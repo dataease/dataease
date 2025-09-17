@@ -33,6 +33,7 @@ import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.datasource.provider.ExcelUtils;
 import io.dataease.datasource.server.DatasourceServer;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.i18n.Translator;
@@ -892,14 +893,78 @@ public class DataVisualizationServer implements DataVisualizationApi {
         QSnapshotCoreChartView snapshotCoreChartView = QSnapshotCoreChartView.snapshotCoreChartView;
         QCoreDatasetTableField coreDatasetTableField = QCoreDatasetTableField.coreDatasetTableField;
 
-        List<VisualizationViewTableDTO> result = queryFactory.select(Projections.fields(VisualizationViewTableDTO.class, snapshotCoreChartView.id, snapshotCoreChartView.title, snapshotCoreChartView.sceneId, snapshotCoreChartView.tableId, snapshotCoreChartView.type, snapshotCoreChartView.render, snapshotCoreChartView.sceneId.as("visualizationId"), coreDatasetTableField.id.as("fieldId"), coreDatasetTableField.originName, coreDatasetTableField.name.as("fieldName"), coreDatasetTableField.type.as("fieldType"), coreDatasetTableField.deType)).from(snapshotCoreChartView).join(coreDatasetTableField).on(snapshotCoreChartView.tableId.eq(coreDatasetTableField.datasetGroupId)).where(snapshotCoreChartView.sceneId.eq(dvId).and(snapshotCoreChartView.id.isNotNull()).and(snapshotCoreChartView.type.ne("VQuery"))).fetch();
+        List<VisualizationViewTableDTO> result = queryFactory.select(
+                Projections.fields(VisualizationViewTableDTO.class,
+                        snapshotCoreChartView.id,
+                        snapshotCoreChartView.title,
+                        snapshotCoreChartView.sceneId,
+                        snapshotCoreChartView.tableId,
+                        snapshotCoreChartView.type,
+                        snapshotCoreChartView.render,
+                        snapshotCoreChartView.sceneId.as("visualizationId"),
+                        coreDatasetTableField.id.as("fieldId"),
+                        coreDatasetTableField.originName,
+                        coreDatasetTableField.name.as("fieldName"),
+                        coreDatasetTableField.type.as("fieldType"),
+                        coreDatasetTableField.deType))
+                .from(snapshotCoreChartView)
+                .join(coreDatasetTableField).on(snapshotCoreChartView.tableId.eq(coreDatasetTableField.datasetGroupId))
+                .where(snapshotCoreChartView.sceneId.eq(dvId)
+                        .and(snapshotCoreChartView.id.isNotNull())
+                        .and(snapshotCoreChartView.type.ne("VQuery"))).fetch();
+
+
+        List<VisualizationViewTableDTO> aggregatedResult = result.stream()
+                .collect(Collectors.groupingBy(dto -> Arrays.asList(
+                        dto.getId(),
+                        dto.getTitle(),
+                        dto.getSceneId(),
+                        dto.getTableId(),
+                        dto.getType(),
+                        dto.getRender(),
+                        dto.getVisualizationId()
+                )))
+                .entrySet().stream()
+                .map(entry -> {
+                    List<VisualizationViewTableDTO> group = entry.getValue();
+                    VisualizationViewTableDTO first = group.get(0);
+
+                    // 创建新的 DTO 对象
+                    VisualizationViewTableDTO aggregatedDto = new VisualizationViewTableDTO();
+                    aggregatedDto.setId(first.getId());
+                    aggregatedDto.setTitle(first.getTitle());
+                    aggregatedDto.setSceneId(first.getSceneId());
+                    aggregatedDto.setTableId(first.getTableId());
+                    aggregatedDto.setType(first.getType());
+                    aggregatedDto.setRender(first.getRender());
+                    aggregatedDto.setVisualizationId(first.getVisualizationId());
+
+                    // 聚合字段信息
+                    List<DatasetTableFieldDTO> tableFields = group.stream()
+                            .map(dto -> {
+                                DatasetTableFieldDTO fieldDto = new DatasetTableFieldDTO();
+                                fieldDto.setId(dto.getFieldId());
+                                fieldDto.setOriginName(dto.getOriginName());
+                                fieldDto.setName(dto.getFieldName());
+                                fieldDto.setType(dto.getFieldType());
+                                fieldDto.setDeType(dto.getDeType());
+                                return fieldDto;
+                            })
+                            .collect(Collectors.toList());
+
+                    aggregatedDto.setTableFields(tableFields);
+                    return aggregatedDto;
+                })
+                .collect(Collectors.toList());
+
 
         SnapshotDataVisualizationInfo dvInfo = snapshotDataVisualizationInfoRepository.findById(dvId).orElse(null);
         if (dvInfo != null && !CollectionUtils.isEmpty(result)) {
             String componentData = dvInfo.getComponentData();
-            return result.stream().filter(item -> componentData.indexOf("\"id\":\"" + item.getId()) > 0).toList();
+            return aggregatedResult.stream().filter(item -> componentData.indexOf("\"id\":\"" + item.getId()) > 0).toList();
         } else {
-            return result;
+            return aggregatedResult;
+
         }
     }
 
