@@ -1,5 +1,7 @@
 package io.dataease.api.visualization.vo;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.util.List;
@@ -10,7 +12,8 @@ public class VisualizationOuterParamsDsInfoVO {
 
     private String dsName;
 
-    private String dsId;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long dsId;
 
     private List targetFieldInfo;
 

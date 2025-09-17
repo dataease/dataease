@@ -329,23 +329,23 @@ public class CoreVisualizationManage {
             QSnapshotVisualizationOuterParamsInfo snapshotVisualizationOuterParamsInfo = QSnapshotVisualizationOuterParamsInfo.snapshotVisualizationOuterParamsInfo;
             QSnapshotVisualizationOuterParams snapshotVisualizationOuterParams = QSnapshotVisualizationOuterParams.snapshotVisualizationOuterParams;
             QSnapshotVisualizationOuterParamsTargetViewInfo snapshotVisualizationOuterParamsTargetViewInfo = QSnapshotVisualizationOuterParamsTargetViewInfo.snapshotVisualizationOuterParamsTargetViewInfo;
-            List<String> paramsInfoIds = queryFactory.select(snapshotVisualizationOuterParamsTargetViewInfo.targetId).from(snapshotVisualizationOuterParamsTargetViewInfo)
+            List<Long> paramsInfoIds = queryFactory.select(snapshotVisualizationOuterParamsTargetViewInfo.targetId).from(snapshotVisualizationOuterParamsTargetViewInfo)
                     .innerJoin(snapshotVisualizationOuterParamsInfo).on(snapshotVisualizationOuterParamsTargetViewInfo.paramsInfoId.eq(snapshotVisualizationOuterParamsInfo.paramsInfoId))
                     .innerJoin(snapshotVisualizationOuterParams).on(snapshotVisualizationOuterParamsInfo.paramsId.eq(snapshotVisualizationOuterParams.paramsId))
-                    .where(snapshotVisualizationOuterParams.visualizationId.eq(dvId.toString())).fetch();
+                    .where(snapshotVisualizationOuterParams.visualizationId.eq(dvId)).fetch();
 
             if (CollectionUtils.isNotEmpty(paramsInfoIds)) {
                 snapshotVisualizationOuterParamsTargetViewInfoRepository.deleteByParamsInfoIds(paramsInfoIds);
             }
 
-            List<String> paramsIds = queryFactory.select(snapshotVisualizationOuterParamsInfo.paramsId).from(snapshotVisualizationOuterParamsInfo)
+            List<Long> paramsIds = queryFactory.select(snapshotVisualizationOuterParamsInfo.paramsId).from(snapshotVisualizationOuterParamsInfo)
                     .innerJoin(snapshotVisualizationOuterParams).on(snapshotVisualizationOuterParamsInfo.paramsId.eq(snapshotVisualizationOuterParams.paramsId))
-                    .where(snapshotVisualizationOuterParams.visualizationId.eq(dvId.toString()))
+                    .where(snapshotVisualizationOuterParams.visualizationId.eq(dvId))
                     .fetch();
             if (CollectionUtils.isNotEmpty(paramsIds)) {
                 snapshotVisualizationOuterParamsInfoRepository.deleteByParamsIds(paramsIds);
             }
-            snapshotVisualizationOuterParamsRepository.deleteByVisualizationId(dvId.toString());
+            snapshotVisualizationOuterParamsRepository.deleteByVisualizationId(dvId);
             //xpack 阈值告警
             chartViewManege.removeThreshold(dvId, CommonConstants.RESOURCE_TABLE.SNAPSHOT);
 
@@ -431,25 +431,25 @@ public class CoreVisualizationManage {
             QSnapshotVisualizationOuterParamsInfo snapshotVisualizationOuterParamsInfo = QSnapshotVisualizationOuterParamsInfo.snapshotVisualizationOuterParamsInfo;
             QSnapshotVisualizationOuterParams snapshotVisualizationOuterParams = QSnapshotVisualizationOuterParams.snapshotVisualizationOuterParams;
 
-            List<String> paramsInfoIds = queryFactory.select(snapshotVisualizationOuterParamsTargetViewInfo.targetId)
+            List<Long> paramsInfoIds = queryFactory.select(snapshotVisualizationOuterParamsTargetViewInfo.targetId)
                     .from(snapshotVisualizationOuterParamsTargetViewInfo)
                     .innerJoin(snapshotVisualizationOuterParamsInfo).on(snapshotVisualizationOuterParamsTargetViewInfo.paramsInfoId.eq(snapshotVisualizationOuterParamsInfo.paramsInfoId))
                     .innerJoin(snapshotVisualizationOuterParams).on(snapshotVisualizationOuterParamsInfo.paramsId.eq(snapshotVisualizationOuterParams.paramsId))
-                    .where(snapshotVisualizationOuterParams.visualizationId.eq(dvId.toString())).fetch();
+                    .where(snapshotVisualizationOuterParams.visualizationId.eq(dvId)).fetch();
             if (CollectionUtils.isNotEmpty(paramsInfoIds)) {
                 snapshotVisualizationOuterParamsTargetViewInfoRepository.deleteByParamsInfoIds(paramsInfoIds);
             }
 
             QVisualizationOuterParamsInfo visualizationOuterParamsInfo = QVisualizationOuterParamsInfo.visualizationOuterParamsInfo;
             QVisualizationOuterParams visualizationOuterParams = QVisualizationOuterParams.visualizationOuterParams;
-            List<String> paramsIds = queryFactory.select(visualizationOuterParamsInfo.paramsId).from(visualizationOuterParamsInfo)
+            List<Long> paramsIds = queryFactory.select(visualizationOuterParamsInfo.paramsId).from(visualizationOuterParamsInfo)
                     .leftJoin(visualizationOuterParams).on(visualizationOuterParamsInfo.paramsId.eq(visualizationOuterParams.paramsId))
-                    .where(visualizationOuterParams.visualizationId.eq(dvId.toString())).fetch();
+                    .where(visualizationOuterParams.visualizationId.eq(dvId)).fetch();
 
             if (CollectionUtils.isNotEmpty(paramsIds)) {
                 visualizationOuterParamsInfoRepository.deleteByParamsIds(paramsIds);
             }
-            visualizationOuterParamsRepository.deleteByVisualizationId(dvId.toString());
+            visualizationOuterParamsRepository.deleteByVisualizationId(dvId);
             //xpack 阈值告警
             chartViewManege.removeThreshold(dvId, CommonConstants.RESOURCE_TABLE.CORE);
         }
@@ -560,7 +560,7 @@ public class CoreVisualizationManage {
                 )).from(visualizationOuterParamsTargetViewInfo)
                 .leftJoin(visualizationOuterParamsInfo).on(visualizationOuterParamsTargetViewInfo.paramsInfoId.eq(visualizationOuterParamsInfo.paramsInfoId))
                 .leftJoin(visualizationOuterParams).on(visualizationOuterParams.paramsId.eq(visualizationOuterParamsInfo.paramsId))
-                .where(visualizationOuterParams.visualizationId.eq(dvId.toString())).fetch().forEach(item -> {
+                .where(visualizationOuterParams.visualizationId.eq(dvId)).fetch().forEach(item -> {
                     SnapshotVisualizationOuterParamsTargetViewInfo snapshotVisualizationOuterParamsTargetViewInfo = new SnapshotVisualizationOuterParamsTargetViewInfo();
                     BeanUtils.copyBean(snapshotVisualizationOuterParamsTargetViewInfo, item);
                     snapshotVisualizationOuterParamsTargetViewInfoRepository.saveAndFlush(snapshotVisualizationOuterParamsTargetViewInfo);
@@ -578,13 +578,13 @@ public class CoreVisualizationManage {
                         visualizationOuterParamsInfo.enabledDefault
                 )).from(visualizationOuterParamsInfo)
                 .leftJoin(visualizationOuterParams).on(visualizationOuterParams.paramsId.eq(visualizationOuterParamsInfo.paramsId))
-                .where(visualizationOuterParams.visualizationId.eq(dvId.toString())).fetch().forEach(item -> {
+                .where(visualizationOuterParams.visualizationId.eq(dvId)).fetch().forEach(item -> {
                     SnapshotVisualizationOuterParamsInfo snapshotVisualizationOuterParamsInfo = new SnapshotVisualizationOuterParamsInfo();
                     BeanUtils.copyBean(snapshotVisualizationOuterParamsInfo, item);
                     snapshotVisualizationOuterParamsInfoRepository.saveAndFlush(snapshotVisualizationOuterParamsInfo);
                 });
 
-        visualizationOuterParamsRepository.findByVisualizationId(dvId.toString()).forEach(item -> {
+        visualizationOuterParamsRepository.findByVisualizationId(dvId).forEach(item -> {
             SnapshotVisualizationOuterParams snapshotVisualizationOuterParams = new SnapshotVisualizationOuterParams();
             BeanUtils.copyBean(snapshotVisualizationOuterParams, item);
             snapshotVisualizationOuterParamsRepository.saveAndFlush(snapshotVisualizationOuterParams);
@@ -717,7 +717,7 @@ public class CoreVisualizationManage {
                 )).from(snapshotVisualizationOuterParamsTargetViewInfo)
                 .leftJoin(snapshotVisualizationOuterParamsInfo).on(snapshotVisualizationOuterParamsTargetViewInfo.paramsInfoId.eq(snapshotVisualizationOuterParamsInfo.paramsInfoId))
                 .leftJoin(snapshotVisualizationOuterParams).on(snapshotVisualizationOuterParams.paramsId.eq(snapshotVisualizationOuterParamsInfo.paramsId))
-                .where(snapshotVisualizationOuterParams.visualizationId.eq(dvId.toString())).fetch().forEach(item -> {
+                .where(snapshotVisualizationOuterParams.visualizationId.eq(dvId)).fetch().forEach(item -> {
                     VisualizationOuterParamsTargetViewInfo visualizationOuterParamsTargetViewInfo = new VisualizationOuterParamsTargetViewInfo();
                     BeanUtils.copyBean(visualizationOuterParamsTargetViewInfo, item);
                     visualizationOuterParamsTargetViewInfoRepository.saveAndFlush(visualizationOuterParamsTargetViewInfo);
@@ -736,7 +736,7 @@ public class CoreVisualizationManage {
                         snapshotVisualizationOuterParamsInfo.enabledDefault
                 )).from(snapshotVisualizationOuterParamsInfo)
                 .leftJoin(snapshotVisualizationOuterParams).on(snapshotVisualizationOuterParamsInfo.paramsId.eq(snapshotVisualizationOuterParams.paramsId))
-                .where(snapshotVisualizationOuterParams.visualizationId.eq(dvId.toString())).fetch().forEach(item -> {
+                .where(snapshotVisualizationOuterParams.visualizationId.eq(dvId)).fetch().forEach(item -> {
                     VisualizationOuterParamsInfo visualizationOuterParamsInfo = new VisualizationOuterParamsInfo();
                     BeanUtils.copyBean(visualizationOuterParamsInfo, item);
                     visualizationOuterParamsInfoRepository.saveAndFlush(visualizationOuterParamsInfo);
@@ -750,7 +750,7 @@ public class CoreVisualizationManage {
                 snapshotVisualizationOuterParams.remark,
                 snapshotVisualizationOuterParams.copyFrom,
                 snapshotVisualizationOuterParams.copyId
-        )).from(snapshotVisualizationOuterParams).where(snapshotVisualizationOuterParams.visualizationId.eq(dvId.toString())).fetch().forEach(item -> {
+        )).from(snapshotVisualizationOuterParams).where(snapshotVisualizationOuterParams.visualizationId.eq(dvId)).fetch().forEach(item -> {
             VisualizationOuterParams outerParams = new VisualizationOuterParams();
             BeanUtils.copyBean(outerParams, item);
             visualizationOuterParamsRepository.saveAndFlush(outerParams);

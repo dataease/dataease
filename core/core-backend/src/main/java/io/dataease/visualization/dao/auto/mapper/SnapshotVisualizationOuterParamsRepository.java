@@ -13,7 +13,7 @@ import java.util.List;
 public interface SnapshotVisualizationOuterParamsRepository extends JpaRepository<SnapshotVisualizationOuterParams, Long>, JpaSpecificationExecutor<SnapshotVisualizationOuterParams> {
 
     @Transactional
-    default void deleteByVisualizationId(String visualizationId) {
+    default void deleteByVisualizationId(Long visualizationId) {
         Specification<SnapshotVisualizationOuterParams> spec = (root, query, cb) ->
                 cb.equal(root.get("visualizationId"), visualizationId);
         List<SnapshotVisualizationOuterParams> list = findAll(spec);
