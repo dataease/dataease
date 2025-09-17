@@ -115,6 +115,7 @@ export abstract class G2ChartView<
       lineLineWidth: axis.axisLine.lineStyle.width,
       lineLineDash,
       label: axis.axisLabel.show,
+      labelOpacity: 1,
       labelFill: axis.axisLabel.color,
       labelFillOpacity: 1,
       labelFontSize: axis.axisLabel.fontSize,
