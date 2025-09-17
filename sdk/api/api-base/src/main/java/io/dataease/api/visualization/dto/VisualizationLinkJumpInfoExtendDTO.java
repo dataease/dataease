@@ -36,8 +36,10 @@ public class VisualizationLinkJumpInfoExtendDTO extends VisualizationLinkJumpInf
      */
     @JsonSerialize(using = ToStringSerializer.class)
     private Long sourceFieldActiveId;
-    private String targetViewId;
-    private String targetFieldId;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long targetViewId;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long targetFieldId;
     @JsonSerialize(using = ToStringSerializer.class)
     private Long copyFrom;
     @JsonSerialize(using = ToStringSerializer.class)
