@@ -4,6 +4,7 @@ import {
   getLineConditions,
   getLineLabelColorByCondition,
   hexColorToRGBA,
+  hexToRgba,
   parseJson
 } from '@/views/chart/components/js/util'
 import { defaultsDeep, isEmpty, merge } from 'lodash-es'
@@ -872,6 +873,84 @@ export class BidirectionalHorizontalBar extends G2ChartView {
     return options
   }
 
+  protected configConditions(chart: Chart, options: G2Spec): G2Spec {
+    const { threshold } = parseJson(chart.senior)
+    if (!threshold?.enable || !threshold?.lineThreshold?.length) {
+      return options
+    }
+    const leftAxis = chart.yAxis?.[0]
+    const rightAxis = chart.yAxisExt?.[0]
+    let leftCondition: TableThreshold, rightCondition: TableThreshold
+    threshold.lineThreshold.forEach(item => {
+      if (item.fieldId === leftAxis.id) {
+        leftCondition = item as TableThreshold
+      }
+      if (item.fieldId === rightAxis.id) {
+        rightCondition = item as TableThreshold
+      }
+    })
+    const { basicStyle } = parseJson(chart.customAttr)
+    if (leftCondition?.conditions?.length) {
+      const [firstMark] = options.children[0].children
+      firstMark.data.value.forEach(d => {
+        leftCondition.conditions.forEach(c => {
+          if (
+            (c.term === 'between' && d.value >= c.min && d.value <= c.max) ||
+            (c.term === 'lt' && d.value < c.value) ||
+            (c.term === 'le' && d.value <= c.value) ||
+            (c.term === 'gt' && d.value > c.value) ||
+            (c.term === 'ge' && d.value >= c.value)
+          ) {
+            let tmpColor = hexToRgba(c.color, basicStyle.alpha)
+            if (basicStyle.gradient) {
+              const angle = basicStyle.layout === 'vertical' ? 270 : 180
+              tmpColor = setGradientColor(tmpColor, true, angle)
+            }
+            d.conditionColor = tmpColor
+          }
+        })
+      })
+      firstMark.style = {
+        ...firstMark.style,
+        fill: d => {
+          if (d.conditionColor) {
+            return d.conditionColor
+          }
+        }
+      }
+    }
+    if (rightCondition?.conditions?.length) {
+      const [, secondMark] = options.children[0].children
+      secondMark.data.value.forEach(d => {
+        rightCondition.conditions.forEach(c => {
+          if (
+            (c.term === 'between' && d.value >= c.min && d.value <= c.max) ||
+            (c.term === 'lt' && d.value < c.value) ||
+            (c.term === 'le' && d.value <= c.value) ||
+            (c.term === 'gt' && d.value > c.value) ||
+            (c.term === 'ge' && d.value >= c.value)
+          ) {
+            let tmpColor = hexToRgba(c.color, basicStyle.alpha)
+            if (basicStyle.gradient) {
+              const angle = basicStyle.layout === 'vertical' ? 90 : 0
+              tmpColor = setGradientColor(tmpColor, true, angle)
+            }
+            d.conditionColor = tmpColor
+          }
+        })
+      })
+      secondMark.style = {
+        ...secondMark.style,
+        fill: d => {
+          if (d.conditionColor) {
+            return d.conditionColor
+          }
+        }
+      }
+    }
+    return options
+  }
+
   setupDefaultOptions(chart: ChartObj): ChartObj {
     chart.customStyle.yAxis = {
       ...chart.customStyle.yAxis,
@@ -897,7 +976,8 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       this.configYAxis,
       this.configTooltip,
       this.configLabel,
-      this.configLegend
+      this.configLegend,
+      this.configConditions
     )(chart, options, {}, this)
   }
 
