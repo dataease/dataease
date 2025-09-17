@@ -75,6 +75,8 @@ export abstract class G2ChartView<
             itemMarkerSize: legendSize,
             itemLabelFontSize: legendFontSize,
             itemLabelFill: legendColor,
+            itemLabelFillOpacity: 1,
+            itemLabelOpacity: 1,
             navPageNumFontSize: legendSize,
             navPageNumFill: legendColor,
             navButtonSize: legendSize,
