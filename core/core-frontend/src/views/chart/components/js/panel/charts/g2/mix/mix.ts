@@ -545,6 +545,7 @@ export class ColumnLineMix extends G2ChartView {
       merge(intervalMark, {
         scale: {
           y: {
+            nice: false,
             domain: [yAxis.axisValue.min, yAxis.axisValue.max]
           }
         },
@@ -567,6 +568,7 @@ export class ColumnLineMix extends G2ChartView {
       const scaleOpt = {
         scale: {
           y: {
+            nice: false,
             independent: true,
             domain: [yAxisExt.axisValue.min, yAxisExt.axisValue.max]
           }

@@ -711,6 +711,7 @@ export class GroupLineMix extends G2ChartView {
       const scaleOpt = {
         scale: {
           y: {
+            nice: false,
             domain: [yAxis.axisValue.min, yAxis.axisValue.max]
           }
         }
@@ -736,6 +737,7 @@ export class GroupLineMix extends G2ChartView {
       const scaleOpt = {
         scale: {
           y: {
+            nice: false,
             domain: [yAxisExt.axisValue.min, yAxisExt.axisValue.max]
           }
         }
