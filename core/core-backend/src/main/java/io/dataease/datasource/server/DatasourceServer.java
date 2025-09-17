@@ -1074,7 +1074,7 @@ public class DatasourceServer implements DatasourceApi {
             }
             coreDatasource.setStatus(status);
         } catch (Exception e) {
-            DEException.throwException(e.getMessage());
+            DEException.throwException(e);
         }
     }
 
@@ -1155,6 +1155,7 @@ public class DatasourceServer implements DatasourceApi {
                         LicenseUtil.validate();
                         validate(datasource);
                     } catch (Exception e) {
+                        LogUtil.error(e.getMessage(), e);
                     } finally {
                         syncDsIds.removeIf(id -> id.equals(datasource.getId()));
                     }
@@ -1372,10 +1373,10 @@ public class DatasourceServer implements DatasourceApi {
             }
         } catch (DEException e) {
             datasourceDTO.setStatus("Error");
-            DEException.throwException(e.getMessage());
+            throw e;
         } catch (Exception e) {
             datasourceDTO.setStatus("Error");
-            DEException.throwException(e.getMessage());
+            DEException.throwException(e);
         } finally {
             coreDatasource.setStatus(datasourceDTO.getStatus());
             dataSourceManage.innerEditStatus(coreDatasource);
