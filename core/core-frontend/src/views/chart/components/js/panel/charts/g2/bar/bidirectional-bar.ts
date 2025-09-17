@@ -910,12 +910,14 @@ export class BidirectionalHorizontalBar extends G2ChartView {
           }
         })
       })
+      const originColor = firstMark.style?.fill
       firstMark.style = {
         ...firstMark.style,
         fill: d => {
           if (d.conditionColor) {
             return d.conditionColor
           }
+          return originColor
         }
       }
     }
@@ -939,12 +941,14 @@ export class BidirectionalHorizontalBar extends G2ChartView {
           }
         })
       })
+      const originColor = secondMark.style?.fill
       secondMark.style = {
         ...secondMark.style,
         fill: d => {
           if (d.conditionColor) {
             return d.conditionColor
           }
+          return originColor
         }
       }
     }
