@@ -2079,44 +2079,6 @@ export class SummaryCell extends CustomDataCell {
   }
 }
 
-/**
- * 配置空数据样式
- * @param newChart
- * @param basicStyle
- * @param newData
- * @param container
- */
-export const configEmptyDataStyle = (newChart, basicStyle, newData, container) => {
-  /**
-   * 辅助函数：移除空数据dom
-   */
-  const removeEmptyDom = () => {
-    const emptyElement = document.getElementById(container + '_empty')
-    if (emptyElement) {
-      emptyElement.parentElement.removeChild(emptyElement)
-    }
-  }
-  removeEmptyDom()
-  if (newData.length) return
-  newChart.on(S2Event.LAYOUT_AFTER_HEADER_LAYOUT, ev => {
-    removeEmptyDom()
-    if (!newData.length) {
-      const emptyDom = document.createElement('div')
-      const left = Math.min(newChart.options.width, ev.colsHierarchy.width) / 2 - 32
-      emptyDom.id = container + '_empty'
-      emptyDom.textContent = i18nt('data_set.no_data')
-      emptyDom.setAttribute(
-        'style',
-        `position: absolute;
-        left: ${left}px;
-        top: 50%;`
-      )
-      const parent = document.getElementById(container)
-      parent.insertBefore(emptyDom, parent.firstChild)
-    }
-  })
-}
-
 export const getLeafNodes = (tree: Array<ColumnNode>): ColumnNode[] => {
   const result: ColumnNode[] = []
   const inorderTraversal = node => {

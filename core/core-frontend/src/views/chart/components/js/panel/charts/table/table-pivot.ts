@@ -438,6 +438,11 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       },
       dataCell: meta => {
         return new CustomDataCell(meta, meta.spreadsheet)
+      },
+      placeholder: {
+        empty: {
+          description: t('data_set.no_data')
+        }
       }
     }
     // options
@@ -1251,8 +1256,8 @@ class EmptyDataCell extends MergedCell {
     this.meta.fieldValue = ' '
     super.drawTextShape()
     const { rowHeader, columnHeader } = this.spreadsheet.facet
-    const offsetX = columnHeader.style.viewportWidth / 2
-    const offsetY = rowHeader.style.viewportHeight / 2
+    const offsetX = columnHeader.headerConfig.viewportWidth / 2
+    const offsetY = rowHeader.headerConfig.viewportHeight / 2
     const style = this.getTextStyle()
     this.appendChild(
       new Text({
