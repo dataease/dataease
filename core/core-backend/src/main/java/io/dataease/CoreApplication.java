@@ -1,5 +1,6 @@
 package io.dataease;
 
+import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 import io.dataease.listener.EhCacheStartListener;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,6 +13,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableCaching
 @EnableScheduling
 @EnableJpaRepositories(basePackages = "io.dataease")
+@EnableEncryptableProperties
 public class CoreApplication {
 
     public static void main(String[] args) {
