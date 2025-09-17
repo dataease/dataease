@@ -1,7 +1,6 @@
 import { useI18n } from '@/hooks/web/useI18n'
 import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
 import {
-  configEmptyDataStyle,
   copyContent,
   CustomDataCell,
   getSummaryRow,
@@ -157,7 +156,12 @@ export class TableNormal extends S2ChartView<TableSheet> {
           ? ScrollbarPositionType.CONTENT
           : ScrollbarPositionType.CANVAS
       },
-      frozen: {}
+      frozen: {},
+      placeholder: {
+        empty: {
+          description: t('data_set.no_data')
+        }
+      }
     }
     // 列宽设置
     s2Options.style = this.configStyle(chart, s2DataConfig)
@@ -240,7 +244,6 @@ export class TableNormal extends S2ChartView<TableSheet> {
         ev.colsHierarchy.width = lastNode.x + lastNode.width
       })
     }
-    configEmptyDataStyle(newChart, basicStyle, newData, container)
     // click
     newChart.on(S2Event.DATA_CELL_CLICK, ev => {
       const cell = newChart.getCell(ev.target)

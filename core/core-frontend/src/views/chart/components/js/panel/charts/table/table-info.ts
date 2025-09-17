@@ -22,7 +22,6 @@ import {
   getRowIndex,
   SortTooltip,
   summaryRowStyle,
-  configEmptyDataStyle,
   getLeafNodes,
   getColumns,
   drawImage,
@@ -198,7 +197,12 @@ export class TableInfo extends S2ChartView<TableSheet> {
           ? ScrollbarPositionType.CONTENT
           : ScrollbarPositionType.CANVAS
       },
-      frozen: {}
+      frozen: {},
+      placeholder: {
+        empty: {
+          description: t('data_set.no_data')
+        }
+      }
     }
     s2Options.style = this.configStyle(chart, s2DataConfig)
     // 自适应列宽模式下，URL 字段的宽度固定为 120
@@ -332,8 +336,6 @@ export class TableInfo extends S2ChartView<TableSheet> {
         ev.colsHierarchy.width = lastNode.x + lastNode.width
       })
     }
-    // 空数据时表格样式
-    configEmptyDataStyle(newChart, basicStyle, newData, container)
     // click
     newChart.on(S2Event.DATA_CELL_CLICK, ev => {
       const cell = newChart.getCell(ev.target)
