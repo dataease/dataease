@@ -492,6 +492,7 @@ export class ColumnLineMix extends G2ChartView {
           lineLineWidth: xAxis.axisLine.lineStyle.width,
           lineLineDash,
           label: xAxis.axisLabel.show,
+          labelOpacity: 1,
           labelFill: xAxis.axisLabel.color,
           labelFillOpacity: 1,
           labelFontSize: xAxis.axisLabel.fontSize,

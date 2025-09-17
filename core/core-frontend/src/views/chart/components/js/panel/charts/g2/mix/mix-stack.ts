@@ -377,7 +377,9 @@ export class StackLineMix extends G2ChartView {
       itemMarker: legend.icon,
       itemMarkerSize: legend.size,
       itemLabelFontSize: legend.fontSize,
-      itemLabelFill: legend.color
+      itemLabelFill: legend.color,
+      itemLabelOpacity: 1,
+      itemLabelFillOpacity: 1
     }
     unionRelations.forEach(([key, value]) => {
       legendMark.scale.color.domain.push(key)
@@ -652,6 +654,7 @@ export class StackLineMix extends G2ChartView {
           lineLineWidth: xAxis.axisLine.lineStyle.width,
           lineLineDash,
           label: xAxis.axisLabel.show,
+          labelOpacity: 1,
           labelFill: xAxis.axisLabel.color,
           labelFillOpacity: 1,
           labelFontSize: xAxis.axisLabel.fontSize,
