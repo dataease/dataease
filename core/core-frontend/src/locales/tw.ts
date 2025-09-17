@@ -1463,6 +1463,7 @@ export default {
     axis_label_show: '標籤顯示',
     axis_label_color: '標籤顏色',
     axis_label_fontsize: '標籤大小',
+    axis_tick_show: '刻度顯示',
     text_style: '字體樣式',
     bolder: '加粗',
     change_ds: '更換資料集',
