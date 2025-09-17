@@ -737,54 +737,51 @@ public class ChartDataManage {
         List<String[]> data = new ArrayList<>();
 
         String querySql = null;
-        //如果不是插件图表 走原生逻辑
-        if (table.getMode() == 0) {// 直连
-            if (ObjectUtils.isEmpty(dsMap)) {
-                DEException.throwException(Translator.get("i18n_datasource_delete"));
-            }
-            for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {
-                DatasourceSchemaDTO ds = next.getValue();
-                if (StringUtils.isNotEmpty(ds.getStatus()) && "Error".equalsIgnoreCase(ds.getStatus())) {
-                    DEException.throwException(Translator.get("i18n_invalid_ds"));
-                }
-            }
-
-            SQLMeta sqlMeta = new SQLMeta();
-            Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
-            WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams(), pluginManage);
-
-            if (StringUtils.equalsAnyIgnoreCase(view.getType(), "indicator", "gauge", "liquid")) {
-                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams(), pluginManage);
-                querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
-            } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
-                List<ChartViewFieldDTO> xFields = new ArrayList<>();
-                xFields.addAll(xAxis);
-                xFields.addAll(extStack);
-                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xFields, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams(), pluginManage);
-                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams(), pluginManage);
-                querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
-            } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
-                List<ChartViewFieldDTO> yFields = new ArrayList<>();
-                yFields.addAll(yAxis);
-                yFields.addAll(extBubble);
-                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams(), pluginManage);
-                Quota2SQLObj.quota2sqlObj(sqlMeta, yFields, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams(), pluginManage);
-                querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
-            } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
-                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams(), pluginManage);
-                querySql = SQLProvider.createQuerySQL(sqlMeta, false, true, view);
-            } else {
-                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams(), pluginManage);
-                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams(), pluginManage);
-                querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
-            }
-
-            querySql = provider.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
-            datasourceRequest.setQuery(querySql);
-            logger.debug("calcite chart get field enum sql: " + querySql);
-
-            data = (List<String[]>) provider.fetchResultField(datasourceRequest).get("data");
+        if (ObjectUtils.isEmpty(dsMap)) {
+            DEException.throwException(Translator.get("i18n_datasource_delete"));
         }
+        for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {
+            DatasourceSchemaDTO ds = next.getValue();
+            if (StringUtils.isNotEmpty(ds.getStatus()) && "Error".equalsIgnoreCase(ds.getStatus())) {
+                DEException.throwException(Translator.get("i18n_invalid_ds"));
+            }
+        }
+
+        SQLMeta sqlMeta = new SQLMeta();
+        Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
+        WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams(), pluginManage);
+
+        if (StringUtils.equalsAnyIgnoreCase(view.getType(), "indicator", "gauge", "liquid")) {
+            Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams(), pluginManage);
+            querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
+        } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
+            List<ChartViewFieldDTO> xFields = new ArrayList<>();
+            xFields.addAll(xAxis);
+            xFields.addAll(extStack);
+            Dimension2SQLObj.dimension2sqlObj(sqlMeta, xFields, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams(), pluginManage);
+            Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams(), pluginManage);
+            querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
+        } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
+            List<ChartViewFieldDTO> yFields = new ArrayList<>();
+            yFields.addAll(yAxis);
+            yFields.addAll(extBubble);
+            Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams(), pluginManage);
+            Quota2SQLObj.quota2sqlObj(sqlMeta, yFields, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams(), pluginManage);
+            querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
+        } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
+            Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams(), pluginManage);
+            querySql = SQLProvider.createQuerySQL(sqlMeta, false, true, view);
+        } else {
+            Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams(), pluginManage);
+            Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams(), pluginManage);
+            querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
+        }
+
+        querySql = provider.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
+        datasourceRequest.setQuery(querySql);
+        logger.debug("calcite chart get field enum sql: " + querySql);
+
+        data = (List<String[]>) provider.fetchResultField(datasourceRequest).get("data");
         return data;
     }
 
