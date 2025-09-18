@@ -33,6 +33,7 @@ import {
   getThisEnd,
   getLastStart,
   getAround,
+  getAroundStart,
   getCustomRange
 } from './time-format-dayjs'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -1087,7 +1088,7 @@ const isInRange = (ele, startWindowTime, timeStamp) => {
   }
   let startTime
   if (relativeToCurrent === 'custom') {
-    startTime = getAround(relativeToCurrentType, around === 'f' ? 'subtract' : 'add', timeNum)
+    startTime = getAroundStart(relativeToCurrentType, around === 'f' ? 'subtract' : 'add', timeNum)
   } else {
     switch (relativeToCurrent) {
       case 'thisYear':
@@ -1130,6 +1131,7 @@ const isInRange = (ele, startWindowTime, timeStamp) => {
         break
     }
   }
+
   const startValue = regularOrTrends === 'fixed' ? regularOrTrendsValue : startTime
   if (intervalType === 'start') {
     return startWindowTime < +new Date(startValue) || isDynamicWindowTime
@@ -1147,7 +1149,7 @@ const isInRange = (ele, startWindowTime, timeStamp) => {
           ? new Date(
               dayjs(new Date(regularOrTrendsValue[0])).startOf(noTime).format('YYYY/MM/DD HH:mm:ss')
             )
-          : getAround(relativeToCurrentType, around === 'f' ? 'subtract' : 'add', timeNum)
+          : getAroundStart(relativeToCurrentType, around === 'f' ? 'subtract' : 'add', timeNum)
       endTime =
         regularOrTrends === 'fixed'
           ? new Date(
@@ -1508,6 +1510,8 @@ const validate = () => {
         return true
       }
       if (!ele.setTimeRange) return false
+      console.log(startTime, endTime)
+
       if (
         isInRange(
           ele,
@@ -3723,14 +3727,15 @@ defineExpose({
           margin-bottom: 8px;
 
           .field-select--input {
-            .ed-select-tags-wrapper.has-prefix {
-              margin-left: 25px;
+            .ed-select__prefix {
+              padding-right: 0;
             }
+
             .ed-select__input {
               margin-left: 6px !important;
             }
             .ed-tag {
-              max-width: 52px;
+              max-width: 46px !important;
               .ed-tag__close {
                 margin-left: 2px;
               }
