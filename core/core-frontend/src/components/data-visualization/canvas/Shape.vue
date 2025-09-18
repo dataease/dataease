@@ -513,8 +513,13 @@ const handleDbClick = () => {
   }
 }
 
+const hasChartMouseEvent = () => {
+  const chartContainer = document.getElementById(`container-canvas-${element.value.id}-common`)
+  return chartContainer && window.getComputedStyle(chartContainer).cursor !== 'default'
+}
+
 const handleInnerMouseDownOnShape = e => {
-  if (!canvasActive.value) {
+  if (!canvasActive.value || hasChartMouseEvent()) {
     return
   }
   batchSelected(e)
