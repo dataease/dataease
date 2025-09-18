@@ -583,7 +583,7 @@ export function getStyle(chart: Chart, dataConfig: S2DataConfig): S2Style {
             return 0
           }
           const columnCount = tableHeader.showIndex ? fieldsSize + 1 : fieldsSize
-          const minWidth = width / columnCount
+          const minWidth = Math.floor(width / columnCount) - 1
           return Math.max(minWidth, basicStyle.tableColumnWidth)
         }
       }
