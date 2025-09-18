@@ -97,7 +97,7 @@ export class Area extends G2ChartView {
     // 开始渲染
     newChart.options(options)
     newChart.on('point:click', action)
-    extremumEvt(newChart, chart, options, container, scale)
+    extremumEvt(newChart, chart, options, container, scale, this.name === 'area')
     // configPlotTooltipEvent(chart, newChart)
     return newChart
   }

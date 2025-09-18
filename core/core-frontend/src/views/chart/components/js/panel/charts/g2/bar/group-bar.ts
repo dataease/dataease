@@ -72,18 +72,16 @@ export class GroupBar extends StackBar {
       dy: labelAttr.position === 'top' ? -10 : 0,
       dx: 0
     }
-    const transform = labelAttr.fullDisplay
-      ? {}
-      : { transform: [{ type: 'exceedAdjust' }, { type: 'overlapHide' }] }
-
     const label = {
       text: 'value',
       fillOpacity: 1,
       fill: labelAttr.color,
       fontSize: labelAttr.fontSize,
       ...position,
-      formatter: (value, _data) => valueFormatter(value, labelAttr.labelFormatter),
-      ...transform
+      formatter: (value, _data) => valueFormatter(value, labelAttr.labelFormatter)
+    }
+    if (!labelAttr.fullDisplay) {
+      label.transform = [{ type: 'overlapHide' }]
     }
     return {
       ...options,

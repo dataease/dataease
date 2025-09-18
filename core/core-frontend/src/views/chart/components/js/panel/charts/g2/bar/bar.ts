@@ -108,14 +108,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     newChart.options(options)
     newChart.on('interval:click', action)
     configTooltip(newChart, chart)
-    extremumEvt(
-      newChart,
-      chart,
-      options.children[0],
-      container,
-      scale,
-      this.name === 'bar' || this.name === 'bar-group'
-    )
+    extremumEvt(newChart, chart, options.children[0], container, scale, this.name === 'bar')
     return newChart
   }
 
