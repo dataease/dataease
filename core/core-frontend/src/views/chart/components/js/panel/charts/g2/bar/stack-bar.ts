@@ -106,18 +106,15 @@ export class StackBar extends Bar {
   }
 
   protected configTooltip(chart: Chart, options: ViewSpec): ViewSpec {
+    const { children } = options
     const { tooltip } = parseJson(chart.customAttr)
     if (!tooltip.show) {
-      return {
-        ...options,
-        tooltip: false
-      }
+      return options
     }
     const tooltipMap = function (a) {
       return a
     }
     tooltipMap.title = undefined
-
     const tooltipOptions: ViewSpec = {
       tooltip: tooltipMap,
       interaction: {
@@ -158,13 +155,7 @@ export class StackBar extends Bar {
     }
     return {
       ...options,
-      children: [
-        {
-          ...options.children[0],
-          ...tooltipOptions
-        },
-        ...options.children.slice(1)
-      ]
+      children: [{ ...children[0], ...tooltipOptions }, ...children.slice(1)]
     }
   }
 

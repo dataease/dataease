@@ -83,6 +83,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
         background: true
       }
     },
+    tooltip: false,
     transform: [{ type: 'dodgeX' } as Transform]
   } as ViewSpec
 
@@ -188,11 +189,11 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
   }
 
   protected configTooltip(chart: Chart, options: ViewSpec): ViewSpec {
+    const { children } = options
     const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
     const tooltipAttr = customAttr.tooltip
     const yAxis = chart.yAxis
     if (!tooltipAttr.show) {
-      options.children[0].tooltip = false
       return options
     }
     const formatterMap = tooltipAttr.seriesTooltipFormatter
@@ -258,13 +259,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     }
     return {
       ...options,
-      children: [
-        {
-          ...options.children[0],
-          ...tooltipOptions
-        },
-        ...options.children.slice(1)
-      ]
+      children: [{ ...children[0], ...tooltipOptions }, ...children.slice(1)]
     }
   }
 

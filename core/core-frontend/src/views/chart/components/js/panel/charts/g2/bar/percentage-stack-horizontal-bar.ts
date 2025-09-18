@@ -64,7 +64,6 @@ export class PercentageStackBar extends HorizontalStackBar {
     const { tooltip } = parseJson(chart.customAttr)
     const { children } = options
     if (!tooltip.show) {
-      children[0].tooltip = false
       return options
     }
     const tooltipMap = function (a) {
@@ -121,13 +120,7 @@ export class PercentageStackBar extends HorizontalStackBar {
     }
     return {
       ...options,
-      children: [
-        {
-          ...options.children[0],
-          ...tooltipOptions
-        },
-        ...options.children.slice(1)
-      ]
+      children: [{ ...children[0], ...tooltipOptions }, ...children.slice(1)]
     }
   }
 

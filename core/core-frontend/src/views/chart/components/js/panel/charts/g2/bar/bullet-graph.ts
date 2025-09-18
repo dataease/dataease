@@ -155,7 +155,7 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
   }
 
   protected configMisc(chart: Chart, options: RuntimeOptions): RuntimeOptions {
-    const { basicStyle } = parseJson(chart.customAttr)
+    const { basicStyle, tooltip } = parseJson(chart.customAttr)
     const { bullet } = parseJson(chart.customAttr).misc
     const isDynamic = bullet.bar.ranges.showType === 'dynamic'
     // 背景颜色，固定区间背景时，按大小降序
@@ -228,10 +228,12 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
       style: {
         maxWidth: bullet.bar.measures.size
       },
-      tooltip: {
-        title: d => d.title,
-        items: [{ channel: 'y' }]
-      }
+      tooltip: tooltip.show
+        ? {
+            title: d => d.title,
+            items: [{ channel: 'y' }]
+          }
+        : false
     }
     const targetName =
       chart.yAxisExt[0]?.chartShowName || bullet.bar.target.name || chart.yAxisExt[0]?.name
@@ -247,10 +249,12 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
       interaction: {
         legendFilter: false
       },
-      tooltip: {
-        title: false,
-        items: [{ channel: 'y' }]
-      }
+      tooltip: tooltip.show
+        ? {
+            title: false,
+            items: [{ channel: 'y' }]
+          }
+        : false
     }
     childrens.push(target)
     childrens.push(measures)

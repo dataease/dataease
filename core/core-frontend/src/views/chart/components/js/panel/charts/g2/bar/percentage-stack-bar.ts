@@ -69,12 +69,10 @@ export class PercentageStackBar extends GroupStackBar {
   }
 
   protected configTooltip(chart: Chart, options: ViewSpec): ViewSpec {
+    const { children } = options
     const { tooltip } = parseJson(chart.customAttr)
     if (!tooltip.show) {
-      return {
-        ...options,
-        tooltip: false
-      }
+      return options
     }
     const tooltipMap = function (a) {
       return a
@@ -130,13 +128,7 @@ export class PercentageStackBar extends GroupStackBar {
     }
     return {
       ...options,
-      children: [
-        {
-          ...options.children[0],
-          ...tooltipOptions
-        },
-        ...options.children.slice(1)
-      ]
+      children: [{ ...children[0], ...tooltipOptions }, ...children.slice(1)]
     }
   }
 

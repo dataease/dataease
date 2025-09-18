@@ -75,7 +75,6 @@ export class HorizontalStackBar extends HorizontalBar {
     const { children } = options
     const { tooltip } = parseJson(chart.customAttr)
     if (!tooltip.show) {
-      children[0].tooltip = false
       return options
     }
 

@@ -164,7 +164,8 @@ export class ProgressBar extends HorizontalStackBar {
           scale: {
             color: { range: [] },
             y: { nice: true }
-          }
+          },
+          tooltip: false
         },
         {
           type: 'interval',
@@ -179,7 +180,8 @@ export class ProgressBar extends HorizontalStackBar {
           scale: {
             color: { type: 'identity' }
           },
-          animate: false
+          animate: false,
+          tooltip: false
         }
       ]
     }
@@ -253,7 +255,6 @@ export class ProgressBar extends HorizontalStackBar {
     const { children } = options
     const { tooltip } = parseJson(chart.customAttr)
     if (!tooltip.show) {
-      children[0].tooltip = false
       return options
     }
     children[0].tooltip = {
