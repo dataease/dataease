@@ -97,10 +97,7 @@ export class Area extends G2ChartView {
     // 开始渲染
     newChart.options(options)
     newChart.on('point:click', action)
-    newChart.afterRender = (c?: any) => {
-      extremumEvt(c, chart, c.options(), container, scale, this.name === 'area')
-      c.render()
-    }
+    extremumEvt(newChart, chart, options, container, scale)
     // configPlotTooltipEvent(chart, newChart)
     return newChart
   }
@@ -258,9 +255,7 @@ export class Area extends G2ChartView {
             }
             return labelCfg.position === 'top' ? 'bottom' : 'top'
           },
-          transform: labelAttr.fullDisplay
-            ? [{ type: 'exceedAdjust' }]
-            : [{ type: 'exceedAdjust' }, { type: 'overlapHide' }],
+          ...(labelAttr.fullDisplay ? {} : { transform: [{ type: 'overlapHide' }] }),
           fontFamily: chart.fontFamily
         }
       ]
@@ -736,9 +731,7 @@ export class StackArea extends Area {
           textBaseline: () => {
             return labelAttr.position === 'top' ? 'bottom' : 'top'
           },
-          transform: labelAttr.fullDisplay
-            ? [{ type: 'exceedAdjust' }]
-            : [{ type: 'exceedAdjust' }, { type: 'overlapHide' }],
+          ...(labelAttr.fullDisplay ? {} : { transform: [{ type: 'overlapHide' }] }),
           fontFamily: chart.fontFamily
         }
       ]

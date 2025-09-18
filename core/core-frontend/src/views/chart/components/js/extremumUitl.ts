@@ -90,7 +90,7 @@ export const extremumEvt = (
   // 这里获取 y 字段
   // 部分图表传过来的是options包含 children 的数组
   // 部分图表是children数组中的对象，line or bar
-  const { y: yField } = options.encode
+  const { y: yField } = options.encode ? options.encode : options.children[0].encode
   const chartData = options.children ? options.children : [options]
   // 遍历所有 series，为标签注入 HTML 和样式
   chartData
@@ -119,35 +119,37 @@ export const extremumEvt = (
       pointSize = Math.max(pointSize, item.encode?.size || 0)
     })
 
-  const parentRect = parent?.getBoundingClientRect()
-  // 渲染后调整极值标签位置，防止溢出
-  newChart.on('afterrender', () => {
-    document.querySelectorAll('.extremum-' + chart.container).forEach(item => {
+  const setExtremumPosition = () => {
+    document.querySelectorAll('.extremum-' + chart.container)?.forEach(item => {
       item.style.display = 'block'
+      item?.parentElement?.parentElement
       const itemRect = item.getBoundingClientRect()
-      const childNode = item.childNodes[1] as HTMLElement
+      const itemParentRect = item.parentElement?.getBoundingClientRect()
+      const spanElement = item.parentElement.querySelector('span' as string) as HTMLElement
       // 判断是否顶部溢出
-      if (itemRect.top < parentRect.top) {
-        item.style.transform = `translate(-50%) translateY(${pointSize / scale + 10}px)`
-        childNode.style.cssText += 'transform: translateX(-50%) rotate(180deg); top: -5px;'
+      const itemParentParentRect = item.parentElement?.parentElement?.getBoundingClientRect()
+      // 顶部有足够空间
+      if (itemParentRect.top - itemParentParentRect.top > itemParentRect.height) {
+        item.style.transform = `translateY(-${itemRect.height + 5}px)`
+        spanElement.style.cssText += 'transform: rotate(0deg);top: -6px;'
+      } else {
+        item.style.transform = `translateY(${pointSize / scale + 5 * 2}px)`
+        spanElement.style.cssText += `transform: rotate(180deg);top: ${pointSize / scale + 5}px;`
       }
-      // 判断是否右侧溢出
-      if (itemRect.right > parentRect.right) {
-        const currentLeft = parseFloat(window.getComputedStyle(item).left) || 0
-        const newLeft = currentLeft - (itemRect.right - parentRect.right)
-        item.style.left = `${newLeft}px`
-        // childNode 反向偏移，保持始终指向在数据点上
-        childNode.style.left = itemRect.width / 2 + Math.abs(newLeft) + 'px'
+      // 判断右侧溢出
+      const overflowRight = itemParentRect.right - itemParentParentRect.right
+      let newRight = itemRect.width / 2
+      if (overflowRight > itemRect.width * 0.5) {
+        newRight = overflowRight
       }
-      // 判断是否左侧溢出
-      if (itemRect.left < parentRect.left) {
-        const currentLeft = parseFloat(window.getComputedStyle(item).left) || 0
-        const newLeft = currentLeft + (parentRect.left - itemRect.left)
-        item.style.left = `${newLeft}px`
-        // childNode 反向偏移，保持始终指向在数据点上
-        childNode.style.left = itemRect.width / 2 - Math.abs(newLeft) + 'px'
-      }
+      item.style.right = newRight + 'px'
     })
+  }
+  newChart.on('afterchangesize', () => {
+    setExtremumPosition()
+  })
+  newChart.on('afterrender', () => {
+    setExtremumPosition()
   })
 }
 
@@ -244,18 +246,16 @@ const extremumHtml = (chart, yField, isSeriesLabel) => {
         background: rgba(${color});
       ">
         ${textContent}
-        <span style="
+      </div>
+      <span style="
           position: absolute;
-          bottom: -4.8px;
-          left: 50%;
-          transform: translateX(-50%);
+          top: -6px;
+          left: -4px;
           width: 0; height: 0;
           border-top: 5px solid rgba(${color});
           border-left: 4px solid transparent;
           border-right: 4px solid transparent;
-          border-bottom: 0;
         "></span>
-      </div>
     `
   }
 }

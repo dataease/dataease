@@ -14,7 +14,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@antv/g2": "^5.3.5",
+    "@antv/g2": "^5.4.0",
     "@antv/l7": "^2.22.0",
     "@antv/l7plot": "^0.5.5",
     "@antv/s2": "^2.4.5",

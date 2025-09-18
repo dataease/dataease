@@ -7,7 +7,7 @@ import {
 } from '@/views/chart/components/js/panel/charts/g2/bar/common'
 import { useI18n } from '@/hooks/web/useI18n'
 import { flow, hexColorToRGBA, hexToRgba, parseJson } from '@/views/chart/components/js/util'
-import { cloneDeep, isEmpty } from 'lodash-es'
+import { cloneDeep, defaultsDeep, isEmpty } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import {
   getLineDash,
@@ -83,8 +83,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
         background: true
       }
     },
-    transform: [{ type: 'dodgeX' } as Transform],
-    data: []
+    transform: [{ type: 'dodgeX' } as Transform]
   } as ViewSpec
 
   async drawChart(drawOptions: G2DrawOptions<G2Column>): Promise<G2Column> {
@@ -96,14 +95,11 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     const data = cloneDeep(drawOptions.chart.data?.data)
     const initOptions: ViewSpec = {
       type: 'view',
-      data: {
-        value: data
-      },
+      data: data,
       children: [
         {
           ...this.intervalOptions,
-          transform: [].concat(this.intervalOptions.transform),
-          data
+          transform: [].concat(this.intervalOptions.transform)
         }
       ]
     }
@@ -120,17 +116,6 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
       scale,
       this.name === 'bar' || this.name === 'bar-group'
     )
-    newChart.afterRender = (c?: any) => {
-      extremumEvt(
-        c,
-        chart,
-        c.options(),
-        container,
-        scale,
-        this.name === 'bar' || this.name === 'bar-group'
-      )
-      c.render()
-    }
     return newChart
   }
 
@@ -155,11 +140,8 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     const position = {
       position: l.position === 'middle' ? 'inside' : l.position,
       textAlign: 'center',
-      dy: l.position === 'top' ? -10 : 0,
+      dy: l.position === 'top' ? -15 : 0,
       dx: 0
-    }
-    const transform = {
-      transform: [{ type: 'exceedAdjust' }, { type: 'overlapHide' }]
     }
     // 配置标签样式
     const newLabel = {
@@ -195,8 +177,10 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
           return ''
         }
         return valueFormatter(value, labelCfg.formatterCfg)
-      },
-      ...(l.fullDisplay ? { transform: [{ type: 'exceedAdjust' }] } : transform)
+      }
+    }
+    if (!l.fullDisplay) {
+      newLabel.transform = [{ type: 'overlapHide' }]
     }
     return {
       ...options,
@@ -712,6 +696,29 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     }
   }
 
+  protected configSlider(chart: Chart, options: ViewSpec): ViewSpec {
+    const { functionCfg } = parseJson(chart.senior)
+    if (!functionCfg?.sliderShow) {
+      return options
+    }
+    const lineMark = options.children[0]
+    const sliderOpt = {
+      slider: {
+        x: {
+          values: [functionCfg.sliderRange[0] / 100, functionCfg.sliderRange[1] / 100],
+          style: {
+            trackFill: functionCfg.sliderBg,
+            selectionFill: functionCfg.sliderFillBg,
+            handleLabelFill: functionCfg.sliderTextColor,
+            sparklineLineStrokeOpacity: 0
+          }
+        }
+      }
+    }
+    defaultsDeep(lineMark, sliderOpt)
+    return options
+  }
+
   protected setupOptions(chart: Chart, options: ViewSpec): ViewSpec {
     return flow(
       this.configTheme,
@@ -722,7 +729,8 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
       this.configXAxis,
       this.configYAxis,
       this.configAnalyse,
-      this.configBarConditions
+      this.configBarConditions,
+      this.configSlider
     )(chart, options, {}, this)
   }
 

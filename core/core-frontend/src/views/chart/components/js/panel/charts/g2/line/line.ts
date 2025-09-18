@@ -95,10 +95,7 @@ export class Line extends G2ChartView {
     const newChart = new G2Chart({ container })
     newChart.options(options)
     newChart.on('point:click', action)
-    newChart.afterRender = (c?: any) => {
-      extremumEvt(c, chart, c.options(), container, scale)
-      c.render()
-    }
+    extremumEvt(newChart, chart, options, container, scale)
     // configPlotTooltipEvent(chart, newChart)
     return newChart
   }
@@ -257,9 +254,7 @@ export class Line extends G2ChartView {
             }
             return labelCfg.position === 'top' ? 'bottom' : 'top'
           },
-          transform: labelAttr.fullDisplay
-            ? [{ type: 'exceedAdjust' }]
-            : [{ type: 'exceedAdjust' }, { type: 'overlapHide' }],
+          ...(labelAttr.fullDisplay ? {} : { transform: [{ type: 'overlapHide' }] }),
           fontFamily: chart.fontFamily
         }
       ]
