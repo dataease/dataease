@@ -16,7 +16,7 @@ import {
   TOOLTIP_ITEM_TPL,
   TOOLTIP_TITLE_TPL
 } from '@/views/chart/components/js/panel/common/common_antv'
-import { defaultsDeep, isEmpty } from 'lodash-es'
+import { isEmpty } from 'lodash-es'
 
 /**
  * 堆叠柱状图
@@ -74,7 +74,7 @@ export class StackBar extends Bar {
 
     if (labelAttr.showTotal) {
       const formatterCfg = labelAttr.labelFormatter ?? formatterItem
-      const groupedData = groupBy(children[0].data.value, 'field')
+      const groupedData = groupBy(options.data, 'field')
       for (const [key, values] of Object.entries(groupedData)) {
         const total = values.reduce((a, b) => a + b.value, 0)
         const value = valueFormatter(total, formatterCfg)
