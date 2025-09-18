@@ -3497,7 +3497,9 @@ const deleteChartFieldItem = id => {
                     height: fieldDHeight + 'px'
                   }"
                 >
-                  <label>{{ t('chart.dimension') }}</label>
+                  <div style="margin-top: 12px" class="label-top">
+                    {{ t('chart.dimension') }}
+                  </div>
                   <el-scrollbar class="drag-list">
                     <div
                       v-for="element in dimensionData"
@@ -3667,7 +3669,7 @@ const deleteChartFieldItem = id => {
                   :class="{ dark: themes === 'dark' }"
                 >
                   <div class="divider"></div>
-                  <label>{{ t('chart.quota') }}</label>
+                  <div style="margin-top: 8px" class="label-top">{{ t('chart.quota') }}</div>
                   <el-scrollbar class="drag-list">
                     <div
                       v-for="element in quotaData"
@@ -4367,7 +4369,7 @@ span {
   .field-height {
     height: 50%;
 
-    label {
+    .label-top {
       color: #646a73;
       font-size: 12px;
       font-style: normal;
@@ -4772,7 +4774,7 @@ span {
     width: 100%;
   }
   .dataset-search-label {
-    height: 22px;
+    height: 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
