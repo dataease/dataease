@@ -59,7 +59,7 @@ export class GroupBar extends StackBar {
   protected configLabel(chart: Chart, options: ViewSpec): ViewSpec {
     const customAttr = parseJson(chart.customAttr)
     const { label: labelAttr } = customAttr
-    if (!labelAttr || !labelAttr.show) return options
+    if (!labelAttr.show || !labelAttr.childrenShow) return options
 
     const { children } = options
     if (labelAttr.showExtremum) {

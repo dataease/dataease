@@ -25,7 +25,7 @@ export class PercentageStackBar extends GroupStackBar {
   protected configLabel(chart: Chart, options: ViewSpec): ViewSpec {
     const customAttr = parseJson(chart.customAttr)
     const { label: labelAttr } = customAttr
-    if (!labelAttr || !labelAttr.show) return options
+    if (!labelAttr.show) return options
 
     const { children } = options
     const position = {
