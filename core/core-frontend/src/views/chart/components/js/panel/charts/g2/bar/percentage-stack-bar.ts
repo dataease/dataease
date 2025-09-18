@@ -152,7 +152,8 @@ export class PercentageStackBar extends GroupStackBar {
       this.configXAxis,
       this.configYAxis,
       this.configAnalyse,
-      this.configBarConditions
+      this.configBarConditions,
+      this.configSlider
     )(chart, options, {}, this)
   }
 

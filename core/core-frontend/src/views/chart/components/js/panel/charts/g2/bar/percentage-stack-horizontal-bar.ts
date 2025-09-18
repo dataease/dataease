@@ -13,7 +13,7 @@ import { isEmpty } from 'lodash-es'
 import { HorizontalStackBar } from '@/views/chart/components/js/panel/charts/g2/bar/stack-horizontal-bar'
 
 /**
- * 百分比堆叠柱状图
+ * 百分比条形图
  */
 export class PercentageStackBar extends HorizontalStackBar {
   propertyInner = {
@@ -140,7 +140,8 @@ export class PercentageStackBar extends HorizontalStackBar {
       this.configLegend,
       this.configXAxis,
       this.configYAxis,
-      this.configAnalyse
+      this.configAnalyse,
+      this.configSlider
     )(chart, options, {}, this)
   }
 

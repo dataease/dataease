@@ -139,7 +139,8 @@ export class GroupStackBar extends StackBar {
       this.configXAxis,
       this.configYAxis,
       this.configAnalyse,
-      this.configBarConditions
+      this.configBarConditions,
+      this.configSlider
     )(chart, options, {}, this)
   }
 

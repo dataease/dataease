@@ -222,7 +222,8 @@ export class StackBar extends Bar {
       this.configLegend,
       this.configXAxis,
       this.configYAxis,
-      this.configAnalyse
+      this.configAnalyse,
+      this.configSlider
     )(chart, options, {}, this)
   }
 
