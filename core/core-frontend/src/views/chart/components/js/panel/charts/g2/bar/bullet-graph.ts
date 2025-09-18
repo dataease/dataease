@@ -235,8 +235,11 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
           }
         : false
     }
-    const targetName =
+    let targetName =
       chart.yAxisExt[0]?.chartShowName || bullet.bar.target.name || chart.yAxisExt[0]?.name
+    if (targetName === measureName) {
+      targetName = `${targetName} `
+    }
     const target = {
       type: 'point',
       encode: {
@@ -399,7 +402,7 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
     // exceedAdjust 自动对标签做溢出检测和矫正，即当标签超出视图区域时，会对标签自动做反方向的位移
     // overlapHide 对位置碰撞的标签进行隐藏，默认保留前一个，隐藏后一个
     const transform = {
-      transform: [{ type: 'contrastReverse' }, { type: 'exceedAdjust' }, { type: 'overlapHide' }]
+      transform: [{ type: 'exceedAdjust' }, { type: 'overlapHide' }]
     }
     // 配置标签样式
     const label = {
