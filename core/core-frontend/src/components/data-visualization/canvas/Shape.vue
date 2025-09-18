@@ -519,7 +519,7 @@ const hasChartMouseEvent = () => {
 }
 
 const handleInnerMouseDownOnShape = e => {
-  if (!canvasActive.value || hasChartMouseEvent()) {
+  if (!canvasActive.value) {
     return
   }
   batchSelected(e)
@@ -694,9 +694,10 @@ const handleMouseDownOnShape = e => {
     }
     handleGroupComponent()
   }
-
-  document.addEventListener('mousemove', move)
-  document.addEventListener('mouseup', up)
+  if (!hasChartMouseEvent()) {
+    document.addEventListener('mousemove', move)
+    document.addEventListener('mouseup', up)
+  }
 }
 
 const selectCurComponent = e => {
