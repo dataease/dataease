@@ -16,12 +16,10 @@ import org.hibernate.annotations.Comment;
 @Table(name = "visualization_outer_params")
 public class VisualizationOuterParams {
     @Id
-    @Size(max = 50)
     @Comment("主键")
     @Column(name = "params_id", nullable = false)
     private Long paramsId;
 
-    @Size(max = 50)
     @Comment("可视化资源ID")
     @Column(name = "visualization_id")
     private Long visualizationId;
