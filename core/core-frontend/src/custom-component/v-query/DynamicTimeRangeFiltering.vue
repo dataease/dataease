@@ -3,7 +3,7 @@ import { toRefs, PropType, onBeforeMount, watch, computed } from 'vue'
 import { Calendar } from '@element-plus/icons-vue'
 import { type DatePickType } from 'element-plus-secondary'
 import type { ManipulateType } from 'dayjs'
-import { getAround, getCustomRange } from './time-format-dayjs'
+import { getAround, getCustomRange, getAroundStart } from './time-format-dayjs'
 interface SelectConfig {
   regularOrTrends: string
   regularOrTrendsValue: [Date, Date]
@@ -109,13 +109,17 @@ const init = () => {
     )
       return
     config.value.regularOrTrendsValue = [
-      getAround(relativeToCurrentTypeRange, 'add', 0),
+      getAroundStart(relativeToCurrentTypeRange, 'add', 0),
       getAround(relativeToCurrentTypeRange, 'add', 1)
     ]
     return
   }
 
-  const startTime = getAround(relativeToCurrentType, around === 'f' ? 'subtract' : 'add', timeNum)
+  const startTime = getAroundStart(
+    relativeToCurrentType,
+    around === 'f' ? 'subtract' : 'add',
+    timeNum
+  )
   const endTime = getAround(
     relativeToCurrentTypeRange,
     aroundRange === 'f' ? 'subtract' : 'add',
