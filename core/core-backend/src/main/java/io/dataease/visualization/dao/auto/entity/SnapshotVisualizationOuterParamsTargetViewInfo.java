@@ -15,22 +15,18 @@ import org.hibernate.annotations.Comment;
 @Table(name = "snapshot_visualization_outer_params_target_view_info")
 public class SnapshotVisualizationOuterParamsTargetViewInfo {
     @Id
-    @Size(max = 50)
     @Comment("主键")
     @Column(name = "target_id", nullable = false)
     private Long targetId;
 
-    @Size(max = 50)
     @Comment("visualization_outer_params_info 表的 ID")
     @Column(name = "params_info_id")
     private Long paramsInfoId;
 
-    @Size(max = 50)
     @Comment("联动视图ID/联动过滤项ID")
     @Column(name = "target_view_id")
     private Long targetViewId;
 
-    @Size(max = 50)
     @Comment("联动字段ID")
     @Column(name = "target_field_id")
     private Long targetFieldId;

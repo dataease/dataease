@@ -2,7 +2,9 @@ package io.dataease.visualization.server;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import io.dataease.api.chart.vo.ChartBaseVO;
 import io.dataease.api.dataset.vo.CoreDatasetGroupVO;
 import io.dataease.api.dataset.vo.CoreDatasetTableFieldVO;
 import io.dataease.api.visualization.VisualizationOuterParamsApi;
@@ -13,6 +15,7 @@ import io.dataease.auth.DeLinkPermit;
 import io.dataease.constant.CommonConstants;
 import io.dataease.dao.auto.entity.CoreDatasetTable;
 import io.dataease.dao.auto.entity.QCoreDatasetGroup;
+import io.dataease.dao.auto.entity.QCoreDatasetTableField;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableRepository;
 import io.dataease.dataset.utils.FieldUtils;
 import io.dataease.extensions.view.dto.SqlVariableDetails;
@@ -120,7 +123,7 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
         Map<String, Long> finalParamsInfoNameIdMap = paramsInfoNameIdMap;
         Optional.ofNullable(outerParamsDTO.getOuterParamsInfoArray()).orElse(new ArrayList<>()).forEach(outerParamsInfo -> {
             Long paramsInfoId = finalParamsInfoNameIdMap.get(outerParamsInfo.getParamName());
-            if (paramsInfoId != null) {
+            if (paramsInfoId == null) {
                 paramsInfoId = IDUtils.snowID();
             }
             outerParamsInfo.setParamsInfoId(paramsInfoId);
@@ -163,6 +166,65 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
         );
     }
 
+    private List<CoreDatasetTableFieldVO> getDsFieldInfo(Long datasetGroupId) {
+        QCoreDatasetTableField qField = QCoreDatasetTableField.coreDatasetTableField;
+        return queryFactory.select(Projections.fields(CoreDatasetTableFieldVO.class,
+                        qField.id,
+                        qField.datasourceId,
+                        qField.datasetTableId,
+                        qField.datasetGroupId,
+                        qField.chartId,
+                        qField.originName,
+                        qField.name,
+                        qField.description,
+                        qField.dataeaseName,
+                        qField.fieldShortName,
+                        qField.groupList,
+                        qField.otherGroup,
+                        qField.groupType,
+                        qField.type,
+                        qField.size,
+                        qField.deType,
+                        qField.deExtractType,
+                        qField.type,
+                        qField.extField,
+                        qField.checked,
+                        qField.columnIndex,
+                        qField.lastSyncTime,
+                        qField.accuracy,
+                        qField.dateFormat,
+                        qField.dateFormatType,
+                        qField.params,
+                        qField.id.stringValue().as("attachId") // 别名映射
+                ))
+                .from(qField)
+                .where(qField.datasetGroupId.eq(datasetGroupId))
+                .orderBy(qField.deType.asc(), qField.originName.asc())
+                .fetch();
+    }
+
+    public List<ChartBaseVO> getViewInfo(Long datasetGroupId, Long visualizationId) {
+        QSnapshotCoreChartView ccv = QSnapshotCoreChartView.snapshotCoreChartView;
+        QSnapshotDataVisualizationInfo dvi = QSnapshotDataVisualizationInfo.snapshotDataVisualizationInfo;
+
+        return queryFactory.select(Projections.fields(ChartBaseVO.class,
+                        ccv.id.as("chartId"),
+                        ccv.title.as("chartName"),
+                        ccv.type.as("chartType")
+                ))
+                .from(ccv)
+                .innerJoin(dvi).on(ccv.sceneId.eq(dvi.id))
+                .where(ccv.tableId.eq(datasetGroupId)
+                        .and(ccv.type.ne("VQuery"))
+                        .and(dvi.id.eq(visualizationId))
+                        .and(Expressions.booleanTemplate(
+                                        "{0} like concat('%', {1}, '%')",
+                                        dvi.componentData,
+                                        ccv.id)))
+                .distinct()
+                .fetch();
+    }
+
     @Override
     public List<CoreDatasetGroupVO> queryDsWithVisualizationId(Long visualizationId) {
 
@@ -188,9 +250,16 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
                 .innerJoin(qSnapshotCoreChartView).on(qCoreDatasetGroup.id.eq(qSnapshotCoreChartView.tableId).and(qSnapshotCoreChartView.type.ne("VQuery")))
                 .innerJoin(qSnapshotDataVisualizationInfo).on(qSnapshotCoreChartView.sceneId.eq(qSnapshotDataVisualizationInfo.id))
                 .where(qSnapshotCoreChartView.sceneId.eq(visualizationId).and(qSnapshotDataVisualizationInfo.id.eq(visualizationId)))
-                .where(qSnapshotDataVisualizationInfo.componentData.like("%" + qSnapshotCoreChartView.id + "%"))
-                .fetch();
+                .where(Expressions.booleanTemplate(
+                        "{0} like concat('%', {1}, '%')",
+                        qSnapshotDataVisualizationInfo.componentData,
+                        qSnapshotCoreChartView.id
+                )).fetch();
         if (!CollectionUtils.isEmpty(result)) {
+            result.stream().forEach(item ->{
+                item.setDatasetViews(getViewInfo(item.getId(), visualizationId));
+                item.setDatasetFields(getDsFieldInfo(item.getId()));
+            });
             List<Long> activeViewIds = dataVisualizationServer.getEnabledViewIds(visualizationId, CommonConstants.RESOURCE_TABLE.SNAPSHOT);
             result.forEach(coreDatasetGroupVO -> {
                 // 过滤已删除的图表

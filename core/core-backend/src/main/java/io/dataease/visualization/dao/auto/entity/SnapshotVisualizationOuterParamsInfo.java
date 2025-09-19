@@ -16,12 +16,10 @@ import org.hibernate.annotations.Comment;
 @Table(name = "snapshot_visualization_outer_params_info")
 public class SnapshotVisualizationOuterParamsInfo {
     @Id
-    @Size(max = 50)
     @Comment("主键")
     @Column(name = "params_info_id", nullable = false)
     private Long paramsInfoId;
 
-    @Size(max = 50)
     @Comment("visualization_outer_params 表的 ID")
     @Column(name = "params_id")
     private Long paramsId;
