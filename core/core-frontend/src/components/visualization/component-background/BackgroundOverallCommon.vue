@@ -218,7 +218,7 @@
                 class="image-hint"
                 :class="`image-hint_${themes}`"
               >
-                支持JPG、PNG、GIF、SVG
+                {{ t('visualization.panel_background_image_tips') }}
               </span>
 
               <el-button
@@ -229,7 +229,7 @@
                 @click="goFile"
                 :disabled="!state.commonBackground.backgroundImageEnable"
               >
-                重新上传
+                {{ t('visualization.reUpload') }}
               </el-button>
             </el-row>
           </div>
