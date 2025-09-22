@@ -3,6 +3,10 @@ import {
   flow,
   getLineConditions,
   getLineLabelColorByCondition,
+  handleBreakLineMultiDimension,
+  handleIgnoreData,
+  handleSetZeroMultiDimension,
+  handleSetZeroSingleDimension,
   hexColorToRGBA,
   parseJson,
   randomString,
@@ -652,9 +656,43 @@ export class Area extends G2ChartView {
     return options
   }
 
+  protected configEmptyDataStrategy(chart: Chart, options: G2Spec): G2Spec {
+    const { functionCfg } = parseJson(chart.senior)
+    const { emptyDataStrategy } = functionCfg
+    const [areaMark, lineMark] = options.children
+    const data = options.data.value
+    const multiDimension = chart.yAxis?.length > 1
+    switch (emptyDataStrategy) {
+      case 'breakLine': {
+        if (multiDimension) {
+          handleBreakLineMultiDimension(data)
+        }
+        merge(areaMark, { style: { connect: false } })
+        merge(lineMark, { style: { connect: false } })
+        break
+      }
+      case 'ignoreData': {
+        handleIgnoreData(data)
+        break
+      }
+      case 'setZero': {
+        if (multiDimension) {
+          // 多维度置0
+          handleSetZeroMultiDimension(data)
+        } else {
+          // 单维度置0
+          handleSetZeroSingleDimension(data)
+        }
+        break
+      }
+    }
+    return options
+  }
+
   protected setupOptions(chart: Chart, options: G2Spec, context: Record<string, any>): G2Spec {
     return flow(
       this.configTheme,
+      this.configEmptyDataStrategy,
       this.configColor,
       this.configLabel,
       this.configBasicStyle,
@@ -866,11 +904,44 @@ export class StackArea extends Area {
     return setUpStackSeriesColor(chart, data)
   }
 
+  protected configEmptyDataStrategy(chart: Chart, options: G2Spec): G2Spec {
+    const { functionCfg } = parseJson(chart.senior)
+    const { emptyDataStrategy } = functionCfg
+    const [areaMark, lineMark] = options.children
+    const data = options.data.value
+    const multiDimension = chart.yAxis?.length > 1 || chart.extStack?.length > 0
+    switch (emptyDataStrategy) {
+      case 'breakLine': {
+        if (multiDimension) {
+          handleBreakLineMultiDimension(data)
+        }
+        merge(areaMark, { style: { connect: false } })
+        merge(lineMark, { style: { connect: false } })
+        break
+      }
+      case 'ignoreData': {
+        handleIgnoreData(data)
+        break
+      }
+      case 'setZero': {
+        if (multiDimension) {
+          // 多维度置0
+          handleSetZeroMultiDimension(data)
+        } else {
+          // 单维度置0
+          handleSetZeroSingleDimension(data)
+        }
+        break
+      }
+    }
+    return options
+  }
+
   constructor() {
     super('area-stack')
     this.baseOptions = {
       ...this.baseOptions,
-      transform: [{ type: 'stackY' }]
+      transform: [{ type: 'stackY', orderBy: 'series' }]
     }
     delete this.propertyInner.threshold
     this.properties = this.properties.filter(item => item !== 'threshold')
