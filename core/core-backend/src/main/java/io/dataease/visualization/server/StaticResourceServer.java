@@ -18,9 +18,11 @@ import org.springframework.web.multipart.MultipartFile;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import javax.imageio.ImageIO;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -29,6 +31,7 @@ import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/staticResource")
@@ -69,8 +72,45 @@ public class StaticResourceServer implements StaticResourceApi {
         if (StringUtils.isEmpty(mimeType)) {
             return false;
         }
+        if (!hasValidImageExtension(file.getOriginalFilename())) {
+            return false;
+        }
         // 判断是否为图片或SVG
-        return (isImageCheckType(file)) || isValidSVG(file);
+        return (isImageOther(file)) || isValidSVG(file);
+    }
+
+    private boolean hasValidImageExtension(String filename) {
+        if (StringUtils.isEmpty(filename)) {
+            return false;
+        }
+        // 转换为小写进行比较
+        String lowerFilename = filename.toLowerCase();
+        // 允许的图片后缀名列表
+        Set<String> allowedExtensions = Set.of(
+                ".gif", ".svg", ".png", ".jpeg", ".jpg"
+        );
+
+        for (String ext : allowedExtensions) {
+            if (lowerFilename.endsWith(ext)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isImageOther(MultipartFile file) {
+        BufferedImage image = null;
+        try (InputStream input = file.getInputStream()) {
+            image = ImageIO.read(input);
+        } catch (IOException e) {
+            LogUtil.error(e.getMessage(), e);
+            return false;
+        }
+        if (image == null || image.getWidth() <= 0 || image.getHeight() <= 0) {
+            return false;
+        }
+        return true;
     }
 
     public void saveFilesToServe(String staticResource) {
