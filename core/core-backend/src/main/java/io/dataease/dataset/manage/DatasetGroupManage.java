@@ -10,6 +10,7 @@ import io.dataease.api.dataset.vo.DataSetBarVO;
 import io.dataease.api.permissions.relation.api.RelationApi;
 import io.dataease.commons.constants.OptConstants;
 import io.dataease.dao.auto.entity.CoreDatasetGroup;
+import io.dataease.dao.auto.entity.QCoreDatasetGroup;
 import io.dataease.dao.auto.entity.CoreDatasetTable;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupRepository;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableRepository;
