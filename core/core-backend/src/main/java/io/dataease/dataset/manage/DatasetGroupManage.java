@@ -20,10 +20,14 @@ import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.engine.constant.ExtFieldConstant;
+import io.dataease.engine.func.FunctionConstant;
+import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
+import io.dataease.extensions.datasource.model.SQLObj;
 import io.dataease.extensions.view.dto.SqlVariableDetails;
 import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
@@ -80,6 +84,8 @@ public class DatasetGroupManage {
 
     @Autowired(required = false)
     private RelationApi relationManage;
+    @Autowired(required = false)
+    private PluginManageApi pluginManage;
 
     private static final String leafType = "dataset";
 
@@ -595,12 +601,27 @@ public class DatasetGroupManage {
         if (CollectionUtils.isNotEmpty(ids)) {
             var dsList = coreDatasetGroupMapper.selectBatchIds(ids);
             if (CollectionUtils.isNotEmpty(dsList)) {
+                SQLObj tableObj = new SQLObj();
+                tableObj.setTableAlias("");
                 dsList.forEach(ds -> {
                     DatasetTableDTO dto = new DatasetTableDTO();
                     BeanUtils.copyBean(dto, ds);
                     var fields = datasetTableFieldManage.listFieldsWithPermissions(ds.getId());
-                    List<DatasetTableFieldDTO> dimensionList = fields.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getGroupType(), "d")).toList();
-                    List<DatasetTableFieldDTO> quotaList = fields.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getGroupType(), "q")).toList();
+                    var p_fields = fields.stream().filter(ele -> {
+                        boolean flag = true;
+                        if (Objects.equals(ele.getExtField(), ExtFieldConstant.EXT_CALC)) {
+                            String originField = Utils.calcFieldRegex(ele, tableObj, fields, true, null, Utils.mergeParam(Utils.getParams(fields), null), pluginManage);
+                            for (String func : FunctionConstant.AGG_FUNC) {
+                                if (Utils.matchFunction(func, originField)) {
+                                    flag = false;
+                                    break;
+                                }
+                            }
+                        }
+                        return flag;
+                    }).toList();
+                    List<DatasetTableFieldDTO> dimensionList = p_fields.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getGroupType(), "d")).toList();
+                    List<DatasetTableFieldDTO> quotaList = p_fields.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getGroupType(), "q")).toList();
                     Map<String, List<DatasetTableFieldDTO>> map = new LinkedHashMap<>();
                     DatasetUtils.listEncode(dimensionList);
                     DatasetUtils.listEncode(quotaList);
