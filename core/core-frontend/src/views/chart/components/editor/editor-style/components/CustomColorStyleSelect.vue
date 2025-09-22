@@ -10,8 +10,8 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import chartViewManager from '../../../js/panel'
-import { G2PlotChartView } from '../../../js/panel/types/impl/g2plot'
 import { cloneDeep } from 'lodash-es'
+import { type G2ChartView } from '../../../js/panel/types/impl/g2'
 
 const { t } = useI18n()
 
@@ -54,7 +54,7 @@ const seriesColorState = reactive({
   seriesColorPickerId: 'body'
 })
 
-const instance = ref<G2PlotChartView | undefined>()
+const instance = ref<G2ChartView | undefined>()
 
 const colorsName = computed(() => {
   return props.sub ? 'subColors' : 'colors'
@@ -85,7 +85,7 @@ const setupSeriesColor = () => {
   instance.value = chartViewManager.getChartView(
     props.chart.render,
     props.chart.type
-  ) as G2PlotChartView
+  ) as G2ChartView
 
   if (!props.sub) {
     if (!needSetSeriesColor.value) {
