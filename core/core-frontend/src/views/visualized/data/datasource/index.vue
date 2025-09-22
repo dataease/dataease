@@ -201,6 +201,7 @@ const datasetTypeList = computed(() => {
 })
 
 const dsTableDataLoading = ref(false)
+const validateDsLoading = ref(false)
 const selectDataset = row => {
   Object.assign(dsTableDetail, row)
   userDrawer.value = true
@@ -291,8 +292,10 @@ const handleLoadExcel = data => {
 const validateDS = () => {
   let nodeTmpInfo = reactive<Node>(cloneDeep(defaultInfo))
   Object.assign(nodeTmpInfo, cloneDeep(nodeInfo))
+  validateDsLoading.value = true
   validateById(nodeTmpInfo.id as number)
     .then(res => {
+      validateDsLoading.value = false
       if (res.data.type.startsWith('API')) {
         let error = 0
         const dsStatus = JSON.parse(res.data.status)
@@ -319,6 +322,7 @@ const validateDS = () => {
       }
     })
     .catch(() => {
+      validateDsLoading.value = false
       changeDsStatus(state.datasourceTree, nodeTmpInfo.id, -Math.abs(nodeTmpInfo.extraFlag))
     })
 }
@@ -1317,6 +1321,7 @@ const getMenuList = (val: boolean) => {
               <el-button
                 v-if="nodeInfo.type !== 'Excel' && nodeInfo.weight >= 7"
                 secondary
+                v-loading="validateDsLoading"
                 @click="validateDS"
               >
                 {{ t('datasource.validate') }}</el-button

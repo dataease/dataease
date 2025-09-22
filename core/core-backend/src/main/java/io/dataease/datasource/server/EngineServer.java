@@ -75,7 +75,11 @@ public class EngineServer implements EngineApi {
         } else {
             coreDeEngineRepository.saveAndFlush(coreDeEngine);
         }
-        calciteProvider.update(datasourceDTO);
+        try {
+            calciteProvider.update(datasourceDTO);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

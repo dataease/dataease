@@ -365,7 +365,15 @@ public class DatasourceServer implements DatasourceApi {
             datasourceSyncManage.addSchedule(coreDatasourceTask);
         } else {
             checkParams(dataSourceDTO.getConfiguration());
-            calciteProvider.update(dataSourceDTO);
+            commonThreadPool.addTask(() -> {
+                try {
+                    calciteProvider.update(dataSourceDTO);
+                } catch (Exception e) {
+                    CoreDatasource ds = coreDatasourceRepository.findById(coreDatasource.getId()).orElse(null);
+                    ds.setStatus("Error");
+                    dataSourceManage.innerEditStatus(ds);
+                }
+            });
         }
         return dataSourceDTO;
     }
@@ -500,7 +508,15 @@ public class DatasourceServer implements DatasourceApi {
             checkParams(dataSourceDTO.getConfiguration());
             dataSourceManage.checkName(dataSourceDTO);
             dataSourceManage.innerEdit(requestDatasource);
-            calciteProvider.update(dataSourceDTO);
+            commonThreadPool.addTask(() -> {
+                try {
+                    calciteProvider.update(dataSourceDTO);
+                } catch (Exception e) {
+                    CoreDatasource datasource = coreDatasourceRepository.findById(requestDatasource.getId()).orElse(null);
+                    datasource.setStatus("Error");
+                    dataSourceManage.innerEditStatus(datasource);
+                }
+            });
         }
         return dataSourceDTO;
     }
