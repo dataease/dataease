@@ -679,7 +679,10 @@ export default {
     sub_area_tip: '请选择省份或直辖市',
     delete_custom_area_tip: '该操作会导致使用了自定义区域的地图无法正常展示，确定删除？',
     please_select_area: '请选择区域',
-    delete_custom_sub_area_tip: '确定删除该自定义区域？'
+    delete_custom_sub_area_tip: '确定删除该自定义区域？',
+    saml: {
+      title: 'SAML2 设置'
+    }
   },
   components: {
     dashboard_style: '仪表板风格',
