@@ -952,6 +952,26 @@ public class DataVisualizationServer implements DataVisualizationApi {
         return new VisualizationExport2AppVO(chartViewVOInfo, datasetGroupVOInfo, datasetTableVOInfo, datasetTableFieldVOInfo, datasourceVOInfo, datasourceTaskVOInfo, linkJumpVOInfo, linkJumpInfoVOInfo, listJumpTargetViewInfoVO, linkageVOInfo, linkageFieldVOInfo);
     }
 
+    @DeLog(id = "#p0.id", ot = LogOT.APP_TEMPLATE_EXPORT, stExp = "#p0.type")
+    public void exportLogApp(DataVisualizationBaseRequest request){
+
+    }
+
+    @DeLog(id = "#p0.id", ot = LogOT.TEMPLATE_EXPORT, stExp = "#p0.type")
+    public void exportLogTemplate(DataVisualizationBaseRequest request){
+
+    }
+
+    @DeLog(id = "#p0.id", ot = LogOT.PDF_EXPORT, stExp = "#p0.type")
+    public void exportLogPDF(DataVisualizationBaseRequest request){
+
+    }
+
+    @DeLog(id = "#p0.id", ot = LogOT.IMG_EXPORT, stExp = "#p0.type")
+    public void exportLogImg(DataVisualizationBaseRequest request){
+
+    }
+
 
     @Override
     public void nameCheck(DataVisualizationBaseRequest request) {

@@ -19,6 +19,12 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { useI18n } from '@/hooks/web/useI18n'
 import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
+import {
+  exportLogApp,
+  exportLogImg,
+  exportLogPDF,
+  exportLogTemplate
+} from '@/api/visualization/dataVisualization'
 const userStore = useUserStoreWithOut()
 
 const userName = computed(() => userStore.getName)
@@ -136,6 +142,11 @@ const downloadH2 = type => {
     const vueDom = previewCanvasContainer.value.querySelector('.canvas-container')
     downloadCanvas2(type, vueDom, state.dvInfo.name, () => {
       downloadStatus.value = false
+      const param = {
+        id: state.dvInfo.id,
+        type: state.dvInfo.type === 'dashboard' ? 'panel' : 'screen'
+      }
+      type === 'img' ? exportLogImg(param) : exportLogPDF(param)
       mapElementIds.forEach(id => useEmitt().emitter.emit('l7-unprepare-picture', id))
     })
   })
@@ -182,6 +193,11 @@ const fileDownload = (downloadType, attachParams) => {
     const vueDom = previewCanvasContainer.value.querySelector('.canvas-container')
     download2AppTemplate(downloadType, vueDom, state.dvInfo.name, attachParams, () => {
       downloadStatus.value = false
+      const param = {
+        id: state.dvInfo.id,
+        type: state.dvInfo.type === 'dashboard' ? 'panel' : 'screen'
+      }
+      downloadType === 'app' ? exportLogApp(param) : exportLogTemplate(param)
     })
   })
 }

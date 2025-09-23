@@ -148,4 +148,26 @@ public interface DataVisualizationApi {
     @PostMapping("/export2AppCheck")
     @Operation(summary = "仪表板视图明细数据")
     VisualizationExport2AppVO export2AppCheck(@RequestBody VisualizationAppExportRequest appExportRequest);
+
+
+    @PostMapping("/exportLogApp")
+    @Operation(summary = "导出应用模板日志记录")
+    void exportLogApp(@RequestBody DataVisualizationBaseRequest request) throws Exception;
+
+
+    @PostMapping("/exportLogTemplate")
+    @Operation(summary = "导出样式模板日志记录")
+    void exportLogTemplate(@RequestBody DataVisualizationBaseRequest request) throws Exception;
+
+
+
+    @PostMapping("/exportLogPDF")
+    @Operation(summary = "导出PDF日志记录")
+    void exportLogPDF(@RequestBody DataVisualizationBaseRequest request) throws Exception;
+
+
+    @PostMapping("/exportLogImg")
+    @Operation(summary = "导出图片日志记录")
+    void exportLogImg(@RequestBody DataVisualizationBaseRequest request) throws Exception;
+
 }
