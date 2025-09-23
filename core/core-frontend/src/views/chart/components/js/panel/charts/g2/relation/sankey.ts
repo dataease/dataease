@@ -100,7 +100,13 @@ export class G2ChartBar extends G2ChartView {
         elementHighlight: true
       },
       style: {
-        nodeStrokeOpacity: 0
+        nodeStrokeOpacity: 0,
+        fillOpacity: 0.3
+      },
+      state: {
+        active: {
+          fillOpacity: 0.9
+        }
       },
       layout: {
         nodeSort: (a, b) => {
@@ -192,6 +198,7 @@ export class G2ChartBar extends G2ChartView {
     }
     const labelStyle = {
       style: {
+        labelText: d => d.key || '',
         labelFill: label.color,
         labelFontSize: label.fontSize,
         labelFillOpacity: 1,
