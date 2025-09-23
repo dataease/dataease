@@ -88,6 +88,7 @@ public class WhitelistUtils {
                 || StringUtils.startsWithAny(requestURI, "/exportCenter/download")
                 || StringUtils.startsWithAny(requestURI, "/i18n/")
                 || StringUtils.startsWithAny(requestURI, "/communicate/image/")
+                || StringUtils.startsWithAny(requestURI, "/saml/")
                 || StringUtils.startsWithAny(requestURI, "/communicate/down/");
     }
 
