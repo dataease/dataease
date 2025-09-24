@@ -80,10 +80,10 @@ function check_and_prepare_env_params() {
    disk_num=${available_disk%[KMGTP]}
    disk_unit=${available_disk##*[0-9.]}
    case $disk_unit in
-     K) disk_gb=$((disk_num/1024/1024)) ;;
-     M) disk_gb=$((disk_num/1024)) ;;
+     K) disk_gb=$(awk -v i="$disk_num" 'BEGIN{printf "%.0f\n", i / 1024 / 1024}') ;;
+     M) disk_gb=$(awk -v i="$disk_num" 'BEGIN{printf "%.0f\n", i / 1024}') ;;
      G) disk_gb=${disk_num%.*} ;;
-     T) disk_gb=$((disk_num*1024)) ;;
+     T) disk_gb=$(awk -v i="$disk_num" 'BEGIN{printf "%.0f\n", 1024 * i}') ;;
      *) disk_gb=${disk_num%.*} ;;
    esac
    [[ $disk_gb -lt 20 ]] && log_content "\033[31m[警告] DataEase 运行目录所在磁盘剩余空间不足 20G 可能无法正常启动!\033[0m"
