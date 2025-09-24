@@ -22,7 +22,7 @@
             :class="'form-item-' + themes"
           >
             <el-segmented
-              v-model="state.commonBackground.paddingMode"
+              v-model="state.commonBackground.innerPadding2.mode"
               :options="paddingModes"
               size="small"
               style="width: 100%"
@@ -38,7 +38,7 @@
                     controls-position="right"
                     :min="0"
                     :max="100"
-                    v-model="state.commonBackground.innerPadding"
+                    v-model="state.commonBackground.innerPadding2.top"
                     @change="onBackgroundChange"
                   />
                 </div>
@@ -50,8 +50,8 @@
                     controls-position="right"
                     :min="0"
                     :max="100"
-                    v-model="state.commonBackground.innerPaddingLeft"
-                    :disabled="state.commonBackground.paddingMode === PaddingMode.Uniform"
+                    v-model="state.commonBackground.innerPadding2.left"
+                    :disabled="state.commonBackground.innerPadding2.mode === PaddingMode.Uniform"
                     @change="onBackgroundChange"
                   />
                 </div>
@@ -62,11 +62,11 @@
                   <el-input-number
                     style="width: 80%"
                     :effect="themes"
-                    :disabled="state.commonBackground.paddingMode !== PaddingMode.PerSide"
+                    :disabled="state.commonBackground.innerPadding2.mode !== PaddingMode.PerSide"
                     controls-position="right"
                     :min="0"
                     :max="100"
-                    v-model="state.commonBackground.innerPaddingBottom"
+                    v-model="state.commonBackground.innerPadding2.bottom"
                     @change="onBackgroundChange"
                   />
                 </div>
@@ -75,11 +75,11 @@
                   <el-input-number
                     style="width: 80%"
                     :effect="themes"
-                    :disabled="state.commonBackground.paddingMode !== PaddingMode.PerSide"
+                    :disabled="state.commonBackground.innerPadding2.mode !== PaddingMode.PerSide"
                     controls-position="right"
                     :min="0"
                     :max="100"
-                    v-model="state.commonBackground.innerPaddingRight"
+                    v-model="state.commonBackground.innerPadding2.right"
                     @change="onBackgroundChange"
                   />
                 </div>
@@ -339,7 +339,9 @@ const props = withDefaults(
 import { State, PaddingMode } from '@/components/visualization/component-background/Types'
 
 const state = reactive<State>({
-  commonBackground: {},
+  commonBackground: {
+    innerPadding2: {}
+  },
   BackgroundShowMap: {},
   checked: false,
   backgroundOrigin: {},
@@ -384,7 +386,19 @@ const queryBackground = () => {
 }
 
 const init = () => {
-  state.commonBackground = deepCopy(props.commonBackgroundPop)
+  const commonBackgroundPop = deepCopy(props.commonBackgroundPop)
+  const innerPadding = commonBackgroundPop.innerPadding
+  if (innerPadding) {
+    commonBackgroundPop.innerPadding2 = {
+      mode: PaddingMode.Uniform,
+      top: innerPadding,
+      right: innerPadding,
+      bottom: innerPadding,
+      left: innerPadding
+    }
+    commonBackgroundPop.innerPadding = undefined
+  }
+  state.commonBackground = commonBackgroundPop
   if (state.commonBackground.outerImage) {
     state.fileList = [{ url: imgUrlTrans(state.commonBackground.outerImage) }]
   } else {
@@ -414,16 +428,19 @@ const upload = file => {
   })
 }
 
-const onBackgroundChange = () => {
-  if (state.commonBackground.paddingMode === PaddingMode.Uniform) {
-    state.commonBackground.innerPaddingLeft = state.commonBackground.innerPadding
-    state.commonBackground.innerPaddingRight = state.commonBackground.innerPadding
-    state.commonBackground.innerPaddingBottom = state.commonBackground.innerPadding
-  } else if (state.commonBackground.paddingMode === PaddingMode.V_H) {
-    state.commonBackground.innerPaddingRight =
-      state.commonBackground.innerPaddingLeft ?? state.commonBackground.innerPadding
-    state.commonBackground.innerPaddingBottom = state.commonBackground.innerPadding
+const updateInnerPadding = () => {
+  if (state.commonBackground.innerPadding2.mode === PaddingMode.Uniform) {
+    state.commonBackground.innerPadding2.left = state.commonBackground.innerPadding2.top
+    state.commonBackground.innerPadding2.right = state.commonBackground.innerPadding2.top
+    state.commonBackground.innerPadding2.bottom = state.commonBackground.innerPadding2.top
+  } else if (state.commonBackground.innerPadding2.mode === PaddingMode.V_H) {
+    state.commonBackground.innerPadding2.right = state.commonBackground.innerPadding2.left
+    state.commonBackground.innerPadding2.bottom = state.commonBackground.innerPadding2.top
   }
+}
+
+const onBackgroundChange = () => {
+  updateInnerPadding()
   emits('onBackgroundChange', state.commonBackground)
 }
 

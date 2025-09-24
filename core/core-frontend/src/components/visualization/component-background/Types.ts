@@ -10,11 +10,16 @@ export enum PaddingMode {
   PerSide = 'per_side'
 }
 
+export interface InnerPadding {
+  mode?: PaddingMode
+  top?: number
+  right?: number
+  bottom?: number
+  left?: number
+}
+
 export interface CommonBackground {
   innerPadding?: number
-  innerPaddingRight?: number
-  innerPaddingBottom?: number
-  innerPaddingLeft?: number
   borderRadius?: number
   backdropFilterEnable?: boolean
   backdropFilter?: number
@@ -24,8 +29,8 @@ export interface CommonBackground {
   backgroundType?: BackgroundType
   innerImageColor?: string
   innerImage?: string
-  outerImage?: string | null
-  paddingMode?: PaddingMode
+  outerImage?: string
+  innerPadding2?: InnerPadding
 }
 
 export interface State {

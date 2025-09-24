@@ -189,12 +189,8 @@ export const COMMON_COMPONENT_BACKGROUND_BASE: CommonBackground = {
   innerImage: 'board/board_1.svg',
   outerImage: null,
   innerPadding: 12,
-  innerPaddingRight: 12,
-  innerPaddingBottom: 12,
-  innerPaddingLeft: 12,
   borderRadius: 0,
-  backdropFilter: 4,
-  paddingMode: PaddingMode.Uniform
+  backdropFilter: 4
 }
 
 export const COMMON_COMPONENT_BACKGROUND_LIGHT = {
