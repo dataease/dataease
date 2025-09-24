@@ -474,7 +474,6 @@ public class ExportCenterDownLoadManage {
                     for (long i = 1; i < chartViewDTO.getTotalPage() + 1; i++) {
                         request.getViewInfo().getChartExtRequest().setGoPage(i);
                         request.getViewInfo().setXAxis(request.getViewInfo().getXAxis().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
-                        request.getViewInfo().setYAxis(request.getViewInfo().getYAxis().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
                         request.getViewInfo().setXAxisExt(request.getViewInfo().getXAxisExt().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
                         request.getViewInfo().setYAxisExt(request.getViewInfo().getYAxisExt().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
                         request.getViewInfo().setExtStack(request.getViewInfo().getExtStack().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
@@ -487,7 +486,6 @@ public class ExportCenterDownLoadManage {
                             Object[] header = request.getHeader();
                             List<ChartViewFieldDTO> xAxis = new ArrayList<>();
                             xAxis.addAll(request.getViewInfo().getXAxis());
-                            xAxis.addAll(request.getViewInfo().getYAxis());
                             xAxis.addAll(request.getViewInfo().getXAxisExt());
                             xAxis.addAll(request.getViewInfo().getYAxisExt());
                             xAxis.addAll(request.getViewInfo().getExtStack());
