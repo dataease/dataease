@@ -443,6 +443,11 @@ export class TablePivot extends S2ChartView<PivotSheet> {
         empty: {
           description: t('data_set.no_data')
         }
+      },
+      transformCanvasConfig() {
+        return {
+          supportsCSSTransform: true
+        }
       }
     }
     // options
