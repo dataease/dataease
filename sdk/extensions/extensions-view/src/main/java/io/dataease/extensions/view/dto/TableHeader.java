@@ -23,7 +23,7 @@ public class TableHeader {
     static
     public class ColumnInfo {
         @Getter
-        private String key;
+        private String field;
         private List<ColumnInfo> children = new ArrayList<>();
         private Integer width;
     }

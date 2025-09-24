@@ -615,7 +615,7 @@ public class ChartDataServer implements ChartDataApi {
         var result = new ArrayList<String>();
         for (TableHeader.ColumnInfo column : columns) {
             if (CollectionUtils.isEmpty(column.getChildren())) {
-                result.add(column.getKey());
+                result.add(column.getField());
             } else {
                 result.addAll(getHeaderLeafColumn(column.getChildren()));
             }
@@ -641,11 +641,11 @@ public class ChartDataServer implements ChartDataApi {
             if (depth.equals(toDepth)) {
                 Cell cell = rowMap.get("row" + depth).createCell(width);
                 cell.setCellStyle(cellStyle);
-                cell.setCellValue(getDeFieldName(xAxis, column.getKey()));
+                cell.setCellValue(getDeFieldName(xAxis, column.getField()));
             } else {
                 for (int i = depth; i <= toDepth; i++) {
                     Cell cell1 = rowMap.get("row" + i).createCell(width);
-                    cell1.setCellValue(getDeFieldName(xAxis, column.getKey()));
+                    cell1.setCellValue(getDeFieldName(xAxis, column.getField()));
                     cell1.setCellStyle(cellStyle);
                 }
                 CellRangeAddress region = new CellRangeAddress(depth, toDepth, width, width);
@@ -657,10 +657,10 @@ public class ChartDataServer implements ChartDataApi {
             }
         } else {
             Cell cell1 = rowMap.get("row" + depth).createCell(width);
-            cell1.setCellValue(getGroupName(tableHeader, column.getKey()));
+            cell1.setCellValue(getGroupName(tableHeader, column.getField()));
             cell1.setCellStyle(cellStyle);
             Cell cell2 = rowMap.get("row" + depth).createCell(width + column.getWidth() - 1);
-            cell2.setCellValue(getGroupName(tableHeader, column.getKey()));
+            cell2.setCellValue(getGroupName(tableHeader, column.getField()));
             cell2.setCellStyle(cellStyle);
             CellRangeAddress region = new CellRangeAddress(depth, depth, width, width + column.getWidth() - 1);
             sheet.addMergedRegion(region);
