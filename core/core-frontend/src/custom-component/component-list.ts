@@ -3,10 +3,7 @@ import { deepCopy } from '@/utils/utils'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 import { getViewConfig } from '@/views/chart/components/editor/util/chart'
 import { useI18n } from '@/hooks/web/useI18n'
-import {
-  CommonBackground,
-  PaddingMode
-} from '@/components/visualization/component-background/Types'
+import { CommonBackground } from '@/components/visualization/component-background/Types'
 const { t } = useI18n()
 
 export const commonStyle = {

@@ -2,16 +2,27 @@ import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
 import type { UploadFile } from 'element-plus-secondary'
 
 export type BackgroundType = 'outerImage' | 'innerImage'
-// export type PaddingMode = 'Uniform' | '垂直-水平' | '四边独立'
 
-export enum PaddingMode {
+/**
+ * 简写模式枚举，用于定义不同的边值设置模式
+ */
+export enum ShorthandMode {
+  /**
+   * 统一模式，所有边使用相同的值
+   */
   Uniform = 'uniform',
-  V_H = 'v_h',
-  PerSide = 'per_side'
+  /**
+   * 轴模式，可能按水平和垂直轴设置值
+   */
+  Axis = 'axis',
+  /**
+   * 逐边模式，可单独设置每条边的值
+   */
+  PerEdge = 'per_edge'
 }
 
-export interface InnerPadding {
-  mode?: PaddingMode
+export interface EdgeValues {
+  mode?: ShorthandMode
   top?: number
   right?: number
   bottom?: number
@@ -30,7 +41,7 @@ export interface CommonBackground {
   innerImageColor?: string
   innerImage?: string
   outerImage?: string
-  innerPadding2?: InnerPadding
+  innerPadding2?: EdgeValues
 }
 
 export interface State {

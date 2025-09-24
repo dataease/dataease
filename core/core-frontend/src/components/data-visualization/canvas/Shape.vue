@@ -159,7 +159,7 @@ import { activeWatermarkCheckUser, removeActiveWatermark } from '@/components/wa
 import { useI18n } from '@/hooks/web/useI18n'
 import {
   CommonBackground,
-  PaddingMode
+  ShorthandMode
 } from '@/components/visualization/component-background/Types'
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
@@ -935,20 +935,22 @@ const componentBackgroundStyle = computed(() => {
     const commonBackground = element.value.commonBackground as CommonBackground
     const innerPaddingTarget = ['Group'].includes(element.value.component) ? 0 : innerPadding
     let padding = innerPaddingTarget * scale.value + 'px'
-    const paddingMode = commonBackground.paddingMode
-    if (paddingMode) {
-      if (paddingMode === PaddingMode.V_H) {
-        padding = `${commonBackground.innerPadding * scale.value}px ${
-          commonBackground.innerPaddingLeft * scale.value
-        }px`
-      } else if (paddingMode === PaddingMode.PerSide) {
-        padding = `${commonBackground.innerPadding * scale.value}px ${
-          commonBackground.innerPaddingRight * scale.value
-        }px ${commonBackground.innerPaddingBottom * scale.value}px ${
-          commonBackground.innerPaddingLeft * scale.value
-        }px`
-      }
+    const paddingMode = commonBackground.innerPadding2?.mode
+    if (paddingMode === ShorthandMode.Uniform) {
+      padding = `${commonBackground.innerPadding2?.top * scale.value}px`
+    } else if (paddingMode === ShorthandMode.Axis) {
+      padding = `${commonBackground.innerPadding2?.top * scale.value}px ${
+        commonBackground.innerPadding2?.left * scale.value
+      }px`
+    } else if (paddingMode === ShorthandMode.PerEdge) {
+      padding = `${commonBackground.innerPadding2?.top * scale.value}px ${
+        commonBackground.innerPadding2?.right * scale.value
+      }px ${commonBackground.innerPadding2?.bottom * scale.value}px ${
+        commonBackground.innerPadding2?.left * scale.value
+      }px`
     }
+    console.log('=========padding 2', padding)
+
     let style = {
       padding: padding,
       borderRadius: borderRadius + 'px'

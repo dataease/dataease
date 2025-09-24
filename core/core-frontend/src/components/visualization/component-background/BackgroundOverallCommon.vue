@@ -51,7 +51,7 @@
                     :min="0"
                     :max="100"
                     v-model="state.commonBackground.innerPadding2.left"
-                    :disabled="state.commonBackground.innerPadding2.mode === PaddingMode.Uniform"
+                    :disabled="state.commonBackground.innerPadding2.mode === ShorthandMode.Uniform"
                     @change="onBackgroundChange"
                   />
                 </div>
@@ -62,7 +62,7 @@
                   <el-input-number
                     style="width: 80%"
                     :effect="themes"
-                    :disabled="state.commonBackground.innerPadding2.mode !== PaddingMode.PerSide"
+                    :disabled="state.commonBackground.innerPadding2.mode !== ShorthandMode.PerEdge"
                     controls-position="right"
                     :min="0"
                     :max="100"
@@ -75,7 +75,7 @@
                   <el-input-number
                     style="width: 80%"
                     :effect="themes"
-                    :disabled="state.commonBackground.innerPadding2.mode !== PaddingMode.PerSide"
+                    :disabled="state.commonBackground.innerPadding2.mode !== ShorthandMode.PerEdge"
                     controls-position="right"
                     :min="0"
                     :max="100"
@@ -336,7 +336,7 @@ const props = withDefaults(
   }
 )
 
-import { State, PaddingMode } from '@/components/visualization/component-background/Types'
+import { State, ShorthandMode } from '@/components/visualization/component-background/Types'
 
 const state = reactive<State>({
   commonBackground: {
@@ -353,10 +353,10 @@ const state = reactive<State>({
   predefineColors: COLOR_PANEL
 })
 
-const paddingModes = Object.values(PaddingMode).map(item => ({
-  label: t(`visualization.padding_mode_${item}`),
+const paddingModes = Object.values(ShorthandMode).map(item => ({
+  label: t(`visualization.shorthand_mode_${item}`),
   value: item
-})) as { label: string; value: PaddingMode }[]
+})) as { label: string; value: ShorthandMode }[]
 
 const goFile = () => {
   files.value.click()
@@ -390,7 +390,7 @@ const init = () => {
   const innerPadding = commonBackgroundPop.innerPadding
   if (innerPadding) {
     commonBackgroundPop.innerPadding2 = {
-      mode: PaddingMode.Uniform,
+      mode: ShorthandMode.Uniform,
       top: innerPadding,
       right: innerPadding,
       bottom: innerPadding,
@@ -429,11 +429,11 @@ const upload = file => {
 }
 
 const updateInnerPadding = () => {
-  if (state.commonBackground.innerPadding2.mode === PaddingMode.Uniform) {
+  if (state.commonBackground.innerPadding2.mode === ShorthandMode.Uniform) {
     state.commonBackground.innerPadding2.left = state.commonBackground.innerPadding2.top
     state.commonBackground.innerPadding2.right = state.commonBackground.innerPadding2.top
     state.commonBackground.innerPadding2.bottom = state.commonBackground.innerPadding2.top
-  } else if (state.commonBackground.innerPadding2.mode === PaddingMode.V_H) {
+  } else if (state.commonBackground.innerPadding2.mode === ShorthandMode.Axis) {
     state.commonBackground.innerPadding2.right = state.commonBackground.innerPadding2.left
     state.commonBackground.innerPadding2.bottom = state.commonBackground.innerPadding2.top
   }
