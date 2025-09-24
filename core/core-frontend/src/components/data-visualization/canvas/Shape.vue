@@ -157,6 +157,10 @@ import {
 import Board from '@/components/de-board/Board.vue'
 import { activeWatermarkCheckUser, removeActiveWatermark } from '@/components/watermark/watermark'
 import { useI18n } from '@/hooks/web/useI18n'
+import {
+  CommonBackground,
+  PaddingMode
+} from '@/components/visualization/component-background/Types'
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -928,9 +932,25 @@ const componentBackgroundStyle = computed(() => {
       innerPadding,
       borderRadius
     } = element.value.commonBackground
+    const commonBackground = element.value.commonBackground as CommonBackground
     const innerPaddingTarget = ['Group'].includes(element.value.component) ? 0 : innerPadding
+    let padding = innerPaddingTarget * scale.value + 'px'
+    const paddingMode = commonBackground.paddingMode
+    if (paddingMode) {
+      if (paddingMode === PaddingMode.V_H) {
+        padding = `${commonBackground.innerPadding * scale.value}px ${
+          commonBackground.innerPaddingLeft * scale.value
+        }px`
+      } else if (paddingMode === PaddingMode.PerSide) {
+        padding = `${commonBackground.innerPadding * scale.value}px ${
+          commonBackground.innerPaddingRight * scale.value
+        }px ${commonBackground.innerPaddingBottom * scale.value}px ${
+          commonBackground.innerPaddingLeft * scale.value
+        }px`
+      }
+    }
     let style = {
-      padding: innerPaddingTarget * scale.value + 'px',
+      padding: padding,
       borderRadius: borderRadius + 'px'
     }
     let colorRGBA = ''

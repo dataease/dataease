@@ -3,6 +3,10 @@ import { deepCopy } from '@/utils/utils'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 import { getViewConfig } from '@/views/chart/components/editor/util/chart'
 import { useI18n } from '@/hooks/web/useI18n'
+import {
+  CommonBackground,
+  PaddingMode
+} from '@/components/visualization/component-background/Types'
 const { t } = useI18n()
 
 export const commonStyle = {
@@ -177,7 +181,7 @@ export const MULTI_DIMENSIONAL = {
   z: 0
 }
 
-export const COMMON_COMPONENT_BACKGROUND_BASE = {
+export const COMMON_COMPONENT_BACKGROUND_BASE: CommonBackground = {
   backgroundColorSelect: true,
   backdropFilterEnable: false,
   backgroundImageEnable: false,
@@ -185,8 +189,12 @@ export const COMMON_COMPONENT_BACKGROUND_BASE = {
   innerImage: 'board/board_1.svg',
   outerImage: null,
   innerPadding: 12,
+  innerPaddingRight: 12,
+  innerPaddingBottom: 12,
+  innerPaddingLeft: 12,
   borderRadius: 0,
-  backdropFilter: 4
+  backdropFilter: 4,
+  paddingMode: PaddingMode.Uniform
 }
 
 export const COMMON_COMPONENT_BACKGROUND_LIGHT = {

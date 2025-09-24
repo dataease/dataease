@@ -15,23 +15,80 @@
     />
     <el-form size="small" label-position="top" style="width: 100%">
       <el-row :gutter="8">
-        <el-col :span="12">
+        <el-col :span="24">
           <el-form-item
             :label="t('visualization.inner_padding')"
             class="form-item w100"
             :class="'form-item-' + themes"
           >
-            <el-input-number
+            <el-segmented
+              v-model="state.commonBackground.paddingMode"
+              :options="paddingModes"
+              size="small"
               style="width: 100%"
-              :effect="themes"
-              controls-position="right"
-              :min="0"
-              :max="100"
-              v-model="state.commonBackground.innerPadding"
               @change="onBackgroundChange"
             />
+            <el-row :gutter="8">
+              <el-col :span="12">
+                <div style="display: flex; align-items: center; margin-bottom: 8px">
+                  <span style="width: 20%; padding-right: 8px">顶</span>
+                  <el-input-number
+                    style="width: 80%"
+                    :effect="themes"
+                    controls-position="right"
+                    :min="0"
+                    :max="100"
+                    v-model="state.commonBackground.innerPadding"
+                    @change="onBackgroundChange"
+                  />
+                </div>
+                <div style="display: flex; align-items: center">
+                  <span style="width: 20%; padding-right: 8px">左</span>
+                  <el-input-number
+                    style="width: 80%"
+                    :effect="themes"
+                    controls-position="right"
+                    :min="0"
+                    :max="100"
+                    v-model="state.commonBackground.innerPaddingLeft"
+                    :disabled="state.commonBackground.paddingMode === PaddingMode.Uniform"
+                    @change="onBackgroundChange"
+                  />
+                </div>
+              </el-col>
+              <el-col :span="12">
+                <div style="display: flex; align-items: center; margin-bottom: 8px">
+                  <span style="width: 20%; padding-right: 8px">底</span>
+                  <el-input-number
+                    style="width: 80%"
+                    :effect="themes"
+                    :disabled="state.commonBackground.paddingMode !== PaddingMode.PerSide"
+                    controls-position="right"
+                    :min="0"
+                    :max="100"
+                    v-model="state.commonBackground.innerPaddingBottom"
+                    @change="onBackgroundChange"
+                  />
+                </div>
+                <div style="display: flex; align-items: center">
+                  <span style="width: 20%; padding-right: 8px">右</span>
+                  <el-input-number
+                    style="width: 80%"
+                    :effect="themes"
+                    :disabled="state.commonBackground.paddingMode !== PaddingMode.PerSide"
+                    controls-position="right"
+                    :min="0"
+                    :max="100"
+                    v-model="state.commonBackground.innerPaddingRight"
+                    @change="onBackgroundChange"
+                  />
+                </div>
+              </el-col>
+            </el-row>
           </el-form-item>
         </el-col>
+      </el-row>
+      <el-row :gutter="8">
         <el-col :span="12">
           <el-form-item
             :label="t('visualization.board_radio')"
@@ -214,7 +271,7 @@
             <el-row>
               <span
                 style="margin-top: 2px"
-                v-if="!state.commonBackground['outerImage']"
+                v-if="!state.commonBackground.outerImage"
                 class="image-hint"
                 :class="`image-hint_${themes}`"
               >
@@ -224,7 +281,7 @@
               <el-button
                 size="small"
                 style="margin: 8px 0 0 -4px"
-                v-if="state.commonBackground['outerImage']"
+                v-if="state.commonBackground.outerImage"
                 text
                 @click="goFile"
                 :disabled="!state.commonBackground.backgroundImageEnable"
@@ -244,7 +301,7 @@
 <script setup lang="ts">
 import { queryVisualizationBackground } from '@/api/visualization/visualizationBackground'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
-import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
+import { computed, effect, nextTick, onMounted, reactive, ref, watch } from 'vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
@@ -279,7 +336,9 @@ const props = withDefaults(
   }
 )
 
-const state = reactive({
+import { State, PaddingMode } from '@/components/visualization/component-background/Types'
+
+const state = reactive<State>({
   commonBackground: {},
   BackgroundShowMap: {},
   checked: false,
@@ -291,6 +350,11 @@ const state = reactive({
   panel: null,
   predefineColors: COLOR_PANEL
 })
+
+const paddingModes = Object.values(PaddingMode).map(item => ({
+  label: t(`visualization.padding_mode_${item}`),
+  value: item
+})) as { label: string; value: PaddingMode }[]
 
 const goFile = () => {
   files.value.click()
@@ -307,8 +371,8 @@ const reUpload = e => {
     return
   }
   uploadFileResult(file, fileUrl => {
-    state.commonBackground['outerImage'] = fileUrl
-    state.fileList = [{ url: imgUrlTrans(state.commonBackground['outerImage']) }]
+    state.commonBackground.outerImage = fileUrl
+    state.fileList = [{ url: imgUrlTrans(state.commonBackground.outerImage) }]
     onBackgroundChange()
   })
 }
@@ -321,8 +385,8 @@ const queryBackground = () => {
 
 const init = () => {
   state.commonBackground = deepCopy(props.commonBackgroundPop)
-  if (state.commonBackground['outerImage']) {
-    state.fileList = [{ url: imgUrlTrans(state.commonBackground['outerImage']) }]
+  if (state.commonBackground.outerImage) {
+    state.fileList = [{ url: imgUrlTrans(state.commonBackground.outerImage) }]
   } else {
     state.fileList = []
   }
@@ -334,7 +398,7 @@ const commitStyle = () => {
 
 const handleRemove = () => {
   state.uploadDisabled = false
-  state.commonBackground['outerImage'] = null
+  state.commonBackground.outerImage = null
   state.fileList = []
   onBackgroundChange()
   commitStyle()
@@ -345,12 +409,21 @@ const handlePictureCardPreview = file => {
 }
 const upload = file => {
   uploadFileResult(file.file, fileUrl => {
-    state.commonBackground['outerImage'] = fileUrl
+    state.commonBackground.outerImage = fileUrl
     onBackgroundChange()
   })
 }
 
 const onBackgroundChange = () => {
+  if (state.commonBackground.paddingMode === PaddingMode.Uniform) {
+    state.commonBackground.innerPaddingLeft = state.commonBackground.innerPadding
+    state.commonBackground.innerPaddingRight = state.commonBackground.innerPadding
+    state.commonBackground.innerPaddingBottom = state.commonBackground.innerPadding
+  } else if (state.commonBackground.paddingMode === PaddingMode.V_H) {
+    state.commonBackground.innerPaddingRight =
+      state.commonBackground.innerPaddingLeft ?? state.commonBackground.innerPadding
+    state.commonBackground.innerPaddingBottom = state.commonBackground.innerPadding
+  }
   emits('onBackgroundChange', state.commonBackground)
 }
 
