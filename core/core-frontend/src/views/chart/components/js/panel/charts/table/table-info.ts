@@ -180,7 +180,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
 
     // options
     const s2Options: S2Options = {
-      width: containerDom.getBoundingClientRect().width,
+      width: containerDom.offsetWidth,
       height: containerDom.offsetHeight,
       seriesNumber: {
         enable: tableHeader.showIndex,
@@ -201,6 +201,11 @@ export class TableInfo extends S2ChartView<TableSheet> {
       placeholder: {
         empty: {
           description: t('data_set.no_data')
+        }
+      },
+      transformCanvasConfig() {
+        return {
+          supportsCSSTransform: true
         }
       }
     }
@@ -301,7 +306,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
         const totalWidthWithImg = ev.colLeafNodes.reduce((p, n) => {
           return p + (urlFields.includes(n.field) ? 120 : n.width)
         }, 0)
-        const containerWidth = containerDom.getBoundingClientRect().width - 1
+        const containerWidth = containerDom.offsetWidth - 1
         if (containerWidth <= totalWidthWithImg) {
           // 图库计算的布局宽度已经大于等于容器宽度，不需要再扩大，但是需要处理非整数宽度值，不然会出现透明细线
           ev.colLeafNodes.reduce((p, n) => {

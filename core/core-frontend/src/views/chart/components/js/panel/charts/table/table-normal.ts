@@ -139,7 +139,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
     const { basicStyle, tableCell, tableHeader, tooltip } = parseJson(chart.customAttr)
     // options
     const s2Options: S2Options = {
-      width: containerDom.getBoundingClientRect().width,
+      width: containerDom.offsetWidth,
       height: containerDom.offsetHeight,
       seriesNumber: {
         enable: tableHeader.showIndex,
@@ -160,6 +160,11 @@ export class TableNormal extends S2ChartView<TableSheet> {
       placeholder: {
         empty: {
           description: t('data_set.no_data')
+        }
+      },
+      transformCanvasConfig() {
+        return {
+          supportsCSSTransform: true
         }
       }
     }
@@ -220,7 +225,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
           newChart.store.set('lastLayoutResult', undefined)
           return
         }
-        const containerWidth = containerDom.getBoundingClientRect().width - 1
+        const containerWidth = containerDom.offsetWidth - 1
         const scale = containerWidth / ev.colsHierarchy.width
         if (scale <= 1) {
           // 图库计算的布局宽度已经大于等于容器宽度，不需要再扩大，但是需要处理非整数宽度值，不然会出现透明细线
