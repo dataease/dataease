@@ -22,7 +22,7 @@
             :class="'form-item-' + themes"
           >
             <el-segmented
-              v-model="state.commonBackground.innerPadding2.mode"
+              v-model="state.commonBackground.innerPadding.mode"
               :options="paddingModes"
               size="small"
               style="width: 100%"
@@ -31,55 +31,63 @@
             <el-row :gutter="8">
               <el-col :span="12">
                 <div style="display: flex; align-items: center; margin-bottom: 8px">
-                  <span style="width: 20%; padding-right: 8px">顶</span>
+                  <span style="width: 30%; padding-right: 8px">{{
+                    t('visualization.edge_top')
+                  }}</span>
                   <el-input-number
-                    style="width: 80%"
+                    style="width: 70%"
                     :effect="themes"
                     controls-position="right"
                     :min="0"
                     :max="100"
-                    v-model="state.commonBackground.innerPadding2.top"
+                    v-model="state.commonBackground.innerPadding.top"
                     @change="onBackgroundChange"
                   />
                 </div>
                 <div style="display: flex; align-items: center">
-                  <span style="width: 20%; padding-right: 8px">左</span>
+                  <span style="width: 30%; padding-right: 8px">{{
+                    t('visualization.edge_left')
+                  }}</span>
                   <el-input-number
-                    style="width: 80%"
+                    style="width: 70%"
                     :effect="themes"
                     controls-position="right"
                     :min="0"
                     :max="100"
-                    v-model="state.commonBackground.innerPadding2.left"
-                    :disabled="state.commonBackground.innerPadding2.mode === ShorthandMode.Uniform"
+                    v-model="state.commonBackground.innerPadding.left"
+                    :disabled="state.commonBackground.innerPadding.mode === ShorthandMode.Uniform"
                     @change="onBackgroundChange"
                   />
                 </div>
               </el-col>
               <el-col :span="12">
                 <div style="display: flex; align-items: center; margin-bottom: 8px">
-                  <span style="width: 20%; padding-right: 8px">底</span>
+                  <span style="width: 30%; padding-right: 8px">{{
+                    t('visualization.edge_bottom')
+                  }}</span>
                   <el-input-number
-                    style="width: 80%"
+                    style="width: 70%"
                     :effect="themes"
-                    :disabled="state.commonBackground.innerPadding2.mode !== ShorthandMode.PerEdge"
+                    :disabled="state.commonBackground.innerPadding.mode !== ShorthandMode.PerEdge"
                     controls-position="right"
                     :min="0"
                     :max="100"
-                    v-model="state.commonBackground.innerPadding2.bottom"
+                    v-model="state.commonBackground.innerPadding.bottom"
                     @change="onBackgroundChange"
                   />
                 </div>
                 <div style="display: flex; align-items: center">
-                  <span style="width: 20%; padding-right: 8px">右</span>
+                  <span style="width: 30%; padding-right: 8px">{{
+                    t('visualization.edge_right')
+                  }}</span>
                   <el-input-number
-                    style="width: 80%"
+                    style="width: 70%"
                     :effect="themes"
-                    :disabled="state.commonBackground.innerPadding2.mode !== ShorthandMode.PerEdge"
+                    :disabled="state.commonBackground.innerPadding.mode !== ShorthandMode.PerEdge"
                     controls-position="right"
                     :min="0"
                     :max="100"
-                    v-model="state.commonBackground.innerPadding2.right"
+                    v-model="state.commonBackground.innerPadding.right"
                     @change="onBackgroundChange"
                   />
                 </div>
@@ -340,7 +348,7 @@ import { State, ShorthandMode } from '@/components/visualization/component-backg
 
 const state = reactive<State>({
   commonBackground: {
-    innerPadding2: {}
+    innerPadding: {}
   },
   BackgroundShowMap: {},
   checked: false,
@@ -388,17 +396,17 @@ const queryBackground = () => {
 const init = () => {
   const commonBackgroundPop = deepCopy(props.commonBackgroundPop)
   const innerPadding = commonBackgroundPop.innerPadding
-  if (typeof innerPadding !== 'undefined') {
-    commonBackgroundPop.innerPadding2 = {
+  if (typeof innerPadding === 'number') {
+    commonBackgroundPop.innerPadding = {
       mode: ShorthandMode.Uniform,
       top: innerPadding,
       right: innerPadding,
       bottom: innerPadding,
       left: innerPadding
     }
-    commonBackgroundPop.innerPadding = undefined
   }
   state.commonBackground = commonBackgroundPop
+  updateInnerPadding()
   if (state.commonBackground.outerImage) {
     state.fileList = [{ url: imgUrlTrans(state.commonBackground.outerImage) }]
   } else {
@@ -429,13 +437,13 @@ const upload = file => {
 }
 
 const updateInnerPadding = () => {
-  if (state.commonBackground.innerPadding2.mode === ShorthandMode.Uniform) {
-    state.commonBackground.innerPadding2.left = state.commonBackground.innerPadding2.top
-    state.commonBackground.innerPadding2.right = state.commonBackground.innerPadding2.top
-    state.commonBackground.innerPadding2.bottom = state.commonBackground.innerPadding2.top
-  } else if (state.commonBackground.innerPadding2.mode === ShorthandMode.Axis) {
-    state.commonBackground.innerPadding2.right = state.commonBackground.innerPadding2.left
-    state.commonBackground.innerPadding2.bottom = state.commonBackground.innerPadding2.top
+  if (state.commonBackground.innerPadding.mode === ShorthandMode.Uniform) {
+    state.commonBackground.innerPadding.left = state.commonBackground.innerPadding.top
+    state.commonBackground.innerPadding.right = state.commonBackground.innerPadding.top
+    state.commonBackground.innerPadding.bottom = state.commonBackground.innerPadding.top
+  } else if (state.commonBackground.innerPadding.mode === ShorthandMode.Axis) {
+    state.commonBackground.innerPadding.right = state.commonBackground.innerPadding.left
+    state.commonBackground.innerPadding.bottom = state.commonBackground.innerPadding.top
   }
 }
 

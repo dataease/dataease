@@ -30,7 +30,7 @@ export interface EdgeValues {
 }
 
 export interface CommonBackground {
-  innerPadding?: number
+  innerPadding?: EdgeValues
   borderRadius?: number
   backdropFilterEnable?: boolean
   backdropFilter?: number
@@ -41,7 +41,6 @@ export interface CommonBackground {
   innerImageColor?: string
   innerImage?: string
   outerImage?: string
-  innerPadding2?: EdgeValues
 }
 
 export interface State {
