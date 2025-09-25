@@ -15,10 +15,9 @@ import java.util.List;
 @Component("h2")
 public class H2 extends DatasourceConfiguration {
     private String driver = "org.h2.Driver";
-    private List<String> illegalParameters = Arrays.asList("INIT", "RUNSCRIPT");
 
     public String getJdbc() {
-        for (String illegalParameter : illegalParameters) {
+        for (String illegalParameter : getH2IllegalParameters()) {
             if (jdbc.toUpperCase().replace("\\", "").contains(illegalParameter)) {
                 DEException.throwException("Has illegal parameter: " + jdbc);
             }
