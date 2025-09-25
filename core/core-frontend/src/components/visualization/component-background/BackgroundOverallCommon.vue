@@ -354,7 +354,7 @@ const state = reactive<State>({
 })
 
 const paddingModes = Object.values(ShorthandMode).map(item => ({
-  label: t(`visualization.shorthand_mode_${item}`),
+  label: t(`visualization.inner_padding_shorthand_mode_${item}`),
   value: item
 })) as { label: string; value: ShorthandMode }[]
 
