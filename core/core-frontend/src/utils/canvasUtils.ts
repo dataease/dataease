@@ -162,7 +162,9 @@ export function historyItemAdaptor(
   ) {
     componentItem.propValue?.forEach((filterItem, index) => {
       if (reportFilterInfo[filterItem.id]) {
-        componentItem.propValue[index] = JSON.parse(reportFilterInfo[filterItem.id].filterInfo)
+        const mergeItem = JSON.parse(reportFilterInfo[filterItem.id].filterInfo)
+        mergeItem['defaultValueFirstItem'] = false
+        componentItem.propValue[index] = mergeItem
       }
     })
   }
