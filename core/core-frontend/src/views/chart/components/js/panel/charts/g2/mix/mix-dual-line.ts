@@ -1,5 +1,12 @@
 import { G2ChartView, G2DrawOptions } from '../../../types/impl/g2'
-import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
+import {
+  flow,
+  handleBreakLineMultiDimension,
+  handleSetZeroMultiDimension,
+  handleSetZeroSingleDimension,
+  hexColorToRGBA,
+  parseJson
+} from '@/views/chart/components/js/util'
 import { cloneDeep, defaultsDeep, isEmpty, merge } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -153,6 +160,9 @@ export class GroupLineMix extends G2ChartView {
                   key: 'left'
                 }
               },
+              style: {
+                stroke: 'white'
+              },
               tooltip: false
             },
             {
@@ -191,6 +201,9 @@ export class GroupLineMix extends G2ChartView {
                 y: {
                   key: 'right'
                 }
+              },
+              style: {
+                stroke: 'white'
               },
               tooltip: false
             }
@@ -283,7 +296,7 @@ export class GroupLineMix extends G2ChartView {
         opacity: basicStyle.leftLineSymbolSize === 0 ? 0 : 1,
         fillOpacity: basicStyle.leftLineSymbolSize === 0 ? 0 : 1,
         strokeOpacity: basicStyle.leftLineSymbolSize === 0 ? 0 : 1,
-        lineWidth: 0
+        lineWidth: basicStyle.leftLineSymbolSize === 0 ? 0 : 1
       }
     })
     const rightCat = []
@@ -354,7 +367,7 @@ export class GroupLineMix extends G2ChartView {
         opacity: basicStyle.lineSymbolSize === 0 ? 0 : 1,
         fillOpacity: basicStyle.lineSymbolSize === 0 ? 0 : 1,
         strokeOpacity: basicStyle.lineSymbolSize === 0 ? 0 : 1,
-        lineWidth: 0
+        lineWidth: basicStyle.lineSymbolSize === 0 ? 0 : 1
       }
     })
     return options
@@ -959,8 +972,49 @@ export class GroupLineMix extends G2ChartView {
     return result
   }
 
+  protected configEmptyDataStrategy(chart: Chart, options: G2Spec): G2Spec {
+    const { functionCfg } = parseJson(chart.senior)
+    const { emptyDataStrategy } = functionCfg
+    const [leftLineMark, _, rightLineMark] = options.children[0].children
+    const leftData = leftLineMark.data?.value || []
+    const rightData = rightLineMark.data || []
+    const leftMultiDimension = chart.xAxisExt?.length > 0
+    const rightMultiDimension = chart.extBubble?.length > 0
+    switch (emptyDataStrategy) {
+      case 'breakLine': {
+        if (leftMultiDimension) {
+          handleBreakLineMultiDimension(leftData)
+          merge(leftLineMark, { style: { connect: false } })
+        }
+        if (rightMultiDimension) {
+          handleBreakLineMultiDimension(rightData)
+          merge(rightLineMark, { style: { connect: false } })
+        }
+        break
+      }
+      case 'setZero': {
+        if (leftMultiDimension) {
+          // 多维度置0
+          handleSetZeroMultiDimension(leftData)
+        } else {
+          // 单维度置0
+          handleSetZeroSingleDimension(leftData)
+        }
+        if (rightMultiDimension) {
+          // 多维度置0
+          handleSetZeroMultiDimension(rightData)
+        } else {
+          // 单维度置0
+          handleSetZeroSingleDimension(rightData)
+        }
+        break
+      }
+    }
+    return options
+  }
   protected setupOptions(chart: Chart, options: G2Spec, context: Record<string, any>): G2Spec {
     return flow(
+      this.configEmptyDataStrategy,
       this.configBasicStyle,
       this.configLegend,
       this.configLabel,

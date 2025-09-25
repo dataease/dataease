@@ -1,5 +1,12 @@
 import { G2ChartView, G2DrawOptions } from '../../../types/impl/g2'
-import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
+import {
+  flow,
+  handleBreakLineMultiDimension,
+  handleSetZeroMultiDimension,
+  handleSetZeroSingleDimension,
+  hexColorToRGBA,
+  parseJson
+} from '@/views/chart/components/js/util'
 import { cloneDeep, defaultsDeep, isEmpty, merge } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -154,6 +161,9 @@ export class ColumnLineMix extends G2ChartView {
               key: 'right'
             }
           },
+          style: {
+            stroke: 'white'
+          },
           tooltip: false
         }
       ]
@@ -262,7 +272,7 @@ export class ColumnLineMix extends G2ChartView {
         opacity: basicStyle.lineSymbolSize === 0 ? 0 : 1,
         fillOpacity: basicStyle.lineSymbolSize === 0 ? 0 : 1,
         strokeOpacity: basicStyle.lineSymbolSize === 0 ? 0 : 1,
-        lineWidth: 0
+        lineWidth: basicStyle.lineSymbolSize === 0 ? 0 : 1
       }
     })
     return options
@@ -673,7 +683,7 @@ export class ColumnLineMix extends G2ChartView {
   }
 
   public setupDefaultOptions(chart: ChartObj): ChartObj {
-    const { customAttr, senior } = chart
+    const { senior } = chart
     if (
       senior.functionCfg.emptyDataStrategy == undefined ||
       senior.functionCfg.emptyDataStrategy === 'ignoreData'
@@ -716,8 +726,39 @@ export class ColumnLineMix extends G2ChartView {
     return result
   }
 
+  protected configEmptyDataStrategy(chart: Chart, options: G2Spec): G2Spec {
+    const { functionCfg } = parseJson(chart.senior)
+    const { emptyDataStrategy } = functionCfg
+    const [intervalMark, lineMark] = options.children
+    const leftData = intervalMark.data?.value || []
+    const rightData = lineMark.data || []
+    const multiDimension = chart.extBubble?.length > 0
+    switch (emptyDataStrategy) {
+      case 'breakLine': {
+        if (multiDimension) {
+          handleBreakLineMultiDimension(rightData)
+        }
+        merge(lineMark, { style: { connect: false } })
+        break
+      }
+      case 'setZero': {
+        if (multiDimension) {
+          // 多维度置0
+          handleSetZeroMultiDimension(rightData)
+        } else {
+          // 单维度置0
+          handleSetZeroSingleDimension(rightData)
+        }
+        handleSetZeroSingleDimension(leftData)
+        break
+      }
+    }
+    return options
+  }
+
   protected setupOptions(chart: Chart, options: G2Spec, context: Record<string, any>): G2Spec {
     return flow(
+      this.configEmptyDataStrategy,
       this.configBasicStyle,
       this.configLegend,
       this.configLabel,
