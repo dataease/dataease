@@ -23,3 +23,11 @@ export interface EdgeValues {
   bottom?: number
   left?: number
 }
+
+export interface CornerValues {
+  mode?: ShorthandMode
+  topLeft?: number
+  topRight?: number
+  bottomLeft?: number
+  bottomRight?: number
+}

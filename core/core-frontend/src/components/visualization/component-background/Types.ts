@@ -16,6 +16,7 @@ export interface CommonBackground {
   innerImageColor?: string
   innerImage?: string
   outerImage?: string
+  borderRadius2?: CornerValues
 }
 
 export interface State {

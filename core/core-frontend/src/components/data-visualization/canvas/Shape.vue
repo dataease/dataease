@@ -948,9 +948,25 @@ const componentBackgroundStyle = computed(() => {
       }px`
     }
 
+    let borderRadiusStyle = borderRadius + 'px'
+    const borderRadiusMode = commonBackground.borderRadius2?.mode
+    if (borderRadiusMode === ShorthandMode.Uniform) {
+      borderRadiusStyle = `${commonBackground.borderRadius2?.topLeft * scale.value}px`
+    } else if (borderRadiusMode === ShorthandMode.Axis) {
+      borderRadiusStyle = `${commonBackground.borderRadius2?.topLeft * scale.value}px ${
+        commonBackground.borderRadius2?.bottomLeft * scale.value
+      }px`
+    } else if (borderRadiusMode === ShorthandMode.PerEdge) {
+      borderRadiusStyle = `${commonBackground.borderRadius2?.topLeft * scale.value}px ${
+        commonBackground.borderRadius2?.topRight * scale.value
+      }px ${commonBackground.borderRadius2?.bottomRight * scale.value}px ${
+        commonBackground.borderRadius2?.bottomLeft * scale.value
+      }px`
+    }
+
     let style = {
       padding: innerPaddingStyle,
-      borderRadius: borderRadius + 'px'
+      borderRadius: borderRadiusStyle
     }
     let colorRGBA = ''
     if (backgroundColorSelect && backgroundColor) {

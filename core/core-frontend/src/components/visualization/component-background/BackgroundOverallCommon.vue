@@ -110,21 +110,76 @@
         </el-col>
       </el-row>
       <el-row :gutter="8">
-        <el-col :span="12">
+        <el-col :span="24">
           <el-form-item
             :label="t('visualization.board_radio')"
             class="form-item w100"
             :class="'form-item-' + themes"
           >
-            <el-input-number
+            <el-segmented
+              v-model="state.commonBackground.borderRadius2.mode"
+              :options="paddingModes"
+              size="small"
               style="width: 100%"
-              :effect="themes"
-              controls-position="right"
-              :min="0"
-              :max="100"
-              v-model="state.commonBackground.borderRadius"
               @change="onBackgroundChange"
             />
+            <el-row :gutter="8">
+              <el-col :span="12">
+                <div style="display: flex; align-items: center; margin-bottom: 8px">
+                  <span style="width: 30%; padding-right: 8px">左上</span>
+                  <el-input-number
+                    style="width: 70%"
+                    :effect="themes"
+                    controls-position="right"
+                    :min="0"
+                    :max="100"
+                    v-model="state.commonBackground.borderRadius2.topLeft"
+                    @change="onBackgroundChange"
+                  />
+                </div>
+                <div style="display: flex; align-items: center">
+                  <span style="width: 30%; padding-right: 8px">左下</span>
+                  <el-input-number
+                    style="width: 70%"
+                    :effect="themes"
+                    controls-position="right"
+                    :min="0"
+                    :max="100"
+                    v-model="state.commonBackground.borderRadius2.bottomLeft"
+                    :disabled="state.commonBackground.borderRadius2.mode === ShorthandMode.Uniform"
+                    @change="onBackgroundChange"
+                  />
+                </div>
+              </el-col>
+              <el-col :span="12">
+                <div style="display: flex; align-items: center; margin-bottom: 8px">
+                  <span style="width: 30%; padding-right: 8px">右上</span>
+                  <el-input-number
+                    style="width: 70%"
+                    :effect="themes"
+                    :disabled="state.commonBackground.borderRadius2.mode !== ShorthandMode.PerEdge"
+                    controls-position="right"
+                    :min="0"
+                    :max="100"
+                    v-model="state.commonBackground.borderRadius2.topRight"
+                    @change="onBackgroundChange"
+                  />
+                </div>
+                <div style="display: flex; align-items: center">
+                  <span style="width: 30%; padding-right: 8px">右下</span>
+                  <el-input-number
+                    style="width: 70%"
+                    :effect="themes"
+                    :disabled="state.commonBackground.borderRadius2.mode !== ShorthandMode.PerEdge"
+                    controls-position="right"
+                    :min="0"
+                    :max="100"
+                    v-model="state.commonBackground.borderRadius2.bottomRight"
+                    @change="onBackgroundChange"
+                  />
+                </div>
+              </el-col>
+            </el-row>
           </el-form-item>
         </el-col>
       </el-row>
@@ -362,7 +417,8 @@ import { ShorthandMode } from '@/Types'
 
 const state = reactive<State>({
   commonBackground: {
-    innerPadding: {}
+    innerPadding: {},
+    borderRadius2: {}
   },
   BackgroundShowMap: {},
   checked: false,
@@ -419,6 +475,17 @@ const init = () => {
       left: innerPadding
     }
   }
+  const borderRadius = commonBackgroundPop.borderRadius
+  if (typeof borderRadius !== 'undefined') {
+    commonBackgroundPop.borderRadius2 = {
+      mode: ShorthandMode.Uniform,
+      topLeft: borderRadius,
+      topRight: borderRadius,
+      bottomLeft: borderRadius,
+      bottomRight: borderRadius
+    }
+    commonBackgroundPop.borderRadius = undefined
+  }
   state.commonBackground = commonBackgroundPop
   updateInnerPadding()
   if (state.commonBackground.outerImage) {
@@ -461,8 +528,21 @@ const updateInnerPadding = () => {
   }
 }
 
+const updateBorderRadius = () => {
+  if (state.commonBackground.borderRadius2.mode === ShorthandMode.Uniform) {
+    state.commonBackground.borderRadius2.topLeft = state.commonBackground.borderRadius2.topLeft
+    state.commonBackground.borderRadius2.topRight = state.commonBackground.borderRadius2.topLeft
+    state.commonBackground.borderRadius2.bottomLeft = state.commonBackground.borderRadius2.topLeft
+    state.commonBackground.borderRadius2.bottomRight = state.commonBackground.borderRadius2.topLeft
+  } else if (state.commonBackground.borderRadius2.mode === ShorthandMode.Axis) {
+    state.commonBackground.borderRadius2.bottomRight = state.commonBackground.borderRadius2.topLeft
+    state.commonBackground.borderRadius2.topRight = state.commonBackground.borderRadius2.bottomLeft
+  }
+}
+
 const onBackgroundChange = () => {
   updateInnerPadding()
+  updateBorderRadius()
   emits('onBackgroundChange', state.commonBackground)
 }
 
