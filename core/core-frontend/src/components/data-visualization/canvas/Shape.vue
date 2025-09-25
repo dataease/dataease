@@ -935,18 +935,18 @@ const componentBackgroundStyle = computed(() => {
     const commonBackground = element.value.commonBackground as CommonBackground
     const innerPaddingTarget = ['Group'].includes(element.value.component) ? 0 : innerPadding
     let innerPaddingStyle = innerPaddingTarget * scale.value + 'px'
-    const paddingMode = commonBackground.innerPadding2?.mode
+    const paddingMode = commonBackground.innerPadding?.mode
     if (paddingMode === ShorthandMode.Uniform) {
-      innerPaddingStyle = `${commonBackground.innerPadding2?.top * scale.value}px`
+      innerPaddingStyle = `${commonBackground.innerPadding?.top * scale.value}px`
     } else if (paddingMode === ShorthandMode.Axis) {
-      innerPaddingStyle = `${commonBackground.innerPadding2?.top * scale.value}px ${
-        commonBackground.innerPadding2?.left * scale.value
+      innerPaddingStyle = `${commonBackground.innerPadding?.top * scale.value}px ${
+        commonBackground.innerPadding?.left * scale.value
       }px`
     } else if (paddingMode === ShorthandMode.PerEdge) {
-      innerPaddingStyle = `${commonBackground.innerPadding2?.top * scale.value}px ${
-        commonBackground.innerPadding2?.right * scale.value
-      }px ${commonBackground.innerPadding2?.bottom * scale.value}px ${
-        commonBackground.innerPadding2?.left * scale.value
+      innerPaddingStyle = `${commonBackground.innerPadding?.top * scale.value}px ${
+        commonBackground.innerPadding?.right * scale.value
+      }px ${commonBackground.innerPadding?.bottom * scale.value}px ${
+        commonBackground.innerPadding?.left * scale.value
       }px`
     }
 
