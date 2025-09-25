@@ -35,31 +35,32 @@ public class Db2 extends DatasourceConfiguration {
             }
             return getJdbcUrl();
         }
+        String url = "";
         if (StringUtils.isEmpty(extraParams.trim())) {
             if (StringUtils.isEmpty(getSchema())) {
-                return "jdbc:db2://HOSTNAME:PORT/DATABASE"
+                url = "jdbc:db2://HOSTNAME:PORT/DATABASE"
                         .replace("HOSTNAME", getLHost().trim())
                         .replace("PORT", getLPort().toString().trim())
                         .replace("DATABASE", getDataBase().trim());
             } else {
-                return "jdbc:db2://HOSTNAME:PORT/DATABASE:currentSchema=SCHEMA;"
+                url = "jdbc:db2://HOSTNAME:PORT/DATABASE:currentSchema=SCHEMA;"
                         .replace("HOSTNAME", getLHost().trim())
                         .replace("PORT", getLPort().toString().trim())
                         .replace("DATABASE", getDataBase().trim())
                         .replace("SCHEMA", getSchema().trim());
             }
         } else {
-            String url = "jdbc:db2://HOSTNAME:PORT/DATABASE:EXTRA_PARAMS"
+            url = "jdbc:db2://HOSTNAME:PORT/DATABASE:EXTRA_PARAMS"
                     .replace("HOSTNAME", getLHost().trim())
                     .replace("PORT", getLPort().toString().trim())
                     .replace("DATABASE", getDataBase().trim())
                     .replace("EXTRA_PARAMS", getExtraParams().trim());
-            for (String illegalParameter : illegalParameters) {
-                if (url.toLowerCase().contains(illegalParameter.toLowerCase())) {
-                    DEException.throwException("Illegal parameter: " + illegalParameter);
-                }
-            }
-            return url;
         }
+        for (String illegalParameter : illegalParameters) {
+            if (url.toLowerCase().contains(illegalParameter.toLowerCase())) {
+                DEException.throwException("Illegal parameter: " + illegalParameter);
+            }
+        }
+        return url;
     }
 }

@@ -18,29 +18,30 @@ public class Mongo extends DatasourceConfiguration {
     private List<String> showTableSqls = Arrays.asList("show tables");
 
     public String getJdbc() {
-        if(StringUtils.isNoneEmpty(getUrlType()) && !getUrlType().equalsIgnoreCase("hostName")){
+        if (StringUtils.isNoneEmpty(getUrlType()) && !getUrlType().equalsIgnoreCase("hostName")) {
             if (!getJdbcUrl().startsWith("jdbc:mysql")) {
                 DEException.throwException("Illegal jdbcUrl: " + getJdbcUrl());
             }
             return getJdbcUrl();
         }
+        String jdbcUrl = "";
         if (StringUtils.isEmpty(extraParams.trim())) {
-            return "jdbc:mysql://HOSTNAME:PORT/DATABASE"
+            jdbcUrl = "jdbc:mysql://HOSTNAME:PORT/DATABASE"
                     .replace("HOSTNAME", getLHost().trim())
                     .replace("PORT", getLPort().toString().trim())
                     .replace("DATABASE", getDataBase().trim());
         } else {
-            for (String illegalParameter : illegalParameters) {
-                if (getExtraParams().contains(illegalParameter)) {
-                    throw new RuntimeException("Illegal parameter: " + illegalParameter);
-                }
-            }
-
-            return "jdbc:mysql://HOSTNAME:PORT/DATABASE?EXTRA_PARAMS"
+            jdbcUrl = "jdbc:mysql://HOSTNAME:PORT/DATABASE?EXTRA_PARAMS"
                     .replace("HOSTNAME", getLHost().trim())
                     .replace("PORT", getLPort().toString().trim())
                     .replace("DATABASE", getDataBase().trim())
                     .replace("EXTRA_PARAMS", getExtraParams().trim());
         }
+        for (String illegalParameter : illegalParameters) {
+            if (jdbcUrl.contains(illegalParameter)) {
+                throw new RuntimeException("Illegal parameter: " + illegalParameter);
+            }
+        }
+        return jdbcUrl;
     }
 }
