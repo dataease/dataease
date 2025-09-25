@@ -949,7 +949,6 @@ const componentBackgroundStyle = computed(() => {
         commonBackground.innerPadding2?.left * scale.value
       }px`
     }
-    console.log('=========padding 2', padding)
 
     let style = {
       padding: padding,
