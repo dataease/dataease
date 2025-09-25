@@ -6,7 +6,7 @@ export type BackgroundType = 'outerImage' | 'innerImage'
 
 export interface CommonBackground {
   innerPadding?: EdgeValues
-  borderRadius?: number
+  borderRadius?: CornerValues
   backdropFilterEnable?: boolean
   backdropFilter?: number
   backgroundColorSelect?: boolean
@@ -16,7 +16,6 @@ export interface CommonBackground {
   innerImageColor?: string
   innerImage?: string
   outerImage?: string
-  borderRadius2?: CornerValues
 }
 
 export interface State {

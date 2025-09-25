@@ -117,8 +117,8 @@
             :class="'form-item-' + themes"
           >
             <el-segmented
-              v-model="state.commonBackground.borderRadius2.mode"
-              :options="paddingModes"
+              v-model="state.commonBackground.borderRadius.mode"
+              :options="cornerModes"
               size="small"
               style="width: 100%"
               @change="onBackgroundChange"
@@ -126,55 +126,63 @@
             <el-row :gutter="8">
               <el-col :span="12">
                 <div style="display: flex; align-items: center; margin-bottom: 8px">
-                  <span style="width: 30%; padding-right: 8px">左上</span>
+                  <span style="width: 30%; padding-right: 8px">{{
+                    t('visualization.corner_top_left')
+                  }}</span>
                   <el-input-number
                     style="width: 70%"
                     :effect="themes"
                     controls-position="right"
                     :min="0"
                     :max="100"
-                    v-model="state.commonBackground.borderRadius2.topLeft"
+                    v-model="state.commonBackground.borderRadius.topLeft"
                     @change="onBackgroundChange"
                   />
                 </div>
                 <div style="display: flex; align-items: center">
-                  <span style="width: 30%; padding-right: 8px">左下</span>
+                  <span style="width: 30%; padding-right: 8px">{{
+                    t('visualization.corner_bottom_left')
+                  }}</span>
                   <el-input-number
                     style="width: 70%"
                     :effect="themes"
                     controls-position="right"
                     :min="0"
                     :max="100"
-                    v-model="state.commonBackground.borderRadius2.bottomLeft"
-                    :disabled="state.commonBackground.borderRadius2.mode === ShorthandMode.Uniform"
+                    v-model="state.commonBackground.borderRadius.bottomLeft"
+                    :disabled="state.commonBackground.borderRadius.mode === ShorthandMode.Uniform"
                     @change="onBackgroundChange"
                   />
                 </div>
               </el-col>
               <el-col :span="12">
                 <div style="display: flex; align-items: center; margin-bottom: 8px">
-                  <span style="width: 30%; padding-right: 8px">右上</span>
+                  <span style="width: 30%; padding-right: 8px">{{
+                    t('visualization.corner_top_right')
+                  }}</span>
                   <el-input-number
                     style="width: 70%"
                     :effect="themes"
-                    :disabled="state.commonBackground.borderRadius2.mode !== ShorthandMode.PerEdge"
+                    :disabled="state.commonBackground.borderRadius.mode !== ShorthandMode.PerEdge"
                     controls-position="right"
                     :min="0"
                     :max="100"
-                    v-model="state.commonBackground.borderRadius2.topRight"
+                    v-model="state.commonBackground.borderRadius.topRight"
                     @change="onBackgroundChange"
                   />
                 </div>
                 <div style="display: flex; align-items: center">
-                  <span style="width: 30%; padding-right: 8px">右下</span>
+                  <span style="width: 30%; padding-right: 8px">{{
+                    t('visualization.corner_bottom_right')
+                  }}</span>
                   <el-input-number
                     style="width: 70%"
                     :effect="themes"
-                    :disabled="state.commonBackground.borderRadius2.mode !== ShorthandMode.PerEdge"
+                    :disabled="state.commonBackground.borderRadius.mode !== ShorthandMode.PerEdge"
                     controls-position="right"
                     :min="0"
                     :max="100"
-                    v-model="state.commonBackground.borderRadius2.bottomRight"
+                    v-model="state.commonBackground.borderRadius.bottomRight"
                     @change="onBackgroundChange"
                   />
                 </div>
@@ -418,7 +426,7 @@ import { ShorthandMode } from '@/Types'
 const state = reactive<State>({
   commonBackground: {
     innerPadding: {},
-    borderRadius2: {}
+    borderRadius: {}
   },
   BackgroundShowMap: {},
   checked: false,
@@ -433,6 +441,11 @@ const state = reactive<State>({
 
 const paddingModes = Object.values(ShorthandMode).map(item => ({
   label: t(`visualization.inner_padding_shorthand_mode_${item}`),
+  value: item
+})) as { label: string; value: ShorthandMode }[]
+
+const cornerModes = Object.values(ShorthandMode).map(item => ({
+  label: t(`visualization.corner_shorthand_mode_${item}`),
   value: item
 })) as { label: string; value: ShorthandMode }[]
 
@@ -476,18 +489,18 @@ const init = () => {
     }
   }
   const borderRadius = commonBackgroundPop.borderRadius
-  if (typeof borderRadius !== 'undefined') {
-    commonBackgroundPop.borderRadius2 = {
+  if (typeof borderRadius === 'number') {
+    commonBackgroundPop.borderRadius = {
       mode: ShorthandMode.Uniform,
       topLeft: borderRadius,
       topRight: borderRadius,
       bottomLeft: borderRadius,
       bottomRight: borderRadius
     }
-    commonBackgroundPop.borderRadius = undefined
   }
   state.commonBackground = commonBackgroundPop
   updateInnerPadding()
+  updateBorderRadius()
   if (state.commonBackground.outerImage) {
     state.fileList = [{ url: imgUrlTrans(state.commonBackground.outerImage) }]
   } else {
@@ -529,14 +542,13 @@ const updateInnerPadding = () => {
 }
 
 const updateBorderRadius = () => {
-  if (state.commonBackground.borderRadius2.mode === ShorthandMode.Uniform) {
-    state.commonBackground.borderRadius2.topLeft = state.commonBackground.borderRadius2.topLeft
-    state.commonBackground.borderRadius2.topRight = state.commonBackground.borderRadius2.topLeft
-    state.commonBackground.borderRadius2.bottomLeft = state.commonBackground.borderRadius2.topLeft
-    state.commonBackground.borderRadius2.bottomRight = state.commonBackground.borderRadius2.topLeft
-  } else if (state.commonBackground.borderRadius2.mode === ShorthandMode.Axis) {
-    state.commonBackground.borderRadius2.bottomRight = state.commonBackground.borderRadius2.topLeft
-    state.commonBackground.borderRadius2.topRight = state.commonBackground.borderRadius2.bottomLeft
+  if (state.commonBackground.borderRadius.mode === ShorthandMode.Uniform) {
+    state.commonBackground.borderRadius.topRight = state.commonBackground.borderRadius.topLeft
+    state.commonBackground.borderRadius.bottomLeft = state.commonBackground.borderRadius.topLeft
+    state.commonBackground.borderRadius.bottomRight = state.commonBackground.borderRadius.topLeft
+  } else if (state.commonBackground.borderRadius.mode === ShorthandMode.Axis) {
+    state.commonBackground.borderRadius.bottomRight = state.commonBackground.borderRadius.topLeft
+    state.commonBackground.borderRadius.topRight = state.commonBackground.borderRadius.bottomLeft
   }
 }
 

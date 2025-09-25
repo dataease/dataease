@@ -190,7 +190,10 @@ export const COMMON_COMPONENT_BACKGROUND_BASE: CommonBackground = {
     mode: ShorthandMode.Uniform,
     top: 12
   },
-  borderRadius: 0,
+  borderRadius: {
+    mode: ShorthandMode.Uniform,
+    topLeft: 0
+  },
   backdropFilter: 4
 }
 
