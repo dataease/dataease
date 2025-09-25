@@ -388,7 +388,7 @@ const queryBackground = () => {
 const init = () => {
   const commonBackgroundPop = deepCopy(props.commonBackgroundPop)
   const innerPadding = commonBackgroundPop.innerPadding
-  if (innerPadding) {
+  if (typeof innerPadding !== 'undefined') {
     commonBackgroundPop.innerPadding2 = {
       mode: ShorthandMode.Uniform,
       top: innerPadding,

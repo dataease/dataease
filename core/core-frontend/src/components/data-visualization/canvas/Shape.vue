@@ -934,16 +934,16 @@ const componentBackgroundStyle = computed(() => {
     } = element.value.commonBackground
     const commonBackground = element.value.commonBackground as CommonBackground
     const innerPaddingTarget = ['Group'].includes(element.value.component) ? 0 : innerPadding
-    let padding = innerPaddingTarget * scale.value + 'px'
+    let innerPaddingStyle = innerPaddingTarget * scale.value + 'px'
     const paddingMode = commonBackground.innerPadding2?.mode
     if (paddingMode === ShorthandMode.Uniform) {
-      padding = `${commonBackground.innerPadding2?.top * scale.value}px`
+      innerPaddingStyle = `${commonBackground.innerPadding2?.top * scale.value}px`
     } else if (paddingMode === ShorthandMode.Axis) {
-      padding = `${commonBackground.innerPadding2?.top * scale.value}px ${
+      innerPaddingStyle = `${commonBackground.innerPadding2?.top * scale.value}px ${
         commonBackground.innerPadding2?.left * scale.value
       }px`
     } else if (paddingMode === ShorthandMode.PerEdge) {
-      padding = `${commonBackground.innerPadding2?.top * scale.value}px ${
+      innerPaddingStyle = `${commonBackground.innerPadding2?.top * scale.value}px ${
         commonBackground.innerPadding2?.right * scale.value
       }px ${commonBackground.innerPadding2?.bottom * scale.value}px ${
         commonBackground.innerPadding2?.left * scale.value
@@ -951,7 +951,7 @@ const componentBackgroundStyle = computed(() => {
     }
 
     let style = {
-      padding: padding,
+      padding: innerPaddingStyle,
       borderRadius: borderRadius + 'px'
     }
     let colorRGBA = ''
