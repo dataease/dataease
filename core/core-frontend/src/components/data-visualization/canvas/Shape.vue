@@ -949,18 +949,18 @@ const componentBackgroundStyle = computed(() => {
     }
 
     let borderRadiusStyle = borderRadius + 'px'
-    const borderRadiusMode = commonBackground.borderRadius2?.mode
+    const borderRadiusMode = commonBackground.borderRadius?.mode
     if (borderRadiusMode === ShorthandMode.Uniform) {
-      borderRadiusStyle = `${commonBackground.borderRadius2?.topLeft * scale.value}px`
+      borderRadiusStyle = `${commonBackground.borderRadius?.topLeft * scale.value}px`
     } else if (borderRadiusMode === ShorthandMode.Axis) {
-      borderRadiusStyle = `${commonBackground.borderRadius2?.topLeft * scale.value}px ${
-        commonBackground.borderRadius2?.bottomLeft * scale.value
+      borderRadiusStyle = `${commonBackground.borderRadius?.topLeft * scale.value}px ${
+        commonBackground.borderRadius?.bottomLeft * scale.value
       }px`
     } else if (borderRadiusMode === ShorthandMode.PerEdge) {
-      borderRadiusStyle = `${commonBackground.borderRadius2?.topLeft * scale.value}px ${
-        commonBackground.borderRadius2?.topRight * scale.value
-      }px ${commonBackground.borderRadius2?.bottomRight * scale.value}px ${
-        commonBackground.borderRadius2?.bottomLeft * scale.value
+      borderRadiusStyle = `${commonBackground.borderRadius?.topLeft * scale.value}px ${
+        commonBackground.borderRadius?.topRight * scale.value
+      }px ${commonBackground.borderRadius?.bottomRight * scale.value}px ${
+        commonBackground.borderRadius?.bottomLeft * scale.value
       }px`
     }
 
