@@ -1,5 +1,10 @@
 <template>
-  <div :id="containerId" class="table-container"></div>
+  <div
+    :id="containerId"
+    class="table-container"
+    ref="tableContainer"
+    :class="{ dark: themes === 'dark' }"
+  ></div>
   <div class="button-group">
     <el-button :effect="themes" @click="onCancelConfig">{{ t('chart.cancel') }}</el-button>
     <el-button type="primary" @click="onConfigChange">{{ t('chart.confirm') }}</el-button>
@@ -117,6 +122,7 @@ const containerId = computed(() => {
   return 'table-container-' + props.chart.id
 })
 const groupMenu = ref<HTMLDivElement>()
+const tableContainer = ref<HTMLDivElement>()
 let s2: TableSheet
 const renderTable = (chart: ChartObj) => {
   const data = dvMainStore.getViewDataDetails(chart.id)
@@ -175,6 +181,19 @@ const renderTable = (chart: ChartObj) => {
       enable: false,
       getContainer: () => containerDom,
       render: sheet => new GroupMenu(sheet),
+      autoAdjustBoundary: null,
+      adjustPosition(positionInfo) {
+        const {
+          position: { x, y }
+        } = positionInfo
+        const scrollWidth = containerDom.scrollLeft
+        const menuWidth = groupMenu.value?.offsetWidth || 120
+        const containerWidth = containerDom.offsetWidth
+        if (x - scrollWidth + menuWidth > containerWidth) {
+          return { x: x - menuWidth, y: y + 10 }
+        }
+        return { x: x, y: y + 10 }
+      },
       style: {
         position: 'absolute',
         borderRadius: '4px'
@@ -586,6 +605,9 @@ class GroupMenu extends BaseTooltip {
   height: 40vh;
   overflow-x: auto;
   overflow-y: hidden;
+  &.dark {
+    scrollbar-color: #3a3a3a #1a1a1a;
+  }
 }
 
 .group-menu {
@@ -598,6 +620,7 @@ class GroupMenu extends BaseTooltip {
   :deep(span) {
     cursor: pointer;
     padding: 5px 10px;
+    word-break: keep-all;
     &:hover {
       background-color: var(--ed-fill-color-light);
     }

@@ -921,6 +921,8 @@ onMounted(() => {
 </style>
 <style lang="less">
 .table-header-group-config-dialog {
+  background-color: #1a1a1a;
+  border: 1px solid #2a2a2a;
   .ed-dialog__header,
   .ed-dialog__body {
     color: #a6a6a6;
