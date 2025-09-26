@@ -157,6 +157,9 @@ const calcData = (viewInfo: Chart, callback, resetPageInfo = true) => {
           chartData.value = res?.data as Partial<Chart['data']>
           state.totalItems = res?.totalItems
           dvMainStore.setViewDataDetails(viewInfo.id, res)
+          if (!res.drill) {
+            dvMainStore.setPureCanvasViewDataInfo(viewInfo.id, res)
+          }
           emit('onDrillFilters', res?.drillFilters)
           renderChart(res as unknown as Chart, resetPageInfo)
         }
