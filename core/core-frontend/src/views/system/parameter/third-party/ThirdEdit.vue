@@ -182,8 +182,12 @@ defineExpose({
     </el-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="resetForm(dingtalkForm)">{{ t('common.cancel') }}</el-button>
-        <el-button :disabled="!state.form.id || !state.form.domain" @click="validateHandlerOnly">
+        <el-button secondary @click="resetForm(dingtalkForm)">{{ t('common.cancel') }}</el-button>
+        <el-button
+          secondary
+          :disabled="!state.form.id || !state.form.domain"
+          @click="validateHandlerOnly"
+        >
           {{ t('commons.validate') }}
         </el-button>
         <el-button type="primary" @click="submitForm(dingtalkForm)">
