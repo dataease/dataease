@@ -125,7 +125,7 @@ const groupMenu = ref<HTMLDivElement>()
 const tableContainer = ref<HTMLDivElement>()
 let s2: TableSheet
 const renderTable = (chart: ChartObj) => {
-  const data = dvMainStore.getViewDataDetails(chart.id)
+  const data = dvMainStore.getPureCanvasViewDataInfo(chart.id)
   const containerDom = document.getElementById(containerId.value)
   let realData = []
   if (data?.tableRow?.length) {

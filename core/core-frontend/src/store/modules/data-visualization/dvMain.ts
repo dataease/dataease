@@ -126,6 +126,8 @@ export const dvMainStore = defineStore('dataVisualization', {
       mobileLayoutStatus: false,
       // 公共链接状态(当前是否是公共链接打开)
       publicLinkStatus: false,
+      // 不带钻取的原始数据
+      pureCanvasViewDataInfo: {},
       pcTabMatrixCount: {
         x: 36,
         y: 36
@@ -204,6 +206,12 @@ export const dvMainStore = defineStore('dataVisualization', {
     }
   },
   actions: {
+    setPureCanvasViewDataInfo(viewId, chartDataInfo) {
+      this.pureCanvasViewDataInfo[viewId] = chartDataInfo.data
+    },
+    getPureCanvasViewDataInfo(viewId) {
+      return this.pureCanvasViewDataInfo[viewId]
+    },
     setLastHiddenComponent(value?) {
       if (value) {
         this.lastHiddenComponent = [value]
