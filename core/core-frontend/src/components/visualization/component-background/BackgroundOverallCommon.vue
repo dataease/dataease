@@ -116,13 +116,26 @@
             class="form-item w100"
             :class="'form-item-' + themes"
           >
-            <el-segmented
-              v-model="state.commonBackground.borderRadius.mode"
-              :options="cornerModes"
-              size="small"
-              style="width: 100%"
-              @change="onBackgroundChange"
-            />
+            <div style="display: flex; align-items: center; width: 100%; margin-bottom: 8px">
+              <span style="width: 15%; padding-right: 8px">{{
+                t('visualization.corner_shorthand_mode')
+              }}</span>
+              <el-select
+                :effect="themes"
+                v-model="state.commonBackground.borderRadius.mode"
+                size="small"
+                style="width: 85%"
+                @change="onBackgroundChange"
+              >
+                <el-option
+                  class="custom-style-option"
+                  v-for="option in cornerModes"
+                  :key="option.value"
+                  :label="option.label"
+                  :value="option.value"
+                />
+              </el-select>
+            </div>
             <el-row :gutter="8">
               <el-col :span="12">
                 <div style="display: flex; align-items: center; margin-bottom: 8px">

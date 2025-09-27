@@ -3312,6 +3312,7 @@ export default {
     edge_bottom: '下',
     edge_left: '左',
     board_radio: '圆角',
+    corner_shorthand_mode: '模式',
     corner_shorthand_mode_uniform: '统一值',
     corner_shorthand_mode_axis: '对角',
     corner_shorthand_mode_per_edge: '逐角',

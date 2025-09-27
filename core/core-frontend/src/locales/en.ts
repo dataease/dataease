@@ -3399,6 +3399,7 @@ export default {
     edge_bottom: 'Bottom',
     edge_left: 'Left',
     board_radio: 'Corners',
+    corner_shorthand_mode: 'Mode',
     corner_shorthand_mode_uniform: 'Uniform',
     corner_shorthand_mode_axis: 'Diagonal',
     corner_shorthand_mode_per_edge: 'Per Corner',
