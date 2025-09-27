@@ -21,13 +21,26 @@
             class="form-item w100"
             :class="'form-item-' + themes"
           >
-            <el-segmented
-              v-model="state.commonBackground.innerPadding.mode"
-              :options="paddingModes"
-              size="small"
-              style="width: 100%"
-              @change="onBackgroundChange"
-            />
+            <div style="display: flex; align-items: center; width: 100%; margin-bottom: 8px">
+              <span style="width: 15%; padding-right: 8px">{{
+                t('visualization.inner_padding_shorthand_mode')
+              }}</span>
+              <el-select
+                :effect="themes"
+                v-model="state.commonBackground.innerPadding.mode"
+                size="small"
+                style="width: 85%"
+                @change="onBackgroundChange"
+              >
+                <el-option
+                  class="custom-style-option"
+                  v-for="option in paddingModes"
+                  :key="option.value"
+                  :label="option.label"
+                  :value="option.value"
+                />
+              </el-select>
+            </div>
             <el-row :gutter="8">
               <el-col :span="12">
                 <div style="display: flex; align-items: center; margin-bottom: 8px">
@@ -575,13 +588,13 @@ watch(
   align-items: center;
 }
 
-.ed-select-dropdown__item {
+.board-select .ed-select-dropdown__item {
   height: 100px !important;
   text-align: center;
   padding: 0px 5px;
 }
 
-.ed-select-dropdown__item.selected::after {
+.board-select .ed-select-dropdown__item.selected::after {
   display: none;
 }
 

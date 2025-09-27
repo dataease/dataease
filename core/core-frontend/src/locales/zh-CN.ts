@@ -3296,6 +3296,7 @@ export default {
     stream_mobile_tips: 'IOS终端可能无法显示',
     json_params_error: '第三方参数解析失败，请检查参数格式是否正确',
     inner_padding: '内边距',
+    inner_padding_shorthand_mode: '模式',
     inner_padding_shorthand_mode_uniform: '统一值',
     inner_padding_shorthand_mode_axis: '轴向',
     inner_padding_shorthand_mode_per_edge: '逐边',

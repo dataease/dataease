@@ -3287,6 +3287,7 @@ export default {
     stream_mobile_tips: 'IOS終端可能無法顯示',
     json_params_error: '第三方參數解析失敗，請檢查參數格式是否正確',
     inner_padding: '內邊距',
+    inner_padding_shorthand_mode: '模式',
     inner_padding_shorthand_mode_uniform: '統一值',
     inner_padding_shorthand_mode_axis: '軸向',
     inner_padding_shorthand_mode_per_edge: '逐邊',

@@ -3383,6 +3383,7 @@ export default {
     stream_mobile_tips: 'May not be displayed on IOS devices',
     json_params_error: 'Failed to parse third-party parameters. Please check the parameter format.',
     inner_padding: 'Inner Padding',
+    inner_padding_shorthand_mode: 'Mode',
     inner_padding_shorthand_mode_uniform: 'Uniform',
     inner_padding_shorthand_mode_axis: 'Axis',
     inner_padding_shorthand_mode_per_edge: 'Per Edge',
