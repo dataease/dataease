@@ -25,7 +25,7 @@ import { viewFieldTimeTrans } from '@/utils/viewUtils'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
-import { filterEnumParams } from '@/utils/componentUtils'
+import { filterEnumParams, filterEnumParamsReduce } from '@/utils/componentUtils'
 const { t } = useI18n()
 
 export const dvMainStore = defineStore('dataVisualization', {
@@ -1453,6 +1453,7 @@ export const dvMainStore = defineStore('dataVisualization', {
                   const queryMapFlag = optionValueSource === 1 && field.id !== displayId
                   let queryMapParams = queryParams
                   if (queryMapFlag) {
+                    queryParams = filterEnumParamsReduce(queryParams, field.id)
                     queryMapParams = filterEnumParams(queryParams, field.id)
                   }
                   // 0 文本类型 1 数字类型
