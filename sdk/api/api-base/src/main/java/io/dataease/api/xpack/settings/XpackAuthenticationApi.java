@@ -81,6 +81,10 @@ public interface XpackAuthenticationApi {
     @PostMapping("/validate/oauth2")
     String validateOauth2(@RequestBody XpackOauth2VO editor);
 
+    @Operation(summary = "验证SAML2")
+    @PostMapping("/validate/saml2")
+    String validateSaml2(@RequestBody XpackSaml2VO editor);
+
     @Operation(summary = "验证")
     @PostMapping("/validateId/{id}")
     String validate(@PathVariable("id") Long id);

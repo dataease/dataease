@@ -3,6 +3,7 @@ package io.dataease.result;
 import io.dataease.i18n.I18n;
 import io.dataease.i18n.Translator;
 import io.dataease.utils.JsonUtil;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -30,6 +31,10 @@ public class ResultResponseBodyAdvice implements ResponseBodyAdvice<Object> {
         //if true, need to translate
         if (methodParameter.hasMethodAnnotation(I18n.class)) {
             o = translate(o);
+        }
+
+        if (ObjectUtils.isNotEmpty(mediaType) && MediaType.APPLICATION_XML_VALUE.equals(mediaType.toString())) {
+            return o;
         }
 
         if (!(o instanceof ResultMessage)) {
