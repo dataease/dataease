@@ -10,11 +10,13 @@ import {
   nextTick,
   computed,
   inject,
+  onBeforeUnmount,
   onUnmounted,
   Ref
 } from 'vue'
 import { enumValueObj, type EnumValue, getEnumValue } from '@/api/dataset'
 import { cloneDeep, debounce } from 'lodash-es'
+import eventBus from '@/utils/eventBus'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { useI18n } from '@/hooks/web/useI18n'
 import colorFunctions from 'less/lib/less/functions/color.js'
@@ -723,6 +725,18 @@ const tagWidth = computed(() => {
 
 const tagTextWidth = computed(() => {
   return (getCustomWidth() - 65) / 2 - 20 + 'px'
+})
+
+const componentClick = () => {
+  mult.value?.blur()
+  single.value?.blur()
+}
+
+onMounted(() => {
+  eventBus.on('componentClick', componentClick)
+})
+onBeforeUnmount(() => {
+  eventBus.off('componentClick', componentClick)
 })
 
 defineExpose({
