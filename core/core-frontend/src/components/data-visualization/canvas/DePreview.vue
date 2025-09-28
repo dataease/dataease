@@ -522,6 +522,10 @@ const scrollPreview = () => {
 
 const showUnpublishFlag = computed(() => dvInfo.value?.status === 0 && isMainCanvas(canvasId.value))
 
+const isFixedFlag = computed(
+  () => isOverSize.value && canvasStyleData.value?.screenAdaptor !== 'keep'
+)
+
 defineExpose({
   restore
 })
@@ -562,7 +566,7 @@ defineExpose({
         :canvas-id="canvasId"
         :canvas-style-data="canvasStyleData"
         :component-data="baseComponentData"
-        :is-fixed="isOverSize"
+        :is-fixed="isFixedFlag"
       ></canvas-opt-bar>
       <template v-if="renderReady && !showUnpublishFlag">
         <component-wrapper
