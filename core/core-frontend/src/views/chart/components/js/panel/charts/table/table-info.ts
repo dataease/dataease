@@ -28,7 +28,9 @@ import {
   getSummaryRow,
   SummaryCell,
   mapKeyToField,
-  setupColumnTitle
+  setupColumnTitle,
+  calcTreeWidth,
+  getStartPosition
 } from '@/views/chart/components/js/panel/common/common_table'
 
 const { t } = useI18n()
@@ -153,15 +155,21 @@ export class TableInfo extends S2ChartView<TableSheet> {
           })
         }
         setupColumnTitle(headerGroupConfig.columns as unknown as ColumnNode[], nameMap)
-        const allKeys = columns.map(c => drillFieldMap[c] || c.field)
+        const allKeys = columns.map(c => drillFieldMap[c.field] || c.field)
         const leafNodes = getLeafNodes(headerGroupConfig.columns as ColumnNode[])
         const leafKeys = leafNodes.map(c => c.field)
         if (isEqual(leafKeys, allKeys)) {
           if (Object.keys(drillFieldMap).length) {
+            const drillNameMap =
+              chart.drillFields?.reduce((pre, cur) => {
+                pre[cur.dataeaseName] = cur.chartShowName || cur.name
+                return pre
+              }, {}) || {}
             const originField = Object.values(drillFieldMap)[0]
             const drillField = Object.keys(drillFieldMap)[0]
             const [drillCol] = getColumns([originField], headerGroupConfig.columns as ColumnNode[])
             drillCol.field = drillField
+            drillCol.title = drillNameMap[drillField] ?? drillCol.title
           }
           columns.splice(0, columns.length, ...headerGroupConfig.columns)
         }
@@ -515,20 +523,4 @@ export class TableInfo extends S2ChartView<TableSheet> {
   constructor() {
     super('table-info', [])
   }
-}
-
-function calcTreeWidth(node) {
-  if (!node.children?.length) {
-    return node.width
-  }
-  return node.children.reduce((pre, cur) => {
-    return pre + calcTreeWidth(cur)
-  }, 0)
-}
-
-function getStartPosition(node) {
-  if (!node.children?.length) {
-    return node.x
-  }
-  return getStartPosition(node.children[0])
 }

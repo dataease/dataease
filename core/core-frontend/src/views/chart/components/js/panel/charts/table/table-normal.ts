@@ -6,7 +6,13 @@ import {
   getSummaryRow,
   SortTooltip,
   SummaryCell,
-  summaryRowStyle
+  summaryRowStyle,
+  getLeafNodes,
+  getColumns,
+  calcTreeWidth,
+  getStartPosition,
+  mapKeyToField,
+  setupColumnTitle
 } from '@/views/chart/components/js/panel/common/common_table'
 import { S2ChartView, S2DrawOptions } from '@/views/chart/components/js/panel/types/impl/s2'
 import { parseJson } from '@/views/chart/components/js/util'
@@ -20,7 +26,7 @@ import {
   TableSheet,
   ViewMeta
 } from '@antv/s2'
-import { isNumber } from 'lodash-es'
+import { isEqual, isNumber } from 'lodash-es'
 import { TABLE_EDITOR_PROPERTY, TABLE_EDITOR_PROPERTY_INNER } from './common'
 
 const { t } = useI18n()
@@ -34,7 +40,8 @@ export class TableNormal extends S2ChartView<TableSheet> {
     'table-header-selector': [
       ...TABLE_EDITOR_PROPERTY_INNER['table-header-selector'],
       'tableHeaderSort',
-      'showTableHeader'
+      'showTableHeader',
+      'headerGroup'
     ],
     'basic-style-selector': [
       ...TABLE_EDITOR_PROPERTY_INNER['basic-style-selector'],
@@ -76,6 +83,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
 
     const columns = []
     const meta = []
+    const drillFieldMap = {}
     if (chart.drill) {
       // 下钻过滤字段
       const filterFields = chart.drillFilters.map(i => i.fieldId)
@@ -84,13 +92,14 @@ export class TableNormal extends S2ChartView<TableSheet> {
       const drillFieldIndex = chart.xAxis.findIndex(ele => ele.id === drillFieldId)
       // 当前下钻字段
       const curDrillFieldId = chart.drillFields[filterFields.length].id
-      const curDrillField = fields.filter(ele => ele.id === curDrillFieldId)
+      const curDrillField = fields.find(ele => ele.id === curDrillFieldId)
       filterFields.push(curDrillFieldId)
       // 移除下钻字段，把当前下钻字段插入到下钻入口位置
       fields = fields.filter(ele => {
         return !filterFields.includes(ele.id)
       })
-      fields.splice(drillFieldIndex, 0, ...curDrillField)
+      drillFieldMap[curDrillField.dataeaseName] = chart.drillFields[0].dataeaseName
+      fields.splice(drillFieldIndex, 0, curDrillField)
     }
     const axisMap = [...chart.xAxis, ...chart.yAxis].reduce((pre, cur) => {
       pre[cur.dataeaseName] = cur
@@ -102,10 +111,9 @@ export class TableNormal extends S2ChartView<TableSheet> {
       if (f?.hide === true) {
         return
       }
-      columns.push(ele.dataeaseName)
+      columns.push({ field: ele.dataeaseName, title: ele.chartShowName ?? ele.name })
       meta.push({
         field: ele.dataeaseName,
-        name: ele.chartShowName ?? ele.name,
         formatter: function (value) {
           if (!f) {
             return value
@@ -124,7 +132,47 @@ export class TableNormal extends S2ChartView<TableSheet> {
         }
       })
     })
-
+    const { basicStyle, tableCell, tableHeader, tooltip } = parseJson(chart.customAttr)
+    // 表头分组
+    const { headerGroup, showTableHeader } = tableHeader
+    if (headerGroup && showTableHeader !== false) {
+      const { headerGroupConfig } = tableHeader
+      if (headerGroupConfig?.columns?.length) {
+        // 存量配置转换
+        if (headerGroupConfig.columns[0].key) {
+          mapKeyToField(headerGroupConfig.columns as unknown as ColumnNode[])
+        }
+        const nameMap =
+          [...chart.xAxis, ...chart.yAxis].reduce((pre, cur) => {
+            pre[cur.dataeaseName] = cur.name
+            return pre
+          }, {}) || {}
+        if (headerGroupConfig.meta?.length) {
+          headerGroupConfig.meta.forEach(m => {
+            nameMap[m.field] = m.name
+          })
+        }
+        setupColumnTitle(headerGroupConfig.columns as unknown as ColumnNode[], nameMap)
+        const allKeys = columns.map(c => drillFieldMap[c.field] || c.field)
+        const leafNodes = getLeafNodes(headerGroupConfig.columns as ColumnNode[])
+        const leafKeys = leafNodes.map(c => c.field)
+        if (isEqual(leafKeys, allKeys)) {
+          if (Object.keys(drillFieldMap).length) {
+            const drillNameMap =
+              chart.drillFields?.reduce((pre, cur) => {
+                pre[cur.dataeaseName] = cur.chartShowName || cur.name
+                return pre
+              }, {}) || {}
+            const originField = Object.values(drillFieldMap)[0]
+            const drillField = Object.keys(drillFieldMap)[0]
+            const [drillCol] = getColumns([originField], headerGroupConfig.columns as ColumnNode[])
+            drillCol.field = drillField
+            drillCol.title = drillNameMap[drillField] ?? drillCol.title
+          }
+          columns.splice(0, columns.length, ...headerGroupConfig.columns)
+        }
+      }
+    }
     // 空值处理
     const newData = this.configEmptyDataStrategy(chart)
     // data config
@@ -136,7 +184,6 @@ export class TableNormal extends S2ChartView<TableSheet> {
       data: newData
     }
 
-    const { basicStyle, tableCell, tableHeader, tooltip } = parseJson(chart.customAttr)
     // options
     const s2Options: S2Options = {
       width: containerDom.offsetWidth,
@@ -221,6 +268,13 @@ export class TableNormal extends S2ChartView<TableSheet> {
             n.x = p
             return p + n.width
           }, 0)
+          // 处理分组的单元格，宽度为所有叶子节点之和
+          ev.colNodes.forEach(n => {
+            if (n.colIndex === -1) {
+              n.width = calcTreeWidth(n)
+              n.x = getStartPosition(n)
+            }
+          })
           ev.colsHierarchy.width = totalWidth
           newChart.store.set('lastLayoutResult', undefined)
           return
@@ -241,6 +295,13 @@ export class TableNormal extends S2ChartView<TableSheet> {
           n.x = p
           return p + n.width
         }, 0)
+        // 处理分组的单元格，宽度为所有叶子节点之和
+        ev.colNodes.forEach(n => {
+          if (n.colIndex === -1) {
+            n.width = calcTreeWidth(n)
+            n.x = getStartPosition(n)
+          }
+        })
         // 从最后一列减掉
         const lastNode = ev.colLeafNodes[ev.colLeafNodes.length - 1]
         if (totalWidth > containerWidth) {

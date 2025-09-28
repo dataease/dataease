@@ -2066,6 +2066,23 @@ export const summaryRowStyle = (newChart, newData, tableCell, tableHeader, showS
   })
 }
 
+
+export function calcTreeWidth(node) {
+  if (!node.children?.length) {
+    return node.width
+  }
+  return node.children.reduce((pre, cur) => {
+    return pre + calcTreeWidth(cur)
+  }, 0)
+}
+
+export function getStartPosition(node) {
+  if (!node.children?.length) {
+    return node.x
+  }
+  return getStartPosition(node.children[0])
+}
+
 export class SummaryCell extends CustomDataCell {
   getTextStyle() {
     const textStyle = cloneDeep(this.theme.colCell.bolderText)
