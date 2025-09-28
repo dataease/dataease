@@ -620,6 +620,8 @@ export default {
     field_mapping: 'Field Mapping',
     oauth2name:
       'For example: {\'{\'}"account": "oauth2Account", "name": "oauth2Name", "email": "email"{\'}\'}',
+    saml2name:
+      'For example: {\'{\'}"account": "saml2Account", "name": "saml2Name", "email": "email"{\'}\'}',
     oidc_settings: 'OIDC Settings',
     test_mail_recipient: 'Only used as a test email recipient',
     to_enable_ssl: 'If the SMTP port is 465, you usually need to enable SSL',

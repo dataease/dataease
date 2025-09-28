@@ -11,7 +11,9 @@
 
     <artifactId>common</artifactId>
 
-
+    <properties>
+        <opensaml.version>3.4.6</opensaml.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -136,6 +138,18 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-core</artifactId>
+            <version>${opensaml.version}</version>
+        </dependency>
+
+        <!-- OpenSAML SAML Impl -->
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-saml-impl</artifactId>
+            <version>${opensaml.version}</version>
+        </dependency>
     </dependencies>
 
 </project>

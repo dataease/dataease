@@ -603,6 +603,8 @@ export default {
     field_mapping: '字段映射',
     oauth2name:
       '例如：{\'{\'}"account": "oauth2Account", "name": "oauth2Name", "email": "email"{\'}\'}',
+    saml2name:
+      '例如：{\'{\'}"account": "saml2Account", "name": "saml2Name", "email": "email"{\'}\'}',
     oidc_settings: 'OIDC设置',
     test_mail_recipient: '仅用来作为测试邮件收件人',
     to_enable_ssl: '如果SMTP端口是 465 ，通常需要启用SSL',
