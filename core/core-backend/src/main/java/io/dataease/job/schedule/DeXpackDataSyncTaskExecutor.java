@@ -75,8 +75,8 @@ public class DeXpackDataSyncTaskExecutor {
 
     }
 
-    public void removeSyncTask(String taskId, boolean isSimpleJop) {
-        String jobGroup = isSimpleJop ? SYNC_SIMPLE_JOB_GROUP : SYNC_JOB_GROUP;
+    public void removeSyncTask(String taskId, boolean isSimpleJob) {
+        String jobGroup = isSimpleJob ? SYNC_SIMPLE_JOB_GROUP : SYNC_JOB_GROUP;
         JobKey jobKey = new JobKey(taskId, jobGroup);
         TriggerKey triggerKey = new TriggerKey(taskId, jobGroup);
         if (scheduleManager.exist(jobKey)) {
@@ -87,9 +87,20 @@ public class DeXpackDataSyncTaskExecutor {
     /**
      * 获取间隔任务的下一次执行时间
      */
-    public Long getSimpleJobNextFireTime(String taskId) {
+    public Long getSimpleJobNextFireTime(String taskId, Date currentTime) {
         TriggerKey triggerKey = new TriggerKey(taskId, SYNC_SIMPLE_JOB_GROUP);
-        JobKey jobKey = new JobKey(taskId, SYNC_SIMPLE_JOB_GROUP);
-        return scheduleManager.getNextSimpleTriggerTime(triggerKey, jobKey);
+        return scheduleManager.getNextSimpleTriggerTime(triggerKey, currentTime);
+    }
+
+    public void pauseTrigger(String taskId, boolean isSimpleJob) {
+        String jobGroup = isSimpleJob ? SYNC_SIMPLE_JOB_GROUP : SYNC_JOB_GROUP;
+        TriggerKey triggerKey = new TriggerKey(taskId, jobGroup);
+        scheduleManager.pauseTrigger(triggerKey);
+    }
+
+    public void resumeTrigger(String taskId, boolean isSimpleJob) {
+        String jobGroup = isSimpleJob ? SYNC_SIMPLE_JOB_GROUP : SYNC_JOB_GROUP;
+        TriggerKey triggerKey = new TriggerKey(taskId, jobGroup);
+        scheduleManager.resumeTrigger(triggerKey);
     }
 }

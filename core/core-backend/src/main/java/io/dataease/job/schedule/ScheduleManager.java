@@ -493,7 +493,10 @@ public class ScheduleManager {
             Date oldStartTime = trigger.getStartTime();
             Date oldEndTime = trigger.getEndTime();
             String oldPeriod = trigger.getJobDataMap().getString("period");
-            if ((oldStartTime != null && !oldStartTime.equals(startTime)) || (oldEndTime != null && !oldEndTime.equals(endTime)) || (oldPeriod != null && !oldPeriod.equals(period))) {
+            boolean startTimeChanged = !Objects.equals(oldStartTime, startTime);
+            boolean endTimeChanged = !Objects.equals(oldEndTime, endTime);
+            boolean periodChanged = !Objects.equals(oldPeriod, period);
+            if (startTimeChanged || endTimeChanged || periodChanged) {
                 TriggerBuilder<SimpleTrigger> triggerBuilder = simpleJobTriggerBuilder(triggerKey, period, startTime, endTime);
                 triggerBuilder.usingJobData(trigger.getJobDataMap());
                 scheduler.rescheduleJob(triggerKey, triggerBuilder.build());
@@ -548,17 +551,47 @@ public class ScheduleManager {
     /**
      * 获取间隔任务的下一次执行时间
      */
-    public Long getNextSimpleTriggerTime(TriggerKey triggerKey, JobKey jobKey) {
+    public Long getNextSimpleTriggerTime(TriggerKey triggerKey, Date currentTime) {
         try {
             SimpleTrigger trigger = (SimpleTrigger) scheduler.getTrigger(triggerKey);
             if (trigger == null) {
                 LogUtil.warn("getNextSimpleTriggerTime: " + triggerKey.getName() + "," + triggerKey.getGroup());
                 return null;
             }
-            LogUtil.debug("SimpleTriggerNextTime: " + triggerKey.getName() + "," + triggerKey.getGroup() + "," + trigger.getFireTimeAfter(new Date()));
-            return trigger.getFireTimeAfter(new Date()) != null ? trigger.getFireTimeAfter(new Date()).getTime() : null;
+            LogUtil.debug("SimpleTriggerNextTime: " + triggerKey.getName() + "," + triggerKey.getGroup() + "," + trigger.getFireTimeAfter(currentTime));
+            return trigger.getFireTimeAfter(currentTime) != null ? trigger.getFireTimeAfter(currentTime).getTime() : null;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            LogUtil.error(e.getMessage(), e);
+            DEException.throwException(e);
+        }
+        return null;
+    }
+
+    public void pauseTrigger(TriggerKey triggerKey) {
+        try {
+            Trigger trigger = scheduler.getTrigger(triggerKey);
+            if (trigger != null) {
+                scheduler.pauseTrigger(triggerKey);
+            } else {
+                LogUtil.warn("pauseTrigger: " + triggerKey.getName() + "," + triggerKey.getGroup());
+            }
+        } catch (Exception e) {
+            LogUtil.error(e.getMessage(), e);
+            DEException.throwException(e);
+        }
+    }
+
+    public void resumeTrigger(TriggerKey triggerKey) {
+        try {
+            Trigger trigger = scheduler.getTrigger(triggerKey);
+            if (trigger != null) {
+                scheduler.resumeTrigger(triggerKey);
+            } else {
+                LogUtil.warn("resumeTrigger: " + triggerKey.getName() + "," + triggerKey.getGroup());
+            }
+        } catch (Exception e) {
+            LogUtil.error(e.getMessage(), e);
+            DEException.throwException(e);
         }
     }
 }
