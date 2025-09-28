@@ -60,6 +60,13 @@ const onCancelConfig = () => {
   emits('onCancelConfig')
 }
 
+const allAxis = computed(() => {
+  const axis = [...props.chart.xAxis]
+  if (props.chart.type === 'table-normal') {
+    axis.push(...props.chart.yAxis)
+  }
+  return axis
+})
 const onConfigChange = () => {
   const { fields } = s2.dataCfg
   emits('onConfigChange', { columns: fields.columns, meta: [] })
@@ -67,10 +74,9 @@ const onConfigChange = () => {
 
 const init = () => {
   const chart = cloneDeep(props.chart)
-  const xAxis = chart.xAxis
   const { headerGroupConfig } = chart.customAttr.tableHeader
   const showColumns = []
-  xAxis?.forEach(axis => {
+  allAxis.value?.forEach(axis => {
     axis.hide !== true &&
       showColumns.push({ field: axis.dataeaseName, title: axis.chartShowName ?? axis.name })
   })
@@ -93,11 +99,11 @@ const init = () => {
       }
       setupColumnTitle(headerGroupConfig.columns, nameFieldMap)
     }
-    const allAxis = showColumns.map(item => item.field)
+    const allKeys = showColumns.map(item => item.field)
     const leafNodes = getLeafNodes(headerGroupConfig.columns)
     const leafKeys = leafNodes.map(item => item.field)
     const { columns } = headerGroupConfig
-    if (!isEqual(allAxis, leafKeys)) {
+    if (!isEqual(allKeys, leafKeys)) {
       columns.splice(0, columns.length, ...showColumns)
     } else {
       const nameMap = showColumns.reduce((pre, cur) => {
