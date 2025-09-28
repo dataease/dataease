@@ -533,6 +533,10 @@ const getPreviewCanvasSize = () => {
     innerHeight: previewCanvas.value.clientHeight
   }
 }
+const isFixedFlag = computed(
+  () => isOverSize.value && canvasStyleData.value?.screenAdaptor !== 'keep'
+)
+
 defineExpose({
   restore,
   getPreviewCanvasSize,
@@ -574,7 +578,7 @@ defineExpose({
       :canvas-id="canvasId"
       :canvas-style-data="canvasStyleData"
       :component-data="baseComponentData"
-      :is-fixed="isOverSize"
+      :is-fixed="isFixedFlag"
     ></canvas-opt-bar>
     <template v-if="renderReady && !showUnpublishFlag">
       <component-wrapper
