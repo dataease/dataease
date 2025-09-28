@@ -8,5 +8,6 @@ ws = "ws"
 guid = "guid"
 yoy = "yoy"
 Ein = "Ein"
+Datas = "Datas"
 [files]
 extend-exclude = ["mapFiles/**", "docs"]
