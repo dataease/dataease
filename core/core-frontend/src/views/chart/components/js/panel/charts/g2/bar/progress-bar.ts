@@ -282,6 +282,7 @@ export class ProgressBar extends HorizontalStackBar {
     const tooltipOptions: ViewSpec = {
       tooltip: a => a,
       interaction: {
+        ...children[0].interaction,
         tooltip: {
           mount: createTooltipWrapper(chart),
           css: {

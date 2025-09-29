@@ -202,6 +202,7 @@ export class RangeBar extends HorizontalBar {
         ]
       },
       interaction: {
+        ...children[0].interaction,
         tooltip: {
           mount: createTooltipWrapper(chart),
           css: tooltipCss(tooltip),

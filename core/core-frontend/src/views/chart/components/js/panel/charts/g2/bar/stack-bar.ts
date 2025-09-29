@@ -118,6 +118,7 @@ export class StackBar extends Bar {
     const tooltipOptions: ViewSpec = {
       tooltip: tooltipMap,
       interaction: {
+        ...children[0].interaction,
         tooltip: {
           mount: createTooltipWrapper(chart),
           css: tooltipCss(tooltip),

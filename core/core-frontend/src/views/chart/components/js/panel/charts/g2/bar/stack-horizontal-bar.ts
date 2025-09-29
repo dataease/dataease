@@ -81,6 +81,7 @@ export class HorizontalStackBar extends HorizontalBar {
     const tooltipOptions: ViewSpec = {
       tooltip: a => a,
       interaction: {
+        ...children[0].interaction,
         tooltip: {
           mount: createTooltipWrapper(chart),
           css: tooltipCss(tooltip),

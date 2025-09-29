@@ -82,6 +82,7 @@ export class PercentageStackBar extends GroupStackBar {
     const tooltipOptions: ViewSpec = {
       tooltip: tooltipMap,
       interaction: {
+        ...children[0].interaction,
         tooltip: {
           mount: createTooltipWrapper(chart),
           css: tooltipCss(tooltip),

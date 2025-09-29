@@ -6,6 +6,7 @@ import { ViewSpec, configTooltip } from '@/views/chart/components/js/panel/chart
 import { setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
 import { Bar } from '@/views/chart/components/js/panel/charts/g2/bar/bar'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
+import { DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'
 
 const { t } = useI18n()
 
@@ -182,16 +183,32 @@ export class Waterfall extends Bar {
 
     const scale = {
       color: { range: colors },
-      y: { nice: true }
+      y: { nice: true },
+      x: { paddingInner: -0.005 }
     }
 
-    const style = {
+    let style = {
       radius:
         basicStyle.radiusColumnBar === 'roundAngle' ? basicStyle.columnBarRightAngleRadius : 0,
       ...(basicStyle.radiusColumnBar === 'topRoundAngle' && {
         radiusTopLeft: basicStyle.columnBarRightAngleRadius,
         radiusTopRight: basicStyle.columnBarRightAngleRadius
       })
+    }
+    let columnWidthRatio
+    const _v = basicStyle.columnWidthRatio ?? DEFAULT_BASIC_STYLE.columnWidthRatio
+    if (_v >= 1 && _v <= 100) {
+      columnWidthRatio = _v / 100.0
+    } else if (_v < 1) {
+      columnWidthRatio = 1 / 100.0
+    } else if (_v > 100) {
+      columnWidthRatio = 1
+    }
+    if (columnWidthRatio) {
+      style = {
+        ...style,
+        columnWidthRatio
+      }
     }
 
     return {

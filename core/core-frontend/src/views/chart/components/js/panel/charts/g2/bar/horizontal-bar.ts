@@ -10,6 +10,7 @@ import { Bar } from '@/views/chart/components/js/panel/charts/g2/bar/bar'
 import { getLineDash, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { Chart } from '@antv/g2'
+import { DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'
 
 const { t } = useI18n()
 /**
@@ -60,7 +61,7 @@ export class HorizontalBar extends Bar {
         ? setGradientColor(hexColorToRGBA(ele, basicStyle.alpha), true)
         : hexColorToRGBA(ele, basicStyle.alpha)
     )
-    const style = {
+    let style = {
       ...(basicStyle.radiusColumnBar === 'topRoundAngle' && {
         radiusTopLeft: basicStyle.columnBarRightAngleRadius,
         radiusTopRight: basicStyle.columnBarRightAngleRadius
@@ -70,6 +71,27 @@ export class HorizontalBar extends Bar {
       }),
       ...(basicStyle.radiusColumnBar !== 'topRoundAngle' &&
         basicStyle.radiusColumnBar !== 'roundAngle' && { radius: 0 })
+    }
+    let columnWidthRatio
+    const _v = basicStyle.columnWidthRatio ?? DEFAULT_BASIC_STYLE.columnWidthRatio
+    if (_v >= 1 && _v <= 100) {
+      columnWidthRatio = _v / 100.0
+    } else if (_v < 1) {
+      columnWidthRatio = 1 / 100.0
+    } else if (_v > 100) {
+      columnWidthRatio = 1
+    }
+    if (columnWidthRatio) {
+      style = {
+        ...style,
+        columnWidthRatio
+      }
+    }
+    if (this.name === 'bar-stack-horizontal' || this.name === 'progress-bar') {
+      children[0].scale.x = {
+        type: 'band',
+        paddingInner: 0.01
+      }
     }
     children[0].scale.color.range = colors
     children[0].scale.y.nice = true
@@ -233,7 +255,11 @@ export class HorizontalBar extends Bar {
       coordinate: { transform: [{ type: 'transpose' }] },
       scale: {
         color: { range: [] },
-        y: { nice: true }
+        y: { nice: true },
+        x: {
+          type: 'band',
+          paddingInner: -0.21
+        }
       }
     })
   }

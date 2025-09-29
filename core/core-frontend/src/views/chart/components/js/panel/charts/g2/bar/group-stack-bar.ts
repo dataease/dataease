@@ -76,6 +76,7 @@ export class GroupStackBar extends StackBar {
     const tooltipOptions: ViewSpec = {
       tooltip: tooltipMap,
       interaction: {
+        ...children[0].interaction,
         tooltip: {
           mount: createTooltipWrapper(chart),
           css: tooltipCss(tooltip),

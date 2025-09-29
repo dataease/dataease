@@ -16,6 +16,7 @@ import {
   TOOLTIP_TITLE_TPL
 } from '@/views/chart/components/js/panel/common/common_antv'
 import {
+  DEFAULT_BASIC_STYLE,
   DEFAULT_YAXIS_EXT_STYLE,
   DEFAULT_YAXIS_STYLE
 } from '@/views/chart/components/editor/util/chart'
@@ -205,6 +206,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     const tooltipOptions: ViewSpec = {
       tooltip: d => d,
       interaction: {
+        ...children[0].interaction,
         tooltip: {
           mount: createTooltipWrapper(chart),
           css: tooltipCss(tooltipAttr),
@@ -283,7 +285,17 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
       },
       y: {
         nice: true
+      },
+      x: {
+        type: 'band',
+        paddingInner: 0.01
       }
+    }
+    if (this.name === 'bar' || this.name === 'percentage-bar-stack' || this.name === 'waterfall') {
+      scale.x.paddingInner = -0.21
+    }
+    if (this.name === 'bar-group') {
+      scale.x.paddingInner = -0.1
     }
     const basicStyle = parseJson(chart.customAttr).basicStyle
     const { radiusColumnBar, columnBarRightAngleRadius } = basicStyle
@@ -300,6 +312,21 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     } else {
       style = {
         radius: 0
+      }
+    }
+    let columnWidthRatio
+    const _v = basicStyle.columnWidthRatio ?? DEFAULT_BASIC_STYLE.columnWidthRatio
+    if (_v >= 1 && _v <= 100) {
+      columnWidthRatio = _v / 100.0
+    } else if (_v < 1) {
+      columnWidthRatio = 1 / 100.0
+    } else if (_v > 100) {
+      columnWidthRatio = 1
+    }
+    if (columnWidthRatio) {
+      style = {
+        ...style,
+        columnWidthRatio
       }
     }
     return {
