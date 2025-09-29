@@ -817,6 +817,9 @@ const tablePageClass = computed(() => {
     height: calc(100% - 24px);
     width: 100%;
   }
+  .show-close {
+    padding-bottom: 24px;
+  }
 }
 .enlarge-image {
   display: flex;
