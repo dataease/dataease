@@ -655,10 +655,18 @@ public class ChartDataServer implements ChartDataApi {
             }
         } else {
             Cell cell1 = rowMap.get("row" + depth).createCell(width);
-            cell1.setCellValue(getGroupName(tableHeader, column.getField()));
+            if (StringUtils.isNotBlank(column.getTitle())) {
+                cell1.setCellValue(column.getTitle());
+            } else {
+                cell1.setCellValue(getGroupName(tableHeader, column.getField()));
+            }
             cell1.setCellStyle(cellStyle);
             Cell cell2 = rowMap.get("row" + depth).createCell(width + column.getWidth() - 1);
-            cell2.setCellValue(getGroupName(tableHeader, column.getField()));
+            if (StringUtils.isNotBlank(column.getTitle())) {
+                cell2.setCellValue(column.getTitle());
+            } else {
+                cell2.setCellValue(getGroupName(tableHeader, column.getField()));
+            }
             cell2.setCellStyle(cellStyle);
             CellRangeAddress region = new CellRangeAddress(depth, depth, width, width + column.getWidth() - 1);
             sheet.addMergedRegion(region);
