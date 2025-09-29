@@ -473,7 +473,7 @@ export class Scatter extends G2ChartView {
           y: {
             domainMin: yAxis.axisValue.min,
             domainMax: yAxis.axisValue.max,
-            tickCount: yAxis.axisValue.splitCount,
+            tickCount: yAxis.axisValue.splitCount < 2 ? 2 : yAxis.axisValue.splitCount,
             tickMethod: (min, max, count) => {
               const step = (max - min) / count
               const ticks = []

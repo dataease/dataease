@@ -562,7 +562,7 @@ export class ColumnLineMix extends G2ChartView {
         },
         axis: {
           y: {
-            tickCount: yAxis.axisValue.splitCount,
+            tickCount: yAxis.axisValue.splitCount < 2 ? 2 : yAxis.axisValue.splitCount,
             tickMethod: (min, max, count) => {
               const step = (max - min) / (count - 1)
               const ticks = []
@@ -588,7 +588,7 @@ export class ColumnLineMix extends G2ChartView {
       merge(lineMark, scaleOpt, {
         axis: {
           y: {
-            tickCount: yAxisExt.axisValue.splitCount,
+            tickCount: yAxisExt.axisValue.splitCount < 2 ? 2 : yAxisExt.axisValue.splitCount,
             tickMethod: (min, max, count) => {
               const step = (max - min) / (count - 1)
               const ticks = []
