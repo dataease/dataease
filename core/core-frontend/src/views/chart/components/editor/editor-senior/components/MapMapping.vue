@@ -113,7 +113,7 @@ const finishEdit = () => {
 const updateAreaData = debounce(() => {
   const filteredData = state.currentData.filter(item => {
     if (!search.value?.trim()) {
-      return true
+      return item.originName
     }
     return item.mappedName?.includes(search.value)
   })
@@ -247,6 +247,9 @@ onMounted(() => {
   :deep(.area-map-table-header-cell-dark) {
     background-color: #1a1a1a;
     color: @canvas-main-font-color-dark;
+    &:hover {
+      background-color: #1a1a1a;
+    }
   }
   :deep(.area-map-table-row-dark) {
     .area-map-table-cell-dark {
