@@ -1132,7 +1132,6 @@ defineExpose({
 .preview {
   margin-top: 5px;
   border: 1px solid #e6e6e6;
-  border-radius: 4px;
   border-radius: 6px;
   height: 470px !important;
   overflow: hidden;
@@ -1267,7 +1266,6 @@ defineExpose({
   white-space: nowrap;
   text-overflow: ellipsis;
 
-  border-radius: 4px;
   border-radius: 6px;
   border: 1px solid #dee0e3;
 
@@ -1466,14 +1464,12 @@ span {
 
 .outer-content {
   height: 340px;
-  border-radius: 4px;
   border-radius: 6px;
 }
 
 .padding-lr {
   height: 500px;
   border: 1px solid var(--deCardStrokeColor, #dee0e3);
-  border-radius: 4px;
   border-radius: 6px;
   padding: 12px;
   box-sizing: border-box;
