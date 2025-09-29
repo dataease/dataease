@@ -420,7 +420,7 @@ export class Area extends G2ChartView {
           y: {
             domainMin: yAxis.axisValue.min,
             domainMax: yAxis.axisValue.max,
-            tickCount: yAxis.axisValue.splitCount < 2 ? 2 : yAxis.axisValue.splitCount,
+            tickCount: yAxis.axisValue.splitCount,
             tickMethod: (min, max, count) => {
               const step = (max - min) / count
               const ticks = []
@@ -932,6 +932,87 @@ export class StackArea extends Area {
           handleSetZeroSingleDimension(data)
         }
         break
+      }
+    }
+    return options
+  }
+
+  protected configAssistLine(chart: Chart, options: G2Spec): G2Spec {
+    const { assistLineCfg } = parseJson(chart.senior)
+    if (!assistLineCfg.enable || !assistLineCfg.assistLine?.length) {
+      return options
+    }
+    const lineData = []
+    const { yAxis } = parseJson(chart.customStyle)
+    const position = yAxis.position === 'left' ? 'left' : 'right'
+    const axisFormatterCfg = yAxis.axisLabelFormatter ?? DEFAULT_YAXIS_STYLE.axisLabelFormatter
+    const dynamicFields = []
+    assistLineCfg.assistLine?.forEach(item => {
+      // 固定值
+      if (item.field === '0') {
+        lineData.push(item)
+      }
+      // 动态值
+      if (item.field === '1') {
+        dynamicFields.push(item.fieldId)
+      }
+    })
+    chart.data.dynamicAssistLines?.forEach(item => {
+      if (dynamicFields.includes(item.fieldId)) {
+        lineData.push({ ...item, value: parseFloat(item.value) })
+      }
+    })
+    if (lineData.length) {
+      const randomAssistColorScale = randomString(6)
+      lineData.forEach(line => {
+        const value = valueFormatter(parseFloat(line.value), axisFormatterCfg)
+        const assistLineMark: G2Spec = {
+          type: 'lineY',
+          encode: { y: 'value', color: () => randomAssistColorScale },
+          data: [line],
+          style: {
+            stroke: line.color,
+            lineDash:
+              line.lineType === 'solid' ? [] : line.lineType === 'dashed' ? [10, 8] : [1, 2],
+            opacity: 1
+          },
+          labels: [
+            {
+              text: line.name ? `${line.name}: ${value}` : value,
+              style: {
+                fontSize: parseInt(line.fontSize),
+                fill: line.color,
+                fillOpacity: 1
+              },
+              position: position,
+              textBaseline: 'bottom',
+              transform: [{ type: 'overlapHide' }, { type: 'exceedAdjust' }],
+              fontFamily: chart.fontFamily
+            }
+          ]
+        }
+        options.children.push(assistLineMark)
+      })
+      if (options.legend?.color) {
+        const colorLegend = options.legend.color
+        if (!Symbols.has('empty')) {
+          registerSymbol('empty', this.EMPTY_MARKER)
+        }
+        const originMarker = colorLegend.itemMarker
+        merge(colorLegend, {
+          itemMarker: d => {
+            if (d === randomAssistColorScale || d.id === randomAssistColorScale) {
+              return 'empty'
+            }
+            return originMarker
+          },
+          itemLabelText: d => {
+            if (d.id === randomAssistColorScale) {
+              return ''
+            }
+            return d.id
+          }
+        })
       }
     }
     return options
