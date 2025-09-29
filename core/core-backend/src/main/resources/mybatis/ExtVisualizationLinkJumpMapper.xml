@@ -339,7 +339,7 @@
 
     <select id="getTargetVisualizationJumpInfo" resultMap="AllJumpMap">
         SELECT DISTINCT
-        concat( lj.source_view_id, '#', jtvi.source_field_active_id ) AS sourceInfo,
+        concat( lj.source_view_id, '#', jtvi.source_field_active_id, '#', lji.source_field_id ) AS sourceInfo,
         concat( jtvi.target_view_id, '#', jtvi.target_field_id ) AS targetInfo
         FROM
         visualization_link_jump_target_view_info jtvi
@@ -357,7 +357,7 @@
 
     <select id="getTargetVisualizationJumpInfoSnapshot" resultMap="AllJumpMap">
             SELECT DISTINCT
-            concat( lj.source_view_id, '#', jtvi.source_field_active_id ) AS sourceInfo,
+            concat( lj.source_view_id, '#', jtvi.source_field_active_id, '#', lji.source_field_id ) AS sourceInfo,
             concat( jtvi.target_view_id, '#', jtvi.target_field_id ) AS targetInfo
             FROM
             snapshot_visualization_link_jump_target_view_info jtvi
