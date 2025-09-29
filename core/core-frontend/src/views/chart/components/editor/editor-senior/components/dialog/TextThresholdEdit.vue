@@ -182,7 +182,7 @@ init()
           <div class="color-title">{{ t('chart.backgroundColor') }}</div>
           <el-color-picker
             is-custom
-            size="large"
+            :trigger-width="60"
             v-model="item.backgroundColor"
             show-alpha
             class="color-picker-style"
