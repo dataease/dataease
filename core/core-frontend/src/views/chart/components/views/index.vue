@@ -181,7 +181,9 @@ const state = reactive({
     width: 'fit-content',
     maxWidth: '100%',
     wordBreak: 'break-word',
-    whiteSpace: 'pre-wrap'
+    whiteSpace: 'pre-wrap',
+    paddingRight: '0px',
+    overflow: 'hidden'
   } as CSSProperties,
   drillFilters: [],
   viewInfoData: null,
@@ -303,6 +305,14 @@ const initTitle = () => {
         appearanceStore.fontList.forEach(ele => {
           CHART_FONT_FAMILY_MAP[ele.name] = ele.name
         })
+      }
+      if (customStyle.text.isItalic) {
+        if (customStyle.text.hPosition === 'right') {
+          state.title_class.paddingRight = Math.floor(customStyle.text.fontSize / 7) + 'px'
+        } else {
+          state.title_class.paddingRight = '0px'
+          state.title_class.overflow = 'visible'
+        }
       }
       state.title_class.fontFamily = customStyle.text.fontFamily
         ? CHART_FONT_FAMILY_MAP[customStyle.text.fontFamily]
