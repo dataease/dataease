@@ -800,7 +800,7 @@ export class StackArea extends Area {
     }, {})
     if (extStack?.length) {
       Object.entries(colorMap).forEach(([k, v]) => {
-        let color = hexColorToRGBA(v.color, basicStyle.alpha)
+        let color = hexColorToRGBA(v, basicStyle.alpha)
         if (basicStyle.gradient) {
           color = setGradientColor(color, true, 270)
         }
