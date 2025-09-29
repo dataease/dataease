@@ -790,11 +790,9 @@ const init = viewItem => {
       JSON.stringify(chartDetails.yAxisExt) +
       JSON.stringify(chartDetails.drillFields)
     checkJumpStr = checkAllAxisStr
-  } else if (chartDetails.type === 'table-pivot') {
+  } else if (['table-normal', 'table-info', 'table-pivot'].includes(chartDetails.type)) {
     checkJumpStr =
       checkAllAxisStr + JSON.stringify(chartDetails.yAxis) + JSON.stringify(chartDetails.yAxisExt)
-  } else if (chartDetails.type === 'table-info') {
-    checkJumpStr = checkAllAxisStr
   } else {
     checkJumpStr = checkAllAxisStr
   }
