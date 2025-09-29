@@ -717,7 +717,7 @@ export class Area extends G2ChartView {
 export class StackArea extends Area {
   propertyInner = {
     ...this['propertyInner'],
-    'label-selector': ['vPosition', 'fontSize', 'color', 'labelFormatter', 'showExtremum'],
+    'label-selector': ['vPosition', 'fontSize', 'color', 'labelFormatter'],
     'tooltip-selector': ['fontSize', 'color', 'tooltipFormatter', 'show', 'carousel']
   }
   axisConfig = {
