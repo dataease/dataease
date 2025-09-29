@@ -252,6 +252,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
           range: [firstColor]
         },
         y: {
+          nice: true,
           range: [0, 1]
         }
       }
@@ -262,6 +263,9 @@ export class BidirectionalHorizontalBar extends G2ChartView {
           type: 'ordinal',
           domain: [secondMark.encode.color.value],
           range: [secondColor]
+        },
+        y: {
+          nice: true
         }
       }
     })
@@ -273,6 +277,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       defaultsDeep(secondMark, {
         scale: {
           y: {
+            nice: true,
             range: [0, 1]
           }
         }
@@ -482,6 +487,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       merge(firstMark, {
         scale: {
           y: {
+            nice: false,
             domain: [yAxis.axisValue.min, yAxis.axisValue.max]
           }
         },
@@ -493,7 +499,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
         },
         axis: {
           y: {
-            tickCount: yAxis.axisValue.splitCount,
+            tickCount: yAxis.axisValue.splitCount < 2 ? 2 : yAxis.axisValue.splitCount,
             tickMethod: (min, max, count) => {
               const step = (max - min) / (count - 1)
               const ticks = []
@@ -510,6 +516,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       merge(secondMark, {
         scale: {
           y: {
+            nice: false,
             domain: [yAxisExt.axisValue.min, yAxisExt.axisValue.max]
           }
         },
@@ -521,7 +528,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
         },
         axis: {
           y: {
-            tickCount: yAxisExt.axisValue.splitCount,
+            tickCount: yAxisExt.axisValue.splitCount < 2 ? 2 : yAxisExt.axisValue.splitCount,
             tickMethod: (min, max, count) => {
               const step = (max - min) / (count - 1)
               const ticks = []
