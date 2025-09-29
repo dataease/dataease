@@ -478,7 +478,8 @@ export const DEFAULT_TABLE_HEADER: ChartTableHeaderAttr = {
   headerGroup: false,
   headerGroupConfig: {
     columns: []
-  }
+  },
+  rowHeaderFreeze: true
 }
 export const DEFAULT_TABLE_CELL: ChartTableCellAttr = {
   tableFontColor: '#000000',
