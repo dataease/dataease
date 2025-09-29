@@ -267,6 +267,9 @@ onMounted(() => {
     :deep(.ed-table__empty-block) {
       background-color: @side-content-background;
     }
+    :deep(.ed-table__header-wrapper) {
+      border-top: unset;
+    }
   }
 }
 </style>
