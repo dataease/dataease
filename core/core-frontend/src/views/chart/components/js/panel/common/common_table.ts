@@ -1133,7 +1133,7 @@ export function copyContent(s2Instance: SpreadSheet, event, fieldMeta) {
         const arr = matrix[k] as TableDataCell[]
         arr.forEach((cell, index) => {
           const cellMeta = cell.getMeta()
-          const value = cellMeta.data?.[cellMeta.valueField]
+          const value = cellMeta.data?.[cellMeta.valueField] || cellMeta.data?.raw?.[cellMeta.valueField]
           const metaObj = find(fieldMeta, m => m.field === cellMeta.valueField)
           let fieldVal = value?.toString()
           if (metaObj) {
