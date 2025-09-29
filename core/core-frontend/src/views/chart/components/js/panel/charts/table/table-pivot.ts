@@ -107,7 +107,8 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       'showColTooltip',
       'showRowTooltip',
       'showHorizonBorder',
-      'showVerticalBorder'
+      'showVerticalBorder',
+      'rowHeaderFreeze'
     ],
     'table-total-selector': ['row', 'col'],
     'basic-style-selector': [
@@ -193,7 +194,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
     })
 
     // total config
-    const { basicStyle, tooltip, tableTotal } = parseJson(chart.customAttr)
+    const { basicStyle, tooltip, tableTotal, tableHeader } = parseJson(chart.customAttr)
     if (!tableTotal.row.subTotalsDimensionsNew || tableTotal.row.subTotalsDimensions == undefined) {
       tableTotal.row.subTotalsDimensions = r
     }
@@ -448,6 +449,9 @@ export class TablePivot extends S2ChartView<PivotSheet> {
         return {
           supportsCSSTransform: true
         }
+      },
+      frozen: {
+        rowHeader: !(tableHeader.rowHeaderFreeze === false)
       }
     }
     // options

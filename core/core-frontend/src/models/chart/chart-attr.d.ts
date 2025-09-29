@@ -532,6 +532,10 @@ declare interface ChartTableHeaderAttr {
       name: string
     }[]
   }
+  /**
+   * 透视表行头冻结
+   */
+  rowHeaderFreeze: boolean
 }
 /**
  * 单元格属性
