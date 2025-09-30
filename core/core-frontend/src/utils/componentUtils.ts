@@ -30,10 +30,9 @@ export const filterEnumParams = (queryParams, fieldId: string) => {
 export const filterEnumParamsReduce = (queryParams, fieldId: string) => {
   const resultMap = filterEnumMap[fieldId]
   if (resultMap) {
-    const resultMapReduce = Object.entries(params1).reduce((acc, [key, value]) => {
-      acc[value] = key
-      return acc
-    }, {})
+    const resultMapReduce = Object.fromEntries(
+      Object.entries(resultMap).map(([key, value]) => [value, key])
+    )
     const resultParams = []
     queryParams.forEach(param => {
       resultParams.push(resultMapReduce[param] || param)

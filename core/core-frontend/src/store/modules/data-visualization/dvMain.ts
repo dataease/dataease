@@ -1275,6 +1275,7 @@ export const dvMainStore = defineStore('dataVisualization', {
                   const queryMapFlag = optionValueSource === 1 && field.id !== displayId
                   let queryMapParams = queryParams
                   if (queryMapFlag) {
+                    queryParams = filterEnumParamsReduce(queryParams, field.id)
                     queryMapParams = filterEnumParams(queryParams, field.id)
                   }
                   // 0 文本类型 1 数字类型
