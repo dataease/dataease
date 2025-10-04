@@ -157,10 +157,8 @@ import {
 import Board from '@/components/de-board/Board.vue'
 import { activeWatermarkCheckUser, removeActiveWatermark } from '@/components/watermark/watermark'
 import { useI18n } from '@/hooks/web/useI18n'
-import {
-  CommonBackground,
-  ShorthandMode
-} from '@/components/visualization/component-background/Types'
+import { CommonBackground } from '@/components/visualization/component-background/Types'
+import { ShorthandMode } from '@/Types'
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
