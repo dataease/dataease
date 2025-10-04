@@ -357,7 +357,8 @@ const props = withDefaults(
   }
 )
 
-import { State, ShorthandMode } from '@/components/visualization/component-background/Types'
+import { State } from '@/components/visualization/component-background/Types'
+import { ShorthandMode } from '@/Types'
 
 const state = reactive<State>({
   commonBackground: {
