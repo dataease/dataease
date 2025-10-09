@@ -1,5 +1,7 @@
 export default {
   common: {
+    to_this_month: 'From the beginning of the year to this month',
+    up_to_options: 'Display up to 1000 options',
     next_week: 'Next week',
     next_month: 'Next month',
     next_quarter: 'Next quarter',
