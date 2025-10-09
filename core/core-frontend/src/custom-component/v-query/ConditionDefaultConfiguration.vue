@@ -225,6 +225,10 @@ const relativeToCurrentListRange = computed(() => {
         {
           label: t('v_query.last_12_months'),
           value: 'LastTwelveMonths'
+        },
+        {
+          label: t('common.to_this_month'),
+          value: 'YearToThisMonth'
         }
       ]
       break
@@ -272,8 +276,8 @@ const relativeToCurrentListRange = computed(() => {
 })
 
 const defaultValueFirstItemShow = computed(() => {
-  const { displayType, optionValueSource, multiple } = curComponent.value
-  return +displayType === 0 && optionValueSource === 1 && !multiple
+  const { displayType, optionValueSource } = curComponent.value
+  return +displayType === 0 && optionValueSource === 1
 })
 
 const aroundList = [
