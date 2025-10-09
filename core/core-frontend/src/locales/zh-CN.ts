@@ -2857,6 +2857,7 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
+    data_match_type: '数据匹配方式',
     select_resource: '请选择{0}',
     change_screen_page: '更换{0}',
     new_screen_page: '新建分页',

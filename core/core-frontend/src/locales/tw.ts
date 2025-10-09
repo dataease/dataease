@@ -2848,6 +2848,7 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    data_match_type: '資料匹配方式',
     select_resource: '請選擇{0}',
     change_screen_page: '更換{0}',
     new_screen_page: '新建分頁',
