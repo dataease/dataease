@@ -23,6 +23,7 @@ export interface Item {
   name: string
   value: number
   timeValue: string
+  timeType?: string
 }
 
 type Props = {
@@ -312,7 +313,15 @@ const addFields = () => {
   }
   showTextArea.value = false
 }
-
+const timeDialog = ref()
+const showTimeDialog = (obj: any) => {
+  if (obj.deType !== 1) return
+  timeDialog.value.init(obj.timeType, obj.timeValue)
+}
+const saveTime = (type, value) => {
+  item.value.timeType = type
+  item.value.timeValue = value
+}
 const emits = defineEmits(['update:item', 'del'])
 </script>
 
@@ -436,7 +445,12 @@ const emits = defineEmits(['update:item', 'del'])
               effect="light"
               :content="item.timeValue"
               placement="top"
-              ><el-input class="w70 mar5" size="small" v-model="item.timeValue"
+              ><el-input
+                readonly
+                @click="showTimeDialog(item)"
+                class="w70 mar5"
+                size="small"
+                v-model="item.timeValue"
             /></el-tooltip>
             <el-input v-else class="w70 mar5" size="small" v-model="item.value" />
             <div class="bottom-line"></div>
@@ -540,6 +554,7 @@ const emits = defineEmits(['update:item', 'del'])
       </el-icon>
     </div>
   </div>
+  <TimeSetDialog @saveTime="saveTime" ref="timeDialog"></TimeSetDialog>
 </template>
 
 <style lang="less" scoped>
