@@ -79,7 +79,7 @@ const handleClick = (ele: TabsPaneContext) => {
     state.curTypeList = shortcutOption
       .getBusiList()
       .filter(busi => busi === 'all_types' || busiAuthList.includes(busi))
-    state.tableColumn = shortcutOption.getColmunList()
+    state.tableColumn = shortcutOption.getColumnList()
     loadTableData()
   }
 }

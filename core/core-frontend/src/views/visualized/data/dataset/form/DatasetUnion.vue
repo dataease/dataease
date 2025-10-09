@@ -445,7 +445,7 @@ const confirmEditUnion = () => {
 }
 
 const handleCommand = (ele, command) => {
-  if (command === 'editerField') {
+  if (command === 'editorField') {
     getNodeField(ele)
     currentNode.value = cloneDeep(ele)
   }
@@ -454,7 +454,7 @@ const handleCommand = (ele, command) => {
     tableRename({ name: ele.tableName, id: ele.id })
   }
 
-  if (command === 'editerSql') {
+  if (command === 'editorSql') {
     const { tableName, datasourceId, info, id, sqlVariableDetails } = ele
     if (ele.type === 'sql') {
       sqlNode.value = {
@@ -571,7 +571,7 @@ const menuList = [
   {
     svgName: icon_textBox_outlined,
     label: t('data_set.field_selection'),
-    command: 'editerField'
+    command: 'editorField'
   },
   {
     svgName: icon_deleteTrash_outlined,
@@ -584,7 +584,7 @@ const sqlMenu = [
   {
     svgName: icon_edit_outlined,
     label: t('data_set.edit_sql'),
-    command: 'editerSql'
+    command: 'editorSql'
   },
   {
     svgName: icon_rename_outlined,
@@ -1060,7 +1060,7 @@ defineExpose({
 
 const handleActiveNode = ele => {
   activeNodeId.value = ele.id
-  handleCommand(ele, 'editerField')
+  handleCommand(ele, 'editorField')
 }
 
 const emits = defineEmits([
