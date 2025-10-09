@@ -2165,6 +2165,10 @@ const relativeToCurrentListRange = computed(() => {
         {
           label: t('v_query.last_12_months'),
           value: 'LastTwelveMonths'
+        },
+        {
+          label: t('common.to_this_month'),
+          value: 'YearToThisMonth'
         }
       ]
       break
@@ -2957,8 +2961,17 @@ defineExpose({
                 {{ t('v_query.of_option_values') }}
               </div>
               <div class="value">
-                <el-radio-group class="larger-radio" v-model="curComponent.resultMode">
-                  <el-radio :label="0">{{ t('login.default_login') }}</el-radio>
+                <el-radio-group class="larger-radio icon-info" v-model="curComponent.resultMode">
+                  <el-radio :label="0"
+                    >{{ t('login.default_login') }}
+                    <el-tooltip effect="dark" :content="t('common.up_to_options')" placement="top">
+                      <el-icon style="margin-left: 4px; color: #646a73">
+                        <icon name="icon_info_outlined"
+                          ><icon_info_outlined class="svg-icon"
+                        /></icon>
+                      </el-icon> </el-tooltip
+                  ></el-radio>
+
                   <el-radio :label="1">{{ t('chart.result_mode_all') }}</el-radio>
                 </el-radio-group>
               </div>
@@ -3422,8 +3435,16 @@ defineExpose({
                 {{ t('v_query.of_option_values') }}
               </div>
               <div class="value" style="margin-top: 10.5px">
-                <el-radio-group class="larger-radio" v-model="curComponent.resultMode">
-                  <el-radio :label="0">{{ t('chart.default') }}</el-radio>
+                <el-radio-group class="larger-radio icon-info" v-model="curComponent.resultMode">
+                  <el-radio :label="0"
+                    >{{ t('chart.default') }}
+                    <el-tooltip effect="dark" :content="t('common.up_to_options')" placement="top">
+                      <el-icon style="margin-left: 4px; color: #646a73">
+                        <icon name="icon_info_outlined"
+                          ><icon_info_outlined class="svg-icon"
+                        /></icon>
+                      </el-icon> </el-tooltip
+                  ></el-radio>
                   <el-radio :label="1">{{ t('data_set.all') }}</el-radio>
                 </el-radio-group>
               </div>
@@ -4189,6 +4210,12 @@ defineExpose({
   }
 }
 .larger-radio {
+  &.icon-info {
+    .ed-radio__label {
+      display: flex;
+      align-items: center;
+    }
+  }
   .ed-radio__inner {
     width: 16px;
     height: 16px;

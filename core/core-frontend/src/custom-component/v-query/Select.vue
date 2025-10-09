@@ -107,8 +107,8 @@ const cascade = computed(() => {
 })
 let time
 const disabledFirstItem = computed(() => {
-  const { defaultValueFirstItem, optionValueSource, multiple } = props.config
-  return defaultValueFirstItem && optionValueSource === 1 && !multiple
+  const { defaultValueFirstItem, optionValueSource } = props.config
+  return defaultValueFirstItem && optionValueSource === 1
 })
 const setDefaultMapValue = arr => {
   const { displayId, field } = config.value
@@ -402,7 +402,7 @@ watch(
 
 const setDefaultValueFirstItem = () => {
   if (!options.value.length) return
-  selectValue.value = options.value[0].value
+  selectValue.value = config.value.multiple ? [options.value[0].value] : options.value[0].value
   const value = Array.isArray(selectValue.value) ? [...selectValue.value] : selectValue.value
   if (!props.isConfig) {
     config.value.selectValue = Array.isArray(selectValue.value)
@@ -497,13 +497,15 @@ watch(
     if (!props.isConfig) return
     if (val) {
       selectValue.value = []
+      setDefaultValueFirstItem()
     }
     nextTick(() => {
       multiple.value = val
-      config.value.defaultValueFirstItem = false
       if (!val) {
         nextTick(() => {
           selectValue.value = undefined
+          if (!config.value.defaultValueFirstItem) return
+          setDefaultValueFirstItem()
         })
       }
     })
@@ -762,6 +764,7 @@ defineExpose({
     show-checked
     :tagColor="tagColor"
     scrollbar-always-on
+    :disabled="disabledFirstItem && props.isConfig"
     clearable
     :style="selectStyle"
     collapse-tags

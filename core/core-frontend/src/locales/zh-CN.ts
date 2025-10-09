@@ -1,5 +1,7 @@
 export default {
   common: {
+    to_this_month: '年初至本月',
+    up_to_options: '最多展示1000个选项',
     next_week: '下周',
     next_month: '下月',
     next_quarter: '下季',
