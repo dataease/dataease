@@ -19,4 +19,6 @@ public class XpackOauthAuthVO implements Serializable {
     private String authEndpoint;
 
     private String scope;
+
+    private String codeKey;
 }
