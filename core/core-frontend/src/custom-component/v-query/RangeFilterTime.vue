@@ -224,6 +224,10 @@ const relativeToCurrentListRange = computed(() => {
         {
           label: t('v_query.last_12_months'),
           value: 'LastTwelveMonths'
+        },
+        {
+          label: t('common.to_this_month'),
+          value: 'YearToThisMonth'
         }
       ]
       break

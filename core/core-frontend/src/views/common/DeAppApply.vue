@@ -8,7 +8,7 @@
     :close-on-press-escape="false"
     size="500px"
     direction="rtl"
-    z-index="1000"
+    :z-index="1000"
   >
     <div class="app-export">
       <el-form
@@ -16,7 +16,6 @@
         :model="state.form"
         :rules="state.rule"
         class="de-form-item app-form"
-        size="middle"
         label-width="180px"
         label-position="top"
       >
@@ -68,7 +67,6 @@
             :data="state.dsTree"
             :props="state.propsTree"
             @node-click="dsTreeSelect"
-            :filter-method="dsTreeFilterMethod"
             :render-after-expand="false"
             filterable
           >
@@ -82,10 +80,55 @@
             </template>
           </el-tree-select>
         </el-form-item>
+        <el-form-item :label="t('visualization.data_match_type')" prop="dataType">
+          <el-radio-group v-model="state.form.dataType">
+            <el-radio size="small" :label="'datasource'">
+              {{ t('datasource.datasource') }}</el-radio
+            >
+            <el-radio size="small" :label="'dataset'">{{ t('dataset.datalist') }} </el-radio>
+          </el-radio-group>
+        </el-form-item>
         <div class="de-row-rules" style="margin: 0 0 16px">
           <span>{{ t('visualization.datasource_info') }}</span>
         </div>
-        <el-row class="datasource-link">
+        <el-row class="datasource-link" v-if="state.form.dataType === 'datasource'">
+          <el-row class="head">
+            <el-col :span="11">{{ t('visualization.app_datasource') }}</el-col
+            ><el-col :span="2"></el-col
+            ><el-col :span="11">{{ t('visualization.sys_datasource') }}</el-col>
+          </el-row>
+          <el-row
+            :key="index"
+            class="content"
+            v-for="(appDatasource, index) in state.appData.datasourceInfo"
+          >
+            <el-col :span="11">
+              <el-select style="width: 100%" v-model="appDatasource.name" disabled>
+                <el-option
+                  :key="appDatasource.name"
+                  :label="appDatasource.name"
+                  :value="appDatasource.name"
+                >
+                </el-option>
+              </el-select> </el-col
+            ><el-col :span="2" class="icon-center">
+              <Icon name="dv-link-target"
+                ><dvLinkTarget class="svg-icon" style="width: 20px; height: 20px" /></Icon></el-col
+            ><el-col :span="11">
+              <dataset-select
+                ref="datasetSelector"
+                v-model="appDatasource.systemDatasourceId"
+                style="flex: 1"
+                :state-obj="state"
+                themes="light"
+                source-type="datasource"
+                @add-ds-window="addDsWindow"
+                view-id="0"
+              />
+            </el-col>
+          </el-row>
+        </el-row>
+        <el-row class="datasource-link" v-if="state.form.dataType === 'dataset'">
           <el-row class="head">
             <el-col :span="11">{{ t('visualization.app_datasource') }}</el-col
             ><el-col :span="2"></el-col
@@ -217,7 +260,8 @@ const state = reactive({
     pid: '',
     name: t('visualization.new'),
     datasetFolderPid: null,
-    datasetFolderName: null
+    datasetFolderName: null,
+    dataType: 'datasource'
   },
   rule: {
     name: [
@@ -250,6 +294,11 @@ const state = reactive({
         required: true,
         message: t('visualization.select_ds_group_folder'),
         trigger: 'blur'
+      }
+    ],
+    dataType: [
+      {
+        required: true
       }
     ]
   }
@@ -297,6 +346,7 @@ const dfs = (arr: BusiTreeNode[]) => {
 const init = params => {
   state.appApplyDrawer = true
   state.form = params.base
+  state.form.dataType = 'datasource'
   state.appData.datasourceInfo = deepCopy(appData.value?.datasourceInfo)
   initData()
 }
@@ -403,6 +453,10 @@ defineExpose({
   font-size: 12px;
   font-weight: 500;
   width: 100%;
+  .head_type {
+    width: 100%;
+    margin-bottom: 16px;
+  }
   .head {
     width: 100%;
   }

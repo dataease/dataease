@@ -112,7 +112,7 @@ const showLeft = ref(true)
 const maskShow = ref(false)
 const loading = ref(false)
 const updateCustomTime = ref(false)
-const editerName = ref()
+const editorName = ref()
 const nameMap = ref({})
 const currentField = ref({
   dateFormat: '',
@@ -1630,7 +1630,7 @@ const dfsUnion = (arr, list) => {
 const handleClick = () => {
   showInput.value = true
   nextTick(() => {
-    editerName.value.focus()
+    editorName.value.focus()
   })
 }
 
@@ -1723,7 +1723,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
         <template v-if="showInput">
           <el-input
             maxlength="64"
-            ref="editerName"
+            ref="editorName"
             v-model="datasetName"
             @blur="handleDatasetName"
           />
@@ -1735,7 +1735,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
           }}</span>
         </template>
       </span>
-      <span class="oprate">
+      <span class="operate">
         <el-button :disabled="showInput" type="primary" @click="datasetSaveAndBack">{{
           t('data_set.save_and_return')
         }}</el-button>

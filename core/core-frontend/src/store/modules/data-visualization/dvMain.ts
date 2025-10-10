@@ -25,7 +25,7 @@ import { viewFieldTimeTrans } from '@/utils/viewUtils'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
-import { filterEnumParams } from '@/utils/componentUtils'
+import { filterEnumParams, filterEnumParamsReduce } from '@/utils/componentUtils'
 const { t } = useI18n()
 
 export const dvMainStore = defineStore('dataVisualization', {
@@ -1016,7 +1016,6 @@ export const dvMainStore = defineStore('dataVisualization', {
         trackInfo = this.nowPanelJumpInfoTargetPanel
       }
       const preActiveComponentIds = []
-      const checkQDList = [...data.dimensionList, ...data.quotaList]
       const customFilterInfo = data.customFilter
       for (let indexOuter = 0; indexOuter < this.componentData.length; indexOuter++) {
         const element = this.componentData[indexOuter]
@@ -1024,7 +1023,7 @@ export const dvMainStore = defineStore('dataVisualization', {
           if (['UserView', 'VQuery'].includes(element.component)) {
             this.trackFilterCursor(
               element,
-              checkQDList,
+              data,
               trackInfo,
               preActiveComponentIds,
               viewId,
@@ -1035,7 +1034,7 @@ export const dvMainStore = defineStore('dataVisualization', {
             element.propValue?.forEach((groupItem, index) => {
               this.trackFilterCursor(
                 groupItem,
-                checkQDList,
+                data,
                 trackInfo,
                 preActiveComponentIds,
                 viewId,
@@ -1048,7 +1047,7 @@ export const dvMainStore = defineStore('dataVisualization', {
               tabItem.componentData?.forEach((tabComponent, index) => {
                 this.trackFilterCursor(
                   tabComponent,
-                  checkQDList,
+                  data,
                   trackInfo,
                   preActiveComponentIds,
                   viewId,
@@ -1276,6 +1275,7 @@ export const dvMainStore = defineStore('dataVisualization', {
                   const queryMapFlag = optionValueSource === 1 && field.id !== displayId
                   let queryMapParams = queryParams
                   if (queryMapFlag) {
+                    queryParams = filterEnumParamsReduce(queryParams, field.id)
                     queryMapParams = filterEnumParams(queryParams, field.id)
                   }
                   // 0 文本类型 1 数字类型
@@ -1367,12 +1367,13 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
     trackFilterCursor(
       element,
-      checkQDList,
+      sourceData,
       trackInfo,
       preActiveComponentIds,
       viewId,
       customFilter?
     ) {
+      const checkQDList = [...sourceData.dimensionList, ...sourceData.quotaList]
       let currentFilters = element.linkageFilters || [] // 当前联动filter
       if (['table-info', 'table-normal'].includes(element.innerType)) {
         currentFilters = []
@@ -1387,7 +1388,10 @@ export const dvMainStore = defineStore('dataVisualization', {
       // 联动的图表情况历史条件
       // const currentFilters = []
       checkQDList.forEach(QDItem => {
-        const sourceInfo = viewId + '#' + QDItem.id
+        let sourceInfo = viewId + '#' + QDItem.id
+        if (sourceData.option === 'jump') {
+          sourceInfo = sourceInfo + '#' + sourceData.sourceFieldId
+        }
         // 获取所有目标联动信息
         const targetInfoList = trackInfo[sourceInfo] || []
         const paramValue = [QDItem.value]
@@ -1453,6 +1457,7 @@ export const dvMainStore = defineStore('dataVisualization', {
                   const queryMapFlag = optionValueSource === 1 && field.id !== displayId
                   let queryMapParams = queryParams
                   if (queryMapFlag) {
+                    queryParams = filterEnumParamsReduce(queryParams, field.id)
                     queryMapParams = filterEnumParams(queryParams, field.id)
                   }
                   // 0 文本类型 1 数字类型

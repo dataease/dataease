@@ -1,5 +1,7 @@
 export default {
   common: {
+    to_this_month: 'From the beginning of the year to this month',
+    up_to_options: 'Display up to 1000 options',
     next_week: 'Next week',
     next_month: 'Next month',
     next_quarter: 'Next quarter',
@@ -2927,6 +2929,7 @@ export default {
     column_name: 'Field name'
   },
   visualization: {
+    data_match_type: 'Data match type',
     select_resource: 'Select {0}',
     change_screen_page: 'Change {0}',
     new_screen_page: 'New page',
@@ -3383,6 +3386,14 @@ export default {
     stream_mobile_tips: 'May not be displayed on IOS devices',
     json_params_error: 'Failed to parse third-party parameters. Please check the parameter format.',
     inner_padding: 'Inner Padding',
+    inner_padding_shorthand_mode: 'Mode',
+    inner_padding_shorthand_mode_uniform: 'Uniform',
+    inner_padding_shorthand_mode_axis: 'Axis',
+    inner_padding_shorthand_mode_per_edge: 'Per Edge',
+    edge_top: 'Top',
+    edge_right: 'Right',
+    edge_bottom: 'Bottom',
+    edge_left: 'Left',
     board_radio: 'Corners',
     web_set_tips: 'Some websites may not allow embedding and will not display.',
     repeat_params: 'Duplicate parameter names exist.',

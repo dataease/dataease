@@ -189,16 +189,16 @@ defineExpose({
   setFieldForm,
   fieldForm
 })
-const parmasTitle = ref('')
+const paramsTitle = ref('')
 
-const updateParmasToQuota = () => {
+const updateParamsToQuota = () => {
   const [o] = fieldForm.params
-  parmasTitle.value = '编辑计算参数'
+  paramsTitle.value = t('data_set.edit_calculation_parameters')
   Object.assign(formQuota, o || {})
   dialogFormVisible.value = true
 }
 
-const delParmasToQuota = () => {
+const delParamsToQuota = () => {
   const [o] = fieldForm.params
   fieldForm.params = []
   const str = mirror.value.state.doc.toString()
@@ -299,10 +299,10 @@ initFunction()
                   </el-icon>
                   {{ item.name }}
                   <div v-if="!item.groupType" class="icon-right">
-                    <el-icon @click.stop="updateParmasToQuota" class="hover-icon">
+                    <el-icon @click.stop="updateParamsToQuota" class="hover-icon">
                       <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
                     </el-icon>
-                    <el-icon @click.stop="delParmasToQuota" class="hover-icon">
+                    <el-icon @click.stop="delParamsToQuota" class="hover-icon">
                       <Icon name="icon_delete-trash_outlined"
                         ><icon_deleteTrash_outlined class="svg-icon"
                       /></Icon>

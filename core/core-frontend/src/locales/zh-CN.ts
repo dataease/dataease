@@ -1,5 +1,7 @@
 export default {
   common: {
+    to_this_month: '年初至本月',
+    up_to_options: '最多展示1000个选项',
     next_week: '下周',
     next_month: '下月',
     next_quarter: '下季',
@@ -2855,6 +2857,7 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
+    data_match_type: '数据匹配方式',
     select_resource: '请选择{0}',
     change_screen_page: '更换{0}',
     new_screen_page: '新建分页',
@@ -3296,6 +3299,14 @@ export default {
     stream_mobile_tips: 'IOS终端可能无法显示',
     json_params_error: '第三方参数解析失败，请检查参数格式是否正确',
     inner_padding: '内边距',
+    inner_padding_shorthand_mode: '模式',
+    inner_padding_shorthand_mode_uniform: '统一值',
+    inner_padding_shorthand_mode_axis: '轴向',
+    inner_padding_shorthand_mode_per_edge: '逐边',
+    edge_top: '上',
+    edge_right: '右',
+    edge_bottom: '下',
+    edge_left: '左',
     board_radio: '圆角',
     web_set_tips: '部分网站可能设置不允许嵌入而无法显示',
     repeat_params: '存在名称重复的参数',

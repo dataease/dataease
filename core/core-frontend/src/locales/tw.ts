@@ -1,5 +1,7 @@
 export default {
   common: {
+    to_this_month: '年初至本月',
+    up_to_options: '最多展示1000個選項',
     next_week: '下週',
     next_month: '下個月',
     next_quarter: '下季',
@@ -2846,6 +2848,7 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    data_match_type: '資料匹配方式',
     select_resource: '請選擇{0}',
     change_screen_page: '更換{0}',
     new_screen_page: '新建分頁',
@@ -3287,6 +3290,14 @@ export default {
     stream_mobile_tips: 'IOS終端可能無法顯示',
     json_params_error: '第三方參數解析失敗，請檢查參數格式是否正確',
     inner_padding: '內邊距',
+    inner_padding_shorthand_mode: '模式',
+    inner_padding_shorthand_mode_uniform: '統一值',
+    inner_padding_shorthand_mode_axis: '軸向',
+    inner_padding_shorthand_mode_per_edge: '逐邊',
+    edge_top: '上',
+    edge_right: '右',
+    edge_bottom: '下',
+    edge_left: '左',
     board_radio: '圓角',
     web_set_tips: '部分網站可能設置不允許嵌入而無法顯示',
     repeat_params: '存在名稱重複的參數',

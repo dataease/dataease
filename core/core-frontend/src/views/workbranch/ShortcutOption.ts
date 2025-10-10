@@ -52,7 +52,7 @@ class ShortcutOption {
       }
     }
   }
-  getColmunList() {
+  getColumnList() {
     return this.busiRecordMap[this.busiFlag].columnList
   }
   loadData(param: ShortcutRequest): Promise<IResponse> {

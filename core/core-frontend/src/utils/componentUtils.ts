@@ -2,6 +2,8 @@ import { EnumValue, enumValueObj } from '@/api/dataset'
 
 let filterEnumMap = {}
 
+const filterIdNameEnumMap = {}
+
 const findFilterEnum = async (val: EnumValue) => {
   const queryId = val.queryId
   const displayId = val.displayId
@@ -18,6 +20,22 @@ export const filterEnumParams = (queryParams, fieldId: string) => {
     const resultParams = []
     queryParams.forEach(param => {
       resultParams.push(resultMap[param] || param)
+    })
+    return resultParams
+  } else {
+    return queryParams
+  }
+}
+
+export const filterEnumParamsReduce = (queryParams, fieldId: string) => {
+  const resultMap = filterEnumMap[fieldId]
+  if (resultMap) {
+    const resultMapReduce = Object.fromEntries(
+      Object.entries(resultMap).map(([key, value]) => [value, key])
+    )
+    const resultParams = []
+    queryParams.forEach(param => {
+      resultParams.push(resultMapReduce[param] || param)
     })
     return resultParams
   } else {

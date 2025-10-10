@@ -15,23 +15,101 @@
     />
     <el-form size="small" label-position="top" style="width: 100%">
       <el-row :gutter="8">
-        <el-col :span="12">
+        <el-col :span="24">
           <el-form-item
             :label="t('visualization.inner_padding')"
             class="form-item w100"
             :class="'form-item-' + themes"
           >
-            <el-input-number
-              style="width: 100%"
-              :effect="themes"
-              controls-position="right"
-              :min="0"
-              :max="100"
-              v-model="state.commonBackground.innerPadding"
-              @change="onBackgroundChange"
-            />
+            <div style="display: flex; align-items: center; width: 100%; margin-bottom: 8px">
+              <span style="width: 15%; padding-right: 8px">{{
+                t('visualization.inner_padding_shorthand_mode')
+              }}</span>
+              <el-select
+                :effect="themes"
+                v-model="state.commonBackground.innerPadding.mode"
+                size="small"
+                style="width: 85%"
+                @change="onBackgroundChange"
+              >
+                <el-option
+                  class="custom-style-option"
+                  v-for="option in paddingModes"
+                  :key="option.value"
+                  :label="option.label"
+                  :value="option.value"
+                />
+              </el-select>
+            </div>
+            <el-row :gutter="8">
+              <el-col :span="12">
+                <div style="display: flex; align-items: center; margin-bottom: 8px">
+                  <span style="width: 30%; padding-right: 8px">{{
+                    t('visualization.edge_top')
+                  }}</span>
+                  <el-input-number
+                    style="width: 70%"
+                    :effect="themes"
+                    controls-position="right"
+                    :min="0"
+                    :max="100"
+                    v-model="state.commonBackground.innerPadding.top"
+                    @change="onBackgroundChange"
+                  />
+                </div>
+                <div style="display: flex; align-items: center">
+                  <span style="width: 30%; padding-right: 8px">{{
+                    t('visualization.edge_left')
+                  }}</span>
+                  <el-input-number
+                    style="width: 70%"
+                    :effect="themes"
+                    controls-position="right"
+                    :min="0"
+                    :max="100"
+                    v-model="state.commonBackground.innerPadding.left"
+                    :disabled="state.commonBackground.innerPadding.mode === ShorthandMode.Uniform"
+                    @change="onBackgroundChange"
+                  />
+                </div>
+              </el-col>
+              <el-col :span="12">
+                <div style="display: flex; align-items: center; margin-bottom: 8px">
+                  <span style="width: 30%; padding-right: 8px">{{
+                    t('visualization.edge_bottom')
+                  }}</span>
+                  <el-input-number
+                    style="width: 70%"
+                    :effect="themes"
+                    :disabled="state.commonBackground.innerPadding.mode !== ShorthandMode.PerEdge"
+                    controls-position="right"
+                    :min="0"
+                    :max="100"
+                    v-model="state.commonBackground.innerPadding.bottom"
+                    @change="onBackgroundChange"
+                  />
+                </div>
+                <div style="display: flex; align-items: center">
+                  <span style="width: 30%; padding-right: 8px">{{
+                    t('visualization.edge_right')
+                  }}</span>
+                  <el-input-number
+                    style="width: 70%"
+                    :effect="themes"
+                    :disabled="state.commonBackground.innerPadding.mode !== ShorthandMode.PerEdge"
+                    controls-position="right"
+                    :min="0"
+                    :max="100"
+                    v-model="state.commonBackground.innerPadding.right"
+                    @change="onBackgroundChange"
+                  />
+                </div>
+              </el-col>
+            </el-row>
           </el-form-item>
         </el-col>
+      </el-row>
+      <el-row :gutter="8">
         <el-col :span="12">
           <el-form-item
             :label="t('visualization.board_radio')"
@@ -214,7 +292,7 @@
             <el-row>
               <span
                 style="margin-top: 2px"
-                v-if="!state.commonBackground['outerImage']"
+                v-if="!state.commonBackground.outerImage"
                 class="image-hint"
                 :class="`image-hint_${themes}`"
               >
@@ -224,7 +302,7 @@
               <el-button
                 size="small"
                 style="margin: 8px 0 0 -4px"
-                v-if="state.commonBackground['outerImage']"
+                v-if="state.commonBackground.outerImage"
                 text
                 @click="goFile"
                 :disabled="!state.commonBackground.backgroundImageEnable"
@@ -244,7 +322,7 @@
 <script setup lang="ts">
 import { queryVisualizationBackground } from '@/api/visualization/visualizationBackground'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
-import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
+import { computed, effect, nextTick, onMounted, reactive, ref, watch } from 'vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
@@ -279,8 +357,13 @@ const props = withDefaults(
   }
 )
 
-const state = reactive({
-  commonBackground: {},
+import { State } from '@/components/visualization/component-background/Types'
+import { ShorthandMode } from '@/Types'
+
+const state = reactive<State>({
+  commonBackground: {
+    innerPadding: {}
+  },
   BackgroundShowMap: {},
   checked: false,
   backgroundOrigin: {},
@@ -291,6 +374,11 @@ const state = reactive({
   panel: null,
   predefineColors: COLOR_PANEL
 })
+
+const paddingModes = Object.values(ShorthandMode).map(item => ({
+  label: t(`visualization.inner_padding_shorthand_mode_${item}`),
+  value: item
+})) as { label: string; value: ShorthandMode }[]
 
 const goFile = () => {
   files.value.click()
@@ -307,8 +395,8 @@ const reUpload = e => {
     return
   }
   uploadFileResult(file, fileUrl => {
-    state.commonBackground['outerImage'] = fileUrl
-    state.fileList = [{ url: imgUrlTrans(state.commonBackground['outerImage']) }]
+    state.commonBackground.outerImage = fileUrl
+    state.fileList = [{ url: imgUrlTrans(state.commonBackground.outerImage) }]
     onBackgroundChange()
   })
 }
@@ -320,9 +408,21 @@ const queryBackground = () => {
 }
 
 const init = () => {
-  state.commonBackground = deepCopy(props.commonBackgroundPop)
-  if (state.commonBackground['outerImage']) {
-    state.fileList = [{ url: imgUrlTrans(state.commonBackground['outerImage']) }]
+  const commonBackgroundPop = deepCopy(props.commonBackgroundPop)
+  const innerPadding = commonBackgroundPop.innerPadding
+  if (typeof innerPadding === 'number') {
+    commonBackgroundPop.innerPadding = {
+      mode: ShorthandMode.Uniform,
+      top: innerPadding,
+      right: innerPadding,
+      bottom: innerPadding,
+      left: innerPadding
+    }
+  }
+  state.commonBackground = commonBackgroundPop
+  updateInnerPadding()
+  if (state.commonBackground.outerImage) {
+    state.fileList = [{ url: imgUrlTrans(state.commonBackground.outerImage) }]
   } else {
     state.fileList = []
   }
@@ -334,7 +434,7 @@ const commitStyle = () => {
 
 const handleRemove = () => {
   state.uploadDisabled = false
-  state.commonBackground['outerImage'] = null
+  state.commonBackground.outerImage = null
   state.fileList = []
   onBackgroundChange()
   commitStyle()
@@ -345,12 +445,24 @@ const handlePictureCardPreview = file => {
 }
 const upload = file => {
   uploadFileResult(file.file, fileUrl => {
-    state.commonBackground['outerImage'] = fileUrl
+    state.commonBackground.outerImage = fileUrl
     onBackgroundChange()
   })
 }
 
+const updateInnerPadding = () => {
+  if (state.commonBackground.innerPadding.mode === ShorthandMode.Uniform) {
+    state.commonBackground.innerPadding.left = state.commonBackground.innerPadding.top
+    state.commonBackground.innerPadding.right = state.commonBackground.innerPadding.top
+    state.commonBackground.innerPadding.bottom = state.commonBackground.innerPadding.top
+  } else if (state.commonBackground.innerPadding.mode === ShorthandMode.Axis) {
+    state.commonBackground.innerPadding.right = state.commonBackground.innerPadding.left
+    state.commonBackground.innerPadding.bottom = state.commonBackground.innerPadding.top
+  }
+}
+
 const onBackgroundChange = () => {
+  updateInnerPadding()
   emits('onBackgroundChange', state.commonBackground)
 }
 
@@ -477,13 +589,13 @@ watch(
   align-items: center;
 }
 
-.ed-select-dropdown__item {
+.board-select .ed-select-dropdown__item {
   height: 100px !important;
   text-align: center;
   padding: 0px 5px;
 }
 
-.ed-select-dropdown__item.selected::after {
+.board-select .ed-select-dropdown__item.selected::after {
   display: none;
 }
 
