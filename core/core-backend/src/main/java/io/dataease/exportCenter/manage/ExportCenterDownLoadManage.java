@@ -204,7 +204,7 @@ public class ExportCenterDownLoadManage {
         String dataPath = exportData_path + exportTask.getId();
         File directory = new File(dataPath);
         // 如果父目录不存在，则递归创建
-        if (!directory.exists()){
+        if (!directory.exists()) {
             boolean isCreated = directory.mkdirs(); // 创建所有必要的父目录
         }
 
@@ -440,6 +440,22 @@ public class ExportCenterDownLoadManage {
         startViewTask(exportTask, request);
     }
 
+    public static void removeColumn(List<Object[]> list, List<Integer> columnIndexs) {
+        if (list == null || list.isEmpty() || columnIndexs == null || columnIndexs.isEmpty()) {
+            return;
+        }
+        for (int i = 0; i < list.size(); i++) {
+            Object[] originalRow = list.get(i);
+            Object[] newRow = new Object[originalRow.length - columnIndexs.size()];
+            int newIndex = 0;
+            for (int j = 0; j < originalRow.length; j++) {
+                if (!columnIndexs.contains(j)) {
+                    newRow[newIndex++] = originalRow[j];
+                }
+            }
+            list.set(i, newRow);
+        }
+    }
 
     public void startViewTask(CoreExportTask exportTask, ChartExcelRequest request) {
         String dataPath = exportData_path + exportTask.getId();
@@ -469,10 +485,6 @@ public class ExportCenterDownLoadManage {
                     ChartViewDTO chartViewDTO = chartDataServer.findExcelData(request);
                     for (long i = 1; i < chartViewDTO.getTotalPage() + 1; i++) {
                         request.getViewInfo().getChartExtRequest().setGoPage(i);
-                        request.getViewInfo().setXAxis(request.getViewInfo().getXAxis().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
-                        request.getViewInfo().setYAxis(request.getViewInfo().getYAxis().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
-                        request.getViewInfo().setXAxisExt(request.getViewInfo().getXAxisExt().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
-                        request.getViewInfo().setYAxisExt(request.getViewInfo().getYAxisExt().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
                         request.getViewInfo().setExtStack(request.getViewInfo().getExtStack().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
                         chartDataServer.findExcelData(request);
                         details.addAll(request.getDetails());
@@ -490,6 +502,14 @@ public class ExportCenterDownLoadManage {
                             xAxis.addAll(request.getViewInfo().getDrillFields());
                             header = Arrays.stream(request.getHeader()).filter(item -> xAxis.stream().map(d -> StringUtils.isNotBlank(d.getChartShowName()) ? d.getChartShowName() : d.getName()).toList().contains(item)).toArray();
                             details.add(0, header);
+                            List<Integer> columnIndexs = new ArrayList<>();
+                            for (int i1 = 0; i1 < xAxis.size(); i1++) {
+                                ChartViewFieldDTO xAxi = xAxis.get(i1);
+                                if (xAxi.isHide()) {
+                                    columnIndexs.add(i1);
+                                }
+                            }
+                            removeColumn(details, columnIndexs);
                             ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), wb);
                             sheetIndex++;
                             details.clear();

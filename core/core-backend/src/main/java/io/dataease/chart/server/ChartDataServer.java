@@ -16,6 +16,7 @@ import io.dataease.dataset.server.DatasetFieldServer;
 import io.dataease.constant.DeTypeConstants;
 import io.dataease.dataset.utils.DatasetUtils;
 import io.dataease.exception.DEException;
+import io.dataease.exportCenter.manage.ExportCenterDownLoadManage;
 import io.dataease.exportCenter.manage.ExportCenterManage;
 import io.dataease.exportCenter.util.ExportCenterUtils;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
@@ -259,11 +260,6 @@ public class ChartDataServer implements ChartDataApi {
                     ChartViewDTO chartViewDTO = findExcelData(request);
                     for (long i = 1; i < chartViewDTO.getTotalPage() + 1; i++) {
                         request.getViewInfo().getChartExtRequest().setGoPage(i);
-                        request.getViewInfo().setXAxis(request.getViewInfo().getXAxis().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
-                        request.getViewInfo().setYAxis(request.getViewInfo().getYAxis().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
-                        request.getViewInfo().setXAxisExt(request.getViewInfo().getXAxisExt().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
-                        request.getViewInfo().setYAxisExt(request.getViewInfo().getYAxisExt().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
-                        request.getViewInfo().setExtStack(request.getViewInfo().getExtStack().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
                         findExcelData(request);
                         details.addAll(request.getDetails());
                         if ((details.size() + extractPageSize) > sheetLimit || i == chartViewDTO.getTotalPage()) {
@@ -277,6 +273,14 @@ public class ChartDataServer implements ChartDataApi {
                             xAxis.addAll(request.getViewInfo().getExtStack());
                             Object[] header = Arrays.stream(request.getHeader()).filter(item -> xAxis.stream().map(d -> StringUtils.isNotBlank(d.getChartShowName()) ? d.getChartShowName() : d.getName()).toList().contains(item)).collect(Collectors.toList()).toArray();
                             details.add(0, header);
+                            List<Integer> columnIndexs = new ArrayList<>();
+                            for (int i1 = 0; i1 < xAxis.size(); i1++) {
+                                ChartViewFieldDTO xAxi = xAxis.get(i1);
+                                if (xAxi.isHide()) {
+                                    columnIndexs.add(i1);
+                                }
+                            }
+                            ExportCenterDownLoadManage.removeColumn(details, columnIndexs);
                             ViewDetailField[] detailFields = request.getDetailFields();
                             ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), wb);
                             sheetIndex++;
