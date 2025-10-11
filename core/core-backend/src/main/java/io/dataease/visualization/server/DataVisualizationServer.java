@@ -272,12 +272,12 @@ public class DataVisualizationServer implements DataVisualizationApi {
                                 List<AppCoreDatasetTableFieldVO> sourceDatasetTableFieldListSub = sourceDatasetTableFieldMap.get(sourceTable.getId());
 
                                 QueryWrapper<CoreDatasetTableField> wrapperField = new QueryWrapper<>();
-                                wrapper.eq("dataset_table_id", systemTable.getId());
+                                wrapperField.eq("dataset_table_id", systemTable.getId());
                                 List<CoreDatasetTableField> systemDatasetTableFieldSub = coreDatasetTableFieldMapper.selectList(wrapperField);
 
                                 for (AppCoreDatasetTableFieldVO sourceTableField : sourceDatasetTableFieldListSub) {
                                     for (CoreDatasetTableField systemTableField : systemDatasetTableFieldSub) {
-                                        if (sourceTable.getTableName().equals(systemTable.getTableName())) {
+                                        if (sourceTableField.getOriginName().equals(systemTableField.getOriginName())) {
                                             // 获取dsTableIdMap datasourceIdMap
                                             dsTableFieldsIdMap.put(sourceTableField.getId(), systemTableField.getId());
                                             break;
