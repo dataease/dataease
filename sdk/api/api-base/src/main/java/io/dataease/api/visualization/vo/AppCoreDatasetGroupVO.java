@@ -89,4 +89,9 @@ public class AppCoreDatasetGroupVO implements Serializable {
      * 是否跨源
      */
     private Boolean isCross;
+
+    /**
+     * 映射系统数据集ID
+     */
+    private Long systemDatasetId;
 }

@@ -234,7 +234,8 @@ const saveCanvasWithCheck = (withPublish = false, status?) => {
           pid: '',
           name: dvInfo.value.name,
           datasetFolderPid: null,
-          datasetFolderName: dvInfo.value.name
+          datasetFolderName: dvInfo.value.name,
+          dataType: dvInfo.value['dataType']
         },
         appData: appData.value
       }

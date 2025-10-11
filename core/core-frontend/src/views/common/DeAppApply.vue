@@ -14,7 +14,7 @@
       <el-form
         ref="appSaveForm"
         :model="state.form"
-        :rules="state.rule"
+        :rules="isDatasourceMatch ? state.ruleDatasource : state.ruleDataset"
         class="de-form-item app-form"
         label-width="180px"
         label-position="top"
@@ -51,120 +51,128 @@
             </template>
           </el-tree-select>
         </el-form-item>
-        <el-form-item :label="t('visualization.ds_group_name')" prop="datasetFolderName">
-          <el-input
-            v-model="state.form.datasetFolderName"
-            autocomplete="off"
-            :placeholder="t('visualization.input_tips')"
-          />
-        </el-form-item>
-        <el-form-item :label="t('visualization.ds_group_position')" prop="datasetFolderPid">
-          <el-tree-select
-            style="width: 100%"
-            @keydown.stop
-            @keyup.stop
-            v-model="state.form.datasetFolderPid"
-            :data="state.dsTree"
-            :props="state.propsTree"
-            @node-click="dsTreeSelect"
-            :render-after-expand="false"
-            filterable
-          >
-            <template #default="{ data: { name } }">
-              <span class="custom-tree-node">
-                <el-icon>
-                  <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
-                </el-icon>
-                <span :title="name">{{ name }}</span>
-              </span>
-            </template>
-          </el-tree-select>
-        </el-form-item>
         <el-form-item :label="t('visualization.data_match_type')" prop="dataType">
-          <el-radio-group v-model="state.form.dataType">
-            <el-radio size="small" :label="'datasource'">
-              {{ t('datasource.datasource') }}</el-radio
-            >
-            <el-radio size="small" :label="'dataset'">{{ t('dataset.datalist') }} </el-radio>
-          </el-radio-group>
+          <el-select v-model="state.form.dataType" :placeholder="t('chart.pls_select_field')">
+            <el-option key="datasource" :label="t('datasource.datasource')" value="datasource" />
+            <el-option key="dataset" :label="t('dataset.datalist')" value="dataset" />
+          </el-select>
         </el-form-item>
-        <div class="de-row-rules" style="margin: 0 0 16px">
-          <span>{{ t('visualization.datasource_info') }}</span>
-        </div>
-        <el-row class="datasource-link" v-if="state.form.dataType === 'datasource'">
-          <el-row class="head">
-            <el-col :span="11">{{ t('visualization.app_datasource') }}</el-col
-            ><el-col :span="2"></el-col
-            ><el-col :span="11">{{ t('visualization.sys_datasource') }}</el-col>
+        <template v-if="isDatasourceMatch">
+          <el-form-item :label="t('visualization.ds_group_name')" prop="datasetFolderName">
+            <el-input
+              v-model="state.form.datasetFolderName"
+              autocomplete="off"
+              :placeholder="t('visualization.input_tips')"
+            />
+          </el-form-item>
+          <el-form-item :label="t('visualization.ds_group_position')" prop="datasetFolderPid">
+            <el-tree-select
+              style="width: 100%"
+              @keydown.stop
+              @keyup.stop
+              v-model="state.form.datasetFolderPid"
+              :data="state.dsTree"
+              :props="state.propsTree"
+              @node-click="dsTreeSelect"
+              :render-after-expand="false"
+              filterable
+            >
+              <template #default="{ data: { name } }">
+                <span class="custom-tree-node">
+                  <el-icon>
+                    <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
+                  </el-icon>
+                  <span :title="name">{{ name }}</span>
+                </span>
+              </template>
+            </el-tree-select>
+          </el-form-item>
+          <div class="de-row-rules" style="margin: 0 0 16px">
+            <span>{{ t('visualization.datasource_info') }}</span>
+          </div>
+          <el-row class="datasource-link">
+            <el-row class="head">
+              <el-col :span="11">{{ t('visualization.app_datasource') }}</el-col
+              ><el-col :span="2"></el-col
+              ><el-col :span="11">{{ t('visualization.sys_datasource') }}</el-col>
+            </el-row>
+            <el-row
+              :key="index"
+              class="content"
+              v-for="(appDatasource, index) in state.appData.datasourceInfo"
+            >
+              <el-col :span="11">
+                <el-select style="width: 100%" v-model="appDatasource.name" disabled>
+                  <el-option
+                    :key="appDatasource.name"
+                    :label="appDatasource.name"
+                    :value="appDatasource.name"
+                  >
+                  </el-option>
+                </el-select> </el-col
+              ><el-col :span="2" class="icon-center">
+                <Icon name="dv-link-target"
+                  ><dvLinkTarget
+                    class="svg-icon"
+                    style="width: 20px; height: 20px" /></Icon></el-col
+              ><el-col :span="11">
+                <dataset-select
+                  ref="datasetSelector"
+                  v-model="appDatasource.systemDatasourceId"
+                  style="flex: 1"
+                  :state-obj="state"
+                  themes="light"
+                  source-type="datasource"
+                  @add-ds-window="addDatasourceWindow"
+                  view-id="0"
+                />
+              </el-col>
+            </el-row>
           </el-row>
-          <el-row
-            :key="index"
-            class="content"
-            v-for="(appDatasource, index) in state.appData.datasourceInfo"
-          >
-            <el-col :span="11">
-              <el-select style="width: 100%" v-model="appDatasource.name" disabled>
-                <el-option
-                  :key="appDatasource.name"
-                  :label="appDatasource.name"
-                  :value="appDatasource.name"
-                >
-                </el-option>
-              </el-select> </el-col
-            ><el-col :span="2" class="icon-center">
-              <Icon name="dv-link-target"
-                ><dvLinkTarget class="svg-icon" style="width: 20px; height: 20px" /></Icon></el-col
-            ><el-col :span="11">
-              <dataset-select
-                ref="datasetSelector"
-                v-model="appDatasource.systemDatasourceId"
-                style="flex: 1"
-                :state-obj="state"
-                themes="light"
-                source-type="datasource"
-                @add-ds-window="addDsWindow"
-                view-id="0"
-              />
-            </el-col>
+        </template>
+        <template v-if="!isDatasourceMatch">
+          <div class="de-row-rules" style="margin: 0 0 16px">
+            <span>{{ t('visualization.dataset_info') }}</span>
+          </div>
+          <el-row class="datasource-link">
+            <el-row class="head">
+              <el-col :span="11">{{ t('visualization.app_dataset') }}</el-col
+              ><el-col :span="2"></el-col
+              ><el-col :span="11">{{ t('visualization.sys_dataset') }}</el-col>
+            </el-row>
+            <el-row
+              :key="index"
+              class="content"
+              v-for="(appDataset, index) in state.appData.datasetGroupsInfo"
+            >
+              <el-col :span="11">
+                <el-select style="width: 100%" v-model="appDataset.name" disabled>
+                  <el-option
+                    :key="appDataset.name"
+                    :label="appDataset.name"
+                    :value="appDataset.name"
+                  >
+                  </el-option>
+                </el-select> </el-col
+              ><el-col :span="2" class="icon-center">
+                <Icon name="dv-link-target"
+                  ><dvLinkTarget
+                    class="svg-icon"
+                    style="width: 20px; height: 20px" /></Icon></el-col
+              ><el-col :span="11">
+                <dataset-select
+                  ref="datasetSelector"
+                  v-model="appDataset.systemDatasetId"
+                  style="flex: 1"
+                  :state-obj="state"
+                  themes="light"
+                  @add-ds-window="addDatasetWindow"
+                  view-id="0"
+                />
+              </el-col>
+            </el-row>
           </el-row>
-        </el-row>
-        <el-row class="datasource-link" v-if="state.form.dataType === 'dataset'">
-          <el-row class="head">
-            <el-col :span="11">{{ t('visualization.app_datasource') }}</el-col
-            ><el-col :span="2"></el-col
-            ><el-col :span="11">{{ t('visualization.sys_datasource') }}</el-col>
-          </el-row>
-          <el-row
-            :key="index"
-            class="content"
-            v-for="(appDatasource, index) in state.appData.datasourceInfo"
-          >
-            <el-col :span="11">
-              <el-select style="width: 100%" v-model="appDatasource.name" disabled>
-                <el-option
-                  :key="appDatasource.name"
-                  :label="appDatasource.name"
-                  :value="appDatasource.name"
-                >
-                </el-option>
-              </el-select> </el-col
-            ><el-col :span="2" class="icon-center">
-              <Icon name="dv-link-target"
-                ><dvLinkTarget class="svg-icon" style="width: 20px; height: 20px" /></Icon></el-col
-            ><el-col :span="11">
-              <dataset-select
-                ref="datasetSelector"
-                v-model="appDatasource.systemDatasourceId"
-                style="flex: 1"
-                :state-obj="state"
-                themes="light"
-                source-type="datasource"
-                @add-ds-window="addDsWindow"
-                view-id="0"
-              />
-            </el-col>
-          </el-row>
-        </el-row>
+        </template>
       </el-form>
     </div>
     <template #footer>
@@ -238,9 +246,16 @@ const dvPreName = computed(() =>
     ? t('work_branch.dashboard')
     : t('work_branch.big_data_screen')
 )
-const addDsWindow = () => {
+const isDatasourceMatch = computed(() => state.form.dataType === 'datasource')
+const addDatasourceWindow = () => {
   // do addDsWindow
   const url = '#/data/datasource?opt=create'
+  window.open(url, openType)
+}
+
+const addDatasetWindow = () => {
+  // do addDsWindow
+  const url = '#/data/dataset?opt=create'
   window.open(url, openType)
 }
 
@@ -254,7 +269,8 @@ const state = reactive({
     isLeaf: node => !node.children?.length
   },
   appData: {
-    datasourceInfo: []
+    datasourceInfo: [],
+    datasetGroupsInfo: []
   },
   form: {
     pid: '',
@@ -263,7 +279,30 @@ const state = reactive({
     datasetFolderName: null,
     dataType: 'datasource'
   },
-  rule: {
+  ruleDataset: {
+    name: [
+      {
+        required: true,
+        min: 2,
+        max: 25,
+        message: t('datasource.input_limit_2_25', [2, 25]),
+        trigger: 'blur'
+      }
+    ],
+    pid: [
+      {
+        required: true,
+        message: t('visualization.select_folder'),
+        trigger: 'blur'
+      }
+    ],
+    dataType: [
+      {
+        required: true
+      }
+    ]
+  },
+  ruleDatasource: {
     name: [
       {
         required: true,
@@ -348,6 +387,7 @@ const init = params => {
   state.form = params.base
   state.form.dataType = 'datasource'
   state.appData.datasourceInfo = deepCopy(appData.value?.datasourceInfo)
+  state.appData.datasetGroupsInfo = deepCopy(appData.value?.datasetGroupsInfo)
   initData()
 }
 
@@ -367,23 +407,37 @@ const close = () => {
 
 const saveApp = () => {
   let datasourceMatchReady = true
+  let datasetMatchReady = true
   state.appData.datasourceInfo.forEach(datasource => {
     if (!datasource.systemDatasourceId) {
       datasourceMatchReady = false
     }
   })
-  if (!datasourceMatchReady) {
+
+  state.appData.datasetGroupsInfo.forEach(dataset => {
+    if (!dataset.systemDatasetId) {
+      datasetMatchReady = false
+    }
+  })
+  if (!datasourceMatchReady && isDatasourceMatch.value) {
     ElMessage.error(t('visualization.app_no_datasource_tips'))
+    return
+  }
+
+  if (!datasetMatchReady && !isDatasourceMatch.value) {
+    ElMessage.error(t('visualization.app_no_dataset_tips'))
     return
   }
   appSaveForm.value?.validate(valid => {
     if (valid) {
       // 还原datasource
       appData.value['datasourceInfo'] = state.appData.datasourceInfo
+      appData.value['datasetGroupsInfo'] = state.appData.datasetGroupsInfo
       dvInfo.value['pid'] = state.form.pid
       dvInfo.value['name'] = state.form.name
       dvInfo.value['datasetFolderPid'] = state.form.datasetFolderPid
       dvInfo.value['datasetFolderName'] = state.form.datasetFolderName
+      dvInfo.value['dataType'] = state.form.dataType
       dvInfo.value['dataState'] = 'ready'
       snapshotStore.recordSnapshotCache('renderChart')
       emits('saveAppCanvas')
