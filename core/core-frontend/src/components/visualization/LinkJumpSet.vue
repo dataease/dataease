@@ -35,7 +35,7 @@
         <el-row class="preview">
           <el-col :span="8" style="height: 100%; overflow-y: auto">
             <el-row class="tree-head">
-              <span class="head-text">{{ t('visualization.to_select_field') }}</span>
+              <span class="head-text">{{ t('visualization.to_select_view') }}</span>
               <span class="head-filter">
                 {{ t('visualization.show_selected_only') }}
                 <el-switch size="small" v-model="state.showSelected" />
@@ -211,7 +211,11 @@
                       <template v-if="state.linkJumpInfo.targetDvId">
                         <div class="jump-com-list">
                           <el-tabs size="small" v-model="state.activeCollapse">
-                            <el-tab-pane :label="t('visualization.linkage_view')" name="view">
+                            <el-tab-pane
+                              v-if="!isIndicator"
+                              :label="t('visualization.linkage_view')"
+                              name="view"
+                            >
                             </el-tab-pane>
                             <el-tab-pane
                               :label="t('visualization.with_filter_params')"
@@ -672,11 +676,6 @@ const selectSourceTips = t('visualization.select_target_resource')
 
 const targetSource = t('visualization.target_dashboard_dataV')
 
-const curSource =
-  dvInfo.value.type === 'dashboard'
-    ? t('visualization.cur_dashboard')
-    : t('visualization.cur_screen')
-
 const state = reactive({
   curDataVWeight: 0,
   activeCollapse: 'view',
@@ -687,6 +686,7 @@ const state = reactive({
   tempId: null,
   initState: false,
   viewId: null,
+  viewType: null,
   name2Auto: [],
   searchField: '',
   searchFunction: '',
@@ -754,7 +754,7 @@ const dialogInit = viewItem => {
 const initCurFilterFieldArray = componentDataCheck => {
   componentDataCheck.forEach(componentItem => {
     if (componentItem.component === 'VQuery' && componentItem.propValue instanceof Array) {
-      componentItem.propValue?.forEach(filterItem => {
+      componentItem.propValue.forEach(filterItem => {
         if (filterItem.checkedFields.includes(state.viewId)) {
           state.linkJumpCurFilterFieldArray.push({
             id: filterItem.id,
@@ -766,17 +766,20 @@ const initCurFilterFieldArray = componentDataCheck => {
     } else if (componentItem.component === 'Group') {
       initCurFilterFieldArray(componentItem.propValue)
     } else if (componentItem.component === 'DeTabs') {
-      componentItem.propValue?.forEach(tabItem => {
+      componentItem.propValue.forEach(tabItem => {
         initCurFilterFieldArray(tabItem.componentData)
       })
     }
   })
 }
 
+const isIndicator = computed(() => 'indicator' === state.viewType)
+
 const init = viewItem => {
   state.initState = false
   state.viewId = viewItem.id
-  state.activeCollapse = 'view'
+  state.viewType = viewItem.type
+  state.activeCollapse = isIndicator.value ? 'filter' : 'view'
   const chartDetails = canvasViewInfo.value[state.viewId] as ChartObj
   state.curJumpViewInfo = chartDetails
   let checkAllAxisStr =
@@ -795,20 +798,11 @@ const init = viewItem => {
       JSON.stringify(chartDetails.yAxisExt) +
       JSON.stringify(chartDetails.drillFields)
     checkJumpStr = checkAllAxisStr
-  } else if (chartDetails.type === 'table-pivot') {
+  } else if (
+    ['table-normal', 'table-info', 'table-pivot', 'indicator'].includes(chartDetails.type)
+  ) {
     checkJumpStr =
       checkAllAxisStr + JSON.stringify(chartDetails.yAxis) + JSON.stringify(chartDetails.yAxisExt)
-  } else if (chartDetails.type === 'table-info') {
-    checkJumpStr = checkAllAxisStr
-  } else if (chartDetails.type === 'multi-scatter') {
-    // 多维散点图跳转字段只列出维度，引用字段可选所有轴字段
-    const multiScatterExtra =
-      JSON.stringify(chartDetails.yAxis || []) +
-      JSON.stringify(chartDetails.extColor || []) +
-      JSON.stringify(chartDetails.extBubble || []) +
-      JSON.stringify(chartDetails.yAxisExt || [])
-    checkAllAxisStr = checkAllAxisStr + multiScatterExtra
-    checkJumpStr = JSON.stringify(chartDetails.extColor || [])
   } else {
     checkJumpStr = checkAllAxisStr
   }
@@ -971,7 +965,7 @@ const getPanelViewList = dvId => {
     // 增加过滤组件匹配
     JSON.parse(rsp.data.bashComponentData).forEach(componentItem => {
       if (componentItem.component === 'VQuery' && componentItem.propValue instanceof Array) {
-        componentItem.propValue?.forEach(filterItem => {
+        componentItem.propValue.forEach(filterItem => {
           state.currentLinkPanelViewArray.push({
             id: filterItem.id,
             type: 'filter',
@@ -991,7 +985,9 @@ const dvNodeClick = data => {
   if (data.leaf) {
     state.curDataVWeight = data.weight
     state.linkJumpInfo.targetViewInfoList = []
-    addLinkJumpField()
+    if (!isIndicator.value) {
+      addLinkJumpField()
+    }
     getPanelViewList(data.id)
   }
 }
@@ -1132,7 +1128,7 @@ defineExpose({
 .preview {
   margin-top: 5px;
   border: 1px solid #e6e6e6;
-  border-radius: 6px;
+  border-radius: 4px;
   height: 470px !important;
   overflow: hidden;
   background-size: 100% 100% !important;
@@ -1266,7 +1262,7 @@ defineExpose({
   white-space: nowrap;
   text-overflow: ellipsis;
 
-  border-radius: 6px;
+  border-radius: 4px;
   border: 1px solid #dee0e3;
 
   background: #fff;
@@ -1464,13 +1460,13 @@ span {
 
 .outer-content {
   height: 340px;
-  border-radius: 6px;
+  border-radius: 4px;
 }
 
 .padding-lr {
   height: 500px;
   border: 1px solid var(--deCardStrokeColor, #dee0e3);
-  border-radius: 6px;
+  border-radius: 4px;
   padding: 12px;
   box-sizing: border-box;
   margin-left: 12px;
@@ -1501,8 +1497,8 @@ span {
   color: var(--deTextDisable);
 }
 .outer-content-mirror {
-  border: 1px solid #d9dcdf;
-  border-radius: 6px;
+  border: 1px solid #bbbfc4;
+  border-radius: 4px;
   height: calc(100% - 30px);
   width: 100%;
   overflow: hidden;
@@ -1520,8 +1516,8 @@ span {
 }
 
 .outer-content-right {
-  border: 1px solid #d9dcdf;
-  border-radius: 6px;
+  border: 1px solid #bbbfc4;
+  border-radius: 4px;
   height: calc(100% - 30px);
   width: 100%;
   padding: 12px;

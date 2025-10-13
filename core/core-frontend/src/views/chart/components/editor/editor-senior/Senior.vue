@@ -167,7 +167,7 @@ const linkJumpSetOpen = () => {
   }
   //跳转设置需要先触发保存
   canvasSave(() => {
-    linkJumpRef.value.dialogInit({ id: chart.value.id })
+    linkJumpRef.value.dialogInit({ id: chart.value.id, type: chart.value.type })
   })
 }
 const linkageSetOpen = () => {

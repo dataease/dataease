@@ -16,7 +16,8 @@ export class IndicatorChartView extends AbstractChartView {
     'indicator-name-selector',
     'threshold',
     'function-cfg',
-    'linkage'
+    'linkage',
+    'jump-set'
   ]
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],
