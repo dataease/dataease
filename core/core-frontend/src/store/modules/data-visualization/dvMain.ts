@@ -1194,6 +1194,7 @@ export const dvMainStore = defineStore('dataVisualization', {
         return
       }
       const currentFilters = [] // 外部参数信息
+      const defaultValueMap = {}
       // 外部参数 可能会包含多个参数
       Object.keys(params).forEach(function (sourceInfo) {
         // 获取外部参数的值 sourceInfo 是外部参数名称 支持数组传入
@@ -1258,7 +1259,6 @@ export const dvMainStore = defineStore('dataVisualization', {
             preActiveComponentIds.push(element.id)
           }
           if (element.component === 'VQuery') {
-            const defaultValueMap = {}
             element.propValue?.forEach(filterItem => {
               if (filterItem.id === targetViewId) {
                 let queryParams = paramValue
@@ -1330,6 +1330,10 @@ export const dvMainStore = defineStore('dataVisualization', {
                 }
               }
             })
+            const allCascadeDataset = element.cascade
+              .flat()
+              .map(item => `--${item.datasetId}`)
+              .join('')
             // 级联条件处理
             if (element.cascade?.length && Object.keys(defaultValueMap).length) {
               element.cascade.forEach(cascadeItem => {
@@ -1344,7 +1348,7 @@ export const dvMainStore = defineStore('dataVisualization', {
                         itemInner['selectValue'] = Array.isArray(curDefaultValue)
                           ? curDefaultValue
                           : [curDefaultValue]
-                      } else {
+                      } else if (!allCascadeDataset.includes(key)) {
                         itemInner['currentSelectValue'] = []
                         itemInner['selectValue'] = []
                       }
