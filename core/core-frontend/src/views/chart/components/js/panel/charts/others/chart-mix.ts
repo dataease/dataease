@@ -212,7 +212,6 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
       const label = {
         fields: [],
         ...tempLabel,
-        offsetY: -8,
         formatter: (data: Datum) => {
           if (!labelAttr.seriesLabelFormatter?.length) {
             return data.value
