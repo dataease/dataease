@@ -93,13 +93,14 @@ const dfsInit = arr => {
       const child = dfsInit(items)
       elementList.push({ logic, child })
     } else {
-      const { enumValue, fieldId, filterType, term, value, timeValue, field } = ele
+      const { enumValue, fieldId, filterType, term, timeType, value, timeValue, field } = ele
       const { name, deType } = field || {}
       elementList.push({
         enumValue: enumValue.join(','),
         fieldId,
         filterType,
         term,
+        timeType,
         timeValue,
         value,
         name,
@@ -121,13 +122,14 @@ const dfsSubmit = arr => {
         fieldId: '',
         filterType: '',
         term: '',
+        timeType: 'year',
         type: 'tree',
         value: '',
         timeValue: '',
         subTree: { logic, items: subTree }
       })
     } else {
-      const { enumValue, fieldId, filterType, deType, term, value, name, timeValue } = ele
+      const { enumValue, fieldId, filterType, deType, term, value, timeType, name, timeValue } = ele
       errorDetected({ deType, enumValue, filterType, term, value, name, timeValue })
       if (fieldId) {
         items.push({
@@ -136,6 +138,7 @@ const dfsSubmit = arr => {
           timeValue,
           filterType,
           term,
+          timeType,
           value,
           type: 'item',
           subTree: null
@@ -278,6 +281,7 @@ const addCondReal = (type, logic) => {
           enumValue: '',
           term: '',
           filterType: 'logic',
+          timeType: 'year',
           name: '',
           timeValue: '',
           deType: ''

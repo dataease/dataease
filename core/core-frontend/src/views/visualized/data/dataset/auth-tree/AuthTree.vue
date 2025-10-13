@@ -68,6 +68,7 @@ const add = (type, child, logic) => {
           value: '',
           enumValue: '',
           term: '',
+          timeType: 'year',
           filterType: 'logic',
           name: '',
           deType: ''

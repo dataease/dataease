@@ -15,6 +15,7 @@ import {
   sysParamsIlns,
   fieldEnums
 } from '@/views/visualized/data/dataset/options.js'
+import TimeSetDialog from '@/components/time-set-dialog/index.vue'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 export interface Item {
   term: string
@@ -27,6 +28,7 @@ export interface Item {
   filterTypeTime?: string
   timeValue: string
   dynamicTimeSetting?: SelectConfig
+  timeType?: string
 }
 
 type Props = {
@@ -432,6 +434,17 @@ const addFields = () => {
   showTextArea.value = false
 }
 
+const timeDialogRef = ref()
+const showTimeDialog = (obj: any) => {
+  if (obj.deType !== 1) return
+  timeDialogRef.value.init(obj.timeType, obj.value)
+}
+
+const saveTime = (type, value) => {
+  item.value.timeType = type
+  item.value.value = value
+}
+
 const emits = defineEmits(['update:item', 'del'])
 </script>
 
@@ -590,6 +603,19 @@ const emits = defineEmits(['update:item', 'del'])
                 size="small"
                 v-model="item.timeValue"
             /></el-tooltip>
+            <el-tooltip
+              class="item"
+              v-if="item.deType === 1 && item.filterTypeTime !== 'dynamicDate'"
+              effect="light"
+              :content="item.value"
+              placement="top"
+              ><el-input
+                readonly
+                @click="showTimeDialog(item)"
+                class="w70 mar5"
+                size="small"
+                v-model="item.value"
+            /></el-tooltip>
             <el-input v-else class="w70 mar5" size="small" v-model="item.value" />
             <div class="bottom-line"></div>
           </template>
@@ -709,6 +735,7 @@ const emits = defineEmits(['update:item', 'del'])
       </template>
     </el-dialog>
   </div>
+  <TimeSetDialog @saveTime="saveTime" ref="timeDialogRef"></TimeSetDialog>
 </template>
 
 <style lang="less" scoped>
