@@ -70,6 +70,7 @@ const add = (type, child, logic) => {
           term: '',
           filterType: 'logic',
           name: '',
+          timeType: 'year',
           filterTypeTime: 'dateValue',
           timeValue: '',
           dynamicTimeSetting: {},
