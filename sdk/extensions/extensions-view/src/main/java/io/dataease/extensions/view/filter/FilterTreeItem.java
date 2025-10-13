@@ -24,6 +24,9 @@ public class FilterTreeItem implements Serializable {
     private List<String> enumValue;// ['a','b']
     private String filterTypeTime;// dateValue | dynamicDate
     private DynamicTimeSetting dynamicTimeSetting;
+
+    private String timeType; // 时间细粒度
+
     // tree
     private FilterTreeObj subTree;
 
