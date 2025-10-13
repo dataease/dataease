@@ -34,6 +34,8 @@ public class DatasetRowPermissionsTreeItem implements Serializable {
     private String timeValue;// 'a'
     private List<String> enumValue;// ['a','b']
 
+    private String timeType; // 时间细粒度
+
     private DatasetRowPermissionsTreeObj subTree;
     private static final long serialVersionUID = 1L;
 }
