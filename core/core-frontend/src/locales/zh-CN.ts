@@ -2884,6 +2884,7 @@ export default {
     publish: '发布',
     freeze_top: '位置冻结在顶部',
     indicator_linkage: '指标卡联动仅携带图表过滤参数',
+    indicator_jump: '指标卡跳转仅携带图表过滤参数',
     gap_size: '间隙大小',
     small: '小',
     middle: '中',

@@ -2957,6 +2957,7 @@ export default {
     publish: 'Publish',
     freeze_top: 'Position frozen at the top',
     indicator_linkage: 'Indicator card linkage only carries chart filtering parameters',
+    indicator_jump: 'Indicator card jump only carries chart filtering parameters',
     gap_size: 'Gap Size',
     small: 'Small',
     middle: 'Medium',

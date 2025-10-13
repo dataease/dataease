@@ -211,7 +211,11 @@
                       <template v-if="state.linkJumpInfo.targetDvId">
                         <div class="jump-com-list">
                           <el-tabs size="small" v-model="state.activeCollapse">
-                            <el-tab-pane :label="t('visualization.linkage_view')" name="view">
+                            <el-tab-pane
+                              v-if="!isIndicator"
+                              :label="t('visualization.linkage_view')"
+                              name="view"
+                            >
                             </el-tab-pane>
                             <el-tab-pane
                               :label="t('visualization.with_filter_params')"
@@ -682,6 +686,7 @@ const state = reactive({
   tempId: null,
   initState: false,
   viewId: null,
+  viewType: null,
   name2Auto: [],
   searchField: '',
   searchFunction: '',
@@ -768,10 +773,13 @@ const initCurFilterFieldArray = componentDataCheck => {
   })
 }
 
+const isIndicator = computed(() => 'indicator' === state.viewType)
+
 const init = viewItem => {
   state.initState = false
   state.viewId = viewItem.id
-  state.activeCollapse = 'view'
+  state.viewType = viewItem.type
+  state.activeCollapse = isIndicator.value ? 'filter' : 'view'
   const chartDetails = canvasViewInfo.value[state.viewId] as ChartObj
   state.curJumpViewInfo = chartDetails
   let checkAllAxisStr =
@@ -790,7 +798,9 @@ const init = viewItem => {
       JSON.stringify(chartDetails.yAxisExt) +
       JSON.stringify(chartDetails.drillFields)
     checkJumpStr = checkAllAxisStr
-  } else if (['table-normal', 'table-info', 'table-pivot'].includes(chartDetails.type)) {
+  } else if (
+    ['table-normal', 'table-info', 'table-pivot', 'indicator'].includes(chartDetails.type)
+  ) {
     checkJumpStr =
       checkAllAxisStr + JSON.stringify(chartDetails.yAxis) + JSON.stringify(chartDetails.yAxisExt)
   } else {
@@ -975,7 +985,9 @@ const dvNodeClick = data => {
   if (data.leaf) {
     state.curDataVWeight = data.weight
     state.linkJumpInfo.targetViewInfoList = []
-    addLinkJumpField()
+    if (!isIndicator.value) {
+      addLinkJumpField()
+    }
     getPanelViewList(data.id)
   }
 }

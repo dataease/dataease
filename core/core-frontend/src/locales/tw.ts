@@ -2875,6 +2875,7 @@ export default {
     publish: '發佈',
     freeze_top: '位置凍結在頂部',
     indicator_linkage: '指標卡聯動僅攜帶圖表過濾參數',
+    indicator_jump: '指標卡跳轉僅攜帶圖表過濾參數',
     gap_size: '間隙大小',
     small: '小',
     middle: '中',
