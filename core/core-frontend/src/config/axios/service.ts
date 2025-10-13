@@ -16,6 +16,8 @@ import { config } from './config'
 import { configHandler } from './refresh'
 import { isMobile, getLocale } from '@/utils/utils'
 import { useRequestStoreWithOut } from '@/store/modules/request'
+import { clearCache } from '@/utils/cacheUtil'
+
 type AxiosErrorWidthLoading<T> = T & {
   config: {
     loading?: boolean
@@ -189,7 +191,7 @@ service.interceptors.response.use(
           showClose: true
         })
         if (response.data.code === 80001) {
-          localStorage.clear()
+          clearCache()
           let queryRedirectPath = '/workbranch/index'
           if (router.currentRoute.value.fullPath) {
             queryRedirectPath = router.currentRoute.value.fullPath as string
@@ -246,7 +248,7 @@ service.interceptors.response.use(
 
     error.config.loading && tryHideLoading(permissionStore.getCurrentPath)
     if (header.has('DE-GATEWAY-FLAG')) {
-      localStorage.clear()
+      clearCache()
       const flag = header.get('DE-GATEWAY-FLAG')
       localStorage.setItem('DE-GATEWAY-FLAG', flag.toString())
       let queryRedirectPath = '/workbranch/index'
@@ -295,7 +297,6 @@ const executeVersionHandler = (response: AxiosResponse) => {
     return
   }
   if (executeVersion && executeVersion !== cacheVal) {
-    wsCache.clear()
     wsCache.set(key, executeVersion)
     showMsg('系统有升级，请点击刷新页面', '-sys-upgrade-')
   }
