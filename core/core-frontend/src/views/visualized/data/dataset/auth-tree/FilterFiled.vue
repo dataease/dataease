@@ -37,6 +37,7 @@ const props = withDefaults(defineProps<Props>(), {
     term: '',
     fieldId: '',
     filterType: '',
+    timeType: 'year',
     deType: 0,
     enumValue: '',
     name: '',

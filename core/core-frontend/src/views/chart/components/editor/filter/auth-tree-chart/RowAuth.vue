@@ -172,6 +172,7 @@ const dfsInit = arr => {
         fieldId,
         filterType,
         term,
+        timeType,
         value,
         field
       } = ele
@@ -181,6 +182,7 @@ const dfsInit = arr => {
         fieldId,
         filterType,
         term,
+        timeType,
         timeValue: getTimeValue(dynamicTimeSetting),
         filterTypeTime,
         dynamicTimeSetting,
@@ -204,6 +206,7 @@ const dfsSubmit = arr => {
         fieldId: '',
         filterType: '',
         term: '',
+        timeType: 'year',
         type: 'tree',
         value: '',
         filterTypeTime: 'dateValue',
@@ -220,6 +223,7 @@ const dfsSubmit = arr => {
         filterType,
         deType,
         term,
+        timeType,
         value,
         name,
         timeValue
@@ -234,6 +238,7 @@ const dfsSubmit = arr => {
           filterTypeTime,
           dynamicTimeSetting,
           term,
+          timeType,
           value,
           type: 'item',
           subTree: null
@@ -375,6 +380,7 @@ const addCondReal = (type, logic) => {
           value: '',
           enumValue: '',
           term: '',
+          timeType: 'year',
           filterType: 'logic',
           name: '',
           timeValue: '',
