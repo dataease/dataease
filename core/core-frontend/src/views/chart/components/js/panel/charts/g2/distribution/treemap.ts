@@ -11,6 +11,7 @@ import { Chart as G2Chart, G2Spec } from '@antv/g2'
 import { G2ChartView, G2DrawOptions } from '../../../types/impl/g2'
 import {
   getTooltipSeriesTotalMap,
+  handleChartDashboardHidden,
   TOOLTIP_ITEM_TPL,
   TOOLTIP_TITLE_TPL
 } from '../../../common/common_antv'
@@ -87,6 +88,7 @@ export class Treemap extends G2ChartView {
     const total = data.reduce((pre, next) => pre + (next.value ?? 0), 0)
     const options = this.setupOptions(chart, baseOptions, { total })
     const newChart = new G2Chart({ container })
+    handleChartDashboardHidden(chart, options)
     newChart.options(options)
     newChart.on('polygon:click', action)
     return newChart

@@ -76,6 +76,7 @@ declare interface Chart {
   extColor: Axis[]
 
   fontFamily?: string
+  dashboardHidden?: boolean
 }
 declare type CustomAttr = DeepPartial<ChartAttr> | JSONString<DeepPartial<ChartAttr>>
 declare type CustomStyle = DeepPartial<ChartStyle> | JSONString<DeepPartial<ChartStyle>>

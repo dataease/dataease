@@ -3,7 +3,10 @@ import { G2DrawOptions } from '@/views/chart/components/js/panel/types/impl/g2'
 import { useI18n } from '@/hooks/web/useI18n'
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
 import { ViewSpec, configTooltip } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
-import { setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
+import {
+  handleChartDashboardHidden,
+  setGradientColor
+} from '@/views/chart/components/js/panel/common/common_antv'
 import { Bar } from '@/views/chart/components/js/panel/charts/g2/bar/bar'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'
@@ -165,6 +168,7 @@ export class Waterfall extends Bar {
     }
     const options = this.setupOptions(chart, initOptions)
     const newChart = new G2Column({ container, autoFit: true })
+    handleChartDashboardHidden(chart, options)
     newChart.options(options)
     newChart.on('interval:click', action)
     configTooltip(newChart, chart)

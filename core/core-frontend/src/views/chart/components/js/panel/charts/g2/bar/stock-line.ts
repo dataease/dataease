@@ -6,7 +6,11 @@ import { LINE_EDITOR_PROPERTY_INNER } from '../line/common'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ChartEvent, Chart as G2Chart, G2Spec } from '@antv/g2'
 import { registerSymbol, Symbols } from '@antv/g2/esm/utils/marker'
-import { TOOLTIP_ITEM_TPL, TOOLTIP_TITLE_TPL } from '../../../common/common_antv'
+import {
+  handleChartDashboardHidden,
+  TOOLTIP_ITEM_TPL,
+  TOOLTIP_TITLE_TPL
+} from '../../../common/common_antv'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
@@ -174,6 +178,7 @@ export class StockLine extends G2ChartView {
     }
     const newChart = new G2Chart({ container })
     const options = this.setupOptions(chart, initOptions)
+    handleChartDashboardHidden(chart, options)
     // 开始渲染
     newChart.options(options)
     newChart.on(`interval:${ChartEvent.CLICK}`, evt => {

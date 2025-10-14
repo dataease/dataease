@@ -9,7 +9,10 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { flow, parseJson } from '@/views/chart/components/js/util'
 import { RuntimeOptions } from '@antv/g2/lib/api/runtime'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
-import { getLineDash } from '@/views/chart/components/js/panel/common/common_antv'
+import {
+  getLineDash,
+  handleChartDashboardHidden
+} from '@/views/chart/components/js/panel/common/common_antv'
 
 const { t } = useI18n()
 
@@ -84,6 +87,7 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
     const options = this.setupOptions(chart, initOptions)
     let newChart = null
     const { Chart: BulletClass } = await import('@antv/g2')
+    handleChartDashboardHidden(chart, options)
     newChart = new BulletClass(options)
     newChart.on('element:click', ev => {
       const pointData = ev?.data?.data

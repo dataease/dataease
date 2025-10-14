@@ -14,6 +14,7 @@ import { G2DrawOptions } from '@/views/chart/components/js/panel/types/impl/g2'
 import { Chart, Chart as G2Column } from '@antv/g2'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
+  handleChartDashboardHidden,
   setGradientColor,
   TOOLTIP_ITEM_TPL,
   TOOLTIP_TITLE_TPL
@@ -189,6 +190,7 @@ export class ProgressBar extends HorizontalStackBar {
     const newChart = new G2Column({ container, autoFit: true })
     const newOptions = cloneDeep(options)
     newOptions.children = [options.children[1], options.children[0]]
+    handleChartDashboardHidden(chart, newOptions)
     newChart.options(newOptions)
     newChart.on('interval:click', action)
     configTooltip(newChart, chart)

@@ -1,6 +1,10 @@
 import { G2ChartView, G2DrawOptions } from '../../../types/impl/g2'
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
-import { setGradientColor, TOOLTIP_ITEM_TPL } from '../../../common/common_antv'
+import {
+  handleChartDashboardHidden,
+  setGradientColor,
+  TOOLTIP_ITEM_TPL
+} from '../../../common/common_antv'
 import { useI18n } from '@/hooks/web/useI18n'
 import { defaultsDeep } from 'lodash-es'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
@@ -150,6 +154,7 @@ export class G2ChartBar extends G2ChartView {
 
     const options: G2Spec = this.setupOptions(chart, initOptions)
     const newChart = new G2Chart({ container })
+    handleChartDashboardHidden(chart, options)
     newChart.options(options)
 
     newChart.on('edge:click', action)

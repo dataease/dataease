@@ -18,7 +18,11 @@ import { LINE_AXIS_TYPE, LINE_EDITOR_PROPERTY, LINE_EDITOR_PROPERTY_INNER } from
 import { useI18n } from '@/hooks/web/useI18n'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
 import { DEFAULT_YAXIS_STYLE } from '@/views/chart/components/editor/util/chart'
-import { TOOLTIP_ITEM_TPL, TOOLTIP_TITLE_TPL } from '../../../common/common_antv'
+import {
+  handleChartDashboardHidden,
+  TOOLTIP_ITEM_TPL,
+  TOOLTIP_TITLE_TPL
+} from '../../../common/common_antv'
 import { extremumEvt, addExtremumText } from '@/views/chart/components/js/extremumUitl'
 import { registerSymbol, Symbols } from '@antv/g2/esm/utils/marker'
 
@@ -97,6 +101,7 @@ export class Line extends G2ChartView {
     const options = this.setupOptions(chart, initOptions)
     // 开始渲染
     const newChart = new G2Chart({ container })
+    handleChartDashboardHidden(chart, options)
     newChart.options(options)
     newChart.on('point:click', action)
     extremumEvt(newChart, chart, options, container, scale)

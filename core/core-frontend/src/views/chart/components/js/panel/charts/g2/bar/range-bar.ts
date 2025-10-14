@@ -15,6 +15,7 @@ import { HorizontalBar } from '@/views/chart/components/js/panel/charts/g2/bar/h
 import { G2DrawOptions } from '@/views/chart/components/js/panel/types/impl/g2'
 import { cloneDeep, isEmpty } from 'lodash-es'
 import {
+  handleChartDashboardHidden,
   TOOLTIP_ITEM_TPL,
   TOOLTIP_TITLE_TPL
 } from '@/views/chart/components/js/panel/common/common_antv'
@@ -114,6 +115,7 @@ export class RangeBar extends HorizontalBar {
     }
     const options: ViewSpec = this.setupOptions(chart, initOptions)
     const newChart = new G2Column({ container, autoFit: true })
+    handleChartDashboardHidden(chart, options)
     newChart.options(options)
     newChart.on('interval:click', action)
     configTooltip(newChart, chart)

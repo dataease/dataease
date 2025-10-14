@@ -5,7 +5,11 @@ import {
   parseJson,
   setUpSingleDimensionSeriesColor
 } from '@/views/chart/components/js/util'
-import { TOOLTIP_ITEM_TPL, TOOLTIP_TITLE_TPL } from '../../../common/common_antv'
+import {
+  handleChartDashboardHidden,
+  TOOLTIP_ITEM_TPL,
+  TOOLTIP_TITLE_TPL
+} from '../../../common/common_antv'
 import { useI18n } from '@/hooks/web/useI18n'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { defaultsDeep, isEmpty } from 'lodash-es'
@@ -81,6 +85,7 @@ export class Funnel extends G2ChartView {
     }
     const options = this.setupOptions(chart, baseOptions)
     const newChart = new G2Chart({ container })
+    handleChartDashboardHidden(chart, options)
     newChart.options(options)
     newChart.on('interval:click', action)
     return newChart
@@ -330,7 +335,7 @@ export class Funnel extends G2ChartView {
       this.configLabel,
       this.configTooltip,
       this.configLegend
-    )(chart, options)
+    )(chart, options, {}, this)
   }
 
   constructor() {

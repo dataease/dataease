@@ -6,7 +6,10 @@ import {
   getScaleValue
 } from '@/views/chart/components/editor/util/chart'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
-import { setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
+import {
+  handleChartDashboardHidden,
+  setGradientColor
+} from '@/views/chart/components/js/panel/common/common_antv'
 import { useI18n } from '@/hooks/web/useI18n'
 import { defaultsDeep } from 'lodash-es'
 import { G2Spec, Chart as G2Chart } from '@antv/g2'
@@ -88,6 +91,7 @@ export class Gauge extends G2ChartView {
     }
     const options = this.setupOptions(chart, initOptions, { scale })
     const newChart = new G2Chart({ container })
+    handleChartDashboardHidden(chart, options)
     newChart.options(options)
     newChart.on('afterrender', () => {
       action({

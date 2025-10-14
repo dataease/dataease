@@ -5,6 +5,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { G2ChartView, G2DrawOptions } from '../../../types/impl/g2'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
 import { defaultsDeep } from 'lodash-es'
+import { handleChartDashboardHidden } from '@/views/chart/components/js/panel/common/common_antv'
 
 const { t } = useI18n()
 const DEFAULT_LIQUID_DATA = []
@@ -68,6 +69,7 @@ export class Liquid extends G2ChartView {
     }
     const options = this.setupOptions(chart, initOptions, context)
     const newChart = new G2Chart({ container })
+    handleChartDashboardHidden(chart, options)
     newChart.options(options)
     newChart.on('afterrender', () => {
       action({

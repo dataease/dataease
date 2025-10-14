@@ -1,6 +1,10 @@
 import { G2ChartView, G2DrawOptions } from '../../../types/impl/g2'
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
-import { TOOLTIP_ITEM_TPL, TOOLTIP_TITLE_TPL } from '../../../common/common_antv'
+import {
+  handleChartDashboardHidden,
+  TOOLTIP_ITEM_TPL,
+  TOOLTIP_TITLE_TPL
+} from '../../../common/common_antv'
 import { useI18n } from '@/hooks/web/useI18n'
 import { defaultsDeep, isEmpty, toString } from 'lodash-es'
 import { ChartEvent, Chart as G2Chart, G2Spec } from '@antv/g2'
@@ -111,6 +115,7 @@ export class Scatter extends G2ChartView {
     }
     const options: G2Spec = this.setupOptions(chart, baseOptions)
     const newChart = new G2Chart({ container })
+    handleChartDashboardHidden(chart, options)
     newChart.options(options)
     newChart.on('point:click', action)
     if (options.labels) {

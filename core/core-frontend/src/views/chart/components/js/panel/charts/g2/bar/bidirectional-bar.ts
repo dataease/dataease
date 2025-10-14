@@ -11,7 +11,12 @@ import { defaultsDeep, isEmpty, merge } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { useI18n } from '@/hooks/web/useI18n'
 import { AxisComponent, ChartEvent, Chart as G2Chart, G2Spec } from '@antv/g2'
-import { setGradientColor, TOOLTIP_ITEM_TPL, TOOLTIP_TITLE_TPL } from '../../../common/common_antv'
+import {
+  handleChartDashboardHidden,
+  setGradientColor,
+  TOOLTIP_ITEM_TPL,
+  TOOLTIP_TITLE_TPL
+} from '../../../common/common_antv'
 
 const { t } = useI18n()
 
@@ -229,11 +234,13 @@ export class BidirectionalHorizontalBar extends G2ChartView {
         }
       }
       if (reRenderMark) {
+        handleChartDashboardHidden(chart, newChart)
         newChart.render()
       }
     })
     newChart.on('interval:click', action)
     // 开始渲染
+    handleChartDashboardHidden(chart, options)
     newChart.options(options)
     return newChart
   }

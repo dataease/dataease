@@ -4,7 +4,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { cloneDeep, defaultsDeep } from 'lodash-es'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
 import { G2ChartView, G2DrawOptions } from '../../../types/impl/g2'
-import { TOOLTIP_ITEM_TPL } from '../../../common/common_antv'
+import { handleChartDashboardHidden, TOOLTIP_ITEM_TPL } from '../../../common/common_antv'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
@@ -81,6 +81,7 @@ export class CirclePacking extends G2ChartView {
       }
       const options = this.setupOptions(chart, initOptions)
       const newChart = new G2Chart({ container })
+      handleChartDashboardHidden(chart, options)
       newChart.options(options)
       newChart.on('element:click', param => {
         const pointData = param?.data?.data

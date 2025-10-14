@@ -5,7 +5,11 @@ import { defaultsDeep, isEmpty } from 'lodash-es'
 import { DEFAULT_LABEL } from '@/views/chart/components/editor/util/chart'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
 import { G2ChartView, G2DrawOptions } from '../../../types/impl/g2'
-import { TOOLTIP_ITEM_TPL, TOOLTIP_TITLE_TPL } from '../../../common/common_antv'
+import {
+  handleChartDashboardHidden,
+  TOOLTIP_ITEM_TPL,
+  TOOLTIP_TITLE_TPL
+} from '../../../common/common_antv'
 
 const { t } = useI18n()
 
@@ -97,6 +101,7 @@ export class Radar extends G2ChartView {
     }
     const options = this.setupOptions(chart, baseOptions)
     const newChart = new G2Chart({ container })
+    handleChartDashboardHidden(chart, options)
     newChart.options(options)
     newChart.on('point:click', action)
     if (options.children[0].labels?.length) {

@@ -13,7 +13,8 @@ import {
   getLineDash,
   setGradientColor,
   TOOLTIP_ITEM_TPL,
-  TOOLTIP_TITLE_TPL
+  TOOLTIP_TITLE_TPL,
+  handleChartDashboardHidden
 } from '@/views/chart/components/js/panel/common/common_antv'
 import {
   DEFAULT_BASIC_STYLE,
@@ -107,6 +108,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     }
     const options: ViewSpec = this.setupOptions(chart, initOptions)
     const newChart = new G2Column({ container, autoFit: true })
+    handleChartDashboardHidden(chart, options)
     newChart.options(options)
     newChart.on('interval:click', action)
     configTooltip(newChart, chart)

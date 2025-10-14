@@ -2552,3 +2552,101 @@ export const TOOLTIP_ITEM_TPL = `
         </li>
 `
 export const TOOLTIP_TITLE_TPL = `<div class="g2-tooltip-title" style="color: rgba(0, 0, 0, 0.45); overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{title}</div>`
+
+/**
+ * 辅助函数：隐藏子组件的文本标签
+ * 包含 图例、坐标轴标签、坐标轴标题、数据标签、缩略轴
+ * @param child
+ */
+function hideChildrenLabels(child) {
+  child.labels?.length && (child.labels = [])
+  ;['x', 'y'].forEach(
+    axis => child.axis?.[axis] && Object.assign(child.axis[axis], { label: false, title: false })
+  )
+  child.legend && (child.legend = false)
+  child.slider && Object.assign(child.slider, { x: false, y: false })
+}
+
+/**
+ * 处理图表隐藏时的图表配置项
+ * 当隐藏图表示，对应的图表文本配置项也隐藏
+ * 包括 图例、坐标轴标签、坐标轴标题、数据标签、缩略轴
+ * @param chart
+ * @param options
+ */
+export function handleChartDashboardHidden(chart: Chart, options) {
+  if (!chart.dashboardHidden) return
+  const { type } = chart
+  const hasChildren = options.children && options.children.length > 0
+  // 辅助函数：批量隐藏 legend 和 axis
+  const hideLegendAndAxis = opt => {
+    opt.legend = false
+    opt.axis?.x && Object.assign(opt.axis.x, { label: false, title: false })
+    opt.axis?.y && Object.assign(opt.axis.y, { label: false, title: false })
+  }
+  if (hasChildren && type !== 'gauge' && type !== 'liquid') {
+    switch (type) {
+      case 'stock-line':
+        hideLegendAndAxis(options)
+        options.children?.[1] && (options.children[1].slider = false)
+        break
+      case 'bullet-graph':
+        hideLegendAndAxis(options)
+        options.children?.[1] && (options.children[1].labels = [])
+        break
+      default:
+        if (type.indexOf('-mix') > -1) {
+          if (options.type === 'view') {
+            hideLegendAndAxis(options)
+            options.children?.forEach(hideChildrenLabels)
+          } else {
+            options.children.forEach(child => {
+              if (child.type === 'view') {
+                hideLegendAndAxis(child)
+                child.children?.forEach(hideChildrenLabels)
+              } else {
+                child.scale ? (child.scale.color = false) : (child.color = false)
+              }
+            })
+          }
+        } else {
+          if (options.type === 'view') {
+            options.legend = false
+            const radar = type === 'radar'
+            const axisOpt = radar
+              ? { labelFormatter: () => '', title: false }
+              : { label: false, title: false }
+            options.axis?.x && Object.assign(options.axis.x, axisOpt)
+            options.axis?.y && Object.assign(options.axis.y, axisOpt)
+          }
+          options.children.forEach(child =>
+            type === 'bidirectional-bar'
+              ? child.children?.forEach(c => hideChildrenLabels(c.value || c))
+              : hideChildrenLabels(child)
+          )
+        }
+    }
+  } else {
+    switch (type) {
+      case 'gauge':
+        const setGaugeStyle = c => {
+          c.style.text = () => ''
+          c.style.textContent = () => ''
+          c.axis?.y && (c.axis.y.labelFormatter = () => '')
+        }
+        hasChildren ? options.children.forEach(setGaugeStyle) : setGaugeStyle(options)
+        break
+      case 'liquid':
+        options.style.contentText = ''
+        break
+      case 'treemap':
+      case 'sankey':
+      case 'circle-packing':
+        options.style.labelText = () => ''
+        break
+      default:
+        if (type === 'funnel') options.paddingRight = 0
+        hideChildrenLabels(options)
+    }
+  }
+}

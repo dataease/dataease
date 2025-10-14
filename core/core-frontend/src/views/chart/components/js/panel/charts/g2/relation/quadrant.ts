@@ -5,7 +5,11 @@ import {
   parseJson,
   setUpSingleDimensionSeriesColor
 } from '@/views/chart/components/js/util'
-import { TOOLTIP_ITEM_TPL, TOOLTIP_TITLE_TPL } from '../../../common/common_antv'
+import {
+  handleChartDashboardHidden,
+  TOOLTIP_ITEM_TPL,
+  TOOLTIP_TITLE_TPL
+} from '../../../common/common_antv'
 import { useI18n } from '@/hooks/web/useI18n'
 import { defaultsDeep, isEmpty } from 'lodash-es'
 import { ChartEvent, Chart as G2Chart, G2Spec } from '@antv/g2'
@@ -155,6 +159,7 @@ export class Quadrant extends G2ChartView {
     chart.container = container
     const options: G2Spec = this.setupOptions(chart, baseOptions, {})
     const newChart = new G2Chart({ container })
+    handleChartDashboardHidden(chart, options)
     newChart.options(options)
     newChart.on(`point:${ChartEvent.CLICK}`, action)
     newChart.on(`plot:${ChartEvent.CLICK}`, () => quadrantDefaultBaseline(defaultBaselineQuadrant))

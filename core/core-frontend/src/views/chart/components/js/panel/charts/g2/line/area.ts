@@ -20,7 +20,12 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { addExtremumText, extremumEvt } from '@/views/chart/components/js/extremumUitl'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
 import { DEFAULT_YAXIS_STYLE } from '@/views/chart/components/editor/util/chart'
-import { setGradientColor, TOOLTIP_ITEM_TPL, TOOLTIP_TITLE_TPL } from '../../../common/common_antv'
+import {
+  handleChartDashboardHidden,
+  setGradientColor,
+  TOOLTIP_ITEM_TPL,
+  TOOLTIP_TITLE_TPL
+} from '../../../common/common_antv'
 import { registerSymbol, Symbols } from '@antv/g2/esm/utils/marker'
 
 const { t } = useI18n()
@@ -99,6 +104,7 @@ export class Area extends G2ChartView {
     const newChart = new G2Chart({ container })
     const options = this.setupOptions(chart, initOptions, { chartObj: newChart })
     // 开始渲染
+    handleChartDashboardHidden(chart, options)
     newChart.options(options)
     newChart.on('point:click', action)
     extremumEvt(newChart, chart, options, container, scale, this.name === 'area')

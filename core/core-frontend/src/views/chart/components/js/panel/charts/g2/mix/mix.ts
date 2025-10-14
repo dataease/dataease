@@ -15,7 +15,12 @@ import {
   DEFAULT_BASIC_STYLE,
   DEFAULT_YAXIS_STYLE
 } from '@/views/chart/components/editor/util/chart'
-import { setGradientColor, TOOLTIP_ITEM_TPL, TOOLTIP_TITLE_TPL } from '../../../common/common_antv'
+import {
+  handleChartDashboardHidden,
+  setGradientColor,
+  TOOLTIP_ITEM_TPL,
+  TOOLTIP_TITLE_TPL
+} from '../../../common/common_antv'
 import { CHART_MIX_EDITOR_PROPERTY, CHART_MIX_EDITOR_PROPERTY_INNER } from './common'
 
 const { t } = useI18n()
@@ -173,6 +178,7 @@ export class ColumnLineMix extends G2ChartView {
 
     newChart.on('point:click', action)
     newChart.on('interval:click', action)
+    handleChartDashboardHidden(chart, options)
     newChart.options(options)
     // extremumEvt(newChart, chart, options, container)
     // configPlotTooltipEvent(chart, newChart)
