@@ -12,6 +12,8 @@ public class DeCollectionUtils {
         if (list == null || list.isEmpty()) {
             return new HashMap<>();
         }
-        return list.stream().collect(Collectors.groupingBy(keyExtractor));
+        return list.stream()
+                .filter(item -> keyExtractor.apply(item) != null)
+                .collect(Collectors.groupingBy(keyExtractor));
     }
 }
