@@ -95,6 +95,9 @@ public class EsProvider extends Provider {
         try {
             String sql;
             if (datasourceRequest.getTable() != null) {
+                if (!getTables(datasourceRequest).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList()).contains(datasourceRequest.getTable())) {
+                    DEException.throwException("无效的表名！");
+                }
                 sql = "select * from \"" + datasourceRequest.getTable() + "\" limit 0";
             } else {
                 sql = datasourceRequest.getQuery();
