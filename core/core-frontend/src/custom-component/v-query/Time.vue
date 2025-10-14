@@ -345,7 +345,10 @@ const disabledDate = val => {
   const startValue = regularOrTrends === 'fixed' ? regularOrTrendsValue : startTime
 
   if (intervalType === 'start') {
-    return timeStamp < +new Date(startValue) || isDynamicWindowTime
+    return (
+      timeStamp < +new Date(dayjs(startValue).startOf('day').format('YYYY/MM/DD HH:mm:ss')) ||
+      isDynamicWindowTime
+    )
   }
 
   if (intervalType === 'end') {
