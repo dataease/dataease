@@ -102,7 +102,7 @@ onMounted(() => {
                 <el-input-number
                   effect="dark"
                   size="small"
-                  :min="600"
+                  :min="100"
                   :max="50000"
                   v-model="canvasStyleData.width"
                   @change="onBaseChange"
@@ -115,7 +115,7 @@ onMounted(() => {
                 <el-input-number
                   effect="dark"
                   size="small"
-                  :min="600"
+                  :min="100"
                   :max="50000"
                   v-model="canvasStyleData.height"
                   @change="onBaseChange"
