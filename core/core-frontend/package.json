@@ -67,7 +67,8 @@
     "vue3-ace-editor": "^2.2.2",
     "vuedraggable": "^4.1.0",
     "web-storage-cache": "^1.1.1",
-    "xss": "^1.0.14"
+    "xss": "^1.0.14",
+    "vxe-table": "^4.16.20"
   },
   "devDependencies": {
     "@intlify/unplugin-vue-i18n": "^0.8.2",
