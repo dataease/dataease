@@ -13,6 +13,7 @@ import {
 } from '@/views/chart/components/js/panel/charts/g2plot/pie/common'
 import {
   getTooltipSeriesTotalMap,
+  handleChartDashboardHidden,
   TOOLTIP_ITEM_TPL,
   TOOLTIP_TITLE_TPL
 } from '../../../../common/common_antv'
@@ -63,6 +64,7 @@ export class Pie extends G2ChartView {
     const total = data.reduce((pre, next) => pre + (next.value ?? 0), 0)
     const options = this.setupOptions(chart, initOptions, { total })
     const newChart = new G2Chart({ container })
+    handleChartDashboardHidden(chart, options)
     newChart.options(options)
     newChart.on('interval:click', d => {
       d.data?.data?.field !== customAttr.basicStyle.topNLabel && action(d)
