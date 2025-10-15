@@ -45,6 +45,11 @@ const fontFamily = CHART_FONT_FAMILY_ORIGIN.concat(
 )
 const fontLetterSpace = CHART_FONT_LETTER_SPACE
 
+const namePositionList = [
+  { name: t('chart.name_position_top'), value: 'top' },
+  { name: t('chart.name_position_bottom'), value: 'bottom' }
+]
+
 const state = reactive({
   indicatorNameForm: JSON.parse(JSON.stringify(DEFAULT_INDICATOR_NAME_STYLE)),
   basicStyleForm: {} as ChartBasicStyle
@@ -274,6 +279,27 @@ defineExpose({ getFormData })
           :effect="themes"
           @change="changeTitleStyle('nameValueSpacing')"
         />
+      </el-form-item>
+      <el-form-item
+        class="form-item name-value-spacing-input"
+        :class="'form-item-' + themes"
+        :label="t('chart.name_position')"
+      >
+        <el-select
+          :effect="themes"
+          v-model="state.indicatorNameForm.namePosition"
+          size="small"
+          style="width: 100%"
+          @change="changeTitleStyle('namePosition')"
+        >
+          <el-option
+            class="custom-style-option"
+            v-for="option in namePositionList"
+            :key="option.value"
+            :label="option.name"
+            :value="option.value"
+          />
+        </el-select>
       </el-form-item>
     </el-form>
   </div>

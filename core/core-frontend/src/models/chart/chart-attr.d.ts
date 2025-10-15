@@ -1301,6 +1301,10 @@ declare interface ChartIndicatorNameStyle {
    * 指标/名称间距
    */
   nameValueSpacing: number
+  /**
+   * 指标名称位置
+   */
+  namePosition?: 'top' | 'bottom'
 }
 
 /**
