@@ -493,6 +493,9 @@ public class DatasetSQLBotManage {
             config = JsonUtil.parseObject(config_json, Configuration.class);
             config.convertJdbcUrl();
         }
+        if (dsType.contains(DatasourceConfiguration.DatasourceType.mysql.name()) && ObjectUtils.isNotEmpty(config) && StringUtils.isNotBlank(config.getHost()) && StringUtils.equalsIgnoreCase("mysql-de", config.getHost())) {
+            config.setHost(dsHost);
+        }
         DataSQLBotAssistantVO vo = new DataSQLBotAssistantVO();
         vo.setDataBase(config.getDataBase());
         vo.setExtraParams(config.getExtraParams());
