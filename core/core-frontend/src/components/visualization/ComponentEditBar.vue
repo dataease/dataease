@@ -563,7 +563,7 @@ const linkageChange = item => {
   let checkResult = false
   if (item.linkageFilters && item.linkageFilters.length > 0) {
     item.linkageFilters.forEach(linkage => {
-      if (element.value.id === linkage.sourceViewId) {
+      if (element.value.id === linkage?.sourceViewId) {
         checkResult = true
       }
     })
