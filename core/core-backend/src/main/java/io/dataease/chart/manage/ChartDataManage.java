@@ -227,10 +227,12 @@ public class ChartDataManage {
         // 联动条件
         if (ObjectUtils.isNotEmpty(chartExtRequest.getLinkageFilters())) {
             for (ChartExtFilterDTO linkageFilter : chartExtRequest.getLinkageFilters()) {
-                if (3 == linkageFilter.getFilterType()) {
-                    customLinkageFilter = linkageFilter.getCustomFilter();
-                } else {
-                    filters.add(linkageFilter);
+                if(linkageFilter != null){
+                    if (3 == linkageFilter.getFilterType()) {
+                        customLinkageFilter = linkageFilter.getCustomFilter();
+                    } else {
+                        filters.add(linkageFilter);
+                    }
                 }
             }
         }
