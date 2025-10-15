@@ -351,7 +351,7 @@ const handleFieldIdChange = (val: EnumValue) => {
     })
     .finally(() => {
       loading.value = false
-      if (disabledFirstItem.value) {
+      if (disabledFirstItem.value && config.value.defaultValueCheck) {
         time = setTimeout(() => {
           clearTimeout(time)
           setDefaultValueFirstItem()
@@ -504,7 +504,7 @@ watch(
       if (!val) {
         nextTick(() => {
           selectValue.value = undefined
-          if (!config.value.defaultValueFirstItem) return
+          if (!config.value.defaultValueFirstItem || !config.value.defaultValueCheck) return
           setDefaultValueFirstItem()
         })
       }

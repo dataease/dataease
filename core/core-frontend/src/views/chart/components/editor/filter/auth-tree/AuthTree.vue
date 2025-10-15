@@ -146,7 +146,7 @@ const del = (index, child) => {
   align-items: center;
   position: relative;
   z-index: 1;
-  width: 100%;
+  width: fit-content;
 
   .logic-left {
     box-sizing: border-box;
