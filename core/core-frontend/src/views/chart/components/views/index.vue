@@ -155,7 +155,7 @@ const titleShow = computed(() => {
   return (
     !['rich-text', 'picture-group'].includes(element.value.innerType) &&
     state.title_show &&
-    showPosition.value !== 'viewDialog'
+    (element.value.dashboardHidden ? true : showPosition.value !== 'viewDialog')
   )
 })
 const snapshotStore = snapshotStoreWithOut()
@@ -169,6 +169,24 @@ const state = reactive({
   },
   title_class: {
     fontSize: '18px',
+    color: '#303133',
+    textAlign: 'left',
+    fontStyle: 'normal',
+    fontWeight: 'normal',
+    background: '',
+    fontFamily: '',
+    textShadow: 'none',
+    letterSpacing: '0px',
+    fontSynthesis: 'style weight',
+    width: 'fit-content',
+    maxWidth: '100%',
+    wordBreak: 'break-word',
+    whiteSpace: 'pre-wrap',
+    paddingRight: '0px',
+    overflow: 'hidden'
+  } as CSSProperties,
+  chart_hide_title_class: {
+    fontSize: '10px',
     color: '#303133',
     textAlign: 'left',
     fontStyle: 'normal',
@@ -1099,7 +1117,12 @@ const clearG2Tooltip = () => {
       :style="{ 'justify-content': titleAlign, 'margin-bottom': marginBottom }"
     >
       <template v-if="!titleEditStatus">
-        <p class="ellipsis" v-if="titleShow" :style="state.title_class" @dblclick="changeEditTitle">
+        <p
+          class="ellipsis"
+          v-if="titleShow"
+          :style="element.dashboardHidden ? state.chart_hide_title_class : state.title_class"
+          @dblclick="changeEditTitle"
+        >
           {{ view.title }}
         </p>
       </template>
