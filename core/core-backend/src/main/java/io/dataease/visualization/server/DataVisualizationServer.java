@@ -237,7 +237,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         return null;
     }
 
-    private void appDatasetMatch(VisualizationExport2AppVO appData, Map<Long, Long> datasourceIdMap, Map<Long, Long> dsGroupIdMap, Map<Long, Long> dsTableIdMap, Map<Long, Long> dsTableFieldsIdMap) {
+    private void appDatasetMatch(VisualizationExport2AppVO appData, Map<Long, Long> datasourceIdMap, Map<Long, Long> dsGroupIdMap, Map<Long, Long> dsTableIdMap, Map<Long, Long> dsTableFieldsIdMap,Map<String, String> dsTableFieldsDatasetNameMap) {
 
         List<AppCoreDatasetGroupVO> sourceDatasetGroupList = appData.getDatasetGroupsInfo();
         List<AppCoreDatasetTableVO> sourceDatasetTableList = appData.getDatasetTablesInfo();
@@ -248,6 +248,10 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
         Map<Long, List<AppCoreDatasetTableFieldVO>> sourceDatasetTableFieldMap =
                 DeCollectionUtils.groupBy(sourceDatasetTableFieldList, AppCoreDatasetTableFieldVO::getDatasetTableId);
+
+        Map<Long, List<AppCoreDatasetTableFieldVO>> sourceDatasetTableFieldMapGroup =
+                DeCollectionUtils.groupBy(sourceDatasetTableFieldList, AppCoreDatasetTableFieldVO::getDatasetGroupId);
+
 
         sourceDatasetGroupList.forEach(sourceDatasetGroup -> {
             Long systemDatasetGroupId = sourceDatasetGroup.getSystemDatasetId();
@@ -280,6 +284,25 @@ public class DataVisualizationServer implements DataVisualizationApi {
                                         if (sourceTableField.getOriginName().equals(systemTableField.getOriginName())) {
                                             // 获取dsTableIdMap datasourceIdMap
                                             dsTableFieldsIdMap.put(sourceTableField.getId(), systemTableField.getId());
+                                            dsTableFieldsDatasetNameMap.put(sourceTableField.getDataeaseName(),systemTableField.getDataeaseName());
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                // 获取 dsTableFieldsIdMapGroup 进行二次匹配 解决计算字段没有tableId 问题
+                                List<AppCoreDatasetTableFieldVO> sourceDatasetTableFieldListSubGroup = sourceDatasetTableFieldMapGroup.get(sourceTable.getDatasetGroupId());
+
+                                QueryWrapper<CoreDatasetTableField> wrapperFieldGroup = new QueryWrapper<>();
+                                wrapperFieldGroup.eq("dataset_group_id", systemTable.getDatasetGroupId());
+                                List<CoreDatasetTableField> systemDatasetTableFieldSubGroup = coreDatasetTableFieldMapper.selectList(wrapperFieldGroup);
+
+                                for (AppCoreDatasetTableFieldVO sourceTableField : sourceDatasetTableFieldListSubGroup) {
+                                    for (CoreDatasetTableField systemTableField : systemDatasetTableFieldSubGroup) {
+                                        if (dsTableFieldsIdMap.get(sourceTableField.getId())==null && sourceTableField.getName().equals(systemTableField.getName())) {
+                                            // 获取dsTableIdMap datasourceIdMap
+                                            dsTableFieldsIdMap.put(sourceTableField.getId(), systemTableField.getId());
+                                            dsTableFieldsDatasetNameMap.put(sourceTableField.getDataeaseName(),systemTableField.getDataeaseName());
                                             break;
                                         }
                                     }
@@ -316,6 +339,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         List<DatasetGroupInfoDTO> newDsGroupInfo = new ArrayList<>();
         Map<Long, Long> dsTableIdMap = new HashMap<>();
         Map<Long, Long> dsTableFieldsIdMap = new HashMap<>();
+        Map<String, String> dsTableFieldsDatasetNameMap = new HashMap<>();
         List<CoreDatasetTableField> dsTableFieldsList = new ArrayList();
         Map<Long, Long> datasourceIdMap = new HashMap<>();
         Map<Long, Map<String, String>> dsTableNamesMap = new HashMap<>();
@@ -325,7 +349,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         if (appData != null) {
             isAppSave = true;
             if ("dataset".equals(request.getDataType())) {
-                appDatasetMatch(appData, datasourceIdMap, dsGroupIdMap, dsTableIdMap, dsTableFieldsIdMap);
+                appDatasetMatch(appData, datasourceIdMap, dsGroupIdMap, dsTableIdMap, dsTableFieldsIdMap,dsTableFieldsDatasetNameMap);
             } else {
                 try {
                     List<AppCoreDatasourceVO> appCoreDatasourceVO = appData.getDatasourceInfo();
@@ -536,6 +560,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 });
                 dsGroupIdMap.forEach((key, value) -> {
                     mutableViewInfoStr.set(mutableViewInfoStr.get().replaceAll(key.toString(), value.toString()));
+                });
+                dsTableFieldsDatasetNameMap.forEach((key, value) -> {
+                    mutableViewInfoStr.set(mutableViewInfoStr.get().replaceAll(key, value));
                 });
                 canvasViewsStr.put(viewId, mutableViewInfoStr.get());
             });
