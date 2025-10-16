@@ -213,7 +213,7 @@ onMounted(() => {
       <div v-if="showOverlay && appearanceStore.getShowAi" class="overlay"></div>
     </div>
     <div v-else class="operate-setting">
-      <desktop-setting />
+      <desktop-setting :sqlbot-enabled="sqlbotEnabled" />
     </div>
   </el-header>
 </template>

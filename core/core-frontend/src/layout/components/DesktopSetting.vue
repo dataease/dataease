@@ -15,6 +15,14 @@ import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { msgCountApi } from '@/api/msg'
 import { computed, ref, onMounted } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import logo_sqlbot from '@/assets/svg/logo_sqlbot.svg'
+
+defineProps({
+  sqlbotEnabled: {
+    type: Boolean,
+    default: false
+  }
+})
 
 const aiBaseUrl = ref('https://maxkb.fit2cloud.com/ui/chat/2ddd8b594ce09dbb?mode=embed')
 const showToolbox = ref(false)
@@ -29,6 +37,7 @@ const redirectUser = () => {
   const kidPath = sysMenu.matched[0].children[0].path
   push(`${sysMenu.path}/${kidPath}`)
 }
+
 const initShowToolbox = () => {
   showToolbox.value = permissionStore.getRouters.some(route => route.path === '/toolbox')
 }
@@ -49,6 +58,9 @@ const initAiBase = async () => {
 const handleAiClick = () => {
   useEmitt().emitter.emit('aiComponentChange')
 }
+const handleSQLBotClick = () => {
+  push('/sqlbot/index')
+}
 onMounted(() => {
   initShowToolbox()
   initAiBase()
@@ -60,6 +72,11 @@ onMounted(() => {
 
 <template>
   <ToolboxCfg v-if="showToolbox" />
+  <el-tooltip effect="dark" content="SQLBot" placement="bottom">
+    <el-icon style="margin: 0 10px" class="ai-icon copilot-icon" v-if="sqlbotEnabled">
+      <Icon name="copilot"><logo_sqlbot @click="handleSQLBotClick" class="svg-icon" /></Icon>
+    </el-icon>
+  </el-tooltip>
   <el-tooltip effect="dark" :content="$t('data_export.export_center')" placement="bottom">
     <el-icon
       style="margin-left: 10px"
