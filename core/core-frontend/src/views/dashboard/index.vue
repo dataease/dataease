@@ -1,56 +1,64 @@
 <script setup lang="ts">
+// 导入模块重新组织，按功能分类
+// 核心Vue模块
 import { computed, nextTick, onMounted, onUnmounted, reactive, ref } from 'vue'
-import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import { findComponentAttr } from '../../utils/components'
-import DvSidebar from '../../components/visualization/DvSidebar.vue'
 import router from '@/router'
-import MobileConfigPanel from './MobileConfigPanel.vue'
-import { useAppStoreWithOut } from '@/store/modules/app'
-import { useEmitt } from '@/hooks/web/useEmitt'
-import DbToolbar from '@/components/dashboard/DbToolbar.vue'
-import ViewEditor from '@/views/chart/components/editor/index.vue'
-import { getDatasetTree } from '@/api/dataset'
-import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
-import DbCanvasAttr from '@/components/dashboard/DbCanvasAttr.vue'
-import { decompressionPre, initCanvasData, onInitReady } from '@/utils/canvasUtils'
-import ChartStyleBatchSet from '@/views/chart/components/editor/editor-style/ChartStyleBatchSet.vue'
-import DeCanvas from '@/views/canvas/DeCanvas.vue'
-import { check, compareStorage } from '@/utils/CrossPermission'
-import { useCache } from '@/hooks/web/useCache'
-import { cloneDeep } from 'lodash-es'
-import { useEmbedded } from '@/store/modules/embedded'
+
+// 状态管理相关
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
-import { watermarkFind } from '@/api/watermark'
-import { XpackComponent } from '@/components/plugin'
-import { Base64 } from 'js-base64'
-import CanvasCacheDialog from '@/components/visualization/CanvasCacheDialog.vue'
-import { deepCopy } from '@/utils/utils'
-const interactiveStore = interactiveStoreWithOut()
 import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
-import eventBus from '@/utils/eventBus'
-import { useI18n } from '@/hooks/web/useI18n'
+import { useAppStoreWithOut } from '@/store/modules/app'
+import { useEmbedded } from '@/store/modules/embedded'
+
+// UI组件
+import DvSidebar from '../../components/visualization/DvSidebar.vue'
+import DbToolbar from '@/components/dashboard/DbToolbar.vue'
+import ViewEditor from '@/views/chart/components/editor/index.vue'
+import DbCanvasAttr from '@/components/dashboard/DbCanvasAttr.vue'
+import ChartStyleBatchSet from '@/views/chart/components/editor/editor-style/ChartStyleBatchSet.vue'
+import DeCanvas from '@/views/canvas/DeCanvas.vue'
+import MobileConfigPanel from './MobileConfigPanel.vue'
+import CanvasCacheDialog from '@/components/visualization/CanvasCacheDialog.vue'
 import DashboardHiddenComponent from '@/components/dashboard/DashboardHiddenComponent.vue'
+import { XpackComponent } from '@/components/plugin'
+
+// API和工具函数
+import { getDatasetTree } from '@/api/dataset'
+import { watermarkFind } from '@/api/watermark'
 import { recoverToPublished } from '@/api/visualization/dataVisualization'
+import { decompressionPre, initCanvasData, onInitReady } from '@/utils/canvasUtils'
+import { check, compareStorage } from '@/utils/CrossPermission'
+import { useCache } from '@/hooks/web/useCache'
+import { useEmitt } from '@/hooks/web/useEmitt'
+import { useI18n } from '@/hooks/web/useI18n'
+import { findComponentAttr } from '../../utils/components'
+import { deepCopy } from '@/utils/utils'
+import eventBus from '@/utils/eventBus'
+
+// 第三方库
+import { cloneDeep } from 'lodash-es'
+import { Base64 } from 'js-base64'
+
+// 类型导入
+import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
+// 状态管理初始化
+const interactiveStore = interactiveStoreWithOut()
 const embeddedStore = useEmbedded()
-const { wsCache } = useCache()
-const canvasCacheOutRef = ref(null)
-const deCanvasRef = ref(null)
-const eventCheck = e => {
-  if (e.key === 'panel-weight' && !compareStorage(e.oldValue, e.newValue)) {
-    const resourceId = embeddedStore.resourceId || router.currentRoute.value.query.resourceId
-    const opt = embeddedStore.opt || router.currentRoute.value.query.opt
-    if (!(opt && opt === 'create')) {
-      check(wsCache.get('panel-weight'), resourceId as string, 4)
-    }
-  }
-}
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const requestStore = useRequestStoreWithOut()
 const permissionStore = usePermissionStoreWithOut()
+const appStore = useAppStoreWithOut()
+
+// 工具函数和hooks
+const { wsCache } = useCache()
+const { t } = useI18n()
+
+// 响应式状态
 const {
   fullscreenFlag,
   componentData,
@@ -63,11 +71,17 @@ const {
   lastHiddenComponent,
   dvInfo
 } = storeToRefs(dvMainStore)
-const dataInitState = ref(false)
-const appStore = useAppStoreWithOut()
-const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
-const { t } = useI18n()
 
+// 本地状态
+const canvasCacheOutRef = ref(null)
+const deCanvasRef = ref(null)
+const dataInitState = ref(false)
+const mobileConfig = ref(false)
+const loadFinish = ref(false)
+const newWindowFromDiv = ref(false)
+let p = null
+
+// 共享状态
 const state = reactive({
   datasetTree: [],
   sourcePid: null,
@@ -76,10 +90,23 @@ const state = reactive({
   resourceId: null
 })
 
+// 计算属性
+const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
+
+// 方法
 const initDataset = () => {
   getDatasetTree({}).then(res => {
     state.datasetTree = (res as unknown as Tree[]) || []
   })
+}
+const eventCheck = e => {
+  if (e.key === 'panel-weight' && !compareStorage(e.oldValue, e.newValue)) {
+    const resourceId = embeddedStore.resourceId || router.currentRoute.value.query.resourceId
+    const opt = embeddedStore.opt || router.currentRoute.value.query.opt
+    if (!(opt && opt === 'create')) {
+      check(wsCache.get('panel-weight'), resourceId as string, 4)
+    }
+  }
 }
 
 const otherEditorShow = computed(() => {
@@ -117,7 +144,6 @@ const checkPer = async resourceId => {
   return check(wsCache.get('panel-weight'), resourceId, 4)
 }
 
-const mobileConfig = ref(false)
 
 const onMobileConfig = () => {
   const canvasStyleDataCopy = cloneDeep(canvasStyleData.value)
@@ -137,9 +163,6 @@ const onMobileConfig = () => {
   })
 }
 
-const loadFinish = ref(false)
-const newWindowFromDiv = ref(false)
-let p = null
 const XpackLoaded = () => p(true)
 
 const doUseCache = flag => {
