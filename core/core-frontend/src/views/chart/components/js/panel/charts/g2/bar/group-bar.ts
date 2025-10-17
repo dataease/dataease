@@ -3,7 +3,7 @@ import {
   BAR_EDITOR_PROPERTY,
   BAR_EDITOR_PROPERTY_INNER
 } from '@/views/chart/components/js/panel/charts/g2/bar/common'
-import { flow, parseJson } from '@/views/chart/components/js/util'
+import { flow, parseJson, setUpGroupSeriesColor } from '@/views/chart/components/js/util'
 import { StackBar } from '@/views/chart/components/js/panel/charts/g2/bar/stack-bar'
 import { Chart as G2Column } from '@antv/g2'
 import { ViewSpec } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
@@ -95,14 +95,8 @@ export class GroupBar extends StackBar {
     }
   }
 
-  protected configColor(_chart: Chart, options: ViewSpec): ViewSpec {
-    // return this.configGroupColor(chart, options)
-    return options
-  }
-
-  public setupSeriesColor(_chart: ChartObj, _data?: any[]): ChartBasicStyle['seriesColor'] {
-    // return setUpGroupSeriesColor(chart, data)
-    return []
+  public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
+    return setUpGroupSeriesColor(chart, data)
   }
 
   protected setupOptions(chart: Chart, options: ViewSpec): ViewSpec {

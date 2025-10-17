@@ -160,10 +160,6 @@ export class StackBar extends Bar {
     }
   }
 
-  protected configColor(_chart: Chart, options: ViewSpec): ViewSpec {
-    return options
-  }
-
   protected configData(chart: Chart, options: ViewSpec): ViewSpec {
     const { xAxis, extStack, yAxis } = chart
     const mainSort = xAxis.some(axis => axis.sort !== 'none')

@@ -7,21 +7,20 @@ import {
 } from '@/views/chart/components/js/panel/charts/g2/bar/common'
 import { useI18n } from '@/hooks/web/useI18n'
 import { flow, hexColorToRGBA, hexToRgba, parseJson } from '@/views/chart/components/js/util'
-import { cloneDeep, defaultsDeep, isEmpty } from 'lodash-es'
+import { cloneDeep, defaultsDeep, filter, find, isEmpty } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import {
   getLineDash,
+  handleChartDashboardHidden,
   setGradientColor,
   TOOLTIP_ITEM_TPL,
-  TOOLTIP_TITLE_TPL,
-  handleChartDashboardHidden
+  TOOLTIP_TITLE_TPL
 } from '@/views/chart/components/js/panel/common/common_antv'
 import {
   DEFAULT_BASIC_STYLE,
   DEFAULT_YAXIS_EXT_STYLE,
   DEFAULT_YAXIS_STYLE
 } from '@/views/chart/components/editor/util/chart'
-import { filter, find } from 'lodash-es'
 import {
   configTooltip,
   createTooltipWrapper,
@@ -736,10 +735,58 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     return options
   }
 
+  protected configColor(chart: Chart, options: ViewSpec): ViewSpec {
+    const { basicStyle } = parseJson(chart.customAttr)
+    const { seriesColor } = basicStyle
+    if (!seriesColor?.length) {
+      return options
+    }
+    const { xAxis, xAxisExt, yAxis } = chart
+    if (!xAxis?.length || !yAxis?.length) {
+      return options
+    }
+    const relations = []
+    if (xAxisExt?.length) {
+      seriesColor.forEach(item => {
+        let color = hexColorToRGBA(item.color, basicStyle.alpha)
+        if (basicStyle.gradient) {
+          color = setGradientColor(color, true, 270)
+        }
+        relations.push([item.id, color])
+      })
+    } else {
+      const colorMap = seriesColor.reduce((pre, next) => {
+        pre[next.id] = next.color
+        return pre
+      }, {})
+      yAxis.forEach(item => {
+        if (colorMap[item.id]) {
+          let color = hexColorToRGBA(colorMap[item.id], basicStyle.alpha)
+          if (basicStyle.gradient) {
+            color = setGradientColor(color, true, 270)
+          }
+          relations.push([item.chartShowName ?? item.name, color])
+        }
+      })
+    }
+    if (relations.length) {
+      const scaleOptions = {
+        scale: {
+          color: {
+            relations
+          }
+        }
+      }
+      defaultsDeep(options, scaleOptions)
+    }
+    return options
+  }
+
   protected setupOptions(chart: Chart, options: ViewSpec): ViewSpec {
     return flow(
       this.configTheme,
       this.configBasicStyle,
+      this.configColor,
       this.configLabel,
       this.configTooltip,
       this.configLegend,
