@@ -2929,6 +2929,7 @@ export default {
     column_name: 'Field name'
   },
   visualization: {
+    cur_sq_dataset: 'Currently selected dataset:',
     data_match_type: 'Data match type',
     select_resource: 'Select {0}',
     change_screen_page: 'Change {0}',

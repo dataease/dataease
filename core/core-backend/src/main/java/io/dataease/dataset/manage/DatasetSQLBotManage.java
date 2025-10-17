@@ -6,12 +6,15 @@ import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.DatasetTableInfoDTO;
 import io.dataease.api.dataset.union.UnionDTO;
 import io.dataease.api.dataset.vo.DataSQLBotAssistantVO;
+import io.dataease.api.dataset.vo.DataSQLBotDatasetVO;
 import io.dataease.api.dataset.vo.SQLBotAssistanTable;
 import io.dataease.api.dataset.vo.SQLBotAssistantField;
 import io.dataease.api.permissions.dataset.api.ColumnPermissionsApi;
 import io.dataease.api.permissions.dataset.dto.DataSetColumnPermissionsDTO;
 import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
 import io.dataease.auth.bo.TokenUserBO;
+import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
+import io.dataease.chart.dao.ext.mapper.ExtChartViewMapper;
 import io.dataease.commons.utils.EncryptUtils;
 import io.dataease.constant.ColumnPermissionConstants;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
@@ -67,6 +70,9 @@ public class DatasetSQLBotManage {
 
     @Resource
     private DataSetAssistantMapper dataSetAssistantMapper;
+
+    @Resource
+    private ExtChartViewMapper extChartViewMapper;
 
     @Resource
     private EngineManage engineManage;
@@ -147,8 +153,12 @@ public class DatasetSQLBotManage {
         return datasetRowPermissions.stream().collect(Collectors.groupingBy(DataSetRowPermissionsTreeDTO::getDatasetId));
     }
 
+    public List<DataSQLBotDatasetVO> getDatasetList(String dvInfo){
+        return extChartViewMapper.findDataSQLBotDatasetDvId(dvInfo);
+    }
 
-    public List<DataSQLBotAssistantVO> getDatasourceList(Long dsId, Long datasetId) {
+
+    public List<DataSQLBotAssistantVO> getDatasourceList(Long dsId, Long datasetId, String dvInfo) {
         TokenUserBO user = Objects.requireNonNull(AuthUtils.getUser());
         Long oid = user.getDefaultOid();
         Long uid = user.getUserId();
@@ -164,6 +174,12 @@ public class DatasetSQLBotManage {
         }
         if (ObjectUtils.isNotEmpty(dsId)) {
             queryWrapper.eq("cd.id", dsId);
+        }
+        if(ObjectUtils.isNotEmpty(dvInfo)){
+            List<Long> targetDsGroupIds = extChartViewMapper.findDatasetGroupIdByDvId(dvInfo);
+            if(CollectionUtils.isNotEmpty(targetDsGroupIds)){
+                queryWrapper.in("cdg.id", targetDsGroupIds);
+            }
         }
         if (ObjectUtils.isEmpty(model)) {
             if (!isAdmin) {

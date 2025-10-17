@@ -2848,6 +2848,7 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    cur_sq_dataset: '當前選擇的數據集：',
     data_match_type: '資料匹配方式',
     select_resource: '請選擇{0}',
     change_screen_page: '更換{0}',
