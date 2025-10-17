@@ -22,16 +22,18 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import MapSetting from './map/MapSetting.vue'
 import BasicInfo from './basic/BasicInfo.vue'
 import ThirdParty from './third-party/index.vue'
 import EngineInfo from '@/views/system/parameter/engine/EngineInfo.vue'
 import { XpackComponent } from '@/components/plugin'
+import { isDesktop } from '@/utils/ModelUtil'
 /* import EmailInfo from './email/EmailInfo.vue' */
 const { t } = useI18n()
 
+const desktop = isDesktop()
 const tabArray = ref([
   { label: t('system.basic_settings'), name: 'basic' },
   { label: t('system.map_settings'), name: 'map' },
@@ -49,6 +51,18 @@ const addTable = tab => {
     tabArray.value.splice(1, 0, tab)
   }
 }
+
+onMounted(() => {
+  if (desktop) {
+    let len = tabArray.value.length
+    while (len--) {
+      if (tabArray.value[len]['name'] === 'third_party') {
+        tabArray.value.splice(len, 1)
+        break
+      }
+    }
+  }
+})
 </script>
 <style lang="less">
 .router-title {
