@@ -605,7 +605,7 @@ const emits = defineEmits(['update:item', 'del'])
             /></el-tooltip>
             <el-tooltip
               class="item"
-              v-if="item.deType === 1 && item.filterTypeTime !== 'dynamicDate'"
+              v-else-if="item.deType === 1 && item.filterTypeTime !== 'dynamicDate'"
               effect="light"
               :content="item.value"
               placement="top"

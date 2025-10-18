@@ -29,6 +29,7 @@ const redirectUser = () => {
   const kidPath = sysMenu.matched[0].children[0].path
   push(`${sysMenu.path}/${kidPath}`)
 }
+
 const initShowToolbox = () => {
   showToolbox.value = permissionStore.getRouters.some(route => route.path === '/toolbox')
 }
@@ -49,6 +50,7 @@ const initAiBase = async () => {
 const handleAiClick = () => {
   useEmitt().emitter.emit('aiComponentChange')
 }
+
 onMounted(() => {
   initShowToolbox()
   initAiBase()

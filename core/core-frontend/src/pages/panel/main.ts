@@ -1,7 +1,6 @@
 const suffix = `${import.meta.env.VITE_VERSION}-dataease`
 
 const dom = document.querySelector('head')
-const cb = dom.appendChild.bind(dom)
 
 const formatterUrl = <T extends Node>(node: T, prefix: string) => {
   if (['SCRIPT', 'LINK'].includes(node.nodeName)) {

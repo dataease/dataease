@@ -1431,17 +1431,19 @@ export const dvMainStore = defineStore('dataVisualization', {
                   sourceViewId: viewId
                 }
               }
-              let j = currentFilters.length
-              while (j--) {
-                const filter = currentFilters[j]
-                // 兼容性准备 viewIds 只会存放一个值
-                if (targetFieldId === filter.fieldId && filter.viewIds.includes(targetViewId)) {
-                  currentFilters.splice(j, 1)
+              if (condition) {
+                let j = currentFilters.length
+                while (j--) {
+                  const filter = currentFilters[j]
+                  // 兼容性准备 viewIds 只会存放一个值
+                  if (targetFieldId === filter.fieldId && filter.viewIds.includes(targetViewId)) {
+                    currentFilters.splice(j, 1)
+                  }
                 }
+                // 不存在该条件 且 条件有效 直接保存该条件
+                // !filterExist && vValid && currentFilters.push(condition)
+                currentFilters.push(condition)
               }
-              // 不存在该条件 且 条件有效 直接保存该条件
-              // !filterExist && vValid && currentFilters.push(condition)
-              currentFilters.push(condition)
             }
             preActiveComponentIds.includes(element.id) || preActiveComponentIds.push(element.id)
           }
@@ -1501,6 +1503,7 @@ export const dvMainStore = defineStore('dataVisualization', {
         })
       })
       element.linkageFilters = currentFilters
+      console.log('===test===' + JSON.stringify(element.linkageFilters))
     },
 
     clearPanelLinkageInfo() {

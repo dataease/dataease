@@ -2,6 +2,7 @@ package io.dataease.dataset.server;
 
 import io.dataease.api.dataset.DataAssistantApi;
 import io.dataease.api.dataset.vo.DataSQLBotAssistantVO;
+import io.dataease.api.dataset.vo.DataSQLBotDatasetVO;
 import io.dataease.dataset.manage.DatasetSQLBotManage;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +17,12 @@ public class DatasetSQLBotServer implements DataAssistantApi {
     @Resource
     private DatasetSQLBotManage datasetSQLBotManage;
     @Override
-    public List<DataSQLBotAssistantVO> getDatasourceList(Long dsId, Long datasetId) {
-        return datasetSQLBotManage.getDatasourceList(dsId, datasetId);
+    public List<DataSQLBotAssistantVO> getDatasourceList(Long dsId, Long datasetId, String dvInfo) {
+        return datasetSQLBotManage.getDatasourceList(dsId, datasetId,dvInfo);
+    }
+
+    @Override
+    public List<DataSQLBotDatasetVO> getDatasetList(String dvInfo) {
+        return datasetSQLBotManage.getDatasetList(dvInfo);
     }
 }

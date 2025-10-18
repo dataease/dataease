@@ -1,23 +1,23 @@
 <template>
   <div
-    id="dataease-v2-embedded-sqlbot"
-    v-loading="loading"
-    class="dataease-v2-embedded-sqlbot"
+    id="dataease-v2-embedded-assistant-sqlbot"
+    class="dataease-v2-embedded-assistant-sqlbot"
   ></div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onUnmounted, reactive, ref } from 'vue'
+import { createApp, onMounted, onUnmounted, reactive, ref } from 'vue'
 import request from '@/config/axios'
 import { useUserStoreWithOut } from '@/store/modules/user'
-
+import SQDatasetSelect from '@/views/sqlbot/SQDatasetSelect.vue'
 const userStore = useUserStoreWithOut()
 const loading = ref(true)
 const state = reactive({
   domain: '',
   id: '',
   enabled: false,
-  valid: false
+  valid: false,
+  historyShow: false
 })
 const sqlbotExist = ref(false)
 const timer = ref()
@@ -43,12 +43,13 @@ const loadSqlbotInfo = () => {
 }
 
 const loadSqlbotPage = () => {
-  const scriptId = 'dataease-v2-embedded-sqlbot-script'
+  const scriptId = `sqlbot-assistant-float-script-${state.assistantId}`
   const exitsScript = document.getElementById(scriptId)
-  if (exitsScript && window['sqlbot_embedded_handler']) {
+  if (exitsScript && window['sqlbot_assistant_handler']) {
     mountedEmbeddedPage()
     return
   }
+  console.log('==test==0=')
   const script = document.createElement('script')
   script.defer = true
   script.async = true
@@ -57,25 +58,38 @@ const loadSqlbotPage = () => {
   if (sqlbotDomain.endsWith('/')) {
     sqlbotDomain = sqlbotDomain.slice(0, -1)
   }
-  script.src = `${sqlbotDomain}/xpack_static/sqlbot-embedded-dynamic.umd.js?t=${new Date().getTime()}`
+  script.src = `${sqlbotDomain}/assistant.js?id=${state.id}&online=true&userFlag=${
+    userStore.getUid
+  }&t=${new Date().getTime()}`
   script.onload = () => {
+    console.log('==test==00=')
     mountedEmbeddedPage()
   }
   document.head.appendChild(script)
 }
-
 const mountedEmbeddedPage = () => {
   if (sqlbotExist.value) {
     return
   }
   const tempTimer = setTimeout(() => {
-    if (window['sqlbot_embedded_handler']) {
-      console.log('===test===111')
-      window['sqlbot_embedded_handler'].mounted('#dataease-v2-embedded-sqlbot', {
-        embeddedId: state.id,
-        online: true,
-        userFlag: userStore.getUid
-      })
+    console.log('==test==1=' + window['sqlbot_assistant_handler'])
+    if (window['sqlbot_assistant_handler']) {
+      console.log('==test==2=')
+
+      // window['sqlbot_assistant_handler'].mounted('#dataease-v2-embedded-assistant-sqlbot', {
+      //   embeddedId: state.id,
+      //   online: true,
+      //   userFlag: userStore.getUid
+      // })
+
+      const container = document.getElementById('sqlbot-assistant-chat-container')
+      if (container) {
+        const mountPoint = document.createElement('div')
+        mountPoint.id = 'chat-component-mount-point'
+        container.appendChild(mountPoint)
+        const chatApp = createApp(SQDatasetSelect)
+        chatApp.mount(mountPoint)
+      }
       loading.value = false
       sqlbotExist.value = true
       if (tempTimer) {
@@ -100,11 +114,18 @@ onUnmounted(() => {
 })
 </script>
 
+<style lang="less">
+#sqlbot-assistant-chat-container {
+  z-index: 200;
+}
+</style>
+
 <style lang="less" scoped>
-.dataease-v2-embedded-sqlbot {
-  width: 100vw;
-  height: 100vh;
+.dataease-v2-embedded-assistant-sqlbot {
+  width: 20px;
+  height: 20px;
   overflow: hidden;
+  position: absolute;
   display: flex;
 }
 </style>

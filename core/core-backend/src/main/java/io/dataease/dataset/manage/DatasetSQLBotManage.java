@@ -6,12 +6,15 @@ import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.DatasetTableInfoDTO;
 import io.dataease.api.dataset.union.UnionDTO;
 import io.dataease.api.dataset.vo.DataSQLBotAssistantVO;
+import io.dataease.api.dataset.vo.DataSQLBotDatasetVO;
 import io.dataease.api.dataset.vo.SQLBotAssistanTable;
 import io.dataease.api.dataset.vo.SQLBotAssistantField;
 import io.dataease.api.permissions.dataset.api.ColumnPermissionsApi;
 import io.dataease.api.permissions.dataset.dto.DataSetColumnPermissionsDTO;
 import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
 import io.dataease.auth.bo.TokenUserBO;
+import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
+import io.dataease.chart.dao.ext.mapper.ExtChartViewMapper;
 import io.dataease.commons.utils.EncryptUtils;
 import io.dataease.constant.ColumnPermissionConstants;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
@@ -67,6 +70,9 @@ public class DatasetSQLBotManage {
 
     @Resource
     private DataSetAssistantMapper dataSetAssistantMapper;
+
+    @Resource
+    private ExtChartViewMapper extChartViewMapper;
 
     @Resource
     private EngineManage engineManage;
@@ -147,8 +153,12 @@ public class DatasetSQLBotManage {
         return datasetRowPermissions.stream().collect(Collectors.groupingBy(DataSetRowPermissionsTreeDTO::getDatasetId));
     }
 
+    public List<DataSQLBotDatasetVO> getDatasetList(String dvInfo){
+        return extChartViewMapper.findDataSQLBotDatasetDvId(dvInfo);
+    }
 
-    public List<DataSQLBotAssistantVO> getDatasourceList(Long dsId, Long datasetId) {
+
+    public List<DataSQLBotAssistantVO> getDatasourceList(Long dsId, Long datasetId, String dvInfo) {
         TokenUserBO user = Objects.requireNonNull(AuthUtils.getUser());
         Long oid = user.getDefaultOid();
         Long uid = user.getUserId();
@@ -164,6 +174,12 @@ public class DatasetSQLBotManage {
         }
         if (ObjectUtils.isNotEmpty(dsId)) {
             queryWrapper.eq("cd.id", dsId);
+        }
+        if(ObjectUtils.isNotEmpty(dvInfo)){
+            List<Long> targetDsGroupIds = extChartViewMapper.findDatasetGroupIdByDvId(dvInfo);
+            if(CollectionUtils.isNotEmpty(targetDsGroupIds)){
+                queryWrapper.in("cdg.id", targetDsGroupIds);
+            }
         }
         if (ObjectUtils.isEmpty(model)) {
             if (!isAdmin) {
@@ -428,7 +444,37 @@ public class DatasetSQLBotManage {
         if (CollectionUtils.isEmpty(vos)) {
             return;
         }
-        vos.forEach(vo -> {
+        Iterator<DataSQLBotAssistantVO> voIterator = vos.iterator();
+        while (voIterator.hasNext()) {
+            DataSQLBotAssistantVO vo = voIterator.next();
+            Map<String, Object> dsRowData = vo.getRowData();
+            List<SQLBotAssistanTable> tables = vo.getTables();
+
+            // 使用迭代器遍历tables，以便在遍历时删除元素
+            Iterator<SQLBotAssistanTable> tableIterator = tables.iterator();
+            while (tableIterator.hasNext()) {
+                SQLBotAssistanTable table = tableIterator.next();
+                Long datasetGroupId = table.getDatasetGroupId();
+                List<DataSetColumnPermissionsDTO> columnPermissionsDTOS = ObjectUtils.isEmpty(colPermissionMap) ? null : colPermissionMap.get(datasetGroupId);
+                List<DataSetRowPermissionsTreeDTO> rowPermissionsTreeDTOS = ObjectUtils.isEmpty(rowPermissionMap) ? null : rowPermissionMap.get(datasetGroupId);
+
+                if (table.isNeedTransform() || ObjectUtils.isNotEmpty(columnPermissionsDTOS) || ObjectUtils.isNotEmpty(rowPermissionsTreeDTOS)) {
+                    try {
+                        rebuildTable(table, columnPermissionsDTOS, rowPermissionsTreeDTOS, dsRowData);
+                    } catch (Exception e) {
+                        LogUtil.error(e);
+                        // 遇到异常，移除当前table
+                        tableIterator.remove();
+                    }
+                }
+            }
+
+            // 如果vo中的tables为空，则移除vo
+            if (CollectionUtils.isEmpty(tables)) {
+                voIterator.remove();
+            }
+        }
+        /*vos.forEach(vo -> {
             Map<String, Object> dsRowData = vo.getRowData();
             List<SQLBotAssistanTable> tables = vo.getTables();
             tables.forEach(table -> {
@@ -443,7 +489,7 @@ public class DatasetSQLBotManage {
                     }
                 }
             });
-        });
+        });*/
     }
 
     private SQLBotAssistantField buildField(Map<String, Object> row) {
@@ -492,6 +538,9 @@ public class DatasetSQLBotManage {
             config_json = EncryptUtils.aesDecrypt(dsConfig.toString()).toString();
             config = JsonUtil.parseObject(config_json, Configuration.class);
             config.convertJdbcUrl();
+        }
+        if (dsType.contains(DatasourceConfiguration.DatasourceType.mysql.name()) && ObjectUtils.isNotEmpty(config) && StringUtils.isNotBlank(config.getHost()) && StringUtils.equalsIgnoreCase("mysql-de", config.getHost()) && StringUtils.isNotBlank(dsHost)) {
+            config.setHost(dsHost);
         }
         DataSQLBotAssistantVO vo = new DataSQLBotAssistantVO();
         vo.setDataBase(config.getDataBase());
