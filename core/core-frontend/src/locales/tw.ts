@@ -2849,6 +2849,7 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    sqlbot_query_tips: '智能問數',
     cur_sq_dataset: '當前選擇的數據集：',
     data_match_type: '資料匹配方式',
     select_resource: '請選擇{0}',

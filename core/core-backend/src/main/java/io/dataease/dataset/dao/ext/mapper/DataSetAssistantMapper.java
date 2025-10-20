@@ -57,7 +57,6 @@ public interface DataSetAssistantMapper {
             left join `core_dataset_table` cdt on cdg.id =  cdt.dataset_group_id
             left join `core_dataset_table_field` cdtf on cdtf.dataset_group_id = cdg.id and (cdtf.dataset_table_id is NULL or cdtf.dataset_table_id = cdt.id)
             inner join `core_datasource` cd on cdt.datasource_id = cd.id
-            where  cdg.is_cross != 1 and (cd.STATUS IS NULL OR cd.STATUS != 'Error')
             ${ew.customSqlSegment}
             """
     )
@@ -120,8 +119,6 @@ public interface DataSetAssistantMapper {
     INNER JOIN `core_dataset_group` cdg ON cdg.id = cdt.dataset_group_id
         AND cdg.is_cross != 1
     INNER JOIN `core_dataset_table_field` cdtf ON cdtf.dataset_group_id = cdg.id and (cdtf.dataset_table_id is NULL or cdtf.dataset_table_id = cdt.id)
-    where not exists( select 1 from user_ds_permissions ds_p where cd.id = ds_p.resource_id )
-    and not exists( select 1 from user_dg_permissions dg_p where cdg.id = dg_p.resource_id )
     ${ew.customSqlSegment}
     """)
     List<Map<String, Object>> queryCommunity(@Param("ew") QueryWrapper queryWrapper);

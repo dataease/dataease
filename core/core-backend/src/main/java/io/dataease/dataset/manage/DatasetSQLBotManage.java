@@ -179,11 +179,17 @@ public class DatasetSQLBotManage {
             if (!isAdmin) {
                 return null;
             }
+            queryWrapper.eq("cdg.is_cross", 0)
+                    .and(wrapper -> wrapper.isNull("cd.STATUS").or().ne("cd.STATUS", "Error"));
             list = dataSetAssistantMapper.queryAll(queryWrapper);
         } else if (!model) {
             if (!isAdmin) {
                 return null;
             }
+            queryWrapper.apply("""
+                not exists( select 1 from user_ds_permissions ds_p where cd.id = ds_p.resource_id )
+                and not exists( select 1 from user_dg_permissions dg_p where cdg.id = dg_p.resource_id )
+            """);
             list = dataSetAssistantMapper.queryCommunity(queryWrapper);
         } else {
             boolean isRootRole = isAdmin;

@@ -2930,6 +2930,7 @@ export default {
     column_name: 'Field name'
   },
   visualization: {
+    sqlbot_query_tips: 'Smart Data Query',
     cur_sq_dataset: 'Currently selected dataset:',
     data_match_type: 'Data match type',
     select_resource: 'Select {0}',

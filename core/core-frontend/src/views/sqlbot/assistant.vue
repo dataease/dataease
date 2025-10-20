@@ -10,6 +10,7 @@ import { createApp, onMounted, onUnmounted, reactive, ref } from 'vue'
 import request from '@/config/axios'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import SQDatasetSelect from '@/views/sqlbot/SQDatasetSelect.vue'
+import AssistantHead from '@/views/sqlbot/AssistantHead.vue'
 const userStore = useUserStoreWithOut()
 const loading = ref(true)
 const state = reactive({
@@ -17,7 +18,8 @@ const state = reactive({
   id: '',
   enabled: false,
   valid: false,
-  historyShow: false
+  historyShow: false,
+  sqlbotScript: null
 })
 const sqlbotExist = ref(false)
 const timer = ref()
@@ -49,7 +51,6 @@ const loadSqlbotPage = () => {
     mountedEmbeddedPage()
     return
   }
-  console.log('==test==0=')
   const script = document.createElement('script')
   script.defer = true
   script.async = true
@@ -62,33 +63,35 @@ const loadSqlbotPage = () => {
     userStore.getUid
   }&t=${new Date().getTime()}`
   script.onload = () => {
-    console.log('==test==00=')
     mountedEmbeddedPage()
   }
   document.head.appendChild(script)
+  state.sqlbotScript = script
 }
 const mountedEmbeddedPage = () => {
   if (sqlbotExist.value) {
     return
   }
   const tempTimer = setTimeout(() => {
-    console.log('==test==1=' + window['sqlbot_assistant_handler'])
     if (window['sqlbot_assistant_handler']) {
-      console.log('==test==2=')
-
-      // window['sqlbot_assistant_handler'].mounted('#dataease-v2-embedded-assistant-sqlbot', {
-      //   embeddedId: state.id,
-      //   online: true,
-      //   userFlag: userStore.getUid
-      // })
-
       const container = document.getElementById('sqlbot-assistant-chat-container')
       if (container) {
+        // 数据集选择
         const mountPoint = document.createElement('div')
         mountPoint.id = 'chat-component-mount-point'
         container.appendChild(mountPoint)
-        const chatApp = createApp(SQDatasetSelect)
+        const chatApp = createApp(SQDatasetSelect, {
+          // 在这里传递 props
+          assistantId: state.id
+        })
         chatApp.mount(mountPoint)
+
+        // 头部样式
+        const mountPointHead = document.createElement('div')
+        mountPointHead.id = 'chat-component-mount-point-head'
+        container.appendChild(mountPointHead)
+        const chatHeadApp = createApp(AssistantHead)
+        chatHeadApp.mount(mountPointHead)
       }
       loading.value = false
       sqlbotExist.value = true
@@ -110,6 +113,16 @@ onUnmounted(() => {
   if (timer.value) {
     clearInterval(timer.value)
     timer.value = null
+  }
+
+  // 移除 script 标签
+  if (state.sqlbotScript && state.sqlbotScript.parentNode) {
+    state.sqlbotScript.parentNode.removeChild(state.sqlbotScript)
+  }
+
+  // 可选：清理全局变量
+  if (window['sqlbot_assistant_handler']) {
+    delete window['sqlbot_assistant_handler']
   }
 })
 </script>
