@@ -215,7 +215,6 @@ const switchTab = (name: string) => {
   activeName.value = name || 'simple'
 }
 const autoCallback = (param: any) => {
-  console.log(param)
   activeName.value = param.activeName || 'simple'
   preheat.value = param.preheat
   if (param.loadingText) {

@@ -43,7 +43,7 @@ const loadSqlbotInfo = () => {
 }
 
 const loadSqlbotPage = () => {
-  const scriptId = `sqlbot-assistant-float-script-${state.assistantId}`
+  const scriptId = `sqlbot-assistant-float-script-${state.id}`
   const exitsScript = document.getElementById(scriptId)
   if (exitsScript && window['sqlbot_assistant_handler']) {
     mountedEmbeddedPage()

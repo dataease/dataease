@@ -158,7 +158,7 @@ public class DatasetSQLBotManage {
     }
 
 
-    public List<DataSQLBotAssistantVO> getDatasourceList(Long dsId, Long datasetId, String dvInfo) {
+    public List<DataSQLBotAssistantVO> getDatasourceList(Long dsId, Long datasetId) {
         TokenUserBO user = Objects.requireNonNull(AuthUtils.getUser());
         Long oid = user.getDefaultOid();
         Long uid = user.getUserId();
@@ -174,12 +174,6 @@ public class DatasetSQLBotManage {
         }
         if (ObjectUtils.isNotEmpty(dsId)) {
             queryWrapper.eq("cd.id", dsId);
-        }
-        if(ObjectUtils.isNotEmpty(dvInfo)){
-            List<Long> targetDsGroupIds = extChartViewMapper.findDatasetGroupIdByDvId(dvInfo);
-            if(CollectionUtils.isNotEmpty(targetDsGroupIds)){
-                queryWrapper.in("cdg.id", targetDsGroupIds);
-            }
         }
         if (ObjectUtils.isEmpty(model)) {
             if (!isAdmin) {

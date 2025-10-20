@@ -70,7 +70,6 @@ const mountedEmbeddedPage = () => {
   }
   const tempTimer = setTimeout(() => {
     if (window['sqlbot_embedded_handler']) {
-      console.log('===test===111')
       window['sqlbot_embedded_handler'].mounted('#dataease-v2-embedded-sqlbot', {
         embeddedId: state.id,
         online: true,

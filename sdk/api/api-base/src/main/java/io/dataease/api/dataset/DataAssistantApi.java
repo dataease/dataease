@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface DataAssistantApi {
     @GetMapping("/datasource")
-    List<DataSQLBotAssistantVO> getDatasourceList(@RequestParam(required = false) Long dsId, @RequestParam(required = false) Long datasetId, @RequestParam(required = false) String dvInfo);
+    List<DataSQLBotAssistantVO> getDatasourceList(@RequestParam(required = false) Long dsId, @RequestParam(required = false) Long tableId);
 
     @GetMapping("/dataset/{dvInfo}")
     List<DataSQLBotDatasetVO> getDatasetList(@PathVariable String dvInfo);

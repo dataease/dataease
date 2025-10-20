@@ -7,7 +7,7 @@ import java.io.Serializable;
 @Data
 public class DataSQLBotDatasetVO implements Serializable {
 
-    private Long tableId;
+    private String tableId;
 
     private String tableName;
 
