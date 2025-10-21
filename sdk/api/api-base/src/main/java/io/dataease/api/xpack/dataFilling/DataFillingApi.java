@@ -164,6 +164,10 @@ public interface DataFillingApi {
     @PostMapping("/user-task/saveData/{id}")
     DataFillFormTableDataResponse saveFormRowData(@PathVariable("id") Long id, @RequestBody Map<String, Object> data) throws Exception;
 
+    @Operation(summary = "用户新增填报数据")
+    @PostMapping("/user-task/appendData/{id}")
+    DataFillFormTableDataResponse appendFormRowData(@PathVariable("id") Long id, @RequestBody Map<String, Object> data) throws Exception;
+
     @Operation(summary = "数据填报操作日志")
     @DePermit({"#p0.formId+':read'"})
     @PostMapping("/log/page/{goPage}/{pageSize}")
