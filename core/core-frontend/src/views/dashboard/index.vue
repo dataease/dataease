@@ -1,5 +1,4 @@
 <script setup lang="ts">
-// 导入模块重新组织，按功能分类
 // 核心Vue模块
 import { computed, nextTick, onMounted, onUnmounted, reactive, ref } from 'vue'
 import { storeToRefs } from 'pinia'
@@ -177,7 +176,7 @@ const doUseCache = flag => {
       snapshotStore.recordSnapshotCache('renderChart')
     }, 1500)
   } else {
-    initLocalCanvasData()
+    initLocalCanvasData(()=>{})
     wsCache.delete('DE-DV-CATCH-' + state.resourceId)
   }
 }
