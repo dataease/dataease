@@ -259,7 +259,7 @@ export class TableG2Chart extends G2ChartView {
         scale: {
           color: {
             type: 'linear',
-            interpolate: () => {
+            interpolate() {
               return c => colors[Math.floor(c * (colors.length - 1))]
             }
           }
@@ -267,7 +267,8 @@ export class TableG2Chart extends G2ChartView {
         legend: {
           color: {
             color: colors,
-            label: false
+            label: false,
+            step: 0.00000001
           }
         }
       }
