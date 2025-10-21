@@ -15,7 +15,7 @@ public class SystemSettingUtils {
                 XpackSettingConstants.PVP,
                 XpackSettingConstants.PLATFORM_RID,
                 XpackSettingConstants.DEFAULT_LOGIN,
-                XpackSettingConstants.THRSHOLD_LOG_LIVE_TIME,
+                XpackSettingConstants.THRESHOLD_LOG_LIVE_TIME,
                 XpackSettingConstants.LOGIN_LIMIT,
                 XpackSettingConstants.LOGIN_LIMIT_RATE,
                 XpackSettingConstants.LOGIN_LIMIT_TIME);
