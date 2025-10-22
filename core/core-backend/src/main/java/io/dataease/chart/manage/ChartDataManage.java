@@ -110,7 +110,7 @@ public class ChartDataManage {
             DEException.throwException(ResultCode.DATA_IS_WRONG.code(), Translator.get("i18n_chart_not_handler") + ": " + view.getRender() + "," + view.getType());
         }
 
-        var dillAxis = new ArrayList<ChartViewFieldDTO>();
+        var drillAxis = new ArrayList<ChartViewFieldDTO>();
         DatasetGroupInfoDTO table = datasetGroupManage.getDatasetGroupInfoDTO(view.getTableId(), null);
         if (table == null) {
             DEException.throwException(ResultCode.DATA_IS_WRONG.code(), Translator.get("i18n_no_ds"));
@@ -141,9 +141,7 @@ public class ChartDataManage {
         var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
         formatResult.getContext().put("allFields", allFields);
         var axisMap = formatResult.getAxisMap();
-        axisMap.forEach((axis, fields) -> {
-            fields.removeIf(fieldDTO -> !dataeaseNames.contains(fieldDTO.getDataeaseName()));
-        });
+        axisMap.forEach((axis, fields) -> fields.removeIf(fieldDTO -> !dataeaseNames.contains(fieldDTO.getDataeaseName())));
 
         // 过滤来自仪表板的条件
         List<ChartExtFilterDTO> extFilterList = new ArrayList<>();
@@ -319,7 +317,7 @@ public class ChartDataManage {
                         if (!fields.contains(dim.getId())) {
                             viewField.setSource(FieldSource.DRILL);
                             xAxis.add(viewField);
-                            dillAxis.add(viewField);
+                            drillAxis.add(viewField);
                             fields.add(dim.getId());
                         }
                         if (i == drillRequestList.size() - 1) {
@@ -327,7 +325,7 @@ public class ChartDataManage {
                             if (!fields.contains(nextDrillField.getId())) {
                                 nextDrillField.setSource(FieldSource.DRILL);
                                 xAxis.add(nextDrillField);
-                                dillAxis.add(nextDrillField);
+                                drillAxis.add(nextDrillField);
                                 fields.add(nextDrillField.getId());
                             } else {
                                 Optional<ChartViewFieldDTO> axis = xAxis.stream().filter(x -> Objects.equals(x.getId(), nextDrillField.getId())).findFirst();
@@ -335,7 +333,7 @@ public class ChartDataManage {
                                     field.setSort(nextDrillField.getSort());
                                     field.setCustomSort(nextDrillField.getCustomSort());
                                 });
-                                dillAxis.add(nextDrillField);
+                                drillAxis.add(nextDrillField);
                             }
                         }
                     }
@@ -343,7 +341,7 @@ public class ChartDataManage {
             }
         }
 
-        formatResult.getContext().put("dillAxis", dillAxis);
+        formatResult.getContext().put("drillAxis", drillAxis);
 
         //转义特殊字符
         extFilterList = extFilterList.stream().peek(ele -> {
