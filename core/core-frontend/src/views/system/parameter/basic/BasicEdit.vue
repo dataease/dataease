@@ -50,7 +50,8 @@ const state = reactive({
     { value: '1', label: 'LDAP' },
     { value: '2', label: 'OIDC' },
     { value: '3', label: 'CAS' },
-    { value: '9', label: 'OAuth2' }
+    { value: '9', label: 'OAuth2' },
+    { value: '10', label: 'Saml2' }
   ],
   sortOptions: [
     { value: '0', label: t('resource_sort.time_asc') },
