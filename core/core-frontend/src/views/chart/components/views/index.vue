@@ -445,7 +445,11 @@ const jumpClick = param => {
   if (param.name) {
     const colList = [...param.dimensionList, ...param.quotaList]
     colList.forEach(dimensionItem => {
-      if (dimensionItem.id === param.name || dimensionItem.name === param.name) {
+      if (
+        dimensionItem.id === param.name ||
+        dimensionItem.value === param.name ||
+        dimensionItem.name === param.name
+      ) {
         dimension = dimensionItem
         sourceInfo = param.viewId + '#' + dimension.id
         jumpInfo = nowPanelJumpInfo.value[sourceInfo]
