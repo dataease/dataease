@@ -17,12 +17,16 @@ import {
 } from '@/views/chart/components/editor/util/chart'
 import {
   handleChartDashboardHidden,
-  setGradientColor,
   TOOLTIP_ITEM_TPL,
   TOOLTIP_TITLE_TPL
 } from '../../../common/common_antv'
 import { CHART_MIX_EDITOR_PROPERTY, CHART_MIX_EDITOR_PROPERTY_INNER } from './common'
 import { registerSymbol, Symbols } from '@antv/g2/esm/utils/marker'
+import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
+import {
+  createTooltipWrapper,
+  tooltipCss
+} from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 
 const { t } = useI18n()
 /**
@@ -214,7 +218,17 @@ export class GroupLineMix extends G2ChartView {
             }
           ]
         }
-      ]
+      ],
+      interaction: {
+        elementHighlight: {
+          background: true,
+          region: true
+        },
+        elementSelect: {
+          background: true,
+          single: true
+        }
+      }
     }
     const newChart = new G2Chart({ container })
     const options = this.setupOptions(chart, initOptions, {
@@ -227,8 +241,7 @@ export class GroupLineMix extends G2ChartView {
     newChart.on('interval:click', action)
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
-    // extremumEvt(newChart, chart, options, container)
-    // configPlotTooltipEvent(chart, newChart)
+    new G2TooltipCarousel(newChart, chart, [...leftData, ...rightData]).start()
     return newChart
   }
 
@@ -576,26 +589,11 @@ export class GroupLineMix extends G2ChartView {
     const tooltipOptions: G2Spec = {
       tooltip: d => d,
       interaction: {
+        ...options.interaction,
         tooltip: {
           crosshairsLineDash: [4, 4],
-          mount: g2TooltipWrapper,
-          css: {
-            '.g2-tooltip': {
-              background: tooltip.backgroundColor
-            },
-            '.g2-tooltip-title': {
-              color: tooltip.color,
-              'font-size': `${tooltip.fontSize}px`
-            },
-            '.g2-tooltip-list-item-name-label': {
-              color: tooltip.color,
-              'font-size': `${tooltip.fontSize}px`
-            },
-            '.g2-tooltip-list-item-value': {
-              color: tooltip.color,
-              'font-size': `${tooltip.fontSize}px`
-            }
-          },
+          mount: createTooltipWrapper(chart),
+          css: tooltipCss(tooltip),
           render: (_, { title, items }) => {
             const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)
             if (tooltip.seriesTooltipFormatter?.length) {

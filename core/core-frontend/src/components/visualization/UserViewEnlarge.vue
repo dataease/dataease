@@ -181,7 +181,7 @@ import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { activeWatermarkCheckUser } from '@/components/watermark/watermark'
 import { getCanvasStyle } from '@/utils/style'
 import EmptyBackground from '../empty-background/src/EmptyBackground.vue'
-import ChartCarouselTooltip from '@/views/chart/components/js/g2plot_tooltip_carousel'
+import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 
 const downLoading = ref(false)
 const dvMainStore = dvMainStoreWithOut()
@@ -324,7 +324,6 @@ const dialogInit = (canvasStyle, view, item, opt, params = { scale: 0.5 }) => {
   }
   nextTick(() => {
     initWatermark()
-    ChartCarouselTooltip.paused()
   })
 }
 
@@ -455,7 +454,7 @@ const initWatermark = () => {
   activeWatermarkCheckUser('enlarge-inner-content', 'canvas-main', state.scale)
 }
 const handleClose = () => {
-  ChartCarouselTooltip.closeEnlargeDialogDestroy(viewInfo.value.id)
+  G2TooltipCarousel.closeEnlargeDialogDestroy(viewInfo.value.id)
 }
 defineExpose({
   dialogInit

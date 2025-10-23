@@ -2650,3 +2650,22 @@ export function handleChartDashboardHidden(chart: Chart, options) {
     }
   }
 }
+
+/**
+ * 将渐变色字符串（如 l(270) 0:rgba(255,69,0,0.3) 1:rgba(255,69,0,1)）转换为 CSS 的 linear-gradient 语法
+ * @param str
+ */
+export function toLinearGradient(str: string): string {
+  // 匹配角度和颜色点
+  const match = str.match(/^l\((\d+)\)\s*(.*)$/)
+  if (!match) return str
+  const angle = match[1] === '270' ? '360' : '90'
+  const stops = match[2]
+    .split(/\s+/)
+    .map(s => {
+      const [offset, color] = s.split(':')
+      return `${color} ${parseFloat(offset) * 100}%`
+    })
+    .join(', ')
+  return `linear-gradient(${angle}deg, ${stops})`
+}

@@ -13,6 +13,7 @@ import {
   getLineDash,
   handleChartDashboardHidden,
   setGradientColor,
+  toLinearGradient,
   TOOLTIP_ITEM_TPL,
   TOOLTIP_TITLE_TPL
 } from '@/views/chart/components/js/panel/common/common_antv'
@@ -22,13 +23,13 @@ import {
   DEFAULT_YAXIS_STYLE
 } from '@/views/chart/components/editor/util/chart'
 import {
-  configTooltip,
   createTooltipWrapper,
   tooltipCss,
   Transform,
   ViewSpec
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 import { addExtremumText, extremumEvt } from '@/views/chart/components/js/extremumUitl'
+import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 
 const { t } = useI18n()
 const DEFAULT_DATA: any[] = []
@@ -81,7 +82,12 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     },
     interaction: {
       elementHighlight: {
-        background: true
+        background: true,
+        region: true
+      },
+      elementSelect: {
+        background: true,
+        single: true
       }
     },
     tooltip: false,
@@ -110,7 +116,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
     newChart.on('interval:click', action)
-    configTooltip(newChart, chart)
+    new G2TooltipCarousel(newChart, chart, data).start()
     extremumEvt(newChart, chart, options.children[0], container, scale, this.name === 'bar')
     return newChart
   }
@@ -246,7 +252,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
             })
             const itemsHtml = result
               .map(item => {
-                const marker = item.color
+                const marker = toLinearGradient(item.color)
                 const label = item.name
                 const value = item.value
                 return TOOLTIP_ITEM_TPL.replace('{marker}', marker)

@@ -2,7 +2,10 @@ import { Chart as G2Column } from '@antv/g2'
 import { G2DrawOptions } from '@/views/chart/components/js/panel/types/impl/g2'
 import { useI18n } from '@/hooks/web/useI18n'
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
-import { ViewSpec, configTooltip } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
+import {
+  ViewSpec,
+  listenerTooltipShow
+} from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 import {
   handleChartDashboardHidden,
   setGradientColor
@@ -171,7 +174,7 @@ export class Waterfall extends Bar {
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
     newChart.on('interval:click', action)
-    configTooltip(newChart, chart)
+    listenerTooltipShow(newChart, chart)
     return newChart
   }
 

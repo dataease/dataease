@@ -21,6 +21,8 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { cloneDeep, defaultsDeep, isEmpty } from 'lodash-es'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
+import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
+import { createTooltipWrapper, tooltipCss } from '../../bar/barUtil'
 
 const { t } = useI18n()
 
@@ -59,6 +61,11 @@ export class Pie extends G2ChartView {
       },
       coordinate: {
         type: 'theta'
+      },
+      interaction: {
+        elementSelect: {
+          single: true
+        }
       }
     }
     const total = data.reduce((pre, next) => pre + (next.value ?? 0), 0)
@@ -69,6 +76,7 @@ export class Pie extends G2ChartView {
     newChart.on('interval:click', d => {
       d.data?.data?.field !== customAttr.basicStyle.topNLabel && action(d)
     })
+    new G2TooltipCarousel(newChart, chart, data).start()
     return newChart
   }
 
@@ -215,39 +223,13 @@ export class Pie extends G2ChartView {
         pre[next.id] = next
         return pre
       }, {}) as Record<string, SeriesFormatter>
-    let g2TooltipWrapper = document.getElementById('G2-TOOLTIP-WRAPPER')
-    if (!g2TooltipWrapper) {
-      g2TooltipWrapper = document.createElement('div')
-      g2TooltipWrapper.id = 'G2-TOOLTIP-WRAPPER'
-      g2TooltipWrapper.style.position = 'absolute'
-      g2TooltipWrapper.style.pointerEvents = 'none'
-      g2TooltipWrapper.style.zIndex = '9999'
-      document.body.appendChild(g2TooltipWrapper)
-    }
-
     const { total } = context
     const tooltipOptions: G2Spec = {
       tooltip: d => d,
       interaction: {
         tooltip: {
-          mount: g2TooltipWrapper,
-          css: {
-            '.g2-tooltip': {
-              background: tooltipAttr.backgroundColor
-            },
-            '.g2-tooltip-title': {
-              color: tooltipAttr.color,
-              'font-size': `${tooltipAttr.fontSize}px`
-            },
-            '.g2-tooltip-list-item-name-label': {
-              color: tooltipAttr.color,
-              'font-size': `${tooltipAttr.fontSize}px`
-            },
-            '.g2-tooltip-list-item-value': {
-              color: tooltipAttr.color,
-              'font-size': `${tooltipAttr.fontSize}px`
-            }
-          },
+          mount: createTooltipWrapper(chart),
+          css: tooltipCss(tooltipAttr),
           render: (_, { items }) => {
             let tooltipItems = items
             if (tooltipAttr.seriesTooltipFormatter?.length) {

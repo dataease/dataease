@@ -88,7 +88,6 @@ const state = reactive({
   ]
 })
 const dialogInit = (dvType = 'dashboard') => {
-  ChartCarouselTooltip.paused()
   curDvType.value = dvType
   dialogShow.value = true
   dvMainStore.initCurMultiplexingComponents()
@@ -110,7 +109,7 @@ const saveMultiplexing = () => {
   })
 }
 const handleClose = () => {
-  ChartCarouselTooltip.closeEnlargeDialogDestroy()
+  G2TooltipCarousel.closeEnlargeDialogDestroy()
 }
 defineExpose({
   dialogInit

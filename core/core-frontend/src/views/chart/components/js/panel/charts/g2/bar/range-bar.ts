@@ -4,7 +4,7 @@ import {
 } from '@/views/chart/components/js/panel/charts/g2/bar/common'
 import { flow, parseJson } from '@/views/chart/components/js/util'
 import {
-  configTooltip,
+  listenerTooltipShow,
   createTooltipWrapper,
   tooltipCss,
   ViewSpec
@@ -118,7 +118,7 @@ export class RangeBar extends HorizontalBar {
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
     newChart.on('interval:click', action)
-    configTooltip(newChart, chart)
+    listenerTooltipShow(newChart, chart)
     return newChart
   }
 

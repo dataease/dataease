@@ -58,7 +58,7 @@ export function createTooltipWrapper(chart: Chart) {
     g2TooltipWrapper.id = wrapperId
     g2TooltipWrapper.style.position = 'absolute'
     g2TooltipWrapper.style.pointerEvents = 'none'
-    g2TooltipWrapper.style.zIndex = '9999'
+    g2TooltipWrapper.style.zIndex = '2000'
     g2TooltipWrapper.style.top = '0px'
     document.body.appendChild(g2TooltipWrapper)
   }
@@ -88,7 +88,7 @@ export function tooltipCss(tooltipAttr: DeepPartial<ChartTooltipAttr>) {
   }
 }
 
-export function configTooltip(newChart: G2Chart, chart: Chart) {
+export function listenerTooltipShow(newChart: G2Chart, chart: Chart) {
   newChart.on('tooltip:show', event => {
     const tooltipWrapper = document.getElementById(tooltipWrapperId(chart.container))
     const allTooltips = tooltipWrapper?.querySelectorAll('.g2-tooltip')
@@ -100,10 +100,14 @@ export function configTooltip(newChart: G2Chart, chart: Chart) {
       }
       tooltip.removeEventListener('mouseleave', tooltipMouseleave)
       tooltip.addEventListener('mouseleave', tooltipMouseleave)
-      if (event.client.y < tooltip.getBoundingClientRect().height) {
+      // 调整 tooltip z-index 和位置
+      tooltipWrapper.style.zIndex = chart.container.indexOf('viewDialog') > -1 ? '9999' : '2000'
+      const clientY = event.client?.y
+      if (!clientY) return
+      if (clientY < tooltip.getBoundingClientRect().height) {
         tooltip.style.top = '0px'
       } else {
-        tooltip.style.top = `${event.client.y - tooltip.getBoundingClientRect().height}px`
+        tooltip.style.top = `${clientY - tooltip.getBoundingClientRect().height}px`
       }
     })
   })

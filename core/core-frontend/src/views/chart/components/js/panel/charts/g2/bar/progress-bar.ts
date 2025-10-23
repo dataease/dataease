@@ -4,7 +4,7 @@ import {
 } from '@/views/chart/components/js/panel/charts/g2/bar/common'
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
 import {
-  configTooltip,
+  listenerTooltipShow,
   createTooltipWrapper,
   tooltipCss,
   ViewSpec
@@ -193,7 +193,7 @@ export class ProgressBar extends HorizontalStackBar {
     handleChartDashboardHidden(chart, newOptions)
     newChart.options(newOptions)
     newChart.on('interval:click', action)
-    configTooltip(newChart, chart)
+    listenerTooltipShow(newChart, chart)
     return newChart
   }
 

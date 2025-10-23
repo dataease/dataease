@@ -354,7 +354,11 @@ const renderG2 = async (chart, chartView: G2PlotChartView<any, any>) => {
       // 在这里清理掉之前图表的空dom
       configEmptyDataStyle([1], containerId)
       myChart?.destroy()
-      const dashboardHidden = props.element.dashboardHidden
+      // 处理图表在右侧小区域时隐藏文本标识
+      let dashboardHidden = props.element.dashboardHidden
+      if (dvMainStore.mobileInPc) {
+        dashboardHidden = !props.element.inMobile
+      }
       myChart = await chartView.drawChart({
         chartObj: myChart,
         container: containerId,

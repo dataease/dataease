@@ -23,6 +23,11 @@ import {
 } from '../../../common/common_antv'
 import { CHART_MIX_EDITOR_PROPERTY, CHART_MIX_EDITOR_PROPERTY_INNER } from './common'
 import { registerSymbol, Symbols } from '@antv/g2/esm/utils/marker'
+import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
+import {
+  createTooltipWrapper,
+  tooltipCss
+} from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 
 const { t } = useI18n()
 /**
@@ -192,7 +197,17 @@ export class StackLineMix extends G2ChartView {
             }
           ]
         }
-      ]
+      ],
+      interaction: {
+        elementHighlight: {
+          background: true,
+          region: true
+        },
+        elementSelect: {
+          background: true,
+          single: true
+        }
+      }
     }
     const newChart = new G2Chart({ container })
     const options = this.setupOptions(chart, initOptions, {
@@ -205,8 +220,7 @@ export class StackLineMix extends G2ChartView {
     newChart.on('interval:click', action)
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
-    // extremumEvt(newChart, chart, options, container)
-    // configPlotTooltipEvent(chart, newChart)
+    new G2TooltipCarousel(newChart, chart, [...leftData, ...rightData]).start()
     return newChart
   }
 
@@ -549,39 +563,15 @@ export class StackLineMix extends G2ChartView {
         pre[next.id] = next
         return pre
       }, {}) as Record<string, SeriesFormatter>
-    let g2TooltipWrapper = document.getElementById('G2-TOOLTIP-WRAPPER')
-    if (!g2TooltipWrapper) {
-      g2TooltipWrapper = document.createElement('div')
-      g2TooltipWrapper.id = 'G2-TOOLTIP-WRAPPER'
-      g2TooltipWrapper.style.position = 'absolute'
-      g2TooltipWrapper.style.pointerEvents = 'none'
-      g2TooltipWrapper.style.zIndex = '9999'
-      document.body.appendChild(g2TooltipWrapper)
-    }
     const { yAxis } = chart
     const tooltipOptions: G2Spec = {
       tooltip: d => d,
       interaction: {
+        ...options.interaction,
         tooltip: {
           crosshairsLineDash: [4, 4],
-          mount: g2TooltipWrapper,
-          css: {
-            '.g2-tooltip': {
-              background: tooltip.backgroundColor
-            },
-            '.g2-tooltip-title': {
-              color: tooltip.color,
-              'font-size': `${tooltip.fontSize}px`
-            },
-            '.g2-tooltip-list-item-name-label': {
-              color: tooltip.color,
-              'font-size': `${tooltip.fontSize}px`
-            },
-            '.g2-tooltip-list-item-value': {
-              color: tooltip.color,
-              'font-size': `${tooltip.fontSize}px`
-            }
-          },
+          mount: createTooltipWrapper(chart),
+          css: tooltipCss(tooltip),
           render: (_, { title, items }) => {
             const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)
             if (tooltip.seriesTooltipFormatter?.length) {
