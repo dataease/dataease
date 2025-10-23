@@ -13,7 +13,6 @@ import io.dataease.api.permissions.dataset.api.ColumnPermissionsApi;
 import io.dataease.api.permissions.dataset.dto.DataSetColumnPermissionsDTO;
 import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
 import io.dataease.auth.bo.TokenUserBO;
-import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
 import io.dataease.chart.dao.ext.mapper.ExtChartViewMapper;
 import io.dataease.commons.utils.EncryptUtils;
 import io.dataease.constant.ColumnPermissionConstants;
@@ -72,9 +71,6 @@ public class DatasetSQLBotManage {
     private DataSetAssistantMapper dataSetAssistantMapper;
 
     @Resource
-    private ExtChartViewMapper extChartViewMapper;
-
-    @Resource
     private EngineManage engineManage;
 
     @Resource
@@ -100,6 +96,9 @@ public class DatasetSQLBotManage {
     private String aesIv;
     @Value("${dataease.sqlbot.log:false}")
     private boolean sqlbotApiLog;
+
+    @Resource
+    private ExtChartViewMapper extChartViewMapper;
 
     private String aesEncrypt(String text) {
         String iv = aesIv;
@@ -153,10 +152,10 @@ public class DatasetSQLBotManage {
         return datasetRowPermissions.stream().collect(Collectors.groupingBy(DataSetRowPermissionsTreeDTO::getDatasetId));
     }
 
+
     public List<DataSQLBotDatasetVO> getDatasetList(String dvInfo){
         return extChartViewMapper.findDataSQLBotDatasetDvId(dvInfo);
     }
-
 
     public List<DataSQLBotAssistantVO> getDatasourceList(Long dsId, Long datasetId) {
         TokenUserBO user = Objects.requireNonNull(AuthUtils.getUser());
@@ -179,17 +178,11 @@ public class DatasetSQLBotManage {
             if (!isAdmin) {
                 return null;
             }
-            queryWrapper.eq("cdg.is_cross", 0)
-                    .and(wrapper -> wrapper.isNull("cd.STATUS").or().ne("cd.STATUS", "Error"));
             list = dataSetAssistantMapper.queryAll(queryWrapper);
         } else if (!model) {
             if (!isAdmin) {
                 return null;
             }
-            queryWrapper.apply("""
-                not exists( select 1 from user_ds_permissions ds_p where cd.id = ds_p.resource_id )
-                and not exists( select 1 from user_dg_permissions dg_p where cdg.id = dg_p.resource_id )
-            """);
             list = dataSetAssistantMapper.queryCommunity(queryWrapper);
         } else {
             boolean isRootRole = isAdmin;
