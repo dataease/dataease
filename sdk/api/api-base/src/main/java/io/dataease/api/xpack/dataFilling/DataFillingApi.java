@@ -193,6 +193,10 @@ public interface DataFillingApi {
     @PostMapping("/form/{formId}/confirmUpload")
     void confirmUpload(@PathVariable("formId") Long formId, @RequestBody Map<String, String> data);
 
+    @Operation(summary = "用户确认上传Excel")
+    @PostMapping("/user-task/appendData/{id}/form/{formId}/confirmUpload")
+    void appendDataConfirmUpload(@PathVariable("id") Long id, @PathVariable("formId") Long formId, @RequestBody Map<String, String> data);
+
     @Operation(summary = "获取表单模版配置")
     @GetMapping("/template/{itemId}")
     String getTemplateByUserTaskItemId(@PathVariable("itemId") Long itemId);
