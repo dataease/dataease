@@ -280,7 +280,7 @@ onMounted(() => {
         <el-form ref="formRef" :model="form">
           <el-form-item prop="name" :rules="rules">
             <el-input
-              size="middle"
+              size="default"
               :effect="themes"
               v-model="selectedNodeName"
               class="data-set-dark"
@@ -319,7 +319,7 @@ onMounted(() => {
               </el-button>
             </div>
             <el-input
-              size="middle"
+              size="default"
               :effect="themes"
               v-model="searchStr"
               :placeholder="t('dataset.search')"

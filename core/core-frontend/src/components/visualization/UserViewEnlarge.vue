@@ -32,7 +32,7 @@
             class="m-button"
             v-if="optType === 'enlarge' && exportPermissions[0]"
             link
-            size="middle"
+            size="default"
             @click="downloadViewImage"
           >
             <el-icon color="#1F2329" size="16" style="margin-right: 3px"
@@ -44,7 +44,7 @@
             class="m-button"
             v-if="optType === 'details' && exportPermissions[1]"
             link
-            size="middle"
+            size="default"
             :loading="exportLoading"
             :disabled="
               requestStore.loadingMap[permissionStore.currentPath] > 0 ||
@@ -61,7 +61,7 @@
             class="m-button"
             v-if="optType === 'details' && exportPermissions[2]"
             link
-            size="middle"
+            size="default"
             :loading="exportLoading"
             @click="downloadViewDetails('dataset')"
             :disabled="
@@ -78,7 +78,7 @@
             class="m-button"
             v-if="optType === 'details' && exportPermissions[2] && viewInfo.type === 'table-pivot'"
             link
-            size="middle"
+            size="default"
             :loading="exportLoading"
             @click="exportAsFormattedExcel"
           >

@@ -5,7 +5,7 @@
         <el-form-item class="form-item" :class="'form-item-' + themes" :label="label">
           <el-input-number
             :effect="themes"
-            size="middle"
+            size="default"
             :disabled="curComponent['isLock']"
             :min="min"
             :max="max"
@@ -58,7 +58,7 @@
           <el-form-item class="form-item" :class="'form-item-' + themes" label="X">
             <el-input-number
               :effect="themes"
-              size="middle"
+              size="default"
               :disabled="curComponent['isLock']"
               :min="-360"
               :max="360"
@@ -71,7 +71,7 @@
           <el-form-item class="form-item" :class="'form-item-' + themes" label="Y">
             <el-input-number
               :effect="themes"
-              size="middle"
+              size="default"
               :disabled="curComponent['isLock']"
               :min="-360"
               :max="360"
@@ -84,7 +84,7 @@
           <el-form-item class="form-item" :class="'form-item-' + themes" label="Z">
             <el-input-number
               :effect="themes"
-              size="middle"
+              size="default"
               :disabled="curComponent['isLock']"
               :min="-360"
               :max="360"
