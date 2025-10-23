@@ -86,8 +86,8 @@ export class Treemap extends G2ChartView {
       }
     }
     const total = data.reduce((pre, next) => pre + (next.value ?? 0), 0)
-    const options = this.setupOptions(chart, baseOptions, { total })
     const newChart = new G2Chart({ container })
+    const options = this.setupOptions(chart, baseOptions, { total, chartObj: newChart })
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
     newChart.on('polygon:click', action)
@@ -337,13 +337,65 @@ export class Treemap extends G2ChartView {
     return options
   }
 
+  protected configLabelTooltip(
+    chart: Chart,
+    options: G2Spec,
+    context: Record<string, any>
+  ): G2Spec {
+    const { label, tooltip } = parseJson(chart.customAttr)
+    if (!label.show || !tooltip.show) {
+      return options
+    }
+    defaultsDeep(options, {
+      interaction: {
+        tooltip: {
+          clickLock: true
+        }
+      }
+    })
+    const { chartObj } = context
+    chartObj.on('label:pointermove', e => {
+      const { target } = e
+      const parentElement = target.attributes.dependentElement
+      const offsetX = parentElement.attributes.x + parentElement.attributes.width / 2
+      const offsetY = parentElement.attributes.y + parentElement.attributes.height / 2
+      const { canvas } = chartObj.getContext()
+      const { document } = canvas!
+      const plot = document.querySelector('.plot')
+      if (!plot) {
+        return
+      }
+      plot.setAttribute('tooltipLocked', true)
+      chartObj.emit('tooltip:show', {
+        offsetX,
+        offsetY,
+        data: {
+          data: {
+            id: e.data.data.id
+          }
+        }
+      })
+    })
+    chartObj.on('label:pointerout', () => {
+      const { canvas } = chartObj.getContext()
+      const { document } = canvas!
+      const plot = document.querySelector('.plot')
+      if (plot) {
+        plot.setAttribute('tooltipLocked', false)
+      }
+      chartObj.emit('tooltip:hide')
+    })
+    return options
+  }
+
   protected setupOptions(chart: Chart, options: G2Spec, context: Record<string, any>): G2Spec {
     return flow(
       this.configTheme,
       this.configColor,
       this.configLabel,
       this.configTooltip,
-      this.configLegend
+      this.configLegend,
+      this.configLabelTooltip
     )(chart, options, context, this)
   }
 
