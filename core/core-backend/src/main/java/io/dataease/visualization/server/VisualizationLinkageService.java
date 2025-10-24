@@ -132,10 +132,7 @@ public class VisualizationLinkageService implements VisualizationLinkageApi {
 
     @Override
     public Map updateLinkageActive(VisualizationLinkageRequest request) {
-        SnapshotCoreChartView coreChartView = new SnapshotCoreChartView();
-        coreChartView.setId(request.getSourceViewId());
-        coreChartView.setLinkageActive(request.getActiveStatus());
-        snapshotCoreChartViewRepository.saveAndFlush(coreChartView);
+        snapshotCoreChartViewRepository.updateLinkageActiveById(request.getSourceViewId(),request.getActiveStatus());
         return getVisualizationAllLinkageInfo(request.getDvId(), CommonConstants.RESOURCE_TABLE.SNAPSHOT);
     }
 

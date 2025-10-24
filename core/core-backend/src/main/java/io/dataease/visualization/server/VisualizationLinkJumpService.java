@@ -306,10 +306,7 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
 
     @Override
     public VisualizationLinkJumpBaseResponse updateJumpSetActive(VisualizationLinkJumpBaseRequest request) {
-        SnapshotCoreChartView coreChartView = new SnapshotCoreChartView();
-        coreChartView.setId(Long.valueOf(request.getSourceViewId()));
-        coreChartView.setJumpActive(request.getActiveStatus());
-        snapshotCoreChartViewRepository.saveAndFlush(coreChartView);
+        snapshotCoreChartViewRepository.updateJumpActiveById(request.getSourceViewId(),request.getActiveStatus());
         return queryVisualizationJumpInfo(request.getSourceDvId(), CommonConstants.RESOURCE_TABLE.SNAPSHOT);
     }
 
