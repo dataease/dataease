@@ -246,7 +246,7 @@ export class WordCloud extends G2ChartView {
   }
 
   protected setupOptions(chart: Chart, options: G2Spec): G2Spec {
-    return flow(this.configTooltip)(chart, options)
+    return flow(this.configTheme, this.configTooltip)(chart, options)
   }
 
   constructor() {
