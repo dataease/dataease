@@ -6,6 +6,7 @@ import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,4 +46,14 @@ public interface SnapshotCoreChartViewRepository extends JpaRepository<SnapshotC
 
     @Query("SELECT c.id as id FROM SnapshotCoreChartView c WHERE c.id IN :ids AND c.linkageActive = :linkageActive")
     List<Long> findIdsByIdInAndLinkageActive(@Param("ids") List<Long> ids, @Param("linkageActive") Boolean linkageActive);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE SnapshotCoreChartView v SET v.linkageActive = :linkageActive WHERE v.id = :id")
+    void updateLinkageActiveById(@Param("id") Long id, @Param("linkageActive") Boolean linkageActive);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE SnapshotCoreChartView v SET v.jumpActive = :jumpActive WHERE v.id = :id")
+    void updateJumpActiveById(@Param("id") Long id, @Param("jumpActive") Boolean jumpActive);
 }
