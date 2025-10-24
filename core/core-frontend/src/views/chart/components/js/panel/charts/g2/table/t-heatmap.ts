@@ -235,6 +235,21 @@ export class TableG2Chart extends G2ChartView {
 
   protected configLegend(chart: Chart, options: G2Spec, context: Record<string, any>): G2Spec {
     const { legend } = parseJson(chart.customStyle)
+    const colorField = chart.extColor[0]
+    const colors = options.theme.category10
+    if (colorField.groupType === 'q') {
+      const colorQuotaScale = {
+        scale: {
+          color: {
+            type: 'linear',
+            interpolate() {
+              return c => colors[Math.floor(c * (colors.length - 1))]
+            }
+          }
+        }
+      }
+      defaultsDeep(options, colorQuotaScale)
+    }
     if (!legend.show) {
       return { ...options, legend: false }
     }
@@ -250,20 +265,10 @@ export class TableG2Chart extends G2ChartView {
       }
     }
     defaultsDeep(options, tmpLegend)
-    const colorField = chart.extColor[0]
     if (colorField.groupType === 'q') {
       const { container } = context
       const containerDom = document.getElementById(container)
-      const colors = options.theme.category10
       const quotaLegendOption = {
-        scale: {
-          color: {
-            type: 'linear',
-            interpolate() {
-              return c => colors[Math.floor(c * (colors.length - 1))]
-            }
-          }
-        },
         legend: {
           color: {
             color: colors,
