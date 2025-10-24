@@ -4565,6 +4565,7 @@ export default {
     bind: '绑定',
     unbind_success: '解绑成功',
     confirm_unbind_dingtalk: '确定解除{0}绑定吗？',
+    unbind_error: '当前用户来源是{0}，无法解绑',
     pls_use: '请使用',
     bind_use_qr: '扫描二维码绑定',
     pls_use_dingtalk: '请使用钉钉扫描二维码登录',
