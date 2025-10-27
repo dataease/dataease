@@ -52,5 +52,6 @@ public class DfUserTaskData implements Serializable {
 
     private String formExtSetting;
 
+    private Integer fillType;
 
 }
