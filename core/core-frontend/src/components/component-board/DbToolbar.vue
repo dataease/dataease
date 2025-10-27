@@ -10,14 +10,14 @@ import dvCancelPublish from '@/assets/svg/icon_undo_outlined.svg'
 import { ElIcon, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import eventBus from '@/utils/eventBus'
 import { useEmbedded } from '@/store/modules/embedded'
-import { nextTick, reactive, ref, computed, onBeforeUnmount, onMounted } from 'vue'
+import { nextTick, ref, computed, onBeforeUnmount, onMounted } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
 import Icon from '../icon-custom/src/Icon.vue'
-import MultiplexingCanvas from '@/views/common/MultiplexingCanvas.vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import { XpackComponent } from '@/components/plugin'
 import {
   canvasSave,
   canvasSaveWithParams,
@@ -26,10 +26,7 @@ import {
   initCanvasData
 } from '@/utils/canvasUtils'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import { copyStoreWithOut } from '@/store/modules/data-visualization/copy'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
-import OuterParamsSet from '@/components/visualization/OuterParamsSet.vue'
-import { XpackComponent } from '@/components/plugin'
 import { useCache } from '@/hooks/web/useCache'
 import DeFullscreen from '@/components/visualization/common/DeFullscreen.vue'
 import DeAppApply from '@/views/common/DeAppApply.vue'
@@ -38,7 +35,6 @@ import { updatePublishStatus } from '@/api/visualization/dataVisualization'
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
-const copyStore = copyStoreWithOut()
 const { styleChangeTimes, snapshotIndex } = storeToRefs(snapshotStore)
 const resourceAppOpt = ref(null)
 const {
@@ -48,13 +44,11 @@ const {
   editMode,
   appData
 } = storeToRefs(dvMainStore)
-const multiplexingRef = ref(null)
 const fullScreeRef = ref(null)
 let nameEdit = ref(false)
 let inputName = ref('')
 let nameInput = ref(null)
 const resourceGroupOpt = ref(null)
-const outerParamsSetRef = ref(null)
 const { wsCache } = useCache('localStorage')
 const userStore = useUserStoreWithOut()
 const isIframe = computed(() => appStore.getIsIframe)
@@ -104,11 +98,20 @@ const redo = () => {
     eventBus.emit('matrix-canvasInit', false)
   }
 }
-
 const previewInner = () => {
   fullScreeRef.value.toggleFullscreen()
 }
 
+const openHandler = ref(null)
+const initOpenHandler = newWindow => {
+  if (openHandler?.value) {
+    const pm = {
+      methodName: 'initOpenHandler',
+      args: newWindow
+    }
+    openHandler.value.invokeMethod(pm)
+  }
+}
 const previewOuter = () => {
   if (!dvInfo.value.id || dvInfo.value.dataState === 'prepare') {
     ElMessage.warning(t('components.current_page_first'))
@@ -333,16 +336,7 @@ const onDvNameChange = () => {
 const appStore = useAppStoreWithOut()
 const isEmbedded = computed(() => appStore.getIsDataEaseBi || appStore.getIsIframe)
 
-const openHandler = ref(null)
-const initOpenHandler = newWindow => {
-  if (openHandler?.value) {
-    const pm = {
-      methodName: 'initOpenHandler',
-      args: newWindow
-    }
-    openHandler.value.invokeMethod(pm)
-  }
-}
+
 </script>
 
 <template>
@@ -382,10 +376,10 @@ const initOpenHandler = newWindow => {
           <div id="canvas-name" class="name-area" @dblclick="editCanvasName">
             {{ dvInfo.name }}
             <el-icon
-                class="toolbar-hover-icon"
+                class="toolbar-hover-icon vam"
                 @click="editCanvasName()"
               >
-                <Icon name="icon_setting"><icon_dv_edit class="svg-icon" style="vertical-align: middle;" /></Icon>
+                <icon_dv_edit class="svg-icon"/>
               </el-icon>
           </div>
         </div>
@@ -414,51 +408,51 @@ const initOpenHandler = newWindow => {
           </template>
         </el-dropdown>
 
+        <el-button
+          v-if="editMode === 'edit' || editMode === 'preview'"
+          :disabled="styleChangeTimes < 1"
+          @click="saveCanvasWithCheck()"
+          style="float: right; margin-right: 12px"
+          type="primary"
+        >
+          {{ t('data_set.otherSave') }}
+        </el-button>
+        <el-dropdown
+          :disabled="dvInfo.status === 0"
+          popper-class="menu-outer-dv_popper"
+          trigger="hover"
+        >
           <el-button
-            v-if="editMode === 'edit' || editMode === 'preview'"
-            :disabled="styleChangeTimes < 1"
-            @click="saveCanvasWithCheck()"
-            style="float: right; margin-right: 12px"
+            @click="saveCanvasWithCheck(true, 1)"
+            style="float: right; margin: 0 12px 0 0"
             type="primary"
           >
-            {{ t('data_set.otherSave') }}
+            {{ t('visualization.save') }}
           </el-button>
-          <el-dropdown
-            :disabled="dvInfo.status === 0"
-            popper-class="menu-outer-dv_popper"
-            trigger="hover"
-          >
-            <el-button
-              @click="saveCanvasWithCheck(true, 1)"
-              style="float: right; margin: 0 12px 0 0"
-              type="primary"
-            >
-              {{ t('visualization.save') }}
-            </el-button>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item @click="recoverToPublished" v-if="dvInfo.status === 2">
-                  <el-icon class="handle-icon">
-                    <Icon name="icon_left_outlined"
-                      ><dv-recover-outlined class="svg-icon toolbar-icon"
-                    /></Icon>
-                  </el-icon>
-                  {{ t('visualization.publish_recover') }}
-                </el-dropdown-item>
-                <el-dropdown-item
-                  @click="publishStatusChange(0)"
-                  v-if="[1, 2].includes(dvInfo.status)"
-                >
-                  <el-icon class="handle-icon">
-                    <Icon name="icon_left_outlined"
-                      ><dv-cancel-publish class="svg-icon toolbar-icon"
-                    /></Icon>
-                  </el-icon>
-                  {{ t('visualization.cancel_publish') }}
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item @click="recoverToPublished" v-if="dvInfo.status === 2">
+                <el-icon class="handle-icon">
+                  <Icon name="icon_left_outlined"
+                    ><dv-recover-outlined class="svg-icon toolbar-icon"
+                  /></Icon>
+                </el-icon>
+                {{ t('visualization.publish_recover') }}
+              </el-dropdown-item>
+              <el-dropdown-item
+                @click="publishStatusChange(0)"
+                v-if="[1, 2].includes(dvInfo.status)"
+              >
+                <el-icon class="handle-icon">
+                  <Icon name="icon_left_outlined"
+                    ><dv-cancel-publish class="svg-icon toolbar-icon"
+                  /></Icon>
+                </el-icon>
+                {{ t('visualization.cancel_publish') }}
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
       </div>
     </div>
     <Teleport v-if="nameEdit" :to="'#canvas-name'">
@@ -469,17 +463,14 @@ const initOpenHandler = newWindow => {
         @blur="closeEditCanvasName"
       />
     </Teleport>
-
-    <multiplexing-canvas ref="multiplexingRef"></multiplexing-canvas>
+    <!-- 仪表盘另存为弹窗 -->
     <de-resource-group-opt
       @finish="resourceOptFinish"
       cur-canvas-type="dashboard"
       ref="resourceGroupOpt"
     />
-    <outer-params-set ref="outerParamsSetRef"> </outer-params-set>
   </div>
   <de-fullscreen show-position="edit" ref="fullScreeRef"></de-fullscreen>
-  <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
   <de-app-apply
     ref="resourceAppOpt"
     :component-data="componentData"
@@ -488,6 +479,7 @@ const initOpenHandler = newWindow => {
     cur-canvas-type="dashboard"
     @saveAppCanvas="saveCanvasWithCheck"
   ></de-app-apply>
+  <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
 </template>
 
 <style lang="less" scoped>
