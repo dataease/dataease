@@ -53,6 +53,11 @@ document.querySelector('head').appendChild = <T extends Node>(node: T) => {
   element.appendChild(newNode)
   return newNode
 }
+
+document.querySelector('head').removeChild = <T extends Node>(node: T) => {
+  element.removeChild(node)
+  return node
+}
 import { App, createApp } from 'vue'
 import '@/style/index.less'
 import 'normalize.css/normalize.css'
