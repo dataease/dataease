@@ -184,7 +184,6 @@ public interface DataFillingApi {
     DfExcelData excelUpload(@PathVariable("formId") Long formId, @RequestParam("file") MultipartFile file) throws Exception;
 
     @Operation(summary = "下载Excel模板")
-    @DePermit({"#p0+':manage'"})
     @GetMapping("/form/{formId}/excelTemplate")
     void excelTemplate(@PathVariable("formId") Long formId);
 
