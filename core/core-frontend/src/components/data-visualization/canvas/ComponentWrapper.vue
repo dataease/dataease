@@ -16,6 +16,8 @@ import { XpackComponent } from '@/components/plugin'
 import DePreviewPopDialog from '@/components/visualization/DePreviewPopDialog.vue'
 import Icon from '../../icon-custom/src/Icon.vue'
 import replaceOutlined from '@/assets/svg/icon_replace_outlined.svg'
+import { CommonBackground } from '@/components/visualization/component-background/Types'
+import { ShorthandMode } from '@/Types'
 
 const componentWrapperInnerRef = ref(null)
 const componentEditBarRef = ref(null)
@@ -226,9 +228,43 @@ const componentBackgroundStyle = computed(() => {
       innerPadding,
       borderRadius
     } = config.value.commonBackground
+    const commonBackground = config.value.commonBackground as CommonBackground
+    const innerPaddingTarget = ['Group'].includes(config.value.component) ? 0 : innerPadding
+    let innerPaddingStyle = innerPaddingTarget * deepScale.value + 'px'
+    const paddingMode = commonBackground.innerPadding?.mode
+    if (paddingMode === ShorthandMode.Uniform) {
+      innerPaddingStyle = `${commonBackground.innerPadding?.top * deepScale.value}px`
+    } else if (paddingMode === ShorthandMode.Axis) {
+      innerPaddingStyle = `${commonBackground.innerPadding?.top * deepScale.value}px ${
+        commonBackground.innerPadding?.left * deepScale.value
+      }px`
+    } else if (paddingMode === ShorthandMode.PerEdge) {
+      innerPaddingStyle = `${commonBackground.innerPadding?.top * deepScale.value}px ${
+        commonBackground.innerPadding?.right * deepScale.value
+      }px ${commonBackground.innerPadding?.bottom * deepScale.value}px ${
+        commonBackground.innerPadding?.left * deepScale.value
+      }px`
+    }
+
+    let borderRadiusStyle = borderRadius + 'px'
+    const borderRadiusMode = commonBackground.borderRadius?.mode
+    if (borderRadiusMode === ShorthandMode.Uniform) {
+      borderRadiusStyle = `${commonBackground.borderRadius?.topLeft * deepScale.value}px`
+    } else if (borderRadiusMode === ShorthandMode.Axis) {
+      borderRadiusStyle = `${commonBackground.borderRadius?.topLeft * deepScale.value}px ${
+        commonBackground.borderRadius?.bottomLeft * deepScale.value
+      }px`
+    } else if (borderRadiusMode === ShorthandMode.PerEdge) {
+      borderRadiusStyle = `${commonBackground.borderRadius?.topLeft * deepScale.value}px ${
+        commonBackground.borderRadius?.topRight * deepScale.value
+      }px ${commonBackground.borderRadius?.bottomRight * deepScale.value}px ${
+        commonBackground.borderRadius?.bottomLeft * deepScale.value
+      }px`
+    }
+
     let style = {
-      padding: innerPadding * deepScale.value + 'px',
-      borderRadius: borderRadius + 'px'
+      padding: innerPaddingStyle,
+      borderRadius: borderRadiusStyle
     }
     let colorRGBA = ''
     if (backgroundColorSelect && backgroundColor) {
