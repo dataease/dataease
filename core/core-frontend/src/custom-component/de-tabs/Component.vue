@@ -174,6 +174,8 @@ import Board from '@/components/de-board/Board.vue'
 import ChartCarouselTooltip from '@/views/chart/components/js/g2plot_tooltip_carousel'
 import { debounce } from 'lodash-es'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { CommonBackground } from '@/components/visualization/component-background/Types'
+import { ShorthandMode } from '@/Types'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const { tabMoveInActiveId, bashMatrixInfo, editMode, mobileInPc } = storeToRefs(dvMainStore)
@@ -515,9 +517,43 @@ const backgroundStyle = backgroundParams => {
       innerPadding,
       borderRadius
     } = backgroundParams
+    const commonBackground = backgroundParams as CommonBackground
+    const innerPaddingTarget = ['Group'].includes(element.value.component) ? 0 : innerPadding
+    let innerPaddingStyle = innerPaddingTarget * scale.value + 'px'
+    const paddingMode = commonBackground.innerPadding?.mode
+    if (paddingMode === ShorthandMode.Uniform) {
+      innerPaddingStyle = `${commonBackground.innerPadding?.top * scale.value}px`
+    } else if (paddingMode === ShorthandMode.Axis) {
+      innerPaddingStyle = `${commonBackground.innerPadding?.top * scale.value}px ${
+        commonBackground.innerPadding?.left * scale.value
+      }px`
+    } else if (paddingMode === ShorthandMode.PerEdge) {
+      innerPaddingStyle = `${commonBackground.innerPadding?.top * scale.value}px ${
+        commonBackground.innerPadding?.right * scale.value
+      }px ${commonBackground.innerPadding?.bottom * scale.value}px ${
+        commonBackground.innerPadding?.left * scale.value
+      }px`
+    }
+
+    let borderRadiusStyle = borderRadius + 'px'
+    const borderRadiusMode = commonBackground.borderRadius?.mode
+    if (borderRadiusMode === ShorthandMode.Uniform) {
+      borderRadiusStyle = `${commonBackground.borderRadius?.topLeft * scale.value}px`
+    } else if (borderRadiusMode === ShorthandMode.Axis) {
+      borderRadiusStyle = `${commonBackground.borderRadius?.topLeft * scale.value}px ${
+        commonBackground.borderRadius?.bottomLeft * scale.value
+      }px`
+    } else if (borderRadiusMode === ShorthandMode.PerEdge) {
+      borderRadiusStyle = `${commonBackground.borderRadius?.topLeft * scale.value}px ${
+        commonBackground.borderRadius?.topRight * scale.value
+      }px ${commonBackground.borderRadius?.bottomRight * scale.value}px ${
+        commonBackground.borderRadius?.bottomLeft * scale.value
+      }px`
+    }
+
     let style = {
-      padding: innerPadding * scale.value + 'px',
-      borderRadius: borderRadius + 'px'
+      padding: innerPaddingStyle,
+      borderRadius: borderRadiusStyle
     }
     let colorRGBA = ''
     if (backgroundColorSelect && backgroundColor) {
