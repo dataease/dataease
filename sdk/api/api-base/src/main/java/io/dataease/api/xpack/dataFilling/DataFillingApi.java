@@ -179,7 +179,6 @@ public interface DataFillingApi {
     void clearLog(@RequestBody DfClearCommitLogRequest request) throws Exception;
 
     @Operation(summary = "上传Excel")
-    @DePermit({"#p0+':manage'"})
     @PostMapping("/form/{formId}/uploadFile")
     DfExcelData excelUpload(@PathVariable("formId") Long formId, @RequestParam("file") MultipartFile file) throws Exception;
 
