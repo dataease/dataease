@@ -290,7 +290,12 @@ onMounted(() => {
           </el-tooltip>
         </el-col>
         <el-col :span="useQuotaExt ? 2 : 4">
-          <el-select v-model="item.lineType" class="select-item" @change="changeAssistLine">
+          <el-select
+            v-model="item.lineType"
+            popper-class="assist-line-select-popper"
+            class="select-item"
+            @change="changeAssistLine"
+          >
             <el-option
               v-for="opt in state.lineOptions"
               :key="opt.value"
@@ -377,5 +382,8 @@ span {
 .ed-select-dropdown__item {
   padding: 0 20px;
   font-size: 14px;
+}
+.assist-line-select-popper li.is-selected::after {
+  right: 6px;
 }
 </style>
