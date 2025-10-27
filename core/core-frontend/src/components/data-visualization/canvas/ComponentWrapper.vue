@@ -344,7 +344,6 @@ const eventEnable = computed(
       ['indicator', 'rich-text'].includes(config.value.innerType)) &&
     config.value.events &&
     config.value.events.checked &&
-    (isDashboard() || (!isDashboard() && !isMobile())) &&
     showPosition.value !== 'canvas-multiplexing'
 )
 
