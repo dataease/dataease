@@ -737,17 +737,17 @@ export function mappingColor(value, defaultColor, field, type, filedValueMap?, r
           flag = true
         }
       } else if (t.term === 'le') {
-        if (value <= tv) {
+        if (value !== null && value <= tv) {
           color = t[type]
           flag = true
         }
       } else if (t.term === 'ge') {
-        if (value >= tv) {
+        if (value !== null && value >= tv) {
           color = t[type]
           flag = true
         }
       } else if (t.term === 'between') {
-        if (min <= value && value <= max) {
+        if (value !== null && min <= value && value <= max) {
           color = t[type]
           flag = true
         }
