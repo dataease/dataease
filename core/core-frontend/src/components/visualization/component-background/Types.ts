@@ -1,3 +1,4 @@
+import { EdgeValues, CornerValues } from '@/Types'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
 import type { UploadFile } from 'element-plus-secondary'
 
