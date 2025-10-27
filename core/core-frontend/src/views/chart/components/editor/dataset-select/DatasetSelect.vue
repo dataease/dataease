@@ -37,6 +37,7 @@ const props = withDefaults(
     disabled: false
   }
 )
+const datasetTreeFirstLeaf = ref('')
 
 const datasetSelector = ref(null)
 
@@ -72,6 +73,8 @@ const initDataset = () => {
   method(params)
     .then(res => {
       sortTypeChange((res as unknown as Tree[]) || [])
+      datasetTreeFirstLeaf.value = getFirstDeepLeaf((res as unknown as Tree[]) || [])
+      emits('initAddValueTableId', datasetTreeFirstLeaf.value)
     })
     .finally(() => {
       loadingDatasetTree.value = false
@@ -83,7 +86,8 @@ const emits = defineEmits([
   'update:modelValue',
   'update:stateObj',
   'onDatasetChange',
-  'addDsWindow'
+  'addDsWindow',
+  'initAddValueTableId'
 ])
 
 const _modelValue = computed({
@@ -185,6 +189,13 @@ function flatTree(tree: Tree[]) {
 const onDatasetChange = val => {
   emits('onDatasetChange', val)
 }
+const getFirstDeepLeaf = (arr) => {
+  for (const item of arr) {
+    if (item.children?.length) return getFirstDeepLeaf(item.children);
+    else return item.id;
+  }
+  return null;
+};
 const filterNode = (value: string, data: Tree) => {
   if (!value) return true
   return data.name?.includes(value)
