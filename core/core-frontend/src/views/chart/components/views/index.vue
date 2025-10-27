@@ -181,7 +181,7 @@ const state = reactive({
     width: 'fit-content',
     maxWidth: '100%',
     wordBreak: 'break-word',
-    whiteSpace: 'pre-wrap'
+    whiteSpace: 'pre-wrap!important'
   } as CSSProperties,
   drillFilters: [],
   viewInfoData: null,
