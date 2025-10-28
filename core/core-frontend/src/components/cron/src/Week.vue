@@ -128,13 +128,13 @@ const emits = defineEmits(['update:modelValue'])
 <template>
   <div>
     <div>
-      <el-radio v-model="type" label="1" size="small" border>{{ t('cron.every_week') }}</el-radio>
+      <el-radio v-model="type" value="1" size="small" border>{{ t('cron.every_week') }}</el-radio>
     </div>
     <div>
-      <el-radio v-model="type" label="5" size="small" border>{{ t('cron.not_set') }}</el-radio>
+      <el-radio v-model="type" value="5" size="small" border>{{ t('cron.not_set') }}</el-radio>
     </div>
     <div>
-      <el-radio v-model="type" label="2" size="small" border>{{ t('cron.cycle') }}</el-radio>
+      <el-radio v-model="type" value="2" size="small" border>{{ t('cron.cycle') }}</el-radio>
       <span style="margin-left: 10px; margin-right: 5px">{{ t('cron.week_start') }}</span>
       <el-input-number
         v-model="state.cycle.start"
@@ -155,7 +155,7 @@ const emits = defineEmits(['update:modelValue'])
       />
     </div>
     <div>
-      <el-radio v-model="type" label="3" size="small" border>{{ t('cron.repeat') }}</el-radio>
+      <el-radio v-model="type" value="3" size="small" border>{{ t('cron.repeat') }}</el-radio>
       <span style="margin-left: 10px; margin-right: 5px">{{ t('cron.week_start') }}</span>
       <el-input-number
         v-model="state.loop.start"
@@ -177,7 +177,7 @@ const emits = defineEmits(['update:modelValue'])
       {{ t('cron.day_exec') }}
     </div>
     <div>
-      <el-radio v-model="type" label="4" size="small" border>{{ t('cron.set') }}</el-radio>
+      <el-radio v-model="type" value="4" size="small" border>{{ t('cron.set') }}</el-radio>
       <el-checkbox-group v-model="state.appoint" style="margin-left: 50px; line-height: 25px">
         <el-checkbox v-for="i in 7" :key="i" :label="i + ''" @change="type = '4'" />
       </el-checkbox-group>

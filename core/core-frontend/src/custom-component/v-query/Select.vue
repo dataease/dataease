@@ -791,7 +791,7 @@ defineExpose({
   >
     <template #default="{ item }">
       <el-radio-group v-model="selectValue">
-        <el-radio :title="item.label" :label="item.value">{{ item.label }}</el-radio>
+        <el-radio :title="item.label" :value="item.value">{{ item.label }}</el-radio>
       </el-radio-group>
     </template>
   </el-select-v2>

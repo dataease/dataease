@@ -223,11 +223,11 @@ onMounted(() => {
               @change="changeBasicStyle('radiusColumnBar')"
               class="radius-class"
             >
-              <el-radio label="rightAngle" :effect="themes">{{ t('chart.rightAngle') }}</el-radio>
-              <el-radio label="roundAngle" :effect="themes">{{ t('chart.roundAngle') }}</el-radio>
+              <el-radio value="rightAngle" :effect="themes">{{ t('chart.rightAngle') }}</el-radio>
+              <el-radio value="roundAngle" :effect="themes">{{ t('chart.roundAngle') }}</el-radio>
               <el-radio
                 v-if="!props.chart.type.includes('-stack')"
-                label="topRoundAngle"
+                value="topRoundAngle"
                 :effect="themes"
               >
                 {{ t('chart.topRoundAngle') }}</el-radio

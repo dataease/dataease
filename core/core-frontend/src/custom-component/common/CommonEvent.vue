@@ -120,9 +120,9 @@ const typeMap = {
           :disabled="!eventsInfo.checked"
           @change="onJumpValueChange"
         >
-          <el-radio :effect="themes" label="_blank">{{ t('visualization.new_window') }}</el-radio>
-          <el-radio :effect="themes" label="_self">{{ t('visualization.now_window') }}</el-radio>
-          <el-radio :effect="themes" label="newPop">{{ t('visualization.pop_window') }}</el-radio>
+          <el-radio :effect="themes" value="_blank">{{ t('visualization.new_window') }}</el-radio>
+          <el-radio :effect="themes" value="_self">{{ t('visualization.now_window') }}</el-radio>
+          <el-radio :effect="themes" value="newPop">{{ t('visualization.pop_window') }}</el-radio>
         </el-radio-group>
       </el-form-item>
     </el-form>

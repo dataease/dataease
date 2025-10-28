@@ -359,10 +359,10 @@ const onPlaceholderChange = () => {
                 size="small"
                 @change="onFreezeChange"
               >
-                <el-radio :effect="themes" style="min-width: 80px" :label="true">{{
+                <el-radio :effect="themes" style="min-width: 80px" :value="true">{{
                   t('visualization.to_top')
                 }}</el-radio>
-                <el-radio :effect="themes" style="min-width: 80px" :label="false">{{
+                <el-radio :effect="themes" style="min-width: 80px" :value="false">{{
                   t('visualization.default')
                 }}</el-radio>
               </el-radio-group>
@@ -549,10 +549,10 @@ const onPlaceholderChange = () => {
               :class="'form-item-' + themes"
             >
               <el-radio-group :effect="themes" v-model="chart.customStyle.component.layout">
-                <el-radio label="vertical" :effect="themes">
+                <el-radio value="vertical" :effect="themes">
                   {{ t('visualization.condition_top') }}
                 </el-radio>
-                <el-radio label="horizontal" :effect="themes">
+                <el-radio value="horizontal" :effect="themes">
                   {{ t('visualization.condition_left') }}
                 </el-radio>
               </el-radio-group>

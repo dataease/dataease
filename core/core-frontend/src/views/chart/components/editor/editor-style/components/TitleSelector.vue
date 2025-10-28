@@ -287,7 +287,7 @@ watch(
             v-model="state.titleForm.hPosition"
             @change="changeTitleStyle('hPosition')"
           >
-            <el-radio :effect="themes" label="left">
+            <el-radio :effect="themes" value="left">
               <el-tooltip :effect="toolTip" placement="top">
                 <template #content>
                   {{ t('chart.text_pos_left') }}
@@ -304,7 +304,7 @@ watch(
                 </div>
               </el-tooltip>
             </el-radio>
-            <el-radio :effect="themes" label="center">
+            <el-radio :effect="themes" value="center">
               <el-tooltip :effect="toolTip" placement="top">
                 <template #content>
                   {{ t('chart.text_pos_center') }}
@@ -324,7 +324,7 @@ watch(
                 </div>
               </el-tooltip>
             </el-radio>
-            <el-radio :effect="themes" label="right">
+            <el-radio :effect="themes" value="right">
               <el-tooltip :effect="toolTip" placement="top">
                 <template #content>
                   {{ t('chart.text_pos_right') }}

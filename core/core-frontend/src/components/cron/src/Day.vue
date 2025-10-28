@@ -129,13 +129,13 @@ const emits = defineEmits(['update:modelValue'])
 <template>
   <div>
     <div>
-      <el-radio v-model="type" label="1" size="small" border>{{ t('cron.every_day') }}</el-radio>
+      <el-radio v-model="type" value="1" size="small" border>{{ t('cron.every_day') }}</el-radio>
     </div>
     <div>
-      <el-radio v-model="type" label="5" size="small" border>{{ t('cron.not_set') }}</el-radio>
+      <el-radio v-model="type" value="5" size="small" border>{{ t('cron.not_set') }}</el-radio>
     </div>
     <div>
-      <el-radio v-model="type" label="2" size="small" border>{{ t('cron.cycle') }}</el-radio>
+      <el-radio v-model="type" value="2" size="small" border>{{ t('cron.cycle') }}</el-radio>
       <span style="margin-left: 10px; margin-right: 5px">{{ t('cron.from') }}</span>
       <el-input-number
         v-model="state.cycle.start"
@@ -157,7 +157,7 @@ const emits = defineEmits(['update:modelValue'])
       {{ t('cron.day') }}
     </div>
     <div>
-      <el-radio v-model="type" label="3" size="small" border>{{ t('cron.repeat') }}</el-radio>
+      <el-radio v-model="type" value="3" size="small" border>{{ t('cron.repeat') }}</el-radio>
       <span style="margin-left: 10px; margin-right: 5px">{{ t('cron.from') }}</span>
       <el-input-number
         v-model="state.loop.start"
@@ -179,7 +179,7 @@ const emits = defineEmits(['update:modelValue'])
       {{ t('cron.day_exec') }}
     </div>
     <div>
-      <el-radio v-model="type" label="8" size="small" border>{{ t('cron.work_day') }}</el-radio>
+      <el-radio v-model="type" value="8" size="small" border>{{ t('cron.work_day') }}</el-radio>
       <span style="margin-left: 10px; margin-right: 5px">{{ t('cron.this_month') }}</span>
       <el-input-number
         v-model="work"
@@ -192,12 +192,12 @@ const emits = defineEmits(['update:modelValue'])
       {{ t('cron.day_near_work_day') }}
     </div>
     <div>
-      <el-radio v-model="type" label="6" size="small" border>{{
+      <el-radio v-model="type" value="6" size="small" border>{{
         t('cron.this_week_last_day')
       }}</el-radio>
     </div>
     <div>
-      <el-radio v-model="type" label="4" size="small" border>{{ t('cron.set') }}</el-radio>
+      <el-radio v-model="type" value="4" size="small" border>{{ t('cron.set') }}</el-radio>
       <el-checkbox-group v-model="state.appoint">
         <div v-for="i in 4" :key="i" style="margin-left: 10px; line-height: 25px">
           <template v-for="j in 10">

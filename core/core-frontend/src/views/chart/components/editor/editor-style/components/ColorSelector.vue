@@ -154,7 +154,7 @@ init()
                     <el-radio
                       v-for="(c, index) in state.colorForm.colors"
                       :key="index"
-                      :label="c"
+                      :value="c"
                       style="padding: 2px"
                       @click="switchColor(index)"
                     >

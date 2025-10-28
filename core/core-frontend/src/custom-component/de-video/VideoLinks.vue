@@ -19,8 +19,8 @@
           @change="onChange"
           v-model="state.linkInfoTemp[state.linkInfoTemp.videoType].loop"
         >
-          <el-radio :effect="themes" :label="false">{{ t('visualization.play_once') }}</el-radio>
-          <el-radio :effect="themes" :label="true">{{ t('visualization.play_circle') }}</el-radio>
+          <el-radio :effect="themes" :value="false">{{ t('visualization.play_once') }}</el-radio>
+          <el-radio :effect="themes" :value="true">{{ t('visualization.play_circle') }}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item :effect="themes" :label="t('visualization.video_links')">

@@ -325,8 +325,8 @@ onMounted(() => {
           v-model="state.tableTotalForm.row.reverseLayout"
           @change="changeTableTotal('row.reverseLayout')"
         >
-          <el-radio :effect="themes" :label="true">{{ t('chart.total_pos_top') }}</el-radio>
-          <el-radio :effect="themes" :label="false">{{ t('chart.total_pos_bottom') }}</el-radio>
+          <el-radio :effect="themes" :value="true">{{ t('chart.total_pos_top') }}</el-radio>
+          <el-radio :effect="themes" :value="false">{{ t('chart.total_pos_bottom') }}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item
@@ -432,9 +432,9 @@ onMounted(() => {
           v-model="state.tableTotalForm.row.totalSort"
           @change="changeTableTotal('row.totalSort')"
         >
-          <el-radio :effect="themes" label="none">{{ t('chart.total_sort_none') }}</el-radio>
-          <el-radio :effect="themes" label="asc">{{ t('chart.total_sort_asc') }}</el-radio>
-          <el-radio :effect="themes" label="desc">{{ t('chart.total_sort_desc') }}</el-radio>
+          <el-radio :effect="themes" value="none">{{ t('chart.total_sort_none') }}</el-radio>
+          <el-radio :effect="themes" value="asc">{{ t('chart.total_sort_asc') }}</el-radio>
+          <el-radio :effect="themes" value="desc">{{ t('chart.total_sort_desc') }}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item
@@ -522,8 +522,8 @@ onMounted(() => {
           :disabled="chart.xAxis.length < 2 || state.basicStyleForm.tableLayoutMode === 'tree'"
           @change="changeTableTotal('row')"
         >
-          <el-radio :effect="themes" :label="true">{{ t('chart.total_pos_top') }}</el-radio>
-          <el-radio :effect="themes" :label="false">{{ t('chart.total_pos_bottom') }}</el-radio>
+          <el-radio :effect="themes" :value="true">{{ t('chart.total_pos_top') }}</el-radio>
+          <el-radio :effect="themes" :value="false">{{ t('chart.total_pos_bottom') }}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item
@@ -632,8 +632,8 @@ onMounted(() => {
           v-model="state.tableTotalForm.col.reverseLayout"
           @change="changeTableTotal('col')"
         >
-          <el-radio :effect="themes" :label="true">{{ t('chart.total_pos_left') }}</el-radio>
-          <el-radio :effect="themes" :label="false">{{ t('chart.total_pos_right') }}</el-radio>
+          <el-radio :effect="themes" :value="true">{{ t('chart.total_pos_left') }}</el-radio>
+          <el-radio :effect="themes" :value="false">{{ t('chart.total_pos_right') }}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item
@@ -739,9 +739,9 @@ onMounted(() => {
           v-model="state.tableTotalForm.col.totalSort"
           @change="changeTableTotal('col')"
         >
-          <el-radio :effect="themes" label="none">{{ t('chart.total_sort_none') }}</el-radio>
-          <el-radio :effect="themes" label="asc">{{ t('chart.total_sort_asc') }}</el-radio>
-          <el-radio :effect="themes" label="desc">{{ t('chart.total_sort_desc') }}</el-radio>
+          <el-radio :effect="themes" value="none">{{ t('chart.total_sort_none') }}</el-radio>
+          <el-radio :effect="themes" value="asc">{{ t('chart.total_sort_asc') }}</el-radio>
+          <el-radio :effect="themes" value="desc">{{ t('chart.total_sort_desc') }}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item
@@ -792,8 +792,8 @@ onMounted(() => {
           :disabled="chart.xAxisExt?.length < 2"
           @change="changeTableTotal('col')"
         >
-          <el-radio :effect="themes" :label="true">{{ t('chart.total_pos_left') }}</el-radio>
-          <el-radio :effect="themes" :label="false">{{ t('chart.total_pos_right') }}</el-radio>
+          <el-radio :effect="themes" :value="true">{{ t('chart.total_pos_left') }}</el-radio>
+          <el-radio :effect="themes" :value="false">{{ t('chart.total_pos_right') }}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item

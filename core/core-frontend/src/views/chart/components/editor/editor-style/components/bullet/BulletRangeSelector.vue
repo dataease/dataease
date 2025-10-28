@@ -162,8 +162,8 @@ onMounted(() => {
           v-model="state.bulletRangeForm.bar.ranges.showType"
           @change="changeShowType()"
         >
-          <el-radio :effect="themes" label="dynamic">{{ t('chart.dynamic') }}</el-radio>
-          <el-radio :effect="themes" label="fixed">{{ t('chart.fix') }}</el-radio>
+          <el-radio :effect="themes" value="dynamic">{{ t('chart.dynamic') }}</el-radio>
+          <el-radio :effect="themes" value="fixed">{{ t('chart.fix') }}</el-radio>
         </el-radio-group>
       </el-form-item>
       <div v-if="state.bulletRangeForm.bar.ranges.showType === 'dynamic'">

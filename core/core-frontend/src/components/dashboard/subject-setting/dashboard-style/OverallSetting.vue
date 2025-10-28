@@ -45,8 +45,8 @@
         :label="t('visualization.component_gap')"
       >
         <el-radio-group v-model="canvasStyleData.dashboard.gap" @change="themeChange">
-          <el-radio :effect="themes" label="yes">{{ t('visualization.gap') }}</el-radio>
-          <el-radio :effect="themes" label="no">{{ t('visualization.no_gap') }}</el-radio>
+          <el-radio :effect="themes" value="yes">{{ t('visualization.gap') }}</el-radio>
+          <el-radio :effect="themes" value="no">{{ t('visualization.no_gap') }}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item
@@ -56,10 +56,10 @@
         :label="t('visualization.gap_size')"
       >
         <el-radio-group v-model="canvasStyleData.dashboard.gapMode" @change="onGapModeChange">
-          <el-radio :effect="themes" label="small">{{ t('visualization.small') }}</el-radio>
-          <el-radio :effect="themes" label="middle">{{ t('visualization.middle') }}</el-radio>
-          <el-radio :effect="themes" label="large">{{ t('visualization.large') }}</el-radio>
-          <el-radio :effect="themes" label="custom">{{ t('visualization.custom') }}</el-radio>
+          <el-radio :effect="themes" value="small">{{ t('visualization.small') }}</el-radio>
+          <el-radio :effect="themes" value="middle">{{ t('visualization.middle') }}</el-radio>
+          <el-radio :effect="themes" value="large">{{ t('visualization.large') }}</el-radio>
+          <el-radio :effect="themes" value="custom">{{ t('visualization.custom') }}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item
@@ -84,10 +84,10 @@
       :label="t('visualization.dashboard_adaptor')"
     >
       <el-radio-group v-model="canvasStyleData.dashboardAdaptor" @change="onKeepSizeChange">
-        <el-radio :effect="themes" label="keepHeightAndWidth">{{
+        <el-radio :effect="themes" value="keepHeightAndWidth">{{
           t('visualization.scale_keep_height_and_width')
         }}</el-radio>
-        <el-radio :effect="themes" label="withWidth">{{
+        <el-radio :effect="themes" value="withWidth">{{
           t('visualization.scale_with_width')
         }}</el-radio>
       </el-radio-group>
@@ -210,10 +210,10 @@
         class="radio-span"
         @change="themeChange"
       >
-        <el-radio label="all" :effect="themes">
+        <el-radio value="all" :effect="themes">
           {{ t('visualization.view') }}
         </el-radio>
-        <el-radio label="custom" :effect="themes">
+        <el-radio value="custom" :effect="themes">
           {{ resourceType }}
         </el-radio>
       </el-radio-group>

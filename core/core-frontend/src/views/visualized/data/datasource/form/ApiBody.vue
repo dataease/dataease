@@ -193,23 +193,23 @@ const emits = defineEmits(['headersChange'])
 <template>
   <div class="radio-group_api">
     <el-radio-group v-model="apiBody.type">
-      <el-radio :disabled="isReadOnly" :label="BODY_TYPE.FORM_DATA" @change="modeChange">
+      <el-radio :disabled="isReadOnly" :value="BODY_TYPE.FORM_DATA" @change="modeChange">
         {{ t('datasource.body_form_data') }}
       </el-radio>
 
-      <el-radio :disabled="isReadOnly" :label="BODY_TYPE.WWW_FORM" @change="modeChange">
+      <el-radio :disabled="isReadOnly" :value="BODY_TYPE.WWW_FORM" @change="modeChange">
         {{ t('datasource.body_x_www_from_urlencoded') }}
       </el-radio>
 
-      <el-radio :disabled="isReadOnly" :label="BODY_TYPE.JSON" @change="modeChange">
+      <el-radio :disabled="isReadOnly" :value="BODY_TYPE.JSON" @change="modeChange">
         {{ t('datasource.body_json') }}
       </el-radio>
 
-      <el-radio :disabled="isReadOnly" :label="BODY_TYPE.XML" @change="modeChange">
+      <el-radio :disabled="isReadOnly" :value="BODY_TYPE.XML" @change="modeChange">
         {{ t('datasource.body_xml') }}
       </el-radio>
 
-      <el-radio :disabled="isReadOnly" :label="BODY_TYPE.RAW" @change="modeChange">
+      <el-radio :disabled="isReadOnly" :value="BODY_TYPE.RAW" @change="modeChange">
         {{ t('datasource.body_raw') }}
       </el-radio>
     </el-radio-group>

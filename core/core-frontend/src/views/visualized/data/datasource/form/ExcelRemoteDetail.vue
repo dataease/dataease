@@ -971,8 +971,8 @@ defineExpose({
           v-if="activeStep === 2"
         >
           <el-radio-group v-model="form.syncSetting.updateType">
-            <el-radio label="add_scope"> {{ t('data_source.append_data') }}</el-radio>
-            <el-radio label="all_scope">{{ t('data_source.replace_data') }}</el-radio>
+            <el-radio value="add_scope"> {{ t('data_source.append_data') }}</el-radio>
+            <el-radio value="all_scope">{{ t('data_source.replace_data') }}</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item
@@ -981,9 +981,9 @@ defineExpose({
           v-if="activeStep === 2"
         >
           <el-radio-group v-model="form.syncSetting.syncRate" @change="onRateChange">
-            <el-radio label="RIGHTNOW">{{ t('data_source.update_now') }}</el-radio>
-            <el-radio label="CRON">{{ t('datasource.cron_config') }}</el-radio>
-            <el-radio label="SIMPLE_CRON">{{ t('datasource.simple_cron') }}</el-radio>
+            <el-radio value="RIGHTNOW">{{ t('data_source.update_now') }}</el-radio>
+            <el-radio value="CRON">{{ t('datasource.cron_config') }}</el-radio>
+            <el-radio value="SIMPLE_CRON">{{ t('datasource.simple_cron') }}</el-radio>
           </el-radio-group>
         </el-form-item>
         <div

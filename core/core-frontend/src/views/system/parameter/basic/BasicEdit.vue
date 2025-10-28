@@ -403,21 +403,21 @@ defineExpose({
         </div>
         <div v-else-if="item.pkey === 'defaultLogin'">
           <el-radio-group v-model="state.form[item.pkey]">
-            <el-radio v-for="item in state.loginOptions" :key="item.value" :label="item.value">
+            <el-radio v-for="item in state.loginOptions" :key="item.value" :value="item.value">
               {{ item.label }}
             </el-radio>
           </el-radio-group>
         </div>
         <div v-else-if="item.pkey === 'defaultSort'">
           <el-radio-group v-model="state.form[item.pkey]">
-            <el-radio v-for="item in state.sortOptions" :key="item.value" :label="item.value">
+            <el-radio v-for="item in state.sortOptions" :key="item.value" :value="item.value">
               {{ item.label }}
             </el-radio>
           </el-radio-group>
         </div>
         <div v-else-if="item.pkey === 'defaultOpen'">
           <el-radio-group v-model="state.form[item.pkey]">
-            <el-radio v-for="item in state.openOptions" :key="item.value" :label="item.value">
+            <el-radio v-for="item in state.openOptions" :key="item.value" :value="item.value">
               {{ item.label }}
             </el-radio>
           </el-radio-group>

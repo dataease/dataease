@@ -125,13 +125,13 @@ const emits = defineEmits(['update:modelValue'])
 <template>
   <div>
     <div>
-      <el-radio v-model="type" label="1" size="small" border>{{ t('cron.every_year') }}</el-radio>
+      <el-radio v-model="type" value="1" size="small" border>{{ t('cron.every_year') }}</el-radio>
     </div>
     <div>
-      <el-radio v-model="type" label="5" size="small" border>{{ t('cron.not_set') }}</el-radio>
+      <el-radio v-model="type" value="5" size="small" border>{{ t('cron.not_set') }}</el-radio>
     </div>
     <div>
-      <el-radio v-model="type" label="2" size="small" border>{{ t('cron.cycle') }}</el-radio>
+      <el-radio v-model="type" value="2" size="small" border>{{ t('cron.cycle') }}</el-radio>
       <span style="margin-left: 10px; margin-right: 5px">{{ t('cron.from') }}</span>
       <el-input-number
         v-model="state.cycle.start"

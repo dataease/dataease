@@ -106,7 +106,7 @@ init()
                 v-model="state.bubbleAnimateForm.type"
                 @change="onBubbleAnimateChange()"
               >
-                <el-radio :effect="themes" label="wave"> {{ t('chart.water_wave') }} </el-radio>
+                <el-radio :effect="themes" value="wave"> {{ t('chart.water_wave') }} </el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>

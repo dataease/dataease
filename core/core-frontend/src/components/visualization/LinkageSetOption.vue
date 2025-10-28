@@ -52,12 +52,12 @@ const { actionSelection } = toRefs(props)
         @change="selectionChange"
         class="radio_group"
       >
-        <el-radio label="custom"
+        <el-radio value="custom"
           ><span style="font-weight: normal">
             {{ t('visualization.linkage_option1') }}
           </span></el-radio
         >
-        <el-radio label="auto"
+        <el-radio value="auto"
           ><span style="font-weight: normal">{{
             t('visualization.linkage_option2')
           }}</span></el-radio

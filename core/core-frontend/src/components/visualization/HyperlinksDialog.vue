@@ -9,8 +9,8 @@
       </el-form-item>
       <el-form-item :label="t('visualization.open_mode')">
         <el-radio-group v-model="state.linkInfo.openMode" :disabled="!state.linkInfo.enable">
-          <el-radio label="_blank">{{ t('visualization.new_window') }}</el-radio>
-          <el-radio label="_self">{{ t('visualization.now_window') }}</el-radio>
+          <el-radio value="_blank">{{ t('visualization.new_window') }}</el-radio>
+          <el-radio value="_self">{{ t('visualization.now_window') }}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item :label="t('visualization.hyperLinks')">

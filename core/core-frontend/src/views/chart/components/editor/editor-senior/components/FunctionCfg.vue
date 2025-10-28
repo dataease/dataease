@@ -205,17 +205,17 @@ onMounted(() => {
           v-model="state.functionForm.emptyDataStrategy"
           @change="changeFunctionCfg"
         >
-          <el-radio :effect="themes" :label="'breakLine'">
+          <el-radio :effect="themes" :value="'breakLine'">
             {{ isRichText ? t('visualization.set_as_tips') + '"-"' : t('chart.break_line') }}
           </el-radio>
-          <el-radio v-if="isRichText" :effect="themes" :label="'custom'">
+          <el-radio v-if="isRichText" :effect="themes" :value="'custom'">
             {{ t('visualization.custom') }}
           </el-radio>
           <template v-if="!isRichText">
-            <el-radio v-if="!isCirclePacking" :effect="themes" :label="'setZero'">{{
+            <el-radio v-if="!isCirclePacking" :effect="themes" :value="'setZero'">{{
               t('chart.set_zero')
             }}</el-radio>
-            <el-radio v-if="showIgnoreOption" :effect="themes" :label="'ignoreData'">
+            <el-radio v-if="showIgnoreOption" :effect="themes" :value="'ignoreData'">
               {{ t('chart.ignore_data') }}
             </el-radio>
           </template>

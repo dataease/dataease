@@ -297,7 +297,7 @@ watch(
       <div class="setting-content">
         <div class="setting">
           <el-radio-group v-model="timeRange.intervalType">
-            <el-radio v-for="ele in intervalTypeList" :key="ele.value" :label="ele.value">{{
+            <el-radio v-for="ele in intervalTypeList" :key="ele.value" :value="ele.value">{{
               ele.label
             }}</el-radio>
           </el-radio-group>
@@ -309,8 +309,8 @@ watch(
       <div class="setting-content">
         <div class="setting">
           <el-radio-group v-model="timeRange.regularOrTrends">
-            <el-radio label="fixed">{{ t('dynamic_time.fix') }}</el-radio>
-            <el-radio label="dynamic">{{ t('dynamic_time.dynamic') }}</el-radio>
+            <el-radio value="fixed">{{ t('dynamic_time.fix') }}</el-radio>
+            <el-radio value="dynamic">{{ t('dynamic_time.dynamic') }}</el-radio>
           </el-radio-group>
         </div>
         <template v-if="dynamicTime && timeRange.intervalType !== 'timeInterval'">

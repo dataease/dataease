@@ -180,13 +180,13 @@ onBeforeUnmount(() => {
               @change="onStyleChange"
               :effect="themes"
             >
-              <el-radio label="adaptation" :effect="themes">{{
+              <el-radio value="adaptation" :effect="themes">{{
                 t('visualization.pic_adaptation')
               }}</el-radio>
-              <el-radio label="original" :effect="themes">{{
+              <el-radio value="original" :effect="themes">{{
                 t('visualization.pic_original')
               }}</el-radio>
-              <el-radio label="equiratio" :effect="themes">{{
+              <el-radio value="equiratio" :effect="themes">{{
                 t('visualization.pic_equiratio')
               }}</el-radio>
             </el-radio-group>

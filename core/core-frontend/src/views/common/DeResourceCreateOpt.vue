@@ -10,10 +10,10 @@
     <el-row class="create-main" v-loading="state.loading">
       <el-row>
         <el-col :span="18" style="height: 40px">
-          <el-radio v-model="state.inputType" label="new_outer_template"
+          <el-radio v-model="state.inputType" value="new_outer_template"
             >{{ t('visualization.import_template') }}
           </el-radio>
-          <el-radio v-model="state.inputType" label="new_inner_template" @click="getTree"
+          <el-radio v-model="state.inputType" value="new_inner_template" @click="getTree"
             >{{ t('visualization.copy_template') }}
           </el-radio>
         </el-col>

@@ -101,7 +101,7 @@ const handleTabClick = () => {
   >
     <template v-if="!multiple" #default="{ item }">
       <el-radio-group v-model="selectValue">
-        <el-radio :label="item.value">{{ item.label }}</el-radio>
+        <el-radio :value="item.value">{{ item.label }}</el-radio>
       </el-radio-group>
     </template>
   </el-select-v2>

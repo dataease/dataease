@@ -1,6 +1,6 @@
 <!-- IconSlider.vue -->
 <template>
-  <el-tooltip offset="22" effect="dark" placement="left" :content="t('visualization.query')">
+  <el-tooltip :offset="22" effect="dark" placement="left" :content="t('visualization.query')">
     <div
       class="canvas-filter"
       :class="{ 'filter-btn-fix': isFixed }"
