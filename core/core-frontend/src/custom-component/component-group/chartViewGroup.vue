@@ -32,10 +32,9 @@ const props = defineProps({
   }
 })
 
-const { dvModel } = toRefs(props)
+const emit = defineEmits(['onTypeChange'])
 
 const userViewGroup = ref<InstanceType<typeof ElScrollbar>>()
-
 const state = reactive({
   curCategory: 'quota',
   chartGroupList: CHART_TYPE_CONFIGS
@@ -50,18 +49,9 @@ const anchorPosition = anchor => {
   scrollTo(element.offsetTop)
 }
 
-const newComponent = (innerType, staticMap) => {
-  eventBus.emit('handleNew', { componentName: 'UserView', innerType: innerType, staticMap })
+const newComponent = (render, innerType) => {
+  emit('onTypeChange', render, innerType)
 }
-
-const handleDragStart = e => {
-  commonHandleDragStart(e, dvModel.value)
-}
-
-const handleDragEnd = e => {
-  commonHandleDragEnd(e, dvModel.value)
-}
-
 const chartGroupListScroll = computed(() => {
   return state.chartGroupList.reduce(
     (pre, next) => {
@@ -133,7 +123,7 @@ const loadPluginCategory = data => {
 </script>
 
 <template>
-  <div  class="group-right">
+  <div class="group-right">
     <el-row
       :id="chartGroupInfo.category"
       v-for="chartGroupInfo in state.chartGroupList"
@@ -148,12 +138,16 @@ const loadPluginCategory = data => {
           v-for="chartInfo in chartGroupInfo.details"
           :key="chartInfo.title"
         >
+        <el-tooltip placement="right" :offset="6" :hide-after="0" :enterable="false">
+          <template #content>
+            <div>点击可切换为{{ chartInfo.title }}</div>
+            <div>其他信息</div>
+          </template>
           <div
-            v-on:click="newComponent(chartInfo.value, chartInfo['staticMap'])"
+            v-on:click="newComponent(chartInfo.render, chartInfo.value)"
             class="item-top"
             draggable="true"
             :data-id="'UserView&' + chartInfo.value"
-            :title="chartInfo.title"
           >
             <Icon
               class-name="item-top-icon"
@@ -171,17 +165,18 @@ const loadPluginCategory = data => {
               ></component
             ></Icon>
           </div>
+        </el-tooltip>
           <!-- <div :title="chartInfo.title" class="item-bottom">
             <span>{{ chartInfo.title }}</span>
           </div> -->
         </el-col>
       </el-row>
     </el-row>
+    <XpackComponent
+      jsname="L2NvbXBvbmVudC9wbHVnaW5zLWhhbmRsZXIvVmlld0NhdGVnb3J5SGFuZGxlcg=="
+      @load-plugin-category="loadPluginCategory"
+    />
   </div>
-  <XpackComponent
-    jsname="L2NvbXBvbmVudC9wbHVnaW5zLWhhbmRsZXIvVmlld0NhdGVnb3J5SGFuZGxlcg=="
-    @load-plugin-category="loadPluginCategory"
-  />
 </template>
 
 <style lang="less" scoped>
@@ -209,7 +204,7 @@ const loadPluginCategory = data => {
 }
 
 .item {
-  margin-bottom: 12px;
+  margin-bottom: 6px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -222,6 +217,8 @@ const loadPluginCategory = data => {
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: #f5f6f7;
+    border: 1px solid #e4e4e4;
     &:hover {
       border: 1px solid var(--ed-color-primary);
     }
@@ -242,7 +239,7 @@ const loadPluginCategory = data => {
 }
 
 .group-title {
-  padding: 0 8px;
+  padding: 0 8px 4px 8px;
   font-weight: 400;
   font-size: 12px;
   line-height: 20px;

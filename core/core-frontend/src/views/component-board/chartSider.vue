@@ -3,20 +3,16 @@ import {
   PropType,
   reactive,
   ref,
-  watch,
   toRefs,
-  computed,
   nextTick,
-  onBeforeMount,
-  provide,
-  unref,
-  onBeforeUnmount,
-  onMounted
+  computed,
+  onMounted,
+  onBeforeUnmount
 } from 'vue'
 // ===== 第三方库导入 =====
 import { storeToRefs } from 'pinia'
-import { cloneDeep, forEach, get, debounce, set, concat, keys } from 'lodash-es'
-import { ElMessage, ElTreeSelect } from 'element-plus-secondary'
+import { get, set, concat, keys } from 'lodash-es'
+import { ElMessage } from 'element-plus-secondary'
 
 import { BASE_VIEW_CONFIG, getViewConfig } from '@/views/chart/components/editor/util/chart'
 import chartViewManager from '@/views/chart/components/js/panel'
@@ -30,7 +26,7 @@ import Senior from '@/views/chart/components/editor/editor-senior/Senior.vue'
 // hook
 import { useI18n } from '@/hooks/web/useI18n'
 import { useEmitt } from '@/hooks/web/useEmitt'
-
+const { emitter } = useEmitt()
 const { t } = useI18n()
 
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -40,11 +36,7 @@ const dvMainStore = dvMainStoreWithOut()
 const {
   canvasCollapse,
   curComponent,
-  componentData,
-  editMode,
-  mobileInPc,
-  fullscreenFlag,
-  dvInfo
+  mobileInPc
 } = storeToRefs(dvMainStore)
 
 const props = defineProps({
@@ -141,14 +133,14 @@ const calcData = (view, resetDrill = false, updateQuery = '') => {
     }
   }
   snapshotStore.recordSnapshotCache('calcData', view.id)
-  // if (updateQuery === 'updateQuery') {
+  if (updateQuery === 'updateQuery') {
   //   queryList.value.forEach(ele => {
   //     useEmitt().emitter.emit(`updateQueryCriteria${ele.id}`)
   //   })
-  // }
+  }
 }
 const onColorChange = val => {
-  view.value.customAttr.color = val
+  (view.value.customAttr as any).color = val
   renderChart(view.value)
 }
 const onMiscChange = val => {
@@ -378,16 +370,154 @@ const onBubbleAnimateChange = val => {
 }
 
 const snapshotStore = snapshotStoreWithOut()
+const recordSnapshotInfo = type => {
+  view.value['dataFrom'] = 'calc'
+  snapshotStore.recordSnapshotCache(type, view.value.id)
+}
+const removeItems = (
+  _type:
+    | 'xAxis'
+    | 'xAxisExt'
+    | 'extStack'
+    | 'yAxis'
+    | 'yAxisExt'
+    | 'extBubble'
+    | 'customFilter'
+    | 'drillFields'
+    | 'flowMapStartName'
+    | 'flowMapEndName'
+    | 'extColor'
+) => {
+  recordSnapshotInfo('calcData')
+  let axis = []
+  switch (_type) {
+    case 'xAxis':
+      axis = view.value.xAxis?.splice(0)
+      break
+    case 'xAxisExt':
+      axis = view.value.xAxisExt?.splice(0)
+      break
+    case 'extStack':
+      axis = view.value.extStack?.splice(0)
+      break
+    case 'yAxis':
+      axis = view.value.yAxis?.splice(0)
+      break
+    case 'yAxisExt':
+      axis = view.value.yAxisExt?.splice(0)
+      break
+    case 'extBubble':
+      axis = view.value.extBubble?.splice(0)
+      break
+    case 'customFilter':
+      view.value.customFilter = {}
+      return
+      break
+    case 'drillFields':
+      axis = view.value.drillFields?.splice(0)
+      break
+    case 'flowMapStartName':
+      axis = view.value.flowMapStartName?.splice(0)
+      break
+    case 'flowMapEndName':
+      axis = view.value.flowMapEndName?.splice(0)
+      break
+    case 'extColor':
+      axis = view.value.extColor?.splice(0)
+      break
+  }
+  axis?.length && emitter.emit('removeAxis', { axisType: _type, axis, editType: 'remove' })
+}
 
-// 计算属性
-const chartStyleShow = computed(() => {
-  return (
-    !['richText', 'Picture'].includes(view.value.type) &&
-    curComponent.value &&
-    curComponent.value.component === 'UserView'
-  )
-})
+const onTypeChange = (render, type) => {
+  const viewConf = getViewConfig(type)
+  if (viewConf.isPlugin) {
+    view.value.plugin = {
+      isPlugin: true,
+      staticMap: viewConf.staticMap
+    }
+    view.value.isPlugin = true
+  } else {
+    view.value.isPlugin = false
+    delete view.value.plugin
+  }
+  view.value.render = render
+  view.value.type = type
+  emitter.emit('chart-type-change')
+  emitter.emit('chart-type-change-' + view.value.id)
+  // 处理配置项默认值，不同图表的同一配置项默认值不同
+  const chartViewInstance = chartViewManager.getChartView(view.value.render, view.value.type)
+  if (chartViewInstance) {
+    view.value = chartViewInstance.setupDefaultOptions(view.value) as unknown as ChartObj
+    // 处理轴
+    const axisConfig = chartViewInstance.axisConfig
+    keys(axisConfig).forEach((axis: AxisType) => {
+      const axisArr = view.value[axis] as Axis[]
+      if (!axisArr?.length) {
+        return
+      }
+      const axisSpec = axisConfig[axis]
+      const { type, limit } = axisSpec
+      const removedAxis = []
+      // check type
+      if (type) {
+        for (let i = axisArr.length - 1; i >= 0; i--) {
+          if (axisArr[i].groupType !== type) {
+            const [axis] = axisArr.splice(i, 1)
+            removedAxis.push(axis)
+          }
+        }
+      }
+      // check limit
+      if (limit && limit < axisArr.length) {
+        axisArr.splice(limit).forEach(i => removedAxis.push(i))
+      }
+      removedAxis.length &&
+        emitter.emit('removeAxis', { axisType: axis, axis: removedAxis, editType: 'remove' })
+    })
+    if (view.value.type === 'line') {
+      if (view.value?.xAxisExt?.length && view.value?.yAxis?.length > 1) {
+        const axis = view.value.yAxis.splice(1)
+        emitter.emit('removeAxis', { axisType: 'yAxis', axis, editType: 'remove' })
+      }
+    }
+    if (
+      view.value.type === 'liquid' ||
+      view.value.type === 'gauge' ||
+      view.value.type === 'indicator'
+    ) {
+      removeItems('drillFields')
+    }
+    if (!['line', 'area', 'bar', 'bar-group'].includes(view.value.type)) {
+      // 清除图表标注
+      const pointElement = document.getElementById('point_' + view.value.id)
+      if (pointElement) {
+        pointElement.remove()
+        pointElement.parentNode?.removeChild(pointElement)
+      }
+    }
+  }
+  curComponent.value.innerType = type
+  calcData(view.value, true)
+}
+// ===== 动态高度计算 =====
+const elTabsHeight = ref('auto')
 
+const calculateElTabsHeight = () => {
+  nextTick(() => {
+    const edMainElement = document.querySelector('.sidebar-content')
+    const chartHeaderElement = document.querySelector('.chart-view')
+
+    if (edMainElement && chartHeaderElement) {
+      const edMainHeight = edMainElement.clientHeight
+      const chartHeaderHeight = chartHeaderElement.clientHeight
+      const remainingHeight = edMainHeight - chartHeaderHeight - 54
+      elTabsHeight.value = `${remainingHeight}px`
+    }
+  })
+}
+
+// computed
 const chartViewInstance = computed(() => {
   return chartViewManager.getChartView(view.value.render, view.value.type)
 })
@@ -395,19 +525,35 @@ const chartViewInstance = computed(() => {
 const allFields = computed(() => {
   return concat(state.quotaData, state.dimensionData)
 })
+// ===== 生命周期钩子 =====
+onMounted(() => {
+  calculateElTabsHeight()
+  // 监听窗口大小变化
+  window.addEventListener('resize', calculateElTabsHeight)
+})
 
+onBeforeUnmount(() => {
+  // 清理事件监听器
+  window.removeEventListener('resize', calculateElTabsHeight)
+})
 </script>
 
 <template>
 <div class="left-sidebar" :class="{ collapsed: canvasCollapse.chartAreaCollapse }">
-    <div class="sidebar-header">
-      <span :class="{'collapsed-header': canvasCollapse.chartAreaCollapse}">图表</span>
-      <ToggleButton :collapsed="canvasCollapse.chartAreaCollapse" @toggle="collapseChange('chartAreaCollapse')" />
-    </div>
-    <div class="sidebar-content" v-if="!canvasCollapse.chartAreaCollapse">
-      <ChartViewGroup></ChartViewGroup>
-      <el-tabs v-model="tabActive" class="tab-header" :class="{ dark: themes === 'dark' }">
-        <el-tab-pane name="style" :label="t('chart.chart_style')" style="width: 100%">
+  <div class="sidebar-header">
+    <span :class="{'collapsed-header': canvasCollapse.chartAreaCollapse}">图表</span>
+    <ToggleButton :collapsed="canvasCollapse.chartAreaCollapse" @toggle="collapseChange('chartAreaCollapse')" />
+  </div>
+  <div class="sidebar-content" v-if="!canvasCollapse.chartAreaCollapse">
+    <chart-view-group
+      class="chart-view"
+      :themes="themes"
+      :type="view.type"
+      @on-type-change="onTypeChange"
+    ></chart-view-group>
+    <el-tabs v-model="tabActive" class="tab-header"  :class="{ dark: themes === 'dark' }" >
+      <el-tab-pane name="style" :label="t('chart.chart_style')" style="width: 100%">
+        <div class="tab-content" :style="{height: elTabsHeight }">
           <chart-style
             :properties="chartViewInstance.properties"
             :property-inner-all="chartViewInstance.propertyInner"
@@ -443,8 +589,10 @@ const allFields = computed(() => {
             @onChangeFlowMapLineForm="onChangeFlowMapLineForm"
             @onChangeFlowMapPointForm="onChangeFlowMapPointForm"
           />
-        </el-tab-pane>
-        <el-tab-pane name="senior" :label="t('chart.senior')" style="width: 100%">
+        </div>
+      </el-tab-pane>
+      <el-tab-pane name="senior" :label="t('chart.senior')" style="width: 100%">
+        <div class="tab-content" :style="{height: elTabsHeight }">
           <senior
             :chart="view"
             :quota-data="view.yAxis"
@@ -461,20 +609,46 @@ const allFields = computed(() => {
             @onMapMappingChange="onMapMappingChange"
             @onBubbleAnimateChange="onBubbleAnimateChange"
           />
-        </el-tab-pane>
-      </el-tabs>
-    </div>
+        </div>
+      </el-tab-pane>
+    </el-tabs>
+  </div>
 </div>
 </template>
 
 <style lang="less" scoped>
-.sidebar-container {
-  display: flex;
-  height: 100vh;
-  background-color: #f5f5f5;
+.sidebar-content{
+  :deep(.ed-tabs__header .ed-tabs__item){
+    font-weight: 400;
+    font-size: 12px;
+    padding: 0 8px !important;
+    margin-right: 12px;
+  }
+}
+.sidebar-content {
+  flex: 1;
+  overflow: hidden;
+}
+.tab-content{
+  overflow-y: auto;
+  :deep(.ed-collapse-item__content){
+    padding: 12px 6px 2px 6px !important;
+  }
+  .ed-form-item__label{
+    color: #646A73;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    height: unset;
+    line-height: 20px;
+   }
+  /* 针对 el-scrollbar 的垂直滚动条宽度设置 */
+  ::-webkit-scrollbar {
+    width: 6px!important;
+  }
 }
 .left-sidebar{
-  width: 200px;
+  width: 240px;
   height: 100%;
   border-right: 1px solid #e0e0e0;
   border-left: 1px solid #e0e0e0;
@@ -505,4 +679,5 @@ const allFields = computed(() => {
 .chart-dashline{
   border-bottom: solid 1px #e0e0e0;
 }
+
 </style>

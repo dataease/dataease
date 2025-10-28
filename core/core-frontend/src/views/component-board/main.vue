@@ -14,8 +14,14 @@ import {
   onMounted
 } from 'vue'
 import { storeToRefs } from 'pinia'
+import { ElMessage, ElTreeSelect } from 'element-plus-secondary'
+import { cloneDeep, forEach, get, debounce, set, concat, keys } from 'lodash-es'
 
 import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
+import DimensionItem from '@/views/chart/components/editor/drag-item/DimensionItem.vue'
+
+import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 
 import chartViewManager from '@/views/chart/components/js/panel'
 import { BASE_VIEW_CONFIG, getViewConfig } from '@/views/chart/components/editor/util/chart'
@@ -230,6 +236,194 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
       addAxis(e, type as AxisType)
     }
   }
+}
+
+const dragCheckMapType = list => {
+  if (list && list.length > 0) {
+    let valid = true
+    for (let i = 0; i < list.length; i++) {
+      if (list[i].deType !== 5) {
+        list.splice(i, 1)
+        valid = false
+      }
+    }
+    if (!valid) {
+      ElMessage({
+        message: t('chart.error_d_not_coordinates'),
+        type: 'warning'
+      })
+    }
+    return valid
+  }
+}
+const onMove = e => {
+  recordSnapshotInfo('calcData')
+  state.moveId = e.draggedContext.element.id
+  return true
+}
+const addAxis = (e, axis: AxisType) => {
+  recordSnapshotInfo('calcData')
+  const axisSpec = chartViewInstance.value?.axisConfig[axis]
+  if (!axisSpec) {
+    return
+  }
+  const { type, limit, duplicate } = axisSpec
+  let typeValid, dup
+
+  if (view.value.type === 'bar-range' && (axis === 'yAxis' || axis === 'yAxisExt')) {
+    //区间条形图先排除非时间纬度或者指标的情况
+    const list = view.value[axis]
+    if (list && list.length > 0) {
+      let valid = true
+      for (let i = 0; i < list.length; i++) {
+        if (list[i].groupType === 'd' && list[i].deType === 1) {
+          list[i].sort = 'asc'
+        }
+        if (!(list[i].groupType === 'q' || (list[i].groupType === 'd' && list[i].deType === 1))) {
+          list.splice(i, 1)
+          valid = false
+        }
+      }
+      if (!valid) {
+        ElMessage({
+          message: t('chart.error_d_not_time_2_q'),
+          type: 'warning'
+        })
+      }
+      typeValid = valid
+    }
+  } else if (
+    ((view.value.type === 'symbolic-map' || view.value.type === 'heat-map') && axis === 'xAxis') ||
+    (view.value.type === 'flow-map' && (axis === 'xAxis' || axis === 'xAxisExt'))
+  ) {
+    typeValid = dragCheckMapType(view.value[axis])
+  } else if (type) {
+    typeValid = dragCheckType(view.value[axis], type)
+  }
+
+  // 针对指标卡进行数值类型判断
+  if (typeValid && type === 'q' && view.value.type === 'indicator') {
+    const list = view.value[axis]
+    if (list && list.length > 0) {
+      let valid = true
+      for (let i = 0; i < list.length; i++) {
+        if (list[i].deType !== 2 && list[i].deType !== 3) {
+          list.splice(i, 1)
+          valid = false
+        }
+      }
+      typeValid = valid
+      if (!typeValid) {
+        ElMessage({
+          message: t('chart.error_not_number'),
+          type: 'warning'
+        })
+      }
+    }
+  }
+
+  if (!duplicate) {
+    dup = dragMoveDuplicate(view.value[axis], e, 'chart')
+  }
+  if (view.value[axis].length > limit) {
+    const removedAxis = view.value[axis].splice(limit)
+    if (e.newDraggableIndex + 1 <= limit) {
+      emitter.emit('removeAxis', { axisType: axis, axis: removedAxis, editType: 'remove' })
+      emitter.emit('addAxis', {
+        axisType: axis,
+        axis: [view.value[axis][e.newDraggableIndex]],
+        editType: 'add'
+      })
+    }
+  } else {
+    if (!dup && typeValid) {
+      const isGaugeOrLiquid = view.value.type === 'gauge' || view.value.type === 'liquid'
+      const quotaData = cloneDeep(state.quotaData)
+      emitter.emit('addAxis', {
+        axisType: axis,
+        axis: [view.value[axis][e.newDraggableIndex]],
+        editType: 'add',
+        ...(isGaugeOrLiquid ? { quotaData: quotaData } : {})
+      })
+    }
+  }
+  if (view.value.type === 'line') {
+    if (view.value?.xAxisExt?.length && view.value?.yAxis?.length > 1) {
+      const axis = view.value.yAxis.splice(1)
+      emitter.emit('removeAxis', { axisType: 'yAxis', axis, editType: 'remove' })
+    }
+  }
+  if (view.value.type.includes('chart-mix')) {
+    if (axis === 'yAxis') {
+      if (view.value.yAxisExt.length > 0) {
+        const chartType = view.value.yAxisExt[0].chartType
+        forEach(view.value.yAxis, axis => {
+          if (chartType === 'bar') {
+            axis.chartType = 'line'
+          } else if (chartType === 'line') {
+            axis.chartType = 'bar'
+          }
+        })
+      }
+    } else if (axis === 'yAxisExt') {
+      if (view.value.yAxis.length > 0) {
+        const chartType = view.value.yAxis[0].chartType
+        forEach(view.value.yAxisExt, axis => {
+          if (chartType === 'bar') {
+            axis.chartType = 'line'
+          } else if (chartType === 'line') {
+            axis.chartType = 'bar'
+          }
+        })
+      }
+    }
+  }
+
+  if (typeValid && view.value.type === 'bar-range') {
+    //处理某一个轴有数据的情况
+    let tempType = null
+    let tempDeType = null
+    if (axis === 'yAxis' && view.value.yAxisExt[0]) {
+      tempType = view.value.yAxisExt[0].groupType
+      tempDeType = view.value.yAxisExt[0].deType
+    } else if (axis === 'yAxisExt' && view.value.yAxis[0]) {
+      tempType = view.value.yAxis[0].groupType
+      tempDeType = view.value.yAxis[0].deType
+    }
+    if (tempType !== null) {
+      const list = view.value[axis]
+      if (list && list.length > 0) {
+        let valid = true
+        for (let i = 0; i < list.length; i++) {
+          if (
+            !(
+              list[i].groupType === tempType &&
+              (tempType === 'q' || (tempType === 'd' && list[i].deType === tempDeType))
+            )
+          ) {
+            list.splice(i, 1)
+            valid = false
+          }
+        }
+        if (!valid) {
+          ElMessage({
+            message: t('chart.error_bar_range_axis_type_not_equal'),
+            type: 'warning'
+          })
+        }
+        typeValid = valid
+      }
+    }
+  }
+}
+const addXaxis = e => {
+  addAxis(e, 'xAxis')
+}
+const addDrill = e => {
+  recordSnapshotInfo('calcData')
+  dragCheckType(view.value.drillFields, 'd')
+  dragMoveDuplicate(view.value.drillFields, e, '')
+  dragRemoveAggField(view.value.drillFields, e)
 }
 const onTableColumnWidthChange = val => {
   if (editMode.value !== 'edit') {

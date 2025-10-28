@@ -7,8 +7,6 @@ import {
   toRefs,
   computed,
   nextTick,
-  onBeforeMount,
-  provide,
   unref,
   onBeforeUnmount,
   onMounted
@@ -16,16 +14,13 @@ import {
 
 // ===== 第三方库导入 =====
 import { storeToRefs } from 'pinia'
-import { ElMessage, ElTreeSelect } from 'element-plus-secondary'
-import { useRouter, useRoute } from 'vue-router_2'
-import { useDraggable } from '@vueuse/core'
+import { cloneDeep } from 'lodash-es'
 
 // ===== 组件导入 =====
 import DatasetSelect from '@/views/chart/components/editor/dataset-select/DatasetSelect.vue'
 import ToggleButton from '@/components/common/ToggleButton.vue'
 
 // ===== 图标组件导入 =====
-import { iconChartMap } from '@/components/icon-group/chart-list'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import {
   iconFieldCalculatedMap,
@@ -34,20 +29,15 @@ import {
 
 // ===== Hooks 导入 =====
 import { useI18n } from '@/hooks/web/useI18n'
-import { useCache } from '@/hooks/web/useCache'
-import { useEmitt } from '@/hooks/web/useEmitt'
 
-// ===== Store 导入 =====
-import { useAppStoreWithOut } from '@/store/modules/app'
-import { useEmbedded } from '@/store/modules/embedded'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 
 // ===== API 导入 =====
-import { Field, getFieldByDQ, copyChartField, deleteChartField } from '@/api/chart'
+import { Field, getFieldByDQ } from '@/api/chart'
 
 // ===== 工具函数导入 =====
-import { BASE_VIEW_CONFIG, getViewConfig } from '@/views/chart/components/editor/util/chart'
+import { BASE_VIEW_CONFIG } from '@/views/chart/components/editor/util/chart'
 import { fieldType } from '@/utils/attr'
 
 const { t } = useI18n()
@@ -71,29 +61,15 @@ const props = defineProps({
   }
 })
 
-// ===== Store 实例化 =====
+// ===== Store =====
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
-const embeddedStore = useEmbedded()
-const appStore = useAppStoreWithOut()
 
-// ===== Store 状态解构 =====
 const { view } = toRefs(props)
 const {
   canvasCollapse,
-  curComponent,
-  componentData,
-  editMode,
-  mobileInPc,
-  fullscreenFlag,
-  dvInfo
 } = storeToRefs(dvMainStore)
 
-// ===== 工具实例化 =====
-const { wsCache } = useCache('localStorage')
-const router = useRouter()
-
-// ===== 响应式状态定义 =====
 const state = reactive({
   extData: '',
   moveId: -1,
@@ -133,7 +109,6 @@ const state = reactive({
 // ===== Ref 定义 =====
 const el = ref<HTMLElement | null>(null)
 const elDrag = ref<HTMLElement | null>(null)
-const openHandler = ref(null)
 const previewHeight = ref(0)
 const fieldLoading = ref(false)
 const datasetSelector = ref(null)
@@ -148,7 +123,7 @@ const calculateElDragHeight = () => {
   nextTick(() => {
     const edMainElement = document.querySelector('.dataset-main-top')
     const datasetHeaderElement = document.querySelector('.dataset-header')
-    
+
     if (edMainElement && datasetHeaderElement) {
       const edMainHeight = edMainElement.clientHeight
       const datasetHeaderHeight = datasetHeaderElement.clientHeight
@@ -159,30 +134,6 @@ const calculateElDragHeight = () => {
 }
 
 // ===== 拖拽功能 =====
-const { y, isDragging } = useDraggable(el, {
-  initialValue: { x: 0, y: 400 },
-  draggingElement: elDrag
-})
-
-// ===== 事件监听器 =====
-const onTableColumnWidthChange = val => {
-  if (editMode.value !== 'edit') {
-    return
-  }
-  view.value.customAttr.basicStyle.tableFieldWidth = val
-  snapshotStore.recordSnapshotCache('renderChart', view.value.id)
-}
-
-const { emitter } = useEmitt({
-  name: 'set-table-column-width',
-  callback: args => onTableColumnWidthChange(args)
-})
-
-// ===== 计算属性 =====
-const toolTip = computed(() => {
-  return props.themes || 'dark'
-})
-
 const quotaData = computed(() => {
   let result = JSON.parse(JSON.stringify(state.quota))
   if (view.value?.type === 'table-info') {
@@ -206,21 +157,6 @@ const dimensionData = computed(() => {
   return result
 })
 
-const fieldDHeight = computed(() => {
-  const h = y.value - 200
-  if (h < 53) {
-    return 53
-  }
-  return h > previewHeight.value - 50 ? previewHeight.value - 50 : h
-})
-const dragVerticalTop = computed(() => {
-  const h = y.value - 200
-  if (h < 50) {
-    return 50
-  }
-  return h > previewHeight.value - 53 ? previewHeight.value - 53 : h
-})
-
 // ===== 工具函数 =====
 const getIconName = (deType, extField, dimension = false) => {
   if (extField === 2) {
@@ -230,15 +166,6 @@ const getIconName = (deType, extField, dimension = false) => {
   return iconFieldMap[fieldType[deType]]
 }
 
-const initOpenHandler = newWindow => {
-  if (openHandler?.value) {
-    const pm = {
-      methodName: 'initOpenHandler',
-      args: newWindow
-    }
-    openHandler.value.invokeMethod(pm)
-  }
-}
 
 const collapseChange = type => {
   canvasCollapse.value[type] = !canvasCollapse.value[type]
@@ -284,13 +211,6 @@ const getFields = (id, chartId, type) => {
     state.quotaData = []
 
     fieldLoading.value = false
-  }
-}
-
-const handleChartFieldEdit = (item, type) => {
-  return {
-    type: type,
-    item: item
   }
 }
 
@@ -360,6 +280,17 @@ const setActiveShift = (ele, type = 'dimension') => {
     }
   }
 }
+
+const startToMove = (e: DragEvent, item) => {
+  e.dataTransfer.setData(
+    'dimension',
+    JSON.stringify(
+      item
+        .filter(ele => ele.id)
+        .map(ele => ({ ...cloneDeep(unref(ele)), datasetId: view.value.tableId }))
+    )
+  )
+}
 const singleDragStartD = (e: DragEvent, ele, type) => {
   const activeChild = type === 'dimension' ? activeDimension : activeQuota
   const deactivateChild = type === 'quota' ? activeDimension : activeQuota
@@ -368,13 +299,6 @@ const singleDragStartD = (e: DragEvent, ele, type) => {
     activeChild.value = [unref(ele)]
   }
   startToMove(e, unref(activeDimension.value))
-}
-
-const dragStart = () => {
-  isDrag.value = true
-  setTimeout(() => {
-    isDraggingItem.value = true
-  }, 0)
 }
 
 const singleDragStart = (e: DragEvent, ele, type) => {
@@ -403,32 +327,6 @@ const singleDragEnd = () => {
   activeDimension.value = []
   activeQuota.value = []
   dragEnd()
-}
-
-const dragEnter = (ev: MouseEvent) => {
-  ev.preventDefault()
-}
-
-const dragOver = (ev: MouseEvent) => {
-  ev.preventDefault()
-}
-
-const drop = (ev: MouseEvent, type = 'xAxis') => {
-  ev.preventDefault()
-  const arr = activeDimension.value.length ? activeDimension.value : activeQuota.value
-  for (let i = 0; i < arr.length; i++) {
-    const obj = cloneDeep(arr[i])
-    state.moveId = obj.id as unknown as number
-    view.value[type] ??= []
-    view.value[type].push(obj)
-    const e = { newDraggableIndex: view.value[type].length - 1 }
-
-    if ('drillFields' === type) {
-      addDrill(e)
-    } else {
-      addAxis(e, type as AxisType)
-    }
-  }
 }
 
 
@@ -479,6 +377,7 @@ onBeforeUnmount(() => {
             :view-id="view.id"
             :state-obj="state"
             :themes="themes"
+            source-type="dataset"
             :disabled="false"
             @init-add-value-table-id="initAddValueTableId"
             @on-dataset-change="changeDataset"
@@ -529,34 +428,42 @@ onBeforeUnmount(() => {
                 @dragstart="$event => singleDragStartD($event, element, 'dimension')"
                 @dragend="singleDragEnd"
               >
-                <div class="drag-item">
-                  <div
-                    class="items flex-align-center"
-                    :class="[
-                      'item-dimension--' + themes,
-                      isDraggingItem && 'is-dragging-item',
-                      activeDimension.map(itx => itx.id).includes(element.id) && 'active'
-                    ]"
-                    :draggable="true"
-                    @dragstart="dragStartD"
-                    @dragend="dragEnd">
-                    <el-icon class="field-icon dimension-icon">
-                      <Icon>
-                        <component
-                          class="svg-icon"
-                          :class="`field-icon-${fieldType[[2, 3].includes(element.deType) ? 2 : 0]}`"
-                          :is="getIconName(element.deType, element.extField)"
-                        ></component>
-                      </Icon>
-                    </el-icon>
-                    <span class="field-name" :title="element.name">{{ element.name }}</span>
+                <el-tooltip placement="right" :offset="10" :hide-after="0" :enterable="false">
+                  <template #content>
+                    <div>显示名称：{{ element.originName }}</div>
+                    <div>字段名称：{{ element.name }}</div>
+                    <div>表达式：{{ element.name }}</div>
+                    <div>描述：{{ element.name }}</div>
+                  </template>
+                  <div class="drag-item">
+                    <div
+                      class="items flex-align-center"
+                      :class="[
+                        'item-dimension--' + themes,
+                        isDraggingItem && 'is-dragging-item',
+                        activeDimension.map(itx => itx.id).includes(element.id) && 'active'
+                      ]"
+                      :draggable="true"
+                      @dragstart="dragStartD"
+                      @dragend="dragEnd">
+                      <el-icon class="field-icon dimension-icon">
+                        <Icon>
+                          <component
+                            class="svg-icon"
+                            :class="`field-icon-${fieldType[[2, 3].includes(element.deType) ? 2 : 0]}`"
+                            :is="getIconName(element.deType, element.extField)"
+                          ></component>
+                        </Icon>
+                      </el-icon>
+                      <span class="field-name" :title="element.name">{{ element.name }}</span>
+                    </div>
                   </div>
-                </div>
+                </el-tooltip>
               </div>
             </div>
           </div>
         </div>
-      
+
         <!-- 指标区域 -->
         <div class="metric-section">
           <div class="section-header">{{ t('chart.quota') }}</div>
@@ -640,8 +547,9 @@ onBeforeUnmount(() => {
     padding: 10px 10px 0 10px;
   }
   .field-sections-container{
-    padding: 0 10px;
+    // padding: 0 10px;
     overflow: auto;
+    font-size: 14px;
   }
 }
 .de-chart-editor {
@@ -750,8 +658,8 @@ onBeforeUnmount(() => {
   }
 }
 .field-sections-container{
-  font-size: 14px;
   .section-header{
+    padding: 0 10px;
     font-weight: 500;
     color: #2e2f32;
     height: 28px;
@@ -759,8 +667,9 @@ onBeforeUnmount(() => {
     user-select: none;
   }
   .field-name{
-    display: inline-block;
-    width: 90px;
+    padding: 0 10px;
+    // display: inline-block;
+    // width: 90px;
     word-break: break-all;
     overflow: hidden;
     white-space: nowrap;
