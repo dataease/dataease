@@ -354,7 +354,6 @@ watch(
             :title="$t('chart.legend')"
           >
             <legend-selector
-              class="attr-selector"
               :property-inner="propertyInnerAll['legend-selector']"
               :themes="themes"
               :chart="chart"

@@ -4,7 +4,7 @@
       <el-form ref="form" size="mini" label-width="70px">
         <el-form-item :label="t('visualization.video_type')">
           <el-radio-group v-model="state.streamMediaInfoTemp.videoType">
-            <el-radio :label="'flv'">FLV</el-radio>
+            <el-radio :value="'flv'">FLV</el-radio>
           </el-radio-group>
           <span style="color: #909399; font-size: 8px; margin-left: 3px">
             Tips:{{ t('visualization.live_tips') }}

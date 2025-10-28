@@ -205,7 +205,7 @@ onMounted(() => {
           v-model="state.functionForm.emptyDataStrategy"
           @change="changeFunctionCfg"
         >
-          <el-radio :effect="themes" :value="'breakLine'">
+          <el-radio :value="'breakLine'" :effect="themes">
             {{ isRichText ? t('visualization.set_as_tips') + '"-"' : t('chart.break_line') }}
           </el-radio>
           <el-radio v-if="isRichText" :effect="themes" :value="'custom'">

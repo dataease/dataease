@@ -2498,7 +2498,7 @@ defineExpose({
           <div class="title flex-align-center">
             {{ t('v_query.chart_and_field') }}
             <el-radio-group class="ml-4 larger-radio" v-model="curComponent.auto">
-              <el-radio :disabled="!curComponent.auto" :value="true">
+              <el-radio :value="true" :disabled="!curComponent.auto">
                 <div class="flex-align-center">
                   {{ t('chart.margin_model_auto') }}
                   <el-tooltip effect="dark" placement="top">
@@ -3113,7 +3113,7 @@ defineExpose({
                     @change="handleValueSourceChange"
                     v-model="curComponent.optionValueSource"
                   >
-                    <el-radio :disabled="!!curComponent.parameters.length" :label="0">{{
+                    <el-radio :value="0" :disabled="!!curComponent.parameters.length">{{
                       t('chart.margin_model_auto')
                     }}</el-radio>
                     <el-radio :value="1">{{ t('chart.select_dataset') }}</el-radio>

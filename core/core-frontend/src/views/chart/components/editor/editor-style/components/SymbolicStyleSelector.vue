@@ -5,7 +5,7 @@ import { ElMessage, UploadProps } from 'element-plus-secondary'
 import { svgStrToUrl } from '@/views/chart/components/js/util'
 import { useI18n } from '@/hooks/web/useI18n'
 import { cloneDeep, debounce, defaultsDeep } from 'lodash-es'
-
+import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 const props = withDefaults(
   defineProps<{
     chart: ChartObj

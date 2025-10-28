@@ -283,10 +283,10 @@
               v-model="state.commonBackground.backgroundType"
               @change="onBackgroundChange"
             >
-              <el-radio :effect="themes" label="outerImage">{{
+              <el-radio :effect="themes" value="outerImage">{{
                 t('visualization.photo')
               }}</el-radio>
-              <el-radio :effect="themes" label="innerImage">{{
+              <el-radio :effect="themes" value="innerImage">{{
                 t('visualization.board')
               }}</el-radio>
             </el-radio-group>

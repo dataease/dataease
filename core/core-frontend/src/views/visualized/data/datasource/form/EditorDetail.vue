@@ -1143,10 +1143,10 @@ defineExpose({
             :label="t('datasource.connection_mode')"
             prop="configuration.connectionType"
           >
-            <el-radio v-model="form.configuration.connectionType" label="sid"
+            <el-radio v-model="form.configuration.connectionType" value="sid"
               >{{ t('datasource.oracle_sid') }}
             </el-radio>
-            <el-radio v-model="form.configuration.connectionType" label="serviceName">
+            <el-radio v-model="form.configuration.connectionType" value="serviceName">
               {{ t('datasource.oracle_service_name') }}
             </el-radio>
           </el-form-item>
