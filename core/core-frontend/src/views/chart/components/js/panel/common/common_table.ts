@@ -2135,6 +2135,7 @@ class CustomMergedCell extends MergedCell {
   }
 
   drawTextShape(): void {
+    console.log(this.meta.fieldValue)
     if (this.meta.deFieldType === 7) {
       drawImage.apply(this)
     } else {
@@ -2158,11 +2159,25 @@ export class CustomDataCell extends TableDataCell {
     })
   }
 
+  public getBackgroundColor() {
+    let bgColorInfo = super.getBackgroundColor()
+    if (this.meta.isMergedCell) {
+      bgColorInfo = {
+        ...bgColorInfo,
+        backgroundColorOpacity: 0
+      }
+    }
+    return bgColorInfo
+  }
+
   /**
    * 重写绘制文本内容的方法
    * @protected
    */
   protected drawTextShape() {
+    if(this.meta.isMergedCell) {
+      return
+    }
     if (this.meta.autoWrap) {
       drawTextShape(this, false)
     } else {

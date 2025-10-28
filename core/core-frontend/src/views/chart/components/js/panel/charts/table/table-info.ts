@@ -503,6 +503,16 @@ export class TableInfo extends S2ChartView<TableSheet> {
       const summaryObj = getSummaryRow(data, axis, basicStyle.seriesSummary) as any
       data.push(summaryObj)
     }
+    const { mergeCells } = tableCell
+    const mergedCellsInfoMap: Record<string, boolean> = {}
+    if (mergeCells) {
+      s2Options.mergedCellsInfo?.reduce((p, n) => {
+        n.forEach(cell => {
+          p[`${cell.rowIndex}-${cell.colIndex}`] = true
+        })
+        return p
+      }, mergedCellsInfoMap)
+    }
     s2Options.dataCell = viewMeta => {
       // 总计行处理
       if (showSummary && viewMeta.rowIndex === data.length - 1) {
@@ -533,6 +543,10 @@ export class TableInfo extends S2ChartView<TableSheet> {
       // 配置文本自动换行参数
       viewMeta.autoWrap = tableCell.mergeCells ? false : basicStyle.autoWrap
       viewMeta.maxLines = basicStyle.maxLines
+      // 合并单元格标记
+      if (mergeCells && mergedCellsInfoMap[`${viewMeta.rowIndex}-${viewMeta.colIndex}`]) {
+        viewMeta.isMergedCell = true
+      }
       return new CustomDataCell(viewMeta, viewMeta?.spreadsheet)
     }
   }
