@@ -3710,6 +3710,7 @@ export default {
     frontTimeOut: '请求超时时间 (秒)',
     logLiveTime: '操作日志保留时间 (天)',
     thresholdLogLiveTime: '阈值告警记录保留时间 (天)',
+    dataFillingLogLiveTime: '数据填报操作日志保留时间 (天)',
     exportFileLiveTime: '后台导出文件保留时间 (天)',
     platformOid: '第三方平台用户组织',
     platformRid: '第三方平台用户角色',

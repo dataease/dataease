@@ -32,6 +32,7 @@ const requireKeys = [
   'logLiveTime',
   'thresholdLogLiveTime',
   'exportFileLiveTime',
+  'dataFillingLogLiveTime',
   'frontTimeOut',
   'loginLimitTime',
   'loginLimitRate'
@@ -340,6 +341,7 @@ defineExpose({
           v-else-if="
             item.pkey === 'logLiveTime' ||
             item.pkey === 'thresholdLogLiveTime' ||
+            item.pkey === 'dataFillingLogLiveTime' ||
             item.pkey === 'loginLimitRate' ||
             item.pkey === 'loginLimitTime'
           "

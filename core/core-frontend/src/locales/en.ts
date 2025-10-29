@@ -3812,6 +3812,7 @@ export default {
     frontTimeOut: 'Request timeout (seconds)',
     logLiveTime: 'Operation log retention time (days)',
     thresholdLogLiveTime: 'Threshold alarm record retention time (days)',
+    dataFillingLogLiveTime: 'DataFilling operation log retention time (days)',
     exportFileLiveTime: 'Background export file retention time (days)',
     platformOid: 'Third-party platform user organization',
     platformRid: 'Third-party platform user role',

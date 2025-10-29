@@ -3701,6 +3701,7 @@ export default {
     frontTimeOut: '請求超時時間 (秒)',
     logLiveTime: '操作日誌保留時間 (天)',
     thresholdLogLiveTime: '閾值警告記錄保留時間 (天)',
+    dataFillingLogLiveTime: '數據填報操作日誌保留時間 (天)',
     exportFileLiveTime: '後台匯出檔案保留時間 (天)',
     platformOid: '第三方平台使用者組織',
     platformRid: '第三方平台使用者角色',

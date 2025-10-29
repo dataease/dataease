@@ -11,6 +11,7 @@ public class XpackSettingConstants {
     public static final String PVP = "basic.pvp";
     public static final String DEFAULT_LOGIN = "basic.defaultLogin";
     public static final String THRESHOLD_LOG_LIVE_TIME = "basic.thresholdLogLiveTime";
+    public static final String DATA_FILLING_LOG_LIVE_TIME = "basic.dataFillingLogLiveTime";
     public static final String DEFAULT_SORT = "basic.defaultSort";
     public static final String DEFAULT_OPEN = "basic.defaultOpen";
     public static final String LOGIN_LIMIT = "basic.loginLimit";
