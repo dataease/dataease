@@ -11,6 +11,7 @@ import io.dataease.api.visualization.VisualizationOuterParamsApi;
 import io.dataease.api.visualization.dto.VisualizationOuterParamsDTO;
 import io.dataease.api.visualization.dto.VisualizationOuterParamsInfoDTO;
 import io.dataease.api.visualization.response.VisualizationOuterParamsBaseResponse;
+import io.dataease.api.visualization.vo.VisualizationOuterParamsInfoVO;
 import io.dataease.api.visualization.vo.VisualizationOuterParamsTargetViewInfoVO;
 import io.dataease.auth.DeLinkPermit;
 import io.dataease.constant.CommonConstants;
@@ -213,24 +214,65 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
     @DeLinkPermit
     @Override
     public VisualizationOuterParamsBaseResponse getOuterParamsInfo(Long visualizationId) {
-
-        QVisualizationOuterParams qVisualizationOuterParams = QVisualizationOuterParams.visualizationOuterParams;
-        QVisualizationOuterParamsInfo qVisualizationOuterParamsInfo = QVisualizationOuterParamsInfo.visualizationOuterParamsInfo;
-        QVisualizationOuterParamsTargetViewInfo visualizationOuterParamsTargetViewInfo = QVisualizationOuterParamsTargetViewInfo.visualizationOuterParamsTargetViewInfo;
-
-        List<VisualizationOuterParamsInfoDTO> result = queryFactory.select(Projections.fields(VisualizationOuterParamsInfoDTO.class,
-                        qVisualizationOuterParamsInfo.paramName.as("paramName"),
-                        qVisualizationOuterParamsInfo.required,
-                        qVisualizationOuterParamsInfo.defaultValue,
-                        qVisualizationOuterParamsInfo.enabledDefault,
-                        visualizationOuterParamsTargetViewInfo.targetViewId.stringValue().concat("#").concat(visualizationOuterParamsTargetViewInfo.targetViewId.stringValue()).as("targetInfo"))).from(qVisualizationOuterParams)
-                .leftJoin(qVisualizationOuterParamsInfo).on(qVisualizationOuterParamsInfo.paramsId.eq(qVisualizationOuterParams.paramsId))
-                .leftJoin(visualizationOuterParamsTargetViewInfo).on(visualizationOuterParamsTargetViewInfo.paramsInfoId.eq(qVisualizationOuterParamsInfo.paramsInfoId))
-                .fetch();
+        List<VisualizationOuterParamsInfoDTO> result = getVisualizationOuterParamsInfo(visualizationId);
         return new VisualizationOuterParamsBaseResponse(Optional.ofNullable(result).orElse(new ArrayList<>()).stream().collect(Collectors.toMap(VisualizationOuterParamsInfoDTO::getSourceInfo, VisualizationOuterParamsInfoDTO::getTargetInfoList)),
                 Optional.ofNullable(result).orElse(new ArrayList<>()).stream().collect(Collectors.toMap(VisualizationOuterParamsInfoDTO::getSourceInfo, paramsInfo -> paramsInfo))
         );
     }
+
+    public List<VisualizationOuterParamsInfoDTO> getVisualizationOuterParamsInfo(Long visualizationId) {
+        QVisualizationOuterParams pop = QVisualizationOuterParams.visualizationOuterParams;
+        QVisualizationOuterParamsInfo popi = QVisualizationOuterParamsInfo.visualizationOuterParamsInfo;
+        QVisualizationOuterParamsTargetViewInfo poptvi = QVisualizationOuterParamsTargetViewInfo.visualizationOuterParamsTargetViewInfo;
+
+        // 执行查询获取原始数据
+        List<VisualizationOuterParamsInfoDTO> queryResults = queryFactory
+                .select(Projections.bean(VisualizationOuterParamsInfoDTO.class,
+                        popi.paramName.as("sourceInfo"),
+                        // 处理 boolean 字段转换
+                        popi.required,
+                        popi.defaultValue,
+                        popi.enabledDefault,
+                        Expressions.stringTemplate("CONCAT({0}, '#', {1})",
+                                poptvi.targetViewId, poptvi.targetFieldId).as("targetInfo")))
+                .from(pop)
+                .leftJoin(popi).on(pop.paramsId.eq(popi.paramsId))
+                .leftJoin(poptvi).on(popi.paramsInfoId.eq(poptvi.paramsInfoId))
+                .where(pop.visualizationId.eq(visualizationId)
+                        .and(pop.checked.eq(true))  // 数据库中是 1/0，但 QueryDSL 实体应该是 boolean
+                        .and(popi.checked.eq(true)))
+                .distinct()
+                .fetch();
+
+        return groupQueryResults(queryResults);
+    }
+
+    private List<VisualizationOuterParamsInfoDTO> groupQueryResults(List<VisualizationOuterParamsInfoDTO> queryResults) {
+        Map<String, VisualizationOuterParamsInfoDTO> resultMap = new LinkedHashMap<>();
+
+        for (VisualizationOuterParamsInfoDTO result : queryResults) {
+            String key = result.getSourceInfo() + "_" + result.getRequired() + "_" +
+                    result.getDefaultValue() + "_" + result.getEnabledDefault();
+
+            VisualizationOuterParamsInfoDTO dto = resultMap.get(key);
+            if (dto == null) {
+                dto = new VisualizationOuterParamsInfoDTO();
+                dto.setSourceInfo(result.getSourceInfo());
+                dto.setRequired(result.getRequired());
+                dto.setDefaultValue(result.getDefaultValue());
+                dto.setEnabledDefault(result.getEnabledDefault());
+                dto.setTargetInfoList(new ArrayList<>());
+                resultMap.put(key, dto);
+            }
+
+            if (result.getTargetInfo() != null) {
+                dto.getTargetInfoList().add(result.getTargetInfo());
+            }
+        }
+
+        return new ArrayList<>(resultMap.values());
+    }
+
 
     private List<CoreDatasetTableFieldVO> getDsFieldInfo(Long datasetGroupId) {
         QCoreDatasetTableField qField = QCoreDatasetTableField.coreDatasetTableField;
