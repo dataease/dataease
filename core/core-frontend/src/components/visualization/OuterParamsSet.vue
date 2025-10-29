@@ -334,7 +334,7 @@ import edit from '@/assets/svg/icon_rename_outlined.svg'
 import icon_more_vertical_outlined from '@/assets/svg/icon_more-vertical_outlined.svg'
 import filterParams from '@/assets/svg/filter-params.svg'
 import icon_dataset from '@/assets/svg/icon_dataset.svg'
-import { ref, reactive, computed, nextTick } from 'vue'
+import { ref, reactive, nextTick } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { ElCol, ElIcon, ElInput, ElMessage } from 'element-plus-secondary'
@@ -472,10 +472,6 @@ const validateArgs = (val, id) => {
   }
 }
 
-const viewSelectedField = computed(() =>
-  state.outerParamsInfo?.targetViewInfoList?.map(targetViewInfo => targetViewInfo.targetViewId)
-)
-
 const closeEdit = params => {
   if (!params.paramName || params.paramName.length < 2 || params.paramName.length > 25) {
     ElMessage({
@@ -499,18 +495,6 @@ const outerParamsOperation = (cmd, node, data) => {
   }
 }
 
-const fieldIdDisabledCheck = targetViewInfo => {
-  return (
-    state.viewIdFieldArrayMap[targetViewInfo.targetViewId] &&
-    state.viewIdFieldArrayMap[targetViewInfo.targetViewId].length === 1 &&
-    state.viewIdFieldArrayMap[targetViewInfo.targetViewId][0].id === 'empty'
-  )
-}
-
-const getFieldArray = id => {
-  return state.viewIdFieldArrayMap[id]
-}
-
 const initParams = async () => {
   state.baseFilterInfo = []
   state.baseDatasetInfo = []
@@ -519,13 +503,13 @@ const initParams = async () => {
     if (componentItem.component === 'VQuery') {
       state.baseFilterInfo.push(componentItem)
     } else if (componentItem.component === 'Group') {
-      componentItem.propValue?.forEach(groupItem => {
+      componentItem.propValue.forEach(groupItem => {
         if (groupItem.component === 'VQuery') {
           state.baseFilterInfo.push(groupItem)
         }
       })
     } else if (componentItem.component === 'DeTabs') {
-      componentItem.propValue?.forEach(tabItem => {
+      componentItem.propValue.forEach(tabItem => {
         tabItem.componentData?.forEach(tabComponent => {
           if (tabComponent.component === 'VQuery') {
             state.baseFilterInfo.push(tabComponent)
@@ -722,7 +706,7 @@ const getPanelViewList = dvId => {
     // 增加过滤组件匹配
     componentData.value.forEach(componentItem => {
       if (componentItem.component === 'VQuery') {
-        componentItem.propValue?.forEach(filterItem => {
+        componentItem.propValue.forEach(filterItem => {
           state.currentLinkPanelViewArray.push({
             id: filterItem.id,
             type: 'filter',
@@ -736,28 +720,6 @@ const getPanelViewList = dvId => {
       }
     })
   })
-}
-
-const addOuterParamsField = () => {
-  state.outerParamsInfo.targetViewInfoList.push({
-    targetViewId: '',
-    targetFieldId: ''
-  })
-}
-const deleteOuterParamsField = index => {
-  state.outerParamsInfo.targetViewInfoList.splice(index, 1)
-}
-
-const viewInfoOnChange = targetViewInfo => {
-  if (
-    state.viewIdFieldArrayMap[targetViewInfo.targetViewId] &&
-    state.viewIdFieldArrayMap[targetViewInfo.targetViewId].length === 1 &&
-    state.viewIdFieldArrayMap[targetViewInfo.targetViewId][0].id === 'empty'
-  ) {
-    targetViewInfo.targetFieldId = 'empty'
-  } else {
-    targetViewInfo.targetFieldId = null
-  }
 }
 
 const initSelected = data => {

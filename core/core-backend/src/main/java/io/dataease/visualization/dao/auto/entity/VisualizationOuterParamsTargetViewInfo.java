@@ -16,7 +16,6 @@ import org.hibernate.annotations.Comment;
 @Table(name = "visualization_outer_params_target_view_info")
 public class VisualizationOuterParamsTargetViewInfo {
     @Id
-    @Size(max = 50)
     @Comment("主键")
     @Column(name = "target_id", nullable = false)
     private Long targetId;
@@ -43,9 +42,8 @@ public class VisualizationOuterParamsTargetViewInfo {
     @Column(name = "copy_id", length = 50)
     private String copyId;
 
-    @Size(max = 50)
     @Comment("联动数据集id/联动过滤组件id")
-    @Column(name = "target_ds_id", length = 50)
-    private String targetDsId;
+    @Column(name = "target_ds_id")
+    private Long targetDsId;
 
 }

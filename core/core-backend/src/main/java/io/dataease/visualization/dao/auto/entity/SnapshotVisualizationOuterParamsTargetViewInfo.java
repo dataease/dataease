@@ -41,9 +41,8 @@ public class SnapshotVisualizationOuterParamsTargetViewInfo {
     @Column(name = "copy_id", length = 50)
     private String copyId;
 
-    @Size(max = 50)
     @Comment("联动数据集id/联动过滤组件id")
-    @Column(name = "target_ds_id", length = 50)
-    private String targetDsId;
+    @Column(name = "target_ds_id")
+    private Long targetDsId;
 
 }
