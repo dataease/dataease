@@ -2135,7 +2135,6 @@ class CustomMergedCell extends MergedCell {
   }
 
   drawTextShape(): void {
-    console.log(this.meta.fieldValue)
     if (this.meta.deFieldType === 7) {
       drawImage.apply(this)
     } else {
