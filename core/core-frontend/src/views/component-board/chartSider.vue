@@ -548,7 +548,7 @@ onBeforeUnmount(() => {
     <chart-view-group
       class="chart-view"
       :themes="themes"
-      :type="view.type"
+      :chart-type="view.type"
       @on-type-change="onTypeChange"
     ></chart-view-group>
     <el-tabs v-model="tabActive" class="tab-header"  :class="{ dark: themes === 'dark' }" >

@@ -18,6 +18,10 @@ const props = defineProps({
     type: String,
     default: 'dv'
   },
+  chartType: {
+    type: String,
+    default: 'quota'
+  },
   element: {
     type: Object,
     default() {
@@ -146,6 +150,7 @@ const loadPluginCategory = data => {
           <div
             v-on:click="newComponent(chartInfo.render, chartInfo.value)"
             class="item-top"
+            :class="{active: chartInfo.value === chartType}"
             draggable="true"
             :data-id="'UserView&' + chartInfo.value"
           >
@@ -219,7 +224,7 @@ const loadPluginCategory = data => {
     justify-content: center;
     background-color: #f5f6f7;
     border: 1px solid #e4e4e4;
-    &:hover {
+    &:hover, &.active {
       border: 1px solid var(--ed-color-primary);
     }
   }

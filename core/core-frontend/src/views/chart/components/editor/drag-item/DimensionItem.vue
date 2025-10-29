@@ -301,17 +301,12 @@ onMounted(() => {
         <el-icon v-if="showHideIcon" style="margin-left: 4px">
           <Icon><icon_invisible_outlined class="svg-icon inner-class" /></Icon>
         </el-icon>
-        <el-tooltip :effect="toolTip" placement="top">
-          <template #content>
-            <span>{{ t('chart.delete') }}</span>
-          </template>
-          <el-icon class="child remove-icon">
-            <Icon
-              ><icon_deleteTrash_outlined @click="removeItem" class="svg-icon inner-class"
-            /></Icon>
-          </el-icon>
-        </el-tooltip>
-        <el-icon class="child" style="position: absolute; top: 7px; right: 10px; cursor: pointer">
+        <el-icon class="child remove-icon">
+          <Icon
+            ><icon_deleteTrash_outlined @click="removeItem" class="svg-icon inner-class"
+          /></Icon>
+        </el-icon>
+        <el-icon class="child arrow_down-icon" style="position: absolute; top: 7px; left: 8px; cursor: pointer">
           <Icon name="icon_down_outlined-1"><icon_down_outlined1 class="svg-icon" /></Icon>
         </el-icon>
       </el-tag>
@@ -870,7 +865,7 @@ span {
 .remove-icon {
   position: absolute;
   top: 7px;
-  right: 24px;
+  right: 8px;
   cursor: pointer;
   .inner-class {
     font-size: 14px;
@@ -878,6 +873,7 @@ span {
 }
 
 .father {
+  padding-left: 24px;
   &.dark_icon-right {
     .child {
       color: #a6a6a6;

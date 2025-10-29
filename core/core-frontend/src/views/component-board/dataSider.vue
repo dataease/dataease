@@ -15,6 +15,7 @@ import {
 // ===== 第三方库导入 =====
 import { storeToRefs } from 'pinia'
 import { cloneDeep } from 'lodash-es'
+import draggable from 'vuedraggable'
 
 // ===== 组件导入 =====
 import DatasetSelect from '@/views/chart/components/editor/dataset-select/DatasetSelect.vue'
@@ -328,6 +329,10 @@ const singleDragEnd = () => {
   activeQuota.value = []
   dragEnd()
 }
+const onRemove = () => {
+  activeDimension.value = []
+  activeQuota.value = []
+}
 
 
 watch(
@@ -415,51 +420,60 @@ onBeforeUnmount(() => {
           <div class="section-header">{{ t('chart.dimension') }}</div>
           <div class="field-list-container">
             <div class="field-list">
-              <div
-                v-for="element in dimensionData"
-                :key="element.id"
-                :draggable="true"
-                class="field-item dimension-item"
-                :class="{ 'field-item-dark': themes === 'dark' }"
-                @click.ctrl="setActiveCtrl(element)"
-                @click.meta="setActiveCtrl(element)"
-                @click.exact="setActive(element)"
-                @click.shift="setActiveShift(element)"
-                @dragstart="$event => singleDragStartD($event, element, 'dimension')"
-                @dragend="singleDragEnd"
+              <draggable
+                :list="dimensionData"
+                item-key="id"
+                :group="{name: 'drag', pull: 'clone' }"
+                :sort="false"
+                @remove="onRemove"
               >
-                <el-tooltip placement="right" :offset="10" :hide-after="0" :enterable="false">
-                  <template #content>
-                    <div>显示名称：{{ element.originName }}</div>
-                    <div>字段名称：{{ element.name }}</div>
-                    <div>表达式：{{ element.name }}</div>
-                    <div>描述：{{ element.name }}</div>
-                  </template>
-                  <div class="drag-item">
-                    <div
-                      class="items flex-align-center"
-                      :class="[
-                        'item-dimension--' + themes,
-                        isDraggingItem && 'is-dragging-item',
-                        activeDimension.map(itx => itx.id).includes(element.id) && 'active'
-                      ]"
-                      :draggable="true"
-                      @dragstart="dragStartD"
-                      @dragend="dragEnd">
-                      <el-icon class="field-icon dimension-icon">
-                        <Icon>
-                          <component
-                            class="svg-icon"
-                            :class="`field-icon-${fieldType[[2, 3].includes(element.deType) ? 2 : 0]}`"
-                            :is="getIconName(element.deType, element.extField)"
-                          ></component>
-                        </Icon>
-                      </el-icon>
-                      <span class="field-name" :title="element.name">{{ element.name }}</span>
+              <template #item="{ element }">
+                <div
+                  :key="element.id"
+                  :draggable="true"
+                  class="field-item dimension-item"
+                  :class="{ 'field-item-dark': themes === 'dark' }"
+                  @click.ctrl="setActiveCtrl(element)"
+                  @click.meta="setActiveCtrl(element)"
+                  @click.exact="setActive(element)"
+                  @click.shift="setActiveShift(element)"
+                  @dragstart="$event => singleDragStartD($event, element, 'dimension')"
+                  @dragend="singleDragEnd"
+                >
+                  <el-tooltip placement="right" :offset="10" :hide-after="0" :enterable="false">
+                    <template #content>
+                      <div>显示名称：{{ element.originName }}</div>
+                      <div>字段名称：{{ element.name }}</div>
+                      <div>表达式：{{ element.name }}</div>
+                      <div>描述：{{ element.name }}</div>
+                    </template>
+                    <div class="drag-item">
+                      <div
+                        class="items flex-align-center"
+                        :class="[
+                          'item-dimension--' + themes,
+                          isDraggingItem && 'is-dragging-item',
+                          activeDimension.map(itx => itx.id).includes(element.id) && 'active'
+                        ]"
+                        :draggable="true"
+                        @dragstart="dragStartD"
+                        @dragend="dragEnd">
+                        <el-icon class="field-icon dimension-icon">
+                          <Icon>
+                            <component
+                              class="svg-icon"
+                              :class="`field-icon-${fieldType[[2, 3].includes(element.deType) ? 2 : 0]}`"
+                              :is="getIconName(element.deType, element.extField)"
+                            ></component>
+                          </Icon>
+                        </el-icon>
+                        <span class="field-name" :title="element.name">{{ element.name }}</span>
+                      </div>
                     </div>
-                  </div>
-                </el-tooltip>
-              </div>
+                  </el-tooltip>
+                </div>
+              </template>
+              </draggable>
             </div>
           </div>
         </div>
@@ -469,40 +483,49 @@ onBeforeUnmount(() => {
           <div class="section-header">{{ t('chart.quota') }}</div>
           <div class="field-list-container">
             <div class="field-list">
-              <div
-                v-for="element in quotaData"
-                :key="element.id"
-                :draggable="true"
-                class="field-item metric-item"
-                :class="{ 'field-item-dark': themes === 'dark' }"
-                @click.ctrl="setActiveCtrl(element, 'quota')"
-                @click.meta="setActiveCtrl(element, 'quota')"
-                @click.exact="setActive(element, 'quota')"
-                @click.shift="setActiveShift(element, 'quota')"
-                @dragstart="$event => singleDragStart($event, element, 'quota')"
-                @dragend="singleDragEnd"
+              <draggable
+                :list="quotaData"
+                item-key="id"
+                :group="{name: 'drag', pull: 'clone' }"
+                :sort="false"
+                @remove="onRemove"
               >
-                <div class="drag-item">
+                <template #item="{ element }">
                   <div
-                    class="items flex-align-center"
-                    :class="[
-                      'item-dimension--' + themes,
-                      isDraggingItem && 'is-dragging-item',
-                      activeQuota.map(itx => itx.id).includes(element.id) && 'active'
-                    ]">
-                    <el-icon class="field-icon metric-icon">
-                      <Icon>
-                        <component
-                          class="svg-icon"
-                          :class="`field-icon-${fieldType[element.deType]}`"
-                          :is="getIconName(element.deType, element.extField, true)"
-                        ></component>
-                      </Icon>
-                    </el-icon>
-                    <span class="field-name" :title="element.name">{{ element.name }}</span>
+                    :key="element.id"
+                    :draggable="true"
+                    class="field-item metric-item"
+                    :class="{ 'field-item-dark': themes === 'dark' }"
+                    @click.ctrl="setActiveCtrl(element, 'quota')"
+                    @click.meta="setActiveCtrl(element, 'quota')"
+                    @click.exact="setActive(element, 'quota')"
+                    @click.shift="setActiveShift(element, 'quota')"
+                    @dragstart="$event => singleDragStart($event, element, 'quota')"
+                    @dragend="singleDragEnd"
+                  >
+                    <div class="drag-item">
+                      <div
+                        class="items flex-align-center"
+                        :class="[
+                          'item-dimension--' + themes,
+                          isDraggingItem && 'is-dragging-item',
+                          activeQuota.map(itx => itx.id).includes(element.id) && 'active'
+                        ]">
+                        <el-icon class="field-icon metric-icon">
+                          <Icon>
+                            <component
+                              class="svg-icon"
+                              :class="`field-icon-${fieldType[element.deType]}`"
+                              :is="getIconName(element.deType, element.extField, true)"
+                            ></component>
+                          </Icon>
+                        </el-icon>
+                        <span class="field-name" :title="element.name">{{ element.name }}</span>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
+                </template>
+              </draggable>
             </div>
           </div>
         </div>
@@ -547,7 +570,6 @@ onBeforeUnmount(() => {
     padding: 10px 10px 0 10px;
   }
   .field-sections-container{
-    // padding: 0 10px;
     overflow: auto;
     font-size: 14px;
   }
