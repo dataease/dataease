@@ -7,7 +7,7 @@ import dvDelete from '@/assets/svg/dv-delete.svg'
 import dvMove from '@/assets/svg/dv-move.svg'
 import dvCancelPublish from '@/assets/svg/icon_undo_outlined.svg'
 import { treeDraggbleChart } from '@/utils/treeDraggbleChart'
-import { debounce } from 'lodash-es'
+import { throttle } from 'lodash-es'
 import dvRename from '@/assets/svg/dv-rename.svg'
 import dvDashboardSpine from '@/assets/svg/dv-dashboard-spine.svg'
 import dvDashboardSpineDisabled from '@/assets/svg/dv-dashboard-spine-disabled.svg'
@@ -622,7 +622,7 @@ const sortTypeChange = sortType => {
   state.curSortType = sortType
 }
 
-const proxyAllowDrop = debounce((arg1, arg2) => {
+const proxyAllowDrop = throttle((arg1, arg2) => {
   const flagArray = ['dashboard', 'dataV', 'dataset', 'datasource']
   const flag = flagArray.findIndex(item => item === curCanvasType.value)
   if (flag < 0 || !isFreeFolder(arg2, flag + 1)) {

@@ -5,7 +5,7 @@ import icon_copy_filled from '@/assets/svg/icon_copy_filled.svg'
 import icon_dataset from '@/assets/svg/icon_dataset.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import icon_intoItem_outlined from '@/assets/svg/icon_into-item_outlined.svg'
-import { debounce } from 'lodash-es'
+import { throttle } from 'lodash-es'
 import icon_rename_outlined from '@/assets/svg/icon_rename_outlined.svg'
 import icon_warning_colorful_red from '@/assets/svg/icon_warning_colorful_red.svg'
 import dvFolder from '@/assets/svg/dv-folder.svg'
@@ -1042,7 +1042,7 @@ const loadInit = () => {
   }
 }
 
-const proxyAllowDrop = debounce((arg1, arg2) => {
+const proxyAllowDrop = throttle((arg1, arg2) => {
   const flagArray = ['dashboard', 'dataV', 'dataset', 'datasource']
   const flag = flagArray.findIndex(item => item === 'datasource')
   if (flag < 0 || !isFreeFolder(arg2, flag + 1)) {
