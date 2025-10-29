@@ -549,7 +549,7 @@ public class CoreVisualizationManage {
         QVisualizationOuterParams visualizationOuterParams = QVisualizationOuterParams.visualizationOuterParams;
         QVisualizationOuterParamsTargetViewInfo visualizationOuterParamsTargetViewInfo = QVisualizationOuterParamsTargetViewInfo.visualizationOuterParamsTargetViewInfo;
 
-        queryFactory.select(Projections.bean(QVisualizationOuterParamsTargetViewInfo.class,
+        queryFactory.select(Projections.bean(VisualizationOuterParamsTargetViewInfo.class,
                         visualizationOuterParamsTargetViewInfo.targetId,
                         visualizationOuterParamsTargetViewInfo.paramsInfoId,
                         visualizationOuterParamsTargetViewInfo.targetViewId,
