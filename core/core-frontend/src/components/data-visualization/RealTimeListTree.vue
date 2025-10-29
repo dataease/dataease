@@ -348,7 +348,7 @@ const iconMap = {
 const getIconName = item => {
   if (item.component === 'UserView') {
     const viewInfo = canvasViewInfo.value[item.id]
-    return iconMap[`${viewInfo.type}-origin`]
+    return iconMap[`${viewInfo?.type}-origin`]
   } else {
     return iconMap[item.icon]
   }

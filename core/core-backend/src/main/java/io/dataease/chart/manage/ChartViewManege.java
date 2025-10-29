@@ -616,6 +616,7 @@ public class ChartViewManege {
                         BeanUtils.copyBean(newView, source);
                         newView.setId(source.getId() + copyId);
                         newView.setSceneId(newDvId);
+                        newView.setCopyFrom(source.getId());
                         newView.setCopyId(copyId);
                         return newView;
                     })
@@ -633,6 +634,7 @@ public class ChartViewManege {
                         BeanUtils.copyBean(newView, source);
                         newView.setId(source.getId() + copyId);
                         newView.setSceneId(newDvId);
+                        newView.setCopyFrom(source.getId());
                         newView.setCopyId(copyId);
                         return newView;
                     })
