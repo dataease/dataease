@@ -572,6 +572,7 @@ export class StackLineMix extends G2ChartView {
           crosshairsLineDash: [4, 4],
           mount: createTooltipWrapper(chart),
           css: tooltipCss(tooltip),
+          enterable: false,
           render: (_, { title, items }) => {
             const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)
             if (tooltip.seriesTooltipFormatter?.length) {

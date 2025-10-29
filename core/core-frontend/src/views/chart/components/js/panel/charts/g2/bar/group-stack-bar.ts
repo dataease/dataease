@@ -80,12 +80,8 @@ export class GroupStackBar extends StackBar {
         tooltip: {
           mount: createTooltipWrapper(chart),
           css: tooltipCss(tooltip),
-          enterable: true,
+          enterable: false,
           shared: true,
-          bounding: {
-            x: 0,
-            y: 0
-          },
           position: 'top-right',
           render: (_, { title, items: originalItems }) => {
             const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)

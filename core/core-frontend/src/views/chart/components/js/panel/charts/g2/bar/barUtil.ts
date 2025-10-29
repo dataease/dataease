@@ -91,24 +91,42 @@ export function tooltipCss(tooltipAttr: DeepPartial<ChartTooltipAttr>) {
 export function listenerTooltipShow(newChart: G2Chart, chart: Chart) {
   newChart.on('tooltip:show', event => {
     const tooltipWrapper = document.getElementById(tooltipWrapperId(chart.container))
-    const allTooltips = tooltipWrapper?.querySelectorAll('.g2-tooltip')
-    if (!allTooltips) return
-    allTooltips.forEach(item => {
-      const tooltip = item as HTMLElement
-      const tooltipMouseleave = () => {
-        tooltip.style.visibility = 'hidden'
-      }
-      tooltip.removeEventListener('mouseleave', tooltipMouseleave)
-      tooltip.addEventListener('mouseleave', tooltipMouseleave)
-      // 调整 tooltip z-index 和位置
+    if (tooltipWrapper) {
       tooltipWrapper.style.zIndex = chart.container.indexOf('viewDialog') > -1 ? '9999' : '2000'
-      const clientY = event.client?.y
-      if (!clientY) return
-      if (clientY < tooltip.getBoundingClientRect().height) {
-        tooltip.style.top = '0px'
-      } else {
-        tooltip.style.top = `${clientY - tooltip.getBoundingClientRect().height}px`
-      }
-    })
+      const allTooltips = tooltipWrapper?.querySelectorAll('.g2-tooltip')
+      if (!allTooltips) return
+      allTooltips.forEach(item => {
+        const tooltip = item as HTMLElement
+        tooltip.style.visibility = 'visible'
+        if (event?.offsetY) {
+          const { top, height } = newChart
+            ?.getContext()
+            ?.canvas?.context?.contextService?.$container?.getBoundingClientRect()
+          if (top) {
+            tooltip.style.top = top + height / 2 - tooltip.getBoundingClientRect().height / 2 + 'px'
+          }
+        }
+        const clientY = event?.client?.y
+        if (!clientY) return
+        if (clientY < tooltip.getBoundingClientRect().height) {
+          tooltip.style.top = '0px'
+        } else {
+          tooltip.style.top = `${clientY - tooltip.getBoundingClientRect().height - 20}px`
+        }
+        const clientX = event.client?.x
+        const targetDiv =
+          document.getElementById('edit-canvas-main') ||
+          document.getElementById('dv-main-center') ||
+          document.getElementById('preview-canvas-main')
+        if (!targetDiv || clientX == null) return
+
+        const dvRight = targetDiv.getBoundingClientRect().right
+        const tooltipWidth = tooltip.getBoundingClientRect().width
+        const left = clientX + 20
+
+        tooltip.style.left =
+          left + tooltipWidth > dvRight ? `${dvRight - tooltipWidth}px` : `${left}px`
+      })
+    }
   })
 }

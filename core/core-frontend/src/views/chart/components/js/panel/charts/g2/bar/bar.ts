@@ -217,12 +217,8 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
         tooltip: {
           mount: createTooltipWrapper(chart),
           css: tooltipCss(tooltipAttr),
-          enterable: true,
+          enterable: false,
           shared: true,
-          bounding: {
-            x: 0,
-            y: 0
-          },
           position: 'top-right',
           render: (_, { title, items: originalItems }) => {
             const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)

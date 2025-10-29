@@ -31,9 +31,13 @@ class G2TooltipCarousel {
   private finalExtraWait: number
   private index: number
   private isPaused: boolean
+  /**
+   * 图表与视口可见性观察者
+   * @private
+   */
   private intersectionObserver: IntersectionObserver
   private chartElement: HTMLElement
-  private timers = { interval: null, carousel: null, nextItem: null }
+  private timers = { interval: null, carousel: null, nextItem: null, rectTimer: null }
   private isExecuting: boolean
   private isViewEnlarged: boolean
   private instanceId: number
@@ -42,20 +46,21 @@ class G2TooltipCarousel {
   // 事件处理函数引用
   private handleMouseEnter: EventListener
   private handleMouseLeave: EventListener
-  private handleMouseWheel: EventListener
+  // 图表所在页面可见性变化处理函数引用
   private handleVisibility: EventListener
 
   /**
    * 构造函数，初始化轮播实例
    */
   constructor(newChart: any, chart: any, data: any[]) {
+    listenerTooltipShow(newChart, chart)
     // 重新创建实例前销毁已有实例
     G2TooltipCarousel.destroyByContainer(chart.container)
     this.newChart = newChart
     this.chart = chart
     const { isLine, lineEncodedX, isMix, mixEncodedX } = this.specialChartTypes()
     if (isLine && lineEncodedX) {
-      this.data = data
+      this.data = this.groupByField(data, { x: lineEncodedX })
     } else if (isMix && mixEncodedX) {
       this.data = this.groupByField(data, { x: mixEncodedX })
     } else {
@@ -72,7 +77,6 @@ class G2TooltipCarousel {
     // 事件处理函数绑定
     this.handleMouseEnter = this.pause.bind(this)
     this.handleMouseLeave = this.mouseLeave.bind(this)
-    this.handleMouseWheel = this.mouseWheel.bind(this)
     this.handleVisibility = this.handleVisibilityChange.bind(this)
     const { tooltip } = parseJson(this.chart.customAttr)
     // 如果不显示tooltip，销毁实例
@@ -86,24 +90,34 @@ class G2TooltipCarousel {
       G2TooltipCarousel.destroyByContainer(chart.container)
       return null
     }
-    // 图表渲染后显示第一个tooltip
-    this.newChart.on('afterrender', () => {
-      listenerTooltipShow(this.newChart, chart)
-      if (this.chart.dashboardHidden) return
-      this.showTooltipAtData(this.buildTooltipData(), this.data?.[0] || data?.[0] || [])
-    })
+    this.chartElement = this.newChart.getContainer()
+    if (!this.chartElement) {
+      return null
+    }
     this.normalInterval = carousel?.stayTime * 1000
     this.finalExtraWait = carousel?.intervalTime * 1000
-    this.chartElement = this.newChart.getContainer()
     this.isViewEnlarged = this.chart.container.indexOf('viewDialog') > -1
+    this.checkStopOnViewChange()
+    this.init()
+    G2TooltipCarousel.instanceCache.set(chart.container, this)
+  }
+
+  /**
+   * 检查是否需要停止轮播（如仪表盘隐藏或有放大视图时）
+   * @private
+   */
+  private checkStopOnViewChange() {
+    const containerPrefix = this.chart.container.split(this.chart.id)?.[0] || ''
     G2TooltipCarousel.instanceCache.forEach(instance => {
-      // 如果有仪表盘隐藏或者当前有放大视图时，停止轮播
-      if (instance.chart.dashboardHidden || this.isViewEnlarged) {
+      // 如果有仪表盘隐藏或者当前有放大视图、图表容器ID前缀与其他都不一样，停止轮播
+      if (
+        instance.chart.dashboardHidden ||
+        this.isViewEnlarged ||
+        !instance.chart.container.startsWith(containerPrefix)
+      ) {
         G2TooltipCarousel.getInstanceByContainerId(instance.chart.container)?.stop()
       }
     })
-    this.init()
-    G2TooltipCarousel.instanceCache.set(chart.container, this)
   }
 
   /**
@@ -169,34 +183,36 @@ class G2TooltipCarousel {
   }
 
   /**
-   * 添加鼠标和页面可见性事件监听
+   * 页面可见性事件监听
    * 绑定时用同一函数引用，防止内存泄漏
    */
   private addEventListeners() {
+    document.addEventListener('visibilitychange', this.handleVisibility)
     this.chartElement.addEventListener('mouseenter', this.handleMouseEnter)
     this.chartElement.addEventListener('mouseleave', this.handleMouseLeave)
-    const previewCanvasMain = document.getElementById('preview-canvas-main')
-    const editCanvasMain = document.getElementById('edit-canvas-main')
-    const mobileComList = document.getElementById('mobile-com-list')
-    const wheelTargetElements = [previewCanvasMain, editCanvasMain, mobileComList].filter(
-      el => el !== null
-    )
-    if (wheelTargetElements && wheelTargetElements.length > 0) {
-      wheelTargetElements[0].addEventListener('mousewheel', this.mouseWheel)
-      wheelTargetElements[0].addEventListener('touchmove', this.touchMove.bind(this), {
-        passive: true
-      })
-    }
-    document.addEventListener('visibilitychange', this.handleVisibility)
     if (!this.intersectionObserver) {
-      // threshold 0.7 当可见比例跨过 0.7 时会触发回调
       this.intersectionObserver = new IntersectionObserver(this.handleIntersection.bind(this), {
         root: null,
-        threshold: [0, 0.5, 0.7, 1]
+        threshold: [0, 0.3, 0.5, 0.7]
       })
     }
     this.intersectionObserver?.observe(this.newChart.getContainer())
+    let lastRect = this.newChart.getContainer().getBoundingClientRect()
+    this.timers.rectTimer = setInterval(() => {
+      const newRect = this.newChart.getContainer().getBoundingClientRect()
+      if (newRect.top !== lastRect.top || newRect.left !== lastRect.left) {
+        this.restart()
+        lastRect = newRect
+      }
+    }, 200)
   }
+
+  private restart = this.debounce(() => {
+    G2TooltipCarousel.instanceCache?.forEach(instance => {
+      instance.stop()
+      instance.start()
+    })
+  }, 100)
 
   /**
    * 移除事件监听
@@ -205,39 +221,7 @@ class G2TooltipCarousel {
   private removeEventListeners() {
     this.chartElement.removeEventListener('mouseenter', this.handleMouseEnter)
     this.chartElement.removeEventListener('mouseleave', this.handleMouseLeave)
-    const previewCanvasMain = document.getElementById('preview-canvas-main')
-    const editCanvasMain = document.getElementById('edit-canvas-main')
-    const mobileComList = document.getElementById('mobile-com-list')
-    const wheelTargetElements = [previewCanvasMain, editCanvasMain, mobileComList].filter(
-      el => el !== null
-    )
-    if (wheelTargetElements && wheelTargetElements.length > 0) {
-      wheelTargetElements[0].removeEventListener('mousewheel', this.mouseWheel)
-      wheelTargetElements[0].removeEventListener('touchmove', this.touchMove.bind(this), {
-        passive: true
-      })
-    }
     document.removeEventListener('visibilitychange', this.handleVisibility)
-  }
-
-  /**
-   * 定义 mousewheel 事件处理函数（PC端）
-   * @private
-   */
-  private mouseWheel = this.debounce(() => {
-    G2TooltipCarousel.instanceCache?.forEach(instance => {
-      instance.pause(true)
-      instance.resume(true)
-    })
-  }, 0)
-
-  /**
-   * 定义 touchmove 事件处理函数（移动端）
-   * @param event
-   * @private
-   */
-  private touchMove(event: TouchEvent) {
-    this.mouseWheel(event)
   }
 
   /**
@@ -257,9 +241,8 @@ class G2TooltipCarousel {
    * IntersectionObserver回调，处理元素进入/离开视口
    * 只有可见区域大于70%时才恢复轮播，否则暂停
    */
-  private handleIntersection(entries) {
-    const entry = entries[0]
-    if (entry.intersectionRatio < 0.7 || this.chart.dashboardHidden) {
+  private handleIntersection(_entries) {
+    if (!this.isActuallyVisible(this.newChart.getContainer()) || this.chart.dashboardHidden) {
       this.hideTooltipAtData()
       this.chartIsVisible = false
       this.pause(true)
@@ -269,10 +252,28 @@ class G2TooltipCarousel {
     }
   }
 
+  private isActuallyVisible(el: HTMLElement): boolean {
+    if (!el) return false
+    // 检查可见比例
+    const rect = el.getBoundingClientRect()
+    let visibleHeight = Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 60)
+    let visibleWidth = Math.min(rect.right, window.innerWidth) - Math.max(rect.left, 0)
+    const dvMainCenter = document.getElementById('dv-main-center')
+    if (dvMainCenter) {
+      const dvRect = dvMainCenter.getBoundingClientRect()
+      visibleHeight = Math.min(rect.bottom, dvRect.bottom) - Math.max(rect.top, dvRect.top)
+      visibleWidth = Math.min(rect.right, dvRect.right) - Math.max(rect.left, dvRect.left)
+    }
+    const percentHeight = visibleHeight / rect.height
+    const percentWidth = visibleWidth / rect.width
+    return percentHeight > 0.7 && percentWidth > 0.7
+  }
+
   /**
    * 页面可见性变化处理
    */
   private handleVisibilityChange() {
+    this.checkStopOnViewChange()
     if (document.hidden) {
       this.pause(true)
       return
@@ -354,7 +355,7 @@ class G2TooltipCarousel {
           this.timers.nextItem = setTimeout(() => {
             this.index += 1
             this.next()
-          }, 20)
+          }, 0)
         }
       }, this.normalInterval)
     } finally {
@@ -423,11 +424,43 @@ class G2TooltipCarousel {
    * @param originalData
    */
   showTooltipAtData(tooltipData, originalData?: any) {
-    this.newChart.emit('tooltip:show', tooltipData)
-    if (this.isMixChart() && originalData) {
-      this.newChart.emit('element:select', { data: { data: [originalData] } })
-    } else {
-      this.newChart.emit('element:select', { data: { data: [tooltipData.data.data] } })
+    const isMix = this.isMixChart()
+    const isLineOrMix = this.isLineChart() || isMix
+    this.newChart.emit('element:select', {
+      data: { data: [isMix && originalData ? originalData : tooltipData.data.data] }
+    })
+    const { offsetX, offsetY } = this.getTooltipOffsetX(tooltipData)
+    this.newChart.emit('tooltip:show', {
+      ...tooltipData,
+      ...(offsetX && isLineOrMix && { offsetX }),
+      ...(offsetY && { offsetY })
+    })
+  }
+
+  /**
+   * 计算 tooltip 的 X、Y 轴偏移位置
+   * @param tooltipData
+   */
+  getTooltipOffsetX(tooltipData) {
+    try {
+      const ctx = this.newChart.getContext()
+      const root = ctx.canvas.document.getElementsByClassName('plot')[0]
+      const { center } = root.getRenderBounds()
+      const scaleX = (this.newChart.getScale() || ctx.views[0].scale).x
+      const x =
+        tooltipData.data.data.x ||
+        tooltipData.data.data[this.newChart?.children?.[0]?.value?.encode?.x]
+      const [x2] = (this.newChart.getView()?.coordinate || ctx.views[0].coordinate).map([
+        scaleX.map(x),
+        0.5
+      ])
+      const { insetLeft, marginLeft, paddingLeft } = root.__data__
+      return {
+        offsetX: insetLeft + marginLeft + paddingLeft + x2,
+        offsetY: center[1]
+      }
+    } catch (e) {
+      console.error('Get Tooltip offsetX fail:', e)
     }
   }
 
@@ -486,6 +519,11 @@ class G2TooltipCarousel {
       this.next()
     }
   }
+
+  /**
+   * 鼠标移出事件处理
+   * @param ev
+   */
   mouseLeave(ev) {
     const el = this.chartElement
     setTimeout(() => {
@@ -514,6 +552,10 @@ class G2TooltipCarousel {
     this.stop()
     this.removeEventListeners()
     this.intersectionObserver?.disconnect()
+    if (this.timers.rectTimer) {
+      clearTimeout(this.timers.rectTimer)
+      this.timers.rectTimer = null
+    }
     G2TooltipCarousel.instanceCache.delete(this.chart.container)
   }
 
