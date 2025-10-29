@@ -19,6 +19,8 @@ public class VisualizationOuterParamsInfoDTO extends VisualizationOuterParamsInf
     //仪表板外部参数信息 dvId#paramName
     private String sourceInfo;
 
+    private String targetInfo;
+
     //目标联动参数 targetViewId#targetFieldId
     private List<String> targetInfoList;
 
