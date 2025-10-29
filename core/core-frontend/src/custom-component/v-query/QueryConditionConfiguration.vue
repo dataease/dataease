@@ -1256,8 +1256,15 @@ const validate = () => {
       ele.defaultValueCheck &&
       ((Array.isArray(ele.defaultValue) && !ele.defaultValue.length) || !ele.defaultValue)
     ) {
-      ElMessage.error(t('report.filter.title'))
-      return true
+      if (ele.optionValueSource !== 1) {
+        ElMessage.error(t('report.filter.title'))
+        return true
+      }
+
+      if (!ele.defaultValueFirstItem) {
+        ElMessage.error(t('report.filter.title'))
+        return true
+      }
     }
 
     if (ele.displayType === '9') {
@@ -2346,9 +2353,9 @@ const dsSelectProps = {
 }
 
 const dfs = arr => {
-  return arr.filter(ele => {
+  return (arr || []).filter(ele => {
     if (!!ele.children?.length && !ele.leaf) {
-      ele.children = dfs(ele.children)
+      ele.children = dfs(ele.children) || []
       return !!ele.children?.length
     }
     return ele.leaf
