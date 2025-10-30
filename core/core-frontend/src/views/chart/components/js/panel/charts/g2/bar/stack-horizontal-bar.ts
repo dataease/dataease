@@ -8,6 +8,7 @@ import {
 import { useI18n } from '@/hooks/web/useI18n'
 import {
   TOOLTIP_ITEM_TPL,
+  toLinearGradient,
   TOOLTIP_TITLE_TPL
 } from '@/views/chart/components/js/panel/common/common_antv'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
@@ -103,7 +104,7 @@ export class HorizontalStackBar extends HorizontalBar {
             })
             const itemsHtml = result
               .map(item => {
-                const marker = item.color
+                const marker = toLinearGradient(item.color)
                 const label = item.name
                 const value = item.value
                 return TOOLTIP_ITEM_TPL.replace('{marker}', marker)
@@ -127,6 +128,7 @@ export class HorizontalStackBar extends HorizontalBar {
     return flow(
       this.configTheme,
       this.configBasicStyle,
+      this.configColor,
       this.configLabel,
       this.configTooltip,
       this.configLegend,

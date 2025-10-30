@@ -101,6 +101,13 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
       return
     }
     const data = cloneDeep(drawOptions.chart.data?.data)
+    if (this.name === 'bar-group') {
+      if (!chart.xAxisExt[0]) {
+        data.forEach(item => {
+          item[this.intervalOptions.encode.color] = ' '
+        })
+      }
+    }
     const initOptions: ViewSpec = {
       type: 'view',
       data: data,
@@ -298,7 +305,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
       scale.x.paddingInner = -0.21
     }
     if (this.name === 'bar-group') {
-      scale.x.paddingInner = -0.1
+      scale.x.paddingInner = -0.2
     }
     const basicStyle = parseJson(chart.customAttr).basicStyle
     const { radiusColumnBar, columnBarRightAngleRadius } = basicStyle

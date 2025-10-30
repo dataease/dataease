@@ -3,7 +3,12 @@ import {
   BAR_EDITOR_PROPERTY,
   BAR_EDITOR_PROPERTY_INNER
 } from '@/views/chart/components/js/panel/charts/g2/bar/common'
-import { flow, parseJson, setUpGroupSeriesColor } from '@/views/chart/components/js/util'
+import {
+  flow,
+  hexColorToRGBA,
+  parseJson,
+  setUpGroupSeriesColor
+} from '@/views/chart/components/js/util'
 import { StackBar } from '@/views/chart/components/js/panel/charts/g2/bar/stack-bar'
 import { Chart as G2Column } from '@antv/g2'
 import { ViewSpec } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
@@ -11,6 +16,8 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { G2DrawOptions } from '@/views/chart/components/js/panel/types/impl/g2'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { addExtremumText } from '@/views/chart/components/js/extremumUitl'
+import { setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
+import { defaultsDeep } from 'lodash-es'
 
 const { t } = useI18n()
 /**
@@ -97,6 +104,53 @@ export class GroupBar extends StackBar {
 
   public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
     return setUpGroupSeriesColor(chart, data)
+  }
+
+  protected configColor(chart: Chart, options: ViewSpec): ViewSpec {
+    const { basicStyle } = parseJson(chart.customAttr)
+    const { seriesColor } = basicStyle
+    if (!seriesColor?.length) {
+      return options
+    }
+    const { xAxis, xAxisExt, yAxis } = chart
+    if (!xAxis?.length || !yAxis?.length) {
+      return options
+    }
+    const relations = []
+    if (xAxisExt?.length) {
+      seriesColor.forEach(item => {
+        let color = hexColorToRGBA(item.color, basicStyle.alpha)
+        if (basicStyle.gradient) {
+          color = setGradientColor(color, true, 270)
+        }
+        relations.push([item.id, color])
+      })
+    } else {
+      const colorMap = seriesColor.reduce((pre, next) => {
+        pre[next.id] = next.color
+        return pre
+      }, {})
+      yAxis.forEach(item => {
+        if (colorMap[item.id]) {
+          let color = hexColorToRGBA(colorMap[item.id], basicStyle.alpha)
+          if (basicStyle.gradient) {
+            color = setGradientColor(color, true, 270)
+          }
+          relations.push([' ', color])
+        }
+      })
+    }
+    if (relations.length) {
+      const scaleOptions = {
+        scale: {
+          color: {
+            relations
+          }
+        }
+      }
+      defaultsDeep(options, scaleOptions)
+    }
+    return options
   }
 
   protected setupOptions(chart: Chart, options: ViewSpec): ViewSpec {

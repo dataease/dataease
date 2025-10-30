@@ -18,6 +18,7 @@ import {
 import {
   handleChartDashboardHidden,
   setGradientColor,
+  toLinearGradient,
   TOOLTIP_ITEM_TPL,
   TOOLTIP_TITLE_TPL
 } from '../../../common/common_antv'
@@ -443,7 +444,7 @@ export class ColumnLineMix extends G2ChartView {
             })
             const itemsHtml = result
               .map(item => {
-                const marker = item.color
+                const marker = toLinearGradient(item.color)
                 const label = item.name
                 const value = item.value
                 return TOOLTIP_ITEM_TPL.replace('{marker}', marker)

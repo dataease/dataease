@@ -3,7 +3,12 @@ import {
   BAR_EDITOR_PROPERTY,
   BAR_EDITOR_PROPERTY_INNER
 } from '@/views/chart/components/js/panel/charts/g2/bar/common'
-import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
+import {
+  flow,
+  hexColorToRGBA,
+  parseJson,
+  setUpStackSeriesColor
+} from '@/views/chart/components/js/util'
 import { ViewSpec } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Bar } from '@/views/chart/components/js/panel/charts/g2/bar/bar'
@@ -11,6 +16,7 @@ import { getLineDash, setGradientColor } from '@/views/chart/components/js/panel
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { Chart } from '@antv/g2'
 import { DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'
+import { defaultsDeep } from 'lodash-es'
 
 const { t } = useI18n()
 /**
@@ -87,7 +93,11 @@ export class HorizontalBar extends Bar {
         columnWidthRatio
       }
     }
-    if (this.name === 'bar-stack-horizontal' || this.name === 'progress-bar') {
+    if (
+      this.name === 'bar-stack-horizontal' ||
+      this.name === 'progress-bar' ||
+      this.name === 'bar-range'
+    ) {
       children[0].scale.x = {
         type: 'band',
         paddingInner: 0.01
@@ -234,10 +244,62 @@ export class HorizontalBar extends Bar {
     return false
   }
 
+  public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
+    return setUpStackSeriesColor(chart, data)
+  }
+
+  protected configColor(chart: Chart, options: ViewSpec): ViewSpec {
+    const { basicStyle } = parseJson(chart.customAttr)
+    const { seriesColor } = basicStyle
+    if (!seriesColor?.length) {
+      return options
+    }
+    const { xAxis, yAxis, extStack } = chart
+    if (!xAxis?.length || !yAxis?.length) {
+      return options
+    }
+    const relations = []
+    if (extStack?.length) {
+      seriesColor.forEach(item => {
+        let color = hexColorToRGBA(item.color, basicStyle.alpha)
+        if (basicStyle.gradient) {
+          color = setGradientColor(color, true)
+        }
+        relations.push([item.id, color])
+      })
+    } else {
+      const colorMap = seriesColor.reduce((pre, next) => {
+        pre[next.id] = next.color
+        return pre
+      }, {})
+      yAxis.forEach(item => {
+        if (colorMap[item.id]) {
+          let color = hexColorToRGBA(colorMap[item.id], basicStyle.alpha)
+          if (basicStyle.gradient) {
+            color = setGradientColor(color, true)
+          }
+          relations.push([item.chartShowName ?? item.name, color])
+        }
+      })
+    }
+    if (relations.length) {
+      const scaleOptions = {
+        scale: {
+          color: {
+            relations
+          }
+        }
+      }
+      defaultsDeep(options, scaleOptions)
+    }
+    return options
+  }
+
   protected setupOptions(chart: Chart, options: ViewSpec): ViewSpec {
     return flow(
       this.configTheme,
       this.configBasicStyle,
+      this.configColor,
       this.configLabel,
       this.configTooltip,
       this.configLegend,

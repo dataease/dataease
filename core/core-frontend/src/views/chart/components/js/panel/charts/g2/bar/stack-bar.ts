@@ -2,7 +2,12 @@ import {
   BAR_EDITOR_PROPERTY,
   BAR_EDITOR_PROPERTY_INNER
 } from '@/views/chart/components/js/panel/charts/g2/bar/common'
-import { flow, parseJson, setUpStackSeriesColor } from '@/views/chart/components/js/util'
+import {
+  flow,
+  hexColorToRGBA,
+  parseJson,
+  setUpStackSeriesColor
+} from '@/views/chart/components/js/util'
 import { Bar } from '@/views/chart/components/js/panel/charts/g2/bar/bar'
 import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
 import { groupBy } from 'lodash'
@@ -13,10 +18,12 @@ import {
   ViewSpec
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 import {
+  setGradientColor,
+  toLinearGradient,
   TOOLTIP_ITEM_TPL,
   TOOLTIP_TITLE_TPL
 } from '@/views/chart/components/js/panel/common/common_antv'
-import { isEmpty } from 'lodash-es'
+import { defaultsDeep, isEmpty } from 'lodash-es'
 
 /**
  * 堆叠柱状图
@@ -136,7 +143,7 @@ export class StackBar extends Bar {
             })
             const itemsHtml = result
               .map(item => {
-                const marker = item.color
+                const marker = toLinearGradient(item.color)
                 const label = item.name
                 const value = item.value
                 return TOOLTIP_ITEM_TPL.replace('{marker}', marker)
@@ -192,6 +199,53 @@ export class StackBar extends Bar {
 
   public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
     return setUpStackSeriesColor(chart, data)
+  }
+
+  protected configColor(chart: Chart, options: ViewSpec): ViewSpec {
+    const { basicStyle } = parseJson(chart.customAttr)
+    const { seriesColor } = basicStyle
+    if (!seriesColor?.length) {
+      return options
+    }
+    const { xAxis, xAxisExt, yAxis, extStack } = chart
+    if (!xAxis?.length || !yAxis?.length) {
+      return options
+    }
+    const relations = []
+    if (xAxisExt?.length || extStack?.length) {
+      seriesColor.forEach(item => {
+        let color = hexColorToRGBA(item.color, basicStyle.alpha)
+        if (basicStyle.gradient) {
+          color = setGradientColor(color, true, 270)
+        }
+        relations.push([item.id, color])
+      })
+    } else {
+      const colorMap = seriesColor.reduce((pre, next) => {
+        pre[next.id] = next.color
+        return pre
+      }, {})
+      yAxis.forEach(item => {
+        if (colorMap[item.id]) {
+          let color = hexColorToRGBA(colorMap[item.id], basicStyle.alpha)
+          if (basicStyle.gradient) {
+            color = setGradientColor(color, true, 270)
+          }
+          relations.push([item.chartShowName ?? item.name, color])
+        }
+      })
+    }
+    if (relations.length) {
+      const scaleOptions = {
+        scale: {
+          color: {
+            relations
+          }
+        }
+      }
+      defaultsDeep(options, scaleOptions)
+    }
+    return options
   }
 
   protected setupOptions(chart: Chart, options: ViewSpec): ViewSpec {

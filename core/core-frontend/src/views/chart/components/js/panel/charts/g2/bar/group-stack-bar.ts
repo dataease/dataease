@@ -13,6 +13,7 @@ import {
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import {
   TOOLTIP_ITEM_TPL,
+  toLinearGradient,
   TOOLTIP_TITLE_TPL
 } from '@/views/chart/components/js/panel/common/common_antv'
 import { defaultsDeep, isEmpty } from 'lodash-es'
@@ -96,7 +97,7 @@ export class GroupStackBar extends StackBar {
             })
             const itemsHtml = result
               .map(item => {
-                const marker = item.color
+                const marker = toLinearGradient(item.color)
                 const label = item.name
                 const value = item.value
                 return TOOLTIP_ITEM_TPL.replace('{marker}', marker)

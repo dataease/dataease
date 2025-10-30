@@ -204,7 +204,7 @@ class G2TooltipCarousel {
         this.restart()
         lastRect = newRect
       }
-    }, 200)
+    }, 16)
   }
 
   private restart = this.debounce(() => {

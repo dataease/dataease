@@ -7,6 +7,7 @@ import {
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 import {
   TOOLTIP_ITEM_TPL,
+  toLinearGradient,
   TOOLTIP_TITLE_TPL
 } from '@/views/chart/components/js/panel/common/common_antv'
 import { isEmpty } from 'lodash-es'
@@ -105,7 +106,7 @@ export class PercentageStackBar extends HorizontalStackBar {
             })
             const itemsHtml = result
               .map(item => {
-                const marker = item.color
+                const marker = toLinearGradient(item.color)
                 const label = item.name
                 const value = item.value
                 return TOOLTIP_ITEM_TPL.replace('{marker}', marker)
@@ -129,6 +130,7 @@ export class PercentageStackBar extends HorizontalStackBar {
     return flow(
       this.configTheme,
       this.configBasicStyle,
+      this.configColor,
       this.configLabel,
       this.configTooltip,
       this.configLegend,

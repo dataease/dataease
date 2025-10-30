@@ -23,6 +23,7 @@ import { DEFAULT_YAXIS_STYLE } from '@/views/chart/components/editor/util/chart'
 import {
   handleChartDashboardHidden,
   setGradientColor,
+  toLinearGradient,
   TOOLTIP_ITEM_TPL,
   TOOLTIP_TITLE_TPL
 } from '../../../common/common_antv'
@@ -598,7 +599,7 @@ export class Area extends G2ChartView {
             })
             const itemsHtml = result
               .map(item => {
-                const marker = item.color
+                const marker = toLinearGradient(item.color)
                 const label = item.name
                 const value = item.value
                 return TOOLTIP_ITEM_TPL.replace('{marker}', marker)
@@ -840,7 +841,7 @@ export class StackArea extends Area {
             })
             const itemsHtml = result
               .map(item => {
-                const marker = item.color
+                const marker = toLinearGradient(item.color)
                 const label = item.name
                 const value = item.value
                 return TOOLTIP_ITEM_TPL.replace('{marker}', marker)

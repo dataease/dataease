@@ -7,10 +7,11 @@ import {
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 import { GroupStackBar } from '@/views/chart/components/js/panel/charts/g2/bar/group-stack-bar'
 import {
+  toLinearGradient,
   TOOLTIP_ITEM_TPL,
   TOOLTIP_TITLE_TPL
 } from '@/views/chart/components/js/panel/common/common_antv'
-import { defaultsDeep, isEmpty } from 'lodash-es'
+import { isEmpty } from 'lodash-es'
 
 /**
  * 百分比堆叠柱状图
@@ -113,7 +114,7 @@ export class PercentageStackBar extends GroupStackBar {
             })
             const itemsHtml = result
               .map(item => {
-                const marker = item.color
+                const marker = toLinearGradient(item.color)
                 const label = item.name
                 const value = item.value
                 return TOOLTIP_ITEM_TPL.replace('{marker}', marker)
