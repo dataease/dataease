@@ -19,7 +19,7 @@ export class PercentageStackBar extends HorizontalStackBar {
   propertyInner = {
     ...this['propertyInner'],
     'label-selector': ['color', 'fontSize', 'vPosition', 'reserveDecimalCount'],
-    'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'show', 'carousel']
+    'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'show']
   }
 
   protected configLabel(chart: Chart, options: ViewSpec): ViewSpec {
