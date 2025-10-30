@@ -16,14 +16,16 @@ import java.util.regex.Pattern;
 public class Oracle extends DatasourceConfiguration {
     private String driver = "oracle.jdbc.driver.OracleDriver";
     private String extraParams = "";
-    private List<String> getIllegalParameters = Arrays.asList(
-            // 原有参数（如RMI相关）
-            "java.naming.factory.initial", "java.naming.provider.url", "rmi",
-            // 新增：LDAP协议及相关危险参数
-            "ldap://", "ldaps://", "java.naming.factory.object", "java.naming.factory.state",
-            // 其他JDBC危险参数
-            "autoDeserialize", "connectionProperties", "initSQL", "dns", "file", "ftp"
-    );
+    private List<String> getOracleIllegalParameters() {
+        return Arrays.asList(
+                // 原有参数（如RMI相关）
+                "java.naming.factory.initial", "java.naming.provider.url", "rmi",
+                // 新增：LDAP协议及相关危险参数
+                "ldap://", "ldaps://", "java.naming.factory.object", "java.naming.factory.state",
+                // 其他JDBC危险参数
+                "autoDeserialize", "connectionProperties", "initSQL", "dns", "file", "ftp"
+        );
+    }
 
 
     public String getJdbc() {
@@ -31,7 +33,7 @@ public class Oracle extends DatasourceConfiguration {
             if (!getJdbcUrl().startsWith("jdbc:oracle")) {
                 DEException.throwException("Illegal jdbcUrl: " + getJdbcUrl());
             }
-            for (String illegalParameter : getIllegalParameters()) {
+            for (String illegalParameter : getOracleIllegalParameters()) {
                 if (getJdbcUrl().toLowerCase().contains(illegalParameter.toLowerCase())) {
                     DEException.throwException("Illegal jdbcUrl: " + illegalParameter);
                 }
