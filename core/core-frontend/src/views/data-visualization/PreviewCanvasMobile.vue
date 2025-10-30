@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { onMounted, onUnmounted, reactive } from 'vue'
+import { nextTick, onMounted, onUnmounted, reactive, ref } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import router from '@/router/mobile'
 import { initCanvasDataMobile, initCanvasData } from '@/utils/canvasUtils'
@@ -16,10 +16,15 @@ import { setTitle } from '@/utils/utils'
 import EmptyBackground from '../../components/empty-background/src/EmptyBackground.vue'
 import { filterEnumMapSync } from '@/utils/componentUtils'
 import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
+import { useEmitt } from '@/hooks/web/useEmitt'
+import { downloadCanvas2 } from '@/utils/imgUtils'
 
 const dvMainStore = dvMainStoreWithOut()
 const { t } = useI18n()
 const embeddedStore = useEmbedded()
+
+const previewCanvasContainer = ref(null)
+const downloadStatus = ref(false)
 const state = reactive({
   canvasDataPreview: null,
   canvasStylePreview: null,
@@ -41,6 +46,16 @@ const props = defineProps({
   },
   ticketArgs: propTypes.string.def(null)
 })
+
+const downloadH2 = type => {
+  downloadStatus.value = true
+  nextTick(() => {
+    const vueDom = previewCanvasContainer.value.querySelector('.canvas-container')
+    downloadCanvas2(type, vueDom, state.dvInfo.name, () => {
+      downloadStatus.value = false
+    })
+  })
+}
 
 const loadCanvasDataAsync = async (dvId, dvType) => {
   const jumpInfoParam = embeddedStore.jumpInfoParam || router.currentRoute.value.query.jumpInfoParam
@@ -173,13 +188,20 @@ onUnmounted(() => {
   window.removeEventListener('popstate', handlePopState)
 })
 
+useEmitt({
+  name: 'canvasDownload',
+  callback: function (type = 'img') {
+    downloadH2(type)
+  }
+})
+
 defineExpose({
   loadCanvasDataAsync
 })
 </script>
 
 <template>
-  <div class="content" v-if="state.initState">
+  <div class="content" v-if="state.initState" ref="previewCanvasContainer">
     <canvas-opt-bar
       canvas-id="canvas-main"
       :canvas-style-data="state.canvasStylePreview || {}"

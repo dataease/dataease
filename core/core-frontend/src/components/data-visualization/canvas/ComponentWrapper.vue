@@ -379,7 +379,7 @@ const onWrapperClick = e => {
           }
         } else {
           initOpenHandler(window.open(url, jumpType))
-          if (isMobile()) {
+          if (isDashboard() && isMobile()) {
             window.location.reload()
           }
         }
