@@ -350,6 +350,8 @@ const eventEnable = computed(
 const onWrapperClickCur = e => {
   // 指标卡为内部触发
   if (['indicator'].includes(config.value.innerType)) {
+    e.preventDefault()
+    e.stopPropagation()
     return
   }
   onWrapperClick(e)
