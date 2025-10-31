@@ -115,6 +115,11 @@ export function listenerTooltipShow(newChart: G2Chart, chart: Chart) {
     if (!allTooltips) return
     allTooltips.forEach(item => {
       const tooltip = item as HTMLElement
+      const tooltipMouseleave = () => {
+        tooltip.style.visibility = 'hidden'
+      }
+      tooltip.removeEventListener('mouseleave', tooltipMouseleave)
+      tooltip.addEventListener('mouseleave', tooltipMouseleave)
       const { height, right } = newChart
         ?.getContext()
         ?.canvas?.context?.contextService?.$container?.getBoundingClientRect()
