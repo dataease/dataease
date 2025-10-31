@@ -348,6 +348,11 @@ const handleFieldIdChange = (val: EnumValue) => {
         }
       })
       customSort()
+      if (!res?.length) {
+        options.value = []
+        selectValue.value = config.value.multiple ? [] : undefined
+        config.value.defaultValue = selectValue.value
+      }
     })
     .finally(() => {
       loading.value = false
