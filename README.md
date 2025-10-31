@@ -104,10 +104,11 @@ curl -sSL https://dataease.oss-cn-hangzhou.aliyuncs.com/quick_start_v2.sh | bash
 
 ## License
 
-Copyright (c) 2014-2025 [FIT2CLOUD 飞致云](https://fit2cloud.com/), All rights reserved.
+DataEase V3 遵循 [FIT2CLOUD Open Source License](LICENSE) 开源协议，该许可证本质上是 GPLv3，但有一些额外的限制。
 
-Licensed under The GNU General Public License version 3 (GPLv3)  (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+你可以基于 DataEase 的源代码进行二次开发，但是需要遵守以下规定：
 
-<https://www.gnu.org/licenses/gpl-3.0.html>
+- 不能替换和修改 DataEase 的 Logo 和版权信息；
+- 二次开发后的衍生作品必须遵守 GPL V3 的开源义务。
 
-Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+如需商业授权，请联系 support@fit2cloud.com 。
