@@ -184,6 +184,8 @@ import { exportPermission } from '@/utils/utils'
 import EmptyBackground from '../empty-background/src/EmptyBackground.vue'
 import { supportExtremumChartType } from '@/views/chart/components/js/extremumUitl'
 import ChartCarouselTooltip from '@/views/chart/components/js/g2plot_tooltip_carousel'
+import html2canvas from 'html2canvas'
+import JsPDF from 'jspdf'
 const downLoading = ref(false)
 const dvMainStore = dvMainStoreWithOut()
 const dialogShow = ref(false)
@@ -436,8 +438,12 @@ const htmlToImage = () => {
       : 500
   setTimeout(() => {
     initWatermark()
-    toPng(viewContainer.value)
-      .then(dataUrl => {
+    html2canvas(viewContainer.value)
+      .then(canvas => {
+        const dom = document.body.appendChild(canvas)
+        dom.style.display = 'none'
+        document.body.removeChild(dom)
+        const dataUrl = dom.toDataURL('image/png', 1)
         downLoading.value = false
         const a = document.createElement('a')
         a.setAttribute('download', viewInfo.value.title)
