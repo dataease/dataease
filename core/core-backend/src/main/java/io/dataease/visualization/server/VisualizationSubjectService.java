@@ -77,6 +77,7 @@ public class VisualizationSubjectService implements VisualizationSubjectApi {
                 request.setName(request.getName());
                 VisualizationSubject saveInfo = new VisualizationSubject();
                 BeanUtils.copyBean(saveInfo, request);
+                saveInfo.setCreateNum(0);
                 visualizationSubjectRepository.saveAndFlush(saveInfo);
             } else {
                 DEException.throwException("名称已经存在");
