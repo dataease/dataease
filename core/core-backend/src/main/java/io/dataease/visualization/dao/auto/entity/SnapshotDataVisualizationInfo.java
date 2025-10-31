@@ -61,9 +61,9 @@ public class SnapshotDataVisualizationInfo {
     private Integer status;
 
     @Comment("是否单独打开水印 0-关闭 1-开启")
-    @ColumnDefault("0")
+    @ColumnDefault("false")
     @Column(name = "self_watermark_status")
-    private Integer selfWatermarkStatus;
+    private Boolean selfWatermarkStatus;
 
     @Comment("排序")
     @ColumnDefault("0")
