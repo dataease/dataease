@@ -129,7 +129,7 @@ export class StackBar extends Bar {
         tooltip: {
           mount: createTooltipWrapper(chart),
           css: tooltipCss(tooltip),
-          enterable: false,
+          enterable: true,
           shared: true,
           position: 'top-right',
           render: (_, { title, items: originalItems }) => {
@@ -151,7 +151,9 @@ export class StackBar extends Bar {
                   .replace('{value}', value)
               })
               .join('')
-            const listHtml = `<ul class="g2-tooltip-list" style="margin: 0px; list-style-type: none; padding: 0px;">${itemsHtml}</ul>`
+            const listHtml = `<ul class="g2-tooltip-list" style="${tooltipMaxHeight(
+              chart
+            )}margin: 0px; list-style-type: none; padding: 0px;">${itemsHtml}</ul>`
             return `${titleHtml}${listHtml}`
           }
         }

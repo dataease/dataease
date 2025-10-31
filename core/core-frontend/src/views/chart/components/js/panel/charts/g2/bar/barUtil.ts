@@ -62,7 +62,8 @@ export function createTooltipWrapper(chart: Chart) {
     g2TooltipWrapper.style.top = '0px'
     document.body.appendChild(g2TooltipWrapper)
   }
-  return g2TooltipWrapper
+  // 如果开启轮播则不使用自定义tooltip容器
+  return chart.customAttr?.tooltip?.carousel?.enable ? undefined : g2TooltipWrapper
 }
 
 export function tooltipCss(tooltipAttr: DeepPartial<ChartTooltipAttr>) {
@@ -88,24 +89,39 @@ export function tooltipCss(tooltipAttr: DeepPartial<ChartTooltipAttr>) {
   }
 }
 
+/**
+ * 计算 tooltip 最大高度
+ * 最大高度为图表高度-20px
+ * @param chart
+ */
+export function tooltipMaxHeight(chart: Chart) {
+  const chartContainer = document.getElementById(chart.container)
+  const defaultHeight = 80
+  const maxHeight = chartContainer
+    ? Math.max(chartContainer.getBoundingClientRect().height - 20, defaultHeight)
+    : defaultHeight
+  return `max-height: ${maxHeight}px;`
+}
+
 export function listenerTooltipShow(newChart: G2Chart, chart: Chart) {
   newChart.on('tooltip:show', event => {
-    const tooltipWrapper = document.getElementById(tooltipWrapperId(chart.container))
-    if (tooltipWrapper) {
-      tooltipWrapper.style.zIndex = chart.container.indexOf('viewDialog') > -1 ? '9999' : '2000'
-      const allTooltips = tooltipWrapper?.querySelectorAll('.g2-tooltip')
-      if (!allTooltips) return
-      allTooltips.forEach(item => {
-        const tooltip = item as HTMLElement
-        tooltip.style.visibility = 'visible'
-        if (event?.offsetY) {
-          const { top, height } = newChart
-            ?.getContext()
-            ?.canvas?.context?.contextService?.$container?.getBoundingClientRect()
-          if (top) {
-            tooltip.style.top = top + height / 2 - tooltip.getBoundingClientRect().height / 2 + 'px'
-          }
-        }
+    const isCarousel = chart.customAttr?.tooltip?.carousel?.enable
+    const tooltipWrapper = isCarousel
+      ? document.getElementById(chart.container)
+      : document.getElementById(tooltipWrapperId(chart.container))
+    if (!tooltipWrapper) return
+    tooltipWrapper.style.zIndex = chart.container.indexOf('viewDialog') > -1 ? '9999' : '2000'
+    const allTooltips = tooltipWrapper?.querySelectorAll('.g2-tooltip')
+    if (!allTooltips) return
+    allTooltips.forEach(item => {
+      const tooltip = item as HTMLElement
+      const { height, right } = newChart
+        ?.getContext()
+        ?.canvas?.context?.contextService?.$container?.getBoundingClientRect()
+      if (isCarousel) {
+        const tooltipHeight = tooltip.getBoundingClientRect().height
+        tooltip.style.top = (height / 2 - tooltipHeight / 2 + 20) * chart.tScale + 'px'
+      } else {
         const clientY = event?.client?.y
         if (!clientY) return
         if (clientY < tooltip.getBoundingClientRect().height) {
@@ -120,13 +136,12 @@ export function listenerTooltipShow(newChart: G2Chart, chart: Chart) {
           document.getElementById('preview-canvas-main')
         if (!targetDiv || clientX == null) return
 
-        const dvRight = targetDiv.getBoundingClientRect().right
         const tooltipWidth = tooltip.getBoundingClientRect().width
-        const left = clientX + 20
+        const left = clientX
 
         tooltip.style.left =
-          left + tooltipWidth > dvRight ? `${dvRight - tooltipWidth}px` : `${left}px`
-      })
-    }
+          left + tooltipWidth > right ? `${clientX - tooltipWidth - 20}px` : `${left + 20}px`
+      }
+    })
   })
 }

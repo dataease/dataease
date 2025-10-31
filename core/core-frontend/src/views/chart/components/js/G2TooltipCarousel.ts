@@ -256,14 +256,8 @@ class G2TooltipCarousel {
     if (!el) return false
     // 检查可见比例
     const rect = el.getBoundingClientRect()
-    let visibleHeight = Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 60)
-    let visibleWidth = Math.min(rect.right, window.innerWidth) - Math.max(rect.left, 0)
-    const dvMainCenter = document.getElementById('dv-main-center')
-    if (dvMainCenter) {
-      const dvRect = dvMainCenter.getBoundingClientRect()
-      visibleHeight = Math.min(rect.bottom, dvRect.bottom) - Math.max(rect.top, dvRect.top)
-      visibleWidth = Math.min(rect.right, dvRect.right) - Math.max(rect.left, dvRect.left)
-    }
+    const visibleHeight = Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 60)
+    const visibleWidth = Math.min(rect.right, window.innerWidth) - Math.max(rect.left, 0)
     const percentHeight = visibleHeight / rect.height
     const percentWidth = visibleWidth / rect.width
     return percentHeight > 0.7 && percentWidth > 0.7
@@ -445,7 +439,7 @@ class G2TooltipCarousel {
     try {
       const ctx = this.newChart.getContext()
       const root = ctx.canvas.document.getElementsByClassName('plot')[0]
-      const { center } = root.getRenderBounds()
+      const { height } = root.getRenderBounds()
       const scaleX = (this.newChart.getScale() || ctx.views[0].scale).x
       const x =
         tooltipData.data.data.x ||
@@ -456,8 +450,8 @@ class G2TooltipCarousel {
       ])
       const { insetLeft, marginLeft, paddingLeft } = root.__data__
       return {
-        offsetX: insetLeft + marginLeft + paddingLeft + x2,
-        offsetY: center[1]
+        offsetX: insetLeft + marginLeft + paddingLeft + x2 * this.chart.tScale,
+        offsetY: (height / 2) * this.chart.tScale
       }
     } catch (e) {
       console.error('Get Tooltip offsetX fail:', e)

@@ -12,11 +12,11 @@ import {
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import {
-  TOOLTIP_ITEM_TPL,
   toLinearGradient,
+  TOOLTIP_ITEM_TPL,
   TOOLTIP_TITLE_TPL
 } from '@/views/chart/components/js/panel/common/common_antv'
-import { defaultsDeep, isEmpty } from 'lodash-es'
+import { isEmpty } from 'lodash-es'
 
 /**
  * 分组堆叠柱状图

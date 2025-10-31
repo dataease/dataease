@@ -26,7 +26,8 @@ import { CHART_MIX_EDITOR_PROPERTY, CHART_MIX_EDITOR_PROPERTY_INNER } from './co
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 import {
   createTooltipWrapper,
-  tooltipCss
+  tooltipCss,
+  tooltipMaxHeight
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 
 const { t } = useI18n()
@@ -425,7 +426,7 @@ export class ColumnLineMix extends G2ChartView {
           crosshairsLineDash: [4, 4],
           mount: createTooltipWrapper(chart),
           css: tooltipCss(tooltip),
-          enterable: false,
+          enterable: true,
           render: (_, { title, items }) => {
             const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)
             if (tooltip.seriesTooltipFormatter?.length) {
@@ -452,7 +453,9 @@ export class ColumnLineMix extends G2ChartView {
                   .replace('{value}', value)
               })
               .join('')
-            const listHtml = `<ul class="g2-tooltip-list" style="margin: 0px; list-style-type: none; padding: 0px;">${itemsHtml}</ul>`
+            const listHtml = `<ul class="g2-tooltip-list" style="${tooltipMaxHeight(
+              chart
+            )}margin: 0px; list-style-type: none; padding: 0px;">${itemsHtml}</ul>`
             return `${titleHtml}${listHtml}`
           }
         }

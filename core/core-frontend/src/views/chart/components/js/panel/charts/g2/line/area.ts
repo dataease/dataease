@@ -29,7 +29,7 @@ import {
 } from '../../../common/common_antv'
 import { registerSymbol, Symbols } from '@antv/g2/esm/utils/marker'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
-import { createTooltipWrapper, tooltipCss } from '../bar/barUtil'
+import { createTooltipWrapper, tooltipCss, tooltipMaxHeight } from '../bar/barUtil'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
@@ -571,6 +571,7 @@ export class Area extends G2ChartView {
           crosshairsLineDash: [4, 4],
           mount: createTooltipWrapper(chart),
           css: tooltipCss(tooltipAttr),
+          enterable: true,
           render: (e, { title, items: originalItems }) => {
             const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)
             let tooltipItems = originalItems
@@ -607,7 +608,9 @@ export class Area extends G2ChartView {
                   .replace('{value}', value)
               })
               .join('')
-            const listHtml = `<ul class="g2-tooltip-list" style="margin: 0px; list-style-type: none; padding: 0px;">${itemsHtml}</ul>`
+            const listHtml = `<ul class="g2-tooltip-list" style="${tooltipMaxHeight(
+              chart
+            )}margin: 0px; list-style-type: none; padding: 0px;">${itemsHtml}</ul>`
             return `${titleHtml}${listHtml}`
           }
         }
@@ -829,6 +832,7 @@ export class StackArea extends Area {
           crosshairsLineDash: [4, 4],
           mount: createTooltipWrapper(chart),
           css: tooltipCss(tooltipAttr),
+          enterable: true,
           render: (e, { title, items }) => {
             const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)
             const result = []
@@ -849,7 +853,9 @@ export class StackArea extends Area {
                   .replace('{value}', value)
               })
               .join('')
-            const listHtml = `<ul class="g2-tooltip-list" style="margin: 0px; list-style-type: none; padding: 0px;">${itemsHtml}</ul>`
+            const listHtml = `<ul class="g2-tooltip-list" style="${tooltipMaxHeight(
+              chart
+            )}margin: 0px; list-style-type: none; padding: 0px;">${itemsHtml}</ul>`
             return `${titleHtml}${listHtml}`
           }
         }

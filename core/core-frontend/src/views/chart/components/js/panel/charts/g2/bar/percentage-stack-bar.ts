@@ -3,6 +3,7 @@ import { flow, parseJson } from '@/views/chart/components/js/util'
 import {
   createTooltipWrapper,
   tooltipCss,
+  tooltipMaxHeight,
   ViewSpec
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 import { GroupStackBar } from '@/views/chart/components/js/panel/charts/g2/bar/group-stack-bar'
@@ -89,10 +90,6 @@ export class PercentageStackBar extends GroupStackBar {
           css: tooltipCss(tooltip),
           enterable: true,
           shared: true,
-          bounding: {
-            x: 0,
-            y: 0
-          },
           position: 'top-right',
           render: (_, { title, items: originalItems }) => {
             const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)
@@ -122,7 +119,9 @@ export class PercentageStackBar extends GroupStackBar {
                   .replace('{value}', value)
               })
               .join('')
-            const listHtml = `<ul class="g2-tooltip-list" style="margin: 0px; list-style-type: none; padding: 0px;">${itemsHtml}</ul>`
+            const listHtml = `<ul class="g2-tooltip-list" style="${tooltipMaxHeight(
+              chart
+            )}margin: 0px; list-style-type: none; padding: 0px;">${itemsHtml}</ul>`
             return `${titleHtml}${listHtml}`
           }
         }
