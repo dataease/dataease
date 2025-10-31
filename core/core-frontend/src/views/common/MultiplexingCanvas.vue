@@ -72,6 +72,7 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import PreviewShow from '@/views/data-visualization/PreviewShow.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import ChartCarouselTooltip from '@/views/chart/components/js/g2plot_tooltip_carousel'
+import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const dialogShow = ref(false)
