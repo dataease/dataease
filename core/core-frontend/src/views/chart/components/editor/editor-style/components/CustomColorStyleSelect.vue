@@ -234,10 +234,8 @@ const changeColorOption = (option?) => {
   }
 }
 const resetCustomColor = () => {
-  const { type } = props.chart
   const { basicStyleForm } = state.value
-
-  if (type.includes('map')) {
+  if (props.chart?.type?.includes('map')) {
     changeColorOption()
   } else {
     basicStyleForm[seriesColorName.value] = []
