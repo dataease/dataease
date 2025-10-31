@@ -193,7 +193,7 @@ class G2TooltipCarousel {
     if (!this.intersectionObserver) {
       this.intersectionObserver = new IntersectionObserver(this.handleIntersection.bind(this), {
         root: null,
-        threshold: [0, 0.3, 0.5, 0.7]
+        threshold: [0, 0.3, 0.5, 0.7, 1]
       })
     }
     this.intersectionObserver?.observe(this.newChart.getContainer())
