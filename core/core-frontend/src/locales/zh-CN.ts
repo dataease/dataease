@@ -4236,7 +4236,7 @@ export default {
       detail_columns: '字段描述',
       display_name: '显示名称',
       show_more_detail: '查看更多',
-      confirm_to_mark_as_complete: '确认标记为完成?',
+      confirm_to_mark_as_complete: '确认标记为已提交?',
       mobile_number_format_is_incorrect: '手机号码格式不正确',
       email_format_is_incorrect: '邮箱格式不正确',
       name: '名称',
@@ -4335,7 +4335,7 @@ export default {
       ge_check: '值需要大于等于{0}: {1}',
       status: '填报状态',
       status_0: '未填报',
-      status_1: '已完成'
+      status_1: '已提交'
     },
     database: {
       nvarchar: '字符串',

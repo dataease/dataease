@@ -4230,7 +4230,7 @@ export default {
       detail_columns: '字段描述',
       display_name: '顯示名稱',
       show_more_detail: '查看更多',
-      confirm_to_mark_as_complete: '確認標記為完成?',
+      confirm_to_mark_as_complete: '確認標記為已提交?',
       mobile_number_format_is_incorrect: '手機號碼格式不正確',
       email_format_is_incorrect: '郵件格式不正確',
       name: '名稱',
@@ -4329,7 +4329,7 @@ export default {
       ge_check: '值需要大於等於{0}: {1}',
       status: '填報狀態',
       status_0: '未填報',
-      status_1: '已完成'
+      status_1: '已提交'
     },
     database: {
       nvarchar: '字串',
