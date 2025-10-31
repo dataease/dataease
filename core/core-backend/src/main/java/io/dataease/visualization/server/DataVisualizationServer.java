@@ -437,9 +437,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
         BeanUtils.copyBean(visualizationInfo, request);
         visualizationInfo.setNodeType(request.getNodeType() == null ? DataVisualizationConstants.NODE_TYPE.LEAF : request.getNodeType());
         if (request.getSelfWatermarkStatus() != null && request.getSelfWatermarkStatus()) {
-            visualizationInfo.setSelfWatermarkStatus(1);
+            visualizationInfo.setSelfWatermarkStatus(true);
         } else {
-            visualizationInfo.setSelfWatermarkStatus(0);
+            visualizationInfo.setSelfWatermarkStatus(false);
         }
         if (DataVisualizationConstants.RESOURCE_OPT_TYPE.COPY.equals(request.getOptType())) {
             // 复制更新 新建权限插入
@@ -536,9 +536,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
         DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
         BeanUtils.copyBean(visualizationInfo, request);
         if (request.getSelfWatermarkStatus() != null && request.getSelfWatermarkStatus()) {
-            visualizationInfo.setSelfWatermarkStatus(1);
+            visualizationInfo.setSelfWatermarkStatus(true);
         } else {
-            visualizationInfo.setSelfWatermarkStatus(0);
+            visualizationInfo.setSelfWatermarkStatus(false);
         }
 
         // 检查当前节点的pid是否一致如果不一致 需要调用move 接口(预存 可能会出现pid =-1的情况)
