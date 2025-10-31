@@ -26,6 +26,7 @@ import {
   exportLogPDF,
   exportLogTemplate
 } from '@/api/visualization/dataVisualization'
+import { deepCopy } from '@/utils/utils'
 const userStore = useUserStoreWithOut()
 
 const userName = computed(() => userStore.getName)
@@ -100,6 +101,12 @@ const loadCanvasData = (dvId, weight?, ext?) => {
       state.dvInfo = dvInfo
       state.curPreviewGap = curPreviewGap
       dataInitState.value = true
+      // 修复铺满全屏模版导出错位问题
+      if (props.showPosition !== 'multiplexing') {
+        dvMainStore.setCanvasStyle(deepCopy(canvasStyleResult))
+        dvMainStore.setComponentData(deepCopy(canvasDataResult))
+      }
+
       if (props.showPosition === 'preview') {
         dvMainStore.updateCurDvInfo(dvInfo)
         nextTick(() => {
