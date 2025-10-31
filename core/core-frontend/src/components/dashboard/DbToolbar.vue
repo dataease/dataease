@@ -82,9 +82,7 @@ const {
 } = storeToRefs(dvMainStore)
 const dvModel = 'dashboard'
 const MultiplexingCanvasShow = ref(false)
-const MultiplexingCanvas = defineAsyncComponent(
-  () => import('@/views/common/MultiplexingCanvas.vue')
-)
+import MultiplexingCanvas from '@/views/common/MultiplexingCanvas.vue'
 
 import OuterParamsSet from '@/components/visualization/OuterParamsSet.vue'
 import UserViewGroup from '@/custom-component/component-group/UserViewGroup.vue'
