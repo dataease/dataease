@@ -732,7 +732,7 @@ const tablePageClass = computed(() => {
         @keydown.stop
         @keyup.stop
       >
-        <div>共{{ state.pageInfo.total }}条</div>
+        <div style="white-space: nowrap">共{{ state.pageInfo.total }}条</div>
         <el-pagination
           v-if="state.pageStyle !== 'general'"
           class="table-page-content"
