@@ -192,28 +192,29 @@ const saveCanvasWithCheck = (withPublish = false, status?) => {
     })
     return
   }
-  if (dvInfo.value.dataState === 'prepare') {
-    if (appData.value) {
-      // 应用保存
-      const params = {
-        base: {
-          pid: '',
-          name: dvInfo.value.name,
-          datasetFolderPid: null,
-          datasetFolderName: dvInfo.value.name,
-          dataType: dvInfo.value['dataType']
-        },
-        appData: appData.value
-      }
-      nextTick(() => {
-        resourceAppOpt.value.init(params)
-      })
-    } else {
+  // if (dvInfo.value.dataState === 'prepare') {
+  //   console.log(dvInfo.value.dataState, 'dvInfo.value.dataState')
+  //   if (appData.value) {
+  //     // 应用保存
+  //     const params = {
+  //       base: {
+  //         pid: '',
+  //         name: dvInfo.value.name,
+  //         datasetFolderPid: null,
+  //         datasetFolderName: dvInfo.value.name,
+  //         dataType: dvInfo.value['dataType']
+  //       },
+  //       appData: appData.value
+  //     }
+  //     nextTick(() => {
+  //       resourceAppOpt.value.init(params)
+  //     })
+  //   } else {
       const params = { name: dvInfo.value.name, leaf: true, id: dvInfo.value.pid || '0' }
       resourceGroupOpt.value.optInit('leaf', params, 'newLeaf', true, { withPublish, status })
-      return
-    }
-  }
+  //     return
+  //   }
+  // }
   checkCanvasChangePre(() => {
     saveResource({ withPublish, status })
   })
@@ -232,13 +233,7 @@ const saveResource = (checkParams?) => {
         let url = window.location.href
         url = url.replace(/(#\/[^?]*)(?:\?[^#]*)?/, `$1?resourceId=${dvInfo.value.id}`)
         if (!embeddedStore.baseUrl) {
-          window.history.replaceState(
-            {
-              path: url
-            },
-            '',
-            url
-          )
+          window.history.replaceState({path: url}, '', url)
         }
         if (appData.value) {
           initCanvasData(
@@ -344,9 +339,7 @@ const isEmbedded = computed(() => appStore.getIsDataEaseBi || appStore.getIsIfra
     <div class="toolbar">
       <div class="left-area-pro">
         <el-icon class="custom-el-icon back-icon" @click="backToMain()">
-          <Icon name="icon_left_outlined"
-            ><icon_left_outlined class="svg-icon toolbar-icon"
-          /></Icon>
+          <Icon name="icon_left_outlined"><icon_left_outlined class="svg-icon toolbar-icon"/></Icon>
         </el-icon>
         <div class="left-area">
           <div class="opt-area">
@@ -364,9 +357,7 @@ const isEmbedded = computed(() => appStore.getIsDataEaseBi || appStore.getIsIfra
             <el-tooltip effect="dark" :content="$t('commons.reduction')" placement="bottom">
               <el-icon
                 class="toolbar-hover-icon opt-icon-redo"
-                :class="{
-                  'toolbar-icon-disabled': snapshotIndex === snapshotStore.snapshotData.length - 1
-                }"
+                :class="{'toolbar-icon-disabled': snapshotIndex === snapshotStore.snapshotData.length - 1}"
                 @click="redo()"
               >
                 <Icon name="icon_redo_outlined"><icon_redo_outlined class="svg-icon" /></Icon>
@@ -409,7 +400,6 @@ const isEmbedded = computed(() => appStore.getIsDataEaseBi || appStore.getIsIfra
         </el-dropdown>
 
         <el-button
-          v-if="editMode === 'edit' || editMode === 'preview'"
           :disabled="styleChangeTimes < 1"
           @click="saveCanvasWithCheck()"
           style="float: right; margin-right: 12px"
@@ -417,42 +407,12 @@ const isEmbedded = computed(() => appStore.getIsDataEaseBi || appStore.getIsIfra
         >
           {{ t('data_set.otherSave') }}
         </el-button>
-        <el-dropdown
-          :disabled="dvInfo.status === 0"
-          popper-class="menu-outer-dv_popper"
-          trigger="hover"
-        >
-          <el-button
-            @click="saveCanvasWithCheck(true, 1)"
-            style="float: right; margin: 0 12px 0 0"
-            type="primary"
-          >
-            {{ t('visualization.save') }}
-          </el-button>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item @click="recoverToPublished" v-if="dvInfo.status === 2">
-                <el-icon class="handle-icon">
-                  <Icon name="icon_left_outlined"
-                    ><dv-recover-outlined class="svg-icon toolbar-icon"
-                  /></Icon>
-                </el-icon>
-                {{ t('visualization.publish_recover') }}
-              </el-dropdown-item>
-              <el-dropdown-item
-                @click="publishStatusChange(0)"
-                v-if="[1, 2].includes(dvInfo.status)"
-              >
-                <el-icon class="handle-icon">
-                  <Icon name="icon_left_outlined"
-                    ><dv-cancel-publish class="svg-icon toolbar-icon"
-                  /></Icon>
-                </el-icon>
-                {{ t('visualization.cancel_publish') }}
-              </el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
+        <el-button
+          @click="saveCanvasWithCheck(true, 1)"
+          style="float: right; margin: 0 12px 0 0"
+          type="primary"
+        >{{ t('visualization.save') }}
+        </el-button>
       </div>
     </div>
     <Teleport v-if="nameEdit" :to="'#canvas-name'">

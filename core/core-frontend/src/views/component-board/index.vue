@@ -111,7 +111,6 @@ const checkPer = async resourceId => {
   return check(wsCache.get('panel-weight'), resourceId, 4)
 }
 
-
 const onMobileConfig = () => {
   const canvasStyleDataCopy = cloneDeep(canvasStyleData.value)
   if (!canvasStyleDataCopy.mobileSetting) {
@@ -186,7 +185,6 @@ const winMsgWebParamsHandle = msgInfo => {
   dvMainStore.addWebParamsFilter(params)
 }
 
-
 const doRecoverToPublished = () => {
   recoverToPublished({ id: dvInfo.value.id, type: 'dashboard', name: dvInfo.value.name }).then(
     () => {
@@ -209,7 +207,6 @@ const handleNewFromCanvasMain = newComponentInfo => {
   const { componentName, innerType, staticMap } = newComponentInfo
   if (componentName) {
     const component = findNewComponentFromList(componentName, innerType, curOriginThemes, staticMap)
-    console.log(componentName, component, '---component----')
     syncShapeItemStyle(component, 300, 300)
     component.id = guid()
     // component.y = undefined

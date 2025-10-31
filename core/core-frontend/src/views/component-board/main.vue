@@ -21,6 +21,7 @@ import draggable from 'vuedraggable'
 import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
 import DimensionItem from '@/views/chart/components/editor/drag-item/DimensionItem.vue'
 import QuotaItem from '@/views/chart/components/editor/drag-item/QuotaItem.vue'
+import DragPlaceholder from '@/views/chart/components/editor/drag-item/DragPlaceholder.vue'
 
 import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
@@ -583,9 +584,47 @@ const onTableColumnWidthChange = val => {
   view.value.customAttr.basicStyle.tableFieldWidth = val
   snapshotStore.recordSnapshotCache('renderChart', view.value.id)
 }
-
+const allFields = computed(() => {
+  return concat(state.quotaData, state.dimensionData)
+})
 const getComponentStyle = style => {
   return getStyle(style, style.borderActive ? commonFilterAttrs : commonFilterAttrsFilterBorder)
+}
+const calcData = (view, resetDrill = false, updateQuery = '') => {
+  if (
+    view.refreshTime === '' ||
+    parseFloat(view.refreshTime).toString() === 'NaN' ||
+    parseFloat(view.refreshTime) < 1
+  ) {
+    ElMessage.error(t('chart.only_input_number'))
+    return
+  }
+  if (resetDrill) {
+    useEmitt().emitter.emit('resetDrill-' + view.id, 0)
+  } else {
+    // if (mobileInPc.value) {
+    //   //移动端设计
+    //   useEmitt().emitter.emit('onMobileStatusChange', {
+    //     type: 'componentStyleChange',
+    //     value: { type: 'calcData', component: JSON.parse(JSON.stringify(view)) }
+    //   })
+    // } else {
+      useEmitt().emitter.emit('calcData-' + view.id, view)
+      snapshotStore.recordSnapshotCache('renderChart', view.id)
+    // }
+  }
+  snapshotStore.recordSnapshotCache('calcData', view.id)
+  // if (updateQuery === 'updateQuery') {
+  //   queryList.value.forEach(ele => {
+  //     useEmitt().emitter.emit(`updateQueryCriteria${ele.id}`)
+  //   })
+  // }
+}
+
+const updateChartData = view => {
+  curComponent.value['state'] = 'ready'
+  useEmitt().emitter.emit('checkShowEmpty', { allFields: allFields.value, view: view })
+  calcData(view, true, 'updateQuery')
 }
 
 // computed
@@ -599,6 +638,22 @@ const toolTip = computed(() => {
 const curComponentId = computed(() => {
   return curComponent.value?.id || ''
 })
+
+// 计算component-view-area的高度
+const elAreaHeight = ref('auto')
+const calculateElAreaHeight = () => {
+  nextTick(() => {
+    const edMainElement = document.querySelector('.data-area')
+    const chartHeaderElement = document.querySelector('.button-area')
+
+    if (edMainElement && chartHeaderElement) {
+      const edMainHeight = edMainElement.clientHeight
+      const chartHeaderHeight = chartHeaderElement.clientHeight
+      const remainingHeight = edMainHeight - chartHeaderHeight - 24
+      elAreaHeight.value = `${remainingHeight}px`
+    }
+  })
+}
 const customFilter = reactive([])
 
 const showAxis = (axis: AxisType) => {
@@ -612,6 +667,22 @@ const onCustomSort = item => {
   customSortAxis.value = 'xAxis'
   // customSort()
 }
+
+// 生命周期钩子
+onMounted(() => {
+  calculateElAreaHeight()
+  // 监听窗口大小变化
+  window.addEventListener('resize', calculateElAreaHeight)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', calculateElAreaHeight)
+})
+
+// 监听组件数据变化，重新计算高度
+watch(() => componentData.value, () => {
+  calculateElAreaHeight()
+}, { deep: true })
 
 </script>
 
@@ -682,22 +753,6 @@ const onCustomSort = item => {
           </draggable>
           <drag-placeholder :themes="themes" :drag-list="view.xAxis" />
         </div>
-        <el-tooltip
-          :effect="toolTip"
-          placement="top"
-          :content="t('common.delete')"
-        >
-          <el-icon
-            class="remove-icon"
-            :class="{ 'remove-icon--dark': themes === 'dark' }"
-            size="14px"
-            @click="removeItems('xAxis')"
-          >
-            <Icon class-name="inner-class" name="icon_delete-trash_outlined"
-              ><icon_deleteTrash_outlined class="svg-icon inner-class"
-            /></Icon>
-          </el-icon>
-        </el-tooltip>
       </el-row>
 
       <!--xAxisExt-->
@@ -738,16 +793,6 @@ const onCustomSort = item => {
           </draggable>
           <drag-placeholder :drag-list="view.xAxisExt" />
         </div>
-        <el-icon
-          class="remove-icon"
-          :class="{ 'remove-icon--dark': themes === 'dark' }"
-          size="14px"
-          @click="removeItems('xAxisExt')"
-        >
-          <Icon class-name="inner-class" name="icon_delete-trash_outlined"
-            ><icon_deleteTrash_outlined class="svg-icon inner-class"
-          /></Icon>
-        </el-icon>
       </el-row>
 
       <!--flowMapStartName-->
@@ -789,16 +834,6 @@ const onCustomSort = item => {
           </draggable>
           <drag-placeholder :themes="themes" :drag-list="view.flowMapStartName" />
         </div>
-         <el-icon
-          class="remove-icon"
-          :class="{ 'remove-icon--dark': themes === 'dark' }"
-          size="14px"
-          @click="removeItems('flowMapStartName')"
-        >
-          <Icon class-name="inner-class" name="icon_delete-trash_outlined"
-            ><icon_deleteTrash_outlined class="svg-icon inner-class"
-          /></Icon>
-        </el-icon>
       </el-row>
 
       <!--flowMapEndName-->
@@ -840,16 +875,6 @@ const onCustomSort = item => {
           </draggable>
           <drag-placeholder :themes="themes" :drag-list="view.flowMapEndName" />
         </div>
-        <el-icon
-          class="remove-icon"
-          :class="{ 'remove-icon--dark': themes === 'dark' }"
-          size="14px"
-          @click="removeItems('flowMapEndName')"
-        >
-          <Icon class-name="inner-class" name="icon_delete-trash_outlined"
-            ><icon_deleteTrash_outlined class="svg-icon inner-class"
-          /></Icon>
-        </el-icon>
       </el-row>
 
       <!--extStack-->
@@ -890,16 +915,6 @@ const onCustomSort = item => {
           </draggable>
           <drag-placeholder :drag-list="view.extStack" />
         </div>
-        <el-icon
-          class="remove-icon"
-          :class="{ 'remove-icon--dark': themes === 'dark' }"
-          size="14px"
-          @click="removeItems('extStack')"
-        >
-          <Icon class-name="inner-class" name="icon_delete-trash_outlined"
-            ><icon_deleteTrash_outlined class="svg-icon inner-class"
-          /></Icon>
-        </el-icon>
       </el-row>
 
       <!-- extColor -->
@@ -941,16 +956,6 @@ const onCustomSort = item => {
           </draggable>
           <drag-placeholder :themes="themes" :drag-list="view.extColor" />
         </div>
-        <el-icon
-          class="remove-icon"
-          :class="{ 'remove-icon--dark': themes === 'dark' }"
-          size="14px"
-          @click="removeItems('extColor')"
-        >
-          <Icon class-name="inner-class" name="icon_delete-trash_outlined"
-            ><icon_deleteTrash_outlined class="svg-icon inner-class"
-          /></Icon>
-        </el-icon>
       </el-row>
 
       <template v-if="view.type !== 'bar-range'">
@@ -1018,22 +1023,6 @@ const onCustomSort = item => {
               :drag-list="view.yAxis"
             />
           </div>
-          <el-tooltip
-            :effect="toolTip"
-            placement="top"
-            :content="t('common.delete')"
-          >
-            <el-icon
-              class="remove-icon"
-              :class="{ 'remove-icon--dark': themes === 'dark' }"
-              size="14px"
-              @click="removeItems('yAxis')"
-            >
-              <Icon class-name="inner-class" name="icon_delete-trash_outlined"
-                ><icon_deleteTrash_outlined class="svg-icon inner-class"
-              /></Icon>
-            </el-icon>
-          </el-tooltip>
         </el-row>
         <!-- xAxisExtRight -->
         <el-row v-if="showAxis('xAxisExtRight')" class="line-style drag-data">
@@ -1073,16 +1062,6 @@ const onCustomSort = item => {
             </draggable>
             <drag-placeholder :drag-list="view.extBubble" />
           </div>
-          <el-icon
-            class="remove-icon"
-            :class="{ 'remove-icon--dark': themes === 'dark' }"
-            size="14px"
-            @click="removeItems('extBubble')"
-          >
-            <Icon class-name="inner-class" name="icon_delete-trash_outlined"
-              ><icon_deleteTrash_outlined class="svg-icon inner-class"
-            /></Icon>
-          </el-icon>
         </el-row>
         <!--yAxisExt-->
         <el-row v-if="showAxis('yAxisExt')" class="line-style drag-data">
@@ -1124,16 +1103,6 @@ const onCustomSort = item => {
             </draggable>
             <drag-placeholder :drag-list="view.yAxisExt" />
           </div>
-          <el-icon
-            class="remove-icon"
-            :class="{ 'remove-icon--dark': themes === 'dark' }"
-            size="14px"
-            @click="removeItems('yAxisExt')"
-          >
-            <Icon class-name="inner-class" name="icon_delete-trash_outlined"
-              ><icon_deleteTrash_outlined class="svg-icon inner-class"
-            /></Icon>
-          </el-icon>
         </el-row>
       </template>
       <template v-else-if="view.type === 'bar-range'">
@@ -1144,7 +1113,7 @@ const onCustomSort = item => {
               <i v-if="!chartViewInstance.axisConfig.yAxis?.allowEmpty" class="required"></i>
               <span>{{ chartViewInstance.axisConfig.yAxis.name }}</span>
             </span>
-    
+
           </div>
           <div class="drag-data-area">
             <draggable
@@ -1194,16 +1163,6 @@ const onCustomSort = item => {
             </draggable>
             <drag-placeholder :drag-list="view.yAxis" />
           </div>
-          <el-icon
-            class="remove-icon"
-            :class="{ 'remove-icon--dark': themes === 'dark' }"
-            size="14px"
-            @click="removeItems('yAxis')"
-          >
-            <Icon class-name="inner-class" name="icon_delete-trash_outlined"
-              ><icon_deleteTrash_outlined class="svg-icon inner-class"
-            /></Icon>
-          </el-icon>
         </el-row>
         <!--yAxisExt-->
         <el-row v-if="showAxis('yAxisExt')" class="line-style drag-data">
@@ -1212,7 +1171,7 @@ const onCustomSort = item => {
               <i v-if="!chartViewInstance.axisConfig.yAxisExt?.allowEmpty" class="required"></i>
               <span>{{ chartViewInstance.axisConfig.yAxisExt.name }}</span>
             </span>
-              
+
           </div>
           <div class="drag-data-area">
             <draggable
@@ -1262,16 +1221,6 @@ const onCustomSort = item => {
             </draggable>
             <drag-placeholder :drag-list="view.yAxisExt" />
           </div>
-          <el-icon
-            class="remove-icon"
-            :class="{ 'remove-icon--dark': themes === 'dark' }"
-            size="14px"
-            @click="removeItems('yAxisExt')"
-          >
-            <Icon class-name="inner-class" name="icon_delete-trash_outlined"
-              ><icon_deleteTrash_outlined class="svg-icon inner-class"
-            /></Icon>
-          </el-icon>
         </el-row>
       </template>
       <!-- extBubble -->
@@ -1332,16 +1281,6 @@ const onCustomSort = item => {
           </draggable>
           <drag-placeholder :drag-list="view.extBubble" />
         </div>
-        <el-icon
-          class="remove-icon"
-          :class="{ 'remove-icon--dark': themes === 'dark' }"
-          size="14px"
-          @click="removeItems('extBubble')"
-        >
-          <Icon class-name="inner-class" name="icon_delete-trash_outlined"
-            ><icon_deleteTrash_outlined class="svg-icon inner-class"
-          /></Icon>
-        </el-icon>
       </el-row>
 
       <!--drill-->
@@ -1392,16 +1331,6 @@ const onCustomSort = item => {
           </draggable>
           <drag-placeholder :drag-list="view.drillFields" />
         </div>
-         <el-icon
-          class="remove-icon"
-          :class="{ 'remove-icon--dark': themes === 'dark' }"
-          size="14px"
-          @click="removeItems('drillFields')"
-        >
-          <Icon class-name="inner-class" name="icon_delete-trash_outlined"
-            ><icon_deleteTrash_outlined class="svg-icon inner-class"
-          /></Icon>
-        </el-icon>
       </el-row>
 
       <!--filter-->
@@ -1424,24 +1353,7 @@ const onCustomSort = item => {
               <span>{{ element.name }}</span>
             </template>
           </draggable>
-        </div>  
-        <!-- <el-tooltip
-          :effect="toolTip"
-          placement="top"
-          :content="t('common.delete')"
-        >
-          <el-icon
-            class="remove-icon"
-            :class="{ 'remove-icon--dark': themes === 'dark' }"
-            size="14px"
-            @click="removeItems('customFilter')"
-          >
-            <Icon class-name="inner-class" name="icon_delete-trash_outlined"
-              ><icon_deleteTrash_outlined class="svg-icon inner-class"
-            /></Icon>
-          </el-icon>
-        </el-tooltip> -->
-
+        </div>
         <!-- <div
           class="tree-btn"
           v-if="isFilterActive || themes === 'dark'"
@@ -1490,32 +1402,33 @@ const onCustomSort = item => {
       </el-row>
     </div>
     <!-- 数据展示区域 -->
-    <div class="data-area">
-      <div class="button-area">
+    <div class="data-area" ref="dataAreaRef">
+      <div class="button-area" ref="buttonAreaRef">
         <el-button size="small" class="arco-btn fullscreen-btn">全屏</el-button>
-        <el-button size="small" class="arco-btn data-view-btn">查询</el-button>
+        <el-button size="small" class="arco-btn data-view-btn" @click="updateChartData(view)">查询</el-button>
       </div>
-      <div v-for="item in componentData" :key="item.id">
-        <component
-          :is="findComponent(item.component)"
-          v-if="item.component === 'UserView' || item['isPlugin']"
-          class="component"
-          :id="'component' + item.id"
-          :dv-type="dvInfo.type"
-          :style="getComponentStyle(item.style)"
-          :prop-value="item.propValue"
-          :view="canvasViewInfo[item.id]"
-          :element="item"
-          :request="item.request"
-          :dv-info="dvInfo"
-          :font-family="fontFamily"
-          />
-          <!-- :active="item.id === curComponentId" -->
-          <!-- @input="handleInput" -->
-          <!-- :is-edit="true" -->
-          <!-- :scale="curBaseScale" -->
-          <!-- :show-position="'canvas'" -->
-          <!-- :canvas-active="canvasActive" -->
+      <div :style="{ height: elAreaHeight}">
+        <div v-for="item in componentData" :key="item.id" style="height: 100%">
+          <component
+            :is="findComponent(item.component)"
+            class="component"
+            :id="'component' + item.id"
+            :dv-type="dvInfo.type"
+            :style="getComponentStyle(item.style)"
+            :prop-value="item.propValue"
+            :view="canvasViewInfo[item.id]"
+            :element="item"
+            :request="item.request"
+            :dv-info="dvInfo"
+            :font-family="fontFamily"
+            />
+            <!-- :active="item.id === curComponentId" -->
+            <!-- @input="handleInput" -->
+            <!-- :is-edit="true" -->
+            <!-- :scale="curBaseScale" -->
+            <!-- :show-position="'canvas'" -->
+            <!-- :canvas-active="canvasActive" -->
+        </div>
       </div>
     </div>
   </div>
@@ -1544,6 +1457,9 @@ const onCustomSort = item => {
     margin-top: 12px;
     background-color: #fff;
   }
+  .button-area{
+    padding: 8px 0 16px;
+  }
   .required::after {
     content: '*';
     color: var(--ed-color-danger);
@@ -1556,8 +1472,13 @@ const onCustomSort = item => {
     min-height: 24px;
     flex: 1;
   }
+
   .drag-block-style{
     min-height: 24px;
+    // border-radius: 4px;
+    // align-items: center;
+    // border: 1px dashed #bbbfc4;
+    // background-color: #1f23290d;
   }
   :deep(.item-style){
     display: inline-block;
@@ -1568,6 +1489,10 @@ const onCustomSort = item => {
   }
   :deep(.father .arrow_down-icon ){
     visibility: visible;
+  }
+  :deep(.drag-placeholder-style) {
+    width: auto;
+    top: calc(50% - 8px);
   }
 }
 .line-style{

@@ -334,7 +334,6 @@ const onRemove = () => {
   activeQuota.value = []
 }
 
-
 watch(
   [() => view.value['tableId']],
   () => {
@@ -425,20 +424,16 @@ onBeforeUnmount(() => {
                 item-key="id"
                 :group="{name: 'drag', pull: 'clone' }"
                 :sort="false"
-                @remove="onRemove"
               >
               <template #item="{ element }">
                 <div
                   :key="element.id"
-                  :draggable="true"
                   class="field-item dimension-item"
                   :class="{ 'field-item-dark': themes === 'dark' }"
                   @click.ctrl="setActiveCtrl(element)"
                   @click.meta="setActiveCtrl(element)"
                   @click.exact="setActive(element)"
                   @click.shift="setActiveShift(element)"
-                  @dragstart="$event => singleDragStartD($event, element, 'dimension')"
-                  @dragend="singleDragEnd"
                 >
                   <el-tooltip placement="right" :offset="10" :hide-after="0" :enterable="false">
                     <template #content>
@@ -447,28 +442,23 @@ onBeforeUnmount(() => {
                       <div>表达式：{{ element.name }}</div>
                       <div>描述：{{ element.name }}</div>
                     </template>
-                    <div class="drag-item">
-                      <div
-                        class="items flex-align-center"
-                        :class="[
-                          'item-dimension--' + themes,
-                          isDraggingItem && 'is-dragging-item',
-                          activeDimension.map(itx => itx.id).includes(element.id) && 'active'
-                        ]"
-                        :draggable="true"
-                        @dragstart="dragStartD"
-                        @dragend="dragEnd">
-                        <el-icon class="field-icon dimension-icon">
-                          <Icon>
-                            <component
-                              class="svg-icon"
-                              :class="`field-icon-${fieldType[[2, 3].includes(element.deType) ? 2 : 0]}`"
-                              :is="getIconName(element.deType, element.extField)"
-                            ></component>
-                          </Icon>
-                        </el-icon>
-                        <span class="field-name" :title="element.name">{{ element.name }}</span>
-                      </div>
+                    <div
+                      class="drag-item items flex-align-center"
+                      :class="[
+                        'item-dimension--' + themes,
+                        isDraggingItem && 'is-dragging-item',
+                        activeDimension.map(itx => itx.id).includes(element.id) && 'active'
+                      ]">
+                      <el-icon class="field-icon dimension-icon">
+                        <Icon>
+                          <component
+                            class="svg-icon"
+                            :class="`field-icon-${fieldType[[2, 3].includes(element.deType) ? 2 : 0]}`"
+                            :is="getIconName(element.deType, element.extField)"
+                          ></component>
+                        </Icon>
+                      </el-icon>
+                      <span class="field-name" :title="element.name">{{ element.name }}</span>
                     </div>
                   </el-tooltip>
                 </div>
@@ -493,35 +483,30 @@ onBeforeUnmount(() => {
                 <template #item="{ element }">
                   <div
                     :key="element.id"
-                    :draggable="true"
                     class="field-item metric-item"
                     :class="{ 'field-item-dark': themes === 'dark' }"
                     @click.ctrl="setActiveCtrl(element, 'quota')"
                     @click.meta="setActiveCtrl(element, 'quota')"
                     @click.exact="setActive(element, 'quota')"
                     @click.shift="setActiveShift(element, 'quota')"
-                    @dragstart="$event => singleDragStart($event, element, 'quota')"
-                    @dragend="singleDragEnd"
                   >
-                    <div class="drag-item">
-                      <div
-                        class="items flex-align-center"
-                        :class="[
-                          'item-dimension--' + themes,
-                          isDraggingItem && 'is-dragging-item',
-                          activeQuota.map(itx => itx.id).includes(element.id) && 'active'
-                        ]">
-                        <el-icon class="field-icon metric-icon">
-                          <Icon>
-                            <component
-                              class="svg-icon"
-                              :class="`field-icon-${fieldType[element.deType]}`"
-                              :is="getIconName(element.deType, element.extField, true)"
-                            ></component>
-                          </Icon>
-                        </el-icon>
-                        <span class="field-name" :title="element.name">{{ element.name }}</span>
-                      </div>
+                    <div
+                      class="drag-item items flex-align-center"
+                      :class="[
+                        'item-dimension--' + themes,
+                        isDraggingItem && 'is-dragging-item',
+                        activeQuota.map(itx => itx.id).includes(element.id) && 'active'
+                      ]">
+                      <el-icon class="field-icon metric-icon">
+                        <Icon>
+                          <component
+                            class="svg-icon"
+                            :class="`field-icon-${fieldType[element.deType]}`"
+                            :is="getIconName(element.deType, element.extField, true)"
+                          ></component>
+                        </Icon>
+                      </el-icon>
+                      <span class="field-name" :title="element.name">{{ element.name }}</span>
                     </div>
                   </div>
                 </template>

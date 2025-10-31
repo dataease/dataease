@@ -50,7 +50,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       mobileInPc: false,
       inMobile: false,
       firstLoadMap: [],
-      canvasStyleData: { ...deepCopy(DEFAULT_CANVAS_STYLE_DATA_DARK), backgroundColor: null },
+      canvasStyleData: { ...deepCopy(DEFAULT_CANVAS_STYLE_DATA_LIGHT), backgroundColor: null },
       appData: null, //应用信息
       // 当前展示画布缓存数据
       componentDataCache: null,
