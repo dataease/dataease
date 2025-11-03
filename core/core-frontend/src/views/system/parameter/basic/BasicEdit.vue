@@ -32,6 +32,7 @@ const requireKeys = [
   'logLiveTime',
   'thresholdLogLiveTime',
   'exportFileLiveTime',
+  'dataFillingLogLiveTime',
   'frontTimeOut',
   'loginLimitTime',
   'loginLimitRate'
@@ -50,7 +51,8 @@ const state = reactive({
     { value: '1', label: 'LDAP' },
     { value: '2', label: 'OIDC' },
     { value: '3', label: 'CAS' },
-    { value: '9', label: 'OAuth2' }
+    { value: '9', label: 'OAuth2' },
+    { value: '10', label: 'Saml2' }
   ],
   sortOptions: [
     { value: '0', label: t('resource_sort.time_asc') },
@@ -339,6 +341,7 @@ defineExpose({
           v-else-if="
             item.pkey === 'logLiveTime' ||
             item.pkey === 'thresholdLogLiveTime' ||
+            item.pkey === 'dataFillingLogLiveTime' ||
             item.pkey === 'loginLimitRate' ||
             item.pkey === 'loginLimitTime'
           "

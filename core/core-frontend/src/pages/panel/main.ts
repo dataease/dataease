@@ -1,7 +1,6 @@
 const suffix = `${import.meta.env.VITE_VERSION}-dataease`
 
 const dom = document.querySelector('head')
-const cb = dom.appendChild.bind(dom)
 
 const formatterUrl = <T extends Node>(node: T, prefix: string) => {
   if (['SCRIPT', 'LINK'].includes(node.nodeName)) {
@@ -53,6 +52,11 @@ document.querySelector('head').appendChild = <T extends Node>(node: T) => {
   const newNode = formatterUrl(node, getPrefix())
   element.appendChild(newNode)
   return newNode
+}
+
+document.querySelector('head').removeChild = <T extends Node>(node: T) => {
+  element.removeChild(node)
+  return node
 }
 import { App, createApp } from 'vue'
 import '@/style/index.less'

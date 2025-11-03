@@ -8,8 +8,6 @@ import router from '@/router'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
-import { useRequestStoreWithOut } from '@/store/modules/request'
-import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { useEmbedded } from '@/store/modules/embedded'
 
@@ -22,21 +20,17 @@ import ChartStyleBatchSet from '@/views/chart/components/editor/editor-style/Cha
 import DeCanvas from '@/views/canvas/DeCanvas.vue'
 import MobileConfigPanel from './MobileConfigPanel.vue'
 import CanvasCacheDialog from '@/components/visualization/CanvasCacheDialog.vue'
-import DashboardHiddenComponent from '@/components/dashboard/DashboardHiddenComponent.vue'
 import { XpackComponent } from '@/components/plugin'
 
 // API和工具函数
 import { getDatasetTree } from '@/api/dataset'
 import { watermarkFind } from '@/api/watermark'
-import { recoverToPublished } from '@/api/visualization/dataVisualization'
 import { decompressionPre, initCanvasData, onInitReady } from '@/utils/canvasUtils'
 import { check, compareStorage } from '@/utils/CrossPermission'
 import { useCache } from '@/hooks/web/useCache'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import { useI18n } from '@/hooks/web/useI18n'
 import { findComponentAttr } from '../../utils/components'
 import { deepCopy } from '@/utils/utils'
-import eventBus from '@/utils/eventBus'
 
 // 第三方库
 import { cloneDeep } from 'lodash-es'
@@ -46,6 +40,13 @@ import { Base64 } from 'js-base64'
 import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
 // 状态管理初始化
 const interactiveStore = interactiveStoreWithOut()
+import { useRequestStoreWithOut } from '@/store/modules/request'
+import { usePermissionStoreWithOut } from '@/store/modules/permission'
+import eventBus from '@/utils/eventBus'
+import { useI18n } from '@/hooks/web/useI18n'
+import DashboardHiddenComponent from '@/components/dashboard/DashboardHiddenComponent.vue'
+import { recoverToPublished } from '@/api/visualization/dataVisualization'
+// import SqlAssistant from '@/views/sqlbot/assistant.vue'
 const embeddedStore = useEmbedded()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -360,6 +361,7 @@ onUnmounted(() => {
       :class="{ 'preview-content': editMode === 'preview' }"
       element-loading-background="rgba(0, 0, 0, 0)"
     >
+      <!--      <SqlAssistant></SqlAssistant>-->
       <!-- 中间画布 -->
       <main class="center" :class="{ 'de-screen-full': fullscreenFlag }">
         <de-canvas

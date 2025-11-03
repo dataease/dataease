@@ -8,14 +8,12 @@ import io.dataease.api.chart.request.ChartExcelRequestInner;
 import io.dataease.auth.DeLinkPermit;
 import io.dataease.chart.constant.ChartConstants;
 import io.dataease.chart.manage.ChartDataManage;
-import io.dataease.constant.AuthConstant;
-import io.dataease.constant.CommonConstants;
-import io.dataease.constant.LogOT;
+import io.dataease.constant.*;
 import io.dataease.dataset.manage.PermissionManage;
 import io.dataease.dataset.server.DatasetFieldServer;
-import io.dataease.constant.DeTypeConstants;
 import io.dataease.dataset.utils.DatasetUtils;
 import io.dataease.exception.DEException;
+import io.dataease.exportCenter.dao.auto.entity.CoreExportTask;
 import io.dataease.exportCenter.manage.ExportCenterDownLoadManage;
 import io.dataease.exportCenter.manage.ExportCenterManage;
 import io.dataease.exportCenter.util.ExportCenterUtils;
@@ -25,6 +23,7 @@ import io.dataease.i18n.Lang;
 import io.dataease.license.manage.F2CLicLimitedManage;
 import io.dataease.log.DeLog;
 import io.dataease.result.ResultCode;
+import io.dataease.utils.CommonBeanFactory;
 import io.dataease.utils.JsonUtil;
 import io.dataease.utils.LogUtil;
 import io.dataease.visualization.manage.VisualizationTemplateExtendDataManage;
@@ -321,6 +320,16 @@ public class ChartDataServer implements ChartDataApi {
                 wb.write(outputStream);
                 outputStream.flush();
                 outputStream.close();
+
+                try {
+                    if (request.getBusiFlag().equalsIgnoreCase("dashboard")) {
+                        CommonBeanFactory.proxy(this.getClass()).exportPanelViewLog(Long.parseLong(request.getViewId()));
+                    } else {
+                        CommonBeanFactory.proxy(this.getClass()).exportScreenViewLog(Long.parseLong(request.getViewId()));
+                    }
+                } catch (Exception e) {
+                    LogUtil.error(e);
+                }
             } catch (Exception e) {
                 DEException.throwException(e);
             }
@@ -821,4 +830,12 @@ public class ChartDataServer implements ChartDataApi {
     public List<String> getDrillFieldData(ChartViewDTO view, Long fieldId) throws Exception {
         return chartDataManage.getDrillFieldData(view, fieldId);
     }
+
+    @DeLog(id = "#p0", ot = LogOT.EXPORT, st = LogST.PANEL)
+    public void exportPanelViewLog(Long id) {}
+
+    @DeLog(id = "#p0", ot = LogOT.EXPORT, st = LogST.SCREEN)
+    public void exportScreenViewLog(Long id) {}
+
+
 }

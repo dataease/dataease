@@ -6,12 +6,14 @@ import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.DatasetTableInfoDTO;
 import io.dataease.api.dataset.union.UnionDTO;
 import io.dataease.api.dataset.vo.DataSQLBotAssistantVO;
+import io.dataease.api.dataset.vo.DataSQLBotDatasetVO;
 import io.dataease.api.dataset.vo.SQLBotAssistanTable;
 import io.dataease.api.dataset.vo.SQLBotAssistantField;
 import io.dataease.api.permissions.dataset.api.ColumnPermissionsApi;
 import io.dataease.api.permissions.dataset.dto.DataSetColumnPermissionsDTO;
 import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
 import io.dataease.auth.bo.TokenUserBO;
+import io.dataease.chart.dao.ext.mapper.ExtChartViewMapper;
 import io.dataease.commons.utils.EncryptUtils;
 import io.dataease.constant.ColumnPermissionConstants;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
@@ -95,6 +97,9 @@ public class DatasetSQLBotManage {
     @Value("${dataease.sqlbot.log:false}")
     private boolean sqlbotApiLog;
 
+    @Resource
+    private ExtChartViewMapper extChartViewMapper;
+
     private String aesEncrypt(String text) {
         String iv = aesIv;
         int len = iv.length();
@@ -147,6 +152,10 @@ public class DatasetSQLBotManage {
         return datasetRowPermissions.stream().collect(Collectors.groupingBy(DataSetRowPermissionsTreeDTO::getDatasetId));
     }
 
+
+    public List<DataSQLBotDatasetVO> getDatasetList(String dvInfo){
+        return extChartViewMapper.findDataSQLBotDatasetDvId(dvInfo);
+    }
 
     public List<DataSQLBotAssistantVO> getDatasourceList(Long dsId, Long datasetId) {
         TokenUserBO user = Objects.requireNonNull(AuthUtils.getUser());

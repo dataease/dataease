@@ -1,6 +1,7 @@
 package io.dataease.utils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MappingUtils {
@@ -23,12 +24,48 @@ public class MappingUtils {
         Object current = sourceMap;
 
         for (String key : keys) {
-            if (!(current instanceof Map)) {
+            if (current == null) {
                 return null;
             }
-            @SuppressWarnings("unchecked")
-            Map<String, Object> currentMap = (Map<String, Object>) current;
-            current = currentMap.get(key);
+
+            if (key.matches(".+\\[\\d+]")) {
+                String propertyName = key.replaceAll("\\[\\d+]", "");
+                String indexStr = key.replaceAll(".*\\[(\\d+)]", "$1");
+
+                if (!(current instanceof Map)) {
+                    return null;
+                }
+
+                @SuppressWarnings("unchecked")
+                Map<String, Object> currentMap = (Map<String, Object>) current;
+                Object arrayOrList = currentMap.get(propertyName);
+
+                if (!(arrayOrList instanceof List)) {
+                    return null;
+                }
+
+                @SuppressWarnings("unchecked")
+                List<Object> list = (List<Object>) arrayOrList;
+
+                try {
+                    int index = Integer.parseInt(indexStr);
+                    if (index < 0 || index >= list.size()) {
+                        return null;
+                    }
+                    current = list.get(index);
+                } catch (NumberFormatException e) {
+                    return null;
+                }
+            } else {
+                // 普通对象属性
+                if (!(current instanceof Map)) {
+                    return null;
+                }
+
+                @SuppressWarnings("unchecked")
+                Map<String, Object> currentMap = (Map<String, Object>) current;
+                current = currentMap.get(key);
+            }
 
             if (current == null) {
                 return null;

@@ -737,17 +737,17 @@ export function mappingColor(value, defaultColor, field, type, filedValueMap?, r
           flag = true
         }
       } else if (t.term === 'le') {
-        if (value <= tv) {
+        if (value !== null && value <= tv) {
           color = t[type]
           flag = true
         }
       } else if (t.term === 'ge') {
-        if (value >= tv) {
+        if (value !== null && value >= tv) {
           color = t[type]
           flag = true
         }
       } else if (t.term === 'between') {
-        if (min <= value && value <= max) {
+        if (value !== null && min <= value && value <= max) {
           color = t[type]
           flag = true
         }
@@ -2158,11 +2158,25 @@ export class CustomDataCell extends TableDataCell {
     })
   }
 
+  public getBackgroundColor() {
+    let bgColorInfo = super.getBackgroundColor()
+    if (this.meta.isMergedCell) {
+      bgColorInfo = {
+        ...bgColorInfo,
+        backgroundColorOpacity: 0
+      }
+    }
+    return bgColorInfo
+  }
+
   /**
    * 重写绘制文本内容的方法
    * @protected
    */
   protected drawTextShape() {
+    if(this.meta.isMergedCell) {
+      return
+    }
     if (this.meta.autoWrap) {
       drawTextShape(this, false)
     } else {

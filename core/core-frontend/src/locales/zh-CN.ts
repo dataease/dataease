@@ -1,5 +1,6 @@
 export default {
   common: {
+    month_to_yesterday: '月初至昨天',
     to_this_month: '年初至本月',
     up_to_options: '最多展示1000个选项',
     next_week: '下周',
@@ -2857,6 +2858,8 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
+    sqlbot_query_tips: '智能问数',
+    cur_sq_dataset: '当前选择的数据集：',
     data_match_type: '数据匹配方式',
     select_resource: '请选择{0}',
     change_screen_page: '更换{0}',
@@ -3707,6 +3710,7 @@ export default {
     frontTimeOut: '请求超时时间 (秒)',
     logLiveTime: '操作日志保留时间 (天)',
     thresholdLogLiveTime: '阈值告警记录保留时间 (天)',
+    dataFillingLogLiveTime: '数据填报操作日志保留时间 (天)',
     exportFileLiveTime: '后台导出文件保留时间 (天)',
     platformOid: '第三方平台用户组织',
     platformRid: '第三方平台用户角色',
@@ -4232,7 +4236,7 @@ export default {
       detail_columns: '字段描述',
       display_name: '显示名称',
       show_more_detail: '查看更多',
-      confirm_to_mark_as_complete: '确认标记为完成?',
+      confirm_to_mark_as_complete: '确认标记为已提交?',
       mobile_number_format_is_incorrect: '手机号码格式不正确',
       email_format_is_incorrect: '邮箱格式不正确',
       name: '名称',
@@ -4331,7 +4335,7 @@ export default {
       ge_check: '值需要大于等于{0}: {1}',
       status: '填报状态',
       status_0: '未填报',
-      status_1: '已完成'
+      status_1: '已提交'
     },
     database: {
       nvarchar: '字符串',
@@ -4562,6 +4566,7 @@ export default {
     bind: '绑定',
     unbind_success: '解绑成功',
     confirm_unbind_dingtalk: '确定解除{0}绑定吗？',
+    unbind_error: '当前用户来源是{0}，无法解绑',
     pls_use: '请使用',
     bind_use_qr: '扫描二维码绑定',
     pls_use_dingtalk: '请使用钉钉扫描二维码登录',

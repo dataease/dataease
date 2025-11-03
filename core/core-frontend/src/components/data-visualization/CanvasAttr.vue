@@ -65,10 +65,7 @@ const themeAttrChange = (custom, property, value) => {
             }
             merge(viewInfo['customAttr'], tmpValue)
           } else {
-            console.log('viewInfo=' + JSON.stringify(viewInfo['customAttr']))
-            console.log('value=' + JSON.stringify(value))
             merge(viewInfo['customAttr'], value)
-            console.log('merge=' + JSON.stringify(viewInfo['customAttr']))
           }
         } else {
           Object.keys(value).forEach(function (key) {

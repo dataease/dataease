@@ -1597,7 +1597,8 @@ public class CalciteProvider extends Provider {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
         try {
-            CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+            Connection conn = (connection != null) ? connection : getCalciteConnection();
+            CalciteConnection calciteConnection = conn.unwrap(CalciteConnection.class);
             SchemaPlus rootSchema = buildSchema(datasourceRequest, calciteConnection);
         } catch (Exception e) {
             DEException.throwException(e.getMessage());
@@ -1633,7 +1634,8 @@ public class CalciteProvider extends Provider {
         BeanUtils.copyBean(datasourceSchemaDTO, datasource);
         datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
         try {
-            CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+            Connection conn = (connection != null) ? connection : getCalciteConnection();
+            CalciteConnection calciteConnection = conn.unwrap(CalciteConnection.class);
             SchemaPlus rootSchema = calciteConnection.getRootSchema();
             if (rootSchema.getSubSchema(datasourceSchemaDTO.getSchemaAlias()) != null) {
                 JdbcSchema jdbcSchema = rootSchema.getSubSchema(datasourceSchemaDTO.getSchemaAlias()).unwrap(JdbcSchema.class);

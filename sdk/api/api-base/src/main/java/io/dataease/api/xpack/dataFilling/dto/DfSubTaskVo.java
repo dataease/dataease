@@ -52,5 +52,7 @@ public class DfSubTaskVo implements Serializable {
     private int totalUserCount;
     private int unfinishedUserCount;
 
+    private Integer fillType;
+
 
 }

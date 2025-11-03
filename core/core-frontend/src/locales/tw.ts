@@ -1,5 +1,6 @@
 export default {
   common: {
+    month_to_yesterday: '月初至昨天',
     to_this_month: '年初至本月',
     up_to_options: '最多展示1000個選項',
     next_week: '下週',
@@ -2848,6 +2849,8 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    sqlbot_query_tips: '智能問數',
+    cur_sq_dataset: '當前選擇的數據集：',
     data_match_type: '資料匹配方式',
     select_resource: '請選擇{0}',
     change_screen_page: '更換{0}',
@@ -3698,6 +3701,7 @@ export default {
     frontTimeOut: '請求超時時間 (秒)',
     logLiveTime: '操作日誌保留時間 (天)',
     thresholdLogLiveTime: '閾值警告記錄保留時間 (天)',
+    dataFillingLogLiveTime: '數據填報操作日誌保留時間 (天)',
     exportFileLiveTime: '後台匯出檔案保留時間 (天)',
     platformOid: '第三方平台使用者組織',
     platformRid: '第三方平台使用者角色',
@@ -4226,7 +4230,7 @@ export default {
       detail_columns: '字段描述',
       display_name: '顯示名稱',
       show_more_detail: '查看更多',
-      confirm_to_mark_as_complete: '確認標記為完成?',
+      confirm_to_mark_as_complete: '確認標記為已提交?',
       mobile_number_format_is_incorrect: '手機號碼格式不正確',
       email_format_is_incorrect: '郵件格式不正確',
       name: '名稱',
@@ -4325,7 +4329,7 @@ export default {
       ge_check: '值需要大於等於{0}: {1}',
       status: '填報狀態',
       status_0: '未填報',
-      status_1: '已完成'
+      status_1: '已提交'
     },
     database: {
       nvarchar: '字串',
@@ -4553,7 +4557,8 @@ export default {
     international_lark_desc: '綁定後，您可透過國際飛書掃碼登入',
     bind: '綁定',
     unbind_success: '解綁成功',
-    confirm_unbind_dingtalk: '確定解除釘釘綁定嗎？ ',
+    confirm_unbind_dingtalk: '確定解除{0}綁定嗎？ ',
+    unbind_error: '當前用戶來源是{0}，無法解綁',
     pls_use: '請使用',
     bind_use_qr: '掃描二維碼綁定',
     pls_use_dingtalk: '請使用釘釘掃描二維碼登入',

@@ -244,6 +244,9 @@ export const calcNiceMinValue = (chart, options, tmpOptions) => {
   const min = Math.min(...values)
   const max = Math.max(...values)
   const niceMinValue = niceMin(min, max)
+  if (isNaN(niceMinValue)) {
+    return tmpOptions
+  }
   const axis = {
     yAxis: {
       ...tmpOptions.yAxis,

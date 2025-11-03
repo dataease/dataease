@@ -1503,7 +1503,6 @@ export const dvMainStore = defineStore('dataVisualization', {
         })
       })
       element.linkageFilters = currentFilters
-      console.log('===test===' + JSON.stringify(element.linkageFilters))
     },
 
     clearPanelLinkageInfo() {

@@ -128,7 +128,10 @@ export const copyStore = defineStore('copy', {
           if (dvInfo.value.type === 'dashboard') {
             eventBus.emit('addDashboardItem-' + newComponent.canvasId, newComponent)
           }
-          if (i === dataArray.length - 1) {
+          if (
+            i === dataArray.length - 1 &&
+            (dataArray.length === 1 || (dataArray.length > 1 && dvInfo.value.type === 'dashboard'))
+          ) {
             dvMainStore.setCurComponent({
               component: newComponent,
               index: componentData.value.length - 1
