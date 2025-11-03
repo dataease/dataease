@@ -4,6 +4,7 @@ import lombok.Data;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -68,7 +69,7 @@ public class Configuration {
     protected static final Pattern HOST_PORT_PATTERN = Pattern.compile("//([^:/]+)(?::(\\d+))?");
     protected static final Pattern PARAMETERS_PATTERN = Pattern.compile("([^&=]+)=([^&]*)");
     private static final Pattern DB_NAME_PATTERN = Pattern.compile("//[^/]+/([^?]+)");
-    private Map<String, String> parameters;
+    private Map<String, String> parameters = new HashMap<>();
     protected void parseHostAndPort(String jdbcUrl) {
         Matcher matcher = HOST_PORT_PATTERN.matcher(jdbcUrl);
         if (matcher.find()) {
