@@ -1,15 +1,15 @@
 <script lang="ts" setup>
 import dvFolder from '@/assets/svg/dv-folder.svg'
 import icon_dashboard from '@/assets/svg/icon_dashboard.svg'
-
+import { getDefaultSettings } from '@/api/common'
+import { useCache } from '@/hooks/web/useCache'
 import icon_right_outlined from '@/assets/svg/icon_right_outlined.svg'
 import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
 import dvSortAsc from '@/assets/svg/dv-sort-asc.svg'
 import dvSortDesc from '@/assets/svg/dv-sort-desc.svg'
-import { ref, computed, onMounted, watch, onUnmounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { useCache } from '@/hooks/web/useCache'
 import treeSort from '@/utils/treeSortUtils'
 import { BusiTreeRequest } from '@/models/tree/TreeNode'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
@@ -31,6 +31,7 @@ const interactiveStore = interactiveStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
 const { wsCache } = useCache('sessionStorage')
+const { wsCache: wsCacheLocal } = useCache()
 const { t } = useI18n()
 
 const dfsTree = (ids, arr) => {
@@ -176,15 +177,19 @@ const getTree = async () => {
 }
 
 const setSortType = () => {
-  const type = wsCache.get('mobile-sort-type')
+  let sortType = sortList[Number(wsCacheLocal.get('TreeSort-backend')) ?? 1].value
+  const type = wsCacheLocal.get('mobile-sort-type') ?? sortType
   sortTypeChange(type || curSortType.value)
 }
 
-onUnmounted(() => {
-  wsCache.set('mobile-sort-type', curSortType.value)
-})
+const sortTypeChangeMobile = type => {
+  wsCacheLocal.set('mobile-sort-type', type)
+  sortTypeChange(type)
+}
 
-onMounted(() => {
+onMounted(async () => {
+  const defaultSort = await getDefaultSettings()
+  wsCacheLocal.set('TreeSort-backend', defaultSort['basic.defaultSort'] ?? '1')
   getTree()
   activeDirectName.value = wsCache.get('activeDirectName')
   if (wsCache.get('activeTabbar') !== 'direct' || !activeDirectName.value) return
@@ -239,7 +244,7 @@ onMounted(() => {
             </el-icon>
           </template>
         </el-input>
-        <el-dropdown @command="sortTypeChange" trigger="click">
+        <el-dropdown @command="sortTypeChangeMobile" trigger="click">
           <el-icon class="filter-icon-span">
             <Icon v-if="curSortType.includes('asc')" name="dv-sort-asc" class="opt-icon"
               ><dvSortAsc class="svg-icon opt-icon"
