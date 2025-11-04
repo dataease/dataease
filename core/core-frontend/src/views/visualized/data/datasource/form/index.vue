@@ -295,7 +295,7 @@ const continueCreating = () => {
   init(null, pid.value)
 }
 
-const handleShowFinishPage = ({ id, name, pid }) => {
+const handleShowFinishPage = ({ id, name, pid: pidVal }) => {
   isShowFinishPage()
     .then(res => {
       if (editDs.value || !res.data) {
@@ -308,7 +308,7 @@ const handleShowFinishPage = ({ id, name, pid }) => {
       }
     })
     .finally(() => {
-      pid.value = pid
+      pid.value = pidVal
     })
 }
 
