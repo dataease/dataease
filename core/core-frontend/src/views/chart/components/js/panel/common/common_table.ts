@@ -2389,7 +2389,7 @@ const getWrapTextHeight = (wrapText, textStyle, spreadsheet, maxLines) => {
 }
 
 // 导出获取汇总行的函数
-export function getSummaryRow(data, axis, sumCon = []) {
+export function getSummaryRow(data, axis, sumCon = [], customSumResult = {}) {
   const summaryObj = { SUMMARY: true }
   for (let i = 0; i < axis.length; i++) {
     const a = axis[i].dataeaseName
@@ -2472,6 +2472,9 @@ export function getSummaryRow(data, axis, sumCon = []) {
             .sqrt()
             .toNumber() // 计算总体标准差
         }
+        break
+      case 'custom':
+        summaryObj[a] = customSumResult[a]
         break
     }
   }

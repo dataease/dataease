@@ -4,11 +4,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.chart.dto.PageInfo;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.chart.charts.impl.DefaultChartHandler;
+import io.dataease.constant.DeTypeConstants;
+import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.Dimension2SQLObj;
 import io.dataease.engine.trans.ExtWhere2Str;
 import io.dataease.engine.trans.Quota2SQLObj;
 import io.dataease.engine.utils.Utils;
+import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.datasource.model.SQLMeta;
@@ -16,9 +19,11 @@ import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.view.dto.*;
 import io.dataease.extensions.view.util.ChartDataUtil;
 import io.dataease.extensions.view.util.FieldUtil;
+import io.dataease.utils.IDUtils;
 import io.dataease.utils.JsonUtil;
 import lombok.Getter;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -110,7 +115,7 @@ public class TableNormalHandler extends DefaultChartHandler {
 
         var tablePageMode = (String) filterResult.getContext().get("tablePageMode");
         var totalPageSql = "SELECT COUNT(*) FROM (" + SQLProvider.createQuerySQLNoSort(sqlMeta, true, view) + ") COUNT_TEMP";
-        if (StringUtils.isNotEmpty(totalPageSql) && StringUtils.equalsIgnoreCase(tablePageMode, "page")) {
+        if (StringUtils.equalsIgnoreCase(tablePageMode, "page")) {
             totalPageSql = provider.rebuildSQL(totalPageSql, sqlMeta, crossDs, dsMap);
             datasourceRequest.setQuery(totalPageSql);
             datasourceRequest.setTotalPageFlag(true);
@@ -131,7 +136,6 @@ public class TableNormalHandler extends DefaultChartHandler {
         List<String[]> data = (List<String[]>) provider.fetchResultField(datasourceRequest).get("data");
         //自定义排序
         data = ChartDataUtil.resultCustomSort(xAxis, yAxis, view.getSortPriority(), data);
-
         var yoyFiltered = filterResult.getContext().get("yoyFiltered") != null;
         if (yoyFiltered) {
             // 这里没加分页，因为加了分页参数可能会把原始数据挤出去
@@ -207,6 +211,56 @@ public class TableNormalHandler extends DefaultChartHandler {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        // 自定义汇总
+        var basicStyle = (Map<String, Object>) view.getCustomAttr().get("basicStyle");
+        var showSummary = BooleanUtils.isTrue((Boolean) basicStyle.get("showSummary"));
+        if (showSummary) {
+            var fieldList = (List) basicStyle.get("seriesSummary");
+            if (CollectionUtils.isNotEmpty(fieldList)) {
+                var customCalcFields = new ArrayList<ChartViewFieldDTO>();
+                var seriesList = JsonUtil.parseList(JsonUtil.toJSONString(fieldList).toString(), new TypeReference<List<ChartViewFieldDTO>>(){});
+                seriesList.forEach(field -> {
+                    if (!BooleanUtils.isTrue(field.getShow()) || !"custom".equalsIgnoreCase(field.getSummary())) {
+                        return;
+                    }
+                    if (StringUtils.isBlank(field.getOriginName())) {
+                        return;
+                    }
+                    field.setSummary("");
+                    field.setDeType(DeTypeConstants.DE_FLOAT);
+                    field.setId(IDUtils.snowID());
+                    field.setExtField(ExtFieldConstant.EXT_CALC);
+                    customCalcFields.add(field);
+                });
+                if (!customCalcFields.isEmpty()) {
+                    var xFields = sqlMeta.getXFields();
+                    // 清空维度值，获取完结果再设置回去
+                    sqlMeta.setXFields(Collections.emptyList());
+                    List<DatasetTableFieldDTO> tmpList = FieldUtil.transFields(allFields);
+                    tmpList.addAll(customCalcFields);
+                    Quota2SQLObj.quota2sqlObj(sqlMeta, customCalcFields, tmpList, crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
+                    String customSumSql = SQLProvider.createQuerySQL(sqlMeta, false, !StringUtils.equalsIgnoreCase(dsMap.values().iterator().next().getType(), "es"), view);
+                    customSumSql = provider.rebuildSQL(customSumSql, sqlMeta, crossDs, dsMap);
+                    var customSumReq = new DatasourceRequest();
+                    customSumReq.setIsCross(crossDs);
+                    customSumReq.setDsList(dsMap);
+                    customSumReq.setQuery(customSumSql);
+                    var customSumData = (List<String[]>) provider.fetchResultField(customSumReq).get("data");
+                    if (CollectionUtils.isNotEmpty(customSumData)) {
+                        var customSumResult = new HashMap<String, Double>();
+                        // 只取第一行结果
+                        var customSumArr = customSumData.get(0);
+                        for (int i = 0; i < customSumArr.length; i++) {
+                            if (customCalcFields.get(i) != null) {
+                                customSumResult.put(customCalcFields.get(i).getField(), Double.valueOf(customSumArr[i]));
+                            }
+                        }
+                        result.put("customSumResult", customSumResult);
+                    }
+                    sqlMeta.setXFields(xFields);
+                }
+            }
         }
         return calcResult;
     }

@@ -306,6 +306,7 @@ declare interface ChartBasicStyle {
     show: boolean
     field: string
     summary: string
+    originName?: string
   }>
   /**
    * 符号地图符号大小最小值

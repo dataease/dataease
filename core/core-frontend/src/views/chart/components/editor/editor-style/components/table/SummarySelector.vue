@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { useI18n } from '@/hooks/web/useI18n'
-import { computed, onMounted, PropType, reactive, watch } from 'vue'
+import { computed, onMounted, PropType, reactive, watch, ref, nextTick, inject } from 'vue'
 import { DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'
 import { cloneDeep, defaultsDeep, filter, find } from 'lodash-es'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
+import CustomAggrEdit from './CustomAggrEdit.vue'
+
 const dvMainStore = dvMainStoreWithOut()
 const { batchOptStatus } = storeToRefs(dvMainStore)
 const { t } = useI18n()
@@ -30,6 +32,7 @@ const state = reactive({
     show: boolean
     field: string
     summary: string
+    originName?: string
   }
 })
 
@@ -37,7 +40,12 @@ const emit = defineEmits(['onBasicStyleChange'])
 const changeBasicStyle = (prop?: string, requestData = false) => {
   emit('onBasicStyleChange', { data: state.basicStyleForm, requestData }, prop)
 }
-
+const changeSummaryType = () => {
+  if (state.currentAxisSummary.summary === 'custom' && !state.currentAxisSummary.originName) {
+    return
+  }
+  changeBasicStyle('seriesSummary')
+}
 watch(
   [
     () => props.chart.customAttr.basicStyle.showSummary,
@@ -65,15 +73,38 @@ const summaryTypes = [
   { key: 'sum', name: t('chart.sum') },
   { key: 'avg', name: t('chart.avg') },
   { key: 'max', name: t('chart.max') },
-  { key: 'min', name: t('chart.min') }
-  // { key: 'stddev_pop', name: t('chart.stddev_pop') },
-  // { key: 'var_pop', name: t('chart.var_pop') }
+  { key: 'min', name: t('chart.min') },
+  { key: 'custom', name: t('commons.custom') }
 ]
 
 function onSelectAxis(value) {
   state.currentAxisSummary = find(state.basicStyleForm.seriesSummary, s => s.field === value)
 }
 
+const calcEdit = ref()
+const editCalcField = ref(false)
+const dimension = inject('dimension', () => [])
+const quota = inject('quota', () => [])
+const editField = () => {
+  editCalcField.value = true
+  nextTick(() => {
+    calcEdit.value.initEdit(
+      state.currentAxisSummary,
+      quota().filter(ele => ele.id !== '-1')
+    )
+  })
+}
+const closeEditCalc = () => {
+  editCalcField.value = false
+}
+const confirmEditCalc = () => {
+  calcEdit.value.setFieldForm()
+  const obj = cloneDeep(calcEdit.value.fieldForm)
+  state.currentAxisSummary.originName = obj.originName
+  setFieldDefaultValue(state.currentAxisSummary)
+  closeEditCalc()
+  changeSummaryType()
+}
 const init = () => {
   const basicStyle = cloneDeep(props.chart.customAttr.basicStyle)
 
@@ -112,7 +143,14 @@ const init = () => {
     state.currentAxisSummary = undefined
   }
 }
-
+const setFieldDefaultValue = field => {
+  field.extField = 2
+  field.chartId = props.chart.id
+  field.datasetGroupId = props.chart.tableId
+  field.lastSyncTime = null
+  field.columnIndex = dimension().length + quota().length
+  field.deExtractType = field.deType
+}
 onMounted(() => {
   init()
 })
@@ -173,21 +211,41 @@ onMounted(() => {
 
         <div class="indented-container">
           <el-form-item class="form-item" :class="'form-item-' + themes">
-            <el-select
-              v-model="state.currentAxisSummary.summary"
-              :class="'form-item-' + themes"
-              class="form-item"
-              :effect="themes"
-              :disabled="!state.currentAxisSummary.show"
-              @change="changeBasicStyle('seriesSummary')"
-            >
-              <el-option v-for="c in summaryTypes" :key="c.key" :value="c.key" :label="c.name" />
-            </el-select>
+            <el-col :span="state.currentAxisSummary.summary === 'custom' ? 19 : 22" :offset="2">
+              <el-select
+                v-model="state.currentAxisSummary.summary"
+                :class="'form-item-' + themes"
+                class="form-item"
+                :effect="themes"
+                :disabled="!state.currentAxisSummary.show"
+                @change="changeSummaryType"
+              >
+                <el-option v-for="c in summaryTypes" :key="c.key" :value="c.key" :label="c.name" />
+              </el-select>
+            </el-col>
+            <el-col v-if="state.currentAxisSummary.summary === 'custom'" :span="2" :offset="1">
+              <el-icon style="cursor: pointer">
+                <Setting @click="editField()" />
+              </el-icon>
+            </el-col>
           </el-form-item>
         </div>
       </template>
     </el-form>
   </div>
+  <!--图表计算字段-->
+  <el-dialog
+    v-model="editCalcField"
+    width="1000px"
+    title="自定义总计"
+    :close-on-click-modal="false"
+  >
+    <custom-aggr-edit ref="calcEdit" />
+    <template #footer>
+      <el-button secondary @click="closeEditCalc()">{{ t('dataset.cancel') }} </el-button>
+      <el-button type="primary" @click="confirmEditCalc()">{{ t('dataset.confirm') }} </el-button>
+    </template>
+  </el-dialog>
 </template>
 
 <style scoped lang="less">
