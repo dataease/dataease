@@ -123,12 +123,8 @@ export function listenerTooltipShow(newChart: G2Chart, chart: Chart) {
       }
       tooltip.removeEventListener('mouseleave', tooltipMouseleave)
       tooltip.addEventListener('mouseleave', tooltipMouseleave)
-      const { height, right } = newChart
-        ?.getContext()
-        ?.canvas?.context?.contextService?.$container?.getBoundingClientRect()
       if (isCarousel) {
-        const tooltipHeight = tooltip.getBoundingClientRect().height
-        tooltip.style.top = (height / 2 - tooltipHeight / 2 + 20) * chart.tScale + 'px'
+        tooltip.style.top = '0px'
       } else {
         const clientY = event?.client?.y
         if (!clientY) return
@@ -138,17 +134,16 @@ export function listenerTooltipShow(newChart: G2Chart, chart: Chart) {
           tooltip.style.top = `${clientY - tooltip.getBoundingClientRect().height - 20}px`
         }
         const clientX = event.client?.x
-        const targetDiv =
-          document.getElementById('edit-canvas-main') ||
-          document.getElementById('dv-main-center') ||
-          document.getElementById('preview-canvas-main')
+        const targetDiv = document.getElementById(chart.container)
         if (!targetDiv || clientX == null) return
 
         const tooltipWidth = tooltip.getBoundingClientRect().width
         const left = clientX
 
         tooltip.style.left =
-          left + tooltipWidth > right ? `${clientX - tooltipWidth - 20}px` : `${left + 20}px`
+          left + tooltipWidth > targetDiv.getBoundingClientRect().right
+            ? `${clientX - tooltipWidth - 20}px`
+            : `${left + 20}px`
       }
     })
   })
