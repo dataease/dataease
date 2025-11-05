@@ -553,6 +553,59 @@ onMounted(() => {
     <!--gauge-end-->
 
     <!--liquid-begin-->
+    <el-form-item
+      v-show="showProperty('liquidShowBorder')"
+      class="form-item"
+      :class="'form-item-' + themes"
+    >
+      <el-checkbox
+        :effect="themes"
+        v-model="state.miscForm.liquidShowBorder"
+        @change="changeMisc('liquidShowBorder')"
+      >
+        {{ t('chart.liquid_show_border') }}
+      </el-checkbox>
+    </el-form-item>
+    <el-row :guter="8">
+      <el-col :span="12">
+        <el-form-item
+          v-show="showProperty('liquidBorderWidth')"
+          class="form-item"
+          :label="t('chart.liquid_border_width')"
+          :class="'form-item-' + themes"
+        >
+          <el-input-number
+            v-model="state.miscForm.liquidBorderWidth"
+            :disabled="!state.miscForm.liquidShowBorder"
+            :effect="themes"
+            :min="1"
+            :max="100"
+            size="small"
+            controls-position="right"
+            @change="changeMisc('liquidBorderWidth')"
+          />
+        </el-form-item>
+      </el-col>
+      <el-col :span="12">
+        <el-form-item
+          v-show="showProperty('liquidBorderDistance')"
+          class="form-item"
+          :label="t('chart.liquid_border_distance')"
+          :class="'form-item-' + themes"
+        >
+          <el-input-number
+            v-model="state.miscForm.liquidBorderDistance"
+            :disabled="!state.miscForm.liquidShowBorder"
+            :effect="themes"
+            :min="1"
+            :max="100"
+            size="small"
+            controls-position="right"
+            @change="changeMisc('liquidBorderDistance')"
+          />
+        </el-form-item>
+      </el-col>
+    </el-row>
     <el-row :gutter="8">
       <el-col :span="12">
         <el-form-item

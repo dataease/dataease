@@ -2070,7 +2070,10 @@ export default {
     table_field_total_label: '字段别名',
     table_row_header_freeze: '行头冻结',
     value_formatter_total_out_percent: '显示占比',
-    enable_slider_tip: '开启缩略轴后，轮播提示将会失效'
+    enable_slider_tip: '开启缩略轴后，轮播提示将会失效',
+    liquid_show_border: '显示边框',
+    liquid_border_width: '边框宽度',
+    liquid_border_distance: '边框间距'
   },
   dataset: {
     field_value: '字段值',

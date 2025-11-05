@@ -731,6 +731,18 @@ declare interface ChartMiscAttr {
    */
   liquidShape: string
   /**
+   * 水波图边框显示
+   */
+  liquidShowBorder: boolean
+  /**
+   * 水波图边框宽度
+   */
+  liquidBorderWidth: number
+  /**
+   * 水波图边框距离
+   */
+  liquidBorderDistance: number
+  /**
    * 地图倾角
    */
   mapPitch: number

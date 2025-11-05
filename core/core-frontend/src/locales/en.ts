@@ -2120,7 +2120,10 @@ export default {
     table_field_total_label: 'Field Alias',
     table_row_header_freeze: 'Row Header Freeze',
     value_formatter_total_out_percent: 'Show percentage',
-    enable_slider_tip: 'After enabling the slider, the carousel prompt will be disabled.'
+    enable_slider_tip: 'After enabling the slider, the carousel prompt will be disabled.',
+    liquid_show_border: 'Show Border',
+    liquid_border_width: 'Border Width',
+    liquid_border_distance: 'Border Distance'
   },
   dataset: {
     field_value: 'Field Value',

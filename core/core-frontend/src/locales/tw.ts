@@ -2061,7 +2061,10 @@ export default {
     table_field_total_label: '字段別名',
     table_row_header_freeze: '行頭凍結',
     value_formatter_total_out_percent: '顯示佔比',
-    enable_slider_tip: '開啟縮略軸後，輪播提示將會失效'
+    enable_slider_tip: '開啟縮略軸後，輪播提示將會失效',
+    liquid_show_border: '顯示邊框',
+    liquid_border_width: '邊框寬度',
+    liquid_border_distance: '邊框間距'
   },
   dataset: {
     field_value: '欄位值',

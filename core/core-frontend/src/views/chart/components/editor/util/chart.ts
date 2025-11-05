@@ -344,7 +344,10 @@ export const DEFAULT_MISC: ChartMiscAttr = {
         symbolSize: 4
       }
     }
-  }
+  },
+  liquidShowBorder: false,
+  liquidBorderWidth: 4,
+  liquidBorderDistance: 8
 }
 
 export const DEFAULT_MARK = {

@@ -7,6 +7,7 @@ import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/uti
 import { DEFAULT_MISC } from '@/views/chart/components/editor/util/chart'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { useI18n } from '@/hooks/web/useI18n'
+import { defaultsDeep } from 'lodash-es'
 
 const { t } = useI18n()
 const DEFAULT_LIQUID_DATA = []
@@ -28,7 +29,15 @@ export class Liquid extends G2PlotChartView<LiquidOptions, G2Liquid> {
     'border-style': ['all'],
     'basic-style-selector': ['colors', 'alpha'],
     'label-selector': ['fontSize', 'color', 'labelFormatter'],
-    'misc-selector': ['liquidShape', 'liquidSize', 'liquidMaxType', 'liquidMaxField'],
+    'misc-selector': [
+      'liquidShape',
+      'liquidSize',
+      'liquidMaxType',
+      'liquidMaxField',
+      'liquidShowBorder',
+      'liquidBorderWidth',
+      'liquidBorderDistance'
+    ],
     'title-selector': [
       'title',
       'fontSize',
@@ -130,6 +139,15 @@ export class Liquid extends G2PlotChartView<LiquidOptions, G2Liquid> {
       percent: value / max,
       radius: radius,
       shape: shape
+    }
+    const { misc } = customAttr
+    if (misc?.liquidShowBorder) {
+      defaultsDeep(size, {
+        outline: {
+          border: misc.liquidBorderWidth ?? DEFAULT_MISC.liquidBorderWidth,
+          distance: misc.liquidBorderDistance ?? DEFAULT_MISC.liquidBorderDistance
+        }
+      })
     }
     return { ...options, ...size }
   }
