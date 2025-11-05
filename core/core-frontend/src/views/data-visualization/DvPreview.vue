@@ -42,6 +42,11 @@ const props = defineProps({
     type: String,
     default: 'preview'
   },
+  // 显示悬浮按钮
+  showPopBar: {
+    type: Boolean,
+    default: false
+  },
   downloadStatus: {
     required: false,
     type: Boolean,
@@ -133,6 +138,7 @@ defineExpose({
         :show-position="showPosition"
         :download-status="downloadStatus"
         :outer-screen-adaptor="screenAdaptor"
+        :show-pop-bar="showPopBar"
         :show-linkage-button="showLinkageButton"
       ></de-preview>
     </div>

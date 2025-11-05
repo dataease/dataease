@@ -215,6 +215,7 @@ defineExpose({
       :canvas-view-info="state.canvasViewInfoPreview"
       :dv-info="state.dvInfo"
       :cur-gap="state.curPreviewGap"
+      :show-pop-bar="true"
       :show-linkage-button="false"
       :is-selector="props.isSelector"
     ></de-preview>

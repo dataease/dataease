@@ -511,8 +511,7 @@ const dataVPreview = computed(
 const linkOptBarShow = computed(() => {
   return Boolean(
     canvasStyleData.value.suspensionButtonAvailable &&
-      !inMobile.value &&
-      !mobileInPc.value &&
+      ((!inMobile.value && !mobileInPc.value) || !isDashboard()) &&
       showPopBar.value &&
       !isDesktopFlag
   )
