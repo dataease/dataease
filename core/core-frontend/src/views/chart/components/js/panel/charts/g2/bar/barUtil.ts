@@ -72,7 +72,8 @@ export function tooltipCss(tooltipAttr: DeepPartial<ChartTooltipAttr>) {
       background: tooltipAttr.backgroundColor,
       'max-height': '50vh',
       'overflow-y': 'auto',
-      position: 'fixed'
+      position: 'fixed',
+      'scrollbar-width': tooltipAttr.carousel.enable ? 'none !important' : 'auto'
     },
     '.g2-tooltip-title': {
       color: tooltipAttr.color,
@@ -91,16 +92,18 @@ export function tooltipCss(tooltipAttr: DeepPartial<ChartTooltipAttr>) {
 
 /**
  * 计算 tooltip 最大高度
- * 最大高度为图表高度-20px
  * @param chart
  */
 export function tooltipMaxHeight(chart: Chart) {
   const chartContainer = document.getElementById(chart.container)
   const defaultHeight = 80
-  const maxHeight = chartContainer
-    ? Math.max(chartContainer.getBoundingClientRect().height - 20, defaultHeight)
-    : defaultHeight
-  return `max-height: ${maxHeight}px;`
+  const chartRect = chartContainer?.getBoundingClientRect()
+  let doubleHeight = chartRect.height * 2 - 20
+  if (chart.customAttr?.tooltip?.carousel?.enable) {
+    doubleHeight = chartRect.height / 1.2 - 20
+  }
+  const maxHeight = chartContainer ? Math.max(doubleHeight, defaultHeight) : defaultHeight
+  return `max-height: ${maxHeight}px;max-width: ${chartRect.width / 2}px;`
 }
 
 export function listenerTooltipShow(newChart: G2Chart, chart: Chart) {

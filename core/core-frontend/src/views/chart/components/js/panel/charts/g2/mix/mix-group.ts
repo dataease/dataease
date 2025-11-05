@@ -341,6 +341,13 @@ export class GroupLineMix extends G2ChartView {
     merge(lineMark, rightColorScale)
     merge(pointMark, rightColorScale)
     merge(intervalMark, {
+      scale: {
+        x: {
+          paddingInner: -0.21
+        }
+      }
+    })
+    merge(intervalMark, {
       style: {
         columnWidthRatio: basicStyle.columnWidthRatio / 100
       }

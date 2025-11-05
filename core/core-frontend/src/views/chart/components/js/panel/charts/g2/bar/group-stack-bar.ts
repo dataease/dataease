@@ -7,6 +7,7 @@ import { StackBar } from '@/views/chart/components/js/panel/charts/g2/bar/stack-
 import {
   createTooltipWrapper,
   tooltipCss,
+  tooltipMaxHeight,
   Transform,
   ViewSpec
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
@@ -81,7 +82,7 @@ export class GroupStackBar extends StackBar {
         tooltip: {
           mount: createTooltipWrapper(chart),
           css: tooltipCss(tooltip),
-          enterable: false,
+          enterable: true,
           shared: true,
           position: 'top-right',
           render: (_, { title, items: originalItems }) => {
@@ -105,7 +106,9 @@ export class GroupStackBar extends StackBar {
                   .replace('{value}', value)
               })
               .join('')
-            const listHtml = `<ul class="g2-tooltip-list" style="margin: 0px; list-style-type: none; padding: 0px;">${itemsHtml}</ul>`
+            const listHtml = `<ul class="g2-tooltip-list" style="${tooltipMaxHeight(
+              chart
+            )}margin: 0px; list-style-type: none; padding: 0px;">${itemsHtml}</ul>`
             return `${titleHtml}${listHtml}`
           }
         }

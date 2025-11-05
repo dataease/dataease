@@ -2565,6 +2565,7 @@ function hideChildrenLabels(child) {
   )
   child.legend && (child.legend = false)
   child.slider && Object.assign(child.slider, { x: false, y: false })
+  child.tooltip = false
 }
 
 /**

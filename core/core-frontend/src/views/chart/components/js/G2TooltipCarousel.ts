@@ -193,7 +193,7 @@ class G2TooltipCarousel {
     if (!this.intersectionObserver) {
       this.intersectionObserver = new IntersectionObserver(this.handleIntersection.bind(this), {
         root: null,
-        threshold: [0, 0.3, 0.5, 0.7, 1]
+        threshold: [0, 0.1, 0.3, 0.5, 0.7, 0.9, 1]
       })
     }
     this.intersectionObserver?.observe(this.newChart.getContainer())
@@ -212,7 +212,7 @@ class G2TooltipCarousel {
       instance.stop()
       instance.start()
     })
-  }, 100)
+  }, 1000)
 
   /**
    * 移除事件监听
@@ -256,11 +256,20 @@ class G2TooltipCarousel {
     if (!el) return false
     // 检查可见比例
     const rect = el.getBoundingClientRect()
-    const visibleHeight = Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 60)
-    const visibleWidth = Math.min(rect.right, window.innerWidth) - Math.max(rect.left, 0)
+    let visibleHeight = Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 60)
+    let visibleWidth = Math.min(rect.right, window.innerWidth) - Math.max(rect.left, 0)
+    const dvMainCenter =
+      document.getElementById('dv-main-center') ||
+      document.getElementById('preview-canvas-main') ||
+      document.getElementById('edit-canvas-main')
+    if (dvMainCenter) {
+      const dvRect = dvMainCenter.getBoundingClientRect()
+      visibleHeight = Math.min(rect.bottom, dvRect.bottom) - Math.max(rect.top, dvRect.top)
+      visibleWidth = Math.min(rect.right, dvRect.right) - Math.max(rect.left, dvRect.left)
+    }
     const percentHeight = visibleHeight / rect.height
     const percentWidth = visibleWidth / rect.width
-    return percentHeight > 0.7 && percentWidth > 0.7
+    return percentHeight >= 0.9 && percentWidth >= 0.7
   }
 
   /**
@@ -421,7 +430,7 @@ class G2TooltipCarousel {
     const isMix = this.isMixChart()
     const isLineOrMix = this.isLineChart() || isMix
     this.newChart.emit('element:select', {
-      data: { data: [isMix && originalData ? originalData : tooltipData.data.data] }
+      data: { data: [isLineOrMix && originalData ? originalData : tooltipData.data.data] }
     })
     const { offsetX, offsetY } = this.getTooltipOffsetX(tooltipData)
     this.newChart.emit('tooltip:show', {
@@ -437,24 +446,37 @@ class G2TooltipCarousel {
    */
   getTooltipOffsetX(tooltipData) {
     try {
-      const ctx = this.newChart.getContext()
-      const root = ctx.canvas.document.getElementsByClassName('plot')[0]
-      const { height } = root.getRenderBounds()
-      const scaleX = (this.newChart.getScale() || ctx.views[0].scale).x
       const x =
-        tooltipData.data.data.x ||
-        tooltipData.data.data[this.newChart?.children?.[0]?.value?.encode?.x]
-      const [x2] = (this.newChart.getView()?.coordinate || ctx.views[0].coordinate).map([
-        scaleX.map(x),
-        0.5
-      ])
-      const { insetLeft, marginLeft, paddingLeft } = root.__data__
-      return {
-        offsetX: insetLeft + marginLeft + paddingLeft + x2 * this.chart.tScale,
-        offsetY: (height / 2) * this.chart.tScale
+        tooltipData?.data?.data?.x ??
+        tooltipData?.data?.data?.[this.newChart?.children?.[0]?.value?.encode?.x]
+      const ctx = this.newChart?.getContext()
+      if (!ctx) return {}
+      const elements = ctx.canvas?.document?.getElementsByClassName('element') || []
+      const root = ctx.canvas?.document?.getElementsByClassName('plot')?.[0]
+      if (!root || elements.length === 0) return {}
+      const { insetLeft = 0, marginLeft = 0, paddingLeft = 0 } = root.__data__ || {}
+      const plotPaddingLeft = insetLeft + marginLeft + paddingLeft
+      const offsetY = (root.getRenderBounds().height / 2) * (this.chart.tScale || 1)
+      if (this.isLineChart()) {
+        const xField = ctx.views[0].options.marks[0].encode.x
+        const firstXElement = elements.filter(
+          ele => ele.markType === 'point' && ele.__data__.data[xField] === x
+        )?.[0]
+        const offsetX =
+          plotPaddingLeft +
+          (firstXElement?.__data__?.points?.[0]?.[0] + firstXElement?.__data__?.points?.[1]?.[0]) /
+            2
+        return { offsetX, offsetY }
+      } else {
+        const xElement = Array.from(elements).find(ele => ele.__data__?.title === x)
+        if (!xElement || !xElement.__data__?.points) return {}
+        const points = xElement.__data__.points
+        const offsetX = plotPaddingLeft + (points[0][0] + points[1][0]) / 2
+        return { offsetX, offsetY }
       }
     } catch (e) {
       console.error('Get Tooltip offsetX fail:', e)
+      return {}
     }
   }
 

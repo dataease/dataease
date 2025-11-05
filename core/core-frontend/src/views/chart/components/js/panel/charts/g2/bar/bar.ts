@@ -304,7 +304,12 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
         paddingInner: 0.01
       }
     }
-    if (this.name === 'bar' || this.name === 'percentage-bar-stack' || this.name === 'waterfall') {
+    if (
+      this.name === 'bar' ||
+      this.name === 'percentage-bar-stack' ||
+      this.name === 'waterfall' ||
+      this.name === 'bar-group-stack'
+    ) {
       scale.x.paddingInner = -0.21
     }
     if (this.name === 'bar-group') {

@@ -15,6 +15,7 @@ import {
   createTooltipWrapper,
   handleEmptyDataStrategy,
   tooltipCss,
+  tooltipMaxHeight,
   ViewSpec
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 import {
