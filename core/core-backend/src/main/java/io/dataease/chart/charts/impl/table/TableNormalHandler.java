@@ -28,7 +28,9 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author jianneng
@@ -220,11 +222,15 @@ public class TableNormalHandler extends DefaultChartHandler {
             if (CollectionUtils.isNotEmpty(fieldList)) {
                 var customCalcFields = new ArrayList<ChartViewFieldDTO>();
                 var seriesList = JsonUtil.parseList(JsonUtil.toJSONString(fieldList).toString(), new TypeReference<List<ChartViewFieldDTO>>(){});
+                var quotaIds = allFields.stream().map(DatasetTableFieldDTO::getDataeaseName).collect(Collectors.toSet());
                 seriesList.forEach(field -> {
                     if (!BooleanUtils.isTrue(field.getShow()) || !"custom".equalsIgnoreCase(field.getSummary())) {
                         return;
                     }
                     if (StringUtils.isBlank(field.getOriginName())) {
+                        return;
+                    }
+                    if (!quotaIds.contains(field.getField())) {
                         return;
                     }
                     field.setSummary("");
@@ -248,12 +254,16 @@ public class TableNormalHandler extends DefaultChartHandler {
                     customSumReq.setQuery(customSumSql);
                     var customSumData = (List<String[]>) provider.fetchResultField(customSumReq).get("data");
                     if (CollectionUtils.isNotEmpty(customSumData)) {
-                        var customSumResult = new HashMap<String, Double>();
+                        var customSumResult = new HashMap<String, BigDecimal>();
                         // 只取第一行结果
                         var customSumArr = customSumData.get(0);
                         for (int i = 0; i < customSumArr.length; i++) {
-                            if (customCalcFields.get(i) != null) {
-                                customSumResult.put(customCalcFields.get(i).getField(), Double.valueOf(customSumArr[i]));
+                            if (customCalcFields.get(i) != null && customSumArr[i] != null) {
+                                try {
+                                    customSumResult.put(customCalcFields.get(i).getField(), new BigDecimal(customSumArr[i]));
+                                } catch (Exception e) {
+                                    customSumResult.put(customCalcFields.get(i).getField(), new BigDecimal(0));
+                                }
                             }
                         }
                         result.put("customSumResult", customSumResult);
