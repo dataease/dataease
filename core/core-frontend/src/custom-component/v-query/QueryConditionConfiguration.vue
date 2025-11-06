@@ -1784,6 +1784,7 @@ const parameterCompletion = ele => {
     defaultNumValueEnd: null,
     numValueEnd: null,
     numValueStart: null,
+    displayFormat: 0,
     timeRange: {
       intervalType: 'none',
       dynamicWindow: false,
@@ -3438,6 +3439,24 @@ defineExpose({
                   </div>
                 </div>
               </div>
+              <template v-if="['0', '2', '5'].includes(curComponent.displayType)">
+                <div
+                  class="label ellipsis"
+                  :title="t('common.display_formats')"
+                  style="margin-top: 10.5px"
+                >
+                  {{ t('common.display_formats') }}
+                </div>
+                <div class="value" style="margin-top: 10.5px">
+                  <el-radio-group
+                    class="larger-radio icon-info"
+                    v-model="curComponent.displayFormat"
+                  >
+                    <el-radio :label="0">{{ t('common.dropdown_display') }} </el-radio>
+                    <el-radio :label="1">{{ t('common.tile_display') }}</el-radio>
+                  </el-radio-group>
+                </div>
+              </template>
               <div
                 class="label ellipsis"
                 :title="t('v_query.of_option_values')"
