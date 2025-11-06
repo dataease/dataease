@@ -16,6 +16,7 @@ import {
 } from 'vue'
 import { enumValueObj, type EnumValue, getEnumValue } from '@/api/dataset'
 import { cloneDeep, debounce } from 'lodash-es'
+import Flat from './Flat.vue'
 import eventBus from '@/utils/eventBus'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -27,6 +28,7 @@ interface SelectConfig {
   selectValue: any
   defaultMapValue: any
   mapValue: any
+  displayFormat?: number
   defaultValue: any
   checkedFieldsMap: object
   displayType: string
@@ -64,6 +66,7 @@ const props = defineProps({
     default: () => {
       return {
         selectValue: '',
+        displayFormat: 0,
         queryConditionWidth: 0,
         resultMode: 0,
         defaultValue: '',
@@ -657,6 +660,10 @@ const selectStyle = computed(() => {
   return props.isConfig ? {} : { width: getCustomWidth() + 'px' }
 })
 
+const selectStyleFlat = computed(() => {
+  return props.isConfig ? { width: '415px' } : { width: getCustomWidth() + 'px' }
+})
+
 const mult = ref()
 const single = ref()
 
@@ -734,6 +741,24 @@ const tagTextWidth = computed(() => {
   return (getCustomWidth() - 65) / 2 - 20 + 'px'
 })
 
+const activeItems = computed(() => {
+  return Array.isArray(selectValue.value) ? selectValue.value : [selectValue.value]
+})
+
+const handleItemClick = (item: any) => {
+  if (multiple.value) {
+    if (selectValue.value.includes(item)) {
+      selectValue.value = selectValue.value.filter(ele => ele !== item)
+    } else {
+      selectValue.value = [...selectValue.value, item]
+    }
+  } else {
+    selectValue.value = selectValue.value === item ? undefined : item
+  }
+
+  handleValueChange()
+}
+
 const componentClick = () => {
   mult.value?.blur()
   single.value?.blur()
@@ -754,8 +779,18 @@ defineExpose({
 </script>
 
 <template>
+  <Flat
+    @handleItemClick="handleItemClick"
+    :options="options"
+    :selectStyle="selectStyleFlat"
+    v-loading="loading"
+    :multiple="multiple"
+    :disabled="disabledFirstItem && props.isConfig"
+    :activeItems="activeItems"
+    v-if="config.displayFormat === 1"
+  ></Flat>
   <el-select-v2
-    v-if="multiple"
+    v-else-if="multiple"
     key="multiple"
     ref="mult"
     v-model="selectValue"

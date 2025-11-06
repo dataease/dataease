@@ -1,5 +1,8 @@
 export default {
   common: {
+    display_formats: '展示形式',
+    dropdown_display: '下拉展示',
+    tile_display: '平铺展示',
     month_to_yesterday: '月初至昨天',
     to_this_month: '年初至本月',
     up_to_options: '最多展示1000个选项',
