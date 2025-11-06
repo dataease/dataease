@@ -754,6 +754,16 @@ export function mappingColor(value, defaultColor, field, type, filedValueMap?, r
       } else if (t.term === 'default') {
         color = t[type]
         flag = true
+      } else if (t.term === 'null') {
+        if (value === null || value === undefined || value === '') {
+          color = t[type]
+          flag = true
+        }
+      } else if (t.term === 'not_null') {
+        if (value !== null && value !== undefined && value !== '') {
+          color = t[type]
+          flag = true
+        }
       }
       if (flag) {
         break
@@ -801,11 +811,25 @@ export function mappingColor(value, defaultColor, field, type, filedValueMap?, r
         color = defaultColor
       }
     } else {
+      const fc = field.conditions[i]
+      if (fc.term === 'null') {
+        if (value === null && value === undefined && value === '') {
+          color = fc[type]
+          flag = true
+        }
+      } else if (fc.term === 'not_null') {
+        if (value !== null && value !== undefined && value !== '') {
+          color = fc[type]
+          flag = true
+        }
+      }
+      if (flag) {
+        break
+      }
       // time
       if (!tv || !value) {
         break
       }
-      const fc = field.conditions[i]
       tv = new Date(tv.replace(/-/g, '/') + ' GMT+8').getTime()
       const v = new Date(value.replace(/-/g, '/') + ' GMT+8').getTime()
       if (fc.term === 'eq') {
