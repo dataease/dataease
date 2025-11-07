@@ -1,5 +1,5 @@
 import type { Column, ColumnOptions } from '@antv/g2plot/esm/plots/column'
-import { cloneDeep, defaults, each, groupBy, isEmpty } from 'lodash-es'
+import { cloneDeep, defaults, each, groupBy, isEmpty, merge } from 'lodash-es'
 import {
   G2PlotChartView,
   G2PlotDrawOptions
@@ -48,6 +48,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
   properties = BAR_EDITOR_PROPERTY
   propertyInner = {
     ...BAR_EDITOR_PROPERTY_INNER,
+    'x-axis-selector': [...BAR_EDITOR_PROPERTY_INNER['x-axis-selector'], 'showLengthLimit'],
     'basic-style-selector': [...BAR_EDITOR_PROPERTY_INNER['basic-style-selector'], 'seriesColor'],
     'label-selector': ['vPosition', 'seriesLabelFormatter', 'showExtremum'],
     'tooltip-selector': [
@@ -134,7 +135,85 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
     }
     extremumEvt(newChart, chart, options, container)
     configPlotTooltipEvent(chart, newChart)
+    this.configXAxisLengthLimit(chart, newChart)
     return newChart
+  }
+
+  private configXAxisLengthLimit(chart: Chart, chartObj: Column): void {
+    const xAxis = parseJson(chart.customStyle).xAxis
+    if (!xAxis.show || !xAxis.axisLabel?.show) {
+      return
+    }
+    let hideTimer
+    const { tooltip } = parseJson(chart.customAttr)
+    chartObj?.on('axis-label:mousemove', e => {
+      const showText = e.target?.attrs?.text
+      if (!showText?.endsWith('...')) {
+        return
+      }
+      hideTimer && clearTimeout(hideTimer)
+      const originText = e.target?.cfg?.delegateObject?.item?.name
+      const parentContainer: HTMLDivElement = e.view?.ele
+      let axisLabelDom = parentContainer.getElementsByClassName(
+        'g2-axis-label-tooltip'
+      )[0] as HTMLDivElement
+      if (!axisLabelDom) {
+        axisLabelDom = document.createElement('div')
+        merge(axisLabelDom.style, {
+          left: '0px',
+          top: '0px',
+          display: 'none',
+          position: 'absolute',
+          padding: '4px 8px',
+          borderRadius: '4px',
+          zIndex: '1',
+          cursor: 'default',
+          pointerEvents: 'none',
+          transition:
+            'left 0.4s cubic-bezier(0.23, 1, 0.32, 1), top 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
+          boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 8px 0px',
+          color: tooltip.color,
+          fontSize: `${tooltip.fontSize}px`,
+          backgroundColor: tooltip.backgroundColor
+        })
+        axisLabelDom.className = 'g2-axis-label-tooltip'
+        parentContainer.appendChild(axisLabelDom)
+      }
+      const { width: labelWidth, height: labelHeight } = axisLabelDom.getBoundingClientRect()
+      let left = e.x - (tooltip.fontSize * originText.length) / 2 - 10
+      let top = e.y - tooltip.fontSize - 18
+      if (labelWidth) {
+        if (e.x - labelWidth < 10) {
+          left = 0
+        } else {
+          left = e.x - labelWidth - 10
+        }
+      }
+      if (labelHeight) {
+        if (e.y < labelHeight) {
+          top = e.y + 10
+        } else {
+          top = e.y - labelHeight - 10
+        }
+      }
+      axisLabelDom.style.left = `${left}px`
+      axisLabelDom.style.top = `${top}px`
+      axisLabelDom.innerText = originText
+      if (axisLabelDom.style.display !== 'block') {
+        axisLabelDom.style.display = 'block'
+      }
+    })
+    chartObj?.on('axis-label:mouseleave', e => {
+      const parentContainer: HTMLDivElement = e.view?.ele
+      const axisLabelDom = parentContainer.getElementsByClassName(
+        'g2-axis-label-tooltip'
+      )[0] as HTMLDivElement
+      if (axisLabelDom) {
+        hideTimer = setTimeout(() => {
+          axisLabelDom.style.display = 'none'
+        }, 200)
+      }
+    })
   }
 
   protected configLabel(chart: Chart, options: ColumnOptions): ColumnOptions {
@@ -239,6 +318,23 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
     }
 
     return options
+  }
+
+  protected configXAxis(chart: Chart, options: ColumnOptions): ColumnOptions {
+    const tmpOptions = super.configXAxis(chart, options)
+    if (!tmpOptions.xAxis) {
+      return tmpOptions
+    }
+    const xAxis = parseJson(chart.customStyle).xAxis
+    if (tmpOptions.xAxis.label) {
+      const { lengthLimit } = xAxis.axisLabel
+      defaults(tmpOptions.xAxis.label, {
+        formatter: value => {
+          return value?.length > lengthLimit ? value.substring(0, lengthLimit) + '...' : value
+        }
+      })
+    }
+    return tmpOptions
   }
 
   protected configYAxis(chart: Chart, options: ColumnOptions): ColumnOptions {
