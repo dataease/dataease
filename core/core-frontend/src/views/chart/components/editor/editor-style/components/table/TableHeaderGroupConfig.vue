@@ -168,6 +168,20 @@ const renderTable = (chart: ChartObj) => {
     width: containerDom.getBoundingClientRect().width,
     height: containerDom.offsetHeight,
     tooltip: {
+      autoAdjustBoundary: null,
+      adjustPosition(positionInfo) {
+        const {
+          position: { x, y }
+        } = positionInfo
+        const scrollWidth = containerDom.scrollLeft
+        const groupMenuContainer = document.getElementById(menuGroupId.value)
+        const menuWidth = groupMenuContainer?.offsetWidth || 120
+        const containerWidth = containerDom.offsetWidth
+        if (x - scrollWidth + menuWidth > containerWidth) {
+          return { x: x - menuWidth, y: y + 10 }
+        }
+        return { x: x, y: y + 10 }
+      },
       getContainer: () => containerDom,
       renderTooltip: sheet => new GroupMenu(sheet),
       style: {
@@ -624,6 +638,7 @@ class GroupMenu extends BaseTooltip {
   :deep(span) {
     cursor: pointer;
     padding: 5px 10px;
+    word-break: keep-all;
     &:hover {
       background-color: var(--ed-fill-color-light);
     }
