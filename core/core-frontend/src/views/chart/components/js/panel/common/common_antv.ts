@@ -492,11 +492,6 @@ export function getXAxis(chart: Chart) {
                 fontSize: a.axisLabel.fontSize,
                 textAlign: textAlign,
                 fontFamily: chart.fontFamily
-              },
-              formatter: value => {
-                return chart.type === 'bidirectional-bar' && value.length > a.axisLabel.lengthLimit
-                  ? value.substring(0, a.axisLabel.lengthLimit) + '...'
-                  : value
               }
             }
           : null
@@ -1947,9 +1942,9 @@ const AXIS_LABEL_TOOLTIP_STYLE = {
 }
 const AXIS_LABEL_TOOLTIP_TPL =
   '<div class="g2-axis-label-tooltip">' + '<div class="g2-tooltip-title">{title}</div>' + '</div>'
-export function configAxisLabelLengthLimit(chart, plot, triggerObjName) {
+export function configAxisLabelLengthLimit(chart, plot, triggerObjName = 'axis-label') {
   // 设置触发事件的名称，如果未传入，则默认为 'axis-label'
-  const triggerName = triggerObjName || 'axis-label'
+  const triggerName = triggerObjName
 
   // 判断是否是Y轴标题
   const isYaxisTitle = triggerName === 'axis-title'
@@ -2231,26 +2226,23 @@ export function handleConditionsStyle(chart: Chart, options) {
   } else if (chart.type === 'waterfall') {
     newColor = getWaterfallColor(basicStyle, chart)
   }
+  const tooltip = options.tooltip
+  if (tooltip && !tooltip.customItems) {
+    options.tooltip.customItems = originalItems => {
+      originalItems.forEach(item => {
+        if (item.data?.[colorField]) {
+          item.color = item.data[colorField][0]
+        }
+      })
+      return originalItems
+    }
+  }
   const tmpOption = {
     ...options,
     rawFields,
     ...configRoundAngle(chart, 'columnStyle', columnStyle),
     ...configRoundAngle(chart, 'barStyle', columnStyle),
-    tooltip: {
-      ...options.tooltip,
-      ...(options.tooltip['customItems']
-        ? {}
-        : {
-            customItems: originalItems => {
-              originalItems.forEach(item => {
-                if (item.data?.[colorField]) {
-                  item.color = item.data[colorField][0]
-                }
-              })
-              return originalItems
-            }
-          })
-    },
+    tooltip,
     ...(newColor ? { color: newColor } : {})
   }
   return tmpOption

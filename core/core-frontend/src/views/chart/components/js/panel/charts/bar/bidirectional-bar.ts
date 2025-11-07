@@ -2,7 +2,7 @@ import {
   G2PlotChartView,
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
-import { cloneDeep, defaultTo, isEmpty, map } from 'lodash-es'
+import { cloneDeep, defaults, defaultTo, isEmpty, map } from 'lodash-es'
 import {
   configAxisLabelLengthLimit,
   configPlotTooltipEvent,
@@ -227,6 +227,12 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
     }
     if (tmpOptions.xAxis.label) {
       delete tmpOptions.xAxis.label.style.textAlign
+      const { lengthLimit } = parseJson(chart.customStyle).xAxis.axisLabel
+      defaults(tmpOptions.xAxis.label, {
+        formatter: value => {
+          return value?.length > lengthLimit ? value.substring(0, lengthLimit) + '...' : value
+        }
+      })
     }
     return tmpOptions
   }
