@@ -306,6 +306,7 @@ export default {
     time_function: '时间函数',
     customize: '自定义',
     that_day: '当天',
+    timestamp: '当前时间（时间戳）',
     value: '值',
     name_use_parameters: "可用${'{'}参数名{'}'}，使用参数",
     add_parameters: '添加参数',

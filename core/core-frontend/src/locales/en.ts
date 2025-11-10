@@ -316,6 +316,7 @@ export default {
     time_function: 'Time function',
     customize: 'Customize',
     that_day: 'That day',
+    timestamp: 'current time (timestamp)',
     value: 'Value',
     name_use_parameters: "You can use ${'{'}parameter name{'}'}, use parameters",
     add_parameters: 'Add parameters',

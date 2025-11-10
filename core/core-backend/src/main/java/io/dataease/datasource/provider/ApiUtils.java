@@ -274,6 +274,9 @@ public class ApiUtils {
                         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(timeFormat.split(" ")[1]);
                         httpClientConfig.addHeader(header.get("name").toString(), simpleDateFormat.format(date));
                     }
+                    if (StringUtils.isNotEmpty(timeFormat) && timeFormat.split(" ")[0].equalsIgnoreCase("timestamp")) {
+                        httpClientConfig.addHeader(header.get("name").toString(), String.valueOf(System.currentTimeMillis()));
+                    }
                 } else {
                     httpClientConfig.addHeader(header.get("name").toString(), header.get("value").toString());
                 }
@@ -338,6 +341,9 @@ public class ApiUtils {
                         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(timeFormat.split(" ")[1]);
                         params.add(argument.get("name") + "=" + simpleDateFormat.format(date));
                     }
+                    if (StringUtils.isNotEmpty(timeFormat) && timeFormat.split(" ")[0].equalsIgnoreCase("timestamp")) {
+                        params.add(argument.get("name") + "=" + System.currentTimeMillis());
+                    }
                 } else {
                     params.add(argument.get("name") + "=" + URLEncoder.encode(argument.get("value")));
                 }
@@ -369,6 +375,10 @@ public class ApiUtils {
                             bodYparams.add(matcher.group(1));
                         }
                         for (String param : bodYparams) {
+                            if (param.equalsIgnoreCase("currentTimestamp")) {
+                                raw = raw.replace("${" + param + "}", String.valueOf(System.currentTimeMillis()));
+                                continue;
+                            }
                             for (ApiDefinition definition : paramsList) {
                                 for (int i = 0; i < definition.getFields().size(); i++) {
                                     TableField field = definition.getFields().get(i);
@@ -469,6 +479,9 @@ public class ApiUtils {
                                         if (StringUtils.isNotEmpty(timeFormat) && timeFormat.split(" ")[0].equalsIgnoreCase("currentDay")) {
                                             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(timeFormat.split(" ")[1]);
                                             body.put(jsonNode.get("name").toString(), simpleDateFormat.format(date));
+                                        }
+                                        if (StringUtils.isNotEmpty(timeFormat) && timeFormat.split(" ")[0].equalsIgnoreCase("timestamp")) {
+                                            body.put(jsonNode.get("name").toString(), String.valueOf(System.currentTimeMillis()));
                                         }
                                     } else {
                                         body.put(jsonNode.get("name").asText(), jsonNode.get("value").asText());
