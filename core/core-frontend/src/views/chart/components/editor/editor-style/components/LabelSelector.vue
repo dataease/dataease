@@ -679,29 +679,16 @@ const isProgressBar = computed(() => {
         />
       </el-select>
     </el-form-item>
-    <el-form-item v-if="showPositionV" class="form-item" :class="'form-item-' + themes">
-      <template #label>
-        {{ t('chart.label_position') }}
-        <el-tooltip
-          class="item"
-          :effect="toolTip"
-          placement="top"
-          v-if="chart.type.includes('chart-mix')"
-        >
-          <template #content>
-            <span v-html="t('chart.chart_mix_label_only_left')"></span>
-          </template>
-          <span style="vertical-align: middle">
-            <el-icon style="cursor: pointer">
-              <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
-            </el-icon>
-          </span>
-        </el-tooltip>
-      </template>
+    <el-form-item
+      v-if="showPositionV"
+      class="form-item"
+      :class="'form-item-' + themes"
+      :label="t('chart.label_position')"
+    >
       <el-select
+        v-model="state.labelForm.position"
         size="small"
         :effect="themes"
-        v-model="state.labelForm.position"
         :placeholder="t('chart.label_position')"
         @change="changeLabelAttr('position')"
       >
