@@ -305,6 +305,7 @@ export default {
     time_function: '時間函數',
     customize: '自訂',
     that_day: '當天',
+    timestamp: '當前時間（時間戳）',
     value: '值',
     name_use_parameters: "可用${'{'}參數名稱{'}'}，使用參數",
     add_parameters: '新增參數',

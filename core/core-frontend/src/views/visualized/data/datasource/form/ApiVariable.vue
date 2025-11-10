@@ -148,6 +148,10 @@ const timeFunLists = [
   {
     label: t('data_source.that_day') + '（yyyy/MM/dd）',
     value: 'currentDay yyyy/MM/dd'
+  },
+  {
+    label: t('data_source.timestamp'),
+    value: 'timestamp'
   }
 ]
 </script>
