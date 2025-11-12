@@ -73,7 +73,7 @@ public class RedisCacheImpl implements DECacheService {
         Cache cache = getCacheManager().getCache(cacheName);
         if (null == cache) return;
         cache.evictIfPresent(key);
-        cache.clear();
+        // cache.clear();
         redisTemplate.delete(cacheName + SEPARATOR + key);
     }
 
