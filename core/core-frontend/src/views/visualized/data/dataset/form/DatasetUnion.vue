@@ -8,6 +8,7 @@ import icon_intersect from '@/assets/svg/icon_intersect.svg'
 import icon_leftAssociation from '@/assets/svg/icon_left-association.svg'
 import icon_rightAssociation from '@/assets/svg/icon_right-association.svg'
 import icon_sql_outlined from '@/assets/svg/icon_sql_outlined.svg'
+import { getCSSVariable } from '@/utils/color'
 import referenceTable from '@/assets/svg/reference-table.svg'
 import icon_moreVertical_outlined from '@/assets/svg/icon_more-vertical_outlined.svg'
 import { reactive, computed, ref, nextTick, inject, type Ref, watch, unref } from 'vue'
@@ -41,7 +42,7 @@ const props = defineProps({
 })
 
 const primaryColor = computed(() => {
-  return appearanceStore.themeColor === 'custom' ? appearanceStore.customColor : '#3370FF'
+  return appearanceStore.themeColor === 'custom' ? appearanceStore.customColor : getCSSVariable()
 })
 const isCross = inject<Ref>('isCross')
 

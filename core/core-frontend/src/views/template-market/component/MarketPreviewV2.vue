@@ -699,7 +699,7 @@ onMounted(() => {
   &:active {
     color: #245bdb;
     &::after {
-      background: #3370ff33;
+      background-color: var(--ed-color-primary-33, #3370ff33);
       display: block;
     }
   }

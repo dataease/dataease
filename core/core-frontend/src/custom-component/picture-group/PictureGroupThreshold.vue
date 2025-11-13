@@ -278,8 +278,8 @@ onMounted(() => {
     }
 
     &.active {
-      color: #3370ff;
-      border-color: #3370ff;
+      color: var(--ed-color-primary, #3370ff);
+      border-color: var(--ed-color-primary, #3370ff);
     }
   }
 
