@@ -1,6 +1,6 @@
 <script lang="tsx" setup>
-import { iconChartDarkMap } from '@/components/icon-group/chart-dark-list'
-import { iconChartMap } from '@/components/icon-group/chart-list'
+import { iconChartDarkMap } from '@/components/icon-group/chart-dark-list-empty'
+import { iconChartMap } from '@/components/icon-group/chart-list-empty'
 import { toRefs } from 'vue'
 const props = defineProps({
   viewIcon: {
@@ -44,6 +44,5 @@ const { viewIcon, themes } = toRefs(props)
 .item-icon {
   width: 50%;
   height: 50%;
-  opacity: 0.3;
 }
 </style>

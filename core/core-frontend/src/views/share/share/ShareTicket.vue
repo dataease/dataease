@@ -90,7 +90,7 @@
         <el-table-column prop="args" :label="$t('dataset.param')" width="117">
           <template v-slot="scope">
             <el-tooltip class="box-item" effect="light" :content="scope.row.args" placement="top">
-              <span style="color: #3370ff">
+              <span class="svg-primary-color">
                 {{ getArgCount(scope.row) }}
               </span>
             </el-tooltip>

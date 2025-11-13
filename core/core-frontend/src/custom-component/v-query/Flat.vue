@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { inject, computed } from 'vue'
+import { getCSSVariable } from '@/utils/color'
 
 const props = defineProps({
   options: {
@@ -34,7 +35,7 @@ const boxHeight = computed(() => {
 })
 
 const btnColor = computed(() => {
-  return customStyle ? customStyle.btnColor : '#3370FF'
+  return customStyle ? customStyle.btnColor : getCSSVariable()
 })
 
 const emits = defineEmits(['handleItemClick'])
