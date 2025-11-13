@@ -42,3 +42,8 @@ export function colorStringToHex(colorStr) {
 
   return a !== undefined ? rgbaToHex(r, g, b, a) : rgbToHex(r, g, b)
 }
+
+export function getCSSVariable(element = document.body, property = '--ed-color-primary') {
+  const style = window.getComputedStyle(element)
+  return style.getPropertyValue(property) || '#3370FF'
+}

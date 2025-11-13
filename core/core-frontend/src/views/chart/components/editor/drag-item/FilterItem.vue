@@ -7,10 +7,11 @@ import { getItemType } from './utils'
 import { Delete, Filter } from '@element-plus/icons-vue'
 import { fieldType } from '@/utils/attr'
 import { iconFieldMap } from '@/components/icon-group/field-list'
+import { getCSSVariable } from '@/utils/color'
 
 const state = reactive({
   formatterItem: formatterItem,
-  tagColor: '#3370ff'
+  tagColor: getCSSVariable()
 })
 
 const props = defineProps({

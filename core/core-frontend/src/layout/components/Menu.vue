@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { ElMenu } from 'element-plus-secondary'
+import { getCSSVariable } from '@/utils/color'
 import { useRoute, useRouter } from 'vue-router_2'
 import { isExternal } from '@/utils/validate'
 import { useCache } from '@/hooks/web/useCache'
@@ -10,7 +11,8 @@ const appearanceStore = useAppearanceStoreWithOut()
 const tempColor = computed(() => {
   return {
     '--temp-color':
-      (appearanceStore.themeColor === 'custom' ? appearanceStore.customColor : '#3370FF') + '1A'
+      (appearanceStore.themeColor === 'custom' ? appearanceStore.customColor : getCSSVariable()) +
+      '1A'
   }
 })
 defineProps({
