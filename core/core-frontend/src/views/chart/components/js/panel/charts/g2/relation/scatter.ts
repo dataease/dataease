@@ -457,15 +457,7 @@ export class Scatter extends G2ChartView {
           gridStrokeOpacity: 1,
           gridLineWidth: yAxis.splitLine.lineStyle.width,
           gridLineDash,
-          transform: yAxis.axisLabel.rotate
-            ? [
-                {
-                  type: 'rotate',
-                  optionalAngles: [yAxis.axisLabel.rotate],
-                  recoverWhenFailed: false
-                }
-              ]
-            : [],
+          labelTransform: `rotate(${yAxis.axisLabel.rotate || 0})`,
           labelFormatter: d => {
             return valueFormatter(d, yAxis.axisLabelFormatter)
           }
