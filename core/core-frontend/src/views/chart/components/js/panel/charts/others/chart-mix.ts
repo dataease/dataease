@@ -208,6 +208,8 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
         pre[next.id] = next
         return pre
       }, {})
+      const textBaseline =
+        this.getLeftType() === 'line' ? 'bottom' : axisType === 'yAxis' ? 'top' : 'bottom'
       tempLabel.style.fill = DEFAULT_LABEL.color
       const label = {
         fields: [],
@@ -232,7 +234,7 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
               y: 0,
               text: value,
               textAlign: 'start',
-              textBaseline: 'top',
+              textBaseline,
               fontSize: labelCfg.fontSize,
               fontFamily: chart.fontFamily,
               fill: labelCfg.color
@@ -650,7 +652,7 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
       this.configYAxis,
       this.configAnalyse,
       this.configEmptyDataStrategy
-    )(chart, options)
+    )(chart, options, {}, this)
   }
 
   constructor(name = 'chart-mix') {
