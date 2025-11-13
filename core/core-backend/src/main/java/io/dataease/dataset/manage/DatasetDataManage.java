@@ -684,9 +684,12 @@ public class DatasetDataManage {
     }
 
     public List<String> getFieldEnum(MultFieldValuesRequest multFieldValuesRequest) throws Exception {
+        if (CollectionUtils.isEmpty(multFieldValuesRequest.getFieldIds())) {
+            return Collections.emptyList();
+        }
         // 根据前端传的查询组件field ids，获取所有字段枚举值并去重合并
         List<List<String>> list = new ArrayList<>();
-        for (Long id : multFieldValuesRequest.getFieldIds()) {
+        for (Long id : new LinkedHashSet<>(multFieldValuesRequest.getFieldIds())) {
             DatasetTableFieldDTO field = datasetTableFieldManage.selectById(id);
             if (field == null) {
                 DEException.throwException(Translator.get("i18n_no_field"));
