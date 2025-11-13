@@ -317,15 +317,7 @@ export class Quadrant extends G2ChartView {
           gridStrokeOpacity: 1,
           gridLineWidth: xAxis.splitLine.lineStyle.width,
           gridLineDash,
-          transform: xAxis.axisLabel.rotate
-            ? [
-                {
-                  type: 'rotate',
-                  optionalAngles: [xAxis.axisLabel.rotate],
-                  recoverWhenFailed: false
-                }
-              ]
-            : []
+          labelTransform: `rotate(${xAxis.axisLabel.rotate || 0})`
         }
       }
     }
@@ -398,15 +390,7 @@ export class Quadrant extends G2ChartView {
           gridStrokeOpacity: 1,
           gridLineWidth: yAxis.splitLine.lineStyle.width,
           gridLineDash,
-          transform: yAxis.axisLabel.rotate
-            ? [
-                {
-                  type: 'rotate',
-                  optionalAngles: [yAxis.axisLabel.rotate],
-                  recoverWhenFailed: false
-                }
-              ]
-            : [],
+          labelTransform: `rotate(${yAxis.axisLabel.rotate || 0})`,
           labelFormatter: d => {
             return valueFormatter(d, yAxis.axisLabelFormatter)
           }
