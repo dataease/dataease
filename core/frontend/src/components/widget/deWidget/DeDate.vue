@@ -138,7 +138,7 @@ export default {
       showDate: false,
       startWindowTime: 0,
       minDate: new Date(1980, 0, 1),
-      maxDate: new Date(2025, 10, 1),
+      maxDate: new Date(2030, 10, 1),
       currentDate: new Date(),
       operator: 'between',
       defaultIndex: 2,
@@ -473,6 +473,7 @@ export default {
       this.currentDate = new Date(end || new Date())
       this.selectSecondInput = true
       this.showDate = true
+      console.log(this.columns)
     },
     cancel() {
       this.showDate = false
