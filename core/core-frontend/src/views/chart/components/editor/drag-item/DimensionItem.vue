@@ -296,6 +296,7 @@ onMounted(() => {
             }"
           >
             <span class="item-name">{{ item.chartShowName ? item.chartShowName : item.name }}</span>
+            <span :data-id="item.id" class="node-id_private"></span>
           </span>
         </el-tooltip>
         <el-icon v-if="showHideIcon" style="margin-left: 4px">

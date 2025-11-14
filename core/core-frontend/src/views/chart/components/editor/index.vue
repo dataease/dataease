@@ -1941,7 +1941,14 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
     const obj = cloneDeep(arr[i])
     state.moveId = obj.id as unknown as number
     view.value[type] ??= []
-    view.value[type].push(obj)
+    const targetId = ev.srcElement.offsetParent?.querySelector('.node-id_private')?.dataset?.id
+    const index = view.value[type].findIndex(ele => ele.id === targetId && ele.id !== obj.id)
+    if (index !== -1) {
+      view.value[type].splice(index + 1, 0, obj)
+    } else {
+      view.value[type].push(obj)
+    }
+
     const e = { newDraggableIndex: view.value[type].length - 1 }
 
     if ('drillFields' === type) {

@@ -393,6 +393,7 @@ onMounted(() => {
             <span v-if="item.summary !== ''" class="item-right-summary">
               ({{ t('chart.' + item.summary) }})
             </span>
+            <span :data-id="item.id" class="node-id_private"></span>
           </span>
         </el-tooltip>
         <span
