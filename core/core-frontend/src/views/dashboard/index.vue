@@ -205,7 +205,8 @@ onMounted(async () => {
   const createType = embeddedStore.createType || router.currentRoute.value.query.createType
   const templateParams =
     embeddedStore.templateParams || router.currentRoute.value.query.templateParams
-  const checkResult = await checkPer(resourceId)
+  const checkResourceId = opt && opt === 'copy' ? null : resourceId
+  const checkResult = await checkPer(checkResourceId as string)
   if (!checkResult) {
     return
   }
