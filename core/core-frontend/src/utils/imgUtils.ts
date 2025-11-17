@@ -7,6 +7,7 @@ import { findResourceAsBase64 } from '@/api/staticResource'
 import FileSaver from 'file-saver'
 import { deepCopy } from '@/utils/utils'
 import { toPng } from 'html-to-image'
+import { domToPng } from 'modern-screenshot'
 const embeddedStore = useEmbedded()
 const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData, componentData, canvasViewInfo, canvasViewDataInfo, dvInfo } =
@@ -78,7 +79,7 @@ export function download2AppTemplate(downloadType, canvasDom, name, attachParams
   }
 }
 
-export function downloadCanvas2(type, canvasDom, name, callBack?) {
+export function downloadCanvas(type, canvasDom, name, callBack?) {
   // const canvasDom = document.getElementById(canvasId)
   if (canvasDom) {
     html2canvas(canvasDom)
@@ -115,8 +116,8 @@ export function downloadCanvas2(type, canvasDom, name, callBack?) {
   }
 }
 
-export function downloadCanvas(type, canvasDom, name, callBack?) {
-  toPng(canvasDom)
+export function downloadCanvas2(type, canvasDom, name, callBack?) {
+  domToPng(canvasDom)
     .then(dataUrl => {
       if (type === 'img') {
         const a = document.createElement('a')
