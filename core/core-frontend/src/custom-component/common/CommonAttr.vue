@@ -232,7 +232,7 @@ onMounted(() => {
         v-model="element.style.borderActive"
         @modelChange="val => onStyleAttrChange({ key: 'borderActive', value: val })"
         :themes="themes"
-        :title="t('visualization.board') + '333'"
+        :title="t('visualization.board')"
         name="borderSetting"
         class="common-style-area"
       >
