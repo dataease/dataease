@@ -393,7 +393,9 @@ defineExpose({
         />
       </el-form-item>
       <el-form-item
-        v-if="['oracle', 'sqlServer', 'pg', 'redshift', 'db2', 'dm'].includes(nodeInfo.type)"
+        v-if="
+          ['oracle', 'sqlServer', 'pg', 'kingbase', 'redshift', 'db2', 'dm'].includes(nodeInfo.type)
+        "
         class="schema-label"
         :prop="showSchema ? '' : 'configuration.schema'"
       >

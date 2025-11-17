@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    url: jdbc:kingbase8://host:port/db?currentSchema=schema
+    username: user
+    password: passwd
+    driver-class-name: com.kingbase8.Driver
+  messages:
+    basename: i18n/lic,i18n/core,i18n/permissions,i18n/xpack,i18n/sync
+  flyway:
+    enabled: false
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          batch_size: 1000
+          lob:
+            non_contextual_creation: true
+        order_inserts: true
+        order_updates: true
+        temp:
+          use_jdbc_metadata_defaults: false
+    hibernate:
+      naming:
+        physical-strategy:  io.dataease.config.DynamicCaseNamingStrategy
+      ddl-auto: update
+    show-sql: true
+
+
+quartz:
+  enabled: true
+  scheduler-name: deSyncJob
+  properties.org.quartz.jobStore.driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate

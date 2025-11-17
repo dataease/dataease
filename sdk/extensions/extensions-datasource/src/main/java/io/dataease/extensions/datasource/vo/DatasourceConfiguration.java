@@ -24,6 +24,7 @@ public class DatasourceConfiguration extends Configuration {
         TiDB("TiDB", "TiDB", "OLTP", "`", "`", 3),
         oracle("oracle", "ORACLE", "OLTP", "\"", "\"", 1),
         pg("pg", "PostgreSQL", "OLTP", "\"", "\"", 9),
+        kingbase("kingbase", "Kingbase", "OLTP", "", "", 31),
         redshift("redshift", "AWS Redshift", "OLTP", "\"", "\"", 13),
         db2("db2", "Db2", "OLTP", "", "", 12),
         ck("ck", "Clickhouse", "OLAP", "`", "`", 11),

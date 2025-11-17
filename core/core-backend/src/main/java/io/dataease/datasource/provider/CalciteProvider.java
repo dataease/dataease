@@ -101,7 +101,8 @@ public class CalciteProvider extends Provider {
         } catch (Exception e) {
             DEException.throwException(e.getMessage());
         }
-        if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.pg.name())) {
+        if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.pg.name())
+                || datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.kingbase.name())) {
             Set<String> SYSTEM_SCHEMAS = new HashSet<>(Arrays.asList("information_schema", "pg_catalog", "pg_temp_1", "pg_toast", "pg_toast_temp_1"));
             return schemas.stream().filter(schema -> !SYSTEM_SCHEMAS.contains(schema)).collect(Collectors.toList());
         }
@@ -116,6 +117,13 @@ public class CalciteProvider extends Provider {
                 DatasourceConfiguration configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Pg.class);
                 List<String> schemas = getSchema(datasourceRequest);
                 if (CollectionUtils.isEmpty(schemas) || !schemas.contains(configuration.getSchema())) {
+                    DEException.throwException("无效的 schema！");
+                }
+                break;
+            case kingbase:
+                DatasourceConfiguration kingbaseConfiguration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Kingbase.class);
+                List<String> kingbaseSchemas = getSchema(datasourceRequest);
+                if (CollectionUtils.isEmpty(kingbaseSchemas) || !kingbaseSchemas.contains(kingbaseConfiguration.getSchema())) {
                     DEException.throwException("无效的 schema！");
                 }
                 break;
@@ -221,6 +229,7 @@ public class CalciteProvider extends Provider {
             SqlNode sqlNode = parser.parseStmt();
             return sqlNode.toSqlString(getDialect(value)).toString();
         } catch (Exception e) {
+            e.printStackTrace();
             DEException.throwException(e.getMessage());
         }
         return null;
@@ -423,6 +432,9 @@ public class CalciteProvider extends Provider {
             case pg:
                 configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Pg.class);
                 break;
+            case kingbase:
+                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Kingbase.class);
+                break;
             case redshift:
                 configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Redshift.class);
                 break;
@@ -478,6 +490,7 @@ public class CalciteProvider extends Provider {
     }
 
     public Map<String, Object> jdbcFetchResultField(DatasourceRequest datasourceRequest) throws DEException {
+        System.out.println("getQuery: " + datasourceRequest.getQuery());
         DatasourceSchemaDTO value = datasourceRequest.getDsList().entrySet().iterator().next().getValue();
         datasourceRequest.setDatasource(value);
 
@@ -526,6 +539,7 @@ public class CalciteProvider extends Provider {
             fieldList = getField(resultSet, datasourceRequest);
             dataList = getData(resultSet, datasourceRequest);
         } catch (SQLException e) {
+            e.printStackTrace();
             DEException.throwException("SQL ERROR: " + e.getMessage());
         } catch (Exception e) {
             DEException.throwException("Datasource connection exception: " + e.getMessage());
@@ -801,6 +815,22 @@ public class CalciteProvider extends Provider {
                 break;
             case pg:
                 configuration = JsonUtil.parseObject(datasourceDTO.getConfiguration(), Pg.class);
+                if (StringUtils.isNotEmpty(configuration.getUrlType()) && configuration.getUrlType().equalsIgnoreCase("jdbcUrl")) {
+                    if (configuration.getJdbcUrl().contains("password=")) {
+                        String[] params = configuration.getJdbcUrl().split("\\?")[1].split("&");
+                        String pd = "";
+                        for (int i = 0; i < params.length; i++) {
+                            if (params[i].contains("password=")) {
+                                pd = params[i];
+                            }
+                        }
+                        configuration.setJdbcUrl(configuration.getJdbcUrl().replace(pd, "password=******"));
+                        datasourceDTO.setConfiguration(JsonUtil.toJSONString(configuration).toString());
+                    }
+                }
+                break;
+            case kingbase:
+                configuration = JsonUtil.parseObject(datasourceDTO.getConfiguration(), Kingbase.class);
                 if (StringUtils.isNotEmpty(configuration.getUrlType()) && configuration.getUrlType().equalsIgnoreCase("jdbcUrl")) {
                     if (configuration.getJdbcUrl().contains("password=")) {
                         String[] params = configuration.getJdbcUrl().split("\\?")[1].split("&");
@@ -1136,6 +1166,23 @@ public class CalciteProvider extends Provider {
                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
                 rootSchema.add(ds.getSchemaAlias(), schema);
                 break;
+            case kingbase:
+                configuration = JsonUtil.parseObject(ds.getConfiguration(), Kingbase.class);
+                if (StringUtils.isNotBlank(configuration.getUsername())) {
+                    dataSource.setUsername(configuration.getUsername());
+                }
+                if (StringUtils.isNotBlank(configuration.getPassword())) {
+                    dataSource.setPassword(configuration.getPassword());
+                }
+                dataSource.setInitialSize(configuration.getInitialPoolSize());
+                dataSource.setMaxTotal(configuration.getMaxPoolSize());
+                dataSource.setMinIdle(configuration.getMinPoolSize());
+                dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                startSshSession(configuration, null, ds.getId());
+                dataSource.setUrl(configuration.getJdbc());
+                schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
+                rootSchema.add(ds.getSchemaAlias(), schema);
+                break;
             case redshift:
                 configuration = JsonUtil.parseObject(ds.getConfiguration(), Redshift.class);
                 if (StringUtils.isNotBlank(configuration.getUsername())) {
@@ -1348,6 +1395,40 @@ public class CalciteProvider extends Provider {
                         ORDER BY a.attnum;
                         """, configuration.getSchema(), datasourceRequest.getTable());
                 break;
+            case kingbase:
+                configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Kingbase.class);
+                if (StringUtils.isEmpty(configuration.getSchema())) {
+                    DEException.throwException(Translator.get("i18n_schema_is_empty"));
+                }
+                sql = String.format("""
+                        SELECT a.attname     AS ColumnName,
+                               t.typname,
+                               b.description AS ColumnDescription,
+                               CASE
+                                   WHEN d.indisprimary THEN 1
+                                   ELSE 0
+                                   END,
+                               CASE
+                                   WHEN pg_get_expr(ad.adbin, ad.adrelid) LIKE 'nextval%%' THEN 1
+                        """ + (datasourceRequest.getDsVersion() > 9 ? """
+                                   WHEN a.attidentity = 'd' THEN 1
+                                   WHEN a.attidentity = 'a' THEN 1
+                        """ : "") + """
+                                   ELSE 0
+                                   END
+                        FROM pg_class c
+                                 JOIN pg_attribute a ON a.attrelid = c.oid
+                                 LEFT JOIN pg_attrdef ad ON a.attrelid = ad.adrelid AND a.attnum = ad.adnum
+                                 LEFT JOIN pg_description b ON a.attrelid = b.objoid AND a.attnum = b.objsubid
+                                 JOIN pg_type t ON a.atttypid = t.oid
+                                 LEFT JOIN pg_index d ON d.indrelid = a.attrelid AND d.indisprimary AND a.attnum = ANY (d.indkey)
+                        where c.relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = '%s')
+                          AND c.relname = '%s'
+                          AND a.attnum > 0
+                          AND NOT a.attisdropped
+                        ORDER BY a.attnum;
+                        """, configuration.getSchema(), datasourceRequest.getTable());
+                break;
             case redshift:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), CK.class);
                 sql = String.format("SELECT\n" + "    a.attname AS ColumnName,\n" + "    t.typname,\n" + "    b.description AS ColumnDescription,\n" + "    0, 0\n" + "FROM\n" + "    pg_class c\n" + "    JOIN pg_attribute a ON a.attrelid = c.oid\n" + "    LEFT JOIN pg_description b ON a.attrelid = b.objoid AND a.attnum = b.objsubid\n" + "    JOIN pg_type t ON a.atttypid = t.oid\n" + "WHERE\n" + "    c.relname = '%s'\n" + "    AND a.attnum > 0\n" + "    AND NOT a.attisdropped\n" + "ORDER BY\n" + "    a.attnum\n" + "   ", datasourceRequest.getTable());
@@ -1454,6 +1535,15 @@ public class CalciteProvider extends Provider {
                 tableSqls.add("SELECT \n" + "    c.relname AS view_name,\n" + "    COALESCE(d.description, 'No description provided') AS view_description\n" + "FROM \n" + "    pg_class c\n" + "JOIN \n" + "    pg_namespace n ON c.relnamespace = n.oid\n" + "LEFT JOIN \n" + "    pg_description d ON c.oid = d.objoid\n" + "WHERE \n" + "    c.relkind = 'v'  \n" + "    AND n.nspname = 'SCHEMA'".replace("SCHEMA", configuration.getSchema()));
                 tableSqls.add("SELECT \n" + "    c.relname AS materialized_view_name,\n" + "    COALESCE(d.description, '') AS view_description\n" + "FROM \n" + "    pg_class c\n" + "JOIN \n" + "    pg_namespace n ON c.relnamespace = n.oid\n" + "LEFT JOIN \n" + "    pg_description d ON c.oid = d.objoid\n" + "WHERE \n" + "    c.relkind = 'm' and n.nspname ='SCHEMA';  ".replace("SCHEMA", configuration.getSchema()));
                 break;
+            case kingbase:
+                configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Kingbase.class);
+                if (StringUtils.isEmpty(configuration.getSchema())) {
+                    DEException.throwException(Translator.get("i18n_schema_is_empty"));
+                }
+                tableSqls.add("SELECT  \n" + "    relname AS TableName,  \n" + "    obj_description(relfilenode::regclass, 'pg_class') AS TableDescription  \n" + "FROM  \n" + "    pg_class  \n" + "WHERE  \n" + "   relkind in  ('r','p', 'f')  \n" + "    AND relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'SCHEMA') ".replace("SCHEMA", configuration.getSchema()));
+                tableSqls.add("SELECT \n" + "    c.relname AS view_name,\n" + "    COALESCE(d.description, 'No description provided') AS view_description\n" + "FROM \n" + "    pg_class c\n" + "JOIN \n" + "    pg_namespace n ON c.relnamespace = n.oid\n" + "LEFT JOIN \n" + "    pg_description d ON c.oid = d.objoid\n" + "WHERE \n" + "    c.relkind = 'v'  \n" + "    AND n.nspname = 'SCHEMA'".replace("SCHEMA", configuration.getSchema()));
+                tableSqls.add("SELECT \n" + "    c.relname AS materialized_view_name,\n" + "    COALESCE(d.description, '') AS view_description\n" + "FROM \n" + "    pg_class c\n" + "JOIN \n" + "    pg_namespace n ON c.relnamespace = n.oid\n" + "LEFT JOIN \n" + "    pg_description d ON c.oid = d.objoid\n" + "WHERE \n" + "    c.relkind = 'm' and n.nspname ='SCHEMA';  ".replace("SCHEMA", configuration.getSchema()));
+                break;
             case redshift:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), CK.class);
                 tableSqls.add("SELECT  \n" + "    relname AS TableName,  \n" + "    obj_description(relfilenode::regclass, 'pg_class') AS TableDescription  \n" + "FROM  \n" + "    pg_class  \n" + "WHERE  \n" + "   relkind in  ('r','p', 'f')  \n" + "    AND relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'SCHEMA') ".replace("SCHEMA", configuration.getSchema()));
@@ -1495,6 +1585,8 @@ public class CalciteProvider extends Provider {
                 DatasourceConfiguration configuration = JsonUtil.parseObject(datasource.getConfiguration(), Db2.class);
                 return "select SCHEMANAME from syscat.SCHEMATA   WHERE \"DEFINER\" ='USER'".replace("USER", configuration.getUsername().toUpperCase());
             case pg:
+                return "SELECT nspname FROM pg_namespace;";
+            case kingbase:
                 return "SELECT nspname FROM pg_namespace;";
             case redshift:
                 return "SELECT nspname FROM pg_namespace;";

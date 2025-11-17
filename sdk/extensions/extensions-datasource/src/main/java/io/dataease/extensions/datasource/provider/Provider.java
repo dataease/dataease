@@ -238,6 +238,7 @@ public abstract class Provider {
                 sqlDialect = Db2SqlDialect.DEFAULT;
                 break;
             case pg:
+            case kingbase:
                 sqlDialect = PostgresqlSqlDialect.DEFAULT;
                 break;
             case redshift:

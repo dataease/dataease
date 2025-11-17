@@ -243,7 +243,8 @@ public class EngineManage {
 
 
     public static class PgJdbcUrlParser implements JdbcUrlParser {
-        private static final Pattern PATTERN = Pattern.compile("jdbc:postgresql://(.*):(\\d+)/(.*)\\?(.*)");
+        private static final Pattern PATTERN = Pattern.compile("jdbc:(?:postgresql|kingbase8|kingbase)://(.*):(\\d+)/(.*?)(?:\\?(.*))?$");
+        private static final Pattern SCHEMA_PATTERN = Pattern.compile("(^|&)currentSchema=([^&]+)");
 
         @Override
         public Map<String, String> parse(String url, Environment env) {
@@ -253,16 +254,29 @@ public class EngineManage {
             config.put("host", matcher.group(1));
             config.put("port", matcher.group(2));
             config.put("dataBase", matcher.group(3));
-            if (matcher.groupCount() == 4) {
-                String regex = "currentSchema=([^&]+)";
-                Pattern pattern = Pattern.compile(regex);
-                Matcher schema = pattern.matcher(matcher.group(4));
+            String params = matcher.group(4);
+            if (StringUtils.isNotEmpty(params)) {
+                Matcher schema = SCHEMA_PATTERN.matcher(params);
                 if (schema.find()) {
-                    config.put("schema", schema.group(1));
+                    String schemaValue = schema.group(2);
+                    if (StringUtils.isNotEmpty(schemaValue)) {
+                        config.put("schema", schemaValue.replace("\"", ""));
+                    }
                 }
+                config.put("extraParams", Arrays.stream(params.split("&"))
+                        .filter(item -> !item.startsWith("currentSchema="))
+                        .collect(java.util.stream.Collectors.joining("&")));
+            } else {
                 config.put("extraParams", "");
             }
-            config.put("type", "pg");
+            String driverClassName = env.getProperty("spring.datasource.driver-class-name");
+            if (url.startsWith("jdbc:kingbase")) {
+                driverClassName = StringUtils.defaultIfBlank(driverClassName, "com.kingbase8.Driver");
+            }
+            if (StringUtils.isNotEmpty(driverClassName)) {
+                config.put("driver", driverClassName);
+            }
+            config.put("type", url.startsWith("jdbc:kingbase") ? "kingbase" : "pg");
             config.put("username", env.getProperty("spring.datasource.username"));
             config.put("password", env.getProperty("spring.datasource.password"));
             return config;
@@ -407,18 +421,22 @@ public class EngineManage {
                 if (parserMap == null) {
                     parserMap = new HashMap<>();
                     String jdbcUrl = env.getProperty("spring.datasource.url");
-                    if (jdbcUrl != null) {
-                        if (jdbcUrl.startsWith("jdbc:mysql://")) {
-                            parserMap.put("jdbc:mysql://", new MysqlJdbcUrlParser());
-                        } else if (jdbcUrl.startsWith("jdbc:oracle:thin:@")) {
-                            parserMap.put("jdbc:oracle:thin:@", new OracleJdbcUrlParser());
-                        } else if (jdbcUrl.startsWith("jdbc:postgresql://")) {
-                            parserMap.put("jdbc:postgresql://", new PgJdbcUrlParser());
-                        } else if (jdbcUrl.startsWith("jdbc:sqlserver://")) {
-                            parserMap.put("jdbc:sqlserver://", new SqlserverJdbcUrlParser());
-                        } else if (jdbcUrl.startsWith("jdbc:dm://")) {
-                            parserMap.put("jdbc:dm://", new DmJdbcUrlParser());
-                        }
+                        if (jdbcUrl != null) {
+                            if (jdbcUrl.startsWith("jdbc:mysql://")) {
+                                parserMap.put("jdbc:mysql://", new MysqlJdbcUrlParser());
+                            } else if (jdbcUrl.startsWith("jdbc:oracle:thin:@")) {
+                                parserMap.put("jdbc:oracle:thin:@", new OracleJdbcUrlParser());
+                            } else if (jdbcUrl.startsWith("jdbc:postgresql://")) {
+                                parserMap.put("jdbc:postgresql://", new PgJdbcUrlParser());
+                            } else if (jdbcUrl.startsWith("jdbc:kingbase8://")) {
+                                parserMap.put("jdbc:kingbase8://", new PgJdbcUrlParser());
+                            } else if (jdbcUrl.startsWith("jdbc:kingbase://")) {
+                                parserMap.put("jdbc:kingbase://", new PgJdbcUrlParser());
+                            } else if (jdbcUrl.startsWith("jdbc:sqlserver://")) {
+                                parserMap.put("jdbc:sqlserver://", new SqlserverJdbcUrlParser());
+                            } else if (jdbcUrl.startsWith("jdbc:dm://")) {
+                                parserMap.put("jdbc:dm://", new DmJdbcUrlParser());
+                            }
                     }
                 }
             }
