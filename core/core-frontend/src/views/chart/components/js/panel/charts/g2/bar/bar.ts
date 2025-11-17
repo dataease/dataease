@@ -600,13 +600,6 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
           return value
         }
       }
-      // 刻度值旋转角度
-      const rotate = axis.axisLabel.rotate
-      const labelTransform = {
-        type: 'rotate',
-        optionalAngles: !rotate || rotate === 0 ? [] : [rotate],
-        recoverWhenFailed: false
-      }
       const x = {
         position: axis.position,
         // 标题
@@ -623,7 +616,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
         ...label,
         labelAutoHide: true,
         labelAutoRotate: false,
-        ...(rotate === 0 ? {} : { transform: [labelTransform] })
+        labelTransform: `rotate(${axis.axisLabel.rotate || 0})`
       }
       return x
     }
