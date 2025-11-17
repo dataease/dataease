@@ -550,7 +550,7 @@ onMounted(() => {
       :label="t('chart.orient')"
       class="form-item"
       :class="'form-item-' + themes"
-      v-if="showProperty('orient')"
+      v-if="false && showProperty('orient')"
     >
       <el-radio-group
         v-model="state.legendForm.orient"

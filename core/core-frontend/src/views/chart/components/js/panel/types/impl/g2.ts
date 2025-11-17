@@ -37,36 +37,26 @@ export abstract class G2ChartView<
         const l = JSON.parse(JSON.stringify(customStyle.legend))
         if (l.show) {
           let position
-          const orient = l.orient
+          let layoutJustifyContent = 'center'
           const legendSymbol = l.icon
           const legendSize = l.size
           const legendFontSize = l.fontSize
           const legendColor = l.color
           // position 图例布局
           // layoutJustifyContent 图例实例布局
-          let layoutJustifyContent = 'center'
           // 根据图例方向和位置设置布局和位置
-          if (orient === 'horizontal') {
-            // 水平布局
-            position = l.vPosition === 'center' ? 'bottom' : l.vPosition
+          if (l.vPosition === 'top' || l.vPosition === 'bottom') {
+            position = l.vPosition
             layoutJustifyContent =
-              l.hPosition === 'left' && l.vPosition !== 'center'
+              l.hPosition === 'left'
                 ? 'flex-start'
-                : l.hPosition === 'right' && l.vPosition !== 'center'
+                : l.hPosition === 'right'
                 ? 'flex-end'
                 : 'center'
           } else {
-            // 垂直布局
-            position = l.hPosition === 'center' ? 'left' : l.hPosition
-            layoutJustifyContent =
-              l.vPosition === 'top' && l.hPosition !== 'center'
-                ? 'flex-start'
-                : l.vPosition === 'bottom' && l.hPosition !== 'center'
-                ? 'flex-end'
-                : 'center'
+            position = l.hPosition
           }
           legend = {
-            orientation: orient,
             position,
             layout: {
               justifyContent: layoutJustifyContent
