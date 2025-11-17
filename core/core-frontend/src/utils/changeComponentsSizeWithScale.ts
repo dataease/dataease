@@ -35,26 +35,27 @@ function changeComponentsSizeWithScaleCircle(componentDataCopy, scale) {
     return
   }
   componentDataCopy?.forEach(component => {
-    Object.keys(component.style).forEach(key => {
-      if (needToChangeDirectionAttrs.width.includes(key)) {
-        // 根据原来的比例获取样式原来的尺寸
-        // 再用原来的尺寸 * 现在的比例得出新的尺寸
-        if (!!component.style[key]) {
+    if (component.style) {
+      Object.keys(component.style)?.forEach(key => {
+        if (needToChangeDirectionAttrs.width.includes(key)) {
+          // 根据原来的比例获取样式原来的尺寸
+          // 再用原来的尺寸 * 现在的比例得出新的尺寸
+          if (!!component.style[key]) {
+            component.style[key] = format(
+              getOriginStyle(component.style[key], canvasStyleData.value.scale),
+              scale
+            )
+          }
+        } else if (needToChangeDirectionAttrs.height.includes(key)) {
+          // 根据原来的比例获取样式原来的尺寸
+          // 再用原来的尺寸 * 现在的比例得出新的尺寸
           component.style[key] = format(
-            getOriginStyle(component.style[key], canvasStyleData.value.scale),
+            getOriginStyle(component.style[key], canvasStyleData.value.scaleHeight),
             scale
           )
         }
-      } else if (needToChangeDirectionAttrs.height.includes(key)) {
-        // 根据原来的比例获取样式原来的尺寸
-        // 再用原来的尺寸 * 现在的比例得出新的尺寸
-        component.style[key] = format(
-          getOriginStyle(component.style[key], canvasStyleData.value.scaleHeight),
-          scale
-        )
-      }
-    })
-
+      })
+    }
     if (['Group'].includes(component.component)) {
       groupSizeStyleAdaptor(component)
       const parentStyle = component.style
@@ -129,7 +130,7 @@ export function changeRefComponentsSizeWithScalePointCircle(
   outScale
 ) {
   componentDataRef.forEach(component => {
-    Object.keys(component.style).forEach(key => {
+    Object.keys(component.style)?.forEach(key => {
       if (needToChangeDirectionAttrs.width.includes(key)) {
         // 根据原来的比例获取样式原来的尺寸
         // 再用原来的尺寸 * 现在的比例得出新的尺寸
