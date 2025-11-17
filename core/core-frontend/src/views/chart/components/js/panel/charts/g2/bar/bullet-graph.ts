@@ -330,11 +330,6 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
           return value
         }
       }
-      // 刻度值旋转角度
-      const labelTransform = {
-        type: 'rotate',
-        optionalAngles: [axis.axisLabel.rotate]
-      }
       const x = {
         // 标题
         title: axis.nameShow && axis.name ? axis.name : false,
@@ -348,7 +343,7 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
         ...grid,
         // 刻度值
         ...label,
-        transform: [labelTransform]
+        labelTransform: `rotate(${axis.axisLabel.rotate || 0})`
       }
       return x
     }
