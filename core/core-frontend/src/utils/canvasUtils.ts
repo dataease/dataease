@@ -226,19 +226,14 @@ export function historyItemAdaptor(
   if (componentItem.style['borderActive'] === undefined) {
     componentItem.style['borderActive'] = false
     componentItem.style['borderWidth'] = 1
-    componentItem.style['borderRadius'] = getNewBorderRadius(5)
+    componentItem.style['borderRadius'] = 5
     componentItem.style['borderStyle'] = 'solid'
     componentItem.style['borderColor'] = '#cccccc'
   } else {
     componentItem.style['borderWidth'] =
       componentItem.style['borderWidth'] === undefined ? 1 : componentItem.style['borderWidth']
     componentItem.style['borderRadius'] =
-      componentItem.style['borderRadius'] === undefined
-        ? getNewBorderRadius(5)
-        : componentItem.style['borderRadius']
-    if (isNumber(componentItem.style['borderRadius'])) {
-      componentItem.style['borderRadius'] = getNewBorderRadius(componentItem.style['borderRadius'])
-    }
+      componentItem.style['borderRadius'] === undefined ? 5 : componentItem.style['borderRadius']
     componentItem.style['borderStyle'] =
       componentItem.style['borderStyle'] === undefined
         ? 'solid'
