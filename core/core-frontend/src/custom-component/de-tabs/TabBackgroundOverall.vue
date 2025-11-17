@@ -29,9 +29,13 @@ const onTitleBackgroundChange = (params, paramsName) => {
 </script>
 
 <template>
-  <div class="tab-title-background">
-    <el-tabs class="background-tabs" v-model="activeName" stretch>
-      <el-tab-pane :label="t('visualization.active_title_background')" name="activeBackground">
+  <div class="tab-title-background" :class="{ 'background-tabs-dark': themes === 'dark' }">
+    <el-tabs class="background-tabs" v-model="activeName" :effect="themes" stretch>
+      <el-tab-pane
+        :effect="themes"
+        :label="t('visualization.active_title_background')"
+        name="activeBackground"
+      >
         <background-overall-common
           :themes="themes"
           edit-position="tab"
@@ -40,7 +44,11 @@ const onTitleBackgroundChange = (params, paramsName) => {
           @onBackgroundChange="onTitleBackgroundChange($event, 'active')"
         />
       </el-tab-pane>
-      <el-tab-pane :label="t('visualization.inactive_title_background')" name="inActiveBackground">
+      <el-tab-pane
+        :effect="themes"
+        :label="t('visualization.inactive_title_background')"
+        name="inActiveBackground"
+      >
         <div class="background-label">
           <span>
             <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
@@ -92,6 +100,18 @@ const onTitleBackgroundChange = (params, paramsName) => {
 
   :deep(.ed-tabs__content) {
     padding: 12px 0;
+  }
+}
+
+.background-tabs-dark {
+  :deep(.ed-tabs__item) {
+    &:hover {
+      color: var(--ed-color-primary);
+    }
+    color: #ebebeb;
+  }
+  :deep(.is-active) {
+    color: var(--ed-color-primary);
   }
 }
 </style>
