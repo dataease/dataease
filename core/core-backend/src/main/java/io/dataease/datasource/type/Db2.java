@@ -20,7 +20,7 @@ public class Db2 extends DatasourceConfiguration {
             // 新增：LDAP协议及相关危险参数
             "ldap://", "ldaps://", "java.naming.factory.object", "java.naming.factory.state",
             // 其他JDBC危险参数
-            "autoDeserialize", "connectionProperties", "initSQL", "dns", "file", "ftp"
+            "autoDeserialize", "connectionProperties", "initSQL", "dns", "file", "ftp", "iiop", "corbaname", "iiopname"
     );
 
     public String getJdbc() {
