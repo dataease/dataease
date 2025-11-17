@@ -93,7 +93,7 @@ public class TableInfoHandler extends DefaultChartHandler {
             pageInfo.setPageSize(chartExtRequest.getPageSize());
         }
         Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
-        if (view.getIsExcelExport()) {
+        if (view.getExportDatasetOriginData()) {
             for (int i = 0; i < xAxis.size(); i++) {
                 ChartViewFieldDTO fieldDTO = null;
                 for (ChartViewFieldDTO allField : allFields) {

@@ -108,6 +108,7 @@ public class ChartDataServer implements ChartDataApi {
             Integer[] dsTypes = null;
             //downloadType = dataset 为下载原始名字 这里做数据转换模拟 table-info类型图表导出
             if ("dataset".equals(request.getDownloadType())) {
+                viewDTO.setExportDatasetOriginData(true);
                 viewDTO.setResultMode(ChartConstants.VIEW_RESULT_MODE.ALL);
                 viewDTO.setType("table-info");
                 viewDTO.setRender("antv");
