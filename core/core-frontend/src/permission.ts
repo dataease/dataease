@@ -66,6 +66,9 @@ router.beforeEach(async (to, from, next) => {
       let pathname = window.location.pathname
       pathname = pathname.substring(0, pathname.length - 1)
       let url = window.origin + pathname + '/mobile.html#/index'
+      if (location.hash?.startsWith('#/preview')) {
+        url = window.origin + pathname + '/mobile.html' + location.hash
+      }
       if (window.location.search) {
         url += window.location.search
       }
