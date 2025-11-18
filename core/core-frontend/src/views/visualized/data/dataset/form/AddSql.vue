@@ -1688,7 +1688,7 @@ const mousedownDrag = () => {
     height: 80px;
     width: 822px;
     border-radius: 4px;
-    background: #e1eaff;
+    background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
     position: relative;
     line-height: 22px;
     padding: 9px 0 9px 40px;

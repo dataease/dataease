@@ -192,7 +192,7 @@ if (uid.value === '1') {
     color: var(--ed-color-black) !important;
   }
   &:hover {
-    background-color: var(--ed-menu-hover-bg-color) !important;
+    background-color: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1)) !important;
   }
 }
 .top-info-container {
