@@ -139,7 +139,7 @@
             <el-row :gutter="8">
               <el-col :span="12">
                 <div style="display: flex; align-items: center; margin-bottom: 8px">
-                  <span style="width: 30%; padding-right: 8px">{{
+                  <span style="width: 30%; padding-right: 6px">{{
                     t('visualization.corner_top_left')
                   }}</span>
                   <el-input-number
@@ -153,7 +153,7 @@
                   />
                 </div>
                 <div style="display: flex; align-items: center">
-                  <span style="width: 30%; padding-right: 8px">{{
+                  <span style="width: 30%; padding-right: 6px">{{
                     t('visualization.corner_bottom_left')
                   }}</span>
                   <el-input-number
@@ -170,7 +170,7 @@
               </el-col>
               <el-col :span="12">
                 <div style="display: flex; align-items: center; margin-bottom: 8px">
-                  <span style="width: 30%; padding-right: 8px">{{
+                  <span style="width: 30%; padding-right: 6px">{{
                     t('visualization.corner_top_right')
                   }}</span>
                   <el-input-number
@@ -185,7 +185,7 @@
                   />
                 </div>
                 <div style="display: flex; align-items: center">
-                  <span style="width: 30%; padding-right: 8px">{{
+                  <span style="width: 30%; padding-right: 6px">{{
                     t('visualization.corner_bottom_right')
                   }}</span>
                   <el-input-number
