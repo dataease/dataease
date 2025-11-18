@@ -114,7 +114,7 @@ const timeFunLists = [
   },
   {
     label: t('data_source.timestamp'),
-    value: 'timestamp'
+    value: 'currentTimestamp'
   }
 ]
 </script>

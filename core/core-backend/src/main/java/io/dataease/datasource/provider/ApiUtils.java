@@ -274,7 +274,7 @@ public class ApiUtils {
                         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(timeFormat.split(" ")[1]);
                         httpClientConfig.addHeader(header.get("name").toString(), simpleDateFormat.format(date));
                     }
-                    if (StringUtils.isNotEmpty(timeFormat) && timeFormat.split(" ")[0].equalsIgnoreCase("timestamp")) {
+                    if (StringUtils.isNotEmpty(timeFormat) && timeFormat.split(" ")[0].equalsIgnoreCase("currentTimestamp")) {
                         httpClientConfig.addHeader(header.get("name").toString(), String.valueOf(System.currentTimeMillis()));
                     }
                 } else {
@@ -341,7 +341,7 @@ public class ApiUtils {
                         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(timeFormat.split(" ")[1]);
                         params.add(argument.get("name") + "=" + simpleDateFormat.format(date));
                     }
-                    if (StringUtils.isNotEmpty(timeFormat) && timeFormat.split(" ")[0].equalsIgnoreCase("timestamp")) {
+                    if (StringUtils.isNotEmpty(timeFormat) && timeFormat.split(" ")[0].equalsIgnoreCase("currentTimestamp")) {
                         params.add(argument.get("name") + "=" + System.currentTimeMillis());
                     }
                 } else {
@@ -480,7 +480,7 @@ public class ApiUtils {
                                             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(timeFormat.split(" ")[1]);
                                             body.put(jsonNode.get("name").toString(), simpleDateFormat.format(date));
                                         }
-                                        if (StringUtils.isNotEmpty(timeFormat) && timeFormat.split(" ")[0].equalsIgnoreCase("timestamp")) {
+                                        if (StringUtils.isNotEmpty(timeFormat) && timeFormat.split(" ")[0].equalsIgnoreCase("currentTimestamp")) {
                                             body.put(jsonNode.get("name").toString(), String.valueOf(System.currentTimeMillis()));
                                         }
                                     } else {
