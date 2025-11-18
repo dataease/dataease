@@ -396,7 +396,8 @@ onMounted(async () => {
     embeddedStore.templateParams || router.currentRoute.value.query.templateParams
   createType = embeddedStore.createType || router.currentRoute.value.query.createType
   const opt = embeddedStore.opt || router.currentRoute.value.query.opt
-  const checkResult = await checkPer(dvId)
+  const checkDvId = opt && opt === 'copy' ? null : dvId
+  const checkResult = await checkPer(checkDvId)
   if (!checkResult) {
     return
   }
