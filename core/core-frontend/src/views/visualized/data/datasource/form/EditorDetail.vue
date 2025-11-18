@@ -156,7 +156,7 @@ const initForm = (type, pluginDsList, indexPlugin, isPluginDs) => {
       host: '',
       authMethod: '',
       port: '',
-      initialPoolSize: 5,
+      initialPoolSize: 50,
       minPoolSize: 50,
       maxPoolSize: 100,
       queryTimeout: 30
