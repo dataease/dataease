@@ -365,7 +365,7 @@ const downloadViewImage = () => {
 
 const downloadViewDetails = (downloadType = 'view') => {
   const viewDataInfo = dvMainStore.getViewDataDetails(viewInfo.value.id)
-  const viewInfoSource = dvMainStore.getViewDetails(viewInfo.value.id)
+  const viewInfoSource = deepCopy(dvMainStore.getViewDetails(viewInfo.value.id))
   if (!viewDataInfo) {
     ElMessage.error(t('chart.field_is_empty_export_error'))
     return
