@@ -103,8 +103,8 @@ const loadCanvasData = (dvId, weight?, ext?) => {
       dataInitState.value = true
       // 修复铺满全屏模版导出错位问题
       if (props.showPosition !== 'multiplexing') {
-        dvMainStore.setCanvasStyle(deepCopy(canvasStyleResult))
-        dvMainStore.setComponentData(deepCopy(canvasDataResult))
+        state.canvasDataPreviewSource = deepCopy(canvasDataResult)
+        state.canvasStylePreviewSource = deepCopy(canvasStyleResult)
       }
 
       if (props.showPosition === 'preview') {
@@ -139,14 +139,22 @@ const fileDownload = (downloadType, attachParams) => {
   downloadStatus.value = true
   nextTick(() => {
     const vueDom = previewCanvasContainer.value.querySelector('.canvas-container')
-    download2AppTemplate(downloadType, vueDom, state.dvInfo.name, attachParams, () => {
-      downloadStatus.value = false
-      const param = {
-        id: state.dvInfo.id,
-        type: state.dvInfo.type === 'dashboard' ? 'panel' : 'screen'
+    download2AppTemplate(
+      downloadType,
+      vueDom,
+      state.dvInfo.name,
+      attachParams,
+      state.canvasDataPreviewSource,
+      state.canvasStylePreviewSource,
+      () => {
+        downloadStatus.value = false
+        const param = {
+          id: state.dvInfo.id,
+          type: state.dvInfo.type === 'dashboard' ? 'panel' : 'screen'
+        }
+        downloadType === 'app' ? exportLogApp(param) : exportLogTemplate(param)
       }
-      downloadType === 'app' ? exportLogApp(param) : exportLogTemplate(param)
-    })
+    )
   })
 }
 
@@ -201,6 +209,8 @@ const dataVKeepSize = computed(() => {
 })
 
 const state = reactive({
+  canvasDataPreviewSource: null,
+  canvasStylePreviewSource: null,
   canvasDataPreview: null,
   canvasStylePreview: null,
   canvasViewInfoPreview: null,
