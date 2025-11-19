@@ -249,6 +249,7 @@ const isEmbedded = computed(() => appStore.getIsDataEaseBi || appStore.getIsIfra
 
 const backHandler = (url: string) => {
   if (isEmbedded.value) {
+    wsCache.set(`dv-info-id`, dvInfo.value.id)
     embeddedStore.clearState()
     useEmitt().emitter.emit('changeCurrentComponent', 'ScreenPanel')
     return
