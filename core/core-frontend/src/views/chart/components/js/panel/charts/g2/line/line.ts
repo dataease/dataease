@@ -97,6 +97,7 @@ export class Line extends G2ChartView {
       },
       children: [
         {
+          zIndex: -1,
           type: 'line',
           encode: { series: 'category' },
           interaction: {
@@ -110,7 +111,7 @@ export class Line extends G2ChartView {
             }
           }
         },
-        { type: 'point', tooltip: false }
+        { type: 'point', tooltip: false, zIndex: 0 }
       ]
     }
     const options = this.setupOptions(chart, initOptions)
@@ -575,6 +576,7 @@ export class Line extends G2ChartView {
       const randomAssistColorScale = randomString(6)
       const assistLineMark: G2Spec = {
         type: 'lineY',
+        zIndex: 0,
         encode: { y: 'value', color: () => randomAssistColorScale },
         data: lineData,
         style: {
