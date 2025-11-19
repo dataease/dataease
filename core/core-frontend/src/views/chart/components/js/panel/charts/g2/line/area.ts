@@ -82,10 +82,10 @@ export class Area extends G2ChartView {
         type: 'area',
         tooltip: false,
         style: { fillOpacity: 0.3 },
-        zIndex: 1
+        zIndex: -1
       },
-      { type: 'line', encode: { series: 'category' }, zIndex: 0 },
-      { type: 'point', tooltip: false, zIndex: 2 }
+      { type: 'line', encode: { series: 'category' }, zIndex: -2 },
+      { type: 'point', tooltip: false, zIndex: 0 }
     ]
   }
   EMPTY_MARKER = () => []
@@ -492,6 +492,7 @@ export class Area extends G2ChartView {
         type: 'lineY',
         encode: { y: 'value', color: () => randomAssistColorScale },
         data: lineData,
+        zIndex: 0,
         style: {
           stroke: d => d.color,
           lineDash: d => (d.lineType === 'solid' ? [] : d.lineType === 'dashed' ? [10, 8] : [1, 2]),
@@ -927,6 +928,7 @@ export class StackArea extends Area {
           type: 'lineY',
           encode: { y: 'value', color: () => randomAssistColorScale },
           data: [line],
+          zIndex: 0,
           style: {
             stroke: line.color,
             lineDash:
