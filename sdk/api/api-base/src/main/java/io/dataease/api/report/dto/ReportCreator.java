@@ -1,5 +1,6 @@
 package io.dataease.api.report.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.dataease.api.visualization.vo.VisualizationReportFilterVO;
@@ -63,4 +64,7 @@ public class ReportCreator implements Serializable {
     private Integer retryInterval;
 
     private List<VisualizationReportFilterVO> reportFilter;
+
+    @JsonIgnore
+    private Long logTaskId;
 }
