@@ -31,6 +31,7 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import { deepCopy, nameTrim } from '@/utils/utils'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { guid } from '@/views/visualized/data/dataset/form/util'
+import { ShorthandMode } from '@/components/visualization/component-background/Types'
 const dvMainStore = dvMainStoreWithOut()
 const {
   inMobile,
@@ -48,6 +49,27 @@ import { isDesktop } from '@/utils/ModelUtil'
 const { t } = useI18n()
 const appearanceStore = useAppearanceStoreWithOut()
 const { wsCache } = useCache()
+
+const getNewInnerPadding = (commonGap = 0) => {
+  return {
+    mode: ShorthandMode.Uniform,
+    top: commonGap,
+    right: commonGap,
+    bottom: commonGap,
+    left: commonGap
+  }
+}
+
+const getNewBorderRadius = (commonGap = 0) => {
+  return {
+    mode: ShorthandMode.Uniform,
+    topLeft: commonGap,
+    topRight: commonGap,
+    bottomLeft: commonGap,
+    bottomRight: commonGap
+  }
+}
+
 export function chartTransStr2Object(targetIn, copy) {
   const target = copy === 'Y' ? cloneDeep(targetIn) : targetIn
   return target
@@ -98,7 +120,7 @@ export function findNewComponent(componentName, innerType, staticMap?) {
     }
   } else if (['DeDecoration', 'DynamicBackground'].includes(componentName)) {
     newComponent.style.borderWidth = 0
-    newComponent.style.innerPadding = 0
+    newComponent.style.innerPadding = getNewInnerPadding()
   }
   return newComponent
 }
@@ -118,6 +140,10 @@ export function commonHandleDragEnd(e, dvModel) {
     // 仪表板结束消息传输方式(用来清理未移入的组件)
     eventBus.emit('handleDragEnd-canvas-main', e)
   }
+}
+
+function isNumber(value) {
+  return !isNaN(value) && typeof value === 'number'
 }
 
 function matrixAdaptor(componentItem) {
@@ -166,7 +192,19 @@ export function historyItemAdaptor(
       }
     })
   }
+  // 历史innerPadding 转换
+  if (isNumber(componentItem['commonBackground'].innerPadding)) {
+    componentItem['commonBackground'].innerPadding = getNewInnerPadding(
+      componentItem['commonBackground'].innerPadding
+    )
+  }
 
+  // 历史borderRadius 转换
+  if (isNumber(componentItem['commonBackground'].borderRadius)) {
+    componentItem['commonBackground'].borderRadius = getNewBorderRadius(
+      componentItem['commonBackground'].borderRadius
+    )
+  }
   if (componentItem.component === 'DeTabs') {
     componentItem.style['showTabTitle'] =
       componentItem.style['showTabTitle'] === undefined ? true : componentItem.style['showTabTitle']
@@ -183,14 +221,19 @@ export function historyItemAdaptor(
   if (componentItem.style['borderActive'] === undefined) {
     componentItem.style['borderActive'] = false
     componentItem.style['borderWidth'] = 1
-    componentItem.style['borderRadius'] = 5
+    componentItem.style['borderRadius'] = getNewBorderRadius(5)
     componentItem.style['borderStyle'] = 'solid'
     componentItem.style['borderColor'] = '#cccccc'
   } else {
     componentItem.style['borderWidth'] =
       componentItem.style['borderWidth'] === undefined ? 1 : componentItem.style['borderWidth']
     componentItem.style['borderRadius'] =
-      componentItem.style['borderRadius'] === undefined ? 5 : componentItem.style['borderRadius']
+      componentItem.style['borderRadius'] === undefined
+        ? getNewBorderRadius(5)
+        : componentItem.style['borderRadius']
+    if (isNumber(componentItem.style['borderRadius'])) {
+      componentItem.style['borderRadius'] = getNewBorderRadius(componentItem.style['borderRadius'])
+    }
     componentItem.style['borderStyle'] =
       componentItem.style['borderStyle'] === undefined
         ? 'solid'
