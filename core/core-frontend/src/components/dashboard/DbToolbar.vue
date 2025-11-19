@@ -337,6 +337,7 @@ const embeddedStore = useEmbedded()
 
 const backHandler = (url: string) => {
   if (isEmbedded.value) {
+    wsCache.set(`db-info-id`, dvInfo.value.id)
     embeddedStore.clearState()
     useEmitt().emitter.emit('changeCurrentComponent', 'DashboardPanel')
     return
