@@ -55,17 +55,17 @@ function getCustomRange(relativeToCurrentRange: string): [Date, Date] {
       return getThisWeek()
     case 'LastThreeMonths':
       return [
-        new Date(dayjs().subtract(3, 'month').startOf('month').format('YYYY/MM/DD HH:mm:ss')),
+        new Date(dayjs().subtract(2, 'month').startOf('month').format('YYYY/MM/DD HH:mm:ss')),
         getThisEnd('day')
       ]
     case 'LastSixMonths':
       return [
-        new Date(dayjs().subtract(6, 'month').startOf('month').format('YYYY/MM/DD HH:mm:ss')),
+        new Date(dayjs().subtract(5, 'month').startOf('month').format('YYYY/MM/DD HH:mm:ss')),
         getThisEnd('day')
       ]
     case 'LastTwelveMonths':
       return [
-        new Date(dayjs().subtract(12, 'month').startOf('month').format('YYYY/MM/DD HH:mm:ss')),
+        new Date(dayjs().subtract(11, 'month').startOf('month').format('YYYY/MM/DD HH:mm:ss')),
         getThisEnd('day')
       ]
     case 'YearToThisMonth':
