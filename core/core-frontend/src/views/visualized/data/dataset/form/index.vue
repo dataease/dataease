@@ -606,7 +606,11 @@ const editField = item => {
   editCalcField.value = true
   nextTick(() => {
     calcTitle.value = t('dataset.edit_calc_field')
-    calcEdit.value.initEdit(item, dimensions.value, quota.value)
+    calcEdit.value.initEdit(
+      item,
+      dimensions.value.filter(ele => ele.extField !== 3),
+      quota.value.filter(ele => ele.extField !== 3)
+    )
   })
 }
 
