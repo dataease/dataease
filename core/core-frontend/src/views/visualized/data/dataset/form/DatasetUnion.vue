@@ -267,6 +267,7 @@ const saveSqlNode = (val: SqlNode, cb) => {
     sqlVariableDetails
   }
   dfsNodeBack([obj], [id], state.nodeList)
+  cb?.()
   emits('reGetName')
 }
 
