@@ -1785,7 +1785,8 @@ watch(
   val => {
     if (!val) return
     setCacheId()
-  }
+  },
+  { immediate: true }
 )
 
 const fieldDHeight = computed(() => {
