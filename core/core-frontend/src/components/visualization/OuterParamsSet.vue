@@ -571,7 +571,7 @@ const paramsCheckedAdaptor = (outerParamsInfo, newBaseFilterInfo, newBaseDataset
   outerParamsInfo.targetViewInfoList.forEach(targetViewInfo => {
     viewMatchIds.push(targetViewInfo.targetViewId)
     dsFieldIdSelected[targetViewInfo.targetDsId] =
-      targetViewInfo.targetFieldId === 'empty'
+      targetViewInfo.targetFieldId === '999999'
         ? targetViewInfo.targetViewId
         : targetViewInfo.targetFieldId
   })
@@ -642,7 +642,7 @@ const save = () => {
         outerParamsInfo.targetViewInfoList.push({
           targetViewId: baseFilterInfo.filterSelected,
           targetDsId: baseFilterInfo.id,
-          targetFieldId: 'empty'
+          targetFieldId: '999999'
         })
       }
     })
@@ -714,7 +714,7 @@ const getPanelViewList = dvId => {
             title: filterItem.name
           })
           state.viewIdFieldArrayMap[filterItem.id] = [
-            { id: 'empty', name: t('visualization.filter_no_select') }
+            { id: '999999', name: t('visualization.filter_no_select') }
           ]
         })
       }
