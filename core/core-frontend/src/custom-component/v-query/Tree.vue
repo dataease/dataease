@@ -9,8 +9,10 @@ import {
   computed,
   inject,
   Ref,
+  onBeforeMount,
   shallowRef
 } from 'vue'
+import { useEmitt } from '@/hooks/web/useEmitt'
 import { cloneDeep, debounce } from 'lodash-es'
 import { getFieldTree } from '@/api/dataset'
 import colorFunctions from 'less/lib/less/functions/color.js'
@@ -40,6 +42,7 @@ interface SelectConfig {
 }
 
 const customStyle: any = inject('$custom-style-filter')
+const cascadeList = inject('cascade-list', Function, true)
 const props = defineProps({
   config: {
     type: Object as PropType<SelectConfig>,
@@ -235,14 +238,64 @@ const dfs = arr => {
     return { ...ele, value: ele.id, label: ele.text, children }
   })
 }
-
+const cascade = computed(() => {
+  return cascadeList() || []
+})
 const loading = ref(false)
+
+const getCascadeFieldId = () => {
+  const filter = []
+  cascade.value.forEach(ele => {
+    let condition = null
+    ele.forEach(item => {
+      const [_, queryId, fieldId] = item.datasetId.split('--')
+      if (queryId === config.value.id && condition) {
+        if (item.fieldId) {
+          condition.fieldId = item.fieldId
+        }
+        filter.push(condition)
+      } else {
+        if (props.isConfig) {
+          if (!!item.selectValue?.length) {
+            condition = {
+              fieldId: fieldId,
+              operator: 'in',
+              value: [...item.selectValue]
+            }
+          }
+        } else {
+          if (!!item.currentSelectValue?.length) {
+            condition = {
+              fieldId: fieldId,
+              operator: 'in',
+              value: [...item.currentSelectValue]
+            }
+          }
+        }
+      }
+    })
+  })
+  return filter
+}
+const getOptionFromCascade = () => {
+  config.value.selectValue = config.value.multiple ? [] : undefined
+  treeValue.value = config.value.multiple ? [] : undefined
+  getTreeOption()
+}
+
+onBeforeMount(() => {
+  useEmitt({
+    name: `${config.value.id}-select`,
+    callback: getOptionFromCascade
+  })
+})
 
 const getTreeOption = debounce(() => {
   loading.value = true
   getFieldTree({
     fieldIds: props.config.treeFieldList.map(ele => ele.id),
-    resultMode: config.value.resultMode || 0
+    resultMode: config.value.resultMode || 0,
+    filter: getCascadeFieldId()
   })
     .then(res => {
       treeOptionList.value = dfs(res)

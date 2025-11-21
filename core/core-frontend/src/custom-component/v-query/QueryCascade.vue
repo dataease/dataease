@@ -15,6 +15,7 @@ interface Cascade {
   queryId: string
   deType: string
   fieldId: string
+  isTree: boolean
 }
 
 type cascadeMap = Record<string, Cascade>
@@ -68,6 +69,7 @@ const init = (cascadeMap: cascadeMap, arr) => {
   cascadeList.value = cloneDeep(arr)
   datasetMap.value = Object.values(cascadeMap).map(ele => ({
     label: ele.name,
+    isTree: ele.isTree,
     deType: ele.deType,
     value: `${ele.datasetId}--${ele.queryId}--${ele.fieldId}`
   }))
@@ -256,7 +258,7 @@ defineExpose({
             style="width: 300px"
           >
             <el-option
-              v-for="itx in datasetMap"
+              v-for="itx in datasetMap.filter(ele => (idx === 0 && !ele.isTree) || idx === 1)"
               :key="itx.value"
               :label="itx.label"
               :value="itx.value"
