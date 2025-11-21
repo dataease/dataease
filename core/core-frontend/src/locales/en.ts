@@ -713,7 +713,7 @@ export default {
     saml: {
       title: 'SAML2 Settings',
       request: 'Enable Request Signing',
-      assertion: 'Enable Assertion Signing',
+      assertion: 'Enable Assertion Signing'
     }
   },
   components: {

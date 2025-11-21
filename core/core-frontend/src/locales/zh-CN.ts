@@ -692,7 +692,7 @@ export default {
     saml: {
       title: 'SAML2 设置',
       request: '开启请求签名',
-      assertion: '开启断言签名',
+      assertion: '开启断言签名'
     }
   },
   components: {
