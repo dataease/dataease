@@ -20,16 +20,18 @@
             :label="t('visualization.inner_padding')"
             class="form-item w100"
             :class="'form-item-' + themes"
+          ></el-form-item>
+          <el-form-item
+            :label="t('visualization.inner_padding_shorthand_mode')"
+            class="form-item w100"
+            :class="'form-item-' + themes"
           >
             <div style="display: flex; align-items: center; width: 100%; margin-bottom: 8px">
-              <span style="width: 15%; padding-right: 8px">{{
-                t('visualization.inner_padding_shorthand_mode')
-              }}</span>
               <el-select
                 :effect="themes"
                 v-model="state.commonBackground.innerPadding.mode"
                 size="small"
-                style="width: 85%"
+                style="width: 100%"
                 @change="onBackgroundChange"
               >
                 <el-option
@@ -116,15 +118,17 @@
             class="form-item w100"
             :class="'form-item-' + themes"
           >
+          </el-form-item>
+          <el-form-item
+            :label="t('visualization.corner_shorthand_mode')"
+            class="form-item w100"
+            :class="'form-item-' + themes"
+          >
             <div style="display: flex; align-items: center; width: 100%; margin-bottom: 8px">
-              <span style="width: 15%; padding-right: 8px">{{
-                t('visualization.corner_shorthand_mode')
-              }}</span>
               <el-select
                 :effect="themes"
                 v-model="state.commonBackground.borderRadius.mode"
                 size="small"
-                style="width: 85%"
                 @change="onBackgroundChange"
               >
                 <el-option
