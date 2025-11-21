@@ -1159,7 +1159,72 @@ public class DatasetDataManage {
             provider = ProviderFactory.getProvider(dsList.getFirst());
         }
 
+        //组件过滤条件
+        List<ChartExtFilterDTO> extFilterList = new ArrayList<>();
+        if (ObjectUtils.isNotEmpty(multFieldValuesRequest.getFilter())) {
+            for (ChartExtFilterDTO filterDTO : multFieldValuesRequest.getFilter()) {
+                // 解析多个fieldId,fieldId是一个逗号分隔的字符串
+                String fieldId = filterDTO.getFieldId();
+                if (filterDTO.getIsTree() == null) {
+                    filterDTO.setIsTree(false);
+                }
+
+                boolean hasParameters = false;
+                List<SqlVariableDetails> sqlVariables = datasetGroupManage.getSqlParams(Arrays.asList(datasetGroupInfoDTO.getId()));
+                if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(sqlVariables)) {
+                    for (SqlVariableDetails parameter : Optional.ofNullable(filterDTO.getParameters()).orElse(new ArrayList<>())) {
+                        String parameterId = StringUtils.endsWith(parameter.getId(), START_END_SEPARATOR) ? parameter.getId().split(START_END_SEPARATOR)[0] : parameter.getId();
+                        if (sqlVariables.stream().map(SqlVariableDetails::getId).collect(Collectors.toList()).contains(parameterId)) {
+                            hasParameters = true;
+                        }
+                    }
+                }
+
+                if (hasParameters) {
+                    continue;
+                }
+
+                if (StringUtils.isNotEmpty(fieldId)) {
+                    List<Long> fieldIds = Arrays.stream(fieldId.split(",")).map(Long::valueOf).collect(Collectors.toList());
+
+                    if (filterDTO.getIsTree()) {
+                        ChartExtFilterDTO filterRequest = new ChartExtFilterDTO();
+                        BeanUtils.copyBean(filterRequest, filterDTO);
+                        filterRequest.setDatasetTableFieldList(new ArrayList<>());
+                        for (Long fId : fieldIds) {
+                            DatasetTableFieldDTO datasetTableField = datasetTableFieldManage.selectById(fId);
+                            if (datasetTableField == null) {
+                                continue;
+                            }
+                            if (Objects.equals(datasetTableField.getDatasetGroupId(), datasetGroupInfoDTO.getId())) {
+                                filterRequest.getDatasetTableFieldList().add(datasetTableField);
+                            }
+                        }
+                        if (ObjectUtils.isNotEmpty(filterRequest.getDatasetTableFieldList())) {
+                            extFilterList.add(filterRequest);
+                        }
+                    } else {
+                        for (Long fId : fieldIds) {
+                            ChartExtFilterDTO filterRequest = new ChartExtFilterDTO();
+                            BeanUtils.copyBean(filterRequest, filterDTO);
+                            filterRequest.setFieldId(fId + "");
+
+                            DatasetTableFieldDTO datasetTableField = datasetTableFieldManage.selectById(fId);
+                            if (datasetTableField == null) {
+                                continue;
+                            }
+                            filterRequest.setDatasetTableField(datasetTableField);
+                            if (Objects.equals(datasetTableField.getDatasetGroupId(), datasetGroupInfoDTO.getId())) {
+                                extFilterList.add(filterRequest);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         Field2SQLObj.field2sqlObj(sqlMeta, fields, allFields, crossDs, dsMap, Utils.getParams(allFields), null, pluginManage);
+        ExtWhere2Str.extWhere2sqlOjb(sqlMeta, extFilterList, allFields, crossDs, dsMap, Utils.getParams(allFields), null, pluginManage);
         WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, allFields, crossDs, dsMap, Utils.getParams(allFields), null, pluginManage);
         Order2SQLObj.getOrders(sqlMeta, datasetGroupInfoDTO.getSortFields(), allFields, crossDs, dsMap, Utils.getParams(allFields), null, pluginManage);
         String querySQL;
