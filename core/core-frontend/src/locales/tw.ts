@@ -684,7 +684,12 @@ export default {
     sub_area_tip: '請選擇省份或直轄市',
     delete_custom_area_tip: '該操作會導致使用了自定義區域的地圖無法正常展示，確定刪除？',
     please_select_area: '請選擇區域',
-    delete_custom_sub_area_tip: '確定刪除該自定義區域？'
+    delete_custom_sub_area_tip: '確定刪除該自定義區域？',
+    saml: {
+      title: 'SAML2 設定',
+      request: '開啟請求簽名',
+      assertion: '開啟斷言簽名'
+    }
   },
   components: {
     effective_during_link: '公共連結生效',

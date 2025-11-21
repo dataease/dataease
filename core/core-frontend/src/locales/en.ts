@@ -709,7 +709,12 @@ export default {
     delete_custom_area_tip:
       'This operation will cause the map using the custom area to fail to display normally, are you sure to delete?',
     please_select_area: 'Please select an area',
-    delete_custom_sub_area_tip: 'Are you sure you want to delete this custom area?'
+    delete_custom_sub_area_tip: 'Are you sure you want to delete this custom area?',
+    saml: {
+      title: 'SAML2 Settings',
+      request: 'Enable Request Signing',
+      assertion: 'Enable Assertion Signing',
+    }
   },
   components: {
     dashboard_style: 'Dashboard style',

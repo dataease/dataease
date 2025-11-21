@@ -690,7 +690,9 @@ export default {
     please_select_area: '请选择区域',
     delete_custom_sub_area_tip: '确定删除该自定义区域？',
     saml: {
-      title: 'SAML2 设置'
+      title: 'SAML2 设置',
+      request: '开启请求签名',
+      assertion: '开启断言签名',
     }
   },
   components: {
