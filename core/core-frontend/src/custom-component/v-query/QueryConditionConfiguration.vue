@@ -162,9 +162,10 @@ const datasetFieldList = computed(() => {
 const setCascadeDefault = val => {
   conditions.value.forEach(ele => {
     if (
-      ele.optionValueSource === 1 &&
-      [0, 2, 5].includes(+ele.displayType) &&
-      val.includes(ele.id)
+      (ele.optionValueSource === 1 &&
+        [0, 2, 5].includes(+ele.displayType) &&
+        val.includes(ele.id)) ||
+      [9].includes(+ele.displayType)
     ) {
       ele.selectValue = Array.isArray(ele.selectValue) ? [] : undefined
       ele.defaultValue = Array.isArray(ele.defaultValue) ? [] : undefined
@@ -1176,21 +1177,26 @@ const CascadeDialog = defineAsyncComponent(() => import('./QueryCascade.vue'))
 const cascadeDialog = ref()
 const openCascadeDialog = () => {
   const cascadeMap = conditions.value
-    .filter(
-      ele =>
-        [0, 2, 5].includes(+ele.displayType) &&
-        ele.optionValueSource === 1 &&
-        !!ele.checkedFields?.length &&
-        !!Object.values(ele.checkedFieldsMap).filter(item => !!item).length
-    )
+    .filter(ele => {
+      return (
+        ([0, 2, 5].includes(+ele.displayType) &&
+          ele.optionValueSource === 1 &&
+          !!ele.checkedFields?.length &&
+          !!Object.values(ele.checkedFieldsMap).filter(item => !!item).length) ||
+        ([9].includes(+ele.displayType) && ele.treeFieldList?.length)
+      )
+    })
     .reduce((pre, next) => {
+      const isTree = [9].includes(+next.displayType)
+      const fieldId = isTree ? next.treeFieldList[0].id : next.field.id
       pre[next.id] = {
         datasetId: next.dataset.id,
+        isTree,
         name: next.name,
         queryId: next.id,
-        fieldId: next.field.id,
+        fieldId: fieldId,
         deType: (datasetMap[next.dataset.id]?.fields?.dimensionList || next.dataset.fields).find(
-          ele => ele.id === next.field.id
+          ele => ele.id === fieldId
         )?.deType
       }
       return pre
