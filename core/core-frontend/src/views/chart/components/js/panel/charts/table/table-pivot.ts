@@ -128,8 +128,8 @@ export class TablePivot extends S2ChartView<PivotSheet> {
     const { container, chart, chartObj, action } = drawOption
     const containerDom = document.getElementById(container)
 
-    const { xAxisExt: columnFields, xAxis: rowFields, yAxis: valueFields } = chart
-    const [c, r, v] = [columnFields, rowFields, valueFields].map(arr =>
+    const { xAxis: rowFields, xAxisExt: columnFields, yAxis: valueFields } = chart
+    const [r, c, v] = [rowFields, columnFields, valueFields].map(arr =>
       arr.map(i => i.dataeaseName)
     )
 
@@ -186,65 +186,6 @@ export class TablePivot extends S2ChartView<PivotSheet> {
     }
     tableTotal.col.subTotalsDimensions = c
 
-    // 解析合计、小计排序
-    const sortParams = []
-    let rowTotalSort = false
-    if (
-      tableTotal.row.totalSort &&
-      tableTotal.row.totalSort !== 'none' &&
-      c.length > 0 &&
-      tableTotal.row.showGrandTotals &&
-      v.indexOf(tableTotal.row.totalSortField) > -1
-    ) {
-      c.forEach(i => {
-        const sort = {
-          sortFieldId: i,
-          sortMethod: tableTotal.row.totalSort.toUpperCase(),
-          sortByMeasure: TOTAL_VALUE,
-          query: {
-            [EXTRA_FIELD]: tableTotal.row.totalSortField
-          }
-        }
-        sortParams.push(sort)
-      })
-      rowTotalSort = true
-    }
-    let colTotalSort = false
-    if (
-      tableTotal.col.totalSort &&
-      tableTotal.col.totalSort !== 'none' &&
-      r.length > 0 &&
-      tableTotal.col.showGrandTotals &&
-      v.indexOf(tableTotal.col.totalSortField) > -1
-    ) {
-      r.forEach(i => {
-        const sort = {
-          sortFieldId: i,
-          sortMethod: tableTotal.col.totalSort.toUpperCase(),
-          sortByMeasure: TOTAL_VALUE,
-          query: {
-            [EXTRA_FIELD]: tableTotal.col.totalSortField
-          }
-        }
-        sortParams.push(sort)
-      })
-      colTotalSort = true
-    }
-    //列维度为空，行排序按照指标列来排序，取第一个有排序设置的指标
-    if (!columnFields?.length) {
-      const sortField = valueFields?.find(v => !['none', 'custom_sort'].includes(v.sort))
-      if (sortField) {
-        const sort = {
-          sortFieldId: r[0],
-          sortMethod: sortField.sort.toUpperCase(),
-          sortByMeasure: TOTAL_VALUE,
-          query: {
-            [EXTRA_FIELD]: sortField.dataeaseName
-          }
-        }
-        sortParams.push(sort)
-      }
-    }
     // 自定义总计小计
     const totals = [
       tableTotal.row.calcTotals,
@@ -289,94 +230,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
     })
     // 空值处理
     const newData = this.configEmptyDataStrategy(chart)
-    // 行列维度排序
-    if (!rowTotalSort) {
-      c?.forEach((f, i) => {
-        if (valueFieldMap[f]?.sort === 'none') {
-          return
-        }
-        const sort = {
-          sortFieldId: f
-        }
-        const sortMethod = valueFieldMap[f]?.sort?.toUpperCase()
-        if (sortMethod === 'CUSTOM_SORT') {
-          sort.sortBy = valueFieldMap[f].customSort
-        } else {
-          if ([2, 3, 4].includes(valueFieldMap[f]?.deType)) {
-            const fieldValues = newData.map(item => item[f])
-            const uniqueValues = [...new Set(fieldValues)]
-            uniqueValues.sort((a, b) => {
-              return sortMethod === 'ASC' ? a - b : b - a
-            })
-            sort.sortBy = uniqueValues
-          } else if (i === 0) {
-            sort.sortMethod = sortMethod
-          } else {
-            const fieldValues = newData.map(item => item[f])
-            const uniqueValues = [...new Set(fieldValues)]
-
-            // 根据配置动态决定排序顺序
-            uniqueValues.sort((a, b) => {
-              if (!a && !b) {
-                return 0
-              }
-              if (!a) {
-                return sortMethod === 'ASC' ? -1 : 1
-              }
-              if (!b) {
-                return sortMethod === 'ASC' ? 1 : -1
-              }
-              return sortMethod === 'ASC' ? a.localeCompare(b) : b.localeCompare(a)
-            })
-            sort.sortBy = uniqueValues
-          }
-        }
-        sortParams.push(sort)
-      })
-    }
-    if (!colTotalSort) {
-      r?.forEach((f, i) => {
-        if (valueFieldMap[f]?.sort === 'none') {
-          return
-        }
-        const sort = {
-          sortFieldId: f
-        }
-        const sortMethod = valueFieldMap[f]?.sort?.toUpperCase()
-        if (sortMethod === 'CUSTOM_SORT') {
-          sort.sortBy = valueFieldMap[f].customSort
-        } else {
-          if ([2, 3, 4].includes(valueFieldMap[f]?.deType)) {
-            const fieldValues = newData.map(item => item[f])
-            const uniqueValues = [...new Set(fieldValues)]
-            uniqueValues.sort((a, b) => {
-              return sortMethod === 'ASC' ? a - b : b - a
-            })
-            sort.sortBy = uniqueValues
-          } else if (i === 0) {
-            sort.sortMethod = sortMethod
-          } else {
-            const fieldValues = newData.map(item => item[f])
-            const uniqueValues = [...new Set(fieldValues)]
-            // 根据配置动态决定排序顺序
-            uniqueValues.sort((a, b) => {
-              if (!a && !b) {
-                return 0
-              }
-              if (!a) {
-                return sortMethod === 'ASC' ? -1 : 1
-              }
-              if (!b) {
-                return sortMethod === 'ASC' ? 1 : -1
-              }
-              return sortMethod === 'ASC' ? a.localeCompare(b) : b.localeCompare(a)
-            })
-            sort.sortBy = uniqueValues
-          }
-        }
-        sortParams.push(sort)
-      })
-    }
+    const sortParams = this.configSortParams(chart, newData)
     // data config
     const s2DataConfig: S2DataConfig = {
       fields: {
@@ -826,6 +680,307 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       merge(theme, tmp)
     }
     return theme
+  }
+  private configSortParams(chart: Chart, newData: []) {
+    // 行列分开处理，先行后列，样式设置中汇总总计排序的优先级最高，剩下的按照字段的排序优先级设置进行排序
+    const { xAxis: rowFields, xAxisExt: columnFields, yAxis: valueFields } = chart
+    const [r, c, v] = [rowFields, columnFields, valueFields].map(arr =>
+      arr.map(i => i.dataeaseName)
+    )
+    const { tableTotal } = parseJson(chart.customAttr)
+    // 解析合计、小计排序
+    const sortParams = []
+    let rowTotalSort = false
+    if (
+      tableTotal.row.totalSort &&
+      tableTotal.row.totalSort !== 'none' &&
+      c.length > 0 &&
+      tableTotal.row.showGrandTotals &&
+      v.indexOf(tableTotal.row.totalSortField) > -1
+    ) {
+      c.forEach(i => {
+        const sort = {
+          sortFieldId: i,
+          sortMethod: tableTotal.row.totalSort.toUpperCase(),
+          sortByMeasure: TOTAL_VALUE,
+          query: {
+            [EXTRA_FIELD]: tableTotal.row.totalSortField
+          }
+        }
+        sortParams.push(sort)
+      })
+      rowTotalSort = true
+    }
+    let colTotalSort = false
+    if (
+      tableTotal.col.totalSort &&
+      tableTotal.col.totalSort !== 'none' &&
+      r.length > 0 &&
+      tableTotal.col.showGrandTotals &&
+      v.indexOf(tableTotal.col.totalSortField) > -1
+    ) {
+      r.forEach(i => {
+        const sort = {
+          sortFieldId: i,
+          sortMethod: tableTotal.col.totalSort.toUpperCase(),
+          sortByMeasure: TOTAL_VALUE,
+          query: {
+            [EXTRA_FIELD]: tableTotal.col.totalSortField
+          }
+        }
+        sortParams.push(sort)
+      })
+      colTotalSort = true
+    }
+    if (colTotalSort && rowTotalSort) {
+      return sortParams
+    }
+    const noFieldSort = [...rowFields, ...columnFields, ...valueFields].every(
+      f => f.sort === 'none'
+    )
+    if (noFieldSort) {
+      return sortParams
+    }
+    const valueFieldMap: Record<string, Axis> = [
+      ...rowFields,
+      ...columnFields,
+      ...valueFields
+    ].reduce((p, n) => {
+      p[n.dataeaseName] = n
+      return p
+    }, {})
+    //列维度为空，行排序需要考虑指标的排序设置和优先级设置
+    if (!columnFields?.length && !colTotalSort) {
+      // id
+      const sortValueFields = valueFields
+        .filter(f => !['none', 'custom_sort'].includes(f.sort))
+        .map(f => f.id)
+      const sortRowFieldsMap = rowFields
+        .filter(f => f.sort !== 'none')
+        .reduce((p, n) => {
+          p[n.id] = n
+          return p
+        }, {})
+      const sortFieldsBeforeValueFields: string[] = []
+      const sortFieldsAfterValueFields: string[] = []
+      const sortFieldsNotInPriority: string[] = keys(sortRowFieldsMap)
+      if (sortValueFields.length && chart.sortPriority?.length) {
+        let minSortValueFieldIndex = rowFields.length
+        let minSortValueFieldId = ''
+        chart.sortPriority.forEach((f, i) => {
+          if (sortValueFields.includes(f.id) && i < minSortValueFieldIndex) {
+            minSortValueFieldIndex = i
+            minSortValueFieldId = f.id
+          }
+        })
+        chart.sortPriority.forEach((f, i) => {
+          if (sortRowFieldsMap[f.id]) {
+            const indexInSortFields = sortFieldsNotInPriority.indexOf(f.id)
+            sortFieldsNotInPriority.splice(indexInSortFields, 1)
+            if (i < minSortValueFieldIndex) {
+              sortFieldsBeforeValueFields.push(f.id)
+            } else {
+              sortFieldsAfterValueFields.push(f.id)
+            }
+          }
+        })
+        const tmpFields = [...sortFieldsBeforeValueFields, ...sortFieldsNotInPriority]
+        tmpFields.forEach(f => {
+          const sort = {
+            sortFieldId: sortRowFieldsMap[f].dataeaseName
+          }
+          const sortMethod = sortRowFieldsMap[f]?.sort?.toUpperCase()
+          if (sortMethod === 'CUSTOM_SORT') {
+            sort.sortBy = sortRowFieldsMap[f].customSort
+          } else {
+            if ([2, 3, 4].includes(sortRowFieldsMap[f]?.deType)) {
+              const fieldValues = newData.map(item => item[f])
+              const uniqueValues = [...new Set(fieldValues)]
+              uniqueValues.sort((a, b) => {
+                return sortMethod === 'ASC' ? a - b : b - a
+              })
+              sort.sortBy = uniqueValues
+            } else {
+              const fieldValues = newData.map(item => item[f])
+              const uniqueValues = [...new Set(fieldValues)]
+
+              // 根据配置动态决定排序顺序
+              uniqueValues.sort((a, b) => {
+                if (!a && !b) {
+                  return 0
+                }
+                if (!a) {
+                  return sortMethod === 'ASC' ? -1 : 1
+                }
+                if (!b) {
+                  return sortMethod === 'ASC' ? 1 : -1
+                }
+                return sortMethod === 'ASC' ? a.localeCompare(b) : b.localeCompare(a)
+              })
+              sort.sortBy = uniqueValues
+            }
+          }
+          sortParams.push(sort)
+        })
+        if (sortFieldsAfterValueFields.length && minSortValueFieldId) {
+          const sortValueField = valueFields.find(f => f.id === minSortValueFieldId)
+          sortFieldsAfterValueFields.forEach(f => {
+            const sort = {
+              sortFieldId: sortRowFieldsMap[f].dataeaseName,
+              sortMethod: sortValueField.sort.toUpperCase(),
+              sortByMeasure: TOTAL_VALUE,
+              query: {
+                [EXTRA_FIELD]: sortValueField.dataeaseName
+              }
+            }
+            sortParams.push(sort)
+          })
+        }
+        return sortParams
+      } else {
+        rowFields.forEach(f => {
+          if (sortRowFieldsMap[f.id]) {
+            const sort = {
+              sortFieldId: f.dataeaseName
+            }
+            const sortMethod = f.sort.toUpperCase()
+            if (sortMethod === 'CUSTOM_SORT') {
+              sort.sortBy = f.customSort
+            } else {
+              if ([2, 3, 4].includes(f.deType)) {
+                const fieldValues = newData.map(item => item[f.dataeaseName])
+                const uniqueValues = [...new Set(fieldValues)]
+                uniqueValues.sort((a, b) => {
+                  return sortMethod === 'ASC' ? a - b : b - a
+                })
+                sort.sortBy = uniqueValues
+              } else {
+                const fieldValues = newData.map(item => item[f.dataeaseName])
+                const uniqueValues = [...new Set(fieldValues)]
+
+                // 根据配置动态决定排序顺序
+                uniqueValues.sort((a, b) => {
+                  if (!a && !b) {
+                    return 0
+                  }
+                  if (!a) {
+                    return sortMethod === 'ASC' ? -1 : 1
+                  }
+                  if (!b) {
+                    return sortMethod === 'ASC' ? 1 : -1
+                  }
+                  return sortMethod === 'ASC' ? a.localeCompare(b) : b.localeCompare(a)
+                })
+                sort.sortBy = uniqueValues
+              }
+            }
+            sortParams.push(sort)
+          } else {
+            if (sortValueFields.length) {
+              const sortValueField = valueFields.find(f => f.id === sortValueFields[0])
+              const sort = {
+                sortFieldId: f.dataeaseName,
+                sortMethod: sortValueField.sort.toUpperCase(),
+                sortByMeasure: TOTAL_VALUE,
+                query: {
+                  [EXTRA_FIELD]: sortValueField.dataeaseName
+                }
+              }
+              sortParams.push(sort)
+            }
+          }
+        })
+      }
+      return sortParams
+    }
+    if (!rowTotalSort) {
+      c?.forEach((f, i) => {
+        if (valueFieldMap[f]?.sort === 'none') {
+          return
+        }
+        const sort = {
+          sortFieldId: f
+        }
+        const sortMethod = valueFieldMap[f]?.sort?.toUpperCase()
+        if (sortMethod === 'CUSTOM_SORT') {
+          sort.sortBy = valueFieldMap[f].customSort
+        } else {
+          if ([2, 3, 4].includes(valueFieldMap[f]?.deType)) {
+            const fieldValues = newData.map(item => item[f])
+            const uniqueValues = [...new Set(fieldValues)]
+            uniqueValues.sort((a, b) => {
+              return sortMethod === 'ASC' ? a - b : b - a
+            })
+            sort.sortBy = uniqueValues
+          } else if (i === 0) {
+            sort.sortMethod = sortMethod
+          } else {
+            const fieldValues = newData.map(item => item[f])
+            const uniqueValues = [...new Set(fieldValues)]
+
+            // 根据配置动态决定排序顺序
+            uniqueValues.sort((a, b) => {
+              if (!a && !b) {
+                return 0
+              }
+              if (!a) {
+                return sortMethod === 'ASC' ? -1 : 1
+              }
+              if (!b) {
+                return sortMethod === 'ASC' ? 1 : -1
+              }
+              return sortMethod === 'ASC' ? a.localeCompare(b) : b.localeCompare(a)
+            })
+            sort.sortBy = uniqueValues
+          }
+        }
+        sortParams.push(sort)
+      })
+    }
+    if (!colTotalSort) {
+      r?.forEach((f, i) => {
+        if (valueFieldMap[f]?.sort === 'none') {
+          return
+        }
+        const sort = {
+          sortFieldId: f
+        }
+        const sortMethod = valueFieldMap[f]?.sort?.toUpperCase()
+        if (sortMethod === 'CUSTOM_SORT') {
+          sort.sortBy = valueFieldMap[f].customSort
+        } else {
+          if ([2, 3, 4].includes(valueFieldMap[f]?.deType)) {
+            const fieldValues = newData.map(item => item[f])
+            const uniqueValues = [...new Set(fieldValues)]
+            uniqueValues.sort((a, b) => {
+              return sortMethod === 'ASC' ? a - b : b - a
+            })
+            sort.sortBy = uniqueValues
+          } else if (i === 0) {
+            sort.sortMethod = sortMethod
+          } else {
+            const fieldValues = newData.map(item => item[f])
+            const uniqueValues = [...new Set(fieldValues)]
+            // 根据配置动态决定排序顺序
+            uniqueValues.sort((a, b) => {
+              if (!a && !b) {
+                return 0
+              }
+              if (!a) {
+                return sortMethod === 'ASC' ? -1 : 1
+              }
+              if (!b) {
+                return sortMethod === 'ASC' ? 1 : -1
+              }
+              return sortMethod === 'ASC' ? a.localeCompare(b) : b.localeCompare(a)
+            })
+            sort.sortBy = uniqueValues
+          }
+        }
+        sortParams.push(sort)
+      })
+    }
+    return sortParams
   }
 
   setupDefaultOptions(chart: ChartObj): ChartObj {
