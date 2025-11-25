@@ -1,21 +1,21 @@
-package io.dataease.api.sync.task.dto;
+package io.dataease.extensions.sync.model.task;
 
-import io.dataease.api.sync.datasource.dto.SyncDatasourceDTO;
+import io.dataease.extensions.sync.model.TableFieldDTO;
+import io.dataease.extensions.sync.model.datasource.DatasourceDTO;
 import lombok.Data;
 
 import java.util.List;
 
 /**
  * @author fit2cloud
- * @date 2023/8/10 16:39
  **/
 @Data
 public class Target {
     private String type;
     private String createTable;
-    private List<TableField> fieldList;
+    private List<TableFieldDTO> fieldList;
     private String tableName;
-    private SyncDatasourceDTO datasource;
+    private DatasourceDTO datasource;
     private String datasourceId;
     private String targetProperty;
     private String incrementSync;

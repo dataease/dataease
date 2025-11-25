@@ -1,0 +1,111 @@
+package io.dataease.extensions.sync.plugin;
+
+import io.dataease.exception.DEException;
+import io.dataease.extensions.sync.factory.SyncProviderFactory;
+import io.dataease.extensions.sync.model.datasource.DatasourceRequest;
+import io.dataease.extensions.sync.provider.SyncProvider;
+import io.dataease.extensions.sync.vo.XpackPluginsSyncDatasourceVO;
+import io.dataease.license.utils.JsonUtil;
+import io.dataease.plugins.template.DataEasePlugin;
+import io.dataease.plugins.vo.DataEasePluginVO;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.URI;
+import java.nio.file.Paths;
+import java.security.ProtectionDomain;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+
+/**
+ * DataEase同步数据源插件抽象类
+ *
+ * @author jianneng
+ **/
+public abstract class DataEaseSyncDatasourcePlugin extends SyncProvider implements DataEasePlugin {
+    private final String DEFAULT_FILE_PATH = "/opt/dataease3.0/drivers/plugin";
+
+    @Override
+    public List<String> getSchema(DatasourceRequest datasourceRequest) {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public void loadPlugin() {
+        XpackPluginsSyncDatasourceVO datasourceConfig = getConfig();
+        SyncProviderFactory.loadPlugin(datasourceConfig.getType(), datasourceConfig.getDatasourceRole(), this);
+        try {
+            loadDriver();
+        } catch (Exception e) {
+            DEException.throwException(e);
+        }
+    }
+
+    private void loadDriver() throws Exception {
+        XpackPluginsSyncDatasourceVO config = getConfig();
+        String localPath = StringUtils.isEmpty(config.getDriverPath()) ? DEFAULT_FILE_PATH : config.getDriverPath();
+        ProtectionDomain protectionDomain = this.getClass().getProtectionDomain();
+        URI uri = protectionDomain.getCodeSource().getLocation().toURI();
+        try (JarFile jarFile = new JarFile(new File(uri))) {
+            Enumeration<JarEntry> entries = jarFile.entries();
+            while (entries.hasMoreElements()) {
+                JarEntry entry = entries.nextElement();
+                String name = entry.getName();
+                if (StringUtils.endsWith(name, ".jar")) {
+                    File file = new File(localPath, Paths.get(name).getFileName().toString());
+                    if (!file.getParentFile().exists()) {
+                        file.getParentFile().mkdirs();
+                    }
+
+                    try (InputStream inputStream = jarFile.getInputStream(entry);
+                         FileOutputStream outputStream = new FileOutputStream(file)) {
+                        byte[] bytes = new byte[1024];
+                        int length;
+                        while ((length = inputStream.read(bytes)) >= 0) {
+                            outputStream.write(bytes, 0, length);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public XpackPluginsSyncDatasourceVO getConfig() {
+        DataEasePluginVO pluginInfo = null;
+        try {
+            pluginInfo = getPluginInfo();
+        } catch (Exception e) {
+            DEException.throwException(e);
+        }
+        String config = pluginInfo.getConfig();
+        XpackPluginsSyncDatasourceVO vo = JsonUtil.parseObject(config, XpackPluginsSyncDatasourceVO.class);
+        vo.setIcon(pluginInfo.getIcon());
+        return vo;
+    }
+
+    @Override
+    public void unloadPlugin() {
+        try {
+            ProtectionDomain protectionDomain = this.getClass().getProtectionDomain();
+            URI uri = protectionDomain.getCodeSource().getLocation().toURI();
+            try (JarFile jarFile = new JarFile(new File(uri))) {
+                Enumeration<JarEntry> entries = jarFile.entries();
+                while (entries.hasMoreElements()) {
+                    JarEntry entry = entries.nextElement();
+                    String name = entry.getName();
+                    if (StringUtils.endsWith(name, ".jar")) {
+                        File file = new File(DEFAULT_FILE_PATH, Paths.get(name).getFileName().toString());
+                        file.delete();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            DEException.throwException(e);
+        }
+    }
+}

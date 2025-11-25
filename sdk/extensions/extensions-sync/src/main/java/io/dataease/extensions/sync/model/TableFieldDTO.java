@@ -1,28 +1,22 @@
-package io.dataease.api.sync.task.dto;
+package io.dataease.extensions.sync.model;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
- * @author fit2cloud
- */
-@Setter
-@Getter
-@EqualsAndHashCode(callSuper = false)
-public class TableField {
+ *
+ * @author jianneng
+ * @date 2025/11/11 17:53
+ **/
+@Data
+public class TableFieldDTO {
     private String fieldSource;
+    private String fieldSourceType;
     private String fieldName;
     private String remarks;
     private String fieldType;
     private int fieldSize;
-    /**
-     * 精度
-     */
     private int fieldPrecision;
-
     private boolean fieldPk;
     private boolean fieldIndex;
     private Object defaultValue;
-
 }
