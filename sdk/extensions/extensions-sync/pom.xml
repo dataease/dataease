@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.dataease</groupId>
+        <artifactId>extensions</artifactId>
+        <version>${dataease.version}</version>
+    </parent>
+
+    <artifactId>extensions-sync</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.dataease</groupId>
+            <artifactId>extensions-datasource</artifactId>
+            <version>${dataease.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+            <version>${jsch.version}</version>
+        </dependency>
+    </dependencies>
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>fit2cloud-public</id>
+            <name>Fit2cloud Public</name>
+            <url>https://repository.fit2cloud.com/repository/fit2cloud-public/</url>
+        </repository>
+    </repositories>
+</project>

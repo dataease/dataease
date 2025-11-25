@@ -3671,7 +3671,9 @@ export default {
     'flag-all': '全部',
     'flag-ds': '資料來源插件',
     'flag-view': '圖表插件',
-    'flag-df': '資料填報插件'
+    'flag-df': '資料填報插件',
+    'flag-sync-source': '數據同步-源數據源插件',
+    'flag-sync-sink': '數據同步-目標數據源插件'
   },
   online_map: {
     geometry: '地理資訊',

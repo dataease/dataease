@@ -3783,7 +3783,9 @@ export default {
     'flag-all': 'All',
     'flag-ds': 'Datasource plug-in',
     'flag-view': 'Chart plug-in',
-    'flag-df': 'Data reporting plug-in'
+    'flag-df': 'Data reporting plug-in',
+    'flag-sync-source': 'Data Sync - Source plug-in',
+    'flag-sync-sink': 'Data Sync- Sink plug-in'
   },
   online_map: {
     geometry: 'Geographic information',
