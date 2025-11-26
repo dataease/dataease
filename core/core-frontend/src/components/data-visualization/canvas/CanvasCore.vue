@@ -202,9 +202,6 @@ const PointShadow = defineAsyncComponent(
 )
 const ContextMenu = defineAsyncComponent(() => import('./ContextMenu.vue'))
 const MarkLine = defineAsyncComponent(() => import('./MarkLine.vue'))
-const UserViewEnlarge = defineAsyncComponent(
-  () => import('@/components/visualization/UserViewEnlarge.vue')
-)
 const LinkJumpSet = defineAsyncComponent(() => import('@/components/visualization/LinkJumpSet.vue'))
 const LinkageSet = defineAsyncComponent(() => import('@/components/visualization/LinkageSet.vue'))
 const DatasetParamsComponent = defineAsyncComponent(
@@ -1445,17 +1442,19 @@ const handleDragOver = e => {
 const getMoveItem = () => {
   return infoBox.value.moveItem
 }
-
+const userViewEnlarge = ref()
 const userViewEnlargeOpen = (opt, item) => {
-  userViewEnlargeRefShow.value = true
-  nextTick(() => {
-    userViewEnlargeRef.value.dialogInit(
-      canvasStyleData.value,
-      canvasViewInfo.value[item.id],
-      item,
-      opt,
-      { scale: curBaseScale.value }
-    )
+  import('@/components/visualization/UserViewEnlarge.vue').then(res => {
+    userViewEnlarge.value = res.default
+    nextTick(() => {
+      userViewEnlargeRef.value.dialogInit(
+        canvasStyleData.value,
+        canvasViewInfo.value[item.id],
+        item,
+        opt,
+        { scale: curBaseScale.value }
+      )
+    })
   })
 }
 
@@ -1773,7 +1772,7 @@ defineExpose({
     <MarkLine v-if="markLineShow" />
     <!-- 选中区域 -->
     <Area v-show="isShowArea" :start="start" :width="width" :height="height" />
-    <user-view-enlarge v-if="userViewEnlargeRefShow" ref="userViewEnlargeRef"></user-view-enlarge>
+    <component ref="userViewEnlargeRef" :is="userViewEnlarge"></component>
     <link-jump-set v-if="linkJumpRefShow" ref="linkJumpRef"></link-jump-set>
     <linkage-set v-if="linkageRefShow" ref="linkageRef"></linkage-set>
     <dataset-params-component
