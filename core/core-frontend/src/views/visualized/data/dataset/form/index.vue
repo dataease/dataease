@@ -1658,6 +1658,7 @@ const sourceChange = val => {
 
 const finish = res => {
   const { id, pid, name } = res
+  isUpdate = false
   datasetName.value = name
   nodeInfo = {
     id,
