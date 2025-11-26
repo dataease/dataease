@@ -1562,7 +1562,9 @@ const handleBeforeClose = () => {
   defaultConfigurationRef.value?.mult()
   defaultConfigurationRef.value?.single()
   handleDialogClick()
-  curComponent.value.id = ''
+  if (curComponent.value) {
+    curComponent.value.id = ''
+  }
   relationshipChartIndex.value = 0
   dialogVisible.value = false
 }
@@ -2269,6 +2271,7 @@ const timeGranularityMultipleChange = (val: string) => {
 watch(
   () => showError.value,
   val => {
+    if (!curComponent.value) return
     curComponent.value.showError = val
   }
 )
