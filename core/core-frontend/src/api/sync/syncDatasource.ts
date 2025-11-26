@@ -49,3 +49,7 @@ export const getFieldListApi = data => {
 export const validateByIdApi = (id: string) => {
   return request.get({ url: `/sync/datasource/validate/${id}` })
 }
+
+export const loadSyncPlugin = () => {
+  return request.get({ url: '/xpackComponent/syncPlugins' })
+}
