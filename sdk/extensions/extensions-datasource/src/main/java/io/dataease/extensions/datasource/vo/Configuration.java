@@ -48,6 +48,7 @@ public class Configuration {
     private String sshPassword;
     private String sshKey;
     private String sshKeyPassword;
+    private String url;
 
 
     public String getLHost(){

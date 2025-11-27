@@ -153,7 +153,7 @@ public class DatasetSQLBotManage {
     }
 
 
-    public List<DataSQLBotDatasetVO> getDatasetList(String dvInfo){
+    public List<DataSQLBotDatasetVO> getDatasetList(String dvInfo) {
         return extChartViewMapper.findDataSQLBotDatasetDvId(dvInfo);
     }
 
@@ -538,7 +538,7 @@ public class DatasetSQLBotManage {
         DataSQLBotAssistantVO vo = new DataSQLBotAssistantVO();
         vo.setDataBase(config.getDataBase());
         vo.setExtraParams(config.getExtraParams());
-        vo.setHost(config.getHost());
+        vo.setHost(dsType.contains(DatasourceConfiguration.DatasourceType.es.name()) ? config.getUrl() : config.getHost());
         vo.setPort(config.getPort());
         vo.setName(row.get("cd_name").toString());
         vo.setComment(ObjectUtils.isEmpty(row.get("cd_description")) ? vo.getName() : row.get("cd_description").toString());
