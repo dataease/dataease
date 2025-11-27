@@ -141,7 +141,6 @@ onMounted(async () => {
       if (!window.tinymce) {
         window.tinymce = tinymce
       }
-      debugger
       loadDistributed().then(async res => {
         new Function(res.data)()
         useEmitt().emitter.emit('load-xpack')
