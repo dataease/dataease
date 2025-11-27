@@ -57,3 +57,8 @@ export const loadSyncPlugin = () => {
 export const loadPluginApi = (key: string) => {
   return request.get({ url: `/xpackComponent/contentPlugin/${key}` })
 }
+
+export const loadPluginStaticInfo = (moduleName: string) => {
+  const url = `/xpackComponent/pluginStaticInfo/${moduleName}`
+  return request.get({ url })
+}
