@@ -53,3 +53,7 @@ export const validateByIdApi = (id: string) => {
 export const loadSyncPlugin = () => {
   return request.get({ url: '/xpackComponent/syncPlugins' })
 }
+
+export const loadPluginApi = (key: string) => {
+  return request.get({ url: `/xpackComponent/contentPlugin/${key}` })
+}
