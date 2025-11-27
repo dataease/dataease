@@ -141,7 +141,7 @@ onMounted(async () => {
       if (!window.tinymce) {
         window.tinymce = tinymce
       }
-      loadDistributed().then(async res => {
+      loadDistributed()?.then(async res => {
         new Function(res.data)()
         useEmitt().emitter.emit('load-xpack')
       })
