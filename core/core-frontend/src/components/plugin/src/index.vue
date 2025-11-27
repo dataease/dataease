@@ -65,6 +65,7 @@ useEmitt({
 })
 
 const loadComponent = () => {
+  console.log('load-component...1')
   loading.value = true
   const byteArray = wsCache.get(`de-plugin-proxy`)
   if (byteArray) {
@@ -108,6 +109,7 @@ defineExpose({
   invokeMethod
 })
 onMounted(async () => {
+  console.log('plugin index onmounted...')
   const key = 'xpack-model-distributed'
   let distributed = false
   if (wsCache.get(key) === null) {
@@ -128,6 +130,11 @@ onMounted(async () => {
   if (distributed) {
     if (window['DEXPack']) {
       const xpack = await window['DEXPack'].mapping[attrs.jsname]
+      console.log('dexpack...', attrs.jsname)
+      if (!xpack) {
+        loadComponent()
+        return
+      }
       plugin.value = xpack.default
     } else if (!window._de_xpack_not_loaded) {
       window._de_xpack_not_loaded = true
