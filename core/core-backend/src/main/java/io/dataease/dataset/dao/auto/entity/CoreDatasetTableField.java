@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2025-02-06
+ * @since 2025-11-26
  */
 @TableName("core_dataset_table_field")
 public class CoreDatasetTableField implements Serializable {
@@ -140,6 +140,11 @@ public class CoreDatasetTableField implements Serializable {
      * 计算字段参数
      */
     private String params;
+
+    /**
+     * 是否排序
+     */
+    private Boolean orderChecked;
 
     public Long getId() {
         return id;
@@ -341,6 +346,14 @@ public class CoreDatasetTableField implements Serializable {
         this.params = params;
     }
 
+    public Boolean getOrderChecked() {
+        return orderChecked;
+    }
+
+    public void setOrderChecked(Boolean orderChecked) {
+        this.orderChecked = orderChecked;
+    }
+
     @Override
     public String toString() {
         return "CoreDatasetTableField{" +
@@ -369,6 +382,7 @@ public class CoreDatasetTableField implements Serializable {
         ", dateFormat = " + dateFormat +
         ", dateFormatType = " + dateFormatType +
         ", params = " + params +
+        ", orderChecked = " + orderChecked +
         "}";
     }
 }

@@ -2,6 +2,7 @@ package io.dataease.exportCenter.manage;
 
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import io.dataease.api.chart.dto.DeSortField;
 import io.dataease.api.chart.dto.ViewDetailField;
 import io.dataease.api.chart.request.ChartExcelRequest;
 import io.dataease.api.chart.request.ChartExcelRequestInner;
@@ -24,10 +25,7 @@ import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupMapper;
 import io.dataease.dataset.manage.*;
 import io.dataease.datasource.utils.DatasourceUtils;
 import io.dataease.engine.sql.SQLProvider;
-import io.dataease.engine.trans.Field2SQLObj;
-import io.dataease.engine.trans.Order2SQLObj;
-import io.dataease.engine.trans.Table2SQLObj;
-import io.dataease.engine.trans.WhereTree2Str;
+import io.dataease.engine.trans.*;
 import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
 import io.dataease.exportCenter.dao.auto.entity.CoreExportTask;
@@ -283,7 +281,17 @@ public class ExportCenterDownLoadManage {
                 Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
                 Field2SQLObj.field2sqlObj(sqlMeta, allFields, allFields, crossDs, dsMap, Utils.getParams(allFields), null, pluginManage);
                 WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, allFields, crossDs, dsMap, Utils.getParams(allFields), null, pluginManage);
-                Order2SQLObj.getOrders(sqlMeta, dto.getSortFields(), allFields, crossDs, dsMap, Utils.getParams(allFields), null, pluginManage);
+                List<DeSortField> sortFields = new ArrayList<>();
+                for (DatasetTableFieldDTO field : allFields) {
+                    if (field.getOrderChecked()) {
+                        DeSortField sortField = new DeSortField();
+                        BeanUtils.copyBean(sortField, field);
+                        sortField.setOrderDirection("asc");
+                        sortFields.add(sortField);
+                    }
+                }
+                dto.setSortFields(sortFields);
+                DatasetOrder2SQLObj.getOrders(sqlMeta, dto.getSortFields(), allFields);
                 String replaceSql = provider.rebuildSQL(SQLProvider.createQuerySQL(sqlMeta, false, false, false), sqlMeta, crossDs, dsMap);
                 Long totalCount = datasetDataManage.getDatasetTotal(dto, replaceSql, null);
                 Long curLimit = ExportCenterUtils.getExportLimit("dataset");

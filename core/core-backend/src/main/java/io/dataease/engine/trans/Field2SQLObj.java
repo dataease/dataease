@@ -152,6 +152,7 @@ public class Field2SQLObj {
         return SQLObj.builder()
                 .fieldName(fieldName)
                 .fieldAlias(fieldAlias)
+                .id(f.getId())
                 .build();
     }
 

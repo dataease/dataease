@@ -120,6 +120,11 @@ public class ChartDataServer implements ChartDataApi {
                 TypeReference<List<ChartViewFieldDTO>> listTypeReference = new TypeReference<List<ChartViewFieldDTO>>() {
                 };
                 viewDTO.setXAxis(JsonUtil.parseList(JsonUtil.toJSONString(sourceFields).toString(), listTypeReference));
+                viewDTO.getXAxis().forEach(x -> {
+                    if (x.getOrderChecked()) {
+                        x.setSort("asc");
+                    }
+                });
             }
             int curLimit = Math.toIntExact(ExportCenterUtils.getExportLimit("view"));
             int curDsLimit = Math.toIntExact(ExportCenterUtils.getExportLimit("dataset"));
@@ -833,10 +838,12 @@ public class ChartDataServer implements ChartDataApi {
     }
 
     @DeLog(id = "#p0", ot = LogOT.EXPORT, st = LogST.PANEL)
-    public void exportPanelViewLog(Long id) {}
+    public void exportPanelViewLog(Long id) {
+    }
 
     @DeLog(id = "#p0", ot = LogOT.EXPORT, st = LogST.SCREEN)
-    public void exportScreenViewLog(Long id) {}
+    public void exportScreenViewLog(Long id) {
+    }
 
 
 }
