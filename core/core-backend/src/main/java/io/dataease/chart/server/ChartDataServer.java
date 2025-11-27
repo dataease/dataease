@@ -138,6 +138,8 @@ public class ChartDataServer implements ChartDataApi {
             if (CommonConstants.VIEW_DATA_FROM.TEMPLATE.equalsIgnoreCase(viewDTO.getDataFrom())) {
                 chartViewInfo = extendDataManage.getChartDataInfo(viewDTO.getId(), viewDTO);
             } else {
+                // 要走明细表的逻辑
+                viewDTO.setIsPlugin(false);
                 chartViewInfo = chartDataManage.calcData(viewDTO);
             }
             List<Object[]> tableRow = (List) chartViewInfo.getData().get("sourceData");
@@ -825,7 +827,6 @@ public class ChartDataServer implements ChartDataApi {
         }
         return cellStyle;
     }
-
 
     @Override
     public List<String> getFieldData(ChartViewDTO view, Long fieldId, String fieldType) throws Exception {
