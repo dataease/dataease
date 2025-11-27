@@ -41,7 +41,7 @@ const importProxy = (bytesArray: any[]) => {
     `../../../../../../${formatArray(bytesArray[6])}/${formatArray(bytesArray[7])}/${formatArray(
       bytesArray[8]
     )}/${formatArray(bytesArray[9])}/${formatArray(bytesArray[10])}.vue`
-    )
+  )
   promise
     .then((res: any) => {
       plugin.value = res.default
@@ -97,61 +97,60 @@ const storeCacheProxy = byteArray => {
 }
 const pluginProxy = ref(null)
 const invokeMethod = param => {
-  if (pluginProxy.value['invokeMethod']) {
-    if (pluginProxy.value && pluginProxy.value['invokeMethod']) {
-      pluginProxy.value['invokeMethod'](param)
-    } else if (param.methodName && pluginProxy.value[param.methodName]) {
-      pluginProxy.value[param.methodName](param.args)
-    }
+  if (pluginProxy.value && pluginProxy.value['invokeMethod']) {
+    pluginProxy.value['invokeMethod'](param)
+  } else if (param.methodName && pluginProxy.value[param.methodName]) {
+    pluginProxy.value[param.methodName](param.args)
   }
-  const emits = defineEmits(['loadFail'])
-  defineExpose({
-    invokeMethod
-  })
-  onMounted(async () => {
-    const key = 'xpack-model-distributed'
-    let distributed = false
-    if (wsCache.get(key) === null) {
-      const res = await xpackModelApi()
-      const resData = isNull(res.data) ? 'null' : res.data
-      wsCache.set('xpack-model-distributed', resData)
-      distributed = res.data
-    } else {
-      distributed = wsCache.get(key)
-    }
-    if (isNull(distributed)) {
-      setTimeout(() => {
-        emits('loadFail')
-        loading.value = false
-      }, 1000)
-      return
-    }
-    if (distributed) {
-      if (window['DEXPack']) {
-        const xpack = await window['DEXPack'].mapping[attrs.jsname]
-        plugin.value = xpack.default
-      } else if (!window._de_xpack_not_loaded) {
-        window._de_xpack_not_loaded = true
-        window['VueDe'] = Vue
-        window['AxiosDe'] = axios
-        window['PiniaDe'] = Pinia
-        window['vueRouterDe'] = router
-        window['MittAllDe'] = useEmitt().emitter.all
-        window['I18nDe'] = i18n
-        window['EchartsDE'] = echarts
-        if (!window.tinymce) {
-          window.tinymce = tinymce
-        }
-        debugger
-        loadDistributed().then(async res => {
-          new Function(res.data)()
-          useEmitt().emitter.emit('load-xpack')
-        })
+}
+const emits = defineEmits(['loadFail'])
+defineExpose({
+  invokeMethod
+})
+onMounted(async () => {
+  const key = 'xpack-model-distributed'
+  let distributed = false
+  if (wsCache.get(key) === null) {
+    const res = await xpackModelApi()
+    const resData = isNull(res.data) ? 'null' : res.data
+    wsCache.set('xpack-model-distributed', resData)
+    distributed = res.data
+  } else {
+    distributed = wsCache.get(key)
+  }
+  if (isNull(distributed)) {
+    setTimeout(() => {
+      emits('loadFail')
+      loading.value = false
+    }, 1000)
+    return
+  }
+  if (distributed) {
+    if (window['DEXPack']) {
+      const xpack = await window['DEXPack'].mapping[attrs.jsname]
+      plugin.value = xpack.default
+    } else if (!window._de_xpack_not_loaded) {
+      window._de_xpack_not_loaded = true
+      window['VueDe'] = Vue
+      window['AxiosDe'] = axios
+      window['PiniaDe'] = Pinia
+      window['vueRouterDe'] = router
+      window['MittAllDe'] = useEmitt().emitter.all
+      window['I18nDe'] = i18n
+      window['EchartsDE'] = echarts
+      if (!window.tinymce) {
+        window.tinymce = tinymce
       }
-    } else {
-      loadComponent()
+      debugger
+      loadDistributed().then(async res => {
+        new Function(res.data)()
+        useEmitt().emitter.emit('load-xpack')
+      })
     }
-  })
+  } else {
+    loadComponent()
+  }
+})
 </script>
 
 <template>
