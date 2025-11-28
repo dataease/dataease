@@ -200,7 +200,7 @@ onMounted(() => {
 const reUpload = e => {
   const file = e.target.files[0]
   if (file.size > 15000000) {
-    ElMessage.error('图片大小不能超过15M')
+    ElMessage.error(t('visualization.pic_size_error'))
     return
   }
   uploadFileResult(file, fileUrl => {
