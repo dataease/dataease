@@ -83,10 +83,6 @@ const goFile = () => {
   files.value.click()
 }
 
-const sizeMessage = () => {
-  ElMessage.success('图片大小不能超过15M')
-}
-
 const fileListInit = () => {
   fileList.value = []
   if (element.value.propValue.urlList && element.value.propValue.urlList.length > 0) {
