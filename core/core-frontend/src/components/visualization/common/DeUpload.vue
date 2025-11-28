@@ -40,11 +40,14 @@ import { imgUrlTrans } from '@/utils/imgUtils'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
 import { ElMessage } from 'element-plus-secondary'
+import { useI18n } from '@/hooks/web/useI18n'
 import ImgViewDialog from '@/custom-component/ImgViewDialog.vue'
+
 const snapshotStore = snapshotStoreWithOut()
 const emits = defineEmits(['onImgChange'])
 const files = ref(null)
 const maxImageSize = 15000000
+const { t } = useI18n()
 
 const props = defineProps({
   imgUrl: {
@@ -107,7 +110,7 @@ const reUpload = e => {
 }
 
 const sizeMessage = () => {
-  ElMessage.error('图片大小不能超过15M')
+  ElMessage.error(t('visualization.pic_size_error'))
 }
 
 onMounted(() => {

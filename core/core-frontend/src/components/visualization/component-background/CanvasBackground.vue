@@ -168,7 +168,7 @@ const goFile = () => {
 }
 
 const sizeMessage = () => {
-  ElMessage.success(t('visualization.pic_size_error'))
+  ElMessage.error(t('visualization.pic_size_error'))
 }
 
 const reUpload = e => {
