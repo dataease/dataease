@@ -34,4 +34,6 @@ public class ExportTaskDTO  {
     private String exportFromName;
 
     private String orgName;
+
+    private String params;
 }
