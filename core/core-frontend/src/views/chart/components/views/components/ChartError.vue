@@ -34,7 +34,7 @@ function showInfo() {
       :close-on-click-modal="false"
       center
     >
-      <el-main style="height: 400px">
+      <el-main style="height: 400px; padding: 0; margin-top: 20px">
         <span style="white-space: pre-line" v-html="errMsg"></span>
       </el-main>
       <template #footer>
