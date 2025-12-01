@@ -159,6 +159,12 @@ public class ExportCenterDownLoadManage {
     private void setExportFromName(ExportTaskDTO exportTaskDTO) {
         if (exportTaskDTO.getExportFromType().equalsIgnoreCase("chart")) {
             exportTaskDTO.setExportFromName(coreChartViewRepository.findById(exportTaskDTO.getExportFrom()).orElse(new CoreChartView()).getTitle());
+            if (StringUtils.isNotEmpty(exportTaskDTO.getExportFromName())) {
+                ChartExcelRequest request = JsonUtil.parseObject(exportTaskDTO.getParams(), ChartExcelRequest.class);
+                if (request.getViewInfo() != null && request.getViewInfo().getId() != null && request.getViewInfo().getId().equals(exportTaskDTO.getExportFrom())) {
+                    exportTaskDTO.setExportFromName(request.getViewInfo().getTitle());
+                }
+            }
         }
         if (exportTaskDTO.getExportFromType().equalsIgnoreCase("dataset")) {
             exportTaskDTO.setExportFromName(coreDatasetGroupRepository.findById(exportTaskDTO.getExportFrom()).orElse(new CoreDatasetGroup()).getName());
