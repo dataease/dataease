@@ -293,7 +293,11 @@ public class DatasetGroupManage {
     private List<DatasourceDTO> getDatasource(Long datasetId) {
         List<CoreDatasetTable> coreDatasetTables = coreDatasetTableRepository.findByDatasetGroupId(datasetId);
         List<Long> ids = new ArrayList<>();
-        coreDatasetTables.forEach(ele -> ids.add(ele.getDatasourceId()));
+        coreDatasetTables.forEach(ele -> {
+            if (!ids.contains(ele.getDatasourceId())) {
+                ids.add(ele.getDatasourceId());
+            }
+        });
         if (CollectionUtils.isEmpty(ids)) {
             DEException.throwException(Translator.get("i18n_dataset_create_error"));
         }
