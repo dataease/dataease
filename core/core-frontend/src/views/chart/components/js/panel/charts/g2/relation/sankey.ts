@@ -157,7 +157,28 @@ export class G2ChartBar extends G2ChartView {
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
 
-    newChart.on('edge:click', action)
+    const templateData = chart.data.data[0]
+    newChart.on('polygon:click', e => {
+      if (!(e.data?.data?.source && e.data?.data?.target)) {
+        return
+      }
+      const source = e.data.data.source.key
+      const target = e.data.data.target.key
+      action({
+        data: {
+          data: {
+            name: source,
+            dimensionList: [
+              { id: templateData.dimensionList[0].id, value: source },
+              { id: templateData.dimensionList[1].id, value: target }
+            ],
+            quotaList: [{ id: templateData.quotaList[0].id, value: e.data.data.value }]
+          }
+        },
+        x: e.offset.x,
+        y: e.offset.y
+      })
+    })
 
     return newChart
   }
