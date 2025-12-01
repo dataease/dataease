@@ -194,7 +194,7 @@ onUnmounted(() => {
       position: absolute;
       content: '%';
       right: 35px;
-      top: 1px;
+      top: -1px;
     }
   }
 }
