@@ -189,12 +189,15 @@ onUnmounted(() => {
 
   :deep(.ed-input__wrapper) {
     position: relative;
-    padding: 0 38px 0 8px;
+    padding-left: 8px !important;
+    padding-right: 38px !important;
     &::after {
       position: absolute;
       content: '%';
       right: 35px;
-      top: -1px;
+      top: 1px;
+      height: 24px;
+      line-height: 24px;
     }
   }
 }
