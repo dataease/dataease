@@ -15,7 +15,7 @@
         ref="appSaveForm"
         :model="state.form"
         :rules="isDatasourceMatch ? state.ruleDatasource : state.ruleDataset"
-        class="de-form-item app-form"
+        class="de-form-item app-form create-dialog"
         label-width="180px"
         label-position="top"
       >

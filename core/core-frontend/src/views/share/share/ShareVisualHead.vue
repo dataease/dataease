@@ -275,6 +275,14 @@ const state = reactive({
 watch(
   () => props.resourceId,
   () => {
+    shareEnable.value = false
+    state.detailInfo = {
+      id: '',
+      uuid: '',
+      pwd: '',
+      exp: 0,
+      autoPwd: true
+    }
     popoverVisible.value = false
   }
 )
@@ -296,6 +304,7 @@ const hideShare = async () => {
     return
   }
 }
+
 const clickOutPopover = e => {
   if (
     !popoverVisible.value ||
