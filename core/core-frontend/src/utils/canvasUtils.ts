@@ -300,19 +300,6 @@ export function historyAdaptor(
       componentItem.canvasId = 'canvas-main'
     })
   }
-  canvasStyleResult['dvType'] = attachInfo.dvType
-  if (attachInfo.dvType === 'dataV') {
-    // 首次赋值
-    canvasStyleResult['tScale'] = canvasStyleResult['tScale'] || canvasStyleResult.scale / 100
-    canvasStyleResult['tScaleWidth'] =
-      canvasStyleResult['tScaleWidth'] || canvasStyleResult.scaleWidth / 100
-    canvasStyleResult['tScaleHeight'] =
-      canvasStyleResult['tScaleHeight'] || canvasStyleResult.scaleHeight / 100
-  } else {
-    canvasStyleResult['tScale'] = 1
-    canvasStyleResult['tScaleWidth'] = 1
-    canvasStyleResult['tScaleHeight'] = 1
-  }
   const curVersion = wsCache.get('x-de-execute-version')
 
   // 含有定时报告过滤项每次都需要匹配
