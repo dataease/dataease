@@ -304,11 +304,11 @@ public class CoreVisualizationManage {
             Set<Long> dvIds = new HashSet<>();
             dvIds.add(dvId);
             snapshotDataVisualizationInfoRepository.deleteAllByIdInBatch(dvIds);
-
             snapshotCoreChartViewRepository.deleteBySceneId(dvId);
+
             deleteViewLinkageFieldSnapshot(dvId, null);
             deleteViewLinkageSnapshot(dvId, null);
-            visualizationLinkJumpRepository.deleteBySourceDvId(dvId);
+
             QSnapshotVisualizationLinkJump snapshotVisualizationLinkJump = QSnapshotVisualizationLinkJump.snapshotVisualizationLinkJump;
             QSnapshotVisualizationLinkJumpInfo snapshotVisualizationLinkJumpInfo = QSnapshotVisualizationLinkJumpInfo.snapshotVisualizationLinkJumpInfo;
             List<Long> linkJumpInfoIds = queryFactory.select(snapshotVisualizationLinkJumpInfo.id).from(snapshotVisualizationLinkJumpInfo)
