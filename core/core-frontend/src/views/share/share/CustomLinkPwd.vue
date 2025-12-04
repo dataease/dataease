@@ -60,6 +60,9 @@ const handleClose = done => {
   done()
 }
 const cancel = () => {
+  state.form.pwd = ''
+  originPwd.value = ''
+  pwdForm.value.resetFields()
   dialogVisible.value = false
 }
 const emits = defineEmits(['pwdChange'])
