@@ -15,7 +15,7 @@
         ref="appSaveForm"
         :model="state.form"
         :rules="state.rule"
-        class="de-form-item app-form"
+        class="de-form-item app-form create-dialog"
         size="middle"
         label-width="180px"
         label-position="top"
