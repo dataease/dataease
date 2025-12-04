@@ -6,7 +6,6 @@ import { storeToRefs } from 'pinia'
 import { findResourceAsBase64 } from '@/api/staticResource'
 import FileSaver from 'file-saver'
 import { deepCopy } from '@/utils/utils'
-import { toPng } from 'html-to-image'
 import { domToPng } from 'modern-screenshot'
 const embeddedStore = useEmbedded()
 const dvMainStore = dvMainStoreWithOut()
@@ -36,15 +35,7 @@ export function imgUrlTrans(url) {
   }
 }
 
-export function download2AppTemplate(
-  downloadType,
-  canvasDom,
-  name,
-  attachParams,
-  componentDataSource = componentData.value,
-  canvasStyleDataSource = canvasStyleData.value,
-  callBack?
-) {
+export function download2AppTemplate(downloadType, canvasDom, name, attachParams, callBack?) {
   try {
     findStaticSource(function (staticResource) {
       html2canvas(canvasDom).then(canvas => {
@@ -61,8 +52,8 @@ export function download2AppTemplate(
             dvType: dvInfo.value.type,
             nodeType: downloadType,
             version: 3,
-            canvasStyleData: JSON.stringify(canvasStyleDataSource),
-            componentData: JSON.stringify(componentDataSource),
+            canvasStyleData: JSON.stringify(canvasStyleData.value),
+            componentData: JSON.stringify(componentData.value),
             dynamicData: JSON.stringify(canvasViewDataTemplate),
             staticResource: JSON.stringify(staticResource || {}),
             appData: attachParams ? JSON.stringify(attachParams) : null

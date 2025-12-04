@@ -139,22 +139,14 @@ const fileDownload = (downloadType, attachParams) => {
   downloadStatus.value = true
   nextTick(() => {
     const vueDom = previewCanvasContainer.value.querySelector('.canvas-container')
-    download2AppTemplate(
-      downloadType,
-      vueDom,
-      state.dvInfo.name,
-      attachParams,
-      state.canvasDataPreviewSource,
-      state.canvasStylePreviewSource,
-      () => {
-        downloadStatus.value = false
-        const param = {
-          id: state.dvInfo.id,
-          type: state.dvInfo.type === 'dashboard' ? 'panel' : 'screen'
-        }
-        downloadType === 'app' ? exportLogApp(param) : exportLogTemplate(param)
+    download2AppTemplate(downloadType, vueDom, state.dvInfo.name, attachParams, () => {
+      downloadStatus.value = false
+      const param = {
+        id: state.dvInfo.id,
+        type: state.dvInfo.type === 'dashboard' ? 'panel' : 'screen'
       }
-    )
+      downloadType === 'app' ? exportLogApp(param) : exportLogTemplate(param)
+    })
   })
 }
 

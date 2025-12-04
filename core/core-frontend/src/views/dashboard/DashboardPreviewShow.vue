@@ -191,7 +191,7 @@ const fileDownload = (downloadType, attachParams) => {
   downloadStatus.value = true
   nextTick(() => {
     const vueDom = previewCanvasContainer.value.querySelector('.canvas-container')
-    download2AppTemplate(downloadType, vueDom, state.dvInfo.name, attachParams, null, null, () => {
+    download2AppTemplate(downloadType, vueDom, state.dvInfo.name, attachParams, () => {
       downloadStatus.value = false
       const param = {
         id: state.dvInfo.id,
