@@ -33,7 +33,6 @@ import {
   componentPreSort,
   findDragComponent,
   findNewComponent,
-  getTransformParams,
   isDashboard,
   isGroupOrTabCanvas,
   isMainCanvas,
@@ -408,7 +407,6 @@ let snapshotTimer = ref(null)
 
 // 根据需要需要扩充外部scroll区域也可以进行组合的功能 此方法变更为外部组件调用
 const handleMouseDown = e => {
-  const transformParams = getTransformParams()
   // 仪表板和预览状态不显示菜单和组创建
   if (dashboardActive.value || editMode.value === 'preview') {
     return
@@ -428,20 +426,20 @@ const handleMouseDown = e => {
 
   const startX = e.clientX
   const startY = e.clientY
-  start.value.x = (startX - editorX.value) * transformParams.tOffsetSpeed
-  start.value.y = (startY - editorY.value) * transformParams.tOffsetSpeed
+  start.value.x = startX - editorX.value
+  start.value.y = startY - editorY.value
   // 展示选中区域
   isShowArea.value = true
 
   const move = moveEvent => {
-    width.value = Math.abs((moveEvent.clientX - startX) * transformParams.tOffsetSpeed)
-    height.value = Math.abs((moveEvent.clientY - startY) * transformParams.tOffsetSpeed)
+    width.value = Math.abs(moveEvent.clientX - startX)
+    height.value = Math.abs(moveEvent.clientY - startY)
     if (moveEvent.clientX < startX) {
-      start.value.x = (moveEvent.clientX - editorX.value) * transformParams.tOffsetSpeed
+      start.value.x = moveEvent.clientX - editorX.value
     }
 
     if (moveEvent.clientY < startY) {
-      start.value.y = (moveEvent.clientY - editorY.value) * transformParams.tOffsetSpeed
+      start.value.y = moveEvent.clientY - editorY.value
     }
   }
 
@@ -579,8 +577,8 @@ const handleContextMenu = event => {
   const offsetY = rect.top
 
   // 计算鼠标相对于最外层 div 的坐标
-  const left = (mouseX - offsetX) / canvasStyleData.value.tScale
-  let top = (mouseY - offsetY) / canvasStyleData.value.tScale
+  const left = mouseX - offsetX
+  let top = mouseY - offsetY
   // 组件处于编辑状态的时候 如富文本 不弹出右键菜单
   if (!curComponent.value || (curComponent.value && !curComponent.value.editing)) {
     if (

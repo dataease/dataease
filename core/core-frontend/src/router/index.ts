@@ -46,7 +46,7 @@ export const routes: AppRouteRecordRaw[] = [
     name: 'dvCanvas',
     hidden: true,
     meta: {},
-    component: () => import('@/views/data-visualization/indexV3.vue')
+    component: () => import('@/views/data-visualization/index.vue')
   },
   {
     path: '/dashboard',

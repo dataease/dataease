@@ -1654,21 +1654,6 @@ export const dvMainStore = defineStore('dataVisualization', {
 
       this.canvasStyleData = deepCopy(canvasStyleDataNew)
       this.canvasStyleData.dvType = dvType
-      if (dvType === 'dataV') {
-        this.canvasStyleData.scale = 100
-        this.canvasStyleData.scaleWidth = 100
-        this.canvasStyleData.scaleHeight = 100
-        this.canvasStyleData.tScale = 0.6
-        this.canvasStyleData.tScaleWidth = 0.6
-        this.canvasStyleData.tScaleHeight = 0.6
-      } else {
-        this.canvasStyleData.scale = 60
-        this.canvasStyleData.scaleWidth = 60
-        this.canvasStyleData.scaleHeight = 60
-        this.canvasStyleData.tScale = 1
-        this.canvasStyleData.tScaleWidth = 1
-        this.canvasStyleData.tScaleHeight = 1
-      }
       this.componentData = []
       this.canvasViewInfo = {}
     },
