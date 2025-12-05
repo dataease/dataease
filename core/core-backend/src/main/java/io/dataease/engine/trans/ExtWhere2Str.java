@@ -141,7 +141,11 @@ public class ExtWhere2Str {
                     if (StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType()) && whereNameList.size() == 1) {
                         whereName = whereNameList.get(0);
                     } else {
-                        whereName = "CONCAT(" + StringUtils.join(whereNameList, ",',',") + ")";
+                        if (StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
+                            whereName = "(" + StringUtils.join(whereNameList, "+','+") + ")";
+                        } else {
+                            whereName = "CONCAT(" + StringUtils.join(whereNameList, ",',',") + ")";
+                        }
                     }
                 } else {
                     whereName = whereNameList.get(0);
