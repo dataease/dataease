@@ -1944,7 +1944,7 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
     const targetId = ev.srcElement.offsetParent?.querySelector('.node-id_private')?.dataset?.id
     const index = view.value[type].findIndex(ele => ele.id === targetId && ele.id !== obj.id)
     if (index !== -1) {
-      view.value[type].splice(index + 1, 0, obj)
+      view.value[type].splice(index + 1 + i, 0, obj)
     } else {
       view.value[type].push(obj)
     }
