@@ -31,7 +31,9 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
     'legend-selector',
     'x-axis-selector',
     'y-axis-selector',
-    'threshold'
+    'threshold',
+    'jump-set',
+    'linkage'
   ]
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],
