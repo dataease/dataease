@@ -6,6 +6,7 @@ import io.dataease.api.permissions.dataset.api.RowPermissionsApi;
 import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.commons.utils.SqlparserUtils;
 import io.dataease.constant.AuthEnum;
+import io.dataease.constant.SQLConstants;
 import io.dataease.dataset.constant.DatasetTableType;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupMapper;
@@ -17,7 +18,6 @@ import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.datasource.manage.DataSourceManage;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.engine.constant.ExtFieldConstant;
-import io.dataease.constant.SQLConstants;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;
@@ -162,12 +162,8 @@ public class DatasetSQLManage {
 
             String[] array = fields.stream()
                     .map(f -> {
-                        String alias;
-                        if (StringUtils.isEmpty(f.getDataeaseName())) {
-                            alias = TableUtils.fieldNameShort(table.getTableAlias() + "_" + f.getOriginName());
-                        } else {
-                            alias = f.getDataeaseName();
-                        }
+                        String alias = TableUtils.fieldNameShort(table.getTableAlias() + "_" + f.getOriginName());
+
                         f.setFieldShortName(alias);
                         f.setDataeaseName(f.getFieldShortName());
                         f.setDatasetTableId(datasetTable.getId());
@@ -336,12 +332,7 @@ public class DatasetSQLManage {
 
             String[] array = fields.stream()
                     .map(f -> {
-                        String alias;
-                        if (StringUtils.isEmpty(f.getDataeaseName())) {
-                            alias = TableUtils.fieldNameShort(table.getTableAlias() + "_" + f.getOriginName());
-                        } else {
-                            alias = f.getDataeaseName();
-                        }
+                        String alias = TableUtils.fieldNameShort(table.getTableAlias() + "_" + f.getOriginName());
 
                         f.setFieldShortName(alias);
                         f.setDataeaseName(f.getFieldShortName());
@@ -497,6 +488,7 @@ public class DatasetSQLManage {
     public String putObj2Map(Map<Long, DatasourceSchemaDTO> dsMap, DatasetTableDTO ds, boolean isCross) {
         return putObj2Map(dsMap, ds, isCross, null);
     }
+
     public String putObj2Map(Map<Long, DatasourceSchemaDTO> dsMap, DatasetTableDTO ds, boolean isCross, CoreDatasource coreDatasource) {
         // 通过datasource id校验数据源权限
         if (ObjectUtils.isEmpty(coreDatasource)) {
