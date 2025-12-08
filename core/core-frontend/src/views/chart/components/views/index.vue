@@ -37,7 +37,7 @@ import { useFilter } from '@/hooks/web/useFilter'
 import { useCache } from '@/hooks/web/useCache'
 
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { cloneDeep } from 'lodash-es'
+import { cloneDeep, debounce } from 'lodash-es'
 import ChartComponentS2 from '@/views/chart/components/views/components/ChartComponentS2.vue'
 import { ChartLibraryType } from '@/views/chart/components/js/panel/types'
 import chartViewManager from '@/views/chart/components/js/panel'
@@ -594,7 +594,7 @@ const jumpClick = param => {
   }
 }
 
-const queryData = (firstLoad = false) => {
+const queryData = debounce((firstLoad = false) => {
   if (loading.value) {
     return
   }
@@ -604,7 +604,7 @@ const queryData = (firstLoad = false) => {
   params['chartExtRequest'] = queryFilter
   chartExtRequest.value = queryFilter
   calcData(params)
-}
+}, 300)
 
 const calcData = params => {
   dvMainStore.setLastViewRequestInfo(params.id, params.chartExtRequest)
