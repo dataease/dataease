@@ -1,12 +1,15 @@
 import { useI18n } from '@/hooks/web/useI18n'
 import SnowflakeId from 'snowflake-id'
-const snowflake = new SnowflakeId()
+import { ref } from 'vue'
 
+const snowflake = new SnowflakeId()
 const { t } = useI18n()
 
 const guid = () => {
   return snowflake.generate()
 }
+
+const num = ref(+new Date())
 
 const timestampFormatDate = (timestamp, showMs?: boolean) => {
   if (!timestamp || timestamp === -1) {
@@ -168,5 +171,6 @@ export {
   fieldOptions,
   guid,
   getFieldName,
+  num,
   timeTypes
 }
