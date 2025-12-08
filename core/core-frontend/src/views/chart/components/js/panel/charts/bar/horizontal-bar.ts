@@ -628,14 +628,14 @@ export class HorizontalPercentageStackBar extends HorizontalStackBar {
     'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'show']
   }
   protected configLabel(chart: Chart, options: BarOptions): BarOptions {
-    const baseOptions = super.configLabel(chart, options)
-    if (!baseOptions.label) {
-      return baseOptions
+    const baseLabel = getLabel(chart)
+    if (!baseLabel) {
+      return { ...options, label: baseLabel }
     }
     const { customAttr } = chart
     const l = parseJson(customAttr).label
     const label = {
-      ...baseOptions.label,
+      ...baseLabel,
       formatter: function (data: Datum) {
         let value = data.value
         if (value) {
@@ -662,7 +662,7 @@ export class HorizontalPercentageStackBar extends HorizontalStackBar {
       }
     }
     return {
-      ...baseOptions,
+      ...options,
       label
     }
   }
