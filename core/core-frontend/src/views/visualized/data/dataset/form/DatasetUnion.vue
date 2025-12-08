@@ -20,7 +20,7 @@ import { guid } from './util'
 import { HandleMore } from '@/components/handle-more'
 import { propTypes } from '@/utils/propTypes'
 import UnionFieldList from './UnionFieldList.vue'
-import type { Node, Field } from './util'
+import { type Node, type Field, num } from './util'
 import { getTableField } from '@/api/dataset'
 import type { SqlNode } from './AddSql.vue'
 import { cloneDeep } from 'lodash-es'
@@ -344,12 +344,11 @@ const closeEditUnion = () => {
   }
   editUnion.value = false
 }
-let num = +new Date()
 
 const setGuid = (arr, id, datasourceId) => {
   arr.forEach(ele => {
     if (!ele.id) {
-      ele.id = `${++num}`
+      ele.id = `${++num.value}`
       ele.datasetTableId = id
       ele.datasourceId = datasourceId
     }
