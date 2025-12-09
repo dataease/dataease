@@ -183,7 +183,8 @@ export class TableInfo extends S2ChartView<TableSheet> {
         hoverHighlight: !(basicStyle.showHoverStyle === false),
         scrollbarPosition: newData.length
           ? ScrollbarPositionType.CONTENT
-          : ScrollbarPositionType.CANVAS
+          : ScrollbarPositionType.CANVAS,
+        hoverFocus: false
       }
     }
     s2Options.style = this.configStyle(chart, s2DataConfig)

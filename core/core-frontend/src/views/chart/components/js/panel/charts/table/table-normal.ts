@@ -179,7 +179,8 @@ export class TableNormal extends S2ChartView<TableSheet> {
         hoverHighlight: !(basicStyle.showHoverStyle === false),
         scrollbarPosition: newData.length
           ? ScrollbarPositionType.CONTENT
-          : ScrollbarPositionType.CANVAS
+          : ScrollbarPositionType.CANVAS,
+        hoverFocus: false
       }
     }
     // 列宽设置
