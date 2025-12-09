@@ -138,9 +138,18 @@ service.interceptors.request.use(
       config.params = {}
       config.url = url
     }
-    config.cancelToken = new CancelToken(function executor(c) {
-      cancelMap[config.url] = c
-    })
+
+    if (config.url.endsWith('chartData/getData')) {
+      const chartKey = `chartData/getData/${(config.data as any).id}`
+      config.cancelToken = new CancelToken(function executor(c) {
+        cancelMap[chartKey] = c
+      })
+    } else {
+      config.cancelToken = new CancelToken(function executor(c) {
+        cancelMap[config.url] = c
+      })
+    }
+
     config.loading && tryShowLoading(permissionStore.getCurrentPath)
     return config
   },
