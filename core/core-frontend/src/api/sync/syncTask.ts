@@ -43,6 +43,10 @@ export interface ITableField {
 
 export interface ITargetProperty {
   /**
+   * 容错率
+   */
+  faultToleranceRate: number
+  /**
    * 启用分区on
    */
   partitionEnable: string
@@ -96,6 +100,8 @@ export interface ITargetProperty {
    * 分区字段
    */
   partitionColumn: string
+
+  [key: string]: any
 }
 
 export interface ITarget {

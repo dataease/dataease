@@ -107,14 +107,6 @@ public interface SinkProvider {
     boolean validateCreateTableSql(DatasourceRequest datasourceRequest, String createTableSql, String tableName);
 
     /**
-     * 获取获取数据源节点数
-     *
-     * @param datasourceRequest datasource 配置
-     * @return 节点数
-     */
-    String getNodes(DatasourceRequest datasourceRequest);
-
-    /**
      * 获取支持的数据类型
      *
      * @return 数据类型列表
@@ -146,5 +138,15 @@ public interface SinkProvider {
      * @return 替换后的配置
      */
     String generatorSinkConfig(TaskInfoVO taskInfoVO);
+
+    /**
+     * 默认主键字段
+     *
+     * @param datasourceRequest datasource 配置
+     * @return 默认主键字段
+     */
+    default TableFieldDTO defaultKeyField(DatasourceRequest datasourceRequest) {
+        return null;
+    }
 
 }

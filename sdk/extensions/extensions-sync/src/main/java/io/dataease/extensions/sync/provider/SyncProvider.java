@@ -3,11 +3,12 @@ package io.dataease.extensions.sync.provider;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import io.dataease.exception.DEException;
-import io.dataease.extensions.sync.model.TableFieldDTO;
 import io.dataease.extensions.sync.model.datasource.ConnectionObj;
 import io.dataease.extensions.sync.model.datasource.DatasourceRequest;
+import io.dataease.extensions.sync.utils.ProviderUtil;
 import io.dataease.extensions.sync.vo.DatasourceConfiguration;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,10 +16,14 @@ import java.io.IOException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.SQLTimeoutException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 数据源提供者抽象类，定义了与数据源交互的基本操作和SSH会话管理
@@ -81,21 +86,78 @@ public abstract class SyncProvider {
 
     /**
      * 配置额外参数
-     * 如Doris需要配置版本以及be节点等
+     * 默认不做任何操作
+     * 如: Doris需要配置版本以及be节点等
      *
      * @param datasource 数据源请求
      * @throws DEException 异常
      */
-    public abstract void configurationAdditionalParameters(DatasourceRequest datasource) throws DEException;
+    public void configurationAdditionalParameters(DatasourceRequest datasource) throws DEException {
+        // 默认不做任何操作
+    }
 
     /**
-     * 获取表字段信息
+     * 执行SQL语句
      *
-     * @param datasourceRequest 数据源请求
-     * @return 表字段信息列表
-     * @throws DEException 异常
+     * @param configuration 数据源配置
+     * @param queryStr      SQL语句
+     * @return 执行结果
      */
-    public abstract List<TableFieldDTO> fetchTableField(DatasourceRequest datasourceRequest) throws DEException;
+    public boolean executeSql(DatasourceConfiguration configuration, String queryStr) {
+        int queryTimeout = Math.max(configuration.getQueryTimeout(), 30);
+        // 对于DDL操作，使用更长的超时时间
+        if (isDdlOperation(queryStr)) {
+            queryTimeout = Math.max(queryTimeout, 120);
+        }
+        long startTime = System.currentTimeMillis();
+        String operationType = getOperationType(queryStr);
+        try (Connection con = getConnection(configuration).getConnection()) {
+            con.setNetworkTimeout(Runnable::run, queryTimeout * 1000);
+            Statement statement = ProviderUtil.getStatement(con, queryTimeout);
+            // 执行SQL
+            int result = statement.executeUpdate(queryStr);
+            return result >= 0;
+
+        } catch (SQLTimeoutException e) {
+            long executeTime = System.currentTimeMillis() - startTime;
+            String errorMsg = String.format("%s operation timed out, execution time: %dms, timeout setting: %ds",
+                    operationType, executeTime, queryTimeout);
+            DEException.throwException(errorMsg);
+        } catch (SQLException e) {
+            long executeTime = System.currentTimeMillis() - startTime;
+            String errorCode = e.getSQLState();
+            String errorMsg = String.format("%s operation failed, execution time: %dms, error code: %s, error message: %s",
+                    operationType, executeTime, errorCode, e.getMessage());
+            DEException.throwException(errorMsg);
+        } catch (Exception e) {
+            long executeTime = System.currentTimeMillis() - startTime;
+            String errorMsg = String.format("%s operation exception, execution time: %dms, exception message: %s",
+                    operationType, executeTime, e.getMessage());
+            DEException.throwException(errorMsg);
+        }
+        return false;
+    }
+
+    /**
+     * 判断是否为DDL操作
+     */
+    private boolean isDdlOperation(String sql) {
+        Pattern ddlPrefix = Pattern.compile("^\\s*(CREATE|ALTER|DROP|TRUNCATE)\\b", Pattern.CASE_INSENSITIVE);
+        return sql != null && ddlPrefix.matcher(sql).find();
+    }
+
+    /**
+     * 获取操作类型
+     */
+    private String getOperationType(String sql) {
+        if (StringUtils.isBlank(sql)) {
+            return "UNKNOWN";
+        }
+        Matcher m = Pattern
+                .compile("^\\s*(CREATE|ALTER|DROP|INSERT|UPDATE|DELETE)\\b", Pattern.CASE_INSENSITIVE)
+                .matcher(sql);
+        return m.find() ? m.group(1).toUpperCase() : "OTHER";
+    }
 
     /**
      * 获取带有查询超时设置的SQL语句对象

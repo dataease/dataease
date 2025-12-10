@@ -1,5 +1,6 @@
 package io.dataease.extensions.sync.provider;
 
+import io.dataease.exception.DEException;
 import io.dataease.extensions.sync.datatype.StandardDataType;
 import io.dataease.extensions.sync.model.TableDTO;
 import io.dataease.extensions.sync.model.TableFieldDTO;
@@ -25,6 +26,15 @@ public interface SourceProvider {
      * @return 表信息列表
      */
     List<TableDTO> getTables(DatasourceRequest datasourceRequest);
+
+    /**
+     * 获取表字段信息
+     *
+     * @param datasourceRequest 数据源请求
+     * @return 表字段信息列表
+     * @throws DEException 异常
+     */
+    List<TableFieldDTO> fetchTableField(DatasourceRequest datasourceRequest) throws DEException;
 
     /**
      * 通过SQL获取字段信息
