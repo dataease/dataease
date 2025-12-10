@@ -2945,6 +2945,8 @@ export default {
     column_name: 'Field name'
   },
   visualization: {
+    jump_dialog_background: 'Jump pop-up background color',
+    jump_dialog_button: 'Jump pop-up button color',
     sqlbot_query_tips: 'Smart Data Query',
     cur_sq_dataset: 'Currently selected dataset:',
     data_match_type: 'Data match type',

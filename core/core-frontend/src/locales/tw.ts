@@ -2864,6 +2864,8 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    jump_dialog_background: '跳轉彈框背景色',
+    jump_dialog_button: '跳轉彈框按鈕色',
     sqlbot_query_tips: '智能問數',
     cur_sq_dataset: '當前選擇的數據集：',
     data_match_type: '資料匹配方式',

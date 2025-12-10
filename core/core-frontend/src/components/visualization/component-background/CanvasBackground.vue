@@ -112,6 +112,43 @@
           <img-view-dialog v-model="state.dialogVisible" :image-url="state.dialogImageUrl" />
         </div>
       </div>
+      <el-divider class="m-divider" :class="'m-divider-' + themes"></el-divider>
+      <div class="indented-container">
+        <div class="indented-item">
+          <el-form-item
+            class="form-item"
+            :class="'form-item-' + themes"
+            :label="t('visualization.jump_dialog_background')"
+          >
+            <el-color-picker
+              v-model="canvasStyleData.dialogBackgroundColor"
+              :effect="themes"
+              :trigger-width="computedBackgroundColorPickerWidth"
+              is-custom
+              show-alpha
+              class="color-picker-style"
+              :predefine="state.predefineColors"
+              @change="onBackgroundChange"
+            />
+          </el-form-item>
+          <el-form-item
+            class="form-item"
+            :class="'form-item-' + themes"
+            :label="t('visualization.jump_dialog_button')"
+          >
+            <el-color-picker
+              v-model="canvasStyleData.dialogButton"
+              :effect="themes"
+              :trigger-width="computedBackgroundColorPickerWidth"
+              is-custom
+              show-alpha
+              class="color-picker-style"
+              :predefine="state.predefineColors"
+              @change="onBackgroundChange"
+            />
+          </el-form-item>
+        </div>
+      </div>
     </el-form>
   </div>
 </template>
@@ -391,6 +428,15 @@ watch(
   &.image-hint_dark {
     color: #757575;
   }
+}
+
+.m-divider {
+  border-color: rgba(31, 35, 41, 0.15);
+  margin: 8px 0 8px;
+}
+
+.m-divider-dark {
+  border-color: rgba(233, 236, 241, 0.15) !important;
 }
 </style>
 

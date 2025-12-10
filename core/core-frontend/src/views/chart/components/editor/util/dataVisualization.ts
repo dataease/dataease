@@ -126,6 +126,8 @@ export const DEFAULT_CANVAS_STYLE_DATA_DARK = {
   themeId: '10002',
   color: '#fff',
   backgroundColor: '#020408',
+  dialogBackgroundColor: '#fff',
+  dialogButton: '#020408',
   dashboard: DEFAULT_DASHBOARD_STYLE_DARK,
   component: PANEL_CHART_INFO_DARK
 }

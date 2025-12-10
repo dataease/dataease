@@ -2870,6 +2870,8 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
+    jump_dialog_background: '跳转弹框背景色',
+    jump_dialog_button: '跳转弹框按钮色',
     sqlbot_query_tips: '智能问数',
     cur_sq_dataset: '当前选择的数据集：',
     data_match_type: '数据匹配方式',

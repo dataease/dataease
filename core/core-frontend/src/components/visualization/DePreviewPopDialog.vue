@@ -27,6 +27,10 @@
 import { computed, reactive, ref } from 'vue'
 import { useEmbedded } from '@/store/modules/embedded'
 import { XpackComponent } from '@/components/plugin'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { storeToRefs } from 'pinia'
+const dvMainStore = dvMainStoreWithOut()
+const { canvasStyleData } = storeToRefs(dvMainStore)
 const state = reactive({
   dialogShow: false,
   name: '',
@@ -39,9 +43,16 @@ const xpackIframe = ref()
 const embeddedStore = useEmbedded()
 const dialogStyle = computed(() => {
   if (state.fullscreen) {
-    return {}
+    return [
+      { '--ed-dialog-bg-color': canvasStyleData.value.dialogBackgroundColor },
+      { '--ed-dialog__close-button': canvasStyleData.value.dialogButton }
+    ]
   } else {
-    return { height: state.height }
+    return [
+      { '--ed-dialog-bg-color': canvasStyleData.value.dialogBackgroundColor },
+      { '--ed-dialog__close-button': canvasStyleData.value.dialogButton },
+      { height: state.height }
+    ]
   }
 })
 
@@ -82,6 +93,9 @@ defineExpose({
 <style lang="less">
 .preview_pop_custom {
   overflow: hidden;
+  .ed-dialog__close {
+    color: var(--ed-dialog__close-button);
+  }
   .preview-main-frame-outer {
     width: 100%;
     height: 100%;

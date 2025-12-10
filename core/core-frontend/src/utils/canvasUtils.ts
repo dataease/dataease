@@ -337,6 +337,9 @@ export function historyAdaptor(
     canvasStyleResult['popupButtonAvailable'] === undefined
       ? true
       : canvasStyleResult['popupButtonAvailable'] //兼容弹框区域按钮开关
+  canvasStyleResult['dialogBackgroundColor'] = canvasStyleResult['dialogBackgroundColor'] || '#fff'
+  canvasStyleResult['dialogButton'] = canvasStyleResult['dialogButton'] || '#020408'
+
   canvasDataResult.forEach(componentItem => {
     historyItemAdaptor(componentItem, reportFilterInfo, attachInfo, canvasVersion, canvasInfo)
   })
