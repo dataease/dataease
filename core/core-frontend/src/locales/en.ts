@@ -711,7 +711,12 @@ export default {
     delete_custom_area_tip:
       'This operation will cause the map using the custom area to fail to display normally, are you sure to delete?',
     please_select_area: 'Please select an area',
-    delete_custom_sub_area_tip: 'Are you sure you want to delete this custom area?'
+    delete_custom_sub_area_tip: 'Are you sure you want to delete this custom area?',
+    saml: {
+      title: 'SAML2 Settings',
+      request: 'Enable Request Signing',
+      assertion: 'Enable Assertion Signing'
+    }
   },
   components: {
     dashboard_style: 'Dashboard style',
@@ -1180,6 +1185,10 @@ export default {
     has_same_ds: 'There is a Datasource with the same configuration, confirm to save? ',
     app_token: 'app_token',
     input_app_token: 'Please enter the app_token',
+    doc_id: 'doc_id',
+    input_doc_id: 'Please enter the doc_id',
+    sheet_id: 'sheet_id',
+    input_sheet_id: 'Please select a worksheet',
     table_id: 'table_id',
     input_table_id: 'Please select a data table',
     view_id: 'view_id',
@@ -1588,7 +1597,6 @@ export default {
     chart_scatter: 'Scatter chart',
     chart_multi_scatter: 'Multi-dimensional scatter',
     bubble_size: 'Bubble size',
-    lightness: 'Lightness',
     chart_treemap: 'Rectangular treemap',
     drill: 'Drill',
     drag_block_treemap_label: 'Block label',
@@ -1831,6 +1839,9 @@ export default {
     dimension_text_style: 'Name style',
     dimension_letter_space: 'Name letter spacing',
     name_value_spacing: 'Name/value spacing',
+    name_position: 'Position',
+    name_position_top: 'Top',
+    name_position_bottom: 'Bottom',
     font_family: 'Font',
     letter_space: 'Letter spacing',
     font_shadow: 'Font shadow',
@@ -1876,7 +1887,6 @@ export default {
     scatter_tip:
       'When this indicator takes effect, the bubble size attribute in the style size will be invalid',
     place_name_mapping: 'Place name mapping',
-    used_global_map_mapping: 'Use global place name mapping',
     axis_tip:
       'Minimum value, maximum value, and interval are all numeric types; if not filled in, this item will be considered automatic. <br/>Please make sure that the filled value can be calculated correctly, otherwise the axis value will not be displayed normally. ',
     format_tip: `The template variables are {a}, {b}, {c}, {d}, which represent the series name, data name, data value, etc. <br>
@@ -1906,7 +1916,7 @@ export default {
     end_point: 'Ending point',
     line: 'Line',
     map_style: 'Map style',
-    map_style_url: 'Map style URL',
+    map_style_url: 'Map style URL/ID',
     map_pitch: 'Pitch',
     map_rotation: 'Rotation',
     map_style_normal: 'Standard',
@@ -2126,7 +2136,12 @@ export default {
     quota_col_label: 'Quota Column Label',
     table_grand_total_label: 'Total Alias',
     table_field_total_label: 'Field Alias',
-    table_row_header_freeze: 'Row Header Freeze'
+    table_row_header_freeze: 'Row Header Freeze',
+    value_formatter_total_out_percent: 'Show percentage',
+    enable_slider_tip: 'After enabling the slider, the carousel prompt will be disabled.',
+    liquid_show_border: 'Show Border',
+    liquid_border_width: 'Border Width',
+    liquid_border_distance: 'Border Distance'
   },
   dataset: {
     field_value: 'Field Value',
@@ -2864,7 +2879,7 @@ export default {
     must_be_met:
       "Based on  the current component's condition, if cascade configuration is required, the following conditions must be met:",
     select_data_set:
-      '1. Display type: Text dropdown component and numeric dropdown component, dropdown tree; 2. Source of option values: Selection dataset',
+      '1. Display type: text and number drop-down component; 2. Option value source: select Dataset',
     add_cascade_configuration: 'Add cascade configuration',
     add_cascade_condition: 'Add cascade condition',
     query_condition_level: 'Level',
@@ -2941,6 +2956,10 @@ export default {
     column_name: 'Field name'
   },
   visualization: {
+    jump_dialog_background: 'Jump pop-up background color',
+    jump_dialog_button: 'Jump pop-up button color',
+    sqlbot_query_tips: 'Smart Data Query',
+    cur_sq_dataset: 'Currently selected dataset:',
     data_match_type: 'Data match type',
     select_resource: 'Select {0}',
     change_screen_page: 'Change {0}',
@@ -3074,8 +3093,11 @@ export default {
     ds_group_name: 'Dataset Group Name',
     ds_group_position: 'Dataset Group Position',
     datasource_info: 'Datasource Information',
+    dataset_info: 'Dataset Information',
     app_datasource: 'Application Datasource',
+    app_dataset: 'Application dataset',
     sys_datasource: 'System Datasource',
+    sys_dataset: 'System dataset',
     select_folder: 'Please select the associated folder',
     belong_folder: 'Belonging Folder',
     no_content: 'No relevant content found',
@@ -3083,6 +3105,7 @@ export default {
     cancel: 'Cancel',
     select_ds_group_folder: 'Please select the folder for the dataset group',
     app_no_datasource_tips: 'There are unconfigured datasources',
+    app_no_dataset_tips: 'There are unconfigured datasets',
     dataset: 'Dataset',
     delete: 'Delete',
     delete_success: 'Delete successful',
@@ -3251,7 +3274,6 @@ export default {
     selected_view: 'Selected View',
     used_dataset: 'Used Dataset',
     to_select_view: 'Select View',
-    to_select_field: 'Select Field',
     show_selected_only: 'Show Selected Only',
     same_dataset: 'Same Dataset',
     diff_dataset: 'Different Dataset',
@@ -3317,7 +3339,6 @@ export default {
     space_left: 'Left',
     space_width: 'Width',
     space_height: 'Height',
-    to_top: 'Move to Top',
     down: 'Download',
     mobile_style_setting: 'Style Setting',
     mobile_style_setting_tips: 'Customize mobile background',
@@ -3803,9 +3824,7 @@ export default {
     'flag-all': 'All',
     'flag-ds': 'Datasource plug-in',
     'flag-view': 'Chart plug-in',
-    'flag-df': 'Data reporting plug-in',
-    'flag-sync-source': 'Data Sync - Source plug-in',
-    'flag-sync-sink': 'Data Sync- Sink plug-in'
+    'flag-df': 'Data reporting plug-in'
   },
   online_map: {
     geometry: 'Geographic information',
@@ -3985,8 +4004,8 @@ export default {
     query_timeout: 'Query timeout',
     description: 'Description',
     tips: 'Tips',
-    replication: 'Replicas',
-    replication_tip: 'Number of replicas used when creating tables. The default is 1.'
+    replication: 'BACKEND Replicas',
+    replication_tip: 'Number of BE Nodes'
   },
   sync_summary: {
     summary: 'Overview',
@@ -4233,11 +4252,6 @@ export default {
     instance_title: 'Task log',
     add_task: 'Add task',
     lark_groups: 'Lark group',
-    dingtalk_groups: ' Dingtalk group',
-    dingtalk_groups_tips: 'Create an application robot first and add it to the group',
-    robot_code_place: 'Defaults to the same as APP Key',
-    click_add_chat: 'Please click the button below to add a group chat',
-    add_chat_tips: 'Only supports admin-associated accounts using the client',
     larksuite_groups: 'Larksuite group',
     send_setting: 'Send settings',
     retrying_settings: 'Send failed retry settings',
@@ -4617,7 +4631,6 @@ export default {
     notification_user: 'Notifier',
     notification_email: 'Email notification',
     please_enter_email: 'Please enter email, press Enter to confirm',
-    please_choose_dingtalk_group: 'Please select dingtalk group',
     please_choose_lark_group: 'Please select lark group',
     notification_content: 'Notification content',
     default_msg: 'Default message',
@@ -4706,7 +4719,8 @@ export default {
       'After binding, you can log in by scanning the QR code through International Lark',
     bind: 'Bind',
     unbind_success: 'Unbind successfully',
-    confirm_unbind_dingtalk: 'Are you sure you want to unbind DingTalk? ',
+    confirm_unbind_dingtalk: 'Are you sure you want to unbind {0}? ',
+    unbind_error: 'Current user origin is {0}, cannot unbind',
     pls_use: 'Please use ',
     bind_use_qr: 'Scan QR code to bind',
     pls_use_dingtalk: 'Please use DingTalk to scan QR code to log in',
@@ -4766,14 +4780,6 @@ export default {
   security: {
     title: 'Security Settings'
   },
-  setting_hmac: {
-    title: 'HMAC Settings',
-    enable: 'Enable HMAC Authentication',
-    clock_skew: 'Clock skew',
-    clock_skew_tips:
-      'Unit: seconds, default is 300, which allows a time difference of up to 5 minutes between the request time and server time',
-    clock_skew_range: 'Clock skew range is 1-{0} seconds'
-  },
   setting_mfa: {
     title: 'MFA Settings',
     status: 'Global MFA Authentication Enabled',
@@ -4825,84 +4831,5 @@ export default {
     content_type: 'Content Type',
     del_confirm: 'Are you sure you want to delete this Webhook?',
     batch_del_confirm: 'Are you sure you want to delete {0} Webhooks?'
-  },
-  spreadsheet: {
-    title: 'Spreadsheet',
-    new_folder: 'New Folder',
-    new_sheet: 'New Spreadsheet',
-    new_spreadsheet: 'New Spreadsheet',
-    edit_sheet: 'Edit Spreadsheet',
-    save: 'Save',
-    save_success: 'Saved successfully',
-    delete_success: 'Deleted successfully',
-    name_placeholder: 'Please enter name',
-    name_required: 'Name is required',
-    dataset_binding: 'Dataset Binding',
-    bind_dataset: 'Bind Dataset',
-    unbind_dataset: 'Unbind Dataset',
-    unbind_confirm: 'Are you sure to unbind this dataset?',
-    refresh_dataset: 'Refresh Data',
-    refresh_type: 'Refresh Type',
-    manual_refresh: 'Manual Refresh',
-    auto_refresh: 'Auto Refresh',
-    refresh_freq: 'Refresh Frequency',
-    range_config: 'Fill Range',
-    sheet_name: 'Sheet Name',
-    version_history: 'Version History',
-    publish: 'Publish',
-    unpublish: 'Unpublish',
-    published: 'Published',
-    unpublished: 'Unpublished',
-    preview: 'Preview',
-    export: 'Export',
-    share: 'Share',
-    copy: 'Copy',
-    move: 'Move',
-    rename: 'Rename',
-    delete: 'Delete',
-    delete_confirm: 'Are you sure to delete this spreadsheet?',
-    delete_folder_confirm:
-      'After deletion, all resources under this folder will be deleted, please proceed with caution.',
-    save_before_leave: 'Do you want to save before leaving?',
-    unsaved_changes: 'There are unsaved changes',
-    loading: 'Loading...',
-    no_data: 'No data',
-    save_first: 'Please save the spreadsheet first',
-    back: 'Back',
-    discard: 'Discard',
-    load_error: 'Failed to load',
-    save_error: 'Failed to save',
-    update_success: 'Updated successfully',
-    update_error: 'Failed to update',
-    select_required: 'Please select a dataset',
-    tips: 'Tips',
-    coming_soon: 'Feature coming soon',
-    toolbar: {
-      undo: 'Undo',
-      redo: 'Redo',
-      bold: 'Bold',
-      italic: 'Italic',
-      underline: 'Underline',
-      strikethrough: 'Strikethrough',
-      font_color: 'Font Color',
-      background_color: 'Background Color',
-      border: 'Border',
-      merge_cell: 'Merge Cells',
-      align_left: 'Align Left',
-      align_center: 'Center',
-      align_right: 'Align Right',
-      wrap_text: 'Wrap Text',
-      insert_row: 'Insert Row',
-      insert_column: 'Insert Column',
-      delete_row: 'Delete Row',
-      delete_column: 'Delete Column',
-      freeze: 'Freeze',
-      filter: 'Filter',
-      sort: 'Sort',
-      formula: 'Formula',
-      chart: 'Chart',
-      image: 'Image',
-      link: 'Link'
-    }
   }
 }
