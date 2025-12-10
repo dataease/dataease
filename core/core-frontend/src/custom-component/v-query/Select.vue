@@ -12,10 +12,12 @@ import {
   inject,
   onBeforeUnmount,
   onUnmounted,
+  defineAsyncComponent,
   Ref
 } from 'vue'
 import { enumValueObj, type EnumValue, getEnumValue } from '@/api/dataset'
 import { cloneDeep, debounce } from 'lodash-es'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import Flat from './Flat.vue'
 import eventBus from '@/utils/eventBus'
 import { useEmitt } from '@/hooks/web/useEmitt'
@@ -59,7 +61,7 @@ interface SelectConfig {
 }
 
 const { t } = useI18n()
-
+const dvMainStore = dvMainStoreWithOut()
 const props = defineProps({
   config: {
     type: Object as PropType<SelectConfig>,
@@ -105,6 +107,14 @@ const placeholderText = computed(() => {
   }
   return ' '
 })
+
+const isMobileDataV = computed(() => {
+  const { inMobile, dvInfo } = dvMainStore
+  return dvInfo.type === 'dataV' && inMobile
+})
+
+const VanPopupSelect = defineAsyncComponent(() => import('./VanPopupSelect.vue'))
+
 const cascade = computed(() => {
   return cascadeList() || []
 })
@@ -771,6 +781,16 @@ onBeforeUnmount(() => {
   eventBus.off('componentClick', componentClick)
 })
 
+const onClear = () => {
+  selectValue.value = multiple.value ? [] : undefined
+  handleValueChange()
+}
+
+const onConfirm = (val: any) => {
+  selectValue.value = multiple.value ? [...val] : val[0]
+  handleValueChange()
+}
+
 defineExpose({
   displayTypeChange,
   mult,
@@ -835,6 +855,14 @@ defineExpose({
       </el-radio-group>
     </template>
   </el-select-v2>
+  <VanPopupSelect
+    @onClear="onClear"
+    @onConfirm="onConfirm"
+    :options="options"
+    :selectValue="selectValue"
+    :multiple="multiple"
+    v-if="isMobileDataV"
+  ></VanPopupSelect>
 </template>
 
 <style lang="less">
