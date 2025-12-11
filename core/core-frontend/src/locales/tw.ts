@@ -2864,6 +2864,7 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    number_formatter: '數字內容格式',
     jump_dialog_background: '跳轉彈框背景色',
     jump_dialog_button: '跳轉彈框按鈕色',
     sqlbot_query_tips: '智能問數',

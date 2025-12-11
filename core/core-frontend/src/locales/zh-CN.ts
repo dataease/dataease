@@ -2870,6 +2870,7 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
+    number_formatter: '数字内容格式',
     jump_dialog_background: '跳转弹框背景色',
     jump_dialog_button: '跳转弹框按钮色',
     sqlbot_query_tips: '智能问数',

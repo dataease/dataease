@@ -46,6 +46,7 @@ import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { useCache } from '@/hooks/web/useCache'
 import { isDesktop } from '@/utils/ModelUtil'
 import { ShorthandMode } from '@/Types'
+import { formatterItem } from '@/views/chart/components/js/formatter'
 const { t } = useI18n()
 const appearanceStore = useAppearanceStoreWithOut()
 const { wsCache } = useCache()
@@ -339,6 +340,9 @@ export function historyAdaptor(
       : canvasStyleResult['popupButtonAvailable'] //兼容弹框区域按钮开关
   canvasStyleResult['dialogBackgroundColor'] = canvasStyleResult['dialogBackgroundColor'] || '#fff'
   canvasStyleResult['dialogButton'] = canvasStyleResult['dialogButton'] || '#020408'
+
+  canvasStyleResult['component']['formatterItem'] =
+    canvasStyleResult['component']['formatterItem'] || deepCopy(formatterItem)
 
   canvasDataResult.forEach(componentItem => {
     historyItemAdaptor(componentItem, reportFilterInfo, attachInfo, canvasVersion, canvasInfo)

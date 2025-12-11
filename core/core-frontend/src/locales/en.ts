@@ -2945,6 +2945,7 @@ export default {
     column_name: 'Field name'
   },
   visualization: {
+    number_formatter: 'Number Content Format',
     jump_dialog_background: 'Jump pop-up background color',
     jump_dialog_button: 'Jump pop-up button color',
     sqlbot_query_tips: 'Smart Data Query',

@@ -15,6 +15,8 @@ import SeniorStyleSetting from '@/components/dashboard/subject-setting/dashboard
 import Icon from '../icon-custom/src/Icon.vue'
 import CanvasBaseSetting from '@/components/visualization/CanvasBaseSetting.vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import ValueFormatterSetting from '@/components/dashboard/subject-setting/dashboard-style/ValueFormatterSetting.vue'
+import { formatterViewInfo } from '@/views/chart/components/js/formatter'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const { canvasStyleData, canvasViewInfo } = storeToRefs(dvMainStore)
@@ -35,6 +37,10 @@ const init = () => {
   })
 }
 
+const onFormatterItemChange = val => {
+  themeAttrChange('formatterCfg', 'formatterCfg', val)
+}
+
 const onColorChange = val => {
   themeAttrChange('customAttr', 'color', val)
 }
@@ -53,7 +59,9 @@ const themeAttrChange = (custom, property, value) => {
     Object.keys(canvasViewInfo.value).forEach(function (viewId) {
       try {
         const viewInfo = canvasViewInfo.value[viewId]
-        if (custom === 'customAttr') {
+        if (custom === 'formatterCfg') {
+          formatterViewInfo(viewInfo, value)
+        } else if (custom === 'customAttr') {
           if (viewInfo.type === 'flow-map') {
             const { customAttr } = viewInfo
             const tmpValue = cloneDeep(value)
@@ -171,6 +179,17 @@ onMounted(() => {
         name="overallSetting"
       >
         <overall-setting style="padding-bottom: 8px" themes="dark" />
+      </el-collapse-item>
+      <el-collapse-item
+        effect="dark"
+        :title="t('visualization.number_formatter')"
+        name="formatterItem"
+      >
+        <ValueFormatterSetting
+          :formatter-cfg="canvasStyleData.component.formatterItem"
+          themes="dark"
+          @onFormatterItemChange="onFormatterItemChange"
+        ></ValueFormatterSetting>
       </el-collapse-item>
       <el-collapse-item
         effect="dark"

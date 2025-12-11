@@ -1,4 +1,4 @@
-import { find } from 'lodash-es'
+import { find, merge } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 import { getLocale } from '@/utils/utils'
 import { parseJson } from '@/views/chart/components/js/util'
@@ -254,4 +254,66 @@ export const calcNiceMinValue = (chart, options, tmpOptions) => {
     }
   }
   return { ...tmpOptions, ...axis }
+}
+
+/**
+ * 适配图表数字格式化属性
+ * @param viewInfo
+ * @param value
+ */
+export const formatterViewInfo = (viewInfo, value) => {
+  viewInfo.xAxis.forEach(function (item) {
+    item['formatterCfg'] = merge(item['formatterCfg'], value)
+  })
+  viewInfo.xAxisExt.forEach(function (item) {
+    item['formatterCfg'] = merge(item['formatterCfg'], value)
+  })
+  viewInfo.yAxis.forEach(function (item) {
+    item['formatterCfg'] = merge(item['formatterCfg'], value)
+  })
+  viewInfo.extStack.forEach(function (item) {
+    item['formatterCfg'] = merge(item['formatterCfg'], value)
+  })
+  viewInfo.extBubble.forEach(function (item) {
+    item['formatterCfg'] = merge(item['formatterCfg'], value)
+  })
+  viewInfo.extLabel.forEach(function (item) {
+    item['formatterCfg'] = merge(item['formatterCfg'], value)
+  })
+  viewInfo.extTooltip.forEach(function (item) {
+    item['formatterCfg'] = merge(item['formatterCfg'], value)
+  })
+  //customAttr
+  viewInfo['customAttr']['label']['labelFormatter'] = merge(
+    viewInfo['customAttr']['label']['labelFormatter'],
+    value
+  )
+  viewInfo['customAttr']['label']['quotaLabelFormatter'] = merge(
+    viewInfo['customAttr']['label']['quotaLabelFormatter'],
+    value
+  )
+  viewInfo['customAttr']['label']['totalFormatter'] = merge(
+    viewInfo['customAttr']['label']['totalFormatter'],
+    value
+  )
+  viewInfo['customAttr']['tooltip']['tooltipFormatter'] = merge(
+    viewInfo['customAttr']['tooltip']['tooltipFormatter'],
+    value
+  )
+  viewInfo['customAttr']['tooltip']['seriesTooltipFormatter'].forEach(function (item) {
+    item['formatterCfg'] = merge(item['formatterCfg'], value)
+  })
+  //customStyle
+  viewInfo['customStyle']['xAxis']['axisLabelFormatter'] = merge(
+    viewInfo['customStyle']['xAxis']['axisLabelFormatter'],
+    value
+  )
+  viewInfo['customStyle']['yAxis']['axisLabelFormatter'] = merge(
+    viewInfo['customStyle']['yAxis']['axisLabelFormatter'],
+    value
+  )
+  viewInfo['customStyle']['yAxisExt']['axisLabelFormatter'] = merge(
+    viewInfo['customStyle']['yAxisExt']['axisLabelFormatter'],
+    value
+  )
 }
