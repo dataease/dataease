@@ -1777,7 +1777,8 @@ watch(
   val => {
     if (!val || !!previewHeight.value) return
     calcEle()
-  }
+  },
+  { immediate: true }
 )
 
 watch(
