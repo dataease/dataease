@@ -37,7 +37,7 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],
     'basic-style-selector': ['colors'],
-    'label-selector': ['fontSize', 'color'],
+    'label-selector': ['fontSize', 'color', 'labelFormatter'],
     'x-axis-selector': ['name', 'color', 'fontSize', 'position', 'axisLabel', 'axisLine'],
     'y-axis-selector': [
       'name',
@@ -61,7 +61,7 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
       'fontShadow'
     ],
     'legend-selector': ['orient', 'color', 'fontSize', 'hPosition', 'vPosition'],
-    'tooltip-selector': ['show', 'color', 'fontSize', 'backgroundColor'],
+    'tooltip-selector': ['show', 'color', 'fontSize', 'backgroundColor', 'tooltipFormatter'],
     'border-style': ['all']
   }
   axis: AxisType[] = ['xAxis', 'xAxisExt', 'extColor', 'filter']
@@ -244,7 +244,7 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
                 const name = fieldObj?.chartShowName ? fieldObj?.chartShowName : fieldObj?.name
                 let value = originalItems[0].data[fieldObj.dataeaseName]
                 if (!isNaN(Number(value))) {
-                  value = valueFormatter(value, fieldObj?.formatterCfg)
+                  value = valueFormatter(value, customAttr.tooltip.tooltipFormatter)
                 }
                 items.push({
                   ...originalItems[0],
@@ -327,6 +327,7 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
     const tmpOptions = super.configLabel(chart, options)
     if (tmpOptions.label) {
       const extColor = deepCopy(chart.extColor)
+      const { label: labelAttr } = parseJson(chart.customAttr)
       const layout = []
       if (!tmpOptions.label.fullDisplay) {
         layout.push(...tmpOptions.label.layout)
@@ -338,7 +339,7 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
         formatter: data => {
           const value = data[extColor[0]?.dataeaseName]
           if (!isNaN(Number(value))) {
-            return valueFormatter(value, extColor[0]?.formatterCfg)
+            return valueFormatter(value, labelAttr.labelFormatter)
           }
           return value
         }
