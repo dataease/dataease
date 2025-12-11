@@ -45,12 +45,12 @@ const dialogStyle = computed(() => {
   if (state.fullscreen) {
     return [
       { '--ed-dialog-bg-color': canvasStyleData.value.dialogBackgroundColor },
-      { '--ed-dialog__close-button': canvasStyleData.value.dialogButton }
+      { '--ed-dialog__de-text': canvasStyleData.value.dialogButton }
     ]
   } else {
     return [
       { '--ed-dialog-bg-color': canvasStyleData.value.dialogBackgroundColor },
-      { '--ed-dialog__close-button': canvasStyleData.value.dialogButton },
+      { '--ed-dialog__de-text': canvasStyleData.value.dialogButton },
       { height: state.height }
     ]
   }
@@ -94,7 +94,10 @@ defineExpose({
 .preview_pop_custom {
   overflow: hidden;
   .ed-dialog__close {
-    color: var(--ed-dialog__close-button);
+    color: var(--ed-dialog__de-text);
+  }
+  :deep(.content-outer) {
+    background-color: var(--ed-dialog-bg-color) !important;
   }
   .preview-main-frame-outer {
     width: 100%;
