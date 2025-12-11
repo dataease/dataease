@@ -156,7 +156,8 @@ const previewOuter = () => {
     return
   }
   canvasSave(() => {
-    let url = '#/preview?dvId=' + dvInfo.value.id + '&ignoreParams=true&editPreview=true'
+    let url =
+      '#/preview?dvId=' + dvInfo.value.id + '&dvType=dashboard&ignoreParams=true&editPreview=true'
     if (embeddedStore.baseUrl) {
       url = `${embeddedStore.baseUrl}${url}`.replaceAll('\/\/#', '\/#')
     }

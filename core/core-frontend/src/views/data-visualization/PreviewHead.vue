@@ -36,7 +36,13 @@ const openType = wsCache.get('open-backend') === '1' ? '_self' : '_blank'
 const favorited = ref(false)
 const preview = () => {
   const baseUrl = isDataEaseBi.value ? embeddedStore.baseUrl : ''
-  const url = baseUrl + '#/preview?dvId=' + dvInfo.value.id + '&ignoreParams=true'
+  const url =
+    baseUrl +
+    '#/preview?dvId=' +
+    dvInfo.value.id +
+    '&dvType=' +
+    dvInfo.value['type'] +
+    '&ignoreParams=true'
   const newWindow = window.open(url, '_blank')
   initOpenHandler(newWindow)
 }
