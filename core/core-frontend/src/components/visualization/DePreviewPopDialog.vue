@@ -93,11 +93,13 @@ defineExpose({
 <style lang="less">
 .preview_pop_custom {
   overflow: hidden;
-  .ed-dialog__close {
-    color: var(--ed-dialog__de-text);
+  :deep(.is_link) {
+    &:hover {
+      color: var(--ed-dialog__de-text) !important;
+    }
   }
-  :deep(.content-outer) {
-    background-color: var(--ed-dialog-bg-color) !important;
+  .ed-dialog__close {
+    color: var(--ed-dialog__de-text) !important;
   }
   .preview-main-frame-outer {
     width: 100%;

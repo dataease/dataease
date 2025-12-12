@@ -8,6 +8,7 @@ import {
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { defaultTo, merge } from 'lodash-es'
+import { formatterViewInfo } from '@/views/chart/components/js/formatter'
 const dvMainStore = dvMainStoreWithOut()
 
 export const LIGHT_THEME_COLOR_MAIN = '#000000'
@@ -536,6 +537,7 @@ export function adaptCurThemeCommonStyle(component) {
     // 图表-Begin
     const curViewInfo = dvMainStore.canvasViewInfo[component.id]
     adaptCurTheme(curViewInfo.customStyle, curViewInfo.customAttr)
+    formatterViewInfo(curViewInfo, dvMainStore.canvasStyleData.component.formatterItem)
     useEmitt().emitter.emit('renderChart-' + component.id, curViewInfo)
     // 图表-Begin
   } else if (component.component === 'Group') {

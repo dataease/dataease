@@ -478,7 +478,7 @@ defineExpose({
 <style lang="less">
 .userViewEnlarge-class {
   .ed-dialog__close {
-    color: var(--ed-dialog__de-text);
+    color: var(--ed-dialog__de-text) !important;
   }
   .ed-dialog__header {
     display: flex;
@@ -531,7 +531,8 @@ defineExpose({
 
     &:not(.is-disabled):focus,
     &:not(.is-disabled):hover {
-      color: #1f2329;
+      color: var(--ed-dialog__de-text) !important;
+      opacity: 0.5;
       border-color: transparent;
       background-color: rgba(31, 35, 41, 0.1);
     }
