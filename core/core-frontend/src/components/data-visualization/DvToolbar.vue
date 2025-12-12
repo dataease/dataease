@@ -714,5 +714,10 @@ const fullScreenPreview = () => {
   .handle-icon {
     color: rgba(166, 166, 166, 1) !important;
   }
+
+  .ed-dropdown-menu__item:not(.is-disabled):focus,
+  .ed-dropdown-menu__item:not(.is-disabled):hover {
+    background-color: #444141cc !important;
+  }
 }
 </style>
