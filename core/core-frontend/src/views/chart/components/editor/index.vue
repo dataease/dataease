@@ -1943,13 +1943,16 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
     view.value[type] ??= []
     const targetId = ev.srcElement.offsetParent?.querySelector('.node-id_private')?.dataset?.id
     const index = view.value[type].findIndex(ele => ele.id === targetId && ele.id !== obj.id)
+    let newDraggableIndex
     if (index !== -1) {
       view.value[type].splice(index + 1 + i, 0, obj)
+      newDraggableIndex = index + 1 + i
     } else {
       view.value[type].push(obj)
+      newDraggableIndex = view.value[type].length - 1
     }
 
-    const e = { newDraggableIndex: view.value[type].length - 1 }
+    const e = { newDraggableIndex }
 
     if ('drillFields' === type) {
       addDrill(e)
