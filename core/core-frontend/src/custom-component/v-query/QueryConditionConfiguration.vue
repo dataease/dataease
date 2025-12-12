@@ -1189,8 +1189,9 @@ const openCascadeDialog = () => {
     .reduce((pre, next) => {
       const isTree = [9].includes(+next.displayType)
       const fieldId = isTree ? next.treeFieldList[0].id : next.field.id
+      const datasetId = isTree ? next.treeFieldList[0].datasetGroupId : next.dataset.id
       pre[next.id] = {
-        datasetId: next.dataset.id,
+        datasetId,
         isTree,
         name: next.name,
         queryId: next.id,
