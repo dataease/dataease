@@ -44,9 +44,10 @@ export function download2AppTemplate(downloadType, canvasDom, name, attachParams
           canvasViewDataTemplate[viewId].data = canvasViewDataInfo.value[viewId]
         })
         const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.1是图片质量
+        const templateName = attachParams?.appName ? attachParams.appName : name
         if (snapshot !== '') {
           const templateInfo = {
-            name: name,
+            name: templateName,
             templateType: 'self',
             snapshot: snapshot,
             dvType: dvInfo.value.type,
@@ -62,7 +63,7 @@ export function download2AppTemplate(downloadType, canvasDom, name, attachParams
           if (downloadType === 'template') {
             FileSaver.saveAs(blob, name + '-TEMPLATE.DET2')
           } else if (downloadType === 'app') {
-            FileSaver.saveAs(blob, name + '-APP.DET2APP')
+            FileSaver.saveAs(blob, templateName + '-APP.DET2APP')
           }
         }
         if (callBack) {
