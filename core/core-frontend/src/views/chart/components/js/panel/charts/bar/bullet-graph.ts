@@ -245,8 +245,7 @@ export class BulletGraph extends G2PlotChartView<G2BulletOptions, G2Bullet> {
       style.textAlign = 'center'
       style.textBaseline = position === 'left' ? 'top' : 'bottom'
     }
-
-    yAxisConfig.label.style = style
+    tmpOptions.yAxis.nice = false
     return tmpOptions
   }
 
