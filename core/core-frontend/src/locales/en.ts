@@ -2947,7 +2947,7 @@ export default {
   visualization: {
     number_formatter: 'Number Content Format',
     jump_dialog_background: 'Dialog Background Color',
-    jump_dialog_button: 'Dialog Font Button Color',
+    jump_dialog_button: 'Dialog Font Color',
     sqlbot_query_tips: 'Smart Data Query',
     cur_sq_dataset: 'Currently selected dataset:',
     data_match_type: 'Data match type',

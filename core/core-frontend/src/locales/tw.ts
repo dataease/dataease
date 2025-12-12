@@ -2866,7 +2866,7 @@ export default {
   visualization: {
     number_formatter: '數字內容格式',
     jump_dialog_background: '彈框背景色',
-    jump_dialog_button: '彈框字體按鈕色',
+    jump_dialog_button: '彈框字體色',
     sqlbot_query_tips: '智能問數',
     cur_sq_dataset: '當前選擇的數據集：',
     data_match_type: '資料匹配方式',
