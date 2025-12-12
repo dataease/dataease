@@ -2868,7 +2868,7 @@ export default {
     must_be_met:
       "Based on  the current component's condition, if cascade configuration is required, the following conditions must be met:",
     select_data_set:
-      '1. Display type: text and number drop-down component; 2. Option value source: select Dataset',
+      '1. Display type: Text dropdown component and numeric dropdown component, dropdown tree; 2. Source of option values: Selection dataset',
     add_cascade_configuration: 'Add cascade configuration',
     add_cascade_condition: 'Add cascade condition',
     query_condition_level: 'Level',

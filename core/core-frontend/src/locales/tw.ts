@@ -2793,7 +2793,7 @@ export default {
     condition_cascade_configuration: '查詢條件級聯配置',
     not_reverse_cascade: '(僅上級能級聯下級,不可反向級聯)',
     must_be_met: '基於目前查詢元件的查詢條件，如果需要進行級聯配置，需要滿足以下條件：',
-    select_data_set: '1. 展示類型：文字下拉元件與數字下拉元件；2. 選項值來源：選擇資料集',
+    select_data_set: '1. 展示類型：文字下拉元件與數字下拉元件，下拉樹；2. 選項值來源：選擇資料集',
     add_cascade_configuration: '新增級聯配置',
     add_cascade_condition: '新增級聯條件',
     query_condition_level: '查詢條件層級',

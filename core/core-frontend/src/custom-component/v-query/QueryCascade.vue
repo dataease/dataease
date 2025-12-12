@@ -327,6 +327,7 @@ defineExpose({
     font-family: var(--de-custom_font, 'PingFang');
     font-size: 14px;
     font-weight: 400;
+    line-height: 20px;
 
     .ed-icon {
       position: absolute;
