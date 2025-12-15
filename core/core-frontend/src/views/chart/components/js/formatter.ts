@@ -292,6 +292,9 @@ export const formatterViewInfo = (viewInfo, value) => {
     viewInfo['customAttr']['label']['quotaLabelFormatter'],
     value
   )
+  viewInfo['customAttr']['label']['seriesLabelFormatter'].forEach(function (item) {
+    item['formatterCfg'] = merge(item['formatterCfg'], value)
+  })
   viewInfo['customAttr']['label']['totalFormatter'] = merge(
     viewInfo['customAttr']['label']['totalFormatter'],
     value
