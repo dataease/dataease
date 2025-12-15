@@ -25,7 +25,7 @@ public class DatasetOrder2SQLObj {
                 DeSortField deSortField = sortFields.get(i);
                 for (int j = 0; j < originFields.size(); j++) {
                     if (deSortField.getId().equals(originFields.get(j).getId())) {
-                        String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
+                        String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, j);
                         SQLObj order = SQLObj.builder()
                                 .orderField(String.format(SQLConstants.FIELD_DOT, fieldAlias))
                                 .orderAlias(String.format(SQLConstants.FIELD_DOT, fieldAlias))
