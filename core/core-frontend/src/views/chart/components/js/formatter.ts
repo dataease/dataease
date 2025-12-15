@@ -299,13 +299,25 @@ export const formatterViewInfo = (viewInfo, value) => {
     viewInfo['customAttr']['label']['totalFormatter'],
     value
   )
-  viewInfo['customAttr']['tooltip']['tooltipFormatter'] = merge(
-    viewInfo['customAttr']['tooltip']['tooltipFormatter'],
-    value
-  )
-  viewInfo['customAttr']['tooltip']['seriesTooltipFormatter'].forEach(function (item) {
-    item['formatterCfg'] = merge(item['formatterCfg'], value)
-  })
+  if (
+    ![
+      'table-info',
+      'table-normal',
+      'table-pivot',
+      'stock-line',
+      'bullet-graph',
+      'percentage-bar-stack-horizontal'
+    ].includes(viewInfo.type)
+  ) {
+    viewInfo['customAttr']['tooltip']['tooltipFormatter'] = merge(
+      viewInfo['customAttr']['tooltip']['tooltipFormatter'],
+      value
+    )
+    viewInfo['customAttr']['tooltip']['seriesTooltipFormatter'].forEach(function (item) {
+      item['formatterCfg'] = merge(item['formatterCfg'], value)
+    })
+  }
+
   //customStyle
   viewInfo['customStyle']['xAxis']['axisLabelFormatter'] = merge(
     viewInfo['customStyle']['xAxis']['axisLabelFormatter'],

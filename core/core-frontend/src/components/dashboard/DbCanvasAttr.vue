@@ -74,6 +74,9 @@ const themeAttrChange = (custom, property, value) => {
           })
         }
         useEmitt().emitter.emit('renderChart-' + viewId, viewInfo)
+        if (viewInfo.type === 'rich-text') {
+          useEmitt().emitter.emit('calcData-' + viewId, viewInfo)
+        }
       } catch (e) {
         console.warn('themeAttrChange-error')
       }
