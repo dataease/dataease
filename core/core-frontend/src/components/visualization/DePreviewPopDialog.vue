@@ -24,11 +24,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { useEmbedded } from '@/store/modules/embedded'
 import { XpackComponent } from '@/components/plugin'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
+import ChartCarouselTooltip from '@/views/chart/components/js/g2plot_tooltip_carousel'
 const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData } = storeToRefs(dvMainStore)
 const state = reactive({
@@ -84,6 +85,16 @@ const previewInit = params => {
     }
   }
 }
+// 监听弹窗显示隐藏，控制tooltip显示隐藏，避免遮挡弹窗
+watch(
+  () => state.dialogShow,
+  show => {
+    document.querySelectorAll('.g2-tooltip')?.forEach(tooltip => {
+      tooltip.classList.toggle('hidden-tooltip', show)
+    })
+    if (!show) ChartCarouselTooltip.closeEnlargeDialogDestroy()
+  }
+)
 
 defineExpose({
   previewInit
