@@ -653,7 +653,7 @@ export function getConditions(chart: Chart) {
         field: field.field.dataeaseName,
         mapping(value, rowData) {
           // 总计小计
-          if (rowData?.isTotals) {
+          if (rowData?.isGrandTotals || rowData?.isSubTotals) {
             return null
           }
           // 表头
@@ -668,7 +668,7 @@ export function getConditions(chart: Chart) {
       res.background.push({
         field: field.field.dataeaseName,
         mapping(value, rowData) {
-          if (rowData?.isTotals) {
+          if (rowData?.isGrandTotals || rowData?.isSubTotals) {
             return null
           }
           if (rowData?.id && rowData?.field === rowData.id) {
