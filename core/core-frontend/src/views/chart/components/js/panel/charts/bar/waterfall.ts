@@ -102,7 +102,12 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
       xField: 'field',
       yField: 'value',
       seriesField: 'category',
-      appendPadding: getPadding(chart)
+      appendPadding: getPadding(chart),
+      meta: {
+        field: {
+          type: 'cat'
+        }
+      }
     }
     const options = this.setupOptions(chart, baseOptions)
     const { Waterfall: G2Waterfall } = await import('@antv/g2plot/esm/plots/waterfall')
@@ -111,33 +116,6 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
     configPlotTooltipEvent(chart, newChart)
     configAxisLabelLengthLimit(chart, newChart)
     return newChart
-  }
-
-  protected configMeta(chart: Chart, options: WaterfallOptions): WaterfallOptions {
-    const yAxis = chart.yAxis
-    const meta: WaterfallOptions['meta'] = {
-      field: {
-        type: 'cat'
-      }
-    }
-    if (!yAxis?.length) {
-      return {
-        ...options,
-        meta
-      }
-    }
-    const f = yAxis[0]
-    const yAxisStyle = parseJson(chart.customStyle).yAxis
-    meta.value = {
-      alias: f.name,
-      formatter: (value: number) => {
-        return valueFormatter(value, yAxisStyle.axisLabelFormatter)
-      }
-    }
-    return {
-      ...options,
-      meta
-    }
   }
 
   protected configBasicStyle(chart: Chart, options: WaterfallOptions): WaterfallOptions {
@@ -177,6 +155,11 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
       return tmpOptions
     }
     const yAxis = parseJson(chart.customStyle).yAxis
+    if (tmpOptions.yAxis.label) {
+      tmpOptions.yAxis.label.formatter = value => {
+        return valueFormatter(value, yAxis.axisLabelFormatter)
+      }
+    }
     const axisValue = yAxis.axisValue
     if (!axisValue?.auto) {
       const axis = {
@@ -329,7 +312,6 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
       this.configTooltip,
       this.configXAxis,
       this.configYAxis,
-      this.configMeta,
       this.configBarConditions
     )(chart, options)
   }
