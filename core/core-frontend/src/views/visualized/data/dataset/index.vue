@@ -138,7 +138,6 @@ const state = reactive({
   curSortType: 'time_desc'
 })
 
-const resourceGroupOpt = ref()
 const curCanvasType = ref('')
 const mounted = ref(false)
 const openType = wsCache.get('open-backend') === '1' ? '_self' : '_blank'
