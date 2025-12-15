@@ -14,7 +14,10 @@ import io.dataease.extensions.view.dto.ChartExtFilterDTO;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -37,110 +40,112 @@ public class ExtWhere2Str {
             dsType = next.getValue().getType();
         }
 
-        // 把下拉树转成多个 field = value and field = value ... 的形式
         if (ObjectUtils.isNotEmpty(fields)) {
-            List<ChartExtFilterDTO> transFields = new ArrayList<>();
             for (ChartExtFilterDTO request : fields) {
-                if (request.getIsTree()) {
-                    String[] values = request.getValue().get(0).split(",");
-                    for (int i = 0; i < request.getDatasetTableFieldList().size(); i++) {
-                        ChartExtFilterDTO dto = new ChartExtFilterDTO();
-                        dto.setDatasetTableField(request.getDatasetTableFieldList().get(i));
-                        dto.setOperator(request.getOperator());
-                        dto.setValue(Collections.singletonList(values[i]));
-                        transFields.add(dto);
-                    }
-                } else {
-                    transFields.add(request);
-                }
-            }
-
-            for (ChartExtFilterDTO request : transFields) {
                 List<String> value = request.getValue();
 
-                DatasetTableFieldDTO field = request.getDatasetTableField();
-
-                if (ObjectUtils.isEmpty(value) || ObjectUtils.isEmpty(field)) {
-                    continue;
-                }
-                String whereName = "";
-
-                String originName;
-                if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 2) {
-                    // 解析origin name中有关联的字段生成sql表达式
-                    String calcFieldExp = Utils.calcFieldRegex(field, tableObj, originFields, isCross, dsMap, paramMap, pluginManage);
-                    // 给计算字段处加一个占位符，后续SQL方言转换后再替换
-                    originName = String.format(SqlPlaceholderConstants.CALC_FIELD_PLACEHOLDER, field.getId());
-                    fieldsDialect.put(originName, calcFieldExp);
-                    if (isCross) {
-                        originName = calcFieldExp;
-                    }
-                } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
-                    if (StringUtils.equalsIgnoreCase(dsType, "es")) {
-                        originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getOriginName());
-                    } else {
-                        originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getDataeaseName());
-                    }
-                } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 3) {
-                    String groupFieldExp = Utils.transGroupFieldToSql(field, originFields, isCross, dsMap, pluginManage);
-                    // 给计算字段处加一个占位符，后续SQL方言转换后再替换
-                    originName = String.format(SqlPlaceholderConstants.CALC_FIELD_PLACEHOLDER, field.getId());
-                    fieldsDialect.put(originName, groupFieldExp);
-                    if (isCross) {
-                        originName = groupFieldExp;
-                    }
+                List<String> whereNameList = new ArrayList<>();
+                List<DatasetTableFieldDTO> fieldList = new ArrayList<>();
+                if (request.getIsTree()) {
+                    fieldList.addAll(request.getDatasetTableFieldList());
                 } else {
-                    if (StringUtils.equalsIgnoreCase(dsType, "es")) {
-                        originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getOriginName());
-                    } else {
-                        originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getDataeaseName());
-                    }
+                    fieldList.add(request.getDatasetTableField());
                 }
 
-                if (field.getDeType() == 1) {
-                    if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                        // 此处获取标准格式的日期
-                        whereName = String.format(SQLConstants.DE_STR_TO_DATE, originName, StringUtils.isEmpty(field.getDateFormat()) ? SQLConstants.DEFAULT_DATE_FORMAT : field.getDateFormat());
+                for (DatasetTableFieldDTO field : fieldList) {
+                    if (ObjectUtils.isEmpty(value) || ObjectUtils.isEmpty(field)) {
+                        continue;
                     }
-                    if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                        String cast = String.format(SQLConstants.CAST, originName, SQLConstants.DEFAULT_INT_FORMAT);
-                        // 此处获取标准格式的日期
-                        whereName = String.format(SQLConstants.FROM_UNIXTIME, cast, SQLConstants.DEFAULT_DATE_FORMAT);
+                    String whereName = "";
+
+                    String originName;
+                    if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 2) {
+                        // 解析origin name中有关联的字段生成sql表达式
+                        String calcFieldExp = Utils.calcFieldRegex(field, tableObj, originFields, isCross, dsMap, paramMap, pluginManage);
+                        // 给计算字段处加一个占位符，后续SQL方言转换后再替换
+                        originName = String.format(SqlPlaceholderConstants.CALC_FIELD_PLACEHOLDER, field.getId());
+                        fieldsDialect.put(originName, calcFieldExp);
                         if (isCross) {
-                            whereName = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
+                            originName = calcFieldExp;
+                        }
+                    } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
+                        if (StringUtils.equalsIgnoreCase(dsType, "es")) {
+                            originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getOriginName());
+                        } else {
+                            originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getDataeaseName());
+                        }
+                    } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 3) {
+                        String groupFieldExp = Utils.transGroupFieldToSql(field, originFields, isCross, dsMap, pluginManage);
+                        // 给计算字段处加一个占位符，后续SQL方言转换后再替换
+                        originName = String.format(SqlPlaceholderConstants.CALC_FIELD_PLACEHOLDER, field.getId());
+                        fieldsDialect.put(originName, groupFieldExp);
+                        if (isCross) {
+                            originName = groupFieldExp;
+                        }
+                    } else {
+                        if (StringUtils.equalsIgnoreCase(dsType, "es")) {
+                            originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getOriginName());
+                        } else {
+                            originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getDataeaseName());
                         }
                     }
-                    if (field.getDeExtractType() == 1) {
-                        // 如果都是时间类型，把date和time类型进行字符串拼接
-                        if (isCross) {
-                            if (StringUtils.equalsIgnoreCase(field.getType(), "date")) {
-                                originName = String.format(SQLConstants.DE_STR_TO_DATE, String.format(SQLConstants.CONCAT, originName, "' 00:00:00'"), SQLConstants.DEFAULT_DATE_FORMAT);
-                            } else if (StringUtils.equalsIgnoreCase(field.getType(), "time")) {
-                                originName = String.format(SQLConstants.DE_STR_TO_DATE, String.format(SQLConstants.CONCAT, "'1970-01-01 '", originName), SQLConstants.DEFAULT_DATE_FORMAT);
+
+                    if (field.getDeType() == 1) {
+                        if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
+                            // 此处获取标准格式的日期
+                            whereName = String.format(SQLConstants.DE_STR_TO_DATE, originName, StringUtils.isEmpty(field.getDateFormat()) ? SQLConstants.DEFAULT_DATE_FORMAT : field.getDateFormat());
+                        }
+                        if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
+                            String cast = String.format(SQLConstants.CAST, originName, SQLConstants.DEFAULT_INT_FORMAT);
+                            // 此处获取标准格式的日期
+                            whereName = String.format(SQLConstants.FROM_UNIXTIME, cast, SQLConstants.DEFAULT_DATE_FORMAT);
+                            if (isCross) {
+                                whereName = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
                             }
                         }
-                        // 此处获取标准格式的日期，同时此处是仪表板过滤，仪表板中图表的日期均已经格式化，所以要强制加上日期转换
-                        whereName = String.format(SQLConstants.DE_CAST_DATE_FORMAT, originName,
-                                SQLConstants.DEFAULT_DATE_FORMAT,
-                                SQLConstants.DEFAULT_DATE_FORMAT);
+                        if (field.getDeExtractType() == 1) {
+                            // 如果都是时间类型，把date和time类型进行字符串拼接
+                            if (isCross) {
+                                if (StringUtils.equalsIgnoreCase(field.getType(), "date")) {
+                                    originName = String.format(SQLConstants.DE_STR_TO_DATE, String.format(SQLConstants.CONCAT, originName, "' 00:00:00'"), SQLConstants.DEFAULT_DATE_FORMAT);
+                                } else if (StringUtils.equalsIgnoreCase(field.getType(), "time")) {
+                                    originName = String.format(SQLConstants.DE_STR_TO_DATE, String.format(SQLConstants.CONCAT, "'1970-01-01 '", originName), SQLConstants.DEFAULT_DATE_FORMAT);
+                                }
+                            }
+                            // 此处获取标准格式的日期，同时此处是仪表板过滤，仪表板中图表的日期均已经格式化，所以要强制加上日期转换
+                            whereName = String.format(SQLConstants.DE_CAST_DATE_FORMAT, originName,
+                                    SQLConstants.DEFAULT_DATE_FORMAT,
+                                    SQLConstants.DEFAULT_DATE_FORMAT);
+                        }
+                    } else if (field.getDeType() == 2 || field.getDeType() == 3) {
+                        if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
+                            whereName = String.format(SQLConstants.CAST, originName, SQLConstants.DEFAULT_FLOAT_FORMAT);
+                        }
+                        if (field.getDeExtractType() == 1) {
+                            whereName = String.format(SQLConstants.UNIX_TIMESTAMP, originName);
+                        }
+                        if (field.getDeExtractType() == 2 || field.getDeExtractType() == 4) {
+                            whereName = String.format(SQLConstants.CAST, originName, SQLConstants.DEFAULT_INT_FORMAT);
+                        }
+                        if (field.getDeExtractType() == 3) {
+                            whereName = String.format(SQLConstants.CAST, originName, SQLConstants.DEFAULT_FLOAT_FORMAT);
+                        }
+                    } else {
+                        whereName = originName;
                     }
-                } else if (field.getDeType() == 2 || field.getDeType() == 3) {
-                    if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                        whereName = String.format(SQLConstants.CAST, originName, SQLConstants.DEFAULT_FLOAT_FORMAT);
-                    }
-                    if (field.getDeExtractType() == 1) {
-                        whereName = String.format(SQLConstants.UNIX_TIMESTAMP, originName);
-                    }
-                    if (field.getDeExtractType() == 2 || field.getDeExtractType() == 4) {
-                        whereName = String.format(SQLConstants.CAST, originName, SQLConstants.DEFAULT_INT_FORMAT);
-                    }
-                    if (field.getDeExtractType() == 3) {
-                        whereName = String.format(SQLConstants.CAST, originName, SQLConstants.DEFAULT_FLOAT_FORMAT);
-                    }
-                } else {
-                    whereName = originName;
+                    whereNameList.add(whereName);
                 }
 
+                String whereName = "";
+                if (request.getIsTree()) {
+                    if (StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType()) && whereNameList.size() == 1) {
+                        whereName = whereNameList.get(0);
+                    } else {
+                        whereName = "CONCAT(" + StringUtils.join(whereNameList, ",',',") + ")";
+                    }
+                } else {
+                    whereName = whereNameList.get(0);
+                }
                 String whereTerm = Utils.transFilterTerm(request.getOperator());
                 String whereValue = "";
 
