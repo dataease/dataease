@@ -508,7 +508,7 @@ class ChartCarouselTooltip {
           instance.resume()
         }
       })
-    }, 50)
+    }, 0)
     // 定义 touchmove 事件处理函数（移动端）
     const handleTouchMove = (event: TouchEvent) => {
       handleMouseWheel(event)
