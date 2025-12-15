@@ -316,7 +316,7 @@ const nodeClick = (data: BusiTreeNode, node) => {
   }
 }
 
-const getTree = async () => {
+const getTree = async (notOpen = false) => {
   const request = {
     busiFlag: curCanvasType.value,
     resourceTable: props.resourceTable
@@ -340,12 +340,12 @@ const getTree = async () => {
   if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
     state.originResourceTree = nodeData[0]['children'] || []
     sortTypeChange(curSortType)
-    afterTreeInit()
+    afterTreeInit(notOpen)
     return
   }
   state.originResourceTree = nodeData
   sortTypeChange(curSortType)
-  afterTreeInit()
+  afterTreeInit(notOpen)
 }
 
 const flattedTree = computed<BusiTreeNode[]>(() => {
@@ -364,7 +364,7 @@ function flatTree(tree: BusiTreeNode[]) {
   return result
 }
 
-const afterTreeInit = () => {
+const afterTreeInit = (notOpen = false) => {
   state.pWeightMap = treeParentWeight(state.originResourceTree, rootManage.value ? 9 : 0)
   mounted.value = true
   if (selectedNodeKey.value && returnMounted.value) {
@@ -375,6 +375,7 @@ const afterTreeInit = () => {
   nextTick(() => {
     resourceListTree.value.setCurrentKey(selectedNodeKey.value)
     resourceListTree.value.filter(filterText.value)
+    if (notOpen) return
     nextTick(() => {
       document.querySelector('.is-current')?.firstChild?.click()
     })
@@ -398,7 +399,7 @@ const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
     }).then(() => {
       deleteLogic(data.id, curCanvasType.value).then(() => {
         ElMessage.success(t('visualization.delete_success'))
-        getTree()
+        getTree(true)
       })
     })
   } else if (cmd === 'cancelPublish') {
@@ -529,7 +530,7 @@ const resourceEdit = resourceId => {
 }
 
 const resourceOptFinish = () => {
-  getTree()
+  getTree(true)
 }
 
 const resourceCreateFinish = templateData => {
