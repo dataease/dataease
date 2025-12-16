@@ -484,10 +484,53 @@ const isConfirmSearch = (id, disabledFirstItem = false) => {
   queryDataForId(id)
 }
 
+const isConfirmSearchNoRequiredName = id => {
+  if (componentWithSure.value) return
+  let requiredName = ''
+  let numName = ''
+  const emitterList = (element.value.propValue || [])
+    .filter(ele => ele.id === id)
+    .reduce((pre, next) => {
+      if (next.displayType === '22') {
+        if (
+          !isNaN(next.numValueEnd) &&
+          !isNaN(next.numValueStart) &&
+          next.numValueEnd < next.numValueStart
+        ) {
+          numName = next.name
+        }
+        if (
+          [next.numValueEnd, next.numValueStart].filter(itx => ![null, undefined, ''].includes(itx))
+            .length === 1
+        ) {
+          requiredName = next.name
+        }
+      }
+
+      const keyList = getKeyList(next)
+      pre = [...new Set([...keyList, ...pre])]
+      return pre
+    }, [])
+  if (!!requiredName) {
+    ElMessage.error(`【${requiredName}】${t('v_query.before_querying')}`)
+    return
+  }
+  if (!!numName) {
+    ElMessage.error(`【${numName}】${t('v_query.the_minimum_value')}`)
+    return
+  }
+  if (!emitterList.length) return
+  fillRequireVal(emitterList)
+  emitterList.forEach(ele => {
+    emitter.emit(`query-data-${ele}`)
+  })
+}
+
 provide('is-confirm-search', isConfirmSearch)
 provide('unmount-select', unMountSelect)
 provide('release-unmount-select', releaseSelect)
 provide('query-data-for-id', queryDataForId)
+provide('query-data-for-id-tree', isConfirmSearchNoRequiredName)
 provide('com-width', getQueryConditionWidth)
 provide('cascade-list', getCascadeList)
 provide('placeholder', getPlaceholder)
