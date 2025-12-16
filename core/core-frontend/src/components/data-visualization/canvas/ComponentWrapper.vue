@@ -179,7 +179,7 @@ const handleInnerMouseDown = e => {
     dvMainStore.mobileInPc
   ) {
     onClick()
-    if (e.target?.className?.includes('ed-input__inner')) return
+    if (e.target?.className?.includes?.('ed-input__inner')) return
     e?.stopPropagation()
     e?.preventDefault()
   }
