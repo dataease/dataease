@@ -162,10 +162,9 @@ const datasetFieldList = computed(() => {
 const setCascadeDefault = val => {
   conditions.value.forEach(ele => {
     if (
-      (ele.optionValueSource === 1 &&
-        [0, 2, 5].includes(+ele.displayType) &&
-        val.includes(ele.id)) ||
-      [9].includes(+ele.displayType)
+      ele.optionValueSource === 1 &&
+      [0, 2, 5].includes(+ele.displayType) &&
+      val.includes(ele.id)
     ) {
       ele.selectValue = Array.isArray(ele.selectValue) ? [] : undefined
       ele.defaultValue = Array.isArray(ele.defaultValue) ? [] : undefined
@@ -1524,7 +1523,6 @@ const validate = () => {
         return true
       }
       if (!ele.setTimeRange) return false
-      console.log(startTime, endTime)
 
       if (
         isInRange(
