@@ -294,27 +294,6 @@ const handleFieldIdDefaultChange = (val: string[]) => {
     })
 }
 
-const setOldMapValue = arr => {
-  const { displayId } = config.value
-  if (!displayId) {
-    return []
-  }
-  let defaultMapValue = {}
-  let defaultValue = []
-  arr.forEach(ele => {
-    defaultMapValue[ele] = []
-  })
-  enumValueArr.forEach(ele => {
-    if (defaultMapValue[ele[displayId]]) {
-      defaultMapValue[ele[displayId]].push(ele)
-    }
-  })
-  Object.values(defaultMapValue).forEach(ele => {
-    defaultValue = [...defaultValue, ...(ele as unknown as string[])]
-  })
-  return defaultValue
-}
-
 const customSort = () => {
   if (config.value.sortList?.length && config.value.sort === 'customSort') {
     options.value = [
@@ -339,19 +318,15 @@ const handleFieldIdChange = (val: EnumValue) => {
   enumValueObj(val)
     .then(res => {
       let oldArr = []
-      let oldEnumValueArr = []
       if (selectValue.value?.length && config.value.multiple) {
         oldArr = [...selectValue.value]
-        oldEnumValueArr = setOldMapValue(oldArr)
       }
-      enumValueArr = [...(res || []), ...oldEnumValueArr] || []
+      enumValueArr = [...(res || [])] || []
       options.value = [
         ...new Set(
-          (res || [])
-            .map(ele => {
-              return `${ele[val.displayId || val.queryId]}`
-            })
-            .concat(oldArr)
+          (res || []).map(ele => {
+            return `${ele[val.displayId || val.queryId]}`
+          })
         )
       ].map(ele => {
         return {
@@ -364,6 +339,26 @@ const handleFieldIdChange = (val: EnumValue) => {
       if (!res?.length) {
         options.value = []
         selectValue.value = config.value.multiple ? [] : undefined
+        config.value.defaultValue = selectValue.value
+      }
+
+      const valArr = options.value.map(ele => ele.value)
+
+      if (
+        config.value.multiple &&
+        Array.isArray(selectValue.value) &&
+        selectValue.value.length &&
+        !selectValue.value.every(ele => valArr.includes(ele))
+      ) {
+        const delArr = selectValue.value.filter(ele => !valArr.includes(ele))
+        selectValue.value = selectValue.value.filter(ele => valArr.includes(ele))
+        options.value = options.value.filter(ele => !delArr.includes(ele.value))
+        config.value.defaultValue = selectValue.value
+      }
+
+      if (!config.value.multiple && selectValue.value && !valArr.includes(selectValue.value)) {
+        options.value = options.value.filter(ele => selectValue.value !== ele.value)
+        selectValue.value = undefined
         config.value.defaultValue = selectValue.value
       }
     })
@@ -405,6 +400,7 @@ const handleFieldIdChange = (val: EnumValue) => {
           ? [...selectValue.value]
           : selectValue.value
       }
+      setCascadeValueBack(config.value.mapValue)
       isFromRemote.value = false
     })
 }
@@ -871,6 +867,9 @@ defineExpose({
   font-family: var(--de-canvas_custom_font);
   .ed-vl__window.ed-select-dropdown__list {
     min-width: 200px;
+  }
+  .ed-select-dropdown {
+    width: auto !important;
   }
   .ed-select-dropdown__option-item {
     .ed-checkbox__label:hover {
