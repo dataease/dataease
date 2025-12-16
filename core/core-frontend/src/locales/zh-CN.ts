@@ -2799,7 +2799,7 @@ export default {
     condition_cascade_configuration: '查询条件级联配置',
     not_reverse_cascade: '(仅上级能级联下级,不可反向级联)',
     must_be_met: '基于当前查询组件的查询条件，如果需要进行级联配置，需要满足以下条件：',
-    select_data_set: '1. 展示类型：文本下拉组件和数字下拉组件，下拉树；2. 选项值来源：选择数据集',
+    select_data_set: '1. 展示类型：文本下拉组件，数字下拉组件，下拉树；2. 选项值来源：选择数据集',
     add_cascade_configuration: '添加级联配置',
     add_cascade_condition: '添加级联条件',
     query_condition_level: '查询条件层级',
