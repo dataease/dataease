@@ -372,6 +372,9 @@ public class ChartDataServer implements ChartDataApi {
         List<CellRangeAddress> mergeConfig = new ArrayList<>();
         if (StringUtils.equalsAnyIgnoreCase(viewInfo.getType(), "table-normal", "table-info")) {
             for (ChartViewFieldDTO xAxi : xAxis) {
+                if (xAxi.isHide()) {
+                    continue;
+                }
                 if (xAxi.getDeType().equals(DeTypeConstants.DE_INT) || xAxi.getDeType().equals(DeTypeConstants.DE_FLOAT)) {
                     CellStyle formatterCellStyle = createCellStyle(wb, xAxi.getFormatterCfg(), null);
                     styles.add(formatterCellStyle);
@@ -755,16 +758,19 @@ public class ChartDataServer implements ChartDataApi {
             }
             switch (formatter.getUnit()) {
                 case 1000:
-                    formatStr = formatStr + "\"千\"";
+                    formatStr = formatStr + (formatter.getUnitLanguage().equalsIgnoreCase("ch") ? "\"千\"" : "\"K\"");
                     break;
                 case 10000:
                     formatStr = formatStr + "\"万\"";
                     break;
                 case 1000000:
-                    formatStr = formatStr + "\"百万\"";
+                    formatStr = formatStr + (formatter.getUnitLanguage().equalsIgnoreCase("ch") ? "\"百万\"" : "\"M\"");
                     break;
                 case 100000000:
                     formatStr = formatStr + "\"亿\"";
+                    break;
+                case 1000000000:
+                    formatStr = formatStr + "\"B\"";
                     break;
                 default:
                     break;
@@ -788,16 +794,19 @@ public class ChartDataServer implements ChartDataApi {
             }
             switch (formatter.getUnit()) {
                 case 1000:
-                    formatStr = formatStr + "\"千\"";
+                    formatStr = formatStr + (formatter.getUnitLanguage().equalsIgnoreCase("ch") ? "\"千\"" : "\"K\"");
                     break;
                 case 10000:
                     formatStr = formatStr + "\"万\"";
                     break;
                 case 1000000:
-                    formatStr = formatStr + "\"百万\"";
+                    formatStr = formatStr + (formatter.getUnitLanguage().equalsIgnoreCase("ch") ? "\"百万\"" : "\"M\"");
                     break;
                 case 100000000:
                     formatStr = formatStr + "\"亿\"";
+                    break;
+                case 1000000000:
+                    formatStr = formatStr + "\"B\"";
                     break;
                 default:
                     break;
