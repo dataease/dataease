@@ -256,6 +256,14 @@ export const calcNiceMinValue = (chart, options, tmpOptions) => {
   return { ...tmpOptions, ...axis }
 }
 
+const unShowTooltipsFormatter = [
+  'table-info',
+  'table-normal',
+  'table-pivot',
+  'stock-line',
+  'bullet-graph',
+  'percentage-bar-stack-horizontal'
+]
 /**
  * 适配图表数字格式化属性
  * @param viewInfo
@@ -299,16 +307,7 @@ export const formatterViewInfo = (viewInfo, value) => {
     viewInfo['customAttr']['label']['totalFormatter'],
     value
   )
-  if (
-    ![
-      'table-info',
-      'table-normal',
-      'table-pivot',
-      'stock-line',
-      'bullet-graph',
-      'percentage-bar-stack-horizontal'
-    ].includes(viewInfo.type)
-  ) {
+  if (!unShowTooltipsFormatter.includes(viewInfo.type)) {
     viewInfo['customAttr']['tooltip']['tooltipFormatter'] = merge(
       viewInfo['customAttr']['tooltip']['tooltipFormatter'],
       value
@@ -331,4 +330,10 @@ export const formatterViewInfo = (viewInfo, value) => {
     viewInfo['customStyle']['yAxisExt']['axisLabelFormatter'],
     value
   )
+}
+
+export const mergeTooltipFormat = (item, type, value) => {
+  if (!unShowTooltipsFormatter.includes(type)) {
+    item['formatterCfg'] = merge(item['formatterCfg'], value)
+  }
 }

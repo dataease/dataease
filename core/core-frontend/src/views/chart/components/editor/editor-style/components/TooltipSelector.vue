@@ -11,10 +11,11 @@ import {
   formatterType,
   getUnitTypeList,
   initFormatCfgUnit,
-  onChangeFormatCfgUnitLanguage
+  onChangeFormatCfgUnitLanguage,
+  mergeTooltipFormat
 } from '@/views/chart/components/js/formatter'
 import { fieldType } from '@/utils/attr'
-import { defaultTo, partition, map, includes, isEmpty } from 'lodash-es'
+import { defaultTo, partition, map, includes, isEmpty, merge } from 'lodash-es'
 import chartViewManager from '../../../js/panel'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
@@ -105,11 +106,17 @@ const changeDataset = () => {
   const formatterIds = formatter.map(i => i.id)
   quotaData.value.forEach(axis => {
     if (!formatterIds.includes(axis.id)) {
-      formatter.push({
+      const formatterItem = {
         ...axis,
         seriesId: axis.id,
         show: false
-      })
+      }
+      mergeTooltipFormat(
+        formatterItem,
+        props.chart.type,
+        dvMainStore.canvasStyleData.component.formatterItem
+      )
+      formatter.push(formatterItem)
     }
   })
   if (formatter[0]) {
@@ -263,7 +270,19 @@ const init = () => {
       // 新增图表
       const formatter = state.tooltipForm.seriesTooltipFormatter
       if (!formatter.length) {
-        quotaData.value?.forEach(i => formatter.push({ ...i, seriesId: i.id, show: false }))
+        quotaData.value?.forEach(axis => {
+          const formatterItem = {
+            ...axis,
+            seriesId: axis.id,
+            show: false
+          }
+          mergeTooltipFormat(
+            formatterItem,
+            props.chart.type,
+            dvMainStore.canvasStyleData.component.formatterItem
+          )
+          formatter.push(formatterItem)
+        })
         curSeriesFormatter.value = {}
         return
       }
