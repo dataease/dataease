@@ -1,10 +1,10 @@
-import { Chart as G2Column } from '@antv/g2'
+import { Chart as G2Column, IntervalMark } from '@antv/g2'
 import { G2DrawOptions } from '@/views/chart/components/js/panel/types/impl/g2'
 import { useI18n } from '@/hooks/web/useI18n'
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
 import {
-  ViewSpec,
-  listenerTooltipShow
+  listenerTooltipShow,
+  ViewSpec
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 import {
   handleChartDashboardHidden,
@@ -215,7 +215,7 @@ export class Waterfall extends Bar {
       style = {
         ...style,
         columnWidthRatio
-      }
+      } as any
     }
 
     return {
@@ -231,7 +231,7 @@ export class Waterfall extends Bar {
               return d.difference > 0 ? colors[0] : colors[1]
             }
           }
-        },
+        } as IntervalMark,
         ...children.slice(1)
       ]
     }
@@ -305,10 +305,10 @@ export class Waterfall extends Bar {
     options.children[0].style = {
       ...options.children[0].style,
       fill: d => {
-        if (d.conditionColor) {
-          return d.conditionColor
-        }
         if (d.isTotal) return colors[2]
+        if (d.conditionColor?.[0]) {
+          return d.conditionColor[0]
+        }
         return d.difference > 0 ? colors[0] : colors[1]
       }
     }
