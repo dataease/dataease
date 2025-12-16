@@ -158,6 +158,7 @@ const tagTextWidth = computed(() => {
 const showOrHide = ref(true)
 const queryConditionWidth = inject('com-width', Function, true)
 const isConfirmSearch = inject('is-confirm-search', Function, true)
+const isConfirmSearchNoRequiredName = inject('query-data-for-id-tree', Function, true)
 watch(
   () => config.value.id,
   () => {
@@ -166,6 +167,7 @@ watch(
 )
 onMounted(() => {
   setTimeout(() => {
+    fromSelect = true
     init()
   }, 0)
 })
@@ -277,9 +279,9 @@ const getCascadeFieldId = () => {
   })
   return filter
 }
+let fromSelect = false
 const getOptionFromCascade = () => {
-  config.value.selectValue = config.value.multiple ? [] : undefined
-  treeValue.value = config.value.multiple ? [] : undefined
+  fromSelect = true
   getTreeOption()
 }
 
@@ -290,6 +292,20 @@ onBeforeMount(() => {
   })
 })
 
+const dfsAuth = (tree, val) => {
+  return tree.some(ele => {
+    if (ele.value === val) {
+      return true
+    }
+
+    if (ele.children?.length) {
+      return dfsAuth(ele.children, val)
+    }
+
+    return false
+  })
+}
+
 const getTreeOption = debounce(() => {
   loading.value = true
   getFieldTree({
@@ -299,10 +315,35 @@ const getTreeOption = debounce(() => {
   })
     .then(res => {
       treeOptionList.value = dfs(res)
+      if (fromSelect) {
+        fromTreeSelectConfirm.value = true
+        if (multiple.value && Array.isArray(treeValue.value) && treeValue.value.length) {
+          treeValue.value = treeValue.value.filter(ele => dfsAuth(treeOptionList.value, ele))
+        } else if (treeValue.value && !dfsAuth(treeOptionList.value, treeValue.value)) {
+          treeValue.value = undefined
+        } else {
+          fromSelect = false
+        }
+
+        if (fromSelect) {
+          config.value.selectValue = Array.isArray(treeValue.value)
+            ? [...treeValue.value]
+            : treeValue.value
+          config.value.defaultValue = config.value.selectValue
+
+          if (props.config) return
+
+          nextTick(() => {
+            fromTreeSelectConfirm.value = false
+            isConfirmSearchNoRequiredName(config.value.id)
+          })
+        }
+      }
     })
     .finally(() => {
       loading.value = false
       showWholePath.value = true
+      fromSelect = false
     })
 }, 300)
 watch(
