@@ -794,7 +794,6 @@ const addAxis = (e, axis: AxisType) => {
         itemNewAdd['formatterCfg'],
         dvMainStore.canvasStyleData.component.formatterItem
       )
-      console.log('===test==1' + JSON.stringify(itemNewAdd))
     }
   } else {
     if (!dup && typeValid) {
@@ -811,7 +810,6 @@ const addAxis = (e, axis: AxisType) => {
         itemNewAdd['formatterCfg'],
         dvMainStore.canvasStyleData.component.formatterItem
       )
-      console.log('===test==2' + JSON.stringify(itemNewAdd))
     }
   }
   if (view.value.type === 'line') {
@@ -3755,7 +3753,6 @@ const deleteChartFieldItem = id => {
                   <div class="divider"></div>
                   <div style="margin-top: 8px" class="label-top">{{ t('chart.quota') }}</div>
                   <el-scrollbar class="drag-list">
-                    22
                     <div
                       v-for="element in quotaData"
                       :key="element.id"
