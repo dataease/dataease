@@ -140,7 +140,8 @@ const init = (fromMount = false) => {
     oldId = config.value.treeFieldList?.map(ele => ele.id).join('-')
     multiple.value = config.value.multiple
   })
-  if (getCascadeFieldId().length && fromMount) return
+  if (getCascadeFieldId().some(ele => ele.defaultValueFirstItem) && fromMount && !props.isConfig)
+    return
   getTreeOption()
 }
 
@@ -252,6 +253,7 @@ const getCascadeFieldId = () => {
     let condition = null
     ele.forEach(item => {
       const [_, queryId, fieldId] = item.datasetId.split('--')
+      const defaultValueFirstItem = item.defaultValueFirstItem
       if (queryId === config.value.id && condition) {
         if (item.fieldId) {
           condition.fieldId = item.fieldId
@@ -261,7 +263,8 @@ const getCascadeFieldId = () => {
         if (props.isConfig) {
           if (!!item.selectValue?.length) {
             condition = {
-              fieldId: fieldId,
+              fieldId,
+              defaultValueFirstItem,
               operator: 'in',
               value: [...item.selectValue]
             }
@@ -269,7 +272,8 @@ const getCascadeFieldId = () => {
         } else {
           if (!!item.currentSelectValue?.length) {
             condition = {
-              fieldId: fieldId,
+              fieldId,
+              defaultValueFirstItem,
               operator: 'in',
               value: [...item.currentSelectValue]
             }

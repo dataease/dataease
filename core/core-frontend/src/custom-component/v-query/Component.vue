@@ -470,7 +470,17 @@ const getQueryConditionWidth = () => {
 }
 
 const getCascadeList = () => {
-  return props.element.cascade
+  const { propValue, cascade } = props.element
+  const defaultValueFirstItemMap = propValue.reduce((pre, next) => {
+    pre[next.id] = next.defaultValueFirstItem
+    return pre
+  }, {})
+  cascade.forEach(itx => {
+    itx.forEach(ele => {
+      ele.defaultValueFirstItem = defaultValueFirstItemMap[ele.datasetId.split('--')[1]]
+    })
+  })
+  return cascade
 }
 
 const getPlaceholder = computed(() => {
