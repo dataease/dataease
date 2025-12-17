@@ -870,6 +870,7 @@ defineExpose({
   }
   .ed-select-dropdown {
     width: auto !important;
+    min-width: 150px;
   }
   .ed-select-dropdown__option-item {
     .ed-checkbox__label:hover {
