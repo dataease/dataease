@@ -124,7 +124,7 @@ watch(
   }
 )
 
-const init = () => {
+const init = (fromMount = false) => {
   loading.value = true
   const { defaultValueCheck, multiple: plus, defaultValue } = config.value
   if (defaultValueCheck) {
@@ -140,6 +140,7 @@ const init = () => {
     oldId = config.value.treeFieldList?.map(ele => ele.id).join('-')
     multiple.value = config.value.multiple
   })
+  if (getCascadeFieldId().length && fromMount) return
   getTreeOption()
 }
 
@@ -168,7 +169,7 @@ watch(
 onMounted(() => {
   setTimeout(() => {
     fromSelect = true
-    init()
+    init(true)
   }, 0)
 })
 
@@ -279,6 +280,7 @@ const getCascadeFieldId = () => {
   })
   return filter
 }
+
 let fromSelect = false
 const getOptionFromCascade = () => {
   fromSelect = true
