@@ -35,7 +35,8 @@ const requireKeys = [
   'dataFillingLogLiveTime',
   'frontTimeOut',
   'loginLimitTime',
-  'loginLimitRate'
+  'loginLimitRate',
+  'thresholdLimit'
 ]
 const state = reactive({
   form: reactive({
