@@ -1278,6 +1278,7 @@ export const dvMainStore = defineStore('dataVisualization', {
                 filterItem.defaultMapValue = []
                 filterItem.mapValue = []
                 filterItem.defaultValueCheck = true
+                filterItem.defaultValueFirstItem = false
                 filterItem.timeType = 'fixed'
                 if (['0', '2'].includes(filterItem.displayType)) {
                   const { optionValueSource, field, displayId } = filterItem
