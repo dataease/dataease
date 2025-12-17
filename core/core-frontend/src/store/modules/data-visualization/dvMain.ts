@@ -26,6 +26,7 @@ import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { filterEnumParams, filterEnumParamsReduce } from '@/utils/componentUtils'
+import { formatterItem } from '@/views/chart/components/js/formatter'
 const { t } = useI18n()
 
 export const dvMainStore = defineStore('dataVisualization', {
@@ -270,6 +271,8 @@ export const dvMainStore = defineStore('dataVisualization', {
     setCanvasStyle(style) {
       style.component['seniorStyleSetting'] =
         style.component['seniorStyleSetting'] || deepCopy(SENIOR_STYLE_SETTING_LIGHT)
+      style['component']['formatterItem'] =
+        style['component']['formatterItem'] || deepCopy(formatterItem)
       this.canvasStyleData = style
     },
     setCanvasStyleScale(value) {
