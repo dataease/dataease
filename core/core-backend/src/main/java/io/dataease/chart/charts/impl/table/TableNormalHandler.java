@@ -241,8 +241,10 @@ public class TableNormalHandler extends DefaultChartHandler {
                 });
                 if (!customCalcFields.isEmpty()) {
                     var xFields = sqlMeta.getXFields();
+                    var xOrder = sqlMeta.getXOrders();
                     // 清空维度值，获取完结果再设置回去
                     sqlMeta.setXFields(Collections.emptyList());
+                    sqlMeta.setXOrders(Collections.emptyList());
                     List<DatasetTableFieldDTO> tmpList = FieldUtil.transFields(allFields);
                     tmpList.addAll(customCalcFields);
                     Quota2SQLObj.quota2sqlObj(sqlMeta, customCalcFields, tmpList, crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
@@ -269,6 +271,7 @@ public class TableNormalHandler extends DefaultChartHandler {
                         result.put("customSumResult", customSumResult);
                     }
                     sqlMeta.setXFields(xFields);
+                    sqlMeta.setXOrders(xOrder);
                 }
             }
         }
