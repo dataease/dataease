@@ -26,4 +26,6 @@ public class MessageDTO implements Serializable {
     private MessageEnum messageEnum;
 
     private Long messageId;
+
+    List<List<String>> gridData;
 }

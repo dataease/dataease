@@ -3734,7 +3734,8 @@ export default {
     loginLimit: '限制登入',
     loginLimitRate: '限制登入失敗次數 (次)',
     loginLimitTime: '限制登入失敗時間 (分)',
-    share_disable_tips: '開啟後儀表板以及大屏分享無效'
+    share_disable_tips: '開啟後儀表板以及大屏分享無效',
+    thresholdLimit: '告警數據限製'
   },
   resource_sort: {
     time_asc: '按建立時間升序',
@@ -4497,6 +4498,7 @@ export default {
     msg_title: '消息標題',
     msg_content: '消息正文',
     repeat_send: '是否重複發送',
+    show_field_value: '顯示字段值',
     recipient: '接收人',
     choose_recipient: '選擇接收人',
     trigger_alarm: '觸發告警',
@@ -4506,6 +4508,7 @@ export default {
     recipient_setting: '設置接收人',
     attention_quota_tip: '您關注的指標',
     pay_attention_in_time: '。請及時關注。',
+    threshold_record: '告警數據',
     msg_preview: '消息預覽',
     average: '平均值',
     next_time: '下一',

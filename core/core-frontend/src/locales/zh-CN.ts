@@ -3740,7 +3740,8 @@ export default {
     loginLimit: '限制登录',
     loginLimitRate: '限制登录失败次数 (次)',
     loginLimitTime: '限制登录失败时间 (分)',
-    share_disable_tips: '开启后仪表板以及大屏分享无效'
+    share_disable_tips: '开启后仪表板以及大屏分享无效',
+    thresholdLimit: '告警数据限制'
   },
   resource_sort: {
     time_asc: '按创建时间升序',
@@ -4502,6 +4503,7 @@ export default {
     msg_title: '消息标题',
     msg_content: '消息正文',
     repeat_send: '是否重复发送',
+    show_field_value: '显示字段值',
     recipient: '接收人',
     choose_recipient: '选择接收人',
     trigger_alarm: '触发告警',
@@ -4511,6 +4513,7 @@ export default {
     recipient_setting: '设置接收人',
     attention_quota_tip: '您关注的指标',
     pay_attention_in_time: '。请及时关注。',
+    threshold_record: '告警数据',
     msg_preview: '消息预览',
     average: '平均值',
     next_time: '下一',

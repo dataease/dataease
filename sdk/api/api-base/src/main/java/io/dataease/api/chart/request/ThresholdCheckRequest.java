@@ -17,4 +17,8 @@ public class ThresholdCheckRequest implements Serializable {
     private String thresholdTemplate;
 
     private String resourceTable;
+
+    private boolean showFieldValue;
+
+    private Integer thresholdLimit = 5;
 }

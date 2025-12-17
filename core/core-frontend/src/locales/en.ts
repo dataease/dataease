@@ -3845,7 +3845,8 @@ export default {
     loginLimit: 'Limit login',
     loginLimitRate: 'Limit login failure times (times)',
     loginLimitTime: 'Limit login failure time (minutes)',
-    share_disable_tips: 'Dashboard and data screen sharing are invalid after turning on'
+    share_disable_tips: 'Dashboard and data screen sharing are invalid after turning on',
+    thresholdLimit: 'Alarm data limitation'
   },
   resource_sort: {
     time_asc: 'In ascending order by creation time',
@@ -4628,6 +4629,7 @@ export default {
     msg_title: 'Message title',
     msg_content: 'Message content',
     repeat_send: 'Repeat send',
+    show_field_value: 'Show field value',
     recipient: 'Recipient',
     choose_recipient: 'Select recipient',
     trigger_alarm: 'Trigger alarm',
@@ -4637,6 +4639,7 @@ export default {
     recipient_setting: 'Recipient setting',
     attention_quota_tip: 'The indicators you are following',
     pay_attention_in_time: '. Please pay attention in time.',
+    threshold_record: 'Alert Data',
     msg_preview: 'Message preview',
     average: 'Average value',
     next_time: 'Next ',

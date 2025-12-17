@@ -19,7 +19,8 @@ public class SystemSettingUtils {
                 XpackSettingConstants.DATA_FILLING_LOG_LIVE_TIME,
                 XpackSettingConstants.LOGIN_LIMIT,
                 XpackSettingConstants.LOGIN_LIMIT_RATE,
-                XpackSettingConstants.LOGIN_LIMIT_TIME);
+                XpackSettingConstants.LOGIN_LIMIT_TIME,
+                XpackSettingConstants.THRESHOLD_LIMIT);
         return xpackSettingList.contains(pkey);
     }
 }

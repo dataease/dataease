@@ -17,4 +17,5 @@ public class XpackSettingConstants {
     public static final String LOGIN_LIMIT = "basic.loginLimit";
     public static final String LOGIN_LIMIT_RATE = "basic.loginLimitRate";
     public static final String LOGIN_LIMIT_TIME = "basic.loginLimitTime";
+    public static final String THRESHOLD_LIMIT = "basic.thresholdLimit";
 }

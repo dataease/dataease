@@ -35,6 +35,7 @@ public class ChartViewThresholdManage {
     @Resource
     private ChartViewManege chartViewManege;
 
+
     public String convertThresholdRules(Long chartId, String thresholdRules, String resourceTable) {
         ChartViewDTO details = chartViewManege.getDetails(chartId, resourceTable);
         return convertThresholdRules(details, thresholdRules);
@@ -277,30 +278,103 @@ public class ChartViewThresholdManage {
             Pattern pattern = Pattern.compile(regex, Pattern.DOTALL);
             Matcher matcher = pattern.matcher(thresholdTemplate);
             StringBuilder sb = new StringBuilder();
+
+            boolean withThresholdData = false;
+            int thresholdRecordCount = request.getThresholdLimit();
             while (matcher.find()) {
                 long id = Long.parseLong(matcher.group(1));
+                if (id == 2L) {
+                    withThresholdData = true;
+                }
                 // 根据id从map中获取替换文本
                 DatasetTableFieldDTO fieldDTO = fieldMap.get(id);
                 if (ObjectUtils.isEmpty(fieldDTO)) continue;
+                String dataeaseName = fieldDTO.getDataeaseName();
                 String fieldDTOName = fieldDTO.getName();
-                /*String dataeaseName = fieldDTO.getDataeaseName();
-                String replacement = null;
-                if (fieldDTO.getDeType().equals(DeTypeConstants.DE_FLOAT) || fieldDTO.getDeType().equals(DeTypeConstants.DE_INT)) {
-                    List<String> valueList = rows.stream().map(row -> ObjectUtils.isEmpty(row.get(dataeaseName)) ? null : stripTrailingZeros2String(row.get(dataeaseName))).collect(Collectors.toList());
-                    replacement = fieldDTOName + ": " + JsonUtil.toJSONString(valueList);
-                } else {
-                    List<String> valueList = rows.stream().map(row -> ObjectUtils.isEmpty(row.get(dataeaseName)) ? null : row.get(dataeaseName).toString()).collect(Collectors.toList());
-                    replacement = fieldDTOName + ": " + JsonUtil.toJSONString(valueList);
+
+                if (rows.size() > thresholdRecordCount) {
+                    rows = rows.subList(0, thresholdRecordCount);
                 }
-
-                // 替换文本
-                matcher.appendReplacement(sb, replacement);*/
-                matcher.appendReplacement(sb, fieldDTOName);
+                if (request.isShowFieldValue()) {
+                    String replacement = null;
+                    if (fieldDTO.getDeType().equals(DeTypeConstants.DE_FLOAT) || fieldDTO.getDeType().equals(DeTypeConstants.DE_INT)) {
+                        List<String> valueList = rows.stream().map(row -> ObjectUtils.isEmpty(row.get(dataeaseName)) ? null : stripTrailingZeros2String(row.get(dataeaseName))).collect(Collectors.toList());
+                        replacement = fieldDTOName + ": " + JsonUtil.toJSONString(valueList);
+                    } else {
+                        List<String> valueList = rows.stream().map(row -> ObjectUtils.isEmpty(row.get(dataeaseName)) ? null : row.get(dataeaseName).toString()).collect(Collectors.toList());
+                        replacement = fieldDTOName + ": " + JsonUtil.toJSONString(valueList);
+                    }
+                    matcher.appendReplacement(sb, replacement);
+                } else {
+                    matcher.appendReplacement(sb, fieldDTOName);
+                }
             }
-            matcher.appendTail(sb);
 
+            matcher.appendTail(sb);
             // 输出替换后的HTML内容
             String result = sb.toString();
+
+            if (withThresholdData) {
+                Set<Long> thresholdFieldIdSet = new HashSet<>();
+                getThresholdFieldIdList(filterTreeObj, thresholdFieldIdSet);
+                List<List<String>> thresholdTableList = rows.stream().map(row -> thresholdFieldIdSet.stream().map(fieldId -> {
+                    DatasetTableFieldDTO fieldDTO = fieldMap.get(fieldId);
+                    if (ObjectUtils.isEmpty(fieldDTO)) return "";
+                    String dataeaseName = fieldDTO.getDataeaseName();
+                    Integer deType = fieldDTO.getDeType();
+                    String value = null;
+
+                    if (deType.equals(DeTypeConstants.DE_FLOAT) || deType.equals(DeTypeConstants.DE_INT)) {
+                        value = ObjectUtils.isEmpty(row.get(dataeaseName)) ? null : stripTrailingZeros2String(row.get(dataeaseName));
+                    } else {
+                        value = ObjectUtils.isEmpty(row.get(dataeaseName)) ? null : row.get(dataeaseName).toString();
+                    }
+                    return value;
+                }).collect(Collectors.toList())).collect(Collectors.toList());
+                List<String> tableHeadList = thresholdFieldIdSet.stream().map(i -> fieldMap.get(i).getName()).collect(Collectors.toList());
+                tableHeadList.addFirst("NO");
+                thresholdTableList.addFirst(tableHeadList);
+                StringBuilder tableHtml = new StringBuilder("<table style=\"min-width:35%;border-collapse:collapse;font-family:'Segoe UI',Arial,sans-serif;font-size:14px;border:1px solid;border-radius:8px;overflow:hidden;border-spacing:0\">");
+
+                for (int i = 0; i < thresholdTableList.size(); i++) {
+                    List<String> row = thresholdTableList.get(i);
+                    if (i == 0) {
+                        StringBuilder theadHtmlBuild = new StringBuilder("<thead><tr style=\"border-bottom:2px double;border-color: inherit;\">");
+                        row.forEach(item -> {
+                            theadHtmlBuild.append("<th style=\"border: 1px dashed;border-color: inherit;padding:12px;text-align:left;font-weight:bold;letter-spacing:1px;text-transform:uppercase;\">").append(item).append("</th>");
+                        });
+                        theadHtmlBuild.append("</tr></thead>");
+                        tableHtml.append(theadHtmlBuild);
+                        continue;
+                    }
+                    row.addFirst(String.valueOf(i));
+                    if (i == 1) {
+                        tableHtml.append("<tbody>");
+                    }
+
+                    StringBuilder trHtmlBuild = new StringBuilder("<tr style=\"border-bottom:1px dashed;border-color: inherit;\">");
+                    row.forEach(item -> {
+                        trHtmlBuild.append("<td style=\"border: 1px dashed;border-color: inherit;padding:12px\">").append(item).append("</td>");
+                    });
+                    trHtmlBuild.append("</tr>");
+                    tableHtml.append(trHtmlBuild);
+
+                    if (i == thresholdTableList.size() - 1) {
+                        tableHtml.append("</tbody></table>");
+                    }
+
+                }
+
+                String thresholdDataRex = "<span id=\"changeText-(\\d+)\"[^>]*?style=\"([^\"]*?)\"[^>]*?>\\s*<span[^>]*?data-mce-content=\"\\[告警数据\\]\"[^>]*?>\\[告警数据\\]</span>\\s*</span>";
+
+                Pattern thresholdDataPattern = Pattern.compile(thresholdDataRex, Pattern.DOTALL);
+                Matcher thresholdDataMatcher = thresholdDataPattern.matcher(result);
+                if (thresholdDataMatcher.find()) {
+                    String originStyle = thresholdDataMatcher.group(2);
+                    String tableStyleHtml = tableHtml.toString().replace("min-width:35%;", originStyle + "min-width:35%;");
+                    result = thresholdDataMatcher.replaceAll(tableStyleHtml);
+                }
+            }
             return new ThresholdCheckVO(true, result, null, null);
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), new Throwable(e));
@@ -314,6 +388,18 @@ public class ChartViewThresholdManage {
         }
         if (!(value instanceof BigDecimal)) return value.toString();
         return ((BigDecimal) value).stripTrailingZeros().toPlainString();
+    }
+
+    private void getThresholdFieldIdList(FilterTreeObj conditionTree, Set<Long> fieldIdSet) {
+        List<FilterTreeItem> items = conditionTree.getItems();
+        items.forEach(item -> {
+            if (!StringUtils.equals("item", item.getType())) {
+                getThresholdFieldIdList(item.getSubTree(), fieldIdSet);
+            } else {
+                Long fieldId = item.getFieldId();
+                fieldIdSet.add(fieldId);
+            }
+        });
     }
 
     private void chartDynamicMap(List<Map<String, Object>> rows, FilterTreeObj conditionTree, Map<Long, DatasetTableFieldDTO> fieldMap) {
@@ -603,4 +689,5 @@ public class ChartViewThresholdManage {
             return valueLong == targetLong;
         }
     }
+
 }
