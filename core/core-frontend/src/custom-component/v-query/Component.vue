@@ -470,7 +470,7 @@ const getQueryConditionWidth = () => {
 }
 
 const getCascadeList = () => {
-  const { propValue, cascade } = props.element
+  const { propValue, cascade = [] } = props.element
   const defaultValueFirstItemMap = propValue.reduce((pre, next) => {
     pre[next.id] = next.defaultValueFirstItem
     return pre
