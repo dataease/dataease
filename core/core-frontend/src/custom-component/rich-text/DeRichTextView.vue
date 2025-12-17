@@ -130,6 +130,7 @@ const language_map = {
   tw: 'zh_TW',
   'zh-CN': 'zh_CN'
 }
+
 const language = language_map[userStore.getLanguage]
 const dataRowSelect = ref({})
 const dataRowNameSelect = ref({})
@@ -382,7 +383,7 @@ const assignment = content => {
     if (on) {
       const thresholdStyleInfo = conditionAdaptor(state.viewDataInfo)
       on.forEach(itm => {
-        if (dataRowFiledName.value.includes(itm)) {
+        if (dataRowFiledName.value.includes(decodeHTMLEntities(itm))) {
           const ele = itm.slice(1, -1)
           let value =
             dataRowNameSelect.value[ele] !== undefined ? dataRowNameSelect.value[ele] : null
@@ -410,6 +411,22 @@ const assignment = content => {
   }
 
   return content
+}
+
+const decodeHTMLEntities = text => {
+  if (!text) return text
+
+  const textarea = document.createElement('textarea')
+  textarea.innerHTML = text
+  return textarea.value
+}
+
+const encodeHTMLEntities = text => {
+  if (!text) return text
+
+  const textarea = document.createElement('textarea')
+  textarea.textContent = text
+  return textarea.innerHTML
 }
 const initFontFamily = htmlText => {
   const regex = /font-family:\s*([^;"]+);/g
