@@ -6,8 +6,8 @@ import {
   isTransparent,
   parseJson,
   resetRgbOpacity,
-  safeDecimalSum,
-  safeDecimalMean
+  safeDecimalMean,
+  safeDecimalSum
 } from '../..//util'
 import {
   DEFAULT_BASIC_STYLE,
@@ -50,17 +50,13 @@ import {
   filter,
   find,
   intersection,
+  isNumber,
   keys,
   map,
   maxBy,
-  meanBy,
   merge,
   minBy,
-  repeat,
-  sumBy,
-  size,
-  sum,
-  isNumber
+  repeat
 } from 'lodash-es'
 import { createVNode, render } from 'vue'
 import TableTooltip from '@/views/chart/components/editor/common/TableTooltip.vue'
@@ -2198,7 +2194,7 @@ export class CustomDataCell extends TableDataCell {
    * @protected
    */
   protected drawTextShape() {
-    if(this.meta.isMergedCell) {
+    if (this.meta.isMergedCell) {
       return
     }
     if (this.meta.autoWrap) {
@@ -2242,7 +2238,8 @@ const drawTextShape = (cell, isHeader) => {
   // 单元格文本
   const { formattedValue } = cell.getFormattedFieldValue()
   // 获取文本样式
-  const textStyle = cell.getTextStyle()
+  const textStyle = cloneDeep(cell.getTextStyle())
+  textStyle.textAlign = undefined
   // 宽度能放几个字符，就放几个，放不下就换行
   let wrapText = getWrapText(
     formattedValue ? formattedValue?.toString() : emptyPlaceholder,
@@ -2298,7 +2295,8 @@ const drawTextShape = (cell, isHeader) => {
   cell.actualTextWidth = cell.spreadsheet.measureTextWidth(wrapText, textStyle)
 
   // 获取文本位置并渲染文本
-  const { x, y } = cell.getTextAndIconPosition()?.text || cell.getTextPosition()
+  const { y } = cell.getTextAndIconPosition()?.text || cell.getTextPosition()
+  const x = getTextStartX(cell, textStyle)
   // 绘制文本
   cell.textShape = renderText(cell, [cell.textShape], x, y, wrapText, textStyle, {
     fontSize: extraStyleFontSize
@@ -2306,6 +2304,33 @@ const drawTextShape = (cell, isHeader) => {
 
   // 将文本形状添加到形状数组
   cell.textShapes.push(cell.textShape)
+}
+
+/**
+ * 计算文本起始X位置
+ * @param cell
+ * @param textStyle
+ */
+function getTextStartX(cell, textStyle) {
+  // 获取单元格区域
+  const area = cell.getCellArea()
+  // 计算文本宽度,只计算第一行宽度
+  const textWidth = cell.spreadsheet.measureTextWidthRoughly(
+    cell.actualText.split('\n')[0],
+    textStyle
+  )
+  const padding = cell.theme.colCell?.cell?.padding ?? { left: 0, right: 0 }
+  const align = cell.getTextStyle()?.textAlign ?? 'left'
+  switch (align) {
+    case 'left':
+      return area.x + (padding.left || 0)
+    case 'center':
+      return area.x + (area.width - textWidth) / 2
+    case 'right':
+      return area.x + area.width - textWidth - (padding.right || 0)
+    default:
+      return area.x + (padding.left || 0)
+  }
 }
 
 /**
