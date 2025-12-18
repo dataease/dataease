@@ -2,6 +2,7 @@
 import { ref, reactive, onBeforeMount, nextTick, inject } from 'vue'
 import { initCanvasData, initCanvasDataMobile, onInitReady } from '@/utils/canvasUtils'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
+import router from '@/router/mobile'
 import { useEmbedded } from '@/store/modules/embedded'
 import { isMobile } from '@/utils/utils'
 import { check } from '@/utils/CrossPermission'
@@ -56,9 +57,15 @@ onBeforeMount(async () => {
   }
   // 添加外部参数
   let attachParams
-  await getOuterParamsInfo(embeddedParams.dvId).then(rsp => {
-    dvMainStore.setNowPanelOuterParamsInfoV2(rsp.data, embeddedParams.dvId)
-  })
+  try {
+    await getOuterParamsInfo(embeddedParams.dvId).then(rsp => {
+      dvMainStore.setNowPanelOuterParamsInfoV2(rsp.data, embeddedParams.dvId)
+    })
+  } catch (error) {
+    if (error.status === 401) {
+      return
+    }
+  }
 
   // div嵌入
   if (embeddedParams.outerParams) {

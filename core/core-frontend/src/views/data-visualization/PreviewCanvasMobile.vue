@@ -88,9 +88,16 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
 
   // 添加外部参数
   let attachParam
-  await getOuterParamsInfo(dvId).then(rsp => {
-    dvMainStore.setNowPanelOuterParamsInfoV2(rsp.data, dvId)
-  })
+  try {
+    await getOuterParamsInfo(dvId).then(rsp => {
+      dvMainStore.setNowPanelOuterParamsInfoV2(rsp.data, dvId)
+    })
+  } catch (error) {
+    if (error.status === 401) {
+      router.push('/login')
+      return
+    }
+  }
 
   // 外部参数（iframe 或者 iframe嵌入）
   const attachParamsEncode = router.currentRoute.value.query.attachParams
@@ -150,7 +157,9 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
       }
       initBrowserTimer()
     }
-  )
+  ).catch(err => {
+    console.log(err)
+  })
 }
 
 let p = null
