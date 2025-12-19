@@ -22,7 +22,9 @@ class G2TooltipCarousel {
     'chart-mix-stack',
     'chart-mix-dual-line',
     'pie',
-    'pie-donut'
+    'pie-donut',
+    'pie-rose',
+    'pie-donut-rose'
   ]
   private newChart: any
   private chart: any
@@ -430,6 +432,9 @@ class G2TooltipCarousel {
     const isMix = this.isMixChart()
     const isLineOrMix = this.isLineChart() || isMix
     this.newChart.emit('element:select', {
+      data: { data: [isLineOrMix && originalData ? originalData : tooltipData.data.data] }
+    })
+    this.newChart.emit('element:highlight', {
       data: { data: [isLineOrMix && originalData ? originalData : tooltipData.data.data] }
     })
     const { offsetX, offsetY } = this.getTooltipOffsetX(tooltipData)

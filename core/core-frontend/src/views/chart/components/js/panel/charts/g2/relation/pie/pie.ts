@@ -65,7 +65,8 @@ export class Pie extends G2ChartView {
       interaction: {
         elementSelect: {
           single: true
-        }
+        },
+        elementHighlight: true
       }
     }
     const total = data.reduce((pre, next) => pre + (next.value ?? 0), 0)
