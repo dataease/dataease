@@ -14,7 +14,6 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { Bar } from '@/views/chart/components/js/panel/charts/g2/bar/bar'
 import { getLineDash, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
-import { Chart } from '@antv/g2'
 import { DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'
 import { defaultsDeep } from 'lodash-es'
 

@@ -7,12 +7,11 @@ import {
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
-  TOOLTIP_ITEM_TPL,
   toLinearGradient,
+  TOOLTIP_ITEM_TPL,
   TOOLTIP_TITLE_TPL
 } from '@/views/chart/components/js/panel/common/common_antv'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
-import { Chart } from '@antv/g2'
 import { HorizontalBar } from '@/views/chart/components/js/panel/charts/g2/bar/horizontal-bar'
 import { isEmpty } from 'lodash-es'
 
@@ -118,16 +117,45 @@ export class HorizontalStackBar extends HorizontalBar {
         }
       }
     }
+    const childrenList = [{ ...children[0], ...tooltipOptions }, ...children.slice(1)]
     return {
       ...options,
-      children: [{ ...children[0], ...tooltipOptions }, ...children.slice(1)]
+      children: childrenList
     }
+  }
+
+  protected configData(chart: Chart, options: ViewSpec): ViewSpec {
+    const { xAxis, extStack, yAxis } = chart
+    const mainSort = xAxis.some(axis => axis.sort !== 'none')
+    const subSort = extStack.some(axis => axis.sort !== 'none')
+    if (mainSort || subSort) {
+      return options
+    }
+    const quotaSort = yAxis?.[0]?.sort !== 'none'
+    if (!quotaSort || !extStack.length || !yAxis.length) {
+      return options
+    }
+    const { data } = options
+    const mainAxisValueMap = data.reduce((p, n) => {
+      p[n.field] = p[n.field] ? p[n.field] + n.value : n.value || 0
+      return p
+    }, {})
+    const sort = yAxis[0].sort
+    data.sort((p, n) => {
+      if (sort === 'asc') {
+        return mainAxisValueMap[p.field] - mainAxisValueMap[n.field]
+      } else {
+        return mainAxisValueMap[n.field] - mainAxisValueMap[p.field]
+      }
+    })
+    return options
   }
 
   protected setupOptions(chart: Chart, options: ViewSpec): ViewSpec {
     return flow(
       this.configTheme,
       this.configBasicStyle,
+      this.configData,
       this.configColor,
       this.configLabel,
       this.configTooltip,
