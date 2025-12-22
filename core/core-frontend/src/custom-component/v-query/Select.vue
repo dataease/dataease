@@ -344,6 +344,8 @@ const handleFieldIdChange = (val: EnumValue) => {
 
       const valArr = options.value.map(ele => ele.value)
 
+      let change = false
+
       if (
         config.value.multiple &&
         Array.isArray(selectValue.value) &&
@@ -354,12 +356,24 @@ const handleFieldIdChange = (val: EnumValue) => {
         selectValue.value = selectValue.value.filter(ele => valArr.includes(ele))
         options.value = options.value.filter(ele => !delArr.includes(ele.value))
         config.value.defaultValue = selectValue.value
+        change = true
       }
 
       if (!config.value.multiple && selectValue.value && !valArr.includes(selectValue.value)) {
         options.value = options.value.filter(ele => selectValue.value !== ele.value)
         selectValue.value = undefined
         config.value.defaultValue = selectValue.value
+        change = true
+      }
+
+      if (change) {
+        config.value.mapValue = setDefaultMapValue(
+          Array.isArray(selectValue.value) ? [...selectValue.value] : [selectValue.value]
+        )
+        config.value.defaultMapValue = setDefaultMapValue(
+          Array.isArray(selectValue.value) ? [...selectValue.value] : [selectValue.value]
+        )
+        setCascadeValueBack(config.value.mapValue)
       }
     })
     .finally(() => {
@@ -675,8 +689,6 @@ const single = ref()
 
 const getOptionFromCascade = () => {
   if (config.value.optionValueSource !== 1 || ![0, 2, 5].includes(+config.value.displayType)) return
-  config.value.selectValue = config.value.multiple ? [] : undefined
-  selectValue.value = config.value.multiple ? [] : undefined
   isFromRemote.value = true
   debounceOptions(1)
 }
