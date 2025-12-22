@@ -671,7 +671,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
       return data
     }
     options.children[0].data = {
-      value: options.children[0].data,
+      value: options.children[0].data || options.data,
       transform: [
         {
           type: 'custom',

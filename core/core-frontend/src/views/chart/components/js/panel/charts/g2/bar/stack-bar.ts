@@ -177,7 +177,7 @@ export class StackBar extends Bar {
     if (!quotaSort || !extStack.length || !yAxis.length) {
       return options
     }
-    const { data } = options.children[0]
+    const data = options.children[0]?.data || options.data
     const mainAxisValueMap = data.reduce((p, n) => {
       p[n.field] = p[n.field] ? p[n.field] + n.value : n.value || 0
       return p
