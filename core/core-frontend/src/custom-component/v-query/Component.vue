@@ -300,11 +300,17 @@ watch(
   }
 )
 const list = ref([])
-
+let oldList = []
+let isResetData = false
 watch(
   () => props.element.propValue,
   () => {
     list.value = [...props.element.propValue]
+    if (isResetData) {
+      isResetData = false
+      return
+    }
+    oldList = cloneDeep(props.element.propValue)
   },
   {
     immediate: true
@@ -670,43 +676,50 @@ const delQueryConfig = index => {
 }
 
 const resetData = () => {
-  ;(list.value || []).reduce((pre, next) => {
-    next.conditionValueF = next.defaultConditionValueF
-    next.conditionValueOperatorF = next.defaultConditionValueOperatorF
-    next.conditionValueS = next.defaultConditionValueS
-    next.conditionValueOperatorS = next.defaultConditionValueOperatorS
+  isResetData = true
+  element.value.propValue = []
+  nextTick(() => {
+    element.value.propValue = cloneDeep(oldList)
+    ;(element.value.propValue || []).reduce((pre, next) => {
+      next.conditionValueF = next.defaultConditionValueF
+      next.conditionValueOperatorF = next.defaultConditionValueOperatorF
+      next.conditionValueS = next.defaultConditionValueS
+      next.conditionValueOperatorS = next.defaultConditionValueOperatorS
 
-    if (next.displayType === '22') {
-      next.numValueEnd = next.defaultNumValueEnd
-      next.numValueStart = next.defaultNumValueStart
-    }
+      if (next.displayType === '22') {
+        next.numValueEnd = next.defaultNumValueEnd
+        next.numValueStart = next.defaultNumValueStart
+      }
 
-    if (!next.defaultValueCheck) {
-      next.defaultValue = next.multiple || +next.displayType === 7 ? [] : undefined
-    }
-    next.selectValue = Array.isArray(next.defaultValue) ? [...next.defaultValue] : next.defaultValue
-    if (next.optionValueSource === 1 && next.defaultMapValue?.length) {
-      next.mapValue = Array.isArray(next.defaultMapValue)
-        ? [...next.defaultMapValue]
-        : next.defaultMapValue
-    }
+      if (!next.defaultValueCheck) {
+        next.defaultValue = next.multiple || +next.displayType === 7 ? [] : undefined
+      }
+      next.selectValue = Array.isArray(next.defaultValue)
+        ? [...next.defaultValue]
+        : next.defaultValue
+      if (next.optionValueSource === 1 && next.defaultMapValue?.length) {
+        next.mapValue = Array.isArray(next.defaultMapValue)
+          ? [...next.defaultMapValue]
+          : next.defaultMapValue
+      }
 
-    ;(props.element.cascade || []).forEach(ele => {
-      ele.forEach(item => {
-        const comId = item.datasetId.split('--')[1]
-        if (next.id === comId) {
-          item.currentSelectValue = Array.isArray(next.selectValue)
-            ? next.selectValue
-            : [next.selectValue].filter(itx => ![null, undefined].includes(itx))
-          useEmitt().emitter.emit(`${item.datasetId.split('--')[1]}-select`)
-        }
+      ;(props.element.cascade || []).forEach(ele => {
+        ele.forEach(item => {
+          const comId = item.datasetId.split('--')[1]
+          if (next.id === comId) {
+            item.currentSelectValue = Array.isArray(next.selectValue)
+              ? next.selectValue
+              : [next.selectValue].filter(itx => ![null, undefined].includes(itx))
+            useEmitt().emitter.emit(`${item.datasetId.split('--')[1]}-select`)
+          }
+        })
       })
-    })
-    const keyList = getKeyList(next)
-    pre = [...new Set([...keyList, ...pre])]
-    return pre
-  }, [])
-  !componentWithSure.value && queryData()
+      const keyList = getKeyList(next)
+      pre = [...new Set([...keyList, ...pre])]
+      return pre
+    }, [])
+    !componentWithSure.value && queryData()
+  })
 }
 
 const clearData = () => {
