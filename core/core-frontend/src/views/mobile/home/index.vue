@@ -23,7 +23,7 @@ const router = useRouter()
 const { t } = useI18n()
 const { wsCache } = useCache('sessionStorage')
 
-const activeTab = ref('recent')
+const activeTab = ref('store')
 const emptyTips = ref('')
 const state = reactive({
   tableData: [],
@@ -62,8 +62,8 @@ const loadShareTableData = () => {
 }
 
 const baseTablePaneList = ref([
-  { title: t('work_branch.recent'), name: 'recent', disabled: false },
   { title: '我的收藏', name: 'store', disabled: false },
+  { title: t('work_branch.recent'), name: 'recent', disabled: false },
   { title: t('visualization.share_out'), name: 'share', disabled: false }
 ])
 
@@ -139,7 +139,7 @@ const handleClick = ({ name, disabled }) => {
   }
 }
 onMounted(() => {
-  activeTab.value = wsCache.get('activeTab') || 'recent'
+  activeTab.value = wsCache.get('activeTab') || 'store'
   wsCache.set('activeTab', '')
   !!busiAuthList.length &&
     handleClick({

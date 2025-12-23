@@ -45,7 +45,7 @@ defineProps({
 })
 const desktop = wsCache.get('app.desktop')
 const panelKeyword = ref()
-const activeName = ref('recent')
+const activeName = ref('store')
 const activeCommand = ref('all_types')
 const state = reactive({
   tableData: [],
@@ -146,8 +146,8 @@ const loadTableData = () => {
 }
 
 const baseTablePaneList = ref([
-  { title: t('work_branch.recently_used'), name: 'recent', disabled: false },
   { title: t('work_branch.my_collection'), name: 'store', disabled: false },
+  { title: t('work_branch.recently_used'), name: 'recent', disabled: false },
   { title: t('visualization.share_out'), name: 'share', disabled: false }
 ])
 
@@ -182,7 +182,7 @@ watch(
 onMounted(() => {
   !!busiAuthList.length &&
     handleClick({
-      paneName: 'recent',
+      paneName: 'store',
       uid: 0,
       slots: undefined,
       props: undefined,
