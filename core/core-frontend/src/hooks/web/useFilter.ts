@@ -451,9 +451,6 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               displayId
             )
           }
-
-          console.log(selectValue, item, 'item')
-
           if (
             !!selectValue?.length ||
             ['[object Number]', '[object Date]'].includes(
