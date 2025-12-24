@@ -65,7 +65,7 @@ export const userStore = defineStore('user', {
         wsCache.set('user.' + key, this[key])
       })
       const locale = useLocaleStoreWithOut()
-      if (locale.getCurrentLocale?.lang !== this.language) {
+      if (locale.getCurrentLocale?.lang !== this.language && !window.DataEaseBi) {
         window.location.reload()
       }
       this.setLanguage(this.language)
