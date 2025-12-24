@@ -2631,7 +2631,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
       label-width="120px"
     >
       <el-form-item prop="name" :label="t('dataset.field_name')">
-        <el-input v-model="currentNormalField.name" />
+        <el-input maxlength="100" v-model="currentNormalField.name" />
       </el-form-item>
     </el-form>
     <template #footer>
