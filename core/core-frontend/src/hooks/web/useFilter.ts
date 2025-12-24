@@ -19,12 +19,12 @@ const getDynamicRangeTime = (type: number, selectValue: any, timeGranularityMult
       +new Date(
         dayjs(selectValue[0])
           .startOf(timeType as 'month' | 'year' | 'date')
-          .format('YYYY-MM-DD HH:mm:ss')
+          .format('YYYY/MM/DD HH:mm:ss')
       ),
       +new Date(
         dayjs(selectValue[1])
           .endOf(timeType as 'month' | 'year' | 'date')
-          .format('YYYY-MM-DD HH:mm:ss')
+          .format('YYYY/MM/DD HH:mm:ss')
       )
     ]
   }
@@ -451,6 +451,9 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               displayId
             )
           }
+
+          console.log(selectValue, item, 'item')
+
           if (
             !!selectValue?.length ||
             ['[object Number]', '[object Date]'].includes(
