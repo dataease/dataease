@@ -2095,6 +2095,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                         <div class="column-style">
                           <el-input
                             v-model="scope.row.name"
+                            maxlength="100"
                             :placeholder="t('commons.input_content')"
                           />
                         </div>
