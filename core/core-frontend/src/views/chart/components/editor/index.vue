@@ -1775,7 +1775,7 @@ const setCacheId = debounce(() => {
 watch(
   () => curComponent.value,
   val => {
-    if (!val || !!previewHeight.value) return
+    if (!val || !!previewHeight.value || mobileInPc) return
     calcEle()
   },
   { immediate: true }

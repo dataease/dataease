@@ -529,7 +529,7 @@ const save = () => {
           width: 8px;
           height: 1px;
           position: absolute;
-          bottom: 0;
+          bottom: -1px;
           left: 0;
           background: #1f232926;
         }

@@ -250,16 +250,12 @@ onMounted(async () => {
     const canvasCache = wsCache.get('DE-DV-CATCH-' + resourceId)
     if (canvasCache) {
       canvasCacheOutRefShow.value = true
-      console.log(canvasCache)
       nextTick(() => {
-        console.log(canvasCacheOutRef.value)
         setTimeout(() => {
-          console.log(canvasCacheOutRef.value)
           canvasCacheOutRef.value?.dialogInit({ canvasType: 'dashboard', resourceId: resourceId })
         }, 300)
       })
     } else {
-      console.log('initLocalCanvasData...')
       initLocalCanvasData(() => {
         // do init
       })
