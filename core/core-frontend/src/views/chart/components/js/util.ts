@@ -1173,3 +1173,7 @@ export const randomString = (length: number): string => {
   }
   return result
 }
+
+export const handleEmptyDataStrategy = (x, y) => {
+  return [x, y]
+}
