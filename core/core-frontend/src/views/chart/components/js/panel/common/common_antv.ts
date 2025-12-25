@@ -1395,6 +1395,7 @@ export function configL7PlotZoom(chart: Chart, plot: L7Plot<PlotOptions>) {
     plot.scene.map['dragPan']?.disable()
     plot.scene.map['scrollZoom']?.disable()
     plot.scene.map['doubleClickZoom']?.disable()
+    plot.scene.map['dragRotate']?.disable()
     return
   }
   plot.once('loaded', () => {
