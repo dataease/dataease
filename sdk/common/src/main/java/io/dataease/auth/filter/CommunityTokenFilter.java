@@ -43,7 +43,7 @@ public class CommunityTokenFilter implements Filter {
                 Object apisixCacheManage = CommonBeanFactory.getBean("apisixCacheManage");
                 Method method = DeReflectUtil.findMethod(apisixCacheManage.getClass(), "userCacheBO");
                 Object o = ReflectionUtils.invokeMethod(method, apisixCacheManage, userId);
-                Method pwdMethod = DeReflectUtil.findMethod(o.getClass(), "getPwd");
+                Method pwdMethod = DeReflectUtil.findMethod(o.getClass(), "getSecret");
                 Object pwdObj = ReflectionUtils.invokeMethod(pwdMethod, o);
                 secret = pwdObj.toString();
             }
