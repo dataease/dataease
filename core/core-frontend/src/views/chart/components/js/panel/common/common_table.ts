@@ -1404,22 +1404,24 @@ export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
     for (let colIndex = 0; colIndex < colLeafNodes.length; colIndex++) {
       const dataCellMeta = layoutResult.getCellMeta(rowIndex, colIndex)
       const { fieldValue } = dataCellMeta
-      if (fieldValue === 0 || fieldValue) {
-        const meta = metaMap[dataCellMeta.valueField]
-        const cell = worksheet.getCell(rowIndex + maxColHeight + 1, rowLength + colIndex + 1)
-        cell.alignment = { vertical: 'middle', horizontal: 'center' }
-        const value = meta?.formatter?.(fieldValue) || fieldValue
-        if (typeof value === 'number') {
-          cell.value = value
-        } else if (typeof value === 'string') {
-          const formatterCfg = formatterMap?.[dataCellMeta.valueField]
-          const result = extractNumber(value, formatterCfg)
-          if (typeof result === 'string') {
-            cell.value = result
-          } else {
-            cell.value = result.value
-            cell.numFmt = result.numFmt
-          }
+      const cell = worksheet.getCell(rowIndex + maxColHeight + 1, rowLength + colIndex + 1)
+      cell.alignment = { vertical: 'middle', horizontal: 'center' }
+      if (fieldValue === "-" || fieldValue === null || fieldValue === undefined) {
+        cell.value = '-'
+        continue
+      }
+      const meta = metaMap[dataCellMeta.valueField]
+      const value = meta?.formatter?.(fieldValue) || fieldValue
+      if (typeof value === 'number') {
+        cell.value = value
+      } else if (typeof value === 'string') {
+        const formatterCfg = formatterMap?.[dataCellMeta.valueField]
+        const result = extractNumber(value, formatterCfg)
+        if (typeof result === 'string') {
+          cell.value = result
+        } else {
+          cell.value = result.value
+          cell.numFmt = result.numFmt
         }
       }
     }
@@ -1592,22 +1594,24 @@ export async function exportRowQuotaGridPivot(instance: PivotSheet, chart: Chart
     for (let colIndex = 0; colIndex < colLeafNodes.length; colIndex++) {
       const dataCellMeta = layoutResult.getCellMeta(rowIndex, colIndex)
       const { fieldValue } = dataCellMeta
-      if (fieldValue === 0 || fieldValue) {
-        const meta = metaMap[dataCellMeta.valueField]
-        const cell = worksheet.getCell(rowIndex + maxColHeight + 1, rowLength + colIndex + 2)
-        const value = meta?.formatter?.(fieldValue) || fieldValue
-        cell.alignment = { vertical: 'middle', horizontal: 'center' }
-        if (typeof value === 'number') {
-          cell.value = value
-        } else if (typeof value === 'string') {
-          const formatterCfg = formatterMap?.[dataCellMeta.valueField]
-          const result = extractNumber(value, formatterCfg)
-          if (typeof result === 'string') {
-            cell.value = result
-          } else {
-            cell.value = result.value
-            cell.numFmt = result.numFmt
-          }
+      const cell = worksheet.getCell(rowIndex + maxColHeight + 1, rowLength + colIndex + 2)
+      cell.alignment = { vertical: 'middle', horizontal: 'center' }
+      if (fieldValue === "-" || fieldValue === null || fieldValue === undefined) {
+        cell.value = '-'
+        continue
+      }
+      const meta = metaMap[dataCellMeta.valueField]
+      const value = meta?.formatter?.(fieldValue) || fieldValue
+      if (typeof value === 'number') {
+        cell.value = value
+      } else if (typeof value === 'string') {
+        const formatterCfg = formatterMap?.[dataCellMeta.valueField]
+        const result = extractNumber(value, formatterCfg)
+        if (typeof result === 'string') {
+          cell.value = result
+        } else {
+          cell.value = result.value
+          cell.numFmt = result.numFmt
         }
       }
     }
@@ -1731,22 +1735,24 @@ export async function exportTreePivot(instance: PivotSheet, chart: ChartObj) {
     for (let colIndex = 0; colIndex < colLeafNodes.length; colIndex++) {
       const dataCellMeta = layoutResult.getCellMeta(rowIndex, colIndex)
       const { fieldValue } = dataCellMeta
-      if (fieldValue === 0 || fieldValue) {
-        const meta = metaMap[dataCellMeta.valueField]
-        const cell = worksheet.getCell(rowIndex + maxColHeight + 1, colIndex + 1 + 1)
-        const value = meta?.formatter?.(fieldValue) || fieldValue
-        cell.alignment = { vertical: 'middle', horizontal: 'center' }
-        if (typeof value === 'number') {
-          cell.value = value
-        } else if (typeof value === 'string') {
-          const formatterCfg = formatterMap?.[dataCellMeta.valueField]
-          const result = extractNumber(value, formatterCfg)
-          if (typeof result === 'string') {
-            cell.value = result
-          } else {
-            cell.value = result.value
-            cell.numFmt = result.numFmt
-          }
+      const cell = worksheet.getCell(rowIndex + maxColHeight + 1, colIndex + 1 + 1)
+      cell.alignment = { vertical: 'middle', horizontal: 'center' }
+      if (fieldValue === "-" || fieldValue === null || fieldValue === undefined) {
+        cell.value = '-'
+        continue
+      }
+      const meta = metaMap[dataCellMeta.valueField]
+      const value = meta?.formatter?.(fieldValue) || fieldValue
+      if (typeof value === 'number') {
+        cell.value = value
+      } else if (typeof value === 'string') {
+        const formatterCfg = formatterMap?.[dataCellMeta.valueField]
+        const result = extractNumber(value, formatterCfg)
+        if (typeof result === 'string') {
+          cell.value = result
+        } else {
+          cell.value = result.value
+          cell.numFmt = result.numFmt
         }
       }
     }
@@ -1871,22 +1877,24 @@ export async function exportRowQuotaTreePivot(instance: PivotSheet, chart: Chart
     for (let colIndex = 0; colIndex < colLeafNodes.length; colIndex++) {
       const dataCellMeta = layoutResult.getCellMeta(rowIndex, colIndex)
       const { fieldValue } = dataCellMeta
-      if (fieldValue === 0 || fieldValue) {
-        const meta = metaMap[dataCellMeta.valueField]
-        const cell = worksheet.getCell(rowIndex + maxColHeight + 1, colIndex + 2)
-        const value = meta?.formatter?.(fieldValue) || fieldValue
-        cell.alignment = { vertical: 'middle', horizontal: 'center' }
-        if (typeof value === 'number') {
-          cell.value = value
-        } else if (typeof value === 'string') {
-          const formatterCfg = formatterMap?.[dataCellMeta.valueField]
-          const result = extractNumber(value, formatterCfg)
-          if (typeof result === 'string') {
-            cell.value = result
-          } else {
-            cell.value = result.value
-            cell.numFmt = result.numFmt
-          }
+      const cell = worksheet.getCell(rowIndex + maxColHeight + 1, colIndex + 2)
+      cell.alignment = { vertical: 'middle', horizontal: 'center' }
+      if (fieldValue === "-" || fieldValue === null || fieldValue === undefined) {
+        cell.value = '-'
+        continue
+      }
+      const meta = metaMap[dataCellMeta.valueField]
+      const value = meta?.formatter?.(fieldValue) || fieldValue
+      if (typeof value === 'number') {
+        cell.value = value
+      } else if (typeof value === 'string') {
+        const formatterCfg = formatterMap?.[dataCellMeta.valueField]
+        const result = extractNumber(value, formatterCfg)
+        if (typeof result === 'string') {
+          cell.value = result
+        } else {
+          cell.value = result.value
+          cell.numFmt = result.numFmt
         }
       }
     }
