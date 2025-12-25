@@ -248,6 +248,10 @@ const relativeToCurrentListRange = computed(() => {
           value: 'thisWeek'
         },
         {
+          label: t('cron.this_month'),
+          value: 'thisMonth'
+        },
+        {
           label: t('v_query.last_3_days'),
           value: 'LastThreeDays'
         },
