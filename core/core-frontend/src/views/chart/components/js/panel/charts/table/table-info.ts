@@ -14,7 +14,7 @@ import { hexColorToRGBA, isAlphaColor, parseJson } from '../../../util'
 import { S2ChartView, S2DrawOptions } from '../../types/impl/s2'
 import { TABLE_EDITOR_PROPERTY, TABLE_EDITOR_PROPERTY_INNER } from './common'
 import { useI18n } from '@/hooks/web/useI18n'
-import { filter, isEqual, isNumber, merge } from 'lodash-es'
+import { filter, isEqual, merge } from 'lodash-es'
 import {
   calcTreeWidth,
   calculateGroupHeaderHeight,
@@ -29,6 +29,7 @@ import {
   getRowIndex,
   getStartPosition,
   getSummaryRow,
+  isNumeric,
   SortTooltip,
   SummaryCell,
   summaryRowStyle
@@ -125,7 +126,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
           if (value === null || value === undefined) {
             return value
           }
-          if (![2, 3, 4].includes(f.deType) || !isNumber(value)) {
+          if (![2, 3, 4].includes(f.deType) || !isNumeric(value)) {
             return value
           }
           let formatCfg = f.formatterCfg

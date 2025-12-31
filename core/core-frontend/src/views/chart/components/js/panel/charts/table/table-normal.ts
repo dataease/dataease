@@ -11,7 +11,8 @@ import {
   getColumns,
   summaryRowStyle,
   calcTreeWidth,
-  getStartPosition
+  getStartPosition,
+  isNumeric
 } from '@/views/chart/components/js/panel/common/common_table'
 import { S2ChartView, S2DrawOptions } from '@/views/chart/components/js/panel/types/impl/s2'
 import { parseJson } from '@/views/chart/components/js/util'
@@ -25,7 +26,7 @@ import {
   TableSheet,
   ViewMeta
 } from '@antv/s2'
-import { isNumber, isEqual } from 'lodash-es'
+import { isEqual } from 'lodash-es'
 import { TABLE_EDITOR_PROPERTY, TABLE_EDITOR_PROPERTY_INNER } from './common'
 
 const { t } = useI18n()
@@ -121,7 +122,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
           if (value === null || value === undefined) {
             return value
           }
-          if (![2, 3, 4].includes(f.deType) || !isNumber(value)) {
+          if (![2, 3, 4].includes(f.deType) || !isNumeric(value)) {
             return value
           }
           let formatCfg = f.formatterCfg

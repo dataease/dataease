@@ -2787,3 +2787,7 @@ const calculateGroupHeaderMaxTextHeight = (
     10.5
   )
 }
+
+export const isNumeric = (value: any): boolean => {
+  return !isNaN(parseFloat(value)) && isFinite(value)
+}

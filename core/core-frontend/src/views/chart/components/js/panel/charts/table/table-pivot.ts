@@ -21,8 +21,8 @@ import { hexColorToRGBA, isAlphaColor, parseJson } from '../../../util'
 import { S2ChartView, S2DrawOptions } from '../../types/impl/s2'
 import { TABLE_EDITOR_PROPERTY_INNER } from './common'
 import { useI18n } from '@/hooks/web/useI18n'
-import { isNumber, keys, maxBy, merge, minBy, some, isEmpty, get } from 'lodash-es'
-import { copyContent, CustomDataCell } from '../../common/common_table'
+import { keys, maxBy, merge, minBy, some, isEmpty, get } from 'lodash-es'
+import { copyContent, CustomDataCell, isNumeric } from '../../common/common_table'
 import Decimal from 'decimal.js'
 import { DEFAULT_TABLE_HEADER } from '@/views/chart/components/editor/util/chart'
 
@@ -166,7 +166,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
           if (value === null || value === undefined) {
             return value
           }
-          if (![2, 3, 4].includes(f.deType) || !isNumber(value)) {
+          if (![2, 3, 4].includes(f.deType) || !isNumeric(value)) {
             return value
           }
           if (f.formatterCfg) {
