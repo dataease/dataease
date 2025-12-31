@@ -585,6 +585,12 @@ export class HorizontalStackBar extends HorizontalBar {
     return optionTmp
   }
 
+  setupDefaultOptions(chart: ChartObj): ChartObj {
+    const chartTmp = super.setupDefaultOptions(chart)
+    chartTmp.customAttr.label.showStackQuota = true
+    return chartTmp
+  }
+
   protected setupOptions(chart: Chart, options: BarOptions): BarOptions {
     return flow(
       this.configTheme,

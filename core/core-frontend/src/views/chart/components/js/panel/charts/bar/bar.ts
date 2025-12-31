@@ -638,6 +638,12 @@ export class StackBar extends Bar {
     return setUpStackSeriesColor(chart, data)
   }
 
+  setupDefaultOptions(chart: ChartObj): ChartObj {
+    const chartTmp = super.setupDefaultOptions(chart)
+    chartTmp.customAttr.label.showStackQuota = true
+    return chartTmp
+  }
+
   protected setupOptions(chart: Chart, options: ColumnOptions): ColumnOptions {
     return flow(
       this.configTheme,
