@@ -1265,72 +1265,78 @@ export const dvMainStore = defineStore('dataVisualization', {
             element.propValue?.forEach(filterItem => {
               if (filterItem.id === targetViewId) {
                 let queryParams = paramValue
-                if (!['1', '7'].includes(filterItem.displayType)) {
-                  // 查询组件除了时间组件 其他入参只支持文本 这里全部转为文本
-                  queryParams = paramValue.map(number => String(number))
-                }
-                filterItem.defaultMapValue = []
-                filterItem.mapValue = []
-                filterItem.defaultValueCheck = true
-                filterItem.defaultValueFirstItem = false
-                filterItem.timeType = 'fixed'
-                if (['0', '2'].includes(filterItem.displayType)) {
-                  const { optionValueSource, field, displayId } = filterItem
-                  const queryMapFlag = optionValueSource === 1 && field.id !== displayId
-                  let queryMapParams = queryParams
-                  if (queryMapFlag) {
-                    queryParams = filterEnumParamsReduce(queryParams, field.id)
-                    queryMapParams = filterEnumParams(queryParams, field.id)
+                const targetMatchMode = targetInfoArray[2] // 目标匹配模式
+                if (targetMatchMode === 'filter') {
+                  // do filter
+                  filterItem['optionFilter'] = queryParams
+                } else {
+                  if (!['1', '7'].includes(filterItem.displayType)) {
+                    // 查询组件除了时间组件 其他入参只支持文本 这里全部转为文本
+                    queryParams = paramValue.map(number => String(number))
                   }
-                  // 0 文本类型 1 数字类型
-                  if (filterItem.multiple) {
-                    // multiple === true 多选
-                    filterItem['selectValue'] = queryParams
-                    filterItem['defaultValue'] = queryParams
-                  } else {
-                    // 单选
+                  filterItem.defaultMapValue = []
+                  filterItem.mapValue = []
+                  filterItem.defaultValueCheck = true
+                  filterItem.defaultValueFirstItem = false
+                  filterItem.timeType = 'fixed'
+                  if (['0', '2'].includes(filterItem.displayType)) {
+                    const { optionValueSource, field, displayId } = filterItem
+                    const queryMapFlag = optionValueSource === 1 && field.id !== displayId
+                    let queryMapParams = queryParams
+                    if (queryMapFlag) {
+                      queryParams = filterEnumParamsReduce(queryParams, field.id)
+                      queryMapParams = filterEnumParams(queryParams, field.id)
+                    }
+                    // 0 文本类型 1 数字类型
+                    if (filterItem.multiple) {
+                      // multiple === true 多选
+                      filterItem['selectValue'] = queryParams
+                      filterItem['defaultValue'] = queryParams
+                    } else {
+                      // 单选
+                      filterItem['selectValue'] = queryParams[0]
+                      filterItem['defaultValue'] = queryParams[0]
+                    }
+                    filterItem['defaultMapValue'] = queryMapParams
+                    filterItem['mapValue'] = queryMapParams
+                  } else if (filterItem.displayType === '1') {
+                    // 1 时间类型
                     filterItem['selectValue'] = queryParams[0]
                     filterItem['defaultValue'] = queryParams[0]
-                  }
-                  filterItem['defaultMapValue'] = queryMapParams
-                  filterItem['mapValue'] = queryMapParams
-                } else if (filterItem.displayType === '1') {
-                  // 1 时间类型
-                  filterItem['selectValue'] = queryParams[0]
-                  filterItem['defaultValue'] = queryParams[0]
-                } else if (filterItem.displayType === '7') {
-                  // 7 时间范围类型
-                  filterItem['selectValue'] = queryParams
-                  filterItem['defaultValue'] = queryParams
-                } else if (filterItem.displayType === '8') {
-                  // 8 文本搜索
-                  filterItem['conditionValueF'] = parmaValueSource + ''
-                  filterItem['defaultConditionValueF'] = parmaValueSource + ''
-                } else if (filterItem.displayType === '9') {
-                  // 9 下拉树
-                  if (filterItem.multiple) {
-                    // multiple === true 多选
+                  } else if (filterItem.displayType === '7') {
+                    // 7 时间范围类型
                     filterItem['selectValue'] = queryParams
                     filterItem['defaultValue'] = queryParams
-                  } else {
-                    // 单选
-                    filterItem['selectValue'] = queryParams[0]
-                    filterItem['defaultValue'] = queryParams[0]
+                  } else if (filterItem.displayType === '8') {
+                    // 8 文本搜索
+                    filterItem['conditionValueF'] = parmaValueSource + ''
+                    filterItem['defaultConditionValueF'] = parmaValueSource + ''
+                  } else if (filterItem.displayType === '9') {
+                    // 9 下拉树
+                    if (filterItem.multiple) {
+                      // multiple === true 多选
+                      filterItem['selectValue'] = queryParams
+                      filterItem['defaultValue'] = queryParams
+                    } else {
+                      // 单选
+                      filterItem['selectValue'] = queryParams[0]
+                      filterItem['defaultValue'] = queryParams[0]
+                    }
+                  } else if (filterItem.displayType === '22') {
+                    filterItem['defaultNumValueStart'] = queryParams[0]
+                    filterItem['defaultNumValueEnd'] = queryParams[1]
+                    filterItem['numValueStart'] = queryParams[0]
+                    filterItem['numValueEnd'] = queryParams[1]
                   }
-                } else if (filterItem.displayType === '22') {
-                  filterItem['defaultNumValueStart'] = queryParams[0]
-                  filterItem['defaultNumValueEnd'] = queryParams[1]
-                  filterItem['numValueStart'] = queryParams[0]
-                  filterItem['numValueEnd'] = queryParams[1]
-                }
-                if ('DE_EMPTY' === paramValueStr) {
-                  filterItem['selectValue'] = null
-                  filterItem['defaultValue'] = null
-                  filterItem['conditionValueF'] = null
-                  filterItem['defaultConditionValueF'] = null
-                }
-                if (filterItem['defaultValue']) {
-                  defaultValueMap[filterItem.id] = filterItem['defaultValue']
+                  if ('DE_EMPTY' === paramValueStr) {
+                    filterItem['selectValue'] = null
+                    filterItem['defaultValue'] = null
+                    filterItem['conditionValueF'] = null
+                    filterItem['defaultConditionValueF'] = null
+                  }
+                  if (filterItem['defaultValue']) {
+                    defaultValueMap[filterItem.id] = filterItem['defaultValue']
+                  }
                 }
               }
             })

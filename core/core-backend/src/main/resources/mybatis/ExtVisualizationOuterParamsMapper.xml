@@ -46,6 +46,7 @@
     <collection property="targetViewInfoList" ofType="io.dataease.visualization.dao.auto.entity.VisualizationOuterParamsTargetViewInfo">
       <result column="target_view_id" jdbcType="VARCHAR" property="targetViewId"/>
       <result column="target_ds_id" jdbcType="VARCHAR" property="targetDsId"/>
+      <result column="match_mode" jdbcType="VARCHAR" property="matchMode"/>
       <result column="target_field_id" jdbcType="VARCHAR" property="targetFieldId"/>
     </collection>
   </resultMap>
@@ -71,6 +72,7 @@
             ifnull( popi.checked, 0 ) AS checked,
             poptvi.target_view_id,
             poptvi.target_ds_id,
+            poptvi.match_mode,
             poptvi.target_field_id
         FROM
             snapshot_visualization_outer_params pop
@@ -178,7 +180,7 @@
             popi.required AS required,
             popi.default_value AS default_value,
             popi.enabled_default AS enabled_default,
-            CONCAT( poptvi.target_view_id, '#', poptvi.target_field_id ) AS targetInfo
+            CONCAT( poptvi.target_view_id, '#', poptvi.target_field_id, '#', poptvi.match_mode ) AS targetInfo
         FROM
             visualization_outer_params pop
             LEFT JOIN visualization_outer_params_info popi ON pop.params_id = popi.params_id

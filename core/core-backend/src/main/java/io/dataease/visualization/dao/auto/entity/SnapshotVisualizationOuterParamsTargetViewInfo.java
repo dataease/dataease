@@ -53,6 +53,16 @@ public class SnapshotVisualizationOuterParamsTargetViewInfo implements Serializa
      */
     private String targetDsId;
 
+    private String matchMode;
+
+    public String getMatchMode() {
+        return matchMode;
+    }
+
+    public void setMatchMode(String matchMode) {
+        this.matchMode = matchMode;
+    }
+
     public String getTargetId() {
         return targetId;
     }

@@ -2870,6 +2870,9 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
+    outer_params_type: '类型',
+    outer_params_type_self: '赋值',
+    outer_params_type_filter: '过滤',
     number_formatter: '数字内容格式',
     jump_dialog_background: '弹框背景色',
     jump_dialog_button: '弹框字体色',
