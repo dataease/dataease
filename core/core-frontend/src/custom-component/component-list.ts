@@ -223,7 +223,7 @@ export const COMMON_COMPONENT_BACKGROUND_MAP = {
 
 export const COMMON_TAB_TITLE_BACKGROUND = {
   enable: false, // 是否启用tab标题背景
-  multiply: true, // 激活状态与非激活状态背景是否复用
+  multiply: false, // 激活状态与非激活状态背景是否复用
   active: COMMON_COMPONENT_BACKGROUND_LIGHT,
   inActive: COMMON_COMPONENT_BACKGROUND_LIGHT
 }
