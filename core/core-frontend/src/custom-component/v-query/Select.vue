@@ -58,6 +58,7 @@ interface SelectConfig {
     label: string
     value: string
   }[]
+  optionFilter: []
 }
 
 const { t } = useI18n()
@@ -76,7 +77,8 @@ const props = defineProps({
         defaultValueCheck: false,
         optionValueSource: 0,
         multiple: false,
-        checkedFieldsMap: {}
+        checkedFieldsMap: {},
+        optionFilter: []
       }
     }
   },
@@ -271,7 +273,16 @@ const handleFieldIdDefaultChange = (val: string[]) => {
   })
     .then(res => {
       options.value = (res || [])
-        .filter(ele => ele !== null)
+        .filter(ele => {
+          return (
+            ele !== null &&
+            ((config.value.optionFilter &&
+              config.value.optionFilter.length > 0 &&
+              config.value.optionFilter.includes(ele)) ||
+              !config.value.optionFilter ||
+              config.value.optionFilter.length === 0)
+          )
+        })
         .map(ele => {
           return {
             label: `${ele}`,

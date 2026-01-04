@@ -2945,6 +2945,9 @@ export default {
     column_name: 'Field name'
   },
   visualization: {
+    outer_params_type: 'Type',
+    outer_params_type_self: 'Assignment',
+    outer_params_type_filter: 'Filter',
     number_formatter: 'Number Content Format',
     jump_dialog_background: 'Dialog Background Color',
     jump_dialog_button: 'Dialog Font Color',

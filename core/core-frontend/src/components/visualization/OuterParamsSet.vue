@@ -89,7 +89,8 @@
                       </el-icon>
                     </div>
                   </div>
-                  <div style="flex: 1">{{ t('visualization.filter_component') }}</div>
+                  <div style="width: 120px">{{ t('visualization.filter_component') }}</div>
+                  <div style="width: 160px">{{ t('visualization.outer_params_type') }}</div>
                   <div style="flex: 1">{{ t('visualization.connection_condition') }}</div>
                 </div>
                 <div class="outer-filter-content">
@@ -101,11 +102,30 @@
                     :key="index"
                   >
                     <div style="width: 16px"></div>
-                    <div style="flex: 1; line-height: 32px">
+                    <div style="width: 120px; line-height: 32px">
                       <Icon name="filter-params"
                         ><filterParams style="margin-top: 4px" class="svg-icon view-type-icon"
                       /></Icon>
                       <span>{{ findFilterName(baseFilter.id) }}</span>
+                    </div>
+                    <div style="width: 152px; margin-right: 12px">
+                      <el-select
+                        v-model="baseFilter.matchMode"
+                        filterable
+                        style="width: 100%"
+                        :placeholder="t('v_query.select_query_condition')"
+                        clearable
+                      >
+                        <el-option
+                          :label="t('visualization.outer_params_type_self')"
+                          value="self"
+                        ></el-option>
+                        <el-option
+                          :label="t('visualization.outer_params_type_filter')"
+                          value="filter"
+                        >
+                        </el-option>
+                      </el-select>
                     </div>
                     <div style="flex: 1">
                       <el-select
@@ -567,9 +587,11 @@ const datasetInfoChange = datasetInfo => {
 
 const paramsCheckedAdaptor = (outerParamsInfo, newBaseFilterInfo, newBaseDatasetInfo) => {
   const dsFieldIdSelected = {}
+  const dsFilterMatchMode = {}
   const viewMatchIds = []
   outerParamsInfo.targetViewInfoList.forEach(targetViewInfo => {
     viewMatchIds.push(targetViewInfo.targetViewId)
+    dsFilterMatchMode[targetViewInfo.targetDsId] = targetViewInfo.matchMode || 'self'
     dsFieldIdSelected[targetViewInfo.targetDsId] =
       targetViewInfo.targetFieldId === 'empty'
         ? targetViewInfo.targetViewId
@@ -601,6 +623,7 @@ const paramsCheckedAdaptor = (outerParamsInfo, newBaseFilterInfo, newBaseDataset
   if (newBaseFilterInfo) {
     newBaseFilterInfo.forEach(filterInfo => {
       filterInfo['filterSelected'] = dsFieldIdSelected[filterInfo.id]
+      filterInfo['matchMode'] = dsFilterMatchMode[filterInfo.id] || 'self'
     })
   }
   outerParamsInfo['filterInfo'] = newBaseFilterInfo
@@ -642,6 +665,7 @@ const save = () => {
         outerParamsInfo.targetViewInfoList.push({
           targetViewId: baseFilterInfo.filterSelected,
           targetDsId: baseFilterInfo.id,
+          matchMode: baseFilterInfo.matchMode,
           targetFieldId: 'empty'
         })
       }

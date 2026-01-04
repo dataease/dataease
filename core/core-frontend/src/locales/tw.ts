@@ -2864,6 +2864,9 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    outer_params_type: '類型',
+    outer_params_type_self: '賦值',
+    outer_params_type_filter: '過濾',
     number_formatter: '數字內容格式',
     jump_dialog_background: '彈框背景色',
     jump_dialog_button: '彈框字體色',

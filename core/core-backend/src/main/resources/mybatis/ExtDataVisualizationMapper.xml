@@ -816,7 +816,8 @@
          	`target_field_id`,
          	`copy_from`,
          	`copy_id`,
-         	`target_ds_id`
+         	`target_ds_id`,
+         	`match_mode`
          ) SELECT
          voptvi.`target_id`,
          voptvi.`params_info_id`,
@@ -824,7 +825,8 @@
          voptvi.`target_field_id`,
          voptvi.`copy_from`,
          voptvi.`copy_id`,
-         voptvi.`target_ds_id`
+         voptvi.`target_ds_id`,
+         voptvi.`match_mode`
          FROM
          	visualization_outer_params_target_view_info voptvi
          	LEFT JOIN visualization_outer_params_info vopi ON vopi.params_info_id = voptvi.params_info_id
@@ -1181,7 +1183,8 @@
          	`target_field_id`,
          	`copy_from`,
          	`copy_id`,
-         	`target_ds_id`
+         	`target_ds_id`,
+         	`match_mode`
          ) SELECT
          voptvi.`target_id`,
          voptvi.`params_info_id`,
@@ -1189,7 +1192,8 @@
          voptvi.`target_field_id`,
          voptvi.`copy_from`,
          voptvi.`copy_id`,
-         voptvi.`target_ds_id`
+         voptvi.`target_ds_id`,
+         voptvi.`match_mode`
          FROM
          	snapshot_visualization_outer_params_target_view_info voptvi
          	LEFT JOIN snapshot_visualization_outer_params_info vopi ON vopi.params_info_id = voptvi.params_info_id
