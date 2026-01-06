@@ -1258,8 +1258,17 @@ export function configL7Zoom(
     scene.removeControl(zoomOption)
   }
   if (shouldHideZoom(basicStyle)) {
+    // 当地图未加载完成时，无法配置控制项，需要监听loaded事件
+    if (!scene.loaded) {
+      scene.once('loaded', () => {
+        updateMapStatusOption(mapKey.mapType, scene, false)
+      })
+    } else {
+      updateMapStatusOption(mapKey.mapType, scene, false)
+    }
     return
   }
+  updateMapStatusOption(mapKey.mapType, scene, true)
   if (!scene?.getControlByName('zoom')) {
     if (!scene.map) {
       scene.once('loaded', () => {
@@ -2476,5 +2485,49 @@ export const configRoundAngle = (chart: Chart, styleName: string, callBack?: (da
     [styleName]: datum => {
       return { ...(callBack ? callBack(datum) : {}) }
     }
+  }
+}
+
+/**
+ * 更新地图交互配置
+ * @param mapType
+ * @param scene
+ * @param enable
+ */
+function updateMapStatusOption(mapType: string, scene: Scene, enable = false) {
+  switch (mapType) {
+    case 'tianditu':
+      if (enable) {
+        scene.map?.enableDrag()
+        scene.map?.enableScrollWheelZoom()
+        scene.map?.enableDoubleClickZoom()
+        scene.map?.enableKeyboard()
+        scene.map?.enablePinchToZoom()
+      } else {
+        scene.map?.disableDrag()
+        scene.map?.disableScrollWheelZoom()
+        scene.map?.disableDoubleClickZoom()
+        scene.map?.disableKeyboard()
+        scene.map?.disablePinchToZoom()
+      }
+      break
+    case 'qq':
+      scene.map?.setDraggable(enable)
+      scene.map?.setScrollable(enable)
+      scene.map?.setDoubleClickZoom(enable)
+      scene.map?.setTouchZoomable(enable)
+      scene.map?.setPitchable(enable)
+      scene.map?.setRotatable(enable)
+      break
+    default:
+      scene.map?.setStatus({
+        dragEnable: enable,
+        keyboardEnable: enable,
+        doubleClickZoom: enable,
+        rotateEnable: enable,
+        pitchEnable: enable,
+        scrollWheel: enable,
+        touchZoom: false
+      } as any)
   }
 }
