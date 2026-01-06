@@ -2870,6 +2870,10 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
+    outer_params_type_tips1:
+      "类型为过滤时仅对文本下拉、文本树、数字下拉，文本树的过滤格式多级之间使用'-de-' 隔离",
+    outer_params_type_tips2:
+      '["Level1","Level1-de-Level2_1","Level2-de-Level2_1","Level1-de-Level2_1-de-Level3_1","Level2"]',
     outer_params_type: '类型',
     outer_params_type_self: '赋值',
     outer_params_type_filter: '过滤',

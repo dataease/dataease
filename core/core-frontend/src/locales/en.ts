@@ -2945,6 +2945,10 @@ export default {
     column_name: 'Field name'
   },
   visualization: {
+    outer_params_type_tips1:
+      "When the type is 'filter', it only applies to text dropdown, text tree, and number dropdown. For text tree filtering format, separate multiple levels with '-de-'",
+    outer_params_type_tips2:
+      '["Level1","Level1-de-Level2_1","Level2-de-Level2_1","Level1-de-Level2_1-de-Level3_1","Level2"]',
     outer_params_type: 'Type',
     outer_params_type_self: 'Assignment',
     outer_params_type_filter: 'Filter',

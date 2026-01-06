@@ -39,6 +39,7 @@ interface SelectConfig {
   }
   defaultValueCheck: boolean
   multiple: boolean
+  optionFilter: []
 }
 
 const customStyle: any = inject('$custom-style-filter')
@@ -56,7 +57,8 @@ const props = defineProps({
         defaultValueCheck: false,
         multiple: false,
         checkedFieldsMap: {},
-        treeFieldList: []
+        treeFieldList: [],
+        optionFilter: []
       }
     }
   },
@@ -320,7 +322,7 @@ const getTreeOption = debounce(() => {
     filter: getCascadeFieldId()
   })
     .then(res => {
-      treeOptionList.value = dfs(res)
+      treeOptionList.value = filterTree(dfs(res), config.value.optionFilter)
       if (fromSelect) {
         fromTreeSelectConfirm.value = true
         if (multiple.value && Array.isArray(treeValue.value) && treeValue.value.length) {
@@ -393,6 +395,37 @@ const tagColor = computed(() => {
     .mix(new colorTree('ffffff'), new colorTree(hexColor.substr(1)), { value: 20 })
     .toRGB()
 })
+
+const filterTree = (treeData, filterIds) => {
+  if (!filterIds || filterIds.length === 0) {
+    return treeData
+  }
+  const filterIdSet = new Set(filterIds)
+  // 递归处理每个节点
+  const recursionFilter = node => {
+    const newNode = { ...node }
+
+    // 2. 处理子节点：有子节点才过滤，无子节点直接返回当前节点
+    if (newNode.children && Array.isArray(newNode.children) && newNode.children.length > 0) {
+      // 筛选出当前节点的子节点中，id在过滤清单里的「命中子节点」
+      const hitChildren = newNode.children.filter(child => filterIdSet.has(child.id))
+
+      if (hitChildren.length > 0) {
+        // 规则1：当前层级有命中的子节点 → 只保留命中的，递归过滤其子节点
+        newNode.children = hitChildren.map(child => recursionFilter(child))
+      } else {
+        // 规则2：当前层级无命中的子节点 → 完整保留所有子节点，子节点也不做过滤
+        newNode.children = [...newNode.children]
+      }
+    }
+    return newNode
+  }
+
+  // 根节点过滤：只保留根节点id在过滤清单中的节点，再递归处理子节点
+  return treeData
+    .filter(rootNode => filterIdSet.has(rootNode.id))
+    .map(node => recursionFilter(node))
+}
 </script>
 
 <template>

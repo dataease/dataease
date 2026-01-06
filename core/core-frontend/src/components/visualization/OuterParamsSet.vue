@@ -90,7 +90,22 @@
                     </div>
                   </div>
                   <div style="width: 120px">{{ t('visualization.filter_component') }}</div>
-                  <div style="width: 160px">{{ t('visualization.outer_params_type') }}</div>
+                  <div style="width: 160px">
+                    {{ t('visualization.outer_params_type') }}
+                    <el-tooltip class="item" placement="bottom">
+                      <template #content>
+                        <div>
+                          {{ t('visualization.outer_params_type_tips1') }} <br />
+                          {{ t('visualization.outer_params_type_tips2') }}
+                        </div>
+                      </template>
+                      <el-icon class="hint-icon-type" style="display: inline-block">
+                        <Icon name="icon_info_outlined"
+                          ><icon_info_outlined class="svg-icon"
+                        /></Icon>
+                      </el-icon>
+                    </el-tooltip>
+                  </div>
                   <div style="flex: 1">{{ t('visualization.connection_condition') }}</div>
                 </div>
                 <div class="outer-filter-content">
@@ -377,6 +392,7 @@ const { t } = useI18n()
 const curEditDataId = ref(null)
 const snapshotStore = snapshotStoreWithOut()
 import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
+import dvInfoSvg from '@/assets/svg/dv-info.svg'
 
 const state = reactive({
   filterExpand: true,
@@ -1152,6 +1168,13 @@ defineExpose({
   height: 10px;
   margin-bottom: 12px;
   margin-right: -80px;
+}
+
+.hint-icon-type {
+  cursor: pointer;
+  font-size: 14px;
+  color: #646a73;
+  display: inline-block;
 }
 
 .hint-icon {

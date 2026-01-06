@@ -2864,6 +2864,10 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    outer_params_type_tips1:
+      "類型為過濾時僅對文字下拉、文字樹、數字下拉有效。文字樹的過濾格式中，多級之間使用 '-de-' 分隔",
+    outer_params_type_tips2:
+      '["Level1","Level1-de-Level2_1","Level2-de-Level2_1","Level1-de-Level2_1-de-Level3_1","Level2"]',
     outer_params_type: '類型',
     outer_params_type_self: '賦值',
     outer_params_type_filter: '過濾',
