@@ -502,9 +502,19 @@ const jumpClick = param => {
           curFilter.filter.forEach(filterItem => {
             targetViewInfoList.forEach(targetViewInfo => {
               if (targetViewInfo.sourceFieldActiveId === filterItem.filterId) {
-                filterOuterParams[targetViewInfo.outerParamsName] = {
-                  operator: filterItem.operator,
-                  value: filterItem.value
+                const outerFilterItem = filterOuterParams[targetViewInfo.outerParamsName]
+                if (outerFilterItem) {
+                  // 当前已经存在 根据arrayType 放置位置
+                  if (filterItem['arrayType'] === 'END') {
+                    outerFilterItem.value[outerFilterItem.value.length - 1] = filterItem.value[0]
+                  } else {
+                    outerFilterItem.value[0] = filterItem.value[0]
+                  }
+                } else {
+                  filterOuterParams[targetViewInfo.outerParamsName] = {
+                    operator: filterItem.operator,
+                    value: filterItem.value
+                  }
                 }
               }
             })

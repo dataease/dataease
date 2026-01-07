@@ -516,8 +516,10 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
                   item.parametersArr[curComponentId].filter(e => e.id === endTimeFieldId)
                 )
                 filter.push({
+                  filterId: id,
                   componentId: ele.id,
                   fieldId: endTimeFieldId,
+                  arrayType: 'END',
                   operator,
                   value: resultEnd,
                   parameters: parametersFilterEnd,
@@ -547,8 +549,10 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
                   item.parametersArr[curComponentId].filter(e => e.id === endTimeFieldId)
                 )
                 filter.push({
+                  filterId: id,
                   componentId: ele.id,
                   fieldId: endTimeFieldId,
+                  arrayType: 'END',
                   operator,
                   value: resultEnd,
                   parameters: parametersFilterEnd,
