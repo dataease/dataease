@@ -813,7 +813,7 @@ export function mappingColor(value, defaultColor, field, type, filedValueMap?, r
     } else {
       const fc = field.conditions[i]
       if (fc.term === 'null') {
-        if (value === null && value === undefined && value === '') {
+        if (value === null || value === undefined || value === '') {
           color = fc[type]
           flag = true
         }

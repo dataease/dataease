@@ -268,11 +268,11 @@ export class TablePivot extends S2ChartView<PivotSheet> {
     // 默认展开层级
     if (basicStyle.tableLayoutMode === 'tree') {
       const { defaultExpandLevel } = basicStyle
-      if (isNumber(defaultExpandLevel)) {
-        if (defaultExpandLevel >= chart.xAxis.length) {
-          s2Options.style.rowExpandDepth = defaultExpandLevel
+      if (isNumeric(defaultExpandLevel)) {
+        if ((defaultExpandLevel as number) >= chart.xAxis.length) {
+          s2Options.style.rowExpandDepth = defaultExpandLevel as number
         } else {
-          s2Options.style.rowExpandDepth = defaultExpandLevel - 2
+          s2Options.style.rowExpandDepth = (defaultExpandLevel as number) - 2
         }
       }
       if (defaultExpandLevel === 'all') {
