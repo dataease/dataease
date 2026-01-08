@@ -168,7 +168,7 @@ export const useAppearanceStore = defineStore('appearanceStore', {
     setCurrentFont(name) {
       const currentFont = this.fontList.find(ele => ele.name === name)
       if (currentFont) {
-        let fontStyleElement = document.querySelector(`#de-custom_font${name}`)
+        let fontStyleElement = document.querySelector(`[id="de-custom_font${name}"]`)
         if (!fontStyleElement) {
           fontStyleElement = document.createElement('style')
           fontStyleElement.setAttribute('id', `de-custom_font${name}`)
