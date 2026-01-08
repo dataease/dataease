@@ -54,6 +54,7 @@
       <OnlineMapTdt
         v-if="!mapLoading && mapLoaded && mapEditor.key && mapEditor.mapType === 'tianditu'"
         :map-key="mapEditor.key"
+        :security-code="mapEditor.securityCode"
       />
       <OnlineMapQQ
         v-if="!mapLoading && mapLoaded && mapEditor.key && mapEditor.mapType === 'qq'"

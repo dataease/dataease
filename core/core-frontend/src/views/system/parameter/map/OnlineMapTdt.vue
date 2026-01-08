@@ -24,7 +24,8 @@ const loadMap = () => {
     return
   }
   const mykey = props.mapKey
-  const url = `https://api.tianditu.gov.cn/api?v=4.0&tk=${mykey}`
+  const securityCode = props.securityCode ? '&sk=' + props.securityCode : ''
+  const url = `https://api.tianditu.gov.cn/api?v=4.0&tk=${mykey}${securityCode}`
 
   loadScript(url)
     .then(() => {
