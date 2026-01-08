@@ -98,7 +98,25 @@ const defaultStyle = {
 }
 const customStyle = reactive({ ...defaultStyle })
 const snapshotStore = snapshotStoreWithOut()
+let instanceElMessage = null
+let closeTime = null
 
+const closeElMessage = requiredName => {
+  if (instanceElMessage) {
+    instanceElMessage.close()
+  }
+  instanceElMessage = ElMessage({
+    message: `【${requiredName}】${t('v_query.before_querying')}`,
+    type: 'error'
+  })
+
+  if (closeTime) {
+    clearTimeout(closeTime)
+  }
+  closeTime = setTimeout(() => {
+    instanceElMessage.close()
+  }, 2000)
+}
 const btnStyle = computed(() => {
   const style = {
     color: customStyle.labelColorBtn
@@ -458,7 +476,7 @@ const queryDataForId = id => {
       return pre
     }, [])
   if (!!requiredName) {
-    ElMessage.error(`【${requiredName}】${t('v_query.before_querying')}`)
+    closeElMessage(requiredName)
     return
   }
   if (!!numName) {
@@ -528,7 +546,7 @@ const isConfirmSearchNoRequiredName = id => {
       return pre
     }, [])
   if (!!requiredName) {
-    ElMessage.error(`【${requiredName}】${t('v_query.before_querying')}`)
+    closeElMessage(requiredName)
     return
   }
   if (!!numName) {
@@ -552,6 +570,12 @@ provide('cascade-list', getCascadeList)
 provide('placeholder', getPlaceholder)
 
 onBeforeUnmount(() => {
+  if (instanceElMessage) {
+    instanceElMessage.close()
+  }
+  if (closeTime) {
+    clearTimeout(closeTime)
+  }
   emitter.off(`addQueryCriteria${element.value.id}`)
   emitter.off(`editQueryCriteria${element.value.id}`)
   emitter.off(`updateQueryCriteria${element.value.id}`)
@@ -834,7 +858,7 @@ const queryData = () => {
     return pre
   }, [])
   if (!!requiredName) {
-    ElMessage.error(`【${requiredName}】${t('v_query.before_querying')}`)
+    closeElMessage(requiredName)
     return
   }
 
