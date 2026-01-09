@@ -130,6 +130,7 @@
                         style="width: 100%"
                         :placeholder="t('v_query.select_query_condition')"
                         clearable
+                        @change="matchModeChange(baseFilter)"
                       >
                         <el-option
                           :label="t('visualization.outer_params_type_self')"
@@ -155,6 +156,11 @@
                           :key="item.id"
                           :label="item.name"
                           :value="item.id"
+                          :disabled="
+                            baseFilter.matchMode === 'filter'
+                              ? !['0', '9', '2'].includes(item.displayType + '')
+                              : false
+                          "
                         >
                           <span style="font-size: 12px"> {{ item.name }}</span>
                         </el-option>
@@ -464,6 +470,15 @@ const state = reactive({
     numberRangeWidget: t('visualization.number_range_widget')
   }
 })
+
+const matchModeChange = baseFilter => {
+  if (
+    baseFilter.matchMode === 'filter' &&
+    !['0', '9', '2'].includes(baseFilter.filterSelected + '')
+  ) {
+    baseFilter.filterSelected = undefined
+  }
+}
 
 const argRefs = ref({})
 
