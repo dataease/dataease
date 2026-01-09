@@ -339,13 +339,23 @@ const handleFieldIdChange = (val: EnumValue) => {
             return `${ele[val.displayId || val.queryId]}`
           })
         )
-      ].map(ele => {
-        return {
-          label: `${ele}`,
-          value: `${ele}`,
-          checked: oldArr.includes(ele)
-        }
-      })
+      ]
+        .filter(ele => {
+          return (
+            (config.value.optionFilter &&
+              config.value.optionFilter.length > 0 &&
+              config.value.optionFilter.includes(ele)) ||
+            !config.value.optionFilter ||
+            config.value.optionFilter.length === 0
+          )
+        })
+        .map(ele => {
+          return {
+            label: `${ele}`,
+            value: `${ele}`,
+            checked: oldArr.includes(ele)
+          }
+        })
       customSort()
       if (!res?.length) {
         options.value = []
