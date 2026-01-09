@@ -1117,7 +1117,14 @@ export const dvMainStore = defineStore('dataVisualization', {
             targetInfo.defaultValue.length > 0
           ) {
             // 非必填时 用户没有填写参数 但是启用默认值且有预设默认值时
-            params[key] = JSON.parse(targetInfo.defaultValue)
+            if (paramsVersion === 'v2') {
+              params[key] = {
+                operator: 'in',
+                value: JSON.parse(targetInfo.defaultValue)
+              }
+            } else {
+              params[key] = JSON.parse(targetInfo.defaultValue)
+            }
           } else if (!userParamsIsNull) {
             params[key] = paramsPre[key]
           }
