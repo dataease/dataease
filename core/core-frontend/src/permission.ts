@@ -12,6 +12,7 @@ import { isMobile, checkPlatform, isLarkPlatform, isPlatformClient } from '@/uti
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { useEmbedded } from '@/store/modules/embedded'
+import { useLoading } from '@/hooks/web/useLoading'
 const appearanceStore = useAppearanceStoreWithOut()
 const { wsCache } = useCache()
 const permissionStore = usePermissionStoreWithOut()
@@ -20,13 +21,16 @@ const userStore = useUserStoreWithOut()
 const appStore = useAppStoreWithOut()
 
 const { start, done } = useNProgress()
-
+const { open } = useLoading()
 const { loadStart, loadDone } = usePageLoading()
 
 const whiteList = ['/login', '/de-link', '/chart-view', '/admin-login', '/401'] // 不重定向白名单
 const embeddedWindowWhiteList = ['/dvCanvas', '/dashboard', '/preview', '/dataset-embedded-form']
 const embeddedRouteWhiteList = ['/dataset-embedded', '/dataset-form', '/dataset-embedded-form']
 router.beforeEach(async (to, from, next) => {
+  if (['/chart-view'].includes(to.path) || to.path.startsWith('/de-link/')) {
+    open()
+  }
   start()
   loadStart()
   const platform = checkPlatform()
