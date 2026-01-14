@@ -5,12 +5,15 @@ import {
   ref,
   onBeforeUnmount,
   onBeforeMount,
+  onMounted,
   nextTick
 } from 'vue'
 import { debounce } from 'lodash-es'
 import { XpackComponent } from '@/components/plugin'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { useLoading } from '@/hooks/web/useLoading'
 
+const { close } = useLoading()
 const currentComponent = shallowRef()
 const Preview = defineAsyncComponent(() => import('@/views/data-visualization/PreviewCanvas.vue'))
 const VisualizationEditor = defineAsyncComponent(
@@ -55,7 +58,9 @@ onBeforeMount(() => {
   window.addEventListener('resize', setStyle)
   setStyle()
 })
-
+onMounted(() => {
+  close()
+})
 onBeforeUnmount(() => {
   window.removeEventListener('resize', setStyle)
 })
