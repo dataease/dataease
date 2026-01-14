@@ -34,6 +34,7 @@ import { onMounted, nextTick, ref, reactive, onBeforeUnmount } from 'vue'
 import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import PreviewCanvas from '@/views/data-visualization/PreviewCanvas.vue'
+import { useLoading } from '@/hooks/web/useLoading'
 import { ProxyInfo, shareProxy } from './ShareProxy'
 import PwdTips from './pwd.vue'
 import ErrorTemplate from './ErrorTemplate.vue'
@@ -52,6 +53,7 @@ const linkExist = ref(false)
 const loading = ref(true)
 const linkExp = ref(false)
 const pwdValid = ref(false)
+const { close } = useLoading()
 const { t } = useI18n()
 const state = reactive({
   ticketValidVO: {
@@ -61,6 +63,7 @@ const state = reactive({
   }
 })
 onMounted(async () => {
+  close()
   const proxyInfo = (await shareProxy.loadProxy()) as ProxyInfo
   if (proxyInfo?.shareDisable) {
     loading.value = false
