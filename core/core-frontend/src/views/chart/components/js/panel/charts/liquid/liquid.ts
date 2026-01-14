@@ -28,7 +28,7 @@ export class Liquid extends G2PlotChartView<LiquidOptions, G2Liquid> {
     'background-overall-component': ['all'],
     'border-style': ['all'],
     'basic-style-selector': ['colors', 'alpha'],
-    'label-selector': ['fontSize', 'color', 'labelFormatter'],
+    'label-selector': ['fontSize', 'color', 'showQuota', 'showProportion'],
     'misc-selector': [
       'liquidShape',
       'liquidSize',
@@ -171,21 +171,37 @@ export class Liquid extends G2PlotChartView<LiquidOptions, G2Liquid> {
       }
     }
     const label = customAttr.label
-    const labelFormatter = label.labelFormatter
+    const style = {
+      fontSize: label.fontSize.toString() + 'px',
+      color: label.color,
+      lineHeight: '"unset"',
+      overflow: 'visible'
+    }
+    const title = label.showQuota
+      ? {
+          style: {
+            ...style,
+            fontWeight: 'blod'
+          },
+          formatter: () => {
+            return valueFormatter(chart.data.series[0].data[0], label.quotaLabelFormatter)
+          }
+        }
+      : false
+    const content = label.showProportion
+      ? {
+          style,
+          formatter: () => {
+            return (originVal * 100).toFixed(label.reserveDecimalCount) + '%'
+          }
+        }
+      : false
+
     return {
       ...options,
       statistic: {
-        content: {
-          style: {
-            fontSize: label.fontSize.toString() + 'px',
-            color: label.color,
-            lineHeight: '"unset"',
-            overflow: 'visible'
-          },
-          formatter: () => {
-            return valueFormatter(originVal, labelFormatter)
-          }
-        }
+        title,
+        content
       }
     }
   }
