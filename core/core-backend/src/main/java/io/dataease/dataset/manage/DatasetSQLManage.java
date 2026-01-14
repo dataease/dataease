@@ -124,10 +124,10 @@ public class DatasetSQLManage {
     }
 
     public Map<String, Object> getUnionSQLForEdit(DatasetGroupInfoDTO dataTableInfoDTO, ChartExtRequest chartExtRequest) throws Exception {
-        return getUnionSQLForEdit(dataTableInfoDTO, chartExtRequest, null);
+        return getUnionSQLForEdit(dataTableInfoDTO, chartExtRequest, null, chartExtRequest == null);
     }
 
-    public Map<String, Object> getUnionSQLForEdit(DatasetGroupInfoDTO dataTableInfoDTO, ChartExtRequest chartExtRequest, CoreDatasource coreDatasource) throws Exception {
+    public Map<String, Object> getUnionSQLForEdit(DatasetGroupInfoDTO dataTableInfoDTO, ChartExtRequest chartExtRequest, CoreDatasource coreDatasource, boolean isFromDataSet) throws Exception {
         Map<Long, DatasourceSchemaDTO> dsMap = new LinkedHashMap<>();
         List<UnionDTO> union = dataTableInfoDTO.getUnion();
         // 所有选中的字段，即select后的查询字段
@@ -152,7 +152,7 @@ public class DatasetSQLManage {
             } else {
                 schema = putObj2Map(dsMap, datasetTable, isCross, coreDatasource);
             }
-            SQLObj table = getUnionTable(datasetTable, tableInfo, schema, i, filterParameters(chartExtRequest, currentDs.getId()), chartExtRequest == null, isCross, dsMap);
+            SQLObj table = getUnionTable(datasetTable, tableInfo, schema, i, filterParameters(chartExtRequest, currentDs.getId()), isFromDataSet, isCross, dsMap);
             if (i == 0) {
                 tableName = table;
             }

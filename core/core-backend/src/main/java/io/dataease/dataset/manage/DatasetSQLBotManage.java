@@ -358,7 +358,7 @@ public class DatasetSQLBotManage {
             coreDatasource = BeanUtils.mapToBean(dsRowData, CoreDatasource.class);
         }
         try {
-            sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, null, coreDatasource);
+            sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, null, coreDatasource, true);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

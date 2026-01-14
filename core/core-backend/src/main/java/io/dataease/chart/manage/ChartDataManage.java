@@ -709,7 +709,7 @@ public class ChartDataManage {
         }
 
         // 获取dsMap,union sql
-        Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(table, null);
+        Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(table, null, null, false);
         String sql = (String) sqlMap.get("sql");
         Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
         List<String> dsList = new ArrayList<>();
@@ -781,7 +781,7 @@ public class ChartDataManage {
 
             querySql = provider.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
             datasourceRequest.setQuery(querySql);
-            logger.debug("calcite chart get field enum sql: " + querySql);
+            logger.debug("calcite chart get field enum sql: {}", querySql);
 
             data = (List<String[]>) provider.fetchResultField(datasourceRequest).get("data");
         }
