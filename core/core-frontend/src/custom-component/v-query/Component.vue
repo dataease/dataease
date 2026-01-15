@@ -980,7 +980,9 @@ const autoStyle = computed(() => {
               </div>
               <div
                 class="label-wrapper-tooltip"
-                v-if="showPosition !== 'preview' && !dvMainStore.mobileInPc"
+                v-if="
+                  !['preview', 'edit-preview'].includes(showPosition) && !dvMainStore.mobileInPc
+                "
               >
                 <el-tooltip
                   effect="dark"
