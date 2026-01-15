@@ -514,13 +514,13 @@ public class ExportCenterDownLoadManage {
                             ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), wb);
                             sheetIndex++;
                             details.clear();
-                            exportTask.setExportStatus("IN_PROGRESS");
-                            double exportProgress = (double) (i / (chartViewDTO.getTotalPage() + 1));
-                            DecimalFormat df = new DecimalFormat("#.##");
-                            String formattedResult = df.format((exportProgress) * 100);
-                            exportTask.setExportProgress(formattedResult);
-                            exportTaskMapper.updateById(exportTask);
                         }
+                        exportTask.setExportStatus("IN_PROGRESS");
+                        double exportProgress = (double) (i / (chartViewDTO.getTotalPage() + 1));
+                        DecimalFormat df = new DecimalFormat("#.##");
+                        String formattedResult = df.format((exportProgress) * 100);
+                        exportTask.setExportProgress(formattedResult);
+                        exportTaskMapper.updateById(exportTask);
                     }
                 } else {
                     downloadNotTableInfoData(request, wb);
