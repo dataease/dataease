@@ -474,9 +474,13 @@ const state = reactive({
 const matchModeChange = baseFilter => {
   if (
     baseFilter.matchMode === 'filter' &&
-    !['0', '9', '2'].includes(baseFilter.filterSelected + '')
+    baseFilter.propValue &&
+    baseFilter.propValue.length > 0
   ) {
-    baseFilter.filterSelected = undefined
+    const matchedItem = baseFilter.propValue.find(item => item.id === baseFilter.filterSelected)
+    if (matchedItem && !['0', '9', '2'].includes(matchedItem.displayType.toString())) {
+      baseFilter.filterSelected = undefined
+    }
   }
 }
 
