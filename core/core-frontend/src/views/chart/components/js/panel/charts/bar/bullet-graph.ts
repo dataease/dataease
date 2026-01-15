@@ -394,9 +394,11 @@ export class BulletGraph extends G2PlotChartView<G2BulletOptions, G2Bullet> {
           }
         })
         const ranges = data.ranges
+        const rangeFormatterCfg =
+          formatterMap['ranges']?.formatterCfg ?? rangeFormatter?.formatterCfg
         ranges.forEach((range, index) => {
           const value = isDynamic
-            ? valueFormatter(parseFloat(data.minRanges[0]), rangeFormatter.formatterCfg)
+            ? valueFormatter(parseFloat(data.minRanges[0]), rangeFormatterCfg)
             : (range as string)
           let name = ''
           let color: string | string[]
