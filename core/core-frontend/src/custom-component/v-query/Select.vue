@@ -25,6 +25,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import colorFunctions from 'less/lib/less/functions/color.js'
 import colorTree from 'less/lib/less/tree/color.js'
 import { colorStringToHex } from '@/utils/color'
+import { isMobile } from '@/utils/utils'
 
 interface SelectConfig {
   selectValue: any
@@ -111,8 +112,7 @@ const placeholderText = computed(() => {
 })
 
 const isMobileDataV = computed(() => {
-  const { inMobile, dvInfo } = dvMainStore
-  return dvInfo.type === 'dataV' && inMobile
+  return dvMainStore.dvInfo.type === 'dataV' && isMobile()
 })
 
 const VanPopupSelect = defineAsyncComponent(() => import('./VanPopupSelect.vue'))

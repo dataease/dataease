@@ -97,10 +97,7 @@ onBeforeMount(async () => {
       curPreviewGap
     }) {
       if (!isPc.value) {
-        if (!dvInfo.mobileLayout) {
-          useEmitt().emitter.emit('changeCurrentComponent', 'DashboardEmpty')
-          return
-        } else {
+        if (dvInfo.mobileLayout) {
           dvMainStore.setMobileInPc(true)
           dvMainStore.setInMobile(true)
         }
