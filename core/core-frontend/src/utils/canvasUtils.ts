@@ -1112,3 +1112,29 @@ export function syncViewTitle(element) {
     }
   }
 }
+
+// 地图类图表，需要预先准备图片
+const mapChartTypes = ['bubble-map', 'flow-map', 'heat-map', 'map', 'symbolic-map']
+
+/**
+ * 获取画布中所有地图类图表的元素ID
+ * @param canvasDataPreview
+ */
+export function getMapElementIds(canvasDataPreview) {
+  const mapElementIds = []
+  canvasDataPreview.forEach(item => {
+    if (mapChartTypes.includes(item.innerType)) {
+      mapElementIds.push(item.id)
+    }
+    if (item.component === 'DeTabs') {
+      item.propValue?.forEach(tabItem => {
+        tabItem.componentData?.forEach(tabComponent => {
+          if (mapChartTypes.includes(tabComponent.innerType)) {
+            mapElementIds.push(tabComponent.id)
+          }
+        })
+      })
+    }
+  })
+  return mapElementIds
+}

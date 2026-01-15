@@ -8,7 +8,12 @@ import PreviewHead from '@/views/data-visualization/PreviewHead.vue'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { storeToRefs } from 'pinia'
 import { useAppStoreWithOut } from '@/store/modules/app'
-import { initCanvasData, initCanvasDataPrepare, onInitReady } from '@/utils/canvasUtils'
+import {
+  getMapElementIds,
+  initCanvasData,
+  initCanvasDataPrepare,
+  onInitReady
+} from '@/utils/canvasUtils'
 import { useMoveLine } from '@/hooks/web/useMoveLine'
 import { Icon } from '@/components/icon-custom'
 import { download2AppTemplate, downloadCanvas2 } from '@/utils/imgUtils'
@@ -119,14 +124,9 @@ const loadCanvasData = (dvId, weight?, ext?) => {
     }
   )
 }
-// 地图类图表，需要预先准备图片
-const mapChartTypes = ['bubble-map', 'flow-map', 'heat-map', 'map', 'symbolic-map']
 const download = type => {
   downloadStatus.value = true
-  const mapElementIds =
-    state.canvasDataPreview
-      ?.filter(ele => mapChartTypes.includes(ele.innerType))
-      .map(ele => ele.id) || []
+  const mapElementIds = getMapElementIds(state.canvasDataPreview)
   mapElementIds.forEach(id => useEmitt().emitter.emit('l7-prepare-picture', id))
   setTimeout(() => {
     const vueDom = previewCanvasContainer.value.querySelector('.canvas-container')
@@ -143,10 +143,7 @@ const download = type => {
 }
 const fileDownload = (downloadType, attachParams) => {
   downloadStatus.value = true
-  const mapElementIds =
-    state.canvasDataPreview
-      ?.filter(ele => mapChartTypes.includes(ele.innerType))
-      .map(ele => ele.id) || []
+  const mapElementIds = getMapElementIds(state.canvasDataPreview)
   mapElementIds.forEach(id => useEmitt().emitter.emit('l7-prepare-picture', id))
   nextTick(() => {
     const vueDom = previewCanvasContainer.value.querySelector('.canvas-container')
