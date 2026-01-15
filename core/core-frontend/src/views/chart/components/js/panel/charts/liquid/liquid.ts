@@ -175,14 +175,12 @@ export class Liquid extends G2PlotChartView<LiquidOptions, G2Liquid> {
       fontSize: label.fontSize.toString() + 'px',
       color: label.color,
       lineHeight: '"unset"',
-      overflow: 'visible'
+      overflow: 'visible',
+      opacity: 1
     }
     const title = label.showQuota
       ? {
-          style: {
-            ...style,
-            fontWeight: 'blod'
-          },
+          style,
           formatter: () => {
             return valueFormatter(chart.data.series[0].data[0], label.quotaLabelFormatter)
           }

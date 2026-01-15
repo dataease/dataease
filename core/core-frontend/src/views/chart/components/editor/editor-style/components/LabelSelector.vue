@@ -561,6 +561,7 @@ const isProgressBar = computed(() => {
             :predefine="COLOR_PANEL"
             @change="changeLabelAttr('color')"
             is-custom
+            show-alpha
           />
         </el-form-item>
         <el-form-item
