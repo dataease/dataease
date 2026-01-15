@@ -99,6 +99,8 @@ getExampleValue()
           v-model="formatterCfg.decimalCount"
           :effect="themes"
           size="small"
+          :step="1"
+          :precision="0"
           :min="0"
           :max="10"
           @change="onFormatChange"
