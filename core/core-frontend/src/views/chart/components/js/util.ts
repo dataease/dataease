@@ -932,6 +932,10 @@ export function getStackColor<O extends PickOptions = Options>(chart: Chart, opt
     const seriesSet = new Set()
     data?.forEach(d => d.category !== null && seriesSet.add(d.category))
     const tmp = [...seriesSet]
+    const values = options.meta?.category?.values
+    if (values?.length) {
+      tmp.sort((a, b) => values.indexOf(a) - values.indexOf(b))
+    }
     tmp.forEach((c, i) => {
       const curAxisColor = seriesMap[c as string]
       if (curAxisColor) {
