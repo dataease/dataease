@@ -172,6 +172,7 @@ getExampleValue()
         <el-input
           v-model="formatterCfg.suffix"
           :effect="themes"
+          maxlength="30"
           size="small"
           clearable
           :placeholder="t('commons.input_content')"

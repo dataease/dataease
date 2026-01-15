@@ -117,6 +117,7 @@ getExampleValue()
         <el-input
           v-model="formatterItem.formatterCfg.suffix"
           clearable
+          maxlength="30"
           :placeholder="t('commons.input_content')"
           @change="getExampleValue"
         />

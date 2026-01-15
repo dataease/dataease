@@ -1433,6 +1433,7 @@ const isProgressBar = computed(() => {
                     :effect="props.themes"
                     v-model="curSeriesFormatter.formatterCfg.suffix"
                     size="small"
+                    maxlength="30"
                     clearable
                     :placeholder="t('commons.input_content')"
                     @change="changeLabelAttr('seriesLabelFormatter')"

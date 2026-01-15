@@ -935,6 +935,7 @@ onMounted(() => {
                     :disabled="!curSeriesFormatter.show"
                     :effect="props.themes"
                     v-model="curSeriesFormatter.formatterCfg.suffix"
+                    maxlength="30"
                     size="small"
                     clearable
                     :placeholder="t('commons.input_content')"
