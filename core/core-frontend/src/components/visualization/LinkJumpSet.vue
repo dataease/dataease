@@ -744,7 +744,18 @@ const { wsCache } = useCache()
 
 const outerContentEditor = ref(null)
 
+const resetParams = () => {
+  state.linkJump = null
+  state.linkJumpInfoArray = []
+  state.linkJumpInfoXArray = []
+  state.linkJumpCurViewFieldArray = []
+  state.linkJumpCurFilterFieldArray = []
+  state.mapJumpInfoArray = {}
+  state.linkJumpInfo = null
+}
+
 const dialogInit = viewItem => {
+  resetParams()
   state.showSelected = false
   dialogShow.value = true
   state.initState = false
@@ -913,6 +924,9 @@ const save = () => {
     })
 }
 const nodeClick = data => {
+  if (!data) {
+    return
+  }
   state.linkJumpInfo = state.mapJumpInfoArray[data.sourceFieldId]
   if (!state.linkJumpInfo.windowSize) {
     state.linkJumpInfo.windowSize = 'middle'
