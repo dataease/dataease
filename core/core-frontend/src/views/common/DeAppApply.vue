@@ -200,7 +200,7 @@ import {
 } from 'element-plus-secondary'
 import { computed, PropType, reactive, ref, toRefs } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { queryTreeApi } from '@/api/visualization/dataVisualization'
+import { dvNameCheck, queryTreeApi } from '@/api/visualization/dataVisualization'
 import { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
 import { getDatasetTree } from '@/api/dataset'
 import DatasetSelect from '@/views/chart/components/editor/dataset-select/DatasetSelect.vue'
@@ -428,7 +428,7 @@ const saveApp = () => {
     ElMessage.error(t('visualization.app_no_dataset_tips'))
     return
   }
-  appSaveForm.value?.validate(valid => {
+  appSaveForm.value?.validate(async valid => {
     if (valid) {
       // 还原datasource
       appData.value['datasourceInfo'] = state.appData.datasourceInfo
@@ -439,7 +439,15 @@ const saveApp = () => {
       dvInfo.value['datasetFolderName'] = state.form.datasetFolderName
       dvInfo.value['dataType'] = state.form.dataType
       dvInfo.value['dataState'] = 'ready'
+      await dvNameCheck({
+        opt: 'newLeaf',
+        nodeType: 'leaf',
+        name: dvInfo.value['name'],
+        type: curCanvasType.value,
+        pid: dvInfo.value['pid']
+      })
       snapshotStore.recordSnapshotCache('renderChart')
+
       emits('saveAppCanvas')
     } else {
       return false
