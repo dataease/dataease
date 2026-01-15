@@ -61,7 +61,7 @@ router.beforeEach(async (to, from, next) => {
       if (toPath.includes('?')) {
         toPath = to.fullPath.substring(0, to.fullPath.lastIndexOf('?'))
       }
-      window.location.href = prefix + '/mobile.html#' + toPath + linkQuery
+      window.location.href = (prefix + '/mobile.html#' + toPath + linkQuery).replace(/\+/g, '%2B')
     } else if (
       wsCache.get('user.token') ||
       isDesktop ||
