@@ -2510,7 +2510,9 @@ export default {
     serial_no: 'Serial number',
     remark: 'Remark',
     back_community: 'Revert to Community Edition',
-    confirm_tips: 'Are you sure you want to restore to the community edition? '
+    confirm_tips: 'Are you sure you want to restore to the community edition? ',
+    set_of: '',
+    count_of: 'account'
   },
   cron: {
     second: 'Seconds',

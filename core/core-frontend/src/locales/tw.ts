@@ -2440,7 +2440,9 @@ export default {
     serial_no: '序號',
     remark: '備註',
     back_community: '還原至社區版',
-    confirm_tips: '确定還原至社區版？'
+    confirm_tips: '确定還原至社區版？',
+    set_of: '套',
+    count_of: '個賬號'
   },
   cron: {
     second: '秒',

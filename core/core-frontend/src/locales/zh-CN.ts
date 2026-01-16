@@ -2446,7 +2446,9 @@ export default {
     serial_no: '序列号',
     remark: '备注',
     back_community: '还原至社区版',
-    confirm_tips: '确定还原至社区版？'
+    confirm_tips: '确定还原至社区版？',
+    set_of: '套',
+    count_of: '个账号'
   },
   cron: {
     second: '秒',
