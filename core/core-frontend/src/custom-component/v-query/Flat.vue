@@ -7,6 +7,10 @@ const props = defineProps({
     type: Array,
     default: () => []
   },
+  disabled: {
+    type: Boolean,
+    default: false
+  },
   activeItems: {
     type: Array,
     default: () => []
@@ -40,12 +44,13 @@ const btnColor = computed(() => {
 
 const emits = defineEmits(['handleItemClick'])
 const handleItemClick = (item: any) => {
+  if (props.disabled) return
   emits('handleItemClick', item.value)
 }
 </script>
 
 <template>
-  <div :style="customSelectStyle" class="flat-select">
+  <div :style="customSelectStyle" class="flat-select" :class="disabled && 'disabled-flat'">
     <el-scrollbar>
       <div class="scrollbar-flex-content">
         <p
@@ -89,6 +94,15 @@ const handleItemClick = (item: any) => {
         left: 50%;
         transform: translateX(-50%);
         background-color: v-bind(btnColor) !important;
+      }
+    }
+  }
+
+  &.disabled-flat {
+    .select-item {
+      cursor: not-allowed;
+      &.active-select::after {
+        background-color: #eff0f1 !important;
       }
     }
   }
