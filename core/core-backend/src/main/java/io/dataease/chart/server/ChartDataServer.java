@@ -36,6 +36,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.RegionUtil;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -661,9 +662,9 @@ public class ChartDataServer implements ChartDataApi {
         }
     }
 
-    private static void createCell(TableHeader tableHeader, TableHeader.ColumnInfo column, Integer width, Integer depth, Sheet sheet, CellStyle cellStyle, Integer totaalDepth, Map<String, Row> rowMap, List<ChartViewFieldDTO> xAxis) {
+    private static void createCell(TableHeader tableHeader, TableHeader.ColumnInfo column, Integer width, Integer depth, Sheet sheet, CellStyle cellStyle, Integer totalDepth, Map<String, Row> rowMap, List<ChartViewFieldDTO> xAxis) {
         if (org.springframework.util.CollectionUtils.isEmpty(column.getChildren())) {
-            Integer toDepth = totaalDepth - 1 > depth ? totaalDepth - 1 : depth;
+            Integer toDepth = totalDepth - 1 > depth ? totalDepth - 1 : depth;
             if (depth.equals(toDepth)) {
                 Cell cell = rowMap.get("row" + depth).createCell(width);
                 cell.setCellStyle(cellStyle);
@@ -676,7 +677,10 @@ public class ChartDataServer implements ChartDataApi {
                 }
                 CellRangeAddress region = new CellRangeAddress(depth, toDepth, width, width);
                 sheet.addMergedRegion(region);
-
+                RegionUtil.setBorderTop(BorderStyle.THIN, region, sheet);
+                RegionUtil.setBorderRight(BorderStyle.THIN, region, sheet);
+                RegionUtil.setBorderBottom(BorderStyle.THIN, region, sheet);
+                RegionUtil.setBorderLeft(BorderStyle.THIN, region, sheet);
                 Cell mergedCell = rowMap.get("row" + depth).getCell(width);
                 mergedCell.setCellStyle(cellStyle);
 
@@ -690,11 +694,15 @@ public class ChartDataServer implements ChartDataApi {
             cell2.setCellStyle(cellStyle);
             CellRangeAddress region = new CellRangeAddress(depth, depth, width, width + column.getWidth() - 1);
             sheet.addMergedRegion(region);
+            RegionUtil.setBorderTop(BorderStyle.THIN, region, sheet);
+            RegionUtil.setBorderRight(BorderStyle.THIN, region, sheet);
+            RegionUtil.setBorderBottom(BorderStyle.THIN, region, sheet);
+            RegionUtil.setBorderLeft(BorderStyle.THIN, region, sheet);
             Cell mergedCell = rowMap.get("row" + depth).getCell(width);
             mergedCell.setCellStyle(cellStyle);
             int subWith = width;
             for (TableHeader.ColumnInfo child : column.getChildren()) {
-                createCell(tableHeader, child, subWith, depth + 1, sheet, cellStyle, totaalDepth, rowMap, xAxis);
+                createCell(tableHeader, child, subWith, depth + 1, sheet, cellStyle, totalDepth, rowMap, xAxis);
                 subWith = subWith + child.getWidth();
             }
         }
