@@ -25,7 +25,11 @@ import { viewFieldTimeTrans } from '@/utils/viewUtils'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
-import { filterEnumParams, filterEnumParamsReduce } from '@/utils/componentUtils'
+import {
+  filterEnumParams,
+  filterEnumParamsReduce,
+  filterParamsOptions
+} from '@/utils/componentUtils'
 import { formatterItem } from '@/views/chart/components/js/formatter'
 const { t } = useI18n()
 
@@ -1276,6 +1280,18 @@ export const dvMainStore = defineStore('dataVisualization', {
                 if (targetMatchMode === 'filter') {
                   // do filter
                   filterItem['optionFilter'] = queryParams
+                  if (filterItem.defaultValueCheck) {
+                    const result = filterParamsOptions(
+                      deepCopy(filterItem['selectValue']),
+                      deepCopy(queryParams)
+                    )
+                    if (result) {
+                      filterItem['selectValue'] = queryParams
+                      filterItem['defaultValue'] = queryParams
+                    } else {
+                      filterItem.defaultValueCheck = false
+                    }
+                  }
                 } else {
                   if (!['1', '7'].includes(filterItem.displayType)) {
                     // 查询组件除了时间组件 其他入参只支持文本 这里全部转为文本
