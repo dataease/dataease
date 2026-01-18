@@ -287,6 +287,13 @@ function load_de_images() {
 
 function set_de_service() {
    log_title "配置 DataEase 服务"
+
+   # 判断是否为wsl
+   local is_wsl= false
+   if grep -qE "(Microsoft|microsoft|WLS)" /proc/version; then
+      is_wsl=true
+   fi
+
    if [[ -f /etc/init.d/dataease ]];then
       if which chkconfig >/dev/null 2>&1;then
          chkconfig dataease >/dev/null
@@ -300,6 +307,12 @@ function set_de_service() {
    if [[ ! -f /etc/systemd/system/dataease.service ]];then
       log_content "配置 dataease Service"
       cp ${DE_RUN_BASE}/bin/dataease/dataease.service /etc/systemd/system/
+      #--- 如果是 WSL，则移除 service 文件中对 docker 的依赖 ---
+      if [ "$is_wsl" = true ]; then
+         log_content "检测到 WSL 环境，移除 dataease.service 中的 Docker 依赖配置"
+         sed -i '/docker.service/d' /etc/systemd/system/dataease.service
+      fi
+      #------------------------------------------------------
       chmod 644 /etc/systemd/system/dataease.service
       log_content "配置开机自启动"
       systemctl enable dataease >/dev/null 2>&1; systemctl daemon-reload | tee -a ${CURRENT_DIR}/install.log
