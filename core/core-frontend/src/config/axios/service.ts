@@ -257,9 +257,13 @@ service.interceptors.response.use(
 
     error.config.loading && tryHideLoading(permissionStore.getCurrentPath)
     if (header.has('DE-GATEWAY-FLAG')) {
+      const userToken = wsCache.get('user.token')
+      const inPlatformClient = !!wsCache.get('de-platform-client')
       clearCache()
-      const flag = header.get('DE-GATEWAY-FLAG')
-      localStorage.setItem('DE-GATEWAY-FLAG', flag.toString())
+      if (!(userToken && inPlatformClient)) {
+        const flag = header.get('DE-GATEWAY-FLAG')
+        localStorage.setItem('DE-GATEWAY-FLAG', flag.toString())
+      }
       let queryRedirectPath = '/workbranch/index'
       if (router.currentRoute.value.fullPath) {
         queryRedirectPath = router.currentRoute.value.fullPath as string
