@@ -18,7 +18,9 @@ import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.license.utils.LicenseUtil;
+import io.dataease.share.dao.auto.entity.CoreShareTicket;
 import io.dataease.share.dao.auto.entity.XpackShare;
+import io.dataease.share.dao.auto.mapper.CoreShareTicketMapper;
 import io.dataease.share.dao.auto.mapper.XpackShareMapper;
 import io.dataease.share.dao.ext.mapper.XpackShareExtMapper;
 import io.dataease.share.dao.ext.po.XpackSharePO;
@@ -54,8 +56,29 @@ public class XpackShareManage {
     @Resource
     private ShareTicketManage shareTicketManage;
 
+    @Resource(name = "coreShareTicketMapper")
+    private CoreShareTicketMapper coreShareTicketMapper;
+
     @Resource
     private SysParameterManage sysParameterManage;
+
+    public void deleteByResource(Long resourceId) {
+        if (resourceId == null) {
+            return;
+        }
+        QueryWrapper<XpackShare> wrapper = new QueryWrapper<>();
+        wrapper.eq("resource_id", resourceId);
+        List<XpackShare> shares = xpackShareMapper.selectList(wrapper);
+        if (CollectionUtils.isEmpty(shares)) {
+            return;
+        }
+        xpackShareMapper.delete(wrapper);
+
+        List<String> uuidList = shares.stream().map(XpackShare::getUuid).collect(Collectors.toList());
+        QueryWrapper<CoreShareTicket> ticketQueryWrapper = new QueryWrapper<>();
+        ticketQueryWrapper.in("uuid", uuidList);
+        coreShareTicketMapper.delete(ticketQueryWrapper);
+    }
 
     public XpackShare queryByResource(Long resourceId) {
         Long userId = AuthUtils.getUser().getUserId();
@@ -207,7 +230,7 @@ public class XpackShareManage {
         return pos.stream().map(po ->
                 new XpackShareGridVO(
                         po.getShareId(), po.getResourceId(), po.getName(), po.getCreator().toString(),
-                        po.getTime(), po.getExp(), 9, po.getExtFlag(),po.getExtFlag1(), po.getType())).toList();
+                        po.getTime(), po.getExp(), 9, po.getExtFlag(), po.getExtFlag1(), po.getType())).toList();
     }
 
     private XpackShareManage proxy() {
