@@ -227,6 +227,8 @@ const changeTableThreshold = () => {
             return
           }
           if (
+            !ele.term.includes('null') &&
+            !ele.term.includes('empty') &&
             (field.field.deType === 2 || field.field.deType === 3 || field.field.deType === 4) &&
             parseFloat(ele.value).toString() === 'NaN'
           ) {
