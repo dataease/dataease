@@ -54,6 +54,7 @@ export const useLocaleStore = defineStore('locales', {
         const res = await request.get({ url: '/sysParameter/i18nOptions' })
         this.customLoaded = true
         const customMap = res.data
+        let match = false
         for (const key in customMap) {
           const item = {
             lang: key,
@@ -61,6 +62,17 @@ export const useLocaleStore = defineStore('locales', {
             custom: true
           }
           this.localeMap.push(item)
+          if (this.currentLocale?.lang === key) {
+            match = true
+          }
+        }
+        if (this.currentLocale?.lang && !match) {
+          const matchItem = this.localeMap.find(item =>
+            item.lang.startsWith(this.currentLocale.lang)
+          )
+          if (matchItem) {
+            this.currentLocale['lang'] = matchItem.lang
+          }
         }
         return this.localeMap
       } catch (error) {
