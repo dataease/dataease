@@ -186,14 +186,14 @@ const htmlToImage = () => {
 
 const handleInnerMouseDown = e => {
   // do setCurComponent
-  if (showPosition.value.includes('multiplexing')) {
+  if (showPositionActive.value.includes('multiplexing')) {
     componentEditBarRef.value.multiplexingCheckOut()
     e?.stopPropagation()
     e?.preventDefault()
   }
   if (
     (!['rich-text'].includes(config.value.innerType) &&
-      ['popEdit', 'preview'].includes(showPosition.value)) ||
+      ['popEdit', 'preview'].includes(showPositionActive.value)) ||
     dvMainStore.mobileInPc
   ) {
     onClick()
@@ -367,14 +367,14 @@ const onPointClick = param => {
 
 const eventEnable = computed(
   () =>
-    showPosition.value.includes('preview') &&
+    showPositionActive.value.includes('preview') &&
     (['Picture', 'CanvasIcon', 'CircleShape', 'SvgTriangle', 'RectShape', 'ScrollText'].includes(
       config.value.component
     ) ||
       ['indicator', 'rich-text'].includes(config.value.innerType)) &&
     config.value.events &&
     config.value.events.checked &&
-    showPosition.value !== 'canvas-multiplexing'
+    showPositionActive.value !== 'canvas-multiplexing'
 )
 
 const onWrapperClickCur = e => {
@@ -388,7 +388,7 @@ const onWrapperClickCur = e => {
 }
 
 const onWrapperClick = e => {
-  if (eventEnable.value && !['edit-preview'].includes(showPosition.value)) {
+  if (eventEnable.value && !['edit-preview'].includes(showPositionActive.value)) {
     if (config.value.events.type === 'showHidden') {
       // 打开弹框区域
       nextTick(() => {
@@ -460,7 +460,7 @@ const commonParams = computed(() => {
 })
 
 const showCheck = computed(() => {
-  return dvMainStore.mobileInPc && showPosition.value === 'edit'
+  return dvMainStore.mobileInPc && showPositionActive.value === 'edit'
 })
 
 const updateFromMobile = (e, type) => {
@@ -522,7 +522,7 @@ onBeforeUnmount(() => {
   <div
     class="wrapper-outer"
     :class="[
-      showPosition + '-' + config.component,
+      showPositionActive + '-' + config.component,
       {
         'freeze-component': freezeFlag
       }
@@ -545,13 +545,13 @@ onBeforeUnmount(() => {
       </el-icon>
     </div>
     <component-edit-bar
-      v-if="!showPosition.includes('canvas') && !props.isSelector"
+      v-if="!showPositionActive.includes('canvas') && !props.isSelector"
       class="wrapper-edit-bar"
       ref="componentEditBarRef"
       :canvas-id="canvasId"
       :index="index"
       :element="config"
-      :show-position="showPosition"
+      :show-position="showPositionActive"
       :class="{ 'wrapper-edit-bar-active': active }"
       @componentImageDownload="htmlToImage"
       @userViewEnlargeOpen="opt => emits('userViewEnlargeOpen', opt)"
@@ -595,7 +595,7 @@ onBeforeUnmount(() => {
           :element="config"
           :request="config?.request"
           :linkage="config?.linkage"
-          :show-position="showPosition"
+          :show-position="showPositionActive"
           :search-count="searchCount"
           :scale="deepScale"
           :disabled="true"
