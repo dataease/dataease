@@ -2947,6 +2947,7 @@ export default {
     column_name: 'Field name'
   },
   visualization: {
+    img_can_not_null: 'Image cannot be empty',
     outer_params_type_tips1:
       "When the type is 'filter', it only applies to text dropdown, text tree, and number dropdown. For text tree filtering format, separate multiple levels with '-de-'",
     outer_params_type_tips2:

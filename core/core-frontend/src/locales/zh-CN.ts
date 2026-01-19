@@ -2872,6 +2872,7 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
+    img_can_not_null: '图片不能为空',
     outer_params_type_tips1:
       "类型为过滤时仅对文本下拉、文本树、数字下拉，文本树的过滤格式多级之间使用'-de-' 隔离",
     outer_params_type_tips2:

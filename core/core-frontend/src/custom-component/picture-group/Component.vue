@@ -33,6 +33,7 @@ import { mappingColor } from '@/views/chart/components/js/panel/common/common_ta
 import { storeToRefs } from 'pinia'
 import ChartEmptyInfo from '@/views/chart/components/views/components/ChartEmptyInfo.vue'
 import ChartError from '@/views/chart/components/views/components/ChartError.vue'
+import { deepCopy } from '@/utils/utils'
 const dvMainStore = dvMainStoreWithOut()
 const { canvasViewInfo, mobileInPc, fullscreenFlag } = storeToRefs(dvMainStore)
 const state = reactive({
@@ -198,8 +199,16 @@ const conditionAdaptor = (chart: Chart) => {
   const conditions = threshold.tableThreshold ?? []
   if (conditions?.length > 0) {
     for (let i = 0; i < conditions.length; i++) {
-      const field = conditions[i]
+      const field = deepCopy(conditions[i])
       let defaultValueColor = null
+      field.conditions.sort((a, b) => {
+        const aIsDefault = a.term === 'default'
+        const bIsDefault = b.term === 'default'
+
+        if (aIsDefault && !bIsDefault) return 1
+        if (!aIsDefault && bIsDefault) return -1
+        return 0
+      })
       const checkResult = mappingColor(
         dataRowNameSelect.value[field.field.name],
         defaultValueColor,
