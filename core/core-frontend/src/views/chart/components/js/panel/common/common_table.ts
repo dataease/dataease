@@ -2067,6 +2067,9 @@ export function configMergeCells(chart: Chart, options: S2Options, dataConfig: S
     const mergedCellsInfo = []
     const axisToMerge = dataConfig.meta.filter((_, i) => i < quotaIndex || quotaIndex === -1)
     axisToMerge.forEach((a, i) => {
+      if (mergedColInfo[i - 1]) {
+        mergedColInfo[i - 1] = []
+      }
       const preMergedColInfo = mergedColInfo[i]
       const curMergedColInfo = []
       mergedColInfo.push(curMergedColInfo)
@@ -2080,7 +2083,10 @@ export function configMergeCells(chart: Chart, options: S2Options, dataConfig: S
             const curRange = index - lastIndex
             if (curRange > 1 || (index === end && curRange === 1 && lastVal === curVal)) {
               const tmpMergeCells = []
-              const textIndex = curRange % 2 === 1 ? (curRange - 1) / 2 : curRange / 2 - 1
+              let textIndex = curRange % 2 === 1 ? (curRange - 1) / 2 : curRange / 2 - 1
+              if (index === end && lastVal === curVal) {
+                textIndex = curRange % 2 === 1 ? (curRange - 1) / 2 : curRange / 2
+              }
               for (let j = 0; j < curRange; j++) {
                 tmpMergeCells.push({
                   colIndex: showIndex ? i + 1 : i,
