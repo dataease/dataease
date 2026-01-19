@@ -117,7 +117,7 @@ export function downloadCanvas(type, canvasDom, name, callBack?) {
 }
 
 export function downloadCanvas2(type, canvasDom, name, callBack?) {
-  domToPng(canvasDom)
+  domToPng(canvasDom, { scale: 3 })
     .then(dataUrl => {
       if (type === 'img') {
         const a = document.createElement('a')

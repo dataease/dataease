@@ -1630,7 +1630,7 @@ export function getMapObject(
         zoom: basicStyle.autoFit === false ? basicStyle.zoomLevel : undefined,
         showLabel: !(basicStyle.showLabel === false), //不支持
         WebGLParams: {
-          preserveDrawingBuffer: true
+          preserveDrawingBuffer: true // 不支持
         }
       })
     case 'qq':
@@ -1641,7 +1641,7 @@ export function getMapObject(
         center,
         zoom: basicStyle.autoFit === false ? basicStyle.zoomLevel : 12,
         showLabel: !(basicStyle.showLabel === false),
-        WebGLParams: {
+        renderOptions: {
           preserveDrawingBuffer: true
         }
       })

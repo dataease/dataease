@@ -1122,7 +1122,7 @@ const mapChartTypes = ['bubble-map', 'flow-map', 'heat-map', 'map', 'symbolic-ma
  */
 export function getMapElementIds(canvasDataPreview) {
   const mapElementIds = []
-  canvasDataPreview.forEach(item => {
+  canvasDataPreview?.forEach(item => {
     if (mapChartTypes.includes(item.innerType)) {
       mapElementIds.push(item.id)
     }

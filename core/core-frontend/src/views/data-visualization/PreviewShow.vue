@@ -145,7 +145,7 @@ const fileDownload = (downloadType, attachParams) => {
   downloadStatus.value = true
   const mapElementIds = getMapElementIds(state.canvasDataPreview)
   mapElementIds.forEach(id => useEmitt().emitter.emit('l7-prepare-picture', id))
-  nextTick(() => {
+  setTimeout(() => {
     const vueDom = previewCanvasContainer.value.querySelector('.canvas-container')
     download2AppTemplate(downloadType, vueDom, state.dvInfo.name, attachParams, () => {
       downloadStatus.value = false
@@ -156,7 +156,7 @@ const fileDownload = (downloadType, attachParams) => {
       downloadType === 'app' ? exportLogApp(param) : exportLogTemplate(param)
       mapElementIds.forEach(id => useEmitt().emitter.emit('l7-unprepare-picture', id))
     })
-  })
+  }, 1000)
 }
 
 const downloadAsAppTemplate = downloadType => {
