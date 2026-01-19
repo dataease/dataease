@@ -1363,12 +1363,12 @@ export const dvMainStore = defineStore('dataVisualization', {
                 }
               }
             })
-            const allCascadeDataset = element.cascade
-              .flat()
-              .map(item => `--${item.datasetId}`)
-              .join('')
             // 级联条件处理
             if (element.cascade?.length && Object.keys(defaultValueMap).length) {
+              const allCascadeDataset = element.cascade
+                .flat()
+                .map(item => `--${item.datasetId}`)
+                .join('')
               element.cascade.forEach(cascadeItem => {
                 Object.keys(defaultValueMap).forEach(key => {
                   const curDefaultValue = defaultValueMap[key]
