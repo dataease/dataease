@@ -712,9 +712,19 @@ const preparePicture = id => {
     })
     scene.addControl(zoom)
     zoom.hide()
-    zoom.getImage().then(res => {
+    // 天地图
+    const getTmapImage = async () => {
+      const res = await scene.exportPng('png')
       canvas2Picture(res, true)
-    })
+    }
+    zoom
+      .getImage()
+      .then(res => {
+        canvas2Picture(res, true)
+      })
+      .catch(() => {
+        getTmapImage()
+      })
   }
 }
 const unPreparePicture = id => {
