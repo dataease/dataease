@@ -101,7 +101,9 @@ const subjectEdit = () => {
 
 const subjectChange = () => {
   if (!themeSelected.value) {
-    dvMainStore.setCanvasStyle(JSON.parse(subjectItem.value.details))
+    const canvasStyleTemp = JSON.parse(subjectItem.value.details)
+    canvasStyleTemp['dashboard']['showGrid'] = canvasStyleTemp['dashboard']['showGrid'] || false
+    dvMainStore.setCanvasStyle(canvasStyleTemp)
     snapshotStore.recordSnapshotCache('renderChart')
     adaptCurThemeCommonStyleAll()
     useEmitt().emitter.emit('onSubjectChange')
