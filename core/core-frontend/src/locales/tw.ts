@@ -2877,8 +2877,17 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
-    jump_dialog_background: '跳轉彈框背景色',
-    jump_dialog_button: '跳轉彈框按鈕色',
+    img_can_not_null: '圖片不能為空',
+    outer_params_type_tips1:
+      "類型為過濾時僅對文字下拉、文字樹、數字下拉有效。文字樹的過濾格式中，多級之間使用 '-de-' 分隔",
+    outer_params_type_tips2:
+      '["Level1","Level1-de-Level2_1","Level2-de-Level2_1","Level1-de-Level2_1-de-Level3_1","Level2"]',
+    outer_params_type: '類型',
+    outer_params_type_self: '賦值',
+    outer_params_type_filter: '過濾',
+    number_formatter: '數字內容格式',
+    jump_dialog_background: '彈框背景色',
+    jump_dialog_button: '彈框字體色',
     sqlbot_query_tips: '智能問數',
     cur_sq_dataset: '當前選擇的數據集：',
     data_match_type: '資料匹配方式',

@@ -2883,8 +2883,17 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
-    jump_dialog_background: '跳转弹框背景色',
-    jump_dialog_button: '跳转弹框按钮色',
+    img_can_not_null: '图片不能为空',
+    outer_params_type_tips1:
+      "类型为过滤时仅对文本下拉、文本树、数字下拉，文本树的过滤格式多级之间使用'-de-' 隔离",
+    outer_params_type_tips2:
+      '["Level1","Level1-de-Level2_1","Level2-de-Level2_1","Level1-de-Level2_1-de-Level3_1","Level2"]',
+    outer_params_type: '类型',
+    outer_params_type_self: '赋值',
+    outer_params_type_filter: '过滤',
+    number_formatter: '数字内容格式',
+    jump_dialog_background: '弹框背景色',
+    jump_dialog_button: '弹框字体色',
     sqlbot_query_tips: '智能问数',
     cur_sq_dataset: '当前选择的数据集：',
     data_match_type: '数据匹配方式',

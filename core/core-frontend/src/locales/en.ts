@@ -2956,8 +2956,17 @@ export default {
     column_name: 'Field name'
   },
   visualization: {
-    jump_dialog_background: 'Jump pop-up background color',
-    jump_dialog_button: 'Jump pop-up button color',
+    img_can_not_null: 'Image cannot be empty',
+    outer_params_type_tips1:
+      "When the type is 'filter', it only applies to text dropdown, text tree, and number dropdown. For text tree filtering format, separate multiple levels with '-de-'",
+    outer_params_type_tips2:
+      '["Level1","Level1-de-Level2_1","Level2-de-Level2_1","Level1-de-Level2_1-de-Level3_1","Level2"]',
+    outer_params_type: 'Type',
+    outer_params_type_self: 'Assignment',
+    outer_params_type_filter: 'Filter',
+    number_formatter: 'Number Content Format',
+    jump_dialog_background: 'Dialog Background Color',
+    jump_dialog_button: 'Dialog Font Color',
     sqlbot_query_tips: 'Smart Data Query',
     cur_sq_dataset: 'Currently selected dataset:',
     data_match_type: 'Data match type',
