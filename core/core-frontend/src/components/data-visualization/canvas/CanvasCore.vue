@@ -552,8 +552,13 @@ const handleContextMenu = event => {
   const curDomId = event.currentTarget?.id
   if (curDomId) {
     const curDomSplitParams = curDomId.split('-')
-    if (curDomSplitParams.length > 1 && curDomSplitParams[1] !== 'canvas') {
-      const tabDom = document.getElementById(`shape-id-${curDomSplitParams[1]}`)
+    if (
+      curDomSplitParams.length > 1 &&
+      curDomSplitParams[curDomSplitParams.length - 1] !== 'canvas'
+    ) {
+      const tabDom = document.getElementById(
+        `shape-id-${curDomSplitParams[curDomSplitParams.length - 1]}`
+      )
       if (tabDom) {
         left = left + tabDom.offsetLeft
         top = top + tabDom.offsetTop
