@@ -25,6 +25,7 @@ import {
   tdtMapStyleOptions
 } from '@/views/chart/components/js/panel/charts/map/common'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { find } from 'lodash-es'
 
 const dvMainStore = dvMainStoreWithOut()
 const localeStore = useLocaleStoreWithOut()
@@ -122,6 +123,10 @@ const init = () => {
     file && (state.fileList[0] = { url: file })
   }
   state.basicStyleForm = defaultsDeep(basicStyle, cloneDeep(DEFAULT_BASIC_STYLE)) as ChartBasicStyle
+  const mapStyle = basicStyle.mapStyle
+  if (mapStyle && !find(mapStyleOptions.value, s => s.value === mapStyle)) {
+    state.basicStyleForm.mapStyle = 'normal'
+  }
   state.miscForm = defaultsDeep(miscStyle, cloneDeep(DEFAULT_MISC)) as ChartMiscAttr
   if (!state.customColor) {
     state.customColor = state.basicStyleForm.colors[0]
@@ -352,13 +357,13 @@ const validateInput = (value, field) => {
   }
   state.basicStyleForm[field] = num
 }
-onMounted(() => {
-  init()
-  getMapKey().then(res => {
+onMounted(async () => {
+  await getMapKey().then(res => {
     if (res) {
       mapType.value = res.mapType
     }
   })
+  init()
   useEmitt({
     name: 'chart-type-change',
     callback: () => {
