@@ -1309,8 +1309,8 @@ export const dvMainStore = defineStore('dataVisualization', {
                       deepCopy(queryParams)
                     )
                     if (result) {
-                      filterItem['selectValue'] = queryParams
-                      filterItem['defaultValue'] = queryParams
+                      filterItem['selectValue'] = result
+                      filterItem['defaultValue'] = result
                     } else {
                       filterItem.defaultValueCheck = false
                     }
