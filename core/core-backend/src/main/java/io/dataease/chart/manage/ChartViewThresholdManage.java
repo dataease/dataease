@@ -44,7 +44,12 @@ public class ChartViewThresholdManage {
     private String convertThresholdRules(ChartViewDTO chart, String thresholdRules) {
         List<DatasetTableFieldDTO> fieldList = chartFields(chart);
         FilterTreeObj filterTreeObj = JsonUtil.parseObject(thresholdRules, FilterTreeObj.class);
-        Map<String, DatasetTableFieldDTO> fieldMap = fieldList.stream().collect(Collectors.toMap(item -> item.getId().toString(), item -> item));
+        Map<String, DatasetTableFieldDTO> fieldMap = fieldList.stream()
+                .collect(Collectors.toMap(
+                        item -> item.getId().toString(),
+                        item -> item,
+                        (existing, replacement) -> existing
+                ));
         return convertTree(filterTreeObj, fieldMap);
     }
 
