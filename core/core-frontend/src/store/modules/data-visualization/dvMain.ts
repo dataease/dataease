@@ -1171,15 +1171,29 @@ export const dvMainStore = defineStore('dataVisualization', {
           } else if (element.component === 'DeTabs') {
             element.propValue?.forEach(tabItem => {
               tabItem.componentData?.forEach((tabComponent, index) => {
-                this.trackOuterFilterCursor(
-                  tabComponent,
-                  params,
-                  preActiveComponentIds,
-                  trackInfo,
-                  source,
-                  paramsVersion
-                )
-                tabItem.componentData[index] = tabComponent
+                if (['UserView', 'VQuery'].includes(tabComponent.component)) {
+                  this.trackOuterFilterCursor(
+                    tabComponent,
+                    params,
+                    preActiveComponentIds,
+                    trackInfo,
+                    source,
+                    paramsVersion
+                  )
+                  tabItem.componentData[index] = tabComponent
+                } else if (tabComponent.component === 'Group') {
+                  tabComponent.propValue?.forEach((groupItem, index) => {
+                    this.trackOuterFilterCursor(
+                      groupItem,
+                      params,
+                      preActiveComponentIds,
+                      trackInfo,
+                      source,
+                      paramsVersion
+                    )
+                    tabComponent.propValue[index] = groupItem
+                  })
+                }
               })
             })
           }

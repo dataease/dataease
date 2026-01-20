@@ -568,6 +568,12 @@ const initParams = async () => {
         tabItem.componentData?.forEach(tabComponent => {
           if (tabComponent.component === 'VQuery') {
             state.baseFilterInfo.push(tabComponent)
+          } else if (tabComponent.component === 'Group') {
+            tabComponent.propValue.forEach(groupItem => {
+              if (groupItem.component === 'VQuery') {
+                state.baseFilterInfo.push(groupItem)
+              }
+            })
           }
         })
       })
