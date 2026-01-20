@@ -363,10 +363,22 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
             timeGranularity = 'date',
             displayType,
             displayId,
-            multiple
+            multiple,
+            optionFilter
           } = item
 
           const isTree = +displayType === 9
+          if (optionFilter) {
+            filter.push({
+              filterId: id,
+              componentId: ele.id,
+              fieldId: item.checkedFieldsMap[curComponentId],
+              operator: 'in',
+              value: optionFilter,
+              parameters: [],
+              isTree
+            })
+          }
 
           if (
             timeType === 'dynamic' &&
