@@ -976,10 +976,21 @@ export function setUpStackSeriesColor(
         return
       }
       seriesSet.add(d.category)
+    })
+    const cats = [...seriesSet]
+    const stackAxis = extStack[0]
+    if (stackAxis.sort === 'custom_sort' && stackAxis.customSort?.length) {
+      cats.sort((a, b) => {
+        const aIndex = stackAxis.customSort.indexOf(a)
+        const bIndex = stackAxis.customSort.indexOf(b)
+        return aIndex - bIndex
+      })
+    }
+    cats.forEach((c, i) => {
       result.push({
-        id: d.category,
-        name: d.category,
-        color: colors[(seriesSet.size - 1) % colors.length]
+        id: c,
+        name: c,
+        color: colors[i % colors.length]
       })
     })
   } else {
