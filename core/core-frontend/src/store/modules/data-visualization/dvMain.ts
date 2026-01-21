@@ -1289,9 +1289,15 @@ export const dvMainStore = defineStore('dataVisualization', {
           if (element.component === 'VQuery') {
             element.propValue?.forEach(filterItem => {
               if (filterItem.id === targetViewId) {
-                let queryParams = paramValue
                 const targetMatchMode = targetInfoArray[2] // 目标匹配模式
                 if (targetMatchMode === 'filter') {
+                  paramValue = paramValue.map(option => {
+                    if (typeof option === 'string' && option.includes(',')) {
+                      return option.replace(/,/g, '-de-')
+                    }
+                    return option
+                  })
+                  const queryParams = paramValue
                   // do filter
                   filterItem['optionFilter'] = queryParams
                   if (filterItem.defaultValueCheck) {
