@@ -1317,7 +1317,7 @@ export const dvMainStore = defineStore('dataVisualization', {
                     if (result) {
                       filterItem['selectValue'] = result
                       filterItem['defaultValue'] = result
-                    } else {
+                    } else if (!filterItem.defaultValueFirstItem) {
                       filterItem.defaultValueCheck = false
                     }
                   }
