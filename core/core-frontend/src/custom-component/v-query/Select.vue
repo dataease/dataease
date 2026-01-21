@@ -304,19 +304,7 @@ const handleFieldIdDefaultChange = (val: string[]) => {
           ? [...selectValue.value]
           : selectValue.value
       }
-      if (config.value?.required && config.value?.optionFilter?.length > 0) {
-        const isValid = selectValue.value?.some(value =>
-          options.value?.some(option => option.value === value)
-        )
-        if (!isValid) {
-          config.value.selectValue = null
-          ElMessage({
-            message: `【${config.value?.name}】${t('v_query.before_querying')}`,
-            type: 'error',
-            duration: 3000
-          })
-        }
-      }
+      requiredComp()
       if (options.value) setEmptyData()
     })
 }
@@ -642,6 +630,36 @@ watch(
   }
 )
 
+const requiredComp = () => {
+  if (config.value?.required && config.value?.optionFilter?.length > 0) {
+    const isValid = hasIntersection(options.value, selectValue.value)
+    if (!isValid) {
+      config.value.selectValue = null
+      ElMessage({
+        message: `【${config.value?.name}】${t('v_query.before_querying')}`,
+        type: 'error',
+        duration: 3000
+      })
+    }
+  }
+}
+
+const hasIntersection = (options, selectValue) => {
+  if (!Array.isArray(options) || options.length === 0) {
+    return false
+  }
+  if (selectValue == null) {
+    return false
+  }
+  const selectedValues = Array.isArray(selectValue) ? selectValue : [selectValue]
+  if (selectedValues.length === 0) {
+    return false
+  }
+  const optionValues = options.map(option => option.value)
+
+  return selectedValues.some(value => optionValues.includes(value))
+}
+
 const setOptions = (num: number) => {
   if (num !== config.value.optionValueSource) return
   const {
@@ -682,16 +700,28 @@ const setOptions = (num: number) => {
       break
     case 2:
       options.value = cloneDeep(
-        (valueSource || []).map(ele => {
-          return {
-            label: `${ele}`,
-            value: `${ele}`,
-            checked: Array.isArray(selectValue.value)
-              ? selectValue.value.includes(`${ele}`)
-              : selectValue.value === ele
-          }
-        })
+        (valueSource || [])
+          .filter(ele => {
+            return (
+              ele !== null &&
+              ((config.value.optionFilter &&
+                config.value.optionFilter.length > 0 &&
+                config.value.optionFilter.includes(ele)) ||
+                !config.value.optionFilter ||
+                config.value.optionFilter.length === 0)
+            )
+          })
+          .map(ele => {
+            return {
+              label: `${ele}`,
+              value: `${ele}`,
+              checked: Array.isArray(selectValue.value)
+                ? selectValue.value.includes(`${ele}`)
+                : selectValue.value === ele
+            }
+          })
       )
+      requiredComp()
       setEmptyData()
       break
     default:
