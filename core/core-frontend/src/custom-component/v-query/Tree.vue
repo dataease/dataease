@@ -391,6 +391,95 @@ const tagColor = computed(() => {
 
   return mixColor('ffffff', hexColor.substr(1), 0.2)
 })
+
+function filterTree(treeData, filterIds) {
+  if (!filterIds || filterIds.length === 0) {
+    return treeData
+  }
+  const filterSet = new Set(filterIds)
+
+  // 用于存储最终保留的所有节点ID
+  const keepIds = new Set()
+
+  // 用于查找节点的Map
+  const nodeMap = new Map()
+  // 用于构建节点关系的Map（子节点到父节点）
+  const parentMap = new Map()
+
+  // 遍历所有节点，构建Map和父子关系
+  function traverse(nodes, parentId = null) {
+    for (const node of nodes) {
+      nodeMap.set(node.id, node)
+      if (parentId) {
+        parentMap.set(node.id, parentId)
+      }
+
+      // 递归处理子节点
+      if (node.children && node.children.length > 0) {
+        traverse(node.children, node.id)
+      }
+    }
+  }
+
+  // 收集所有匹配的节点及其祖先和后代
+  function collectRelatedNodes(nodeId) {
+    if (keepIds.has(nodeId)) return
+
+    keepIds.add(nodeId)
+    const node = nodeMap.get(nodeId)
+
+    // 1. 收集所有祖先节点
+    let currentId = nodeId
+    while (parentMap.has(currentId)) {
+      const parentId = parentMap.get(currentId)
+      keepIds.add(parentId)
+      currentId = parentId
+    }
+
+    // 2. 收集所有后代节点（递归）
+    function collectDescendants(node) {
+      if (node.children && node.children.length > 0) {
+        for (const child of node.children) {
+          keepIds.add(child.id)
+          collectDescendants(child)
+        }
+      }
+    }
+    collectDescendants(node)
+  }
+
+  // 第二步：递归构建过滤后的树
+  function buildFilteredTree(nodes) {
+    const result = []
+
+    for (const node of nodes) {
+      // 如果节点ID在保留集合中，则保留该节点
+      if (keepIds.has(node.id)) {
+        const newNode = { ...node }
+
+        // 递归处理子节点
+        if (newNode.children && newNode.children.length > 0) {
+          newNode.children = buildFilteredTree(newNode.children)
+        }
+
+        result.push(newNode)
+      }
+    }
+
+    return result
+  }
+
+  // 执行遍历和构建
+  traverse(treeData)
+
+  for (const filterId of filterIds) {
+    if (nodeMap.has(filterId)) {
+      collectRelatedNodes(filterId)
+    }
+  }
+
+  return buildFilteredTree(treeData)
+}
 </script>
 
 <template>

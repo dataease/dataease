@@ -369,12 +369,25 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
 
           const isTree = +displayType === 9
           if (optionFilter) {
+            let fieldIdOption = item.checkedFieldsMap[curComponentId]
+            const optionFilterValue = isTree
+              ? optionFilter.map(itemOption => itemOption.replace(/-de-/g, ','))
+              : optionFilter
+            if (isTree) {
+              const [i, r] = getFieldId(
+                treeFieldList,
+                optionFilterValue,
+                relationshipChartIndex,
+                ids
+              )
+              fieldIdOption = i
+            }
             filter.push({
               filterId: id,
               componentId: ele.id,
-              fieldId: item.checkedFieldsMap[curComponentId],
+              fieldId: fieldIdOption,
               operator: 'in',
-              value: optionFilter,
+              value: optionFilterValue,
               parameters: [],
               isTree
             })
