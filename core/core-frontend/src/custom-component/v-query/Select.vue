@@ -26,9 +26,11 @@ import colorFunctions from 'less/lib/less/functions/color.js'
 import colorTree from 'less/lib/less/tree/color.js'
 import { colorStringToHex } from '@/utils/color'
 import { isMobile } from '@/utils/utils'
+import { ElMessage } from 'element-plus-secondary'
 
 interface SelectConfig {
   selectValue: any
+  required: false
   defaultMapValue: any
   mapValue: any
   displayFormat?: number
@@ -70,6 +72,7 @@ const props = defineProps({
     default: () => {
       return {
         selectValue: '',
+        required: false,
         displayFormat: 0,
         queryConditionWidth: 0,
         resultMode: 0,
@@ -301,7 +304,20 @@ const handleFieldIdDefaultChange = (val: string[]) => {
           ? [...selectValue.value]
           : selectValue.value
       }
-      setEmptyData()
+      if (config.value?.required && config.value?.optionFilter?.length > 0) {
+        const isValid = selectValue.value?.some(value =>
+          options.value?.some(option => option.value === value)
+        )
+        if (!isValid) {
+          config.value.selectValue = null
+          ElMessage({
+            message: `【${config.value?.name}】${t('v_query.before_querying')}`,
+            type: 'error',
+            duration: 3000
+          })
+        }
+      }
+      if (options.value) setEmptyData()
     })
 }
 
@@ -434,6 +450,19 @@ const handleFieldIdChange = (val: EnumValue) => {
         selectValue.value = Array.isArray(selectValue.value)
           ? [...selectValue.value]
           : selectValue.value
+      }
+      if (config.value?.required && config.value?.optionFilter?.length > 0) {
+        const isValid = selectValue.value?.some(value =>
+          options.value?.some(option => option.value === value)
+        )
+        if (!isValid) {
+          config.value.selectValue = null
+          ElMessage({
+            message: `【${config.value?.name}】${t('v_query.before_querying')}`,
+            type: 'error',
+            duration: 3000
+          })
+        }
       }
       setCascadeValueBack(config.value.mapValue)
       isFromRemote.value = false

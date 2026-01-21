@@ -18,9 +18,13 @@ import { getFieldTree } from '@/api/dataset'
 import colorFunctions from 'less/lib/less/functions/color.js'
 import colorTree from 'less/lib/less/tree/color.js'
 import { colorStringToHex } from '@/utils/color'
+import { ElMessage } from 'element-plus-secondary'
+import { useI18n } from '@/hooks/web/useI18n'
+const { t } = useI18n()
 
 interface SelectConfig {
   selectValue: any
+  required: false
   defaultMapValue: any
   defaultValue: any
   queryConditionWidth: number
@@ -51,6 +55,7 @@ const props = defineProps({
       return {
         selectValue: '',
         defaultValue: '',
+        required: false,
         queryConditionWidth: 0,
         displayType: '',
         resultMode: 0,
@@ -314,6 +319,39 @@ const dfsAuth = (tree, val) => {
   })
 }
 
+function containsNodeById(source, params) {
+  // 统一处理参数为数组
+  const searchIds = Array.isArray(params) ? params : [params]
+
+  // 递归搜索函数
+  function searchById(node) {
+    // 检查当前节点的id是否在搜索列表中
+    if (searchIds.includes(node.id)) {
+      return true
+    }
+
+    // 递归搜索子节点
+    if (node.children && node.children.length > 0) {
+      for (const child of node.children) {
+        if (searchById(child)) {
+          return true
+        }
+      }
+    }
+
+    return false
+  }
+
+  // 遍历所有根节点
+  for (const node of source) {
+    if (searchById(node)) {
+      return true
+    }
+  }
+
+  return false
+}
+
 const getTreeOption = debounce(() => {
   loading.value = true
   getFieldTree({
@@ -323,6 +361,18 @@ const getTreeOption = debounce(() => {
   })
     .then(res => {
       treeOptionList.value = filterTree(dfs(res), config.value.optionFilter)
+      if (config.value?.required && config.value?.optionFilter?.length > 0) {
+        const isValid = containsNodeById(treeOptionList.value, config.value.selectValue)
+        if (!isValid) {
+          config.value.selectValue = null
+          ElMessage({
+            message: `【${config.value?.name}】${t('v_query.before_querying')}`,
+            type: 'error',
+            duration: 3000
+          })
+        }
+      }
+
       if (fromSelect) {
         fromTreeSelectConfirm.value = true
         if (multiple.value && Array.isArray(treeValue.value) && treeValue.value.length) {
