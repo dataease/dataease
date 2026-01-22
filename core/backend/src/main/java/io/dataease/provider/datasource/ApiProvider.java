@@ -105,7 +105,7 @@ public class ApiProvider extends Provider {
 
     @Override
     public Status checkDsStatus(DatasourceRequest datasourceRequest) throws Exception {
-        Status status =  new Status();
+        Status status = new Status();
         status.setStatus(checkStatus(datasourceRequest));
         return status;
     }
@@ -226,12 +226,19 @@ public class ApiProvider extends Provider {
                     }
                 }
                 for (JSONObject field : fields) {
+                    String value = Optional.ofNullable(data.get(field.get("originName"))).orElse("").toString();
+                    if (value.startsWith("{") && value.endsWith("}")) {
+                        try {
+                            value = CommonBeanFactory.getBean(ObjectMapper.class).writeValueAsString(data.get(field.get("originName")));
+                        } catch (Exception e) {
+                        }
+                    }
                     JSONArray array = field.getJSONArray("value");
                     if (array != null) {
-                        array.add(Optional.ofNullable(data.get(field.getString("originName"))).orElse("").toString().replaceAll("\n", " ").replaceAll("\r", " "));
+                        array.add(value.replaceAll("\n", " ").replaceAll("\r", " "));
                     } else {
                         array = new JSONArray();
-                        array.add(Optional.ofNullable(data.get(field.getString("originName"))).orElse("").toString().replaceAll("\n", " ").replaceAll("\r", " "));
+                        array.add(value.replaceAll("\n", " ").replaceAll("\r", " "));
                     }
                     field.put("value", array);
                 }
@@ -283,7 +290,7 @@ public class ApiProvider extends Provider {
             JSONObject jsonObject = JSONObject.parseObject(jsonStr, Feature.IgnoreNotMatch);
             for (String s : jsonObject.keySet()) {
                 String value = jsonObject.getString(s);
-                if (StringUtils.isNotEmpty(value) &&  value.startsWith("{")) {
+                if (StringUtils.isNotEmpty(value) && value.startsWith("{")) {
                     value = JSONObject.toJSONString(jsonObject.getJSONObject(s), SerializerFeature.WriteMapNullValue);
                 }
                 if (StringUtils.isNotEmpty(value) && value.startsWith("[")) {
@@ -451,7 +458,15 @@ public class ApiProvider extends Provider {
                 String[] row = new String[apiDefinition.getFields().size()];
                 int i = 0;
                 for (DatasetTableFieldDTO field : apiDefinition.getFields()) {
-                    row[i] = Optional.ofNullable(data.get(field.getOriginName())).orElse("").toString().replaceAll("\n", " ").replaceAll("\r", " ");
+
+                    String value = Optional.ofNullable(data.get(field.getOriginName())).orElse("").toString();
+                    if (value.startsWith("{") && value.endsWith("}")) {
+                        try {
+                            value = CommonBeanFactory.getBean(ObjectMapper.class).writeValueAsString(data.get(field.getOriginName()));
+                        } catch (Exception e) {
+                        }
+                    }
+                    row[i] = value.replaceAll("\n", " ").replaceAll("\r", " ");
                     i++;
                 }
                 dataList.add(row);
