@@ -7,7 +7,7 @@
     :before-close="close"
     @submit.prevent
   >
-    <template-market ref="templateMarketCreateRef" @close="close"></template-market>
+    <template-market isDialog ref="templateMarketCreateRef" @close="close"></template-market>
   </el-dialog>
 </template>
 
