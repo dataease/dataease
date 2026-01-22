@@ -50,7 +50,7 @@
       </el-row>
     </el-row>
     <el-row v-show="previewModel === 'full'" class="main-container">
-      <el-row class="market-head">
+      <el-row class="market-head" :class="isDialog && 'create-preview'">
         <span>{{ title }} </span>
         <el-row class="head-right">
           <el-input
@@ -207,6 +207,13 @@ const { wsCache } = useCache()
 const embeddedStore = useEmbedded()
 const appStore = useAppStoreWithOut()
 const interactiveStore = interactiveStoreWithOut()
+
+defineProps({
+  isDialog: {
+    type: Boolean,
+    default: false
+  }
+})
 
 // full 正常展示 marketPreview 模板中心预览 createPreview 创建界面预览
 const previewModel = ref('full')
@@ -633,14 +640,18 @@ defineExpose({
     width: 100%;
     height: 100%;
     .market-head {
-      height: 56px;
       background: #ffffff;
       align-items: center;
       padding: 12px 24px;
       border-bottom: 1px solid rgba(31, 35, 41, 0.15);
+
+      &.create-preview {
+        padding: 0;
+        padding-bottom: 12px;
+      }
       span {
         font-size: 16px;
-        font-color: #1f2329;
+        color: #1f2329;
         font-weight: 500;
       }
       .head-right {
@@ -659,6 +670,7 @@ defineExpose({
       height: calc(100vh - 135px);
       .template-left {
         padding: 8px;
+        padding-left: 0;
         width: 204px;
         height: 100%;
         overflow-y: auto;
@@ -783,7 +795,7 @@ defineExpose({
 
 <style lang="less">
 .custom-line {
-  margin: 4px;
+  margin: 4px 0;
   background: rgba(31, 35, 41, 0.15);
   border: 0;
   height: 1px;
