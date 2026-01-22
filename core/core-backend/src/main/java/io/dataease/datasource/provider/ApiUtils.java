@@ -610,6 +610,13 @@ public class ApiUtils {
                 }
                 for (Map<String, Object> field : fields) {
                     JSONArray array = new JSONArray();
+                    String value = Optional.ofNullable(data.get(field.get("originName"))).orElse("").toString();
+                    if (value.startsWith("{") && value.endsWith("}")) {
+                        try {
+                            value = objectMapper.writeValueAsString(data.get(field.get("originName")));
+                        } catch (Exception e) {
+                        }
+                    }
                     if (field.get("value") != null) {
                         try {
                             TypeReference<JSONArray> listTypeReference = new TypeReference<JSONArray>() {
@@ -618,9 +625,9 @@ public class ApiUtils {
                         } catch (Exception e) {
                             DEException.throwException(e);
                         }
-                        array.add(Optional.ofNullable(data.get(field.get("originName"))).orElse("").toString().replaceAll("\n", " ").replaceAll("\r", " "));
+                        array.add(value.replaceAll("\n", " ").replaceAll("\r", " "));
                     } else {
-                        array.add(Optional.ofNullable(data.get(field.get("originName"))).orElse("").toString().replaceAll("\n", " ").replaceAll("\r", " "));
+                        array.add(value.replaceAll("\n", " ").replaceAll("\r", " "));
                     }
                     field.put("value", array);
                 }
@@ -838,7 +845,14 @@ public class ApiUtils {
                 String[] row = new String[apiDefinition.getFields().size()];
                 int i = 0;
                 for (TableField field : apiDefinition.getFields()) {
-                    row[i] = Optional.ofNullable(data.get(field.getOriginName())).orElse("").toString().replaceAll("\n", " ").replaceAll("\r", " ");
+                    String value = Optional.ofNullable(data.get(field.getOriginName())).orElse("").toString();
+                    if (value.startsWith("{") && value.endsWith("}")) {
+                        try {
+                            value = objectMapper.writeValueAsString(data.get(field.getOriginName()));
+                        } catch (Exception e) {
+                        }
+                    }
+                    row[i] = value.replaceAll("\n", " ").replaceAll("\r", " ");
                     i++;
                 }
                 dataList.add(row);
