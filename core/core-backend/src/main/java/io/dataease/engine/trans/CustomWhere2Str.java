@@ -258,9 +258,9 @@ public class CustomWhere2Str {
                             && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
                         whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE_CH, value);
                     } else {
-                        if (request.getDatasetTableField().getDeType() == 2
-                                || request.getDatasetTableField().getDeType() == 3
-                                || request.getDatasetTableField().getDeType() == 4) {
+                        if (field.getDeType() == 2
+                                || field.getDeType() == 3
+                                || field.getDeType() == 4) {
                             whereValue = String.format(SQLConstants.WHERE_NUMBER_VALUE, value);
                         } else {
                             whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value);
