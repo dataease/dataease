@@ -147,7 +147,7 @@ const fieldFormList = ref([])
 const builtInList = ref([
   {
     id: 'sysParams.userId',
-    name: t('system.account')
+    name: t('common.account')
   },
   {
     id: 'sysParams.userName',
