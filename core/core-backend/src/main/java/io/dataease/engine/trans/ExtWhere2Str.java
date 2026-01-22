@@ -276,7 +276,13 @@ public class ExtWhere2Str {
                                     && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
                                 whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE_CH, value.get(0));
                             } else {
-                                whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value.get(0));
+                                if (request.getDatasetTableField().getDeType() == 2
+                                        || request.getDatasetTableField().getDeType() == 3
+                                        || request.getDatasetTableField().getDeType() == 4) {
+                                    whereValue = String.format(SQLConstants.WHERE_NUMBER_VALUE, value.get(0));
+                                } else {
+                                    whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value.get(0));
+                                }
                             }
                         }
                     }
