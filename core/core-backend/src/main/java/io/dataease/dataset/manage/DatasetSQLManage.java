@@ -119,6 +119,8 @@ public class DatasetSQLManage {
 
     public Map<String, Object> getUnionSQLForEdit(DatasetGroupInfoDTO dataTableInfoDTO, ChartExtRequest chartExtRequest) throws Exception {
         Map<Long, DatasourceSchemaDTO> dsMap = new LinkedHashMap<>();
+        // 获取所有字段，将dataeaseName赋值给currentField中的dataeaseName
+        List<DatasetTableFieldDTO> allFields = dataTableInfoDTO.getAllFields();
         List<UnionDTO> union = dataTableInfoDTO.getUnion();
         // 所有选中的字段，即select后的查询字段
         Map<String, String[]> checkedInfo = new LinkedHashMap<>();
@@ -152,9 +154,16 @@ public class DatasetSQLManage {
 
             String[] array = fields.stream()
                     .map(f -> {
+                        // 赋值dataeaseName
+                        for (DatasetTableFieldDTO a_f: allFields) {
+                            if (Objects.equals(a_f.getId(),f.getId())) {
+                                f.setDataeaseName(a_f.getDataeaseName());
+                            }
+                        }
+
                         String alias;
                         if (StringUtils.isEmpty(f.getDataeaseName())) {
-                            alias = TableUtils.fieldNameShort(table.getTableAlias() + "_" + f.getOriginName());
+                            alias = TableUtils.fieldNameShort(f.getDatasetTableId() + "_" + f.getOriginName());
                         } else {
                             alias = f.getDataeaseName();
                         }
@@ -185,7 +194,7 @@ public class DatasetSQLManage {
             checkedFields.addAll(fields);
             // 获取child的fields和union
             if (!CollectionUtils.isEmpty(unionDTO.getChildrenDs())) {
-                getUnionForEdit(datasetTable, table, unionDTO.getChildrenDs(), checkedInfo, unionList, checkedFields, dsMap, chartExtRequest, isCross);
+                getUnionForEdit(datasetTable, table, unionDTO.getChildrenDs(), checkedInfo, unionList, checkedFields, dsMap, chartExtRequest, isCross, allFields);
             }
         }
         // build sql
@@ -305,7 +314,7 @@ public class DatasetSQLManage {
                                  List<UnionDTO> childrenDs, Map<String, String[]> checkedInfo,
                                  List<UnionParamDTO> unionList, List<DatasetTableFieldDTO> checkedFields,
                                  Map<Long, DatasourceSchemaDTO> dsMap, ChartExtRequest chartExtRequest,
-                                 boolean isCross) throws Exception {
+                                 boolean isCross, List<DatasetTableFieldDTO> allFields) throws Exception {
         for (int i = 0; i < childrenDs.size(); i++) {
             int index = unionList.size() + 1;
 
@@ -326,9 +335,16 @@ public class DatasetSQLManage {
 
             String[] array = fields.stream()
                     .map(f -> {
+                        // 赋值dataeaseName
+                        for (DatasetTableFieldDTO a_f: allFields) {
+                            if (Objects.equals(a_f.getId(),f.getId())) {
+                                f.setDataeaseName(a_f.getDataeaseName());
+                            }
+                        }
+
                         String alias;
                         if (StringUtils.isEmpty(f.getDataeaseName())) {
-                            alias = TableUtils.fieldNameShort(table.getTableAlias() + "_" + f.getOriginName());
+                            alias = TableUtils.fieldNameShort(f.getDatasetTableId() + "_" + f.getOriginName());
                         } else {
                             alias = f.getDataeaseName();
                         }
@@ -362,7 +378,7 @@ public class DatasetSQLManage {
             unionToParent.setCurrentSQLObj(table);
             unionList.add(unionToParent);
             if (!CollectionUtils.isEmpty(unionDTO.getChildrenDs())) {
-                getUnionForEdit(datasetTable, table, unionDTO.getChildrenDs(), checkedInfo, unionList, checkedFields, dsMap, chartExtRequest, isCross);
+                getUnionForEdit(datasetTable, table, unionDTO.getChildrenDs(), checkedInfo, unionList, checkedFields, dsMap, chartExtRequest, isCross, allFields);
             }
         }
     }
