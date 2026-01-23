@@ -215,14 +215,14 @@ public class DatasetDataManage {
             DatasetUtils.dsDecode(datasetGroupInfoDTO);
         }
 
-        Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, null);
-        String sql = (String) sqlMap.get("sql");
-
         // 获取allFields
         List<DatasetTableFieldDTO> fields = datasetGroupInfoDTO.getAllFields();
         if (ObjectUtils.isEmpty(fields)) {
             DEException.throwException(Translator.get("i18n_no_fields"));
         }
+
+        Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, null);
+        String sql = (String) sqlMap.get("sql");
 
         Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
         if (checkPermission) {
