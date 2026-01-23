@@ -40,6 +40,7 @@ import { Text } from '@antv/g'
 import { getAggregationAndCalcFuncByQuery } from '@antv/s2/esm/utils/data-set-operate'
 import { calcActionByType } from '@antv/s2/esm/utils/number-calculate'
 import { CellData } from '@antv/s2'
+import { Renderer } from '@antv/g-svg'
 
 type DataItem = Record<string, any>
 
@@ -447,6 +448,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       },
       transformCanvasConfig() {
         return {
+          renderer: new Renderer(),
           supportsCSSTransform: true
         }
       },

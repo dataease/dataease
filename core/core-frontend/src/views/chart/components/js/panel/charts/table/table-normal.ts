@@ -28,7 +28,7 @@ import {
 } from '@antv/s2'
 import { isEqual, isNumber } from 'lodash-es'
 import { TABLE_EDITOR_PROPERTY, TABLE_EDITOR_PROPERTY_INNER } from './common'
-
+import { Renderer } from '@antv/g-svg'
 const { t } = useI18n()
 /**
  * 汇总表
@@ -211,6 +211,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
       },
       transformCanvasConfig() {
         return {
+          renderer: new Renderer(),
           supportsCSSTransform: true
         }
       }

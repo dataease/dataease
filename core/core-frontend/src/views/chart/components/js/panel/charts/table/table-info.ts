@@ -32,6 +32,7 @@ import {
   calcTreeWidth,
   getStartPosition
 } from '@/views/chart/components/js/panel/common/common_table'
+import { Renderer } from '@antv/g-svg'
 
 const { t } = useI18n()
 
@@ -213,6 +214,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
       },
       transformCanvasConfig() {
         return {
+          renderer: new Renderer(),
           supportsCSSTransform: true
         }
       }
