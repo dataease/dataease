@@ -102,7 +102,7 @@ onUnmounted(() => {
 <style lang="less" scoped>
 .dataease-v2-embedded-sqlbot {
   width: 100vw;
-  height: 100vh;
+  height: calc(100vh - 56px);
   overflow: hidden;
   display: flex;
 }
