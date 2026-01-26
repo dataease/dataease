@@ -103,4 +103,7 @@ public interface ExtDataVisualizationMapper {
 
     @Select("select status from data_visualization_info where id = #{dvId}")
     Integer findDvInfoStats(@Param("dvId") Long dvId);
+
+    @Select("select id from data_visualization_info where pid = -1")
+    List<Long> findCopyResource();
 }

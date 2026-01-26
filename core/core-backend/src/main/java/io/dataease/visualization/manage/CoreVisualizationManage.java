@@ -101,6 +101,14 @@ public class CoreVisualizationManage {
         return TreeUtils.mergeTree(nodes, BusiNodeVO.class, false);
     }
 
+    public void dataVisualizationInit() {
+        List<Long> resourceIds= extDataVisualizationMapper.findCopyResource();
+        if (CollectionUtils.isNotEmpty(resourceIds)) {
+            resourceIds.forEach(this::delete);
+        }
+
+    }
+
     @XpackInteract(value = "visualizationResourceTree", before = false)
     public void delete(Long id) {
         DataVisualizationInfo info = mapper.selectById(id);

@@ -32,6 +32,9 @@ public class CoreOptRecentManage {
     }
 
     public void saveOpt(Long resourceId, String resourceName, int resourceType, int optType) {
+        if (AuthUtils.getUser() == null) {
+            return;
+        }
         Long uid = AuthUtils.getUser().getUserId();
         QueryWrapper<CoreOptRecent> updateWrapper = new QueryWrapper<>();
         if (resourceId != null) {
