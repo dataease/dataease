@@ -268,9 +268,14 @@
              <if test="ew.info != null">
                 AND NOT EXISTS(select 1 from per_busi_resource community where core_opt_recent.resource_id = community.id)
              </if>
-             <if test="ew.isAsc">
-                order by core_opt_recent.time asc
-             </if>
+             <choose>
+                <when test="ew.isAsc">
+                  order by core_opt_recent.time asc
+                </when>
+                <otherwise>
+                  order by core_opt_recent.time desc
+                </otherwise>
+             </choose>
     </select>
 
     <insert id="copyLinkJump">
