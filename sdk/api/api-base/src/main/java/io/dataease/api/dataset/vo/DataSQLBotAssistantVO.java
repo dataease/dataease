@@ -11,6 +11,8 @@ import java.util.Map;
 @Data
 public class DataSQLBotAssistantVO implements Serializable {
 
+    private Long id;
+
     private String name;
 
     private String type;
