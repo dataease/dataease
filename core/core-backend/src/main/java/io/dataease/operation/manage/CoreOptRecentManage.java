@@ -34,6 +34,9 @@ public class CoreOptRecentManage {
     }
 
     public void saveOpt(Long resourceId, String resourceName, int resourceType, int optType) {
+        if (AuthUtils.getUser() == null) {
+            return;
+        }
         Long uid = AuthUtils.getUser().getUserId();
         if (coreOptRecentRepository.updateByParams(resourceId, resourceName, resourceType, uid, optType, System.currentTimeMillis()) == 0) {
             CoreOptRecent optRecent = new CoreOptRecent();
