@@ -337,10 +337,18 @@ defineExpose({
         </div>
       </template>
       <template v-else-if="hasTreeData && mounted">
-        <empty-background :description="t('visualization.preview_select_tips')" img-type="select" />
+        <empty-background
+          v-if="dataInitState"
+          :description="t('visualization.preview_select_tips')"
+          img-type="select"
+        />
       </template>
       <template v-else-if="mounted">
-        <empty-background :description="t('visualization.have_none_resource')" img-type="none">
+        <empty-background
+          v-if="dataInitState"
+          :description="t('visualization.have_none_resource')"
+          img-type="none"
+        >
           <el-button v-if="rootManage && !isDataEaseBi" @click="createNew" type="primary">
             <template #icon>
               <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>

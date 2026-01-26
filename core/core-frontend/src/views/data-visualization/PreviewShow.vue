@@ -338,10 +338,18 @@ onBeforeMount(() => {
         </div>
       </template>
       <template v-else-if="hasTreeData && mounted">
-        <empty-background :description="t('visualization.select_screen_tips')" img-type="select" />
+        <empty-background
+          v-if="dataInitState"
+          :description="t('visualization.select_screen_tips')"
+          img-type="select"
+        />
       </template>
       <template v-else-if="mounted">
-        <empty-background :description="t('visualization.no_screen')" img-type="none">
+        <empty-background
+          v-if="dataInitState"
+          :description="t('visualization.no_screen')"
+          img-type="none"
+        >
           <el-button v-if="rootManage && !isDataEaseBi" @click="createNew" type="primary">
             <template #icon>
               <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
