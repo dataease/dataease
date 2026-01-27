@@ -2079,7 +2079,8 @@ export default {
     enable_slider_tip: '开启缩略轴后，轮播提示将会失效',
     liquid_show_border: '显示边框',
     liquid_border_width: '边框宽度',
-    liquid_border_distance: '边框间距'
+    liquid_border_distance: '边框间距',
+    top_n_label_tip: '请勿和扇区标签字段数据值重复，否则会导致显示异常'
   },
   dataset: {
     field_value: '字段值',

@@ -2132,7 +2132,9 @@ export default {
     enable_slider_tip: 'After enabling the slider, the carousel prompt will be disabled.',
     liquid_show_border: 'Show Border',
     liquid_border_width: 'Border Width',
-    liquid_border_distance: 'Border Distance'
+    liquid_border_distance: 'Border Distance',
+    top_n_label_tip:
+      'Do not duplicate the data value of the sector label field, otherwise it will cause display abnormalities.'
   },
   dataset: {
     field_value: 'Field Value',

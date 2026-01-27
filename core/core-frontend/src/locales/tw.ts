@@ -2073,7 +2073,8 @@ export default {
     enable_slider_tip: '開啟縮略軸後，輪播提示將會失效',
     liquid_show_border: '顯示邊框',
     liquid_border_width: '邊框寬度',
-    liquid_border_distance: '邊框間距'
+    liquid_border_distance: '邊框間距',
+    top_n_label_tip: '請勿與扇區標籤欄位的數據值重複，否則會導致顯示異常。'
   },
   dataset: {
     field_value: '欄位值',

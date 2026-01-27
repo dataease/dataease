@@ -1440,7 +1440,6 @@ onMounted(async () => {
       <el-form-item
         class="form-item"
         :class="'form-item-' + themes"
-        :label="t('chart.top_n_label')"
         v-show="state.basicStyleForm.calcTopN"
       >
         <el-input
@@ -1450,6 +1449,19 @@ onMounted(async () => {
           :maxlength="50"
           @change="changeBasicStyle('topNLabel')"
         />
+        <template #label>
+          <div style="display: flex; align-items: center">
+            <span style="margin-right: 4px">{{ $t('chart.top_n_label') }}</span>
+            <el-tooltip effect="dark" placement="bottom">
+              <template #content>
+                <div>{{ t('chart.top_n_label_tip') }}</div>
+              </template>
+              <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
+                <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
+              </el-icon>
+            </el-tooltip>
+          </div>
+        </template>
       </el-form-item>
     </div>
     <div class="alpha-setting" v-if="showProperty('innerRadius')">

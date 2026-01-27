@@ -133,7 +133,10 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
     const { Pie: G2Pie } = await import('@antv/g2plot/esm/plots/pie')
     const newChart = new G2Pie(container, options)
     newChart.on('interval:click', d => {
-      d.data?.data?.field !== customAttr.basicStyle.topNLabel && action(d)
+      if (customAttr.basicStyle.calcTopN && d.data?.data?.others) {
+        return
+      }
+      action(d)
     })
     configPlotTooltipEvent(chart, newChart)
     return newChart
@@ -279,7 +282,8 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
         dynamicTooltipValue: [],
         field: basicStyle.topNLabel,
         name: basicStyle.topNLabel,
-        value: 0
+        value: 0,
+        others: true
       }
       const dynamicTotalMap: Record<string, number> = {}
       otherItems.reduce((p, n) => {
