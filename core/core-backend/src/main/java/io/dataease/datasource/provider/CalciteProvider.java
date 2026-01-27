@@ -100,6 +100,7 @@ public class CalciteProvider extends Provider {
                 schemas.add(resultSet.getString(1));
             }
         } catch (Exception e) {
+            LogUtil.error(e.getMessage(), e);
             DEException.throwException(e.getMessage());
         }
         if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.pg.name())) {
@@ -154,6 +155,7 @@ public class CalciteProvider extends Provider {
                 }
             }
         } catch (Exception e) {
+            LogUtil.error(e.getMessage(), e);
             DEException.throwException(e.getMessage());
         }
         return tables;
@@ -1625,6 +1627,7 @@ public class CalciteProvider extends Provider {
                 startSshSession(configuration, null, datasourceDTO.getId());
             }
         } catch (Exception e) {
+            LogUtil.error(e.getMessage(), e);
             DEException.throwException(e.getMessage());
         }
     }
@@ -1676,7 +1679,10 @@ public class CalciteProvider extends Provider {
             BasicDataSource basicDataSource = (BasicDataSource) jdbcSchema.getDataSource();
             basicDataSource.setMaxWaitMillis(5 * 1000);
             return basicDataSource.getConnection();
+        } catch (DEException e) {
+            throw e;
         } catch (Exception e) {
+            LogUtil.error(e.getMessage(), e);
             DEException.throwException(Translator.get("i18n_invalid_connection") + e.getMessage());
         }
         return null;
