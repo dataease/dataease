@@ -7,7 +7,7 @@ import { ElCol } from 'element-plus-secondary'
 const props = defineProps({
   title: propTypes.string,
   tips: propTypes.string,
-  iconName: propTypes.string,
+  iconName: propTypes.object,
   showSplitLine: propTypes.bool,
   active: propTypes.bool
 })

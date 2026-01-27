@@ -138,17 +138,14 @@ const expandClick = component => {
                 @click="onClick(getComponent(index))"
               >
                 <div style="width: 22px">
-                  <el-icon class="component-expand" @click="expandClick(getComponent(index))">
-                    <Icon
-                      v-if="getComponent(index)?.expand"
-                      name="dv-expand-down"
-                      class="expand-icon"
+                  <el-icon
+                    class="component-expand expand-icon"
+                    @click="expandClick(getComponent(index))"
+                  >
+                    <Icon v-if="getComponent(index)?.expand" name="dv-expand-down"
                       ><dvExpandDown class="svg-icon expand-icon"
                     /></Icon>
-                    <Icon
-                      v-if="!getComponent(index)?.expand"
-                      name="dv-expand-right"
-                      class="expand-icon"
+                    <Icon v-if="!getComponent(index)?.expand" name="dv-expand-right"
                       ><dvExpandRight class="svg-icon expand-icon"
                     /></Icon>
                   </el-icon>

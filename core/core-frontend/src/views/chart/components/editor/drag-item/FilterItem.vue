@@ -124,7 +124,7 @@ onMounted(() => {
           class="child"
           style="position: absolute; top: 7px; right: 10px; color: #a6a6a6; cursor: pointer"
         >
-          <Icon name="icon_down_outlined-1" class="el-icon-arrow-down el-icon-delete"
+          <Icon name="icon_down_outlined-1"
             ><icon_down_outlined1 class="svg-icon el-icon-arrow-down el-icon-delete"
           /></Icon>
         </el-icon>

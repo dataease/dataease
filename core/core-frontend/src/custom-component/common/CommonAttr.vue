@@ -23,7 +23,7 @@ const props = withDefaults(
     type?: 'light' | 'dark'
     themes?: EditorTheme
     element: any
-    showStyle: boolean
+    showStyle?: boolean
     backgroundColorPickerWidth?: number
     backgroundBorderSelectWidth?: number
   }>(),

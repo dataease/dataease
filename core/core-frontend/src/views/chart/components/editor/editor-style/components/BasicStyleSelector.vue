@@ -1278,7 +1278,6 @@ onMounted(async () => {
         style="width: 100%"
         :effect="themes"
         controls-position="right"
-        size="middle"
         :min="0"
         :max="30"
         :disabled="!state.basicStyleForm.radarShowPoint"
