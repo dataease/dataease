@@ -135,11 +135,31 @@ public class DatasetTableFieldManage {
 
     public void deleteByDatasetGroupUpdate(Long datasetGroupId, List<Long> fieldIds) {
         if (!CollectionUtils.isEmpty(fieldIds)) {
+            // chartCopyFields不删除
+            List<Long> chartCopyFields = getChartCopyFieldsByDatasetGroupIdAndOriginIds(datasetGroupId, fieldIds);
+            fieldIds.addAll(chartCopyFields);
             QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
             wrapper.eq("dataset_group_id", datasetGroupId);
             wrapper.notIn("id", fieldIds);
             coreDatasetTableFieldMapper.delete(wrapper);
         }
+    }
+
+    /**
+     * 获取图表复制字段
+     * 通过原始名是[field_id]格式，ext_field 为 2，并且chart_id不为空的字段判定为图表复制字段
+     * @param datasetGroupId 数据集ID
+     * @param fieldIds 原数据集字段ID列表
+     */
+    public List<Long> getChartCopyFieldsByDatasetGroupIdAndOriginIds(Long datasetGroupId, List<Long> fieldIds) {
+        List<String> originNames = fieldIds.stream().map(id -> "[" + id + "]").collect(Collectors.toList());
+        QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
+        wrapper.eq("dataset_group_id", datasetGroupId);
+        wrapper.eq("ext_field", 2);
+        wrapper.in("origin_name", originNames);
+        wrapper.isNotNull("chart_id");
+        List<CoreDatasetTableField> list = coreDatasetTableFieldMapper.selectList(wrapper);
+        return list.stream().map(CoreDatasetTableField::getId).collect(Collectors.toList());
     }
 
     public void deleteByDatasetGroupDelete(Long datasetGroupId) {
