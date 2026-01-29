@@ -19,7 +19,7 @@ import static java.awt.SystemColor.info;
 public class Redshift extends DatasourceConfiguration {
     private String driver = "com.amazon.redshift.jdbc42.Driver";
     private String extraParams = "";
-    private List<String> illegalParameters = Arrays.asList("socketFactory", "socketFactoryArg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationPluginClassName");
+    private List<String> illegalParameters = Arrays.asList("socketFactory", "socketFactoryArg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationPluginClassName", "IniFile");
 
     public String getJdbc() {
         if (StringUtils.isNoneEmpty(getUrlType()) && !getUrlType().equalsIgnoreCase("hostName")) {
