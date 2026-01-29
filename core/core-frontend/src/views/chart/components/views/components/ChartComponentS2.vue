@@ -30,6 +30,7 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { isDashboard, trackBarStyleCheck } from '@/utils/canvasUtils'
 import { type SpreadSheet } from '@antv/s2'
 import { parseJson } from '../../js/util'
+import { useI18n } from '@/hooks/web/useI18n'
 
 const dvMainStore = dvMainStoreWithOut()
 const {
@@ -41,6 +42,7 @@ const {
   inMobile
 } = storeToRefs(dvMainStore)
 const { emitter } = useEmitt()
+const { t } = useI18n()
 
 const props = defineProps({
   element: {
@@ -724,7 +726,7 @@ const tablePageClass = computed(() => {
         @keydown.stop
         @keyup.stop
       >
-        <div>共{{ state.pageInfo.total }}条</div>
+        <div>{{ t('chart.total') }} {{ state.pageInfo.total }} {{ t('chart.items') }}</div>
         <el-pagination
           v-if="state.pageStyle !== 'general'"
           class="table-page-content"
