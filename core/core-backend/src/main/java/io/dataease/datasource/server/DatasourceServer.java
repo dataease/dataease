@@ -1089,6 +1089,11 @@ public class DatasourceServer implements DatasourceApi {
         if (ObjectUtils.isEmpty(tableName) || ObjectUtils.isEmpty(id)) {
             return null;
         }
+        DatasetTableDTO datasetTableDTO = new DatasetTableDTO();
+        datasetTableDTO.setDatasourceId(id);
+        if (!getTables(datasetTableDTO).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList()).contains(tableName)) {
+            DEException.throwException(Translator.get("i18n_invalid_table_name"));
+        }
         String sql = "SELECT * FROM `" + tableName + "`";
         sql = new String(Base64.getEncoder().encode(sql.getBytes()));
         PreviewSqlDTO previewSqlDTO = new PreviewSqlDTO();
