@@ -292,7 +292,7 @@ const configCompat = (labelAttr: DeepPartial<ChartLabelAttr>) => {
   }
 }
 const checkLabelContent = contentProp => {
-  if (chartType.value === 'funnel' || chartType.value === 'liquid') {
+  if (['funnel', 'liquid', 'circle-packing'].includes(chartType.value)) {
     return false
   }
   const propIntersection = intersection(props.propertyInner, [

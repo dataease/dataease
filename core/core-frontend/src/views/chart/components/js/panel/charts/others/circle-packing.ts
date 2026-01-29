@@ -47,7 +47,7 @@ export class CirclePacking extends G2PlotChartView<CirclePackingOptions, G2Circl
       'fontShadow'
     ],
     'function-cfg': ['emptyDataStrategy'],
-    'label-selector': ['color', 'fontSize'],
+    'label-selector': ['color', 'fontSize', 'showDimension', 'showQuota', 'showProportion'],
     'legend-selector': ['icon', 'orient', 'fontSize', 'color', 'hPosition', 'vPosition'],
     'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'tooltipFormatter', 'show']
   }
@@ -176,9 +176,19 @@ export class CirclePacking extends G2PlotChartView<CirclePackingOptions, G2Circl
       ...tmpOptions.label,
       textAlign: 'center',
       offsetY: 5,
-      layout: labelAttr.fullDisplay ? [{ type: 'limit-in-plot' }] : tmpOptions.label.layout,
+      layout: labelAttr.fullDisplay ? [] : [{ type: 'limit-in-shape' }],
       formatter: (d: Datum) => {
-        return d.children.length === 0 ? d.name : ''
+        let showLabel = labelAttr.showDimension ? d.name : ''
+        if (labelAttr.showQuota) {
+          const quota = valueFormatter(d.value, labelAttr.quotaLabelFormatter)
+          showLabel += showLabel ? `\n${quota}` : quota
+        }
+        if (labelAttr.showProportion && d.depth > 0) {
+          const proportion = ((d.value || 1) / (d.parent?.value || 1)) * 100
+          const percent = `${proportion.toFixed(labelAttr.reserveDecimalCount ?? 2)}%`
+          showLabel += showLabel ? `\n${percent}` : percent
+        }
+        return d.children.length === 0 ? showLabel : ''
       }
     }
     return {
