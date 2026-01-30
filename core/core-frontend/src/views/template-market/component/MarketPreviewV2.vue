@@ -49,7 +49,7 @@
               <iconFilter />
             </el-icon>
           </el-row>
-          <el-row v-show="state.extFilterActive">
+          <el-row style="width: 100%" v-show="state.extFilterActive">
             <el-select
               v-model="state.templateType"
               style="margin-top: 8px"
@@ -63,7 +63,7 @@
               />
             </el-select>
           </el-row>
-          <el-row v-show="state.extFilterActive">
+          <el-row style="width: 100%" v-show="state.extFilterActive">
             <el-select
               v-model="state.templateSourceType"
               style="margin-top: 8px"
