@@ -4838,3 +4838,24 @@ export default {
     batch_del_confirm: 'Are you sure you want to delete {0} Webhooks?'
   }
 }
+
+
+  // Element Plus internationalization configuration
+  element_plus: {
+    el: {
+      pagination: {
+        goto: 'Go to',
+        pagesize: '/page',
+        total: 'Total {total}',
+        pageClassifier: '',
+        page: 'Page',
+        prev: 'Go to previous page',
+        next: 'Go to next page',
+        currentPage: 'page {pager}',
+        prevPages: 'Previous {pager} pages',
+        nextPages: 'Next {pager} pages',
+        deprecationWarning: 'Deprecated usages detected, please refer to the el-pagination documentation for more details',
+      }
+    }
+  }
+}

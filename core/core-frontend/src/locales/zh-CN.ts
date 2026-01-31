@@ -4692,5 +4692,23 @@ export default {
     content_type: '内容类型',
     del_confirm: '确定删除该 Webhook吗？',
     batch_del_confirm: '确定删除 {0} 个 Webhook吗'
+  },
+  // Element Plus internationalization configuration
+  element_plus: {
+    el: {
+      pagination: {
+        goto: "前往",
+        pagesize: "条/页",
+        total: "共 {total} 条",
+        pageClassifier: "页",
+        page: "页",
+        prev: "上一页",
+        next: "下一页",
+        currentPage: "第 {pager} 页",
+        prevPages: "向前 {pager} 页",
+        nextPages: "向后 {pager} 页",
+        deprecationWarning: "检测到已弃用的用法，请参阅 el-pagination 文档以了解更多详情"
+      }
+    }
   }
 }

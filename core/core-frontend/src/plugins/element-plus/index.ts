@@ -1,4 +1,5 @@
 import type { App } from 'vue'
+import { locale } from 'element-plus-secondary'
 
 // 需要全局引入一些组件，如ElScrollbar，不然一些下拉项样式有问题
 import { ElLoading, ElScrollbar } from 'element-plus-secondary'
@@ -24,4 +25,9 @@ export const setupElementPlusIcons = (app: App<Element>) => {
   for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)
   }
+}
+
+// 导出Element Plus国际化配置函数
+export const setElementPlusLocale = (localeObj: any) => {
+  locale(localeObj)
 }
