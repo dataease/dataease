@@ -13,7 +13,7 @@
       @templateApply="templateApply"
     />
     <el-row v-if="previewModel === 'createPreview'" class="main-container">
-      <el-row class="market-head">
+      <el-row class="market-head" style="padding: 0 0 12px 0">
         <el-icon class="custom-back-icon hover-icon" @click="previewModel = 'full'"
           ><ArrowLeft
         /></el-icon>
