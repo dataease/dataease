@@ -4836,11 +4836,7 @@ export default {
     content_type: 'Content Type',
     del_confirm: 'Are you sure you want to delete this Webhook?',
     batch_del_confirm: 'Are you sure you want to delete {0} Webhooks?'
-  }
-}
-
-
-  // Element Plus internationalization configuration
+  },
   element_plus: {
     el: {
       pagination: {
@@ -4854,7 +4850,8 @@ export default {
         currentPage: 'page {pager}',
         prevPages: 'Previous {pager} pages',
         nextPages: 'Next {pager} pages',
-        deprecationWarning: 'Deprecated usages detected, please refer to the el-pagination documentation for more details',
+        deprecationWarning:
+          'Deprecated usages detected, please refer to the el-pagination documentation for more details'
       }
     }
   }

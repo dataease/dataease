@@ -11,11 +11,15 @@ import { setElementPlusLocale } from '@/plugins/element-plus'
 // 合并DataEase的国际化配置到Element Plus的国际化结构中
 const mergeLocaleData = (baseLocale: any, customData: any) => {
   const merged = JSON.parse(JSON.stringify(baseLocale || {}))
-  
+
   const mergeRecursive = (obj: any, source: any) => {
     for (const key in source) {
       if (source.hasOwnProperty(key)) {
-        if (typeof source[key] === 'object' && source[key] !== null && !Array.isArray(source[key])) {
+        if (
+          typeof source[key] === 'object' &&
+          source[key] !== null &&
+          !Array.isArray(source[key])
+        ) {
           if (!obj[key]) obj[key] = {}
           mergeRecursive(obj[key], source[key])
         } else {
@@ -25,7 +29,7 @@ const mergeLocaleData = (baseLocale: any, customData: any) => {
     }
     return obj
   }
-  
+
   return mergeRecursive(merged, customData)
 }
 
@@ -122,10 +126,10 @@ export const useLocaleStore = defineStore('locales', {
       this.currentLocale.lang = localeMap?.lang
       const baseLocale = elLocaleMap[localeMap?.lang]
       const customData = await loadCustomLocaleData(localeMap?.lang)
-      
+
       // 合并基础国际化配置和自定义配置
       this.currentLocale.elLocale = mergeLocaleData(baseLocale, customData)
-      
+
       // 同时更新Element Plus的国际化配置
       if (this.currentLocale.elLocale) {
         setElementPlusLocale(this.currentLocale.elLocale)
@@ -136,10 +140,10 @@ export const useLocaleStore = defineStore('locales', {
       this.currentLocale.lang = language
       const baseLocale = elLocaleMap[language]
       const customData = await loadCustomLocaleData(language)
-      
+
       // 合并基础国际化配置和自定义配置
       this.currentLocale.elLocale = mergeLocaleData(baseLocale, customData)
-      
+
       // 同时更新Element Plus的国际化配置
       if (this.currentLocale.elLocale) {
         setElementPlusLocale(this.currentLocale.elLocale)

@@ -1,10 +1,10 @@
 import type { App } from 'vue'
-import { locale } from 'element-plus-secondary'
 
 // 需要全局引入一些组件，如ElScrollbar，不然一些下拉项样式有问题
 import { ElLoading, ElScrollbar } from 'element-plus-secondary'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import 'element-plus-secondary/theme-chalk/el-radio-button.css'
+import { ElConfigProvider } from 'element-plus-secondary'
 
 const plugins = [ElLoading]
 
@@ -27,7 +27,7 @@ export const setupElementPlusIcons = (app: App<Element>) => {
   }
 }
 
-// 导出Element Plus国际化配置函数
+// 修改 setElementPlusLocale 函数以使用 ElConfigProvider 设置国际化
 export const setElementPlusLocale = (localeObj: any) => {
-  locale(localeObj)
+  ElConfigProvider.locale = localeObj
 }
