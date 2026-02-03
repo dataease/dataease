@@ -269,7 +269,7 @@ onMounted(() => {
           v-model="state.tableHeaderForm.tableHeaderAlign"
           @change="changeTableHeader('tableHeaderAlign')"
         >
-          <el-radio label="left">
+          <el-radio value="left">
             <el-tooltip effect="dark" placement="top">
               <template #content>
                 {{ t('chart.text_pos_left') }}
@@ -289,7 +289,7 @@ onMounted(() => {
               </div>
             </el-tooltip>
           </el-radio>
-          <el-radio label="center">
+          <el-radio value="center">
             <el-tooltip effect="dark" placement="top">
               <template #content>
                 {{ t('chart.text_pos_center') }}
@@ -309,7 +309,7 @@ onMounted(() => {
               </div>
             </el-tooltip>
           </el-radio>
-          <el-radio label="right">
+          <el-radio value="right">
             <el-tooltip effect="dark" placement="top">
               <template #content>
                 {{ t('chart.text_pos_right') }}
@@ -444,7 +444,7 @@ onMounted(() => {
             v-model="state.tableHeaderForm.tableHeaderColAlign"
             @change="changeTableHeader('tableHeaderColAlign')"
           >
-            <el-radio label="left">
+            <el-radio value="left">
               <el-tooltip effect="dark" placement="top">
                 <template #content>
                   {{ t('chart.text_pos_left') }}
@@ -464,7 +464,7 @@ onMounted(() => {
                 </div>
               </el-tooltip>
             </el-radio>
-            <el-radio label="center">
+            <el-radio value="center">
               <el-tooltip effect="dark" placement="top">
                 <template #content>
                   {{ t('chart.text_pos_center') }}
@@ -484,7 +484,7 @@ onMounted(() => {
                 </div>
               </el-tooltip>
             </el-radio>
-            <el-radio label="right">
+            <el-radio value="right">
               <el-tooltip effect="dark" placement="top">
                 <template #content>
                   {{ t('chart.text_pos_right') }}
@@ -618,7 +618,7 @@ onMounted(() => {
             v-model="state.tableHeaderForm.tableHeaderCornerAlign"
             @change="changeTableHeader('tableHeaderCornerAlign')"
           >
-            <el-radio label="left">
+            <el-radio value="left">
               <el-tooltip effect="dark" placement="top">
                 <template #content>
                   {{ t('chart.text_pos_left') }}
@@ -638,7 +638,7 @@ onMounted(() => {
                 </div>
               </el-tooltip>
             </el-radio>
-            <el-radio label="center">
+            <el-radio value="center">
               <el-tooltip effect="dark" placement="top">
                 <template #content>
                   {{ t('chart.text_pos_center') }}
@@ -658,7 +658,7 @@ onMounted(() => {
                 </div>
               </el-tooltip>
             </el-radio>
-            <el-radio label="right">
+            <el-radio value="right">
               <el-tooltip effect="dark" placement="top">
                 <template #content>
                   {{ t('chart.text_pos_right') }}

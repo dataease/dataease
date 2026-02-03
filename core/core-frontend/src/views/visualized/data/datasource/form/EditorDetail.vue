@@ -1013,8 +1013,8 @@ defineExpose({
             v-if="form.type !== 'es'"
           >
             <el-radio-group v-model="form.configuration.urlType">
-              <el-radio label="hostName">{{ t('data_source.hostname') }}</el-radio>
-              <el-radio label="jdbcUrl">{{ t('data_source.jdbc_connection') }}</el-radio>
+              <el-radio value="hostName">{{ t('data_source.hostname') }}</el-radio>
+              <el-radio value="jdbcUrl">{{ t('data_source.jdbc_connection') }}</el-radio>
             </el-radio-group>
           </el-form-item>
 
@@ -1257,8 +1257,8 @@ defineExpose({
             </el-form-item>
             <el-form-item :label="t('data_source.connection_method')">
               <el-radio-group v-model="form.configuration.sshType">
-                <el-radio label="password">{{ t('data_source.password') }}</el-radio>
-                <el-radio label="sshkey">ssh key</el-radio>
+                <el-radio value="password">{{ t('data_source.password') }}</el-radio>
+                <el-radio value="sshkey">ssh key</el-radio>
               </el-radio-group>
             </el-form-item>
             <el-form-item
@@ -1405,8 +1405,8 @@ defineExpose({
           v-if="activeStep === 2 && form.type.startsWith('API')"
         >
           <el-radio-group v-model="form.syncSetting.updateType">
-            <el-radio label="all_scope">{{ t('datasource.all_scope') }}</el-radio>
-            <el-radio label="add_scope"> {{ t('datasource.add_scope') }}</el-radio>
+            <el-radio value="all_scope">{{ t('datasource.all_scope') }}</el-radio>
+            <el-radio value="add_scope"> {{ t('datasource.add_scope') }}</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item
@@ -1415,9 +1415,9 @@ defineExpose({
           v-if="activeStep === 2 && form.type.startsWith('API')"
         >
           <el-radio-group v-model="form.syncSetting.syncRate" @change="onRateChange">
-            <el-radio label="RIGHTNOW">{{ t('data_source.update_now') }}</el-radio>
-            <el-radio label="CRON">{{ t('datasource.cron_config') }}</el-radio>
-            <el-radio label="SIMPLE_CRON">{{ t('datasource.simple_cron') }}</el-radio>
+            <el-radio value="RIGHTNOW">{{ t('data_source.update_now') }}</el-radio>
+            <el-radio value="CRON">{{ t('datasource.cron_config') }}</el-radio>
+            <el-radio value="SIMPLE_CRON">{{ t('datasource.simple_cron') }}</el-radio>
           </el-radio-group>
         </el-form-item>
         <div

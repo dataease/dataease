@@ -93,12 +93,12 @@
                     v-if="state.linkJumpInfo"
                     v-model="state.linkJumpInfo.linkType"
                   >
-                    <el-radio label="outer">{{ t('visualization.link_outer') }}</el-radio>
-                    <el-radio label="inner">{{ t('visualization.dashboard_dataV') }}</el-radio>
+                    <el-radio value="outer">{{ t('visualization.link_outer') }}</el-radio>
+                    <el-radio value="inner">{{ t('visualization.dashboard_dataV') }}</el-radio>
                   </el-radio-group>
                   <el-radio-group class="larger-radio" v-if="!state.linkJumpInfo" disabled>
-                    <el-radio label="outer">{{ t('visualization.link_outer') }}</el-radio>
-                    <el-radio label="inner">{{ resourceType }}</el-radio>
+                    <el-radio value="outer">{{ t('visualization.link_outer') }}</el-radio>
+                    <el-radio value="inner">{{ resourceType }}</el-radio>
                   </el-radio-group>
                 </el-form-item>
                 <el-form-item class="radio-group-box">
@@ -110,14 +110,14 @@
                     v-if="state.linkJumpInfo"
                     v-model="state.linkJumpInfo.jumpType"
                   >
-                    <el-radio label="_self">{{ t('visualization.now_window') }}</el-radio>
-                    <el-radio label="_blank">{{ t('visualization.new_window') }}</el-radio>
-                    <el-radio label="newPop">{{ t('visualization.pop_window') }}</el-radio>
+                    <el-radio value="_self">{{ t('visualization.now_window') }}</el-radio>
+                    <el-radio value="_blank">{{ t('visualization.new_window') }}</el-radio>
+                    <el-radio value="newPop">{{ t('visualization.pop_window') }}</el-radio>
                   </el-radio-group>
                   <el-radio-group class="larger-radio" v-if="!state.linkJumpInfo" disabled>
-                    <el-radio label="_self">{{ t('visualization.now_window') }}</el-radio>
-                    <el-radio label="_blank">{{ t('visualization.new_window') }}</el-radio>
-                    <el-radio label="newPop">{{ t('visualization.pop_window') }}</el-radio>
+                    <el-radio value="_self">{{ t('visualization.now_window') }}</el-radio>
+                    <el-radio value="_blank">{{ t('visualization.new_window') }}</el-radio>
+                    <el-radio value="newPop">{{ t('visualization.pop_window') }}</el-radio>
                   </el-radio-group>
                 </el-form-item>
 
@@ -129,9 +129,9 @@
                     <span class="title">{{ t('visualization.window_size') }}</span>
                   </template>
                   <el-radio-group class="larger-radio" v-model="state.linkJumpInfo.windowSize">
-                    <el-radio label="large">{{ t('visualization.window_size_large') }}</el-radio>
-                    <el-radio label="middle">{{ t('visualization.window_size_middle') }}</el-radio>
-                    <el-radio label="small">{{ t('visualization.window_size_small') }}</el-radio>
+                    <el-radio value="large">{{ t('visualization.window_size_large') }}</el-radio>
+                    <el-radio value="middle">{{ t('visualization.window_size_middle') }}</el-radio>
+                    <el-radio value="small">{{ t('visualization.window_size_small') }}</el-radio>
                   </el-radio-group>
                 </el-form-item>
               </el-header>

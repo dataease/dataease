@@ -261,7 +261,7 @@ defineExpose({ getFormData })
             v-model="state.indicatorValueForm.hPosition"
             @change="changeLabelTitleStyleStyle('hPosition')"
           >
-            <el-radio :effect="themes" label="left">
+            <el-radio :effect="themes" value="left">
               <el-tooltip :effect="toolTip" placement="top">
                 <template #content>
                   {{ t('chart.text_pos_left') }}
@@ -332,7 +332,7 @@ defineExpose({ getFormData })
           v-model="state.indicatorValueForm.vPosition"
           @change="changeLabelTitleStyleStyle('vPosition')"
         >
-          <el-radio label="top">
+          <el-radio value="top">
             <el-tooltip :effect="toolTip" placement="top">
               <template #content>
                 {{ t('chart.text_pos_top') }}
@@ -352,7 +352,7 @@ defineExpose({ getFormData })
               </div>
             </el-tooltip>
           </el-radio>
-          <el-radio label="center">
+          <el-radio value="center">
             <el-tooltip :effect="toolTip" placement="top">
               <template #content>
                 {{ t('chart.text_pos_center') }}
@@ -372,7 +372,7 @@ defineExpose({ getFormData })
               </div>
             </el-tooltip>
           </el-radio>
-          <el-radio label="bottom">
+          <el-radio value="bottom">
             <el-tooltip :effect="toolTip" placement="top">
               <template #content>
                 {{ t('chart.text_pos_bottom') }}

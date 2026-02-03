@@ -277,7 +277,7 @@ initDateFormatter()
       </el-form-item>
       <el-form-item :label="t('chart.compare_type')">
         <el-radio-group v-model="compareItem.compareCalc.type">
-          <el-radio v-for="radio in state.compareList" :key="radio.value" :label="radio.value"
+          <el-radio v-for="radio in state.compareList" :key="radio.value" :value="radio.value"
             >{{ t('chart.' + radio.value) }}
           </el-radio>
         </el-radio-group>
@@ -285,9 +285,9 @@ initDateFormatter()
 
       <el-form-item :label="t('chart.compare_data')">
         <el-radio-group v-model="compareItem.compareCalc.resultData">
-          <el-radio label="pre">{{ t('chart.data_pre') }}</el-radio>
-          <el-radio label="sub">{{ t('chart.data_sub') }}</el-radio>
-          <el-radio label="percent">{{ t('chart.data_percent') }}</el-radio>
+          <el-radio value="pre">{{ t('chart.data_pre') }}</el-radio>
+          <el-radio value="sub">{{ t('chart.data_sub') }}</el-radio>
+          <el-radio value="percent">{{ t('chart.data_percent') }}</el-radio>
         </el-radio-group>
       </el-form-item>
 

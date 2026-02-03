@@ -9,7 +9,6 @@
         :stroke-width="element.style.borderWidth"
       />
     </svg>
-    <v-text :prop-value="element.propValue" :element="element" />
   </div>
 </template>
 

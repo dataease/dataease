@@ -429,7 +429,7 @@ onMounted(() => {
                 size="small"
                 :effect="themes"
                 v-model="state.legendForm.miscForm.mapAutoLegend"
-                :label="true"
+                :value="true"
                 @change="changeMisc('mapAutoLegend')"
                 style="width: 80px"
               >
@@ -439,7 +439,7 @@ onMounted(() => {
                 size="small"
                 :effect="themes"
                 v-model="state.legendForm.miscForm.mapAutoLegend"
-                :label="false"
+                :value="false"
                 @change="changeMisc('mapAutoLegend')"
               >
                 {{ t('chart.custom_case') }}
@@ -460,7 +460,7 @@ onMounted(() => {
                   size="small"
                   :effect="themes"
                   v-model="state.legendForm.miscForm.mapLegendRangeType"
-                  :label="'quantize'"
+                  :value="'quantize'"
                   @change="changeLegendCustomType('mapLegendRangeType')"
                   style="width: 75px"
                 >
@@ -470,7 +470,7 @@ onMounted(() => {
                   size="small"
                   :effect="themes"
                   v-model="state.legendForm.miscForm.mapLegendRangeType"
-                  :label="'custom'"
+                  :value="'custom'"
                   @change="changeLegendCustomType('mapLegendRangeType')"
                 >
                   {{ t('chart.legend_custom_range') }}
@@ -573,8 +573,8 @@ onMounted(() => {
         size="small"
         @change="changeLegendStyle('orient')"
       >
-        <el-radio :effect="themes" label="horizontal">{{ t('chart.horizontal') }}</el-radio>
-        <el-radio :effect="themes" label="vertical">{{ t('chart.vertical') }}</el-radio>
+        <el-radio :effect="themes" value="horizontal">{{ t('chart.horizontal') }}</el-radio>
+        <el-radio :effect="themes" value="vertical">{{ t('chart.vertical') }}</el-radio>
       </el-radio-group>
     </el-form-item>
 
@@ -590,7 +590,7 @@ onMounted(() => {
           v-model="state.legendForm.hPosition"
           @change="changeLegendStyle('hPosition')"
         >
-          <el-radio label="left">
+          <el-radio value="left">
             <el-tooltip :effect="toolTip" placement="top">
               <template #content>
                 {{ t('chart.text_pos_left') }}
@@ -607,7 +607,7 @@ onMounted(() => {
               </div>
             </el-tooltip>
           </el-radio>
-          <el-radio label="center" :disabled="state.legendForm.vPosition === 'center'">
+          <el-radio value="center" :disabled="state.legendForm.vPosition === 'center'">
             <el-tooltip :effect="toolTip" placement="top">
               <template #content>
                 {{ t('chart.text_pos_center') }}
@@ -627,7 +627,7 @@ onMounted(() => {
               </div>
             </el-tooltip>
           </el-radio>
-          <el-radio label="right">
+          <el-radio value="right">
             <el-tooltip :effect="toolTip" placement="top">
               <template #content>
                 {{ t('chart.text_pos_right') }}
@@ -664,7 +664,7 @@ onMounted(() => {
           v-model="state.legendForm.vPosition"
           @change="changeLegendStyle('vPosition')"
         >
-          <el-radio label="top">
+          <el-radio value="top">
             <el-tooltip :effect="toolTip" placement="top">
               <template #content>
                 {{ t('chart.text_pos_top') }}
@@ -681,7 +681,7 @@ onMounted(() => {
               </div>
             </el-tooltip>
           </el-radio>
-          <el-radio label="center" :disabled="state.legendForm.hPosition === 'center'">
+          <el-radio value="center" :disabled="state.legendForm.hPosition === 'center'">
             <el-tooltip :effect="toolTip" placement="top">
               <template #content>
                 {{ t('chart.text_pos_center') }}
@@ -701,7 +701,7 @@ onMounted(() => {
               </div>
             </el-tooltip>
           </el-radio>
-          <el-radio label="bottom">
+          <el-radio value="bottom">
             <el-tooltip :effect="toolTip" placement="top">
               <template #content>
                 {{ t('chart.text_pos_bottom') }}

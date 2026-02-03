@@ -531,8 +531,8 @@ defineExpose({
     >
       <div class="setting">
         <el-radio-group @change="handleTimeTypeChange" v-model="curComponent.timeType">
-          <el-radio label="fixed">{{ t('dynamic_time.fix') }}</el-radio>
-          <el-radio label="dynamic">{{ t('dynamic_time.dynamic') }}</el-radio>
+          <el-radio value="fixed">{{ t('dynamic_time.fix') }}</el-radio>
+          <el-radio value="dynamic">{{ t('dynamic_time.dynamic') }}</el-radio>
         </el-radio-group>
       </div>
       <template v-if="dynamicTime && curComponent.displayType === '1'">

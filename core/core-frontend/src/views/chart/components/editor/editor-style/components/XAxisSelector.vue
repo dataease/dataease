@@ -155,30 +155,30 @@ onMounted(() => {
         @change="changeAxisStyle('position')"
       >
         <div v-if="isBidirectionalBar">
-          <el-radio :effect="props.themes" label="top">{{
+          <el-radio :effect="props.themes" value="top">{{
             isHorizontalLayout ? t('chart.text_pos_left') : t('chart.text_pos_top')
           }}</el-radio>
-          <el-radio :effect="props.themes" label="bottom">{{
+          <el-radio :effect="props.themes" value="bottom">{{
             t('chart.text_pos_center')
           }}</el-radio>
         </div>
         <div v-else-if="isBulletGraph">
           <div v-if="isHorizontalLayout">
-            <el-radio :effect="props.themes" label="bottom">{{
+            <el-radio :effect="props.themes" value="bottom">{{
               t('chart.text_pos_left')
             }}</el-radio>
-            <el-radio :effect="props.themes" label="top">{{ t('chart.text_pos_right') }}</el-radio>
+            <el-radio :effect="props.themes" value="top">{{ t('chart.text_pos_right') }}</el-radio>
           </div>
           <div v-else>
-            <el-radio :effect="props.themes" label="top">{{ t('chart.text_pos_top') }}</el-radio>
-            <el-radio :effect="props.themes" label="bottom">{{
+            <el-radio :effect="props.themes" value="top">{{ t('chart.text_pos_top') }}</el-radio>
+            <el-radio :effect="props.themes" value="bottom">{{
               t('chart.text_pos_bottom')
             }}</el-radio>
           </div>
         </div>
         <div v-else>
-          <el-radio :effect="props.themes" label="top">{{ t('chart.text_pos_top') }}</el-radio>
-          <el-radio :effect="props.themes" label="bottom">{{
+          <el-radio :effect="props.themes" value="top">{{ t('chart.text_pos_top') }}</el-radio>
+          <el-radio :effect="props.themes" value="bottom">{{
             t('chart.text_pos_bottom')
           }}</el-radio>
         </div>

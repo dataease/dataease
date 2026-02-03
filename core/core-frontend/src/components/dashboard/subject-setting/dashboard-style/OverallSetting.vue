@@ -210,8 +210,8 @@
         class="radio-span"
         @change="themeChange"
       >
-        <el-radio label="all" :effect="themes"> {{ t('visualization.view') }} </el-radio>
-        <el-radio label="custom" :effect="themes">
+        <el-radio value="all" :effect="themes"> {{ t('visualization.view') }} </el-radio>
+        <el-radio value="custom" :effect="themes">
           {{ resourceType }}
         </el-radio>
       </el-radio-group>
