@@ -15,7 +15,7 @@ public class ExternalUserVO implements Serializable {
     private static final long serialVersionUID = -5244308239452360019L;
 
     @Schema(description = "用户ID")
-    @JsonSerialize(using= ToStringSerializer.class)
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long uid;
     @Schema(description = "用户账号")
     private String account;
@@ -25,6 +25,9 @@ public class ExternalUserVO implements Serializable {
     private String email;
     @Schema(description = "用户电话")
     private String phone;
+
+    public ExternalUserVO() {
+    }
 
     public ExternalUserVO(Long uid, String account, String name, String email, String phone) {
         this.uid = uid;
