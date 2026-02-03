@@ -8,6 +8,10 @@ import { COLOR_PANEL } from '../../../util/chart'
 import { fieldType } from '@/utils/attr'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import { cloneDeep } from 'lodash-es'
+import {
+  transDateFormat,
+  transDatePickerType
+} from '@/views/chart/components/editor/util/DateFormatUtil'
 
 const { t } = useI18n()
 
@@ -403,6 +407,14 @@ const getFieldOptions = () => {
   return fieldOptions
 }
 
+const datePickerFormat = (fieldItem: { dateStyle: any; datePattern: any }) => {
+  return transDateFormat(fieldItem.dateStyle, fieldItem.datePattern)
+}
+
+const datePickerType = (fieldItem: { dateStyle: string }) => {
+  return transDatePickerType(fieldItem.dateStyle)
+}
+
 init()
 </script>
 
@@ -527,6 +539,19 @@ init()
                   class="value-item"
                   clearable
                   @change="changeThreshold"
+                />
+                <el-date-picker
+                  v-model="item.value"
+                  v-else-if="[1].includes(fieldItem.field.deType)"
+                  :type="datePickerType(fieldItem.field)"
+                  :placeholder="t('chart.drag_block_label_value')"
+                  :format="datePickerFormat(fieldItem.field)"
+                  :value-format="datePickerFormat(fieldItem.field)"
+                  key="start-time-filt"
+                  size="default"
+                  class="value-item"
+                  @change="changeThreshold"
+                  style="width: 100%"
                 />
                 <el-input
                   v-model="item.value"
