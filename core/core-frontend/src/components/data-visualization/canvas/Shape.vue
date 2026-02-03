@@ -584,88 +584,117 @@ const handleMouseDownOnShape = e => {
     ? document.getElementById('shape-id-' + canvasId.value.split('--')[0])
     : null
   const curDom = document.getElementById(domId.value)
+
+  // 添加节流变量
+  let rafId = null
+  let lastTime = 0
+  const throttleInterval = 25 // 约30FPS，可以根据需要调整
+
   const move = moveEvent => {
-    hasMove = true
-    const curX = moveEvent.clientX
-    const curY = moveEvent.clientY
-    const top = curY - startY + startTop
-    const left = curX - startX + startLeft
-    pos['top'] = top
-    pos['left'] = left
-    // 非主画布非分组画布的情况 需要检测是否从Tab中移除组件(向左移除30px 或者向右移除30px 向左移除30px)
-    // 因为仪表板中组件向下移动可能只是为了挤占空间 不一定是为了移出 这里无法判断明确意图 暂时支不支持向下移出
-    // 大屏和仪表板暂时做位置算法区分 仪表板暂时使用curX 因为缩放的影响 大屏使用 tab位置 + 组件位置（相对内部画布）+初始触发点
-    // 如果组件在tab中且tab在Group中 不允许移入移出 pTabGroupFlag = true
-    if (
-      !pTabGroupFlag &&
-      pJoinTab &&
-      !isMainCanvas(canvasId.value) &&
-      !isGroupCanvas(canvasId.value) &&
-      !isGroupArea.value &&
-      (top < -30 || left < -30 || left + componentWidth - canvasWidth > 30)
-    ) {
-      contentDisplay.value = false
-      dvMainStore.setMousePointShadowMap({
-        mouseX:
-          !isDashboard() && outerTabDom
-            ? outerTabDom.offsetLeft + curDom.offsetLeft + offsetX
-            : curX,
-        mouseY:
-          !isDashboard() && outerTabDom
-            ? outerTabDom.offsetTop + curDom.offsetTop + offsetY + 100
-            : curY + mainScrollTop.value,
-        width: componentWidth,
-        height: componentHeight
-      })
-      const tabComponentId = element.value.canvasId.split('--')[0]
-      dvMainStore.setTabMoveOutComponentId(tabComponentId)
-    } else {
-      dvMainStore.setTabMoveOutComponentId(null)
-      contentDisplay.value = true
-    }
-    // 仪表板进行Tab碰撞检查
-    tabMoveInCheck()
-    // 仪表板模式 会造成移动现象 当检测组件正在碰撞有效区内或者移入有效区内 则周边组件不进行移动
-    if (
-      dashboardActive.value &&
-      (isFirst || (!tabMoveInActiveId.value && !tabCollisionActiveId.value))
-    ) {
-      element.value['dragging'] = true
-      emit('onDragging', e)
+    const now = Date.now()
+
+    // 节流处理
+    if (now - lastTime < throttleInterval && rafId !== null) {
+      return
     }
 
-    //如果当前组件是Group分组 则要进行内部组件深度计算
-    if (['DeTabs', 'Group'].includes(element.value.component)) {
-      groupSizeStyleAdaptor(element.value)
+    // 使用 requestAnimationFrame 来优化性能
+    if (rafId) {
+      cancelAnimationFrame(rafId)
     }
-    //如果当前画布是Group内部画布 则对应组件定位在resize时要还原到groupStyle中
-    if (isGroupCanvas(canvasId.value) || isTabCanvas(canvasId.value)) {
-      groupStyleRevert(element.value, {
-        width: parentNode.value.offsetWidth,
-        height: parentNode.value.offsetHeight
-      })
-    }
-    // 防止首次组件在tab旁边无法触发矩阵移动
-    if (isFirst) {
-      isFirst = false
-    }
-    // 修改当前组件样式
-    dvMainStore.setShapeStyle(pos, areaData.value.components, 'move')
-    // 等更新完当前组件的样式并绘制到屏幕后再判断是否需要吸附
-    // GroupArea是分组视括组件 不需要进行吸附
-    // 如果不使用 nextTick，吸附后将无法移动
-    if (!isGroupArea.value) {
-      nextTick(() => {
-        // 触发元素移动事件，用于显示标线、吸附功能
-        // 后面两个参数代表鼠标移动方向
-        // curY - startY > 0 true 表示向下移动 false 表示向上移动
-        // curX - startX > 0 true 表示向右移动 false 表示向左移动
-        eventBus.emit('move', { isDownward: curY - startY > 0, isRightward: curX - startX > 0 })
-      })
-    }
+
+    rafId = requestAnimationFrame(() => {
+      hasMove = true
+      const curX = moveEvent.clientX
+      const curY = moveEvent.clientY
+      const top = curY - startY + startTop
+      const left = curX - startX + startLeft
+      pos['top'] = top
+      pos['left'] = left
+      // 非主画布非分组画布的情况 需要检测是否从Tab中移除组件(向左移除30px 或者向右移除30px 向左移除30px)
+      // 因为仪表板中组件向下移动可能只是为了挤占空间 不一定是为了移出 这里无法判断明确意图 暂时支不支持向下移出
+      // 大屏和仪表板暂时做位置算法区分 仪表板暂时使用curX 因为缩放的影响 大屏使用 tab位置 + 组件位置（相对内部画布）+初始触发点
+      // 如果组件在tab中且tab在Group中 不允许移入移出 pTabGroupFlag = true
+      if (
+        !pTabGroupFlag &&
+        pJoinTab &&
+        !isMainCanvas(canvasId.value) &&
+        !isGroupCanvas(canvasId.value) &&
+        !isGroupArea.value &&
+        (top < -30 || left < -30 || left + componentWidth - canvasWidth > 30)
+      ) {
+        contentDisplay.value = false
+        dvMainStore.setMousePointShadowMap({
+          mouseX:
+            !isDashboard() && outerTabDom
+              ? outerTabDom.offsetLeft + curDom.offsetLeft + offsetX
+              : curX,
+          mouseY:
+            !isDashboard() && outerTabDom
+              ? outerTabDom.offsetTop + curDom.offsetTop + offsetY + 100
+              : curY + mainScrollTop.value,
+          width: componentWidth,
+          height: componentHeight
+        })
+        const tabComponentId = element.value.canvasId.split('--')[0]
+        dvMainStore.setTabMoveOutComponentId(tabComponentId)
+      } else {
+        dvMainStore.setTabMoveOutComponentId(null)
+        contentDisplay.value = true
+      }
+      // 仪表板进行Tab碰撞检查
+      tabMoveInCheck()
+      // 仪表板模式 会造成移动现象 当检测组件正在碰撞有效区内或者移入有效区内 则周边组件不进行移动
+      if (
+        dashboardActive.value &&
+        (isFirst || (!tabMoveInActiveId.value && !tabCollisionActiveId.value))
+      ) {
+        element.value['dragging'] = true
+        emit('onDragging', e)
+      }
+
+      //如果当前组件是Group分组 则要进行内部组件深度计算
+      if (['DeTabs', 'Group'].includes(element.value.component)) {
+        groupSizeStyleAdaptor(element.value)
+      }
+      //如果当前画布是Group内部画布 则对应组件定位在resize时要还原到groupStyle中
+      if (isGroupCanvas(canvasId.value) || isTabCanvas(canvasId.value)) {
+        groupStyleRevert(element.value, {
+          width: parentNode.value.offsetWidth,
+          height: parentNode.value.offsetHeight
+        })
+      }
+      // 防止首次组件在tab旁边无法触发矩阵移动
+      if (isFirst) {
+        isFirst = false
+      }
+      // 修改当前组件样式
+      dvMainStore.setShapeStyle(pos, areaData.value.components, 'move')
+      // 等更新完当前组件的样式并绘制到屏幕后再判断是否需要吸附
+      // GroupArea是分组视括组件 不需要进行吸附
+      // 如果不使用 nextTick，吸附后将无法移动
+      if (!isGroupArea.value) {
+        nextTick(() => {
+          // 触发元素移动事件，用于显示标线、吸附功能
+          // 后面两个参数代表鼠标移动方向
+          // curY - startY > 0 true 表示向下移动 false 表示向上移动
+          // curX - startX > 0 true 表示向右移动 false 表示向左移动
+          eventBus.emit('move', { isDownward: curY - startY > 0, isRightward: curX - startX > 0 })
+        })
+      }
+
+      lastTime = now
+      rafId = null
+    })
   }
 
   const up = () => {
+    // 清理动画帧
+    if (rafId) {
+      cancelAnimationFrame(rafId)
+      rafId = null
+    }
+
     dashboardActive.value && emit('onMouseUp')
     element.value['dragging'] = false
     hasMove &&
