@@ -4,6 +4,7 @@ import icon_italic_outlined from '@/assets/svg/icon_italic_outlined.svg'
 import icon_leftAlignment_outlined from '@/assets/svg/icon_left-alignment_outlined.svg'
 import icon_centerAlignment_outlined from '@/assets/svg/icon_center-alignment_outlined.svg'
 import icon_rightAlignment_outlined from '@/assets/svg/icon_right-alignment_outlined.svg'
+import icon_customAlignment_outlined from '@/assets/svg/icon_custom-alignment_outlined.svg'
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import { computed, onMounted, PropType, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -15,6 +16,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import TableHeaderGroupConfig from './TableHeaderGroupConfig.vue'
 import { getLeafNodes } from '@/views/chart/components/js/panel/common/common_table'
+import { SERIES_NUMBER_FIELD } from '@antv/s2'
 
 const dvMainStore = dvMainStoreWithOut()
 const { batchOptStatus, mobileInPc } = storeToRefs(dvMainStore)
@@ -35,7 +37,7 @@ const props = defineProps({
 })
 
 watch(
-  () => props.chart.customAttr.tableHeader,
+  [() => props.chart.customAttr.tableHeader, () => props.chart.xAxis, () => props.chart.yAxis],
   () => {
     init()
   },
@@ -69,6 +71,12 @@ const state = reactive({
 const emit = defineEmits(['onTableHeaderChange'])
 
 const changeTableHeader = prop => {
+  if (prop === 'alignConfig') {
+    state.tableHeaderForm.alignConfig = alignConfigOptions.map(item => ({
+      id: item.id,
+      align: item.id === alignConfig.id ? alignConfig.align : item.align
+    }))
+  }
   emit('onTableHeaderChange', state.tableHeaderForm, prop)
 }
 
@@ -112,6 +120,21 @@ const groupConfigValid = computed(() => {
   const leafKeys = leafNodes.map(item => item.key)
   return isEqual(showColumnFields, leafKeys)
 })
+
+const alignConfig = reactive({
+  id: '',
+  align: 'left'
+})
+const alignConfigOptions = reactive([])
+const changeAlignConfig = () => {
+  const selected = state.tableHeaderForm.alignConfig.find(item => item.id === alignConfig.id)
+  if (selected) {
+    alignConfig.align = selected.align
+  }
+}
+const showCustomAlign = computed(() => {
+  return ['table-info', 'table-normal'].includes(props.chart.type)
+})
 const init = () => {
   const tableHeader = props.chart?.customAttr?.tableHeader
   if (tableHeader) {
@@ -138,6 +161,38 @@ const init = () => {
         state.tableHeaderForm.tableHeaderBgColor,
         alpha
       )
+    }
+  }
+  if (['table-info', 'table-normal'].includes(props.chart.type)) {
+    const axis = [...props.chart?.xAxis]
+    if (props.chart?.type === 'table-normal') {
+      axis.push(...props.chart?.yAxis)
+    }
+    const alignCfg = props.chart?.customAttr?.tableHeader?.alignConfig || []
+    const alignCfgMap = alignCfg?.reduce((p, n) => {
+      p[n.id] = n.align
+      return p
+    }, {})
+    alignConfigOptions.splice(0, alignConfigOptions.length)
+    if (tableHeader?.showIndex) {
+      alignConfigOptions.push({
+        id: SERIES_NUMBER_FIELD,
+        label: tableHeader.indexLabel,
+        align: alignCfgMap[SERIES_NUMBER_FIELD] || 'left'
+      })
+    }
+    axis.forEach(item => {
+      const align = alignCfgMap[item.dataeaseName] || 'left'
+      alignConfigOptions.push({
+        id: item.dataeaseName,
+        label: item.chartShowName ?? item.name,
+        align
+      })
+    })
+    const flag = alignConfigOptions.findIndex(item => item.id === alignConfig.id) === -1
+    if (flag) {
+      alignConfig.id = alignConfigOptions[0].id
+      alignConfig.align = alignConfigOptions[0].align
     }
   }
 }
@@ -329,10 +384,111 @@ onMounted(() => {
               </div>
             </el-tooltip>
           </el-radio>
+          <el-radio label="custom" v-if="showCustomAlign">
+            <el-tooltip effect="dark" placement="top">
+              <template #content>
+                {{ t('commons.custom') }}
+              </template>
+              <div
+                class="icon-btn"
+                :class="{
+                  dark: themes === 'dark',
+                  active: state.tableHeaderForm.tableHeaderAlign === 'custom'
+                }"
+              >
+                <el-icon>
+                  <Icon name="icon_custom-alignment_outlined"
+                    ><icon_customAlignment_outlined class="svg-icon"
+                  /></Icon>
+                </el-icon>
+              </div>
+            </el-tooltip>
+          </el-radio>
         </el-radio-group>
       </el-form-item>
     </el-space>
-
+    <el-row
+      v-if="showProperty('tableHeaderAlign') && state.tableHeaderForm.tableHeaderAlign === 'custom'"
+    >
+      <el-col :span="12">
+        <el-select :effect="themes" v-model="alignConfig.id" @change="changeAlignConfig">
+          <el-option
+            v-for="item in alignConfigOptions"
+            :key="item.id"
+            :label="item.label"
+            :value="item.id"
+          />
+        </el-select>
+      </el-col>
+      <el-col :span="12" style="display: flex; align-items: center">
+        <el-radio-group
+          class="icon-radio-group"
+          v-model="alignConfig.align"
+          @change="changeTableHeader('alignConfig')"
+        >
+          <el-radio label="left">
+            <el-tooltip effect="dark" placement="top">
+              <template #content>
+                {{ t('chart.text_pos_left') }}
+              </template>
+              <div
+                class="icon-btn"
+                :class="{
+                  dark: themes === 'dark',
+                  active: alignConfig.align === 'left'
+                }"
+              >
+                <el-icon>
+                  <Icon name="icon_left-alignment_outlined"
+                    ><icon_leftAlignment_outlined class="svg-icon"
+                  /></Icon>
+                </el-icon>
+              </div>
+            </el-tooltip>
+          </el-radio>
+          <el-radio label="center">
+            <el-tooltip effect="dark" placement="top">
+              <template #content>
+                {{ t('chart.text_pos_center') }}
+              </template>
+              <div
+                class="icon-btn"
+                :class="{
+                  dark: themes === 'dark',
+                  active: alignConfig.align === 'center'
+                }"
+              >
+                <el-icon>
+                  <Icon name="icon_center-alignment_outlined"
+                    ><icon_centerAlignment_outlined class="svg-icon"
+                  /></Icon>
+                </el-icon>
+              </div>
+            </el-tooltip>
+          </el-radio>
+          <el-radio label="right">
+            <el-tooltip effect="dark" placement="top">
+              <template #content>
+                {{ t('chart.text_pos_right') }}
+              </template>
+              <div
+                class="icon-btn"
+                :class="{
+                  dark: themes === 'dark',
+                  active: alignConfig.align === 'right'
+                }"
+              >
+                <el-icon>
+                  <Icon name="icon_right-alignment_outlined"
+                    ><icon_rightAlignment_outlined class="svg-icon"
+                  /></Icon>
+                </el-icon>
+              </div>
+            </el-tooltip>
+          </el-radio>
+        </el-radio-group>
+      </el-col>
+    </el-row>
     <template v-if="chart.type === 'table-pivot' && showProperty('tableHeaderBgColor')">
       <el-divider class="m-divider" :class="{ 'divider-dark': themes === 'dark' }" />
       <el-form-item

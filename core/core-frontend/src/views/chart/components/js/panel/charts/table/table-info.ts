@@ -409,7 +409,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
 
   protected configTheme(chart: Chart): S2Theme {
     const theme = super.configTheme(chart)
-    const { basicStyle, tableCell } = parseJson(chart.customAttr)
+    const { basicStyle, tableCell, tableHeader } = parseJson(chart.customAttr)
     if (tableCell.mergeCells) {
       const tableFontColor = hexColorToRGBA(tableCell.tableFontColor, basicStyle.alpha)
       let tableItemBgColor = tableCell.tableItemBgColor
@@ -466,6 +466,26 @@ export class TableInfo extends S2ChartView<TableSheet> {
         }
       }
       merge(theme, mergeCellTheme)
+    }
+    if (tableCell.tableItemAlign === 'custom') {
+      const { alignConfig } = tableCell
+      const alignMap = alignConfig.reduce((p, n) => {
+        p[n.id] = n.align
+        return p
+      }, {})
+      merge(theme, {
+        dataCellAlignConfig: alignMap
+      })
+    }
+    if (tableHeader.tableHeaderAlign === 'custom') {
+      const { alignConfig } = tableHeader
+      const alignMap = alignConfig.reduce((p, n) => {
+        p[n.id] = n.align
+        return p
+      }, {})
+      merge(theme, {
+        colCellAlignConfig: alignMap
+      })
     }
     return theme
   }

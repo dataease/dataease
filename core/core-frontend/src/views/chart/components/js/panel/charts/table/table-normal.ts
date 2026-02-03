@@ -12,7 +12,8 @@ import {
   summaryRowStyle,
   calcTreeWidth,
   getStartPosition,
-  isNumeric
+  isNumeric,
+  CustomTableColCell
 } from '@/views/chart/components/js/panel/common/common_table'
 import { S2ChartView, S2DrawOptions } from '@/views/chart/components/js/panel/types/impl/s2'
 import { parseJson } from '@/views/chart/components/js/util'
@@ -21,12 +22,13 @@ import {
   S2DataConfig,
   S2Event,
   S2Options,
+  S2Theme,
   ScrollbarPositionType,
   TableColCell,
   TableSheet,
   ViewMeta
 } from '@antv/s2'
-import { isEqual } from 'lodash-es'
+import { isEqual, merge } from 'lodash-es'
 import { TABLE_EDITOR_PROPERTY, TABLE_EDITOR_PROPERTY_INNER } from './common'
 
 const { t } = useI18n()
@@ -210,6 +212,9 @@ export class TableNormal extends S2ChartView<TableSheet> {
       // header interaction
       chart.container = container
       this.configHeaderInteraction(chart, s2Options)
+      s2Options.colCell = (node, sheet, config) => {
+        return new CustomTableColCell(node, sheet, config)
+      }
     }
     // 配置总计和序号列
     this.configSummaryRowAndIndex(chart, pageInfo, s2Options, s2DataConfig)
@@ -324,6 +329,32 @@ export class TableNormal extends S2ChartView<TableSheet> {
     newChart.setThemeCfg({ theme: customTheme })
 
     return newChart
+  }
+
+  protected configTheme(chart: Chart): S2Theme {
+    const theme = super.configTheme(chart)
+    const { tableHeader, tableCell } = parseJson(chart.customAttr)
+    if (tableCell.tableItemAlign === 'custom') {
+      const { alignConfig } = tableCell
+      const alignMap = alignConfig.reduce((p, n) => {
+        p[n.id] = n.align
+        return p
+      }, {})
+      merge(theme, {
+        dataCellAlignConfig: alignMap
+      })
+    }
+    if (tableHeader.tableHeaderAlign === 'custom') {
+      const { alignConfig } = tableHeader
+      const alignMap = alignConfig.reduce((p, n) => {
+        p[n.id] = n.align
+        return p
+      }, {})
+      merge(theme, {
+        colCellAlignConfig: alignMap
+      })
+    }
+    return theme
   }
 
   protected configSummaryRowAndIndex(

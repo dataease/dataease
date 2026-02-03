@@ -2168,6 +2168,22 @@ class CustomMergedCell extends MergedCell {
     })
   }
 
+
+  protected getTextStyle() {
+    const textStyle = super.getTextStyle()
+    const dataCellAlignConfig = this.theme.dataCellAlignConfig
+    if (dataCellAlignConfig) {
+      const align = dataCellAlignConfig[this.meta.valueField]
+      if (align) {
+        textStyle.textAlign = align
+      }
+    }
+    if (textStyle.textAlign === 'custom') {
+      textStyle.textAlign = 'left'
+    }
+    return textStyle
+  }
+
   drawTextShape(): void {
     if (this.meta.deFieldType === 7) {
       drawImage.apply(this)
@@ -2203,6 +2219,21 @@ export class CustomDataCell extends TableDataCell {
     return bgColorInfo
   }
 
+  protected getTextStyle() {
+    const textStyle = super.getTextStyle()
+    const dataCellAlignConfig = this.theme.dataCellAlignConfig
+    if (dataCellAlignConfig) {
+      const align = dataCellAlignConfig[this.meta.valueField]
+      if (align) {
+        textStyle.textAlign = align
+      }
+    }
+    if (textStyle.textAlign === 'custom') {
+      textStyle.textAlign = 'left'
+    }
+    return textStyle
+  }
+
   /**
    * 重写绘制文本内容的方法
    * @protected
@@ -2220,6 +2251,22 @@ export class CustomDataCell extends TableDataCell {
 }
 
 export class CustomTableColCell extends TableColCell {
+
+  protected getTextStyle() {
+    const textStyle = super.getTextStyle()
+    const colCellAlignConfig = this.theme.colCellAlignConfig
+    if (colCellAlignConfig) {
+      const align = colCellAlignConfig[this.meta.field]
+      if (align) {
+        textStyle.textAlign = align
+      }
+    }
+    if (textStyle.textAlign === 'custom') {
+      textStyle.textAlign = 'left'
+    }
+    return textStyle
+  }
+
   /**
    * 重写是为了表头文本内容的换行
    * @protected
@@ -2549,7 +2596,15 @@ export function getSummaryRow(data, axis, sumCon = [], customSumResult = {}) {
 export class SummaryCell extends CustomDataCell {
   getTextStyle() {
     const textStyle = cloneDeep(this.theme.colCell.bolderText)
-    textStyle.textAlign = this.theme.dataCell.text.textAlign
+    const dataCellAlignConfig = this.theme.dataCellAlignConfig
+    if (dataCellAlignConfig) {
+      const align = dataCellAlignConfig[this.meta.valueField]
+      if (align) {
+        textStyle.textAlign = align
+      }
+    } else {
+      textStyle.textAlign = this.theme.dataCell.text.textAlign
+    }
     return textStyle
   }
 
