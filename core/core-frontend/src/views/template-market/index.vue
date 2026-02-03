@@ -13,7 +13,7 @@
       @templateApply="templateApply"
     />
     <el-row v-if="previewModel === 'createPreview'" class="main-container">
-      <el-row class="market-head" style="padding: 0 0 12px">
+      <el-row class="market-head">
         <el-icon class="custom-back-icon hover-icon" @click="previewModel = 'full'"
           ><ArrowLeft
         /></el-icon>
@@ -96,25 +96,28 @@
         </el-row>
       </el-row>
       <el-row class="template-area">
-        <div class="template-left">
-          <el-tree
-            v-if="state.treeShow"
-            menu
-            class="custom-market-tree"
-            v-model="state.marketActiveTab"
-            :data="categoriesComputed"
-            :props="state.treeProps"
-            node-key="label"
-            default-expand-all
-            highlight-current
-            :current-node-key="state.marketActiveTab"
-            @node-click="nodeClick"
-          >
-            <template #default="{ data }">
-              <span :title="data.label" class="ed-tree-node__label">{{ data.label }}</span>
-            </template>
-          </el-tree>
-        </div>
+        <el-scrollbar>
+          <div class="template-left">
+            <el-tree
+              v-if="state.treeShow"
+              menu
+              class="custom-market-tree"
+              v-model="state.marketActiveTab"
+              :data="categoriesComputed"
+              :props="state.treeProps"
+              node-key="label"
+              default-expand-all
+              highlight-current
+              :current-node-key="state.marketActiveTab"
+              @node-click="nodeClick"
+            >
+              <template #default="{ data }">
+                <span :title="data.label" class="ed-tree-node__label">{{ data.label }}</span>
+              </template>
+            </el-tree>
+          </div>
+        </el-scrollbar>
+
         <div
           v-show="state.networkStatus && state.hasResult"
           id="template-show-area"
@@ -645,10 +648,6 @@ defineExpose({
       padding: 12px 24px;
       border-bottom: 1px solid rgba(31, 35, 41, 0.15);
 
-      &.create-preview {
-        padding: 0;
-        padding-bottom: 12px;
-      }
       span {
         font-size: 16px;
         color: #1f2329;
@@ -670,10 +669,8 @@ defineExpose({
       height: calc(100vh - 135px);
       .template-left {
         padding: 8px;
-        padding-left: 0;
         width: 204px;
         height: 100%;
-        overflow-y: auto;
         background: #ffffff;
       }
       .template-right {
@@ -799,5 +796,6 @@ defineExpose({
   background: rgba(31, 35, 41, 0.15);
   border: 0;
   height: 1px;
+  margin-left: 24px;
 }
 </style>

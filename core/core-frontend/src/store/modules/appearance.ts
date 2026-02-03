@@ -300,6 +300,12 @@ export const useAppearanceStore = defineStore('appearanceStore', {
             .mix(new colorTree('ffffff'), new colorTree(this.customColor.substr(1)), { value: 15 })
             .toRGB()
         )
+        document.documentElement.style.setProperty(
+          '--ed-color-primary-dark-20',
+          colorFunctions
+            .mix(new colorTree('000000'), new colorTree(this.customColor.substr(1)), { value: 20 })
+            .toRGB()
+        )
         document.documentElement.style.setProperty('--ed-color-primary-1a', `${this.customColor}1a`)
         document.documentElement.style.setProperty('--ed-color-primary-33', `${this.customColor}33`)
         document.documentElement.style.setProperty('--ed-color-primary-99', `${this.customColor}99`)
@@ -317,6 +323,7 @@ export const useAppearanceStore = defineStore('appearanceStore', {
         document.documentElement.style.removeProperty('--ed-color-primary-33')
         document.documentElement.style.removeProperty('--ed-color-primary-99')
         document.documentElement.style.removeProperty('--ed-color-primary-dark-2')
+        document.documentElement.style.removeProperty('--ed-color-primary-dark-20')
       }
       this.bg = data.bg
       this.login = data.login

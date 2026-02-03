@@ -684,7 +684,14 @@ defineExpose({
       <div class="icon-methods" v-show="showPosition === 'preview'">
         <span class="title"> {{ resourceLabel }} </span>
         <div v-if="rootManage" class="flex-align-center">
-          <el-tooltip :content="t('work_branch.new_folder')" placement="top" effect="dark">
+          <el-tooltip
+            offset="14"
+            :content="t('work_branch.new_folder')"
+            placement="top"
+            popper-class="new-folder_tip"
+            effect="dark"
+            arrow-offset="10"
+          >
             <el-icon
               class="custom-icon btn"
               style="margin-right: 20px"
@@ -694,31 +701,27 @@ defineExpose({
             </el-icon>
           </el-tooltip>
 
-          <el-tooltip :content="newResourceLabel" placement="top" effect="dark">
-            <el-dropdown popper-class="menu-outer-dv_popper" trigger="hover">
-              <el-icon class="custom-icon btn" @click="addOperation('newLeaf', null, 'leaf', true)">
-                <Icon name="icon_file-add_outlined"
-                  ><icon_fileAdd_outlined class="svg-icon"
-                /></Icon>
-              </el-icon>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item @click="addOperation('newLeaf', null, 'leaf', true)">
-                    <el-icon :class="`handle-icon color-${curCanvasType}`">
-                      <Icon><component class="svg-icon" :is="dvSvgType"></component></Icon>
-                    </el-icon>
-                    {{ t('work_branch.new_empty') }}
-                  </el-dropdown-item>
-                  <el-dropdown-item @click="addOperation('newFromTemplate', null, 'leaf', true)">
-                    <el-icon class="handle-icon">
-                      <Icon name="dv-use-template"><dvUseTemplate class="svg-icon" /></Icon>
-                    </el-icon>
-                    {{ t('work_branch.new_using_template') }}
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
-          </el-tooltip>
+          <el-dropdown placement="bottom-start" popper-class="menu-outer-dv_popper" trigger="hover">
+            <el-icon class="custom-icon btn" @click="addOperation('newLeaf', null, 'leaf', true)">
+              <Icon name="icon_file-add_outlined"><icon_fileAdd_outlined class="svg-icon" /></Icon>
+            </el-icon>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item @click="addOperation('newLeaf', null, 'leaf', true)">
+                  <el-icon :class="`handle-icon color-${curCanvasType}`">
+                    <Icon><component class="svg-icon" :is="dvSvgType"></component></Icon>
+                  </el-icon>
+                  {{ t('work_branch.new_empty') }}
+                </el-dropdown-item>
+                <el-dropdown-item @click="addOperation('newFromTemplate', null, 'leaf', true)">
+                  <el-icon class="handle-icon">
+                    <Icon name="dv-use-template"><dvUseTemplate class="svg-icon" /></Icon>
+                  </el-icon>
+                  {{ t('work_branch.new_using_template') }}
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </div>
       </div>
       <el-input
@@ -915,11 +918,24 @@ defineExpose({
     }
     .custom-icon {
       font-size: 20px;
+      position: relative;
+      outline: none;
       &.btn {
         color: var(--ed-color-primary);
       }
       &:hover {
         cursor: pointer;
+        &::after {
+          content: '';
+          background-color: var(--ed-color-primary-1a, #3370ff1a);
+          width: 28px;
+          height: 28px;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          border-radius: 4px;
+          transform: translate(-50%, -50%);
+        }
       }
     }
   }
@@ -1004,10 +1020,16 @@ defineExpose({
 <style lang="less">
 .menu-outer-dv_popper {
   min-width: 140px;
-  margin-top: -2px !important;
+  margin-top: 6px !important;
 
   .ed-icon {
     border-radius: 4px;
+  }
+}
+
+.new-folder_tip {
+  .ed-popper__arrow {
+    transform: translate(46px, 0px) !important;
   }
 }
 

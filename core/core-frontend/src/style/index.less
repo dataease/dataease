@@ -725,3 +725,36 @@ strong {
 .ed-menu--vertical.ed-menu--light .ed-menu-item.is-active.is-active.is-active {
   background-color: var(--ed-color-primary-1a, #3370ff1a) !important;
 }
+
+.utree-popover {
+  padding-bottom: 0 !important;
+  .pagination-count {
+    height: auto !important;
+  }
+  .ed-pager li.number {
+    &:hover {
+      background-color: #1f23291a;
+    }
+
+    &:active {
+      background-color: #1f232933;
+    }
+  }
+  .btn-quicknext,
+  .btn-quickprev {
+    svg {
+      path[fill='#245BDB'],
+      path[fill='currentColor'] {
+        fill: var(--ed-color-primary, #3370ff);
+      }
+    }
+
+    &:active {
+      svg {
+        path {
+          fill: var(--ed-color-primary-dark-20, #245bdb);
+        }
+      }
+    }
+  }
+}
