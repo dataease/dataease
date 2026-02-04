@@ -72,6 +72,10 @@ export class TableNormal extends S2ChartView<TableSheet> {
 
   setupDefaultOptions(chart: ChartObj): ChartObj {
     chart.xAxis = []
+    const customAttr = parseJson(chart.customAttr)
+    if (customAttr.basicStyle.tableColumnMode === 'colAdapt') {
+      customAttr.basicStyle.tableColumnMode = 'adapt'
+    }
     return chart
   }
 

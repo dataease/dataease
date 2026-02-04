@@ -563,6 +563,10 @@ export function getStyle(chart: Chart, dataConfig: S2DataConfig): Style {
         style.colCfg.width = basicStyle.tableColumnWidth
         break
       }
+      case 'colAdapt': {
+        style.layoutWidthType = 'colAdaptive'
+        break
+      }
       // 查看详情用，均分铺满
       default: {
         delete style.layoutWidthType

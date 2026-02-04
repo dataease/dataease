@@ -148,10 +148,15 @@ const init = () => {
           align
         })
       })
-      const flag = alignConfigOptions.findIndex(item => item.id === alignConfig.id) === -1
-      if (flag) {
-        alignConfig.id = alignConfigOptions[0].id
-        alignConfig.align = alignConfigOptions[0].align
+      if (alignConfigOptions.length) {
+        const exist = alignConfigOptions.findIndex(item => item.id === alignConfig.id) !== -1
+        if (!exist) {
+          alignConfig.id = alignConfigOptions[0].id
+          alignConfig.align = alignConfigOptions[0].align
+        }
+      } else {
+        alignConfig.id = ''
+        alignConfig.align = 'left'
       }
     }
   }

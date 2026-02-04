@@ -573,6 +573,14 @@ export class TableInfo extends S2ChartView<TableSheet> {
     }
   }
 
+  setupDefaultOptions(chart: ChartObj): ChartObj {
+    const customAttr = parseJson(chart.customAttr)
+    if (customAttr.basicStyle.tableColumnMode === 'colAdapt') {
+      customAttr.basicStyle.tableColumnMode = 'adapt'
+    }
+    return chart
+  }
+
   constructor() {
     super('table-info', [])
   }
