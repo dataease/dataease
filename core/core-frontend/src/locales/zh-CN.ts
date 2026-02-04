@@ -1678,6 +1678,7 @@ export default {
     table_column_adapt: '自适应',
     table_column_fixed: '固定列宽',
     table_column_custom: '自定义',
+    table_column_col_adapt: '列自适应',
     chart_table_pivot: '透视表',
     chart_table_heatmap: '热力图',
     table_pivot_row: '数据行',

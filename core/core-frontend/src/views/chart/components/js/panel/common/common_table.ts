@@ -1941,18 +1941,12 @@ function extractNumber(
         numFmt
       }
     }
-    const value = parseFloat(result)
-    let numFmt = '#'
-    if (formatterCfg.thousandSeparator) {
-      numFmt += ',#'
-    }
-    if (Math.abs(value) < 1) {
-      numFmt = '0'
-    }
+    const value = parseFloat(result) / 100
+    let numFmt = '0'
     if (formatterCfg.decimalCount > 0) {
       numFmt += `.${'0'.repeat(formatterCfg.decimalCount)}`
     }
-    numFmt += '"%"'
+    numFmt += '%'
     return {
       value,
       numFmt

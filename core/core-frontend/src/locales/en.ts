@@ -1714,6 +1714,7 @@ export default {
     table_column_adapt: 'Adaptive',
     table_column_fixed: 'Fixed column width',
     table_column_custom: 'Custom',
+    table_column_col_adapt: 'Column adaptive',
     chart_table_pivot: 'Pivot table',
     chart_table_heatmap: 'Heat map',
     table_pivot_row: 'Data row',
