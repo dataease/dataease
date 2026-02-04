@@ -33,6 +33,8 @@ public class DataSQLBotAssistantVO implements Serializable {
 
     private String comment;
 
+    private String mode;
+
     private List<SQLBotAssistanTable> tables = new ArrayList<>();
 
     @JsonIgnore
