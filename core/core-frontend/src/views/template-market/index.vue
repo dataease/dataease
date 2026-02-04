@@ -762,7 +762,7 @@ defineExpose({
 }
 
 .custom-back-icon {
-  font-size: 20px;
+  font-size: 20px !important;
   cursor: pointer;
   margin-right: 8px;
   color: rgba(31, 35, 41, 1);
