@@ -97,6 +97,9 @@ public class DatasetSQLBotManage {
     @Value("${dataease.sqlbot.log:false}")
     private boolean sqlbotApiLog;
 
+    @Value("${dataease.sqlbot.ds-id-fixed:false}")
+    private boolean dsIdFixed;
+
     @Resource
     private ExtChartViewMapper extChartViewMapper;
 
@@ -546,6 +549,10 @@ public class DatasetSQLBotManage {
         vo.setSchema(config.getSchema());
         vo.setUser(config.getUsername());
         vo.setPassword(config.getPassword());
+        vo.setMode(config.getConnectionType());
+        if (dsIdFixed) {
+            vo.setId(Long.parseLong(row.get("cd_id").toString()));
+        }
         row.put("cd_configuration", config_json);
         Map<String, Object> rowData = buildRowData(row, 0);
         rowData.put("id", Long.parseLong(row.get("cd_id").toString()));
