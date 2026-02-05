@@ -75,7 +75,7 @@ const changeThreshold = () => {
 const changeSplitThreshold = (threshold: string) => {
   // check input
   if (threshold) {
-    const regex = /^(\d+)(,\d+)*$/
+    const regex = /^(\d+(?:\.\d+)?)(,\d+(?:\.\d+)?)*$/
     if (!regex.test(threshold)) {
       ElMessage.error(t('chart.gauge_threshold_format_error'))
       return
