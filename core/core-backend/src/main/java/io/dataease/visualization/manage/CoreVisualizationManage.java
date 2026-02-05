@@ -132,8 +132,10 @@ public class CoreVisualizationManage {
             }
         }
 
-        // 删除分享相关资源
-        xpackShareManage.deleteByResource(id);
+        if(!ModelUtils.isDesktop()){
+            // 删除分享相关资源
+            xpackShareManage.deleteByResource(id);
+        }
 
         // 删除可视化资源
         extDataVisualizationMapper.deleteDataVBatch(delIds, CommonConstants.RESOURCE_TABLE.CORE);
