@@ -926,7 +926,7 @@ const chartAreaShow = computed(() => {
 const titleInputRef = ref()
 const titleEditStatus = ref(false)
 function changeEditTitle() {
-  if (!props.active) {
+  if (!props.active || mobileInPc.value) {
     return
   }
   if (!titleEditStatus.value) {
