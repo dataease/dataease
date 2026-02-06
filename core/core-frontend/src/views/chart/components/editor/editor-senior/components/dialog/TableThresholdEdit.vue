@@ -273,6 +273,9 @@ const changeThreshold = () => {
 
 const addConditions = item => {
   const newCondition = JSON.parse(JSON.stringify(thresholdCondition))
+  if (item.field.dateStyle === 'H_m_s') {
+    newCondition.value = '00:00:00'
+  }
   // 获取单元格默认背景颜色
   const tableCell = props.chart?.customAttr?.tableCell
   if (tableCell) {
@@ -542,12 +545,26 @@ init()
                 />
                 <el-date-picker
                   v-model="item.value"
-                  v-else-if="[1].includes(fieldItem.field.deType)"
+                  v-else-if="
+                    [1].includes(fieldItem.field.deType) && fieldItem.field.dateStyle !== 'H_m_s'
+                  "
                   :type="datePickerType(fieldItem.field)"
                   :placeholder="t('chart.drag_block_label_value')"
                   :format="datePickerFormat(fieldItem.field)"
                   :value-format="datePickerFormat(fieldItem.field)"
-                  key="start-time-filt"
+                  size="default"
+                  class="value-item"
+                  @change="changeThreshold"
+                  style="width: 100%"
+                />
+                <el-time-picker
+                  v-model="item.value"
+                  v-else-if="
+                    [1].includes(fieldItem.field.deType) && fieldItem.field.dateStyle === 'H_m_s'
+                  "
+                  :placeholder="t('chart.drag_block_label_value')"
+                  :format="datePickerFormat(fieldItem.field)"
+                  :value-format="datePickerFormat(fieldItem.field)"
                   size="default"
                   class="value-item"
                   @change="changeThreshold"

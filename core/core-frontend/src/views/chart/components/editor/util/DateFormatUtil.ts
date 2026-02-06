@@ -18,6 +18,8 @@ export function transDateFormat(dateStyle: string, datePattern: string): string 
       return `YYYY${split}MM${split}DD HH:mm`
     case 'y_M_d_H_m_s':
       return `YYYY${split}MM${split}DD HH:mm:ss`
+    case 'H_m_s':
+      return 'HH:mm:ss'
     default:
       return 'YYYY-MM-DD HH:mm:ss'
   }

@@ -830,8 +830,17 @@ export function mappingColor(value, defaultColor, field, type, filedValueMap?, r
       if (!tv || !value) {
         break
       }
-      tv = new Date(tv.replace(/-/g, '/') + ' GMT+8').getTime()
-      const v = new Date(value.replace(/-/g, '/') + ' GMT+8').getTime()
+      // 特殊时间格式不转换, 包含时或者包含时、分时(不包含秒), 直接比较字符串，因为new Date转换会有误差
+      const isSpecialTimeFormat = (dateStyle?: string) =>
+        dateStyle === 'H_m_s' || (dateStyle && dateStyle.length > 5 && dateStyle.length < 11)
+
+      let v: number | string
+      if (isSpecialTimeFormat(field?.field?.dateStyle)) {
+        v = value
+      } else {
+        v = new Date(value.replace(/-/g, '/') + ' GMT+8').getTime()
+        tv = new Date(tv.replace(/-/g, '/') + ' GMT+8').getTime()
+      }
       if (fc.term === 'eq') {
         if (v === tv) {
           color = fc[type]
