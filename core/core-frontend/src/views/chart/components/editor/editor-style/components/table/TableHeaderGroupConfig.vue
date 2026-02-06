@@ -20,7 +20,10 @@ import {
   TooltipShowOptions,
   ColCell,
   Node,
-  LayoutResult
+  LayoutResult,
+  TableDataCell,
+  TableColCell,
+  TextTheme
 } from '@antv/s2'
 import { ElMessageBox } from 'element-plus-secondary'
 import { cloneDeep, debounce, isEqual, isNumber } from 'lodash-es'
@@ -104,6 +107,43 @@ const containerId = computed(() => {
   return 'table-container-' + props.chart.id
 })
 let s2: TableSheet
+class CustomDataCell extends TableDataCell {
+  protected getTextStyle(): TextTheme {
+    const textStyle = super.getTextStyle()
+    const dataCellAlignConfig = this.theme.dataCellAlignConfig
+    if (dataCellAlignConfig) {
+      const align = dataCellAlignConfig[this.meta.valueField]
+      if (align) {
+        textStyle.textAlign = align
+      }
+    }
+    if (textStyle.textAlign === 'custom') {
+      textStyle.textAlign = 'left'
+    }
+    return textStyle
+  }
+}
+class CustomColCell extends TableColCell {
+  protected getTextStyle(): TextTheme {
+    const textStyle = super.getTextStyle()
+    const colCellAlignConfig = this.theme.colCellAlignConfig
+    if (colCellAlignConfig) {
+      // 分组单元格居中
+      if (this.meta.children?.length) {
+        textStyle.textAlign = 'center'
+        return textStyle
+      }
+      const align = colCellAlignConfig[this.meta.field]
+      if (align) {
+        textStyle.textAlign = align
+      }
+    }
+    if (textStyle.textAlign === 'custom') {
+      textStyle.textAlign = 'left'
+    }
+    return textStyle
+  }
+}
 const renderTable = (chart: ChartObj) => {
   const data = dvMainStore.getViewDataDetails(chart.id)
   const containerDom = document.getElementById(containerId.value)
@@ -196,10 +236,31 @@ const renderTable = (chart: ChartObj) => {
         colCellVertical: false,
         rowCellVertical: false
       }
+    },
+    dataCell: meta => {
+      return new CustomDataCell(meta, meta.spreadsheet)
+    },
+    colCell: (meta, sheet, config) => {
+      return new CustomColCell(meta, sheet, config)
     }
   }
   s2 = new TableSheet(containerDom, s2DataConfig, s2Options)
+  const { tableHeader, tableCell } = chart.customAttr
   const theme = getCustomTheme(chart)
+  if (tableHeader.tableHeaderAlign === 'custom') {
+    theme.colCellAlignConfig =
+      tableHeader.alignConfig?.reduce((pre, cur) => {
+        pre[cur.id] = cur.align
+        return pre
+      }, {}) || {}
+  }
+  if (tableCell.tableItemAlign === 'custom') {
+    theme.dataCellAlignConfig =
+      tableCell.alignConfig?.reduce((pre, cur) => {
+        pre[cur.id] = cur.align
+        return pre
+      }, {}) || {}
+  }
   s2.setTheme(theme)
   const groupMenuContainer = document.getElementById(menuGroupId.value)
   s2.on(S2Event.COL_CELL_CONTEXT_MENU, e => {

@@ -2254,6 +2254,11 @@ export class CustomTableColCell extends TableColCell {
     const textStyle = super.getTextStyle()
     const colCellAlignConfig = this.theme.colCellAlignConfig
     if (colCellAlignConfig) {
+      // 分组单元格居中
+      if (this.meta.children?.length) {
+        textStyle.textAlign = 'center'
+        return textStyle
+      }
       const align = colCellAlignConfig[this.meta.field]
       if (align) {
         textStyle.textAlign = align
