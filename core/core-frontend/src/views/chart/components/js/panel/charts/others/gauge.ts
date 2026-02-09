@@ -263,13 +263,7 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
           color: label.color
         },
         formatter: function () {
-          let value
-          if (labelFormatter.type === 'percent') {
-            value = options.percent
-          } else {
-            value = data
-          }
-          return valueFormatter(value, labelFormatter)
+          return valueFormatter(data, labelFormatter)
         }
       } as GaugeOptions['statistic']['title']
     }
