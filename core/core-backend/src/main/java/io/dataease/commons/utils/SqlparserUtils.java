@@ -725,7 +725,7 @@ public class SqlparserUtils {
         if (sql.contains(SysParamsSubstitutedParams) && userEntity != null) {
             sql = sql.replace(SysParamsSubstitutedParams + "sysParams.userId", userEntity.getAccount());
             sql = sql.replace(SysParamsSubstitutedParams + "sysParams.userEmail", userEntity.getEmail());
-            sql = sql.replace(SysParamsSubstitutedParams + "sysParams.userName", userEntity.getName());
+            sql = sql.replace(SysParamsSubstitutedParams + "sysParams.userName", Translator.get(userEntity.getName()));
             for (SysVariableValueItem variable : userEntity.getVariables()) {
                 String value = null;
                 if (!variable.isValid()) {
