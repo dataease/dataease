@@ -14,7 +14,7 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 const currentComponent = shallowRef()
 const Preview = defineAsyncComponent(() => import('@/views/data-visualization/PreviewCanvas.vue'))
 const VisualizationEditor = defineAsyncComponent(
-  () => import('@/views/data-visualization/index.vue')
+  () => import('@/views/data-visualization/indexV3.vue')
 )
 const DashboardEditor = defineAsyncComponent(() => import('@/views/dashboard/index.vue'))
 

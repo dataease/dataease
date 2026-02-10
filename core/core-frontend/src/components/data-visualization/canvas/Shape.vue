@@ -148,6 +148,7 @@ import dvHidden from '@/assets/svg/dv-hidden.svg'
 import { groupSizeStyleAdaptor, groupStyleRevert, tabInnerStyleRevert } from '@/utils/style'
 import {
   checkJoinTab,
+  getTransformParams,
   isDashboard,
   isGroupCanvas,
   isMainCanvas,
@@ -553,6 +554,7 @@ const handleMouseDownOnShape = e => {
     e.stopPropagation()
     return
   }
+  const { tOffsetX, tOffsetY, tOffsetSpeed } = getTransformParams()
   dashboardActive.value && emit('onStartMove', e)
   // 将当前点击组件的事件传播出去
   nextTick(() => eventBus.emit('componentClick'))
@@ -569,8 +571,8 @@ const handleMouseDownOnShape = e => {
   cursors.value = getCursor() // 根据旋转角度获取光标位置
 
   const pos = { ...defaultStyle.value }
-  const startY = e.clientY
-  const startX = e.clientX
+  const startY = e.clientY - tOffsetY
+  const startX = e.clientX - tOffsetX
 
   const offsetY = e.offsetY
   const offsetX = e.offsetX
@@ -594,10 +596,10 @@ const handleMouseDownOnShape = e => {
   const curDom = document.getElementById(domId.value)
   const move = moveEvent => {
     hasMove = true
-    const curX = moveEvent.clientX
-    const curY = moveEvent.clientY
-    const top = curY - startY + startTop
-    const left = curX - startX + startLeft
+    const curX = moveEvent.clientX - tOffsetX
+    const curY = moveEvent.clientY - tOffsetY
+    const top = (curY - startY) * tOffsetSpeed + startTop
+    const left = (curX - startX) * tOffsetSpeed + startLeft
     pos['top'] = top
     pos['left'] = left
     // 非主画布非分组画布的情况 需要检测是否从Tab中移除组件(向左移除30px 或者向右移除30px 向左移除30px)
@@ -733,6 +735,7 @@ const handleMouseDownOnPoint = (point, e) => {
   dvMainStore.setClickComponentStatus(true)
   e.stopPropagation()
   e.preventDefault()
+  const { tOffsetX, tOffsetY, tOffsetSpeed, tScale } = getTransformParams()
   const style = { ...defaultStyle.value }
 
   // 组件宽高比
@@ -754,14 +757,12 @@ const handleMouseDownOnPoint = (point, e) => {
   // 当前点击圆点相对于画布的中心坐标
   const curPoint = {
     x: Math.round(
-      pointRect.left -
-        editorRectInfo.left +
+      (pointRect.left - editorRectInfo.left) * tOffsetSpeed +
         e.target.offsetWidth / 2 +
         offsetGapAdaptor('x', point) / 2
     ),
     y: Math.round(
-      pointRect.top -
-        editorRectInfo.top +
+      (pointRect.top - editorRectInfo.top) * tOffsetSpeed +
         e.target.offsetHeight / 2 +
         offsetGapAdaptor('y', point) / 2
     )
@@ -802,8 +803,12 @@ const handleMouseDownOnPoint = (point, e) => {
 
     needSave = true
     const curPosition = {
-      x: moveEvent.clientX - Math.round(editorRectInfo.left) + offsetGapAdaptor('x', point),
-      y: moveEvent.clientY - Math.round(editorRectInfo.top) + offsetGapAdaptor('y', point)
+      x:
+        (moveEvent.clientX - Math.round(editorRectInfo.left)) * tOffsetSpeed +
+        offsetGapAdaptor('x', point),
+      y:
+        (moveEvent.clientY - Math.round(editorRectInfo.top)) * tOffsetSpeed +
+        offsetGapAdaptor('y', point)
     }
     calculateComponentPositionAndSize(point, style, curPosition, proportion, needLockProportion, {
       center,
