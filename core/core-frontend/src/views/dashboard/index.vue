@@ -35,6 +35,8 @@ import { useI18n } from '@/hooks/web/useI18n'
 import DashboardHiddenComponent from '@/components/dashboard/DashboardHiddenComponent.vue'
 import { recoverToPublished } from '@/api/visualization/dataVisualization'
 import SqlAssistant from '@/views/sqlbot/assistant.vue'
+import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
+const contextmenuStore = contextmenuStoreWithOut()
 const embeddedStore = useEmbedded()
 const { wsCache } = useCache()
 const canvasCacheOutRef = ref(null)
@@ -186,6 +188,7 @@ onMounted(async () => {
   dvMainStore.setCurComponent({ component: null, index: null })
   dvMainStore.setHiddenListStatus(false)
   snapshotStore.initSnapShot()
+  contextmenuStore.hideContextMenu()
   if (window.location.hash.includes('#/dashboard')) {
     newWindowFromDiv.value = true
   }
