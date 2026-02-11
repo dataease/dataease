@@ -38,6 +38,8 @@ import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import eventBus from '@/utils/eventBus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { recoverToPublished } from '@/api/visualization/dataVisualization'
+import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
+const contextmenuStore = contextmenuStoreWithOut()
 const embeddedStore = useEmbedded()
 const { wsCache } = useCache()
 const canvasCacheOutRef = ref(null)
@@ -217,6 +219,7 @@ onMounted(async () => {
   dvMainStore.setCurComponent({ component: null, index: null })
   dvMainStore.setHiddenListStatus(false)
   snapshotStore.initSnapShot()
+  contextmenuStore.hideContextMenu()
   if (window.location.hash.includes('#/dashboard')) {
     newWindowFromDiv.value = true
   }
