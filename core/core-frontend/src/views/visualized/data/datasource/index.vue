@@ -1118,7 +1118,14 @@ const getMenuList = (val: boolean) => {
           <div class="icon-methods">
             <span class="title"> {{ t('datasource.datasource') }} </span>
             <div v-if="rootManage" class="flex-align-center">
-              <el-tooltip effect="dark" :content="t('deDataset.new_folder')" placement="top">
+              <el-tooltip
+                arrow-offset="10"
+                offset="14"
+                effect="dark"
+                popper-class="new-folder_tip"
+                :content="t('deDataset.new_folder')"
+                placement="top"
+              >
                 <el-icon
                   class="custom-icon btn"
                   :style="{ marginRight: '20px' }"
@@ -1127,7 +1134,14 @@ const getMenuList = (val: boolean) => {
                   <Icon name="dv-new-folder"><dvNewFolder class="svg-icon" /></Icon>
                 </el-icon>
               </el-tooltip>
-              <el-tooltip effect="dark" :content="t('datasource.create')" placement="top">
+              <el-tooltip
+                arrow-offset="10"
+                offset="14"
+                popper-class="new-folder_tip"
+                effect="dark"
+                :content="t('datasource.create')"
+                placement="top"
+              >
                 <el-icon class="custom-icon btn" @click="createDatasource">
                   <Icon name="icon_file-add_outlined"
                     ><icon_fileAdd_outlined class="svg-icon"
@@ -2060,6 +2074,17 @@ const getMenuList = (val: boolean) => {
 
           &:hover {
             cursor: pointer;
+            &::after {
+              content: '';
+              background-color: var(--ed-color-primary-1a, #3370ff1a);
+              width: 28px;
+              height: 28px;
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              border-radius: 4px;
+              transform: translate(-50%, -50%);
+            }
           }
         }
       }

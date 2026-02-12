@@ -1222,7 +1222,7 @@ defineExpose({
               </el-icon>
             </span>
           </el-form-item>
-          <template v-if="showSSH">
+          <template v-if="showSSH && form.configuration.urlType !== 'jdbcUrl'">
             <el-form-item>
               <el-checkbox v-model="form.configuration.useSSH"
                 >{{ t('data_source.enable_ssh') }}

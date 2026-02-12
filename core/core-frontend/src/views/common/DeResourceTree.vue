@@ -1019,17 +1019,13 @@ defineExpose({
 
 <style lang="less">
 .menu-outer-dv_popper {
+  --ed-border-color-light: #dee0e3;
   min-width: 140px;
   margin-top: 6px !important;
+  margin-left: -4px !important;
 
   .ed-icon {
     border-radius: 4px;
-  }
-}
-
-.new-folder_tip {
-  .ed-popper__arrow {
-    transform: translate(46px, 0px) !important;
   }
 }
 
