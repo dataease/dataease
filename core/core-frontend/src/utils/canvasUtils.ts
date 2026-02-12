@@ -533,7 +533,18 @@ export function initCanvasDataMobile(dvId, params, callBack) {
     dvId,
     params,
     function ({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview }) {
-      const componentData = canvasDataResult.filter(ele => !!ele.inMobile)
+      // ========== 核心修改：无移动端布局时，跳过过滤 ==========
+      let componentData = canvasDataResult
+      // 1. 数据大屏（dataV）：强制走PC端配置，无视移动端标记和布局
+      if (params.busiFlag === 'dataV') {
+        dvMainStore.setInMobile(false); // 强制关闭移动端状态
+        dvInfo.mobileLayout = false; // 强制标记大屏无移动端布局（避免兜底提示）
+        componentData = canvasDataResult // 不过滤任何组件，复用全部PC端配置
+      }
+      // 2. 仪表板（panel）：保留原有逻辑，有移动端布局时过滤inMobile=true的组件
+      else if (params.busiFlag === 'dashboard' && dvInfo.mobileLayout) {
+        componentData = canvasDataResult.filter(ele => !!ele.inMobile)
+      }
       canvasDataResult.forEach(ele => {
         const {
           mx,
@@ -549,10 +560,10 @@ export function initCanvasDataMobile(dvId, params, callBack) {
           events,
           commonBackground
         } = ele
-        ele.x = mx
-        ele.y = my
-        ele.sizeX = mSizeX
-        ele.sizeY = mSizeY
+        ele.x = mx || ele.x // 无移动端x则用PC端x
+        ele.y = my || ele.y // 无移动端y则用PC端y
+        ele.sizeX = mSizeX || ele.sizeX // 无移动端宽度则用PC端
+        ele.sizeY = mSizeY || ele.sizeY // 无移动端高度则用PC端
         ele.style = mStyle || style
         ele.propValue = mPropValue || propValue
         ele.events = mEvents || events
@@ -777,17 +788,17 @@ export function itemCanvasPathCheck(item, checkType) {
   if (checkType === 'pTabGroup') {
     return Boolean(
       pathMap[item.id] &&
-        pathMap[item.id].component === 'DeTabs' &&
-        pathMap[pathMap[item.id].id] &&
-        pathMap[pathMap[item.id].id].component === 'Group'
+      pathMap[item.id].component === 'DeTabs' &&
+      pathMap[pathMap[item.id].id] &&
+      pathMap[pathMap[item.id].id].component === 'Group'
     )
   }
   // 当前组件是group且在Tab中
   if (checkType === 'groupInTab') {
     return Boolean(
       item.component === 'Group' &&
-        pathMap[pathMap[item.id].id] &&
-        pathMap[pathMap[item.id].id].component === 'DeTabs'
+      pathMap[pathMap[item.id].id] &&
+      pathMap[pathMap[item.id].id].component === 'DeTabs'
     )
   }
 
