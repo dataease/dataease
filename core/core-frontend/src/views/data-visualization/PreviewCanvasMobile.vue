@@ -93,10 +93,8 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
       dvMainStore.setNowPanelOuterParamsInfoV2(rsp.data, dvId)
     })
   } catch (error) {
-    if (error.status === 401) {
-      router.push('/login')
-      return
-    }
+    router.push('/login')
+    return
   }
 
   // 外部参数（iframe 或者 iframe嵌入）
