@@ -831,7 +831,10 @@ const proxyAllowDrop = throttle((arg1, arg2) => {
               <el-tooltip
                 class="box-item"
                 effect="dark"
+                offset="14"
+                popper-class="new-folder_tip"
                 :content="t('deDataset.new_folder')"
+                arrow-offset="10"
                 placement="top"
               >
                 <el-icon
@@ -845,6 +848,9 @@ const proxyAllowDrop = throttle((arg1, arg2) => {
               <el-tooltip
                 class="box-item"
                 effect="dark"
+                popper-class="new-folder_tip"
+                offset="14"
+                arrow-offset="10"
                 :content="t('data_set.a_new_dataset')"
                 placement="top"
               >
@@ -1287,6 +1293,17 @@ const proxyAllowDrop = throttle((arg1, arg2) => {
 
           &:hover {
             cursor: pointer;
+            &::after {
+              content: '';
+              background-color: var(--ed-color-primary-1a, #3370ff1a);
+              width: 28px;
+              height: 28px;
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              border-radius: 4px;
+              transform: translate(-50%, -50%);
+            }
           }
         }
       }
