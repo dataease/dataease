@@ -1163,6 +1163,10 @@ export default {
     load_data: '加载数据'
   },
   chart: {
+    self: '自己',
+    total_row: '整行',
+    custom: '自定义',
+    apply_to: '作用范围',
     align: '对齐方式',
     reset: '重置',
     chart_refresh_tips: '图表刷新设置优先于仪表板刷新设置',

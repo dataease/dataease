@@ -1106,7 +1106,7 @@ init()
       v-model="state.editTableThresholdDialog"
       :title="t('chart.threshold')"
       :visible="state.editTableThresholdDialog"
-      width="1050px"
+      width="1250px"
       class="dialog-css"
       append-to-body
     >

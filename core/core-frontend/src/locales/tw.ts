@@ -1158,6 +1158,10 @@ export default {
     load_data: '載入資料'
   },
   chart: {
+    self: '自己',
+    total_row: '整行',
+    custom: '自定義',
+    apply_to: '作用範圍',
     align: '對齊方式',
     reset: '重置',
     chart_refresh_tips: '圖表刷新設定優先於儀表板刷新設定',

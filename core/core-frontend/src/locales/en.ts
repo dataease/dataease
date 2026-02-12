@@ -1195,6 +1195,10 @@ export default {
     load_data: 'Load Data'
   },
   chart: {
+    self: 'Self',
+    total_row: 'Entire Row',
+    custom: 'Custom',
+    apply_to: 'Apply To',
     align: 'Alignment',
     reset: 'Reset',
     chart_refresh_tips: 'Chart refresh settings take precedence over dashboard refresh settings',

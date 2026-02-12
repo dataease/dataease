@@ -620,6 +620,13 @@ export function getConditions(chart: Chart) {
   const conditions = threshold.tableThreshold ?? []
 
   const dimFields = [...chart.xAxis, ...chart.xAxisExt].map(i => i.dataeaseName)
+  const allFields = [...chart.xAxis, ...chart.xAxisExt, ...chart.yAxis, ...chart.yAxisExt]
+  const fieldIdToName = allFields.reduce((acc, f) => {
+    acc[f.id] = f.dataeaseName
+    return acc
+  }, {})
+  const allColumnNames = allFields.map(f => f.dataeaseName)
+
   if (conditions?.length > 0) {
     const { tableCell, basicStyle, tableHeader } = parseJson(chart.customAttr)
     // 合并单元格时斑马纹失效
@@ -640,17 +647,53 @@ export function getConditions(chart: Chart) {
       ? tableHeader.tableHeaderBgColor
       : hexColorToRGBA(tableHeader.tableHeaderBgColor, basicStyle.alpha)
     const filedValueMap = getFieldValueMap(chart)
+
+    // Build map of target column -> rules
+    const targetRulesMap = {} // columnName -> Array<{ rule, sourceField }>
+
     for (let i = 0; i < conditions.length; i++) {
-      const field = conditions[i]
+      const fieldItem = conditions[i]
+      if (!fieldItem.conditions) continue;
+      
+      for (let j = 0; j < fieldItem.conditions.length; j++) {
+        const rule = fieldItem.conditions[j]
+        let targets = []
+        if (rule.target === 'total_row') {
+          targets = allColumnNames
+        } else if (rule.target === 'custom' && rule.targetFieldId) {
+          const targetName = fieldIdToName[rule.targetFieldId]
+          if (targetName) targets = [targetName]
+        } else {
+          // Default to self
+          targets = [fieldItem.field.dataeaseName]
+        }
+
+        targets.forEach(targetName => {
+          if (!targetRulesMap[targetName]) {
+            targetRulesMap[targetName] = []
+          }
+          targetRulesMap[targetName].push({
+            rule: rule,
+            sourceField: fieldItem.field
+          })
+        })
+      }
+    }
+
+    // Generate S2 conditions for each target column
+    for (const targetName in targetRulesMap) {
+      const rules = targetRulesMap[targetName]
       let defaultValueColor = valueColor
       let defaultBgColor = valueBgColor
-      // 透视表表头颜色配置
-      if (chart.type === 'table-pivot' && dimFields.includes(field.field.dataeaseName)) {
+      // 透视表表头颜色配置 (Use target column type to decide default color?)
+      // If target is a dimension in pivot table, use header color
+      if (chart.type === 'table-pivot' && dimFields.includes(targetName)) {
         defaultValueColor = headerValueColor
         defaultBgColor = headerValueBgColor
       }
+
       res.text.push({
-        field: field.field.dataeaseName,
+        field: targetName,
         mapping(value, rowData) {
           // 总计小计
           if (rowData?.isGrandTotals || rowData?.isSubTotals) {
@@ -660,13 +703,14 @@ export function getConditions(chart: Chart) {
           if (rowData?.id && rowData?.field === rowData.id) {
             return null
           }
+          
           return {
-            fill: mappingColor(value, defaultValueColor, field, 'color', filedValueMap, rowData)
+            fill: mappingColor(value, defaultValueColor, rules, 'color', filedValueMap, rowData)
           }
         }
       })
       res.background.push({
-        field: field.field.dataeaseName,
+        field: targetName,
         mapping(value, rowData) {
           if (rowData?.isGrandTotals || rowData?.isSubTotals) {
             return null
@@ -677,7 +721,7 @@ export function getConditions(chart: Chart) {
           const fill = mappingColor(
             value,
             defaultBgColor,
-            field,
+            rules,
             'backgroundColor',
             filedValueMap,
             rowData
@@ -693,12 +737,26 @@ export function getConditions(chart: Chart) {
   return res
 }
 
-export function mappingColor(value, defaultColor, field, type, filedValueMap?, rowData?) {
+export function mappingColor(value, defaultColor, rules, type, filedValueMap?, rowData?) {
   let color = null
-  for (let i = 0; i < field.conditions.length; i++) {
+  
+  // If called from old code (rules is a single field object), adapt it
+  if (rules && !Array.isArray(rules) && rules.conditions) {
+      const field = rules;
+      rules = field.conditions.map(c => ({ rule: c, sourceField: field.field }));
+  }
+
+  for (let i = 0; i < rules.length; i++) {
+    const { rule, sourceField } = rules[i]
     let flag = false
-    const t = field.conditions[i]
+    const t = rule
     let tv, max, min
+    
+    let checkValue = value;
+    if (sourceField.dataeaseName && rowData) {
+        checkValue = rowData[sourceField.dataeaseName];
+    }
+    
     if (t.type === 'dynamic') {
       if (t.term === 'between') {
         max = parseFloat(getValue(t.dynamicMaxField, filedValueMap, rowData))
@@ -714,40 +772,44 @@ export function mappingColor(value, defaultColor, field, type, filedValueMap?, r
         tv = t.value
       }
     }
-    if (field.field.deType === 2 || field.field.deType === 3 || field.field.deType === 4) {
+    
+    const val = checkValue;
+
+    if (sourceField.deType === 2 || sourceField.deType === 3 || sourceField.deType === 4) {
       tv = parseFloat(tv)
+      const numVal = parseFloat(val)
       if (t.term === 'eq') {
-        if (value === tv) {
+        if (numVal === tv) {
           color = t[type]
           flag = true
         }
       } else if (t.term === 'not_eq') {
-        if (value !== tv) {
+        if (numVal !== tv) {
           color = t[type]
           flag = true
         }
       } else if (t.term === 'lt') {
-        if (value < tv) {
+        if (numVal < tv) {
           color = t[type]
           flag = true
         }
       } else if (t.term === 'gt') {
-        if (value > tv) {
+        if (numVal > tv) {
           color = t[type]
           flag = true
         }
       } else if (t.term === 'le') {
-        if (value !== null && value <= tv) {
+        if (val !== null && numVal <= tv) {
           color = t[type]
           flag = true
         }
       } else if (t.term === 'ge') {
-        if (value !== null && value >= tv) {
+        if (val !== null && numVal >= tv) {
           color = t[type]
           flag = true
         }
       } else if (t.term === 'between') {
-        if (value !== null && min <= value && value <= max) {
+        if (val !== null && min <= numVal && numVal <= max) {
           color = t[type]
           flag = true
         }
@@ -755,49 +817,47 @@ export function mappingColor(value, defaultColor, field, type, filedValueMap?, r
         color = t[type]
         flag = true
       } else if (t.term === 'null') {
-        if (value === null || value === undefined || value === '') {
+        if (val === null || val === undefined || val === '') {
           color = t[type]
           flag = true
         }
       } else if (t.term === 'not_null') {
-        if (value !== null && value !== undefined && value !== '') {
+        if (val !== null && val !== undefined && val !== '') {
           color = t[type]
           flag = true
         }
       }
       if (flag) {
         break
-      } else if (i === field.conditions.length - 1) {
-        color = defaultColor
       }
-    } else if (field.field.deType === 0 || field.field.deType === 5) {
+    } else if (sourceField.deType === 0 || sourceField.deType === 5) {
       if (t.term === 'eq') {
-        if (value === tv) {
+        if (val === tv) {
           color = t[type]
           flag = true
         }
       } else if (t.term === 'not_eq') {
-        if (value !== tv) {
+        if (val !== tv) {
           color = t[type]
           flag = true
         }
       } else if (t.term === 'like') {
-        if (value.includes(tv)) {
+        if (val && val.includes(tv)) {
           color = t[type]
           flag = true
         }
       } else if (t.term === 'not like') {
-        if (!value.includes(tv)) {
+        if (val && !val.includes(tv)) {
           color = t[type]
           flag = true
         }
       } else if (t.term === 'null') {
-        if (value === null || value === undefined || value === '') {
+        if (val === null || val === undefined || val === '') {
           color = t[type]
           flag = true
         }
       } else if (t.term === 'not_null') {
-        if (value !== null && value !== undefined && value !== '') {
+        if (val !== null && val !== undefined && val !== '') {
           color = t[type]
           flag = true
         }
@@ -807,18 +867,16 @@ export function mappingColor(value, defaultColor, field, type, filedValueMap?, r
       }
       if (flag) {
         break
-      } else if (i === field.conditions.length - 1) {
-        color = defaultColor
       }
     } else {
-      const fc = field.conditions[i]
+      const fc = rule
       if (fc.term === 'null') {
-        if (value === null || value === undefined || value === '') {
+        if (val === null || val === undefined || val === '') {
           color = fc[type]
           flag = true
         }
       } else if (fc.term === 'not_null') {
-        if (value !== null && value !== undefined && value !== '') {
+        if (val !== null && val !== undefined && val !== '') {
           color = fc[type]
           flag = true
         }
@@ -827,60 +885,64 @@ export function mappingColor(value, defaultColor, field, type, filedValueMap?, r
         break
       }
       // time
-      if (!tv || !value) {
+      if (!tv || !val) {
         break
-      }
-      // 特殊时间格式不转换, 包含时或者包含时、分时(不包含秒), 直接比较字符串，因为new Date转换会有误差
-      const isSpecialTimeFormat = (dateStyle?: string) =>
-        dateStyle === 'H_m_s' || (dateStyle && dateStyle.length > 5 && dateStyle.length < 11)
-
-      let v: number | string
-      if (isSpecialTimeFormat(field?.field?.dateStyle)) {
-        v = value
       } else {
-        v = new Date(value.replace(/-/g, '/') + ' GMT+8').getTime()
-        tv = new Date(tv.replace(/-/g, '/') + ' GMT+8').getTime()
-      }
-      if (fc.term === 'eq') {
-        if (v === tv) {
-          color = fc[type]
-          flag = true
-        }
-      } else if (fc.term === 'not_eq') {
-        if (v !== tv) {
-          color = fc[type]
-          flag = true
-        }
-      } else if (fc.term === 'lt') {
-        if (v < tv) {
-          color = fc[type]
-          flag = true
-        }
-      } else if (fc.term === 'gt') {
-        if (v > tv) {
-          color = fc[type]
-          flag = true
-        }
-      } else if (fc.term === 'le') {
-        if (v <= tv) {
-          color = fc[type]
-          flag = true
-        }
-      } else if (fc.term === 'ge') {
-        if (v >= tv) {
-          color = fc[type]
-          flag = true
-        }
-      } else if (fc.term === 'default') {
-        color = fc[type]
-        flag = true
+          // 特殊时间格式不转换, 包含时或者包含时、分时(不包含秒), 直接比较字符串，因为new Date转换会有误差
+          const isSpecialTimeFormat = (dateStyle?: string) =>
+            dateStyle === 'H_m_s' || (dateStyle && dateStyle.length > 5 && dateStyle.length < 11)
+
+          let v: number | string
+          let compareTv = tv;
+          if (isSpecialTimeFormat(sourceField?.dateStyle)) {
+            v = val
+          } else {
+            v = new Date(val.replace(/-/g, '/') + ' GMT+8').getTime()
+            compareTv = new Date(tv.toString().replace(/-/g, '/') + ' GMT+8').getTime()
+          }
+          if (fc.term === 'eq') {
+            if (v === compareTv) {
+              color = fc[type]
+              flag = true
+            }
+          } else if (fc.term === 'not_eq') {
+            if (v !== compareTv) {
+              color = fc[type]
+              flag = true
+            }
+          } else if (fc.term === 'lt') {
+            if (v < compareTv) {
+              color = fc[type]
+              flag = true
+            }
+          } else if (fc.term === 'gt') {
+            if (v > compareTv) {
+              color = fc[type]
+              flag = true
+            }
+          } else if (fc.term === 'le') {
+            if (v <= compareTv) {
+              color = fc[type]
+              flag = true
+            }
+          } else if (fc.term === 'ge') {
+            if (v >= compareTv) {
+              color = fc[type]
+              flag = true
+            }
+          } else if (fc.term === 'default') {
+            color = fc[type]
+            flag = true
+          }
       }
       if (flag) {
         break
-      } else if (i === field.conditions.length - 1) {
-        color = defaultColor
       }
     }
+  }
+  
+  if (!color) {
+      color = defaultColor;
   }
   return color
 }
