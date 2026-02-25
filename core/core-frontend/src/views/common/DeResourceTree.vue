@@ -1024,6 +1024,11 @@ defineExpose({
   margin-top: 6px !important;
   margin-left: -4px !important;
 
+  .ed-dropdown-menu__item:not(.is-disabled):hover {
+    background-color: #1f23291a;
+    color: #1f2329;
+  }
+
   .ed-icon {
     border-radius: 4px;
   }
