@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -18,7 +19,7 @@ public class H2 extends DatasourceConfiguration {
 
     public String getJdbc() {
         for (String illegalParameter : getH2IllegalParameters()) {
-            if (jdbc.toUpperCase().replace("\\", "").contains(illegalParameter)) {
+            if (jdbc.toUpperCase(Locale.ENGLISH).replace("\\", "").contains(illegalParameter)) {
                 DEException.throwException("Has illegal parameter: " + jdbc);
             }
         }
