@@ -516,7 +516,7 @@ public class ExportCenterDownLoadManage {
                             details.clear();
                         }
                         exportTask.setExportStatus("IN_PROGRESS");
-                        double exportProgress = (double) (i / (chartViewDTO.getTotalPage() + 1));
+                        double exportProgress = (double) ((double) i / (chartViewDTO.getTotalPage()));
                         DecimalFormat df = new DecimalFormat("#.##");
                         String formattedResult = df.format((exportProgress) * 100);
                         exportTask.setExportProgress(formattedResult);
