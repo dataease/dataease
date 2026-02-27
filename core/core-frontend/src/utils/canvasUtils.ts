@@ -488,17 +488,15 @@ export async function backCanvasData(dvId, mobileViewInfo, busiFlag, callBack) {
       componentData.value.forEach(ele => {
         ele.inMobile = componentDataId.includes(ele.id)
         if (ele.inMobile) {
-          const { mx, my, mSizeX, mSizeY, mPropValue, mEvents, mCommonBackground } =
-            componentDataCopy.find(itx => itx.id === ele.id)
+          const { mx, my, mSizeX, mSizeY, mEvents, mCommonBackground } = componentDataCopy.find(
+            itx => itx.id === ele.id
+          )
           ele.mx = mx
           ele.my = my
           ele.mSizeX = mSizeX
           ele.mSizeY = mSizeY
           ele.mEvents = mEvents
           ele.mCommonBackground = mCommonBackground
-          if (ele.component === 'VQuery') {
-            ele.mPropValue = mPropValue
-          }
         }
       })
       Object.keys(canvasViewInfoPreview).forEach(key => {
@@ -541,7 +539,6 @@ export function initCanvasDataMobile(dvId, params, callBack) {
           mSizeX,
           mSizeY,
           mStyle,
-          mPropValue,
           mEvents,
           mCommonBackground,
           style,
@@ -554,14 +551,12 @@ export function initCanvasDataMobile(dvId, params, callBack) {
         ele.sizeX = mSizeX
         ele.sizeY = mSizeY
         ele.style = mStyle || style
-        ele.propValue = mPropValue || propValue
         ele.events = mEvents || events
         ele.commonBackground = mCommonBackground || commonBackground
         if (ele.component === 'DeTabs') {
           ele.propValue?.forEach(tabItem => {
             tabItem.componentData?.forEach(tabComponent => {
               tabComponent.style = tabComponent.mStyle || tabComponent.style
-              tabComponent.propValue = tabComponent.mPropValue || tabComponent.propValue
               tabComponent.events = tabComponent.mEvents || tabComponent.events
               tabComponent.commonBackground =
                 tabComponent.mCommonBackground || tabComponent.commonBackground

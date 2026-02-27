@@ -213,7 +213,6 @@ function deepCopyHelper(data, idMap) {
   result.inMobile = false
   delete result.mStyle
   delete result.mEvents
-  delete result.mPropValue
   delete result.mCommonBackground
   if (result.component === 'VQuery') {
     result.propValue?.forEach(queryItem => {

@@ -149,9 +149,6 @@ const hanedleMessage = event => {
         ele.mStyle = style
         ele.mEvents = events
         ele.mCommonBackground = commonBackground
-        if (ele.component === 'VQuery') {
-          ele.mPropValue = propValue
-        }
         if (ele.component === 'DeTabs') {
           ele.propValue.forEach(tabItem => {
             tabItem.componentData?.forEach(tabComponent => {
@@ -164,9 +161,6 @@ const hanedleMessage = event => {
               tabComponent.mStyle = tStyle
               tabComponent.mEvents = tEvents
               tabComponent.mCommonBackground = tCommonBackground
-              if (tabComponent.component === 'VQuery') {
-                tabComponent.mPropValue = tPropValue
-              }
             })
           })
         }

@@ -23,7 +23,7 @@ const hanedleMessage = event => {
   if (event.data.type === 'panelInit') {
     const { componentData, canvasStyleData, dvInfo, canvasViewInfo, isEmbedded } = event.data.value
     componentData.forEach(ele => {
-      const { mx, my, mSizeX, mSizeY, mStyle, mCommonBackground, mEvents, mPropValue } = ele
+      const { mx, my, mSizeX, mSizeY, mStyle, mCommonBackground, mEvents } = ele
       ele.x = mx
       ele.y = my
       ele.sizeX = mSizeX
@@ -31,9 +31,6 @@ const hanedleMessage = event => {
       ele.style = deepCopy(mStyle || ele.style)
       ele.commonBackground = deepCopy(mCommonBackground || ele.commonBackground)
       ele.events = deepCopy(mEvents || ele.events)
-      if (ele.component === 'VQuery') {
-        ele.propValue = deepCopy(mPropValue || ele.propValue)
-      }
 
       if (ele.component === 'DeTabs') {
         ele.propValue?.forEach(tabItem => {
@@ -41,8 +38,7 @@ const hanedleMessage = event => {
             const {
               mStyle: tStyle,
               mCommonBackground: tCommonBackground,
-              mEvents: tEvents,
-              mPropValue: tPropValue
+              mEvents: tEvents
             } = tabComponent
             tabComponent.style = deepCopy(tStyle || tabComponent.style)
             tabComponent.commonBackground = deepCopy(
