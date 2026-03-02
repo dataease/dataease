@@ -36,6 +36,7 @@ import {
   S2Options,
   S2Theme,
   SERIES_NUMBER_FIELD,
+  EXTRA_FIELD,
   setTooltipContainerStyle,
   SHAPE_STYLE_MAP,
   SpreadSheet,
@@ -565,6 +566,77 @@ export function getStyle(chart: Chart, dataConfig: S2DataConfig): Style {
       }
       case 'colAdapt': {
         style.layoutWidthType = 'colAdaptive'
+        const parentNodeWidthMap = {}
+        const nodeMaxWidthMap = {}
+        const quotaLabelMap = chart.yAxis?.reduce((p, n) => {
+          p[n.dataeaseName] = n.chartShowName || n.name
+          return p
+        }, {}) || {}
+        let calcCount = 50
+        //只计算最后两层表头的宽度，采样 50 个数据
+        style.colCfg.width = node => {
+          const spreadsheet = node.spreadsheet
+          const colHeaderTheme = spreadsheet.theme.colCell.bolderText
+          const padding = spreadsheet.theme.colCell.cell.padding
+          const paddingWidth = (padding?.left || 8) + (padding?.right || 8) + 12
+          // 小计总计和第一层表头直接根据文本计算宽度
+          if (node.isTotals || node.parent.id === 'root') {
+            let label = node.label
+            if (node.key === EXTRA_FIELD) {
+              label = quotaLabelMap[node.label] || label
+            }
+            const totalsWidth = spreadsheet.measureTextWidth(label, colHeaderTheme) + paddingWidth
+            return totalsWidth
+          }
+
+          const parentWidth = parentNodeWidthMap[node.parent.id]
+          if (!parentWidth || (parentWidth && calcCount < 50)) {
+            const parentLabel = node.parent.label
+            const parentTextWidth = spreadsheet.measureTextWidth(parentLabel, colHeaderTheme) + paddingWidth
+            parentNodeWidthMap[node.parent.id] = parentTextWidth
+            const siblings = node.parent.children
+            const siblingsTextWidthMap = {}
+            const siblingsWidth = siblings.reduce((p, n) => {
+              let label = n.label
+              if (n.key === EXTRA_FIELD) {
+                label = quotaLabelMap[n.label] || label
+              }
+              const pureTextWidth = spreadsheet.measureTextWidth(label, colHeaderTheme)
+              if (n.key === EXTRA_FIELD) {
+                siblingsTextWidthMap[n.label] = pureTextWidth
+              }
+              calcCount++
+              return p + pureTextWidth + paddingWidth
+            }, 0)
+            if (siblingsWidth < parentTextWidth) {
+              const offsetWidth = parentTextWidth - siblingsWidth
+              const expandOffsetWidth = offsetWidth / Object.keys(siblingsTextWidthMap).length
+              for (const key in siblingsTextWidthMap) {
+                const tmpWidth = siblingsTextWidthMap[key] + Math.ceil(expandOffsetWidth) + paddingWidth
+                const maxWidth = nodeMaxWidthMap[key]
+                if (!maxWidth || (maxWidth && tmpWidth > maxWidth)) {
+                  nodeMaxWidthMap[key] = tmpWidth
+                }
+              }
+            } else {
+              for (const key in siblingsTextWidthMap) {
+                const tmpWidth = siblingsTextWidthMap[key] + paddingWidth
+                const maxWidth = nodeMaxWidthMap[key]
+                if (!maxWidth || (maxWidth && tmpWidth > maxWidth)) {
+                  nodeMaxWidthMap[key] = tmpWidth
+                }
+              }
+            }
+            return nodeMaxWidthMap[node.label]
+          } else {
+            const fieldWidth = nodeMaxWidthMap[node.label]
+            if (fieldWidth) {
+              return fieldWidth
+            }
+            const textWidth = spreadsheet.measureTextWidth(node.label, colHeaderTheme) + paddingWidth
+            return textWidth
+          }
+        }
         break
       }
       // 查看详情用，均分铺满
