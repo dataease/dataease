@@ -104,7 +104,8 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       'tableLayoutMode',
       'showHoverStyle',
       'quotaPosition',
-      'quotaColLabel'
+      'quotaColLabel',
+      'tableRowHeaderMode'
     ]
   }
   axis: AxisType[] = ['xAxis', 'xAxisExt', 'yAxis', 'filter']
@@ -265,9 +266,9 @@ export class TablePivot extends S2ChartView<PivotSheet> {
     }
     // options
     s2Options.style = this.configStyle(chart, s2DataConfig)
-    // 默认展开层级
     if (basicStyle.tableLayoutMode === 'tree') {
-      const { defaultExpandLevel } = basicStyle
+      const { defaultExpandLevel, tableRowHeaderMode, tableRowHeaderWidth } = basicStyle
+      // 默认展开层级
       if (isNumeric(defaultExpandLevel)) {
         if ((defaultExpandLevel as number) >= chart.xAxis.length) {
           s2Options.style.rowExpandDepth = defaultExpandLevel as number
@@ -280,6 +281,23 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       }
       if (!defaultExpandLevel) {
         s2Options.style.hierarchyCollapse = true
+      }
+
+      // 行头宽度
+      if (tableRowHeaderMode === 'fixed') {
+        let treeRowsWidth = tableRowHeaderWidth
+        if (treeRowsWidth < 10) {
+          treeRowsWidth = 120
+        }
+        s2Options.style.treeRowsWidth = treeRowsWidth
+      }
+      if (tableRowHeaderMode === 'percent') {
+        let treeRowsWidth = tableRowHeaderWidth
+        if (treeRowsWidth > 50) {
+          treeRowsWidth = 20
+        }
+        const width = containerDom.offsetWidth * (treeRowsWidth / 100)
+        s2Options.style.treeRowsWidth = width
       }
     }
     // 列汇总别名

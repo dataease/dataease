@@ -145,6 +145,16 @@ const init = () => {
       }
       tableExpandLevelOptions.push({ name, value: i })
     }
+    if (basicStyle.tableRowHeaderMode === 'percent') {
+      if (basicStyle.tableRowHeaderWidth > 50) {
+        state.basicStyleForm.tableRowHeaderWidth = 20
+      }
+    }
+    if (basicStyle.tableRowHeaderMode === 'fixed') {
+      if (basicStyle.tableRowHeaderWidth < 10) {
+        state.basicStyleForm.tableRowHeaderWidth = 120
+      }
+    }
   }
   const lastPageInfo = dvMainStore.getViewPageInfo(props.chart.id)
   if (lastPageInfo) {
@@ -985,6 +995,46 @@ onMounted(async () => {
       >
         <template #append>%</template>
       </el-input>
+    </el-form-item>
+    <el-form-item
+      :label="t('chart.table_row_header_width')"
+      class="form-item"
+      :class="'form-item-' + themes"
+      v-if="showProperty('tableRowHeaderMode') && state.basicStyleForm.tableLayoutMode === 'tree'"
+    >
+      <el-radio-group
+        v-model="state.basicStyleForm.tableRowHeaderMode"
+        @change="changeBasicStyle('tableRowHeaderMode')"
+        class="table-column-mode"
+      >
+        <el-radio value="adapt" :effect="themes">
+          {{ t('chart.table_row_header_adapt') }}
+        </el-radio>
+        <el-radio value="fixed" :effect="themes">
+          {{ t('chart.table_row_header_fixed') }}
+        </el-radio>
+        <el-radio label="percent" :effect="themes">
+          {{ t('chart.table_row_header_percent') }}
+        </el-radio>
+      </el-radio-group>
+    </el-form-item>
+    <el-form-item
+      v-if="
+        showProperty('tableRowHeaderMode') &&
+        state.basicStyleForm.tableLayoutMode === 'tree' &&
+        state.basicStyleForm.tableRowHeaderMode !== 'adapt'
+      "
+      class="form-item form-item-slider"
+      :class="'form-item-' + themes"
+    >
+      <el-input-number
+        :effect="themes"
+        v-model.number="state.basicStyleForm.tableRowHeaderWidth"
+        :min="state.basicStyleForm.tableRowHeaderMode === 'percent' ? 1 : 10"
+        :max="state.basicStyleForm.tableRowHeaderMode === 'percent' ? 50 : 100000"
+        controls-position="right"
+        @change="changeBasicStyle('tableRowHeaderWidth')"
+      />
     </el-form-item>
     <el-form-item v-if="showProperty('autoWrap')" class="form-item" :class="'form-item-' + themes">
       <el-checkbox

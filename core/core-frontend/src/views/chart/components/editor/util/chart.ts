@@ -1731,7 +1731,9 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   circleBorderWidth: 0,
   circlePadding: 0,
   quotaPosition: 'col',
-  quotaColLabel: t('dataset.value')
+  quotaColLabel: t('dataset.value'),
+  tableRowHeaderMode: 'adapt',
+  tableRowHeaderWidth: 10
 }
 
 export const BASE_VIEW_CONFIG = {

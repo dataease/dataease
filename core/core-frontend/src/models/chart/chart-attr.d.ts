@@ -381,6 +381,14 @@ declare interface ChartBasicStyle {
    * 圆形填充图间距
    */
   circlePadding: number
+  /**
+   * 透视表行头模式
+   */
+  tableRowHeaderMode: 'adapt' | 'fixed' | 'percent'
+  /**
+   * 透视表行头宽度
+   */
+  tableRowHeaderWidth: number
 }
 /**
  * 表头属性
