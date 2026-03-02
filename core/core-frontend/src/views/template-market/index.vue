@@ -770,12 +770,17 @@ defineExpose({
 
 .img-main-create {
   display: inherit;
-  justify-content: center;
-  width: 100%;
   background: #0f1114;
   overflow-x: auto;
   overflow-y: hidden;
+  width: 100%;
+  height: 100% !important;
+}
+
+.img-main-create img {
+  width: 100%;
   height: 100%;
+  object-fit: contain; /* 保持图片比例，不裁剪 */
 }
 
 .custom-market-tree {
