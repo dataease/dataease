@@ -689,7 +689,8 @@ export default {
       title: 'SAML2 設定',
       request: '開啟請求簽名',
       assertion: '開啟斷言簽名'
-    }
+    },
+    country: '國家'
   },
   components: {
     effective_during_link: '公共連結生效',

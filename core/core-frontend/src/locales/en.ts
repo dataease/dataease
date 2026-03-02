@@ -714,7 +714,8 @@ export default {
       title: 'SAML2 Settings',
       request: 'Enable Request Signing',
       assertion: 'Enable Assertion Signing'
-    }
+    },
+    country: 'Country'
   },
   components: {
     dashboard_style: 'Dashboard style',

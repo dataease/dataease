@@ -693,7 +693,8 @@ export default {
       title: 'SAML2 设置',
       request: '开启请求签名',
       assertion: '开启断言签名'
-    }
+    },
+    country: '国家'
   },
   components: {
     dashboard_style: '仪表板风格',
