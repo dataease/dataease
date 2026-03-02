@@ -12,11 +12,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 @Data
 @Component("ck")
 public class CK extends DatasourceConfiguration {
+    private static final Map<String, String> SSL_CERT_PATH_CACHE = new ConcurrentHashMap<>();
     private String driver = "com.clickhouse.jdbc.ClickHouseDriver";
     private String extraParams = "";
     private String compressAlgorithm = "none"; // 默认设置为none以避免HTTP压缩问题
@@ -76,16 +81,41 @@ public class CK extends DatasourceConfiguration {
     }
 
     private String writeTempCert(String certContent, String prefix) {
+        String cacheKey = prefix + ":" + sha256(certContent);
+        String cachedPath = SSL_CERT_PATH_CACHE.get(cacheKey);
+        if (StringUtils.isNotBlank(cachedPath) && Files.exists(Paths.get(cachedPath))) {
+            return cachedPath;
+        }
         try {
             Path certDir = Paths.get(System.getProperty("java.io.tmpdir"), "dataease2", "clickhouse-ssl");
             Files.createDirectories(certDir);
             Path certFile = Files.createTempFile(certDir, "de-" + prefix + "-", ".pem");
             Files.writeString(certFile, certContent, StandardCharsets.UTF_8, StandardOpenOption.TRUNCATE_EXISTING);
             certFile.toFile().deleteOnExit();
-            return certFile.toAbsolutePath().toString();
+            String certPath = certFile.toAbsolutePath().toString();
+            SSL_CERT_PATH_CACHE.put(cacheKey, certPath);
+            return certPath;
         } catch (IOException e) {
             DEException.throwException("SSL cert write failed: " + e.getMessage());
             return null;
+        }
+    }
+
+    private String sha256(String content) {
+        try {
+            byte[] digest = MessageDigest.getInstance("SHA-256").digest(content.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hex = new StringBuilder(digest.length * 2);
+            for (byte b : digest) {
+                String h = Integer.toHexString(b & 0xff);
+                if (h.length() == 1) {
+                    hex.append('0');
+                }
+                hex.append(h);
+            }
+            return hex.toString();
+        } catch (NoSuchAlgorithmException e) {
+            DEException.throwException("SHA-256 not supported: " + e.getMessage());
+            return "";
         }
     }
 
