@@ -315,9 +315,6 @@ public class CalciteProvider extends Provider {
         DatasourceConfiguration datasourceConfiguration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), DatasourceConfiguration.class);
 
         String table = datasourceRequest.getTable();
-        if (!getTables(datasourceRequest).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList()).contains(table)) {
-            DEException.throwException(Translator.get("i18n_invalid_table_name"));
-        }
         if (StringUtils.isEmpty(table)) {
             ResultSet resultSet = null;
             try (Connection con = getConnectionFromPool(datasourceRequest.getDatasource().getId()); Statement statement = getStatement(con, 30)) {
@@ -338,6 +335,9 @@ public class CalciteProvider extends Provider {
                 }
             }
         } else {
+            if (!getTables(datasourceRequest).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList()).contains(table)) {
+                DEException.throwException(Translator.get("i18n_invalid_table_name"));
+            }
             ResultSet resultSet = null;
             try (Connection con = getConnectionFromPool(datasourceRequest.getDatasource().getId()); Statement statement = getStatement(con, 30)) {
                 datasourceRequest.setDsVersion(con.getMetaData().getDatabaseMajorVersion());
