@@ -822,6 +822,8 @@ onBeforeMount(() => {
   position: absolute;
   width: 100%;
   height: 100%;
+  font-style: normal;
+  font-weight: normal;
 }
 .custom-tab-title {
   .title-inner {
