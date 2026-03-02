@@ -81,7 +81,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
 
   async drawChart(drawOption: L7PlotDrawOptions<Choropleth>): Promise<Choropleth> {
     const { chart, level, container, action, scope } = drawOption
-    const { areaId } = drawOption
+    const { areaId, gadmName } = drawOption
     if (!areaId) {
       return
     }
@@ -131,6 +131,30 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
         geoJson.features = geoJson.features.filter(f => scope.includes('156' + f.properties.adcode))
       } else {
         geoJson = cloneDeep(await getGeoJsonFile(areaId))
+      }
+    }
+    if (areaId.startsWith('geo_') && geoJson?.features?.length) {
+      const levelNames = Object.keys(geoJson?.features[0]?.properties).filter(key =>
+        key.startsWith('NAME_')
+      )
+      const nameKey = levelNames[levelNames.length - 1]
+      geoJson.features.forEach(item => {
+        if (item.properties[nameKey]) {
+          item.properties['name'] = item.properties[nameKey]
+        }
+      })
+      if (areaId.length > 7) {
+        geoJson.features = geoJson.features.filter(f => {
+          const names = Object.keys(f.properties)
+            .filter(key => key.startsWith('NAME_'))
+            .map(key => f.properties[key])
+            .filter(Boolean)
+            .join('@')
+          if (isEmpty(names)) {
+            return true
+          }
+          return names.replace(/@[^@]*$/, '') === gadmName
+        })
       }
     }
     let data = []
@@ -225,17 +249,27 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       }
       view.scene.map['keyboard'].disable()
       view.on('fillAreaLayer:click', (ev: MapMouseEvent) => {
-        const data = ev.feature.properties
+        const evData = ev.feature.properties
         if (areaId.startsWith('custom_')) {
-          data.name = data.areaName
-          data.adcode = '156'
+          evData.name = evData.areaName
+          evData.adcode = '156'
+        }
+        let adcode = evData.adcode
+        let names = ''
+        if (adcode + '' !== '156' && !areaId.startsWith('156')) {
+          adcode = 'geo_' + adcode
+          names = Object.keys(evData)
+            .filter(key => key.startsWith('NAME_'))
+            .map(key => evData[key])
+            .filter(Boolean)
+            .join('@')
         }
         action({
           x: ev.x,
           y: ev.y,
           data: {
-            data,
-            extra: { adcode: data.adcode, scope: data.scope }
+            data: evData,
+            extra: { adcode, scope: evData.scope, gadmName: names }
           }
         })
       })
@@ -314,7 +348,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     })
     if (colorScale.length) {
       options.color['value'] = colorScale.map(item =>
-        item.color ? new ColorWrapper(item.color) : new ColorWrapper(item)
+        item.color && item.value ? new ColorWrapper(item.color, item.value) : new ColorWrapper(item)
       )
       if (colorScale[0].value && !misc.mapAutoLegend) {
         options.color['scale']['domain'] = [
@@ -334,10 +368,10 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       let value = '-'
       if (item.value !== '') {
         if (Array.isArray(item.value)) {
-          item.value.forEach((v, i) => {
-            item.value[i] = Number.isNaN(v) || v === 'NaN' ? 'NaN' : parseFloat(v).toFixed(0)
-          })
-          value = item.value.join('-')
+          const arr = item.value.every(Number.isNaN) ? item.color.value : item.value
+          value = arr
+            .map(v => (Number.isNaN(v) || String(v) === 'NaN' ? 'NaN' : parseFloat(v).toFixed(0)))
+            .join('-')
         } else {
           const tmp = item.value as string
           value = Number.isNaN(tmp) || tmp === 'NaN' ? 'NaN' : parseFloat(tmp).toFixed(0)
@@ -628,9 +662,13 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
 
 class ColorWrapper {
   private color: string
+  value?: any
 
-  constructor(color: string) {
+  constructor(color: string, value?: any) {
     this.color = color
+    if (value !== undefined) {
+      this.value = value
+    }
   }
 
   toString(): string {

@@ -277,15 +277,22 @@ const calcData = async (view, callback) => {
           if (!res?.drillFilters?.length) {
             dynamicAreaId.value = ''
             scope = null
+            gadmName = null
           } else {
-            const extra = view.chartExtRequest?.drill?.[res?.drillFilters?.length - 1].extra
+            const chartExtRequest = view.chartExtRequest || view.value?.chartExtRequest
+            const extra = chartExtRequest?.drill?.[res?.drillFilters?.length - 1].extra
             dynamicAreaId.value = extra?.adcode + ''
             scope = extra?.scope
+            gadmName = extra?.gadmName
             // 地图
             const map = parseJson(view.customAttr)?.map
             if (map) {
               let areaId = map.id
               country.value = areaId.slice(0, 3)
+              // 世界下钻到国家，切换路径
+              if (country.value === '000' || dynamicAreaId.value?.startsWith('000')) {
+                country.value = chartExtRequest?.drill?.[0]?.extra?.adcode
+              }
             }
             if (!dynamicAreaId.value?.startsWith(country.value)) {
               if (country.value === 'cus') {
@@ -373,6 +380,7 @@ const renderG2Plot = async (chart, chartView: G2PlotChartView<any, any>) => {
 
 const dynamicAreaId = ref('')
 const country = ref('')
+let gadmName
 const chartContainer = ref<HTMLElement>(null)
 let scope
 let mapTimer: number
@@ -401,7 +409,8 @@ const renderL7Plot = async (chart: ChartObj, chartView: L7PlotChartView<any, any
       chart,
       areaId,
       action,
-      scope
+      scope,
+      gadmName
     })
     callback?.()
     emit('resetLoading')

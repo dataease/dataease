@@ -12,7 +12,7 @@ import type {
   UploadProps
 } from 'element-plus-secondary'
 import request from '@/config/axios'
-import { GeometryFrom } from './interface'
+import { GeometryFrom, countryList } from './interface'
 import { useCache } from '@/hooks/web/useCache'
 const { wsCache } = useCache()
 const { t } = useI18n()
@@ -25,7 +25,8 @@ const state = reactive({
     pid: null,
     code: null,
     name: null,
-    fileName: null
+    fileName: null,
+    country: null
   }),
   treeData: []
 })
@@ -34,14 +35,49 @@ const treeProps = {
   label: 'name',
   disabled: 'readOnly'
 }
+const isCountry = computed(() => state.form.pid === '000')
+const isChina = computed(() => state.form.pid?.startsWith('156'))
+/**
+ * 获取父节点数量
+ * @param nodes
+ * @param pid
+ * @param count
+ */
+const getAncestorCount = (nodes, pid, count = 0) => {
+  for (const node of nodes) {
+    if (node.id === pid) {
+      return count
+    }
+    if (node.children) {
+      const res = getAncestorCount(node.children, pid, count + 1)
+      if (res !== null) return res
+    }
+  }
+  return null
+}
 const formatPid = computed(() => {
-  if (!state.form.pid) return ''
   const pid = state.form.pid
-  return pid.replace(/(0+)$/g, '').replace(/\D/g, '')
+  if (!pid) return ''
+  // 156开头的pid没有父节点，直接返回pid，其他pid根据父先节点数量拼接字符串
+  const ancestorCount = pid.startsWith('156') ? 0 : getAncestorCount(state.treeData, pid) || ''
+  const clStr = ancestorCount ? ancestorCount : ''
+  // 先去掉非数字，再用正则保留前3位和后面非0部分
+  const numericPid = pid.replace(/\D/g, '').replace(/(\d{3})(0+)$/, '$1') + clStr
+  return state.form.country ? numericPid.substring(3, numericPid.length) : numericPid
 })
 const codeTips = ref(t('system.at_the_end'))
 const pidChange = () => {
   state.form.code = null
+  state.form.country = null
+}
+
+/**
+ * 当pid变化时，如果不是国家级别且不是中国，则自动生成code
+ */
+const onPidChanged = () => {
+  if (!isCountry.value && !isChina.value) {
+    state.form.code = formatPid.value.padEnd(9, '0').slice(formatPid.value.length)
+  }
 }
 const validateCode = (_: any, value: any, callback: any) => {
   const isCountry = !formatPid.value
@@ -66,6 +102,13 @@ const validateCode = (_: any, value: any, callback: any) => {
 }
 const rule = reactive<FormRules>({
   pid: [
+    {
+      required: true,
+      message: t('common.require'),
+      trigger: 'change'
+    }
+  ],
+  country: [
     {
       required: true,
       message: t('common.require'),
@@ -102,6 +145,7 @@ const edit = (pid?: string) => {
   state.form.pid = pid
   state.form.code = null
   state.form.name = null
+  state.form.country = null
   geoFile.value = null
   state.form.fileName = null
   dialogVisible.value = true
@@ -182,6 +226,13 @@ const buildFormData = (file, param) => {
   formData.append('request', new Blob([JSON.stringify(param)], { type: 'application/json' }))
   return formData
 }
+
+const countryChange = () => {
+  const countryItem = countryList.find(item => item.code === state.form.country) || null
+  state.form.code = countryItem.code
+  state.form.name = countryItem?.cn_name
+}
+
 defineExpose({
   edit
 })
@@ -214,7 +265,26 @@ defineExpose({
           :render-after-expand="false"
           :placeholder="t('common.please_select')"
           @current-change="pidChange"
+          @change="onPidChanged"
         />
+      </el-form-item>
+
+      <el-form-item :label="t('system.country')" v-if="isCountry" prop="country">
+        <el-select
+          v-model="state.form.country"
+          :filterable="true"
+          :placeholder="t('common.please_select')"
+          @change="countryChange"
+        >
+          <el-option
+            v-for="item in countryList"
+            :key="item.name"
+            :label="item.cn_name"
+            :value="item.code"
+          >
+            <span style="float: left">{{ item.cn_name + ' ' + item.name }}</span>
+          </el-option>
+        </el-select>
       </el-form-item>
 
       <el-form-item :label="t('system.region_code')" prop="code">
@@ -229,7 +299,7 @@ defineExpose({
           </span>
         </template>
 
-        <el-input v-if="state.form.pid" v-model="state.form.code">
+        <el-input v-if="state.form.pid" v-model="state.form.code" :disabled="isCountry || !isChina">
           <template #prefix>
             {{ formatPid }}
           </template>
@@ -246,7 +316,7 @@ defineExpose({
       </el-form-item>
 
       <el-form-item :label="t('system.region_name')" prop="name">
-        <el-input v-model="state.form.name" />
+        <el-input v-model="state.form.name" :disabled="isCountry" />
       </el-form-item>
 
       <div class="geo-label-mask" />

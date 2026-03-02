@@ -1057,7 +1057,7 @@ export function configL7Tooltip(chart: Chart): TooltipOptions {
 }
 
 export function handleGeoJson(geoJson: FeatureCollection, nameMapping?: Record<string, string>) {
-  geoJson.features.forEach(item => {
+  geoJson?.features.forEach(item => {
     if (!item.properties['centroid']) {
       if (item.properties['center']) {
         item.properties['centroid'] = item.properties['center']

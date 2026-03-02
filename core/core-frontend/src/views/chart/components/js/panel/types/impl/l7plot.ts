@@ -22,6 +22,8 @@ export interface L7PlotDrawOptions<P> extends AntVDrawOptions<P> {
   level?: ViewLevel['level']
   geoJson?: FeatureCollection
   scope?: string[]
+  // 表示GADM层级关系，name1@name2@name3,用于过滤geojson数据
+  gadmName?: string
 }
 // S2 or others to be defined next
 export abstract class L7PlotChartView<

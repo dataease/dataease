@@ -1,6 +1,10 @@
 package io.dataease.map.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.dataease.api.map.dto.GeometryNodeCreator;
 import io.dataease.api.map.vo.AreaNode;
 import io.dataease.api.map.vo.CustomGeoArea;
@@ -156,7 +160,12 @@ public class MapManage {
 
         File geoFile = buildGeoFile(code);
         try {
+          boolean isChina = StringUtils.startsWith(code, "156");
+          if (isChina) {
             file.transferTo(geoFile);
+          } else {
+            addGeoJsonField(code, file, geoFile);
+          }
         } catch (IOException e) {
             LogUtil.error(e.getMessage());
             DEException.throwException(e);
@@ -315,4 +324,67 @@ public class MapManage {
         }
         return true;
     }
+
+  /**
+   * 将GeoJSON文件中的每个feature的properties添加adcode字段，值为根据父级code生成的子级code，并将修改后的GeoJSON写入指定文件。
+   * @param code 当前行政区划编码
+   * @param file 上传的GeoJSON文件
+   * @param geoFile 目标文件，修改后的GeoJSON将写入此文件
+   * @throws IOException 如果读取或写入文件时发生错误
+   */
+    private void addGeoJsonField(String code, MultipartFile file, File geoFile) throws IOException {
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      JsonNode geoJson = mapper.readTree(file.getInputStream());
+      ArrayNode features = (ArrayNode) geoJson.get("features");
+      if (features != null) {
+        for (JsonNode feature : features) {
+          ObjectNode featureObj = (ObjectNode) feature;
+          ObjectNode properties = (ObjectNode) featureObj.get("properties");
+          if (properties == null) {
+            properties = mapper.createObjectNode();
+            featureObj.set("properties", properties);
+          }
+          properties.put("adcode", setChildAdcode(code));
+        }
+      }
+      mapper.writeValue(geoFile, geoJson);
+    } catch (Exception e) {
+      LogUtil.error(e.getMessage());
+      DEException.throwException(e);
+    }
+  }
+
+  /**
+   * 根据父级行政区划编码生成子级编码。 规则： 1. 若code为3位，直接在末尾加1并补0到9位； 2. 否则去除末尾所有0，最后一位数字加1，补0到9位； 3.
+   * 若全为0，返回1并补0到原长度； 4. 若最后一位已为9，抛出“层级过长”异常。
+   *
+   * @param code 父级行政区划编码
+   * @return 子级行政区划编码
+   * @throws IllegalArgumentException 层级过长时抛出
+   */
+  private String setChildAdcode(String code) {
+    // 3位时直接补1并补0到9位
+    if (code.length() == 3) {
+      return StringUtils.rightPad(code + "1", 9, '0');
+    }
+    // 去除末尾所有0
+    String noTrailingZeros = StringUtils.stripEnd(code, "0");
+    // 如果全是0，返回"1"并补0到原长度
+    if (StringUtils.isBlank(noTrailingZeros)) {
+      return StringUtils.rightPad("1", code.length(), '0');
+    }
+    if (noTrailingZeros.length() == 3) {
+      return StringUtils.rightPad(noTrailingZeros + "1", 9, '0');
+    }
+    // 最后一位数字加1
+    int lastDigit = noTrailingZeros.charAt(noTrailingZeros.length() - 1) - '0';
+    if (lastDigit == 9) {
+      throw new IllegalArgumentException("Hierarchy too deep");
+    }
+    String incremented = noTrailingZeros + (lastDigit + 1);
+    // 补0到9位
+    return StringUtils.rightPad(incremented, 9, '0');
+  }
+
 }
