@@ -107,7 +107,8 @@ const finishEdit = () => {
     }, {})
   }
   const oldMappedName = areaNameMap[curOriginName.value]
-  if (oldMappedName === curMappedName.value) {
+  if (!curMappedName.value || oldMappedName === curMappedName.value) {
+    curMappedName.value = oldMappedName
     return
   }
   areaNameMap[curOriginName.value] = curMappedName.value

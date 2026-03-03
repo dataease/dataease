@@ -150,7 +150,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
             .map(key => f.properties[key])
             .filter(Boolean)
             .join('@')
-          if (isEmpty(names)) {
+          if (isEmpty(names) || !gadmName) {
             return true
           }
           return names.replace(/@[^@]*$/, '') === gadmName
