@@ -21,7 +21,7 @@ import {
   findBaseDeFaultAttr
 } from '@/custom-component/component-list'
 import { get, set } from 'lodash-es'
-import { viewFieldTimeTrans } from '@/utils/viewUtils'
+import { checkIsSameDs, viewFieldTimeTrans } from '@/utils/viewUtils'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -1458,7 +1458,7 @@ export const dvMainStore = defineStore('dataVisualization', {
           const targetViewId = targetInfoArray[0] // 目标图表
           if (element.component === 'UserView' && element.id === targetViewId) {
             // 如果含有customFilter 仅加入customFilter
-            if (customFilter) {
+            if (customFilter && checkIsSameDs(this.canvasViewInfo, viewId, element.id)) {
               currentFilters.push({
                 filterType: 3,
                 customFilter: customFilter
