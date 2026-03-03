@@ -233,6 +233,25 @@ const countryChange = () => {
   state.form.name = countryItem?.cn_name
 }
 
+const searchKeyword = ref('')
+/**
+ * 国家选择框的搜索过滤
+ */
+const handleFilterMethod = (query: string) => {
+  searchKeyword.value = query || ''
+}
+/**
+ * 判断单个选项是否可见
+ */
+const isOptionVisible = item => {
+  if (!searchKeyword.value) {
+    return true
+  }
+  const kw = searchKeyword.value.toLowerCase()
+  const matchCn = item.cn_name && item.cn_name.includes(searchKeyword.value)
+  const matchEn = item.name && item.name.toLowerCase().includes(kw)
+  return matchCn || matchEn
+}
 defineExpose({
   edit
 })
@@ -275,12 +294,14 @@ defineExpose({
           :filterable="true"
           :placeholder="t('common.please_select')"
           @change="countryChange"
+          :filter-method="handleFilterMethod"
         >
           <el-option
             v-for="item in countryList"
             :key="item.name"
             :label="item.cn_name"
             :value="item.code"
+            v-show="isOptionVisible(item)"
           >
             <span style="float: left">{{ item.cn_name + ' ' + item.name }}</span>
           </el-option>
