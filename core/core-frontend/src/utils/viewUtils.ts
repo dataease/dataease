@@ -33,3 +33,7 @@ export function viewFieldTimeTrans(viewDataInfo, params) {
     })
   }
 }
+
+export function checkIsSameDs(canvasViewInfo, sourceViewId, targetViewId) {
+  return canvasViewInfo[sourceViewId]['tableId'] === canvasViewInfo[targetViewId]['tableId']
+}
