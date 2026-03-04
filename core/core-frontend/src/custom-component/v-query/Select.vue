@@ -329,6 +329,7 @@ const customSort = () => {
 }
 
 const handleFieldIdChange = (val: EnumValue) => {
+  let change = false
   loading.value = true
   enumValueObj(val)
     .then(res => {
@@ -369,8 +370,6 @@ const handleFieldIdChange = (val: EnumValue) => {
 
       const valArr = options.value.map(ele => ele.value)
 
-      let change = false
-
       if (
         config.value.multiple &&
         Array.isArray(selectValue.value) &&
@@ -402,6 +401,8 @@ const handleFieldIdChange = (val: EnumValue) => {
       }
     })
     .finally(() => {
+      let changeAuth = change
+      change = false
       loading.value = false
       if (disabledFirstItem.value && config.value.defaultValueCheck) {
         time = setTimeout(() => {
@@ -431,7 +432,7 @@ const handleFieldIdChange = (val: EnumValue) => {
           Array.isArray(selectValue.value) ? [...selectValue.value] : [selectValue.value]
         )
 
-        if (shouldReSearch) {
+        if (shouldReSearch || changeAuth) {
           queryDataForId(config.value.id)
         }
       } else {
