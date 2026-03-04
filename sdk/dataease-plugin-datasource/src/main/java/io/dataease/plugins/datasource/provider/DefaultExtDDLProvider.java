@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 public class DefaultExtDDLProvider extends ExtDDLProvider {
 
-    private final Pattern CHECK_INJECT_PATTERN = Pattern.compile("(.*\\=.*\\-\\-.*)|(.*(\\+).*)|(.*\\w+(%|\\$|#|&)\\w+.*)|(.*\\|\\|.*)|(.*\\s+(and|or)\\s+.*)|(.*\\b(select|update|union|and|or|delete|insert|trancate|char|into|substr|ascii|declare|exec|count|master|into|drop|execute|sleep|extractvalue|updatexml|substring|database|concat|rand|gtid_subset)\\b.*)");
+    private final Pattern CHECK_INJECT_PATTERN = Pattern.compile("(.*\\=.*\\-\\-.*)|(.*(\\+).*)|(.*\\w+(%|\\$|#|&)\\w+.*)|(.*\\|\\|.*)|(.*\\s+(and|or)\\s+.*)|(.*\\b(select|update|union|and|or|delete|insert|truncate|char|into|substr|ascii|declare|exec|count|master|into|drop|execute|sleep|extractvalue|updatexml|substring|database|concat|rand|gtid_subset)\\b.*)");
 
     @Override
     public boolean checkSqlInjection(String sql) {
