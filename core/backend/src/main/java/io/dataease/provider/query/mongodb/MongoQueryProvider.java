@@ -1403,7 +1403,7 @@ public class MongoQueryProvider extends QueryProvider {
             }
             originField = originField.replaceAll("[\\t\\n\\r]]", "");
             // 正则提取[xxx]
-            String regex = "\\[(.*?)]";
+            String regex = "\\[([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})\\]";
             Pattern pattern = Pattern.compile(regex);
             Matcher matcher = pattern.matcher(originField);
             Set<String> ids = new HashSet<>();

@@ -161,6 +161,7 @@ export default {
   },
   beforeDestroy() {
     bus.$off('reset-default-value', this.resetDefaultValue)
+    this.destroyTimeMachine()
   },
   methods: {
     clearHandler() {

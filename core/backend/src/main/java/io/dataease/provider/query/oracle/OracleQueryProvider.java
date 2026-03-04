@@ -1515,6 +1515,7 @@ public class OracleQueryProvider extends QueryProvider {
                 } else {
                     originName = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
                 }
+
                 String format = transDateFormat(request.getDateStyle(), request.getDatePattern());
                 if (field.getDeType() == 1) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
@@ -1820,7 +1821,7 @@ public class OracleQueryProvider extends QueryProvider {
             }
             originField = originField.replaceAll("[\\t\\n\\r]]", "");
             // 正则提取[xxx]
-            String regex = "\\[(.*?)]";
+            String regex = "\\[([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})\\]";
             Pattern pattern = Pattern.compile(regex);
             Matcher matcher = pattern.matcher(originField);
             Set<String> ids = new HashSet<>();
