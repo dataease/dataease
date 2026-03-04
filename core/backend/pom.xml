@@ -13,7 +13,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <shiro.version>1.9.1</shiro.version>
+        <shiro.version>1.12.0</shiro.version>
         <java.version>11</java.version>
         <graalvm.version>20.1.0</graalvm.version>
         <jwt.version>3.12.1</jwt.version>
