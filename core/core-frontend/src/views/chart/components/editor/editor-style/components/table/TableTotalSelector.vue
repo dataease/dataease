@@ -24,7 +24,12 @@ const props = defineProps({
   }
 })
 watch(
-  [() => props.chart.customAttr.tableTotal, () => props.chart.xAxis, () => props.chart.yAxis],
+  [
+    () => props.chart.customAttr.tableTotal,
+    () => props.chart.xAxis,
+    () => props.chart.yAxis,
+    () => props.chart.customAttr.basicStyle
+  ],
   () => {
     init()
   },
