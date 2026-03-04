@@ -227,7 +227,7 @@ export const countryList: CountryInfo[] = [
   { name: 'Saint Vincent and the Grenadines', cn_name: '圣文森特和格林纳丁斯', code: '670' },
   { name: 'Venezuela, Bolivarian Republic of', cn_name: '委内瑞拉', code: '862' },
   { name: 'Virgin Islands, U.S.', cn_name: '美属维尔京群岛', code: '850' },
-  { name: 'Viet Nam', cn_name: '越南', code: '704' },
+  { name: 'Vietnam', cn_name: '越南', code: '704' },
   { name: 'Vanuatu', cn_name: '瓦努阿图', code: '548' },
   { name: 'Samoa', cn_name: '萨摩亚', code: '882' },
   { name: 'Yemen', cn_name: '也门', code: '887' },
