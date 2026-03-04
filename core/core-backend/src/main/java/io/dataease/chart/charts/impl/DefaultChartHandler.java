@@ -245,21 +245,25 @@ public class DefaultChartHandler extends AbstractChartPlugin {
         return list;
     }
 
-    protected List<ChartViewFieldDTO> getAssistFields(List<ChartSeniorAssistDTO> list, List<ChartViewFieldDTO> yAxis) {
+    protected List<ChartViewFieldDTO> getAssistFields(List<ChartSeniorAssistDTO> list, List<ChartViewFieldDTO> axis) {
+        return getAssistFields(list, axis, SQLConstants.FIELD_ALIAS_Y_PREFIX);
+    }
+
+    protected List<ChartViewFieldDTO> getAssistFields(List<ChartSeniorAssistDTO> list, List<ChartViewFieldDTO> axis, String prefix) {
         List<ChartViewFieldDTO> res = new ArrayList<>();
         for (ChartSeniorAssistDTO dto : list) {
             DatasetTableFieldDTO curField = dto.getCurField();
-            ChartViewFieldDTO yField = null;
+            ChartViewFieldDTO targetField = null;
             String alias = "";
-            for (int i = 0; i < yAxis.size(); i++) {
-                ChartViewFieldDTO field = yAxis.get(i);
+            for (int i = 0; i < axis.size(); i++) {
+                ChartViewFieldDTO field = axis.get(i);
                 if (Objects.equals(field.getId(), curField.getId())) {
-                    yField = field;
-                    alias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
+                    targetField = field;
+                    alias = String.format(prefix, i);
                     break;
                 }
             }
-            if (ObjectUtils.isEmpty(yField)) {
+            if (ObjectUtils.isEmpty(targetField)) {
                 continue;
             }
 

@@ -726,7 +726,7 @@ export function getConditions(chart: Chart) {
     for (let i = 0; i < conditions.length; i++) {
       const fieldItem = conditions[i]
       if (!fieldItem.conditions) continue;
-      
+
       for (let j = 0; j < fieldItem.conditions.length; j++) {
         const rule = fieldItem.conditions[j]
         let targets = []
@@ -775,7 +775,7 @@ export function getConditions(chart: Chart) {
           if (rowData?.id && rowData?.field === rowData.id) {
             return null
           }
-          
+
           return {
             fill: mappingColor(value, defaultValueColor, rules, 'color', filedValueMap, rowData)
           }
@@ -811,7 +811,7 @@ export function getConditions(chart: Chart) {
 
 export function mappingColor(value, defaultColor, rules, type, filedValueMap?, rowData?) {
   let color = null
-  
+
   // If called from old code (rules is a single field object), adapt it
   if (rules && !Array.isArray(rules) && rules.conditions) {
       const field = rules;
@@ -823,12 +823,12 @@ export function mappingColor(value, defaultColor, rules, type, filedValueMap?, r
     let flag = false
     const t = rule
     let tv, max, min
-    
+
     let checkValue = value;
-    if (sourceField.dataeaseName && rowData) {
-        checkValue = rowData[sourceField.dataeaseName];
+    if (sourceField.dataeaseName && rowData?.[sourceField.dataeaseName]) {
+      checkValue = rowData[sourceField.dataeaseName]
     }
-    
+
     if (t.type === 'dynamic') {
       if (t.term === 'between') {
         max = parseFloat(getValue(t.dynamicMaxField, filedValueMap, rowData))
@@ -844,7 +844,7 @@ export function mappingColor(value, defaultColor, rules, type, filedValueMap?, r
         tv = t.value
       }
     }
-    
+
     const val = checkValue;
 
     if (sourceField.deType === 2 || sourceField.deType === 3 || sourceField.deType === 4) {
@@ -1012,7 +1012,7 @@ export function mappingColor(value, defaultColor, rules, type, filedValueMap?, r
       }
     }
   }
-  
+
   if (!color) {
       color = defaultColor;
   }

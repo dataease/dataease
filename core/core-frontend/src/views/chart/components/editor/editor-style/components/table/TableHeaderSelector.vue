@@ -425,7 +425,7 @@ onMounted(() => {
           />
         </el-select>
       </el-col>
-      <el-col :span="12" style="display: flex; align-items: center">
+      <el-col :offset="1" :span="11" style="display: flex; align-items: center">
         <el-radio-group
           class="icon-radio-group"
           v-model="alignConfig.align"

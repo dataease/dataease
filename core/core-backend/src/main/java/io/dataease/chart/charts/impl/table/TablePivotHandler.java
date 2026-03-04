@@ -3,6 +3,7 @@ package io.dataease.chart.charts.impl.table;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.chart.charts.impl.GroupChartHandler;
 import io.dataease.constant.DeTypeConstants;
+import io.dataease.constant.SQLConstants;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.Dimension2SQLObj;
@@ -44,7 +45,16 @@ public class TablePivotHandler extends GroupChartHandler {
             var originSql = result.getQuerySql();
             var dynamicAssistFields = getDynamicThresholdFields(view);
             var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
-            var assistFields = getAssistFields(dynamicAssistFields, yAxis);
+            var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
+            var dimAxis = new ArrayList<>(xAxis);
+            var xAxisExt = formatResult.getAxisMap().get(ChartAxis.xAxisExt);
+            if (xAxisExt != null) {
+                dimAxis.addAll(xAxisExt);
+            }
+            var yAssistFields = getAssistFields(dynamicAssistFields, yAxis);
+            var assistFields = new ArrayList<>(yAssistFields);
+            var xAssistFields = getAssistFields(dynamicAssistFields, dimAxis, SQLConstants.FIELD_ALIAS_X_PREFIX);
+            assistFields.addAll(xAssistFields);
             if (CollectionUtils.isNotEmpty(assistFields)) {
                 var req = new DatasourceRequest();
                 req.setIsCross(crossDs);
