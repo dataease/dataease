@@ -384,6 +384,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
             }
             filter.push({
               filterId: id,
+              filterFrom: 'optionFilter',
               componentId: ele.id,
               fieldId: fieldIdOption,
               operator: 'in',

@@ -500,24 +500,26 @@ const jumpClick = param => {
         ) {
           // do filter
           curFilter.filter.forEach(filterItem => {
-            targetViewInfoList.forEach(targetViewInfo => {
-              if (targetViewInfo.sourceFieldActiveId === filterItem.filterId) {
-                const outerFilterItem = filterOuterParams[targetViewInfo.outerParamsName]
-                if (outerFilterItem) {
-                  // 当前已经存在 根据arrayType 放置位置
-                  if (filterItem['arrayType'] === 'END') {
-                    outerFilterItem.value[outerFilterItem.value.length - 1] = filterItem.value[0]
+            if (filterItem.filterFrom !== 'optionFilter') {
+              targetViewInfoList.forEach(targetViewInfo => {
+                if (targetViewInfo.sourceFieldActiveId === filterItem.filterId) {
+                  const outerFilterItem = filterOuterParams[targetViewInfo.outerParamsName]
+                  if (outerFilterItem) {
+                    // 当前已经存在 根据arrayType 放置位置
+                    if (filterItem['arrayType'] === 'END') {
+                      outerFilterItem.value[outerFilterItem.value.length - 1] = filterItem.value[0]
+                    } else {
+                      outerFilterItem.value[0] = filterItem.value[0]
+                    }
                   } else {
-                    outerFilterItem.value[0] = filterItem.value[0]
-                  }
-                } else {
-                  filterOuterParams[targetViewInfo.outerParamsName] = {
-                    operator: filterItem.operator,
-                    value: filterItem.value
+                    filterOuterParams[targetViewInfo.outerParamsName] = {
+                      operator: filterItem.operator,
+                      value: filterItem.value
+                    }
                   }
                 }
-              }
-            })
+              })
+            }
           })
         }
         let attachParamsInfo
