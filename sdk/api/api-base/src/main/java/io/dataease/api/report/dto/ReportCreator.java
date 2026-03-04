@@ -65,6 +65,8 @@ public class ReportCreator implements Serializable {
 
     private List<VisualizationReportFilterVO> reportFilter;
 
+    private Integer dataPermission = 0;
+
     @JsonIgnore
     private Long logTaskId;
 }

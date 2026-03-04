@@ -1,11 +1,13 @@
 package io.dataease.utils;
 
 import io.dataease.exception.DEException;
+import lombok.Data;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -38,6 +40,8 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static io.dataease.result.ResultCode.SYSTEM_INNER_ERROR;
@@ -664,6 +668,115 @@ public class HttpClientUtil {
             } catch (Exception e) {
                 logger.error("HttpClient关闭连接失败", e);
             }
+        }
+    }
+
+    public static MultipartResponse postForScreenshot(
+            String url, Map<String,String> body, HttpClientConfig config) throws IOException {
+        CloseableHttpClient httpClient = null;
+        try {
+            httpClient = buildHttpClient(url);
+            HttpPost httpPost = new HttpPost(url);
+            if (config == null) {
+                config = new HttpClientConfig();
+            }
+            httpPost.setConfig(config.buildRequestConfig());
+            Map<String, String> header = config.getHeader();
+            for (String key : header.keySet()) {
+                httpPost.addHeader(key, header.get(key));
+            }
+            EntityBuilder entityBuilder = EntityBuilder.create();
+            String json = JsonUtil.toJSONString(body).toString();
+            entityBuilder.setText(json);
+            entityBuilder.setContentType(ContentType.APPLICATION_JSON);
+            HttpEntity requestEntity = entityBuilder.build();
+            httpPost.setEntity(requestEntity);
+
+
+            try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
+                if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+                    throw new DEException(response.getStatusLine().getStatusCode(), response.toString());
+                }
+                HttpEntity entity = response.getEntity();
+                byte[] bytes = EntityUtils.toByteArray(entity);          // raw bytes
+                String contentType = response.getFirstHeader("Content-Type").getValue();
+                if (contentType.startsWith("multipart/")) {
+                    return MultipartParser.parse(bytes, contentType);   // see util below
+                } else {
+                    throw new IOException("unexpected response: " + contentType);
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Data
+    public static class MultipartResponse {
+        Map<String,Object> metadata;
+        byte[] image;
+    }
+
+    public class MultipartParser {
+        public static   MultipartResponse parse(byte[] body, String contentType) throws IOException {
+            String boundary = extractBoundary(contentType);
+            String delim = "--" + boundary;
+            byte[] delimBytes = delim.getBytes();
+            MultipartResponse resp = new MultipartResponse();
+            resp.metadata = new HashMap<>();
+
+            int idx = 0;
+            while (idx < body.length) {
+                int start = indexOf(body, delimBytes, idx);
+                if (start < 0) break;
+                idx = start + delimBytes.length;
+                if (idx + 1 < body.length && body[idx] == '-' && body[idx+1] == '-') break; // final boundary
+                // skip CRLF
+                if (body[idx] == '\r' && body[idx+1] == '\n') idx += 2;
+
+                // read headers
+                int headerEnd = indexOf(body, "\r\n\r\n".getBytes(), idx);
+                String headers = new String(body, idx, headerEnd - idx);
+                idx = headerEnd + 4;
+
+                boolean isImage = headers.contains("name=\"image\"");
+                int nextBoundary = indexOf(body, delimBytes, idx);
+                if (nextBoundary < 0) break;
+
+                byte[] part = new byte[nextBoundary - idx - 2]; // strip trailing CRLF
+                System.arraycopy(body, idx, part, 0, part.length);
+
+                if (isImage) {
+                    resp.image = part;
+                } else {
+                    String json = new String(part);
+                    // 最简单把整个 JSON 字符串放到 metadata map；
+                    // 你也可以用 Jackson/Gson 解析成具体字段
+                    resp.metadata = JsonUtil.parseObject(json, Map.class);
+                }
+                idx = nextBoundary;
+            }
+            return resp;
+        }
+
+        private static String extractBoundary(String contentType) {
+            Pattern p = Pattern.compile("boundary=(.*)");
+            Matcher m = p.matcher(contentType);
+            if (m.find()) {
+                return m.group(1);
+            }
+            throw new IllegalArgumentException("No boundary in content-type");
+        }
+
+        private static int indexOf(byte[] array, byte[] target, int start) {
+            outer:
+            for (int i = start; i <= array.length - target.length; i++) {
+                for (int j = 0; j < target.length; j++) {
+                    if (array[i+j] != target[j]) continue outer;
+                }
+                return i;
+            }
+            return -1;
         }
     }
 }

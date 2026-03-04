@@ -47,6 +47,7 @@
         <guava.version>33.0.0-jre</guava.version>
         <commons-net.version>3.8.0</commons-net.version>
         <selenium-java.version>4.19.1</selenium-java.version>
+        <playwright-java.version>1.55.0</playwright-java.version>
         <angus-mail.version>2.0.3</angus-mail.version>
         <mysql-connector-j.version>8.2.0</mysql-connector-j.version>
         <itextpdf.version>8.0.4</itextpdf.version>

@@ -64,4 +64,6 @@ public class ReportInfoVO implements Serializable {
     private Integer retryLimit;
 
     private Integer retryInterval;
+
+    private Integer dataPermission = 0;
 }
