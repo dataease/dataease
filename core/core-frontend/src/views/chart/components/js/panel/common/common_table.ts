@@ -2528,15 +2528,19 @@ function getTextStartX(cell, textStyle) {
   )
   const padding = cell.theme.colCell?.cell?.padding ?? { left: 0, right: 0 }
   const align = cell.getTextStyle()?.textAlign ?? 'left'
+  const paddingLeft = padding.left || 0
+  const paddingRight = padding.right || 0
+  // 可用宽度（扣除 padding）
+  const availableWidth = area.width - paddingLeft - paddingRight
   switch (align) {
     case 'left':
-      return area.x + (padding.left || 0)
+      return area.x + paddingLeft
     case 'center':
-      return area.x + (area.width - textWidth) / 2
+      return area.x + paddingLeft + (availableWidth - textWidth) / 2
     case 'right':
-      return area.x + area.width - textWidth - (padding.right || 0)
+      return area.x + area.width - textWidth - paddingRight
     default:
-      return area.x + (padding.left || 0)
+      return area.x + paddingLeft
   }
 }
 
