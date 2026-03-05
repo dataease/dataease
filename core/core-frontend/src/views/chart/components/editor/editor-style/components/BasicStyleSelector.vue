@@ -65,11 +65,26 @@ const state = reactive({
     fieldId: '',
     width: 0
   },
-  fileList: []
+  fileList: [],
+  treeRowWidth: 10
 })
 const emit = defineEmits(['onBasicStyleChange', 'onMiscChange'])
 const changeBasicStyle = (prop?: string, requestData = false, render = true) => {
   emit('onBasicStyleChange', { data: state.basicStyleForm, requestData, render }, prop)
+}
+
+const changeTreeRowWidth = () => {
+  if (state.basicStyleForm.tableRowHeaderMode === 'percent') {
+    state.basicStyleForm.tableRowHeaderWidthPercent = state.treeRowWidth
+  }
+  if (state.basicStyleForm.tableRowHeaderMode === 'fixed') {
+    state.basicStyleForm.tableRowHeaderWidth = state.treeRowWidth
+  }
+  changeBasicStyle(
+    state.basicStyleForm.tableRowHeaderMode === 'percent'
+      ? 'tableRowHeaderWidthPercent'
+      : 'tableRowHeaderWidth'
+  )
 }
 const onAlphaChange = v => {
   const _v = parseInt(v)
@@ -146,13 +161,15 @@ const init = () => {
       tableExpandLevelOptions.push({ name, value: i })
     }
     if (basicStyle.tableRowHeaderMode === 'percent') {
-      if (basicStyle.tableRowHeaderWidth > 50) {
-        state.basicStyleForm.tableRowHeaderWidth = 20
+      state.treeRowWidth = basicStyle.tableRowHeaderWidthPercent
+      if (basicStyle.tableRowHeaderWidthPercent > 80) {
+        state.treeRowWidth = 80
       }
     }
     if (basicStyle.tableRowHeaderMode === 'fixed') {
+      state.treeRowWidth = basicStyle.tableRowHeaderWidth
       if (basicStyle.tableRowHeaderWidth < 10) {
-        state.basicStyleForm.tableRowHeaderWidth = 120
+        state.treeRowWidth = 120
       }
     }
   }
@@ -1029,11 +1046,11 @@ onMounted(async () => {
     >
       <el-input-number
         :effect="themes"
-        v-model.number="state.basicStyleForm.tableRowHeaderWidth"
+        v-model.number="state.treeRowWidth"
         :min="state.basicStyleForm.tableRowHeaderMode === 'percent' ? 1 : 10"
-        :max="state.basicStyleForm.tableRowHeaderMode === 'percent' ? 50 : 100000"
+        :max="state.basicStyleForm.tableRowHeaderMode === 'percent' ? 80 : 100000"
         controls-position="right"
-        @change="changeBasicStyle('tableRowHeaderWidth')"
+        @change="changeTreeRowWidth"
       />
     </el-form-item>
     <el-form-item v-if="showProperty('autoWrap')" class="form-item" :class="'form-item-' + themes">

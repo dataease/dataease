@@ -121,7 +121,8 @@ export const customAttrTrans = {
     'lineSymbolSize',
     'leftLineWidth',
     'leftLineSymbolSize',
-    'tableColumnWidth'
+    'tableColumnWidth',
+    'tableRowHeaderWidth'
   ],
   tableHeader: [
     'tableTitleFontSize',

@@ -389,6 +389,10 @@ declare interface ChartBasicStyle {
    * 透视表行头宽度
    */
   tableRowHeaderWidth: number
+  /**
+   * 透视表行头宽度百分比
+   */
+  tableRowHeaderWidthPercent: number
 }
 /**
  * 表头属性

@@ -1733,7 +1733,8 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   quotaPosition: 'col',
   quotaColLabel: t('dataset.value'),
   tableRowHeaderMode: 'adapt',
-  tableRowHeaderWidth: 10
+  tableRowHeaderWidth: 120,
+  tableRowHeaderWidthPercent: 20
 }
 
 export const BASE_VIEW_CONFIG = {

@@ -267,7 +267,12 @@ export class TablePivot extends S2ChartView<PivotSheet> {
     // options
     s2Options.style = this.configStyle(chart, s2DataConfig)
     if (basicStyle.tableLayoutMode === 'tree') {
-      const { defaultExpandLevel, tableRowHeaderMode, tableRowHeaderWidth } = basicStyle
+      const {
+        defaultExpandLevel,
+        tableRowHeaderMode,
+        tableRowHeaderWidth,
+        tableRowHeaderWidthPercent
+      } = basicStyle
       // 默认展开层级
       if (isNumeric(defaultExpandLevel)) {
         if ((defaultExpandLevel as number) >= chart.xAxis.length) {
@@ -292,11 +297,11 @@ export class TablePivot extends S2ChartView<PivotSheet> {
         s2Options.style.treeRowsWidth = treeRowsWidth
       }
       if (tableRowHeaderMode === 'percent') {
-        let treeRowsWidth = tableRowHeaderWidth
-        if (treeRowsWidth > 50) {
-          treeRowsWidth = 20
+        let treeRowsWidthPercent = tableRowHeaderWidthPercent
+        if (treeRowsWidthPercent > 80) {
+          treeRowsWidthPercent = 20
         }
-        const width = containerDom.offsetWidth * (treeRowsWidth / 100)
+        const width = containerDom.offsetWidth * (treeRowsWidthPercent / 100)
         s2Options.style.treeRowsWidth = width
       }
     }
