@@ -56,7 +56,7 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
   }
 
   async drawChart(drawOption: L7PlotDrawOptions<Choropleth>): Promise<Choropleth> {
-    const { chart, level, areaId, container, action, scope } = drawOption
+    const { chart, level, areaId, container, action, scope, gadmName } = drawOption
     if (!areaId) {
       return
     }
@@ -104,6 +104,30 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
         geoJson.features = geoJson.features.filter(f => scope.includes('156' + f.properties.adcode))
       } else {
         geoJson = cloneDeep(await getGeoJsonFile(areaId))
+      }
+    }
+    if (areaId.startsWith('geo_') && geoJson?.features?.length) {
+      const levelNames = Object.keys(geoJson?.features[0]?.properties).filter(key =>
+        key.startsWith('NAME_')
+      )
+      const nameKey = levelNames[levelNames.length - 1]
+      geoJson?.features.forEach(item => {
+        if (item.properties[nameKey]) {
+          item.properties['name'] = item.properties[nameKey]
+        }
+      })
+      if (areaId.length > 7) {
+        geoJson.features = geoJson?.features.filter(f => {
+          const names = Object.keys(f.properties)
+            .filter(key => key.startsWith('NAME_'))
+            .map(key => f.properties[key])
+            .filter(Boolean)
+            .join('@')
+          if (isEmpty(names) || !gadmName) {
+            return true
+          }
+          return names.replace(/@[^@]*$/, '') === gadmName
+        })
       }
     }
     let options: ChoroplethOptions = {
@@ -175,23 +199,32 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       })
       view.scene.map['keyboard'].disable()
       dotLayer.on('dotLayer:click', (ev: MapMouseEvent) => {
-        const data = ev.feature.properties
+        const evData = ev.feature.properties
         let adcode, scope
         if (areaId.startsWith('custom_')) {
           adcode = '156'
-          const area = customSubArea.find(a => a.name === data.name)
+          const area = customSubArea.find(a => a.name === evData.name)
           scope = area?.scopeArr
         } else {
           adcode = view.currentDistrictData.features.find(
             i => i.properties.name === ev.feature.properties.name
           )?.properties.adcode
         }
+        let names = ''
+        if (adcode + '' !== '156' && !areaId.startsWith('156')) {
+          adcode = 'geo_' + adcode
+          names = Object.keys(evData)
+            .filter(key => key.startsWith('NAME_'))
+            .map(key => evData[key])
+            .filter(Boolean)
+            .join('@')
+        }
         action({
           x: ev.x,
           y: ev.y,
           data: {
-            data,
-            extra: { adcode, scope }
+            data: evData,
+            extra: { adcode, scope, gadmName: names }
           }
         })
       })
@@ -342,14 +375,17 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
         obj[value['field']] = { value: value.value, data: value }
         return obj
       }, {})
-      geoJson.features.forEach(item => {
+      geoJson?.features.forEach(item => {
         const name = item.properties['name']
         if (areaMap?.[name]?.value) {
           dotData.push({
             x: item.properties['centroid'][0],
             y: item.properties['centroid'][1],
             size: areaMap[name].value,
-            properties: areaMap[name].data,
+            properties: {
+              ...item.properties,
+              ...areaMap[name].data
+            },
             name: name
           })
         }
