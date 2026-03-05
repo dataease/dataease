@@ -731,7 +731,11 @@ export function getConditions(chart: Chart) {
         const rule = fieldItem.conditions[j]
         let targets = []
         if (rule.target === 'total_row') {
-          targets = allColumnNames
+          targets = [...allColumnNames]
+          // 明细表和汇总表需要包含序号列
+          if (tableHeader.showIndex && (chart.type === 'table-info' || chart.type === 'table-normal')) {
+            targets.push(SERIES_NUMBER_FIELD)
+          }
         } else if (rule.target === 'custom' && rule.targetFieldId) {
           const targetName = fieldIdToName[rule.targetFieldId]
           if (targetName) targets = [targetName]
