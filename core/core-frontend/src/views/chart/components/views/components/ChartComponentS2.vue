@@ -357,6 +357,7 @@ const handlePageSizeChange = pageSize => {
   if (state.pageStyle === 'general') {
     state.currentPageSize = pageSize
     emitter.emit('set-page-size', pageSize)
+    state.pageInfo.currentPage = 1
   }
   let extReq = { pageSize: pageSize }
   if (chartExtRequest.value) {
