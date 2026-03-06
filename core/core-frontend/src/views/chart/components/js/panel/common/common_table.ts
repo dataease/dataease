@@ -720,7 +720,6 @@ export function getConditions(chart: Chart) {
       : hexColorToRGBA(tableHeader.tableHeaderBgColor, basicStyle.alpha)
     const filedValueMap = getFieldValueMap(chart)
 
-    // Build map of target column -> rules
     const targetRulesMap = {} // columnName -> Array<{ rule, sourceField }>
 
     for (let i = 0; i < conditions.length; i++) {
@@ -740,7 +739,6 @@ export function getConditions(chart: Chart) {
           const targetName = fieldIdToName[rule.targetFieldId]
           if (targetName) targets = [targetName]
         } else {
-          // Default to self
           targets = [fieldItem.field.dataeaseName]
         }
 
@@ -756,13 +754,10 @@ export function getConditions(chart: Chart) {
       }
     }
 
-    // Generate S2 conditions for each target column
     for (const targetName in targetRulesMap) {
       const rules = targetRulesMap[targetName]
       let defaultValueColor = valueColor
       let defaultBgColor = valueBgColor
-      // 透视表表头颜色配置 (Use target column type to decide default color?)
-      // If target is a dimension in pivot table, use header color
       if (chart.type === 'table-pivot' && dimFields.includes(targetName)) {
         defaultValueColor = headerValueColor
         defaultBgColor = headerValueBgColor
@@ -771,6 +766,9 @@ export function getConditions(chart: Chart) {
       res.text.push({
         field: targetName,
         mapping(value, rowData) {
+          if (!value && !rowData) {
+            return null
+          }
           // 总计小计
           if (rowData?.isGrandTotals || rowData?.isSubTotals) {
             return null
@@ -788,6 +786,9 @@ export function getConditions(chart: Chart) {
       res.background.push({
         field: targetName,
         mapping(value, rowData) {
+          if (!value && !rowData) {
+            return null
+          }
           if (rowData?.isGrandTotals || rowData?.isSubTotals) {
             return null
           }
@@ -826,11 +827,14 @@ export function mappingColor(value, defaultColor, rules, type, filedValueMap?, r
     const { rule, sourceField } = rules[i]
     let flag = false
     const t = rule
-    let tv, max, min
+    let targetValue, max, min
 
     let checkValue = value;
-    if (sourceField.dataeaseName && rowData?.[sourceField.dataeaseName]) {
-      checkValue = rowData[sourceField.dataeaseName]
+    if (sourceField.dataeaseName) {
+      checkValue = rowData?.[sourceField.dataeaseName]
+      if (checkValue === undefined) {
+        checkValue = rowData?.query?.[sourceField.dataeaseName]
+      }
     }
 
     if (t.type === 'dynamic') {
@@ -838,49 +842,49 @@ export function mappingColor(value, defaultColor, rules, type, filedValueMap?, r
         max = parseFloat(getValue(t.dynamicMaxField, filedValueMap, rowData))
         min = parseFloat(getValue(t.dynamicMinField, filedValueMap, rowData))
       } else {
-        tv = getValue(t.dynamicField, filedValueMap, rowData)
+        targetValue = getValue(t.dynamicField, filedValueMap, rowData)
       }
     } else {
       if (t.term === 'between') {
         min = parseFloat(t.min)
         max = parseFloat(t.max)
       } else {
-        tv = t.value
+        targetValue = t.value
       }
     }
 
     const val = checkValue;
 
     if (sourceField.deType === 2 || sourceField.deType === 3 || sourceField.deType === 4) {
-      tv = parseFloat(tv)
+      targetValue = parseFloat(targetValue)
       const numVal = parseFloat(val)
       if (t.term === 'eq') {
-        if (numVal === tv) {
+        if (numVal === targetValue) {
           color = t[type]
           flag = true
         }
       } else if (t.term === 'not_eq') {
-        if (numVal !== tv) {
+        if (numVal !== targetValue) {
           color = t[type]
           flag = true
         }
       } else if (t.term === 'lt') {
-        if (numVal < tv) {
+        if (numVal < targetValue) {
           color = t[type]
           flag = true
         }
       } else if (t.term === 'gt') {
-        if (numVal > tv) {
+        if (numVal > targetValue) {
           color = t[type]
           flag = true
         }
       } else if (t.term === 'le') {
-        if (val !== null && numVal <= tv) {
+        if (val !== null && numVal <= targetValue) {
           color = t[type]
           flag = true
         }
       } else if (t.term === 'ge') {
-        if (val !== null && numVal >= tv) {
+        if (val !== null && numVal >= targetValue) {
           color = t[type]
           flag = true
         }
@@ -908,22 +912,22 @@ export function mappingColor(value, defaultColor, rules, type, filedValueMap?, r
       }
     } else if (sourceField.deType === 0 || sourceField.deType === 5) {
       if (t.term === 'eq') {
-        if (val === tv) {
+        if (val === targetValue) {
           color = t[type]
           flag = true
         }
       } else if (t.term === 'not_eq') {
-        if (val !== tv) {
+        if (val !== targetValue) {
           color = t[type]
           flag = true
         }
       } else if (t.term === 'like') {
-        if (val && val.includes(tv)) {
+        if (val && val.includes(targetValue)) {
           color = t[type]
           flag = true
         }
       } else if (t.term === 'not like') {
-        if (val && !val.includes(tv)) {
+        if (val && !val.includes(targetValue)) {
           color = t[type]
           flag = true
         }
@@ -961,7 +965,7 @@ export function mappingColor(value, defaultColor, rules, type, filedValueMap?, r
         break
       }
       // time
-      if (!tv || !val) {
+      if (!targetValue || !val) {
         break
       } else {
           // 特殊时间格式不转换, 包含时或者包含时、分时(不包含秒), 直接比较字符串，因为new Date转换会有误差
@@ -969,12 +973,12 @@ export function mappingColor(value, defaultColor, rules, type, filedValueMap?, r
             dateStyle === 'H_m_s' || (dateStyle && dateStyle.length > 5 && dateStyle.length < 11)
 
           let v: number | string
-          let compareTv = tv;
+          let compareTv = targetValue;
           if (isSpecialTimeFormat(sourceField?.dateStyle)) {
             v = val
           } else {
             v = new Date(val.replace(/-/g, '/') + ' GMT+8').getTime()
-            compareTv = new Date(tv.toString().replace(/-/g, '/') + ' GMT+8').getTime()
+            compareTv = new Date(targetValue.toString().replace(/-/g, '/') + ' GMT+8').getTime()
           }
           if (fc.term === 'eq') {
             if (v === compareTv) {
@@ -1035,7 +1039,13 @@ function getFieldValueMap(view) {
 
 function getValue(field, filedValueMap, rowData) {
   if (field.summary === 'value') {
-    return rowData ? rowData[field.field?.dataeaseName] : undefined
+    // 单元格数据
+    let value =  rowData?.[field.field?.dataeaseName]
+    // 表头数据
+    if (value === undefined) {
+      value = rowData.query?.[field.field?.dataeaseName]
+    }
+    return value
   } else {
     return filedValueMap[field.summary + '-' + field.fieldId]
   }
