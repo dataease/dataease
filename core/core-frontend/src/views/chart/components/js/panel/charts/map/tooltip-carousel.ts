@@ -374,14 +374,16 @@ export class CarouselManager {
         ?.setData(this.getActiveData(index))
       if (this.chart.type === 'bubble-map') {
         // 气泡地图高亮
-        const { _id } = this.view.scene
-          .getLayers()
-          ?.find(i => i.name === 'bubbleLayer')
-          ?.layerSource.data.dataArray.find(i => i.name === this.data[index].name)
-        this.view.scene
-          .getLayers()
-          ?.find(i => i.name === 'bubbleLayer' && i.coordCenter)
-          ?.setActive(_id, { color: 'rgba(30,90,255,1)' })
+        const bubbleLayer = this.view.scene.getLayers()?.find(i => i.name === 'bubbleLayer')
+        const targetData = bubbleLayer?.layerSource?.data?.dataArray?.find(
+          i => i.name === this.data[index].name
+        )
+        if (targetData?._id) {
+          this.view.scene
+            .getLayers()
+            ?.find(i => i.name === 'bubbleLayer' && i.coordCenter)
+            ?.setActive(targetData._id, { color: 'rgba(30,90,255,1)' })
+        }
       }
     }
   }
@@ -459,40 +461,36 @@ export class CarouselManager {
       ?.find(i => i.name === 'highlightLayer')
       ?.setData({ type: 'FeatureCollection', features: [] })
     if (this.chart.type === 'bubble-map') {
-      const { _id } = this.view.scene
-        ?.getLayers()
-        ?.find(i => i.name === 'bubbleLayer')
-        ?.layerSource.data.dataArray.find(i => i.name === this.data[index].name)
-      this.view.scene
-        .getLayers()
-        ?.find(i => i.name === 'bubbleLayer' && i.coordCenter)
-        ?.setActive(_id, {
-          color: this.view.scene
-            .getLayers()
-            .find(i => i.name === 'bubbleLayer')
-            .styleAttributeService.getLayerStyleAttribute('color').scale.field
-        })
+      const bubbleLayer = this.view.scene?.getLayers()?.find(i => i.name === 'bubbleLayer')
+      const targetData = bubbleLayer?.layerSource?.data?.dataArray?.find(
+        i => i.name === this.data[index]?.name
+      )
+      if (targetData?._id) {
+        this.view.scene
+          .getLayers()
+          ?.find(i => i.name === 'bubbleLayer' && i.coordCenter)
+          ?.setActive(targetData._id, {
+            color: bubbleLayer?.styleAttributeService?.getLayerStyleAttribute('color')?.scale?.field
+          })
+      }
     }
     if (this.chart.type === 'symbolic-map') {
       const lngField = this.chart.xAxis[0].dataeaseName
       const latField = this.chart.xAxis[1].dataeaseName
-      const { _id } = this.scene
-        ?.getLayers()
-        ?.find(i => i.type === 'PointLayer')
-        ?.layerSource.data.dataArray.find(i => {
-          const targetLng = this.data[index][lngField]
-          const targetLat = this.data[index][latField]
-          return i[lngField] === targetLng && i[latField] === targetLat
-        })
-      this.scene
-        .getLayers()
-        ?.find(i => i.type === 'PointLayer' && i.coordCenter)
-        ?.setActive(_id, {
-          color: this.scene
-            .getLayers()
-            .find(i => i.type === 'PointLayer')
-            .styleAttributeService.getLayerStyleAttribute('color').scale.field
-        })
+      const pointLayer = this.scene?.getLayers()?.find(i => i.type === 'PointLayer')
+      const targetData = pointLayer?.layerSource?.data?.dataArray?.find(i => {
+        const targetLng = this.data[index]?.[lngField]
+        const targetLat = this.data[index]?.[latField]
+        return i[lngField] === targetLng && i[latField] === targetLat
+      })
+      if (targetData?._id) {
+        this.scene
+          .getLayers()
+          ?.find(i => i.type === 'PointLayer' && i.coordCenter)
+          ?.setActive(targetData._id, {
+            color: pointLayer?.styleAttributeService?.getLayerStyleAttribute('color')?.scale?.field
+          })
+      }
     }
   }
 
@@ -596,18 +594,18 @@ export class CarouselManager {
           this.popup.closeButton = false
           this.scene.addPopup(this.popup)
           this.popup.addTo(this.scene)
-          const { _id } = this.scene
-            .getLayers()
-            ?.find(i => i.type === 'PointLayer')
-            ?.layerSource.data.dataArray.find(i => {
-              const targetLng = this.data[index][lngField]
-              const targetLat = this.data[index][latField]
-              return i[lngField] === targetLng && i[latField] === targetLat
-            })
-          this.scene
-            .getLayers()
-            ?.find(i => i.type === 'PointLayer' && i.coordCenter)
-            ?.setActive(_id, { color: 'rgba(30,90,255,1)' })
+          const pointLayer = this.scene?.getLayers()?.find(i => i.type === 'PointLayer')
+          const targetData = pointLayer?.layerSource?.data?.dataArray?.find(i => {
+            const targetLng = this.data[index]?.[lngField]
+            const targetLat = this.data[index]?.[latField]
+            return i[lngField] === targetLng && i[latField] === targetLat
+          })
+          if (targetData?._id) {
+            this.scene
+              .getLayers()
+              ?.find(i => i.type === 'PointLayer' && i.coordCenter)
+              ?.setActive(targetData._id, { color: 'rgba(30,90,255,1)' })
+          }
         }
       }
       return undefined
