@@ -376,9 +376,6 @@ const onWrapperClick = e => {
           } else {
             window.open(url, '_blank')
           }
-          if (isMobile()) {
-            window.location.reload()
-          }
         } else {
           initOpenHandler(window.open(url, jumpType))
           if (isDashboard() && isMobile()) {
