@@ -2009,6 +2009,30 @@ const deleteChartFieldItem = id => {
       fieldLoading.value = false
     })
 }
+
+let directionTop = 0
+const scrollToTop = debounce(() => {
+  chartStyleRef.value.setScrollTop(directionTop)
+  directionTop = 0
+}, 10)
+
+const chartStyleRef = ref()
+const chartStyleScroll = (val: any) => {
+  if (chartStyleRef.value) {
+    if (directionTop === 0) {
+      directionTop = val.scrollTop
+    }
+    if (val.scrollTop - directionTop > 0) {
+      // 向下滚
+      directionTop = val.scrollTop - 1
+      scrollToTop()
+    } else if (val.scrollTop === 0) {
+      // 向上滚
+      directionTop = 1
+      scrollToTop()
+    }
+  }
+}
 </script>
 
 <template>
@@ -3364,7 +3388,11 @@ const deleteChartFieldItem = id => {
                   style="width: 100%"
                 >
                   <el-container direction="vertical">
-                    <el-scrollbar class="drag_main_area">
+                    <el-scrollbar
+                      ref="chartStyleRef"
+                      @scroll="chartStyleScroll"
+                      class="drag_main_area"
+                    >
                       <template v-if="view.plugin?.isPlugin">
                         <plugin-component
                           :jsname="view.plugin.staticMap['editor-style']"
