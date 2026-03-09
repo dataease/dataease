@@ -33,9 +33,13 @@ export function uploadFileResult(file, callback) {
   const fileUrl = staticResourcePath + newFileName
   const param = new FormData()
   param.append('file', file)
-  return uploadFile(fileId, param).then(() => {
-    callback(fileUrl)
-  })
+  return uploadFile(fileId, param)
+    .then(() => {
+      callback(fileUrl, null)
+    })
+    .catch(error => {
+      callback(null, error)
+    })
 }
 
 export function findResourceAsBase64(params) {
