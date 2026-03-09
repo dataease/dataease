@@ -307,8 +307,8 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     const { legend } = parseJson(chart.customStyle)
     let data = sourceData
     let colorScale = []
-    let minValue = misc.mapLegendMin
-    let maxValue = misc.mapLegendMax
+    let minValue = misc.mapAutoLegend ? 0 : misc.mapLegendMin
+    let maxValue = misc.mapAutoLegend ? 0 : misc.mapLegendMax
     let mapLegendNumber = misc.mapLegendNumber
     if (legend.show) {
       getMaxAndMinValueByData(sourceData, 'value', maxValue, minValue, (max, min) => {
@@ -322,6 +322,9 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       } else {
         mapLegendNumber = 9
       }
+      mapLegendNumber = misc.mapAutoLegend
+        ? this.calculateAutoLegendNumber(sourceData)
+        : mapLegendNumber
       // 定义最大值、最小值、区间数量和对应的颜色
       colorScale = getDynamicColorScale(minValue, maxValue, mapLegendNumber, colors)
     } else {
@@ -358,6 +361,49 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       }
     }
     return options
+  }
+
+  /**
+   * 自动图例数量计算
+   * 根据数据的最大值、最小值和数据条数动态确定合适的图例数量
+   * @param data 源数据
+   */
+  private calculateAutoLegendNumber(data: any[]): number {
+    if (!data || data.length === 0) {
+      return 1
+    }
+    // 提取有效数值
+    const values = data
+      .map(item => parseFloat(item.value))
+      .filter(v => !isNaN(v) && v !== null && v !== undefined)
+    if (values.length === 0) {
+      return 1
+    }
+    // 计算最大值和最小值
+    const maxValue = Math.max(...values)
+    const minValue = Math.min(...values)
+    // 如果所有数据都相同，只需要 1 个图例
+    if (maxValue === minValue) {
+      return 1
+    }
+    // 根据数据条数和值范围计算合适的图例数量
+    const dataCount = values.length
+    // 基础图例数量：根据数据量决定
+    let legendNumber: number
+    if (dataCount <= 5) {
+      // 数据很少，每个数据一个图例
+      legendNumber = dataCount
+    } else if (dataCount <= 9) {
+      // 数据适中，按数据量
+      legendNumber = dataCount
+    } else {
+      // 数据较多，根据值范围平均分配，最多 9 个
+      // 计算每个区间的跨度
+      const idealIntervals = Math.min(9, Math.ceil(Math.sqrt(dataCount)))
+      legendNumber = idealIntervals
+    }
+    // 确保图例数量在 1-9 之间
+    return Math.max(1, Math.min(9, legendNumber))
   }
 
   // 内部函数 创建自定义图例的内容
@@ -478,10 +524,40 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       options.color.scale.domain = [ranges[0][0], ranges[ranges.length - 1][1]]
     } else {
       customLegend['customContent'] = (_: string, items: CategoryLegendListItem[]) => {
-        const showItems = items?.length > 30 ? items.slice(0, 30) : items
+        // 去重逻辑
+        const uniqueItems = items.reduce(
+          (acc, item) => {
+            const valueKey = JSON.stringify(item.value)
+            if (!acc.seen.has(valueKey)) {
+              acc.seen.add(valueKey)
+              acc.result.push(item)
+            }
+            return acc
+          },
+          { seen: new Set(), result: [] }
+        ).result
+        // 限制最多显示 30 个元素
+        const showItems = uniqueItems.length > 30 ? uniqueItems.slice(0, 30) : uniqueItems
         if (showItems?.length) {
           if (showItems.length === 1) {
-            showItems[0].value = options.color.scale.domain.slice(0, 2)
+            const domain = options.color.scale.domain
+            if (domain) {
+              showItems[0].value = domain?.slice(0, 2)
+            } else {
+              const firstValue = showItems[0].value?.[0]
+              const secondValue = showItems[0].value?.[1]
+              if (
+                firstValue !== undefined &&
+                secondValue !== undefined &&
+                !Number.isNaN(firstValue) &&
+                !Number.isNaN(secondValue)
+              ) {
+                showItems[0].value = [firstValue, secondValue]
+              } else {
+                const v = firstValue ?? secondValue
+                showItems[0].value = [v, v]
+              }
+            }
           }
           return this.createLegendCustomContent(showItems)
         }
