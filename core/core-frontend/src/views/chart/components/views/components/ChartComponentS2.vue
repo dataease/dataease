@@ -313,23 +313,61 @@ const initScroll = () => {
           ? 1
           : customAttr.tableHeader.tableTitleHeight
       const scrollBarSize = myChart.theme.scrollBar.size
-      const scrollHeight =
-        rowHeight * chartData.value.tableRow.length + headerHeight - offsetHeight + scrollBarSize
+      const basicStyle = customAttr.basicStyle
+
+      // 开启自动换行时，使用 facet 的 viewCellHeights 或 scrollTargetMaxOffset 获取实际的最大滚动距离
+      let maxScrollY: number
+      if (basicStyle?.autoWrap) {
+        // 从滚动条获取实际的滚动范围
+        const vScrollBar = myChart.facet?.vScrollBar
+        if (vScrollBar) {
+          // 直接取滚动条配置的最大滚动距离
+          maxScrollY = vScrollBar.scrollTargetMaxOffset
+        } else {
+          // 如果无法获取滚动条信息，尝试使用 viewCellHeights
+          const viewCellHeights = myChart.facet?.viewCellHeights
+          if (viewCellHeights) {
+            const rowsHeight = viewCellHeights.getTotalHeight()
+            const viewHeight = offsetHeight - headerHeight
+            maxScrollY = Math.max(0, rowsHeight - viewHeight + scrollBarSize)
+          } else {
+            maxScrollY =
+              rowHeight * chartData.value.tableRow.length +
+              headerHeight -
+              offsetHeight +
+              scrollBarSize
+          }
+        }
+      } else {
+        maxScrollY =
+          rowHeight * chartData.value.tableRow.length + headerHeight - offsetHeight + scrollBarSize
+      }
+
       // 显示内容没撑满
-      if (scrollHeight < scrollBarSize) {
+      if (maxScrollY < scrollBarSize) {
         return
       }
-      // 到底了重置一下,1是误差
-      if (scrolledOffset >= scrollHeight - 1) {
+      // 到底了重置一下，使用实际的最大滚动距离判断
+      if (scrolledOffset >= maxScrollY - 1) {
         myChart.store.set('scrollY', 0)
         myChart.render()
         scrolledOffset = 0
       }
-      const viewedHeight = offsetHeight - headerHeight - scrollBarSize + scrolledOffset
-      const scrollViewCount = chartData.value.tableRow.length - viewedHeight / rowHeight
+
+      let scrollViewCount: number
+      if (basicStyle?.autoWrap && myChart.facet?.viewCellHeights) {
+        // 如果开启了自动换行，计算当前未展示的内容高度所对应的比例，再乘以总行数，以获得大致的未展示行数
+        const totalHeight = myChart.facet.viewCellHeights.getTotalHeight()
+        const unViewedRatio = totalHeight > 0 ? (maxScrollY - scrolledOffset) / totalHeight : 0
+        scrollViewCount = chartData.value.tableRow.length * unViewedRatio
+      } else {
+        const viewedHeight = offsetHeight - headerHeight - scrollBarSize + scrolledOffset
+        scrollViewCount = chartData.value.tableRow.length - viewedHeight / rowHeight
+      }
+
       const duration = (scrollViewCount / senior.scrollCfg.row) * senior.scrollCfg.interval
       myChart.facet.scrollWithAnimation(
-        { offsetY: { value: scrollHeight, animate: false } },
+        { offsetY: { value: maxScrollY, animate: false } },
         duration,
         initScroll
       )
