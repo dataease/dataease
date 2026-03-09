@@ -29,7 +29,7 @@ import { imgUrlTrans } from '@/utils/imgUtils'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { getData } from '@/api/chart'
 import { parseJson } from '@/views/chart/components/js/util'
-import { mappingColor } from '@/views/chart/components/js/panel/common/common_table'
+import { mappingColorCustom } from '@/views/chart/components/js/panel/common/common_table'
 import { storeToRefs } from 'pinia'
 import ChartEmptyInfo from '@/views/chart/components/views/components/ChartEmptyInfo.vue'
 import ChartError from '@/views/chart/components/views/components/ChartError.vue'
@@ -209,7 +209,7 @@ const conditionAdaptor = (chart: Chart) => {
         if (!aIsDefault && bIsDefault) return -1
         return 0
       })
-      const checkResult = mappingColor(
+      const checkResult = mappingColorCustom(
         dataRowNameSelect.value[field.field.name],
         defaultValueColor,
         field,

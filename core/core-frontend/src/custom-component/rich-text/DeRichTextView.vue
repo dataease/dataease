@@ -61,7 +61,7 @@ import ChartError from '@/views/chart/components/views/components/ChartError.vue
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { parseJson } from '@/views/chart/components/js/util'
-import { mappingColor } from '@/views/chart/components/js/panel/common/common_table'
+import { mappingColorCustom } from '@/views/chart/components/js/panel/common/common_table'
 import { CHART_FONT_FAMILY_ORIGIN } from '@/views/chart/components/editor/util/chart'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 const snapshotStore = snapshotStoreWithOut()
@@ -719,13 +719,13 @@ const conditionAdaptor = (chart: Chart) => {
       let defaultValueColor = 'none'
       let defaultBgColor = 'none'
       res[field.field.name] = {
-        color: mappingColor(
+        color: mappingColorCustom(
           dataRowNameSelectSource.value[field.field.name],
           defaultValueColor,
           field,
           'color'
         ),
-        backgroundColor: mappingColor(
+        backgroundColor: mappingColorCustom(
           dataRowNameSelectSource.value[field.field.name],
           defaultBgColor,
           field,
