@@ -225,7 +225,10 @@ const conditionAdaptor = (chart: Chart) => {
 const withInit = () => {
   if (element.value.propValue['urlList'] && element.value.propValue['urlList'].length > 0) {
     state.showUrl = element.value.propValue['urlList'][0].url
+  } else {
+    state.showUrl = null
   }
+
   initCarousel()
 }
 
