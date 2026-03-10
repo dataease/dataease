@@ -1452,11 +1452,22 @@ export function copyContent(s2Instance: SpreadSheet, event, fieldMeta) {
       const curCell = cells[0]
       if (cell.getMeta().id === curCell.id) {
         const cellMeta = cell.getMeta()
-        const value = cellMeta.data?.[cellMeta.valueField]
-        const metaObj = find(fieldMeta, m => m.field === cellMeta.valueField)
+        const valueField = cellMeta.valueField
+        const value = cellMeta.data?.[valueField]
+        const metaObj = find(fieldMeta, m => m.field === valueField)
         let fieldVal = value?.toString()
         if (metaObj) {
           fieldVal = metaObj.formatter(value)
+        }
+        if (fieldVal === undefined || fieldVal === null) {
+          const fieldMap = fieldMeta?.reduce((p, n) => {
+            p[n.field] = n.name
+            return p
+          }, {})
+          fieldVal = cellMeta.value
+          if (fieldMap?.[fieldVal]) {
+            fieldVal = fieldMap[fieldVal]
+          }
         }
         copyString(fieldVal, true)
       }
@@ -1497,11 +1508,22 @@ export function copyContent(s2Instance: SpreadSheet, event, fieldMeta) {
         const arr = matrix[k] as TableDataCell[]
         arr.forEach((cell, index) => {
           const cellMeta = cell.getMeta()
-          const value = cellMeta.data?.[cellMeta.valueField]
-          const metaObj = find(fieldMeta, m => m.field === cellMeta.valueField)
+          const valueField = cellMeta.valueField
+          const value = cellMeta.data?.[valueField]
+          const metaObj = find(fieldMeta, m => m.field === valueField)
           let fieldVal = value?.toString()
           if (metaObj) {
             fieldVal = metaObj.formatter(value)
+          }
+          if (fieldVal === undefined || fieldVal === null) {
+            const fieldMap = fieldMeta?.reduce((p, n) => {
+              p[n.field] = n.name
+              return p
+            }, {})
+            fieldVal = cellMeta.value
+            if (fieldMap?.[fieldVal]) {
+              fieldVal = fieldMap[fieldVal]
+            }
           }
           if (fieldVal === undefined || fieldVal === null) {
             fieldVal = ''
