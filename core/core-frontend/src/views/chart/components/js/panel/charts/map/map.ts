@@ -5,13 +5,13 @@ import {
 import type { Choropleth, ChoroplethOptions } from '@antv/l7plot/dist/esm/plots/choropleth'
 import {
   filterChartDataByRange,
+  filterEmptyMinValue,
   flow,
   getDynamicColorScale,
   getGeoJsonFile,
-  hexColorToRGBA,
-  parseJson,
   getMaxAndMinValueByData,
-  filterEmptyMinValue
+  hexColorToRGBA,
+  parseJson
 } from '@/views/chart/components/js/util'
 import {
   handleGeoJson,
@@ -399,8 +399,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     } else {
       // 数据较多，根据值范围平均分配，最多 9 个
       // 计算每个区间的跨度
-      const idealIntervals = Math.max(9, Math.ceil(Math.sqrt(dataCount)))
-      legendNumber = idealIntervals
+      legendNumber = Math.max(9, Math.ceil(Math.sqrt(dataCount)))
     }
     // 确保图例数量在 1-9 之间
     return Math.max(1, Math.min(9, legendNumber))
@@ -414,7 +413,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       let value = '-'
       if (item.value !== '') {
         if (Array.isArray(item.value)) {
-          const arr = item.value.every(Number.isNaN) ? item.color.value : item.value
+          const arr = item.value.every(Number.isNaN) ? item.color.value || [] : item.value
           value = arr
             .map(v => (Number.isNaN(v) || String(v) === 'NaN' ? 'NaN' : parseFloat(v).toFixed(0)))
             .join('-')
