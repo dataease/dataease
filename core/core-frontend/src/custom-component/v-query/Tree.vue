@@ -381,6 +381,7 @@ const getTreeOption = debounce(() => {
           treeValue.value = undefined
         } else {
           fromSelect = false
+          fromTreeSelectConfirm.value = false
         }
 
         if (fromSelect) {
@@ -389,7 +390,7 @@ const getTreeOption = debounce(() => {
             : treeValue.value
           config.value.defaultValue = config.value.selectValue
 
-          if (props.config) return
+          if (props.isConfig) return
 
           nextTick(() => {
             fromTreeSelectConfirm.value = false
