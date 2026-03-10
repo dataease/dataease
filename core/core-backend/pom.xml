@@ -108,11 +108,7 @@
                     <groupId>com.h2database</groupId>
                     <artifactId>h2</artifactId>
                 </dependency>
-                <dependency>
-                    <groupId>org.seleniumhq.selenium</groupId>
-                    <artifactId>selenium-java</artifactId>
-                    <version>${selenium-java.version}</version>
-                </dependency>
+
                 <dependency>
                     <groupId>org.eclipse.angus</groupId>
                     <artifactId>angus-mail</artifactId>

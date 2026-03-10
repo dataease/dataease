@@ -3,6 +3,7 @@ package io.dataease.api.visualization;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import io.dataease.api.report.bo.DatasetPermissionTemplate;
 import io.dataease.api.visualization.dto.VisualizationViewTableDTO;
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
 import io.dataease.api.visualization.request.VisualizationAppExportRequest;
@@ -14,6 +15,7 @@ import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
@@ -170,4 +172,7 @@ public interface DataVisualizationApi {
     @Operation(summary = "导出图片日志记录")
     void exportLogImg(@RequestBody DataVisualizationBaseRequest request) throws Exception;
 
+
+    @Hidden
+    List<DatasetPermissionTemplate> queruDatasetPermissionTemplate(Long resourceId);
 }

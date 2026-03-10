@@ -244,4 +244,8 @@ public interface UserApi {
     @GetMapping("/lang")
     String userLang();
 
+
+    @Hidden
+    List<UserReciVO> getFormatRecipient(Long oid, List<Long> uidList, List<Long> ridList);
+
 }

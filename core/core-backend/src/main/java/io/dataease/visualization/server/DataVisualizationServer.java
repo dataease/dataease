@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.DatasetTableInfoDTO;
 import io.dataease.api.dataset.union.UnionDTO;
+import io.dataease.api.report.bo.DatasetPermissionTemplate;
 import io.dataease.api.template.dto.TemplateManageFileDTO;
 import io.dataease.api.template.dto.VisualizationTemplateExtendDataDTO;
 import io.dataease.api.visualization.DataVisualizationApi;
@@ -68,6 +69,7 @@ import io.dataease.visualization.dao.auto.mapper.VisualizationWatermarkMapper;
 import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
 import io.dataease.visualization.manage.CoreBusiManage;
 import io.dataease.visualization.manage.CoreVisualizationManage;
+import io.dataease.visualization.manage.ResourcePermissionManage;
 import io.dataease.visualization.utils.VisualizationUtils;
 import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
@@ -1141,5 +1143,12 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
         }
         return result;
+    }
+
+    @Resource
+    private ResourcePermissionManage resourcePermissionManage;
+    @Override
+    public List<DatasetPermissionTemplate> queruDatasetPermissionTemplate(Long resourceId) {
+        return resourcePermissionManage.queruDatasetPermissionTemplate(resourceId);
     }
 }
