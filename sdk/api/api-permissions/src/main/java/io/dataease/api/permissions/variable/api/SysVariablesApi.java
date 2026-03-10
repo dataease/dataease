@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+import java.util.Map;
 
 import static io.dataease.constant.AuthResourceEnum.SYSTEM;
 
@@ -67,5 +68,8 @@ public interface SysVariablesApi {
     @Operation(summary = "批量删除变量值")
     @PostMapping("/value/batchDel")
     void batchDel(@RequestBody List<Long> ids);
+
+    @Hidden
+    Map<Long, Map<String, String>> queryBatchSysVariable(List<Long> uids);
 
 }
