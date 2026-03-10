@@ -153,7 +153,7 @@ export class Funnel extends G2ChartView {
         position: label.position === 'middle' ? 'inside' : label.position,
         fontSize: label.fontSize,
         fill: label.color,
-        transform: !label.fullDisplay ? [{ type: 'overflowHide' }] : []
+        transform: label.fullDisplay === true ? [] : [{ type: 'overlapHide' }]
       })
     }
     if (label.conversionTag?.show) {
