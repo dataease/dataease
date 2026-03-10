@@ -137,6 +137,7 @@ const viewTrack = ref(null)
 const clearLinkage = () => {
   linkageActiveHistory.value = false
   try {
+    myChart?.emit('element:unselect', {})
     myChart?.setState('active', () => true, false)
     myChart?.setState('inactive', () => true, false)
     myChart?.setState('selected', () => true, false)
@@ -146,10 +147,6 @@ const clearLinkage = () => {
 }
 const reDrawView = () => {
   linkageActiveHistory.value = false
-  const slider = myChart?.chart?.getController('slider')
-  if (!slider) {
-    myChart?.render()
-  }
 }
 const linkageActivePre = () => {
   if (linkageActiveHistory.value) {
@@ -161,30 +158,34 @@ const linkageActivePre = () => {
 }
 const linkageActive = () => {
   linkageActiveHistory.value = true
-  myChart?.setState('active', () => true, false)
-  myChart?.setState('inactive', () => true, false)
-  myChart?.setState('selected', () => true, false)
-  myChart?.setState('active', param => {
-    if (Array.isArray(param)) {
-      return false
-    } else {
-      return checkSelected(param)
-    }
-  })
-  myChart?.setState('inactive', param => {
-    if (Array.isArray(param)) {
-      return false
-    } else {
-      return !checkSelected(param)
-    }
-  })
-  myChart?.setState('selected', param => {
-    if (Array.isArray(param)) {
-      return false
-    } else {
-      return checkSelected(param)
-    }
-  })
+  try {
+    myChart?.setState('active', () => true, false)
+    myChart?.setState('inactive', () => true, false)
+    myChart?.setState('selected', () => true, false)
+    myChart?.setState('active', param => {
+      if (Array.isArray(param)) {
+        return false
+      } else {
+        return checkSelected(param)
+      }
+    })
+    myChart?.setState('inactive', param => {
+      if (Array.isArray(param)) {
+        return false
+      } else {
+        return !checkSelected(param)
+      }
+    })
+    myChart?.setState('selected', param => {
+      if (Array.isArray(param)) {
+        return false
+      } else {
+        return checkSelected(param)
+      }
+    })
+  } catch (err) {
+    console.warn('linkageActive error')
+  }
 }
 const checkSelected = param => {
   // 获取当前视图的所有联动字段ID

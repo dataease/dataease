@@ -81,10 +81,18 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
         title: false
       }
     },
+    state: {
+      selected: {
+        stroke: 'black',
+        lineWidth: 1
+      },
+      unselected: { opacity: 0.5 }
+    },
     interaction: {
       elementHighlight: {
         background: true,
-        region: true
+        region: true,
+        single: true
       },
       elementSelect: {
         background: true,
@@ -124,6 +132,27 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
     newChart.on('interval:click', action)
+    const { functionCfg } = parseJson(chart.senior)
+    newChart.on('plot:click', e => {
+      // 点击背景事件，开启滑块时不触发，因为启动滑块后，通过 xy 获取点击位置对应的数据项不准确
+      if (e.target.className === 'element-background' && !functionCfg?.sliderShow) {
+        const point = { x: e.x, y: e.y }
+        const snapRecords = newChart.getDataByXY(point, { shared: true })
+        if (snapRecords && snapRecords.length > 0) {
+          newChart.emit('element:unselect', {})
+          newChart.emit('interval:click', { data: { data: { ...snapRecords[0] } } })
+          newChart.emit('element:select', { data: { data: snapRecords } })
+        }
+      }
+      // 仅当点击在图形上时触发
+      if (e.target.className === 'element' && e.target.__data__?.data) {
+        newChart.emit('element:unselect', {})
+        const targetData = e.target.__data__?.data
+        const data = { data: { data: targetData } }
+        newChart.emit('interval:click', data)
+        newChart.emit('element:select', { data: { data: [{ ...targetData }] } })
+      }
+    })
     new G2TooltipCarousel(newChart, chart, data).start()
     extremumEvt(newChart, chart, options.children[0], container, scale, this.name === 'bar')
     return newChart
