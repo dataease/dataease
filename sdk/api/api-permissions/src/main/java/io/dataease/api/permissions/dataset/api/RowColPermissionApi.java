@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface RowColPermissionApi {
 
-    List<RowColPermissionItem> query(List<Long> datastetIds);
+    List<RowColPermissionItem> query(List<Long> datasetIds);
 }
