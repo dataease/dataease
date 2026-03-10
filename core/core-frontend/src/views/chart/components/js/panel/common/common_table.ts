@@ -814,6 +814,189 @@ export function getConditions(chart: Chart) {
   return res
 }
 
+export function mappingColorCustom(value, defaultColor, field, type, filedValueMap?, rowData?) {
+  let color = null
+  for (let i = 0; i < field.conditions.length; i++) {
+    let flag = false
+    const t = field.conditions[i]
+    let tv, max, min
+    if (t.type === 'dynamic') {
+      if (t.term === 'between') {
+        max = parseFloat(getValue(t.dynamicMaxField, filedValueMap, rowData))
+        min = parseFloat(getValue(t.dynamicMinField, filedValueMap, rowData))
+      } else {
+        tv = getValue(t.dynamicField, filedValueMap, rowData)
+      }
+    } else {
+      if (t.term === 'between') {
+        min = parseFloat(t.min)
+        max = parseFloat(t.max)
+      } else {
+        tv = t.value
+      }
+    }
+    if (field.field.deType === 2 || field.field.deType === 3 || field.field.deType === 4) {
+      tv = parseFloat(tv)
+      if (t.term === 'eq') {
+        if (value === tv) {
+          color = t[type]
+          flag = true
+        }
+      } else if (t.term === 'not_eq') {
+        if (value !== tv) {
+          color = t[type]
+          flag = true
+        }
+      } else if (t.term === 'lt') {
+        if (value < tv) {
+          color = t[type]
+          flag = true
+        }
+      } else if (t.term === 'gt') {
+        if (value > tv) {
+          color = t[type]
+          flag = true
+        }
+      } else if (t.term === 'le') {
+        if (value !== null && value <= tv) {
+          color = t[type]
+          flag = true
+        }
+      } else if (t.term === 'ge') {
+        if (value !== null && value >= tv) {
+          color = t[type]
+          flag = true
+        }
+      } else if (t.term === 'between') {
+        if (value !== null && min <= value && value <= max) {
+          color = t[type]
+          flag = true
+        }
+      } else if (t.term === 'default') {
+        color = t[type]
+        flag = true
+      } else if (t.term === 'null') {
+        if (value === null || value === undefined || value === '') {
+          color = t[type]
+          flag = true
+        }
+      } else if (t.term === 'not_null') {
+        if (value !== null && value !== undefined && value !== '') {
+          color = t[type]
+          flag = true
+        }
+      }
+      if (flag) {
+        break
+      } else if (i === field.conditions.length - 1) {
+        color = defaultColor
+      }
+    } else if (field.field.deType === 0 || field.field.deType === 5) {
+      if (t.term === 'eq') {
+        if (value === tv) {
+          color = t[type]
+          flag = true
+        }
+      } else if (t.term === 'not_eq') {
+        if (value !== tv) {
+          color = t[type]
+          flag = true
+        }
+      } else if (t.term === 'like') {
+        if (value.includes(tv)) {
+          color = t[type]
+          flag = true
+        }
+      } else if (t.term === 'not like') {
+        if (!value.includes(tv)) {
+          color = t[type]
+          flag = true
+        }
+      } else if (t.term === 'null') {
+        if (value === null || value === undefined || value === '') {
+          color = t[type]
+          flag = true
+        }
+      } else if (t.term === 'not_null') {
+        if (value !== null && value !== undefined && value !== '') {
+          color = t[type]
+          flag = true
+        }
+      } else if (t.term === 'default') {
+        color = t[type]
+        flag = true
+      }
+      if (flag) {
+        break
+      } else if (i === field.conditions.length - 1) {
+        color = defaultColor
+      }
+    } else {
+      const fc = field.conditions[i]
+      if (fc.term === 'null') {
+        if (value === null && value === undefined && value === '') {
+          color = fc[type]
+          flag = true
+        }
+      } else if (fc.term === 'not_null') {
+        if (value !== null && value !== undefined && value !== '') {
+          color = fc[type]
+          flag = true
+        }
+      }
+      if (flag) {
+        break
+      }
+      // time
+      if (!tv || !value) {
+        break
+      }
+      tv = new Date(tv.replace(/-/g, '/') + ' GMT+8').getTime()
+      const v = new Date(value.replace(/-/g, '/') + ' GMT+8').getTime()
+      if (fc.term === 'eq') {
+        if (v === tv) {
+          color = fc[type]
+          flag = true
+        }
+      } else if (fc.term === 'not_eq') {
+        if (v !== tv) {
+          color = fc[type]
+          flag = true
+        }
+      } else if (fc.term === 'lt') {
+        if (v < tv) {
+          color = fc[type]
+          flag = true
+        }
+      } else if (fc.term === 'gt') {
+        if (v > tv) {
+          color = fc[type]
+          flag = true
+        }
+      } else if (fc.term === 'le') {
+        if (v <= tv) {
+          color = fc[type]
+          flag = true
+        }
+      } else if (fc.term === 'ge') {
+        if (v >= tv) {
+          color = fc[type]
+          flag = true
+        }
+      } else if (fc.term === 'default') {
+        color = fc[type]
+        flag = true
+      }
+      if (flag) {
+        break
+      } else if (i === field.conditions.length - 1) {
+        color = defaultColor
+      }
+    }
+  }
+  return color
+}
+
 export function mappingColor(value, defaultColor, rules, type, filedValueMap?, rowData?) {
   let color = null
 
