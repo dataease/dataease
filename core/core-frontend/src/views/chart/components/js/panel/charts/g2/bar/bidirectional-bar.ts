@@ -341,12 +341,22 @@ export class BidirectionalHorizontalBar extends G2ChartView {
     }
     defaultsDeep(firstMark, {
       style: {
-        fill: firstColor
+        fill: d => {
+          if (d.value === null || d.value === undefined) {
+            return 'transparent'
+          }
+          return firstColor
+        }
       }
     })
     defaultsDeep(secondMark, {
       style: {
-        fill: secondColor
+        fill: d => {
+          if (d.value === null || d.value === undefined) {
+            return 'transparent'
+          }
+          return secondColor
+        }
       }
     })
     return options
