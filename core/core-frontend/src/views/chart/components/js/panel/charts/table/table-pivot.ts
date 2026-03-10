@@ -433,14 +433,38 @@ export class TablePivot extends S2ChartView<PivotSheet> {
           return
         }
         const containerWidth = containerDom.getBoundingClientRect().width
-        const scale = containerWidth / (ev.colsHierarchy.width + ev.rowsHierarchy.width)
+        let scale = containerWidth / (ev.colsHierarchy.width + ev.rowsHierarchy.width)
+        let totalRowWidth = Math.round(ev.rowsHierarchy.width * scale)
+        if (basicStyle.tableLayoutMode === 'tree') {
+          if (basicStyle.tableRowHeaderMode === 'fixed') {
+            totalRowWidth = basicStyle.tableRowHeaderWidth
+          }
+          if (basicStyle.tableRowHeaderMode === 'percent') {
+            const treeRowsWidthPercent = basicStyle.tableRowHeaderWidthPercent
+            totalRowWidth = containerWidth * (treeRowsWidthPercent / 100)
+            // 百分比要随着容器大小改变
+            ev.rowsHierarchy.width = totalRowWidth
+            ev.rowNodes.forEach(n => {
+              n.width = totalRowWidth
+            })
+          }
+          if (tableHeader.rowHeaderFreeze !== false) {
+            // 表头冻结，树形模式最大表头宽度为表格的一半
+            const maxRowWidth = containerWidth / 2
+            if (totalRowWidth > maxRowWidth) {
+              totalRowWidth = maxRowWidth
+            }
+          }
+          scale = (containerWidth - totalRowWidth) / ev.colsHierarchy.width
+        }
         if (scale <= 1) {
           return
         }
-        const totalRowWidth = Math.round(ev.rowsHierarchy.width * scale)
-        ev.rowNodes.forEach(n => {
-          n.width = Math.round(n.width * scale)
-        })
+        if (basicStyle.tableLayoutMode !== 'tree' && basicStyle.tableRowHeaderMode === 'adapt') {
+          ev.rowNodes.forEach(n => {
+            n.width = Math.round(n.width * scale)
+          })
+        }
         if (basicStyle.tableLayoutMode !== 'tree') {
           ev.rowNodes.forEach(n => {
             n.x = 0
