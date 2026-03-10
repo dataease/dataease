@@ -399,7 +399,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     } else {
       // 数据较多，根据值范围平均分配，最多 9 个
       // 计算每个区间的跨度
-      const idealIntervals = Math.min(9, Math.ceil(Math.sqrt(dataCount)))
+      const idealIntervals = Math.max(9, Math.ceil(Math.sqrt(dataCount)))
       legendNumber = idealIntervals
     }
     // 确保图例数量在 1-9 之间
