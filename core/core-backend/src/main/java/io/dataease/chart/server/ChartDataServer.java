@@ -566,7 +566,7 @@ public class ChartDataServer implements ChartDataApi {
                 }
             }
             if (CollectionUtils.isNotEmpty(mergeConfig)) {
-                mergeConfig.forEach(detailsSheet::addMergedRegion);
+                mergeConfig.forEach(detailsSheet::addMergedRegionUnsafe);
             }
         }
     }
