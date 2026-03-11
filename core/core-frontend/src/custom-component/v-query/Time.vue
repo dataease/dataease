@@ -146,6 +146,10 @@ watch(
 )
 
 const handleValueChange = () => {
+  if (selectValue.value === null) {
+    selectValue.value = multiple.value ? [] : undefined
+  }
+
   selectValue.value = Array.isArray(selectValue.value)
     ? selectValue.value.map(ele => ele && dayjs(ele).format('YYYY/MM/DD HH:mm:ss'))
     : selectValue.value && dayjs(selectValue.value).format('YYYY/MM/DD HH:mm:ss')
