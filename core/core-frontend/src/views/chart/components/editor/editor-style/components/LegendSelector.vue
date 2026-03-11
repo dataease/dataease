@@ -17,7 +17,10 @@ import { cloneDeep } from 'lodash-es'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { getDynamicColorScale } from '@/views/chart/components/js/util'
 import CustomSortEdit from '@/views/chart/components/editor/drag-item/components/CustomSortEdit.vue'
-
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { storeToRefs } from 'pinia'
+const dvMainStore = dvMainStoreWithOut()
+const { batchOptStatus } = storeToRefs(dvMainStore)
 const { t } = useI18n()
 
 const props = withDefaults(
@@ -726,7 +729,7 @@ onMounted(() => {
     </el-space>
     <el-form-item
       class="form-item"
-      v-if="showProperty('legendSort')"
+      v-if="showProperty('legendSort') && !batchOptStatus"
       :class="'form-item-' + themes"
       :label="t('chart.legend_sort')"
     >
