@@ -422,13 +422,15 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
           value = Number.isNaN(tmp) || tmp === 'NaN' ? 'NaN' : parseFloat(tmp).toFixed(0)
         }
       }
-      const substituteObj = { ...item, value }
+      if (value && value !== '') {
+        const substituteObj = { ...item, value }
 
-      const domStr = substitute(ITEM_TPL, substituteObj)
-      const itemDom = createDom(domStr)
-      // 给 legend 形状用的
-      itemDom.style.setProperty('--bgColor', item.color)
-      listDom.appendChild(itemDom)
+        const domStr = substitute(ITEM_TPL, substituteObj)
+        const itemDom = createDom(domStr)
+        // 给 legend 形状用的
+        itemDom.style.setProperty('--bgColor', item.color)
+        listDom.appendChild(itemDom)
+      }
     })
     return listDom
   }
