@@ -691,8 +691,10 @@ export function getConditions(chart: Chart) {
   }
   const conditions = threshold.tableThreshold ?? []
 
-  const dimFields = [...chart.xAxis, ...chart.xAxisExt].map(i => i.dataeaseName)
-  const allFields = [...chart.xAxis, ...chart.xAxisExt, ...chart.yAxis, ...chart.yAxisExt]
+  const allFields = [...chart.xAxis]
+  if (chart.type === 'table-normal') {
+    allFields.push(...chart.yAxis)
+  }
   const fieldIdToName = allFields.reduce((acc, f) => {
     acc[f.id] = f.dataeaseName
     return acc
@@ -714,10 +716,6 @@ export function getConditions(chart: Chart) {
       : isAlphaColor(tableCell.tableItemBgColor)
       ? tableCell.tableItemBgColor
       : hexColorToRGBA(tableCell.tableItemBgColor, basicStyle.alpha)
-    const headerValueColor = tableHeader.tableHeaderFontColor
-    const headerValueBgColor = isAlphaColor(tableHeader.tableHeaderBgColor)
-      ? tableHeader.tableHeaderBgColor
-      : hexColorToRGBA(tableHeader.tableHeaderBgColor, basicStyle.alpha)
     const filedValueMap = getFieldValueMap(chart)
 
     const targetRulesMap = {} // columnName -> Array<{ rule, sourceField }>
@@ -732,7 +730,7 @@ export function getConditions(chart: Chart) {
         if (rule.target === 'total_row') {
           targets = [...allColumnNames]
           // 明细表和汇总表需要包含序号列
-          if (tableHeader.showIndex && (chart.type === 'table-info' || chart.type === 'table-normal')) {
+          if (tableHeader.showIndex) {
             targets.push(SERIES_NUMBER_FIELD)
           }
         } else if (rule.target === 'custom' && rule.targetFieldId) {
@@ -756,25 +754,13 @@ export function getConditions(chart: Chart) {
 
     for (const targetName in targetRulesMap) {
       const rules = targetRulesMap[targetName]
-      let defaultValueColor = valueColor
-      let defaultBgColor = valueBgColor
-      if (chart.type === 'table-pivot' && dimFields.includes(targetName)) {
-        defaultValueColor = headerValueColor
-        defaultBgColor = headerValueBgColor
-      }
+      const defaultValueColor = valueColor
+      const defaultBgColor = valueBgColor
 
       res.text.push({
         field: targetName,
         mapping(value, rowData) {
           if (!value && !rowData) {
-            return null
-          }
-          // 总计小计
-          if (rowData?.isGrandTotals || rowData?.isSubTotals) {
-            return null
-          }
-          // 表头
-          if (rowData?.id && rowData?.field === rowData.id) {
             return null
           }
 
@@ -787,12 +773,6 @@ export function getConditions(chart: Chart) {
         field: targetName,
         mapping(value, rowData) {
           if (!value && !rowData) {
-            return null
-          }
-          if (rowData?.isGrandTotals || rowData?.isSubTotals) {
-            return null
-          }
-          if (rowData?.id && rowData?.field === rowData.id) {
             return null
           }
           const fill = mappingColor(
@@ -1000,11 +980,366 @@ export function mappingColorCustom(value, defaultColor, field, type, filedValueM
 export function mappingColor(value, defaultColor, rules, type, filedValueMap?, rowData?) {
   let color = null
 
-  // If called from old code (rules is a single field object), adapt it
-  if (rules && !Array.isArray(rules) && rules.conditions) {
-      const field = rules;
-      rules = field.conditions.map(c => ({ rule: c, sourceField: field.field }));
+  for (let i = 0; i < rules.length; i++) {
+    const { rule, sourceField } = rules[i]
+    let flag = false
+    const t = rule
+    let targetValue, max, min
+
+    let checkValue = value;
+    if (sourceField.dataeaseName) {
+      checkValue = rowData?.[sourceField.dataeaseName]
+      if (checkValue === undefined) {
+        checkValue = rowData?.query?.[sourceField.dataeaseName]
+      }
+    }
+
+    if (t.type === 'dynamic') {
+      if (t.term === 'between') {
+        max = parseFloat(getValue(t.dynamicMaxField, filedValueMap, rowData))
+        min = parseFloat(getValue(t.dynamicMinField, filedValueMap, rowData))
+      } else {
+        targetValue = getValue(t.dynamicField, filedValueMap, rowData)
+      }
+    } else {
+      if (t.term === 'between') {
+        min = parseFloat(t.min)
+        max = parseFloat(t.max)
+      } else {
+        targetValue = t.value
+      }
+    }
+
+    const val = checkValue;
+
+    if (sourceField.deType === 2 || sourceField.deType === 3 || sourceField.deType === 4) {
+      targetValue = parseFloat(targetValue)
+      const numVal = parseFloat(val)
+      if (t.term === 'eq') {
+        if (numVal === targetValue) {
+          color = t[type]
+          flag = true
+        }
+      } else if (t.term === 'not_eq') {
+        if (numVal !== targetValue) {
+          color = t[type]
+          flag = true
+        }
+      } else if (t.term === 'lt') {
+        if (numVal < targetValue) {
+          color = t[type]
+          flag = true
+        }
+      } else if (t.term === 'gt') {
+        if (numVal > targetValue) {
+          color = t[type]
+          flag = true
+        }
+      } else if (t.term === 'le') {
+        if (val !== null && numVal <= targetValue) {
+          color = t[type]
+          flag = true
+        }
+      } else if (t.term === 'ge') {
+        if (val !== null && numVal >= targetValue) {
+          color = t[type]
+          flag = true
+        }
+      } else if (t.term === 'between') {
+        if (val !== null && min <= numVal && numVal <= max) {
+          color = t[type]
+          flag = true
+        }
+      } else if (t.term === 'default') {
+        color = t[type]
+        flag = true
+      } else if (t.term === 'null') {
+        if (val === null || val === undefined || val === '') {
+          color = t[type]
+          flag = true
+        }
+      } else if (t.term === 'not_null') {
+        if (val !== null && val !== undefined && val !== '') {
+          color = t[type]
+          flag = true
+        }
+      }
+      if (flag) {
+        break
+      }
+    } else if (sourceField.deType === 0 || sourceField.deType === 5) {
+      if (t.term === 'eq') {
+        if (val === targetValue) {
+          color = t[type]
+          flag = true
+        }
+      } else if (t.term === 'not_eq') {
+        if (val !== targetValue) {
+          color = t[type]
+          flag = true
+        }
+      } else if (t.term === 'like') {
+        if (val && val.includes(targetValue)) {
+          color = t[type]
+          flag = true
+        }
+      } else if (t.term === 'not like') {
+        if (val && !val.includes(targetValue)) {
+          color = t[type]
+          flag = true
+        }
+      } else if (t.term === 'null') {
+        if (val === null || val === undefined || val === '') {
+          color = t[type]
+          flag = true
+        }
+      } else if (t.term === 'not_null') {
+        if (val !== null && val !== undefined && val !== '') {
+          color = t[type]
+          flag = true
+        }
+      } else if (t.term === 'default') {
+        color = t[type]
+        flag = true
+      }
+      if (flag) {
+        break
+      }
+    } else {
+      const fc = rule
+      if (fc.term === 'null') {
+        if (val === null || val === undefined || val === '') {
+          color = fc[type]
+          flag = true
+        }
+      } else if (fc.term === 'not_null') {
+        if (val !== null && val !== undefined && val !== '') {
+          color = fc[type]
+          flag = true
+        }
+      }
+      if (flag) {
+        break
+      }
+      // time
+      if (!targetValue || !val) {
+        break
+      } else {
+          // 特殊时间格式不转换, 包含时或者包含时、分时(不包含秒), 直接比较字符串，因为new Date转换会有误差
+          const isSpecialTimeFormat = (dateStyle?: string) =>
+            dateStyle === 'H_m_s' || (dateStyle && dateStyle.length > 5 && dateStyle.length < 11)
+
+          let v: number | string
+          let compareTv = targetValue;
+          if (isSpecialTimeFormat(sourceField?.dateStyle)) {
+            v = val
+          } else {
+            v = new Date(val.replace(/-/g, '/') + ' GMT+8').getTime()
+            compareTv = new Date(targetValue.toString().replace(/-/g, '/') + ' GMT+8').getTime()
+          }
+          if (fc.term === 'eq') {
+            if (v === compareTv) {
+              color = fc[type]
+              flag = true
+            }
+          } else if (fc.term === 'not_eq') {
+            if (v !== compareTv) {
+              color = fc[type]
+              flag = true
+            }
+          } else if (fc.term === 'lt') {
+            if (v < compareTv) {
+              color = fc[type]
+              flag = true
+            }
+          } else if (fc.term === 'gt') {
+            if (v > compareTv) {
+              color = fc[type]
+              flag = true
+            }
+          } else if (fc.term === 'le') {
+            if (v <= compareTv) {
+              color = fc[type]
+              flag = true
+            }
+          } else if (fc.term === 'ge') {
+            if (v >= compareTv) {
+              color = fc[type]
+              flag = true
+            }
+          } else if (fc.term === 'default') {
+            color = fc[type]
+            flag = true
+          }
+      }
+      if (flag) {
+        break
+      }
+    }
   }
+
+  if (!color) {
+      color = defaultColor;
+  }
+  return color
+}
+
+export function getPivotConditions(chart: Chart) {
+  const { threshold } = parseJson(chart.senior)
+  if (!threshold.enable) {
+    return
+  }
+  const res = {
+    text: [],
+    background: []
+  }
+  const conditions = threshold.tableThreshold ?? []
+
+  const dimFields = [...chart.xAxis, ...chart.xAxisExt].map(i => i.dataeaseName)
+  const allFields = [...chart.xAxis, ...chart.xAxisExt, ...chart.yAxis]
+  const fieldIdToName = allFields.reduce((acc, f) => {
+    acc[f.id] = f.dataeaseName
+    return acc
+  }, {})
+
+  if (conditions?.length > 0) {
+    const { tableCell, basicStyle, tableHeader } = parseJson(chart.customAttr)
+    const enableTableCrossBG = tableCell.enableTableCrossBG
+    // 单元格字体颜色
+    const valueColor = isAlphaColor(tableCell.tableFontColor)
+      ? tableCell.tableFontColor
+      : hexColorToRGBA(tableCell.tableFontColor, basicStyle.alpha)
+    // 单元格背景颜色
+    const valueBgColor = enableTableCrossBG
+      ? null
+      : isAlphaColor(tableCell.tableItemBgColor)
+      ? tableCell.tableItemBgColor
+      : hexColorToRGBA(tableCell.tableItemBgColor, basicStyle.alpha)
+    // 列头字体颜色
+    const colHeaderValueColor = isAlphaColor(tableHeader.tableHeaderFontColor)
+      ? tableHeader.tableHeaderFontColor
+      : hexColorToRGBA(tableHeader.tableHeaderFontColor, basicStyle.alpha)
+    // 列头背景颜色
+    const colHeaderBgColor = isAlphaColor(tableHeader.tableHeaderBgColor)
+      ? tableHeader.tableHeaderBgColor
+      : hexColorToRGBA(tableHeader.tableHeaderBgColor, basicStyle.alpha)
+    // 行头字体颜色
+    const rowHeaderValueColor = isAlphaColor(tableHeader.tableHeaderColFontColor)
+    ? tableHeader.tableHeaderColFontColor
+    : hexColorToRGBA(tableHeader.tableHeaderColFontColor, basicStyle.alpha)
+    // 行头背景颜色
+    const rowHeaderBgColor = isAlphaColor(tableHeader.tableHeaderColBgColor)
+      ? tableHeader.tableHeaderColBgColor
+      : hexColorToRGBA(tableHeader.tableHeaderColBgColor, basicStyle.alpha)
+    const filedValueMap = getFieldValueMap(chart)
+
+    
+
+    const targetRulesMap = {} // columnName -> Array<{ rule, sourceField }>
+    const xFields = chart.xAxis.map(f => f.dataeaseName)
+    const xExtFields = chart.xAxisExt.map(f => f.dataeaseName)
+    const yFields = chart.yAxis.map(f => f.dataeaseName)
+    for (let i = 0; i < conditions.length; i++) {
+      const fieldItem = conditions[i]
+      if (!fieldItem.conditions) continue;
+
+      for (let j = 0; j < fieldItem.conditions.length; j++) {
+        const rule = fieldItem.conditions[j]
+        let targets = []
+        if (rule.target === 'total_row') {
+          if (xFields.includes(fieldItem.field.dataeaseName)) {
+            targets.push(...xFields)
+            if (basicStyle.quotaPosition === 'row') {
+              targets.push(EXTRA_FIELD)
+            }
+          }
+          if (xExtFields.includes(fieldItem.field.dataeaseName)) {
+            targets.push(...xExtFields)
+            if (basicStyle.quotaPosition !== 'row') {
+              targets.push(EXTRA_FIELD)
+            }
+          }
+          targets.push(...yFields)
+        } else if (rule.target === 'custom' && rule.targetFieldId) {
+          const targetName = fieldIdToName[rule.targetFieldId]
+          if (targetName) targets = [targetName]
+        } else {
+          targets = [fieldItem.field.dataeaseName]
+        }
+
+        targets.forEach(targetName => {
+          if (!targetRulesMap[targetName]) {
+            targetRulesMap[targetName] = []
+          }
+          targetRulesMap[targetName].push({
+            rule: rule,
+            sourceField: fieldItem.field
+          })
+        })
+      }
+    }
+
+    for (const targetName in targetRulesMap) {
+      const rules = targetRulesMap[targetName]
+      let defaultValueColor = valueColor
+      let defaultBgColor = valueBgColor
+      if (xFields.includes(targetName)) {
+        defaultValueColor = rowHeaderValueColor
+        defaultBgColor = rowHeaderBgColor
+      }
+      if (xExtFields.includes(targetName)) {
+        defaultValueColor = colHeaderValueColor
+        defaultBgColor = colHeaderBgColor
+      }
+
+      res.text.push({
+        field: targetName,
+        mapping(value, rowData) {
+          if (!value && !rowData) {
+            return null
+          }
+          // 角头
+          if (rowData.cornerType) {
+            return null
+          }
+
+          return {
+            fill: mappingPivotColor(value, defaultValueColor, rules.toReversed(), 'color', filedValueMap, rowData)
+          }
+        }
+      })
+      res.background.push({
+        field: targetName,
+        mapping(value, rowData) {
+          if (!value && !rowData) {
+            return null
+          }
+          // 角头
+          if (rowData.cornerType) {
+            return null
+          }
+          
+          const fill = mappingPivotColor(
+            value,
+            defaultBgColor,
+            rules.toReversed(),
+            'backgroundColor',
+            filedValueMap,
+            rowData
+          )
+          if (isTransparent(fill)) {
+            return null
+          }
+          return { fill }
+        }
+      })
+    }
+  }
+  return res
+}
+
+export function mappingPivotColor(value, defaultColor, rules, type, filedValueMap?, rowData?) {
+  let color = null
 
   for (let i = 0; i < rules.length; i++) {
     const { rule, sourceField } = rules[i]
@@ -1018,6 +1353,23 @@ export function mappingColor(value, defaultColor, rules, type, filedValueMap?, r
       if (checkValue === undefined) {
         checkValue = rowData?.query?.[sourceField.dataeaseName]
       }
+    }
+
+    if (rowData.isGrandTotals || rowData.isSubTotals) {
+      if (rule.target !== 'total_row') {
+        return null
+      }
+      checkValue = rowData?.query?.[sourceField.dataeaseName]
+    }
+
+    if (rowData.field === EXTRA_FIELD) {
+      if (rule.target !== 'total_row') {
+        return null
+      }
+      checkValue = rowData?.query?.[sourceField.dataeaseName]
+    }
+    if (checkValue === undefined) {
+      return null
     }
 
     if (t.type === 'dynamic') {
