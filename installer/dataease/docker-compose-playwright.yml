@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  api:
+    image: registry.cn-qingdao.aliyuncs.com/dataease/de-playwright-api:v1.58.2-noble
+    container_name: de-playwright-api
+    privileged: true
+    environment:
+      - CONCURRENCY=${DE_PLAYWRIGHT_CONCURRENCY}
+    volumes:
+      - ${DE_BASE}/dataease2.0/logs:/opt/app/logs
+    restart: unless-stopped
+    init: true
+    ipc: host
+    shm_size: ${DE_PLAYWRIGHT_SHM_SIZE}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - dataease-network

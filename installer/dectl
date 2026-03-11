@@ -58,8 +58,8 @@ function _generate_compose_file_args() {
          compose_files="${compose_files} -f docker-compose-task.yml"
       fi
 
-      if [[ -f $DE_RUNNING_BASE/docker-compose-selenium.yml ]] && [[ "$DE_EXTERNAL_SELENIUM" != "true" ]];then
-         compose_files="${compose_files} -f docker-compose-selenium.yml"
+      if [[ -f $DE_RUNNING_BASE/docker-compose-playwright.yml ]] && [[ "$DE_EXTERNAL_PLAYWRIGHT" != "true" ]];then
+         compose_files="${compose_files} -f docker-compose-playwright.yml"
       fi
    fi
 }
