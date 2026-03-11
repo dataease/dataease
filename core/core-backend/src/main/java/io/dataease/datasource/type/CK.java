@@ -14,6 +14,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
@@ -28,6 +30,9 @@ public class CK extends DatasourceConfiguration {
     private String sslCA;
     private String sslCert;
     private String sslKey;
+
+    private List<String> ILLEGAL_PARAMETERS = Arrays.asList("jndi:", "rmi:", "ldap:", "ldaps:", "dns:", "nis:", "corba:",
+            "java.naming.factory.initial", "java.naming.provider.url");
 
     public String getJdbc() {
         String jdbcUrl;
@@ -69,6 +74,7 @@ public class CK extends DatasourceConfiguration {
             jdbcUrl = appendCertParam(jdbcUrl, "sslCert", sslCert, "cert");
             jdbcUrl = appendCertParam(jdbcUrl, "sslKey", sslKey, "key");
         }
+        checkIllegalParameters(jdbcUrl);
         return jdbcUrl;
     }
 
@@ -127,4 +133,14 @@ public class CK extends DatasourceConfiguration {
     private boolean containsParam(String jdbcUrl, String paramName) {
         return Pattern.compile("(?i)([?&])" + Pattern.quote(paramName) + "=").matcher(jdbcUrl).find();
     }
+
+    private void checkIllegalParameters(String jdbcUrl) {
+        String lowerUrl = jdbcUrl.toLowerCase();
+        for (String illegalParam : ILLEGAL_PARAMETERS) {
+            if (lowerUrl.contains(illegalParam.toLowerCase())) {
+                throw new SecurityException("Illegal parameter detected in JDBC URL: " + illegalParam);
+            }
+        }
+    }
+
 }

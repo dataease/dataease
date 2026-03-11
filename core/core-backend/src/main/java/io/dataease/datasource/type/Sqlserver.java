@@ -16,11 +16,11 @@ import java.util.regex.Pattern;
 public class Sqlserver extends DatasourceConfiguration {
     private String driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
     private String extraParams = "";
-    private List<String> illegalParameters = Arrays.asList("autoDeserialize", "queryInterceptors", "statementInterceptors", "detectCustomCollations");
+    private List<String> illegalParameters = Arrays.asList("autoDeserialize", "queryInterceptors", "statementInterceptors", "detectCustomCollations", "jndi:", "rmi:", "ldap:", "ldaps:", "java.naming.factory.initial");
     private List<String> showTableSqls = Arrays.asList("show tables");
 
     public String getJdbc() {
-        if(StringUtils.isNoneEmpty(getUrlType()) && !getUrlType().equalsIgnoreCase("hostName")){
+        if (StringUtils.isNoneEmpty(getUrlType()) && !getUrlType().equalsIgnoreCase("hostName")) {
             if (!getJdbcUrl().startsWith("jdbc:sqlserver")) {
                 DEException.throwException("Illegal jdbcUrl: " + getJdbcUrl());
             }
@@ -28,12 +28,12 @@ public class Sqlserver extends DatasourceConfiguration {
         }
         String jdbcUrl = "";
         if (StringUtils.isEmpty(extraParams.trim())) {
-            jdbcUrl =  "jdbc:sqlserver://HOSTNAME:PORT;DatabaseName=DATABASE"
+            jdbcUrl = "jdbc:sqlserver://HOSTNAME:PORT;DatabaseName=DATABASE"
                     .replace("HOSTNAME", getLHost().trim())
                     .replace("PORT", getLPort().toString().trim())
                     .replace("DATABASE", getDataBase().trim());
         } else {
-            jdbcUrl =  "jdbc:sqlserver://HOSTNAME:PORT;DatabaseName=DATABASE;EXTRA_PARAMS"
+            jdbcUrl = "jdbc:sqlserver://HOSTNAME:PORT;DatabaseName=DATABASE;EXTRA_PARAMS"
                     .replace("HOSTNAME", getLHost().trim())
                     .replace("PORT", getLPort().toString().trim())
                     .replace("DATABASE", getDataBase().trim())
@@ -53,4 +53,5 @@ public class Sqlserver extends DatasourceConfiguration {
     protected Pattern getDatabasePattern() {
         return DB_NAME_PATTERN;
     }
+
 }
