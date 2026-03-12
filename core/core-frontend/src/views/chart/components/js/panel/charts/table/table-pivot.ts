@@ -453,23 +453,23 @@ export class TablePivot extends S2ChartView<PivotSheet> {
               n.width = totalRowWidth
             })
           }
-          if (tableHeader.rowHeaderFreeze !== false) {
-            // 表头冻结，树形模式最大表头宽度为表格的一半
-            const maxRowWidth = containerWidth / 2
-            if (totalRowWidth > maxRowWidth) {
-              totalRowWidth = maxRowWidth
+          if (basicStyle?.tableRowHeaderMode !== 'adapt') {
+            if (tableHeader.rowHeaderFreeze !== false) {
+              // 表头冻结，树形模式最大表头宽度为表格的一半
+              const maxRowWidth = containerWidth / 2
+              if (totalRowWidth > maxRowWidth) {
+                totalRowWidth = maxRowWidth
+              }
             }
+            scale = (containerWidth - totalRowWidth) / ev.colsHierarchy.width
           }
-          scale = (containerWidth - totalRowWidth) / ev.colsHierarchy.width
         }
         if (scale <= 1) {
           return
         }
-        if (basicStyle.tableLayoutMode !== 'tree' && basicStyle.tableRowHeaderMode === 'adapt') {
-          ev.rowNodes.forEach(n => {
-            n.width = Math.round(n.width * scale)
-          })
-        }
+        ev.rowNodes.forEach(n => {
+          n.width = Math.round(n.width * scale)
+        })
         if (basicStyle.tableLayoutMode !== 'tree') {
           ev.rowNodes.forEach(n => {
             n.x = 0
