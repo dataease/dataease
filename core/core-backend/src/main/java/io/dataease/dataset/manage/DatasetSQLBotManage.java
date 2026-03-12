@@ -605,6 +605,9 @@ public class DatasetSQLBotManage {
             DatasetTableInfoDTO tableInfoDTO = JsonUtil.parseObject(info, DatasetTableInfoDTO.class);
             if (StringUtils.isNotBlank(tableInfoDTO.getSql())) {
                 String sql = new String(Base64.getDecoder().decode(tableInfoDTO.getSql()));
+                if (StringUtils.isNotBlank(sql) && StringUtils.contains(sql, "$DE_PARAM")) {
+                    table.setNeedTransform(true);
+                }
                 table.setSql(sql);
             }
             if (StringUtils.isBlank(tableInfoDTO.getSql()) && StringUtils.isNotBlank(tableInfoDTO.getTable())) {
