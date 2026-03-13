@@ -59,9 +59,7 @@ import io.dataease.template.dao.auto.mapper.VisualizationTemplateMapper;
 import io.dataease.template.dao.ext.ExtVisualizationTemplateMapper;
 import io.dataease.template.manage.TemplateCenterManage;
 import io.dataease.utils.*;
-import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
-import io.dataease.visualization.dao.auto.entity.SnapshotDataVisualizationInfo;
-import io.dataease.visualization.dao.auto.entity.VisualizationWatermark;
+import io.dataease.visualization.dao.auto.entity.*;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
 import io.dataease.visualization.dao.auto.mapper.SnapshotCoreChartViewMapper;
 import io.dataease.visualization.dao.auto.mapper.SnapshotDataVisualizationInfoMapper;
@@ -347,6 +345,10 @@ public class DataVisualizationServer implements DataVisualizationApi {
         Map<Long, Map<String, String>> dsTableNamesMap = new HashMap<>();
         List<Long> newDatasourceId = new ArrayList<>();
         List<Long> excelDatasourceId = new ArrayList<>();
+        Map<Long, Long> linkageIdMap = new HashMap<>();
+        Map<Long, Long> linkageFieldIdMap = new HashMap<>();
+        Map<Long, Long> linkJumpIdMap = new HashMap<>();
+        Map<Long, Long> linkJumpInfoIdMap = new HashMap<>();
         Map<String, String> excelTableNamesMap = new HashMap<>();
         if (appData != null) {
             isAppSave = true;
@@ -574,6 +576,62 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 if (viewInfo.getTableId() == null) {
                     viewInfo.setTableId(viewInfo.getSourceTableId());
                 }
+            });
+
+            // visualization_linkage
+            appData.getLinkages().forEach(visualizationLinkageVO -> {
+                Long oldId = visualizationLinkageVO.getId();
+                Long newId = IDUtils.snowID();
+                VisualizationLinkage visualizationLinkage = new VisualizationLinkage();
+                BeanUtils.copyBean(visualizationLinkage, visualizationLinkageVO);
+                visualizationLinkage.setDvId(newDvId);
+                visualizationLinkage.setId(newId);
+                linkageIdMap.put(oldId, newId);
+            });
+
+            // visualization_linkage_field
+            appData.getLinkageFields().forEach(visualizationLinkageFieldVO -> {
+                Long oldId = visualizationLinkageFieldVO.getId();
+                Long newId = IDUtils.snowID();
+                VisualizationLinkageField visualizationLinkageField = new VisualizationLinkageField();
+                BeanUtils.copyBean(visualizationLinkageField, visualizationLinkageFieldVO);
+                visualizationLinkageField.setId(newId);
+                visualizationLinkageField.setLinkageId(linkageIdMap.get(visualizationLinkageField.getLinkageId()));
+                visualizationLinkageField.setSourceField(dsTableFieldsIdMap.get(visualizationLinkageField.getSourceField()));
+                visualizationLinkageField.setTargetField(dsTableFieldsIdMap.get(visualizationLinkageField.getTargetField()));
+                linkageFieldIdMap.put(oldId, newId);
+            });
+
+            // visualization_link_jump
+            appData.getLinkJumps().forEach(visualizationLinkJumpVO -> {
+                Long oldId = visualizationLinkJumpVO.getId();
+                Long newId = IDUtils.snowID();
+                VisualizationLinkJump visualizationLinkJump = new VisualizationLinkJump();
+                BeanUtils.copyBean(visualizationLinkJump, visualizationLinkJumpVO);
+                visualizationLinkJump.setId(newId);
+                visualizationLinkJump.setSourceDvId(newDvId);
+                linkJumpIdMap.put(oldId, newId);
+            });
+
+            // visualization_link_jump_info
+            appData.getLinkJumpInfos().forEach(visualizationLinkJumpInfoVO -> {
+                Long oldId = visualizationLinkJumpInfoVO.getId();
+                Long newId = IDUtils.snowID();
+                VisualizationLinkJumpInfo visualizationLinkJumpInfo = new VisualizationLinkJumpInfo();
+                BeanUtils.copyBean(visualizationLinkJumpInfo, visualizationLinkJumpInfoVO);
+                visualizationLinkJumpInfo.setId(newId);
+                visualizationLinkJumpInfo.setLinkJumpId(linkJumpIdMap.get(visualizationLinkJumpInfo.getLinkJumpId()));
+                linkJumpInfoIdMap.put(oldId, newId);
+            });
+
+            // visualization_link_jump_target_view_info
+            appData.getLinkJumpTargetInfos().forEach(visualizationLinkJumpTargetViewInfoVO -> {
+                Long oldId = visualizationLinkJumpTargetViewInfoVO.getTargetId();
+                Long newId = IDUtils.snowID();
+                VisualizationLinkJumpTargetViewInfo visualizationLinkJumpTargetViewInfo = new VisualizationLinkJumpTargetViewInfo();
+                BeanUtils.copyBean(visualizationLinkJumpTargetViewInfo, visualizationLinkJumpTargetViewInfoVO);
+                visualizationLinkJumpTargetViewInfo.setTargetId(newId);
+                visualizationLinkJumpTargetViewInfoVO.setTargetFieldId(String.valueOf(linkJumpInfoIdMap.get(visualizationLinkJumpTargetViewInfoVO.getTargetFieldId())));
             });
         }
         //保存图表信息
