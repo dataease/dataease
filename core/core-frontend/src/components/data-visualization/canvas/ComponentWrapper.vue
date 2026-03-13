@@ -378,9 +378,6 @@ const onWrapperClick = e => {
           }
         } else {
           initOpenHandler(window.open(url, jumpType))
-          if (isDashboard() && isMobile()) {
-            window.location.reload()
-          }
         }
       } catch (e) {
         console.warn('url 格式错误:' + url)
