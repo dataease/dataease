@@ -295,6 +295,7 @@ import { ChoroplethOptions, TextLayer } from '@antv/l7plot/dist/esm'
 import { nextTick } from 'vue'
 import { centroid } from '@turf/centroid'
 import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
+import { useMapStoreWithOut } from '@/store/modules/map'
 const { wsCache } = useCache()
 const { t } = useI18n()
 const keyword = ref('')
@@ -342,6 +343,9 @@ const delHandler = data => {
           selectedData.value = null
         }
         ElMessage.success(t('common.delete_success'))
+        // 删除后清除缓存
+        const mapStore = useMapStoreWithOut()
+        mapStore.mapCache[data.id] = null
         loadTreeData(false)
       })
     })
