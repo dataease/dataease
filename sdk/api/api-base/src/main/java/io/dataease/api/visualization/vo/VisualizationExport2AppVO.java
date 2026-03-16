@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class VisualizationExport2AppVO {
@@ -37,6 +38,8 @@ public class VisualizationExport2AppVO {
     List<VisualizationLinkageVO> linkages;
 
     List<VisualizationLinkageFieldVO> linkageFields;
+
+    Map<Long,Long> viewIdMap;
 
     public VisualizationExport2AppVO() {
 

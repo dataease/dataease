@@ -484,7 +484,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                     viewInfo.setTableId(viewInfo.getSourceTableId());
                 }
             });
-
+            Map<Long, Long> viewIdMap = appData.getViewIdMap();
             // visualization_linkage
             appData.getLinkages().forEach(visualizationLinkageVO -> {
                 Long oldId = visualizationLinkageVO.getId();
@@ -493,6 +493,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 BeanUtils.copyBean(visualizationLinkage, visualizationLinkageVO);
                 visualizationLinkage.setDvId(newDvId);
                 visualizationLinkage.setId(newId);
+                visualizationLinkage.setSourceViewId(viewIdMap.get(visualizationLinkage.getSourceViewId()));
                 linkageIdMap.put(oldId, newId);
             });
 
@@ -517,6 +518,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 BeanUtils.copyBean(visualizationLinkJump, visualizationLinkJumpVO);
                 visualizationLinkJump.setId(newId);
                 visualizationLinkJump.setSourceDvId(newDvId);
+                visualizationLinkJump.setSourceViewId(viewIdMap.get(visualizationLinkJump.getSourceViewId()));
                 linkJumpIdMap.put(oldId, newId);
             });
 
@@ -832,6 +834,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         try {
             Long newDvId = IDUtils.snowID();
             String newFrom = request.getNewFrom();
+            Map<Long,Long> viewIdsMap = new HashMap<>();
             String templateStyle = null;
             String templateData = null;
             String dynamicData = null;
@@ -925,6 +928,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 VisualizationTemplateExtendDataDTO extendDataDTO = new VisualizationTemplateExtendDataDTO(newDvId, newViewId, originViewData);
                 extendDataInfo.put(newViewId, extendDataDTO);
                 templateData = templateData.replaceAll(originViewId, newViewId.toString());
+                viewIdsMap.put(Long.valueOf(originViewId),newViewId);
                 if (StringUtils.isNotEmpty(appDataStr)) {
                     chartView.setTableId(chartView.getSourceTableId());
                     appDataStr = appDataStr.replaceAll(originViewId, newViewId.toString());
@@ -938,7 +942,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             request.setCanvasStyleData(templateStyle);
             //Store static resource into the server
             staticResourceServer.saveFilesToServe(staticResource);
-            return new DataVisualizationVO(newDvId, name, dvType, version, templateStyle, templateData, appDataStr, canvasViewInfo, null);
+            return new DataVisualizationVO(newDvId, name, dvType, version, templateStyle, templateData, appDataStr, canvasViewInfo, null,viewIdsMap);
         } catch (Exception e) {
             e.printStackTrace();
             DEException.throwException("解析错误");
