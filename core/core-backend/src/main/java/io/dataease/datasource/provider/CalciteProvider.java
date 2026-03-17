@@ -1,7 +1,7 @@
 package io.dataease.datasource.provider;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.jcraft.jsch.Session;
+import com.jcraft.jsch.*;
 import io.dataease.constant.SQLConstants;
 import io.dataease.dataset.utils.FieldUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
