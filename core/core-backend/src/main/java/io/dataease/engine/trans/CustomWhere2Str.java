@@ -2,6 +2,7 @@ package io.dataease.engine.trans;
 
 import io.dataease.constant.SQLConstants;
 import io.dataease.engine.utils.Utils;
+import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.constant.SqlPlaceholderConstants;
 import io.dataease.extensions.datasource.dto.CalParam;
@@ -18,12 +19,14 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
  * @Author Junjun
  */
 public class CustomWhere2Str {
+    private static final Pattern NUMBER_PATTERN = Pattern.compile("^[-+]?\\d+(\\.\\d+)?([eE][-+]?\\d+)?$");
 
     public static void customWhere2sqlObj(SQLMeta meta, FilterTreeObj tree, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, List<CalParam> fieldParam, List<CalParam> chartParam, PluginManageApi pluginManage) {
         SQLObj tableObj = meta.getTable();
@@ -171,9 +174,9 @@ public class CustomWhere2Str {
                         || StringUtils.containsIgnoreCase(field.getType(), "NCHAR"))
                         && !isCross
                         && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
-                    res = "(" + whereName + " IN (" + item.getEnumValue().stream().map(str -> "'" + SQLConstants.MSSQL_N_PREFIX + str + "'").collect(Collectors.joining(",")) + "))";
+                    res = "(" + whereName + " IN (" + item.getEnumValue().stream().map(CustomWhere2Str::toSqlServerNQuotedValue).collect(Collectors.joining(",")) + "))";
                 } else {
-                    res = "(" + whereName + " IN ('" + String.join("','", item.getEnumValue()) + "'))";
+                    res = "(" + whereName + " IN (" + item.getEnumValue().stream().map(CustomWhere2Str::toQuotedValue).collect(Collectors.joining(",")) + "))";
                 }
             }
         } else {
@@ -199,18 +202,18 @@ public class CustomWhere2Str {
                         || StringUtils.containsIgnoreCase(field.getType(), "NCHAR"))
                         && !isCross
                         && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
-                    whereValue = "(" + Arrays.stream(value.split(",")).map(str -> "'" + SQLConstants.MSSQL_N_PREFIX + str + "'").collect(Collectors.joining(",")) + ")";
+                    whereValue = "(" + Arrays.stream(value.split(",")).map(CustomWhere2Str::toSqlServerNQuotedValue).collect(Collectors.joining(",")) + ")";
                 } else {
-                    whereValue = "('" + String.join("','", value.split(",")) + "')";
+                    whereValue = "(" + Arrays.stream(value.split(",")).map(CustomWhere2Str::toQuotedValue).collect(Collectors.joining(",")) + ")";
                 }
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "like")) {
                 if ((StringUtils.containsIgnoreCase(field.getType(), "NVARCHAR")
                         || StringUtils.containsIgnoreCase(field.getType(), "NCHAR"))
                         && !isCross
                         && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
-                    whereValue = "'" + SQLConstants.MSSQL_N_PREFIX + "%" + value + "%'";
+                    whereValue = toSqlServerNLikeValue(value);
                 } else {
-                    whereValue = "'%" + value + "%'";
+                    whereValue = toLikeValue(value);
                 }
             } else {
                 // 如果是时间字段过滤，当条件是等于和不等于的时候转换成between和not between
@@ -249,21 +252,21 @@ public class CustomWhere2Str {
                                 value = Utils.transLong2Str(startTime);
                             }
                         }
-                        whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value);
+                        whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, sanitizeSqlLiteral(value));
                     }
                 } else {
                     if ((StringUtils.containsIgnoreCase(field.getType(), "NVARCHAR")
                             || StringUtils.containsIgnoreCase(field.getType(), "NCHAR"))
                             && !isCross
                             && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
-                        whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE_CH, value);
+                        whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE_CH, sanitizeSqlLiteral(value));
                     } else {
                         if (field.getDeType() == 2
                                 || field.getDeType() == 3
                                 || field.getDeType() == 4) {
-                            whereValue = String.format(SQLConstants.WHERE_NUMBER_VALUE, value);
+                            whereValue = String.format(SQLConstants.WHERE_NUMBER_VALUE, sanitizeNumberLiteral(value));
                         } else {
-                            whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value);
+                            whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, sanitizeSqlLiteral(value));
                         }
                     }
                 }
@@ -275,6 +278,36 @@ public class CustomWhere2Str {
             res = build.getWhereField() + " " + build.getWhereTermAndValue();
         }
         return res;
+    }
+
+    private static String sanitizeSqlLiteral(String value) {
+        String normalized = StringUtils.defaultString(value);
+        Utils.validateSqlInjectionRisk(normalized);
+        return Utils.transValue(normalized);
+    }
+
+    private static String toQuotedValue(String value) {
+        return "'" + sanitizeSqlLiteral(value) + "'";
+    }
+
+    private static String toLikeValue(String value) {
+        return "'%" + sanitizeSqlLiteral(value) + "%'";
+    }
+
+    private static String toSqlServerNQuotedValue(String value) {
+        return "'" + SQLConstants.MSSQL_N_PREFIX + sanitizeSqlLiteral(value) + "'";
+    }
+
+    private static String toSqlServerNLikeValue(String value) {
+        return "'" + SQLConstants.MSSQL_N_PREFIX + "%" + sanitizeSqlLiteral(value) + "%'";
+    }
+
+    private static String sanitizeNumberLiteral(String value) {
+        String normalized = StringUtils.trimToEmpty(value);
+        if (!NUMBER_PATTERN.matcher(normalized).matches()) {
+            DEException.throwException("Illegal number filter value");
+        }
+        return normalized;
     }
 
     private static String fixValue(FilterTreeItem item) {
