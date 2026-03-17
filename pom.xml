@@ -55,7 +55,7 @@
         <flexmark.version>0.62.2</flexmark.version>
         <jsqlparser.version>4.9</jsqlparser.version>
         <commons-compress.version>1.26.2</commons-compress.version>
-        <jsch.version>0.1.55</jsch.version>
+        <jsch.version>0.2.26</jsch.version>
     </properties>
 
     <dependencyManagement>

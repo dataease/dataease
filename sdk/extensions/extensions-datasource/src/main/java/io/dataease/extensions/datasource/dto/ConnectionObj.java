@@ -1,6 +1,6 @@
 package io.dataease.extensions.datasource.dto;
 
-import com.jcraft.jsch.Session;
+import com.jcraft.jsch.*;
 import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import lombok.Data;

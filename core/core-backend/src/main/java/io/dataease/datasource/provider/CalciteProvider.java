@@ -1,12 +1,11 @@
 package io.dataease.datasource.provider;
 
-import com.jcraft.jsch.Session;
+import com.jcraft.jsch.*;
 import io.dataease.constant.SQLConstants;
 import io.dataease.dao.auto.entity.CoreDatasource;
 import io.dataease.dataset.utils.FieldUtils;
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.datasource.manage.EngineManage;
-import io.dataease.datasource.request.EngineRequest;
 import io.dataease.datasource.type.*;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.*;
