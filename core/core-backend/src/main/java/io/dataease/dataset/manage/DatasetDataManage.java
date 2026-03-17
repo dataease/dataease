@@ -127,7 +127,7 @@ public class DatasetDataManage {
                 Map map = JsonUtil.parseObject(datasourceSchemaDTO.getConfiguration(), Map.class);
                 if (!datasourceRequest.getIsCross()) {
                     if (ObjectUtils.isNotEmpty(map.get("schema"))) {
-                        sql = sql.replaceAll(SqlPlaceholderConstants.KEYWORD_PREFIX_REGEX + datasourceSchemaDTO.getSchemaAlias() + SqlPlaceholderConstants.KEYWORD_SUFFIX_REGEX, String.format(format, map.get("schema").toString()) );
+                        sql = sql.replaceAll(SqlPlaceholderConstants.KEYWORD_PREFIX_REGEX + datasourceSchemaDTO.getSchemaAlias() + SqlPlaceholderConstants.KEYWORD_SUFFIX_REGEX, String.format(format, map.get("schema").toString()));
                     } else {
                         sql = sql.replaceAll(SqlPlaceholderConstants.KEYWORD_PREFIX_REGEX + datasourceSchemaDTO.getSchemaAlias() + SqlPlaceholderConstants.KEYWORD_SUFFIX_REGEX + "\\.", "");
                     }
@@ -154,8 +154,7 @@ public class DatasetDataManage {
                     sql = SqlUtils.addSchema(originSql, tableSchema);
                 }
             }
-            datasourceRequest.setQuery(sql.replaceAll("\r\n", " ")
-                    .replaceAll("\n", " "));
+            datasourceRequest.setQuery(sql.replaceAll("\r\n", " ").replaceAll("\n", " "));
             logger.debug("calcite data table field sql: " + datasourceRequest.getQuery());
             // 获取数据源表的原始字段
             if (StringUtils.equalsIgnoreCase(type, DatasetTableType.DB)) {
@@ -538,8 +537,7 @@ public class DatasetDataManage {
                         if (desensitizationList.keySet().contains(fields.get(j).getDataeaseName())) {
                             obj.put(fields.get(j).getDataeaseName(), ChartDataBuild.desensitizationValue(desensitizationList.get(fields.get(j).getDataeaseName()), String.valueOf(res)));
                         } else {
-                            obj.put(ObjectUtils.isNotEmpty(fields.get(j).getDataeaseName()) ?
-                                    fields.get(j).getDataeaseName() : fields.get(j).getOriginName(), res);
+                            obj.put(ObjectUtils.isNotEmpty(fields.get(j).getDataeaseName()) ? fields.get(j).getDataeaseName() : fields.get(j).getOriginName(), res);
                         }
                     }
                 }
@@ -564,8 +562,7 @@ public class DatasetDataManage {
             if (ObjectUtils.isEmpty(dto)) {
                 if (Objects.equals(datasetTableFieldDTO.getExtField(), ExtFieldConstant.EXT_NORMAL)) {
                     for (DatasetTableFieldDTO fieldDTO : unionFields) {
-                        if (Objects.equals(datasetTableFieldDTO.getDatasetTableId(), fieldDTO.getDatasetTableId())
-                                && Objects.equals(datasetTableFieldDTO.getOriginName(), fieldDTO.getOriginName())) {
+                        if (Objects.equals(datasetTableFieldDTO.getDatasetTableId(), fieldDTO.getDatasetTableId()) && Objects.equals(datasetTableFieldDTO.getOriginName(), fieldDTO.getOriginName())) {
                             datasetTableFieldDTO.setDataeaseName(fieldDTO.getDataeaseName());
                             datasetTableFieldDTO.setFieldShortName(fieldDTO.getFieldShortName());
                         }
@@ -1004,7 +1001,7 @@ public class DatasetDataManage {
             }
             DeSortField deSortField = new DeSortField();
             BeanUtils.copyBean(deSortField, field);
-            deSortField.setOrderDirection(request.getSort());
+            deSortField.setOrderDirection(request.getSort().equalsIgnoreCase("asc") ? "asc" : "desc");
             datasetGroupInfoDTO.setSortFields(Collections.singletonList(deSortField));
             sortDistinct = false;
         }

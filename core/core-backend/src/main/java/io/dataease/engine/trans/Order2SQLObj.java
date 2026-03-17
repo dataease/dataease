@@ -123,7 +123,7 @@ public class Order2SQLObj {
         SQLObj result = SQLObj.builder()
                 .orderField(String.format(SQLConstants.FIELD_DOT, originField))
                 .orderAlias(String.format(SQLConstants.FIELD_DOT, originField))
-                .orderDirection(f.getOrderDirection()).build();
+                .orderDirection(f.getOrderDirection().equalsIgnoreCase("asc") ? "asc" : "desc").build();
         return result;
     }
 
