@@ -500,6 +500,11 @@ public class DatasetSQLBotManage {
         field.setType(row.get("cdtf_type").toString());
         field.setComment(row.get("cdtf_name").toString());
         if (ObjectUtils.isNotEmpty(row.get("cdtf_ext_field")) && !row.get("cdtf_ext_field").equals(0)) {
+            Object extName = row.get("cdtf_name");
+            String extNameText = null;
+            if (ObjectUtils.isNotEmpty(extName) && StringUtils.isNotBlank(extNameText = extName.toString())) {
+                field.setName(extNameText);
+            }
             field.setNeedTransform(true);
         }
         Map<String, Object> fieldRowData = buildRowData(row, 3);
