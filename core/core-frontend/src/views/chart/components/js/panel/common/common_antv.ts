@@ -1407,6 +1407,31 @@ export function configL7PlotZoom(chart: Chart, plot: L7Plot<PlotOptions>) {
     plot.scene.map['dragRotate']?.disable()
     plot.scene.map['touchPitch']?.disable()
     plot.scene.map['touchZoomRotate']?.disable()
+    // 移动端允许触摸事件冒泡，使页面可以正常滚动
+    if (isMobile()) {
+      // 避免重复注册事件监听器
+      if ((plot as any).__deMobileTouchSetup__) {
+        return
+      }
+      ;(plot as any).__deMobileTouchSetup__ = true
+
+      const setTouchAction = () => {
+        const container = plot.scene.getContainer?.() as HTMLElement
+        if (container) {
+          container.style.touchAction = 'auto'
+          const canvas = container.querySelector('canvas')
+          if (canvas) {
+            canvas.style.touchAction = 'auto'
+          }
+        }
+      }
+      // 必须等待scene加载完成后才能获取到container
+      if (plot.scene.loaded) {
+        setTouchAction()
+      } else {
+        plot.scene.once('loaded', setTouchAction)
+      }
+    }
     return
   }
   plot.once('loaded', () => {
@@ -2529,5 +2554,12 @@ function updateMapStatusOption(mapType: string, scene: Scene, enable = false) {
         scrollWheel: enable,
         touchZoom: false
       } as any)
+  }
+  // 当交互关闭时，画布容器不响应事件，避免与地图交互冲突
+  if (!enable && isMobile()) {
+    const sceneEl = scene
+      .getServiceContainer?.()
+      .sceneService?.getSceneContainer() as HTMLElement | null
+    sceneEl && (sceneEl.style.pointerEvents = 'auto')
   }
 }

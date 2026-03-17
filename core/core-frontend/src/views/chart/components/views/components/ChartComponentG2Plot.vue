@@ -7,7 +7,8 @@ import {
   reactive,
   ref,
   shallowRef,
-  toRefs
+  toRefs,
+  watch
 } from 'vue'
 import { getData } from '@/api/chart'
 import { ChartLibraryType } from '@/views/chart/components/js/panel/types'
@@ -795,7 +796,10 @@ onMounted(() => {
       return
     }
     if (entry.intersectionRatio <= 0) {
-      myChart?.emit('tooltip:hidden')
+      // G2Plot 图表使用 emit，L7/L7Plot 图表没有 emit 方法
+      if (myChart && typeof myChart.emit === 'function') {
+        myChart.emit('tooltip:hidden')
+      }
     }
   })
   intersectionObserver.observe(containerDom)
@@ -820,6 +824,34 @@ onBeforeUnmount(() => {
     console.warn(e)
   }
 })
+
+/**
+ * 是否隐藏地图缩放组件
+ */
+function shouldHideZoom(): boolean {
+  const basicStyle = parseJson(view.value.customAttr.basicStyle)
+  return (
+    (basicStyle.suspension === false && basicStyle.showZoom === undefined) ||
+    basicStyle.showZoom === false
+  )
+}
+const ONLINE_CHARTS = ['flow-map', 'heat-map', 'symbolic-map']
+/**
+ * 监听图表选中状态,仅处理在线地图在移动端的交互
+ * active = true 时：图表选中 → 事件穿透画布容器，不拦截，能够直接与画布交互
+ * active = false 时：图表未选中 → 画布容器正常响应事件，能够滑动页面
+ */
+watch(
+  () => props.active,
+  newVal => {
+    if (ONLINE_CHARTS.includes(view.value.type) && isMobile() && shouldHideZoom()) {
+      const containerDiv = document.getElementById(containerId)
+      containerDiv?.querySelectorAll<HTMLElement>('.l7-scene').forEach(el => {
+        el.style.pointerEvents = newVal ? 'none' : 'auto'
+      })
+    }
+  }
+)
 </script>
 
 <template>
