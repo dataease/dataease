@@ -78,6 +78,7 @@ public class H2EngineProvider extends EngineProvider {
 
     @Override
     public String createTableSql(String tableName, List<TableField> tableFields, CoreDeEngine engine) {
+        validateSqlInjectionRisk(tableName);
         String dorisTableColumnSql = createTableSql(tableFields);
         return creatTableSql.replace("TABLE_NAME", tableName).replace("Column_Fields", dorisTableColumnSql);
     }

@@ -4,11 +4,13 @@ package io.dataease.datasource.provider;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.server.DatasourceServer;
+import io.dataease.engine.utils.Utils;
 import io.dataease.extensions.datasource.dto.TableField;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +30,7 @@ public class MysqlEngineProvider extends EngineProvider {
 
     @Override
     public String createView(String name, String viewSQL) {
+        validateSqlInjectionRisk(name);
         return "CREATE or replace view " + name + " AS (" + viewSQL + ")";
     }
 
@@ -102,6 +105,7 @@ public class MysqlEngineProvider extends EngineProvider {
 
     @Override
     public String createTableSql(String tableName, List<TableField> tableFields, CoreDeEngine engine) {
+        validateSqlInjectionRisk(tableName);
         String dorisTableColumnSql = createTableSql(tableFields);
         return creatTableSql.replace("TABLE_NAME", tableName).replace("Column_Fields", dorisTableColumnSql);
     }

@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Utils {
-    private static final List<Pattern> SQL_INJECTION_PATTERNS = Arrays.asList(
+    public static final List<Pattern> SQL_INJECTION_PATTERNS = Arrays.asList(
             Pattern.compile("[\\'\";`]"),
             Pattern.compile("--\\s*|#"),
             Pattern.compile("\\b(or|and|union|select|insert|delete|update|drop|alter|exec|xp_cmdshell)\\b", Pattern.CASE_INSENSITIVE),
