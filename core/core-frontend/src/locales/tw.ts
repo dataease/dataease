@@ -710,7 +710,7 @@ export default {
     dashboard_configuration: '儀表板配置',
     to_mobile_layout: '切換至行動裝置佈局',
     complete: '完成',
-    pager_color: '分頁器配色',
+    pager_color: '分頁器',
     title_horizontal_position: '標題水平位置',
     title_display_position: '標題顯示位置',
     title_color: '標題顏色',

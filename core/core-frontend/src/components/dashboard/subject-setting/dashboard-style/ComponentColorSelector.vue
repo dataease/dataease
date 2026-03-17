@@ -204,17 +204,33 @@
             </el-col>
             <el-col :span="12">
               <el-form-item :label="t('components.pager_color')" class="form-item">
-                <el-color-picker
-                  :trigger-width="colorPickerWidth"
-                  v-model="seniorForm.pagerColor"
-                  size="small"
-                  :predefine="predefineColors"
-                  color-format="rgb"
-                  :effect="themes"
-                  show-alpha
-                  is-custom
-                  @change="changePagerColorChange"
-                />
+                <div style="display: flex; width: 100%; gap: 8px">
+                  <el-color-picker
+                    :trigger-width="60"
+                    v-model="seniorForm.pagerColor"
+                    size="small"
+                    :predefine="predefineColors"
+                    color-format="rgb"
+                    :effect="themes"
+                    show-alpha
+                    is-custom
+                    @change="changePagerColorChange"
+                  />
+                  <el-select
+                    style="flex: 1; width: auto"
+                    :title="t('chart.text_fontsize')"
+                    v-model="seniorForm.pagerSize"
+                    size="small"
+                    @change="changePagerColorChange"
+                  >
+                    <el-option
+                      v-for="option in fontSizeList"
+                      :key="option.value"
+                      :label="option.name"
+                      :value="option.value"
+                    />
+                  </el-select>
+                </div>
               </el-form-item>
             </el-col>
           </el-row>
@@ -249,6 +265,17 @@ let colorAreaInit = ref(false)
 const { themes } = toRefs(props)
 const emits = defineEmits(['onColorChange'])
 const colorFormRef = ref(null)
+
+const fontSizeList = computed(() => {
+  const arr = []
+  for (let i = 6; i <= 40; i = i + 2) {
+    arr.push({
+      name: i + '',
+      value: i
+    })
+  }
+  return arr
+})
 
 const colorForm = computed(
   () => canvasStyleData.value.component.chartColor as DeepPartial<ChartAttr>

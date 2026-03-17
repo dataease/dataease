@@ -712,15 +712,17 @@ onBeforeUnmount(() => {
 })
 
 const autoStyle = computed(() => {
+  const adaptorScale =
+    (scale.value * (canvasStyleData.value.component.seniorStyleSetting?.pagerSize || 14)) / 14
   if (isISOMobile()) {
     return {
-      height: 20 * scale.value + 8 + 'px',
-      width: 100 / scale.value + '%!important',
-      left: 50 * (1 - 1 / scale.value) + '%', // 放大余量 除以 2
-      transform: 'scale(' + scale.value + ') translateZ(0)'
+      height: 20 * adaptorScale + 8 + 'px',
+      width: 100 / adaptorScale + '%!important',
+      left: 50 * (1 - 1 / adaptorScale) + '%', // 放大余量 除以 2
+      transform: 'scale(' + adaptorScale + ') translateZ(0)'
     } as CSSProperties
   } else {
-    return { zoom: scale.value }
+    return { zoom: adaptorScale }
   }
 })
 

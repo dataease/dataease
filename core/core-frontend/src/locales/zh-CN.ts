@@ -713,7 +713,7 @@ export default {
     dashboard_configuration: '仪表板配置',
     to_mobile_layout: '切换至移动端布局',
     complete: '完成',
-    pager_color: '分页器配色',
+    pager_color: '分页器',
     title_horizontal_position: '标题水平位置',
     title_display_position: '标题显示位置',
     title_color: '标题颜色',
