@@ -40,8 +40,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.UnsupportedCharsetException;
 import java.sql.*;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -495,6 +499,8 @@ public class CalciteProvider extends Provider {
 
         // schema
         ResultSet resultSet = null;
+        String oracleCharset = normalizeOracleCharset(datasourceConfiguration.getCharset());
+        String oracleTargetCharset = normalizeOracleCharset(datasourceConfiguration.getTargetCharset());
 
         try (Connection con = getConnectionFromPool(datasourceRequest.getDatasource().getId())) {
 
@@ -507,9 +513,9 @@ public class CalciteProvider extends Provider {
                         Object valueObject = datasourceRequest.getTableFieldWithValues().get(i).getValue();
 
                         if (valueObject instanceof String && DatasourceConfiguration.DatasourceType.valueOf(value.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
-                            if (StringUtils.isNotEmpty(datasourceConfiguration.getCharset()) && StringUtils.isNotEmpty(datasourceConfiguration.getTargetCharset())) {
+                            if (StringUtils.isNotEmpty(oracleCharset) && StringUtils.isNotEmpty(oracleTargetCharset)) {
                                 //转换为数据库的字符集
-                                valueObject = new String(((String) valueObject).getBytes(datasourceConfiguration.getTargetCharset()), datasourceConfiguration.getCharset());
+                                valueObject = convertOracleText((String) valueObject, oracleTargetCharset, oracleCharset);
                             }
                             if (datasourceRequest.getTableFieldWithValues().get(i).getType().equals(Types.CLOB)) {
                                 Reader reader = new StringReader((String) valueObject);
@@ -557,6 +563,8 @@ public class CalciteProvider extends Provider {
         DatasourceConfiguration datasourceConfiguration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), DatasourceConfiguration.class);
         // schema
         ResultSet resultSet = null;
+        String oracleCharset = normalizeOracleCharset(datasourceConfiguration.getCharset());
+        String oracleTargetCharset = normalizeOracleCharset(datasourceConfiguration.getTargetCharset());
 
         try (Connection con = getConnectionFromPool(datasourceRequest.getDatasource().getId())) {
 
@@ -568,9 +576,9 @@ public class CalciteProvider extends Provider {
                     try {
                         Object valueObject = datasourceRequest.getTableFieldWithValues().get(i).getValue();
                         if (valueObject instanceof String && DatasourceConfiguration.DatasourceType.valueOf(value.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
-                            if (StringUtils.isNotEmpty(datasourceConfiguration.getCharset()) && StringUtils.isNotEmpty(datasourceConfiguration.getTargetCharset())) {
+                            if (StringUtils.isNotEmpty(oracleCharset) && StringUtils.isNotEmpty(oracleTargetCharset)) {
                                 //转换为数据库的字符集
-                                valueObject = new String(((String) valueObject).getBytes(datasourceConfiguration.getTargetCharset()), datasourceConfiguration.getCharset());
+                                valueObject = convertOracleText((String) valueObject, oracleTargetCharset, oracleCharset);
                             }
                             if (datasourceRequest.getTableFieldWithValues().get(i).getType().equals(Types.CLOB)) {
                                 Reader reader = new StringReader((String) valueObject);
@@ -616,8 +624,10 @@ public class CalciteProvider extends Provider {
             statement.executeUpdate("ALTER SESSION SET CURRENT_SCHEMA = " + datasourceConfiguration.getSchema());
             statement.executeUpdate("ALTER SESSION SET NLS_TIMESTAMP_FORMAT = 'YYYY-MM-DD HH24:MI:SS'");
             //调整字符集
-            if (StringUtils.isNotEmpty(datasourceConfiguration.getCharset()) && StringUtils.isNotEmpty(datasourceConfiguration.getTargetCharset())) {
-                datasourceRequest.setQuery(new String(datasourceRequest.getQuery().getBytes(datasourceConfiguration.getTargetCharset()), datasourceConfiguration.getCharset()));
+            String oracleCharset = normalizeOracleCharset(datasourceConfiguration.getCharset());
+            String oracleTargetCharset = normalizeOracleCharset(datasourceConfiguration.getTargetCharset());
+            if (StringUtils.isNotEmpty(oracleCharset) && StringUtils.isNotEmpty(oracleTargetCharset)) {
+                datasourceRequest.setQuery(convertOracleText(datasourceRequest.getQuery(), oracleTargetCharset, oracleCharset));
             }
         }
         statement = getPreparedStatement(con, datasourceConfiguration.getQueryTimeout(), datasourceRequest.getQuery(), datasourceRequest.getTableFieldWithValues(), autoIncrementPkName, datasourceConfiguration);
@@ -631,6 +641,8 @@ public class CalciteProvider extends Provider {
         DatasourceConfiguration datasourceConfiguration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), DatasourceConfiguration.class);
         // schema
         ResultSet resultSet = null;
+        String oracleCharset = normalizeOracleCharset(datasourceConfiguration.getCharset());
+        String oracleTargetCharset = normalizeOracleCharset(datasourceConfiguration.getTargetCharset());
         try (Connection con = getConnectionFromPool(datasourceRequest.getDatasource().getId())) {
 
             Statement statement = getStatement(value, con, datasourceRequest, datasourceConfiguration, autoIncrementPkName);
@@ -643,9 +655,9 @@ public class CalciteProvider extends Provider {
                         Object valueObject = datasourceRequest.getTableFieldWithValues().get(i).getValue();
 
                         if (valueObject instanceof String && DatasourceConfiguration.DatasourceType.valueOf(value.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
-                            if (StringUtils.isNotEmpty(datasourceConfiguration.getCharset()) && StringUtils.isNotEmpty(datasourceConfiguration.getTargetCharset())) {
+                            if (StringUtils.isNotEmpty(oracleCharset) && StringUtils.isNotEmpty(oracleTargetCharset)) {
                                 //转换为数据库的字符集
-                                valueObject = new String(((String) valueObject).getBytes(datasourceConfiguration.getTargetCharset()), datasourceConfiguration.getCharset());
+                                valueObject = convertOracleText((String) valueObject, oracleTargetCharset, oracleCharset);
                             }
                             if (datasourceRequest.getTableFieldWithValues().get(i).getType().equals(Types.CLOB)) {
                                 Reader reader = new StringReader((String) valueObject);
@@ -724,10 +736,10 @@ public class CalciteProvider extends Provider {
             DatasourceConfiguration jdbcConfiguration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), DatasourceConfiguration.class);
 
             if (StringUtils.isNotEmpty(jdbcConfiguration.getCharset())) {
-                originCharset = jdbcConfiguration.getCharset();
+                originCharset = normalizeOracleCharset(jdbcConfiguration.getCharset());
             }
             if (StringUtils.isNotEmpty(jdbcConfiguration.getTargetCharset())) {
-                targetCharset = jdbcConfiguration.getTargetCharset();
+                targetCharset = normalizeOracleCharset(jdbcConfiguration.getTargetCharset());
             }
         }
         List<String[]> list = new LinkedList<>();
@@ -777,6 +789,26 @@ public class CalciteProvider extends Provider {
             list.add(row);
         }
         return list;
+    }
+
+    private String normalizeOracleCharset(String charset) {
+        if (StringUtils.isBlank(charset) || StringUtils.equalsIgnoreCase(charset, "Default")) {
+            return null;
+        }
+        String normalized = StringUtils.equalsIgnoreCase(charset, "US7ASCII") ? "US-ASCII" : charset;
+        try {
+            return Charset.forName(normalized).name();
+        } catch (UnsupportedCharsetException | IllegalCharsetNameException e) {
+            DEException.throwException("Unsupported charset: " + charset);
+        }
+        return null;
+    }
+
+    private String convertOracleText(String value, String fromCharset, String toCharset) throws UnsupportedEncodingException {
+        if (StringUtils.isEmpty(value) || StringUtils.isBlank(fromCharset) || StringUtils.isBlank(toCharset)) {
+            return value;
+        }
+        return new String(value.getBytes(fromCharset), toCharset);
     }
 
     @Override

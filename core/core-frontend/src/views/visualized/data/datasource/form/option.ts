@@ -74,6 +74,7 @@ export const dsTypes = [
     extraParams: '',
     charset: [
       'Default',
+      'US7ASCII',
       'GBK',
       'BIG5',
       'ISO-8859-1',

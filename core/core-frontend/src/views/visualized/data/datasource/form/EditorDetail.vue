@@ -83,7 +83,17 @@ const state = reactive({
 
 const schemas = ref([])
 const targetCharset = ref(['GBK', 'UTF-8'])
-const charset = ref(['GBK', 'BIG5', 'ISO-8859-1', 'UTF-8', 'UTF-16', 'CP850', 'EUC_JP', 'EUC_KR'])
+const charset = ref([
+  'US7ASCII',
+  'GBK',
+  'BIG5',
+  'ISO-8859-1',
+  'UTF-8',
+  'UTF-16',
+  'CP850',
+  'EUC_JP',
+  'EUC_KR'
+])
 
 const loading = ref(false)
 const dsForm = ref<FormInstance>()
