@@ -736,7 +736,7 @@ export default {
     dashboard_configuration: 'Dashboard configuration',
     to_mobile_layout: 'Switch to mobile layout',
     complete: 'Complete',
-    pager_color: 'Pager color',
+    pager_color: 'Pager',
     title_horizontal_position: 'Title horizontal position',
     title_display_position: 'Label display position',
     title_color: 'Title color',
