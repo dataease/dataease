@@ -1261,14 +1261,14 @@ export function configL7Zoom(
     // 当地图未加载完成时，无法配置控制项，需要监听loaded事件
     if (!scene.loaded) {
       scene.once('loaded', () => {
-        updateMapStatusOption(mapKey.mapType, scene, false)
+        updateMapStatusOption(chart, mapKey.mapType, scene, false)
       })
     } else {
-      updateMapStatusOption(mapKey.mapType, scene, false)
+      updateMapStatusOption(chart, mapKey.mapType, scene, false)
     }
     return
   }
-  updateMapStatusOption(mapKey.mapType, scene, true)
+  updateMapStatusOption(chart, mapKey.mapType, scene, true)
   if (!scene?.getControlByName('zoom')) {
     if (!scene.map) {
       scene.once('loaded', () => {
@@ -2519,7 +2519,7 @@ export const configRoundAngle = (chart: Chart, styleName: string, callBack?: (da
  * @param scene
  * @param enable
  */
-function updateMapStatusOption(mapType: string, scene: Scene, enable = false) {
+function updateMapStatusOption(chart: Chart, mapType: string, scene: Scene, enable = false) {
   switch (mapType) {
     case 'tianditu':
       if (enable) {
@@ -2557,9 +2557,14 @@ function updateMapStatusOption(mapType: string, scene: Scene, enable = false) {
   }
   // 当交互关闭时，画布容器不响应事件，避免与地图交互冲突
   if (!enable && isMobile()) {
-    const sceneEl = scene
+    let sceneEl = scene
       .getServiceContainer?.()
       .sceneService?.getSceneContainer() as HTMLElement | null
-    sceneEl && (sceneEl.style.pointerEvents = 'auto')
+    if (mapType === 'qq') {
+      sceneEl = document.getElementById(chart.container)
+      sceneEl && (sceneEl.style.pointerEvents = 'none')
+    } else {
+      sceneEl && (sceneEl.style.pointerEvents = 'auto')
+    }
   }
 }

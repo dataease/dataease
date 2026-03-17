@@ -422,6 +422,7 @@ let mapL7Timer: number
 const renderL7 = async (chart: ChartObj, chartView: L7ChartView<any, any>, callback) => {
   mapL7Timer && clearTimeout(mapL7Timer)
   mapL7Timer = setTimeout(async () => {
+    chart.container = containerId
     myChart = await chartView.drawChart({
       chartObj: myChart,
       container: containerId,
@@ -846,9 +847,19 @@ watch(
   newVal => {
     if (ONLINE_CHARTS.includes(view.value.type) && isMobile() && shouldHideZoom()) {
       const containerDiv = document.getElementById(containerId)
-      containerDiv?.querySelectorAll<HTMLElement>('.l7-scene').forEach(el => {
-        el.style.pointerEvents = newVal ? 'none' : 'auto'
-      })
+      if (!containerDiv) return
+      // 仅有腾讯地图配置该参数
+      const isQQMap = !!containerDiv.style.pointerEvents
+      const containerEvents = newVal ? 'auto' : 'none'
+      const sceneEvents = isQQMap ? containerEvents : newVal ? 'none' : 'auto'
+
+      if (isQQMap) {
+        containerDiv.style.pointerEvents = containerEvents
+      }
+
+      containerDiv
+        .querySelectorAll<HTMLElement>('.l7-scene')
+        .forEach(el => (el.style.pointerEvents = sceneEvents))
     }
   }
 )

@@ -155,6 +155,11 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
       chart.container = container
       configCarouselTooltip(chart, symbolicLayer, symbolicLayer.sourceOption.data, scene)
       qqMapRendered(scene)
+      // 提高tooltip层级，避免被地图覆盖
+      const containerElement = document.getElementById(container)
+      containerElement
+        ?.querySelectorAll<HTMLElement>('.l7-marker-container')
+        .forEach(el => (el.style.zIndex = '3'))
     })
     symbolicLayer.on('click', ev => {
       const data = ev.feature
