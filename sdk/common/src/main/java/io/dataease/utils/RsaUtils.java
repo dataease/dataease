@@ -23,6 +23,8 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
+import static io.dataease.constant.CacheConstant.UserCacheConstant.Symmetric_Key;
+
 @Component
 public class RsaUtils {
 
@@ -205,19 +207,19 @@ public class RsaUtils {
 
 
     private static final String ALGORITHM = "AES";
-    public static String symmetricKey = null;
+    public static String symmetricKey = "symmetricKey";
     private static final int KEY_SIZE = 128;
 
 
     public static String generateSymmetricKey() {
         try {
-            if (StringUtils.isEmpty(symmetricKey)) {
+            if (!CacheUtils.keyExist(Symmetric_Key, symmetricKey)) {
                 KeyGenerator keyGenerator = KeyGenerator.getInstance(ALGORITHM);
                 keyGenerator.init(KEY_SIZE, new SecureRandom());
                 SecretKey secretKey = keyGenerator.generateKey();
-                symmetricKey = Base64.getEncoder().encodeToString(secretKey.getEncoded());
+                CacheUtils.put(Symmetric_Key, symmetricKey, Base64.getEncoder().encodeToString(secretKey.getEncoded()));
             }
-            return symmetricKey;
+            return CacheUtils.get(Symmetric_Key, symmetricKey).toString();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
