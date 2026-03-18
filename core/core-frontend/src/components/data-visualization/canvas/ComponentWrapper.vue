@@ -11,13 +11,15 @@ import Board from '@/components/de-board/Board.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { activeWatermarkCheckUser, removeActiveWatermark } from '@/components/watermark/watermark'
 import { isMobile } from '@/utils/utils'
-import { isDashboard, isMainCanvas } from '@/utils/canvasUtils'
+import { isMainCanvas } from '@/utils/canvasUtils'
 import { XpackComponent } from '@/components/plugin'
 import DePreviewPopDialog from '@/components/visualization/DePreviewPopDialog.vue'
 import Icon from '../../icon-custom/src/Icon.vue'
 import replaceOutlined from '@/assets/svg/icon_replace_outlined.svg'
 import { CommonBackground } from '@/components/visualization/component-background/Types'
 import { ShorthandMode } from '@/Types'
+import { useI18n } from '@/hooks/web/useI18n'
+const { t } = useI18n()
 
 const componentWrapperInnerRef = ref(null)
 const componentEditBarRef = ref(null)
@@ -157,7 +159,7 @@ const htmlToImage = () => {
   setTimeout(() => {
     const vueDom = document.getElementById(viewDemoInnerId.value)
     activeWatermarkCheckUser(viewDemoInnerId.value, 'canvas-main', scale.value / 100)
-    downloadCanvas2('img', vueDom, '图表', () => {
+    downloadCanvas2('img', vueDom, t('chart.chart'), () => {
       // do callback
       removeActiveWatermark(viewDemoInnerId.value)
       downLoading.value = false
@@ -457,7 +459,7 @@ const showPositionActive = computed(() =>
     @mousedown="handleInnerMouseDown"
     @mouseenter="onMouseEnter"
     v-loading="downLoading"
-    element-loading-text="导出中..."
+    :element-loading-text="$t('visualization.export_loading')"
     element-loading-background="rgba(255, 255, 255, 1)"
   >
     <div
