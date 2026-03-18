@@ -405,7 +405,8 @@ const initOpenHandler = newWindow => {
   }
 }
 const deepScale = computed(() => scale.value / 100)
-const showActive = computed(() => props.popActive || (dvMainStore.mobileInPc && props.active))
+//const showActive = computed(() => props.popActive || (dvMainStore.mobileInPc && props.active))
+const showActive = false
 
 const freezeFlag = computed(() => {
   return (
