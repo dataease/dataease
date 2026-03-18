@@ -34,6 +34,8 @@ const appStore = useAppStoreWithOut()
 import replaceOutlined from '@/assets/svg/icon_replace_outlined.svg'
 import { CommonBackground } from '@/components/visualization/component-background/Types'
 import { ShorthandMode } from '@/Types'
+import { useI18n } from '@/hooks/web/useI18n'
+const { t } = useI18n()
 
 const componentWrapperInnerRef = ref(null)
 const componentEditBarRef = ref(null)
@@ -175,7 +177,7 @@ const htmlToImage = () => {
   setTimeout(() => {
     const vueDom = document.getElementById(viewDemoInnerId.value)
     activeWatermarkCheckUser(viewDemoInnerId.value, 'canvas-main', scale.value / 100)
-    downloadCanvas2('img', vueDom, '图表', () => {
+    downloadCanvas2('img', vueDom, t('chart.chart'), () => {
       // do callback
       removeActiveWatermark(viewDemoInnerId.value)
       downLoading.value = false
@@ -526,7 +528,7 @@ onBeforeUnmount(() => {
     @mousedown="handleInnerMouseDown"
     @mouseenter="onMouseEnter"
     v-loading="downLoading"
-    element-loading-text="导出中..."
+    :element-loading-text="$t('visualization.export_loading')"
     element-loading-background="rgba(255, 255, 255, 1)"
   >
     <div

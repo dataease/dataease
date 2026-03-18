@@ -9,7 +9,7 @@
     ref="shapeInnerRef"
     :id="domId"
     v-loading="downLoading"
-    element-loading-text="导出中..."
+    :element-loading-text="$t('visualization.export_loading')"
     element-loading-background="rgba(255, 255, 255, 1)"
     @dblclick="handleDbClick"
   >
