@@ -1,9 +1,9 @@
 package io.dataease.extensions.datafilling.provider;
 
 
-import io.dataease.extensions.datasource.dto.TableField;
 import io.dataease.extensions.datafilling.dto.ExtIndexField;
 import io.dataease.extensions.datafilling.dto.ExtTableField;
+import io.dataease.extensions.datasource.dto.TableField;
 import io.dataease.extensions.datasource.dto.TableFieldWithValue;
 import org.apache.commons.lang3.StringUtils;
 
@@ -17,7 +17,21 @@ public abstract class ExtDDLProvider {
 
     public final String DEFAULT_DATE_FORMAT_STR = "yyyy-MM-dd HH:mm:ss";
 
-    public abstract String createTableSql(String table, List<ExtTableField> formFields);
+    public boolean useCreateSqlWithComment() {
+        return false;
+    }
+
+    public String createTableSqlWithComment(String table, List<ExtTableField> formFields, String tableComment) throws Exception {
+        throw new Exception("method not implemented");
+    }
+
+    public String createTableSql(String table, List<ExtTableField> formFields) throws Exception {
+        throw new Exception("method not implemented");
+    }
+
+    public List<String> createComment(String table, List<ExtTableField> formFields, String tableComment) {
+        return new ArrayList<>();
+    }
 
     @Deprecated
     public String getTableFieldsSql(String table) {
