@@ -1171,35 +1171,37 @@ export class CustomZoom extends Zoom {
       container,
       this.zoomIn
     )
+    // 抽出重置事件，方便其他事件（移动端触摸）触发
+    const zoomReset = () => {
+      if (this.mapsService.map?.deMapProvider == 'qq') {
+        if (this.mapsService.map.deMapAutoFit) {
+          this.mapsService.setZoomAndCenter(this.mapsService.map.deMapAutoZoom, [
+            this.mapsService.map.deMapAutoLng,
+            this.mapsService.map.deMapAutoLat
+          ])
+        } else {
+          this.mapsService.setZoomAndCenter(
+            this.controlOption['initZoom'],
+            this.controlOption['center']
+          )
+        }
+      } else {
+        if (this.controlOption['bounds']) {
+          this.mapsService.fitBounds(this.controlOption['bounds'], { animate: true })
+        } else {
+          this.mapsService.setZoomAndCenter(
+            this.controlOption['initZoom'],
+            this.controlOption['center']
+          )
+        }
+      }
+    }
     this['zoomResetButton'] = this['createButton'](
       this.controlOption['resetText'],
       'Reset',
       'l7-button-control',
       container,
-      () => {
-        if (this.mapsService.map?.deMapProvider == 'qq') {
-          if (this.mapsService.map.deMapAutoFit) {
-            this.mapsService.setZoomAndCenter(this.mapsService.map.deMapAutoZoom, [
-              this.mapsService.map.deMapAutoLng,
-              this.mapsService.map.deMapAutoLat
-            ])
-          } else {
-            this.mapsService.setZoomAndCenter(
-              this.controlOption['initZoom'],
-              this.controlOption['center']
-            )
-          }
-        } else {
-          if (this.controlOption['bounds']) {
-            this.mapsService.fitBounds(this.controlOption['bounds'], { animate: true })
-          } else {
-            this.mapsService.setZoomAndCenter(
-              this.controlOption['initZoom'],
-              this.controlOption['center']
-            )
-          }
-        }
-      }
+      () => zoomReset()
     )
     if (this.controlOption.showZoom) {
       this['zoomNumDiv'] = this['createButton'](
@@ -1223,6 +1225,13 @@ export class CustomZoom extends Zoom {
     }
     setStyle(elements, 'border-bottom', 'none')
     this['updateDisabled']()
+    // 腾讯地图需要监听移动端的触摸事件
+    if (this.mapsService.map?.deMapProvider === 'qq') {
+      const handlers = [zoomReset, () => this.zoomIn(), () => this.zoomOut()]
+      elements.forEach((el, i) => {
+        el.addEventListener('touchend', handlers[i])
+      })
+    }
   }
   public getDefault(option: Partial<IZoomControlOption>) {
     const { buttonColor } = option as any
@@ -2560,7 +2569,8 @@ function updateMapStatusOption(chart: Chart, mapType: string, scene: Scene, enab
     let sceneEl = scene
       .getServiceContainer?.()
       .sceneService?.getSceneContainer() as HTMLElement | null
-    if (mapType === 'qq') {
+    // 腾讯天地图需要调整地图容器的事件穿透
+    if (['qq', 'tianditu'].includes(mapType)) {
       sceneEl = document.getElementById(chart.container)
       sceneEl && (sceneEl.style.pointerEvents = 'none')
     } else {

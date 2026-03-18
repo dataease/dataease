@@ -836,7 +836,7 @@ function shouldHideZoom(): boolean {
     basicStyle.showZoom === false
   )
 }
-const ONLINE_CHARTS = ['flow-map', 'heat-map', 'symbolic-map']
+const ONLINE_CHARTS = ['symbolic-map']
 /**
  * 监听图表选中状态,仅处理在线地图在移动端的交互
  * active = true 时：图表选中 → 事件穿透画布容器，不拦截，能够直接与画布交互
@@ -848,12 +848,12 @@ watch(
     if (ONLINE_CHARTS.includes(view.value.type) && isMobile() && shouldHideZoom()) {
       const containerDiv = document.getElementById(containerId)
       if (!containerDiv) return
-      // 仅有腾讯地图配置该参数
-      const isQQMap = !!containerDiv.style.pointerEvents
+      // 腾讯天地图地图配置该参数
+      const isQQAndTianMap = !!containerDiv.style.pointerEvents
       const containerEvents = newVal ? 'auto' : 'none'
-      const sceneEvents = isQQMap ? containerEvents : newVal ? 'none' : 'auto'
+      const sceneEvents = isQQAndTianMap ? containerEvents : newVal ? 'none' : 'auto'
 
-      if (isQQMap) {
+      if (isQQAndTianMap) {
         containerDiv.style.pointerEvents = containerEvents
       }
 
