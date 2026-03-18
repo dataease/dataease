@@ -157,12 +157,17 @@ public class ChartDataManage {
 
                 boolean hasParameters = false;
                 if (CollectionUtils.isNotEmpty(sqlVariables)) {
-                    for (SqlVariableDetails parameter : Optional.ofNullable(request.getParameters()).orElse(new ArrayList<>())) {
-                        String parameterId = StringUtils.endsWith(parameter.getId(), START_END_SEPARATOR) ? parameter.getId().split(START_END_SEPARATOR)[0] : parameter.getId();
-                        if (sqlVariables.stream().map(SqlVariableDetails::getId).collect(Collectors.toList()).contains(parameterId)) {
-                            hasParameters = true;
+                    if(fieldId.indexOf("|DE|")>-1){
+                        hasParameters = true;
+                    }else{
+                        for (SqlVariableDetails parameter : Optional.ofNullable(request.getParameters()).orElse(new ArrayList<>())) {
+                            String parameterId = StringUtils.endsWith(parameter.getId(), START_END_SEPARATOR) ? parameter.getId().split(START_END_SEPARATOR)[0] : parameter.getId();
+                            if (sqlVariables.stream().map(SqlVariableDetails::getId).collect(Collectors.toList()).contains(parameterId)) {
+                                hasParameters = true;
+                            }
                         }
                     }
+
                 }
 
                 if (hasParameters) {
