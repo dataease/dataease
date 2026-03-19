@@ -1266,18 +1266,10 @@ export function configL7Zoom(
   if (zoomOption) {
     scene.removeControl(zoomOption)
   }
+  onlineMapStatusOption(chart, mapKey?.mapType, scene, true)
   if (shouldHideZoom(basicStyle)) {
-    // 当地图未加载完成时，无法配置控制项，需要监听loaded事件
-    if (!scene.loaded) {
-      scene.once('loaded', () => {
-        updateMapStatusOption(chart, mapKey.mapType, scene, false)
-      })
-    } else {
-      updateMapStatusOption(chart, mapKey.mapType, scene, false)
-    }
     return
   }
-  updateMapStatusOption(chart, mapKey.mapType, scene, true)
   if (!scene?.getControlByName('zoom')) {
     if (!scene.map) {
       scene.once('loaded', () => {
@@ -1403,8 +1395,24 @@ export function calculateBounds(coordinates: number[][]): {
   ]
 }
 
+function mobileEv(chart: Chart, plot: L7Plot<PlotOptions>) {
+  if (!isMobile()) return
+  const containerDiv = document.getElementById(chart.container)
+  const active = containerDiv?.getAttribute('de-chart-active') === 'true'
+  const setTouchAction = () => {
+    const sceneEl = plot.scene
+      .getServiceContainer?.()
+      .sceneService?.getSceneContainer() as HTMLElement | null
+    if (sceneEl) {
+      sceneEl.style.pointerEvents = active ? 'none' : 'auto'
+    }
+  }
+  plot.scene.loaded ? setTouchAction() : plot.scene.once('loaded', setTouchAction)
+}
+
 export function configL7PlotZoom(chart: Chart, plot: L7Plot<PlotOptions>) {
   const { basicStyle } = parseJson(chart.customAttr)
+  mobileEv(chart, plot)
   if (shouldHideZoom(basicStyle)) {
     // amap
     plot.scene.map['zoomEnable']?.disable()
@@ -1416,31 +1424,6 @@ export function configL7PlotZoom(chart: Chart, plot: L7Plot<PlotOptions>) {
     plot.scene.map['dragRotate']?.disable()
     plot.scene.map['touchPitch']?.disable()
     plot.scene.map['touchZoomRotate']?.disable()
-    // 移动端允许触摸事件冒泡，使页面可以正常滚动
-    if (isMobile()) {
-      // 避免重复注册事件监听器
-      if ((plot as any).__deMobileTouchSetup__) {
-        return
-      }
-      ;(plot as any).__deMobileTouchSetup__ = true
-
-      const setTouchAction = () => {
-        const container = plot.scene.getContainer?.() as HTMLElement
-        if (container) {
-          container.style.touchAction = 'auto'
-          const canvas = container.querySelector('canvas')
-          if (canvas) {
-            canvas.style.touchAction = 'auto'
-          }
-        }
-      }
-      // 必须等待scene加载完成后才能获取到container
-      if (plot.scene.loaded) {
-        setTouchAction()
-      } else {
-        plot.scene.once('loaded', setTouchAction)
-      }
-    }
     return
   }
   plot.once('loaded', () => {
@@ -2521,6 +2504,12 @@ export const configRoundAngle = (chart: Chart, styleName: string, callBack?: (da
     }
   }
 }
+function onlineMapStatusOption(chart: Chart, mapType: string, scene: Scene, enable = false) {
+  if (!scene.loaded) {
+    return scene.once('loaded', () => setMapStatusOption(chart, mapType, scene, enable))
+  }
+  setMapStatusOption(chart, mapType, scene, enable)
+}
 
 /**
  * 更新地图交互配置
@@ -2528,23 +2517,17 @@ export const configRoundAngle = (chart: Chart, styleName: string, callBack?: (da
  * @param scene
  * @param enable
  */
-function updateMapStatusOption(chart: Chart, mapType: string, scene: Scene, enable = false) {
+function setMapStatusOption(chart: Chart, mapType: string, scene: Scene, enable = false) {
   switch (mapType) {
-    case 'tianditu':
-      if (enable) {
-        scene.map?.enableDrag()
-        scene.map?.enableScrollWheelZoom()
-        scene.map?.enableDoubleClickZoom()
-        scene.map?.enableKeyboard()
-        scene.map?.enablePinchToZoom()
-      } else {
-        scene.map?.disableDrag()
-        scene.map?.disableScrollWheelZoom()
-        scene.map?.disableDoubleClickZoom()
-        scene.map?.disableKeyboard()
-        scene.map?.disablePinchToZoom()
-      }
+    case 'tianditu': {
+      const method = enable ? 'enable' : 'disable'
+      scene.map?.[`${method}Drag`]()
+      scene.map?.[`${method}ScrollWheelZoom`]()
+      scene.map?.[`${method}DoubleClickZoom`]()
+      scene.map?.[`${method}Keyboard`]()
+      scene.map?.[`${method}PinchToZoom`]()
       break
+    }
     case 'qq':
       scene.map?.setDraggable(enable)
       scene.map?.setScrollable(enable)
@@ -2564,17 +2547,13 @@ function updateMapStatusOption(chart: Chart, mapType: string, scene: Scene, enab
         touchZoom: false
       } as any)
   }
-  // 当交互关闭时，画布容器不响应事件，避免与地图交互冲突
-  if (!enable && isMobile()) {
-    let sceneEl = scene
-      .getServiceContainer?.()
-      .sceneService?.getSceneContainer() as HTMLElement | null
-    // 腾讯天地图需要调整地图容器的事件穿透
-    if (['qq', 'tianditu'].includes(mapType)) {
-      sceneEl = document.getElementById(chart.container)
-      sceneEl && (sceneEl.style.pointerEvents = 'none')
-    } else {
-      sceneEl && (sceneEl.style.pointerEvents = 'auto')
-    }
+  if (!isMobile()) return
+  const isSpecialMap = mapType === 'qq' || mapType === 'tianditu'
+  const baseSceneEl = scene
+    .getServiceContainer?.()
+    .sceneService?.getSceneContainer() as HTMLElement | null
+  const sceneEl = isSpecialMap ? document.getElementById(chart.container) : baseSceneEl
+  if (sceneEl) {
+    sceneEl.style.pointerEvents = isSpecialMap ? 'none' : 'auto'
   }
 }

@@ -827,40 +827,28 @@ onBeforeUnmount(() => {
 })
 
 /**
- * 是否隐藏地图缩放组件
- */
-function shouldHideZoom(): boolean {
-  const basicStyle = parseJson(view.value.customAttr.basicStyle)
-  return (
-    (basicStyle.suspension === false && basicStyle.showZoom === undefined) ||
-    basicStyle.showZoom === false
-  )
-}
-const ONLINE_CHARTS = ['symbolic-map']
-/**
- * 监听图表选中状态,仅处理在线地图在移动端的交互
+ * 监听图表选中状态,处理地图在移动端的交互
  * active = true 时：图表选中 → 事件穿透画布容器，不拦截，能够直接与画布交互
  * active = false 时：图表未选中 → 画布容器正常响应事件，能够滑动页面
  */
 watch(
   () => props.active,
   newVal => {
-    if (ONLINE_CHARTS.includes(view.value.type) && isMobile() && shouldHideZoom()) {
-      const containerDiv = document.getElementById(containerId)
-      if (!containerDiv) return
-      // 腾讯天地图地图配置该参数
-      const isQQAndTianMap = !!containerDiv.style.pointerEvents
-      const containerEvents = newVal ? 'auto' : 'none'
-      const sceneEvents = isQQAndTianMap ? containerEvents : newVal ? 'none' : 'auto'
-
-      if (isQQAndTianMap) {
-        containerDiv.style.pointerEvents = containerEvents
-      }
-
-      containerDiv
-        .querySelectorAll<HTMLElement>('.l7-scene')
-        .forEach(el => (el.style.pointerEvents = sceneEvents))
+    if (!MAP_CHARTS.includes(view.value.type) || !isMobile()) return
+    const containerDiv = document.getElementById(containerId)
+    if (!containerDiv) return
+    // 腾讯 / 天地图：容器配置 pointer-events
+    const isQQOrTianMap = !!containerDiv.style.pointerEvents
+    const containerEvents = newVal ? 'auto' : 'none'
+    const sceneEvents = isQQOrTianMap ? containerEvents : newVal ? 'none' : 'auto'
+    if (isQQOrTianMap) {
+      containerDiv.style.pointerEvents = containerEvents
     }
+    containerDiv
+      .querySelectorAll<HTMLElement>('.l7-scene')
+      .forEach(el => (el.style.pointerEvents = sceneEvents))
+    // 容器添加活跃标识，方便后续样式调整
+    containerDiv.setAttribute('de-chart-active', String(newVal))
   }
 )
 </script>
