@@ -435,7 +435,7 @@ export class HorizontalStackBar extends HorizontalBar {
         obj.value = res ?? ''
         return obj
       },
-      container: getTooltipContainer(`tooltip-${chart.id}`),
+      container: getTooltipContainer(`tooltip-${chart.id}`, chart.container),
       itemTpl: TOOLTIP_TPL,
       enterable: true
     }
@@ -695,7 +695,7 @@ export class HorizontalPercentageStackBar extends HorizontalStackBar {
         obj.value = (Math.round(param.value * 10000) / 100).toFixed(l.reserveDecimalCount) + '%'
         return obj
       },
-      container: getTooltipContainer(`tooltip-${chart.id}`),
+      container: getTooltipContainer(`tooltip-${chart.id}`, chart.container),
       itemTpl: TOOLTIP_TPL,
       enterable: true
     }

@@ -259,7 +259,7 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
         })
         return result
       },
-      container: getTooltipContainer(`tooltip-${chart.id}`),
+      container: getTooltipContainer(`tooltip-${chart.id}`, chart.container),
       itemTpl: TOOLTIP_TPL,
       shared: true,
       enterable: true

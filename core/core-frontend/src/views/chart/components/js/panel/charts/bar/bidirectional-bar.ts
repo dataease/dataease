@@ -306,7 +306,7 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
         }
         return result
       },
-      container: getTooltipContainer(`tooltip-${chart.id}`),
+      container: getTooltipContainer(`tooltip-${chart.id}`, chart.container),
       itemTpl: TOOLTIP_TPL,
       enterable: true
     }

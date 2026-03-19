@@ -249,7 +249,7 @@ export class ProgressBar extends G2PlotChartView<BarOptions, G2Progress> {
           })
           return result.length == 0 ? originalItems : result
         },
-        container: getTooltipContainer(`tooltip-${chart.id}`),
+        container: getTooltipContainer(`tooltip-${chart.id}`, chart.container),
         itemTpl: TOOLTIP_TPL,
         enterable: true
       }

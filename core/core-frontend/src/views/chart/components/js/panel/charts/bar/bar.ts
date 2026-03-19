@@ -486,7 +486,7 @@ export class StackBar extends Bar {
         obj.value = res ?? ''
         return obj
       },
-      container: getTooltipContainer(`tooltip-${chart.id}`),
+      container: getTooltipContainer(`tooltip-${chart.id}`, chart.container),
       itemTpl: TOOLTIP_TPL,
       enterable: true
     }
@@ -892,7 +892,7 @@ export class GroupStackBar extends StackBar {
         obj.value = valueFormatter(param.value, tooltipAttr.tooltipFormatter)
         return obj
       },
-      container: getTooltipContainer(`tooltip-${chart.id}`),
+      container: getTooltipContainer(`tooltip-${chart.id}`, chart.container),
       itemTpl: TOOLTIP_TPL,
       enterable: true
     }
@@ -978,7 +978,7 @@ export class PercentageStackBar extends GroupStackBar {
         obj.value = (Math.round(param.value * 10000) / 100).toFixed(l.reserveDecimalCount) + '%'
         return obj
       },
-      container: getTooltipContainer(`tooltip-${chart.id}`),
+      container: getTooltipContainer(`tooltip-${chart.id}`, chart.container),
       itemTpl: TOOLTIP_TPL,
       enterable: true
     }

@@ -256,7 +256,7 @@ export class RangeBar extends G2PlotChartView<BarOptions, Bar> {
               }
               return { value: res, values: param.values, name: param.field }
             },
-            container: getTooltipContainer(`tooltip-${chart.id}`),
+            container: getTooltipContainer(`tooltip-${chart.id}`, chart.container),
             itemTpl: TOOLTIP_TPL,
             enterable: true
           }

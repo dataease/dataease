@@ -259,7 +259,7 @@ export class Scatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
         })
         return result
       },
-      container: getTooltipContainer(`tooltip-${chart.id}`),
+      container: getTooltipContainer(`tooltip-${chart.id}`, chart.container),
       itemTpl: TOOLTIP_TPL,
       enterable: true
     }

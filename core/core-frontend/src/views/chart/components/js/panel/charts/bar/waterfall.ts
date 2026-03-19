@@ -247,7 +247,7 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
         })
         return result
       },
-      container: getTooltipContainer(`tooltip-${chart.id}`),
+      container: getTooltipContainer(`tooltip-${chart.id}`, chart.container),
       itemTpl: TOOLTIP_TPL,
       enterable: true
     }

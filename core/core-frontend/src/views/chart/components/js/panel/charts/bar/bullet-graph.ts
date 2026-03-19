@@ -434,7 +434,7 @@ export class BulletGraph extends G2PlotChartView<G2BulletOptions, G2Bullet> {
         result.sort((a, b) => (a.color === 'grey' ? 1 : b.color === 'grey' ? -1 : 0))
         return result
       },
-      container: getTooltipContainer(`tooltip-${chart.id}`),
+      container: getTooltipContainer(`tooltip-${chart.id}`, chart.container),
       itemTpl: TOOLTIP_TPL,
       enterable: true
     }

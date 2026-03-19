@@ -259,7 +259,7 @@ export function getTooltip(chart: Chart) {
             const value = valueFormatter(param.value, t.tooltipFormatter)
             return { name: param.field, value }
           },
-          container: getTooltipContainer(`tooltip-${chart.id}`),
+          container: getTooltipContainer(`tooltip-${chart.id}`, chart.container),
           itemTpl: TOOLTIP_TPL,
           enterable: true
         }
@@ -314,7 +314,7 @@ export function getMultiSeriesTooltip(chart: Chart) {
       })
       return result
     },
-    container: getTooltipContainer(`tooltip-${chart.id}`),
+    container: getTooltipContainer(`tooltip-${chart.id}`, chart.container),
     itemTpl: TOOLTIP_TPL,
     enterable: true
   }
@@ -1689,7 +1689,7 @@ function shouldHideZoom(basicStyle: any): boolean {
 }
 
 const G2_TOOLTIP_WRAPPER = 'g2-tooltip-wrapper'
-export function getTooltipContainer(id) {
+export function getTooltipContainer(id, chartContainer?: string) {
   let wrapperDom = document.getElementById(G2_TOOLTIP_WRAPPER)
   if (!wrapperDom) {
     wrapperDom = document.createElement('div')
@@ -1713,6 +1713,14 @@ export function getTooltipContainer(id) {
   g2Tooltip.style.position = 'fixed'
   g2Tooltip.style.left = '0px'
   g2Tooltip.style.top = '0px'
+  if (chartContainer) {
+    const chartDom = document.getElementById(chartContainer)
+    if (chartDom) {
+      const rect = chartDom.getBoundingClientRect()
+      g2Tooltip.style.left = rect.x + 'px'
+      g2Tooltip.style.top = rect.y + 'px'
+    }
+  }
   const g2TooltipTitle = document.createElement('div')
   g2TooltipTitle.classList.add('g2-tooltip-title')
   g2Tooltip.appendChild(g2TooltipTitle)
@@ -1842,9 +1850,9 @@ export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>
     plot.options.tooltip.showMarkers = isCarousel ? true : false
     const wrapperDom = document.getElementById(G2_TOOLTIP_WRAPPER)
     wrapperDom.style.zIndex = isCarousel && wrapperDom ? carousel_zIndex : '9999'
-    if (tooltipCtl.tooltip) {
-      // 处理视图放大后再关闭 tooltip 的 dom 被清除
-      const container = tooltipCtl.tooltip.cfg.container
+    // 处理视图放大后再关闭 tooltip 的 dom 被清除
+    const container = plot.chart.getOptions().tooltip?.container
+    if (container) {
       // 当下拉菜单不显示时，移除tooltip的hidden-tooltip样式
       if (viewTrackBarElement?.getAttribute('aria-expanded') === 'false') {
         container.classList.toggle('hidden-tooltip', false)
@@ -1890,7 +1898,7 @@ export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>
       if (!tooltipCtl) {
         return
       }
-      const container = tooltipCtl.tooltip?.cfg.container
+      const container = plot.chart.getOptions().tooltip?.container
       for (const ele of wrapperDom.children) {
         if (!container || container.id !== ele.id) {
           ele.style.display = 'none'

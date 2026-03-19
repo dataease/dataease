@@ -311,7 +311,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
         })
         return result
       },
-      container: getTooltipContainer(`tooltip-${chart.id}`),
+      container: getTooltipContainer(`tooltip-${chart.id}`, chart.container),
       itemTpl: TOOLTIP_TPL,
       enterable: true
     }

@@ -361,6 +361,7 @@ const renderG2Plot = async (chart, chartView: G2PlotChartView<any, any>) => {
       // 在这里清理掉之前图表的空dom
       configEmptyDataStyle([1], containerId)
       myChart?.destroy()
+      chart.container = containerId
       myChart = await chartView.drawChart({
         chartObj: myChart,
         container: containerId,
