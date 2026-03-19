@@ -13,7 +13,7 @@ import {
   shallowRef
 } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import { cloneDeep, debounce } from 'lodash-es'
+import { cloneDeep, debounce, sortBy } from 'lodash-es'
 import { getFieldTree } from '@/api/dataset'
 import colorFunctions from 'less/lib/less/functions/color.js'
 import colorTree from 'less/lib/less/tree/color.js'
@@ -240,14 +240,14 @@ let cacheId = ''
 let treeOptionList = shallowRef([])
 const filterMethod = (value, data) =>
   (data.label ?? '').toLowerCase().includes((value ?? '').toLowerCase())
+
 const dfs = arr => {
-  return (arr || []).map(ele => {
-    let children = []
-    if (!!ele.children?.length) {
-      children = dfs(ele.children)
-    }
-    return { ...ele, value: ele.id, label: ele.text, children }
+  const mapped = (arr || []).map(ele => {
+    const label = ele.text
+    const children = ele.children?.length ? dfs(ele.children) : []
+    return { ...ele, value: ele.id, label, children }
   })
+  return sortBy(mapped, node => (node.label ?? '').toLowerCase())
 }
 const cascade = computed(() => {
   return cascadeList() || []
