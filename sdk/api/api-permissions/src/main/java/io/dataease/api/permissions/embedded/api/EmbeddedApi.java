@@ -76,4 +76,9 @@ public interface EmbeddedApi {
     @Hidden
     @GetMapping("/limitCount")
     int getLimitCount();
+
+    @ApiOperationSupport(order = 8)
+    @Operation(summary = "注销Token")
+    @PostMapping("/logout")
+    void logout();
 }
