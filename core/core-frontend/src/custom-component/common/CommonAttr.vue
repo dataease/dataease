@@ -13,6 +13,7 @@ import CarouselSetting from '@/custom-component/common/CarouselSetting.vue'
 import CommonBorderSetting from '@/custom-component/common/CommonBorderSetting.vue'
 import CollapseSwitchItem from '../../components/collapse-switch-item/src/CollapseSwitchItem.vue'
 import TabBackgroundOverall from '@/custom-component/de-tabs/TabBackgroundOverall.vue'
+import CustomTabsSortSide from '@/custom-component/de-tabs/CustomTabsSortSide.vue'
 const snapshotStore = snapshotStoreWithOut()
 
 const { t } = useI18n()
@@ -204,6 +205,7 @@ onMounted(() => {
           :themes="themes"
           :element="element"
         ></common-style-set>
+        <CustomTabsSortSide :themes="themes" :config="element"></CustomTabsSortSide>
       </collapse-switch-item>
       <el-collapse-item
         v-if="styleShow"
