@@ -1266,8 +1266,9 @@ export function configL7Zoom(
   if (zoomOption) {
     scene.removeControl(zoomOption)
   }
-  onlineMapStatusOption(chart, mapKey?.mapType, scene, true)
-  if (shouldHideZoom(basicStyle)) {
+  const hideZoom = shouldHideZoom(basicStyle)
+  onlineMapStatusOption(chart, mapKey?.mapType, scene, !hideZoom)
+  if (hideZoom) {
     return
   }
   if (!scene?.getControlByName('zoom')) {
