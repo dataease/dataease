@@ -19,7 +19,7 @@ export interface Item {
   fieldId: string
   filterType: string
   deType: number
-  enumValue: string
+  enumValue: string[]
   name: string
   value: number
   timeValue: string
@@ -38,7 +38,7 @@ const props = withDefaults(defineProps<Props>(), {
     fieldId: '',
     filterType: '',
     deType: 0,
-    enumValue: '',
+    enumValue: [],
     name: '',
     value: null,
     timeValue: ''
@@ -67,9 +67,6 @@ const filedList = inject('filedList')
 const checkListWithFilter = computed(() => {
   if (!filterFiled.value) return enumList.value
   return enumList.value.filter(ele => ele.includes(filterFiled.value))
-})
-const checkResult = computed(() => {
-  return checklist.value.join(',')
 })
 
 const sysParamsIln = computed(() => {
@@ -130,9 +127,8 @@ const confirm = () => {
 
 const cancelSelect = () => {
   const { enumValue } = item.value
-  const arr = enumValue.trim() ? enumValue.split(',') : []
-  checklist.value = arr
-  checkboxlist.value = checkListWithFilter.value.filter(ele => arr.includes(ele))
+  checklist.value = [...enumValue]
+  checkboxlist.value = checkListWithFilter.value.filter(ele => enumValue.includes(ele))
   if (checkboxlist.value.length) {
     checkAll.value = checkboxlist.value.length === checkListWithFilter.value.length
     isIndeterminate.value = checkboxlist.value.length !== checkListWithFilter.value.length
@@ -146,14 +142,13 @@ const cancelSelect = () => {
 }
 const initNameEnumName = () => {
   const { name, enumValue, fieldId } = item.value
-  const arr = enumValue.trim() ? enumValue.split(',') : []
   if (!name && fieldId) {
-    checklist.value = arr
+    checklist.value = [...enumValue]
   }
   if (!name && !fieldId) return
   initEnumOptions()
   activeName.value = item.value.name
-  checklist.value = arr
+  checklist.value = [...enumValue]
 }
 const cancelKeyDow = () => {
   if (!showTextArea.value && !keydownCanceled.value) {
@@ -199,7 +194,7 @@ const cancel = () => {
   item.value.name = activeName.value || ''
 }
 const cancelfixValue = () => {
-  item.value.enumValue = checkResult.value || ''
+  item.value.enumValue = [...checklist.value]
 }
 const delChecks = (idx, i) => {
   checklist.value.splice(idx, 1)
@@ -213,7 +208,7 @@ const selectItem = ({ name, id, deType }) => {
     name,
     deType,
     filterType: 'logic',
-    enumValue: '',
+    enumValue: [],
     value: '',
     term: '',
     timeValue: ''
@@ -466,7 +461,13 @@ const emits = defineEmits(['update:item', 'del'])
           :hide-on-click="false"
         >
           <template #reference>
-            <el-input v-model="item.enumValue" ref="enumInput" size="small" readonly clearable>
+            <el-input
+              :value="item.enumValue.join(',')"
+              ref="enumInput"
+              size="small"
+              readonly
+              clearable
+            >
             </el-input>
           </template>
           <div class="de-panel clearfix">

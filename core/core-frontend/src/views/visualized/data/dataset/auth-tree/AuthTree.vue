@@ -66,7 +66,7 @@ const add = (type, child, logic) => {
       ? {
           fieldId: '',
           value: '',
-          enumValue: '',
+          enumValue: [],
           term: '',
           timeType: 'year',
           filterType: 'logic',

@@ -80,7 +80,7 @@ const dfsInit = arr => {
       const { enumValue, fieldId, filterType, term, timeType, value, field } = ele
       const { name, deType } = field || {}
       elementList.push({
-        enumValue: enumValue.join(','),
+        enumValue,
         fieldId,
         filterType,
         term,
@@ -115,7 +115,7 @@ const dfsSubmit = arr => {
       errorDetected({ deType, enumValue, filterType, term, value, name })
       if (fieldId) {
         items.push({
-          enumValue: enumValue ? enumValue.split(',') : [],
+          enumValue: enumValue || [],
           fieldId,
           filterType,
           term,
@@ -259,7 +259,7 @@ const addCondReal = (type, logic) => {
       ? {
           fieldId: '',
           value: '',
-          enumValue: '',
+          enumValue: [],
           term: '',
           timeType: 'year',
           filterType: 'logic',
