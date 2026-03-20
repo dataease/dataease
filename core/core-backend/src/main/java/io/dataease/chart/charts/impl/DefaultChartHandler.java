@@ -175,7 +175,7 @@ public class DefaultChartHandler extends AbstractChartPlugin {
         List<ChartSeniorAssistDTO> chartSeniorAssistDTOS = mergeAssistField(calcResult.getDynamicAssistFields(), calcResult.getAssistData(), calcResult.getDynamicAssistFieldsOriginList(), calcResult.getAssistDataOriginList());
         dataMap.put("dynamicAssistLines", chartSeniorAssistDTOS);
         view.setData(dataMap);
-        view.setSql(Base64.getEncoder().encodeToString(calcResult.getQuerySql().getBytes()));
+        view.setSql(null);
         view.setDrill(isDrill);
         view.setDrillFilters(drillFilters);
         return view;
