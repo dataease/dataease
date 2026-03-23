@@ -219,7 +219,7 @@ public abstract class Provider {
     }
 
     public String replaceComment(String s) {
-        String regex = "/\\*[\\s\\S]*?\\*/|-- .*";
+        String regex = "/\\*[\\s\\S]*?\\*/|--.*";
         return s.replaceAll(regex, " ");
     }
 
