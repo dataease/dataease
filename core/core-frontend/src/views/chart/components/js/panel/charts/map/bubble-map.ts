@@ -418,7 +418,7 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     const { basicStyle, label } = parseJson(chart.customAttr)
     const senior = parseJson(chart.senior)
     const curAreaNameMapping = senior.areaMapping?.[areaId]
-    handleGeoJson(geoJson, curAreaNameMapping)
+    handleGeoJson(geoJson, curAreaNameMapping, senior.useGlobalAreaMapping)
     options.color = basicStyle.areaBaseColor
     if (!chart.data?.data?.length || !geoJson?.features?.length) {
       options.label && (options.label.field = 'name')
@@ -532,6 +532,10 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       context.layers = [areaLabelLayer]
     }
     return options
+  }
+  setupDefaultOptions(chart: ChartObj): ChartObj {
+    chart.senior.useGlobalAreaMapping = true
+    return chart
   }
 
   protected setupOptions(

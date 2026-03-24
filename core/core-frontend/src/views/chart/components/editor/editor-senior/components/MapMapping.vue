@@ -18,8 +18,17 @@ const props = defineProps({
 
 const emit = defineEmits(['onMapMappingChange'])
 const { chart, themes } = toRefs(props)
+const state = reactive({
+  mappingForm: {},
+  currentData: [],
+  useGlobalAreaMapping: false
+})
 watch(
-  [() => chart.value?.senior.areaMapping, () => chart.value?.customAttr.map.id],
+  [
+    () => chart.value?.senior.areaMapping,
+    () => chart.value?.customAttr.map.id,
+    state.useGlobalAreaMapping
+  ],
   () => {
     init()
   },
@@ -35,10 +44,6 @@ const areaData = reactive([])
 const dynamicAreaId = computed(() => {
   return chart.value?.customAttr.map.id
 })
-const state = reactive({
-  mappingForm: {},
-  currentData: []
-})
 const pageInfo = reactive({
   pageSize: 10,
   total: 100,
@@ -48,11 +53,19 @@ const init = async () => {
   const chartObj = JSON.parse(JSON.stringify(chart.value))
   if (chartObj?.senior) {
     let senior = parseJson(chartObj.senior)
-    state.mappingForm = senior.areaMapping
-    let curAreaMapping = state.mappingForm?.[dynamicAreaId.value]
-    if (!curAreaMapping) {
-      curAreaMapping = await getAreaMapping(dynamicAreaId.value)
+    const useGlobalAreaMapping = senior.useGlobalAreaMapping
+    state.useGlobalAreaMapping = useGlobalAreaMapping
+    let curAreaMapping = null
+    if (useGlobalAreaMapping) {
+      curAreaMapping = await getAreaMapping(dynamicAreaId.value, useGlobalAreaMapping)
+    } else {
+      state.mappingForm = senior.areaMapping
+      curAreaMapping = state.mappingForm?.[dynamicAreaId.value]
+      if (!curAreaMapping) {
+        curAreaMapping = await getAreaMapping(dynamicAreaId.value)
+      }
     }
+    curAreaMapping = curAreaMapping || {}
     const tmp = []
     forEach(curAreaMapping, (val, key) => {
       tmp.push({
@@ -66,7 +79,7 @@ const init = async () => {
   }
 }
 
-const getAreaMapping = async areaId => {
+const getAreaMapping = async (areaId, useGlobalAreaMapping = false) => {
   if (!areaId) {
     return {}
   }
@@ -77,7 +90,10 @@ const getAreaMapping = async areaId => {
       return p
     }, {})
   }
-  const geoJson = await getGeoJsonFile(areaId)
+  const geoJson = await getGeoJsonFile(areaId, useGlobalAreaMapping)
+  if (useGlobalAreaMapping && geoJson?.['deMapping']) {
+    return geoJson?.['deMapping']
+  }
   const names = Object.keys(geoJson?.features[0]?.properties).filter(key => key.startsWith('NAME_'))
   const nameKey = names[names.length - 1]
   return geoJson.features.reduce((p, n) => {
@@ -90,6 +106,9 @@ const getAreaMapping = async areaId => {
   }, {})
 }
 const triggerEdit = scope => {
+  if (state.useGlobalAreaMapping) {
+    return
+  }
   editAreaId.value = `#area-${scope.$index}-input`
   curOriginName.value = scope.row.originName
   curMappedName.value = scope.row.mappedName
@@ -130,7 +149,11 @@ const updateAreaData = debounce(() => {
   pageInfo.total = filteredData.length
 }, 300)
 const onMapMappingChange = () => {
-  emit('onMapMappingChange', state.mappingForm)
+  const global = state.useGlobalAreaMapping
+  emit('onMapMappingChange', global ? {} : state.mappingForm, global)
+  if (global) {
+    init()
+  }
 }
 onMounted(() => {
   init()
@@ -138,6 +161,16 @@ onMounted(() => {
 </script>
 <template>
   <div style="width: 100%">
+    <div style="padding-bottom: 8px">
+      <el-checkbox
+        size="small"
+        :effect="themes"
+        v-model="state.useGlobalAreaMapping"
+        @change="onMapMappingChange"
+      >
+        {{ $t('chart.used_global_map_mapping') }}
+      </el-checkbox>
+    </div>
     <el-table
       size="mini"
       class="area-map-table"
@@ -170,7 +203,7 @@ onMounted(() => {
             @click="triggerEdit(scope)"
           >
             <span :title="scope.row.mappedName">{{ scope.row.mappedName }}</span>
-            <el-icon><Edit /></el-icon>
+            <el-icon v-if="!state.useGlobalAreaMapping"><Edit /></el-icon>
           </el-button>
         </template>
       </el-table-column>

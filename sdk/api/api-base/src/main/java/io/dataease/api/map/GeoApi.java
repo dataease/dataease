@@ -6,8 +6,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Map;
 
 @Tag(name = "系统设置:地理信息")
 @ApiSupport(order = 798)
@@ -20,4 +23,8 @@ public interface GeoApi {
     @Operation(summary = "删除地理信息")
     @PostMapping("/delete/{id}")
     void deleteGeo(@PathVariable("id") String id);
+
+    @Operation(summary = "地名映射")
+    @PostMapping("/{id}/mapping")
+    void placeNameMapping(@PathVariable("id") String id, @RequestBody Map<String, String> req) throws Exception;
 }

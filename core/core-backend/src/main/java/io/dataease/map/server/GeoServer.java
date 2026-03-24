@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/geometry")
 public class GeoServer implements GeoApi {
@@ -22,5 +24,10 @@ public class GeoServer implements GeoApi {
     @Override
     public void deleteGeo(String id) {
         mapManage.deleteGeo(id);
+    }
+
+    @Override
+    public void placeNameMapping(String id, Map<String, String> req) throws Exception {
+        mapManage.placeNameMapping(id, req);
     }
 }

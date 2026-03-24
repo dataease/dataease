@@ -2091,7 +2091,8 @@ export default {
     liquid_show_border: '顯示邊框',
     liquid_border_width: '邊框寬度',
     liquid_border_distance: '邊框間距',
-    top_n_label_tip: '請勿與扇區標籤欄位的數據值重複，否則會導致顯示異常。'
+    top_n_label_tip: '請勿與扇區標籤欄位的數據值重複，否則會導致顯示異常。',
+    used_global_map_mapping: '使用全域地名對應'
   },
   dataset: {
     field_value: '欄位值',

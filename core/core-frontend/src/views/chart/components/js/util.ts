@@ -494,10 +494,13 @@ export const isParent = (type: any, parentType: any) => {
   return false
 }
 
-export const getGeoJsonFile = async (areaId: string): Promise<FeatureCollection> => {
+export const getGeoJsonFile = async (
+  areaId: string,
+  useGlobalAreaMapping = false
+): Promise<FeatureCollection> => {
   const mapStore = useMapStoreWithOut()
   let geoJson = mapStore.mapCache[areaId]
-  if (!geoJson) {
+  if (!geoJson || useGlobalAreaMapping) {
     const res = await getGeoJson(areaId)
     geoJson = res?.data
     mapStore.setMap({ id: areaId, geoJson })

@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -160,8 +161,7 @@ public class MapManage {
 
         File geoFile = buildGeoFile(code);
         try {
-          boolean isChina = StringUtils.startsWith(code, "156");
-          if (isChina) {
+          if (isChina(code)) {
             file.transferTo(geoFile);
           } else {
             addGeoJsonField(code, file, geoFile);
@@ -293,7 +293,7 @@ public class MapManage {
 
     private File buildGeoFile(String code) {
         String id = getBusiGeoCode(code);
-        String customMapDir = StaticResourceConstants.CUSTOM_MAP_DIR;
+        String customMapDir = isChina(code) ? StaticResourceConstants.MAP_DIR : StaticResourceConstants.CUSTOM_MAP_DIR;
         String countryCode = countryCode(id);
         String fileDirPath = customMapDir + "/" + countryCode + "/";
         File dir = new File(fileDirPath);
@@ -387,4 +387,61 @@ public class MapManage {
     return StringUtils.rightPad(incremented, 9, '0');
   }
 
+  public boolean isChina(String code) {
+      return StringUtils.startsWith(code, "156");
+  }
+
+  /**
+   * 根据给定的行政区划编码和基础目录构建对应的 GeoJSON 文件对象。
+   *
+   * @return  {@code {baseDir}/{countryCode}/{id}.json} 的 {@link File}
+   */
+  private File buildMapJsonFile(String id, String baseDir) {
+    String countryCode = countryCode(id);
+    String fileDirPath = baseDir + "/" + countryCode + "/";
+    File dir = new File(fileDirPath);
+    if (!dir.exists()) {
+      dir.mkdirs();
+    }
+    String filePath = fileDirPath + id + ".json";
+    return new File(filePath);
+  }
+
+  /**
+   * 根据前端传入的区域编码和地名映射信息，将映射结果写入对应的 GeoJSON 文件的根节点 deMapping 字段中
+   */
+  public void placeNameMapping(String id, Map<String, String> req) {
+    final String busiId = id.startsWith(GEO_PREFIX) ? id.substring(GEO_PREFIX.length()) : id;
+    final String baseDir =
+        id.startsWith(GEO_PREFIX)
+            ? StaticResourceConstants.CUSTOM_MAP_DIR
+            : StaticResourceConstants.MAP_DIR;
+
+    File file = buildMapJsonFile(busiId, baseDir);
+    if (!file.exists()) {
+      DEException.throwException("GeoJSON 文件不存在: " + file.getAbsolutePath());
+    }
+    writeDeMappingToFile(file, req);
+  }
+
+  private void writeDeMappingToFile(File file, Map<String, String> req) {
+    ObjectMapper mapper = new ObjectMapper();
+    try {
+      JsonNode root = mapper.readTree(file);
+      if (!(root instanceof ObjectNode)) {
+        DEException.throwException("GeoJSON 根节点不是对象，无法写入 deMapping");
+      }
+      ObjectNode objectNode = (ObjectNode) root;
+
+      ObjectNode deMappingNode = mapper.createObjectNode();
+      if (req != null && !req.isEmpty()) {
+        req.forEach(deMappingNode::put);
+      }
+      objectNode.set("deMapping", deMappingNode);
+      mapper.writerWithDefaultPrettyPrinter().writeValue(file, objectNode);
+    } catch (Exception e) {
+      LogUtil.error(e.getMessage());
+      DEException.throwException(e);
+    }
+  }
 }
