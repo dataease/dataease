@@ -221,6 +221,7 @@
                     :title="t('chart.text_fontsize')"
                     v-model="seniorForm.pagerSize"
                     size="small"
+                    :effect="themes"
                     @change="changePagerColorChange"
                   >
                     <el-option
