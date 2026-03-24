@@ -15,7 +15,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['onMapMappingChange'])
+const emit = defineEmits(['onPlaceNameMappingChange'])
 
 const { selectedData, themes } = toRefs(props)
 const dialogVisible = ref(false)
@@ -44,6 +44,7 @@ const pageInfo = reactive({
 })
 
 const init = () => {
+  search.value = ''
   areaData.length = 0
   dialogVisible.value = true
   const chartObj = JSON.parse(selectedData.value.geoJson)
@@ -138,7 +139,7 @@ const submitForm = () => {
     return p
   }, {})
   // 统一提交到上层
-  emit('onMapMappingChange', mappingForm)
+  emit('onPlaceNameMappingChange', mappingForm)
   dialogVisible.value = false
 }
 onBeforeMount(() => {
@@ -166,7 +167,7 @@ defineExpose({
         :row-class-name="'area-map-table-row-' + themes"
         :data="areaData"
         v-loading="showLoading"
-        v-if="areaData && areaData.length"
+        v-if="areaData"
       >
         <el-table-column label="图形" prop="originName" show-overflow-tooltip />
         <el-table-column>

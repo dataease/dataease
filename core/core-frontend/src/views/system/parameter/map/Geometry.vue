@@ -268,7 +268,7 @@
   <place-name-mapping
     ref="placeNameMappingRef"
     :selectedData="selectedData"
-    @onMapMappingChange="onMapMappingChange"
+    @onPlaceNameMappingChange="onPlaceNameMappingChange"
   />
 </template>
 
@@ -730,7 +730,7 @@ const placeNameMappingRef = ref()
 const editPlaceNameMapping = () => {
   placeNameMappingRef?.value.init()
 }
-const onMapMappingChange = (mappingForm: any) => {
+const onPlaceNameMappingChange = (mappingForm: any) => {
   if (showGeoJson.value) {
     const id = selectedData.value['id']
     const url = '/geometry/' + id + '/mapping'
