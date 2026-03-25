@@ -73,6 +73,8 @@
         @click="selectCurComponent"
         @mousedown="handleInnerMouseDownOnShape"
       >
+        <!-- 背景模糊层 由于父层的backdrop-filter是作用于背后内容，无法模糊自身背景图 -->
+        <div v-if="blurBgEnable" class="blur-bg" :style="blurBgStyle"></div>
         <Icon v-if="shapeLock" name="dv-lock"><dvLock class="svg-icon iconfont icon-suo" /></Icon>
         <div class="component-slot" :style="slotStyle">
           <slot></slot>
@@ -159,6 +161,11 @@ import { activeWatermarkCheckUser, removeActiveWatermark } from '@/components/wa
 import { useI18n } from '@/hooks/web/useI18n'
 import { CommonBackground } from '@/components/visualization/component-background/Types'
 import { ShorthandMode } from '@/Types'
+import {
+  isBlurBgEnabled,
+  getBlurBgStyle,
+  getComponentBackgroundStyle
+} from '@/utils/backgroundStyleUtils'
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -946,77 +953,23 @@ const commonBackgroundSvgInner = computed(() => {
   }
 })
 
+// 是否启用背景模糊，有背景图且开启了模糊
+const blurBgEnable = computed(() => {
+  return isBlurBgEnabled(element.value.commonBackground)
+})
+
+// 背景模糊层样式
+const blurBgStyle = computed(() => {
+  return getBlurBgStyle(element.value.commonBackground, scale.value)
+})
+
 const componentBackgroundStyle = computed(() => {
   if (element.value.commonBackground && element.value.component !== 'GroupArea') {
-    const {
-      backdropFilterEnable,
-      backdropFilter,
-      backgroundColorSelect,
-      backgroundColor,
-      backgroundImageEnable,
-      backgroundType,
-      outerImage,
-      innerPadding,
-      borderRadius
-    } = element.value.commonBackground
-    const commonBackground = element.value.commonBackground as CommonBackground
-    const innerPaddingTarget = ['Group'].includes(element.value.component) ? 0 : innerPadding
-    let innerPaddingStyle = innerPaddingTarget * scale.value + 'px'
-    const paddingMode = commonBackground.innerPadding?.mode
-    if (paddingMode === ShorthandMode.Uniform) {
-      innerPaddingStyle = `${commonBackground.innerPadding?.top * scale.value}px`
-    } else if (paddingMode === ShorthandMode.Axis) {
-      innerPaddingStyle = `${commonBackground.innerPadding?.top * scale.value}px ${
-        commonBackground.innerPadding?.left * scale.value
-      }px`
-    } else if (paddingMode === ShorthandMode.PerEdge) {
-      innerPaddingStyle = `${commonBackground.innerPadding?.top * scale.value}px ${
-        commonBackground.innerPadding?.right * scale.value
-      }px ${commonBackground.innerPadding?.bottom * scale.value}px ${
-        commonBackground.innerPadding?.left * scale.value
-      }px`
-    }
-
-    let borderRadiusStyle = borderRadius + 'px'
-    const borderRadiusMode = commonBackground.borderRadius?.mode
-    if (borderRadiusMode === ShorthandMode.Uniform) {
-      borderRadiusStyle = `${commonBackground.borderRadius?.topLeft * scale.value}px`
-    } else if (borderRadiusMode === ShorthandMode.Axis) {
-      borderRadiusStyle = `${commonBackground.borderRadius?.topLeft * scale.value}px ${
-        commonBackground.borderRadius?.bottomLeft * scale.value
-      }px`
-    } else if (borderRadiusMode === ShorthandMode.PerEdge) {
-      borderRadiusStyle = `${commonBackground.borderRadius?.topLeft * scale.value}px ${
-        commonBackground.borderRadius?.topRight * scale.value
-      }px ${commonBackground.borderRadius?.bottomRight * scale.value}px ${
-        commonBackground.borderRadius?.bottomLeft * scale.value
-      }px`
-    }
-
-    let style = {
-      padding: innerPaddingStyle,
-      borderRadius: borderRadiusStyle
-    }
-    let colorRGBA = ''
-    if (backgroundColorSelect && backgroundColor) {
-      colorRGBA = backgroundColor
-    }
-    if (backgroundImageEnable) {
-      if (backgroundType === 'outerImage' && typeof outerImage === 'string') {
-        style['background'] = `url(${imgUrlTrans(outerImage)}) no-repeat ${colorRGBA}`
-      } else {
-        style['background-color'] = colorRGBA
-      }
-    } else {
-      style['background-color'] = colorRGBA
-    }
-    if (element.value.component !== 'UserView') {
-      style['overflow'] = 'hidden'
-    }
-    if (backdropFilterEnable) {
-      style['backdrop-filter'] = 'blur(' + backdropFilter + 'px)'
-    }
-    return style
+    return getComponentBackgroundStyle(element.value.commonBackground, {
+      scale: scale.value,
+      isUserView: element.value.component === 'UserView',
+      forceNoPadding: ['Group'].includes(element.value.component)
+    })
   }
   return {}
 })
@@ -1247,6 +1200,12 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   position: relative;
+  background-size: 100% 100% !important;
+}
+
+.blur-bg {
+  width: 100%;
+  height: 100%;
   background-size: 100% 100% !important;
 }
 
