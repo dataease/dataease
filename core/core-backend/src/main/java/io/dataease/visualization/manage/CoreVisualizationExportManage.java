@@ -154,7 +154,7 @@ public class CoreVisualizationExportManage {
         ChartViewDTO chartViewDTO = null;
         request.setIsExcelExport(true);
         String type = request.getType();
-        if (StringUtils.equals("table-info", type)) {
+        if (StringUtils.equalsAnyIgnoreCase(type, "table-info", "table-normal")) {
             request.setResultCount(Math.toIntExact(ExportCenterUtils.getExportLimit("view")));
             request.setResultMode(ChartConstants.VIEW_RESULT_MODE.ALL);
         }
