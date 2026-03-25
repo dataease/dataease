@@ -13,6 +13,11 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { activeWatermarkCheckUser, removeActiveWatermark } from '@/components/watermark/watermark'
 import { isMobile } from '@/utils/utils'
 import { isDashboard, isMainCanvas } from '@/utils/canvasUtils'
+import {
+  isBlurBgEnabled,
+  getBlurBgStyle,
+  getComponentBackgroundStyle
+} from '@/utils/backgroundStyleUtils'
 import { XpackComponent } from '@/components/plugin'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import DePreviewPopDialog from '@/components/visualization/DePreviewPopDialog.vue'
@@ -222,43 +227,20 @@ const onMouseEnter = () => {
   eventBus.emit('v-hover', config.value.id)
 }
 
+const blurBgEnable = computed(() => {
+  return isBlurBgEnabled(config.value.commonBackground)
+})
+
+const blurBgStyle = computed(() => {
+  return getBlurBgStyle(config.value.commonBackground, deepScale.value)
+})
+
 const componentBackgroundStyle = computed(() => {
   if (config.value.commonBackground) {
-    const {
-      backdropFilterEnable,
-      backdropFilter,
-      backgroundColorSelect,
-      backgroundColor,
-      backgroundImageEnable,
-      backgroundType,
-      outerImage,
-      innerPadding,
-      borderRadius
-    } = config.value.commonBackground
-    let style = {
-      padding: innerPadding * deepScale.value + 'px',
-      borderRadius: borderRadius + 'px'
-    }
-    let colorRGBA = ''
-    if (backgroundColorSelect && backgroundColor) {
-      colorRGBA = backgroundColor
-    }
-    if (backgroundImageEnable) {
-      if (backgroundType === 'outerImage' && typeof outerImage === 'string') {
-        style['background'] = `url(${imgUrlTrans(outerImage)}) no-repeat ${colorRGBA}`
-      } else {
-        style['background-color'] = colorRGBA
-      }
-    } else {
-      style['background-color'] = colorRGBA
-    }
-    if (config.value.component !== 'UserView') {
-      style['overflow'] = 'hidden'
-    }
-    if (backdropFilterEnable) {
-      style['backdrop-filter'] = 'blur(' + backdropFilter + 'px)'
-    }
-    return style
+    return getComponentBackgroundStyle(config.value.commonBackground, {
+      scale: deepScale.value,
+      isUserView: config.value.component === 'UserView'
+    })
   }
   return {}
 })
@@ -470,6 +452,7 @@ const updateFromMobile = (e, type) => {
       :id="viewDemoInnerId"
       :style="componentBackgroundStyle"
     >
+      <div v-if="blurBgEnable" class="blur-bg" :style="blurBgStyle"></div>
       <div
         class="wrapper-inner-adaptor"
         :style="slotStyle"
@@ -548,6 +531,12 @@ const updateFromMobile = (e, type) => {
     width: 100%;
     height: 100%;
   }
+}
+
+.blur-bg {
+  width: 100%;
+  height: 100%;
+  background-size: 100% 100% !important;
 }
 
 .wrapper-edit-bar-active {
