@@ -632,26 +632,18 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 snapshotVisualizationLinkJumpMapper.insert(visualizationLinkJump);
             });
 
-            // visualization_link_jump_info
             appData.getLinkJumpInfos().forEach(visualizationLinkJumpInfoVO -> {
-                Long oldId = visualizationLinkJumpInfoVO.getId();
-                Long newId = IDUtils.snowID();
-                SnapshotVisualizationLinkJumpInfo visualizationLinkJumpInfo = new SnapshotVisualizationLinkJumpInfo();
-                BeanUtils.copyBean(visualizationLinkJumpInfo, visualizationLinkJumpInfoVO);
-                visualizationLinkJumpInfo.setId(newId);
-                visualizationLinkJumpInfo.setLinkJumpId(linkJumpIdMap.get(visualizationLinkJumpInfo.getLinkJumpId()));
-                linkJumpInfoIdMap.put(oldId, newId);
-                snapshotVisualizationLinkJumpInfoMapper.insert(visualizationLinkJumpInfo);
-            });
-
-            // visualization_link_jump_target_view_info
-            appData.getLinkJumpTargetInfos().forEach(visualizationLinkJumpTargetViewInfoVO -> {
-                Long newId = IDUtils.snowID();
-                SnapshotVisualizationLinkJumpTargetViewInfo visualizationLinkJumpTargetViewInfo = new SnapshotVisualizationLinkJumpTargetViewInfo();
-                BeanUtils.copyBean(visualizationLinkJumpTargetViewInfo, visualizationLinkJumpTargetViewInfoVO);
-                visualizationLinkJumpTargetViewInfo.setTargetId(newId);
-                visualizationLinkJumpTargetViewInfoVO.setTargetFieldId(String.valueOf(linkJumpInfoIdMap.get(visualizationLinkJumpTargetViewInfoVO.getTargetFieldId())));
-                snapshotVisualizationLinkJumpTargetViewInfoMapper.insert(visualizationLinkJumpTargetViewInfo);
+                if("outer".equals(visualizationLinkJumpInfoVO.getLinkType())){
+                    Long oldId = visualizationLinkJumpInfoVO.getId();
+                    Long newId = IDUtils.snowID();
+                    SnapshotVisualizationLinkJumpInfo visualizationLinkJumpInfo = new SnapshotVisualizationLinkJumpInfo();
+                    BeanUtils.copyBean(visualizationLinkJumpInfo, visualizationLinkJumpInfoVO);
+                    visualizationLinkJumpInfo.setId(newId);
+                    visualizationLinkJumpInfo.setLinkJumpId(linkJumpIdMap.get(visualizationLinkJumpInfo.getLinkJumpId()));
+                    visualizationLinkJumpInfo.setSourceFieldId(dsTableFieldsIdMap.get(visualizationLinkJumpInfo.getSourceFieldId()));
+                    linkJumpInfoIdMap.put(oldId, newId);
+                    snapshotVisualizationLinkJumpInfoMapper.insert(visualizationLinkJumpInfo);
+                }
             });
         }
         //保存图表信息
