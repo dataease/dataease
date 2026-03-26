@@ -14,7 +14,10 @@ export type Transform = {
 }
 
 export function handleEmptyDataStrategy<O extends ViewSpec>(chart: Chart, options: O): O {
-  const { data } = options.children[0]
+  const childData = options.children?.[0]?.data
+  const rootData = (options as any).data
+  const data = childData ?? rootData
+  if (!data?.length) return options
   if (!data?.length) {
     return options
   }

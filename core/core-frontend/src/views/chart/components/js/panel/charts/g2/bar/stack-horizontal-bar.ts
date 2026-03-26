@@ -154,6 +154,7 @@ export class HorizontalStackBar extends HorizontalBar {
   protected setupOptions(chart: Chart, options: ViewSpec): ViewSpec {
     return flow(
       this.configTheme,
+      this.configEmptyDataStrategy,
       this.configBasicStyle,
       this.configData,
       this.configColor,

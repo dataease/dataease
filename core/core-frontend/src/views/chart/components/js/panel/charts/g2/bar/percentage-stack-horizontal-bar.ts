@@ -129,6 +129,7 @@ export class PercentageStackBar extends HorizontalStackBar {
   protected setupOptions(chart: Chart, options: ViewSpec): ViewSpec {
     return flow(
       this.configTheme,
+      this.configEmptyDataStrategy,
       this.configBasicStyle,
       this.configColor,
       this.configLabel,

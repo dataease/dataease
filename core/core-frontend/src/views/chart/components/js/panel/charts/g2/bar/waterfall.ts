@@ -4,6 +4,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
 import {
   listenerTooltipShow,
+  handleEmptyDataStrategy,
   ViewSpec
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 import {
@@ -28,6 +29,7 @@ export class Waterfall extends Bar {
     'tooltip-selector',
     'title-selector',
     'legend-selector',
+    'function-cfg',
     'x-axis-selector',
     'y-axis-selector',
     'threshold'
@@ -52,6 +54,7 @@ export class Waterfall extends Bar {
       'fontShadow'
     ],
     'legend-selector': ['icon', 'orient', 'fontSize', 'color', 'hPosition', 'vPosition'],
+    'function-cfg': ['emptyDataStrategy'],
     'x-axis-selector': [
       'position',
       'name',
@@ -274,6 +277,11 @@ export class Waterfall extends Bar {
     }
   }
 
+  protected configEmptyDataStrategy(chart: Chart, options: ViewSpec): ViewSpec {
+    handleEmptyDataStrategy(chart, options)
+    return options
+  }
+
   protected configBarConditions(chart: Chart, options: ViewSpec): ViewSpec {
     const { threshold } = parseJson(chart.senior)
     if (!threshold.enable) return options
@@ -405,6 +413,7 @@ export class Waterfall extends Bar {
   protected setupOptions(chart: Chart, options: ViewSpec): ViewSpec {
     return flow(
       this.configTheme,
+      this.configEmptyDataStrategy,
       this.configBasicStyle,
       this.configLabel,
       this.configTooltip,

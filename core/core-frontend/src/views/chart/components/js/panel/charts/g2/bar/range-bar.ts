@@ -10,7 +10,7 @@ import {
   ViewSpec
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 import { useI18n } from '@/hooks/web/useI18n'
-import { Chart as G2Column, Chart } from '@antv/g2'
+import { Chart as G2Column } from '@antv/g2'
 import { HorizontalBar } from '@/views/chart/components/js/panel/charts/g2/bar/horizontal-bar'
 import { G2DrawOptions } from '@/views/chart/components/js/panel/types/impl/g2'
 import { cloneDeep, isEmpty } from 'lodash-es'
@@ -22,6 +22,8 @@ import {
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 
 const { t } = useI18n()
+// 与父类方法参数保持一致，避免 flow 推导到 @antv/g2 的 Chart 类型后出现 TS2345。
+type PanelChart = Parameters<HorizontalBar['setupOptions']>[0]
 
 /**
  * 堆叠条形图
@@ -44,8 +46,11 @@ export class RangeBar extends HorizontalBar {
     }
   }
   properties = BAR_RANGE_EDITOR_PROPERTY.filter(p => p !== 'threshold')
-  propertyInner = {
+  // 显式声明为父类同型，避免 TS 将 spread 结果推断成可选字段集合。
+  propertyInner: HorizontalBar['propertyInner'] = {
     ...BAR_EDITOR_PROPERTY_INNER,
+    // 显式补齐父类要求的必填项，避免 spread 后被推断为可选导致 TS2416。
+    'basic-style-selector': BAR_EDITOR_PROPERTY_INNER['basic-style-selector'] || [],
     'label-selector': ['hPosition', 'color', 'fontSize', 'labelFormatter', 'showGap'],
     'tooltip-selector': [
       'fontSize',
@@ -90,7 +95,13 @@ export class RangeBar extends HorizontalBar {
     if (isDate) {
       data = cloneDeep(data).map(item => ({
         ...item,
-        values: item.values.map(dateStr => new Date(dateStr)),
+        values: item.values.map(dateStr => {
+          // 保留空值给空数据策略处理，避免 new Date(null/undefined) 把空值“吞掉”。
+          if (dateStr === null || dateStr === undefined || dateStr === '') {
+            return null
+          }
+          return new Date(dateStr)
+        }),
         dateFormat: dateFormat
       }))
     }
@@ -122,7 +133,7 @@ export class RangeBar extends HorizontalBar {
     return newChart
   }
 
-  protected configYAxis(chart: Chart, options: ViewSpec): ViewSpec {
+  protected configYAxis(chart: PanelChart, options: ViewSpec): ViewSpec {
     const tmpOptions = super.configYAxis(chart, options)
     const customStyle = parseJson(chart.customStyle)
     const axis = JSON.parse(JSON.stringify(customStyle['xAxis']))
@@ -140,7 +151,7 @@ export class RangeBar extends HorizontalBar {
     return tmpOptions
   }
 
-  protected configLabel(chart: Chart, options: ViewSpec): ViewSpec {
+  protected configLabel(chart: PanelChart, options: ViewSpec): ViewSpec {
     const customAttr = parseJson(chart.customAttr)
     const { label: labelAttr } = customAttr
     if (!labelAttr.show) return options
@@ -157,6 +168,14 @@ export class RangeBar extends HorizontalBar {
       : { transform: [{ type: 'exceedAdjust' }, { type: 'overlapHide' }] }
     const isDate = !!chart.data.isDate
     const dateFormat = children[0].scale.y.mask
+    const formatDateLabel = (dateVal: any) => {
+      // 标签格式化兜底：空值或非法日期直接返回空串，避免显示 Invalid Date。
+      if (dateVal === null || dateVal === undefined || dateVal === '') {
+        return ''
+      }
+      const date = dateVal instanceof Date ? dateVal : new Date(dateVal)
+      return Number.isNaN(date.getTime()) ? '' : date.format(dateFormat)
+    }
     const label = {
       text: 'value',
       fillOpacity: 1,
@@ -169,9 +188,7 @@ export class RangeBar extends HorizontalBar {
         }
         let value
         if (isDate) {
-          value = data.values
-            .map((dateStr: string) => new Date(dateStr).format(dateFormat))
-            .join(' ~ ')
+          value = data.values.map((dateStr: string) => formatDateLabel(dateStr)).join(' ~ ')
         } else {
           value = data.values
             .map((dateStr: string) => valueFormatter(dateStr, labelAttr.labelFormatter))
@@ -185,7 +202,7 @@ export class RangeBar extends HorizontalBar {
     return options
   }
 
-  protected configTooltip(chart: Chart, options: ViewSpec): ViewSpec {
+  protected configTooltip(chart: PanelChart, options: ViewSpec): ViewSpec {
     const { tooltip } = parseJson(chart.customAttr)
     const { children } = options
     if (!tooltip.show) {
@@ -194,6 +211,14 @@ export class RangeBar extends HorizontalBar {
     }
     const isDate = !!chart.data.isDate
     const dateFormat = children[0].scale.y.mask
+    const formatDateLabel = (dateVal: any) => {
+      // tooltip 与标签保持一致的空值处理，避免时间区间展示异常文本。
+      if (dateVal === null || dateVal === undefined || dateVal === '') {
+        return ''
+      }
+      const date = dateVal instanceof Date ? dateVal : new Date(dateVal)
+      return Number.isNaN(date.getTime()) ? '' : date.format(dateFormat)
+    }
     const tooltipOptions: ViewSpec = {
       tooltip: {
         items: [
@@ -220,7 +245,7 @@ export class RangeBar extends HorizontalBar {
                   item.value
                     .map((dateStr: string) =>
                       isDate
-                        ? new Date(dateStr).format(dateFormat)
+                        ? formatDateLabel(dateStr)
                         : valueFormatter(dateStr, tooltip.tooltipFormatter)
                     )
                     .join(' ~ ') + (tooltip.showGap ? ` (${item.original_data.gap})` : '')
@@ -244,9 +269,57 @@ export class RangeBar extends HorizontalBar {
     }
   }
 
-  protected setupOptions(chart: Chart, options: ViewSpec): ViewSpec {
+  protected configEmptyDataStrategy(chart: PanelChart, options: ViewSpec): ViewSpec {
+    const markData = options.children?.[0]?.data
+    // 兼容 data 既可能是数组也可能是 { value: [] } 的场景。
+    const data = Array.isArray(markData) ? markData : markData?.value
+    if (!Array.isArray(data) || !data.length) return options
+
+    const isEmptyValue = (value: any) => {
+      if (value === null || value === undefined || value === '') {
+        return true
+      }
+      if (value instanceof Date) {
+        return Number.isNaN(value.getTime())
+      }
+      return false
+    }
+
+    const strategy = parseJson(chart.senior).functionCfg.emptyDataStrategy
+
+    // RangeBar 的数值是 [start, end]，不能复用普通柱图单值逻辑。
+    if (strategy === 'ignoreData') {
+      // 任一端点为空时过滤整条，防止区间绘制不完整。
+      const filteredData = data.filter(item => {
+        if (!Array.isArray(item.values) || item.values.length < 2) {
+          return false
+        }
+        return !item.values.some(v => isEmptyValue(v))
+      })
+      if (Array.isArray(markData)) {
+        options.children[0].data = filteredData
+      } else if (markData) {
+        markData.value = filteredData
+      }
+      return options
+    }
+
+    if (strategy === 'setZero') {
+      // 仅替换空端点为 0，非空值保持原始数据。
+      data.forEach(item => {
+        if (item.values) {
+          item.values = item.values.map(v => (isEmptyValue(v) ? 0 : v))
+        }
+      })
+    }
+
+    return options
+  }
+
+  protected setupOptions(chart: PanelChart, options: ViewSpec): ViewSpec {
     return flow(
       this.configTheme,
+      this.configEmptyDataStrategy,
       this.configBasicStyle,
       this.configLabel,
       this.configTooltip,

@@ -9,7 +9,10 @@ import {
   parseJson,
   setUpStackSeriesColor
 } from '@/views/chart/components/js/util'
-import { ViewSpec } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
+import {
+  ViewSpec,
+  handleEmptyDataStrategy
+} from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Bar } from '@/views/chart/components/js/panel/charts/g2/bar/bar'
 import { getLineDash, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
@@ -287,9 +290,15 @@ export class HorizontalBar extends Bar {
     return options
   }
 
+  protected configEmptyDataStrategy(chart: Chart, options: ViewSpec): ViewSpec {
+    handleEmptyDataStrategy(chart, options)
+    return options
+  }
+
   protected setupOptions(chart: Chart, options: ViewSpec): ViewSpec {
     return flow(
       this.configTheme,
+      this.configEmptyDataStrategy,
       this.configBasicStyle,
       this.configColor,
       this.configLabel,

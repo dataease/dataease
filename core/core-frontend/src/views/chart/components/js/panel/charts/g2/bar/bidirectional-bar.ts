@@ -10,7 +10,7 @@ import {
 import { defaultsDeep, isEmpty, merge } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { useI18n } from '@/hooks/web/useI18n'
-import { AxisComponent, ChartEvent, Chart as G2Chart, G2Spec } from '@antv/g2'
+import { ChartEvent, Chart as G2Chart, G2Spec } from '@antv/g2'
 import {
   handleChartDashboardHidden,
   setGradientColor,
@@ -563,6 +563,49 @@ export class BidirectionalHorizontalBar extends G2ChartView {
     return options
   }
 
+  protected configEmptyDataStrategy(chart: Chart, options: G2Spec): G2Spec {
+    const [firstMark, secondMark] = options.children?.[0]?.children || []
+    const firstData = firstMark?.data?.value
+    const secondData = secondMark?.data?.value
+    if (!firstData?.length || !secondData?.length) {
+      return options
+    }
+
+    const strategy = parseJson(chart.senior).functionCfg.emptyDataStrategy
+    const isNullValue = value => value === null || value === undefined
+
+    if (strategy === 'ignoreData') {
+      const emptyFields = new Set<string>()
+      firstData.forEach(obj => {
+        if (isNullValue(obj?.value)) {
+          emptyFields.add(obj?.field)
+        }
+      })
+      secondData.forEach(obj => {
+        if (isNullValue(obj?.value)) {
+          emptyFields.add(obj?.field)
+        }
+      })
+      firstMark.data.value = firstData.filter(obj => !emptyFields.has(obj?.field))
+      secondMark.data.value = secondData.filter(obj => !emptyFields.has(obj?.field))
+      return options
+    }
+
+    const updateValues = (strategy: 'breakLine' | 'setZero', data: any[]) => {
+      const emptyValue = strategy === 'setZero' ? 0 : null
+      data.forEach(obj => {
+        if (isNullValue(obj?.value)) {
+          obj.value = emptyValue
+        }
+      })
+    }
+    if (strategy === 'breakLine' || strategy === 'setZero') {
+      updateValues(strategy, firstData)
+      updateValues(strategy, secondData)
+    }
+    return options
+  }
+
   protected configTooltip(chart: Chart, options: G2Spec): G2Spec {
     const { tooltip: tooltipAttr, basicStyle } = parseJson(chart.customAttr)
     const { yAxis, yAxisExt } = chart
@@ -999,6 +1042,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
 
   protected setupOptions(chart: Chart, options: G2Spec) {
     return flow(
+      this.configEmptyDataStrategy,
       this.configBasicStyle,
       this.configXAxis,
       this.configYAxis,
