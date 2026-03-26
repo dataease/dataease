@@ -13,7 +13,7 @@ import {
   DEFAULT_MISC
 } from '@/views/chart/components/editor/util/chart'
 import { ElCol, ElFormItem, ElRow, ElSpace } from 'element-plus-secondary'
-import { cloneDeep } from 'lodash-es'
+import { cloneDeep, get, set } from 'lodash-es'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { getDynamicColorScale } from '@/views/chart/components/js/util'
 import CustomSortEdit from '@/views/chart/components/editor/drag-item/components/CustomSortEdit.vue'
@@ -102,6 +102,13 @@ const changeLegendStyle = prop => {
 }
 
 const changeMisc = prop => {
+  // 仅对子弹图区间图例字段做合并保护，避免覆盖 fixedRange/showType。
+  if (typeof prop === 'string' && prop.startsWith('bullet.')) {
+    const latestMisc = cloneDeep(props.chart?.customAttr?.misc || state.legendForm.miscForm)
+    set(latestMisc, prop, get(state.legendForm.miscForm, prop))
+    emit('onMiscChange', { data: latestMisc, requestData: true }, prop)
+    return
+  }
   emit('onMiscChange', { data: state.legendForm.miscForm, requestData: true }, prop)
 }
 
