@@ -341,10 +341,15 @@ onMounted(() => {
       />
     </el-form-item>
     <div
-      style="flex: 1; display: flex"
+      style="flex: 1; display: flex; width: 100%"
       v-if="showProperty('showRange') && state.legendForm.showRange"
     >
-      <el-form-item :label="t('chart.icon')" class="form-item" :class="'form-item-' + themes">
+      <el-form-item
+        :label="t('chart.icon')"
+        class="form-item"
+        :class="'form-item-' + themes"
+        style="flex: 1; min-width: 0"
+      >
         <el-select
           :effect="themes"
           v-model="state.legendForm.miscForm.bullet.bar.ranges.symbol"
@@ -359,7 +364,11 @@ onMounted(() => {
           />
         </el-select>
       </el-form-item>
-      <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-left: 8px">
+      <el-form-item
+        class="form-item"
+        :class="'form-item-' + themes"
+        style="flex: 1; min-width: 0; padding-left: 8px"
+      >
         <template #label>&nbsp;</template>
         <el-select
           :effect="themes"
