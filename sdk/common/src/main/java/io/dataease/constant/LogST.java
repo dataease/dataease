@@ -17,7 +17,8 @@ public enum LogST {
     MENU(12, "SOURCE_TYPE_MENU"),
     APIKEY(13, "SOURCE_TYPE_APIKEY"),
     DATA_FILLING(14, "SOURCE_TYPE_DATAFILLING"),
-    DATA(15, "SOURCE_TYPE_DATA");
+    DATA(15, "SOURCE_TYPE_DATA"),
+    SPREADSHEET(16, "SOURCE_TYPE_SPREADSHEET");
     private Integer value;
 
     private String name;
