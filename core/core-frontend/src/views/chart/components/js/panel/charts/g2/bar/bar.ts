@@ -19,6 +19,7 @@ import {
 } from '@/views/chart/components/js/panel/common/common_antv'
 import {
   DEFAULT_BASIC_STYLE,
+  DEFAULT_XAXIS_STYLE,
   DEFAULT_YAXIS_EXT_STYLE,
   DEFAULT_YAXIS_STYLE
 } from '@/views/chart/components/editor/util/chart'
@@ -533,17 +534,27 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     if (assistLineArr?.length > 0) {
       const customStyle = parseJson(chart.customStyle)
       let axisFormatterCfg, axisExtFormatterCfg
-      if (customStyle.yAxis) {
-        const a = JSON.parse(JSON.stringify(customStyle.yAxis))
-        axisFormatterCfg = a.axisLabelFormatter
-          ? a.axisLabelFormatter
-          : DEFAULT_YAXIS_STYLE.axisLabelFormatter
-      }
-      if (customStyle.yAxisExt) {
-        const a = JSON.parse(JSON.stringify(customStyle.yAxisExt))
-        axisExtFormatterCfg = a.axisLabelFormatter
-          ? a.axisLabelFormatter
-          : DEFAULT_YAXIS_EXT_STYLE.axisLabelFormatter
+      const isHorizontalBar = this.name.includes('horizontal')
+      if (isHorizontalBar) {
+        if (customStyle.xAxis) {
+          const a = JSON.parse(JSON.stringify(customStyle.xAxis))
+          axisFormatterCfg = a.axisLabelFormatter
+            ? a.axisLabelFormatter
+            : DEFAULT_XAXIS_STYLE.axisLabelFormatter
+        }
+      } else {
+        if (customStyle.yAxis) {
+          const a = JSON.parse(JSON.stringify(customStyle.yAxis))
+          axisFormatterCfg = a.axisLabelFormatter
+            ? a.axisLabelFormatter
+            : DEFAULT_YAXIS_STYLE.axisLabelFormatter
+        }
+        if (customStyle.yAxisExt) {
+          const a = JSON.parse(JSON.stringify(customStyle.yAxisExt))
+          axisExtFormatterCfg = a.axisLabelFormatter
+            ? a.axisLabelFormatter
+            : DEFAULT_YAXIS_EXT_STYLE.axisLabelFormatter
+        }
       }
       const fixedLines = assistLineArr.filter(ele => ele.field === '0')
       const dynamicLineFields = assistLineArr
@@ -562,25 +573,28 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
       const lines = fixedLines.concat(dynamicLines || [])
       lines.forEach(item => {
         const value = parseFloat(item.value)
-        const content =
-          item.name +
-          ' : ' +
-          valueFormatter(value, item.yAxisType === 'left' ? axisFormatterCfg : axisExtFormatterCfg)
+        const targetFormatter =
+          item.yAxisType === 'left' || !axisExtFormatterCfg ? axisFormatterCfg : axisExtFormatterCfg
+        const content = item.name + ' : ' + valueFormatter(value, targetFormatter)
+        const fontSize = item.fontSize ? parseInt(item.fontSize + '') : '100%'
         assistLine.push({
           type: 'lineY',
           data: [value],
           style: {
             stroke: item.color,
+            strokeOpacity: 1,
             lineDash: getLineDash(item.lineType)
           },
           labels: [
             {
               text: content,
-              position: 'left',
+              position: isHorizontalBar ? 'inside' : 'left',
               textBaseline: 'bottom',
               fill: item.color,
+              fillOpacity: 1,
               background: false,
-              fontSize: item.fontSize ? item.fontSize : 10
+              fontSize,
+              style: isHorizontalBar ? { transform: 'rotate(90deg)' } : undefined
             }
           ]
         })
