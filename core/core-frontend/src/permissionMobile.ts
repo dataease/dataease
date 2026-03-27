@@ -8,13 +8,51 @@ import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { useLinkStoreWithOut } from '@/store/modules/link'
+import { useLoading } from '@/hooks/web/useLoading'
+import { h } from 'vue'
 
 const appearanceStore = useAppearanceStoreWithOut()
 const permissionStore = usePermissionStoreWithOut()
 const { wsCache } = useCache()
 const userStore = useUserStoreWithOut()
 const linkStore = useLinkStoreWithOut()
+// 简化版骨架屏
+const skeletonContent = h(
+  'div',
+  {
+    style: {
+      padding: '10px',
+      width: '100%',
+      height: '100%'
+    }
+  },
+  [
+    h(
+      'style',
+      {},
+      `
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .skeleton-bar {
+      height: 16px;
+      margin-bottom: 12px;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
+  `
+    ),
+    h('div', { class: 'skeleton-bar', style: { width: '100%', height: '24%' } }),
+    h('div', { class: 'skeleton-bar', style: { width: '100%', height: '24%' } }),
+    h('div', { class: 'skeleton-bar', style: { width: '100%', height: '24%' } }),
+    h('div', { class: 'skeleton-bar', style: { width: '100%', height: '24%' } })
+  ]
+)
 
+const { open } = useLoading('skeleton-loading', skeletonContent as any)
 const { start, done } = useNProgress()
 const interactiveStore = interactiveStoreWithOut()
 
@@ -22,6 +60,9 @@ const { loadStart, loadDone } = usePageLoading()
 const whiteList = ['/login', '/panel', '/DashboardEmpty', '/preview'] // 不重定向白名单
 
 router.beforeEach(async (to, _, next) => {
+  if (to.path.startsWith('/de-link/')) {
+    open()
+  }
   start()
   loadStart()
   await appearanceStore.setAppearance()

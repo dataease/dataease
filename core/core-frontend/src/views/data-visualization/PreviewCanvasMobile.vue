@@ -16,10 +16,13 @@ import { setTitle } from '@/utils/utils'
 import EmptyBackground from '../../components/empty-background/src/EmptyBackground.vue'
 import { filterEnumMapSync } from '@/utils/componentUtils'
 import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
+import { useLoading } from '@/hooks/web/useLoading'
 
 const dvMainStore = dvMainStoreWithOut()
 const { t } = useI18n()
 const embeddedStore = useEmbedded()
+const { close } = useLoading()
+
 const state = reactive({
   canvasDataPreview: null,
   canvasStylePreview: null,
@@ -78,6 +81,7 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
       dvMainStore.setNowPanelOuterParamsInfoV2(rsp.data, dvId)
     })
   } catch (error) {
+    close()
     router.push('/login')
     return
   }
@@ -110,6 +114,8 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
       canvasViewInfoPreview,
       curPreviewGap
     }) {
+      close()
+
       if (!dvInfo.mobileLayout && dvType === 'dashboard') {
         await router.push('/DashboardEmpty')
         return
@@ -140,9 +146,7 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
       }
       initBrowserTimer()
     }
-  ).catch(err => {
-    console.log(err)
-  })
+  )
 }
 
 let p = null
