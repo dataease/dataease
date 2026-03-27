@@ -642,6 +642,18 @@ public class DataVisualizationServer implements DataVisualizationApi {
                     visualizationLinkJumpInfo.setLinkJumpId(linkJumpIdMap.get(visualizationLinkJumpInfo.getLinkJumpId()));
                     visualizationLinkJumpInfo.setSourceFieldId(dsTableFieldsIdMap.get(visualizationLinkJumpInfo.getSourceFieldId()));
                     linkJumpInfoIdMap.put(oldId, newId);
+
+
+                    dsTableFieldsIdMap.forEach((key, value) -> {
+                        if(StringUtils.isNotEmpty(visualizationLinkJumpInfo.getContent())){
+                            visualizationLinkJumpInfo.setContent(visualizationLinkJumpInfo.getContent().replaceAll(key.toString(), value.toString()));
+                        }
+                    });
+                    dsTableFieldsDatasetNameMap.forEach((key, value) -> {
+                        if(StringUtils.isNotEmpty(visualizationLinkJumpInfo.getContent())){
+                            visualizationLinkJumpInfo.setContent(visualizationLinkJumpInfo.getContent().replaceAll(key.toString(), value.toString()));
+                        }
+                    });
                     snapshotVisualizationLinkJumpInfoMapper.insert(visualizationLinkJumpInfo);
                 }
             });
