@@ -72,7 +72,7 @@ const changeRangeNumber = () => {
       state.rangeList.push({
         name: t('chart.symbolic_range') + (i + 1),
         fixedRangeValue: undefined,
-        fill: 'rgba(0,128,255,0.44)'
+        fill: predefineColors[i % predefineColors.length]
       })
     }
   }
@@ -84,9 +84,19 @@ const changeRangeItem = () => {
 }
 
 const validateRangeList = () => {
-  return state.rangeList.every(
-    item => item.name && item.fixedRangeValue !== null && item.fixedRangeValue !== undefined
-  )
+  state.rangeList.forEach((item, index) => {
+    if (
+      item.fixedRangeValue === null ||
+      item.fixedRangeValue === undefined ||
+      item.fixedRangeValue === ''
+    ) {
+      item.fixedRangeValue = 0
+    }
+    if (!item.name || !String(item.name).trim()) {
+      item.name = t('chart.symbolic_range') + (index + 1)
+    }
+  })
+  return true
 }
 
 const init = () => {
@@ -110,9 +120,9 @@ const getRangeList = () => {
   } else {
     for (let i = 0; i < state.bulletRangeForm.bar.ranges.fixedRangeNumber; i++) {
       range.push({
-        name: '区间' + (i + 1),
-        fixedRangeValue: undefined,
-        fill: 'rgba(0,128,255,0)'
+        name: t('chart.symbolic_range') + (i + 1),
+        fixedRangeValue: 0,
+        fill: predefineColors[i % predefineColors.length]
       })
     }
     state.rangeList = cloneDeep(range)
@@ -216,7 +226,6 @@ onMounted(() => {
             <el-input-number
               :effect="themes"
               v-model="item.fixedRangeValue"
-              :min="0"
               size="small"
               controls-position="right"
               @change="changeRangeItem()"
