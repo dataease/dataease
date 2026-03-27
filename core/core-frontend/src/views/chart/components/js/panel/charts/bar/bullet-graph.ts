@@ -323,7 +323,7 @@ export class BulletGraph extends G2PlotChartView<G2BulletOptions, G2Bullet> {
       createLegendItem(
         'measure',
         measureName || chart.yAxis[0]?.name,
-        'square',
+        bullet.bar.ranges.symbol,
         [].concat(bullet.bar.measures.fill)[0],
         bullet.bar.ranges.symbolSize
       )
