@@ -1,9 +1,13 @@
 import { ElLoading } from 'element-plus-secondary'
 let loadingInstance = null
 
-export const useLoading = () => {
+export const useLoading = (customClass = '', text = '') => {
   const open = () => {
-    loadingInstance = ElLoading.service({ fullscreen: true })
+    loadingInstance = ElLoading.service({
+      fullscreen: true,
+      customClass,
+      text
+    })
   }
 
   const close = () => {
