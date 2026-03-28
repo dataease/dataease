@@ -11,7 +11,6 @@ import { useLinkStoreWithOut } from '@/store/modules/link'
 import { useLoading } from '@/hooks/web/useLoading'
 import { h } from 'vue'
 
-const appearanceStore = useAppearanceStoreWithOut()
 const permissionStore = usePermissionStoreWithOut()
 const { wsCache } = useCache()
 const userStore = useUserStoreWithOut()
@@ -65,6 +64,7 @@ router.beforeEach(async (to, _, next) => {
   }
   start()
   loadStart()
+  const appearanceStore = useAppearanceStoreWithOut()
   await appearanceStore.setAppearance()
   if (to.name === 'link') {
     next()
