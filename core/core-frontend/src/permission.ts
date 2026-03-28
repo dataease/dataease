@@ -13,7 +13,6 @@ import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { useEmbedded } from '@/store/modules/embedded'
 import { useLoading } from '@/hooks/web/useLoading'
-const appearanceStore = useAppearanceStoreWithOut()
 const { wsCache } = useCache()
 const permissionStore = usePermissionStoreWithOut()
 const interactiveStore = interactiveStoreWithOut()
@@ -28,6 +27,7 @@ const whiteList = ['/login', '/de-link', '/chart-view', '/admin-login', '/401'] 
 const embeddedWindowWhiteList = ['/dvCanvas', '/dashboard', '/preview', '/dataset-embedded-form']
 const embeddedRouteWhiteList = ['/dataset-embedded', '/dataset-form', '/dataset-embedded-form']
 router.beforeEach(async (to, from, next) => {
+  const appearanceStore = useAppearanceStoreWithOut()
   if (['/chart-view'].includes(to.path) || to.path.startsWith('/de-link/')) {
     open()
   }

@@ -47,7 +47,6 @@ import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { useCache } from '@/hooks/web/useCache'
 import { isDesktop } from '@/utils/ModelUtil'
 const { t } = useI18n()
-const appearanceStore = useAppearanceStoreWithOut()
 const { wsCache } = useCache()
 
 const getNewInnerPadding = (commonGap = 0) => {
@@ -453,6 +452,7 @@ export function initCanvasDataPrepare(dvId, params, callBack) {
       dvInfo.type === 'dashboard' && canvasStyleResult['dashboard'].gap === 'yes'
         ? canvasStyleResult['dashboard'].gapSize
         : 0
+    const appearanceStore = useAppearanceStoreWithOut()
     appearanceStore.setCurrentFont(canvasStyleResult.fontFamily)
     document.documentElement.style.setProperty(
       '--de-canvas_custom_font',

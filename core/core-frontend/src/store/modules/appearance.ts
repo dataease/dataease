@@ -8,7 +8,6 @@ import colorTree from 'less/lib/less/tree/color.js'
 import { useEmbedded } from '@/store/modules/embedded'
 import { setTitle } from '@/utils/utils'
 
-const embeddedStore = useEmbedded()
 const basePath = import.meta.env.VITE_API_BASEPATH
 const baseUrl = basePath + '/appearance/image/'
 import { isBtnShow } from '@/utils/utils'
@@ -164,6 +163,7 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       this.fontList = res || []
     },
     setCurrentFont(name) {
+      const embeddedStore = useEmbedded()
       const currentFont = this.fontList.find(ele => ele.name === name)
       if (currentFont) {
         let fontStyleElement = document.querySelector(`#de-custom_font${name}`)
@@ -203,6 +203,7 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       this.loaded = data
     },
     async setAppearance(isDataEaseBi?: boolean) {
+      const embeddedStore = useEmbedded()
       const desktop = wsCache.get('app.desktop')
       if (desktop) {
         this.loaded = true
