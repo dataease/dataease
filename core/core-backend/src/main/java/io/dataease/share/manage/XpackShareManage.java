@@ -62,6 +62,9 @@ public class XpackShareManage {
     @Resource
     private SysParameterManage sysParameterManage;
 
+    @Resource
+    private ShareSecretManage shareSecretManage;
+
     public void deleteByResource(Long resourceId) {
         if (resourceId == null) {
             return;
@@ -88,14 +91,6 @@ public class XpackShareManage {
         return xpackShareMapper.selectOne(queryWrapper);
     }
 
-    public String queryPwd(Long resourceId, Long userId) {
-        QueryWrapper<XpackShare> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("creator", userId);
-        queryWrapper.eq("resource_id", resourceId);
-        XpackShare xpackShare = xpackShareMapper.selectOne(queryWrapper);
-        if (ObjectUtils.isEmpty(xpackShare)) return null;
-        return xpackShare.getPwd();
-    }
 
     @Transactional
     public void switcher(Long resourceId) {
@@ -266,7 +261,9 @@ public class XpackShareManage {
             vo.setInIframeError(false);
             return vo;
         }
-        String linkToken = LinkTokenUtil.generate(xpackShare.getCreator(), xpackShare.getResourceId(), xpackShare.getExp(), xpackShare.getPwd(), xpackShare.getOid());
+        String defaultPwd = shareSecretManage.getDefaultPwd();
+        String secret = StringUtils.isBlank(xpackShare.getPwd()) ? defaultPwd : xpackShare.getPwd();
+        String linkToken = LinkTokenUtil.generate(xpackShare.getCreator(), xpackShare.getResourceId(), xpackShare.getExp(), secret, xpackShare.getOid());
         HttpServletResponse response = ServletUtils.response();
         response.addHeader(AuthConstant.LINK_TOKEN_KEY, linkToken);
         Integer type = xpackShare.getType();
