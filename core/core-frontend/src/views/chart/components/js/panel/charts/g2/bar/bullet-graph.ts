@@ -8,11 +8,20 @@ import {
 import { useI18n } from '@/hooks/web/useI18n'
 import { flow, parseJson } from '@/views/chart/components/js/util'
 import { RuntimeOptions } from '@antv/g2/lib/api/runtime'
-import { valueFormatter } from '@/views/chart/components/js/formatter'
+import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
 import {
   getLineDash,
-  handleChartDashboardHidden
+  handleChartDashboardHidden,
+  TOOLTIP_ITEM_TPL,
+  TOOLTIP_TITLE_TPL
 } from '@/views/chart/components/js/panel/common/common_antv'
+import {
+  createTooltipWrapper,
+  listenerTooltipShow,
+  tooltipCss,
+  tooltipMaxHeight
+} from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
+import { isEmpty } from 'lodash-es'
 
 const { t } = useI18n()
 
@@ -104,6 +113,7 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
       }
       action(actionParams)
     })
+    listenerTooltipShow(newChart, chart)
     return newChart
   }
 
@@ -160,8 +170,11 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
 
   protected configMisc(chart: Chart, options: RuntimeOptions): RuntimeOptions {
     const { basicStyle, tooltip } = parseJson(chart.customAttr)
+    const customStyleLegend = parseJson(chart.customStyle).legend
     const { bullet } = parseJson(chart.customAttr).misc
     const isDynamic = bullet.bar.ranges.showType === 'dynamic'
+    const showRangeLegend = customStyleLegend?.showRange
+    const rangeLegendNames = []
     // 背景颜色，固定区间背景时，按大小降序
     const rangeColor = isDynamic
       ? chart.extBubble?.length
@@ -174,6 +187,11 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
     // 固定区间背景
     const ranges = bullet.bar.ranges.fixedRange || []
     ranges.sort((a, b) => (a.fixedRangeValue ?? 0) - (b.fixedRangeValue ?? 0))
+    if (showRangeLegend && !isDynamic) {
+      ranges.forEach(item => {
+        rangeLegendNames.push(item.name)
+      })
+    }
     ranges.forEach((item, index) => {
       // 用于配置区间边界， 存储当前区间的上一个区间
       const prev = ranges[index - 1]
@@ -182,13 +200,14 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
         encode: {
           x: 'title',
           y: [prev ? prev.fixedRangeValue : 0, item.fixedRangeValue],
-          color: () => item.name
+          ...(showRangeLegend ? { color: () => item.name } : {})
         },
         interaction: {
           legendFilter: false
         },
         style: {
-          maxWidth: bullet.bar.ranges.size
+          maxWidth: bullet.bar.ranges.size,
+          ...(showRangeLegend ? {} : { fill: item.fill })
         },
         tooltip: false
       }
@@ -198,18 +217,22 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
       childrens.length = 0
       if (chart.extBubble?.length) {
         const rangeName = chart.extBubble[0]?.chartShowName || chart.extBubble[0]?.name
+        if (showRangeLegend) {
+          rangeLegendNames.push(rangeName)
+        }
         childrens.push({
           type: 'interval',
           encode: {
             x: 'title',
             y: 'ranges',
-            color: () => rangeName
+            ...(showRangeLegend ? { color: () => rangeName } : {})
           },
           interaction: {
             legendFilter: false
           },
           style: {
-            maxWidth: bullet.bar.ranges.size
+            maxWidth: bullet.bar.ranges.size,
+            ...(showRangeLegend ? {} : { fill: [].concat(bullet.bar.ranges.fill)[0] })
           },
           tooltip: false
         })
@@ -263,14 +286,15 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
           }
         : false
     }
-    childrens.push(target)
     childrens.push(measures)
+    childrens.push(target)
     options = {
       ...options,
       scale: {
         color: {
+          domain: [...rangeLegendNames, targetName, measureName],
           range: [
-            ...[].concat(rangeColor),
+            ...(showRangeLegend ? [].concat(rangeColor) : []),
             ...[].concat(bullet.bar.target.fill),
             ...[].concat(bullet.bar.measures.fill)
           ]
@@ -421,13 +445,227 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
     return options
   }
 
-  protected configTooltip(_chart: Chart, options: RuntimeOptions): RuntimeOptions {
+  private buildTooltipFormatterMap(tooltipAttr: any): Record<string, any> {
+    const formatterMap: Record<string, any> = {}
+    tooltipAttr.seriesTooltipFormatter
+      ?.filter(i => i.show)
+      .forEach(next => {
+        switch (next.axisType) {
+          case 'yAxis':
+            formatterMap.measures = next
+            break
+          case 'yAxisExt':
+            formatterMap.target = next
+            break
+          case 'extBubble':
+            formatterMap.ranges = next
+            break
+          default:
+            break
+        }
+      })
+    return formatterMap
+  }
+
+  private formatTooltipValue(value: unknown, formatterCfg?: any): string {
+    const safeFormatterCfg = formatterCfg ? { ...formatterCfg } : { ...formatterItem }
+    if (value === null || value === undefined) {
+      return ''
+    }
+    if (typeof value === 'string') {
+      const trimmedValue = value.trim()
+      if (!trimmedValue) {
+        return ''
+      }
+      const numericValue = Number(trimmedValue)
+      if (!Number.isFinite(numericValue)) {
+        return ''
+      }
+      return valueFormatter(numericValue, safeFormatterCfg)
+    }
+    if (typeof value === 'number') {
+      if (!Number.isFinite(value)) {
+        return ''
+      }
+      return valueFormatter(value, safeFormatterCfg)
+    }
+    const normalizedValue = Number(value)
+    if (!Number.isFinite(normalizedValue)) {
+      return ''
+    }
+    return valueFormatter(normalizedValue, safeFormatterCfg)
+  }
+
+  private getTooltipMetricValue(chartData: any, field: string): any {
+    if (field === 'measures') {
+      return chartData?.tooltipMeasures ?? chartData?.measures
+    }
+    if (field === 'target') {
+      return chartData?.tooltipTarget ?? chartData?.target
+    }
+    if (field === 'ranges') {
+      return chartData?.tooltipRanges ?? chartData?.ranges
+    }
+    return chartData?.[field]
+  }
+
+  private buildTooltipRows(params: {
+    chart: Chart
+    options: RuntimeOptions
+    tooltipAttr: any
+    bullet: any
+    formatterMap: Record<string, any>
+    titleValue: string
+  }): any[] {
+    const { chart, options, tooltipAttr, bullet, formatterMap, titleValue } = params
+    const hasSeriesFormatter = !!tooltipAttr.seriesTooltipFormatter?.length
+    const isDynamic = bullet.bar.ranges.showType === 'dynamic'
+    const rangeFormatter = chart.extBubble?.[0]
+    const chartData = options.data?.find(item => item.title === titleValue)
+    const result = []
+
+    const axisFormatterMap = {
+      measures: chart.yAxis?.[0],
+      target: chart.yAxisExt?.[0],
+      ranges: chart.extBubble?.[0]
+    }
+    const visibleKeys = hasSeriesFormatter ? Object.keys(formatterMap) : ['measures', 'target']
+
+    visibleKeys.forEach(field => {
+      if (field === '记录数*') {
+        return
+      }
+      const formatter = formatterMap?.[field] ?? axisFormatterMap[field]
+      if (!formatter) {
+        return
+      }
+
+      let name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
+      let value = this.formatTooltipValue(
+        this.getTooltipMetricValue(chartData, field),
+        formatter.formatterCfg
+      )
+      let color = bullet.bar[field]?.fill ?? 'grey'
+
+      if (field === 'ranges') {
+        if (!isDynamic && rangeFormatter) {
+          name = isEmpty(rangeFormatter.chartShowName)
+            ? rangeFormatter.name
+            : rangeFormatter.chartShowName
+          value = this.formatTooltipValue(
+            chartData?.tooltipMinRanges?.[0] ?? chartData?.minRanges?.[0],
+            rangeFormatter.formatterCfg
+          )
+          color = 'grey'
+        } else {
+          return
+        }
+      }
+
+      result.push({ color, name, value })
+    })
+
+    if (!hasSeriesFormatter) {
+      return result
+    }
+
+    const ranges = chartData?.ranges ?? []
+    const rangeFormatterCfg = formatterMap.ranges?.formatterCfg ?? rangeFormatter?.formatterCfg
+    ranges.forEach((range, index) => {
+      const value = isDynamic
+        ? this.formatTooltipValue(
+            chartData?.tooltipMinRanges?.[0] ?? chartData?.minRanges?.[0],
+            rangeFormatterCfg
+          )
+        : this.formatTooltipValue(range, rangeFormatterCfg)
+      let name = ''
+      let color: string | string[] = 'grey'
+      if (isDynamic && rangeFormatter) {
+        name = isEmpty(rangeFormatter.chartShowName)
+          ? rangeFormatter.name
+          : rangeFormatter.chartShowName
+        color = bullet.bar.ranges.fill
+      } else {
+        const customRange = bullet.bar.ranges.fixedRange?.[index]
+        name = customRange?.name
+          ? customRange.name
+          : isEmpty(rangeFormatter?.chartShowName)
+          ? rangeFormatter?.name
+          : rangeFormatter?.chartShowName
+        color = customRange?.fill ?? 'grey'
+      }
+      result.push({ color, name, value })
+    })
+
+    const dynamicTooltipValue =
+      chart.data?.data?.find(d => d.field === titleValue)?.dynamicTooltipValue || []
+    if (dynamicTooltipValue.length > 0) {
+      dynamicTooltipValue.forEach(dy => {
+        const formatter = tooltipAttr.seriesTooltipFormatter?.find(i => i.id === dy.fieldId)
+        if (!formatter) {
+          return
+        }
+        const value = this.formatTooltipValue(dy.value, formatter.formatterCfg)
+        const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
+        result.push({ color: 'grey', name, value })
+      })
+    }
+
+    return result
+  }
+
+  private buildTooltipHtml(chart: Chart, titleValue: string, items: any[]): string {
+    const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', titleValue)
+    const itemsHtml = items
+      .map(item => {
+        const marker = [].concat(item.color as any)?.[0] ?? 'grey'
+        return TOOLTIP_ITEM_TPL.replace('{marker}', marker)
+          .replace('{label}', item.name ?? '')
+          .replace('{value}', item.value ?? '')
+      })
+      .join('')
+    const listHtml = `<ul class="g2-tooltip-list" style="${tooltipMaxHeight(
+      chart
+    )}margin: 0px; list-style-type: none; padding: 0px;">${itemsHtml}</ul>`
+    return `${titleHtml}${listHtml}`
+  }
+
+  protected configTooltip(chart: Chart, options: RuntimeOptions): RuntimeOptions {
+    const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
+    const tooltipAttr = customAttr.tooltip
+    const { bullet } = parseJson(chart.customAttr).misc
+    if (!tooltipAttr.show) {
+      return { ...options, tooltip: false }
+    }
+    const formatterMap = this.buildTooltipFormatterMap(tooltipAttr)
+
     return {
       ...options,
+      tooltip: d => d,
       interaction: {
+        ...options.interaction,
         tooltip: {
+          mount: createTooltipWrapper(chart),
+          css: tooltipCss(tooltipAttr),
           shared: true,
-          enterable: true
+          enterable: true,
+          render: (_, { title, items: originalItems }) => {
+            if (!originalItems?.length) {
+              return ''
+            }
+            const head: any = originalItems[0]
+            const titleValue = (title as any) || head.title || head.data?.title || ''
+            const rows = this.buildTooltipRows({
+              chart,
+              options,
+              tooltipAttr,
+              bullet,
+              formatterMap,
+              titleValue
+            })
+            rows.sort((a, b) => (a.color === 'grey' ? 1 : b.color === 'grey' ? -1 : 0))
+            return this.buildTooltipHtml(chart, titleValue, rows)
+          }
         }
       }
     }
@@ -480,6 +718,9 @@ function mergeBulletData(chart): any[] {
       ranges: [],
       measures: [],
       target: [],
+      hasValidMeasure: false,
+      hasValidTarget: false,
+      hasValidRange: false,
       dimensionList: items[0].dimensionList,
       quotaList: []
     }
@@ -487,15 +728,29 @@ function mergeBulletData(chart): any[] {
     // 防止指标相同时无数据有可能会导致数据不一致
     items.forEach(item => {
       const quotaId = item.quotaList[0]?.id
-      const v = item.value || 0
+      const rawValue = item.value
+      let normalizedValue = NaN
+      if (typeof rawValue === 'number') {
+        normalizedValue = rawValue
+      } else if (typeof rawValue === 'string') {
+        const trimmedValue = rawValue.trim()
+        normalizedValue = trimmedValue ? Number(trimmedValue) : NaN
+      } else if (rawValue !== null && rawValue !== undefined) {
+        normalizedValue = Number(rawValue)
+      }
+      const hasValidNumber = Number.isFinite(normalizedValue)
+      const v = hasValidNumber ? normalizedValue : 0
       if (quotaId === chart.yAxis[0]?.id) {
         entry.measures.push(v)
+        entry.hasValidMeasure = entry.hasValidMeasure || hasValidNumber
       }
       if (quotaId === chart.yAxisExt[0]?.id) {
         entry.target.push(v)
+        entry.hasValidTarget = entry.hasValidTarget || hasValidNumber
       }
       if (quotaId === chart.extBubble[0]?.id) {
         entry.ranges.push(v)
+        entry.hasValidRange = entry.hasValidRange || hasValidNumber
       }
       entry.quotaList.push(item.quotaList[0])
     })
@@ -510,8 +765,12 @@ function mergeBulletData(chart): any[] {
       measures: measures,
       target: target,
       ranges: ranges,
+      tooltipMeasures: entry.hasValidMeasure ? measures[0] : '',
+      tooltipTarget: entry.hasValidTarget ? target[0] : '',
+      tooltipRanges: entry.hasValidRange ? ranges[0] : '',
       quotaList: [...entry.quotaList],
       minRanges: ranges,
+      tooltipMinRanges: entry.hasValidRange ? ranges : [''],
       originalRanges: ranges,
       originalTarget: target
     }
