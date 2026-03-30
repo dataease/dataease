@@ -1,7 +1,7 @@
 {
   "name": "dataease",
   "private": true,
-  "version": "0.0.0",
+  "version": "2.10.20",
   "scripts": {
     "dev:win": "set NODE_OPTIONS=--max_old_space_size=4096 && vite --mode dev --host 0.0.0.0",
     "dev": "NODE_OPTIONS=--max_old_space_size=4096 vite --mode dev --host 0.0.0.0",

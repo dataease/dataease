@@ -34,7 +34,7 @@ const getPrefix = (): string => {
       }
       if (url.includes(suffix)) {
         prefix = new URL(url).origin
-        const index = url.indexOf(`/js/div_import_${suffix}`)
+        const index = url.indexOf(`/js/div_import_0.0.0-dataease`)
         if (index > 0) {
           prefix = url.substring(0, index)
         }

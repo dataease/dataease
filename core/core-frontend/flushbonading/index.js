@@ -43,7 +43,7 @@ htmlStream.pipe(parserStream).on('finish', () => {
         }
         if (url.includes(suffix)) {
           prefix = new URL(url).origin
-          const index = url.indexOf(\`/js/div_import_${suffix}\`)
+          const index = url.indexOf(\`/js/div_import_0.0.0-dataease\`)
           if (index > 0) {
             prefix = url.substring(0, index)
           }
@@ -77,6 +77,6 @@ htmlStream.pipe(parserStream).on('finish', () => {
   })
   document.documentElement.insertBefore(head, document.querySelector('body'))`
 
-  fs.writeFile(`../dist/js/div_import_${suffix}.js`, templateJs, err => {
+  fs.writeFile(`../dist/js/div_import_0.0.0-dataease.js`, templateJs, err => {
   })
 })
