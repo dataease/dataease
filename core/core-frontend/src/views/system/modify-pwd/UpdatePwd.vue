@@ -7,6 +7,7 @@ import { rsaEncryp } from '@/utils/encryption'
 import { ElMessage } from 'element-plus-secondary'
 import { logoutHandler } from '@/utils/logout'
 import { CustomPassword } from '@/components/custom-password'
+import { isMobile } from '@/utils/utils'
 
 const { t } = useI18n()
 
@@ -79,12 +80,19 @@ const rule = {
 }
 const updatePwdForm = ref()
 
+const emits = defineEmits(['success'])
+
 const save = () => {
   updatePwdForm.value.validate(val => {
     if (val) {
       const pwd = rsaEncryp(pwdForm.pwd)
       const newPwd = rsaEncryp(pwdForm.newPwd)
       request.post({ url: '/user/modifyPwd', data: { pwd, newPwd } }).then(() => {
+        if (isMobile()) {
+          emits('success')
+          return
+        }
+
         ElMessage.success(t('system.log_in_again'))
         logoutHandler()
       })
