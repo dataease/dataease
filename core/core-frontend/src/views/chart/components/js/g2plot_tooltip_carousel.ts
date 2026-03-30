@@ -442,7 +442,10 @@ class ChartCarouselTooltip {
   public hasParentWithSwitchHidden(element: HTMLElement) {
     let parent = element.parentElement
     while (parent) {
-      if (parent.classList.contains('switch-hidden')) {
+      if (
+        parent.classList.contains('switch-hidden') ||
+        window.getComputedStyle(parent).display === 'none'
+      ) {
         return true
       }
       parent = parent.parentElement
