@@ -2,14 +2,13 @@
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import eventBus from '@/utils/eventBus'
-import colorFunctions from 'less/lib/less/functions/color.js'
-import colorTree from 'less/lib/less/tree/color.js'
 import { isISOMobile, isMobile } from '@/utils/utils'
 import { cloneDeep } from 'lodash-es'
 import { ElMessage } from 'element-plus-secondary'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import QueryConditionConfiguration from './QueryConditionConfiguration.vue'
 import type { ComponentInfo } from '@/api/chart'
+import { mixColor } from '@/utils/color'
 import { infoFormat } from './options'
 import {
   onBeforeUnmount,
@@ -166,20 +165,8 @@ const btnHoverStyle = computed(() => {
 
   return {
     rawColor: customStyle.btnColor ?? '#3370ff',
-    hoverColor: customStyle.btnColor
-      ? colorFunctions
-          .mix(new colorTree('ffffff'), new colorTree(btnColor), {
-            value: 15
-          })
-          .toRGB()
-      : '#5285FF',
-    activeColor: customStyle.btnColor
-      ? colorFunctions
-          .mix(new colorTree('000000'), new colorTree(btnColor), {
-            value: 15
-          })
-          .toRGB()
-      : '#2B5FD9'
+    hoverColor: customStyle.btnColor ? mixColor('ffffff', btnColor, 0.15) : '#5285FF',
+    activeColor: customStyle.btnColor ? mixColor('000000', btnColor, 0.15) : '#2B5FD9'
   }
 })
 
@@ -197,11 +184,7 @@ const btnPrimaryActiveColor = computed(() => {
 
 const tagColor = computed(() => {
   if (customStyle.background && !customStyle.background.toLowerCase().includes('#ffffff')) {
-    return colorFunctions
-      .mix(new colorTree('ffffff'), new colorTree(customStyle.background.substr(1)), {
-        value: 15
-      })
-      .toRGB()
+    return mixColor('ffffff', customStyle.background.substr(1), 0.15)
   }
   return '#f0f2f5'
 })

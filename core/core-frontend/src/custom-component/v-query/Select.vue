@@ -22,10 +22,9 @@ import Flat from './Flat.vue'
 import eventBus from '@/utils/eventBus'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { useI18n } from '@/hooks/web/useI18n'
-import colorFunctions from 'less/lib/less/functions/color.js'
-import colorTree from 'less/lib/less/tree/color.js'
 import { colorStringToHex } from '@/utils/color'
 import { isMobile } from '@/utils/utils'
+import { mixColor } from '@/utils/color'
 
 interface SelectConfig {
   selectValue: any
@@ -747,9 +746,7 @@ const tagColor = computed(() => {
     ? customStyle.background
     : colorStringToHex(customStyle.background)
 
-  return colorFunctions
-    .mix(new colorTree('ffffff'), new colorTree(hexColor.substr(1)), { value: 20 })
-    .toRGB()
+  return mixColor('ffffff', hexColor.substr(1), 0.2)
 })
 
 const tagWidth = computed(() => {

@@ -5,29 +5,7 @@ import { uiLoadApi } from '@/api/login'
 import { useCache } from '@/hooks/web/useCache'
 import { useEmbedded } from '@/store/modules/embedded'
 import { setTitle } from '@/utils/utils'
-
-const mixColor = (color1: string, color2: string, weight: number) => {
-  weight = Math.max(Math.min(Number(weight), 100), 0) / 100
-  color1 = color1.replace('#', '')
-  color2 = color2.replace('#', '')
-  const r = Math.round(
-    parseInt(color1.substring(0, 2), 16) * weight +
-      parseInt(color2.substring(0, 2), 16) * (1 - weight)
-  )
-  const g = Math.round(
-    parseInt(color1.substring(2, 4), 16) * weight +
-      parseInt(color2.substring(2, 4), 16) * (1 - weight)
-  )
-  const b = Math.round(
-    parseInt(color1.substring(4, 6), 16) * weight +
-      parseInt(color2.substring(4, 6), 16) * (1 - weight)
-  )
-  return `#
-  ${r.toString(16).padStart(2, '0')}
-  ${g.toString(16).padStart(2, '0')}
-  ${b.toString(16).padStart(2, '0')}
-  `
-}
+import { mixColor } from '@/utils/color'
 
 const basePath = import.meta.env.VITE_API_BASEPATH
 const baseUrl = basePath + '/appearance/image/'
