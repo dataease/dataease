@@ -1,5 +1,10 @@
 package io.dataease.auth.filter;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.Verification;
 import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.constant.AuthConstant;
 import io.dataease.exception.DEException;
@@ -15,8 +20,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ReflectionUtils;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
@@ -72,8 +79,30 @@ public class TokenFilter implements Filter {
             }
             String linkToken = ServletUtils.getHead(AuthConstant.LINK_TOKEN_KEY);
             if (StringUtils.isNotBlank(linkToken)) {
-                TokenUserBO tokenUserBO = TokenUtils.validateLinkToken(linkToken);
-                UserUtils.setUserInfo(tokenUserBO);
+                if (StringUtils.length(linkToken) < 100) {
+                    DEException.throwException("token is invalid");
+                }
+                DecodedJWT jwt = JWT.decode(linkToken);
+                Long userId = jwt.getClaim("uid").asLong();
+                Long oid = jwt.getClaim("oid").asLong();
+                Long resourceId = jwt.getClaim("resourceId").asLong();
+                if (ObjectUtils.isEmpty(userId)) {
+                    DEException.throwException("link token格式错误！");
+                }
+
+                Object shareSecretManage = CommonBeanFactory.getBean("shareSecretManage");
+                Method getSecretMethod = DeReflectUtil.findMethod(shareSecretManage.getClass(), "getSecret");
+                Object pwdObj = ReflectionUtils.invokeMethod(getSecretMethod, shareSecretManage, resourceId, userId);
+                String linkSecret = pwdObj.toString();
+
+                Algorithm algorithm = Algorithm.HMAC256(linkSecret);
+                Verification verification = JWT.require(algorithm);
+                JWTVerifier verifier = verification.build();
+                DecodedJWT decode = JWT.decode(linkToken);
+                algorithm.verify(decode);
+                verifier.verify(linkToken);
+
+                UserUtils.setUserInfo(new TokenUserBO(userId, oid));
                 filterChain.doFilter(servletRequest, servletResponse);
                 return;
             }

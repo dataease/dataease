@@ -1,18 +1,12 @@
 package io.dataease.share.interceptor;
 
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.auth0.jwt.interfaces.Verification;
 import io.dataease.auth.DeLinkPermit;
 import io.dataease.constant.AuthConstant;
 import io.dataease.exception.DEException;
-import io.dataease.share.manage.XpackShareManage;
-import io.dataease.share.util.LinkTokenUtil;
 import io.dataease.utils.LogUtil;
 import io.dataease.utils.ServletUtils;
-import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -38,8 +32,6 @@ public class DeLinkAop {
 
     private final ExpressionParser parser = new SpelExpressionParser();
 
-    @Resource
-    private XpackShareManage xpackShareManage;
 
     @Around(value = "@annotation(io.dataease.auth.DeLinkPermit)")
     public Object logAround(ProceedingJoinPoint point) throws Throwable {
@@ -60,18 +52,6 @@ public class DeLinkAop {
                 DEException.throwException("link token invalid");
                 return false;
             }
-
-            Long uid = jwt.getClaim("uid").asLong();
-            String secret = xpackShareManage.queryPwd(resourceId, uid);
-            if (StringUtils.isBlank(secret)) {
-                secret = LinkTokenUtil.defaultPwd;
-            }
-            Algorithm algorithm = Algorithm.HMAC256(secret);
-            Verification verification = JWT.require(algorithm);
-            JWTVerifier verifier = verification.build();
-            DecodedJWT decode = JWT.decode(linkToken);
-            algorithm.verify(decode);
-            verifier.verify(linkToken);
         }
         try {
             return point.proceed(params);
