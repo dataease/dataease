@@ -753,6 +753,9 @@ export default {
     to_delete_variable: 'Are you sure you want to delete {0}?'
   },
   user: {
+    my: 'My',
+    switch_organization: 'Switch Organization',
+    logout: 'Logout',
     change_password: 'Change Password',
     select_users: 'Please select a user',
     account: 'Account',

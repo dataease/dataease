@@ -8,10 +8,13 @@ import OrgCell from '@/views/mobile/components/OrgCell.vue'
 import { useRouter } from 'vue-router_2'
 import { logoutApi } from '@/api/login'
 import { logoutHandler } from '@/utils/logout'
+import UpdatePwd from '@/views/system/modify-pwd/UpdatePwd.vue'
+import VanPopup from 'vant/es/popup'
 import VanNavBar from 'vant/es/nav-bar'
 import VanImage from 'vant/es/image'
 import 'vant/es/image/style'
 import 'vant/es/nav-bar/style'
+import 'vant/es/popup/style'
 
 interface OrgTreeNode {
   id: string | number
@@ -157,12 +160,18 @@ const dfsTree = (ids, arr) => {
 const activeTableData = computed(() => {
   return directId.value.length ? dfsTree([...directId.value], tableData.value) : tableData.value
 })
+
+const showPwd = ref(false)
+const success = () => {
+  showPwd.value = false
+  logout()
+}
 </script>
 
 <template>
   <div class="de-mobile-user">
     <template v-if="showNavBar">
-      <div class="logout flex-center" style="padding-top: 8px; margin: 0">我的</div>
+      <div class="logout flex-center" style="padding-top: 8px; margin: 0">{{ $t('user.my') }}</div>
       <div class="mobile-user-top">
         <van-image round width="48" height="48" :src="userImg" />
         <div class="user-name">
@@ -171,12 +180,18 @@ const activeTableData = computed(() => {
       </div>
       <OrgCell
         @click="orgClick"
-        label="切换组织"
+        :label="$t('user.switch_organization')"
         prefix-icon="icon_switch_outlined"
         :tips="name"
         nextlevel
       ></OrgCell>
-      <div class="logout flex-center danger" @click="logout">注销</div>
+      <div class="logout flex-center" @click="showPwd = true">{{ $t('user.change_password') }}</div>
+      <div class="logout flex-center danger" @click="logout">{{ $t('user.logout') }}</div>
+      <van-popup teleport="body" position="bottom" v-model:show="showPwd">
+        <div style="padding: 0 24px 24px">
+          <update-pwd @success="success" />
+        </div>
+      </van-popup>
     </template>
     <template v-else>
       <van-nav-bar

@@ -731,6 +731,9 @@ export default {
     to_delete_variable: '确定删除 {0} 吗?'
   },
   user: {
+    my: '我的',
+    switch_organization: '切换组织',
+    logout: '注销',
     change_password: '修改密码',
     select_users: '请选择用户',
     account: '账号',

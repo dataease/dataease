@@ -728,6 +728,9 @@ export default {
     to_delete_variable: '確定刪除 {0} 嗎?'
   },
   user: {
+    my: '我的',
+    switch_organization: '切換組織',
+    logout: '登出',
     change_password: '修改密碼',
     select_users: '請選擇使用者',
     account: '帳號',
