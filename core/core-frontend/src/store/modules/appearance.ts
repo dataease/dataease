@@ -3,10 +3,31 @@ import { store } from '@/store/index'
 import { defaultFont, list } from '@/api/font'
 import { uiLoadApi } from '@/api/login'
 import { useCache } from '@/hooks/web/useCache'
-import colorFunctions from 'less/lib/less/functions/color.js'
-import colorTree from 'less/lib/less/tree/color.js'
 import { useEmbedded } from '@/store/modules/embedded'
 import { setTitle } from '@/utils/utils'
+
+const mixColor = (color1: string, color2: string, weight: number) => {
+  weight = Math.max(Math.min(Number(weight), 100), 0) / 100
+  color1 = color1.replace('#', '')
+  color2 = color2.replace('#', '')
+  const r = Math.round(
+    parseInt(color1.substring(0, 2), 16) * weight +
+      parseInt(color2.substring(0, 2), 16) * (1 - weight)
+  )
+  const g = Math.round(
+    parseInt(color1.substring(2, 4), 16) * weight +
+      parseInt(color2.substring(2, 4), 16) * (1 - weight)
+  )
+  const b = Math.round(
+    parseInt(color1.substring(4, 6), 16) * weight +
+      parseInt(color2.substring(4, 6), 16) * (1 - weight)
+  )
+  return `#
+  ${r.toString(16).padStart(2, '0')}
+  ${g.toString(16).padStart(2, '0')}
+  ${b.toString(16).padStart(2, '0')}
+  `
+}
 
 const basePath = import.meta.env.VITE_API_BASEPATH
 const baseUrl = basePath + '/appearance/image/'
@@ -289,30 +310,22 @@ export const useAppearanceStore = defineStore('appearanceStore', {
         document.documentElement.style.setProperty('--van-blue', this.customColor)
         document.documentElement.style.setProperty(
           '--ed-color-primary-light-5',
-          colorFunctions
-            .mix(new colorTree('ffffff'), new colorTree(this.customColor.substr(1)), { value: 40 })
-            .toRGB()
+          mixColor('ffffff', this.customColor, 40)
         )
         document.documentElement.style.setProperty(
           '--ed-color-primary-light-3',
-          colorFunctions
-            .mix(new colorTree('ffffff'), new colorTree(this.customColor.substr(1)), { value: 15 })
-            .toRGB()
+          mixColor('ffffff', this.customColor, 15)
         )
         document.documentElement.style.setProperty(
           '--ed-color-primary-dark-20',
-          colorFunctions
-            .mix(new colorTree('000000'), new colorTree(this.customColor.substr(1)), { value: 20 })
-            .toRGB()
+          mixColor('000000', this.customColor, 20)
         )
         document.documentElement.style.setProperty('--ed-color-primary-1a', `${this.customColor}1a`)
         document.documentElement.style.setProperty('--ed-color-primary-33', `${this.customColor}33`)
         document.documentElement.style.setProperty('--ed-color-primary-99', `${this.customColor}99`)
         document.documentElement.style.setProperty(
           '--ed-color-primary-dark-2',
-          colorFunctions
-            .mix(new colorTree('000000'), new colorTree(this.customColor.substr(1)), { value: 15 })
-            .toRGB()
+          mixColor('000000', this.customColor, 15)
         )
       } else if (document.documentElement.style.getPropertyValue('--ed-color-primary')) {
         document.documentElement.style.setProperty('--ed-color-primary', '#3370FF')
