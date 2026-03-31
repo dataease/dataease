@@ -425,14 +425,8 @@ const windowsJump = (url, jumpType, size = 'middle') => {
       dePreviewPopDialogRef.value.previewInit({ url, size })
     } else if ('_self' === jumpType) {
       newWindow = window.open(url, jumpType)
-      if (inMobile.value) {
-        window.location.reload()
-      }
     } else {
       newWindow = window.open(url, jumpType)
-      if (inMobile.value) {
-        window.location.reload()
-      }
     }
     initOpenHandler(newWindow)
   } catch (e) {
