@@ -37,9 +37,7 @@ export function imgUrlTrans(url) {
 }
 
 function prePareTemplateBaseData(dvId, callback) {
-  console.log('==test==0')
   if (dvInfo.value.type === 'dataV' && canvasStyleData.value.screenAdaptor === 'full') {
-    console.log('==test==1')
     initCanvasDataPrepare(
       dvId,
       { busiFlag: 'dataV', resourceTable: 'core' },
