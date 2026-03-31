@@ -241,7 +241,7 @@ const buildInnerRefreshTimer = (
     const timerRefreshTime = refreshUnit === 'second' ? refreshTime * 1000 : refreshTime * 60000
     innerRefreshTimer = setInterval(() => {
       clearViewLinkage()
-      queryData()
+      queryData(false, true)
       innerSearchCount++
     }, timerRefreshTime)
   }
@@ -260,7 +260,7 @@ watch([() => scale.value], () => {
 watch([() => searchCount.value], () => {
   // 内部计时器启动 忽略外部计时器
   if (!innerRefreshTimer) {
-    queryData()
+    queryData(false, true)
   }
 })
 // 仪表板的查询结果设置变化 图表数据需要刷新
@@ -590,13 +590,13 @@ const queryDataFromSelect = (firstLoad = false) => {
   queryData(firstLoad)
 }
 
-const queryData = debounce((firstLoad = false) => {
+const queryData = debounce((firstLoad = false, autoRefresh = false) => {
   if (loading.value) {
     return
   }
   const searched = dvMainStore.firstLoadMap.includes(element.value.id)
   let queryFilter = filter(searched ? false : firstLoad)
-  if (showPosition.value.includes('viewDialog')) {
+  if (showPosition.value.includes('viewDialog') || autoRefresh) {
     queryFilter = dvMainStore.getLastViewRequestInfo(view.value.id)
   }
   let params = cloneDeep(view.value)
