@@ -1,7 +1,7 @@
 <template>
-  <div style="display: flex; width: 100%">
+  <div class="drag-list">
     <div style="flex: 1; min-width: 0">
-      <draggable :list="config.propValue" animation="300" class="drag-list" @end="onSortChange">
+      <draggable :list="config.propValue" animation="300" @end="onSortChange">
         <template #item="{ element }">
           <span
             :key="element.name"
@@ -96,10 +96,12 @@ import { deepCopy } from '@/utils/utils'
 .drag-list {
   overflow: auto;
   max-height: 400px;
+  display: flex;
+  width: 100%;
 }
 
 .item-icon {
-  height: 30px;
+  height: 31px;
   padding: 2px;
   margin: 2px !important;
   text-align: left;
