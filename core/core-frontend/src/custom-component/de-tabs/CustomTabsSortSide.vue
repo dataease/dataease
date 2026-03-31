@@ -22,25 +22,25 @@
     <div style="width: 80px">
       <div v-for="item in config.propValue" :key="item" class="item-icon">
         <el-icon class="component-base" @click="onDelete(item)">
-          <Icon name="dv-show"><Delete class="svg-icon opt-icon" /></Icon>
+          <Icon name="dv-show"><Delete class="svg-icon f16" /></Icon>
         </el-icon>
         <el-icon
           v-show="item.hidden"
           class="component-base component-icon-display"
           @click="() => (item['hidden'] = false)"
         >
-          <Icon name="dv-eye-close"><dvEyeClose class="svg-icon opt-icon" /></Icon>
+          <Icon name="dv-eye-close"><dvEyeClose class="svg-icon f16" /></Icon>
         </el-icon>
         <el-icon
           v-show="!item.hidden"
           class="component-base"
           @click="() => (item['hidden'] = true)"
         >
-          <Icon name="dv-show"><dvShow class="svg-icon opt-icon" /></Icon>
+          <Icon name="dv-show"><dvShow class="svg-icon f16" /></Icon>
         </el-icon>
 
         <el-icon v-show="!item.hidden" class="component-base" @click="onCopy(item)">
-          <Icon name="dv-show"><CopyDocument class="svg-icon opt-icon" /></Icon>
+          <Icon name="dv-show"><CopyDocument class="svg-icon f16" /></Icon>
         </el-icon>
       </div>
     </div>
@@ -174,7 +174,7 @@ import { deepCopy } from '@/utils/utils'
   padding: 0 4px;
   color: #a6a6a6;
 
-  .opt-icon {
+  .f16 {
     font-size: 16px;
   }
 
