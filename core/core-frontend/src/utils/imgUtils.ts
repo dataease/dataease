@@ -7,6 +7,7 @@ import { findResourceAsBase64 } from '@/api/staticResource'
 import FileSaver from 'file-saver'
 import { deepCopy } from '@/utils/utils'
 import { domToPng } from 'modern-screenshot'
+import { initCanvasDataPrepare } from '@/utils/canvasUtils'
 const embeddedStore = useEmbedded()
 const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData, componentData, canvasViewInfo, canvasViewDataInfo, dvInfo } =
@@ -35,6 +36,28 @@ export function imgUrlTrans(url) {
   }
 }
 
+function prePareTemplateBaseData(dvId, callback) {
+  console.log('==test==0')
+  if (dvInfo.value.type === 'dataV' && canvasStyleData.value.screenAdaptor === 'full') {
+    console.log('==test==1')
+    initCanvasDataPrepare(
+      dvId,
+      { busiFlag: 'dataV', resourceTable: 'core' },
+      function ({ canvasDataResult, canvasStyleResult }) {
+        callback({
+          canvasDataResult: JSON.stringify(canvasDataResult),
+          canvasStyleResult: JSON.stringify(canvasStyleResult)
+        })
+      }
+    )
+  } else {
+    callback({
+      canvasDataResult: JSON.stringify(componentData.value),
+      canvasStyleResult: JSON.stringify(canvasStyleData.value)
+    })
+  }
+}
+
 export function download2AppTemplate(downloadType, canvasDom, name, attachParams, callBack?) {
   try {
     findStaticSource(function (staticResource) {
@@ -46,27 +69,34 @@ export function download2AppTemplate(downloadType, canvasDom, name, attachParams
         const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.1是图片质量
         const templateName = attachParams?.appName ? attachParams.appName : name
         if (snapshot !== '') {
-          const templateInfo = {
-            name: templateName,
-            templateType: 'self',
-            snapshot: snapshot,
-            dvType: dvInfo.value.type,
-            nodeType: downloadType,
-            version: 3,
-            canvasStyleData: JSON.stringify(canvasStyleData.value),
-            componentData: JSON.stringify(componentData.value),
-            dynamicData: JSON.stringify(canvasViewDataTemplate),
-            staticResource: JSON.stringify(staticResource || {}),
-            appData: attachParams ? JSON.stringify(attachParams) : null
-          }
-          const blob = new Blob([JSON.stringify(templateInfo)], { type: '' })
-          if (downloadType === 'template') {
-            FileSaver.saveAs(blob, name + '-TEMPLATE.DET2')
-          } else if (downloadType === 'app') {
-            FileSaver.saveAs(blob, templateName + '-APP.DET2APP')
-          }
-        }
-        if (callBack) {
+          prePareTemplateBaseData(
+            dvInfo.value.id,
+            function ({ canvasDataResult, canvasStyleResult }) {
+              const templateInfo = {
+                name: templateName,
+                templateType: 'self',
+                snapshot: snapshot,
+                dvType: dvInfo.value.type,
+                nodeType: downloadType,
+                version: 3,
+                canvasStyleData: canvasStyleResult,
+                componentData: canvasDataResult,
+                dynamicData: JSON.stringify(canvasViewDataTemplate),
+                staticResource: JSON.stringify(staticResource || {}),
+                appData: attachParams ? JSON.stringify(attachParams) : null
+              }
+              const blob = new Blob([JSON.stringify(templateInfo)], { type: '' })
+              if (downloadType === 'template') {
+                FileSaver.saveAs(blob, name + '-TEMPLATE.DET2')
+              } else if (downloadType === 'app') {
+                FileSaver.saveAs(blob, templateName + '-APP.DET2APP')
+              }
+              if (callBack) {
+                callBack()
+              }
+            }
+          )
+        } else if (callBack) {
           callBack()
         }
       })
