@@ -12,7 +12,6 @@ RUN mkdir -p /opt/apps/config \
     /opt/dataease2.0/data/plugin/
 
 ADD drivers/* /opt/dataease2.0/drivers/
-ADD mapFiles/ /opt/dataease2.0/data/map/
 ADD staticResource/ /opt/dataease2.0/data/static-resource/
 
 WORKDIR /opt/apps

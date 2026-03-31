@@ -133,6 +133,11 @@ function prepare_de_run_base() {
          envsubst < $i > $CONF_FOLDER/$i
       fi
    done
+
+   log_content "复制地图文件"
+   if [ -d ${DE_RUN_BASE}/data/map ] || [ -d ${DE_RUN_BASE}/mapFiles ]; then
+      mv ${DE_RUN_BASE}/mapFiles/* ${DE_RUN_BASE}/data/map/
+   fi
 }
 
 function update_dectl() {

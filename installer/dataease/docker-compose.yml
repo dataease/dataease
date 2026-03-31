@@ -14,6 +14,7 @@ services:
       - ${DE_BASE}/dataease2.0/data/static-resource:/opt/dataease2.0/data/static-resource
       - ${DE_BASE}/dataease2.0/cache:/opt/dataease2.0/cache
       - ${DE_BASE}/dataease2.0/data/geo:/opt/dataease2.0/data/geo
+      - ${DE_BASE}/dataease2.0/data/map:/opt/dataease2.0/data/map
       - ${DE_BASE}/dataease2.0/data/appearance:/opt/dataease2.0/data/appearance
       - ${DE_BASE}/dataease2.0/data/exportData:/opt/dataease2.0/data/exportData
       - ${DE_BASE}/dataease2.0/data/plugin:/opt/dataease2.0/data/plugin
