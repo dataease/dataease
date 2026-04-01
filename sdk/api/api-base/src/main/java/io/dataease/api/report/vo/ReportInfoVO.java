@@ -45,6 +45,7 @@ public class ReportInfoVO implements Serializable {
 
     private List<String> emailList;
 
+    private List<String> dingtalkGroupList;
     private List<String> larkGroupList;
 
     private List<String> larksuiteGroupList;

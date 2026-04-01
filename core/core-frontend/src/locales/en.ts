@@ -4276,6 +4276,7 @@ export default {
     instance_title: 'Task log',
     add_task: 'Add task',
     lark_groups: 'Lark group',
+    dingtalk_groups: ' Dingtalk group',
     larksuite_groups: 'Larksuite group',
     send_setting: 'Send settings',
     retrying_settings: 'Send failed retry settings',

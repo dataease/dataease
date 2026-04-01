@@ -1,9 +1,11 @@
 package io.dataease.api.dingtalk.vo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Schema(description = "钉钉信息")
 @Data
@@ -20,5 +22,11 @@ public class DingtalkInfoVO implements Serializable {
     private Boolean enable = false;
     @Schema(description = "是否可用")
     private Boolean valid = false;
+
+    @JsonIgnore
+    private String robotCode;
+
+    @JsonIgnore
+    private List<DingtalkChatItem> chatList;
 
 }
