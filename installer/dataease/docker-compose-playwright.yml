@@ -7,6 +7,7 @@ services:
     privileged: true
     environment:
       - CONCURRENCY=${DE_PLAYWRIGHT_CONCURRENCY}
+      - TZ=Asia/Shanghai
     volumes:
       - ${DE_BASE}/dataease2.0/logs:/opt/app/logs
     restart: unless-stopped
