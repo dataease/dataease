@@ -271,7 +271,7 @@ service.interceptors.response.use(
       router.push(`/login?redirect=${queryRedirectPath}`)
     }
     if (header.has('DE-FORBIDDEN-FLAG')) {
-      showMsg('当前用户权限配置已变更，请刷新页面', '-changed-')
+      showMsg('当前权限不允许访问，请联系管理员', '-changed-')
     }
     /* if ([400, 401].includes(error?.response.status)) {
       return Promise.reject(error)
