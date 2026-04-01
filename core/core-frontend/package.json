@@ -36,7 +36,7 @@
     "element-resize-detector": "^1.2.4",
     "exceljs": "^4.4.0",
     "file-saver": "^2.0.5",
-    "flv.js": "^1.6.2",
+    "flv-h265": "^1.7.0",
     "html-to-image": "^1.11.11",
     "html2canvas": "^1.4.1",
     "js-base64": "^3.7.5",
