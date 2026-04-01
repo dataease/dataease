@@ -5,6 +5,7 @@ import io.dataease.api.dingtalk.dto.DingtalkEnableEditor;
 import io.dataease.api.dingtalk.dto.DingtalkSettingCreator;
 import io.dataease.api.dingtalk.dto.DingtalkTokenRequest;
 import io.dataease.api.dingtalk.vo.DingtalkInfoVO;
+import io.dataease.api.lark.vo.LarkGroupVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,4 +43,8 @@ public interface DingtalkApi {
     @Operation(summary = "钉钉绑定", hidden = true)
     @PostMapping("/bind")
     void bind(@RequestBody DingtalkTokenRequest request);
+
+    @Operation(summary = "获取群组", hidden = true)
+    @GetMapping("/getGroup")
+    LarkGroupVO getGroup();
 }
