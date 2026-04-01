@@ -31,4 +31,5 @@ public class DingtalkInfoVO implements Serializable {
     @Schema(description = "群列表")
     private List<DingtalkChatItem> chatList;
 
+
 }
