@@ -1866,13 +1866,27 @@ export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>
         container.classList.toggle('hidden-tooltip', false)
       }
       container.style.display = 'block'
-      const dom = document.getElementById(container.id)
+      let dom = document.getElementById(container.id)
+      if (dom?.style.display === 'none') {
+        dom = undefined
+      }
       if (!dom) {
         const full = document.getElementsByClassName('fullscreen')
         if (full.length) {
           full.item(0).appendChild(container)
         } else {
           const wrapperDom = document.getElementById(G2_TOOLTIP_WRAPPER)
+          const existing = document.querySelectorAll(`#${container.id}`)
+          // 移除所有不是当前 container 的同 id 元素
+          existing.forEach(el => {
+            if (el !== container) {
+              el.parentNode?.removeChild(el)
+            }
+          })
+          if (event) {
+            container.style.left = event.clientX + 'px'
+            container.style.top = event.clientY + 'px'
+          }
           wrapperDom.appendChild(container)
         }
       }
