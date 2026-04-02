@@ -27,15 +27,11 @@
         <el-icon
           v-show="item.hidden"
           class="component-base component-icon-display"
-          @click="() => (item['hidden'] = false)"
+          @click="onShow(item)"
         >
           <Icon name="dv-eye-close"><dvEyeClose class="svg-icon f16" /></Icon>
         </el-icon>
-        <el-icon
-          v-show="!item.hidden"
-          class="component-base"
-          @click="() => (item['hidden'] = true)"
-        >
+        <el-icon v-show="!item.hidden" class="component-base" @click="onHidden(item)">
           <Icon name="dv-show"><dvShow class="svg-icon f16" /></Icon>
         </el-icon>
 
@@ -50,7 +46,7 @@
 <script setup lang="ts">
 import drag from '@/assets/svg/drag.svg'
 import draggable from 'vuedraggable'
-import { toRefs } from 'vue'
+import { nextTick, toRefs } from 'vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import eventBus from '@/utils/eventBus'
 import dvEyeClose from '@/assets/svg/dv-eye-close.svg'
@@ -73,14 +69,44 @@ const props = withDefaults(
 
 const { config, themes } = toRefs(props)
 
+// 检查并修正当前激活的tab页（传入当前隐藏的tabItem）
+const checkAndFixCurrentTab = tabItem => {
+  // 如果隐藏的不是当前激活的tab，不需要处理
+  if (tabItem.name !== config.value.editableTabsValue) return
+
+  // 过滤出可见的标签页
+  const visibleTabs = config.value.propValue.filter(tab => !tab.hidden)
+
+  // 如果没有可见标签页，不做处理
+  if (visibleTabs.length === 0) return
+
+  // 切换到第一个可见的tab
+  nextTick(() => {
+    config.value.editableTabsValue = visibleTabs[0].name
+  })
+}
+
 const onSortChange = () => {
   snapshotStore.recordSnapshotCache('tab-sort-save')
   eventBus.emit('onTabSortChange-' + config.value.id)
 }
 
+const onShow = tabItem => {
+  snapshotStore.recordSnapshotCache('tab')
+  tabItem['hidden'] = false
+  config.value.editableTabsValue = tabItem.name
+}
+
+const onHidden = tabItem => {
+  snapshotStore.recordSnapshotCache('tab')
+  tabItem['hidden'] = true
+  checkAndFixCurrentTab(tabItem)
+}
+
 const onDelete = item => {
   snapshotStore.recordSnapshotCache('tab')
   eventBus.emit('onTabDelete-' + config.value.id, deepCopy(item))
+  checkAndFixCurrentTab(item)
 }
 
 const onCopy = item => {

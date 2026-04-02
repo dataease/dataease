@@ -703,15 +703,20 @@ const initCarousel = () => {
   if (!isEditMode.value) {
     if (element.value.carousel?.enable) {
       const switchTime = (element.value.carousel.time || 5) * 1000
+      // 过滤出可见的标签页
+      const visibleTabs = element.value.propValue.filter(tab => !tab.hidden)
+
+      // 如果没有可见的标签页，则不启动轮播
+      if (visibleTabs.length === 0) return
       let switchCount = 1
       // 轮播定时器
       carouselTimer = setInterval(() => {
         // 鼠标移入时 停止轮播
         if (!state.hoverFlag) {
-          const nowIndex = switchCount % element.value.propValue.length
+          const nowIndex = switchCount % visibleTabs.length
           switchCount++
           nextTick(() => {
-            element.value.editableTabsValue = element.value.propValue[nowIndex].name
+            element.value.editableTabsValue = visibleTabs[nowIndex].name
           })
         }
       }, switchTime)
