@@ -326,8 +326,10 @@ const calcTabLength = () => {
       const containerDom = document.getElementById(
         'tab-' + element.value.propValue[element.value.propValue.length - 1].name
       )
-      tabsAreaScroll.value =
-        containerDom.parentNode.clientWidth > tabComponentRef.value.clientWidth - 100
+      if (containerDom) {
+        tabsAreaScroll.value =
+          containerDom?.parentNode?.clientWidth > tabComponentRef.value.clientWidth - 100
+      }
     } else {
       tabsAreaScroll.value = false
     }
