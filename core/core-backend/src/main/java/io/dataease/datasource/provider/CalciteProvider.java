@@ -1313,7 +1313,36 @@ public class CalciteProvider extends Provider {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
                 }
 
-                sql = String.format("SELECT \n" + "    c.name ,t.name ,ep.value, 0, 0  \n" + "FROM \n" + "    sys.columns AS c\n" + "LEFT JOIN  sys.extended_properties AS ep ON c.object_id = ep.major_id AND c.column_id = ep.minor_id\n" + "LEFT JOIN sys.types AS t ON c.user_type_id = t.user_type_id\n" + "LEFT JOIN sys.objects AS o ON c.object_id = o.object_id\n" + "WHERE  o.name = '%s'", datasourceRequest.getTable());
+                sql = String.format("""
+                        SELECT
+                            c.name,
+                            t.name,
+                            CAST(ep.value AS NVARCHAR(4000)),
+                            CASE
+                                WHEN pk.column_id IS NOT NULL THEN 1
+                                ELSE 0
+                                END,
+                            COLUMNPROPERTY(c.object_id, c.name, 'IsIdentity')
+                        FROM sys.columns AS c
+                                 INNER JOIN sys.objects AS o ON c.object_id = o.object_id
+                                 INNER JOIN sys.schemas AS s ON o.schema_id = s.schema_id
+                                 LEFT JOIN sys.types AS t ON c.user_type_id = t.user_type_id
+                                 LEFT JOIN sys.extended_properties AS ep
+                                           ON c.object_id = ep.major_id
+                                               AND c.column_id = ep.minor_id
+                                               AND ep.name = 'MS_Description'
+                                 LEFT JOIN (
+                            SELECT ic.object_id, ic.column_id
+                            FROM sys.indexes i
+                                     INNER JOIN sys.index_columns ic
+                                                ON i.object_id = ic.object_id
+                                                    AND i.index_id = ic.index_id
+                            WHERE i.is_primary_key = 1
+                        ) pk ON c.object_id = pk.object_id AND c.column_id = pk.column_id
+                        WHERE o.name = '%s'
+                          AND s.name = '%s'
+                        ORDER BY c.column_id
+                        """, datasourceRequest.getTable(), configuration.getSchema());
                 break;
             case pg:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Pg.class);
