@@ -661,6 +661,10 @@ const reShow = () => {
   })
 }
 
+const activateTab = (tabName: string) => {
+  editableTabsValue.value = tabName
+}
+
 watch(
   () => isEditMode.value,
   () => {
@@ -674,15 +678,20 @@ const initCarousel = () => {
   if (!isEditMode.value) {
     if (element.value.carousel?.enable) {
       const switchTime = (element.value.carousel.time || 5) * 1000
+      // 过滤出可见的标签页
+      const visibleTabs = element.value.propValue.filter(tab => !tab.hidden)
+
+      // 如果没有可见的标签页，则不启动轮播
+      if (visibleTabs.length === 0) return
       let switchCount = 1
       // 轮播定时器
       carouselTimer = setInterval(() => {
         // 鼠标移入时 停止轮播
         if (!state.hoverFlag) {
-          const nowIndex = switchCount % element.value.propValue.length
+          const nowIndex = switchCount % visibleTabs.length
           switchCount++
           nextTick(() => {
-            editableTabsValue.value = element.value.propValue[nowIndex].name
+            editableTabsValue.value = visibleTabs[nowIndex].name
           })
         }
       }, switchTime)
@@ -701,6 +710,7 @@ onMounted(() => {
     eventBus.on('onTabSortChange-' + element.value.id, reShow)
     eventBus.on('onTabDelete-' + element.value.id, deleteCur)
     eventBus.on('onTabCopy-' + element.value.id, copyCur)
+    eventBus.on('onTabActivate-' + element.value.id, activateTab)
   }
 
   currentInstance = getCurrentInstance()
@@ -716,6 +726,7 @@ onBeforeUnmount(() => {
     eventBus.off('onTabSortChange-' + element.value.id, reShow)
     eventBus.off('onTabDelete-' + element.value.id, deleteCur)
     eventBus.off('onTabCopy-' + element.value.id, copyCur)
+    eventBus.off('onTabActivate-' + element.value.id, activateTab)
   }
 })
 onBeforeMount(() => {
