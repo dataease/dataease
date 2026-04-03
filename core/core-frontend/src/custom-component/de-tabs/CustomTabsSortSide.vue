@@ -8,13 +8,24 @@
             class="item-dimension"
             :class="{ 'item-dimension-dark': themes === 'dark' }"
             :title="element.title"
+            @dblclick="startEditTitle(element)"
           >
             <el-icon size="20px">
               <Icon name="drag"><drag class="svg-icon" /></Icon>
             </el-icon>
-            <span class="item-span">
+            <span v-if="editingItem !== element" class="item-span">
               {{ element.title }}
             </span>
+            <el-input
+              v-else
+              ref="titleInput"
+              v-model="editingTitle"
+              size="small"
+              class="edit-input"
+              @blur="saveTitleEdit(element)"
+              @keyup.enter="saveTitleEdit(element)"
+              @keyup.esc="cancelEdit"
+            />
           </span>
         </template>
       </draggable>
@@ -46,7 +57,7 @@
 <script setup lang="ts">
 import drag from '@/assets/svg/drag.svg'
 import draggable from 'vuedraggable'
-import { nextTick, toRefs } from 'vue'
+import { nextTick, toRefs, ref } from 'vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import eventBus from '@/utils/eventBus'
 import dvEyeClose from '@/assets/svg/dv-eye-close.svg'
@@ -68,6 +79,59 @@ const props = withDefaults(
 )
 
 const { config, themes } = toRefs(props)
+
+// 编辑相关状态
+const editingItem = ref<any>(null)
+const editingTitle = ref('')
+const titleInput = ref<any>(null)
+
+// 开始编辑标题
+const startEditTitle = (element: any) => {
+  editingItem.value = element
+  editingTitle.value = element.title
+
+  nextTick(() => {
+    if (titleInput.value) {
+      titleInput.value.focus()
+      // 选中所有文本
+      titleInput.value.select()
+    }
+  })
+}
+
+// 保存标题编辑
+const saveTitleEdit = (element: any) => {
+  if (!editingItem.value || editingItem.value !== element) return
+
+  const newTitle = editingTitle.value.trim()
+
+  // 如果标题为空，恢复原标题
+  if (!newTitle) {
+    editingItem.value = null
+    editingTitle.value = ''
+    return
+  }
+
+  // 如果标题有变化，保存快照并更新
+  if (newTitle !== element.title) {
+    snapshotStore.recordSnapshotCache('tab-title-edit')
+    element.title = newTitle
+    eventBus.emit('onTabTitleChange-' + config.value.id, {
+      ...element,
+      title: newTitle
+    })
+  }
+  snapshotStore.recordSnapshotCache('tab-title-edit')
+  // 退出编辑模式
+  editingItem.value = null
+  editingTitle.value = ''
+}
+
+// 取消编辑
+const cancelEdit = () => {
+  editingItem.value = null
+  editingTitle.value = ''
+}
 
 // 检查并修正当前激活的tab页（传入当前隐藏的tabItem）
 const checkAndFixCurrentTab = tabItem => {
@@ -113,7 +177,7 @@ const onCopy = item => {
   snapshotStore.recordSnapshotCache('tab')
   eventBus.emit('onTabCopy-' + config.value.id, deepCopy(item))
 }
-import { ElIcon } from 'element-plus-secondary'
+import { ElIcon, ElInput } from 'element-plus-secondary'
 import Icon from '../../components/icon-custom/src/Icon.vue'
 import { deepCopy } from '@/utils/utils'
 </script>
@@ -146,6 +210,7 @@ import { deepCopy } from '@/utils/utils'
   background-color: white;
   display: flex;
   align-items: center;
+  cursor: pointer;
 }
 
 .item-icon {
@@ -159,6 +224,21 @@ import { deepCopy } from '@/utils/utils'
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+.edit-input {
+  flex: 1;
+  min-width: 80px;
+
+  :deep(.el-input__wrapper) {
+    padding: 0 8px;
+    background-color: transparent;
+
+    .el-input__inner {
+      font-size: 12px;
+      line-height: 24px;
+    }
+  }
 }
 
 .blackTheme .item-dimension {
