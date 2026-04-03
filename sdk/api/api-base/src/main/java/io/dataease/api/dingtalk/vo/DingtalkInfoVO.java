@@ -10,6 +10,8 @@ import java.util.List;
 @Schema(description = "钉钉信息")
 @Data
 public class DingtalkInfoVO implements Serializable {
+    @Schema(description = "corpId")
+    private String corpId;
     @Schema(description = "agentId")
     private String agentId;
     @Schema(description = "appKey")
@@ -23,10 +25,10 @@ public class DingtalkInfoVO implements Serializable {
     @Schema(description = "是否可用")
     private Boolean valid = false;
 
-    @JsonIgnore
+    @Schema(description = "机器人Code")
     private String robotCode;
 
-    @JsonIgnore
+    @Schema(description = "群列表")
     private List<DingtalkChatItem> chatList;
 
 }
