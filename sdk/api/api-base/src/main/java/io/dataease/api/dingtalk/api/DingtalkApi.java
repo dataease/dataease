@@ -1,11 +1,10 @@
 package io.dataease.api.dingtalk.api;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
-import io.dataease.api.dingtalk.dto.DingtalkEnableEditor;
-import io.dataease.api.dingtalk.dto.DingtalkSettingCreator;
-import io.dataease.api.dingtalk.dto.DingtalkTokenRequest;
+import io.dataease.api.dingtalk.dto.*;
 import io.dataease.api.dingtalk.vo.DingtalkInfoVO;
 import io.dataease.api.lark.vo.LarkGroupVO;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,4 +46,12 @@ public interface DingtalkApi {
     @Operation(summary = "获取群组", hidden = true)
     @GetMapping("/getGroup")
     LarkGroupVO getGroup();
+
+    @Hidden
+    @PostMapping("/getSignatureInfo")
+    DingtalkSignatureInfo getSignatureInfo(@RequestBody SignatureRequest request);
+
+    @Hidden
+    @PostMapping("/checkChat")
+    void checkChat(@RequestBody DingtalkChatCheckRequest request);
 }
