@@ -113,6 +113,14 @@ const timeFunLists = [
     value: 'currentDay yyyy/MM/dd'
   },
   {
+    label: t('data_source.previous_day') + '（yyyy-MM-dd）',
+    value: 'yesterday yyyy-MM-dd'
+  },
+  {
+    label: t('data_source.previous_day') + '（yyyy/MM/dd）',
+    value: 'yesterday yyyy/MM/dd'
+  },
+  {
     label: t('data_source.timestamp'),
     value: 'currentTimestamp'
   }

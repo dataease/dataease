@@ -39,6 +39,27 @@ public class ApiUtils {
     private static TypeReference<List<Map<String, Object>>> listForMapTypeReference = new TypeReference<List<Map<String, Object>>>() {
     };
 
+    private static String formatTimeFunctionValue(String timeFormat) {
+        if (StringUtils.isBlank(timeFormat)) {
+            return null;
+        }
+        String[] timeFunction = timeFormat.split(" ", 2);
+        String functionName = timeFunction[0];
+        Calendar calendar = Calendar.getInstance();
+        if (functionName.equalsIgnoreCase("currentTimestamp")) {
+            return String.valueOf(System.currentTimeMillis());
+        }
+        if (timeFunction.length < 2) {
+            return null;
+        }
+        if (functionName.equalsIgnoreCase("yesterday")) {
+            calendar.add(Calendar.DAY_OF_MONTH, -1);
+        } else if (!functionName.equalsIgnoreCase("currentDay")) {
+            return null;
+        }
+        return new SimpleDateFormat(timeFunction[1]).format(calendar.getTime());
+    }
+
     public static List<DatasetTableDTO> getApiTables(DatasourceRequest datasourceRequest) throws DEException {
         List<DatasetTableDTO> tableDescs = new ArrayList<>();
         TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
@@ -267,15 +288,9 @@ public class ApiUtils {
                     }
                     httpClientConfig.addHeader(header.get("name").toString(), result);
                 } else if (header.get("nameType") != null && header.get("nameType").toString().equalsIgnoreCase("timeFun")) {
-                    String timeFormat = header.get("value").toString();
-                    Calendar calendar = Calendar.getInstance();
-                    Date date = calendar.getTime();
-                    if (StringUtils.isNotEmpty(timeFormat) && timeFormat.split(" ")[0].equalsIgnoreCase("currentDay")) {
-                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(timeFormat.split(" ")[1]);
-                        httpClientConfig.addHeader(header.get("name").toString(), simpleDateFormat.format(date));
-                    }
-                    if (StringUtils.isNotEmpty(timeFormat) && timeFormat.split(" ")[0].equalsIgnoreCase("currentTimestamp")) {
-                        httpClientConfig.addHeader(header.get("name").toString(), String.valueOf(System.currentTimeMillis()));
+                    String timeValue = formatTimeFunctionValue(header.get("value").toString());
+                    if (StringUtils.isNotEmpty(timeValue)) {
+                        httpClientConfig.addHeader(header.get("name").toString(), timeValue);
                     }
                 } else {
                     httpClientConfig.addHeader(header.get("name").toString(), header.get("value").toString());
@@ -334,15 +349,9 @@ public class ApiUtils {
                     }
                     params.add(argument.get("name") + "=" + result);
                 } else if (argument.get("nameType") != null && argument.get("nameType").toString().equalsIgnoreCase("timeFun")) {
-                    String timeFormat = argument.get("value").toString();
-                    Calendar calendar = Calendar.getInstance();
-                    Date date = calendar.getTime();
-                    if (StringUtils.isNotEmpty(timeFormat) && timeFormat.split(" ")[0].equalsIgnoreCase("currentDay")) {
-                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(timeFormat.split(" ")[1]);
-                        params.add(argument.get("name") + "=" + simpleDateFormat.format(date));
-                    }
-                    if (StringUtils.isNotEmpty(timeFormat) && timeFormat.split(" ")[0].equalsIgnoreCase("currentTimestamp")) {
-                        params.add(argument.get("name") + "=" + System.currentTimeMillis());
+                    String timeValue = formatTimeFunctionValue(argument.get("value").toString());
+                    if (StringUtils.isNotEmpty(timeValue)) {
+                        params.add(argument.get("name") + "=" + timeValue);
                     }
                 } else {
                     params.add(argument.get("name") + "=" + URLEncoder.encode(argument.get("value")));
@@ -472,19 +481,13 @@ public class ApiUtils {
                                             }
                                         }
                                         body.put(jsonNode.get("name").asText(), result);
-                                    } else if (jsonNode.get("nameType") != null && jsonNode.get("nameType").asText().equalsIgnoreCase("timeFun")) {
-                                        String timeFormat = jsonNode.get("value").asText();
-                                        Calendar calendar = Calendar.getInstance();
-                                        Date date = calendar.getTime();
-                                        if (StringUtils.isNotEmpty(timeFormat) && timeFormat.split(" ")[0].equalsIgnoreCase("currentDay")) {
-                                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(timeFormat.split(" ")[1]);
-                                            body.put(jsonNode.get("name").toString(), simpleDateFormat.format(date));
-                                        }
-                                        if (StringUtils.isNotEmpty(timeFormat) && timeFormat.split(" ")[0].equalsIgnoreCase("currentTimestamp")) {
-                                            body.put(jsonNode.get("name").toString(), String.valueOf(System.currentTimeMillis()));
-                                        }
-                                    } else {
-                                        body.put(jsonNode.get("name").asText(), jsonNode.get("value").asText());
+                                     } else if (jsonNode.get("nameType") != null && jsonNode.get("nameType").asText().equalsIgnoreCase("timeFun")) {
+                                         String timeValue = formatTimeFunctionValue(jsonNode.get("value").asText());
+                                         if (StringUtils.isNotEmpty(timeValue)) {
+                                             body.put(jsonNode.get("name").asText(), timeValue);
+                                         }
+                                     } else {
+                                         body.put(jsonNode.get("name").asText(), jsonNode.get("value").asText());
                                     }
                                 }
                             }
