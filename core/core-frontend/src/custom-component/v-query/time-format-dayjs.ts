@@ -74,7 +74,7 @@ function getCustomRange(relativeToCurrentRange: string): [Date, Date] {
       const sm = new Date(dayjs().startOf('month').format('YYYY/MM/DD HH:mm:ss'))
       const ld = getLastEnd('day')
       if (+sm > +ld) {
-        return [sm, sm]
+        return [sm, getThisEnd('day')]
       }
       return [sm, ld]
     case 'today':
