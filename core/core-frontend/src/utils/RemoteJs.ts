@@ -1,5 +1,5 @@
 export const loadScript = (url: string, jsId?: string) => {
-  return new Promise(function (resolve, reject) {
+  return new Promise<void>(function (resolve, reject) {
     const scriptId = jsId || 'de-fit2cloud-script-id'
     let dom = document.getElementById(scriptId)
     if (dom) {

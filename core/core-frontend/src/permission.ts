@@ -13,6 +13,7 @@ import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { useEmbedded } from '@/store/modules/embedded'
 import { useLoading } from '@/hooks/web/useLoading'
+import { ElMessageBox } from 'element-plus-secondary'
 const appearanceStore = useAppearanceStoreWithOut()
 const { wsCache } = useCache()
 const permissionStore = usePermissionStoreWithOut()
@@ -109,6 +110,9 @@ router.beforeEach(async (to, from, next) => {
           }, {})
         }
         if (!pathValid(to.path) && to.path !== '/404' && !to.path.startsWith('/de-link')) {
+          if (to.path.startsWith('/sys-setting')) {
+            await noAdminPermission()
+          }
           const firstPath = getFirstAuthMenu()
           next({ path: firstPath || '/404' })
           return
@@ -137,6 +141,9 @@ router.beforeEach(async (to, from, next) => {
       await interactiveStore.initInteractive(true)
 
       if (!pathValid(to.path) && to.path !== '/404' && !to.path.startsWith('/de-link')) {
+        if (to.path.startsWith('/sys-setting')) {
+          await noAdminPermission()
+        }
         const firstPath = getFirstAuthMenu()
         next({ path: firstPath || '/404' })
         return
@@ -169,7 +176,34 @@ router.beforeEach(async (to, from, next) => {
     }
   }
 })
-
+const noAdminPermission = async () => {
+  const promise = new Promise<void>((resolve, reject) => {
+    ElMessageBox.confirm('当前页面仅对 admin 开放, 即将跳转首页', {
+      confirmButtonType: 'primary',
+      type: 'warning',
+      confirmButtonText: '确定',
+      cancelButtonText: '',
+      autofocus: false,
+      showCancelButton: false,
+      showClose: false
+    })
+      .then(() => {
+        resolve()
+      })
+      .catch(() => {
+        reject()
+      })
+  })
+  return Promise.race([
+    promise,
+    new Promise<void>(resolve => {
+      setTimeout(() => {
+        ElMessageBox.close()
+        resolve()
+      }, 3000)
+    })
+  ])
+}
 router.afterEach(() => {
   done()
   loadDone()
