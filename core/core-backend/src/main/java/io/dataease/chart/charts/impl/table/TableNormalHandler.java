@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.chart.dto.PageInfo;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.chart.charts.impl.DefaultChartHandler;
+import io.dataease.chart.constant.ChartConstants;
 import io.dataease.constant.DeTypeConstants;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.sql.SQLProvider;
@@ -152,18 +153,38 @@ public class TableNormalHandler extends DefaultChartHandler {
             logger.debug("expanded sql: " + expandedSql);
             var expandedData = (List<String[]>) provider.fetchResultField(expandedReq).get("data");
             logger.debug("expanded data: " + expandedData);
-            quickCalc(xAxis, yAxis, Collections.emptyList(), Collections.emptyList(), view.getType(), expandedData);
+            var tmpAxis = (String) JsonUtil.toJSONString(yAxis);
+            var yoyAxis = JsonUtil.parseList(tmpAxis, new TypeReference<List<ChartViewFieldDTO>>() {
+            });
+            // 只计算同环比
+            yoyAxis.forEach(axis -> {
+                var calc = axis.getCompareCalc();
+                if (ObjectUtils.isEmpty(calc)) {
+                    return;
+                }
+                if (Arrays.asList("accumulate", "percent").contains(calc.getType())){
+                    calc.setType("none");
+                }
+            });
+            quickCalc(xAxis, yoyAxis, Collections.emptyList(), Collections.emptyList(), view.getType(), expandedData);
             var resultData = new ArrayList<String[]>();
+            var expendedDataCache = new HashMap<String, String[]>();
             for (String[] originDataLine : data) {
                 var originDim = new StringBuilder();
                 for (int i = 0; i < xAxis.size(); i++) {
                     originDim.append(originDataLine[i]);
+                }
+                var targetData = expendedDataCache.get(originDim.toString());
+                if (targetData != null) {
+                    resultData.add(targetData);
+                    continue;
                 }
                 for (String[] expandedDataLine : expandedData) {
                     var expandedDim = new StringBuilder();
                     for (int i = 0; i < xAxis.size(); i++) {
                         expandedDim.append(expandedDataLine[i]);
                     }
+                    expendedDataCache.putIfAbsent(expandedDim.toString(), expandedDataLine);
                     if (StringUtils.equals(originDim, expandedDim)) {
                         resultData.add(expandedDataLine);
                         break;
@@ -171,6 +192,19 @@ public class TableNormalHandler extends DefaultChartHandler {
                 }
             }
             data = resultData;
+            // 只计算其他快速计算
+            var quickCalcAxis = JsonUtil.parseList(tmpAxis, new TypeReference<List<ChartViewFieldDTO>>() {
+            });
+            quickCalcAxis.forEach(axis -> {
+                var calc = axis.getCompareCalc();
+                if (ObjectUtils.isEmpty(calc)) {
+                    return;
+                }
+                if (Arrays.asList(ChartConstants.M_Y).contains(calc.getType())) {
+                    calc.setType("none");
+                }
+            });
+            quickCalc(xAxis, quickCalcAxis, Collections.emptyList(), Collections.emptyList(), view.getType(), data);
         } else {
             quickCalc(xAxis, yAxis, Collections.emptyList(), Collections.emptyList(), view.getType(), data);
         }
