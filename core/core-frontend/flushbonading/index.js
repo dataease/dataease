@@ -41,7 +41,7 @@ htmlStream.pipe(parserStream).on('finish', () => {
         } else if (ele.nodeName === 'SCRIPT') {
           url = ele.src
         }
-        if (url.includes(suffix)) {
+        if (url.includes('0.0.0-dataease')) {
           prefix = new URL(url).origin
           const index = url.indexOf(\`/js/div_import_0.0.0-dataease\`)
           if (index > 0) {
