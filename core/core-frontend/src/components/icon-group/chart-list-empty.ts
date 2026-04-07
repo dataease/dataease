@@ -14,6 +14,7 @@ const iconChartMapEmpty = {
   'icon_chart-quadrant_light': 'quadrant',
   'icon_chart-scatter_light': 'scatter',
   'icon_circle-packing_light': 'circle-packing',
+  'icon_multi-scatter_light': 'multi-scatter',
   icon_circular_light: 'pie-donut',
   icon_combination_light: 'chart-mix',
   'icon_common-table_light': 'table-info',

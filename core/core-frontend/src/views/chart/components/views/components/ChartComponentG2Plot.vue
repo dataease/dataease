@@ -572,6 +572,9 @@ const trackClick = trackAction => {
   let quotaList = state.pointParam.data.quotaList
   if (['bar-range', 'bullet-graph'].includes(curView.type)) {
     quotaList = state.pointParam.data.dimensionList
+  } else if (curView.type === 'multi-scatter') {
+    // 多维散点图 dimensionList 包含颜色维度+横轴+纵轴的值
+    quotaList = []
   } else {
     quotaList[0]['value'] = state.pointParam.data.value
   }

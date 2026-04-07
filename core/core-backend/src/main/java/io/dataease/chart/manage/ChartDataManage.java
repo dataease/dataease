@@ -768,6 +768,12 @@ public class ChartDataManage {
                 Dimension2SQLObj.dimension2sqlObj(sqlMeta, xFields, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams(), pluginManage);
                 Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams(), pluginManage);
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
+            } else if (StringUtils.equalsIgnoreCase(view.getType(), "multi-scatter")) {
+                List<ChartViewFieldDTO> allDimFields = new ArrayList<>();
+                allDimFields.addAll(xAxis);
+                allDimFields.addAll(yAxis);
+                Dimension2SQLObj.dimension2sqlObj(sqlMeta, allDimFields, transFields(allFields), crossDs, dsMap, Utils.getParams(transFields(allFields)), view.getCalParams(), pluginManage);
+                querySql = SQLProvider.createQuerySQL(sqlMeta, false, needOrder, view);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
                 List<ChartViewFieldDTO> yFields = new ArrayList<>();
                 yFields.addAll(yAxis);

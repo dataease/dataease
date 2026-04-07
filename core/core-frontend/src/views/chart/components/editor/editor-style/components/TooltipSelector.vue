@@ -15,7 +15,7 @@ import {
   mergeTooltipFormat
 } from '@/views/chart/components/js/formatter'
 import { fieldType } from '@/utils/attr'
-import { defaultTo, partition, map, includes, isEmpty, merge } from 'lodash-es'
+import { defaultTo, partition, map, includes, isEmpty } from 'lodash-es'
 import chartViewManager from '../../../js/panel'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
@@ -127,7 +127,9 @@ const changeDataset = () => {
 const AXIS_PROP: AxisType[] = ['yAxis', 'yAxisExt', 'extBubble']
 const quotaAxis = computed(() => {
   let result = []
-  AXIS_PROP.forEach(prop => {
+  const axisList: AxisType[] =
+    props.chart.type === 'multi-scatter' ? ['xAxis', ...AXIS_PROP] : AXIS_PROP
+  axisList.forEach(prop => {
     if (!chartViewInstance.value?.axis?.includes(prop)) {
       return
     }
@@ -156,7 +158,12 @@ const extTooltip = computed(() => {
     i => !quotaIds.includes(i.id) && i.show && quotaData.value?.findIndex(j => j.id === i.id) !== -1
   )
 })
+const isMultiScatter = computed(() => props.chart.type === 'multi-scatter')
 const showFormatterSummary = computed(() => {
+  // 多维散点图不聚合，不显示汇总方式选择
+  if (isMultiScatter.value) {
+    return false
+  }
   return (
     quotaAxis.value?.findIndex(i => curSeriesFormatter.value.id === i.id) === -1 &&
     curSeriesFormatter.value.id !== '-1'
@@ -168,7 +175,9 @@ const formatterNameEditable = computed(() => {
 const formatterEditable = computed(() => {
   return (
     showProperty('seriesTooltipFormatter') &&
-    (props.chart.yAxis?.length || props.chart.yAxisExt?.length)
+    (props.chart.yAxis?.length ||
+      props.chart.yAxisExt?.length ||
+      (props.chart.type === 'multi-scatter' && props.chart.xAxis?.length))
   )
 })
 const chartViewInstance = computed(() => {
@@ -756,7 +765,7 @@ onMounted(() => {
               class="series-select-option"
               :value="item"
               :label="`${item.name}${
-                item.summary !== '' ? '(' + t('chart.' + item.summary) + ')' : ''
+                !isMultiScatter && item.summary !== '' ? '(' + t('chart.' + item.summary) + ')' : ''
               }`"
               v-if="showOption(item)"
             >
@@ -770,7 +779,9 @@ onMounted(() => {
                 ></Icon>
               </el-icon>
               {{ item.name }}
-              {{ item.summary !== '' ? '(' + t('chart.' + item.summary) + ')' : '' }}
+              {{
+                !isMultiScatter && item.summary !== '' ? '(' + t('chart.' + item.summary) + ')' : ''
+              }}
             </el-option>
           </template>
         </el-select>

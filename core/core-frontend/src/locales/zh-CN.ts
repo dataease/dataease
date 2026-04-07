@@ -1569,6 +1569,7 @@ export default {
     chart_scatter_bubble: '气泡图',
     chart_scatter: '散点图',
     bubble_size: '气泡大小',
+    lightness: '明暗',
     chart_treemap: '矩形树图',
     drill: '钻取',
     drag_block_treemap_label: '色块标签',

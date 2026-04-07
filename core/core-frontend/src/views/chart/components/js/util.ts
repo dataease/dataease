@@ -253,7 +253,14 @@ const distributionChartTypes = [
   'word-cloud'
 ]
 // 关系图
-const relationChartTypes = ['scatter', 'quadrant', 'funnel', 'sankey', 'circle-packing']
+const relationChartTypes = [
+  'scatter',
+  'multi-scatter',
+  'quadrant',
+  'funnel',
+  'sankey',
+  'circle-packing'
+]
 // 不支持指标累加的图表
 export const notSupportAccumulateViews = [
   ...quotaViews,

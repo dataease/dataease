@@ -814,6 +814,15 @@ const init = viewItem => {
   ) {
     checkJumpStr =
       checkAllAxisStr + JSON.stringify(chartDetails.yAxis) + JSON.stringify(chartDetails.yAxisExt)
+  } else if (chartDetails.type === 'multi-scatter') {
+    // 多维散点图跳转字段只列出维度，引用字段可选所有轴字段
+    const multiScatterExtra =
+      JSON.stringify(chartDetails.yAxis || []) +
+      JSON.stringify(chartDetails.extColor || []) +
+      JSON.stringify(chartDetails.extBubble || []) +
+      JSON.stringify(chartDetails.yAxisExt || [])
+    checkAllAxisStr = checkAllAxisStr + multiScatterExtra
+    checkJumpStr = JSON.stringify(chartDetails.extColor || [])
   } else {
     checkJumpStr = checkAllAxisStr
   }

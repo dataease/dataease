@@ -315,6 +315,9 @@ const NOT_SUPPORT_SORT = [
 ]
 
 const showSort = computed(() => {
+  if (chart.value.type === 'multi-scatter') {
+    return false
+  }
   return (
     props.type !== 'extLabel' &&
     props.type !== 'extTooltip' &&
@@ -390,7 +393,10 @@ onMounted(() => {
             }"
           >
             <span class="item-name">{{ item.chartShowName ? item.chartShowName : item.name }}</span>
-            <span v-if="item.summary !== ''" class="item-right-summary">
+            <span
+              v-if="item.summary !== '' && chart.type !== 'multi-scatter'"
+              class="item-right-summary"
+            >
               ({{ t('chart.' + item.summary) }})
             </span>
             <span :data-id="item.id" class="node-id_private"></span>
@@ -443,7 +449,7 @@ onMounted(() => {
         >
           <el-dropdown-item
             @click.prevent
-            v-if="chart.type !== 'table-info' && item.summary !== ''"
+            v-if="!['table-info', 'multi-scatter'].includes(chart.type) && item.summary !== ''"
           >
             <el-dropdown
               :effect="themes"
@@ -613,7 +619,8 @@ onMounted(() => {
           <el-dropdown-item
             @click.prevent
             v-if="
-              !['table-info', 'bullet-graph'].includes(chart.type) && props.type !== 'extBubble'
+              !['table-info', 'bullet-graph', 'multi-scatter'].includes(chart.type) &&
+              props.type !== 'extBubble'
             "
           >
             <el-dropdown
@@ -803,7 +810,10 @@ onMounted(() => {
           <el-dropdown-item
             class="menu-item-padding"
             v-if="
-              props.type !== 'extLabel' && props.type !== 'extTooltip' && props.type !== 'extBubble'
+              props.type !== 'extLabel' &&
+              props.type !== 'extTooltip' &&
+              props.type !== 'extBubble' &&
+              chart.type !== 'multi-scatter'
             "
             :icon="iconFilter"
             :command="beforeClickItem('filter')"

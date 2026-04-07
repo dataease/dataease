@@ -1604,6 +1604,7 @@ export default {
     chart_scatter_bubble: 'Bubble chart',
     chart_scatter: 'Scatter chart',
     bubble_size: 'Bubble size',
+    lightness: 'Lightness',
     chart_treemap: 'Rectangular treemap',
     drill: 'Drill',
     drag_block_treemap_label: 'Block label',

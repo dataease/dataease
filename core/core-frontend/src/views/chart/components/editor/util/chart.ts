@@ -1586,6 +1586,13 @@ export const CHART_TYPE_CONFIGS = [
         value: 'circle-packing',
         title: t('chart.chart_circle_packing'),
         icon: 'circle-packing'
+      },
+      {
+        render: 'antv',
+        category: 'distribute',
+        value: 'multi-scatter',
+        title: '多维散点图',
+        icon: 'multi-scatter'
       }
     ]
   },

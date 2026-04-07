@@ -571,6 +571,7 @@ const linkageFieldAdaptor = async data => {
       if (state.curLinkageViewInfo.tableId === targetChartDetails.tableId) {
         // 只匹配联动字段为0的 避免已经匹配过的重新匹配
         if (data.linkageFields && data.linkageFields.length === 0) {
+          const isMultiScatter = state.curLinkageViewInfo.type === 'multi-scatter'
           const curCheckAllAxisStr =
             JSON.stringify(state.curLinkageViewInfo.xAxis) +
             JSON.stringify(state.curLinkageViewInfo.xAxisExt) +
@@ -578,18 +579,28 @@ const linkageFieldAdaptor = async data => {
             (state.curLinkageViewInfo.type.includes('chart-mix')
               ? JSON.stringify(state.curLinkageViewInfo.extBubble)
               : '') +
-            (['indicator'].includes(state.curLinkageViewInfo.type)
+            (['indicator', 'multi-scatter'].includes(state.curLinkageViewInfo.type)
               ? JSON.stringify(state.curLinkageViewInfo.yAxis)
+              : '') +
+            (isMultiScatter
+              ? JSON.stringify(state.curLinkageViewInfo.extColor || []) +
+                JSON.stringify(state.curLinkageViewInfo.extBubble || []) +
+                JSON.stringify(state.curLinkageViewInfo.yAxisExt || [])
               : '')
           const targetCheckAllAxisStr =
             JSON.stringify(targetChartDetails.xAxis) +
             JSON.stringify(targetChartDetails.xAxisExt) +
-            JSON.stringify(state.curLinkageViewInfo.extStack) +
+            JSON.stringify(targetChartDetails.extStack) +
             (targetChartDetails.type.includes('chart-mix')
               ? JSON.stringify(targetChartDetails.extBubble)
               : '') +
-            (['indicator'].includes(state.curLinkageViewInfo.type)
+            (['indicator', 'multi-scatter'].includes(state.curLinkageViewInfo.type)
               ? JSON.stringify(state.curLinkageViewInfo.yAxis)
+              : '') +
+            (isMultiScatter
+              ? JSON.stringify(state.curLinkageViewInfo.extColor || []) +
+                JSON.stringify(state.curLinkageViewInfo.extBubble || []) +
+                JSON.stringify(state.curLinkageViewInfo.yAxisExt || [])
               : '')
           state.sourceLinkageInfo.targetViewFields.forEach(item => {
             if (
@@ -610,6 +621,7 @@ const linkageFieldAdaptor = async data => {
 
 const sourceLinkageInfoFilter = computed(() => {
   if (state.sourceLinkageInfo.targetViewFields) {
+    const isMultiScatter = state.curLinkageViewInfo.type === 'multi-scatter'
     const curCheckAllAxisStr =
       JSON.stringify(state.curLinkageViewInfo.xAxis) +
       JSON.stringify(state.curLinkageViewInfo.drillFields) +
@@ -618,8 +630,13 @@ const sourceLinkageInfoFilter = computed(() => {
       (state.curLinkageViewInfo.type.includes('chart-mix')
         ? JSON.stringify(state.curLinkageViewInfo.extBubble)
         : '') +
-      (['table-normal', 'indicator'].includes(state.curLinkageViewInfo.type)
+      (['table-normal', 'indicator', 'multi-scatter'].includes(state.curLinkageViewInfo.type)
         ? JSON.stringify(state.curLinkageViewInfo.yAxis)
+        : '') +
+      (isMultiScatter
+        ? JSON.stringify(state.curLinkageViewInfo.extColor || []) +
+          JSON.stringify(state.curLinkageViewInfo.extBubble || []) +
+          JSON.stringify(state.curLinkageViewInfo.yAxisExt || [])
         : '')
     return state.sourceLinkageInfo.targetViewFields.filter(item =>
       curCheckAllAxisStr.includes(item.id)
