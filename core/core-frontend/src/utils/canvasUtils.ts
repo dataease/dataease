@@ -555,6 +555,13 @@ export function initCanvasDataMobile(dvId, params, callBack) {
         ele.style = mStyle || style
         ele.events = mEvents || events
         ele.commonBackground = mCommonBackground || commonBackground
+        if (ele.component === 'VQuery') {
+          ele.propValue?.forEach(queryItem => {
+            queryItem.placeholder = queryItem.mPlaceholder || queryItem.placeholder
+            queryItem.queryConditionWidth =
+              queryItem.mQueryConditionWidth || queryItem.queryConditionWidth
+          })
+        }
         if (ele.component === 'DeTabs') {
           ele.propValue?.forEach(tabItem => {
             tabItem.componentData?.forEach(tabComponent => {

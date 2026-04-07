@@ -149,6 +149,16 @@ const hanedleMessage = event => {
         ele.mStyle = style
         ele.mEvents = events
         ele.mCommonBackground = commonBackground
+
+        if (ele.component === 'VQuery') {
+          ele.propValue = propValue
+          ele.propValue?.forEach(queryItem => {
+            queryItem['mPlaceholder'] = queryItem.placeholder
+            queryItem['mQueryConditionWidth'] = queryItem.queryConditionWidth
+            queryItem.placeholder = queryItem.tempPlaceholder
+            queryItem.queryConditionWidth = queryItem.tempQueryConditionWidth
+          })
+        }
         if (ele.component === 'DeTabs') {
           ele.propValue.forEach(tabItem => {
             tabItem.componentData?.forEach(tabComponent => {
