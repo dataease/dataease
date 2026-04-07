@@ -182,13 +182,7 @@ const onPointClick = param => {
 </script>
 
 <template>
-  <div
-    class="de-view-wrapper"
-    :style="{
-      zoom: state.canvasStylePreview?.scale / 100
-    }"
-    v-if="!!config && state.initState"
-  >
+  <div class="de-view-wrapper" style="zoom: 0.6" v-if="!!config && state.initState">
     <ComponentWrapper
       style="width: 100%; height: 100%"
       :view-info="viewInfo"
