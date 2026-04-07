@@ -194,7 +194,9 @@ onMounted(() => {
       <collapse-switch-item
         v-if="tabTitleShow"
         v-model="element.style.showTabTitle"
-        @modelChange="val => onStyleAttrChange({ key: 'showTabTitle', value: val })"
+        @modelChange="
+          () => onStyleAttrChange({ key: 'showTabTitle', value: element.style.showTabTitle })
+        "
         :themes="themes"
         :title="t('visualization.tab_title')"
         name="tabTitle"
@@ -232,7 +234,9 @@ onMounted(() => {
       <collapse-switch-item
         v-if="element && borderSettingShow"
         v-model="element.style.borderActive"
-        @modelChange="val => onStyleAttrChange({ key: 'borderActive', value: val })"
+        @modelChange="
+          () => onStyleAttrChange({ key: 'borderActive', value: element.style.borderActive })
+        "
         :themes="themes"
         :title="t('visualization.board')"
         name="borderSetting"

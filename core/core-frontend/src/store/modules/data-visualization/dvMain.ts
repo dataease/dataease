@@ -860,7 +860,10 @@ export const dvMainStore = defineStore('dataVisualization', {
           if (this.curBatchOptComponents.includes(component.id)) {
             if (propertyInfo.custom === 'commonBackground') {
               component.commonBackground = deepCopy(this.batchOptComponentInfo.commonBackground)
-            } else if (propertyInfo.custom === 'style' && component.style[propertyInfo.property]) {
+            } else if (
+              propertyInfo.custom === 'style' &&
+              component.style[propertyInfo.property] !== undefined
+            ) {
               component.style[propertyInfo.property] = propertyInfo.value
             }
           }
@@ -887,7 +890,7 @@ export const dvMainStore = defineStore('dataVisualization', {
                     )
                   } else if (
                     propertyInfo.custom === 'style' &&
-                    tabComponent.style[propertyInfo.property]
+                    tabComponent.style[propertyInfo.property] !== undefined
                   ) {
                     tabComponent.style[propertyInfo.property] = propertyInfo.value
                   }
