@@ -19,6 +19,18 @@ const checkItemPosition = component => {
   component.sizeY = 20
 }
 
+const apdataQuery = ele => {
+  if (ele.component === 'VQuery') {
+    ele.propValue?.forEach(queryItem => {
+      queryItem['tempPlaceholder'] = queryItem.placeholder
+      queryItem['tempQueryConditionWidth'] = queryItem.queryConditionWidth
+      queryItem.placeholder = queryItem.mPlaceholder || queryItem.placeholder
+      queryItem.queryConditionWidth =
+        queryItem.mQueryConditionWidth || queryItem.queryConditionWidth
+    })
+  }
+}
+
 const hanedleMessage = event => {
   if (event.data.type === 'panelInit') {
     const { componentData, canvasStyleData, dvInfo, canvasViewInfo, isEmbedded } = event.data.value
@@ -31,6 +43,7 @@ const hanedleMessage = event => {
       ele.style = deepCopy(mStyle || ele.style)
       ele.commonBackground = deepCopy(mCommonBackground || ele.commonBackground)
       ele.events = deepCopy(mEvents || ele.events)
+      apdataQuery(ele)
 
       if (ele.component === 'DeTabs') {
         ele.propValue?.forEach(tabItem => {
@@ -46,7 +59,7 @@ const hanedleMessage = event => {
             )
             tabComponent.events = deepCopy(tEvents || tabComponent.events)
             if (tabComponent.component === 'VQuery') {
-              tabComponent.propValue = deepCopy(tPropValue || tabComponent.propValue)
+              tabComponent.propValue = deepCopy(tabComponent.propValue)
             }
           })
         })
