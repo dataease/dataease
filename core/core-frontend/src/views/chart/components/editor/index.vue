@@ -494,7 +494,10 @@ const quotaItemRemove = item => {
   recordSnapshotInfo('calcData')
   let axisType: AxisType = item.removeType
   let axis
-  if (item.removeType === 'quota') {
+  if (item.removeType === 'dimension') {
+    axisType = 'xAxis'
+    axis = view.value.xAxis.splice(item.index, 1)
+  } else if (item.removeType === 'quota') {
     axisType = 'yAxis'
     axis = view.value.yAxis.splice(item.index, 1)
   } else if (item.removeType === 'quotaExt') {
@@ -2729,7 +2732,7 @@ const chartStyleScroll = (val: any) => {
                                     :item="element"
                                     :index="index"
                                     :themes="props.themes"
-                                    type="quota"
+                                    type="dimension"
                                     @onDimensionItemChange="dimensionItemChange"
                                     @onDimensionItemRemove="dimensionItemRemove"
                                     @onNameEdit="showRename"
@@ -2743,7 +2746,7 @@ const chartStyleScroll = (val: any) => {
                                     :chart="view"
                                     :item="element"
                                     :index="index"
-                                    type="quota"
+                                    type="dimension"
                                     :themes="props.themes"
                                     @onQuotaItemChange="item => quotaItemChange(item, 'xAxis')"
                                     @onQuotaItemRemove="quotaItemRemove"
