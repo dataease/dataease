@@ -32,6 +32,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { comInfo } from './com-info'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import StyleInject from './StyleInject.vue'
+import { getKeyList, reRenderAll } from '@/custom-component/v-query/QueryUtils'
 const props = defineProps({
   view: {
     type: Object,
@@ -356,29 +357,6 @@ const releaseSelect = id => {
   unMountSelect.value = unMountSelect.value.filter(ele => ele !== id)
 }
 
-const getKeyList = next => {
-  let checkedFieldsMapArr = Object.entries(next.checkedFieldsMap).filter(ele =>
-    next.checkedFields.includes(ele[0])
-  )
-  if (next.displayType === '9') {
-    checkedFieldsMapArr = (
-      next.treeCheckedList?.length
-        ? next.treeCheckedList.filter((_, index) => index < next.treeFieldList.length)
-        : next.treeFieldList.map(() => {
-            return {
-              checkedFields: [...next.checkedFields],
-              checkedFieldsMap: cloneDeep(next.checkedFieldsMap)
-            }
-          })
-    )
-      .map(item =>
-        Object.entries(item.checkedFieldsMap).filter(ele => item.checkedFields.includes(ele[0]))
-      )
-      .flat()
-  }
-  return checkedFieldsMapArr.filter(ele => !!ele[1]).map(ele => ele[0])
-}
-
 const fillRequireVal = arr => {
   element.value.propValue?.forEach(next => {
     if (arr.some(itx => next.checkedFields.includes(itx)) && next.required) {
@@ -676,20 +654,6 @@ const editQueryCriteria = () => {
 
 const addCriteriaConfigOut = () => {
   queryConfig.value.setConditionOut()
-}
-
-const reRenderAll = (oldArr, newArr) => {
-  const newArrIds = newArr.map(ele => ele.id)
-  const emitterList = (oldArr || []).reduce((pre, next) => {
-    if (newArrIds.includes(next.id)) return pre
-    const keyList = getKeyList(next)
-    pre = [...new Set([...keyList, ...pre])]
-    return pre
-  }, [])
-  if (!emitterList.length) return
-  emitterList.forEach(ele => {
-    emitter.emit(`query-data-${ele}`)
-  })
 }
 
 const delQueryConfig = index => {

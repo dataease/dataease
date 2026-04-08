@@ -31,6 +31,7 @@ import {
   filterParamsOptions
 } from '@/utils/componentUtils'
 import { formatterItem } from '@/views/chart/components/js/formatter'
+import { reRenderAfterDelete } from '@/custom-component/v-query/QueryUtils'
 const { t } = useI18n()
 
 export const dvMainStore = defineStore('dataVisualization', {
@@ -586,8 +587,11 @@ export const dvMainStore = defineStore('dataVisualization', {
       }
 
       if (/\d/.test(index)) {
+        const deletedComponent = componentData[index]
         this.curComponentIndex = null
         componentData.splice(index, 1)
+        // VQuery 组件
+        deletedComponent?.component === 'VQuery' && reRenderAfterDelete(deletedComponent.propValue)
       }
     },
     updateCurDvInfo(dvInfo) {
