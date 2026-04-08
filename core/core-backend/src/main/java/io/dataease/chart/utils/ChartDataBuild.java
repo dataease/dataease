@@ -1521,7 +1521,7 @@ public class ChartDataBuild {
                 if (i == ele.length) break;
                 ChartViewFieldDTO chartViewFieldDTO = fields.get(i);
                 if (chartViewFieldDTO.getDeType() == 0 || chartViewFieldDTO.getDeType() == 1 || chartViewFieldDTO.getDeType() == 5 || chartViewFieldDTO.getDeType() == 7) {
-                    d.put(fields.get(i).getDataeaseName(), StringUtils.isEmpty(ele[i]) ? "" : ele[i]);
+                    d.put(fields.get(i).getDataeaseName(), ele[i]);
                 } else if (chartViewFieldDTO.getDeType() == 2 || chartViewFieldDTO.getDeType() == 3 || chartViewFieldDTO.getDeType() == 4) {
                     // 如果是在维度中展示，导出excel时展示为字符串，其它情况展示为数值类型
                     if (view.getIsExcelExport() || StringUtils.equalsIgnoreCase(chartViewFieldDTO.getGroupType(), "d")) {
