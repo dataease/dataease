@@ -380,7 +380,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                         if (StringUtils.isNotEmpty(datasourceOld.getConfiguration())) {
                             if (datasourceOld.getType().equals(DatasourceConfiguration.DatasourceType.API.name())) {
                                 DEException.throwException(Translator.get("i18n_app_error_no_api"));
-                            } else if (datasourceOld.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
+                            } else if (datasourceOld.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name()) || datasourceOld.getType().equals(DatasourceConfiguration.DatasourceType.ExcelRemote.name())) {
                                 dsTableNamesMap.put(datasourceOld.getId(), ExcelUtils.getTableNamesMap(datasourceOld.getType(), datasourceOld.getConfiguration()));
                             } else if (datasourceOld.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
                                 dsTableNamesMap.put(datasourceOld.getId(), (Map<String, String>) datasourceServer.invokeMethod(datasourceOld.getType(), "getTableNamesMap", String.class, datasourceOld.getConfiguration()));
@@ -392,7 +392,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                     systemDatasource.forEach(datasourceNew -> {
                         // Excel 数据表明映射
                         if (StringUtils.isNotEmpty(datasourceNew.getConfiguration())) {
-                            if (datasourceNew.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
+                            if (datasourceNew.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name()) || datasourceNew.getType().equals(DatasourceConfiguration.DatasourceType.ExcelRemote.name())) {
                                 dsTableNamesMap.put(datasourceNew.getId(), ExcelUtils.getTableNamesMap(datasourceNew.getType(), datasourceNew.getConfiguration()));
                                 excelDatasourceId.add(datasourceNew.getId());
                             } else if (datasourceNew.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
@@ -485,7 +485,17 @@ public class DataVisualizationServer implements DataVisualizationApi {
                             Map<String, String> systemDsTableNamesMap = dsTableNamesMap.get(value);
                             if (MapUtils.isNotEmpty(appDsTableNamesMap)) {
                                 appDsTableNamesMap.forEach((keyName, valueName) -> {
-                                    if (MapUtils.isNotEmpty(systemDsTableNamesMap) && StringUtils.isNotEmpty(systemDsTableNamesMap.get(keyName))) {
+                                    // 检查是否都只有一个元素
+                                    boolean bothHaveSingleEntry = appDsTableNamesMap.size() == 1 &&
+                                            systemDsTableNamesMap != null &&
+                                            systemDsTableNamesMap.size() == 1;
+                                    if (bothHaveSingleEntry) {
+                                        // 直接使用 systemDsTableNamesMap 的第一个值
+                                        String firstSystemValue = systemDsTableNamesMap.values().iterator().next();
+                                        dsGroup.setInfo(dsGroup.getInfo().replaceAll(valueName, firstSystemValue));
+                                        excelTableNamesMap.put(valueName, firstSystemValue);
+                                    } else if (MapUtils.isNotEmpty(systemDsTableNamesMap) &&
+                                            StringUtils.isNotEmpty(systemDsTableNamesMap.get(keyName))) {
                                         dsGroup.setInfo(dsGroup.getInfo().replaceAll(valueName, systemDsTableNamesMap.get(keyName)));
                                         excelTableNamesMap.put(valueName, systemDsTableNamesMap.get(keyName));
                                     } else {
@@ -493,7 +503,6 @@ public class DataVisualizationServer implements DataVisualizationApi {
                                     }
                                 });
                             }
-
                         });
                         if (dsGroupNameSave.contains(dsGroup.getName())) {
                             dsGroup.setName(dsGroup.getName() + "-" + UUID.randomUUID().toString());
