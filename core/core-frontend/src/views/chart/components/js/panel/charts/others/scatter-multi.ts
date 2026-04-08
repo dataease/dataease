@@ -414,7 +414,10 @@ export class MultiScatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
           const value = isTimeStr
             ? String(rawValue)
             : valueFormatter(parseFloat(String(rawValue)), formatter.formatterCfg)
-          const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
+          let name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
+          if (fieldKey === 'x') {
+            name = xFieldName
+          }
           result.push({ color: pointColor, name, value, marker: true })
         })
         datum.dynamicTooltipValue?.forEach(item => {
