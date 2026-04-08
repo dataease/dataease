@@ -15,7 +15,7 @@ import java.util.List;
 public class Mysql extends DatasourceConfiguration {
     private String driver = "com.mysql.cj.jdbc.Driver";
     private String extraParams = "characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull";
-    private List<String> illegalParameters = Arrays.asList("maxAllowedPacket", "autoDeserialize", "queryInterceptors", "statementInterceptors", "detectCustomCollations", "allowloadlocalinfile", "allowUrlInLocalInfile", "allowLoadLocalInfileInPath");
+    private List<String> illegalParameters = Arrays.asList("maxAllowedPacket", "autoDeserialize", "queryInterceptors", "statementInterceptors", "detectCustomCollations", "allowloadlocalinfile", "allowUrlInLocalInfile", "allowLoadLocalInfileInPath", "allowMultiQueries");
     private List<String> showTableSqls = Arrays.asList("show tables");
 
     public String getJdbc() {
@@ -32,12 +32,12 @@ public class Mysql extends DatasourceConfiguration {
         }
         String jdbcUrl = "";
         if (StringUtils.isEmpty(extraParams.trim())) {
-            jdbcUrl =  "jdbc:mysql://HOSTNAME:PORT/DATABASE"
+            jdbcUrl = "jdbc:mysql://HOSTNAME:PORT/DATABASE"
                     .replace("HOSTNAME", getLHost().trim())
                     .replace("PORT", getLPort().toString().trim())
                     .replace("DATABASE", getDataBase().trim());
         } else {
-            jdbcUrl =  "jdbc:mysql://HOSTNAME:PORT/DATABASE?EXTRA_PARAMS"
+            jdbcUrl = "jdbc:mysql://HOSTNAME:PORT/DATABASE?EXTRA_PARAMS"
                     .replace("HOSTNAME", getLHost().trim())
                     .replace("PORT", getLPort().toString().trim())
                     .replace("DATABASE", getDataBase().trim())
