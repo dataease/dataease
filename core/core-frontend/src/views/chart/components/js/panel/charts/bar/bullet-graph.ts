@@ -14,10 +14,10 @@ import {
 import { useI18n } from '@/hooks/web/useI18n'
 import { flow, parseJson } from '@/views/chart/components/js/util'
 import { BulletOptions } from '@antv/g2plot'
-import { isEmpty } from 'lodash-es'
+import { defaults, isEmpty } from 'lodash-es'
 import {
-  configAxisLabelLengthLimit,
   configPlotTooltipEvent,
+  configXAxisLengthLimit,
   getPadding,
   getTooltipContainer,
   TOOLTIP_TPL
@@ -131,7 +131,7 @@ export class BulletGraph extends G2PlotChartView<G2BulletOptions, G2Bullet> {
       action(actionParams)
     })
     configPlotTooltipEvent(chart, newChart)
-    configAxisLabelLengthLimit(chart, newChart, null)
+    configXAxisLengthLimit(chart, newChart)
     return newChart
   }
 
@@ -224,6 +224,15 @@ export class BulletGraph extends G2PlotChartView<G2BulletOptions, G2Bullet> {
     }
 
     xAxis.label.style = style
+    if (tmpOptions.xAxis.label) {
+      const x = parseJson(chart.customStyle).xAxis
+      const { lengthLimit } = x.axisLabel
+      defaults(tmpOptions.xAxis.label, {
+        formatter: value => {
+          return value?.length > lengthLimit ? value.substring(0, lengthLimit) + '...' : value
+        }
+      })
+    }
     return tmpOptions
   }
 

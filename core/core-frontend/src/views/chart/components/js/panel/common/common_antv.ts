@@ -2128,6 +2128,83 @@ export function configAxisLabelLengthLimit(chart, plot, triggerObjName = 'axis-l
   })
 }
 
+export function configXAxisLengthLimit(chart: any, chartObj: any): void {
+  const xAxis = parseJson(chart.customStyle).xAxis
+  if (!xAxis.show || !xAxis.axisLabel?.show) {
+    return
+  }
+  let hideTimer
+  const { tooltip } = parseJson(chart.customAttr)
+  chartObj?.on('axis-label:mousemove', e => {
+    const showText = e.target?.attrs?.text
+    if (!showText?.endsWith('...')) {
+      return
+    }
+    hideTimer && clearTimeout(hideTimer)
+    const originText = e.target?.cfg?.delegateObject?.item?.name
+    const parentContainer: HTMLDivElement = e.view?.ele
+    let axisLabelDom = parentContainer.getElementsByClassName(
+      'g2-axis-label-tooltip'
+    )[0] as HTMLDivElement
+    if (!axisLabelDom) {
+      axisLabelDom = document.createElement('div')
+      _.merge(axisLabelDom.style, {
+        left: '0px',
+        top: '0px',
+        display: 'none',
+        position: 'absolute',
+        padding: '4px 8px',
+        borderRadius: '4px',
+        zIndex: '1',
+        cursor: 'default',
+        pointerEvents: 'none',
+        transition:
+          'left 0.4s cubic-bezier(0.23, 1, 0.32, 1), top 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
+        boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 8px 0px',
+        color: tooltip.color,
+        fontSize: `${tooltip.fontSize}px`,
+        backgroundColor: tooltip.backgroundColor
+      })
+      axisLabelDom.className = 'g2-axis-label-tooltip'
+      parentContainer.appendChild(axisLabelDom)
+    }
+    const { width: labelWidth, height: labelHeight } = axisLabelDom.getBoundingClientRect()
+    let left = e.x - (tooltip.fontSize * originText.length) / 2 - 10
+    let top = e.y - tooltip.fontSize - 18
+    if (labelWidth) {
+      if (e.x - labelWidth < 10) {
+        left = 0
+      } else {
+        left = e.x - labelWidth - 10
+      }
+    }
+    if (labelHeight) {
+      if (e.y < labelHeight) {
+        top = e.y + 10
+      } else {
+        top = e.y - labelHeight - 10
+      }
+    }
+    axisLabelDom.style.left = `${left}px`
+    axisLabelDom.style.top = `${top}px`
+    axisLabelDom.innerText = originText
+    if (axisLabelDom.style.display !== 'block') {
+      axisLabelDom.style.display = 'block'
+    }
+  })
+  chartObj?.on('axis-label:mouseleave', e => {
+    const parentContainer: HTMLDivElement = e.view?.ele
+    const axisLabelDom = parentContainer.getElementsByClassName(
+      'g2-axis-label-tooltip'
+    )[0] as HTMLDivElement
+    if (axisLabelDom) {
+      hideTimer = setTimeout(() => {
+        axisLabelDom.style.display = 'none'
+      }, 200)
+    }
+  })
+}
+
 /**
  * y轴标题截取
  * @param chart
