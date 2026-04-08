@@ -1417,6 +1417,8 @@ const saveRename = ref => {
           view.value.yAxis[index].chartShowName = chartShowName
           break
         case 'dimension':
+          axisType = 'xAxis'
+          axis = view.value.xAxis[index]
           view.value.xAxis[index].chartShowName = chartShowName
           break
         case 'quotaExt':
@@ -2720,7 +2722,7 @@ const chartStyleScroll = (val: any) => {
                                 animation="300"
                                 class="drag-block-style"
                                 :class="{ dark: themes === 'dark' }"
-                                @add="addYaxis"
+                                @add="addXaxis"
                                 @change="e => onAxisChange(e, 'xAxis')"
                               >
                                 <template #item="{ element, index }">
