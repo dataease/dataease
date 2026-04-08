@@ -985,6 +985,16 @@ const marginBottom = computed<string | 0>(() => {
 const iconSize = computed<string>(() => {
   return 16 * scale.value + 'px'
 })
+
+/**
+ * 保证标题容器高度最小高度不低于图标高度
+ */
+const titleContainerMinHeight = computed<string>(() => {
+  if (!titleShow.value) {
+    return 16 * scale.value + 4 + 'px'
+  }
+  return 16 * scale.value + 'px'
+})
 /**
  * 修改透明度
  * 边框透明度为0时会是存色，顾配置低透明度
@@ -1120,7 +1130,11 @@ const clearG2Tooltip = () => {
   >
     <div
       class="title-container"
-      :style="{ 'justify-content': titleAlign, 'margin-bottom': marginBottom }"
+      :style="{
+        'justify-content': titleAlign,
+        'margin-bottom': marginBottom,
+        'min-height': titleContainerMinHeight
+      }"
     >
       <template v-if="!titleEditStatus">
         <p class="ellipsis" v-if="titleShow" :style="state.title_class" @dblclick="changeEditTitle">
