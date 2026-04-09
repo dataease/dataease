@@ -405,6 +405,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
         if (viewMeta.colIndex === 0) {
           if (tableHeader.showIndex || xAxis?.length) {
             viewMeta.fieldValue = summaryLabel ?? t('chart.total_show')
+            viewMeta.isSummaryLabel = true
           }
         }
         return new SummaryCell(viewMeta, viewMeta?.spreadsheet)

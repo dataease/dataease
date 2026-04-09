@@ -1867,6 +1867,9 @@ export function copyContent(s2Instance: SpreadSheet, event, fieldMeta) {
           if (metaObj) {
             fieldVal = metaObj.formatter(value)
           }
+          if (cellMeta.isSummaryLabel) {
+              fieldVal = cellMeta.fieldValue?.toString() ?? fieldVal
+          }
           if (fieldVal === undefined || fieldVal === null) {
             const fieldMap = fieldMeta?.reduce((p, n) => {
               p[n.field] = n.name
@@ -1901,6 +1904,9 @@ export function copyContent(s2Instance: SpreadSheet, event, fieldMeta) {
     content = value?.toString()
     if (metaObj) {
       content = metaObj.formatter(value)
+    }
+    if (cellMeta.isSummaryLabel) {
+      content = cellMeta.fieldValue?.toString() ?? content
     }
   } else {
     // 列头&行头

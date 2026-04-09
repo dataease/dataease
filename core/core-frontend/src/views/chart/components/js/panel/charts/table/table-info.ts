@@ -546,10 +546,12 @@ export class TableInfo extends S2ChartView<TableSheet> {
         if (viewMeta.colIndex === 0) {
           if (tableHeader.showIndex) {
             viewMeta.fieldValue = summaryLabel ?? t('chart.total_show')
+            viewMeta.isSummaryLabel = true
           } else {
             // 第一列不是数值类型的，显示总计
             if (![2, 3, 4].includes(xAxis?.[0]?.deType)) {
               viewMeta.fieldValue = summaryLabel ?? t('chart.total_show')
+              viewMeta.isSummaryLabel = true
             }
           }
         }
