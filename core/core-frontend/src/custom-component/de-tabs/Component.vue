@@ -179,6 +179,7 @@ import { debounce } from 'lodash-es'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { CommonBackground } from '@/components/visualization/component-background/Types'
 import { ShorthandMode } from '@/Types'
+import { checkFilterRemove } from '@/custom-component/v-query/QueryUtils'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const { tabMoveInActiveId, bashMatrixInfo, editMode, mobileInPc } = storeToRefs(dvMainStore)
@@ -378,6 +379,7 @@ function deleteCur(param) {
   let len = element.value.propValue.length
   while (len--) {
     if (element.value.propValue[len].name === param.name) {
+      const deletedTab = element.value.propValue[len]
       element.value.propValue.splice(len, 1)
       const activeIndex =
         (len - 1 + element.value.propValue.length) % element.value.propValue.length
@@ -385,6 +387,9 @@ function deleteCur(param) {
       state.tabShow = false
       nextTick(() => {
         state.tabShow = true
+        deletedTab.componentData?.forEach(tabComponent => {
+          checkFilterRemove(tabComponent)
+        })
       })
     }
   }
