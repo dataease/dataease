@@ -372,12 +372,12 @@ public class ChartDataServer implements ChartDataApi {
         Integer totalDepth = 0;
         List<CellRangeAddress> mergeConfig = new ArrayList<>();
         if (StringUtils.equalsAnyIgnoreCase(viewInfo.getType(), "table-normal", "table-info")) {
-            for (ChartViewFieldDTO xAxi : xAxis) {
-                if (xAxi.isHide()) {
+            for (ChartViewFieldDTO tmpAxis : xAxis) {
+                if (tmpAxis.isHide()) {
                     continue;
                 }
-                if (xAxi.getDeType().equals(DeTypeConstants.DE_INT) || xAxi.getDeType().equals(DeTypeConstants.DE_FLOAT)) {
-                    CellStyle formatterCellStyle = createCellStyle(wb, xAxi.getFormatterCfg(), null);
+                if (tmpAxis.getDeType().equals(DeTypeConstants.DE_INT) || tmpAxis.getDeType().equals(DeTypeConstants.DE_FLOAT)) {
+                    CellStyle formatterCellStyle = createCellStyle(wb, tmpAxis.getFormatterCfg(), null);
                     styles.add(formatterCellStyle);
                 } else {
                     styles.add(null);
@@ -404,6 +404,7 @@ public class ChartDataServer implements ChartDataApi {
                 }
             }
             if ("table-info".equalsIgnoreCase(viewInfo.getType()) && !"dataset".equalsIgnoreCase(viewInfo.getDownloadType())) {
+                xAxis = xAxis.stream().filter(x -> !x.isHide()).toList();
                 Map<String, Object> tableCell = (Map<String, Object>) viewInfo.getCustomAttr().get("tableCell");
                 Boolean mergeCells = (Boolean) tableCell.get("mergeCells");
                 if (mergeCells != null && mergeCells) {
@@ -528,7 +529,7 @@ public class ChartDataServer implements ChartDataApi {
                             detailsSheet.setColumnWidth(j, 255 * 20);
                         } else if (cellValObj != null) {
                             try {
-                                if ((viewInfo.getType().equalsIgnoreCase("table-normal") || viewInfo.getType().equalsIgnoreCase("table-info")) && (xAxis.get(j).getDeType().equals(DeTypeConstants.DE_INT) || xAxis.get(j).getDeType().equals(DeTypeConstants.DE_FLOAT))) {
+                                if (StringUtils.equalsAnyIgnoreCase(viewInfo.getType(), "table-info", "table-normal") && Arrays.asList(DeTypeConstants.DE_INT,DeTypeConstants.DE_FLOAT).contains(xAxis.get(j).getDeType())) {
                                     try {
                                         FormatterCfgDTO formatterCfgDTO = xAxis.get(j).getFormatterCfg() == null ? new FormatterCfgDTO().setUnitLanguage(Lang.isChinese() ? "ch" : "en") : xAxis.get(j).getFormatterCfg();
                                         row.getCell(j).setCellStyle(styles.get(j));
