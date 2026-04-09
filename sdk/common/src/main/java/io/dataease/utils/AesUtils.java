@@ -9,6 +9,8 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import java.security.SecureRandom;
+
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class AesUtils {
@@ -61,5 +63,32 @@ public class AesUtils {
 
     public static Object aesDecrypt(Object o) {
         return o == null ? null : aesDecrypt(o.toString(), "www.fit2cloud.co", "1234567890123456");
+    }
+
+    public static String aesEncryptWithIv(String src, String secretKey) {
+        if (StringUtils.isBlank(secretKey)) {
+            throw new RuntimeException("secretKey is empty");
+        }
+        try {
+            // 生成随机IV
+            byte[] iv = new byte[16];
+            new SecureRandom().nextBytes(iv);
+            IvParameterSpec ivSpec = new IvParameterSpec(iv);
+
+            byte[] raw = secretKey.getBytes(UTF_8);
+            SecretKeySpec secretKeySpec = new SecretKeySpec(raw, "AES");
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, ivSpec);
+            byte[] encrypted = cipher.doFinal(src.getBytes(UTF_8));
+
+            // 将IV拼接到密文前面
+            byte[] ivAndCipher = new byte[iv.length + encrypted.length];
+            System.arraycopy(iv, 0, ivAndCipher, 0, iv.length);
+            System.arraycopy(encrypted, 0, ivAndCipher, iv.length, encrypted.length);
+
+            return Base64.encodeBase64String(ivAndCipher);
+        } catch (Exception e) {
+            throw new RuntimeException("AES encrypt error:", e);
+        }
     }
 }

@@ -4813,6 +4813,10 @@ export default {
   security: {
     title: 'Security Settings'
   },
+  setting_hmac: {
+    title: 'HMAC Settings',
+    enable: 'Enable HMAC Authentication'
+  },
   setting_mfa: {
     title: 'MFA Settings',
     status: 'Global MFA Authentication Enabled',

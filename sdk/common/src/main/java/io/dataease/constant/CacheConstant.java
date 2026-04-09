@@ -31,6 +31,7 @@ public class CacheConstant {
         public static final String RSA_CACHE = "de_v2_rsa";
         public static final String PER_MENU_ID_CACHE = "de_v2_per_menu_id";
         public static final String GLOBAL_MFA_CACHE = "de_v2_global_mfa";
+        public static final String GLOBAL_HMAC_CACHE = "de_v2_global_hmac";
     }
 
     public static class LicenseCacheConstant {
