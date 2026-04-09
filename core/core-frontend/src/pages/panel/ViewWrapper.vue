@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onBeforeMount, reactive, inject, nextTick } from 'vue'
+import { ref, onBeforeMount, reactive, inject, nextTick, onMounted } from 'vue'
 import { initCanvasData, onInitReady } from '@/utils/canvasUtils'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { useEmbedded } from '@/store/modules/embedded'
@@ -29,7 +29,8 @@ const state = reactive({
   dvInfo: null,
   dvId: null,
   suffixId: 'common',
-  initState: true
+  initState: true,
+  scale: 100
 })
 
 const embeddedParams = embeddedParamsDiv?.chartId ? embeddedParamsDiv : embeddedStore
@@ -147,6 +148,7 @@ onBeforeMount(async () => {
       nextTick(() => {
         onInitReady({ resourceId: chartId })
       })
+      resetLayout()
     }
   )
 })
@@ -179,12 +181,31 @@ const onPointClick = param => {
     console.warn('de_inner_params send error')
   }
 }
+const previewViewCanvas = ref(null)
+
+const resetLayout = () => {
+  nextTick(() => {
+    if (previewViewCanvas.value) {
+      //div容器获取tableBox.value.clientWidth
+      const widthSource = state.canvasDataPreview?.find(item => item.id === embeddedParams?.chartId)
+        ?.style.width
+      if (widthSource) {
+        let canvasWidth = previewViewCanvas.value.clientWidth
+        state.scale = (canvasWidth * state.canvasStylePreview.scale) / widthSource
+      }
+    }
+  })
+}
+onMounted(() => {
+  resetLayout()
+})
 </script>
 
 <template>
-  <div class="de-view-wrapper" style="zoom: 0.6" v-if="!!config && state.initState">
+  <div class="de-view-wrapper" ref="previewViewCanvas" v-if="!!config && state.initState">
     <ComponentWrapper
       style="width: 100%; height: 100%"
+      :scale="state.scale"
       :view-info="viewInfo"
       :config="config"
       :canvas-style-data="state.canvasStylePreview"
