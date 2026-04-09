@@ -17,6 +17,7 @@ import { configHandler } from './refresh'
 import { isMobile, getLocale } from '@/utils/utils'
 import { useRequestStoreWithOut } from '@/store/modules/request'
 import { clearCache } from '@/utils/cacheUtil'
+import { securityConfig } from './hmac'
 
 type AxiosErrorWidthLoading<T> = T & {
   config: {
@@ -100,6 +101,7 @@ service.interceptors.request.use(
     if (config instanceof Promise) {
       config = await config
     }
+    await securityConfig(config, service.getUri(config))
     if (
       config.method === 'post' &&
       (config.headers as AxiosRequestHeaders)['Content-Type'] ===
