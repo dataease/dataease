@@ -13,7 +13,6 @@ import io.dataease.dataset.manage.PermissionManage;
 import io.dataease.dataset.utils.DatasetUtils;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.*;
-import io.dataease.engine.utils.SQLUtils;
 import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.api.PluginManageApi;
@@ -350,14 +349,12 @@ public class ChartDataManage {
 
         formatResult.getContext().put("drillAxis", drillAxis);
 
-        //转义特殊字符
+        // 保存原始值，不再在此处预转义，由后面的 sanitizeSqlLiteral 统一负责转义
         extFilterList.forEach(ele -> {
             if (ObjectUtils.isNotEmpty(ele.getValue())) {
-                List<String> collect = ele.getValue().stream().map(SQLUtils::transKeyword).collect(Collectors.toList());
                 if (CollectionUtils.isEmpty(ele.getOriginValue())) {
                     ele.setOriginValue(ele.getValue());
                 }
-                ele.setValue(collect);
             }
         });
         // 视图自定义过滤逻辑
