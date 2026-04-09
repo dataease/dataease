@@ -4624,6 +4624,10 @@ export default {
   security: {
     title: '安全设置'
   },
+  setting_hmac: {
+    title: 'HMAC 设置',
+    enable: '启用 HMAC 认证'
+  },
   setting_mfa: {
     title: 'MFA 设置',
     status: '全局启用 MFA 认证',
