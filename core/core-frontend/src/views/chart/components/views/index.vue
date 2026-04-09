@@ -17,6 +17,7 @@ import {
   CSSProperties,
   nextTick,
   onBeforeMount,
+  onBeforeUnmount,
   onMounted,
   PropType,
   provide,
@@ -887,6 +888,13 @@ onMounted(() => {
   buildInnerRefreshTimer(refreshViewEnable, refreshUnit, refreshTime)
 
   initTitle()
+})
+
+onBeforeUnmount(() => {
+  if (innerRefreshTimer) {
+    clearInterval(innerRefreshTimer)
+    innerRefreshTimer = null
+  }
 })
 
 // 1.开启仪表板刷新 2.首次加载（searchCount =0 ）3.正在请求数据 则显示加载状态
