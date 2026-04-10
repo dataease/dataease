@@ -338,9 +338,34 @@ export class BulletGraph extends G2PlotChartView<G2BulletOptions, G2Bullet> {
       )
     )
 
+    const legendSize = bullet.bar.ranges.symbolSize ?? customStyleLegend.size ?? 4
     return {
       ...options,
-      legend: { custom: true, position: baseLegend.position, layout: baseLegend.layout, items }
+      legend: {
+        ...baseLegend,
+        custom: true,
+        position: baseLegend.position,
+        layout: baseLegend.layout,
+        items,
+        itemHeight:
+          (customStyleLegend.fontSize > legendSize * 2
+            ? customStyleLegend.fontSize
+            : legendSize * 2) + 4,
+        pageNavigator: {
+          marker: {
+            style: {
+              fill: 'rgba(0,0,0,0.65)',
+              size: legendSize * 2
+            }
+          },
+          text: {
+            style: {
+              fill: customStyleLegend.color,
+              fontSize: customStyleLegend.fontSize
+            }
+          }
+        }
+      }
     }
   }
 
