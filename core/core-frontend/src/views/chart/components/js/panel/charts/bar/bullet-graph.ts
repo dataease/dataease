@@ -374,7 +374,7 @@ export class BulletGraph extends G2PlotChartView<G2BulletOptions, G2Bullet> {
     const tooltipAttr = customAttr.tooltip
     const { bullet } = parseJson(chart.customAttr).misc
     if (!tooltipAttr.show) return { ...options, tooltip: false }
-
+    const customStyleLegend = parseJson(chart.customStyle).legend
     const formatterMap = tooltipAttr.seriesTooltipFormatter
       ?.filter(i => i.show)
       .reduce((pre, next, _index) => {
@@ -430,29 +430,33 @@ export class BulletGraph extends G2PlotChartView<G2BulletOptions, G2Bullet> {
         const ranges = data.ranges
         const rangeFormatterCfg =
           formatterMap['ranges']?.formatterCfg ?? rangeFormatter?.formatterCfg
-        if (!formatterMap['ranges']) return result
-        ranges.forEach((range, index) => {
-          const value = isDynamic
-            ? valueFormatter(parseFloat(data.minRanges[0]), rangeFormatterCfg)
-            : (range as string)
-          let name = ''
-          let color: string | string[]
-          if (bullet.bar.ranges.showType === 'dynamic') {
-            name = isEmpty(rangeFormatter.chartShowName)
-              ? rangeFormatter.name
-              : rangeFormatter.chartShowName
-            color = bullet.bar['ranges'].fill
-          } else {
-            const customRange = bullet.bar.ranges.fixedRange[index].name
-            name = customRange
-              ? customRange
-              : isEmpty(rangeFormatter.chartShowName)
-              ? rangeFormatter.name
-              : rangeFormatter.chartShowName
-            color = bullet.bar['ranges'].fixedRange[index].fill
-          }
-          result.push({ ...originalItems[0], color, name, value })
-        })
+        const shouldShowRanges = isDynamic
+          ? Boolean(formatterMap['ranges'])
+          : customStyleLegend.showRange
+        if (shouldShowRanges) {
+          ranges.forEach((range, index) => {
+            const value = isDynamic
+              ? valueFormatter(parseFloat(data.minRanges[0]), rangeFormatterCfg)
+              : (range as string)
+            let name = ''
+            let color: string | string[]
+            if (bullet.bar.ranges.showType === 'dynamic') {
+              name = isEmpty(rangeFormatter.chartShowName)
+                ? rangeFormatter.name
+                : rangeFormatter.chartShowName
+              color = bullet.bar['ranges'].fill
+            } else {
+              const customRange = bullet.bar.ranges.fixedRange[index].name
+              name = customRange
+                ? customRange
+                : isEmpty(rangeFormatter.chartShowName)
+                ? rangeFormatter.name
+                : rangeFormatter.chartShowName
+              color = bullet.bar['ranges'].fixedRange[index].fill
+            }
+            result.push({ ...originalItems[0], color, name, value })
+          })
+        }
         const dynamicTooltipValue = chart.data.data.find(
           d => d.field === originalItems[0]['title']
         )?.dynamicTooltipValue
