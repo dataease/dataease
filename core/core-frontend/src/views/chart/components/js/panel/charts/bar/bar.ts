@@ -826,8 +826,20 @@ export class GroupStackBar extends StackBar {
     }
   }
 
+  protected configData(chart: Chart, options: ColumnOptions): ColumnOptions {
+    if (!chart.xAxisExt?.length) {
+      options.isGroup = false
+    }
+    if (!chart.extStack?.length) {
+      options.isStack = false
+      options.groupField = 'category'
+    }
+    return options
+  }
+
   protected setupOptions(chart: Chart, options: ColumnOptions): ColumnOptions {
     return flow(
+      this.configData,
       this.configTheme,
       this.configEmptyDataStrategy,
       this.configColor,
