@@ -453,6 +453,41 @@ export function adaptCurTheme(customStyle, customAttr) {
     remarkShow: customStyle['text']['remarkShow'],
     remark: customStyle['text']['remark']
   }
+  const chartColor = canvasStyle.component.chartColor
+  if (chartColor) {
+    const labelSetting = chartColor.label
+    if (labelSetting) {
+      const label = customAttr.label
+      if (label) {
+        label.color = labelSetting.color
+        label.fontSize = labelSetting.fontSize
+      }
+      const labelFormatter = customAttr.label?.seriesLabelFormatter
+      if (labelFormatter && Array.isArray(labelFormatter)) {
+        labelFormatter.forEach(item => {
+          item.color = labelSetting.color
+          item.fontSize = labelSetting.fontSize
+        })
+      }
+    }
+    const tooltipSetting = chartColor.tooltip
+    if (tooltipSetting) {
+      const tooltip = customAttr.tooltip
+      if (tooltip) {
+        tooltip.color = tooltipSetting.color
+        tooltip.fontSize = tooltipSetting.fontSize
+        tooltip.backgroundColor = tooltipSetting.backgroundColor
+      }
+      const tooltipFormatter = customAttr.tooltip?.seriesTooltipFormatter
+      if (tooltipFormatter && Array.isArray(tooltipFormatter)) {
+        tooltipFormatter.forEach(item => {
+          item.color = tooltipSetting.color
+          item.fontSize = tooltipSetting.fontSize
+          item.backgroundColor = tooltipSetting.backgroundColor
+        })
+      }
+    }
+  }
 }
 
 export function adaptTitleFontFamily(fontFamily, viewInfo) {
