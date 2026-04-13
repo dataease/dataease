@@ -92,6 +92,11 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       yField: 'value',
       seriesField: 'category',
       appendPadding: getPadding(chart),
+      meta: {
+        category: {
+          type: 'cat'
+        }
+      },
       color,
       interactions: [
         {
