@@ -253,7 +253,7 @@ export class CarouselManager {
           }
           this.createSymbolicMapPopup(index)
         } else {
-          if (this.chart.type === 'map') {
+          if (['map', 'bubble-map'].includes(this.chart.type)) {
             // 轮播进行时，隐藏隐藏鼠标悬浮的tooltip
             const mouseTooltip = containerElement.getElementsByClassName('l7plot-tooltip-container')
             for (const tooltip of Array.from(mouseTooltip)) {
