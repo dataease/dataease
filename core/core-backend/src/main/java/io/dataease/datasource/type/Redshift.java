@@ -1,5 +1,6 @@
 package io.dataease.datasource.type;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import lombok.Data;
@@ -19,6 +20,7 @@ import static java.awt.SystemColor.info;
 public class Redshift extends DatasourceConfiguration {
     private String driver = "com.amazon.redshift.jdbc42.Driver";
     private String extraParams = "";
+    @JsonIgnore
     private List<String> illegalParameters = Arrays.asList("socketFactory", "socketFactoryArg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationPluginClassName", "IniFile");
 
     public String getJdbc() {

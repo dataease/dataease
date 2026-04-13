@@ -1,5 +1,6 @@
 package io.dataease.datasource.type;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import lombok.Data;
@@ -31,6 +32,7 @@ public class CK extends DatasourceConfiguration {
     private String sslCert;
     private String sslKey;
 
+    @JsonIgnore
     private List<String> ILLEGAL_PARAMETERS = Arrays.asList("jndi:", "rmi:", "ldap:", "ldaps:", "dns:", "nis:", "corba:",
             "java.naming.factory.initial", "java.naming.provider.url");
 

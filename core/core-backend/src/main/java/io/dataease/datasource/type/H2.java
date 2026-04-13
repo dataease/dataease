@@ -1,5 +1,6 @@
 package io.dataease.datasource.type;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import lombok.Data;
@@ -29,6 +30,7 @@ public class H2 extends DatasourceConfiguration {
         return jdbc;
     }
 
+    @JsonIgnore
     private List<String> getH2IllegalParameters() {
         return Arrays.asList("INIT", "RUNSCRIPT");
     }
