@@ -441,6 +441,13 @@ class ChartCarouselTooltip {
    */
   public hasParentWithSwitchHidden(element: HTMLElement) {
     let parent = element.parentElement
+    const hasViewDialogInstance = Array.from(CAROUSEL_MANAGER_INSTANCES.keys()).some(key =>
+      key.includes('viewDialog')
+    )
+    const isNotViewDialog = !this.chart.container.includes('viewDialog')
+    if (hasViewDialogInstance && isNotViewDialog) {
+      return true
+    }
     while (parent) {
       if (
         parent.classList.contains('switch-hidden') ||
