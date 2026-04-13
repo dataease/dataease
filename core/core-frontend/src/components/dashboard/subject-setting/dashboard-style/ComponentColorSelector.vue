@@ -67,6 +67,107 @@
       </div>
 
       <el-collapse-item
+        :title="t('visualization.chart_label')"
+        name="chart_label"
+        class="inner-collapse"
+        :effect="themes"
+        :class="`inner-collapse_${themes}`"
+      >
+        <div style="padding: 0 8px 8px">
+          <el-row :gutter="8">
+            <el-col :span="12">
+              <el-form-item :label="t('chart.text_color')" class="form-item">
+                <el-color-picker
+                  :trigger-width="colorPickerWidth"
+                  v-model="colorForm.label.color"
+                  size="small"
+                  :predefine="predefineColors"
+                  is-custom
+                  :effect="themes"
+                  @change="changeLabelCase"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item :label="t('chart.text_fontsize')" class="form-item">
+                <el-select
+                  style="width: 100%"
+                  v-model="colorForm.label.fontSize"
+                  size="small"
+                  :effect="themes"
+                  @change="changeLabelCase"
+                >
+                  <el-option
+                    v-for="option in fontSizeList"
+                    :key="option.value"
+                    :label="option.name"
+                    :value="option.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </div>
+      </el-collapse-item>
+
+      <el-collapse-item
+        :title="t('visualization.chart_tooltip')"
+        name="chart_tooltip"
+        class="inner-collapse"
+        :effect="themes"
+        :class="`inner-collapse_${themes}`"
+      >
+        <div style="padding: 0 8px 8px">
+          <el-row :gutter="8">
+            <el-col :span="12">
+              <el-form-item :label="t('visualization.chart_tooltip_bg_color')" class="form-item">
+                <el-color-picker
+                  :trigger-width="colorPickerWidth"
+                  v-model="colorForm.tooltip.backgroundColor"
+                  size="small"
+                  :predefine="predefineColors"
+                  is-custom
+                  :effect="themes"
+                  @change="changeTooltipCase"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item :label="t('chart.text_color')" class="form-item">
+                <el-color-picker
+                  :trigger-width="colorPickerWidth"
+                  v-model="colorForm.tooltip.color"
+                  size="small"
+                  :predefine="predefineColors"
+                  is-custom
+                  :effect="themes"
+                  @change="changeTooltipCase"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item :label="t('chart.text_fontsize')" class="form-item">
+                <el-select
+                  style="width: 100%"
+                  v-model="colorForm.tooltip.fontSize"
+                  size="small"
+                  :effect="themes"
+                  @change="changeTooltipCase"
+                >
+                  <el-option
+                    v-for="option in fontSizeList"
+                    :key="option.value"
+                    :label="option.name"
+                    :value="option.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </div>
+      </el-collapse-item>
+
+      <el-collapse-item
         :title="t('visualization.table_color_matching')"
         name="table_color_matching"
         class="inner-collapse"
@@ -251,6 +352,7 @@ import { storeToRefs } from 'pinia'
 import CustomColorStyleSelect from '@/views/chart/components/editor/editor-style/components/CustomColorStyleSelect.vue'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import { useEmitt } from '@/hooks/web/useEmitt'
 const { t } = useI18n()
 const snapshotStore = snapshotStoreWithOut()
 
@@ -292,7 +394,7 @@ const state = reactive({
   colorIndex: 0
 })
 const dvMainStore = dvMainStoreWithOut()
-const { canvasStyleData } = storeToRefs(dvMainStore)
+const { canvasStyleData, canvasViewInfo } = storeToRefs(dvMainStore)
 const initForm = () => {
   state.customColor = colorForm.value.basicStyle.colors[0]
   setTimeout(() => {
@@ -317,6 +419,64 @@ const changeColorCase = modifyName => {
   emits('onColorChange', colorForm.value)
 }
 
+let canvasAttrInit = false
+
+const changeLabelCase = () => {
+  if (canvasAttrInit) {
+    const val = colorForm.value.label
+    Object.keys(canvasViewInfo.value).forEach(function (viewId) {
+      const viewInfo = canvasViewInfo.value[viewId]
+      try {
+        const label = viewInfo.customAttr?.label
+        if (label) {
+          label.color = val.color
+          label.fontSize = val.fontSize
+        }
+        const labelFormatter = viewInfo.customAttr?.label?.seriesLabelFormatter
+        if (labelFormatter && Array.isArray(labelFormatter)) {
+          labelFormatter.forEach(item => {
+            item.color = val.color
+            item.fontSize = val.fontSize
+          })
+        }
+        useEmitt().emitter.emit('renderChart-' + viewId, viewInfo)
+      } catch (e) {
+        console.warn('changeLabelCase-error')
+      }
+    })
+    snapshotStore.recordSnapshotCache('renderChart')
+  }
+}
+
+const changeTooltipCase = () => {
+  if (canvasAttrInit) {
+    const val = colorForm.value.tooltip
+    Object.keys(canvasViewInfo.value).forEach(function (viewId) {
+      const viewInfo = canvasViewInfo.value[viewId]
+      try {
+        const tooltip = viewInfo.customAttr?.tooltip
+        if (tooltip) {
+          tooltip.color = val.color
+          tooltip.fontSize = val.fontSize
+          tooltip.backgroundColor = val.backgroundColor
+        }
+        const tooltipFormatter = viewInfo.customAttr?.tooltip?.seriesTooltipFormatter
+        if (tooltipFormatter && Array.isArray(tooltipFormatter)) {
+          tooltipFormatter.forEach(item => {
+            item.color = val.color
+            item.fontSize = val.fontSize
+            item.backgroundColor = val.backgroundColor
+          })
+        }
+        useEmitt().emitter.emit('renderChart-' + viewId, viewInfo)
+      } catch (e) {
+        console.warn('changeTooltipCase-error')
+      }
+    })
+    snapshotStore.recordSnapshotCache('renderChart')
+  }
+}
+
 const containerRef = ref()
 const containerWidth = ref()
 
@@ -338,6 +498,10 @@ onMounted(() => {
     nextTick(() => {
       containerWidth.value = containerRef.value?.offsetWidth
     })
+  })
+
+  nextTick(() => {
+    canvasAttrInit = true
   })
 })
 </script>

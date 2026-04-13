@@ -52,6 +52,15 @@ export const DEFAULT_COLOR_CASE: DeepPartial<ChartAttr> = {
     tableItemBgColor: '#FFFFFF',
     tableFontColor: '#000000',
     tableItemSubBgColor: '#EEEEEE'
+  },
+  label: {
+    color: '#000000',
+    fontSize: 12
+  },
+  tooltip: {
+    color: '#000000',
+    fontSize: 12,
+    backgroundColor: '#FFFFFF'
   }
 }
 
@@ -104,6 +113,15 @@ export const DEFAULT_COLOR_CASE_LIGHT: DeepPartial<ChartAttr> = {
     tableItemBgColor: '#FFFFFF',
     tableFontColor: '#000000',
     tableItemSubBgColor: '#1E90FF'
+  },
+  label: {
+    color: '#000000',
+    fontSize: 12
+  },
+  tooltip: {
+    color: '#000000',
+    fontSize: 12,
+    backgroundColor: '#FFFFFF'
   }
 }
 
@@ -155,6 +173,15 @@ export const DEFAULT_COLOR_CASE_DARK: DeepPartial<ChartAttr> = {
     tableItemBgColor: '#131E42',
     tableFontColor: '#ffffff',
     tableItemSubBgColor: '#1E90FF'
+  },
+  label: {
+    color: '#FFFFFF',
+    fontSize: 12
+  },
+  tooltip: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    backgroundColor: '#5A5C62'
   }
 }
 
