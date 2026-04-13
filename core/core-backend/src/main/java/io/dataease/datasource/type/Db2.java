@@ -1,5 +1,6 @@
 package io.dataease.datasource.type;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import lombok.Data;
@@ -14,6 +15,7 @@ import java.util.List;
 public class Db2 extends DatasourceConfiguration {
     private String driver = "com.ibm.db2.jcc.DB2Driver";
     private String extraParams = "";
+    @JsonIgnore
     private List<String> illegalParameters = Arrays.asList(
             // 原有参数（如RMI相关）
             "java.naming.factory.initial", "java.naming.provider.url", "rmi",

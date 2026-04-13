@@ -1,5 +1,6 @@
 package io.dataease.datasource.type;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import lombok.Data;
@@ -15,6 +16,7 @@ import java.util.List;
 public class Impala extends DatasourceConfiguration {
     private String driver = "com.cloudera.impala.jdbc.Driver";
     private String extraParams = "";
+    @JsonIgnore
     private List<String> illegalParameters = Arrays.asList(
             // 原有非法参数
             "autoDeserialize", "queryInterceptors", "statementInterceptors", "detectCustomCollations",

@@ -1,5 +1,6 @@
 package io.dataease.datasource.type;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import lombok.Data;
@@ -15,7 +16,8 @@ import java.util.List;
 public class Sqlserver extends DatasourceConfiguration {
     private String driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
     private String extraParams = "";
-    private List<String> illegalParameters = Arrays.asList("autoDeserialize", "queryInterceptors", "statementInterceptors", "detectCustomCollations");
+    @JsonIgnore
+    private List<String> illegalParameters = Arrays.asList("autoDeserialize", "queryInterceptors", "statementInterceptors", "detectCustomCollations", "jndi:", "rmi:", "ldap:", "ldaps:", "java.naming.factory.initial");
     private List<String> showTableSqls = Arrays.asList("show tables");
 
     public String getJdbc() {
