@@ -376,7 +376,9 @@ export class BulletGraph extends G2PlotChartView<G2BulletOptions, G2Bullet> {
     if (!tooltipAttr.show) return { ...options, tooltip: false }
     const customStyleLegend = parseJson(chart.customStyle).legend
     const formatterMap = tooltipAttr.seriesTooltipFormatter
-      ?.filter(i => i.show)
+      ?.filter(
+        i => i.show && ['-yAxis', '-yAxisExt', 'extBubble'].some(k => i.seriesId.includes(k))
+      )
       .reduce((pre, next, _index) => {
         switch (next.axisType) {
           case 'yAxis':
@@ -392,7 +394,6 @@ export class BulletGraph extends G2PlotChartView<G2BulletOptions, G2Bullet> {
             return pre
         }
       }, {}) as Record<string, SeriesFormatter>
-
     const tooltip = {
       shared: true,
       showMarkers: true,
@@ -403,7 +404,6 @@ export class BulletGraph extends G2PlotChartView<G2BulletOptions, G2Bullet> {
         const result = []
         const data = options.data.find(item => item.title === originalItems[0].title)
         Object.keys(formatterMap).forEach((key, _index) => {
-          if (key === '记录数*') return
           const formatter = formatterMap[key]
           if (formatter) {
             let name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
