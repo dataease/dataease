@@ -539,7 +539,7 @@ const initOpenHandler = newWindow => {
       methodName: 'initOpenHandler',
       args: newWindow
     }
-    openHandler.value.invokeMethod(pm)
+    openHandler.value?.invokeMethod(pm)
   }
 }
 
