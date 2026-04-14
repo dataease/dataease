@@ -641,10 +641,10 @@ onMounted(() => {
 }
 .filter-icon-span {
   float: left;
-  border: 1px solid #bbbfc4;
+  border: 1px solid #d9dcdf;
   width: 32px;
   height: 32px;
-  border-radius: 4px;
+  border-radius: 6px;
   padding: 7px;
   margin-left: 8px;
 }

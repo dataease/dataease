@@ -293,7 +293,7 @@ onMounted(async () => {
             <div v-if="showSlogan" class="login-welcome">
               {{ slogan || t('system.available_to_everyone') }}
             </div>
-            <div class="login-form">
+            <div class="login-form border-radius-12">
               <div
                 class="default-login-tabs"
                 v-if="activeName === 'simple' || activeName === 'ldap'"

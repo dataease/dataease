@@ -39,7 +39,7 @@ const emits = defineEmits(['customClick'])
   cursor: pointer;
   flex-direction: column;
   align-items: center;
-  border-radius: 4px;
+  border-radius: 6px;
   color: #a6a6a6;
 
   span {

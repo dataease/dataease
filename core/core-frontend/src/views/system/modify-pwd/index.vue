@@ -175,7 +175,7 @@ const { t } = useI18n()
       height: 184px;
     }
     border-radius: 8px;
-    border: 1px solid #bbbfc4;
+    border: 1px solid #d9dcdf;
   }
 
   .refresh-login {

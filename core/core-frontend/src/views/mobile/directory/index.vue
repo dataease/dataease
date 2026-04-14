@@ -301,10 +301,10 @@ onMounted(async () => {
       width: calc(100% - 40px);
     }
     .filter-icon-span {
-      border: 1px solid #bbbfc4;
+      border: 1px solid #d9dcdf;
       width: 32px;
       height: 32px;
-      border-radius: 4px;
+      border-radius: 6px;
       color: #1f2329;
       padding: 8px;
       margin-left: 8px;

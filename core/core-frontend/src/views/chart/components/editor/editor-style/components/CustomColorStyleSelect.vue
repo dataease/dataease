@@ -556,8 +556,8 @@ const colorItemBorderColor = (index, state) => {
   margin-top: 30px;
   line-height: 28px;
 
-  border-radius: 4px;
-  border: 1px solid #bbbfc4;
+  border-radius: 6px;
+  border: 1px solid #d9dcdf;
   padding: 0 7px;
   width: 28px;
   height: 28px;

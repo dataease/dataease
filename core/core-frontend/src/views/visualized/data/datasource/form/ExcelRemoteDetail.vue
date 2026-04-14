@@ -1181,9 +1181,9 @@ defineExpose({
     }
 
     .left-api_params {
-      border-top-left-radius: 4px;
-      border-bottom-left-radius: 4px;
-      border: 1px solid #bbbfc4;
+      border-top-left-radius: 6px;
+      border-bottom-left-radius: 6px;
+      border: 1px solid #d9dcdf;
       width: 300px;
       padding: 16px;
       .name-copy {
@@ -1204,9 +1204,9 @@ defineExpose({
     }
 
     .right-api_params {
-      border-top-right-radius: 4px;
-      border-bottom-right-radius: 4px;
-      border: 1px solid #bbbfc4;
+      border-top-right-radius: 6px;
+      border-bottom-right-radius: 6px;
+      border: 1px solid #d9dcdf;
       border-left: none;
       width: calc(100% - 200px);
     }
@@ -1296,8 +1296,8 @@ defineExpose({
       align-items: center;
       justify-content: center;
       background: #ffffff;
-      border: 1px solid #bbbfc4;
-      border-radius: 4px;
+      border: 1px solid #d9dcdf;
+      border-radius: 6px;
 
       .is-active {
         background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));

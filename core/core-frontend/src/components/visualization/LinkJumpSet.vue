@@ -1520,8 +1520,8 @@ span {
   color: var(--deTextDisable);
 }
 .outer-content-mirror {
-  border: 1px solid #bbbfc4;
-  border-radius: 4px;
+  border: 1px solid #d9dcdf;
+  border-radius: 6px;
   height: calc(100% - 30px);
   width: 100%;
   overflow: hidden;
@@ -1539,8 +1539,8 @@ span {
 }
 
 .outer-content-right {
-  border: 1px solid #bbbfc4;
-  border-radius: 4px;
+  border: 1px solid #d9dcdf;
+  border-radius: 6px;
   height: calc(100% - 30px);
   width: 100%;
   padding: 12px;

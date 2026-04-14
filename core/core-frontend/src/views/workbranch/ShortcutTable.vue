@@ -282,7 +282,7 @@ const getEmptyDesc = (): string => {
 
 <template>
   <div
-    class="dashboard-type"
+    class="dashboard-type border-radius-12"
     :class="expand && 'expand'"
     v-if="tablePaneList.length"
     v-loading="loading"

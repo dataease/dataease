@@ -561,10 +561,6 @@ defineExpose({
       }
     }
 
-    .ed-table__header {
-      border-top: 1px solid #1f232926;
-    }
-
     th.ed-table__cell.is-leaf {
       border-color: #1f232926;
     }

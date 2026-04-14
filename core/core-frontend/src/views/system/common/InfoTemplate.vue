@@ -224,7 +224,7 @@ formatLabel()
 .info-template-container {
   padding: 24px 24px 8px 24px;
   background: var(--ContentBG, #ffffff);
-  border-radius: 4px;
+  border-radius: 12px;
   .info-template-header {
     display: flex;
     margin-top: -4px;

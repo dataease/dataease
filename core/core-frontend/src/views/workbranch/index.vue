@@ -305,7 +305,7 @@ loadShareBase()
 <template>
   <div class="workbranch" v-loading="requestStore.loadingMap[permissionStore.currentPath]">
     <div class="info-quick-creation">
-      <div class="user-info">
+      <div class="user-info border-radius-12">
         <el-icon class="main-color user-icon-container">
           <Icon name="user-img"><userImg class="svg-icon" /></Icon>
         </el-icon>
@@ -331,12 +331,12 @@ loadShareBase()
         </div>
       </div>
 
-      <div class="quick-creation">
+      <div class="quick-creation border-radius-12">
         <span class="label"> {{ t('work_branch.create_quickly') }} </span>
         <div class="item-creation">
           <div
             :key="ele.name"
-            class="item"
+            class="item border-radius-12"
             :class="{
               'quick-create-disabled': !ele['menuAuth'] || !ele['anyManage']
             }"
@@ -360,7 +360,7 @@ loadShareBase()
             </span>
           </div>
           <div
-            class="item item-quick"
+            class="item item-quick border-radius-12"
             :class="{
               'quick-create-disabled': !(havePanelAuth || haveScreenAuth)
             }"
@@ -384,7 +384,10 @@ loadShareBase()
       </div>
     </div>
     <div class="template-market-dashboard">
-      <div class="template-market" :style="{ paddingBottom: expandFold !== 'fold' ? '24px' : 0 }">
+      <div
+        class="template-market border-radius-12"
+        :style="{ paddingBottom: expandFold !== 'fold' ? '24px' : 0 }"
+      >
         <div class="label">
           {{ t('work_branch.template_center') }}
           <div class="expand-all">

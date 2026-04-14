@@ -971,8 +971,8 @@ span {
   color: var(--deTextDisable);
 }
 .outer-content-mirror {
-  border: 1px solid #bbbfc4;
-  border-radius: 4px;
+  border: 1px solid #d9dcdf;
+  border-radius: 6px;
   height: 100%;
   overflow: hidden;
 }

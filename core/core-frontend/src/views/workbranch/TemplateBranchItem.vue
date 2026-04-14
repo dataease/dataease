@@ -1,5 +1,5 @@
 <template>
-  <div class="template">
+  <div class="template border-radius-12">
     <div class="photo">
       <div class="img" :style="classBackground"></div>
     </div>
