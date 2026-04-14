@@ -156,6 +156,10 @@ const builtInList = ref([
   {
     id: 'sysParams.userEmail',
     name: t('commons.email')
+  },
+  {
+    id: 'sysParams.userPhone',
+    name: t('auth.sysParams_type.user_phone')
   }
 ])
 
