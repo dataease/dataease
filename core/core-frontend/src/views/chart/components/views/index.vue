@@ -873,6 +873,12 @@ onMounted(() => {
       chart.container =
         'container-' + showPosition.value + '-' + view.value.id + '-' + suffixId.value
       clearExtremum(chart)
+      // 切换到不支持下钻的图表类型时，清除下钻状态
+      const chartView = chartViewManager.getChartView(view.value.render, view.value.type)
+      if (chartView && !chartView.axis.includes('drill')) {
+        state.drillClickDimensionList = []
+        state.drillFilters = []
+      }
     }
   })
   if (showPosition.value === 'viewDialog') {

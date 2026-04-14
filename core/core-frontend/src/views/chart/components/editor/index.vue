@@ -1064,11 +1064,7 @@ const onTypeChange = (render, type) => {
         emitter.emit('removeAxis', { axisType: 'yAxis', axis, editType: 'remove' })
       }
     }
-    if (
-      view.value.type === 'liquid' ||
-      view.value.type === 'gauge' ||
-      view.value.type === 'indicator'
-    ) {
+    if (['liquid', 'gauge', 'indicator', 'multi-scatter', 't-heatmap'].includes(view.value.type)) {
       removeItems('drillFields')
     }
     if (!['line', 'area', 'bar', 'bar-group'].includes(view.value.type)) {
