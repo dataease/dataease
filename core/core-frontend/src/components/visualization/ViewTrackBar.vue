@@ -2,11 +2,13 @@
   <div>
     <el-dropdown
       :id="'view-track-bar-' + chartId"
-      :teleported="false"
+      :teleported="true"
       trigger="click"
+      placement="bottom"
+      popper-class="track_bar_custom"
       @visible-change="visibleChange"
     >
-      <input id="input" ref="trackButton" type="button" hidden />
+      <input id="input" style="opacity: 0" ref="trackButton" type="button" />
       <template #dropdown>
         <div :class="{ 'data-mobile': isDataVMobile }">
           <el-dropdown-menu
@@ -93,6 +95,12 @@ defineExpose({
 })
 </script>
 
+<style lang="less">
+.track_bar_custom {
+  transform: translate(50px, -30px);
+}
+</style>
+
 <style lang="less" scoped>
 .menu-item {
   font-size: 12px;
@@ -100,6 +108,7 @@ defineExpose({
 
 :deep(.ed-dropdown__popper) {
   position: static !important;
+  z-index: 9999 !important; /* 添加这行 */
 }
 
 .ed-popper[x-placement^='bottom'] .popper__arrow {
