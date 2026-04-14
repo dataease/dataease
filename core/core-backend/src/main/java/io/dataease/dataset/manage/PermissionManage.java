@@ -212,7 +212,13 @@ public class PermissionManage {
                         items.add(datasetRowPermissionsTreeItem);
                         continue;
                     }
-
+                    if (StringUtils.isNotEmpty(userEntity.getName()) && datasetRowPermissionsTreeItem.getValue().equalsIgnoreCase("${sysParams.userPhone}")) {
+                        if(StringUtils.isNotEmpty(userEntity.getPhone())){
+                            datasetRowPermissionsTreeItem.setValue(userEntity.getPhone());
+                            items.add(datasetRowPermissionsTreeItem);
+                        }
+                        continue;
+                    }
                     String value = handleSysVariable(userEntity, datasetRowPermissionsTreeItem);
                     if (value == null) {
                         continue;

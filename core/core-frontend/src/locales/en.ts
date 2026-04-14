@@ -924,6 +924,7 @@ export default {
       user_source: 'Origin',
       user_label: 'User label',
       user_email: 'Email',
+      user_phone: 'Mobile phone',
       dept: 'Organization',
       role: 'Role'
     },

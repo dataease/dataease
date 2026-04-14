@@ -896,6 +896,7 @@ export default {
       user_source: '用户来源',
       user_label: '用户标签',
       user_email: '邮箱',
+      user_phone: '手机号',
       dept: '组织',
       role: '角色'
     },

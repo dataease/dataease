@@ -894,6 +894,7 @@ export default {
       user_source: '使用者來源',
       user_label: '使用者標籤',
       user_email: '信箱',
+      user_phone: '手機號',
       dept: '組織',
       role: '角色'
     },
