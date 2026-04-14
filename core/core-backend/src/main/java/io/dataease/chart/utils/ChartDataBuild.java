@@ -630,9 +630,15 @@ public class ChartDataBuild {
                     DynamicValueDTO valueDTO = new DynamicValueDTO();
                     ChartViewFieldDTO f = view.getExtLabel().get(ii);
                     int idx = extLabelStart + ii;
-                    BigDecimal value = (idx < row.length && StringUtils.isNotEmpty(row[idx])) ? new BigDecimal(row[idx]) : null;
+                    if (idx < row.length && StringUtils.isNotEmpty(row[idx])) {
+                        try {
+                            valueDTO.setValue(new BigDecimal(row[idx]));
+                        } catch (NumberFormatException e) {
+                            // 时间等非数值类型，保留原始字符串
+                            valueDTO.setStringValue(row[idx]);
+                        }
+                    }
                     valueDTO.setFieldId(f.getId());
-                    valueDTO.setValue(value);
                     dynamicLabelValue.add(valueDTO);
                 }
             }
@@ -641,9 +647,15 @@ public class ChartDataBuild {
                     DynamicValueDTO valueDTO = new DynamicValueDTO();
                     ChartViewFieldDTO f = view.getExtTooltip().get(ii);
                     int idx = extTooltipStart + ii;
-                    BigDecimal value = (idx < row.length && StringUtils.isNotEmpty(row[idx])) ? new BigDecimal(row[idx]) : null;
+                    if (idx < row.length && StringUtils.isNotEmpty(row[idx])) {
+                        try {
+                            valueDTO.setValue(new BigDecimal(row[idx]));
+                        } catch (NumberFormatException e) {
+                            // 时间等非数值类型，保留原始字符串
+                            valueDTO.setStringValue(row[idx]);
+                        }
+                    }
                     valueDTO.setFieldId(f.getId());
-                    valueDTO.setValue(value);
                     dynamicTooltipValue.add(valueDTO);
                 }
             }
@@ -1633,9 +1645,15 @@ public class ChartDataBuild {
             for (int ii = 0; ii < view.getExtLabel().size(); ii++) {
                 DynamicValueDTO valueDTO = new DynamicValueDTO();
                 ChartViewFieldDTO chartViewFieldDTO = view.getExtLabel().get(ii);
-                BigDecimal value = StringUtils.isEmpty(row[ii + (size - extSize)]) ? null : new BigDecimal(row[ii + (size - extSize)]);
+                String raw = row[ii + (size - extSize)];
+                if (StringUtils.isNotEmpty(raw)) {
+                    try {
+                        valueDTO.setValue(new BigDecimal(raw));
+                    } catch (NumberFormatException e) {
+                        valueDTO.setStringValue(raw);
+                    }
+                }
                 valueDTO.setFieldId(chartViewFieldDTO.getId());
-                valueDTO.setValue(value);
                 dynamicLabelValue.add(valueDTO);
             }
         }
@@ -1643,9 +1661,15 @@ public class ChartDataBuild {
             for (int ii = 0; ii < view.getExtTooltip().size(); ii++) {
                 DynamicValueDTO valueDTO = new DynamicValueDTO();
                 ChartViewFieldDTO chartViewFieldDTO = view.getExtTooltip().get(ii);
-                BigDecimal value = StringUtils.isEmpty(row[ii + (size - extSize) + view.getExtLabel().size()]) ? null : new BigDecimal(row[ii + (size - extSize) + view.getExtLabel().size()]);
+                String raw = row[ii + (size - extSize) + view.getExtLabel().size()];
+                if (StringUtils.isNotEmpty(raw)) {
+                    try {
+                        valueDTO.setValue(new BigDecimal(raw));
+                    } catch (NumberFormatException e) {
+                        valueDTO.setStringValue(raw);
+                    }
+                }
                 valueDTO.setFieldId(chartViewFieldDTO.getId());
-                valueDTO.setValue(value);
                 dynamicTooltipValue.add(valueDTO);
             }
         }

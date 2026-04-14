@@ -14,4 +14,5 @@ public class DynamicValueDTO {
     @JsonSerialize(using = ToStringSerializer.class)
     private Long fieldId;
     private BigDecimal value;
+    private String stringValue;
 }

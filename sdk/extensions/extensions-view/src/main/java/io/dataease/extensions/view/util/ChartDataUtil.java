@@ -84,7 +84,7 @@ public class ChartDataUtil {
 
     public static List<String[]> customSort(List<String> custom, List<String[]> data, int index) {
         List<String[]> res = new ArrayList<>();
-        
+
         // 数据行在自定义排序的范围内，记录该数据行的内容以及下标
         List<Integer> indexInCustomSort = new ArrayList<>();
         List<String[]> dataInCustomSort = new ArrayList<>();
@@ -271,9 +271,15 @@ public class ChartDataUtil {
             for (int ii = 0; ii < view.getExtLabel().size(); ii++) {
                 DynamicValueDTO valueDTO = new DynamicValueDTO();
                 ChartViewFieldDTO chartViewFieldDTO = view.getExtLabel().get(ii);
-                BigDecimal value = StringUtils.isEmpty(row[ii + (size - extSize)]) ? null : new BigDecimal(row[ii + (size - extSize)]);
+                String raw = row[ii + (size - extSize)];
+                if (StringUtils.isNotEmpty(raw)) {
+                    try {
+                        valueDTO.setValue(new BigDecimal(raw));
+                    } catch (NumberFormatException e) {
+                        valueDTO.setStringValue(raw);
+                    }
+                }
                 valueDTO.setFieldId(chartViewFieldDTO.getId());
-                valueDTO.setValue(value);
                 dynamicLabelValue.add(valueDTO);
             }
         }
@@ -281,9 +287,15 @@ public class ChartDataUtil {
             for (int ii = 0; ii < view.getExtTooltip().size(); ii++) {
                 DynamicValueDTO valueDTO = new DynamicValueDTO();
                 ChartViewFieldDTO chartViewFieldDTO = view.getExtTooltip().get(ii);
-                BigDecimal value = StringUtils.isEmpty(row[ii + (size - extSize) + view.getExtLabel().size()]) ? null : new BigDecimal(row[ii + (size - extSize) + view.getExtLabel().size()]);
+                String raw = row[ii + (size - extSize) + view.getExtLabel().size()];
+                if (StringUtils.isNotEmpty(raw)) {
+                    try {
+                        valueDTO.setValue(new BigDecimal(raw));
+                    } catch (NumberFormatException e) {
+                        valueDTO.setStringValue(raw);
+                    }
+                }
                 valueDTO.setFieldId(chartViewFieldDTO.getId());
-                valueDTO.setValue(value);
                 dynamicTooltipValue.add(valueDTO);
             }
         }

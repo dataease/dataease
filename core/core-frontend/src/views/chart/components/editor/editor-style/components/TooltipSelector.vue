@@ -205,6 +205,11 @@ const COUNT_AGGREGATION_TYPE = [
 ]
 const COUNT_DE_TYPE = [0, 1, 5]
 
+// 当前选中的指标是否为非数值类型，非数值类型禁用数值格式配置
+const isNonNumericFormatter = computed(() => {
+  return COUNT_DE_TYPE.includes(curSeriesFormatter.value?.deType)
+})
+
 const aggregationList = computed(() => {
   if (COUNT_DE_TYPE.includes(curSeriesFormatter.value?.deType)) {
     return COUNT_AGGREGATION_TYPE
@@ -851,7 +856,7 @@ onMounted(() => {
           >
             <el-select
               size="small"
-              :disabled="!curSeriesFormatter.show"
+              :disabled="!curSeriesFormatter.show || isNonNumericFormatter"
               style="width: 100%"
               :effect="props.themes"
               v-model="curSeriesFormatter.formatterCfg.type"
@@ -873,7 +878,7 @@ onMounted(() => {
           >
             <el-input-number
               controls-position="right"
-              :disabled="!curSeriesFormatter.show"
+              :disabled="!curSeriesFormatter.show || isNonNumericFormatter"
               style="width: 100%"
               :effect="props.themes"
               v-model="curSeriesFormatter.formatterCfg.decimalCount"
@@ -895,7 +900,9 @@ onMounted(() => {
                 >
                   <el-select
                     :disabled="
-                      !curSeriesFormatter.show || curSeriesFormatter.formatterCfg.type == 'percent'
+                      !curSeriesFormatter.show ||
+                      isNonNumericFormatter ||
+                      curSeriesFormatter.formatterCfg.type == 'percent'
                     "
                     size="small"
                     :effect="themes"
@@ -923,7 +930,9 @@ onMounted(() => {
                 >
                   <el-select
                     :disabled="
-                      !curSeriesFormatter.show || curSeriesFormatter.formatterCfg.type == 'percent'
+                      !curSeriesFormatter.show ||
+                      isNonNumericFormatter ||
+                      curSeriesFormatter.formatterCfg.type == 'percent'
                     "
                     :effect="props.themes"
                     v-model="curSeriesFormatter.formatterCfg.unit"
@@ -949,7 +958,7 @@ onMounted(() => {
                   :class="'form-item-' + themes"
                 >
                   <el-input
-                    :disabled="!curSeriesFormatter.show"
+                    :disabled="!curSeriesFormatter.show || isNonNumericFormatter"
                     :effect="props.themes"
                     v-model="curSeriesFormatter.formatterCfg.suffix"
                     maxlength="30"
@@ -965,7 +974,7 @@ onMounted(() => {
 
           <el-form-item class="form-item" :class="'form-item-' + themes">
             <el-checkbox
-              :disabled="!curSeriesFormatter.show"
+              :disabled="!curSeriesFormatter.show || isNonNumericFormatter"
               size="small"
               :effect="props.themes"
               v-model="curSeriesFormatter.formatterCfg.thousandSeparator"
