@@ -1,3 +1,5 @@
+import { useCache } from '@/hooks/web/useCache'
+const { wsCache } = useCache()
 export const clearCache = () => {
   const keys = [
     'DataEaseKey',
@@ -16,6 +18,6 @@ export const clearCache = () => {
     'user.uid'
   ]
   keys.forEach(key => {
-    localStorage.removeItem(key)
+    wsCache.delete(key)
   })
 }
