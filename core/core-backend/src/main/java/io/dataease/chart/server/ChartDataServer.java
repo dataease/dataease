@@ -408,9 +408,10 @@ public class ChartDataServer implements ChartDataApi {
                 Map<String, Object> tableCell = (Map<String, Object>) viewInfo.getCustomAttr().get("tableCell");
                 Boolean mergeCells = (Boolean) tableCell.get("mergeCells");
                 if (mergeCells != null && mergeCells) {
-                    var mergeIndex = viewInfo.getXAxis().size();
-                    for (int i = 0; i < viewInfo.getXAxis().size(); i++) {
-                        if ("q".equalsIgnoreCase(viewInfo.getXAxis().get(i).getGroupType())) {
+                    var tmpAxis = viewInfo.getXAxis().stream().filter(x -> !x.isHide()).toList();
+                    var mergeIndex = tmpAxis.size();
+                    for (int i = 0; i < tmpAxis.size(); i++) {
+                        if ("q".equalsIgnoreCase(tmpAxis.get(i).getGroupType())) {
                             mergeIndex = i;
                             break;
                         }

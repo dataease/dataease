@@ -370,7 +370,6 @@ public class ChartDataManage {
             fieldCustomFilter = customLinkageFilter;
         }
         chartFilterTreeService.searchFieldAndSet(fieldCustomFilter);
-        fieldCustomFilter = chartFilterTreeService.charReplace(fieldCustomFilter);
         // 获取dsMap,union sql
         Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(table, chartExtRequest);
         String sql = (String) sqlMap.get("sql");
