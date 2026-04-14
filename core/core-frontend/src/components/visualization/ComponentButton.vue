@@ -41,7 +41,7 @@ const emits = defineEmits(['customClick'])
   cursor: pointer;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
+  border-radius: 6px;
   color: #ffffff99;
   position: relative;
   &::after {

@@ -100,7 +100,7 @@ onMounted(() => {
   padding: 5px;
   height: 28px;
   width: 28px;
-  border-radius: 4px;
+  border-radius: 6px;
   overflow: hidden;
   cursor: pointer;
   display: flex;
