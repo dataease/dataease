@@ -344,8 +344,8 @@ const loadFail = () => {
     }
 
     .van-field {
-      border: 1px solid #bbbfc4;
-      border-radius: 4px;
+      border: 1px solid #d9dcdf;
+      border-radius: 6px;
       margin: 16px 0;
     }
 

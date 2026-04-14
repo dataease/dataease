@@ -457,7 +457,7 @@ onMounted(() => {
   border: 1px solid #dcdfe6;
   width: 32px;
   height: 32px;
-  border-radius: 4px;
+  border-radius: 6px;
   padding: 7px;
   margin-left: 8px;
 }

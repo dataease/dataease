@@ -199,7 +199,7 @@ if (uid.value === '1') {
   height: 32px;
   display: flex;
   align-items: center;
-  border-radius: 4px;
+  border-radius: 6px;
   overflow: hidden;
   cursor: pointer;
   &:hover {

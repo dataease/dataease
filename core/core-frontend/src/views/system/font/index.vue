@@ -143,7 +143,7 @@ onMounted(() => {
     </div>
     <div class="font-content_overflow">
       <div class="font-content_list" v-if="fontListComputed.length">
-        <div class="font-content_item" v-for="ele in fontListComputed" :key="ele">
+        <div class="font-content_item border-radius-12" v-for="ele in fontListComputed" :key="ele">
           <span v-if="ele.isDefault" class="font-default">{{ t('system.default_font') }}</span>
           <div class="font-name">
             <span :title="ele.name" :class="!ele.isBuiltin && 'font-name_text'">{{

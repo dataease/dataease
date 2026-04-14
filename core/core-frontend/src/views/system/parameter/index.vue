@@ -72,7 +72,7 @@ const addTable = tab => {
   height: auto;
   overflow-y: auto;
   background: var(--ContentBG, #ffffff);
-  border-radius: 4px;
+  border-radius: 12px;
   &.basic-info_bg {
     background: none;
   }

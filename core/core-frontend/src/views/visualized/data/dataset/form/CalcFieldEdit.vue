@@ -664,8 +664,8 @@ initFunction()
     align-items: center;
     justify-content: center;
     background: #ffffff;
-    border: 1px solid #bbbfc4;
-    border-radius: 4px;
+    border: 1px solid #d9dcdf;
+    border-radius: 6px;
 
     .is-active {
       background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
@@ -882,8 +882,8 @@ initFunction()
 .calcu-field {
   .cm-scroller {
     height: 320px;
-    border: 1px solid #bbbfc4;
-    border-radius: 4px;
+    border: 1px solid #d9dcdf;
+    border-radius: 6px;
     overflow-y: auto;
     background: #fff;
   }
