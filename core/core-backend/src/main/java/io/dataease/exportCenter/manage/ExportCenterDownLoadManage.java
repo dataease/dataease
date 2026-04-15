@@ -484,14 +484,38 @@ public class ExportCenterDownLoadManage {
                 Sheet detailsSheet;
                 Integer sheetIndex = 1;
                 if ("dataset".equals(request.getDownloadType()) || request.getViewInfo().getType().equalsIgnoreCase("table-info") || request.getViewInfo().getType().equalsIgnoreCase("table-normal")) {
+                    boolean summaryEnabled = !"dataset".equals(request.getDownloadType()) && ChartDataServer.isSummaryEnabled(request.getViewInfo());
+                    ChartDataServer.SummaryConfig summaryConfig = null;
+                    ChartDataServer.SummaryAccumulator summaryAcc = null;
+                    List<ChartViewFieldDTO> allExportColumns = null;
+                    Map<String, java.math.BigDecimal> customSumResult = null;
+                    if (summaryEnabled) {
+                        summaryConfig = ChartDataServer.parseSummaryConfig(request.getViewInfo());
+                        summaryAcc = new ChartDataServer.SummaryAccumulator();
+                        allExportColumns = ChartDataServer.getAllExportColumns(request.getViewInfo());
+                    }
+
                     request.getViewInfo().getChartExtRequest().setPageSize(Long.valueOf(extractPageSize));
                     ChartViewDTO chartViewDTO = chartDataServer.findExcelData(request);
                     for (long i = 1; i < chartViewDTO.getTotalPage() + 1; i++) {
                         request.getViewInfo().getChartExtRequest().setGoPage(i);
                         request.getViewInfo().setExtStack(request.getViewInfo().getExtStack().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
-                        chartDataServer.findExcelData(request);
+                        ChartViewDTO pageDto = chartDataServer.findExcelData(request);
                         details.addAll(request.getDetails());
+
+                        if (summaryEnabled) {
+                            ChartDataServer.accumulatePageStats(summaryAcc, request.getDetails(), allExportColumns, summaryConfig);
+                            if (i == chartViewDTO.getTotalPage() && pageDto.getData() != null && pageDto.getData().get("customSumResult") != null) {
+                                customSumResult = (Map<String, java.math.BigDecimal>) pageDto.getData().get("customSumResult");
+                            }
+                        }
+
                         if (((details.size() + extractPageSize) > sheetLimit) || i == chartViewDTO.getTotalPage()) {
+                            if (i == chartViewDTO.getTotalPage() && summaryEnabled && summaryAcc.totalCount > 0) {
+                                Object[] totalRow = ChartDataServer.buildSummaryRow(allExportColumns, summaryConfig, summaryAcc, customSumResult);
+                                details.add(totalRow);
+                            }
+
                             detailsSheet = wb.createSheet("数据" + sheetIndex);
                             Integer[] excelTypes = request.getExcelTypes();
                             ViewDetailField[] detailFields = request.getDetailFields();

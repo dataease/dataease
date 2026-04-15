@@ -10,6 +10,7 @@ import io.dataease.constant.DeTypeConstants;
 import io.dataease.dataset.server.DatasetFieldServer;
 import io.dataease.exception.DEException;
 import io.dataease.exportCenter.util.ExportCenterUtils;
+import io.dataease.chart.server.ChartDataServer;
 import io.dataease.extensions.view.dto.ChartExtFilterDTO;
 import io.dataease.extensions.view.dto.ChartExtRequest;
 import io.dataease.extensions.view.dto.ChartViewDTO;
@@ -27,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -174,6 +176,7 @@ public class CoreVisualizationExportManage {
         boolean rightExist = ObjectUtils.isNotEmpty(chart.get("right"));
         if (!leftExist && !rightExist) {
             ExcelSheetModel sheetModel = exportSingleData(chart, title);
+            appendSummaryToSheet(sheetModel, chartViewDTO, chart);
             resultList.add(sheetModel);
             return resultList;
         }
@@ -194,6 +197,75 @@ public class CoreVisualizationExportManage {
             sourceNumberStr = sourceNumberStr.replaceAll("[.]$", "");
         }
         return sourceNumberStr;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void appendSummaryToSheet(ExcelSheetModel sheetModel, ChartViewDTO chartViewDTO, Map<String, Object> chart) {
+        if (!ChartDataServer.isSummaryEnabled(chartViewDTO)) return;
+        ChartDataServer.SummaryConfig config = ChartDataServer.parseSummaryConfig(chartViewDTO);
+        List<ChartViewFieldDTO> allColumns = ChartDataServer.getAllExportColumns(chartViewDTO);
+        ChartDataServer.SummaryAccumulator acc = new ChartDataServer.SummaryAccumulator();
+
+        Object objectTableRow = chart.get("tableRow");
+        if (objectTableRow == null) objectTableRow = chart.get("sourceData");
+        if (objectTableRow == null) return;
+
+        List<Map<String, Object>> tableRow = (List<Map<String, Object>>) objectTableRow;
+        for (Map<String, Object> row : tableRow) {
+            acc.totalCount++;
+            for (int j = 0; j < allColumns.size(); j++) {
+                ChartViewFieldDTO field = allColumns.get(j);
+                String fName = field.getDataeaseName();
+                if (!config.summaryShowMap.containsKey(fName) || !config.summaryShowMap.get(fName)) continue;
+                String sType = config.summaryTypeMap.get(fName);
+                if (sType == null || "custom".equals(sType)) continue;
+                Object valObj = row.get(fName);
+                if (valObj == null || StringUtils.isBlank(valObj.toString())) continue;
+                try {
+                    BigDecimal val = new BigDecimal(valObj.toString());
+                    switch (sType) {
+                        case "max":
+                            BigDecimal curMax = acc.maxMap.get(fName);
+                            if (curMax == null || val.compareTo(curMax) > 0) acc.maxMap.put(fName, val);
+                            break;
+                        case "min":
+                            BigDecimal curMin = acc.minMap.get(fName);
+                            if (curMin == null || val.compareTo(curMin) < 0) acc.minMap.put(fName, val);
+                            break;
+                        default:
+                            acc.sumMap.merge(fName, val, BigDecimal::add);
+                            acc.countMap.merge(fName, 1L, Long::sum);
+                            if ("var_pop".equals(sType) || "stddev_pop".equals(sType)) {
+                                acc.sumOfSquaresMap.merge(fName, val.multiply(val), BigDecimal::add);
+                            }
+                            break;
+                    }
+                } catch (Exception ignored) {
+                }
+            }
+        }
+
+        if (acc.totalCount == 0) return;
+
+        Map<String, BigDecimal> customSumResult = chart.get("customSumResult") != null
+                ? (Map<String, BigDecimal>) chart.get("customSumResult") : null;
+
+        Object[] totalRowArr = ChartDataServer.buildSummaryRow(allColumns, config, acc, customSumResult);
+
+        List<String> headKeys = new ArrayList<>();
+        for (ChartViewFieldDTO field : allColumns) {
+            headKeys.add(field.getDataeaseName());
+        }
+
+        List<String> summaryRow = new ArrayList<>();
+        for (int i = 0; i < headKeys.size(); i++) {
+            if (i < totalRowArr.length && totalRowArr[i] != null) {
+                summaryRow.add(totalRowArr[i].toString());
+            } else {
+                summaryRow.add(StringUtils.EMPTY);
+            }
+        }
+        sheetModel.getData().add(summaryRow);
     }
 
     private final TypeReference<List<Map<String, Object>>> tokenType = new TypeReference<List<Map<String, Object>>>() {

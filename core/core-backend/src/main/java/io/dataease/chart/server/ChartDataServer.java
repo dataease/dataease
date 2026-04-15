@@ -264,13 +264,38 @@ public class ChartDataServer implements ChartDataApi {
                     List<Object[]> details = new ArrayList<>();
                     Sheet detailsSheet;
                     Integer sheetIndex = 1;
+
+                    boolean summaryEnabled = !"dataset".equals(request.getDownloadType()) && isSummaryEnabled(request.getViewInfo());
+                    SummaryConfig summaryConfig = null;
+                    SummaryAccumulator summaryAcc = null;
+                    List<ChartViewFieldDTO> allExportColumns = null;
+                    Map<String, BigDecimal> customSumResult = null;
+                    if (summaryEnabled) {
+                        summaryConfig = parseSummaryConfig(request.getViewInfo());
+                        summaryAcc = new SummaryAccumulator();
+                        allExportColumns = getAllExportColumns(request.getViewInfo());
+                    }
+
                     request.getViewInfo().getChartExtRequest().setPageSize(Long.valueOf(extractPageSize));
                     ChartViewDTO chartViewDTO = findExcelData(request);
                     for (long i = 1; i < chartViewDTO.getTotalPage() + 1; i++) {
                         request.getViewInfo().getChartExtRequest().setGoPage(i);
-                        findExcelData(request);
+                        ChartViewDTO pageDto = findExcelData(request);
                         details.addAll(request.getDetails());
+
+                        if (summaryEnabled) {
+                            accumulatePageStats(summaryAcc, request.getDetails(), allExportColumns, summaryConfig);
+                            if (i == chartViewDTO.getTotalPage() && pageDto.getData() != null && pageDto.getData().get("customSumResult") != null) {
+                                customSumResult = (Map<String, BigDecimal>) pageDto.getData().get("customSumResult");
+                            }
+                        }
+
                         if ((details.size() + extractPageSize) > sheetLimit || i == chartViewDTO.getTotalPage()) {
+                            if (i == chartViewDTO.getTotalPage() && summaryEnabled && summaryAcc.totalCount > 0) {
+                                Object[] totalRow = buildSummaryRow(allExportColumns, summaryConfig, summaryAcc, customSumResult);
+                                details.add(totalRow);
+                            }
+
                             detailsSheet = wb.createSheet("数据" + sheetIndex);
                             Integer[] excelTypes = request.getExcelTypes();
                             List<ChartViewFieldDTO> xAxis = new ArrayList<>();
@@ -865,5 +890,182 @@ public class ChartDataServer implements ChartDataApi {
     public void exportScreenViewLog(Long id) {
     }
 
+    public static boolean isSummaryEnabled(ChartViewDTO viewInfo) {
+        if (viewInfo == null || viewInfo.getCustomAttr() == null) return false;
+        String type = viewInfo.getType();
+        if (!StringUtils.equalsAnyIgnoreCase(type, "table-info", "table-normal")) return false;
+        Map<String, Object> basicStyle = (Map<String, Object>) viewInfo.getCustomAttr().get("basicStyle");
+        if (basicStyle == null) return false;
+        return basicStyle.get("showSummary") != null && (Boolean) basicStyle.get("showSummary");
+    }
+
+    public static SummaryConfig parseSummaryConfig(ChartViewDTO viewInfo) {
+        SummaryConfig config = new SummaryConfig();
+        Map<String, Object> basicStyle = (Map<String, Object>) viewInfo.getCustomAttr().get("basicStyle");
+        config.summaryLabel = (basicStyle.get("summaryLabel") != null && StringUtils.isNotBlank(basicStyle.get("summaryLabel").toString()))
+                ? basicStyle.get("summaryLabel").toString()
+                : (Lang.isChinese() ? "总计" : "Total");
+
+        List<Map<String, Object>> seriesSummary = basicStyle.get("seriesSummary") != null
+                ? (List<Map<String, Object>>) basicStyle.get("seriesSummary") : null;
+
+        List<ChartViewFieldDTO> summaryFields;
+        if (viewInfo.getType().equalsIgnoreCase("table-info")) {
+            summaryFields = viewInfo.getXAxis();
+        } else {
+            summaryFields = new ArrayList<>();
+            summaryFields.addAll(viewInfo.getXAxis());
+            summaryFields.addAll(viewInfo.getYAxis());
+        }
+
+        for (ChartViewFieldDTO field : summaryFields) {
+            String fName = field.getDataeaseName();
+            String sType = "sum";
+            boolean sShow = true;
+            if (seriesSummary != null) {
+                for (Map<String, Object> s : seriesSummary) {
+                    if (fName.equals(s.get("field"))) {
+                        sType = s.get("summary") == null ? "sum" : s.get("summary").toString();
+                        sShow = s.get("show") == null || (Boolean) s.get("show");
+                        break;
+                    }
+                }
+            }
+            config.summaryTypeMap.put(fName, sType);
+            config.summaryShowMap.put(fName, sShow);
+        }
+        return config;
+    }
+
+    public static void accumulatePageStats(SummaryAccumulator acc, List<Object[]> pageDetails,
+                                           List<ChartViewFieldDTO> allColumns, SummaryConfig config) {
+        if (pageDetails == null) return;
+        for (Object[] row : pageDetails) {
+            acc.totalCount++;
+            for (int j = 0; j < allColumns.size() && j < row.length; j++) {
+                ChartViewFieldDTO field = allColumns.get(j);
+                String fName = field.getDataeaseName();
+                if (!config.summaryShowMap.containsKey(fName) || !config.summaryShowMap.get(fName)) continue;
+                String sType = config.summaryTypeMap.get(fName);
+                if (sType == null || "custom".equals(sType)) continue;
+                Object valObj = row[j];
+                if (valObj == null || StringUtils.isBlank(valObj.toString())) continue;
+                try {
+                    BigDecimal val = new BigDecimal(valObj.toString());
+                    switch (sType) {
+                        case "max":
+                            BigDecimal curMax = acc.maxMap.get(fName);
+                            if (curMax == null || val.compareTo(curMax) > 0) acc.maxMap.put(fName, val);
+                            break;
+                        case "min":
+                            BigDecimal curMin = acc.minMap.get(fName);
+                            if (curMin == null || val.compareTo(curMin) < 0) acc.minMap.put(fName, val);
+                            break;
+                        default:
+                            acc.sumMap.merge(fName, val, BigDecimal::add);
+                            acc.countMap.merge(fName, 1L, Long::sum);
+                            if ("var_pop".equals(sType) || "stddev_pop".equals(sType)) {
+                                acc.sumOfSquaresMap.merge(fName, val.multiply(val), BigDecimal::add);
+                            }
+                            break;
+                    }
+                } catch (Exception ignored) {
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Object[] buildSummaryRow(List<ChartViewFieldDTO> allColumns, SummaryConfig config,
+                                           SummaryAccumulator acc, Map<String, BigDecimal> customSumResult) {
+        Object[] totalRow = new Object[allColumns.size()];
+        boolean labelSet = false;
+        for (int j = 0; j < allColumns.size(); j++) {
+            ChartViewFieldDTO field = allColumns.get(j);
+            String fName = field.getDataeaseName();
+            if (config.summaryShowMap.containsKey(fName) && config.summaryShowMap.get(fName)) {
+                String sType = config.summaryTypeMap.get(fName);
+                switch (sType) {
+                    case "custom":
+                        totalRow[j] = customSumResult != null && customSumResult.get(fName) != null
+                                ? customSumResult.get(fName).toPlainString() : null;
+                        break;
+                    case "max":
+                        totalRow[j] = acc.maxMap.get(fName) != null ? acc.maxMap.get(fName).toPlainString() : null;
+                        break;
+                    case "min":
+                        totalRow[j] = acc.minMap.get(fName) != null ? acc.minMap.get(fName).toPlainString() : null;
+                        break;
+                    case "avg":
+                        BigDecimal sum = acc.sumMap.get(fName);
+                        Long cnt = acc.countMap.get(fName);
+                        if (sum != null && cnt != null && cnt > 0) {
+                            totalRow[j] = sum.divide(BigDecimal.valueOf(cnt), 8, java.math.RoundingMode.HALF_UP).toPlainString();
+                        }
+                        break;
+                    case "sum":
+                        totalRow[j] = acc.sumMap.get(fName) != null ? acc.sumMap.get(fName).toPlainString() : null;
+                        break;
+                    case "var_pop":
+                        totalRow[j] = calcVariance(acc, fName, false);
+                        break;
+                    case "stddev_pop":
+                        totalRow[j] = calcVariance(acc, fName, true);
+                        break;
+                    default:
+                        break;
+                }
+            } else if (!labelSet) {
+                totalRow[j] = config.summaryLabel;
+                labelSet = true;
+            }
+        }
+        if (!labelSet && totalRow.length > 0) {
+            totalRow[0] = config.summaryLabel;
+        }
+        return totalRow;
+    }
+
+    private static String calcVariance(SummaryAccumulator acc, String fName, boolean isSqrt) {
+        Long cnt = acc.countMap.get(fName);
+        BigDecimal sum = acc.sumMap.get(fName);
+        BigDecimal sumSq = acc.sumOfSquaresMap.get(fName);
+        if (cnt == null || cnt < 2 || sum == null || sumSq == null) return null;
+        BigDecimal mean = sum.divide(BigDecimal.valueOf(cnt), 16, java.math.RoundingMode.HALF_UP);
+        BigDecimal variance = sumSq.divide(BigDecimal.valueOf(cnt), 16, java.math.RoundingMode.HALF_UP)
+                .subtract(mean.multiply(mean));
+        BigDecimal sampleVariance = variance.multiply(BigDecimal.valueOf(cnt))
+                .divide(BigDecimal.valueOf(cnt - 1), 8, java.math.RoundingMode.HALF_UP);
+        if (isSqrt) {
+            return BigDecimal.valueOf(Math.sqrt(sampleVariance.doubleValue()))
+                    .setScale(8, java.math.RoundingMode.HALF_UP).toPlainString();
+        }
+        return sampleVariance.toPlainString();
+    }
+
+    public static List<ChartViewFieldDTO> getAllExportColumns(ChartViewDTO viewInfo) {
+        List<ChartViewFieldDTO> allColumns = new ArrayList<>();
+        allColumns.addAll(viewInfo.getXAxis());
+        allColumns.addAll(viewInfo.getYAxis());
+        allColumns.addAll(viewInfo.getXAxisExt());
+        allColumns.addAll(viewInfo.getYAxisExt());
+        allColumns.addAll(viewInfo.getExtStack());
+        return allColumns;
+    }
+
+    public static class SummaryConfig {
+        public String summaryLabel;
+        public Map<String, String> summaryTypeMap = new HashMap<>();
+        public Map<String, Boolean> summaryShowMap = new HashMap<>();
+    }
+
+    public static class SummaryAccumulator {
+        public long totalCount = 0;
+        public Map<String, BigDecimal> sumMap = new HashMap<>();
+        public Map<String, BigDecimal> maxMap = new HashMap<>();
+        public Map<String, BigDecimal> minMap = new HashMap<>();
+        public Map<String, Long> countMap = new HashMap<>();
+        public Map<String, BigDecimal> sumOfSquaresMap = new HashMap<>();
+    }
 
 }
