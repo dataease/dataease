@@ -9,4 +9,5 @@ public class Item {
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
     private String name;
+    private String account;
 }
