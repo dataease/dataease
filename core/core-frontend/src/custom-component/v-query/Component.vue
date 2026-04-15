@@ -10,6 +10,8 @@ import { ElMessage } from 'element-plus-secondary'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import QueryConditionConfiguration from './QueryConditionConfiguration.vue'
 import type { ComponentInfo } from '@/api/chart'
+import { getDynamicRange, getCustomTime } from '@/custom-component/v-query/time-format'
+import { getCustomRange } from '@/custom-component/v-query/time-format-dayjs'
 import { infoFormat } from './options'
 import {
   onBeforeUnmount,
@@ -690,6 +692,57 @@ const resetData = () => {
         next.mapValue = Array.isArray(next.defaultMapValue)
           ? [...next.defaultMapValue]
           : next.defaultMapValue
+      }
+
+      if (
+        next.defaultValueCheck &&
+        [1, 7].includes(+next.displayType) &&
+        next.timeType === 'dynamic'
+      ) {
+        if (+next.displayType === 1) {
+          let selectValue = getDynamicRange(next) || []
+          next.defaultValue = new Date(selectValue[0])
+          next.selectValue = new Date(selectValue[0])
+        } else {
+          const {
+            timeNum,
+            relativeToCurrentType,
+            around,
+            relativeToCurrentRange,
+            arbitraryTime,
+            timeGranularity,
+            timeNumRange,
+            relativeToCurrentTypeRange,
+            aroundRange,
+            timeGranularityMultiple,
+            arbitraryTimeRange
+          } = next
+
+          let startTime = getCustomTime(
+            timeNum,
+            relativeToCurrentType,
+            timeGranularity,
+            around,
+            arbitraryTime,
+            timeGranularityMultiple,
+            'start-panel'
+          )
+          let endTime = getCustomTime(
+            timeNumRange,
+            relativeToCurrentTypeRange,
+            timeGranularity,
+            aroundRange,
+            arbitraryTimeRange,
+            timeGranularityMultiple,
+            'end-panel'
+          )
+
+          if (!!relativeToCurrentRange && relativeToCurrentRange !== 'custom') {
+            ;[startTime, endTime] = getCustomRange(relativeToCurrentRange)
+          }
+          next.defaultValue = [startTime, endTime]
+          next.selectValue = [startTime, endTime]
+        }
       }
 
       ;(props.element.cascade || []).forEach(ele => {

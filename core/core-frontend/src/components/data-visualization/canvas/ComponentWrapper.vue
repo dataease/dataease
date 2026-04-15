@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { getStyle } from '@/utils/style'
 import eventBus from '@/utils/eventBus'
-import { ref, toRefs, computed, nextTick } from 'vue'
+import { ref, toRefs, computed, nextTick, onMounted, onBeforeUnmount } from 'vue'
 import findComponent from '@/utils/components'
 import { downloadCanvas2 } from '@/utils/imgUtils'
 import ComponentEditBar from '@/components/visualization/ComponentEditBar.vue'
@@ -391,6 +391,45 @@ const updateFromMobile = (e, type) => {
 const showPositionActive = computed(() =>
   showPosition.value === 'edit-preview' ? 'preview' : showPosition.value
 )
+const isIntersecting = ref(false)
+const observer = ref<IntersectionObserver | null>(null)
+// 移动端懒加载开关
+const isMobileLazyLoadEnabled = computed(() => {
+  return isMobile() || dvMainStore.inMobile || dvMainStore.mobileInPc
+})
+// 初始化IntersectionObserver
+onMounted(() => {
+  if (isMobileLazyLoadEnabled.value && showPositionActive.value === 'preview') {
+    const wrapperInner = componentWrapperInnerRef.value
+    if (wrapperInner) {
+      observer.value = new IntersectionObserver(
+        entries => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              isIntersecting.value = true
+              // 一旦加载完成，不再监听
+              if (observer.value) {
+                observer.value.unobserve(entry.target)
+              }
+            }
+          })
+        },
+        {
+          rootMargin: '200px 0px', // 提前200px开始加载
+          threshold: 0.1
+        }
+      )
+      observer.value.observe(wrapperInner)
+    }
+  }
+})
+
+// 清理Observer
+onBeforeUnmount(() => {
+  if (observer.value) {
+    observer.value.disconnect()
+  }
+})
 </script>
 
 <template>
@@ -454,6 +493,7 @@ const showPositionActive = computed(() =>
         @mousedown="onWrapperClickCur"
       >
         <component
+          v-if="isIntersecting || !isMobileLazyLoadEnabled"
           :is="findComponent(config['component'])"
           :view="viewInfo"
           ref="component"
