@@ -380,20 +380,9 @@ const fontSizeList = computed(() => {
   return arr
 })
 
-const colorForm = computed(() => ({
-  ...(canvasStyleData.value.component.chartColor as DeepPartial<ChartAttr>),
-  label: {
-    color: '#000000',
-    fontSize: 12,
-    ...(canvasStyleData.value.component.chartColor?.label || {})
-  },
-  tooltip: {
-    color: '#000000',
-    fontSize: 12,
-    backgroundColor: '#FFFFFF',
-    ...(canvasStyleData.value.component.chartColor?.tooltip || {})
-  }
-}))
+const colorForm = computed(
+  () => canvasStyleData.value.component.chartColor as DeepPartial<ChartAttr>
+)
 
 const seniorForm = computed(() => canvasStyleData.value.component.seniorStyleSetting)
 

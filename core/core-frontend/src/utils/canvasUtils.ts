@@ -346,6 +346,21 @@ export function historyAdaptor(
   canvasStyleResult['component']['formatterItem'] =
     canvasStyleResult['component']['formatterItem'] || deepCopy(formatterItem)
 
+  canvasStyleResult.component.chartColor = {
+    ...canvasStyleResult.component.chartColor,
+    label: {
+      color: '#000000',
+      fontSize: 12,
+      ...(canvasStyleResult.component.chartColor?.label || {})
+    },
+    tooltip: {
+      color: '#000000',
+      fontSize: 12,
+      backgroundColor: '#FFFFFF',
+      ...(canvasStyleResult.component.chartColor?.tooltip || {})
+    }
+  }
+
   canvasDataResult.forEach(componentItem => {
     historyItemAdaptor(componentItem, reportFilterInfo, attachInfo, canvasVersion, canvasInfo)
   })
