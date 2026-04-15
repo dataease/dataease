@@ -95,7 +95,7 @@ defineExpose({
 
 <style lang="less">
 .track_bar_custom {
-  transform: translate(50px, -30px);
+  transform: translate(50px, -30px) !important;
 }
 </style>
 
