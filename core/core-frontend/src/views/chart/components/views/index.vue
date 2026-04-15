@@ -1004,7 +1004,9 @@ const iconSize = computed<string>(() => {
  * 保证标题容器高度最小高度不低于图标高度
  */
 const titleContainerMinHeight = computed<string>(() => {
-  if (!titleShow.value) {
+  if (['picture-group', 'rich-text'].includes(element.value.innerType)) {
+    return '0px'
+  } else if (!titleShow.value) {
     return 16 * scale.value + 4 + 'px'
   }
   return 16 * scale.value + 'px'
