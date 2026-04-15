@@ -132,6 +132,7 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     }
     let options: ChoroplethOptions = {
       preserveDrawingBuffer: true,
+      minZoom: -2,
       map: {
         type: 'mapbox',
         style: 'blank'
