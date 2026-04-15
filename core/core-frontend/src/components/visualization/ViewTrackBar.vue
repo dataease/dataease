@@ -81,9 +81,7 @@ const visibleChange = () => {
 const chartId = ref(null)
 const trackButtonClick = (id?: string) => {
   chartId.value = id
-  setTimeout(() => {
-    trackButton.value.click()
-  }, 50)
+  trackButton.value.click()
 }
 
 const trackMenuClick = menu => {
@@ -108,7 +106,6 @@ defineExpose({
 
 :deep(.ed-dropdown__popper) {
   position: static !important;
-  z-index: 9999 !important; /* 添加这行 */
 }
 
 .ed-popper[x-placement^='bottom'] .popper__arrow {
