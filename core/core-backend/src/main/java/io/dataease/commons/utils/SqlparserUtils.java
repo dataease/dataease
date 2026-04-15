@@ -150,7 +150,7 @@ public class SqlparserUtils {
     }
 
     private static boolean isParams(String paramId) {
-        if (Arrays.asList("sysParams.userId", "sysParams.userEmail", "sysParams.userName").contains(paramId)) {
+        if (Arrays.asList("sysParams.userId", "sysParams.userEmail", "sysParams.userName", "sysParams.userPhone").contains(paramId)) {
             return true;
         }
         boolean isLong = false;
@@ -726,6 +726,9 @@ public class SqlparserUtils {
             sql = sql.replace(SysParamsSubstitutedParams + "sysParams.userId", userEntity.getAccount());
             sql = sql.replace(SysParamsSubstitutedParams + "sysParams.userEmail", userEntity.getEmail());
             sql = sql.replace(SysParamsSubstitutedParams + "sysParams.userName", Translator.get(userEntity.getName()));
+            if (StringUtils.isNotEmpty(userEntity.getPhone())) {
+                sql = sql.replace(SysParamsSubstitutedParams + "sysParams.userPhone", Translator.get(userEntity.getPhone()));
+            }
             for (SysVariableValueItem variable : userEntity.getVariables()) {
                 String value = null;
                 if (!variable.isValid()) {

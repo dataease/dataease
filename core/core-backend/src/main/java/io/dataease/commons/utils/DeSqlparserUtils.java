@@ -181,7 +181,7 @@ public class DeSqlparserUtils {
     }
 
     private static boolean isParams(String paramId) {
-        if (Arrays.asList("sysParams.userId", "sysParams.userEmail", "sysParams.userName").contains(paramId)) {
+        if (Arrays.asList("sysParams.userId", "sysParams.userEmail", "sysParams.userName", "sysParams.userPhone").contains(paramId)) {
             return true;
         }
         boolean isLong = false;
