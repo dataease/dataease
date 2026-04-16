@@ -1,10 +1,12 @@
 import { useI18n } from '@/hooks/web/useI18n'
 import dayjs from 'dayjs'
+import 'dayjs/locale/zh-cn'
 import type { ManipulateType, QUnitType } from 'dayjs'
 import quarterOfYear from 'dayjs/plugin/quarterOfYear'
 type ManipulateTypeWithQuarter = ManipulateType | 'quarter'
 const { t } = useI18n()
 dayjs.extend(quarterOfYear)
+dayjs.locale('zh-cn')
 
 function getThisStart(val = 'month' as ManipulateTypeWithQuarter) {
   return new Date(dayjs().startOf(val).format('YYYY/MM/DD HH:mm:ss'))
@@ -56,8 +58,8 @@ const shortcuts = [
   {
     text: 'dynamic_time.cweek',
     onClick: ({ emit }) => {
-      const startTime = new Date(+new Date(getThisStart('week')) + 24 * 1000 * 3600)
-      const endTime = new Date(+new Date(getThisEnd('week')) + 24 * 1000 * 3600)
+      const startTime = getThisStart('week')
+      const endTime = getThisEnd('week')
       if (callback([startTime, endTime])) return
       emit('pick', [dayjs(startTime), dayjs(endTime)])
     }
@@ -93,8 +95,8 @@ const shortcuts = [
   {
     text: 'dynamic_time.lweek',
     onClick: ({ emit }) => {
-      const startTime = new Date(+new Date(getLastStart('week')) + 24 * 1000 * 3600)
-      const endTime = new Date(+new Date(getLastEnd('week')) + 24 * 1000 * 3600)
+      const startTime = getLastStart('week')
+      const endTime = getLastEnd('week')
       if (callback([startTime, endTime])) return
       emit('pick', [dayjs(startTime), dayjs(endTime)])
     }
