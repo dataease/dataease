@@ -15,6 +15,7 @@ import { flow, getGeoJsonFile, hexColorToRGBA, parseJson } from '@/views/chart/c
 import { cloneDeep, isEmpty } from 'lodash-es'
 import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
 import {
+  configL7PlotZoom,
   handleGeoJson,
   mapRendered,
   mapRendering
@@ -25,6 +26,10 @@ import { configCarouselTooltip } from '@/views/chart/components/js/panel/charts/
 import { getCustomGeoArea } from '@/api/map'
 import { TextLayer } from '@antv/l7plot/dist/esm'
 import { centroid } from '@turf/centroid'
+import {
+  isPointOnlyGeoJson,
+  drawPointFallbackChart
+} from '@/views/chart/components/js/panel/charts/map/point-fallback'
 
 const { t } = useI18n()
 
@@ -129,6 +134,30 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
           return names.replace(/@[^@]*$/, '') === gadmName
         })
       }
+    }
+    if (isPointOnlyGeoJson(geoJson)) {
+      const { basicStyle } = parseJson(chart.customAttr)
+      const { bubbleCfg } = parseJson(chart.senior)
+      const { offsetHeight, offsetWidth } = document.getElementById(container)
+      const sizeRange: [number, number] = bubbleCfg?.enable
+        ? [10, Math.min(offsetHeight, offsetWidth) / 10]
+        : [5, Math.min(offsetHeight, offsetWidth) / 20]
+      const dataColor = hexColorToRGBA(basicStyle.colors[0], basicStyle.alpha)
+      const view = await drawPointFallbackChart(drawOption, chart, geoJson, data || [], action, {
+        dotSize: { field: 'size', value: sizeRange },
+        dotColor: {
+          field: 'hasData',
+          value: ({ hasData }) => (hasData ? dataColor : '#cccccc')
+        },
+        dotName: 'dotLayer',
+        dotShape: { field: 'hasData', value: ({ hasData }) => (hasData ? 'circle' : 'square') },
+        animate: bubbleCfg?.enable
+          ? { enable: true, speed: bubbleCfg.speed, rings: bubbleCfg.rings }
+          : undefined,
+        disableInteraction: false
+      })
+      configL7PlotZoom(chart, view)
+      return view
     }
     let options: ChoroplethOptions = {
       preserveDrawingBuffer: true,

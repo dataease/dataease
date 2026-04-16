@@ -401,6 +401,9 @@ const renderL7Plot = async (chart: ChartObj, chartView: L7PlotChartView<any, any
   }
   mapTimer && clearTimeout(mapTimer)
   mapTimer = setTimeout(async () => {
+    if (myChart?.tooltip && typeof myChart.tooltip.destroy !== 'function') {
+      myChart.tooltip = null
+    }
     myChart?.destroy()
     if (chartContainer.value) {
       chartContainer.value.textContent = ''

@@ -14,6 +14,7 @@ import {
   parseJson
 } from '@/views/chart/components/js/util'
 import {
+  configL7PlotZoom,
   handleGeoJson,
   mapRendered,
   mapRendering
@@ -40,6 +41,10 @@ import { configCarouselTooltip } from '@/views/chart/components/js/panel/charts/
 import { getCustomGeoArea } from '@/api/map'
 import { centroid } from '@turf/centroid'
 import { TextLayer } from '@antv/l7plot/dist/esm'
+import {
+  isPointOnlyGeoJson,
+  drawPointFallbackChart
+} from '@/views/chart/components/js/panel/charts/map/point-fallback'
 
 const { t } = useI18n()
 
@@ -156,6 +161,51 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
           return names.replace(/@[^@]*$/, '') === gadmName
         })
       }
+    }
+    if (isPointOnlyGeoJson(geoJson)) {
+      const { basicStyle } = parseJson(chart.customAttr)
+      const dataColor = hexColorToRGBA(basicStyle.colors?.[0] || '#5470c6', basicStyle.alpha ?? 1)
+      const view = await drawPointFallbackChart(drawOption, chart, geoJson, sourceData, action, {
+        dotSize: 6,
+        dotColor: {
+          field: 'hasData',
+          value: ({ hasData }) => (hasData ? dataColor : '#cccccc')
+        },
+        dotName: 'dotLayer',
+        disableInteraction: false,
+        customizeChoroplethOptions: (opts, c, dotData) => {
+          this.customConfigLegend(c, opts)
+          const legendSourceData = dotData
+            .filter(d => d.hasData)
+            .map(d => ({ name: d.name, value: d.size }))
+          if (legendSourceData.length && opts.legend && typeof opts.legend === 'object') {
+            const colors = basicStyle.colors.map(cc => hexColorToRGBA(cc, basicStyle.alpha))
+            const values = legendSourceData.map(d => d.value)
+            const min = Math.min(...values)
+            const max = Math.max(...values)
+            const step = values.length > 1 ? (max - min) / Math.min(colors.length, 5) : 1
+            const items: { value: number[]; color: string }[] = []
+            if (values.length === 1) {
+              items.push({ value: [min, max], color: colors[0] })
+            } else {
+              for (let i = 0; i < Math.min(colors.length, 5); i++) {
+                const lo = min + step * i
+                const hi = i === Math.min(colors.length, 5) - 1 ? max : min + step * (i + 1)
+                items.push({ value: [lo, hi], color: colors[i % colors.length] })
+              }
+            }
+            opts.legend.customContent = () => {
+              if (items.length) {
+                return this.createLegendCustomContent(items)
+              }
+              return ''
+            }
+          }
+          return opts
+        }
+      })
+      configL7PlotZoom(chart, view)
+      return view
     }
     let data = []
     // 自定义图例
@@ -440,7 +490,11 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
   private customConfigLegend(chart: Chart, options: ChoroplethOptions): ChoroplethOptions {
     const { basicStyle, misc } = parseJson(chart.customAttr)
     const colors = basicStyle.colors.map(item => hexColorToRGBA(item, basicStyle.alpha))
-    if (basicStyle.suspension === false && basicStyle.showZoom === undefined) {
+    if (
+      basicStyle.suspension === false &&
+      basicStyle.showZoom === undefined &&
+      options.legend === false
+    ) {
       return options
     }
     const { legend } = parseJson(chart.customStyle)

@@ -6,14 +6,14 @@ export const getWorldTree = (): Promise<IResponse<AreaNode>> => {
 }
 
 export const getGeoJson = (areaId: string): Promise<IResponse<FeatureCollection>> => {
-  let prefix = '/map'
-  let areaCode = areaId
-  if (isCustomGeo(areaId)) {
-    prefix = '/geo'
-    areaCode = getBusiGeoCode(areaId)
-  }
-  const realCountry = areaCode.substring(0, 3)
-  const url = `${prefix}/${realCountry}/${areaCode}.json`
+  const isGeo = isCustomGeo(areaId)
+  const areaCode = isGeo ? getBusiGeoCode(areaId) : areaId
+
+  // 中国区域走 /map, 其他走 /geo
+  const prefix = !isGeo || areaCode.startsWith('156') ? '/map' : '/geo'
+  const countryCode = areaCode.substring(0, 3)
+  const url = `${prefix}/${countryCode}/${areaCode}.json`
+
   return request.get({ url })
 }
 
