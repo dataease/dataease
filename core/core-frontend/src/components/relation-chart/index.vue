@@ -120,7 +120,7 @@ defineExpose({
     width: 100%;
     height: 100%;
     background: #f5f6f7;
-    border-radius: 4px;
+    border-radius: 6px;
     position: relative;
   }
 }

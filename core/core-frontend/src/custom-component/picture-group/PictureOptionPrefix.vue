@@ -23,7 +23,7 @@ withDefaults(
   flex-direction: column;
   align-content: center;
   img {
-    border-radius: 4px;
+    border-radius: 6px;
     width: 100%;
     height: 100%;
   }

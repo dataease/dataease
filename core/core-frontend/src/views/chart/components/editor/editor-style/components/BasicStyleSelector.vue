@@ -1621,7 +1621,7 @@ onMounted(() => {
   .ed-select {
     width: 100px !important;
     :deep(.ed-input__wrapper) {
-      border-radius: 4px 0 0 4px !important;
+      border-radius: 6px 0 0 4px !important;
     }
   }
   .ed-input-group {
@@ -1663,7 +1663,7 @@ onMounted(() => {
   :deep(.ed-upload--picture-card) {
     background: #eff0f1;
     border: 1px dashed #dee0e3;
-    border-radius: 4px;
+    border-radius: 6px;
 
     .ed-icon {
       color: #1f2329;
@@ -1728,7 +1728,7 @@ onMounted(() => {
   :deep(.ed-upload--picture-card) {
     background: #eff0f1;
     border: 1px dashed #dee0e3;
-    border-radius: 4px;
+    border-radius: 6px;
 
     .ed-icon {
       color: #1f2329;

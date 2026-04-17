@@ -77,7 +77,7 @@ const templateInnerPreview = () => {
 .template {
   overflow: hidden;
   border: 1px solid #d9d9d9;
-  border-radius: 4px;
+  border-radius: 6px;
   display: flex;
   flex-wrap: wrap;
   min-width: 181px;

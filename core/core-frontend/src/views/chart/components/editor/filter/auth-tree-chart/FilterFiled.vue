@@ -1110,7 +1110,7 @@ const emits = defineEmits(['update:item', 'del'])
         :nth-child(2) {
           height: 26px;
           line-height: 26px;
-          border-radius: 4px;
+          border-radius: 6px;
           padding: 0 4px;
           color: var(--ed-color-primary, #3370ff);
           &:hover {
@@ -1160,7 +1160,7 @@ const emits = defineEmits(['update:item', 'del'])
             width: 24px;
             margin: 0px;
             height: 24px;
-            border-radius: 4px;
+            border-radius: 6px;
             background-color: #1f23291a;
           }
         }
@@ -1204,7 +1204,7 @@ const emits = defineEmits(['update:item', 'del'])
   margin: 5px 0;
   background-color: #fff;
   border: 1px solid #ebeef5;
-  border-radius: 4px;
+  border-radius: 6px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   margin-top: 12px;
   position: absolute;

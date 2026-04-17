@@ -320,7 +320,7 @@ defineExpose({
   .content {
     height: 62px;
     width: 852px;
-    border-radius: 4px;
+    border-radius: 6px;
     background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
     position: relative;
     padding: 9px 0 9px 40px;

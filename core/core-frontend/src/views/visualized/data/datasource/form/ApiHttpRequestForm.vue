@@ -210,7 +210,7 @@ const emits = defineEmits(['changeId'])
 .request-content {
   border: 1px #dcdfe6 solid;
   height: 100%;
-  border-radius: 4px;
+  border-radius: 6px;
   width: 100%;
   .ms-query {
     background: #409eff;

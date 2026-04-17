@@ -152,7 +152,7 @@ init()
 <style lang="less" scoped>
 .line-item {
   width: 100%;
-  border-radius: 4px;
+  border-radius: 6px;
   border: 1px solid #dcdfe6;
   padding: 4px 14px;
   margin-bottom: 10px;

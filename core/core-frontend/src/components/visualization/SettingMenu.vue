@@ -359,7 +359,7 @@ onMounted(() => {
 
   ul {
     border: 1px solid #e4e7ed;
-    border-radius: 4px;
+    border-radius: 6px;
     background-color: #fff;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
     box-sizing: border-box;

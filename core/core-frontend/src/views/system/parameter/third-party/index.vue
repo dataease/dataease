@@ -146,7 +146,7 @@ search()
 <style lang="less" scoped>
 .no-params {
   height: 72px;
-  border-radius: 4px;
+  border-radius: 6px;
   display: flex;
   padding: 0 24px;
   align-items: center;
@@ -157,7 +157,7 @@ search()
 .container-sys-platform {
   padding: 24px;
   overflow: hidden;
-  border-radius: 4px;
+  border-radius: 6px;
   background: var(--ContentBG, #ffffff);
 }
 .platform-head-container {

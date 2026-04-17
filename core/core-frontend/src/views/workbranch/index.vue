@@ -471,7 +471,7 @@ loadShareBase()
     .user-info {
       padding: 24px 16px 16px 16px;
       background: #fff;
-      border-radius: 4px;
+      border-radius: 6px;
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
@@ -555,7 +555,7 @@ loadShareBase()
     }
 
     .quick-creation {
-      border-radius: 4px;
+      border-radius: 6px;
       background: #fff;
       margin-top: 16px;
       padding: 24px;
@@ -578,7 +578,7 @@ loadShareBase()
           padding: 12px;
           width: 150px;
           margin-top: 16px;
-          border-radius: 4px;
+          border-radius: 6px;
           border: 1px solid #dee0e3;
           display: flex;
           align-items: center;
@@ -591,7 +591,7 @@ loadShareBase()
             font-size: 21.33px;
             padding: 5.33px;
             margin-right: 12px;
-            border-radius: 4px;
+            border-radius: 6px;
             color: #fff;
           }
 
@@ -651,7 +651,7 @@ loadShareBase()
     .template-market {
       padding: 24px 24px 0;
       background: #fff;
-      border-radius: 4px;
+      border-radius: 6px;
       .label {
         color: #1f2329;
         font-feature-settings: 'clig' off, 'liga' off;
@@ -668,7 +668,7 @@ loadShareBase()
           font-size: 14px;
           font-weight: 400;
           line-height: 22px;
-          border-radius: 4px;
+          border-radius: 6px;
 
           button {
             cursor: pointer;
@@ -677,7 +677,7 @@ loadShareBase()
           .flex-center {
             padding: 0 4px;
             color: #646a73;
-            border-radius: 4px;
+            border-radius: 6px;
             height: 26px;
             border: none;
             outline: none;
@@ -699,7 +699,7 @@ loadShareBase()
           color: #1f2329;
           cursor: pointer;
           height: 24px;
-          border-radius: 4px;
+          border-radius: 6px;
           background: rgba(31, 35, 41, 0.1);
           display: inline-flex;
           align-items: center;

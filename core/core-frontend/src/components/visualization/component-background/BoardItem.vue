@@ -53,7 +53,7 @@ const mainIconClass = itemUrl => {
     &:hover {
       border: 1px dashed var(--ed-color-primary-99, rgba(51, 112, 255, 0.6));
     }
-    border-radius: 4px;
+    border-radius: 6px;
     background-color: #f5f6f7;
     width: 88px;
     height: 64px;

@@ -198,7 +198,7 @@ const handleChange = () => {
   cursor: pointer;
   height: 24px;
   width: 24px;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 16px;
   &:hover {
     background: rgba(31, 35, 41, 0.1);
@@ -226,7 +226,7 @@ const handleChange = () => {
   }
   .ed-cascader-panel {
     .ed-cascader-menu {
-      border-radius: 4px;
+      border-radius: 6px;
       border: 1px solid #dee0e3;
       background: #fff;
       box-shadow: 0px 4px 8px 0px rgba(31, 35, 41, 0.1);

@@ -198,7 +198,7 @@ function setPosition(p: 'left' | 'center' | 'right') {
   .ed-checkbox__label {
     .bash-icon {
       background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
-      border-radius: 4px;
+      border-radius: 6px;
       color: var(--ed-color-primary);
     }
   }
@@ -208,7 +208,7 @@ function setPosition(p: 'left' | 'center' | 'right') {
   .ed-radio__label {
     .bash-icon {
       background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
-      border-radius: 4px;
+      border-radius: 6px;
     }
   }
 }
@@ -242,7 +242,7 @@ function setPosition(p: 'left' | 'center' | 'right') {
   width: 24px;
   height: 24px;
   text-align: center;
-  border-radius: 4px;
+  border-radius: 6px;
   padding-top: 1px;
 
   color: #1f2329;

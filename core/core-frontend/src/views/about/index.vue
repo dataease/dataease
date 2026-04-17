@@ -237,13 +237,13 @@ const update = (licKey: string) => {
 <style lang="less">
 .about-dialog {
   img {
-    border-radius: 4px;
+    border-radius: 6px;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
   }
   .color-overlay {
     position: absolute;
-    border-radius: 4px;
+    border-radius: 6px;
     width: 792px;
     height: 180px;
     top: 72px;
@@ -259,7 +259,7 @@ const update = (licKey: string) => {
   }
 
   .content {
-    border-radius: 4px;
+    border-radius: 6px;
     border: 1px solid #dee0e3;
     border-top-left-radius: 0;
     border-top-right-radius: 0;

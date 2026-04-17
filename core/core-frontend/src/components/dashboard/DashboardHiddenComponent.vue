@@ -71,7 +71,7 @@ const addToDashboard = item => {
     float: left;
     background: #fff;
     padding: 4px;
-    border-radius: 4px;
+    border-radius: 6px;
     border: 1px solid #dee0e3;
     &:nth-child(2n) {
       margin-right: -1px;

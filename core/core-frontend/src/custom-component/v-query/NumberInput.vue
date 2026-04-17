@@ -108,7 +108,7 @@ const color = computed(() => {
 .num-search-select {
   display: flex;
   align-items: center;
-  border-radius: 4px;
+  border-radius: 6px;
   .num-value_line {
     background: #1f2329;
     width: 12px;

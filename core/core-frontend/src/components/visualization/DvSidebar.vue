@@ -324,7 +324,7 @@ const onComponentNameChange = () => {
     width: 100%;
     outline: none;
     border: 1px solid #295acc;
-    border-radius: 4px;
+    border-radius: 6px;
     padding: 0 4px;
     height: 100%;
   }
@@ -339,7 +339,7 @@ const onComponentNameChange = () => {
     background-color: #050e21;
     outline: none;
     border: 1px solid #295acc;
-    border-radius: 4px;
+    border-radius: 6px;
     padding: 0 4px;
     height: 100%;
   }

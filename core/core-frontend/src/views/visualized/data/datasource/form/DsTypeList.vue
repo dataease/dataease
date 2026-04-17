@@ -164,7 +164,7 @@ const selectDs = ({ type }) => {
     align-items: center;
     background: #ffffff;
     border: 1px solid #dee0e3;
-    border-radius: 4px;
+    border-radius: 6px;
     margin-bottom: 16px;
     margin-left: 16px;
     padding: 16px;

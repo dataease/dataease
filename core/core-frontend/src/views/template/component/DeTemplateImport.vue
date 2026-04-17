@@ -326,7 +326,7 @@ if (props.templateId) {
   height: 300px !important;
   overflow: auto;
   background-size: 100% 100% !important;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 .preview-show {
   border-left: 1px solid #e6e6e6;

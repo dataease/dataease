@@ -812,7 +812,7 @@ onMounted(() => {
   .input-suffix-btn {
     width: 24px;
     height: 24px;
-    border-radius: 4px;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;

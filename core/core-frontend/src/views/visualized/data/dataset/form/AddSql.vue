@@ -1477,7 +1477,7 @@ const mousedownDrag = () => {
             height: 28px;
             margin-top: 4px;
             word-break: break-all;
-            border-radius: 4px;
+            border-radius: 6px;
 
             .icon-right {
               display: none;
@@ -1687,7 +1687,7 @@ const mousedownDrag = () => {
   .content {
     height: 80px;
     width: 822px;
-    border-radius: 4px;
+    border-radius: 6px;
     background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
     position: relative;
     line-height: 22px;

@@ -58,7 +58,7 @@ const selectHandler = (index: number) => {
         height: 40px;
         padding: 9px 8px;
         line-height: 22px;
-        border-radius: 4px;
+        border-radius: 6px;
         font-size: 14px;
         font-weight: 400;
         cursor: pointer;

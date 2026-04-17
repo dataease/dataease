@@ -611,7 +611,7 @@ watch(
   :deep(.ed-upload--picture-card) {
     background: #eff0f1;
     border: 1px dashed #dee0e3;
-    border-radius: 4px;
+    border-radius: 6px;
 
     .ed-icon {
       color: #1f2329;
@@ -664,7 +664,7 @@ watch(
   :deep(.ed-upload--picture-card) {
     background: #eff0f1;
     border: 1px dashed #dee0e3;
-    border-radius: 4px;
+    border-radius: 6px;
 
     .ed-icon {
       color: #1f2329;

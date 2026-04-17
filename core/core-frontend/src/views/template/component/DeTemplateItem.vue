@@ -88,7 +88,7 @@ const handleCommand = key => {
   position: relative;
   background: #ffffff;
   border: 1px solid #dee0e3;
-  border-radius: 4px;
+  border-radius: 6px;
   margin: 0 16px 16px 0;
   overflow: hidden;
   .custom-item-checkbox {
@@ -132,12 +132,12 @@ const handleCommand = key => {
 
     .el-icon-more:hover {
       background: rgba(31, 35, 41, 0.1);
-      border-radius: 4px;
+      border-radius: 6px;
     }
 
     .el-icon-more:active {
       background: rgba(31, 35, 41, 0.2);
-      border-radius: 4px;
+      border-radius: 6px;
     }
   }
 
@@ -177,7 +177,7 @@ const handleCommand = key => {
 
 .icon-screen-new {
   background: var(--ed-color-primary);
-  border-radius: 4px;
+  border-radius: 6px;
   color: #fff;
   padding: 3px;
 }

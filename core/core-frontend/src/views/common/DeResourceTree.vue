@@ -1010,7 +1010,7 @@ defineExpose({
   }
 
   .icon-screen-new {
-    border-radius: 4px;
+    border-radius: 6px;
     color: #fff;
     padding: 3px;
   }
@@ -1030,7 +1030,7 @@ defineExpose({
   }
 
   .ed-icon {
-    border-radius: 4px;
+    border-radius: 6px;
   }
 }
 

@@ -518,7 +518,7 @@ const getEmptyDesc = (): string => {
 .dashboard-type {
   padding: 8px 24px 0 24px;
   background: #fff;
-  border-radius: 4px;
+  border-radius: 6px;
   height: calc(100% - 280px);
   margin-top: 16px;
 
@@ -580,7 +580,7 @@ const getEmptyDesc = (): string => {
       font-size: 18px;
       padding: 3px;
       margin-right: 12px;
-      border-radius: 4px;
+      border-radius: 6px;
       color: #fff;
     }
     .name-star {

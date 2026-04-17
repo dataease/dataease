@@ -848,7 +848,7 @@ const onPlaceholderChange = () => {
     :deep(.ed-upload--picture-card) {
       background: #eff0f1;
       border: 1px dashed #dee0e3;
-      border-radius: 4px;
+      border-radius: 6px;
 
       .ed-icon {
         color: #1f2329;
@@ -925,7 +925,7 @@ const onPlaceholderChange = () => {
   width: 24px;
   height: 24px;
   text-align: center;
-  border-radius: 4px;
+  border-radius: 6px;
   padding-top: 4px;
 
   color: #1f2329;

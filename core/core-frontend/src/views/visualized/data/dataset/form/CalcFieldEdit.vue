@@ -717,12 +717,12 @@ initFunction()
     border: 1px solid var(--deCardStrokeColor, #dee0e3);
     box-sizing: border-box;
     height: 500px;
-    border-radius: 4px;
+    border-radius: 6px;
   }
 }
 .hover-icon_quota {
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 16px;
   position: relative;
 
@@ -733,7 +733,7 @@ initFunction()
       width: 24px;
       height: 24px;
       background: rgba(31, 35, 41, 0.1);
-      border-radius: 4px;
+      border-radius: 6px;
       transform: translate(-50%, -50%);
       top: 50%;
       left: 50%;
@@ -747,7 +747,7 @@ initFunction()
       width: 24px;
       height: 24px;
       background: rgba(31, 35, 41, 0.1);
-      border-radius: 4px;
+      border-radius: 6px;
       transform: translate(-50%, -50%);
       top: 50%;
       left: 50%;
@@ -761,7 +761,7 @@ initFunction()
       width: 24px;
       height: 24px;
       background: rgba(31, 35, 41, 0.2);
-      border-radius: 4px;
+      border-radius: 6px;
       transform: translate(-50%, -50%);
       top: 50%;
       left: 50%;
@@ -803,7 +803,7 @@ initFunction()
   height: 28px;
   margin-top: 4px;
   word-break: break-all;
-  border-radius: 4px;
+  border-radius: 6px;
 
   .icon-right {
     display: none;
@@ -840,7 +840,7 @@ initFunction()
   min-height: 28px;
   padding: 0px 8px;
   margin-bottom: 4px;
-  border-radius: 4px;
+  border-radius: 6px;
   color: #1f2329;
   &:hover {
     background: rgba(31, 35, 41, 0.1);

@@ -69,7 +69,7 @@ const previewTemplate = () => {
   height: 145px;
   background-color: var(--ContentBG, #ffffff);
   border: 1px solid #dee0e3;
-  border-radius: 4px;
+  border-radius: 6px;
   flex: none;
   order: 0;
   flex-grow: 0;
