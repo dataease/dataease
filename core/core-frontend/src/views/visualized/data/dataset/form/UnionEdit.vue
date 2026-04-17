@@ -151,7 +151,7 @@ defineExpose({
 .field-style {
   height: 430px;
   border: 1px solid var(--deCardStrokeColor, #dee0e3);
-  border-radius: 4px;
+  border-radius: 6px;
   width: 100%;
   box-sizing: border-box;
   display: flex;

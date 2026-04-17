@@ -140,7 +140,7 @@ const handleChange = (val: boolean) => {
         width: 100%;
         height: 82px;
         padding: 0 16px 0 12px;
-        border-radius: 4px;
+        border-radius: 6px;
         border: 1px solid #dee0e3;
         .ds {
           font-size: 32px;

@@ -1287,7 +1287,7 @@ span {
 }
 
 .threshold-container {
-  border-radius: 4px;
+  border-radius: 6px;
   border: 1px solid #dee0e3;
 
   margin-top: 8px;

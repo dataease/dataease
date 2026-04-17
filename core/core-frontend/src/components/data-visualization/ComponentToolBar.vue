@@ -222,7 +222,7 @@ onUnmounted(() => {
   height: 24px !important;
   width: 24px !important;
   font-size: 16px !important;
-  border-radius: 4px;
+  border-radius: 6px;
   color: #646a73 !important;
 
   &[aria-expanded='true'] {

@@ -252,7 +252,7 @@ const loadPluginCategory = data => {
         white-space: nowrap;
         list-style-type: none;
         list-style-position: inside;
-        border-radius: 4px;
+        border-radius: 6px;
         color: #a6a6a6;
         padding-left: 8px;
         &:hover {
@@ -300,7 +300,7 @@ const loadPluginCategory = data => {
     width: 88px;
     height: 64px;
     background: #1a1a1a;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     display: flex;
     align-items: center;

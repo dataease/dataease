@@ -47,7 +47,7 @@ const handleCommand = (command: string) => {
   height: auto;
   padding: 8px 16px;
   display: flex;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 .inactivate-button {
   display: flex;

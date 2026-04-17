@@ -170,7 +170,7 @@ watch(
 
   .arrow-filter:hover {
     background: rgba(31, 35, 41, 0.1);
-    border-radius: 4px;
+    border-radius: 6px;
   }
 
   .ed-icon-arrow-right.arrow-filter {

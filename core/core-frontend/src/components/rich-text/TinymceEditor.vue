@@ -104,7 +104,7 @@ tinymce.init({})
 }
 
 .tox {
-  border-radius: 4px !important;
+  border-radius: 6px !important;
   border-bottom: 1px solid #ccc !important;
   z-index: 1000;
 }

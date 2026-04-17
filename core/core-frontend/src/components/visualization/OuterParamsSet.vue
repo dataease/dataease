@@ -859,7 +859,7 @@ defineExpose({
 .preview {
   margin-top: 5px;
   border: 1px solid #e6e6e6;
-  border-radius: 4px;
+  border-radius: 6px;
   height: 470px !important;
   overflow: hidden;
   background-size: 100% 100% !important;
@@ -1120,7 +1120,7 @@ defineExpose({
 .expand-custom {
   width: 16px;
   height: 16px;
-  border-radius: 4px;
+  border-radius: 6px;
   padding: 0px 1px;
   color: rgba(100, 106, 115, 1);
   &:hover {
@@ -1131,7 +1131,7 @@ defineExpose({
 
 .ds-view-content {
   width: calc(100% - 16px);
-  border-radius: 4px;
+  border-radius: 6px;
   margin: 8px 16px 0 16px;
   padding: 12px;
   background: rgba(245, 246, 247, 1);

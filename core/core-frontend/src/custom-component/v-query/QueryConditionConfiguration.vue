@@ -3663,7 +3663,7 @@ defineExpose({
     font-family: var(--de-custom_font, 'PingFang');
     width: 1152px;
     height: 454px;
-    border-radius: 4px;
+    border-radius: 6px;
     border: 1px solid #dee0e3;
     display: flex;
     .ed-checkbox:not(.is-disabled) {

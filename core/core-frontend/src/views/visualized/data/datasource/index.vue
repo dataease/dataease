@@ -2149,9 +2149,9 @@ const getMenuList = (val: boolean) => {
   .api-card {
     width: calc(50% - 16px);
     height: 140px;
-    border-radius: 4px;
+    border-radius: 6px;
     border: 1px solid var(--deCardStrokeColor, #dee0e3);
-    border-radius: 4px;
+    border-radius: 6px;
     margin: 0 0 16px 16px;
     padding: 16px;
     font-family: var(--de-custom_font, 'PingFang');

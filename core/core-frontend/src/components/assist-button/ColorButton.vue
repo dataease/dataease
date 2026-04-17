@@ -44,7 +44,7 @@ const colorButtonClick = () => {
 .color-button-outer {
   width: 32px;
   height: 32px;
-  border-radius: 4px;
+  border-radius: 6px;
   border-width: 1px;
   border-color: #dee0e3;
   cursor: pointer;
@@ -68,7 +68,7 @@ const colorButtonClick = () => {
 .color-button-inner {
   width: 20px;
   height: 20px;
-  border-radius: 4px;
+  border-radius: 6px;
   border: 1px solid #dee0e3;
 }
 .color-button-inner-light {

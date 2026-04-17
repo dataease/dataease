@@ -39,7 +39,7 @@ const { t } = useI18n()
   .user-tabs {
     width: 200px;
     height: 201px;
-    border-radius: 4px;
+    border-radius: 6px;
     background: #fff;
     padding: 16px;
     .list-item_primary {
@@ -75,7 +75,7 @@ const { t } = useI18n()
           align-items: center;
           width: 100%;
           padding: 16px 24px 16px 24px;
-          border-radius: 4px;
+          border-radius: 6px;
           border: 1px solid #dee0e3;
           .bind {
             font-size: 48px;
@@ -110,7 +110,7 @@ const { t } = useI18n()
         }
       }
       padding: 20px 24px 24px 24px;
-      border-radius: 4px;
+      border-radius: 6px;
       background: #fff;
       .role {
         & + .role {

@@ -42,7 +42,7 @@ const del = () => {
   width: 100%;
   height: 58px;
   padding: 0 0 0 0;
-  border-radius: 4px;
+  border-radius: 6px;
   .excel {
     font-size: 32px;
     margin-right: 14.67px;

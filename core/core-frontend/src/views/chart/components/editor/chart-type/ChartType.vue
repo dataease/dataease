@@ -163,7 +163,7 @@ const groupActiveChange = category => {
         white-space: nowrap;
         list-style-type: none;
         list-style-position: inside;
-        border-radius: 4px;
+        border-radius: 6px;
         padding-left: 8px;
         &:hover {
           background: rgba(255, 255, 255, 0.1);
@@ -210,7 +210,7 @@ const groupActiveChange = category => {
     width: 88px;
     height: 64px;
     background: transparent;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     display: flex;
     align-items: center;

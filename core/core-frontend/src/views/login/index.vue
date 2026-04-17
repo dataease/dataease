@@ -471,7 +471,7 @@ onMounted(async () => {
     padding-top: 20px;
     box-shadow: 0px 6px 24px rgba(31, 35, 41, 0.08);
     border: 1px solid #dee0e3;
-    border-radius: 4px;
+    border-radius: 6px;
 
     .login-input-module {
       width: 100%;

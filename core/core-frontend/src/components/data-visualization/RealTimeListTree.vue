@@ -784,7 +784,7 @@ const canvasChange = () => {
   cursor: pointer;
   height: 22px !important;
   width: 22px !important;
-  border-radius: 4px;
+  border-radius: 6px;
   padding: 0 4px;
 
   .opt-icon {

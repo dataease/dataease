@@ -106,7 +106,7 @@ defineExpose({
     min-height: 67px;
     width: 100%;
     padding: 16px;
-    border-radius: 4px;
+    border-radius: 6px;
     border: 1px solid var(--deBorderBase, #dcdfe6);
     overflow: auto;
     max-height: 500px;

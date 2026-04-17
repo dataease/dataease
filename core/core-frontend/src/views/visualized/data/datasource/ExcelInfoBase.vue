@@ -30,7 +30,7 @@ withDefaults(
   width: 100%;
   height: 24px;
   padding: 0 0 0 0;
-  border-radius: 4px;
+  border-radius: 6px;
   font-weight: 400;
   .excel {
     font-size: 24px;

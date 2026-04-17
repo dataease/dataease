@@ -510,7 +510,7 @@ init()
 <style lang="less" scoped>
 .field-item {
   width: 100%;
-  border-radius: 4px;
+  border-radius: 6px;
   padding: 10px 16px;
   margin-top: 10px;
   background: #f5f6f7;
@@ -582,7 +582,7 @@ span {
 .tip {
   font-size: 12px;
   background: #d6e2ff;
-  border-radius: 4px;
+  border-radius: 6px;
   padding: 10px 20px;
   display: flex;
   align-items: center;

@@ -288,6 +288,6 @@ onMounted(() => {
   box-sizing: border-box;
   margin-top: 12px;
   overflow-x: auto;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 </style>

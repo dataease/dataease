@@ -34,7 +34,7 @@ defineExpose({
 <style lang="less" scoped>
 .base-info-content {
   padding: 24px;
-  border-radius: 4px;
+  border-radius: 6px;
   background: #fff;
   margin: 24px 24px 0 24px;
   position: relative;

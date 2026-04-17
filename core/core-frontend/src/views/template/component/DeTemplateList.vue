@@ -142,7 +142,7 @@ defineExpose({
     padding: 0 30px 0 12px;
     display: flex;
     align-items: center;
-    border-radius: 4px;
+    border-radius: 6px;
     color: var(--deTextPrimary, #1f2329);
     font-family: var(--de-custom_font, 'PingFang');
     font-style: normal;
@@ -186,12 +186,12 @@ defineExpose({
 
       .el-icon-more:hover {
         background: rgba(31, 35, 41, 0.1);
-        border-radius: 4px;
+        border-radius: 6px;
       }
 
       .el-icon-more:active {
         background: rgba(31, 35, 41, 0.2);
-        border-radius: 4px;
+        border-radius: 6px;
       }
     }
 

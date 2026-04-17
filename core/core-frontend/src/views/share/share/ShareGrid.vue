@@ -315,7 +315,7 @@ watch(
     font-size: 18px;
     padding: 3px;
     margin-right: 12px;
-    border-radius: 4px;
+    border-radius: 6px;
     color: #fff;
     background: var(--ed-color-primary, #3370ff);
   }

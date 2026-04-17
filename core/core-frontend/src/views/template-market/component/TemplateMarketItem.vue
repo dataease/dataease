@@ -74,7 +74,7 @@ const templateInnerPreview = () => {
   box-shadow: 0 0 2px 0 rgba(31, 31, 31, 0.15), 0 1px 2px 0 rgba(31, 31, 31, 0.15);
   border: solid 2px #fff;
   box-sizing: border-box;
-  border-radius: 4px;
+  border-radius: 6px;
   width: 100%;
 }
 
@@ -99,7 +99,7 @@ const templateInnerPreview = () => {
 
 .template-img:hover {
   border: solid 1px #4b8fdf;
-  border-radius: 4px;
+  border-radius: 6px;
   color: deepskyblue;
   cursor: pointer;
 }

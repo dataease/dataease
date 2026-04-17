@@ -1197,7 +1197,7 @@ const proxyAllowDrop = throttle((arg1, arg2) => {
     height: 200px;
     width: 100%;
     padding: 16px;
-    border-radius: 4px;
+    border-radius: 6px;
     border: 1px solid var(--deBorderBase, #dcdfe6);
     overflow: auto;
 
@@ -1392,7 +1392,7 @@ const proxyAllowDrop = throttle((arg1, arg2) => {
       padding: 24px;
       margin: 24px;
       background: #fff;
-      border-radius: 4px;
+      border-radius: 6px;
       height: calc(100% - 138px);
     }
 

@@ -46,7 +46,7 @@ const emits = defineEmits(['customClick'])
   position: relative;
   &::after {
     content: '';
-    border-radius: 4px;
+    border-radius: 6px;
     display: none;
     position: absolute;
     width: calc(100% + 10px);

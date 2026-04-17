@@ -46,7 +46,7 @@ const openBlank = () => {
   &:hover,
   &:active {
     background-color: #1f23291a;
-    border-radius: 4px;
+    border-radius: 6px;
   }
 }
 

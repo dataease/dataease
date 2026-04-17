@@ -3192,7 +3192,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
             position: relative;
 
             :deep(.ed-tree-node__content) {
-              border-radius: 4px;
+              border-radius: 6px;
               &:hover {
                 background: rgba(31, 35, 41, 0.1);
               }
@@ -3456,7 +3456,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
   .group-fields_item {
     padding: 16px;
     background: #f5f6f7;
-    border-radius: 4px;
+    border-radius: 6px;
     display: flex;
 
     & + .group-fields_item {

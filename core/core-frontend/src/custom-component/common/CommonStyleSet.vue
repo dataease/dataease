@@ -638,7 +638,7 @@ watch(
   .ed-checkbox__label {
     .bash-icon {
       background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
-      border-radius: 4px;
+      border-radius: 6px;
       color: var(--ed-color-primary);
     }
   }
@@ -648,7 +648,7 @@ watch(
   .ed-radio__label {
     .bash-icon {
       background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
-      border-radius: 4px;
+      border-radius: 6px;
     }
   }
 }
@@ -682,7 +682,7 @@ watch(
   width: 24px;
   height: 24px;
   text-align: center;
-  border-radius: 4px;
+  border-radius: 6px;
   padding-top: 1px;
 
   color: #1f2329;
@@ -750,7 +750,7 @@ watch(
   width: 24px;
   height: 24px;
   text-align: center;
-  border-radius: 4px;
+  border-radius: 6px;
   padding-top: 4px;
 
   color: #1f2329;

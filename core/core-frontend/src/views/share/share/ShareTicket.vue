@@ -359,7 +359,7 @@ onMounted(() => {
         &:hover {
           cursor: pointer;
           background-color: #1f23291a;
-          border-radius: 4px;
+          border-radius: 6px;
         }
         svg {
           width: 20px;

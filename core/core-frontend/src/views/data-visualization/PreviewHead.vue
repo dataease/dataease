@@ -291,7 +291,7 @@ const initOpenHandler = newWindow => {
       margin-left: 12px;
       cursor: pointer;
       font-size: 20px;
-      border-radius: 4px;
+      border-radius: 6px;
       position: relative;
       &:hover {
         &::after {
@@ -299,7 +299,7 @@ const initOpenHandler = newWindow => {
           position: absolute;
           top: -4px;
           left: -4px;
-          border-radius: 4px;
+          border-radius: 6px;
           height: 28px;
           width: 28px;
           background: #1f23291a;

@@ -219,7 +219,7 @@ onMounted(() => {
     row-gap: 16px;
     justify-content: space-between;
     .font-content_item {
-      border-radius: 4px;
+      border-radius: 6px;
       background: #fff;
       width: calc(50% - 8px);
       position: relative;

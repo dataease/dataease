@@ -4257,7 +4257,7 @@ const chartStyleScroll = (val: any) => {
     .items {
       width: 100%;
       height: 28px;
-      border-radius: 4px;
+      border-radius: 6px;
       border: 1px solid transparent;
       color: #a6a6a6;
       font-size: 12px;
@@ -4646,7 +4646,7 @@ span {
     white-space: nowrap;
     text-overflow: ellipsis;
     position: relative;
-    border-radius: 4px;
+    border-radius: 6px;
     border: 1px solid transparent;
 
     font-size: 12px;
@@ -4795,7 +4795,7 @@ span {
     padding: 2px 0 0 0;
     width: 100%;
     min-height: 32px;
-    border-radius: 4px;
+    border-radius: 6px;
     overflow-x: hidden;
     overflow-y: hidden;
     display: block;
@@ -4843,7 +4843,7 @@ span {
       margin-top: 8px;
       background: #fff;
       height: 28px;
-      border-radius: 4px;
+      border-radius: 6px;
       border: 1px solid #dcdfe6;
       display: flex;
       color: #cccccc;
@@ -5014,7 +5014,7 @@ span {
         position: absolute;
         width: 24px;
         height: 24px;
-        border-radius: 4px;
+        border-radius: 6px;
         top: -4px;
         left: -4px;
         background: rgba(31, 35, 41, 0.1);
@@ -5434,7 +5434,7 @@ span {
     width: 100%;
     outline: none;
     border: 1px solid #295acc;
-    border-radius: 4px;
+    border-radius: 6px;
     padding: 0 4px;
     height: 100%;
   }
@@ -5449,7 +5449,7 @@ span {
     background-color: #050e21;
     outline: none;
     border: 1px solid #295acc;
-    border-radius: 4px;
+    border-radius: 6px;
     padding: 0 4px;
     height: 100%;
   }

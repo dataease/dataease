@@ -12,6 +12,7 @@
   --ed-disabled-border-color: #d9dcdf !important;
   --ed-border-color-light: #dee0e3 !important;
   --ed-border-color-lighter: #dee0e3 !important;
+  --ed-popover-border-radius: 6px !important;
 }
 
 body {
@@ -59,7 +60,7 @@ body {
 
 .list-item_primary {
   height: 40px;
-  border-radius: 4px;
+  border-radius: 6px;
   padding: 8px 12px;
   cursor: pointer;
   display: flex;
@@ -185,7 +186,7 @@ body {
 .tree-icon {
   cursor: pointer;
   font-size: 16px;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 .hover-icon-in-table {
@@ -224,7 +225,7 @@ body {
   width: 26px !important;
   height: 26px !important;
   color: rgba(255, 255, 255, 1);
-  border-radius: 4px;
+  border-radius: 6px;
 
   &:hover {
     background: rgba(235, 235, 235, 0.1);
@@ -303,7 +304,7 @@ body {
     display: none;
     width: 22px;
     height: 22px;
-    border-radius: 4px;
+    border-radius: 6px;
   }
 
   &:hover {
@@ -644,7 +645,7 @@ strong {
 
 .de-main_scrollbar {
   ::-webkit-scrollbar-thumb {
-    border-radius: 4px;
+    border-radius: 6px;
     background: #1f23294d;
   }
 
@@ -803,7 +804,7 @@ strong {
 .ed-select__popper {
   padding: 0 4px !important;
   .ed-select-dropdown__item {
-    border-radius: 4px;
+    border-radius: 6px;
   }
 
   .ed-select-dropdown__list {
@@ -820,4 +821,21 @@ strong {
 }
 .ed-message-box {
   --ed-messagebox-border-radius: 12px !important;
+}
+
+.ed-popover.ed-popover {
+  --ed-popover-border-radius: 6px;
+}
+
+.ed-popper__arrow {
+  width: 10px !important;
+  height: 10px !important;
+}
+
+.ed-popper[data-popper-placement^='top'] > .ed-popper__arrow {
+  bottom: -5px !important;
+}
+
+.ed-popper[data-popper-placement^='right'] > .ed-popper__arrow {
+  left: -5px !important;
 }

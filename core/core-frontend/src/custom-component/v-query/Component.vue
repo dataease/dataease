@@ -1270,7 +1270,7 @@ const autoStyle = computed(() => {
             padding: 4px 8px;
             height: 26px;
             width: 58px;
-            border-radius: 4px;
+            border-radius: 6px;
             border: 1px solid #dee0e3;
             background: #fff;
             box-shadow: 0px 4px 8px 0px rgba(31, 35, 41, 0.1);
@@ -1323,7 +1323,7 @@ const autoStyle = computed(() => {
             padding: 4px 8px;
             height: 26px;
             width: 58px;
-            border-radius: 4px;
+            border-radius: 6px;
             border: 1px solid #dee0e3;
             background: #fff;
             box-shadow: 0px 4px 8px 0px rgba(31, 35, 41, 0.1);

@@ -1082,7 +1082,7 @@ defineExpose({
   }
 
   .execute-rate-cont {
-    border-radius: 4px;
+    border-radius: 6px;
     margin-top: -8px;
   }
 
@@ -1334,9 +1334,9 @@ defineExpose({
 .api-card {
   height: 120px;
   width: 392px;
-  border-radius: 4px;
+  border-radius: 6px;
   border: 1px solid var(--deCardStrokeColor, #dee0e3);
-  border-radius: 4px;
+  border-radius: 6px;
   margin: 0 0 16px 16px;
   padding: 16px;
   font-family: var(--de-custom_font, 'PingFang');

@@ -135,7 +135,7 @@ const findUrl = name => {
         white-space: nowrap;
         list-style-type: none;
         list-style-position: inside;
-        border-radius: 4px;
+        border-radius: 6px;
         padding-left: 8px;
         &:hover {
           background: rgba(255, 255, 255, 0.1);
@@ -174,7 +174,7 @@ const findUrl = name => {
     height: 64px;
     background: #1a1a1a;
     padding: 4px;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     &:hover {
       outline: 1px solid var(--ed-color-primary);
@@ -203,7 +203,7 @@ const findUrl = name => {
   .item-top {
     width: 28px;
     height: 28px;
-    border-radius: 4px;
+    border-radius: 6px;
     padding: 4px;
     cursor: pointer;
     &:hover {

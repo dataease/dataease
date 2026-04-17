@@ -134,7 +134,7 @@ init()
   padding: 2px;
   margin: 2px;
   border: 1px solid #dee0e3;
-  border-radius: 4px;
+  border-radius: 6px;
   text-align: left;
   color: #606266;
   background-color: white;

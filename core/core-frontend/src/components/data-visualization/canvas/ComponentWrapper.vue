@@ -399,7 +399,7 @@ const isMobileLazyLoadEnabled = computed(() => {
 })
 // 初始化IntersectionObserver
 onMounted(() => {
-  if (isMobileLazyLoadEnabled.value && showPositionActive.value === 'preview') {
+  if (isMobileLazyLoadEnabled.value) {
     const wrapperInner = componentWrapperInnerRef.value
     if (wrapperInner) {
       observer.value = new IntersectionObserver(

@@ -336,7 +336,7 @@ onMounted(() => {
 <style lang="less" scoped>
 .line-item {
   width: 100%;
-  border-radius: 4px;
+  border-radius: 6px;
   padding: 4px;
   display: flex;
   justify-content: left;

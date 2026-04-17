@@ -96,7 +96,7 @@ const templateInnerPreview = () => {
   margin: 0;
   border: 1px solid rgba(222, 224, 227, 1);
   box-sizing: border-box;
-  border-radius: 4px;
+  border-radius: 6px;
   width: 100%;
   background: #fff;
   overflow: hidden;
@@ -125,7 +125,7 @@ const templateInnerPreview = () => {
 }
 .template-img {
   background-size: 100% 100%;
-  border-radius: 4px 4px 0 0;
+  border-radius: 6px 4px 0 0;
 }
 
 .template-button {
