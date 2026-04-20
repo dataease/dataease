@@ -81,9 +81,11 @@ const templateInnerPreview = () => {
   display: flex;
   flex-wrap: wrap;
   min-width: 181px;
+  width: calc(20% - 16px);
   height: 141px;
   margin-left: 16px;
   position: relative;
+  margin-bottom: 16px;
 
   .photo {
     padding: 4px;
