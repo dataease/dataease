@@ -62,6 +62,10 @@ export default HeaderMenuItem
         padding-left: 11px !important;
       }
     }
+
+    .ed-menu--popup .ed-menu-item.is-active.is-active:not(:hover) {
+      background-color: transparent;
+    }
   }
 }
 </style>
