@@ -562,7 +562,7 @@ defineExpose({
     }
 
     th.ed-table__cell.is-leaf {
-      border-color: #1f232926;
+      border-color: #e5e6eb;
     }
 
     .red-line {
