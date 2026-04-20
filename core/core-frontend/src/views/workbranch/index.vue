@@ -384,62 +384,64 @@ loadShareBase()
       </div>
     </div>
     <div class="template-market-dashboard">
-      <div
-        class="template-market border-radius-12"
-        :style="{ paddingBottom: expandFold !== 'fold' ? '24px' : 0 }"
-      >
-        <div class="label">
-          {{ t('work_branch.template_center') }}
-          <div class="expand-all">
-            <button class="all flex-center" @click="toTemplateMarket">
-              {{ t('work_branch.view_all') }}
-            </button>
-            <el-divider direction="vertical" />
-            <button @click="handleExpandFold" class="expand flex-center">
-              {{ t(`visualization.${expandFold}`) }}
-            </button>
+      <el-scrollbar style="height: 100%">
+        <div
+          class="template-market border-radius-12"
+          :style="{ paddingBottom: expandFold !== 'fold' ? '24px' : 0 }"
+        >
+          <div class="label">
+            {{ t('work_branch.template_center') }}
+            <div class="expand-all">
+              <button class="all flex-center" @click="toTemplateMarket">
+                {{ t('work_branch.view_all') }}
+              </button>
+              <el-divider direction="vertical" />
+              <button @click="handleExpandFold" class="expand flex-center">
+                {{ t(`visualization.${expandFold}`) }}
+              </button>
+            </div>
           </div>
+          <template v-if="expandFold === 'fold'">
+            <div class="tab-btn">
+              <div
+                v-for="ele in tabBtnList"
+                :key="ele.value"
+                :class="activeTabBtn === ele.value && 'active'"
+                @click="activeTabChange(ele.value)"
+                class="main-btn"
+              >
+                {{ ele.name }}
+              </div>
+            </div>
+            <div class="template-list" v-show="state.networkStatus && state.hasResult">
+              <template-branch-item
+                v-for="(template, index) in state.marketTemplatePreviewShowList"
+                v-show="template['showFlag']"
+                :key="index"
+                :template="template"
+                :base-url="state.baseUrl"
+                :create-auth="createAuth"
+                @templateApply="templateApply"
+                @templatePreview="templatePreview"
+              >
+              </template-branch-item>
+            </div>
+            <el-row v-show="state.networkStatus && !state.hasResult" class="template-empty">
+              <div style="text-align: center">
+                <Icon name="no_result" class="no-result"
+                  ><no_result class="svg-icon no-result"
+                /></Icon>
+                <br />
+                <span class="no-result-tips">{{ t('work_branch.relevant_templates_found') }}</span>
+              </div>
+            </el-row>
+            <el-row v-show="!state.networkStatus" class="template-empty">
+              {{ t('visualization.market_network_tips', [state.baseUrl]) }}
+            </el-row>
+          </template>
         </div>
-        <template v-if="expandFold === 'fold'">
-          <div class="tab-btn">
-            <div
-              v-for="ele in tabBtnList"
-              :key="ele.value"
-              :class="activeTabBtn === ele.value && 'active'"
-              @click="activeTabChange(ele.value)"
-              class="main-btn"
-            >
-              {{ ele.name }}
-            </div>
-          </div>
-          <div class="template-list" v-show="state.networkStatus && state.hasResult">
-            <template-branch-item
-              v-for="(template, index) in state.marketTemplatePreviewShowList"
-              v-show="template['showFlag']"
-              :key="index"
-              :template="template"
-              :base-url="state.baseUrl"
-              :create-auth="createAuth"
-              @templateApply="templateApply"
-              @templatePreview="templatePreview"
-            >
-            </template-branch-item>
-          </div>
-          <el-row v-show="state.networkStatus && !state.hasResult" class="template-empty">
-            <div style="text-align: center">
-              <Icon name="no_result" class="no-result"
-                ><no_result class="svg-icon no-result"
-              /></Icon>
-              <br />
-              <span class="no-result-tips">{{ t('work_branch.relevant_templates_found') }}</span>
-            </div>
-          </el-row>
-          <el-row v-show="!state.networkStatus" class="template-empty">
-            {{ t('visualization.market_network_tips', [state.baseUrl]) }}
-          </el-row>
-        </template>
-      </div>
-      <shortcut-table :expand="expandFold === 'expand'" />
+        <shortcut-table :expand="expandFold === 'expand'" />
+      </el-scrollbar>
     </div>
     <de-resource-create-opt-v2 ref="resourceCreateOpt"></de-resource-create-opt-v2>
   </div>
@@ -591,7 +593,7 @@ loadShareBase()
             font-size: 21.33px;
             padding: 5.33px;
             margin-right: 12px;
-            border-radius: 6px;
+            border-radius: 8px;
             color: #fff;
           }
 
@@ -646,7 +648,6 @@ loadShareBase()
 
   .template-market-dashboard {
     width: calc(100% - 376px);
-    height: 100%;
 
     .template-market {
       padding: 24px 24px 0;
@@ -727,8 +728,9 @@ loadShareBase()
       .template-list {
         display: flex;
         margin-left: -16px;
-        overflow-x: auto;
-        padding-bottom: 24px;
+        padding-bottom: 8px;
+        width: calc(100vw - 455px);
+        flex-wrap: wrap;
       }
     }
   }

@@ -516,10 +516,10 @@ const getEmptyDesc = (): string => {
 
 <style lang="less" scoped>
 .dashboard-type {
-  padding: 8px 24px 0 24px;
+  padding: 8px 24px 24px 24px;
   background: #fff;
   border-radius: 6px;
-  height: calc(100% - 280px);
+  min-height: calc(100% - 280px);
   margin-top: 16px;
 
   .select-type-list {
