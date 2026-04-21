@@ -86,7 +86,7 @@ export class GroupBar extends StackBar {
       fontSize: labelAttr.fontSize,
       ...position,
       formatter: (value, _data) => valueFormatter(value, labelAttr.labelFormatter)
-    }
+    } as any
     if (!labelAttr.fullDisplay) {
       label.transform = [{ type: 'overlapHide' }]
     }

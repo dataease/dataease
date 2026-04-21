@@ -78,7 +78,7 @@ declare interface Chart {
   fontFamily?: string
   dashboardHidden?: boolean
   inMobile?: boolean
-  [key: any]: any
+  [key: string]: any
 }
 declare type CustomAttr = DeepPartial<ChartAttr> | JSONString<DeepPartial<ChartAttr>>
 declare type CustomStyle = DeepPartial<ChartStyle> | JSONString<DeepPartial<ChartStyle>>

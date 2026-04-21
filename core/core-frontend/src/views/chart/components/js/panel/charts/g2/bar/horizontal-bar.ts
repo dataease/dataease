@@ -79,8 +79,8 @@ export class HorizontalBar extends Bar {
       }),
       ...(basicStyle.radiusColumnBar !== 'topRoundAngle' &&
         basicStyle.radiusColumnBar !== 'roundAngle' && { radius: 0 })
-    }
-    let columnWidthRatio
+    } as any
+    let columnWidthRatio: number | undefined
     const _v = basicStyle.columnWidthRatio ?? DEFAULT_BASIC_STYLE.columnWidthRatio
     if (_v >= 1 && _v <= 100) {
       columnWidthRatio = _v / 100.0
@@ -92,7 +92,7 @@ export class HorizontalBar extends Bar {
     if (columnWidthRatio) {
       style = {
         ...style,
-        columnWidthRatio
+        columnWidthRatio: columnWidthRatio
       }
     }
     if (

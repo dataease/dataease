@@ -11,7 +11,7 @@ import {
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 import { cloneDeep, defaultTo } from 'lodash-es'
 import { G2DrawOptions } from '@/views/chart/components/js/panel/types/impl/g2'
-import { Chart, Chart as G2Column } from '@antv/g2'
+import { Chart as G2Column } from '@antv/g2'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
   handleChartDashboardHidden,

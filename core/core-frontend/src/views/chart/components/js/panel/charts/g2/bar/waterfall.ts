@@ -1,4 +1,4 @@
-import { Chart as G2Column, IntervalMark } from '@antv/g2'
+import { Chart as G2Column } from '@antv/g2'
 import { G2DrawOptions } from '@/views/chart/components/js/panel/types/impl/g2'
 import { useI18n } from '@/hooks/web/useI18n'
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
@@ -234,7 +234,7 @@ export class Waterfall extends Bar {
               return d.difference > 0 ? colors[0] : colors[1]
             }
           }
-        } as IntervalMark,
+        },
         ...children.slice(1)
       ]
     }

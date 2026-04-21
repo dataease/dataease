@@ -5,9 +5,39 @@ import {
   handleSetZeroSingleDimension,
   parseJson
 } from '@/views/chart/components/js/util'
-import { Chart as G2Chart, G2Spec } from '@antv/g2'
+import { Chart as G2Chart } from '@antv/g2'
 
-export type ViewSpec = { children?: G2Spec[]; [key: string]: any } & G2Spec
+/**
+ * 运行时形态与 G2Spec 完全一致 ，G2 以普通对象消费
+ */
+export interface ChildSpec {
+  axis?: Record<string, any>
+  encode?: Record<string, any>
+  scale?: Record<string, any>
+  style?: Record<string, any>
+  transform?: Array<Record<string, any>>
+  labels?: any[]
+  tooltip?: any
+  interaction?: Record<string, any>
+  data?: any
+  [key: string]: any
+}
+
+export interface ViewSpec {
+  type?: string
+  children?: ChildSpec[]
+  data?: any
+  scale?: Record<string, any>
+  theme?: Record<string, any>
+  coordinate?: Record<string, any>
+  title?: any
+  legend?: Record<string, any>
+  tooltip?: any
+  interaction?: Record<string, any>
+  annotations?: any[]
+  [key: string]: any
+}
+
 export type Transform = {
   type: string
   [key: string]: any
@@ -66,7 +96,8 @@ export function createTooltipWrapper(chart: Chart) {
     document.body.appendChild(g2TooltipWrapper)
   }
   // 如果开启轮播则不使用自定义tooltip容器
-  return chart.customAttr?.tooltip?.carousel?.enable ? undefined : g2TooltipWrapper
+  const customAttr = parseJson(chart.customAttr)
+  return customAttr?.tooltip?.carousel?.enable ? undefined : g2TooltipWrapper
 }
 
 export function tooltipCss(tooltipAttr: DeepPartial<ChartTooltipAttr>) {
@@ -102,7 +133,8 @@ export function tooltipMaxHeight(chart: Chart) {
   const defaultHeight = 80
   const chartRect = chartContainer?.getBoundingClientRect()
   let doubleHeight = chartRect.height * 2 - 20
-  if (chart.customAttr?.tooltip?.carousel?.enable) {
+  const customAttr = parseJson(chart.customAttr)
+  if (customAttr?.tooltip?.carousel?.enable) {
     doubleHeight = chartRect.height / 1.2 - 20
   }
   const maxHeight = chartContainer ? Math.max(doubleHeight, defaultHeight) : defaultHeight
@@ -111,7 +143,8 @@ export function tooltipMaxHeight(chart: Chart) {
 
 export function listenerTooltipShow(newChart: G2Chart, chart: Chart) {
   newChart.on('tooltip:show', event => {
-    const isCarousel = chart.customAttr?.tooltip?.carousel?.enable
+    const customAttr = parseJson(chart.customAttr)
+    const isCarousel = customAttr?.tooltip?.carousel?.enable
     const tooltipWrapper = isCarousel
       ? document.getElementById(chart.container)
       : document.getElementById(tooltipWrapperId(chart.container))

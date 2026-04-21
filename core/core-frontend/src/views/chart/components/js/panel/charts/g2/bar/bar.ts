@@ -218,7 +218,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
         }
         return valueFormatter(value, labelCfg.formatterCfg)
       }
-    }
+    } as any
     if (!l.fullDisplay) {
       newLabel.transform = [{ type: 'overlapHide' }]
     }
