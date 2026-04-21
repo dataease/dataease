@@ -271,7 +271,7 @@ const getOperator = (
   firstLoad
 ) => {
   if (+displayType === 9) {
-    return multiple ? 'in' : 'eq'
+    return 'in'
   }
 
   if (+displayType === 22) {
@@ -295,7 +295,7 @@ const getOperator = (
     return valueF === '' ? operatorS : operatorF
   }
 
-  return [1, 7].includes(+displayType) ? 'between' : multiple ? 'in' : 'eq'
+  return [1, 7].includes(+displayType) ? 'between' : 'in'
 }
 
 const duplicateRemoval = arr => {
