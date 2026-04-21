@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { reactive, onMounted, watch } from 'vue'
+import { reactive, onMounted, watch, nextTick, ref } from 'vue'
 import { COLOR_PANEL, DEFAULT_MISC } from '@/views/chart/components/editor/util/chart'
 import { cloneDeep, defaultsDeep } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -42,20 +42,32 @@ const state = reactive({
 })
 
 const emit = defineEmits(['onBasicStyleChange', 'onMiscChange'])
+const syncingMisc = ref(false)
 
 watch(
   () => props.chart.customAttr.misc,
   () => {
+    if (syncingMisc.value) {
+      return
+    }
     init()
   },
   { deep: true }
 )
 
+const emitMiscChange = (payload, prop?) => {
+  syncingMisc.value = true
+  emit('onMiscChange', payload, prop)
+  nextTick(() => {
+    syncingMisc.value = false
+  })
+}
+
 const changeStyle = (prop?) => {
   if (state.bulletRangeForm.bar.ranges.showType === 'fixed' && state.rangeList.length) {
     state.bulletRangeForm.bar.ranges.fixedRange = cloneDeep(state.rangeList)
   }
-  emit('onMiscChange', { data: { bullet: { ...state.bulletRangeForm } }, requestData: true }, prop)
+  emitMiscChange({ data: { bullet: { ...state.bulletRangeForm } }, requestData: true }, prop)
 }
 const changeRangeNumber = () => {
   if (state.bulletRangeForm.bar.ranges.fixedRangeNumber === null) {
@@ -170,7 +182,7 @@ onMounted(() => {
         <el-radio-group
           :effect="themes"
           v-model="state.bulletRangeForm.bar.ranges.showType"
-          @change="changeShowType()"
+          @change="changeShowType"
         >
           <el-radio :effect="themes" label="dynamic">{{ t('chart.dynamic') }}</el-radio>
           <el-radio :effect="themes" label="fixed">{{ t('chart.fix') }}</el-radio>
