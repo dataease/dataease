@@ -4677,7 +4677,10 @@ export default {
   },
   setting_hmac: {
     title: 'HMAC 設定',
-    enable: '啟用 HMAC 認證'
+    enable: '啟用 HMAC 認證',
+    clock_skew: '時鐘偏差',
+    clock_skew_tips: '單位：秒，默認為300，即允許請求時間與伺服器時間相差5分鐘',
+    clock_skew_range: '時鐘偏差範圍為 1-{0} 秒'
   },
   setting_mfa: {
     title: 'MFA 設置',
