@@ -14,7 +14,11 @@
         v-if="state.dialogShow"
         class="preview-main-frame"
         id="iframe-de-preview-pop"
-        :src="state.url"
+        :src="
+          state.url.startsWith('#/preview?dvId=')
+            ? `?${new Date().getTime()}${state.url}`
+            : state.url
+        "
         scrolling="auto"
         frameborder="0"
       />
