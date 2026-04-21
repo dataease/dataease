@@ -238,7 +238,8 @@ onMounted(() => {
         line-height: 22px;
         color: #2ca91f;
         padding: 0 6px;
-        border-bottom-left-radius: 4px;
+        border-bottom-left-radius: 6px;
+        border-top-right-radius: 12px;
       }
 
       .font-name {
@@ -297,12 +298,10 @@ onMounted(() => {
 
       .font-upload_btn {
         .ed-button {
-          min-width: 0;
-          margin: 0 12px 8px 0;
-          padding: 4px 8px;
-          font-size: 12px;
-          font-weight: 400;
-          line-height: 20px;
+          height: 28px;
+          line-height: 28px;
+          min-width: 48px;
+          padding: 3px 8px;
         }
       }
     }
