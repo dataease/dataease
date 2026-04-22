@@ -150,7 +150,8 @@ export class GroupLineMix extends G2ChartView {
               scale: {
                 y: {
                   key: 'left',
-                  nice: true
+                  nice: true,
+                  independent: true
                 }
               },
               style: {
@@ -170,6 +171,9 @@ export class GroupLineMix extends G2ChartView {
                   key: 'left'
                 }
               },
+              axis: {
+                y: false
+              },
               style: {
                 stroke: 'white'
               },
@@ -187,7 +191,8 @@ export class GroupLineMix extends G2ChartView {
               scale: {
                 y: {
                   key: 'right',
-                  nice: true
+                  nice: true,
+                  independent: true
                 }
               },
               axis: {
@@ -211,6 +216,9 @@ export class GroupLineMix extends G2ChartView {
                 y: {
                   key: 'right'
                 }
+              },
+              axis: {
+                y: false
               },
               style: {
                 stroke: 'white'
@@ -732,18 +740,19 @@ export class GroupLineMix extends G2ChartView {
       }
     })
     if (yAxis.axisValue.auto === false) {
-      const scaleOpt = {
-        scale: {
-          y: {
-            nice: false,
-            domain: [yAxis.axisValue.min, yAxis.axisValue.max]
-          }
-        }
+      const n = Math.max(2, yAxis.axisValue.splitCount)
+      const scaleYLeft = {
+        key: 'left',
+        nice: false,
+        independent: true,
+        domain: [yAxis.axisValue.min, yAxis.axisValue.max]
       }
-      merge(leftLineMark, scaleOpt, {
+      leftLineMark.scale.y = scaleYLeft
+      leftPointMark.scale.y = scaleYLeft
+      merge(leftLineMark, {
         axis: {
           y: {
-            tickCount: yAxis.axisValue.splitCount < 2 ? 2 : yAxis.axisValue.splitCount,
+            tickCount: n,
             tickMethod: (min, max, count) => {
               const step = (max - min) / (count - 1)
               const ticks = []
@@ -755,21 +764,21 @@ export class GroupLineMix extends G2ChartView {
           }
         }
       })
-      merge(leftPointMark, scaleOpt)
     }
     if (yAxisExt.axisValue.auto === false) {
-      const scaleOpt = {
-        scale: {
-          y: {
-            nice: false,
-            domain: [yAxisExt.axisValue.min, yAxisExt.axisValue.max]
-          }
-        }
+      const n = Math.max(2, yAxisExt.axisValue.splitCount)
+      const scaleYRight = {
+        key: 'right',
+        nice: false,
+        independent: true,
+        domain: [yAxisExt.axisValue.min, yAxisExt.axisValue.max]
       }
-      merge(lineMark, scaleOpt, {
+      lineMark.scale.y = scaleYRight
+      pointMark.scale.y = scaleYRight
+      merge(lineMark, {
         axis: {
           y: {
-            tickCount: yAxisExt.axisValue.splitCount < 2 ? 2 : yAxisExt.axisValue.splitCount,
+            tickCount: n,
             tickMethod: (min, max, count) => {
               const step = (max - min) / (count - 1)
               const ticks = []
@@ -781,7 +790,6 @@ export class GroupLineMix extends G2ChartView {
           }
         }
       })
-      merge(pointMark, scaleOpt)
     }
     return options
   }

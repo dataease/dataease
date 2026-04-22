@@ -143,18 +143,33 @@ export class HorizontalBar extends Bar {
     const customStyle = parseJson(chart.customStyle)
     const xAxisAtt = JSON.parse(JSON.stringify(customStyle['xAxis']))
     if (!xAxisAtt.axisValue?.auto) {
+      const child0 = tmpOptions.children[0]
       return {
         ...tmpOptions,
-        scale: {
-          ...options.scale,
-          y: {
-            ...options.scale.y,
-            nice: true,
-            clamp: true,
-            domain: [xAxisAtt.axisValue.min, xAxisAtt.axisValue.max],
-            tickCount: xAxisAtt.axisValue.splitCount
-          }
-        }
+        children: [
+          {
+            ...child0,
+            scale: {
+              ...child0.scale,
+              y: {
+                nice: false,
+                clamp: true,
+                domain: [xAxisAtt.axisValue.min, xAxisAtt.axisValue.max],
+                tickCount: xAxisAtt.axisValue.splitCount,
+                tickMethod: (min, max, count) => {
+                  const n = Math.max(2, count)
+                  const step = (max - min) / (n - 1)
+                  const ticks = []
+                  for (let i = 0; i < n; i++) {
+                    ticks.push(min + step * i)
+                  }
+                  return ticks
+                }
+              }
+            }
+          },
+          ...tmpOptions.children.slice(1)
+        ]
       }
     }
     return tmpOptions

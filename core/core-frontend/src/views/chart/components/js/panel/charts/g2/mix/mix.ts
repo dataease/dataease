@@ -151,7 +151,8 @@ export class ColumnLineMix extends G2ChartView {
           scale: {
             y: {
               key: 'right',
-              nice: true
+              nice: true,
+              independent: true
             }
           },
           axis: {
@@ -172,6 +173,9 @@ export class ColumnLineMix extends G2ChartView {
             y: {
               key: 'right'
             }
+          },
+          axis: {
+            y: false
           },
           style: {
             stroke: 'white'
@@ -546,16 +550,17 @@ export class ColumnLineMix extends G2ChartView {
       }
     })
     if (yAxis.axisValue.auto === false) {
+      const n = Math.max(2, yAxis.axisValue.splitCount)
+      intervalMark.scale.y = {
+        key: 'left',
+        nice: false,
+        clamp: true,
+        domain: [yAxis.axisValue.min, yAxis.axisValue.max]
+      }
       merge(intervalMark, {
-        scale: {
-          y: {
-            nice: false,
-            domain: [yAxis.axisValue.min, yAxis.axisValue.max]
-          }
-        },
         axis: {
           y: {
-            tickCount: yAxis.axisValue.splitCount < 2 ? 2 : yAxis.axisValue.splitCount,
+            tickCount: n,
             tickMethod: (min, max, count) => {
               const step = (max - min) / (count - 1)
               const ticks = []
@@ -569,19 +574,20 @@ export class ColumnLineMix extends G2ChartView {
       })
     }
     if (yAxisExt.axisValue.auto === false) {
-      const scaleOpt = {
-        scale: {
-          y: {
-            nice: false,
-            independent: true,
-            domain: [yAxisExt.axisValue.min, yAxisExt.axisValue.max]
-          }
-        }
+      const n = Math.max(2, yAxisExt.axisValue.splitCount)
+      const scaleY = {
+        key: 'right',
+        nice: false,
+        clamp: true,
+        independent: true,
+        domain: [yAxisExt.axisValue.min, yAxisExt.axisValue.max]
       }
-      merge(lineMark, scaleOpt, {
+      lineMark.scale.y = scaleY
+      pointMark.scale.y = scaleY
+      merge(lineMark, {
         axis: {
           y: {
-            tickCount: yAxisExt.axisValue.splitCount < 2 ? 2 : yAxisExt.axisValue.splitCount,
+            tickCount: n,
             tickMethod: (min, max, count) => {
               const step = (max - min) / (count - 1)
               const ticks = []
@@ -593,7 +599,6 @@ export class ColumnLineMix extends G2ChartView {
           }
         }
       })
-      merge(pointMark, scaleOpt)
     }
     return options
   }

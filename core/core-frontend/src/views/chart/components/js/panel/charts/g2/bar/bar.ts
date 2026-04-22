@@ -480,17 +480,33 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     const customStyle = parseJson(chart.customStyle)
     const yAxisAtt = JSON.parse(JSON.stringify(customStyle['yAxis']))
     if (!yAxisAtt.axisValue?.auto) {
+      const child0 = tmpOptions.children[0]
       return {
         ...tmpOptions,
-        scale: {
-          ...options.scale,
-          y: {
-            nice: true,
-            clamp: true,
-            domain: [yAxisAtt.axisValue.min, yAxisAtt.axisValue.max],
-            tickCount: yAxisAtt.axisValue.splitCount
-          }
-        }
+        children: [
+          {
+            ...child0,
+            scale: {
+              ...child0.scale,
+              y: {
+                nice: false,
+                clamp: true,
+                domain: [yAxisAtt.axisValue.min, yAxisAtt.axisValue.max],
+                tickCount: yAxisAtt.axisValue.splitCount,
+                tickMethod: (min, max, count) => {
+                  const n = Math.max(2, count)
+                  const step = (max - min) / (n - 1)
+                  const ticks = []
+                  for (let i = 0; i < n; i++) {
+                    ticks.push(min + step * i)
+                  }
+                  return ticks
+                }
+              }
+            }
+          },
+          ...tmpOptions.children.slice(1)
+        ]
       }
     }
     return tmpOptions

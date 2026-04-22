@@ -193,7 +193,7 @@ export class Waterfall extends Bar {
 
     const scale = {
       color: { range: colors },
-      y: { nice: true },
+      y: {},
       x: { paddingInner: -0.005 }
     }
 

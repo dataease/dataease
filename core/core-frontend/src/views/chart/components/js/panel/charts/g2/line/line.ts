@@ -423,13 +423,15 @@ export class Line extends G2ChartView {
       const scaleOpt = {
         scale: {
           y: {
+            nice: false,
             domainMin: yAxis.axisValue.min,
             domainMax: yAxis.axisValue.max,
             tickCount: yAxis.axisValue.splitCount < 2 ? 2 : yAxis.axisValue.splitCount,
             tickMethod: (min, max, count) => {
-              const step = (max - min) / count
+              const n = Math.max(2, count)
+              const step = (max - min) / (n - 1)
               const ticks = []
-              for (let i = 0; i <= count; i++) {
+              for (let i = 0; i < n; i++) {
                 ticks.push(min + step * i)
               }
               return ticks
@@ -438,6 +440,11 @@ export class Line extends G2ChartView {
         }
       }
       defaultsDeep(axisOption, scaleOpt)
+      const result = defaultsDeep(options, axisOption)
+      if (result.scale?.y) {
+        result.scale.y.nice = false
+      }
+      return result
     }
     return defaultsDeep(options, axisOption)
   }
