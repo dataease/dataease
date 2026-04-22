@@ -37,6 +37,9 @@ public class SpreadsheetVO implements Serializable {
     @Schema(description = "Univer数据模型JSON")
     private String sheetData;
 
+    @Schema(description = "插件配置JSON")
+    private String configData;
+
     @Schema(description = "版本号")
     private Integer version;
 

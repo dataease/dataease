@@ -29,8 +29,11 @@ public class SpreadsheetEditor implements Serializable {
     @Schema(description = "所属组织ID")
     private Long orgId;
 
-    @Schema(description = "Univer数据模型JSON")
+    @Schema(description = "sheet数据")
     private String sheetData;
+
+    @Schema(description = "配置数据")
+    private String configData;
 
     @Schema(description = "版本号")
     private Integer version;
