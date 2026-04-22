@@ -66,12 +66,33 @@ export class GroupBar extends StackBar {
   protected configLabel(chart: Chart, options: ViewSpec): ViewSpec {
     const customAttr = parseJson(chart.customAttr)
     const { label: labelAttr } = customAttr
-    if (!labelAttr.show || !labelAttr.childrenShow) return options
+    if (!labelAttr.show) return options
 
     const { children } = options
     if (labelAttr.showExtremum) {
       const { x: xField, y: yField, color: colorField } = children[0].encode
       addExtremumText(options.children, [], xField, yField, colorField, false)
+    }
+
+    if (!labelAttr.childrenShow) {
+      if (labelAttr.showExtremum) {
+        const ghostLabel = {
+          text: (d: any) => (d.extremum ? '' : ''),
+          fillOpacity: 0,
+          fontSize: 0
+        } as any
+        return {
+          ...options,
+          children: [
+            {
+              ...children[0],
+              labels: [ghostLabel]
+            },
+            ...children.slice(1)
+          ]
+        }
+      }
+      return options
     }
     const position = {
       position: labelAttr.position === 'middle' ? 'inside' : labelAttr.position,
@@ -85,7 +106,10 @@ export class GroupBar extends StackBar {
       fill: labelAttr.color,
       fontSize: labelAttr.fontSize,
       ...position,
-      formatter: (value, _data) => valueFormatter(value, labelAttr.labelFormatter)
+      formatter: (value, data) =>
+        data.extremum && labelAttr.showExtremum
+          ? ''
+          : valueFormatter(value, labelAttr.labelFormatter)
     } as any
     if (!labelAttr.fullDisplay) {
       label.transform = [{ type: 'overlapHide' }]

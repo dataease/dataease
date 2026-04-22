@@ -202,7 +202,11 @@ export class Area extends G2ChartView {
       labels: [
         {
           text: d => {
-            if (d.extremum) {
+            if (d.value === null) {
+              return ''
+            }
+            const isExtremumShown = d.extremum && showExtremumIds.includes(d.quotaList?.[0]?.id)
+            if (isExtremumShown) {
               return ''
             }
             if (!labelAttr.seriesLabelFormatter?.length) {
@@ -220,9 +224,6 @@ export class Area extends G2ChartView {
           style: {
             opacity: 1,
             fontSize: d => {
-              if (d.extremum) {
-                return 0
-              }
               if (!labelAttr.seriesLabelFormatter?.length) {
                 return 12
               }
@@ -230,16 +231,22 @@ export class Area extends G2ChartView {
               if (!labelCfg) {
                 return 12
               }
+              if (d.extremum && showExtremumIds.includes(d.quotaList?.[0]?.id)) {
+                return labelCfg.showExtremum ? labelCfg.fontSize : 0
+              }
               if (!labelCfg.show) {
                 return 0
               }
               return labelCfg.fontSize
             },
             fill: d => {
-              if (d.extremum || !labelAttr.seriesLabelFormatter?.length) {
+              if (!labelAttr.seriesLabelFormatter?.length) {
                 return 'black'
               }
               const labelCfg = formatterMap?.[d.quotaList[0].id] as SeriesFormatter
+              if (d.extremum && showExtremumIds.includes(d.quotaList?.[0]?.id)) {
+                return labelCfg?.showExtremum ? labelCfg?.color ?? 'black' : 'black'
+              }
               if (!labelCfg?.show) {
                 return 'black'
               }
@@ -249,7 +256,10 @@ export class Area extends G2ChartView {
               return color
             },
             position: d => {
-              if (d.extremum || !labelAttr.seriesLabelFormatter?.length) {
+              if (
+                (d.extremum && showExtremumIds.includes(d.quotaList?.[0]?.id)) ||
+                !labelAttr.seriesLabelFormatter?.length
+              ) {
                 return 'top'
               }
               const labelCfg = formatterMap?.[d.quotaList[0].id] as SeriesFormatter
@@ -260,7 +270,10 @@ export class Area extends G2ChartView {
             }
           },
           textBaseline: d => {
-            if (d.extremum || !labelAttr.seriesLabelFormatter?.length) {
+            if (
+              (d.extremum && showExtremumIds.includes(d.quotaList?.[0]?.id)) ||
+              !labelAttr.seriesLabelFormatter?.length
+            ) {
               return 'bottom'
             }
             const labelCfg = formatterMap?.[d.quotaList[0].id] as SeriesFormatter

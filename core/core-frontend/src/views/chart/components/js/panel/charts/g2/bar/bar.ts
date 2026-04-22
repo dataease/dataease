@@ -182,7 +182,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
       },
       ...position,
       formatter: (value, data) => {
-        if (data.extremum) {
+        if (data.extremum && showExtremumIds.includes(data.quotaList?.[0]?.id)) {
           return ''
         }
         if (!labelAttr.seriesLabelFormatter?.length) {
