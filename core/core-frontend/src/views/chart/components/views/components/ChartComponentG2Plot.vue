@@ -616,6 +616,7 @@ const trackClick = trackAction => {
       emit('onJumpClick', jumpParam)
       break
     default:
+      clearLinkage()
       break
   }
 }
