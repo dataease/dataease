@@ -711,6 +711,18 @@ const conditionAdaptor = (chart: Chart) => {
   if (!threshold.enable) {
     return
   }
+
+  const idNameMapping = {}
+  if (chart.xAxis && Array.isArray(chart.xAxis)) {
+    chart.xAxis.forEach(item => {
+      idNameMapping[item.id] = item.name
+    })
+  }
+  if (chart.yAxis && Array.isArray(chart.yAxis)) {
+    chart.yAxis.forEach(item => {
+      idNameMapping[item.id] = item.name
+    })
+  }
   const res = {}
   const conditions = threshold.tableThreshold ?? []
   if (conditions?.length > 0) {
@@ -718,19 +730,21 @@ const conditionAdaptor = (chart: Chart) => {
       const field = conditions[i]
       let defaultValueColor = 'none'
       let defaultBgColor = 'none'
-      res[field.field.name] = {
-        color: mappingColorCustom(
-          dataRowNameSelectSource.value[field.field.name],
-          defaultValueColor,
-          field,
-          'color'
-        ),
-        backgroundColor: mappingColorCustom(
-          dataRowNameSelectSource.value[field.field.name],
-          defaultBgColor,
-          field,
-          'backgroundColor'
-        )
+      const colorCondition = mappingColorCustom(
+        dataRowNameSelectSource.value[field.field.name],
+        defaultValueColor,
+        field,
+        'color'
+      )
+      const backgroundColorCondition = mappingColorCustom(
+        dataRowNameSelectSource.value[field.field.name],
+        defaultBgColor,
+        field,
+        'backgroundColor'
+      )
+      res[idNameMapping[colorCondition.targetFieldId] || field.field.name] = {
+        color: colorCondition.color,
+        backgroundColor: backgroundColorCondition.color
       }
     }
   }

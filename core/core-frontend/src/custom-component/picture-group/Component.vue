@@ -214,7 +214,7 @@ const conditionAdaptor = (chart: Chart) => {
         defaultValueColor,
         field,
         'url'
-      )
+      ).color
       if (checkResult) {
         state.showUrl = checkResult
       }

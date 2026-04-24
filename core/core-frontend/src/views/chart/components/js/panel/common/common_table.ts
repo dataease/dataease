@@ -796,6 +796,7 @@ export function getConditions(chart: Chart) {
 
 export function mappingColorCustom(value, defaultColor, field, type, filedValueMap?, rowData?) {
   let color = null
+  let hitCondition = null;
   for (let i = 0; i < field.conditions.length; i++) {
     let flag = false
     const t = field.conditions[i]
@@ -867,6 +868,7 @@ export function mappingColorCustom(value, defaultColor, field, type, filedValueM
         }
       }
       if (flag) {
+        hitCondition = t
         break
       } else if (i === field.conditions.length - 1) {
         color = defaultColor
@@ -907,6 +909,7 @@ export function mappingColorCustom(value, defaultColor, field, type, filedValueM
         flag = true
       }
       if (flag) {
+        hitCondition = t
         break
       } else if (i === field.conditions.length - 1) {
         color = defaultColor
@@ -925,6 +928,7 @@ export function mappingColorCustom(value, defaultColor, field, type, filedValueM
         }
       }
       if (flag) {
+        hitCondition = fc
         break
       }
       // time
@@ -968,13 +972,25 @@ export function mappingColorCustom(value, defaultColor, field, type, filedValueM
         flag = true
       }
       if (flag) {
+        hitCondition = fc
         break
       } else if (i === field.conditions.length - 1) {
         color = defaultColor
       }
     }
   }
-  return color
+  if(hitCondition && hitCondition.target === 'custom'){
+    return {
+      targetFieldId: hitCondition.targetFieldId,
+      color
+    }
+  }else{
+    return {
+      targetFieldId: field.fieldId,
+      color
+    }
+  }
+
 }
 
 export function mappingColor(value, defaultColor, rules, type, filedValueMap?, rowData?) {
@@ -1233,7 +1249,7 @@ export function getPivotConditions(chart: Chart) {
       : hexColorToRGBA(tableHeader.tableHeaderColBgColor, basicStyle.alpha)
     const filedValueMap = getFieldValueMap(chart)
 
-    
+
 
     const targetRulesMap = {} // columnName -> Array<{ rule, sourceField }>
     const xFields = chart.xAxis.map(f => f.dataeaseName)
@@ -1318,7 +1334,7 @@ export function getPivotConditions(chart: Chart) {
           if (rowData.cornerType) {
             return null
           }
-          
+
           const fill = mappingPivotColor(
             value,
             defaultBgColor,
