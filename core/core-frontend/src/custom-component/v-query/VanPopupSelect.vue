@@ -112,7 +112,7 @@ const handleCheckAllChange = (val: any) => {
         </el-checkbox>
 
         <el-input
-          style="position: absolute; top: 3px; right: 150px; width: 150px"
+          style="position: absolute; top: 3px; right: 115px; width: 150px"
           v-model="keywords"
           clearable
         ></el-input>
