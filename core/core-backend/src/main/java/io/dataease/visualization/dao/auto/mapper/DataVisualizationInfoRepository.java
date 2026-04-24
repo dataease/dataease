@@ -66,4 +66,8 @@ public interface DataVisualizationInfoRepository extends JpaRepository<DataVisua
     }
 
     List<DataVisualizationInfo> findByDeleteFlagAndNodeTypeAndStatusNot(boolean deleteFlag, String nodeType, Integer status);
+
+    default String queryComponentData(Long id) {
+        return findById(id).map(DataVisualizationInfo::getComponentData).orElse(null);
+    }
 }

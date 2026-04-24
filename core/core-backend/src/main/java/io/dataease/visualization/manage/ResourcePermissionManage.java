@@ -6,10 +6,11 @@ import io.dataease.api.dataset.union.UnionDTO;
 import io.dataease.api.report.bo.DatasetPermissionTemplate;
 import io.dataease.api.report.bo.TableSysVariable;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
+import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupRepository;
 import io.dataease.dataset.utils.DatasetTableTypeConstants;
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;
 import io.dataease.utils.JsonUtil;
-import io.dataease.visualization.dao.perext.ResourcePermissionMapper;
+import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoRepository;
 import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -23,21 +24,28 @@ import java.util.stream.Collectors;
 @Component
 public class ResourcePermissionManage {
 
+    @Resource
+    private DataVisualizationInfoRepository dataVisualizationInfoRepository;
 
     @Resource
-    private ResourcePermissionMapper resourcePermissionMapper;
-
+    private CoreDatasetGroupRepository coreDatasetGroupRepository;
 
     public static final String regex2 = "\\$f2cde\\[(.*?)\\]";
 
     public List<DatasetPermissionTemplate> queruDatasetPermissionTemplate(Long resourceId) {
-        String componentDataText = resourcePermissionMapper.queryResourceData(resourceId);
+        String componentDataText = dataVisualizationInfoRepository.queryComponentData(resourceId);
+        if (componentDataText == null) {
+            return Collections.emptyList();
+        }
         TypeReference<List<Map<String, Object>>> tokenType = new TypeReference<>() {
         };
         List<Map<String, Object>> componentData = JsonUtil.parseList(componentDataText, tokenType);
         List<Map<String, Object>> userViewList = getUserViewList(componentData);
+        if (userViewList.isEmpty()) {
+            return Collections.emptyList();
+        }
         List<Long> viewIds = userViewList.stream().filter(item -> ObjectUtils.isNotEmpty(item.get("id"))).map(item -> Long.parseLong(item.get("id").toString())).collect(Collectors.toList());
-        List<CoreDatasetGroup> datasetGroups = resourcePermissionMapper.queryDataSetList(viewIds);
+        List<CoreDatasetGroup> datasetGroups = coreDatasetGroupRepository.findByViewIds(viewIds);
         return getDatasetPermissionTemplate(datasetGroups);
     }
 
