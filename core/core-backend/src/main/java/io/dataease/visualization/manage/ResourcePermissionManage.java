@@ -5,7 +5,7 @@ import io.dataease.api.dataset.union.DatasetTableInfoDTO;
 import io.dataease.api.dataset.union.UnionDTO;
 import io.dataease.api.report.bo.DatasetPermissionTemplate;
 import io.dataease.api.report.bo.TableSysVariable;
-import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
+import io.dataease.dao.auto.entity.CoreDatasetGroup;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupRepository;
 import io.dataease.dataset.utils.DatasetTableTypeConstants;
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;
