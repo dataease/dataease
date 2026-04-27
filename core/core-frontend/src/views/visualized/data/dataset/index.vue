@@ -832,9 +832,7 @@ const proxyAllowDrop = throttle((arg1, arg2) => {
                 class="box-item"
                 effect="dark"
                 offset="14"
-                popper-class="new-folder_tip"
                 :content="t('deDataset.new_folder')"
-                arrow-offset="10"
                 placement="top"
               >
                 <el-icon
@@ -848,9 +846,7 @@ const proxyAllowDrop = throttle((arg1, arg2) => {
               <el-tooltip
                 class="box-item"
                 effect="dark"
-                popper-class="new-folder_tip"
                 offset="14"
-                arrow-offset="10"
                 :content="t('data_set.a_new_dataset')"
                 placement="top"
               >

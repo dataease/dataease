@@ -688,9 +688,7 @@ defineExpose({
             offset="14"
             :content="t('work_branch.new_folder')"
             placement="top"
-            popper-class="new-folder_tip"
             effect="dark"
-            arrow-offset="10"
           >
             <el-icon
               class="custom-icon btn"

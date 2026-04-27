@@ -1119,10 +1119,8 @@ const getMenuList = (val: boolean) => {
             <span class="title"> {{ t('datasource.datasource') }} </span>
             <div v-if="rootManage" class="flex-align-center">
               <el-tooltip
-                arrow-offset="10"
                 offset="14"
                 effect="dark"
-                popper-class="new-folder_tip"
                 :content="t('deDataset.new_folder')"
                 placement="top"
               >
@@ -1135,9 +1133,7 @@ const getMenuList = (val: boolean) => {
                 </el-icon>
               </el-tooltip>
               <el-tooltip
-                arrow-offset="10"
                 offset="14"
-                popper-class="new-folder_tip"
                 effect="dark"
                 :content="t('datasource.create')"
                 placement="top"
