@@ -123,6 +123,7 @@ const templateInnerPreview = () => {
       line-height: 20px;
       padding: 0;
       margin-top: 8px;
+      width: calc(50% - 6px);
       & + .ed-button {
         margin-left: 8px;
       }

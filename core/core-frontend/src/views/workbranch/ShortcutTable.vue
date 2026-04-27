@@ -616,7 +616,7 @@ const getEmptyDesc = (): string => {
 </style>
 <style lang="less">
 .menu-panel-select_popper {
-  width: 140px;
+  min-width: 140px;
   background: #fff;
 }
 </style>
