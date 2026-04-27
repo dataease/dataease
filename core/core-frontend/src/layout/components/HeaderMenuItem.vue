@@ -57,9 +57,12 @@ export default HeaderMenuItem
 
     .ed-menu--popup {
       min-width: 150px;
-      padding: 3px 0;
+      padding: 4px;
+      border-radius: 6px;
+
       .ed-menu-item {
-        padding-left: 11px !important;
+        padding-left: 8px !important;
+        border-radius: 6px;
       }
     }
 
