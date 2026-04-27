@@ -215,6 +215,24 @@ public class CustomWhere2Str {
                 } else {
                     whereValue = toLikeValue(value);
                 }
+            } else if (StringUtils.containsIgnoreCase(item.getTerm(), "start_with")) {
+                if ((StringUtils.containsIgnoreCase(field.getType(), "NVARCHAR")
+                        || StringUtils.containsIgnoreCase(field.getType(), "NCHAR"))
+                        && !isCross
+                        && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
+                    whereValue = toSqlServerNStartValue(value);
+                } else {
+                    whereValue = toStartValue(value);
+                }
+            } else if (StringUtils.containsIgnoreCase(item.getTerm(), "end_with")) {
+                if ((StringUtils.containsIgnoreCase(field.getType(), "NVARCHAR")
+                        || StringUtils.containsIgnoreCase(field.getType(), "NCHAR"))
+                        && !isCross
+                        && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
+                    whereValue = toSqlServerNEndValue(value);
+                } else {
+                    whereValue = toEndValue(value);
+                }
             } else {
                 // 如果是时间字段过滤，当条件是等于和不等于的时候转换成between和not between
                 if (field.getDeType() == 1) {
@@ -294,12 +312,28 @@ public class CustomWhere2Str {
         return "'%" + sanitizeSqlLiteral(value) + "%'";
     }
 
+    private static String toStartValue(String value) {
+        return "'" + sanitizeSqlLiteral(value) + "%'";
+    }
+
+    private static String toEndValue(String value) {
+        return "'%" + sanitizeSqlLiteral(value) + "'";
+    }
+
     private static String toSqlServerNQuotedValue(String value) {
         return "'" + SQLConstants.MSSQL_N_PREFIX + sanitizeSqlLiteral(value) + "'";
     }
 
     private static String toSqlServerNLikeValue(String value) {
         return "'" + SQLConstants.MSSQL_N_PREFIX + "%" + sanitizeSqlLiteral(value) + "%'";
+    }
+
+    private static String toSqlServerNStartValue(String value) {
+        return "'" + SQLConstants.MSSQL_N_PREFIX + sanitizeSqlLiteral(value) + "%'";
+    }
+
+    private static String toSqlServerNEndValue(String value) {
+        return "'" + SQLConstants.MSSQL_N_PREFIX + "%" + sanitizeSqlLiteral(value) + "'";
     }
 
     private static String sanitizeNumberLiteral(String value) {
