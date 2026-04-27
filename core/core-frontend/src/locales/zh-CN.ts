@@ -1525,6 +1525,8 @@ export default {
     condition: '过滤值',
     filter_value_can_null: '过滤值不能为空',
     filter_like: '包含',
+    filter_start_with: '开始以',
+    filter_end_with: '结束以',
     filter_not_like: '不包含',
     filter_in: '属于',
     filter_not_in: '不属于',

@@ -1384,6 +1384,8 @@ export default {
     filter_empty: '空字串',
     filter_not_empty: '非空字串',
     filter_include: '包含',
+    filter_start_with: '開始以',
+    filter_end_with: '結束以',
     filter_not_include: '不包含',
     rose_type: '玫瑰圖模式',
     radius_mode: '半徑',

@@ -1422,6 +1422,8 @@ export default {
     filter_empty: 'Empty string',
     filter_not_empty: 'Not empty string',
     filter_include: 'Include',
+    filter_start_with: 'Start with',
+    filter_end_with: 'End with',
     filter_not_include: 'Not included',
     rose_type: 'Rose diagram mode',
     radius_mode: 'Radius',
