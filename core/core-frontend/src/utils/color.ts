@@ -64,9 +64,7 @@ export const mixColor = (color1: string, color2: string, weight: number) => {
     parseInt(color1.substring(4, 6), 16) * weight +
       parseInt(color2.substring(4, 6), 16) * (1 - weight)
   )
-  return `#
-  ${r.toString(16).padStart(2, '0')}
-  ${g.toString(16).padStart(2, '0')}
-  ${b.toString(16).padStart(2, '0')}
-  `
+  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b
+    .toString(16)
+    .padStart(2, '0')}`
 }
