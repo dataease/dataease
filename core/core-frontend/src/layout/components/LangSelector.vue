@@ -57,10 +57,11 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 12px;
+  padding: 0 8px;
+  border-radius: 6px;
   &:hover {
     cursor: pointer;
-    background-color: #f2f2f2;
+    background-color: #1f23291a;
   }
 }
 .active {
