@@ -421,6 +421,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
                 ? 'flex-end'
                 : 'center'
           }
+          const verticalLegend = position === 'left' || position === 'right'
           legend = {
             color: {
               orientation: orient,
@@ -435,9 +436,8 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
               navPageNumFontSize: legendSize,
               navPageNumFill: legendColor,
               navButtonSize: legendSize,
-              navOrientation:
-                position === 'left' || position === 'right' ? 'vertical' : 'horizontal',
-              maxRows: 1,
+              navOrientation: verticalLegend ? 'vertical' : 'horizontal',
+              ...(verticalLegend ? { maxCols: 1 } : { maxRows: 1 }),
               navControllerSpacing: 20
             }
           }

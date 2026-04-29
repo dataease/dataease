@@ -56,6 +56,7 @@ export abstract class G2ChartView<
           } else {
             position = l.hPosition
           }
+          const verticalLegend = position === 'left' || position === 'right'
           legend = {
             position,
             layout: {
@@ -70,7 +71,9 @@ export abstract class G2ChartView<
             navPageNumFontSize: legendSize,
             navPageNumFill: legendColor,
             navButtonSize: legendSize,
-            navOrientation: position === 'left' || position === 'right' ? 'vertical' : 'horizontal'
+            navOrientation: verticalLegend ? 'vertical' : 'horizontal',
+            navControllerSpacing: 4,
+            ...(verticalLegend ? { maxCols: 1 } : { maxRows: 1 })
           }
         } else {
           legend = false
@@ -136,6 +139,8 @@ export abstract class G2ChartView<
   }
 
   public setupSubSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
+    void chart
+    void data
     return undefined
   }
 
