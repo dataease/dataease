@@ -477,17 +477,19 @@ const action = param => {
     trackClick(trackMenu.value[0])
   } else {
     // 图表关联多个事件
+    const pointX = param.x ?? param?.canvas?.x ?? 0
+    const pointY = param.y ?? param?.canvas?.y ?? 0
     const barStyleTemp = {
-      left: param.x - 50,
-      top: param.y + 10
+      left: pointX - 50,
+      top: pointY + 10
     }
     trackBarStyleCheck(props.element, barStyleTemp, props.scale, trackMenu.value.length)
     const trackBarX = barStyleTemp.left
     let trackBarY = 50
     state.trackBarStyle.left = barStyleTemp.left + 'px'
     if (curView.type === 'symbolic-map') {
-      trackBarY = param.y + 10
-      state.trackBarStyle.top = param.y + 10 + 'px'
+      trackBarY = pointY + 10
+      state.trackBarStyle.top = pointY + 10 + 'px'
     } else {
       trackBarY = barStyleTemp.top
       state.trackBarStyle.top = barStyleTemp.top + 'px'
