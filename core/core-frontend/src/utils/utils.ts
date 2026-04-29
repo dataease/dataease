@@ -2,6 +2,7 @@ import { BusiTreeNode } from '@/models/tree/TreeNode'
 import { useCache } from '@/hooks/web/useCache'
 import { loadScript } from '@/utils/RemoteJs'
 import { ElMessage } from 'element-plus-secondary'
+import * as dd from 'dingtalk-jsapi'
 
 const { wsCache } = useCache()
 export function deepCopy(target) {
@@ -150,8 +151,8 @@ export const setTitle = (title?: string) => {
   }
   const jsUrl = 'https://g.alicdn.com/dingding/dingtalk-jsapi/3.0.25/dingtalk.open.js'
   const jsId = 'fit2cloud-dataease-v2-platform-client-dingtalk'
-  if (window['dd'] && window['dd'].biz?.navigation?.setTitle) {
-    window['dd'].biz.navigation.setTitle({
+  if (dd && dd.biz?.navigation?.setTitle) {
+    dd.biz.navigation.setTitle({
       title: title
     })
     return
@@ -159,8 +160,8 @@ export const setTitle = (title?: string) => {
   const awaitMethod = loadScript(jsUrl, jsId)
   awaitMethod
     .then(() => {
-      window['dd'].ready(() => {
-        window['dd'].biz.navigation.setTitle({
+      dd.ready(() => {
+        dd.biz.navigation.setTitle({
           title: title
         })
       })
