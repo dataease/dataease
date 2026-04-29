@@ -251,7 +251,9 @@ public class VisualizationLinkJumpManage {
                         qJump.id,
                         Expressions.asNumber(dvId).as("sourceDvId"),
                         qJump.linkJumpInfo,
-                        qJump.checked
+                        Expressions.cases()
+                                .when(qJump.checked.isNull()).then(false)
+                                .otherwise(qJump.checked).as("checked")
                 ))
                 .from(qChartView)
                 .leftJoin(qJump).on(qChartView.id.eq(qJump.sourceViewId).and(qJump.sourceDvId.eq(dvId)))
@@ -286,7 +288,9 @@ public class VisualizationLinkJumpManage {
                         vlji.targetDvId,
                         dvi.type.as("targetDvType"),
                         vlji.content,
-                        vlji.checked,
+                        Expressions.cases()
+                                .when(vlji.checked.isNull()).then(false)
+                                .otherwise(vlji.checked).as("checked"),
                         Expressions.cases()
                                 .when(vlji.attachParams.isNull()).then(false)
                                 .otherwise(vlji.attachParams).as("attachParams"),
@@ -324,7 +328,9 @@ public class VisualizationLinkJumpManage {
                     vlji.targetDvId,
                     dvi.type.as("targetDvType"),
                     vlji.content,
-                    vlji.checked,
+                    Expressions.cases()
+                            .when(vlji.checked.isNull()).then(false)
+                            .otherwise(vlji.checked).as("checked"),
                     Expressions.cases()
                             .when(vlji.attachParams.isNull()).then(false)
                             .otherwise(vlji.attachParams).as("attachParams"),
@@ -366,7 +372,9 @@ public class VisualizationLinkJumpManage {
                         vlji.targetDvId,
                         dvi.type.as("targetDvType"),
                         vlji.content,
-                        vlji.checked,
+                        Expressions.cases()
+                                .when(vlji.checked.isNull()).then(false)
+                                .otherwise(vlji.checked).as("checked"),
                         Expressions.cases()
                                 .when(vlji.attachParams.isNull()).then(false)
                                 .otherwise(vlji.attachParams).as("attachParams"),
@@ -404,7 +412,9 @@ public class VisualizationLinkJumpManage {
                     vlji.targetDvId,
                     dvi.type.as("targetDvType"),
                     vlji.content,
-                    vlji.checked,
+                    Expressions.cases()
+                            .when(vlji.checked.isNull()).then(false)
+                            .otherwise(vlji.checked).as("checked"),
                     Expressions.cases()
                             .when(vlji.attachParams.isNull()).then(false)
                             .otherwise(vlji.attachParams).as("attachParams"),
