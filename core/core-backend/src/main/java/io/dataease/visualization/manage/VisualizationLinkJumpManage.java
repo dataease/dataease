@@ -251,14 +251,13 @@ public class VisualizationLinkJumpManage {
                         qJump.id,
                         Expressions.asNumber(dvId).as("sourceDvId"),
                         qJump.linkJumpInfo,
-                        Expressions.cases()
-                                .when(qJump.checked.isNull()).then(false)
-                                .otherwise(qJump.checked).as("checked")
+                        qJump.checked.as("checked")
                 ))
                 .from(qChartView)
                 .leftJoin(qJump).on(qChartView.id.eq(qJump.sourceViewId).and(qJump.sourceDvId.eq(dvId)))
                 .where(qChartView.id.eq(viewId)).fetchFirst();
         if (result != null) {
+            result.setChecked(Boolean.TRUE.equals(result.getChecked()));
             result.setLinkJumpInfoArray(getLinkJumpInfoSnapshot(result.getId() == null ? -1 : result.getId(), result.getSourceViewId(), uid, isDesktop));
         }
         return result;
@@ -288,12 +287,8 @@ public class VisualizationLinkJumpManage {
                         vlji.targetDvId,
                         dvi.type.as("targetDvType"),
                         vlji.content,
-                        Expressions.cases()
-                                .when(vlji.checked.isNull()).then(false)
-                                .otherwise(vlji.checked).as("checked"),
-                        Expressions.cases()
-                                .when(vlji.attachParams.isNull()).then(false)
-                                .otherwise(vlji.attachParams).as("attachParams"),
+                        vlji.checked.as("checked"),
+                        vlji.attachParams.as("attachParams"),
                         vljtvi.targetId,
                         vljtvi.targetViewId,
                         vljtvi.targetFieldId,
@@ -328,12 +323,8 @@ public class VisualizationLinkJumpManage {
                     vlji.targetDvId,
                     dvi.type.as("targetDvType"),
                     vlji.content,
-                    Expressions.cases()
-                            .when(vlji.checked.isNull()).then(false)
-                            .otherwise(vlji.checked).as("checked"),
-                    Expressions.cases()
-                            .when(vlji.attachParams.isNull()).then(false)
-                            .otherwise(vlji.attachParams).as("attachParams"),
+                    vlji.checked.as("checked"),
+                    vlji.attachParams.as("attachParams"),
                     vljtvi.targetId,
                     vljtvi.targetViewId,
                     vljtvi.targetFieldId,
@@ -372,12 +363,8 @@ public class VisualizationLinkJumpManage {
                         vlji.targetDvId,
                         dvi.type.as("targetDvType"),
                         vlji.content,
-                        Expressions.cases()
-                                .when(vlji.checked.isNull()).then(false)
-                                .otherwise(vlji.checked).as("checked"),
-                        Expressions.cases()
-                                .when(vlji.attachParams.isNull()).then(false)
-                                .otherwise(vlji.attachParams).as("attachParams"),
+                        vlji.checked.as("checked"),
+                        vlji.attachParams.as("attachParams"),
                         vljtvi.targetId,
                         vljtvi.targetViewId,
                         vljtvi.targetFieldId,
@@ -412,12 +399,8 @@ public class VisualizationLinkJumpManage {
                     vlji.targetDvId,
                     dvi.type.as("targetDvType"),
                     vlji.content,
-                    Expressions.cases()
-                            .when(vlji.checked.isNull()).then(false)
-                            .otherwise(vlji.checked).as("checked"),
-                    Expressions.cases()
-                            .when(vlji.attachParams.isNull()).then(false)
-                            .otherwise(vlji.attachParams).as("attachParams"),
+                    vlji.checked.as("checked"),
+                    vlji.attachParams.as("attachParams"),
                     vljtvi.targetId,
                     vljtvi.targetViewId,
                     vljtvi.targetFieldId,
@@ -451,8 +434,8 @@ public class VisualizationLinkJumpManage {
                 newDto.setTargetDvId(dto.getTargetDvId());
                 newDto.setTargetDvType(dto.getTargetDvType());
                 newDto.setContent(dto.getContent());
-                newDto.setChecked(dto.getChecked());
-                newDto.setAttachParams(dto.getAttachParams());
+                newDto.setChecked(Boolean.TRUE.equals(dto.getChecked()));
+                newDto.setAttachParams(Boolean.TRUE.equals(dto.getAttachParams()));
                 newDto.setSourceFieldId(dto.getSourceFieldId());
                 newDto.setSourceDeType(dto.getSourceDeType());
                 newDto.setSourceFieldName(dto.getSourceFieldName());
