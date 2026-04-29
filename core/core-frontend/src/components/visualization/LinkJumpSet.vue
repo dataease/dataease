@@ -327,7 +327,9 @@
                                     style="width: 100%"
                                   >
                                     <el-option
-                                      v-for="viewField in getTargetViewFields(targetViewInfo)"
+                                      v-for="viewField in state.viewIdFieldArrayMap[
+                                        targetViewInfo.targetViewId
+                                      ]"
                                       :key="viewField.id"
                                       :label="viewField.name"
                                       :value="viewField.id"
@@ -670,43 +672,10 @@ const selectSourceTips = t('visualization.select_target_resource')
 
 const targetSource = t('visualization.target_dashboard_dataV')
 
-const DIMENSION_DE_TYPES = [0, 1, 5]
-const JUMP_FIELD_PROPS = [
-  'xAxis',
-  'xAxisExt',
-  'extStack',
-  'extColor',
-  'drillFields',
-  'area',
-  'flowMapStartName',
-  'flowMapEndName'
-]
-
-const isDimensionField = field => {
-  return field?.groupType === 'd' || DIMENSION_DE_TYPES.includes(field?.deType)
-}
-
-const getJumpDimensionFieldIds = chart => {
-  const ids = new Set<string>()
-  JUMP_FIELD_PROPS.forEach(prop => {
-    const fields = chart?.[prop]
-    if (!Array.isArray(fields)) {
-      return
-    }
-    fields.forEach(field => {
-      if (field?.id && isDimensionField(field)) {
-        ids.add(field.id)
-      }
-    })
-  })
-  return ids
-}
-
-const getTargetViewFields = targetViewInfo => {
-  return (state.viewIdFieldArrayMap[targetViewInfo.targetViewId] || []).filter(
-    field => field.id === '1000001' || isDimensionField(field)
-  )
-}
+const curSource =
+  dvInfo.value.type === 'dashboard'
+    ? t('visualization.cur_dashboard')
+    : t('visualization.cur_screen')
 
 const state = reactive({
   curDataVWeight: 0,
@@ -810,7 +779,39 @@ const init = viewItem => {
   state.activeCollapse = 'view'
   const chartDetails = canvasViewInfo.value[state.viewId] as ChartObj
   state.curJumpViewInfo = chartDetails
-  const jumpDimensionFieldIds = getJumpDimensionFieldIds(chartDetails)
+  let checkAllAxisStr =
+    JSON.stringify(chartDetails.xAxis) +
+    JSON.stringify(chartDetails.xAxisExt) +
+    JSON.stringify(chartDetails.drillFields)
+  let checkJumpStr
+  // 堆叠图的可选参数分两种情况 1.如果有堆叠项 则指标只有第一个可选 2.如果没有堆叠项泽所有指标都可以选
+  if (chartDetails.type.indexOf('stack') > -1 && chartDetails.extStack.length > 2) {
+    const yAxisArray = chartDetails.yAxis
+    const yAxisNew = yAxisArray.length > 0 ? JSON.stringify(yAxisArray[0]) : '[]'
+    checkAllAxisStr =
+      JSON.stringify(chartDetails.xAxis) +
+      JSON.stringify(chartDetails.xAxisExt) +
+      JSON.stringify(yAxisNew) +
+      JSON.stringify(chartDetails.yAxisExt) +
+      JSON.stringify(chartDetails.drillFields)
+    checkJumpStr = checkAllAxisStr
+  } else if (chartDetails.type === 'table-pivot') {
+    checkJumpStr =
+      checkAllAxisStr + JSON.stringify(chartDetails.yAxis) + JSON.stringify(chartDetails.yAxisExt)
+  } else if (chartDetails.type === 'table-info') {
+    checkJumpStr = checkAllAxisStr
+  } else if (chartDetails.type === 'multi-scatter') {
+    // 多维散点图跳转字段只列出维度，引用字段可选所有轴字段
+    const multiScatterExtra =
+      JSON.stringify(chartDetails.yAxis || []) +
+      JSON.stringify(chartDetails.extColor || []) +
+      JSON.stringify(chartDetails.extBubble || []) +
+      JSON.stringify(chartDetails.yAxisExt || [])
+    checkAllAxisStr = checkAllAxisStr + multiScatterExtra
+    checkJumpStr = JSON.stringify(chartDetails.extColor || [])
+  } else {
+    checkJumpStr = checkAllAxisStr
+  }
   const request = { busiFlag: 'dashboard-dataV' } as BusiTreeRequest
   // 获取可关联的仪表板
   queryTreeApi(request).then(rsp => {
@@ -838,7 +839,7 @@ const init = viewItem => {
       state.linkJumpCurViewFieldArray = []
       const sourceCurViewFieldArray = rsp.data
       sourceCurViewFieldArray.forEach(fieldItem => {
-        if (jumpDimensionFieldIds.has(fieldItem.id) && isDimensionField(fieldItem)) {
+        if (checkAllAxisStr.indexOf(fieldItem.id) > -1) {
           state.linkJumpCurViewFieldArray.push(fieldItem)
         }
       })
@@ -850,10 +851,12 @@ const init = viewItem => {
       state.linkJumpInfoArray = []
       state.linkJumpInfoXArray = []
       state.linkJump.linkJumpInfoArray.forEach(linkJumpInfo => {
-        if (jumpDimensionFieldIds.has(linkJumpInfo.sourceFieldId)) {
+        if (checkJumpStr.indexOf(linkJumpInfo.sourceFieldId) > -1) {
           state.mapJumpInfoArray[linkJumpInfo.sourceFieldId] = linkJumpInfo
           state.linkJumpInfoArray.push(linkJumpInfo)
           state.linkJumpInfoXArray.push(linkJumpInfo)
+        } else if (checkAllAxisStr.indexOf(linkJumpInfo.sourceFieldId) > -1) {
+          state.linkJumpInfoArray.push(linkJumpInfo)
         }
       })
       const firstNode = state.linkJumpInfoArray[0]
@@ -916,10 +919,6 @@ const save = () => {
     })
 }
 const nodeClick = data => {
-  if (!data) {
-    state.linkJumpInfo = null
-    return
-  }
   state.linkJumpInfo = state.mapJumpInfoArray[data.sourceFieldId]
   if (!state.linkJumpInfo.windowSize) {
     state.linkJumpInfo.windowSize = 'middle'
@@ -1021,15 +1020,19 @@ const deleteLinkJumpFieldById = targetId => {
 
 const fieldIdDisabledCheck = targetViewInfo => {
   return (
-    (getTargetViewFields(targetViewInfo).length === 1 &&
-      getTargetViewFields(targetViewInfo)[0].id === '1000001') ||
+    (state.viewIdFieldArrayMap[targetViewInfo.targetViewId] &&
+      state.viewIdFieldArrayMap[targetViewInfo.targetViewId].length === 1 &&
+      state.viewIdFieldArrayMap[targetViewInfo.targetViewId][0].id === '1000001') ||
     !targetViewInfo.sourceFieldActiveId
   )
 }
 
 const viewInfoOnChange = targetViewInfo => {
-  const fields = getTargetViewFields(targetViewInfo)
-  if (fields.length === 1 && fields[0].id === '1000001') {
+  if (
+    state.viewIdFieldArrayMap[targetViewInfo.targetViewId] &&
+    state.viewIdFieldArrayMap[targetViewInfo.targetViewId].length === 1 &&
+    state.viewIdFieldArrayMap[targetViewInfo.targetViewId][0].id === '1000001'
+  ) {
     targetViewInfo.targetFieldId = '1000001'
   } else {
     targetViewInfo.targetFieldId = null
@@ -1129,6 +1132,7 @@ defineExpose({
 .preview {
   margin-top: 5px;
   border: 1px solid #e6e6e6;
+  border-radius: 4px;
   border-radius: 6px;
   height: 470px !important;
   overflow: hidden;
@@ -1263,6 +1267,7 @@ defineExpose({
   white-space: nowrap;
   text-overflow: ellipsis;
 
+  border-radius: 4px;
   border-radius: 6px;
   border: 1px solid #dee0e3;
 
@@ -1461,12 +1466,14 @@ span {
 
 .outer-content {
   height: 340px;
+  border-radius: 4px;
   border-radius: 6px;
 }
 
 .padding-lr {
   height: 500px;
   border: 1px solid var(--deCardStrokeColor, #dee0e3);
+  border-radius: 4px;
   border-radius: 6px;
   padding: 12px;
   box-sizing: border-box;
