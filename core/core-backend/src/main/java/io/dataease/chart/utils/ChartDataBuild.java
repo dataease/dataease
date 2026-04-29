@@ -1491,6 +1491,139 @@ public class ChartDataBuild {
         }
     }
 
+    // AntV multi-scatter
+    public static Map<String, Object> transMultiScatterDataAntV(List<ChartViewFieldDTO> extColor, List<ChartViewFieldDTO> xAxisQuota, List<ChartViewFieldDTO> yAxisQuota, List<ChartViewFieldDTO> extBubble, List<ChartViewFieldDTO> yAxisExt, ChartViewDTO view, List<String[]> data, boolean isDrill) {
+        Map<String, Object> map = new HashMap<>();
+        List<AxisChartDataAntVDTO> dataList = new ArrayList<>();
+
+        int colorSize = ObjectUtils.isNotEmpty(extColor) ? extColor.size() : 0;
+        int xQuotaSize = ObjectUtils.isNotEmpty(xAxisQuota) ? xAxisQuota.size() : 0;
+        int yQuotaSize = ObjectUtils.isNotEmpty(yAxisQuota) ? yAxisQuota.size() : 0;
+        int bubbleSize = ObjectUtils.isNotEmpty(extBubble) ? extBubble.size() : 0;
+        int lightnessSize = ObjectUtils.isNotEmpty(yAxisExt) ? yAxisExt.size() : 0;
+        int extLabelSize = ObjectUtils.isNotEmpty(view.getExtLabel()) ? view.getExtLabel().size() : 0;
+        int extTooltipSize = ObjectUtils.isNotEmpty(view.getExtTooltip()) ? view.getExtTooltip().size() : 0;
+
+        int xQuotaStart = colorSize;
+        int yQuotaStart = xQuotaStart + xQuotaSize;
+        int bubbleStart = yQuotaStart + yQuotaSize;
+        int lightnessStart = bubbleStart + bubbleSize;
+        int extLabelStart = lightnessStart + lightnessSize;
+        int extTooltipStart = extLabelStart + extLabelSize;
+
+        for (String[] row : data) {
+            AxisChartDataAntVDTO dto = new AxisChartDataAntVDTO();
+
+            StringBuilder category = new StringBuilder();
+            List<ChartDimensionDTO> dimensionList = new ArrayList<>();
+            for (int i = 0; i < colorSize && i < row.length; i++) {
+                if (isDrill && i < colorSize - 1) {
+                    continue;
+                }
+                if (!category.isEmpty()) {
+                    category.append("\n");
+                }
+                category.append(row[i]);
+                ChartDimensionDTO dimensionDTO = new ChartDimensionDTO();
+                dimensionDTO.setId(extColor.get(i).getId());
+                dimensionDTO.setValue(row[i]);
+                dimensionList.add(dimensionDTO);
+            }
+            String categoryValue = category.isEmpty() ? "default" : category.toString();
+            dto.setField(categoryValue);
+            dto.setName(categoryValue);
+            dto.setCategory(categoryValue);
+            dto.setDimensionList(dimensionList);
+
+            List<ChartQuotaDTO> quotaList = new ArrayList<>();
+            if (xQuotaSize > 0 && xQuotaStart < row.length) {
+                ChartQuotaDTO quotaDTO = new ChartQuotaDTO();
+                quotaDTO.setId(xAxisQuota.getFirst().getId());
+                quotaList.add(quotaDTO);
+                ChartViewFieldDTO xField = xAxisQuota.getFirst();
+                boolean isTimeDimension = StringUtils.equalsIgnoreCase(xField.getGroupType(), "d") || (xField.getDeType() != null && xField.getDeType() == 1);
+                if (isTimeDimension) {
+                    dto.setXLabel(row[xQuotaStart]);
+                    dto.setX(null);
+                } else {
+                    try {
+                        dto.setX(StringUtils.isEmpty(row[xQuotaStart]) ? null : new BigDecimal(row[xQuotaStart]));
+                    } catch (Exception e) {
+                        dto.setXLabel(row[xQuotaStart]);
+                        dto.setX(null);
+                    }
+                }
+            }
+
+            if (yQuotaSize > 0 && yQuotaStart < row.length) {
+                ChartQuotaDTO quotaDTO = new ChartQuotaDTO();
+                quotaDTO.setId(yAxisQuota.getFirst().getId());
+                quotaList.add(quotaDTO);
+                try {
+                    BigDecimal yValue = StringUtils.isEmpty(row[yQuotaStart]) ? null : new BigDecimal(row[yQuotaStart]);
+                    dto.setY(yValue);
+                    dto.setValue(yValue);
+                } catch (Exception e) {
+                    dto.setY(null);
+                    dto.setValue(null);
+                }
+            }
+
+            if (bubbleSize > 0 && bubbleStart < row.length) {
+                ChartQuotaDTO quotaDTO = new ChartQuotaDTO();
+                quotaDTO.setId(extBubble.getFirst().getId());
+                quotaList.add(quotaDTO);
+                try {
+                    dto.setPopSize(StringUtils.isEmpty(row[bubbleStart]) ? null : new BigDecimal(row[bubbleStart]));
+                } catch (Exception e) {
+                    dto.setPopSize(null);
+                }
+            }
+
+            if (lightnessSize > 0 && lightnessStart < row.length) {
+                ChartQuotaDTO quotaDTO = new ChartQuotaDTO();
+                quotaDTO.setId(yAxisExt.getFirst().getId());
+                quotaList.add(quotaDTO);
+                try {
+                    dto.setLightness(StringUtils.isEmpty(row[lightnessStart]) ? null : new BigDecimal(row[lightnessStart]));
+                } catch (Exception e) {
+                    dto.setLightness(null);
+                }
+            }
+            dto.setQuotaList(quotaList);
+
+            dto.setDynamicLabelValue(buildMultiScatterDynamicValue(view.getExtLabel(), row, extLabelStart, extLabelSize));
+            dto.setDynamicTooltipValue(buildMultiScatterDynamicValue(view.getExtTooltip(), row, extTooltipStart, extTooltipSize));
+            dataList.add(dto);
+        }
+
+        map.put("data", dataList);
+        return map;
+    }
+
+    private static List<DynamicValueDTO> buildMultiScatterDynamicValue(List<ChartViewFieldDTO> fields, String[] row, int start, int size) {
+        List<DynamicValueDTO> valueList = new ArrayList<>();
+        if (ObjectUtils.isEmpty(fields)) {
+            return valueList;
+        }
+        for (int i = 0; i < size && i < fields.size(); i++) {
+            int index = start + i;
+            if (index >= row.length) {
+                break;
+            }
+            DynamicValueDTO valueDTO = new DynamicValueDTO();
+            valueDTO.setFieldId(fields.get(i).getId());
+            valueDTO.setStringValue(row[index]);
+            try {
+                valueDTO.setValue(StringUtils.isEmpty(row[index]) ? null : new BigDecimal(row[index]));
+            } catch (Exception e) {
+                valueDTO.setValue(null);
+            }
+            valueList.add(valueDTO);
+        }
+        return valueList;
+    }
+
     // 计算动态标签和提示
     private static void buildDynamicValue(ChartViewDTO view, AxisChartDataAntVDTO axisChartDataDTO, String[] row, int size, int extSize) {
         List<DynamicValueDTO> dynamicLabelValue = new ArrayList<>();

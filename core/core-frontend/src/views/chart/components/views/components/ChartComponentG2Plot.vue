@@ -571,6 +571,25 @@ const trackClick = trackAction => {
   let quotaList = state.pointParam.data.quotaList
   if (['bar-range', 'bullet-graph'].includes(curView.type)) {
     quotaList = state.pointParam.data.dimensionList
+  } else if (curView.type === 'multi-scatter') {
+    const dynamicValueMap = {}
+    ;[
+      ...(state.pointParam.data.dynamicLabelValue || []),
+      ...(state.pointParam.data.dynamicTooltipValue || [])
+    ].forEach(item => {
+      dynamicValueMap[item.fieldId] = item.stringValue ?? item.value
+    })
+    const multiScatterValueMap = {
+      [curView.xAxis?.[0]?.id]: state.pointParam.data.x,
+      [curView.yAxis?.[0]?.id]: state.pointParam.data.y,
+      [curView.extBubble?.[0]?.id]: state.pointParam.data.popSize,
+      [curView.yAxisExt?.[0]?.id]: state.pointParam.data.lightness,
+      ...dynamicValueMap
+    }
+    quotaList = quotaList.map(item => ({
+      ...item,
+      value: multiScatterValueMap[item.id]
+    }))
   } else {
     quotaList[0]['value'] = state.pointParam.data.value
   }

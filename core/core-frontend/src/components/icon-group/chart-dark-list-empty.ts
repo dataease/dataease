@@ -10,6 +10,7 @@ const iconChartMapEmpty = {
   'icon_bullet-chart_light': 'bullet-graph-dark',
   'icon_chart-quadrant_light': 'quadrant-dark',
   'icon_chart-scatter_light': 'scatter-dark',
+  'icon_multi-scatter_light': 'multi-scatter-dark',
   'icon_circle-packing_light': 'circle-packing-dark',
   icon_circular_light: 'pie-donut-dark',
   icon_combination_light: 'chart-mix-dark',

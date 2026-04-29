@@ -36,7 +36,6 @@ import { fieldType } from '@/utils/attr'
 import QuotaItem from '@/views/chart/components/editor/drag-item/QuotaItem.vue'
 import DragPlaceholder from '@/views/chart/components/editor/drag-item/DragPlaceholder.vue'
 import FilterTree from './filter/FilterTree.vue'
-import QuotaFilterEditor from '@/views/chart/components/editor/filter/QuotaFilterEditor.vue'
 import ResultFilterEditor from '@/views/chart/components/editor/filter/ResultFilterEditor.vue'
 import { ElIcon } from 'element-plus-secondary'
 import DrillItem from '@/views/chart/components/editor/drag-item/DrillItem.vue'
@@ -243,8 +242,6 @@ const state = reactive({
     index: 0,
     renameType: ''
   },
-  quotaFilterEdit: false,
-  quotaItem: {},
   resultFilterEdit: false,
   filterItem: {},
   chartForFilter: {},
@@ -266,7 +263,7 @@ const state = reactive({
 })
 
 const filedList = computed(() => {
-  return [...state.dimension, ...state.quota].filter(ele => ele.id !== 'count' && !!ele.summary)
+  return state.dimension.filter(ele => ele.id !== 'count' && !!ele.summary)
 })
 
 provide('filedList', () => filedList.value)
@@ -411,7 +408,7 @@ const queryList = computed(() => {
 
 const quotaData = computed(() => {
   let result = JSON.parse(JSON.stringify(state.quota))
-  if (view.value?.type === 'table-info') {
+  if (['table-info', 'multi-scatter'].includes(view.value?.type)) {
     result = result?.filter(item => item.id !== '-1')
   }
   if (state.searchField) {
@@ -432,7 +429,7 @@ const dimensionData = computed(() => {
 })
 const realQuota = computed(() => {
   let result = JSON.parse(JSON.stringify(state.quota))
-  if (view.value?.type === 'table-info') {
+  if (['table-info', 'multi-scatter'].includes(view.value?.type)) {
     result = result?.filter(item => item.id !== '-1')
   }
   return result
@@ -507,6 +504,9 @@ const quotaItemRemove = item => {
   if (item.removeType === 'quota') {
     axisType = 'yAxis'
     axis = view.value.yAxis.splice(item.index, 1)
+  } else if (item.removeType === 'dimension') {
+    axisType = 'xAxis'
+    axis = view.value.xAxis.splice(item.index, 1)
   } else if (item.removeType === 'quotaExt') {
     axisType = 'yAxisExt'
     axis = view.value.yAxisExt.splice(item.index, 1)
@@ -733,6 +733,25 @@ const addAxis = (e, axis: AxisType) => {
         if (list[i].groupType === 'd' && list[i].deType === 1) {
           list[i].sort = 'asc'
         }
+        if (!(list[i].groupType === 'q' || (list[i].groupType === 'd' && list[i].deType === 1))) {
+          list.splice(i, 1)
+          valid = false
+        }
+      }
+      if (!valid) {
+        ElMessage({
+          message: t('chart.error_d_not_time_2_q'),
+          type: 'warning'
+        })
+      }
+      typeValid = valid
+    }
+  } else if (view.value.type === 'multi-scatter' && axis === 'xAxis') {
+    // 多维散点图 xAxis 只接受指标或时间维度
+    const list = view.value[axis]
+    if (list && list.length > 0) {
+      let valid = true
+      for (let i = list.length - 1; i >= 0; i--) {
         if (!(list[i].groupType === 'q' || (list[i].groupType === 'd' && list[i].deType === 1))) {
           list.splice(i, 1)
           valid = false
@@ -1031,11 +1050,7 @@ const onTypeChange = (render, type) => {
         emitter.emit('removeAxis', { axisType: 'yAxis', axis, editType: 'remove' })
       }
     }
-    if (
-      view.value.type === 'liquid' ||
-      view.value.type === 'gauge' ||
-      view.value.type === 'indicator'
-    ) {
+    if (['liquid', 'gauge', 'indicator', 'multi-scatter'].includes(view.value.type)) {
       removeItems('drillFields')
     }
     if (!['line', 'area', 'bar', 'bar-group'].includes(view.value.type)) {
@@ -1439,38 +1454,6 @@ const saveRename = ref => {
   })
 }
 
-const showQuotaEditFilter = item => {
-  recordSnapshotInfo('calcData')
-  state.quotaItem = JSON.parse(JSON.stringify(item))
-  if (!state.quotaItem.logic) {
-    state.quotaItem.logic = 'and'
-  }
-  state.quotaFilterEdit = true
-}
-const closeQuotaFilter = () => {
-  state.quotaFilterEdit = false
-}
-const saveQuotaFilter = () => {
-  for (let i = 0; i < state.quotaItem.filter.length; i++) {
-    const f = state.quotaItem.filter[i]
-    if (!f.term.includes('null') && !f.term.includes('empty') && (!f.value || f.value === '')) {
-      ElMessage.error(t('chart.filter_value_can_null'))
-      return
-    }
-    if (!f.term.includes('null') && !f.term.includes('empty') && isNaN(f.value)) {
-      ElMessage.error(t('chart.filter_value_can_not_str'))
-      return
-    }
-  }
-  if (state.quotaItem.filterType === 'quota') {
-    view.value.yAxis[state.quotaItem.index].filter = state.quotaItem.filter
-    view.value.yAxis[state.quotaItem.index].logic = state.quotaItem.logic
-  } else if (state.quotaItem.filterType === 'quotaExt') {
-    view.value.yAxisExt[state.quotaItem.index].filter = state.quotaItem.filter
-    view.value.yAxisExt[state.quotaItem.index].logic = state.quotaItem.logic
-  }
-  closeQuotaFilter()
-}
 const changeFilterData = customFilter => {
   view.value.customFilter = cloneDeep(customFilter)
 }
@@ -2201,7 +2184,10 @@ const chartStyleScroll = (val: any) => {
                           </div>
                         </el-row>
                         <!--xAxis-->
-                        <el-row v-if="showAxis('xAxis')" class="padding-lr drag-data">
+                        <el-row
+                          v-if="view.type !== 'multi-scatter' && showAxis('xAxis')"
+                          class="padding-lr drag-data"
+                        >
                           <div class="form-draggable-title">
                             <span>
                               {{ chartViewInstance.axisConfig.xAxis.name }}
@@ -2587,6 +2573,93 @@ const chartStyleScroll = (val: any) => {
                           </div>
                         </el-row>
 
+                        <!--xAxis multi-scatter-->
+                        <el-row
+                          v-if="view.type === 'multi-scatter' && showAxis('xAxis')"
+                          class="padding-lr drag-data"
+                        >
+                          <div class="form-draggable-title">
+                            <span>
+                              {{ chartViewInstance.axisConfig.xAxis.name }}
+                              <i
+                                v-if="!chartViewInstance.axisConfig.xAxis?.allowEmpty"
+                                class="required"
+                              ></i>
+                            </span>
+                            <el-tooltip
+                              :effect="toolTip"
+                              placement="top"
+                              :content="t('common.delete')"
+                            >
+                              <el-icon
+                                class="remove-icon"
+                                :class="{ 'remove-icon--dark': themes === 'dark' }"
+                                size="14px"
+                                @click="removeItems('xAxis')"
+                              >
+                                <Icon class-name="inner-class" name="icon_delete-trash_outlined"
+                                  ><icon_deleteTrash_outlined class="svg-icon inner-class"
+                                /></Icon>
+                              </el-icon>
+                            </el-tooltip>
+                          </div>
+                          <div
+                            class="qw"
+                            @drop="$event => drop($event)"
+                            @dragenter="dragEnter"
+                            @dragover="$event => dragOver($event)"
+                          >
+                            <draggable
+                              :list="view.xAxis"
+                              :move="onMove"
+                              item-key="id"
+                              group="drag"
+                              animation="300"
+                              class="drag-block-style"
+                              :class="{ dark: themes === 'dark' }"
+                              @add="addXaxis"
+                              @change="e => onAxisChange(e, 'xAxis')"
+                            >
+                              <template #item="{ element, index }">
+                                <dimension-item
+                                  v-if="element.groupType === 'd'"
+                                  :dimension-data="state.dimension"
+                                  :quota-data="state.quota"
+                                  :chart="view"
+                                  :item="element"
+                                  :index="index"
+                                  :themes="props.themes"
+                                  type="dimension"
+                                  @onDimensionItemChange="dimensionItemChange"
+                                  @onDimensionItemRemove="dimensionItemRemove"
+                                  @onNameEdit="showRename"
+                                  @onCustomSort="onCustomSort"
+                                  @valueFormatter="valueFormatter"
+                                  @onToggleHide="onToggleHide"
+                                  @editSortPriority="editSortPriority"
+                                />
+                                <quota-item
+                                  v-else-if="element.groupType === 'q'"
+                                  :dimension-data="state.dimension"
+                                  :quota-data="state.quota"
+                                  :chart="view"
+                                  :item="element"
+                                  :index="index"
+                                  type="dimension"
+                                  :themes="props.themes"
+                                  @onQuotaItemChange="item => quotaItemChange(item, 'xAxis')"
+                                  @onQuotaItemRemove="quotaItemRemove"
+                                  @onNameEdit="showRename"
+                                  @valueFormatter="valueFormatter"
+                                  @onToggleHide="onToggleHide"
+                                  @editSortPriority="editSortPriority"
+                                />
+                              </template>
+                            </draggable>
+                            <drag-placeholder :themes="themes" :drag-list="view.xAxis" />
+                          </div>
+                        </el-row>
+
                         <template v-if="view.type !== 'bar-range'">
                           <!--yAxis-->
                           <el-row v-if="showAxis('yAxis')" class="padding-lr drag-data">
@@ -2663,7 +2736,6 @@ const chartStyleScroll = (val: any) => {
                                     @onQuotaItemChange="item => quotaItemChange(item, 'yAxis')"
                                     @onQuotaItemRemove="quotaItemRemove"
                                     @onNameEdit="showRename"
-                                    @editItemFilter="showQuotaEditFilter"
                                     @editItemCompare="showQuotaEditCompare"
                                     @valueFormatter="valueFormatter"
                                     @onToggleHide="onToggleHide"
@@ -2795,7 +2867,6 @@ const chartStyleScroll = (val: any) => {
                                     @onQuotaItemChange="item => quotaItemChange(item, 'yAxisExt')"
                                     @onQuotaItemRemove="quotaItemRemove"
                                     @onNameEdit="showRename"
-                                    @editItemFilter="showQuotaEditFilter"
                                     @editItemCompare="showQuotaEditCompare"
                                     @valueFormatter="valueFormatter"
                                     @editSortPriority="editSortPriority"
@@ -2878,7 +2949,6 @@ const chartStyleScroll = (val: any) => {
                                     @onQuotaItemChange="item => quotaItemChange(item, 'yAxis')"
                                     @onQuotaItemRemove="quotaItemRemove"
                                     @onNameEdit="showRename"
-                                    @editItemFilter="showQuotaEditFilter"
                                     @editItemCompare="showQuotaEditCompare"
                                     @valueFormatter="valueFormatter"
                                     @editSortPriority="editSortPriority"
@@ -2959,7 +3029,6 @@ const chartStyleScroll = (val: any) => {
                                     @onQuotaItemChange="item => quotaItemChange(item, 'yAxisExt')"
                                     @onQuotaItemRemove="quotaItemRemove"
                                     @onNameEdit="showRename"
-                                    @editItemFilter="showQuotaEditFilter"
                                     @editItemCompare="showQuotaEditCompare"
                                     @valueFormatter="valueFormatter"
                                     @editSortPriority="editSortPriority"
@@ -3045,7 +3114,6 @@ const chartStyleScroll = (val: any) => {
                                   @onQuotaItemChange="item => quotaItemChange(item, 'extBubble')"
                                   @onQuotaItemRemove="quotaItemRemove"
                                   @onNameEdit="showRename"
-                                  @editItemFilter="showQuotaEditFilter"
                                   @editItemCompare="showQuotaEditCompare"
                                   @valueFormatter="valueFormatter"
                                   @editSortPriority="editSortPriority"
@@ -3907,24 +3975,6 @@ const chartStyleScroll = (val: any) => {
       </template>
     </el-dialog>
 
-    <!--指标过滤器-->
-    <el-dialog
-      v-if="state.quotaFilterEdit"
-      v-model="state.quotaFilterEdit"
-      :title="t('chart.add_filter')"
-      :visible="state.quotaFilterEdit"
-      :close-on-click-modal="false"
-      width="600px"
-      class="dialog-css"
-    >
-      <quota-filter-editor :item="state.quotaItem" />
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="closeQuotaFilter">{{ t('chart.cancel') }} </el-button>
-          <el-button type="primary" @click="saveQuotaFilter">{{ t('chart.confirm') }} </el-button>
-        </div>
-      </template>
-    </el-dialog>
     <el-dialog
       v-if="state.resultFilterEdit"
       v-model="state.resultFilterEdit"

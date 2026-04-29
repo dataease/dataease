@@ -13,6 +13,7 @@ const iconChartMapEmpty = {
   'icon_bullet-chart_light': 'bullet-graph',
   'icon_chart-quadrant_light': 'quadrant',
   'icon_chart-scatter_light': 'scatter',
+  'icon_multi-scatter_light': 'multi-scatter',
   'icon_circle-packing_light': 'circle-packing',
   icon_circular_light: 'pie-donut',
   icon_combination_light: 'chart-mix',

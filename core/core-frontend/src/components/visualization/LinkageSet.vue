@@ -233,7 +233,7 @@
                           style="width: 100%"
                         >
                           <el-option
-                            v-for="item in state.linkageInfo.targetViewFields"
+                            v-for="item in targetLinkageInfoFilter"
                             :key="item.id"
                             :label="item.name"
                             :value="item.id"
@@ -353,6 +353,40 @@ const customLinkageActive = ref(deepCopy(ACTION_SELECTION))
 const toggleSameDs = ref(true)
 
 const toggleDiffDs = ref(true)
+
+const LINKAGE_FIELD_PROPS = [
+  'xAxis',
+  'xAxisExt',
+  'extStack',
+  'extColor',
+  'yAxis',
+  'yAxisExt',
+  'extBubble',
+  'extLabel',
+  'extTooltip',
+  'drillFields'
+]
+
+const getDraggedFieldIds = chart => {
+  const ids = new Set<string>()
+  LINKAGE_FIELD_PROPS.forEach(prop => {
+    const fields = chart?.[prop]
+    if (!Array.isArray(fields)) {
+      return
+    }
+    fields.forEach(field => {
+      if (field?.id) {
+        ids.add(field.id)
+      }
+    })
+  })
+  return ids
+}
+
+const filterDraggedFields = (fields = [], chart) => {
+  const ids = getDraggedFieldIds(chart)
+  return fields.filter(item => ids.has(item.id))
+}
 
 const sameDsTreeSelectedChange = () => {
   const checkedCount = curLinkageTargetViewsInfoSameDs.value.filter(
@@ -566,35 +600,18 @@ const deleteLinkageField = index => {
 const linkageFieldAdaptor = async data => {
   if (data.linkageActive) {
     // 初始化映射关系 如果当前是相同的数据集且没有关联关系，则自动补充映射关系
-    const targetChartDetails = canvasViewInfo.value[data.targetViewId]
+    const targetChartDetails = canvasViewInfo.value[data.targetViewId] as any
     if (targetChartDetails && targetChartDetails.tableId && data.linkageFields.length === 0) {
-      if (state.curLinkageViewInfo.tableId === targetChartDetails.tableId) {
+      if ((state.curLinkageViewInfo as any).tableId === targetChartDetails.tableId) {
         // 只匹配联动字段为0的 避免已经匹配过的重新匹配
         if (data.linkageFields && data.linkageFields.length === 0) {
-          const curCheckAllAxisStr =
-            JSON.stringify(state.curLinkageViewInfo.xAxis) +
-            JSON.stringify(state.curLinkageViewInfo.xAxisExt) +
-            JSON.stringify(state.curLinkageViewInfo.extStack) +
-            (state.curLinkageViewInfo.type.includes('chart-mix')
-              ? JSON.stringify(state.curLinkageViewInfo.extBubble)
-              : '') +
-            (['indicator'].includes(state.curLinkageViewInfo.type)
-              ? JSON.stringify(state.curLinkageViewInfo.yAxis)
-              : '')
-          const targetCheckAllAxisStr =
-            JSON.stringify(targetChartDetails.xAxis) +
-            JSON.stringify(targetChartDetails.xAxisExt) +
-            JSON.stringify(state.curLinkageViewInfo.extStack) +
-            (targetChartDetails.type.includes('chart-mix')
-              ? JSON.stringify(targetChartDetails.extBubble)
-              : '') +
-            (['indicator'].includes(state.curLinkageViewInfo.type)
-              ? JSON.stringify(state.curLinkageViewInfo.yAxis)
-              : '')
-          state.sourceLinkageInfo.targetViewFields.forEach(item => {
+          const curDraggedFieldIds = getDraggedFieldIds(state.curLinkageViewInfo)
+          const targetDraggedFieldIds = getDraggedFieldIds(targetChartDetails)
+          const sourceFields = (state.sourceLinkageInfo as any).targetViewFields || []
+          sourceFields.forEach(item => {
             if (
-              curCheckAllAxisStr.includes(item.id) &&
-              targetCheckAllAxisStr.includes(item.id) &&
+              curDraggedFieldIds.has(item.id) &&
+              targetDraggedFieldIds.has(item.id) &&
               data.linkageFields
             ) {
               addLinkageFieldAdaptor(data, item.id, item.id)
@@ -609,24 +626,22 @@ const linkageFieldAdaptor = async data => {
 }
 
 const sourceLinkageInfoFilter = computed(() => {
-  if (state.sourceLinkageInfo.targetViewFields) {
-    const curCheckAllAxisStr =
-      JSON.stringify(state.curLinkageViewInfo.xAxis) +
-      JSON.stringify(state.curLinkageViewInfo.drillFields) +
-      JSON.stringify(state.curLinkageViewInfo.xAxisExt) +
-      JSON.stringify(state.curLinkageViewInfo.extStack) +
-      (state.curLinkageViewInfo.type.includes('chart-mix')
-        ? JSON.stringify(state.curLinkageViewInfo.extBubble)
-        : '') +
-      (['table-normal', 'indicator'].includes(state.curLinkageViewInfo.type)
-        ? JSON.stringify(state.curLinkageViewInfo.yAxis)
-        : '')
-    return state.sourceLinkageInfo.targetViewFields.filter(item =>
-      curCheckAllAxisStr.includes(item.id)
+  if ((state.sourceLinkageInfo as any).targetViewFields) {
+    return filterDraggedFields(
+      (state.sourceLinkageInfo as any).targetViewFields,
+      state.curLinkageViewInfo
     )
   } else {
     return []
   }
+})
+
+const targetLinkageInfoFilter = computed(() => {
+  if (!state.linkageInfo?.targetViewFields) {
+    return []
+  }
+  const targetChartDetails = canvasViewInfo.value[state.linkageInfo.targetViewId] as any
+  return filterDraggedFields(state.linkageInfo.targetViewFields, targetChartDetails)
 })
 
 const targetViewCheckedChange = (treeName, data) => {

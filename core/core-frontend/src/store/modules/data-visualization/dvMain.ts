@@ -1395,6 +1395,11 @@ export const dvMainStore = defineStore('dataVisualization', {
       // 联动的图表情况历史条件
       // const currentFilters = []
       checkQDList.forEach(QDItem => {
+        const hasTimeRange = QDItem.timeValue && Array.isArray(QDItem.timeValue)
+        const hasValue = QDItem.value !== null && QDItem.value !== undefined && QDItem.value !== ''
+        if (!hasTimeRange && !hasValue) {
+          return
+        }
         const sourceInfo = viewId + '#' + QDItem.id
         // 获取所有目标联动信息
         const targetInfoList = trackInfo[sourceInfo] || []
@@ -1441,7 +1446,7 @@ export const dvMainStore = defineStore('dataVisualization', {
               }
               // 不存在该条件 且 条件有效 直接保存该条件
               // !filterExist && vValid && currentFilters.push(condition)
-              currentFilters.push(condition)
+              condition && currentFilters.push(condition)
             }
             preActiveComponentIds.includes(element.id) || preActiveComponentIds.push(element.id)
           }

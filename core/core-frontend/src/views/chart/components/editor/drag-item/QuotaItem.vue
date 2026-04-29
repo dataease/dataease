@@ -10,7 +10,6 @@ import icon_functions_outlined from '@/assets/svg/icon_functions_outlined.svg'
 import icon_visible_outlined from '@/assets/svg/icon_visible_outlined.svg'
 import icon_invisible_outlined from '@/assets/svg/icon_invisible_outlined.svg'
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
-import iconFilter from '@/assets/svg/icon-filter.svg'
 import { useI18n } from '@/hooks/web/useI18n'
 import { computed, onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { formatterItem } from '@/views/chart/components/js/formatter'
@@ -71,7 +70,6 @@ const emit = defineEmits([
   'onCustomSort',
   'onQuotaItemChange',
   'onNameEdit',
-  'editItemFilter',
   'editItemCompare',
   'valueFormatter',
   'onToggleHide',
@@ -166,9 +164,6 @@ const clickItem = param => {
     case 'remove':
       removeItem()
       break
-    case 'filter':
-      editFilter()
-      break
     case 'formatter':
       valueFormatter()
       break
@@ -249,12 +244,6 @@ const getItemTagType = () => {
   tagType.value = getItemType(props.dimensionData, props.quotaData, props.item)
 }
 
-const editFilter = () => {
-  item.value.index = props.index
-  item.value.filterType = props.type
-  emit('editItemFilter', item.value)
-}
-
 const quickCalc = param => {
   switch (param.type) {
     case 'none':
@@ -326,6 +315,9 @@ const NOT_SUPPORT_SORT = [
 ]
 
 const showSort = computed(() => {
+  if (chart.value.type === 'multi-scatter') {
+    return false
+  }
   return (
     props.type !== 'extLabel' &&
     props.type !== 'extTooltip' &&
@@ -401,7 +393,10 @@ onMounted(() => {
             }"
           >
             <span class="item-name">{{ item.chartShowName ? item.chartShowName : item.name }}</span>
-            <span v-if="item.summary !== ''" class="item-right-summary">
+            <span
+              v-if="item.summary !== '' && chart.type !== 'multi-scatter'"
+              class="item-right-summary"
+            >
               ({{ t('chart.' + item.summary) }})
             </span>
             <span :data-id="item.id" class="node-id_private"></span>
@@ -454,7 +449,7 @@ onMounted(() => {
         >
           <el-dropdown-item
             @click.prevent
-            v-if="chart.type !== 'table-info' && item.summary !== ''"
+            v-if="!['table-info', 'multi-scatter'].includes(chart.type) && item.summary !== ''"
           >
             <el-dropdown
               :effect="themes"
@@ -624,7 +619,8 @@ onMounted(() => {
           <el-dropdown-item
             @click.prevent
             v-if="
-              !['table-info', 'bullet-graph'].includes(chart.type) && props.type !== 'extBubble'
+              !['table-info', 'bullet-graph', 'multi-scatter'].includes(chart.type) &&
+              props.type !== 'extBubble'
             "
           >
             <el-dropdown
@@ -809,18 +805,6 @@ onMounted(() => {
           >
             <el-icon />
             <span>{{ t('chart.sort_priority') }}</span>
-          </el-dropdown-item>
-
-          <el-dropdown-item
-            class="menu-item-padding"
-            v-if="
-              props.type !== 'extLabel' && props.type !== 'extTooltip' && props.type !== 'extBubble'
-            "
-            :icon="iconFilter"
-            :command="beforeClickItem('filter')"
-            :divided="chart.type.includes('chart-mix')"
-          >
-            <span>{{ t('chart.filter') }}</span>
           </el-dropdown-item>
 
           <el-dropdown-item

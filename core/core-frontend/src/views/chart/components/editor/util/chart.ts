@@ -1558,6 +1558,13 @@ export const CHART_TYPE_CONFIGS = [
       {
         render: 'antv',
         category: 'distribute',
+        value: 'multi-scatter',
+        title: t('chart.chart_multi_scatter'),
+        icon: 'multi-scatter'
+      },
+      {
+        render: 'antv',
+        category: 'distribute',
         value: 'quadrant',
         title: t('chart.chart_quadrant'),
         icon: 'quadrant'

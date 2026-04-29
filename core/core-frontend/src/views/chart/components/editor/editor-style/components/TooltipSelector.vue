@@ -50,6 +50,7 @@ const toolTip = computed(() => {
 const emit = defineEmits(['onTooltipChange', 'onExtTooltipChange'])
 const curSeriesFormatter = ref<DeepPartial<SeriesFormatter>>({})
 const quotaData = ref<Axis[]>(inject('quotaData'))
+const tooltipQuotaData = computed(() => quotaData.value?.filter(item => item.id !== '-1') || [])
 const showSeriesTooltipFormatter = computed(() => {
   return (
     showProperty('seriesTooltipFormatter') &&
@@ -76,7 +77,7 @@ const changeChartType = () => {
     })
     axisIds.push(axis.id)
   })
-  quotaData.value.forEach(quotaAxis => {
+  tooltipQuotaData.value.forEach(quotaAxis => {
     if (!axisIds.includes(quotaAxis.id)) {
       initFormatCfgUnit(quotaAxis.formatterCfg)
       formatter.push({
@@ -96,14 +97,14 @@ const changeChartType = () => {
 const changeDataset = () => {
   curSeriesFormatter.value = {}
   const formatter = state.tooltipForm.seriesTooltipFormatter
-  const quotaIds = quotaData.value.map(i => i.id)
+  const quotaIds = tooltipQuotaData.value.map(i => i.id)
   for (let i = formatter.length - 1; i >= 0; i--) {
     if (!quotaIds.includes(formatter[i].id)) {
       formatter.splice(i, 1)
     }
   }
   const formatterIds = formatter.map(i => i.id)
-  quotaData.value.forEach(axis => {
+  tooltipQuotaData.value.forEach(axis => {
     if (!formatterIds.includes(axis.id)) {
       formatter.push({
         ...axis,
@@ -137,6 +138,9 @@ const quotaAxisIds = computed(() => {
 })
 
 function showOption(item) {
+  if (item.id === '-1') {
+    return false
+  }
   if (props.chart.type.includes('chart-mix')) {
     return includes(quotaAxisIds.value, item.id)
   }
@@ -146,7 +150,10 @@ function showOption(item) {
 const extTooltip = computed(() => {
   const quotaIds = quotaAxis.value?.map(i => i.id)
   return state.tooltipForm.seriesTooltipFormatter.filter(
-    i => !quotaIds.includes(i.id) && i.show && quotaData.value?.findIndex(j => j.id === i.id) !== -1
+    i =>
+      !quotaIds.includes(i.id) &&
+      i.show &&
+      tooltipQuotaData.value?.findIndex(j => j.id === i.id) !== -1
   )
 })
 const showFormatterSummary = computed(() => {
@@ -262,8 +269,13 @@ const init = () => {
       formatterSelector.value?.blur()
       // 新增图表
       const formatter = state.tooltipForm.seriesTooltipFormatter
+      for (let i = formatter.length - 1; i >= 0; i--) {
+        if (formatter[i].id === '-1') {
+          formatter.splice(i, 1)
+        }
+      }
       if (!formatter.length) {
-        quotaData.value?.forEach(i => formatter.push({ ...i, seriesId: i.id, show: false }))
+        tooltipQuotaData.value?.forEach(i => formatter.push({ ...i, seriesId: i.id, show: false }))
         curSeriesFormatter.value = {}
         return
       }
@@ -299,7 +311,7 @@ const updateSeriesTooltipFormatter = (form: AxisEditForm) => {
   if (
     !showSeriesTooltipFormatter.value ||
     !state.tooltipForm.seriesTooltipFormatter.length ||
-    !quotaData.value?.length ||
+    !tooltipQuotaData.value?.length ||
     !AXIS_PROP.includes(axisType)
   ) {
     return
@@ -326,9 +338,10 @@ const addAxis = (form: AxisEditForm) => {
     if (!next) {
       return pre
     }
-    next.axisType = axisType
-    next.seriesId = `${next.id}-${axisType}`
-    pre[next.id] = next
+    const extAxis = next as Axis & { axisType?: AxisType; seriesId?: string }
+    extAxis.axisType = axisType
+    extAxis.seriesId = `${extAxis.id}-${axisType}`
+    pre[extAxis.id] = extAxis
     return pre
   }, {})
   const dupAxis = []
@@ -363,12 +376,13 @@ const removeAxis = (form: AxisEditForm) => {
     if (!next) {
       return pre
     }
-    next.axisType = axisType
-    next.seriesId = `${next.id}-${axisType}`
-    pre[next.seriesId] = next
+    const extAxis = next as Axis & { axisType?: AxisType; seriesId?: string }
+    extAxis.axisType = axisType
+    extAxis.seriesId = `${extAxis.id}-${axisType}`
+    pre[extAxis.seriesId] = extAxis
     return pre
   }, {})
-  const quotaIds = quotaData.value?.map(i => i.id)
+  const quotaIds = tooltipQuotaData.value?.map(i => i.id)
   const formatterDupMap = state.tooltipForm.seriesTooltipFormatter.reduce((pre, next) => {
     if (pre[next.id] !== undefined) {
       pre[`${next.id}-${axisType}`] = true
@@ -406,9 +420,10 @@ const updateAxis = (form: AxisEditForm) => {
     if (!next) {
       return pre
     }
-    next.axisType = axisType
-    next.seriesId = `${next.id}-${axisType}`
-    pre[next.seriesId] = next
+    const extAxis = next as Axis & { axisType?: AxisType; seriesId?: string }
+    extAxis.axisType = axisType
+    extAxis.seriesId = `${extAxis.id}-${axisType}`
+    pre[extAxis.seriesId] = extAxis
     return pre
   }, {})
   state.tooltipForm.seriesTooltipFormatter.forEach(ele => {
@@ -419,12 +434,14 @@ const updateAxis = (form: AxisEditForm) => {
   })
 }
 const allFields = computed(() => {
-  return defaultTo(props.allFields, []).map(item => ({
-    key: item.dataeaseName,
-    name: item.name,
-    value: `${item.dataeaseName}@${item.name}`,
-    disabled: false
-  }))
+  return defaultTo(props.allFields, [])
+    .filter(item => item.id !== '-1')
+    .map(item => ({
+      key: item.dataeaseName,
+      name: item.name,
+      value: `${item.dataeaseName}@${item.name}`,
+      disabled: false
+    }))
 })
 const defaultPlaceholder = computed(() => {
   if (state.tooltipForm.showFields && state.tooltipForm.showFields.length > 0) {
