@@ -3,6 +3,7 @@ import { useCache } from '@/hooks/web/useCache'
 import { loadScript } from '@/utils/RemoteJs'
 import { ElMessage } from 'element-plus-secondary'
 import DOMPurify from 'dompurify'
+import * as dd from 'dingtalk-jsapi'
 
 const { wsCache } = useCache()
 export function deepCopy(target) {
@@ -56,10 +57,6 @@ export function checkAddHttp(url) {
   }
 }
 
-export const sanitizeHtml = (html: string): string => {
-  return DOMPurify.sanitize(html)
-}
-
 export const setColorName = (obj, keyword: string, key?: string, colorKey?: string) => {
   key = key || 'name'
   colorKey = colorKey || 'colorName'
@@ -76,10 +73,7 @@ export const setColorName = (obj, keyword: string, key?: string, colorKey?: stri
       keyword +
       '</span>' +
       name.substring(index + keyword.length, name.length)
-    obj[colorKey] = DOMPurify.sanitize(textCode, {
-      ALLOWED_TAGS: ['span'],
-      ALLOWED_ATTR: ['class']
-    })
+    obj[colorKey] = textCode
     return
   }
   obj[colorKey] = null
