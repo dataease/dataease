@@ -191,8 +191,7 @@ export class StockLine extends G2ChartView {
       })
       if (selectData.length) {
         const param = {
-          x: evt.x,
-          y: evt.y,
+          ...evt,
           data: {
             data: {
               ...evt.data.data,

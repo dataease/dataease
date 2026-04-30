@@ -89,8 +89,7 @@ export class CirclePacking extends G2ChartView {
           return
         }
         const actionParams = {
-          x: param.x,
-          y: param.y,
+          ...param,
           data: {
             data: {
               ...pointData

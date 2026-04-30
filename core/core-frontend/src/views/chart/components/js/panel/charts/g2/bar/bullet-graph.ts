@@ -107,8 +107,7 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
       const pointData = ev?.data?.data
       const dimensionList = options.data.find(item => item.title === pointData.title)?.dimensionList
       const actionParams = {
-        x: ev.x,
-        y: ev.y,
+        ...ev,
         data: {
           data: {
             ...pointData,
