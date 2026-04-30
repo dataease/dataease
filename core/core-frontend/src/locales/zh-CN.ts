@@ -3874,8 +3874,8 @@ export default {
     query_timeout: '查询超时',
     description: '描述',
     tips: '提示',
-    replication: 'BE 副本数',
-    replication_tip: 'BE 节点数量'
+    replication: '副本数',
+    replication_tip: '建表副本数，默认值为 1'
   },
   sync_summary: {
     summary: '概览',

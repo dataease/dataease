@@ -3868,8 +3868,8 @@ export default {
     query_timeout: '查詢超時',
     description: '描述',
     tips: '提示',
-    replication: 'BE 複本數',
-    replication_tip: 'BE 節點數量'
+    replication: '副本數',
+    replication_tip: '建表副本數，預設值為 1'
   },
   sync_summary: {
     summary: '概覽',

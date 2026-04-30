@@ -3980,8 +3980,8 @@ export default {
     query_timeout: 'Query timeout',
     description: 'Description',
     tips: 'Tips',
-    replication: 'BACKEND Replicas',
-    replication_tip: 'Number of BE Nodes'
+    replication: 'Replicas',
+    replication_tip: 'Number of replicas used when creating tables. The default is 1.'
   },
   sync_summary: {
     summary: 'Overview',
