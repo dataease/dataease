@@ -5,7 +5,6 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.List;
 
 @Schema(description = "电子表格编辑DTO")
 @Data
@@ -31,9 +30,6 @@ public class SpreadsheetEditor implements Serializable {
 
     @Schema(description = "sheet数据")
     private String sheetData;
-
-    @Schema(description = "配置数据")
-    private String configData;
 
     @Schema(description = "版本号")
     private Integer version;
