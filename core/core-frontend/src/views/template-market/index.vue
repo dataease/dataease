@@ -647,6 +647,8 @@ defineExpose({
       align-items: center;
       padding: 12px 24px;
       border-bottom: 1px solid rgba(31, 35, 41, 0.15);
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
 
       span {
         font-size: 16px;
