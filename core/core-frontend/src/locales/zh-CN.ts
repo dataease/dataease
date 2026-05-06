@@ -957,6 +957,7 @@ export default {
     config: '数据源配置',
     table: '数据源表',
     table_name: '表名',
+    table_remarks: '表备注',
     remark: '备注',
     column_name: '字段名',
     field_type: '字段类型',

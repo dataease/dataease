@@ -955,6 +955,7 @@ export default {
     config: '資料來源配置',
     table: '資料來源表',
     table_name: '表名',
+    table_remarks: '表備註',
     remark: '備註',
     column_name: '欄位名稱',
     field_type: '字段類型',

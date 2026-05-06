@@ -1423,7 +1423,14 @@ const getMenuList = (val: boolean) => {
               <el-table-column
                 key="tableName"
                 prop="tableName"
+                show-overflow-tooltip
                 :label="t('datasource.table_name')"
+              />
+              <el-table-column
+                key="name"
+                prop="name"
+                show-overflow-tooltip
+                :label="t('datasource.table_remarks')"
               />
               <el-table-column
                 key="status"
