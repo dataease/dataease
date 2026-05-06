@@ -22,6 +22,7 @@ import io.dataease.log.DeLog;
 import io.dataease.model.ExportTaskDTO;
 import io.dataease.system.manage.SysParameterManage;
 import io.dataease.utils.*;
+import io.dataease.visualization.dao.auto.entity.CoreStore;
 import io.dataease.visualization.dao.auto.entity.VisualizationWatermark;
 import io.dataease.visualization.dao.auto.mapper.VisualizationWatermarkMapper;
 import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
@@ -90,16 +91,20 @@ public class ExportCenterManage implements BaseExportApi {
     }
 
     public void delete(String id) {
-        Iterator<Map.Entry<String, Future>> iterator = Running_Task.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, Future> entry = iterator.next();
-            if (entry.getKey().equalsIgnoreCase(id)) {
-                entry.getValue().cancel(true);
-                iterator.remove();
+        QueryWrapper<CoreExportTask> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id", id);
+        if (exportTaskMapper.exists(queryWrapper)) {
+            Iterator<Map.Entry<String, Future>> iterator = Running_Task.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<String, Future> entry = iterator.next();
+                if (entry.getKey().equalsIgnoreCase(id)) {
+                    entry.getValue().cancel(true);
+                    iterator.remove();
+                }
             }
+            FileUtils.deleteDirectoryRecursively(exportData_path + id);
+            exportTaskMapper.deleteById(id);
         }
-        FileUtils.deleteDirectoryRecursively(exportData_path + id);
-        exportTaskMapper.deleteById(id);
     }
 
     public void deleteAll(String type) {
