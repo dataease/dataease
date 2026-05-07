@@ -39,7 +39,7 @@ const arr = Array(40)
   margin: 0;
   border: 1px solid rgba(222, 224, 227, 1);
   box-sizing: border-box;
-  border-radius: 6px;
+  border-radius: 12px;
   width: 100%;
   background: #fff;
   overflow: hidden;

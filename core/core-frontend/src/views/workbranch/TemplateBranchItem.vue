@@ -143,7 +143,7 @@ const templateInnerPreview = () => {
     box-shadow: 0px 6px 24px 0px rgba(31, 35, 41, 0.08);
     .apply {
       transition: 0.3s;
-      height: 73px;
+      height: 75px;
     }
     .ed-button {
       display: block;
