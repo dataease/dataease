@@ -302,6 +302,7 @@ onMounted(() => {
           line-height: 28px;
           min-width: 48px;
           padding: 3px 8px;
+          font-size: 12px;
         }
       }
     }
