@@ -528,6 +528,7 @@ export default {
     on_the_left: 'Please select a region on the left',
     region_code: 'Region code',
     superior_region: 'Superior region',
+    country: 'Country',
     coordinate_file: 'Coordinate file',
     delete_this_node: 'Are you sure you want to delete this node',
     at_the_end:
@@ -1875,6 +1876,7 @@ export default {
     scatter_tip:
       'When this indicator takes effect, the bubble size attribute in the style size will be invalid',
     place_name_mapping: 'Place name mapping',
+    used_global_map_mapping: 'Use global place name mapping',
     axis_tip:
       'Minimum value, maximum value, and interval are all numeric types; if not filled in, this item will be considered automatic. <br/>Please make sure that the filled value can be calculated correctly, otherwise the axis value will not be displayed normally. ',
     format_tip: `The template variables are {a}, {b}, {c}, {d}, which represent the series name, data name, data value, etc. <br>

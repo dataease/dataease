@@ -231,7 +231,11 @@
         ]
       },
       "properties": {
-        "name": "Somalia"
+        "name": "Somalia",
+          "adcode": 706,
+          "cn_name": "索马里",
+          "iso_alpha3": "SOM",
+          "center": [45.3182,2.0469]
       }
     },
     {
@@ -268,7 +272,11 @@
         ]
       },
       "properties": {
-        "name": "Liechtenstein"
+        "name": "Liechtenstein",
+          "adcode": 438,
+          "cn_name": "列支敦士登",
+          "iso_alpha3": "LIE",
+          "center": [9.5215,47.141]
       }
     },
     {
@@ -573,7 +581,11 @@
         ]
       },
       "properties": {
-        "name": "Morocco"
+        "name": "Morocco",
+          "adcode": 504,
+          "cn_name": "摩洛哥",
+          "iso_alpha3": "MAR",
+          "center": [-6.8498,34.0209]
       }
     },
     {
@@ -808,7 +820,11 @@
         ]
       },
       "properties": {
-        "name": "Western Sahara"
+        "name": "Western Sahara",
+          "adcode": 732,
+          "cn_name": "西撒哈拉",
+          "iso_alpha3": "ESH",
+          "center": [-13.7,24.2155]
       }
     },
     {
@@ -1197,7 +1213,11 @@
         ]
       },
       "properties": {
-        "name": "Serbia"
+        "name": "Serbia",
+          "adcode": 688,
+          "cn_name": "塞尔维亚",
+          "iso_alpha3": "SRB",
+          "center": [20.4612,44.7866]
       }
     },
     {
@@ -1962,7 +1982,11 @@
         ]
       },
       "properties": {
-        "name": "Afghanistan"
+        "name": "Afghanistan",
+          "adcode": 4,
+          "cn_name": "阿富汗",
+          "iso_alpha3": "AFG",
+          "center": [69.1761,34.5553]
       }
     },
     {
@@ -2453,7 +2477,11 @@
         ]
       },
       "properties": {
-        "name": "Angola"
+        "name": "Angola",
+          "adcode": 24,
+          "cn_name": "安哥拉",
+          "iso_alpha3": "AGO",
+          "center": [13.2306,-8.8383]
       }
     },
     {
@@ -2602,7 +2630,11 @@
         ]
       },
       "properties": {
-        "name": "Albania"
+        "name": "Albania",
+          "adcode": 8,
+          "cn_name": "阿尔巴尼亚",
+          "iso_alpha3": "ALB",
+          "center": [19.8172,41.3275]
       }
     },
     {
@@ -2667,7 +2699,11 @@
         ]
       },
       "properties": {
-        "name": "Andorra"
+        "name": "Andorra",
+          "adcode": 20,
+          "cn_name": "安道尔",
+          "iso_alpha3": "AND",
+          "center": [1.5218,42.5063]
       }
     },
     {
@@ -2838,7 +2874,11 @@
         ]
       },
       "properties": {
-        "name": "United Arab Emirates"
+        "name": "United Arab Emirates",
+          "adcode": 784,
+          "cn_name": "阿联酋",
+          "iso_alpha3": "ARE",
+          "center": [54.3705,24.4539]
       }
     },
     {
@@ -3993,7 +4033,11 @@
         ]
       },
       "properties": {
-        "name": "Argentina"
+        "name": "Argentina",
+          "adcode": 32,
+          "cn_name": "阿根廷",
+          "iso_alpha3": "ARG",
+          "center": [-58.3816,-34.6037]
       }
     },
     {
@@ -4130,7 +4174,11 @@
         ]
       },
       "properties": {
-        "name": "Armenia"
+        "name": "Armenia",
+          "adcode": 51,
+          "cn_name": "亚美尼亚",
+          "iso_alpha3": "ARM",
+          "center": [44.509,40.1776]
       }
     },
     {
@@ -4159,7 +4207,11 @@
         ]
       },
       "properties": {
-        "name": "American Samoa"
+        "name": "American Samoa",
+          "adcode": 16,
+          "cn_name": "美属萨摩亚",
+          "iso_alpha3": "ASM",
+          "center": [-170.702,-14.271]
       }
     },
     {
@@ -4302,7 +4354,11 @@
         ]
       },
       "properties": {
-        "name": "French Southern and Antarctic Lands"
+        "name": "French Southern and Antarctic Lands",
+          "adcode": 260,
+          "cn_name": "法属南部领地",
+          "iso_alpha3": "ATF",
+          "center": [70.25,-49.35]
       }
     },
     {
@@ -4335,7 +4391,11 @@
         ]
       },
       "properties": {
-        "name": "Antigua and Barbuda"
+        "name": "Antigua and Barbuda",
+          "adcode": 28,
+          "cn_name": "安提瓜和巴布达",
+          "iso_alpha3": "ATG",
+          "center": [-61.8456,17.1175]
       }
     },
     {
@@ -6594,7 +6654,11 @@
         ]
       },
       "properties": {
-        "name": "Australia"
+        "name": "Australia",
+          "adcode": 36,
+          "cn_name": "澳大利亚",
+          "iso_alpha3": "AUS",
+          "center": [149.13,-35.2809]
       }
     },
     {
@@ -7023,7 +7087,11 @@
         ]
       },
       "properties": {
-        "name": "Austria"
+        "name": "Austria",
+          "adcode": 40,
+          "cn_name": "奥地利",
+          "iso_alpha3": "AUT",
+          "center": [16.3738,48.2082]
       }
     },
     {
@@ -7286,7 +7354,11 @@
         ]
       },
       "properties": {
-        "name": "Azerbaijan"
+        "name": "Azerbaijan",
+          "adcode": 31,
+          "cn_name": "阿塞拜疆",
+          "iso_alpha3": "AZE",
+          "center": [49.8932,40.4093]
       }
     },
     {
@@ -7411,7 +7483,11 @@
         ]
       },
       "properties": {
-        "name": "Burundi"
+        "name": "Burundi",
+          "adcode": 108,
+          "cn_name": "布隆迪",
+          "iso_alpha3": "BDI",
+          "center": [29.3639,-3.3784]
       }
     },
     {
@@ -7552,7 +7628,11 @@
         ]
       },
       "properties": {
-        "name": "Belgium"
+        "name": "Belgium",
+          "adcode": 56,
+          "cn_name": "比利时",
+          "iso_alpha3": "BEL",
+          "center": [4.3517,50.8503]
       }
     },
     {
@@ -7753,7 +7833,11 @@
         ]
       },
       "properties": {
-        "name": "Benin"
+        "name": "Benin",
+          "adcode": 204,
+          "cn_name": "贝宁",
+          "iso_alpha3": "BEN",
+          "center": [2.6323,6.4969]
       }
     },
     {
@@ -8058,7 +8142,11 @@
         ]
       },
       "properties": {
-        "name": "Burkina Faso"
+        "name": "Burkina Faso",
+          "adcode": 854,
+          "cn_name": "布基纳法索",
+          "iso_alpha3": "BFA",
+          "center": [-1.5339,12.3686]
       }
     },
     {
@@ -8677,7 +8765,11 @@
         ]
       },
       "properties": {
-        "name": "Bangladesh"
+        "name": "Bangladesh",
+          "adcode": 50,
+          "cn_name": "孟加拉国",
+          "iso_alpha3": "BGD",
+          "center": [90.4113,23.7104]
       }
     },
     {
@@ -9014,7 +9106,11 @@
         ]
       },
       "properties": {
-        "name": "Bulgaria"
+        "name": "Bulgaria",
+          "adcode": 100,
+          "cn_name": "保加利亚",
+          "iso_alpha3": "BGR",
+          "center": [23.3219,42.6977]
       }
     },
     {
@@ -9051,7 +9147,11 @@
         ]
       },
       "properties": {
-        "name": "Bahrain"
+        "name": "Bahrain",
+          "adcode": 48,
+          "cn_name": "巴林",
+          "iso_alpha3": "BHR",
+          "center": [50.586,26.2285]
       }
     },
     {
@@ -9490,7 +9590,11 @@
         ]
       },
       "properties": {
-        "name": "Bahamas"
+        "name": "Bahamas",
+          "adcode": 44,
+          "cn_name": "巴哈马",
+          "iso_alpha3": "BHS",
+          "center": [-77.339,25.0582]
       }
     },
     {
@@ -9671,7 +9775,11 @@
         ]
       },
       "properties": {
-        "name": "Bosnia and Herzegovina"
+        "name": "Bosnia and Herzegovina",
+          "adcode": 70,
+          "cn_name": "波斯尼亚和黑塞哥维那",
+          "iso_alpha3": "BIH",
+          "center": [18.4131,43.8563]
       }
     },
     {
@@ -10368,7 +10476,11 @@
         ]
       },
       "properties": {
-        "name": "Belarus"
+        "name": "Belarus",
+          "adcode": 112,
+          "cn_name": "白俄罗斯",
+          "iso_alpha3": "BLR",
+          "center": [27.5615,53.9006]
       }
     },
     {
@@ -10459,7 +10571,11 @@
         ]
       },
       "properties": {
-        "name": "Belize"
+        "name": "Belize",
+          "adcode": 84,
+          "cn_name": "伯利兹",
+          "iso_alpha3": "BLZ",
+          "center": [-88.1962,17.251]
       }
     },
     {
@@ -10488,7 +10604,11 @@
         ]
       },
       "properties": {
-        "name": "Bermuda"
+        "name": "Bermuda",
+          "adcode": 60,
+          "cn_name": "百慕大",
+          "iso_alpha3": "BMU",
+          "center": [-64.7505,32.294]
       }
     },
     {
@@ -11145,7 +11265,11 @@
         ]
       },
       "properties": {
-        "name": "Bolivia"
+        "name": "Bolivia",
+          "adcode": 68,
+          "cn_name": "玻利维亚",
+          "iso_alpha3": "BOL",
+          "center": [-68.1193,-16.5]
       }
     },
     {
@@ -13784,7 +13908,11 @@
         ]
       },
       "properties": {
-        "name": "Brazil"
+        "name": "Brazil",
+          "adcode": 76,
+          "cn_name": "巴西",
+          "iso_alpha3": "BRA",
+          "center": [-47.9292,-15.7801]
       }
     },
     {
@@ -13817,7 +13945,11 @@
         ]
       },
       "properties": {
-        "name": "Barbados"
+        "name": "Barbados",
+          "adcode": 52,
+          "cn_name": "巴巴多斯",
+          "iso_alpha3": "BRB",
+          "center": [-59.6105,13.1939]
       }
     },
     {
@@ -13888,7 +14020,11 @@
         ]
       },
       "properties": {
-        "name": "Brunei"
+        "name": "Brunei",
+          "adcode": 96,
+          "cn_name": "文莱",
+          "iso_alpha3": "BRN",
+          "center": [114.9463,4.9031]
       }
     },
     {
@@ -14189,7 +14325,11 @@
         ]
       },
       "properties": {
-        "name": "Bhutan"
+        "name": "Bhutan",
+          "adcode": 64,
+          "cn_name": "不丹",
+          "iso_alpha3": "BTN",
+          "center": [89.6177,27.4728]
       }
     },
     {
@@ -14446,7 +14586,11 @@
         ]
       },
       "properties": {
-        "name": "Botswana"
+        "name": "Botswana",
+          "adcode": 72,
+          "cn_name": "博茨瓦纳",
+          "iso_alpha3": "BWA",
+          "center": [25.9087,-24.6282]
       }
     },
     {
@@ -14707,7 +14851,11 @@
         ]
       },
       "properties": {
-        "name": "Central African Republic"
+        "name": "Central African Republic",
+          "adcode": 140,
+          "cn_name": "中非共和国",
+          "iso_alpha3": "CAF",
+          "center": [18.5885,4.3947]
       }
     },
     {
@@ -24606,7 +24754,11 @@
         ]
       },
       "properties": {
-        "name": "Canada"
+        "name": "Canada",
+          "adcode": 124,
+          "cn_name": "加拿大",
+          "iso_alpha3": "CAN",
+          "center": [-75.6972,45.4215]
       }
     },
     {
@@ -24999,7 +25151,11 @@
         ]
       },
       "properties": {
-        "name": "Switzerland"
+        "name": "Switzerland",
+          "adcode": 756,
+          "cn_name": "瑞士",
+          "iso_alpha3": "CHE",
+          "center": [7.4474,46.948]
       }
     },
     {
@@ -27147,6 +27303,10 @@
       },
       "properties": {
         "name": "Chile",
+          "adcode": 152,
+          "cn_name": "智利",
+          "iso_alpha3": "CHL",
+          "center": [-70.6693,-33.4489],
         "center": [
           -72.46245121585589,
           -44.28452280412797
@@ -60126,6 +60286,10 @@
       },
       "properties": {
         "name": "China",
+          "adcode": 156,
+          "cn_name": "中国",
+          "iso_alpha3": "CHN",
+          "center": [116.4074,39.9042],
         "center": [
           116.407526,
           39.90403
@@ -60630,7 +60794,11 @@
         ]
       },
       "properties": {
-        "name": "Côte d'Ivoire"
+        "name": "Côte d'Ivoire",
+          "adcode": 384,
+          "cn_name": "科特迪瓦",
+          "iso_alpha3": "CIV",
+          "center": [-4.0083,5.36]
       }
     },
     {
@@ -61079,7 +61247,11 @@
         ]
       },
       "properties": {
-        "name": "Cameroon"
+        "name": "Cameroon",
+          "adcode": 120,
+          "cn_name": "喀麦隆",
+          "iso_alpha3": "CMR",
+          "center": [11.5174,3.8667]
       }
     },
     {
@@ -61804,7 +61976,11 @@
         ]
       },
       "properties": {
-        "name": "Dem. Rep. Congo"
+        "name": "Dem. Rep. Congo",
+          "adcode": 180,
+          "cn_name": "刚果（金）",
+          "iso_alpha3": "COD",
+          "center": [15.3222,-4.325]
       }
     },
     {
@@ -62105,7 +62281,11 @@
         ]
       },
       "properties": {
-        "name": "Congo"
+        "name": "Congo",
+          "adcode": 178,
+          "cn_name": "刚果（布）",
+          "iso_alpha3": "COG",
+          "center": [15.2663,-4.2634]
       }
     },
     {
@@ -62746,7 +62926,11 @@
         ]
       },
       "properties": {
-        "name": "Colombia"
+        "name": "Colombia",
+          "adcode": 170,
+          "cn_name": "哥伦比亚",
+          "iso_alpha3": "COL",
+          "center": [-74.0721,4.711]
       }
     },
     {
@@ -62825,7 +63009,11 @@
         ]
       },
       "properties": {
-        "name": "Comoros"
+        "name": "Comoros",
+          "adcode": 174,
+          "cn_name": "科摩罗",
+          "iso_alpha3": "COM",
+          "center": [43.2473,-11.6986]
       }
     },
     {
@@ -63024,7 +63212,11 @@
         ]
       },
       "properties": {
-        "name": "Cape Verde"
+        "name": "Cape Verde",
+          "adcode": 132,
+          "cn_name": "佛得角",
+          "iso_alpha3": "CPV",
+          "center": [-23.5133,14.9177]
       }
     },
     {
@@ -63237,7 +63429,11 @@
         ]
       },
       "properties": {
-        "name": "Costa Rica"
+        "name": "Costa Rica",
+          "adcode": 188,
+          "cn_name": "哥斯达黎加",
+          "iso_alpha3": "CRI",
+          "center": [-84.0907,9.9281]
       }
     },
     {
@@ -63552,7 +63748,11 @@
         ]
       },
       "properties": {
-        "name": "Cuba"
+        "name": "Cuba",
+          "adcode": 192,
+          "cn_name": "古巴",
+          "iso_alpha3": "CUB",
+          "center": [-82.3667,23.1136]
       }
     },
     {
@@ -63581,7 +63781,11 @@
         ]
       },
       "properties": {
-        "name": "Curaçao"
+        "name": "Curaçao",
+          "adcode": 531,
+          "cn_name": "库拉索",
+          "iso_alpha3": "CUW",
+          "center": [-68.9335,12.1084]
       }
     },
     {
@@ -63632,7 +63836,11 @@
         ]
       },
       "properties": {
-        "name": "Cayman Islands"
+        "name": "Cayman Islands",
+          "adcode": 136,
+          "cn_name": "开曼群岛",
+          "iso_alpha3": "CYM",
+          "center": [-81.3857,19.3022]
       }
     },
     {
@@ -63689,7 +63897,11 @@
         ]
       },
       "properties": {
-        "name": "N. Cyprus"
+        "name": "N. Cyprus",
+          "adcode": 197,
+          "cn_name": "北塞浦路斯",
+          "iso_alpha3": "CYP",
+          "center": [33.3736,35.1856]
       }
     },
     {
@@ -63750,7 +63962,11 @@
         ]
       },
       "properties": {
-        "name": "Cyprus"
+        "name": "Cyprus",
+          "adcode": 196,
+          "cn_name": "塞浦路斯",
+          "iso_alpha3": "CYP",
+          "center": [33.3736,35.1856]
       }
     },
     {
@@ -63999,7 +64215,11 @@
         ]
       },
       "properties": {
-        "name": "Czech Republic"
+        "name": "Czech Republic",
+          "adcode": 205,
+          "cn_name": "捷克",
+          "iso_alpha3": "CZE",
+          "center": [14.4208,50.088]
       }
     },
     {
@@ -64798,7 +65018,11 @@
         ]
       },
       "properties": {
-        "name": "Germany"
+        "name": "Germany",
+          "adcode": 276,
+          "cn_name": "德国",
+          "iso_alpha3": "DEU",
+          "center": [13.405,52.52]
       }
     },
     {
@@ -64903,7 +65127,11 @@
         ]
       },
       "properties": {
-        "name": "Djibouti"
+        "name": "Djibouti",
+          "adcode": 262,
+          "cn_name": "吉布提",
+          "iso_alpha3": "DJI",
+          "center": [43.1456,11.5889]
       }
     },
     {
@@ -64936,7 +65164,11 @@
         ]
       },
       "properties": {
-        "name": "Dominica"
+        "name": "Dominica",
+          "adcode": 212,
+          "cn_name": "多米尼克",
+          "iso_alpha3": "DMA",
+          "center": [-61.39,15.3]
       }
     },
     {
@@ -65323,7 +65555,11 @@
         ]
       },
       "properties": {
-        "name": "Denmark"
+        "name": "Denmark",
+          "adcode": 208,
+          "cn_name": "丹麦",
+          "iso_alpha3": "DNK",
+          "center": [12.5683,55.6761]
       }
     },
     {
@@ -65488,7 +65724,11 @@
         ]
       },
       "properties": {
-        "name": "Dominican Republic"
+        "name": "Dominican Republic",
+          "adcode": 214,
+          "cn_name": "多米尼加",
+          "iso_alpha3": "DOM",
+          "center": [-69.8908,18.4861]
       }
     },
     {
@@ -65992,6 +66232,10 @@
       },
       "properties": {
         "name": "Algeria",
+          "adcode": 12,
+          "cn_name": "阿尔及利亚",
+          "iso_alpha3": "DZA",
+          "center": [3.0506,36.7538],
         "center": [
           2.7276750988918296,
           28.52690748278473
@@ -66582,7 +66826,11 @@
         ]
       },
       "properties": {
-        "name": "Ecuador"
+        "name": "Ecuador",
+          "adcode": 218,
+          "cn_name": "厄瓜多尔",
+          "iso_alpha3": "ECU",
+          "center": [-78.4678,-0.1807]
       }
     },
     {
@@ -66831,7 +67079,11 @@
         ]
       },
       "properties": {
-        "name": "Egypt"
+        "name": "Egypt",
+          "adcode": 818,
+          "cn_name": "埃及",
+          "iso_alpha3": "EGY",
+          "center": [31.2357,30.0444]
       }
     },
     {
@@ -67246,7 +67498,11 @@
         ]
       },
       "properties": {
-        "name": "Eritrea"
+        "name": "Eritrea",
+          "adcode": 232,
+          "cn_name": "厄立特里亚",
+          "iso_alpha3": "ERI",
+          "center": [38.9183,15.3229]
       }
     },
     {
@@ -67898,6 +68154,10 @@
       },
       "properties": {
         "name": "Spain",
+          "adcode": 724,
+          "cn_name": "西班牙",
+          "iso_alpha3": "ESP",
+          "center": [-3.7038,40.4168],
         "center": [
           -2.377564,
           41.429245
@@ -68128,7 +68388,11 @@
         ]
       },
       "properties": {
-        "name": "Estonia"
+        "name": "Estonia",
+          "adcode": 233,
+          "cn_name": "爱沙尼亚",
+          "iso_alpha3": "EST",
+          "center": [24.7536,59.437]
       }
     },
     {
@@ -68537,7 +68801,11 @@
         ]
       },
       "properties": {
-        "name": "Ethiopia"
+        "name": "Ethiopia",
+          "adcode": 231,
+          "cn_name": "埃塞俄比亚",
+          "iso_alpha3": "ETH",
+          "center": [38.7469,9.032]
       }
     },
     {
@@ -68952,7 +69220,11 @@
         ]
       },
       "properties": {
-        "name": "Finland"
+        "name": "Finland",
+          "adcode": 246,
+          "cn_name": "芬兰",
+          "iso_alpha3": "FIN",
+          "center": [24.9384,60.1695]
       }
     },
     {
@@ -69179,7 +69451,11 @@
         ]
       },
       "properties": {
-        "name": "Fiji"
+        "name": "Fiji",
+          "adcode": 242,
+          "cn_name": "斐济",
+          "iso_alpha3": "FJI",
+          "center": [178.4324,-18.142]
       }
     },
     {
@@ -69374,7 +69650,11 @@
         ]
       },
       "properties": {
-        "name": "Falkland Is."
+        "name": "Falkland Is.",
+          "adcode": 238,
+          "cn_name": "福克兰群岛",
+          "iso_alpha3": "FLK",
+          "center": [-57.85,-51.696]
       }
     },
     {
@@ -69529,7 +69809,11 @@
         ]
       },
       "properties": {
-        "name": "French Guiana"
+        "name": "French Guiana",
+          "adcode": 254,
+          "cn_name": "法属圭亚那",
+          "iso_alpha3": "GUF",
+          "center": [-52.3333,4.9333]
       }
     },
     {
@@ -70219,6 +70503,10 @@
       },
       "properties": {
         "name": "France",
+          "adcode": 250,
+          "cn_name": "法国",
+          "iso_alpha3": "FRA",
+          "center": [2.3522,48.8566],
         "center": [
           2.236367,
           47.425659
@@ -70301,7 +70589,11 @@
         ]
       },
       "properties": {
-        "name": "Faroe Islands"
+        "name": "Faroe Islands",
+          "adcode": 234,
+          "cn_name": "法罗群岛",
+          "iso_alpha3": "FRO",
+          "center": [-6.9118,62.0079]
       }
     },
     {
@@ -70356,7 +70648,11 @@
         ]
       },
       "properties": {
-        "name": "Micronesia"
+        "name": "Micronesia",
+          "adcode": 583,
+          "cn_name": "密克罗尼西亚",
+          "iso_alpha3": "FSM",
+          "center": [158.185,6.9167]
       }
     },
     {
@@ -70661,7 +70957,11 @@
         ]
       },
       "properties": {
-        "name": "Gabon"
+        "name": "Gabon",
+          "adcode": 266,
+          "cn_name": "加蓬",
+          "iso_alpha3": "GAB",
+          "center": [9.4673,0.4162]
       }
     },
     {
@@ -71588,7 +71888,11 @@
         ]
       },
       "properties": {
-        "name": "United Kingdom"
+        "name": "United Kingdom",
+          "adcode": 826,
+          "cn_name": "英国",
+          "iso_alpha3": "GBR",
+          "center": [-0.1276,51.5074]
       }
     },
     {
@@ -71937,7 +72241,11 @@
         ]
       },
       "properties": {
-        "name": "Georgia"
+        "name": "Georgia",
+          "adcode": 268,
+          "cn_name": "格鲁吉亚",
+          "iso_alpha3": "GEO",
+          "center": [44.793,41.6938]
       }
     },
     {
@@ -72150,7 +72458,11 @@
         ]
       },
       "properties": {
-        "name": "Ghana"
+        "name": "Ghana",
+          "adcode": 288,
+          "cn_name": "加纳",
+          "iso_alpha3": "GHA",
+          "center": [-0.1969,5.6037]
       }
     },
     {
@@ -72655,7 +72967,11 @@
         ]
       },
       "properties": {
-        "name": "Guinea"
+        "name": "Guinea",
+          "adcode": 324,
+          "cn_name": "几内亚",
+          "iso_alpha3": "GIN",
+          "center": [-13.7,9.5092]
       }
     },
     {
@@ -72752,7 +73068,11 @@
         ]
       },
       "properties": {
-        "name": "Gambia"
+        "name": "Gambia",
+          "adcode": 270,
+          "cn_name": "冈比亚",
+          "iso_alpha3": "GMB",
+          "center": [-16.5885,13.4549]
       }
     },
     {
@@ -73051,7 +73371,11 @@
         ]
       },
       "properties": {
-        "name": "Guinea-Bissau"
+        "name": "Guinea-Bissau",
+          "adcode": 624,
+          "cn_name": "几内亚比绍",
+          "iso_alpha3": "GNB",
+          "center": [-15.5875,11.8636]
       }
     },
     {
@@ -73194,7 +73518,11 @@
         ]
       },
       "properties": {
-        "name": "Eq. Guinea"
+        "name": "Eq. Guinea",
+          "adcode": 226,
+          "cn_name": "赤道几内亚",
+          "iso_alpha3": "GNQ",
+          "center": [8.7806,3.75]
       }
     },
     {
@@ -74429,7 +74757,11 @@
         ]
       },
       "properties": {
-        "name": "Greece"
+        "name": "Greece",
+          "adcode": 300,
+          "cn_name": "希腊",
+          "iso_alpha3": "GRC",
+          "center": [23.7275,37.9838]
       }
     },
     {
@@ -74458,7 +74790,11 @@
         ]
       },
       "properties": {
-        "name": "Grenada"
+        "name": "Grenada",
+          "adcode": 308,
+          "cn_name": "格林纳达",
+          "iso_alpha3": "GRD",
+          "center": [-61.7488,12.0561]
       }
     },
     {
@@ -76417,7 +76753,11 @@
         ]
       },
       "properties": {
-        "name": "Greenland"
+        "name": "Greenland",
+          "adcode": 304,
+          "cn_name": "格陵兰",
+          "iso_alpha3": "GRL",
+          "center": [-51.7216,64.1836]
       }
     },
     {
@@ -76638,7 +76978,11 @@
         ]
       },
       "properties": {
-        "name": "Guatemala"
+        "name": "Guatemala",
+          "adcode": 320,
+          "cn_name": "危地马拉",
+          "iso_alpha3": "GTM",
+          "center": [-90.5328,14.6248]
       }
     },
     {
@@ -76671,7 +77015,11 @@
         ]
       },
       "properties": {
-        "name": "Guam"
+        "name": "Guam",
+          "adcode": 316,
+          "cn_name": "关岛",
+          "iso_alpha3": "GUM",
+          "center": [144.7937,13.4443]
       }
     },
     {
@@ -77064,7 +77412,11 @@
         ]
       },
       "properties": {
-        "name": "Guyana"
+        "name": "Guyana",
+          "adcode": 328,
+          "cn_name": "圭亚那",
+          "iso_alpha3": "GUY",
+          "center": [-58.1551,6.8013]
       }
     },
     {
@@ -77097,7 +77449,11 @@
         ]
       },
       "properties": {
-        "name": "Heard I. and McDonald Is."
+        "name": "Heard I. and McDonald Is.",
+          "adcode": 334,
+          "cn_name": "赫德岛和麦克唐纳群岛",
+          "iso_alpha3": "HMD",
+          "center": [73.5,-53.1]
       }
     },
     {
@@ -77418,7 +77774,11 @@
         ]
       },
       "properties": {
-        "name": "Honduras"
+        "name": "Honduras",
+          "adcode": 340,
+          "cn_name": "洪都拉斯",
+          "iso_alpha3": "HND",
+          "center": [-87.2068,14.0723]
       }
     },
     {
@@ -77861,7 +78221,11 @@
         ]
       },
       "properties": {
-        "name": "Croatia"
+        "name": "Croatia",
+          "adcode": 191,
+          "cn_name": "克罗地亚",
+          "iso_alpha3": "HRV",
+          "center": [15.9819,45.815]
       }
     },
     {
@@ -78052,7 +78416,11 @@
         ]
       },
       "properties": {
-        "name": "Haiti"
+        "name": "Haiti",
+          "adcode": 332,
+          "cn_name": "海地",
+          "iso_alpha3": "HTI",
+          "center": [-72.3388,18.5944]
       }
     },
     {
@@ -78249,7 +78617,11 @@
         ]
       },
       "properties": {
-        "name": "Hungary"
+        "name": "Hungary",
+          "adcode": 348,
+          "cn_name": "匈牙利",
+          "iso_alpha3": "HUN",
+          "center": [19.0402,47.4979]
       }
     },
     {
@@ -82848,7 +83220,11 @@
         ]
       },
       "properties": {
-        "name": "Indonesia"
+        "name": "Indonesia",
+          "adcode": 360,
+          "cn_name": "印度尼西亚",
+          "iso_alpha3": "IDN",
+          "center": [106.8272,-6.2088]
       }
     },
     {
@@ -82877,7 +83253,11 @@
         ]
       },
       "properties": {
-        "name": "Isle of Man"
+        "name": "Isle of Man",
+          "adcode": 833,
+          "cn_name": "马恩岛",
+          "iso_alpha3": "IMN",
+          "center": [-4.4805,54.151]
       }
     },
     {
@@ -84928,7 +85308,11 @@
         ]
       },
       "properties": {
-        "name": "India"
+        "name": "India",
+          "adcode": 356,
+          "cn_name": "印度",
+          "iso_alpha3": "IND",
+          "center": [77.209,28.6139]
       }
     },
     {
@@ -84965,7 +85349,11 @@
         ]
       },
       "properties": {
-        "name": "British Indian Ocean Territory"
+        "name": "British Indian Ocean Territory",
+          "adcode": 86,
+          "cn_name": "英属印度洋领地",
+          "iso_alpha3": "IOT",
+          "center": [72.4,-7.3]
       }
     },
     {
@@ -85240,7 +85628,11 @@
         ]
       },
       "properties": {
-        "name": "Ireland"
+        "name": "Ireland",
+          "adcode": 372,
+          "cn_name": "爱尔兰",
+          "iso_alpha3": "IRL",
+          "center": [-6.2603,53.3498]
       }
     },
     {
@@ -86099,7 +86491,11 @@
         ]
       },
       "properties": {
-        "name": "Iran"
+        "name": "Iran",
+          "adcode": 364,
+          "cn_name": "伊朗",
+          "iso_alpha3": "IRN",
+          "center": [51.389,35.6892]
       }
     },
     {
@@ -86516,7 +86912,11 @@
         ]
       },
       "properties": {
-        "name": "Iraq"
+        "name": "Iraq",
+          "adcode": 368,
+          "cn_name": "伊拉克",
+          "iso_alpha3": "IRQ",
+          "center": [44.3615,33.3152]
       }
     },
     {
@@ -86873,7 +87273,11 @@
         ]
       },
       "properties": {
-        "name": "Iceland"
+        "name": "Iceland",
+          "adcode": 352,
+          "cn_name": "冰岛",
+          "iso_alpha3": "ISL",
+          "center": [-21.8174,64.1466]
       }
     },
     {
@@ -87034,7 +87438,11 @@
         ]
       },
       "properties": {
-        "name": "Israel"
+        "name": "Israel",
+          "adcode": 376,
+          "cn_name": "以色列",
+          "iso_alpha3": "ISR",
+          "center": [35.2137,31.7683]
       }
     },
     {
@@ -88065,7 +88473,11 @@
         ]
       },
       "properties": {
-        "name": "Italy"
+        "name": "Italy",
+          "adcode": 380,
+          "cn_name": "意大利",
+          "iso_alpha3": "ITA",
+          "center": [12.4964,41.9028]
       }
     },
     {
@@ -88138,7 +88550,11 @@
         ]
       },
       "properties": {
-        "name": "Jamaica"
+        "name": "Jamaica",
+          "adcode": 388,
+          "cn_name": "牙买加",
+          "iso_alpha3": "JAM",
+          "center": [-76.7936,18.0179]
       }
     },
     {
@@ -88299,7 +88715,11 @@
         ]
       },
       "properties": {
-        "name": "Jordan"
+        "name": "Jordan",
+          "adcode": 400,
+          "cn_name": "约旦",
+          "iso_alpha3": "JOR",
+          "center": [35.9284,31.9539]
       }
     },
     {
@@ -89650,7 +90070,11 @@
         ]
       },
       "properties": {
-        "name": "Japan"
+        "name": "Japan",
+          "adcode": 392,
+          "cn_name": "日本",
+          "iso_alpha3": "JPN",
+          "center": [139.6917,35.6895]
       }
     },
     {
@@ -89723,7 +90147,11 @@
         ]
       },
       "properties": {
-        "name": "Siachen Glacier"
+        "name": "Siachen Glacier",
+          "adcode": 111,
+          "cn_name": "锡亚琴冰川",
+          "iso_alpha3": "SGC",
+          "center": [77.1,35.5]
       }
     },
     {
@@ -90610,7 +91038,11 @@
         ]
       },
       "properties": {
-        "name": "Kazakhstan"
+        "name": "Kazakhstan",
+          "adcode": 398,
+          "cn_name": "哈萨克斯坦",
+          "iso_alpha3": "KAZ",
+          "center": [71.429,51.1605]
       }
     },
     {
@@ -90915,7 +91347,11 @@
         ]
       },
       "properties": {
-        "name": "Kenya"
+        "name": "Kenya",
+          "adcode": 404,
+          "cn_name": "肯尼亚",
+          "iso_alpha3": "KEN",
+          "center": [36.8219,-1.2921]
       }
     },
     {
@@ -91672,7 +92108,11 @@
         ]
       },
       "properties": {
-        "name": "Kyrgyzstan"
+        "name": "Kyrgyzstan",
+          "adcode": 417,
+          "cn_name": "吉尔吉斯斯坦",
+          "iso_alpha3": "KGZ",
+          "center": [74.5698,42.8746]
       }
     },
     {
@@ -92017,7 +92457,11 @@
         ]
       },
       "properties": {
-        "name": "Cambodia"
+        "name": "Cambodia",
+          "adcode": 116,
+          "cn_name": "柬埔寨",
+          "iso_alpha3": "KHM",
+          "center": [104.9282,11.5621]
       }
     },
     {
@@ -92084,7 +92528,11 @@
         ]
       },
       "properties": {
-        "name": "Kiribati"
+        "name": "Kiribati",
+          "adcode": 296,
+          "cn_name": "基里巴斯",
+          "iso_alpha3": "KIR",
+          "center": [173,1.3333]
       }
     },
     {
@@ -92399,7 +92847,11 @@
         ]
       },
       "properties": {
-        "name": "Korea"
+        "name": "Korea",
+          "adcode": 410,
+          "cn_name": "韩国",
+          "iso_alpha3": "KOR",
+          "center": [126.978,37.5665]
       }
     },
     {
@@ -92510,7 +92962,11 @@
         ]
       },
       "properties": {
-        "name": "Kuwait"
+        "name": "Kuwait",
+          "adcode": 414,
+          "cn_name": "科威特",
+          "iso_alpha3": "KWT",
+          "center": [47.9774,29.3759]
       }
     },
     {
@@ -93527,7 +93983,11 @@
         ]
       },
       "properties": {
-        "name": "Lao PDR"
+        "name": "Lao PDR",
+          "adcode": 418,
+          "cn_name": "老挝",
+          "iso_alpha3": "LAO",
+          "center": [102.6331,17.9667]
       }
     },
     {
@@ -93596,7 +94056,11 @@
         ]
       },
       "properties": {
-        "name": "Lebanon"
+        "name": "Lebanon",
+          "adcode": 422,
+          "cn_name": "黎巴嫩",
+          "iso_alpha3": "LBN",
+          "center": [35.5018,33.8938]
       }
     },
     {
@@ -93761,7 +94225,11 @@
         ]
       },
       "properties": {
-        "name": "Liberia"
+        "name": "Liberia",
+          "adcode": 430,
+          "cn_name": "利比里亚",
+          "iso_alpha3": "LBR",
+          "center": [-10.7957,6.3156]
       }
     },
     {
@@ -94062,7 +94530,11 @@
         ]
       },
       "properties": {
-        "name": "Libya"
+        "name": "Libya",
+          "adcode": 434,
+          "cn_name": "利比亚",
+          "iso_alpha3": "LBY",
+          "center": [13.1913,32.8872]
       }
     },
     {
@@ -94095,7 +94567,11 @@
         ]
       },
       "properties": {
-        "name": "St. Lucia"
+        "name": "St. Lucia",
+          "adcode": 662,
+          "cn_name": "圣卢西亚",
+          "iso_alpha3": "LCA",
+          "center": [-60.9833,14.0101]
       }
     },
     {
@@ -94218,7 +94694,11 @@
         ]
       },
       "properties": {
-        "name": "Sri Lanka"
+        "name": "Sri Lanka",
+          "adcode": 144,
+          "cn_name": "斯里兰卡",
+          "iso_alpha3": "LKA",
+          "center": [79.8428,6.9271]
       }
     },
     {
@@ -94323,7 +94803,11 @@
         ]
       },
       "properties": {
-        "name": "Lesotho"
+        "name": "Lesotho",
+          "adcode": 426,
+          "cn_name": "莱索托",
+          "iso_alpha3": "LSO",
+          "center": [27.4869,-29.3151]
       }
     },
     {
@@ -94670,7 +95154,11 @@
         ]
       },
       "properties": {
-        "name": "Lithuania"
+        "name": "Lithuania",
+          "adcode": 440,
+          "cn_name": "立陶宛",
+          "iso_alpha3": "LTU",
+          "center": [25.2797,54.6872]
       }
     },
     {
@@ -94783,7 +95271,11 @@
         ]
       },
       "properties": {
-        "name": "Luxembourg"
+        "name": "Luxembourg",
+          "adcode": 442,
+          "cn_name": "卢森堡",
+          "iso_alpha3": "LUX",
+          "center": [6.1296,49.6116]
       }
     },
     {
@@ -95004,7 +95496,11 @@
         ]
       },
       "properties": {
-        "name": "Latvia"
+        "name": "Latvia",
+          "adcode": 428,
+          "cn_name": "拉脱维亚",
+          "iso_alpha3": "LVA",
+          "center": [24.1052,56.9496]
       }
     },
     {
@@ -95221,7 +95717,11 @@
         ]
       },
       "properties": {
-        "name": "Moldova"
+        "name": "Moldova",
+          "adcode": 498,
+          "cn_name": "摩尔多瓦",
+          "iso_alpha3": "MDA",
+          "center": [28.8497,47.0105]
       }
     },
     {
@@ -95536,7 +96036,11 @@
         ]
       },
       "properties": {
-        "name": "Madagascar"
+        "name": "Madagascar",
+          "adcode": 450,
+          "cn_name": "马达加斯加",
+          "iso_alpha3": "MDG",
+          "center": [47.5289,-18.8792]
       }
     },
     {
@@ -96675,7 +97179,11 @@
         ]
       },
       "properties": {
-        "name": "Mexico"
+        "name": "Mexico",
+          "adcode": 484,
+          "cn_name": "墨西哥",
+          "iso_alpha3": "MEX",
+          "center": [-99.1332,19.4326]
       }
     },
     {
@@ -96792,7 +97300,11 @@
         ]
       },
       "properties": {
-        "name": "North Macedonia"
+        "name": "North Macedonia",
+          "adcode": 807,
+          "cn_name": "北马其顿",
+          "iso_alpha3": "MKD",
+          "center": [21.4245,41.9973]
       }
     },
     {
@@ -97317,7 +97829,11 @@
         ]
       },
       "properties": {
-        "name": "Mali"
+        "name": "Mali",
+          "adcode": 466,
+          "cn_name": "马里",
+          "iso_alpha3": "MLI",
+          "center": [-8.0029,12.6392]
       }
     },
     {
@@ -97346,7 +97862,11 @@
         ]
       },
       "properties": {
-        "name": "Malta"
+        "name": "Malta",
+          "adcode": 470,
+          "cn_name": "马耳他",
+          "iso_alpha3": "MLT",
+          "center": [14.5146,35.8989]
       }
     },
     {
@@ -98425,7 +98945,11 @@
         ]
       },
       "properties": {
-        "name": "Myanmar"
+        "name": "Myanmar",
+          "adcode": 104,
+          "cn_name": "缅甸",
+          "iso_alpha3": "MMR",
+          "center": [96.1951,19.7633]
       }
     },
     {
@@ -98570,7 +99094,11 @@
         ]
       },
       "properties": {
-        "name": "Montenegro"
+        "name": "Montenegro",
+          "adcode": 499,
+          "cn_name": "黑山",
+          "iso_alpha3": "MNE",
+          "center": [19.265,42.4304]
       }
     },
     {
@@ -99839,7 +100367,11 @@
         ]
       },
       "properties": {
-        "name": "Mongolia"
+        "name": "Mongolia",
+          "adcode": 496,
+          "cn_name": "蒙古",
+          "iso_alpha3": "MNG",
+          "center": [106.9057,47.9077]
       }
     },
     {
@@ -99868,7 +100400,11 @@
         ]
       },
       "properties": {
-        "name": "Northern Mariana Islands"
+        "name": "Northern Mariana Islands",
+          "adcode": 580,
+          "cn_name": "北马里亚纳群岛",
+          "iso_alpha3": "MNP",
+          "center": [145.75,15.1778]
       }
     },
     {
@@ -100433,7 +100969,11 @@
         ]
       },
       "properties": {
-        "name": "Mozambique"
+        "name": "Mozambique",
+          "adcode": 508,
+          "cn_name": "莫桑比克",
+          "iso_alpha3": "MOZ",
+          "center": [32.5713,-25.9664]
       }
     },
     {
@@ -100864,7 +101404,11 @@
         ]
       },
       "properties": {
-        "name": "Mauritania"
+        "name": "Mauritania",
+          "adcode": 478,
+          "cn_name": "毛里塔尼亚",
+          "iso_alpha3": "MRT",
+          "center": [-15.98,18.0735]
       }
     },
     {
@@ -100893,7 +101437,11 @@
         ]
       },
       "properties": {
-        "name": "Montserrat"
+        "name": "Montserrat",
+          "adcode": 500,
+          "cn_name": "蒙特塞拉特",
+          "iso_alpha3": "MSR",
+          "center": [-62.211,16.7425]
       }
     },
     {
@@ -100930,7 +101478,11 @@
         ]
       },
       "properties": {
-        "name": "Mauritius"
+        "name": "Mauritius",
+          "adcode": 480,
+          "cn_name": "毛里求斯",
+          "iso_alpha3": "MUS",
+          "center": [57.4977,-20.1609]
       }
     },
     {
@@ -101239,7 +101791,11 @@
         ]
       },
       "properties": {
-        "name": "Malawi"
+        "name": "Malawi",
+          "adcode": 454,
+          "cn_name": "马拉维",
+          "iso_alpha3": "MWI",
+          "center": [33.7703,-13.9833]
       }
     },
     {
@@ -101839,6 +102395,10 @@
       },
       "properties": {
         "name": "Malaysia",
+          "adcode": 458,
+          "cn_name": "马来西亚",
+          "iso_alpha3": "MYS",
+          "center": [101.6869,3.139],
         "center": [
           102.0284508132934,
           4.77617325050245
@@ -102111,7 +102671,11 @@
         ]
       },
       "properties": {
-        "name": "Namibia"
+        "name": "Namibia",
+          "adcode": 516,
+          "cn_name": "纳米比亚",
+          "iso_alpha3": "NAM",
+          "center": [17.0805,-22.5609]
       }
     },
     {
@@ -102258,7 +102822,11 @@
         ]
       },
       "properties": {
-        "name": "New Caledonia"
+        "name": "New Caledonia",
+          "adcode": 540,
+          "cn_name": "新喀里多尼亚",
+          "iso_alpha3": "NCL",
+          "center": [166.4572,-22.2758]
       }
     },
     {
@@ -102559,7 +103127,11 @@
         ]
       },
       "properties": {
-        "name": "Niger"
+        "name": "Niger",
+          "adcode": 562,
+          "cn_name": "尼日尔",
+          "iso_alpha3": "NER",
+          "center": [2.1263,13.5116]
       }
     },
     {
@@ -103170,7 +103742,11 @@
         ]
       },
       "properties": {
-        "name": "Nigeria"
+        "name": "Nigeria",
+          "adcode": 566,
+          "cn_name": "尼日利亚",
+          "iso_alpha3": "NGA",
+          "center": [7.4951,9.0765]
       }
     },
     {
@@ -103443,7 +104019,11 @@
         ]
       },
       "properties": {
-        "name": "Nicaragua"
+        "name": "Nicaragua",
+          "adcode": 558,
+          "cn_name": "尼加拉瓜",
+          "iso_alpha3": "NIC",
+          "center": [-86.2734,12.115]
       }
     },
     {
@@ -103472,7 +104052,11 @@
         ]
       },
       "properties": {
-        "name": "Niue"
+        "name": "Niue",
+          "adcode": 570,
+          "cn_name": "纽埃",
+          "iso_alpha3": "NIU",
+          "center": [-169.867,-19.054]
       }
     },
     {
@@ -103716,6 +104300,10 @@
       },
       "properties": {
         "name": "Netherlands",
+          "adcode": 528,
+          "cn_name": "荷兰",
+          "iso_alpha3": "NLD",
+          "center": [4.8952,52.3702],
         "center": [
           4.92332,
           52.369756
@@ -105566,7 +106154,11 @@
         ]
       },
       "properties": {
-        "name": "Norway"
+        "name": "Norway",
+          "adcode": 578,
+          "cn_name": "挪威",
+          "iso_alpha3": "NOR",
+          "center": [10.7522,59.9139]
       }
     },
     {
@@ -106063,7 +106655,11 @@
         ]
       },
       "properties": {
-        "name": "Nepal"
+        "name": "Nepal",
+          "adcode": 524,
+          "cn_name": "尼泊尔",
+          "iso_alpha3": "NPL",
+          "center": [85.324,27.7172]
       }
     },
     {
@@ -106891,6 +107487,10 @@
       },
       "properties": {
         "name": "New Zealand",
+          "adcode": 554,
+          "cn_name": "新西兰",
+          "iso_alpha3": "NZL",
+          "center": [174.7633,-41.2865],
         "center": [
           172.6871279475878,
           -41.97391417794825
@@ -107121,7 +107721,11 @@
         ]
       },
       "properties": {
-        "name": "Oman"
+        "name": "Oman",
+          "adcode": 512,
+          "cn_name": "阿曼",
+          "iso_alpha3": "OMN",
+          "center": [58.5933,23.588]
       }
     },
     {
@@ -107918,7 +108522,11 @@
         ]
       },
       "properties": {
-        "name": "Pakistan"
+        "name": "Pakistan",
+          "adcode": 586,
+          "cn_name": "巴基斯坦",
+          "iso_alpha3": "PAK",
+          "center": [73.0479,33.6844]
       }
     },
     {
@@ -108241,7 +108849,11 @@
         ]
       },
       "properties": {
-        "name": "Panama"
+        "name": "Panama",
+          "adcode": 591,
+          "cn_name": "巴拿马",
+          "iso_alpha3": "PAN",
+          "center": [-79.5199,8.9824]
       }
     },
     {
@@ -109218,7 +109830,11 @@
         ]
       },
       "properties": {
-        "name": "Peru"
+        "name": "Peru",
+          "adcode": 604,
+          "cn_name": "秘鲁",
+          "iso_alpha3": "PER",
+          "center": [-77.0282,-12.0464]
       }
     },
     {
@@ -110689,7 +111305,11 @@
         ]
       },
       "properties": {
-        "name": "Philippines"
+        "name": "Philippines",
+          "adcode": 608,
+          "cn_name": "菲律宾",
+          "iso_alpha3": "PHL",
+          "center": [121.0244,14.5995]
       }
     },
     {
@@ -110718,7 +111338,11 @@
         ]
       },
       "properties": {
-        "name": "Palau"
+        "name": "Palau",
+          "adcode": 585,
+          "cn_name": "帕劳",
+          "iso_alpha3": "PLW",
+          "center": [134.479,7.3419]
       }
     },
     {
@@ -111597,7 +112221,11 @@
         ]
       },
       "properties": {
-        "name": "Papua New Guinea"
+        "name": "Papua New Guinea",
+          "adcode": 598,
+          "cn_name": "巴布亚新几内亚",
+          "iso_alpha3": "PNG",
+          "center": [147.1803,-9.4431]
       }
     },
     {
@@ -112010,7 +112638,11 @@
         ]
       },
       "properties": {
-        "name": "Poland"
+        "name": "Poland",
+          "adcode": 616,
+          "cn_name": "波兰",
+          "iso_alpha3": "POL",
+          "center": [21.0122,52.2297]
       }
     },
     {
@@ -112077,7 +112709,11 @@
         ]
       },
       "properties": {
-        "name": "Puerto Rico"
+        "name": "Puerto Rico",
+          "adcode": 630,
+          "cn_name": "波多黎各",
+          "iso_alpha3": "PRI",
+          "center": [-66.1057,18.4655]
       }
     },
     {
@@ -112270,7 +112906,11 @@
         ]
       },
       "properties": {
-        "name": "Dem. Rep. Korea"
+        "name": "Dem. Rep. Korea",
+          "adcode": 408,
+          "cn_name": "朝鲜",
+          "iso_alpha3": "PRK",
+          "center": [125.754,39.0392]
       }
     },
     {
@@ -112585,7 +113225,11 @@
         ]
       },
       "properties": {
-        "name": "Portugal"
+        "name": "Portugal",
+          "adcode": 620,
+          "cn_name": "葡萄牙",
+          "iso_alpha3": "PRT",
+          "center": [-9.1393,38.7223]
       }
     },
     {
@@ -112942,7 +113586,11 @@
         ]
       },
       "properties": {
-        "name": "Paraguay"
+        "name": "Paraguay",
+          "adcode": 600,
+          "cn_name": "巴拉圭",
+          "iso_alpha3": "PRY",
+          "center": [-57.6362,-25.3005]
       }
     },
     {
@@ -113077,7 +113725,11 @@
         ]
       },
       "properties": {
-        "name": "Palestine"
+        "name": "Palestine",
+          "adcode": 275,
+          "cn_name": "巴勒斯坦",
+          "iso_alpha3": "PSE",
+          "center": [35.2332,31.9522]
       }
     },
     {
@@ -113208,7 +113860,11 @@
         ]
       },
       "properties": {
-        "name": "French Polynesia"
+        "name": "French Polynesia",
+          "adcode": 258,
+          "cn_name": "法属波利尼西亚",
+          "iso_alpha3": "PYF",
+          "center": [-149.567,-17.535]
       }
     },
     {
@@ -113293,7 +113949,11 @@
         ]
       },
       "properties": {
-        "name": "Qatar"
+        "name": "Qatar",
+          "adcode": 634,
+          "cn_name": "卡塔尔",
+          "iso_alpha3": "QAT",
+          "center": [51.531,25.2854]
       }
     },
     {
@@ -113658,7 +114318,11 @@
         ]
       },
       "properties": {
-        "name": "Romania"
+        "name": "Romania",
+          "adcode": 642,
+          "cn_name": "罗马尼亚",
+          "iso_alpha3": "ROU",
+          "center": [26.1025,44.4268]
       }
     },
     {
@@ -121262,6 +121926,10 @@
       },
       "properties": {
         "name": "Russia",
+          "adcode": 643,
+          "cn_name": "俄罗斯",
+          "iso_alpha3": "RUS",
+          "center": [37.6173,55.7558],
         "center": [
           97.13055582863024,
           66.901646276725
@@ -121418,7 +122086,11 @@
         ]
       },
       "properties": {
-        "name": "Rwanda"
+        "name": "Rwanda",
+          "adcode": 646,
+          "cn_name": "卢旺达",
+          "iso_alpha3": "RWA",
+          "center": [30.0588,-1.9441]
       }
     },
     {
@@ -121877,7 +122549,11 @@
         ]
       },
       "properties": {
-        "name": "Saudi Arabia"
+        "name": "Saudi Arabia",
+          "adcode": 682,
+          "cn_name": "沙特阿拉伯",
+          "iso_alpha3": "SAU",
+          "center": [46.6753,24.7136]
       }
     },
     {
@@ -122314,7 +122990,11 @@
         ]
       },
       "properties": {
-        "name": "Sudan"
+        "name": "Sudan",
+          "adcode": 729,
+          "cn_name": "苏丹",
+          "iso_alpha3": "SDN",
+          "center": [32.5599,15.5007]
       }
     },
     {
@@ -122635,7 +123315,11 @@
         ]
       },
       "properties": {
-        "name": "S. Sudan"
+        "name": "S. Sudan",
+          "adcode": 728,
+          "cn_name": "南苏丹",
+          "iso_alpha3": "SSD",
+          "center": [31.6333,4.85]
       }
     },
     {
@@ -122924,7 +123608,11 @@
         ]
       },
       "properties": {
-        "name": "Senegal"
+        "name": "Senegal",
+          "adcode": 686,
+          "cn_name": "塞内加尔",
+          "iso_alpha3": "SEN",
+          "center": [-17.4467,14.6937]
       }
     },
     {
@@ -122953,7 +123641,11 @@
         ]
       },
       "properties": {
-        "name": "Singapore"
+        "name": "Singapore",
+          "adcode": 702,
+          "cn_name": "新加坡",
+          "iso_alpha3": "SGP",
+          "center": [103.8198,1.3521]
       }
     },
     {
@@ -123010,7 +123702,11 @@
         ]
       },
       "properties": {
-        "name": "South Sandwich Islands"
+        "name": "South Sandwich Islands",
+          "adcode": 239,
+          "cn_name": "南乔治亚岛",
+          "iso_alpha3": "SGS",
+          "center": [-38.5,-54.2833]
       }
     },
     {
@@ -123039,7 +123735,11 @@
         ]
       },
       "properties": {
-        "name": "St. Helena"
+        "name": "St. Helena",
+          "adcode": 654,
+          "cn_name": "圣赫勒拿",
+          "iso_alpha3": "SHN",
+          "center": [-5.718,-15.9387]
       }
     },
     {
@@ -123498,7 +124198,11 @@
         ]
       },
       "properties": {
-        "name": "Solomon Is."
+        "name": "Solomon Is.",
+          "adcode": 90,
+          "cn_name": "所罗门群岛",
+          "iso_alpha3": "SLB",
+          "center": [159.949,-9.428]
       }
     },
     {
@@ -123741,7 +124445,11 @@
         ]
       },
       "properties": {
-        "name": "Sierra Leone"
+        "name": "Sierra Leone",
+          "adcode": 694,
+          "cn_name": "塞拉利昂",
+          "iso_alpha3": "SLE",
+          "center": [-13.2317,8.4606]
       }
     },
     {
@@ -123854,7 +124562,11 @@
         ]
       },
       "properties": {
-        "name": "El Salvador"
+        "name": "El Salvador",
+          "adcode": 222,
+          "cn_name": "萨尔瓦多",
+          "iso_alpha3": "SLV",
+          "center": [-89.2182,13.6929]
       }
     },
     {
@@ -123883,7 +124595,11 @@
         ]
       },
       "properties": {
-        "name": "St. Pierre and Miquelon"
+        "name": "St. Pierre and Miquelon",
+          "adcode": 666,
+          "cn_name": "圣皮埃尔和密克隆",
+          "iso_alpha3": "SPM",
+          "center": [-56.181,46.773]
       }
     },
     {
@@ -123942,7 +124658,11 @@
         ]
       },
       "properties": {
-        "name": "São Tomé and Príncipe"
+        "name": "São Tomé and Príncipe",
+          "adcode": 678,
+          "cn_name": "圣多美和普林西比",
+          "iso_alpha3": "STP",
+          "center": [6.6068,0.3365]
       }
     },
     {
@@ -124223,7 +124943,11 @@
         ]
       },
       "properties": {
-        "name": "Suriname"
+        "name": "Suriname",
+          "adcode": 740,
+          "cn_name": "苏里南",
+          "iso_alpha3": "SUR",
+          "center": [-55.2038,5.852]
       }
     },
     {
@@ -124376,7 +125100,11 @@
         ]
       },
       "properties": {
-        "name": "Slovakia"
+        "name": "Slovakia",
+          "adcode": 703,
+          "cn_name": "斯洛伐克",
+          "iso_alpha3": "SVK",
+          "center": [17.1077,48.1486]
       }
     },
     {
@@ -124597,7 +125325,11 @@
         ]
       },
       "properties": {
-        "name": "Slovenia"
+        "name": "Slovenia",
+          "adcode": 705,
+          "cn_name": "斯洛文尼亚",
+          "iso_alpha3": "SVN",
+          "center": [14.5058,46.0569]
       }
     },
     {
@@ -125104,7 +125836,11 @@
         ]
       },
       "properties": {
-        "name": "Sweden"
+        "name": "Sweden",
+          "adcode": 752,
+          "cn_name": "瑞典",
+          "iso_alpha3": "SWE",
+          "center": [18.0686,59.3293]
       }
     },
     {
@@ -125221,7 +125957,11 @@
         ]
       },
       "properties": {
-        "name": "Eswatini"
+        "name": "Eswatini",
+          "adcode": 748,
+          "cn_name": "斯威士兰",
+          "iso_alpha3": "SWZ",
+          "center": [31.4659,-26.3054]
       }
     },
     {
@@ -125254,7 +125994,11 @@
         ]
       },
       "properties": {
-        "name": "Seychelles"
+        "name": "Seychelles",
+          "adcode": 690,
+          "cn_name": "塞舌尔",
+          "iso_alpha3": "SYC",
+          "center": [55.4544,-4.6236]
       }
     },
     {
@@ -125519,7 +126263,11 @@
         ]
       },
       "properties": {
-        "name": "Syria"
+        "name": "Syria",
+          "adcode": 760,
+          "cn_name": "叙利亚",
+          "iso_alpha3": "SYR",
+          "center": [36.2765,33.5138]
       }
     },
     {
@@ -125548,7 +126296,11 @@
         ]
       },
       "properties": {
-        "name": "Turks and Caicos Islands"
+        "name": "Turks and Caicos Islands",
+          "adcode": 796,
+          "cn_name": "特克斯和凯科斯群岛",
+          "iso_alpha3": "TCA",
+          "center": [-71.797,21.46]
       }
     },
     {
@@ -125809,7 +126561,11 @@
         ]
       },
       "properties": {
-        "name": "Chad"
+        "name": "Chad",
+          "adcode": 148,
+          "cn_name": "乍得",
+          "iso_alpha3": "TCD",
+          "center": [15.0445,12.1348]
       }
     },
     {
@@ -125930,7 +126686,11 @@
         ]
       },
       "properties": {
-        "name": "Togo"
+        "name": "Togo",
+          "adcode": 768,
+          "cn_name": "多哥",
+          "iso_alpha3": "TGO",
+          "center": [1.2255,6.1256]
       }
     },
     {
@@ -126725,7 +127485,11 @@
         ]
       },
       "properties": {
-        "name": "Thailand"
+        "name": "Thailand",
+          "adcode": 764,
+          "cn_name": "泰国",
+          "iso_alpha3": "THA",
+          "center": [100.5018,13.7563]
       }
     },
     {
@@ -127320,7 +128084,11 @@
         ]
       },
       "properties": {
-        "name": "Tajikistan"
+        "name": "Tajikistan",
+          "adcode": 762,
+          "cn_name": "塔吉克斯坦",
+          "iso_alpha3": "TJK",
+          "center": [68.7864,38.5598]
       }
     },
     {
@@ -127753,7 +128521,11 @@
         ]
       },
       "properties": {
-        "name": "Turkmenistan"
+        "name": "Turkmenistan",
+          "adcode": 795,
+          "cn_name": "土库曼斯坦",
+          "iso_alpha3": "TKM",
+          "center": [58.3794,37.9601]
       }
     },
     {
@@ -127864,7 +128636,11 @@
         ]
       },
       "properties": {
-        "name": "Timor-Leste"
+        "name": "Timor-Leste",
+          "adcode": 626,
+          "cn_name": "东帝汶",
+          "iso_alpha3": "TLS",
+          "center": [125.5675,-8.5569]
       }
     },
     {
@@ -127919,7 +128695,11 @@
         ]
       },
       "properties": {
-        "name": "Tonga"
+        "name": "Tonga",
+          "adcode": 776,
+          "cn_name": "汤加",
+          "iso_alpha3": "TON",
+          "center": [-175.2018,-21.1393]
       }
     },
     {
@@ -127964,7 +128744,11 @@
         ]
       },
       "properties": {
-        "name": "Trinidad and Tobago"
+        "name": "Trinidad and Tobago",
+          "adcode": 780,
+          "cn_name": "特立尼达和多巴哥",
+          "iso_alpha3": "TTO",
+          "center": [-61.516,10.6549]
       }
     },
     {
@@ -128271,7 +129055,11 @@
         ]
       },
       "properties": {
-        "name": "Tunisia"
+        "name": "Tunisia",
+          "adcode": 788,
+          "cn_name": "突尼斯",
+          "iso_alpha3": "TUN",
+          "center": [10.1815,36.8065]
       }
     },
     {
@@ -129142,7 +129930,11 @@
         ]
       },
       "properties": {
-        "name": "Turkey"
+        "name": "Turkey",
+          "adcode": 792,
+          "cn_name": "土耳其",
+          "iso_alpha3": "TUR",
+          "center": [32.8597,39.9334]
       }
     },
     {
@@ -129721,7 +130513,11 @@
         ]
       },
       "properties": {
-        "name": "Tanzania"
+        "name": "Tanzania",
+          "adcode": 834,
+          "cn_name": "坦桑尼亚",
+          "iso_alpha3": "TZA",
+          "center": [39.2083,-6.7924]
       }
     },
     {
@@ -129962,7 +130758,11 @@
         ]
       },
       "properties": {
-        "name": "Uganda"
+        "name": "Uganda",
+          "adcode": 800,
+          "cn_name": "乌干达",
+          "iso_alpha3": "UGA",
+          "center": [32.5825,0.3476]
       }
     },
     {
@@ -130817,7 +131617,11 @@
         ]
       },
       "properties": {
-        "name": "Ukraine"
+        "name": "Ukraine",
+          "adcode": 804,
+          "cn_name": "乌克兰",
+          "iso_alpha3": "UKR",
+          "center": [30.5234,50.4501]
       }
     },
     {
@@ -131106,7 +131910,11 @@
         ]
       },
       "properties": {
-        "name": "Uruguay"
+        "name": "Uruguay",
+          "adcode": 858,
+          "cn_name": "乌拉圭",
+          "iso_alpha3": "URY",
+          "center": [-56.1645,-34.9011]
       }
     },
     {
@@ -136746,6 +137554,10 @@
       },
       "properties": {
         "name": "United States",
+          "adcode": 840,
+          "cn_name": "美国",
+          "iso_alpha3": "USA",
+          "center": [-77.0369,38.9072],
         "center": [
           -106.53,
           38.82
@@ -137320,7 +138132,11 @@
         ]
       },
       "properties": {
-        "name": "Uzbekistan"
+        "name": "Uzbekistan",
+          "adcode": 860,
+          "cn_name": "乌兹别克斯坦",
+          "iso_alpha3": "UZB",
+          "center": [69.2401,41.2995]
       }
     },
     {
@@ -137349,7 +138165,11 @@
         ]
       },
       "properties": {
-        "name": "St. Vincent and the Grenadines"
+        "name": "St. Vincent and the Grenadines",
+          "adcode": 670,
+          "cn_name": "圣文森特和格林纳丁斯",
+          "iso_alpha3": "VCT",
+          "center": [-61.2248,13.1579]
       }
     },
     {
@@ -138028,7 +138848,11 @@
         ]
       },
       "properties": {
-        "name": "Venezuela"
+        "name": "Venezuela",
+          "adcode": 862,
+          "cn_name": "委内瑞拉",
+          "iso_alpha3": "VEN",
+          "center": [-66.9036,10.4806]
       }
     },
     {
@@ -138057,7 +138881,11 @@
         ]
       },
       "properties": {
-        "name": "U.S. Virgin Islands"
+        "name": "U.S. Virgin Islands",
+          "adcode": 850,
+          "cn_name": "美属维尔京群岛",
+          "iso_alpha3": "VIR",
+          "center": [-64.9307,18.3358]
       }
     },
     {
@@ -138896,7 +139724,11 @@
         ]
       },
       "properties": {
-        "name": "Vietnam"
+        "name": "Vietnam",
+          "adcode": 704,
+          "cn_name": "越南",
+          "iso_alpha3": "VNM",
+          "center": [105.8542,21.0285]
       }
     },
     {
@@ -139163,7 +139995,11 @@
         ]
       },
       "properties": {
-        "name": "Vanuatu"
+        "name": "Vanuatu",
+          "adcode": 548,
+          "cn_name": "瓦努阿图",
+          "iso_alpha3": "VUT",
+          "center": [168.3273,-17.7333]
       }
     },
     {
@@ -139226,7 +140062,11 @@
         ]
       },
       "properties": {
-        "name": "Samoa"
+        "name": "Samoa",
+          "adcode": 882,
+          "cn_name": "萨摩亚",
+          "iso_alpha3": "WSM",
+          "center": [-171.7513,-13.8333]
       }
     },
     {
@@ -139481,7 +140321,11 @@
         ]
       },
       "properties": {
-        "name": "Yemen"
+        "name": "Yemen",
+          "adcode": 887,
+          "cn_name": "也门",
+          "iso_alpha3": "YEM",
+          "center": [44.2075,15.3694]
       }
     },
     {
@@ -140119,6 +140963,10 @@
       },
       "properties": {
         "name": "South Africa",
+          "adcode": 710,
+          "cn_name": "南非",
+          "iso_alpha3": "ZAF",
+          "center": [28.1871,-25.7479],
         "center": [
           25.666670486555895,
           -28.674509815552605
@@ -140523,7 +141371,11 @@
         ]
       },
       "properties": {
-        "name": "Zambia"
+        "name": "Zambia",
+          "adcode": 894,
+          "cn_name": "赞比亚",
+          "iso_alpha3": "ZMB",
+          "center": [28.2871,-15.3875]
       }
     },
     {
@@ -140720,7 +141572,11 @@
         ]
       },
       "properties": {
-        "name": "Zimbabwe"
+        "name": "Zimbabwe",
+          "adcode": 716,
+          "cn_name": "津巴布韦",
+          "iso_alpha3": "ZWE",
+          "center": [31.0335,-17.8252]
       }
     },
     {
@@ -141299,7 +142155,11 @@
         ]
       },
       "properties": {
-        "name": "Kashmir"
+        "name": "Kashmir",
+          "adcode": 113,
+          "cn_name": "克什米尔",
+          "iso_alpha3": "KSH",
+          "center": [74.8,34.1]
       }
     },
     {
@@ -141364,7 +142224,11 @@
         ]
       },
       "properties": {
-        "name": "San Marino"
+        "name": "San Marino",
+          "adcode": 674,
+          "cn_name": "圣马力诺",
+          "iso_alpha3": "SMR",
+          "center": [12.4458,43.9424]
       }
     },
     {
@@ -141549,7 +142413,11 @@
         ]
       },
       "properties": {
-        "name": "Vatican"
+        "name": "Vatican",
+          "adcode": 336,
+          "cn_name": "梵蒂冈",
+          "iso_alpha3": "VAT",
+          "center": [12.4534,41.9029]
       }
     },
     {
@@ -141618,7 +142486,11 @@
         ]
       },
       "properties": {
-        "name": "Monaco"
+        "name": "Monaco",
+          "adcode": 492,
+          "cn_name": "摩纳哥",
+          "iso_alpha3": "MCO",
+          "center": [7.4246,43.7384]
       }
     },
     {
@@ -141797,7 +142669,11 @@
         ]
       },
       "properties": {
-        "name": "Maldives"
+        "name": "Maldives",
+          "adcode": 462,
+          "cn_name": "马尔代夫",
+          "iso_alpha3": "MDV",
+          "center": [73.5093,4.1755]
       }
     },
     {
@@ -141870,7 +142746,11 @@
         ]
       },
       "properties": {
-        "name": "Marshall Islands"
+        "name": "Marshall Islands",
+          "adcode": 584,
+          "cn_name": "马绍尔群岛",
+          "iso_alpha3": "MHL",
+          "center": [171.275,7.1167]
       }
     },
     {
@@ -141911,7 +142791,11 @@
         ]
       },
       "properties": {
-        "name": "Nauru"
+        "name": "Nauru",
+          "adcode": 520,
+          "cn_name": "瑙鲁",
+          "iso_alpha3": "NRU",
+          "center": [166.9209,-0.5228]
       }
     },
     {
@@ -141990,7 +142874,11 @@
         ]
       },
       "properties": {
-        "name": "Tokelau"
+        "name": "Tokelau",
+          "adcode": 772,
+          "cn_name": "托克劳",
+          "iso_alpha3": "TKL",
+          "center": [-171.848,-9.2]
       }
     },
     {
@@ -142055,7 +142943,11 @@
         ]
       },
       "properties": {
-        "name": "Cook Islands"
+        "name": "Cook Islands",
+          "adcode": 184,
+          "cn_name": "库克群岛",
+          "iso_alpha3": "COK",
+          "center": [-159.775,-21.2367]
       }
     },
     {
@@ -142194,7 +143086,11 @@
         ]
       },
       "properties": {
-        "name": "St. Kitts and Nevis"
+        "name": "St. Kitts and Nevis",
+          "adcode": 659,
+          "cn_name": "圣基茨和尼维斯",
+          "iso_alpha3": "KNA",
+          "center": [-62.757,17.3026]
       }
     },
     {
@@ -142251,7 +143147,11 @@
         ]
       },
       "properties": {
-        "name": "Tuvalu"
+        "name": "Tuvalu",
+          "adcode": 798,
+          "cn_name": "图瓦卢",
+          "iso_alpha3": "TUV",
+          "center": [179.215,-8.5211]
       }
     }
   ]

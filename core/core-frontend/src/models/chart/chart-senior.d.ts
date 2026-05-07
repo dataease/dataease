@@ -26,6 +26,10 @@ declare interface ChartSenior {
    * 气泡动效
    */
   bubbleCfg: BubbleCfg
+  /**
+   * 是否启用全局（公共）地名映射
+   */
+  useGlobalAreaMapping: boolean
 }
 
 /**

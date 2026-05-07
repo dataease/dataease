@@ -12,7 +12,7 @@ import type {
   UploadProps
 } from 'element-plus-secondary'
 import request from '@/config/axios'
-import { GeometryFrom } from './interface'
+import { GeometryFrom, countryList } from './interface'
 import { useCache } from '@/hooks/web/useCache'
 const { wsCache } = useCache()
 const { t } = useI18n()
@@ -25,7 +25,8 @@ const state = reactive({
     pid: null,
     code: null,
     name: null,
-    fileName: null
+    fileName: null,
+    country: null
   }),
   treeData: []
 })
@@ -34,14 +35,40 @@ const treeProps = {
   label: 'name',
   disabled: 'readOnly'
 }
+const getBusiGeoCode = (code?: string) => {
+  return code?.startsWith('geo_') ? code.substring(4) : code
+}
+const isCountry = computed(() => state.form.pid === '000')
+const isChina = computed(() => getBusiGeoCode(state.form.pid)?.startsWith('156'))
+const getAncestorCount = (nodes, pid, count = 0) => {
+  for (const node of nodes) {
+    if (node.id === pid) {
+      return count
+    }
+    if (node.children) {
+      const res = getAncestorCount(node.children, pid, count + 1)
+      if (res !== null) return res
+    }
+  }
+  return null
+}
 const formatPid = computed(() => {
   if (!state.form.pid) return ''
-  const pid = state.form.pid
-  return pid.replace(/(0+)$/g, '').replace(/\D/g, '')
+  const pid = getBusiGeoCode(state.form.pid) || ''
+  const ancestorCount = pid.startsWith('156') ? 0 : getAncestorCount(state.treeData, state.form.pid)
+  const countSuffix = ancestorCount ? ancestorCount : ''
+  const numericPid = pid.replace(/\D/g, '').replace(/(\d{3})(0+)$/, '$1') + countSuffix
+  return state.form.country ? numericPid.substring(3, numericPid.length) : numericPid
 })
 const codeTips = ref(t('system.at_the_end'))
 const pidChange = () => {
   state.form.code = null
+  state.form.country = null
+}
+const onPidChanged = () => {
+  if (!isCountry.value && !isChina.value) {
+    state.form.code = formatPid.value.padEnd(9, '0').slice(formatPid.value.length)
+  }
 }
 const validateCode = (_: any, value: any, callback: any) => {
   const isCountry = !formatPid.value
@@ -66,6 +93,13 @@ const validateCode = (_: any, value: any, callback: any) => {
 }
 const rule = reactive<FormRules>({
   pid: [
+    {
+      required: true,
+      message: t('common.require'),
+      trigger: 'change'
+    }
+  ],
+  country: [
     {
       required: true,
       message: t('common.require'),
@@ -98,10 +132,11 @@ const rule = reactive<FormRules>({
 
 const edit = (pid?: string) => {
   const key = 'de-area-tree'
-  state.treeData = wsCache.get(key)
+  state.treeData = wsCache.get(key) || []
   state.form.pid = pid
   state.form.code = null
   state.form.name = null
+  state.form.country = null
   geoFile.value = null
   state.form.fileName = null
   dialogVisible.value = true
@@ -182,6 +217,24 @@ const buildFormData = (file, param) => {
   formData.append('request', new Blob([JSON.stringify(param)], { type: 'application/json' }))
   return formData
 }
+const countryChange = () => {
+  const countryItem = countryList.find(item => item.code === state.form.country) || null
+  state.form.code = countryItem?.code
+  state.form.name = countryItem?.cn_name
+}
+const searchKeyword = ref('')
+const handleFilterMethod = (query: string) => {
+  searchKeyword.value = query || ''
+}
+const isOptionVisible = item => {
+  if (!searchKeyword.value) {
+    return true
+  }
+  const kw = searchKeyword.value.toLowerCase()
+  const matchCn = item.cn_name && item.cn_name.includes(searchKeyword.value)
+  const matchEn = item.name && item.name.toLowerCase().includes(kw)
+  return matchCn || matchEn
+}
 defineExpose({
   edit
 })
@@ -214,7 +267,28 @@ defineExpose({
           :render-after-expand="false"
           :placeholder="t('common.please_select')"
           @current-change="pidChange"
+          @change="onPidChanged"
         />
+      </el-form-item>
+
+      <el-form-item :label="t('system.country')" v-if="isCountry" prop="country">
+        <el-select
+          v-model="state.form.country"
+          filterable
+          :placeholder="t('common.please_select')"
+          :filter-method="handleFilterMethod"
+          @change="countryChange"
+        >
+          <el-option
+            v-for="item in countryList"
+            v-show="isOptionVisible(item)"
+            :key="item.name"
+            :label="item.cn_name"
+            :value="item.code"
+          >
+            <span style="float: left">{{ item.cn_name + ' ' + item.name }}</span>
+          </el-option>
+        </el-select>
       </el-form-item>
 
       <el-form-item :label="t('system.region_code')" prop="code">
@@ -229,7 +303,7 @@ defineExpose({
           </span>
         </template>
 
-        <el-input v-if="state.form.pid" v-model="state.form.code">
+        <el-input v-if="state.form.pid" v-model="state.form.code" :disabled="isCountry || !isChina">
           <template #prefix>
             {{ formatPid }}
           </template>
@@ -246,7 +320,7 @@ defineExpose({
       </el-form-item>
 
       <el-form-item :label="t('system.region_name')" prop="name">
-        <el-input v-model="state.form.name" />
+        <el-input v-model="state.form.name" :disabled="isCountry" />
       </el-form-item>
 
       <div class="geo-label-mask" />

@@ -512,6 +512,7 @@ export default {
     on_the_left: '請在左側選擇區域',
     region_code: '區域代碼',
     superior_region: '上級區域',
+    country: '國家',
     coordinate_file: '座標檔',
     delete_this_node: '確定刪除此節點嗎',
     at_the_end:
@@ -1829,6 +1830,7 @@ export default {
       '引用欄位以"[" 開始， "]" 結束。 <br/>請勿修改引用內容，否則將引用失敗。 <br/>若輸入與引用欄位相同格式的內容，將當作引用欄位處理。 ',
     scatter_tip: '此指標生效時，樣式大小中的氣泡大小屬性將失效',
     place_name_mapping: '地名映射',
+    used_global_map_mapping: '使用全局地名映射',
     axis_tip:
       '最小值、最大值、間隔均為數值類型；若不填，則該項視為自動。 <br/>請確保填入數值能正確計算，否則將無法正常顯示軸值。 ',
     format_tip: `模板變數有{a}, {b}，{c}，{d}，分別表示系列名，資料名，資料值等。 <br>

@@ -1,4 +1,4 @@
-import { cloneDeep, isEmpty, isNumber } from 'lodash-es'
+import { cloneDeep, isNumber } from 'lodash-es'
 import { DEFAULT_TITLE_STYLE } from '../editor/util/chart'
 import { equalsAny, includesAny } from '../editor/util/StringUtils'
 import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
@@ -10,9 +10,10 @@ import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useLinkStoreWithOut } from '@/store/modules/link'
 import { useAppStoreWithOut } from '@/store/modules/app'
-import { valueFormatter } from '@/views/chart/components/js/formatter'
-import { deepCopy } from '@/utils/utils'
-
+const EMPTY_FEATURE_COLLECTION: FeatureCollection = {
+  type: 'FeatureCollection',
+  features: []
+}
 const appStore = useAppStoreWithOut()
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 
@@ -410,13 +411,22 @@ export const isParent = (type: any, parentType: any) => {
   return false
 }
 
-export const getGeoJsonFile = async (areaId: string): Promise<FeatureCollection> => {
+export const getGeoJsonFile = async (
+  areaId: string,
+  useGlobalAreaMapping = false
+): Promise<FeatureCollection> => {
   const mapStore = useMapStoreWithOut()
   let geoJson = mapStore.mapCache[areaId]
-  if (!geoJson) {
-    const res = await getGeoJson(areaId)
-    geoJson = res.data
+  if (!geoJson || useGlobalAreaMapping) {
+    const res = await getGeoJson(areaId).catch(() => null)
+    geoJson = res?.data
+    if (!geoJson?.features) {
+      geoJson = cloneDeep(EMPTY_FEATURE_COLLECTION)
+    }
     mapStore.setMap({ id: areaId, geoJson })
+  }
+  if (!geoJson?.features) {
+    geoJson = cloneDeep(EMPTY_FEATURE_COLLECTION)
   }
   return toRaw(geoJson)
 }

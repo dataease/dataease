@@ -1810,6 +1810,7 @@ export const BASE_VIEW_CONFIG = {
     threshold: DEFAULT_THRESHOLD,
     scrollCfg: DEFAULT_SCROLL,
     areaMapping: {},
+    useGlobalAreaMapping: false,
     bubbleCfg: DEFAULT_BUBBLE_ANIMATE
   },
   flowMapStartName: [],

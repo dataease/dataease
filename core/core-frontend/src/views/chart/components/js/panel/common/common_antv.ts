@@ -1058,8 +1058,16 @@ export function configL7Tooltip(chart: Chart): TooltipOptions {
   }
 }
 
-export function handleGeoJson(geoJson: FeatureCollection, nameMapping?: Record<string, string>) {
-  geoJson.features.forEach(item => {
+export function handleGeoJson(
+  geoJson: FeatureCollection,
+  nameMapping?: Record<string, string>,
+  useGlobalAreaMapping = false
+) {
+  let mapping = nameMapping
+  if (useGlobalAreaMapping && geoJson?.['deMapping']) {
+    mapping = geoJson['deMapping']
+  }
+  geoJson?.features.forEach(item => {
     if (!item.properties['centroid']) {
       if (item.properties['center']) {
         item.properties['centroid'] = item.properties['center']
@@ -1069,8 +1077,8 @@ export function handleGeoJson(geoJson: FeatureCollection, nameMapping?: Record<s
       }
     }
     let name = item.properties['name']
-    if (nameMapping?.[name]) {
-      name = nameMapping[name]
+    if (mapping?.[name]) {
+      name = mapping[name]
       item.properties['name'] = name
     }
   })

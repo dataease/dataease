@@ -148,8 +148,8 @@ const onThresholdChange = val => {
   emit('onThresholdChange', val)
 }
 
-const onMapMappingChange = val => {
-  emit('onMapMappingChange', val)
+const onMapMappingChange = (val, useGlobalAreaMapping) => {
+  emit('onMapMappingChange', val, useGlobalAreaMapping)
 }
 
 const onBubbleAnimateChange = val => {

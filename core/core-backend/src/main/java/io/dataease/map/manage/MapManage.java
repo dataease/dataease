@@ -1,5 +1,9 @@
 package io.dataease.map.manage;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.dataease.api.map.dto.GeometryNodeCreator;
 import io.dataease.api.map.vo.AreaNode;
 import io.dataease.api.map.vo.CustomGeoArea;
@@ -34,6 +38,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -157,7 +162,11 @@ public class MapManage {
 
         File geoFile = buildGeoFile(code);
         try {
-            file.transferTo(geoFile);
+            if (isChina(code)) {
+                file.transferTo(geoFile);
+            } else {
+                addGeoJsonField(code, file, geoFile);
+            }
         } catch (IOException e) {
             LogUtil.error(e.getMessage());
             DEException.throwException(e);
@@ -291,9 +300,23 @@ public class MapManage {
 
     private File buildGeoFile(String code) {
         String id = getBusiGeoCode(code);
-        String customMapDir = StaticResourceConstants.CUSTOM_MAP_DIR;
+        String customMapDir = isChina(id) ? StaticResourceConstants.MAP_DIR : StaticResourceConstants.CUSTOM_MAP_DIR;
         String countryCode = countryCode(id);
         String fileDirPath = customMapDir + "/" + countryCode + "/";
+        File dir = new File(fileDirPath);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        String filePath = fileDirPath + id + ".json";
+        return new File(filePath);
+    }
+
+    /**
+     * 根据给定的行政区划编码和基础目录构建对应的 GeoJSON 文件对象。
+     */
+    private File buildMapJsonFile(String id, String baseDir) {
+        String countryCode = countryCode(id);
+        String fileDirPath = baseDir + "/" + countryCode + "/";
         File dir = new File(fileDirPath);
         if (!dir.exists()) {
             dir.mkdirs();
@@ -321,5 +344,91 @@ public class MapManage {
                 return false;
         }
         return true;
+    }
+
+    private void addGeoJsonField(String code, MultipartFile file, File geoFile) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            JsonNode geoJson = mapper.readTree(file.getInputStream());
+            ArrayNode features = (ArrayNode) geoJson.get("features");
+            if (features != null) {
+                for (JsonNode feature : features) {
+                    ObjectNode featureObj = (ObjectNode) feature;
+                    ObjectNode properties = (ObjectNode) featureObj.get("properties");
+                    if (properties == null) {
+                        properties = mapper.createObjectNode();
+                        featureObj.set("properties", properties);
+                    }
+                    properties.put("adcode", setChildAdcode(code));
+                }
+            }
+            mapper.writeValue(geoFile, geoJson);
+        } catch (Exception e) {
+            LogUtil.error(e.getMessage());
+            DEException.throwException(e);
+        }
+    }
+
+    private String setChildAdcode(String code) {
+        if (code.length() == 3) {
+            return StringUtils.rightPad(code + "1", 9, '0');
+        }
+        String noTrailingZeros = StringUtils.stripEnd(code, "0");
+        if (StringUtils.isBlank(noTrailingZeros)) {
+            return StringUtils.rightPad("1", code.length(), '0');
+        }
+        if (noTrailingZeros.length() == 3) {
+            return StringUtils.rightPad(noTrailingZeros + "1", 9, '0');
+        }
+        int lastDigit = noTrailingZeros.charAt(noTrailingZeros.length() - 1) - '0';
+        if (lastDigit == 9) {
+            throw new IllegalArgumentException("Hierarchy too deep");
+        }
+        String incremented = noTrailingZeros + (lastDigit + 1);
+        return StringUtils.rightPad(incremented, 9, '0');
+    }
+
+    public boolean isChina(String code) {
+        return StringUtils.startsWith(getBusiGeoCode(code), "156");
+    }
+
+    /**
+     * 将前端提交的地名映射写入对应 GeoJSON 文件根节点 deMapping 字段。
+     */
+    public void placeNameMapping(String id, Map<String, String> req) {
+        validateCode(id);
+        final String busiId = StringUtils.startsWith(id, GEO_PREFIX)
+                ? id.substring(GEO_PREFIX.length())
+                : id;
+        final String baseDir = StringUtils.startsWith(id, GEO_PREFIX)
+                ? (isChina(busiId) ? StaticResourceConstants.MAP_DIR : StaticResourceConstants.CUSTOM_MAP_DIR)
+                : StaticResourceConstants.MAP_DIR;
+
+        File file = buildMapJsonFile(busiId, baseDir);
+        if (!file.exists()) {
+            DEException.throwException("GeoJSON 文件不存在: " + file.getAbsolutePath());
+        }
+        writeDeMappingToFile(file, req);
+    }
+
+    private void writeDeMappingToFile(File file, Map<String, String> req) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            JsonNode root = mapper.readTree(file);
+            if (!(root instanceof ObjectNode objectNode)) {
+                DEException.throwException("GeoJSON 根节点不是对象，无法写入 deMapping");
+                return;
+            }
+
+            ObjectNode deMappingNode = mapper.createObjectNode();
+            if (req != null && !req.isEmpty()) {
+                req.forEach(deMappingNode::put);
+            }
+            objectNode.set("deMapping", deMappingNode);
+            mapper.writeValue(file, objectNode);
+        } catch (Exception e) {
+            LogUtil.error(e.getMessage());
+            DEException.throwException(e);
+        }
     }
 }

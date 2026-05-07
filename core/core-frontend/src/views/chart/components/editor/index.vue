@@ -1269,8 +1269,9 @@ const onThresholdChange = val => {
   }
 }
 
-const onMapMappingChange = val => {
+const onMapMappingChange = (val, useGlobalAreaMapping = false) => {
   view.value.senior.areaMapping = val
+  view.value.senior.useGlobalAreaMapping = useGlobalAreaMapping
   renderChart(view.value)
 }
 

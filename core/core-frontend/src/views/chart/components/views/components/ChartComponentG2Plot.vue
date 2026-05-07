@@ -279,17 +279,26 @@ const calcData = async (view, callback) => {
           if (!res?.drillFilters?.length) {
             dynamicAreaId.value = ''
             scope = null
+            gadmName = null
           } else {
-            const extra = view.chartExtRequest?.drill?.[res?.drillFilters?.length - 1].extra
-            dynamicAreaId.value = extra?.adcode + ''
+            const chartExtRequest = view.chartExtRequest || view.value?.chartExtRequest
+            const extra = chartExtRequest?.drill?.[res?.drillFilters?.length - 1].extra
+            dynamicAreaId.value = extra?.adcode ? extra.adcode + '' : ''
             scope = extra?.scope
+            gadmName = extra?.gadmName
             // 地图
             const map = parseJson(view.customAttr)?.map
             if (map) {
               let areaId = map.id
               country.value = areaId.slice(0, 3)
+              if (country.value === '000' || dynamicAreaId.value?.startsWith('000')) {
+                const firstAdcode = chartExtRequest?.drill?.[0]?.extra?.adcode
+                if (firstAdcode) {
+                  country.value = firstAdcode + ''
+                }
+              }
             }
-            if (!dynamicAreaId.value?.startsWith(country.value)) {
+            if (dynamicAreaId.value && !dynamicAreaId.value?.startsWith(country.value)) {
               if (country.value === 'cus') {
                 dynamicAreaId.value = '156' + dynamicAreaId.value
               } else {
@@ -384,6 +393,7 @@ const renderG2 = async (chart, chartView: G2PlotChartView<any, any>) => {
 const dynamicAreaId = ref('')
 const country = ref('')
 const appStore = useAppStoreWithOut()
+let gadmName
 const chartContainer = ref<HTMLElement>(null)
 let scope
 let mapTimer: number
@@ -402,20 +412,27 @@ const renderL7Plot = async (chart: ChartObj, chartView: L7PlotChartView<any, any
   }
   mapTimer && clearTimeout(mapTimer)
   mapTimer = setTimeout(async () => {
-    myChart?.destroy()
-    if (chartContainer.value) {
-      chartContainer.value.textContent = ''
+    try {
+      myChart?.destroy()
+      if (chartContainer.value) {
+        chartContainer.value.textContent = ''
+      }
+      myChart = await chartView.drawChart({
+        chartObj: myChart,
+        container: containerId,
+        chart,
+        areaId,
+        action,
+        scope,
+        gadmName
+      })
+      callback?.()
+    } catch (e) {
+      console.error('renderL7Plot error', e)
+      callback?.()
+    } finally {
+      emit('resetLoading')
     }
-    myChart = await chartView.drawChart({
-      chartObj: myChart,
-      container: containerId,
-      chart,
-      areaId,
-      action,
-      scope
-    })
-    callback?.()
-    emit('resetLoading')
   }, 500)
 }
 

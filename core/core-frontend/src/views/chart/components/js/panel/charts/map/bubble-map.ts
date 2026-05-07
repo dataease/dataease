@@ -15,6 +15,7 @@ import { flow, getGeoJsonFile, hexColorToRGBA, parseJson } from '@/views/chart/c
 import { cloneDeep, isEmpty } from 'lodash-es'
 import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
 import {
+  configEmptyDataStyle,
   handleGeoJson,
   mapRendered,
   mapRendering
@@ -25,6 +26,10 @@ import { configCarouselTooltip } from '@/views/chart/components/js/panel/charts/
 import { getCustomGeoArea } from '@/api/map'
 import { TextLayer } from '@antv/l7plot/dist/esm'
 import { centroid } from '@turf/centroid'
+import {
+  drawPointFallbackChart,
+  isPointOnlyGeoJson
+} from '@/views/chart/components/js/panel/charts/map/point-fallback'
 
 const { t } = useI18n()
 
@@ -56,11 +61,13 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
   }
 
   async drawChart(drawOption: L7PlotDrawOptions<Choropleth>): Promise<Choropleth> {
-    const { chart, level, areaId, container, action, scope } = drawOption
+    const { chart, level, areaId, container, action, scope, gadmName } = drawOption
     if (!areaId) {
       return
     }
     chart.container = container
+    const senior = parseJson(chart.senior)
+    const useGlobalAreaMapping = !!senior.useGlobalAreaMapping && !areaId.startsWith('custom_')
     let geoJson = {} as FeatureCollection
     let customSubArea: CustomGeoSubArea[] = []
     let data = chart.data?.data
@@ -72,9 +79,8 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
         p['156' + n.properties.adcode] = n.properties.name
         return p
       }, {})
-      const { areaMapping } = parseJson(chart.senior)
       const areaMap = customSubArea.reduce((p, n) => {
-        const mappedName = areaMapping?.[areaId]?.[n.name]
+        const mappedName = senior.areaMapping?.[areaId]?.[n.name]
         if (mappedName) {
           n.name = mappedName
         }
@@ -100,11 +106,65 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       data = fakeData
     } else {
       if (scope) {
-        geoJson = cloneDeep(await getGeoJsonFile('156'))
+        geoJson = cloneDeep(await getGeoJsonFile('156', useGlobalAreaMapping))
         geoJson.features = geoJson.features.filter(f => scope.includes('156' + f.properties.adcode))
       } else {
-        geoJson = cloneDeep(await getGeoJsonFile(areaId))
+        geoJson = cloneDeep(await getGeoJsonFile(areaId, useGlobalAreaMapping))
       }
+    }
+    if (areaId.startsWith('geo_') && geoJson?.features?.length) {
+      const levelNames = Object.keys(geoJson?.features[0]?.properties).filter(key =>
+        key.startsWith('NAME_')
+      )
+      const nameKey = levelNames[levelNames.length - 1]
+      geoJson.features.forEach(item => {
+        if (item.properties[nameKey]) {
+          item.properties['name'] = item.properties[nameKey]
+        }
+      })
+      if (areaId.length > 7) {
+        geoJson.features = geoJson.features.filter(f => {
+          const names = Object.keys(f.properties)
+            .filter(key => key.startsWith('NAME_'))
+            .map(key => f.properties[key])
+            .filter(Boolean)
+            .join('@')
+          if (isEmpty(names) || !gadmName) {
+            return true
+          }
+          return names.replace(/@[^@]*$/, '') === gadmName
+        })
+      }
+    }
+    if (!geoJson?.features?.length) {
+      configEmptyDataStyle([], container)
+      return
+    }
+    if (isPointOnlyGeoJson(geoJson)) {
+      const { basicStyle } = parseJson(chart.customAttr)
+      const { bubbleCfg } = parseJson(chart.senior)
+      const curAreaNameMapping = useGlobalAreaMapping ? undefined : senior.areaMapping?.[areaId]
+      handleGeoJson(geoJson, curAreaNameMapping, useGlobalAreaMapping)
+      const { offsetHeight, offsetWidth } = document.getElementById(container)
+      const sizeRange: [number, number] = bubbleCfg?.enable
+        ? [10, Math.min(offsetHeight, offsetWidth) / 10]
+        : [5, Math.min(offsetHeight, offsetWidth) / 20]
+      const dataColor = hexColorToRGBA(basicStyle.colors[0], basicStyle.alpha)
+      const view = await drawPointFallbackChart(drawOption, chart, geoJson, data || [], action, {
+        dotSize: { field: 'size', value: sizeRange },
+        dotColor: {
+          field: 'hasData',
+          value: ({ hasData }) => (hasData ? dataColor : '#cccccc')
+        },
+        dotName: 'dotLayer',
+        dotShape: { field: 'hasData', value: ({ hasData }) => (hasData ? 'circle' : 'square') },
+        animate: bubbleCfg?.enable
+          ? { enable: true, speed: bubbleCfg.speed, rings: bubbleCfg.rings }
+          : undefined,
+        disableInteraction: false
+      })
+      this.configZoomButton(chart, view)
+      return view
     }
     let options: ChoroplethOptions = {
       preserveDrawingBuffer: true,
@@ -175,23 +235,32 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       })
       view.scene.map['keyboard'].disable()
       dotLayer.on('dotLayer:click', (ev: MapMouseEvent) => {
-        const data = ev.feature.properties
+        const evData = ev.feature.properties
         let adcode, scope
         if (areaId.startsWith('custom_')) {
           adcode = '156'
-          const area = customSubArea.find(a => a.name === data.name)
+          const area = customSubArea.find(a => a.name === evData.name)
           scope = area?.scopeArr
         } else {
-          adcode = view.currentDistrictData.features.find(
+          adcode = view.currentDistrictData?.features?.find(
             i => i.properties.name === ev.feature.properties.name
           )?.properties.adcode
+        }
+        let names = ''
+        if (adcode + '' !== '156' && !areaId.startsWith('156')) {
+          adcode = 'geo_' + adcode
+          names = Object.keys(evData)
+            .filter(key => key.startsWith('NAME_'))
+            .map(key => evData[key])
+            .filter(Boolean)
+            .join('@')
         }
         action({
           x: ev.x,
           y: ev.y,
           data: {
-            data,
-            extra: { adcode, scope }
+            data: evData,
+            extra: { adcode, scope, gadmName: names }
           }
         })
       })
@@ -349,7 +418,10 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
             x: item.properties['centroid'][0],
             y: item.properties['centroid'][1],
             size: areaMap[name].value,
-            properties: areaMap[name].data,
+            properties: {
+              ...item.properties,
+              ...areaMap[name].data
+            },
             name: name
           })
         }
@@ -381,8 +453,9 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     const geoJson: FeatureCollection = context.geoJson
     const { basicStyle, label } = parseJson(chart.customAttr)
     const senior = parseJson(chart.senior)
-    const curAreaNameMapping = senior.areaMapping?.[areaId]
-    handleGeoJson(geoJson, curAreaNameMapping)
+    const useGlobalAreaMapping = !!senior.useGlobalAreaMapping && !areaId.startsWith('custom_')
+    const curAreaNameMapping = useGlobalAreaMapping ? undefined : senior.areaMapping?.[areaId]
+    handleGeoJson(geoJson, curAreaNameMapping, useGlobalAreaMapping)
     options.color = basicStyle.areaBaseColor
     if (!chart.data?.data?.length || !geoJson?.features?.length) {
       options.label && (options.label.field = 'name')
@@ -496,6 +569,11 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       context.layers = [areaLabelLayer]
     }
     return options
+  }
+
+  setupDefaultOptions(chart: ChartObj): ChartObj {
+    chart.senior.useGlobalAreaMapping = true
+    return chart
   }
 
   protected setupOptions(

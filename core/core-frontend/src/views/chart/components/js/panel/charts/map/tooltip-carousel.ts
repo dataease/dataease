@@ -8,9 +8,10 @@ import { deepCopy } from '@/utils/utils'
 
 export const configCarouselTooltip = (chart, view, data, scene, customSubArea?, drawOption?) => {
   if (['bubble-map', 'map'].includes(chart.type)) {
-    data = view.source.data.dataArray
-      ?.filter(i => i.dimensionList?.length > 0)
-      .reduce((acc, current) => {
+    const sourceData = view.source?.data?.dataArray
+    data = sourceData
+      ?.filter(i => i?.dimensionList?.length > 0)
+      ?.reduce((acc, current) => {
         const existingItem = acc.find(obj => {
           if (drawOption?.areaId?.startsWith('custom_')) {
             return obj.areaName === current.areaName
@@ -135,7 +136,7 @@ export class CarouselManager {
     this.view = view
     this.chart = chart
     this.scene = scene
-    this.data = data
+    this.data = Array.isArray(data) ? data.filter(Boolean) : []
     this.popup = null
     this.currentIndex = 0
     this.customSubArea = customSubArea
@@ -256,7 +257,19 @@ export class CarouselManager {
               tooltipElement.style.display = 'none'
             }
           }
-          this.createPopup(index)
+          const popupCreated = this.createPopup(index)
+          if (!popupCreated) {
+            this.currentIndex++
+            if (this.currentIndex >= this.data.length) {
+              this.currentIndex = 0
+            }
+            if (this.currentIndex !== index) {
+              this.popupIntervalId = window.setTimeout(() => {
+                showPopup(this.currentIndex)
+              }, this.intervalTime)
+            }
+            return
+          }
         }
         this.clearExistingTimers()
         this.popupTimeoutId = window.setTimeout(() => {
@@ -311,7 +324,10 @@ export class CarouselManager {
    * @param index
    * @private
    */
-  private createPopup(index: number): void {
+  private createPopup(index: number): boolean {
+    if (!this.popup) {
+      return false
+    }
     const tooltipStyle = this.view.tooltip.options.domStyles
     const tooltipBackgroundColor = tooltipStyle['l7plot-tooltip']['background-color']
     const tooltipFontSize = tooltipStyle['l7plot-tooltip']['font-size']
@@ -331,7 +347,7 @@ export class CarouselManager {
     document.head.appendChild(style)
 
     const popupData = this.getPopupData(index)
-    if (popupData.data) {
+    if (popupData?.data && popupData.centroid?.length >= 2) {
       let tooltipItem = ''
       this.getTooltipItems(popupData.data).forEach(fieldData => {
         tooltipItem += `
@@ -369,16 +385,20 @@ export class CarouselManager {
         ?.setData(this.getActiveData(index))
       if (this.chart.type === 'bubble-map') {
         // 气泡地图高亮
-        const { _id } = this.view.scene
+        const bubbleItem = this.view.scene
           .getLayers()
           ?.find(i => i.name === 'bubbleLayer')
-          ?.layerSource.data.dataArray.find(i => i.name === this.data[index].name)
-        this.view.scene
-          .getLayers()
-          ?.find(i => i.name === 'bubbleLayer' && i.coordCenter)
-          ?.setActive(_id, { color: 'rgba(30,90,255,1)' })
+          ?.layerSource?.data?.dataArray?.find(i => i.name === this.data[index].name)
+        if (bubbleItem?._id) {
+          this.view.scene
+            .getLayers()
+            ?.find(i => i.name === 'bubbleLayer' && i.coordCenter)
+            ?.setActive(bubbleItem._id, { color: 'rgba(30,90,255,1)' })
+        }
       }
+      return true
     }
+    return false
   }
 
   private getActiveData(index): any {
@@ -387,8 +407,8 @@ export class CarouselManager {
         type: 'FeatureCollection',
         features: []
       }
-      const area = this.customSubArea.find(a => a.name === this.data[index].areaName)
-      const areaMap = this.view.currentDistrictData.features.reduce((p, n) => {
+      const area = this.customSubArea?.find(a => a.name === this.data[index].areaName)
+      const areaMap = (this.view.currentDistrictData?.features || []).reduce((p, n) => {
         p['156' + n.properties.adcode] = n
         return p
       }, {})
@@ -402,10 +422,10 @@ export class CarouselManager {
     return {
       type: 'FeatureCollection',
       features: [
-        this.view.currentDistrictData.features.find(
+        (this.view.currentDistrictData?.features || []).find(
           i => i.properties.name === this.data[index].name
         )
-      ]
+      ].filter(Boolean)
     }
   }
 
@@ -421,14 +441,20 @@ export class CarouselManager {
       data.name = data.areaName
       return {
         data,
-        centroid: area.centroid
+        centroid: area?.centroid || data.centroid || data.properties?.centroid
       }
     } else {
+      const data = this.data[index]
+      const feature = (this.view.currentDistrictData?.features || []).find(
+        i => i.properties.name === data.name
+      )
       return {
-        data: this.data[index],
-        centroid: this.view.currentDistrictData.features.find(
-          i => i.properties.name === this.data[index].name
-        )?.properties.centroid
+        data,
+        centroid:
+          feature?.properties?.centroid ||
+          data?.centroid ||
+          data?.properties?.centroid ||
+          (data?.x !== undefined && data?.y !== undefined ? [data.x, data.y] : undefined)
       }
     }
   }
@@ -454,40 +480,44 @@ export class CarouselManager {
       ?.find(i => i.name === 'highlightLayer')
       ?.setData({ type: 'FeatureCollection', features: [] })
     if (this.chart.type === 'bubble-map') {
-      const { _id } = this.view.scene
+      const bubbleItem = this.view.scene
         ?.getLayers()
         ?.find(i => i.name === 'bubbleLayer')
-        ?.layerSource.data.dataArray.find(i => i.name === this.data[index].name)
-      this.view.scene
-        .getLayers()
-        ?.find(i => i.name === 'bubbleLayer' && i.coordCenter)
-        ?.setActive(_id, {
-          color: this.view.scene
-            .getLayers()
-            .find(i => i.name === 'bubbleLayer')
-            .styleAttributeService.getLayerStyleAttribute('color').scale.field
-        })
+        ?.layerSource?.data?.dataArray?.find(i => i.name === this.data[index]?.name)
+      if (bubbleItem?._id) {
+        this.view.scene
+          .getLayers()
+          ?.find(i => i.name === 'bubbleLayer' && i.coordCenter)
+          ?.setActive(bubbleItem._id, {
+            color: this.view.scene
+              .getLayers()
+              .find(i => i.name === 'bubbleLayer')
+              .styleAttributeService.getLayerStyleAttribute('color').scale.field
+          })
+      }
     }
     if (this.chart.type === 'symbolic-map') {
       const lngField = this.chart.xAxis[0].dataeaseName
       const latField = this.chart.xAxis[1].dataeaseName
-      const { _id } = this.scene
+      const pointItem = this.scene
         ?.getLayers()
         ?.find(i => i.type === 'PointLayer')
-        ?.layerSource.data.dataArray.find(i => {
+        ?.layerSource?.data?.dataArray?.find(i => {
           const targetLng = this.data[index][lngField]
           const targetLat = this.data[index][latField]
           return i[lngField] === targetLng && i[latField] === targetLat
         })
-      this.scene
-        .getLayers()
-        ?.find(i => i.type === 'PointLayer' && i.coordCenter)
-        ?.setActive(_id, {
-          color: this.scene
-            .getLayers()
-            .find(i => i.type === 'PointLayer')
-            .styleAttributeService.getLayerStyleAttribute('color').scale.field
-        })
+      if (pointItem?._id) {
+        this.scene
+          .getLayers()
+          ?.find(i => i.type === 'PointLayer' && i.coordCenter)
+          ?.setActive(pointItem._id, {
+            color: this.scene
+              .getLayers()
+              .find(i => i.type === 'PointLayer')
+              .styleAttributeService.getLayerStyleAttribute('color').scale.field
+          })
+      }
     }
   }
 
@@ -591,18 +621,20 @@ export class CarouselManager {
           this.popup.closeButton = false
           this.scene.addPopup(this.popup)
           this.popup.addTo(this.scene)
-          const { _id } = this.scene
+          const pointItem = this.scene
             .getLayers()
             ?.find(i => i.type === 'PointLayer')
-            ?.layerSource.data.dataArray.find(i => {
+            ?.layerSource?.data?.dataArray?.find(i => {
               const targetLng = this.data[index][lngField]
               const targetLat = this.data[index][latField]
               return i[lngField] === targetLng && i[latField] === targetLat
             })
-          this.scene
-            .getLayers()
-            ?.find(i => i.type === 'PointLayer' && i.coordCenter)
-            ?.setActive(_id, { color: 'rgba(30,90,255,1)' })
+          if (pointItem?._id) {
+            this.scene
+              .getLayers()
+              ?.find(i => i.type === 'PointLayer' && i.coordCenter)
+              ?.setActive(pointItem._id, { color: 'rgba(30,90,255,1)' })
+          }
         }
       }
       return undefined
