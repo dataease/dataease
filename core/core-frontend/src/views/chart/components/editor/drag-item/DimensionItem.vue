@@ -915,6 +915,11 @@ span {
 .data-dropdown_popper_mr9 {
   margin-left: -9px !important;
 }
+.ed-dropdown__popper {
+  :nth-child(1).ed-dropdown-menu__item--divided {
+    display: none !important;
+  }
+}
 .menu-item-padding {
   span {
     font-size: 14px;
