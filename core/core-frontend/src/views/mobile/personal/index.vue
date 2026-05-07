@@ -2,9 +2,7 @@
 import icon_right_outlined from '@/assets/svg/icon_right_outlined.svg'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import userImg from '@/assets/img/user.png'
-import { mountedOrg, switchOrg } from '@/api/user'
 import { ref, onMounted, computed } from 'vue'
-import OrgCell from '@/views/mobile/components/OrgCell.vue'
 import { useRouter } from 'vue-router_2'
 import { logoutApi } from '@/api/login'
 import { logoutHandler } from '@/utils/logout'
@@ -24,142 +22,11 @@ interface OrgTreeNode {
 }
 const userStore = useUserStoreWithOut()
 const { push } = useRouter()
-const navBarTitle = ref('组织')
-const name = ref('')
-const showNavBar = ref(true)
 const logout = async () => {
   await logoutApi()
   logoutHandler()
   push('/login')
 }
-
-const orgClick = () => {
-  showNavBar.value = false
-}
-const activeDirectName = ref('')
-
-let orgOption = null
-const findName = () => {
-  const stack = [...orgOption]
-  while (stack.length) {
-    const item = stack.pop()
-    if (item?.id === userStore.getOid) {
-      name.value = item?.name
-      break
-    }
-    if (item?.children?.length) {
-      item.children.forEach(kid => stack.push(kid))
-    }
-  }
-}
-
-let directIdCopy = []
-let directNameCopy = []
-
-const dfsOrgTree = (arr, depth) => {
-  arr.forEach(item => {
-    const { name, id } = item
-    if (depth <= directIdCopy.length) {
-      if (depth < directIdCopy.length) {
-        directIdCopy = directIdCopy.slice(0, depth)
-        directNameCopy = directNameCopy.slice(0, depth)
-      }
-      directIdCopy.splice(directIdCopy.length - 1, 1, id)
-      directNameCopy.splice(directNameCopy.length - 1, 1, name)
-    } else {
-      directIdCopy.push(id)
-      directNameCopy.push(name)
-    }
-
-    let nextDepth = depth + 1
-
-    if (id === userStore.getOid) {
-      directName.value = [...directNameCopy]
-      directId.value = [...directIdCopy]
-      nextDepth = 999
-    }
-    if (item?.children?.length && nextDepth !== 999) {
-      dfsOrgTree(item?.children, nextDepth)
-    }
-  })
-}
-
-onMounted(() => {
-  mountedOrg().then(res => {
-    orgOption = res.data as OrgTreeNode[]
-    tableData.value = res.data as OrgTreeNode[]
-    findName()
-    dfsOrgTree(orgOption, 1)
-    directName.value.pop()
-    directId.value.pop()
-    activeDirectName.value = directName.value[directName.value.length - 1]
-  })
-})
-
-const switchHandler = (id: number | string) => {
-  switchOrg(id).then(res => {
-    const token = res.data.token
-    userStore.setToken(token)
-    userStore.setExp(res.data.exp)
-    userStore.setTime(Date.now())
-    window.location.reload()
-  })
-}
-
-const onClickLeft = () => {
-  directName.value.pop()
-  activeDirectName.value = directName.value[directName.value.length - 1]
-  directId.value.pop()
-  if (!directName.value.length) {
-    showNavBar.value = true
-  }
-}
-
-const clearOrg = () => {
-  if (!directName.value.length) return
-  directName.value = []
-  activeDirectName.value = ''
-  directId.value = []
-}
-
-const orgCellClick = (type, val) => {
-  if (type !== 'right') {
-    switchHandler(val.id)
-  } else {
-    directName.value.push(val.name)
-    activeDirectName.value = val.name
-    directId.value.push(val.id)
-  }
-}
-
-const handleDir = index => {
-  if (index === directId.value.length - 1) return
-  directId.value = directId.value.slice(0, index + 1)
-  directName.value = directName.value.slice(0, index + 1)
-  activeDirectName.value = directName.value[directName.value.length - 1]
-}
-
-const tableData = ref([])
-const directName = ref([])
-const directId = ref([])
-
-const dfsTree = (ids, arr) => {
-  const id = ids.shift()
-  return arr.reduce((pre, ele) => {
-    if (id && ele.id === id) {
-      if (!ids.length) {
-        return ele.children || []
-      }
-      const children = dfsTree([...ids], ele.children || [])
-      pre = children || []
-    }
-    return pre
-  }, [])
-}
-
-const activeTableData = computed(() => {
-  return directId.value.length ? dfsTree([...directId.value], tableData.value) : tableData.value
-})
 
 const showPwd = ref(false)
 const success = () => {
@@ -170,66 +37,20 @@ const success = () => {
 
 <template>
   <div class="de-mobile-user">
-    <template v-if="showNavBar">
-      <div class="logout flex-center" style="padding-top: 8px; margin: 0">{{ $t('user.my') }}</div>
-      <div class="mobile-user-top">
-        <van-image round width="48" height="48" :src="userImg" />
-        <div class="user-name">
-          {{ userStore.name }}
-        </div>
+    <div class="logout flex-center" style="padding-top: 8px; margin: 0">{{ $t('user.my') }}</div>
+    <div class="mobile-user-top">
+      <van-image round width="48" height="48" :src="userImg" />
+      <div class="user-name">
+        {{ userStore.name }}
       </div>
-      <OrgCell
-        @click="orgClick"
-        :label="$t('user.switch_organization')"
-        prefix-icon="icon_switch_outlined"
-        :tips="name"
-        nextlevel
-      ></OrgCell>
-      <div class="logout flex-center" @click="showPwd = true">{{ $t('user.change_password') }}</div>
-      <div class="logout flex-center danger" @click="logout">{{ $t('user.logout') }}</div>
-      <van-popup teleport="body" position="bottom" v-model:show="showPwd">
-        <div style="padding: 0 24px 24px">
-          <update-pwd @success="success" />
-        </div>
-      </van-popup>
-    </template>
-    <template v-else>
-      <van-nav-bar
-        safe-area-inset-top
-        :title="activeDirectName || navBarTitle"
-        left-arrow
-        @click-left="onClickLeft"
-      />
-      <div class="cell-org_scroll">
-        <div class="grey">
-          <div @click="clearOrg" class="flex-align-center">
-            <span class="ellipsis" :class="!!directName.length && 'active'">组织</span>
-            <el-icon v-if="!!directName.length">
-              <Icon name="icon_right_outlined"><icon_right_outlined class="svg-icon" /></Icon>
-            </el-icon>
-          </div>
-          <div
-            @click="handleDir(index)"
-            class="flex-align-center"
-            v-for="(ele, index) in directName"
-            :key="ele"
-          >
-            <span class="ellipsis" :class="ele !== activeDirectName && 'active'">{{ ele }}</span>
-            <el-icon v-if="directName.length > 1 && index !== directName.length - 1">
-              <Icon name="icon_right_outlined"><icon_right_outlined class="svg-icon" /></Icon>
-            </el-icon>
-          </div>
-        </div>
-        <OrgCell
-          @click="type => orgCellClick(type, ele)"
-          v-for="ele in activeTableData"
-          :key="ele.id"
-          :label="ele.name"
-          :nextlevel="ele.children"
-          :active="name === ele.name"
-        ></OrgCell>
+    </div>
+    <div class="logout flex-center" @click="showPwd = true">{{ $t('user.change_password') }}</div>
+    <div class="logout flex-center danger" @click="logout">{{ $t('user.logout') }}</div>
+    <van-popup teleport="body" position="bottom" v-model:show="showPwd">
+      <div style="padding: 0 24px 24px">
+        <update-pwd @success="success" />
       </div>
-    </template>
+    </van-popup>
   </div>
 </template>
 

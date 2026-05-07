@@ -136,8 +136,7 @@ onMounted(() => {
       <HeaderMenuItem v-for="menu in routers" :key="menu.path" :menu="menu"></HeaderMenuItem>
     </el-menu>
     <div class="operate-setting" v-if="!desktop">
-      <XpackComponent jsname="c3dpdGNoZXI=" />
-      <el-tooltip offset="6" effect="dark" :content="t('commons.assistant')" placement="bottom">
+      <el-tooltip effect="dark" :content="t('commons.assistant')" placement="bottom">
         <el-icon
           style="margin: 0 10px"
           class="ai-icon"
@@ -146,12 +145,7 @@ onMounted(() => {
           <Icon name="dv-ai"><dvAi @click="handleAiClick" class="svg-icon" /></Icon>
         </el-icon>
       </el-tooltip>
-      <el-tooltip
-        offset="10"
-        effect="dark"
-        :content="t('data_export.export_center')"
-        placement="bottom"
-      >
+      <el-tooltip effect="dark" :content="t('data_export.export_center')" placement="bottom">
         <el-icon
           class="preview-download_icon"
           :class="navigateBg === 'light' && 'is-light-setting'"
@@ -172,7 +166,6 @@ onMounted(() => {
       <el-tooltip
         v-if="showMsg"
         effect="dark"
-        offset="10"
         :content="$t('v_query.msg_center')"
         placement="bottom"
       >
