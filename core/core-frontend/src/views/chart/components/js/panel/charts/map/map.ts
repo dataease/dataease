@@ -245,7 +245,8 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       preserveDrawingBuffer: true,
       map: {
         type: 'mapbox',
-        style: 'blank'
+        style: 'blank',
+        minZoom: -2
       },
       geoArea: {
         type: 'geojson'
