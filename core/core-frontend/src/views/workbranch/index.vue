@@ -5,7 +5,6 @@ import icon_database_outlined from '@/assets/svg/icon_database_outlined.svg'
 import icon_operationAnalysis_outlined from '@/assets/svg/icon_operation-analysis_outlined.svg'
 import userImg from '@/assets/svg/user-img.svg'
 import icon_template_colorful from '@/assets/svg/icon_template_colorful.svg'
-import no_result from '@/assets/svg/no_result.svg'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, shallowRef, computed, reactive, watch } from 'vue'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
@@ -16,6 +15,7 @@ import { useUserStoreWithOut } from '@/store/modules/user'
 import { useRouter } from 'vue-router_2'
 import { searchMarketRecommend } from '@/api/templateMarket'
 import TemplateBranchItem from '@/views/workbranch/TemplateBranchItem.vue'
+import TemplateBranchItemSkeleton from '@/views/workbranch/TemplateBranchItemSkeleton.vue'
 import { ElMessage } from 'element-plus-secondary'
 import { useCache } from '@/hooks/web/useCache'
 import DeResourceCreateOptV2 from '@/views/common/DeResourceCreateOptV2.vue'
@@ -426,15 +426,10 @@ loadShareBase()
               >
               </template-branch-item>
             </div>
-            <el-row v-show="state.networkStatus && !state.hasResult" class="template-empty">
-              <div style="text-align: center">
-                <Icon name="no_result" class="no-result"
-                  ><no_result class="svg-icon no-result"
-                /></Icon>
-                <br />
-                <span class="no-result-tips">{{ t('work_branch.relevant_templates_found') }}</span>
-              </div>
-            </el-row>
+            <div class="template-list" v-show="state.networkStatus && !state.hasResult">
+              <template-branch-item-skeleton v-for="(_, index) in Array(5).fill({})" :key="index">
+              </template-branch-item-skeleton>
+            </div>
             <el-row v-show="!state.networkStatus" class="template-empty">
               {{ t('visualization.market_network_tips', [state.baseUrl]) }}
             </el-row>
