@@ -125,7 +125,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="flex-table" :class="!tableData.length && 'no-data'">
+  <div class="flex-table" :class="tableData && !tableData.length && 'no-data'">
     <el-table
       ref="table"
       :border="border"
