@@ -33,7 +33,7 @@
 <script lang="ts" setup>
 import { onMounted, reactive } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { batchUpdate, findCategoriesByTemplateIds } from '@/api/template'
+import { batchUpdate, findOne } from '@/api/template'
 import { ElMessage } from 'element-plus-secondary'
 const emits = defineEmits(['closeBatchEditTemplateDialog', 'refresh'])
 const { t } = useI18n()
@@ -65,9 +65,10 @@ const state = reactive({
 })
 
 const initCategories = () => {
-  const params = { templateArray: props.templateIds }
-  findCategoriesByTemplateIds(params).then(rsp => {
-    state.templateInfo.categories = rsp.data
+  const firstId = props.templateIds?.[0]
+  if (!firstId) return
+  findOne(firstId).then(rsp => {
+    state.templateInfo.categories = rsp.data?.categories || []
   })
 }
 
