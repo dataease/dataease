@@ -248,7 +248,7 @@ const roleValidator = (rule, value, callback) => {
     callback(
       new Error(
         t(
-          `system_parameter_setting.${
+          `template_manage.${
             nodeType === 'folder' ? 'name_already_exists_type' : 'the_same_category'
           }`
         )
