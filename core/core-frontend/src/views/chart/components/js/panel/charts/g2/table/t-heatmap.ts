@@ -117,10 +117,10 @@ export class TableG2Chart extends G2ChartView {
     const newChart = new G2Chart({ container })
     newChart.options(options)
     newChart.on('plot:click', param => {
-      if (!param.data?.data) {
+      if (!param?.target?.__data__?.data) {
         return
       }
-      const pointData = param.data.data
+      const pointData = param.target.__data__.data
       const dimensionList = []
       chart.data.fields.forEach(item => {
         Object.keys(pointData).forEach(key => {
@@ -134,11 +134,11 @@ export class TableG2Chart extends G2ChartView {
         })
       })
       action({
-        x: param.data.x,
-        y: param.data.y,
+        x: param.x,
+        y: param.y,
         data: {
           data: {
-            ...param.data.data,
+            ...pointData,
             value: dimensionList[1].value,
             name: dimensionList[1].id,
             dimensionList: dimensionList,
