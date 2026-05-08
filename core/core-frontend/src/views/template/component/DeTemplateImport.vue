@@ -65,8 +65,12 @@
     </el-form>
     <el-row> </el-row>
     <el-row class="de-root-class">
-      <el-button secondary @click="cancel()">{{ t('commons.cancel') }}</el-button>
-      <el-button type="primary" @click="saveTemplate()">{{ t('commons.confirm') }}</el-button>
+      <el-button secondary :disabled="loading" @click="cancel()">{{
+        t('commons.cancel')
+      }}</el-button>
+      <el-button type="primary" :loading="loading" @click="saveTemplate()">{{
+        t('commons.confirm')
+      }}</el-button>
     </el-row>
   </div>
 </template>
@@ -80,6 +84,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 const emits = defineEmits(['closeEditTemplateDialog', 'refresh', 'addCategoryInfo'])
 const { t } = useI18n()
 const filesRef = ref(null)
+const loading = ref(false)
 const maxImageSize = 35000000
 const props = defineProps({
   pid: {
@@ -180,6 +185,9 @@ const saveTemplate = () => {
     return false
   }
 
+  if (loading.value) return false
+  loading.value = true
+
   if (props.optType === 'insert') {
     importTemplate()
   } else {
@@ -196,17 +204,26 @@ const editTemplate = () => {
     optType: props.optType
   }
   // 全局名称校验
-  nameCheck(nameCheckRequest).then(response => {
-    if (response.data.indexOf('exist') > -1) {
-      ElMessage.warning(t('template_manage.exists_name_hint'))
-    } else {
-      save(state.templateInfo).then(response => {
-        ElMessage.success(t('template_manage.edit_success'))
-        emits('refresh', getRefreshPInfo())
-        emits('closeEditTemplateDialog')
-      })
-    }
-  })
+  nameCheck(nameCheckRequest)
+    .then(response => {
+      if (response.data.indexOf('exist') > -1) {
+        ElMessage.warning(t('template_manage.exists_name_hint'))
+        loading.value = false
+      } else {
+        save(state.templateInfo)
+          .then(() => {
+            ElMessage.success(t('template_manage.edit_success'))
+            emits('refresh', getRefreshPInfo())
+            emits('closeEditTemplateDialog')
+          })
+          .finally(() => {
+            loading.value = false
+          })
+      }
+    })
+    .catch(() => {
+      loading.value = false
+    })
 }
 
 const getRefreshPInfo = () => {
@@ -231,36 +248,57 @@ const importTemplate = () => {
     categories: state.templateInfo.categories,
     optType: props.optType
   }
-  categoryTemplateNameCheck(nameCheckRequest).then(response => {
-    if (response.data.indexOf('exist') > -1) {
-      ElMessageBox.confirm(t('template_manage.hint'), {
-        tip: t('template_manage.cover_exists_hint'),
-        confirmButtonType: 'danger',
-        type: 'warning',
-        autofocus: false,
-        showClose: false
-      }).then(() => {
-        save(state.templateInfo).then(() => {
-          ElMessage.success(t('template_manage.cover_success'))
-          emits('refresh', getRefreshPInfo())
-          emits('closeEditTemplateDialog')
+  categoryTemplateNameCheck(nameCheckRequest)
+    .then(response => {
+      if (response.data.indexOf('exist') > -1) {
+        ElMessageBox.confirm(t('template_manage.hint'), {
+          tip: t('template_manage.cover_exists_hint'),
+          confirmButtonType: 'danger',
+          type: 'warning',
+          autofocus: false,
+          showClose: false
         })
-      })
-    } else {
-      // 全局名称校验
-      nameCheck(nameCheckRequest).then(response => {
-        if (response.data.indexOf('exist') > -1) {
-          ElMessage.warning(t('template_manage.exists_name_hint'))
-        } else {
-          save(state.templateInfo).then(rsp => {
-            ElMessage.success(t('template_manage.import_success'))
-            emits('refresh', getRefreshPInfo())
-            emits('closeEditTemplateDialog')
+          .then(() => {
+            save(state.templateInfo)
+              .then(() => {
+                ElMessage.success(t('template_manage.cover_success'))
+                emits('refresh', getRefreshPInfo())
+                emits('closeEditTemplateDialog')
+              })
+              .finally(() => {
+                loading.value = false
+              })
           })
-        }
-      })
-    }
-  })
+          .catch(() => {
+            loading.value = false
+          })
+      } else {
+        // 全局名称校验
+        nameCheck(nameCheckRequest)
+          .then(response => {
+            if (response.data.indexOf('exist') > -1) {
+              ElMessage.warning(t('template_manage.exists_name_hint'))
+              loading.value = false
+            } else {
+              save(state.templateInfo)
+                .then(() => {
+                  ElMessage.success(t('template_manage.import_success'))
+                  emits('refresh', getRefreshPInfo())
+                  emits('closeEditTemplateDialog')
+                })
+                .finally(() => {
+                  loading.value = false
+                })
+            }
+          })
+          .catch(() => {
+            loading.value = false
+          })
+      }
+    })
+    .catch(() => {
+      loading.value = false
+    })
 }
 
 const handleFileChange = e => {
