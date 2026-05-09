@@ -242,8 +242,13 @@ export class TableG2Chart extends G2ChartView {
         scale: {
           color: {
             type: 'linear',
+            nice: true,
             interpolate() {
-              return c => colors[Math.floor(c * (colors.length - 1))]
+              return c => {
+                if (isNaN(c)) return colors[0]
+                const t = Math.max(0, Math.min(1, c))
+                return colors[Math.floor(t * (colors.length - 1))]
+              }
             }
           }
         }
@@ -272,8 +277,7 @@ export class TableG2Chart extends G2ChartView {
         legend: {
           color: {
             color: colors,
-            label: false,
-            step: 0.00000001
+            label: false
           }
         }
       }
