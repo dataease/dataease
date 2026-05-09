@@ -164,20 +164,24 @@ export class G2ChartBar extends G2ChartView {
       }
       const source = e.data.data.source.key
       const target = e.data.data.target.key
-      action({
+      const actionData = {
         data: {
           data: {
             name: source,
-            dimensionList: [
-              { id: templateData.dimensionList[0].id, value: source },
-              { id: templateData.dimensionList[1].id, value: target }
-            ],
+            dimensionList: [{ id: templateData.dimensionList[0].id, value: source }],
             quotaList: [{ id: templateData.quotaList[0].id, value: e.data.data.value }]
           }
         },
         x: e.offset.x,
         y: e.offset.y
-      })
+      }
+      if (templateData.dimensionList[1]) {
+        actionData.data.data.dimensionList.push({
+          id: templateData.dimensionList[1].id,
+          value: target
+        })
+      }
+      action(actionData)
     })
 
     return newChart
