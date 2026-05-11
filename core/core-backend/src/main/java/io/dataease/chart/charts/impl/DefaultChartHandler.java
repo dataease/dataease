@@ -532,10 +532,10 @@ public class DefaultChartHandler extends AbstractChartPlugin {
                                     if (new BigDecimal(lastValue).compareTo(BigDecimal.ZERO) == 0) {
                                         item[dataIndex] = null;
                                     } else {
-                                        item[dataIndex] = new BigDecimal(cValue)
-                                                .divide(new BigDecimal(lastValue).abs(), 8, RoundingMode.HALF_UP)
-                                                .subtract(new BigDecimal(1))
-                                                .setScale(8, RoundingMode.HALF_UP)
+                                        BigDecimal numerator = new BigDecimal(cValue).subtract(new BigDecimal(lastValue));
+                                        BigDecimal denominator = new BigDecimal(lastValue).abs();
+                                        item[dataIndex] = numerator
+                                                .divide(denominator, 8, RoundingMode.HALF_UP)
                                                 .toString();
                                     }
                                 } else if (StringUtils.equalsIgnoreCase(resultData, "pre")) {
