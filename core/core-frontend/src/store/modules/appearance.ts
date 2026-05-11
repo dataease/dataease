@@ -292,6 +292,12 @@ export const useAppearanceStore = defineStore('appearanceStore', {
         document.documentElement.style.setProperty('--ed-color-primary', this.customColor)
         document.documentElement.style.setProperty('--van-blue', this.customColor)
         document.documentElement.style.setProperty(
+          '--ed-color-primary_b50',
+          colorFunctions
+            .mix(new colorTree('ffffff'), new colorTree(this.customColor.substr(1)), { value: 90 })
+            .toRGB()
+        )
+        document.documentElement.style.setProperty(
           '--ed-color-primary-light-5',
           mixColor('ffffff', this.customColor, 40)
         )
