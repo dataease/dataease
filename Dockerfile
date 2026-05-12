@@ -1,18 +1,12 @@
 FROM registry.cn-qingdao.aliyuncs.com/dataease/alpine-openjdk21-jre
 STOPSIGNAL SIGTERM
-RUN mkdir -p /opt/apps/config \
-    /opt/dataease2.0/drivers/ \
-    /opt/dataease2.0/cache/ \
-    /opt/dataease2.0/data/map \
-    /opt/dataease2.0/data/static-resource/ \
-    /opt/dataease2.0/data/appearance/ \
-    /opt/dataease2.0/data/exportData/ \
-    /opt/dataease2.0/data/excel/ \
-    /opt/dataease2.0/data/i8n/ \
-    /opt/dataease2.0/data/plugin/
+RUN mkdir -p /opt/dataease2.0/drivers/ \
+    /opt/dataease2.0/data/map-origin/ \
+    /opt/dataease2.0/data/static-resource/
 
 ADD drivers/* /opt/dataease2.0/drivers/
 ADD staticResource/ /opt/dataease2.0/data/static-resource/
+COPY mapFiles /opt/dataease2.0/data/map-origin
 
 WORKDIR /opt/apps
 
