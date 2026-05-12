@@ -9,8 +9,10 @@ import org.quartz.TriggerBuilder;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class CronUtils {
 
@@ -32,6 +34,26 @@ public class CronUtils {
             LogUtil.error(e.getMessage(), e);
         }
         return date;
+    }
+
+    public static List<Long> getNextTriggerTimes(String cron, Long startTime, Long endTime, int count) {
+        List<Long> times = new ArrayList<>();
+        if (count <= 0) {
+            return times;
+        }
+        CronTrigger trigger = getCronTrigger(cron);
+        long now = System.currentTimeMillis();
+        Date cursor = new Date(Math.max(ObjectUtils.defaultIfNull(startTime, now), now));
+        Date limitTime = endTime == null || endTime <= 0 ? null : new Date(endTime);
+        Date nextTime = trigger.getFireTimeAfter(cursor);
+        while (nextTime != null && times.size() < count) {
+            if (limitTime != null && nextTime.after(limitTime)) {
+                break;
+            }
+            times.add(nextTime.getTime());
+            nextTime = trigger.getFireTimeAfter(nextTime);
+        }
+        return times;
     }
 
     public static String tempCron() {
