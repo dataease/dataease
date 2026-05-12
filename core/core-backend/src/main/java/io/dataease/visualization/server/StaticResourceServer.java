@@ -120,7 +120,7 @@ public class StaticResourceServer implements StaticResourceApi {
             Map<String, String> resource = JsonUtil.parse(staticResource, Map.class);
             for (Map.Entry<String, String> entry : resource.entrySet()) {
                 String path = entry.getKey();
-                String fileName = path.substring(path.lastIndexOf("/") + 1, path.length());
+                String fileName = extractFileName(path);
                 saveSingleFileToServe(fileName, entry.getValue());
             }
         }
@@ -148,11 +148,15 @@ public class StaticResourceServer implements StaticResourceApi {
         Map<String, String> result = new HashMap<>();
         if (CollectionUtils.isNotEmpty(resourceRequest.getResourcePathList())) {
             for (String path : resourceRequest.getResourcePathList()) {
-                String value = StaticResourceUtils.getImgFileToBase64(path.substring(path.lastIndexOf("/") + 1, path.length()));
+                String value = StaticResourceUtils.getImgFileToBase64(extractFileName(path));
                 result.put(path, value);
             }
         }
         return result;
+    }
+
+    private String extractFileName(String path) {
+        return StringUtils.substringAfterLast(StringUtils.replace(path, "\\", "/"), "/");
     }
 
     private static boolean isValidSVG(MultipartFile file){
