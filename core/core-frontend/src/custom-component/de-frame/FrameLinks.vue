@@ -60,7 +60,7 @@ const props = defineProps({
 const { frameLinks } = toRefs(props)
 
 const toolTip = computed(() => {
-  return props.themes === 'dark' ? 'light' : 'dark'
+  return props.themes || 'dark'
 })
 
 const state = reactive({
