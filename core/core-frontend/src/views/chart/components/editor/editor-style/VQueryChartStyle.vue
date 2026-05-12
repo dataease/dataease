@@ -41,7 +41,7 @@ const props = defineProps({
 })
 const { chart, commonBackgroundPop, element } = toRefs(props)
 const toolTip = computed(() => {
-  return props.themes === 'dark' ? 'light' : 'dark'
+  return props.themes || 'dark'
 })
 const predefineColors = COLOR_PANEL
 const fontSizeList = []
