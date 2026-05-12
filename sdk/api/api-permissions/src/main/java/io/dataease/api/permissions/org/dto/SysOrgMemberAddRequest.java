@@ -20,6 +20,6 @@ public class SysOrgMemberAddRequest implements Serializable {
     @Schema(description = "用户ID列表", requiredMode = Schema.RequiredMode.REQUIRED)
     private List<Long> userIds;
 
-    @Schema(description = "角色ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    private Long roleId;
+    @Schema(description = "角色ID列表", requiredMode = Schema.RequiredMode.REQUIRED)
+    private List<Long> roleIds;
 }
