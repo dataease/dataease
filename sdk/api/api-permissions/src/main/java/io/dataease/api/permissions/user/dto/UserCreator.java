@@ -35,4 +35,6 @@ public class UserCreator implements Serializable {
     private Boolean mfaEnable = false;
     @Schema(description = "系统变量")
     private List<SysVariableValueItem> variables;
+    @Schema(description = "所属组织ID")
+    private Long defaultOid;
 }

@@ -1,0 +1,8 @@
+[[sources]]
+id = "dashboard_mysql"
+type = "mysql"
+host = "localhost"
+port = 3306
+user = "root"
+password = "Password123@mysql"
+database = "dataease_v3"

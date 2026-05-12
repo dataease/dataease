@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 @Schema(description = "组织构造器")
 @Data
@@ -18,4 +19,6 @@ public class OrgCreator implements Serializable {
     private String name;
     @Schema(description = "上级ID")
     private Long pid;
+    @Schema(description = "组织管理员用户ID列表")
+    private List<Long> adminIds;
 }

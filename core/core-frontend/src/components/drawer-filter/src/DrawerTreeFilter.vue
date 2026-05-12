@@ -9,6 +9,8 @@ interface TreeConfig {
   showCheckbox: boolean
   checkOnClickNode: boolean
   placeholder: string
+  multiple: boolean
+  clearable: boolean
 }
 const props = defineProps({
   optionList: propTypes.arrayOf(
@@ -20,7 +22,11 @@ const props = defineProps({
     })
   ),
   title: propTypes.string,
-  property: Object as PropType<TreeConfig>
+  property: Object as PropType<TreeConfig>,
+  disabled: {
+    type: Boolean,
+    default: false
+  }
 })
 
 const { property } = toRefs(props)
@@ -30,7 +36,9 @@ const treeConfig = computed(() => {
       checkStrictly: false,
       showCheckbox: true,
       checkOnClickNode: true,
-      placeholder: t('user.role')
+      placeholder: t('user.role'),
+      multiple: true,
+      clearable: false
     },
     property.value
   )
@@ -39,12 +47,17 @@ const treeConfig = computed(() => {
 
 const state = reactive({
   currentStatus: [],
+  currentStatusSingle: null as any,
   activeStatus: []
 })
 
 const emits = defineEmits(['filter-change'])
 const filterTree = ref()
 const treeChange = () => {
+  if (!treeConfig.value.multiple) {
+    emits('filter-change', state.currentStatusSingle ? [state.currentStatusSingle] : [])
+    return
+  }
   const nodes = state.currentStatus.map(id => {
     return filterTree.value?.getNode(id).data
   })
@@ -59,6 +72,7 @@ const optionListNotSelect = computed(() => {
 })
 const clear = () => {
   state.currentStatus = []
+  state.currentStatusSingle = null
 }
 watch(
   () => state.currentStatus,
@@ -67,6 +81,12 @@ watch(
   },
   {
     immediate: true
+  }
+)
+watch(
+  () => state.currentStatusSingle,
+  () => {
+    treeChange()
   }
 )
 defineExpose({
@@ -79,6 +99,7 @@ defineExpose({
     <span>{{ title }}</span>
     <div class="filter-item">
       <el-tree-select
+        v-if="treeConfig.multiple"
         node-key="value"
         ref="filterTree"
         :teleported="false"
@@ -86,10 +107,28 @@ defineExpose({
         v-model="state.currentStatus"
         :data="optionListNotSelect"
         :highlight-current="true"
+        :disabled="disabled"
         multiple
+        clearable
         :render-after-expand="false"
         :placeholder="$t('common.please_select') + treeConfig.placeholder"
         :show-checkbox="treeConfig.showCheckbox"
+        :check-strictly="treeConfig.checkStrictly"
+        :check-on-click-node="treeConfig.checkOnClickNode"
+      />
+      <el-tree-select
+        v-else
+        node-key="value"
+        ref="filterTree"
+        :teleported="false"
+        style="width: 100%"
+        v-model="state.currentStatusSingle"
+        :data="optionListNotSelect"
+        :highlight-current="true"
+        :disabled="disabled"
+        :clearable="treeConfig.clearable"
+        :render-after-expand="false"
+        :placeholder="$t('common.please_select') + treeConfig.placeholder"
         :check-strictly="treeConfig.checkStrictly"
         :check-on-click-node="treeConfig.checkOnClickNode"
       />

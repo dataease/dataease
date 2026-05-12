@@ -44,6 +44,13 @@ const cleanrInnerValue = (index: number) => {
       state.conditions[i].value = []
     }
   }
+  // For tree-select in single-select mode, also clear single value
+  if (componentList.value[index]?.type === 'tree-select') {
+    const prop = componentList.value[index]?.property
+    if (prop && prop.multiple === false) {
+      state.conditions = state.conditions.filter(c => c.field !== field)
+    }
+  }
 }
 const clearInnerTag = (index?: number) => {
   if (isNaN(index)) {
@@ -79,11 +86,16 @@ const filterChange = (value, field, operator) => {
       exits = true
       condition['value'] = value
     }
-    if (!condition?.value?.length) {
+    const val = condition?.value
+    const isEmpty = Array.isArray(val)
+      ? !val.length
+      : val === null || val === undefined || val === ''
+    if (isEmpty) {
       state.conditions.splice(len, 1)
     }
   }
-  if (!exits && value?.length) {
+  const hasValue = Array.isArray(value) ? value.length : value != null && value !== ''
+  if (!exits && hasValue) {
     state.conditions.push({ field, value, operator })
   }
   treeFilterChange(value, field, operator)
@@ -129,6 +141,7 @@ defineExpose({
         :option-list="component.option"
         :title="component.title"
         :property="component.property"
+        :disabled="component.disabled"
         @filter-change="v => filterChange(v, component.field, 'in')"
       />
       <drawer-filter
