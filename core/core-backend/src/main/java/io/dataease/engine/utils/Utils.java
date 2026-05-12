@@ -210,6 +210,8 @@ public class Utils {
             case "not in":
                 return " NOT IN ";
             case "like":
+            case "start_with":
+            case "end_with":
                 return " LIKE ";
             case "not like":
                 return " NOT LIKE ";
