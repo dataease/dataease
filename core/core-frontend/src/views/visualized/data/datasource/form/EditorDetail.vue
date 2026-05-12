@@ -18,7 +18,7 @@ import ApiHttpRequestDraw from './ApiHttpRequestDraw.vue'
 import type { Configuration, ApiConfiguration, SyncSetting } from './option'
 import { fieldType, fieldTypeText } from '@/utils/attr'
 import { Icon } from '@/components/icon-custom'
-import { getSchema } from '@/api/datasource'
+import { getSchema, previewCronNextTimes } from '@/api/datasource'
 import { Base64 } from 'js-base64'
 import { CustomPassword } from '@/components/custom-password'
 import { ElForm, ElMessage, ElMessageBox } from 'element-plus-secondary'
@@ -27,6 +27,7 @@ import { ComponentPublicInstance } from 'vue'
 import { XpackComponent } from '@/components/plugin'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import { boolean } from 'mathjs'
+import dayjs from 'dayjs'
 const { t } = useI18n()
 const prop = defineProps({
   form: {
@@ -560,6 +561,9 @@ const returnItem = apiItem => {
 }
 
 const showCron = ref(false)
+const cronPreviewVisible = ref(false)
+const cronPreviewLoading = ref(false)
+const cronPreviewTimes = ref<string[]>([])
 
 const onRateChange = () => {
   if (form.value.syncSetting.syncRate === 'SIMPLE') {
@@ -604,6 +608,43 @@ const onSimpleCronChange = () => {
     form.value.syncSetting.cron = '0 0 0 1/' + form.value.syncSetting.simpleCronValue + ' * ? *'
     return
   }
+}
+
+const normalizeTimeValue = value => {
+  if (value === undefined || value === null || value === '') {
+    return undefined
+  }
+  const time = new Date(value).getTime()
+  return Number.isNaN(time) ? undefined : time
+}
+
+const cronPreviewRows = computed(() => {
+  return cronPreviewTimes.value.map((time, index) => ({
+    index: index + 1,
+    time
+  }))
+})
+
+const previewNextCronTimes = () => {
+  if (!form.value.syncSetting?.cron?.trim()) {
+    dsApiForm.value?.validateField('syncSetting.cron')
+    return
+  }
+  cronPreviewLoading.value = true
+  previewCronNextTimes({
+    cron: form.value.syncSetting.cron,
+    startTime: normalizeTimeValue(form.value.syncSetting.startTime) ?? Date.now(),
+    endTime: normalizeTimeValue(form.value.syncSetting.endTime)
+  })
+    .then(res => {
+      cronPreviewTimes.value = (res || []).map(time =>
+        dayjs(Number(time)).format('YYYY-MM-DD HH:mm:ss')
+      )
+      cronPreviewVisible.value = true
+    })
+    .finally(() => {
+      cronPreviewLoading.value = false
+    })
 }
 
 const showSchema = ref(false)
@@ -1555,21 +1596,26 @@ defineExpose({
             </div>
           </el-form-item>
           <el-form-item v-if="form.syncSetting.syncRate === 'CRON'" prop="syncSetting.cron">
-            <el-popover :width="834" v-model="cronEdit" trigger="click">
-              <template #default>
-                <div style="width: 814px; height: 450px; overflow-y: auto">
-                  <cron
-                    v-if="showCron"
-                    v-model="form.syncSetting.cron"
-                    :is-rate="form.syncRate === 'CRON'"
-                    @close="cronEdit = false"
-                  />
-                </div>
-              </template>
-              <template #reference>
-                <el-input v-model="form.syncSetting.cron" @click="cronEdit = true" />
-              </template>
-            </el-popover>
+            <div class="cron-input-group">
+              <el-popover :width="834" v-model="cronEdit" trigger="click">
+                <template #default>
+                  <div style="width: 814px; height: 450px; overflow-y: auto">
+                    <cron
+                      v-if="showCron"
+                      v-model="form.syncSetting.cron"
+                      :is-rate="form.syncRate === 'CRON'"
+                      @close="cronEdit = false"
+                    />
+                  </div>
+                </template>
+                <template #reference>
+                  <el-input v-model="form.syncSetting.cron" @click="cronEdit = true" />
+                </template>
+              </el-popover>
+              <el-button secondary :loading="cronPreviewLoading" @click="previewNextCronTimes">
+                {{ t('datasource.preview_next_exec_times') }}
+              </el-button>
+            </div>
           </el-form-item>
           <el-form-item
             v-if="form.syncSetting.syncRate !== 'RIGHTNOW'"
@@ -1601,6 +1647,22 @@ defineExpose({
           </el-form-item>
         </div>
       </el-form>
+      <el-dialog
+        v-model="cronPreviewVisible"
+        :title="t('datasource.next_five_exec_times')"
+        width="520px"
+        class="create-dialog"
+      >
+        <el-table
+          v-loading="cronPreviewLoading"
+          :data="cronPreviewRows"
+          :empty-text="t('datasource.no_next_exec_time')"
+          header-cell-class-name="header-cell"
+        >
+          <el-table-column prop="index" width="80" label="#" />
+          <el-table-column prop="time" :label="t('datasource.exec_time')" />
+        </el-table>
+      </el-dialog>
       <el-dialog
         :title="t('data_source.edit_parameters')"
         v-model="dialogEditParams"
@@ -1727,6 +1789,17 @@ defineExpose({
     .ed-input-number {
       width: 140px;
       margin: 0 8px;
+    }
+  }
+
+  .cron-input-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .ed-popover__reference-wrapper,
+    :deep(.ed-input) {
+      flex: 1;
     }
   }
 
