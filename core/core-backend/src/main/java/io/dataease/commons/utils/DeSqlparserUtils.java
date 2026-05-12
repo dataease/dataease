@@ -7,6 +7,7 @@ import io.dataease.api.permissions.variable.dto.SysVariableValueItem;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
+import io.dataease.extensions.datasource.dto.TableFieldWithValue;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.extensions.datasource.vo.XpackPluginsDatasourceVO;
 import io.dataease.extensions.view.dto.SqlVariableDetails;
@@ -20,6 +21,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.math.BigDecimal;
+import java.sql.Types;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -42,6 +45,10 @@ public class DeSqlparserUtils {
     private List<SqlVariableDetails> defaultsSqlVariableDetails = new ArrayList<>();
 
     public String handleVariableDefaultValue(String sql, String sqlVariableDetails, boolean isEdit, boolean isFromDataSet, List<SqlVariableDetails> parameters, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, PluginManageApi pluginManage, UserFormVO userEntity) {
+        return handleVariableDefaultValueWithPreparedParams(sql, sqlVariableDetails, isEdit, isFromDataSet, parameters, isCross, dsMap, pluginManage, userEntity).getSql();
+    }
+
+    public SqlVariableHandleResult handleVariableDefaultValueWithPreparedParams(String sql, String sqlVariableDetails, boolean isEdit, boolean isFromDataSet, List<SqlVariableDetails> parameters, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, PluginManageApi pluginManage, UserFormVO userEntity) {
         DatasourceSchemaDTO ds = dsMap.entrySet().iterator().next().getValue();
         if (StringUtils.isEmpty(sql)) {
             DEException.throwException(Translator.get("i18n_sql_not_empty"));
@@ -54,46 +61,55 @@ public class DeSqlparserUtils {
         if (StringUtils.isNotEmpty(sqlVariableDetails)) {
             defaultsSqlVariableDetails = JsonUtil.parseList(sqlVariableDetails, listTypeReference);
         }
+        List<TableFieldWithValue> tableFieldWithValues = new ArrayList<>();
         Pattern pattern = Pattern.compile(deVariablePattern);
         Matcher matcher = pattern.matcher(sql);
+        StringBuilder sqlBuilder = new StringBuilder();
+        int lastIndex = 0;
         while (matcher.find()) {
+            sqlBuilder.append(sql, lastIndex, matcher.start());
             String sqlItemWithParam = matcher.group();
             String sqlItem = sqlItemWithParam.substring(10, sqlItemWithParam.length() - 1);
             boolean replaceParam = false;
+            List<TableFieldWithValue> sqlItemFieldWithValues = new ArrayList<>();
             Pattern p = Pattern.compile(sqlParamsRegex);
-            Matcher m = p.matcher(sqlItemWithParam);
+            Matcher m = p.matcher(sqlItem);
+            StringBuilder sqlItemBuilder = new StringBuilder();
+            int sqlItemLastIndex = 0;
             while (m.find()) {
                 String sqlVariable = m.group();
+                sqlItemBuilder.append(sqlItem, sqlItemLastIndex, m.start());
                 boolean replaceParamItem = false;
-                SqlVariableDetails defaultsSqlVariableDetail = null;
-                for (SqlVariableDetails sqlVariableDetail : defaultsSqlVariableDetails) {
-                    if (sqlVariable.substring(2, sqlVariable.length() - 1).equalsIgnoreCase(sqlVariableDetail.getVariableName())) {
-                        defaultsSqlVariableDetail = sqlVariableDetail;
-                        break;
-                    }
-                }
-                SqlVariableDetails filterParameter = null;
-                if (ObjectUtils.isNotEmpty(parameters)) {
-                    for (SqlVariableDetails parameter : parameters) {
-                        if (parameter.getVariableName().equalsIgnoreCase(defaultsSqlVariableDetail.getVariableName())) {
-                            filterParameter = parameter;
-                        }
-                    }
-                }
+                String variableName = sqlVariable.substring(2, sqlVariable.length() - 1);
+                SqlVariableDetails defaultsSqlVariableDetail = findSqlVariableDetail(defaultsSqlVariableDetails, variableName);
+                SqlVariableDetails filterParameter = findSqlVariableDetail(parameters, variableName);
                 if (filterParameter != null) {
-                    sqlItem = sqlItem.replace(sqlVariable, transFilter(filterParameter, dsMap));
+                    PreparedSqlFragment preparedSqlFragment = buildPreparedSqlFragment(filterParameter);
+                    boolean quoted = isQuotedVariable(sqlItem, m.start(), m.end());
+                    if (quoted) {
+                        sqlItemBuilder.setLength(sqlItemBuilder.length() - 1);
+                    }
+                    sqlItemBuilder.append(preparedSqlFragment.replacement());
+                    sqlItemLastIndex = quoted ? m.end() + 1 : m.end();
+                    sqlItemFieldWithValues.addAll(preparedSqlFragment.tableFieldWithValues());
                     replaceParamItem = true;
                 } else {
                     if (defaultsSqlVariableDetail != null && StringUtils.isNotEmpty(defaultsSqlVariableDetail.getDefaultValue())) {
                         if (!isEdit && isFromDataSet && defaultsSqlVariableDetail.getDefaultValueScope().equals(SqlVariableDetails.DefaultValueScope.ALLSCOPE)) {
-                            sqlItem = sqlItem.replace(sqlVariable, defaultsSqlVariableDetail.getDefaultValue());
+                            sqlItemBuilder.append(defaultsSqlVariableDetail.getDefaultValue());
+                            sqlItemLastIndex = m.end();
                             replaceParamItem = true;
                         }
                         if (isEdit) {
-                            sqlItem = sqlItem.replace(sqlVariable, defaultsSqlVariableDetail.getDefaultValue());
+                            sqlItemBuilder.append(defaultsSqlVariableDetail.getDefaultValue());
+                            sqlItemLastIndex = m.end();
                             replaceParamItem = true;
                         }
                     }
+                }
+                if (!replaceParamItem) {
+                    sqlItemBuilder.append(sqlItem, sqlItemLastIndex, m.end());
+                    sqlItemLastIndex = m.end();
                 }
                 if (!replaceParamItem) {
                     replaceParam = false;
@@ -102,8 +118,12 @@ public class DeSqlparserUtils {
                     replaceParam = true;
                 }
             }
+            if (replaceParam) {
+                sqlItemBuilder.append(sqlItem.substring(sqlItemLastIndex));
+                sqlItem = sqlItemBuilder.toString();
+            }
             p = Pattern.compile(sysVariableRegex);
-            m = p.matcher(sqlItemWithParam);
+            m = p.matcher(sqlItem);
             while (m.find()) {
                 boolean replaceParamItem = false;
 
@@ -135,11 +155,15 @@ public class DeSqlparserUtils {
                 }
             }
             if (!replaceParam) {
-                sql = sql.replace(sqlItemWithParam, SubstitutedSql);
+                sqlBuilder.append(SubstitutedSql);
             } else {
-                sql = sql.replace(sqlItemWithParam, sqlItem);
+                sqlBuilder.append(sqlItem);
+                tableFieldWithValues.addAll(sqlItemFieldWithValues);
             }
+            lastIndex = matcher.end();
         }
+        sqlBuilder.append(sql.substring(lastIndex));
+        sql = sqlBuilder.toString();
 
         try {
             if (!isCross) {
@@ -177,7 +201,9 @@ public class DeSqlparserUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return sql;
+        SqlVariableHandleResult result = new SqlVariableHandleResult(sql);
+        result.setTableFieldWithValues(tableFieldWithValues);
+        return result;
     }
 
     private static boolean isParams(String paramId) {
@@ -198,36 +224,92 @@ public class DeSqlparserUtils {
     }
 
 
-    private String transFilter(SqlVariableDetails sqlVariableDetails, Map<Long, DatasourceSchemaDTO> dsMap) {
-        if (sqlVariableDetails.getOperator().equals("in")) {
-            if (StringUtils.equalsIgnoreCase(dsMap.entrySet().iterator().next().getValue().getType(), DatasourceConfiguration.DatasourceType.sqlServer.getType()) && sqlVariableDetails.getDeType() == 0) {
-                return "N'" + String.join("', N'", sqlVariableDetails.getValue()) + "'";
-            } else {
-                if (sqlVariableDetails.getDeType() == 2 || sqlVariableDetails.getDeType() == 3) {
-                    return String.join(",", sqlVariableDetails.getValue());
-                } else {
-                    return "'" + String.join("','", sqlVariableDetails.getValue()) + "'";
-                }
+    private SqlVariableDetails findSqlVariableDetail(List<SqlVariableDetails> sqlVariableDetails, String variableName) {
+        if (CollectionUtils.isEmpty(sqlVariableDetails)) {
+            return null;
+        }
+        for (SqlVariableDetails sqlVariableDetail : sqlVariableDetails) {
+            if (StringUtils.equalsIgnoreCase(variableName, sqlVariableDetail.getVariableName())) {
+                return sqlVariableDetail;
             }
-        } else if (sqlVariableDetails.getOperator().equals("between")) {
+        }
+        return null;
+    }
+
+    private boolean isQuotedVariable(String sqlItem, int start, int end) {
+        return start > 0
+                && end < sqlItem.length()
+                && sqlItem.charAt(start - 1) == '\''
+                && sqlItem.charAt(end) == '\'';
+    }
+
+    private PreparedSqlFragment buildPreparedSqlFragment(SqlVariableDetails sqlVariableDetails) {
+        List<TableFieldWithValue> values = new ArrayList<>();
+        List<String> replacements = new ArrayList<>();
+        List<String> preparedValues = resolvePreparedValues(sqlVariableDetails);
+        for (String preparedValue : preparedValues) {
+            values.add(buildPreparedValue(sqlVariableDetails, preparedValue));
+            replacements.add("?");
+        }
+        return new PreparedSqlFragment(String.join(",", replacements), values);
+    }
+
+    private List<String> resolvePreparedValues(SqlVariableDetails sqlVariableDetails) {
+        if (StringUtils.equals(sqlVariableDetails.getOperator(), "in")) {
+            return CollectionUtils.isEmpty(sqlVariableDetails.getValue()) ? Collections.emptyList() : sqlVariableDetails.getValue();
+        }
+        if (StringUtils.equals(sqlVariableDetails.getOperator(), "between")) {
             if (sqlVariableDetails.getDeType() == 1) {
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat(sqlVariableDetails.getType().size() > 1 ? (String) sqlVariableDetails.getType().get(1).replace("DD", "dd").replace("YYYY", "yyyy") : "yyyy");
                 if (StringUtils.endsWith(sqlVariableDetails.getId(), START_END_SEPARATOR)) {
-                    return simpleDateFormat.format(new Date(Long.parseLong((String) sqlVariableDetails.getValue().get(1))));
-                } else {
-                    return simpleDateFormat.format(new Date(Long.parseLong((String) sqlVariableDetails.getValue().get(0))));
+                    return Collections.singletonList(simpleDateFormat.format(new Date(Long.parseLong((String) sqlVariableDetails.getValue().get(1)))));
                 }
-            } else {
-                if (StringUtils.endsWith(sqlVariableDetails.getId(), START_END_SEPARATOR)) {
-                    return sqlVariableDetails.getValue().get(1);
-                } else {
-                    return sqlVariableDetails.getValue().get(0);
-                }
+                return Collections.singletonList(simpleDateFormat.format(new Date(Long.parseLong((String) sqlVariableDetails.getValue().get(0)))));
             }
-        } else {
-            return (String) sqlVariableDetails.getValue().get(0);
+            if (StringUtils.endsWith(sqlVariableDetails.getId(), START_END_SEPARATOR)) {
+                return Collections.singletonList(sqlVariableDetails.getValue().get(1));
+            }
+            return Collections.singletonList(sqlVariableDetails.getValue().get(0));
         }
+        return CollectionUtils.isEmpty(sqlVariableDetails.getValue()) ? Collections.emptyList() : Collections.singletonList(sqlVariableDetails.getValue().get(0));
+    }
 
+    private TableFieldWithValue buildPreparedValue(SqlVariableDetails sqlVariableDetails, String value) {
+        TableFieldWithValue tableFieldWithValue = new TableFieldWithValue();
+        tableFieldWithValue.setFiledName(sqlVariableDetails.getVariableName());
+        tableFieldWithValue.setTerm(sqlVariableDetails.getOperator());
+        tableFieldWithValue.setDeExtractType(sqlVariableDetails.getDeType());
+        if (sqlVariableDetails.getDeType() == 2) {
+            tableFieldWithValue.setType(Types.BIGINT);
+            tableFieldWithValue.setColumnTypeName("BIGINT");
+            tableFieldWithValue.setValue(Long.parseLong(value));
+            return tableFieldWithValue;
+        }
+        if (sqlVariableDetails.getDeType() == 3) {
+            tableFieldWithValue.setType(Types.DECIMAL);
+            tableFieldWithValue.setColumnTypeName("DECIMAL");
+            tableFieldWithValue.setValue(new BigDecimal(value));
+            return tableFieldWithValue;
+        }
+        if (sqlVariableDetails.getDeType() == 4) {
+            if (StringUtils.equalsAnyIgnoreCase(value, "true", "false")) {
+                tableFieldWithValue.setType(Types.BOOLEAN);
+                tableFieldWithValue.setColumnTypeName("BOOLEAN");
+                tableFieldWithValue.setValue(Boolean.parseBoolean(value));
+            } else {
+                tableFieldWithValue.setType(Types.INTEGER);
+                tableFieldWithValue.setColumnTypeName("INTEGER");
+                tableFieldWithValue.setValue(Integer.parseInt(value));
+            }
+            return tableFieldWithValue;
+        }
+        tableFieldWithValue.setType(Types.VARCHAR);
+        tableFieldWithValue.setColumnTypeName("VARCHAR");
+        tableFieldWithValue.setValue(value);
+        return tableFieldWithValue;
+    }
+
+    private record PreparedSqlFragment(String replacement, List<TableFieldWithValue> tableFieldWithValues) {
     }
 
     private String handleSubstitutedSql(String sysVariableId) {
@@ -295,6 +377,3 @@ public class DeSqlparserUtils {
         }
     }
 }
-
-
-

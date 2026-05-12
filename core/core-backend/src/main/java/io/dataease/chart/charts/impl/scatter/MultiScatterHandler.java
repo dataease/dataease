@@ -83,8 +83,7 @@ public class MultiScatterHandler extends DefaultChartHandler {
         boolean needOrder = Utils.isNeedOrder(dsList);
         boolean crossDs = ((DatasetGroupInfoDTO) formatResult.getContext().get("dataset")).getIsCross();
         DatasourceRequest datasourceRequest = new DatasourceRequest();
-        datasourceRequest.setIsCross(crossDs);
-        datasourceRequest.setDsList(dsMap);
+        fillDatasourceRequest(datasourceRequest, crossDs, dsMap, sqlMap);
 
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
         var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
@@ -144,5 +143,4 @@ public class MultiScatterHandler extends DefaultChartHandler {
                 .collect(Collectors.toList());
     }
 }
-
 
