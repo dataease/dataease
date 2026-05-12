@@ -907,8 +907,14 @@ public class DatasourceServer implements DatasourceApi {
 
     private static final Integer replace = 0;
     private static final Integer append = 1;
+    private static final List<String> EXCEL_UPLOAD_SUFFIXES = List.of("xlsx", "xls", "csv");
 
     public ExcelFileData uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("id") long datasourceId, @RequestParam("editType") Integer editType) throws DEException {
+        String fileName = file == null ? null : file.getOriginalFilename();
+        String suffix = StringUtils.substringAfterLast(StringUtils.defaultString(fileName), ".").toLowerCase(Locale.ROOT);
+        if (!EXCEL_UPLOAD_SUFFIXES.contains(suffix)) {
+            DEException.throwException(Translator.get("i18n_unsupported_file_format"));
+        }
         CoreDatasource coreDatasource = null;
         if (ObjectUtils.isNotEmpty(datasourceId) && 0L != datasourceId) {
             coreDatasource = dataSourceManage.getCoreDatasource(datasourceId);
