@@ -32,7 +32,7 @@ const props = withDefaults(
 const predefineColors = COLOR_PANEL
 const typeList = formatterType
 const toolTip = computed(() => {
-  return props.themes === 'dark' ? 'light' : 'dark'
+  return props.themes || 'dark'
 })
 const state = reactive({
   axisForm: JSON.parse(JSON.stringify(DEFAULT_YAXIS_STYLE))

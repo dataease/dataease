@@ -37,7 +37,7 @@ useEmitt({
 })
 const emit = defineEmits(['onLegendChange', 'onMiscChange'])
 const toolTip = computed(() => {
-  return props.themes === 'dark' ? 'light' : 'dark'
+  return props.themes || 'dark'
 })
 watch(
   () => props.chart.customStyle,

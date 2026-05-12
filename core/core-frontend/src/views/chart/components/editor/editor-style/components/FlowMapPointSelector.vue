@@ -42,7 +42,7 @@ const state = reactive({
   }
 })
 const toolTip = computed(() => {
-  return props.themes === 'dark' ? 'light' : 'dark'
+  return props.themes || 'dark'
 })
 const emit = defineEmits(['onChangeFlowMapPointForm'])
 
