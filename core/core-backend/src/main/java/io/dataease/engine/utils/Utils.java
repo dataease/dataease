@@ -34,7 +34,7 @@ public class Utils {
   public static final List<Pattern> SQL_INJECTION_PATTERNS_FOR_VALUES =
       Arrays.asList(
           Pattern.compile("[\";`]"),
-          Pattern.compile("--\\s*|#"),
+          Pattern.compile("--\\s*"),
           Pattern.compile(
               "\\b(or|and|union|select|insert|delete|update|drop|alter|exec|xp_cmdshell)\\b",
               Pattern.CASE_INSENSITIVE),
