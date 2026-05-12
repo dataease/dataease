@@ -35,7 +35,7 @@ const state = reactive({
   basicStyleForm: {}
 })
 const toolTip = computed(() => {
-  return props.themes === 'dark' ? 'light' : 'dark'
+  return props.themes || 'dark'
 })
 const emit = defineEmits(['onChangeFlowMapLineForm', 'onBasicStyleChange'])
 
