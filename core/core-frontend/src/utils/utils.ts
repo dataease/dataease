@@ -2,8 +2,7 @@ import { BusiTreeNode } from '@/models/tree/TreeNode'
 import { useCache } from '@/hooks/web/useCache'
 import { loadScript } from '@/utils/RemoteJs'
 import { ElMessage } from 'element-plus-secondary'
-import { useI18n } from '@/hooks/web/useI18n'
-const { t } = useI18n()
+import DOMPurify from 'dompurify'
 
 const { wsCache } = useCache()
 export function deepCopy(target) {
@@ -55,6 +54,10 @@ export function checkAddHttp(url) {
   } else {
     return 'http://' + url
   }
+}
+
+export const sanitizeHtml = (html: string): string => {
+  return DOMPurify.sanitize(html)
 }
 
 export const setColorName = (obj, keyword: string, key?: string, colorKey?: string) => {
