@@ -96,7 +96,7 @@ const init = () => {
 }
 
 const toolTip = computed(() => {
-  return props.themes === 'dark' ? 'light' : 'dark'
+  return props.themes || 'dark'
 })
 
 watch(
