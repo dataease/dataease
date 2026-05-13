@@ -10,7 +10,6 @@ import io.dataease.auth.vo.TokenVO;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
 import io.dataease.utils.LogUtil;
-import io.dataease.utils.Md5Utils;
 import io.dataease.utils.RsaUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -43,8 +42,7 @@ public class SubstituleLoginServer {
         TokenUserBO tokenUserBO = new TokenUserBO();
         tokenUserBO.setUserId(1L);
         tokenUserBO.setDefaultOid(1L);
-        String md5Pwd = Md5Utils.md5(pwd);
-        return generate(tokenUserBO, md5Pwd);
+        return generate(tokenUserBO, SubstituleLoginConfig.getTokenSecret());
     }
 
 
