@@ -106,13 +106,25 @@ public class SqlparserUtils {
                 } else {
                     if (defaultsSqlVariableDetail != null && StringUtils.isNotEmpty(defaultsSqlVariableDetail.getDefaultValue())) {
                         if (!isEdit && isFromDataSet && defaultsSqlVariableDetail.getDefaultValueScope().equals(SqlVariableDetails.DefaultValueScope.ALLSCOPE)) {
-                            sqlBuilder.append(defaultsSqlVariableDetail.getDefaultValue());
-                            lastIndex = matcher.end();
+                            PreparedSqlFragment preparedSqlFragment = buildPreparedSqlFragmentForDefaultValue(defaultsSqlVariableDetail);
+                            boolean quoted = isQuotedVariable(sql, matcher.start(), matcher.end());
+                            if (quoted) {
+                                sqlBuilder.setLength(sqlBuilder.length() - 1);
+                            }
+                            sqlBuilder.append(preparedSqlFragment.replacement());
+                            lastIndex = quoted ? matcher.end() + 1 : matcher.end();
+                            tableFieldWithValues.addAll(preparedSqlFragment.tableFieldWithValues());
                             replaced = true;
                         }
                         if (isEdit) {
-                            sqlBuilder.append(defaultsSqlVariableDetail.getDefaultValue());
-                            lastIndex = matcher.end();
+                            PreparedSqlFragment preparedSqlFragment = buildPreparedSqlFragmentForDefaultValue(defaultsSqlVariableDetail);
+                            boolean quoted = isQuotedVariable(sql, matcher.start(), matcher.end());
+                            if (quoted) {
+                                sqlBuilder.setLength(sqlBuilder.length() - 1);
+                            }
+                            sqlBuilder.append(preparedSqlFragment.replacement());
+                            lastIndex = quoted ? matcher.end() + 1 : matcher.end();
+                            tableFieldWithValues.addAll(preparedSqlFragment.tableFieldWithValues());
                             replaced = true;
                         }
                     }
@@ -739,6 +751,17 @@ public class SqlparserUtils {
             replacements.add("?");
         }
         return new PreparedSqlFragment(String.join(",", replacements), values);
+    }
+
+    private PreparedSqlFragment buildPreparedSqlFragmentForDefaultValue(SqlVariableDetails sqlVariableDetails) {
+        SqlVariableDetails defaultValueDetail = new SqlVariableDetails();
+        defaultValueDetail.setVariableName(sqlVariableDetails.getVariableName());
+        defaultValueDetail.setType(sqlVariableDetails.getType());
+        defaultValueDetail.setDeType(sqlVariableDetails.getDeType());
+        defaultValueDetail.setId(sqlVariableDetails.getId());
+        defaultValueDetail.setOperator(sqlVariableDetails.getOperator());
+        defaultValueDetail.setValue(Collections.singletonList(sqlVariableDetails.getDefaultValue()));
+        return buildPreparedSqlFragment(defaultValueDetail);
     }
 
     private List<String> resolvePreparedValues(SqlVariableDetails sqlVariableDetails) {
