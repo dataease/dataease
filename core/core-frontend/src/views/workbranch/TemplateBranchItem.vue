@@ -1,7 +1,7 @@
 <template>
   <div class="template border-radius-12">
     <div class="photo">
-      <div class="img" :style="classBackground"></div>
+      <img :src="imgUrlTrans(thumbnailUrl)" alt="" sizes="" style="width: 100%" />
     </div>
     <div class="apply" :class="{ 'fix-height': !createAuth[template.templateType] }">
       <span :title="template.title" class="name ellipsis">
@@ -43,13 +43,6 @@ const props = defineProps({
   },
   baseUrl: {
     type: String
-  }
-})
-
-const classBackground = computed(() => {
-  return {
-    background: `url(${imgUrlTrans(thumbnailUrl.value)}) no-repeat`,
-    'background-size': `100% 100%`
   }
 })
 
