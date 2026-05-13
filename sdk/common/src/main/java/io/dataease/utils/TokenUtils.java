@@ -1,14 +1,18 @@
 package io.dataease.utils;
 
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.Verification;
 import io.dataease.auth.bo.TokenUserBO;
+import io.dataease.auth.config.SubstituleLoginConfig;
 import io.dataease.exception.DEException;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.ReflectionUtils;
 
 public class TokenUtils {
-
 
     public static TokenUserBO userBOByToken(String token) {
         DecodedJWT jwt = JWT.decode(token);
@@ -28,7 +32,13 @@ public class TokenUtils {
         if (StringUtils.length(token) < 100) {
             DEException.throwException("token is invalid");
         }
-        return userBOByToken(token);
+        Object apisixTokenManage = CommonBeanFactory.getBean("apisixTokenManage");
+        if (ObjectUtils.isNotEmpty(apisixTokenManage)) {
+            return validateByApisixTokenManage(apisixTokenManage, token);
+        }
+        TokenUserBO userBO = userBOByToken(token);
+        validateSubstituteToken(token, userBO);
+        return userBO;
     }
 
 
@@ -47,5 +57,26 @@ public class TokenUtils {
             DEException.throwException("link token格式错误！");
         }
         return new TokenUserBO(userId, oid);
+    }
+
+    private static TokenUserBO validateByApisixTokenManage(Object apisixTokenManage, String token) {
+        Object tokenBO = ReflectionUtils.invokeMethod(ReflectionUtils.findMethod(apisixTokenManage.getClass(), "validate", String.class), apisixTokenManage, token);
+        if (ObjectUtils.isEmpty(tokenBO)) {
+            DEException.throwException("token is invalid");
+        }
+        Long userId = (Long) ReflectionUtils.invokeMethod(DeReflectUtil.findMethod(tokenBO.getClass(), "getUserId"), tokenBO);
+        Long defaultOid = (Long) ReflectionUtils.invokeMethod(DeReflectUtil.findMethod(tokenBO.getClass(), "getDefaultOid"), tokenBO);
+        return new TokenUserBO(userId, defaultOid);
+    }
+
+    private static void validateSubstituteToken(String token, TokenUserBO userBO) {
+        String secret = SubstituleLoginConfig.getTokenSecret();
+        if (StringUtils.isBlank(secret)) {
+            DEException.throwException("token is invalid");
+        }
+        Algorithm algorithm = Algorithm.HMAC256(secret);
+        Verification verification = JWT.require(algorithm).withClaim("uid", userBO.getUserId()).withClaim("oid", userBO.getDefaultOid());
+        JWTVerifier verifier = verification.build();
+        verifier.verify(token);
     }
 }
