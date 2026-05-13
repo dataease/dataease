@@ -37,8 +37,7 @@ public class CommunityTokenFilter implements Filter {
         if (StringUtils.isNotBlank(token) && ObjectUtils.isNotEmpty(userBO = AuthUtils.getUser()) && ObjectUtils.isNotEmpty(userId = userBO.getUserId()) && !LicenseUtil.licenseValid()) {
             String secret = null;
             if (ObjectUtils.isEmpty(CommonBeanFactory.getBean("loginServer"))) {
-                String pwd = SubstituleLoginConfig.getPwd();
-                secret = Md5Utils.md5(pwd);
+                secret = SubstituleLoginConfig.getTokenSecret();
             } else {
                 Object apisixCacheManage = CommonBeanFactory.getBean("apisixCacheManage");
                 Method method = DeReflectUtil.findMethod(apisixCacheManage.getClass(), "userCacheBO");
