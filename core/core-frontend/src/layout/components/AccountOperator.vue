@@ -14,11 +14,13 @@ import LangSelector from './LangSelector.vue'
 import router from '@/router'
 import { useCache } from '@/hooks/web/useCache'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
+import { useRouter } from 'vue-router_2'
 const appearanceStore = useAppearanceStoreWithOut()
 const navigateBg = computed(() => appearanceStore.getNavigateBg)
 const { wsCache } = useCache()
 const userStore = useUserStoreWithOut()
 const { t } = useI18n()
+const { push, resolve } = useRouter()
 
 interface LinkItem {
   id: number
@@ -70,8 +72,11 @@ const toAbout = () => {
 }
 
 const executeMethod = (item: LinkItem) => {
-  if (item?.method) {
+  if (item?.method && item.method === 'toAbout') {
     toAbout()
+  }
+  if (item?.method && item.method === 'toSystemCfg') {
+    toSystemCfg()
   }
 
   if (item.link) {
@@ -95,9 +100,14 @@ const openLanguage = () => {
 const openPopover = () => {
   unref(popoverRef).popperRef?.delayHide?.()
 }
-
+const toSystemCfg = () => {
+  const sysMenu = resolve('/sys-setting')
+  const kidPath = sysMenu.matched[0].children[0].path
+  push(`${sysMenu.path}/${kidPath}`)
+}
 if (uid.value === '1') {
-  linkLoaded([{ id: 4, link: '/sys-setting/parameter', label: t('commons.system_setting') }])
+  // linkLoaded([{ id: 4, link: '/sys-setting/parameter', label: t('commons.system_setting') }])
+  linkLoaded([{ id: 4, label: t('commons.system_setting'), method: 'toSystemCfg' }])
   const desktop = wsCache.get('app.desktop')
   if (!desktop) {
     linkLoaded([{ id: 2, link: '/modify-pwd/index', label: t('user.change_password') }])
