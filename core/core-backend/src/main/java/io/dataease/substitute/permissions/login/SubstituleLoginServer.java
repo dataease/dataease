@@ -4,7 +4,6 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.algorithms.Algorithm;
 import io.dataease.api.permissions.login.dto.PwdLoginDTO;
-import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.auth.config.SubstituleLoginConfig;
 import io.dataease.auth.vo.TokenVO;
 import io.dataease.exception.DEException;
@@ -40,11 +39,8 @@ public class SubstituleLoginServer {
         if (!StringUtils.equals(pwd, SubstituleLoginConfig.getPwd())) {
             DEException.throwException(Translator.get("i18n_login_name_pwd_err"));
         }
-        TokenUserBO tokenUserBO = new TokenUserBO();
-        tokenUserBO.setUserId(1L);
-        tokenUserBO.setDefaultOid(1L);
         String md5Pwd = Md5Utils.md5(pwd);
-        return generate(tokenUserBO, md5Pwd);
+        return generate(1L, md5Pwd);
     }
 
 
@@ -53,12 +49,10 @@ public class SubstituleLoginServer {
         LogUtil.info("substitule logout");
     }
 
-    private TokenVO generate(TokenUserBO bo, String secret) {
+    private TokenVO generate(Long userId, String secret) {
         Algorithm algorithm = Algorithm.HMAC256(secret);
-        Long userId = bo.getUserId();
-        Long defaultOid = bo.getDefaultOid();
         JWTCreator.Builder builder = JWT.create();
-        builder.withClaim("uid", userId).withClaim("oid", defaultOid);
+        builder.withClaim("uid", userId);
         String token = builder.sign(algorithm);
         return new TokenVO(token, 0L);
     }

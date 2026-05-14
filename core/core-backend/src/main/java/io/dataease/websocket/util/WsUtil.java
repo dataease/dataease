@@ -1,8 +1,7 @@
 package io.dataease.websocket.util;
 
 
-import io.dataease.auth.bo.TokenUserBO;
-import io.dataease.utils.AuthUtils;
+import io.dataease.permission.util.V3UserUtil;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -12,9 +11,9 @@ public class WsUtil {
     private static final CopyOnWriteArraySet<Long> ONLINE_USERS = new CopyOnWriteArraySet();
 
     public static boolean onLine() {
-        TokenUserBO user = AuthUtils.getUser();
-        if (ObjectUtils.isNotEmpty(user) && ObjectUtils.isNotEmpty(user.getUserId()))
-            return onLine(user.getUserId());
+        Long uid = V3UserUtil.getUid();
+        if (ObjectUtils.isNotEmpty(uid))
+            return onLine(uid);
         return false;
     }
 
@@ -23,9 +22,9 @@ public class WsUtil {
     }
 
     public static boolean offLine() {
-        TokenUserBO user = AuthUtils.getUser();
-        if (ObjectUtils.isNotEmpty(user) && ObjectUtils.isNotEmpty(user.getUserId()))
-            return offLine(user.getUserId());
+        Long uid = V3UserUtil.getUid();
+        if (ObjectUtils.isNotEmpty(uid))
+            return offLine(uid);
         return false;
     }
 

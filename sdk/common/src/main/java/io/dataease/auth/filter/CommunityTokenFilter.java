@@ -1,3 +1,4 @@
+/*
 package io.dataease.auth.filter;
 
 import com.auth0.jwt.JWT;
@@ -33,8 +34,7 @@ public class CommunityTokenFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         Long userId = null;
         String token = ServletUtils.getToken();
-        TokenUserBO userBO = null;
-        if (StringUtils.isNotBlank(token) && ObjectUtils.isNotEmpty(userBO = AuthUtils.getUser()) && ObjectUtils.isNotEmpty(userId = userBO.getUserId()) && !LicenseUtil.licenseValid()) {
+        if (StringUtils.isNotBlank(token) && ObjectUtils.isNotEmpty(userId = V3UserUtil.getUid()) && !LicenseUtil.licenseValid()) {
             String secret = null;
             if (ObjectUtils.isEmpty(CommonBeanFactory.getBean("loginServer"))) {
                 String pwd = SubstituleLoginConfig.getPwd();
@@ -49,7 +49,7 @@ public class CommunityTokenFilter implements Filter {
             }
             try {
                 Algorithm algorithm = Algorithm.HMAC256(secret);
-                Verification verification = JWT.require(algorithm).withClaim("uid", userId).withClaim("oid", userBO.getDefaultOid());
+                Verification verification = JWT.require(algorithm).withClaim("uid", userId).withClaim("oid", V3UserUtil.getUser().getOid());
                 JWTVerifier verifier = verification.build();
                 DecodedJWT decode = JWT.decode(token);
                 algorithm.verify(decode);
@@ -78,3 +78,4 @@ public class CommunityTokenFilter implements Filter {
         httpResponse.getWriter().write(Objects.requireNonNull(responseEntity.getBody()));
     }
 }
+*/

@@ -10,8 +10,8 @@ import io.dataease.api.dataset.vo.DataSetBarVO;
 import io.dataease.api.permissions.relation.api.RelationApi;
 import io.dataease.commons.constants.OptConstants;
 import io.dataease.dao.auto.entity.CoreDatasetGroup;
-import io.dataease.dao.auto.entity.QCoreDatasetGroup;
 import io.dataease.dao.auto.entity.CoreDatasetTable;
+import io.dataease.dao.auto.entity.QCoreDatasetGroup;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupRepository;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableRepository;
 import io.dataease.dataset.dao.ext.po.DataSetNodePO;
@@ -36,6 +36,7 @@ import io.dataease.license.utils.LicenseUtil;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.operation.manage.CoreOptRecentManage;
+import io.dataease.permission.util.V3UserUtil;
 import io.dataease.system.manage.CoreUserManage;
 import io.dataease.utils.*;
 import jakarta.annotation.Resource;
@@ -103,7 +104,7 @@ public class DatasetGroupManage {
                 CoreDatasetGroup coreDatasetGroup = coreDatasetGroupRepository.findById(datasetGroupInfoDTO.getId()).orElse(null);
                 datasetGroupInfoDTO.setPid(coreDatasetGroup.getPid());
             }
-            datasetGroupInfoDTO.setUpdateBy(AuthUtils.getUser().getUserId() + "");
+            datasetGroupInfoDTO.setUpdateBy(V3UserUtil.getUid() + "");
             datasetGroupInfoDTO.setLastUpdateTime(System.currentTimeMillis());
             if (StringUtils.equalsIgnoreCase(datasetGroupInfoDTO.getNodeType(), leafType)) {
                 if (!rename && ObjectUtils.isEmpty(datasetGroupInfoDTO.getAllFields())) {
@@ -122,8 +123,8 @@ public class DatasetGroupManage {
             if (ObjectUtils.isEmpty(datasetGroupInfoDTO.getId())) {
                 isCreate = true;
                 datasetGroupInfoDTO.setId(IDUtils.snowID());
-                datasetGroupInfoDTO.setCreateBy(AuthUtils.getUser().getUserId() + "");
-                datasetGroupInfoDTO.setUpdateBy(AuthUtils.getUser().getUserId() + "");
+                datasetGroupInfoDTO.setCreateBy(V3UserUtil.getUid() + "");
+                datasetGroupInfoDTO.setUpdateBy(V3UserUtil.getUid() + "");
                 datasetGroupInfoDTO.setCreateTime(time);
                 datasetGroupInfoDTO.setLastUpdateTime(time);
                 datasetGroupInfoDTO.setPid(datasetGroupInfoDTO.getPid() == null ? 0L : datasetGroupInfoDTO.getPid());
@@ -189,7 +190,7 @@ public class DatasetGroupManage {
         long time = System.currentTimeMillis();
         CoreDatasetGroup coreDatasetGroup = new CoreDatasetGroup();
         BeanUtils.copyBean(coreDatasetGroup, datasetGroupInfoDTO);
-        datasetGroupInfoDTO.setUpdateBy(AuthUtils.getUser().getUserId() + "");
+        datasetGroupInfoDTO.setUpdateBy(V3UserUtil.getUid() + "");
         coreDatasetGroup.setLastUpdateTime(time);
         coreDatasetGroupRepository.saveAndFlush(coreDatasetGroup);
         coreOptRecentManage.saveOpt(coreDatasetGroup.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASET, OptConstants.OPT_TYPE.UPDATE);

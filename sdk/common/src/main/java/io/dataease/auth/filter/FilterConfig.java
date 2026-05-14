@@ -1,13 +1,14 @@
+/*
 package io.dataease.auth.filter;
 
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
+// @Configuration
 public class FilterConfig {
 
-    @Bean
+    // @Bean
     public FilterRegistrationBean orderFilter() {
         FilterRegistrationBean filter = new FilterRegistrationBean<>();
         filter.setName("tokenFilter");
@@ -17,7 +18,7 @@ public class FilterConfig {
         return filter;
     }
 
-    @Bean
+    // @Bean
     public FilterRegistrationBean communityFilter() {
         FilterRegistrationBean filter = new FilterRegistrationBean<>();
         filter.setName("communityTokenFilter");
@@ -27,3 +28,4 @@ public class FilterConfig {
         return filter;
     }
 }
+*/

@@ -11,7 +11,6 @@ import io.dataease.api.xpack.share.request.XpackShareUuidEditor;
 import io.dataease.api.xpack.share.vo.TicketValidVO;
 import io.dataease.api.xpack.share.vo.XpackShareGridVO;
 import io.dataease.api.xpack.share.vo.XpackShareProxyVO;
-import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.constant.AuthConstant;
 import io.dataease.constant.BusiResourceEnum;
 import io.dataease.dao.auto.entity.QDataVisualizationInfo;
@@ -19,13 +18,17 @@ import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.license.utils.LicenseUtil;
+import io.dataease.permission.util.V3UserUtil;
 import io.dataease.share.dao.auto.entity.QXpackShare;
 import io.dataease.share.dao.auto.entity.XpackShare;
 import io.dataease.share.dao.auto.mapper.XpackShareRepository;
 import io.dataease.share.dao.ext.po.XpackSharePO;
 import io.dataease.share.util.LinkTokenUtil;
 import io.dataease.system.manage.SysParameterManage;
-import io.dataease.utils.*;
+import io.dataease.utils.CommonBeanFactory;
+import io.dataease.utils.IDUtils;
+import io.dataease.utils.RsaUtils;
+import io.dataease.utils.ServletUtils;
 import jakarta.annotation.Resource;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.servlet.http.HttpServletResponse;
@@ -65,7 +68,7 @@ public class XpackShareManage {
     private SysParameterManage sysParameterManage;
 
     public XpackShare queryByResource(Long resourceId) {
-        Long userId = AuthUtils.getUser().getUserId();
+        Long userId = V3UserUtil.getUid();
         Specification<XpackShare> xpackShareSpec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(cb.equal(root.get("creator"), userId));
@@ -97,15 +100,14 @@ public class XpackShareManage {
             shareTicketManage.deleteByShare(originData.getUuid());
             return;
         }
-        TokenUserBO user = AuthUtils.getUser();
-        Long userId = user.getUserId();
+        Long userId = V3UserUtil.getUid();
         XpackShare xpackShare = new XpackShare();
         xpackShare.setId(IDUtils.snowID());
         xpackShare.setCreator(userId);
         xpackShare.setTime(System.currentTimeMillis());
         xpackShare.setResourceId(resourceId);
         xpackShare.setUuid(RandomStringUtils.randomAlphanumeric(8));
-        xpackShare.setOid(user.getDefaultOid());
+        // xpackShare.setOid(user.getDefaultOid());
 
 
         QDataVisualizationInfo qVisualization = QDataVisualizationInfo.dataVisualizationInfo;
@@ -178,7 +180,7 @@ public class XpackShareManage {
 
 
     public Page<XpackSharePO> querySharePage(int goPage, int pageSize, VisualizationWorkbranchQueryRequest request) {
-        Long uid = AuthUtils.getUser().getUserId();
+        Long uid = V3UserUtil.getUid();
         QXpackShare xpackShare = QXpackShare.xpackShare;
         QDataVisualizationInfo dataVisualizationInfo = QDataVisualizationInfo.dataVisualizationInfo;
         JPAQuery<XpackSharePO> query = queryFactory.select(

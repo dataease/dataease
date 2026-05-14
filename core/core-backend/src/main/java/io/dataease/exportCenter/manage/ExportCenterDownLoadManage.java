@@ -13,7 +13,6 @@ import io.dataease.api.permissions.user.api.UserApi;
 import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.api.xpack.dataFilling.DataFillingApi;
 import io.dataease.api.xpack.dataFilling.dto.DataFillFormTableDataRequest;
-import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewRepository;
 import io.dataease.chart.server.ChartDataServer;
 import io.dataease.commons.utils.ExcelWatermarkUtils;
@@ -22,8 +21,12 @@ import io.dataease.constant.LogOT;
 import io.dataease.constant.LogST;
 import io.dataease.dao.auto.entity.CoreChartView;
 import io.dataease.dao.auto.entity.CoreDatasetGroup;
+import io.dataease.dao.auto.entity.CoreExportTask;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupRepository;
-import io.dataease.dataset.manage.*;
+import io.dataease.dataset.manage.DatasetDataManage;
+import io.dataease.dataset.manage.DatasetSQLManage;
+import io.dataease.dataset.manage.DatasetTableFieldManage;
+import io.dataease.dataset.manage.PermissionManage;
 import io.dataease.datasource.utils.DatasourceUtils;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.Field2SQLObj;
@@ -32,7 +35,6 @@ import io.dataease.engine.trans.Table2SQLObj;
 import io.dataease.engine.trans.WhereTree2Str;
 import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
-import io.dataease.dao.auto.entity.CoreExportTask;
 import io.dataease.exportCenter.dao.auto.mapper.CoreExportTaskRepository;
 import io.dataease.exportCenter.util.ExportCenterUtils;
 import io.dataease.extensions.datasource.api.PluginManageApi;
@@ -50,7 +52,11 @@ import io.dataease.i18n.Translator;
 import io.dataease.license.utils.LicenseUtil;
 import io.dataease.log.DeLog;
 import io.dataease.model.ExportTaskDTO;
-import io.dataease.utils.*;
+import io.dataease.permission.util.V3UserUtil;
+import io.dataease.utils.BeanUtils;
+import io.dataease.utils.CommonBeanFactory;
+import io.dataease.utils.JsonUtil;
+import io.dataease.utils.LogUtil;
 import io.dataease.visualization.dao.auto.entity.VisualizationWatermark;
 import io.dataease.visualization.dao.auto.mapper.VisualizationWatermarkRepository;
 import io.dataease.visualization.dto.WatermarkContentDTO;
@@ -182,10 +188,8 @@ public class ExportCenterDownLoadManage {
         String dataPath = exportData_path + exportTask.getId();
         File directory = new File(dataPath);
         boolean isCreated = directory.mkdir();
-        TokenUserBO tokenUserBO = AuthUtils.getUser();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
             coreExportTaskRepository.saveAndFlush(exportTask);
-            AuthUtils.setUser(tokenUserBO);
             coreExportTaskRepository.saveAndFlush(exportTask);
             try {
                 exportTask.setExportStatus("IN_PROGRESS");
@@ -215,11 +219,9 @@ public class ExportCenterDownLoadManage {
             boolean isCreated = directory.mkdirs(); // 创建所有必要的父目录
         }
 
-        TokenUserBO tokenUserBO = AuthUtils.getUser();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
             coreExportTaskRepository.saveAndFlush(exportTask);
             LicenseUtil.validate();
-            AuthUtils.setUser(tokenUserBO);
             try {
                 coreExportTaskRepository.saveAndFlush(exportTask);
                 exportTask.setExportStatus("IN_PROGRESS");
@@ -270,9 +272,9 @@ public class ExportCenterDownLoadManage {
                     sql = Utils.replaceSchemaAlias(sql, dsMap);
                 }
                 List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = new ArrayList<>();
-                TokenUserBO user = AuthUtils.getUser();
-                if (user != null) {
-                    rowPermissionsTree = permissionManage.getRowPermissionsTree(dto.getId(), user.getUserId());
+                Long uid = V3UserUtil.getUid();
+                if (uid != null) {
+                    rowPermissionsTree = permissionManage.getRowPermissionsTree(dto.getId(), uid);
                 }
                 if (StringUtils.isNotEmpty(request.getExpressionTree())) {
                     DatasetRowPermissionsTreeObj datasetRowPermissionsTreeObj = JsonUtil.parseObject(request.getExpressionTree(), DatasetRowPermissionsTreeObj.class);
@@ -448,11 +450,9 @@ public class ExportCenterDownLoadManage {
         String dataPath = exportData_path + exportTask.getId();
         File directory = new File(dataPath);
         boolean isCreated = directory.mkdir();
-        TokenUserBO tokenUserBO = AuthUtils.getUser();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
             coreExportTaskRepository.saveAndFlush(exportTask);
             LicenseUtil.validate();
-            AuthUtils.setUser(tokenUserBO);
             try {
                 exportTask.setExportStatus("IN_PROGRESS");
                 coreExportTaskRepository.saveAndFlush(exportTask);
@@ -599,7 +599,7 @@ public class ExportCenterDownLoadManage {
         VisualizationWatermark watermark = watermarkRepository.findById("system_default").orElse(null);
         WatermarkContentDTO watermarkContent = JsonUtil.parseObject(watermark.getSettingContent(), WatermarkContentDTO.class);
         if (watermarkContent.getEnable() && watermarkContent.getExcelEnable()) {
-            UserFormVO userInfo = CommonBeanFactory.getBean(UserApi.class).queryById(AuthUtils.getUser().getUserId());
+            UserFormVO userInfo = CommonBeanFactory.getBean(UserApi.class).queryById(V3UserUtil.getUid());
             // 在主逻辑中添加水印
             int watermarkPictureIdx = ExcelWatermarkUtils.addWatermarkImage(wb, watermarkContent, userInfo); // 生成水印图片并获取 ID
             for (Sheet sheet : wb) {
@@ -679,9 +679,9 @@ public class ExportCenterDownLoadManage {
                 sql = Utils.replaceSchemaAlias(sql, dsMap);
             }
             List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = new ArrayList<>();
-            TokenUserBO user = AuthUtils.getUser();
-            if (user != null) {
-                rowPermissionsTree = permissionManage.getRowPermissionsTree(dto.getId(), user.getUserId());
+            Long uid = V3UserUtil.getUid();
+            if (uid != null) {
+                rowPermissionsTree = permissionManage.getRowPermissionsTree(dto.getId(), uid);
             }
             if (StringUtils.isNotEmpty(request.getExpressionTree())) {
                 DatasetRowPermissionsTreeObj datasetRowPermissionsTreeObj = JsonUtil.parseObject(request.getExpressionTree(), DatasetRowPermissionsTreeObj.class);

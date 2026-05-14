@@ -107,10 +107,7 @@ public interface UserApi {
     @PostMapping("/role/selected/{goPage}/{pageSize}")
     PageResult<UserItemVO> selectedForRole(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody UserRequest request);
 
-    @Operation(summary = "切换组织")
-    @Parameter(name = "oId", description = "目标组织ID", required = true, in = ParameterIn.PATH)
-    @PostMapping("/switch/{oId}")
-    TokenVO switchOrg(@PathVariable("oId") Long oId);
+
 
     @Operation(summary = "获取当前登录人信息")
     @GetMapping("/info")

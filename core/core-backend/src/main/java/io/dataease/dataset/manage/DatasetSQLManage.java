@@ -6,6 +6,7 @@ import io.dataease.api.permissions.dataset.api.RowPermissionsApi;
 import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.commons.utils.SqlparserUtils;
 import io.dataease.constant.AuthEnum;
+import io.dataease.constant.SQLConstants;
 import io.dataease.dao.auto.entity.CoreDatasetGroup;
 import io.dataease.dao.auto.entity.CoreDatasource;
 import io.dataease.dataset.constant.DatasetTableType;
@@ -16,7 +17,6 @@ import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.manage.DataSourceManage;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.engine.constant.ExtFieldConstant;
-import io.dataease.constant.SQLConstants;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;
@@ -33,8 +33,8 @@ import io.dataease.extensions.view.dto.ChartExtRequest;
 import io.dataease.extensions.view.dto.SqlVariableDetails;
 import io.dataease.i18n.Translator;
 import io.dataease.license.utils.LicenseUtil;
+import io.dataease.permission.util.V3UserUtil;
 import io.dataease.system.manage.CorePermissionManage;
-import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
 import jakarta.annotation.Resource;
@@ -155,8 +155,8 @@ public class DatasetSQLManage {
             String[] array = fields.stream()
                     .map(f -> {
                         // 赋值dataeaseName
-                        for (DatasetTableFieldDTO a_f: allFields) {
-                            if (Objects.equals(a_f.getId(),f.getId())) {
+                        for (DatasetTableFieldDTO a_f : allFields) {
+                            if (Objects.equals(a_f.getId(), f.getId())) {
                                 f.setDataeaseName(a_f.getDataeaseName());
                             }
                         }
@@ -336,8 +336,8 @@ public class DatasetSQLManage {
             String[] array = fields.stream()
                     .map(f -> {
                         // 赋值dataeaseName
-                        for (DatasetTableFieldDTO a_f: allFields) {
-                            if (Objects.equals(a_f.getId(),f.getId())) {
+                        for (DatasetTableFieldDTO a_f : allFields) {
+                            if (Objects.equals(a_f.getId(), f.getId())) {
                                 f.setDataeaseName(a_f.getDataeaseName());
                             }
                         }
@@ -474,7 +474,7 @@ public class DatasetSQLManage {
         if (getRowPermissionsApi() == null) {
             return null;
         }
-        return getRowPermissionsApi().getUserById(AuthUtils.getUser().getUserId());
+        return getRowPermissionsApi().getUserById(V3UserUtil.getUid());
     }
 
     private SQLObj getUnionTable(DatasetTableDTO currentDs, DatasetTableInfoDTO infoDTO, String tableSchema, int index, List<SqlVariableDetails> parameters, boolean isFromDataSet, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap) {

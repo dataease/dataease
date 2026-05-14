@@ -4,7 +4,7 @@ package io.dataease.operation.manage;
 import io.dataease.commons.constants.OptConstants;
 import io.dataease.operation.dao.auto.entity.CoreOptRecent;
 import io.dataease.operation.dao.auto.mapper.CoreOptRecentRepository;
-import io.dataease.utils.AuthUtils;
+import io.dataease.permission.util.V3UserUtil;
 import io.dataease.utils.IDUtils;
 import jakarta.persistence.criteria.Predicate;
 import org.apache.commons.collections4.CollectionUtils;
@@ -34,10 +34,7 @@ public class CoreOptRecentManage {
     }
 
     public void saveOpt(Long resourceId, String resourceName, int resourceType, int optType) {
-        if (AuthUtils.getUser() == null) {
-            return;
-        }
-        Long uid = AuthUtils.getUser().getUserId();
+        Long uid = V3UserUtil.getUid();
         if (coreOptRecentRepository.updateByParams(resourceId, resourceName, resourceType, uid, optType, System.currentTimeMillis()) == 0) {
             CoreOptRecent optRecent = new CoreOptRecent();
             optRecent.setId(IDUtils.snowID());
@@ -46,13 +43,13 @@ public class CoreOptRecentManage {
             optRecent.setResourceType(resourceType);
             optRecent.setOptType(optType);
             optRecent.setTime(System.currentTimeMillis());
-            optRecent.setUid(AuthUtils.getUser().getUserId());
+            optRecent.setUid(V3UserUtil.getUid());
             coreOptRecentRepository.saveAndFlush(optRecent);
         }
     }
 
     public Map<String, Long> findTemplateRecentUseTime() {
-        Long uid = AuthUtils.getUser().getUserId();
+        Long uid = V3UserUtil.getUid();
         Specification<CoreOptRecent> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(cb.equal(root.get("resourceType"), OptConstants.OPT_RESOURCE_TYPE.TEMPLATE));

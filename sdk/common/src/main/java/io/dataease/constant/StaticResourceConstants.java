@@ -1,7 +1,7 @@
 package io.dataease.constant;
 
 import io.dataease.utils.ConfigUtils;
-import io.dataease.utils.ModelUtils;
+import io.dataease.utils.LocalModelUtils;
 
 import java.io.File;
 
@@ -40,7 +40,7 @@ public class StaticResourceConstants {
     public static final String URL_SEPARATOR = "/";
 
     public static String getHomeData() {
-        if (ModelUtils.isDesktop()) {
+        if (LocalModelUtils.isDesktop()) {
             return ConfigUtils.getConfig("dataease.path.data", "/opt/dataease3.0/data");
         } else {
             return "/opt/dataease3.0/data";

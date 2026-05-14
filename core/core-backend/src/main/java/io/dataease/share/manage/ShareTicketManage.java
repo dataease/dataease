@@ -7,12 +7,16 @@ import io.dataease.api.xpack.share.request.TicketSwitchRequest;
 import io.dataease.api.xpack.share.vo.TicketVO;
 import io.dataease.api.xpack.share.vo.TicketValidVO;
 import io.dataease.exception.DEException;
+import io.dataease.permission.util.V3UserUtil;
 import io.dataease.result.PageResult;
 import io.dataease.share.dao.auto.entity.CoreShareTicket;
 import io.dataease.share.dao.auto.entity.XpackShare;
 import io.dataease.share.dao.auto.mapper.CoreShareTicketRepository;
 import io.dataease.share.dao.auto.mapper.XpackShareRepository;
-import io.dataease.utils.*;
+import io.dataease.utils.BeanUtils;
+import io.dataease.utils.CodingUtil;
+import io.dataease.utils.CommonBeanFactory;
+import io.dataease.utils.IDUtils;
 import jakarta.annotation.Resource;
 import jakarta.persistence.criteria.Predicate;
 import org.apache.commons.lang3.ObjectUtils;
@@ -37,7 +41,6 @@ public class ShareTicketManage {
 
     @Resource
     private XpackShareRepository xpackShareRepository;
-
 
 
     public CoreShareTicket getByTicket(String ticket) {
@@ -99,7 +102,7 @@ public class ShareTicketManage {
         Specification<XpackShare> xpackShareSpec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(cb.equal(root.get("resourceId"), resourceId));
-            predicates.add(cb.equal(root.get("creator"), AuthUtils.getUser().getUserId()));
+            predicates.add(cb.equal(root.get("creator"), V3UserUtil.getUid()));
             return cb.and(predicates.toArray(new Predicate[0]));
         };
         XpackShare xpackShare = xpackShareRepository.findOne(xpackShareSpec).orElse(null);
@@ -117,7 +120,7 @@ public class ShareTicketManage {
         Specification<XpackShare> xpackShareSpec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(cb.equal(root.get("resourceId"), resourceId));
-            predicates.add(cb.equal(root.get("creator"), AuthUtils.getUser().getUserId()));
+            predicates.add(cb.equal(root.get("creator"), V3UserUtil.getUid()));
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 

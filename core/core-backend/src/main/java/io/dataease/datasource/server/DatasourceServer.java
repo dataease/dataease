@@ -49,6 +49,7 @@ import io.dataease.license.utils.LicenseUtil;
 import io.dataease.log.DeLog;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
+import io.dataease.permission.util.V3UserUtil;
 import io.dataease.qrtz.dao.auto.repo.entity.QrtzSchedulerState;
 import io.dataease.result.PageResult;
 import io.dataease.system.dao.auto.entity.CoreSysSetting;
@@ -273,8 +274,8 @@ public class DatasourceServer implements DatasourceApi {
             dataSourceDTO.setStatus("Error");
         }
         dataSourceDTO.setTaskStatus(TaskStatus.WaitingForExecution.name());
-        dataSourceDTO.setCreateBy(AuthUtils.getUser().getUserId().toString());
-        dataSourceDTO.setUpdateBy(AuthUtils.getUser().getUserId());
+        dataSourceDTO.setCreateBy(V3UserUtil.getUid().toString());
+        dataSourceDTO.setUpdateBy(V3UserUtil.getUid());
 
         CoreDatasource coreDatasource = new CoreDatasource();
         BeanUtils.copyBean(coreDatasource, dataSourceDTO);
@@ -395,7 +396,7 @@ public class DatasourceServer implements DatasourceApi {
         preCheckDs(dataSourceDTO);
 
         dataSourceDTO.setUpdateTime(System.currentTimeMillis());
-        dataSourceDTO.setUpdateBy(AuthUtils.getUser().getUserId());
+        dataSourceDTO.setUpdateBy(V3UserUtil.getUid());
         try {
             checkDatasourceStatus(dataSourceDTO);
         } catch (Exception e) {
@@ -899,7 +900,7 @@ public class DatasourceServer implements DatasourceApi {
             coreDatasource = dataSourceManage.getCoreDatasource(datasourceId);
         }
         ExcelUtils excelUtils = new ExcelUtils();
-        ExcelFileData excelFileData = excelUtils.excelSaveAndParse(file, String.valueOf(AuthUtils.getUser().getUserId()));
+        ExcelFileData excelFileData = excelUtils.excelSaveAndParse(file, String.valueOf(V3UserUtil.getUid()));
 
         if (Objects.equals(editType, append)) { //按照excel sheet 名称匹配，替换：0；追加：1
             if (coreDatasource != null) {
@@ -1146,7 +1147,7 @@ public class DatasourceServer implements DatasourceApi {
         org.springframework.data.domain.Pageable pageableWithSort = PageRequest.of(0, 5, sort);
         Specification<CoreDatasource> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("createBy"), AuthUtils.getUser().getUserId()));
+            predicates.add(cb.equal(root.get("createBy"), V3UserUtil.getUid()));
             return cb.and(predicates.toArray(new Predicate[0]));
         };
         List<CoreDatasource> coreDatasources = coreDatasourceRepository.findAll(spec, pageableWithSort).getContent();
@@ -1264,13 +1265,13 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     public boolean showFinishPage() throws DEException {
-        return coreDsFinishPageRepository.findById(AuthUtils.getUser().getUserId()).orElse(null) == null;
+        return coreDsFinishPageRepository.findById(V3UserUtil.getUid()).orElse(null) == null;
     }
 
 
     public void setShowFinishPage() throws DEException {
         CoreDsFinishPage coreDsFinishPage = new CoreDsFinishPage();
-        coreDsFinishPage.setId(AuthUtils.getUser().getUserId());
+        coreDsFinishPage.setId(V3UserUtil.getUid());
         coreDsFinishPageRepository.saveAndFlush(coreDsFinishPage);
     }
 

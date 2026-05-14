@@ -5,13 +5,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ModelUtils {
+public class LocalModelUtils {
 
     private static String modelValue;
 
     @Value("${spring.profiles.active:standalone}")
     public void setModelValue(String modelValue) {
-        ModelUtils.modelValue = modelValue;
+        LocalModelUtils.modelValue = modelValue;
     }
 
     public static DeModel get() {
