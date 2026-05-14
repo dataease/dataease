@@ -1401,6 +1401,18 @@ export const dvMainStore = defineStore('dataVisualization', {
           }
         }
       }
+      let sourceLinkageChanged = false
+      if (element.component === 'UserView' && currentFilters.length) {
+        for (let i = currentFilters.length - 1; i >= 0; i--) {
+          if (currentFilters[i].sourceViewId === viewId) {
+            currentFilters.splice(i, 1)
+            sourceLinkageChanged = true
+          }
+        }
+      }
+      if (sourceLinkageChanged) {
+        preActiveComponentIds.includes(element.id) || preActiveComponentIds.push(element.id)
+      }
       // 联动的图表情况历史条件
       // const currentFilters = []
       checkQDList.forEach(QDItem => {
@@ -1421,7 +1433,8 @@ export const dvMainStore = defineStore('dataVisualization', {
             if (customFilter) {
               currentFilters.push({
                 filterType: 3,
-                customFilter: customFilter
+                customFilter: customFilter,
+                sourceViewId: viewId
               })
             } else {
               // 如果目标图表 和 当前循环组件id相等 则进行条件增减
@@ -1450,7 +1463,11 @@ export const dvMainStore = defineStore('dataVisualization', {
                 while (j--) {
                   const filter = currentFilters[j]
                   // 兼容性准备 viewIds 只会存放一个值
-                  if (targetFieldId === filter.fieldId && filter.viewIds.includes(targetViewId)) {
+                  if (
+                    targetFieldId === filter.fieldId &&
+                    filter.viewIds.includes(targetViewId) &&
+                    (!filter.sourceViewId || filter.sourceViewId === viewId)
+                  ) {
                     currentFilters.splice(j, 1)
                   }
                 }
