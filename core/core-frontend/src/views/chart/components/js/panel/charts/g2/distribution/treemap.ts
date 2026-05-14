@@ -90,7 +90,22 @@ export class Treemap extends G2ChartView {
     const options = this.setupOptions(chart, baseOptions, { total, chartObj: newChart })
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
-    newChart.on('polygon:click', action)
+    const dataById = new Map(data.map(item => [item.id, item]))
+    const handleClick = event => {
+      const pointData =
+        event?.target?.__data__?.data?.data ??
+        event?.target?.attributes?.dependentElement?.__data__?.data?.data ??
+        dataById.get(event?.data?.data?.id)
+      if (!pointData) {
+        return
+      }
+      action({
+        x: event.x ?? event?.client?.x,
+        y: event.y ?? event?.client?.y,
+        data: { data: pointData }
+      })
+    }
+    ;['element:click', 'label:click'].forEach(eventName => newChart.on(eventName, handleClick))
     return newChart
   }
 
