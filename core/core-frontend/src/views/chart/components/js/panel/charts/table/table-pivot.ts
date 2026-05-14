@@ -417,7 +417,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
                 tmp = tmp.parent
               }
             })
-            const totlaRowWidth = ev.rowsHierarchy.sampleNodesForAllLevels.reduce((p, n) => {
+            const totalRowWidth = ev.rowsHierarchy.sampleNodesForAllLevels.reduce((p, n) => {
               return p + n.width
             }, 0)
             const maxRowLevel = ev.rowsHierarchy.maxLevel
@@ -431,7 +431,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
                 n.width = width
               }
             })
-            ev.rowsHierarchy.width = totlaRowWidth
+            ev.rowsHierarchy.width = totalRowWidth
             ev.colsHierarchy.width = totalColWidth
           }
           s2.store.set('lastLayoutResult', undefined)
