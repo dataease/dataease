@@ -40,7 +40,15 @@ export class CirclePacking extends G2ChartView {
       'fontShadow'
     ],
     'function-cfg': ['emptyDataStrategy'],
-    'label-selector': ['color', 'fontSize'],
+    'label-selector': [
+      'color',
+      'fontSize',
+      'showDimension',
+      'showQuota',
+      'showProportion',
+      'quotaLabelFormatter',
+      'reserveDecimalCount'
+    ],
     'legend-selector': ['icon', 'orient', 'fontSize', 'color', 'hPosition', 'vPosition'],
     'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'tooltipFormatter', 'show']
   }
@@ -83,8 +91,8 @@ export class CirclePacking extends G2ChartView {
       const newChart = new G2Chart({ container })
       handleChartDashboardHidden(chart, options)
       newChart.options(options)
-      newChart.on('element:click', param => {
-        const pointData = param?.data?.data
+      const handlePointClick = param => {
+        const pointData = param?.target?.__data__?.data?.data
         if (pointData?.name === t('commons.all')) {
           return
         }
@@ -97,7 +105,11 @@ export class CirclePacking extends G2ChartView {
           }
         }
         action(actionParams)
-      })
+      }
+      // 标签层有时会拦截事件，这里同时监听 label 点击，确保下钻/联动可触发。
+      ;['element:click', 'label:click'].forEach(eventName =>
+        newChart.on(eventName, handlePointClick)
+      )
       return newChart
     }
   }
@@ -151,6 +163,95 @@ export class CirclePacking extends G2ChartView {
       }
       return defaultsDeep(options, labelHide)
     }
+
+    // 计算比例的总值
+    const calculateTotal = (data: any[]): number => {
+      let total = 0
+      const traverse = (arr: any[]) => {
+        arr?.forEach(item => {
+          if (!item.children || !item.children.length) {
+            total += item.value ?? 0
+          } else {
+            traverse(item.children)
+          }
+        })
+      }
+      traverse(data)
+      return total
+    }
+
+    const total = calculateTotal(options.data.value.children)
+
+    const getLabelContent = d => {
+      const contentItems = []
+      if (label.showDimension) {
+        contentItems.push(d.data.field)
+      }
+      if (label.showQuota) {
+        const formattedValue = valueFormatter(d.data.value, label.quotaLabelFormatter)
+        contentItems.push(formattedValue)
+      }
+      if (label.showProportion && total > 0) {
+        const percentage = `${(Math.round((d.data.value / total) * 10000) / 100).toFixed(
+          label.reserveDecimalCount
+        )}%`
+        if (label.showDimension && label.showQuota) {
+          contentItems.push(`(${percentage})`)
+        } else {
+          contentItems.push(percentage)
+        }
+      }
+      return contentItems.length > 1 ? contentItems.join('\n') : contentItems.join(' ')
+    }
+
+    const canLabelFitInsideCircle = (d, text: string): boolean => {
+      const radius = Number(d?.r)
+      const diameterByRadius = radius > 0 ? radius * 2 : 0
+      const width = Number(d?.width)
+      const height = Number(d?.height)
+      const diameterBySize = width > 0 && height > 0 ? Math.min(width, height) : 0
+      const diameter = diameterByRadius || diameterBySize
+      if (!diameter) {
+        return true
+      }
+      const fontSize = Number(label.fontSize || 12)
+      const lines = `${text ?? ''}`.split('\n').filter(line => line !== '')
+      if (!lines.length) {
+        return true
+      }
+
+      // 使用 canvas 实测文本宽度，避免字符数估算过于保守。
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
+      if (!ctx) {
+        return true
+      }
+      ctx.font = `${fontSize}px sans-serif`
+
+      const r = diameter / 2
+      const lineHeight = fontSize * 1.05
+      const textHeight = lines.length * lineHeight
+      const verticalPadding = 0.98
+      if (textHeight > diameter * verticalPadding) {
+        return false
+      }
+
+      const widthPadding = 0.98
+      for (let i = 0; i < lines.length; i++) {
+        const lineWidth = ctx.measureText(lines[i]).width
+        // 计算该行中心点在圆心坐标系中的 y 偏移，再求该高度上的最大弦长。
+        const y = (i + 0.5) * lineHeight - textHeight / 2
+        if (Math.abs(y) > r) {
+          return false
+        }
+        const maxChordWidth = 2 * Math.sqrt(r * r - y * y)
+        if (lineWidth > maxChordWidth * widthPadding) {
+          return false
+        }
+      }
+      return true
+    }
+
     const labelStyle = {
       style: {
         labelFill: label.color,
@@ -159,9 +260,17 @@ export class CirclePacking extends G2ChartView {
           if (d.height) {
             return ''
           }
-          return d.data.field
+          const labelContent = getLabelContent(d)
+          if (!label.fullDisplay && !canLabelFitInsideCircle(d, labelContent)) {
+            return ''
+          }
+          return labelContent
         },
-        labelTransform: label.fullDisplay ? [] : [{ type: 'overflowHide' }]
+        // 让鼠标事件尽量透传到圆形图元，避免 hover 标签时 tooltip 无法触发。
+        labelPointerEvents: 'none',
+        // 使用显式换行和自定义越界判断，避免 G2 再次折行/裁剪后只显示第一行。
+        labelWordWrap: false,
+        labelTransform: []
       }
     }
     return defaultsDeep(options, labelStyle)
@@ -274,7 +383,11 @@ export class CirclePacking extends G2ChartView {
     senior.functionCfg.emptyDataStrategy = 'ignoreData'
     customAttr.label = {
       ...label,
-      show: true
+      show: true,
+      showDimension: true,
+      showQuota: true,
+      showProportion: false,
+      reserveDecimalCount: 2
     }
     legend.show = false
     basicStyle.circleBorderWidth = 0
