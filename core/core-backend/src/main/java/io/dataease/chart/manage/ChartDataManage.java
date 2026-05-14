@@ -447,13 +447,24 @@ public class ChartDataManage {
         String maxType = (String) sizeObj.get(type);
         if (StringUtils.equalsIgnoreCase("dynamic", maxType)) {
             Map<String, Object> maxField = (Map<String, Object>) sizeObj.get(field);
-            Long id = Long.valueOf((String) maxField.get("id"));
+            if (maxField == null || maxField.get("id") == null || StringUtils.isBlank(maxField.get("id").toString())) {
+                resetDynamicField(sizeObj, type, field);
+                return null;
+            }
+            long id;
+            try {
+                id = Long.parseLong(maxField.get("id").toString());
+            } catch (NumberFormatException e) {
+                resetDynamicField(sizeObj, type, field);
+                return null;
+            }
             String summary = (String) maxField.get("summary");
             DatasetTableFieldDTO datasetTableField = datasetTableFieldManage.selectById(id);
             if (ObjectUtils.isNotEmpty(datasetTableField)) {
                 if (datasetTableField.getDeType() == 0 || datasetTableField.getDeType() == 1 || datasetTableField.getDeType() == 5) {
                     if (!StringUtils.containsIgnoreCase(summary, "count")) {
-                        DEException.throwException(Translator.get("i18n_gauge_field_change"));
+                        resetDynamicField(sizeObj, type, field);
+                        return null;
                     }
                 }
                 ChartViewFieldDTO dto = new ChartViewFieldDTO();
@@ -461,10 +472,31 @@ public class ChartDataManage {
                 dto.setSummary(summary);
                 return dto;
             } else {
-                DEException.throwException(Translator.get("i18n_gauge_field_delete"));
+                resetDynamicField(sizeObj, type, field);
             }
         }
         return null;
+    }
+
+    private void resetDynamicField(Map<String, Object> sizeObj, String type, String field) {
+        sizeObj.put(type, "fix");
+        sizeObj.put(field, Map.of("id", "", "summary", ""));
+        switch (type) {
+            case "gaugeMinType":
+                sizeObj.putIfAbsent("gaugeMin", 0);
+                sizeObj.putIfAbsent("gaugeMin", 0);
+                break;
+            case "gaugeMaxType":
+                sizeObj.putIfAbsent("gaugeMax", 100);
+                sizeObj.putIfAbsent("gaugeMax", 100);
+                break;
+            case "liquidMaxType":
+                sizeObj.putIfAbsent("liquidMax", 100);
+                sizeObj.putIfAbsent("liquidMax", 100);
+                break;
+            default:
+                break;
+        }
     }
 
     private ChartViewDTO emptyChartViewDTO(ChartViewDTO view) {

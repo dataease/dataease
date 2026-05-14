@@ -140,6 +140,9 @@ const positionComponentShow = computed(() => {
 })
 
 const showProperties = (property: EditorProperty) => properties.value?.includes(property)
+const getPropertyInner = (property: EditorProperty) => propertyInnerAll.value?.[property] || []
+const showPropertySwitch = (property: EditorProperty, prop: string) =>
+  getPropertyInner(property).includes(prop)
 
 const onMiscChange = (val, prop) => {
   emit('onMiscChange', val, prop)
@@ -201,7 +204,7 @@ const onBackgroundChange = (val, prop) => {
   state.initReady && emit('onBackgroundChange', val, prop)
 }
 
-const onActiveChange = val => {
+const onActiveChange = () => {
   snapshotStore.recordSnapshotCache('onActiveChange')
   state.initReady &&
     emit('onStyleAttrChange', {
@@ -490,11 +493,12 @@ watch(
             />
           </collapse-switch-item>
           <collapse-switch-item
+            v-if="showProperties('tooltip-selector')"
             v-model="chart.customAttr.tooltip.show"
             :themes="themes"
             :change-model="chart.customAttr.tooltip"
             :title="t('chart.tooltip')"
-            :show-switch="propertyInnerAll['tooltip-selector'].includes('show')"
+            :show-switch="showPropertySwitch('tooltip-selector', 'show')"
             name="tooltip"
             @modelChange="val => onTooltipChange({ data: val }, 'show')"
           >
@@ -514,7 +518,7 @@ watch(
             :change-model="chart.customAttr.tableHeader"
             :effect="themes"
             :title="t('chart.table_header')"
-            :show-switch="propertyInnerAll['table-header-selector'].includes('showTableHeader')"
+            :show-switch="showPropertySwitch('table-header-selector', 'showTableHeader')"
             name="tableHeader"
             @modelChange="val => onTableHeaderChange(val, 'showTableHeader')"
           >

@@ -84,7 +84,7 @@ const validMaxField = computed(() => {
   return isValidField(state.miscForm.gaugeMaxField)
 })
 const isValidField = field => {
-  return field.id !== '-1' && quotaData.value.findIndex(ele => ele.id === field.id) !== -1
+  return field?.id !== '-1' && quotaData.value.findIndex(ele => ele.id === field?.id) !== -1
 }
 
 const state = reactive({
@@ -110,20 +110,65 @@ const init = () => {
 }
 
 const initField = () => {
+  state.quotaData = props.quotaFields.filter(ele => ele.id !== '-1')
   // 数据集字段中，如果没有 y 轴字段，直接返回
   const yAxisInDataset = props.quotaFields.find(ele => ele.id === props.chart.yAxis?.[0]?.id)
   if (!yAxisInDataset) {
+    syncInvalidDynamicField()
     return
   }
-  // 过滤掉记录数字段
-  state.quotaData = props.quotaFields.filter(ele => ele.id !== '-1')
+  syncInvalidDynamicField()
 }
 const NUMBER_DE_TYPE = [2, 3]
+const DYNAMIC_FIELD_FALLBACK = {
+  gaugeMin: 0,
+  gaugeMax: 100,
+  liquidMax: 100
+}
 
 const getDynamicField = () => {
   return (
     quotaData.value?.find(item => item.id === props.chart.yAxis?.[0]?.id) || quotaData.value?.[0]
   )
+}
+const resetDynamicFieldConfig = (typeKey, fieldKey, valueKey) => {
+  const miscForm = state.miscForm as Record<string, any>
+  const currentField = miscForm[fieldKey] || {}
+  const changed = miscForm[typeKey] === 'dynamic' || !!currentField.id || !!currentField.summary
+  miscForm[typeKey] = 'fix'
+  miscForm[fieldKey] = { id: '', summary: '' }
+  if ([undefined, null, ''].includes(miscForm[valueKey])) {
+    miscForm[valueKey] = DYNAMIC_FIELD_FALLBACK[valueKey]
+  }
+  return changed
+}
+const sanitizeDynamicFieldConfig = (typeKey, fieldKey, valueKey) => {
+  const miscForm = state.miscForm as Record<string, any>
+  if (miscForm[typeKey] !== 'dynamic') {
+    return false
+  }
+  const currentField = miscForm[fieldKey] || {}
+  if (!isValidField(currentField)) {
+    return resetDynamicFieldConfig(typeKey, fieldKey, valueKey)
+  }
+  const quotaField = getQuotaField(currentField.id)
+  if (!quotaField?.id) {
+    return resetDynamicFieldConfig(typeKey, fieldKey, valueKey)
+  }
+  return false
+}
+const syncInvalidDynamicField = () => {
+  let changed = false
+  if (isGauge.value) {
+    changed = sanitizeDynamicFieldConfig('gaugeMinType', 'gaugeMinField', 'gaugeMin') || changed
+    changed = sanitizeDynamicFieldConfig('gaugeMaxType', 'gaugeMaxField', 'gaugeMax') || changed
+  }
+  if (isLiquid.value) {
+    changed = sanitizeDynamicFieldConfig('liquidMaxType', 'liquidMaxField', 'liquidMax') || changed
+  }
+  if (changed) {
+    changeMisc('', true)
+  }
 }
 const changeQuotaField = (type: string, resetSummary?: boolean) => {
   if (isGauge.value) {

@@ -91,6 +91,8 @@ public class ChartDataServer implements ChartDataApi {
                 chartDataManage.encodeData(dto);
                 return dto;
             }
+        } catch (DEException e) {
+            throw e;
         } catch (Exception e) {
             DEException.throwException(ResultCode.DATA_IS_WRONG.code(), e.getMessage() + "\n\n" + ExceptionUtils.getStackTrace(e));
         }

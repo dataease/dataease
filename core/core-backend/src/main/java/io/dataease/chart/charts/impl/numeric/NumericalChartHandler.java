@@ -6,7 +6,6 @@ import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.Quota2SQLObj;
 import io.dataease.engine.utils.Utils;
-import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
@@ -14,7 +13,6 @@ import io.dataease.extensions.datasource.model.SQLMeta;
 import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.view.dto.*;
 import io.dataease.extensions.view.util.FieldUtil;
-import io.dataease.i18n.Translator;
 import io.dataease.utils.BeanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -22,8 +20,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class NumericalChartHandler extends DefaultChartHandler {
     @Override
@@ -64,13 +60,26 @@ public class NumericalChartHandler extends DefaultChartHandler {
         String maxType = (String) target.get(type);
         if (StringUtils.equalsIgnoreCase("dynamic", maxType)) {
             Map<String, Object> maxField = (Map<String, Object>) target.get(field);
-            if (maxField.get("id") == null || StringUtils.isEmpty(maxField.get("id").toString())) {
-                DEException.throwException(Translator.get("i18n_gauge_field_delete"));
+            if (maxField == null || maxField.get("id") == null || StringUtils.isBlank(maxField.get("id").toString())) {
+                resetDynamicField(target, type, field);
+                return null;
             }
-            Long id = Long.valueOf((String) maxField.get("id"));
+            Long id;
+            try {
+                id = Long.valueOf(maxField.get("id").toString());
+            } catch (NumberFormatException e) {
+                resetDynamicField(target, type, field);
+                return null;
+            }
             String summary = (String) maxField.get("summary");
             DatasetTableFieldDTO datasetTableField = datasetTableFieldManage.selectById(id);
             if (ObjectUtils.isNotEmpty(datasetTableField)) {
+                if (datasetTableField.getDeType() == 0 || datasetTableField.getDeType() == 1 || datasetTableField.getDeType() == 5) {
+                    if (!StringUtils.containsIgnoreCase(summary, "count")) {
+                        resetDynamicField(target, type, field);
+                        return null;
+                    }
+                }
                 ChartViewFieldDTO dto = new ChartViewFieldDTO();
                 BeanUtils.copyBean(dto, datasetTableField);
                 if (StringUtils.isEmpty(dto.getSummary())) {
@@ -78,9 +87,30 @@ public class NumericalChartHandler extends DefaultChartHandler {
                 }
                 return dto;
             } else {
-                DEException.throwException(Translator.get("i18n_gauge_field_delete"));
+                resetDynamicField(target, type, field);
             }
         }
         return null;
+    }
+
+    protected void resetDynamicField(Map<String, Object> target, String type, String field) {
+        target.put(type, "fix");
+        target.put(field, Map.of("id", "", "summary", ""));
+        switch (type) {
+            case "gaugeMinType":
+                target.putIfAbsent("gaugeMin", 0);
+                target.putIfAbsent("gaugeMin", 0);
+                break;
+            case "gaugeMaxType":
+                target.putIfAbsent("gaugeMax", 100);
+                target.putIfAbsent("gaugeMax", 100);
+                break;
+            case "liquidMaxType":
+                target.putIfAbsent("liquidMax", 100);
+                target.putIfAbsent("liquidMax", 100);
+                break;
+            default:
+                break;
+        }
     }
 }
