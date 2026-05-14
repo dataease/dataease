@@ -760,8 +760,33 @@ const panelLoad = paneInfo => {
 }
 const datasetListTree = ref()
 
+// 预计算可见节点 ID 集合，filterNode 只做 O(1) 查询
+const visibleNodeIds = new Set()
+
+const buildVisibleIds = (nodes: BusiTreeNode[], keyword: string): boolean => {
+  let anyMatch = false
+  for (const node of nodes) {
+    const selfMatch = !!node.name?.toLowerCase().includes(keyword)
+    const childMatch = node.children?.length ? buildVisibleIds(node.children, keyword) : false
+    if (selfMatch || childMatch) {
+      visibleNodeIds.add(node.id)
+      anyMatch = true
+    }
+  }
+  return anyMatch
+}
+
+let searchTimer
 watch(nickName, (val: string) => {
-  datasetListTree.value.filter(val)
+  clearTimeout(searchTimer)
+  searchTimer = setTimeout(() => {
+    const keyword = val?.trim().toLowerCase()
+    visibleNodeIds.clear()
+    if (keyword) {
+      buildVisibleIds(state.datasetTree, keyword)
+    }
+    datasetListTree.value.filter(val?.trim())
+  }, 300)
 })
 const sideTreeStatus = ref(true)
 const changeSideTreeStatus = val => {
@@ -769,8 +794,8 @@ const changeSideTreeStatus = val => {
 }
 
 const filterNode = (value: string, data: BusiTreeNode) => {
-  if (!value) return true
-  return data.name?.toLowerCase().includes(value.toLowerCase())
+  if (!value?.trim()) return true
+  return visibleNodeIds.has(data.id)
 }
 const mouseenter = () => {
   appStore.setArrowSide(true)
