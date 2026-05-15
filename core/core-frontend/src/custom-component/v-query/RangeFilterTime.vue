@@ -228,6 +228,10 @@ const relativeToCurrentListRange = computed(() => {
         {
           label: t('common.to_this_month'),
           value: 'YearToThisMonth'
+        },
+        {
+          label: t('v_query.year_to_last_month_end'),
+          value: 'YearToLastMonthEnd'
         }
       ]
       break
@@ -253,6 +257,10 @@ const relativeToCurrentListRange = computed(() => {
         {
           label: t('v_query.year_to_date'),
           value: 'yearBeginning'
+        },
+        {
+          label: t('v_query.year_to_last_month_end'),
+          value: 'YearToLastMonthEnd'
         },
         {
           label: t('common.month_to_yesterday'),
