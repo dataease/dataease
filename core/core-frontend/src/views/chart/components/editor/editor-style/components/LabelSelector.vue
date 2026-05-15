@@ -97,11 +97,31 @@ watch(
 )
 
 const computedIdKey = computed(() => {
-  if (props.chart.type.includes('chart-mix')) {
+  if (props.chart.type.includes('chart-mix') || props.chart.type.includes('bidirectional-bar')) {
     return 'seriesId'
   }
   return 'id'
 })
+
+const showAxisNameInSeriesLabel = computed(() => {
+  return props.chart.type.includes('chart-mix') || props.chart.type.includes('bidirectional-bar')
+})
+
+const getSeriesFormatterKey = item => item?.[computedIdKey.value] ?? item?.seriesId ?? item?.id
+
+const getSeriesFormatter = (formatterMap, axis) => {
+  const seriesKey = getSeriesFormatterKey(axis)
+  return formatterMap[seriesKey] ?? formatterMap[axis?.id]
+}
+
+const getAxisName = (axisType: AxisType) => {
+  if (props.chart.type.includes('bidirectional-bar')) {
+    return axisType === 'yAxis'
+      ? t('chart.drag_block_value_axis')
+      : t('chart.drag_block_value_axis_ext')
+  }
+  return axisType === 'yAxis' ? t('chart.left_axis') : t('chart.right_axis')
+}
 
 const curSeriesFormatter = ref<Partial<SeriesFormatter>>({})
 const formatterEditable = computed(() => {
@@ -118,7 +138,7 @@ const initSeriesLabel = () => {
 
   const seriesAxisMap = formatter.reduce((pre, next) => {
     const id = next.seriesId ?? next.id
-    pre[next[computedIdKey.value]] = { ...next, seriesId: id }
+    pre[getSeriesFormatterKey(next) ?? id] = { ...next, seriesId: id }
     return pre
   }, {})
   formatter.splice(0, formatter.length)
@@ -129,24 +149,13 @@ const initSeriesLabel = () => {
   let initFlag = false
   const themeColor = dvMainStore.canvasStyleData.dashboard.themeColor
   const axisMap = yAxis.value.reduce((pre, next) => {
+    const axisSuffix = showAxisNameInSeriesLabel.value ? `(${getAxisName(next.axisType)})` : ''
     const optionLabel: string = `${next.chartShowName ?? next.name}${
       next.summary !== '' ? '(' + t('chart.' + next.summary) + ')' : ''
-    }${
-      props.chart.type.includes('chart-mix')
-        ? next.axisType === 'yAxis'
-          ? `(${t('chart.left_axis')})`
-          : `(${t('chart.right_axis')})`
-        : ''
-    }` as string
+    }${axisSuffix}` as string
     const optionShowName: string = `${next.chartShowName ?? next.name}${
       next.summary !== '' ? '(' + t('chart.' + next.summary) + ')' : ''
-    }${
-      props.chart.type.includes('chart-mix')
-        ? next.axisType === 'yAxis'
-          ? `(${t('chart.left_axis')})`
-          : `(${t('chart.right_axis')})`
-        : ''
-    }` as string
+    }${axisSuffix}` as string
     let tmp = {
       ...next,
       optionLabel: optionLabel,
@@ -157,34 +166,36 @@ const initSeriesLabel = () => {
       showExtremum: false,
       position: 'top'
     } as SeriesFormatter
-    if (seriesAxisMap[next[computedIdKey.value]]) {
-      initFormatCfgUnit(seriesAxisMap[next[computedIdKey.value]].formatterCfg)
+    const seriesFormatter = getSeriesFormatter(seriesAxisMap, next)
+    if (seriesFormatter) {
+      initFormatCfgUnit(seriesFormatter.formatterCfg)
       tmp = {
         ...tmp,
-        formatterCfg: seriesAxisMap[next[computedIdKey.value]].formatterCfg,
-        show: seriesAxisMap[next[computedIdKey.value]].show,
-        color: seriesAxisMap[next[computedIdKey.value]].color,
-        fontSize: seriesAxisMap[next[computedIdKey.value]].fontSize,
-        showExtremum: seriesAxisMap[next[computedIdKey.value]].showExtremum,
-        position: seriesAxisMap[next[computedIdKey.value]].position
+        formatterCfg: seriesFormatter.formatterCfg,
+        show: seriesFormatter.show,
+        color: seriesFormatter.color,
+        fontSize: seriesFormatter.fontSize,
+        showExtremum: seriesFormatter.showExtremum,
+        position: seriesFormatter.position
       }
     } else {
       initFlag = true
     }
     formatter.push(tmp)
     next.seriesId = next.seriesId ?? next.id
-    pre[next[computedIdKey.value]] = tmp
+    pre[getSeriesFormatterKey(next)] = tmp
     return pre
   }, {})
   // 初始化一下序列数组，用于主题适配
   if (initFlag) {
     changeLabelAttr('seriesLabelFormatter', false)
   }
-  if (!curSeriesFormatter.value || !axisMap[curSeriesFormatter.value[computedIdKey.value]]) {
-    curSeriesFormatter.value = axisMap[formatter[0][computedIdKey.value]]
+  const curSeriesKey = getSeriesFormatterKey(curSeriesFormatter.value)
+  if (!curSeriesFormatter.value || !axisMap[curSeriesKey]) {
+    curSeriesFormatter.value = axisMap[getSeriesFormatterKey(formatter[0])]
     return
   }
-  curSeriesFormatter.value = axisMap[curSeriesFormatter.value[computedIdKey.value]]
+  curSeriesFormatter.value = axisMap[curSeriesKey]
 }
 
 const labelPositionR = [
