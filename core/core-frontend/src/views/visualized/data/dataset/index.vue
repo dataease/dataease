@@ -394,7 +394,6 @@ const closeExport = () => {
 
 const save = ({ logic, items, errorMessage }) => {
   table.value.id = nodeInfo.id
-  table.value.row = 100000
   table.value.filename = exportForm.value.name
   table.value.dataEaseBi = isDataEaseBi.value || appStore.getIsIframe
   if (errorMessage) {
