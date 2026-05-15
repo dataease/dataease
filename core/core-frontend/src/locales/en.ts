@@ -2886,6 +2886,7 @@ export default {
     last_3_days: 'Last 3 days',
     month_to_date: 'Month to date',
     year_to_date: 'Year to date',
+    year_to_last_month_end: 'Year to end of last month',
     exact_match: 'Exact',
     fuzzy_match: 'Fuzzy',
     option_type: 'Option type',
