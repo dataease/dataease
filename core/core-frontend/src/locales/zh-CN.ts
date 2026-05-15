@@ -2820,6 +2820,7 @@ export default {
     last_3_days: '最近 3 天',
     month_to_date: '月初至今',
     year_to_date: '年初至今',
+    year_to_last_month_end: '年初至上月末',
     exact_match: '精确匹配',
     fuzzy_match: '模糊匹配',
     option_type: '选项类型',

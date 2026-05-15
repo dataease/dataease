@@ -1,11 +1,23 @@
 import dayjs from 'dayjs'
-import type { ManipulateType } from 'dayjs'
-function getThisStart(val = 'month' as ManipulateType | 'quarter') {
-  return new Date(dayjs().startOf(val).format('YYYY/MM/DD HH:mm:ss'))
+import type { ManipulateType, QUnitType } from 'dayjs'
+import quarterOfYear from 'dayjs/plugin/quarterOfYear'
+type ManipulateTypeWithQuarter = ManipulateType | 'quarter'
+dayjs.extend(quarterOfYear)
+
+function getThisStart(val = 'month' as ManipulateTypeWithQuarter) {
+  return new Date(
+    dayjs()
+      .startOf(val as QUnitType)
+      .format('YYYY/MM/DD HH:mm:ss')
+  )
 }
 
-function getThisEnd(val = 'month' as ManipulateType | 'quarter') {
-  return new Date(dayjs().endOf(val).format('YYYY/MM/DD HH:mm:ss'))
+function getThisEnd(val = 'month' as ManipulateTypeWithQuarter) {
+  return new Date(
+    dayjs()
+      .endOf(val as QUnitType)
+      .format('YYYY/MM/DD HH:mm:ss')
+  )
 }
 
 function getLastStart(val = 'month' as ManipulateType) {
@@ -14,6 +26,15 @@ function getLastStart(val = 'month' as ManipulateType) {
 
 function getLastEnd(val = 'month' as ManipulateType) {
   return new Date(dayjs().subtract(1, val).endOf(val).format('YYYY/MM/DD HH:mm:ss'))
+}
+
+function getYearToLastMonthEnd(): [Date, Date] {
+  const start = getThisStart('year')
+  const end = getLastEnd('month')
+  if (+start > +end) {
+    return [start, getThisEnd('day')]
+  }
+  return [start, end]
 }
 
 function getAround(val = 'month' as ManipulateType, type = 'add', num = 0) {
@@ -70,6 +91,8 @@ function getCustomRange(relativeToCurrentRange: string): [Date, Date] {
       ]
     case 'YearToThisMonth':
       return [new Date(dayjs().startOf('year').format('YYYY/MM/DD HH:mm:ss')), getThisEnd('month')]
+    case 'YearToLastMonthEnd':
+      return getYearToLastMonthEnd()
     case 'monthToYesterday':
       const sm = new Date(dayjs().startOf('month').format('YYYY/MM/DD HH:mm:ss'))
       const ld = getLastEnd('day')
@@ -99,6 +122,7 @@ export {
   getThisEnd,
   getLastStart,
   getLastEnd,
+  getYearToLastMonthEnd,
   getAround,
   getCustomRange,
   getAroundStart
