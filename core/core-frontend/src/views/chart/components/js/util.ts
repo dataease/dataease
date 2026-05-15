@@ -1,4 +1,4 @@
-import { isNumber } from 'lodash-es'
+import { cloneDeep, isNumber } from 'lodash-es'
 import { DEFAULT_TITLE_STYLE } from '../editor/util/chart'
 import { equalsAny, includesAny } from '../editor/util/StringUtils'
 import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
@@ -571,11 +571,15 @@ function getChartExcelTitle(preFix, viewTitle) {
 
 export const exportExcelDownload = (chart, preFix, callBack?) => {
   const excelName = getChartExcelTitle(preFix, chart.title)
+  const viewInfo = toRaw(chart)
   let request: any = {
     proxy: null,
     dvId: chart.sceneId,
     viewId: chart.id,
-    viewInfo: chart,
+    viewInfo: {
+      ...viewInfo,
+      customAttr: cloneDeep(viewInfo.customAttr)
+    },
     viewName: excelName,
     busiFlag: chart.busiFlag,
     downloadType: chart.downloadType
