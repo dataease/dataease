@@ -127,15 +127,7 @@ public class ChartDataServer implements ChartDataApi {
                     }
                 });
             }
-            int curLimit = Math.toIntExact(ExportCenterUtils.getExportLimit("view"));
-            int curDsLimit = Math.toIntExact(ExportCenterUtils.getExportLimit("dataset"));
-            int viewLimit = Math.min(curLimit, curDsLimit);
-            if (ChartConstants.VIEW_RESULT_MODE.CUSTOM.equals(viewDTO.getResultMode())) {
-                Integer limitCount = viewDTO.getResultCount();
-                viewDTO.setResultCount(Math.min(viewLimit, limitCount));
-            } else {
-                viewDTO.setResultCount(viewLimit);
-            }
+            viewDTO.setResultCount(getExcelExportLimit(request.getDownloadType()));
             if (CommonConstants.VIEW_DATA_FROM.TEMPLATE.equalsIgnoreCase(viewDTO.getDataFrom())) {
                 chartViewInfo = extendDataManage.getChartDataInfo(viewDTO.getId(), viewDTO);
             } else {
@@ -154,6 +146,15 @@ public class ChartDataServer implements ChartDataApi {
             throw new RuntimeException(e);
         }
         return chartViewInfo;
+    }
+
+    private int getExcelExportLimit(String downloadType) {
+        long viewLimit = ExportCenterUtils.getExportLimit("view");
+        if ("dataset".equals(downloadType)) {
+            long datasetLimit = ExportCenterUtils.getExportLimit("dataset");
+            return Math.toIntExact(Math.min(viewLimit, datasetLimit));
+        }
+        return Math.toIntExact(viewLimit);
     }
 
 
