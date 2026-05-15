@@ -115,42 +115,49 @@ const handleClick = tab => {
     })
 }
 
+const getExportTasks = () => {
+  if (activeName.value === 'IN_PROGRESS') {
+    exportTasksRecords().then(res => {
+      tabList.value.forEach(item => {
+        if (item.name === 'ALL') {
+          item.label = t('data_set.all') + '(' + res.data.ALL + ')'
+        }
+        if (item.name === 'IN_PROGRESS') {
+          item.label = t('data_set.exporting') + '(' + res.data.IN_PROGRESS + ')'
+        }
+        if (item.name === 'SUCCESS') {
+          item.label = t('data_set.success') + '(' + res.data.SUCCESS + ')'
+        }
+        if (item.name === 'FAILED') {
+          item.label = t('data_set.fail') + '(' + res.data.FAILED + ')'
+        }
+        if (item.name === 'PENDING') {
+          item.label = t('data_set.waiting') + '(' + res.data.PENDING + ')'
+        }
+      })
+    })
+    exportTasks(
+      state.paginationConfig.currentPage,
+      state.paginationConfig.pageSize,
+      activeName.value
+    ).then(res => {
+      state.paginationConfig.total = res.data.total
+      tableData.value = res.data.records
+    })
+  }
+}
+
 const init = params => {
   drawer.value = true
   if (params && params.activeName !== undefined) {
     activeName.value = params.activeName
   }
   handleClick()
+  if (isDataEaseBi.value || appStore.getIsIframe) {
+    return
+  }
   timer = setInterval(() => {
-    if (activeName.value === 'IN_PROGRESS') {
-      exportTasksRecords().then(res => {
-        tabList.value.forEach(item => {
-          if (item.name === 'ALL') {
-            item.label = t('data_set.all') + '(' + res.data.ALL + ')'
-          }
-          if (item.name === 'IN_PROGRESS') {
-            item.label = t('data_set.exporting') + '(' + res.data.IN_PROGRESS + ')'
-          }
-          if (item.name === 'SUCCESS') {
-            item.label = t('data_set.success') + '(' + res.data.SUCCESS + ')'
-          }
-          if (item.name === 'FAILED') {
-            item.label = t('data_set.fail') + '(' + res.data.FAILED + ')'
-          }
-          if (item.name === 'PENDING') {
-            item.label = t('data_set.waiting') + '(' + res.data.PENDING + ')'
-          }
-        })
-      })
-      exportTasks(
-        state.paginationConfig.currentPage,
-        state.paginationConfig.pageSize,
-        activeName.value
-      ).then(res => {
-        state.paginationConfig.total = res.data.total
-        tableData.value = res.data.records
-      })
-    }
+    getExportTasks()
   }, 5000)
 }
 const linkStore = useLinkStoreWithOut()
@@ -336,24 +343,28 @@ const delAll = () => {
 useEmitt({ name: 'task-export-topic-call', callback: taskExportTopicCall })
 
 defineExpose({
-  init
+  init,
+  handleClose
 })
 </script>
 
 <template>
-  <el-drawer
-    v-loading="drawerLoading"
-    modal-class="de-export-excel"
-    :title="$t('data_export.export_center')"
-    v-model="drawer"
-    direction="rtl"
-    size="1000px"
-    append-to-body
-    :before-close="handleClose"
-  >
+  <div class="de-export-excel_content">
+    <el-button
+      v-if="(isDataEaseBi || appStore.getIsIframe) && activeName === 'IN_PROGRESS'"
+      class="de-refresh-Embedded"
+      text
+      @click="getExportTasks"
+    >
+      <template #icon>
+        <Icon name="icon_refresh_outlined"><icon_refresh_outlined class="svg-icon" /></Icon>
+      </template>
+      {{ t('commons.refresh') }}
+    </el-button>
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane v-for="tab in tabList" :key="tab.name" :label="tab.label" :name="tab.name" />
     </el-tabs>
+
     <el-button
       v-if="activeName === 'SUCCESS' && multipleSelection.length === 0"
       secondary
@@ -485,7 +496,7 @@ defineExpose({
         </template>
       </GridTable>
     </div>
-  </el-drawer>
+  </div>
 
   <el-dialog :title="t('data_set.reason_for_failure')" v-model="msgDialogVisible" width="30%">
     <span>{{ msg }}</span>
@@ -500,13 +511,18 @@ defineExpose({
 </template>
 
 <style lang="less">
-.de-export-excel {
-  .ed-drawer__body {
-    padding-bottom: 24px;
+.de-export-excel_content {
+  height: 100%;
+  width: 100%;
+  position: relative;
+
+  .de-refresh-Embedded {
+    position: absolute;
+    right: 16px;
+    top: 12px;
+    z-index: 1;
   }
-  .ed-drawer__header {
-    border-bottom: none;
-  }
+
   .ed-tabs {
     margin-top: -25px;
     .ed-tabs__header {
