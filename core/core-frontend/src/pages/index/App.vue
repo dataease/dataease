@@ -6,8 +6,8 @@ import { useRoute } from 'vue-router_2'
 const route = useRoute()
 const exportExcelRef = ref()
 const exportExcelRefShow = ref(false)
-const ExportExcel = defineAsyncComponent(
-  () => import('@/views/visualized/data/dataset/ExportExcel.vue')
+const ExportExcelDraw = defineAsyncComponent(
+  () => import('@/views/visualized/data/dataset/ExportExcelDraw.vue')
 )
 const exportExcelCenter = params => {
   exportExcelRefShow.value = true
@@ -23,6 +23,6 @@ useEmitt({
 <template>
   <config-global>
     <router-view :key="route.path" />
-    <ExportExcel v-if="exportExcelRefShow" ref="exportExcelRef"></ExportExcel>
+    <ExportExcelDraw ref="exportExcelRef"></ExportExcelDraw>
   </config-global>
 </template>
