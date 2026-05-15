@@ -60,6 +60,18 @@ public class ApiUtils {
         return new SimpleDateFormat(timeFunction[1]).format(calendar.getTime());
     }
 
+    static boolean isParamFieldMatched(List<TableField> fields, TableField field, String param) {
+        if (field == null || StringUtils.isBlank(param)) {
+            return false;
+        }
+        if (StringUtils.equalsIgnoreCase(field.getName(), param)) {
+            return true;
+        }
+        boolean matchedByName = Optional.ofNullable(fields).orElseGet(ArrayList::new).stream()
+                .anyMatch(item -> StringUtils.equalsIgnoreCase(item.getName(), param));
+        return !matchedByName && StringUtils.equalsIgnoreCase(field.getOriginName(), param);
+    }
+
     public static List<DatasetTableDTO> getApiTables(DatasourceRequest datasourceRequest) throws DEException {
         List<DatasetTableDTO> tableDescs = new ArrayList<>();
         TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
@@ -238,7 +250,7 @@ public class ApiUtils {
                     for (ApiDefinition definition : paramsList) {
                         for (int i = 0; i < definition.getFields().size(); i++) {
                             TableField field = definition.getFields().get(i);
-                            if (field.getName().equalsIgnoreCase(param)) {
+                            if (isParamFieldMatched(definition.getFields(), field, param)) {
                                 String resultStr = execHttpRequest(true, definition, definition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), paramsList);
                                 List<String[]> dataList = fetchResult(resultStr, definition);
                                 if (dataList.size() > 0) {
@@ -268,7 +280,7 @@ public class ApiUtils {
                         for (ApiDefinition definition : paramsList) {
                             for (int i = 0; i < definition.getFields().size(); i++) {
                                 TableField field = definition.getFields().get(i);
-                                if (field.getName().equalsIgnoreCase(param)) {
+                                if (isParamFieldMatched(definition.getFields(), field, param)) {
                                     String resultStr = execHttpRequest(true, definition, definition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), paramsList);
                                     List<String[]> dataList = fetchResult(resultStr, definition);
                                     if (dataList.size() > 0) {
@@ -315,7 +327,7 @@ public class ApiUtils {
                     for (ApiDefinition definition : paramsList) {
                         for (int i = 0; i < definition.getFields().size(); i++) {
                             TableField field = definition.getFields().get(i);
-                            if (field.getOriginName().equalsIgnoreCase(param)) {
+                            if (isParamFieldMatched(definition.getFields(), field, param)) {
                                 String resultStr = execHttpRequest(true, definition, definition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), paramsList);
                                 List<String[]> dataList = fetchResult(resultStr, definition);
                                 if (dataList.size() > 0) {
@@ -337,7 +349,7 @@ public class ApiUtils {
                         for (ApiDefinition definition : paramsList) {
                             for (int i = 0; i < definition.getFields().size(); i++) {
                                 TableField field = definition.getFields().get(i);
-                                if (field.getName().equalsIgnoreCase(param)) {
+                                if (isParamFieldMatched(definition.getFields(), field, param)) {
                                     String resultStr = execHttpRequest(true, definition, definition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), paramsList);
                                     List<String[]> dataList = fetchResult(resultStr, definition);
                                     if (dataList.size() > 0) {
@@ -391,7 +403,7 @@ public class ApiUtils {
                             for (ApiDefinition definition : paramsList) {
                                 for (int i = 0; i < definition.getFields().size(); i++) {
                                     TableField field = definition.getFields().get(i);
-                                    if (field.getOriginName().equalsIgnoreCase(param)) {
+                                    if (isParamFieldMatched(definition.getFields(), field, param)) {
                                         String resultStr = execHttpRequest(false, definition, definition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), paramsList);
                                         List<String[]> dataList = fetchResult(resultStr, definition);
                                         if (dataList.size() > 0) {
@@ -432,7 +444,7 @@ public class ApiUtils {
                                         for (ApiDefinition definition : paramsList) {
                                             for (int i = 0; i < definition.getFields().size(); i++) {
                                                 TableField field = definition.getFields().get(i);
-                                                if (field.getOriginName().equalsIgnoreCase(param)) {
+                                                if (isParamFieldMatched(definition.getFields(), field, param)) {
                                                     String resultStr = execHttpRequest(false, definition, definition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), paramsList);
                                                     List<String[]> dataList = fetchResult(resultStr, definition);
                                                     if (dataList.size() > 0) {
@@ -462,7 +474,7 @@ public class ApiUtils {
                                             for (ApiDefinition definition : paramsList) {
                                                 for (int i = 0; i < definition.getFields().size(); i++) {
                                                     TableField field = definition.getFields().get(i);
-                                                    if (field.getOriginName().equalsIgnoreCase(param)) {
+                                                    if (isParamFieldMatched(definition.getFields(), field, param)) {
                                                         String resultStr = execHttpRequest(false, definition, definition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), paramsList);
                                                         List<String[]> dataList = fetchResult(resultStr, definition);
                                                         if (dataList.size() > 0) {
