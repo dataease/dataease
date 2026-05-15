@@ -22,5 +22,7 @@ public class RoleCreator implements Serializable {
     @Schema(hidden = true)
     private Long rid;
 
+    private Long oid;
+
 
 }

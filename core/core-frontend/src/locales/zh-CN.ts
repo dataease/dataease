@@ -836,6 +836,8 @@ export default {
     type: '角色类型',
     desc: '角色描述',
     average_role: '普通用户',
+    org_analyst: '数据分析师',
+    analyst: '分析师',
     org_admin: '组织管理员',
     confirm_delete: '确认删除该角色吗？',
     delete_tips:

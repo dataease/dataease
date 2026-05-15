@@ -9,6 +9,7 @@ export const userInfo = () => request.get({ url: '/user/info' })
 
 export const searchRoleApi = (keyword: string) =>
   request.post({ url: '/role/query', data: { keyword } })
+export const searchRoleByOidApi = (oid: number) => request.get({ url: `/role/queryWithOid/${oid}` })
 
 export const userOptionForRoleApi = data => request.post({ url: '/user/role/option', data })
 
@@ -17,6 +18,9 @@ export const userSelectedForRoleApi = (page: number, limit: number, data) =>
 
 export const userPageApi = (page: number, limit: number, data) =>
   request.post({ url: `/user/pager/${page}/${limit}`, data })
+
+export const memberPageApi = (page: number, limit: number, data) =>
+  request.post({ url: `/user/mumberPager/${page}/${limit}`, data })
 
 export const personSysVariableInfoApi = uid =>
   request.get({ url: `/user/personSysVariableInfo/${uid}` })

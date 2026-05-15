@@ -41,6 +41,16 @@ public interface UserApi {
     @PostMapping("/pager/{goPage}/{pageSize}")
     PageResult<UserGridVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody UserGridRequest request);
 
+    @Operation(summary = "查询成员列表")
+    @Parameters({
+            @Parameter(name = "goPage", description = "目标页码", required = true, in = ParameterIn.PATH),
+            @Parameter(name = "pageSize", description = "每页容量", required = true, in = ParameterIn.PATH),
+            @Parameter(name = "request", description = "过滤条件", required = true)
+    })
+    @DePermit("m:read")
+    @PostMapping("/mumberPager/{goPage}/{pageSize}")
+    PageResult<UserGridVO> memberPager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody UserGridRequest request);
+
     @Operation(summary = "查询用户详情")
     @Parameter(name = "id", description = "ID", required = true, in = ParameterIn.PATH)
     @DePermit({"m:read", "#p0 + ':read'"})
