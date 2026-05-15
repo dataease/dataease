@@ -1046,28 +1046,32 @@ export const dvMainStore = defineStore('dataVisualization', {
             this.componentData[indexOuter] = element
           } else if (element.component === 'Group') {
             element.propValue?.forEach((groupItem, index) => {
-              this.trackFilterCursor(
-                groupItem,
-                data,
-                trackInfo,
-                preActiveComponentIds,
-                viewId,
-                customFilterInfo
-              )
-              element.propValue[index] = groupItem
-            })
-          } else if (element.component === 'DeTabs') {
-            element.propValue?.forEach(tabItem => {
-              tabItem.componentData?.forEach((tabComponent, index) => {
+              if (groupItem.id !== viewId) {
                 this.trackFilterCursor(
-                  tabComponent,
+                  groupItem,
                   data,
                   trackInfo,
                   preActiveComponentIds,
                   viewId,
                   customFilterInfo
                 )
-                tabItem.componentData[index] = tabComponent
+                element.propValue[index] = groupItem
+              }
+            })
+          } else if (element.component === 'DeTabs') {
+            element.propValue?.forEach(tabItem => {
+              tabItem.componentData?.forEach((tabComponent, index) => {
+                if (tabComponent.id !== viewId) {
+                  this.trackFilterCursor(
+                    tabComponent,
+                    data,
+                    trackInfo,
+                    preActiveComponentIds,
+                    viewId,
+                    customFilterInfo
+                  )
+                  tabItem.componentData[index] = tabComponent
+                }
               })
             })
           }
@@ -1583,6 +1587,9 @@ export const dvMainStore = defineStore('dataVisualization', {
         } else if (item.component === 'DeTabs') {
           item.propValue.forEach(tabItem => {
             tabItem.componentData?.forEach(tabComponent => {
+              console.log(
+                '==test1==' + tabComponent.id + JSON.stringify(tabComponent.linkageFilters)
+              )
               if (tabComponent.linkageFilters && tabComponent.linkageFilters.length > 0) {
                 tabComponent.linkageFilters.splice(0, tabComponent.linkageFilters.length)
                 useEmitt().emitter.emit('query-data-' + tabComponent.id)
