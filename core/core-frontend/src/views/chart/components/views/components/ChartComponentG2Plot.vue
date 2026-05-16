@@ -30,6 +30,7 @@ import { L7ChartView } from '@/views/chart/components/js/panel/types/impl/l7'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ExportImage } from '@antv/l7'
 import { configEmptyDataStyle } from '@/views/chart/components/js/panel/common/common_antv'
+import { hasNextDrillLevel } from '@/views/chart/components/views/util/drill'
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const { nowPanelTrackInfo, nowPanelJumpInfo, mobileInPc, embeddedCallBack, inMobile } =
@@ -669,7 +670,10 @@ const trackMenu = computed(() => {
       (!mobileInPc.value || inMobile.value) &&
       trackMenuInfo.push('jump')
     linkageCount && view.value?.linkageActive && trackMenuInfo.push('linkage')
-    view.value.drillFields.length && trackMenuInfo.push('drill')
+    hasNextDrillLevel(
+      curView?.drillFields || view.value.drillFields,
+      curView?.drillFilters?.length || 0
+    ) && trackMenuInfo.push('drill')
     // 如果同时配置jump linkage drill 切配置联动时同时下钻 在实际只显示两个 '跳转' '联动和下钻'
     if (trackMenuInfo.length === 3 && props.element.actionSelection.linkageActive === 'auto') {
       trackMenuInfo = ['jump', 'linkageAndDrill']

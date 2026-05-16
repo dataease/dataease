@@ -15,6 +15,7 @@ import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { storeToRefs } from 'pinia'
 import { isDashboard, trackBarStyleCheck } from '@/utils/canvasUtils'
 import ViewTrackBar from '@/components/visualization/ViewTrackBar.vue'
+import { hasNextDrillLevel } from '@/views/chart/components/views/util/drill'
 
 const props = defineProps({
   // 公共参数集
@@ -75,6 +76,7 @@ const viewTrack = ref(null)
 const indicatorRef = ref(null)
 const errMsg = ref('')
 const isError = ref(false)
+const drillFilters = ref([])
 const state = reactive({
   pointParam: null,
   data: null,
@@ -390,6 +392,7 @@ const calcData = (view, callback) => {
           errMsg.value = res.msg
         } else {
           chartData.value = res?.data as Partial<Chart['data']>
+          drillFilters.value = res?.drillFilters || []
           emit('onDrillFilters', res?.drillFilters)
 
           dvMainStore.setViewDataDetails(view.id, res)
@@ -398,9 +401,11 @@ const calcData = (view, callback) => {
         callback?.()
       })
       .catch(() => {
+        drillFilters.value = []
         callback?.()
       })
   } else {
+    drillFilters.value = []
     callback?.()
   }
 }
@@ -492,7 +497,8 @@ const trackMenu = computed(() => {
     (!mobileInPc.value || inMobile.value) &&
     trackMenuInfo.push('jump')
   linkageCount && view.value?.linkageActive && trackMenuInfo.push('linkage')
-  view.value.drillFields.length && trackMenuInfo.push('drill')
+  hasNextDrillLevel(view.value.drillFields, drillFilters.value.length) &&
+    trackMenuInfo.push('drill')
   // 如果同时配置jump linkage drill 切配置联动时同时下钻 在实际只显示两个 '跳转' '联动和下钻'
   if (trackMenuInfo.length === 3 && props.element.actionSelection.linkageActive === 'auto') {
     trackMenuInfo = ['jump', 'linkageAndDrill']
