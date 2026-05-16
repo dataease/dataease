@@ -398,11 +398,9 @@ public class ChartDataServer implements ChartDataApi {
         Integer totalDepth = 0;
         List<CellRangeAddress> mergeConfig = new ArrayList<>();
         if (StringUtils.equalsAnyIgnoreCase(viewInfo.getType(), "table-normal", "table-info")) {
-            for (ChartViewFieldDTO tmpAxis : xAxis) {
-                if (tmpAxis.isHide()) {
-                    continue;
-                }
-                if (tmpAxis.getDeType().equals(DeTypeConstants.DE_INT) || tmpAxis.getDeType().equals(DeTypeConstants.DE_FLOAT)) {
+            List<ChartViewFieldDTO> visibleTableFields = xAxis.stream().filter(x -> !x.isHide()).toList();
+            for (ChartViewFieldDTO tmpAxis : visibleTableFields) {
+                if (isNumericType(tmpAxis.getDeType())) {
                     CellStyle formatterCellStyle = createCellStyle(wb, tmpAxis.getFormatterCfg(), null);
                     styles.add(formatterCellStyle);
                 } else {
@@ -429,8 +427,10 @@ public class ChartDataServer implements ChartDataApi {
                     }
                 }
             }
+            if (StringUtils.equalsAnyIgnoreCase(viewInfo.getType(), "table-info", "table-normal") && !"dataset".equalsIgnoreCase(viewInfo.getDownloadType())) {
+                xAxis = visibleTableFields;
+            }
             if ("table-info".equalsIgnoreCase(viewInfo.getType()) && !"dataset".equalsIgnoreCase(viewInfo.getDownloadType())) {
-                xAxis = xAxis.stream().filter(x -> !x.isHide()).toList();
                 Map<String, Object> tableCell = (Map<String, Object>) viewInfo.getCustomAttr().get("tableCell");
                 Boolean mergeCells = (Boolean) tableCell.get("mergeCells");
                 if (mergeCells != null && mergeCells) {
@@ -556,16 +556,25 @@ public class ChartDataServer implements ChartDataApi {
                             detailsSheet.setColumnWidth(j, 255 * 20);
                         } else if (cellValObj != null) {
                             try {
-                                if (StringUtils.equalsAnyIgnoreCase(viewInfo.getType(), "table-info", "table-normal") && Arrays.asList(DeTypeConstants.DE_INT,DeTypeConstants.DE_FLOAT).contains(xAxis.get(j).getDeType())) {
-                                    try {
-                                        FormatterCfgDTO formatterCfgDTO = xAxis.get(j).getFormatterCfg() == null ? new FormatterCfgDTO().setUnitLanguage(Lang.isChinese() ? "ch" : "en") : xAxis.get(j).getFormatterCfg();
-                                        row.getCell(j).setCellStyle(styles.get(j));
-                                        row.getCell(j).setCellValue(Double.valueOf(cellValue(formatterCfgDTO, new BigDecimal(cellValObj.toString()))));
-                                    } catch (Exception e) {
+                                boolean tableChart = StringUtils.equalsAnyIgnoreCase(viewInfo.getType(), "table-info", "table-normal");
+                                if (tableChart && j < xAxis.size()) {
+                                    ChartViewFieldDTO field = xAxis.get(j);
+                                    if (isNumericType(field.getDeType())) {
+                                        try {
+                                            BigDecimal numericValue = new BigDecimal(cellValObj.toString());
+                                            FormatterCfgDTO formatterCfgDTO = field.getFormatterCfg() == null ? new FormatterCfgDTO() : field.getFormatterCfg();
+                                            if (styles.size() > j && styles.get(j) != null) {
+                                                cell.setCellStyle(styles.get(j));
+                                            }
+                                            cell.setCellValue(Double.valueOf(cellValue(formatterCfgDTO, numericValue)));
+                                        } catch (Exception e) {
+                                            cell.setCellValue(cellValObj.toString());
+                                        }
+                                    } else {
                                         cell.setCellValue(cellValObj.toString());
                                     }
                                 } else {
-                                    if ((excelTypes[j].equals(DeTypeConstants.DE_INT) || excelTypes[j].equals(DeTypeConstants.DE_FLOAT)) && StringUtils.isNotEmpty(cellValObj.toString())) {
+                                    if (excelTypes != null && excelTypes.length > j && isNumericType(excelTypes[j]) && StringUtils.isNotEmpty(cellValObj.toString())) {
                                         cell.setCellValue(Double.valueOf(cellValObj.toString()));
                                     } else if (cellValObj != null) {
                                         cell.setCellValue(cellValObj.toString());
@@ -597,6 +606,10 @@ public class ChartDataServer implements ChartDataApi {
                 mergeConfig.forEach(detailsSheet::addMergedRegionUnsafe);
             }
         }
+    }
+
+    private static boolean isNumericType(Integer deType) {
+        return Objects.equals(deType, DeTypeConstants.DE_INT) || Objects.equals(deType, DeTypeConstants.DE_FLOAT);
     }
 
     private static List<CellRangeAddress> getMergeConfig(List<Object[]> data, int colIndex, int offsetHeight) {
