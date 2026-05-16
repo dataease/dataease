@@ -31,6 +31,7 @@ import { isDashboard, trackBarStyleCheck } from '@/utils/canvasUtils'
 import { type SpreadSheet } from '@antv/s2'
 import { parseJson } from '../../js/util'
 import { useI18n } from '@/hooks/web/useI18n'
+import { hasNextDrillLevel, isCurrentDrillField } from '@/views/chart/components/views/util/drill'
 
 const dvMainStore = dvMainStoreWithOut()
 const {
@@ -570,7 +571,7 @@ const trackMenuCmp = computed(() => {
     (!mobileInPc.value || inMobile.value) &&
     trackMenuInfo.push('jump')
   linkageCount && view.value?.linkageActive && trackMenuInfo.push('linkage')
-  view.value.drillFields.length && trackMenuInfo.push('drill')
+  hasNextDrillLevel(view.value.drillFields, drillLength.value) && trackMenuInfo.push('drill')
   // 如果同时配置jump linkage drill 切配置联动时同时下钻 在实际只显示两个 '跳转' '联动和下钻'
   if (trackMenuInfo.length === 3 && props.element.actionSelection.linkageActive === 'auto') {
     trackMenuInfo = ['jump', 'linkageAndDrill']
@@ -605,7 +606,7 @@ const trackMenuCalc = itemId => {
     trackMenuInfo.push('jump')
   linkageCount && view.value?.linkageActive && trackMenuInfo.push('linkage')
   // 判断是否有下钻 同时判断下钻到第几层
-  if (view.value.drillFields.length && view.value.drillFields[drillLength.value].id === itemId) {
+  if (isCurrentDrillField(view.value.drillFields, drillLength.value, itemId)) {
     drillCount++
   }
   drillCount && trackMenuInfo.push('drill')
