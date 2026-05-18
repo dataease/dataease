@@ -130,6 +130,7 @@ const setupAll = async (
   const { wsCache } = useCache()
   wsCache.set('TreeSort-backend', defaultSort['basic.defaultSort'] ?? '1')
   wsCache.set('open-backend', defaultSort['basic.defaultOpen'] ?? '0')
+  wsCache.set('embeddedExportMode-backend', defaultSort['basic.embeddedExportMode'] ?? 'sync')
   app.mount(dom)
   return app
 }

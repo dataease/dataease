@@ -21,6 +21,7 @@ import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.log.DeLog;
 import io.dataease.model.ExportTaskDTO;
+import io.dataease.constant.XpackSettingConstants;
 import io.dataease.system.manage.SysParameterManage;
 import io.dataease.utils.*;
 import io.dataease.visualization.dao.auto.entity.CoreStore;
@@ -80,6 +81,11 @@ public class ExportCenterManage implements BaseExportApi {
 
     private DataFillingApi getDataFillingApi() {
         return dataFillingApi;
+    }
+
+    public boolean embeddedExportSync() {
+        String mode = sysParameterManage.singleVal(XpackSettingConstants.EMBEDDED_EXPORT_MODE);
+        return !StringUtils.equalsIgnoreCase(mode, "async");
     }
 
 

@@ -12,9 +12,11 @@ import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useLinkStoreWithOut } from '@/store/modules/link'
 import { useAppStoreWithOut } from '@/store/modules/app'
+import { useCache } from '@/hooks/web/useCache'
 import { Decimal } from 'decimal.js'
 
 const appStore = useAppStoreWithOut()
+const { wsCache } = useCache()
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 
 const { t } = useI18n()
@@ -607,6 +609,9 @@ export const exportExcelDownload = (chart, preFix, callBack?) => {
   }
 
   const linkStore = useLinkStoreWithOut()
+  const embeddedAsyncExport =
+    (isDataEaseBi.value || appStore.getIsIframe) &&
+    wsCache.get('embeddedExportMode-backend') === 'async'
 
   if (isDataEaseBi.value || appStore.getIsIframe) {
     request.dataEaseBi = true
@@ -617,7 +622,10 @@ export const exportExcelDownload = (chart, preFix, callBack?) => {
   }
   method(request)
     .then(res => {
-      if (linkStore.getLinkToken || isDataEaseBi.value || appStore.getIsIframe) {
+      if (
+        linkStore.getLinkToken ||
+        ((isDataEaseBi.value || appStore.getIsIframe) && !embeddedAsyncExport)
+      ) {
         const blob = new Blob([res.data], { type: 'application/vnd.ms-excel' })
         const link = document.createElement('a')
         link.style.display = 'none'
