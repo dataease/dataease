@@ -140,6 +140,7 @@ public class ChartDataServer implements ChartDataApi {
                 request.setHeader(dsHeader);
                 request.setExcelTypes(dsTypes);
             }
+            viewDTO.setData(chartViewInfo.getData());
             request.setDetails(tableRow);
             request.setData(chartViewInfo.getData());
         } catch (Exception e) {
@@ -386,19 +387,12 @@ public class ChartDataServer implements ChartDataApi {
 
     public static void setExcelData(Sheet detailsSheet, CellStyle cellStyle, Object[] header, List<Object[]> details, ViewDetailField[] detailFields, Integer[] excelTypes, Comment comment, ChartViewDTO viewInfo, Workbook wb) {
         List<CellStyle> styles = new ArrayList<>();
-        List<ChartViewFieldDTO> xAxis = new ArrayList<>();
-
-        xAxis.addAll(viewInfo.getXAxis());
-        xAxis.addAll(viewInfo.getYAxis());
-        xAxis.addAll(viewInfo.getXAxisExt());
-        xAxis.addAll(viewInfo.getYAxisExt());
-        xAxis.addAll(viewInfo.getExtStack());
-        xAxis.addAll(viewInfo.getDrillFields());
+        List<ChartViewFieldDTO> exportFields = resolveExportFields(viewInfo, header);
         TableHeader tableHeader = null;
         Integer totalDepth = 0;
         List<CellRangeAddress> mergeConfig = new ArrayList<>();
         if (StringUtils.equalsAnyIgnoreCase(viewInfo.getType(), "table-normal", "table-info")) {
-            for (ChartViewFieldDTO tmpAxis : xAxis) {
+            for (ChartViewFieldDTO tmpAxis : exportFields) {
                 if (tmpAxis.isHide()) {
                     continue;
                 }
@@ -415,10 +409,7 @@ public class ChartDataServer implements ChartDataApi {
             if (tableHeaderMap.get("headerGroup") != null && Boolean.parseBoolean(tableHeaderMap.get("headerGroup").toString())) {
                 var tmpHeader = JsonUtil.parseObject((String) JsonUtil.toJSONString(customAttr.get("tableHeader")), TableHeader.class);
                 // 校验字段数量和顺序
-                var allAxis = new ArrayList<>(viewInfo.getXAxis().stream().filter(x -> !x.isHide()).toList());
-                if (StringUtils.equalsIgnoreCase(viewInfo.getType(), "table-normal")) {
-                    allAxis.addAll(viewInfo.getYAxis().stream().filter(x -> !x.isHide()).toList());
-                }
+                var allAxis = new ArrayList<>(exportFields.stream().filter(x -> !x.isHide()).toList());
                 if (validateHeaderGroup(tmpHeader, allAxis)) {
                     tableHeader = tmpHeader;
                     for (TableHeader.ColumnInfo column : tableHeader.getHeaderGroupConfig().getColumns()) {
@@ -430,7 +421,6 @@ public class ChartDataServer implements ChartDataApi {
                 }
             }
             if ("table-info".equalsIgnoreCase(viewInfo.getType()) && !"dataset".equalsIgnoreCase(viewInfo.getDownloadType())) {
-                xAxis = xAxis.stream().filter(x -> !x.isHide()).toList();
                 Map<String, Object> tableCell = (Map<String, Object>) viewInfo.getCustomAttr().get("tableCell");
                 Boolean mergeCells = (Boolean) tableCell.get("mergeCells");
                 if (mergeCells != null && mergeCells) {
@@ -506,7 +496,7 @@ public class ChartDataServer implements ChartDataApi {
                 int width = 0;
                 Integer depth = 0;
                 for (TableHeader.ColumnInfo column : tableHeader.getHeaderGroupConfig().getColumns()) {
-                    createCell(tableHeader, column, width, depth, detailsSheet, cellStyle, totalDepth, rowMap, xAxis);
+                    createCell(tableHeader, column, width, depth, detailsSheet, cellStyle, totalDepth, rowMap, exportFields);
                     width = width + column.getWidth();
                 }
             }
@@ -556,9 +546,11 @@ public class ChartDataServer implements ChartDataApi {
                             detailsSheet.setColumnWidth(j, 255 * 20);
                         } else if (cellValObj != null) {
                             try {
-                                if (StringUtils.equalsAnyIgnoreCase(viewInfo.getType(), "table-info", "table-normal") && Arrays.asList(DeTypeConstants.DE_INT,DeTypeConstants.DE_FLOAT).contains(xAxis.get(j).getDeType())) {
+                                if (StringUtils.equalsAnyIgnoreCase(viewInfo.getType(), "table-info", "table-normal")
+                                        && j < exportFields.size()
+                                        && Arrays.asList(DeTypeConstants.DE_INT, DeTypeConstants.DE_FLOAT).contains(exportFields.get(j).getDeType())) {
                                     try {
-                                        FormatterCfgDTO formatterCfgDTO = xAxis.get(j).getFormatterCfg() == null ? new FormatterCfgDTO().setUnitLanguage(Lang.isChinese() ? "ch" : "en") : xAxis.get(j).getFormatterCfg();
+                                        FormatterCfgDTO formatterCfgDTO = exportFields.get(j).getFormatterCfg() == null ? new FormatterCfgDTO().setUnitLanguage(Lang.isChinese() ? "ch" : "en") : exportFields.get(j).getFormatterCfg();
                                         row.getCell(j).setCellStyle(styles.get(j));
                                         row.getCell(j).setCellValue(Double.valueOf(cellValue(formatterCfgDTO, new BigDecimal(cellValObj.toString()))));
                                     } catch (Exception e) {
@@ -581,7 +573,7 @@ public class ChartDataServer implements ChartDataApi {
                                 ChartSeniorFunctionCfgDTO functionCfgDTO = JsonUtil.parseObject((String) JsonUtil.toJSONString(senior.get("functionCfg")), ChartSeniorFunctionCfgDTO.class);
                                 if (functionCfgDTO != null && StringUtils.isNotEmpty(functionCfgDTO.getEmptyDataStrategy()) && functionCfgDTO.getEmptyDataStrategy().equalsIgnoreCase("setZero")) {
                                     if ((viewInfo.getType().equalsIgnoreCase("table-normal") || viewInfo.getType().equalsIgnoreCase("table-info"))) {
-                                        if (functionCfgDTO.getEmptyDataFieldCtrl().contains(xAxis.get(j).getDataeaseName())) {
+                                        if (j < exportFields.size() && functionCfgDTO.getEmptyDataFieldCtrl().contains(exportFields.get(j).getDataeaseName())) {
                                             cell.setCellValue(0);
                                         }
                                     } else {
@@ -597,6 +589,53 @@ public class ChartDataServer implements ChartDataApi {
                 mergeConfig.forEach(detailsSheet::addMergedRegionUnsafe);
             }
         }
+    }
+
+    static List<ChartViewFieldDTO> resolveExportFields(ChartViewDTO viewInfo, Object[] header) {
+        List<ChartViewFieldDTO> fields = new ArrayList<>();
+        if (viewInfo != null && viewInfo.getData() != null && viewInfo.getData().get("fields") != null) {
+            Object fieldsObj = viewInfo.getData().get("fields");
+            if (fieldsObj instanceof List<?> fieldList && !fieldList.isEmpty() && fieldList.getFirst() instanceof ChartViewFieldDTO) {
+                fields.addAll(fieldList.stream().map(ChartViewFieldDTO.class::cast).toList());
+            } else {
+                fields.addAll(JsonUtil.parseList(JsonUtil.toJSONString(fieldsObj).toString(), new TypeReference<List<ChartViewFieldDTO>>() {
+                }));
+            }
+        }
+        if (CollectionUtils.isEmpty(fields)) {
+            appendFields(fields, viewInfo == null ? null : viewInfo.getXAxis());
+            appendFields(fields, viewInfo == null ? null : viewInfo.getYAxis());
+            appendFields(fields, viewInfo == null ? null : viewInfo.getXAxisExt());
+            appendFields(fields, viewInfo == null ? null : viewInfo.getYAxisExt());
+            appendFields(fields, viewInfo == null ? null : viewInfo.getExtStack());
+            appendFields(fields, viewInfo == null ? null : viewInfo.getDrillFields());
+        }
+        if (ArrayUtils.isEmpty(header) || CollectionUtils.isEmpty(fields)) {
+            return fields;
+        }
+        Map<String, Deque<ChartViewFieldDTO>> fieldMap = new HashMap<>();
+        fields.forEach(field -> fieldMap.computeIfAbsent(getExportFieldName(field), key -> new ArrayDeque<>()).add(field));
+        List<ChartViewFieldDTO> orderedFields = new ArrayList<>();
+        for (Object headerItem : header) {
+            if (headerItem == null) {
+                continue;
+            }
+            Deque<ChartViewFieldDTO> matchedFields = fieldMap.get(headerItem.toString());
+            if (matchedFields != null && !matchedFields.isEmpty()) {
+                orderedFields.add(matchedFields.removeFirst());
+            }
+        }
+        return CollectionUtils.isNotEmpty(orderedFields) ? orderedFields : fields;
+    }
+
+    private static void appendFields(List<ChartViewFieldDTO> target, List<ChartViewFieldDTO> source) {
+        if (CollectionUtils.isNotEmpty(source)) {
+            target.addAll(source);
+        }
+    }
+
+    private static String getExportFieldName(ChartViewFieldDTO field) {
+        return StringUtils.isNotBlank(field.getChartShowName()) ? field.getChartShowName() : field.getName();
     }
 
     private static List<CellRangeAddress> getMergeConfig(List<Object[]> data, int colIndex, int offsetHeight) {
