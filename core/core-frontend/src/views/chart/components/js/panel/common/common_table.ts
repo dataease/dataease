@@ -3386,6 +3386,8 @@ export const configEmptyDataStyle = (newChart, basicStyle, newData, container) =
       emptyDom.setAttribute(
         'style',
         `position: absolute;
+        color: ${basicStyle.tableEmptyFontColor ?? 'inherit'};
+        font-size: ${basicStyle.tableEmptyFontSize ? basicStyle.tableEmptyFontSize + 'px' : 'inherit'};
         left: ${left}px;
         top: 50%;`
       )
