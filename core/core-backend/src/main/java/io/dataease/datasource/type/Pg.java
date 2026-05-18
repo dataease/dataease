@@ -1,15 +1,11 @@
 package io.dataease.datasource.type;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.dataease.exception.DEException;
+import io.dataease.datasource.security.JdbcUrlSecurityPolicy;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import java.net.URLDecoder;
-import java.util.Arrays;
-import java.util.List;
 import java.util.regex.Pattern;
 
 @Data
@@ -17,23 +13,12 @@ import java.util.regex.Pattern;
 public class Pg extends DatasourceConfiguration {
     private String driver = "org.postgresql.Driver";
     private String extraParams = "";
-    @JsonIgnore
-    private List<String> illegalParameters = Arrays.asList("socketFactory", "socketFactoryArg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationPluginClassName");
 
     public String getJdbc() {
-        if (StringUtils.isNoneEmpty(getUrlType()) && !getUrlType().equalsIgnoreCase("hostName")) {
-            for (String illegalParameter : illegalParameters) {
-                if (URLDecoder.decode(getJdbcUrl()).contains(illegalParameter)) {
-                    DEException.throwException("Illegal parameter: " + illegalParameter);
-                }
-            }
-            if (!getJdbcUrl().startsWith("jdbc:postgresql")) {
-                DEException.throwException("Illegal jdbcUrl: " + getJdbcUrl());
-            }
-            return getJdbcUrl();
-        }
         String jdbcUrl = "";
-        if (StringUtils.isEmpty(extraParams.trim())) {
+        if (StringUtils.isNoneEmpty(getUrlType()) && !getUrlType().equalsIgnoreCase("hostName")) {
+            jdbcUrl = getJdbcUrl();
+        } else if (StringUtils.isEmpty(extraParams.trim())) {
             if (StringUtils.isEmpty(getSchema())) {
                 jdbcUrl = "jdbc:postgresql://HOSTNAME:PORT/DATABASE"
                         .replace("HOSTNAME", getLHost().trim())
@@ -54,12 +39,7 @@ public class Pg extends DatasourceConfiguration {
                     .replace("EXTRA_PARAMS", getExtraParams().trim());
 
         }
-        for (String illegalParameter : illegalParameters) {
-            if (URLDecoder.decode(jdbcUrl).toLowerCase().contains(illegalParameter.toLowerCase()) || URLDecoder.decode(jdbcUrl).contains(illegalParameter.toLowerCase())) {
-                DEException.throwException("Illegal parameter: " + illegalParameter);
-            }
-        }
-        return jdbcUrl;
+        return JdbcUrlSecurityPolicy.validate("pg", getDriver(), jdbcUrl, getExtraParams());
     }
 
     private static final Pattern DB_NAME_PATTERN = Pattern.compile("//[^/]+/([^?]+)");
