@@ -86,6 +86,7 @@ export const DEFAULT_COLOR_CASE_LIGHT: DeepPartial<ChartAttr> = {
     gaugeStyle: 'default',
     tableBorderColor: '#E6E7E4',
     tableScrollBarColor: 'rgba(0, 0, 0, 0.15)',
+    tableEmptyFontColor: '#000',
     zoomButtonColor: '#aaa',
     zoomBackground: '#fff'
   },
@@ -147,6 +148,7 @@ export const DEFAULT_COLOR_CASE_DARK: DeepPartial<ChartAttr> = {
     gaugeStyle: 'default',
     tableBorderColor: '#CCCCCC',
     tableScrollBarColor: 'rgba(255, 255, 255, 0.5)',
+    tableEmptyFontColor: '#fff',
     zoomButtonColor: '#fff',
     zoomBackground: '#000'
   },
