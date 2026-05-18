@@ -393,6 +393,14 @@ declare interface ChartBasicStyle {
    * 透视表行头宽度百分比
    */
   tableRowHeaderWidthPercent: number
+  /**
+   * 表格空数据提示字体颜色
+   */
+  tableEmptyFontColor: string
+  /**
+   * 表格空数据提示字体大小
+   */
+  tableEmptyFontSize: number
 }
 /**
  * 表头属性
