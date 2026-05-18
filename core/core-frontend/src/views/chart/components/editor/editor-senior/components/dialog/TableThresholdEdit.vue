@@ -445,7 +445,7 @@ init()
       <Icon name="icon_info_filled" class="icon-style"
         ><icon_info_filled class="svg-icon icon-style"
       /></Icon>
-      <span style="padding-left: 10px">{{ t('chart.table_threshold_tip') }}2</span>
+      <span style="padding-left: 10px">{{ t('chart.table_threshold_tip') }}</span>
     </div>
 
     <div @keydown.stop @keyup.stop style="max-height: 50vh; overflow-y: auto">
