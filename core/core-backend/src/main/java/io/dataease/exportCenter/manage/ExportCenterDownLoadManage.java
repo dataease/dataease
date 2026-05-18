@@ -519,23 +519,9 @@ public class ExportCenterDownLoadManage {
                             detailsSheet = wb.createSheet("数据" + sheetIndex);
                             Integer[] excelTypes = request.getExcelTypes();
                             ViewDetailField[] detailFields = request.getDetailFields();
-                            Object[] header = request.getHeader();
-                            List<ChartViewFieldDTO> xAxis = new ArrayList<>();
-                            xAxis.addAll(request.getViewInfo().getXAxis());
-                            xAxis.addAll(request.getViewInfo().getYAxis());
-                            xAxis.addAll(request.getViewInfo().getXAxisExt());
-                            xAxis.addAll(request.getViewInfo().getYAxisExt());
-                            xAxis.addAll(request.getViewInfo().getExtStack());
-                            xAxis.addAll(request.getViewInfo().getDrillFields());
-                            header = Arrays.stream(request.getHeader()).filter(item -> xAxis.stream().map(d -> StringUtils.isNotBlank(d.getChartShowName()) ? d.getChartShowName() : d.getName()).toList().contains(item)).toArray();
+                            Object[] header = ChartDataServer.filterExportHeader(request.getHeader(), request.getViewInfo());
                             details.add(0, header);
-                            List<Integer> columnIndexs = new ArrayList<>();
-                            for (int i1 = 0; i1 < xAxis.size(); i1++) {
-                                ChartViewFieldDTO xAxi = xAxis.get(i1);
-                                if (xAxi.isHide()) {
-                                    columnIndexs.add(i1);
-                                }
-                            }
+                            List<Integer> columnIndexs = ChartDataServer.getHiddenExportColumnIndexes(header, request.getViewInfo());
                             removeColumn(details, columnIndexs);
                             ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), wb);
                             sheetIndex++;
@@ -876,4 +862,3 @@ public class ExportCenterDownLoadManage {
         }
     }
 }
-

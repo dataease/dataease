@@ -300,21 +300,9 @@ public class ChartDataServer implements ChartDataApi {
 
                             detailsSheet = wb.createSheet("数据" + sheetIndex);
                             Integer[] excelTypes = request.getExcelTypes();
-                            List<ChartViewFieldDTO> xAxis = new ArrayList<>();
-                            xAxis.addAll(request.getViewInfo().getXAxis());
-                            xAxis.addAll(request.getViewInfo().getYAxis());
-                            xAxis.addAll(request.getViewInfo().getXAxisExt());
-                            xAxis.addAll(request.getViewInfo().getYAxisExt());
-                            xAxis.addAll(request.getViewInfo().getExtStack());
-                            Object[] header = Arrays.stream(request.getHeader()).filter(item -> xAxis.stream().map(d -> StringUtils.isNotBlank(d.getChartShowName()) ? d.getChartShowName() : d.getName()).toList().contains(item)).collect(Collectors.toList()).toArray();
+                            Object[] header = filterExportHeader(request.getHeader(), request.getViewInfo());
                             details.add(0, header);
-                            List<Integer> columnIndexs = new ArrayList<>();
-                            for (int i1 = 0; i1 < xAxis.size(); i1++) {
-                                ChartViewFieldDTO xAxi = xAxis.get(i1);
-                                if (xAxi.isHide()) {
-                                    columnIndexs.add(i1);
-                                }
-                            }
+                            List<Integer> columnIndexs = getHiddenExportColumnIndexes(header, request.getViewInfo());
                             ExportCenterDownLoadManage.removeColumn(details, columnIndexs);
                             ViewDetailField[] detailFields = request.getDetailFields();
                             ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), wb);
@@ -591,7 +579,7 @@ public class ChartDataServer implements ChartDataApi {
         }
     }
 
-    static List<ChartViewFieldDTO> resolveExportFields(ChartViewDTO viewInfo, Object[] header) {
+    public static List<ChartViewFieldDTO> resolveExportFields(ChartViewDTO viewInfo, Object[] header) {
         List<ChartViewFieldDTO> fields = new ArrayList<>();
         if (viewInfo != null && viewInfo.getData() != null && viewInfo.getData().get("fields") != null) {
             Object fieldsObj = viewInfo.getData().get("fields");
@@ -626,6 +614,29 @@ public class ChartDataServer implements ChartDataApi {
             }
         }
         return CollectionUtils.isNotEmpty(orderedFields) ? orderedFields : fields;
+    }
+
+    public static Object[] filterExportHeader(Object[] header, ChartViewDTO viewInfo) {
+        if (ArrayUtils.isEmpty(header)) {
+            return ArrayUtils.EMPTY_OBJECT_ARRAY;
+        }
+        List<ChartViewFieldDTO> exportFields = resolveExportFields(viewInfo, header);
+        if (CollectionUtils.isEmpty(exportFields)) {
+            return header;
+        }
+        Set<String> exportFieldNames = exportFields.stream().map(ChartDataServer::getExportFieldName).collect(Collectors.toSet());
+        return Arrays.stream(header).filter(Objects::nonNull).filter(item -> exportFieldNames.contains(item.toString())).toArray();
+    }
+
+    public static List<Integer> getHiddenExportColumnIndexes(Object[] header, ChartViewDTO viewInfo) {
+        List<ChartViewFieldDTO> exportFields = resolveExportFields(viewInfo, header);
+        List<Integer> columnIndexs = new ArrayList<>();
+        for (int i = 0; i < exportFields.size(); i++) {
+            if (exportFields.get(i).isHide()) {
+                columnIndexs.add(i);
+            }
+        }
+        return columnIndexs;
     }
 
     private static void appendFields(List<ChartViewFieldDTO> target, List<ChartViewFieldDTO> source) {
