@@ -701,10 +701,11 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
           const cColor = this.getColorByConditions([].concat(q), currentValue, chart)
           if (cColor) {
             item.conditionColor.push(cColor)
-          } else {
-            item.conditionColor = undefined
           }
         })
+        if (!item.conditionColor.length) {
+          item.conditionColor = undefined
+        }
       })
       return data
     }
@@ -720,9 +721,10 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     options.children[0].style = {
       ...options.children[0].style,
       fill: d => {
-        if (d.conditionColor) {
-          return d.conditionColor
+        if (d.conditionColor?.length) {
+          return d.conditionColor[0]
         }
+        return d.color
       }
     }
     return options
