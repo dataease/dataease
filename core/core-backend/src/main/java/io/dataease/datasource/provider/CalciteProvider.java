@@ -7,8 +7,10 @@ import io.dataease.dataset.utils.FieldUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDriver;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
+import io.dataease.datasource.dao.auto.mapper.CoreDriverMapper;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.request.EngineRequest;
+import io.dataease.datasource.security.JdbcUrlSecurityPolicy;
 import io.dataease.datasource.type.*;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.*;
@@ -58,6 +60,8 @@ public class CalciteProvider extends Provider {
 
     @Resource
     protected CoreDatasourceMapper coreDatasourceMapper;
+    @Resource
+    protected CoreDriverMapper coreDriverMapper;
     @Resource
     private EngineManage engineManage;
     protected ExtendedJdbcClassLoader extendedJdbcClassLoader;
@@ -407,44 +411,11 @@ public class CalciteProvider extends Provider {
     @Override
     public ConnectionObj getConnection(DatasourceDTO coreDatasource) throws Exception {
         ConnectionObj connectionObj = new ConnectionObj();
-        DatasourceConfiguration configuration = null;
         DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(coreDatasource.getType());
-        switch (datasourceType) {
-            case mysql:
-            case mongo:
-            case StarRocks:
-            case doris:
-            case TiDB:
-            case mariadb:
-                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Mysql.class);
-                break;
-            case impala:
-                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Impala.class);
-                break;
-            case sqlServer:
-                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Sqlserver.class);
-                break;
-            case oracle:
-                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Oracle.class);
-                break;
-            case db2:
-                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Db2.class);
-                break;
-            case pg:
-                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Pg.class);
-                break;
-            case redshift:
-                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Redshift.class);
-                break;
-            case h2:
-                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), H2.class);
-                break;
-            case ck:
-                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), CK.class);
-                break;
-            default:
-                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Mysql.class);
-        }
+        DatasourceConfiguration configuration = parseDatasourceConfiguration(coreDatasource.getConfiguration(), datasourceType);
+        CoreDriver customDriver = resolveCustomDriver(coreDatasource.getType(), configuration.getCustomDriver());
+        String driverClassName = JdbcUrlSecurityPolicy.resolveDriverClass(coreDatasource.getType(), configuration.getDriver(), configuration.getCustomDriver(), customDriver);
+        configuration.setDriver(driverClassName);
         startSshSession(configuration, connectionObj, null);
         Properties props = new Properties();
         if (StringUtils.isNotBlank(configuration.getUsername())) {
@@ -453,8 +424,7 @@ public class CalciteProvider extends Provider {
         if (StringUtils.isNotBlank(configuration.getPassword())) {
             props.setProperty("password", configuration.getPassword());
         }
-        String driverClassName = configuration.getDriver();
-        ExtendedJdbcClassLoader jdbcClassLoader = extendedJdbcClassLoader;
+        ExtendedJdbcClassLoader jdbcClassLoader = JdbcUrlSecurityPolicy.isDefaultCustomDriver(configuration.getCustomDriver()) ? extendedJdbcClassLoader : getCustomJdbcClassLoader(customDriver);
         Connection conn = null;
         try {
             Driver driverClass = (Driver) jdbcClassLoader.loadClass(driverClassName).newInstance();
@@ -465,6 +435,40 @@ public class CalciteProvider extends Provider {
         }
         connectionObj.setConnection(conn);
         return connectionObj;
+    }
+
+    private DatasourceConfiguration parseDatasourceConfiguration(String config, DatasourceConfiguration.DatasourceType datasourceType) {
+        return switch (datasourceType) {
+            case mysql, StarRocks, doris, TiDB, mariadb -> JsonUtil.parseObject(config, Mysql.class);
+            case mongo -> JsonUtil.parseObject(config, Mongo.class);
+            case impala -> JsonUtil.parseObject(config, Impala.class);
+            case sqlServer -> JsonUtil.parseObject(config, Sqlserver.class);
+            case oracle -> JsonUtil.parseObject(config, Oracle.class);
+            case db2 -> JsonUtil.parseObject(config, Db2.class);
+            case pg -> JsonUtil.parseObject(config, Pg.class);
+            case redshift -> JsonUtil.parseObject(config, Redshift.class);
+            case h2 -> JsonUtil.parseObject(config, H2.class);
+            case ck -> JsonUtil.parseObject(config, CK.class);
+            default -> JsonUtil.parseObject(config, Mysql.class);
+        };
+    }
+
+    private CoreDriver resolveCustomDriver(String datasourceType, String customDriver) {
+        if (JdbcUrlSecurityPolicy.isDefaultCustomDriver(customDriver)) {
+            return null;
+        }
+        Long customDriverId;
+        try {
+            customDriverId = Long.valueOf(customDriver);
+        } catch (NumberFormatException e) {
+            DEException.throwException("invalid driver");
+            return null;
+        }
+        CoreDriver coreDriver = coreDriverMapper.selectById(customDriverId);
+        if (coreDriver == null || !StringUtils.equalsIgnoreCase(coreDriver.getType(), datasourceType)) {
+            DEException.throwException("invalid driver");
+        }
+        return coreDriver;
     }
 
     private DatasetTableDTO getTableDesc(DatasourceRequest datasourceRequest, ResultSet resultSet) throws SQLException {

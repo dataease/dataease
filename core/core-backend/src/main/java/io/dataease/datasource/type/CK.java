@@ -1,6 +1,6 @@
 package io.dataease.datasource.type;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.dataease.datasource.security.JdbcUrlSecurityPolicy;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import lombok.Data;
@@ -15,8 +15,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
@@ -32,16 +30,9 @@ public class CK extends DatasourceConfiguration {
     private String sslCert;
     private String sslKey;
 
-    @JsonIgnore
-    private List<String> ILLEGAL_PARAMETERS = Arrays.asList("jndi:", "rmi:", "ldap:", "ldaps:", "dns:", "nis:", "corba:",
-            "java.naming.factory.initial", "java.naming.provider.url");
-
     public String getJdbc() {
         String jdbcUrl;
         if (StringUtils.isNotEmpty(getUrlType()) && !getUrlType().equalsIgnoreCase("hostName")) {
-            if (!getJdbcUrl().startsWith("jdbc:clickhouse")) {
-                DEException.throwException("Illegal jdbcUrl: " + getJdbcUrl());
-            }
             jdbcUrl = getJdbcUrl();
         } else {
             StringBuilder builder = new StringBuilder();
@@ -76,8 +67,7 @@ public class CK extends DatasourceConfiguration {
             jdbcUrl = appendCertParam(jdbcUrl, "sslCert", sslCert, "cert");
             jdbcUrl = appendCertParam(jdbcUrl, "sslKey", sslKey, "key");
         }
-        checkIllegalParameters(jdbcUrl);
-        return jdbcUrl;
+        return JdbcUrlSecurityPolicy.validate("ck", getDriver(), jdbcUrl, getExtraParams());
     }
 
     private String appendCertParam(String jdbcUrl, String paramName, String certContent, String filePrefix) {
@@ -135,14 +125,4 @@ public class CK extends DatasourceConfiguration {
     private boolean containsParam(String jdbcUrl, String paramName) {
         return Pattern.compile("(?i)([?&])" + Pattern.quote(paramName) + "=").matcher(jdbcUrl).find();
     }
-
-    private void checkIllegalParameters(String jdbcUrl) {
-        String lowerUrl = jdbcUrl.toLowerCase();
-        for (String illegalParam : ILLEGAL_PARAMETERS) {
-            if (lowerUrl.contains(illegalParam.toLowerCase())) {
-                throw new SecurityException("Illegal parameter detected in JDBC URL: " + illegalParam);
-            }
-        }
-    }
-
 }
