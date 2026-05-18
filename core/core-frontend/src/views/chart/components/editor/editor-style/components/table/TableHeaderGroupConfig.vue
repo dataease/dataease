@@ -217,10 +217,19 @@ const renderTable = (chart: ChartObj) => {
         const groupMenuContainer = document.getElementById(menuGroupId.value)
         const menuWidth = groupMenuContainer?.offsetWidth || 120
         const containerWidth = containerDom.offsetWidth
+        let finalX = x
+        let finalY = y + 10
         if (x - scrollWidth + menuWidth > containerWidth) {
-          return { x: x - menuWidth, y: y + 10 }
+          finalX = x - menuWidth
         }
-        return { x: x, y: y + 10 }
+        const menuHeight = groupMenuContainer?.offsetHeight || 80
+        if (finalY + menuHeight > containerDom.offsetHeight - 8) {
+          finalY = containerDom.offsetHeight - menuHeight - 8
+          if (finalY < 0) {
+            finalY = 0
+          }
+        }
+        return { x: finalX, y: finalY }
       },
       getContainer: () => containerDom,
       renderTooltip: sheet => new GroupMenu(sheet),
@@ -519,6 +528,7 @@ const renderTable = (chart: ChartObj) => {
               s2.render(true)
             }
             s2.interaction.clearState()
+            s2.emit(S2Event.LAYOUT_AFTER_HEADER_LAYOUT, { ...s2.facet.layoutResult, reLayout: true })
           })
           .catch(() => {
             // do nothing
@@ -572,7 +582,8 @@ const renderTable = (chart: ChartObj) => {
   })
   s2.once(S2Event.LAYOUT_AFTER_HEADER_LAYOUT, (e: LayoutResult) => {
     const initialized = s2.store.get('initialized')
-    if (!initialized) {
+    const reLayout = e.reLayout
+    if (!initialized || reLayout) {
       s2.store.set('initialized', true)
       s2.changeSheetSize(e.colsHierarchy.width)
       const length = s2.dataCfg.data?.length || 0
@@ -580,7 +591,12 @@ const renderTable = (chart: ChartObj) => {
       const rowHeight = s2.options.style.cellCfg.height
       const totalHeight = headerHeight + rowHeight * length
       if (containerDom.offsetHeight > totalHeight) {
-        containerDom.style.height = totalHeight + 'px'
+        // 要加上滚动条高度
+        containerDom.style.height = totalHeight + 8 + 'px'
+      }
+      if (containerDom.offsetHeight < totalHeight) {
+        containerDom.style.height = totalHeight + 8 + 'px'
+        s2.changeSheetSize(undefined, totalHeight + 8)
       }
       s2.render(false)
     }
@@ -684,8 +700,29 @@ class GroupMenu extends BaseTooltip {
   height: 40vh;
   overflow-x: auto;
   overflow-y: hidden;
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #ddd;
+    border-radius: 4px;
+    &:hover {
+      background: #ccc;
+    }
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
   &.dark {
-    scrollbar-color: #3a3a3a #1a1a1a;
+    &::-webkit-scrollbar-thumb {
+      background: #3a3a3a;
+      &:hover {
+        background: #4a4a4a;
+      }
+    }
+    &::-webkit-scrollbar-track {
+      background: #1a1a1a;
+    }
   }
 }
 
