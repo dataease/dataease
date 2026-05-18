@@ -17,6 +17,7 @@ import io.dataease.exportCenter.dao.auto.entity.CoreExportTask;
 import io.dataease.exportCenter.dao.auto.mapper.CoreExportDownloadTaskMapper;
 import io.dataease.exportCenter.dao.auto.mapper.CoreExportTaskMapper;
 import io.dataease.exportCenter.dao.ext.mapper.ExportTaskExtMapper;
+import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.log.DeLog;
 import io.dataease.model.ExportTaskDTO;
@@ -357,6 +358,17 @@ public class ExportCenterManage implements BaseExportApi {
     }
 
 
+    public void validateDownloadTask(String id) {
+        CoreExportDownloadTask coreExportDownloadTask = coreExportDownloadTaskMapper.selectById(id);
+        if (coreExportDownloadTask != null) {
+            if (System.currentTimeMillis() - coreExportDownloadTask.getCreateTime() <= coreExportDownloadTask.getValidTime() * 60 * 1000) {
+                DEException.throwException(Translator.get("i18n_download_link_invalid"));
+            }
+        } else {
+            DEException.throwException(Translator.get("i18n_download_link_invalid"));
+        }
+    }
+
     @Scheduled(fixedRate = 60 * 60 * 1000)
     public void checkDownLoadInfos() {
         coreExportDownloadTaskMapper.selectList(null).forEach(downLoadInfo -> {
@@ -373,4 +385,3 @@ public class ExportCenterManage implements BaseExportApi {
         Long createTime;
     }
 }
-
