@@ -209,6 +209,39 @@ const handleDefaultVal = (chart: Chart) => {
     }
   }
 }
+
+/**
+ * 根据图表请求状态恢复 S2 下钻状态
+ * 仪表板在 resize/scale 重绘时可能复用原始 view，但数据仍是下钻后的结果
+ * 这里通过 chartExtRequest.drill 反推 drillFilters，避免表头字段回退
+ *
+ */
+const restoreDrillState = (chart: ChartObj) => {
+  const drillRequests = chart.chartExtRequest?.drill
+  const drillFields = chart.drillFields ?? []
+  if (!drillRequests?.length || chart.drillFilters?.length || drillFields.length < 2) {
+    return
+  }
+  if (drillRequests.length >= drillFields.length) {
+    return
+  }
+  const drillFilters = []
+  for (let index = 0; index < drillRequests.length; index++) {
+    const request = drillRequests[index]
+    const drillField = drillFields[index]
+    const dimension = request.dimensionList?.find(item => item.id === drillField?.id)
+    if (!dimension) {
+      return
+    }
+    drillFilters.push({
+      fieldId: dimension.id,
+      value: dimension.value !== undefined && dimension.value !== null ? [dimension.value] : []
+    })
+  }
+  chart.drill = true
+  chart.drillFilters = drillFilters
+}
+
 const renderChart = (viewInfo: Chart, resetPageInfo: boolean) => {
   if (!viewInfo) {
     return
@@ -220,6 +253,7 @@ const renderChart = (viewInfo: Chart, resetPageInfo: boolean) => {
     data: chartData.value,
     fontFamily: props.fontFamily
   } as ChartObj)
+  restoreDrillState(actualChart)
 
   recursionTransObj(customAttrTrans, actualChart.customAttr, scale.value, terminal.value)
   recursionTransObj(customStyleTrans, actualChart.customStyle, scale.value, terminal.value)
