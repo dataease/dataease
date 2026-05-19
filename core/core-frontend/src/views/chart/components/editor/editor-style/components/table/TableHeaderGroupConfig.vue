@@ -528,7 +528,10 @@ const renderTable = (chart: ChartObj) => {
               s2.render(true)
             }
             s2.interaction.clearState()
-            s2.emit(S2Event.LAYOUT_AFTER_HEADER_LAYOUT, { ...s2.facet.layoutResult, reLayout: true })
+            s2.emit(S2Event.LAYOUT_AFTER_HEADER_LAYOUT, {
+              ...s2.facet.layoutResult,
+              reLayout: true
+            })
           })
           .catch(() => {
             // do nothing
