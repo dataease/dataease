@@ -27,6 +27,10 @@ const Dataset = defineAsyncComponent(() => import('@/views/visualized/data/datas
 const Datasource = defineAsyncComponent(
   () => import('@/views/visualized/data/datasource/index.vue')
 )
+
+const ExportExcel = defineAsyncComponent(
+  () => import('@/views/visualized/data/dataset/ExportExcel.vue')
+)
 const ScreenPanel = defineAsyncComponent(() => import('@/views/data-visualization/PreviewShow.vue'))
 const DashboardPanel = defineAsyncComponent(
   () => import('@/views/dashboard/DashboardPreviewShow.vue')
@@ -45,7 +49,8 @@ const componentMap = {
   Datasource,
   ScreenPanel,
   DashboardPanel,
-  TemplateManage
+  TemplateManage,
+  ExportExcel
 }
 const iframeStyle = ref(null)
 const setStyle = debounce(() => {
