@@ -41,9 +41,9 @@ public interface CoreOptRecentRepository extends JpaRepository<CoreOptRecent, Lo
                 coreOptRecent.setOptType(optType);
             });
             saveAllAndFlush(results);
-            return 0;
+            return 1;
         }
-        return 1;
+        return 0;
     }
 
     List<CoreOptRecent> findByUid(Long uid);
