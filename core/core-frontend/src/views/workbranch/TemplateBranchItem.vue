@@ -72,41 +72,45 @@ const templateInnerPreview = () => {
   border: 1px solid #d9d9d9;
   border-radius: 6px;
   display: flex;
-  flex-wrap: wrap;
-  min-width: 181px;
+  flex-direction: column;
   width: calc(20% - 16px);
-  height: 141px;
   margin-left: 16px;
+  height: auto;
   position: relative;
+  padding-bottom: 39px;
   margin-bottom: 16px;
 
   .photo {
+    box-sizing: border-box;
     padding: 4px;
     padding-bottom: 0;
-    height: 101px;
+    aspect-ratio: 1.774 / 1;
     width: 100%;
-    .img {
+    overflow: hidden;
+
+    img {
       width: 100%;
       height: 100%;
-      border-top-left-radius: 4px;
-      border-top-right-radius: 4px;
+      display: block;
+      object-fit: cover;
     }
   }
 
   .apply {
+    box-sizing: border-box;
     padding: 8px 12px;
     background: #fff;
     border-top: 1px solid #d9d9d9;
-    position: absolute;
     width: 100%;
-    left: 0;
-    bottom: 0;
     height: 39px;
     display: flex;
     flex-wrap: wrap;
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
     justify-content: space-between;
+    position: absolute;
+    bottom: 0;
+    left: 0;
 
     .ed-button {
       min-width: 73px;
@@ -146,5 +150,23 @@ const templateInnerPreview = () => {
 
 .fix-height {
   height: 39px !important;
+}
+
+@media screen and (max-width: 1420px) {
+  .template {
+    width: calc(25% - 16px);
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .template {
+    width: calc(33.3333% - 16px);
+  }
+}
+
+@media screen and (max-width: 920px) {
+  .template {
+    width: calc(50% - 16px);
+  }
 }
 </style>
