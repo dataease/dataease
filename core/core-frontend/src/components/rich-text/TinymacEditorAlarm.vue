@@ -80,6 +80,9 @@ const init = ref({
   outer_placeholder: '双击输入文字',
   inline: false,
   branding: true,
+  relative_urls: false,
+  remove_script_host: false,
+  convert_urls: false,
   setup: editor => {
     const emoticons = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
 <path d="M8.66683 4.66671H11.0002C11.1843 4.66671 11.3335 4.81595 11.3335 5.00004V5.66671C11.3335 5.8508 11.1843 6.00004 11.0002 6.00004H8.66683V11C8.66683 11.1841 8.51759 11.3334 8.3335 11.3334H7.66683C7.48273 11.3334 7.3335 11.1841 7.3335 11V6.00004H5.00016C4.81607 6.00004 4.66683 5.8508 4.66683 5.66671V5.00004C4.66683 4.81595 4.81607 4.66671 5.00016 4.66671H7.3335C7.3335 4.66671 8.66683 4.68559 8.66683 4.66671Z" fill="#1F2329"/>

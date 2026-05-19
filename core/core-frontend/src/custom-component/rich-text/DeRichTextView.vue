@@ -181,6 +181,9 @@ const init = ref({
   outer_placeholder: outerPlaceholder,
   inline: true, // 开启内联模式
   branding: false,
+  relative_urls: false,
+  remove_script_host: false,
+  convert_urls: false,
   icons: 'vertical-content',
   vertical_align: element.value.propValue.verticalAlign,
   table_default_styles: {
