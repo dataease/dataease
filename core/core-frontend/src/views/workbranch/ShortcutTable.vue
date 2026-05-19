@@ -619,4 +619,13 @@ const getEmptyDesc = (): string => {
   min-width: 140px;
   background: #fff;
 }
+.dashboard-type {
+  .name-content {
+    display: flex;
+    align-items: center;
+    .ed-icon svg {
+      border-radius: 6px;
+    }
+  }
+}
 </style>
