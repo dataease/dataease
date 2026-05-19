@@ -65,7 +65,10 @@ const init = reactive({
   language: 'zh_CN', //语言
   skin_url: formatDataEaseBi('./tinymce-dataease-private/skins/ui/oxide'), // skin路径，具体路径看自己的项目
   height: 400, //编辑器高度
-  branding: false, //是否禁用“Powered by TinyMCE”
+  branding: false, //是否禁用”Powered by TinyMCE”
+  relative_urls: false,
+  remove_script_host: false,
+  convert_urls: false,
   menubar: true, //顶部菜单栏显示
   image_dimensions: false, //去除宽高属性
   plugins: props.plugins, //这里的数据是在props里面就定义好了的
