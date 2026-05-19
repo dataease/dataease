@@ -151,6 +151,10 @@ const initTemplateShow = () => {
       state.hasResult = true
     }
   })
+
+  state.marketTemplatePreviewShowList = state.marketTemplatePreviewShowList
+    .filter(ele => ele.showFlag)
+    .slice(0, 5)
 }
 
 const templateShowCur = templateItem => {
@@ -416,7 +420,6 @@ loadShareBase()
             <div class="template-list" v-show="state.networkStatus && state.hasResult">
               <template-branch-item
                 v-for="(template, index) in state.marketTemplatePreviewShowList"
-                v-show="template['showFlag']"
                 :key="index"
                 :template="template"
                 :base-url="state.baseUrl"

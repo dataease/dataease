@@ -325,6 +325,7 @@ export const useAppearanceStore = defineStore('appearanceStore', {
         document.documentElement.style.setProperty('--ed-color-primary', '#3370FF')
         document.documentElement.style.removeProperty('--ed-color-primary-light-3')
         document.documentElement.style.removeProperty('--ed-color-primary-light-5')
+        document.documentElement.style.removeProperty('--ed-color-primary_b50')
         document.documentElement.style.removeProperty('--ed-color-primary-1a')
         document.documentElement.style.removeProperty('--ed-color-primary-33')
         document.documentElement.style.removeProperty('--ed-color-primary-99')
