@@ -40,6 +40,10 @@ defineExpose({
 .de-export-excel {
   .ed-drawer__body {
     padding-bottom: 24px;
+
+    .ed-tabs {
+      margin-top: -25px;
+    }
   }
   .ed-drawer__header {
     border-bottom: none;

@@ -524,7 +524,6 @@ defineExpose({
   }
 
   .ed-tabs {
-    margin-top: -25px;
     .ed-tabs__header {
       margin-bottom: 24px;
     }
