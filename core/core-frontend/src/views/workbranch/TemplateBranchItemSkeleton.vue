@@ -17,22 +17,25 @@
   border: 1px solid #d9d9d9;
   border-radius: 6px;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   min-width: 181px;
   width: calc(20% - 16px);
-  height: 141px;
+  height: auto;
   margin-left: 16px;
-  position: relative;
   margin-bottom: 16px;
 
   .photo {
+    box-sizing: border-box;
     padding: 4px;
     padding-bottom: 0;
-    height: 101px;
+    aspect-ratio: 1.774 / 1;
     width: 100%;
+    overflow: hidden;
+
     .img {
       width: 100%;
       height: 100%;
+      display: block;
       border-top-left-radius: 4px;
       border-top-right-radius: 4px;
       background: #eff0f199;
@@ -40,13 +43,11 @@
   }
 
   .apply {
+    box-sizing: border-box;
     padding: 8px 12px;
     background: #fff;
     border-top: 1px solid #d9d9d9;
-    position: absolute;
     width: 100%;
-    left: 0;
-    bottom: 0;
     height: 39px;
     display: flex;
     flex-wrap: wrap;
@@ -65,6 +66,24 @@
       background-color: #eff0f1;
       border-radius: 6px;
     }
+  }
+}
+
+@media screen and (max-width: 1420px) {
+  .template {
+    width: calc(25% - 16px);
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .template {
+    width: calc(33.3333% - 16px);
+  }
+}
+
+@media screen and (max-width: 920px) {
+  .template {
+    width: calc(50% - 16px);
   }
 }
 </style>
