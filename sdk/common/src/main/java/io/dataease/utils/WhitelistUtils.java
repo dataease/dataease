@@ -13,13 +13,6 @@ import static io.dataease.result.ResultCode.INTERFACE_ADDRESS_INVALID;
 public class WhitelistUtils {
 
     private static String contextPath;
-    private static final List<String> STATIC_PATH_PREFIXES = List.of(
-            "/assets/",
-            "/static/"
-    );
-    private static final List<String> STATIC_FILES = List.of(
-            "/favicon.ico"
-    );
 
 
     public static String getContextPath() {
@@ -75,7 +68,7 @@ public class WhitelistUtils {
             requestURI = requestURI.replaceFirst(AuthConstant.DE_OIDCAPI_PREFIX, "");
         }
         return WHITE_PATH.contains(requestURI)
-                || isStaticAssetRequest(requestURI)
+                || StringUtils.endsWithAny(requestURI, ".gif",".ico", "js", ".css", "svg", "png", "jpg", "js.map", ".otf", ".ttf", ".woff2")
                 || StringUtils.startsWithAny(requestURI, "data:image")
                 || StringUtils.startsWithAny(requestURI, "/login/platformLogin/")
                 || StringUtils.startsWithAny(requestURI, "/static-resource/")
@@ -98,11 +91,6 @@ public class WhitelistUtils {
                 || StringUtils.startsWithAny(requestURI, "/communicate/image/")
                 || StringUtils.startsWithAny(requestURI, "/saml/")
                 || StringUtils.startsWithAny(requestURI, "/communicate/down/");
-    }
-
-    private static boolean isStaticAssetRequest(String requestURI) {
-        return STATIC_FILES.contains(requestURI)
-                || STATIC_PATH_PREFIXES.stream().anyMatch(requestURI::startsWith);
     }
 
     public static String getBaseApiUrl(String redirect_uri) {
