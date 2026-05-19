@@ -381,10 +381,8 @@ public class ChartDataServer implements ChartDataApi {
         Integer totalDepth = 0;
         List<CellRangeAddress> mergeConfig = new ArrayList<>();
         if (StringUtils.equalsAnyIgnoreCase(viewInfo.getType(), "table-normal", "table-info")) {
+            exportFields = exportFields.stream().filter(tmpAxis -> !tmpAxis.isHide()).toList();
             for (ChartViewFieldDTO tmpAxis : exportFields) {
-                if (tmpAxis.isHide()) {
-                    continue;
-                }
                 if (tmpAxis.getDeType().equals(DeTypeConstants.DE_INT) || tmpAxis.getDeType().equals(DeTypeConstants.DE_FLOAT)) {
                     CellStyle formatterCellStyle = createCellStyle(wb, tmpAxis.getFormatterCfg(), null);
                     styles.add(formatterCellStyle);
@@ -398,7 +396,7 @@ public class ChartDataServer implements ChartDataApi {
             if (tableHeaderMap.get("headerGroup") != null && Boolean.parseBoolean(tableHeaderMap.get("headerGroup").toString())) {
                 var tmpHeader = JsonUtil.parseObject((String) JsonUtil.toJSONString(customAttr.get("tableHeader")), TableHeader.class);
                 // 校验字段数量和顺序
-                var allAxis = new ArrayList<>(exportFields.stream().filter(x -> !x.isHide()).toList());
+                var allAxis = new ArrayList<>(exportFields);
                 if (validateHeaderGroup(tmpHeader, allAxis)) {
                     tableHeader = tmpHeader;
                     for (TableHeader.ColumnInfo column : tableHeader.getHeaderGroupConfig().getColumns()) {
