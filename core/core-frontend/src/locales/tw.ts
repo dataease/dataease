@@ -4494,6 +4494,8 @@ export default {
       task_end_time: '任務截止時間',
       edit_data: '編輯資料',
       show_data: '查看資料',
+      msg_title: '您有一個新的資料填報任務',
+      msg_content: '您有一個新的資料填報任務，請及時完成填報工作',
       confirm_enable: '確認啟動任務？ （單次任務會新建下發任務）',
       confirm_disable: '確認停止任務？ ',
       edit_task: '編輯任務',

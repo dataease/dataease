@@ -4494,6 +4494,8 @@ export default {
       bind_complete: 'Already bound',
       option_value: 'Option value',
       add_option: 'Add option value',
+      msg_title: 'You Have a New Data Reporting Task',
+      msg_content: 'You have a new data reporting task, please complete the reporting promptly',
       form_name_cannot_none: 'Form name cannot be empty',
       form_update_rule_none: 'Please configure update rules',
       form_components_cannot_null: 'Please add form components',
