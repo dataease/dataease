@@ -768,7 +768,7 @@ public class SqlparserUtils {
         if (StringUtils.equals(sqlVariableDetails.getOperator(), "in")) {
             return CollectionUtils.isEmpty(sqlVariableDetails.getValue()) ? Collections.emptyList() : sqlVariableDetails.getValue();
         }
-        if (StringUtils.equals(sqlVariableDetails.getOperator(), "between")) {
+        if (StringUtils.equals(sqlVariableDetails.getOperator(), "between") || StringUtils.equals(sqlVariableDetails.getOperator(), "eq")) {
             if (sqlVariableDetails.getDeType() == 1) {
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat(sqlVariableDetails.getType().size() > 1 ? (String) sqlVariableDetails.getType().get(1).replace("DD", "dd").replace("YYYY", "yyyy") : "yyyy");
                 if (StringUtils.endsWith(sqlVariableDetails.getId(), START_END_SEPARATOR)) {
