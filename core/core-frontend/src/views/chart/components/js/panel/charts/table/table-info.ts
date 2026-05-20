@@ -29,6 +29,7 @@ import {
   getRowIndex,
   getStartPosition,
   getSummaryRow,
+  reserveTableRightBorderWidth,
   isNumeric,
   SortTooltip,
   SummaryCell,
@@ -311,7 +312,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
               n.x = getStartPosition(n)
             }
           })
-          ev.colsHierarchy.width = totalWidth
+          ev.colsHierarchy.width = totalWidth + 1
           newChart.store.set('lastLayoutResult', undefined)
           return
         }
@@ -357,6 +358,11 @@ export class TableInfo extends S2ChartView<TableSheet> {
           ev.colLeafNodes[ev.colLeafNodes.length - 1].width -= totalWidth - availableWidth
         }
         ev.colsHierarchy.width = containerWidth
+      })
+    }
+    if (basicStyle?.tableColumnMode === 'field') {
+      newChart.on(S2Event.LAYOUT_AFTER_HEADER_LAYOUT, (ev: LayoutResult) => {
+        reserveTableRightBorderWidth(ev, containerDom.getBoundingClientRect().width)
       })
     }
     // 空数据时表格样式

@@ -35,6 +35,7 @@ import {
   S2Event,
   S2Options,
   S2Theme,
+  type LayoutResult,
   SERIES_NUMBER_FIELD,
   EXTRA_FIELD,
   setTooltipContainerStyle,
@@ -658,6 +659,22 @@ export function getStyle(chart: Chart, dataConfig: S2DataConfig): Style {
   }
 
   return style
+}
+
+export function reserveTableRightBorderWidth(ev: LayoutResult, containerWidth: number) {
+  if (!ev.colLeafNodes?.length) {
+    return
+  }
+  const totalWidth = ev.colLeafNodes.reduce((p, n) => p + n.width, 0)
+  if (totalWidth < containerWidth) {
+    return
+  }
+  const lastLeafNode = ev.colLeafNodes[ev.colLeafNodes.length - 1]
+  if (lastLeafNode.width <= 1) {
+    return
+  }
+  lastLeafNode.width -= 1
+  ev.colsHierarchy.width = totalWidth
 }
 
 export function getCurrentField(valueFieldList: Axis[], field: ChartViewField) {
