@@ -23,8 +23,8 @@ const props = withDefaults(
       customColor: any
       colorIndex: number
     }
-    propertyInner: Array<string>
-    chart: ChartObj
+    propertyInner?: Array<string>
+    chart?: ChartObj
     sub?: boolean
   }>(),
   {

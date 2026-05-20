@@ -14,9 +14,8 @@ const props = defineProps({
     default: false
   },
   propValue: {
-    type: String,
-    required: true,
-    default: ''
+    type: Object,
+    required: true
   },
   element: {
     type: Object,

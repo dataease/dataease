@@ -6,7 +6,7 @@ import ComponentButtonLabel from '@/components/visualization/ComponentButtonLabe
 
 const props = defineProps({
   title: propTypes.string,
-  iconName: propTypes.string,
+  iconName: propTypes.object,
   showSplitLine: propTypes.bool,
   baseWidth: {
     required: false,

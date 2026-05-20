@@ -137,21 +137,21 @@ onMounted(() => {
       >
         <div v-if="isBulletGraph">
           <div v-if="isHorizontalLayout">
-            <el-radio :effect="props.themes" label="right">{{ t('chart.text_pos_top') }}</el-radio>
-            <el-radio :effect="props.themes" label="left">{{
+            <el-radio :effect="props.themes" value="right">{{ t('chart.text_pos_top') }}</el-radio>
+            <el-radio :effect="props.themes" value="left">{{
               t('chart.text_pos_bottom')
             }}</el-radio>
           </div>
           <div v-else>
-            <el-radio :effect="props.themes" label="left">{{ t('chart.text_pos_left') }}</el-radio>
-            <el-radio :effect="props.themes" label="right">{{
+            <el-radio :effect="props.themes" value="left">{{ t('chart.text_pos_left') }}</el-radio>
+            <el-radio :effect="props.themes" value="right">{{
               t('chart.text_pos_right')
             }}</el-radio>
           </div>
         </div>
         <div v-else>
-          <el-radio :effect="props.themes" label="left">{{ t('chart.text_pos_left') }}</el-radio>
-          <el-radio :effect="props.themes" label="right">{{ t('chart.text_pos_right') }}</el-radio>
+          <el-radio :effect="props.themes" value="left">{{ t('chart.text_pos_left') }}</el-radio>
+          <el-radio :effect="props.themes" value="right">{{ t('chart.text_pos_right') }}</el-radio>
         </div>
       </el-radio-group>
     </el-form-item>

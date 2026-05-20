@@ -29,9 +29,8 @@ const { t } = useI18n()
 
 const props = defineProps({
   propValue: {
-    type: String,
-    required: true,
-    default: ''
+    type: Object,
+    required: true
   },
   element: {
     type: Object,

@@ -401,8 +401,8 @@ onMounted(() => {
         v-model="state.basicStyleForm.tableLayoutMode"
         @change="changeBasicStyle('tableLayoutMode')"
       >
-        <el-radio label="grid" :effect="themes">{{ t('chart.table_layout_grid') }}</el-radio>
-        <el-radio label="tree" :effect="themes">{{ t('chart.table_layout_tree') }}</el-radio>
+        <el-radio value="grid" :effect="themes">{{ t('chart.table_layout_grid') }}</el-radio>
+        <el-radio value="tree" :effect="themes">{{ t('chart.table_layout_tree') }}</el-radio>
       </el-radio-group>
     </el-form-item>
     <el-form-item
@@ -436,8 +436,8 @@ onMounted(() => {
         v-model="state.basicStyleForm.quotaPosition"
         @change="changeBasicStyle('quotaPosition')"
       >
-        <el-radio label="col" :effect="themes">{{ t('chart.quota_position_col') }}</el-radio>
-        <el-radio label="row" :effect="themes">{{ t('chart.quota_position_row') }}</el-radio>
+        <el-radio value="col" :effect="themes">{{ t('chart.quota_position_col') }}</el-radio>
+        <el-radio value="row" :effect="themes">{{ t('chart.quota_position_row') }}</el-radio>
       </el-radio-group>
     </el-form-item>
     <el-form-item
@@ -498,8 +498,8 @@ onMounted(() => {
         @change="changeBasicStyle('radiusColumnBar')"
         class="radius-class"
       >
-        <el-radio label="rightAngle" :effect="themes">{{ t('chart.rightAngle') }}</el-radio>
-        <el-radio label="roundAngle" :effect="themes">{{ t('chart.roundAngle') }}</el-radio>
+        <el-radio value="rightAngle" :effect="themes">{{ t('chart.rightAngle') }}</el-radio>
+        <el-radio value="roundAngle" :effect="themes">{{ t('chart.roundAngle') }}</el-radio>
         <el-radio
           v-if="!props.chart.type.includes('-stack')"
           label="topRoundAngle"
@@ -921,10 +921,10 @@ onMounted(() => {
         @change="changeBasicStyle('tableColumnMode')"
         class="table-column-mode"
       >
-        <el-radio label="adapt" :effect="themes">
+        <el-radio value="adapt" :effect="themes">
           {{ t('chart.table_column_adapt') }}
         </el-radio>
-        <el-radio label="custom" :effect="themes">
+        <el-radio value="custom" :effect="themes">
           {{ t('chart.table_column_fixed') }}
         </el-radio>
         <el-radio v-show="chart.type !== 'table-pivot'" label="field" :effect="themes">
@@ -1269,7 +1269,6 @@ onMounted(() => {
         style="width: 100%"
         :effect="themes"
         controls-position="right"
-        size="middle"
         :min="0"
         :max="30"
         :disabled="!state.basicStyleForm.radarShowPoint"

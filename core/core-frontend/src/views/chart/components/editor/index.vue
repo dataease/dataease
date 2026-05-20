@@ -3559,7 +3559,7 @@ const chartStyleScroll = (val: any) => {
                     style="margin-left: 8px"
                     @click="editDs"
                   >
-                    <Icon name="icon_edit_outlined" class="el-icon-arrow-down el-icon-delete"
+                    <Icon name="icon_edit_outlined"
                       ><icon_edit_outlined class="svg-icon el-icon-arrow-down el-icon-delete"
                     /></Icon>
                   </el-icon>
@@ -3579,7 +3579,7 @@ const chartStyleScroll = (val: any) => {
                         :class="{ dark: themes === 'dark' }"
                         @click="getFields(view.tableId, view.id, view.type)"
                       >
-                        <Icon name="icon_refresh_outlined" class="el-icon-arrow-down el-icon-delete"
+                        <Icon name="icon_refresh_outlined"
                           ><icon_refresh_outlined
                             class="svg-icon el-icon-arrow-down el-icon-delete"
                         /></Icon>
@@ -3591,7 +3591,7 @@ const chartStyleScroll = (val: any) => {
                       :class="{ dark: themes === 'dark' }"
                       @click="addCalcField('d')"
                     >
-                      <Icon name="icon_add_outlined" class="el-icon-arrow-down el-icon-delete"
+                      <Icon name="icon_add_outlined"
                         ><icon_add_outlined class="svg-icon el-icon-arrow-down el-icon-delete"
                       /></Icon>
                     </el-icon>
@@ -3599,7 +3599,6 @@ const chartStyleScroll = (val: any) => {
                 </div>
                 <el-input
                   v-model="state.searchField"
-                  size="middle"
                   :effect="themes"
                   class="dataset-search-input"
                   :class="{ dark: themes === 'dark' }"

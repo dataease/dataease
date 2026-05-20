@@ -26,7 +26,7 @@ onMounted(() => {
         你好，我是 DataEase 智能客服<br />点击一下，开启高效解答模式~<br />&nbsp;
       </p>
       <div class="bottom">
-        <el-button size="middle" @click="confirm"> 我知道了 </el-button>
+        <el-button @click="confirm"> 我知道了 </el-button>
       </div>
     </div>
     <template #reference>
