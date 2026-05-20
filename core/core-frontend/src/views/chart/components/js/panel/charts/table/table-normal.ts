@@ -258,7 +258,9 @@ export class TableNormal extends S2ChartView<TableSheet> {
           return
         }
         const containerWidth = containerDom.getBoundingClientRect().width
-        const scale = containerWidth / ev.colsHierarchy.width
+        // 预留 1px 给最右侧边框，避免边框被裁剪
+        const availableWidth = containerWidth - 1
+        const scale = availableWidth / ev.colsHierarchy.width
         if (scale <= 1) {
           // 图库计算的布局宽度已经大于等于容器宽度，不需要再扩大，但是需要处理非整数宽度值，不然会出现透明细线
           ev.colLeafNodes.reduce((p, n) => {
@@ -266,6 +268,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
             n.x = p
             return p + n.width
           }, 0)
+          ev.colsHierarchy.width = ev.colLeafNodes.reduce((p, n) => p + n.width, 0) + 1
           return
         }
         const totalWidth = ev.colLeafNodes.reduce((p, n) => {
@@ -280,9 +283,9 @@ export class TableNormal extends S2ChartView<TableSheet> {
             n.x = getStartPosition(n)
           }
         })
-        if (totalWidth > containerWidth) {
+        if (totalWidth > availableWidth) {
           // 从最后一列减掉
-          ev.colLeafNodes[ev.colLeafNodes.length - 1].width -= totalWidth - containerWidth
+          ev.colLeafNodes[ev.colLeafNodes.length - 1].width -= totalWidth - availableWidth
         }
         ev.colsHierarchy.width = containerWidth
       })

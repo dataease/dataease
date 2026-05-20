@@ -41,6 +41,7 @@ import {
   SHAPE_STYLE_MAP,
   SpreadSheet,
   Style,
+  CellBorderPosition,
   TableColCell,
   TableDataCell,
   updateShapeAttr,
@@ -2985,6 +2986,14 @@ export class CustomDataCell extends TableDataCell {
 }
 
 export class CustomTableColCell extends TableColCell {
+
+  protected drawBorders() {
+    super.drawBorders()
+    const { options, isTableMode } = this.spreadsheet
+    if (this.meta.colIndex === 0 && isTableMode() && options.showSeriesNumber) {
+      this.drawVerticalBorder(CellBorderPosition.LEFT)
+    }
+  }
 
   protected getTextStyle() {
     const textStyle = super.getTextStyle()

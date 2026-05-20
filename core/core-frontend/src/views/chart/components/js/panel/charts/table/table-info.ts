@@ -323,6 +323,8 @@ export class TableInfo extends S2ChartView<TableSheet> {
           return p + (urlFields.includes(n.field) ? 120 : n.width)
         }, 0)
         const containerWidth = containerDom.getBoundingClientRect().width
+        // 预留 1px 给最右侧边框，避免边框被裁剪
+        const availableWidth = containerWidth - 1
         if (containerWidth <= totalWidthWithImg) {
           // 图库计算的布局宽度已经大于等于容器宽度，不需要再扩大，但是需要处理非整数宽度值，不然会出现透明细线
           ev.colLeafNodes.reduce((p, n) => {
@@ -330,13 +332,14 @@ export class TableInfo extends S2ChartView<TableSheet> {
             n.x = p
             return p + n.width
           }, 0)
+          ev.colsHierarchy.width = ev.colLeafNodes.reduce((p, n) => p + n.width, 0) + 1
           return
         }
         // 图片字段固定 120, 剩余宽度按比例均摊到其他字段进行扩大
         const totalWidthWithoutImg = ev.colLeafNodes.reduce((p, n) => {
           return p + (urlFields.includes(n.field) ? 0 : n.width)
         }, 0)
-        const restWidth = containerWidth - urlFields.length * 120
+        const restWidth = availableWidth - urlFields.length * 120
         const scale = restWidth / totalWidthWithoutImg
         const totalWidth = ev.colLeafNodes.reduce((p, n) => {
           n.width = urlFields.includes(n.field) ? 120 : Math.round(n.width * scale)
@@ -350,8 +353,8 @@ export class TableInfo extends S2ChartView<TableSheet> {
             n.x = getStartPosition(n)
           }
         })
-        if (totalWidth > containerWidth) {
-          ev.colLeafNodes[ev.colLeafNodes.length - 1].width -= totalWidth - containerWidth
+        if (totalWidth > availableWidth) {
+          ev.colLeafNodes[ev.colLeafNodes.length - 1].width -= totalWidth - availableWidth
         }
         ev.colsHierarchy.width = containerWidth
       })
