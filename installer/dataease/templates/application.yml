@@ -4,6 +4,8 @@ server:
   servlet:
     context-path: ${DE_CONTEXT_PATH}
 spring:
+  profiles:
+    include: ${DE_SPRING_PROFILE}
   servlet:
     multipart:
       max-file-size: 500MB
