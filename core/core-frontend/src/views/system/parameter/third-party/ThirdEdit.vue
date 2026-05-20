@@ -74,14 +74,16 @@ const save = () => {
     })
 }
 
-const saveClose = () => {
+const saveClose = (showMsg: boolean) => {
   const param = { ...state.form }
   const method = request.post({ url: '/sysParameter/sqlbot', data: param })
   showLoading()
   method
     .then(res => {
       if (!res.msg) {
-        ElMessage.success(t('common.save_success'))
+        if (showMsg) {
+          ElMessage.success(t('common.save_success'))
+        }
         emits('saved')
       }
       closeLoading()
@@ -148,7 +150,7 @@ const validateHandlerOnly = () => {
       state.form.valid = false
     })
     .finally(() => {
-      saveClose()
+      saveClose(false)
     })
 }
 
