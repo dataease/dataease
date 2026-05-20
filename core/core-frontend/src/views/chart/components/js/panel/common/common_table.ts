@@ -3065,7 +3065,6 @@ const drawTextShape = (cell, isHeader) => {
   const { formattedValue } = cell.getFormattedFieldValue()
   // 获取文本样式
   const textStyle = cloneDeep(cell.getTextStyle())
-  textStyle.textAlign = undefined
   // 宽度能放几个字符，就放几个，放不下就换行
   let wrapText = getWrapText(
     formattedValue ? formattedValue?.toString() : emptyPlaceholder,
@@ -3140,13 +3139,8 @@ const drawTextShape = (cell, isHeader) => {
 function getTextStartX(cell, textStyle) {
   // 获取单元格区域
   const area = cell.getCellArea()
-  // 计算文本宽度,只计算第一行宽度
-  const textWidth = cell.spreadsheet.measureTextWidthRoughly(
-    cell.actualText.split('\n')[0],
-    textStyle
-  )
-  const padding = cell.theme.colCell?.cell?.padding ?? { left: 0, right: 0 }
-  const align = cell.getTextStyle()?.textAlign ?? 'left'
+  const padding = cell.getStyle()?.cell?.padding ?? { left: 0, right: 0 }
+  const align = textStyle.textAlign ?? 'left'
   const paddingLeft = padding.left || 0
   const paddingRight = padding.right || 0
   // 可用宽度（扣除 padding）
@@ -3155,9 +3149,9 @@ function getTextStartX(cell, textStyle) {
     case 'left':
       return area.x + paddingLeft
     case 'center':
-      return area.x + paddingLeft + (availableWidth - textWidth) / 2
+      return area.x + paddingLeft + availableWidth / 2
     case 'right':
-      return area.x + area.width - textWidth - paddingRight
+      return area.x + area.width - paddingRight
     default:
       return area.x + paddingLeft
   }
