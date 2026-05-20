@@ -92,6 +92,7 @@ import { iconDatasourceMap } from '@/components/icon-group/datasource-list'
 import { querySymmetricKey } from '@/api/login'
 import { symmetricDecrypt } from '@/utils/encryption'
 import { isFreeFolder } from '@/utils/utils'
+import { AnyColumns } from 'element-plus-secondary/es/components/table-v2/src/types'
 const route = useRoute()
 const interactiveStore = interactiveStoreWithOut()
 interface Field {
@@ -254,9 +255,9 @@ const scrollbarRef = ref()
 
 const generateColumns = (arr: Field[]) =>
   arr.map(ele => ({
-    key: ele.originName,
+    key: ele.originName === 'id' ? 'ids' : ele.originName,
     deType: ele.deType,
-    dataKey: ele.originName,
+    dataKey: ele.originName === 'id' ? 'ids' : ele.originName,
     title: ele.name,
     width: 150,
     headerCellRenderer: ({ column }) => (
@@ -276,13 +277,16 @@ const generateColumns = (arr: Field[]) =>
   }))
 
 const dataPreviewLoading = ref(false)
-const columns = ref([])
-const handleLoadExcel = data => {
+const columns = ref<any[]>([])
+const handleLoadExcel = (data: Record<string, unknown>) => {
   dataPreviewLoading.value = true
+  let num = +new Date()
   previewData(data)
     .then(res => {
       columns.value = generateColumns((res?.data?.fields as Field[]) || [])
-      tabData.value = (res?.data?.data as Array<{}>) || []
+      tabData.value = ((res?.data?.data as any) || []).map(ele => {
+        return { ...ele, ids: ele.id, id: num++ }
+      })
     })
     .finally(() => {
       dataPreviewLoading.value = false
