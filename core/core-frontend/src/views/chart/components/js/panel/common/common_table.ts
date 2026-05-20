@@ -3219,27 +3219,32 @@ const getWrapText = (sourceText, textStyle, cellWidth, spreadsheet) => {
   sourceText = sourceText.toString().trim()
   const getTextWidth = text => spreadsheet.measureTextWidthRoughly(text, textStyle)
 
-  let resultWrapText = ''
-  let restText = ''
-  let restTextWidth = 0
-  for (let i = 0; i < sourceText.length; i++) {
-    const char = sourceText[i]
-    const charWidth = getTextWidth(char)
-    restTextWidth += charWidth
-    restText += char
-    // 中文时，需要单元格宽度减去16个文字宽度，否则会超出单元格宽度
-    const cWidth = char.charCodeAt(0) >= 128 ? 12 : 8
-    // 添加换行
-    if (restTextWidth >= cellWidth - textStyle.fontSize - cWidth) {
-      // 最后一个字符不添加换行符
-      resultWrapText += restText + (i !== sourceText.length - 1 ? '\n' : '')
-      restText = ''
-      restTextWidth = 0
-    }
-  }
+  return sourceText
+    .split('\n')
+    .map(text => {
+      let resultWrapText = ''
+      let restText = ''
+      let restTextWidth = 0
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i]
+        const charWidth = getTextWidth(char)
+        restTextWidth += charWidth
+        restText += char
+        // 中文时，需要单元格宽度减去16个文字宽度，否则会超出单元格宽度
+        const cWidth = char.charCodeAt(0) >= 128 ? 12 : 8
+        // 添加换行
+        if (restTextWidth >= cellWidth - textStyle.fontSize - cWidth) {
+          // 最后一个字符不添加换行符
+          resultWrapText += restText + (i !== text.length - 1 ? '\n' : '')
+          restText = ''
+          restTextWidth = 0
+        }
+      }
 
-  resultWrapText += restText
-  return resultWrapText
+      resultWrapText += restText
+      return resultWrapText
+    })
+    .join('\n')
 }
 /**
  * 计算文本行高
