@@ -951,6 +951,7 @@ public class ChartDataServer implements ChartDataApi {
 
     public static SummaryConfig parseSummaryConfig(ChartViewDTO viewInfo) {
         SummaryConfig config = new SummaryConfig();
+        config.tableInfo = viewInfo.getType().equalsIgnoreCase("table-info");
         Map<String, Object> basicStyle = (Map<String, Object>) viewInfo.getCustomAttr().get("basicStyle");
         config.summaryLabel = (basicStyle.get("summaryLabel") != null && StringUtils.isNotBlank(basicStyle.get("summaryLabel").toString()))
                 ? basicStyle.get("summaryLabel").toString()
@@ -961,11 +962,11 @@ public class ChartDataServer implements ChartDataApi {
 
         List<ChartViewFieldDTO> summaryFields;
         if (viewInfo.getType().equalsIgnoreCase("table-info")) {
-            summaryFields = viewInfo.getXAxis();
+            summaryFields = viewInfo.getXAxis().stream()
+                    .filter(field -> Arrays.asList(DeTypeConstants.DE_INT, DeTypeConstants.DE_FLOAT).contains(field.getDeType()))
+                    .collect(Collectors.toList());
         } else {
-            summaryFields = new ArrayList<>();
-            summaryFields.addAll(viewInfo.getXAxis());
-            summaryFields.addAll(viewInfo.getYAxis());
+            summaryFields = viewInfo.getYAxis();
         }
 
         for (ChartViewFieldDTO field : summaryFields) {
@@ -1029,7 +1030,6 @@ public class ChartDataServer implements ChartDataApi {
     public static Object[] buildSummaryRow(List<ChartViewFieldDTO> allColumns, SummaryConfig config,
                                            SummaryAccumulator acc, Map<String, BigDecimal> customSumResult) {
         Object[] totalRow = new Object[allColumns.size()];
-        boolean labelSet = false;
         for (int j = 0; j < allColumns.size(); j++) {
             ChartViewFieldDTO field = allColumns.get(j);
             String fName = field.getDataeaseName();
@@ -1065,15 +1065,38 @@ public class ChartDataServer implements ChartDataApi {
                     default:
                         break;
                 }
-            } else if (!labelSet) {
-                totalRow[j] = config.summaryLabel;
-                labelSet = true;
             }
         }
-        if (!labelSet && totalRow.length > 0) {
-            totalRow[0] = config.summaryLabel;
+        int summaryLabelColumnIndex = getSummaryLabelColumnIndex(allColumns, config);
+        if (summaryLabelColumnIndex >= 0) {
+            totalRow[summaryLabelColumnIndex] = config.summaryLabel;
         }
         return totalRow;
+    }
+
+    private static int getSummaryLabelColumnIndex(List<ChartViewFieldDTO> allColumns, SummaryConfig config) {
+        if (CollectionUtils.isEmpty(allColumns)) {
+            return -1;
+        }
+        int firstVisibleColumnIndex = -1;
+        for (int i = 0; i < allColumns.size(); i++) {
+            if (!allColumns.get(i).isHide()) {
+                firstVisibleColumnIndex = i;
+                break;
+            }
+        }
+        if (firstVisibleColumnIndex < 0) {
+            return -1;
+        }
+        ChartViewFieldDTO firstColumn = allColumns.get(firstVisibleColumnIndex);
+        String firstFieldName = firstColumn.getDataeaseName();
+        boolean firstColumnSummaryVisible = config.summaryShowMap.containsKey(firstFieldName)
+                && config.summaryShowMap.get(firstFieldName);
+        if (config.tableInfo) {
+            return firstColumnSummaryVisible ? -1 : firstVisibleColumnIndex;
+        }
+        return (!firstColumnSummaryVisible || !Arrays.asList(DeTypeConstants.DE_INT, DeTypeConstants.DE_FLOAT).contains(firstColumn.getDeType()))
+                ? firstVisibleColumnIndex : -1;
     }
 
     private static String calcVariance(SummaryAccumulator acc, String fName, boolean isSqrt) {
@@ -1104,6 +1127,7 @@ public class ChartDataServer implements ChartDataApi {
     }
 
     public static class SummaryConfig {
+        public boolean tableInfo;
         public String summaryLabel;
         public Map<String, String> summaryTypeMap = new HashMap<>();
         public Map<String, Boolean> summaryShowMap = new HashMap<>();
