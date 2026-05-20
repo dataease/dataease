@@ -13,7 +13,8 @@ import {
   calcTreeWidth,
   getStartPosition,
   isNumeric,
-  CustomTableColCell
+  CustomTableColCell,
+  reserveTableRightBorderWidth
 } from '@/views/chart/components/js/panel/common/common_table'
 import { S2ChartView, S2DrawOptions } from '@/views/chart/components/js/panel/types/impl/s2'
 import { parseJson } from '@/views/chart/components/js/util'
@@ -253,7 +254,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
               n.x = getStartPosition(n)
             }
           })
-          ev.colsHierarchy.width = totalWidth
+          ev.colsHierarchy.width = totalWidth + 1
           newChart.store.set('lastLayoutResult', undefined)
           return
         }
@@ -288,6 +289,11 @@ export class TableNormal extends S2ChartView<TableSheet> {
           ev.colLeafNodes[ev.colLeafNodes.length - 1].width -= totalWidth - availableWidth
         }
         ev.colsHierarchy.width = containerWidth
+      })
+    }
+    if (basicStyle.tableColumnMode === 'field') {
+      newChart.on(S2Event.LAYOUT_AFTER_HEADER_LAYOUT, (ev: LayoutResult) => {
+        reserveTableRightBorderWidth(ev, containerDom.getBoundingClientRect().width)
       })
     }
     configEmptyDataStyle(newChart, basicStyle, newData, container)
