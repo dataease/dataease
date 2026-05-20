@@ -597,6 +597,7 @@ const handleMouseDownOnShape = e => {
     ? document.getElementById('shape-id-' + canvasId.value.split('--')[0])
     : null
   const curDom = document.getElementById(domId.value)
+
   // 添加节流变量
   let rafId = null
   let lastTime = 0
