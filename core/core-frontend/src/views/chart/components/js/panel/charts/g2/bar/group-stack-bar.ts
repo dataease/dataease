@@ -143,7 +143,13 @@ export class GroupStackBar extends StackBar {
       ...this.intervalOptions.encode,
       series: d => d.group
     }
-    this.intervalOptions.transform = [{ type: 'stackY', groupBy: ['x', 'series'] } as Transform]
+    this.intervalOptions.transform = [
+      {
+        type: 'stackY',
+        groupBy: ['x', 'series'],
+        reverse: true
+      } as Transform
+    ]
     this.axis = [...BAR_AXIS_TYPE, 'xAxisExt', 'extStack']
   }
 }

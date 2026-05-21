@@ -270,7 +270,7 @@ export class StackBar extends Bar {
 
   constructor(name = 'bar-stack') {
     super(name)
-    this.intervalOptions.transform = [{ type: 'stackY' }]
+    this.intervalOptions.transform = [{ type: 'stackY', reverse: true }]
     this.axis = [...this.axis, 'extStack']
   }
 }
