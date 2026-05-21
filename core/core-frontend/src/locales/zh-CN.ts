@@ -716,7 +716,7 @@ export default {
     complete: '完成',
     pager_color: '分页器配色',
     title_horizontal_position: '标题水平位置',
-    title_display_position: '标题显示位置',
+    title_display_position: '标签显示位置',
     title_color: '标题颜色',
     label_color: '标签颜色',
     input_box_style: '输入框样式',
