@@ -24,6 +24,7 @@ import { useEmbedded } from '@/store/modules/embedded'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { useShareStoreWithOut } from '@/store/modules/share'
 import { queryShareBaseApi } from '@/api/visualization/dataVisualization'
+import { cloneDeep } from 'lodash'
 
 const shareStore = useShareStoreWithOut()
 
@@ -130,11 +131,13 @@ watch(
   }
 )
 
+let marketTemplateList = []
+
 const initMarketTemplate = async () => {
   await searchMarketRecommend()
     .then(rsp => {
       state.baseUrl = rsp.data.baseUrl
-      state.marketTemplatePreviewShowList = rsp.data.contents
+      marketTemplateList = rsp.data.contents
       state.hasResult = true
       initTemplateShow()
     })
@@ -145,6 +148,7 @@ const initMarketTemplate = async () => {
 
 const initTemplateShow = () => {
   state.hasResult = false
+  state.marketTemplatePreviewShowList = cloneDeep(marketTemplateList)
   state.marketTemplatePreviewShowList.forEach(template => {
     template.showFlag = templateShowCur(template)
     if (template.showFlag) {
