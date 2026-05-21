@@ -739,7 +739,7 @@ export default {
     complete: 'Complete',
     pager_color: 'Pager',
     title_horizontal_position: 'Title horizontal position',
-    title_display_position: 'Title display position',
+    title_display_position: 'Label display position',
     title_color: 'Title color',
     label_color: 'Label color',
     input_box_style: 'Input box style',

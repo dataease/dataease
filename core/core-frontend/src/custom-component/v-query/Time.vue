@@ -513,6 +513,7 @@ const formatDate = computed(() => {
     v-else
     :key="config.timeGranularity + 1"
     v-model="selectValue"
+    class="icon-fixed_16"
     @visible-change="visibleChange"
     :disabled-date="disabledDate"
     :type="config.timeGranularity"
@@ -614,5 +615,10 @@ const formatDate = computed(() => {
   padding: 10px;
   text-align: center;
   border-bottom: 1px solid #eee;
+}
+.icon-fixed_16 {
+  .ed-input__icon {
+    font-size: 16px !important;
+  }
 }
 </style>
