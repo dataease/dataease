@@ -713,7 +713,7 @@ export default {
     complete: '完成',
     pager_color: '分頁器配色',
     title_horizontal_position: '標題水平位置',
-    title_display_position: '標題顯示位置',
+    title_display_position: '標籤顯示位置',
     title_color: '標題顏色',
     label_color: '標籤顏色',
     input_box_style: '輸入框樣式',

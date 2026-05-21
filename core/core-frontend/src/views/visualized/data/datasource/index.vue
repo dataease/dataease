@@ -1545,7 +1545,7 @@ const getMenuList = (val: boolean) => {
                 </el-col>
                 <el-col v-if="!nodeInfo.type.startsWith('Excel')" :span="24">
                   <BaseInfoItem :label="t('common.description')">{{
-                    nodeInfo.description
+                    nodeInfo.description || '-'
                   }}</BaseInfoItem>
                 </el-col>
               </el-row>
@@ -1851,7 +1851,7 @@ const getMenuList = (val: boolean) => {
             <p class="table-name">
               {{ t('datasource.table_name') }}
             </p>
-            <p class="table-value">
+            <p :title="dsTableDetail.tableName" class="table-value">
               {{ dsTableDetail.tableName }}
             </p>
           </el-col>
@@ -1859,7 +1859,7 @@ const getMenuList = (val: boolean) => {
             <p class="table-name">
               {{ t('datasource.table_description') }}
             </p>
-            <p class="table-value">
+            <p :title="dsTableDetail.name" class="table-value">
               {{ dsTableDetail.name || '-' }}
             </p>
           </el-col>
@@ -2418,6 +2418,10 @@ const getMenuList = (val: boolean) => {
     font-size: 14px;
     font-weight: 400;
     margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
   }
 
   .table-name {
