@@ -1612,7 +1612,7 @@ defineExpose({
               </template>
             </el-popover>
             <div class="cron-preview-row">
-              <el-button secondary :loading="cronPreviewLoading" @click="previewNextCronTimes">
+              <el-button text :loading="cronPreviewLoading" @click="previewNextCronTimes">
                 {{ t('datasource.preview_next_exec_times') }}
               </el-button>
             </div>
@@ -1745,6 +1745,10 @@ defineExpose({
   .execute-rate-cont {
     border-radius: 6px;
     margin-top: -8px;
+    .cron-preview-row {
+      width: 100%;
+      margin: 4px 0 -10px -4px;
+    }
   }
 
   .de-select {
@@ -1805,10 +1809,6 @@ defineExpose({
       :deep(.ed-input) {
         width: 100%;
       }
-    }
-
-    .cron-preview-row {
-      width: 100%;
     }
   }
 
