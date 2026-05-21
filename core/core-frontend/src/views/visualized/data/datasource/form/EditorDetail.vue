@@ -1612,7 +1612,13 @@ defineExpose({
               </template>
             </el-popover>
             <div class="cron-preview-row">
-              <el-button secondary :loading="cronPreviewLoading" @click="previewNextCronTimes">
+              <el-button
+                text
+                type="primary"
+                class="cron-preview-button"
+                :loading="cronPreviewLoading"
+                @click="previewNextCronTimes"
+              >
                 {{ t('datasource.preview_next_exec_times') }}
               </el-button>
             </div>
@@ -1809,6 +1815,10 @@ defineExpose({
 
     .cron-preview-row {
       width: 100%;
+
+      .cron-preview-button {
+        padding: 0;
+      }
     }
   }
 
