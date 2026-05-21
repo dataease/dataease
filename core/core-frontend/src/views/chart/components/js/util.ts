@@ -1118,8 +1118,10 @@ export function getLineLabelColorByCondition(conditions, value, fieldId) {
   if (fieldConditions.length) {
     fieldConditions.some(item => {
       if (
-        (item.term === 'lt' && value <= item.value) ||
-        (item.term === 'gt' && value >= item.value) ||
+        (item.term === 'lt' && value < item.value) ||
+        (item.term === 'le' && value <= item.value) ||
+        (item.term === 'gt' && value > item.value) ||
+        (item.term === 'ge' && value >= item.value) ||
         (item.term === 'between' && value >= item.min && value <= item.max)
       ) {
         color = item.color
