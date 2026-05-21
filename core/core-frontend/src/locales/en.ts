@@ -1462,7 +1462,7 @@ export default {
     table_col_freeze_tip: 'First n col',
     table_row_freeze_tip: 'First n row',
     table_freeze: 'Freeze',
-    table_empty_font_color: 'Table empty value color',
+    table_empty_font_color: 'No data tip',
     stripe: 'Zebra stripe',
     start_angle: 'Starting angle',
     end_angle: 'Ending angle',
