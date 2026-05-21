@@ -120,7 +120,7 @@
               >{{ t('visualization.show_data_info') }}</el-dropdown-item
             >
             <el-dropdown-item
-              style="padding: 0"
+              style="padding: 0; padding-left: 8px"
               v-if="
                 !['picture-group', 'rich-text'].includes(element.innerType) &&
                 barShowCheck('download') &&
@@ -131,13 +131,8 @@
             >
               <el-dropdown style="width: 100%" trigger="hover" placement="right-start">
                 <div
-                  class="flex-align-center"
-                  style="
-                    position: relative;
-                    width: 100%;
-                    padding: 5px 32px 5px 16px;
-                    line-height: 24px;
-                  "
+                  class="flex-align-center dropdown-in_dropdown-item"
+                  style="position: relative; width: 100%; line-height: 32px"
                 >
                   {{ t('visualization.export_as') }}
                   <el-icon size="16px" style="position: absolute; right: 8px; margin-right: 0"
@@ -171,6 +166,7 @@
 
           <xpack-component
             :chart="element"
+            class="cbf"
             resource-table="snapshot"
             jsname="L2NvbXBvbmVudC90aHJlc2hvbGQtd2FybmluZy9FZGl0QmFySGFuZGxlcg=="
             @close-item="closeItem"
@@ -725,5 +721,13 @@ watch(
 .bar-checkbox-area {
   padding: 0 5px;
   height: 24px;
+}
+</style>
+
+<style lang="less">
+.ed-dropdown:has(.dropdown-in_dropdown-item) {
+  :focus-visible {
+    outline: none;
+  }
 }
 </style>
