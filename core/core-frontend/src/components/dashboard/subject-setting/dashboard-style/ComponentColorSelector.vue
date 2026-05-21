@@ -431,6 +431,18 @@ const changePagerColorChange = () => {
 
 const changeColorCase = modifyName => {
   colorForm.value['modifyName'] = modifyName
+  if (modifyName === 'tableHeaderBgColor') {
+    colorForm.value['tableHeader']['tableHeaderCornerBgColor'] =
+      colorForm.value['tableHeader']['tableHeaderBgColor']
+    colorForm.value['tableHeader']['tableHeaderColBgColor'] =
+      colorForm.value['tableHeader']['tableHeaderBgColor']
+  }
+  if (modifyName === 'tableHeaderFontColor') {
+    colorForm.value['tableHeader']['tableHeaderCornerFontColor'] =
+      colorForm.value['tableHeader']['tableHeaderFontColor']
+    colorForm.value['tableHeader']['tableHeaderColFontColor'] =
+      colorForm.value['tableHeader']['tableHeaderFontColor']
+  }
   emits('onColorChange', colorForm.value)
 }
 
