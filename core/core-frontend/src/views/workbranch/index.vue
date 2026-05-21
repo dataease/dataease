@@ -91,7 +91,7 @@ const activeTabChange = value => {
 
 const tabBtnList = [
   {
-    name: t('work_branch.recommended_dashboard'),
+    name: t('work_branch.dashboard'),
     value: 'PANEL'
   },
   {
