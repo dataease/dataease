@@ -154,7 +154,7 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
     }
     const xAxis = chart.xAxis
     if (xAxis?.length === 1 && xAxis[0].deType === 1) {
-      const values = data2.map(item => item.field)
+      const values = options.data.map(item => item.field)
       options.meta = {
         field: {
           type: 'cat',
