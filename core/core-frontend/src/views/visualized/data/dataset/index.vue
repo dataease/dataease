@@ -1353,7 +1353,7 @@ const proxyAllowDrop = throttle((arg1, arg2) => {
         font-weight: 500;
 
         .dataset-name {
-          max-width: 200px;
+          max-width: 400px;
         }
 
         .create-user {
