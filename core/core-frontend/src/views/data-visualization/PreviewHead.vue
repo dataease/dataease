@@ -258,7 +258,7 @@ const initOpenHandler = newWindow => {
   padding: 16px 24px;
   border-bottom: 1px solid rgba(31, 35, 41, 0.15);
   .canvas-name {
-    max-width: 200px;
+    max-width: 400px;
     font-size: 16px;
     font-weight: 500;
   }
