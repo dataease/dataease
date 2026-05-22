@@ -1566,7 +1566,7 @@ public class CalciteProvider extends Provider {
                         "    AND relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = ?)", configuration.getSchema()));
                 tableSqls.add(new QueryAndParams("SELECT \n" +
                         "    c.relname AS view_name,\n" +
-                        "    COALESCE(d.description, 'No description provided') AS view_description\n" +
+                        "    COALESCE(d.description, '') AS view_description\n" +
                         "FROM \n" +
                         "    pg_class c\n" +
                         "JOIN \n" +
