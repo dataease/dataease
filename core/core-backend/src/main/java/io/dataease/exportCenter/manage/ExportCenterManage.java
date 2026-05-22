@@ -83,11 +83,10 @@ public class ExportCenterManage implements BaseExportApi {
         return dataFillingApi;
     }
 
-    public boolean embeddedExportSync() {
-        String mode = sysParameterManage.singleVal(XpackSettingConstants.EMBEDDED_EXPORT_MODE);
-        return !StringUtils.equalsIgnoreCase(mode, "async");
+    @XpackInteract(value = "perSetting", replace = true)
+    public String singleValue(String key) {
+        return "sync";
     }
-
 
     public void download(String id, HttpServletResponse response) throws Exception {
         if (coreExportDownloadTaskMapper.selectById(id) == null) {
