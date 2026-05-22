@@ -17,6 +17,8 @@ public class PermissionVO implements Serializable {
     private boolean root;
     @Schema(description = "是否只读")
     private boolean readonly;
+    @Schema(description = "角色类型编码: 0=普通用户,5=数据分析师,9=组织管理员")
+    private Integer typeCode = 0;
     @Schema(description = "直接权限项")
     private List<PermissionItem> permissions;
     @Schema(description = "关联权限项")

@@ -8,7 +8,6 @@ import io.dataease.api.permissions.user.dto.*;
 import io.dataease.api.permissions.user.vo.*;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
-import io.dataease.auth.vo.TokenVO;
 import io.dataease.model.KeywordRequest;
 import io.dataease.result.PageResult;
 import io.swagger.v3.oas.annotations.Hidden;
@@ -104,9 +103,9 @@ public interface UserApi {
     @PostMapping("/role/option")
     List<UserItemVO> optionForRole(@RequestBody UserRequest request);
 
-    @Operation(summary = "组织内用户")
+    /*@Operation(summary = "组织内用户")
     @GetMapping("/org/option")
-    List<UserItemVO> optionForOrg();
+    List<UserItemVO> optionForOrg();*/
 
     @Operation(summary = "角色已绑用户")
     @Parameters({
@@ -116,7 +115,6 @@ public interface UserApi {
     })
     @PostMapping("/role/selected/{goPage}/{pageSize}")
     PageResult<UserItemVO> selectedForRole(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody UserRequest request);
-
 
 
     @Operation(summary = "获取当前登录人信息")
@@ -254,5 +252,9 @@ public interface UserApi {
 
     @Hidden
     List<UserReciVO> getFormatRecipient(Long oid, List<Long> uidList, List<Long> ridList);
+
+    @Operation(summary = "查询用户")
+    @GetMapping("/query")
+    List<UserOptionVO> query();
 
 }

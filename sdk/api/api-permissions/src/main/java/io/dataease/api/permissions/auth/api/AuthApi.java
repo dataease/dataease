@@ -9,10 +9,9 @@ import io.dataease.api.permissions.auth.vo.ResourceItemVO;
 import io.dataease.api.permissions.auth.vo.ResourceVO;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
+
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -24,9 +23,8 @@ public interface AuthApi {
 
     @Operation(summary = "查询资源树")
     @ApiOperationSupport(order = 1)
-    @Parameter(name = "flag", description = "类型")
-    @GetMapping("/busiResource/{flag}")
-    List<ResourceVO> busiResource(@PathVariable("flag") String flag);
+    @PostMapping("/busiResource")
+    List<ResourceVO> busiResource(@RequestBody BusiResourceRequest request);
 
     @Operation(summary = "查询对象已授权资源")
     @ApiOperationSupport(order = 3)

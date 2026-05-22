@@ -14,6 +14,11 @@ interface UserState {
   language: string
   exp: number
   time: number
+  proxyInfo: {
+    proxy: boolean
+    proxyOid: string | null
+    proxySecret: string | null
+  }
 }
 
 export const userStore = defineStore('user', {
@@ -25,7 +30,12 @@ export const userStore = defineStore('user', {
       oid: null,
       language: 'zh-CN',
       exp: null,
-      time: null
+      time: null,
+      proxyInfo: {
+        proxy: false,
+        proxyOid: null,
+        proxySecret: null
+      }
     }
   },
   getters: {
@@ -49,6 +59,9 @@ export const userStore = defineStore('user', {
     },
     getTime(): number {
       return this.time
+    },
+    getProxyInfo(): { proxy: boolean; proxyOid: string | null; proxySecret: string | null } {
+      return this.proxyInfo
     }
   },
   actions: {
@@ -66,6 +79,10 @@ export const userStore = defineStore('user', {
         this[key] = data[dkey]
         wsCache.set('user.' + key, this[key])
       })
+      const cachedProxyInfo = wsCache.get('user.proxyInfo')
+      if (cachedProxyInfo) {
+        this.proxyInfo = cachedProxyInfo
+      }
       const locale = useLocaleStoreWithOut()
       if (locale.getCurrentLocale?.lang !== this.language && !window.DataEaseBi) {
         window.location.reload()
@@ -96,6 +113,14 @@ export const userStore = defineStore('user', {
       wsCache.set('user.oid', oid)
       this.oid = oid
     },
+    setProxyInfo(proxyInfo: {
+      proxy: boolean
+      proxyOid: string | null
+      proxySecret: string | null
+    }) {
+      wsCache.set('user.proxyInfo', proxyInfo)
+      this.proxyInfo = proxyInfo
+    },
     setLanguage(language: string) {
       const locale = useLocaleStoreWithOut()
       if (!language || language === 'zh_CN') {
@@ -107,7 +132,7 @@ export const userStore = defineStore('user', {
       changeLocale(language as any)
     },
     clear() {
-      const keys: string[] = ['token', 'uid', 'name', 'oid', 'language', 'exp', 'time']
+      const keys: string[] = ['token', 'uid', 'name', 'oid', 'language', 'exp', 'time', 'proxyInfo']
       keys.forEach(key => wsCache.delete('user.' + key))
     }
   }
