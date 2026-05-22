@@ -229,7 +229,7 @@ export const FILTER_COMMON_STYLE_LIGHT = {
   labelColor: '#1f2329',
   titleColor: '#1f2329',
   color: '#1f2329',
-  borderColor: '#bbbfc4',
+  borderColor: '#D9DCDF',
   text: '#1f2329',
   bgColor: '#FFFFFF'
 }
@@ -239,7 +239,7 @@ export const FILTER_COMMON_STYLE_DARK = {
   labelColor: '#ffffff',
   titleColor: '#ffffff',
   color: '#FFFFFF',
-  borderColor: '#484747',
+  borderColor: '#505050',
   text: '#AFAFAF',
   bgColor: '#131C42'
 }

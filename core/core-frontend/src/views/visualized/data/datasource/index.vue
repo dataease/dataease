@@ -2340,7 +2340,7 @@ const getMenuList = (val: boolean) => {
 
         .name {
           margin-left: 8px;
-          max-width: 200px;
+          max-width: 400px;
         }
 
         .create-user {
