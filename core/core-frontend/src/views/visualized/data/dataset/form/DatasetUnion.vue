@@ -230,7 +230,8 @@ const saveSqlNode = (val: SqlNode, cb) => {
         info: state.visualNode.info,
         tableName,
         type: 'sql',
-        isCross: isCross.value
+        isCross: isCross.value,
+        sqlVariableDetails
       }).then(res => {
         state.visualNode.confirm = true
         state.nodeList.push(state.visualNode)
@@ -251,7 +252,8 @@ const saveSqlNode = (val: SqlNode, cb) => {
         info: state.visualNode.info,
         tableName,
         type: 'sql',
-        isCross: isCross.value
+        isCross: isCross.value,
+        sqlVariableDetails
       }).then(() => {
         state.visualNode.confirm = true
         cb?.()
