@@ -884,6 +884,27 @@ export class StackColumnLineMix extends ColumnLineMix {
     return result
   }
 
+  protected configData(chart: Chart, options: DualAxesOptions): DualAxesOptions {
+    if (chart.extStack?.[0]?.sort === 'none') {
+      return options
+    }
+    // 把右轴的主轴数据顺序和左轴保持一致
+    const leftData = options.data?.[0] ?? []
+    const rightData = options.data?.[1] ?? []
+    const leftOrder = leftData.map(d => d.field)
+    rightData.sort((a, b) => {
+      const aIndex = leftOrder.indexOf(a.field)
+      const bIndex = leftOrder.indexOf(b.field)
+      return aIndex - bIndex
+    })
+    return options
+  }
+
+  protected setupOptions(chart: Chart, options: DualAxesOptions): DualAxesOptions {
+    const tmpOptions = flow(this.configData)(chart, options, {}, this)
+    return super.setupOptions(chart, tmpOptions)
+  }
+
   constructor(name = 'chart-mix-stack') {
     super(name)
   }
