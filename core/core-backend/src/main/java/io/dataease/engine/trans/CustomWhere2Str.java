@@ -164,12 +164,6 @@ public class CustomWhere2Str {
             if (field.getDeExtractType() == 3) {
                 whereName = String.format(SQLConstants.CAST, originName, SQLConstants.DEFAULT_FLOAT_FORMAT);
             }
-        } else if (field.getDeType() == 0) {
-            if (field.getDeExtractType() != 0) {
-                whereName = String.format(SQLConstants.CAST, originName, SQLConstants.VARCHAR);
-            } else {
-                whereName = originName;
-            }
         } else {
             whereName = originName;
         }
