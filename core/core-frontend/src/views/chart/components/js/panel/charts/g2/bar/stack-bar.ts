@@ -194,8 +194,6 @@ export class StackBar extends Bar {
   }
 
   protected configEmptyDataStrategy(chart: Chart, options: ViewSpec): ViewSpec {
-    const { data } = options.children[0]
-    if (!data?.length) return options
     handleEmptyDataStrategy(chart, options)
     return options
   }

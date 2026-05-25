@@ -60,7 +60,13 @@ export class HorizontalStackBar extends HorizontalBar {
         fill: labelAttr.color,
         fontSize: labelAttr.fontSize,
         ...position,
-        formatter: (value, _data) => valueFormatter(value, labelAttr.labelFormatter),
+        formatter: (value, _data) => {
+          debugger
+          if (value === null || value === undefined) {
+            return ''
+          }
+          return valueFormatter(value, labelAttr.labelFormatter)
+        },
         transform
       }
     ]
@@ -97,6 +103,9 @@ export class HorizontalStackBar extends HorizontalBar {
             const tooltipItems = originalItems
             const result = []
             tooltipItems.forEach(item => {
+              if (item.value === null || item.value === undefined) {
+                return ''
+              }
               const value = valueFormatter(item.value, tooltip.tooltipFormatter)
               const name = isEmpty(item.category) ? item.field : item.category
               result.push({ ...item, name, value })

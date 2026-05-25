@@ -109,6 +109,11 @@ export class Scatter extends G2ChartView {
         y: 'value',
         color: 'category'
       },
+      scale: {
+        y: {
+          nice: true
+        }
+      },
       legend: {
         size: false
       }
@@ -236,14 +241,17 @@ export class Scatter extends G2ChartView {
             const value = valueFormatter(d.value, label.labelFormatter)
             return toString(value)
           },
-          position: 'top',
+          position: 'inside',
           style: {
             fill: label.color,
             fontSize: label.fontSize,
-            textBaseline: 'bottom',
+            textAlign: 'center',
+            textBaseline: 'middle',
             fillOpacity: 1
           },
-          transform: label.fullDisplay ? [] : [{ type: 'overlapHide' }, { type: 'exceedAdjust' }]
+          transform: label.fullDisplay
+            ? [{ type: 'exceedAdjust' }]
+            : [{ type: 'exceedAdjust' }, { type: 'overlapHide' }]
         }
       ]
     }
@@ -468,6 +476,7 @@ export class Scatter extends G2ChartView {
       const scaleOpt = {
         scale: {
           y: {
+            nice: false,
             domainMin: yAxis.axisValue.min,
             domainMax: yAxis.axisValue.max,
             tickCount: yAxis.axisValue.splitCount < 2 ? 2 : yAxis.axisValue.splitCount,
@@ -483,6 +492,11 @@ export class Scatter extends G2ChartView {
         }
       }
       defaultsDeep(axisOption, scaleOpt)
+      const result = defaultsDeep(options, axisOption)
+      if (result.scale?.y) {
+        result.scale.y.nice = false
+      }
+      return result
     }
     return defaultsDeep(options, axisOption)
   }

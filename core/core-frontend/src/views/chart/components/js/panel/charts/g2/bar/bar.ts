@@ -25,6 +25,7 @@ import {
 } from '@/views/chart/components/editor/util/chart'
 import {
   createTooltipWrapper,
+  handleEmptyDataStrategy,
   tooltipCss,
   tooltipMaxHeight,
   Transform,
@@ -182,6 +183,9 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
       },
       ...position,
       formatter: (value, data) => {
+        if (data.value === null || data.value === undefined) {
+          return ''
+        }
         if (data.extremum && showExtremumIds.includes(data.quotaList?.[0]?.id)) {
           return ''
         }
@@ -247,7 +251,10 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
             const head = originalItems[0]
             tooltipItems.forEach(item => {
               const formatter = formatterMap[item.quotaList[0].id] ?? yAxis[0]
-              const value = valueFormatter(item.value, formatter.formatterCfg)
+              const value =
+                item.value === null || item.value === undefined
+                  ? ''
+                  : valueFormatter(item.value, formatter.formatterCfg)
               const name = isEmpty(formatter.chartShowName)
                 ? formatter.name
                 : formatter.chartShowName
@@ -256,7 +263,10 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
             head.dynamicTooltipValue?.forEach(item => {
               const formatter = formatterMap[item.fieldId]
               if (formatter) {
-                const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
+                const value =
+                  item.value === null || item.value === undefined
+                    ? ''
+                    : valueFormatter(parseFloat(item.value), formatter.formatterCfg)
                 const name = isEmpty(formatter.chartShowName)
                   ? formatter.name
                   : formatter.chartShowName
@@ -516,10 +526,10 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     const { children } = options
     return {
       ...options,
-      children: [...children, ...this.getAssistLineStyle(chart)]
+      children: [...children, ...this.getAssistLineStyle(chart, options)]
     }
   }
-  protected getAssistLineStyle = (chart: Chart) => {
+  protected getAssistLineStyle = (chart: Chart, options?: ViewSpec) => {
     const assistLine = []
     const senior = parseJson(chart.senior)
     if (!senior.assistLineCfg?.enable) {
@@ -530,6 +540,8 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
       const customStyle = parseJson(chart.customStyle)
       let axisFormatterCfg, axisExtFormatterCfg
       const isHorizontalBar = this.name.includes('horizontal')
+      const axis = options?.children?.[0]?.axis
+      const valueAxisLabelFormatter = isHorizontalBar ? (axis as any)?.y?.labelFormatter : undefined
       if (isHorizontalBar) {
         if (customStyle.xAxis) {
           const a = JSON.parse(JSON.stringify(customStyle.xAxis))
@@ -570,7 +582,11 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
         const value = parseFloat(item.value)
         const targetFormatter =
           item.yAxisType === 'left' || !axisExtFormatterCfg ? axisFormatterCfg : axisExtFormatterCfg
-        const content = item.name + ' : ' + valueFormatter(value, targetFormatter)
+        const axisFormattedValue =
+          typeof valueAxisLabelFormatter === 'function'
+            ? valueAxisLabelFormatter(value)
+            : valueFormatter(value, targetFormatter)
+        const content = item.name + ' : ' + axisFormattedValue
         const fontSize = item.fontSize ? parseInt(item.fontSize + '') : '100%'
         assistLine.push({
           type: 'lineY',
@@ -832,9 +848,15 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     return options
   }
 
+  protected configEmptyDataStrategy(chart: Chart, options: ViewSpec): ViewSpec {
+    handleEmptyDataStrategy(chart, options)
+    return options
+  }
+
   protected setupOptions(chart: Chart, options: ViewSpec): ViewSpec {
     return flow(
       this.configTheme,
+      this.configEmptyDataStrategy,
       this.configBasicStyle,
       this.configColor,
       this.configLabel,
