@@ -12,6 +12,19 @@ import {
 } from '@/views/chart/components/js/panel/common/common_antv'
 import { isEmpty } from 'lodash-es'
 import { HorizontalStackBar } from '@/views/chart/components/js/panel/charts/g2/bar/stack-horizontal-bar'
+import type { G2DrawOptions } from '@/views/chart/components/js/panel/types/impl/g2'
+import type { Chart as G2Column } from '@antv/g2'
+import {
+  configPercentageStackEmptyAnchorStyle,
+  configPercentageStackEmptyAnchorTooltipGuard,
+  configPercentageStackEmptyDataStrategy,
+  filterPercentageStackTooltipItems,
+  formatPercentageStackRatio,
+  getPercentageStackFieldTotal,
+  getPercentageStackOptionsData,
+  getPercentageStackZeroTotalFields,
+  shouldHidePercentageStackLabelValue
+} from '@/views/chart/components/js/panel/charts/g2/bar/percentage-stack-helper'
 
 /**
  * 百分比条形图
@@ -23,17 +36,39 @@ export class PercentageStackBar extends HorizontalStackBar {
     'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'show']
   }
 
+  async drawChart(drawOptions: G2DrawOptions<G2Column>): Promise<G2Column> {
+    const newChart = await super.drawChart(drawOptions)
+    if (newChart) {
+      configPercentageStackEmptyAnchorTooltipGuard(newChart)
+    }
+    return newChart
+  }
+
+  protected configEmptyDataStrategy(chart: Chart, options: ViewSpec): ViewSpec {
+    return configPercentageStackEmptyDataStrategy(chart, options, () => {
+      super.configEmptyDataStrategy(chart, options)
+    })
+  }
+
+  protected configEmptyAnchorStyle(_chart: Chart, options: ViewSpec): ViewSpec {
+    return configPercentageStackEmptyAnchorStyle(options)
+  }
+
   protected configLabel(chart: Chart, options: ViewSpec): ViewSpec {
     const customAttr = parseJson(chart.customAttr)
     const { label: labelAttr } = customAttr
     if (!labelAttr.show) return options
 
     const { children } = options
+    const zeroTotalFields = getPercentageStackZeroTotalFields(
+      getPercentageStackOptionsData(options)
+    )
+    const isZeroTotalField = data => zeroTotalFields.has(data?.field)
     const position = {
       position: labelAttr.position === 'middle' ? 'inside' : labelAttr.position,
-      textAlign: 'center',
+      textAlign: data => (isZeroTotalField(data) ? 'start' : 'center'),
       dy: labelAttr.position === 'top' ? -10 : 0,
-      dx: 0
+      dx: data => (isZeroTotalField(data) ? 4 : 0)
     }
     const transform = labelAttr.fullDisplay
       ? {}
@@ -47,11 +82,9 @@ export class PercentageStackBar extends HorizontalStackBar {
       ...position,
       formatter: (value, _data, _, o) => {
         // 计算与当前数据相同 field 的 value 总和
-        const sum =
-          o?.reduce(
-            (acc, item) => (item.field === _data.field ? acc + (item.value || 0) : acc),
-            0
-          ) || 1
+        const sum = getPercentageStackFieldTotal(o, _data.field)
+        if (shouldHidePercentageStackLabelValue(value, _data, sum)) return ''
+        if (!sum) return `${(0).toFixed(labelAttr.reserveDecimalCount)}%`
         // 返回百分比格式化结果
         return `${((value / sum) * 100).toFixed(labelAttr.reserveDecimalCount)}%`
       },
@@ -88,17 +121,20 @@ export class PercentageStackBar extends HorizontalStackBar {
           position: 'top-right',
           render: (_, { title, items: originalItems }) => {
             const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)
-            const tooltipItems = originalItems
+            // 锚点只负责鼠标命中，不应出现在 tooltip 明细里。
+            const tooltipItems = filterPercentageStackTooltipItems(originalItems)
+            if (!tooltipItems.length) return ''
             const sum = tooltipItems?.reduce(
               (acc, { value = 0 }: { value: number }) => acc + value,
               0
             )
             const result = []
             tooltipItems.forEach(item => {
-              const itemValue = item.value ? (item.value as number) : 0
-              const value = `${((itemValue / sum) * 100).toFixed(
+              const value = formatPercentageStackRatio(
+                item.value,
+                sum,
                 tooltip.tooltipFormatter.decimalCount
-              )}%`
+              )
               const name = `${isEmpty(item.category) ? item.field : item.category}${
                 item.group ? '-' + item.group : ''
               }`
@@ -138,8 +174,14 @@ export class PercentageStackBar extends HorizontalStackBar {
       this.configXAxis,
       this.configYAxis,
       this.configAnalyse,
+      this.configEmptyAnchorStyle,
       this.configSlider
     )(chart, options, {}, this)
+  }
+
+  setupDefaultOptions(chart: ChartObj): ChartObj {
+    chart.customAttr.label.position = 'middle'
+    return super.setupDefaultOptions(chart)
   }
 
   constructor(name = 'percentage-bar-stack-horizontal') {

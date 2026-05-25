@@ -7,12 +7,23 @@ import {
   ViewSpec
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 import { GroupStackBar } from '@/views/chart/components/js/panel/charts/g2/bar/group-stack-bar'
+import type { G2DrawOptions } from '@/views/chart/components/js/panel/types/impl/g2'
 import {
   toLinearGradient,
   TOOLTIP_ITEM_TPL,
   TOOLTIP_TITLE_TPL
 } from '@/views/chart/components/js/panel/common/common_antv'
+import type { Chart as G2Column } from '@antv/g2'
 import { isEmpty } from 'lodash-es'
+import {
+  configPercentageStackEmptyAnchorStyle,
+  configPercentageStackEmptyAnchorTooltipGuard,
+  configPercentageStackEmptyDataStrategy,
+  filterPercentageStackTooltipItems,
+  formatPercentageStackRatio,
+  getPercentageStackFieldTotal,
+  shouldHidePercentageStackLabelValue
+} from '@/views/chart/components/js/panel/charts/g2/bar/percentage-stack-helper'
 
 /**
  * 百分比堆叠柱状图
@@ -22,6 +33,24 @@ export class PercentageStackBar extends GroupStackBar {
     ...this['propertyInner'],
     'label-selector': ['color', 'fontSize', 'vPosition', 'reserveDecimalCount'],
     'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'show', 'carousel']
+  }
+
+  async drawChart(drawOptions: G2DrawOptions<G2Column>): Promise<G2Column> {
+    const newChart = await super.drawChart(drawOptions)
+    if (newChart) {
+      configPercentageStackEmptyAnchorTooltipGuard(newChart)
+    }
+    return newChart
+  }
+
+  protected configEmptyDataStrategy(chart: Chart, options: ViewSpec): ViewSpec {
+    return configPercentageStackEmptyDataStrategy(chart, options, () => {
+      super.configEmptyDataStrategy(chart, options)
+    })
+  }
+
+  protected configEmptyAnchorStyle(_chart: Chart, options: ViewSpec): ViewSpec {
+    return configPercentageStackEmptyAnchorStyle(options)
   }
 
   protected configLabel(chart: Chart, options: ViewSpec): ViewSpec {
@@ -48,11 +77,9 @@ export class PercentageStackBar extends GroupStackBar {
       ...position,
       formatter: (value, _data, _, o) => {
         // 计算与当前数据相同 field 的 value 总和
-        const sum =
-          o?.reduce(
-            (acc, item) => (item.field === _data.field ? acc + (item.value || 0) : acc),
-            0
-          ) || 1
+        const sum = getPercentageStackFieldTotal(o, _data.field)
+        if (shouldHidePercentageStackLabelValue(value, _data, sum)) return ''
+        if (!sum) return `${(0).toFixed(labelAttr.reserveDecimalCount)}%`
         // 返回百分比格式化结果
         return `${((value / sum) * 100).toFixed(labelAttr.reserveDecimalCount)}%`
       },
@@ -93,17 +120,20 @@ export class PercentageStackBar extends GroupStackBar {
           position: 'top-right',
           render: (_, { title, items: originalItems }) => {
             const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)
-            const tooltipItems = originalItems
+            // 锚点只负责鼠标命中，不应出现在 tooltip 明细里。
+            const tooltipItems = filterPercentageStackTooltipItems(originalItems)
+            if (!tooltipItems.length) return ''
             const sum = tooltipItems?.reduce(
               (acc, { value = 0 }: { value: number }) => acc + value,
               0
             )
             const result = []
             tooltipItems.forEach(item => {
-              const itemValue = item.value ? (item.value as number) : 0
-              const value = `${((itemValue / sum) * 100).toFixed(
+              const value = formatPercentageStackRatio(
+                item.value,
+                sum,
                 tooltip.tooltipFormatter.decimalCount
-              )}%`
+              )
               const name = `${isEmpty(item.category) ? item.field : item.category}${
                 item.group ? '-' + item.group : ''
               }`
@@ -146,6 +176,7 @@ export class PercentageStackBar extends GroupStackBar {
       this.configYAxis,
       this.configAnalyse,
       this.configBarConditions,
+      this.configEmptyAnchorStyle,
       this.configSlider
     )(chart, options, {}, this)
   }

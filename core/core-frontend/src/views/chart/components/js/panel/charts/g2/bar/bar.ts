@@ -25,6 +25,7 @@ import {
 } from '@/views/chart/components/editor/util/chart'
 import {
   createTooltipWrapper,
+  handleEmptyDataStrategy,
   tooltipCss,
   tooltipMaxHeight,
   Transform,
@@ -182,6 +183,9 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
       },
       ...position,
       formatter: (value, data) => {
+        if (data.value === null || data.value === undefined) {
+          return ''
+        }
         if (data.extremum && showExtremumIds.includes(data.quotaList?.[0]?.id)) {
           return ''
         }
@@ -247,7 +251,10 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
             const head = originalItems[0]
             tooltipItems.forEach(item => {
               const formatter = formatterMap[item.quotaList[0].id] ?? yAxis[0]
-              const value = valueFormatter(item.value, formatter.formatterCfg)
+              const value =
+                item.value === null || item.value === undefined
+                  ? ''
+                  : valueFormatter(item.value, formatter.formatterCfg)
               const name = isEmpty(formatter.chartShowName)
                 ? formatter.name
                 : formatter.chartShowName
@@ -256,7 +263,10 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
             head.dynamicTooltipValue?.forEach(item => {
               const formatter = formatterMap[item.fieldId]
               if (formatter) {
-                const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
+                const value =
+                  item.value === null || item.value === undefined
+                    ? ''
+                    : valueFormatter(parseFloat(item.value), formatter.formatterCfg)
                 const name = isEmpty(formatter.chartShowName)
                   ? formatter.name
                   : formatter.chartShowName
@@ -832,9 +842,15 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     return options
   }
 
+  protected configEmptyDataStrategy(chart: Chart, options: ViewSpec): ViewSpec {
+    handleEmptyDataStrategy(chart, options)
+    return options
+  }
+
   protected setupOptions(chart: Chart, options: ViewSpec): ViewSpec {
     return flow(
       this.configTheme,
+      this.configEmptyDataStrategy,
       this.configBasicStyle,
       this.configColor,
       this.configLabel,
