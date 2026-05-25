@@ -231,10 +231,12 @@ const next = () => {
   }
 
   if (currentDsType.value.includes('ExcelRemote') && activeStep.value !== 2) {
-    const validate = excelRemote.value.validateExcel()
-    if (validate) {
-      setNextStep()
-    }
+    const validateFrom = excelRemote.value.submitForm()
+    validateFrom(val => {
+      if (val && excelRemote.value.validateExcel()) {
+        setNextStep()
+      }
+    })
     return
   }
 
