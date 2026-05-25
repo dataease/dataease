@@ -526,10 +526,10 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     const { children } = options
     return {
       ...options,
-      children: [...children, ...this.getAssistLineStyle(chart)]
+      children: [...children, ...this.getAssistLineStyle(chart, options)]
     }
   }
-  protected getAssistLineStyle = (chart: Chart) => {
+  protected getAssistLineStyle = (chart: Chart, options?: ViewSpec) => {
     const assistLine = []
     const senior = parseJson(chart.senior)
     if (!senior.assistLineCfg?.enable) {
@@ -540,6 +540,8 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
       const customStyle = parseJson(chart.customStyle)
       let axisFormatterCfg, axisExtFormatterCfg
       const isHorizontalBar = this.name.includes('horizontal')
+      const axis = options?.children?.[0]?.axis
+      const valueAxisLabelFormatter = isHorizontalBar ? (axis as any)?.y?.labelFormatter : undefined
       if (isHorizontalBar) {
         if (customStyle.xAxis) {
           const a = JSON.parse(JSON.stringify(customStyle.xAxis))
@@ -580,7 +582,11 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
         const value = parseFloat(item.value)
         const targetFormatter =
           item.yAxisType === 'left' || !axisExtFormatterCfg ? axisFormatterCfg : axisExtFormatterCfg
-        const content = item.name + ' : ' + valueFormatter(value, targetFormatter)
+        const axisFormattedValue =
+          typeof valueAxisLabelFormatter === 'function'
+            ? valueAxisLabelFormatter(value)
+            : valueFormatter(value, targetFormatter)
+        const content = item.name + ' : ' + axisFormattedValue
         const fontSize = item.fontSize ? parseInt(item.fontSize + '') : '100%'
         assistLine.push({
           type: 'lineY',
