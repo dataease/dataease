@@ -262,10 +262,7 @@ init()
   width: 40px;
   text-align: center;
 }
-.union-body-container {
-  height: 180px;
-  overflow-y: auto;
-}
+
 .select-field {
   width: 364px;
   display: inline-block;

@@ -247,7 +247,7 @@ const update = (licKey: string) => {
     border-radius: 6px;
     width: 792px;
     height: 180px;
-    top: 72px;
+    top: 64px;
     background-color: #7394f0;
     mix-blend-mode: multiply;
   }
