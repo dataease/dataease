@@ -1195,6 +1195,7 @@ public class DatasourceServer implements DatasourceApi {
     }
 
 
+    @XpackInteract(value = "syncDatasourceStatus", before = false)
     public void updateDatasourceStatus() {
         Specification<CoreDatasource> findTypeNotInSpec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
