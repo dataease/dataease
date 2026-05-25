@@ -546,7 +546,7 @@ export class GroupLineMix extends G2ChartView {
           }[label.position],
           transform: label.fullDisplay
             ? [{ type: 'exceedAdjust' }]
-            : [{ type: 'overlapHide' }, { type: 'overlapDodgeY' }, { type: 'exceedAdjust' }],
+            : [{ type: 'exceedAdjust' }, { type: 'overlapDodgeY' }, { type: 'overlapHide' }],
           fontFamily: chart.fontFamily
         }
       ]

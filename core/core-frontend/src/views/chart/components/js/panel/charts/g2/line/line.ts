@@ -292,7 +292,9 @@ export class Line extends G2ChartView {
             }
             return labelCfg.position === 'top' ? 'bottom' : 'top'
           },
-          ...(labelAttr.fullDisplay ? {} : { transform: [{ type: 'overlapHide' }] }),
+          transform: labelAttr.fullDisplay
+            ? [{ type: 'exceedAdjust' }]
+            : [{ type: 'exceedAdjust' }, { type: 'overlapHide' }],
           fontFamily: chart.fontFamily
         }
       ]

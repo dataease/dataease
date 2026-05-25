@@ -33,6 +33,24 @@ import { createTooltipWrapper, tooltipCss, tooltipMaxHeight } from '../bar/barUt
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
+const MAX_POINT_RANGE_PADDING = 0.12
+const MIN_POINT_RANGE_PADDING = 0.02
+
+const getPointRangePadding = (chart: Chart, lineSymbolSize: number) => {
+  const symbolSize = Number(lineSymbolSize) || 0
+  if (symbolSize <= 0) {
+    return 0
+  }
+  const containerWidth = chart.container?.clientWidth || 0
+  if (!containerWidth) {
+    return MIN_POINT_RANGE_PADDING
+  }
+  return Math.min(
+    MAX_POINT_RANGE_PADDING,
+    Math.max(MIN_POINT_RANGE_PADDING, (symbolSize * 2) / containerWidth)
+  )
+}
+
 export class Area extends G2ChartView {
   properties = LINE_EDITOR_PROPERTY
   propertyInner = {
@@ -282,7 +300,9 @@ export class Area extends G2ChartView {
             }
             return labelCfg.position === 'top' ? 'bottom' : 'top'
           },
-          ...(labelAttr.fullDisplay ? {} : { transform: [{ type: 'overlapHide' }] }),
+          transform: labelAttr.fullDisplay
+            ? [{ type: 'exceedAdjust', bounds: 'main' }]
+            : [{ type: 'exceedAdjust', bounds: 'main' }, { type: 'overlapHide' }],
           fontFamily: chart.fontFamily
         }
       ]
@@ -320,6 +340,8 @@ export class Area extends G2ChartView {
       }
     }
     defaultsDeep(pointMark, pointStyleOpt)
+    const pointRangePadding = getPointRangePadding(chart, basicStyle.lineSymbolSize)
+    options.scale.x.range = [pointRangePadding, 1 - pointRangePadding]
     return options
   }
 
@@ -770,7 +792,9 @@ export class StackArea extends Area {
           textBaseline: () => {
             return labelAttr.position === 'top' ? 'bottom' : 'top'
           },
-          ...(labelAttr.fullDisplay ? {} : { transform: [{ type: 'overlapHide' }] }),
+          transform: labelAttr.fullDisplay
+            ? [{ type: 'exceedAdjust', bounds: 'main' }]
+            : [{ type: 'exceedAdjust', bounds: 'main' }, { type: 'overlapHide' }],
           fontFamily: chart.fontFamily
         }
       ]
