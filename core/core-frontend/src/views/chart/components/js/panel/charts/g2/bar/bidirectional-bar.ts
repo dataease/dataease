@@ -423,7 +423,14 @@ export class BidirectionalHorizontalBar extends G2ChartView {
               keepHeader: true,
               keepTail: true
             }
-          ]
+          ],
+          labelFormatter: value => {
+            const label = `${value ?? ''}`
+            const lengthLimit = xAxis.axisLabel.lengthLimit
+            return lengthLimit && label.length > lengthLimit
+              ? label.substring(0, lengthLimit) + '...'
+              : label
+          }
         }
       }
     }
