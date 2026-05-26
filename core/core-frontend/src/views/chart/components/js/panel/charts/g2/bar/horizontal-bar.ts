@@ -130,13 +130,6 @@ export class HorizontalBar extends Bar {
   protected configYAxis(chart: Chart, options: ViewSpec): ViewSpec {
     const { children } = options
     const xAxis = this.getAxisConfig(chart, 'xAxis')
-    // 让末端刻度标签有空间完整绘制
-    const valueAxisExtra: Record<string, any> = xAxis
-      ? {
-          labelAutoHide: false,
-          labelAutoRotate: false
-        }
-      : {}
     const tmpOptions = {
       ...options,
       children: [
@@ -144,7 +137,7 @@ export class HorizontalBar extends Bar {
           ...children[0],
           axis: {
             ...children[0].axis,
-            y: { ...children[0].axis.y, ...xAxis, ...valueAxisExtra }
+            y: { ...children[0].axis.y, ...xAxis, labelAutoHide: true, labelAutoRotate: false }
           }
         },
         ...children.slice(1)
@@ -152,12 +145,10 @@ export class HorizontalBar extends Bar {
     }
     const customStyle = parseJson(chart.customStyle)
     const xAxisAtt = JSON.parse(JSON.stringify(customStyle['xAxis']))
-    // 预留右侧画布空间，避免数值轴最后一个刻度标签被裁剪
-    const appliedOptions = this.reserveValueAxisRightMargin(chart, tmpOptions, xAxisAtt, xAxis)
     if (!xAxisAtt.axisValue?.auto) {
-      const child0 = appliedOptions.children[0]
+      const child0 = tmpOptions.children[0]
       return {
-        ...appliedOptions,
+        ...tmpOptions,
         children: [
           {
             ...child0,
@@ -180,82 +171,11 @@ export class HorizontalBar extends Bar {
               }
             }
           },
-          ...appliedOptions.children.slice(1)
+          ...tmpOptions.children.slice(1)
         ]
       }
     }
-    return appliedOptions
-  }
-
-  /**
-   * 基于当前数据与数值轴格式化，估算数值轴最长刻度标签的渲染
-   * 并在 ViewSpec 顶层设置足够的 margin，避免末端刻度标签被画布裁剪
-   */
-  private reserveValueAxisRightMargin(
-    chart: Chart,
-    options: ViewSpec,
-    xAxisAtt: any,
-    valueAxisCfg: any
-  ): ViewSpec {
-    if (!valueAxisCfg || !xAxisAtt?.show || xAxisAtt?.axisLabel?.show === false) {
-      return options
-    }
-    const data = (chart.data?.data ?? []) as Array<{ value?: number }>
-    if (!data.length) {
-      return options
-    }
-
-    let maxVal = -Infinity
-    let minVal = Infinity
-    for (const d of data) {
-      const v = Number(d?.value)
-      if (!Number.isFinite(v)) continue
-      if (v > maxVal) maxVal = v
-      if (v < minVal) minVal = v
-    }
-    if (!Number.isFinite(maxVal)) {
-      return options
-    }
-    const axisValue = xAxisAtt?.axisValue
-    if (axisValue && !axisValue.auto) {
-      const fixedMax = Number(axisValue.max)
-      const fixedMin = Number(axisValue.min)
-      if (Number.isFinite(fixedMax)) maxVal = fixedMax
-      if (Number.isFinite(fixedMin)) minVal = fixedMin
-    }
-
-    const formatter = xAxisAtt.axisLabelFormatter
-    const maxStr = String(valueFormatter(maxVal, formatter) ?? maxVal)
-    const minStr = String(valueFormatter(minVal, formatter) ?? minVal)
-    const longestLen = Math.max(maxStr.length, minStr.length)
-
-    // 字符宽估算
-    const fontSize = Number(xAxisAtt?.axisLabel?.fontSize) || 12
-    const labelW = longestLen * fontSize * 0.6
-
-    // 旋转角度取绝对值
-    const rotateDeg = Math.min(90, Math.abs(Number(xAxisAtt?.axisLabel?.rotate) || 0))
-
-    // 默认居中对齐, 末端标签溢出 labelW/2
-    // 锚点变为刻度线处左中点, 标签整体向右下延伸 labelW*cosθ
-    const rightOverflow =
-      rotateDeg === 0 ? labelW / 2 : labelW * Math.cos((rotateDeg * Math.PI) / 180)
-
-    const buffer = 8
-    const marginRight = Math.ceil(rightOverflow + buffer)
-
-    const prev = options as any
-    const next: Record<string, any> = {
-      ...options,
-      marginRight: Math.max(Number(prev.marginRight) || 0, marginRight)
-    }
-
-    if (xAxisAtt?.position === 'top') {
-      const labelH = fontSize * 1.2
-      const topOverflow = rotateDeg === 0 ? labelH : labelW * Math.sin((rotateDeg * Math.PI) / 180)
-      next.marginTop = Math.max(Number(prev.marginTop) || 0, Math.ceil(topOverflow + buffer))
-    }
-    return next as ViewSpec
+    return tmpOptions
   }
 
   protected configXAxis(chart: Chart, options: ViewSpec): ViewSpec {
