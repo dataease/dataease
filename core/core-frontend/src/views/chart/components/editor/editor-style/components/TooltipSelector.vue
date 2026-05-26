@@ -119,14 +119,22 @@ const changeDataset = () => {
 }
 
 const AXIS_PROP: AxisType[] = ['yAxis', 'yAxisExt', 'extBubble']
+const tooltipAxisProp = computed<AxisType[]>(() => {
+  return props.chart.type === 'multi-scatter' ? ['xAxis', ...AXIS_PROP] : AXIS_PROP
+})
 const quotaAxis = computed(() => {
   let result = []
-  AXIS_PROP.forEach(prop => {
+  const axisList: AxisType[] = tooltipAxisProp.value
+  axisList.forEach(prop => {
     if (!chartViewInstance.value?.axis?.includes(prop)) {
       return
     }
     const axis = props.chart[prop]
     axis?.forEach(item => {
+      // 多维散点图 xAxis 可存维度或指标，tooltip 只跟踪指标，跳过维度
+      if (isMultiScatter.value && prop === 'xAxis' && item.groupType !== 'q') {
+        return
+      }
       result.push({ ...item, seriesId: `${item.id}-${prop}` })
     })
   })
@@ -156,7 +164,12 @@ const extTooltip = computed(() => {
       tooltipQuotaData.value?.findIndex(j => j.id === i.id) !== -1
   )
 })
+const isMultiScatter = computed(() => props.chart.type === 'multi-scatter')
 const showFormatterSummary = computed(() => {
+  // 多维散点图不聚合，不显示汇总方式选择
+  if (isMultiScatter.value) {
+    return false
+  }
   return (
     quotaAxis.value?.findIndex(i => curSeriesFormatter.value.id === i.id) === -1 &&
     curSeriesFormatter.value.id !== '-1'
@@ -168,7 +181,9 @@ const formatterNameEditable = computed(() => {
 const formatterEditable = computed(() => {
   return (
     showProperty('seriesTooltipFormatter') &&
-    (props.chart.yAxis?.length || props.chart.yAxisExt?.length)
+    (props.chart.yAxis?.length ||
+      props.chart.yAxisExt?.length ||
+      (isMultiScatter.value && props.chart.xAxis?.some(i => i.groupType === 'q')))
   )
 })
 const chartViewInstance = computed(() => {
@@ -312,7 +327,7 @@ const updateSeriesTooltipFormatter = (form: AxisEditForm) => {
     !showSeriesTooltipFormatter.value ||
     !state.tooltipForm.seriesTooltipFormatter.length ||
     !tooltipQuotaData.value?.length ||
-    !AXIS_PROP.includes(axisType)
+    !tooltipAxisProp.value.includes(axisType)
   ) {
     return
   }
