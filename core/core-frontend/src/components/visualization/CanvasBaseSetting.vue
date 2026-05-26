@@ -66,6 +66,31 @@
         </el-checkbox>
       </el-form-item>
 
+      <el-form-item
+        v-if="!isDesktopFlag"
+        class="form-item no-margin-bottom"
+        :class="'form-item-' + themes"
+      >
+        <el-checkbox
+          size="small"
+          :effect="themes"
+          v-model="canvasStyleData.suspensionViewButtonAvailable"
+          @change="onThemeChange"
+        >
+          <div style="display: flex; line-height: 14px">
+            <span style="margin-right: 4px">{{ t('visualization.hover_button_tips') }}</span>
+            <el-tooltip class="item" :effect="themes" placement="bottom">
+              <template #content>
+                <div>{{ t('visualization.preview_effect') }}</div>
+              </template>
+              <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
+                <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
+              </el-icon>
+            </el-tooltip>
+          </div>
+        </el-checkbox>
+      </el-form-item>
+
       <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
         <el-checkbox
           :effect="themes"
