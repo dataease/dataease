@@ -183,29 +183,30 @@ export class MultiScatter extends G2ChartView {
   ]
   axisConfig: AxisConfig = {
     extColor: {
-      name: `${t('chart.drag_block_type_axis')} / ${t('chart.dimension')}`,
+      name: `${t('chart.color')} / ${t('chart.dimension')}`,
       type: 'd',
       limit: 1,
       allowEmpty: false
     },
     xAxis: {
-      name: `${t('chart.drag_block_value_axis')} / ${t('chart.quota')}`,
+      name: `${t('chart.x_axis')} / ${t('chart.time_dimension_or_quota')}`,
       limit: 1,
       allowEmpty: false
     },
     yAxis: {
       ...this['axisConfig'].yAxis,
+      name: `${t('chart.y_axis')} / ${t('chart.quota')}`,
       limit: 1,
       allowEmpty: false
     },
-    extBubble: {
-      name: `${t('chart.bubble_size')} / ${t('chart.quota')}`,
+    yAxisExt: {
+      name: `${t('chart.lightness')} / ${t('chart.quota')}`,
       type: 'q',
       limit: 1,
       allowEmpty: true
     },
-    yAxisExt: {
-      name: `${t('chart.lightness')} / ${t('chart.quota')}`,
+    extBubble: {
+      name: `${t('chart.radar_size')} / ${t('chart.quota')}`,
       type: 'q',
       limit: 1,
       allowEmpty: true
@@ -493,12 +494,17 @@ export class MultiScatter extends G2ChartView {
     })
   }
 
-  protected configTooltip(chart: Chart, options: G2Spec): G2Spec {
+  protected configTooltip(chart: Chart, options: G2Spec, context: Record<string, any>): G2Spec {
     const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
     const tooltipAttr = customAttr.tooltip
     if (!tooltipAttr.show) {
       return { ...options, tooltip: false }
     }
+    const xAxisField = chart.xAxis?.[0]
+    const isTimeX =
+      !!context?.isTimeX ||
+      (xAxisField &&
+        (xAxisField.groupType === 'd' || (xAxisField.deType != null && xAxisField.deType === 1)))
     const formatterMap = tooltipAttr.seriesTooltipFormatter
       ?.filter(i => i.show)
       .reduce((pre, next) => {
@@ -545,12 +551,18 @@ export class MultiScatter extends G2ChartView {
             const markerColor =
               head.__markerColor || (isCssColor(head.color) ? head.color : '#999999')
             const xValue = head.xLabel ?? head.x
-            if (chart.xAxis?.[0]) {
-              const formatter = formatterMap?.[`${chart.xAxis[0].id}-xAxis`] ?? chart.xAxis[0]
+            if (xAxisField) {
+              const formatter =
+                formatterMap?.[`${xAxisField.id}-xAxis`] ??
+                formatterMap?.[xAxisField.id] ??
+                xAxisField
               result.push({
                 color: markerColor,
-                name: getFieldName(chart.xAxis[0]),
-                value: valueFormatter(xValue, formatter.formatterCfg)
+                name: getFieldName(xAxisField),
+                value:
+                  isTimeX || typeof xValue === 'string'
+                    ? toString(xValue)
+                    : formatLabelValue(xValue, formatter.formatterCfg)
               })
             }
             if (chart.yAxis?.[0]) {
@@ -585,7 +597,7 @@ export class MultiScatter extends G2ChartView {
                 result.push({
                   color: 'grey',
                   name: isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName,
-                  value: valueFormatter(item.stringValue ?? item.value, formatter.formatterCfg)
+                  value: formatLabelValue(item.stringValue ?? item.value, formatter.formatterCfg)
                 })
               }
             })
@@ -612,7 +624,10 @@ export class MultiScatter extends G2ChartView {
     }
     return defaultsDeep(options, {
       axis: {
-        x: this.getAxisStyle(xAxis)
+        x: {
+          ...this.getAxisStyle(xAxis),
+          labelFormatter: d => formatLabelValue(d, xAxis.axisLabelFormatter)
+        }
       }
     })
   }
