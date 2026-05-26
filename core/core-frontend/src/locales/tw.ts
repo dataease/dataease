@@ -2900,6 +2900,8 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    hover_button_tips: '顯示圖表操作按鈕',
+    preview_effect: '預覽時生效',
     img_can_not_null: '圖片不能為空',
     outer_params_type_tips1:
       "類型為過濾時僅對文字下拉、文字樹、數字下拉有效。文字樹的過濾格式中，多級之間使用 '-de-' 分隔",
