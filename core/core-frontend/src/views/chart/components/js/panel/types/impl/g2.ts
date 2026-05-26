@@ -9,6 +9,15 @@ import { parseJson, setupSeriesColor } from '../../../util'
 import { isEmpty } from 'lodash-es'
 import { valueFormatter } from '../../../formatter'
 
+export const LEGEND_NAV_CONTROLLER_PADDING = 10
+export const LEGEND_NAV_CONTROLLER_SPACING = 12
+export const getLegendNavButtonPath = (size: number) => [
+  ['M', -size / 2, -size / 2],
+  ['L', size / 2, -size / 2],
+  ['L', 0, size / 2],
+  ['Z']
+]
+
 export interface G2DrawOptions<O> extends AntVDrawOptions<O> {
   /**
    * 缩放比例
@@ -68,11 +77,16 @@ export abstract class G2ChartView<
             itemLabelFill: legendColor,
             itemLabelFillOpacity: 1,
             itemLabelOpacity: 1,
-            navPageNumFontSize: legendSize,
+            navPageNumFontSize: legendFontSize,
             navPageNumFill: legendColor,
+            navPageNumFillOpacity: 1,
+            navButtonD: getLegendNavButtonPath(legendSize),
             navButtonSize: legendSize,
-            navOrientation: verticalLegend ? 'vertical' : 'horizontal',
-            navControllerSpacing: 4,
+            navButtonFill: legendColor,
+            navButtonFillOpacity: 1,
+            navOrientation: 'horizontal',
+            navControllerPadding: LEGEND_NAV_CONTROLLER_PADDING,
+            navControllerSpacing: LEGEND_NAV_CONTROLLER_SPACING,
             ...(verticalLegend ? { maxCols: 1 } : { maxRows: 1 })
           }
         } else {

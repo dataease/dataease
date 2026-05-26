@@ -1,5 +1,10 @@
 import { Chart as G2Column } from '@antv/g2'
-import { G2ChartView, G2DrawOptions } from '@/views/chart/components/js/panel/types/impl/g2'
+import {
+  G2ChartView,
+  G2DrawOptions,
+  LEGEND_NAV_CONTROLLER_PADDING,
+  getLegendNavButtonPath
+} from '@/views/chart/components/js/panel/types/impl/g2'
 import {
   BAR_AXIS_TYPE,
   BAR_EDITOR_PROPERTY,
@@ -403,38 +408,28 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
         const l = JSON.parse(JSON.stringify(customStyle.legend))
         if (l.show) {
           let position
-          const orient = l.orient
           const legendSymbol = l.icon
           const legendSize = l.size
           const legendFontSize = l.fontSize
           const legendColor = l.color
           // position 图例布局
           // layoutJustifyContent 图例实例布局
-          let layoutJustifyContent = 'center'
           // 根据图例方向和位置设置布局和位置
-          if (orient === 'horizontal') {
-            // 水平布局
-            position = l.vPosition === 'center' ? 'bottom' : l.vPosition
+          let layoutJustifyContent = 'center'
+          if (l.vPosition === 'top' || l.vPosition === 'bottom') {
+            position = l.vPosition
             layoutJustifyContent =
-              l.hPosition === 'left' && l.vPosition !== 'center'
+              l.hPosition === 'left'
                 ? 'flex-start'
-                : l.hPosition === 'right' && l.vPosition !== 'center'
+                : l.hPosition === 'right'
                 ? 'flex-end'
                 : 'center'
           } else {
-            // 垂直布局
-            position = l.hPosition === 'center' ? 'left' : l.hPosition
-            layoutJustifyContent =
-              l.vPosition === 'top' && l.hPosition !== 'center'
-                ? 'flex-start'
-                : l.vPosition === 'bottom' && l.hPosition !== 'center'
-                ? 'flex-end'
-                : 'center'
+            position = l.hPosition
           }
           const verticalLegend = position === 'left' || position === 'right'
           legend = {
             color: {
-              orientation: orient,
               position,
               layout: {
                 justifyContent: layoutJustifyContent
@@ -443,11 +438,16 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
               itemMarkerSize: legendSize,
               itemLabelFontSize: legendFontSize,
               itemLabelFill: legendColor,
-              navPageNumFontSize: legendSize,
+              navPageNumFontSize: legendFontSize,
               navPageNumFill: legendColor,
+              navPageNumFillOpacity: 1,
+              navButtonD: getLegendNavButtonPath(legendSize),
               navButtonSize: legendSize,
-              navOrientation: verticalLegend ? 'vertical' : 'horizontal',
+              navButtonFill: legendColor,
+              navButtonFillOpacity: 1,
+              navOrientation: 'horizontal',
               ...(verticalLegend ? { maxCols: 1 } : { maxRows: 1 }),
+              navControllerPadding: LEGEND_NAV_CONTROLLER_PADDING,
               navControllerSpacing: 20
             }
           }
