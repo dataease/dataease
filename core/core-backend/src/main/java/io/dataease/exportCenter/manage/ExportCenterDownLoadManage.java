@@ -241,12 +241,13 @@ public class ExportCenterDownLoadManage {
                     datasetTableFieldDTO.setFieldShortName(ele.getDataeaseName());
                     return datasetTableFieldDTO;
                 }).collect(Collectors.toList());
-
-                Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(dto, null);
-                String sql = (String) sqlMap.get("sql");
                 if (ObjectUtils.isEmpty(allFields)) {
                     DEException.throwException(Translator.get("i18n_no_fields"));
                 }
+                dto.setAllFields(allFields);
+
+                Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(dto, null);
+                String sql = (String) sqlMap.get("sql");
                 Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
                 allFields = permissionManage.filterColumnPermissions(allFields, desensitizationList, dto.getId(), null);
                 if (ObjectUtils.isEmpty(allFields)) {
@@ -649,12 +650,13 @@ public class ExportCenterDownLoadManage {
                 datasetTableFieldDTO.setFieldShortName(ele.getDataeaseName());
                 return datasetTableFieldDTO;
             }).collect(Collectors.toList());
-
-            Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(dto, null);
-            String sql = (String) sqlMap.get("sql");
             if (ObjectUtils.isEmpty(allFields)) {
                 DEException.throwException(Translator.get("i18n_no_fields"));
             }
+            dto.setAllFields(allFields);
+
+            Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(dto, null);
+            String sql = (String) sqlMap.get("sql");
             Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
             allFields = permissionManage.filterColumnPermissions(allFields, desensitizationList, dto.getId(), null);
             if (ObjectUtils.isEmpty(allFields)) {
@@ -830,4 +832,3 @@ public class ExportCenterDownLoadManage {
         }
     }
 }
-
