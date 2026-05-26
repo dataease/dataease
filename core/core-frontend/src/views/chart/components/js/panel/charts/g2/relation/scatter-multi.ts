@@ -652,7 +652,16 @@ export class MultiScatter extends G2ChartView {
             nice: false,
             domainMin: yAxis.axisValue.min,
             domainMax: yAxis.axisValue.max,
-            tickCount: yAxis.axisValue.splitCount < 2 ? 2 : yAxis.axisValue.splitCount
+            tickCount: yAxis.axisValue.splitCount < 2 ? 2 : yAxis.axisValue.splitCount,
+            tickMethod: (min, max, count) => {
+              const n = Math.max(2, count)
+              const step = (max - min) / (n - 1)
+              const ticks = []
+              for (let i = 0; i < n; i++) {
+                ticks.push(min + step * i)
+              }
+              return ticks
+            }
           }
         }
       })
