@@ -991,7 +991,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
           if (d.conditionColor) {
             return d.conditionColor
           }
-          return originColor
+          return typeof originColor === 'function' ? originColor(d) : originColor
         }
       }
     }
@@ -1022,7 +1022,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
           if (d.conditionColor) {
             return d.conditionColor
           }
-          return originColor
+          return typeof originColor === 'function' ? originColor(d) : originColor
         }
       }
     }
