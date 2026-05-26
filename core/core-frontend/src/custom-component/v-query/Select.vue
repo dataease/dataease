@@ -293,7 +293,7 @@ const handleFieldIdDefaultChange = (val: string[]) => {
             ele !== null &&
             ((config.value.optionFilter &&
               config.value.optionFilter.length > 0 &&
-              config.value.optionFilter.includes(ele)) ||
+              config.value.optionFilter.some(item => String(item) === String(ele))) ||
               !config.value.optionFilter ||
               config.value.optionFilter.length === 0)
           )
@@ -361,7 +361,7 @@ const handleFieldIdChange = (val: EnumValue) => {
           return (
             (config.value.optionFilter &&
               config.value.optionFilter.length > 0 &&
-              config.value.optionFilter.includes(ele)) ||
+              config.value.optionFilter.some(item => String(item) === String(ele))) ||
             !config.value.optionFilter ||
             config.value.optionFilter.length === 0
           )
@@ -719,7 +719,7 @@ const setOptions = (num: number) => {
               ele !== null &&
               ((config.value.optionFilter &&
                 config.value.optionFilter.length > 0 &&
-                config.value.optionFilter.includes(ele)) ||
+                config.value.optionFilter.some(item => String(item) === String(ele))) ||
                 !config.value.optionFilter ||
                 config.value.optionFilter.length === 0)
             )
