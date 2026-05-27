@@ -94,6 +94,7 @@
       placement="right-start"
       v-if="barShowCheck('setting')"
       ref="curDropdown"
+      popper-class="hide-focus_bg"
     >
       <el-icon class="bar-base-icon">
         <el-tooltip :content="t('visualization.more')" effect="dark" placement="bottom">
@@ -166,7 +167,6 @@
 
           <xpack-component
             :chart="element"
-            class="cbf"
             resource-table="snapshot"
             jsname="L2NvbXBvbmVudC90aHJlc2hvbGQtd2FybmluZy9FZGl0QmFySGFuZGxlcg=="
             @close-item="closeItem"
@@ -728,6 +728,14 @@ watch(
 .ed-dropdown:has(.dropdown-in_dropdown-item) {
   :focus-visible {
     outline: none;
+  }
+}
+.ed-dropdown__popper.hide-focus_bg .ed-dropdown-menu__item:not(.is-disabled) {
+  &:focus {
+    background-color: transparent;
+  }
+  &:hover {
+    background-color: #1f23291a;
   }
 }
 </style>
