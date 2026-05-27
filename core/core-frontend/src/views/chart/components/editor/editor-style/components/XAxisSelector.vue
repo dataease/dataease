@@ -118,6 +118,20 @@ const init = () => {
 
 const showProperty = prop => props.propertyInner?.includes(prop)
 
+const isMultiScatterTimeXAxis = computed<boolean>(() => {
+  if (props.chart.type !== 'multi-scatter') {
+    return false
+  }
+  const xAxis = props.chart.xAxis?.[0]
+  return !!xAxis && (xAxis.groupType === 'd' || (xAxis.deType != null && xAxis.deType === 1))
+})
+
+const showAxisLabelFormatter = computed(() => {
+  return (
+    showProperty('axisLabelFormatter') && !isBarRangeTime.value && !isMultiScatterTimeXAxis.value
+  )
+})
+
 const isBidirectionalBar = computed(() => {
   return props.chart.type === 'bidirectional-bar'
 })
@@ -556,7 +570,7 @@ onMounted(() => {
           @change="changeAxisStyle('axisLabel.lengthLimit')"
         />
       </el-form-item>
-      <template v-if="showProperty('axisLabelFormatter') && !isBarRangeTime">
+      <template v-if="showAxisLabelFormatter">
         <el-form-item
           class="form-item"
           :class="'form-item-' + themes"

@@ -2134,7 +2134,11 @@ export function configAxisLabelLengthLimit(chart, plot, triggerObjName = 'axis-l
   })
 }
 
-export function configXAxisLengthLimit(chart: any, chartObj: any): void {
+export function configXAxisLengthLimit(
+  chart: any,
+  chartObj: any,
+  formatOriginText?: (originText: string, event: any) => string
+): void {
   const xAxis = parseJson(chart.customStyle).xAxis
   if (!xAxis.show || !xAxis.axisLabel?.show) {
     return
@@ -2147,7 +2151,10 @@ export function configXAxisLengthLimit(chart: any, chartObj: any): void {
       return
     }
     hideTimer && clearTimeout(hideTimer)
-    const originText = e.target?.cfg?.delegateObject?.item?.name
+    const originTextRaw = e.target?.cfg?.delegateObject?.item?.name
+    const originText = String(
+      (formatOriginText ? formatOriginText(originTextRaw, e) : originTextRaw) ?? ''
+    )
     const parentContainer: HTMLDivElement = e.view?.ele
     let axisLabelDom = parentContainer.getElementsByClassName(
       'g2-axis-label-tooltip'
