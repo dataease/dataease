@@ -3373,6 +3373,9 @@ export class SummaryCell extends CustomDataCell {
     } else {
       textStyle.textAlign = this.theme.dataCell.text.textAlign
     }
+    if (textStyle.textAlign === 'custom') {
+      textStyle.textAlign = 'left'
+    }
     return textStyle
   }
 
