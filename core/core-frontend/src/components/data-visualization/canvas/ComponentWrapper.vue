@@ -237,7 +237,7 @@ const componentBackgroundStyle = computed(() => {
   if (config.value.commonBackground) {
     return getComponentBackgroundStyle(config.value.commonBackground, {
       scale: deepScale.value,
-      isUserView: config.value.component === 'UserView',
+      isUserView: ['DeTabs', 'UserView'].includes(config.value.component),
       forceNoPadding: ['Group'].includes(config.value.component)
     })
   }
