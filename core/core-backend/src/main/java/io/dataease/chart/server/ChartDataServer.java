@@ -544,7 +544,8 @@ public class ChartDataServer implements ChartDataApi {
                                         cell.setCellValue(cellValObj.toString());
                                     }
                                 } else {
-                                    if ((excelTypes[j].equals(DeTypeConstants.DE_INT) || excelTypes[j].equals(DeTypeConstants.DE_FLOAT)) && StringUtils.isNotEmpty(cellValObj.toString())) {
+                                    Integer excelType = getExcelType(j, excelTypes, exportFields, viewInfo);
+                                    if ((Objects.equals(excelType, DeTypeConstants.DE_INT) || Objects.equals(excelType, DeTypeConstants.DE_FLOAT)) && StringUtils.isNotEmpty(cellValObj.toString())) {
                                         cell.setCellValue(Double.valueOf(cellValObj.toString()));
                                     } else if (cellValObj != null) {
                                         cell.setCellValue(cellValObj.toString());
@@ -576,6 +577,15 @@ public class ChartDataServer implements ChartDataApi {
                 mergeConfig.forEach(detailsSheet::addMergedRegionUnsafe);
             }
         }
+    }
+
+    private static Integer getExcelType(int columnIndex, Integer[] excelTypes, List<ChartViewFieldDTO> exportFields, ChartViewDTO viewInfo) {
+        if (viewInfo != null
+                && StringUtils.equalsAnyIgnoreCase(viewInfo.getType(), "table-info", "table-normal")
+                && columnIndex < exportFields.size()) {
+            return exportFields.get(columnIndex).getDeType();
+        }
+        return ArrayUtils.isNotEmpty(excelTypes) && columnIndex < excelTypes.length ? excelTypes[columnIndex] : null;
     }
 
     public static List<ChartViewFieldDTO> resolveExportFields(ChartViewDTO viewInfo, Object[] header) {
