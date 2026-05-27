@@ -108,6 +108,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
     if (!chart.data?.data?.length) {
       return
     }
+    chart.container = container
     const [firstData, secondData] = chart.data.data
     const initOptions: G2Spec = {
       autoFit: true,
@@ -397,10 +398,36 @@ export class BidirectionalHorizontalBar extends G2ChartView {
         position = 'left'
       }
     }
+    // G2 默认轴组件会按完整标签宽度预留空间，横向对称条形图只需要按文本宽度估算中间轴占位
+    const labelFontSize = xAxis.axisLabel.fontSize ?? 12
+    const formatXAxisLabel = value => {
+      const label = `${value ?? ''}`
+      const lengthLimit = xAxis.axisLabel.lengthLimit
+      return lengthLimit && label.length > lengthLimit
+        ? label.substring(0, lengthLimit) + '...'
+        : label
+    }
+    const getLabelTextWidth = text => {
+      return Array.from(`${text ?? ''}`).reduce((width, char) => {
+        return width + (char.charCodeAt(0) > 255 ? labelFontSize : labelFontSize * 0.6)
+      }, 0)
+    }
+    let centerAxisSize: number
+    if (basicStyle.layout === 'horizontal' && position === 'right' && xAxis.axisLabel.show) {
+      const fields = (firstMark.data?.value || []).map(item => item.field)
+      const maxLabelWidth = fields.reduce((maxWidth, field) => {
+        return Math.max(maxWidth, getLabelTextWidth(formatXAxisLabel(field)))
+      }, 0)
+      // 中间维度轴只需要左右各预留半个标签宽度和少量间距，避免 G2 默认轴宽把两侧空白撑大
+      centerAxisSize = Math.ceil(Math.max(labelFontSize + 8, maxLabelWidth / 2 + 8))
+    }
     const axisStyle = {
       axis: {
         x: {
           position: position,
+          size: centerAxisSize,
+          crossPadding: centerAxisSize ? 2 : undefined,
+          padding: centerAxisSize ? 0 : undefined,
           line: xAxis.axisLine.show,
           lineStroke: xAxis.axisLine.lineStyle.color,
           lineStrokeOpacity: 1,
@@ -424,13 +451,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
               keepTail: true
             }
           ],
-          labelFormatter: value => {
-            const label = `${value ?? ''}`
-            const lengthLimit = xAxis.axisLabel.lengthLimit
-            return lengthLimit && label.length > lengthLimit
-              ? label.substring(0, lengthLimit) + '...'
-              : label
-          }
+          labelFormatter: formatXAxisLabel
         }
       }
     }
@@ -441,14 +462,26 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       top: 'top',
       bottom: 'top'
     }
+    const reserveHiddenCenterLabel =
+      basicStyle.layout === 'horizontal' && position === 'right' && xAxis.axisLabel.show
+    // 根因是维度轴标签实际挂在左侧子图上，右侧如果完全隐藏该轴，左右绘图区宽度会不一致
+    const secondXAxis = {
+      label: false,
+      tick: xAxis.axisLabel.show && ['right', 'bottom'].includes(position),
+      position: POSITION_MAP[position],
+      line: xAxis.axisLine.show && ['right', 'bottom'].includes(position)
+    }
+    if (reserveHiddenCenterLabel) {
+      // 横向布局的维度轴标签显示在左右图中间，右侧子图也保留一份不可见标签空间，避免左侧因承载标签而绘图区变窄
+      merge(secondXAxis, {
+        label: true,
+        labelOpacity: 0,
+        labelFillOpacity: 0
+      })
+    }
     merge(secondMark, axisStyle, {
       axis: {
-        x: {
-          label: false,
-          tick: xAxis.axisLabel.show && ['right', 'bottom'].includes(position),
-          position: POSITION_MAP[position],
-          line: xAxis.axisLine.show && ['right', 'bottom'].includes(position)
-        }
+        x: secondXAxis
       }
     })
     if (position === 'left') {
@@ -506,6 +539,43 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       }
       merge(yAxisOption, { position: POSITION_MAP[yAxis.position] })
       merge(yAxisExtOption, { position: POSITION_MAP[yAxisExt.position] })
+      // 横向布局下数值轴在上下方，G2 默认轴高度偏保守，会挤出较大的底部/顶部空白
+      const getHorizontalAxisSize = (axisOption, axisStyle) => {
+        if (axisStyle.axisLabel?.rotate) {
+          return undefined
+        }
+        const labelSize = axisOption.label ? axisStyle.axisLabel.fontSize ?? 12 : 0
+        const titleSize = axisOption.title ? (axisStyle.fontSize ?? 12) + 8 : 0
+        return Math.max(18, labelSize + titleSize + 6)
+      }
+      const compactHorizontalAxis = (axisOption, axisStyle) => {
+        const axisSize = getHorizontalAxisSize(axisOption, axisStyle)
+        if (!axisSize) {
+          return
+        }
+        // 横向布局的数值轴只收紧轴组件预留高度，不改变轴线、标签、标题等样式配置
+        merge(axisOption, {
+          size: axisSize,
+          crossPadding: 0,
+          padding: 0
+        })
+      }
+      compactHorizontalAxis(yAxisOption, yAxis)
+      compactHorizontalAxis(yAxisExtOption, yAxisExt)
+      const getHorizontalPlotLayout = (axisOption, axisStyle) => {
+        const axisSize = getHorizontalAxisSize(axisOption, axisStyle) ?? 18
+        return {
+          marginTop: 0,
+          marginBottom: 0,
+          paddingTop: axisOption.position === 'top' ? axisSize + 4 : 2,
+          paddingBottom: axisOption.position === 'bottom' ? axisSize + 10 : 8,
+          insetTop: 0,
+          insetBottom: 0
+        }
+      }
+      // 默认 view margin/padding 会参与布局留白；横向对称条形图改成固定上下布局，避免顶部图例下方过空、底部 plot 贴边
+      merge(firstMark, getHorizontalPlotLayout(yAxisOption, yAxis))
+      merge(secondMark, getHorizontalPlotLayout(yAxisExtOption, yAxisExt))
     }
     if (yAxis.axisValue.auto === false) {
       merge(firstMark, {
@@ -881,7 +951,65 @@ export class BidirectionalHorizontalBar extends G2ChartView {
     }
     const { basicStyle } = parseJson(chart.customAttr)
     const [firstData, secondData] = chart.data.data
-    const legendOpt = {
+    const flexOptions = options as any
+    // 旧图表配置可能没有 legend.size/fontSize，先兜底，避免图例空间计算出现 NaN
+    const legendFontSize = legend.fontSize ?? 12
+    const legendMarkerSize = legend.size ?? 8
+    const topLegend = legend.vPosition === 'top'
+    const getLegendRatio = (direction: 'col' | 'row', legendFirst = false) => {
+      // spaceFlex 的 ratio 是纯比例切分，小容器下固定 [20, 1] 会把图例层压到不可见；这里按实际容器给图例预留最小像素空间
+      const containerRect =
+        typeof document === 'undefined' || !chart.container
+          ? undefined
+          : document.getElementById(chart.container)?.getBoundingClientRect()
+      const mainSize = direction === 'col' ? containerRect?.height : containerRect?.width
+      const getTextWidth = text => {
+        return Array.from(`${text ?? ''}`).reduce((width, char) => {
+          return width + (char.charCodeAt(0) > 255 ? legendFontSize : legendFontSize * 0.6)
+        }, 0)
+      }
+      // 图例字体或图形放大后，图例层也要随之增高；否则图例会从独立 legends 子层溢出到图表边界外
+      const legendGap = topLegend && direction === 'col' ? 8 : 14
+      const legendLineSize = Math.ceil(Math.max(legendFontSize * 1.3, legendMarkerSize) + legendGap)
+      const legendMainSize =
+        direction === 'col'
+          ? Math.max(topLegend ? 28 : 32, legendLineSize)
+          : Math.max(
+              80,
+              getTextWidth(firstData.name) + legendMarkerSize + 40,
+              getTextWidth(secondData.name) + legendMarkerSize + 40
+            )
+      if (!mainSize || mainSize <= 0) {
+        return legendFirst ? [1, 20] : [20, 1]
+      }
+      const safeLegendSize = Math.max(1, Math.min(legendMainSize, mainSize - 1))
+      const chartMainSize = Math.max(mainSize - safeLegendSize, 1)
+      return legendFirst ? [safeLegendSize, chartMainSize] : [chartMainSize, safeLegendSize]
+    }
+    const keepTopLegendPlotInset = () => {
+      if (!topLegend || basicStyle.layout !== 'horizontal') {
+        return
+      }
+      const chartOptions = flexOptions.children.find(c => c.key === 'chart')
+      if (!chartOptions) {
+        return
+      }
+      merge(chartOptions, {
+        margin: 0,
+        padding: 0,
+        inset: 0
+      })
+      chartOptions.children?.forEach(mark => {
+        const topPadding = typeof mark.paddingTop === 'number' ? Math.min(mark.paddingTop, 2) : 2
+        merge(mark, {
+          marginTop: 0,
+          paddingTop: topPadding,
+          insetTop: 0,
+          insetBottom: Math.max(mark.insetBottom ?? 0, 12)
+        })
+      })
+    }
+    const legendOpt: any = {
       key: 'legends',
       type: 'legends',
       scale: {
@@ -897,37 +1025,50 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       position: 'top',
       layout: {},
       itemMarker: legend.icon,
-      itemMarkerSize: legend.size,
-      itemLabelFontSize: legend.fontSize,
-      itemLabelFill: legend.color
+      itemMarkerSize: legendMarkerSize,
+      itemLabelFontSize: legendFontSize,
+      itemLabelFill: legend.color,
+      ...(topLegend
+        ? {
+            margin: 0,
+            rowPadding: 2,
+            colPadding: 6,
+            crossPadding: 2,
+            itemSpacing: [4, 4, 2],
+            maxRows: 1
+          }
+        : {
+            margin: 8
+          })
     }
     if (legend.hPosition === 'center') {
       legendOpt.layout.justifyContent = 'center'
       legendOpt.layout.flexDirection = 'row'
       if (legend.vPosition === 'top') {
-        options.ratio = [1, 20]
-        options.children.unshift(legendOpt)
+        flexOptions.ratio = getLegendRatio('col', true)
+        flexOptions.children.unshift(legendOpt)
+        keepTopLegendPlotInset()
       }
       if (legend.vPosition === 'bottom') {
-        options.ratio = [20, 1]
-        options.children.push(legendOpt)
+        flexOptions.ratio = getLegendRatio('col')
+        flexOptions.children.push(legendOpt)
       }
     } else {
       if (legend.vPosition === 'center') {
-        options.direction = 'row'
+        flexOptions.direction = 'row'
         legendOpt.position = 'left'
         legendOpt.layout.justifyContent = 'center'
         legendOpt.layout.flexDirection = 'col'
         if (legend.hPosition === 'left') {
-          options.ratio = [1, 20]
-          options.children.unshift(legendOpt)
+          flexOptions.ratio = getLegendRatio('row', true)
+          flexOptions.children.unshift(legendOpt)
         }
         if (legend.hPosition === 'right') {
-          options.ratio = [20, 1]
-          options.children.push(legendOpt)
+          flexOptions.ratio = getLegendRatio('row')
+          flexOptions.children.push(legendOpt)
         }
       } else {
-        options.direction = 'col'
+        flexOptions.direction = 'col'
         if (legend.hPosition === 'left') {
           legendOpt.layout.justifyContent = 'flex-start'
         }
@@ -935,12 +1076,13 @@ export class BidirectionalHorizontalBar extends G2ChartView {
           legendOpt.layout.justifyContent = 'flex-end'
         }
         if (legend.vPosition === 'top') {
-          options.ratio = [1, 20]
-          options.children.unshift(legendOpt)
+          flexOptions.ratio = getLegendRatio('col', true)
+          flexOptions.children.unshift(legendOpt)
+          keepTopLegendPlotInset()
         }
         if (legend.vPosition === 'bottom') {
-          options.ratio = [20, 1]
-          options.children.push(legendOpt)
+          flexOptions.ratio = getLegendRatio('col')
+          flexOptions.children.push(legendOpt)
         }
       }
     }
