@@ -106,21 +106,6 @@ public class TokenFilter implements Filter {
                 filterChain.doFilter(servletRequest, servletResponse);
                 return;
             }
-            String embeddedToken = ServletUtils.getHead(AuthConstant.EMBEDDED_TOKEN_KEY);
-            if (StringUtils.isNotBlank(embeddedToken)) {
-                Object apisixTokenManage = CommonBeanFactory.getBean("apisixTokenManage");
-                if (apisixTokenManage == null) {
-                    DEException.throwException("embedded token is invalid");
-                }
-                Method validateEmbeddedTokenMethod = ReflectionUtils.findMethod(apisixTokenManage.getClass(), "validateEmbeddedToken", String.class);
-                Object embeddedUser = ReflectionUtils.invokeMethod(validateEmbeddedTokenMethod, apisixTokenManage, embeddedToken);
-                if (!(embeddedUser instanceof TokenUserBO)) {
-                    DEException.throwException("embedded token is invalid");
-                }
-                UserUtils.setUserInfo((TokenUserBO) embeddedUser);
-                filterChain.doFilter(servletRequest, servletResponse);
-                return;
-            }
             String token = ServletUtils.getToken();
             TokenUserBO userBO = TokenUtils.validate(token);
             UserUtils.setUserInfo(userBO);
