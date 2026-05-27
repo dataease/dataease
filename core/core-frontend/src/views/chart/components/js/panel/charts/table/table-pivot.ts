@@ -417,7 +417,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
                 tmp = tmp.parent
               }
             })
-            const totlaRowWidth = ev.rowsHierarchy.sampleNodesForAllLevels.reduce((p, n) => {
+            const totalRowWidth = ev.rowsHierarchy.sampleNodesForAllLevels.reduce((p, n) => {
               return p + n.width
             }, 0)
             const maxRowLevel = ev.rowsHierarchy.maxLevel
@@ -431,7 +431,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
                 n.width = width
               }
             })
-            ev.rowsHierarchy.width = totlaRowWidth
+            ev.rowsHierarchy.width = totalRowWidth
             ev.colsHierarchy.width = totalColWidth
           }
           s2.store.set('lastLayoutResult', undefined)
@@ -512,7 +512,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       this.configTouchEvent(s2, drawOption, meta)
     }
     // empty data tip
-    configEmptyDataStyle(s2, newData)
+    configEmptyDataStyle(s2, newData, basicStyle)
     // click
     s2.on(S2Event.DATA_CELL_CLICK, ev => this.dataCellClickAction(chart, ev, s2, action))
     s2.on(S2Event.ROW_CELL_CLICK, ev => this.headerCellClickAction(chart, ev, s2, action))
@@ -1479,6 +1479,13 @@ class EmptyDataCell extends MergedCell {
         textBaseline: 'middle'
       }
     }
+    const meta = this.getMeta()
+    if (meta.fontColor) {
+      config.attrs.fill = meta.fontColor as string
+    }
+    if (meta.fontSize) {
+      config.attrs.fontSize = meta.fontSize as number
+    }
     this.addShape('text', config)
   }
 
@@ -1509,7 +1516,11 @@ export function setColorOpacity(color: string, opacity: number) {
   return color
 }
 
-function configEmptyDataStyle(instance: PivotSheet, data: any[]) {
+function configEmptyDataStyle(
+  instance: PivotSheet,
+  data: any[],
+  basicStyle: DeepPartial<ChartBasicStyle>
+) {
   if (data?.length) {
     return
   }
@@ -1524,7 +1535,15 @@ function configEmptyDataStyle(instance: PivotSheet, data: any[]) {
         mergedCells.push({ rowIndex, colIndex })
       })
     })
-    instance.options.mergedCell = (s, c, m) => new EmptyDataCell(s, c, m)
+    instance.options.mergedCell = (s, c, m) => {
+      if (basicStyle.tableEmptyFontColor) {
+        m.fontColor = basicStyle.tableEmptyFontColor
+      }
+      if (basicStyle.tableEmptyFontSize) {
+        m.fontSize = basicStyle.tableEmptyFontSize
+      }
+      return new EmptyDataCell(s, c, m)
+    }
     instance.interaction.mergeCells(mergedCells)
   })
 }

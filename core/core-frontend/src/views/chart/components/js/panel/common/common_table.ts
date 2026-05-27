@@ -35,12 +35,14 @@ import {
   S2Event,
   S2Options,
   S2Theme,
+  type LayoutResult,
   SERIES_NUMBER_FIELD,
   EXTRA_FIELD,
   setTooltipContainerStyle,
   SHAPE_STYLE_MAP,
   SpreadSheet,
   Style,
+  CellBorderPosition,
   TableColCell,
   TableDataCell,
   updateShapeAttr,
@@ -659,6 +661,22 @@ export function getStyle(chart: Chart, dataConfig: S2DataConfig): Style {
   return style
 }
 
+export function reserveTableRightBorderWidth(ev: LayoutResult, containerWidth: number) {
+  if (!ev.colLeafNodes?.length) {
+    return
+  }
+  const totalWidth = ev.colLeafNodes.reduce((p, n) => p + n.width, 0)
+  if (totalWidth < containerWidth) {
+    return
+  }
+  const lastLeafNode = ev.colLeafNodes[ev.colLeafNodes.length - 1]
+  if (lastLeafNode.width <= 1) {
+    return
+  }
+  lastLeafNode.width -= 1
+  ev.colsHierarchy.width = totalWidth
+}
+
 export function getCurrentField(valueFieldList: Axis[], field: ChartViewField) {
   let list = []
   let res = null
@@ -796,6 +814,7 @@ export function getConditions(chart: Chart) {
 
 export function mappingColorCustom(value, defaultColor, field, type, filedValueMap?, rowData?) {
   let color = null
+  let hitCondition = null;
   for (let i = 0; i < field.conditions.length; i++) {
     let flag = false
     const t = field.conditions[i]
@@ -867,6 +886,7 @@ export function mappingColorCustom(value, defaultColor, field, type, filedValueM
         }
       }
       if (flag) {
+        hitCondition = t
         break
       } else if (i === field.conditions.length - 1) {
         color = defaultColor
@@ -907,6 +927,7 @@ export function mappingColorCustom(value, defaultColor, field, type, filedValueM
         flag = true
       }
       if (flag) {
+        hitCondition = t
         break
       } else if (i === field.conditions.length - 1) {
         color = defaultColor
@@ -925,6 +946,7 @@ export function mappingColorCustom(value, defaultColor, field, type, filedValueM
         }
       }
       if (flag) {
+        hitCondition = fc
         break
       }
       // time
@@ -968,13 +990,25 @@ export function mappingColorCustom(value, defaultColor, field, type, filedValueM
         flag = true
       }
       if (flag) {
+        hitCondition = fc
         break
       } else if (i === field.conditions.length - 1) {
         color = defaultColor
       }
     }
   }
-  return color
+  if(hitCondition && hitCondition.target === 'custom'){
+    return {
+      targetFieldId: hitCondition.targetFieldId,
+      color
+    }
+  }else{
+    return {
+      targetFieldId: field.fieldId,
+      color
+    }
+  }
+
 }
 
 export function mappingColor(value, defaultColor, rules, type, filedValueMap?, rowData?) {
@@ -1233,7 +1267,7 @@ export function getPivotConditions(chart: Chart) {
       : hexColorToRGBA(tableHeader.tableHeaderColBgColor, basicStyle.alpha)
     const filedValueMap = getFieldValueMap(chart)
 
-    
+
 
     const targetRulesMap = {} // columnName -> Array<{ rule, sourceField }>
     const xFields = chart.xAxis.map(f => f.dataeaseName)
@@ -1318,7 +1352,7 @@ export function getPivotConditions(chart: Chart) {
           if (rowData.cornerType) {
             return null
           }
-          
+
           const fill = mappingPivotColor(
             value,
             defaultBgColor,
@@ -2970,6 +3004,14 @@ export class CustomDataCell extends TableDataCell {
 
 export class CustomTableColCell extends TableColCell {
 
+  protected drawBorders() {
+    super.drawBorders()
+    const { options, isTableMode } = this.spreadsheet
+    if (this.meta.colIndex === 0 && isTableMode() && options.showSeriesNumber) {
+      this.drawVerticalBorder(CellBorderPosition.LEFT)
+    }
+  }
+
   protected getTextStyle() {
     const textStyle = super.getTextStyle()
     const colCellAlignConfig = this.theme.colCellAlignConfig
@@ -3023,7 +3065,6 @@ const drawTextShape = (cell, isHeader) => {
   const { formattedValue } = cell.getFormattedFieldValue()
   // 获取文本样式
   const textStyle = cloneDeep(cell.getTextStyle())
-  textStyle.textAlign = undefined
   // 宽度能放几个字符，就放几个，放不下就换行
   let wrapText = getWrapText(
     formattedValue ? formattedValue?.toString() : emptyPlaceholder,
@@ -3098,13 +3139,8 @@ const drawTextShape = (cell, isHeader) => {
 function getTextStartX(cell, textStyle) {
   // 获取单元格区域
   const area = cell.getCellArea()
-  // 计算文本宽度,只计算第一行宽度
-  const textWidth = cell.spreadsheet.measureTextWidthRoughly(
-    cell.actualText.split('\n')[0],
-    textStyle
-  )
-  const padding = cell.theme.colCell?.cell?.padding ?? { left: 0, right: 0 }
-  const align = cell.getTextStyle()?.textAlign ?? 'left'
+  const padding = cell.getStyle()?.cell?.padding ?? { left: 0, right: 0 }
+  const align = textStyle.textAlign ?? 'left'
   const paddingLeft = padding.left || 0
   const paddingRight = padding.right || 0
   // 可用宽度（扣除 padding）
@@ -3113,9 +3149,9 @@ function getTextStartX(cell, textStyle) {
     case 'left':
       return area.x + paddingLeft
     case 'center':
-      return area.x + paddingLeft + (availableWidth - textWidth) / 2
+      return area.x + paddingLeft + availableWidth / 2
     case 'right':
-      return area.x + area.width - textWidth - paddingRight
+      return area.x + area.width - paddingRight
     default:
       return area.x + paddingLeft
   }
@@ -3183,27 +3219,32 @@ const getWrapText = (sourceText, textStyle, cellWidth, spreadsheet) => {
   sourceText = sourceText.toString().trim()
   const getTextWidth = text => spreadsheet.measureTextWidthRoughly(text, textStyle)
 
-  let resultWrapText = ''
-  let restText = ''
-  let restTextWidth = 0
-  for (let i = 0; i < sourceText.length; i++) {
-    const char = sourceText[i]
-    const charWidth = getTextWidth(char)
-    restTextWidth += charWidth
-    restText += char
-    // 中文时，需要单元格宽度减去16个文字宽度，否则会超出单元格宽度
-    const cWidth = char.charCodeAt(0) >= 128 ? 12 : 8
-    // 添加换行
-    if (restTextWidth >= cellWidth - textStyle.fontSize - cWidth) {
-      // 最后一个字符不添加换行符
-      resultWrapText += restText + (i !== sourceText.length - 1 ? '\n' : '')
-      restText = ''
-      restTextWidth = 0
-    }
-  }
+  return sourceText
+    .split('\n')
+    .map(text => {
+      let resultWrapText = ''
+      let restText = ''
+      let restTextWidth = 0
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i]
+        const charWidth = getTextWidth(char)
+        restTextWidth += charWidth
+        restText += char
+        // 中文时，需要单元格宽度减去16个文字宽度，否则会超出单元格宽度
+        const cWidth = char.charCodeAt(0) >= 128 ? 12 : 8
+        // 添加换行
+        if (restTextWidth >= cellWidth - textStyle.fontSize - cWidth) {
+          // 最后一个字符不添加换行符
+          resultWrapText += restText + (i !== text.length - 1 ? '\n' : '')
+          restText = ''
+          restTextWidth = 0
+        }
+      }
 
-  resultWrapText += restText
-  return resultWrapText
+      resultWrapText += restText
+      return resultWrapText
+    })
+    .join('\n')
 }
 /**
  * 计算文本行高
@@ -3370,6 +3411,8 @@ export const configEmptyDataStyle = (newChart, basicStyle, newData, container) =
       emptyDom.setAttribute(
         'style',
         `position: absolute;
+        color: ${basicStyle.tableEmptyFontColor ?? 'inherit'};
+        font-size: ${basicStyle.tableEmptyFontSize ? basicStyle.tableEmptyFontSize + 'px' : 'inherit'};
         left: ${left}px;
         top: 50%;`
       )

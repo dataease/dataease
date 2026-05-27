@@ -44,6 +44,7 @@ import {
 import type { Options } from '@antv/g2plot/esm'
 import { Group } from '@antv/g-canvas'
 import { extremumEvt } from '@/views/chart/components/js/extremumUitl'
+import { getMixTooltipFormatter } from './chart-mix-tooltip'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
@@ -541,7 +542,7 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
     const formatterMap = tooltipAttr.seriesTooltipFormatter
       ?.filter(i => i.show)
       .reduce((pre, next) => {
-        pre[next.id] = next
+        pre[next.seriesId ?? next.id] = next
         return pre
       }, {}) as Record<string, SeriesFormatter>
     const tooltip: DualAxesOptions['tooltip'] = {
@@ -557,15 +558,16 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
           return originalItems
         }
         const result = []
-        originalItems
-          .filter(item => formatterMap[item.data.quotaList[0].id])
-          .forEach(item => {
-            const formatter = formatterMap[item.data.quotaList[0].id]
-            const value = valueFormatter(parseFloat(item.value as string), formatter.formatterCfg)
-            const name = item.data.category
+        originalItems.forEach(item => {
+          const formatter = getMixTooltipFormatter(formatterMap, item)
+          if (!formatter) {
+            return
+          }
+          const value = valueFormatter(parseFloat(item.value as string), formatter.formatterCfg)
+          const name = item.data.category
 
-            result.push({ ...item, name, value })
-          })
+          result.push({ ...item, name, value })
+        })
         head.data.dynamicTooltipValue?.forEach(item => {
           const formatter = formatterMap[item.fieldId]
           if (formatter) {
@@ -880,6 +882,27 @@ export class StackColumnLineMix extends ColumnLineMix {
       })
     }
     return result
+  }
+
+  protected configData(chart: Chart, options: DualAxesOptions): DualAxesOptions {
+    if (chart.extStack?.[0]?.sort === 'none') {
+      return options
+    }
+    // 把右轴的主轴数据顺序和左轴保持一致
+    const leftData = options.data?.[0] ?? []
+    const rightData = options.data?.[1] ?? []
+    const leftOrder = leftData.map(d => d.field)
+    rightData.sort((a, b) => {
+      const aIndex = leftOrder.indexOf(a.field)
+      const bIndex = leftOrder.indexOf(b.field)
+      return aIndex - bIndex
+    })
+    return options
+  }
+
+  protected setupOptions(chart: Chart, options: DualAxesOptions): DualAxesOptions {
+    const tmpOptions = flow(this.configData)(chart, options, {}, this)
+    return super.setupOptions(chart, tmpOptions)
   }
 
   constructor(name = 'chart-mix-stack') {

@@ -86,6 +86,7 @@ export const DEFAULT_COLOR_CASE_LIGHT: DeepPartial<ChartAttr> = {
     gaugeStyle: 'default',
     tableBorderColor: '#E6E7E4',
     tableScrollBarColor: 'rgba(0, 0, 0, 0.15)',
+    tableEmptyFontColor: '#000',
     zoomButtonColor: '#aaa',
     zoomBackground: '#fff'
   },
@@ -147,6 +148,7 @@ export const DEFAULT_COLOR_CASE_DARK: DeepPartial<ChartAttr> = {
     gaugeStyle: 'default',
     tableBorderColor: '#CCCCCC',
     tableScrollBarColor: 'rgba(255, 255, 255, 0.5)',
+    tableEmptyFontColor: '#fff',
     zoomButtonColor: '#fff',
     zoomBackground: '#000'
   },
@@ -227,7 +229,7 @@ export const FILTER_COMMON_STYLE_LIGHT = {
   labelColor: '#1f2329',
   titleColor: '#1f2329',
   color: '#1f2329',
-  borderColor: '#bbbfc4',
+  borderColor: '#D9DCDF',
   text: '#1f2329',
   bgColor: '#FFFFFF'
 }
@@ -237,7 +239,7 @@ export const FILTER_COMMON_STYLE_DARK = {
   labelColor: '#ffffff',
   titleColor: '#ffffff',
   color: '#FFFFFF',
-  borderColor: '#484747',
+  borderColor: '#505050',
   text: '#AFAFAF',
   bgColor: '#131C42'
 }

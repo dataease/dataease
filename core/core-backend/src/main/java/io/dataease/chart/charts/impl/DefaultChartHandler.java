@@ -18,6 +18,7 @@ import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
+import io.dataease.extensions.datasource.dto.TableFieldWithValue;
 import io.dataease.extensions.datasource.model.SQLMeta;
 import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
@@ -91,6 +92,19 @@ public class DefaultChartHandler extends AbstractChartPlugin {
         return (T) new CustomFilterResult(filterList, formatResult.getContext());
     }
 
+    protected void fillDatasourceRequest(DatasourceRequest datasourceRequest, boolean crossDs, Map<Long, DatasourceSchemaDTO> dsMap, Map<String, Object> sqlMap) {
+        datasourceRequest.setIsCross(crossDs);
+        datasourceRequest.setDsList(dsMap);
+        List<TableFieldWithValue> tableFieldWithValues = getTableFieldWithValues(sqlMap);
+        if (CollectionUtils.isNotEmpty(tableFieldWithValues)) {
+            datasourceRequest.setTableFieldWithValues(tableFieldWithValues.stream().map(TableFieldWithValue::copy).toList());
+        }
+    }
+
+    protected List<TableFieldWithValue> getTableFieldWithValues(Map<String, Object> sqlMap) {
+        return (List<TableFieldWithValue>) sqlMap.get("tableFieldWithValues");
+    }
+
     public Map<String, Object> buildResult(ChartViewDTO view, AxisFormatResult formatResult, CustomFilterResult filterResult, List<String[]> data) {
         boolean isDrill = filterResult
                 .getFilterList()
@@ -112,8 +126,7 @@ public class DefaultChartHandler extends AbstractChartPlugin {
         boolean needOrder = Utils.isNeedOrder(dsList);
         boolean crossDs = ((DatasetGroupInfoDTO) formatResult.getContext().get("dataset")).getIsCross();
         DatasourceRequest datasourceRequest = new DatasourceRequest();
-        datasourceRequest.setIsCross(crossDs);
-        datasourceRequest.setDsList(dsMap);
+        fillDatasourceRequest(datasourceRequest, crossDs, dsMap, sqlMap);
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
         var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
         var allFields = (List<ChartViewFieldDTO>) filterResult.getContext().get("allFields");
@@ -540,10 +553,10 @@ public class DefaultChartHandler extends AbstractChartPlugin {
                                     if (new BigDecimal(lastValue).compareTo(BigDecimal.ZERO) == 0) {
                                         item[dataIndex] = null;
                                     } else {
-                                        item[dataIndex] = new BigDecimal(cValue)
-                                                .divide(new BigDecimal(lastValue).abs(), 8, RoundingMode.HALF_UP)
-                                                .subtract(new BigDecimal(1))
-                                                .setScale(8, RoundingMode.HALF_UP)
+                                        BigDecimal numerator = new BigDecimal(cValue).subtract(new BigDecimal(lastValue));
+                                        BigDecimal denominator = new BigDecimal(lastValue).abs();
+                                        item[dataIndex] = numerator
+                                                .divide(denominator, 8, RoundingMode.HALF_UP)
                                                 .toString();
                                     }
                                 } else if (StringUtils.equalsIgnoreCase(resultData, "pre")) {

@@ -224,7 +224,7 @@ if (uid.value === '1') {
   width: 100%;
   height: 100%;
   .de-container {
-    padding: 0 13px 10px;
+    padding: 0 8px 10px;
   }
   .ed-divider--horizontal {
     margin: 0 0 !important;
@@ -250,13 +250,15 @@ if (uid.value === '1') {
   .uinfo-main,
   .uinfo-footer {
     width: 100%;
+    padding: 4px;
     .uinfo-main-item {
       width: 100%;
       height: 40px;
       line-height: 40px;
+      border-radius: 6px;
       cursor: pointer;
       &:hover {
-        background-color: #f2f2f2;
+        background-color: #1f23291a;
       }
       .about-parent {
         display: flex;
@@ -279,10 +281,9 @@ if (uid.value === '1') {
   padding-bottom: 0 !important;
 }
 .language-popover {
-  // max-height: 112px;
   .ed-popper__arrow {
     display: none;
   }
-  padding: var(--ed-popover-padding) 0 !important;
+  padding: 4px !important;
 }
 </style>

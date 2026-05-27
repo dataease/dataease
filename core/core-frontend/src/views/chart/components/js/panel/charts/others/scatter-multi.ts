@@ -7,6 +7,7 @@ import { flow, parseJson, setUpSingleDimensionSeriesColor } from '../../../util'
 import { valueFormatter } from '../../../formatter'
 import {
   configPlotTooltipEvent,
+  configXAxisLengthLimit,
   getPadding,
   getTooltipContainer,
   TOOLTIP_TPL
@@ -98,7 +99,9 @@ export class MultiScatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
       'axisLine',
       'splitLine',
       'axisForm',
-      'axisLabel'
+      'axisLabel',
+      'showLengthLimit',
+      'axisLabelFormatter'
     ],
     'y-axis-selector': [
       'position',
@@ -236,6 +239,14 @@ export class MultiScatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
       })
     }
     configPlotTooltipEvent(chart, newChart as unknown as any)
+    configXAxisLengthLimit(chart, newChart, originText => {
+      return this.formatXAxisLabel(
+        originText,
+        parseJson(chart.customStyle).xAxis,
+        scatterContext.isTimeX,
+        false
+      )
+    })
     return newChart
   }
 
@@ -304,6 +315,21 @@ export class MultiScatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
         }
       }
     }
+  }
+
+  protected configXAxis(chart: Chart, options: ScatterOptions): ScatterOptions {
+    const tmpOptions = super.configXAxis(chart, options)
+    if (!tmpOptions.xAxis) {
+      return tmpOptions
+    }
+    const xAxis = parseJson(chart.customStyle).xAxis
+    const isTimeX = this.isTimeXAxis(chart, options)
+    if (tmpOptions.xAxis.label) {
+      tmpOptions.xAxis.label.formatter = value => {
+        return this.formatXAxisLabel(value, xAxis, isTimeX)
+      }
+    }
+    return tmpOptions
   }
 
   protected configYAxis(chart: Chart, options: ScatterOptions): ScatterOptions {
@@ -572,6 +598,30 @@ export class MultiScatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
       colorField: 'color',
       isTimeX: hasTimeX
     }
+  }
+
+  private isTimeXAxis(chart: Chart, options?: ScatterOptions): boolean {
+    const xAxisField = chart.xAxis?.[0]
+    if (
+      xAxisField &&
+      (xAxisField.groupType === 'd' || (xAxisField.deType != null && xAxisField.deType === 1))
+    ) {
+      return true
+    }
+    const data = (options?.data || []) as Record<string, unknown>[]
+    const xField = options?.xField
+    return !!xField && data.some(item => typeof item[xField] === 'string')
+  }
+
+  private formatXAxisLabel(value, xAxis, isTimeX: boolean, useLengthLimit = true) {
+    const formattedValue = isTimeX
+      ? String(value ?? '')
+      : String(valueFormatter(value, xAxis.axisLabelFormatter) ?? '')
+    const lengthLimit = xAxis.axisLabel?.lengthLimit
+    if (useLengthLimit && lengthLimit && formattedValue.length > lengthLimit) {
+      return formattedValue.substring(0, lengthLimit) + '...'
+    }
+    return formattedValue
   }
 
   constructor() {

@@ -479,6 +479,9 @@ onMounted(async () => {
         height: 40px;
         line-height: 40px;
       }
+      :deep(.ed-input__wrapper) {
+        padding: 1px 12px;
+      }
     }
 
     .login-form-item {

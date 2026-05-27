@@ -1,4 +1,4 @@
-import { isNumber } from 'lodash-es'
+import { cloneDeep, isNumber } from 'lodash-es'
 import { DEFAULT_TITLE_STYLE } from '../editor/util/chart'
 import { equalsAny, includesAny } from '../editor/util/StringUtils'
 import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
@@ -12,9 +12,11 @@ import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useLinkStoreWithOut } from '@/store/modules/link'
 import { useAppStoreWithOut } from '@/store/modules/app'
+import { useCache } from '@/hooks/web/useCache'
 import { Decimal } from 'decimal.js'
 
 const appStore = useAppStoreWithOut()
+const { wsCache } = useCache()
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 
 const { t } = useI18n()
@@ -571,11 +573,15 @@ function getChartExcelTitle(preFix, viewTitle) {
 
 export const exportExcelDownload = (chart, preFix, callBack?) => {
   const excelName = getChartExcelTitle(preFix, chart.title)
+  const viewInfo = toRaw(chart)
   let request: any = {
     proxy: null,
     dvId: chart.sceneId,
     viewId: chart.id,
-    viewInfo: chart,
+    viewInfo: {
+      ...viewInfo,
+      customAttr: cloneDeep(viewInfo.customAttr)
+    },
     viewName: excelName,
     busiFlag: chart.busiFlag,
     downloadType: chart.downloadType
@@ -603,6 +609,9 @@ export const exportExcelDownload = (chart, preFix, callBack?) => {
   }
 
   const linkStore = useLinkStoreWithOut()
+  const embeddedAsyncExport =
+    (isDataEaseBi.value || appStore.getIsIframe) &&
+    wsCache.get('embeddedExportMode-backend') === 'async'
 
   if (isDataEaseBi.value || appStore.getIsIframe) {
     request.dataEaseBi = true
@@ -613,7 +622,10 @@ export const exportExcelDownload = (chart, preFix, callBack?) => {
   }
   method(request)
     .then(res => {
-      if (linkStore.getLinkToken || isDataEaseBi.value || appStore.getIsIframe) {
+      if (
+        linkStore.getLinkToken ||
+        ((isDataEaseBi.value || appStore.getIsIframe) && !embeddedAsyncExport)
+      ) {
         const blob = new Blob([res.data], { type: 'application/vnd.ms-excel' })
         const link = document.createElement('a')
         link.style.display = 'none'

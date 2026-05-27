@@ -16,7 +16,13 @@ const redirectUser = () => {
 </script>
 
 <template>
-  <el-tooltip class="box-item" effect="dark" :content="$t('toolbox.org_center')" placement="top">
+  <el-tooltip
+    offset="10"
+    class="box-item"
+    effect="dark"
+    :content="$t('toolbox.org_center')"
+    placement="top"
+  >
     <div
       class="sys-setting"
       :class="{

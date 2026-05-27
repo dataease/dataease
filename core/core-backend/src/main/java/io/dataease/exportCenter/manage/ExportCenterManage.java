@@ -1,5 +1,10 @@
 package io.dataease.exportCenter.manage;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.Verification;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -7,6 +12,7 @@ import io.dataease.api.chart.request.ChartExcelRequest;
 import io.dataease.api.dataset.dto.DataSetExportRequest;
 import io.dataease.api.export.BaseExportApi;
 import io.dataease.api.xpack.dataFilling.DataFillingApi;
+import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.commons.utils.ExcelWatermarkUtils;
 import io.dataease.constant.LogOT;
 import io.dataease.constant.LogST;
@@ -17,11 +23,14 @@ import io.dataease.exportCenter.dao.auto.entity.CoreExportTask;
 import io.dataease.exportCenter.dao.auto.mapper.CoreExportDownloadTaskMapper;
 import io.dataease.exportCenter.dao.auto.mapper.CoreExportTaskMapper;
 import io.dataease.exportCenter.dao.ext.mapper.ExportTaskExtMapper;
+import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.log.DeLog;
 import io.dataease.model.ExportTaskDTO;
+import io.dataease.constant.XpackSettingConstants;
 import io.dataease.system.manage.SysParameterManage;
 import io.dataease.utils.*;
+import io.dataease.visualization.dao.auto.entity.CoreStore;
 import io.dataease.visualization.dao.auto.entity.VisualizationWatermark;
 import io.dataease.visualization.dao.auto.mapper.VisualizationWatermarkMapper;
 import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
@@ -29,6 +38,7 @@ import io.dataease.visualization.server.DataVisualizationServer;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +46,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ReflectionUtils;
 import io.dataease.visualization.dto.WatermarkContentDTO;
 import io.dataease.api.permissions.user.vo.UserFormVO;
 
+import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.util.*;
 import java.util.concurrent.Future;
@@ -80,50 +92,33 @@ public class ExportCenterManage implements BaseExportApi {
         return dataFillingApi;
     }
 
+    @XpackInteract(value = "perSetting", replace = true)
+    public String singleValue(String key) {
+        return "sync";
+    }
 
-    public void download(String id, HttpServletResponse response) throws Exception {
-        if (coreExportDownloadTaskMapper.selectById(id) == null) {
-            DEException.throwException("任务不存在");
-        }
-        CoreExportTask exportTask = exportTaskMapper.selectById(id);
+    public void download(String id, String ticket, HttpServletResponse response) throws Exception {
+        CoreExportTask exportTask = validateDownloadTask(id, ticket);
         exportCenterDownLoadManage.download(exportTask, response);
     }
 
     public void delete(String id) {
-        Iterator<Map.Entry<String, Future>> iterator = Running_Task.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, Future> entry = iterator.next();
-            if (entry.getKey().equalsIgnoreCase(id)) {
-                entry.getValue().cancel(true);
-                iterator.remove();
-            }
-        }
-        FileUtils.deleteDirectoryRecursively(exportData_path + id);
-        exportTaskMapper.deleteById(id);
+        CoreExportTask exportTask = getCurrentUserExportTask(id);
+        deleteTask(exportTask);
     }
 
     public void deleteAll(String type) {
         if (!STATUS.contains(type)) {
             DEException.throwException("无效的状态");
         }
+        Long currentUserId = currentUserId();
         QueryWrapper<CoreExportTask> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("user_id", AuthUtils.getUser().getUserId());
+        queryWrapper.eq("user_id", currentUserId);
         if (!type.equalsIgnoreCase("ALL")) {
             queryWrapper.eq("export_status", type);
         }
         List<CoreExportTask> exportTasks = exportTaskMapper.selectList(queryWrapper);
-        exportTasks.parallelStream().forEach(exportTask -> {
-            Iterator<Map.Entry<String, Future>> iterator = Running_Task.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<String, Future> entry = iterator.next();
-                if (entry.getKey().equalsIgnoreCase(exportTask.getId())) {
-                    entry.getValue().cancel(true);
-                    iterator.remove();
-                }
-            }
-            FileUtils.deleteDirectoryRecursively(exportData_path + exportTask.getId());
-            exportTaskMapper.deleteById(exportTask.getId());
-        });
+        exportTasks.parallelStream().forEach(this::deleteTask);
 
     }
 
@@ -132,7 +127,7 @@ public class ExportCenterManage implements BaseExportApi {
     }
 
     public void retry(String id) {
-        CoreExportTask exportTask = exportTaskMapper.selectById(id);
+        CoreExportTask exportTask = getCurrentUserExportTask(id);
         if (!exportTask.getExportStatus().equalsIgnoreCase("FAILED")) {
             DEException.throwException("正在导出中!");
         }
@@ -161,8 +156,9 @@ public class ExportCenterManage implements BaseExportApi {
             DEException.throwException("Invalid status: " + status);
         }
 
+        Long currentUserId = currentUserId();
         QueryWrapper<CoreExportTask> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("user_id", AuthUtils.getUser().getUserId());
+        queryWrapper.eq("user_id", currentUserId);
         if (!status.equalsIgnoreCase("ALL")) {
             queryWrapper.eq("export_status", status);
         }
@@ -183,29 +179,30 @@ public class ExportCenterManage implements BaseExportApi {
     }
 
     public Map<String, Long> exportTasks() {
+        Long currentUserId = currentUserId();
         Map<String, Long> result = new HashMap<>();
         QueryWrapper<CoreExportTask> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("user_id", AuthUtils.getUser().getUserId());
+        queryWrapper.eq("user_id", currentUserId);
         queryWrapper.eq("export_status", "IN_PROGRESS");
         result.put("IN_PROGRESS", exportTaskMapper.selectCount(queryWrapper));
 
         queryWrapper.clear();
-        queryWrapper.eq("user_id", AuthUtils.getUser().getUserId());
+        queryWrapper.eq("user_id", currentUserId);
         queryWrapper.eq("export_status", "SUCCESS");
         result.put("SUCCESS", exportTaskMapper.selectCount(queryWrapper));
 
         queryWrapper.clear();
-        queryWrapper.eq("user_id", AuthUtils.getUser().getUserId());
+        queryWrapper.eq("user_id", currentUserId);
         queryWrapper.eq("export_status", "FAILED");
         result.put("FAILED", exportTaskMapper.selectCount(queryWrapper));
 
         queryWrapper.clear();
-        queryWrapper.eq("user_id", AuthUtils.getUser().getUserId());
+        queryWrapper.eq("user_id", currentUserId);
         queryWrapper.eq("export_status", "PENDING");
         result.put("PENDING", exportTaskMapper.selectCount(queryWrapper));
 
         queryWrapper.clear();
-        queryWrapper.eq("user_id", AuthUtils.getUser().getUserId());
+        queryWrapper.eq("user_id", currentUserId);
         result.put("ALL", exportTaskMapper.selectCount(queryWrapper));
         return result;
     }
@@ -250,9 +247,10 @@ public class ExportCenterManage implements BaseExportApi {
     }
 
     public void addTask(String exportFrom, String exportFromType, ChartExcelRequest request, String busiFlag) {
+        Long currentUserId = currentUserId();
         CoreExportTask exportTask = new CoreExportTask();
         exportTask.setId(IDUtils.snowID().toString());
-        exportTask.setUserId(AuthUtils.getUser().getUserId());
+        exportTask.setUserId(currentUserId);
         exportTask.setExportFrom(Long.valueOf(exportFrom));
         exportTask.setExportFromType(exportFromType);
         exportTask.setExportStatus("PENDING");
@@ -272,9 +270,10 @@ public class ExportCenterManage implements BaseExportApi {
 
     public void addTask(Long exportFrom, String exportFromType, DataSetExportRequest request) throws Exception {
         datasetGroupManage.getDatasetGroupInfoDTO(exportFrom, null);
+        Long currentUserId = currentUserId();
         CoreExportTask exportTask = new CoreExportTask();
         exportTask.setId(IDUtils.snowID().toString());
-        exportTask.setUserId(AuthUtils.getUser().getUserId());
+        exportTask.setUserId(currentUserId);
         exportTask.setExportFrom(exportFrom);
         exportTask.setExportFromType(exportFromType);
         exportTask.setExportStatus("PENDING");
@@ -318,7 +317,7 @@ public class ExportCenterManage implements BaseExportApi {
         long threshold = System.currentTimeMillis() - expTime;
         queryWrapper.lt("export_time", threshold);
         exportTaskMapper.selectList(queryWrapper).forEach(coreExportTask -> {
-            delete(coreExportTask.getId());
+            deleteTask(coreExportTask);
         });
 
     }
@@ -327,7 +326,7 @@ public class ExportCenterManage implements BaseExportApi {
         VisualizationWatermark watermark = watermarkMapper.selectById("system_default");
         WatermarkContentDTO watermarkContent = JsonUtil.parseObject(watermark.getSettingContent(), WatermarkContentDTO.class);
         if (watermarkContent.getEnable() && watermarkContent.getExcelEnable()) {
-            UserFormVO userInfo = visualizationMapper.queryInnerUserInfo(AuthUtils.getUser().getUserId());
+            UserFormVO userInfo = visualizationMapper.queryInnerUserInfo(currentUserId());
             // 在主逻辑中添加水印
             int watermarkPictureIdx = ExcelWatermarkUtils.addWatermarkImage(wb, watermarkContent, userInfo); // 生成水印图片并获取 ID
             for (Sheet sheet : wb) {
@@ -337,20 +336,81 @@ public class ExportCenterManage implements BaseExportApi {
     }
 
     @DeLog(id = "#p0", ot = LogOT.DOWNLOAD, st = LogST.DATA)
-    public void generateDownloadUri(String id) {
+    public String generateDownloadUri(String id) {
+        CoreExportTask exportTask = getCurrentUserExportTask(id);
+        long createTime = System.currentTimeMillis();
         CoreExportDownloadTask coreExportDownloadTask = coreExportDownloadTaskMapper.selectById(id);
         if (coreExportDownloadTask != null) {
-            coreExportDownloadTask.setCreateTime(System.currentTimeMillis());
+            coreExportDownloadTask.setCreateTime(createTime);
             coreExportDownloadTaskMapper.updateById(coreExportDownloadTask);
         } else {
             coreExportDownloadTask = new CoreExportDownloadTask();
             coreExportDownloadTask.setId(id);
-            coreExportDownloadTask.setCreateTime(System.currentTimeMillis());
+            coreExportDownloadTask.setCreateTime(createTime);
             coreExportDownloadTask.setValidTime(5L);
             coreExportDownloadTaskMapper.insert(coreExportDownloadTask);
         }
+        return "/exportCenter/download/" + id + "?ticket=" + buildDownloadTicket(exportTask, createTime, coreExportDownloadTask.getValidTime());
     }
 
+    private CoreExportTask getCurrentUserExportTask(String id) {
+        Long currentUserId = currentUserId();
+        CoreExportTask exportTask = exportTaskMapper.selectById(id);
+        if (exportTask == null || !Objects.equals(exportTask.getUserId(), currentUserId)) {
+            DEException.throwException("任务不存在");
+        }
+        return exportTask;
+    }
+
+    private void deleteTask(CoreExportTask exportTask) {
+        if (exportTask == null) {
+            return;
+        }
+        String id = exportTask.getId();
+        Iterator<Map.Entry<String, Future>> iterator = Running_Task.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, Future> entry = iterator.next();
+            if (entry.getKey().equalsIgnoreCase(id)) {
+                entry.getValue().cancel(true);
+                iterator.remove();
+            }
+        }
+        FileUtils.deleteDirectoryRecursively(exportData_path + id);
+        exportTaskMapper.deleteById(id);
+    }
+
+    public CoreExportTask validateDownloadTask(String id, String ticket) {
+        if (StringUtils.isBlank(ticket)) {
+            DEException.throwException(Translator.get("i18n_download_link_invalid"));
+        }
+        CoreExportDownloadTask coreExportDownloadTask = coreExportDownloadTaskMapper.selectById(id);
+        if (coreExportDownloadTask == null) {
+            DEException.throwException(Translator.get("i18n_download_link_invalid"));
+        }
+        CoreExportTask exportTask = exportTaskMapper.selectById(id);
+        if (exportTask == null) {
+            DEException.throwException(Translator.get("i18n_download_link_invalid"));
+        }
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(resolveTicketSecret(exportTask.getUserId()));
+            Verification verification = JWT.require(algorithm);
+            JWTVerifier verifier = verification.build();
+            DecodedJWT jwt = verifier.verify(ticket);
+            String taskId = jwt.getClaim("taskId").asString();
+            Long uid = jwt.getClaim("uid").asLong();
+            Long ticketTime = jwt.getClaim("ts").asLong();
+            if (!StringUtils.equals(id, taskId)
+                    || !Objects.equals(uid, exportTask.getUserId())
+                    || !Objects.equals(ticketTime, coreExportDownloadTask.getCreateTime())
+                    || System.currentTimeMillis() - coreExportDownloadTask.getCreateTime() > coreExportDownloadTask.getValidTime() * 60 * 1000) {
+                DEException.throwException(Translator.get("i18n_download_link_invalid"));
+            }
+        } catch (Exception e) {
+            DEException.throwException(Translator.get("i18n_download_link_invalid"));
+        }
+        coreExportDownloadTaskMapper.deleteById(id);
+        return exportTask;
+    }
 
     @Scheduled(fixedRate = 60 * 60 * 1000)
     public void checkDownLoadInfos() {
@@ -367,5 +427,60 @@ public class ExportCenterManage implements BaseExportApi {
         Long validTime; // 单位：minutes
         Long createTime;
     }
-}
 
+    private String buildDownloadTicket(CoreExportTask exportTask, long createTime, Long validTime) {
+        Algorithm algorithm = Algorithm.HMAC256(resolveTicketSecret(exportTask.getUserId()));
+        return JWT.create()
+                .withClaim("taskId", exportTask.getId())
+                .withClaim("uid", exportTask.getUserId())
+                .withClaim("ts", createTime)
+                .withExpiresAt(new Date(createTime + validTime * 60 * 1000))
+                .sign(algorithm);
+    }
+
+    private String resolveTicketSecret(Long userId) {
+        String secret = null;
+        if (ObjectUtils.isEmpty(CommonBeanFactory.getBean("loginServer"))) {
+            secret = io.dataease.auth.config.SubstituleLoginConfig.getTokenSecret();
+        } else {
+            Object apisixCacheManage = CommonBeanFactory.getBean("apisixCacheManage");
+            Method userCacheMethod = DeReflectUtil.findMethod(apisixCacheManage.getClass(), "userCacheBO");
+            Object cacheBO = ReflectionUtils.invokeMethod(userCacheMethod, apisixCacheManage, userId);
+            Method secretMethod = DeReflectUtil.findMethod(cacheBO.getClass(), "getSecret");
+            Object secretObj = ReflectionUtils.invokeMethod(secretMethod, cacheBO);
+            if (secretObj != null) {
+                secret = secretObj.toString();
+            }
+        }
+        if (StringUtils.isBlank(secret)) {
+            DEException.throwException(Translator.get("i18n_download_link_invalid"));
+        }
+        return secret;
+    }
+
+    private Long currentUserId() {
+        TokenUserBO user = AuthUtils.getUser();
+        if (user != null && user.getUserId() != null) {
+            return user.getUserId();
+        }
+        String embeddedToken = ServletUtils.getHead(io.dataease.constant.AuthConstant.EMBEDDED_TOKEN_KEY);
+        if (StringUtils.isBlank(embeddedToken)) {
+            DEException.throwException("user not found");
+        }
+        Object apisixTokenManage = CommonBeanFactory.getBean("apisixTokenManage");
+        if (apisixTokenManage == null) {
+            DEException.throwException("user not found");
+        }
+        Method validateEmbeddedTokenMethod = ReflectionUtils.findMethod(apisixTokenManage.getClass(), "validateEmbeddedToken", String.class);
+        Object tokenBO = ReflectionUtils.invokeMethod(validateEmbeddedTokenMethod, apisixTokenManage, embeddedToken);
+        if (tokenBO == null) {
+            DEException.throwException("user not found");
+        }
+        Method getUserIdMethod = DeReflectUtil.findMethod(tokenBO.getClass(), "getUserId");
+        Object userId = ReflectionUtils.invokeMethod(getUserIdMethod, tokenBO);
+        if (!(userId instanceof Long)) {
+            DEException.throwException("user not found");
+        }
+        return (Long) userId;
+    }
+}

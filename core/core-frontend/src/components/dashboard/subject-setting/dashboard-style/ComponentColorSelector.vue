@@ -304,10 +304,25 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
+              <el-form-item :label="t('chart.table_empty_font_color')" class="form-item">
+                <el-color-picker
+                  :trigger-width="colorPickerWidth"
+                  v-model="colorForm.basicStyle['tableEmptyFontColor']"
+                  size="small"
+                  :predefine="predefineColors"
+                  color-format="rgb"
+                  :effect="themes"
+                  show-alpha
+                  is-custom
+                  @change="changeColorCase('tableEmptyFontColor')"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
               <el-form-item :label="t('components.pager_color')" class="form-item">
-                <div style="display: flex; width: 100%; gap: 8px">
+                <div style="display: flex; width: 100%; gap: 4px">
                   <el-color-picker
-                    :trigger-width="60"
+                    :trigger-width="53"
                     v-model="seniorForm.pagerColor"
                     size="small"
                     :predefine="predefineColors"
@@ -416,6 +431,18 @@ const changePagerColorChange = () => {
 
 const changeColorCase = modifyName => {
   colorForm.value['modifyName'] = modifyName
+  if (modifyName === 'tableHeaderBgColor') {
+    colorForm.value['tableHeader']['tableHeaderCornerBgColor'] =
+      colorForm.value['tableHeader']['tableHeaderBgColor']
+    colorForm.value['tableHeader']['tableHeaderColBgColor'] =
+      colorForm.value['tableHeader']['tableHeaderBgColor']
+  }
+  if (modifyName === 'tableHeaderFontColor') {
+    colorForm.value['tableHeader']['tableHeaderCornerFontColor'] =
+      colorForm.value['tableHeader']['tableHeaderFontColor']
+    colorForm.value['tableHeader']['tableHeaderColFontColor'] =
+      colorForm.value['tableHeader']['tableHeaderFontColor']
+  }
   emits('onColorChange', colorForm.value)
 }
 

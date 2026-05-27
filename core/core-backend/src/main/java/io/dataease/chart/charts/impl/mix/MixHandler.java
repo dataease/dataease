@@ -94,8 +94,7 @@ public class MixHandler extends YoyChartHandler {
             var assistFields = getAssistFields(leftAssistFields, yAxis);
             if (CollectionUtils.isNotEmpty(assistFields)) {
                 var req = new DatasourceRequest();
-                req.setIsCross(crossDs);
-                req.setDsList(dsMap);
+                fillDatasourceRequest(req, crossDs, dsMap, sqlMap);
 
                 List<ChartSeniorAssistDTO> assists = leftAssistFields.stream().filter(ele -> !StringUtils.equalsIgnoreCase(ele.getSummary(), "last_item")).toList();
                 if (ObjectUtils.isNotEmpty(assists)) {
@@ -166,8 +165,7 @@ public class MixHandler extends YoyChartHandler {
             var assistFields = getAssistFields(rightAssistFields, yAxis);
             if (CollectionUtils.isNotEmpty(assistFields)) {
                 var req = new DatasourceRequest();
-                req.setIsCross(crossDs);
-                req.setDsList(dsMap);
+                fillDatasourceRequest(req, crossDs, dsMap, sqlMap);
 
                 List<ChartSeniorAssistDTO> assists = rightAssistFields.stream().filter(ele -> !StringUtils.equalsIgnoreCase(ele.getSummary(), "last_item")).toList();
                 if (ObjectUtils.isNotEmpty(assists)) {

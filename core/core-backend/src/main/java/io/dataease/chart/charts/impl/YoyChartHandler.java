@@ -87,8 +87,7 @@ public class YoyChartHandler extends DefaultChartHandler {
             var originSql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             originSql = provider.rebuildSQL(originSql, sqlMeta, crossDs, dsMap);
             var request = new DatasourceRequest();
-            request.setIsCross(crossDs);
-            request.setDsList(dsMap);
+            fillDatasourceRequest(request, crossDs, dsMap, sqlMap);
             request.setQuery(originSql);
             logger.debug("calcite yoy sql: " + originSql);
             // 实际过滤后的数据

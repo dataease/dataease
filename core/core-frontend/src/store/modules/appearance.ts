@@ -289,6 +289,12 @@ export const useAppearanceStore = defineStore('appearanceStore', {
         document.documentElement.style.setProperty('--ed-color-primary', this.customColor)
         document.documentElement.style.setProperty('--van-blue', this.customColor)
         document.documentElement.style.setProperty(
+          '--ed-color-primary_b50',
+          colorFunctions
+            .mix(new colorTree('ffffff'), new colorTree(this.customColor.substr(1)), { value: 90 })
+            .toRGB()
+        )
+        document.documentElement.style.setProperty(
           '--ed-color-primary-light-5',
           colorFunctions
             .mix(new colorTree('ffffff'), new colorTree(this.customColor.substr(1)), { value: 40 })
@@ -319,6 +325,7 @@ export const useAppearanceStore = defineStore('appearanceStore', {
         document.documentElement.style.setProperty('--ed-color-primary', '#3370FF')
         document.documentElement.style.removeProperty('--ed-color-primary-light-3')
         document.documentElement.style.removeProperty('--ed-color-primary-light-5')
+        document.documentElement.style.removeProperty('--ed-color-primary_b50')
         document.documentElement.style.removeProperty('--ed-color-primary-1a')
         document.documentElement.style.removeProperty('--ed-color-primary-33')
         document.documentElement.style.removeProperty('--ed-color-primary-99')

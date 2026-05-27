@@ -464,7 +464,7 @@ const fullScreenPreview = () => {
       <div class="right-area">
         <el-tooltip
           effect="dark"
-          :offset="12"
+          :offset="14"
           :content="t('visualization.external_parameter_settings')"
           placement="bottom"
         >

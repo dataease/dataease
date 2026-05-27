@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   api:
     image: registry.cn-qingdao.aliyuncs.com/dataease/de-playwright-api:v1.58.2-noble-0421

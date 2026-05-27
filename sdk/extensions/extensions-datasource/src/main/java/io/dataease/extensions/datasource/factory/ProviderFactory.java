@@ -54,7 +54,7 @@ public class ProviderFactory {
         if (templateMap.containsKey(key)) return;
         templateMap.put(key, plugin);
         try {
-            String moduleName = plugin.getPluginInfo().getModuleName();
+            String moduleName = plugin.getPluginMetadata().getModuleName();
             DataEasePluginFactory.loadTemplate(moduleName, plugin);
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), new Throwable(e));

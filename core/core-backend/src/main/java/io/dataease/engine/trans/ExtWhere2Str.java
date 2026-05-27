@@ -222,6 +222,60 @@ public class ExtWhere2Str {
                             whereValue = toLikeValue(value.get(0));
                         }
                     }
+                } else if (StringUtils.containsIgnoreCase(request.getOperator(), "start_with")) {
+                    // tree的情况需额外处理
+                    if (request.getIsTree()) {
+                        List<DatasetTableFieldDTO> datasetTableFieldList = request.getDatasetTableFieldList();
+                        boolean hasN = false;
+                        for (DatasetTableFieldDTO dto : datasetTableFieldList) {
+                            if (StringUtils.containsIgnoreCase(dto.getType(), "NVARCHAR")
+                                    || StringUtils.containsIgnoreCase(dto.getType(), "NCHAR")) {
+                                hasN = true;
+                                break;
+                            }
+                        }
+                        if (hasN && !isCross && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
+                            whereValue = toSqlServerNStartValue(value.get(0));
+                        } else {
+                            whereValue = toStartValue(value.get(0));
+                        }
+                    } else {
+                        if ((StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NVARCHAR")
+                                || StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NCHAR"))
+                                && !isCross
+                                && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
+                            whereValue = toSqlServerNStartValue(value.get(0));
+                        } else {
+                            whereValue = toStartValue(value.get(0));
+                        }
+                    }
+                } else if (StringUtils.containsIgnoreCase(request.getOperator(), "end_with")) {
+                    // tree的情况需额外处理
+                    if (request.getIsTree()) {
+                        List<DatasetTableFieldDTO> datasetTableFieldList = request.getDatasetTableFieldList();
+                        boolean hasN = false;
+                        for (DatasetTableFieldDTO dto : datasetTableFieldList) {
+                            if (StringUtils.containsIgnoreCase(dto.getType(), "NVARCHAR")
+                                    || StringUtils.containsIgnoreCase(dto.getType(), "NCHAR")) {
+                                hasN = true;
+                                break;
+                            }
+                        }
+                        if (hasN && !isCross && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
+                            whereValue = toSqlServerNEndValue(value.get(0));
+                        } else {
+                            whereValue = toEndValue(value.get(0));
+                        }
+                    } else {
+                        if ((StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NVARCHAR")
+                                || StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NCHAR"))
+                                && !isCross
+                                && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
+                            whereValue = toSqlServerNEndValue(value.get(0));
+                        } else {
+                            whereValue = toEndValue(value.get(0));
+                        }
+                    }
                 } else if (StringUtils.containsIgnoreCase(request.getOperator(), "between")) {
                     if (request.getDatasetTableField().getDeType() == 1) {
                         if (request.getDatasetTableField().getDeExtractType() == 2
@@ -327,12 +381,28 @@ public class ExtWhere2Str {
         return "'%" + sanitizeSqlLiteral(value) + "%'";
     }
 
+    private static String toStartValue(String value) {
+        return "'" + sanitizeSqlLiteral(value) + "%'";
+    }
+
+    private static String toEndValue(String value) {
+        return "'%" + sanitizeSqlLiteral(value) + "'";
+    }
+
     private static String toSqlServerNQuotedValue(String value) {
         return "'" + SQLConstants.MSSQL_N_PREFIX + sanitizeSqlLiteral(value) + "'";
     }
 
     private static String toSqlServerNLikeValue(String value) {
         return "'" + SQLConstants.MSSQL_N_PREFIX + "%" + sanitizeSqlLiteral(value) + "%'";
+    }
+
+    private static String toSqlServerNStartValue(String value) {
+        return "'" + SQLConstants.MSSQL_N_PREFIX + sanitizeSqlLiteral(value) + "%'";
+    }
+
+    private static String toSqlServerNEndValue(String value) {
+        return "'" + SQLConstants.MSSQL_N_PREFIX + "%" + sanitizeSqlLiteral(value) + "'";
     }
 
     private static String sanitizeNumberLiteral(String value) {

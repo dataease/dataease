@@ -394,7 +394,6 @@ const closeExport = () => {
 
 const save = ({ logic, items, errorMessage }) => {
   table.value.id = nodeInfo.id
-  table.value.row = 100000
   table.value.filename = exportForm.value.name
   table.value.dataEaseBi = isDataEaseBi.value || appStore.getIsIframe
   if (errorMessage) {
@@ -403,9 +402,10 @@ const save = ({ logic, items, errorMessage }) => {
   }
   table.value.expressionTree = JSON.stringify({ items, logic })
   exportDatasetLoading.value = true
+  const embeddedSyncExport = wsCache.get('embeddedExportMode-backend') !== 'async'
   exportDatasetData(table.value)
     .then(res => {
-      if (isDataEaseBi.value || appStore.getIsIframe) {
+      if ((isDataEaseBi.value || appStore.getIsIframe) && embeddedSyncExport) {
         const blob = new Blob([res.data], { type: 'application/vnd.ms-excel' })
         const link = document.createElement('a')
         link.style.display = 'none'
@@ -760,8 +760,33 @@ const panelLoad = paneInfo => {
 }
 const datasetListTree = ref()
 
+// 预计算可见节点 ID 集合，filterNode 只做 O(1) 查询
+const visibleNodeIds = new Set()
+
+const buildVisibleIds = (nodes: BusiTreeNode[], keyword: string): boolean => {
+  let anyMatch = false
+  for (const node of nodes) {
+    const selfMatch = !!node.name?.toLowerCase().includes(keyword)
+    const childMatch = node.children?.length ? buildVisibleIds(node.children, keyword) : false
+    if (selfMatch || childMatch) {
+      visibleNodeIds.add(node.id)
+      anyMatch = true
+    }
+  }
+  return anyMatch
+}
+
+let searchTimer
 watch(nickName, (val: string) => {
-  datasetListTree.value.filter(val)
+  clearTimeout(searchTimer)
+  searchTimer = setTimeout(() => {
+    const keyword = val?.trim().toLowerCase()
+    visibleNodeIds.clear()
+    if (keyword) {
+      buildVisibleIds(state.datasetTree, keyword)
+    }
+    datasetListTree.value.filter(val?.trim())
+  }, 300)
 })
 const sideTreeStatus = ref(true)
 const changeSideTreeStatus = val => {
@@ -769,8 +794,8 @@ const changeSideTreeStatus = val => {
 }
 
 const filterNode = (value: string, data: BusiTreeNode) => {
-  if (!value) return true
-  return data.name?.toLowerCase().includes(value.toLowerCase())
+  if (!value?.trim()) return true
+  return visibleNodeIds.has(data.id)
 }
 const mouseenter = () => {
   appStore.setArrowSide(true)
@@ -832,9 +857,7 @@ const proxyAllowDrop = throttle((arg1, arg2) => {
                 class="box-item"
                 effect="dark"
                 offset="14"
-                popper-class="new-folder_tip"
                 :content="t('deDataset.new_folder')"
-                arrow-offset="10"
                 placement="top"
               >
                 <el-icon
@@ -848,9 +871,7 @@ const proxyAllowDrop = throttle((arg1, arg2) => {
               <el-tooltip
                 class="box-item"
                 effect="dark"
-                popper-class="new-folder_tip"
                 offset="14"
-                arrow-offset="10"
                 :content="t('data_set.a_new_dataset')"
                 placement="top"
               >
@@ -1357,7 +1378,7 @@ const proxyAllowDrop = throttle((arg1, arg2) => {
         font-weight: 500;
 
         .dataset-name {
-          max-width: 200px;
+          max-width: 400px;
         }
 
         .create-user {

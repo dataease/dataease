@@ -257,6 +257,30 @@
     </el-form-item>
     <el-form-item
       v-show="dvInfo.type === 'dashboard'"
+      style="margin-bottom: 8px"
+      :class="'form-item-' + themes"
+    >
+      <el-checkbox
+        :effect="themes"
+        size="small"
+        v-model="canvasStyleData.suspensionViewButtonAvailable"
+        @change="themeChange"
+      >
+        <span class="data-area-label">
+          <span style="margin-right: 4px"> {{ t('visualization.hover_button_tips') }}</span>
+          <el-tooltip class="item" :effect="toolTip" placement="bottom">
+            <template #content>
+              <div>{{ t('visualization.preview_effect') }}</div>
+            </template>
+            <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
+              <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
+            </el-icon>
+          </el-tooltip>
+        </span>
+      </el-checkbox>
+    </el-form-item>
+    <el-form-item
+      v-show="dvInfo.type === 'dashboard'"
       class="form-item"
       :class="'form-item-' + themes"
       style="margin-bottom: 0"
@@ -329,7 +353,7 @@ const fontFamily = CHART_FONT_FAMILY_ORIGIN.concat(
 )
 
 const toolTip = computed(() => {
-  return props.themes === 'dark' ? 'light' : 'dark'
+  return props.themes || 'dark'
 })
 
 const resourceType = computed(() =>

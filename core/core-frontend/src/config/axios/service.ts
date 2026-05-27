@@ -196,9 +196,14 @@ service.interceptors.response.use(
         !response?.config?.url.startsWith('/xpackComponent/content') &&
         response?.data?.code !== 60003
       ) {
+        let errMsg = response.data.msg
+        if (errMsg?.includes('rsa info has been changed')) {
+          wsCache.delete('DataEaseKey')
+          errMsg = '密钥信息已变更，请刷新页面重试'
+        }
         ElMessage({
           type: 'error',
-          message: response.data.msg,
+          message: errMsg,
           showClose: true
         })
         if (response.data.code === 80001) {

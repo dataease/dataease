@@ -559,6 +559,8 @@ onMounted(() => {
             "
             :min="0"
             :max="100"
+            :step="1"
+            :precision="0"
             @change="changeTableCell('tableColumnFreezeHead')"
           />
         </el-form-item>
@@ -580,6 +582,8 @@ onMounted(() => {
             "
             :min="0"
             :max="100"
+            :step="1"
+            :precision="0"
             @change="changeTableCell('tableRowFreezeHead')"
           />
         </el-form-item>

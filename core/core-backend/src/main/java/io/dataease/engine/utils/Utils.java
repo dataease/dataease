@@ -34,7 +34,7 @@ public class Utils {
   public static final List<Pattern> SQL_INJECTION_PATTERNS_FOR_VALUES =
       Arrays.asList(
           Pattern.compile("[\";`]"),
-          Pattern.compile("--\\s*|#"),
+          Pattern.compile("--\\s*"),
           Pattern.compile(
               "\\b(or|and|union|select|insert|delete|update|drop|alter|exec|xp_cmdshell)\\b",
               Pattern.CASE_INSENSITIVE),
@@ -210,6 +210,8 @@ public class Utils {
             case "not in":
                 return " NOT IN ";
             case "like":
+            case "start_with":
+            case "end_with":
                 return " LIKE ";
             case "not like":
                 return " NOT LIKE ";

@@ -27,6 +27,7 @@ import colorTree from 'less/lib/less/tree/color.js'
 import { colorStringToHex } from '@/utils/color'
 import { isMobile } from '@/utils/utils'
 import { ElMessage } from 'element-plus-secondary'
+import { isCascadeParentCleared } from './cascade-utils'
 
 interface SelectConfig {
   selectValue: any
@@ -167,6 +168,17 @@ const setCascadeValueBack = val => {
   })
 }
 
+const clearCascadeSelectValue = () => {
+  selectValue.value = config.value.multiple ? [] : undefined
+  config.value.selectValue = cloneDeep(selectValue.value)
+  config.value.mapValue = []
+  if (props.isConfig) {
+    config.value.defaultValue = cloneDeep(selectValue.value)
+    config.value.defaultMapValue = []
+  }
+  setCascadeValueBack(config.value.mapValue)
+}
+
 const emitCascade = () => {
   cascade.value.forEach(ele => {
     let trigger = false
@@ -202,7 +214,7 @@ const getCascadeFieldId = () => {
   cascade.value.forEach(ele => {
     let condition = null
     ele.forEach(item => {
-      const [_, queryId, fieldId] = item.datasetId.split('--')
+      const [, queryId, fieldId] = item.datasetId.split('--')
       if (queryId === config.value.id && condition) {
         if (item.fieldId) {
           condition.fieldId = item.fieldId
@@ -281,7 +293,7 @@ const handleFieldIdDefaultChange = (val: string[]) => {
             ele !== null &&
             ((config.value.optionFilter &&
               config.value.optionFilter.length > 0 &&
-              config.value.optionFilter.includes(ele)) ||
+              config.value.optionFilter.some(item => String(item) === String(ele))) ||
               !config.value.optionFilter ||
               config.value.optionFilter.length === 0)
           )
@@ -349,7 +361,7 @@ const handleFieldIdChange = (val: EnumValue) => {
           return (
             (config.value.optionFilter &&
               config.value.optionFilter.length > 0 &&
-              config.value.optionFilter.includes(ele)) ||
+              config.value.optionFilter.some(item => String(item) === String(ele))) ||
             !config.value.optionFilter ||
             config.value.optionFilter.length === 0
           )
@@ -707,7 +719,7 @@ const setOptions = (num: number) => {
               ele !== null &&
               ((config.value.optionFilter &&
                 config.value.optionFilter.length > 0 &&
-                config.value.optionFilter.includes(ele)) ||
+                config.value.optionFilter.some(item => String(item) === String(ele))) ||
                 !config.value.optionFilter ||
                 config.value.optionFilter.length === 0)
             )
@@ -770,6 +782,10 @@ const single = ref()
 
 const getOptionFromCascade = () => {
   if (config.value.optionValueSource !== 1 || ![0, 2, 5].includes(+config.value.displayType)) return
+  if (isCascadeParentCleared(cascade.value, config.value.id, props.isConfig)) {
+    clearCascadeSelectValue()
+    emitCascade()
+  }
   isFromRemote.value = true
   debounceOptions(1)
 }

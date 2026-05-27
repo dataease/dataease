@@ -2,7 +2,7 @@
 import icon_info_filled from '@/assets/svg/icon_info_filled.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
-import { PropType, reactive } from 'vue'
+import { computed, PropType, reactive } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL } from '../../../util/chart'
 import { fieldType } from '@/utils/attr'
@@ -12,6 +12,7 @@ import {
   transDateFormat,
   transDatePickerType
 } from '@/views/chart/components/editor/util/DateFormatUtil'
+import { TableThreshold } from '@/models/chart/chart-senior'
 
 const { t } = useI18n()
 
@@ -203,11 +204,20 @@ const valueOptions = [
 ]
 const predefineColors = COLOR_PANEL
 
-const targetOptions = [
-  { label: t('chart.self'), value: 'self' },
-  { label: t('chart.total_row'), value: 'total_row' },
-  { label: t('chart.custom'), value: 'custom' }
-]
+const targetOptions = computed(() => {
+  if (props.chart.type === 'rich-text') {
+    return [
+      { label: t('chart.self'), value: 'self' },
+      { label: t('chart.custom'), value: 'custom' }
+    ]
+  } else {
+    return [
+      { label: t('chart.self'), value: 'self' },
+      { label: t('chart.total_row'), value: 'total_row' },
+      { label: t('chart.custom'), value: 'custom' }
+    ]
+  }
+})
 
 const state = reactive({
   thresholdArr: [] as TableThreshold[],

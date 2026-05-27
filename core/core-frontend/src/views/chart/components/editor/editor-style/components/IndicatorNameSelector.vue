@@ -34,7 +34,7 @@ const props = defineProps({
 
 const emit = defineEmits(['onIndicatorNameChange'])
 const toolTip = computed(() => {
-  return props.themes === 'dark' ? 'light' : 'dark'
+  return props.themes || 'dark'
 })
 const predefineColors = COLOR_PANEL
 const fontFamily = CHART_FONT_FAMILY_ORIGIN.concat(

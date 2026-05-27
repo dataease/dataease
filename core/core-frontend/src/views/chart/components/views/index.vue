@@ -938,8 +938,11 @@ const chartAreaShow = computed(() => {
 
 const titleInputRef = ref()
 const titleEditStatus = ref(false)
+const titleEditable = computed(() => {
+  return ['canvas', 'canvasDataV'].includes(showPosition.value) && !props.disabled
+})
 function changeEditTitle() {
-  if (!props.active || mobileInPc.value) {
+  if (!titleEditable.value || !props.active || mobileInPc.value) {
     return
   }
   if (!titleEditStatus.value) {
@@ -983,7 +986,7 @@ function onTitleChange() {
 }
 
 const toolTip = computed(() => {
-  return props.themes === 'dark' ? 'light' : 'dark'
+  return props.themes || 'dark'
 })
 
 const marginBottom = computed<string | 0>(() => {

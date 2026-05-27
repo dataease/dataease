@@ -24,6 +24,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import type { Options } from '@antv/g2plot/esm'
 import { Group } from '@antv/g-canvas'
+import { getBidirectionalBarLabelFormatter } from './bidirectional-bar-label'
 
 const { t } = useI18n()
 /**
@@ -153,7 +154,7 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
     }
     const xAxis = chart.xAxis
     if (xAxis?.length === 1 && xAxis[0].deType === 1) {
-      const values = data2.map(item => item.field)
+      const values = options.data.map(item => item.field)
       options.meta = {
         field: {
           type: 'cat',
@@ -424,9 +425,9 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
     const yAxisExt = chart.yAxisExt
     const labelAttr = parseJson(chart.customAttr).label
     const formatterMap = labelAttr.seriesLabelFormatter?.reduce((pre, next) => {
-      pre[next.id] = next
+      pre[next.seriesId ?? next.id] = next
       return pre
-    }, {})
+    }, {}) as Record<string, SeriesFormatter>
     let customAttr: DeepPartial<ChartAttr>
     const layoutHorizontal = options.layout === 'horizontal'
     if (chart.customAttr) {
@@ -455,7 +456,7 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
                 yaxis = yAxisExt[0]
               }
               const value = param[param['series-field-key']]
-              const labelCfg = formatterMap?.[yaxis.id] as SeriesFormatter
+              const labelCfg = getBidirectionalBarLabelFormatter(formatterMap, yaxis.id, param)
               if (yaxis.formatterCfg) {
                 res = valueFormatter(value, yaxis.formatterCfg)
               }

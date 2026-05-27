@@ -28,6 +28,10 @@ const pvpOptions = [
   { value: '3', label: t('commons.date.three_months') },
   { value: '4', label: t('commons.date.one_month') }
 ]
+const embeddedExportModeOptions = [
+  { value: 'sync', label: t('setting_basic.exportModeSync') },
+  { value: 'async', label: t('setting_basic.exportModeAsync') }
+]
 const requireKeys = [
   'logLiveTime',
   'thresholdLogLiveTime',
@@ -435,6 +439,17 @@ defineExpose({
         <div v-else-if="item.pkey === 'defaultOpen'">
           <el-radio-group v-model="state.form[item.pkey]">
             <el-radio v-for="item in state.openOptions" :key="item.value" :label="item.value">
+              {{ item.label }}
+            </el-radio>
+          </el-radio-group>
+        </div>
+        <div v-else-if="item.pkey === 'embeddedExportMode'">
+          <el-radio-group v-model="state.form[item.pkey]">
+            <el-radio
+              v-for="item in embeddedExportModeOptions"
+              :key="item.value"
+              :label="item.value"
+            >
               {{ item.label }}
             </el-radio>
           </el-radio-group>

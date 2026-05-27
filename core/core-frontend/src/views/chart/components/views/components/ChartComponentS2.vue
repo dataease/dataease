@@ -20,7 +20,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import ViewTrackBar from '@/components/visualization/ViewTrackBar.vue'
 import { storeToRefs } from 'pinia'
 import { S2ChartView } from '@/views/chart/components/js/panel/types/impl/s2'
-import { ElPagination } from 'element-plus-secondary'
+import { ElMessage, ElPagination } from 'element-plus-secondary'
 import ChartError from '@/views/chart/components/views/components/ChartError.vue'
 import { defaultsDeep, cloneDeep, debounce } from 'lodash-es'
 import { BASE_VIEW_CONFIG } from '../../editor/util/chart'
@@ -31,6 +31,7 @@ import { isDashboard, trackBarStyleCheck } from '@/utils/canvasUtils'
 import { type SpreadSheet } from '@antv/s2'
 import { parseJson } from '../../js/util'
 import { useI18n } from '@/hooks/web/useI18n'
+import { hasNextDrillLevel, isCurrentDrillField } from '@/views/chart/components/views/util/drill'
 
 const dvMainStore = dvMainStoreWithOut()
 const {
@@ -209,6 +210,39 @@ const handleDefaultVal = (chart: Chart) => {
     }
   }
 }
+
+/**
+ * 根据图表请求状态恢复 S2 下钻状态
+ * 仪表板在 resize/scale 重绘时可能复用原始 view，但数据仍是下钻后的结果
+ * 这里通过 chartExtRequest.drill 反推 drillFilters，避免表头字段回退
+ *
+ */
+const restoreDrillState = (chart: ChartObj) => {
+  const drillRequests = chart.chartExtRequest?.drill
+  const drillFields = chart.drillFields ?? []
+  if (!drillRequests?.length || chart.drillFilters?.length || drillFields.length < 2) {
+    return
+  }
+  if (drillRequests.length >= drillFields.length) {
+    return
+  }
+  const drillFilters = []
+  for (let index = 0; index < drillRequests.length; index++) {
+    const request = drillRequests[index]
+    const drillField = drillFields[index]
+    const dimension = request.dimensionList?.find(item => item.id === drillField?.id)
+    if (!dimension) {
+      return
+    }
+    drillFilters.push({
+      fieldId: dimension.id,
+      value: dimension.value !== undefined && dimension.value !== null ? [dimension.value] : []
+    })
+  }
+  chart.drill = true
+  chart.drillFilters = drillFilters
+}
+
 const renderChart = (viewInfo: Chart, resetPageInfo: boolean) => {
   if (!viewInfo) {
     return
@@ -220,6 +254,7 @@ const renderChart = (viewInfo: Chart, resetPageInfo: boolean) => {
     data: chartData.value,
     fontFamily: props.fontFamily
   } as ChartObj)
+  restoreDrillState(actualChart)
 
   recursionTransObj(customAttrTrans, actualChart.customAttr, scale.value, terminal.value)
   recursionTransObj(customStyleTrans, actualChart.customStyle, scale.value, terminal.value)
@@ -428,6 +463,10 @@ const action = param => {
   pointClickTrans()
   // 下钻 联动 跳转
   if (trackMenu.value.length < 2) {
+    if (view.value.drillFields.length > 0 && trackMenu.value.length === 0) {
+      ElMessage.error(t('chart.last_layer'))
+      return
+    }
     // 只有一个事件直接调用
     trackClick(trackMenu.value[0])
   } else {
@@ -570,7 +609,7 @@ const trackMenuCmp = computed(() => {
     (!mobileInPc.value || inMobile.value) &&
     trackMenuInfo.push('jump')
   linkageCount && view.value?.linkageActive && trackMenuInfo.push('linkage')
-  view.value.drillFields.length && trackMenuInfo.push('drill')
+  hasNextDrillLevel(view.value.drillFields, drillLength.value) && trackMenuInfo.push('drill')
   // 如果同时配置jump linkage drill 切配置联动时同时下钻 在实际只显示两个 '跳转' '联动和下钻'
   if (trackMenuInfo.length === 3 && props.element.actionSelection.linkageActive === 'auto') {
     trackMenuInfo = ['jump', 'linkageAndDrill']
@@ -605,7 +644,7 @@ const trackMenuCalc = itemId => {
     trackMenuInfo.push('jump')
   linkageCount && view.value?.linkageActive && trackMenuInfo.push('linkage')
   // 判断是否有下钻 同时判断下钻到第几层
-  if (view.value.drillFields.length && view.value.drillFields[drillLength.value].id === itemId) {
+  if (isCurrentDrillField(view.value.drillFields, drillLength.value, itemId)) {
     drillCount++
   }
   drillCount && trackMenuInfo.push('drill')
