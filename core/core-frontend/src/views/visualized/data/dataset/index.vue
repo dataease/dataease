@@ -402,9 +402,10 @@ const save = ({ logic, items, errorMessage }) => {
   }
   table.value.expressionTree = JSON.stringify({ items, logic })
   exportDatasetLoading.value = true
+  const embeddedSyncExport = wsCache.get('embeddedExportMode-backend') !== 'async'
   exportDatasetData(table.value)
     .then(res => {
-      if (isDataEaseBi.value || appStore.getIsIframe) {
+      if ((isDataEaseBi.value || appStore.getIsIframe) && embeddedSyncExport) {
         const blob = new Blob([res.data], { type: 'application/vnd.ms-excel' })
         const link = document.createElement('a')
         link.style.display = 'none'
