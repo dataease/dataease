@@ -75,13 +75,12 @@ public abstract class DataEaseDatasourcePlugin extends Provider implements DataE
         }
     }
 
+    public DataEasePluginVO getPluginMetadata() {
+        return DatasourcePluginInfoLoader.load(this);
+    }
+
     public XpackPluginsDatasourceVO getConfig() {
-        DataEasePluginVO pluginInfo = null;
-        try {
-            pluginInfo = getPluginInfo();
-        } catch (Exception e) {
-            DEException.throwException(e);
-        }
+        DataEasePluginVO pluginInfo = getPluginMetadata();
         String config = pluginInfo.getConfig();
         XpackPluginsDatasourceVO vo = JsonUtil.parseObject(config, XpackPluginsDatasourceVO.class);
         vo.setIcon(pluginInfo.getIcon());
