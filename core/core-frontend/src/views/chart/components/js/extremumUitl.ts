@@ -98,10 +98,17 @@ export const extremumEvt = (
     .forEach(item => {
       item.labels.forEach(label => {
         const oldPosition = label.position || 'top'
+        const oldFill = label.style?.fill
         label.style = {
           ...label.style,
           fill: data => {
             if (data.extremum) return ''
+            if (typeof oldFill === 'function') {
+              return oldFill(data)
+            }
+            if (oldFill) {
+              return oldFill
+            }
             const cfg = isSeriesLabel ? formatterMap[data.quotaList?.[0]?.id] : labelAttr
             return cfg?.color ?? '#000'
           },
