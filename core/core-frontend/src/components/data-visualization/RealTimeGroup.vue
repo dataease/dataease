@@ -47,6 +47,7 @@ import radarOrigin from '@/assets/svg/radar-origin.svg'
 import richTextOrigin from '@/assets/svg/rich-text-origin.svg'
 import sankeyOrigin from '@/assets/svg/sankey-origin.svg'
 import scatterOrigin from '@/assets/svg/scatter-origin.svg'
+import multiScatterOrigin from '@/assets/svg/multi-scatter-origin.svg'
 import stockLineOrigin from '@/assets/svg/stock-line-origin.svg'
 import symbolicMapOrigin from '@/assets/svg/symbolic-map-origin.svg'
 import tableInfoOrigin from '@/assets/svg/table-info-origin.svg'
@@ -241,6 +242,7 @@ const iconMap = {
   'rich-text-origin': richTextOrigin,
   'sankey-origin': sankeyOrigin,
   'scatter-origin': scatterOrigin,
+  'multi-scatter-origin': multiScatterOrigin,
   'stock-line-origin': stockLineOrigin,
   'symbolic-map-origin': symbolicMapOrigin,
   'table-info-origin': tableInfoOrigin,
