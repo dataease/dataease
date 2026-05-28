@@ -584,7 +584,7 @@ defineExpose({
     ref="indicatorRef"
     :class="{ 'menu-point': showCursor }"
     :style="contentStyle"
-    @mousedown="onPointClick"
+    @mouseup="onPointClick"
   >
     <view-track-bar
       ref="viewTrack"
