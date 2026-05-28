@@ -376,7 +376,9 @@ public class ChartDataServer implements ChartDataApi {
 
     public static void setExcelData(Sheet detailsSheet, CellStyle cellStyle, Object[] header, List<Object[]> details, ViewDetailField[] detailFields, Integer[] excelTypes, Comment comment, ChartViewDTO viewInfo, Workbook wb) {
         List<CellStyle> styles = new ArrayList<>();
+        Map<String, CellStyle> autoFormatterStyles = new HashMap<>();
         List<ChartViewFieldDTO> exportFields = resolveExportFields(viewInfo, header);
+        Workbook styleWorkbook = wb != null ? wb : detailsSheet.getWorkbook();
         TableHeader tableHeader = null;
         Integer totalDepth = 0;
         List<CellRangeAddress> mergeConfig = new ArrayList<>();
@@ -384,7 +386,10 @@ public class ChartDataServer implements ChartDataApi {
             exportFields = exportFields.stream().filter(tmpAxis -> !tmpAxis.isHide()).toList();
             for (ChartViewFieldDTO tmpAxis : exportFields) {
                 if (tmpAxis.getDeType().equals(DeTypeConstants.DE_INT) || tmpAxis.getDeType().equals(DeTypeConstants.DE_FLOAT)) {
-                    CellStyle formatterCellStyle = createCellStyle(wb, tmpAxis.getFormatterCfg(), null);
+                    FormatterCfgDTO formatterCfg = tmpAxis.getFormatterCfg();
+                    CellStyle formatterCellStyle = formatterCfg != null && "auto".equalsIgnoreCase(formatterCfg.getType())
+                            ? null
+                            : createCellStyle(styleWorkbook, formatterCfg, null);
                     styles.add(formatterCellStyle);
                 } else {
                     styles.add(null);
@@ -538,8 +543,18 @@ public class ChartDataServer implements ChartDataApi {
                                         && Arrays.asList(DeTypeConstants.DE_INT, DeTypeConstants.DE_FLOAT).contains(exportFields.get(j).getDeType())) {
                                     try {
                                         FormatterCfgDTO formatterCfgDTO = exportFields.get(j).getFormatterCfg() == null ? new FormatterCfgDTO().setUnitLanguage(Lang.isChinese() ? "ch" : "en") : exportFields.get(j).getFormatterCfg();
-                                        row.getCell(j).setCellStyle(styles.get(j));
-                                        row.getCell(j).setCellValue(Double.valueOf(cellValue(formatterCfgDTO, new BigDecimal(cellValObj.toString()))));
+                                        String exportNumericValue = cellValue(formatterCfgDTO, new BigDecimal(cellValObj.toString()));
+                                        CellStyle currentStyle = styles.get(j);
+                                        if (formatterCfgDTO != null && "auto".equalsIgnoreCase(formatterCfgDTO.getType())) {
+                                            currentStyle = autoFormatterStyles.computeIfAbsent(
+                                                    buildFormatterStyleCacheKey(formatterCfgDTO, exportNumericValue),
+                                                    key -> createCellStyle(styleWorkbook, formatterCfgDTO, exportNumericValue)
+                                            );
+                                        }
+                                        if (currentStyle != null) {
+                                            row.getCell(j).setCellStyle(currentStyle);
+                                        }
+                                        row.getCell(j).setCellValue(Double.valueOf(exportNumericValue));
                                     } catch (Exception e) {
                                         cell.setCellValue(cellValObj.toString());
                                     }
@@ -845,12 +860,7 @@ public class ChartDataServer implements ChartDataApi {
         }
         String formatStr = "";
         if (formatter.getType().equals("auto")) {
-            String[] valueSplit = String.valueOf(value).split(".");
-            if (StringUtils.isEmpty(value) || !value.contains(".")) {
-                formatStr = "General";
-            } else {
-                formatStr = "0." + new String(new char[valueSplit.length]).replace('\0', '0');
-            }
+            formatStr = buildAutoNumberFormat(value);
             switch (formatter.getUnit()) {
                 case 1000:
                     formatStr = formatStr + (formatter.getUnitLanguage().equalsIgnoreCase("ch") ? "\"千\"" : "\"K\"");
@@ -930,6 +940,31 @@ public class ChartDataServer implements ChartDataApi {
             return null;
         }
         return cellStyle;
+    }
+
+    private static String buildAutoNumberFormat(String value) {
+        String formatStr = "0";
+        if (StringUtils.isBlank(value)) {
+            return formatStr;
+        }
+        int decimalIndex = value.indexOf('.');
+        if (decimalIndex < 0 || decimalIndex == value.length() - 1) {
+            return formatStr;
+        }
+        int decimalCount = value.length() - decimalIndex - 1;
+        return formatStr + "." + new String(new char[decimalCount]).replace('\0', '#');
+    }
+
+    private static String buildFormatterStyleCacheKey(FormatterCfgDTO formatter, String value) {
+        return String.join("|",
+                StringUtils.defaultString(formatter.getType()),
+                StringUtils.defaultString(formatter.getUnitLanguage()),
+                String.valueOf(formatter.getUnit()),
+                String.valueOf(formatter.getDecimalCount()),
+                String.valueOf(formatter.getThousandSeparator()),
+                StringUtils.defaultString(formatter.getSuffix()),
+                buildAutoNumberFormat(value)
+        );
     }
 
     @Override
