@@ -206,6 +206,9 @@ const showSort = computed(() => {
   return !isChartMix || isDimensionType
 })
 const showSortPriority = computed(() => {
+  if (props.chart.type === 'line' && props.type === 'dimensionExt') {
+    return false
+  }
   if (props.chart.type.includes('chart-mix')) {
     return false
   }

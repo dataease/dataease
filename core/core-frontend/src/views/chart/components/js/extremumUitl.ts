@@ -40,6 +40,8 @@ const getRgbaColorLastRgba = (rgbaString: string) => {
   return lastRGBA
 }
 
+const EXTREMUM_LABEL_MARK_TYPES = ['point', 'interval']
+
 /**
  * 判断图表类型是否支持最值标注（极值标签）
  * @param chart - 图表配置对象
@@ -94,7 +96,7 @@ export const extremumEvt = (
   const chartData = options.children ? options.children : [options]
   // 遍历所有 series，为标签注入 HTML 和样式
   chartData
-    .filter(item => item.labels?.length)
+    .filter(item => item.labels?.length && EXTREMUM_LABEL_MARK_TYPES.includes(item.type))
     .forEach(item => {
       item.labels.forEach(label => {
         const oldPosition = label.position || 'top'
