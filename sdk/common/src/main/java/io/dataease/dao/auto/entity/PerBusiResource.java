@@ -64,6 +64,12 @@ public class PerBusiResource {
     private Integer extraFlag1;
 
     @NotNull
+    @Comment("是否组织根目录（随组织生命周期）")
+    @ColumnDefault("false")
+    @Column(name = "org_root", nullable = false)
+    private Boolean orgRoot = false;
+
+    @NotNull
     @Comment("创建时间")
     @ColumnDefault("0")
     @Column(name = "create_time", nullable = false)

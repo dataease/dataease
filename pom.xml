@@ -10,6 +10,8 @@
 
     <modules>
         <module>sdk</module>
+        <module>de-xpack</module>
+        <module>core</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -192,6 +194,26 @@
                         <goals>
                             <goal>clean</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.4.0</version>
+                <executions>
+                    <execution>
+                        <id>remove-core-module</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>remove-project-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <modules>
+                                <module>de-xpack</module>
+                                <module>core</module>
+                            </modules>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

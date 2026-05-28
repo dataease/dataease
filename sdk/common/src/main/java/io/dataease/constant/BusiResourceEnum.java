@@ -1,18 +1,13 @@
 package io.dataease.constant;
 
 
+import lombok.Getter;
+
+@Getter
 public enum BusiResourceEnum {
-    PANEL(1), SCREEN(2), DATASET(3), DATASOURCE(4), DATA_FILLING(8), SPREADSHEET(10);
+    MENU(0), PANEL(1), SCREEN(2), DATASET(3), DATASOURCE(4), DATA_FILLING(8), SPREADSHEET(10);
 
-    private int flag;
-
-    public int getFlag() {
-        return flag;
-    }
-
-    public void setFlag(int flag) {
-        this.flag = flag;
-    }
+    private final int flag;
 
     BusiResourceEnum(int flag) {
         this.flag = flag;

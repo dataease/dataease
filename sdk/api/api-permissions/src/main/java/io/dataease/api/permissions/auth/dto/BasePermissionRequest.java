@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 @Schema(description = "权限查询条件")
 @Data
-public class BusiPermissionRequest implements Serializable {
+public class BasePermissionRequest implements Serializable {
     @Serial
     private static final long serialVersionUID = -2424587989223319563L;
 
