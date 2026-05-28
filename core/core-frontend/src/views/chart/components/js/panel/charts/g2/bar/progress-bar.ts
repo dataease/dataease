@@ -14,6 +14,7 @@ import { G2DrawOptions } from '@/views/chart/components/js/panel/types/impl/g2'
 import { Chart as G2Column } from '@antv/g2'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
+  configAxisLengthLimit,
   handleChartDashboardHidden,
   setGradientColor,
   toLinearGradient,
@@ -195,6 +196,7 @@ export class ProgressBar extends HorizontalStackBar {
     newChart.options(newOptions)
     newChart.on('interval:click', action)
     listenerTooltipShow(newChart, chart)
+    configAxisLengthLimit(chart, newChart, 'yAxis')
     return newChart
   }
 

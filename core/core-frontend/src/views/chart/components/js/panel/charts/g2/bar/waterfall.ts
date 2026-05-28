@@ -8,6 +8,8 @@ import {
   ViewSpec
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 import {
+  configAxisLengthLimit,
+  formatAxisLabelWithLengthLimit,
   handleChartDashboardHidden,
   setGradientColor
 } from '@/views/chart/components/js/panel/common/common_antv'
@@ -178,7 +180,29 @@ export class Waterfall extends Bar {
     newChart.options(options)
     newChart.on('interval:click', action)
     listenerTooltipShow(newChart, chart)
+    configAxisLengthLimit(chart, newChart, 'yAxis')
     return newChart
+  }
+
+  protected getAxisConfig(chart: Chart, axisType: string): any {
+    const axisConfig = super.getAxisConfig(chart, axisType)
+    if (!axisConfig || axisType !== 'yAxis') {
+      return axisConfig
+    }
+    const { yAxis } = parseJson(chart.customStyle)
+    const originLabelFormatter = axisConfig.labelFormatter
+    return {
+      ...axisConfig,
+      labelFormatter: value => {
+        const label =
+          typeof originLabelFormatter === 'function' ? originLabelFormatter(value) : value
+        return formatAxisLabelWithLengthLimit(label, yAxis.axisLabel.lengthLimit)
+      }
+    }
+  }
+
+  protected supportAxisLengthLimit(axisType: string): boolean {
+    return axisType === 'yAxis'
   }
 
   protected configBasicStyle(chart: Chart, options: ViewSpec): ViewSpec {

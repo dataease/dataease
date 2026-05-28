@@ -122,6 +122,10 @@ const isBidirectionalBar = computed(() => {
   return props.chart.type === 'bidirectional-bar'
 })
 
+const showLengthLimit = computed(() => {
+  return isBidirectionalBar.value || showProperty('showLengthLimit')
+})
+
 const isBulletGraph = computed(() => {
   return ['bullet-graph'].includes(props.chart.type)
 })
@@ -527,7 +531,7 @@ onMounted(() => {
         class="form-item"
         :class="'form-item-' + themes"
         :label="t('chart.length_limit')"
-        v-if="isBidirectionalBar"
+        v-if="showLengthLimit"
       >
         <el-input-number
           :disabled="!state.axisForm.axisLabel.show"

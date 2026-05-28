@@ -31,6 +31,8 @@ import { centroid } from '@turf/centroid'
 import { defaults, find, groupBy, map, uniq } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 import { isMobile } from '@/utils/utils'
+import { ChartEvent } from '@antv/g2'
+import { Text } from '@antv/g'
 import { GaodeMap, TMap, TencentMap } from '@antv/l7-maps'
 import {
   gaodeMapStyleOptions,
@@ -2068,6 +2070,133 @@ export function configAxisLabelLengthLimit(chart, plot, triggerObjName) {
     // 如果 tooltip 存在，隐藏它
     if (labelTooltipDom) labelTooltipDom.style.visibility = 'hidden'
   })
+}
+
+export function configXAxisLengthLimit(
+  chart: Chart,
+  chartObj: any,
+  formatOriginText?: (originText: string, event: any) => string
+): void {
+  configAxisLengthLimit(chart, chartObj, 'xAxis', formatOriginText)
+}
+
+export function configAxisLengthLimit(
+  chart: Chart,
+  chartObj: any,
+  axisType = 'xAxis',
+  formatOriginText?: (originText: string, event: any) => string
+): void {
+  const axis = parseJson(chart.customStyle)?.[axisType]
+  if (!axis?.show || !axis.axisLabel?.show || !axis.axisLabel.lengthLimit) {
+    return
+  }
+  let hideTimer: ReturnType<typeof setTimeout>
+  const { tooltip = {} } = parseJson(chart.customAttr)
+  const tooltipFontSize = tooltip.fontSize ?? 12
+  const tooltipId = `AXIS_LABEL_TIP-${chart.container || chart.id || 'default'}-${axisType}`
+
+  const getOriginText = (event: any) => {
+    const originTextRaw = event.target?.attributes?.originValue
+    if (originTextRaw === undefined || originTextRaw === null) {
+      return ''
+    }
+    return String(
+      (formatOriginText ? formatOriginText(String(originTextRaw), event) : originTextRaw) ?? ''
+    )
+  }
+
+  const getTooltipDom = () => {
+    let parentDom = document.getElementById('G2-TOOLTIP-WRAPPER')
+    if (!parentDom) {
+      parentDom = document.createElement('div')
+      parentDom.id = 'G2-TOOLTIP-WRAPPER'
+      parentDom.style.position = 'absolute'
+      parentDom.style.pointerEvents = 'none'
+      parentDom.style.zIndex = '9999'
+      document.body.appendChild(parentDom)
+    }
+
+    let tooltipDom = document.getElementById(tooltipId)
+    if (!tooltipDom) {
+      tooltipDom = document.createElement('div')
+      tooltipDom.id = tooltipId
+      tooltipDom.className = 'g2-axis-label-tooltip'
+      tooltipDom.style.position = 'fixed'
+      tooltipDom.style.display = 'none'
+      tooltipDom.style.color = tooltip.color ?? '#333333'
+      tooltipDom.style.backgroundColor = tooltip.backgroundColor ?? '#ffffff'
+      tooltipDom.style.fontSize = `${tooltipFontSize}px`
+      tooltipDom.style.padding = '4px 8px'
+      tooltipDom.style.boxShadow = 'rgba(0, 0, 0, 0.1) 0px 4px 8px 0px'
+      tooltipDom.style.borderRadius = '4px'
+      tooltipDom.style.cursor = 'default'
+      tooltipDom.style.pointerEvents = 'none'
+      tooltipDom.style.transition =
+        'left 0.4s cubic-bezier(0.23, 1, 0.32, 1), top 0.4s cubic-bezier(0.23, 1, 0.32, 1)'
+      parentDom.appendChild(tooltipDom)
+    }
+    return tooltipDom
+  }
+
+  const hideTooltip = () => {
+    const tooltipDom = document.getElementById(tooltipId)
+    if (tooltipDom) {
+      tooltipDom.style.display = 'none'
+    }
+  }
+
+  chartObj?.on(`axis-label-item:${ChartEvent.POINTER_MOVE}`, event => {
+    const showText = event.target?.attributes?.text
+    if (!showText?.endsWith('...')) {
+      hideTooltip()
+      return
+    }
+    const originText = getOriginText(event)
+    if (!originText || originText === showText) {
+      hideTooltip()
+      return
+    }
+    if (hideTimer) {
+      clearTimeout(hideTimer)
+    }
+    const tooltipDom = getTooltipDom()
+    tooltipDom.innerText = originText
+    tooltipDom.style.display = 'block'
+
+    const { width, height } = tooltipDom.getBoundingClientRect()
+    const clientX = event.client?.x ?? event.x ?? 0
+    const clientY = event.client?.y ?? event.y ?? 0
+    const gap = 10
+    let left = clientX + gap
+    let top = clientY + gap
+
+    if (left + width > window.innerWidth) {
+      left = Math.max(gap, clientX - width - gap)
+    }
+    if (top + height > window.innerHeight) {
+      top = Math.max(gap, clientY - height - gap)
+    }
+
+    tooltipDom.style.left = `${left}px`
+    tooltipDom.style.top = `${top}px`
+  })
+
+  chartObj?.on(`axis-label-item:${ChartEvent.POINTER_OUT}`, () => {
+    hideTimer = setTimeout(hideTooltip, 200)
+  })
+}
+
+export function formatAxisLabelWithLengthLimit(value: unknown, lengthLimit?: number) {
+  const label = value === null || value === undefined ? '' : `${value}`
+  if (lengthLimit && label.length > lengthLimit) {
+    return new Text({
+      style: {
+        text: label.substring(0, lengthLimit) + '...',
+        originValue: label
+      }
+    })
+  }
+  return label
 }
 
 /**

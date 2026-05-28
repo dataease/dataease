@@ -15,6 +15,7 @@ import { HorizontalBar } from '@/views/chart/components/js/panel/charts/g2/bar/h
 import { G2DrawOptions } from '@/views/chart/components/js/panel/types/impl/g2'
 import { cloneDeep, isEmpty } from 'lodash-es'
 import {
+  configAxisLengthLimit,
   handleChartDashboardHidden,
   TOOLTIP_ITEM_TPL,
   TOOLTIP_TITLE_TPL
@@ -130,6 +131,7 @@ export class RangeBar extends HorizontalBar {
     newChart.options(options)
     newChart.on('interval:click', action)
     listenerTooltipShow(newChart, chart)
+    configAxisLengthLimit(chart, newChart, 'yAxis')
     return newChart
   }
 

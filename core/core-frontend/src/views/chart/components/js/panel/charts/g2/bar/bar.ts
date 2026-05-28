@@ -15,6 +15,8 @@ import { flow, hexColorToRGBA, hexToRgba, parseJson } from '@/views/chart/compon
 import { cloneDeep, defaultsDeep, filter, find, isEmpty } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import {
+  configAxisLengthLimit,
+  formatAxisLabelWithLengthLimit,
   getLineDash,
   handleChartDashboardHidden,
   setGradientColor,
@@ -49,6 +51,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
   properties = BAR_EDITOR_PROPERTY
   propertyInner = {
     ...BAR_EDITOR_PROPERTY_INNER,
+    'x-axis-selector': [...BAR_EDITOR_PROPERTY_INNER['x-axis-selector'], 'showLengthLimit'],
     'basic-style-selector': [...BAR_EDITOR_PROPERTY_INNER['basic-style-selector'], 'seriesColor'],
     'label-selector': ['vPosition', 'seriesLabelFormatter', 'showExtremum'],
     'tooltip-selector': [
@@ -141,7 +144,18 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     newChart.on('interval:click', action)
     new G2TooltipCarousel(newChart, chart, data).start()
     extremumEvt(newChart, chart, options.children[0], container, scale, this.name === 'bar')
+    this.configLengthLimitTooltip(chart, newChart)
     return newChart
+  }
+
+  protected configLengthLimitTooltip(chart: Chart, chartObj: G2Column): void {
+    if (this.supportAxisLengthLimit('xAxis')) {
+      configAxisLengthLimit(chart, chartObj, 'xAxis')
+    }
+  }
+
+  protected supportAxisLengthLimit(axisType: string): boolean {
+    return axisType === 'xAxis'
   }
 
   protected configLabel(chart: Chart, options: ViewSpec): ViewSpec {
@@ -208,7 +222,9 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
       }
     } as any
     if (!l.fullDisplay) {
-      newLabel.transform = [{ type: 'overlapHide' }]
+      newLabel.transform = [{ type: 'exceedAdjust' }, { type: 'overlapHide' }]
+    } else {
+      newLabel.transform = [{ type: 'exceedAdjust' }]
     }
     return {
       ...options,
@@ -650,6 +666,9 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
         labelFormatter: value => {
           if (axisType === 'yAxis') {
             return valueFormatter(value, axis.axisLabelFormatter)
+          }
+          if (this.supportAxisLengthLimit(axisType)) {
+            return formatAxisLabelWithLengthLimit(value, axis.axisLabel.lengthLimit)
           }
           return value
         }

@@ -10,12 +10,17 @@ import {
   setUpStackSeriesColor
 } from '@/views/chart/components/js/util'
 import {
-  ViewSpec,
-  handleEmptyDataStrategy
+  handleEmptyDataStrategy,
+  ViewSpec
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Bar } from '@/views/chart/components/js/panel/charts/g2/bar/bar'
-import { getLineDash, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
+import {
+  configAxisLengthLimit,
+  formatAxisLabelWithLengthLimit,
+  getLineDash,
+  setGradientColor
+} from '@/views/chart/components/js/panel/common/common_antv'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'
 import { defaultsDeep } from 'lodash-es'
@@ -194,6 +199,10 @@ export class HorizontalBar extends Bar {
     return tmpOptions
   }
 
+  protected configLengthLimitTooltip(chart: Chart, chartObj): void {
+    configAxisLengthLimit(chart, chartObj, 'yAxis')
+  }
+
   protected getAxisConfig(chart: Chart, axisType: string): any {
     const customStyle = parseJson(chart.customStyle)
     const axis = JSON.parse(JSON.stringify(customStyle[axisType]))
@@ -230,6 +239,11 @@ export class HorizontalBar extends Bar {
         labelFormatter: value => {
           if (axisType === 'xAxis') {
             return valueFormatter(value, axis.axisLabelFormatter)
+          }
+          const lengthLimit = axis.axisLabel.lengthLimit
+          const valueText = value === null || value === undefined ? value : `${value}`
+          if (axisType === 'yAxis' && lengthLimit && valueText?.length > lengthLimit) {
+            return formatAxisLabelWithLengthLimit(valueText, lengthLimit)
           }
           return value
         }

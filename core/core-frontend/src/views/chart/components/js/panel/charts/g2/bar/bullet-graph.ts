@@ -10,6 +10,8 @@ import { flow, parseJson } from '@/views/chart/components/js/util'
 import { RuntimeOptions } from '@antv/g2/lib/api/runtime'
 import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
 import {
+  configAxisLengthLimit,
+  formatAxisLabelWithLengthLimit,
   getLineDash,
   handleChartDashboardHidden,
   TOOLTIP_ITEM_TPL,
@@ -118,6 +120,7 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
       action(actionParams)
     })
     listenerTooltipShow(newChart, chart)
+    configAxisLengthLimit(chart, newChart, 'xAxis')
     return newChart
   }
 
@@ -355,6 +358,9 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
         labelFormatter: value => {
           if (axisType === 'yAxis') {
             return valueFormatter(value, axis.axisLabelFormatter)
+          }
+          if (axisType === 'xAxis') {
+            return formatAxisLabelWithLengthLimit(value, axis.axisLabel.lengthLimit)
           }
           return value
         }

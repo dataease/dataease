@@ -12,6 +12,8 @@ import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ChartEvent, Chart as G2Chart, G2Spec } from '@antv/g2'
 import {
+  configXAxisLengthLimit,
+  formatAxisLabelWithLengthLimit,
   handleChartDashboardHidden,
   setGradientColor,
   TOOLTIP_ITEM_TPL,
@@ -240,6 +242,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       }
     })
     newChart.on('interval:click', action)
+    configXAxisLengthLimit(chart, newChart)
     // 开始渲染
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
@@ -400,12 +403,16 @@ export class BidirectionalHorizontalBar extends G2ChartView {
     }
     // G2 默认轴组件会按完整标签宽度预留空间，横向对称条形图只需要按文本宽度估算中间轴占位
     const labelFontSize = xAxis.axisLabel.fontSize ?? 12
-    const formatXAxisLabel = value => {
+    const formatXAxisLabelText = value => {
       const label = `${value ?? ''}`
       const lengthLimit = xAxis.axisLabel.lengthLimit
       return lengthLimit && label.length > lengthLimit
         ? label.substring(0, lengthLimit) + '...'
         : label
+    }
+    const formatXAxisLabel = value => {
+      const originLabel = `${value ?? ''}`
+      return formatAxisLabelWithLengthLimit(originLabel, xAxis.axisLabel.lengthLimit)
     }
     const getLabelTextWidth = text => {
       return Array.from(`${text ?? ''}`).reduce((width, char) => {
@@ -416,7 +423,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
     if (basicStyle.layout === 'horizontal' && position === 'right' && xAxis.axisLabel.show) {
       const fields = (firstMark.data?.value || []).map(item => item.field)
       const maxLabelWidth = fields.reduce((maxWidth, field) => {
-        return Math.max(maxWidth, getLabelTextWidth(formatXAxisLabel(field)))
+        return Math.max(maxWidth, getLabelTextWidth(formatXAxisLabelText(field)))
       }, 0)
       // 中间维度轴只需要左右各预留半个标签宽度和少量间距，避免 G2 默认轴宽把两侧空白撑大
       centerAxisSize = Math.ceil(Math.max(labelFontSize + 8, maxLabelWidth / 2 + 8))
@@ -873,7 +880,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
         }
       },
       transform: label.fullDisplay
-        ? []
+        ? [{ type: 'exceedAdjust' }]
         : [{ type: 'overlapDodgeY' }, { type: 'exceedAdjust' }, { type: 'overlapHide' }],
       fontFamily: chart.fontFamily
     }
