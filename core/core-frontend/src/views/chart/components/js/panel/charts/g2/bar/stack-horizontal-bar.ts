@@ -1,4 +1,7 @@
-import { BAR_EDITOR_PROPERTY } from '@/views/chart/components/js/panel/charts/g2/bar/common'
+import {
+  BAR_EDITOR_PROPERTY,
+  BAR_EDITOR_PROPERTY_INNER
+} from '@/views/chart/components/js/panel/charts/g2/bar/common'
 import { flow, parseJson } from '@/views/chart/components/js/util'
 import {
   createTooltipWrapper,
@@ -11,9 +14,9 @@ import {
   TOOLTIP_ITEM_TPL,
   TOOLTIP_TITLE_TPL
 } from '@/views/chart/components/js/panel/common/common_antv'
-import { valueFormatter } from '@/views/chart/components/js/formatter'
+import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
 import { HorizontalBar } from '@/views/chart/components/js/panel/charts/g2/bar/horizontal-bar'
-import { isEmpty } from 'lodash-es'
+import { groupBy, isEmpty } from 'lodash-es'
 
 const { t } = useI18n()
 
@@ -33,7 +36,15 @@ export class HorizontalStackBar extends HorizontalBar {
   }
   propertyInner = {
     ...this['propertyInner'],
-    'label-selector': ['color', 'fontSize', 'hPosition', 'labelFormatter'],
+    'label-selector': [
+      ...BAR_EDITOR_PROPERTY_INNER['label-selector'],
+      'hPosition',
+      'showTotal',
+      'totalColor',
+      'totalFontSize',
+      'totalFormatter',
+      'showStackQuota'
+    ],
     'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'tooltipFormatter', 'show']
   }
 
@@ -53,23 +64,64 @@ export class HorizontalStackBar extends HorizontalBar {
       ...(labelAttr.fullDisplay ? [] : [{ type: 'overlapHide' }])
     ]
 
-    const labels = [
-      {
+    const labels = []
+    if (labelAttr.showStackQuota ?? true) {
+      labels.push({
         text: 'value',
         fillOpacity: 1,
         fill: labelAttr.color,
         fontSize: labelAttr.fontSize,
         ...position,
-        formatter: (value, _data) => {
-          debugger
+        formatter: value => {
           if (value === null || value === undefined) {
             return ''
           }
           return valueFormatter(value, labelAttr.labelFormatter)
         },
         transform
+      })
+    }
+
+    if (labelAttr.showTotal) {
+      const formatterCfg = labelAttr.labelFormatter ?? formatterItem
+      const groupedData = groupBy(options.data, 'field')
+      const totalData = Object.entries(groupedData).map(([key, values]) => {
+        const total = values.reduce((a, b) => a + b.value, 0)
+        return {
+          field: key,
+          value: total,
+          totalLabel: valueFormatter(total, formatterCfg)
+        }
+      })
+      if (totalData.length) {
+        children.push({
+          type: 'point',
+          data: totalData,
+          encode: {
+            x: 'field',
+            y: 'value'
+          },
+          coordinate: { transform: [{ type: 'transpose' }] },
+          style: {
+            opacity: 0
+          },
+          labels: [
+            {
+              text: 'totalLabel',
+              fillOpacity: 1,
+              fill: labelAttr.color,
+              fontSize: labelAttr.fontSize,
+              position: 'right',
+              dx: 4,
+              dy: 0,
+              transform,
+              textAlign: 'start'
+            }
+          ],
+          tooltip: false
+        })
       }
-    ]
+    }
 
     return {
       ...options,
