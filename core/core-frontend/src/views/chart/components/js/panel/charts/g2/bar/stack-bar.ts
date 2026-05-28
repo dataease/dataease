@@ -75,7 +75,7 @@ export class StackBar extends Bar {
         fill: labelAttr.color,
         fontSize: labelAttr.fontSize,
         ...position,
-        formatter: (value, _data) => valueFormatter(value, labelAttr.labelFormatter),
+        formatter: value => valueFormatter(value, labelAttr.labelFormatter),
         ...transform
       })
     }
@@ -83,19 +83,38 @@ export class StackBar extends Bar {
     if (labelAttr.showTotal) {
       const formatterCfg = labelAttr.labelFormatter ?? formatterItem
       const groupedData = groupBy(options.data, 'field')
-      for (const [key, values] of Object.entries(groupedData)) {
+      const totalData = Object.entries(groupedData).map(([key, values]) => {
         const total = values.reduce((a, b) => a + b.value, 0)
-        const value = valueFormatter(total, formatterCfg)
+        return {
+          field: key,
+          value: total,
+          totalLabel: valueFormatter(total, formatterCfg)
+        }
+      })
+      if (totalData.length) {
         children.push({
-          type: 'text',
-          data: [key, total],
-          style: {
-            text: value,
-            textAlign: 'center',
-            dy: -10,
-            fill: labelAttr.color,
-            fontSize: labelAttr.fontSize
+          type: 'point',
+          data: totalData,
+          encode: {
+            x: 'field',
+            y: 'value'
           },
+          style: {
+            opacity: 0
+          },
+          labels: [
+            {
+              text: 'totalLabel',
+              fillOpacity: 1,
+              fill: labelAttr.color,
+              fontSize: labelAttr.fontSize,
+              position: 'top',
+              dx: 0,
+              dy: -10,
+              ...transform,
+              textAlign: 'center'
+            }
+          ],
           tooltip: false
         })
       }
