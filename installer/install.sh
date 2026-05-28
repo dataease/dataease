@@ -136,7 +136,7 @@ function prepare_de_run_base() {
 
    log_content "复制地图文件"
    if [ -d ${DE_RUN_BASE}/data/map ] || [ -d ${DE_RUN_BASE}/mapFiles ]; then
-      mv ${DE_RUN_BASE}/mapFiles/* ${DE_RUN_BASE}/data/map/
+      cp -rf ${DE_RUN_BASE}/mapFiles/* ${DE_RUN_BASE}/data/map/
    fi
 }
 
