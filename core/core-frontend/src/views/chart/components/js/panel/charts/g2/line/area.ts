@@ -15,7 +15,14 @@ import {
 } from '@/views/chart/components/js/util'
 import { cloneDeep, defaultsDeep, isEmpty, merge } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
-import { LINE_AXIS_TYPE, LINE_EDITOR_PROPERTY, LINE_EDITOR_PROPERTY_INNER } from './common'
+import {
+  configStackOrderByYAxis,
+  configYAxisSeriesLegendDomain,
+  LINE_AXIS_TYPE,
+  LINE_EDITOR_PROPERTY,
+  LINE_EDITOR_PROPERTY_INNER,
+  sortTooltipItemsByYAxis
+} from './common'
 import { useI18n } from '@/hooks/web/useI18n'
 import { addExtremumText, extremumEvt } from '@/views/chart/components/js/extremumUitl'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
@@ -501,7 +508,7 @@ export class Area extends G2ChartView {
       }
     }
     defaultsDeep(options, tmpLegend)
-    return options
+    return configYAxisSeriesLegendDomain(chart, options)
   }
 
   protected configAssistLine(chart: Chart, options: G2Spec): G2Spec {
@@ -616,7 +623,7 @@ export class Area extends G2ChartView {
             }
             const result = []
             const head = originalItems[0]
-            tooltipItems.forEach(item => {
+            sortTooltipItemsByYAxis(chart, tooltipItems).forEach(item => {
               if (item.value === null || item.value === undefined) {
                 return
               }
@@ -855,6 +862,10 @@ export class StackArea extends Area {
     return options
   }
 
+  protected configLegend(chart: Chart, options: G2Spec): G2Spec {
+    return super.configLegend(chart, configStackOrderByYAxis(chart, options))
+  }
+
   protected configTooltip(chart: Chart, options: G2Spec): G2Spec {
     const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
     const tooltipAttr = customAttr.tooltip
@@ -874,7 +885,7 @@ export class StackArea extends Area {
           render: (e, { title, items }) => {
             const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)
             const result = []
-            items.forEach(item => {
+            sortTooltipItemsByYAxis(chart, items).forEach(item => {
               if (item.value === null || item.value === undefined) {
                 return
               }

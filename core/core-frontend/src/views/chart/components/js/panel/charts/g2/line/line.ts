@@ -14,7 +14,13 @@ import {
 } from '@/views/chart/components/js/util'
 import { cloneDeep, defaultsDeep, isEmpty, merge } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
-import { LINE_AXIS_TYPE, LINE_EDITOR_PROPERTY, LINE_EDITOR_PROPERTY_INNER } from './common'
+import {
+  configYAxisSeriesLegendDomain,
+  LINE_AXIS_TYPE,
+  LINE_EDITOR_PROPERTY,
+  LINE_EDITOR_PROPERTY_INNER,
+  sortTooltipItemsByYAxis
+} from './common'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
 import { DEFAULT_YAXIS_STYLE } from '@/views/chart/components/editor/util/chart'
@@ -566,7 +572,7 @@ export class Line extends G2ChartView {
         defaultsDeep(options, scaleOpt)
       }
     }
-    return options
+    return configYAxisSeriesLegendDomain(chart, options)
   }
 
   protected configAssistLine(chart: Chart, options: G2Spec): G2Spec {
@@ -683,7 +689,7 @@ export class Line extends G2ChartView {
             }
             const result = []
             const head = originalItems[0]
-            tooltipItems.forEach(item => {
+            sortTooltipItemsByYAxis(chart, tooltipItems).forEach(item => {
               if (item.value === null || item.value === undefined) {
                 return
               }
