@@ -289,13 +289,17 @@ public class XpackShareManage {
             vo.setInIframeError(false);
             return vo;
         }
-        String linkToken = LinkTokenUtil.generate(xpackShare.getCreator(), xpackShare.getResourceId(), xpackShare.getExp(), xpackShare.getPwd(), xpackShare.getOid());
-        HttpServletResponse response = ServletUtils.response();
-        response.addHeader(AuthConstant.LINK_TOKEN_KEY, linkToken);
         Integer type = xpackShare.getType();
         String typeText = (ObjectUtils.isNotEmpty(type) && type == 1) ? "dashboard" : "dataV";
         TicketValidVO validVO = shareTicketManage.validateTicket(request.getTicket(), xpackShare);
-        return new XpackShareProxyVO(xpackShare.getResourceId(), xpackShare.getCreator(), linkExp(xpackShare), pwdValid(xpackShare, request.getCiphertext()), typeText, inIframeError, false, true, validVO);
+
+        boolean linkExp = linkExp(xpackShare);
+        boolean pwdValid = pwdValid(xpackShare, request.getCiphertext());
+
+        if (!linkExp && pwdValid && validVO.isTicketValid() && !validVO.isTicketExp()) {
+            generateLinkToken(xpackShare);
+        }
+        return new XpackShareProxyVO(xpackShare.getResourceId(), xpackShare.getCreator(), linkExp, pwdValid, typeText, inIframeError, false, true, validVO);
     }
 
     private boolean linkExp(XpackShare xpackShare) {
@@ -337,7 +341,20 @@ public class XpackShareManage {
         };
 
         XpackShare xpackShare = xpackShareRepository.findOne(xpackShareSpec).orElse(null);
-        return StringUtils.equals(xpackShare.getUuid(), uuid) && StringUtils.equals(xpackShare.getPwd(), pwd);
+        boolean valid = StringUtils.equals(xpackShare.getUuid(), uuid) && StringUtils.equals(xpackShare.getPwd(), pwd);
+        if (valid) {
+            generateLinkToken(xpackShare);
+        }
+        return valid;
+    }
+
+    private void generateLinkToken(XpackShare xpackShare) {
+        String defaultPwd = shareSecretManage.getDefaultPwd();
+        String secret = StringUtils.isBlank(xpackShare.getPwd()) ? defaultPwd : xpackShare.getPwd();
+        String linkToken = LinkTokenUtil.generate(xpackShare.getCreator(), xpackShare.getResourceId(), xpackShare.getExp(), secret, xpackShare.getOid());
+        HttpServletResponse response = ServletUtils.response();
+        assert response != null;
+        response.addHeader(AuthConstant.LINK_TOKEN_KEY, linkToken);
     }
 
     public Map<String, String> queryRelationByUserId(Long uid) {

@@ -93,6 +93,8 @@ public class ChartDataManage {
             view.setChartExtRequest(chartExtRequest);
         }
 
+        chartViewManege.checkLinkChart(view);
+
         //excel导出，如果是从仪表板获取图表数据，则仪表板的查询模式，查询结果的数量，覆盖图表对应的属性
         if (view.getIsExcelExport()) {
             view.setResultMode(ChartConstants.VIEW_RESULT_MODE.CUSTOM);
