@@ -113,7 +113,7 @@ const templateInnerPreview = () => {
     left: 0;
 
     .ed-button {
-      min-width: 73px;
+      min-width: 48px;
       height: 28px;
       display: none;
       font-size: 12px;
@@ -167,6 +167,7 @@ const templateInnerPreview = () => {
 @media screen and (max-width: 920px) {
   .template {
     width: calc(50% - 16px);
+    min-width: 180px;
   }
 }
 </style>
