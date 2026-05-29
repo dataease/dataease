@@ -39,7 +39,7 @@ public class VisualizationExport2AppVO {
 
     List<VisualizationLinkageFieldVO> linkageFields;
 
-    Map<String,String> viewIdMap;
+    Map<Long,Long> viewIdMap;
 
     public VisualizationExport2AppVO() {
 
