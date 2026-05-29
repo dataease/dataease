@@ -398,20 +398,57 @@ export class Waterfall extends Bar {
     const newData = [] as Record<string, any>[]
     let r = 0
     data.forEach(d => {
-      const value = d[yField] ? d[yField] : null
-      newData.push({ ...d, [newYField]: [r, r + value] })
-      r += value
+      const value = this.getNumberValue(d[yField])
+      const current = value ?? 0
+      newData.push({ ...d, [yField]: value, [newYField]: [r, r + current] })
+      r += current
     })
     if (newData.length && total) {
       const sum = newData[newData.length - 1][newYField][1]
       newData.push({
         ...data[0],
+        dynamicTooltipValue: this.getTotalDynamicTooltipValue(data),
         [xField]: total.label,
         [yField]: sum,
         [newYField]: [0, sum]
       })
     }
     return newData
+  }
+
+  protected getNumberValue(value: any): number | null {
+    if (value === null || value === undefined) {
+      return null
+    }
+    if (typeof value === 'string' && value.trim() === '') {
+      return null
+    }
+    const numberValue = Number(value)
+    return Number.isFinite(numberValue) ? numberValue : null
+  }
+
+  protected getTotalDynamicTooltipValue(data: Record<string, any>[]): Record<string, any>[] {
+    const dynamicTooltipValueMap = new Map<string, Record<string, any> & { hasValue: boolean }>()
+    data.forEach(d => {
+      d.dynamicTooltipValue?.forEach(item => {
+        const key = `${item.fieldId}`
+        const value = this.getNumberValue(item.value)
+        const current = dynamicTooltipValueMap.get(key) || {
+          ...item,
+          value: null,
+          hasValue: false
+        }
+        if (value !== null) {
+          current.value = (current.hasValue ? current.value : 0) + value
+          current.hasValue = true
+        }
+        dynamicTooltipValueMap.set(key, current)
+      })
+    })
+    return Array.from(dynamicTooltipValueMap.values()).map(({ hasValue, ...item }) => ({
+      ...item,
+      value: hasValue ? item.value : null
+    }))
   }
 
   /**
