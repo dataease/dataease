@@ -192,7 +192,9 @@ export class GroupLineMix extends G2ChartView {
               },
               scale: {
                 y: {
-                  key: 'right'
+                  key: 'right',
+                  nice: true,
+                  independent: true
                 }
               },
               axis: {
