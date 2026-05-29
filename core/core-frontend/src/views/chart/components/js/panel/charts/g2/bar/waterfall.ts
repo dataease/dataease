@@ -118,7 +118,8 @@ export class Waterfall extends Bar {
       },
       legendFilter: false
     },
-    data: []
+    data: [],
+    tooltip: false
   } as ViewSpec
 
   async drawChart(drawOptions: G2DrawOptions<G2Column>): Promise<G2Column> {
