@@ -65,7 +65,8 @@ export class Waterfall extends Bar {
       'axisLine',
       'splitLine',
       'axisForm',
-      'axisLabel'
+      'axisLabel',
+      'showLengthLimit'
     ],
     'y-axis-selector': [
       'position',
@@ -180,8 +181,13 @@ export class Waterfall extends Bar {
     newChart.options(options)
     newChart.on('interval:click', action)
     listenerTooltipShow(newChart, chart)
-    configAxisLengthLimit(chart, newChart, 'yAxis')
+    this.configLengthLimitTooltip(chart, newChart)
     return newChart
+  }
+
+  protected configLengthLimitTooltip(chart: Chart, chartObj: G2Column): void {
+    configAxisLengthLimit(chart, chartObj, 'xAxis')
+    configAxisLengthLimit(chart, chartObj, 'yAxis')
   }
 
   protected getAxisConfig(chart: Chart, axisType: string): any {
@@ -202,7 +208,7 @@ export class Waterfall extends Bar {
   }
 
   protected supportAxisLengthLimit(axisType: string): boolean {
-    return axisType === 'yAxis'
+    return ['xAxis', 'yAxis'].includes(axisType)
   }
 
   protected configBasicStyle(chart: Chart, options: ViewSpec): ViewSpec {
