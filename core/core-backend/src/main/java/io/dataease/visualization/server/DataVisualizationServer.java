@@ -55,7 +55,6 @@ import io.dataease.template.manage.TemplateCenterManage;
 import io.dataease.utils.*;
 import io.dataease.visualization.dao.auto.entity.*;
 import io.dataease.visualization.dao.auto.mapper.*;
-import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
 import io.dataease.visualization.manage.*;
 import io.dataease.visualization.utils.VisualizationUtils;
 import jakarta.annotation.Resource;
@@ -539,7 +538,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 VisualizationLinkJumpTargetViewInfo visualizationLinkJumpTargetViewInfo = new VisualizationLinkJumpTargetViewInfo();
                 BeanUtils.copyBean(visualizationLinkJumpTargetViewInfo, visualizationLinkJumpTargetViewInfoVO);
                 visualizationLinkJumpTargetViewInfo.setTargetId(newId);
-                visualizationLinkJumpTargetViewInfoVO.setTargetFieldId(String.valueOf(linkJumpInfoIdMap.get(visualizationLinkJumpTargetViewInfoVO.getTargetFieldId())));
+                visualizationLinkJumpTargetViewInfoVO.setTargetFieldId(Long.valueOf(String.valueOf(linkJumpInfoIdMap.get(visualizationLinkJumpTargetViewInfoVO.getTargetFieldId()))));
             });
         }
         //保存图表信息
