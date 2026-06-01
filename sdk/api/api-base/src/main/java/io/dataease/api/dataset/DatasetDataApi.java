@@ -3,6 +3,7 @@ package io.dataease.api.dataset;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.dataset.dto.*;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
+import io.dataease.auth.DePermit;
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,6 +29,7 @@ public interface DatasetDataApi {
     List<DatasetTableFieldDTO> tableField(@RequestBody DatasetTableDTO datasetTableDTO) throws Exception;
 
     @Operation(summary = "SQL预览")
+    @DePermit({"#p0.datasourceId+':read'"})
     @PostMapping("previewSql")
     Map<String, Object> previewSql(@RequestBody PreviewSqlDTO dto) throws Exception;
 
