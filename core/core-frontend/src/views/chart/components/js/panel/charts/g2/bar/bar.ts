@@ -32,7 +32,9 @@ import {
 } from '@/views/chart/components/editor/util/chart'
 import {
   createTooltipWrapper,
+  getStackTooltipGroupName,
   handleEmptyDataStrategy,
+  renderGroupedTooltipItems,
   tooltipCss,
   tooltipMaxHeight,
   Transform,
@@ -294,16 +296,19 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
                 result.push({ color: 'grey', name, value })
               }
             })
-            const itemsHtml = result
-              .map(item => {
+            // tooltip 项按维度槽位分组，帮助区分多维度明细
+            const itemsHtml = renderGroupedTooltipItems(
+              result,
+              item => getStackTooltipGroupName(chart, item),
+              item => {
                 const marker = toLinearGradient(item.color)
                 const label = item.name
                 const value = item.value
                 return TOOLTIP_ITEM_TPL.replace('{marker}', marker)
                   .replace('{label}', label)
                   .replace('{value}', value)
-              })
-              .join('')
+              }
+            )
             const listHtml = `<ul class="g2-tooltip-list" style="${tooltipMaxHeight(
               chart
             )}margin: 0px; list-style-type: none; padding: 0px;">${itemsHtml}</ul>`

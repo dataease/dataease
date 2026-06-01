@@ -1,7 +1,13 @@
 import { BAR_AXIS_TYPE } from '@/views/chart/components/js/panel/charts/g2/bar/common'
 import { flow, parseJson } from '@/views/chart/components/js/util'
 import {
+  configStackSeriesOrder,
   createTooltipWrapper,
+  getStackSeriesIndexMap,
+  getStackSeriesOrder,
+  getStackTooltipGroupName,
+  renderGroupedTooltipItems,
+  sortStackTooltipItems,
   tooltipCss,
   ViewSpec
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
@@ -100,6 +106,9 @@ export class PercentageStackBar extends HorizontalStackBar {
     if (!tooltip.show) {
       return options
     }
+    // 百分比堆叠从过滤后的图形数据取系列顺序，避免锚点数据干扰排序
+    const seriesOrder = getStackSeriesOrder(chart, getPercentageStackOptionsData(options))
+    const seriesIndexMap = getStackSeriesIndexMap(seriesOrder)
     const tooltipMap = function (a) {
       return a
     }
@@ -121,7 +130,7 @@ export class PercentageStackBar extends HorizontalStackBar {
           position: 'top-right',
           render: (_, { title, items: originalItems }) => {
             const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)
-            // 锚点只负责鼠标命中，不应出现在 tooltip 明细里。
+            // 锚点只负责鼠标命中，不应出现在 tooltip 明细里
             const tooltipItems = filterPercentageStackTooltipItems(originalItems)
             if (!tooltipItems.length) return ''
             const sum = tooltipItems?.reduce(
@@ -140,16 +149,21 @@ export class PercentageStackBar extends HorizontalStackBar {
               }`
               result.push({ ...item, name, value })
             })
-            const itemsHtml = result
-              .map(item => {
+            // tooltip 内系列顺序与堆叠层级保持一致
+            sortStackTooltipItems(result, seriesOrder, seriesIndexMap)
+            // tooltip 项按维度槽位分组，帮助区分多维度明细
+            const itemsHtml = renderGroupedTooltipItems(
+              result,
+              item => getStackTooltipGroupName(chart, item),
+              item => {
                 const marker = toLinearGradient(item.color)
                 const label = item.name
                 const value = item.value
                 return TOOLTIP_ITEM_TPL.replace('{marker}', marker)
                   .replace('{label}', label)
                   .replace('{value}', value)
-              })
-              .join('')
+              }
+            )
             const listHtml = `<ul class="g2-tooltip-list" style="margin: 0px; list-style-type: none; padding: 0px;">${itemsHtml}</ul>`
             return `${titleHtml}${listHtml}`
           }
@@ -168,6 +182,8 @@ export class PercentageStackBar extends HorizontalStackBar {
       this.configEmptyDataStrategy,
       this.configBasicStyle,
       this.configColor,
+      // 在颜色和堆叠阶段统一系列顺序，避免图例、颜色、层级错位
+      configStackSeriesOrder,
       this.configLabel,
       this.configTooltip,
       this.configLegend,

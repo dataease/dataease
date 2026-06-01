@@ -4,7 +4,13 @@ import {
 } from '@/views/chart/components/js/panel/charts/g2/bar/common'
 import { flow, parseJson } from '@/views/chart/components/js/util'
 import {
+  configStackSeriesOrder,
   createTooltipWrapper,
+  getStackSeriesIndexMap,
+  getStackSeriesOrder,
+  getStackTooltipGroupName,
+  renderGroupedTooltipItems,
+  sortStackTooltipItems,
   tooltipCss,
   ViewSpec
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
@@ -135,6 +141,9 @@ export class HorizontalStackBar extends HorizontalBar {
     if (!tooltip.show) {
       return options
     }
+    // 基于数据和排序配置生成系列顺序，供 tooltip 与堆叠层级共用
+    const seriesOrder = getStackSeriesOrder(chart, children[0]?.data || options.data)
+    const seriesIndexMap = getStackSeriesIndexMap(seriesOrder)
 
     const tooltipOptions: ViewSpec = {
       tooltip: a => a,
@@ -162,16 +171,21 @@ export class HorizontalStackBar extends HorizontalBar {
               const name = isEmpty(item.category) ? item.field : item.category
               result.push({ ...item, name, value })
             })
-            const itemsHtml = result
-              .map(item => {
+            // tooltip 内系列顺序与堆叠层级保持一致
+            sortStackTooltipItems(result, seriesOrder, seriesIndexMap)
+            // tooltip 项按维度槽位分组，帮助区分多维度明细
+            const itemsHtml = renderGroupedTooltipItems(
+              result,
+              item => getStackTooltipGroupName(chart, item),
+              item => {
                 const marker = toLinearGradient(item.color)
                 const label = item.name
                 const value = item.value
                 return TOOLTIP_ITEM_TPL.replace('{marker}', marker)
                   .replace('{label}', label)
                   .replace('{value}', value)
-              })
-              .join('')
+              }
+            )
             const listHtml = `<ul class="g2-tooltip-list" style="margin: 0px; list-style-type: none; padding: 0px;">${itemsHtml}</ul>`
             return `${titleHtml}${listHtml}`
           }
@@ -218,6 +232,8 @@ export class HorizontalStackBar extends HorizontalBar {
       this.configEmptyDataStrategy,
       this.configBasicStyle,
       this.configData,
+      // 在颜色和堆叠阶段统一系列顺序，避免图例、颜色、层级错位
+      configStackSeriesOrder,
       this.configColor,
       this.configLabel,
       this.configTooltip,

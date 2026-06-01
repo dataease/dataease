@@ -12,8 +12,14 @@ import { Bar } from '@/views/chart/components/js/panel/charts/g2/bar/bar'
 import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
 import { groupBy } from 'lodash'
 import {
+  configStackSeriesOrder,
   createTooltipWrapper,
+  getStackSeriesIndexMap,
+  getStackSeriesOrder,
+  getStackTooltipGroupName,
   handleEmptyDataStrategy,
+  renderGroupedTooltipItems,
+  sortStackTooltipItems,
   tooltipCss,
   tooltipMaxHeight,
   ViewSpec
@@ -138,6 +144,9 @@ export class StackBar extends Bar {
     if (!tooltip.show) {
       return options
     }
+    // 基于数据和排序配置生成系列顺序，供 tooltip 与堆叠层级共用
+    const seriesOrder = getStackSeriesOrder(chart, children[0]?.data || options.data)
+    const seriesIndexMap = getStackSeriesIndexMap(seriesOrder)
     const tooltipMap = function (a) {
       return a
     }
@@ -161,16 +170,21 @@ export class StackBar extends Bar {
               const name = isEmpty(item.category) ? item.field : item.category
               result.push({ ...item, name, value })
             })
-            const itemsHtml = result
-              .map(item => {
+            // tooltip 内系列顺序与堆叠层级保持一致
+            sortStackTooltipItems(result, seriesOrder, seriesIndexMap)
+            // tooltip 项按维度槽位分组，帮助区分多维度明细
+            const itemsHtml = renderGroupedTooltipItems(
+              result,
+              item => getStackTooltipGroupName(chart, item),
+              item => {
                 const marker = toLinearGradient(item.color)
                 const label = item.name
                 const value = item.value
                 return TOOLTIP_ITEM_TPL.replace('{marker}', marker)
                   .replace('{label}', label)
                   .replace('{value}', value)
-              })
-              .join('')
+              }
+            )
             const listHtml = `<ul class="g2-tooltip-list" style="${tooltipMaxHeight(
               chart
             )}margin: 0px; list-style-type: none; padding: 0px;">${itemsHtml}</ul>`
@@ -273,6 +287,8 @@ export class StackBar extends Bar {
       this.configTheme,
       this.configEmptyDataStrategy,
       this.configData,
+      // 在颜色和堆叠阶段统一系列顺序，避免图例、颜色、层级错位
+      configStackSeriesOrder,
       this.configColor,
       this.configBasicStyle,
       this.configLabel,

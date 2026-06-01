@@ -36,7 +36,13 @@ import {
 } from '../../../common/common_antv'
 import { registerSymbol, Symbols } from '@antv/g2/esm/utils/marker'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
-import { createTooltipWrapper, tooltipCss, tooltipMaxHeight } from '../bar/barUtil'
+import {
+  createTooltipWrapper,
+  getStackTooltipGroupName,
+  renderGroupedTooltipItems,
+  tooltipCss,
+  tooltipMaxHeight
+} from '../bar/barUtil'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
@@ -643,16 +649,19 @@ export class Area extends G2ChartView {
                 result.push({ color: 'grey', name, value })
               }
             })
-            const itemsHtml = result
-              .map(item => {
+            // tooltip 项按维度槽位分组，帮助区分多维度明细
+            const itemsHtml = renderGroupedTooltipItems(
+              result,
+              item => getStackTooltipGroupName(chart, item),
+              item => {
                 const marker = toLinearGradient(item.color)
                 const label = item.name
                 const value = item.value
                 return TOOLTIP_ITEM_TPL.replace('{marker}', marker)
                   .replace('{label}', label)
                   .replace('{value}', value)
-              })
-              .join('')
+              }
+            )
             const listHtml = `<ul class="g2-tooltip-list" style="${tooltipMaxHeight(
               chart
             )}margin: 0px; list-style-type: none; padding: 0px;">${itemsHtml}</ul>`
@@ -894,16 +903,19 @@ export class StackArea extends Area {
               const value = valueFormatter(item.value, tooltipAttr.tooltipFormatter)
               result.push({ ...item, name: item.category, value })
             })
-            const itemsHtml = result
-              .map(item => {
+            // tooltip 项按维度槽位分组，帮助区分堆叠面积明细
+            const itemsHtml = renderGroupedTooltipItems(
+              result,
+              item => getStackTooltipGroupName(chart, item),
+              item => {
                 const marker = toLinearGradient(item.color)
                 const label = item.name
                 const value = item.value
                 return TOOLTIP_ITEM_TPL.replace('{marker}', marker)
                   .replace('{label}', label)
                   .replace('{value}', value)
-              })
-              .join('')
+              }
+            )
             const listHtml = `<ul class="g2-tooltip-list" style="${tooltipMaxHeight(
               chart
             )}margin: 0px; list-style-type: none; padding: 0px;">${itemsHtml}</ul>`

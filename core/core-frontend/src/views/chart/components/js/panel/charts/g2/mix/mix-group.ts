@@ -28,6 +28,11 @@ import { registerSymbol, Symbols } from '@antv/g2/esm/utils/marker'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 import {
   createTooltipWrapper,
+  getSeriesIndexMapByRelations,
+  getMixTooltipGroupIndex,
+  getMixTooltipGroupName,
+  renderGroupedTooltipItems,
+  sortMixTooltipItems,
   tooltipCss,
   tooltipMaxHeight
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
@@ -581,6 +586,11 @@ export class GroupLineMix extends G2ChartView {
         return pre
       }, {}) as Record<string, SeriesFormatter>
     const yAxis = chart.yAxis
+    // 读取左右轴 color relations，保持 tooltip 系列顺序与图例一致
+    const seriesIndexMap = getSeriesIndexMapByRelations([
+      ...(intervalMark.scale?.color?.relations || []),
+      ...(lineMark.scale?.color?.relations || [])
+    ])
     const tooltipOptions: G2Spec = {
       tooltip: d => d,
       interaction: {
@@ -604,18 +614,29 @@ export class GroupLineMix extends G2ChartView {
               const name = item.category
               const colorScale = item.left ? view.scale.color : view.scale.color1
               const color = colorScale.map(name) ?? item.color
-              result.push({ value, color, name })
+              // 记录 tooltip 项所属维度分组，供后续分组标题和排序使用
+              result.push({
+                value,
+                color,
+                name,
+                groupName: getMixTooltipGroupName(chart, item),
+                groupIndex: getMixTooltipGroupIndex(chart, item)
+              })
             })
-            const itemsHtml = result
-              .map(item => {
+            // 混合图 tooltip 先按维度分组，再按图例系列顺序排列
+            sortMixTooltipItems(result, seriesIndexMap)
+            const itemsHtml = renderGroupedTooltipItems(
+              result,
+              item => item.groupName,
+              item => {
                 const marker = toLinearGradient(item.color)
                 const label = item.name
                 const value = item.value
                 return TOOLTIP_ITEM_TPL.replace('{marker}', marker)
                   .replace('{label}', label)
                   .replace('{value}', value)
-              })
-              .join('')
+              }
+            )
             const listHtml = `<ul class="g2-tooltip-list" style="${tooltipMaxHeight(
               chart
             )}margin: 0px; list-style-type: none; padding: 0px;">${itemsHtml}</ul>`
