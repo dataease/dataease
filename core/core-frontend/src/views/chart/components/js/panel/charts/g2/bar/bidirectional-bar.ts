@@ -885,7 +885,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       },
       transform: label.fullDisplay
         ? [{ type: 'exceedAdjust' }]
-        : [{ type: 'overlapDodgeY' }, { type: 'exceedAdjust' }, { type: 'overlapHide' }],
+        : [{ type: 'exceedAdjust' }, { type: 'overlapHide' }],
       fontFamily: chart.fontFamily
     }
     if (formatterMap[yAxis[0].id]?.show !== false) {
