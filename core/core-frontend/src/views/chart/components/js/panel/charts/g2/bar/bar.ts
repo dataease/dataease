@@ -609,6 +609,9 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
             : valueFormatter(value, targetFormatter)
         const content = item.name + ' : ' + axisFormattedValue
         const fontSize = item.fontSize ? parseInt(item.fontSize + '') : '100%'
+        const labelTransform = isHorizontalBar
+          ? { transform: [{ type: 'exceedAdjust', offsetY: 24 }] }
+          : {}
         assistLine.push({
           type: 'lineY',
           data: [value],
@@ -620,12 +623,13 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
           labels: [
             {
               text: content,
-              position: isHorizontalBar ? 'inside' : 'left',
+              position: isHorizontalBar ? 'top-left' : 'left',
               textBaseline: 'bottom',
               fill: item.color,
               fillOpacity: 1,
               background: false,
               fontSize,
+              ...labelTransform,
               style: isHorizontalBar ? { transform: 'rotate(90deg)' } : undefined
             }
           ]
