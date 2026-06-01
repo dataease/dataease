@@ -431,6 +431,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
     const axisStyle = {
       axis: {
         x: {
+          zIndex: 1,
           position: position,
           size: centerAxisSize,
           crossPadding: centerAxisSize ? 2 : undefined,
@@ -445,6 +446,9 @@ export class BidirectionalHorizontalBar extends G2ChartView {
           labelFillOpacity: 1,
           labelFontSize: xAxis.axisLabel.fontSize,
           tick: xAxis.axisLabel.show,
+          tickLineWidth: xAxis.axisLine.lineStyle.width,
+          tickStroke: xAxis.axisLine.lineStyle.color,
+          tickOpacity: 1,
           grid: xAxis.splitLine.show,
           gridStroke: xAxis.splitLine.lineStyle.color,
           gridStrokeOpacity: 1,

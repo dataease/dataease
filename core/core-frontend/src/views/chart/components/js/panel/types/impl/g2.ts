@@ -114,6 +114,9 @@ export abstract class G2ChartView<
     }
     const axisOption = {
       tick: axis.axisLabel.show && axis.axisLabel.showTick !== false,
+      tickLineWidth: axis.axisLine.lineStyle.width,
+      tickStroke: axis.axisLine.lineStyle.color,
+      tickOpacity: 1,
       position: axis.position,
       title: axis.nameShow === false ? false : isEmpty(axis.name) ? false : axis.name,
       titleFontSize: axis.fontSize,
