@@ -4339,6 +4339,7 @@ export default {
       show_water_mask: 'Show Watermark',
       format: 'Format',
       view_data: 'Chart Data',
+      all_data: 'All Data',
       pixel: 'Dashboard Resolution',
       reci_setting: 'Receiving Settings',
       retrying: 'Retry on Failure',
