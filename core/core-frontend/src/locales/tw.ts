@@ -4219,6 +4219,7 @@ export default {
       show_water_mask: '顯示水印',
       format: '格式',
       view_data: '圖表數據',
+      all_data: '全部數據',
       pixel: '儀表板分辨率',
       reci_setting: '接收設置',
       retrying: '失敗重試',
