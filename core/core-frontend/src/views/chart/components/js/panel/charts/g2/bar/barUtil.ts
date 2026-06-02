@@ -283,6 +283,82 @@ export function tooltipMaxHeight(chart: Chart) {
   return `max-height: ${maxHeight}px;max-width: ${chartRect.width / 2}px;`
 }
 
+export function getSeriesTooltipFormatterMap(tooltipAttr?: DeepPartial<ChartTooltipAttr>) {
+  return (tooltipAttr?.seriesTooltipFormatter || []).reduce((pre, next) => {
+    if (!next?.id) {
+      return pre
+    }
+    const formatter = next as SeriesFormatter
+    // 同一字段可出现在不同指标槽位，优先用 seriesId 区分具体槽位。
+    if (formatter.seriesId) {
+      pre[formatter.seriesId] = formatter
+    }
+    if (!formatter.seriesId || formatter.seriesId === formatter.id) {
+      pre[formatter.id] = formatter
+    }
+    return pre
+  }, {} as Record<string, SeriesFormatter>)
+}
+
+export function getTooltipItemFieldId(item?: any) {
+  return item?.quotaList?.[0]?.id ?? item?.data?.quotaList?.[0]?.id ?? item?.fieldId
+}
+
+// 旧图表样式可能带着过期 formatter；当前字段缺少配置时按默认展示处理。
+export function isSeriesTooltipFormatterShown(
+  formatterMap: Record<string, SeriesFormatter>,
+  fieldId?: string,
+  axisType?: AxisType
+) {
+  if (!fieldId) {
+    return true
+  }
+  if (axisType) {
+    // 带槽位的主指标不能被旧的 id 级 show:false 误隐藏。
+    const seriesKey = `${fieldId}-${axisType}`
+    return Object.prototype.hasOwnProperty.call(formatterMap, seriesKey)
+      ? formatterMap[seriesKey]?.show !== false
+      : true
+  }
+  if (Object.prototype.hasOwnProperty.call(formatterMap, fieldId)) {
+    return formatterMap[fieldId]?.show !== false
+  }
+  return true
+}
+
+export function isTooltipItemShown(
+  formatterMap: Record<string, SeriesFormatter>,
+  item?: any,
+  axisType?: AxisType
+) {
+  return isSeriesTooltipFormatterShown(formatterMap, getTooltipItemFieldId(item), axisType)
+}
+
+// 带槽位的 formatter 缺项时回退到当前轴字段，避免旧 id 级配置污染新指标。
+export function getSeriesTooltipFormatter(
+  formatterMap: Record<string, SeriesFormatter>,
+  fieldId?: string,
+  fields: Partial<Axis>[] = [],
+  axisType?: AxisType
+) {
+  const field = fields.find(field => field?.id === fieldId)
+  const seriesId = (field as Partial<SeriesFormatter>)?.seriesId
+  if (axisType && fieldId) {
+    const seriesKey = `${fieldId}-${axisType}`
+    return formatterMap[seriesKey] || (seriesId && formatterMap[seriesId]) || field
+  }
+  return (fieldId && formatterMap[fieldId]) || (seriesId && formatterMap[seriesId]) || field
+}
+
+export function getTooltipItemFormatter(
+  formatterMap: Record<string, SeriesFormatter>,
+  item: any,
+  fields: Partial<Axis>[] = [],
+  axisType?: AxisType
+) {
+  return getSeriesTooltipFormatter(formatterMap, getTooltipItemFieldId(item), fields, axisType)
+}
+
 // 将字段显示名降级到原始字段名，避免 tooltip 分组标题为空
 export function getFieldDisplayName(field?: Partial<ChartViewField>) {
   return field?.chartShowName || field?.name || ''

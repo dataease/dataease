@@ -32,8 +32,13 @@ import {
 } from '@/views/chart/components/editor/util/chart'
 import {
   createTooltipWrapper,
+  getSeriesTooltipFormatter,
+  getSeriesTooltipFormatterMap,
   getStackTooltipGroupName,
+  getTooltipItemFormatter,
   handleEmptyDataStrategy,
+  isSeriesTooltipFormatterShown,
+  isTooltipItemShown,
   renderGroupedTooltipItems,
   tooltipCss,
   tooltipMaxHeight,
@@ -248,12 +253,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     if (!tooltipAttr.show) {
       return options
     }
-    const formatterMap = tooltipAttr.seriesTooltipFormatter
-      ?.filter(i => i.show)
-      .reduce((pre, next) => {
-        pre[next.id] = next
-        return pre
-      }, {}) as Record<string, SeriesFormatter>
+    const formatterMap = getSeriesTooltipFormatterMap(tooltipAttr)
     const tooltipOptions: ViewSpec = {
       tooltip: d => d,
       interaction: {
@@ -268,24 +268,34 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
             const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)
             let tooltipItems = originalItems
             if (tooltipAttr.seriesTooltipFormatter?.length) {
-              tooltipItems = originalItems.filter(item => formatterMap[item.quotaList[0].id])
+              // 只隐藏明确配置为不展示的字段，避免过期 formatter 漏掉新指标。
+              tooltipItems = originalItems.filter(item =>
+                isTooltipItemShown(formatterMap, item, 'yAxis')
+              )
             }
             const result = []
             const head = originalItems[0]
             tooltipItems.forEach(item => {
-              const formatter = formatterMap[item.quotaList[0].id] ?? yAxis[0]
+              const formatter = getTooltipItemFormatter(formatterMap, item, yAxis, 'yAxis')
               const value =
                 item.value === null || item.value === undefined
                   ? ''
-                  : valueFormatter(item.value, formatter.formatterCfg)
-              const name = isEmpty(formatter.chartShowName)
-                ? formatter.name
+                  : valueFormatter(
+                      item.value,
+                      formatter?.formatterCfg ?? tooltipAttr.tooltipFormatter
+                    )
+              const name = isEmpty(formatter?.chartShowName)
+                ? formatter?.name ?? item.name
                 : formatter.chartShowName
               result.push({ ...item, name, value })
             })
             head.dynamicTooltipValue?.forEach(item => {
-              const formatter = formatterMap[item.fieldId]
-              if (formatter) {
+              const formatter = getSeriesTooltipFormatter(
+                formatterMap,
+                item.fieldId,
+                chart.extTooltip
+              )
+              if (formatter && isSeriesTooltipFormatterShown(formatterMap, item.fieldId)) {
                 const value =
                   item.value === null || item.value === undefined
                     ? ''
