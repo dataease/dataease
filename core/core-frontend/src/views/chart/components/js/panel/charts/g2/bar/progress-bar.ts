@@ -21,7 +21,6 @@ import {
   TOOLTIP_ITEM_TPL,
   TOOLTIP_TITLE_TPL
 } from '@/views/chart/components/js/panel/common/common_antv'
-import { DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { HorizontalStackBar } from '@/views/chart/components/js/panel/charts/g2/bar/stack-horizontal-bar'
 
@@ -218,18 +217,20 @@ export class ProgressBar extends HorizontalStackBar {
     const { children } = superOptions
     children[0].encode.color = color1[0]
     children[1].encode.color = color1[1]
-    let barWidthRatio
-    const _v = basicStyle.columnWidthRatio ?? DEFAULT_BASIC_STYLE.columnWidthRatio
-    if (_v >= 1 && _v <= 100) {
-      barWidthRatio = _v / 100.0
-    } else if (_v < 1) {
-      barWidthRatio = 1 / 100.0
-    } else if (_v > 100) {
-      barWidthRatio = 1
-    }
-    if (barWidthRatio) {
-      children[0].style = { ...children[0].style, columnWidthRatio: barWidthRatio }
-      children[1].style = { ...children[1].style, columnWidthRatio: barWidthRatio }
+    const columnWidthRatio = this.getColumnWidthRatio(basicStyle)
+    const columnPadding = this.getColumnPadding(columnWidthRatio)
+    const styleColumnWidthRatio = this.getStyleColumnWidthRatio(columnPadding)
+    if (styleColumnWidthRatio) {
+      children[0].style = { ...children[0].style, columnWidthRatio: styleColumnWidthRatio }
+      children[1].scale = {
+        ...children[1].scale,
+        x: {
+          ...(children[1].scale?.x || {}),
+          padding: columnPadding,
+          paddingInner: columnPadding
+        }
+      }
+      children[1].style = { ...children[1].style, columnWidthRatio: styleColumnWidthRatio }
     }
     return superOptions
   }

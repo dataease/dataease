@@ -40,6 +40,7 @@ import {
   isSeriesTooltipFormatterShown,
   isTooltipItemShown,
   renderGroupedTooltipItems,
+  ChildSpec,
   tooltipCss,
   tooltipMaxHeight,
   Transform,
@@ -50,6 +51,8 @@ import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 
 const { t } = useI18n()
 const DEFAULT_DATA: any[] = []
+const FULL_COLUMN_WIDTH_PADDING = 0.01
+const PERCENTAGE_FULL_COLUMN_WIDTH_PADDING = 0.002
 
 /**
  * 柱状图
@@ -268,7 +271,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
             const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)
             let tooltipItems = originalItems
             if (tooltipAttr.seriesTooltipFormatter?.length) {
-              // 只隐藏明确配置为不展示的字段，避免过期 formatter 漏掉新指标。
+              // 只隐藏明确配置为不展示的字段，避免过期 formatter 漏掉新指标
               tooltipItems = originalItems.filter(item =>
                 isTooltipItemShown(formatterMap, item, 'yAxis')
               )
@@ -347,7 +350,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
         colors.push(color ? color : hexColorToRGBA(ele, basicStyle.alpha))
       })
     }
-    const scale = {
+    const scale: Record<string, any> = {
       color: {
         range: colors
       },
@@ -387,19 +390,17 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
         radius: 0
       }
     }
-    let columnWidthRatio
-    const _v = basicStyle.columnWidthRatio ?? DEFAULT_BASIC_STYLE.columnWidthRatio
-    if (_v >= 1 && _v <= 100) {
-      columnWidthRatio = _v / 100.0
-    } else if (_v < 1) {
-      columnWidthRatio = 1 / 100.0
-    } else if (_v > 100) {
-      columnWidthRatio = 1
-    }
+    const columnWidthRatio = this.getColumnWidthRatio(basicStyle)
+    const columnPadding = this.getColumnPadding(columnWidthRatio)
+    let transform = children[0].transform
     if (columnWidthRatio) {
+      // 100% 时保留极小 band 间距，避免 transpose 条形图贴边
+      scale.x.padding = columnPadding
+      scale.x.paddingInner = columnPadding
+      transform = this.configDodgePadding(transform, columnPadding)
       style = {
         ...style,
-        columnWidthRatio
+        columnWidthRatio: this.getStyleColumnWidthRatio(columnPadding)
       }
     }
     return {
@@ -408,11 +409,55 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
         {
           ...children[0],
           scale,
+          transform,
           style
         },
         ...children.slice(1)
       ]
     }
+  }
+
+  protected getColumnWidthRatio(basicStyle: DeepPartial<ChartBasicStyle>): number {
+    // 兼容历史异常配置，保持样式面板 1-100% 的有效范围
+    const value = basicStyle.columnWidthRatio ?? DEFAULT_BASIC_STYLE.columnWidthRatio
+    if (value >= 1 && value <= 100) {
+      return value / 100.0
+    }
+    if (value < 1) {
+      return 1 / 100.0
+    }
+    return 1
+  }
+
+  protected getColumnPadding(columnWidthRatio: number): number {
+    return Math.max(1 - columnWidthRatio, this.getFullColumnWidthPadding())
+  }
+
+  protected getFullColumnWidthPadding(): number {
+    if (this.name.startsWith('percentage-bar-stack')) {
+      return PERCENTAGE_FULL_COLUMN_WIDTH_PADDING
+    }
+    return FULL_COLUMN_WIDTH_PADDING
+  }
+
+  protected getStyleColumnWidthRatio(columnPadding: number): number {
+    return 1 - columnPadding
+  }
+
+  protected configDodgePadding(
+    transforms: ChildSpec['transform'],
+    padding: number
+  ): ChildSpec['transform'] {
+    if (!transforms?.length) {
+      return transforms
+    }
+    if (padding > this.getFullColumnWidthPadding()) {
+      return transforms
+    }
+    // dodgeX 会生成 series band，单独控制多指标柱之间的组内间距
+    return transforms.map(transform =>
+      transform.type === 'dodgeX' ? { ...transform, padding } : transform
+    )
   }
 
   protected configLegend(chart: Chart, options: ViewSpec): ViewSpec {

@@ -202,10 +202,8 @@ export class PercentageStackBar extends HorizontalStackBar {
 
   constructor(name = 'percentage-bar-stack-horizontal') {
     super(name)
-    this.intervalOptions.encode = {
-      ...this.intervalOptions.encode,
-      series: d => d.group
-    }
+    // 百分比堆叠没有分组槽位，移除 series band，避免默认 series padding 放大条间距
+    delete this.intervalOptions.encode.series
     this.intervalOptions.transform = [{ type: 'stackY' }, { type: 'normalizeY' }]
     this.axis = [...BAR_AXIS_TYPE, 'extStack']
   }

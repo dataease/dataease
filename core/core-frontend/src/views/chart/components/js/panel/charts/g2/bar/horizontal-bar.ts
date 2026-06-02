@@ -22,7 +22,6 @@ import {
   setGradientColor
 } from '@/views/chart/components/js/panel/common/common_antv'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
-import { DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'
 import { defaultsDeep } from 'lodash-es'
 
 const { t } = useI18n()
@@ -85,19 +84,12 @@ export class HorizontalBar extends Bar {
       ...(basicStyle.radiusColumnBar !== 'topRoundAngle' &&
         basicStyle.radiusColumnBar !== 'roundAngle' && { radius: 0 })
     } as any
-    let columnWidthRatio: number | undefined
-    const _v = basicStyle.columnWidthRatio ?? DEFAULT_BASIC_STYLE.columnWidthRatio
-    if (_v >= 1 && _v <= 100) {
-      columnWidthRatio = _v / 100.0
-    } else if (_v < 1) {
-      columnWidthRatio = 1 / 100.0
-    } else if (_v > 100) {
-      columnWidthRatio = 1
-    }
+    const columnWidthRatio = this.getColumnWidthRatio(basicStyle)
+    const columnPadding = this.getColumnPadding(columnWidthRatio)
     if (columnWidthRatio) {
       style = {
         ...style,
-        columnWidthRatio: columnWidthRatio
+        columnWidthRatio: this.getStyleColumnWidthRatio(columnPadding)
       }
     }
     if (
@@ -110,6 +102,13 @@ export class HorizontalBar extends Bar {
         paddingInner: 0.01
       }
     }
+    // 横向条形图同样通过 x band 控制分类宽度，需要同步外层和 dodgeX 组内间距
+    children[0].scale.x = {
+      ...(children[0].scale.x || {}),
+      padding: columnPadding,
+      paddingInner: columnPadding
+    }
+    children[0].transform = this.configDodgePadding(children[0].transform, columnPadding)
     children[0].scale.color.range = colors
     children[0].scale.y.nice = true
     children[0].style = { ...children[0].style, ...style }
