@@ -106,13 +106,13 @@ public final class JdbcUrlSecurityPolicy {
         String normalizedUrl = canonicalize(jdbcUrl);
         String normalizedExtraParams = canonicalize(extraParams);
         String expectedPrefix = JDBC_PREFIXES.get(normalizedType);
-        if (StringUtils.isBlank(expectedPrefix) || !normalizedUrl.startsWith(expectedPrefix)) {
+        if (StringUtils.isBlank(expectedPrefix) || !startsWithIgnoreCase(normalizedUrl, expectedPrefix)) {
             DEException.throwException("Illegal jdbcUrl: " + jdbcUrl);
         }
         Set<String> dangerousFragments = new LinkedHashSet<>(COMMON_DANGEROUS_FRAGMENTS);
         dangerousFragments.addAll(TYPE_DANGEROUS_FRAGMENTS.getOrDefault(normalizedType, Set.of()));
         for (String fragment : dangerousFragments) {
-            if (normalizedUrl.contains(fragment) || normalizedExtraParams.contains(fragment)) {
+            if (containsIgnoreCase(normalizedUrl, fragment) || containsIgnoreCase(normalizedExtraParams, fragment)) {
                 DEException.throwException("Illegal parameter: " + fragment);
             }
         }
@@ -166,10 +166,27 @@ public final class JdbcUrlSecurityPolicy {
         }
         normalized = Normalizer.normalize(normalized, Normalizer.Form.NFKC);
         normalized = normalized.replace("\\", "");
-        return normalized.toLowerCase(Locale.ROOT);
+        return normalized;
     }
 
     private static String normalizeType(String type) {
         return StringUtils.defaultString(type).toLowerCase(Locale.ROOT);
+    }
+
+    private static boolean startsWithIgnoreCase(String value, String prefix) {
+        return StringUtils.length(value) >= StringUtils.length(prefix)
+                && value.regionMatches(true, 0, prefix, 0, prefix.length());
+    }
+
+    private static boolean containsIgnoreCase(String value, String fragment) {
+        if (StringUtils.isEmpty(value) || StringUtils.isEmpty(fragment) || fragment.length() > value.length()) {
+            return false;
+        }
+        for (int i = 0; i <= value.length() - fragment.length(); i++) {
+            if (value.regionMatches(true, i, fragment, 0, fragment.length())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
