@@ -9,6 +9,7 @@ import io.dataease.font.dao.auto.mapper.CoreFontMapper;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.FileUtils;
 import io.dataease.utils.IDUtils;
+import io.dataease.utils.LogUtil;
 import jakarta.annotation.Resource;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,12 +24,18 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.awt.*;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 @Component
 public class FontManage {
+
+    private static final Pattern SAFE_FONT_FILE_NAME = Pattern.compile("^[A-Za-z0-9._-]+\\.ttf$", Pattern.CASE_INSENSITIVE);
 
     @Value("${dataease.path.font:/opt/dataease2.0/data/font/}")
     private String path;
@@ -57,6 +64,7 @@ public class FontManage {
         if (CollectionUtils.isNotEmpty(coreFontMapper.selectList(queryWrapper))) {
             DEException.throwException("存在重名字库");
         }
+        validateUploadedFont(fontDto.getFileTransName());
         fontDto.setId(IDUtils.snowID());
         CoreFont coreFont = new CoreFont();
         BeanUtils.copyBean(coreFont, fontDto);
@@ -77,6 +85,7 @@ public class FontManage {
             record.setIsDefault(false);
             coreFontMapper.update(record, updateWrapper);
         }
+        validateUploadedFont(fontDto.getFileTransName());
         CoreFont coreFont = new CoreFont();
         BeanUtils.copyBean(coreFont, fontDto);
         coreFont.setUpdateTime(System.currentTimeMillis());
@@ -89,7 +98,7 @@ public class FontManage {
         if (coreFont != null) {
             coreFontMapper.deleteById(id);
             if (StringUtils.isNotEmpty(coreFont.getFileTransName())) {
-                FileUtils.deleteFile(path + coreFont.getFileTransName());
+                deleteManagedFontFile(coreFont.getFileTransName());
             }
         }
 
@@ -109,6 +118,7 @@ public class FontManage {
     }
 
     public void download(String file, HttpServletResponse response) {
+        validateFontFileName(file);
 
         QueryWrapper<CoreFont> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("file_trans_name", file);
@@ -117,11 +127,12 @@ public class FontManage {
             DEException.throwException("不存在的字库文件");
         }
 
+        Path filePath = resolveFontPath(coreFonts.get(0).getFileTransName());
         try {
             response.setContentType("application/x-download");
             response.setHeader("Content-Disposition", "attachment;filename=" + coreFonts.get(0).getFileTransName());
             try (ServletOutputStream out = response.getOutputStream();
-                 InputStream stream = new FileInputStream(path + coreFonts.get(0).getFileTransName())) {
+                 InputStream stream = Files.newInputStream(filePath)) {
                 byte buff[] = new byte[1024];
                 int length;
                 while ((length = stream.read(buff)) > 0) {
@@ -151,17 +162,18 @@ public class FontManage {
         FontDto fontDto = new FontDto();
         try {
             String filename = file.getOriginalFilename();
+            FileUtils.validateUploadFilename(filename);
             if (StringUtils.isEmpty(filename) || !filename.toLowerCase().endsWith(".ttf")) {
                 DEException.throwException("非法格式的文件！");
             }
-            String suffix = filename.substring(filename.lastIndexOf(".") + 1);
-            String filePath = path + fileNameUUID + "." + suffix;
-            File f = new File(filePath);
-            FileOutputStream fileOutputStream = new FileOutputStream(f);
-            fileOutputStream.write(file.getBytes());
-            fileOutputStream.flush();
-            fileOutputStream.close();
-            fontDto.setFileTransName(fileNameUUID + "." + suffix);
+            String suffix = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
+            String fileTransName = fileNameUUID + "." + suffix;
+            Path filePath = resolveFontPath(fileTransName);
+            try (FileOutputStream fileOutputStream = new FileOutputStream(filePath.toFile())) {
+                fileOutputStream.write(file.getBytes());
+                fileOutputStream.flush();
+            }
+            fontDto.setFileTransName(fileTransName);
 
             long length = file.getSize();
             String unit = "MB";
@@ -177,7 +189,7 @@ public class FontManage {
                 unit = "KB";
                 size = Double.valueOf(String.format("%.2f", (double) length / 1024));
             }
-            Font font = Font.createFont(Font.TRUETYPE_FONT, new File(filePath));
+            Font font = Font.createFont(Font.TRUETYPE_FONT, filePath.toFile());
             fontDto.setSize(size);
             fontDto.setSizeType(unit);
             fontDto.setName(font.getFontName());
@@ -185,6 +197,60 @@ public class FontManage {
             DEException.throwException(e);
         }
         return fontDto;
+    }
+
+    private void validateUploadedFont(String fileTransName) {
+        if (StringUtils.isEmpty(fileTransName)) {
+            return;
+        }
+        Path filePath = resolveFontPath(fileTransName);
+        if (!Files.isRegularFile(filePath)) {
+            DEException.throwException("不存在的字库文件");
+        }
+    }
+
+    private void deleteManagedFontFile(String fileTransName) {
+        if (!isSafeFontFileName(fileTransName)) {
+            LogUtil.warn("Skip deleting unmanaged font file: " + fileTransName);
+            return;
+        }
+        Path filePath = resolveFontPath(fileTransName);
+        try {
+            Files.deleteIfExists(filePath);
+        } catch (IOException e) {
+            DEException.throwException(e);
+        }
+    }
+
+    private Path resolveFontPath(String fileTransName) {
+        validateFontFileName(fileTransName);
+        Path fontBasePath = getFontBasePath();
+        Path targetPath = fontBasePath.resolve(fileTransName).normalize();
+        if (!targetPath.startsWith(fontBasePath)) {
+            DEException.throwException("非法字体文件路径");
+        }
+        return targetPath;
+    }
+
+    private Path getFontBasePath() {
+        try {
+            Path fontBasePath = Paths.get(path).toAbsolutePath().normalize();
+            Files.createDirectories(fontBasePath);
+            return fontBasePath.toRealPath();
+        } catch (IOException e) {
+            DEException.throwException(e);
+            return null;
+        }
+    }
+
+    private void validateFontFileName(String fileTransName) {
+        if (!isSafeFontFileName(fileTransName)) {
+            DEException.throwException("非法字体文件名");
+        }
+    }
+
+    private boolean isSafeFontFileName(String fileTransName) {
+        return StringUtils.isNotBlank(fileTransName) && SAFE_FONT_FILE_NAME.matcher(fileTransName).matches();
     }
 
 }
