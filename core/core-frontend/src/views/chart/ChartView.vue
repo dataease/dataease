@@ -12,6 +12,7 @@ import { debounce } from 'lodash-es'
 import { XpackComponent } from '@/components/plugin'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { useLoading } from '@/hooks/web/useLoading'
+import ExportCenterWindow from '@/pages/panel/ExportCenterWindow.vue'
 
 const { close } = useLoading()
 const currentComponent = shallowRef()
@@ -109,4 +110,5 @@ useEmitt({
   <div :style="iframeStyle">
     <component :is="currentComponent" :jsname="dataFillingPath" v-if="showComponent"></component>
   </div>
+  <ExportCenterWindow></ExportCenterWindow>
 </template>

@@ -2,6 +2,7 @@
 import { shallowRef, defineAsyncComponent, ref, onMounted, nextTick } from 'vue'
 import { propTypes } from '@/utils/propTypes'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import ExportCenterWindow from '@/pages/panel/ExportCenterWindow.vue'
 
 const VisualizationEditor = defineAsyncComponent(
   () => import('@/views/data-visualization/index.vue')
@@ -97,4 +98,5 @@ onMounted(() => {
   <template v-else>
     <component :is="currentComponent" :jsname="dataFillingPath"></component>
   </template>
+  <ExportCenterWindow></ExportCenterWindow>
 </template>
