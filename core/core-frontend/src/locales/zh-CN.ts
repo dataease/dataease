@@ -4223,6 +4223,7 @@ export default {
       show_water_mask: '显示水印',
       format: '格式',
       view_data: '图表数据',
+      all_data: '全部数据',
       pixel: '仪表板分辨率',
       reci_setting: '接收设置',
       retrying: '失败重试',
