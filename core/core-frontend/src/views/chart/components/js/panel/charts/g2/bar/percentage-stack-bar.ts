@@ -200,10 +200,8 @@ export class PercentageStackBar extends GroupStackBar {
 
   constructor(name = 'percentage-bar-stack') {
     super(name)
-    this.intervalOptions.encode = {
-      ...this.intervalOptions.encode,
-      series: d => d.group
-    }
+    // 百分比堆叠没有分组槽位，移除 series band，避免默认 series padding 放大柱间距
+    delete this.intervalOptions.encode.series
     // 百分比堆叠与普通堆叠保持同向层级，避免 tooltip 顺序和视觉层级相反
     this.intervalOptions.transform = [{ type: 'stackY', reverse: true }, { type: 'normalizeY' }]
     this.axis = [...BAR_AXIS_TYPE, 'extStack']
