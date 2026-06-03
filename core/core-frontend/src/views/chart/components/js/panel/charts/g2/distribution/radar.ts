@@ -103,17 +103,23 @@ export class Radar extends G2ChartView {
     const newChart = new G2Chart({ container })
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
-    newChart.on('point:click', action)
-    if (options.children[0].labels?.length) {
-      newChart.on('label:click', e => {
-        action({
-          x: e.x,
-          y: e.y,
-          data: {
-            data: e.target.attrs.data
-          }
-        })
+    const handleClick = e => {
+      const pointData = e?.data?.data
+      if (!pointData) {
+        return
+      }
+      action({
+        ...e,
+        x: e.x,
+        y: e.y,
+        data: {
+          data: pointData
+        }
       })
+    }
+    newChart.on('point:click', handleClick)
+    if (options.children[0].labels?.length) {
+      newChart.on('label:click', handleClick)
     }
     return newChart
   }
@@ -182,8 +188,12 @@ export class Radar extends G2ChartView {
 
     if (radarShowPoint) {
       options.children.push({
+        zIndex: 2,
         type: 'point',
         encode: {
+          x: 'field',
+          y: 'value',
+          color: 'category',
           shape: 'point',
           size: radarPointSize
         },
