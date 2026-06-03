@@ -677,6 +677,7 @@ onBeforeUnmount(() => {
 .component {
   width: 100% !important;
   height: 100% !important;
+  overflow: hidden;
 }
 
 .svg-background {
