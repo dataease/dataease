@@ -72,10 +72,6 @@ public interface RoleApi {
     void delete(@PathVariable("rid") Long rid);
 
 
-    @Operation(summary = "复制", hidden = true)
-    @PostMapping("/copy")
-    void copy(@RequestBody RoleCopyRequest request);
-
     @Operation(summary = "查询组织内角色")
     @PostMapping("/byCurOrg")
     List<RoleVO> byCurOrg(@RequestBody KeywordRequest request);

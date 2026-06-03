@@ -122,8 +122,8 @@ public interface UserApi {
     CurUserVO info();
 
     @Operation(summary = "查询当前组织内用户")
-    @PostMapping("/byCurOrg")
-    List<UserItem> byCurOrg(@RequestBody KeywordRequest request);
+    @GetMapping("/byCurOrg")
+    List<UserOptionVO> byCurOrg();
 
     @Operation(summary = "用户数量", hidden = true)
     @Hidden
@@ -181,9 +181,7 @@ public interface UserApi {
     @GetMapping("/queryByAccount/{account}")
     CurUserVO queryByAccount(@PathVariable("account") String account);
 
-    @Hidden
-    @PostMapping("/all")
-    List<UserItem> allUser(@RequestBody KeywordRequest request);
+
 
     @Hidden
     @PostMapping("/admin/bind")
@@ -213,9 +211,9 @@ public interface UserApi {
     @GetMapping("/defaultOrgAdmin")
     boolean defaultOrgAdmin();
 
-    @Hidden
+    /*@Hidden
     @PostMapping("/subOrgUser")
-    List<UserItem> subOrgUser(@RequestBody List<Long> oidList);
+    List<UserItem> subOrgUser(@RequestBody List<Long> oidList);*/
 
     List<Long> getRecipientUserIds(UserReciRequest request);
 

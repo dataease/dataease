@@ -1,13 +1,14 @@
 import request from '@/config/axios'
 
-export const queryUserApi = data => request.post({ url: '/user/byCurOrg', data })
-export const queryUserOptionsApi = () => request.get({ url: '/user/query' })
+export const queryUserApi = (isSystem?: boolean) =>
+  isSystem ? request.get({ url: '/user/query' }) : request.get({ url: '/user/byCurOrg' })
+
 export const queryRoleApi = data => request.post({ url: '/role/byCurOrg', data })
 
-export const resourceTreeApi = (flag: string, isSystem?: boolean) => {
+export const resourceTreeApi = (flag: string, system?: boolean) => {
   const param = {
     flag,
-    isSystem: !!isSystem
+    system: !!system
   }
   return request.post({ url: '/auth/busiResource', data: param })
 }

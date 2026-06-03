@@ -53,7 +53,7 @@ public interface OrgApi {
     @DePermit({"m:read", "#p0+':manage'"})
     void delete(@PathVariable("id") Long id);
 
-    @Operation(summary = "查询权限内组织树")
+    /*@Operation(summary = "查询权限内组织树")
     @PostMapping("/mounted")
     List<MountedVO> mounted(@RequestBody KeywordRequest request);
 
@@ -64,12 +64,12 @@ public interface OrgApi {
     @Operation(summary = "", hidden = true)
     @GetMapping("/resourceExist/{oid}")
     boolean resourceExist(@PathVariable("oid") Long oid);
-
+*/
     @Operation(hidden = true)
     @GetMapping("/detail/{oid}")
     OrgDetailVO detail(@PathVariable("oid") Long oid);
 
-    @Operation(hidden = true)
+   /* @Operation(hidden = true)
     @GetMapping("/subOrgs")
-    List<String> subOrgs();
+    List<String> subOrgs();*/
 }

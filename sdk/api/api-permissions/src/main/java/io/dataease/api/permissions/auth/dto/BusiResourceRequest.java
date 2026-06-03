@@ -16,5 +16,5 @@ public class BusiResourceRequest implements Serializable {
     private String flag;
 
     @Schema(description = "是否系统级查询")
-    private boolean isSystem;
+    private boolean system;
 }

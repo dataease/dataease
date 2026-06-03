@@ -2,6 +2,7 @@ package io.dataease.api.permissions.user.vo;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import io.dataease.api.permissions.user.bo.UserOrgItem;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -34,4 +35,6 @@ public class UserGridVO {
     private String sysVariable;
     @Schema(description = "用户来源")
     private Integer origin;
+    @Schema(description = "组织")
+    private UserOrgItem orgItem;
 }
