@@ -12,8 +12,6 @@ export const resourceTreeApi = (flag: string, isSystem?: boolean) => {
   return request.post({ url: '/auth/busiResource', data: param })
 }
 
-export const menuTreeApi = () => request.get({ url: '/auth/menuResource' })
-
 export const subjectPermissionApi = data => request.post({ url: '/auth/subjectPermission', data })
 
 export const subjectPermissionSaveApi = data =>

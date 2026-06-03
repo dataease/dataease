@@ -1,6 +1,7 @@
 package io.dataease.utils;
 
 import io.dataease.constant.SortConstants;
+import io.dataease.i18n.Translator;
 import io.dataease.model.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -17,7 +18,7 @@ public class TreeUtils {
     public final static String DEFAULT_ROOT = "root";
     public final static String SEPARATOR = "-de-";
 
-    private final static String I18N_PREFIX = "i18n_auth_menu.";
+    private final static String I18N_PREFIX = "i18n_menu.";
 
     public static <T extends TreeResultModel, R extends TreeBaseModel> List<T> mergeTree(List<R> list, Class<T> tClass, boolean appendI18nPrefix) {
         AtomicBoolean rootExist = new AtomicBoolean(false);
@@ -68,7 +69,8 @@ public class TreeUtils {
         for (int i = 0; i < roots.size(); i++) {
             TreeModel node = roots.get(i);
             if (appendI18nPrefix) {
-                node.getData().setName(I18N_PREFIX + node.getName());
+                String i18nName = I18N_PREFIX + node.getName();
+                node.getData().setName(Translator.get(i18nName));
             }
             T instance = null;
             try {

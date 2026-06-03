@@ -29,10 +29,10 @@ public interface AuthApi {
     @PostMapping("/busiResource")
     List<ResourceVO> busiResource(@RequestBody BusiResourceRequest request);
 
-    @Operation(summary = "查询菜单树")
+    /*@Operation(summary = "查询菜单树")
     @ApiOperationSupport(order = 2)
     @GetMapping("/menuResource")
-    List<ResourceVO> menuResource();
+    List<ResourceVO> menuResource();*/
 
     @Operation(summary = "查询对象已授权资源")
     @ApiOperationSupport(order = 3)
