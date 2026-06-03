@@ -16,6 +16,22 @@ export const reRenderAll = (oldArr, newArr) => {
   })
 }
 
+export const checkFilterRemove = componentTarget => {
+  if (componentTarget?.component === 'VQuery') {
+    reRenderAfterDelete(componentTarget.propValue)
+  } else if (componentTarget.component === 'Group') {
+    componentTarget.propValue.forEach(groupItem => {
+      checkFilterRemove(groupItem)
+    })
+  } else if (componentTarget.component === 'DeTabs') {
+    componentTarget.propValue.forEach(tabItem => {
+      tabItem.componentData?.forEach(tabComponent => {
+        checkFilterRemove(tabComponent)
+      })
+    })
+  }
+}
+
 export const reRenderAfterDelete = oldArr => {
   const emitterList = (oldArr || []).reduce((pre, next) => {
     const keyList = getKeyList(next)
