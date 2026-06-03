@@ -1,4 +1,5 @@
 import { useI18n } from '@/hooks/web/useI18n'
+import type { G2Spec } from '@antv/g2'
 
 const { t } = useI18n()
 
@@ -60,4 +61,20 @@ export const PIE_AXIS_CONFIG: AxisConfig = {
     type: 'q',
     limit: 1
   }
+}
+
+export const configSingleSectorScale = (options: G2Spec, data: any[]): G2Spec => {
+  if (data.length !== 1) {
+    return options
+  }
+  options.scale = {
+    ...options.scale,
+    x: {
+      ...options.scale?.x,
+      padding: 0,
+      paddingInner: 0,
+      paddingOuter: 0
+    }
+  }
+  return options
 }

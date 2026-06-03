@@ -11,6 +11,7 @@ import {
   PIE_EDITOR_PROPERTY,
   PIE_EDITOR_PROPERTY_INNER
 } from '@/views/chart/components/js/panel/charts/g2plot/pie/common'
+import { configSingleSectorScale } from './common'
 import {
   getTooltipSeriesTotalMap,
   handleChartDashboardHidden,
@@ -141,8 +142,9 @@ export class Rose extends G2ChartView {
       }
       data.push(initOtherItem)
     }
-    options.coordinate.outerRadius = basicStyle.radius / 100
-    return options
+    const singleSectorOptions = configSingleSectorScale(options, data)
+    singleSectorOptions.coordinate.outerRadius = basicStyle.radius / 100
+    return singleSectorOptions
   }
 
   protected configColor(chart: Chart, options: G2Spec): G2Spec {
