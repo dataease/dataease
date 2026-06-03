@@ -341,11 +341,10 @@ export class Radar extends G2ChartView {
     const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
     const tooltipAttr = customAttr.tooltip
     const yAxis = chart.yAxis
+    const lineMark = options.children[0]
     if (!tooltipAttr.show) {
-      return {
-        ...options,
-        tooltip: false
-      }
+      defaultsDeep(lineMark, { tooltip: false })
+      return options
     }
     const formatterMap = tooltipAttr.seriesTooltipFormatter
       ?.filter(i => i.show)
@@ -362,7 +361,6 @@ export class Radar extends G2ChartView {
       g2TooltipWrapper.style.zIndex = '9999'
       document.body.appendChild(g2TooltipWrapper)
     }
-    const lineMark = options.children[0]
     const tooltipOptions: G2Spec = {
       tooltip: d => d,
       interaction: {
