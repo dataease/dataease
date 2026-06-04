@@ -990,17 +990,6 @@ const iconSize = computed<string>(() => {
 })
 
 /**
- * 保证标题容器高度最小高度不低于图标高度
- */
-const titleContainerMinHeight = computed<string>(() => {
-  if (['picture-group', 'rich-text'].includes(element.value.innerType)) {
-    return '0px'
-  } else if (!titleShow.value) {
-    return 16 * scale.value + 4 + 'px'
-  }
-  return 16 * scale.value + 'px'
-})
-/**
  * 修改透明度
  * 边框透明度为0时会是存色，顾配置低透明度
  * @param {boolean} isBorder 是否为边框
@@ -1160,57 +1149,60 @@ const clearG2Tooltip = () => {
         />
       </template>
       <transition name="fade">
-        <div
-          class="icons-container"
-          :class="{ 'is-editing': titleEditStatus }"
-          :style="titleIconStyle"
-          v-show="showActionIcons"
-        >
-          <el-tooltip :effect="toolTip" placement="top" v-if="state.title_remark.show">
-            <template #content>
-              <div
-                :style="{
-                  maxWidth: titleTooltipWidth,
-                  wordBreak: 'break-all',
-                  wordWrap: 'break-word',
-                  whiteSpace: 'pre-wrap'
-                }"
-                v-html="state.title_remark.remark"
-              ></div>
-            </template>
-            <el-icon :size="iconSize" class="inner-icon">
-              <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
-            </el-icon>
-          </el-tooltip>
-          <el-tooltip :effect="toolTip" placement="top" content="已设置联动" v-if="hasLinkIcon">
-            <el-icon :size="iconSize" class="inner-icon">
-              <Icon name="icon_link-record_outlined"
-                ><icon_linkRecord_outlined class="svg-icon"
-              /></Icon>
-            </el-icon>
-          </el-tooltip>
-          <el-tooltip
-            :effect="toolTip"
-            placement="top"
-            :content="t('visualization.jump_set_tips')"
-            v-if="hasJumpIcon"
+        <div v-show="showActionIcons" class="icons-container-out">
+          <div
+            class="icons-container"
+            :class="{ 'is-editing': titleEditStatus }"
+            :style="titleIconStyle"
           >
-            <el-icon :size="iconSize" class="inner-icon">
-              <Icon name="icon_viewinchat_outlined"
-                ><icon_viewinchat_outlined class="svg-icon"
-              /></Icon>
-            </el-icon>
-          </el-tooltip>
-          <el-tooltip
-            :effect="toolTip"
-            placement="top"
-            :content="t('visualization.drill_set_tips')"
-            v-if="hasDrillIcon"
-          >
-            <el-icon :size="iconSize" class="inner-icon">
-              <Icon name="icon_drilling_outlined"><icon_drilling_outlined class="svg-icon" /></Icon>
-            </el-icon>
-          </el-tooltip>
+            <el-tooltip :effect="toolTip" placement="top" v-if="state.title_remark.show">
+              <template #content>
+                <div
+                  :style="{
+                    maxWidth: titleTooltipWidth,
+                    wordBreak: 'break-all',
+                    wordWrap: 'break-word',
+                    whiteSpace: 'pre-wrap'
+                  }"
+                  v-html="state.title_remark.remark"
+                ></div>
+              </template>
+              <el-icon :size="iconSize" class="inner-icon">
+                <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
+              </el-icon>
+            </el-tooltip>
+            <el-tooltip :effect="toolTip" placement="top" content="已设置联动" v-if="hasLinkIcon">
+              <el-icon :size="iconSize" class="inner-icon">
+                <Icon name="icon_link-record_outlined"
+                  ><icon_linkRecord_outlined class="svg-icon"
+                /></Icon>
+              </el-icon>
+            </el-tooltip>
+            <el-tooltip
+              :effect="toolTip"
+              placement="top"
+              :content="t('visualization.jump_set_tips')"
+              v-if="hasJumpIcon"
+            >
+              <el-icon :size="iconSize" class="inner-icon">
+                <Icon name="icon_viewinchat_outlined"
+                  ><icon_viewinchat_outlined class="svg-icon"
+                /></Icon>
+              </el-icon>
+            </el-tooltip>
+            <el-tooltip
+              :effect="toolTip"
+              placement="top"
+              :content="t('visualization.drill_set_tips')"
+              v-if="hasDrillIcon"
+            >
+              <el-icon :size="iconSize" class="inner-icon">
+                <Icon name="icon_drilling_outlined"
+                  ><icon_drilling_outlined class="svg-icon"
+                /></Icon>
+              </el-icon>
+            </el-tooltip>
+          </div>
         </div>
       </transition>
     </div>
@@ -1354,25 +1346,30 @@ const clearG2Tooltip = () => {
 
   gap: 8px;
 
-  .icons-container {
-    display: inline-flex;
-    flex-direction: row;
-    align-items: center;
-    flex-wrap: nowrap;
-    gap: 8px;
+  .icons-container-out {
+    position: relative;
+    .icons-container {
+      position: absolute;
+      left: 0;
+      display: inline-flex;
+      flex-direction: row;
+      align-items: center;
+      flex-wrap: nowrap;
+      gap: 8px;
 
-    color: #646a73;
+      color: #646a73;
 
-    &.icons-container__dark {
-      color: #a6a6a6;
-    }
+      &.icons-container__dark {
+        color: #a6a6a6;
+      }
 
-    &.is-editing {
-      gap: 6px;
-    }
+      &.is-editing {
+        gap: 6px;
+      }
 
-    .inner-icon {
-      cursor: pointer;
+      .inner-icon {
+        cursor: pointer;
+      }
     }
   }
 }
