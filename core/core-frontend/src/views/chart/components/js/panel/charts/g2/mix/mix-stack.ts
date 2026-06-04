@@ -22,7 +22,11 @@ import {
   TOOLTIP_ITEM_TPL,
   TOOLTIP_TITLE_TPL
 } from '../../../common/common_antv'
-import { CHART_MIX_EDITOR_PROPERTY, CHART_MIX_EDITOR_PROPERTY_INNER } from './common'
+import {
+  CHART_MIX_EDITOR_PROPERTY,
+  CHART_MIX_EDITOR_PROPERTY_INNER,
+  configMixCustomLegend
+} from './common'
 import { registerSymbol, Symbols } from '@antv/g2/esm/utils/marker'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 import {
@@ -396,89 +400,10 @@ export class StackLineMix extends G2ChartView {
   }
 
   protected configLegend(chart: Chart, options: G2Spec): G2Spec {
-    const { legend } = parseJson(chart.customStyle)
-    if (!legend.show) {
-      return options
-    }
     const [intervalMark, lineMark] = options.children[0].children
     const leftRelations = intervalMark.scale.color.relations
     const rightRelations = lineMark.scale.color.relations
-    const unionRelations = [...leftRelations, ...rightRelations]
-    const legendMark = {
-      position: 'top',
-      type: 'legends',
-      key: 'legend',
-      scale: {
-        color: {
-          type: 'ordinal',
-          domain: [],
-          range: [],
-          relations: unionRelations
-        }
-      },
-      layout: {
-        justifyContent: 'center',
-        alignItems: 'center'
-      },
-      itemMarker: legend.icon,
-      itemMarkerSize: legend.size,
-      itemLabelFontSize: legend.fontSize,
-      itemLabelFill: legend.color,
-      itemLabelOpacity: 1,
-      itemLabelFillOpacity: 1
-    }
-    unionRelations.forEach(([key, value]) => {
-      legendMark.scale.color.domain.push(key)
-      legendMark.scale.color.range.push(value)
-    })
-    if (legend.hPosition === 'center') {
-      options.direction = 'col'
-      legendMark.maxRows = 1
-      if (legend.vPosition === 'top') {
-        legendMark.position = 'top'
-        options.ratio = [1, 20]
-        options.children.unshift(legendMark)
-      }
-      if (legend.vPosition === 'bottom') {
-        legendMark.position = 'bottom'
-        options.ratio = [20, 1]
-        options.children.push(legendMark)
-      }
-      return options
-    }
-    if (legend.vPosition === 'center') {
-      options.direction = 'row'
-      legendMark.maxCols = 1
-      if (legend.hPosition === 'left') {
-        legendMark.position = 'left'
-        options.ratio = [1, 20]
-        options.children.unshift(legendMark)
-      }
-      if (legend.hPosition === 'right') {
-        legendMark.position = 'right'
-        options.ratio = [20, 1]
-        options.children.push(legendMark)
-      }
-      return options
-    }
-    legendMark.maxRows = 1
-    if (legend.vPosition === 'top') {
-      legendMark.position = 'top'
-      options.ratio = [1, 20]
-      options.children.unshift(legendMark)
-    }
-    if (legend.vPosition === 'bottom') {
-      legendMark.position = 'bottom'
-      options.ratio = [20, 1]
-      options.children.push(legendMark)
-    }
-    if (legend.hPosition === 'left') {
-      legendMark.layout.justifyContent = 'flex-start'
-    }
-    if (legend.hPosition === 'right') {
-      legendMark.layout.justifyContent = 'flex-end'
-    }
-    return options
+    return configMixCustomLegend(chart, options, leftRelations, rightRelations)
   }
 
   protected configLabel(chart: Chart, options: G2Spec): G2Spec {
