@@ -698,6 +698,7 @@ export function getConditions(chart: Chart) {
 
 export function mappingColor(value, defaultColor, field, type, filedValueMap?, rowData?) {
   let color = null
+  let hitCondition = null;
   for (let i = 0; i < field.conditions.length; i++) {
     let flag = false
     const t = field.conditions[i]
@@ -759,6 +760,7 @@ export function mappingColor(value, defaultColor, field, type, filedValueMap?, r
         flag = true
       }
       if (flag) {
+        hitCondition = t
         break
       } else if (i === field.conditions.length - 1) {
         color = defaultColor
@@ -799,6 +801,7 @@ export function mappingColor(value, defaultColor, field, type, filedValueMap?, r
         flag = true
       }
       if (flag) {
+        hitCondition = t
         break
       } else if (i === field.conditions.length - 1) {
         color = defaultColor
@@ -843,13 +846,25 @@ export function mappingColor(value, defaultColor, field, type, filedValueMap?, r
         flag = true
       }
       if (flag) {
+        hitCondition = fc
         break
       } else if (i === field.conditions.length - 1) {
         color = defaultColor
       }
     }
   }
-  return color
+  if(hitCondition && hitCondition.target === 'custom'){
+    return {
+      targetFieldId: hitCondition.targetFieldId,
+      color
+    }
+  }else{
+    return {
+      targetFieldId: field.fieldId,
+      color
+    }
+  }
+
 }
 
 function getFieldValueMap(view) {
