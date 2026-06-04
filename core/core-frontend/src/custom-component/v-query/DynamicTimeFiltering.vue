@@ -6,7 +6,7 @@ import type { ManipulateType } from 'dayjs'
 import { getThisStart, getThisEnd, getLastStart, getAroundStart } from './time-format-dayjs'
 interface SelectConfig {
   intervalType: string
-  regularOrTrendsValue: Date
+  regularOrTrendsValue: string | Date | [Date, Date]
   regularOrTrends: string
   relativeToCurrent: string
   timeNum: number

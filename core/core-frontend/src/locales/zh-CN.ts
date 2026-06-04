@@ -2818,6 +2818,7 @@ export default {
     last_6_months: '最近 6 个 月',
     last_12_months: '最近 12 个 月',
     last_3_days: '最近 3 天',
+    last_month_full: '上月（月初至月末）',
     month_to_date: '月初至今',
     year_to_date: '年初至今',
     year_to_last_month_end: '年初至上月末',
