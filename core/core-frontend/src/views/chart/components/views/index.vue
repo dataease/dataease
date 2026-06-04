@@ -988,6 +988,18 @@ const marginBottom = computed<string | 0>(() => {
 const iconSize = computed<string>(() => {
   return 16 * scale.value + 'px'
 })
+
+/**
+ * 保证标题容器高度最小高度不低于图标高度
+ */
+const titleContainerMinHeight = computed<string>(() => {
+  if (['picture-group', 'rich-text'].includes(element.value.innerType)) {
+    return '0px'
+  } else if (!titleShow.value) {
+    return 16 * scale.value + 4 + 'px'
+  }
+  return 16 * scale.value + 'px'
+})
 /**
  * 修改透明度
  * 边框透明度为0时会是存色，顾配置低透明度
