@@ -99,12 +99,57 @@ export class GroupLineMix extends G2ChartView {
 
   EMPTY_MARKER = () => []
 
-  protected getLeftType(): string {
-    return 'line'
+  // 提取参与 y 轴域计算的有效数值，避免空值把轴域拉偏
+  protected getYAxisValues(data: Record<string, any>[]): number[] {
+    return data
+      .map(d => d.value)
+      .filter(value => value !== null && value !== undefined && value !== '')
+      .map(value => Number(value))
+      .filter(value => Number.isFinite(value))
   }
 
-  protected getRightType(): string {
-    return 'line'
+  // 生成接近自动轴刻度的可见轴域，供点线和辅助线共用
+  protected getNiceDomain(min: number, max: number): [number, number] {
+    const range = max - min
+    if (range <= 0) {
+      return [min, max]
+    }
+    const roughStep = range / 5
+    const magnitude = 10 ** Math.floor(Math.log10(roughStep))
+    const residual = roughStep / magnitude
+    let niceStep = magnitude
+    if (residual > 5) {
+      niceStep = 10 * magnitude
+    } else if (residual > 2) {
+      niceStep = 5 * magnitude
+    } else if (residual > 1) {
+      niceStep = 2 * magnitude
+    }
+    return [Math.floor(min / niceStep) * niceStep, Math.ceil(max / niceStep) * niceStep]
+  }
+
+  protected getYAxisDomain(data: Record<string, any>[]): [number, number] | undefined {
+    const values = this.getYAxisValues(data)
+    if (!values.length) {
+      return undefined
+    }
+    const min = Math.min(...values)
+    const max = Math.max(...values)
+    if (min === max) {
+      if (min === 0) {
+        return [0, 1]
+      }
+      const offset = Math.abs(min) * 0.05 || 1
+      return this.getNiceDomain(
+        min > 0 ? Math.max(0, min - offset) : min - offset,
+        max < 0 ? Math.min(0, max + offset) : max + offset
+      )
+    }
+    const offset = (max - min) * 0.05
+    return this.getNiceDomain(
+      min >= 0 ? Math.max(0, min - offset) : min - offset,
+      max <= 0 ? Math.min(0, max + offset) : max + offset
+    )
   }
 
   async drawChart(drawOptions: G2DrawOptions<G2Chart>): Promise<G2Chart> {
@@ -173,7 +218,9 @@ export class GroupLineMix extends G2ChartView {
               },
               scale: {
                 y: {
-                  key: 'left'
+                  key: 'left',
+                  nice: true,
+                  independent: true
                 }
               },
               axis: {
@@ -219,7 +266,9 @@ export class GroupLineMix extends G2ChartView {
               },
               scale: {
                 y: {
-                  key: 'right'
+                  key: 'right',
+                  nice: true,
+                  independent: true
                 }
               },
               axis: {
@@ -673,6 +722,7 @@ export class GroupLineMix extends G2ChartView {
     defaultsDeep(view, {
       scale: {
         x: {
+          range: [0, 1],
           compare: (a, b) => {
             return xAxisSort.indexOf(a) - xAxisSort.indexOf(b)
           }
@@ -760,6 +810,25 @@ export class GroupLineMix extends G2ChartView {
         }
       }
     })
+    // 自动轴下显式同步 line 和 point 的 y 轴域，避免独立 scale 导致点线错位
+    const leftDomain = this.getYAxisDomain(leftLineMark.data?.value || [])
+    if (leftDomain) {
+      const scaleYLeft = {
+        ...leftLineMark.scale.y,
+        domain: leftDomain
+      }
+      leftLineMark.scale.y = scaleYLeft
+      leftPointMark.scale.y = scaleYLeft
+    }
+    const rightDomain = this.getYAxisDomain(lineMark.data || [])
+    if (rightDomain) {
+      const scaleYRight = {
+        ...lineMark.scale.y,
+        domain: rightDomain
+      }
+      lineMark.scale.y = scaleYRight
+      pointMark.scale.y = scaleYRight
+    }
     if (yAxis.axisValue.auto === false) {
       const n = Math.max(2, yAxis.axisValue.splitCount)
       const scaleYLeft = {
@@ -859,18 +928,39 @@ export class GroupLineMix extends G2ChartView {
     const yAxisExtFormatterCfg =
       yAxisExt.axisLabelFormatter ?? DEFAULT_YAXIS_STYLE.axisLabelFormatter
     const view = options.children.find(c => c.key === 'chart')
+    const [leftLineMark, , rightLineMark] = view.children
     const randomAssistColorScale = this.randomString(6)
     splitLineData.forEach((lineData, index) => {
-      if (lineData.length) {
+      const assistLineScaleY = index === 0 ? leftLineMark.scale?.y : rightLineMark.scale?.y
+      // 辅助线只在对应轴当前可见轴域内显示，超出轴域时连同标签一起隐藏
+      const [domainStart, domainEnd] = assistLineScaleY?.domain || []
+      const domainMin = Number(domainStart)
+      const domainMax = Number(domainEnd)
+      const hasDomain = Number.isFinite(domainMin) && Number.isFinite(domainMax)
+      const visibleLineData = lineData.filter(item => {
+        const value = Number(item.value)
+        if (!Number.isFinite(value)) {
+          return false
+        }
+        if (!hasDomain) {
+          return true
+        }
+        return value >= Math.min(domainMin, domainMax) && value <= Math.max(domainMin, domainMax)
+      })
+      if (visibleLineData.length) {
         const assistLineMark: G2Spec = {
           type: 'lineY',
           encode: { y: 'value', color: () => randomAssistColorScale },
           scale: {
             y: {
+              ...assistLineScaleY,
               key: index === 0 ? 'left' : 'right'
             }
           },
-          data: lineData,
+          axis: {
+            y: false
+          },
+          data: visibleLineData,
           style: {
             stroke: d => d.color,
             lineDash: d =>
