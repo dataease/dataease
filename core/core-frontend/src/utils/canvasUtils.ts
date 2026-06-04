@@ -32,6 +32,7 @@ import { deepCopy, nameTrim } from '@/utils/utils'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 import { ShorthandMode } from '@/components/visualization/component-background/Types'
+import { formatterItem } from '@/views/chart/components/js/formatter'
 const dvMainStore = dvMainStoreWithOut()
 const {
   inMobile,
@@ -349,6 +350,24 @@ export function historyAdaptor(
       : canvasStyleResult['popupButtonAvailable'] //兼容弹框区域按钮开关
   canvasStyleResult['dialogBackgroundColor'] = canvasStyleResult['dialogBackgroundColor'] || '#fff'
   canvasStyleResult['dialogButton'] = canvasStyleResult['dialogButton'] || '#020408'
+
+  canvasStyleResult['component']['formatterItem'] =
+    canvasStyleResult['component']['formatterItem'] || deepCopy(formatterItem)
+
+  canvasStyleResult.component.chartColor = {
+    ...canvasStyleResult.component.chartColor,
+    label: {
+      color: '#000000',
+      fontSize: 12,
+      ...(canvasStyleResult.component.chartColor?.label || {})
+    },
+    tooltip: {
+      color: '#000000',
+      fontSize: 12,
+      backgroundColor: '#FFFFFF',
+      ...(canvasStyleResult.component.chartColor?.tooltip || {})
+    }
+  }
 
   canvasDataResult.forEach(componentItem => {
     historyItemAdaptor(componentItem, reportFilterInfo, attachInfo, canvasVersion, canvasInfo)
