@@ -110,6 +110,10 @@ function retain(value, n) {
   if (!n) return Math.round(value)
   const tran = Math.round(value * Math.pow(10, n)) / Math.pow(10, n)
   let tranV = tran.toString()
+  // 遇到科学计数法时用 toFixed(n) 转成普通小数字符串
+  if (/e/i.test(tranV)) {
+    tranV = tran.toFixed(n)
+  }
   const newVal = tranV.indexOf('.')
   if (newVal < 0) {
     tranV += '.'

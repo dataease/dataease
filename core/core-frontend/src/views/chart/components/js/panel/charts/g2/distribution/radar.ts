@@ -201,8 +201,16 @@ export class Radar extends G2ChartView {
       })
     }
     if (radarAreaColor) {
+      const areaBaseline = Number(options.scale?.y?.domainMin)
       options.children.push({
         type: 'area',
+        encode: {
+          x: 'field',
+          y: 'value',
+          // 面积层默认以 0 为基线，自动轴最小值不是 0 时会画到坐标外
+          y1: Number.isFinite(areaBaseline) ? { type: 'constant', value: areaBaseline } : undefined,
+          color: 'category'
+        },
         style: {
           opacity: 0.5
         },
@@ -304,22 +312,56 @@ export class Radar extends G2ChartView {
       }
     }
     defaultsDeep(options, axis)
+    options.inset = misc.showName ? 24 : 8
     const axisValue = misc.axisValue
-    if (!axisValue?.auto) {
+    const data = Array.isArray(options.data) ? options.data : []
+    const dataRange = data.reduce(
+      (range, item) => {
+        const value = Number(item?.value)
+        if (Number.isFinite(value)) {
+          range.min = Math.min(range.min, value)
+          range.max = Math.max(range.max, value)
+        }
+        return range
+      },
+      { min: Infinity, max: -Infinity }
+    )
+    const tickMethod = (min, max, count = 5) => {
+      if (min === max) {
+        return [min]
+      }
+      const splitCount = Math.max(1, count)
+      const step = (max - min) / splitCount
+      const ticks = []
+      for (let i = 0; i <= splitCount; i++) {
+        ticks.push(min + step * i)
+      }
+      return ticks
+    }
+    if (axisValue?.auto !== false) {
+      if (Number.isFinite(dataRange.min) && Number.isFinite(dataRange.max)) {
+        const dataMin = dataRange.min
+        const dataMax = dataRange.max
+        const splitCount = Math.max(1, Number(misc.splitNumber) || 5)
+        const padding = (dataMax - dataMin || Math.abs(dataMax) || 1) / splitCount
+        options.scale.y = {
+          ...options.scale.y,
+          // G2 的 nice 会同时扩展最小值，这里只固定最小值并给最大值留出一格空间
+          nice: false,
+          domainMin: dataMin,
+          domainMax: dataMax + padding,
+          tickCount: splitCount,
+          tickMethod
+        }
+      }
+    } else {
       const yScale = {
         scale: {
           y: {
             domainMin: axisValue.min,
             domainMax: axisValue.max,
             tickCount: axisValue.splitCount,
-            tickMethod: (min, max, count) => {
-              const step = (max - min) / count
-              const ticks = []
-              for (let i = 0; i <= count; i++) {
-                ticks.push(min + step * i)
-              }
-              return ticks
-            }
+            tickMethod
           }
         }
       }
