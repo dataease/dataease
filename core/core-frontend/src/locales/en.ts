@@ -2860,6 +2860,7 @@ export default {
     last_6_months: 'Last 6 months',
     last_12_months: 'Last 12 months',
     last_3_days: 'Last 3 days',
+    last_month_full: 'Last month (start to end of month)',
     month_to_date: 'Month to date',
     year_to_date: 'Year to date',
     year_to_last_month_end: 'Year to end of last month',

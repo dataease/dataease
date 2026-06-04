@@ -5,6 +5,27 @@ import { useI18n } from '@/hooks/web/useI18n'
 import DynamicTime from './DynamicTimeFiltering.vue'
 import DynamicTimeRange from './DynamicTimeRangeFiltering.vue'
 import { ManipulateType } from 'dayjs'
+import { type DatePickType } from 'element-plus-secondary'
+
+type OptionItem = {
+  label: string
+  value: string
+}
+
+type DynamicConfig = {
+  regularOrTrends: string
+  regularOrTrendsValue: string | Date | [Date, Date]
+  intervalType: string
+  relativeToCurrent: string
+  relativeToCurrentRange: string
+  timeNum: number
+  relativeToCurrentType: ManipulateType
+  around: string
+  timeNumRange: number
+  relativeToCurrentTypeRange: ManipulateType
+  aroundRange: string
+  timeGranularity?: DatePickType
+}
 const props = defineProps({
   timeRange: {
     type: Object as PropType<TimeRange>,
@@ -25,7 +46,7 @@ const props = defineProps({
     })
   },
   timeGranularityMultiple: {
-    type: String,
+    type: String as PropType<DatePickType>,
     default: 'yearrange'
   }
 })
@@ -51,7 +72,7 @@ const intervalTypeList = [
 ]
 
 const regularOrTrendsTitle = computed(() => {
-  return intervalTypeList.find(ele => ele.value === timeRange.value.intervalType).label
+  return intervalTypeList.find(ele => ele.value === timeRange.value.intervalType)?.label || ''
 })
 const { timeRange } = toRefs(props)
 const dynamicTime = computed(() => {
@@ -60,6 +81,10 @@ const dynamicTime = computed(() => {
 const filterTypeCom = computed(() => {
   const { intervalType } = timeRange.value
   return intervalType === 'timeInterval' ? DynamicTimeRange : DynamicTime
+})
+
+const dynamicConfig = computed<DynamicConfig>(() => {
+  return timeRange.value as unknown as DynamicConfig
 })
 
 const aroundList = [
@@ -98,7 +123,7 @@ const relativeToCurrentTypeListTips = computed(() => {
   return (relativeToCurrentTypeList.value[relativeToCurrentTypeList.value.length - 1] || {}).label
 })
 const relativeToCurrentList = computed(() => {
-  let list = []
+  let list: OptionItem[] = []
   if (!timeRange.value) return list
   switch (props.timeGranularityMultiple) {
     case 'yearrange':
@@ -188,7 +213,7 @@ const relativeToCurrentList = computed(() => {
 })
 
 const relativeToCurrentListRange = computed(() => {
-  let list = []
+  let list: OptionItem[] = []
   if (!timeRange.value) return list
   switch (props.timeGranularityMultiple) {
     case 'yearrange':
@@ -265,6 +290,10 @@ const relativeToCurrentListRange = computed(() => {
         {
           label: t('common.month_to_yesterday'),
           value: 'monthToYesterday'
+        },
+        {
+          label: t('v_query.last_month_full'),
+          value: 'LastMonthFull'
         }
       ]
       break
@@ -465,7 +494,7 @@ watch(
         <div class="setting-label" v-if="dynamicTime">{{ t('template_manage.preview') }}</div>
         <div :class="dynamicTime ? 'setting-value' : 'w100'">
           <component
-            :config="timeRange"
+            :config="dynamicConfig"
             :timeGranularityMultiple="timeGranularityMultiple"
             ref="inputCom"
             :is="filterTypeCom"
