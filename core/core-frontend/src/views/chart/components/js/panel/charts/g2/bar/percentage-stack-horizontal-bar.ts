@@ -29,7 +29,7 @@ import {
   getPercentageStackFieldTotal,
   getPercentageStackOptionsData,
   getPercentageStackZeroTotalFields,
-  shouldHidePercentageStackLabelValue
+  isPercentageStackEmptyAnchor
 } from '@/views/chart/components/js/panel/charts/g2/bar/percentage-stack-helper'
 
 /**
@@ -38,7 +38,7 @@ import {
 export class PercentageStackBar extends HorizontalStackBar {
   propertyInner = {
     ...this['propertyInner'],
-    'label-selector': ['color', 'fontSize', 'vPosition', 'reserveDecimalCount'],
+    'label-selector': ['color', 'fontSize', 'hPosition', 'reserveDecimalCount'],
     'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'show']
   }
 
@@ -63,6 +63,7 @@ export class PercentageStackBar extends HorizontalStackBar {
   protected configLabel(chart: Chart, options: ViewSpec): ViewSpec {
     const customAttr = parseJson(chart.customAttr)
     const { label: labelAttr } = customAttr
+    const { emptyDataStrategy } = parseJson(chart.senior).functionCfg
     if (!labelAttr.show) return options
 
     const { children } = options
@@ -70,14 +71,15 @@ export class PercentageStackBar extends HorizontalStackBar {
       getPercentageStackOptionsData(options)
     )
     const isZeroTotalField = data => zeroTotalFields.has(data?.field)
+    const isLeftPosition = labelAttr.position === 'left'
     const position = {
       position: labelAttr.position === 'middle' ? 'inside' : labelAttr.position,
-      textAlign: data => (isZeroTotalField(data) ? 'start' : 'center'),
+      textAlign: data => (isLeftPosition || isZeroTotalField(data) ? 'start' : 'center'),
       dy: labelAttr.position === 'top' ? -10 : 0,
-      dx: data => (isZeroTotalField(data) ? 4 : 0)
+      dx: data => (isLeftPosition || isZeroTotalField(data) ? 4 : 0)
     }
     const transform = labelAttr.fullDisplay
-      ? {}
+      ? { transform: [{ type: 'exceedAdjust' }] }
       : { transform: [{ type: 'exceedAdjust' }, { type: 'overlapHide' }] }
 
     const label = {
@@ -87,12 +89,15 @@ export class PercentageStackBar extends HorizontalStackBar {
       fontSize: labelAttr.fontSize,
       ...position,
       formatter: (value, _data, _, o) => {
+        if (isPercentageStackEmptyAnchor(_data)) return ''
+        const numberValue = Number(value)
+        if (!Number.isFinite(numberValue)) return ''
         // 计算与当前数据相同 field 的 value 总和
         const sum = getPercentageStackFieldTotal(o, _data.field)
-        if (shouldHidePercentageStackLabelValue(value, _data, sum)) return ''
         if (!sum) return `${(0).toFixed(labelAttr.reserveDecimalCount)}%`
+        if (emptyDataStrategy !== 'setZero' && numberValue === 0 && sum > 0) return ''
         // 返回百分比格式化结果
-        return `${((value / sum) * 100).toFixed(labelAttr.reserveDecimalCount)}%`
+        return `${((numberValue / sum) * 100).toFixed(labelAttr.reserveDecimalCount)}%`
       },
       ...transform
     }
