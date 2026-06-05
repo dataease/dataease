@@ -1410,6 +1410,7 @@ export default {
     table_col_freeze_tip: '冻结前 n 列',
     table_row_freeze_tip: '冻结前 n 行',
     table_freeze: '冻结',
+    table_empty_font_color: '表格空值颜色',
     stripe: '斑马纹',
     start_angle: '起始角度',
     end_angle: '结束角度',

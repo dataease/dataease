@@ -203,6 +203,21 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
+              <el-form-item :label="t('chart.table_empty_font_color')" class="form-item">
+                <el-color-picker
+                  :trigger-width="colorPickerWidth"
+                  v-model="colorForm.basicStyle['tableEmptyFontColor']"
+                  size="small"
+                  :predefine="predefineColors"
+                  color-format="rgb"
+                  :effect="themes"
+                  show-alpha
+                  is-custom
+                  @change="changeColorCase('tableEmptyFontColor')"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
               <el-form-item :label="t('components.pager_color')" class="form-item">
                 <div style="display: flex; width: 100%; gap: 8px">
                   <el-color-picker
