@@ -17,6 +17,7 @@ import {
   getStackSeriesIndexMap,
   getStackSeriesOrder,
   getStackTooltipGroupName,
+  filterStackBreakLineNullData,
   handleEmptyDataStrategy,
   renderGroupedTooltipItems,
   sortStackTooltipItems,
@@ -228,6 +229,8 @@ export class StackBar extends Bar {
 
   protected configEmptyDataStrategy(chart: Chart, options: ViewSpec): ViewSpec {
     handleEmptyDataStrategy(chart, options)
+    // 普通和分组堆叠会覆盖基类流程，这里同步过滤保持为空补出的 null 片段
+    filterStackBreakLineNullData(chart, options)
     return options
   }
 

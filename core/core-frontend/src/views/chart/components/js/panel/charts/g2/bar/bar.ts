@@ -37,6 +37,7 @@ import {
   getStackTooltipGroupName,
   getTooltipItemFormatter,
   handleEmptyDataStrategy,
+  filterStackBreakLineNullData,
   isSeriesTooltipFormatterShown,
   isTooltipItemShown,
   renderGroupedTooltipItems,
@@ -390,6 +391,11 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
         radius: 0
       }
     }
+    // 堆叠图按整根柱子的外轮廓圆角处理，中间色块连接处保持直边
+    style = {
+      ...style,
+      ...this.getStackOuterRadiusStyle(basicStyle)
+    }
     const columnWidthRatio = this.getColumnWidthRatio(basicStyle)
     const columnPadding = this.getColumnPadding(columnWidthRatio)
     let transform = children[0].transform
@@ -442,6 +448,35 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
 
   protected getStyleColumnWidthRatio(columnPadding: number): number {
     return 1 - columnPadding
+  }
+
+  protected getStackOuterRadiusStyle(
+    basicStyle: DeepPartial<ChartBasicStyle>
+  ): Record<string, any> {
+    // 只覆盖堆叠柱条，普通柱条仍沿用原有单个 interval 圆角逻辑
+    if (
+      ![
+        'bar-stack',
+        'bar-group-stack',
+        'percentage-bar-stack',
+        'bar-stack-horizontal',
+        'percentage-bar-stack-horizontal'
+      ].includes(this.name)
+    ) {
+      return {}
+    }
+    if (!['topRoundAngle', 'roundAngle'].includes(basicStyle.radiusColumnBar)) {
+      return {}
+    }
+    const radius = basicStyle.columnBarRightAngleRadius
+    // G2 stackY 使用 first 和 last 控制外端圆角，innerRadius 为 0 可避免中间连接处圆角
+    return {
+      radiusTopLeft: radius,
+      radiusTopRight: radius,
+      radiusBottomRight: radius,
+      radiusBottomLeft: radius,
+      innerRadius: 0
+    }
   }
 
   protected configDodgePadding(
@@ -933,6 +968,8 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
 
   protected configEmptyDataStrategy(chart: Chart, options: ViewSpec): ViewSpec {
     handleEmptyDataStrategy(chart, options)
+    // 空值策略先补齐数据，再移除仅用于占位但不应绘制的堆叠空片段
+    filterStackBreakLineNullData(chart, options)
     return options
   }
 

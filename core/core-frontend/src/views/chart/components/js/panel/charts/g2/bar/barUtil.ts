@@ -221,6 +221,30 @@ export function handleEmptyDataStrategy<O extends ViewSpec>(chart: Chart, option
   return options
 }
 
+// 堆叠柱条在保持为空时会生成 null 占位，过滤后避免空片段参与 stackY 形成缺口或抢占圆角位置
+export function filterStackBreakLineNullData<O extends ViewSpec>(chart: Chart, options: O): O {
+  const strategy = parseJson(chart.senior).functionCfg.emptyDataStrategy
+  if (strategy !== 'breakLine') return options
+
+  const child = options.children?.[0]
+  // 仅处理 interval 的 stackY 场景，避免影响非堆叠图对空值的展示语义
+  if (!child?.transform?.some(transform => transform.type === 'stackY')) return options
+
+  const childData = child.data
+  const rootData = (options as any).data
+  const data = childData ?? rootData
+  if (!Array.isArray(data) || !data.some(item => item?.value === null)) return options
+
+  // 保留原始数据顺序，只移除 G2 不应绘制的空值占位
+  const filteredData = data.filter(item => item?.value !== null)
+  if (childData) {
+    child.data = filteredData
+  } else {
+    ;(options as any).data = filteredData
+  }
+  return options
+}
+
 export function tooltipWrapperId(container: string) {
   return 'G2-TOOLTIP-WRAPPER-' + container
 }

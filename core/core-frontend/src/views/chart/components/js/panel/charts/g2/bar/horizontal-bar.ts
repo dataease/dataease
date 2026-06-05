@@ -10,6 +10,7 @@ import {
   setUpStackSeriesColor
 } from '@/views/chart/components/js/util'
 import {
+  filterStackBreakLineNullData,
   handleEmptyDataStrategy,
   ViewSpec
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
@@ -84,6 +85,11 @@ export class HorizontalBar extends Bar {
       ...(basicStyle.radiusColumnBar !== 'topRoundAngle' &&
         basicStyle.radiusColumnBar !== 'roundAngle' && { radius: 0 })
     } as any
+    // 横向堆叠同样按整根条的外轮廓圆角处理，避免只有右端圆角
+    style = {
+      ...style,
+      ...this.getStackOuterRadiusStyle(basicStyle)
+    }
     const columnWidthRatio = this.getColumnWidthRatio(basicStyle)
     const columnPadding = this.getColumnPadding(columnWidthRatio)
     if (columnWidthRatio) {
@@ -325,6 +331,8 @@ export class HorizontalBar extends Bar {
 
   protected configEmptyDataStrategy(chart: Chart, options: ViewSpec): ViewSpec {
     handleEmptyDataStrategy(chart, options)
+    // 横向堆叠继承此流程，需要移除保持为空补出的 null 片段
+    filterStackBreakLineNullData(chart, options)
     return options
   }
 
