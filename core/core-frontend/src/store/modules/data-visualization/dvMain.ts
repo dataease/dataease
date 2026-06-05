@@ -1052,28 +1052,32 @@ export const dvMainStore = defineStore('dataVisualization', {
             this.componentData[indexOuter] = element
           } else if (element.component === 'Group') {
             element.propValue?.forEach((groupItem, index) => {
-              this.trackFilterCursor(
-                groupItem,
-                checkQDList,
-                trackInfo,
-                preActiveComponentIds,
-                viewId,
-                customFilterInfo
-              )
-              element.propValue[index] = groupItem
-            })
-          } else if (element.component === 'DeTabs') {
-            element.propValue?.forEach(tabItem => {
-              tabItem.componentData?.forEach((tabComponent, index) => {
+              if (groupItem.id !== viewId) {
                 this.trackFilterCursor(
-                  tabComponent,
+                  groupItem,
                   checkQDList,
                   trackInfo,
                   preActiveComponentIds,
                   viewId,
                   customFilterInfo
                 )
-                tabItem.componentData[index] = tabComponent
+                element.propValue[index] = groupItem
+              }
+            })
+          } else if (element.component === 'DeTabs') {
+            element.propValue?.forEach(tabItem => {
+              tabItem.componentData?.forEach((tabComponent, index) => {
+                if (tabComponent.id !== viewId) {
+                  this.trackFilterCursor(
+                    tabComponent,
+                    checkQDList,
+                    trackInfo,
+                    preActiveComponentIds,
+                    viewId,
+                    customFilterInfo
+                  )
+                  tabItem.componentData[index] = tabComponent
+                }
               })
             })
           }
