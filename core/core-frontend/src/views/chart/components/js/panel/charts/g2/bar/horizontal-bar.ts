@@ -141,7 +141,9 @@ export class HorizontalBar extends Bar {
           ...children[0],
           axis: {
             ...children[0].axis,
-            y: { ...children[0].axis.y, ...xAxis, labelAutoHide: true, labelAutoRotate: false }
+            y: xAxis
+              ? { ...children[0].axis.y, ...xAxis, labelAutoHide: true, labelAutoRotate: false }
+              : false
           }
         },
         ...children.slice(1)
@@ -190,7 +192,7 @@ export class HorizontalBar extends Bar {
       children: [
         {
           ...children[0],
-          axis: { ...children[0].axis, x: { ...children[0].x, ...yAxis } }
+          axis: { ...children[0].axis, x: yAxis ? { ...children[0].axis.x, ...yAxis } : false }
         },
         ...children.slice(1)
       ]
