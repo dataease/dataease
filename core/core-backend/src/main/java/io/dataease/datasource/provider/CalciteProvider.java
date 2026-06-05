@@ -463,6 +463,7 @@ public class CalciteProvider extends Provider {
             conn = driverClass.connect(configuration.getJdbc(), props);
 
         } catch (Exception e) {
+            e.printStackTrace();
             DEException.throwException(e.getMessage());
         }
         connectionObj.setConnection(conn);

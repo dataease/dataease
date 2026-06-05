@@ -27,6 +27,12 @@ public class TaskInfoVO implements Serializable {
 
     private List<Integer> reciFlagList;
 
+    private Integer msgType;
+
+    private String msgTitle;
+
+    private String msgContent;
+
     @JsonSerialize(using = LongArray2StringSerialize.class)
     private List<Long> uidList;
 
