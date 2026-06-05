@@ -91,7 +91,7 @@
         v-for="(tabItem, index) in element.propValue"
         :class="{ 'switch-hidden': editableTabsValue !== tabItem.name }"
       >
-        <template v-if="!tabItem.hidden">
+        <template v-if="!tabItem.hidden && isTabActivated(tabItem.name)">
           <de-canvas
             v-if="isEdit && !mobileInPc"
             :ref="'tabCanvas_' + index"
@@ -301,6 +301,27 @@ const state = reactive({
   tabShow: true,
   hoverFlag: false
 })
+
+const activatedTabs = ref(new Set())
+
+const initActivatedTab = () => {
+  if (element.value.editableTabsValue) {
+    activatedTabs.value.add(element.value.editableTabsValue)
+  }
+}
+
+watch(
+  () => element.value.editableTabsValue,
+  val => {
+    if (val) {
+      activatedTabs.value.add(val)
+    }
+  }
+)
+
+const isTabActivated = tabName => {
+  return activatedTabs.value.has(tabName)
+}
 const tabsAreaScroll = ref(false)
 const editableTabsValue = ref(null)
 
@@ -708,6 +729,7 @@ onMounted(() => {
   if (element.value.propValue.length > 0) {
     editableTabsValue.value = element.value.propValue[0].name
   }
+  initActivatedTab()
   calcTabLength()
   if (['canvas', 'canvasDataV', 'edit'].includes(showPosition.value) && !mobileInPc.value) {
     eventBus.on('onTabMoveIn-' + element.value.id, componentMoveIn)
