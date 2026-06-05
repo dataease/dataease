@@ -1,5 +1,5 @@
 import richTextDark from '@/assets/svg/rich-text-dark.svg'
-import chartMixDualLineDark from '@/assets/svg/empty-dark/icon_line_light.svg'
+import chartMixDualLineDark from '@/assets/svg/chart-mix-dual-line-dark.svg'
 import { defineAsyncComponent } from 'vue'
 import { iconChartMapEmpty } from './chart-dark-list-empty'
 const svgs = import.meta.glob('@/assets/svg/chart-dark/*.svg')

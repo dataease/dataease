@@ -2,7 +2,7 @@ import outerParams from '@/assets/svg/icon_params_setting.svg'
 import filter from '@/assets/svg/filter.svg'
 import pictureGroup from '@/assets/svg/picture-group.svg'
 import richText from '@/assets/svg/rich-text.svg'
-import chartMixDualLine from '@/assets/svg/empty-light/icon_line_light.svg'
+import chartMixDualLine from '@/assets/svg/chart-mix-dual-line.svg'
 import { defineAsyncComponent } from 'vue'
 import { iconChartMapEmpty } from './chart-list-empty'
 const svgs = import.meta.glob('@/assets/svg/chart-light/*.svg')
