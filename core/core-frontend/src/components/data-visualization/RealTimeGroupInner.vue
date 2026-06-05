@@ -217,7 +217,7 @@ const iconMap = {
   'chart-mix-group-origin': chartMixGroupOrigin,
   'chart-mix-origin': chartMixOrigin,
   'chart-mix-stack-origin': chartMixStackOrigin,
-  'chart-mix-dual-line': chartMixDualLineOrigin,
+  'chart-mix-dual-line-origin': chartMixDualLineOrigin,
   'flow-map-origin': flowMapOrigin,
   'funnel-origin': funnelOrigin,
   'gauge-origin': gaugeOrigin,
