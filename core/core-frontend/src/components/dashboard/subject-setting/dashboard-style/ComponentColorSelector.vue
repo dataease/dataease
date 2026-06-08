@@ -219,9 +219,9 @@
             </el-col>
             <el-col :span="12">
               <el-form-item :label="t('components.pager_color')" class="form-item">
-                <div style="display: flex; width: 100%; gap: 8px">
+                <div style="display: flex; width: 100%; gap: 4px">
                   <el-color-picker
-                    :trigger-width="60"
+                    :trigger-width="53"
                     v-model="seniorForm.pagerColor"
                     size="small"
                     :predefine="predefineColors"
