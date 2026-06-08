@@ -1407,7 +1407,7 @@ export default {
     table_col_freeze_tip: '凍結前n 列',
     table_row_freeze_tip: '凍結前n 行',
     table_freeze: '凍結',
-    table_empty_font_color: '表格空值顏色',
+    table_empty_font_color: '無數據提示',
     stripe: '斑馬紋',
     start_angle: '起始角度',
     end_angle: '結束角度',
