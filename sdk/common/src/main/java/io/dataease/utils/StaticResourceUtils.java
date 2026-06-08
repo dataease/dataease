@@ -10,6 +10,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Base64;
+import java.util.Locale;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import static io.dataease.constant.StaticResourceConstants.*;
@@ -19,6 +21,10 @@ public class StaticResourceUtils {
     private final static String FILE_BASE_PATH = USER_HOME + FILE_SEPARATOR + UPLOAD_URL_PREFIX;
 
     private static final Pattern SAFE_RESOURCE_FILE_NAME = Pattern.compile("^[A-Za-z0-9._-]+$");
+
+    private static final Set<String> ALLOWED_RESOURCE_EXTENSIONS = Set.of(
+            ".gif", ".svg", ".png", ".jpeg", ".jpg"
+    );
 
     public static String ensureBoth(@NonNull String string, @NonNull String bothfix) {
         return ensureBoth(string, bothfix, bothfix);
@@ -67,8 +73,16 @@ public class StaticResourceUtils {
             LogUtil.warn("Reject illegal static resource file name: " + imgFile);
             return null;
         }
+        if (!hasAllowedExtension(imgFile)) {
+            LogUtil.warn("Reject static resource with disallowed extension: " + imgFile);
+            return null;
+        }
         Path targetPath = resolveSafeResourcePath(imgFile);
         if (targetPath == null) {
+            return null;
+        }
+        if (!Files.isRegularFile(targetPath)) {
+            LogUtil.warn("Reject static resource that is not a regular file: " + imgFile);
             return null;
         }
         //Convert the picture file into byte array  and encode it with Base64
@@ -118,6 +132,16 @@ public class StaticResourceUtils {
             LogUtil.error(e);
             return null;
         }
+    }
+
+    private static boolean hasAllowedExtension(String fileName) {
+        String lower = fileName.toLowerCase(Locale.ROOT);
+        for (String ext : ALLOWED_RESOURCE_EXTENSIONS) {
+            if (lower.endsWith(ext)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
