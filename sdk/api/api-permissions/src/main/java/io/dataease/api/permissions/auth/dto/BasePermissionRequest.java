@@ -19,5 +19,6 @@ public class BasePermissionRequest implements Serializable {
     @Schema(description = "资源类型", requiredMode = Schema.RequiredMode.REQUIRED)
     private String flag;
 
+    private Long oid;
     private boolean system;
 }

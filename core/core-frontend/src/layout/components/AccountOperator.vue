@@ -14,6 +14,7 @@ import LangSelector from './LangSelector.vue'
 import router from '@/router'
 import { useCache } from '@/hooks/web/useCache'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
+import { usePermissionStore } from '@/store/modules/permission'
 import { useRouter } from 'vue-router_2'
 const appearanceStore = useAppearanceStoreWithOut()
 const navigateBg = computed(() => appearanceStore.getNavigateBg)
@@ -28,6 +29,12 @@ interface LinkItem {
   link?: string
   method?: string
 }
+const permissionStore = usePermissionStore()
+const showSystem = ref(false)
+const initShowSystem = () => {
+  showSystem.value = permissionStore.getRouters.some(route => route.path === '/sys-setting')
+}
+
 const linkList = ref([{ id: 5, label: t('common.about'), method: 'toAbout' }] as LinkItem[])
 if (!appearanceStore.getShowAbout) {
   linkList.value.splice(0, 1)
@@ -105,7 +112,8 @@ const toSystemCfg = () => {
   const kidPath = sysMenu.matched[0].children[0].path
   push(`${sysMenu.path}/${kidPath}`)
 }
-if (uid.value === '1') {
+initShowSystem()
+if (showSystem.value) {
   // linkLoaded([{ id: 4, link: '/sys-setting/parameter', label: t('commons.system_setting') }])
   linkLoaded([{ id: 4, label: t('commons.system_setting'), method: 'toSystemCfg' }])
   const desktop = wsCache.get('app.desktop')

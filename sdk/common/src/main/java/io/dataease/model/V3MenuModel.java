@@ -64,5 +64,5 @@ public class V3MenuModel implements Serializable {
      */
     private Boolean auth;
 
-    private String module;
+    private boolean plugin;
 }

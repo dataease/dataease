@@ -11,7 +11,9 @@ import org.hibernate.annotations.Comment;
 @Getter
 @Setter
 @Entity
-@Table(name = "per_busi_resource")
+@Table(name = "per_busi_resource", indexes = {
+        @Index(name = "idx_per_busi_resource_org_rt", columnList = "org_id, rt_id")
+})
 public class PerBusiResource {
     @Id
     @Comment("资源ID")

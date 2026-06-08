@@ -13,7 +13,6 @@ public class CacheConstant {
     }
 
     public static class RoleCacheConstant {
-        public static final String ROLE_MENU_PERS_CACHE = "de_v2_role_menu_pers";
         public static final String ROLE_BUSI_PERS_CACHE = "de_v2_role_busi_pers";
         public static final String ROLE_BUSI_PERS_INTERACTIVE_CACHE = "de_v2_role_busi_pers_interactive";
     }
