@@ -542,7 +542,12 @@ onBeforeUnmount(() => {
       </el-icon>
     </div>
     <component-edit-bar
-      v-if="!showPositionActive.includes('canvas') && !props.isSelector"
+      v-if="
+        !showPositionActive.includes('canvas') &&
+        !props.isSelector &&
+        (canvasStyleData.suspensionViewButtonAvailable === undefined ||
+          canvasStyleData.suspensionViewButtonAvailable)
+      "
       class="wrapper-edit-bar"
       ref="componentEditBarRef"
       :canvas-id="canvasId"
