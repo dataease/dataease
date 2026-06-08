@@ -334,13 +334,15 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
         line: axis.axisLine.show,
         lineLineWidth: axis.axisLine.lineStyle.width,
         lineStroke: axis.axisLine.lineStyle.color,
-        lineLineDash: getLineDash(axis.axisLine.lineStyle.style)
+        lineLineDash: getLineDash(axis.axisLine.lineStyle.style),
+        lineStrokeOpacity: 1
       }
       // 刻度
       const tick = {
         tick: axis.axisLine.show,
         tickLineWidth: axis.axisLine.lineStyle.width,
-        tickStroke: axis.axisLine.lineStyle.color
+        tickStroke: axis.axisLine.lineStyle.color,
+        tickOpacity: 1
       }
       // 网格线
       const grid = {
@@ -355,6 +357,7 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
         label: axis.axisLabel.show,
         labelFontSize: axis.axisLabel.fontSize,
         labelFill: axis.axisLabel.color,
+        labelOpacity: 1,
         labelFormatter: value => {
           if (axisType === 'yAxis') {
             return valueFormatter(value, axis.axisLabelFormatter)
