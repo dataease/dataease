@@ -77,46 +77,34 @@ public class DeSqlparserUtils {
             StringBuilder sqlItemBuilder = new StringBuilder();
             int sqlItemLastIndex = 0;
             while (m.find()) {
+                if (m.start() < sqlItemLastIndex) {
+                    continue;
+                }
                 String sqlVariable = m.group();
-                sqlItemBuilder.append(sqlItem, sqlItemLastIndex, m.start());
                 boolean replaceParamItem = false;
                 String variableName = sqlVariable.substring(2, sqlVariable.length() - 1);
-                SqlVariableDetails defaultsSqlVariableDetail = findSqlVariableDetail(defaultsSqlVariableDetails, variableName);
-                SqlVariableDetails filterParameter = findSqlVariableDetail(parameters, variableName);
-                if (filterParameter != null) {
-                    PreparedSqlFragment preparedSqlFragment = buildPreparedSqlFragment(filterParameter);
-                    boolean quoted = isQuotedVariable(sqlItem, m.start(), m.end());
-                    if (quoted) {
-                        sqlItemBuilder.setLength(sqlItemBuilder.length() - 1);
+                QuotedLiteralContext quotedLiteralContext = findQuotedLiteralContext(sqlItem, m.start(), m.end());
+                int appendEnd = quotedLiteralContext == null ? m.start() : quotedLiteralContext.start();
+                if (appendEnd < sqlItemLastIndex) {
+                    continue;
+                }
+                sqlItemBuilder.append(sqlItem, sqlItemLastIndex, appendEnd);
+                PreparedSqlFragment preparedSqlFragment;
+                if (quotedLiteralContext != null) {
+                    preparedSqlFragment = buildPreparedSqlFragmentForQuotedLiteral(quotedLiteralContext, parameters, isEdit, isFromDataSet);
+                    if (preparedSqlFragment != null) {
+                        sqlItemBuilder.append(preparedSqlFragment.replacement());
+                        sqlItemLastIndex = quotedLiteralContext.end() + 1;
+                        sqlItemFieldWithValues.addAll(preparedSqlFragment.tableFieldWithValues());
+                        replaceParamItem = true;
                     }
-                    sqlItemBuilder.append(preparedSqlFragment.replacement());
-                    sqlItemLastIndex = quoted ? m.end() + 1 : m.end();
-                    sqlItemFieldWithValues.addAll(preparedSqlFragment.tableFieldWithValues());
-                    replaceParamItem = true;
                 } else {
-                    if (defaultsSqlVariableDetail != null && StringUtils.isNotEmpty(defaultsSqlVariableDetail.getDefaultValue())) {
-                        if (!isEdit && isFromDataSet && defaultsSqlVariableDetail.getDefaultValueScope().equals(SqlVariableDetails.DefaultValueScope.ALLSCOPE)) {
-                            PreparedSqlFragment preparedSqlFragment = buildPreparedSqlFragmentForDefaultValue(defaultsSqlVariableDetail);
-                            boolean quoted = isQuotedVariable(sqlItem, m.start(), m.end());
-                            if (quoted) {
-                                sqlItemBuilder.setLength(sqlItemBuilder.length() - 1);
-                            }
-                            sqlItemBuilder.append(preparedSqlFragment.replacement());
-                            sqlItemLastIndex = quoted ? m.end() + 1 : m.end();
-                            sqlItemFieldWithValues.addAll(preparedSqlFragment.tableFieldWithValues());
-                            replaceParamItem = true;
-                        }
-                        if (isEdit) {
-                            PreparedSqlFragment preparedSqlFragment = buildPreparedSqlFragmentForDefaultValue(defaultsSqlVariableDetail);
-                            boolean quoted = isQuotedVariable(sqlItem, m.start(), m.end());
-                            if (quoted) {
-                                sqlItemBuilder.setLength(sqlItemBuilder.length() - 1);
-                            }
-                            sqlItemBuilder.append(preparedSqlFragment.replacement());
-                            sqlItemLastIndex = quoted ? m.end() + 1 : m.end();
-                            sqlItemFieldWithValues.addAll(preparedSqlFragment.tableFieldWithValues());
-                            replaceParamItem = true;
-                        }
+                    preparedSqlFragment = resolvePreparedSqlFragment(variableName, parameters, isEdit, isFromDataSet);
+                    if (preparedSqlFragment != null) {
+                        sqlItemBuilder.append(preparedSqlFragment.replacement());
+                        sqlItemLastIndex = m.end();
+                        sqlItemFieldWithValues.addAll(preparedSqlFragment.tableFieldWithValues());
+                        replaceParamItem = true;
                     }
                 }
                 if (!replaceParamItem) {
@@ -248,11 +236,142 @@ public class DeSqlparserUtils {
         return null;
     }
 
+    private PreparedSqlFragment resolvePreparedSqlFragment(String variableName, List<SqlVariableDetails> parameters, boolean isEdit, boolean isFromDataSet) {
+        SqlVariableDetails filterParameter = findSqlVariableDetail(parameters, variableName);
+        if (filterParameter != null) {
+            return buildPreparedSqlFragment(filterParameter);
+        }
+        SqlVariableDetails defaultsSqlVariableDetail = findSqlVariableDetail(defaultsSqlVariableDetails, variableName);
+        if (shouldUseDefaultValue(defaultsSqlVariableDetail, isEdit, isFromDataSet)) {
+            return buildPreparedSqlFragmentForDefaultValue(defaultsSqlVariableDetail);
+        }
+        return null;
+    }
+
+    private boolean shouldUseDefaultValue(SqlVariableDetails sqlVariableDetails, boolean isEdit, boolean isFromDataSet) {
+        if (sqlVariableDetails == null || StringUtils.isEmpty(sqlVariableDetails.getDefaultValue())) {
+            return false;
+        }
+        return isEdit || isFromDataSet && sqlVariableDetails.getDefaultValueScope() == SqlVariableDetails.DefaultValueScope.ALLSCOPE;
+    }
+
     private boolean isQuotedVariable(String sqlItem, int start, int end) {
         return start > 0
                 && end < sqlItem.length()
                 && sqlItem.charAt(start - 1) == '\''
                 && sqlItem.charAt(end) == '\'';
+    }
+
+    private QuotedLiteralContext findQuotedLiteralContext(String sqlItem, int start, int end) {
+        int literalStart = -1;
+        for (int i = 0; i < sqlItem.length(); i++) {
+            if (sqlItem.charAt(i) != '\'') {
+                continue;
+            }
+            if (literalStart < 0) {
+                literalStart = i;
+                continue;
+            }
+            if (i + 1 < sqlItem.length() && sqlItem.charAt(i + 1) == '\'') {
+                i++;
+                continue;
+            }
+            if (start > literalStart && end <= i) {
+                return new QuotedLiteralContext(literalStart, i, sqlItem.substring(literalStart + 1, i));
+            }
+            literalStart = -1;
+        }
+        return null;
+    }
+
+    private PreparedSqlFragment buildPreparedSqlFragmentForQuotedLiteral(QuotedLiteralContext quotedLiteralContext, List<SqlVariableDetails> parameters, boolean isEdit, boolean isFromDataSet) {
+        List<LiteralSegment> literalSegments = parseLiteralSegments(quotedLiteralContext.content());
+        if (literalSegments.size() == 1 && literalSegments.get(0).variable()) {
+            return resolvePreparedSqlFragment(literalSegments.get(0).content(), parameters, isEdit, isFromDataSet);
+        }
+        StringBuilder preparedValueBuilder = new StringBuilder();
+        boolean hasVariable = false;
+        for (LiteralSegment literalSegment : literalSegments) {
+            if (!literalSegment.variable()) {
+                preparedValueBuilder.append(unescapeQuotedLiteralText(literalSegment.content()));
+                continue;
+            }
+            hasVariable = true;
+            String preparedValue = resolveQuotedLiteralVariableValue(literalSegment.content(), parameters, isEdit, isFromDataSet);
+            if (preparedValue == null) {
+                return null;
+            }
+            preparedValueBuilder.append(preparedValue);
+        }
+        if (!hasVariable) {
+            return null;
+        }
+        TableFieldWithValue tableFieldWithValue = new TableFieldWithValue();
+        tableFieldWithValue.setFiledName(firstVariableName(literalSegments));
+        tableFieldWithValue.setType(Types.VARCHAR);
+        tableFieldWithValue.setColumnTypeName("VARCHAR");
+        tableFieldWithValue.setValue(preparedValueBuilder.toString());
+        return new PreparedSqlFragment("?", Collections.singletonList(tableFieldWithValue));
+    }
+
+    private String resolveQuotedLiteralVariableValue(String variableName, List<SqlVariableDetails> parameters, boolean isEdit, boolean isFromDataSet) {
+        List<String> preparedValues = resolvePreparedValuesForQuotedLiteral(variableName, parameters, isEdit, isFromDataSet);
+        if (CollectionUtils.isEmpty(preparedValues)) {
+            return null;
+        }
+        if (preparedValues.size() != 1) {
+            DEException.throwException("SQL模板字符串仅支持单值参数");
+        }
+        return preparedValues.get(0);
+    }
+
+    private List<String> resolvePreparedValuesForQuotedLiteral(String variableName, List<SqlVariableDetails> parameters, boolean isEdit, boolean isFromDataSet) {
+        SqlVariableDetails filterParameter = findSqlVariableDetail(parameters, variableName);
+        if (filterParameter != null) {
+            return resolvePreparedValues(filterParameter);
+        }
+        SqlVariableDetails defaultsSqlVariableDetail = findSqlVariableDetail(defaultsSqlVariableDetails, variableName);
+        if (!shouldUseDefaultValue(defaultsSqlVariableDetail, isEdit, isFromDataSet)) {
+            return null;
+        }
+        SqlVariableDetails defaultValueDetail = new SqlVariableDetails();
+        defaultValueDetail.setVariableName(defaultsSqlVariableDetail.getVariableName());
+        defaultValueDetail.setType(defaultsSqlVariableDetail.getType());
+        defaultValueDetail.setDeType(defaultsSqlVariableDetail.getDeType());
+        defaultValueDetail.setId(defaultsSqlVariableDetail.getId());
+        defaultValueDetail.setOperator(defaultsSqlVariableDetail.getOperator());
+        defaultValueDetail.setValue(Collections.singletonList(defaultsSqlVariableDetail.getDefaultValue()));
+        return resolvePreparedValues(defaultValueDetail);
+    }
+
+    private List<LiteralSegment> parseLiteralSegments(String literalContent) {
+        List<LiteralSegment> literalSegments = new ArrayList<>();
+        Matcher matcher = Pattern.compile(sqlParamsRegex).matcher(literalContent);
+        int lastIndex = 0;
+        while (matcher.find()) {
+            if (matcher.start() > lastIndex) {
+                literalSegments.add(new LiteralSegment(false, literalContent.substring(lastIndex, matcher.start())));
+            }
+            literalSegments.add(new LiteralSegment(true, matcher.group().substring(2, matcher.group().length() - 1)));
+            lastIndex = matcher.end();
+        }
+        if (lastIndex < literalContent.length()) {
+            literalSegments.add(new LiteralSegment(false, literalContent.substring(lastIndex)));
+        }
+        return literalSegments;
+    }
+
+    private String unescapeQuotedLiteralText(String text) {
+        return StringUtils.replace(text, "''", "'");
+    }
+
+    private String firstVariableName(List<LiteralSegment> literalSegments) {
+        for (LiteralSegment literalSegment : literalSegments) {
+            if (literalSegment.variable()) {
+                return literalSegment.content();
+            }
+        }
+        return null;
     }
 
     private PreparedSqlFragment buildPreparedSqlFragment(SqlVariableDetails sqlVariableDetails) {
@@ -340,6 +459,12 @@ public class DeSqlparserUtils {
     }
 
     private record PreparedSqlFragment(String replacement, List<TableFieldWithValue> tableFieldWithValues) {
+    }
+
+    private record QuotedLiteralContext(int start, int end, String content) {
+    }
+
+    private record LiteralSegment(boolean variable, String content) {
     }
 
     private String handleSubstitutedSql(String sysVariableId) {
