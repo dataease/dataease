@@ -34,11 +34,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static io.dataease.constant.CacheConstant.CommonCacheConstant.CUSTOM_GEO_CACHE;
@@ -49,6 +54,19 @@ public class MapManage {
     private final static AreaNode WORLD;
 
     private static final String GEO_PREFIX = "geo_";
+    private static final Pattern GEO_CODE_PATTERN = Pattern.compile("\\d{3}(\\d{6}|\\d{8})?");
+    private static final String FEATURE_COLLECTION = "FeatureCollection";
+    private static final String FEATURE = "Feature";
+    private static final String GEOMETRY_COLLECTION = "GeometryCollection";
+    private static final Set<String> GEOJSON_GEOMETRY_TYPES = Set.of(
+            "Point",
+            "MultiPoint",
+            "LineString",
+            "MultiLineString",
+            "Polygon",
+            "MultiPolygon",
+            GEOMETRY_COLLECTION
+    );
 
     static {
         WORLD = AreaNode.builder()
@@ -125,17 +143,16 @@ public class MapManage {
     @CacheEvict(cacheNames = WORLD_MAP_CACHE, key = "'world_map'")
     @Transactional
     public void saveMapGeo(GeometryNodeCreator request, MultipartFile file) {
-        validateCode(request.getCode());
-        if (ObjectUtils.isEmpty(file) || file.isEmpty()) {
-            DEException.throwException("geometry file is require");
+        if (ObjectUtils.isEmpty(request)) {
+            DEException.throwException("geometry request is require");
         }
-
-        String suffix = FileUtils.getExtensionName(file.getOriginalFilename());
-        if (!StringUtils.equalsIgnoreCase("json", suffix)) {
-            DEException.throwException("仅支持json格式文件");
-        }
+        // 统一外部区域编码
+        String code = normalizeGeoCode(request.getCode());
+        // 校验上传文件名和 JSON 后缀
+        validateGeoUploadFile(file);
+        // 校验 GeoJSON 内容结构
+        JsonNode geoJson = parseGeoJson(file);
         List<Area> areas = proxy().defaultArea();
-        String code = getBusiGeoCode(request.getCode());
 
         AtomicReference<String> atomicReference = new AtomicReference<>();
         if (areas.stream().anyMatch(area -> {
@@ -161,11 +178,11 @@ public class MapManage {
 
         File geoFile = buildGeoFile(code);
         try {
-          if (isChina(code)) {
-            file.transferTo(geoFile);
-          } else {
-            addGeoJsonField(code, file, geoFile);
-          }
+            if (isChina(code)) {
+                writeGeoJsonToFile(geoJson, geoFile);
+            } else {
+                addGeoJsonField(code, geoJson, geoFile);
+            }
         } catch (IOException e) {
             LogUtil.error(e.getMessage());
             DEException.throwException(e);
@@ -188,9 +205,12 @@ public class MapManage {
         childTreeIdList(List.of(code), codeResultList);
         coreAreaCustomMapper.deleteBatchIds(codeResultList);
         codeResultList.forEach(id -> {
-            File file = buildGeoFile(id);
-            if (file.exists()) {
-                file.delete();
+            // 删除目标必须是安全路径解析生成
+            Path file = buildGeoFile(id).toPath();
+            try {
+                Files.deleteIfExists(file);
+            } catch (IOException e) {
+                LogUtil.error(e.getMessage());
             }
         });
     }
@@ -292,28 +312,15 @@ public class MapManage {
     }
 
     private File buildGeoFile(String code) {
-        String id = getBusiGeoCode(code);
-        String customMapDir = isChina(code) ? StaticResourceConstants.MAP_DIR : StaticResourceConstants.CUSTOM_MAP_DIR;
-        String countryCode = countryCode(id);
-        String fileDirPath = customMapDir + "/" + countryCode + "/";
-        File dir = new File(fileDirPath);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-        String filePath = fileDirPath + id + ".json";
-        return new File(filePath);
+        return resolveGeoFilePath(code).toFile();
     }
 
-    private String countryCode(String code) {
-        return code.substring(0, 3);
+    private File buildGeoFile(String code, boolean allowWorld) {
+        return resolveGeoFilePath(code, allowWorld).toFile();
     }
 
     public void validateCode(String code) {
-        if (StringUtils.isBlank(code)) DEException.throwException("区域编码不能为空");
-        String busiGeoCode = getBusiGeoCode(code);
-        if (!isNumeric(busiGeoCode)) {
-            DEException.throwException("有效区域编码只能是数字");
-        }
+        normalizeGeoCode(code);
     }
 
     public boolean isNumeric(String str) {
@@ -325,123 +332,262 @@ public class MapManage {
         return true;
     }
 
-  /**
-   * 将GeoJSON文件中的每个feature的properties添加adcode字段，值为根据父级code生成的子级code，并将修改后的GeoJSON写入指定文件。
-   * @param code 当前行政区划编码
-   * @param file 上传的GeoJSON文件
-   * @param geoFile 目标文件，修改后的GeoJSON将写入此文件
-   * @throws IOException 如果读取或写入文件时发生错误
-   */
-    private void addGeoJsonField(String code, MultipartFile file, File geoFile) throws IOException {
-    try {
-      ObjectMapper mapper = new ObjectMapper();
-      JsonNode geoJson = mapper.readTree(file.getInputStream());
-      ArrayNode features = (ArrayNode) geoJson.get("features");
-      if (features != null) {
+    /**
+     * 将GeoJSON文件中的每个feature的properties添加adcode字段，值为根据父级code生成的子级code，并将修改后的GeoJSON写入指定文件。
+     * @param code    当前行政区划编码
+     * @param geoJson 上传的GeoJSON内容
+     * @param geoFile 目标文件，修改后的GeoJSON将写入此文件
+     * @throws IOException 如果读取或写入文件时发生错误
+     */
+    private void addGeoJsonField(String code, JsonNode geoJson, File geoFile) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        ArrayNode features = (ArrayNode) geoJson.get("features");
         for (JsonNode feature : features) {
-          ObjectNode featureObj = (ObjectNode) feature;
-          ObjectNode properties = (ObjectNode) featureObj.get("properties");
-          if (properties == null) {
-            properties = mapper.createObjectNode();
-            featureObj.set("properties", properties);
-          }
-          properties.put("adcode", setChildAdcode(code));
+            ObjectNode featureObj = (ObjectNode) feature;
+            JsonNode propertiesNode = featureObj.get("properties");
+            ObjectNode properties;
+            if (propertiesNode instanceof ObjectNode) {
+                properties = (ObjectNode) propertiesNode;
+            } else {
+                properties = mapper.createObjectNode();
+                featureObj.set("properties", properties);
+            }
+            properties.put("adcode", setChildAdcode(code));
         }
-      }
-      mapper.writeValue(geoFile, geoJson);
-    } catch (Exception e) {
-      LogUtil.error(e.getMessage());
-      DEException.throwException(e);
+        mapper.writeValue(geoFile, geoJson);
     }
-  }
 
-  /**
-   * 根据父级行政区划编码生成子级编码。 规则： 1. 若code为3位，直接在末尾加1并补0到9位； 2. 否则去除末尾所有0，最后一位数字加1，补0到9位； 3.
-   * 若全为0，返回1并补0到原长度； 4. 若最后一位已为9，抛出“层级过长”异常。
-   *
-   * @param code 父级行政区划编码
-   * @return 子级行政区划编码
-   * @throws IllegalArgumentException 层级过长时抛出
-   */
-  private String setChildAdcode(String code) {
-    // 3位时直接补1并补0到9位
-    if (code.length() == 3) {
-      return StringUtils.rightPad(code + "1", 9, '0');
+    /**
+     * 根据父级行政区划编码生成子级编码。 规则： 1. 若code为3位，直接在末尾加1并补0到9位； 2. 否则去除末尾所有0，最后一位数字加1，补0到9位； 3.
+     * 若全为0，返回1并补0到原长度； 4. 若最后一位已为9，抛出“层级过长”异常。
+     *
+     * @param code 父级行政区划编码
+     * @return 子级行政区划编码
+     * @throws IllegalArgumentException 层级过长时抛出
+     */
+    private String setChildAdcode(String code) {
+        // 3位时直接补1并补0到9位
+        if (code.length() == 3) {
+            return StringUtils.rightPad(code + "1", 9, '0');
+        }
+        // 去除末尾所有0
+        String noTrailingZeros = StringUtils.stripEnd(code, "0");
+        // 如果全是0，返回"1"并补0到原长度
+        if (StringUtils.isBlank(noTrailingZeros)) {
+            return StringUtils.rightPad("1", code.length(), '0');
+        }
+        if (noTrailingZeros.length() == 3) {
+            return StringUtils.rightPad(noTrailingZeros + "1", 9, '0');
+        }
+        // 最后一位数字加1
+        int lastDigit = noTrailingZeros.charAt(noTrailingZeros.length() - 1) - '0';
+        if (lastDigit == 9) {
+            throw new IllegalArgumentException("Hierarchy too deep");
+        }
+        String incremented = noTrailingZeros + (lastDigit + 1);
+        // 补0到9位
+        return StringUtils.rightPad(incremented, 9, '0');
     }
-    // 去除末尾所有0
-    String noTrailingZeros = StringUtils.stripEnd(code, "0");
-    // 如果全是0，返回"1"并补0到原长度
-    if (StringUtils.isBlank(noTrailingZeros)) {
-      return StringUtils.rightPad("1", code.length(), '0');
-    }
-    if (noTrailingZeros.length() == 3) {
-      return StringUtils.rightPad(noTrailingZeros + "1", 9, '0');
-    }
-    // 最后一位数字加1
-    int lastDigit = noTrailingZeros.charAt(noTrailingZeros.length() - 1) - '0';
-    if (lastDigit == 9) {
-      throw new IllegalArgumentException("Hierarchy too deep");
-    }
-    String incremented = noTrailingZeros + (lastDigit + 1);
-    // 补0到9位
-    return StringUtils.rightPad(incremented, 9, '0');
-  }
 
-  public boolean isChina(String code) {
-      return StringUtils.startsWith(code, "156");
-  }
-
-  /**
-   * 根据给定的行政区划编码和基础目录构建对应的 GeoJSON 文件对象。
-   *
-   * @return  {@code {baseDir}/{countryCode}/{id}.json} 的 {@link File}
-   */
-  private File buildMapJsonFile(String id, String baseDir) {
-    String countryCode = countryCode(id);
-    String fileDirPath = baseDir + "/" + countryCode + "/";
-    File dir = new File(fileDirPath);
-    if (!dir.exists()) {
-      dir.mkdirs();
+    public boolean isChina(String code) {
+        return StringUtils.startsWith(getBusiGeoCode(code), "156");
     }
-    String filePath = fileDirPath + id + ".json";
-    return new File(filePath);
-  }
 
-  /**
-   * 根据前端传入的区域编码和地名映射信息，将映射结果写入对应的 GeoJSON 文件的根节点 deMapping 字段中
-   */
-  public void placeNameMapping(String id, Map<String, String> req) {
-    final String busiId = id.startsWith(GEO_PREFIX) ? id.substring(GEO_PREFIX.length()) : id;
-    final String baseDir =
-        id.startsWith(GEO_PREFIX)
-            ? StaticResourceConstants.CUSTOM_MAP_DIR
-            : StaticResourceConstants.MAP_DIR;
-
-    File file = buildMapJsonFile(busiId, baseDir);
-    if (!file.exists()) {
-      DEException.throwException("GeoJSON 文件不存在: " + file.getAbsolutePath());
+    /**
+     * 根据前端传入的区域编码和地名映射信息，将映射结果写入对应的 GeoJSON 文件的根节点 deMapping 字段中
+     */
+    public void placeNameMapping(String id, Map<String, String> req) {
+        // 地名映射读取已有世界地图文件时允许 000
+        File file = buildGeoFile(id, true);
+        if (!file.exists()) {
+            DEException.throwException("GeoJSON 文件不存在: " + file.getAbsolutePath());
+        }
+        writeDeMappingToFile(file, req);
     }
-    writeDeMappingToFile(file, req);
-  }
 
-  private void writeDeMappingToFile(File file, Map<String, String> req) {
-    ObjectMapper mapper = new ObjectMapper();
-    try {
-      JsonNode root = mapper.readTree(file);
-      if (!(root instanceof ObjectNode)) {
-        DEException.throwException("GeoJSON 根节点不是对象，无法写入 deMapping");
-      }
-      ObjectNode objectNode = (ObjectNode) root;
+    private void writeDeMappingToFile(File file, Map<String, String> req) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            JsonNode root = mapper.readTree(file);
+            validateGeoJson(root);
+            ObjectNode objectNode = (ObjectNode) root;
 
-      ObjectNode deMappingNode = mapper.createObjectNode();
-      if (req != null && !req.isEmpty()) {
-        req.forEach(deMappingNode::put);
-      }
-      objectNode.set("deMapping", deMappingNode);
-      mapper.writerWithDefaultPrettyPrinter().writeValue(file, objectNode);
-    } catch (Exception e) {
-      LogUtil.error(e.getMessage());
-      DEException.throwException(e);
+            ObjectNode deMappingNode = mapper.createObjectNode();
+            if (req != null && !req.isEmpty()) {
+                req.forEach(deMappingNode::put);
+            }
+            objectNode.set("deMapping", deMappingNode);
+            mapper.writerWithDefaultPrettyPrinter().writeValue(file, objectNode);
+        } catch (Exception e) {
+            LogUtil.error(e.getMessage());
+            DEException.throwException(e);
+        }
     }
-  }
+
+    /**
+     * 拒绝危险文件名并限制上传后缀为 JSON
+     */
+    private void validateGeoUploadFile(MultipartFile file) {
+        if (ObjectUtils.isEmpty(file) || file.isEmpty()) {
+            DEException.throwException("geometry file is require");
+        }
+
+        String filename = file.getOriginalFilename();
+        FileUtils.validateUploadFilename(filename);
+        String suffix = FileUtils.getExtensionName(filename);
+        if (!StringUtils.equalsIgnoreCase("json", suffix)) {
+            DEException.throwException("仅支持json格式文件");
+        }
+    }
+
+    /**
+     * 上传的地图文件内容必须是可解析的 GeoJSON
+     */
+    private JsonNode parseGeoJson(MultipartFile file) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            JsonNode geoJson = mapper.readTree(file.getInputStream());
+            validateGeoJson(geoJson);
+            return geoJson;
+        } catch (IOException e) {
+            LogUtil.error(e.getMessage());
+            DEException.throwException("GeoJSON 文件内容无效");
+            return null;
+        }
+    }
+
+    private void writeGeoJsonToFile(JsonNode geoJson, File geoFile) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.writeValue(geoFile, geoJson);
+    }
+
+    /**
+     * GeoJSON 内容写入风险 仅允许标准 FeatureCollection 结构
+     */
+    private void validateGeoJson(JsonNode geoJson) {
+        if (!(geoJson instanceof ObjectNode)) {
+            DEException.throwException("GeoJSON 根节点不是对象");
+        }
+        JsonNode type = geoJson.get("type");
+        if (type == null || !type.isTextual() || !StringUtils.equals(FEATURE_COLLECTION, type.asText())) {
+            DEException.throwException("仅支持 FeatureCollection 格式 GeoJSON");
+        }
+        JsonNode features = geoJson.get("features");
+        if (!(features instanceof ArrayNode)) {
+            DEException.throwException("GeoJSON features 必须是数组");
+        }
+        for (JsonNode feature : features) {
+            validateGeoJsonFeature(feature);
+        }
+    }
+
+
+    /**
+     * 校验地图文件内容 GeoJSON 做 FeatureCollection 校验
+     */
+    private void validateGeoJsonFeature(JsonNode feature) {
+        if (!(feature instanceof ObjectNode)) {
+            DEException.throwException("GeoJSON feature 必须是对象");
+        }
+        JsonNode type = feature.get("type");
+        if (type == null || !type.isTextual() || !StringUtils.equals(FEATURE, type.asText())) {
+            DEException.throwException("GeoJSON feature 类型无效");
+        }
+        JsonNode geometry = feature.get("geometry");
+        validateGeoJsonGeometry(geometry);
+        JsonNode properties = feature.get("properties");
+        if (properties != null && !properties.isNull() && !(properties instanceof ObjectNode)) {
+            DEException.throwException("GeoJSON properties 必须是对象");
+        }
+    }
+
+
+    /**
+     * 校验 GeoJSON 里每个 Feature.geometry 是否合法
+     */
+    private void validateGeoJsonGeometry(JsonNode geometry) {
+        if (!(geometry instanceof ObjectNode)) {
+            DEException.throwException("GeoJSON geometry 必须是对象");
+        }
+        JsonNode type = geometry.get("type");
+        if (type == null || !type.isTextual() || !GEOJSON_GEOMETRY_TYPES.contains(type.asText())) {
+            DEException.throwException("GeoJSON geometry 类型无效");
+        }
+        if (StringUtils.equals(GEOMETRY_COLLECTION, type.asText())) {
+            JsonNode geometries = geometry.get("geometries");
+            if (!(geometries instanceof ArrayNode)) {
+                DEException.throwException("GeoJSON geometries 必须是数组");
+            }
+            for (JsonNode item : geometries) {
+                validateGeoJsonGeometry(item);
+            }
+            return;
+        }
+        JsonNode coordinates = geometry.get("coordinates");
+        if (!(coordinates instanceof ArrayNode)) {
+            DEException.throwException("GeoJSON coordinates 必须是数组");
+        }
+    }
+
+    /**
+     * 区域编码只允许 geo_ 前缀加受控长度数字或纯受控长度数字
+     */
+    private String normalizeGeoCode(String code) {
+        return normalizeGeoCode(code, false);
+    }
+
+    private String normalizeGeoCode(String code, boolean allowWorld) {
+        if (StringUtils.isBlank(code)) {
+            DEException.throwException("区域编码不能为空");
+        }
+        String busiGeoCode = getBusiGeoCode(code);
+        if (!GEO_CODE_PATTERN.matcher(busiGeoCode).matches()
+                || (!allowWorld && StringUtils.equals(countryCodeOfValidated(busiGeoCode), WORLD.getId()))) {
+            DEException.throwException("有效区域编码只能是3位、9位或11位数字");
+        }
+        return busiGeoCode;
+    }
+
+    private String countryCodeOfValidated(String code) {
+        return code.substring(0, 3);
+    }
+
+    /**
+     * 规范化目标路径并确认文件始终位于地图目录内
+     */
+    private Path resolveGeoFilePath(String code) {
+        return resolveGeoFilePath(code, false);
+    }
+
+    private Path resolveGeoFilePath(String code, boolean allowWorld) {
+        String id = normalizeGeoCode(code, allowWorld);
+        String baseDir = isWorld(id) || isChina(id) ? StaticResourceConstants.MAP_DIR : StaticResourceConstants.CUSTOM_MAP_DIR;
+        Path basePath = Paths.get(baseDir).toAbsolutePath().normalize();
+        try {
+            Files.createDirectories(basePath);
+            Path realBasePath = basePath.toRealPath();
+            Path countryPath = realBasePath.resolve(countryCodeOfValidated(id)).normalize();
+            if (!countryPath.startsWith(realBasePath)) {
+                DEException.throwException("非法地图文件路径");
+            }
+            Files.createDirectories(countryPath);
+            Path realCountryPath = countryPath.toRealPath();
+            if (!realCountryPath.startsWith(realBasePath)) {
+                DEException.throwException("非法地图文件路径");
+            }
+            Path targetPath = realCountryPath.resolve(id + ".json").normalize();
+            if (!targetPath.startsWith(realCountryPath) || Files.isSymbolicLink(targetPath)) {
+                DEException.throwException("非法地图文件路径");
+            }
+            return targetPath;
+        } catch (IOException e) {
+            LogUtil.error(e.getMessage());
+            DEException.throwException(e);
+            return null;
+        }
+    }
+
+    private boolean isWorld(String code) {
+        return StringUtils.equals(getBusiGeoCode(code), WORLD.getId());
+    }
 }
