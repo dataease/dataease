@@ -7,8 +7,8 @@ export const switchOrg = (id: number | string) => request.post({ url: `/user/swi
 
 export const userInfo = () => request.get({ url: '/user/info' })
 
-export const searchRoleApi = (keyword?: string) =>
-  request.post({ url: '/role/query', data: { keyword } })
+export const searchRoleApi = () => request.get({ url: '/role/query' })
+
 export const searchRoleByOidApi = (oid: number) => request.get({ url: `/role/queryWithOid/${oid}` })
 
 export const userOptionForRoleApi = data => request.post({ url: '/user/role/option', data })

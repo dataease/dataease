@@ -153,5 +153,10 @@
         </resources>
     </cache>
 
+    <cache alias="de_v2_all_resources" uses-template="common-cache">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.util.List</value-type>
+    </cache>
+
 </config>
 

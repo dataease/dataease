@@ -28,8 +28,8 @@ public interface RoleApi {
 
     @Operation(summary = "查询")
     @DePermit("m:read")
-    @PostMapping("/query")
-    List<RoleVO> query(@RequestBody KeywordRequest request);
+    @GetMapping("/query")
+    List<RoleVO> query();
 
     @Operation(summary = "创建")
     @DePermit("m:read")
@@ -70,11 +70,6 @@ public interface RoleApi {
     @DePermit({"m:manage", "#p0 + ':manage'"})
     @PostMapping("/delete/{rid}")
     void delete(@PathVariable("rid") Long rid);
-
-
-    @Operation(summary = "查询组织内角色")
-    @PostMapping("/byCurOrg")
-    List<RoleVO> byCurOrg(@RequestBody KeywordRequest request);
 
     @Hidden
     @GetMapping("/queryWithOid/{oid}")

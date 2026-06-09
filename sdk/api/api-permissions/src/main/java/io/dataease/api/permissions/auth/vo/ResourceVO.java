@@ -31,4 +31,6 @@ public class ResourceVO implements TreeResultModel<ResourceVO>, Serializable {
     @JsonSerialize(using = ToStringSerializer.class)
     @Schema(description = "组织ID")
     private Long oid;
+    @Schema(description = "无权限占位节点")
+    private boolean disabled = false;
 }
