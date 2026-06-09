@@ -61,7 +61,7 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
   ]
   propertyInner = {
     'basic-style-selector': ['radiusColumnBar', 'layout'],
-    'label-selector': ['hPosition', 'fontSize', 'color', 'labelFormatter'],
+    'label-selector': ['hPosition', 'vPosition', 'fontSize', 'color', 'labelFormatter'],
     'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter', 'show'],
     'x-axis-selector': [
       ...BAR_EDITOR_PROPERTY_INNER['x-axis-selector'].filter(item => item != 'position'),
@@ -334,13 +334,15 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
         line: axis.axisLine.show,
         lineLineWidth: axis.axisLine.lineStyle.width,
         lineStroke: axis.axisLine.lineStyle.color,
-        lineLineDash: getLineDash(axis.axisLine.lineStyle.style)
+        lineLineDash: getLineDash(axis.axisLine.lineStyle.style),
+        lineStrokeOpacity: 1
       }
       // 刻度
       const tick = {
         tick: axis.axisLine.show,
         tickLineWidth: axis.axisLine.lineStyle.width,
-        tickStroke: axis.axisLine.lineStyle.color
+        tickStroke: axis.axisLine.lineStyle.color,
+        tickOpacity: 1
       }
       // 网格线
       const grid = {
@@ -355,6 +357,7 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
         label: axis.axisLabel.show,
         labelFontSize: axis.axisLabel.fontSize,
         labelFill: axis.axisLabel.color,
+        labelOpacity: 1,
         labelFormatter: value => {
           if (axisType === 'yAxis') {
             return valueFormatter(value, axis.axisLabelFormatter)
@@ -450,17 +453,15 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
     }
     const basicStyle = parseJson(chart.customAttr).basicStyle
     const { layout } = basicStyle
+    const labelPosition = getBulletLabelPosition(l.position, layout)
     const position = {
-      position: l.position === 'middle' ? 'inside' : l.position,
+      position: labelPosition,
       textAlign: 'left',
-      dy: 0,
+      dy: labelPosition === 'top' ? -10 : 0,
       dx: 0
     }
     if (layout !== 'horizontal') {
-      ;(position.position =
-        l.position === 'middle' ? 'inside' : l.position === 'left' ? 'bottom' : 'top'),
-        (position.textAlign = 'center')
-      position.dy = position.position === 'top' ? -10 : 0
+      position.textAlign = 'center'
     }
     // contrastReverse 标签颜色在图形背景上对比度低的情况下，从指定色板选择一个对比度最优的颜色
     // overlapDodgeY 对位置碰撞的标签在 y 方向上进行调整，防止标签重叠
@@ -478,9 +479,9 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
       formatter: d => valueFormatter(d, l.labelFormatter),
       ...(l.fullDisplay ? {} : transform)
     }
-    // 将标签配置应用到最后一个子元素（实际值）
-    options.children?.forEach((item, index) => {
-      if (index === options.children.length - 1) {
+    // 将标签配置应用到实际值条
+    options.children?.forEach(item => {
+      if (item.type === 'interval' && item.encode?.y === 'measures') {
         item.labels = [label]
       }
     })
@@ -829,4 +830,26 @@ function mergeBulletData(chart): any[] {
     result.push(bulletData)
   })
   return result
+}
+
+function getBulletLabelPosition(position: string, layout: string): string {
+  if (position === 'middle') {
+    return 'inside'
+  }
+  if (layout === 'horizontal') {
+    if (position === 'top') {
+      return 'right'
+    }
+    if (position === 'bottom') {
+      return 'left'
+    }
+    return position
+  }
+  if (position === 'left') {
+    return 'bottom'
+  }
+  if (position === 'right') {
+    return 'top'
+  }
+  return position
 }

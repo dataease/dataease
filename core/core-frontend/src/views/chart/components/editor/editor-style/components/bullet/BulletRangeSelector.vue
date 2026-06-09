@@ -63,7 +63,21 @@ const emitMiscChange = (payload, prop?) => {
   })
 }
 
+const normalizeColor = color => {
+  if (Array.isArray(color)) {
+    return color[0] || predefineColors[0]
+  }
+  return typeof color === 'string' ? color : predefineColors[0]
+}
+
+const normalizeRangeFill = () => {
+  state.bulletRangeForm.bar.ranges.fill = normalizeColor(state.bulletRangeForm.bar.ranges.fill)
+}
+
 const changeStyle = (prop?) => {
+  if (state.bulletRangeForm.bar.ranges.showType === 'dynamic') {
+    normalizeRangeFill()
+  }
   if (state.bulletRangeForm.bar.ranges.showType === 'fixed' && state.rangeList.length) {
     state.bulletRangeForm.bar.ranges.fixedRange = cloneDeep(state.rangeList)
   }
@@ -121,6 +135,7 @@ const init = () => {
       customAttr = JSON.parse(chart.customAttr)
     }
     state.bulletRangeForm = defaultsDeep(customAttr.misc.bullet, cloneDeep(DEFAULT_MISC.bullet))
+    normalizeRangeFill()
     getRangeList()
   }
 }
@@ -129,6 +144,9 @@ const getRangeList = () => {
   const range = []
   if (state.bulletRangeForm.bar.ranges?.fixedRange?.length) {
     state.rangeList = state.bulletRangeForm.bar.ranges.fixedRange
+    state.rangeList.forEach(item => {
+      item.fill = normalizeColor(item.fill)
+    })
   } else {
     for (let i = 0; i < state.bulletRangeForm.bar.ranges.fixedRangeNumber; i++) {
       range.push({
@@ -143,6 +161,7 @@ const getRangeList = () => {
 
 const changeShowType = () => {
   if (state.bulletRangeForm.bar.ranges.showType === 'dynamic') {
+    normalizeRangeFill()
     changeStyle()
   } else {
     changeRangeItem()

@@ -347,6 +347,9 @@ const isBarRangeTime = computed<boolean>(() => {
 })
 const showPositionH = computed(() => {
   if (showProperty('hPosition')) {
+    if (props.chart.type === 'bullet-graph') {
+      return props.chart.customAttr.basicStyle.layout === 'horizontal'
+    }
     if (props.chart.type !== 'bidirectional-bar') {
       return true
     }
@@ -356,6 +359,9 @@ const showPositionH = computed(() => {
 })
 const showPositionV = computed(() => {
   if (showProperty('vPosition')) {
+    if (props.chart.type === 'bullet-graph') {
+      return props.chart.customAttr.basicStyle.layout !== 'horizontal'
+    }
     if (props.chart.type !== 'bidirectional-bar' && props.chart.type !== 'bar-group') {
       return true
     }
@@ -363,38 +369,42 @@ const showPositionV = computed(() => {
   }
   return false
 })
+function initLayoutPosition() {
+  const layout = props.chart.customAttr.basicStyle.layout
+  const oldPosition = state?.labelForm?.position
+  if (state?.labelForm?.position === 'inner' || state?.labelForm?.position === 'outer') {
+    state.labelForm.position = 'middle'
+  }
+  if (layout === 'horizontal') {
+    if (state?.labelForm?.position === 'top') {
+      state.labelForm.position = 'right'
+    }
+    if (state?.labelForm?.position === 'bottom') {
+      state.labelForm.position = 'left'
+    }
+  } else {
+    if (state?.labelForm?.position === 'left') {
+      state.labelForm.position = 'bottom'
+    }
+    if (state?.labelForm?.position === 'right') {
+      state.labelForm.position = 'top'
+    }
+  }
+  if (oldPosition !== state.labelForm.position) {
+    changeLabelAttr('position')
+  }
+}
 function initBidirectionalBarPosition() {
   if (chartType.value === 'bidirectional-bar') {
-    const layout = props.chart.customAttr.basicStyle.layout
-    const oldPosition = state?.labelForm?.position
-    if (state?.labelForm?.position === 'inner' || state?.labelForm?.position === 'outer') {
-      state.labelForm.position = 'middle'
-    }
-    if (layout === 'horizontal') {
-      if (state?.labelForm?.position === 'top') {
-        state.labelForm.position = 'right'
-      }
-      if (state?.labelForm?.position === 'bottom') {
-        state.labelForm.position = 'left'
-      }
-    }
-    if (layout === 'vertical') {
-      if (state?.labelForm?.position === 'left') {
-        state.labelForm.position = 'bottom'
-      }
-      if (state?.labelForm?.position === 'right') {
-        state.labelForm.position = 'top'
-      }
-    }
-    if (oldPosition !== state.labelForm.position) {
-      changeLabelAttr('position')
-    }
+    initLayoutPosition()
   }
 }
 
 function initPosition() {
   if (chartType.value === 'bidirectional-bar') {
     initBidirectionalBarPosition()
+  } else if (chartType.value === 'bullet-graph') {
+    initLayoutPosition()
   } else {
     const oldPosition = state?.labelForm?.position
     if (showProperty('rPosition')) {
@@ -428,6 +438,9 @@ watch(
   () => props.chart.customAttr.basicStyle.layout,
   () => {
     initBidirectionalBarPosition()
+    if (chartType.value === 'bullet-graph') {
+      initLayoutPosition()
+    }
   },
   { deep: true }
 )
