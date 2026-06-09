@@ -170,6 +170,11 @@ const component = ref(null)
 const emits = defineEmits(['userViewEnlargeOpen', 'datasetParamsInit', 'onPointClick'])
 const wrapperId = 'wrapper-outer-id-' + config.value.id
 
+const suspensionViewButtonAvailable = computed(
+  () =>
+    dvMainStore.canvasStyleData.suspensionViewButtonAvailable === undefined ||
+    dvMainStore.canvasStyleData.suspensionViewButtonAvailable
+)
 const viewDemoInnerId = computed(() => 'enlarge-inner-content-' + config.value.id)
 const htmlToImage = () => {
   useEmitt().emitter.emit('l7-prepare-picture', config.value.id)
@@ -543,10 +548,7 @@ onBeforeUnmount(() => {
     </div>
     <component-edit-bar
       v-if="
-        !showPositionActive.includes('canvas') &&
-        !props.isSelector &&
-        (canvasStyleData.suspensionViewButtonAvailable === undefined ||
-          canvasStyleData.suspensionViewButtonAvailable)
+        !showPositionActive.includes('canvas') && !props.isSelector && suspensionViewButtonAvailable
       "
       class="wrapper-edit-bar"
       ref="componentEditBarRef"
