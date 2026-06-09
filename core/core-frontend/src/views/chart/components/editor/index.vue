@@ -36,6 +36,7 @@ import { fieldType } from '@/utils/attr'
 import QuotaItem from '@/views/chart/components/editor/drag-item/QuotaItem.vue'
 import DragPlaceholder from '@/views/chart/components/editor/drag-item/DragPlaceholder.vue'
 import FilterTree from './filter/FilterTree.vue'
+import QuotaFilterEditor from '@/views/chart/components/editor/filter/QuotaFilterEditor.vue'
 import ResultFilterEditor from '@/views/chart/components/editor/filter/ResultFilterEditor.vue'
 import { ElIcon } from 'element-plus-secondary'
 import DrillItem from '@/views/chart/components/editor/drag-item/DrillItem.vue'
@@ -242,6 +243,8 @@ const state = reactive({
     index: 0,
     renameType: ''
   },
+  quotaFilterEdit: false,
+  quotaItem: {},
   resultFilterEdit: false,
   filterItem: {},
   chartForFilter: {},
@@ -263,7 +266,7 @@ const state = reactive({
 })
 
 const filedList = computed(() => {
-  return state.dimension.filter(ele => ele.id !== 'count' && !!ele.summary)
+  return [...state.dimension, ...state.quota].filter(ele => ele.id !== 'count' && !!ele.summary)
 })
 
 provide('filedList', () => filedList.value)
@@ -1465,6 +1468,38 @@ const saveRename = ref => {
   })
 }
 
+const showQuotaEditFilter = item => {
+  recordSnapshotInfo('calcData')
+  state.quotaItem = JSON.parse(JSON.stringify(item))
+  if (!state.quotaItem.logic) {
+    state.quotaItem.logic = 'and'
+  }
+  state.quotaFilterEdit = true
+}
+const closeQuotaFilter = () => {
+  state.quotaFilterEdit = false
+}
+const saveQuotaFilter = () => {
+  for (let i = 0; i < state.quotaItem.filter.length; i++) {
+    const f = state.quotaItem.filter[i]
+    if (!f.term.includes('null') && !f.term.includes('empty') && (!f.value || f.value === '')) {
+      ElMessage.error(t('chart.filter_value_can_null'))
+      return
+    }
+    if (!f.term.includes('null') && !f.term.includes('empty') && isNaN(f.value)) {
+      ElMessage.error(t('chart.filter_value_can_not_str'))
+      return
+    }
+  }
+  if (state.quotaItem.filterType === 'quota') {
+    view.value.yAxis[state.quotaItem.index].filter = state.quotaItem.filter
+    view.value.yAxis[state.quotaItem.index].logic = state.quotaItem.logic
+  } else if (state.quotaItem.filterType === 'quotaExt') {
+    view.value.yAxisExt[state.quotaItem.index].filter = state.quotaItem.filter
+    view.value.yAxisExt[state.quotaItem.index].logic = state.quotaItem.logic
+  }
+  closeQuotaFilter()
+}
 const changeFilterData = customFilter => {
   view.value.customFilter = cloneDeep(customFilter)
 }
@@ -2761,6 +2796,7 @@ const chartStyleScroll = (val: any) => {
                                     @onQuotaItemChange="item => quotaItemChange(item, 'yAxis')"
                                     @onQuotaItemRemove="quotaItemRemove"
                                     @onNameEdit="showRename"
+                                    @editItemFilter="showQuotaEditFilter"
                                     @editItemCompare="showQuotaEditCompare"
                                     @valueFormatter="valueFormatter"
                                     @onToggleHide="onToggleHide"
@@ -2892,6 +2928,7 @@ const chartStyleScroll = (val: any) => {
                                     @onQuotaItemChange="item => quotaItemChange(item, 'yAxisExt')"
                                     @onQuotaItemRemove="quotaItemRemove"
                                     @onNameEdit="showRename"
+                                    @editItemFilter="showQuotaEditFilter"
                                     @editItemCompare="showQuotaEditCompare"
                                     @valueFormatter="valueFormatter"
                                     @editSortPriority="editSortPriority"
@@ -2974,6 +3011,7 @@ const chartStyleScroll = (val: any) => {
                                     @onQuotaItemChange="item => quotaItemChange(item, 'yAxis')"
                                     @onQuotaItemRemove="quotaItemRemove"
                                     @onNameEdit="showRename"
+                                    @editItemFilter="showQuotaEditFilter"
                                     @editItemCompare="showQuotaEditCompare"
                                     @valueFormatter="valueFormatter"
                                     @editSortPriority="editSortPriority"
@@ -3054,6 +3092,7 @@ const chartStyleScroll = (val: any) => {
                                     @onQuotaItemChange="item => quotaItemChange(item, 'yAxisExt')"
                                     @onQuotaItemRemove="quotaItemRemove"
                                     @onNameEdit="showRename"
+                                    @editItemFilter="showQuotaEditFilter"
                                     @editItemCompare="showQuotaEditCompare"
                                     @valueFormatter="valueFormatter"
                                     @editSortPriority="editSortPriority"
@@ -3139,6 +3178,7 @@ const chartStyleScroll = (val: any) => {
                                   @onQuotaItemChange="item => quotaItemChange(item, 'extBubble')"
                                   @onQuotaItemRemove="quotaItemRemove"
                                   @onNameEdit="showRename"
+                                  @editItemFilter="showQuotaEditFilter"
                                   @editItemCompare="showQuotaEditCompare"
                                   @valueFormatter="valueFormatter"
                                   @editSortPriority="editSortPriority"
@@ -3995,6 +4035,25 @@ const chartStyleScroll = (val: any) => {
           <el-button type="primary" @click="saveRename(renameForm)"
             >{{ t('chart.confirm') }}
           </el-button>
+        </div>
+      </template>
+    </el-dialog>
+
+    <!--指标过滤器-->
+    <el-dialog
+      v-if="state.quotaFilterEdit"
+      v-model="state.quotaFilterEdit"
+      :title="t('chart.add_filter')"
+      :visible="state.quotaFilterEdit"
+      :close-on-click-modal="false"
+      width="600px"
+      class="dialog-css"
+    >
+      <quota-filter-editor :item="state.quotaItem" />
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="closeQuotaFilter">{{ t('chart.cancel') }} </el-button>
+          <el-button type="primary" @click="saveQuotaFilter">{{ t('chart.confirm') }} </el-button>
         </div>
       </template>
     </el-dialog>

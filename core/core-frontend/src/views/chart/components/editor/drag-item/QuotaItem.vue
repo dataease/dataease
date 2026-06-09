@@ -10,6 +10,7 @@ import icon_functions_outlined from '@/assets/svg/icon_functions_outlined.svg'
 import icon_visible_outlined from '@/assets/svg/icon_visible_outlined.svg'
 import icon_invisible_outlined from '@/assets/svg/icon_invisible_outlined.svg'
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
+import iconFilter from '@/assets/svg/icon-filter.svg'
 import { useI18n } from '@/hooks/web/useI18n'
 import { computed, onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { formatterItem } from '@/views/chart/components/js/formatter'
@@ -70,6 +71,7 @@ const emit = defineEmits([
   'onCustomSort',
   'onQuotaItemChange',
   'onNameEdit',
+  'editItemFilter',
   'editItemCompare',
   'valueFormatter',
   'onToggleHide',
@@ -164,6 +166,9 @@ const clickItem = param => {
     case 'remove':
       removeItem()
       break
+    case 'filter':
+      editFilter()
+      break
     case 'formatter':
       valueFormatter()
       break
@@ -242,6 +247,12 @@ const removeItem = () => {
 
 const getItemTagType = () => {
   tagType.value = getItemType(props.dimensionData, props.quotaData, props.item)
+}
+
+const editFilter = () => {
+  item.value.index = props.index
+  item.value.filterType = props.type
+  emit('editItemFilter', item.value)
 }
 
 const quickCalc = param => {
@@ -805,6 +816,21 @@ onMounted(() => {
           >
             <el-icon />
             <span>{{ t('chart.sort_priority') }}</span>
+          </el-dropdown-item>
+
+          <el-dropdown-item
+            class="menu-item-padding"
+            v-if="
+              chart.type !== 'multi-scatter' &&
+              props.type !== 'extLabel' &&
+              props.type !== 'extTooltip' &&
+              props.type !== 'extBubble'
+            "
+            :icon="iconFilter"
+            :command="beforeClickItem('filter')"
+            :divided="chart.type.includes('chart-mix')"
+          >
+            <span>{{ t('chart.filter') }}</span>
           </el-dropdown-item>
 
           <el-dropdown-item
