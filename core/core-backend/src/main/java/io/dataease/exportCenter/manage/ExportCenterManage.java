@@ -146,15 +146,15 @@ public class ExportCenterManage implements BaseExportApi {
         deleteExportTaskDirectory(resolveExportTaskDirectory(safeTaskId));
         if (exportTask.getExportFromType().equalsIgnoreCase("chart")) {
             ChartExcelRequest request = JsonUtil.parseObject(exportTask.getParams(), ChartExcelRequest.class);
-            exportCenterDownLoadManage.startViewTask(exportTask, request);
+            exportCenterDownLoadManage.startViewTask(safeTaskId, exportTask, request);
         }
         if (exportTask.getExportFromType().equalsIgnoreCase("dataset")) {
             DataSetExportRequest request = JsonUtil.parseObject(exportTask.getParams(), DataSetExportRequest.class);
-            exportCenterDownLoadManage.startDatasetTask(exportTask, request);
+            exportCenterDownLoadManage.startDatasetTask(safeTaskId, exportTask, request);
         }
         if (exportTask.getExportFromType().equalsIgnoreCase("data_filling")) {
             HashMap request = JsonUtil.parseObject(exportTask.getParams(), HashMap.class);
-            exportCenterDownLoadManage.startDataFillingTask(exportTask, request);
+            exportCenterDownLoadManage.startDataFillingTask(safeTaskId, exportTask, request);
         }
     }
 
@@ -267,10 +267,11 @@ public class ExportCenterManage implements BaseExportApi {
         exportTask.setParams(JsonUtil.toJSONString(request).toString());
         exportTask.setExportMachineName(hostName());
         exportTaskMapper.insert(exportTask);
+        String safeTaskId = validateExportTaskId(exportTask.getId());
         if (busiFlag.equalsIgnoreCase("dashboard")) {
-            exportCenterDownLoadManage.startPanelViewTask(exportTask, request);
+            exportCenterDownLoadManage.startPanelViewTask(safeTaskId, exportTask, request);
         } else {
-            exportCenterDownLoadManage.startDataVViewTask(exportTask, request);
+            exportCenterDownLoadManage.startDataVViewTask(safeTaskId, exportTask, request);
         }
 
     }
@@ -290,7 +291,7 @@ public class ExportCenterManage implements BaseExportApi {
         exportTask.setParams(JsonUtil.toJSONString(request).toString());
         exportTask.setExportMachineName(hostName());
         exportTaskMapper.insert(exportTask);
-        exportCenterDownLoadManage.startDatasetTask(exportTask, request);
+        exportCenterDownLoadManage.startDatasetTask(validateExportTaskId(exportTask.getId()), exportTask, request);
     }
 
     @Override
@@ -309,7 +310,7 @@ public class ExportCenterManage implements BaseExportApi {
         exportTask.setExportMachineName(hostName());
         exportTaskMapper.insert(exportTask);
         if (StringUtils.equals(exportFromType, "data_filling")) {
-            exportCenterDownLoadManage.startDataFillingTask(exportTask, request);
+            exportCenterDownLoadManage.startDataFillingTask(validateExportTaskId(exportTask.getId()), exportTask, request);
         }
     }
 

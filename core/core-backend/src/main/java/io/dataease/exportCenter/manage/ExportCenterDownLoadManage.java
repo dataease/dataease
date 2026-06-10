@@ -69,10 +69,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
 import java.net.URLEncoder;
-import java.nio.channels.Channels;
-import java.nio.channels.FileChannel;
-import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.Future;
@@ -170,24 +171,24 @@ public class ExportCenterDownLoadManage {
     }
 
     @DeLog(id = "#p0.exportFrom", ot = LogOT.EXPORT, st = LogST.DATA_FILLING)
-    public void startDataFillingTask(CoreExportTask exportTask, HashMap<String, Object> request) {
+    public void startDataFillingTask(String taskId, CoreExportTask exportTask, HashMap<String, Object> request) {
         if (ObjectUtils.isEmpty(getDataFillingApi())) {
             return;
         }
-        String dataPath = exportData_path + exportTask.getId();
-        File directory = new File(dataPath);
-        boolean isCreated = directory.mkdir();
+        Path dataDirectory = resolveExportTaskDirectory(taskId);
+        Path exportFilePath = resolveExportTaskFilePath(taskId, buildDefaultExportFileName(taskId));
+        createExportDirectory(dataDirectory);
         TokenUserBO tokenUserBO = AuthUtils.getUser();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
             AuthUtils.setUser(tokenUserBO);
             try {
                 exportTask.setExportStatus("IN_PROGRESS");
                 exportTaskMapper.updateById(exportTask);
-                getDataFillingApi().writeExcel(dataPath + "/" + exportTask.getId() + ".xlsx", new DataFillFormTableDataRequest().setId(exportTask.getExportFrom()).setWithoutLogs(true), exportTask.getUserId(), Long.parseLong(request.get("org").toString()));
+                getDataFillingApi().writeExcel(exportFilePath.toString(), new DataFillFormTableDataRequest().setId(exportTask.getExportFrom()).setWithoutLogs(true), exportTask.getUserId(), Long.parseLong(request.get("org").toString()));
                 exportTask.setExportProgress("100");
                 exportTask.setExportStatus("SUCCESS");
 
-                setFileSize(dataPath + "/" + exportTask.getId() + ".xlsx", exportTask);
+                setFileSize(exportFilePath, exportTask);
             } catch (Exception e) {
                 exportTask.setMsg(e.getMessage());
                 LogUtil.error("Failed to export data", e);
@@ -200,13 +201,10 @@ public class ExportCenterDownLoadManage {
     }
 
     @DeLog(id = "#p0.exportFrom", ot = LogOT.EXPORT, st = LogST.DATASET)
-    public void startDatasetTask(CoreExportTask exportTask, DataSetExportRequest request) {
-        String dataPath = exportData_path + exportTask.getId();
-        File directory = new File(dataPath);
-        // 如果父目录不存在，则递归创建
-        if (!directory.exists()) {
-            boolean isCreated = directory.mkdirs(); // 创建所有必要的父目录
-        }
+    public void startDatasetTask(String taskId, CoreExportTask exportTask, DataSetExportRequest request) {
+        Path dataDirectory = resolveExportTaskDirectory(taskId);
+        Path exportFilePath = resolveExportTaskFilePath(taskId, buildDefaultExportFileName(taskId));
+        createExportDirectory(dataDirectory);
 
         TokenUserBO tokenUserBO = AuthUtils.getUser();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
@@ -413,14 +411,14 @@ public class ExportCenterDownLoadManage {
                     }
                 }
                 this.addWatermarkTools(wb);
-                FileOutputStream fileOutputStream = new FileOutputStream(dataPath + "/" + exportTask.getId() + ".xlsx");
-                wb.write(fileOutputStream);
-                fileOutputStream.flush();
-                fileOutputStream.close();
+                try (OutputStream fileOutputStream = Files.newOutputStream(exportFilePath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)) {
+                    wb.write(fileOutputStream);
+                    fileOutputStream.flush();
+                }
                 wb.close();
                 exportTask.setExportProgress("100");
                 exportTask.setExportStatus("SUCCESS");
-                setFileSize(dataPath + "/" + exportTask.getId() + ".xlsx", exportTask);
+                setFileSize(exportFilePath, exportTask);
 
             } catch (Exception e) {
                 LogUtil.error("Failed to export data", e);
@@ -434,13 +432,13 @@ public class ExportCenterDownLoadManage {
     }
 
     @DeLog(id = "#p0.exportFrom", ot = LogOT.EXPORT, st = LogST.PANEL)
-    public void startPanelViewTask(CoreExportTask exportTask, ChartExcelRequest request) {
-        startViewTask(exportTask, request);
+    public void startPanelViewTask(String taskId, CoreExportTask exportTask, ChartExcelRequest request) {
+        startViewTask(taskId, exportTask, request);
     }
 
     @DeLog(id = "#p0.exportFrom", ot = LogOT.EXPORT, st = LogST.SCREEN)
-    public void startDataVViewTask(CoreExportTask exportTask, ChartExcelRequest request) {
-        startViewTask(exportTask, request);
+    public void startDataVViewTask(String taskId, CoreExportTask exportTask, ChartExcelRequest request) {
+        startViewTask(taskId, exportTask, request);
     }
 
     public static void removeColumn(List<Object[]> list, List<Integer> columnIndexs) {
@@ -460,10 +458,10 @@ public class ExportCenterDownLoadManage {
         }
     }
 
-    public void startViewTask(CoreExportTask exportTask, ChartExcelRequest request) {
-        String dataPath = exportData_path + exportTask.getId();
-        File directory = new File(dataPath);
-        boolean isCreated = directory.mkdir();
+    public void startViewTask(String taskId, CoreExportTask exportTask, ChartExcelRequest request) {
+        Path dataDirectory = resolveExportTaskDirectory(taskId);
+        Path exportFilePath = resolveExportTaskFilePath(taskId, buildDefaultExportFileName(taskId));
+        createExportDirectory(dataDirectory);
         TokenUserBO tokenUserBO = AuthUtils.getUser();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
             LicenseUtil.validate();
@@ -539,14 +537,14 @@ public class ExportCenterDownLoadManage {
                 }
                 this.addWatermarkTools(wb);
 
-                try (FileOutputStream outputStream = new FileOutputStream(dataPath + "/" + exportTask.getId() + ".xlsx")) {
+                try (OutputStream outputStream = Files.newOutputStream(exportFilePath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)) {
                     wb.write(outputStream);
                     outputStream.flush();
                 }
                 wb.close();
                 exportTask.setExportProgress("100");
                 exportTask.setExportStatus("SUCCESS");
-                setFileSize(dataPath + "/" + exportTask.getId() + ".xlsx", exportTask);
+                setFileSize(exportFilePath, exportTask);
             } catch (Exception e) {
                 exportTask.setMsg(e.getMessage());
                 LogUtil.error("Failed to export data", e);
@@ -605,9 +603,14 @@ public class ExportCenterDownLoadManage {
         }
     }
 
-    private void setFileSize(String filePath, CoreExportTask exportTask) {
-        File file = new File(filePath);
-        long length = file.length();
+    private void setFileSize(Path filePath, CoreExportTask exportTask) {
+        long length;
+        try {
+            length = Files.size(filePath);
+        } catch (IOException e) {
+            DEException.throwException(e);
+            return;
+        }
         String unit = "Mb";
         Double size = 0.0;
         if ((double) length / 1024 / 1024 > 1) {
@@ -641,24 +644,73 @@ public class ExportCenterDownLoadManage {
 
     public void download(CoreExportTask exportTask, HttpServletResponse response) throws Exception {
         response.setContentType("application/octet-stream");
-        String encodedFileName = URLEncoder.encode(exportTask.getFileName(), StandardCharsets.UTF_8);
+        String downloadFileName = resolveDownloadFileName(exportTask);
+        String encodedFileName = URLEncoder.encode(downloadFileName, StandardCharsets.UTF_8);
         response.setHeader("Content-Disposition", "attachment; filename=\"" + encodedFileName + "\"; filename*=utf-8''" + encodedFileName);
-        String filePath;
+        String taskId = validateExportTaskId(exportTask.getId());
+        Path filePath;
 
         if (exportTask.getExportTime() < 1730277243491L) {
-            filePath = exportData_path + exportTask.getId() + "/" + exportTask.getFileName();
+            filePath = resolveExportTaskFilePath(taskId, downloadFileName);
         } else {
-            filePath = exportData_path + exportTask.getId() + "/" + exportTask.getId() + ".xlsx";
+            filePath = resolveExportTaskFilePath(taskId, buildDefaultExportFileName(taskId));
         }
 
-        try (FileInputStream fileInputStream = new FileInputStream(filePath); OutputStream outputStream = response.getOutputStream()) {
-            FileChannel fileChannel = fileInputStream.getChannel();
-            WritableByteChannel outputChannel = Channels.newChannel(outputStream);
-            fileChannel.transferTo(0, fileChannel.size(), outputChannel);
+        try (InputStream fileInputStream = Files.newInputStream(filePath); OutputStream outputStream = response.getOutputStream()) {
+            fileInputStream.transferTo(outputStream);
+            outputStream.flush();
             response.flushBuffer();
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private String validateExportTaskId(String taskId) {
+        if (StringUtils.isBlank(taskId) || !StringUtils.isNumeric(taskId)) {
+            DEException.throwException("任务不存在");
+        }
+        return taskId;
+    }
+
+    private Path resolveExportBasePath() {
+        return Paths.get(exportData_path).toAbsolutePath().normalize();
+    }
+
+    private Path resolveExportTaskDirectory(String taskId) {
+        Path exportBasePath = resolveExportBasePath();
+        Path exportTaskPath = exportBasePath.resolve(taskId).normalize();
+        if (!exportTaskPath.startsWith(exportBasePath)) {
+            DEException.throwException("Invalid export task path");
+        }
+        return exportTaskPath;
+    }
+
+    private Path resolveExportTaskFilePath(String taskId, String fileName) {
+        FileUtils.validateUploadFilename(fileName);
+        Path exportTaskDirectory = resolveExportTaskDirectory(taskId);
+        Path exportFilePath = exportTaskDirectory.resolve(fileName).normalize();
+        if (!exportFilePath.startsWith(exportTaskDirectory)) {
+            DEException.throwException("Invalid export task file path");
+        }
+        return exportFilePath;
+    }
+
+    private void createExportDirectory(Path dataDirectory) {
+        try {
+            Files.createDirectories(dataDirectory);
+        } catch (IOException e) {
+            DEException.throwException(e);
+        }
+    }
+
+    private String buildDefaultExportFileName(String taskId) {
+        return taskId + ".xlsx";
+    }
+
+    private String resolveDownloadFileName(CoreExportTask exportTask) {
+        String fileName = exportTask.getFileName();
+        FileUtils.validateUploadFilename(fileName);
+        return fileName;
     }
 
     public void downloadDataset(DataSetExportRequest request, HttpServletResponse response) throws Exception {
