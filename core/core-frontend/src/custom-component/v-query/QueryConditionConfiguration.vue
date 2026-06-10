@@ -3779,6 +3779,8 @@ defineExpose({
 
       .select-all {
         height: 40px;
+        display: flex;
+        align-items: center;
       }
 
       .field-list {
