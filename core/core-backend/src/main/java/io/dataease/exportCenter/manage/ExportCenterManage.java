@@ -138,7 +138,7 @@ public class ExportCenterManage implements BaseExportApi {
         exportTask.setExportMachineName(hostName());
         exportTask.setExportTime(System.currentTimeMillis());
         exportTaskMapper.updateById(exportTask);
-        FileUtils.deleteDirectoryRecursively(resolveExportTaskDirectory(id));
+        FileUtils.deleteDirectoryRecursively(resolveExportBasePath(), resolveExportTaskDirectory(id));
         if (exportTask.getExportFromType().equalsIgnoreCase("chart")) {
             ChartExcelRequest request = JsonUtil.parseObject(exportTask.getParams(), ChartExcelRequest.class);
             exportCenterDownLoadManage.startViewTask(exportTask, request);
@@ -377,15 +377,19 @@ public class ExportCenterManage implements BaseExportApi {
                 iterator.remove();
             }
         }
-        FileUtils.deleteDirectoryRecursively(resolveExportTaskDirectory(id));
+        FileUtils.deleteDirectoryRecursively(resolveExportBasePath(), resolveExportTaskDirectory(id));
         exportTaskMapper.deleteById(id);
+    }
+
+    private Path resolveExportBasePath() {
+        return Paths.get(exportData_path).toAbsolutePath().normalize();
     }
 
     private Path resolveExportTaskDirectory(String taskId) {
         if (StringUtils.isBlank(taskId) || !StringUtils.isNumeric(taskId)) {
             DEException.throwException("任务不存在");
         }
-        Path exportBasePath = Paths.get(exportData_path).toAbsolutePath().normalize();
+        Path exportBasePath = resolveExportBasePath();
         Path exportTaskPath = exportBasePath.resolve(taskId).normalize();
         if (!exportTaskPath.startsWith(exportBasePath)) {
             DEException.throwException("Invalid export task path");
