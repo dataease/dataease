@@ -16,16 +16,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.regex.Pattern;
 
 public class ExcelWatermarkUtils {
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-    private static final int MAX_TEXT_LENGTH = 100;
-    private static final int MAX_IMAGE_WIDTH = 4096;
-    private static final int MAX_IMAGE_HEIGHT = 4096;
-    private static final Pattern IP_PATTERN = Pattern.compile(
-            "^([0-9]{1,3}\\.){3}[0-9]{1,3}$|^([0-9a-fA-F]{0,4}:){2,7}[0-9a-fA-F]{0,4}$");
 
 
     public static String transContent(WatermarkContentDTO watermarkContent, UserFormVO userInfo) {
@@ -38,11 +31,7 @@ public class ExcelWatermarkUtils {
             default -> content = "${username}";
         }
         String nickName = userInfo.getName().contains("i18n_") ?Translator.get(userInfo.getName()):userInfo.getName();
-        String ip = IPUtils.get();
-        if (ip == null || !IP_PATTERN.matcher(ip.trim()).matches()) {
-            ip = "127.0.0.1";
-        }
-        content = content.replaceAll("\\$\\{ip}", ip);
+        content = content.replaceAll("\\$\\{ip}", IPUtils.get() == null ? "127.0.0.1" : IPUtils.get());
         content = content.replaceAll("\\$\\{username}", userInfo.getAccount());
         content = content.replaceAll("\\$\\{nickName}", nickName);
         content = content.replaceAll("\\$\\{time}", sdf.format(new Date()));
@@ -100,14 +89,9 @@ public class ExcelWatermarkUtils {
     }
 
     public static byte[] createTextImage(String text, WatermarkContentDTO watermarkContent) {
-        if (text.length() > MAX_TEXT_LENGTH) {
-            text = text.substring(0, MAX_TEXT_LENGTH);
-        }
         double radians = Math.toRadians(15);// 15度偏转
         int width = watermarkContent.getWatermark_fontsize() * text.length();
         int height = (int) Math.round(watermarkContent.getWatermark_fontsize() + width * Math.sin(radians));
-        width = Math.min(width, MAX_IMAGE_WIDTH);
-        height = Math.min(height, MAX_IMAGE_HEIGHT);
         int fontSize = watermarkContent.getWatermark_fontsize();
         Color baseColor = Color.decode(watermarkContent.getWatermark_color());
 
