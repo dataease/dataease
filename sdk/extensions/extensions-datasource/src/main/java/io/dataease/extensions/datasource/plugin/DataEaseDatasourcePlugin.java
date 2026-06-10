@@ -15,6 +15,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -57,18 +60,12 @@ public abstract class DataEaseDatasourcePlugin extends Provider implements DataE
             Enumeration<JarEntry> entries = jarFile.entries();
             while (entries.hasMoreElements()) {
                 JarEntry entry = entries.nextElement();
-                String name = entry.getName();
-                if (!entry.isDirectory() && StringUtils.endsWith(name, ".jar")) {
-                    String fileName = extractSafeDriverFileName(name);
-                    File file = resolveDriverFile(localPath, fileName);
-                    if (!file.getParentFile().exists()) {
-                        if (!file.getParentFile().mkdirs()) {
-                            DEException.throwException("Failed to create driver directory");
-                        }
-                    }
+                if (!entry.isDirectory() && StringUtils.endsWith(entry.getName(), ".jar")) {
+                    Path file = resolveDriverPath(localPath, entry);
+                    Files.createDirectories(file.getParent());
 
                     try (InputStream inputStream = jarFile.getInputStream(entry);
-                         FileOutputStream outputStream = new FileOutputStream(file)) {
+                         FileOutputStream outputStream = new FileOutputStream(file.toFile())) {
                         byte[] bytes = new byte[1024];
                         int length;
                         while ((length = inputStream.read(bytes)) >= 0) {
@@ -101,11 +98,9 @@ public abstract class DataEaseDatasourcePlugin extends Provider implements DataE
                 Enumeration<JarEntry> entries = jarFile.entries();
                 while (entries.hasMoreElements()) {
                     JarEntry entry = entries.nextElement();
-                    String name = entry.getName();
-                    if (!entry.isDirectory() && StringUtils.endsWith(name, ".jar")) {
-                        String fileName = extractSafeDriverFileName(name);
-                        File file = resolveDriverFile(DEFAULT_FILE_PATH, fileName);
-                        file.delete();
+                    if (!entry.isDirectory() && StringUtils.endsWith(entry.getName(), ".jar")) {
+                        Path file = resolveDriverPath(DEFAULT_FILE_PATH, entry);
+                        Files.deleteIfExists(file);
                     }
                 }
             }
@@ -114,33 +109,37 @@ public abstract class DataEaseDatasourcePlugin extends Provider implements DataE
         }
     }
 
-    private String extractSafeDriverFileName(String entryName) {
-        if (StringUtils.isBlank(entryName)
-                || StringUtils.contains(entryName, "..")
-                || StringUtils.startsWith(entryName, "/")
-                || StringUtils.startsWith(entryName, "\\")
-                || StringUtils.contains(entryName, ":")) {
+    private Path resolveDriverPath(String localPath, JarEntry entry) {
+        String fileName = extractSafeDriverFileName(entry);
+        Path targetDirectory = Paths.get(localPath).toAbsolutePath().normalize();
+        Path targetFile = targetDirectory.resolve(fileName).normalize();
+        if (!targetFile.startsWith(targetDirectory)) {
+            DEException.throwException("Invalid driver file path");
+        }
+        return targetFile;
+    }
+
+    private String extractSafeDriverFileName(JarEntry entry) {
+        String entryName = entry.getName();
+        if (StringUtils.isBlank(entryName)) {
             DEException.throwException("Invalid driver entry path");
         }
         String normalizedEntryName = entryName.replace('\\', '/');
-        int lastSeparatorIndex = normalizedEntryName.lastIndexOf('/');
-        String fileName = lastSeparatorIndex >= 0 ? normalizedEntryName.substring(lastSeparatorIndex + 1) : normalizedEntryName;
+        if (StringUtils.contains(normalizedEntryName, "..")
+                || StringUtils.startsWith(normalizedEntryName, "/")
+                || StringUtils.startsWith(normalizedEntryName, "\\")
+                || StringUtils.contains(normalizedEntryName, ":")) {
+            DEException.throwException("Invalid driver entry path");
+        }
+        Path normalizedEntryPath = Paths.get(normalizedEntryName).normalize();
+        Path fileNamePath = normalizedEntryPath.getFileName();
+        if (fileNamePath == null) {
+            DEException.throwException("Invalid driver entry path");
+        }
+        String fileName = fileNamePath.toString();
         if (!SAFE_DRIVER_FILE_NAME.matcher(fileName).matches()) {
             DEException.throwException("Invalid driver file name");
         }
         return fileName;
-    }
-
-    private File resolveDriverFile(String localPath, String fileName) {
-        File dirFile = new File(localPath);
-        File file = new File(dirFile, fileName);
-        try {
-            if (!file.getCanonicalPath().startsWith(dirFile.getCanonicalPath() + File.separator)) {
-                DEException.throwException("Invalid driver file path");
-            }
-        } catch (IOException e) {
-            DEException.throwException(e);
-        }
-        return file;
     }
 }
