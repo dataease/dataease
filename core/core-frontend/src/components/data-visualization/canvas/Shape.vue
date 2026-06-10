@@ -1000,7 +1000,7 @@ const componentBackgroundStyle = computed(() => {
   if (element.value.commonBackground && element.value.component !== 'GroupArea') {
     return getComponentBackgroundStyle(element.value.commonBackground, {
       scale: scale.value,
-      isUserView: element.value.component === 'UserView',
+      isUserView: ['DeTabs', 'UserView'].includes(element.value.component),
       forceNoPadding: ['Group'].includes(element.value.component)
     })
   }

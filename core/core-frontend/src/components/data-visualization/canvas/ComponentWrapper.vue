@@ -316,7 +316,7 @@ const componentBackgroundStyle = computed(() => {
     } else {
       style['background-color'] = colorRGBA
     }
-    if (config.value.component !== 'UserView') {
+    if (!['DeTabs', 'UserView'].includes(config.value.component)) {
       style['overflow'] = 'hidden'
     }
     if (backdropFilterEnable) {
