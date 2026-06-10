@@ -27,6 +27,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -166,10 +167,9 @@ public class FontManage {
             if (StringUtils.isEmpty(filename) || !filename.toLowerCase().endsWith(".ttf")) {
                 DEException.throwException("非法格式的文件！");
             }
-            String suffix = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
-            String fileTransName = fileNameUUID + "." + suffix;
+            String fileTransName = fileNameUUID + ".ttf";
             Path filePath = resolveFontPath(fileTransName);
-            try (FileOutputStream fileOutputStream = new FileOutputStream(filePath.toFile())) {
+            try (OutputStream fileOutputStream = Files.newOutputStream(filePath, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE)) {
                 fileOutputStream.write(file.getBytes());
                 fileOutputStream.flush();
             }
