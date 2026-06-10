@@ -35,7 +35,9 @@ function showInfo() {
       center
     >
       <el-main style="height: 400px; padding: 0; margin-top: 20px">
-        <span style="white-space: pre-line" v-html="errMsg"></span>
+        <span style="white-space: pre-line">
+          {{ errMsg }}
+        </span>
       </el-main>
       <template #footer>
         <span class="m-dialog-footer">
