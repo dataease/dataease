@@ -52,6 +52,8 @@ import io.dataease.api.permissions.user.vo.UserFormVO;
 
 import java.lang.reflect.Method;
 import java.net.InetAddress;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.Future;
 
@@ -136,7 +138,7 @@ public class ExportCenterManage implements BaseExportApi {
         exportTask.setExportMachineName(hostName());
         exportTask.setExportTime(System.currentTimeMillis());
         exportTaskMapper.updateById(exportTask);
-        FileUtils.deleteDirectoryRecursively(exportData_path + id);
+        FileUtils.deleteDirectoryRecursively(resolveExportTaskDirectory(id));
         if (exportTask.getExportFromType().equalsIgnoreCase("chart")) {
             ChartExcelRequest request = JsonUtil.parseObject(exportTask.getParams(), ChartExcelRequest.class);
             exportCenterDownLoadManage.startViewTask(exportTask, request);
@@ -375,8 +377,20 @@ public class ExportCenterManage implements BaseExportApi {
                 iterator.remove();
             }
         }
-        FileUtils.deleteDirectoryRecursively(exportData_path + id);
+        FileUtils.deleteDirectoryRecursively(resolveExportTaskDirectory(id));
         exportTaskMapper.deleteById(id);
+    }
+
+    private Path resolveExportTaskDirectory(String taskId) {
+        if (StringUtils.isBlank(taskId) || !StringUtils.isNumeric(taskId)) {
+            DEException.throwException("任务不存在");
+        }
+        Path exportBasePath = Paths.get(exportData_path).toAbsolutePath().normalize();
+        Path exportTaskPath = exportBasePath.resolve(taskId).normalize();
+        if (!exportTaskPath.startsWith(exportBasePath)) {
+            DEException.throwException("Invalid export task path");
+        }
+        return exportTaskPath;
     }
 
     public CoreExportTask validateDownloadTask(String id, String ticket) {

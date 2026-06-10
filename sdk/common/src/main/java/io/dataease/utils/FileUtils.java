@@ -10,7 +10,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -294,21 +296,31 @@ public class FileUtils {
 
 
     public static boolean deleteDirectoryRecursively(String directoryPath) {
-        File directory = new File(directoryPath);
-        if (!directory.exists()) {
+        Assert.hasText(directoryPath, "Directory path must not be blank");
+        return deleteDirectoryRecursively(Paths.get(directoryPath));
+    }
+
+    public static boolean deleteDirectoryRecursively(Path directory) {
+        Assert.notNull(directory, "Directory path must not be null");
+        Path normalizedDirectory = directory.toAbsolutePath().normalize();
+        if (Files.notExists(normalizedDirectory, LinkOption.NOFOLLOW_LINKS)) {
             return true;
         }
-
-        File[] files = directory.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    deleteDirectoryRecursively(file.getAbsolutePath());
-                } else {
-                    boolean deletionSuccess = file.delete();
-                }
+        File[] files = normalizedDirectory.toFile().listFiles();
+        if (files == null) {
+            return normalizedDirectory.toFile().delete();
+        }
+        for (File file : files) {
+            Path child = file.toPath().toAbsolutePath().normalize();
+            if (!child.startsWith(normalizedDirectory)) {
+                DEException.throwException("Invalid directory path");
+            }
+            if (Files.isDirectory(child, LinkOption.NOFOLLOW_LINKS)) {
+                deleteDirectoryRecursively(child);
+            } else {
+                file.delete();
             }
         }
-        return directory.delete();
+        return normalizedDirectory.toFile().delete();
     }
 }
