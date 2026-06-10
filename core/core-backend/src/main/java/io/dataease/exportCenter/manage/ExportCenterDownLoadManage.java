@@ -70,9 +70,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.Future;
@@ -181,7 +178,7 @@ public class ExportCenterDownLoadManage {
             try {
                 updateExportTask(exportTarget.taskId(), "IN_PROGRESS", null, null, null, null);
                 getDataFillingApi().writeExcel(exportTarget.filePath(), new DataFillFormTableDataRequest().setId(exportFrom).setWithoutLogs(true), userId, Long.parseLong(request.get("org").toString()));
-                setFileSize(exportTarget, "SUCCESS", "100");
+                updateExportTaskSuccess(exportTarget, "100");
             } catch (Exception e) {
                 LogUtil.error("Failed to export data", e);
                 updateExportTask(exportTarget.taskId(), "FAILED", null, e.getMessage(), null, null);
@@ -401,7 +398,7 @@ public class ExportCenterDownLoadManage {
                     fileOutputStream.flush();
                 }
                 wb.close();
-                setFileSize(exportTarget, "SUCCESS", "100");
+                updateExportTaskSuccess(exportTarget, "100");
 
             } catch (Exception e) {
                 LogUtil.error("Failed to export data", e);
@@ -517,7 +514,7 @@ public class ExportCenterDownLoadManage {
                     outputStream.flush();
                 }
                 wb.close();
-                setFileSize(exportTarget, "SUCCESS", "100");
+                updateExportTaskSuccess(exportTarget, "100");
             } catch (Exception e) {
                 LogUtil.error("Failed to export data", e);
                 updateExportTask(exportTarget.taskId(), "FAILED", null, e.getMessage(), null, null);
@@ -584,29 +581,13 @@ public class ExportCenterDownLoadManage {
         }
     }
 
-    private void setFileSize(ExportTaskFileTarget exportTarget, String exportStatus, String exportProgress) {
-        long length;
+    private void updateExportTaskSuccess(ExportTaskFileTarget exportTarget, String exportProgress) {
         try {
-            length = exportTarget.size();
+            ExportTaskFileTarget.FileSize fileSize = exportTarget.readFileSize();
+            updateExportTask(exportTarget.taskId(), "SUCCESS", exportProgress, null, fileSize.size(), fileSize.unit());
         } catch (IOException e) {
             DEException.throwException(e);
-            return;
         }
-        String unit = "Mb";
-        Double size = 0.0;
-        if ((double) length / 1024 / 1024 > 1) {
-            if ((double) length / 1024 / 1024 / 1024 > 1) {
-                unit = "Gb";
-                size = Double.valueOf(String.format("%.2f", (double) length / 1024 / 1024 / 1024));
-            } else {
-                size = Double.valueOf(String.format("%.2f", (double) length / 1024 / 1024));
-            }
-
-        } else {
-            unit = "Kb";
-            size = Double.valueOf(String.format("%.2f", (double) length / 1024));
-        }
-        updateExportTask(exportTarget.taskId(), exportStatus, exportProgress, null, size, unit);
     }
 
     public void addWatermarkTools(Workbook wb) {
@@ -622,63 +603,17 @@ public class ExportCenterDownLoadManage {
         }
     }
 
-    public void download(CoreExportTask exportTask, HttpServletResponse response) throws Exception {
+    public void download(ExportTaskFileTarget exportTarget, String downloadFileName, HttpServletResponse response) throws Exception {
         response.setContentType("application/octet-stream");
-        String downloadFileName = resolveDownloadFileName(exportTask);
         String encodedFileName = URLEncoder.encode(downloadFileName, StandardCharsets.UTF_8);
         response.setHeader("Content-Disposition", "attachment; filename=\"" + encodedFileName + "\"; filename*=utf-8''" + encodedFileName);
-        String taskId = validateExportTaskId(exportTask.getId());
-        Path filePath;
-
-        if (exportTask.getExportTime() < 1730277243491L) {
-            filePath = resolveExportTaskFilePath(taskId, downloadFileName);
-        } else {
-            filePath = resolveExportTaskFilePath(taskId, taskId + ".xlsx");
-        }
-
-        try (InputStream fileInputStream = Files.newInputStream(filePath); OutputStream outputStream = response.getOutputStream()) {
+        try (InputStream fileInputStream = exportTarget.newInputStream(); OutputStream outputStream = response.getOutputStream()) {
             fileInputStream.transferTo(outputStream);
             outputStream.flush();
             response.flushBuffer();
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
-    }
-
-    private String validateExportTaskId(String taskId) {
-        if (StringUtils.isBlank(taskId) || !StringUtils.isNumeric(taskId)) {
-            DEException.throwException("任务不存在");
-        }
-        return taskId;
-    }
-
-    private Path resolveExportBasePath() {
-        return Paths.get(exportData_path).toAbsolutePath().normalize();
-    }
-
-    private Path resolveExportTaskDirectory(String taskId) {
-        Path exportBasePath = resolveExportBasePath();
-        Path exportTaskPath = exportBasePath.resolve(taskId).normalize();
-        if (!exportTaskPath.startsWith(exportBasePath)) {
-            DEException.throwException("Invalid export task path");
-        }
-        return exportTaskPath;
-    }
-
-    private Path resolveExportTaskFilePath(String taskId, String fileName) {
-        FileUtils.validateUploadFilename(fileName);
-        Path exportTaskDirectory = resolveExportTaskDirectory(taskId);
-        Path exportFilePath = exportTaskDirectory.resolve(fileName).normalize();
-        if (!exportFilePath.startsWith(exportTaskDirectory)) {
-            DEException.throwException("Invalid export task file path");
-        }
-        return exportFilePath;
-    }
-
-    private String resolveDownloadFileName(CoreExportTask exportTask) {
-        String fileName = exportTask.getFileName();
-        FileUtils.validateUploadFilename(fileName);
-        return fileName;
     }
 
     public void downloadDataset(DataSetExportRequest request, HttpServletResponse response) throws Exception {

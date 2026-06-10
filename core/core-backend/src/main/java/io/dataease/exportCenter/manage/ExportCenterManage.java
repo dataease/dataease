@@ -104,8 +104,9 @@ public class ExportCenterManage implements BaseExportApi {
     }
 
     public void download(String id, String ticket, HttpServletResponse response) throws Exception {
-        CoreExportTask exportTask = validateDownloadTask(validateExportTaskId(id), ticket);
-        exportCenterDownLoadManage.download(exportTask, response);
+        String safeTaskId = validateExportTaskId(id);
+        CoreExportTask exportTask = validateDownloadTask(safeTaskId, ticket);
+        exportCenterDownLoadManage.download(resolveDownloadTarget(safeTaskId, exportTask), resolveDownloadFileName(exportTask), response);
     }
 
     public void delete(String id) {
@@ -414,6 +415,29 @@ public class ExportCenterManage implements BaseExportApi {
 
     private ExportTaskFileTarget resolveExportTaskFileTarget(String taskId) {
         return new ExportTaskFileTarget(taskId, resolveExportTaskFilePath(taskId));
+    }
+
+    private ExportTaskFileTarget resolveDownloadTarget(String taskId, CoreExportTask exportTask) {
+        if (exportTask.getExportTime() < 1730277243491L) {
+            return new ExportTaskFileTarget(taskId, resolveExportTaskFilePath(taskId, resolveDownloadFileName(exportTask)));
+        }
+        return resolveExportTaskFileTarget(taskId);
+    }
+
+    private Path resolveExportTaskFilePath(String taskId, String fileName) {
+        FileUtils.validateUploadFilename(fileName);
+        Path exportTaskDirectory = resolveExportTaskDirectory(taskId);
+        Path exportFilePath = exportTaskDirectory.resolve(fileName).normalize();
+        if (!exportFilePath.startsWith(exportTaskDirectory)) {
+            DEException.throwException("Invalid export task file path");
+        }
+        return exportFilePath;
+    }
+
+    private String resolveDownloadFileName(CoreExportTask exportTask) {
+        String fileName = exportTask.getFileName();
+        FileUtils.validateUploadFilename(fileName);
+        return fileName;
     }
 
     private String validateExportTaskId(String taskId) {
