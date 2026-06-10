@@ -73,7 +73,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.Future;
@@ -171,36 +170,36 @@ public class ExportCenterDownLoadManage {
     }
 
     @DeLog(id = "#p0.exportFrom", ot = LogOT.EXPORT, st = LogST.DATA_FILLING)
-    public void startDataFillingTask(String runningTaskId, Path exportFilePath, Long exportFrom, Long userId, HashMap<String, Object> request) {
+    public void startDataFillingTask(ExportTaskFileTarget exportTarget, Long exportFrom, Long userId, HashMap<String, Object> request) {
         if (ObjectUtils.isEmpty(getDataFillingApi())) {
             return;
         }
-        createExportDirectory(exportFilePath.getParent());
+        exportTarget.createParentDirectory();
         TokenUserBO tokenUserBO = AuthUtils.getUser();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
             AuthUtils.setUser(tokenUserBO);
             try {
-                updateExportTask(runningTaskId, "IN_PROGRESS", null, null, null, null);
-                getDataFillingApi().writeExcel(exportFilePath.toString(), new DataFillFormTableDataRequest().setId(exportFrom).setWithoutLogs(true), userId, Long.parseLong(request.get("org").toString()));
-                setFileSize(exportFilePath, runningTaskId, "SUCCESS", "100");
+                updateExportTask(exportTarget.taskId(), "IN_PROGRESS", null, null, null, null);
+                getDataFillingApi().writeExcel(exportTarget.filePath(), new DataFillFormTableDataRequest().setId(exportFrom).setWithoutLogs(true), userId, Long.parseLong(request.get("org").toString()));
+                setFileSize(exportTarget, "SUCCESS", "100");
             } catch (Exception e) {
                 LogUtil.error("Failed to export data", e);
-                updateExportTask(runningTaskId, "FAILED", null, e.getMessage(), null, null);
+                updateExportTask(exportTarget.taskId(), "FAILED", null, e.getMessage(), null, null);
             }
         });
-        Running_Task.put(runningTaskId, future);
+        Running_Task.put(exportTarget.taskId(), future);
     }
 
     @DeLog(id = "#p0.exportFrom", ot = LogOT.EXPORT, st = LogST.DATASET)
-    public void startDatasetTask(String runningTaskId, Path exportFilePath, Long exportFrom, DataSetExportRequest request) {
-        createExportDirectory(exportFilePath.getParent());
+    public void startDatasetTask(ExportTaskFileTarget exportTarget, Long exportFrom, DataSetExportRequest request) {
+        exportTarget.createParentDirectory();
 
         TokenUserBO tokenUserBO = AuthUtils.getUser();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
             LicenseUtil.validate();
             AuthUtils.setUser(tokenUserBO);
             try {
-                updateExportTask(runningTaskId, "IN_PROGRESS", null, null, null, null);
+                updateExportTask(exportTarget.taskId(), "IN_PROGRESS", null, null, null, null);
                 CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(exportFrom);
                 if (coreDatasetGroup == null) {
                     throw new Exception("Not found dataset group: " + exportFrom);
@@ -393,33 +392,33 @@ public class ExportCenterDownLoadManage {
                         double exportRogress = (double) ((double) (p + 1) / (double) pageSize) * ((double) 1 / sheetCount);
                         DecimalFormat df = new DecimalFormat("#.##");
                         String formattedResult = df.format((exportRogress + exportRogress2) * 100);
-                        updateExportTask(runningTaskId, "IN_PROGRESS", formattedResult, null, null, null);
+                        updateExportTask(exportTarget.taskId(), "IN_PROGRESS", formattedResult, null, null, null);
                     }
                 }
                 this.addWatermarkTools(wb);
-                try (OutputStream fileOutputStream = Files.newOutputStream(exportFilePath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)) {
+                try (OutputStream fileOutputStream = exportTarget.newOutputStream()) {
                     wb.write(fileOutputStream);
                     fileOutputStream.flush();
                 }
                 wb.close();
-                setFileSize(exportFilePath, runningTaskId, "SUCCESS", "100");
+                setFileSize(exportTarget, "SUCCESS", "100");
 
             } catch (Exception e) {
                 LogUtil.error("Failed to export data", e);
-                updateExportTask(runningTaskId, "FAILED", null, e.getMessage(), null, null);
+                updateExportTask(exportTarget.taskId(), "FAILED", null, e.getMessage(), null, null);
             }
         });
-        Running_Task.put(runningTaskId, future);
+        Running_Task.put(exportTarget.taskId(), future);
     }
 
     @DeLog(id = "#p0.exportFrom", ot = LogOT.EXPORT, st = LogST.PANEL)
-    public void startPanelViewTask(String runningTaskId, Path exportFilePath, ChartExcelRequest request) {
-        startViewTask(runningTaskId, exportFilePath, request);
+    public void startPanelViewTask(ExportTaskFileTarget exportTarget, ChartExcelRequest request) {
+        startViewTask(exportTarget, request);
     }
 
     @DeLog(id = "#p0.exportFrom", ot = LogOT.EXPORT, st = LogST.SCREEN)
-    public void startDataVViewTask(String runningTaskId, Path exportFilePath, ChartExcelRequest request) {
-        startViewTask(runningTaskId, exportFilePath, request);
+    public void startDataVViewTask(ExportTaskFileTarget exportTarget, ChartExcelRequest request) {
+        startViewTask(exportTarget, request);
     }
 
     public static void removeColumn(List<Object[]> list, List<Integer> columnIndexs) {
@@ -439,14 +438,14 @@ public class ExportCenterDownLoadManage {
         }
     }
 
-    public void startViewTask(String runningTaskId, Path exportFilePath, ChartExcelRequest request) {
-        createExportDirectory(exportFilePath.getParent());
+    public void startViewTask(ExportTaskFileTarget exportTarget, ChartExcelRequest request) {
+        exportTarget.createParentDirectory();
         TokenUserBO tokenUserBO = AuthUtils.getUser();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
             LicenseUtil.validate();
             AuthUtils.setUser(tokenUserBO);
             try {
-                updateExportTask(runningTaskId, "IN_PROGRESS", null, null, null, null);
+                updateExportTask(exportTarget.taskId(), "IN_PROGRESS", null, null, null, null);
                 Workbook wb = new SXSSFWorkbook();
                 CellStyle cellStyle = wb.createCellStyle();
                 Font font = wb.createFont();
@@ -506,25 +505,25 @@ public class ExportCenterDownLoadManage {
                         double exportProgress = (double) ((double) i / (chartViewDTO.getTotalPage()));
                         DecimalFormat df = new DecimalFormat("#.##");
                         String formattedResult = df.format((exportProgress) * 100);
-                        updateExportTask(runningTaskId, "IN_PROGRESS", formattedResult, null, null, null);
+                        updateExportTask(exportTarget.taskId(), "IN_PROGRESS", formattedResult, null, null, null);
                     }
                 } else {
                     downloadNotTableInfoData(request, wb);
                 }
                 this.addWatermarkTools(wb);
 
-                try (OutputStream outputStream = Files.newOutputStream(exportFilePath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)) {
+                try (OutputStream outputStream = exportTarget.newOutputStream()) {
                     wb.write(outputStream);
                     outputStream.flush();
                 }
                 wb.close();
-                setFileSize(exportFilePath, runningTaskId, "SUCCESS", "100");
+                setFileSize(exportTarget, "SUCCESS", "100");
             } catch (Exception e) {
                 LogUtil.error("Failed to export data", e);
-                updateExportTask(runningTaskId, "FAILED", null, e.getMessage(), null, null);
+                updateExportTask(exportTarget.taskId(), "FAILED", null, e.getMessage(), null, null);
             }
         });
-        Running_Task.put(runningTaskId, future);
+        Running_Task.put(exportTarget.taskId(), future);
     }
 
     private void updateExportTask(String taskId, String exportStatus, String exportProgress, String msg, Double fileSize, String fileSizeUnit) {
@@ -585,10 +584,10 @@ public class ExportCenterDownLoadManage {
         }
     }
 
-    private void setFileSize(Path filePath, String taskId, String exportStatus, String exportProgress) {
+    private void setFileSize(ExportTaskFileTarget exportTarget, String exportStatus, String exportProgress) {
         long length;
         try {
-            length = Files.size(filePath);
+            length = exportTarget.size();
         } catch (IOException e) {
             DEException.throwException(e);
             return;
@@ -607,7 +606,7 @@ public class ExportCenterDownLoadManage {
             unit = "Kb";
             size = Double.valueOf(String.format("%.2f", (double) length / 1024));
         }
-        updateExportTask(taskId, exportStatus, exportProgress, null, size, unit);
+        updateExportTask(exportTarget.taskId(), exportStatus, exportProgress, null, size, unit);
     }
 
     public void addWatermarkTools(Workbook wb) {
@@ -674,14 +673,6 @@ public class ExportCenterDownLoadManage {
             DEException.throwException("Invalid export task file path");
         }
         return exportFilePath;
-    }
-
-    private void createExportDirectory(Path dataDirectory) {
-        try {
-            Files.createDirectories(dataDirectory);
-        } catch (IOException e) {
-            DEException.throwException(e);
-        }
     }
 
     private String resolveDownloadFileName(CoreExportTask exportTask) {
