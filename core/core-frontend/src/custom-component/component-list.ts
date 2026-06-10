@@ -712,9 +712,9 @@ export function findNewComponentFromList(
     newComponent.name = viewConfig?.title
     newComponent.label = viewConfig?.title
     newComponent.render = viewConfig?.render
-    newComponent.isPlugin = !!isPlugin
+    newComponent.isPlugin = !!isPlugin || !!viewConfig?.isPlugin
     if (isPlugin) {
-      newComponent.staticMap = staticMap
+      newComponent.staticMap = staticMap || viewConfig?.staticMap
     }
   }
   return newComponent
