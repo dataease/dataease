@@ -37,6 +37,7 @@ import java.util.regex.Pattern;
 public class FontManage {
 
     private static final Pattern SAFE_FONT_FILE_NAME = Pattern.compile("^[A-Za-z0-9._-]+\\.ttf$", Pattern.CASE_INSENSITIVE);
+    private static final String TTF_EXTENSION = ".ttf";
 
     @Value("${dataease.path.font:/opt/dataease2.0/data/font/}")
     private String path;
@@ -164,18 +165,16 @@ public class FontManage {
         try {
             String filename = file.getOriginalFilename();
             FileUtils.validateUploadFilename(filename);
-            if (StringUtils.isEmpty(filename) || !filename.toLowerCase().endsWith(".ttf")) {
+            if (StringUtils.isEmpty(filename) || !filename.toLowerCase().endsWith(TTF_EXTENSION)) {
                 DEException.throwException("非法格式的文件！");
             }
-            String fileTransName = fileNameUUID + ".ttf";
+            UploadedFont uploadedFont = validateAndReadUploadedFont(file);
+            String fileTransName = fileNameUUID + TTF_EXTENSION;
             Path filePath = resolveFontPath(fileTransName);
-            try (OutputStream fileOutputStream = Files.newOutputStream(filePath, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE)) {
-                fileOutputStream.write(file.getBytes());
-                fileOutputStream.flush();
-            }
+            Files.write(filePath, uploadedFont.bytes(), StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
             fontDto.setFileTransName(fileTransName);
 
-            long length = file.getSize();
+            long length = uploadedFont.bytes().length;
             String unit = "MB";
             Double size = 0.0;
             if ((double) length / 1024 / 1024 > 1) {
@@ -189,14 +188,27 @@ public class FontManage {
                 unit = "KB";
                 size = Double.valueOf(String.format("%.2f", (double) length / 1024));
             }
-            Font font = Font.createFont(Font.TRUETYPE_FONT, filePath.toFile());
             fontDto.setSize(size);
             fontDto.setSizeType(unit);
-            fontDto.setName(font.getFontName());
+            fontDto.setName(uploadedFont.font().getFontName());
         } catch (Exception e) {
             DEException.throwException(e);
         }
         return fontDto;
+    }
+
+    private UploadedFont validateAndReadUploadedFont(MultipartFile file) throws Exception {
+        byte[] fileBytes = file.getBytes();
+        if (fileBytes.length == 0) {
+            DEException.throwException("非法格式的文件！");
+        }
+        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(fileBytes)) {
+            Font font = Font.createFont(Font.TRUETYPE_FONT, inputStream);
+            return new UploadedFont(fileBytes, font);
+        } catch (FontFormatException e) {
+            DEException.throwException("非法格式的文件！");
+            return null;
+        }
     }
 
     private void validateUploadedFont(String fileTransName) {
@@ -251,6 +263,9 @@ public class FontManage {
 
     private boolean isSafeFontFileName(String fileTransName) {
         return StringUtils.isNotBlank(fileTransName) && SAFE_FONT_FILE_NAME.matcher(fileTransName).matches();
+    }
+
+    private record UploadedFont(byte[] bytes, Font font) {
     }
 
 }
