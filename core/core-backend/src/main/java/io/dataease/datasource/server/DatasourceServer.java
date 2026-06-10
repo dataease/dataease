@@ -840,6 +840,8 @@ public class DatasourceServer implements DatasourceApi {
     public List<TableField> getTableField(Map<String, String> req) throws DEException {
         String tableName = req.get("tableName");
         String datasourceId = req.get("datasourceId");
+        // check table name
+        datasetCacheManage.validateTable(Long.valueOf(datasourceId), tableName);
         DatasetTableDTO datasetTableDTO = new DatasetTableDTO();
         datasetTableDTO.setDatasourceId(Long.valueOf(datasourceId));
         if (!getTables(datasetTableDTO).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList()).contains(tableName)) {
