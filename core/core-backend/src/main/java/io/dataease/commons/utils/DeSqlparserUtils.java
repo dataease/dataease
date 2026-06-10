@@ -37,9 +37,12 @@ public class DeSqlparserUtils {
     public static final String sqlParamsRegex = "\\$\\[(.*?)\\]";
     public static final String sysVariableRegex = "\\$f2cde\\[(.*?)\\]";
     private static final String SysParamsSubstitutedParams = "DeSysParams_";
+    private static final String PREPARED_BINDING_TOKEN_PREFIX = "DE_BIND_";
     private UserFormVO userEntity;
     private static final String SubstitutedSql = " 'DE-BI' = 'DE-BI' ";
     private final List<Map<String, String>> sysParams = new ArrayList<>();
+    private final Map<String, TableFieldWithValue> preparedBindings = new LinkedHashMap<>();
+    private int preparedBindingIndex;
     TypeReference<List<SqlVariableDetails>> listTypeReference = new TypeReference<List<SqlVariableDetails>>() {
     };
     private List<SqlVariableDetails> defaultsSqlVariableDetails = new ArrayList<>();
@@ -54,6 +57,8 @@ public class DeSqlparserUtils {
             DEException.throwException(Translator.get("i18n_sql_not_empty"));
         }
         this.userEntity = userEntity;
+        this.preparedBindings.clear();
+        this.preparedBindingIndex = 0;
         sql = sql.trim();
         if (sql.endsWith(";")) {
             sql = sql.substring(0, sql.length() - 1);
@@ -134,14 +139,15 @@ public class DeSqlparserUtils {
                 sqlItem = sqlItem.replace(m.group(), SysParamsSubstitutedParams + sysVariableId);
                 try {
                     Expression expression = CCJSqlParserUtil.parseCondExpression(sqlItem);
-                    String value = null;
+                    PreparedSqlFragment preparedSqlFragment = null;
                     if (expression instanceof InExpression) {
-                        value = handleSubstitutedSqlForIn(sysVariableId);
+                        preparedSqlFragment = buildPreparedSysSqlFragment(sysVariableId, true);
                     } else {
-                        value = handleSubstitutedSql(sysVariableId);
+                        preparedSqlFragment = buildPreparedSysSqlFragment(sysVariableId, false);
                     }
-                    if (StringUtils.isNotEmpty(value)) {
-                        sqlItem = sqlItem.replace(SysParamsSubstitutedParams + sysVariableId, value);
+                    if (preparedSqlFragment != null) {
+                        sqlItem = sqlItem.replace(SysParamsSubstitutedParams + sysVariableId, preparedSqlFragment.replacement());
+                        sqlItemFieldWithValues.addAll(preparedSqlFragment.tableFieldWithValues());
                         replaceParamItem = true;
                     }
                 } catch (Exception e) {
@@ -201,9 +207,7 @@ public class DeSqlparserUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        SqlVariableHandleResult result = new SqlVariableHandleResult(sql);
-        result.setTableFieldWithValues(tableFieldWithValues);
-        return result;
+        return finalizePreparedSql(sql);
     }
 
     private static boolean isParams(String paramId) {
@@ -311,7 +315,7 @@ public class DeSqlparserUtils {
         tableFieldWithValue.setType(Types.VARCHAR);
         tableFieldWithValue.setColumnTypeName("VARCHAR");
         tableFieldWithValue.setValue(preparedValueBuilder.toString());
-        return new PreparedSqlFragment("?", Collections.singletonList(tableFieldWithValue));
+        return buildPreparedSqlFragment(Collections.singletonList(tableFieldWithValue));
     }
 
     private String resolveQuotedLiteralVariableValue(String variableName, List<SqlVariableDetails> parameters, boolean isEdit, boolean isFromDataSet) {
@@ -376,13 +380,11 @@ public class DeSqlparserUtils {
 
     private PreparedSqlFragment buildPreparedSqlFragment(SqlVariableDetails sqlVariableDetails) {
         List<TableFieldWithValue> values = new ArrayList<>();
-        List<String> replacements = new ArrayList<>();
         List<String> preparedValues = resolvePreparedValues(sqlVariableDetails);
         for (String preparedValue : preparedValues) {
             values.add(buildPreparedValue(sqlVariableDetails, preparedValue));
-            replacements.add("?");
         }
-        return new PreparedSqlFragment(String.join(",", replacements), values);
+        return buildPreparedSqlFragment(values);
     }
 
     private PreparedSqlFragment buildPreparedSqlFragmentForDefaultValue(SqlVariableDetails sqlVariableDetails) {
@@ -458,6 +460,35 @@ public class DeSqlparserUtils {
         return tableFieldWithValue;
     }
 
+    private PreparedSqlFragment buildPreparedSqlFragment(List<TableFieldWithValue> tableFieldWithValues) {
+        List<String> replacements = new ArrayList<>();
+        for (TableFieldWithValue tableFieldWithValue : tableFieldWithValues) {
+            replacements.add(registerPreparedBinding(tableFieldWithValue));
+        }
+        return new PreparedSqlFragment(String.join(",", replacements), tableFieldWithValues);
+    }
+
+    private String registerPreparedBinding(TableFieldWithValue tableFieldWithValue) {
+        String token = PREPARED_BINDING_TOKEN_PREFIX + preparedBindingIndex++;
+        preparedBindings.put(token, tableFieldWithValue);
+        return "'" + token + "'";
+    }
+
+    private SqlVariableHandleResult finalizePreparedSql(String sql) {
+        Pattern tokenPattern = Pattern.compile("'(" + PREPARED_BINDING_TOKEN_PREFIX + "\\d+)'");
+        Matcher matcher = tokenPattern.matcher(sql);
+        StringBuilder sqlBuilder = new StringBuilder();
+        List<TableFieldWithValue> orderedBindings = new ArrayList<>();
+        while (matcher.find()) {
+            orderedBindings.add(preparedBindings.get(matcher.group(1)));
+            matcher.appendReplacement(sqlBuilder, "?");
+        }
+        matcher.appendTail(sqlBuilder);
+        SqlVariableHandleResult result = new SqlVariableHandleResult(sqlBuilder.toString());
+        result.setTableFieldWithValues(orderedBindings);
+        return result;
+    }
+
     private record PreparedSqlFragment(String replacement, List<TableFieldWithValue> tableFieldWithValues) {
     }
 
@@ -467,19 +498,35 @@ public class DeSqlparserUtils {
     private record LiteralSegment(boolean variable, String content) {
     }
 
-    private String handleSubstitutedSql(String sysVariableId) {
+    private PreparedSqlFragment buildPreparedSysSqlFragment(String sysVariableId, boolean inOperator) {
+        SysVariableBinding sysVariableBinding = resolveSysVariableBinding(sysVariableId, inOperator);
+        if (sysVariableBinding == null || CollectionUtils.isEmpty(sysVariableBinding.values())) {
+            return null;
+        }
+        List<TableFieldWithValue> values = new ArrayList<>();
+        for (String value : sysVariableBinding.values()) {
+            SqlVariableDetails sqlVariableDetails = new SqlVariableDetails();
+            sqlVariableDetails.setVariableName(sysVariableId);
+            sqlVariableDetails.setOperator(inOperator ? "in" : "eq");
+            sqlVariableDetails.setDeType(sysVariableBinding.deType());
+            values.add(buildPreparedValue(sqlVariableDetails, value));
+        }
+        return buildPreparedSqlFragment(values);
+    }
+
+    private SysVariableBinding resolveSysVariableBinding(String sysVariableId, boolean inOperator) {
         if (userEntity != null) {
             if (sysVariableId.equalsIgnoreCase("sysParams.userId")) {
-                return userEntity.getAccount();
+                return buildSysVariableBinding(0, inOperator ? Collections.singletonList(userEntity.getAccount()) : Collections.singletonList(userEntity.getAccount()));
             }
             if (sysVariableId.equalsIgnoreCase("sysParams.userEmail")) {
-                return userEntity.getEmail();
+                return buildSysVariableBinding(0, Collections.singletonList(userEntity.getEmail()));
             }
             if (sysVariableId.equalsIgnoreCase("sysParams.userName")) {
-                return userEntity.getName();
+                return buildSysVariableBinding(0, Collections.singletonList(userEntity.getName()));
             }
             if (sysVariableId.equalsIgnoreCase("sysParams.userPhone")) {
-                return userEntity.getPhone();
+                return buildSysVariableBinding(0, Collections.singletonList(userEntity.getPhone()));
             }
             for (SysVariableValueItem variable : userEntity.getVariables()) {
                 if (!variable.isValid()) {
@@ -489,13 +536,19 @@ public class DeSqlparserUtils {
                     continue;
                 }
                 if (variable.getSysVariableDto().getType().equalsIgnoreCase("text")) {
+                    List<String> values = new ArrayList<>();
                     for (SysVariableValueDto sysVariableValueDto : variable.getValueList()) {
                         if (variable.getVariableValueIds().contains(sysVariableValueDto.getId().toString())) {
-                            return sysVariableValueDto.getValue();
+                            values.add(sysVariableValueDto.getValue());
+                            if (!inOperator) {
+                                break;
+                            }
                         }
                     }
+                    return buildSysVariableBinding(0, values);
                 } else {
-                    return variable.getVariableValue();
+                    int deType = variable.getSysVariableDto().getType().equalsIgnoreCase("num") ? 2 : 1;
+                    return buildSysVariableBinding(deType, Collections.singletonList(variable.getVariableValue()));
                 }
             }
             return null;
@@ -504,31 +557,14 @@ public class DeSqlparserUtils {
         }
     }
 
-
-    private String handleSubstitutedSqlForIn(String sysVariableId) {
-        if (userEntity != null) {
-            for (SysVariableValueItem variable : userEntity.getVariables()) {
-                List<String> values = new ArrayList<>();
-                if (!variable.isValid()) {
-                    continue;
-                }
-                if (!sysVariableId.equalsIgnoreCase(variable.getVariableId().toString())) {
-                    continue;
-                }
-                if (variable.getSysVariableDto().getType().equalsIgnoreCase("text")) {
-                    for (SysVariableValueDto sysVariableValueDto : variable.getValueList()) {
-                        if (variable.getVariableValueIds().contains(sysVariableValueDto.getId().toString())) {
-                            values.add(sysVariableValueDto.getValue());
-                        }
-                    }
-                }
-                if (CollectionUtils.isNotEmpty(values)) {
-                    return "'" + String.join("','", values) + "'";
-                }
-            }
-            return null;
-        } else {
+    private SysVariableBinding buildSysVariableBinding(int deType, List<String> values) {
+        List<String> validValues = values == null ? Collections.emptyList() : values.stream().filter(StringUtils::isNotEmpty).toList();
+        if (CollectionUtils.isEmpty(validValues)) {
             return null;
         }
+        return new SysVariableBinding(deType, validValues);
+    }
+
+    private record SysVariableBinding(int deType, List<String> values) {
     }
 }
