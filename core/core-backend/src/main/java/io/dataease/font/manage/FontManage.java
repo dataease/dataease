@@ -163,12 +163,9 @@ public class FontManage {
     private FontDto saveFile(MultipartFile file, String fileNameUUID) throws DEException {
         FontDto fontDto = new FontDto();
         try {
-            String filename = file.getOriginalFilename();
-            FileUtils.validateUploadFilename(filename);
-            if (StringUtils.isEmpty(filename) || !filename.toLowerCase().endsWith(TTF_EXTENSION)) {
-                DEException.throwException("非法格式的文件！");
-            }
-            UploadedFont uploadedFont = validateAndReadUploadedFont(file);
+            validateUploadedFontFilename(file.getOriginalFilename());
+            byte[] fileBytes = file.getBytes();
+            UploadedFont uploadedFont = validateAndReadUploadedFont(fileBytes);
             String fileTransName = fileNameUUID + TTF_EXTENSION;
             Path filePath = resolveFontPath(fileTransName);
             Files.write(filePath, uploadedFont.bytes(), StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
@@ -197,8 +194,14 @@ public class FontManage {
         return fontDto;
     }
 
-    private UploadedFont validateAndReadUploadedFont(MultipartFile file) throws Exception {
-        byte[] fileBytes = file.getBytes();
+    private void validateUploadedFontFilename(String filename) {
+        FileUtils.validateUploadFilename(filename);
+        if (StringUtils.isEmpty(filename) || !filename.toLowerCase().endsWith(TTF_EXTENSION)) {
+            DEException.throwException("非法格式的文件！");
+        }
+    }
+
+    private UploadedFont validateAndReadUploadedFont(byte[] fileBytes) throws Exception {
         if (fileBytes.length == 0) {
             DEException.throwException("非法格式的文件！");
         }
