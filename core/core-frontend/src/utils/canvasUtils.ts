@@ -114,9 +114,9 @@ export function findNewComponent(componentName, innerType, staticMap?) {
     newComponent.name = viewConfig?.title
     newComponent.label = viewConfig?.title
     newComponent.render = viewConfig?.render
-    newComponent.isPlugin = !!staticMap
+    newComponent.isPlugin = !!staticMap || !!viewConfig?.isPlugin
     if (newComponent.isPlugin) {
-      newComponent.staticMap = staticMap
+      newComponent.staticMap = staticMap || viewConfig?.staticMap
     }
   } else if (['DeDecoration', 'DynamicBackground'].includes(componentName)) {
     newComponent.style.borderWidth = 0
