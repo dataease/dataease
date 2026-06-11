@@ -44,6 +44,7 @@ import { ChartLibraryType } from '@/views/chart/components/js/panel/types'
 import chartViewManager from '@/views/chart/components/js/panel'
 import { storeToRefs } from 'pinia'
 import { checkAddHttp, setIdValueTrans } from '@/utils/canvasUtils'
+import { sanitizeHtml } from '@/utils/utils'
 import { Base64 } from 'js-base64'
 import DeRichTextView from '@/custom-component/rich-text/DeRichTextView.vue'
 import DePictureGroup from '@/custom-component/picture-group/Component.vue'
@@ -225,6 +226,8 @@ const titleAlign = computed<string>(() => {
   return 'flex-start'
 })
 
+const safeTitleRemark = computed(() => sanitizeHtml(state.title_remark.remark || ''))
+
 const trackMenu = computed<Array<string>>(() => {
   return chartComponent?.value?.trackMenu ?? []
 })
@@ -355,7 +358,7 @@ const initTitle = () => {
     }
 
     state.title_remark.show = customStyle.text.show && customStyle.text.remarkShow
-    state.title_remark.remark = customStyle.text.remark
+    state.title_remark.remark = sanitizeHtml(customStyle.text.remark || '')
   }
 }
 
@@ -1164,7 +1167,7 @@ const clearG2Tooltip = () => {
                     wordWrap: 'break-word',
                     whiteSpace: 'pre-wrap'
                   }"
-                  v-html="state.title_remark.remark"
+                  v-html="safeTitleRemark"
                 ></div>
               </template>
               <el-icon :size="iconSize" class="inner-icon">
