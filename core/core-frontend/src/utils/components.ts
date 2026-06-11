@@ -1,4 +1,3 @@
-import VText from '@/custom-component/v-text/Component.vue'
 import VQuery from '@/custom-component/v-query/Component.vue'
 import Group from '@/custom-component/group/Component.vue'
 import UserView from '@/custom-component/user-view/Component.vue'
@@ -21,7 +20,6 @@ import PictureGroup from '@/custom-component/picture-group/Component.vue'
 import DeScreen from '@/custom-component/de-screen/Component.vue'
 import DeDecoration from '@/custom-component/de-decoration/Component.vue'
 export const componentsMap = {
-  VText: VText,
   VQuery,
   Group: Group,
   UserView: UserView,
