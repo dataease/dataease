@@ -106,9 +106,11 @@ public class DatasetDataManage {
         List<TableField> tableFields = null;
         String type = datasetTableDTO.getType();
         DatasetTableInfoDTO tableInfoDTO = JsonUtil.parseObject(datasetTableDTO.getInfo(), DatasetTableInfoDTO.class);
-        // check table name
-        datasetCacheManage.validateTable(datasetTableDTO.getDatasourceId(), tableInfoDTO.getTable());
         if (StringUtils.equalsIgnoreCase(type, DatasetTableType.DB) || StringUtils.equalsIgnoreCase(type, DatasetTableType.SQL)) {
+            if (StringUtils.equalsIgnoreCase(type, DatasetTableType.DB)) {
+                // check table name
+                datasetCacheManage.validateTable(datasetTableDTO.getDatasourceId(), tableInfoDTO.getTable());
+            }
             CoreDatasource coreDatasource = dataSourceManage.getCoreDatasource(datasetTableDTO.getDatasourceId());
             DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
             if (coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.Excel.name()) || coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
@@ -179,6 +181,8 @@ public class DatasetDataManage {
             datasourceRequest.setTable(datasetTableDTO.getTableName());
             tableFields = provider.fetchTableField(datasourceRequest);
         } else {
+            // check table name
+            datasetCacheManage.validateTable(datasetTableDTO.getDatasourceId(), tableInfoDTO.getTable());
             // excel,api
             CoreDatasource coreDatasource = engineManage.getDeEngine();
             DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
