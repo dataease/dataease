@@ -10,8 +10,8 @@
 
     <modules>
         <module>sdk</module>
-        <module>de-xpack</module>
-        <module>core</module>
+        <!--<module>de-xpack</module>
+        <module>core</module>-->
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
