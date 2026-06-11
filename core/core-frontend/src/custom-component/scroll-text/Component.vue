@@ -5,6 +5,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
+import { sanitizeHtml } from '@/utils/utils'
 
 const canEdit = ref(false)
 const ctrlKey = ref(17)
@@ -160,6 +161,8 @@ const init = () => {
     }
   }, 1000)
 }
+const sanitizedPropValue = computed(() => sanitizeHtml(element.value['propValue'] || ''))
+
 onMounted(() => {
   init()
 })
@@ -184,11 +187,11 @@ onMounted(() => {
       @mousedown="handleMousedown"
       @blur="handleBlur"
       @input="handleInput"
-      v-html="element['propValue']"
+      v-html="sanitizedPropValue"
     ></div>
   </div>
   <div v-else class="v-text preview" ref="textOut" :style="varStyle">
-    <div class="marquee-txt" ref="text" v-html="element['propValue']"></div>
+    <div class="marquee-txt" ref="text" v-html="sanitizedPropValue"></div>
   </div>
 </template>
 
