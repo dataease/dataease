@@ -155,11 +155,11 @@ public class Quota2SQLObj {
                 } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_empty")) {
                     whereValue = "''";
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
-                    whereValue = "('" + StringUtils.join(f.getValue(), "','") + "')";
+                    whereValue = "('" + StringUtils.join(sanitizeSqlLiteral(f.getValue()), "','") + "')";
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
-                    whereValue = "'%" + f.getValue() + "%'";
+                    whereValue = "'%" + sanitizeSqlLiteral(f.getValue()) + "%'";
                 } else {
-                    whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, f.getValue());
+                    whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, sanitizeSqlLiteral(f.getValue()));
                 }
                 list.add(SQLObj.builder()
                         .whereField(fieldAlias)
@@ -171,6 +171,12 @@ public class Quota2SQLObj {
         List<String> strList = new ArrayList<>();
         list.forEach(ele -> strList.add(ele.getWhereField() + " " + ele.getWhereTermAndValue()));
         return !CollectionUtils.isEmpty(list) ? "(" + String.join(" " + Utils.getLogic(y.getLogic()) + " ", strList) + ")" : null;
+    }
+
+    private static String sanitizeSqlLiteral(String value) {
+        String normalized = StringUtils.defaultString(value);
+        Utils.validateSqlInjectionRisk(normalized);
+        return Utils.transValue(normalized);
     }
 
 }
