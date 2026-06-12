@@ -1,4 +1,3 @@
-import VTextAttr from '@/custom-component/v-text/Attr.vue'
 import GroupAttr from '@/custom-component/group/Attr.vue'
 import UserViewAttr from '@/custom-component/user-view/Attr.vue'
 import PictureAttr from '@/custom-component/picture/Attr.vue'
@@ -20,7 +19,6 @@ import ScrollTextAttr from '@/custom-component/scroll-text/Attr.vue'
 import PopAreaAttr from '@/custom-component/pop-area/Attr.vue'
 import PictureGroupAttr from '@/custom-component/picture-group/Attr.vue'
 export const componentsMap = {
-  VTextAttr: VTextAttr,
   GroupAttr: GroupAttr,
   UserViewAttr: UserViewAttr,
   PictureAttr: PictureAttr,
