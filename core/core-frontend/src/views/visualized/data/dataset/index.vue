@@ -700,7 +700,8 @@ const datasetTypeList = computed(() => {
 
 const defaultProps = {
   children: 'children',
-  label: 'name'
+  label: 'name',
+  disabled: (data: any) => !data.weight
 }
 
 const defaultTab = [
@@ -748,7 +749,7 @@ const getLimit = () => {
 }
 
 const sortTypeTip = computed(() => {
-  return sortList.find(ele => ele.value === state.curSortType).name
+  return sortList.find(ele => ele.value === state.curSortType)?.name
 })
 
 const tablePanes = ref([])
@@ -922,14 +923,24 @@ const proxyAllowDrop = throttle((arg1, arg2) => {
             @node-click="handleNodeClick"
           >
             <template #default="{ node, data }">
-              <span class="custom-tree-node">
+              <span class="custom-tree-node" :class="{ 'node-disabled-custom': !data.weight }">
                 <el-icon v-if="!data.leaf" style="font-size: 18px">
                   <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
                 </el-icon>
                 <el-icon v-if="data.leaf" style="font-size: 18px">
                   <Icon name="icon_dataset"><icon_dataset class="svg-icon" /></Icon>
                 </el-icon>
-                <span :title="node.label" class="label-tooltip ellipsis">{{ node.label }}</span>
+                <el-tooltip
+                  v-if="!data.weight"
+                  effect="dark"
+                  :content="t('common.no_permission_node')"
+                  placement="top-start"
+                >
+                  <span :title="node.label" class="label-tooltip ellipsis">{{ node.label }}</span>
+                </el-tooltip>
+                <span v-else :title="node.label" class="label-tooltip ellipsis">{{
+                  node.label
+                }}</span>
                 <div class="icon-more" v-if="data.weight >= 7">
                   <handle-more
                     icon-size="24px"
@@ -1444,5 +1455,9 @@ const proxyAllowDrop = throttle((arg1, arg2) => {
       display: inline-flex;
     }
   }
+}
+.node-disabled-custom {
+  color: rgba(187, 191, 196, 1);
+  cursor: not-allowed;
 }
 </style>

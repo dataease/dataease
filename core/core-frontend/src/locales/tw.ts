@@ -94,6 +94,7 @@ export default {
     filter_condition: '篩選條件',
     no_auth_tips: '缺少選單權限，請聯絡管理員',
     no_menu_tips: '未找到資源401錯誤',
+    no_permission_node: '對當前節點沒有權限',
     refresh_success: '刷新成功'
   },
   toolbox: {

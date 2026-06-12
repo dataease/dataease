@@ -1041,7 +1041,8 @@ const uploadExcel = editType => {
 const activeName = ref('table')
 const defaultProps = {
   children: 'children',
-  label: 'name'
+  label: 'name',
+  disabled: data => !data.weight
 }
 
 const loadInit = () => {
@@ -1218,7 +1219,11 @@ const getMenuList = (val: boolean) => {
             @node-click="handleNodeClick"
           >
             <template #default="{ node, data }">
-              <span class="custom-tree-node" style="position: relative">
+              <span
+                class="custom-tree-node"
+                style="position: relative"
+                :class="{ 'node-disabled-custom': !data.weight }"
+              >
                 <el-icon :class="data.leaf && 'icon-border'" style="font-size: 18px">
                   <Icon :static-content="getDsIcon(data)"
                     ><component class="svg-icon" :is="getDsIconName(data)"></component
@@ -1230,16 +1235,29 @@ const getMenuList = (val: boolean) => {
                 >
                   <Icon><icon_warning_colorful_red class="svg-icon" /></Icon>
                 </el-icon>
+                <el-tooltip
+                  v-if="!data.weight"
+                  effect="dark"
+                  :content="t('common.no_permission_node')"
+                  placement="top-start"
+                >
+                  <span
+                    :title="node.label"
+                    class="label-tooltip ellipsis"
+                    :class="data.type === 'Excel' && 'excel'"
+                    >{{ node.label }}</span
+                  >
+                </el-tooltip>
                 <span
+                  v-else-if="data.extraFlag > -1"
                   :title="node.label"
                   class="label-tooltip ellipsis"
                   :class="data.type === 'Excel' && 'excel'"
-                  v-if="data.extraFlag > -1"
                   >{{ node.label }}</span
                 >
                 <el-tooltip
-                  effect="dark"
                   v-else
+                  effect="dark"
                   :content="`${t('data_set.invalid_data_source')}: ${node.label}`"
                   placement="top"
                 >
@@ -2385,6 +2403,10 @@ const getMenuList = (val: boolean) => {
       display: inline-flex;
     }
   }
+}
+.node-disabled-custom {
+  color: rgba(187, 191, 196, 1);
+  cursor: not-allowed;
 }
 </style>
 <style lang="less">

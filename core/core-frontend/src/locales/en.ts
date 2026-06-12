@@ -97,6 +97,7 @@ export default {
     filter_condition: 'Filter condition',
     no_auth_tips: 'Missing menu permissions, please contact the administrator',
     no_menu_tips: 'Resource not found 401 error',
+    no_permission_node: 'No permission for this node',
     refresh_success: 'Refresh success'
   },
   toolbox: {

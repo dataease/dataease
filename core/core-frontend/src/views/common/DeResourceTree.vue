@@ -81,7 +81,7 @@ const props = defineProps({
 const defaultProps = {
   children: 'children',
   label: 'name',
-  disabled: (data: any) => data.extraFlag1 === 0
+  disabled: (data: any) => data.extraFlag1 === 0 || !data.weight
 }
 const mounted = ref(false)
 const rootManage = ref(false)
@@ -785,17 +785,20 @@ defineExpose({
         draggable
       >
         <template #default="{ node, data }">
-          <span class="custom-tree-node" :class="{ 'node-disabled-custom': data.extraFlag1 === 0 }">
+          <span
+            class="custom-tree-node"
+            :class="{ 'node-disabled-custom': data.extraFlag1 === 0 || !data.weight }"
+          >
             <el-icon style="font-size: 18px" v-if="!data.leaf">
               <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
             </el-icon>
             <el-icon style="font-size: 18px" v-else-if="curCanvasType === 'dashboard'">
-              <Icon v-if="data.extraFlag1"
+              <Icon v-if="data.extraFlag1 && data.weight"
                 ><component
                   :is="data.extraFlag ? dvDashboardSpineMobile : dvDashboardSpine"
                 ></component
               ></Icon>
-              <Icon v-if="!data.extraFlag1"
+              <Icon v-if="!data.extraFlag1 || !data.weight"
                 ><component
                   :is="data.extraFlag ? dvDashboardSpineMobileDisabled : dvDashboardSpineDisabled"
                 ></component
@@ -803,7 +806,10 @@ defineExpose({
             </el-icon>
             <el-icon
               class="icon-screen-new color-dataV"
-              :class="{ 'color-dataV': data.extraFlag1, 'color-dataV-disabled': !data.extraFlag1 }"
+              :class="{
+                'color-dataV': data.extraFlag1 && data.weight,
+                'color-dataV-disabled': !data.extraFlag1 || !data.weight
+              }"
               style="font-size: 18px"
               v-else
             >
@@ -813,6 +819,15 @@ defineExpose({
             </el-icon>
             <span :title="node.label" class="label-tooltip">
               <el-tooltip
+                v-if="!data.weight"
+                effect="dark"
+                :content="t('common.no_permission_node')"
+                placement="top-start"
+              >
+                {{ node.label }}
+              </el-tooltip>
+              <el-tooltip
+                v-else
                 class="box-item"
                 effect="dark"
                 :content="t('visualization.publish_tips1')"
