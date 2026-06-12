@@ -33,12 +33,17 @@ import io.dataease.visualization.dao.ext.po.VisualizationNodePO;
 import io.dataease.visualization.dao.ext.po.VisualizationResourcePO;
 import io.dataease.visualization.dto.VisualizationNodeBO;
 import jakarta.annotation.Resource;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,6 +56,8 @@ import java.util.stream.Collectors;
 public class CoreVisualizationManage {
     @Resource
     private JPAQueryFactory queryFactory;
+    @PersistenceContext
+    private EntityManager entityManager;
     @Resource
     CoreChartViewRepository coreChartViewRepository;
     @Resource
@@ -214,13 +221,16 @@ public class CoreVisualizationManage {
             Long id = IDUtils.snowID();
             visualizationInfo.setId(id);
         }
+
+        Long uid = V3UserUtil.getUid();
+        java.lang.Long oid = V3UserUtil.getUser().getOid();
         visualizationInfo.setDeleteFlag(DataVisualizationConstants.DELETE_FLAG.AVAILABLE);
         visualizationInfo.setStatus(visualizationInfo.getStatus());
-        visualizationInfo.setCreateBy(V3UserUtil.getUid().toString());
-        visualizationInfo.setUpdateBy(V3UserUtil.getUid().toString());
+        visualizationInfo.setCreateBy(uid.toString());
+        visualizationInfo.setUpdateBy(uid.toString());
         visualizationInfo.setCreateTime(System.currentTimeMillis());
         visualizationInfo.setUpdateTime(System.currentTimeMillis());
-        // visualizationInfo.setOrgId(AuthUtils.getUser().getDefaultOid());
+        visualizationInfo.setOrgId(oid);
         dataVisualizationInfoRepository.saveAndFlush(visualizationInfo);
         // 镜像文件插入
         SnapshotDataVisualizationInfo snapshotVisualizationInfo = new SnapshotDataVisualizationInfo();
@@ -233,8 +243,9 @@ public class CoreVisualizationManage {
     @XpackInteract(value = "visualizationResourceTree", before = false)
     public void innerEdit(DataVisualizationInfo visualizationInfo) {
         // 镜像和主表保持名称一致
+        Long uid = V3UserUtil.getUid();
         visualizationInfo.setUpdateTime(System.currentTimeMillis());
-        visualizationInfo.setUpdateBy(V3UserUtil.getUid().toString());
+        visualizationInfo.setUpdateBy(uid.toString());
         visualizationInfo.setVersion(3);
         // 更新镜像
         SnapshotDataVisualizationInfo snapshotVisualizationInfo = new SnapshotDataVisualizationInfo();
@@ -248,7 +259,7 @@ public class CoreVisualizationManage {
         coreVisualizationInfo.setContentId(visualizationInfo.getContentId());
         coreVisualizationInfo.setName(visualizationInfo.getName());
         coreVisualizationInfo.setUpdateTime(System.currentTimeMillis());
-        coreVisualizationInfo.setUpdateBy(V3UserUtil.getUid().toString());
+        coreVisualizationInfo.setUpdateBy(uid.toString());
         coreVisualizationInfo.setVersion(3);
         dataVisualizationInfoRepository.saveAndFlush(coreVisualizationInfo);
         coreOptRecentManage.saveOpt(visualizationInfo.getId(), OptConstants.OPT_RESOURCE_TYPE.VISUALIZATION, OptConstants.OPT_TYPE.UPDATE);
@@ -273,7 +284,7 @@ public class CoreVisualizationManage {
     @XpackInteract(value = "perFilterManage", recursion = true, invalid = true)
     public PageResult<VisualizationResourceVO> query(int pageNum, int pageSize, VisualizationWorkbranchQueryRequest request) {
         Page<VisualizationResourcePO> poPage = proxy().queryVisualizationPage(pageNum, pageSize, request);
-        if (poPage == null || poPage.getSize() == 0) {
+        if (poPage == null || poPage.getContent().isEmpty()) {
             return new PageResult<>();
         }
         Page<VisualizationResourceVO> visualizationResourcePOPageIPage = poPage.map(po -> {
@@ -286,24 +297,122 @@ public class CoreVisualizationManage {
     }
 
 
+    @SuppressWarnings("unchecked")
     public Page<VisualizationResourcePO> queryVisualizationPage(int goPage, int pageSize, VisualizationWorkbranchQueryRequest request) {
         Long uid = V3UserUtil.getUid();
-        Map<String, Object> params = new HashMap<>();
+        String type = null;
         if (StringUtils.isNotBlank(request.getType())) {
             BusiResourceEnum busiResourceEnum = BusiResourceEnum.valueOf(request.getType().toUpperCase());
             if (ObjectUtils.isEmpty(busiResourceEnum)) {
                 DEException.throwException("type is invalid");
             }
-            params.put("type", request.getType());
+            type = request.getType();
         }
         String info = CommunityUtils.getInfo();
-        if (StringUtils.isNotBlank(info)) {
-            params.put("info", info);
+        boolean isAsc = request.isAsc();
+        String keyword = request.getKeyword();
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT dvResource.id, dvResource.resource_id, dvResource.name, dvResource.ext_flag, ");
+        sql.append("dvResource.type, dvResource.creator, core_opt_recent.uid AS last_editor, ");
+        sql.append("core_opt_recent.time AS last_edit_time, ");
+        sql.append("(CASE WHEN core_store.resource_id IS NULL THEN 0 ELSE 1 END) AS favorite ");
+        sql.append("FROM (");
+        sql.append("SELECT core_dataset_group.id, core_dataset_group.id AS resource_id, core_dataset_group.name, 0 as ext_flag, 'dataset' AS type, core_dataset_group.create_by AS creator FROM core_dataset_group WHERE core_dataset_group.node_type = 'dataset' ");
+        sql.append("UNION ALL ");
+        sql.append("SELECT core_datasource.id, core_datasource.id AS resource_id, core_datasource.name, 0 as ext_flag, 'datasource' AS type, core_datasource.create_by AS creator FROM core_datasource WHERE core_datasource.type <> 'folder' ");
+        sql.append("UNION ALL ");
+        sql.append("SELECT data_visualization_info.id, data_visualization_info.id AS resource_id, data_visualization_info.name, data_visualization_info.mobile_layout as ext_flag, ");
+        sql.append("(CASE data_visualization_info.type WHEN 'dataV' THEN 'screen' ELSE 'panel' END) AS type, ");
+        sql.append("data_visualization_info.create_by AS creator FROM data_visualization_info ");
+        sql.append("WHERE data_visualization_info.delete_flag = 0 AND node_type = 'leaf' AND data_visualization_info.status <> 0");
+        sql.append(") dvResource ");
+        sql.append("LEFT JOIN core_store ON dvResource.id = core_store.resource_id AND core_store.uid = :uid ");
+        sql.append("INNER JOIN core_opt_recent ON dvResource.resource_id = core_opt_recent.resource_id AND core_opt_recent.uid = :uid ");
+        sql.append("WHERE 1=1 ");
+
+        if (StringUtils.isNotBlank(keyword)) {
+            sql.append("AND LOWER(dvResource.name) LIKE :keyword ");
         }
-        params.put("isAsc", request.isAsc());
-//        IPage<VisualizationResourcePO> iPage = new Page<>(goPage, pageSize);
-//        return extDataVisualizationMapper.findRecent(iPage, uid, request.getKeyword(), params);
-        return Page.empty();
+        if (StringUtils.isNotBlank(type)) {
+            sql.append("AND dvResource.type = :type ");
+        }
+        if (StringUtils.isNotBlank(info)) {
+            sql.append("AND NOT EXISTS(SELECT 1 FROM per_busi_resource community WHERE core_opt_recent.resource_id = community.id) ");
+        }
+
+        if (isAsc) {
+            sql.append("ORDER BY core_opt_recent.time ASC ");
+        } else {
+            sql.append("ORDER BY core_opt_recent.time DESC ");
+        }
+
+        // Count query
+        StringBuilder countSql = new StringBuilder();
+        countSql.append("SELECT COUNT(*) FROM (").append(sql).append(") cnt_table");
+        Query countQuery = entityManager.createNativeQuery(countSql.toString());
+        countQuery.setParameter("uid", uid);
+        if (StringUtils.isNotBlank(keyword)) {
+            countQuery.setParameter("keyword", "%" + keyword.toLowerCase() + "%");
+        }
+        if (StringUtils.isNotBlank(type)) {
+            countQuery.setParameter("type", type);
+        }
+        long total = ((Number) countQuery.getSingleResult()).longValue();
+
+        if (total == 0) {
+            return Page.empty();
+        }
+
+        // Data query with pagination (setFirstResult/setMaxResults delegates to Hibernate dialect)
+        Query dataQuery = entityManager.createNativeQuery(sql.toString());
+        dataQuery.setParameter("uid", uid);
+        if (StringUtils.isNotBlank(keyword)) {
+            dataQuery.setParameter("keyword", "%" + keyword.toLowerCase() + "%");
+        }
+        if (StringUtils.isNotBlank(type)) {
+            dataQuery.setParameter("type", type);
+        }
+        int offset = (goPage - 1) * pageSize;
+        dataQuery.setFirstResult(offset);
+        dataQuery.setMaxResults(pageSize);
+
+        List<Object[]> results = dataQuery.getResultList();
+        List<VisualizationResourcePO> records = results.stream().map(row -> {
+            VisualizationResourcePO po = new VisualizationResourcePO();
+            po.setId(toLong(row[0]));
+            po.setResourceId(toLong(row[1]));
+            po.setName(row[2] != null ? row[2].toString() : null);
+            po.setExtFlag(row[3] != null ? toInt(row[3]) : 0);
+            po.setType(row[4] != null ? row[4].toString() : null);
+            po.setCreator(toLong(row[5]));
+            po.setLastEditor(toLong(row[6]));
+            po.setLastEditTime(toLong(row[7]));
+            po.setFavorite(row[8] != null && toInt(row[8]) == 1);
+            return po;
+        }).collect(Collectors.toList());
+
+        return new PageImpl<>(records, PageRequest.of(goPage - 1, pageSize), total);
+    }
+
+    private Long toLong(Object value) {
+        if (value == null) return null;
+        if (value instanceof Number) return ((Number) value).longValue();
+        try {
+            return Long.parseLong(value.toString());
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    private int toInt(Object value) {
+        if (value == null) return 0;
+        if (value instanceof Number) return ((Number) value).intValue();
+        try {
+            return Integer.parseInt(value.toString());
+        } catch (NumberFormatException e) {
+            return 0;
+        }
     }
 
     @Transactional
