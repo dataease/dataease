@@ -142,6 +142,14 @@ public class CoreVisualizationManage {
         return TreeUtils.mergeTree(nodes, BusiNodeVO.class, false);
     }
 
+    public void dataVisualizationInit() {
+        List<Long> resourceIds = dataVisualizationInfoRepository.findByPid(-1L)
+                .stream().map(DataVisualizationInfo::getId).toList();
+        if (CollectionUtils.isNotEmpty(resourceIds)) {
+            resourceIds.forEach(this::delete);
+        }
+    }
+
     @XpackInteract(value = "visualizationResourceTree", before = false)
     public void delete(Long id) {
         DataVisualizationInfo info = dataVisualizationInfoRepository.findById(id).orElse(null);
