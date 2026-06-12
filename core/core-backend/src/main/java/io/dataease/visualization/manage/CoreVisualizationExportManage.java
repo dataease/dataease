@@ -14,7 +14,7 @@ import io.dataease.extensions.view.dto.ChartExtFilterDTO;
 import io.dataease.extensions.view.dto.ChartExtRequest;
 import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.extensions.view.dto.ChartViewFieldDTO;
-import io.dataease.utils.AuthUtils;
+import io.dataease.permission.util.V3UserUtil;
 import io.dataease.utils.JsonUtil;
 import io.dataease.visualization.bo.ExcelSheetModel;
 import io.dataease.visualization.template.FilterBuildTemplate;
@@ -90,7 +90,7 @@ public class CoreVisualizationExportManage {
             } else {
                 view.setChartExtRequest(buildDefaultRequest());
             }
-            view.getChartExtRequest().setUser(AuthUtils.getUser().getUserId());
+            view.getChartExtRequest().setUser(V3UserUtil.getUid());
             view.setTitle((i + 1) + "-" + view.getTitle());
             sheets.addAll(exportViewData(view));
         }

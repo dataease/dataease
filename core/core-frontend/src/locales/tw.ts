@@ -464,6 +464,7 @@ export default {
     user: '使用者',
     role: '角色',
     addUser: '@:common.add@:system.user',
+    selected_count: '已選 {0} 人',
     click_to_show: '點選顯示',
     click_to_hide: '點選隱藏',
     basic_settings: '基礎設定',
@@ -879,7 +880,18 @@ export default {
     move_resource_first: '先遷移資源',
     default_parent_tips: '(預設目前組織)',
     admin_parent_tips: '(預設根組織)',
-    please_login_per_changed: '目前使用者權限已變更，請重新登入'
+    please_login_per_changed: '目前使用者權限已變更，請重新登入',
+    add_member: '新增成員',
+    select_member: '選擇成員',
+    remove_member: '移除成員',
+    remove_member_confirm: '確定將該成員移出目前組織嗎？',
+    member_role: '成員角色',
+    members: '人',
+    selected_count: '已選 {0} 人',
+    select_org_first: '請先在左側選擇組織',
+    search_name_account: '搜尋姓名、帳號',
+    select_member_role: '請選擇成員角色',
+    no_selected_member: '暫無已選成員'
   },
   auth: {
     permission_configuration: '權限配置',

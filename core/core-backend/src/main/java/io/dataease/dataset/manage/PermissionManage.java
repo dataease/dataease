@@ -4,7 +4,10 @@ package io.dataease.dataset.manage;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.permissions.dataset.api.ColumnPermissionsApi;
 import io.dataease.api.permissions.dataset.api.RowPermissionsApi;
-import io.dataease.api.permissions.dataset.dto.*;
+import io.dataease.api.permissions.dataset.dto.DataSetColumnPermissionsDTO;
+import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
+import io.dataease.api.permissions.dataset.dto.DatasetRowPermissionsTreeRequest;
+import io.dataease.api.permissions.dataset.dto.Item;
 import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.api.permissions.variable.dto.SysVariableValueDto;
 import io.dataease.api.permissions.variable.dto.SysVariableValueItem;
@@ -14,7 +17,7 @@ import io.dataease.extensions.view.dto.ColumnPermissionItem;
 import io.dataease.extensions.view.dto.ColumnPermissions;
 import io.dataease.extensions.view.dto.DatasetRowPermissionsTreeItem;
 import io.dataease.extensions.view.dto.DatasetRowPermissionsTreeObj;
-import io.dataease.utils.AuthUtils;
+import io.dataease.permission.util.V3UserUtil;
 import io.dataease.utils.JsonUtil;
 import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
@@ -23,7 +26,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -92,12 +94,12 @@ public class PermissionManage {
 
     private List<DataSetColumnPermissionsDTO> columnPermissions(Long datasetId, Long userId) {
         List<DataSetColumnPermissionsDTO> datasetColumnPermissions = new ArrayList<>();
-        userId = userId != null ? userId : AuthUtils.getUser().getUserId();
+        userId = userId != null ? userId : V3UserUtil.getUid();
 
         if (getRowPermissionsApi() == null || getColumnPermissionsApi() == null) {
             return new ArrayList<>();
         }
-        if (AuthUtils.isSysAdmin(userId)) {
+        if (V3UserUtil.isSysAdmin(userId)) {
             return new ArrayList<>();
         }
 
@@ -146,9 +148,9 @@ public class PermissionManage {
 
     private List<DataSetRowPermissionsTreeDTO> rowPermissionsTree(Long datasetId, Long userId) {
         List<DataSetRowPermissionsTreeDTO> datasetRowPermissions = new ArrayList<>();
-        userId = userId != null ? userId : AuthUtils.getUser().getUserId();
+        userId = userId != null ? userId : V3UserUtil.getUid();
 
-        if (AuthUtils.isSysAdmin(userId)) {
+        if (V3UserUtil.isSysAdmin(userId)) {
             return datasetRowPermissions;
         }
         UserFormVO userEntity = getRowPermissionsApi().getUserById(userId);

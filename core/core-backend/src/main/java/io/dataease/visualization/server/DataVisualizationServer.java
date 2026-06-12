@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
-
 import io.dataease.api.report.bo.DatasetPermissionTemplate;
 import io.dataease.api.template.dto.TemplateManageFileDTO;
 import io.dataease.api.template.dto.VisualizationTemplateExtendDataDTO;
@@ -45,6 +44,7 @@ import io.dataease.log.DeLog;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.operation.manage.CoreOptRecentManage;
+import io.dataease.permission.util.V3UserUtil;
 import io.dataease.result.PageResult;
 import io.dataease.system.manage.CoreUserManage;
 import io.dataease.template.dao.auto.entity.VisualizationTemplate;
@@ -315,8 +315,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
                         DatasetGroupInfoDTO datasetNewRequest = new DatasetGroupInfoDTO();
                         BeanUtils.copyBean(datasetNewRequest, appDatasetGroup);
                         datasetNewRequest.setId(newId);
-                        datasetNewRequest.setCreateBy(AuthUtils.getUser().getUserId() + "");
-                        datasetNewRequest.setUpdateBy(AuthUtils.getUser().getUserId() + "");
+                        datasetNewRequest.setCreateBy(V3UserUtil.getUid() + "");
+                        datasetNewRequest.setUpdateBy(V3UserUtil.getUid() + "");
                         datasetNewRequest.setCreateTime(time);
                         datasetNewRequest.setLastUpdateTime(time);
                         datasetNewRequest.setPid(datasetFolderNewId);
@@ -1154,9 +1154,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
             predicates.add(cb.equal(root.get("name"), request.getName().trim()));
             predicates.add(cb.equal(root.get("nodeType"), request.getNodeType()));
             predicates.add(cb.equal(root.get("type"), request.getTaskId()));
-            if (AuthUtils.getUser().getDefaultOid() != null) {
+            /*if (AuthUtils.getUser().getDefaultOid() != null) {
                 predicates.add(cb.equal(root.get("orgId"), AuthUtils.getUser().getDefaultOid()));
-            }
+            }*/
             return cb.and(predicates.toArray(new Predicate[0]));
         };
         List<DataVisualizationInfo> existList = dataVisualizationInfoRepository.findAll(spec);
@@ -1248,6 +1248,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Resource
     private ResourcePermissionManage resourcePermissionManage;
+
     @Override
     public List<DatasetPermissionTemplate> queruDatasetPermissionTemplate(Long resourceId) {
         return resourcePermissionManage.queruDatasetPermissionTemplate(resourceId);

@@ -97,6 +97,9 @@ public class MenuManage {
         if (coreMenu.getId().equals(21L)) return false;
         return coreMenu.getId().equals(7L)
                 || coreMenu.getPid().equals(7L)
+                || coreMenu.getId().equals(9L)
+                || coreMenu.getId().equals(111L)
+                || coreMenu.getId().equals(112L)
                 || coreMenu.getId().equals(14L)
                 || coreMenu.getId().equals(17L)
                 || coreMenu.getId().equals(18L)

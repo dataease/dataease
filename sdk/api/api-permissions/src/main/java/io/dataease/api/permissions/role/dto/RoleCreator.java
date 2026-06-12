@@ -21,6 +21,4 @@ public class RoleCreator implements Serializable {
     @JsonIgnore
     @Schema(hidden = true)
     private Long rid;
-
-
 }

@@ -1,6 +1,5 @@
 package io.dataease.datasource.manage;
 
-import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
@@ -11,10 +10,14 @@ import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
 import io.dataease.extensions.datasource.factory.ProviderFactory;
+import io.dataease.permission.util.V3UserUtil;
 import io.dataease.result.ResultMessage;
 import io.dataease.template.dao.auto.entity.DeTemplateVersion;
 import io.dataease.template.dao.auto.mapper.DeTemplateVersionRepository;
-import io.dataease.utils.*;
+import io.dataease.utils.BeanUtils;
+import io.dataease.utils.IDUtils;
+import io.dataease.utils.JsonUtil;
+import io.dataease.utils.LocalModelUtils;
 import jakarta.annotation.Resource;
 import jakarta.persistence.criteria.Predicate;
 import org.apache.commons.lang3.StringUtils;
@@ -112,7 +115,7 @@ public class EngineManage {
         initLocalDataSource();
         Specification<CoreDeEngine> spec = (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
-            if (ModelUtils.isDesktop()) {
+            if (LocalModelUtils.isDesktop()) {
                 predicates.add(criteriaBuilder.equal(root.get("type"), engineType.h2.name()));
             } else {
                 predicates.add(criteriaBuilder.notEqual(root.get("type"), engineType.h2.name()));
@@ -124,7 +127,7 @@ public class EngineManage {
             return;
         }
         CoreDeEngine engine = new CoreDeEngine();
-        if (ModelUtils.isDesktop()) {
+        if (LocalModelUtils.isDesktop()) {
             engine.setType(engineType.h2.name());
             H2 h2 = new H2();
             h2.setJdbc(engineUrl);
@@ -175,7 +178,7 @@ public class EngineManage {
         };
         // Spring Data JPA 在某些数据库下exists方法会自动生成 fetch first ? rows only，在 Oracle 11g 及以下会报 ORA-00933 错误
         // 使用count方法替代exists方法
-        if (!(coreDatasourceRepository.count(example) > 0) && !(deTemplateVersionRepository.count(spec) > 0) && !ModelUtils.isDesktop()) {
+        if (!(coreDatasourceRepository.count(example) > 0) && !(deTemplateVersionRepository.count(spec) > 0) && !LocalModelUtils.isDesktop()) {
             Map<String, String> configuration = parseJdbcUrl();
             if (configuration == null) return;
 
@@ -191,7 +194,7 @@ public class EngineManage {
             initDatasource.setUpdateBy(1L);
             initDatasource.setStatus("success");
             initDatasource.setTaskStatus("WaitingForExecution");
-            AuthUtils.setUser(new TokenUserBO(1L, 1L));
+            V3UserUtil.setUid(1L);
             coreDatasourceRepository.findById(985188400292302848L).ifPresent(coreDatasource1 -> {
                 datasourceServer.delete(coreDatasource1.getId());
             });
@@ -421,22 +424,22 @@ public class EngineManage {
                 if (parserMap == null) {
                     parserMap = new HashMap<>();
                     String jdbcUrl = env.getProperty("spring.datasource.url");
-                        if (jdbcUrl != null) {
-                            if (jdbcUrl.startsWith("jdbc:mysql://")) {
-                                parserMap.put("jdbc:mysql://", new MysqlJdbcUrlParser());
-                            } else if (jdbcUrl.startsWith("jdbc:oracle:thin:@")) {
-                                parserMap.put("jdbc:oracle:thin:@", new OracleJdbcUrlParser());
-                            } else if (jdbcUrl.startsWith("jdbc:postgresql://")) {
-                                parserMap.put("jdbc:postgresql://", new PgJdbcUrlParser());
-                            } else if (jdbcUrl.startsWith("jdbc:kingbase8://")) {
-                                parserMap.put("jdbc:kingbase8://", new PgJdbcUrlParser());
-                            } else if (jdbcUrl.startsWith("jdbc:kingbase://")) {
-                                parserMap.put("jdbc:kingbase://", new PgJdbcUrlParser());
-                            } else if (jdbcUrl.startsWith("jdbc:sqlserver://")) {
-                                parserMap.put("jdbc:sqlserver://", new SqlserverJdbcUrlParser());
-                            } else if (jdbcUrl.startsWith("jdbc:dm://")) {
-                                parserMap.put("jdbc:dm://", new DmJdbcUrlParser());
-                            }
+                    if (jdbcUrl != null) {
+                        if (jdbcUrl.startsWith("jdbc:mysql://")) {
+                            parserMap.put("jdbc:mysql://", new MysqlJdbcUrlParser());
+                        } else if (jdbcUrl.startsWith("jdbc:oracle:thin:@")) {
+                            parserMap.put("jdbc:oracle:thin:@", new OracleJdbcUrlParser());
+                        } else if (jdbcUrl.startsWith("jdbc:postgresql://")) {
+                            parserMap.put("jdbc:postgresql://", new PgJdbcUrlParser());
+                        } else if (jdbcUrl.startsWith("jdbc:kingbase8://")) {
+                            parserMap.put("jdbc:kingbase8://", new PgJdbcUrlParser());
+                        } else if (jdbcUrl.startsWith("jdbc:kingbase://")) {
+                            parserMap.put("jdbc:kingbase://", new PgJdbcUrlParser());
+                        } else if (jdbcUrl.startsWith("jdbc:sqlserver://")) {
+                            parserMap.put("jdbc:sqlserver://", new SqlserverJdbcUrlParser());
+                        } else if (jdbcUrl.startsWith("jdbc:dm://")) {
+                            parserMap.put("jdbc:dm://", new DmJdbcUrlParser());
+                        }
                     }
                 }
             }

@@ -4,11 +4,11 @@ import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.permissions.org.dto.OrgCreator;
 import io.dataease.api.permissions.org.dto.OrgEditor;
 import io.dataease.api.permissions.org.dto.OrgLazyRequest;
-import io.dataease.api.permissions.org.dto.OrgRequest;
-import io.dataease.api.permissions.org.vo.*;
+import io.dataease.api.permissions.org.vo.LazyTreeVO;
+import io.dataease.api.permissions.org.vo.OrgDetailVO;
+import io.dataease.api.permissions.org.vo.OrgPageVO;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
-import io.dataease.model.KeywordRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -28,9 +28,9 @@ import static io.dataease.constant.AuthResourceEnum.ORG;
 public interface OrgApi {
 
     @Operation(summary = "查询组织树")
-    @PostMapping("/page/tree")
+    @GetMapping("/page/tree")
     @DePermit("m:read")
-    List<OrgPageVO> pageTree(@RequestBody OrgRequest request);
+    List<OrgPageVO> pageTree();
 
     @Operation(summary = "懒加载组织树")
     @PostMapping("/page/lazyTree")
@@ -53,7 +53,7 @@ public interface OrgApi {
     @DePermit({"m:read", "#p0+':manage'"})
     void delete(@PathVariable("id") Long id);
 
-    @Operation(summary = "查询权限内组织树")
+    /*@Operation(summary = "查询权限内组织树")
     @PostMapping("/mounted")
     List<MountedVO> mounted(@RequestBody KeywordRequest request);
 
@@ -64,12 +64,12 @@ public interface OrgApi {
     @Operation(summary = "", hidden = true)
     @GetMapping("/resourceExist/{oid}")
     boolean resourceExist(@PathVariable("oid") Long oid);
-
+*/
     @Operation(hidden = true)
     @GetMapping("/detail/{oid}")
     OrgDetailVO detail(@PathVariable("oid") Long oid);
 
-    @Operation(hidden = true)
+   /* @Operation(hidden = true)
     @GetMapping("/subOrgs")
-    List<String> subOrgs();
+    List<String> subOrgs();*/
 }

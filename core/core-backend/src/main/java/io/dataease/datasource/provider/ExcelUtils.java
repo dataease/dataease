@@ -45,7 +45,7 @@ public class ExcelUtils {
     private static ObjectMapper objectMapper = new ObjectMapper();
 
     public static String getExcelPath() {
-        if (ModelUtils.isDesktop()) {
+        if (LocalModelUtils.isDesktop()) {
             return ConfigUtils.getConfig("dataease.path.excel", "/opt/dataease3.0/data/excel/");
         } else {
             return "/opt/dataease3.0/data/excel/";

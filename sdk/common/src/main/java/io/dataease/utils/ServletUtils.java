@@ -13,15 +13,13 @@ public class ServletUtils {
     public static HttpServletRequest request() {
         ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (ObjectUtils.isEmpty(servletRequestAttributes)) return null;
-        HttpServletRequest request = servletRequestAttributes.getRequest();
-        return request;
+        return servletRequestAttributes.getRequest();
     }
 
     public static HttpServletResponse response() {
         ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (ObjectUtils.isEmpty(servletRequestAttributes)) return null;
-        HttpServletResponse response = servletRequestAttributes.getResponse();
-        return response;
+        return servletRequestAttributes.getResponse();
     }
 
     public static String getHead(String key) {

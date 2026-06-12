@@ -11,7 +11,9 @@ import org.hibernate.annotations.Comment;
 @Getter
 @Setter
 @Entity
-@Table(name = "per_busi_resource")
+@Table(name = "per_busi_resource", indexes = {
+        @Index(name = "idx_per_busi_resource_org_rt", columnList = "org_id, rt_id")
+})
 public class PerBusiResource {
     @Id
     @Comment("资源ID")
@@ -62,6 +64,12 @@ public class PerBusiResource {
     @ColumnDefault("1")
     @Column(name = "extra_flag1", nullable = false)
     private Integer extraFlag1;
+
+    @NotNull
+    @Comment("是否组织根目录（随组织生命周期）")
+    @ColumnDefault("false")
+    @Column(name = "org_root", nullable = false)
+    private Boolean orgRoot = false;
 
     @NotNull
     @Comment("创建时间")

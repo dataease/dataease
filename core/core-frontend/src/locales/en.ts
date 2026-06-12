@@ -478,6 +478,7 @@ export default {
     user: 'User',
     role: 'Role',
     addUser: '@:common.add @:system.user',
+    selected_count: 'Selected {0} members',
     click_to_show: 'Click to show',
     click_to_hide: 'Click to hide',
     basic_settings: 'Basic settings',
@@ -820,6 +821,17 @@ export default {
     data_import_failed: 'Some data import failed',
     data_import_failed_de: 'Data import failed'
   },
+  sysuser: {
+    sys_user_management: 'System User Management',
+    search_placeholder: 'Search name, account, email',
+    org: 'Organization',
+    user_source: 'Source',
+    sys_variable: 'System Variable',
+    add_sys_user: 'Add System User',
+    edit_sys_user: 'Edit System User',
+    account_placeholder: 'Please enter account',
+    name_placeholder: 'Please enter name'
+  },
   userimport: {
     buttonText: 'Batch import',
     dialogTitle: 'Batch upload',
@@ -909,7 +921,18 @@ export default {
     move_resource_first: 'Migrate resources first',
     default_parent_tips: '(Default current organization)',
     admin_parent_tips: '(Default root organization)',
-    please_login_per_changed: 'Current user permissions have changed, please log in again'
+    please_login_per_changed: 'Current user permissions have changed, please log in again',
+    add_member: 'Add Member',
+    select_member: 'Select Members',
+    remove_member: 'Remove Member',
+    remove_member_confirm: 'Are you sure you want to remove this member from the organization?',
+    member_role: 'Member Role',
+    members: 'members',
+    selected_count: 'Selected {0} members',
+    select_org_first: 'Please select an organization from the left panel',
+    search_name_account: 'Search name or account',
+    select_member_role: 'Please select member role',
+    no_selected_member: 'No members selected'
   },
   auth: {
     permission_configuration: 'Permission Configuration',

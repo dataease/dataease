@@ -13,6 +13,6 @@ export default {
         rewrite: path => path.replace(/^\/api/, 'de2api')
       }
     },
-    port: 8080
+    port: 7070
   }
 }

@@ -1,5 +1,4 @@
 <template>
-  <p class="router-title">{{ t('commons.system_parameter_setting') }}</p>
   <el-tabs v-model="activeName">
     <el-tab-pane v-for="item in tabArray" :key="item.name" :label="item.label" :name="item.name" />
   </el-tabs>
@@ -51,20 +50,10 @@ const addTable = tab => {
 }
 </script>
 <style lang="less">
-.router-title {
-  color: #1f2329;
-  font-feature-settings: 'clig' off, 'liga' off;
-  font-family: var(--de-custom_font, 'PingFang');
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 28px;
-}
 .sys-setting-p {
   width: 100%;
-  height: calc(100vh - 176px);
+  height: calc(100vh - 148px);
   box-sizing: border-box;
-  margin-top: 12px;
 }
 
 .container-sys-param {

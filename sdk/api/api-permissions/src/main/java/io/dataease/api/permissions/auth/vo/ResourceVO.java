@@ -1,14 +1,15 @@
 package io.dataease.api.permissions.auth.vo;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import io.dataease.model.TreeResultModel;
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+
+import io.dataease.model.TreeResultModel;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
 
 @Data
 @Schema(description = "资源结点")
@@ -27,4 +28,9 @@ public class ResourceVO implements TreeResultModel<ResourceVO>, Serializable {
     private boolean leaf = false;
     @Schema(description = "额外标识")
     private Integer extraFlag = 0;
+    @JsonSerialize(using = ToStringSerializer.class)
+    @Schema(description = "组织ID")
+    private Long oid;
+    @Schema(description = "无权限占位节点")
+    private boolean disabled = false;
 }

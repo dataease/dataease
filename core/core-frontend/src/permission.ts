@@ -121,7 +121,6 @@ router.beforeEach(async (to, from, next) => {
         next()
         return
       }
-
       let roleRouters = (await getRoleRouters()) || []
       if (isDesktop) {
         roleRouters = roleRouters.filter(item => item.name !== 'system')

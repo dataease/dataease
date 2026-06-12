@@ -1,28 +1,15 @@
 package io.dataease.constant;
 
+import lombok.Getter;
+
+@Getter
 public enum AuthResourceEnum {
 
     PANEL(2, 1), SCREEN(3, 2), DATASET(5, 3), DATASOURCE(6, 4), SYSTEM(7, 0), USER(8, 5), ROLE(8, 6),  ORG(9, 7),  SYNC_DATASOURCE(23, 9),  TASK(24, 9), SUMMARY(22, 9), DATA_FILLING(60, 8), SPREADSHEET(100L, 10);
 
-    private long menuId;
+    private final long menuId;
 
-    private int flag;
-
-    public long getMenuId() {
-        return menuId;
-    }
-
-    public void setMenuId(long menuId) {
-        this.menuId = menuId;
-    }
-
-    public int getFlag() {
-        return flag;
-    }
-
-    public void setFlag(int flag) {
-        this.flag = flag;
-    }
+    private final int flag;
 
     AuthResourceEnum(long menuId, int flag) {
         this.menuId = menuId;

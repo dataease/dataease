@@ -54,7 +54,7 @@ public class PageResult<T> {
         this.records = page.getContent();
         this.total = page.getTotalElements();
         this.current = page.getNumber() + 1;
-        this.pages = page.getPageable().getPageNumber();
+        this.pages = page.getTotalPages();
         this.size = page.getSize();
         if (showOriginalPage.length > 0 && showOriginalPage[0]) {
             this.originalPage = page;
@@ -72,7 +72,7 @@ public class PageResult<T> {
         this.records = list;
         this.total = total;
         this.current = page.getPageNumber() + 1;
-        this.pages = page.getPageNumber();
         this.size = page.getPageSize();
+        this.pages = total == 0 ? 0 : (total + this.size - 1) / this.size;
     }
 }

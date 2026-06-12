@@ -8,7 +8,6 @@ import io.dataease.api.permissions.auth.dto.BusiPerCheckDTO;
 import io.dataease.api.permissions.dataset.api.RowPermissionsApi;
 import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
 import io.dataease.api.permissions.user.vo.UserFormVO;
-import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.commons.utils.SqlparserUtils;
 import io.dataease.constant.AuthEnum;
@@ -41,8 +40,8 @@ import io.dataease.extensions.view.dto.ChartExtRequest;
 import io.dataease.extensions.view.dto.ColumnPermissionItem;
 import io.dataease.extensions.view.dto.SqlVariableDetails;
 import io.dataease.i18n.Translator;
+import io.dataease.permission.util.V3UserUtil;
 import io.dataease.system.manage.CorePermissionManage;
-import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
 import io.dataease.utils.TreeUtils;
@@ -127,7 +126,7 @@ public class DatasetDataManage {
                 Map map = JsonUtil.parseObject(datasourceSchemaDTO.getConfiguration(), Map.class);
                 if (!datasourceRequest.getIsCross()) {
                     if (ObjectUtils.isNotEmpty(map.get("schema"))) {
-                        sql = sql.replaceAll(SqlPlaceholderConstants.KEYWORD_PREFIX_REGEX + datasourceSchemaDTO.getSchemaAlias() + SqlPlaceholderConstants.KEYWORD_SUFFIX_REGEX, String.format(format, map.get("schema").toString()) );
+                        sql = sql.replaceAll(SqlPlaceholderConstants.KEYWORD_PREFIX_REGEX + datasourceSchemaDTO.getSchemaAlias() + SqlPlaceholderConstants.KEYWORD_SUFFIX_REGEX, String.format(format, map.get("schema").toString()));
                     } else {
                         sql = sql.replaceAll(SqlPlaceholderConstants.KEYWORD_PREFIX_REGEX + datasourceSchemaDTO.getSchemaAlias() + SqlPlaceholderConstants.KEYWORD_SUFFIX_REGEX + "\\.", "");
                     }
@@ -252,9 +251,9 @@ public class DatasetDataManage {
             sql = Utils.replaceSchemaAlias(sql, dsMap);
         }
         List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = new ArrayList<>();
-        TokenUserBO user = AuthUtils.getUser();
-        if (user != null && checkPermission) {
-            rowPermissionsTree = permissionManage.getRowPermissionsTree(datasetGroupInfoDTO.getId(), user.getUserId());
+        Long uid = V3UserUtil.getUid();
+        if (uid != null && checkPermission) {
+            rowPermissionsTree = permissionManage.getRowPermissionsTree(datasetGroupInfoDTO.getId(), uid);
         }
         Provider provider;
         if (crossDs) {
@@ -341,9 +340,9 @@ public class DatasetDataManage {
             }
 
             List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = new ArrayList<>();
-            TokenUserBO user = AuthUtils.getUser();
-            if (user != null) {
-                rowPermissionsTree = permissionManage.getRowPermissionsTree(datasetGroupInfoDTO.getId(), user.getUserId());
+            Long uid = V3UserUtil.getUid();
+            if (uid != null) {
+                rowPermissionsTree = permissionManage.getRowPermissionsTree(datasetGroupInfoDTO.getId(), uid);
             }
 
             Provider provider;
@@ -434,7 +433,7 @@ public class DatasetDataManage {
         if (getRowPermissionsApi() == null) {
             return null;
         }
-        return getRowPermissionsApi().getUserById(AuthUtils.getUser().getUserId());
+        return getRowPermissionsApi().getUserById(V3UserUtil.getUid());
     }
 
     public Map<String, Object> previewSql(PreviewSqlDTO dto) throws DEException {
@@ -747,9 +746,9 @@ public class DatasetDataManage {
             boolean needOrder = Utils.isNeedOrder(dsList);
 
             List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = new ArrayList<>();
-            TokenUserBO user = AuthUtils.getUser();
-            if (user != null) {
-                rowPermissionsTree = permissionManage.getRowPermissionsTree(datasetGroupInfoDTO.getId(), user.getUserId());
+            Long uid = V3UserUtil.getUid();
+            if (uid != null) {
+                rowPermissionsTree = permissionManage.getRowPermissionsTree(datasetGroupInfoDTO.getId(), uid);
             }
 
             Provider provider;
@@ -914,9 +913,9 @@ public class DatasetDataManage {
         boolean needOrder = Utils.isNeedOrder(dsList);
 
         List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = new ArrayList<>();
-        TokenUserBO user = AuthUtils.getUser();
-        if (user != null) {
-            rowPermissionsTree = permissionManage.getRowPermissionsTree(datasetGroupInfoDTO.getId(), user.getUserId());
+        Long uid = V3UserUtil.getUid();
+        if (uid != null) {
+            rowPermissionsTree = permissionManage.getRowPermissionsTree(datasetGroupInfoDTO.getId(), uid);
         }
 
         //组件过滤条件
@@ -1152,9 +1151,9 @@ public class DatasetDataManage {
         boolean needOrder = Utils.isNeedOrder(dsList);
 
         List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = new ArrayList<>();
-        TokenUserBO user = AuthUtils.getUser();
-        if (user != null) {
-            rowPermissionsTree = permissionManage.getRowPermissionsTree(datasetGroupInfoDTO.getId(), user.getUserId());
+        Long uid = V3UserUtil.getUid();
+        if (uid != null) {
+            rowPermissionsTree = permissionManage.getRowPermissionsTree(datasetGroupInfoDTO.getId(), uid);
         }
 
         Provider provider;

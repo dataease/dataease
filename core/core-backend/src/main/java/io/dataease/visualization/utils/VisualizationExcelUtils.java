@@ -4,7 +4,7 @@ import io.dataease.constant.DeTypeConstants;
 import io.dataease.utils.ConfigUtils;
 import io.dataease.utils.FileUtils;
 import io.dataease.utils.LogUtil;
-import io.dataease.utils.ModelUtils;
+import io.dataease.utils.LocalModelUtils;
 import io.dataease.visualization.bo.ExcelSheetModel;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +25,7 @@ public class VisualizationExcelUtils {
     private static final String BASE_ROOT = getBaseRoot();
 
     public static String getBaseRoot() {
-        if (ModelUtils.isDesktop()) {
+        if (LocalModelUtils.isDesktop()) {
             return ConfigUtils.getConfig("dataease.path.report", "/opt/dataease3.0/data/report/");
         } else {
             return "/opt/dataease3.0/data/report/";

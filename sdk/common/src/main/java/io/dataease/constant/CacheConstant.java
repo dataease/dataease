@@ -5,6 +5,7 @@ public class CacheConstant {
         public static final String USER_COUNT_CACHE = "de_v2_user_count";
         public static final String USER_ECHELON_CACHE = "de_v2_user_echelon";
         public static final String LOGIN_USER_CACHE = "de_v2_login_user_cache";
+        public static final String BASE_USER_CACHE = "de_v2_base_user_cache";
         public static final String USER_ROLES_CACHE = "de_v2_user_roles";
         public static final String USER_BUSI_PERS_CACHE = "de_v2_user_busi_pers";
         public static final String USER_BUSI_PERS_INTERACTIVE_CACHE = "de_v2_user_busi_pers_interactive";
@@ -12,7 +13,6 @@ public class CacheConstant {
     }
 
     public static class RoleCacheConstant {
-        public static final String ROLE_MENU_PERS_CACHE = "de_v2_role_menu_pers";
         public static final String ROLE_BUSI_PERS_CACHE = "de_v2_role_busi_pers";
         public static final String ROLE_BUSI_PERS_INTERACTIVE_CACHE = "de_v2_role_busi_pers_interactive";
     }
@@ -20,7 +20,8 @@ public class CacheConstant {
     public static class OrgCacheConstant {
         public static final String ORG_GLOBAL_RESOURCE_CACHE = "de_v2_org_global_resource";
         public static final String ALL_OID_FLAG_RESOURCE_CACHE = "de_v2_all_oid_flag_resource";
-
+        public static final String ALL_RESOURCES_CACHE = "de_v2_all_resources";
+        public static final String ORG_BUSI_PERS_INTERACTIVE_CACHE = "de_v2_org_busi_pers_interactive";
 
     }
 

@@ -21,7 +21,7 @@ import io.dataease.extensions.datasource.dto.FieldGroupDTO;
 import io.dataease.extensions.datasource.model.SQLObj;
 import io.dataease.extensions.view.dto.ColumnPermissionItem;
 import io.dataease.i18n.Translator;
-import io.dataease.utils.AuthUtils;
+import io.dataease.permission.util.V3UserUtil;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.utils.JsonUtil;
@@ -250,7 +250,7 @@ public class DatasetTableFieldManage {
     public List<DatasetTableFieldDTO> listFieldsWithPermissions(Long id) {
         List<DatasetTableFieldDTO> fields = selectByDatasetGroupId(id);
         Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
-        Long userId = AuthUtils.getUser() == null ? null : AuthUtils.getUser().getUserId();
+        Long userId = V3UserUtil.getUid();
         List<DatasetTableFieldDTO> tmp = permissionManage
                 .filterColumnPermissions(fields, desensitizationList, id, userId)
                 .stream()
@@ -263,7 +263,7 @@ public class DatasetTableFieldManage {
     public List<DatasetTableFieldDTO> listFieldsWithPermissionsRemoveAgg(Long id) {
         List<DatasetTableFieldDTO> fields = selectByDatasetGroupId(id);
         Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
-        Long userId = AuthUtils.getUser() == null ? null : AuthUtils.getUser().getUserId();
+        Long userId = V3UserUtil.getUid();
         SQLObj tableObj = new SQLObj();
         tableObj.setTableAlias("");
         List<DatasetTableFieldDTO> tmp = permissionManage

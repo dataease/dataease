@@ -1,7 +1,7 @@
 package io.dataease.home;
 
 import io.dataease.home.manage.DeIndexManage;
-import io.dataease.utils.ModelUtils;
+import io.dataease.utils.LocalModelUtils;
 import io.dataease.utils.RsaUtils;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,7 +33,7 @@ public class RestIndexController {
     @GetMapping("/model")
     @ResponseBody
     public boolean model() {
-        return ModelUtils.isDesktop();
+        return LocalModelUtils.isDesktop();
     }
 
 

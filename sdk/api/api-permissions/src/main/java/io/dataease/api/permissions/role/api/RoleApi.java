@@ -2,7 +2,6 @@ package io.dataease.api.permissions.role.api;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.permissions.role.dto.*;
-import io.dataease.api.permissions.role.vo.ExternalUserVO;
 import io.dataease.api.permissions.role.vo.RoleDetailVO;
 import io.dataease.api.permissions.role.vo.RoleVO;
 import io.dataease.auth.DeApiPath;
@@ -29,8 +28,8 @@ public interface RoleApi {
 
     @Operation(summary = "查询")
     @DePermit("m:read")
-    @PostMapping("/query")
-    List<RoleVO> query(@RequestBody KeywordRequest request);
+    @GetMapping("/query")
+    List<RoleVO> query();
 
     @Operation(summary = "创建")
     @DePermit("m:read")
@@ -47,14 +46,6 @@ public interface RoleApi {
     @PostMapping("/mountUser")
     void mountUser(@RequestBody MountUserRequest request);
 
-    @Operation(summary = "绑定组织外用户")
-    @DePermit({"m:read", "#p0.rid + ':manage'"})
-    @PostMapping("/mountExternalUser")
-    void mountExternalUser(@RequestBody MountExternalUserRequest request);
-
-    @Operation(summary = "查询组织外用户")
-    @GetMapping("/searchExternalUser/{keyword}")
-    ExternalUserVO searchExternalUser(@PathVariable("keyword") String keyword);
 
     @Operation(summary = "解绑用户")
     @DePermit({"m:read", "#p0.rid + ':manage'"})
@@ -79,18 +70,6 @@ public interface RoleApi {
     @DePermit({"m:manage", "#p0 + ':manage'"})
     @PostMapping("/delete/{rid}")
     void delete(@PathVariable("rid") Long rid);
-
-    @Operation(summary = "解绑用户询问")
-    @PostMapping("/beforeUnmountInfo")
-    Integer beforeUnmountInfo(@RequestBody UnmountUserRequest request);
-
-    @Operation(summary = "复制", hidden = true)
-    @PostMapping("/copy")
-    void copy(@RequestBody RoleCopyRequest request);
-
-    @Operation(summary = "查询组织内角色")
-    @PostMapping("/byCurOrg")
-    List<RoleVO> byCurOrg(@RequestBody KeywordRequest request);
 
     @Hidden
     @GetMapping("/queryWithOid/{oid}")

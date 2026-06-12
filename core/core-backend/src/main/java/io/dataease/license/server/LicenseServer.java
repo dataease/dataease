@@ -7,7 +7,7 @@ import io.dataease.license.bo.F2CLicResult;
 import io.dataease.license.manage.CoreLicManage;
 import io.dataease.license.manage.F2CLicManage;
 import io.dataease.license.utils.LicenseUtil;
-import io.dataease.utils.AuthUtils;
+import io.dataease.permission.util.V3UserUtil;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -47,7 +47,7 @@ public class LicenseServer implements LicenseApi {
     @Override
     public void revert() {
         F2CLicResult f2CLicResult = null;
-        if (!AuthUtils.isSysAdmin() || ObjectUtils.isEmpty(f2CLicResult = LicenseUtil.get()) || f2CLicResult.getStatus() != F2CLicResult.Status.expired) {
+        if (!V3UserUtil.isSysAdmin() || ObjectUtils.isEmpty(f2CLicResult = LicenseUtil.get()) || f2CLicResult.getStatus() != F2CLicResult.Status.expired) {
             DEException.throwException("不能进行还原操作!");
         }
         f2CLicManage.revert();

@@ -23,4 +23,6 @@ public class UserItemVO implements Serializable {
     private String name;
     @Schema(description = "邮箱")
     private String email;
+
+    private Boolean enable = false;
 }

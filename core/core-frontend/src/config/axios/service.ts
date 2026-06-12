@@ -121,6 +121,10 @@ service.interceptors.request.use(
     } else if (embeddedStore.token) {
       ;(config.headers as AxiosRequestHeaders)['X-EMBEDDED-TOKEN'] = embeddedStore.token
     }
+    const storedProxyInfo = wsCache.get('user.proxyInfo')
+    if (storedProxyInfo?.proxy && storedProxyInfo?.proxySecret) {
+      ;(config.headers as AxiosRequestHeaders)['X-DE-ADMIN-PROXY'] = storedProxyInfo.proxySecret
+    }
     const locale = getLocale()
     if (locale) {
       const val = mapping[locale] || locale

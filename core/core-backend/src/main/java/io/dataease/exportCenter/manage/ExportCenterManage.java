@@ -4,30 +4,34 @@ import io.dataease.api.chart.request.ChartExcelRequest;
 import io.dataease.api.dataset.dto.DataSetExportRequest;
 import io.dataease.api.export.BaseExportApi;
 import io.dataease.api.permissions.user.api.UserApi;
+import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.api.xpack.dataFilling.DataFillingApi;
 import io.dataease.commons.utils.ExcelWatermarkUtils;
 import io.dataease.constant.LogOT;
 import io.dataease.constant.LogST;
-import io.dataease.dataset.manage.*;
+import io.dataease.dao.auto.entity.CoreExportTask;
+import io.dataease.dataset.manage.DatasetGroupManage;
 import io.dataease.exception.DEException;
 import io.dataease.exportCenter.dao.auto.entity.CoreExportDownloadTask;
-import io.dataease.dao.auto.entity.CoreExportTask;
 import io.dataease.exportCenter.dao.auto.mapper.CoreExportDownloadTaskRepository;
 import io.dataease.exportCenter.dao.auto.mapper.CoreExportTaskRepository;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.log.DeLog;
 import io.dataease.model.ExportTaskDTO;
+import io.dataease.permission.util.V3UserUtil;
 import io.dataease.result.PageResult;
 import io.dataease.system.manage.SysParameterManage;
 import io.dataease.utils.*;
 import io.dataease.visualization.dao.auto.entity.VisualizationWatermark;
 import io.dataease.visualization.dao.auto.mapper.VisualizationWatermarkRepository;
+import io.dataease.visualization.dto.WatermarkContentDTO;
 import io.dataease.visualization.server.DataVisualizationServer;
 import jakarta.annotation.Resource;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -38,8 +42,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import io.dataease.visualization.dto.WatermarkContentDTO;
-import io.dataease.api.permissions.user.vo.UserFormVO;
 
 import java.net.InetAddress;
 import java.util.*;
@@ -102,7 +104,7 @@ public class ExportCenterManage implements BaseExportApi {
         }
         Specification<CoreExportTask> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("userId"), AuthUtils.getUser().getUserId()));
+            predicates.add(cb.equal(root.get("userId"), V3UserUtil.getUid()));
             if (!type.equalsIgnoreCase("ALL")) {
                 predicates.add(cb.equal(root.get("exportStatus"), type));
             }
@@ -160,7 +162,7 @@ public class ExportCenterManage implements BaseExportApi {
         Pageable pageable = PageRequest.of(goPage - 1, pageSize, Sort.by(Sort.Direction.DESC, "exportTime"));
         Specification<CoreExportTask> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("userId"), AuthUtils.getUser().getUserId()));
+            predicates.add(cb.equal(root.get("userId"), V3UserUtil.getUid()));
             if (!status.equalsIgnoreCase("ALL")) {
                 predicates.add(cb.equal(root.get("exportStatus"), status));
             }
@@ -187,15 +189,15 @@ public class ExportCenterManage implements BaseExportApi {
 
     public Map<String, Long> exportTasks() {
         Map<String, Long> result = new HashMap<>();
-        result.put("IN_PROGRESS", coreExportTaskRepository.countByUserIdAndExportStatus(AuthUtils.getUser().getUserId(), "IN_PROGRESS"));
+        result.put("IN_PROGRESS", coreExportTaskRepository.countByUserIdAndExportStatus(V3UserUtil.getUid(), "IN_PROGRESS"));
 
-        result.put("SUCCESS", coreExportTaskRepository.countByUserIdAndExportStatus(AuthUtils.getUser().getUserId(), "SUCCESS"));
+        result.put("SUCCESS", coreExportTaskRepository.countByUserIdAndExportStatus(V3UserUtil.getUid(), "SUCCESS"));
 
-        result.put("FAILED", coreExportTaskRepository.countByUserIdAndExportStatus(AuthUtils.getUser().getUserId(), "FAILED"));
+        result.put("FAILED", coreExportTaskRepository.countByUserIdAndExportStatus(V3UserUtil.getUid(), "FAILED"));
 
-        result.put("PENDING", coreExportTaskRepository.countByUserIdAndExportStatus(AuthUtils.getUser().getUserId(), "PENDING"));
+        result.put("PENDING", coreExportTaskRepository.countByUserIdAndExportStatus(V3UserUtil.getUid(), "PENDING"));
 
-        result.put("ALL", coreExportTaskRepository.countByUserId(AuthUtils.getUser().getUserId()));
+        result.put("ALL", coreExportTaskRepository.countByUserId(V3UserUtil.getUid()));
         return result;
     }
 
@@ -241,7 +243,7 @@ public class ExportCenterManage implements BaseExportApi {
     public void addTask(String exportFrom, String exportFromType, ChartExcelRequest request, String busiFlag) {
         CoreExportTask exportTask = new CoreExportTask();
         exportTask.setId(IDUtils.snowID().toString());
-        exportTask.setUserId(AuthUtils.getUser().getUserId());
+        exportTask.setUserId(V3UserUtil.getUid());
         exportTask.setExportFrom(Long.valueOf(exportFrom));
         exportTask.setExportFromType(exportFromType);
         exportTask.setExportStatus("PENDING");
@@ -261,7 +263,7 @@ public class ExportCenterManage implements BaseExportApi {
         datasetGroupManage.getDatasetGroupInfoDTO(exportFrom, null);
         CoreExportTask exportTask = new CoreExportTask();
         exportTask.setId(UUID.randomUUID().toString());
-        exportTask.setUserId(AuthUtils.getUser().getUserId());
+        exportTask.setUserId(V3UserUtil.getUid());
         exportTask.setExportFrom(exportFrom);
         exportTask.setExportFromType(exportFromType);
         exportTask.setExportStatus("PENDING");
@@ -308,7 +310,7 @@ public class ExportCenterManage implements BaseExportApi {
         VisualizationWatermark watermark = visualizationWatermarkRepository.findById("system_default").orElse(null);
         WatermarkContentDTO watermarkContent = JsonUtil.parseObject(watermark.getSettingContent(), WatermarkContentDTO.class);
         if (watermarkContent.getEnable() && watermarkContent.getExcelEnable()) {
-            UserFormVO userInfo = CommonBeanFactory.getBean(UserApi.class).queryById(AuthUtils.getUser().getUserId());
+            UserFormVO userInfo = CommonBeanFactory.getBean(UserApi.class).queryById(V3UserUtil.getUid());
             // 在主逻辑中添加水印
             int watermarkPictureIdx = ExcelWatermarkUtils.addWatermarkImage(wb, watermarkContent, userInfo); // 生成水印图片并获取 ID
             for (Sheet sheet : wb) {

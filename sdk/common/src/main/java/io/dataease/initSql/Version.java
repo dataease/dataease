@@ -19,22 +19,30 @@ public class Version implements Comparable<Version> {
         return Arrays.asList(version.split("\\."));
     }
 
+    private static int parsePart(String s) {
+        try {
+            return Integer.parseInt(s);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
     @Override
     public int compareTo(Version other) {
         int i = 0;
         while (i < parts.size() || i < other.parts.size()) {
             if (i < parts.size() && i < other.parts.size()) {
-                int thisPart = Integer.parseInt(parts.get(i));
-                int otherPart = Integer.parseInt(other.parts.get(i));
+                int thisPart = parsePart(parts.get(i));
+                int otherPart = parsePart(other.parts.get(i));
                 if (thisPart != otherPart) {
                     return thisPart - otherPart;
                 }
             } else if (i < parts.size()) {
-                if (Integer.parseInt(parts.get(i)) != 0) {
+                if (parsePart(parts.get(i)) != 0) {
                     return 1;
                 }
             } else {
-                if (Integer.parseInt(other.parts.get(i)) != 0) {
+                if (parsePart(other.parts.get(i)) != 0) {
                     return -1;
                 }
             }

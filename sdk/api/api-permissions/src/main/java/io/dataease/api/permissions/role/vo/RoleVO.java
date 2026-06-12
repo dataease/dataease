@@ -23,4 +23,6 @@ public class RoleVO implements Serializable {
     private boolean readonly;
     @Schema(description = "根结点")
     private boolean root;
+
+    private Integer typeCode = 0;
 }

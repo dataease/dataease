@@ -8,7 +8,6 @@ import io.dataease.api.permissions.user.dto.*;
 import io.dataease.api.permissions.user.vo.*;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
-import io.dataease.auth.vo.TokenVO;
 import io.dataease.model.KeywordRequest;
 import io.dataease.result.PageResult;
 import io.swagger.v3.oas.annotations.Hidden;
@@ -40,6 +39,16 @@ public interface UserApi {
     @DePermit("m:read")
     @PostMapping("/pager/{goPage}/{pageSize}")
     PageResult<UserGridVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody UserGridRequest request);
+
+    @Operation(summary = "查询成员列表")
+    @Parameters({
+            @Parameter(name = "goPage", description = "目标页码", required = true, in = ParameterIn.PATH),
+            @Parameter(name = "pageSize", description = "每页容量", required = true, in = ParameterIn.PATH),
+            @Parameter(name = "request", description = "过滤条件", required = true)
+    })
+    @DePermit("m:read")
+    @PostMapping("/mumberPager/{goPage}/{pageSize}")
+    PageResult<UserGridVO> memberPager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody UserGridRequest request);
 
     @Operation(summary = "查询用户详情")
     @Parameter(name = "id", description = "ID", required = true, in = ParameterIn.PATH)
@@ -94,9 +103,9 @@ public interface UserApi {
     @PostMapping("/role/option")
     List<UserItemVO> optionForRole(@RequestBody UserRequest request);
 
-    @Operation(summary = "组织内用户")
+    /*@Operation(summary = "组织内用户")
     @GetMapping("/org/option")
-    List<UserItemVO> optionForOrg();
+    List<UserItemVO> optionForOrg();*/
 
     @Operation(summary = "角色已绑用户")
     @Parameters({
@@ -107,18 +116,14 @@ public interface UserApi {
     @PostMapping("/role/selected/{goPage}/{pageSize}")
     PageResult<UserItemVO> selectedForRole(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody UserRequest request);
 
-    @Operation(summary = "切换组织")
-    @Parameter(name = "oId", description = "目标组织ID", required = true, in = ParameterIn.PATH)
-    @PostMapping("/switch/{oId}")
-    TokenVO switchOrg(@PathVariable("oId") Long oId);
 
     @Operation(summary = "获取当前登录人信息")
     @GetMapping("/info")
     CurUserVO info();
 
     @Operation(summary = "查询当前组织内用户")
-    @PostMapping("/byCurOrg")
-    List<UserItem> byCurOrg(@RequestBody KeywordRequest request);
+    @GetMapping("/byCurOrg")
+    List<UserOptionVO> byCurOrg();
 
     @Operation(summary = "用户数量", hidden = true)
     @Hidden
@@ -176,9 +181,7 @@ public interface UserApi {
     @GetMapping("/queryByAccount/{account}")
     CurUserVO queryByAccount(@PathVariable("account") String account);
 
-    @Hidden
-    @PostMapping("/all")
-    List<UserItem> allUser(@RequestBody KeywordRequest request);
+
 
     @Hidden
     @PostMapping("/admin/bind")
@@ -208,9 +211,9 @@ public interface UserApi {
     @GetMapping("/defaultOrgAdmin")
     boolean defaultOrgAdmin();
 
-    @Hidden
+    /*@Hidden
     @PostMapping("/subOrgUser")
-    List<UserItem> subOrgUser(@RequestBody List<Long> oidList);
+    List<UserItem> subOrgUser(@RequestBody List<Long> oidList);*/
 
     List<Long> getRecipientUserIds(UserReciRequest request);
 
@@ -247,5 +250,9 @@ public interface UserApi {
 
     @Hidden
     List<UserReciVO> getFormatRecipient(Long oid, List<Long> uidList, List<Long> ridList);
+
+    @Operation(summary = "查询用户")
+    @GetMapping("/query")
+    List<UserOptionVO> query();
 
 }

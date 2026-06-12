@@ -1,24 +1,24 @@
 import request from '@/config/axios'
 
-export const queryUserApi = data => request.post({ url: '/user/byCurOrg', data })
-export const queryUserOptionsApi = () => request.get({ url: '/user/org/option' })
-export const queryRoleApi = data => request.post({ url: '/role/byCurOrg', data })
+export const queryUserApi = (isSystem?: boolean) =>
+  isSystem ? request.get({ url: '/user/query' }) : request.get({ url: '/user/byCurOrg' })
 
-export const resourceTreeApi = (flag: string) => request.get({ url: '/auth/busiResource/' + flag })
+export const queryRoleApi = () => request.get({ url: '/role/query' })
 
-export const menuTreeApi = () => request.get({ url: '/auth/menuResource' })
+export const resourceTreeApi = (flag: string, system?: boolean) => {
+  const param = {
+    flag,
+    system: !!system
+  }
+  return request.post({ url: '/auth/busiResource', data: param })
+}
 
-export const resourcePerApi = data => request.post({ url: '/auth/busiPermission', data })
+export const subjectPermissionApi = data => request.post({ url: '/auth/subjectPermission', data })
 
-export const menuPerApi = data => request.post({ url: '/auth/menuPermission', data })
+export const subjectPermissionSaveApi = data =>
+  request.post({ url: '/auth/saveSubjectPermission', data })
 
-export const busiPerSaveApi = data => request.post({ url: '/auth/saveBusiPer', data })
-export const menuPerSaveApi = data => request.post({ url: '/auth/saveMenuPer', data })
+export const resourcePermissionApi = data => request.post({ url: '/auth/resourcePermission', data })
 
-export const resourceTargetPerApi = data =>
-  request.post({ url: '/auth/busiTargetPermission', data })
-
-export const menuTargetPerApi = data => request.post({ url: '/auth/menuTargetPermission', data })
-
-export const busiTargetPerSaveApi = data => request.post({ url: '/auth/saveBusiTargetPer', data })
-export const menuTargetPerSaveApi = data => request.post({ url: '/auth/saveMenuTargetPer', data })
+export const resourcePermissionSaveApi = data =>
+  request.post({ url: '/auth/saveResourcePermission', data })

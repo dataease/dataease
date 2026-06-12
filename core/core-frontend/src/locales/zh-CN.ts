@@ -465,6 +465,7 @@ export default {
     user: '用户',
     role: '角色',
     addUser: '@:common.add@:system.user',
+    selected_count: '已选 {0} 人',
     click_to_show: '点击显示',
     click_to_hide: '点击隐藏',
     basic_settings: '基础设置',
@@ -795,6 +796,17 @@ export default {
     data_import_failed: '部分数据导入失败',
     data_import_failed_de: '数据导入失败'
   },
+  sysuser: {
+    sys_user_management: '系统用户管理',
+    search_placeholder: '搜索姓名、账号、邮箱',
+    org: '所在组织',
+    user_source: '用户来源',
+    sys_variable: '系统变量',
+    add_sys_user: '添加系统用户',
+    edit_sys_user: '编辑系统用户',
+    account_placeholder: '请输入账号',
+    name_placeholder: '请输入姓名'
+  },
   userimport: {
     buttonText: '批量导入',
     dialogTitle: '批量上传',
@@ -824,6 +836,8 @@ export default {
     type: '角色类型',
     desc: '角色描述',
     average_role: '普通用户',
+    org_analyst: '数据分析师',
+    analyst: '分析师',
     org_admin: '组织管理员',
     confirm_delete: '确认删除该角色吗？',
     delete_tips:
@@ -881,7 +895,18 @@ export default {
     move_resource_first: '先迁移资源',
     default_parent_tips: '(默认当前组织)',
     admin_parent_tips: '(默认根组织)',
-    please_login_per_changed: '当前用户权限已变更，请重新登录'
+    please_login_per_changed: '当前用户权限已变更，请重新登录',
+    add_member: '添加成员',
+    select_member: '选择成员',
+    remove_member: '移除成员',
+    remove_member_confirm: '确定将该成员移出当前组织吗？',
+    member_role: '成员角色',
+    members: '人',
+    selected_count: '已选 {0} 人',
+    select_org_first: '请先在左侧选择组织',
+    search_name_account: '搜索姓名、账号',
+    select_member_role: '请选择成员角色',
+    no_selected_member: '暂无已选成员'
   },
   auth: {
     permission_configuration: '权限配置',
@@ -942,6 +967,7 @@ export default {
     resource_name: '资源名称',
     menu_name: '菜单名称',
     from_role: '继承自以下角色：',
+    from_org: '继承自以下组织：',
     auth_alone: '单独授权',
     org_role_empty: '组织管理员已拥有所有资源的权限，无需再授权',
     user_role_empty: '该用户是组织管理员，已拥有所有资源的权限，无需再授权',

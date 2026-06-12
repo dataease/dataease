@@ -279,7 +279,7 @@ const edit = (val, arr) => {
   )
 }
 const loadOrgOptions = async () => {
-  const res = await request.post({ url: '/org/mounted', data: {} })
+  const res = await request.get({ url: '/org/page/tree' })
   const data = res.data
   formatOrg(data)
   state.orgOptions = data

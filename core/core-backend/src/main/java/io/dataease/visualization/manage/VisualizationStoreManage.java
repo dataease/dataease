@@ -10,7 +10,7 @@ import io.dataease.constant.BusiResourceEnum;
 import io.dataease.dao.auto.entity.QDataVisualizationInfo;
 import io.dataease.exception.DEException;
 import io.dataease.license.config.XpackInteract;
-import io.dataease.utils.AuthUtils;
+import io.dataease.permission.util.V3UserUtil;
 import io.dataease.utils.CommonBeanFactory;
 import io.dataease.utils.IDUtils;
 import io.dataease.visualization.dao.auto.entity.CoreStore;
@@ -22,7 +22,10 @@ import jakarta.persistence.criteria.Predicate;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
@@ -39,7 +42,7 @@ public class VisualizationStoreManage {
 
     public void execute(VisualizationStoreRequest request) {
         Long resourceId = request.getId();
-        Long uid = AuthUtils.getUser().getUserId();
+        Long uid = V3UserUtil.getUid();
         if (favorited(resourceId)) {
             Specification<CoreStore> spec = (root, query, cb) -> {
                 List<Predicate> predicates = new ArrayList<>();
@@ -67,7 +70,7 @@ public class VisualizationStoreManage {
     public Boolean favorited(Long resourceId) {
         Specification<CoreStore> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("uid"), AuthUtils.getUser().getUserId()));
+            predicates.add(cb.equal(root.get("uid"), V3UserUtil.getUid()));
             predicates.add(cb.equal(root.get("resourceId"), resourceId));
             return cb.and(predicates.toArray(new Predicate[0]));
         };
@@ -98,7 +101,7 @@ public class VisualizationStoreManage {
     }
 
     public Page<StorePO> queryStorePage(int goPage, int pageSize, VisualizationWorkbranchQueryRequest request) {
-        Long uid = AuthUtils.getUser().getUserId();
+        Long uid = V3UserUtil.getUid();
 
         QCoreStore coreStore = QCoreStore.coreStore;
         QDataVisualizationInfo dataVisualizationInfo = QDataVisualizationInfo.dataVisualizationInfo;

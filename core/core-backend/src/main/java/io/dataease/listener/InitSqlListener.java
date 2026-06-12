@@ -29,6 +29,9 @@ public class InitSqlListener implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
+        List<DeStandaloneVersion> versionRecords = deStandaloneVersionRepository.findRecords();
+        boolean isUpgrade = !CollectionUtils.isEmpty(versionRecords);
+
         List<SqlBlock> sqlBlocks = new ArrayList<>();
         Map<String, SqlBlock> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType(SqlBlock.class);
         sqlBlocks.addAll(beansOfType.entrySet().stream().map(Map.Entry::getValue).toList());
@@ -38,11 +41,21 @@ public class InitSqlListener implements ApplicationRunner {
             String versionGroup = block.getVersionGroup();
             groupedSqlBlocks.computeIfAbsent(versionGroup, k -> new ArrayList<>()).add(block);
         }
-        for (String versionGroup : groupedSqlBlocks.keySet()) {
-            List<SqlBlock> toMigrateSqlBlocks = groupedSqlBlocks.get(versionGroup);
+
+        if (isUpgrade) {
+            executeGroups(groupedSqlBlocks, "upgrade");
+        } else {
+            executeGroups(groupedSqlBlocks, "1", "2", "3");
+        }
+    }
+
+    private void executeGroups(Map<String, List<SqlBlock>> groupedSqlBlocks, String... groups) {
+        for (String group : groups) {
+            List<SqlBlock> toMigrateSqlBlocks = groupedSqlBlocks.get(group);
+            if (toMigrateSqlBlocks == null) continue;
             toMigrateSqlBlocks.sort(versionComparator);
             int versionRank = findLastRank();
-            DeStandaloneVersion lastVersion = getLastVersion(versionGroup);
+            DeStandaloneVersion lastVersion = getLastVersion(group);
             if (lastVersion == null) {
                 for (SqlBlock sqlBlock : toMigrateSqlBlocks) {
                     versionRank++;
@@ -98,33 +111,6 @@ public class InitSqlListener implements ApplicationRunner {
         return null;
     }
 
-    private Comparator<SqlBlock> versionComparator = new Comparator<SqlBlock>() {
-        @Override
-        public int compare(SqlBlock sb1, SqlBlock sb2) {
-            Version v1 = sb1.getVersion();
-            Version v2 = sb2.getVersion();
-
-            int i = 0;
-            while (i < v1.getParts().size() || i < v2.getParts().size()) {
-                if (i < v1.getParts().size() && i < v2.getParts().size()) {
-                    int thisPart = Integer.parseInt(v1.getParts().get(i));
-                    int otherPart = Integer.parseInt(v2.getParts().get(i));
-                    if (thisPart != otherPart) {
-                        return thisPart - otherPart;
-                    }
-                } else if (i < v1.getParts().size()) {
-                    if (Integer.parseInt(v1.getParts().get(i)) != 0) {
-                        return 1;
-                    }
-                } else {
-                    if (Integer.parseInt(v2.getParts().get(i)) != 0) {
-                        return -1;
-                    }
-                }
-                i++;
-            }
-            return 0;
-        }
-    };
+    private Comparator<SqlBlock> versionComparator = (sb1, sb2) -> sb1.getVersion().compareTo(sb2.getVersion());
 
 }

@@ -21,6 +21,7 @@ import io.dataease.license.utils.LicenseUtil;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.operation.manage.CoreOptRecentManage;
+import io.dataease.permission.util.V3UserUtil;
 import io.dataease.utils.*;
 import jakarta.annotation.Resource;
 import jakarta.persistence.criteria.Predicate;
@@ -176,7 +177,7 @@ public class DataSourceManage {
     @XpackInteract(value = "datasourceResourceTree", before = false)
     public void innerEdit(CoreDatasource coreDatasource) {
         coreDatasource.setUpdateTime(System.currentTimeMillis());
-        coreDatasource.setUpdateBy(AuthUtils.getUser().getUserId());
+        coreDatasource.setUpdateBy(V3UserUtil.getUid());
         coreDatasource.setTaskStatus(TaskStatus.WaitingForExecution.name());
         coreDatasourceRepository.saveAndFlush(coreDatasource);
         coreOptRecentManage.saveOpt(coreDatasource.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE, OptConstants.OPT_TYPE.UPDATE);
@@ -187,7 +188,7 @@ public class DataSourceManage {
     public void innerEditName(CoreDatasource coreDatasource) {
         Optional<CoreDatasource> optionalCoreDatasource = coreDatasourceRepository.findById(coreDatasource.getId());
         if (optionalCoreDatasource.isPresent()) {
-            coreDatasourceRepository.move(coreDatasource.getId(), System.currentTimeMillis(), coreDatasource.getPid(), coreDatasource.getName(), AuthUtils.getUser().getUserId());
+            coreDatasourceRepository.move(coreDatasource.getId(), System.currentTimeMillis(), coreDatasource.getPid(), coreDatasource.getName(), V3UserUtil.getUid());
         }
         coreOptRecentManage.saveOpt(coreDatasource.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE, OptConstants.OPT_TYPE.UPDATE);
     }
@@ -206,7 +207,7 @@ public class DataSourceManage {
             DEException.throwException("resource not exist");
         }
         checkName(dataSourceDTO);
-        coreDatasourceRepository.move(id, System.currentTimeMillis(), dataSourceDTO.getPid(), dataSourceDTO.getName(), AuthUtils.getUser().getUserId());
+        coreDatasourceRepository.move(id, System.currentTimeMillis(), dataSourceDTO.getPid(), dataSourceDTO.getName(), V3UserUtil.getUid());
         coreOptRecentManage.saveOpt(sourceData.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE, OptConstants.OPT_TYPE.UPDATE);
     }
 

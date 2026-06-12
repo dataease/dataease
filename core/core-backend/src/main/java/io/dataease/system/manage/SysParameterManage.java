@@ -17,6 +17,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,14 +43,10 @@ public class SysParameterManage {
     private DatasourceServer datasourceServer;
 
     public String singleVal(String key) {
-        Specification<CoreSysSetting> spec = (root, query, cb) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("pkey"), key));
-            return cb.and(predicates.toArray(new Predicate[0]));
-        };
-        CoreSysSetting sysSetting = coreSysSettingRepository.findOne(spec).orElse(null);
-        if (ObjectUtils.isNotEmpty(sysSetting)) {
-            return sysSetting.getPval();
+        Specification<CoreSysSetting> spec = (root, query, cb) -> cb.equal(root.get("pkey"), key);
+        List<CoreSysSetting> list = coreSysSettingRepository.findAll(spec, PageRequest.of(0, 1)).toList();
+        if (CollectionUtils.isNotEmpty(list)) {
+            return list.getFirst().getPval();
         }
         return null;
     }

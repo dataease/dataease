@@ -9,12 +9,12 @@ import io.dataease.api.template.request.TemplateManageRequest;
 import io.dataease.api.template.vo.VisualizationTemplateVO;
 import io.dataease.constant.CommonConstants;
 import io.dataease.exception.DEException;
+import io.dataease.permission.util.V3UserUtil;
 import io.dataease.template.dao.auto.entity.*;
 import io.dataease.template.dao.auto.mapper.VisualizationTemplateCategoryMapRepository;
 import io.dataease.template.dao.auto.mapper.VisualizationTemplateCategoryRepository;
 import io.dataease.template.dao.auto.mapper.VisualizationTemplateRepository;
 import io.dataease.template.manage.TemplateCenterManage;
-import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.visualization.server.StaticResourceServer;
 import jakarta.annotation.Resource;
@@ -81,7 +81,7 @@ public class TemplateManageService implements TemplateManageApi {
         if (StringUtils.isEmpty(request.getId())) {
             request.setId(UUID.randomUUID().toString());
             request.setCreateTime(System.currentTimeMillis());
-            request.setCreateBy(AuthUtils.getUser().getUserId().toString());
+            request.setCreateBy(V3UserUtil.getUid().toString());
             if ("template".equals(request.getNodeType()) || "app".equals(request.getNodeType())) {
                 //Store static resource into the server
                 staticResourceServer.saveFilesToServe(request.getStaticResource());

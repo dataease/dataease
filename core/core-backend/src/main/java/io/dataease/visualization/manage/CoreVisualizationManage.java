@@ -24,6 +24,7 @@ import io.dataease.license.config.XpackInteract;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.operation.manage.CoreOptRecentManage;
+import io.dataease.permission.util.V3UserUtil;
 import io.dataease.result.PageResult;
 import io.dataease.utils.*;
 import io.dataease.visualization.dao.auto.entity.*;
@@ -220,13 +221,16 @@ public class CoreVisualizationManage {
             Long id = IDUtils.snowID();
             visualizationInfo.setId(id);
         }
+
+        Long uid = V3UserUtil.getUid();
+        java.lang.Long oid = V3UserUtil.getUser().getOid();
         visualizationInfo.setDeleteFlag(DataVisualizationConstants.DELETE_FLAG.AVAILABLE);
         visualizationInfo.setStatus(visualizationInfo.getStatus());
-        visualizationInfo.setCreateBy(AuthUtils.getUser().getUserId().toString());
-        visualizationInfo.setUpdateBy(AuthUtils.getUser().getUserId().toString());
+        visualizationInfo.setCreateBy(uid.toString());
+        visualizationInfo.setUpdateBy(uid.toString());
         visualizationInfo.setCreateTime(System.currentTimeMillis());
         visualizationInfo.setUpdateTime(System.currentTimeMillis());
-        visualizationInfo.setOrgId(AuthUtils.getUser().getDefaultOid());
+        visualizationInfo.setOrgId(oid);
         dataVisualizationInfoRepository.saveAndFlush(visualizationInfo);
         // 镜像文件插入
         SnapshotDataVisualizationInfo snapshotVisualizationInfo = new SnapshotDataVisualizationInfo();
@@ -239,8 +243,9 @@ public class CoreVisualizationManage {
     @XpackInteract(value = "visualizationResourceTree", before = false)
     public void innerEdit(DataVisualizationInfo visualizationInfo) {
         // 镜像和主表保持名称一致
+        Long uid = V3UserUtil.getUid();
         visualizationInfo.setUpdateTime(System.currentTimeMillis());
-        visualizationInfo.setUpdateBy(AuthUtils.getUser().getUserId().toString());
+        visualizationInfo.setUpdateBy(uid.toString());
         visualizationInfo.setVersion(3);
         // 更新镜像
         SnapshotDataVisualizationInfo snapshotVisualizationInfo = new SnapshotDataVisualizationInfo();
@@ -254,7 +259,7 @@ public class CoreVisualizationManage {
         coreVisualizationInfo.setContentId(visualizationInfo.getContentId());
         coreVisualizationInfo.setName(visualizationInfo.getName());
         coreVisualizationInfo.setUpdateTime(System.currentTimeMillis());
-        coreVisualizationInfo.setUpdateBy(AuthUtils.getUser().getUserId().toString());
+        coreVisualizationInfo.setUpdateBy(uid.toString());
         coreVisualizationInfo.setVersion(3);
         dataVisualizationInfoRepository.saveAndFlush(coreVisualizationInfo);
         coreOptRecentManage.saveOpt(visualizationInfo.getId(), OptConstants.OPT_RESOURCE_TYPE.VISUALIZATION, OptConstants.OPT_TYPE.UPDATE);
@@ -279,7 +284,7 @@ public class CoreVisualizationManage {
     @XpackInteract(value = "perFilterManage", recursion = true, invalid = true)
     public PageResult<VisualizationResourceVO> query(int pageNum, int pageSize, VisualizationWorkbranchQueryRequest request) {
         Page<VisualizationResourcePO> poPage = proxy().queryVisualizationPage(pageNum, pageSize, request);
-        if(poPage == null || poPage.getContent().isEmpty()){
+        if (poPage == null || poPage.getContent().isEmpty()) {
             return new PageResult<>();
         }
         Page<VisualizationResourceVO> visualizationResourcePOPageIPage = poPage.map(po -> {
@@ -294,7 +299,7 @@ public class CoreVisualizationManage {
 
     @SuppressWarnings("unchecked")
     public Page<VisualizationResourcePO> queryVisualizationPage(int goPage, int pageSize, VisualizationWorkbranchQueryRequest request) {
-        Long uid = AuthUtils.getUser().getUserId();
+        Long uid = V3UserUtil.getUid();
         String type = null;
         if (StringUtils.isNotBlank(request.getType())) {
             BusiResourceEnum busiResourceEnum = BusiResourceEnum.valueOf(request.getType().toUpperCase());
@@ -710,7 +715,7 @@ public class CoreVisualizationManage {
     public void dvRestore(Long dvId) {
         snapshotDataVisualizationInfoRepository.findById(dvId).ifPresent(item -> {
             DataVisualizationInfo dataVisualizationInfo = new DataVisualizationInfo();
-            BeanUtils.copyBean(dataVisualizationInfo,item, "updateTime");
+            BeanUtils.copyBean(dataVisualizationInfo, item, "updateTime");
             dataVisualizationInfoRepository.saveAndFlush(dataVisualizationInfo);
         });
 

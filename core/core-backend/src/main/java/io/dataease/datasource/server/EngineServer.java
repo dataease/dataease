@@ -8,7 +8,11 @@ import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.type.*;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
-import io.dataease.utils.*;
+import io.dataease.permission.util.V3UserUtil;
+import io.dataease.utils.BeanUtils;
+import io.dataease.utils.IDUtils;
+import io.dataease.utils.JsonUtil;
+import io.dataease.utils.RsaUtils;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +20,8 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.*;
+import java.util.Base64;
+import java.util.List;
 
 @RestController
 @RequestMapping("/engine")
@@ -31,7 +36,7 @@ public class EngineServer implements EngineApi {
 
     @Override
     public DatasourceDTO getEngine() {
-        if (!AuthUtils.getUser().getUserId().equals(1L)) {
+        if (!V3UserUtil.isSysAdmin()) {
             DEException.throwException("非管理员，无权访问！");
         }
         DatasourceDTO datasourceDTO = new DatasourceDTO();
@@ -64,7 +69,7 @@ public class EngineServer implements EngineApi {
 
     @Override
     public void save(DatasourceDTO datasourceDTO) {
-        if (!AuthUtils.getUser().getUserId().equals(1L)) {
+        if (!V3UserUtil.isSysAdmin()) {
             DEException.throwException("非管理员，无权访问！");
         }
         if (StringUtils.isNotEmpty(datasourceDTO.getConfiguration())) {
@@ -88,7 +93,7 @@ public class EngineServer implements EngineApi {
 
     @Override
     public void validate(DatasourceDTO datasourceDTO) throws Exception {
-        if (!AuthUtils.getUser().getUserId().equals(1L)) {
+        if (!V3UserUtil.isSysAdmin()) {
             DEException.throwException("非管理员，无权访问！");
         }
         CoreDeEngine coreDeEngine = new CoreDeEngine();
@@ -99,7 +104,7 @@ public class EngineServer implements EngineApi {
 
     @Override
     public void validateById(Long id) throws Exception {
-        if (!AuthUtils.getUser().getUserId().equals(1L)) {
+        if (!V3UserUtil.isSysAdmin()) {
             DEException.throwException("非管理员，无权访问！");
         }
         engineManage.validate(coreDeEngineRepository.findById(id).orElse(null));

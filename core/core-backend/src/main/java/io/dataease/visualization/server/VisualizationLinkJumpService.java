@@ -20,10 +20,10 @@ import io.dataease.dao.auto.entity.QCoreDatasetTableField;
 import io.dataease.dao.auto.entity.QDataVisualizationInfo;
 import io.dataease.dataset.manage.DatasetTableFieldManage;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
-import io.dataease.utils.AuthUtils;
+import io.dataease.permission.util.V3UserUtil;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
-import io.dataease.utils.ModelUtils;
+import io.dataease.utils.LocalModelUtils;
 import io.dataease.visualization.dao.auto.entity.*;
 import io.dataease.visualization.dao.auto.mapper.*;
 import io.dataease.visualization.manage.VisualizationLinkJumpManage;
@@ -78,9 +78,9 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
         Map<String, VisualizationLinkJumpInfoDTO> resultBase = new HashMap<>();
         List<VisualizationLinkJumpDTO> resultLinkJumpList = null;
         if (CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(resourceTable)) {
-            resultLinkJumpList = visualizationLinkJumpManage.queryWithDvIdSnapshot(dvId, AuthUtils.getUser().getUserId(), ModelUtils.isDesktop());
+            resultLinkJumpList = visualizationLinkJumpManage.queryWithDvIdSnapshot(dvId, V3UserUtil.getUid(), LocalModelUtils.isDesktop());
         } else {
-            resultLinkJumpList = visualizationLinkJumpManage.queryWithDvId(dvId, AuthUtils.getUser().getUserId(), ModelUtils.isDesktop());
+            resultLinkJumpList = visualizationLinkJumpManage.queryWithDvId(dvId, V3UserUtil.getUid(), LocalModelUtils.isDesktop());
         }
         Optional.ofNullable(resultLinkJumpList).orElse(new ArrayList<>()).forEach(resultLinkJump -> {
             if (resultLinkJump.getChecked()) {
@@ -106,7 +106,7 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
 
     @Override
     public VisualizationLinkJumpDTO queryWithViewId(Long dvId, Long viewId) {
-        return visualizationLinkJumpManage.queryWithViewId(dvId, viewId, AuthUtils.getUser().getUserId(), ModelUtils.isDesktop());
+        return visualizationLinkJumpManage.queryWithViewId(dvId, viewId, V3UserUtil.getUid(), LocalModelUtils.isDesktop());
     }
 
     @Transactional
@@ -306,10 +306,10 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
 
     @Override
     public VisualizationLinkJumpBaseResponse updateJumpSetActive(VisualizationLinkJumpBaseRequest request) {
-        snapshotCoreChartViewRepository.updateJumpActiveById(request.getSourceViewId(),request.getActiveStatus());
-        if(request.getSourceDvId() != null){
+        snapshotCoreChartViewRepository.updateJumpActiveById(request.getSourceViewId(), request.getActiveStatus());
+        if (request.getSourceDvId() != null) {
             return queryVisualizationJumpInfo(request.getSourceDvId(), CommonConstants.RESOURCE_TABLE.SNAPSHOT);
-        }else{
+        } else {
             return new VisualizationLinkJumpBaseResponse();
         }
     }

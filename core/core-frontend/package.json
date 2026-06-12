@@ -59,7 +59,7 @@
     "tinymce": "^5.8.2",
     "vant": "^4.8.3",
     "video.js": "^7.21.6",
-    "vue": "^3.3.4",
+    "vue": "3.5.35",
     "vue-clipboard3": "^2.0.0",
     "vue-codemirror": "^6.1.1",
     "vue-draggable-next": "^2.2.1",
