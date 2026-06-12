@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jcraft.jsch.*;
 import io.dataease.constant.SQLConstants;
 import io.dataease.dataset.utils.FieldUtils;
+import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDriver;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
@@ -102,8 +103,10 @@ public class CalciteProvider extends Provider {
     @Override
     public List<String> getSchema(DatasourceRequest datasourceRequest) {
         List<String> schemas = new ArrayList<>();
-        String queryStr = getSchemaSql(datasourceRequest.getDatasource());
-        try (ConnectionObj con = getConnection(datasourceRequest.getDatasource()); Statement statement = getStatement(con.getConnection(), 30); ResultSet resultSet = statement.executeQuery(queryStr)) {
+        QueryAndParams queryAndParams = getSchemaQuery(datasourceRequest.getDatasource());
+        try (ConnectionObj con = getConnection(datasourceRequest.getDatasource());
+             PreparedStatement statement = prepareStatement(con.getConnection(), queryAndParams, 30);
+             ResultSet resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
                 schemas.add(resultSet.getString(1));
             }
@@ -259,12 +262,15 @@ public class CalciteProvider extends Provider {
 
     private Map<String, Integer> getTableTypeMap(DatasourceRequest datasourceRequest, DatasourceConfiguration datasourceConfiguration, String tableName) throws DEException {
         Map<String, Integer> map = new HashMap<>();
-        String schemaTable = (ObjectUtils.isNotEmpty(datasourceConfiguration.getSchema()) ? (datasourceConfiguration.getSchema() + "`.`") : "") + tableName;
-        String sql = "SELECT * FROM `$TABLE_NAME$` LIMIT 0 OFFSET 0".replace("$TABLE_NAME$", schemaTable);
+        String schemaTable = ObjectUtils.isNotEmpty(datasourceConfiguration.getSchema())
+                ? TableUtils.quoteIdentifier(datasourceConfiguration.getSchema(), "`", "`") + "." + TableUtils.quoteIdentifier(tableName, "`", "`")
+                : TableUtils.quoteIdentifier(tableName, "`", "`");
+        String sql = "SELECT * FROM " + schemaTable + " LIMIT 0 OFFSET 0";
         sql = transSqlDialect(sql, datasourceRequest.getDsList());
         ResultSet resultSet = null;
-        try (Connection con = getConnectionFromPool(datasourceRequest.getDatasource().getId()); Statement statement = getStatement(con, 30)) {
-            resultSet = statement.executeQuery(sql);
+        try (Connection con = getConnectionFromPool(datasourceRequest.getDatasource().getId());
+             PreparedStatement statement = prepareStatement(con, new QueryAndParams(sql), 30)) {
+            resultSet = statement.executeQuery();
 
             ResultSetMetaData metaData = resultSet.getMetaData();
             int columnCount = metaData.getColumnCount();
@@ -349,31 +355,36 @@ public class CalciteProvider extends Provider {
                 DEException.throwException(Translator.get("i18n_invalid_table_name"));
             }
             ResultSet resultSet = null;
-            try (Connection con = getConnectionFromPool(datasourceRequest.getDatasource().getId()); Statement statement = getStatement(con, 30)) {
+            try (Connection con = getConnectionFromPool(datasourceRequest.getDatasource().getId())) {
                 datasourceRequest.setDsVersion(con.getMetaData().getDatabaseMajorVersion());
+                QueryAndParams tableFieldQuery;
                 if (datasourceRequest.getDatasource().getType().equalsIgnoreCase("mongo")) {
-                    resultSet = statement.executeQuery("select * from " + String.format(" `%s`", table) + " limit 0 offset 0 ");
-                    return fetchResultField(resultSet);
-                }
-                if (isDorisCatalog(datasourceRequest)) {
-                    resultSet = statement.executeQuery("desc " + String.format(" `%s`", table));
+                    tableFieldQuery = new QueryAndParams("select * from " + TableUtils.quoteCompoundIdentifier(table, "`", "`") + " limit 0 offset 0 ");
+                } else if (isDorisCatalog(datasourceRequest)) {
+                    tableFieldQuery = new QueryAndParams("desc " + TableUtils.quoteCompoundIdentifier(table, "`", "`"));
                 } else {
-                    resultSet = statement.executeQuery(getTableFiledSql(datasourceRequest));
+                    tableFieldQuery = getTableFiledQuery(datasourceRequest);
                 }
-
-                Map<String, Integer> tableTypeMap = getTableTypeMap(datasourceRequest, datasourceConfiguration, table);
-
-                while (resultSet.next()) {
-                    TableField tableFieldDesc = getTableFieldDesc(datasourceRequest, resultSet, 3, tableTypeMap);
-                    boolean repeat = false;
-                    for (TableField ele : datasetTableFields) {
-                        if (StringUtils.equalsIgnoreCase(ele.getOriginName(), tableFieldDesc.getOriginName())) {
-                            repeat = true;
-                            break;
-                        }
+                try (PreparedStatement statement = prepareStatement(con, tableFieldQuery, 30)) {
+                    resultSet = statement.executeQuery();
+                    if (datasourceRequest.getDatasource().getType().equalsIgnoreCase("mongo")) {
+                        return fetchResultField(resultSet);
                     }
-                    if (!repeat) {
-                        datasetTableFields.add(tableFieldDesc);
+
+                    Map<String, Integer> tableTypeMap = getTableTypeMap(datasourceRequest, datasourceConfiguration, table);
+
+                    while (resultSet.next()) {
+                        TableField tableFieldDesc = getTableFieldDesc(datasourceRequest, resultSet, 3, tableTypeMap);
+                        boolean repeat = false;
+                        for (TableField ele : datasetTableFields) {
+                            if (StringUtils.equalsIgnoreCase(ele.getOriginName(), tableFieldDesc.getOriginName())) {
+                                repeat = true;
+                                break;
+                            }
+                        }
+                        if (!repeat) {
+                            datasetTableFields.add(tableFieldDesc);
+                        }
                     }
                 }
             } catch (Exception e) {
@@ -664,7 +675,7 @@ public class CalciteProvider extends Provider {
         Statement statement;
         if (DatasourceConfiguration.DatasourceType.valueOf(value.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
             statement = getStatement(con, datasourceConfiguration.getQueryTimeout());
-            statement.executeUpdate("ALTER SESSION SET CURRENT_SCHEMA = " + datasourceConfiguration.getSchema());
+            statement.executeUpdate(buildOracleCurrentSchemaSql(datasourceConfiguration.getSchema()));
             statement.executeUpdate("ALTER SESSION SET NLS_TIMESTAMP_FORMAT = 'YYYY-MM-DD HH24:MI:SS'");
             //调整字符集
             String oracleCharset = normalizeOracleCharset(datasourceConfiguration.getCharset());
@@ -1122,7 +1133,7 @@ public class CalciteProvider extends Provider {
                                 break;
                             case db2:
                                 configuration = JsonUtil.parseObject(ds.getConfiguration(), Db2.class);
-                                dataSource.setValidationQuery("select 1 from syscat.tables  WHERE TABSCHEMA ='DE_SCHEMA' AND \"TYPE\" = 'T'".replace("DE_SCHEMA", configuration.getSchema()));
+                                dataSource.setValidationQuery("select 1 from syscat.tables WHERE TABSCHEMA = '" + escapeSqlLiteral(configuration.getSchema()) + "' AND \"TYPE\" = 'T'");
                                 if (StringUtils.isNotBlank(configuration.getUsername())) {
                                     dataSource.setUsername(configuration.getUsername());
                                 }
@@ -1268,8 +1279,7 @@ public class CalciteProvider extends Provider {
         return list;
     }
 
-    private String getTableFiledSql(DatasourceRequest datasourceRequest) {
-        String sql = "";
+    private QueryAndParams getTableFiledQuery(DatasourceRequest datasourceRequest) {
         DatasourceConfiguration configuration = null;
         String database = "";
         DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(datasourceRequest.getDatasource().getType());
@@ -1287,11 +1297,10 @@ public class CalciteProvider extends Provider {
                     database = databasePrams[0];
                 }
                 if (database.contains(".")) {
-                    sql = "select * from " + datasourceRequest.getTable() + " limit 0 offset 0 ";
+                    return new QueryAndParams("select * from " + TableUtils.quoteCompoundIdentifier(datasourceRequest.getTable(), "`", "`") + " limit 0 offset 0 ");
                 } else {
-                    sql = String.format("SELECT COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT,IF(COLUMN_KEY='PRI',1,0),IF(EXTRA LIKE '%%auto_increment%%',1,0) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s'", database, datasourceRequest.getTable());
+                    return new QueryAndParams("SELECT COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT,IF(COLUMN_KEY='PRI',1,0),IF(EXTRA LIKE '%%auto_increment%%',1,0) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?", database, datasourceRequest.getTable());
                 }
-                break;
             case mysql:
             case mongo:
             case mariadb:
@@ -1306,14 +1315,13 @@ public class CalciteProvider extends Provider {
                     String[] databasePrams = matcher.group(3).split("\\?");
                     database = databasePrams[0];
                 }
-                sql = String.format("SELECT COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT,IF(COLUMN_KEY='PRI',1,0),IF(EXTRA LIKE '%%auto_increment%%',1,0) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s'", database, datasourceRequest.getTable());
-                break;
+                return new QueryAndParams("SELECT COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT,IF(COLUMN_KEY='PRI',1,0),IF(EXTRA LIKE '%%auto_increment%%',1,0) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?", database, datasourceRequest.getTable());
             case oracle:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Oracle.class);
                 if (StringUtils.isEmpty(configuration.getSchema())) {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
                 }
-                sql = String.format("""
+                return new QueryAndParams("""
                         SELECT tc.COLUMN_NAME AS ColumnName,
                                tc.DATA_TYPE,
                                cc.COMMENTS,
@@ -1331,32 +1339,30 @@ public class CalciteProvider extends Provider {
                                                  ALL_CONS_COLUMNS cols
                                                  ON cons.OWNER = cols.OWNER
                                                      AND cons.CONSTRAINT_NAME = cols.CONSTRAINT_NAME
-                                            WHERE cons.TABLE_NAME = '%s'
+                                            WHERE cons.TABLE_NAME = ?
                                               AND cons.CONSTRAINT_TYPE = 'P') ac
                                            ON tc.OWNER = ac.OWNER
-                                               AND tc.TABLE_NAME = ac.TABLE_NAME
-                                               AND tc.COLUMN_NAME = ac.COLUMN_NAME
+                                              AND tc.TABLE_NAME = ac.TABLE_NAME
+                                              AND tc.COLUMN_NAME = ac.COLUMN_NAME
                                  LEFT JOIN ALL_COL_COMMENTS cc
                                            ON tc.owner = cc.owner AND tc.table_name = cc.table_name AND tc.column_name = cc.column_name
-                        WHERE tc.TABLE_NAME = '%s'
-                          AND tc.OWNER = '%s'
+                        WHERE tc.TABLE_NAME = ?
+                          AND tc.OWNER = ?
                         ORDER BY tc.TABLE_NAME, tc.COLUMN_ID
                         """, datasourceRequest.getTable(), datasourceRequest.getTable(), configuration.getSchema());
-                break;
             case db2:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Db2.class);
                 if (StringUtils.isEmpty(configuration.getSchema())) {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
                 }
-                sql = String.format("SELECT COLNAME, TYPENAME, REMARKS, 0, 0 FROM SYSCAT.COLUMNS WHERE TABSCHEMA = '%s' AND TABNAME = '%s' ", configuration.getSchema(), datasourceRequest.getTable());
-                break;
+                return new QueryAndParams("SELECT COLNAME, TYPENAME, REMARKS, 0, 0 FROM SYSCAT.COLUMNS WHERE TABSCHEMA = ? AND TABNAME = ? ", configuration.getSchema(), datasourceRequest.getTable());
             case sqlServer:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Sqlserver.class);
                 if (StringUtils.isEmpty(configuration.getSchema())) {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
                 }
 
-                sql = String.format("""
+                return new QueryAndParams("""
                         SELECT
                             c.name,
                             t.name,
@@ -1382,17 +1388,16 @@ public class CalciteProvider extends Provider {
                                                     AND i.index_id = ic.index_id
                             WHERE i.is_primary_key = 1
                         ) pk ON c.object_id = pk.object_id AND c.column_id = pk.column_id
-                        WHERE o.name = '%s'
-                          AND s.name = '%s'
+                        WHERE o.name = ?
+                          AND s.name = ?
                         ORDER BY c.column_id
                         """, datasourceRequest.getTable(), configuration.getSchema());
-                break;
             case pg:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Pg.class);
                 if (StringUtils.isEmpty(configuration.getSchema())) {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
                 }
-                sql = String.format("""
+                return new QueryAndParams("""
                         SELECT a.attname     AS ColumnName,
                                t.typname,
                                b.description AS ColumnDescription,
@@ -1414,17 +1419,15 @@ public class CalciteProvider extends Provider {
                                  LEFT JOIN pg_description b ON a.attrelid = b.objoid AND a.attnum = b.objsubid
                                  JOIN pg_type t ON a.atttypid = t.oid
                                  LEFT JOIN pg_index d ON d.indrelid = a.attrelid AND d.indisprimary AND a.attnum = ANY (d.indkey)
-                        where c.relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = '%s')
-                          AND c.relname = '%s'
+                        where c.relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = ?)
+                          AND c.relname = ?
                           AND a.attnum > 0
                           AND NOT a.attisdropped
                         ORDER BY a.attnum;
                         """, configuration.getSchema(), datasourceRequest.getTable());
-                break;
             case redshift:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), CK.class);
-                sql = String.format("SELECT\n" + "    a.attname AS ColumnName,\n" + "    t.typname,\n" + "    b.description AS ColumnDescription,\n" + "    0, 0\n" + "FROM\n" + "    pg_class c\n" + "    JOIN pg_attribute a ON a.attrelid = c.oid\n" + "    LEFT JOIN pg_description b ON a.attrelid = b.objoid AND a.attnum = b.objsubid\n" + "    JOIN pg_type t ON a.atttypid = t.oid\n" + "WHERE\n" + "    c.relname = '%s'\n" + "    AND a.attnum > 0\n" + "    AND NOT a.attisdropped\n" + "ORDER BY\n" + "    a.attnum\n" + "   ", datasourceRequest.getTable());
-                break;
+                return new QueryAndParams("SELECT\n" + "    a.attname AS ColumnName,\n" + "    t.typname,\n" + "    b.description AS ColumnDescription,\n" + "    0, 0\n" + "FROM\n" + "    pg_class c\n" + "    JOIN pg_attribute a ON a.attrelid = c.oid\n" + "    LEFT JOIN pg_description b ON a.attrelid = b.objoid AND a.attnum = b.objsubid\n" + "    JOIN pg_type t ON a.atttypid = t.oid\n" + "WHERE\n" + "    c.relname = ?\n" + "    AND a.attnum > 0\n" + "    AND NOT a.attisdropped\n" + "ORDER BY\n" + "    a.attnum\n" + "   ", datasourceRequest.getTable());
             case ck:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), CK.class);
 
@@ -1437,19 +1440,14 @@ public class CalciteProvider extends Provider {
                     String[] databasePrams = matcher.group(3).split("\\?");
                     database = databasePrams[0];
                 }
-                sql = String.format(" SELECT\n" + "    name,\n" + "    type,\n" + "    comment,\n" + "    0, 0\n" + "FROM\n" + "    system.columns\n" + "WHERE\n" + "    database = '%s'  \n" + "    AND table = '%s' ", database, datasourceRequest.getTable());
-                break;
+                return new QueryAndParams(" SELECT\n" + "    name,\n" + "    type,\n" + "    comment,\n" + "    0, 0\n" + "FROM\n" + "    system.columns\n" + "WHERE\n" + "    database = ?  \n" + "    AND table = ? ", database, datasourceRequest.getTable());
             case impala:
-                sql = String.format("DESCRIBE `%s`", datasourceRequest.getTable());
-                break;
+                return new QueryAndParams("DESCRIBE " + TableUtils.quoteCompoundIdentifier(datasourceRequest.getTable(), "`", "`"));
             case h2:
-                sql = String.format("SELECT COLUMN_NAME, DATA_TYPE, REMARKS, 0, 0 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '%s'", datasourceRequest.getTable());
-                break;
+                return new QueryAndParams("SELECT COLUMN_NAME, DATA_TYPE, REMARKS, 0, 0 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ?", datasourceRequest.getTable());
             default:
-                break;
+                return new QueryAndParams("");
         }
-
-        return sql;
     }
 
     private List<QueryAndParams> getTablesSql(DatasourceRequest datasourceRequest) throws DEException {
@@ -1645,23 +1643,31 @@ public class CalciteProvider extends Provider {
         }
     }
 
-    private String getSchemaSql(DatasourceDTO datasource) throws DEException {
+    private QueryAndParams getSchemaQuery(DatasourceDTO datasource) throws DEException {
         DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(datasource.getType());
         switch (datasourceType) {
             case oracle:
-                return "select * from all_users";
+                return new QueryAndParams("select * from all_users");
             case sqlServer:
-                return "select name from sys.schemas;";
+                return new QueryAndParams("select name from sys.schemas;");
             case db2:
                 DatasourceConfiguration configuration = JsonUtil.parseObject(datasource.getConfiguration(), Db2.class);
-                return "select SCHEMANAME from syscat.SCHEMATA   WHERE \"DEFINER\" ='USER'".replace("USER", configuration.getUsername().toUpperCase());
+                return new QueryAndParams("select SCHEMANAME from syscat.SCHEMATA WHERE \"DEFINER\" = ?", StringUtils.upperCase(configuration.getUsername()));
             case pg:
-                return "SELECT nspname FROM pg_namespace;";
+                return new QueryAndParams("SELECT nspname FROM pg_namespace;");
             case redshift:
-                return "SELECT nspname FROM pg_namespace;";
+                return new QueryAndParams("SELECT nspname FROM pg_namespace;");
             default:
-                return "show tables;";
+                return new QueryAndParams("show tables;");
         }
+    }
+
+    String buildOracleCurrentSchemaSql(String schema) {
+        return "ALTER SESSION SET CURRENT_SCHEMA = " + TableUtils.quoteIdentifier(schema, "\"", "\"");
+    }
+
+    private String escapeSqlLiteral(String value) {
+        return StringUtils.replace(StringUtils.defaultString(value), "'", "''");
     }
 
     public Statement getStatement(Connection connection, int queryTimeout) {
