@@ -99,22 +99,22 @@ public class ExcelWatermarkUtils {
         picture.resize(1 + (0.000001 * picCount));
     }
 
+    private static final int MIN_FONT_SIZE = 12;
+    private static final int MAX_FONT_SIZE = 100;
+
     public static byte[] createTextImage(String text, WatermarkContentDTO watermarkContent) {
         if (text.length() > MAX_TEXT_LENGTH) {
             text = text.substring(0, MAX_TEXT_LENGTH);
         }
-        double radians = Math.toRadians(15);// 15度偏转
-        int width = watermarkContent.getWatermark_fontsize() * text.length();
-        int height = (int) Math.round(watermarkContent.getWatermark_fontsize() + width * Math.sin(radians));
-        width = Math.min(width, MAX_IMAGE_WIDTH);
-        height = Math.min(height, MAX_IMAGE_HEIGHT);
-        int fontSize = watermarkContent.getWatermark_fontsize();
+        int fontSize = Math.max(MIN_FONT_SIZE, Math.min(watermarkContent.getWatermark_fontsize(), MAX_FONT_SIZE));
+        double radians = Math.toRadians(15);
+        int width = Math.min(fontSize * text.length(), MAX_IMAGE_WIDTH);
+        int height = Math.min((int) Math.round(fontSize + width * Math.sin(radians)), MAX_IMAGE_HEIGHT);
         Color baseColor = Color.decode(watermarkContent.getWatermark_color());
 
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = image.createGraphics();
 
-        // 设置透明背景
         image = g2d.getDeviceConfiguration().createCompatibleImage(width, height, Transparency.TRANSLUCENT);
         g2d.dispose();
         g2d = image.createGraphics();
