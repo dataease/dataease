@@ -70,7 +70,7 @@ public class JpaUpdateNonNullAspect {
                 return dbEntity;
             }
         } catch (Exception e) {
-            System.out.println("合并实体属性失败: " + e.getMessage());
+            LogUtil.error("合并实体属性失败", e);
         }
         return entity;
     }
@@ -127,7 +127,7 @@ public class JpaUpdateNonNullAspect {
                     setter.invoke(target, value);
                 }
             } catch (Exception e) {
-                LogUtil.error(e);
+                LogUtil.error("copyNonNullProperties 复制属性失败: " + pd.getName(), e);
                 throw new RuntimeException("copyNonNullProperties 复制属性失败: " + pd.getName(), e);
             }
         }

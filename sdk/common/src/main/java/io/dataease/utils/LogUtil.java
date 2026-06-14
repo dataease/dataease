@@ -40,7 +40,11 @@ public class LogUtil {
             }
         } else if (ERROR.equals(level)) {
             if (logger != null && logger.isErrorEnabled()) {
-                logger.error(LogUtil.getMsg(msg));
+                if (msg instanceof Throwable) {
+                    logger.error(LogUtil.getMsg(msg), (Throwable) msg);
+                } else {
+                    logger.error(LogUtil.getMsg(msg));
+                }
             }
         } else {
             if (logger != null && logger.isErrorEnabled()) {
@@ -136,7 +140,11 @@ public class LogUtil {
     public static void error(Object msg) {
         Logger logger = LogUtil.getLogger();
         if (logger != null && logger.isErrorEnabled()) {
-            logger.error(LogUtil.getMsg(msg));// 并追加方法名称
+            if (msg instanceof Throwable) {
+                logger.error(LogUtil.getMsg(msg), (Throwable) msg);
+            } else {
+                logger.error(LogUtil.getMsg(msg));
+            }
         }
     }
 
