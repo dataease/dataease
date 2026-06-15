@@ -4884,6 +4884,8 @@ export default {
     add: 'Add Webhook',
     search_placeholder: 'Search by name',
     content_type: 'Content Type',
+    msg_template: 'Message Template',
+    msg_template_tips: 'Available placeholders: {t0}, {t1}, {t2}',
     del_confirm: 'Are you sure you want to delete this Webhook?',
     batch_del_confirm: 'Are you sure you want to delete {0} Webhooks?'
   },

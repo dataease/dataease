@@ -3,7 +3,7 @@ import { propTypes } from '@/utils/propTypes'
 import { onBeforeMount, watch, toRefs, PropType } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import ApiVariable from './ApiVariable.vue'
-import CodeEdit from './CodeEdit.vue'
+import CodeEdit from '@/components/CodeEdit/CodeEdit.vue'
 import Convert from './convert.js'
 import { KeyValue, BODY_TYPE } from './ApiTestModel.js'
 export interface ApiBodyItem {
