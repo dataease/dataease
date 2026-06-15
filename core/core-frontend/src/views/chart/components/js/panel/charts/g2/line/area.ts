@@ -16,8 +16,13 @@ import {
 import { cloneDeep, defaultsDeep, isEmpty, merge } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import {
+  configAreaMarkConditionStyle,
+  configLineConditionDataColor,
+  configLineMarkConditionStyle,
+  configPointConditionStyle,
   configStackOrderByYAxis,
   configYAxisSeriesLegendDomain,
+  getLineConditionLineYMarks,
   LINE_AXIS_TYPE,
   LINE_EDITOR_PROPERTY,
   LINE_EDITOR_PROPERTY_INNER,
@@ -259,6 +264,8 @@ export class Area extends G2ChartView {
           },
           style: {
             opacity: 1,
+            // 标签需要保持自身填充透明度，避免条件色被面图层透明度影响
+            fillOpacity: 1,
             fontSize: d => {
               if (!labelAttr.seriesLabelFormatter?.length) {
                 return 12
@@ -360,6 +367,38 @@ export class Area extends G2ChartView {
     defaultsDeep(pointMark, pointStyleOpt)
     const pointRangePadding = getPointRangePadding(chart, basicStyle.lineSymbolSize)
     options.scale.x.range = [pointRangePadding, 1 - pointRangePadding]
+    return options
+  }
+
+  /**
+   * 给基础面积图追加条件样式，面、线和点共用同一套条件颜色
+   */
+  protected configConditions(chart: Chart, options: G2Spec): G2Spec {
+    // 堆叠面积图没有条件样式入口，保持原有堆叠色彩逻辑
+    if (chart.type === 'area-stack') {
+      return options
+    }
+    const { threshold } = parseJson(chart.senior)
+    if (!threshold?.enable || !threshold?.lineThreshold?.length) {
+      return options
+    }
+    const data = options.data?.value
+    if (!data?.length) {
+      return options
+    }
+    const conditions = getLineConditions(chart)
+    if (!conditions.length) {
+      return options
+    }
+    const { basicStyle } = parseJson(chart.customAttr)
+    const [areaMark, lineMark, pointMark] = options.children
+    // 先把条件色写入数据项，再分别驱动面积、折线和点的样式
+    configLineConditionDataColor(data, conditions, basicStyle.alpha)
+    configAreaMarkConditionStyle(chart, options, areaMark, conditions, basicStyle.alpha)
+    configLineMarkConditionStyle(chart, options, lineMark, conditions, basicStyle.alpha)
+    configPointConditionStyle(pointMark)
+    // 辅助线作为面积水平切色的视觉参考，和条件色使用同一透明度
+    options.children.push(...getLineConditionLineYMarks(chart, threshold, basicStyle.alpha))
     return options
   }
 
@@ -627,7 +666,7 @@ export class Area extends G2ChartView {
             const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)
             let tooltipItems = originalItems
             if (tooltipAttr.seriesTooltipFormatter?.length) {
-              // 只隐藏明确配置为不展示的字段，避免过期 formatter 漏掉新指标。
+              // 只隐藏明确配置为不展示的字段，避免过期 formatter 漏掉新指标
               tooltipItems = originalItems.filter(item =>
                 isTooltipItemShown(formatterMap, item, 'yAxis')
               )
@@ -747,6 +786,7 @@ export class Area extends G2ChartView {
       this.configColor,
       this.configLabel,
       this.configBasicStyle,
+      this.configConditions,
       this.configLegend,
       this.configXAxis,
       this.configYAxis,
@@ -786,7 +826,6 @@ export class StackArea extends Area {
     if (!labelAttr.show) {
       return options
     }
-    const conditions = getLineConditions(chart)
     if (labelAttr.showExtremum) {
       const { x: xField, y: yField, color: colorField } = options.encode
       addExtremumText(options.children, [], xField, yField, colorField, false)
@@ -809,12 +848,7 @@ export class StackArea extends Area {
               }
               return labelAttr.fontSize
             },
-            fill: d => {
-              const color =
-                getLineLabelColorByCondition(conditions, d.value, d.quotaList[0].id) ||
-                labelAttr.color
-              return color
-            },
+            fill: labelAttr.color,
             position: labelAttr.position
           },
           textBaseline: () => {

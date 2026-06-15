@@ -15,7 +15,12 @@ import {
 import { cloneDeep, defaultsDeep, isEmpty, merge } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import {
+  configLineConditionDataColor,
+  configLineMarkConditionStyle,
+  configPointConditionStyle,
   configYAxisSeriesLegendDomain,
+  getLineConditionColorWithAlpha,
+  getLineConditionLineYMarks,
   LINE_AXIS_TYPE,
   LINE_EDITOR_PROPERTY,
   LINE_EDITOR_PROPERTY_INNER,
@@ -205,7 +210,7 @@ export class Line extends G2ChartView {
   }
 
   protected configLabel(chart: Chart, options: G2Spec): G2Spec {
-    const { label: labelAttr } = parseJson(chart.customAttr)
+    const { label: labelAttr, basicStyle } = parseJson(chart.customAttr)
     if (!labelAttr.show) {
       return options
     }
@@ -214,6 +219,10 @@ export class Line extends G2ChartView {
       pre[next.id] = next
       return pre
     }, {})
+    // 标签颜色同样叠加基础透明度，避免条件色和系列标签色出现透明度差异
+    const getLabelColor = (color = '#000000') => {
+      return getLineConditionColorWithAlpha(color, basicStyle.alpha)
+    }
     const showExtremumIds = Object.keys(formatterMap).filter(id => formatterMap[id].showExtremum)
     if (showExtremumIds?.length > 0) {
       const { x: xField, y: yField, color: colorField } = options.encode
@@ -245,6 +254,8 @@ export class Line extends G2ChartView {
           },
           style: {
             opacity: 1,
+            // 标签需要保持自身填充透明度，避免被 mark 透明度影响条件色显示
+            fillOpacity: 1,
             fontSize: d => {
               if (!labelAttr.seriesLabelFormatter?.length) {
                 return 12
@@ -263,19 +274,24 @@ export class Line extends G2ChartView {
             },
             fill: d => {
               if (!labelAttr.seriesLabelFormatter?.length) {
-                return 'black'
+                return getLabelColor()
               }
               const labelCfg = formatterMap?.[d.quotaList[0].id] as SeriesFormatter
               if (d.extremum && showExtremumIds.includes(d.quotaList?.[0]?.id)) {
-                return labelCfg?.showExtremum ? labelCfg?.color ?? 'black' : 'black'
+                return labelCfg?.showExtremum ? getLabelColor(labelCfg?.color) : getLabelColor()
               }
               if (!labelCfg?.show) {
-                return 'black'
+                return getLabelColor()
               }
-              const color =
-                getLineLabelColorByCondition(conditions, d.value, d.quotaList[0].id) ||
-                labelCfg.color
-              return color
+              // 条件样式优先于系列标签色，保持标签与折线颜色一致
+              const conditionColor = getLineLabelColorByCondition(
+                conditions,
+                d.value,
+                d.quotaList[0].id
+              )
+              return conditionColor
+                ? getLineConditionColorWithAlpha(conditionColor, basicStyle.alpha)
+                : getLabelColor(labelCfg.color)
             },
             position: d => {
               if (
@@ -339,6 +355,33 @@ export class Line extends G2ChartView {
       }
     }
     defaultsDeep(pointMark, pointStyleOpt)
+    return options
+  }
+
+  /**
+   * 给基础折线图追加条件样式，线和点共用同一套条件颜色
+   */
+  protected configConditions(chart: Chart, options: G2Spec): G2Spec {
+    const { threshold } = parseJson(chart.senior)
+    if (!threshold?.enable || !threshold?.lineThreshold?.length) {
+      return options
+    }
+    const data = options.data?.value
+    if (!data?.length) {
+      return options
+    }
+    const conditions = getLineConditions(chart)
+    if (!conditions.length) {
+      return options
+    }
+    const { basicStyle } = parseJson(chart.customAttr)
+    const [lineMark, pointMark] = options.children
+    // 先把条件色写入数据项，再分别驱动线段和点的样式
+    configLineConditionDataColor(data, conditions, basicStyle.alpha)
+    configLineMarkConditionStyle(chart, options, lineMark, conditions, basicStyle.alpha)
+    configPointConditionStyle(pointMark)
+    // 辅助线作为条件分段的视觉参考，和条件色使用同一透明度
+    options.children.push(...getLineConditionLineYMarks(chart, threshold, basicStyle.alpha))
     return options
   }
 
@@ -802,6 +845,7 @@ export class Line extends G2ChartView {
       this.configColor,
       this.configLabel,
       this.configBasicStyle,
+      this.configConditions,
       this.configLegend,
       this.configXAxis,
       this.configYAxis,
