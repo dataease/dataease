@@ -2940,6 +2940,7 @@ export default {
     to_top: '置顶',
     publish_recover: '恢复到发布版本',
     publish_tips1: '发布后可查看',
+    no_permission_tips: '当前资源无权限',
     publish_tips2: '发布后可{0}',
     cancel_publish_tips: '取消发布成功',
     resource_not_published: '该资源未发布',

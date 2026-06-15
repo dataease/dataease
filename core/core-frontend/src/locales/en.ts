@@ -3017,6 +3017,7 @@ export default {
     to_top: 'Pin to Top',
     publish_recover: 'Revert Publish',
     publish_tips1: 'Visible after publication',
+    no_permission_tips: 'No permission',
     publish_tips2: 'Available after publication {0}',
     cancel_publish_tips: 'Successfully unpublished',
     resource_not_published: 'Resource not published',
