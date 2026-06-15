@@ -2934,6 +2934,7 @@ export default {
     to_top: '置頂',
     publish_recover: '恢復到發佈版本',
     publish_tips1: '發佈後可查看',
+    no_permission_tips: '當前資源無權限',
     publish_tips2: '發佈後可{0}',
     cancel_publish_tips: '取消發佈成功',
     resource_not_published: '该資源未發佈',
