@@ -717,6 +717,39 @@ public class HttpClientUtil {
         }
     }
 
+    public static String postRawBody(String url, String contentType, String body, boolean ssl, HttpClientConfig config) {
+        CloseableHttpClient httpClient = null;
+        try {
+            httpClient = buildHttpClient(ssl);
+            HttpPost httpPost = new HttpPost(url);
+            if (ObjectUtils.isEmpty(config)) {
+                config = new HttpClientConfig();
+            }
+            httpPost.setConfig(config.buildRequestConfig());
+            Map<String, String> header = config.getHeader();
+            for (String key : header.keySet()) {
+                httpPost.addHeader(key, header.get(key));
+            }
+            EntityBuilder entityBuilder = EntityBuilder.create();
+            entityBuilder.setText(body);
+            entityBuilder.setContentType(ContentType.create(contentType, java.nio.charset.StandardCharsets.UTF_8));
+            httpPost.setEntity(entityBuilder.build());
+            HttpResponse response = httpClient.execute(httpPost);
+            return getResponseStr(response, config);
+        } catch (Exception e) {
+            logger.error("HttpClient POST raw body failed", e);
+            throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient POST raw body failed: " + e.getMessage());
+        } finally {
+            try {
+                if (httpClient != null) {
+                    httpClient.close();
+                }
+            } catch (Exception e) {
+                logger.error("HttpClient关闭连接失败", e);
+            }
+        }
+    }
+
     public static MultipartResponse postForScreenshot(
             String url, Map<String,String> body, HttpClientConfig config) throws IOException {
         CloseableHttpClient httpClient = null;

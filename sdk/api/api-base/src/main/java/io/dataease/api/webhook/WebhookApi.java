@@ -5,6 +5,7 @@ import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.webhook.request.WebhookSwitchRequest;
 import io.dataease.api.webhook.vo.WebhookGridVO;
 import io.dataease.api.webhook.vo.WebhookOption;
+import io.dataease.api.webhook.vo.WebhookVO;
 import io.dataease.model.KeywordRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -33,7 +34,7 @@ public interface WebhookApi {
 
     @Operation(summary = "保存")
     @PostMapping("/save")
-    void save(@RequestBody WebhookGridVO creator);
+    void save(@RequestBody WebhookVO creator);
 
     @Operation(summary = "切换SSL")
     @PostMapping("/switchSsl")
@@ -42,6 +43,10 @@ public interface WebhookApi {
     @Operation(summary = "删除")
     @PostMapping("/delete")
     void delete(@RequestBody List<Long> ids);
+
+    @Operation(summary = "查询详情")
+    @GetMapping("/get/{id}")
+    WebhookVO get(@PathVariable("id") Long id);
 
     @Operation(summary = "查询选项")
     @GetMapping("/options")
