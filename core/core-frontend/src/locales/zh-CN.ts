@@ -4755,6 +4755,8 @@ export default {
     add: '添加 Webhook',
     search_placeholder: '通过名称搜索',
     content_type: '内容类型',
+    msg_template: '消息模板',
+    msg_template_tips: '可用占位符：{t0}、{t1}、{t2}',
     del_confirm: '确定删除该 Webhook吗？',
     batch_del_confirm: '确定删除 {0} 个 Webhook吗'
   },
