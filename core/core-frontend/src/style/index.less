@@ -903,3 +903,24 @@ strong {
 .ed-color-picker.is-custom.ed-color-picker.is-custom {
   border-radius: 6px;
 }
+
+.ed-popper.is-pure:has(.ed-select-dropdown) {
+  padding: 0 !important;
+  .ed-select-dropdown {
+    padding: 0 4px !important;
+  }
+
+  .ed-select-dropdown__list.ed-vl__window {
+    margin: 4px 0 !important;
+  }
+
+  .ed-select-dropdown:has(.ed-vl__wrapper) {
+    padding: 0 !important;
+    .ed-select-dropdown__list {
+      .ed-select-dropdown__item {
+        left: 4px !important;
+        width: calc(100% - 8px) !important;
+      }
+    }
+  }
+}
