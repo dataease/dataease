@@ -5,7 +5,7 @@ import { config } from './config'
 const { default_headers } = config
 
 const request = (option: any) => {
-  const { url, method, params, data, headersType, responseType, loading } = option
+  const { url, method, params, data, headersType, responseType, loading, headers = {} } = option
   return service({
     url: url,
     method,
@@ -14,7 +14,12 @@ const request = (option: any) => {
     data,
     responseType: responseType,
     headers: {
-      'Content-Type': headersType || default_headers
+      'Content-Type': headersType || default_headers,
+      Accept: 'application/json',
+      'X-Requested-With': 'XMLHttpRequest',
+      'Cache-Control': 'no-store',
+      Pragma: 'no-cache',
+      ...headers
     }
   })
 }
