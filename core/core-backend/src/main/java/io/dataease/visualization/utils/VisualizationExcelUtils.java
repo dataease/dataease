@@ -92,7 +92,7 @@ public class VisualizationExcelUtils {
 
         folderPath += Thread.currentThread().getId() + "/";
         FileUtils.validateExist(folderPath);
-        File result = new File(folderPath + realFileName.get());
+        File result = new File(folderPath + realFileName.get()).getCanonicalFile();
         FileOutputStream fos = new FileOutputStream(result);
         BufferedOutputStream outputStream = new BufferedOutputStream(fos);
         try {
