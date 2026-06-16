@@ -55,7 +55,7 @@ public class WhitelistUtils {
     public static boolean match(String requestURI) {
         invalidUrl(requestURI);
         if (StringUtils.startsWith(requestURI, getContextPath())) {
-            requestURI = requestURI.replaceFirst(getContextPath(), "");
+            requestURI = StringUtils.replaceOnce(requestURI, getContextPath(), "");
         }
         if (StringUtils.startsWith(requestURI, AuthConstant.DE_API_PREFIX)) {
             requestURI = requestURI.replaceFirst(AuthConstant.DE_API_PREFIX, "");
