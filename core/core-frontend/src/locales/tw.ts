@@ -2934,6 +2934,7 @@ export default {
     to_top: '置頂',
     publish_recover: '恢復到發佈版本',
     publish_tips1: '發佈後可查看',
+    no_permission_tips: '當前資源無權限',
     publish_tips2: '發佈後可{0}',
     cancel_publish_tips: '取消發佈成功',
     resource_not_published: '该資源未發佈',
@@ -4744,6 +4745,8 @@ export default {
     add: '添加 Webhook',
     search_placeholder: '通過名稱搜索',
     content_type: '內容類型',
+    msg_template: '消息模板',
+    msg_template_tips: '可用占位符：{t0}、{t1}、{t2}',
     del_confirm: '確定刪除該 Webhook嗎？',
     batch_del_confirm: '確定刪除 {0} 個 Webhook嗎'
   }

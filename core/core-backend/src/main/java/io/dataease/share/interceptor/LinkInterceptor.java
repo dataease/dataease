@@ -42,7 +42,7 @@ public class LinkInterceptor implements HandlerInterceptor {
 
                 String requestURI = ServletUtils.request().getRequestURI();
                 if (StringUtils.startsWith(requestURI, WhitelistUtils.getContextPath())) {
-                    requestURI = requestURI.replaceFirst(WhitelistUtils.getContextPath(), "");
+                    requestURI = StringUtils.replaceOnce(requestURI, WhitelistUtils.getContextPath(), "");
                 }
                 if (StringUtils.startsWith(requestURI, AuthConstant.DE_API_PREFIX)) {
                     requestURI = requestURI.replaceFirst(AuthConstant.DE_API_PREFIX, "");
