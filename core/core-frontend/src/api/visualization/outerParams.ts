@@ -2,7 +2,10 @@ import request from '@/config/axios'
 
 export function queryWithVisualizationId(dvId) {
   return request.get({
-    url: '/outerParams/queryWithVisualizationId/' + dvId
+    url: '/outerParams/queryWithVisualizationId/' + encodeURIComponent(dvId),
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest'
+    }
   })
 }
 
@@ -16,8 +19,11 @@ export function updateOuterParamsSet(requestInfo) {
 
 export function getOuterParamsInfo(dvId) {
   return request.get({
-    url: '/outerParams/getOuterParamsInfo/' + dvId,
+    url: '/outerParams/getOuterParamsInfo/' + encodeURIComponent(dvId),
     method: 'get',
-    loading: false
+    loading: false,
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest'
+    }
   })
 }
