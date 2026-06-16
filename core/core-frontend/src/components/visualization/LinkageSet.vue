@@ -354,22 +354,35 @@ const toggleSameDs = ref(true)
 
 const toggleDiffDs = ref(true)
 
-const LINKAGE_FIELD_PROPS = [
-  'xAxis',
-  'xAxisExt',
-  'extStack',
+const LINKAGE_DIMENSION_FIELD_PROPS = ['xAxis', 'xAxisExt', 'extStack', 'drillFields']
+
+const MULTI_SCATTER_LINKAGE_FIELD_PROPS = [
   'extColor',
+  'xAxis',
   'yAxis',
-  'yAxisExt',
   'extBubble',
+  'yAxisExt',
   'extLabel',
-  'extTooltip',
-  'drillFields'
+  'extTooltip'
 ]
+
+const getLinkageFieldProps = chart => {
+  if (chart?.type === 'multi-scatter') {
+    return MULTI_SCATTER_LINKAGE_FIELD_PROPS
+  }
+  const props = [...LINKAGE_DIMENSION_FIELD_PROPS]
+  if (chart?.type?.includes('chart-mix')) {
+    props.push('extBubble')
+  }
+  if (['table-normal', 'indicator'].includes(chart?.type)) {
+    props.push('yAxis')
+  }
+  return props
+}
 
 const getDraggedFieldIds = chart => {
   const ids = new Set<string>()
-  LINKAGE_FIELD_PROPS.forEach(prop => {
+  getLinkageFieldProps(chart).forEach(prop => {
     const fields = chart?.[prop]
     if (!Array.isArray(fields)) {
       return
