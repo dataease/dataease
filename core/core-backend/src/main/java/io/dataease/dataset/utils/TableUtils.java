@@ -81,4 +81,24 @@ public class TableUtils {
                 .map(part -> quoteIdentifier(part, prefix, suffix))
                 .collect(Collectors.joining("."));
     }
+
+    public static String quoteIdentifier(String name, String prefix, String suffix) {
+        String resolvedPrefix = StringUtils.defaultString(prefix);
+        String resolvedSuffix = StringUtils.defaultString(suffix);
+        if (StringUtils.isEmpty(resolvedPrefix) && StringUtils.isEmpty(resolvedSuffix)) {
+            resolvedPrefix = Quoting.BACK_TICK.string;
+            resolvedSuffix = Quoting.BACK_TICK.string;
+        }
+        String escapedName = StringUtils.defaultString(name);
+        if (StringUtils.isNotEmpty(resolvedSuffix)) {
+            escapedName = escapedName.replace(resolvedSuffix, resolvedSuffix + resolvedSuffix);
+        }
+        return resolvedPrefix + escapedName + resolvedSuffix;
+    }
+
+    public static String quoteCompoundIdentifier(String name, String prefix, String suffix) {
+        return Arrays.stream(StringUtils.defaultString(name).split("\\.", -1))
+                .map(part -> quoteIdentifier(part, prefix, suffix))
+                .collect(Collectors.joining("."));
+    }
 }

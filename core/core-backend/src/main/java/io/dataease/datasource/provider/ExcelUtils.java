@@ -25,14 +25,15 @@ import io.dataease.api.ds.vo.ExcelConfiguration;
 import io.dataease.i18n.Translator;
 import io.dataease.utils.*;
 import lombok.Data;
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
+import java.net.URI;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -212,14 +213,17 @@ public class ExcelUtils {
                 for (int i = 0; i < rootNode.size(); i++) {
                     if (rootNode.get(i).get("deTableName").asText().equalsIgnoreCase(datasourceRequest.getTable())) {
                         List<TableField> tableFields = JsonUtil.parseList(rootNode.get(i).get("fields").toString(), TableFieldListTypeReference);
-                        String suffix = rootNode.get(i).get("path").asText().substring(rootNode.get(i).get("path").asText().lastIndexOf(".") + 1);
-                        InputStream inputStream = new FileInputStream(rootNode.get(i).get("path").asText());
-                        if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
-                            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-                            reader.readLine();//去掉表头
-                            dataList = csvData(reader, false, tableFields.size());
-                        } else {
-                            dataList = fetchExcelDataList(rootNode.get(i).get("tableName").asText(), inputStream);
+                        Path storedExcelPath = resolveStoredExcelPath(rootNode.get(i).get("path").asText());
+                        String suffix = getFileSuffix(storedExcelPath.getFileName().toString());
+                        try (InputStream inputStream = Files.newInputStream(storedExcelPath)) {
+                            if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
+                                try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+                                    reader.readLine();//去掉表头
+                                    dataList = csvData(reader, false, tableFields.size());
+                                }
+                            } else {
+                                dataList = fetchExcelDataList(rootNode.get(i).get("tableName").asText(), inputStream);
+                            }
                         }
                     }
                 }
@@ -738,68 +742,39 @@ public class ExcelUtils {
     }
 
     public static TempExcelFile downLoadFromFtp(ExcelConfiguration remoteExcelRequest) {
-        String username = "";
-        String password = "";
-        String serverAddress = "";
-        String filePath = "";
-        if (remoteExcelRequest.getUrl().contains("@")) {
-            String regex = "ftp://([^:]+):([^@]+)@([^/]+)(.*)";
-            Pattern pattern = Pattern.compile(regex);
-            Matcher matcher = pattern.matcher(remoteExcelRequest.getUrl());
-            if (matcher.find()) {
-                username = matcher.group(1);
-                password = matcher.group(2);
-                serverAddress = matcher.group(3);
-                filePath = matcher.group(4);
-            } else {
-                DEException.throwException(Translator.get("i18n_invalid_address"));
-            }
-        } else {
-            String regex = "ftp://([^/]+)(.*)";
-            Pattern pattern = Pattern.compile(regex);
-            Matcher matcher = pattern.matcher(remoteExcelRequest.getUrl());
-            if (matcher.find()) {
-                serverAddress = matcher.group(1);
-                filePath = matcher.group(2);
-            } else {
-                DEException.throwException(Translator.get("i18n_invalid_address"));
-            }
-        }
-        if (StringUtils.isNotEmpty(remoteExcelRequest.getUserName())) {
-            username = remoteExcelRequest.getUserName();
-        }
-        if (StringUtils.isNotEmpty(remoteExcelRequest.getPasswd())) {
-            password = remoteExcelRequest.getPasswd();
-        }
-        filePath = filePath.startsWith("/") ? filePath.substring(1) : filePath;
-        String remoteFileName = normalizeExcelFilename(filePath);
+        FtpDownloadTarget ftpDownloadTarget = resolveFtpDownloadTarget(remoteExcelRequest);
+        String remoteFileName = normalizeExcelFilename(ftpDownloadTarget.filePath());
         String suffix = getFileSuffix(remoteFileName);
         if (!Arrays.asList("csv", "xlsx", "xls").contains(suffix)) {
             DEException.throwException(Translator.get("i18n_unsupported_file_format"));
         }
         String tranName = UUID.randomUUID().toString() + "." + suffix;
         Path localFilePath = resolveExcelFilePath(tranName);
-
+        FTPClient ftpClient = new FTPClient();
         try {
-            URL url;
-            if (StringUtils.isNotEmpty(username) && StringUtils.isNotEmpty(password)) {
-                url = new URL("ftp://" + username + ":" + URLEncoder.encode(password, StandardCharsets.UTF_8) + "@" + serverAddress + "/" + filePath);
+            ftpClient.setControlEncoding(StandardCharsets.UTF_8.name());
+            ftpClient.connect(ftpDownloadTarget.host(), ftpDownloadTarget.port());
+            boolean loginResult;
+            if (StringUtils.isNotEmpty(ftpDownloadTarget.username())) {
+                loginResult = ftpClient.login(ftpDownloadTarget.username(), ftpDownloadTarget.password());
             } else {
-                url = new URL("ftp://" + serverAddress + "/" + filePath);
+                loginResult = ftpClient.login("anonymous", "");
             }
-
-            URLConnection conn = url.openConnection();
-            try (InputStream inputStream = conn.getInputStream();
-                 OutputStream outputStream = Files.newOutputStream(localFilePath)) {
-                byte[] buffer = new byte[4096];
-                int bytesRead;
-                while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, bytesRead);
+            if (!loginResult) {
+                DEException.throwException(Translator.get("i18n_file_download_failed"));
+            }
+            ftpClient.enterLocalPassiveMode();
+            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+            try (OutputStream outputStream = Files.newOutputStream(localFilePath)) {
+                if (!ftpClient.retrieveFile(ftpDownloadTarget.filePath(), outputStream)) {
+                    DEException.throwException(Translator.get("i18n_file_download_failed"));
                 }
             }
-
         } catch (IOException e) {
-            DEException.throwException(Translator.get("i18n_file_download_failed") + ", " + e.getMessage());
+            LogUtil.error(e.getMessage(), e);
+            DEException.throwException(Translator.get("i18n_file_download_failed"));
+        } finally {
+            closeFtpClient(ftpClient);
         }
         return new TempExcelFile(remoteFileName, tranName, localFilePath);
     }
@@ -850,6 +825,81 @@ public class ExcelUtils {
             DEException.throwException(Translator.get("i18n_invalid_file_name"));
         }
         return filePath;
+    }
+
+    private static Path resolveStoredExcelPath(String configuredPath) {
+        String normalizedConfiguredPath = StringUtils.trimToEmpty(configuredPath);
+        if (normalizedConfiguredPath.isEmpty()) {
+            DEException.throwException(Translator.get("i18n_invalid_file_name"));
+        }
+        Path excelDirectory = ensureExcelDirectory();
+        Path filePath = Paths.get(normalizedConfiguredPath);
+        filePath = filePath.isAbsolute() ? filePath.normalize() : excelDirectory.resolve(filePath).normalize();
+        if (!filePath.startsWith(excelDirectory)) {
+            DEException.throwException(Translator.get("i18n_invalid_file_name"));
+        }
+        Path fileName = filePath.getFileName();
+        if (fileName == null) {
+            DEException.throwException(Translator.get("i18n_invalid_file_name"));
+        }
+        FileUtils.validateUploadFilename(fileName.toString());
+        try {
+            if (Files.exists(filePath)) {
+                Path realExcelDirectory = excelDirectory.toRealPath();
+                Path realFilePath = filePath.toRealPath();
+                if (!realFilePath.startsWith(realExcelDirectory)) {
+                    DEException.throwException(Translator.get("i18n_invalid_file_name"));
+                }
+            }
+        } catch (IOException e) {
+            DEException.throwException(e);
+        }
+        return filePath;
+    }
+
+    private static FtpDownloadTarget resolveFtpDownloadTarget(ExcelConfiguration remoteExcelRequest) {
+        try {
+            URI uri = URI.create(StringUtils.trimToEmpty(remoteExcelRequest.getUrl()));
+            if (!StringUtils.equalsIgnoreCase(uri.getScheme(), "ftp") || StringUtils.isEmpty(uri.getHost())) {
+                DEException.throwException(Translator.get("i18n_invalid_address"));
+            }
+            String username = StringUtils.defaultString(remoteExcelRequest.getUserName());
+            String password = StringUtils.defaultString(remoteExcelRequest.getPasswd());
+            if (StringUtils.isEmpty(username) && StringUtils.isNotEmpty(uri.getUserInfo())) {
+                String[] userInfo = uri.getUserInfo().split(":", 2);
+                username = userInfo[0];
+                password = userInfo.length > 1 ? URLDecoder.decode(userInfo[1], StandardCharsets.UTF_8) : "";
+            }
+            String filePath = StringUtils.removeStart(StringUtils.defaultString(uri.getPath()), "/");
+            if (StringUtils.isEmpty(filePath)) {
+                DEException.throwException(Translator.get("i18n_invalid_address"));
+            }
+            return new FtpDownloadTarget(uri.getHost(), uri.getPort() > 0 ? uri.getPort() : 21, username, password, filePath);
+        } catch (IllegalArgumentException e) {
+            DEException.throwException(Translator.get("i18n_invalid_address"));
+            return null;
+        }
+    }
+
+    private static void closeFtpClient(FTPClient ftpClient) {
+        if (ftpClient == null) {
+            return;
+        }
+        if (ftpClient.isConnected()) {
+            try {
+                ftpClient.logout();
+            } catch (IOException e) {
+                LogUtil.error(e.getMessage(), e);
+            }
+            try {
+                ftpClient.disconnect();
+            } catch (IOException e) {
+                LogUtil.error(e.getMessage(), e);
+            }
+        }
+    }
+
+    private record FtpDownloadTarget(String host, int port, String username, String password, String filePath) {
     }
 
     private record TempExcelFile(String fileName, String tranName, Path path) {
