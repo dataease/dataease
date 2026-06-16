@@ -43,19 +43,11 @@ public class TableUtils {
     }
 
     public static String getTableAndAlias(SQLObj sqlObj, DsTypeDTO datasourceType, boolean isCross) {
-        String schema = "";
-        String prefix = "";
-        String suffix = "";
-        if (StringUtils.isNotEmpty(sqlObj.getTableSchema())) {
-            if (isCross) {
-                prefix = "`";
-                suffix = "`";
-            } else {
-                prefix = datasourceType.getPrefix();
-                suffix = datasourceType.getSuffix();
-            }
-            schema = quoteIdentifier(sqlObj.getTableSchema(), prefix, suffix) + ".";
-        }
+        String prefix = isCross ? Quoting.BACK_TICK.string : datasourceType.getPrefix();
+        String suffix = isCross ? Quoting.BACK_TICK.string : datasourceType.getSuffix();
+        String schema = StringUtils.isNotEmpty(sqlObj.getTableSchema())
+                ? quoteIdentifier(sqlObj.getTableSchema(), prefix, suffix) + "."
+                : "";
         return schema + quoteIdentifier(sqlObj.getTableName(), prefix, suffix) + " " + sqlObj.getTableAlias();
     }
 
@@ -78,46 +70,6 @@ public class TableUtils {
 
     public static String quoteCompoundIdentifier(String name, String prefix, String suffix) {
         return Arrays.stream(StringUtils.splitPreserveAllTokens(StringUtils.defaultString(name), "."))
-                .map(part -> quoteIdentifier(part, prefix, suffix))
-                .collect(Collectors.joining("."));
-    }
-
-    public static String quoteIdentifier(String name, String prefix, String suffix) {
-        String resolvedPrefix = StringUtils.defaultString(prefix);
-        String resolvedSuffix = StringUtils.defaultString(suffix);
-        if (StringUtils.isEmpty(resolvedPrefix) && StringUtils.isEmpty(resolvedSuffix)) {
-            resolvedPrefix = Quoting.BACK_TICK.string;
-            resolvedSuffix = Quoting.BACK_TICK.string;
-        }
-        String escapedName = StringUtils.defaultString(name);
-        if (StringUtils.isNotEmpty(resolvedSuffix)) {
-            escapedName = escapedName.replace(resolvedSuffix, resolvedSuffix + resolvedSuffix);
-        }
-        return resolvedPrefix + escapedName + resolvedSuffix;
-    }
-
-    public static String quoteCompoundIdentifier(String name, String prefix, String suffix) {
-        return Arrays.stream(StringUtils.defaultString(name).split("\\.", -1))
-                .map(part -> quoteIdentifier(part, prefix, suffix))
-                .collect(Collectors.joining("."));
-    }
-
-    public static String quoteIdentifier(String name, String prefix, String suffix) {
-        String resolvedPrefix = StringUtils.defaultString(prefix);
-        String resolvedSuffix = StringUtils.defaultString(suffix);
-        if (StringUtils.isEmpty(resolvedPrefix) && StringUtils.isEmpty(resolvedSuffix)) {
-            resolvedPrefix = Quoting.BACK_TICK.string;
-            resolvedSuffix = Quoting.BACK_TICK.string;
-        }
-        String escapedName = StringUtils.defaultString(name);
-        if (StringUtils.isNotEmpty(resolvedSuffix)) {
-            escapedName = escapedName.replace(resolvedSuffix, resolvedSuffix + resolvedSuffix);
-        }
-        return resolvedPrefix + escapedName + resolvedSuffix;
-    }
-
-    public static String quoteCompoundIdentifier(String name, String prefix, String suffix) {
-        return Arrays.stream(StringUtils.defaultString(name).split("\\.", -1))
                 .map(part -> quoteIdentifier(part, prefix, suffix))
                 .collect(Collectors.joining("."));
     }
