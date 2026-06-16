@@ -74,8 +74,8 @@ public class FileUtils {
         return filename;
     }
 
-    public static void validateExist(String path) {
-        File dir = new File(path);
+    public static void validateExist(String path) throws IOException {
+        File dir = new File(path).getCanonicalFile();
         if (dir.exists()) return;
         dir.mkdirs();
     }
