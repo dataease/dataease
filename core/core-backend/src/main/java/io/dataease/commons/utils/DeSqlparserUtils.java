@@ -196,13 +196,7 @@ public class DeSqlparserUtils {
                     }
                 }
 
-                Pattern patternCross = Pattern.compile("(`.*?`)");
-                Matcher matcherCross = patternCross.matcher(sql);
-                while (matcherCross.find()) {
-                    String group = matcherCross.group();
-                    String info = group.substring(1, group.length() - 1);
-                    sql = sql.replaceAll(group, prefix + info + suffix);
-                }
+                sql = replaceQuotedIdentifiers(sql, prefix, suffix);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -496,6 +490,18 @@ public class DeSqlparserUtils {
     }
 
     private record LiteralSegment(boolean variable, String content) {
+    }
+
+    private String replaceQuotedIdentifiers(String sql, String prefix, String suffix) {
+        Matcher matcher = Pattern.compile("(`.*?`)").matcher(sql);
+        StringBuilder builder = new StringBuilder();
+        while (matcher.find()) {
+            String group = matcher.group();
+            String info = group.substring(1, group.length() - 1);
+            matcher.appendReplacement(builder, Matcher.quoteReplacement(prefix + info + suffix));
+        }
+        matcher.appendTail(builder);
+        return builder.toString();
     }
 
     private PreparedSqlFragment buildPreparedSysSqlFragment(String sysVariableId, boolean inOperator) {
