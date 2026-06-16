@@ -7,6 +7,9 @@ import io.dataease.utils.Md5Utils;
 import org.apache.calcite.avatica.util.Quoting;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 public class TableUtils {
 
     public static String format = Quoting.BACK_TICK.string + "%s" + Quoting.BACK_TICK.string;
@@ -58,5 +61,25 @@ public class TableUtils {
 
     public static String tableName2Sql(DatasourceSchemaDTO ds, String tableName) {
         return "SELECT * FROM " + ds.getSchemaAlias() + "." + String.format(format, tableName);
+    }
+
+    public static String quoteIdentifier(String name, String prefix, String suffix) {
+        String resolvedPrefix = StringUtils.defaultString(prefix);
+        String resolvedSuffix = StringUtils.defaultString(suffix);
+        if (StringUtils.isEmpty(resolvedPrefix) && StringUtils.isEmpty(resolvedSuffix)) {
+            resolvedPrefix = Quoting.BACK_TICK.string;
+            resolvedSuffix = Quoting.BACK_TICK.string;
+        }
+        String escapedName = StringUtils.defaultString(name);
+        if (StringUtils.isNotEmpty(resolvedSuffix)) {
+            escapedName = escapedName.replace(resolvedSuffix, resolvedSuffix + resolvedSuffix);
+        }
+        return resolvedPrefix + escapedName + resolvedSuffix;
+    }
+
+    public static String quoteCompoundIdentifier(String name, String prefix, String suffix) {
+        return Arrays.stream(StringUtils.defaultString(name).split("\\.", -1))
+                .map(part -> quoteIdentifier(part, prefix, suffix))
+                .collect(Collectors.joining("."));
     }
 }
