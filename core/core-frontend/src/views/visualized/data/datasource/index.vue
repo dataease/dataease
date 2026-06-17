@@ -583,7 +583,7 @@ const sortTypeTip = computed(() => {
 const tableData = shallowRef([])
 const tabData = shallowRef([])
 const handleNodeClick = data => {
-  if (!data.leaf) {
+  if (!data.leaf || data.weight === 0) {
     dsListTree.value.setCurrentKey(null)
     return
   }
@@ -1054,7 +1054,8 @@ const uploadExcel = editType => {
 const activeName = ref('table')
 const defaultProps = {
   children: 'children',
-  label: 'name'
+  label: 'name',
+  disabled: (data: any) => data.weight === 0
 }
 
 const loadInit = () => {
@@ -1231,7 +1232,11 @@ const getMenuList = (val: boolean) => {
             @node-click="handleNodeClick"
           >
             <template #default="{ node, data }">
-              <span class="custom-tree-node" style="position: relative">
+              <span
+                class="custom-tree-node"
+                style="position: relative"
+                :class="{ 'node-disabled-custom': data.weight === 0 }"
+              >
                 <el-icon :class="data.leaf && 'icon-border'" style="font-size: 18px">
                   <Icon :static-content="getDsIcon(data)"
                     ><component class="svg-icon" :is="getDsIconName(data)"></component
@@ -1243,18 +1248,30 @@ const getMenuList = (val: boolean) => {
                 >
                   <Icon><icon_warning_colorful_red class="svg-icon" /></Icon>
                 </el-icon>
-                <span
-                  :title="node.label"
-                  class="label-tooltip ellipsis"
-                  :class="data.type === 'Excel' && 'excel'"
-                  v-if="data.extraFlag > -1"
-                  >{{ node.label }}</span
-                >
                 <el-tooltip
+                  v-if="data.extraFlag > -1"
                   effect="dark"
+                  :content="t('visualization.no_permission_tips')"
+                  :disabled="data.weight > 0"
+                  placement="top-start"
+                >
+                  <span
+                    :title="node.label"
+                    class="label-tooltip ellipsis"
+                    :class="data.type === 'Excel' && 'excel'"
+                    v-if="data.extraFlag > -1"
+                    >{{ node.label }}</span
+                  >
+                </el-tooltip>
+                <el-tooltip
                   v-else
-                  :content="`${t('data_set.invalid_data_source')}: ${node.label}`"
-                  placement="top"
+                  effect="dark"
+                  :content="
+                    data.weight === 0
+                      ? t('visualization.no_permission_tips')
+                      : `${t('data_set.invalid_data_source')}: ${node.label}`
+                  "
+                  placement="top-start"
                 >
                   <span
                     :title="node.label"
@@ -2427,6 +2444,11 @@ const getMenuList = (val: boolean) => {
       display: inline-flex;
     }
   }
+}
+
+.node-disabled-custom {
+  color: rgba(187, 191, 196, 1);
+  cursor: not-allowed;
 }
 </style>
 <style lang="less">

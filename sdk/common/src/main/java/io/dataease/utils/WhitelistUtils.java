@@ -26,7 +26,6 @@ public class WhitelistUtils {
             "/login/localLogin",
             "/apisix/check",
             "/dekey",
-            "/symmetricKey",
             "/index.html",
             "/model",
             "/xpackModel",
@@ -56,7 +55,7 @@ public class WhitelistUtils {
     public static boolean match(String requestURI) {
         invalidUrl(requestURI);
         if (StringUtils.startsWith(requestURI, getContextPath())) {
-            requestURI = requestURI.replaceFirst(getContextPath(), "");
+            requestURI = StringUtils.replaceOnce(requestURI, getContextPath(), "");
         }
         if (StringUtils.startsWith(requestURI, AuthConstant.DE_API_PREFIX)) {
             requestURI = requestURI.replaceFirst(AuthConstant.DE_API_PREFIX, "");
@@ -74,6 +73,7 @@ public class WhitelistUtils {
                 || StringUtils.startsWithAny(requestURI, "/static-resource/")
                 || StringUtils.startsWithAny(requestURI, "/appearance/image/")
                 || StringUtils.startsWithAny(requestURI, "/share/proxyInfo")
+                || StringUtils.startsWithAny(requestURI, "/share/validate")
                 || StringUtils.startsWithAny(requestURI, "/xpackComponent/content")
                 || StringUtils.startsWithAny(requestURI, "/xpackComponent/pluginStaticInfo")
                 || StringUtils.startsWithAny(requestURI, "/geo/")

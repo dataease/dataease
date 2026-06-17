@@ -81,7 +81,7 @@ const props = defineProps({
 const defaultProps = {
   children: 'children',
   label: 'name',
-  disabled: (data: any) => data.extraFlag1 === 0
+  disabled: (data: any) => data.extraFlag1 === 0 || data.weight === 0
 }
 const mounted = ref(false)
 const rootManage = ref(false)
@@ -785,7 +785,10 @@ defineExpose({
         draggable
       >
         <template #default="{ node, data }">
-          <span class="custom-tree-node" :class="{ 'node-disabled-custom': data.extraFlag1 === 0 }">
+          <span
+            class="custom-tree-node"
+            :class="{ 'node-disabled-custom': data.extraFlag1 === 0 || data.weight === 0 }"
+          >
             <el-icon style="font-size: 18px" v-if="!data.leaf">
               <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
             </el-icon>
@@ -815,8 +818,12 @@ defineExpose({
               <el-tooltip
                 class="box-item"
                 effect="dark"
-                :content="t('visualization.publish_tips1')"
-                :disabled="data.extraFlag1"
+                :content="
+                  data.weight === 0
+                    ? t('visualization.no_permission_tips')
+                    : t('visualization.publish_tips1')
+                "
+                :disabled="data.extraFlag1 && data.weight > 0"
                 placement="top-start"
               >
                 {{ node.label }}

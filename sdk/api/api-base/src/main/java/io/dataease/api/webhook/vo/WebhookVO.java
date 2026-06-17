@@ -8,11 +8,11 @@ import java.io.Serial;
 import java.io.Serializable;
 
 @Data
-public class WebhookGridVO implements Serializable {
+public class WebhookVO implements Serializable {
     @Serial
-    private static final long serialVersionUID = 2846767076219865522L;
+    private static final long serialVersionUID = 1L;
 
-    @JsonSerialize(using= ToStringSerializer.class)
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     private String name;
@@ -24,4 +24,11 @@ public class WebhookGridVO implements Serializable {
     private String contentType;
 
     private Boolean ssl;
+
+    private String msgTemplate;
+
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long oid;
+
+    private Long createTime;
 }

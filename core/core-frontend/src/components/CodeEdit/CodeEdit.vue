@@ -27,6 +27,12 @@ watch(formatData, () => {
 watch([props.theme], () => {
   format()
 })
+watch(
+  () => props.data,
+  () => {
+    format()
+  }
+)
 onMounted(() => {
   format()
 })

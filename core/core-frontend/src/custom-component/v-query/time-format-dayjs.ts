@@ -109,6 +109,8 @@ function getCustomRange(relativeToCurrentRange: string): [Date, Date] {
         new Date(dayjs().subtract(2, 'day').startOf('day').format('YYYY/MM/DD HH:mm:ss')),
         getThisEnd('day')
       ]
+    case 'LastMonthFull':
+      return [getLastStart('month'), getLastEnd('month')]
     case 'monthBeginning':
       return [getThisStart('month'), getThisEnd('day')]
     case 'yearBeginning':

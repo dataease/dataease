@@ -58,6 +58,7 @@ public class StaticResourceServer implements StaticResourceApi {
     public void upload(String fileId, MultipartFile file) {
         Assert.notNull(file, "Multipart file must not be null");
         try {
+            FileUtils.validateUploadFilename(fileId);
             String originName = file.getOriginalFilename();
             validateImageFilename(originName);
             String newFileName = fileId + originName.substring(originName.lastIndexOf("."), originName.length());
@@ -138,9 +139,12 @@ public class StaticResourceServer implements StaticResourceApi {
     }
 
     private void writeFileIfAbsent(String fileName, byte[] content) throws IOException {
-        Path basePath = Paths.get(staticDir.toString());
+        Path basePath = Paths.get(staticDir.toString()).normalize();
         FileUtils.createIfAbsent(basePath);
-        Path uploadPath = basePath.resolve(fileName);
+        Path uploadPath = basePath.resolve(fileName).normalize();
+        if (!uploadPath.startsWith(basePath)) {
+            DEException.throwException("非法文件路径");
+        }
         if (Files.exists(uploadPath)) {
             LogUtil.info("file exists");
             return;

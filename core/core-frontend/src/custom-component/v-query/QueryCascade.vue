@@ -213,91 +213,100 @@ defineExpose({
         }}<span style="margin-left: 8px" class="tip">{{ t('v_query.not_reverse_cascade') }}</span>
       </div>
     </template>
-    <div class="content">
-      <el-icon style="font-size: 16px">
-        <Icon name="icon_info_colorful"><icon_info_colorful class="svg-icon" /></Icon>
-      </el-icon>
-      {{ t('v_query.must_be_met') }}<br />
-      {{ t('v_query.select_data_set') }}<br />
-    </div>
-    <el-button text @click="addCascadeBlock">
-      <template #icon>
-        <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
-      </template>
-      {{ t('v_query.add_cascade_configuration') }}
-    </el-button>
-    <div class="cascade-content" v-for="(item, index) in cascadeList" :key="index">
-      <div style="display: flex; align-items: center; justify-content: space-between">
-        <el-button :disabled="item.length === 2" text @click="addCascadeItem(item)">
+    <div style="height: calc(100vh - 300px)">
+      <el-scrollbar>
+        <div class="content">
+          <el-icon style="font-size: 16px">
+            <Icon name="icon_info_colorful"><icon_info_colorful class="svg-icon" /></Icon>
+          </el-icon>
+          {{ t('v_query.must_be_met') }}<br />
+          {{ t('v_query.select_data_set') }}<br />
+        </div>
+        <el-button text @click="addCascadeBlock">
           <template #icon>
             <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
           </template>
-          {{ t('v_query.add_cascade_condition') }}
+          {{ t('v_query.add_cascade_configuration') }}
         </el-button>
-        <el-button @click="deleteCascadeBlock(index)" class="cascade-delete-block" text>
-          <template #icon>
-            <Icon name="icon_delete-trash_outlined"
-              ><icon_deleteTrash_outlined class="svg-icon"
-            /></Icon>
-          </template>
-        </el-button>
-      </div>
-      <div class="cascade-item">
-        <div class="label">{{ t('v_query.query_condition_level') }}</div>
-        <div class="item-name">{{ t('v_query.select_query_condition') }}</div>
-        <div class="cascade-icon"></div>
-        <div class="item-field">{{ t('v_query.select_cascaded_field') }}</div>
-      </div>
-      <div class="cascade-item" v-for="(ele, idx) in item" :key="ele.id">
-        <div class="label">{{ t('v_query.level_1', { msg: indexNumCascade[idx] }) }}</div>
-        <div class="item-name">
-          <el-select
-            @visible-change="val => visibleChange(val, index, idx)"
-            v-model="ele.datasetId"
-            @change="setPlaceholder"
-            style="width: 300px"
-          >
-            <el-option
-              v-for="itx in datasetMap.filter(ele => (idx === 0 && !ele.isTree) || idx === 1)"
-              :key="itx.value"
-              :label="itx.label"
-              :value="itx.value"
-              :disabled="
-                (disabledDatasetId.includes(itx.value) &&
-                  item.map(ele => ele.datasetId).includes(itx.value)) ||
-                (!!ele.datasetId && deTypeMap[ele.datasetId] !== itx.deType)
-              "
-            />
-          </el-select>
+        <div class="cascade-content" v-for="(item, index) in cascadeList" :key="index">
+          <div style="display: flex; align-items: center; justify-content: space-between">
+            <el-button :disabled="item.length === 2" text @click="addCascadeItem(item)">
+              <template #icon>
+                <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
+              </template>
+              {{ t('v_query.add_cascade_condition') }}
+            </el-button>
+            <el-button @click="deleteCascadeBlock(index)" class="cascade-delete-block" text>
+              <template #icon>
+                <Icon name="icon_delete-trash_outlined"
+                  ><icon_deleteTrash_outlined class="svg-icon"
+                /></Icon>
+              </template>
+            </el-button>
+          </div>
+          <div class="cascade-item">
+            <div class="label">{{ t('v_query.query_condition_level') }}</div>
+            <div class="item-name">{{ t('v_query.select_query_condition') }}</div>
+            <div class="cascade-icon"></div>
+            <div class="item-field">{{ t('v_query.select_cascaded_field') }}</div>
+          </div>
+          <div class="cascade-item" v-for="(ele, idx) in item" :key="ele.id">
+            <div class="label">{{ t('v_query.level_1', { msg: indexNumCascade[idx] }) }}</div>
+            <div class="item-name">
+              <el-select
+                @visible-change="val => visibleChange(val, index, idx)"
+                v-model="ele.datasetId"
+                @change="setPlaceholder"
+                style="width: 300px"
+              >
+                <el-option
+                  v-for="itx in datasetMap.filter(ele => (idx === 0 && !ele.isTree) || idx === 1)"
+                  :key="itx.value"
+                  :label="itx.label"
+                  :value="itx.value"
+                  :disabled="
+                    (disabledDatasetId.includes(itx.value) &&
+                      item.map(ele => ele.datasetId).includes(itx.value)) ||
+                    (!!ele.datasetId && deTypeMap[ele.datasetId] !== itx.deType)
+                  "
+                />
+              </el-select>
+            </div>
+            <div class="cascade-icon">
+              <el-icon>
+                <Icon name="join-join"><joinJoin class="svg-icon" /></Icon>
+              </el-icon>
+            </div>
+            <div class="item-field">
+              <el-select
+                :placeholder="ele.placeholder"
+                :disabled="!!ele.placeholder"
+                v-model="ele.fieldId"
+                style="width: 300px"
+              >
+                <el-option
+                  v-for="item in optionsMap[ele.datasetId.split('--')[0]]"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                />
+              </el-select>
+            </div>
+            <el-button
+              v-show="idx !== 0"
+              @click="deleteCascade(idx, item)"
+              class="cascade-delete"
+              text
+            >
+              <template #icon>
+                <Icon name="icon_delete-trash_outlined"
+                  ><icon_deleteTrash_outlined class="svg-icon"
+                /></Icon>
+              </template>
+            </el-button>
+          </div>
         </div>
-        <div class="cascade-icon">
-          <el-icon>
-            <Icon name="join-join"><joinJoin class="svg-icon" /></Icon>
-          </el-icon>
-        </div>
-        <div class="item-field">
-          <el-select
-            :placeholder="ele.placeholder"
-            :disabled="!!ele.placeholder"
-            v-model="ele.fieldId"
-            style="width: 300px"
-          >
-            <el-option
-              v-for="item in optionsMap[ele.datasetId.split('--')[0]]"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            />
-          </el-select>
-        </div>
-        <el-button v-show="idx !== 0" @click="deleteCascade(idx, item)" class="cascade-delete" text>
-          <template #icon>
-            <Icon name="icon_delete-trash_outlined"
-              ><icon_deleteTrash_outlined class="svg-icon"
-            /></Icon>
-          </template>
-        </el-button>
-      </div>
+      </el-scrollbar>
     </div>
     <template #footer>
       <div class="dialog-footer">

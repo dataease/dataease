@@ -1,6 +1,4 @@
-import VText from '@/custom-component/v-text/Component.vue'
 import VQuery from '@/custom-component/v-query/Component.vue'
-import VTextAttr from '@/custom-component/v-text/Attr.vue'
 import Group from '@/custom-component/group/Component.vue'
 import GroupAttr from '@/custom-component/group/Attr.vue'
 import UserView from '@/custom-component/user-view/Component.vue'
@@ -44,9 +42,7 @@ import PopAreaAttr from '@/custom-component/pop-area/Attr.vue'
 import PictureGroup from '@/custom-component/picture-group/Component.vue'
 import PictureGroupAttr from '@/custom-component/picture-group/Attr.vue'
 export const componentsMap = {
-  VText: VText,
   VQuery,
-  VTextAttr: VTextAttr,
   Group: Group,
   GroupAttr: GroupAttr,
   UserView: UserView,

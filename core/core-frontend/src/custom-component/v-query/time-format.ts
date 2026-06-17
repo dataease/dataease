@@ -191,7 +191,7 @@ interface TimeRange {
   dynamicWindow: boolean
   maximumSingleQuery: number
   regularOrTrends: string
-  regularOrTrendsValue: string
+  regularOrTrendsValue: string | Date | [Date, Date]
   relativeToCurrent: string
   relativeToCurrentRange: string
   timeNum: number
@@ -200,6 +200,7 @@ interface TimeRange {
   timeNumRange: number
   relativeToCurrentTypeRange: ManipulateType
   aroundRange: string
+  timeGranularity?: string
   timeGranularityMultiple?: string
 }
 export {

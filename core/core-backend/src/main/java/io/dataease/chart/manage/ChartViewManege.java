@@ -1,5 +1,7 @@
 package io.dataease.chart.manage;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -10,6 +12,7 @@ import io.dataease.chart.dao.auto.entity.CoreChartView;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
 import io.dataease.chart.dao.ext.entity.ChartBasePO;
 import io.dataease.chart.dao.ext.mapper.ExtChartViewMapper;
+import io.dataease.constant.AuthConstant;
 import io.dataease.constant.CommonConstants;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableFieldMapper;
@@ -34,6 +37,7 @@ import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.utils.JsonUtil;
 import io.dataease.utils.LogUtil;
+import io.dataease.utils.ServletUtils;
 import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.visualization.dao.auto.entity.SnapshotCoreChartView;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
@@ -157,6 +161,32 @@ public class ChartViewManege {
         }
         ChartViewDTO dto = transRecord2DTO(coreChartView);
         return dto;
+    }
+
+    public void checkLinkChart(ChartViewDTO view) {
+        Long resourceId = view.getSceneId();
+        Long viewId = view.getId();
+        Long tableId = view.getTableId();
+
+        String linkToken = ServletUtils.getHead(AuthConstant.LINK_TOKEN_KEY);
+        if (StringUtils.isBlank(linkToken)) {
+            return;
+        }
+
+        DecodedJWT jwt = JWT.decode(linkToken);
+        Long tokenResourceId = jwt.getClaim("resourceId").asLong();
+        if (!tokenResourceId.equals(resourceId)) {
+            DEException.throwException("超出分享链接权限");
+        }
+
+        CoreChartView chartView = coreChartViewMapper.selectById(viewId);
+        if (chartView == null) {
+            DEException.throwException(Translator.get("i18n_chart_delete"));
+        }
+
+        if (!chartView.getTableId().equals(tableId)) {
+            DEException.throwException("超出分享链接权限");
+        }
     }
 
     /**

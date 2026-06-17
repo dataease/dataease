@@ -74,8 +74,8 @@ public class FileUtils {
         return filename;
     }
 
-    public static void validateExist(String path) {
-        File dir = new File(path);
+    public static void validateExist(String path) throws IOException {
+        File dir = new File(path).getCanonicalFile();
         if (dir.exists()) return;
         dir.mkdirs();
     }
@@ -290,25 +290,5 @@ public class FileUtils {
         }
 
         return bytes;
-    }
-
-
-    public static boolean deleteDirectoryRecursively(String directoryPath) {
-        File directory = new File(directoryPath);
-        if (!directory.exists()) {
-            return true;
-        }
-
-        File[] files = directory.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    deleteDirectoryRecursively(file.getAbsolutePath());
-                } else {
-                    boolean deletionSuccess = file.delete();
-                }
-            }
-        }
-        return directory.delete();
     }
 }

@@ -34,7 +34,7 @@ public class VisualizationExcelUtils {
 
     public static File exportExcel(List<ExcelSheetModel> sheets, String fileName, String folderId) throws Exception {
         AtomicReference<String> realFileName = new AtomicReference<>(fileName);
-        Workbook wb = new SXSSFWorkbook();
+        SXSSFWorkbook wb = new SXSSFWorkbook();
 
         sheets.forEach(sheet -> {
 
@@ -92,7 +92,7 @@ public class VisualizationExcelUtils {
 
         folderPath += Thread.currentThread().getId() + "/";
         FileUtils.validateExist(folderPath);
-        File result = new File(folderPath + realFileName.get());
+        File result = new File(folderPath + realFileName.get()).getCanonicalFile();
         FileOutputStream fos = new FileOutputStream(result);
         BufferedOutputStream outputStream = new BufferedOutputStream(fos);
         try {
@@ -101,6 +101,7 @@ public class VisualizationExcelUtils {
             LogUtil.error(e.getMessage(), new Throwable(e));
             throw e;
         } finally {
+            wb.dispose();
             wb.close();
             outputStream.flush();
             outputStream.close();

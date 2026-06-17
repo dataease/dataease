@@ -157,5 +157,15 @@
         </resources>
     </cache>
 
+    <cache alias="de_v2_dataset_table" uses-template="common-cache">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.util.List</value-type>
+    </cache>
+
+    <cache alias="de_v2_dataset_field" uses-template="common-cache">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.util.List</value-type>
+    </cache>
+
 </config>
 

@@ -493,6 +493,16 @@ const trackMenu = computed(() => {
       jumpCount++
     }
   })
+  if (view.value?.drillFields && view.value?.drillFilters && view.value.drillFilters.length > 0) {
+    const lastItem = view.value?.drillFields[view.value.drillFilters.length]
+    const sourceInfo = view.value.id + '#' + lastItem.id
+    if (nowPanelTrackInfo.value[sourceInfo]) {
+      linkageCount++
+    }
+    if (nowPanelJumpInfo.value[sourceInfo]) {
+      jumpCount++
+    }
+  }
   jumpCount &&
     view.value?.jumpActive &&
     (!mobileInPc.value || inMobile.value) &&

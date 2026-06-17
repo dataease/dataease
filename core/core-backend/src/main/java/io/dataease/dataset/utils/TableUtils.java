@@ -7,6 +7,9 @@ import io.dataease.utils.Md5Utils;
 import org.apache.calcite.avatica.util.Quoting;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 public class TableUtils {
 
     public static String format = Quoting.BACK_TICK.string + "%s" + Quoting.BACK_TICK.string;

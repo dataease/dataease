@@ -1,3 +1,5 @@
+import CryptoJS from 'crypto-js'
+
 export const execute = (text, pwd) => {
   const te = window.atob(text)
   const t = simpleEncode(te, pwd)
@@ -15,10 +17,19 @@ export const execute = (text, pwd) => {
   return null
 }
 
+const secureRandomInt = (min, max) => {
+  const range = max - min + 1
+  const maxUnbiased = Math.floor(0x100000000 / range) * range
+  let randomValue = 0
+  do {
+    const randomBytes = CryptoJS.lib.WordArray.random(4)
+    randomValue = randomBytes.words[0] >>> 0
+  } while (randomValue >= maxUnbiased)
+  return min + (randomValue % range)
+}
+
 export const randomKey = () => {
-  const m = 8
-  const n = 16
-  return Math.ceil(Math.random() * (n - m + 1) + m - 1)
+  return secureRandomInt(8, 16)
 }
 
 const formatSuffix = (suffix, pwd) => {

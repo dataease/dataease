@@ -71,4 +71,8 @@ public interface ThresholdApi {
     @Operation(summary = "根据视图ID删除")
     @GetMapping("/deleteWithChart/{chartId}/{resourceTable}")
     void deleteWithChart(@PathVariable("chartId") Long chartId, @PathVariable("resourceTable") String resourceTable);
+
+    @PostMapping("/thresholdSnapshotRestore")
+    void thresholdSnapshotRestore( @RequestBody ThresholdGridRequest request);
+
 }

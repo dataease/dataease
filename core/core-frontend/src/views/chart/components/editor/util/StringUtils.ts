@@ -1,3 +1,16 @@
+import CryptoJS from 'crypto-js'
+
+const secureRandomInt = (min: number, max: number): number => {
+  const range = max - min + 1
+  const maxUnbiased = Math.floor(0x100000000 / range) * range
+  let randomValue = 0
+  do {
+    const randomBytes = CryptoJS.lib.WordArray.random(4)
+    randomValue = randomBytes.words[0] >>> 0
+  } while (randomValue >= maxUnbiased)
+  return min + (randomValue % range)
+}
+
 // 替换所有 标准模板格式 为 $panelName$
 export function pdfTemplateReplaceAll(content, source, target) {
   const pattern = '\\$' + source + '\\$'
@@ -7,11 +20,11 @@ export function pdfTemplateReplaceAll(content, source, target) {
 
 export function randomRange(min, max) {
   let returnStr = ''
-  const range = max ? Math.round(Math.random() * (max - min)) + min : min
+  const range = max ? secureRandomInt(min, max) : min
   const charStr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
 
   for (let i = 0; i < range; i++) {
-    const index = Math.round(Math.random() * (charStr.length - 1))
+    const index = secureRandomInt(0, charStr.length - 1)
     returnStr += charStr.substring(index, index + 1)
   }
   return returnStr

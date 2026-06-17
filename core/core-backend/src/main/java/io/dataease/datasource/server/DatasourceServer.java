@@ -16,6 +16,7 @@ import io.dataease.commons.utils.CronUtils;
 import io.dataease.constant.LogOT;
 import io.dataease.constant.LogST;
 import io.dataease.constant.SQLConstants;
+import io.dataease.dataset.manage.DatasetCacheManage;
 import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.*;
@@ -109,6 +110,8 @@ public class DatasourceServer implements DatasourceApi {
     private PluginManageApi pluginManage;
     @Autowired(required = false)
     private RelationApi relationManage;
+    @Resource
+    private DatasetCacheManage datasetCacheManage;
 
     public enum UpdateType {
         all_scope, add_scope
@@ -769,19 +772,26 @@ public class DatasourceServer implements DatasourceApi {
         BeanUtils.copyBean(datasourceDTO, coreDatasource);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(datasourceDTO);
+        List<DatasetTableDTO> result;
         if (coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
-            List<DatasetTableDTO> datasetTableDTOS = (List<DatasetTableDTO>) invokeMethod(coreDatasource.getType(), "getApiTables", DatasourceRequest.class, datasourceRequest);
-            return datasetTableDTOS;
+            result = (List<DatasetTableDTO>) invokeMethod(coreDatasource.getType(), "getApiTables", DatasourceRequest.class, datasourceRequest);
+            datasetCacheManage.cacheTablesByDatasource(datasetTableDTO.getDatasourceId(), result);
+            return result;
         }
         if (coreDatasource.getType().contains("Excel")) {
-            return ExcelUtils.getTables(datasourceRequest);
+            result = ExcelUtils.getTables(datasourceRequest);
+            datasetCacheManage.cacheTablesByDatasource(datasetTableDTO.getDatasourceId(), result);
+            return result;
         }
         Provider provider = ProviderFactory.getProvider(datasourceDTO.getType());
         List<DatasetTableDTO> tables = provider.getTables(datasourceRequest);
         if (StringUtils.equalsIgnoreCase(coreDatasource.getType(), DatasourceConfiguration.DatasourceType.oracle.name())) {
-            return tables.stream().filter(table -> !isOracleRecycleBinTable(table)).collect(Collectors.toList());
+            result = tables.stream().filter(table -> !isOracleRecycleBinTable(table)).collect(Collectors.toList());
+        } else {
+            result = tables;
         }
-        return tables;
+        datasetCacheManage.cacheTablesByDatasource(datasetTableDTO.getDatasourceId(), result);
+        return result;
     }
 
     private boolean isOracleRecycleBinTable(DatasetTableDTO table) {

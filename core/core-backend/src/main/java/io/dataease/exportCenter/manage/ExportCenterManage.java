@@ -52,6 +52,12 @@ import io.dataease.api.permissions.user.vo.UserFormVO;
 
 import java.lang.reflect.Method;
 import java.net.InetAddress;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.concurrent.Future;
 
@@ -98,12 +104,13 @@ public class ExportCenterManage implements BaseExportApi {
     }
 
     public void download(String id, String ticket, HttpServletResponse response) throws Exception {
-        CoreExportTask exportTask = validateDownloadTask(id, ticket);
-        exportCenterDownLoadManage.download(exportTask, response);
+        String safeTaskId = validateExportTaskId(id);
+        CoreExportTask exportTask = validateDownloadTask(safeTaskId, ticket);
+        exportCenterDownLoadManage.download(resolveDownloadTarget(safeTaskId, exportTask), resolveDownloadFileName(exportTask), response);
     }
 
     public void delete(String id) {
-        CoreExportTask exportTask = getCurrentUserExportTask(id);
+        CoreExportTask exportTask = getCurrentUserExportTask(validateExportTaskId(id));
         deleteTask(exportTask);
     }
 
@@ -127,7 +134,8 @@ public class ExportCenterManage implements BaseExportApi {
     }
 
     public void retry(String id) {
-        CoreExportTask exportTask = getCurrentUserExportTask(id);
+        String safeTaskId = validateExportTaskId(id);
+        CoreExportTask exportTask = getCurrentUserExportTask(safeTaskId);
         if (!exportTask.getExportStatus().equalsIgnoreCase("FAILED")) {
             DEException.throwException("正在导出中!");
         }
@@ -136,18 +144,18 @@ public class ExportCenterManage implements BaseExportApi {
         exportTask.setExportMachineName(hostName());
         exportTask.setExportTime(System.currentTimeMillis());
         exportTaskMapper.updateById(exportTask);
-        FileUtils.deleteDirectoryRecursively(exportData_path + id);
+        deleteExportTaskDirectory(resolveExportTaskDirectory(safeTaskId));
         if (exportTask.getExportFromType().equalsIgnoreCase("chart")) {
             ChartExcelRequest request = JsonUtil.parseObject(exportTask.getParams(), ChartExcelRequest.class);
-            exportCenterDownLoadManage.startViewTask(exportTask, request);
+            exportCenterDownLoadManage.startViewTask(resolveExportTaskFileTarget(safeTaskId), request);
         }
         if (exportTask.getExportFromType().equalsIgnoreCase("dataset")) {
             DataSetExportRequest request = JsonUtil.parseObject(exportTask.getParams(), DataSetExportRequest.class);
-            exportCenterDownLoadManage.startDatasetTask(exportTask, request);
+            exportCenterDownLoadManage.startDatasetTask(resolveExportTaskFileTarget(safeTaskId), exportTask.getExportFrom(), request);
         }
         if (exportTask.getExportFromType().equalsIgnoreCase("data_filling")) {
             HashMap request = JsonUtil.parseObject(exportTask.getParams(), HashMap.class);
-            exportCenterDownLoadManage.startDataFillingTask(exportTask, request);
+            exportCenterDownLoadManage.startDataFillingTask(resolveExportTaskFileTarget(safeTaskId), exportTask.getExportFrom(), exportTask.getUserId(), request);
         }
     }
 
@@ -260,10 +268,11 @@ public class ExportCenterManage implements BaseExportApi {
         exportTask.setParams(JsonUtil.toJSONString(request).toString());
         exportTask.setExportMachineName(hostName());
         exportTaskMapper.insert(exportTask);
+        String safeTaskId = validateExportTaskId(exportTask.getId());
         if (busiFlag.equalsIgnoreCase("dashboard")) {
-            exportCenterDownLoadManage.startPanelViewTask(exportTask, request);
+            exportCenterDownLoadManage.startPanelViewTask(resolveExportTaskFileTarget(safeTaskId), request);
         } else {
-            exportCenterDownLoadManage.startDataVViewTask(exportTask, request);
+            exportCenterDownLoadManage.startDataVViewTask(resolveExportTaskFileTarget(safeTaskId), request);
         }
 
     }
@@ -283,7 +292,8 @@ public class ExportCenterManage implements BaseExportApi {
         exportTask.setParams(JsonUtil.toJSONString(request).toString());
         exportTask.setExportMachineName(hostName());
         exportTaskMapper.insert(exportTask);
-        exportCenterDownLoadManage.startDatasetTask(exportTask, request);
+        String safeTaskId = validateExportTaskId(exportTask.getId());
+        exportCenterDownLoadManage.startDatasetTask(resolveExportTaskFileTarget(safeTaskId), exportTask.getExportFrom(), request);
     }
 
     @Override
@@ -302,7 +312,8 @@ public class ExportCenterManage implements BaseExportApi {
         exportTask.setExportMachineName(hostName());
         exportTaskMapper.insert(exportTask);
         if (StringUtils.equals(exportFromType, "data_filling")) {
-            exportCenterDownLoadManage.startDataFillingTask(exportTask, request);
+            String safeTaskId = validateExportTaskId(exportTask.getId());
+            exportCenterDownLoadManage.startDataFillingTask(resolveExportTaskFileTarget(safeTaskId), exportTask.getExportFrom(), exportTask.getUserId(), request);
         }
     }
 
@@ -337,20 +348,21 @@ public class ExportCenterManage implements BaseExportApi {
 
     @DeLog(id = "#p0", ot = LogOT.DOWNLOAD, st = LogST.DATA)
     public String generateDownloadUri(String id) {
-        CoreExportTask exportTask = getCurrentUserExportTask(id);
+        String safeTaskId = validateExportTaskId(id);
+        CoreExportTask exportTask = getCurrentUserExportTask(safeTaskId);
         long createTime = System.currentTimeMillis();
-        CoreExportDownloadTask coreExportDownloadTask = coreExportDownloadTaskMapper.selectById(id);
+        CoreExportDownloadTask coreExportDownloadTask = coreExportDownloadTaskMapper.selectById(safeTaskId);
         if (coreExportDownloadTask != null) {
             coreExportDownloadTask.setCreateTime(createTime);
             coreExportDownloadTaskMapper.updateById(coreExportDownloadTask);
         } else {
             coreExportDownloadTask = new CoreExportDownloadTask();
-            coreExportDownloadTask.setId(id);
+            coreExportDownloadTask.setId(safeTaskId);
             coreExportDownloadTask.setCreateTime(createTime);
             coreExportDownloadTask.setValidTime(5L);
             coreExportDownloadTaskMapper.insert(coreExportDownloadTask);
         }
-        return "/exportCenter/download/" + id + "?ticket=" + buildDownloadTicket(exportTask, createTime, coreExportDownloadTask.getValidTime());
+        return "/exportCenter/download/" + safeTaskId + "?ticket=" + buildDownloadTicket(exportTask, createTime, coreExportDownloadTask.getValidTime());
     }
 
     private CoreExportTask getCurrentUserExportTask(String id) {
@@ -366,7 +378,7 @@ public class ExportCenterManage implements BaseExportApi {
         if (exportTask == null) {
             return;
         }
-        String id = exportTask.getId();
+        String id = validateExportTaskId(exportTask.getId());
         Iterator<Map.Entry<String, Future>> iterator = Running_Task.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<String, Future> entry = iterator.next();
@@ -375,8 +387,100 @@ public class ExportCenterManage implements BaseExportApi {
                 iterator.remove();
             }
         }
-        FileUtils.deleteDirectoryRecursively(exportData_path + id);
+        deleteExportTaskDirectory(resolveExportTaskDirectory(id));
         exportTaskMapper.deleteById(id);
+    }
+
+    private Path resolveExportBasePath() {
+        return Paths.get(exportData_path).toAbsolutePath().normalize();
+    }
+
+    private Path resolveExportTaskDirectory(String taskId) {
+        Path exportBasePath = resolveExportBasePath();
+        Path exportTaskPath = exportBasePath.resolve(taskId).normalize();
+        if (!exportTaskPath.startsWith(exportBasePath)) {
+            DEException.throwException("Invalid export task path");
+        }
+        return exportTaskPath;
+    }
+
+    private Path resolveExportTaskFilePath(String taskId) {
+        Path exportTaskDirectory = resolveExportTaskDirectory(taskId);
+        Path exportFilePath = exportTaskDirectory.resolve(taskId + ".xlsx").normalize();
+        if (!exportFilePath.startsWith(exportTaskDirectory)) {
+            DEException.throwException("Invalid export task file path");
+        }
+        return exportFilePath;
+    }
+
+    private ExportTaskFileTarget resolveExportTaskFileTarget(String taskId) {
+        return new ExportTaskFileTarget(taskId, resolveExportTaskFilePath(taskId));
+    }
+
+    private ExportTaskFileTarget resolveDownloadTarget(String taskId, CoreExportTask exportTask) {
+        if (exportTask.getExportTime() < 1730277243491L) {
+            return new ExportTaskFileTarget(taskId, resolveExportTaskFilePath(taskId, resolveDownloadFileName(exportTask)));
+        }
+        return resolveExportTaskFileTarget(taskId);
+    }
+
+    private Path resolveExportTaskFilePath(String taskId, String fileName) {
+        FileUtils.validateUploadFilename(fileName);
+        Path exportTaskDirectory = resolveExportTaskDirectory(taskId);
+        Path exportFilePath = exportTaskDirectory.resolve(fileName).normalize();
+        if (!exportFilePath.startsWith(exportTaskDirectory)) {
+            DEException.throwException("Invalid export task file path");
+        }
+        return exportFilePath;
+    }
+
+    private String resolveDownloadFileName(CoreExportTask exportTask) {
+        String fileName = exportTask.getFileName();
+        FileUtils.validateUploadFilename(fileName);
+        return fileName;
+    }
+
+    private String validateExportTaskId(String taskId) {
+        if (StringUtils.isBlank(taskId) || !StringUtils.isNumeric(taskId)) {
+            DEException.throwException("任务不存在");
+        }
+        return taskId;
+    }
+
+    private void deleteExportTaskDirectory(Path exportTaskPath) {
+        Path exportBasePath = resolveExportBasePath();
+        if (Files.notExists(exportTaskPath)) {
+            return;
+        }
+        try {
+            Files.walkFileTree(exportTaskPath, new SimpleFileVisitor<>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws java.io.IOException {
+                    validateExportPath(exportBasePath, file);
+                    Files.deleteIfExists(file);
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult postVisitDirectory(Path dir, java.io.IOException exc) throws java.io.IOException {
+                    if (exc != null) {
+                        throw exc;
+                    }
+                    validateExportPath(exportBasePath, dir);
+                    Files.deleteIfExists(dir);
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (java.io.IOException e) {
+            DEException.throwException(e);
+        }
+    }
+
+    private void validateExportPath(Path exportBasePath, Path targetPath) {
+        Path normalizedPath = targetPath.toAbsolutePath().normalize();
+        if (!normalizedPath.startsWith(exportBasePath)) {
+            DEException.throwException("Invalid export task path");
+        }
     }
 
     public CoreExportTask validateDownloadTask(String id, String ticket) {

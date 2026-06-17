@@ -2812,6 +2812,7 @@ export default {
     last_6_months: '最近6 個月',
     last_12_months: '最近12 個月',
     last_3_days: '最近3 天',
+    last_month_full: '上月（月初至月末）',
     month_to_date: '月初至今',
     year_to_date: '年初至今',
     year_to_last_month_end: '年初至上月底',
@@ -2933,6 +2934,7 @@ export default {
     to_top: '置頂',
     publish_recover: '恢復到發佈版本',
     publish_tips1: '發佈後可查看',
+    no_permission_tips: '當前資源無權限',
     publish_tips2: '發佈後可{0}',
     cancel_publish_tips: '取消發佈成功',
     resource_not_published: '该資源未發佈',
@@ -4219,6 +4221,7 @@ export default {
       show_water_mask: '顯示水印',
       format: '格式',
       view_data: '圖表數據',
+      all_data: '全部數據',
       pixel: '儀表板分辨率',
       reci_setting: '接收設置',
       retrying: '失敗重試',
@@ -4742,6 +4745,8 @@ export default {
     add: '添加 Webhook',
     search_placeholder: '通過名稱搜索',
     content_type: '內容類型',
+    msg_template: '消息模板',
+    msg_template_tips: '可用占位符：{t0}、{t1}、{t2}',
     del_confirm: '確定刪除該 Webhook嗎？',
     batch_del_confirm: '確定刪除 {0} 個 Webhook嗎'
   }
