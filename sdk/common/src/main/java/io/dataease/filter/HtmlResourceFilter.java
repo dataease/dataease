@@ -34,6 +34,8 @@ public class HtmlResourceFilter implements Filter, Ordered {
             "https://lf1-cdn-tos.bytegoofy.com",
             "https://wwcdn.weixin.qq.com",
             ONLINE_MAP_SCRIPT_SOURCES + ";",
+            "worker-src 'self' blob:",
+            ONLINE_MAP_SCRIPT_SOURCES + ";",
             "style-src 'self' 'unsafe-inline' *;",
             "img-src * data: blob:;",
             "font-src * data:;",
