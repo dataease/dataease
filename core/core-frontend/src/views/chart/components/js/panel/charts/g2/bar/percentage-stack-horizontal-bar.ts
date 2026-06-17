@@ -20,6 +20,7 @@ import { isEmpty } from 'lodash-es'
 import { HorizontalStackBar } from '@/views/chart/components/js/panel/charts/g2/bar/stack-horizontal-bar'
 import type { G2DrawOptions } from '@/views/chart/components/js/panel/types/impl/g2'
 import type { Chart as G2Column } from '@antv/g2'
+import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
 import {
   configPercentageStackEmptyAnchorStyle,
   configPercentageStackEmptyAnchorTooltipGuard,
@@ -38,8 +39,15 @@ import {
 export class PercentageStackBar extends HorizontalStackBar {
   propertyInner = {
     ...this['propertyInner'],
-    'label-selector': ['color', 'fontSize', 'hPosition', 'reserveDecimalCount'],
-    'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'show']
+    'label-selector': ['color', 'fontSize', 'hPosition', 'showQuota', 'showProportion'],
+    'tooltip-selector': [
+      'color',
+      'fontSize',
+      'backgroundColor',
+      'show',
+      'showQuota',
+      'tooltipFormatter'
+    ]
   }
 
   async drawChart(drawOptions: G2DrawOptions<G2Column>): Promise<G2Column> {
@@ -94,10 +102,25 @@ export class PercentageStackBar extends HorizontalStackBar {
         if (!Number.isFinite(numberValue)) return ''
         // 计算与当前数据相同 field 的 value 总和
         const sum = getPercentageStackFieldTotal(o, _data.field)
-        if (!sum) return `${(0).toFixed(labelAttr.reserveDecimalCount)}%`
         if (emptyDataStrategy !== 'setZero' && numberValue === 0 && sum > 0) return ''
-        // 返回百分比格式化结果
-        return `${((numberValue / sum) * 100).toFixed(labelAttr.reserveDecimalCount)}%`
+        const showQuota = labelAttr.showQuota === true
+        const showProportion = labelAttr.showProportion ?? true
+        if (!showQuota && !showProportion) return ''
+
+        const quotaText = showQuota
+          ? valueFormatter(
+              numberValue,
+              labelAttr.quotaLabelFormatter ?? labelAttr.labelFormatter ?? formatterItem
+            )
+          : ''
+        const proportionText = showProportion
+          ? `${showQuota ? ' (' : ''}${formatPercentageStackRatio(
+              numberValue,
+              sum,
+              labelAttr.reserveDecimalCount
+            )}${showQuota ? ')' : ''}`
+          : ''
+        return `${quotaText}${proportionText}`
       },
       ...transform
     }
@@ -106,7 +129,7 @@ export class PercentageStackBar extends HorizontalStackBar {
   }
 
   protected configTooltip(chart: Chart, options: ViewSpec): ViewSpec {
-    const { tooltip } = parseJson(chart.customAttr)
+    const { label: labelAttr, tooltip } = parseJson(chart.customAttr)
     const { children } = options
     if (!tooltip.show) {
       return options
@@ -144,11 +167,14 @@ export class PercentageStackBar extends HorizontalStackBar {
             )
             const result = []
             tooltipItems.forEach(item => {
-              const value = formatPercentageStackRatio(
+              const proportionText = formatPercentageStackRatio(
                 item.value,
                 sum,
-                tooltip.tooltipFormatter.decimalCount
+                labelAttr.reserveDecimalCount
               )
+              const value = tooltip.showQuota
+                ? `${valueFormatter(item.value, tooltip.tooltipFormatter)} (${proportionText})`
+                : proportionText
               const name = `${isEmpty(item.category) ? item.field : item.category}${
                 item.group ? '-' + item.group : ''
               }`
@@ -202,6 +228,7 @@ export class PercentageStackBar extends HorizontalStackBar {
 
   setupDefaultOptions(chart: ChartObj): ChartObj {
     chart.customAttr.label.position = 'middle'
+    chart.customAttr.label.showProportion = true
     return super.setupDefaultOptions(chart)
   }
 

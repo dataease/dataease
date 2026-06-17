@@ -21,6 +21,7 @@ import {
 } from '@/views/chart/components/js/panel/common/common_antv'
 import type { Chart as G2Column } from '@antv/g2'
 import { isEmpty } from 'lodash-es'
+import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
 import {
   configPercentageStackEmptyAnchorStyle,
   configPercentageStackEmptyAnchorTooltipGuard,
@@ -38,8 +39,16 @@ import {
 export class PercentageStackBar extends GroupStackBar {
   propertyInner = {
     ...this['propertyInner'],
-    'label-selector': ['color', 'fontSize', 'vPosition', 'reserveDecimalCount'],
-    'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'show', 'carousel']
+    'label-selector': ['color', 'fontSize', 'vPosition', 'showQuota', 'showProportion'],
+    'tooltip-selector': [
+      'color',
+      'fontSize',
+      'backgroundColor',
+      'show',
+      'showQuota',
+      'tooltipFormatter',
+      'carousel'
+    ]
   }
 
   async drawChart(drawOptions: G2DrawOptions<G2Column>): Promise<G2Column> {
@@ -83,12 +92,28 @@ export class PercentageStackBar extends GroupStackBar {
       fontSize: labelAttr.fontSize,
       ...position,
       formatter: (value, _data, _, o) => {
+        const numberValue = Number(value)
         // 计算与当前数据相同 field 的 value 总和
         const sum = getPercentageStackFieldTotal(o, _data.field)
         if (shouldHidePercentageStackLabelValue(value, _data, sum)) return ''
-        if (!sum) return `${(0).toFixed(labelAttr.reserveDecimalCount)}%`
-        // 返回百分比格式化结果
-        return `${((value / sum) * 100).toFixed(labelAttr.reserveDecimalCount)}%`
+        const showQuota = labelAttr.showQuota === true
+        const showProportion = labelAttr.showProportion ?? true
+        if (!showQuota && !showProportion) return ''
+
+        const quotaText = showQuota
+          ? valueFormatter(
+              numberValue,
+              labelAttr.quotaLabelFormatter ?? labelAttr.labelFormatter ?? formatterItem
+            )
+          : ''
+        const proportionText = showProportion
+          ? `${showQuota ? ' (' : ''}${formatPercentageStackRatio(
+              numberValue,
+              sum,
+              labelAttr.reserveDecimalCount
+            )}${showQuota ? ')' : ''}`
+          : ''
+        return `${quotaText}${proportionText}`
       },
       ...transform
     }
@@ -106,7 +131,7 @@ export class PercentageStackBar extends GroupStackBar {
 
   protected configTooltip(chart: Chart, options: ViewSpec): ViewSpec {
     const { children } = options
-    const { tooltip } = parseJson(chart.customAttr)
+    const { label: labelAttr, tooltip } = parseJson(chart.customAttr)
     if (!tooltip.show) {
       return options
     }
@@ -139,11 +164,14 @@ export class PercentageStackBar extends GroupStackBar {
             )
             const result = []
             tooltipItems.forEach(item => {
-              const value = formatPercentageStackRatio(
+              const proportionText = formatPercentageStackRatio(
                 item.value,
                 sum,
-                tooltip.tooltipFormatter.decimalCount
+                labelAttr.reserveDecimalCount
               )
+              const value = tooltip.showQuota
+                ? `${valueFormatter(item.value, tooltip.tooltipFormatter)} (${proportionText})`
+                : proportionText
               const name = `${isEmpty(item.category) ? item.field : item.category}${
                 item.group ? '-' + item.group : ''
               }`
@@ -196,6 +224,11 @@ export class PercentageStackBar extends GroupStackBar {
       this.configEmptyAnchorStyle,
       this.configSlider
     )(chart, options, {}, this)
+  }
+
+  setupDefaultOptions(chart: ChartObj): ChartObj {
+    chart.customAttr.label.showProportion = true
+    return super.setupDefaultOptions(chart)
   }
 
   constructor(name = 'percentage-bar-stack') {

@@ -321,6 +321,9 @@ const showProperty = prop => {
   }
   return props.propertyInner?.includes(prop)
 }
+const tooltipFormatterDisabled = computed(
+  () => showProperty('showQuota') && !state.tooltipForm.showQuota
+)
 const updateSeriesTooltipFormatter = (form: AxisEditForm) => {
   const { axisType, editType } = form
   if (
@@ -612,7 +615,26 @@ onMounted(() => {
       </el-form-item>
     </div>
 
-    <template v-if="showProperty('tooltipFormatter') && !isBarRangeTime">
+    <el-form-item
+      v-if="showProperty('showQuota')"
+      class="form-item form-item-checkbox"
+      :class="'form-item-' + themes"
+    >
+      <el-checkbox
+        v-model="state.tooltipForm.showQuota"
+        :effect="themes"
+        size="small"
+        label="quota"
+        @change="changeTooltipAttr('showQuota')"
+      >
+        {{ t('chart.quota') }}
+      </el-checkbox>
+    </el-form-item>
+
+    <div
+      v-if="showProperty('tooltipFormatter') && !isBarRangeTime"
+      :style="{ paddingLeft: showProperty('showQuota') ? '22px' : '0' }"
+    >
       <el-form-item
         :label="t('chart.value_formatter_type')"
         class="form-item"
@@ -622,6 +644,7 @@ onMounted(() => {
           size="small"
           style="width: 100%"
           :effect="props.themes"
+          :disabled="tooltipFormatterDisabled"
           v-model="state.tooltipForm.tooltipFormatter.type"
           @change="changeTooltipAttr('tooltipFormatter.type')"
         >
@@ -643,6 +666,7 @@ onMounted(() => {
           controls-position="right"
           style="width: 100%"
           :effect="props.themes"
+          :disabled="tooltipFormatterDisabled"
           v-model="state.tooltipForm.tooltipFormatter.decimalCount"
           :precision="0"
           :min="0"
@@ -661,7 +685,9 @@ onMounted(() => {
               :class="'form-item-' + themes"
             >
               <el-select
-                :disabled="state.tooltipForm.tooltipFormatter.type === 'percent'"
+                :disabled="
+                  tooltipFormatterDisabled || state.tooltipForm.tooltipFormatter.type === 'percent'
+                "
                 size="small"
                 :effect="themes"
                 v-model="state.tooltipForm.tooltipFormatter.unitLanguage"
@@ -682,7 +708,9 @@ onMounted(() => {
               :class="'form-item-' + themes"
             >
               <el-select
-                :disabled="state.tooltipForm.tooltipFormatter.type === 'percent'"
+                :disabled="
+                  tooltipFormatterDisabled || state.tooltipForm.tooltipFormatter.type === 'percent'
+                "
                 :effect="props.themes"
                 v-model="state.tooltipForm.tooltipFormatter.unit"
                 :placeholder="t('chart.pls_select_field')"
@@ -708,6 +736,7 @@ onMounted(() => {
             >
               <el-input
                 :effect="props.themes"
+                :disabled="tooltipFormatterDisabled"
                 v-model="state.tooltipForm.tooltipFormatter.suffix"
                 size="small"
                 clearable
@@ -723,12 +752,13 @@ onMounted(() => {
         <el-checkbox
           size="small"
           :effect="props.themes"
+          :disabled="tooltipFormatterDisabled"
           v-model="state.tooltipForm.tooltipFormatter.thousandSeparator"
           @change="changeTooltipAttr('tooltipFormatter.thousandSeparator')"
           :label="t('chart.value_formatter_thousand_separator')"
         />
       </el-form-item>
-    </template>
+    </div>
     <div v-if="showSeriesTooltipFormatter">
       <el-form-item>
         <el-select

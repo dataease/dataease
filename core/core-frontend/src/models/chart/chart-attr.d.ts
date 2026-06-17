@@ -1124,6 +1124,10 @@ declare interface ChartTooltipAttr {
    */
   tooltipFormatter: BaseFormatter
   /**
+   * 是否显示指标值
+   */
+  showQuota?: boolean
+  /**
    * 背景颜色
    */
   backgroundColor: string
