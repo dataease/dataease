@@ -43,34 +43,23 @@ public class TableUtils {
     }
 
     public static String getTableAndAlias(SQLObj sqlObj, DsTypeDTO datasourceType, boolean isCross) {
-        String prefix = isCross ? Quoting.BACK_TICK.string : datasourceType.getPrefix();
-        String suffix = isCross ? Quoting.BACK_TICK.string : datasourceType.getSuffix();
-        String schema = StringUtils.isNotEmpty(sqlObj.getTableSchema())
-                ? quoteIdentifier(sqlObj.getTableSchema(), prefix, suffix) + "."
-                : "";
-        return schema + quoteIdentifier(sqlObj.getTableName(), prefix, suffix) + " " + sqlObj.getTableAlias();
+        String schema = "";
+        String prefix = "";
+        String suffix = "";
+        if (StringUtils.isNotEmpty(sqlObj.getTableSchema())) {
+            if (isCross) {
+                prefix = "`";
+                suffix = "`";
+            } else {
+                prefix = datasourceType.getPrefix();
+                suffix = datasourceType.getSuffix();
+            }
+            schema = prefix + sqlObj.getTableSchema() + suffix + ".";
+        }
+        return schema + prefix + sqlObj.getTableName() + suffix + " " + sqlObj.getTableAlias();
     }
 
     public static String tableName2Sql(DatasourceSchemaDTO ds, String tableName) {
-        return "SELECT * FROM "
-                + quoteIdentifier(ds.getSchemaAlias(), Quoting.BACK_TICK.string, Quoting.BACK_TICK.string)
-                + "."
-                + quoteIdentifier(tableName, Quoting.BACK_TICK.string, Quoting.BACK_TICK.string);
-    }
-
-    public static String quoteIdentifier(String name, String prefix, String suffix) {
-        String quotePrefix = StringUtils.defaultIfEmpty(prefix, Quoting.BACK_TICK.string);
-        String quoteSuffix = StringUtils.defaultIfEmpty(suffix, quotePrefix);
-        String identifier = StringUtils.defaultString(name);
-        if (StringUtils.isEmpty(quotePrefix) || StringUtils.isEmpty(quoteSuffix)) {
-            return identifier;
-        }
-        return quotePrefix + StringUtils.replace(identifier, quoteSuffix, quoteSuffix + quoteSuffix) + quoteSuffix;
-    }
-
-    public static String quoteCompoundIdentifier(String name, String prefix, String suffix) {
-        return Arrays.stream(StringUtils.splitPreserveAllTokens(StringUtils.defaultString(name), "."))
-                .map(part -> quoteIdentifier(part, prefix, suffix))
-                .collect(Collectors.joining("."));
+        return "SELECT * FROM " + ds.getSchemaAlias() + "." + String.format(format, tableName);
     }
 }
