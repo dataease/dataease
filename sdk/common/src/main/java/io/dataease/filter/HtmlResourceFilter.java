@@ -19,9 +19,10 @@ public class HtmlResourceFilter implements Filter, Ordered {
      * 在线地图脚本来源列表
      */
     private static final String ONLINE_MAP_SCRIPT_SOURCES = String.join(" ",
-            "https://webapi.amap.com",
-            "https://api.tianditu.gov.cn",
-            "https://map.qq.com"
+            "https://*.amap.com",
+            "https://*.tianditu.gov.cn",
+            "https://map.qq.com",
+            "https://*.map.qq.com"
     );
 
     private static final String CONTENT_SECURITY_POLICY = String.join(" ",
