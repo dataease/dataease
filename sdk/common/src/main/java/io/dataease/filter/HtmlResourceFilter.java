@@ -15,6 +15,31 @@ import java.io.IOException;
 @Component
 public class HtmlResourceFilter implements Filter, Ordered {
 
+    /**
+     * 在线地图脚本来源列表
+     */
+    private static final String ONLINE_MAP_SCRIPT_SOURCES = String.join(" ",
+            "https://webapi.amap.com",
+            "https://api.tianditu.gov.cn",
+            "https://map.qq.com"
+    );
+
+    private static final String CONTENT_SECURITY_POLICY = String.join(" ",
+            "default-src 'self' *;",
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+            "https://g.alicdn.com",
+            "https://lf-package-cn.feishucdn.com",
+            "https://lf-package-us.larksuitecdn.com",
+            "https://lf1-cdn-tos.bytegoofy.com",
+            "https://wwcdn.weixin.qq.com",
+            ONLINE_MAP_SCRIPT_SOURCES + ";",
+            "style-src 'self' 'unsafe-inline' *;",
+            "img-src * data: blob:;",
+            "font-src * data:;",
+            "connect-src *;",
+            "frame-ancestors 'self'"
+    );
+
     @Value("${dataease.http.cache:false}")
     private Boolean httpCache;
 
@@ -37,7 +62,7 @@ public class HtmlResourceFilter implements Filter, Ordered {
             httpResponse.setHeader(HttpHeaders.PRAGMA, "no-cache");
             httpResponse.setHeader(HttpHeaders.EXPIRES, "0");
         }
-        httpResponse.setHeader("Content-Security-Policy", "default-src 'self' *; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://g.alicdn.com https://lf-package-cn.feishucdn.com https://lf-package-us.larksuitecdn.com https://lf1-cdn-tos.bytegoofy.com https://wwcdn.weixin.qq.com; style-src 'self' 'unsafe-inline' *; img-src * data: blob:; font-src * data:; connect-src *; frame-ancestors 'self'");
+        httpResponse.setHeader("Content-Security-Policy", CONTENT_SECURITY_POLICY);
         httpResponse.setHeader("X-Content-Type-Options", "nosniff");
         httpResponse.setHeader("X-Frame-Options", "SAMEORIGIN");
         httpResponse.setHeader("X-XSS-Protection", "1; mode=block");
