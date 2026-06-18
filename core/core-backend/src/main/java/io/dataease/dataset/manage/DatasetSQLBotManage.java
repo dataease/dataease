@@ -34,6 +34,7 @@ import io.dataease.extensions.datasource.dto.CalParam;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.datasource.dto.FieldGroupDTO;
+import io.dataease.extensions.datasource.dto.TableFieldWithValue;
 import io.dataease.extensions.datasource.factory.ProviderFactory;
 import io.dataease.extensions.datasource.model.SQLMeta;
 import io.dataease.extensions.datasource.model.SQLObj;
@@ -56,6 +57,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import java.sql.Types;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -366,6 +368,10 @@ public class DatasetSQLBotManage {
             throw new RuntimeException(e);
         }
         String sql = (String) sqlMap.get("sql");
+        List<TableFieldWithValue> tableFieldWithValues = (List<TableFieldWithValue>) sqlMap.get("tableFieldWithValues");
+        if (CollectionUtils.isNotEmpty(tableFieldWithValues)) {
+            sql = replacePreparedPlaceholders(sql, tableFieldWithValues);
+        }
 
         // 获取allFields
         List<DatasetTableFieldDTO> fields = datasetGroupInfoDTO.getAllFields();
@@ -626,6 +632,38 @@ public class DatasetSQLBotManage {
         tableIds.add(Long.parseLong(row.get("cdt_id").toString()));
         table.setTableIds(tableIds);
         return table;
+    }
+
+    private String replacePreparedPlaceholders(String sql, List<TableFieldWithValue> bindings) {
+        for (TableFieldWithValue binding : bindings) {
+            int idx = sql.indexOf('?');
+            if (idx < 0) {
+                break;
+            }
+            sql = sql.substring(0, idx) + toSqlLiteral(binding) + sql.substring(idx + 1);
+        }
+        return sql;
+    }
+
+    private String toSqlLiteral(TableFieldWithValue binding) {
+        Object value = binding.getValue();
+        if (value == null) {
+            return "NULL";
+        }
+        Integer type = binding.getType();
+        if (type != null) {
+            switch (type) {
+                case Types.BIGINT:
+                case Types.INTEGER:
+                case Types.DECIMAL:
+                case Types.NUMERIC:
+                case Types.FLOAT:
+                case Types.DOUBLE:
+                case Types.BOOLEAN:
+                    return value.toString();
+            }
+        }
+        return "'" + value.toString().replace("'", "''") + "'";
     }
 
 }
