@@ -209,17 +209,46 @@ public class SqlparserUtils {
         } else {
             pattern = Pattern.compile(regex2);
             matcher = pattern.matcher(tmpSql);
+            StringBuilder sysBuilder = new StringBuilder();
+            int sysLastIndex = 0;
             while (matcher.find()) {
+                if (matcher.start() < sysLastIndex) {
+                    continue;
+                }
                 String paramId = matcher.group().substring(7, matcher.group().length() - 1);
                 if (!isParams(paramId)) {
                     continue;
                 }
-                hasVariables = true;
-                tmpSql = tmpSql.replace(matcher.group(), SysParamsSubstitutedParams + matcher.group().substring(7, matcher.group().length() - 1));
-                Map<String, String> sysParam = new HashMap<>();
-                sysParam.put("origin", matcher.group());
-                sysParam.put("replace", SysParamsSubstitutedParams + matcher.group().substring(7, matcher.group().length() - 1));
-                sysParams.add(sysParam);
+                QuotedLiteralContext quotedLiteralContext = findQuotedLiteralContext(tmpSql, matcher.start(), matcher.end());
+                int appendEnd = quotedLiteralContext == null ? matcher.start() : quotedLiteralContext.start();
+                if (appendEnd < sysLastIndex) {
+                    continue;
+                }
+                sysBuilder.append(tmpSql, sysLastIndex, appendEnd);
+                if (quotedLiteralContext != null) {
+                    hasVariables = true;
+                    PreparedSqlFragment preparedSqlFragment = buildPreparedSqlFragmentForQuotedSysLiteral(quotedLiteralContext);
+                    if (preparedSqlFragment != null) {
+                        sysBuilder.append(preparedSqlFragment.replacement());
+                        sysLastIndex = quotedLiteralContext.end() + 1;
+                    } else {
+                        sysBuilder.append(tmpSql, appendEnd, quotedLiteralContext.end() + 1);
+                        sysLastIndex = quotedLiteralContext.end() + 1;
+                    }
+                } else {
+                    hasVariables = true;
+                    String replacement = SysParamsSubstitutedParams + paramId;
+                    sysBuilder.append(replacement);
+                    sysLastIndex = matcher.end();
+                    Map<String, String> sysParam = new HashMap<>();
+                    sysParam.put("origin", matcher.group());
+                    sysParam.put("replace", replacement);
+                    sysParams.add(sysParam);
+                }
+            }
+            if (sysLastIndex > 0) {
+                sysBuilder.append(tmpSql.substring(sysLastIndex));
+                tmpSql = sysBuilder.toString();
             }
         }
         if (!hasVariables && !sql.contains(SubstitutedParams)) {
@@ -835,6 +864,70 @@ public class SqlparserUtils {
                 literalSegments.add(new LiteralSegment(false, literalContent.substring(lastIndex, matcher.start())));
             }
             literalSegments.add(new LiteralSegment(true, matcher.group().substring(2, matcher.group().length() - 1)));
+            lastIndex = matcher.end();
+        }
+        if (lastIndex < literalContent.length()) {
+            literalSegments.add(new LiteralSegment(false, literalContent.substring(lastIndex)));
+        }
+        return literalSegments;
+    }
+
+    private PreparedSqlFragment buildPreparedSqlFragmentForQuotedSysLiteral(QuotedLiteralContext quotedLiteralContext) {
+        List<LiteralSegment> literalSegments = parseSysLiteralSegments(quotedLiteralContext.content());
+        if (literalSegments.isEmpty()) {
+            return null;
+        }
+        if (literalSegments.size() == 1 && literalSegments.get(0).variable()) {
+            return buildPreparedSysSqlFragment(literalSegments.get(0).content(), false);
+        }
+        StringBuilder preparedValueBuilder = new StringBuilder();
+        boolean hasVariable = false;
+        for (LiteralSegment literalSegment : literalSegments) {
+            if (!literalSegment.variable()) {
+                preparedValueBuilder.append(unescapeQuotedLiteralText(literalSegment.content()));
+                continue;
+            }
+            if (!isParams(literalSegment.content())) {
+                return null;
+            }
+            hasVariable = true;
+            String preparedValue = resolveQuotedSysLiteralVariableValue(literalSegment.content());
+            if (preparedValue == null) {
+                return null;
+            }
+            preparedValueBuilder.append(preparedValue);
+        }
+        if (!hasVariable) {
+            return null;
+        }
+        TableFieldWithValue tableFieldWithValue = new TableFieldWithValue();
+        tableFieldWithValue.setFiledName(firstVariableName(literalSegments));
+        tableFieldWithValue.setType(Types.VARCHAR);
+        tableFieldWithValue.setColumnTypeName("VARCHAR");
+        tableFieldWithValue.setValue(preparedValueBuilder.toString());
+        return buildPreparedSqlFragment(Collections.singletonList(tableFieldWithValue));
+    }
+
+    private String resolveQuotedSysLiteralVariableValue(String sysVariableId) {
+        SysVariableBinding sysVariableBinding = resolveSysVariableBinding(sysVariableId, false);
+        if (sysVariableBinding == null || CollectionUtils.isEmpty(sysVariableBinding.values())) {
+            return null;
+        }
+        if (sysVariableBinding.values().size() != 1) {
+            DEException.throwException("SQL模板字符串仅支持单值参数");
+        }
+        return sysVariableBinding.values().get(0);
+    }
+
+    private List<LiteralSegment> parseSysLiteralSegments(String literalContent) {
+        List<LiteralSegment> literalSegments = new ArrayList<>();
+        Matcher matcher = Pattern.compile(regex2).matcher(literalContent);
+        int lastIndex = 0;
+        while (matcher.find()) {
+            if (matcher.start() > lastIndex) {
+                literalSegments.add(new LiteralSegment(false, literalContent.substring(lastIndex, matcher.start())));
+            }
+            literalSegments.add(new LiteralSegment(true, matcher.group().substring(7, matcher.group().length() - 1)));
             lastIndex = matcher.end();
         }
         if (lastIndex < literalContent.length()) {

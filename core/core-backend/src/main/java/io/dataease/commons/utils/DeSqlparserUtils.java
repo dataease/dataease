@@ -129,29 +129,60 @@ public class DeSqlparserUtils {
             }
             p = Pattern.compile(sysVariableRegex);
             m = p.matcher(sqlItem);
+            StringBuilder sysItemBuilder = new StringBuilder();
+            int sysItemLastIndex = 0;
             while (m.find()) {
+                if (m.start() < sysItemLastIndex) {
+                    continue;
+                }
                 boolean replaceParamItem = false;
 
                 String sysVariableId = m.group().substring(7, m.group().length() - 1);
                 if (!isParams(sysVariableId)) {
                     continue;
                 }
-                sqlItem = sqlItem.replace(m.group(), SysParamsSubstitutedParams + sysVariableId);
-                try {
-                    Expression expression = CCJSqlParserUtil.parseCondExpression(sqlItem);
-                    PreparedSqlFragment preparedSqlFragment = null;
-                    if (expression instanceof InExpression) {
-                        preparedSqlFragment = buildPreparedSysSqlFragment(sysVariableId, true);
-                    } else {
-                        preparedSqlFragment = buildPreparedSysSqlFragment(sysVariableId, false);
-                    }
+                QuotedLiteralContext quotedLiteralContext = findQuotedLiteralContext(sqlItem, m.start(), m.end());
+                int appendEnd = quotedLiteralContext == null ? m.start() : quotedLiteralContext.start();
+                if (appendEnd < sysItemLastIndex) {
+                    continue;
+                }
+                sysItemBuilder.append(sqlItem, sysItemLastIndex, appendEnd);
+                PreparedSqlFragment preparedSqlFragment;
+                if (quotedLiteralContext != null) {
+                    preparedSqlFragment = buildPreparedSqlFragmentForQuotedSysLiteral(quotedLiteralContext);
                     if (preparedSqlFragment != null) {
-                        sqlItem = sqlItem.replace(SysParamsSubstitutedParams + sysVariableId, preparedSqlFragment.replacement());
+                        sysItemBuilder.append(preparedSqlFragment.replacement());
+                        sysItemLastIndex = quotedLiteralContext.end() + 1;
                         sqlItemFieldWithValues.addAll(preparedSqlFragment.tableFieldWithValues());
                         replaceParamItem = true;
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } else {
+                    String substitutedSql = sqlItem.replace(m.group(), SysParamsSubstitutedParams + sysVariableId);
+                    try {
+                        Expression expression = CCJSqlParserUtil.parseCondExpression(substitutedSql);
+                        if (expression instanceof InExpression) {
+                            preparedSqlFragment = buildPreparedSysSqlFragment(sysVariableId, true);
+                        } else {
+                            preparedSqlFragment = buildPreparedSysSqlFragment(sysVariableId, false);
+                        }
+                        if (preparedSqlFragment != null) {
+                            sysItemBuilder.append(preparedSqlFragment.replacement());
+                            sysItemLastIndex = m.end();
+                            sqlItemFieldWithValues.addAll(preparedSqlFragment.tableFieldWithValues());
+                            replaceParamItem = true;
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (!replaceParamItem) {
+                    if (quotedLiteralContext != null) {
+                        sysItemBuilder.append(sqlItem, appendEnd, quotedLiteralContext.end() + 1);
+                        sysItemLastIndex = quotedLiteralContext.end() + 1;
+                    } else {
+                        sysItemBuilder.append(sqlItem, sysItemLastIndex, m.end());
+                        sysItemLastIndex = m.end();
+                    }
                 }
                 if (!replaceParamItem) {
                     replaceParam = false;
@@ -159,6 +190,10 @@ public class DeSqlparserUtils {
                 } else {
                     replaceParam = true;
                 }
+            }
+            if (replaceParam) {
+                sysItemBuilder.append(sqlItem.substring(sysItemLastIndex));
+                sqlItem = sysItemBuilder.toString();
             }
             if (!replaceParam) {
                 sqlBuilder.append(SubstitutedSql);
@@ -351,6 +386,70 @@ public class DeSqlparserUtils {
                 literalSegments.add(new LiteralSegment(false, literalContent.substring(lastIndex, matcher.start())));
             }
             literalSegments.add(new LiteralSegment(true, matcher.group().substring(2, matcher.group().length() - 1)));
+            lastIndex = matcher.end();
+        }
+        if (lastIndex < literalContent.length()) {
+            literalSegments.add(new LiteralSegment(false, literalContent.substring(lastIndex)));
+        }
+        return literalSegments;
+    }
+
+    private PreparedSqlFragment buildPreparedSqlFragmentForQuotedSysLiteral(QuotedLiteralContext quotedLiteralContext) {
+        List<LiteralSegment> literalSegments = parseSysLiteralSegments(quotedLiteralContext.content());
+        if (literalSegments.isEmpty()) {
+            return null;
+        }
+        if (literalSegments.size() == 1 && literalSegments.get(0).variable()) {
+            return buildPreparedSysSqlFragment(literalSegments.get(0).content(), false);
+        }
+        StringBuilder preparedValueBuilder = new StringBuilder();
+        boolean hasVariable = false;
+        for (LiteralSegment literalSegment : literalSegments) {
+            if (!literalSegment.variable()) {
+                preparedValueBuilder.append(unescapeQuotedLiteralText(literalSegment.content()));
+                continue;
+            }
+            if (!isParams(literalSegment.content())) {
+                return null;
+            }
+            hasVariable = true;
+            String preparedValue = resolveQuotedSysLiteralVariableValue(literalSegment.content());
+            if (preparedValue == null) {
+                return null;
+            }
+            preparedValueBuilder.append(preparedValue);
+        }
+        if (!hasVariable) {
+            return null;
+        }
+        TableFieldWithValue tableFieldWithValue = new TableFieldWithValue();
+        tableFieldWithValue.setFiledName(firstVariableName(literalSegments));
+        tableFieldWithValue.setType(Types.VARCHAR);
+        tableFieldWithValue.setColumnTypeName("VARCHAR");
+        tableFieldWithValue.setValue(preparedValueBuilder.toString());
+        return buildPreparedSqlFragment(Collections.singletonList(tableFieldWithValue));
+    }
+
+    private String resolveQuotedSysLiteralVariableValue(String sysVariableId) {
+        SysVariableBinding sysVariableBinding = resolveSysVariableBinding(sysVariableId, false);
+        if (sysVariableBinding == null || CollectionUtils.isEmpty(sysVariableBinding.values())) {
+            return null;
+        }
+        if (sysVariableBinding.values().size() != 1) {
+            DEException.throwException("SQL模板字符串仅支持单值参数");
+        }
+        return sysVariableBinding.values().get(0);
+    }
+
+    private List<LiteralSegment> parseSysLiteralSegments(String literalContent) {
+        List<LiteralSegment> literalSegments = new ArrayList<>();
+        Matcher matcher = Pattern.compile(sysVariableRegex).matcher(literalContent);
+        int lastIndex = 0;
+        while (matcher.find()) {
+            if (matcher.start() > lastIndex) {
+                literalSegments.add(new LiteralSegment(false, literalContent.substring(lastIndex, matcher.start())));
+            }
+            literalSegments.add(new LiteralSegment(true, matcher.group().substring(7, matcher.group().length() - 1)));
             lastIndex = matcher.end();
         }
         if (lastIndex < literalContent.length()) {

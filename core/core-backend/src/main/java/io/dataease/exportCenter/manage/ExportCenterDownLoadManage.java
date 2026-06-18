@@ -35,6 +35,7 @@ import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
+import io.dataease.extensions.datasource.dto.TableFieldWithValue;
 import io.dataease.extensions.datasource.factory.ProviderFactory;
 import io.dataease.extensions.datasource.model.SQLMeta;
 import io.dataease.extensions.datasource.provider.Provider;
@@ -122,6 +123,17 @@ public class ExportCenterDownLoadManage {
     private final Long sheetLimit = 1000000L;
     @Autowired(required = false)
     private DataFillingApi dataFillingApi = null;
+
+    private void applyPreparedParams(DatasourceRequest datasourceRequest, Map<String, Object> sqlMap) {
+        if (sqlMap == null) {
+            return;
+        }
+        List<TableFieldWithValue> tableFieldWithValues = (List<TableFieldWithValue>) sqlMap.get("tableFieldWithValues");
+        if (CollectionUtils.isEmpty(tableFieldWithValues)) {
+            return;
+        }
+        datasourceRequest.setTableFieldWithValues(tableFieldWithValues.stream().map(TableFieldWithValue::copy).toList());
+    }
 
     private DataFillingApi getDataFillingApi() {
         return dataFillingApi;
@@ -312,6 +324,7 @@ public class ExportCenterDownLoadManage {
                         datasourceRequest.setQuery(querySQL);
                         datasourceRequest.setDsList(dsMap);
                         datasourceRequest.setIsCross(coreDatasetGroup.getIsCross());
+                        applyPreparedParams(datasourceRequest, sqlMap);
                         Map<String, Object> previewData = datasetDataManage.buildPreviewData(provider.fetchResultField(datasourceRequest), allFields, desensitizationList, false);
                         List<Map<String, Object>> data = (List<Map<String, Object>>) previewData.get("data");
                         if (p.equals(0L)) {
@@ -724,6 +737,7 @@ public class ExportCenterDownLoadManage {
                     datasourceRequest.setQuery(querySQL);
                     datasourceRequest.setDsList(dsMap);
                     datasourceRequest.setIsCross(coreDatasetGroup.getIsCross());
+                    applyPreparedParams(datasourceRequest, sqlMap);
                     Map<String, Object> previewData = datasetDataManage.buildPreviewData(provider.fetchResultField(datasourceRequest), allFields, desensitizationList, false);
                     List<Map<String, Object>> data = (List<Map<String, Object>>) previewData.get("data");
                     if (p.equals(0L)) {
