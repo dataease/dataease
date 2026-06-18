@@ -39,7 +39,6 @@ public class HtmlResourceFilter implements Filter, Ordered {
         }
         httpResponse.setHeader("Content-Security-Policy", "default-src 'self' *; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://g.alicdn.com https://lf-package-cn.feishucdn.com https://lf-package-us.larksuitecdn.com https://lf1-cdn-tos.bytegoofy.com https://wwcdn.weixin.qq.com; style-src 'self' 'unsafe-inline' *; img-src * data: blob:; font-src * data:; connect-src *; frame-ancestors 'self'");
         httpResponse.setHeader("X-Content-Type-Options", "nosniff");
-        httpResponse.setHeader("X-Frame-Options", "SAMEORIGIN");
         httpResponse.setHeader("X-XSS-Protection", "1; mode=block");
         // 继续执行过滤器链
         try {
