@@ -113,8 +113,13 @@ public class DeSqlparserUtils {
                     }
                 }
                 if (!replaceParamItem) {
-                    sqlItemBuilder.append(sqlItem, sqlItemLastIndex, m.end());
-                    sqlItemLastIndex = m.end();
+                    if (quotedLiteralContext != null) {
+                        sqlItemBuilder.append(sqlItem, appendEnd, quotedLiteralContext.end() + 1);
+                        sqlItemLastIndex = quotedLiteralContext.end() + 1;
+                    } else {
+                        sqlItemBuilder.append(sqlItem, sqlItemLastIndex, m.end());
+                        sqlItemLastIndex = m.end();
+                    }
                 }
                 if (!replaceParamItem) {
                     replaceParam = false;

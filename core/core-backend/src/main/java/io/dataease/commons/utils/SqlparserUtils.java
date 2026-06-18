@@ -121,8 +121,13 @@ public class SqlparserUtils {
                     }
                 }
                 if (!replaced) {
-                    sqlBuilder.append(matcher.group());
-                    lastIndex = matcher.end();
+                    if (quotedLiteralContext != null) {
+                        sqlBuilder.append(sql, appendEnd, quotedLiteralContext.end() + 1);
+                        lastIndex = quotedLiteralContext.end() + 1;
+                    } else {
+                        sqlBuilder.append(matcher.group());
+                        lastIndex = matcher.end();
+                    }
                 }
             }
             sqlBuilder.append(sql.substring(lastIndex));
