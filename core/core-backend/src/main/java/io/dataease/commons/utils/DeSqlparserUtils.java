@@ -176,8 +176,13 @@ public class DeSqlparserUtils {
                     }
                 }
                 if (!replaceParamItem) {
-                    sysItemBuilder.append(sqlItem, sysItemLastIndex, m.end());
-                    sysItemLastIndex = m.end();
+                    if (quotedLiteralContext != null) {
+                        sysItemBuilder.append(sqlItem, appendEnd, quotedLiteralContext.end() + 1);
+                        sysItemLastIndex = quotedLiteralContext.end() + 1;
+                    } else {
+                        sysItemBuilder.append(sqlItem, sysItemLastIndex, m.end());
+                        sysItemLastIndex = m.end();
+                    }
                 }
                 if (!replaceParamItem) {
                     replaceParam = false;
