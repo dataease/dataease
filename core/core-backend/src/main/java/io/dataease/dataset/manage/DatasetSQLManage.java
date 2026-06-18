@@ -502,10 +502,10 @@ public class DatasetSQLManage {
             Provider provider = ProviderFactory.getProvider(dsMap.entrySet().iterator().next().getValue().getType());
             // parser sql params and replace default value
             String s = new String(Base64.getDecoder().decode(infoDTO.getSql()));
+            s = provider.replaceComment(s);
             SqlVariableHandleResult sqlResult = new SqlparserUtils().handleVariableDefaultValueWithPreparedParams(s, currentDs.getSqlVariableDetails(), false, isFromDataSet, parameters, isCross, dsMap, pluginManage, getUserEntity());
             String sql = sqlResult.getSql();
             tableFieldWithValues.addAll(sqlResult.getTableFieldWithValues());
-            sql = provider.replaceComment(sql);
             // add table schema
             if (isCross) {
                 sql = SqlUtils.addSchema(sql, tableSchema);
