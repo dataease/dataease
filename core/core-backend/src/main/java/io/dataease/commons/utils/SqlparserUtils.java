@@ -232,8 +232,8 @@ public class SqlparserUtils {
                         sysBuilder.append(preparedSqlFragment.replacement());
                         sysLastIndex = quotedLiteralContext.end() + 1;
                     } else {
-                        sysBuilder.append(tmpSql, sysLastIndex, matcher.end());
-                        sysLastIndex = matcher.end();
+                        sysBuilder.append(tmpSql, appendEnd, quotedLiteralContext.end() + 1);
+                        sysLastIndex = quotedLiteralContext.end() + 1;
                     }
                 } else {
                     hasVariables = true;
