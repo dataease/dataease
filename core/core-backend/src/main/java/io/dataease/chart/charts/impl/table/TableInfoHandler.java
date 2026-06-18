@@ -76,8 +76,7 @@ public class TableInfoHandler extends DefaultChartHandler {
         }
         boolean crossDs = ((DatasetGroupInfoDTO) formatResult.getContext().get("dataset")).getIsCross();
         DatasourceRequest datasourceRequest = new DatasourceRequest();
-        datasourceRequest.setIsCross(crossDs);
-        datasourceRequest.setDsList(dsMap);
+        fillDatasourceRequest(datasourceRequest, crossDs, dsMap, sqlMap);
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
         var allFields = (List<ChartViewFieldDTO>) filterResult.getContext().get("allFields");
         PageInfo pageInfo = new PageInfo();
@@ -151,7 +150,7 @@ public class TableInfoHandler extends DefaultChartHandler {
             var assistFields = getAssistFields(dynamicAssistFields, yAxis, xAxis);
             if (CollectionUtils.isNotEmpty(assistFields)) {
                 var req = new DatasourceRequest();
-                req.setDsList(dsMap);
+                fillDatasourceRequest(req, crossDs, dsMap, sqlMap);
 
                 List<ChartSeniorAssistDTO> assists = dynamicAssistFields.stream().filter(ele -> !StringUtils.equalsIgnoreCase(ele.getSummary(), "last_item")).toList();
                 if (ObjectUtils.isNotEmpty(assists)) {
