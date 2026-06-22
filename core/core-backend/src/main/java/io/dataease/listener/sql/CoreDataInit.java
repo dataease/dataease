@@ -3,6 +3,7 @@ package io.dataease.listener.sql;
 import io.dataease.font.dao.auto.entity.CoreFont;
 import io.dataease.font.dao.auto.mapper.CoreFontRepository;
 import io.dataease.initSql.Version;
+import io.dataease.utils.LogUtil;
 import io.dataease.map.dao.auto.entity.Area;
 import io.dataease.map.dao.auto.mapper.AreaRepository;
 import io.dataease.menu.dao.auto.entity.CoreMenu;
@@ -18,6 +19,7 @@ import io.dataease.visualization.dao.auto.mapper.VisualizationBackgroundReposito
 import io.dataease.visualization.dao.auto.mapper.VisualizationSubjectRepository;
 import io.dataease.visualization.dao.auto.mapper.VisualizationWatermarkRepository;
 import jakarta.annotation.Resource;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -43,14 +45,30 @@ public class CoreDataInit implements CoreSqlBlock {
     private CoreSysStartupJobRepository coreSysStartupJobRepository;
     @Resource
     private CoreFontRepository coreFontRepository;
+    @Resource
+    private JdbcTemplate jdbcTemplate;
 
     @Override
     public Version getVersion() {
-        return new Version("2.11");
+        return new Version("2.40");
     }
 
     @Override
     public void execute() {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM de_standalone_version WHERE `success` = 1 and  version LIKE '2.%'", Integer.class);
+        boolean isUpgrade = count != null && count > 0;
+        if (isUpgrade) {
+            LogUtil.info("=== CoreDataInit upgrade mode ===");
+            executeUpgradeSteps();
+        } else {
+            LogUtil.info("=== CoreDataInit fresh install mode ===");
+            executeInitSteps();
+            executeUpgradeSteps();
+        }
+    }
+
+    private void executeInitSteps() {
         initCoreMenu();
         initCoreSysSetting();
         initArea();
@@ -59,6 +77,26 @@ public class CoreDataInit implements CoreSqlBlock {
         initVisualizationWatermark();
         initCoreSysStartupJob();
         initFont();
+    }
+
+    private void executeUpgradeSteps() {
+        fixCoreMenu();
+        fixSchema();
+    }
+
+    private void fixCoreMenu() {
+        coreMenuRepository.findById(15L).ifPresent(menu -> {
+            menu.setAuth(true);
+            coreMenuRepository.save(menu);
+        });
+        coreMenuRepository.findById(16L).ifPresent(menu -> {
+            menu.setMenuSort(4);
+            coreMenuRepository.save(menu);
+        });
+    }
+
+    private void fixSchema() {
+        jdbcTemplate.execute("ALTER TABLE xpack_log MODIFY COLUMN oid bigint NULL COMMENT '组织ID'");
     }
 
     private void initCoreMenu() {
