@@ -40,6 +40,8 @@ import { getItemsOfView } from '@antv/g2/lib/interaction/action/active-region'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
+// G2Plot 百分比堆叠会把 value 转成占比，这个内部字段用于保留原始指标值
+const PERCENTAGE_STACK_ORIGIN_VALUE_FIELD = '__DE_PERCENTAGE_STACK_ORIGIN_VALUE__'
 
 /**
  * 条形图
@@ -634,25 +636,46 @@ export class HorizontalStackBar extends HorizontalBar {
 export class HorizontalPercentageStackBar extends HorizontalStackBar {
   propertyInner = {
     ...this['propertyInner'],
-    'label-selector': ['color', 'fontSize', 'hPosition', 'reserveDecimalCount'],
-    'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'show']
+    'label-selector': ['color', 'fontSize', 'hPosition', 'showQuota', 'showProportion'],
+    'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'showQuota', 'show']
   }
   protected configLabel(chart: Chart, options: BarOptions): BarOptions {
+    // 在 G2Plot 执行百分比转换前先缓存原始 value，标签和 tooltip 显示指标时使用
+    const optionsWithOriginValue = {
+      ...options,
+      data: options.data?.map(item => ({
+        ...item,
+        [PERCENTAGE_STACK_ORIGIN_VALUE_FIELD]:
+          item[PERCENTAGE_STACK_ORIGIN_VALUE_FIELD] ?? item.value
+      }))
+    }
     const baseLabel = getLabel(chart)
     if (!baseLabel) {
-      return { ...options, label: baseLabel }
+      return { ...optionsWithOriginValue, label: baseLabel }
     }
     const { customAttr } = chart
     const l = parseJson(customAttr).label
     const label = {
       ...baseLabel,
       formatter: function (data: Datum) {
-        let value = data.value
-        if (value) {
-          value = (Math.round(value * 10000) / 100).toFixed(l.reserveDecimalCount) + '%'
-        } else {
-          value = '0%'
+        // 按标签配置组合指标值和占比，默认保持只显示占比
+        const showQuota = l.showQuota === true
+        const showProportion = l.showProportion ?? true
+        if (!showQuota && !showProportion) {
+          return ''
         }
+        const quotaText = showQuota
+          ? valueFormatter(
+              data[PERCENTAGE_STACK_ORIGIN_VALUE_FIELD],
+              l.quotaLabelFormatter ?? l.labelFormatter ?? formatterItem
+            ) ?? ''
+          : ''
+        const proportion = data.value
+          ? (Math.round(data.value * 10000) / 100).toFixed(l.reserveDecimalCount) + '%'
+          : '0%'
+        const value = showProportion
+          ? `${quotaText}${showQuota ? ' (' : ''}${proportion}${showQuota ? ')' : ''}`
+          : quotaText
         const group = new Group({})
         group.addShape({
           type: 'text',
@@ -672,7 +695,7 @@ export class HorizontalPercentageStackBar extends HorizontalStackBar {
       }
     }
     return {
-      ...options,
+      ...optionsWithOriginValue,
       label
     }
   }
@@ -689,10 +712,29 @@ export class HorizontalPercentageStackBar extends HorizontalStackBar {
     }
     const { customAttr } = chart
     const l = parseJson(customAttr).label
+    const originValueMap = new Map(
+      options.data?.map(item => [
+        JSON.stringify([item.field, item.category]),
+        item[PERCENTAGE_STACK_ORIGIN_VALUE_FIELD] ?? item.value
+      ])
+    )
     const tooltip = {
       formatter: (param: Datum) => {
-        const obj = { name: param.category, value: param.value }
-        obj.value = (Math.round(param.value * 10000) / 100).toFixed(l.reserveDecimalCount) + '%'
+        const percentValue = Number(param.value)
+        const percent =
+          (Math.round((Number.isFinite(percentValue) ? percentValue : 0) * 10000) / 100).toFixed(
+            l.reserveDecimalCount
+          ) + '%'
+        const obj = { name: param.category, value: percent }
+        if (tooltipAttr.showQuota) {
+          const value =
+            valueFormatter(
+              param[PERCENTAGE_STACK_ORIGIN_VALUE_FIELD] ??
+                originValueMap.get(JSON.stringify([param.field, param.category])),
+              tooltipAttr.tooltipFormatter ?? formatterItem
+            ) ?? ''
+          obj.value = `${value} (${percent})`
+        }
         return obj
       },
       container: getTooltipContainer(`tooltip-${chart.id}`, chart.container),

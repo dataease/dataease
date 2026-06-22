@@ -265,8 +265,7 @@ const unShowTooltipsFormatter = [
   'table-normal',
   'table-pivot',
   'stock-line',
-  'bullet-graph',
-  'percentage-bar-stack-horizontal'
+  'bullet-graph'
 ]
 /**
  * 适配图表数字格式化属性

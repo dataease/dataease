@@ -432,6 +432,7 @@ export const DEFAULT_TOOLTIP: ChartTooltipAttr = {
   fontSize: 12,
   color: '#909399',
   tooltipFormatter: formatterItem,
+  showQuota: false,
   backgroundColor: '#ffffff',
   seriesTooltipFormatter: [],
   carousel: {
