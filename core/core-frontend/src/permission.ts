@@ -13,7 +13,7 @@ import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { useEmbedded } from '@/store/modules/embedded'
 import { useLoading } from '@/hooks/web/useLoading'
-import { ElMessageBox } from 'element-plus-secondary'
+import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 const appearanceStore = useAppearanceStoreWithOut()
 const { wsCache } = useCache()
 const permissionStore = usePermissionStoreWithOut()
@@ -118,6 +118,10 @@ router.beforeEach(async (to, from, next) => {
           next({ path: firstPath || '/404' })
           return
         }
+        if (to.path.startsWith('/system') && !noOrgPermission(to)) {
+          next({ path: '/workbranch/index' })
+          return
+        }
         next()
         return
       }
@@ -148,6 +152,10 @@ router.beforeEach(async (to, from, next) => {
         next({ path: firstPath || '/404' })
         return
       }
+      if (to.path.startsWith('/system') && !noOrgPermission(to)) {
+        next({ path: '/workbranch/index' })
+        return
+      }
       next(nextData)
     }
   } else {
@@ -176,6 +184,15 @@ router.beforeEach(async (to, from, next) => {
     }
   }
 })
+const noOrgPermission = (to: any) => {
+  const oid = userStore.oid
+  const proxyOid = userStore.proxyInfo?.proxyOid
+  if (!oid && !proxyOid) {
+    ElMessage.error('缺失关联组织，禁止访问组织管理中心')
+    return false
+  }
+  return true
+}
 const noAdminPermission = async () => {
   const promise = new Promise<void>((resolve, reject) => {
     ElMessageBox.confirm('当前页面仅对 admin 开放, 即将跳转首页', {
