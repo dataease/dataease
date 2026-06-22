@@ -634,27 +634,44 @@ const dragCheckType = (list, type) => {
     return valid
   }
 }
+const getDragAddIndex = (list, e) => {
+  const dragIndex = e?.newDraggableIndex ?? e?.newIndex
+  if (typeof dragIndex === 'number' && dragIndex >= 0 && dragIndex < list.length) {
+    return dragIndex
+  }
+  // 字段列表原生拖拽可能插入到中间，索引异常时按 moveId 找回新增项
+  for (let i = list.length - 1; i >= 0; i--) {
+    if (list[i]?.id === state.moveId) {
+      return i
+    }
+  }
+  return list.length - 1
+}
 const dragMoveDuplicate = (list, e, mode) => {
+  if (!list?.length) {
+    return
+  }
+  const dragIndex = getDragAddIndex(list, e)
   if (mode === 'ds') {
-    list.splice(e.newDraggableIndex, 1)
+    list.splice(dragIndex, 1)
   } else {
+    if (list[dragIndex]?.id !== state.moveId) {
+      return
+    }
     const dup = list.filter(function (m) {
       return m.id === state.moveId
     })
     if (dup && dup.length > 1) {
-      list.splice(e.newDraggableIndex, 1)
+      list.splice(dragIndex, 1)
       return dup
     }
   }
 }
 const dragRemoveAggField = (list, e) => {
-  const dup = list.filter(function (m) {
-    return m.id === state.moveId
-  })
-  if (dup && dup.length > 0) {
-    if (dup[0].summary === '') {
-      list.splice(e.newDraggableIndex, 1)
-    }
+  const dragIndex = getDragAddIndex(list, e)
+  const dragItem = list[dragIndex]
+  if (dragItem?.id === state.moveId && dragItem.summary === '') {
+    list.splice(dragIndex, 1)
   }
 }
 
@@ -929,8 +946,14 @@ const addExtBubble = e => {
 
 const addDrill = e => {
   recordSnapshotInfo('calcData')
-  dragCheckType(view.value.drillFields, 'd')
-  dragMoveDuplicate(view.value.drillFields, e, '')
+  const typeValid = dragCheckType(view.value.drillFields, 'd') !== false
+  if (!typeValid) {
+    return
+  }
+  const dup = dragMoveDuplicate(view.value.drillFields, e, '')
+  if (dup) {
+    return
+  }
   dragRemoveAggField(view.value.drillFields, e)
 }
 
@@ -1981,24 +2004,31 @@ const dragOver = (ev: MouseEvent) => {
 const drop = (ev: MouseEvent, type = 'xAxis') => {
   ev.preventDefault()
   const arr = activeDimension.value.length ? activeDimension.value : activeQuota.value
+  view.value[type] ??= []
+  const targetId = ev.srcElement.offsetParent?.querySelector('.node-id_private')?.dataset?.id
+  let insertIndex = view.value[type].findIndex(ele => ele.id === targetId)
   for (let i = 0; i < arr.length; i++) {
     const obj = cloneDeep(arr[i])
     state.moveId = obj.id as unknown as number
-    view.value[type] ??= []
-    const targetId = ev.srcElement.offsetParent?.querySelector('.node-id_private')?.dataset?.id
-    const index = view.value[type].findIndex(ele => ele.id === targetId && ele.id !== obj.id)
-    if (index !== -1) {
-      view.value[type].splice(index + 1, 0, obj)
+    let newDraggableIndex = view.value[type].length
+    if (insertIndex !== -1) {
+      // 多选拖入同一目标后方时持续推进插入游标，避免后插入项顶到前面
+      newDraggableIndex = Math.min(insertIndex + 1, view.value[type].length)
+      view.value[type].splice(newDraggableIndex, 0, obj)
     } else {
       view.value[type].push(obj)
     }
 
-    const e = { newDraggableIndex: view.value[type].length - 1 }
+    const e = { newDraggableIndex }
 
     if ('drillFields' === type) {
       addDrill(e)
     } else {
       addAxis(e, type as AxisType)
+    }
+    const currentIndex = view.value[type]?.findIndex(ele => ele === obj)
+    if (currentIndex !== -1) {
+      insertIndex = currentIndex
     }
   }
 }
