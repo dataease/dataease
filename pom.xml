@@ -14,7 +14,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.13</version>
+        <version>3.5.15</version>
         <relativePath />
     </parent>
 
@@ -24,7 +24,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-cloud-alibaba.version>2023.0.1.0</spring-cloud-alibaba.version>
         <spring-cloud.version>2023.0.1</spring-cloud.version>
-        <spring-boot.version>3.3.13</spring-boot.version>
+        <spring-boot.version>3.5.15</spring-boot.version>
         <spring-framework.version>6.2.19</spring-framework.version>
         <spring-ldap.version>3.2.16</spring-ldap.version>
         <tomcat.version>10.1.55</tomcat.version>
@@ -51,6 +51,7 @@
         <flatten-maven.version>1.3.0</flatten-maven.version>
         <maven.exec.version>3.1.0</maven.exec.version>
         <guava.version>33.4.8-jre</guava.version>
+        <gson.version>2.12.1</gson.version>
         <commons-fileupload.version>1.6.0</commons-fileupload.version>
         <commons-lang3.version>3.20.0</commons-lang3.version>
         <commons-net.version>3.9.0</commons-net.version>
