@@ -333,6 +333,9 @@ const showProperty = prop => {
   }
   return props.propertyInner?.includes(prop)
 }
+const tooltipFormatterDisabled = computed(() => {
+  return showProperty('showQuota') && !state.tooltipForm.showQuota
+})
 const updateSeriesTooltipFormatter = (form: AxisEditForm) => {
   const { axisType, editType } = form
   if (
@@ -623,131 +626,160 @@ onMounted(() => {
       </el-form-item>
     </div>
 
-    <template v-if="showProperty('tooltipFormatter') && !isBarRangeTime">
+    <template
+      v-if="(showProperty('tooltipFormatter') || showProperty('showQuota')) && !isBarRangeTime"
+    >
       <el-form-item
-        :label="t('chart.value_formatter_type')"
-        class="form-item"
+        v-if="showProperty('showQuota')"
+        class="form-item form-item-checkbox"
         :class="'form-item-' + themes"
       >
-        <el-select
+        <el-checkbox
           size="small"
-          style="width: 100%"
           :effect="props.themes"
-          v-model="state.tooltipForm.tooltipFormatter.type"
-          @change="changeTooltipAttr('tooltipFormatter.type')"
+          v-model="state.tooltipForm.showQuota"
+          @change="changeTooltipAttr('showQuota')"
+          :label="t('chart.quota')"
+        />
+      </el-form-item>
+      <div :style="{ paddingLeft: showProperty('showQuota') ? '22px' : undefined }">
+        <el-form-item
+          :label="t('chart.value_formatter_type')"
+          class="form-item"
+          :class="'form-item-' + themes"
         >
-          <el-option
-            v-for="type in formatterType"
-            :key="type.value"
-            :label="t('chart.' + type.name)"
-            :value="type.value"
+          <el-select
+            size="small"
+            style="width: 100%"
+            :effect="props.themes"
+            v-model="state.tooltipForm.tooltipFormatter.type"
+            :disabled="tooltipFormatterDisabled"
+            @change="changeTooltipAttr('tooltipFormatter.type')"
+          >
+            <el-option
+              v-for="type in formatterType"
+              :key="type.value"
+              :label="t('chart.' + type.name)"
+              :value="type.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          v-if="state.tooltipForm.tooltipFormatter.type !== 'auto'"
+          :label="t('chart.value_formatter_decimal_count')"
+          class="form-item"
+          :class="'form-item-' + themes"
+        >
+          <el-input-number
+            controls-position="right"
+            style="width: 100%"
+            :effect="props.themes"
+            v-model="state.tooltipForm.tooltipFormatter.decimalCount"
+            :disabled="tooltipFormatterDisabled"
+            :precision="0"
+            :min="0"
+            :max="10"
+            size="small"
+            @change="changeTooltipAttr('tooltipFormatter.decimalCount')"
           />
-        </el-select>
-      </el-form-item>
-      <el-form-item
-        v-if="state.tooltipForm.tooltipFormatter.type !== 'auto'"
-        :label="t('chart.value_formatter_decimal_count')"
-        class="form-item"
-        :class="'form-item-' + themes"
-      >
-        <el-input-number
-          controls-position="right"
-          style="width: 100%"
-          :effect="props.themes"
-          v-model="state.tooltipForm.tooltipFormatter.decimalCount"
-          :precision="0"
-          :min="0"
-          :max="10"
-          size="small"
-          @change="changeTooltipAttr('tooltipFormatter.decimalCount')"
-        />
-      </el-form-item>
+        </el-form-item>
 
-      <template v-if="state.tooltipForm.tooltipFormatter.type !== 'percent'">
-        <el-row :gutter="8">
-          <el-col :span="12" v-if="!isEnLocal">
-            <el-form-item
-              :label="$t('chart.value_formatter_unit_language')"
-              class="form-item"
-              :class="'form-item-' + themes"
-            >
-              <el-select
-                :disabled="state.tooltipForm.tooltipFormatter.type === 'percent'"
-                size="small"
-                :effect="themes"
-                v-model="state.tooltipForm.tooltipFormatter.unitLanguage"
-                :placeholder="$t('chart.pls_select_field')"
-                @change="
-                  v => changeUnitLanguage(state.tooltipForm.tooltipFormatter, v, 'tooltipFormatter')
-                "
+        <template v-if="state.tooltipForm.tooltipFormatter.type !== 'percent'">
+          <el-row :gutter="8">
+            <el-col :span="12" v-if="!isEnLocal">
+              <el-form-item
+                :label="$t('chart.value_formatter_unit_language')"
+                class="form-item"
+                :class="'form-item-' + themes"
               >
-                <el-option :label="$t('chart.value_formatter_unit_language_ch')" value="ch" />
-                <el-option :label="$t('chart.value_formatter_unit_language_en')" value="en" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="isEnLocal ? 24 : 12">
-            <el-form-item
-              :label="t('chart.value_formatter_unit')"
-              class="form-item"
-              :class="'form-item-' + themes"
-            >
-              <el-select
-                :disabled="state.tooltipForm.tooltipFormatter.type === 'percent'"
-                :effect="props.themes"
-                v-model="state.tooltipForm.tooltipFormatter.unit"
-                :placeholder="t('chart.pls_select_field')"
-                size="small"
-                @change="changeTooltipAttr('tooltipFormatter')"
+                <el-select
+                  :disabled="
+                    tooltipFormatterDisabled ||
+                    state.tooltipForm.tooltipFormatter.type === 'percent'
+                  "
+                  size="small"
+                  :effect="themes"
+                  v-model="state.tooltipForm.tooltipFormatter.unitLanguage"
+                  :placeholder="$t('chart.pls_select_field')"
+                  @change="
+                    v =>
+                      changeUnitLanguage(state.tooltipForm.tooltipFormatter, v, 'tooltipFormatter')
+                  "
+                >
+                  <el-option :label="$t('chart.value_formatter_unit_language_ch')" value="ch" />
+                  <el-option :label="$t('chart.value_formatter_unit_language_en')" value="en" />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="isEnLocal ? 24 : 12">
+              <el-form-item
+                :label="t('chart.value_formatter_unit')"
+                class="form-item"
+                :class="'form-item-' + themes"
               >
-                <el-option
-                  v-for="item in getUnitTypeList(state.tooltipForm.tooltipFormatter.unitLanguage)"
-                  :key="item.value"
-                  :label="item.name"
-                  :value="item.value"
+                <el-select
+                  :disabled="
+                    tooltipFormatterDisabled ||
+                    state.tooltipForm.tooltipFormatter.type === 'percent'
+                  "
+                  :effect="props.themes"
+                  v-model="state.tooltipForm.tooltipFormatter.unit"
+                  :placeholder="t('chart.pls_select_field')"
+                  size="small"
+                  @change="changeTooltipAttr('tooltipFormatter')"
+                >
+                  <el-option
+                    v-for="item in getUnitTypeList(state.tooltipForm.tooltipFormatter.unitLanguage)"
+                    :key="item.value"
+                    :label="item.name"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="8">
+            <el-col :span="24">
+              <el-form-item
+                :label="t('chart.value_formatter_suffix')"
+                class="form-item"
+                :class="'form-item-' + themes"
+              >
+                <el-input
+                  :effect="props.themes"
+                  v-model="state.tooltipForm.tooltipFormatter.suffix"
+                  size="small"
+                  clearable
+                  :disabled="tooltipFormatterDisabled"
+                  :placeholder="t('commons.input_content')"
+                  @change="changeTooltipAttr('tooltipFormatter.suffix')"
                 />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="8">
-          <el-col :span="24">
-            <el-form-item
-              :label="t('chart.value_formatter_suffix')"
-              class="form-item"
-              :class="'form-item-' + themes"
-            >
-              <el-input
-                :effect="props.themes"
-                v-model="state.tooltipForm.tooltipFormatter.suffix"
-                size="small"
-                clearable
-                :placeholder="t('commons.input_content')"
-                @change="changeTooltipAttr('tooltipFormatter.suffix')"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </template>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </template>
 
-      <el-form-item class="form-item" :class="'form-item-' + themes">
-        <el-checkbox
-          size="small"
-          :effect="props.themes"
-          v-model="state.tooltipForm.tooltipFormatter.thousandSeparator"
-          @change="changeTooltipAttr('tooltipFormatter.thousandSeparator')"
-          :label="t('chart.value_formatter_thousand_separator')"
-        />
-      </el-form-item>
-      <el-form-item v-if="showTotalPercent" class="form-item" :class="'form-item-' + themes">
-        <el-checkbox
-          size="small"
-          :effect="props.themes"
-          v-model="state.tooltipForm.tooltipFormatter.showTotalPercent"
-          @change="changeTooltipAttr('tooltipFormatter.showTotalPercent')"
-          :label="t('chart.value_formatter_total_out_percent')"
-        />
-      </el-form-item>
+        <el-form-item class="form-item" :class="'form-item-' + themes">
+          <el-checkbox
+            size="small"
+            :effect="props.themes"
+            v-model="state.tooltipForm.tooltipFormatter.thousandSeparator"
+            :disabled="tooltipFormatterDisabled"
+            @change="changeTooltipAttr('tooltipFormatter.thousandSeparator')"
+            :label="t('chart.value_formatter_thousand_separator')"
+          />
+        </el-form-item>
+        <el-form-item v-if="showTotalPercent" class="form-item" :class="'form-item-' + themes">
+          <el-checkbox
+            size="small"
+            :effect="props.themes"
+            v-model="state.tooltipForm.tooltipFormatter.showTotalPercent"
+            :disabled="tooltipFormatterDisabled"
+            @change="changeTooltipAttr('tooltipFormatter.showTotalPercent')"
+            :label="t('chart.value_formatter_total_out_percent')"
+          />
+        </el-form-item>
+      </div>
     </template>
     <div v-if="showSeriesTooltipFormatter">
       <el-form-item>
