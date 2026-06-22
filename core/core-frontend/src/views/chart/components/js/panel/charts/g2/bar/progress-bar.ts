@@ -21,7 +21,7 @@ import {
   TOOLTIP_ITEM_TPL,
   TOOLTIP_TITLE_TPL
 } from '@/views/chart/components/js/panel/common/common_antv'
-import { valueFormatter } from '@/views/chart/components/js/formatter'
+import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
 import { HorizontalStackBar } from '@/views/chart/components/js/panel/charts/g2/bar/stack-horizontal-bar'
 
 const { t } = useI18n()
@@ -239,22 +239,58 @@ export class ProgressBar extends HorizontalStackBar {
     const tmpOptions = super.configLabel(chart, options)
     const { children } = tmpOptions
     const { label: labelAttr } = parseJson(chart.customAttr) || {}
-    if (children?.[0].labels?.length) {
-      children[0].labels[0].text = 'progress'
-      children[0].labels[0].formatter = (progress, data) => {
+    if (!labelAttr?.show || !children?.[0]) {
+      return tmpOptions
+    }
+
+    const baseLabel = children[0].labels?.[0] || {}
+    const label = {
+      ...baseLabel,
+      text: 'progress',
+      fillOpacity: 1,
+      fill: labelAttr.color,
+      fontSize: labelAttr.fontSize,
+      position: labelAttr.position === 'middle' ? 'inside' : labelAttr.position,
+      textAlign: 'start',
+      dy: labelAttr.position === 'top' ? -10 : 0,
+      dx: 0,
+      transform: baseLabel.transform ?? [
+        { type: 'exceedAdjust' },
+        ...(labelAttr.fullDisplay ? [] : [{ type: 'overlapHide' }])
+      ],
+      formatter: (progress, data) => {
         if (data.type === 'target') return ''
-        const quotaText = labelAttr.showQuota
-          ? valueFormatter(data.value, labelAttr.quotaLabelFormatter)
+        const showQuota = labelAttr.showQuota === true
+        const showProportion = labelAttr.showProportion ?? true
+        if (!showQuota && !showProportion) return ''
+
+        const quotaText = showQuota
+          ? valueFormatter(
+              data.value,
+              labelAttr.quotaLabelFormatter ?? labelAttr.labelFormatter ?? formatterItem
+            )
           : ''
-        const proportionText = labelAttr.showProportion
-          ? `${labelAttr.showQuota ? ' (' : ''}${progress.toFixed(labelAttr.reserveDecimalCount)}%${
-              labelAttr.showQuota ? ')' : ''
-            }`
+        const progressValue = Number(progress)
+        const progressText = Number.isFinite(progressValue)
+          ? progressValue.toFixed(labelAttr.reserveDecimalCount ?? 2)
           : ''
+        const proportionText =
+          showProportion && progressText
+            ? `${showQuota ? ' (' : ''}${progressText}%${showQuota ? ')' : ''}`
+            : ''
         return `${quotaText}${proportionText}`
       }
     }
-    return tmpOptions
+    return {
+      ...tmpOptions,
+      children: [
+        {
+          ...children[0],
+          labels: [label]
+        },
+        ...children.slice(1)
+      ]
+    }
   }
 
   protected configTooltip(chart: Chart, options: ViewSpec): ViewSpec {
