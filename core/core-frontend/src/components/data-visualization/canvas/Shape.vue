@@ -400,6 +400,9 @@ const boardMoveActive = computed(() => {
   ]
   return element.value.isPlugin || CHARTS.includes(element.value.innerType)
 })
+const scaledInteractionMapActive = computed(() => {
+  return ['map', 'bubble-map'].includes(element.value.innerType)
+})
 
 const dashboardActive = computed(() => {
   return dvInfo.value.type === 'dashboard'
@@ -501,7 +504,7 @@ const handleBoardMouseDownOnShape = e => {
     return
   }
   dvMainStore.setCurComponent({ component: element.value, index: index.value })
-  handleMouseDownOnShape(e)
+  handleMouseDownOnShape(e, scaledInteractionMapActive.value)
 }
 
 const areaDataPush = component => {
@@ -551,7 +554,7 @@ const handleInnerMouseDownOnShape = e => {
   handleMouseDownOnShape(e)
 }
 
-const handleMouseDownOnShape = e => {
+const handleMouseDownOnShape = (e, forceMove = false) => {
   if (element.value['editing']) {
     // e.preventDefault()
     e.stopPropagation()
@@ -731,7 +734,8 @@ const handleMouseDownOnShape = e => {
     }
     handleGroupComponent()
   }
-  if (!hasChartMouseEvent()) {
+  // 图表专用拖动区域需要绕过图表内部 cursor 判定
+  if (forceMove || !hasChartMouseEvent()) {
     document.addEventListener('mousemove', move)
     document.addEventListener('mouseup', up)
   }

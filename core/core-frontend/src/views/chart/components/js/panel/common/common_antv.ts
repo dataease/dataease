@@ -26,7 +26,7 @@ import { Zoom } from '@antv/l7'
 import { DOM } from '@antv/l7-utils'
 import { Scene } from '@antv/l7-scene'
 import { type IZoomControlOption } from '@antv/l7-component'
-import { PositionType } from '@antv/l7-core'
+import { InteractionEvent, PositionType } from '@antv/l7-core'
 import { centroid } from '@turf/centroid'
 import { defaults, find, groupBy, map, uniq } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -1259,11 +1259,121 @@ export class CustomZoom extends Zoom {
     } as IZoomControlOption
   }
 }
+
+const L7_SCALED_INTERACTION_FLAG = '__deScaledInteractionPatched'
+const L7_SCALED_INTERACTION_CHARTS = ['map', 'bubble-map']
+
+function getScaledL7ContainerPoint(
+  container: HTMLElement,
+  clientX: number,
+  clientY: number,
+  includeClientOffset = true
+) {
+  const rect = container.getBoundingClientRect()
+  const scaleX = rect.width && container.clientWidth ? rect.width / container.clientWidth : 1
+  const scaleY = rect.height && container.clientHeight ? rect.height / container.clientHeight : 1
+  const safeScaleX = Number.isFinite(scaleX) && scaleX > 0 ? scaleX : 1
+  const safeScaleY = Number.isFinite(scaleY) && scaleY > 0 ? scaleY : 1
+  return {
+    x: (clientX - rect.left) / safeScaleX - (includeClientOffset ? container.clientLeft : 0),
+    y: (clientY - rect.top) / safeScaleY - (includeClientOffset ? container.clientTop : 0)
+  }
+}
+
+function rebindL7MouseMoveListener(interactionService: Record<string, any>, originalOnHover) {
+  const container = (interactionService.$containter ||
+    interactionService.mapService?.getMapContainer?.()) as HTMLElement
+  if (!container || typeof originalOnHover !== 'function') {
+    return
+  }
+  container.removeEventListener('mousemove', originalOnHover)
+  container.addEventListener('mousemove', interactionService.onHover)
+}
+
+function getScaledL7HammerInteractionTarget(interactionService: Record<string, any>, target) {
+  const { type, pointerType } = target
+  let clientX
+  let clientY
+  if (pointerType === 'touch') {
+    clientY = Math.floor(target.pointers[0].clientY)
+    clientX = Math.floor(target.pointers[0].clientX)
+  } else {
+    clientY = Math.floor(target.srcEvent.y)
+    clientX = Math.floor(target.srcEvent.x)
+  }
+  const mapContainer = interactionService.mapService?.getMapContainer?.() as HTMLElement
+  if (mapContainer && typeof clientX === 'number' && typeof clientY === 'number') {
+    const point = getScaledL7ContainerPoint(mapContainer, clientX, clientY, false)
+    clientX = point.x
+    clientY = point.y
+  }
+  const lngLat = interactionService.mapService?.containerToLngLat?.([clientX, clientY])
+  return {
+    x: clientX,
+    y: clientY,
+    lngLat,
+    type,
+    target: target.srcEvent
+  }
+}
+
+function configL7ScaledInteraction(chart: Chart, scene?: Scene) {
+  if (!L7_SCALED_INTERACTION_CHARTS.includes(chart?.type)) {
+    return
+  }
+  const interactionService = (scene as any)?.interactionService as Record<string, any>
+  if (!interactionService || interactionService[L7_SCALED_INTERACTION_FLAG]) {
+    return
+  }
+  const originalOnHover = interactionService.onHover
+  const originalInteractionEvent = interactionService.interactionEvent
+  if (typeof originalOnHover !== 'function' || typeof originalInteractionEvent !== 'function') {
+    return
+  }
+  interactionService[L7_SCALED_INTERACTION_FLAG] = true
+  interactionService.interactionEvent = target => {
+    if (['click', 'dblclick'].includes(target?.type)) {
+      // 大屏编辑缩放后，L7 Hammer 点击坐标也需要还原到未缩放容器
+      return getScaledL7HammerInteractionTarget(interactionService, target)
+    }
+    return originalInteractionEvent.call(interactionService, target)
+  }
+  interactionService.onHover = (event: MouseEvent & { type: string }) => {
+    if (event.type !== 'mousemove') {
+      originalOnHover(event)
+      return
+    }
+    const { clientX, clientY } = event
+    let x = clientX
+    let y = clientY
+    const type = event.type
+    const mapContainer = interactionService.mapService?.getMapContainer?.() as HTMLElement
+    if (!mapContainer || typeof clientX !== 'number' || typeof clientY !== 'number') {
+      originalOnHover(event)
+      return
+    }
+    // 大屏编辑缩放后，L7 hover picking 坐标需要还原到未缩放容器
+    const point = getScaledL7ContainerPoint(mapContainer, clientX, clientY)
+    x = point.x
+    y = point.y
+    const lngLat = interactionService.mapService?.containerToLngLat?.([x, y])
+    interactionService.emit?.(InteractionEvent.Hover, {
+      x,
+      y,
+      lngLat,
+      type,
+      target: event
+    })
+  }
+  rebindL7MouseMoveListener(interactionService, originalOnHover)
+}
+
 export function configL7Zoom(
   chart: Chart,
   scene: Scene,
   mapKey?: { key: string; securityCode: string; mapType: string }
 ) {
+  configL7ScaledInteraction(chart, scene)
   const { basicStyle } = parseJson(chart.customAttr)
   const zoomOption = scene?.getControlByName('zoom')
   if (zoomOption) {
@@ -1398,6 +1508,7 @@ export function calculateBounds(coordinates: number[][]): {
 }
 
 export function configL7PlotZoom(chart: Chart, plot: L7Plot<PlotOptions>) {
+  configL7ScaledInteraction(chart, plot?.scene as Scene)
   const { basicStyle } = parseJson(chart.customAttr)
   if (shouldHideZoom(basicStyle)) {
     return
