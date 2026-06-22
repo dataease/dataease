@@ -5,6 +5,7 @@ import dvAi from '@/assets/svg/dv-ai.svg'
 import dvPreviewDownload from '@/assets/svg/icon_download_outlined.svg'
 import { computed, onMounted, ref } from 'vue'
 import { usePermissionStore } from '@/store/modules/permission'
+import { useUserStoreWithOut } from '@/store/modules/user'
 import { isExternal } from '@/utils/validate'
 import { formatRoute } from '@/router/establish'
 import HeaderMenuItem from './HeaderMenuItem.vue'
@@ -16,7 +17,7 @@ import { useRouter, useRoute } from 'vue-router_2'
 import TopDoc from '@/layout/components/TopDoc.vue'
 import AccountOperator from '@/layout/components/AccountOperator.vue'
 import { isDesktop } from '@/utils/ModelUtil'
-import { XpackComponent } from '@/components/plugin'
+// import { XpackComponent } from '@/components/plugin'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import AiComponent from '@/layout/components/AiComponent.vue'
 import { findBaseParams } from '@/api/aiComponent'
@@ -30,7 +31,7 @@ import { useCache } from '@/hooks/web/useCache'
 import { useI18n } from '@/hooks/web/useI18n'
 import { msgCountApi } from '@/api/msg'
 const { wsCache } = useCache('localStorage')
-const aiBaseUrl = ref('https://maxkb.fit2cloud.com/ui/chat/2ddd8b594ce09dbb?mode=embed')
+const aiBaseUrl = ref('https://maxkb.fit2cloud.com/ui/chat/2ddd8b594ce09dbb?mode=embed') as any
 const handleIconClick = () => {
   if (route.path === '/workbranch/index') return
   push('/workbranch/index')
@@ -50,6 +51,7 @@ const activeIndex = computed(() => {
 })
 
 const permissionStore = usePermissionStore()
+const userStore = useUserStoreWithOut()
 const downloadClick = params => {
   useEmitt().emitter.emit('data-export-center', params)
 }
@@ -58,7 +60,7 @@ const showSystem = ref(false)
 const showMsg = ref(false)
 const showToolbox = ref(false)
 const showOverlay = ref(false)
-const showOverlayCopilot = ref(false)
+// const showOverlayCopilot = ref(false)
 const handleSelect = (index: string) => {
   // 自定义事件
   if (isExternal(index)) {
@@ -69,7 +71,14 @@ const handleSelect = (index: string) => {
   }
 }
 const initShowSystem = () => {
-  showSystem.value = permissionStore.getRouters.some(route => route.path === '/system')
+  const hasRoute = permissionStore.getRouters.some(route => route.path === '/system')
+  if (!hasRoute) {
+    showSystem.value = false
+    return
+  }
+  const hasOid = !!userStore.oid
+  const hasProxyOid = !!userStore.proxyInfo?.proxyOid
+  showSystem.value = hasOid || hasProxyOid
 }
 const initShowMsg = () => {
   showMsg.value = permissionStore.getRouters.some(route => route.path === '/msg')
