@@ -40,4 +40,9 @@ public class CacheConstant {
 
         public static final String cacheKey = "de_v2_lic_key";
     }
+
+    public static class DatasetCacheConstant {
+        public static final String DATASET_TABLE_CACHE = "de_v2_dataset_table";
+        public static final String DATASET_FIELD_CACHE = "de_v2_dataset_field";
+    }
 }

@@ -13,6 +13,7 @@ import io.dataease.constant.LogOT;
 import io.dataease.constant.LogST;
 import io.dataease.constant.SQLConstants;
 import io.dataease.dao.auto.entity.CoreDatasource;
+import io.dataease.dataset.manage.DatasetCacheManage;
 import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.dataset.manage.DatasetSQLManage;
 import io.dataease.dataset.utils.TableUtils;
@@ -82,6 +83,7 @@ import java.lang.reflect.Method;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static io.dataease.datasource.server.DatasourceTaskServer.ScheduleType.MANUAL;
@@ -91,6 +93,7 @@ import static io.dataease.datasource.server.DatasourceTaskServer.ScheduleType.RI
 @RestController
 @RequestMapping("/datasource")
 public class DatasourceServer implements DatasourceApi {
+    private static final Pattern ORACLE_RECYCLE_BIN_TABLE_PATTERN = Pattern.compile("^BIN\\$.*\\$[0-9]+$", Pattern.CASE_INSENSITIVE);
     @Resource
     private EngineManage engineManage;
     @Resource
@@ -124,6 +127,8 @@ public class DatasourceServer implements DatasourceApi {
     private CoreDatasourceTaskLogRepository coreDatasourceTaskLogRepository;
     @Resource
     private DatabaseTimeManage databaseTimeManage;
+    @Resource
+    private DatasetCacheManage datasetCacheManage;
 
 
     public enum UpdateType {
@@ -780,15 +785,41 @@ public class DatasourceServer implements DatasourceApi {
         BeanUtils.copyBean(datasourceDTO, coreDatasource);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(datasourceDTO);
+        List<DatasetTableDTO> result;
         if (coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
-            List<DatasetTableDTO> datasetTableDTOS = (List<DatasetTableDTO>) invokeMethod(coreDatasource.getType(), "getApiTables", DatasourceRequest.class, datasourceRequest);
-            return datasetTableDTOS;
+            result = (List<DatasetTableDTO>) invokeMethod(coreDatasource.getType(), "getApiTables", DatasourceRequest.class, datasourceRequest);
+            datasetCacheManage.cacheTablesByDatasource(datasetTableDTO.getDatasourceId(), result);
+            return result;
         }
         if (coreDatasource.getType().contains("Excel")) {
-            return ExcelUtils.getTables(datasourceRequest);
+            result = ExcelUtils.getTables(datasourceRequest);
+            datasetCacheManage.cacheTablesByDatasource(datasetTableDTO.getDatasourceId(), result);
+            return result;
         }
         Provider provider = ProviderFactory.getProvider(datasourceDTO.getType());
-        return provider.getTables(datasourceRequest);
+        List<DatasetTableDTO> tables = provider.getTables(datasourceRequest);
+        if (StringUtils.equalsIgnoreCase(coreDatasource.getType(), DatasourceConfiguration.DatasourceType.oracle.name())) {
+            result = tables.stream().filter(table -> !isOracleRecycleBinTable(table)).collect(Collectors.toList());
+        } else {
+            result = tables;
+        }
+        datasetCacheManage.cacheTablesByDatasource(datasetTableDTO.getDatasourceId(), result);
+        return result;
+    }
+
+    private boolean isOracleRecycleBinTable(DatasetTableDTO table) {
+        if (table == null) {
+            return false;
+        }
+        return isOracleRecycleBinName(table.getTableName()) || isOracleRecycleBinName(table.getName());
+    }
+
+    private boolean isOracleRecycleBinName(String tableName) {
+        if (StringUtils.isBlank(tableName)) {
+            return false;
+        }
+        String normalized = StringUtils.removeEnd(StringUtils.removeStart(tableName.trim(), "\""), "\"");
+        return ORACLE_RECYCLE_BIN_TABLE_PATTERN.matcher(normalized).matches();
     }
 
     @Override
