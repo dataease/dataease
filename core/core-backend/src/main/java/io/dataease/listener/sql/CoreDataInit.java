@@ -3,7 +3,6 @@ package io.dataease.listener.sql;
 import io.dataease.font.dao.auto.entity.CoreFont;
 import io.dataease.font.dao.auto.mapper.CoreFontRepository;
 import io.dataease.initSql.Version;
-import io.dataease.utils.LogUtil;
 import io.dataease.map.dao.auto.entity.Area;
 import io.dataease.map.dao.auto.mapper.AreaRepository;
 import io.dataease.menu.dao.auto.entity.CoreMenu;
@@ -12,6 +11,7 @@ import io.dataease.startup.dao.auto.entity.CoreSysStartupJob;
 import io.dataease.startup.dao.auto.mapper.CoreSysStartupJobRepository;
 import io.dataease.system.dao.auto.entity.CoreSysSetting;
 import io.dataease.system.dao.auto.mapper.CoreSysSettingRepository;
+import io.dataease.utils.LogUtil;
 import io.dataease.visualization.dao.auto.entity.VisualizationBackground;
 import io.dataease.visualization.dao.auto.entity.VisualizationSubject;
 import io.dataease.visualization.dao.auto.entity.VisualizationWatermark;
@@ -85,12 +85,13 @@ public class CoreDataInit implements CoreSqlBlock {
     }
 
     private void fixCoreMenu() {
-        coreMenuRepository.findById(15L).ifPresent(menu -> {
+        coreMenuRepository.findById(64L).ifPresent(menu -> {
             menu.setAuth(true);
             coreMenuRepository.save(menu);
         });
         coreMenuRepository.findById(16L).ifPresent(menu -> {
             menu.setMenuSort(4);
+            menu.setAuth(true);
             coreMenuRepository.save(menu);
         });
     }
