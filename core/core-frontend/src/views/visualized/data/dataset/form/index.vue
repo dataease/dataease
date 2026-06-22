@@ -3167,7 +3167,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
             width: calc(100% - 260px);
 
             :deep(.ed-table__header-wrapper) {
-              display: none;
+              border-top: none;
             }
 
             :deep(.ed-table-v2__header-cell) {
