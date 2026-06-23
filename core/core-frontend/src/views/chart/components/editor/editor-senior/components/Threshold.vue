@@ -1227,7 +1227,7 @@ span {
 
   .label {
     cursor: default;
-    color: #646a73;
+    color: @canvas-main-font-color;
     font-size: 12px;
     font-style: normal;
     font-weight: 400;
@@ -1333,7 +1333,7 @@ span {
   font-style: normal;
   font-weight: 400;
   line-height: 20px;
-  color: #a6a6a6 !important;
+  color: #ebebeb !important;
   &.ed-button {
     color: var(--ed-color-primary) !important;
   }

@@ -257,7 +257,7 @@ onMounted(() => {
 
     .label {
       cursor: default;
-      color: #646a73;
+      color: @canvas-main-font-color;
       font-size: 12px;
       font-style: normal;
       font-weight: 400;
