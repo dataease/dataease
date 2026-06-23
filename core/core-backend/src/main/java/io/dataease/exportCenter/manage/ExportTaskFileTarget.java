@@ -9,7 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
-final class ExportTaskFileTarget {
+public final class ExportTaskFileTarget {
 
     record FileSize(Double size, String unit) {
     }
@@ -26,7 +26,15 @@ final class ExportTaskFileTarget {
         return taskId;
     }
 
+    public String getTaskId() {
+        return taskId;
+    }
+
     String filePath() {
+        return exportFilePath.toString();
+    }
+
+    public String getFilePath() {
         return exportFilePath.toString();
     }
 
