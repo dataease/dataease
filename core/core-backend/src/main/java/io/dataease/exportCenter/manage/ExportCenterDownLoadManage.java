@@ -178,7 +178,7 @@ public class ExportCenterDownLoadManage {
         }
     }
 
-    @DeLog(id = "#p0.exportFrom", ot = LogOT.EXPORT, st = LogST.DATA_FILLING)
+    @DeLog(id = "#p1", ot = LogOT.EXPORT, st = LogST.DATA_FILLING)
     public void startDataFillingTask(ExportTaskFileTarget exportTarget, Long exportFrom, Long userId, HashMap<String, Object> request) {
         if (ObjectUtils.isEmpty(getDataFillingApi())) {
             return;
@@ -421,12 +421,12 @@ public class ExportCenterDownLoadManage {
         Running_Task.put(exportTarget.taskId(), future);
     }
 
-    @DeLog(id = "#p0.exportFrom", ot = LogOT.EXPORT, st = LogST.PANEL)
+    @DeLog(id = "#p1.viewId", ot = LogOT.EXPORT, st = LogST.PANEL)
     public void startPanelViewTask(ExportTaskFileTarget exportTarget, ChartExcelRequest request) {
         startViewTask(exportTarget, request);
     }
 
-    @DeLog(id = "#p0.exportFrom", ot = LogOT.EXPORT, st = LogST.SCREEN)
+    @DeLog(id = "#p1.viewId", ot = LogOT.EXPORT, st = LogST.SCREEN)
     public void startDataVViewTask(ExportTaskFileTarget exportTarget, ChartExcelRequest request) {
         startViewTask(exportTarget, request);
     }
