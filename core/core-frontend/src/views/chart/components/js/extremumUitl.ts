@@ -178,9 +178,14 @@ export const extremumEvt = (newChart, chart, _options, container) => {
         }
       })
     })
-    newChart.chart.geometries[0].on('afteranimate', () => {
-      createExtremumPoint(chart, ev)
-    })
+    const firstGeometry = newChart.chart.geometries[0]
+    const renderExtremumPoint = () => createExtremumPoint(chart, ev)
+    if (_options?.animation === false) {
+      // 禁用动画时 afteranimate 不再稳定触发，改在渲染完成后补建极值标记
+      newChart.on('afterrender', renderExtremumPoint)
+    } else {
+      firstGeometry?.on('afteranimate', renderExtremumPoint)
+    }
   })
   newChart.on('legend-item:click', ev => {
     const legendHideData = ev.view
