@@ -26,6 +26,7 @@ import {
 import {
   getColor,
   getGroupColor,
+  parseJson,
   getSingleDimensionColor,
   getStackColor,
   handleEmptyDataStrategy,
@@ -177,8 +178,15 @@ export abstract class G2PlotChartView<
 
   protected configConditions(chart: Chart, options: O) {
     const annotations = getConditions(chart)
+    const { threshold, functionCfg } = parseJson(chart.senior)
+    const disabledAnimation =
+      threshold?.enable &&
+      functionCfg?.sliderShow &&
+      annotations.some(annotation => annotation.type === 'regionFilter')
     return {
       ...options,
+      // 缩略轴过滤后 regionFilter 需跟随当前渲染周期立即重建
+      ...(disabledAnimation ? { animation: false } : {}),
       annotations: [...annotations, ...((options as unknown as Options).annotations || [])]
     }
   }
