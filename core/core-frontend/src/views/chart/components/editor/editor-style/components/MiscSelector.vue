@@ -347,7 +347,8 @@ onMounted(() => {
     </el-row>
 
     <!--gauge-begin-->
-    <template v-if="!mobileInPc">
+    <!-- 批量操作不允许修改仪表盘最大最小值 -->
+    <template v-if="!batchOptStatus">
       <el-form-item
         v-show="showProperty('gaugeMinType')"
         class="form-item margin-bottom-8"
