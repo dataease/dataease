@@ -16,10 +16,12 @@ import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.chart.dao.ext.mapper.ExtChartViewMapper;
 import io.dataease.commons.utils.EncryptUtils;
 import io.dataease.constant.ColumnPermissionConstants;
+import io.dataease.constant.SQLConstants;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
 import io.dataease.dataset.dao.ext.mapper.DataSetAssistantMapper;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
+import io.dataease.datasource.manage.DataSourceManage;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.sql.SQLProvider;
@@ -30,11 +32,7 @@ import io.dataease.engine.trans.WhereTree2Str;
 import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.api.PluginManageApi;
-import io.dataease.extensions.datasource.dto.CalParam;
-import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
-import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
-import io.dataease.extensions.datasource.dto.FieldGroupDTO;
-import io.dataease.extensions.datasource.dto.TableFieldWithValue;
+import io.dataease.extensions.datasource.dto.*;
 import io.dataease.extensions.datasource.factory.ProviderFactory;
 import io.dataease.extensions.datasource.model.SQLMeta;
 import io.dataease.extensions.datasource.model.SQLObj;
@@ -57,10 +55,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import java.sql.Types;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.sql.Types;
 
 
 @Component
@@ -88,6 +87,9 @@ public class DatasetSQLBotManage {
 
     @Autowired(required = false)
     private PluginManageApi pluginManage;
+
+    @Resource
+    private DataSourceManage dataSourceManage;
 
     @Value("${dataease.sqlbot.encrypt:false}")
     private boolean encryptEnabled;
@@ -561,6 +563,39 @@ public class DatasetSQLBotManage {
         vo.setUser(config.getUsername());
         vo.setPassword(config.getPassword());
         vo.setMode(config.getConnectionType());
+        if (dsType.contains(DatasourceConfiguration.DatasourceType.sqlServer.name())) {
+            ConnectionObj connection = null;
+            try {
+                String datasourceId = row.get("cd_id").toString();
+                CoreDatasource coreDatasource = dataSourceManage.getCoreDatasource(Long.valueOf(datasourceId));
+                DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
+                if (coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.Excel.name()) || coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
+                    coreDatasource = engineManage.getDeEngine();
+                }
+                if (StringUtils.isNotEmpty(coreDatasource.getStatus()) && !"Error".equalsIgnoreCase(coreDatasource.getStatus())) {
+//                    DEException.throwException(Translator.get("i18n_invalid_ds"));
+                    BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
+                    datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
+                    Provider provider = ProviderFactory.getProvider(coreDatasource.getType());
+                    connection = provider.getConnection(datasourceSchemaDTO);
+                    // 获取数据库version
+                    if (connection != null) {
+                        datasourceSchemaDTO.setDsVersion(connection.getConnection().getMetaData().getDatabaseMajorVersion());
+                        vo.setLowVersion(datasourceSchemaDTO.getDsVersion() < 11);
+                    }
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            } finally {
+                if (connection != null && connection.getConnection() != null) {
+                    try {
+                        connection.getConnection().close();
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
         if (dsIdFixed) {
             vo.setId(Long.parseLong(row.get("cd_id").toString()));
         }
