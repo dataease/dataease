@@ -547,7 +547,7 @@ span {
 
   .label {
     cursor: default;
-    color: #646a73;
+    color: @canvas-main-font-color;
     font-size: 12px;
     font-style: normal;
     font-weight: 400;
@@ -584,7 +584,7 @@ span {
 <style>
 .senior-dark {
   .label-dark {
-    color: #a6a6a6 !important;
+    color: #ebebeb !important;
   }
 }
 </style>

@@ -4705,7 +4705,7 @@ span {
     color: #646a73;
 
     &.dark {
-      color: #a6a6a6;
+      color: #ebebeb;
     }
   }
 
