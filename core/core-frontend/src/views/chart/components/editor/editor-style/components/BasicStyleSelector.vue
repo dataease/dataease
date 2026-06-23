@@ -1703,7 +1703,7 @@ onMounted(async () => {
     min-width: 56px;
 
     &.dark {
-      color: #a6a6a6;
+      color: #ebebeb;
     }
   }
 }

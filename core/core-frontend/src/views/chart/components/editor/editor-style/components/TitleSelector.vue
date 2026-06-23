@@ -510,7 +510,7 @@ watch(
   }
 }
 .remark-label {
-  color: var(--N600, #646a73);
+  color: @canvas-main-font-color;
   font-family: var(--de-custom_font, 'PingFang');
   font-size: 12px;
   font-style: normal;
@@ -518,7 +518,7 @@ watch(
   line-height: 20px;
 
   &.remark-label--dark {
-    color: var(--N600-Dark, #a6a6a6);
+    color: @canvas-main-font-color-dark;
   }
 }
 </style>
