@@ -77,7 +77,6 @@ const { icon, name, label, dragInfo, themes } = toRefs(props)
     }
   }
   .label-content {
-    color: @canvas-main-font-color;
     text-align: center;
     line-height: 20px;
     font-size: 12px;
