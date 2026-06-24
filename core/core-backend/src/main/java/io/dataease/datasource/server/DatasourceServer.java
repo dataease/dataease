@@ -916,8 +916,14 @@ public class DatasourceServer implements DatasourceApi {
         Long datasourceId = Long.valueOf(req.get("datasourceId"));
         CoreDatasourceTask coreDatasourceTask = datasourceTaskServer.selectByDSId(datasourceId);
         CoreDatasource coreDatasource = dataSourceManage.getCoreDatasource(datasourceId);
-        DatasourceServer.UpdateType updateType = DatasourceServer.UpdateType.valueOf(coreDatasourceTask.getUpdateType());
-        datasourceSyncManage.extractedData(null, coreDatasource, updateType, MANUAL.toString());
+        if (coreDatasource.getType().equalsIgnoreCase("ExcelRemote")) {
+            DatasourceServer.UpdateType updateType = DatasourceServer.UpdateType.valueOf(coreDatasourceTask.getUpdateType());
+            datasourceSyncManage.extractedExcelData(null, coreDatasource, updateType, MANUAL.toString());
+        } else {
+            DatasourceServer.UpdateType updateType = DatasourceServer.UpdateType.valueOf(coreDatasourceTask.getUpdateType());
+            datasourceSyncManage.extractedData(null, coreDatasource, updateType, MANUAL.toString());
+        }
+
     }
 
     public static <T> List<T> deepCopy(List<T> originalList) {

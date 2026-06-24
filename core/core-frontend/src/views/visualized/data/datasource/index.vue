@@ -699,6 +699,24 @@ const updateApiDs = () => {
   })
 }
 
+const syncRemoteExcelDsLoading = ref(false)
+const updateRemoteExcelDs = () => {
+  if (syncRemoteExcelDsLoading.value) {
+    return
+  }
+  syncRemoteExcelDsLoading.value = true
+  syncApiDs({ datasourceId: nodeInfo.id })
+    .then(() => {
+      ElMessage.success(t('datasource.req_completed'))
+      if (showRecord.value) {
+        getRecord()
+      }
+    })
+    .finally(() => {
+      syncRemoteExcelDsLoading.value = false
+    })
+}
+
 const nodeExpand = data => {
   if (data.id) {
     expandedKey.value.push(data.id)
@@ -1847,14 +1865,30 @@ const getMenuList = (val: boolean) => {
                 </el-col>
               </el-row>
             </template>
-            <el-button @click="getRecord" class="update-records" text>
-              <template #icon>
-                <icon name="icon_describe_outlined"
-                  ><icon_describe_outlined class="svg-icon"
-                /></icon>
-              </template>
-              {{ t('dataset.update_records') }}
-            </el-button>
+            <div class="update-actions">
+              <el-button
+                v-if="nodeInfo.type === 'ExcelRemote'"
+                @click="updateRemoteExcelDs"
+                :loading="syncRemoteExcelDsLoading"
+                class="update-records"
+                text
+              >
+                <template #icon>
+                  <icon name="icon_replace_outlined"
+                    ><icon_replace_outlined class="svg-icon"
+                  /></icon>
+                </template>
+                {{ t('datasource.execute_once') }}
+              </el-button>
+              <el-button @click="getRecord" class="update-records" text>
+                <template #icon>
+                  <icon name="icon_describe_outlined"
+                    ><icon_describe_outlined class="svg-icon"
+                  /></icon>
+                </template>
+                {{ t('dataset.update_records') }}
+              </el-button>
+            </div>
           </BaseInfoContent>
         </template>
       </template>
@@ -2127,10 +2161,17 @@ const getMenuList = (val: boolean) => {
     }
   }
 
-  .update-records {
+  .update-actions {
     position: absolute;
     top: 19px;
     right: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .update-records {
+    margin: 0;
   }
 
   .update-info {
