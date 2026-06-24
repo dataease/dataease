@@ -34,3 +34,6 @@ spring:
     show-sql: true
 mybatis-plus:
   mapper-locations: classpath:mybatis/*.xml
+
+server:
+  address: 127.0.0.1
