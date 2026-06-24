@@ -494,6 +494,7 @@ watch(
                 @onLabelChange="onLabelChange"
               />
             </collapse-switch-item>
+            <!-- tooltip 开关会影响数据详情字段，需要重新取数 -->
             <collapse-switch-item
               v-if="showProperties('tooltip-selector')"
               v-model="chart.customAttr.tooltip.show"
@@ -502,7 +503,7 @@ watch(
               :title="t('chart.tooltip')"
               :show-switch="propertyInnerAll['tooltip-selector'].includes('show')"
               name="tooltip"
-              @modelChange="val => onTooltipChange({ data: val }, 'show')"
+              @modelChange="val => onTooltipChange({ data: val, requestData: true }, 'show')"
             >
               <tooltip-selector
                 class="attr-selector"
