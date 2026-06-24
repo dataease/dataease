@@ -1,6 +1,5 @@
 package io.dataease.datasource.security;
 
-import io.dataease.datasource.dao.auto.entity.CoreDriver;
 import io.dataease.exception.DEException;
 import org.apache.commons.lang3.StringUtils;
 
@@ -125,22 +124,6 @@ public final class JdbcUrlSecurityPolicy {
             DEException.throwException("invalid driver");
         }
         return driverClass;
-    }
-
-    public static String resolveDriverClass(String type, String requestedDriverClass, String customDriver, CoreDriver registeredDriver) {
-        if (!isDefaultCustomDriver(customDriver)) {
-            if (registeredDriver == null
-                    || StringUtils.isBlank(registeredDriver.getDriverClass())
-                    || !StringUtils.equalsIgnoreCase(normalizeType(type), normalizeType(registeredDriver.getType()))) {
-                DEException.throwException("invalid driver");
-            }
-            return registeredDriver.getDriverClass();
-        }
-        String trustedDriverClass = trustedDriverClass(type);
-        if (StringUtils.isNotBlank(requestedDriverClass) && !StringUtils.equalsIgnoreCase(requestedDriverClass, trustedDriverClass)) {
-            DEException.throwException("invalid driver");
-        }
-        return trustedDriverClass;
     }
 
     public static boolean isDefaultCustomDriver(String customDriver) {

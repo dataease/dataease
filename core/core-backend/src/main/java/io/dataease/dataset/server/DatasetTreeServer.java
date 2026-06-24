@@ -8,7 +8,6 @@ import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.vo.DataSetBarVO;
 import io.dataease.constant.LogOT;
 import io.dataease.constant.LogST;
-import io.dataease.constant.XpackSettingConstants;
 import io.dataease.dataset.manage.DatasetGroupManage;
 import io.dataease.exportCenter.manage.ExportCenterDownLoadManage;
 import io.dataease.exportCenter.manage.ExportCenterManage;
@@ -19,7 +18,6 @@ import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -110,8 +108,7 @@ public class DatasetTreeServer implements DatasetTreeApi {
 
     @Override
     public void exportDataset(DataSetExportRequest request, HttpServletResponse response) throws Exception {
-        boolean embeddedSyncExport = !StringUtils.equalsIgnoreCase(exportCenterManage.singleValue(XpackSettingConstants.EMBEDDED_EXPORT_MODE), "async");
-        if (request.isDataEaseBi() && embeddedSyncExport) {
+        if (request.isDataEaseBi()) {
             exportCenterDownLoadManage.downloadDataset(request, response);
         } else {
             exportCenterManage.addTask(request.getId(), "dataset", request);

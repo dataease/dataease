@@ -22,7 +22,6 @@ import io.dataease.permission.util.V3UserUtil;
 import io.dataease.result.PageResult;
 import io.dataease.system.manage.SysParameterManage;
 import io.dataease.utils.*;
-import io.dataease.visualization.dao.auto.entity.CoreStore;
 import io.dataease.visualization.dao.auto.entity.VisualizationWatermark;
 import io.dataease.visualization.dao.auto.mapper.VisualizationWatermarkRepository;
 import io.dataease.visualization.dto.WatermarkContentDTO;
@@ -79,35 +78,24 @@ public class ExportCenterManage implements BaseExportApi {
 
 
     public void download(String id, HttpServletResponse response) throws Exception {
-        if (StringUtils.isBlank(id) || id.contains("..") || id.indexOf('/') >= 0 || id.indexOf('\\') >= 0) {
-            DEException.throwException("非法的任务ID");
-        }
         if (!coreExportDownloadTaskRepository.existsById(id)) {
             DEException.throwException("任务不存在");
         }
         CoreExportTask exportTask = coreExportTaskRepository.findById(id).orElse(null);
-        if (exportTask == null) {
-            DEException.throwException("任务不存在");
-        }
-        if (!exportTask.getUserId().equals(V3UserUtil.getUid())) {
-            DEException.throwException("无权访问该任务");
-        }
         exportCenterDownLoadManage.download(exportTask, response);
     }
 
     public void delete(String id) {
-        if (coreExportTaskRepository.existsById(id)) {
-            Iterator<Map.Entry<String, Future>> iterator = Running_Task.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<String, Future> entry = iterator.next();
-                if (entry.getKey().equalsIgnoreCase(id)) {
-                    entry.getValue().cancel(true);
-                    iterator.remove();
-                }
+        Iterator<Map.Entry<String, Future>> iterator = Running_Task.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, Future> entry = iterator.next();
+            if (entry.getKey().equalsIgnoreCase(id)) {
+                entry.getValue().cancel(true);
+                iterator.remove();
             }
-            FileUtils.deleteDirectoryRecursively(exportData_path + id);
-            coreExportTaskRepository.deleteById(id);
         }
+        FileUtils.deleteFile(exportData_path + id);
+        coreExportTaskRepository.deleteById(id);
     }
 
     public void deleteAll(String type) {
@@ -133,7 +121,7 @@ public class ExportCenterManage implements BaseExportApi {
                     iterator.remove();
                 }
             }
-            FileUtils.deleteDirectoryRecursively(exportData_path + exportTask.getId());
+            FileUtils.deleteFile(exportData_path + exportTask.getId());
             coreExportTaskRepository.deleteById(exportTask.getId());
         });
 
@@ -145,12 +133,6 @@ public class ExportCenterManage implements BaseExportApi {
 
     public void retry(String id) {
         CoreExportTask exportTask = coreExportTaskRepository.findById(id).orElse(null);
-        if (exportTask == null) {
-            DEException.throwException("任务不存在");
-        }
-        if (!exportTask.getUserId().equals(V3UserUtil.getUid())) {
-            DEException.throwException("无权访问该任务");
-        }
         if (!exportTask.getExportStatus().equalsIgnoreCase("FAILED")) {
             DEException.throwException("正在导出中!");
         }
@@ -158,7 +140,7 @@ public class ExportCenterManage implements BaseExportApi {
         exportTask.setExportProgress("0");
         exportTask.setExportMachineName(hostName());
         exportTask.setExportTime(System.currentTimeMillis());
-        FileUtils.deleteDirectoryRecursively(exportData_path + id);
+        FileUtils.deleteFile(exportData_path + id);
         if (exportTask.getExportFromType().equalsIgnoreCase("chart")) {
             ChartExcelRequest request = JsonUtil.parseObject(exportTask.getParams(), ChartExcelRequest.class);
             exportCenterDownLoadManage.startViewTask(exportTask, request);
