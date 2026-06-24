@@ -76,10 +76,17 @@ public class FontManage {
         if (coreFont != null) {
             coreFontRepository.deleteById(id);
             if (StringUtils.isNotEmpty(coreFont.getFileTransName())) {
-                FileUtils.deleteFile(path + coreFont.getFileTransName());
+                String targetPath = path + coreFont.getFileTransName();
+                try {
+                    File targetFile = new File(targetPath).getCanonicalFile();
+                    if (targetFile.getAbsolutePath().startsWith(new File(path).getCanonicalPath())) {
+                        FileUtils.deleteFile(targetFile.getAbsolutePath());
+                    }
+                } catch (IOException e) {
+                    // skip invalid paths
+                }
             }
         }
-
     }
 
     public void changeDefault(FontDto fontDto) {
@@ -92,6 +99,9 @@ public class FontManage {
     }
 
     public void download(String file, HttpServletResponse response) {
+        if (StringUtils.isBlank(file) || file.contains("..") || file.contains("/") || file.contains("\\")) {
+            DEException.throwException("非法的文件路径");
+        }
 
         List<CoreFont> coreFonts = coreFontRepository.findByFileTransName(file);
         if (CollectionUtils.isEmpty(coreFonts)) {
@@ -99,10 +109,16 @@ public class FontManage {
         }
 
         try {
+            String targetPath = path + coreFonts.get(0).getFileTransName();
+            File targetFile = new File(targetPath).getCanonicalFile();
+            if (!targetFile.getAbsolutePath().startsWith(new File(path).getCanonicalPath())) {
+                DEException.throwException("非法的文件路径");
+            }
+
             response.setContentType("application/x-download");
             response.setHeader("Content-Disposition", "attachment;filename=" + coreFonts.get(0).getFileTransName());
             try (ServletOutputStream out = response.getOutputStream();
-                 InputStream stream = new FileInputStream(path + coreFonts.get(0).getFileTransName())) {
+                 InputStream stream = new FileInputStream(targetFile)) {
                 byte buff[] = new byte[1024];
                 int length;
                 while ((length = stream.read(buff)) > 0) {
@@ -133,7 +149,11 @@ public class FontManage {
             if (StringUtils.isEmpty(filename) || !filename.toLowerCase().endsWith(".ttf")) {
                 DEException.throwException("非法格式的文件！");
             }
+            FileUtils.validateUploadFilename(filename);
             String suffix = filename.substring(filename.lastIndexOf(".") + 1);
+            if (suffix.contains("..") || suffix.contains("/") || suffix.contains("\\")) {
+                DEException.throwException("非法的文件名");
+            }
             String filePath = path + fileNameUUID + "." + suffix;
             File f = new File(filePath);
             FileOutputStream fileOutputStream = new FileOutputStream(f);
