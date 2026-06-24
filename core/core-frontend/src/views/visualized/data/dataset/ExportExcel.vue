@@ -3,10 +3,9 @@ import dvPreviewDownload from '@/assets/svg/icon_download_outlined.svg'
 import deDelete from '@/assets/svg/de-delete.svg'
 import icon_fileExcel_colorful from '@/assets/svg/icon_file-excel_colorful.svg'
 import icon_refresh_outlined from '@/assets/svg/icon_refresh_outlined.svg'
-import { ref, h, onUnmounted, computed, reactive } from 'vue'
+import { ref, onUnmounted, computed, reactive } from 'vue'
 import { EmptyBackground } from '@/components/empty-background'
-import { ElButton, ElMessage, ElMessageBox, ElTabPane, ElTabs } from 'element-plus-secondary'
-import { RefreshLeft } from '@element-plus/icons-vue'
+import { ElMessage, ElMessageBox, ElTabPane, ElTabs } from 'element-plus-secondary'
 import {
   exportTasks,
   exportRetry,
@@ -17,10 +16,8 @@ import {
   generateDownloadUri
 } from '@/api/dataset'
 import { useI18n } from '@/hooks/web/useI18n'
-import { useEmitt } from '@/hooks/web/useEmitt'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import { useCache } from '@/hooks/web/useCache'
-import { useLinkStoreWithOut } from '@/store/modules/link'
 import { useAppStoreWithOut } from '@/store/modules/app'
 
 const { t } = useI18n()
@@ -116,35 +113,33 @@ const handleClick = tab => {
 }
 
 const getExportTasks = () => {
-  if (activeName.value === 'IN_PROGRESS') {
-    exportTasksRecords().then(res => {
-      tabList.value.forEach(item => {
-        if (item.name === 'ALL') {
-          item.label = t('data_set.all') + '(' + res.data.ALL + ')'
-        }
-        if (item.name === 'IN_PROGRESS') {
-          item.label = t('data_set.exporting') + '(' + res.data.IN_PROGRESS + ')'
-        }
-        if (item.name === 'SUCCESS') {
-          item.label = t('data_set.success') + '(' + res.data.SUCCESS + ')'
-        }
-        if (item.name === 'FAILED') {
-          item.label = t('data_set.fail') + '(' + res.data.FAILED + ')'
-        }
-        if (item.name === 'PENDING') {
-          item.label = t('data_set.waiting') + '(' + res.data.PENDING + ')'
-        }
-      })
+  exportTasksRecords().then(res => {
+    tabList.value.forEach(item => {
+      if (item.name === 'ALL') {
+        item.label = t('data_set.all') + '(' + res.data.ALL + ')'
+      }
+      if (item.name === 'IN_PROGRESS') {
+        item.label = t('data_set.exporting') + '(' + res.data.IN_PROGRESS + ')'
+      }
+      if (item.name === 'SUCCESS') {
+        item.label = t('data_set.success') + '(' + res.data.SUCCESS + ')'
+      }
+      if (item.name === 'FAILED') {
+        item.label = t('data_set.fail') + '(' + res.data.FAILED + ')'
+      }
+      if (item.name === 'PENDING') {
+        item.label = t('data_set.waiting') + '(' + res.data.PENDING + ')'
+      }
     })
-    exportTasks(
-      state.paginationConfig.currentPage,
-      state.paginationConfig.pageSize,
-      activeName.value
-    ).then(res => {
-      state.paginationConfig.total = res.data.total
-      tableData.value = res.data.records
-    })
-  }
+  })
+  exportTasks(
+    state.paginationConfig.currentPage,
+    state.paginationConfig.pageSize,
+    activeName.value
+  ).then(res => {
+    state.paginationConfig.total = res.data.total
+    tableData.value = res.data.records
+  })
 }
 
 const init = params => {
@@ -160,70 +155,8 @@ const init = params => {
     getExportTasks()
   }, 5000)
 }
-const linkStore = useLinkStoreWithOut()
 const appStore = useAppStoreWithOut()
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
-
-const taskExportTopicCall = task => {
-  if (!linkStore.getLinkToken && !isDataEaseBi.value && !appStore.getIsIframe) {
-    if (JSON.parse(task).exportStatus === 'SUCCESS') {
-      openMessageLoading(
-        JSON.parse(task).exportFromName + ` ${t('data_set.successful_go_to')}`,
-        'success',
-        callbackExportSuc
-      )
-      return
-    }
-    if (JSON.parse(task).exportStatus === 'FAILED') {
-      openMessageLoading(
-        JSON.parse(task).exportFromName + ` ${t('data_set.failed_go_to')}`,
-        'error',
-        callbackExportError
-      )
-    }
-  }
-}
-
-const openMessageLoading = (text, type = 'success', cb) => {
-  // success error loading
-  const customClass = `de-message-${type || 'success'} de-message-export`
-  ElMessage({
-    message: h('p', null, [
-      h(
-        'span',
-        {
-          title: t(text),
-          class: 'ellipsis m50-export'
-        },
-        t(text)
-      ),
-      h(
-        ElButton,
-        {
-          text: true,
-          size: 'small',
-          class: 'btn-text',
-          onClick: () => {
-            cb()
-          }
-        },
-        t('data_export.export_center')
-      )
-    ]),
-    icon: type === 'loading' ? h(RefreshLeft) : '',
-    type,
-    showClose: true,
-    customClass
-  })
-}
-
-const callbackExportError = () => {
-  useEmitt().emitter.emit('data-export-center', { activeName: 'FAILED' })
-}
-
-const callbackExportSuc = () => {
-  useEmitt().emitter.emit('data-export-center', { activeName: 'SUCCESS' })
-}
 
 const downLoadAll = () => {
   if (multipleSelection.value.length === 0) {
@@ -340,8 +273,6 @@ const delAll = () => {
     })
 }
 
-useEmitt({ name: 'task-export-topic-call', callback: taskExportTopicCall })
-
 defineExpose({
   init,
   handleClose
@@ -351,7 +282,7 @@ defineExpose({
 <template>
   <div class="de-export-excel_content">
     <el-button
-      v-if="(isDataEaseBi || appStore.getIsIframe) && activeName === 'IN_PROGRESS'"
+      v-if="isDataEaseBi || appStore.getIsIframe"
       class="de-refresh-Embedded"
       text
       @click="getExportTasks"
