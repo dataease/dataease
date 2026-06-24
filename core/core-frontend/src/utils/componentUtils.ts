@@ -75,7 +75,7 @@ export function filterParamsOptions(params, paramsOption) {
   const prefixSet = new Set()
   // 收集所有可能的父级前缀
   paramsOption.forEach(option => {
-    if (option.includes('-de-')) {
+    if (typeof option === 'string' && option.includes('-de-')) {
       const parts = option.split('-de-')
       // 收集所有前缀：父级、祖父级等
       for (let i = 1; i < parts.length; i++) {
@@ -92,7 +92,7 @@ export function filterParamsOptions(params, paramsOption) {
       return true
     }
     // 如果是层级结构，检查所有父级前缀
-    if (value.includes('-de-')) {
+    if (typeof value === 'string' && value.includes('-de-')) {
       const parts = value.split('-de-')
 
       // 检查所有可能的父级前缀
@@ -107,7 +107,10 @@ export function filterParamsOptions(params, paramsOption) {
     // 检查该值是否是某个选项的父级
     // 如：paramsOption 中有 "香橙店-de-浓郁椰奶"，传入 "香橙店" 也应该匹配
     if (
-      Array.from(optionSet).some(option => option.startsWith(value + '-de-') || option === value)
+      Array.from(optionSet).some(
+        option =>
+          (typeof option === 'string' && option.startsWith(value + '-de-')) || option === value
+      )
     ) {
       return true
     }

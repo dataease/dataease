@@ -8,6 +8,8 @@ import { fieldType } from '@/utils/attr'
 import { cloneDeep, defaultsDeep } from 'lodash-es'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { iconFieldMap } from '@/components/icon-group/field-list'
+import { storeToRefs } from 'pinia'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 
 const { t } = useI18n()
 
@@ -21,7 +23,8 @@ const props = withDefaults(
   }>(),
   { themes: 'dark', mobileInPc: false }
 )
-
+const dvMainStore = dvMainStoreWithOut()
+const { batchOptStatus } = storeToRefs(dvMainStore)
 useEmitt({
   name: 'word-cloud-default-data-range',
   callback: args => wordCloudDefaultDataRange(args)
@@ -344,7 +347,8 @@ onMounted(() => {
     </el-row>
 
     <!--gauge-begin-->
-    <template v-if="!mobileInPc">
+    <!-- 批量操作不允许修改仪表盘最大最小值 -->
+    <template v-if="!batchOptStatus">
       <el-form-item
         v-show="showProperty('gaugeMinType')"
         class="form-item margin-bottom-8"
@@ -650,7 +654,7 @@ onMounted(() => {
     </el-row>
 
     <el-form-item
-      v-show="showProperty('liquidMaxType')"
+      v-show="showProperty('liquidMaxType') && !batchOptStatus"
       class="form-item margin-bottom-8"
       :label="t('chart.liquid_max')"
       :class="'form-item-' + themes"
@@ -670,7 +674,9 @@ onMounted(() => {
     </el-form-item>
 
     <el-form-item
-      v-if="showProperty('liquidMaxType') && state.miscForm.liquidMaxType === 'fix'"
+      v-if="
+        showProperty('liquidMaxType') && state.miscForm.liquidMaxType === 'fix' && !batchOptStatus
+      "
       class="form-item"
       :class="'form-item-' + themes"
     >
@@ -685,7 +691,11 @@ onMounted(() => {
 
     <el-row
       :gutter="8"
-      v-if="showProperty('liquidMaxField') && state.miscForm.liquidMaxType === 'dynamic'"
+      v-if="
+        showProperty('liquidMaxField') &&
+        state.miscForm.liquidMaxType === 'dynamic' &&
+        !batchOptStatus
+      "
     >
       <el-col :span="validLiquidMaxFieldCalcAndAgg ? 24 : 12">
         <el-form-item class="form-item" :class="'form-item-' + themes">
@@ -924,7 +934,7 @@ onMounted(() => {
     min-width: 56px;
 
     &.dark {
-      color: #a6a6a6;
+      color: #ebebeb;
     }
   }
 }

@@ -14,19 +14,18 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.13</version>
+        <version>3.5.15</version>
         <relativePath />
     </parent>
 
     <properties>
-        <dataease.version>2.10.24</dataease.version>
+        <dataease.version>2.10.25</dataease.version>
         <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-cloud-alibaba.version>2023.0.1.0</spring-cloud-alibaba.version>
         <spring-cloud.version>2023.0.1</spring-cloud.version>
-        <spring-boot.version>3.3.13</spring-boot.version>
+        <spring-boot.version>3.5.15</spring-boot.version>
         <spring-framework.version>6.2.19</spring-framework.version>
-        <spring-ldap.version>3.2.16</spring-ldap.version>
         <tomcat.version>10.1.55</tomcat.version>
         <logback.version>1.5.34</logback.version>
         <netty.version>4.1.135.Final</netty.version>
@@ -47,16 +46,18 @@
         <httpclient.version>4.5.14</httpclient.version>
         <httpcore.version>4.4.16</httpcore.version>
         <easyexcel.version>4.0.3</easyexcel.version>
+        <poi.version>5.4.0</poi.version>
         <commons-io.version>2.16.1</commons-io.version>
         <flatten-maven.version>1.3.0</flatten-maven.version>
         <maven.exec.version>3.1.0</maven.exec.version>
         <guava.version>33.4.8-jre</guava.version>
+        <gson.version>2.12.1</gson.version>
         <commons-fileupload.version>1.6.0</commons-fileupload.version>
         <commons-lang3.version>3.20.0</commons-lang3.version>
-        <commons-net.version>3.8.0</commons-net.version>
+        <commons-net.version>3.9.0</commons-net.version>
         <selenium-java.version>4.19.1</selenium-java.version>
         <playwright-java.version>1.55.0</playwright-java.version>
-        <angus-mail.version>2.0.3</angus-mail.version>
+        <angus-mail.version>2.0.4</angus-mail.version>
         <mysql-connector-j.version>8.2.0</mysql-connector-j.version>
         <itextpdf.version>8.0.4</itextpdf.version>
         <flexmark.version>0.62.2</flexmark.version>
@@ -65,6 +66,7 @@
         <jsch.version>0.2.26</jsch.version>
         <xmlsec.version>2.3.5</xmlsec.version>
         <woodstox-core.version>7.1.0</woodstox-core.version>
+        <assertj.version>3.27.7</assertj.version>
     </properties>
 
     <dependencyManagement>
@@ -188,7 +190,6 @@
             <dependency>
                 <groupId>org.springframework.ldap</groupId>
                 <artifactId>spring-ldap-core</artifactId>
-                <version>${spring-ldap.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
@@ -296,9 +297,65 @@
                 <version>${easyexcel.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.quartz-scheduler</groupId>
+                <artifactId>quartz</artifactId>
+                <version>2.3.2</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.mchange</groupId>
+                        <artifactId>mchange-commons-java</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi</artifactId>
+                <version>${poi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
+                <version>${poi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml-lite</artifactId>
+                <version>${poi.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.mysql</groupId>
                 <artifactId>mysql-connector-j</artifactId>
                 <version>${mysql-connector-j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>2.25.4</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>1.18.3</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>2.6</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.pdfbox</groupId>
+                <artifactId>pdfbox</artifactId>
+                <version>2.0.33</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>3.25.5</version>
+            </dependency>
+            <dependency>
+                <groupId>org.xmlunit</groupId>
+                <artifactId>xmlunit-core</artifactId>
+                <version>2.10.0</version>
             </dependency>
 
         </dependencies>
