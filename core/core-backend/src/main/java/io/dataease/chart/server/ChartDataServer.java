@@ -234,7 +234,7 @@ public class ChartDataServer implements ChartDataApi {
         String linkToken = httpServletRequest.getHeader(AuthConstant.LINK_TOKEN_KEY);
         LogUtil.info(request.getViewInfo().getId() + " " + StringUtils.isNotEmpty(linkToken) + " " + request.isDataEaseBi());
         boolean embeddedSyncExport = request.isDataEaseBi() && StringUtils.isEmpty(linkToken) && exportCenterManage.embeddedExportSync();
-        if ((StringUtils.isNotEmpty(linkToken) && !request.isDataEaseBi()) || embeddedSyncExport) {
+        if ((StringUtils.isNotEmpty(linkToken) && (!request.isDataEaseBi()) && embeddedSyncExport)) {
             OutputStream outputStream = response.getOutputStream();
             try {
                 Workbook wb = new SXSSFWorkbook();
