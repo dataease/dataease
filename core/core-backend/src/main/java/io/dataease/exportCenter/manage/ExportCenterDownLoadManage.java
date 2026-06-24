@@ -633,6 +633,8 @@ public class ExportCenterDownLoadManage {
             filePath = exportData_path + exportTask.getId() + "/" + exportTask.getId() + ".xlsx";
         }
 
+        validateDownloadPath(filePath);
+
         try (FileInputStream fileInputStream = new FileInputStream(filePath); OutputStream outputStream = response.getOutputStream()) {
             FileChannel fileChannel = fileInputStream.getChannel();
             WritableByteChannel outputChannel = Channels.newChannel(outputStream);
@@ -843,6 +845,18 @@ public class ExportCenterDownLoadManage {
             outputStream.close();
         } catch (Exception e) {
             DEException.throwException(e);
+        }
+    }
+
+    private void validateDownloadPath(String filePath) {
+        try {
+            File resolved = new File(filePath).getCanonicalFile();
+            File base = new File(exportData_path).getCanonicalFile();
+            if (!resolved.getAbsolutePath().startsWith(base.getAbsolutePath())) {
+                throw new RuntimeException("非法的下载路径");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("路径解析失败");
         }
     }
 }
