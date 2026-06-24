@@ -3,6 +3,10 @@ server:
     connection-timeout: 70000
   servlet:
     context-path: ${DE_CONTEXT_PATH}
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json,application/xml
+    min-response-size: 1024
 spring:
   profiles:
     include: ${DE_SPRING_PROFILE}
