@@ -341,6 +341,9 @@ public class CalciteProvider extends Provider {
             }
         } else {
             ResultSet resultSet = null;
+            if (!getTables(datasourceRequest).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList()).contains(table)) {
+                DEException.throwException(Translator.get("i18n_invalid_table_name"));
+            }
             try (Connection con = getConnectionFromPool(datasourceRequest.getDatasource().getId()); Statement statement = getStatement(con, 30)) {
                 datasourceRequest.setDsVersion(con.getMetaData().getDatabaseMajorVersion());
                 if (datasourceRequest.getDatasource().getType().equalsIgnoreCase("mongo")) {
