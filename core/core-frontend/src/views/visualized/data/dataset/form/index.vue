@@ -1345,7 +1345,7 @@ onMounted(async () => {
   isEdit.value = false
   await new Promise(r => (p = r))
   await initEdite()
-  getDatasource(isEdit.value ? 0 : 2)
+  getDatasource(2)
   window.addEventListener('resize', handleResize)
   getSqlResultHeight()
   quotaTableHeight.value = sqlResultHeight.value - 242
