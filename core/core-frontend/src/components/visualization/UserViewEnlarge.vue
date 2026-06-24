@@ -12,7 +12,7 @@
   >
     <template #header v-if="!isIframe">
       <div class="header-title">
-        <div>{{ viewInfo?.title }}</div>
+        <div class="header-title-text" :title="viewInfo?.title">{{ viewInfo?.title }}</div>
         <div class="export-button">
           <el-select
             v-if="optType === 'enlarge' && exportPermissions[0]"
@@ -490,8 +490,17 @@ defineExpose({
   .ed-dialog__headerbtn {
     position: unset;
   }
+  .ed-dialog__title {
+    display: block;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
   .header-title {
-    width: 100%;
+    flex: 1;
+    min-width: 0;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -501,11 +510,25 @@ defineExpose({
     font-size: 16px;
     font-weight: 500;
     line-height: 24px;
+
+    // 长标题单行截断，避免撑高弹窗头部
+    .header-title-text {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .export-button {
+      flex-shrink: 0;
+    }
   }
 }
 </style>
 <style lang="less" scoped>
 .export-button {
+  margin-left: 16px;
   .pixel-select {
     width: 125px;
     margin-right: 8px;
