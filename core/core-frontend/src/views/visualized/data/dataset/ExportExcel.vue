@@ -3,7 +3,7 @@ import dvPreviewDownload from '@/assets/svg/icon_download_outlined.svg'
 import deDelete from '@/assets/svg/de-delete.svg'
 import icon_fileExcel_colorful from '@/assets/svg/icon_file-excel_colorful.svg'
 import icon_refresh_outlined from '@/assets/svg/icon_refresh_outlined.svg'
-import { ref, onUnmounted, computed, reactive } from 'vue'
+import { ref, onMounted, onUnmounted, computed, reactive } from 'vue'
 import { EmptyBackground } from '@/components/empty-background'
 import { ElMessage, ElMessageBox, ElTabPane, ElTabs } from 'element-plus-secondary'
 import {
@@ -156,6 +156,12 @@ const init = params => {
 }
 const appStore = useAppStoreWithOut()
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
+
+onMounted(() => {
+  if (isDataEaseBi.value || appStore.getIsIframe) {
+    handleClick()
+  }
+})
 
 const downLoadAll = () => {
   if (multipleSelection.value.length === 0) {
