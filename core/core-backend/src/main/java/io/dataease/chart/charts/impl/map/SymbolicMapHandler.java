@@ -61,8 +61,7 @@ public class SymbolicMapHandler extends GroupChartHandler {
         boolean needOrder = Utils.isNeedOrder(dsList);
         boolean crossDs = Utils.isCrossDs(dsMap);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
-        datasourceRequest.setIsCross(((DatasetGroupInfoDTO) formatResult.getContext().get("dataset")).getIsCross());
-        datasourceRequest.setDsList(dsMap);
+        fillDatasourceRequest(datasourceRequest, ((DatasetGroupInfoDTO) formatResult.getContext().get("dataset")).getIsCross(), dsMap, sqlMap);
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
         var extBubble = formatResult.getAxisMap().get(ChartAxis.extBubble);
         var allFields = (List<ChartViewFieldDTO>) filterResult.getContext().get("allFields");
@@ -104,9 +103,8 @@ public class SymbolicMapHandler extends GroupChartHandler {
             logger.debug("calcite data preview sql: " + querySQL);
             // 调用数据源的calcite获得data
             DatasourceRequest datasourceRequest1 = new DatasourceRequest();
-            datasourceRequest1.setIsCross(((DatasetGroupInfoDTO) formatResult.getContext().get("dataset")).getIsCross());
+            fillDatasourceRequest(datasourceRequest1, ((DatasetGroupInfoDTO) formatResult.getContext().get("dataset")).getIsCross(), dsMap, sqlMap);
             datasourceRequest1.setQuery(querySQL);
-            datasourceRequest1.setDsList(dsMap);
             detailData = (List<String[]>) provider.fetchResultField(datasourceRequest1).get("data");
         }
         //自定义排序

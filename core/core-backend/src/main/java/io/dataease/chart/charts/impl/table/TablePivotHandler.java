@@ -47,8 +47,7 @@ public class TablePivotHandler extends GroupChartHandler {
             var assistFields = getAssistFields(dynamicAssistFields, yAxis);
             if (CollectionUtils.isNotEmpty(assistFields)) {
                 var req = new DatasourceRequest();
-                req.setIsCross(crossDs);
-                req.setDsList(dsMap);
+                fillDatasourceRequest(req, crossDs, dsMap, sqlMap);
 
                 List<ChartSeniorAssistDTO> assists = dynamicAssistFields.stream().filter(ele -> !StringUtils.equalsIgnoreCase(ele.getSummary(), "last_item")).toList();
                 if (ObjectUtils.isNotEmpty(assists)) {
@@ -87,7 +86,7 @@ public class TablePivotHandler extends GroupChartHandler {
         boolean needOrder = Utils.isNeedOrder(dsList);
         boolean crossDs = ((DatasetGroupInfoDTO) formatResult.getContext().get("dataset")).getIsCross();
         DatasourceRequest datasourceRequest = new DatasourceRequest();
-        datasourceRequest.setDsList(dsMap);
+        fillDatasourceRequest(datasourceRequest, crossDs, dsMap, sqlMap);
         var allFields = (List<ChartViewFieldDTO>) filterResult.getContext().get("allFields");
         var rowAxis = view.getXAxis();
         var colAxis = view.getXAxisExt();
@@ -102,7 +101,7 @@ public class TablePivotHandler extends GroupChartHandler {
             if (!yAxis.isEmpty()) {
                 var tmpList = new ArrayList<>(allFields);
                 tmpList.addAll(yAxis);
-                var result = getData(sqlMeta, colAxis, yAxis, tmpList, crossDs, dsMap, view, provider, needOrder);
+                var result = getData(sqlMeta, colAxis, yAxis, tmpList, crossDs, dsMap, view, provider, needOrder, sqlMap);
                 var querySql = result.getT1();
                 var data = result.getT2();
                 var tmp = new HashMap<String, Object>();
@@ -127,7 +126,7 @@ public class TablePivotHandler extends GroupChartHandler {
                     if (!yAxis.isEmpty()) {
                         var tmpList = new ArrayList<>(allFields);
                         tmpList.addAll(yAxis);
-                        var result = getData(sqlMeta, xAxis, yAxis, tmpList, crossDs, dsMap, view, provider, needOrder);
+                        var result = getData(sqlMeta, xAxis, yAxis, tmpList, crossDs, dsMap, view, provider, needOrder, sqlMap);
                         var querySql = result.getT1();
                         var data = result.getT2();
                         var tmp = new HashMap<String, Object>();
@@ -145,7 +144,7 @@ public class TablePivotHandler extends GroupChartHandler {
             if (!yAxis.isEmpty()) {
                 var tmpList = new ArrayList<>(allFields);
                 tmpList.addAll(yAxis);
-                var result = getData(sqlMeta, rowAxis, yAxis, tmpList, crossDs, dsMap, view, provider, needOrder);
+                var result = getData(sqlMeta, rowAxis, yAxis, tmpList, crossDs, dsMap, view, provider, needOrder, sqlMap);
                 var querySql = result.getT1();
                 var data = result.getT2();
                 var tmp = new HashMap<String, Object>();
@@ -170,7 +169,7 @@ public class TablePivotHandler extends GroupChartHandler {
                     if (!yAxis.isEmpty()) {
                         var tmpList = new ArrayList<>(allFields);
                         tmpList.addAll(yAxis);
-                        var result = getData(sqlMeta, xAxis, yAxis, tmpList, crossDs, dsMap, view, provider, needOrder);
+                        var result = getData(sqlMeta, xAxis, yAxis, tmpList, crossDs, dsMap, view, provider, needOrder, sqlMap);
                         var querySql = result.getT1();
                         var data = result.getT2();
                         var tmp = new HashMap<String, Object>();
@@ -188,7 +187,7 @@ public class TablePivotHandler extends GroupChartHandler {
                 // 清掉聚合轴
                 var tmpList = new ArrayList<>(allFields);
                 tmpList.addAll(yAxis);
-                var result = getData(sqlMeta, Collections.emptyList(), yAxis, tmpList, crossDs, dsMap, view, provider, needOrder);
+                var result = getData(sqlMeta, Collections.emptyList(), yAxis, tmpList, crossDs, dsMap, view, provider, needOrder, sqlMap);
                 var querySql = result.getT1();
                 var data = result.getT2();
                 var tmp = new HashMap<String, Object>();
@@ -215,7 +214,7 @@ public class TablePivotHandler extends GroupChartHandler {
                     var tmpList = new ArrayList<>(allFields);
                     tmpList.addAll(yAxis);
                     var xAxis = colAxis.subList(0, i + 1);
-                    var result = getData(sqlMeta, xAxis, yAxis, tmpList, crossDs, dsMap, view, provider, needOrder);
+                    var result = getData(sqlMeta, xAxis, yAxis, tmpList, crossDs, dsMap, view, provider, needOrder, sqlMap);
                     var querySql = result.getT1();
                     var data = result.getT2();
                     var tmp = new HashMap<String, Object>();
@@ -238,7 +237,7 @@ public class TablePivotHandler extends GroupChartHandler {
                     var tmpList = new ArrayList<>(allFields);
                     tmpList.addAll(yAxis);
                     var xAxis = rowAxis.subList(0, i + 1);
-                    var result = getData(sqlMeta, xAxis, yAxis, tmpList, crossDs, dsMap, view, provider, needOrder);
+                    var result = getData(sqlMeta, xAxis, yAxis, tmpList, crossDs, dsMap, view, provider, needOrder, sqlMap);
                     var querySql = result.getT1();
                     var data = result.getT2();
                     var tmp = new HashMap<String, Object>();
@@ -270,7 +269,7 @@ public class TablePivotHandler extends GroupChartHandler {
                         xAxis.addAll(subCol);
                         var tmpAllList = new ArrayList<>(allFields);
                         tmpAllList.addAll(yAxis);
-                        var result = getData(sqlMeta, xAxis, yAxis, tmpAllList, crossDs, dsMap, view, provider, needOrder);
+                        var result = getData(sqlMeta, xAxis, yAxis, tmpAllList, crossDs, dsMap, view, provider, needOrder, sqlMap);
                         var querySql = result.getT1();
                         var data = result.getT2();
                         var tmp = new HashMap<String, Object>();
@@ -319,10 +318,9 @@ public class TablePivotHandler extends GroupChartHandler {
 
     private Tuple2<String, List<String[]>> getData(SQLMeta sqlMeta, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis,
                                                    List<ChartViewFieldDTO> allFields, boolean crossDs, Map<Long, DatasourceSchemaDTO> dsMap,
-                                                   ChartViewDTO view, Provider provider, boolean needOrder) {
+                                                   ChartViewDTO view, Provider provider, boolean needOrder, Map<String, Object> sqlMap) {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
-        datasourceRequest.setIsCross(crossDs);
-        datasourceRequest.setDsList(dsMap);
+        fillDatasourceRequest(datasourceRequest, crossDs, dsMap, sqlMap);
         Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
         Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
         String querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
