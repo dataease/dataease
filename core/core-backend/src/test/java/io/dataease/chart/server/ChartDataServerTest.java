@@ -135,6 +135,25 @@ public class ChartDataServerTest {
         }
     }
 
+    @Test
+    public void filterExportHeaderUsesCurrentDrillFieldsInsteadOfStaleViewAxes() {
+        ChartViewFieldDTO province = field("province", "省份", DeTypeConstants.DE_STRING);
+        ChartViewFieldDTO amount = field("amount", "销售额", DeTypeConstants.DE_FLOAT);
+        ChartViewFieldDTO city = field("city", "城市", DeTypeConstants.DE_STRING);
+
+        ChartViewDTO view = new ChartViewDTO();
+        view.setXAxis(new ArrayList<>(Arrays.asList(province, amount)));
+        view.setDrillFields(new ArrayList<>(List.of(city)));
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("fields", new ArrayList<>(Arrays.asList(province, city, amount)));
+        view.setData(data);
+
+        Object[] header = ChartDataServer.filterExportHeader(new Object[]{"省份", "城市", "销售额"}, view);
+
+        assertEquals(Arrays.asList("省份", "城市", "销售额"), Arrays.asList(header));
+    }
+
     private ChartDataServer chartDataServerWithExportLimits(Long viewLimit, Long datasetLimit) throws Exception {
         ChartDataManage chartDataManage = mock(ChartDataManage.class);
         when(chartDataManage.calcData(any(ChartViewDTO.class))).thenAnswer(invocation -> {
