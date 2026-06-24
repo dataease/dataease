@@ -207,6 +207,30 @@ const titleAlign = computed<string>(() => {
   return 'flex-start'
 })
 
+// 标题宽度交给 flex 计算，图标显示时优先占位
+const titleTextStyle = computed<CSSProperties>(() => ({
+  ...state.title_class,
+  flex: '1 1 auto',
+  minWidth: 0,
+  width: 'auto',
+  maxWidth: '100%',
+  wordBreak: 'normal',
+  whiteSpace: 'nowrap'
+}))
+
+// 固定标题行高度，避免图标显示时触发图表区域 resize
+const titleContentHeight = computed<string>(() => {
+  const iconFontSize = Number.parseFloat(iconSize.value) || 0
+  const titleFontSize = Number.parseFloat(`${state.title_class.fontSize}`) || iconFontSize
+  return Math.max(iconFontSize, titleFontSize * 1.2) + 'px'
+})
+
+const titleContentStyle = computed<CSSProperties>(() => ({
+  height: titleContentHeight.value,
+  minHeight: titleContentHeight.value,
+  lineHeight: titleContentHeight.value
+}))
+
 const safeTitleRemark = computed(() => sanitizeHtml(state.title_remark.remark || ''))
 
 const trackMenu = computed<Array<string>>(() => {
@@ -1045,16 +1069,17 @@ const titleIconStyle = computed(() => {
   }
   return {
     color: canvasStyleData.value.component.seniorStyleSetting.linkageIconColor,
+    height: iconSize.value,
+    lineHeight: iconSize.value,
     ...(titleShow.value ? {} : style)
   }
 })
-const chartHover = ref(false)
-const showActionIcons = computed(() => {
-  if (!chartHover.value) {
-    return false
-  }
-  return trackMenu.value.length > 0 || state.title_remark.show
-})
+// 只稳定标题行高度，图标隐藏时不占用标题横向空间
+const hasActionIcons = computed(
+  () => state.title_remark.show || hasLinkIcon.value || hasJumpIcon.value || hasDrillIcon.value
+)
+// 编辑标题时隐藏操作图标，避免遮挡输入框
+const showTitleActionIcons = computed(() => hasActionIcons.value && !titleEditStatus.value)
 const chartConfigs = ref(CHART_TYPE_CONFIGS)
 const pluginLoaded = computed(() => {
   let result = false
@@ -1136,8 +1161,6 @@ const clearG2Tooltip = () => {
     :class="{ 'report-load-finish': !loadingFlag }"
     v-loading="loadingFlag"
     element-loading-background="rgba(0,0,0,0)"
-    @mouseover="chartHover = true"
-    @mouseleave="chartHover = false"
   >
     <div
       class="title-container"
@@ -1146,25 +1169,35 @@ const clearG2Tooltip = () => {
         'margin-bottom': marginBottom
       }"
     >
-      <template v-if="!titleEditStatus">
-        <p class="ellipsis" v-if="titleShow" :style="state.title_class" @dblclick="changeEditTitle">
-          {{ view.title }}
-        </p>
-      </template>
-      <template v-else>
-        <el-input
-          style="flex: 1"
-          :effect="canvasStyleData.dashboard.themeColor"
-          ref="titleInputRef"
-          v-model="view.title"
-          @keydown.stop
-          @keydown.enter="onLeaveTitleInput"
-          v-click-outside="onLeaveTitleInput"
-          @change="onTitleChange"
-        />
-      </template>
-      <transition name="fade">
-        <div v-show="showActionIcons" class="icons-container-out">
+      <div
+        class="title-content"
+        :class="{ 'is-editing': titleEditStatus }"
+        :style="titleShow && !titleEditStatus ? titleContentStyle : undefined"
+      >
+        <template v-if="!titleEditStatus">
+          <p
+            class="ellipsis"
+            v-if="titleShow"
+            :style="titleTextStyle"
+            :title="view.title || ''"
+            @dblclick="changeEditTitle"
+          >
+            {{ view.title }}
+          </p>
+        </template>
+        <template v-else>
+          <el-input
+            style="flex: 1; min-width: 0"
+            :effect="canvasStyleData.dashboard.themeColor"
+            ref="titleInputRef"
+            v-model="view.title"
+            @keydown.stop
+            @keydown.enter="onLeaveTitleInput"
+            v-click-outside="onLeaveTitleInput"
+            @change="onTitleChange"
+          />
+        </template>
+        <div v-if="showTitleActionIcons" class="icons-container-out">
           <div
             class="icons-container"
             :class="{ 'is-editing': titleEditStatus }"
@@ -1219,7 +1252,7 @@ const clearG2Tooltip = () => {
             </el-tooltip>
           </div>
         </div>
-      </transition>
+      </div>
     </div>
     <!--这里去渲染不同图库的图表-->
     <div v-if="allEmptyCheck || (chartAreaShow && !showEmpty)" style="flex: 1; overflow: hidden">
@@ -1352,6 +1385,13 @@ const clearG2Tooltip = () => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+
+  // hover 后图标参与 flex 宽度计算，隐藏时不占标题空间
+  &:hover {
+    .icons-container-out {
+      display: flex;
+    }
+  }
 }
 .title-container {
   position: relative;
@@ -1364,16 +1404,37 @@ const clearG2Tooltip = () => {
 
   gap: 8px;
 
+  .title-content {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 8px;
+    max-width: 100%;
+    min-width: 0;
+
+    &.is-editing {
+      width: 100%;
+    }
+  }
+
   .icons-container-out {
     position: relative;
+    display: none;
+    align-items: center;
+    flex: 0 0 auto;
+    max-width: 100%;
+    height: 100%;
+    margin-right: 16px;
+
     .icons-container {
-      position: absolute;
-      left: 0;
       display: inline-flex;
       flex-direction: row;
       align-items: center;
+      flex: 0 0 auto;
       flex-wrap: nowrap;
       gap: 8px;
+      height: 100%;
+      white-space: nowrap;
 
       color: #646a73;
 
@@ -1386,25 +1447,24 @@ const clearG2Tooltip = () => {
       }
 
       .inner-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         cursor: pointer;
       }
     }
   }
 }
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
 
 .ellipsis {
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  line-height: inherit;
   white-space: nowrap !important;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: 100%;
 }
 </style>
