@@ -7,6 +7,9 @@ import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Data
 @Component("ck")
 public class CK extends DatasourceConfiguration {
