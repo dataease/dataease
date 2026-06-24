@@ -101,6 +101,8 @@ public class ChartDataManage {
             view.setResultMode(chartExtRequest.getResultMode());
             view.setResultCount(chartExtRequest.getResultCount());
         }
+        // tooltip 关闭时动态提示字段不参与数据计算
+        clearDisabledTooltipFields(view);
 
         AbstractChartPlugin chartHandler;
         if (BooleanUtils.isTrue(view.getIsPlugin())) {
@@ -424,6 +426,29 @@ public class ChartDataManage {
 
         ChartCalcDataResult calcResult = chartHandler.calcChartResult(view, formatResult, filterResult, sqlMap, sqlMeta, provider);
         return chartHandler.buildChart(view, calcResult, formatResult, filterResult);
+    }
+
+    private void clearDisabledTooltipFields(ChartViewDTO view) {
+        if (isTooltipEnabled(view)) {
+            return;
+        }
+        view.setExtTooltip(Collections.emptyList());
+    }
+
+    private boolean isTooltipEnabled(ChartViewDTO view) {
+        Map<String, Object> customAttr = view.getCustomAttr();
+        if (MapUtils.isEmpty(customAttr)) {
+            return true;
+        }
+        Object tooltipObj = customAttr.get("tooltip");
+        if (!(tooltipObj instanceof Map<?, ?> tooltip)) {
+            return true;
+        }
+        Object show = tooltip.get("show");
+        if (show instanceof Boolean showTooltip) {
+            return showTooltip;
+        }
+        return !StringUtils.equalsIgnoreCase(String.valueOf(show), "false");
     }
 
     private List<ChartViewFieldDTO> getSizeField(ChartViewDTO view) throws Exception {
