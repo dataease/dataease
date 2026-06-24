@@ -294,6 +294,7 @@ public class CalciteProvider extends Provider {
             try {
                 CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
                 statement = calciteConnection.prepareStatement(datasourceRequest.getQuery());
+                bindPreparedStatementValues(statement, datasourceRequest.getTableFieldWithValues(), null, null, null);
                 resultSet = statement.executeQuery();
                 ResultSetMetaData metaData = resultSet.getMetaData();
                 int columnCount = metaData.getColumnCount();
@@ -322,11 +323,12 @@ public class CalciteProvider extends Provider {
         String table = datasourceRequest.getTable();
         if (StringUtils.isEmpty(table)) {
             ResultSet resultSet = null;
-            try (Connection con = getConnectionFromPool(datasourceRequest.getDatasource().getId()); Statement statement = getStatement(con, 30)) {
-                if (DatasourceConfiguration.DatasourceType.valueOf(datasourceSchemaDTO.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
-                    statement.executeUpdate("ALTER SESSION SET CURRENT_SCHEMA = " + datasourceConfiguration.getSchema());
-                }
-                resultSet = statement.executeQuery(datasourceRequest.getQuery());
+            String oracleCharset = normalizeOracleCharset(datasourceConfiguration.getCharset());
+            String oracleTargetCharset = normalizeOracleCharset(datasourceConfiguration.getTargetCharset());
+            try (Connection con = getConnectionFromPool(datasourceRequest.getDatasource().getId())) {
+                Statement statement = getStatement(datasourceSchemaDTO, con, datasourceRequest, datasourceConfiguration, null);
+                bindPreparedStatementValues(statement, datasourceRequest.getTableFieldWithValues(), DatasourceConfiguration.DatasourceType.valueOf(datasourceSchemaDTO.getType()), oracleCharset, oracleTargetCharset);
+                resultSet = executeQuery(statement, datasourceRequest.getQuery());
                 datasetTableFields.addAll(getField(resultSet, datasourceRequest));
             } catch (Exception e) {
                 DEException.throwException(e.getMessage());
@@ -385,6 +387,43 @@ public class CalciteProvider extends Provider {
         }
 
         return datasetTableFields;
+    }
+
+    private void bindPreparedStatementValues(Statement statement, List<TableFieldWithValue> tableFieldWithValues,
+                                             DatasourceConfiguration.DatasourceType datasourceType,
+                                             String oracleCharset, String oracleTargetCharset) throws SQLException {
+        if (!(statement instanceof PreparedStatement preparedStatement) || CollectionUtils.isEmpty(tableFieldWithValues)) {
+            return;
+        }
+        for (int i = 0; i < tableFieldWithValues.size(); i++) {
+            TableFieldWithValue tableFieldWithValue = tableFieldWithValues.get(i);
+            try {
+                Object valueObject = tableFieldWithValue.getValue();
+                if (valueObject instanceof String
+                        && datasourceType == DatasourceConfiguration.DatasourceType.oracle
+                        && StringUtils.isNotEmpty(oracleCharset)
+                        && StringUtils.isNotEmpty(oracleTargetCharset)) {
+                    valueObject = convertOracleText((String) valueObject, oracleTargetCharset, oracleCharset);
+                }
+                if (tableFieldWithValue.getType() != null && tableFieldWithValue.getType().equals(Types.CLOB) && valueObject instanceof String stringValue) {
+                    Reader reader = new StringReader(stringValue);
+                    preparedStatement.setCharacterStream(i + 1, reader, stringValue.length());
+                } else if (tableFieldWithValue.getType() != null) {
+                    preparedStatement.setObject(i + 1, valueObject, tableFieldWithValue.getType());
+                } else {
+                    preparedStatement.setObject(i + 1, valueObject);
+                }
+            } catch (SQLException | UnsupportedEncodingException e) {
+                throw new SQLException(e.getMessage() + ". VALUE: " + String.valueOf(tableFieldWithValue.getValue()) + " , TARGET TYPE: " + tableFieldWithValue.getColumnTypeName(), e);
+            }
+        }
+    }
+
+    private ResultSet executeQuery(Statement statement, String query) throws SQLException {
+        if (statement instanceof PreparedStatement preparedStatement) {
+            return preparedStatement.executeQuery();
+        }
+        return statement.executeQuery(query);
     }
 
     private boolean isDorisCatalog(DatasourceRequest datasourceRequest) {
