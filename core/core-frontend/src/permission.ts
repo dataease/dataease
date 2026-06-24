@@ -86,6 +86,7 @@ router.beforeEach(async (to, from, next) => {
   const defaultSort = await getDefaultSettings()
   wsCache.set('TreeSort-backend', defaultSort['basic.defaultSort'] ?? '1')
   wsCache.set('open-backend', defaultSort['basic.defaultOpen'] ?? '0')
+  wsCache.set('embeddedExportMode-backend', defaultSort['basic.embeddedExportMode'] ?? 'sync')
   if ((wsCache.get('user.token') || isDesktop) && !to.path.startsWith('/de-link/')) {
     if (!userStore.getUid) {
       await userStore.setUser()

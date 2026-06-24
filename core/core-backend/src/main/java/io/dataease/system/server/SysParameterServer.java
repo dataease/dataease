@@ -74,6 +74,7 @@ public class SysParameterServer implements SysParameterApi {
     public Map<String, Object> defaultSettings() {
         Map<String, Object> map = new HashMap<>();
         map.put(XpackSettingConstants.DEFAULT_SORT, "1");
+        map.put(XpackSettingConstants.EMBEDDED_EXPORT_MODE, "sync");
 
         List<SettingItemVO> settingItemVOS = queryBasicSetting();
         for (SettingItemVO settingItemVO : settingItemVOS) {
@@ -82,6 +83,9 @@ public class SysParameterServer implements SysParameterApi {
             }
             if (StringUtils.isNotBlank(settingItemVO.getPkey()) && settingItemVO.getPkey().equalsIgnoreCase(XpackSettingConstants.DEFAULT_OPEN) && StringUtils.isNotBlank(settingItemVO.getPval())) {
                 map.put(XpackSettingConstants.DEFAULT_OPEN, settingItemVO.getPval());
+            }
+            if (StringUtils.isNotBlank(settingItemVO.getPkey()) && settingItemVO.getPkey().equalsIgnoreCase(XpackSettingConstants.EMBEDDED_EXPORT_MODE) && StringUtils.isNotBlank(settingItemVO.getPval())) {
+                map.put(XpackSettingConstants.EMBEDDED_EXPORT_MODE, settingItemVO.getPval());
             }
         }
         return map;
