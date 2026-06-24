@@ -2,6 +2,8 @@ package io.dataease.api.permissions.auth.api;
 
 import java.util.List;
 
+import io.dataease.api.permissions.auth.dto.*;
+import io.dataease.api.permissions.auth.vo.SubjectNode;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,10 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 
-import io.dataease.api.permissions.auth.dto.SubjectPermissionEditor;
-import io.dataease.api.permissions.auth.dto.BasePermissionRequest;
-import io.dataease.api.permissions.auth.dto.BusiResourceRequest;
-import io.dataease.api.permissions.auth.dto.ResourcePermissionEditor;
 import io.dataease.api.permissions.auth.vo.PermissionVO;
 import io.dataease.api.permissions.auth.vo.ResourceItemVO;
 import io.dataease.api.permissions.auth.vo.ResourceVO;
@@ -90,5 +88,9 @@ public interface AuthApi {
     @Hidden
     @PostMapping("/busiTargetPermissionAll")
     List<ResourceItemVO> busiTargetPermissionAll(@RequestBody BasePermissionRequest request);
+
+
+    @PostMapping("/subjectTree")
+    List<SubjectNode> subjectTree(@RequestBody SubjectRequest request);
 
 }
