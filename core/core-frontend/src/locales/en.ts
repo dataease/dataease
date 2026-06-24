@@ -1012,6 +1012,7 @@ export default {
     config: 'Datasource configuration',
     table: 'Datasource table',
     table_name: 'Table name',
+    table_remarks: 'Table remarks',
     remark: 'Remark',
     column_name: 'Field name',
     field_type: 'Field type',
