@@ -46,6 +46,7 @@
         <httpclient.version>4.5.14</httpclient.version>
         <httpcore.version>4.4.16</httpcore.version>
         <easyexcel.version>4.0.3</easyexcel.version>
+        <poi.version>5.4.0</poi.version>
         <commons-io.version>2.16.1</commons-io.version>
         <flatten-maven.version>1.3.0</flatten-maven.version>
         <maven.exec.version>3.1.0</maven.exec.version>
@@ -308,8 +309,18 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.poi</groupId>
+                <artifactId>poi</artifactId>
+                <version>${poi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
                 <artifactId>poi-ooxml</artifactId>
-                <version>5.4.0</version>
+                <version>${poi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml-lite</artifactId>
+                <version>${poi.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.mysql</groupId>
