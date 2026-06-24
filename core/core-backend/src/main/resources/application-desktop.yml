@@ -21,5 +21,8 @@ spring:
     baseline-on-migrate: true
     out-of-order: true
 
+server:
+  address: 127.0.0.1
+
 mybatis-plus:
   mapper-locations: classpath:mybatis/*.xml
