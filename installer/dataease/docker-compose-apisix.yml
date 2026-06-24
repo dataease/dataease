@@ -1,6 +1,6 @@
 services:
   apisix:
-    image: registry.cn-qingdao.aliyuncs.com/dataease/apisix:3.14.1-debian
+    image: registry.cn-qingdao.aliyuncs.com/dataease/apisix:3.17.0-debian
     container_name: apisix
     environment:
       - TZ=Asia/Shanghai
