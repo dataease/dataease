@@ -26,7 +26,6 @@
         <spring-cloud.version>2023.0.1</spring-cloud.version>
         <spring-boot.version>3.5.15</spring-boot.version>
         <spring-framework.version>6.2.19</spring-framework.version>
-        <spring-ldap.version>3.2.16</spring-ldap.version>
         <tomcat.version>10.1.55</tomcat.version>
         <logback.version>1.5.34</logback.version>
         <netty.version>4.1.135.Final</netty.version>
@@ -190,7 +189,6 @@
             <dependency>
                 <groupId>org.springframework.ldap</groupId>
                 <artifactId>spring-ldap-core</artifactId>
-                <version>${spring-ldap.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
