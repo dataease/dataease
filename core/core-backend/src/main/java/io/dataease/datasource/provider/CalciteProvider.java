@@ -89,6 +89,11 @@ public class CalciteProvider extends Provider {
         }
     }
 
+    protected String buildOracleCurrentSchemaSql(String schema) {
+        String escapedSchema = StringUtils.defaultString(schema).replace("\"", "\"\"");
+        return "ALTER SESSION SET CURRENT_SCHEMA = \"" + escapedSchema + "\"";
+    }
+
     @Override
     public List<String> getSchema(DatasourceRequest datasourceRequest) {
         List<String> schemas = new ArrayList<>();
