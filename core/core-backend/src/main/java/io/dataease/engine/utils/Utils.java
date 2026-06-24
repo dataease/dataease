@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public class Utils {
     public static final List<Pattern> SQL_INJECTION_PATTERNS = Arrays.asList(
             Pattern.compile("[\\'\";`]"),
-            Pattern.compile("--\\s*|#"),
+            Pattern.compile("--\\s*"),
             Pattern.compile("\\b(or|and|union|select|insert|delete|update|drop|alter|exec|xp_cmdshell)\\b", Pattern.CASE_INSENSITIVE),
             Pattern.compile("\\b\\d+\\s*=\\s*\\d+\\b", Pattern.CASE_INSENSITIVE),
             Pattern.compile("\\b1'\\s*=\\s*'1\\b", Pattern.CASE_INSENSITIVE)
