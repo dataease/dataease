@@ -10,25 +10,29 @@
 
     <modules>
         <module>sdk</module>
-        <!--<module>de-xpack</module>
-        <module>core</module>-->
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.0</version>
+        <version>3.3.13</version>
         <relativePath />
     </parent>
 
     <properties>
-        <dataease.version>3.0.0</dataease.version>
+        <dataease.version>2.10.23</dataease.version>
         <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-cloud-alibaba.version>2023.0.1.0</spring-cloud-alibaba.version>
         <spring-cloud.version>2023.0.1</spring-cloud.version>
         <spring-boot.version>3.3.13</spring-boot.version>
+        <spring-framework.version>6.2.19</spring-framework.version>
+        <spring-ldap.version>3.2.16</spring-ldap.version>
+        <tomcat.version>10.1.55</tomcat.version>
+        <logback.version>1.5.34</logback.version>
+        <netty.version>4.1.135.Final</netty.version>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
+        <mybatis-plus.version>3.5.7</mybatis-plus.version>
         <h2.version>2.2.220</h2.version>
         <knife4j.version>4.4.0</knife4j.version>
         <calcite-core.version>1.35.30</calcite-core.version>
@@ -37,7 +41,8 @@
         <java-jwt.version>3.12.1</java-jwt.version>
         <velocity.version>2.3</velocity.version>
         <ehcache.version>3.10.8</ehcache.version>
-        <bcprov.version>1.78</bcprov.version>
+        <bcprov.version>1.84</bcprov.version>
+        <bcprov-jdk18on.version>1.80</bcprov-jdk18on.version>
         <junit.version>4.13.2</junit.version>
         <httpclient.version>4.5.14</httpclient.version>
         <httpcore.version>4.4.16</httpcore.version>
@@ -45,7 +50,9 @@
         <commons-io.version>2.16.1</commons-io.version>
         <flatten-maven.version>1.3.0</flatten-maven.version>
         <maven.exec.version>3.1.0</maven.exec.version>
-        <guava.version>33.0.0-jre</guava.version>
+        <guava.version>33.4.8-jre</guava.version>
+        <commons-fileupload.version>1.6.0</commons-fileupload.version>
+        <commons-lang3.version>3.20.0</commons-lang3.version>
         <commons-net.version>3.8.0</commons-net.version>
         <selenium-java.version>4.19.1</selenium-java.version>
         <playwright-java.version>1.55.0</playwright-java.version>
@@ -53,9 +60,11 @@
         <mysql-connector-j.version>8.2.0</mysql-connector-j.version>
         <itextpdf.version>8.0.4</itextpdf.version>
         <flexmark.version>0.62.2</flexmark.version>
-        <jsqlparser.version>4.9</jsqlparser.version>
+        <mybatis-spring.version>3.0.3</mybatis-spring.version>
         <commons-compress.version>1.26.2</commons-compress.version>
         <jsch.version>0.2.26</jsch.version>
+        <xmlsec.version>2.3.5</xmlsec.version>
+        <woodstox-core.version>7.1.0</woodstox-core.version>
     </properties>
 
     <dependencyManagement>
@@ -76,8 +85,22 @@
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-parent</artifactId>
+                <artifactId>spring-boot-dependencies</artifactId>
                 <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-framework-bom</artifactId>
+                <version>${spring-framework.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-bom</artifactId>
+                <version>${netty.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -87,6 +110,16 @@
                 <version>${spring-boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mybatis</groupId>
+                <artifactId>mybatis-spring</artifactId>
+                <version>${mybatis-spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mybatis-plus.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.h2database</groupId>
@@ -113,6 +146,11 @@
                 <version>${velocity.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.ehcache</groupId>
                 <artifactId>ehcache</artifactId>
                 <version>${ehcache.version}</version>
@@ -126,6 +164,131 @@
                 <artifactId>commons-io</artifactId>
                 <groupId>commons-io</groupId>
                 <version>${commons-io.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-fileupload</groupId>
+                <artifactId>commons-fileupload</artifactId>
+                <version>${commons-fileupload.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.santuario</groupId>
+                <artifactId>xmlsec</artifactId>
+                <version>${xmlsec.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.woodstox</groupId>
+                <artifactId>woodstox-core</artifactId>
+                <version>${woodstox-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.ldap</groupId>
+                <artifactId>spring-ldap-core</artifactId>
+                <version>${spring-ldap.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk18on</artifactId>
+                <version>${bcprov-jdk18on.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-aop</artifactId>
+                <version>${spring-framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-beans</artifactId>
+                <version>${spring-framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>${spring-framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-core</artifactId>
+                <version>${spring-framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-expression</artifactId>
+                <version>${spring-framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-jcl</artifactId>
+                <version>${spring-framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-messaging</artifactId>
+                <version>${spring-framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-tx</artifactId>
+                <version>${spring-framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-web</artifactId>
+                <version>${spring-framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-webmvc</artifactId>
+                <version>${spring-framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-websocket</artifactId>
+                <version>${spring-framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-buffer</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-codec</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-codec-http</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-common</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-handler</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-resolver</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-transport</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-transport-native-unix-common</artifactId>
+                <version>${netty.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.alibaba</groupId>
@@ -194,26 +357,6 @@
                         <goals>
                             <goal>clean</goal>
                         </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.4.0</version>
-                <executions>
-                    <execution>
-                        <id>remove-core-module</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>remove-project-artifact</goal>
-                        </goals>
-                        <configuration>
-                            <modules>
-                                <module>de-xpack</module>
-                                <module>core</module>
-                            </modules>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
