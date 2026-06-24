@@ -1542,22 +1542,22 @@ defineExpose({
             </div>
           </el-form-item>
           <el-form-item v-if="form.syncSetting.syncRate === 'CRON'" prop="syncSetting.cron">
-            <div class="cron-input-group">
-              <el-popover :width="834" v-model="cronEdit" trigger="click">
-                <template #default>
-                  <div style="width: 814px; height: 450px; overflow-y: auto">
-                    <cron
-                      v-if="showCron"
-                      v-model="form.syncSetting.cron"
-                      :is-rate="form.syncRate === 'CRON'"
-                      @close="cronEdit = false"
-                    />
-                  </div>
-                </template>
-                <template #reference>
-                  <el-input v-model="form.syncSetting.cron" @click="cronEdit = true" />
-                </template>
-              </el-popover>
+            <el-popover :width="834" v-model="cronEdit" trigger="click">
+              <template #default>
+                <div style="width: 814px; height: 450px; overflow-y: auto">
+                  <cron
+                    v-if="showCron"
+                    v-model="form.syncSetting.cron"
+                    :is-rate="form.syncRate === 'CRON'"
+                    @close="cronEdit = false"
+                  />
+                </div>
+              </template>
+              <template #reference>
+                <el-input v-model="form.syncSetting.cron" @click="cronEdit = true" />
+              </template>
+            </el-popover>
+            <div class="cron-preview-row">
               <el-button secondary :loading="cronPreviewLoading" @click="previewNextCronTimes">
                 {{ t('datasource.preview_next_exec_times') }}
               </el-button>
@@ -1740,12 +1740,21 @@ defineExpose({
 
   .cron-input-group {
     display: flex;
-    align-items: center;
-    gap: 12px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
 
-    .ed-popover__reference-wrapper,
-    :deep(.ed-input) {
-      flex: 1;
+    .cron-input-row {
+      width: 100%;
+
+      .ed-popover__reference-wrapper,
+      :deep(.ed-input) {
+        width: 100%;
+      }
+    }
+
+    .cron-preview-row {
+      width: 100%;
     }
   }
 
