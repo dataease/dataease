@@ -79,10 +79,19 @@ public class ExportCenterManage implements BaseExportApi {
 
 
     public void download(String id, HttpServletResponse response) throws Exception {
+        if (StringUtils.isBlank(id) || id.contains("..") || id.indexOf('/') >= 0 || id.indexOf('\\') >= 0) {
+            DEException.throwException("非法的任务ID");
+        }
         if (!coreExportDownloadTaskRepository.existsById(id)) {
             DEException.throwException("任务不存在");
         }
         CoreExportTask exportTask = coreExportTaskRepository.findById(id).orElse(null);
+        if (exportTask == null) {
+            DEException.throwException("任务不存在");
+        }
+        if (!exportTask.getUserId().equals(V3UserUtil.getUid())) {
+            DEException.throwException("无权访问该任务");
+        }
         exportCenterDownLoadManage.download(exportTask, response);
     }
 
@@ -136,6 +145,12 @@ public class ExportCenterManage implements BaseExportApi {
 
     public void retry(String id) {
         CoreExportTask exportTask = coreExportTaskRepository.findById(id).orElse(null);
+        if (exportTask == null) {
+            DEException.throwException("任务不存在");
+        }
+        if (!exportTask.getUserId().equals(V3UserUtil.getUid())) {
+            DEException.throwException("无权访问该任务");
+        }
         if (!exportTask.getExportStatus().equalsIgnoreCase("FAILED")) {
             DEException.throwException("正在导出中!");
         }
