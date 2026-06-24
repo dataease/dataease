@@ -2,7 +2,6 @@ package io.dataease.api.visualization.vo;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import com.google.gson.Gson;
 import io.dataease.api.template.dto.VisualizationTemplateExtendDataDTO;
 import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.utils.JsonUtil;
