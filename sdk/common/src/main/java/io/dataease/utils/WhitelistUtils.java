@@ -26,7 +26,6 @@ public class WhitelistUtils {
             "/login/localLogin",
             "/apisix/check",
             "/dekey",
-            "/symmetricKey",
             "/index.html",
             "/model",
             "/xpackModel",
