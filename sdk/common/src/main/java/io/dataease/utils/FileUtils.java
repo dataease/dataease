@@ -10,9 +10,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.FileVisitResult;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -295,32 +296,52 @@ public class FileUtils {
     }
 
 
-    public static boolean deleteDirectoryRecursively(String directoryPath) {
-        Assert.hasText(directoryPath, "Directory path must not be blank");
-        return deleteDirectoryRecursively(Paths.get(directoryPath));
-    }
-
-    public static boolean deleteDirectoryRecursively(Path directory) {
+    public static boolean deleteDirectoryRecursively(Path baseDirectory, Path directory) {
+        Assert.notNull(baseDirectory, "Base directory must not be null");
         Assert.notNull(directory, "Directory path must not be null");
+        Path normalizedBaseDirectory = baseDirectory.toAbsolutePath().normalize();
         Path normalizedDirectory = directory.toAbsolutePath().normalize();
-        if (Files.notExists(normalizedDirectory, LinkOption.NOFOLLOW_LINKS)) {
+        if (!normalizedDirectory.startsWith(normalizedBaseDirectory)) {
+            DEException.throwException("Invalid directory path");
+        }
+        if (Files.notExists(normalizedDirectory)) {
             return true;
         }
-        File[] files = normalizedDirectory.toFile().listFiles();
-        if (files == null) {
-            return normalizedDirectory.toFile().delete();
+        return deleteDirectoryRecursivelyInternal(normalizedBaseDirectory, normalizedDirectory);
+    }
+
+    private static boolean deleteDirectoryRecursivelyInternal(Path baseDirectory, Path directory) {
+        try {
+            Files.walkFileTree(directory, new SimpleFileVisitor<>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    validateChildPath(baseDirectory, file);
+                    Files.deleteIfExists(file);
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                    if (exc != null) {
+                        throw exc;
+                    }
+                    validateChildPath(baseDirectory, dir);
+                    Files.deleteIfExists(dir);
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+            return true;
+        } catch (IOException e) {
+            LogUtil.error(e.getMessage(), e);
+            DEException.throwException(e);
         }
-        for (File file : files) {
-            Path child = file.toPath().toAbsolutePath().normalize();
-            if (!child.startsWith(normalizedDirectory)) {
-                DEException.throwException("Invalid directory path");
-            }
-            if (Files.isDirectory(child, LinkOption.NOFOLLOW_LINKS)) {
-                deleteDirectoryRecursively(child);
-            } else {
-                file.delete();
-            }
+        return false;
+    }
+
+    private static void validateChildPath(Path baseDirectory, Path childPath) {
+        Path normalizedChildPath = childPath.toAbsolutePath().normalize();
+        if (!normalizedChildPath.startsWith(baseDirectory)) {
+            DEException.throwException("Invalid directory path");
         }
-        return normalizedDirectory.toFile().delete();
     }
 }
