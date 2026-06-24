@@ -1,33 +1,22 @@
 package io.dataease.datasource.type;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.dataease.exception.DEException;
+import io.dataease.datasource.security.JdbcUrlSecurityPolicy;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Data
 @Component("mongo")
 public class Mongo extends DatasourceConfiguration {
     private String driver = "com.mysql.cj.jdbc.Driver";
     private String extraParams = "characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull";
-    @JsonIgnore
-    private List<String> illegalParameters = Arrays.asList("autoDeserialize", "queryInterceptors", "statementInterceptors", "detectCustomCollations");
-    private List<String> showTableSqls = Arrays.asList("show tables");
 
     public String getJdbc() {
-        if (StringUtils.isNoneEmpty(getUrlType()) && !getUrlType().equalsIgnoreCase("hostName")) {
-            if (!getJdbcUrl().startsWith("jdbc:mysql")) {
-                DEException.throwException("Illegal jdbcUrl: " + getJdbcUrl());
-            }
-            return getJdbcUrl();
-        }
         String jdbcUrl = "";
-        if (StringUtils.isEmpty(extraParams.trim())) {
+        if (StringUtils.isNoneEmpty(getUrlType()) && !getUrlType().equalsIgnoreCase("hostName")) {
+            jdbcUrl = getJdbcUrl();
+        } else if (StringUtils.isEmpty(extraParams.trim())) {
             jdbcUrl = "jdbc:mysql://HOSTNAME:PORT/DATABASE"
                     .replace("HOSTNAME", getLHost().trim())
                     .replace("PORT", getLPort().toString().trim())
@@ -39,11 +28,6 @@ public class Mongo extends DatasourceConfiguration {
                     .replace("DATABASE", getDataBase().trim())
                     .replace("EXTRA_PARAMS", getExtraParams().trim());
         }
-        for (String illegalParameter : illegalParameters) {
-            if (jdbcUrl.contains(illegalParameter)) {
-                throw new RuntimeException("Illegal parameter: " + illegalParameter);
-            }
-        }
-        return jdbcUrl;
+        return JdbcUrlSecurityPolicy.validate("mongo", getDriver(), jdbcUrl, getExtraParams());
     }
 }

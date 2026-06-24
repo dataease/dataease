@@ -1,39 +1,22 @@
 package io.dataease.datasource.type;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.dataease.exception.DEException;
+import io.dataease.datasource.security.JdbcUrlSecurityPolicy;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-
-import java.net.URLDecoder;
-import java.util.Arrays;
-import java.util.List;
 
 @Data
 @Component("mysql")
 public class Mysql extends DatasourceConfiguration {
     private String driver = "com.mysql.cj.jdbc.Driver";
     private String extraParams = "characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull";
-    @JsonIgnore
-    private List<String> illegalParameters = Arrays.asList("maxAllowedPacket", "autoDeserialize", "queryInterceptors", "statementInterceptors", "detectCustomCollations", "allowloadlocalinfile", "allowUrlInLocalInfile", "allowLoadLocalInfileInPath", "allowMultiQueries");
-    private List<String> showTableSqls = Arrays.asList("show tables");
 
     public String getJdbc() {
-        if (StringUtils.isNoneEmpty(getUrlType()) && !getUrlType().equalsIgnoreCase("hostName")) {
-            for (String illegalParameter : illegalParameters) {
-                if (URLDecoder.decode(getJdbcUrl()).toLowerCase().contains(illegalParameter.toLowerCase()) || URLDecoder.decode(getExtraParams()).contains(illegalParameter.toLowerCase())) {
-                    DEException.throwException("Illegal parameter: " + illegalParameter);
-                }
-            }
-            if (!getJdbcUrl().startsWith("jdbc:mysql")) {
-                DEException.throwException("Illegal jdbcUrl: " + getJdbcUrl());
-            }
-            return getJdbcUrl();
-        }
         String jdbcUrl = "";
-        if (StringUtils.isEmpty(extraParams.trim())) {
+        if (StringUtils.isNoneEmpty(getUrlType()) && !getUrlType().equalsIgnoreCase("hostName")) {
+            jdbcUrl = getJdbcUrl();
+        } else if (StringUtils.isEmpty(extraParams.trim())) {
             jdbcUrl = "jdbc:mysql://HOSTNAME:PORT/DATABASE"
                     .replace("HOSTNAME", getLHost().trim())
                     .replace("PORT", getLPort().toString().trim())
@@ -45,11 +28,6 @@ public class Mysql extends DatasourceConfiguration {
                     .replace("DATABASE", getDataBase().trim())
                     .replace("EXTRA_PARAMS", getExtraParams().trim());
         }
-        for (String illegalParameter : illegalParameters) {
-            if (URLDecoder.decode(jdbcUrl).toLowerCase().contains(illegalParameter.toLowerCase()) || URLDecoder.decode(jdbcUrl).contains(illegalParameter.toLowerCase())) {
-                DEException.throwException("Illegal parameter: " + illegalParameter);
-            }
-        }
-        return jdbcUrl;
+        return JdbcUrlSecurityPolicy.validate("mysql", getDriver(), jdbcUrl, getExtraParams());
     }
 }
