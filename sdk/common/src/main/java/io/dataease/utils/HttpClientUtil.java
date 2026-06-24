@@ -5,6 +5,7 @@ import lombok.Data;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -38,6 +39,9 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.cert.X509Certificate;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -395,17 +399,19 @@ public class HttpClientUtil {
                 }
                 throw new Exception(msg);
             }
-            String fileName = extractFileName(response, url);
-            String suffix = fileName.substring(fileName.lastIndexOf(".") + 1);
+            String fileName = normalizeDownloadFileName(extractFileName(response, url));
+            String suffix = extractSuffix(fileName);
             String tranName = UUID.randomUUID().toString() + "." + suffix;
             name.put("fileName", fileName);
             name.put("tranName", tranName);
-            File localFile = new File(path + tranName);
-            FileOutputStream outputStream = new FileOutputStream(localFile);
-            byte[] buffer = new byte[4096];
-            int bytesRead;
-            while ((bytesRead = response.getEntity().getContent().read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
+            Path localFile = resolveDownloadPath(path, tranName);
+            try (InputStream is = response.getEntity().getContent();
+                 OutputStream outputStream = Files.newOutputStream(localFile)) {
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                while ((bytesRead = is.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
             }
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
@@ -415,15 +421,26 @@ public class HttpClientUtil {
     }
 
     private static String extractFileName(HttpResponse response, String url) {
-        url = URLDecoder.decode(url);
-        String fileName = "";
-        String disposition = response.getHeaders("Content-Disposition").toString();
-        if (disposition != null) {
-            int filenameIndex = disposition.indexOf("filename=");
-            if (filenameIndex > 0) {
-                fileName = disposition.substring(filenameIndex + 9)
-                        .replaceAll("\"", "") // 去除引号
-                        .trim();
+        url = URLDecoder.decode(url, StandardCharsets.UTF_8);
+        String fileName = StringUtils.EMPTY;
+        Header dispositionHeader = response.getFirstHeader("Content-Disposition");
+        if (dispositionHeader != null && StringUtils.isNotBlank(dispositionHeader.getValue())) {
+            String disposition = dispositionHeader.getValue();
+            int filenameStarIndex = disposition.indexOf("filename*=");
+            if (filenameStarIndex >= 0) {
+                fileName = disposition.substring(filenameStarIndex + 10).trim();
+                int charsetIndex = fileName.indexOf("''");
+                if (charsetIndex >= 0) {
+                    fileName = fileName.substring(charsetIndex + 2);
+                }
+                fileName = URLDecoder.decode(fileName.replace("\"", "").trim(), StandardCharsets.UTF_8);
+            } else {
+                int filenameIndex = disposition.indexOf("filename=");
+                if (filenameIndex >= 0) {
+                    fileName = disposition.substring(filenameIndex + 9)
+                            .replace("\"", "")
+                            .trim();
+                }
             }
         }
         if (fileName.isEmpty()) {
@@ -432,10 +449,41 @@ public class HttpClientUtil {
                     ? url.substring(url.lastIndexOf('/') + 1)
                     : "download_" + System.currentTimeMillis();
         }
-        if (fileName.trim().isEmpty()) {
-            fileName = "download_" + System.currentTimeMillis();
-        }
         return fileName;
+    }
+
+    private static String normalizeDownloadFileName(String fileName) {
+        String normalizedFileName = StringUtils.trimToEmpty(fileName);
+        if (normalizedFileName.isEmpty()) {
+            normalizedFileName = "download_" + System.currentTimeMillis();
+        }
+        int separatorIndex = Math.max(normalizedFileName.lastIndexOf('/'), normalizedFileName.lastIndexOf('\\'));
+        if (separatorIndex >= 0) {
+            normalizedFileName = normalizedFileName.substring(separatorIndex + 1);
+        }
+        if (normalizedFileName.isEmpty()) {
+            normalizedFileName = "download_" + System.currentTimeMillis();
+        }
+        FileUtils.validateUploadFilename(normalizedFileName);
+        return normalizedFileName;
+    }
+
+    private static String extractSuffix(String fileName) {
+        int suffixIndex = fileName.lastIndexOf(".");
+        if (suffixIndex < 0 || suffixIndex == fileName.length() - 1) {
+            return "bin";
+        }
+        return fileName.substring(suffixIndex + 1);
+    }
+
+    private static Path resolveDownloadPath(String path, String fileName) {
+        FileUtils.validateUploadFilename(fileName);
+        Path directory = Paths.get(path).toAbsolutePath().normalize();
+        Path target = directory.resolve(fileName).normalize();
+        if (!target.startsWith(directory)) {
+            DEException.throwException("invalid download path");
+        }
+        return target;
     }
 
     public static byte[] downloadBytes(String url) {
@@ -669,6 +717,39 @@ public class HttpClientUtil {
         }
     }
 
+    public static String postRawBody(String url, String contentType, String body, boolean ssl, HttpClientConfig config) {
+        CloseableHttpClient httpClient = null;
+        try {
+            httpClient = buildHttpClient(ssl);
+            HttpPost httpPost = new HttpPost(url);
+            if (ObjectUtils.isEmpty(config)) {
+                config = new HttpClientConfig();
+            }
+            httpPost.setConfig(config.buildRequestConfig());
+            Map<String, String> header = config.getHeader();
+            for (String key : header.keySet()) {
+                httpPost.addHeader(key, header.get(key));
+            }
+            EntityBuilder entityBuilder = EntityBuilder.create();
+            entityBuilder.setText(body);
+            entityBuilder.setContentType(ContentType.create(contentType, java.nio.charset.StandardCharsets.UTF_8));
+            httpPost.setEntity(entityBuilder.build());
+            HttpResponse response = httpClient.execute(httpPost);
+            return getResponseStr(response, config);
+        } catch (Exception e) {
+            logger.error("HttpClient POST raw body failed", e);
+            throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient POST raw body failed: " + e.getMessage());
+        } finally {
+            try {
+                if (httpClient != null) {
+                    httpClient.close();
+                }
+            } catch (Exception e) {
+                logger.error("HttpClient关闭连接失败", e);
+            }
+        }
+    }
+
     public static MultipartResponse postForScreenshot(
             String url, Map<String,String> body, HttpClientConfig config) throws IOException {
         CloseableHttpClient httpClient = null;
@@ -713,14 +794,6 @@ public class HttpClientUtil {
     public static class MultipartResponse {
         Map<String,Object> metadata;
         byte[] image;
-
-        public byte[] getImage() {
-            return image;
-        }
-
-        public Map<String, Object> getMetadata() {
-            return metadata;
-        }
     }
 
     public class MultipartParser {
