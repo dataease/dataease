@@ -22,3 +22,10 @@ export const resourcePermissionApi = data => request.post({ url: '/auth/resource
 
 export const resourcePermissionSaveApi = data =>
   request.post({ url: '/auth/saveResourcePermission', data })
+
+export const subjectTreeApi = (data: {
+  system: boolean
+  type: number
+  lazy?: boolean
+  pid?: number
+}) => request.post({ url: '/auth/subjectTree', data })
