@@ -9,6 +9,7 @@ import io.dataease.api.ds.DatasourceApi;
 import io.dataease.api.ds.vo.*;
 import io.dataease.api.permissions.relation.api.RelationApi;
 import io.dataease.commons.constants.TaskStatus;
+import io.dataease.commons.utils.CronUtils;
 import io.dataease.constant.LogOT;
 import io.dataease.constant.LogST;
 import io.dataease.constant.SQLConstants;
@@ -205,6 +206,22 @@ public class DatasourceServer implements DatasourceApi {
             }
         }
         return hasRepeat;
+    }
+
+    @Override
+    public List<Long> cronNextTimes(@RequestBody TaskDTO syncSetting) throws DEException {
+        if (syncSetting == null || StringUtils.isBlank(syncSetting.getCron())) {
+            return Collections.emptyList();
+        }
+        Long startTime = syncSetting.getStartTime();
+        if (ObjectUtils.isEmpty(startTime) || startTime <= 0) {
+            startTime = System.currentTimeMillis();
+        }
+        Long endTime = syncSetting.getEndTime();
+        if (ObjectUtils.isNotEmpty(endTime) && endTime <= 0) {
+            endTime = null;
+        }
+        return CronUtils.getNextTriggerTimes(syncSetting.getCron(), startTime, endTime, 5);
     }
 
     @DeLog(id = "#p0.id", ot = LogOT.MODIFY, st = LogST.DATASOURCE)

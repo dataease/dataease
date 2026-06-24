@@ -70,6 +70,12 @@ export const getSchema = (data = {}) => {
   return request.post({ url: '/datasource/getSchema', data })
 }
 
+export const previewCronNextTimes = (data = {}) => {
+  return request.post({ url: '/datasource/cronNextTimes', data }).then(res => {
+    return res?.data || []
+  })
+}
+
 export const previewData = (data = {}) => {
   return request.post({ url: '/datasource/previewData', data }).then(res => {
     return res?.data

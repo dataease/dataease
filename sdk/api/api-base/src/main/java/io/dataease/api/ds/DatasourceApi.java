@@ -8,6 +8,7 @@ import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.ApiDefinition;
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
+import io.dataease.extensions.datasource.dto.TaskDTO;
 import io.dataease.extensions.datasource.dto.TableField;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.model.BusiNodeRequest;
@@ -74,6 +75,10 @@ public interface DatasourceApi {
     @PostMapping("/getSchema")
     @Operation(summary = "获取 schema")
     List<String> getSchema(@RequestBody BusiDsRequest dataSourceDTO) throws DEException;
+
+    @PostMapping("/cronNextTimes")
+    @Operation(summary = "获取 cron 下次执行时间")
+    List<Long> cronNextTimes(@RequestBody TaskDTO syncSetting) throws DEException;
 
     @DePermit({"#p0+':manage'"})
     @GetMapping("/validate/{datasourceId}")
