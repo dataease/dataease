@@ -17,6 +17,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class CoreApplication {
 
     public static void main(String[] args) {
+        System.setProperty("AMAZON_REDSHIFT_JDBC_INI_FILE", "null");
+        System.setProperty("user.home", "null");
+        System.setProperty("java.io.tmpdir", "null");
         SpringApplication context = new SpringApplication(CoreApplication.class);
         context.addInitializers(new EhCacheStartListener());
         context.run(args);
