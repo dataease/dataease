@@ -599,7 +599,9 @@ const onPointClick = event => {
 
 defineExpose({
   calcData,
-  renderChart
+  renderChart,
+  // 父层标题栏读取操作菜单用于展示动作图标
+  trackMenu
 })
 </script>
 
