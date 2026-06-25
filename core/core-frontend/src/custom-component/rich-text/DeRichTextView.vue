@@ -61,7 +61,10 @@ import ChartError from '@/views/chart/components/views/components/ChartError.vue
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { parseJson } from '@/views/chart/components/js/util'
-import { mappingColorCustom } from '@/views/chart/components/js/panel/common/common_table'
+import {
+  isNumeric,
+  mappingColorCustom
+} from '@/views/chart/components/js/panel/common/common_table'
 import { CHART_FONT_FAMILY_ORIGIN } from '@/views/chart/components/editor/util/chart'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 const snapshotStore = snapshotStoreWithOut()
@@ -683,7 +686,8 @@ const initCurFields = chartDetails => {
       let rowDataValue = rowData[key]
       const rowDataValueSource = rowData[key]
       const f = valueFieldMap[key]
-      if (f && f.formatterCfg) {
+      // 富文本字段可能是 HTML，只有真实数值才套用指标格式进行格式化
+      if (f && f.formatterCfg && [2, 3].includes(f.deType) && isNumeric(rowDataValue)) {
         rowDataValue = valueFormatter(rowDataValue, f.formatterCfg)
       }
       dataRowNameSelect.value[sourceFieldNameIdMap[key]] = rowDataValue
