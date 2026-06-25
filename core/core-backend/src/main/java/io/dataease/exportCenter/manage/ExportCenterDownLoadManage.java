@@ -211,7 +211,9 @@ public class ExportCenterDownLoadManage {
     @DeLog(id = "#p1", ot = LogOT.EXPORT, st = LogST.DATASET)
     public void startDatasetTask(ExportTaskFileTarget exportTarget, Long exportFrom, DataSetExportRequest request) {
         exportTarget.createParentDirectory();
+        Long uid = V3UserUtil.getUid();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
+            V3UserUtil.setUid(uid);
             LicenseUtil.validate();
             try {
                 updateExportTask(exportTarget.taskId(), "IN_PROGRESS", null, null, null, null);
@@ -232,12 +234,13 @@ public class ExportCenterDownLoadManage {
                     datasetTableFieldDTO.setFieldShortName(ele.getDataeaseName());
                     return datasetTableFieldDTO;
                 }).collect(Collectors.toList());
-                DatasetGroupInfoDTO datasetGroupInfoDTO = datasetGroupManage.getDatasetGroupInfoDTO(request.getId(), null);
-                Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, null);
-                String sql = (String) sqlMap.get("sql");
                 if (ObjectUtils.isEmpty(allFields)) {
                     DEException.throwException(Translator.get("i18n_no_fields"));
                 }
+                dto.setAllFields(allFields);
+
+                Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(dto, null);
+                String sql = (String) sqlMap.get("sql");
                 Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
                 allFields = permissionManage.filterColumnPermissions(allFields, desensitizationList, dto.getId(), null);
                 if (ObjectUtils.isEmpty(allFields)) {
@@ -260,7 +263,6 @@ public class ExportCenterDownLoadManage {
                     sql = Utils.replaceSchemaAlias(sql, dsMap);
                 }
                 List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = new ArrayList<>();
-                Long uid = V3UserUtil.getUid();
                 if (uid != null) {
                     rowPermissionsTree = permissionManage.getRowPermissionsTree(dto.getId(), uid);
                 }
@@ -541,13 +543,13 @@ public class ExportCenterDownLoadManage {
     }
 
     private void updateExportTask(String taskId, String exportStatus, String exportProgress, String msg, Double fileSize, String fileSizeUnit) {
-        CoreExportTask exportTask = new CoreExportTask();
-        exportTask.setId(taskId);
+        CoreExportTask exportTask = coreExportTaskRepository.findById(taskId).orElse(null);
+        if (exportTask == null) return;
         exportTask.setExportStatus(exportStatus);
-        exportTask.setExportProgress(exportProgress);
-        exportTask.setMsg(msg);
-        exportTask.setFileSize(fileSize);
-        exportTask.setFileSizeUnit(fileSizeUnit);
+        if (exportProgress != null) exportTask.setExportProgress(exportProgress);
+        if (msg != null) exportTask.setMsg(msg);
+        if (fileSize != null) exportTask.setFileSize(fileSize);
+        if (fileSizeUnit != null) exportTask.setFileSizeUnit(fileSizeUnit);
         coreExportTaskRepository.saveAndFlush(exportTask);
     }
 
