@@ -26,6 +26,165 @@ import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { defaultsDeep } from 'lodash-es'
 
 const { t } = useI18n()
+type SliderValues = [number, number]
+const DIMENSION_SLIDER_OPACITY_STYLE = {
+  trackOpacity: 1,
+  selectionFillOpacity: 1,
+  handleLabelFillOpacity: 1
+}
+
+const dimensionKey = (value: any) => `${value instanceof Date ? value.getTime() : value}`
+
+const normalizeSliderValues = (values?: number[]): SliderValues => {
+  const [start = 0, end = 1] = values || []
+  return [Math.max(0, Math.min(start, end)), Math.min(1, Math.max(start, end))]
+}
+
+const getSliderSourceData = (data: any): any[] => {
+  if (Array.isArray(data)) {
+    return data
+  }
+  if (Array.isArray(data?.value)) {
+    return data.value
+  }
+  return []
+}
+
+const getSliderDimensionDomain = (data: any[], field: string): any[] => {
+  const domain = []
+  const keys = new Set<string>()
+  data.forEach(item => {
+    const value = item?.[field]
+    const key = dimensionKey(value)
+    if (!keys.has(key)) {
+      keys.add(key)
+      domain.push(value)
+    }
+  })
+  return domain
+}
+
+const getSelectedDimensionDomain = (domain: any[], values: SliderValues): any[] => {
+  if (!domain.length) {
+    return []
+  }
+  const lastIndex = domain.length - 1
+  const startIndex = Math.max(0, Math.min(lastIndex, Math.floor(values[0] * lastIndex)))
+  const endIndex = Math.max(startIndex, Math.min(lastIndex, Math.ceil(values[1] * lastIndex)))
+  return domain.slice(startIndex, endIndex + 1)
+}
+
+const getDimensionSliderLabelFormatter = (selectedDomain: any[], values: SliderValues) => {
+  return (value: number) => {
+    if (!selectedDomain.length) {
+      return ''
+    }
+    const currentValue = Number(value)
+    const labelValue =
+      Math.abs(currentValue - values[0]) <= Math.abs(currentValue - values[1])
+        ? selectedDomain[0]
+        : selectedDomain[selectedDomain.length - 1]
+    return labelValue === null || labelValue === undefined ? '' : `${labelValue}`
+  }
+}
+
+const updateDimensionSliderMark = (mark: any, selectedDomain: any[], values: SliderValues) => ({
+  ...mark,
+  scale: {
+    ...mark.scale,
+    x: {
+      ...mark.scale?.x,
+      domain: selectedDomain,
+      nice: false
+    }
+  },
+  slider: {
+    ...mark.slider,
+    x: {
+      ...mark.slider?.x,
+      values,
+      preserve: true,
+      formatter: getDimensionSliderLabelFormatter(selectedDomain, values),
+      style: {
+        ...mark.slider?.x?.style,
+        ...DIMENSION_SLIDER_OPACITY_STYLE,
+        formatter: getDimensionSliderLabelFormatter(selectedDomain, values)
+      }
+    }
+  }
+})
+
+const updateDimensionSliderLabel = (slider: any, selectedDomain: any[], values: SliderValues) => {
+  const formatter = getDimensionSliderLabelFormatter(selectedDomain, values)
+  if (slider?.attributes) {
+    slider.attributes.formatter = formatter
+    Object.assign(slider.attributes, DIMENSION_SLIDER_OPACITY_STYLE)
+  }
+  if (typeof slider?.setValues === 'function') {
+    slider.setValues(values)
+  }
+}
+
+const horizontalBarDimensionSliderFilter = ({ data, field }) => {
+  const sourceData = getSliderSourceData(data)
+  const domain = getSliderDimensionDomain(sourceData, field)
+  return target => {
+    const sliders = Array.from(target.container.getElementsByClassName?.('slider') || [])
+    const slider = sliders.find((item: any) => item.attributes?.orientation === 'horizontal') as any
+    if (!slider || !sourceData.length || !domain.length) {
+      return
+    }
+    let pendingValues: number[] | undefined
+    let frameId: number | undefined
+    const applyFilter = () => {
+      if (frameId !== undefined) {
+        cancelAnimationFrame(frameId)
+        frameId = undefined
+      }
+      if (!pendingValues) {
+        return
+      }
+      const rawValues = pendingValues
+      pendingValues = undefined
+      const values = normalizeSliderValues(rawValues)
+      const selectedDomain = getSelectedDimensionDomain(domain, values)
+      updateDimensionSliderLabel(slider, selectedDomain, values)
+      target.setState(slider, options => ({
+        ...options,
+        marks: options.marks?.map((mark, index) =>
+          index === 0 ? updateDimensionSliderMark(mark, selectedDomain, values) : mark
+        ),
+        children: options.children?.map((child, index) =>
+          index === 0 ? updateDimensionSliderMark(child, selectedDomain, values) : child
+        )
+      }))
+      target.update()
+    }
+    const scheduleApplyFilter = () => {
+      if (frameId !== undefined) {
+        return
+      }
+      // 拖动过程中按帧刷新，既能实时过滤，又避免单次 pointermove 触发多次重绘
+      frameId = requestAnimationFrame(() => {
+        frameId = undefined
+        applyFilter()
+      })
+    }
+    const onValueChange = event => {
+      pendingValues = event.detail?.value || slider.attributes?.values
+      scheduleApplyFilter()
+    }
+    slider.addEventListener('valuechange', onValueChange)
+    document.addEventListener('pointerup', applyFilter)
+    return () => {
+      if (frameId !== undefined) {
+        cancelAnimationFrame(frameId)
+      }
+      slider.removeEventListener('valuechange', onValueChange)
+      document.removeEventListener('pointerup', applyFilter)
+    }
+  }
+}
 /**
  * 基础条形图
  */
@@ -333,6 +492,70 @@ export class HorizontalBar extends Bar {
     handleEmptyDataStrategy(chart, options)
     // 横向堆叠继承此流程，需要移除保持为空补出的 null 片段
     filterStackBreakLineNullData(chart, options)
+    return options
+  }
+
+  protected configSlider(chart: Chart, options: ViewSpec): ViewSpec {
+    const functionCfgItems = this.propertyInner?.['function-cfg']
+    const hasSliderConfig = Array.isArray(functionCfgItems) && functionCfgItems.includes('slider')
+    const { functionCfg } = parseJson(chart.senior)
+    if (!hasSliderConfig || !functionCfg?.sliderShow) {
+      return options
+    }
+
+    const lineMark = options.children[0]
+    const dimensionField = lineMark?.encode?.x
+    if (!dimensionField) {
+      return options
+    }
+
+    const sourceData = lineMark.data ?? options.data
+    const values = normalizeSliderValues([
+      (functionCfg.sliderRange?.[0] ?? 0) / 100,
+      (functionCfg.sliderRange?.[1] ?? 100) / 100
+    ])
+    const domain = getSliderDimensionDomain(getSliderSourceData(sourceData), dimensionField)
+    if (!domain.length) {
+      return options
+    }
+
+    const selectedDomain = getSelectedDimensionDomain(domain, values)
+    lineMark.scale = {
+      ...lineMark.scale,
+      x: {
+        ...lineMark.scale?.x,
+        domain: selectedDomain,
+        nice: false
+      }
+    }
+    // 横向条形图维度 slider 仍过滤 x 域，但强制以底部横向控件展示
+    lineMark.slider = {
+      x: {
+        type: 'sliderX',
+        position: 'bottom',
+        values,
+        formatter: getDimensionSliderLabelFormatter(selectedDomain, values),
+        style: {
+          trackFill: functionCfg.sliderBg,
+          selectionFill: functionCfg.sliderFillBg,
+          handleLabelFill: functionCfg.sliderTextColor,
+          ...DIMENSION_SLIDER_OPACITY_STYLE,
+          handleLabelPointerEvents: 'none',
+          // handle 文案直接取过滤后维度域首尾，避免转置坐标下和左侧维度轴错位
+          formatter: getDimensionSliderLabelFormatter(selectedDomain, values),
+          sparklineLineStrokeOpacity: 0
+        }
+      }
+    }
+    lineMark.interaction = {
+      ...lineMark.interaction,
+      sliderFilter: false,
+      horizontalBarDimensionSliderFilter: {
+        type: horizontalBarDimensionSliderFilter,
+        field: dimensionField,
+        data: sourceData
+      }
+    }
     return options
   }
 

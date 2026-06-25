@@ -25,6 +25,15 @@ import { valueFormatter } from '@/views/chart/components/js/formatter'
 const { t } = useI18n()
 // 与父类方法参数保持一致，避免 flow 推导到 @antv/g2 的 Chart 类型后出现 TS2345。
 type PanelChart = Parameters<HorizontalBar['setupOptions']>[0]
+type RangeDateChart = {
+  data: { isDate?: boolean }
+  yAxis?: Array<{ datePattern?: string; dateStyle?: string }>
+}
+type DateWithFormatter = Date & { format: (format: string) => string }
+
+const asRangeDateChart = <T>(chart: T) => chart as T & RangeDateChart
+const formatRangeDate = (date: Date, dateFormat: string) =>
+  (date as DateWithFormatter).format(dateFormat)
 
 /**
  * 堆叠条形图
@@ -81,9 +90,10 @@ export class RangeBar extends HorizontalBar {
     if (!chart?.data?.data?.length) {
       return
     }
+    const rangeChart = asRangeDateChart(chart)
     let data = cloneDeep(drawOptions.chart.data?.data)
-    const isDate = !!chart.data.isDate
-    const dateSplit = chart.yAxis?.[0]?.datePattern === 'date_split' ? '/' : '-'
+    const isDate = !!rangeChart.data.isDate
+    const dateSplit = rangeChart.yAxis?.[0]?.datePattern === 'date_split' ? '/' : '-'
     const dateFormat =
       {
         y: 'yyyy',
@@ -92,7 +102,7 @@ export class RangeBar extends HorizontalBar {
         y_M_d_H: `yyyy${dateSplit}MM${dateSplit}dd hh`,
         y_M_d_H_m: `yyyy${dateSplit}MM${dateSplit}dd hh:mm`,
         y_M_d_H_m_s: `yyyy${dateSplit}MM${dateSplit}dd hh:mm:ss`
-      }[chart.yAxis?.[0]?.dateStyle] || 'yyyy-MM-dd hh:mm:ss'
+      }[rangeChart.yAxis?.[0]?.dateStyle] || 'yyyy-MM-dd hh:mm:ss'
     if (isDate) {
       data = cloneDeep(data).map(item => ({
         ...item,
@@ -118,7 +128,7 @@ export class RangeBar extends HorizontalBar {
             y: {
               ...this.intervalOptions.scale.y,
               mask: isDate ? dateFormat : undefined,
-              labelFormatter: val => (isDate ? new Date(val).format(dateFormat) : val)
+              labelFormatter: val => (isDate ? formatRangeDate(new Date(val), dateFormat) : val)
             }
           },
           data
@@ -139,13 +149,14 @@ export class RangeBar extends HorizontalBar {
     const tmpOptions = super.configYAxis(chart, options)
     const customStyle = parseJson(chart.customStyle)
     const axis = JSON.parse(JSON.stringify(customStyle['xAxis']))
-    const isDate = !!chart.data.isDate
+    const rangeChart = asRangeDateChart(chart)
+    const isDate = !!rangeChart.data.isDate
     const dateFormat = options.children[0].scale.y.mask
     tmpOptions.children[0].axis.y = {
       ...tmpOptions.children[0].axis.y,
       labelFormatter: val => {
         if (isDate) {
-          return new Date(val).format(dateFormat)
+          return formatRangeDate(new Date(val), dateFormat)
         }
         return valueFormatter(val, axis.axisLabelFormatter)
       }
@@ -168,7 +179,8 @@ export class RangeBar extends HorizontalBar {
     const transform = labelAttr.fullDisplay
       ? {}
       : { transform: [{ type: 'exceedAdjust' }, { type: 'overlapHide' }] }
-    const isDate = !!chart.data.isDate
+    const rangeChart = asRangeDateChart(chart)
+    const isDate = !!rangeChart.data.isDate
     const dateFormat = children[0].scale.y.mask
     const formatDateLabel = (dateVal: any) => {
       // 标签格式化兜底：空值或非法日期直接返回空串，避免显示 Invalid Date。
@@ -176,7 +188,7 @@ export class RangeBar extends HorizontalBar {
         return ''
       }
       const date = dateVal instanceof Date ? dateVal : new Date(dateVal)
-      return Number.isNaN(date.getTime()) ? '' : date.format(dateFormat)
+      return Number.isNaN(date.getTime()) ? '' : formatRangeDate(date, dateFormat)
     }
     const label = {
       text: 'value',
@@ -211,7 +223,8 @@ export class RangeBar extends HorizontalBar {
       children[0].tooltip = false
       return options
     }
-    const isDate = !!chart.data.isDate
+    const rangeChart = asRangeDateChart(chart)
+    const isDate = !!rangeChart.data.isDate
     const dateFormat = children[0].scale.y.mask
     const formatDateLabel = (dateVal: any) => {
       // tooltip 与标签保持一致的空值处理，避免时间区间展示异常文本。
@@ -219,12 +232,12 @@ export class RangeBar extends HorizontalBar {
         return ''
       }
       const date = dateVal instanceof Date ? dateVal : new Date(dateVal)
-      return Number.isNaN(date.getTime()) ? '' : date.format(dateFormat)
+      return Number.isNaN(date.getTime()) ? '' : formatRangeDate(date, dateFormat)
     }
     const tooltipOptions: ViewSpec = {
       tooltip: {
         items: [
-          (datum, index, data, _column) => ({
+          (datum, index, data) => ({
             value: datum.values,
             original_data: data[index]
           })
@@ -327,7 +340,8 @@ export class RangeBar extends HorizontalBar {
       this.configTooltip,
       this.configLegend,
       this.configXAxis,
-      this.configYAxis
+      this.configYAxis,
+      this.configSlider
     )(chart, options, {}, this)
   }
 
