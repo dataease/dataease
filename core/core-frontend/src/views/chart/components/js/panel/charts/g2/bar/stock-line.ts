@@ -117,12 +117,10 @@ export class StockLine extends G2ChartView {
 
   async drawChart(drawOptions: G2DrawOptions<G2Chart>): Promise<G2Chart> {
     const { chart, action, container } = drawOptions
-    if (!chart.data?.data?.length) {
-      return
-    }
     const xAxis = chart.xAxis
     const yAxis = chart.yAxis
-    if (yAxis.length != 4) {
+    const data = chart.data?.tableRow
+    if (!chart.data?.data?.length || !data?.length || !xAxis?.length || yAxis?.length !== 4) {
       return
     }
     const basicStyle = parseJson(chart.customAttr).basicStyle
@@ -131,9 +129,8 @@ export class StockLine extends G2ChartView {
     basicStyle.colors.forEach(ele => {
       colors.push(hexColorToRGBA(ele, alpha))
     })
-    const data = chart.data?.tableRow
 
-    const [_, __, minAxis, maxAxis] = yAxis
+    const [, , minAxis, maxAxis] = yAxis
     // 时间字段
     const dateAxis = xAxis[0].dataeaseName
     // 时间排序
@@ -155,10 +152,12 @@ export class StockLine extends G2ChartView {
       },
       children: [
         {
-          type: 'link',
+          type: 'interval',
+          // 使用窄区间柱绘制影线，避免 link 端点推断异常
           encode: {
             y: [minAxis.dataeaseName, maxAxis.dataeaseName],
-            color: () => '日K'
+            color: () => '日K',
+            size: 1
           },
           tooltip: false
         },
@@ -268,7 +267,7 @@ export class StockLine extends G2ChartView {
 
   protected configBasicStyle(chart: Chart, options: G2Spec): G2Spec {
     const { basicStyle } = parseJson(chart.customAttr)
-    const [_, __, lineMark, pointMark] = options.children
+    const [, , lineMark, pointMark] = options.children
     const lineStyleOpt = {
       encode: {
         shape: basicStyle.lineSmooth ? 'smooth' : 'line',
@@ -286,20 +285,24 @@ export class StockLine extends G2ChartView {
       pointStyleOpt.encode.shape = 'none'
     }
     defaultsDeep(pointMark, pointStyleOpt)
-    const [linkMark, intervalMark] = options.children
+    const [wickMark, intervalMark] = options.children
     const [startAxis, endAxis] = chart.yAxis
     const red = hexColorToRGBA(this.RED, basicStyle.alpha)
     const green = hexColorToRGBA(this.GREEN, basicStyle.alpha)
     const grey = hexColorToRGBA(this.GREY, basicStyle.alpha)
-    const linkOpt = {
+    const wickOpt = {
       style: {
         stroke: d => {
+          const offset = d[startAxis.dataeaseName] - d[endAxis.dataeaseName]
+          return offset === 0 ? grey : offset > 0 ? green : red
+        },
+        fill: d => {
           const offset = d[startAxis.dataeaseName] - d[endAxis.dataeaseName]
           return offset === 0 ? grey : offset > 0 ? green : red
         }
       }
     }
-    defaultsDeep(linkMark, linkOpt)
+    defaultsDeep(wickMark, wickOpt)
     const intervalOpt = {
       style: {
         fillOpacity: 1,
@@ -465,7 +468,7 @@ export class StockLine extends G2ChartView {
 
   protected configTooltip(chart: Chart, options: G2Spec): G2Spec {
     const { tooltip: tooltipAttr, basicStyle } = parseJson(chart.customAttr)
-    const [_, intervalMark, lineMark] = options.children
+    const [, intervalMark, lineMark] = options.children
     if (!tooltipAttr.show) {
       defaultsDeep(lineMark, { tooltip: false })
       defaultsDeep(intervalMark, { tooltip: false })
