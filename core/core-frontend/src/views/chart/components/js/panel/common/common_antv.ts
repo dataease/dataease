@@ -1281,8 +1281,7 @@ function getScaledL7ContainerPoint(
 }
 
 function rebindL7MouseMoveListener(interactionService: Record<string, any>, originalOnHover) {
-  const container = (interactionService.$containter ||
-    interactionService.mapService?.getMapContainer?.()) as HTMLElement
+  const container = interactionService.mapService?.getMapContainer?.() as HTMLElement
   if (!container || typeof originalOnHover !== 'function') {
     return
   }
