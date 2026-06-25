@@ -19,6 +19,7 @@ import {
   onBeforeMount,
   provide,
   unref,
+  toRaw,
   onBeforeUnmount,
   onMounted,
   defineAsyncComponent
@@ -2026,7 +2027,8 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
     } else {
       addAxis(e, type as AxisType)
     }
-    const currentIndex = view.value[type]?.findIndex(ele => ele === obj)
+    // Vue reactive 数组读取到的是代理对象，需要还原后才能定位刚插入项
+    const currentIndex = view.value[type]?.findIndex(ele => toRaw(ele) === obj)
     if (currentIndex !== -1) {
       insertIndex = currentIndex
     }
