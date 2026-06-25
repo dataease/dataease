@@ -2160,7 +2160,7 @@ const chartStyleScroll = (val: any) => {
           <el-icon
             :title="view.title"
             class="custom-icon"
-            size="20px"
+            size="16"
             @click="collapseChange('chartAreaCollapse')"
           >
             <Fold v-if="canvasCollapse.chartAreaCollapse" class="collapse-icon" />
@@ -3588,7 +3588,7 @@ const chartStyleScroll = (val: any) => {
           <el-icon
             :title="$t('visualization.dataset')"
             class="custom-icon"
-            size="20px"
+            size="16"
             @click="collapseChange('datasetAreaCollapse')"
           >
             <Fold v-if="canvasCollapse.datasetAreaCollapse" class="collapse-icon" />
@@ -4298,7 +4298,7 @@ const chartStyleScroll = (val: any) => {
   }
 }
 .collapse-icon {
-  color: @canvas-main-font-color;
+  color: #a6a6a6;
 }
 
 .hint-icon {
@@ -5073,8 +5073,8 @@ span {
 
 .custom-icon {
   position: absolute;
-  right: 5px;
-  top: 10px;
+  right: 9px;
+  top: 13px;
   cursor: pointer;
   z-index: 2;
 }
