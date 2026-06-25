@@ -2,6 +2,7 @@ package io.dataease.exportCenter.manage;
 
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import io.dataease.api.chart.dto.DeSortField;
 import io.dataease.api.chart.dto.ViewDetailField;
 import io.dataease.api.chart.request.ChartExcelRequest;
 import io.dataease.api.chart.request.ChartExcelRequestInner;
@@ -23,16 +24,10 @@ import io.dataease.dao.auto.entity.CoreChartView;
 import io.dataease.dao.auto.entity.CoreDatasetGroup;
 import io.dataease.dao.auto.entity.CoreExportTask;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupRepository;
-import io.dataease.dataset.manage.DatasetDataManage;
-import io.dataease.dataset.manage.DatasetSQLManage;
-import io.dataease.dataset.manage.DatasetTableFieldManage;
-import io.dataease.dataset.manage.PermissionManage;
+import io.dataease.dataset.manage.*;
 import io.dataease.datasource.utils.DatasourceUtils;
 import io.dataease.engine.sql.SQLProvider;
-import io.dataease.engine.trans.Field2SQLObj;
-import io.dataease.engine.trans.Order2SQLObj;
-import io.dataease.engine.trans.Table2SQLObj;
-import io.dataease.engine.trans.WhereTree2Str;
+import io.dataease.engine.trans.*;
 import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
 import io.dataease.exportCenter.dao.auto.mapper.CoreExportTaskRepository;
@@ -131,6 +126,8 @@ public class ExportCenterDownLoadManage {
     private CoreChartViewRepository coreChartViewRepository;
     @Resource
     private CoreDatasetGroupRepository coreDatasetGroupRepository;
+    @Resource
+    private DatasetGroupManage datasetGroupManage;
 
     private void applyPreparedParams(DatasourceRequest datasourceRequest, Map<String, Object> sqlMap) {
         if (sqlMap == null) {
@@ -192,55 +189,35 @@ public class ExportCenterDownLoadManage {
         }
     }
 
-    @DeLog(id = "#p0.exportFrom", ot = LogOT.EXPORT, st = LogST.DATA_FILLING)
-    public void startDataFillingTask(CoreExportTask exportTask, HashMap<String, Object> request) {
+    @DeLog(id = "#p1", ot = LogOT.EXPORT, st = LogST.DATA_FILLING)
+    public void startDataFillingTask(ExportTaskFileTarget exportTarget, Long exportFrom, Long userId, HashMap<String, Object> request) {
         if (ObjectUtils.isEmpty(getDataFillingApi())) {
             return;
         }
-        String dataPath = exportData_path + exportTask.getId();
-        File directory = new File(dataPath);
-        boolean isCreated = directory.mkdir();
+        exportTarget.createParentDirectory();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
-            coreExportTaskRepository.saveAndFlush(exportTask);
-            coreExportTaskRepository.saveAndFlush(exportTask);
             try {
-                exportTask.setExportStatus("IN_PROGRESS");
-                coreExportTaskRepository.saveAndFlush(exportTask);
-                getDataFillingApi().writeExcel(dataPath + "/" + exportTask.getId() + ".xlsx", new DataFillFormTableDataRequest().setId(exportTask.getExportFrom()).setWithoutLogs(true), exportTask.getUserId(), Long.parseLong(request.get("org").toString()));
-                exportTask.setExportProgress("100");
-                exportTask.setExportStatus("SUCCESS");
-
-                setFileSize(dataPath + "/" + exportTask.getId() + ".xlsx", exportTask);
+                updateExportTask(exportTarget.taskId(), "IN_PROGRESS", null, null, null, null);
+                getDataFillingApi().writeExcel(exportTarget.filePath(), new DataFillFormTableDataRequest().setId(exportFrom).setWithoutLogs(true), userId, Long.parseLong(request.get("org").toString()));
+                updateExportTaskSuccess(exportTarget, "100");
             } catch (Exception e) {
-                exportTask.setMsg(e.getMessage());
                 LogUtil.error("Failed to export data", e);
-                exportTask.setExportStatus("FAILED");
-            } finally {
-                coreExportTaskRepository.saveAndFlush(exportTask);
+                updateExportTask(exportTarget.taskId(), "FAILED", null, e.getMessage(), null, null);
             }
         });
-        Running_Task.put(exportTask.getId(), future);
+        Running_Task.put(exportTarget.taskId(), future);
     }
 
-    @DeLog(id = "#p0.exportFrom", ot = LogOT.EXPORT, st = LogST.DATASET)
-    public void startDatasetTask(CoreExportTask exportTask, DataSetExportRequest request) {
-        String dataPath = exportData_path + exportTask.getId();
-        File directory = new File(dataPath);
-        // 如果父目录不存在，则递归创建
-        if (!directory.exists()) {
-            boolean isCreated = directory.mkdirs(); // 创建所有必要的父目录
-        }
-
+    @DeLog(id = "#p1", ot = LogOT.EXPORT, st = LogST.DATASET)
+    public void startDatasetTask(ExportTaskFileTarget exportTarget, Long exportFrom, DataSetExportRequest request) {
+        exportTarget.createParentDirectory();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
-            coreExportTaskRepository.saveAndFlush(exportTask);
             LicenseUtil.validate();
             try {
-                coreExportTaskRepository.saveAndFlush(exportTask);
-                exportTask.setExportStatus("IN_PROGRESS");
-                coreExportTaskRepository.saveAndFlush(exportTask);
-                CoreDatasetGroup coreDatasetGroup = coreDatasetGroupRepository.findById(exportTask.getExportFrom()).orElse(null);
+                updateExportTask(exportTarget.taskId(), "IN_PROGRESS", null, null, null, null);
+                CoreDatasetGroup coreDatasetGroup = coreDatasetGroupRepository.findById(exportFrom).orElse(null);
                 if (coreDatasetGroup == null) {
-                    throw new Exception("Not found dataset group: " + exportTask.getExportFrom());
+                    throw new Exception("Not found dataset group: " + exportFrom);
                 }
                 DatasetGroupInfoDTO dto = new DatasetGroupInfoDTO();
                 BeanUtils.copyBean(dto, coreDatasetGroup);
@@ -248,20 +225,19 @@ public class ExportCenterDownLoadManage {
                 List<UnionDTO> unionDTOList = JsonUtil.parseList(coreDatasetGroup.getInfo(), new TypeReference<>() {
                 });
                 dto.setUnion(unionDTOList);
-                List<DatasetTableFieldDTO> dsFields = datasetTableFieldManage.selectByDatasetGroupId(Long.valueOf(exportTask.getExportFrom()));
+                List<DatasetTableFieldDTO> dsFields = datasetTableFieldManage.selectByDatasetGroupId(exportFrom);
                 List<DatasetTableFieldDTO> allFields = dsFields.stream().map(ele -> {
                     DatasetTableFieldDTO datasetTableFieldDTO = new DatasetTableFieldDTO();
                     BeanUtils.copyBean(datasetTableFieldDTO, ele);
                     datasetTableFieldDTO.setFieldShortName(ele.getDataeaseName());
                     return datasetTableFieldDTO;
                 }).collect(Collectors.toList());
+                DatasetGroupInfoDTO datasetGroupInfoDTO = datasetGroupManage.getDatasetGroupInfoDTO(request.getId(), null);
+                Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, null);
+                String sql = (String) sqlMap.get("sql");
                 if (ObjectUtils.isEmpty(allFields)) {
                     DEException.throwException(Translator.get("i18n_no_fields"));
                 }
-                dto.setAllFields(allFields);
-
-                Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(dto, null);
-                String sql = (String) sqlMap.get("sql");
                 Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
                 allFields = permissionManage.filterColumnPermissions(allFields, desensitizationList, dto.getId(), null);
                 if (ObjectUtils.isEmpty(allFields)) {
@@ -307,7 +283,17 @@ public class ExportCenterDownLoadManage {
                 Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
                 Field2SQLObj.field2sqlObj(sqlMeta, allFields, allFields, crossDs, dsMap, Utils.getParams(allFields), null, pluginManage);
                 WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, allFields, crossDs, dsMap, Utils.getParams(allFields), null, pluginManage);
-                Order2SQLObj.getOrders(sqlMeta, dto.getSortFields(), allFields, crossDs, dsMap, Utils.getParams(allFields), null, pluginManage);
+                List<DeSortField> sortFields = new ArrayList<>();
+                for (DatasetTableFieldDTO field : allFields) {
+                    if (field.getOrderChecked()) {
+                        DeSortField sortField = new DeSortField();
+                        BeanUtils.copyBean(sortField, field);
+                        sortField.setOrderDirection("asc");
+                        sortFields.add(sortField);
+                    }
+                }
+                dto.setSortFields(sortFields);
+                DatasetOrder2SQLObj.getOrders(sqlMeta, dto.getSortFields(), allFields);
                 String replaceSql = provider.rebuildSQL(SQLProvider.createQuerySQL(sqlMeta, false, false, false), sqlMeta, crossDs, dsMap);
                 Long totalCount = datasetDataManage.getDatasetTotal(dto, replaceSql, null);
                 Long curLimit = ExportCenterUtils.getExportLimit("dataset");
@@ -418,57 +404,62 @@ public class ExportCenterDownLoadManage {
                                 }
                             }
                         }
-                        exportTask.setExportStatus("IN_PROGRESS");
                         double exportRogress2 = (double) ((double) s - 1) / ((double) sheetCount);
                         double exportRogress = (double) ((double) (p + 1) / (double) pageSize) * ((double) 1 / sheetCount);
                         DecimalFormat df = new DecimalFormat("#.##");
                         String formattedResult = df.format((exportRogress + exportRogress2) * 100);
-                        exportTask.setExportProgress(formattedResult);
-                        coreExportTaskRepository.saveAndFlush(exportTask);
+                        updateExportTask(exportTarget.taskId(), "IN_PROGRESS", formattedResult, null, null, null);
                     }
                 }
                 this.addWatermarkTools(wb);
-                FileOutputStream fileOutputStream = new FileOutputStream(dataPath + "/" + exportTask.getId() + ".xlsx");
-                wb.write(fileOutputStream);
-                fileOutputStream.flush();
-                fileOutputStream.close();
+                try (OutputStream fileOutputStream = exportTarget.newOutputStream()) {
+                    wb.write(fileOutputStream);
+                    fileOutputStream.flush();
+                }
                 wb.close();
-                exportTask.setExportProgress("100");
-                exportTask.setExportStatus("SUCCESS");
-                setFileSize(dataPath + "/" + exportTask.getId() + ".xlsx", exportTask);
+                updateExportTaskSuccess(exportTarget, "100");
 
             } catch (Exception e) {
                 LogUtil.error("Failed to export data", e);
-                exportTask.setMsg(e.getMessage());
-                exportTask.setExportStatus("FAILED");
-            } finally {
-                coreExportTaskRepository.saveAndFlush(exportTask);
+                updateExportTask(exportTarget.taskId(), "FAILED", null, e.getMessage(), null, null);
             }
         });
-        Running_Task.put(exportTask.getId(), future);
+        Running_Task.put(exportTarget.taskId(), future);
     }
 
-    @DeLog(id = "#p0.exportFrom", ot = LogOT.EXPORT, st = LogST.PANEL)
-    public void startPanelViewTask(CoreExportTask exportTask, ChartExcelRequest request) {
-        startViewTask(exportTask, request);
+    @DeLog(id = "#p1.viewId", ot = LogOT.EXPORT, st = LogST.PANEL)
+    public void startPanelViewTask(ExportTaskFileTarget exportTarget, ChartExcelRequest request) {
+        startViewTask(exportTarget, request);
     }
 
-    @DeLog(id = "#p0.exportFrom", ot = LogOT.EXPORT, st = LogST.SCREEN)
-    public void startDataVViewTask(CoreExportTask exportTask, ChartExcelRequest request) {
-        startViewTask(exportTask, request);
+    @DeLog(id = "#p1.viewId", ot = LogOT.EXPORT, st = LogST.SCREEN)
+    public void startDataVViewTask(ExportTaskFileTarget exportTarget, ChartExcelRequest request) {
+        startViewTask(exportTarget, request);
     }
 
+    public static void removeColumn(List<Object[]> list, List<Integer> columnIndexs) {
+        if (list == null || list.isEmpty() || columnIndexs == null || columnIndexs.isEmpty()) {
+            return;
+        }
+        for (int i = 0; i < list.size(); i++) {
+            Object[] originalRow = list.get(i);
+            Object[] newRow = new Object[originalRow.length - columnIndexs.size()];
+            int newIndex = 0;
+            for (int j = 0; j < originalRow.length; j++) {
+                if (!columnIndexs.contains(j)) {
+                    newRow[newIndex++] = originalRow[j];
+                }
+            }
+            list.set(i, newRow);
+        }
+    }
 
-    public void startViewTask(CoreExportTask exportTask, ChartExcelRequest request) {
-        String dataPath = exportData_path + exportTask.getId();
-        File directory = new File(dataPath);
-        boolean isCreated = directory.mkdir();
+    public void startViewTask(ExportTaskFileTarget exportTarget, ChartExcelRequest request) {
+        exportTarget.createParentDirectory();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
-            coreExportTaskRepository.saveAndFlush(exportTask);
             LicenseUtil.validate();
             try {
-                exportTask.setExportStatus("IN_PROGRESS");
-                coreExportTaskRepository.saveAndFlush(exportTask);
+                updateExportTask(exportTarget.taskId(), "IN_PROGRESS", null, null, null, null);
                 Workbook wb = new SXSSFWorkbook();
                 CellStyle cellStyle = wb.createCellStyle();
                 Font font = wb.createFont();
@@ -482,62 +473,82 @@ public class ExportCenterDownLoadManage {
                 Sheet detailsSheet;
                 Integer sheetIndex = 1;
                 if ("dataset".equals(request.getDownloadType()) || request.getViewInfo().getType().equalsIgnoreCase("table-info") || request.getViewInfo().getType().equalsIgnoreCase("table-normal")) {
+                    boolean summaryEnabled = !"dataset".equals(request.getDownloadType()) && ChartDataServer.isSummaryEnabled(request.getViewInfo());
+                    ChartDataServer.SummaryConfig summaryConfig = null;
+                    ChartDataServer.SummaryAccumulator summaryAcc = null;
+                    List<ChartViewFieldDTO> allExportColumns = null;
+                    Map<String, java.math.BigDecimal> customSumResult = null;
+                    if (summaryEnabled) {
+                        summaryConfig = ChartDataServer.parseSummaryConfig(request.getViewInfo());
+                        summaryAcc = new ChartDataServer.SummaryAccumulator();
+                        allExportColumns = ChartDataServer.getAllExportColumns(request.getViewInfo());
+                    }
+
                     request.getViewInfo().getChartExtRequest().setPageSize(Long.valueOf(extractPageSize));
                     ChartViewDTO chartViewDTO = chartDataServer.findExcelData(request);
                     for (long i = 1; i < chartViewDTO.getTotalPage() + 1; i++) {
                         request.getViewInfo().getChartExtRequest().setGoPage(i);
-                        request.getViewInfo().setXAxis(request.getViewInfo().getXAxis().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
-                        request.getViewInfo().setXAxisExt(request.getViewInfo().getXAxisExt().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
-                        request.getViewInfo().setYAxisExt(request.getViewInfo().getYAxisExt().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
                         request.getViewInfo().setExtStack(request.getViewInfo().getExtStack().stream().filter(ele -> !ele.isHide()).collect(Collectors.toList()));
-                        chartDataServer.findExcelData(request);
+                        ChartViewDTO pageDto = chartDataServer.findExcelData(request);
                         details.addAll(request.getDetails());
+
+                        if (summaryEnabled) {
+                            ChartDataServer.accumulatePageStats(summaryAcc, request.getDetails(), allExportColumns, summaryConfig);
+                            if (i == chartViewDTO.getTotalPage() && pageDto.getData() != null && pageDto.getData().get("customSumResult") != null) {
+                                customSumResult = (Map<String, java.math.BigDecimal>) pageDto.getData().get("customSumResult");
+                            }
+                        }
+
                         if (((details.size() + extractPageSize) > sheetLimit) || i == chartViewDTO.getTotalPage()) {
+                            if (i == chartViewDTO.getTotalPage() && summaryEnabled && summaryAcc.totalCount > 0) {
+                                Object[] totalRow = ChartDataServer.buildSummaryRow(allExportColumns, summaryConfig, summaryAcc, customSumResult);
+                                details.add(totalRow);
+                            }
+
                             detailsSheet = wb.createSheet("数据" + sheetIndex);
                             Integer[] excelTypes = request.getExcelTypes();
                             ViewDetailField[] detailFields = request.getDetailFields();
-                            Object[] header = request.getHeader();
-                            List<ChartViewFieldDTO> xAxis = new ArrayList<>();
-                            xAxis.addAll(request.getViewInfo().getXAxis());
-                            xAxis.addAll(request.getViewInfo().getXAxisExt());
-                            xAxis.addAll(request.getViewInfo().getYAxisExt());
-                            xAxis.addAll(request.getViewInfo().getExtStack());
-                            xAxis.addAll(request.getViewInfo().getDrillFields());
-                            header = Arrays.stream(request.getHeader()).filter(item -> xAxis.stream().map(d -> StringUtils.isNotBlank(d.getChartShowName()) ? d.getChartShowName() : d.getName()).toList().contains(item)).toArray();
+                            Object[] header = ChartDataServer.filterExportHeader(request.getHeader(), request.getViewInfo());
                             details.add(0, header);
+                            List<Integer> columnIndexs = ChartDataServer.getHiddenExportColumnIndexes(header, request.getViewInfo());
+                            removeColumn(details, columnIndexs);
                             ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), wb);
                             sheetIndex++;
                             details.clear();
-                            exportTask.setExportStatus("IN_PROGRESS");
-                            double exportProgress = (double) (i / (chartViewDTO.getTotalPage() + 1));
-                            DecimalFormat df = new DecimalFormat("#.##");
-                            String formattedResult = df.format((exportProgress) * 100);
-                            exportTask.setExportProgress(formattedResult);
-                            coreExportTaskRepository.saveAndFlush(exportTask);
                         }
+                        double exportProgress = (double) ((double) i / (chartViewDTO.getTotalPage()));
+                        DecimalFormat df = new DecimalFormat("#.##");
+                        String formattedResult = df.format((exportProgress) * 100);
+                        updateExportTask(exportTarget.taskId(), "IN_PROGRESS", formattedResult, null, null, null);
                     }
                 } else {
                     downloadNotTableInfoData(request, wb);
                 }
                 this.addWatermarkTools(wb);
 
-                try (FileOutputStream outputStream = new FileOutputStream(dataPath + "/" + exportTask.getId() + ".xlsx")) {
+                try (OutputStream outputStream = exportTarget.newOutputStream()) {
                     wb.write(outputStream);
                     outputStream.flush();
                 }
                 wb.close();
-                exportTask.setExportProgress("100");
-                exportTask.setExportStatus("SUCCESS");
-                setFileSize(dataPath + "/" + exportTask.getId() + ".xlsx", exportTask);
+                updateExportTaskSuccess(exportTarget, "100");
             } catch (Exception e) {
-                exportTask.setMsg(e.getMessage());
                 LogUtil.error("Failed to export data", e);
-                exportTask.setExportStatus("FAILED");
-            } finally {
-                coreExportTaskRepository.saveAndFlush(exportTask);
+                updateExportTask(exportTarget.taskId(), "FAILED", null, e.getMessage(), null, null);
             }
         });
-        Running_Task.put(exportTask.getId(), future);
+        Running_Task.put(exportTarget.taskId(), future);
+    }
+
+    private void updateExportTask(String taskId, String exportStatus, String exportProgress, String msg, Double fileSize, String fileSizeUnit) {
+        CoreExportTask exportTask = new CoreExportTask();
+        exportTask.setId(taskId);
+        exportTask.setExportStatus(exportStatus);
+        exportTask.setExportProgress(exportProgress);
+        exportTask.setMsg(msg);
+        exportTask.setFileSize(fileSize);
+        exportTask.setFileSizeUnit(fileSizeUnit);
+        coreExportTaskRepository.saveAndFlush(exportTask);
     }
 
     private void downloadNotTableInfoData(ChartExcelRequest request, Workbook wb) {
@@ -587,25 +598,13 @@ public class ExportCenterDownLoadManage {
         }
     }
 
-    private void setFileSize(String filePath, CoreExportTask exportTask) {
-        File file = new File(filePath);
-        long length = file.length();
-        String unit = "Mb";
-        Double size = 0.0;
-        if ((double) length / 1024 / 1024 > 1) {
-            if ((double) length / 1024 / 1024 / 1024 > 1) {
-                unit = "Gb";
-                size = Double.valueOf(String.format("%.2f", (double) length / 1024 / 1024 / 1024));
-            } else {
-                size = Double.valueOf(String.format("%.2f", (double) length / 1024 / 1024));
-            }
-
-        } else {
-            unit = "Kb";
-            size = Double.valueOf(String.format("%.2f", (double) length / 1024));
+    private void updateExportTaskSuccess(ExportTaskFileTarget exportTarget, String exportProgress) {
+        try {
+            ExportTaskFileTarget.FileSize fileSize = exportTarget.readFileSize();
+            updateExportTask(exportTarget.taskId(), "SUCCESS", exportProgress, null, fileSize.size(), fileSize.unit());
+        } catch (IOException e) {
+            DEException.throwException(e);
         }
-        exportTask.setFileSize(size);
-        exportTask.setFileSizeUnit(unit);
     }
 
     public void addWatermarkTools(Workbook wb) {
@@ -621,24 +620,13 @@ public class ExportCenterDownLoadManage {
         }
     }
 
-    public void download(CoreExportTask exportTask, HttpServletResponse response) throws Exception {
+    public void download(ExportTaskFileTarget exportTarget, String downloadFileName, HttpServletResponse response) throws Exception {
         response.setContentType("application/octet-stream");
-        String encodedFileName = URLEncoder.encode(exportTask.getFileName(), StandardCharsets.UTF_8);
+        String encodedFileName = URLEncoder.encode(downloadFileName, StandardCharsets.UTF_8);
         response.setHeader("Content-Disposition", "attachment; filename=\"" + encodedFileName + "\"; filename*=utf-8''" + encodedFileName);
-        String filePath;
-
-        if (exportTask.getExportTime() < 1730277243491L) {
-            filePath = exportData_path + exportTask.getId() + "/" + exportTask.getFileName();
-        } else {
-            filePath = exportData_path + exportTask.getId() + "/" + exportTask.getId() + ".xlsx";
-        }
-
-        validateDownloadPath(filePath);
-
-        try (FileInputStream fileInputStream = new FileInputStream(filePath); OutputStream outputStream = response.getOutputStream()) {
-            FileChannel fileChannel = fileInputStream.getChannel();
-            WritableByteChannel outputChannel = Channels.newChannel(outputStream);
-            fileChannel.transferTo(0, fileChannel.size(), outputChannel);
+        try (InputStream fileInputStream = exportTarget.newInputStream(); OutputStream outputStream = response.getOutputStream()) {
+            fileInputStream.transferTo(outputStream);
+            outputStream.flush();
             response.flushBuffer();
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
