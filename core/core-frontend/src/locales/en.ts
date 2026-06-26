@@ -602,6 +602,9 @@ export default {
     incorrect_please_re_enter: 'The callback domain name format is incorrect, please re-enter',
     cas_settings: 'CAS settings',
     callback_domain_name: 'Callback domain name',
+    logout_redirect_url: 'Logout redirect URL',
+    logout_redirect_url_placeholder:
+      'The URL to redirect to after CAS logout. If empty, stays on CAS logout success page',
     authentication_settings: 'Authentication Settings',
     be_turned_on: 'After the test connection is valid, it can be turned on',
     platform_information_first: 'Please save the platform information first',
