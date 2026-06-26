@@ -1,7 +1,7 @@
 package io.dataease.listener;
 
-import io.dataease.datasource.dao.auto.entity.DeStandaloneVersion;
-import io.dataease.datasource.dao.auto.repository.DeStandaloneVersionRepository;
+import io.dataease.dao.auto.entity.DeStandaloneVersion;
+import io.dataease.dao.auto.repo.DeStandaloneVersionRepository;
 
 import io.dataease.extensions.datasource.utils.SpringContextUtil;
 import io.dataease.initSql.SqlBlock;

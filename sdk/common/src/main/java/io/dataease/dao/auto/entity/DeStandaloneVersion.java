@@ -1,4 +1,4 @@
-package io.dataease.datasource.dao.auto.entity;
+package io.dataease.dao.auto.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,7 +8,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-
 
 import java.time.LocalDateTime;
 
