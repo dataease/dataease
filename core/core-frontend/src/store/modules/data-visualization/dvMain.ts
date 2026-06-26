@@ -1472,10 +1472,12 @@ export const dvMainStore = defineStore('dataVisualization', {
       }
       // 联动的图表情况历史条件
       // const currentFilters = []
+      const skipEmptyValue = this.canvasViewInfo[viewId]?.type === 'multi-scatter'
       checkQDList.forEach(QDItem => {
         const hasTimeRange = QDItem.timeValue && Array.isArray(QDItem.timeValue)
         const hasValue = QDItem.value !== null && QDItem.value !== undefined && QDItem.value !== ''
-        if (!hasTimeRange && !hasValue) {
+        // 多维散点图点击字段可能包含无效值，保留空值过滤
+        if (skipEmptyValue && !hasTimeRange && !hasValue) {
           return
         }
         const sourceInfo = viewId + '#' + QDItem.id
