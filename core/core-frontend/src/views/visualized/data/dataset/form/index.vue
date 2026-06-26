@@ -2215,6 +2215,12 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                       </template>
                     </el-table-column>
 
+                    <el-table-column :label="t('chart.total_sort_field')" align="center" width="90">
+                      <template #default="scope">
+                        <el-checkbox v-model="scope.row.orderChecked" />
+                      </template>
+                    </el-table-column>
+
                     <el-table-column fixed="right" :label="t('chart.dimension')">
                       <template #default="scope">
                         <el-tooltip
@@ -2411,6 +2417,12 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                             {{ fieldTypes(scope.row.deExtractType) }}
                           </span>
                         </div>
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column :label="t('chart.total_sort_field')" align="center" width="90">
+                      <template #default="scope">
+                        <el-checkbox v-model="scope.row.orderChecked" />
                       </template>
                     </el-table-column>
 

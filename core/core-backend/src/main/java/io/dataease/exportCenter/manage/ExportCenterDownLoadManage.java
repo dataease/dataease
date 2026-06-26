@@ -189,14 +189,17 @@ public class ExportCenterDownLoadManage {
         }
     }
 
-    @DeLog(id = "#p1", ot = LogOT.EXPORT, st = LogST.DATA_FILLING)
-    public void startDataFillingTask(ExportTaskFileTarget exportTarget, Long exportFrom, Long userId, HashMap<String, Object> request) {
+    @DeLog(id = "#p2", ot = LogOT.EXPORT, st = LogST.DATA_FILLING)
+    public void startDataFillingTask(CoreExportTask exportTask, ExportTaskFileTarget exportTarget, Long exportFrom, Long userId, HashMap<String, Object> request) {
         if (ObjectUtils.isEmpty(getDataFillingApi())) {
             return;
         }
         exportTarget.createParentDirectory();
+        Long uid = V3UserUtil.getUid();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
             try {
+                V3UserUtil.setUid(uid);
+                coreExportTaskRepository.saveAndFlush(exportTask);
                 updateExportTask(exportTarget.taskId(), "IN_PROGRESS", null, null, null, null);
                 getDataFillingApi().writeExcel(exportTarget.filePath(), new DataFillFormTableDataRequest().setId(exportFrom).setWithoutLogs(true), userId, Long.parseLong(request.get("org").toString()));
                 updateExportTaskSuccess(exportTarget, "100");
@@ -208,11 +211,12 @@ public class ExportCenterDownLoadManage {
         Running_Task.put(exportTarget.taskId(), future);
     }
 
-    @DeLog(id = "#p1", ot = LogOT.EXPORT, st = LogST.DATASET)
-    public void startDatasetTask(ExportTaskFileTarget exportTarget, Long exportFrom, DataSetExportRequest request) {
+    @DeLog(id = "#p2", ot = LogOT.EXPORT, st = LogST.DATASET)
+    public void startDatasetTask(CoreExportTask exportTask, ExportTaskFileTarget exportTarget, Long exportFrom, DataSetExportRequest request) {
         exportTarget.createParentDirectory();
         Long uid = V3UserUtil.getUid();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
+            coreExportTaskRepository.saveAndFlush(exportTask);
             V3UserUtil.setUid(uid);
             LicenseUtil.validate();
             try {
@@ -287,7 +291,7 @@ public class ExportCenterDownLoadManage {
                 WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, allFields, crossDs, dsMap, Utils.getParams(allFields), null, pluginManage);
                 List<DeSortField> sortFields = new ArrayList<>();
                 for (DatasetTableFieldDTO field : allFields) {
-                    if (field.getOrderChecked()) {
+                    if (field.getOrderChecked() != null && field.getOrderChecked()) {
                         DeSortField sortField = new DeSortField();
                         BeanUtils.copyBean(sortField, field);
                         sortField.setOrderDirection("asc");
@@ -429,14 +433,14 @@ public class ExportCenterDownLoadManage {
         Running_Task.put(exportTarget.taskId(), future);
     }
 
-    @DeLog(id = "#p1.viewId", ot = LogOT.EXPORT, st = LogST.PANEL)
-    public void startPanelViewTask(ExportTaskFileTarget exportTarget, ChartExcelRequest request) {
-        startViewTask(exportTarget, request);
+    @DeLog(id = "#p2.viewId", ot = LogOT.EXPORT, st = LogST.PANEL)
+    public void startPanelViewTask(CoreExportTask exportTask, ExportTaskFileTarget exportTarget, ChartExcelRequest request) {
+        startViewTask(exportTask, exportTarget, request);
     }
 
-    @DeLog(id = "#p1.viewId", ot = LogOT.EXPORT, st = LogST.SCREEN)
-    public void startDataVViewTask(ExportTaskFileTarget exportTarget, ChartExcelRequest request) {
-        startViewTask(exportTarget, request);
+    @DeLog(id = "#p2.viewId", ot = LogOT.EXPORT, st = LogST.SCREEN)
+    public void startDataVViewTask(CoreExportTask exportTask, ExportTaskFileTarget exportTarget, ChartExcelRequest request) {
+        startViewTask(exportTask, exportTarget, request);
     }
 
     public static void removeColumn(List<Object[]> list, List<Integer> columnIndexs) {
@@ -456,9 +460,12 @@ public class ExportCenterDownLoadManage {
         }
     }
 
-    public void startViewTask(ExportTaskFileTarget exportTarget, ChartExcelRequest request) {
+    public void startViewTask(CoreExportTask exportTask, ExportTaskFileTarget exportTarget, ChartExcelRequest request) {
         exportTarget.createParentDirectory();
+        Long uid = V3UserUtil.getUid();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
+            V3UserUtil.setUid(uid);
+            coreExportTaskRepository.saveAndFlush(exportTask);
             LicenseUtil.validate();
             try {
                 updateExportTask(exportTarget.taskId(), "IN_PROGRESS", null, null, null, null);

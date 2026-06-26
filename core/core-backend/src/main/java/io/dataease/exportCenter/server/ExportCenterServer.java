@@ -50,13 +50,12 @@ public class ExportCenterServer implements ExportCenterApi {
 
     @Override
     public void download(String id, String ticket, HttpServletResponse response) throws Exception {
-        exportCenterManage.download(id, response);
+        exportCenterManage.download(id, ticket, response);
     }
 
     @Override
     public String generateDownloadUri(String id) throws Exception {
-        exportCenterManage.generateDownloadUri(id);
-        return "";
+        return exportCenterManage.generateDownloadUri(id);
     }
 
     @Override
