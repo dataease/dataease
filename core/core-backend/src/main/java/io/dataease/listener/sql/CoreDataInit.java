@@ -1,5 +1,7 @@
 package io.dataease.listener.sql;
 
+import io.dataease.dao.auto.entity.DeStandaloneVersion;
+import io.dataease.dao.auto.repo.DeStandaloneVersionRepository;
 import io.dataease.font.dao.auto.entity.CoreFont;
 import io.dataease.font.dao.auto.mapper.CoreFontRepository;
 import io.dataease.initSql.Version;
@@ -47,6 +49,8 @@ public class CoreDataInit implements CoreSqlBlock {
     private CoreFontRepository coreFontRepository;
     @Resource
     private JdbcTemplate jdbcTemplate;
+    @Resource
+    private DeStandaloneVersionRepository deStandaloneVersionRepository;
 
     @Override
     public Version getVersion() {
@@ -55,16 +59,16 @@ public class CoreDataInit implements CoreSqlBlock {
 
     @Override
     public void execute() {
-        Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM de_standalone_version WHERE `success` = 1 and  version LIKE '2.%'", Integer.class);
-        boolean isUpgrade = count != null && count > 0;
+        List<DeStandaloneVersion> records = deStandaloneVersionRepository.findRecords();
+        boolean isUpgrade = records.stream()
+                .anyMatch(r -> Boolean.TRUE.equals(r.getSuccess()) && r.getVersion() != null && r.getVersion().startsWith("2."));
         if (isUpgrade) {
             LogUtil.info("=== CoreDataInit upgrade mode ===");
             executeUpgradeSteps();
         } else {
             LogUtil.info("=== CoreDataInit fresh install mode ===");
             executeInitSteps();
-            executeUpgradeSteps();
+            // executeUpgradeSteps();
         }
     }
 

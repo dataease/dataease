@@ -1,13 +1,12 @@
-package io.dataease.datasource.dao.auto.repository;
+package io.dataease.dao.auto.repo;
 
-import io.dataease.datasource.dao.auto.entity.DeStandaloneVersion;
+import io.dataease.dao.auto.entity.DeStandaloneVersion;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.List;
-
 
 public interface DeStandaloneVersionRepository extends JpaRepository<DeStandaloneVersion, Long>, JpaSpecificationExecutor<DeStandaloneVersion> {
     default List<DeStandaloneVersion> findRecords() {
