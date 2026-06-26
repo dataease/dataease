@@ -61,6 +61,8 @@ public class SQLConstants {
 
     public static final String DE_STR_TO_DATE = "DE_STR_TO_DATE(%s,'%s')";
 
+    public static final String DE_STR_TO_DATE_T = "DE_STR_TO_DATE_T(%s,'%s')";
+
     public static final String CAST = "CAST(%s AS %s)";
 
     public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
