@@ -586,6 +586,8 @@ export default {
     incorrect_please_re_enter: '回呼網域格式錯誤，請重新輸入',
     cas_settings: 'CAS設定',
     callback_domain_name: '回呼網域',
+    logout_redirect_url: '登出頁面',
+    logout_redirect_url_placeholder: 'CAS登出後跳轉的目標位址，為空則停留在CAS登出成功頁',
     authentication_settings: '認證設定',
     be_turned_on: '測試連線有效後，可開啟',
     platform_information_first: '請先儲存平台資訊',

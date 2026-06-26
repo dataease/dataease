@@ -589,6 +589,8 @@ export default {
     incorrect_please_re_enter: '回调域名格式错误，请重新输入',
     cas_settings: 'CAS设置',
     callback_domain_name: '回调域名',
+    logout_redirect_url: '注销页面',
+    logout_redirect_url_placeholder: 'CAS注销后跳转的目标地址，为空则停留在CAS注销成功页',
     authentication_settings: '认证设置',
     be_turned_on: '测试连接有效后，可开启',
     platform_information_first: '请先保存平台信息',
