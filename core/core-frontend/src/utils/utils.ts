@@ -57,6 +57,10 @@ export function checkAddHttp(url) {
   }
 }
 
+export const sanitizeHtml = (html: string): string => {
+  return DOMPurify.sanitize(html)
+}
+
 export const setColorName = (obj, keyword: string, key?: string, colorKey?: string) => {
   key = key || 'name'
   colorKey = colorKey || 'colorName'
@@ -73,7 +77,10 @@ export const setColorName = (obj, keyword: string, key?: string, colorKey?: stri
       keyword +
       '</span>' +
       name.substring(index + keyword.length, name.length)
-    obj[colorKey] = textCode
+    obj[colorKey] = DOMPurify.sanitize(textCode, {
+      ALLOWED_TAGS: ['span'],
+      ALLOWED_ATTR: ['class']
+    })
     return
   }
   obj[colorKey] = null
