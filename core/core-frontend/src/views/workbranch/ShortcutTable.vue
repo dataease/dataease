@@ -580,7 +580,7 @@ const getEmptyDesc = (): string => {
       font-size: 18px;
       padding: 3px;
       margin-right: 12px;
-      border-radius: 6px;
+      border-radius: 4px;
       color: #fff;
     }
     .name-star {
@@ -624,7 +624,7 @@ const getEmptyDesc = (): string => {
     display: flex;
     align-items: center;
     .ed-icon svg {
-      border-radius: 6px;
+      border-radius: 4px;
     }
   }
 }
