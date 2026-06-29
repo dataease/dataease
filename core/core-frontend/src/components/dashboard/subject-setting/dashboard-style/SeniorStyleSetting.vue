@@ -114,7 +114,6 @@ onMounted(() => {
   margin-bottom: 8px;
 
   :deep(.ed-form-item__label) {
-    color: #646a73;
     font-size: 12px;
     font-weight: 400;
     line-height: 20px;
@@ -128,7 +127,7 @@ onMounted(() => {
 }
 .form-item-dark {
   :deep(.ed-form-item__label) {
-    color: #6a6a6a;
+    color: #ebebeb;
     font-size: 12px;
     font-weight: 400;
     line-height: 20px;
