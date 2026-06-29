@@ -297,17 +297,6 @@
                 <version>${easyexcel.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.quartz-scheduler</groupId>
-                <artifactId>quartz</artifactId>
-                <version>2.3.2</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.mchange</groupId>
-                        <artifactId>mchange-commons-java</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.poi</groupId>
                 <artifactId>poi</artifactId>
                 <version>${poi.version}</version>
