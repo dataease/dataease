@@ -180,7 +180,6 @@ function setPosition(p: 'left' | 'center' | 'right') {
   font-size: 12px !important;
   font-weight: 400 !important;
   line-height: 20px;
-  color: #646a73 !important;
 }
 
 :deep(.ed-radio) {
