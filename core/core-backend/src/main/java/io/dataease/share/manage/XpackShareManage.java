@@ -65,6 +65,9 @@ public class XpackShareManage {
     private ShareTicketManage shareTicketManage;
 
     @Resource
+    private ShareSecretManage shareSecretManage;
+
+    @Resource
     private SysParameterManage sysParameterManage;
 
     public XpackShare queryByResource(Long resourceId) {

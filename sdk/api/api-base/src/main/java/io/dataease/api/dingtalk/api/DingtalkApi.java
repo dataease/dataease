@@ -55,7 +55,5 @@ public interface DingtalkApi {
     @PostMapping("/checkChat")
     void checkChat(@RequestBody DingtalkChatCheckRequest request);
 
-    @Operation(summary = "获取群组", hidden = true)
-    @GetMapping("/getGroup")
-    LarkGroupVO getGroup();
+
 }
