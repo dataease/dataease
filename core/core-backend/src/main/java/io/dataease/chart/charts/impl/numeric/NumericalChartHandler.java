@@ -6,6 +6,7 @@ import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.Quota2SQLObj;
 import io.dataease.engine.utils.Utils;
+import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
@@ -13,6 +14,7 @@ import io.dataease.extensions.datasource.model.SQLMeta;
 import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.view.dto.*;
 import io.dataease.extensions.view.util.FieldUtil;
+import io.dataease.i18n.Translator;
 import io.dataease.utils.BeanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class NumericalChartHandler extends DefaultChartHandler {
     @Override
@@ -73,15 +76,18 @@ public class NumericalChartHandler extends DefaultChartHandler {
             String summary = (String) maxField.get("summary");
             DatasetTableFieldDTO datasetTableField = datasetTableFieldManage.selectById(id);
             if (ObjectUtils.isNotEmpty(datasetTableField)) {
-                if (datasetTableField.getDeType() == 0 || datasetTableField.getDeType() == 1 || datasetTableField.getDeType() == 5) {
-                    if (!StringUtils.containsIgnoreCase(summary, "count")) {
-                        resetDynamicField(target, type, field);
-                        return null;
-                    }
+                boolean isText = datasetTableField.getDeType() == 0 || datasetTableField.getDeType() == 1 || datasetTableField.getDeType() == 5;
+                if (isText && !StringUtils.containsIgnoreCase(summary, "count")) {
+                    DEException.throwException(Translator.get("i18n_gauge_field_change"));
                 }
                 ChartViewFieldDTO dto = new ChartViewFieldDTO();
                 BeanUtils.copyBean(dto, datasetTableField);
-                if (StringUtils.isEmpty(dto.getSummary())) {
+                // 文本类型的计算字段时，判断originName是否包含表达式，如果包含，这里取消汇总，后续sql中会有默认表达式count,否则将会套一层count导致报错
+                if (isText) {
+                    String textSummary = (dto.getExtField() == 2 && StringUtils.isNotEmpty(dto.getOriginName()) &&
+                            Pattern.compile("^(.*?)\\(\\[").matcher(dto.getOriginName()).find()) ? "" : "count";
+                    dto.setSummary(textSummary);
+                } else if (StringUtils.isEmpty(dto.getSummary())) {
                     dto.setSummary(summary);
                 }
                 return dto;

@@ -155,7 +155,7 @@ const sanitizeDynamicFieldConfig = (typeKey, fieldKey, valueKey) => {
   if (!quotaField?.id) {
     return resetDynamicFieldConfig(typeKey, fieldKey, valueKey)
   }
-  return false
+  return normalizeDynamicFieldSummary(currentField)
 }
 const syncInvalidDynamicField = () => {
   let changed = false
@@ -179,6 +179,9 @@ const changeQuotaField = (type: string, resetSummary?: boolean) => {
       if (isDynamic && resetSummary) {
         state.miscForm.gaugeMaxField.summary = quotaField.summary
       }
+      if (isDynamic) {
+        normalizeDynamicFieldSummary(state.miscForm.gaugeMaxField)
+      }
       if (!isDynamic) {
         state.miscForm.gaugeMax = cloneDeep(gaugeLiquidYaxisDefaultValue.gaugeMax)
         state.miscForm.gaugeMaxField.id = ''
@@ -191,6 +194,9 @@ const changeQuotaField = (type: string, resetSummary?: boolean) => {
       const isDynamic = state.miscForm.gaugeMinType === 'dynamic'
       if (isDynamic && resetSummary) {
         state.miscForm.gaugeMinField.summary = quotaField.summary
+      }
+      if (isDynamic) {
+        normalizeDynamicFieldSummary(state.miscForm.gaugeMinField)
       }
       if (!isDynamic) {
         state.miscForm.gaugeMin = state.miscForm.gaugeMin || 0
@@ -205,6 +211,9 @@ const changeQuotaField = (type: string, resetSummary?: boolean) => {
     const isDynamic = state.miscForm.liquidMaxType === 'dynamic'
     if (isDynamic && resetSummary) {
       state.miscForm.liquidMaxField.summary = quotaField.summary
+    }
+    if (isDynamic) {
+      normalizeDynamicFieldSummary(state.miscForm.liquidMaxField)
     }
     if (!isDynamic) {
       state.miscForm.liquidMax = cloneDeep(gaugeLiquidYaxisDefaultValue.liquidMax)
@@ -248,6 +257,7 @@ const initAxis = yAxisId => {
         state.miscForm.liquidMaxField.id = getDynamicField()?.id || state.quotaData[0]?.id
         const quotaField = getQuotaField(state.miscForm.liquidMaxField.id)
         state.miscForm.liquidMaxField.summary = quotaField.summary
+        normalizeDynamicFieldSummary(state.miscForm.liquidMaxField)
       }
       if (isGauge.value) {
         // max
@@ -255,6 +265,7 @@ const initAxis = yAxisId => {
         state.miscForm.gaugeMaxField.id = getDynamicField()?.id || state.quotaData[0]?.id
         const quotaField = getQuotaField(state.miscForm.gaugeMaxField.id)
         state.miscForm.gaugeMaxField.summary = quotaField.summary
+        normalizeDynamicFieldSummary(state.miscForm.gaugeMaxField)
         // min
         state.miscForm.gaugeMinType = 'fix'
         state.miscForm.gaugeMin = 0
@@ -300,18 +311,20 @@ const validMaxFieldAgg = computed(() => {
 const isAggField = field => {
   return quotaData.value.find(ele => ele.id === field.id)?.agg
 }
-// 校验计算字段和聚合函数
-const validLiquidMaxFieldCalcAndAgg = computed(() => {
-  return isCalcFieldAndAgg(state.miscForm.liquidMaxField)
-})
-const validMinFieldCalcAndAgg = computed(() => {
-  return isCalcFieldAndAgg(state.miscForm.gaugeMinField)
-})
-const validMaxFieldCalcAndAgg = computed(() => {
-  return isCalcFieldAndAgg(state.miscForm.gaugeMaxField)
-})
-const isCalcFieldAndAgg = field => {
-  return quotaData.value.find(ele => ele.id === field.id && ele.extField === 2 && ele.agg)
+// 非数值或计算字段作为动态值时，后端只按计数聚合
+const isDisabledSummaryField = field => {
+  const quotaField = quotaData.value.find(ele => ele.id === field.id)
+  return quotaField
+    ? quotaField.extField === 2 || !NUMBER_DE_TYPE.includes(quotaField.deType)
+    : false
+}
+
+const normalizeDynamicFieldSummary = field => {
+  if (isDisabledSummaryField(field) && field.summary !== 'count') {
+    field.summary = 'count'
+    return true
+  }
+  return false
 }
 
 // 校验数值类型
@@ -424,7 +437,7 @@ onMounted(() => {
         :gutter="8"
         v-if="showProperty('gaugeMinField') && state.miscForm.gaugeMinType === 'dynamic'"
       >
-        <el-col :span="validMinFieldCalcAndAgg ? 24 : 12">
+        <el-col :span="isDisabledSummaryField(state.miscForm.gaugeMinField) ? 24 : 12">
           <el-form-item class="form-item" :class="'form-item-' + themes">
             <el-select
               :effect="themes"
@@ -454,7 +467,7 @@ onMounted(() => {
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="12" v-if="!validMinFieldCalcAndAgg">
+        <el-col :span="12" v-if="!isDisabledSummaryField(state.miscForm.gaugeMinField)">
           <el-form-item class="form-item" :class="'form-item-' + themes">
             <el-select
               :effect="themes"
@@ -526,7 +539,7 @@ onMounted(() => {
         :gutter="8"
         v-if="showProperty('gaugeMaxField') && state.miscForm.gaugeMaxType === 'dynamic'"
       >
-        <el-col :span="validMaxFieldCalcAndAgg ? 24 : 12">
+        <el-col :span="isDisabledSummaryField(state.miscForm.gaugeMaxField) ? 24 : 12">
           <el-form-item class="form-item" :class="'form-item-' + themes">
             <el-select
               :effect="themes"
@@ -556,7 +569,7 @@ onMounted(() => {
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="12" v-if="!validMaxFieldCalcAndAgg">
+        <el-col :span="12" v-if="!isDisabledSummaryField(state.miscForm.gaugeMaxField)">
           <el-form-item class="form-item" :class="'form-item-' + themes">
             <el-select
               :effect="themes"
@@ -679,7 +692,7 @@ onMounted(() => {
       :gutter="8"
       v-if="showProperty('liquidMaxField') && state.miscForm.liquidMaxType === 'dynamic'"
     >
-      <el-col :span="validLiquidMaxFieldCalcAndAgg ? 24 : 12">
+      <el-col :span="isDisabledSummaryField(state.miscForm.liquidMaxField) ? 24 : 12">
         <el-form-item class="form-item" :class="'form-item-' + themes">
           <el-select
             :effect="themes"
@@ -709,7 +722,7 @@ onMounted(() => {
           </el-select>
         </el-form-item>
       </el-col>
-      <el-col :span="12" v-if="!validLiquidMaxFieldCalcAndAgg">
+      <el-col :span="12" v-if="!isDisabledSummaryField(state.miscForm.liquidMaxField)">
         <el-form-item class="form-item" :class="'form-item-' + themes">
           <el-select
             :effect="themes"

@@ -46,6 +46,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -469,15 +470,20 @@ public class ChartDataManage {
             String summary = (String) maxField.get("summary");
             DatasetTableFieldDTO datasetTableField = datasetTableFieldManage.selectById(id);
             if (ObjectUtils.isNotEmpty(datasetTableField)) {
-                if (datasetTableField.getDeType() == 0 || datasetTableField.getDeType() == 1 || datasetTableField.getDeType() == 5) {
-                    if (!StringUtils.containsIgnoreCase(summary, "count")) {
-                        resetDynamicField(sizeObj, type, field);
-                        return null;
-                    }
+                boolean isText = datasetTableField.getDeType() == 0 || datasetTableField.getDeType() == 1 || datasetTableField.getDeType() == 5;
+                if (isText && !StringUtils.containsIgnoreCase(summary, "count")) {
+                    DEException.throwException(Translator.get("i18n_gauge_field_change"));
                 }
                 ChartViewFieldDTO dto = new ChartViewFieldDTO();
                 BeanUtils.copyBean(dto, datasetTableField);
-                dto.setSummary(summary);
+                // 文本类型的计算字段避免后续 SQL 再套一层 count
+                if (isText) {
+                    String textSummary = (dto.getExtField() == 2 && StringUtils.isNotEmpty(dto.getOriginName()) &&
+                            Pattern.compile("^(.*?)\\(\\[").matcher(dto.getOriginName()).find()) ? "" : "count";
+                    dto.setSummary(textSummary);
+                } else {
+                    dto.setSummary(summary);
+                }
                 return dto;
             } else {
                 resetDynamicField(sizeObj, type, field);
