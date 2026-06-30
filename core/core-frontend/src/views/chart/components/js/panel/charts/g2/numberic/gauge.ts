@@ -327,11 +327,19 @@ export class Gauge extends G2ChartView {
   ): G2Spec {
     const customAttr = parseJson(chart.customAttr)
     const { gaugeAxisLine, gaugePercentLabel } = customAttr.basicStyle
+    const customStyle = parseJson(chart.customStyle)
+    const axisLabelColor = customStyle.yAxis?.axisLabel?.color ?? customAttr.label.color
     const { min, max } = context
     const labelFormatter = customAttr.label.labelFormatter ?? DEFAULT_LABEL.labelFormatter
     const axisOption = {
       axis: {
         y: {
+          labelFill: axisLabelColor,
+          labelFillOpacity: 1,
+          tickStroke: axisLabelColor,
+          tickStrokeOpacity: 1,
+          lineStroke: axisLabelColor,
+          lineStrokeOpacity: 1,
           tickLength: (_, id) => {
             if (id % 5 === 0) {
               return 15

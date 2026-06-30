@@ -3,6 +3,8 @@ import { store } from '../../index'
 import { deepCopy } from '@/utils/utils'
 import {
   BASE_VIEW_CONFIG,
+  DEFAULT_COLOR_CASE_DARK,
+  DEFAULT_COLOR_CASE_LIGHT,
   DEFAULT_INDICATOR_NAME_STYLE,
   DEFAULT_INDICATOR_STYLE,
   SENIOR_STYLE_SETTING_LIGHT
@@ -20,7 +22,7 @@ import {
   defaultStyleValue,
   findBaseDeFaultAttr
 } from '@/custom-component/component-list'
-import { get, set } from 'lodash-es'
+import { get, merge, set } from 'lodash-es'
 import { checkIsSameDs, viewFieldTimeTrans } from '@/utils/viewUtils'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { ElMessage } from 'element-plus-secondary'
@@ -282,6 +284,19 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
 
     setCanvasStyle(style) {
+      style.component = style.component || {}
+      const isLightTheme = style.dashboard?.themeColor === 'light'
+      const defaultColorCase = isLightTheme ? DEFAULT_COLOR_CASE_LIGHT : DEFAULT_COLOR_CASE_DARK
+      style.component['chartColor'] = merge(
+        deepCopy(defaultColorCase),
+        style.component['chartColor'] || {}
+      )
+      const useLegacyDefaultLabelColor =
+        style.component.chartColor.label?.color === DEFAULT_COLOR_CASE_LIGHT.label.color
+      // 如果当前是深色主题 且使用了旧的默认label颜色 则将label颜色设置为深色主题的默认label颜色
+      if (!isLightTheme && useLegacyDefaultLabelColor) {
+        style.component.chartColor.label.color = DEFAULT_COLOR_CASE_DARK.label.color
+      }
       style.component['seniorStyleSetting'] =
         style.component['seniorStyleSetting'] || deepCopy(SENIOR_STYLE_SETTING_LIGHT)
       style['component']['formatterItem'] =
