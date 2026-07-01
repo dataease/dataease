@@ -46,8 +46,7 @@ export class CirclePacking extends G2ChartView {
       'showDimension',
       'showQuota',
       'showProportion',
-      'quotaLabelFormatter',
-      'reserveDecimalCount'
+      'quotaLabelFormatter'
     ],
     'legend-selector': ['icon', 'orient', 'fontSize', 'color', 'hPosition', 'vPosition'],
     'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'tooltipFormatter', 'show']
