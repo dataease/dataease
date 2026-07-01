@@ -621,12 +621,10 @@ const linkageFieldAdaptor = async data => {
           const curDraggedFieldIds = getDraggedFieldIds(state.curLinkageViewInfo)
           const targetDraggedFieldIds = getDraggedFieldIds(targetChartDetails)
           const sourceFields = (state.sourceLinkageInfo as any).targetViewFields || []
+          const sourceIsIndicator = (state.curLinkageViewInfo as any).type === 'indicator'
           sourceFields.forEach(item => {
-            if (
-              curDraggedFieldIds.has(item.id) &&
-              targetDraggedFieldIds.has(item.id) &&
-              data.linkageFields
-            ) {
+            const targetFieldMatched = sourceIsIndicator || targetDraggedFieldIds.has(item.id)
+            if (curDraggedFieldIds.has(item.id) && targetFieldMatched && data.linkageFields) {
               addLinkageFieldAdaptor(data, item.id, item.id)
             }
           })

@@ -581,7 +581,9 @@ const onPointClick = event => {
 
 defineExpose({
   calcData,
-  renderChart
+  renderChart,
+  // 暴露给父级标题层展示联动/跳转标识
+  trackMenu
 })
 </script>
 
