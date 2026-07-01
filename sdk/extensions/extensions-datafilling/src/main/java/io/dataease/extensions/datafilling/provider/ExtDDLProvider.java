@@ -193,4 +193,12 @@ public abstract class ExtDDLProvider {
 
     public abstract String listAllIds(String table, String keyColumn);
 
+    /**
+     * 获取批量操作最大参数个数
+     * @return 最大参数个数，-1 表示不限制
+     */
+    public int getMaxParams() {
+        return -1;
+    }
+
 }
