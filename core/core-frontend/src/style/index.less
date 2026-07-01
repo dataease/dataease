@@ -953,7 +953,7 @@ strong {
   color: @canvas-main-font-color;
 }
 
-.ed-collapse-item--light {
+.ed-collapse-item--light:not(:has(.ed-overlay)) {
   .ed-form-item__label,
   .custom-item-text {
     color: @canvas-main-font-color !important;
@@ -989,7 +989,7 @@ strong {
   }
 }
 
-.ed-collapse-item--dark {
+.ed-collapse-item--dark:not(:has(.ed-overlay)) {
   --ed-border-color: #5f5f5f !important;
 
   .ed-input-number--dark:not(.is-disabled),
