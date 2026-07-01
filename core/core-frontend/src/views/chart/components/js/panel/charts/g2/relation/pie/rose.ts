@@ -206,7 +206,8 @@ export class Rose extends G2ChartView {
         }
         res = contentItems.join(' ')
         return res
-      }
+      },
+      connectorStroke: (_data, _index, _dataList, { element }) => element.__data__.color
     }
     if (!labelAttr.fullDisplay) {
       label.transform.push({ type: 'overlapHide' })
