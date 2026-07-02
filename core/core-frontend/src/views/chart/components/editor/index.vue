@@ -1807,6 +1807,7 @@ const { y, isDragging } = useDraggable(el, {
 const previewHeight = ref(0)
 const calcEle = debounce(() => {
   nextTick(() => {
+    console.log('elDrag.value', elDrag.value, (elDrag.value as HTMLDivElement).offsetHeight)
     previewHeight.value = (elDrag.value as HTMLDivElement).offsetHeight
     y.value = previewHeight.value / 2 + 200
   })
@@ -1828,7 +1829,7 @@ const setCacheId = debounce(() => {
 watch(
   () => curComponent.value,
   val => {
-    if (!val || !!previewHeight.value || mobileInPc) return
+    if (!val || !!previewHeight.value || mobileInPc.value) return
     calcEle()
   },
   { immediate: true }
