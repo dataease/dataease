@@ -4970,5 +4970,9 @@ export default {
       image: 'Image',
       link: 'Link'
     }
+  },
+  proxy: {
+    warn_text: 'Currently in proxy organization admin mode',
+    exit_proxy: 'Exit Proxy'
   }
 }

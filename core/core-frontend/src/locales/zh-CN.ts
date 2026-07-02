@@ -4831,5 +4831,9 @@ export default {
       image: '图片',
       link: '链接'
     }
+  },
+  proxy: {
+    warn_text: '当前处于代理组织管理员状态',
+    exit_proxy: '退出代理'
   }
 }

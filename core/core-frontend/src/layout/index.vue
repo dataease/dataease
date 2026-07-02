@@ -68,6 +68,7 @@ const Menu = defineAsyncComponent(() => import('./components/Menu.vue'))
     </el-container>
   </div>
   <XpackComponent jsname="L2NvbXBvbmVudC9sb2dpbi9Qd2RJbnZhbGlkVGlwcw==" />
+  <XpackComponent jsname="L2NvbXBvbmVudC9wcm94eS13YXJuL2luZGV4" />
 </template>
 
 <style lang="less" scoped>

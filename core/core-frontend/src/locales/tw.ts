@@ -4810,5 +4810,9 @@ export default {
       image: '圖片',
       link: '連結'
     }
+  },
+  proxy: {
+    warn_text: '當前處於代理組織管理員狀態',
+    exit_proxy: '退出代理'
   }
 }
