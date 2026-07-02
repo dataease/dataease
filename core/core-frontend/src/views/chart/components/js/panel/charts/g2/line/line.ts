@@ -22,6 +22,7 @@ import {
   getLineConditionColorWithAlpha,
   getLineConditionLineYMarks,
   LINE_AXIS_TYPE,
+  LINE_CONDITION_VISIBLE_DOMAIN_KEY,
   LINE_EDITOR_PROPERTY,
   LINE_EDITOR_PROPERTY_INNER,
   sortTooltipItemsByYAxis
@@ -377,9 +378,21 @@ export class Line extends G2ChartView {
     }
     const { basicStyle } = parseJson(chart.customAttr)
     const [lineMark, pointMark] = options.children
+    const conditionVisibleDomain = { field: options.encode?.x }
+    Object.defineProperty(lineMark, LINE_CONDITION_VISIBLE_DOMAIN_KEY, {
+      value: conditionVisibleDomain,
+      configurable: true
+    })
     // 先把条件色写入数据项，再分别驱动线段和点的样式
     configLineConditionDataColor(data, conditions, basicStyle.alpha)
-    configLineMarkConditionStyle(chart, options, lineMark, conditions, basicStyle.alpha)
+    configLineMarkConditionStyle(
+      chart,
+      options,
+      lineMark,
+      conditions,
+      basicStyle.alpha,
+      conditionVisibleDomain
+    )
     configPointConditionStyle(pointMark)
     // 辅助线作为条件分段的视觉参考，和条件色使用同一透明度
     options.children.push(...getLineConditionLineYMarks(chart, threshold, basicStyle.alpha))
@@ -790,12 +803,19 @@ export class Line extends G2ChartView {
       return options
     }
     const lineMark = options.children[0]
+    const conditionVisibleDomain = lineMark[LINE_CONDITION_VISIBLE_DOMAIN_KEY]
     // 折线图包含 line、point、辅助线等多个 mark，缩略轴切换维度域时需要同步 x 域
     configDimensionSlider(lineMark, options.data, functionCfg, {
       dimensionField: options.encode?.x,
       interactionName: 'lineDimensionSliderFilter',
       syncChildren: true,
-      syncMarks: options.children.slice(1)
+      syncMarks: options.children.slice(1),
+      // 条件渐变需要和缩略轴可见维度域保持一致
+      onSelectedDomainChange: domain => {
+        if (conditionVisibleDomain) {
+          conditionVisibleDomain.values = domain
+        }
+      }
     })
     return options
   }

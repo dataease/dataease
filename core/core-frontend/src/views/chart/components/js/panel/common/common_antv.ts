@@ -774,6 +774,7 @@ type DimensionSliderOptions = {
   syncChildren?: boolean
   syncMarks?: DimensionSliderMark[]
   sliderMarkIndex?: number
+  onSelectedDomainChange?: (domain: any[]) => void
 }
 
 // 补齐缩略轴透明度，避免暗色主题或重绘后控件显示发虚
@@ -883,7 +884,8 @@ const dimensionSliderFilter = ({
   stableKey,
   disableMorph,
   syncChildren,
-  sliderMarkIndex = 0
+  sliderMarkIndex = 0,
+  onSelectedDomainChange
 }: any) => {
   const domain = getSliderDimensionDomain(data, field)
   return (target: any) => {
@@ -904,6 +906,7 @@ const dimensionSliderFilter = ({
       const values = normalizeSliderValues(pendingValues)
       pendingValues = undefined
       const selectedDomain = getSelectedSliderDomain(domain, values)
+      onSelectedDomainChange?.(selectedDomain)
       const formatter = getSliderLabelFormatter(selectedDomain, values)
       const options = { dimensionField: field, stableKey, disableMorph }
       const patchMarks = (marks?: DimensionSliderMark[]) =>
@@ -971,6 +974,7 @@ export const configDimensionSlider = (
   }
 
   const selectedDomain = getSelectedSliderDomain(domain, values)
+  options.onSelectedDomainChange?.(selectedDomain)
   const dimensionOptions = { ...options, dimensionField }
   // 初始渲染时先把主 mark 收敛到缩略轴默认范围
   Object.assign(
@@ -1010,7 +1014,8 @@ export const configDimensionSlider = (
       syncChildren: options.syncChildren,
       sliderMarkIndex: options.sliderMarkIndex,
       stableKey: options.stableKey,
-      disableMorph: options.disableMorph
+      disableMorph: options.disableMorph,
+      onSelectedDomainChange: options.onSelectedDomainChange
     }
   }
   return true

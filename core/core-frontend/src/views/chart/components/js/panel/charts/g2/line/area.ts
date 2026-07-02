@@ -24,6 +24,7 @@ import {
   configYAxisSeriesLegendDomain,
   getLineConditionLineYMarks,
   LINE_AXIS_TYPE,
+  LINE_CONDITION_VISIBLE_DOMAIN_KEY,
   LINE_EDITOR_PROPERTY,
   LINE_EDITOR_PROPERTY_INNER,
   sortTooltipItemsByYAxis
@@ -393,10 +394,29 @@ export class Area extends G2ChartView {
     }
     const { basicStyle } = parseJson(chart.customAttr)
     const [areaMark, lineMark, pointMark] = options.children
+    const conditionVisibleDomain = { field: options.encode?.x }
+    Object.defineProperty(lineMark, LINE_CONDITION_VISIBLE_DOMAIN_KEY, {
+      value: conditionVisibleDomain,
+      configurable: true
+    })
     // 先把条件色写入数据项，再分别驱动面积、折线和点的样式
     configLineConditionDataColor(data, conditions, basicStyle.alpha)
-    configAreaMarkConditionStyle(chart, options, areaMark, conditions, basicStyle.alpha)
-    configLineMarkConditionStyle(chart, options, lineMark, conditions, basicStyle.alpha)
+    configAreaMarkConditionStyle(
+      chart,
+      options,
+      areaMark,
+      conditions,
+      basicStyle.alpha,
+      conditionVisibleDomain
+    )
+    configLineMarkConditionStyle(
+      chart,
+      options,
+      lineMark,
+      conditions,
+      basicStyle.alpha,
+      conditionVisibleDomain
+    )
     configPointConditionStyle(pointMark)
     // 辅助线作为面积水平切色的视觉参考，和条件色使用同一透明度
     options.children.push(...getLineConditionLineYMarks(chart, threshold, basicStyle.alpha))
@@ -730,13 +750,20 @@ export class Area extends G2ChartView {
       return options
     }
     const lineMark = options.children[1]
+    const conditionVisibleDomain = lineMark[LINE_CONDITION_VISIBLE_DOMAIN_KEY]
     // 面积图由 area、line、point 多个 mark 组成，缩略轴过滤维度时必须同步 x 域
     configDimensionSlider(lineMark, options.data, functionCfg, {
       dimensionField: options.encode?.x,
       interactionName: 'areaDimensionSliderFilter',
       syncChildren: true,
       sliderMarkIndex: 1,
-      syncMarks: [options.children[0], ...options.children.slice(2)]
+      syncMarks: [options.children[0], ...options.children.slice(2)],
+      // 条件渐变需要和缩略轴可见维度域保持一致
+      onSelectedDomainChange: domain => {
+        if (conditionVisibleDomain) {
+          conditionVisibleDomain.values = domain
+        }
+      }
     })
     return options
   }

@@ -207,6 +207,26 @@ export const configLineConditionDataColor = (data, conditions, alpha) => {
  */
 export const getStyleValue = (style, d) => (typeof style === 'function' ? style(d) : style)
 
+export const LINE_CONDITION_VISIBLE_DOMAIN_KEY = '__lineConditionVisibleDomain'
+
+export type LineConditionVisibleDomain = {
+  field?: any
+  values?: any[]
+}
+
+const getLineDimensionKey = value => `${value instanceof Date ? value.getTime() : value}`
+
+const getLineConditionVisibleData = (data, visibleDomain?: LineConditionVisibleDomain) => {
+  if (!Array.isArray(data) || !visibleDomain?.field || !visibleDomain.values?.length) {
+    return data
+  }
+  const visibleKeys = new Set(visibleDomain.values.map(getLineDimensionKey))
+  const visibleData = data.filter(item =>
+    visibleKeys.has(getLineDimensionKey(item?.[visibleDomain.field]))
+  )
+  return visibleData.length ? visibleData : data
+}
+
 /**
  * 从 G2 内部渐变语法中提取实际色值，避免条件渐变嵌套已有渐变
  */
@@ -266,7 +286,7 @@ export const getLineConditionGradientColor = (
   enableGradient = false
 ) => {
   const plainBaseColor = getPlainColorFromG2Gradient(baseColor)
-  if (!Array.isArray(data) || data.length < 2) {
+  if (!Array.isArray(data) || !data.length) {
     return plainBaseColor
   }
   const fieldId = data.find(item => item.quotaList?.[0]?.id)?.quotaList?.[0]?.id
@@ -360,16 +380,18 @@ export const configLineMarkConditionStyle = (
   options: G2Spec,
   lineMark,
   conditions,
-  alpha
+  alpha,
+  visibleDomain?: LineConditionVisibleDomain
 ) => {
   const originLineStroke = lineMark.style?.stroke
   lineMark.style = {
     ...lineMark.style,
     stroke: d => {
+      const conditionData = getLineConditionVisibleData(d, visibleDomain)
       const seriesName = d?.[0]?.category
       const baseColor =
         getStyleValue(originLineStroke, d) || getLineDefaultSeriesColor(chart, options, seriesName)
-      return getLineConditionGradientColor(d, conditions, baseColor, alpha)
+      return getLineConditionGradientColor(conditionData, conditions, baseColor, alpha)
     }
   }
 }
@@ -382,22 +404,24 @@ export const configAreaMarkConditionStyle = (
   options: G2Spec,
   areaMark,
   conditions,
-  alpha
+  alpha,
+  visibleDomain?: LineConditionVisibleDomain
 ) => {
   const originAreaFill = areaMark.style?.fill
   const { basicStyle } = parseJson(chart.customAttr)
   areaMark.style = {
     ...areaMark.style,
     fill: d => {
+      const conditionData = getLineConditionVisibleData(d, visibleDomain)
       const seriesName = d?.[0]?.category
       const baseColor =
         getStyleValue(originAreaFill, d) || getLineDefaultSeriesColor(chart, options, seriesName)
       return getLineConditionGradientColor(
-        d,
+        conditionData,
         conditions,
         baseColor,
         alpha,
-        getAreaConditionGradientRange(d),
+        getAreaConditionGradientRange(conditionData),
         !!basicStyle?.gradient
       )
     }
