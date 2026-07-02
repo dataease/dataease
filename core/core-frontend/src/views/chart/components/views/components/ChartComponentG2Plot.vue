@@ -111,6 +111,8 @@ const { view, showPosition, scale, terminal, suffixId } = toRefs(props)
 const isError = ref(false)
 const errMsg = ref('')
 const linkageActiveHistory = ref(false)
+// G2 重绘后只用这些原始字段回放选中，避免旧 datum 的对象引用参与匹配
+const LINKAGE_REPLAY_FIELDS = ['field', 'name', 'category', 'group', 'value', 'x', 'y', 'path']
 
 const dataVMobile = !isDashboard() && isMobile()
 
@@ -143,6 +145,8 @@ const clearLinkage = () => {
     myChart?.setState('active', () => true, false)
     myChart?.setState('inactive', () => true, false)
     myChart?.setState('selected', () => true, false)
+    // 清理联动时同步重置 unselected，避免柱图保留半透明状态
+    myChart?.setState('unselected', () => true, false)
   } catch (e) {
     console.warn('clearLinkage error')
   }
@@ -164,6 +168,8 @@ const linkageActive = () => {
     myChart?.setState('active', () => true, false)
     myChart?.setState('inactive', () => true, false)
     myChart?.setState('selected', () => true, false)
+    // 回放前先清空 unselected，避免多次样式切换后未选中态叠加
+    myChart?.setState('unselected', () => true, false)
     myChart?.setState('active', param => {
       if (Array.isArray(param)) {
         return false
@@ -185,9 +191,55 @@ const linkageActive = () => {
         return checkSelected(param)
       }
     })
+    // G2 elementSelect 的柱图样式使用 selected/unselected，重绘回放时需要同步未选中态
+    myChart?.setState('unselected', param => {
+      if (Array.isArray(param)) {
+        return false
+      } else {
+        return !checkSelected(param)
+      }
+    })
   } catch (err) {
     console.warn('linkageActive error')
   }
+}
+// 只收集 primitive 字段，G2 selectElementByData 使用严格相等匹配
+const getLinkageReplayData = () => {
+  const data = state.pointParam?.data
+  if (!data) {
+    return null
+  }
+  const replayData: Record<string, any> = {}
+  LINKAGE_REPLAY_FIELDS.forEach(key => {
+    const value = data[key]
+    if (['string', 'number', 'boolean'].includes(typeof value) && !Number.isNaN(value)) {
+      replayData[key] = value
+    }
+  })
+  return Object.keys(replayData).length ? replayData : null
+}
+// renderG2 和 forceFit 共用回放逻辑，覆盖图例和标题显隐两类路径
+const replayLinkageActive = () => {
+  if (!linkageActiveHistory.value || !state.linkageActiveParam) {
+    return
+  }
+  linkageActive()
+  const replayData = getLinkageReplayData()
+  if (!replayData) {
+    return
+  }
+  const chart = myChart
+  requestAnimationFrame(() => {
+    if (chart !== myChart || !linkageActiveHistory.value) {
+      return
+    }
+    // G2 选中态重建依赖 elementSelect 内部状态；只用稳定原始字段，避免旧对象数组引用导致匹配失败
+    chart?.emit('element:select', {
+      nativeEvent: false,
+      data: { data: [replayData] }
+    })
+    linkageActive()
+  })
 }
 const checkSelected = param => {
   // 获取当前视图的所有联动字段ID
@@ -382,10 +434,9 @@ const renderG2 = async (chart, chartView: G2PlotChartView<any, any>) => {
       })
       myChart?.render().then(() => {
         myChart?.afterRender?.(myChart)
+        // 样式配置导致 G2 重绘后，回放当前联动选中态，避免标题/图例切换清空选中效果
+        replayLinkageActive()
       })
-      // if (linkageActiveHistory.value) {
-      //   linkageActive()
-      // }
     } catch (e) {
       console.error('renderG2Plot error', e)
     }
@@ -824,7 +875,8 @@ onMounted(() => {
       } else {
         g2ResizeTimer && clearTimeout(g2ResizeTimer)
         g2ResizeTimer = setTimeout(() => {
-          myChart?.forceFit()
+          // 标题显隐和拖拽缩放只触发 forceFit，不会重新走 renderG2，这里也要补回 G2 选中态
+          myChart?.forceFit()?.then(replayLinkageActive)
         }, 300)
       }
     }

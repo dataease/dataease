@@ -129,29 +129,36 @@ export const extremumEvt = (
     })
 
   const setExtremumPosition = () => {
-    document.querySelectorAll('.extremum-' + chart.container)?.forEach(item => {
+    const chartScale = scale || 1
+    document.querySelectorAll<HTMLElement>('.extremum-' + chart.container)?.forEach(item => {
       item.style.display = 'block'
-      item?.parentElement?.parentElement
+      const parentElement = item.parentElement
+      const parentParentElement = parentElement?.parentElement
+      const spanElement = parentElement?.querySelector<HTMLElement>('span')
+      if (!parentElement || !parentParentElement || !spanElement) return
       const itemRect = item.getBoundingClientRect()
-      const itemParentRect = item.parentElement?.getBoundingClientRect()
-      const spanElement = item.parentElement.querySelector('span' as string) as HTMLElement
+      const itemParentRect = parentElement.getBoundingClientRect()
       // 判断是否顶部溢出
-      const itemParentParentRect = item.parentElement?.parentElement?.getBoundingClientRect()
+      const itemParentParentRect = parentParentElement.getBoundingClientRect()
+      const positionScaleX =
+        parentParentElement.offsetWidth > 0
+          ? itemParentParentRect.width / parentParentElement.offsetWidth
+          : chartScale
+      const toLocalX = (value: number) => value / (positionScaleX || 1)
+      const overflowRight = itemParentRect.left + itemRect.width / 2 - itemParentParentRect.right
+      // 保留初始百分比居中，仅在右侧溢出时额外左移
+      const translateX = overflowRight > 0 ? `calc(-50% - ${toLocalX(overflowRight)}px)` : '-50%'
       // 顶部有足够空间
       if (itemParentRect.top - itemParentParentRect.top > itemParentRect.height) {
-        item.style.transform = `translateY(-${itemRect.height + 5}px)`
-        spanElement.style.cssText += 'transform: rotate(0deg);top: -6px;'
+        item.style.transform = `translate(${translateX}, -100%) translateY(-5px)`
+        spanElement.style.transform = 'rotate(0deg)'
+        spanElement.style.top = '-6px'
       } else {
-        item.style.transform = `translateY(${pointSize / scale + 5 * 2}px)`
-        spanElement.style.cssText += `transform: rotate(180deg);top: ${pointSize / scale + 5}px;`
+        item.style.transform = `translate(${translateX}, ${pointSize / chartScale + 5 * 2}px)`
+        spanElement.style.transform = 'rotate(180deg)'
+        spanElement.style.top = `${pointSize / chartScale + 5}px`
       }
-      // 判断右侧溢出
-      const overflowRight = itemParentRect.right - itemParentParentRect.right
-      let newRight = itemRect.width / 2
-      if (overflowRight > itemRect.width * 0.5) {
-        newRight = overflowRight
-      }
-      item.style.right = newRight + 'px'
+      item.style.right = ''
     })
   }
   newChart.on('afterchangesize', () => {

@@ -30,6 +30,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
 import { DEFAULT_YAXIS_STYLE } from '@/views/chart/components/editor/util/chart'
 import {
+  configDimensionSlider,
   handleChartDashboardHidden,
   TOOLTIP_ITEM_TPL,
   TOOLTIP_TITLE_TPL
@@ -789,20 +790,13 @@ export class Line extends G2ChartView {
       return options
     }
     const lineMark = options.children[0]
-    const sliderOpt = {
-      slider: {
-        x: {
-          values: [functionCfg.sliderRange[0] / 100, functionCfg.sliderRange[1] / 100],
-          style: {
-            trackFill: functionCfg.sliderBg,
-            selectionFill: functionCfg.sliderFillBg,
-            handleLabelFill: functionCfg.sliderTextColor,
-            sparklineLineStrokeOpacity: 0
-          }
-        }
-      }
-    }
-    defaultsDeep(lineMark, sliderOpt)
+    // 折线图包含 line、point、辅助线等多个 mark，缩略轴切换维度域时需要同步 x 域
+    configDimensionSlider(lineMark, options.data, functionCfg, {
+      dimensionField: options.encode?.x,
+      interactionName: 'lineDimensionSliderFilter',
+      syncChildren: true,
+      syncMarks: options.children.slice(1)
+    })
     return options
   }
 

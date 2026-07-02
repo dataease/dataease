@@ -754,6 +754,268 @@ export function getSlider(chart: Chart) {
   return cfg
 }
 
+// 缩略轴范围统一使用 0 到 1 的归一化值
+type SliderValues = [number, number]
+// 不同 G2 mark 结构差异较大，这里只声明缩略轴需要读写的字段
+type DimensionSliderMark = {
+  encode?: Record<string, any>
+  scale?: Record<string, any>
+  slider?: Record<string, any>
+  interaction?: Record<string, any>
+  animate?: Record<string, any>
+  [key: string]: any
+}
+// 调用方按图表结构声明同步策略，兼容柱图、折线图和面积图
+type DimensionSliderOptions = {
+  interactionName?: string
+  dimensionField?: string
+  stableKey?: boolean
+  disableMorph?: boolean
+  syncChildren?: boolean
+  syncMarks?: DimensionSliderMark[]
+  sliderMarkIndex?: number
+}
+
+// 补齐缩略轴透明度，避免暗色主题或重绘后控件显示发虚
+const DIMENSION_SLIDER_STYLE = {
+  trackOpacity: 1,
+  selectionFillOpacity: 1,
+  handleLabelFillOpacity: 1
+}
+
+// 将面板百分比范围规整到 G2 slider 可识别的 0 到 1 区间
+const normalizeSliderValues = (values?: number[]): SliderValues => {
+  const [start = 0, end = 1] = values || []
+  return [Math.max(0, Math.min(start, end)), Math.min(1, Math.max(start, end))]
+}
+
+// 从数组数据或 G2 data.value 中提取离散维度域，并保留原始值顺序
+const getSliderDimensionDomain = (data: any, field: string): any[] => {
+  const sourceData = Array.isArray(data) ? data : Array.isArray(data?.value) ? data.value : []
+  return Array.from(
+    new Map(
+      sourceData.map(item => {
+        const value = item?.[field]
+        return [`${value instanceof Date ? value.getTime() : value}`, value]
+      })
+    ).values()
+  )
+}
+
+// 将滑块百分比范围换算为实际需要保留的维度值
+const getSelectedSliderDomain = (domain: any[], values: SliderValues): any[] => {
+  if (!domain.length) {
+    return []
+  }
+  const lastIndex = domain.length - 1
+  const startIndex = Math.max(0, Math.min(lastIndex, Math.floor(values[0] * lastIndex)))
+  const endIndex = Math.max(startIndex, Math.min(lastIndex, Math.ceil(values[1] * lastIndex)))
+  return domain.slice(startIndex, endIndex + 1)
+}
+
+// handle 标签展示过滤后维度域的首尾值，避免显示连续比例值
+const getSliderLabelFormatter = (domain: any[], values: SliderValues) => (value: number) => {
+  const label =
+    Math.abs(Number(value) - values[0]) <= Math.abs(Number(value) - values[1])
+      ? domain[0]
+      : domain[domain.length - 1]
+  return label === null || label === undefined ? '' : `${label}`
+}
+
+// 柱形图缩略轴过滤时保持元素 key 稳定，避免不同维度之间复用动画
+const getSliderKey = (field: string) => (data: any) =>
+  [
+    data?.[field],
+    data?.category,
+    data?.group,
+    data?.quotaList?.map((item: any) => item.id).join(',')
+  ]
+    .filter(item => item !== null && item !== undefined && item !== '')
+    .join('-')
+
+// 只更新 mark 的 x 域，供 line、area、point 等多个 mark 同步过滤
+const patchDimensionDomainMark = (
+  mark: DimensionSliderMark,
+  domain: any[],
+  options: DimensionSliderOptions = {}
+) => ({
+  ...mark,
+  ...(options.stableKey && {
+    encode: { ...mark.encode, key: getSliderKey(options.dimensionField || mark.encode?.x) }
+  }),
+  ...(options.disableMorph && {
+    // 缩略轴按维度切换域，禁用默认 morph，避免柱形从旧维度纵向过渡
+    animate: {
+      ...mark.animate,
+      update: { ...mark.animate?.update, type: null },
+      exit: { ...mark.animate?.exit, type: null }
+    }
+  }),
+  scale: { ...mark.scale, x: { ...mark.scale?.x, domain, nice: false } }
+})
+
+// 更新承载 slider 的 mark，同时继承离散维度域和样式补丁
+const patchDimensionSliderMark = (
+  mark: DimensionSliderMark,
+  domain: any[],
+  values: SliderValues,
+  options: DimensionSliderOptions = {}
+) => {
+  const formatter = getSliderLabelFormatter(domain, values)
+  return {
+    ...patchDimensionDomainMark(mark, domain, options),
+    slider: {
+      ...mark.slider,
+      x: {
+        ...mark.slider?.x,
+        values,
+        formatter,
+        style: { ...mark.slider?.x?.style, ...DIMENSION_SLIDER_STYLE, formatter }
+      }
+    }
+  }
+}
+
+// 自定义 slider 交互按离散维度域更新 mark，替代 G2 默认连续比例过滤
+const dimensionSliderFilter = ({
+  data,
+  field,
+  stableKey,
+  disableMorph,
+  syncChildren,
+  sliderMarkIndex = 0
+}: any) => {
+  const domain = getSliderDimensionDomain(data, field)
+  return (target: any) => {
+    const slider = Array.from(target.container.getElementsByClassName?.('slider') || []).find(
+      (item: any) => item.attributes?.orientation === 'horizontal'
+    ) as any
+    if (!slider || !domain.length) {
+      return
+    }
+    let pendingValues: number[] | undefined
+    let frameId: number | undefined
+    const render = () => {
+      frameId = undefined
+      if (!pendingValues) {
+        return
+      }
+      // valuechange 只记录最新范围，实际更新在同一帧内合并执行
+      const values = normalizeSliderValues(pendingValues)
+      pendingValues = undefined
+      const selectedDomain = getSelectedSliderDomain(domain, values)
+      const formatter = getSliderLabelFormatter(selectedDomain, values)
+      const options = { dimensionField: field, stableKey, disableMorph }
+      const patchMarks = (marks?: DimensionSliderMark[]) =>
+        marks?.map((mark, index) => {
+          if (index === sliderMarkIndex) {
+            return patchDimensionSliderMark(mark, selectedDomain, values, options)
+          }
+          return syncChildren ? patchDimensionDomainMark(mark, selectedDomain, options) : mark
+        })
+      Object.assign(slider.attributes || {}, { formatter }, DIMENSION_SLIDER_STYLE)
+      if (typeof slider?.setValues === 'function') {
+        slider.setValues(values)
+      }
+      target.setState(slider, (state: any) => ({
+        ...state,
+        marks: patchMarks(state.marks),
+        children: patchMarks(state.children)
+      }))
+      target.update()
+    }
+    const onValueChange = (event: any) => {
+      pendingValues = event.detail?.value || slider.attributes?.values
+      // 拖动中按帧刷新，避免 pointermove 频繁触发 G2 重绘
+      if (frameId === undefined) {
+        frameId = requestAnimationFrame(render)
+      }
+    }
+    const apply = () => {
+      if (frameId !== undefined) {
+        cancelAnimationFrame(frameId)
+      }
+      // pointerup 时立即落地最后一次范围，避免松手后缩略轴和图形不同步
+      render()
+    }
+    slider.addEventListener('valuechange', onValueChange)
+    document.addEventListener('pointerup', apply)
+    return () => {
+      if (frameId !== undefined) {
+        cancelAnimationFrame(frameId)
+      }
+      slider.removeEventListener('valuechange', onValueChange)
+      document.removeEventListener('pointerup', apply)
+    }
+  }
+}
+
+// 分类维度缩略轴统一入口：按离散维度域过滤，避免 G2 默认比例过滤导致标签和数据错位
+export const configDimensionSlider = (
+  sliderMark: DimensionSliderMark,
+  sourceData: any,
+  functionCfg: any,
+  options: DimensionSliderOptions = {}
+) => {
+  const dimensionField = options.dimensionField || sliderMark?.encode?.x
+  if (!dimensionField) {
+    return false
+  }
+  const values = normalizeSliderValues([
+    (functionCfg.sliderRange?.[0] ?? 0) / 100,
+    (functionCfg.sliderRange?.[1] ?? 100) / 100
+  ])
+  const domain = getSliderDimensionDomain(sourceData, dimensionField)
+  if (!domain.length) {
+    return false
+  }
+
+  const selectedDomain = getSelectedSliderDomain(domain, values)
+  const dimensionOptions = { ...options, dimensionField }
+  // 初始渲染时先把主 mark 收敛到缩略轴默认范围
+  Object.assign(
+    sliderMark,
+    patchDimensionSliderMark(sliderMark, selectedDomain, values, dimensionOptions)
+  )
+  // 折线图和面积图的其它 mark 共享同一个 x 域，防止线、点、面积错位
+  options.syncMarks?.forEach(mark => {
+    Object.assign(mark, patchDimensionDomainMark(mark, selectedDomain, dimensionOptions))
+  })
+  const sliderX = sliderMark.slider?.x || {}
+  // 强制使用底部横向 slider，横向条形图也保持统一布局入口
+  sliderMark.slider = {
+    ...sliderMark.slider,
+    x: {
+      ...sliderX,
+      type: 'sliderX',
+      position: 'bottom',
+      style: {
+        ...sliderX.style,
+        trackFill: functionCfg.sliderBg,
+        selectionFill: functionCfg.sliderFillBg,
+        handleLabelFill: functionCfg.sliderTextColor,
+        handleLabelPointerEvents: 'none',
+        sparklineLineStrokeOpacity: 0
+      }
+    }
+  }
+  // 关闭 G2 默认 sliderFilter，改用离散维度过滤以保证标签和数据一致
+  sliderMark.interaction = {
+    ...sliderMark.interaction,
+    sliderFilter: false,
+    [options.interactionName || 'dimensionSliderFilter']: {
+      type: dimensionSliderFilter,
+      field: dimensionField,
+      data: sourceData,
+      syncChildren: options.syncChildren,
+      sliderMarkIndex: options.sliderMarkIndex,
+      stableKey: options.stableKey,
+      disableMorph: options.disableMorph
+    }
+  }
+  return true
+}
+
 export function getAnalyse(chart: Chart) {
   const assistLine = []
   const senior = parseJson(chart.senior)

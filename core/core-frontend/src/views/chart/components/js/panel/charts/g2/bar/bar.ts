@@ -16,6 +16,7 @@ import { cloneDeep, defaultsDeep, filter, find, isEmpty } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import {
   configAxisLengthLimit,
+  configDimensionSlider,
   formatAxisLabelWithLengthLimit,
   getLineDash,
   handleChartDashboardHidden,
@@ -897,25 +898,20 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
   }
 
   protected configSlider(chart: Chart, options: ViewSpec): ViewSpec {
+    // 仅在图表样式面板开放 slider 时注入缩略轴，避免影响无缩略轴配置的柱状图
+    const functionCfgItems = this.propertyInner?.['function-cfg']
+    const hasSliderConfig = Array.isArray(functionCfgItems) && functionCfgItems.includes('slider')
     const { functionCfg } = parseJson(chart.senior)
-    if (!functionCfg?.sliderShow) {
+    if (!hasSliderConfig || !functionCfg?.sliderShow) {
       return options
     }
     const lineMark = options.children[0]
-    const sliderOpt = {
-      slider: {
-        x: {
-          values: [functionCfg.sliderRange[0] / 100, functionCfg.sliderRange[1] / 100],
-          style: {
-            trackFill: functionCfg.sliderBg,
-            selectionFill: functionCfg.sliderFillBg,
-            handleLabelFill: functionCfg.sliderTextColor,
-            sparklineLineStrokeOpacity: 0
-          }
-        }
-      }
-    }
-    defaultsDeep(lineMark, sliderOpt)
+    // 垂直柱状图按离散维度域过滤缩略轴，并固定元素 key 避免切换范围时动画方向错乱
+    configDimensionSlider(lineMark, lineMark.data ?? options.data, functionCfg, {
+      interactionName: 'barDimensionSliderFilter',
+      stableKey: true,
+      disableMorph: true
+    })
     return options
   }
 

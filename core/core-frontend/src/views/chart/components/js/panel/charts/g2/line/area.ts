@@ -33,6 +33,7 @@ import { addExtremumText, extremumEvt } from '@/views/chart/components/js/extrem
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
 import { DEFAULT_YAXIS_STYLE } from '@/views/chart/components/editor/util/chart'
 import {
+  configDimensionSlider,
   handleChartDashboardHidden,
   setGradientColor,
   toLinearGradient,
@@ -729,20 +730,14 @@ export class Area extends G2ChartView {
       return options
     }
     const lineMark = options.children[1]
-    const sliderOpt = {
-      slider: {
-        x: {
-          values: [functionCfg.sliderRange[0] / 100, functionCfg.sliderRange[1] / 100],
-          style: {
-            trackFill: functionCfg.sliderBg,
-            selectionFill: functionCfg.sliderFillBg,
-            handleLabelFill: functionCfg.sliderTextColor,
-            sparklineLineStrokeOpacity: 0
-          }
-        }
-      }
-    }
-    defaultsDeep(lineMark, sliderOpt)
+    // 面积图由 area、line、point 多个 mark 组成，缩略轴过滤维度时必须同步 x 域
+    configDimensionSlider(lineMark, options.data, functionCfg, {
+      dimensionField: options.encode?.x,
+      interactionName: 'areaDimensionSliderFilter',
+      syncChildren: true,
+      sliderMarkIndex: 1,
+      syncMarks: [options.children[0], ...options.children.slice(2)]
+    })
     return options
   }
 
