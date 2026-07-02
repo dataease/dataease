@@ -24,6 +24,7 @@ import io.dataease.license.config.XpackInteract;
 import io.dataease.log.DeLog;
 import io.dataease.model.ExportTaskDTO;
 import io.dataease.constant.XpackSettingConstants;
+import io.dataease.permission.model.V3BaseUser;
 import io.dataease.permission.util.V3UserUtil;
 import io.dataease.result.PageResult;
 import io.dataease.system.manage.SysParameterManage;
@@ -525,14 +526,17 @@ public class ExportCenterManage implements BaseExportApi {
         if (ObjectUtils.isEmpty(CommonBeanFactory.getBean("loginServer"))) {
             secret = io.dataease.auth.config.SubstituleLoginConfig.getTokenSecret();
         } else {
-            Object apisixCacheManage = CommonBeanFactory.getBean("apisixCacheManage");
+            V3BaseUser user = V3UserUtil.getUser(userId);
+            secret = user.getPwd() + RsaUtils.publicKey();
+            /*Object apisixCacheManage = CommonBeanFactory.getBean("apisixCacheManage");
             Method userCacheMethod = DeReflectUtil.findMethod(apisixCacheManage.getClass(), "userCacheBO");
             Object cacheBO = ReflectionUtils.invokeMethod(userCacheMethod, apisixCacheManage, userId);
             Method secretMethod = DeReflectUtil.findMethod(cacheBO.getClass(), "getSecret");
             Object secretObj = ReflectionUtils.invokeMethod(secretMethod, cacheBO);
             if (secretObj != null) {
                 secret = secretObj.toString();
-            }
+            }*/
+
         }
         if (StringUtils.isBlank(secret)) {
             DEException.throwException(Translator.get("i18n_download_link_invalid"));

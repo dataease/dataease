@@ -4,7 +4,6 @@ public class CacheConstant {
     public static class UserCacheConstant {
         public static final String USER_COUNT_CACHE = "de_v2_user_count";
         public static final String USER_ECHELON_CACHE = "de_v2_user_echelon";
-        public static final String LOGIN_USER_CACHE = "de_v2_login_user_cache";
         public static final String BASE_USER_CACHE = "de_v2_base_user_cache";
         public static final String USER_ROLES_CACHE = "de_v2_user_roles";
         public static final String USER_BUSI_PERS_CACHE = "de_v2_user_busi_pers";

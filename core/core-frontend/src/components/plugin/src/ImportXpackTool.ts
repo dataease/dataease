@@ -37,7 +37,11 @@ export const importXpackTool = async (methodName: string) => {
   const jsname = 'L3Rvb2xzL0htYWNUb29s'
   const key = 'xpack-model-distributed'
   let distributed = false
-  if (wsCache.get(key) === null) {
+  // In dev mode, set xpack-model-distributed to false by default
+  if (import.meta.env.MODE === 'dev') {
+    distributed = false
+    wsCache.set('xpack-model-distributed', 'false')
+  } else if (wsCache.get(key) === null) {
     const res = await xpackModelApi()
     const resData = isNull(res.data) ? 'null' : res.data
     wsCache.set('xpack-model-distributed', resData)
