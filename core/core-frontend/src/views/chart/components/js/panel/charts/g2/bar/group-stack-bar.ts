@@ -34,6 +34,41 @@ export class GroupStackBar extends StackBar {
     'label-selector': [...BAR_EDITOR_PROPERTY_INNER['label-selector'], 'vPosition']
   }
 
+  protected isGroupMode(chart: Chart): boolean {
+    return chart.xAxisExt?.length > 0 && !chart.extStack?.length
+  }
+
+  protected configGroupMode(chart: Chart, options: ViewSpec): ViewSpec {
+    if (!this.isGroupMode(chart)) {
+      return options
+    }
+    const { children } = options
+    if (!children?.[0]) {
+      return options
+    }
+    const encode = { ...children[0].encode }
+    delete encode.series
+    // 无堆叠项时按分组柱处理，避免子维度被 stackY 累加
+    return {
+      ...options,
+      children: [
+        {
+          ...children[0],
+          encode,
+          transform: [{ type: 'dodgeX' } as Transform]
+        },
+        ...children.slice(1)
+      ]
+    }
+  }
+
+  protected configStackOrder(chart: Chart, options: ViewSpec): ViewSpec {
+    if (this.isGroupMode(chart)) {
+      return options
+    }
+    return configStackSeriesOrder(chart, options)
+  }
+
   protected configLabel(chart: Chart, options: ViewSpec): ViewSpec {
     const customAttr = parseJson(chart.customAttr)
     const { label: labelAttr } = customAttr
@@ -138,11 +173,12 @@ export class GroupStackBar extends StackBar {
   protected setupOptions(chart: Chart, options: ViewSpec): ViewSpec {
     return flow(
       this.configTheme,
+      this.configGroupMode,
       this.configEmptyDataStrategy,
       this.configColor,
       this.configBasicStyle,
       // 在颜色和堆叠阶段统一系列顺序，避免图例、颜色、层级错位
-      configStackSeriesOrder,
+      this.configStackOrder,
       this.configLabel,
       this.configTooltip,
       this.configLegend,
