@@ -322,9 +322,7 @@ const disabledDate = val => {
         startTime = getThisStart('quarter')
         break
       case 'thisWeek':
-        startTime = new Date(
-          dayjs().startOf('week').add(1, 'day').startOf('day').format('YYYY/MM/DD HH:mm:ss')
-        )
+        startTime = getThisStart('week')
         break
       case 'today':
         startTime = getThisStart('day')
