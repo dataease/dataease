@@ -12,6 +12,7 @@ import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.commons.utils.SqlVariableHandleResult;
 import io.dataease.commons.utils.SqlparserUtils;
 import io.dataease.constant.AuthEnum;
+import io.dataease.constant.BusiResourceEnum;
 import io.dataease.constant.SQLConstants;
 import io.dataease.dao.auto.entity.CoreDatasource;
 import io.dataease.dataset.constant.DatasetTableType;
@@ -728,9 +729,7 @@ public class DatasetDataManage {
             Long datasetGroupId = field.getDatasetGroupId();
 
             // check permission
-            BusiPerCheckDTO dto = new BusiPerCheckDTO();
-            dto.setId(datasetGroupId);
-            dto.setAuthEnum(AuthEnum.READ);
+            BusiPerCheckDTO dto = new BusiPerCheckDTO(datasetGroupId, BusiResourceEnum.DATASET, AuthEnum.READ);
             boolean checked = corePermissionManage.checkAuth(dto);
             if (!checked) {
                 DEException.throwException(Translator.get("i18n_no_dataset_permission"));
@@ -895,9 +894,7 @@ public class DatasetDataManage {
             Long datasetGroupId = field.getDatasetGroupId();
 
             // check permission
-            BusiPerCheckDTO dto = new BusiPerCheckDTO();
-            dto.setId(datasetGroupId);
-            dto.setAuthEnum(AuthEnum.READ);
+            BusiPerCheckDTO dto = new BusiPerCheckDTO(datasetGroupId, BusiResourceEnum.DATASET, AuthEnum.READ);
             boolean checked = corePermissionManage.checkAuth(dto);
             if (!checked) {
                 DEException.throwException(Translator.get("i18n_no_dataset_permission"));

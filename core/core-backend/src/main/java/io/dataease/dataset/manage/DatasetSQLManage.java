@@ -6,6 +6,7 @@ import io.dataease.api.permissions.dataset.api.RowPermissionsApi;
 import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.commons.utils.SqlparserUtils;
 import io.dataease.constant.AuthEnum;
+import io.dataease.constant.BusiResourceEnum;
 import io.dataease.constant.SQLConstants;
 import io.dataease.dao.auto.entity.CoreDatasetGroup;
 import io.dataease.dao.auto.entity.CoreDatasource;
@@ -502,9 +503,7 @@ public class DatasetSQLManage {
 
     public String putObj2Map(Map<Long, DatasourceSchemaDTO> dsMap, DatasetTableDTO ds, boolean isCross) {
         // 通过datasource id校验数据源权限
-        BusiPerCheckDTO dto = new BusiPerCheckDTO();
-        dto.setId(ds.getDatasourceId());
-        dto.setAuthEnum(AuthEnum.READ);
+        BusiPerCheckDTO dto = new BusiPerCheckDTO(ds.getDatasourceId(), BusiResourceEnum.DATASOURCE, AuthEnum.READ);
         boolean checked = corePermissionManage.checkAuth(dto);
         if (!checked) {
             DEException.throwException(Translator.get("i18n_no_datasource_permission"));

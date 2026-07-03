@@ -6,6 +6,7 @@ import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
 import io.dataease.chart.charts.ChartHandlerManager;
 import io.dataease.chart.constant.ChartConstants;
 import io.dataease.constant.AuthEnum;
+import io.dataease.constant.BusiResourceEnum;
 import io.dataease.dataset.manage.DatasetGroupManage;
 import io.dataease.dataset.manage.DatasetSQLManage;
 import io.dataease.dataset.manage.DatasetTableFieldManage;
@@ -120,9 +121,7 @@ public class ChartDataManage {
             DEException.throwException(ResultCode.DATA_IS_WRONG.code(), Translator.get("i18n_no_ds"));
         }
         // check permission
-        BusiPerCheckDTO dto = new BusiPerCheckDTO();
-        dto.setId(table.getId());
-        dto.setAuthEnum(AuthEnum.READ);
+        BusiPerCheckDTO dto = new BusiPerCheckDTO(table.getId(), BusiResourceEnum.DATASET, AuthEnum.READ);
         boolean checked = corePermissionManage.checkAuth(dto);
         if (!checked) {
             DEException.throwException(Translator.get("i18n_no_dataset_permission"));
