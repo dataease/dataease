@@ -5,6 +5,7 @@ import { valueFormatter } from '../../../formatter'
 import {
   configAxisLabelLengthLimit,
   configPlotTooltipEvent,
+  configXAxisLengthLimit,
   getPadding,
   getTooltipContainer,
   getTooltipItemConditionColor,
@@ -33,6 +34,15 @@ function getWaterfallNumberValue(value: any): number | null {
   }
   const numberValue = Number(value)
   return Number.isFinite(numberValue) ? numberValue : null
+}
+
+function limitAxisLabel(value: any, lengthLimit?: number): any {
+  if (!lengthLimit || value === null || value === undefined) {
+    return value
+  }
+  const text = String(value)
+  // 轴标签格式化后再截断，避免覆盖样式面板长度限制
+  return text.length > lengthLimit ? `${text.substring(0, lengthLimit)}...` : text
 }
 
 function getTotalDynamicTooltipValue(data: Record<string, any>[]): Record<string, any>[] {
@@ -104,7 +114,8 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
       'axisLine',
       'splitLine',
       'axisForm',
-      'axisLabel'
+      'axisLabel',
+      'showLengthLimit'
     ],
     'y-axis-selector': [
       'position',
@@ -156,6 +167,7 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
     const newChart = new G2Waterfall(container, options)
     newChart.on('interval:click', action)
     configPlotTooltipEvent(chart, newChart)
+    configXAxisLengthLimit(chart, newChart)
     configAxisLabelLengthLimit(chart, newChart)
     return newChart
   }
@@ -191,6 +203,20 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
     }
   }
 
+  protected configXAxis(chart: Chart, options: WaterfallOptions): WaterfallOptions {
+    const tmpOptions = super.configXAxis(chart, options)
+    if (!tmpOptions.xAxis) {
+      return tmpOptions
+    }
+    const xAxis = parseJson(chart.customStyle).xAxis
+    if (tmpOptions.xAxis.label) {
+      tmpOptions.xAxis.label.formatter = value => {
+        return limitAxisLabel(value, xAxis.axisLabel.lengthLimit)
+      }
+    }
+    return tmpOptions
+  }
+
   protected configYAxis(chart: Chart, options: WaterfallOptions): WaterfallOptions {
     const tmpOptions = super.configYAxis(chart, options)
     if (!tmpOptions.yAxis) {
@@ -199,7 +225,10 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
     const yAxis = parseJson(chart.customStyle).yAxis
     if (tmpOptions.yAxis.label) {
       tmpOptions.yAxis.label.formatter = value => {
-        return valueFormatter(value, yAxis.axisLabelFormatter)
+        return limitAxisLabel(
+          valueFormatter(value, yAxis.axisLabelFormatter),
+          yAxis.axisLabel.lengthLimit
+        )
       }
     }
     const axisValue = yAxis.axisValue
