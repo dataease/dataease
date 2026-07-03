@@ -78,11 +78,6 @@
         <value-type>java.util.List</value-type>
     </cache>
 
-    <cache alias="de_v2_org_busi_pers_interactive" uses-template="common-cache">
-        <key-type>java.lang.String</key-type>
-        <value-type>java.util.List</value-type>
-    </cache>
-
     <cache alias="de_v2_lic_cache_result" uses-template="common-cache">
         <key-type>java.lang.String</key-type>
         <value-type>io.dataease.license.bo.F2CLicResult</value-type>
