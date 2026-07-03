@@ -8,7 +8,6 @@ import {
   getPadding,
   getTooltipContainer,
   getTooltipItemConditionColor,
-  getTooltipSeriesTotalMap,
   setGradientColor,
   TOOLTIP_TPL
 } from '../../common/common_antv'
@@ -16,6 +15,49 @@ import { isEmpty } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 import { DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'
 const { t } = useI18n()
+
+function getWaterfallData(data: Record<string, any>[]): Record<string, any>[] {
+  // 瀑布图数据处理，避免字符串数值参与累计时发生拼接
+  return data.map(item => ({
+    ...item,
+    value: getWaterfallNumberValue(item.value)
+  }))
+}
+
+function getWaterfallNumberValue(value: any): number | null {
+  if (value === null || value === undefined) {
+    return null
+  }
+  if (typeof value === 'string' && value.trim() === '') {
+    return null
+  }
+  const numberValue = Number(value)
+  return Number.isFinite(numberValue) ? numberValue : null
+}
+
+function getTotalDynamicTooltipValue(data: Record<string, any>[]): Record<string, any>[] {
+  const dynamicTooltipValueMap = new Map<string, Record<string, any> & { hasValue: boolean }>()
+  data.forEach(d => {
+    d.dynamicTooltipValue?.forEach(item => {
+      const key = `${item.fieldId}`
+      const value = getWaterfallNumberValue(item.value)
+      const current = dynamicTooltipValueMap.get(key) || {
+        ...item,
+        value: null,
+        hasValue: false
+      }
+      if (value !== null) {
+        current.value = (current.hasValue ? current.value : 0) + value
+        current.hasValue = true
+      }
+      dynamicTooltipValueMap.set(key, current)
+    })
+  })
+  return Array.from(dynamicTooltipValueMap.values()).map(({ hasValue, ...item }) => ({
+    ...item,
+    value: hasValue ? item.value : null
+  }))
+}
 
 /**
  * 瀑布图
@@ -96,7 +138,7 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
     if (!chart.data?.data) {
       return
     }
-    const data = chart.data.data
+    const data = getWaterfallData(chart.data.data)
     const baseOptions = {
       data,
       xField: 'field',
@@ -193,7 +235,10 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
         pre[next.id] = next
         return pre
       }, {}) as Record<string, SeriesFormatter>
-    const totalMap = getTooltipSeriesTotalMap(options.data)
+    const totalMap = getTotalDynamicTooltipValue(options.data).reduce((pre, next) => {
+      pre[next.fieldId] = next
+      return pre
+    }, {}) as Record<string, Record<string, any>>
     const tooltip: WaterfallOptions['tooltip'] = {
       showTitle: true,
       customItems(originalItems) {
@@ -206,13 +251,18 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
         if (!head.data.quotaList) {
           Object.keys(formatterMap).forEach(id => {
             const formatter = formatterMap[id]
-            let tmpValue = totalMap[id]
+            let tmpValue = totalMap[id]?.value
+            let stringValue = totalMap[id]?.stringValue
             let color = 'grey'
             if (id === yAxis[0].id) {
               tmpValue = head.data.value
+              stringValue = undefined
               color = head.color
             }
-            const value = valueFormatter(tmpValue, formatter.formatterCfg)
+            const value =
+              tmpValue !== null && tmpValue !== undefined
+                ? valueFormatter(tmpValue, formatter.formatterCfg)
+                : stringValue ?? ''
             const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
             if (id === yAxis[0].id) {
               result.unshift({ color, name, value })
@@ -226,17 +276,21 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
           .filter(item => formatterMap[item.data.quotaList[0].id])
           .forEach(item => {
             const formatter = formatterMap[item.data.quotaList[0].id]
-            const itemValue = (item.value + '').replace(/,/g, '')
+            const itemValue = getWaterfallNumberValue((item.value + '').replace(/,/g, ''))
             formatter.formatterCfg.type = 'value'
-            const value = valueFormatter(parseFloat(itemValue), formatter.formatterCfg)
+            const value =
+              itemValue !== null ? valueFormatter(itemValue, formatter.formatterCfg) : ''
             const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
             result.push({ ...item, name, value })
           })
         head.data.dynamicTooltipValue?.forEach(item => {
           const formatter = formatterMap[item.fieldId]
           if (formatter) {
-            const itemValue = (item.value + '').replace(/,/g, '')
-            const value = valueFormatter(parseFloat(itemValue), formatter.formatterCfg)
+            const itemValue = getWaterfallNumberValue((item.value + '').replace(/,/g, ''))
+            const value =
+              itemValue !== null
+                ? valueFormatter(itemValue, formatter.formatterCfg)
+                : item.stringValue ?? ''
             const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
             result.push({ color: 'grey', name, value })
           }
