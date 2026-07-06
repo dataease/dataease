@@ -608,6 +608,7 @@ export function adaptCurThemeCommonStyleAll() {
   componentData.forEach(item => {
     adaptCurThemeCommonStyle(item)
   })
+  adaptTitleFontFamilyAll(dvMainStore.canvasStyleData.fontFamily)
 }
 
 interface CanvasViewInfo {
