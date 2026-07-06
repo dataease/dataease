@@ -19,6 +19,7 @@
             ? `?${new Date().getTime()}${state.url}`
             : state.url
         "
+        allow="fullscreen"
         scrolling="auto"
         frameborder="0"
       />
