@@ -427,10 +427,18 @@ const renderG2 = async (chart, chartView: G2PlotChartView<any, any>) => {
         dashboardHidden = !props.element.inMobile
       }
       const tScale = dvMainStore.canvasStyleData?.tScale
+      const isDataV = !isDashboard()
       myChart = await chartView.drawChart({
         chartObj: myChart,
         container: containerId,
-        chart: { ...chart, container: containerId, dashboardHidden, tScale },
+        chart: {
+          ...chart,
+          container: containerId,
+          dashboardHidden,
+          tScale,
+          isDataV,
+          themes: isDataV ? 'dark' : dvMainStore.canvasStyleData?.dashboard?.themeColor
+        },
         scale: scale.value,
         action,
         quadrantDefaultBaseline

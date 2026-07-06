@@ -32,6 +32,7 @@ import { Chart as G2Chart, G2Spec } from '@antv/g2'
 import { DEFAULT_YAXIS_STYLE } from '@/views/chart/components/editor/util/chart'
 import {
   configDimensionSlider,
+  getTooltipCrosshairsStyle,
   handleChartDashboardHidden,
   TOOLTIP_ITEM_TPL,
   TOOLTIP_TITLE_TPL
@@ -121,11 +122,12 @@ export class Line extends G2ChartView {
           encode: { series: 'category' },
           interaction: {
             elementHighlight: {
-              background: true,
+              // 基础折线图保留悬浮定位，不绘制选中背景
+              background: false,
               region: true
             },
             elementSelect: {
-              background: true,
+              background: false,
               single: true
             }
           }
@@ -742,6 +744,7 @@ export class Line extends G2ChartView {
         ...lineMark.interaction,
         tooltip: {
           crosshairsLineDash: [4, 4],
+          ...getTooltipCrosshairsStyle(chart),
           mount: createTooltipWrapper(chart),
           css: tooltipCss(tooltipAttr),
           position: 'top-right',

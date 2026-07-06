@@ -35,6 +35,7 @@ import { Chart as G2Chart, G2Spec } from '@antv/g2'
 import { DEFAULT_YAXIS_STYLE } from '@/views/chart/components/editor/util/chart'
 import {
   configDimensionSlider,
+  getTooltipCrosshairsStyle,
   handleChartDashboardHidden,
   setGradientColor,
   toLinearGradient,
@@ -680,6 +681,7 @@ export class Area extends G2ChartView {
       interaction: {
         tooltip: {
           crosshairsLineDash: [4, 4],
+          ...getTooltipCrosshairsStyle(chart),
           mount: createTooltipWrapper(chart),
           css: tooltipCss(tooltipAttr),
           enterable: true,
@@ -956,6 +958,7 @@ export class StackArea extends Area {
       interaction: {
         tooltip: {
           crosshairsLineDash: [4, 4],
+          ...getTooltipCrosshairsStyle(chart),
           mount: createTooltipWrapper(chart),
           css: tooltipCss(tooltipAttr),
           enterable: true,

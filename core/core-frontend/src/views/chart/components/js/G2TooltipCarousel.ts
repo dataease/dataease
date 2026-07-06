@@ -141,6 +141,10 @@ class G2TooltipCarousel {
     return ['line', 'area', 'area-stack'].includes(this.chart.type)
   }
 
+  private isBasicLineChart(): boolean {
+    return this.chart.type === 'line'
+  }
+
   /**
    * 判断图表是否为混合图表
    * @private
@@ -812,8 +816,9 @@ class G2TooltipCarousel {
 
   private clearElementState() {
     const shouldClearSelect = this.isColumnChart() || this.isColumnMixChart()
-    // 双线组合图不展示轮播背景，但需要清掉历史交互残留
-    const shouldClearBackground = shouldClearSelect || this.isDualLineMixChart()
+    // 基础折线和双线组合图不展示轮播背景，但需要清掉历史交互残留
+    const shouldClearBackground =
+      shouldClearSelect || this.isDualLineMixChart() || this.isBasicLineChart()
     if (shouldClearSelect) {
       this.newChart.emit('element:unselect', {})
     }

@@ -16,6 +16,7 @@ import {
   DEFAULT_YAXIS_STYLE
 } from '@/views/chart/components/editor/util/chart'
 import {
+  getTooltipCrosshairsStyle,
   handleChartDashboardHidden,
   setGradientColor,
   toLinearGradient,
@@ -517,6 +518,7 @@ export class StackLineMix extends G2ChartView {
         ...options.interaction,
         tooltip: {
           crosshairsLineDash: [4, 4],
+          ...getTooltipCrosshairsStyle(chart),
           mount: createTooltipWrapper(chart),
           css: tooltipCss(tooltip),
           enterable: true,
