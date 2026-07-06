@@ -19,6 +19,15 @@ import { RuntimeOptions } from '@antv/g2/lib/api/runtime'
 const { t } = useI18n()
 
 const DEFAULT_DATA = []
+const toG2GaugeAngle = (angle: number, fallback: number) => {
+  const degree = Number.isFinite(Number(angle)) ? Number(angle) : fallback
+  // DataEase 面板角度按顺时针理解，传给 G2 radial 前先转成其正向角度
+  return (-degree * Math.PI) / 180
+}
+const clampGaugePercent = (percent: number) => {
+  // 对齐 G2Plot 仪表盘行为，避免超出 0-1 后角度变化被成倍放大
+  return Number.isFinite(percent) ? Math.max(0, Math.min(percent, 1)) : 0
+}
 export class Gauge extends G2ChartView {
   properties: EditorProperty[] = [
     'background-overall-component',
@@ -131,12 +140,14 @@ export class Gauge extends G2ChartView {
           ? misc.gaugeMax
           : chart.data?.series[chart.data?.series.length - 1]?.data[0]
       }
-      startAngle = (misc.gaugeStartAngle * Math.PI) / 180
-      endAngle = (misc.gaugeEndAngle * Math.PI) / 180
+      startAngle = toG2GaugeAngle(misc.gaugeStartAngle, DEFAULT_MISC.gaugeStartAngle)
+      endAngle = toG2GaugeAngle(misc.gaugeEndAngle, DEFAULT_MISC.gaugeEndAngle)
       context.min = min
       context.max = max
     }
-    const percent = (parseFloat(data) - parseFloat(min)) / (parseFloat(max) - parseFloat(min))
+    const percent = clampGaugePercent(
+      (parseFloat(data) - parseFloat(min)) / (parseFloat(max) - parseFloat(min))
+    )
     const tmp: G2Spec = {
       data: {
         value: {

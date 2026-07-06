@@ -36,6 +36,26 @@ import { formatterItem } from '@/views/chart/components/js/formatter'
 import { checkFilterRemove } from '@/custom-component/v-query/QueryUtils'
 const { t } = useI18n()
 
+const BATCH_MISC_EXCLUDE_PROPS: Record<string, string[]> = {
+  gauge: ['gaugeMinType', 'gaugeMinField', 'gaugeMin', 'gaugeMaxType', 'gaugeMaxField', 'gaugeMax'],
+  liquid: ['liquidMaxType', 'liquidMaxField']
+}
+
+const filterBatchMiscProps = (
+  chartType: string,
+  propertyInner: EditorPropertyInner
+): EditorPropertyInner => {
+  const excludeProps = BATCH_MISC_EXCLUDE_PROPS[chartType]
+  if (!excludeProps?.length || !propertyInner?.['misc-selector']) {
+    return propertyInner
+  }
+  return {
+    ...propertyInner,
+    // 批量配置不下发仪表盘最大最小值、水波图目标值设置
+    'misc-selector': propertyInner['misc-selector'].filter(prop => !excludeProps.includes(prop))
+  }
+}
+
 export const dvMainStore = defineStore('dataVisualization', {
   state: () => {
     return {
@@ -768,6 +788,10 @@ export const dvMainStore = defineStore('dataVisualization', {
 
       for (const key in this.batchOptComponents) {
         const componentInfo = this.batchOptComponents[key]
+        const componentPropertyInner = filterBatchMiscProps(
+          componentInfo.value,
+          deepCopy(componentInfo.propertyInner)
+        )
         if (componentType) {
           componentType =
             componentType === componentInfo.componentType ? componentInfo.componentType : 'mix'
@@ -783,21 +807,20 @@ export const dvMainStore = defineStore('dataVisualization', {
           mixPropertiesTemp.forEach(propertyInnerItem => {
             if (
               mixPropertyInnerTemp[propertyInnerItem] &&
-              componentInfo.propertyInner[propertyInnerItem]
+              componentPropertyInner[propertyInnerItem]
             ) {
               mixPropertyInnerTemp[propertyInnerItem] = mixPropertyInnerTemp[
                 propertyInnerItem
               ].filter(
                 propertyInnerItemValue =>
-                  componentInfo.propertyInner[propertyInnerItem].indexOf(propertyInnerItemValue) >
-                  -1
+                  componentPropertyInner[propertyInnerItem].indexOf(propertyInnerItemValue) > -1
               )
             }
           })
         } else {
           // If it doesn't exist, assignment directly
           mixPropertiesTemp = deepCopy(componentInfo.properties)
-          mixPropertyInnerTemp = deepCopy(componentInfo.propertyInner)
+          mixPropertyInnerTemp = componentPropertyInner
         }
         batchAttachInfo.type =
           batchAttachInfo.type === null || batchAttachInfo.type === componentInfo.value
