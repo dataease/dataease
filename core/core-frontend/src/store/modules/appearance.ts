@@ -169,7 +169,7 @@ export const useAppearanceStore = defineStore('appearanceStore', {
     setCurrentFont(name) {
       const embeddedStore = useEmbedded()
       const currentFont = this.fontList.find(ele => ele.name === name)
-      if (currentFont) {
+      if (currentFont && currentFont.fileTransName) {
         let fontStyleElement = document.querySelector(`[id="de-custom_font${name}"]`)
         if (!fontStyleElement) {
           fontStyleElement = document.createElement('style')
