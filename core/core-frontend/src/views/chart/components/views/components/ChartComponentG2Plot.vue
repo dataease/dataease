@@ -504,15 +504,21 @@ let mapL7Timer: number
 const renderL7 = async (chart: ChartObj, chartView: L7ChartView<any, any>, callback) => {
   mapL7Timer && clearTimeout(mapL7Timer)
   mapL7Timer = setTimeout(async () => {
-    myChart = await chartView.drawChart({
-      chartObj: myChart,
-      container: containerId,
-      chart: chart,
-      action
-    })
-    myChart?.render()
-    callback?.()
-    emit('resetLoading')
+    try {
+      myChart = await chartView.drawChart({
+        chartObj: myChart,
+        container: containerId,
+        chart: chart,
+        action
+      })
+      myChart?.render()
+      callback?.()
+    } catch (e) {
+      console.error('renderL7 error', e)
+      callback?.()
+    } finally {
+      emit('resetLoading')
+    }
   }, 500)
 }
 
@@ -880,8 +886,12 @@ onMounted(() => {
     if (Math.abs(widthOffsetPercent) < TOLERANCE && Math.abs(heightOffsetPercent) < TOLERANCE) {
       return
     }
-    if (myChart && preSize[1] > 1) {
-      if (RESIZE_MONITOR_CHARTS.includes(view.value.type)) {
+    const isMapLikeChart = RESIZE_MONITOR_CHARTS.includes(view.value.type)
+    const isNowVisible = size.inlineSize > 1 && size.blockSize > 1
+    // L7 图表在初次挂载高度为 0 时会提前返回；容器变为可见后需要允许一次重新渲染。
+    const canResizeRender = preSize[1] > 1 || (isMapLikeChart && isNowVisible)
+    if (myChart && canResizeRender) {
+      if (isMapLikeChart) {
         renderChart(curView)
       } else {
         g2ResizeTimer && clearTimeout(g2ResizeTimer)
