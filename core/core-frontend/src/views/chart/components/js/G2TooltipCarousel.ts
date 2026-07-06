@@ -7,6 +7,7 @@ class G2TooltipCarousel {
    * @private
    */
   private static instanceCache = new Map<string, G2TooltipCarousel>()
+  private static COLUMN_CAROUSEL_ORIGIN_STYLE = '__deTooltipCarouselOriginStyle__'
   // 支持轮播的图表类型
   private static SUPPORT_CHART_TYPES = [
     'bar',
@@ -50,25 +51,31 @@ class G2TooltipCarousel {
   private handleMouseLeave: EventListener
   // 图表所在页面可见性变化处理函数引用
   private handleVisibility: EventListener
+  private renderWaitCount: number
+  private columnSelectionFrameIds: number[]
+  private isFirstColumnFrameReady: boolean
 
   /**
    * 构造函数，初始化轮播实例
    */
   constructor(newChart: any, chart: any, data: any[]) {
-    listenerTooltipShow(newChart, chart)
+    if (typeof newChart?.on === 'function') {
+      listenerTooltipShow(newChart, chart)
+    }
     // 重新创建实例前销毁已有实例
     G2TooltipCarousel.destroyByContainer(chart.container)
     this.newChart = newChart
     this.chart = chart
+    this.data = data || []
     const { isLine, lineEncodedX, isMix, mixEncodedX } = this.specialChartTypes()
     if (isLine && lineEncodedX) {
-      this.data = this.groupByField(data, { x: lineEncodedX })
+      this.data = this.groupByField(this.data, { x: lineEncodedX })
     } else if (isMix && mixEncodedX) {
-      this.data = this.groupByField(data, { x: mixEncodedX })
+      this.data = this.groupByField(this.data, { x: mixEncodedX })
     } else {
       const encode = this.newChart?.children?.[0]?.value?.encode
       if (encode) {
-        this.data = this.groupByField(data, encode)
+        this.data = this.groupByField(this.data, encode)
       }
     }
     this.index = 0
@@ -76,6 +83,9 @@ class G2TooltipCarousel {
     this.isViewEnlarged = false
     this.isDestroyed = false
     this.instanceId = Date.now()
+    this.renderWaitCount = 0
+    this.columnSelectionFrameIds = []
+    this.isFirstColumnFrameReady = false
     // 事件处理函数绑定
     this.handleMouseEnter = this.pause.bind(this)
     this.handleMouseLeave = this.mouseLeave.bind(this)
@@ -92,10 +102,11 @@ class G2TooltipCarousel {
       G2TooltipCarousel.destroyByContainer(chart.container)
       return null
     }
-    this.chartElement = this.newChart.getContainer()
-    if (!this.chartElement) {
+    const chartElement = this.getChartElement()
+    if (!chartElement) {
       return null
     }
+    this.chartElement = chartElement
     this.normalInterval = carousel?.stayTime * 1000
     this.finalExtraWait = carousel?.intervalTime * 1000
     this.isViewEnlarged = this.chart.container.indexOf('viewDialog') > -1
@@ -136,6 +147,20 @@ class G2TooltipCarousel {
    */
   private isMixChart(): boolean {
     return ['chart-mix', 'chart-mix-dual-line', 'chart-mix-group', 'chart-mix-stack'].includes(
+      this.chart.type
+    )
+  }
+
+  private isColumnMixChart(): boolean {
+    return ['chart-mix', 'chart-mix-group', 'chart-mix-stack'].includes(this.chart.type)
+  }
+
+  private isDualLineMixChart(): boolean {
+    return this.chart.type === 'chart-mix-dual-line'
+  }
+
+  private isColumnChart(): boolean {
+    return ['bar', 'bar-stack', 'bar-group', 'bar-group-stack', 'percentage-bar-stack'].includes(
       this.chart.type
     )
   }
@@ -184,6 +209,17 @@ class G2TooltipCarousel {
     this.addEventListeners()
   }
 
+  private getChartElement(): HTMLElement | null {
+    // 兼容公共入口传入的不同图表实例形态，统一回落到 chart.container
+    return (
+      this.newChart?.getContainer?.() ||
+      this.newChart?.chart?.getContainer?.() ||
+      this.newChart?.ele ||
+      this.newChart?.chart?.ele ||
+      document.getElementById(this.chart.container)
+    )
+  }
+
   /**
    * 页面可见性事件监听
    * 绑定时用同一函数引用，防止内存泄漏
@@ -198,10 +234,12 @@ class G2TooltipCarousel {
         threshold: [0, 0.1, 0.3, 0.5, 0.7, 0.9, 1]
       })
     }
-    this.intersectionObserver?.observe(this.newChart.getContainer())
-    let lastRect = this.newChart.getContainer().getBoundingClientRect()
+    this.intersectionObserver?.observe(this.chartElement)
+    let lastRect = this.chartElement.getBoundingClientRect()
     this.timers.rectTimer = setInterval(() => {
-      const newRect = this.newChart.getContainer().getBoundingClientRect()
+      const chartElement = this.getChartElement()
+      if (!chartElement) return
+      const newRect = chartElement.getBoundingClientRect()
       if (newRect.top !== lastRect.top || newRect.left !== lastRect.left) {
         this.restart()
         lastRect = newRect
@@ -243,8 +281,8 @@ class G2TooltipCarousel {
    * IntersectionObserver回调，处理元素进入/离开视口
    * 只有可见区域大于70%时才恢复轮播，否则暂停
    */
-  private handleIntersection(_entries) {
-    if (!this.isActuallyVisible(this.newChart.getContainer()) || this.chart.dashboardHidden) {
+  private handleIntersection() {
+    if (!this.isActuallyVisible(this.chartElement) || this.chart.dashboardHidden) {
       this.hideTooltipAtData()
       this.chartIsVisible = false
       this.pause(true)
@@ -284,7 +322,8 @@ class G2TooltipCarousel {
       return
     }
     // 元素仍在视口中时恢复轮播
-    if (this.newChart.getContainer().offsetParent !== null) {
+    const chartElement = this.getChartElement()
+    if (chartElement && chartElement.offsetParent !== null) {
       const hasViewDialog = Array.from(G2TooltipCarousel.instanceCache.keys()).some(key =>
         key?.includes('viewDialog')
       )
@@ -327,10 +366,14 @@ class G2TooltipCarousel {
         return
       }
       this.clearTimer()
+      if (this.waitForRenderedElements()) {
+        this.isExecuting = false
+        return
+      }
       if (this.index >= this.data.length) {
         this.index = 0
       }
-      const currentItem = this.data[this.index]
+      const currentItem = this.getCurrentCarouselItem()
       if (!currentItem) {
         this.clearTimer()
         this.isExecuting = false
@@ -389,6 +432,60 @@ class G2TooltipCarousel {
     return tooltipData
   }
 
+  private getCurrentCarouselItem() {
+    let attempts = 0
+    while (attempts < this.data.length) {
+      const item = this.data[this.index]
+      const renderedItem = this.getRenderableCarouselItem(item)
+      if (renderedItem) {
+        return renderedItem
+      }
+      this.index = (this.index + 1) % this.data.length
+      attempts += 1
+    }
+  }
+
+  private getRenderableCarouselItem(item: any) {
+    if (!this.isColumnChart()) {
+      return item
+    }
+    const elements = this.getRenderedElements('interval')
+    if (!elements.length) {
+      return undefined
+    }
+    return this.getRenderedCarouselData(item, elements)
+  }
+
+  private waitForRenderedElements(): boolean {
+    if (!this.isColumnChart() && !this.isColumnMixChart()) {
+      return false
+    }
+    if (this.getRenderedElements('interval').length) {
+      if (!this.isFirstColumnFrameReady) {
+        this.isFirstColumnFrameReady = true
+        // afterrender 后首帧 G2 状态仍可能覆盖轮播选中态，延后一拍再显示第一个柱图 tooltip
+        this.timers.nextItem = setTimeout(() => {
+          this.timers.nextItem = null
+          this.isExecuting = false
+          this.next()
+        }, 160)
+        return true
+      }
+      this.renderWaitCount = 0
+      return false
+    }
+    if (this.renderWaitCount >= 50) {
+      return true
+    }
+    this.renderWaitCount += 1
+    this.timers.nextItem = setTimeout(() => {
+      this.timers.nextItem = null
+      this.isExecuting = false
+      this.next()
+    }, 100)
+    return true
+  }
+
   /**
    * 特殊图表encode.x获取方式不同
    * 折线图和混合图表的 encode.x 配置
@@ -429,20 +526,321 @@ class G2TooltipCarousel {
    * @param originalData
    */
   showTooltipAtData(tooltipData, originalData?: any) {
+    if (typeof this.newChart?.emit !== 'function') {
+      return
+    }
     const isMix = this.isMixChart()
     const isLineOrMix = this.isLineChart() || isMix
-    this.newChart.emit('element:select', {
-      data: { data: [isLineOrMix && originalData ? originalData : tooltipData.data.data] }
-    })
-    this.newChart.emit('element:highlight', {
-      data: { data: [isLineOrMix && originalData ? originalData : tooltipData.data.data] }
-    })
-    const { offsetX, offsetY } = this.getTooltipOffsetX(tooltipData)
+    const isColumn = this.isColumnChart()
+    const isColumnMix = this.isColumnMixChart()
+    const isDualLineMix = this.isDualLineMixChart()
+    const renderedData = this.getRenderedCarouselData(originalData || tooltipData.data.data)
+    if (isColumn && !renderedData) {
+      this.clearElementState()
+      return
+    }
+    const finalTooltipData = renderedData
+      ? { ...tooltipData, data: { ...tooltipData.data, data: renderedData } }
+      : tooltipData
+    this.clearElementState()
+    const highlightSource = isLineOrMix && originalData ? originalData : finalTooltipData.data.data
+    const highlightData = this.getElementMatchData(highlightSource)
+    if (isColumn && !highlightData) {
+      return
+    }
+    if (isColumn) {
+      // 柱图轮播只保留当前柱子的选中框，其它柱子不进入淡化态
+      this.newChart.emit('element:select', {
+        data: { data: [highlightData] }
+      })
+      this.applyColumnSelectionState(highlightData)
+      this.scheduleColumnSelectionState(highlightData)
+    } else if (isColumnMix && highlightData) {
+      // 含柱组合图轮播也需要走 select，避免只显示 tooltip/背景而没有选中态
+      this.newChart.emit('element:select', {
+        data: { data: [highlightData] }
+      })
+      this.applyColumnSelectionState(highlightData)
+      this.scheduleColumnSelectionState(highlightData)
+    } else if (!isDualLineMix && highlightData) {
+      // 双线组合图轮播只展示 tooltip，避免 G2 region 高亮使用历史坐标造成错位选中
+      // G2 elementHighlight 从 e.data.data 读取 datum，不能复用 elementSelect 的数组结构
+      this.newChart.emit('element:highlight', {
+        data: { data: highlightData }
+      })
+    }
+    const { offsetX, offsetY } = this.getTooltipOffsetX(finalTooltipData)
     this.newChart.emit('tooltip:show', {
-      ...tooltipData,
+      ...finalTooltipData,
       ...(offsetX && isLineOrMix && { offsetX }),
       ...(offsetY && { offsetY })
     })
+  }
+
+  private getRenderedCarouselData(originalData?: any, renderedElements?: any[]) {
+    if (!this.isColumnChart()) {
+      return undefined
+    }
+    const elements = renderedElements || this.getRenderedElements('interval')
+    if (!elements.length) {
+      return undefined
+    }
+    const exactElement = elements.find(element =>
+      this.isSameRenderedDatum(this.getElementDatum(element), originalData, true)
+    )
+    if (exactElement) {
+      return this.getElementDatum(exactElement)
+    }
+    const sameDimensionElement = elements.find(element =>
+      this.isSameRenderedDatum(this.getElementDatum(element), originalData, false)
+    )
+    return sameDimensionElement ? this.getElementDatum(sameDimensionElement) : undefined
+  }
+
+  private getRenderedElements(markType?: string): any[] {
+    const ctx = this.newChart?.getContext?.()
+    const elements = Array.from(ctx?.canvas?.document?.getElementsByClassName('element') || [])
+    return markType ? elements.filter((element: any) => element.markType === markType) : elements
+  }
+
+  private getElementDatum(element: any) {
+    return element?.__data__?.data?.data ?? element?.__data__?.data
+  }
+
+  private isSameRenderedDatum(renderedDatum: any, originalDatum: any, exact: boolean): boolean {
+    if (!renderedDatum || !originalDatum) {
+      return false
+    }
+    const renderedField = this.getDatumField(renderedDatum)
+    const originalField = this.getDatumField(originalDatum)
+    if (`${renderedField}` !== `${originalField}`) {
+      return false
+    }
+    if (!exact) {
+      return true
+    }
+    return ['category', 'group'].every(field => {
+      if (originalDatum[field] === undefined || originalDatum[field] === null) {
+        return true
+      }
+      return `${renderedDatum[field]}` === `${originalDatum[field]}`
+    })
+  }
+
+  private getDatumField(datum: any) {
+    return datum?.field ?? datum?.x ?? datum?.title
+  }
+
+  private getElementMatchData(data: any) {
+    if (!data || typeof data !== 'object' || Array.isArray(data)) {
+      return undefined
+    }
+    const matchData = {} as Record<string, any>
+    for (const key of ['field', 'x', 'title', 'name', 'path']) {
+      const value = data[key]
+      if (['string', 'number', 'boolean'].includes(typeof value) && !Number.isNaN(value)) {
+        matchData[key] = value
+        break
+      }
+    }
+    ;['category', 'group'].forEach(key => {
+      const value = data[key]
+      if (['string', 'number', 'boolean'].includes(typeof value) && !Number.isNaN(value)) {
+        matchData[key] = value
+      }
+    })
+    return Object.keys(matchData).length ? matchData : undefined
+  }
+
+  private applyColumnSelectionState(matchData: Record<string, any>) {
+    if (typeof this.newChart?.setState !== 'function') {
+      this.applyColumnSelectionAttributes(matchData)
+      return
+    }
+    const isSelected = param => !Array.isArray(param) && this.isMatchData(param, matchData)
+    this.newChart.setState('selected', isSelected)
+    this.newChart.setState('unselected', () => true, false)
+    this.applyColumnSelectionAttributes(matchData)
+  }
+
+  private scheduleColumnSelectionState(matchData: Record<string, any>) {
+    this.cancelColumnSelectionFrames()
+    // G2 select/background 会在下一帧补样式，这里补刷保证非选中柱子保持原色
+    const reapply = (count: number) => {
+      const frameId = requestAnimationFrame(() => {
+        this.columnSelectionFrameIds = this.columnSelectionFrameIds.filter(id => id !== frameId)
+        if (this.isDestroyed || this.isPaused) {
+          return
+        }
+        this.applyColumnSelectionAttributes(matchData)
+        if (count > 1) {
+          reapply(count - 1)
+        }
+      })
+      this.columnSelectionFrameIds.push(frameId)
+    }
+    reapply(2)
+  }
+
+  private applyColumnSelectionAttributes(matchData: Record<string, any>) {
+    this.getRenderedElements('interval').forEach(element => {
+      if (this.isMatchData(this.getElementDatum(element), matchData)) {
+        this.setDisplayObjectAttributes(element, {
+          opacity: 1,
+          fillOpacity: 1,
+          stroke: 'black',
+          lineWidth: 1
+        })
+        return
+      }
+      this.setDisplayObjectAttributes(element, {
+        opacity: 1,
+        fillOpacity: 1
+      })
+    })
+    this.flushCanvasRender()
+  }
+
+  private isMatchData(data: any, matchData: Record<string, any>) {
+    const source = data?.data ?? data
+    if (!source || typeof source !== 'object' || Array.isArray(source)) {
+      return false
+    }
+    return Object.entries(matchData).every(
+      ([key, value]) => source[key] === value || `${source[key]}` === `${value}`
+    )
+  }
+
+  private setDisplayObjectAttributes(element: any, attrs: Record<string, any>) {
+    this.traverseDisplayObject(element, node => {
+      if (
+        typeof node?.setAttribute !== 'function' &&
+        typeof node?.attr !== 'function' &&
+        !node?.style
+      ) {
+        return
+      }
+      const originKey = G2TooltipCarousel.COLUMN_CAROUSEL_ORIGIN_STYLE
+      node[originKey] = node[originKey] || {}
+      Object.keys(attrs).forEach(key => {
+        if (!(key in node[originKey])) {
+          node[originKey][key] = this.getDisplayObjectAttribute(node, key)
+        }
+        this.setDisplayObjectAttribute(node, key, attrs[key])
+      })
+    })
+  }
+
+  private restoreColumnSelectionAttributes() {
+    this.getRenderedElements('interval').forEach(element => {
+      this.traverseDisplayObject(element, node => {
+        const originKey = G2TooltipCarousel.COLUMN_CAROUSEL_ORIGIN_STYLE
+        const originStyle = node?.[originKey]
+        if (!originStyle) {
+          return
+        }
+        Object.entries(originStyle).forEach(([key, value]) => {
+          this.setDisplayObjectAttribute(node, key, value)
+        })
+        delete node[originKey]
+      })
+    })
+    this.flushCanvasRender()
+  }
+
+  private traverseDisplayObject(element: any, visitor: (node: any) => void) {
+    if (!element) {
+      return
+    }
+    visitor(element)
+    if (element.tagName !== 'g') {
+      return
+    }
+    ;(element.childNodes || []).forEach(child => this.traverseDisplayObject(child, visitor))
+  }
+
+  private getDisplayObjectAttribute(node: any, key: string) {
+    const value = node?.getAttribute?.(key) ?? node?.attr?.(key) ?? node?.style?.[key]
+    if (value !== undefined && value !== null) {
+      return value
+    }
+    if (['opacity', 'fillOpacity', 'strokeOpacity'].includes(key)) {
+      return 1
+    }
+    if (key === 'lineWidth') {
+      return 0
+    }
+    return ''
+  }
+
+  private setDisplayObjectAttribute(node: any, key: string, value: any) {
+    if (node?.style) {
+      node.style[key] = value
+    }
+    if (typeof node?.setAttribute === 'function') {
+      node.setAttribute(key, value)
+      return
+    }
+    if (typeof node?.attr === 'function') {
+      try {
+        node.attr(key, value)
+      } catch {
+        node.attr({ [key]: value })
+      }
+    }
+  }
+
+  private flushCanvasRender() {
+    const canvas = this.newChart?.getContext?.()?.canvas
+    canvas?.render?.()
+  }
+
+  private cancelColumnSelectionFrames() {
+    this.columnSelectionFrameIds.forEach(id => cancelAnimationFrame(id))
+    this.columnSelectionFrameIds = []
+  }
+
+  private clearColumnSelectionState() {
+    this.cancelColumnSelectionFrames()
+    this.restoreColumnSelectionAttributes()
+    if (typeof this.newChart?.setState !== 'function') {
+      return
+    }
+    this.newChart.setState('selected', () => true, false)
+    this.newChart.setState('unselected', () => true, false)
+  }
+
+  private clearElementState() {
+    const shouldClearSelect = this.isColumnChart() || this.isColumnMixChart()
+    // 双线组合图不展示轮播背景，但需要清掉历史交互残留
+    const shouldClearBackground = shouldClearSelect || this.isDualLineMixChart()
+    if (shouldClearSelect) {
+      this.newChart.emit('element:unselect', {})
+    }
+    if (shouldClearSelect) {
+      this.clearColumnSelectionState()
+    }
+    this.newChart.emit('element:unhighlight', {})
+    if (shouldClearBackground) {
+      this.clearInteractionBackgrounds()
+    }
+  }
+
+  private clearInteractionBackgrounds() {
+    try {
+      const ctx = this.newChart?.getContext?.()
+      const backgrounds = Array.from(
+        ctx?.canvas?.document?.getElementsByClassName?.('element-background') || []
+      )
+      backgrounds.forEach((background: any) => background.remove?.())
+      this.getRenderedElements().forEach((element: any) => {
+        if (element?.background) {
+          element.background = null
+        }
+      })
+    } catch (e) {
+      console.warn('Clear tooltip carousel background fail:', e)
+    }
   }
 
   /**
@@ -489,8 +887,11 @@ class G2TooltipCarousel {
    * 隐藏 tooltip
    */
   hideTooltipAtData() {
+    if (typeof this.newChart?.emit !== 'function') {
+      return
+    }
     this.newChart.emit('tooltip:hide')
-    this.newChart.emit('element:unselect', {})
+    this.clearElementState()
   }
 
   /**
@@ -611,7 +1012,7 @@ class G2TooltipCarousel {
    * 判断元素是否有父元素包含 'switch-hidden' 类
    */
   private hasParentWithSwitchHidden() {
-    let parent = this.newChart.getContainer()
+    let parent = this.getChartElement()
     while (parent) {
       if (parent.classList.contains('switch-hidden')) {
         return true
@@ -619,6 +1020,28 @@ class G2TooltipCarousel {
       parent = parent.parentElement
     }
     return false
+  }
+
+  static paused(id?: string) {
+    G2TooltipCarousel.instanceCache?.forEach(instance => {
+      if (!id || instance.chart.id === id) {
+        setTimeout(() => instance.stop(), 200)
+      }
+    })
+  }
+
+  static resume(id?: string) {
+    G2TooltipCarousel.instanceCache?.forEach(instance => {
+      if (!id || instance.chart.id === id) {
+        setTimeout(
+          () => {
+            instance.isExecuting = false
+            instance.resume(true)
+          },
+          id ? 500 : 200
+        )
+      }
+    })
   }
 
   /**

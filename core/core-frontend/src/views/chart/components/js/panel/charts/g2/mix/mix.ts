@@ -22,7 +22,11 @@ import {
   TOOLTIP_ITEM_TPL,
   TOOLTIP_TITLE_TPL
 } from '../../../common/common_antv'
-import { CHART_MIX_EDITOR_PROPERTY, CHART_MIX_EDITOR_PROPERTY_INNER } from './common'
+import {
+  CHART_MIX_EDITOR_PROPERTY,
+  CHART_MIX_EDITOR_PROPERTY_INNER,
+  filterValidMixTooltipItems
+} from './common'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 import {
   createTooltipWrapper,
@@ -445,6 +449,7 @@ export class ColumnLineMix extends G2ChartView {
             if (tooltip.seriesTooltipFormatter?.length) {
               items = items.filter(i => formatterMap[i.quotaList[0].id])
             }
+            items = filterValidMixTooltipItems(items)
             const result = []
             const [view] = chartObj.getContext().views
             items.forEach(item => {

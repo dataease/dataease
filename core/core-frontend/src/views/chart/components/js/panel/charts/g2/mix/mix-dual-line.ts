@@ -23,7 +23,8 @@ import {
 import {
   CHART_MIX_EDITOR_PROPERTY,
   CHART_MIX_EDITOR_PROPERTY_INNER,
-  configMixCustomLegend
+  configMixCustomLegend,
+  filterValidMixTooltipItems
 } from './common'
 import { registerSymbol, Symbols } from '@antv/g2/esm/utils/marker'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
@@ -287,14 +288,9 @@ export class GroupLineMix extends G2ChartView {
         }
       ],
       interaction: {
-        elementHighlight: {
-          background: true,
-          region: true
-        },
-        elementSelect: {
-          background: true,
-          single: true
-        }
+        // 双线组合图只保留 tooltip，不展示鼠标悬浮/点击选中态
+        elementHighlight: false,
+        elementSelect: false
       }
     }
     const newChart = new G2Chart({ container })
@@ -593,6 +589,7 @@ export class GroupLineMix extends G2ChartView {
             if (tooltip.seriesTooltipFormatter?.length) {
               items = items.filter(i => formatterMap[i.quotaList[0].id])
             }
+            items = filterValidMixTooltipItems(items)
             const result = []
             const view = chartObj.getContext().views.find(v => v.key === 'chart')
             items.forEach(item => {

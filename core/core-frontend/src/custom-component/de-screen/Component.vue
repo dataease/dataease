@@ -166,7 +166,7 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import { useI18n } from '@/hooks/web/useI18n'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import Board from '@/components/de-board/Board.vue'
-import ChartCarouselTooltip from '@/views/chart/components/js/g2plot_tooltip_carousel'
+import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 import { debounce } from 'lodash-es'
 import PreviewCanvas from '@/views/data-visualization/PreviewCanvas.vue'
 import SelectScreenDialog from '@/custom-component/de-screen/SelectScreenDialog.vue'
@@ -276,8 +276,8 @@ const viewToolTipsChange = () => {
   element.value.propValue?.forEach(tabItem => {
     const tMethod =
       element.value.editableTabsValue === tabItem.name
-        ? ChartCarouselTooltip.resume
-        : ChartCarouselTooltip.paused
+        ? G2TooltipCarousel.resume
+        : G2TooltipCarousel.paused
     tabItem.componentData?.forEach(componentItem => {
       tMethod(componentItem.id)
       if (componentItem.component === 'Group')

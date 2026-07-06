@@ -3,6 +3,21 @@ import { parseJson } from '@/views/chart/components/js/util'
 
 type MixLegendRelation = [string, string]
 
+export const filterValidMixTooltipItems = <T extends { value?: any }>(items: T[] = []): T[] => {
+  // 组合图 shared tooltip 会补齐同一维度下的空系列，渲染前只保留真实有值的项
+  return items.filter(item => {
+    const value = item?.value
+    if (value === null || value === undefined || Number.isNaN(value)) {
+      return false
+    }
+    if (typeof value === 'string') {
+      const text = value.trim().toLowerCase()
+      return text !== '' && text !== 'nan' && text !== 'null' && text !== 'undefined'
+    }
+    return true
+  })
+}
+
 export const CHART_MIX_EDITOR_PROPERTY: EditorProperty[] = [
   'background-overall-component',
   'border-style',

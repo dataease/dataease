@@ -32,6 +32,7 @@ import { ExportImage } from '@antv/l7'
 import { configEmptyDataStyle } from '@/views/chart/components/js/panel/common/common_antv'
 import { hasNextDrillLevel } from '@/views/chart/components/views/util/drill'
 import { ElMessage } from 'element-plus-secondary'
+import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const { nowPanelTrackInfo, nowPanelJumpInfo, mobileInPc, embeddedCallBack, inMobile } =
@@ -417,6 +418,8 @@ const renderG2 = async (chart, chartView: G2PlotChartView<any, any>) => {
     try {
       // 在这里清理掉之前图表的空dom
       configEmptyDataStyle([1], containerId)
+      // G2 重绘前先停掉 tooltip 轮播，避免旧实例残留高亮背景
+      G2TooltipCarousel.destroyByContainer(containerId)
       myChart?.destroy()
       // 处理图表在右侧小区域时隐藏文本标识
       let dashboardHidden = props.element.dashboardHidden
@@ -907,6 +910,7 @@ const onWheel = (e: WheelEvent) => {
 }
 onBeforeUnmount(() => {
   try {
+    G2TooltipCarousel.destroyByContainer(containerId)
     myChart?.destroy()
     resizeObserver?.disconnect()
     intersectionObserver?.disconnect()

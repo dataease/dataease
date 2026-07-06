@@ -39,15 +39,22 @@ import {
   qqMapStyleOptions,
   tdtMapStyleOptions
 } from '@/views/chart/components/js/panel/charts/map/common'
-import ChartCarouselTooltip, {
-  isPie,
-  isLine,
-  isColumn,
-  isMix,
-  isSupport
-} from '@/views/chart/components/js/g2plot_tooltip_carousel'
+import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 
 const { t: tI18n } = useI18n()
+
+const G2_TOOLTIP_CAROUSEL_CHART_TYPES = {
+  COLUMN: ['bar', 'bar-stack', 'bar-group', 'bar-group-stack', 'percentage-bar-stack'],
+  LINE: ['line', 'area', 'area-stack'],
+  MIX: ['chart-mix', 'chart-mix-group', 'chart-mix-stack', 'chart-mix-dual-line'],
+  PIE: ['pie', 'pie-donut', 'pie-rose', 'pie-donut-rose']
+}
+
+const isColumn = (chartType: string) => G2_TOOLTIP_CAROUSEL_CHART_TYPES.COLUMN.includes(chartType)
+const isPie = (chartType: string) => G2_TOOLTIP_CAROUSEL_CHART_TYPES.PIE.includes(chartType)
+const isMix = (chartType: string) => G2_TOOLTIP_CAROUSEL_CHART_TYPES.MIX.includes(chartType)
+const isSupport = (chartType: string) =>
+  Object.values(G2_TOOLTIP_CAROUSEL_CHART_TYPES).some(category => category.includes(chartType))
 
 export function getPadding(chart: Chart): number[] {
   if (chart.drill) {
@@ -2091,12 +2098,9 @@ function configCarouselTooltip(plot, chart) {
   if (start) {
     // 启用轮播
     plot.once('afterrender', () => {
-      const carousel = chart.customAttr?.tooltip?.carousel
-      ChartCarouselTooltip.manage(plot, chart, {
-        xField: 'field',
-        duration: carousel.enable ? carousel?.stayTime * 1000 : 2000,
-        interval: carousel.enable ? carousel?.intervalTime * 1000 : 2000
-      })
+      const sourceData = Array.isArray(plot?.options?.data) ? plot.options.data : []
+      // 统一使用 G2TooltipCarousel 管理轮播，避免新旧 tooltip 轮播实现分叉
+      new G2TooltipCarousel(plot?.chart || plot, chart, sourceData).start()
     })
   }
 }
@@ -2144,7 +2148,7 @@ export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>
 ) {
   const { tooltip } = parseJson(chart.customAttr)
   if (!tooltip.show) {
-    ChartCarouselTooltip.destroyByContainer(chart.container)
+    G2TooltipCarousel.destroyByContainer(chart.container)
     return
   }
   // 图表容器，用于计算 tooltip 的位置
