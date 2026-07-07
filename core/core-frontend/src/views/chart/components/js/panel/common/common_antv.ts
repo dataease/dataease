@@ -2014,7 +2014,7 @@ const AXIS_LABEL_TOOLTIP_STYLE = {
   visibility: 'visible'
 }
 const AXIS_LABEL_TOOLTIP_TPL =
-  '<div class="g2-axis-label-tooltip">' + '<div class="g2-tooltip-title">{title}</div>' + '</div>'
+  '<div class="g2-axis-label-tooltip">' + '<div class="g2-tooltip-title"></div>' + '</div>'
 export function configAxisLabelLengthLimit(chart, plot, triggerObjName = 'axis-label') {
   // 设置触发事件的名称，如果未传入，则默认为 'axis-label'
   const triggerName = triggerObjName
@@ -2066,8 +2066,11 @@ export function configAxisLabelLengthLimit(chart, plot, triggerObjName = 'axis-l
 
     // 如果没有 tooltip，创建新的 tooltip DOM 元素
     if (!labelTooltipDom) {
-      const domStr = substitute(AXIS_LABEL_TOOLTIP_TPL, { title })
-      labelTooltipDom = createDom(domStr)
+      labelTooltipDom = createDom(AXIS_LABEL_TOOLTIP_TPL)
+      const tooltipTitleDom = labelTooltipDom.getElementsByClassName(
+        'g2-tooltip-title'
+      )[0] as HTMLElement
+      tooltipTitleDom.textContent = title
 
       // 设置 tooltip 的样式
       AXIS_LABEL_TOOLTIP_STYLE.backgroundColor = tooltip.backgroundColor
@@ -2079,7 +2082,10 @@ export function configAxisLabelLengthLimit(chart, plot, triggerObjName = 'axis-l
       parentNode.appendChild(labelTooltipDom)
     } else {
       // 如果已有 tooltip，更新其标题并使其可见
-      labelTooltipDom.getElementsByClassName('g2-tooltip-title')[0].innerHTML = title
+      const tooltipTitleDom = labelTooltipDom.getElementsByClassName(
+        'g2-tooltip-title'
+      )[0] as HTMLElement
+      tooltipTitleDom.textContent = title
       labelTooltipDom.style.visibility = 'visible'
     }
 
