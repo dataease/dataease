@@ -86,6 +86,31 @@ export const setColorName = (obj, keyword: string, key?: string, colorKey?: stri
   obj[colorKey] = null
 }
 
+export interface HighlightSegment {
+  text: string
+  highlight: boolean
+}
+
+export const getHighlightSegments = (text: string, keyword: string): HighlightSegment[] => {
+  if (!keyword) {
+    return [{ text, highlight: false }]
+  }
+  const index = text.indexOf(keyword)
+  if (index < 0) {
+    return [{ text, highlight: false }]
+  }
+  const segments: HighlightSegment[] = []
+  if (index > 0) {
+    segments.push({ text: text.slice(0, index), highlight: false })
+  }
+  segments.push({ text: keyword, highlight: true })
+  const suffix = text.slice(index + keyword.length)
+  if (suffix) {
+    segments.push({ text: suffix, highlight: false })
+  }
+  return segments
+}
+
 export const getQueryString = (name: string) => {
   const reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i')
   const r = window.location.search.substr(1).match(reg)

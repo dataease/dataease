@@ -16,7 +16,7 @@ import {
 import type { DatasetOrFolder } from '@/api/dataset'
 import nothingTree from '@/assets/img/nothing-tree.png'
 import { BusiTreeRequest } from '@/models/tree/TreeNode'
-import { filterFreeFolder } from '@/utils/utils'
+import { filterFreeFolder, getHighlightSegments } from '@/utils/utils'
 export interface Tree {
   isCross: boolean
   name: string
@@ -65,13 +65,7 @@ const filterNode = (value: string, data: Tree) => {
 
 watch(filterText, val => {
   showAll.value = !val
-  treeRef.value.filter(val)
-  nextTick(() => {
-    document.querySelectorAll('.node-text').forEach(ele => {
-      const content = ele.getAttribute('title')
-      ele.innerHTML = content.replace(val, `<span class="highLight">${val}</span>`)
-    })
-  })
+  treeRef.value?.filter(val)
 })
 
 const showPid = computed(() => {
@@ -374,7 +368,15 @@ const emits = defineEmits(['finish', 'onDatasetSave'])
                 <el-icon style="font-size: 18px">
                   <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
                 </el-icon>
-                <span class="node-text" :title="data.name">{{ data.name }}</span>
+                <span class="node-text" :title="data.name">
+                  <template
+                    v-for="(segment, index) in getHighlightSegments(data.name, filterText)"
+                    :key="`${data.id}-${index}`"
+                  >
+                    <span v-if="segment.highlight" class="highLight">{{ segment.text }}</span>
+                    <template v-else>{{ segment.text }}</template>
+                  </template>
+                </span>
               </span>
             </template>
           </el-tree>
