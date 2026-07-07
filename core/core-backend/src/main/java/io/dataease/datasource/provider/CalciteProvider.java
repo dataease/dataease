@@ -184,6 +184,7 @@ public class CalciteProvider extends Provider {
         try {
             CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
             statement = calciteConnection.prepareStatement(datasourceRequest.getQuery());
+            bindPreparedStatementValues(statement, datasourceRequest.getTableFieldWithValues(), null, null, null);
             resultSet = statement.executeQuery();
             ResultSetMetaData metaData = resultSet.getMetaData();
             int columnCount = metaData.getColumnCount();
