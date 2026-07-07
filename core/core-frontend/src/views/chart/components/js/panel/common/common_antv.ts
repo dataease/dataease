@@ -800,8 +800,28 @@ type DimensionSliderOptions = {
 const DIMENSION_SLIDER_STYLE = {
   trackOpacity: 1,
   selectionFillOpacity: 1,
-  handleLabelFillOpacity: 1
+  handleLabelFillOpacity: 1,
+  handleIconFillOpacity: 1
 }
+
+// 字体颜色同步滑块手柄，缩略轴轨道背景另行保持透明
+const getDimensionSliderTextColorStyle = (sliderTextColor?: string) =>
+  sliderTextColor
+    ? {
+        handleLabelFill: sliderTextColor,
+        handleIconFill: sliderTextColor
+      }
+    : {}
+
+// 背景色作为底部缩略轴轨道描边，轨道填充保持透明
+const getDimensionSliderTrackStyle = (sliderBg?: string) => ({
+  trackFill: 'transparent',
+  ...(sliderBg && {
+    trackStroke: sliderBg,
+    trackStrokeOpacity: 1,
+    trackLineWidth: 1
+  })
+})
 
 // 将面板百分比范围规整到 G2 slider 可识别的 0 到 1 区间
 const normalizeSliderValues = (values?: number[]): SliderValues => {
@@ -1014,9 +1034,9 @@ export const configDimensionSlider = (
       position: 'bottom',
       style: {
         ...sliderX.style,
-        trackFill: functionCfg.sliderBg,
+        ...getDimensionSliderTrackStyle(functionCfg.sliderBg),
         selectionFill: functionCfg.sliderFillBg,
-        handleLabelFill: functionCfg.sliderTextColor,
+        ...getDimensionSliderTextColorStyle(functionCfg.sliderTextColor),
         handleLabelPointerEvents: 'none',
         sparklineLineStrokeOpacity: 0
       }
