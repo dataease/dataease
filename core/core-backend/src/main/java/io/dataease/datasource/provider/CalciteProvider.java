@@ -34,12 +34,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
+import java.io.*;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.UnsupportedCharsetException;
 import java.sql.*;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -386,6 +386,43 @@ public class CalciteProvider extends Provider {
         }
 
         return datasetTableFields;
+    }
+
+    private void bindPreparedStatementValues(Statement statement, List<TableFieldWithValue> tableFieldWithValues,
+                                             DatasourceConfiguration.DatasourceType datasourceType,
+                                             String oracleCharset, String oracleTargetCharset) throws SQLException {
+        if (!(statement instanceof PreparedStatement preparedStatement) || CollectionUtils.isEmpty(tableFieldWithValues)) {
+            return;
+        }
+        for (int i = 0; i < tableFieldWithValues.size(); i++) {
+            TableFieldWithValue tableFieldWithValue = tableFieldWithValues.get(i);
+            try {
+                Object valueObject = tableFieldWithValue.getValue();
+                if (valueObject instanceof String
+                        && datasourceType == DatasourceConfiguration.DatasourceType.oracle
+                        && StringUtils.isNotEmpty(oracleCharset)
+                        && StringUtils.isNotEmpty(oracleTargetCharset)) {
+                    valueObject = convertOracleText((String) valueObject, oracleTargetCharset, oracleCharset);
+                }
+                if (tableFieldWithValue.getType() != null && tableFieldWithValue.getType().equals(Types.CLOB) && valueObject instanceof String stringValue) {
+                    Reader reader = new StringReader(stringValue);
+                    preparedStatement.setCharacterStream(i + 1, reader, stringValue.length());
+                } else if (tableFieldWithValue.getType() != null) {
+                    preparedStatement.setObject(i + 1, valueObject, tableFieldWithValue.getType());
+                } else {
+                    preparedStatement.setObject(i + 1, valueObject);
+                }
+            } catch (SQLException | UnsupportedEncodingException e) {
+                throw new SQLException(e.getMessage() + ". VALUE: " + String.valueOf(tableFieldWithValue.getValue()) + " , TARGET TYPE: " + tableFieldWithValue.getColumnTypeName(), e);
+            }
+        }
+    }
+
+    private ResultSet executeQuery(Statement statement, String query) throws SQLException {
+        if (statement instanceof PreparedStatement preparedStatement) {
+            return preparedStatement.executeQuery();
+        }
+        return statement.executeQuery(query);
     }
 
     private boolean isDorisCatalog(DatasourceRequest datasourceRequest) {
@@ -789,6 +826,26 @@ public class CalciteProvider extends Provider {
             list.add(row);
         }
         return list;
+    }
+
+    private String normalizeOracleCharset(String charset) {
+        if (StringUtils.isBlank(charset) || StringUtils.equalsIgnoreCase(charset, "Default")) {
+            return null;
+        }
+        String normalized = StringUtils.equalsIgnoreCase(charset, "US7ASCII") ? "US-ASCII" : charset;
+        try {
+            return Charset.forName(normalized).name();
+        } catch (UnsupportedCharsetException | IllegalCharsetNameException e) {
+            DEException.throwException("Unsupported charset: " + charset);
+        }
+        return null;
+    }
+
+    private String convertOracleText(String value, String fromCharset, String toCharset) throws UnsupportedEncodingException {
+        if (StringUtils.isEmpty(value) || StringUtils.isBlank(fromCharset) || StringUtils.isBlank(toCharset)) {
+            return value;
+        }
+        return new String(value.getBytes(fromCharset), toCharset);
     }
 
     @Override
