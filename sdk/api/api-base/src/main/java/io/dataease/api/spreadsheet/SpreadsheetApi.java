@@ -10,6 +10,7 @@ import io.dataease.auth.DePermit;
 import io.dataease.model.BusiNodeRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,6 +32,10 @@ public interface SpreadsheetApi {
     @Operation(summary = "保存电子表格(创建/编辑)")
     @PostMapping("/save")
     SpreadsheetVO save(@RequestBody SpreadsheetEditor editor);
+
+    @Operation(summary = "根据ID查询电子表格")
+    @GetMapping("/get/{id}")
+    SpreadsheetVO get(@PathVariable("id") Long id);
 
     @Operation(summary = "获取电子表格详情")
     @PostMapping("/findById")
