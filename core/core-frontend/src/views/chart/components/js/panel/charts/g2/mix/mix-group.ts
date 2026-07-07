@@ -28,7 +28,8 @@ import {
   CHART_MIX_EDITOR_PROPERTY,
   CHART_MIX_EDITOR_PROPERTY_INNER,
   configMixCustomLegend,
-  filterValidMixTooltipItems
+  filterValidMixTooltipItems,
+  getAssistLineAxisIndex
 } from './common'
 import { registerSymbol, Symbols } from '@antv/g2/esm/utils/marker'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
@@ -737,8 +738,9 @@ export class GroupLineMix extends G2ChartView {
     const splitLineData = [[], []]
     const splitDynamicFields = [[], []]
     assistLineCfg.assistLine?.forEach(item => {
-      const lineData = splitLineData[item.yAxisType === 'left' ? 0 : 1]
-      const dynamicFields = splitDynamicFields[item.yAxisType === 'left' ? 0 : 1]
+      const axisIndex = getAssistLineAxisIndex(item.yAxisType)
+      const lineData = splitLineData[axisIndex]
+      const dynamicFields = splitDynamicFields[axisIndex]
       // 固定值
       if (item.field === '0') {
         lineData.push({ ...item, value: parseFloat(item.value) })
@@ -753,9 +755,10 @@ export class GroupLineMix extends G2ChartView {
       ...(chart.data.right.dynamicAssistLines ?? [])
     ]
     assistLineData.forEach(d => {
-      const fields = d.yAxisType === 'left' ? splitDynamicFields[0] : splitDynamicFields[1]
+      const axisIndex = getAssistLineAxisIndex(d.yAxisType)
+      const fields = splitDynamicFields[axisIndex]
       if (fields.includes(d.fieldId)) {
-        splitLineData[d.yAxisType === 'left' ? 0 : 1].push({ ...d, value: parseFloat(d.value) })
+        splitLineData[axisIndex].push({ ...d, value: parseFloat(d.value) })
       }
     })
     const { yAxis, yAxisExt } = parseJson(chart.customStyle)

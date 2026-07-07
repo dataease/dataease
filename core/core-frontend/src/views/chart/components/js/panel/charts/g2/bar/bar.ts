@@ -55,6 +55,7 @@ const { t } = useI18n()
 const DEFAULT_DATA: any[] = []
 const FULL_COLUMN_WIDTH_PADDING = 0.01
 const PERCENTAGE_FULL_COLUMN_WIDTH_PADDING = 0.002
+const isAssistLineRightAxis = item => item?.yAxisType === 'right'
 
 /**
  * 柱状图
@@ -692,8 +693,10 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
       const lines = fixedLines.concat(dynamicLines || [])
       lines.forEach(item => {
         const value = parseFloat(item.value)
-        const targetFormatter =
-          item.yAxisType === 'left' || !axisExtFormatterCfg ? axisFormatterCfg : axisExtFormatterCfg
+        // 历史动态辅助线可能缺少 yAxisType，默认跟随主数值轴
+        const useExtAxisFormatter =
+          isAssistLineRightAxis(item) && axisExtFormatterCfg && quotaExtFields.length > 0
+        const targetFormatter = useExtAxisFormatter ? axisExtFormatterCfg : axisFormatterCfg
         const axisFormattedValue =
           typeof valueAxisLabelFormatter === 'function'
             ? valueAxisLabelFormatter(value)

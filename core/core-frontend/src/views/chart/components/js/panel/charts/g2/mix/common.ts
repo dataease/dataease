@@ -18,6 +18,11 @@ export const filterValidMixTooltipItems = <T extends { value?: any }>(items: T[]
   })
 }
 
+export const getAssistLineAxisIndex = (yAxisType?: string): number => {
+  // 历史动态辅助线可能缺少 yAxisType，默认跟随左侧主数值轴
+  return yAxisType === 'right' ? 1 : 0
+}
+
 export const CHART_MIX_EDITOR_PROPERTY: EditorProperty[] = [
   'background-overall-component',
   'border-style',
