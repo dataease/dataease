@@ -447,6 +447,7 @@ export class ColumnLineMix extends G2ChartView {
           mount: createTooltipWrapper(chart),
           css: tooltipCss(tooltip),
           enterable: true,
+          marker: false,
           render: (_, { title, items }) => {
             const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)
             if (tooltip.seriesTooltipFormatter?.length) {

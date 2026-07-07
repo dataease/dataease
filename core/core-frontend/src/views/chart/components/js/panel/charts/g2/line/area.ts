@@ -23,6 +23,7 @@ import {
   configStackOrderByYAxis,
   configYAxisSeriesLegendDomain,
   getLineConditionLineYMarks,
+  getLineTooltipSameDimensionItems,
   LINE_AXIS_TYPE,
   LINE_CONDITION_VISIBLE_DOMAIN_KEY,
   LINE_EDITOR_PROPERTY,
@@ -365,6 +366,11 @@ export class Area extends G2ChartView {
         fillOpacity: basicStyle.lineSymbolSize === 0 ? 0 : 1,
         strokeOpacity: basicStyle.lineSymbolSize === 0 ? 0 : 1,
         lineWidth: 0
+      },
+      state: {
+        // 禁止 hover/选中态给数据点补默认黑色描边
+        active: { lineWidth: 0, strokeOpacity: 0 },
+        selected: { lineWidth: 0, strokeOpacity: 0 }
       }
     }
     defaultsDeep(pointMark, pointStyleOpt)
@@ -681,16 +687,27 @@ export class Area extends G2ChartView {
       interaction: {
         tooltip: {
           crosshairsLineDash: [4, 4],
+          // 关闭 G2 tooltip 悬浮 marker，仅保留辅助线
+          marker: false,
           ...getTooltipCrosshairsStyle(chart),
           mount: createTooltipWrapper(chart),
           css: tooltipCss(tooltipAttr),
           enterable: true,
           render: (_e, { title, items: originalItems }) => {
             const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)
-            let tooltipItems = originalItems
+            // G2 折线默认只返回当前命中的线段，按维度补齐同一 x 下的系列项
+            const fullItems = getLineTooltipSameDimensionItems(
+              options,
+              customAttr,
+              title,
+              originalItems,
+              color =>
+                customAttr.basicStyle?.gradient ? setGradientColor(color, true, 270) : color
+            )
+            let tooltipItems = fullItems
             if (tooltipAttr.seriesTooltipFormatter?.length) {
               // 只隐藏明确配置为不展示的字段，避免过期 formatter 漏掉新指标
-              tooltipItems = originalItems.filter(item =>
+              tooltipItems = fullItems.filter(item =>
                 isTooltipItemShown(formatterMap, item, 'yAxis')
               )
             }
@@ -958,6 +975,8 @@ export class StackArea extends Area {
       interaction: {
         tooltip: {
           crosshairsLineDash: [4, 4],
+          // 关闭 G2 tooltip 悬浮 marker，仅保留辅助线
+          marker: false,
           ...getTooltipCrosshairsStyle(chart),
           mount: createTooltipWrapper(chart),
           css: tooltipCss(tooltipAttr),
@@ -965,7 +984,13 @@ export class StackArea extends Area {
           render: (e, { title, items }) => {
             const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)
             const result = []
-            sortTooltipItemsByYAxis(chart, items).forEach(item => {
+            // G2 折线默认只返回当前命中的线段，按维度补齐同一 x 下的系列项
+            sortTooltipItemsByYAxis(
+              chart,
+              getLineTooltipSameDimensionItems(options, customAttr, title, items, color =>
+                customAttr.basicStyle?.gradient ? setGradientColor(color, true, 270) : color
+              )
+            ).forEach(item => {
               if (item.value === null || item.value === undefined) {
                 return
               }

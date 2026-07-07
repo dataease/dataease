@@ -81,6 +81,88 @@ export const LINE_AXIS_TYPE: AxisType[] = [
   'extTooltip'
 ]
 
+export const getLineTooltipSameDimensionItems = (
+  options: G2Spec,
+  customAttr: DeepPartial<ChartAttr>,
+  title: string,
+  originalItems: any[],
+  formatColor?: (color: string) => string
+) => {
+  const allData = options.data?.value || []
+  const colorMap = (options.scale?.color?.relations || []).reduce((pre, [name, color]) => {
+    pre[`${name}`] = color
+    return pre
+  }, {} as Record<string, string>)
+  const seriesList = [...(options.scale?.color?.domain || [])]
+  if (!seriesList.length && options.scale?.color?.relations?.length) {
+    options.scale.color.relations.forEach(([name]) => {
+      if (!seriesList.includes(name)) {
+        seriesList.push(name)
+      }
+    })
+  }
+  if (!seriesList.length) {
+    allData.forEach(item => {
+      if (item.category === null || item.category === undefined) {
+        return
+      }
+      if (!seriesList.includes(item.category)) {
+        seriesList.push(item.category)
+      }
+    })
+  }
+  const seriesOrderMap = seriesList.reduce((pre, category, index) => {
+    pre[`${category}`] = index
+    return pre
+  }, {} as Record<string, number>)
+  const basicStyle = customAttr.basicStyle
+  const paletteColorMap: Record<string, string> = {}
+  if (basicStyle?.colors?.length) {
+    seriesList.forEach((category, seriesIndex) => {
+      if (category === null || category === undefined) {
+        return
+      }
+      const key = `${category}`
+      const color = hexColorToRGBA(
+        basicStyle.colors[seriesIndex % basicStyle.colors.length],
+        basicStyle.alpha
+      )
+      paletteColorMap[key] = formatColor ? formatColor(color) : color
+    })
+  }
+
+  const head = originalItems[0]
+  const field = head?.field ?? title
+  if (!field) {
+    return originalItems
+  }
+  const itemKeys = new Set(
+    originalItems.map(item => `${item.category ?? ''}-${item.quotaList?.[0]?.id ?? ''}`)
+  )
+  const result = [...originalItems]
+  allData.forEach(item => {
+    if (item.field !== field) {
+      return
+    }
+    const key = `${item.category ?? ''}-${item.quotaList?.[0]?.id ?? ''}`
+    if (itemKeys.has(key)) {
+      return
+    }
+    itemKeys.add(key)
+    // 补齐项没有经过 G2 tooltip 注入颜色，需要按图例色盘兜底
+    result.push({
+      ...item,
+      color: item.color ?? colorMap[`${item.category}`] ?? paletteColorMap[`${item.category}`]
+    })
+  })
+  // 同一维度下 tooltip 顺序固定为图例系列顺序，避免随鼠标命中线段变化
+  return result.sort((a, b) => {
+    const aOrder = seriesOrderMap[`${a.category}`] ?? Number.MAX_SAFE_INTEGER
+    const bOrder = seriesOrderMap[`${b.category}`] ?? Number.MAX_SAFE_INTEGER
+    return aOrder - bOrder
+  })
+}
+
 const Y_AXIS_SERIES_ORDER_NOT_FOUND = Number.MAX_SAFE_INTEGER
 
 /**

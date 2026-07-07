@@ -21,6 +21,7 @@ import {
   configYAxisSeriesLegendDomain,
   getLineConditionColorWithAlpha,
   getLineConditionLineYMarks,
+  getLineTooltipSameDimensionItems,
   LINE_AXIS_TYPE,
   LINE_CONDITION_VISIBLE_DOMAIN_KEY,
   LINE_EDITOR_PROPERTY,
@@ -356,6 +357,11 @@ export class Line extends G2ChartView {
         fillOpacity: basicStyle.lineSymbolSize === 0 ? 0 : 1,
         strokeOpacity: basicStyle.lineSymbolSize === 0 ? 0 : 1,
         lineWidth: 0
+      },
+      state: {
+        // 禁止 hover/选中态给数据点补默认黑色描边
+        active: { lineWidth: 0, strokeOpacity: 0 },
+        selected: { lineWidth: 0, strokeOpacity: 0 }
       }
     }
     defaultsDeep(pointMark, pointStyleOpt)
@@ -744,6 +750,8 @@ export class Line extends G2ChartView {
         ...lineMark.interaction,
         tooltip: {
           crosshairsLineDash: [4, 4],
+          // 关闭 G2 tooltip 悬浮 marker，仅保留辅助线
+          marker: false,
           ...getTooltipCrosshairsStyle(chart),
           mount: createTooltipWrapper(chart),
           css: tooltipCss(tooltipAttr),
@@ -751,9 +759,16 @@ export class Line extends G2ChartView {
           enterable: true,
           render: (e, { title, items: originalItems }) => {
             const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)
-            let tooltipItems = originalItems
+            // G2 折线默认只返回当前命中的线段，按维度补齐同一 x 下的系列项
+            const fullItems = getLineTooltipSameDimensionItems(
+              options,
+              customAttr,
+              title,
+              originalItems
+            )
+            let tooltipItems = fullItems
             if (tooltipAttr.seriesTooltipFormatter?.length) {
-              tooltipItems = originalItems.filter(item => formatterMap[item.quotaList[0].id])
+              tooltipItems = fullItems.filter(item => formatterMap[item.quotaList[0].id])
             }
             const result = []
             const head = originalItems[0]
