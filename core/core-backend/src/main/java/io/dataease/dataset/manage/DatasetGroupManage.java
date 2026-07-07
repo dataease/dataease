@@ -12,6 +12,7 @@ import io.dataease.commons.constants.OptConstants;
 import io.dataease.dao.auto.entity.CoreDatasetGroup;
 import io.dataease.dao.auto.entity.CoreDatasetTable;
 import io.dataease.dao.auto.entity.QCoreDatasetGroup;
+import io.dataease.constant.BusiResourceEnum;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupRepository;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableRepository;
 import io.dataease.dataset.dao.ext.po.DataSetNodePO;
@@ -242,11 +243,6 @@ public class DatasetGroupManage {
 
     @XpackInteract(value = "authResourceTree", replace = true, invalid = true)
     public List<BusiNodeVO> tree(BusiNodeRequest request) {
-        String info = CommunityUtils.getInfo();
-        if (StringUtils.isNotBlank(info)) {
-            //TODO CommunityUtils.getInfo
-//            queryWrapper.notExists(String.format(info, "core_dataset_group.id"));
-        }
         QCoreDatasetGroup coreDatasetGroup = QCoreDatasetGroup.coreDatasetGroup;
         JPAQuery<DataSetNodePO> jpaQuery = queryFactory.select(
                         Projections.fields(DataSetNodePO.class,
@@ -257,6 +253,9 @@ public class DatasetGroupManage {
                         )
                 )
                 .from(coreDatasetGroup);
+        if (CommunityUtils.isCommunityMode()) {
+            jpaQuery.where(CommunityUtils.buildNotExistsCondition(coreDatasetGroup, BusiResourceEnum.DATASET.getFlag()));
+        }
         if (ObjectUtils.isNotEmpty(request.getLeaf()) && !request.getLeaf()) {
             jpaQuery.where(coreDatasetGroup.nodeType.eq(request.getLeaf() ? "dataset" : "folder"));
         }

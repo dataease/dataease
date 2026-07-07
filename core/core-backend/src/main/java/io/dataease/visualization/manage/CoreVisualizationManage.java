@@ -136,11 +136,10 @@ public class CoreVisualizationManage {
         if (ObjectUtils.isNotEmpty(request.getLeaf())) {
             query.where(dataVisualizationInfo.nodeType.eq(request.getLeaf() ? "leaf" : "folder"));
         }
-        //TODO CommunityUtils.getInfo
-//        String info = CommunityUtils.getInfo();
-//        if (StringUtils.isNotBlank(info)) {
-//            queryWrapper.notExists(String.format(info, "data_visualization_info.id"));
-//        }
+        if (CommunityUtils.isCommunityMode()) {
+            int rtId = StringUtils.equalsAny(request.getBusiFlag(), "dataV", "screen") ? BusiResourceEnum.SCREEN.getFlag() : BusiResourceEnum.PANEL.getFlag();
+            query.where(CommunityUtils.buildNotExistsCondition(dataVisualizationInfo, rtId));
+        }
 
         List<VisualizationNodePO> pos = query.fetch();
         if (CollectionUtils.isNotEmpty(pos)) {
@@ -308,7 +307,7 @@ public class CoreVisualizationManage {
             }
             type = request.getType();
         }
-        String info = CommunityUtils.getInfo();
+        boolean isCommunityMode = CommunityUtils.isCommunityMode();
         boolean isAsc = request.isAsc();
         String keyword = request.getKeyword();
 
@@ -337,7 +336,7 @@ public class CoreVisualizationManage {
         if (StringUtils.isNotBlank(type)) {
             sql.append("AND dvResource.type = :type ");
         }
-        if (StringUtils.isNotBlank(info)) {
+        if (isCommunityMode) {
             sql.append("AND NOT EXISTS(SELECT 1 FROM per_busi_resource community WHERE core_opt_recent.resource_id = community.id) ");
         }
 

@@ -5,6 +5,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.dataease.commons.constants.OptConstants;
 import io.dataease.commons.constants.TaskStatus;
+import io.dataease.constant.BusiResourceEnum;
 import io.dataease.dao.auto.entity.CoreDatasource;
 import io.dataease.dao.auto.entity.QCoreDatasource;
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
@@ -107,10 +108,8 @@ public class DataSourceManage {
             jpaQuery.where(coreDatasource.type.eq("folder"));
         }
 
-        String info = CommunityUtils.getInfo();
-        if (StringUtils.isNotBlank(info)) {
-            //TODO CommunityUtils.getInfo
-//            queryWrapper.notExists(String.format(info, "core_datasource.id"));
+        if (CommunityUtils.isCommunityMode()) {
+            jpaQuery.where(CommunityUtils.buildNotExistsCondition(coreDatasource, BusiResourceEnum.DATASOURCE.getFlag()));
         }
 
         List<DatasourceNodeBO> nodes = new ArrayList<>();
