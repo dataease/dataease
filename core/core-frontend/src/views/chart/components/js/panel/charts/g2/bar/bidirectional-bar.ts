@@ -1117,9 +1117,14 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       }
     })
     const { basicStyle } = parseJson(chart.customAttr)
+    const isNullValue = value => value === null || value === undefined
     if (leftCondition?.conditions?.length) {
       const [firstMark] = options.children[0].children
       firstMark.data.value.forEach(d => {
+        // 空值不参与条件样式比较
+        if (isNullValue(d.value)) {
+          return
+        }
         leftCondition.conditions.forEach(c => {
           if (
             (c.term === 'between' && d.value >= c.min && d.value <= c.max) ||
@@ -1141,6 +1146,9 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       firstMark.style = {
         ...firstMark.style,
         fill: d => {
+          if (isNullValue(d.value)) {
+            return typeof originColor === 'function' ? originColor(d) : originColor
+          }
           if (d.conditionColor) {
             return d.conditionColor
           }
@@ -1151,6 +1159,9 @@ export class BidirectionalHorizontalBar extends G2ChartView {
     if (rightCondition?.conditions?.length) {
       const [, secondMark] = options.children[0].children
       secondMark.data.value.forEach(d => {
+        if (isNullValue(d.value)) {
+          return
+        }
         rightCondition.conditions.forEach(c => {
           if (
             (c.term === 'between' && d.value >= c.min && d.value <= c.max) ||
@@ -1172,6 +1183,9 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       secondMark.style = {
         ...secondMark.style,
         fill: d => {
+          if (isNullValue(d.value)) {
+            return typeof originColor === 'function' ? originColor(d) : originColor
+          }
           if (d.conditionColor) {
             return d.conditionColor
           }
