@@ -95,7 +95,12 @@ export function valueFormatter(value, formatter) {
 
 function transUnit(value, formatter) {
   initFormatCfgUnit(formatter)
-  return value / formatter.unit
+  const result = value / formatter.unit
+  if (formatter.type === 'auto' && formatter.unit !== 1) {
+    // 自动格式化做单位换算时去掉 JS 浮点运算尾差
+    return Number(result.toPrecision(15))
+  }
+  return result
 }
 
 function transDecimal(value, formatter) {
