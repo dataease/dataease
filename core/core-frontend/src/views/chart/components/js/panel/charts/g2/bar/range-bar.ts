@@ -34,6 +34,14 @@ type DateWithFormatter = Date & { format: (format: string) => string }
 const asRangeDateChart = <T>(chart: T) => chart as T & RangeDateChart
 const formatRangeDate = (date: Date, dateFormat: string) =>
   (date as DateWithFormatter).format(dateFormat)
+const normalizeRangeValue = (value: any, isDate: boolean) => {
+  if (value === null || value === undefined || value === '') {
+    return null
+  }
+  return isDate ? new Date(value).getTime() : value
+}
+const getRangeValues = (data: any) =>
+  Array.isArray(data?.values) ? data.values : [data?.startValue, data?.endValue]
 
 /**
  * 堆叠条形图
@@ -103,33 +111,36 @@ export class RangeBar extends HorizontalBar {
         y_M_d_H_m: `yyyy${dateSplit}MM${dateSplit}dd hh:mm`,
         y_M_d_H_m_s: `yyyy${dateSplit}MM${dateSplit}dd hh:mm:ss`
       }[rangeChart.yAxis?.[0]?.dateStyle] || 'yyyy-MM-dd hh:mm:ss'
-    if (isDate) {
-      data = cloneDeep(data).map(item => ({
+    data = cloneDeep(data).map(item => {
+      // 时间区间转为时间戳绘制，避免 G2 在 Date range interval 中生成异常 points
+      const values = Array.isArray(item.values)
+        ? item.values.map(value => normalizeRangeValue(value, isDate))
+        : []
+      return {
         ...item,
-        values: item.values.map(dateStr => {
-          // 保留空值给空数据策略处理，避免 new Date(null/undefined) 把空值“吞掉”。
-          if (dateStr === null || dateStr === undefined || dateStr === '') {
-            return null
-          }
-          return new Date(dateStr)
-        }),
-        dateFormat: dateFormat
-      }))
-    }
+        values,
+        startValue: values[0],
+        endValue: values[1],
+        ...(isDate ? { dateFormat } : {})
+      }
+    })
     const initOptions: ViewSpec = {
       type: 'view',
       children: [
         {
           ...this.intervalOptions,
-          encode: { ...this.intervalOptions.encode, y: 'values' },
+          encode: { ...this.intervalOptions.encode, y: 'startValue', y1: 'endValue' },
           transform: [].concat(this.intervalOptions.transform),
           scale: {
-            ...this.intervalOptions.scale,
+            x: {},
+            color: {},
+            ...(this.intervalOptions.scale || {}),
             y: {
-              ...this.intervalOptions.scale.y,
+              ...(this.intervalOptions.scale?.y || {}),
               mask: isDate ? dateFormat : undefined,
               labelFormatter: val => (isDate ? formatRangeDate(new Date(val), dateFormat) : val)
-            }
+            },
+            y1: { key: 'y' }
           },
           data
         }
@@ -147,6 +158,10 @@ export class RangeBar extends HorizontalBar {
 
   protected configYAxis(chart: PanelChart, options: ViewSpec): ViewSpec {
     const tmpOptions = super.configYAxis(chart, options)
+    if (tmpOptions.children[0].axis?.y === false) {
+      // 横轴关闭时保留父类生成的 false，避免只追加 formatter 又唤起默认轴
+      return tmpOptions
+    }
     const customStyle = parseJson(chart.customStyle)
     const axis = JSON.parse(JSON.stringify(customStyle['xAxis']))
     const rangeChart = asRangeDateChart(chart)
@@ -190,26 +205,20 @@ export class RangeBar extends HorizontalBar {
       const date = dateVal instanceof Date ? dateVal : new Date(dateVal)
       return Number.isNaN(date.getTime()) ? '' : formatRangeDate(date, dateFormat)
     }
+    const formatRangeLabelValue = (value: any) =>
+      isDate ? formatDateLabel(value) : valueFormatter(value, labelAttr.labelFormatter)
     const label = {
-      text: 'value',
+      // 区间条标签直接生成最终文本，避免 range interval 默认 value 绕过格式配置
+      text: data => {
+        if (labelAttr.showGap) {
+          return formatRangeLabelValue(data.gap)
+        }
+        return getRangeValues(data).map(formatRangeLabelValue).join(' ~ ')
+      },
       fillOpacity: 1,
       fill: labelAttr.color,
       fontSize: labelAttr.fontSize,
       ...position,
-      formatter: (_value, data) => {
-        if (labelAttr.showGap) {
-          return data.gap
-        }
-        let value
-        if (isDate) {
-          value = data.values.map((dateStr: string) => formatDateLabel(dateStr)).join(' ~ ')
-        } else {
-          value = data.values
-            .map((dateStr: string) => valueFormatter(dateStr, labelAttr.labelFormatter))
-            .join(' ~ ')
-        }
-        return value
-      },
       ...transform
     }
     children[0].labels = [label]
@@ -249,7 +258,13 @@ export class RangeBar extends HorizontalBar {
           mount: createTooltipWrapper(chart),
           css: tooltipCss(tooltip),
           enterable: true,
-          shared: true,
+          // 区间条是起止范围矩形，禁用 series tooltip 的 crosshair 点集计算
+          series: false,
+          shared: false,
+          crosshairs: false,
+          crosshairsX: false,
+          crosshairsY: false,
+          marker: false,
           bounding: { x: 0, y: 0 },
           position: 'top-right',
           render: (_, { title, items: originalItems }) => {
@@ -297,6 +312,9 @@ export class RangeBar extends HorizontalBar {
       if (value instanceof Date) {
         return Number.isNaN(value.getTime())
       }
+      if (typeof value === 'number') {
+        return Number.isNaN(value)
+      }
       return false
     }
 
@@ -324,6 +342,8 @@ export class RangeBar extends HorizontalBar {
       data.forEach(item => {
         if (item.values) {
           item.values = item.values.map(v => (isEmptyValue(v) ? 0 : v))
+          item.startValue = item.values[0]
+          item.endValue = item.values[1]
         }
       })
     }
