@@ -105,6 +105,15 @@ export class BidirectionalHorizontalBar extends G2ChartView {
     }
   }
 
+  private getChartOptions(options: G2Spec) {
+    // 图例会插入外层 children，按 key 定位真实图表层
+    return options.children?.find(child => child.key === 'chart')
+  }
+
+  private getChartMarks(options: G2Spec) {
+    return this.getChartOptions(options)?.children || []
+  }
+
   async drawChart(drawOptions: G2DrawOptions<G2Chart>): Promise<G2Chart> {
     const { chart, container, action } = drawOptions
     if (!chart.data?.data?.length) {
@@ -180,7 +189,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
     const options = this.setupOptions(chart, initOptions)
     const { basicStyle } = parseJson(chart.customAttr)
     const { xAxis } = parseJson(chart.customStyle)
-    const [firstMark, secondMark] = options.children.find(c => c.key === 'chart').children
+    const [firstMark, secondMark] = this.getChartMarks(options)
     newChart.once(ChartEvent.AFTER_RENDER, () => {
       let reRenderMark = false
       if (
@@ -250,7 +259,8 @@ export class BidirectionalHorizontalBar extends G2ChartView {
   }
 
   protected configBasicStyle(chart: Chart, options: G2Spec): G2Spec {
-    const [firstMark, secondMark] = options.children[0].children
+    const chartOptions = this.getChartOptions(options)
+    const [firstMark, secondMark] = this.getChartMarks(options)
     const basicStyle = parseJson(chart.customAttr).basicStyle
     let [firstColor, secondColor] = basicStyle.colors
     firstColor = hexColorToRGBA(firstColor, basicStyle.alpha)
@@ -281,7 +291,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       }
     })
     if (basicStyle.layout === 'vertical') {
-      options.children[0].direction = 'col'
+      chartOptions.direction = 'col'
       delete firstMark.scale.y.range
       delete firstMark.coordinate
       delete secondMark.coordinate
@@ -367,7 +377,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
   }
 
   protected configXAxis(chart: Chart, options: G2Spec): G2Spec {
-    const [firstMark, secondMark] = options.children[0].children
+    const [firstMark, secondMark] = this.getChartMarks(options)
     const { xAxis } = parseJson(chart.customStyle)
     const { basicStyle } = parseJson(chart.customAttr)
     if (!xAxis.show) {
@@ -523,7 +533,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
   }
 
   protected configYAxis(chart: Chart, options: G2Spec): G2Spec {
-    const [firstMark, secondMark] = options.children[0].children
+    const [firstMark, secondMark] = this.getChartMarks(options)
     const { yAxis, yAxisExt } = parseJson(chart.customStyle)
     const { basicStyle } = parseJson(chart.customAttr)
     if (!yAxis.show) {
@@ -551,13 +561,24 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       merge(yAxisOption, { position: POSITION_MAP[yAxis.position] })
       merge(yAxisExtOption, { position: POSITION_MAP[yAxisExt.position] })
       // 横向布局下数值轴在上下方，G2 默认轴高度偏保守，会挤出较大的底部/顶部空白
+      const axisTickLength = 4
+      const axisLabelSpacing = 4
+      const axisTitleSpacing = 12
+      const axisClipPadding = 6
       const getHorizontalAxisSize = (axisOption, axisStyle) => {
         if (axisStyle.axisLabel?.rotate) {
           return undefined
         }
         const labelSize = axisOption.label ? axisStyle.axisLabel.fontSize ?? 12 : 0
-        const titleSize = axisOption.title ? (axisStyle.fontSize ?? 12) + 8 : 0
-        return Math.max(18, labelSize + titleSize + 6)
+        const tickSize = axisOption.tick ? axisTickLength : 0
+        const labelSpacing = axisOption.label ? axisLabelSpacing : 0
+        const titleSize = axisOption.title ? axisStyle.fontSize ?? 12 : 0
+        const titleSpacing = axisOption.title ? axisTitleSpacing : 0
+        // 顶部轴标题会靠近组件裁剪边界，补齐 G2 默认间距并额外预留抗裁切空间
+        return Math.max(
+          18,
+          labelSize + tickSize + labelSpacing + titleSize + titleSpacing + axisClipPadding
+        )
       }
       const compactHorizontalAxis = (axisOption, axisStyle) => {
         const axisSize = getHorizontalAxisSize(axisOption, axisStyle)
@@ -568,7 +589,10 @@ export class BidirectionalHorizontalBar extends G2ChartView {
         merge(axisOption, {
           size: axisSize,
           crossPadding: 0,
-          padding: 0
+          padding: 0,
+          tickLength: axisOption.tick ? axisTickLength : 0,
+          labelSpacing: axisOption.label ? axisLabelSpacing : 0,
+          titleSpacing: axisOption.title ? axisTitleSpacing : 0
         })
       }
       compactHorizontalAxis(yAxisOption, yAxis)
@@ -652,7 +676,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
   }
 
   protected configEmptyDataStrategy(chart: Chart, options: G2Spec): G2Spec {
-    const [firstMark, secondMark] = options.children?.[0]?.children || []
+    const [firstMark, secondMark] = this.getChartMarks(options)
     const firstData = firstMark?.data?.value
     const secondData = secondMark?.data?.value
     if (!firstData?.length || !secondData?.length) {
@@ -697,7 +721,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
   protected configTooltip(chart: Chart, options: G2Spec): G2Spec {
     const { tooltip: tooltipAttr, basicStyle } = parseJson(chart.customAttr)
     const { yAxis, yAxisExt } = chart
-    const [firstMark, secondMark] = options.children[0].children
+    const [firstMark, secondMark] = this.getChartMarks(options)
     if (!tooltipAttr.show) {
       merge(firstMark, { tooltip: false })
       merge(secondMark, { tooltip: false })
@@ -819,7 +843,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       return options
     }
     const { yAxis, yAxisExt } = chart
-    const [firstMark, secondMark] = options.children[0].children
+    const [firstMark, secondMark] = this.getChartMarks(options)
     const conditions = getLineConditions(chart)
     const formatterMap = label.seriesLabelFormatter?.reduce((pre, next) => {
       pre[next.id] = next
@@ -1001,7 +1025,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       if (!topLegend || basicStyle.layout !== 'horizontal') {
         return
       }
-      const chartOptions = flexOptions.children.find(c => c.key === 'chart')
+      const chartOptions = this.getChartOptions(options)
       if (!chartOptions) {
         return
       }
@@ -1118,8 +1142,8 @@ export class BidirectionalHorizontalBar extends G2ChartView {
     })
     const { basicStyle } = parseJson(chart.customAttr)
     const isNullValue = value => value === null || value === undefined
+    const [firstMark, secondMark] = this.getChartMarks(options)
     if (leftCondition?.conditions?.length) {
-      const [firstMark] = options.children[0].children
       firstMark.data.value.forEach(d => {
         // 空值不参与条件样式比较
         if (isNullValue(d.value)) {
@@ -1157,7 +1181,6 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       }
     }
     if (rightCondition?.conditions?.length) {
-      const [, secondMark] = options.children[0].children
       secondMark.data.value.forEach(d => {
         if (isNullValue(d.value)) {
           return
