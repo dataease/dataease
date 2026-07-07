@@ -664,7 +664,9 @@ export function getConditions(chart: Chart) {
             return null
           }
           return {
-            fill: mappingColor(value, defaultValueColor, field, 'color', filedValueMap, rowData)
+            fill: getMappingColorValue(
+              mappingColor(value, defaultValueColor, field, 'color', filedValueMap, rowData)
+            )
           }
         }
       })
@@ -685,10 +687,11 @@ export function getConditions(chart: Chart) {
             filedValueMap,
             rowData
           )
-          if (isTransparent(fill)) {
+          const fillColor = getMappingColorValue(fill)
+          if (isTransparent(fillColor)) {
             return null
           }
-          return {fill}
+          return { fill: fillColor }
         }
       })
     }
@@ -696,9 +699,17 @@ export function getConditions(chart: Chart) {
   return res
 }
 
+function getMappingColorValue(mappingResult) {
+  // S2 条件样式的 fill 只能接收颜色字符串
+  if (mappingResult && typeof mappingResult === 'object' && 'color' in mappingResult) {
+    return mappingResult.color
+  }
+  return mappingResult
+}
+
 export function mappingColor(value, defaultColor, field, type, filedValueMap?, rowData?) {
   let color = null
-  let hitCondition = null;
+  let hitCondition = null
   for (let i = 0; i < field.conditions.length; i++) {
     let flag = false
     const t = field.conditions[i]
@@ -853,12 +864,12 @@ export function mappingColor(value, defaultColor, field, type, filedValueMap?, r
       }
     }
   }
-  if(hitCondition && hitCondition.target === 'custom'){
+  if (hitCondition && hitCondition.target === 'custom') {
     return {
       targetFieldId: hitCondition.targetFieldId,
       color
     }
-  }else{
+  } else {
     return {
       targetFieldId: field.fieldId,
       color
