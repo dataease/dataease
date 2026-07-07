@@ -102,6 +102,11 @@ public class CoreDataInit implements CoreSqlBlock {
 
     private void fixSchema() {
         jdbcTemplate.execute("ALTER TABLE xpack_log MODIFY COLUMN oid bigint NULL COMMENT '组织ID'");
+        jdbcTemplate.execute("ALTER TABLE xpack_share MODIFY COLUMN oid bigint NULL COMMENT '组织ID'");
+        jdbcTemplate.execute("ALTER TABLE xpack_report_task MODIFY COLUMN oid bigint NULL COMMENT '所属组织ID'");
+        jdbcTemplate.execute("ALTER TABLE xpack_threshold_info MODIFY COLUMN oid bigint NULL COMMENT '所属组织'");
+        jdbcTemplate.execute("ALTER TABLE xpack_threshold_info_snapshot MODIFY COLUMN oid bigint NULL COMMENT '所属组织'");
+        jdbcTemplate.execute("ALTER TABLE xpack_webhook MODIFY COLUMN oid bigint NULL COMMENT '组织ID'");
     }
 
     private void initCoreMenu() {

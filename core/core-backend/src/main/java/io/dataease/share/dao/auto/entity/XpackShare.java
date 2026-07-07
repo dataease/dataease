@@ -52,9 +52,8 @@ public class XpackShare {
     @Column(name = "resource_id", nullable = false)
     private Long resourceId;
 
-    @NotNull
     @Comment("组织ID")
-    @Column(name = "oid", nullable = false)
+    @Column(name = "oid")
     private Long oid;
 
     @NotNull
