@@ -723,6 +723,10 @@ public class CoreVisualizationManage {
             coreChartViews.add(BeanUtils.copyBean(new CoreChartView(), item));
         });
         coreChartViewRepository.saveAllAndFlush(coreChartViews);
+
+        // LinkJump / Linkage / OuterParams 相关主表先按 dvId 清理，再从镜像表复制，避免残留脏数据
+        removeCoreLinkAndOuterParams(dvId);
+
         QSnapshotVisualizationLinkJump snapshotVisualizationLinkJump = QSnapshotVisualizationLinkJump.snapshotVisualizationLinkJump;
         QSnapshotVisualizationLinkJumpInfo snapshotVisualizationLinkJumpInfo = QSnapshotVisualizationLinkJumpInfo.snapshotVisualizationLinkJumpInfo;
         QSnapshotVisualizationLinkJumpTargetViewInfo snapshotVisualizationLinkJumpTargetViewInfo = QSnapshotVisualizationLinkJumpTargetViewInfo.snapshotVisualizationLinkJumpTargetViewInfo;
@@ -876,6 +880,51 @@ public class CoreVisualizationManage {
 
         //xpack 阈值告警
         chartViewManege.restoreThreshold(dvId, CommonConstants.RESOURCE_TABLE.CORE);
+    }
+
+    /**
+     * 恢复镜像前，按 dvId 清理主表中 LinkJump / Linkage / OuterParams 相关数据
+     * 先删子表再删父表，避免残留脏数据
+     */
+    private void removeCoreLinkAndOuterParams(Long dvId) {
+        // LinkJump: TargetViewInfo -> Info -> LinkJump
+        QVisualizationLinkJump visualizationLinkJump = QVisualizationLinkJump.visualizationLinkJump;
+        QVisualizationLinkJumpInfo visualizationLinkJumpInfo = QVisualizationLinkJumpInfo.visualizationLinkJumpInfo;
+        List<Long> linkJumpIds = queryFactory.select(visualizationLinkJump.id).from(visualizationLinkJump)
+                .where(visualizationLinkJump.sourceDvId.eq(dvId)).fetch();
+        if (CollectionUtils.isNotEmpty(linkJumpIds)) {
+            List<Long> linkJumpInfoIds = queryFactory.select(visualizationLinkJumpInfo.id).from(visualizationLinkJumpInfo)
+                    .where(visualizationLinkJumpInfo.linkJumpId.in(linkJumpIds)).fetch();
+            if (CollectionUtils.isNotEmpty(linkJumpInfoIds)) {
+                visualizationLinkJumpTargetViewInfoRepository.deleteByLinkJumpInfoIds(linkJumpInfoIds);
+            }
+            visualizationLinkJumpInfoRepository.deleteByLinkJumpIds(linkJumpIds);
+        }
+        visualizationLinkJumpRepository.deleteBySourceDvId(dvId);
+
+        // Linkage: LinkageField -> Linkage
+        QVisualizationLinkage visualizationLinkage = QVisualizationLinkage.visualizationLinkage;
+        List<Long> linkageIds = queryFactory.select(visualizationLinkage.id).from(visualizationLinkage)
+                .where(visualizationLinkage.dvId.eq(dvId)).fetch();
+        if (CollectionUtils.isNotEmpty(linkageIds)) {
+            visualizationLinkageFieldRepository.deleteByLinkageIds(linkageIds);
+        }
+        visualizationLinkageRepository.deleteByDvId(dvId);
+
+        // OuterParams: TargetViewInfo -> Info -> OuterParams
+        QVisualizationOuterParams visualizationOuterParams = QVisualizationOuterParams.visualizationOuterParams;
+        QVisualizationOuterParamsInfo visualizationOuterParamsInfo = QVisualizationOuterParamsInfo.visualizationOuterParamsInfo;
+        List<Long> paramsIds = queryFactory.select(visualizationOuterParams.paramsId).from(visualizationOuterParams)
+                .where(visualizationOuterParams.visualizationId.eq(dvId)).fetch();
+        if (CollectionUtils.isNotEmpty(paramsIds)) {
+            List<Long> paramsInfoIds = queryFactory.select(visualizationOuterParamsInfo.paramsInfoId).from(visualizationOuterParamsInfo)
+                    .where(visualizationOuterParamsInfo.paramsId.in(paramsIds)).fetch();
+            if (CollectionUtils.isNotEmpty(paramsInfoIds)) {
+                visualizationOuterParamsTargetViewInfoRepository.deleteByParamsInfoIds(paramsInfoIds);
+            }
+            visualizationOuterParamsInfoRepository.deleteByParamsIds(paramsIds);
+        }
+        visualizationOuterParamsRepository.deleteByVisualizationId(dvId);
     }
 
     public List<VisualizationViewTableDTO> getVisualizationViewDetails(Long dvId) {

@@ -6,9 +6,21 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 public interface VisualizationLinkJumpTargetViewInfoRepository extends JpaRepository<VisualizationLinkJumpTargetViewInfo, Long>, JpaSpecificationExecutor<VisualizationLinkJumpTargetViewInfo> {
 
+
+    @Transactional
+    default void deleteByLinkJumpInfoIds(List<Long> linkJumpInfoIds) {
+        Specification<VisualizationLinkJumpTargetViewInfo> spec = (root, query, cb) ->
+                cb.and(root.get("linkJumpInfoId").in(linkJumpInfoIds));
+        List<VisualizationLinkJumpTargetViewInfo> entities = findAll(spec);
+        if (!entities.isEmpty()) {
+            deleteAll(entities);
+        }
+    }
 
     @Transactional
     default void updateTargetType(String targetType) {
