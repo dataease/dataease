@@ -3320,6 +3320,7 @@ export default {
     same_dataset: 'Same Dataset',
     diff_dataset: 'Different Dataset',
     no_available_view: 'No available views currently',
+    no_available_chart: 'No selectable charts currently',
     linkage_setting_tips1: 'Configure the field association relationship between charts',
     current_chart_source_field: 'Current Chart Source Field',
     add_linkage_dependency_fields: 'Add Linkage Dependency Fields',

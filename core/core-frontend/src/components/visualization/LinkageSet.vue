@@ -157,6 +157,9 @@
                 </span>
               </template>
             </el-tree>
+            <el-row v-show="!sameDsShow && !diffDsShow" class="no-available-chart">
+              {{ t('visualization.no_available_chart') }}
+            </el-row>
           </el-col>
           <el-col :span="16" class="preview-show">
             <el-row class="content-head">{{ t('visualization.linkage_setting_tips1') }}</el-row>
@@ -1046,6 +1049,14 @@ span {
 
 .tree-dataset-head-top {
   border-top: 1px solid rgba(31, 35, 41, 0.15);
+}
+
+.no-available-chart {
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #8f959e;
 }
 
 .toggle-icon {
