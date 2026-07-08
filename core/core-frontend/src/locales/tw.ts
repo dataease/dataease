@@ -3226,6 +3226,7 @@ export default {
     same_dataset: '同數據集',
     diff_dataset: '不同數據集',
     no_available_view: '暫無可用圖表',
+    no_available_chart: '當前無可選圖表',
     linkage_setting_tips1: '配置圖表間的字段關聯關係',
     current_chart_source_field: '當前圖表源字段',
     add_linkage_dependency_fields: '追加聯動依賴字段',
