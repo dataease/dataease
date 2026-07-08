@@ -33,21 +33,21 @@
     <div style="width: 80px">
       <div v-for="item in config.propValue" :key="item" class="item-icon">
         <el-icon class="component-base" @click="onDelete(item)">
-          <Icon name="dv-show"><Delete class="svg-icon opt-icon" /></Icon>
+          <Icon name="dv-show"><Delete class="svg-icon f16" /></Icon>
         </el-icon>
         <el-icon
           v-show="item.hidden"
           class="component-base component-icon-display"
           @click="onShow(item)"
         >
-          <Icon name="dv-eye-close"><dvEyeClose class="svg-icon opt-icon" /></Icon>
+          <Icon name="dv-eye-close"><dvEyeClose class="svg-icon f16" /></Icon>
         </el-icon>
         <el-icon v-show="!item.hidden" class="component-base" @click="onHidden(item)">
-          <Icon name="dv-show"><dvShow class="svg-icon opt-icon" /></Icon>
+          <Icon name="dv-show"><dvShow class="svg-icon f16" /></Icon>
         </el-icon>
 
         <el-icon v-show="!item.hidden" class="component-base" @click="onCopy(item)">
-          <Icon name="dv-show"><CopyDocument class="svg-icon opt-icon" /></Icon>
+          <Icon name="dv-show"><CopyDocument class="svg-icon f16" /></Icon>
         </el-icon>
       </div>
     </div>
@@ -147,7 +147,6 @@ const checkAndFixCurrentTab = tabItem => {
   // 切换到第一个可见的tab
   nextTick(() => {
     config.value.editableTabsValue = visibleTabs[0].name
-    eventBus.emit('onTabActivate-' + config.value.id, visibleTabs[0].name)
   })
 }
 
@@ -160,7 +159,6 @@ const onShow = tabItem => {
   snapshotStore.recordSnapshotCache('tab')
   tabItem['hidden'] = false
   config.value.editableTabsValue = tabItem.name
-  eventBus.emit('onTabActivate-' + config.value.id, tabItem.name)
 }
 
 const onHidden = tabItem => {
@@ -278,11 +276,11 @@ import { deepCopy } from '@/utils/utils'
   cursor: pointer;
   height: 22px !important;
   width: 22px !important;
-  border-radius: 4px;
+  border-radius: 6px;
   padding: 0 4px;
   color: #a6a6a6;
 
-  .opt-icon {
+  .f16 {
     font-size: 16px;
   }
 
