@@ -10,6 +10,7 @@ import iconVideo from '@/assets/svg/icon-video.svg'
 import icon_graphical from '@/assets/svg/icon_graphical.svg'
 import icon_search from '@/assets/svg/icon_search.svg'
 import other_material_board from '@/assets/svg/other_material_board.svg'
+import dv_dynamic_background from '@/assets/svg/dv_dynamic_background.svg'
 import dv_decoration from '@/assets/svg/dv_decoration.svg'
 import other_material_icon from '@/assets/svg/other_material_icon.svg'
 import scrollText from '@/assets/svg/scroll-text.svg'
@@ -48,6 +49,7 @@ import radarOrigin from '@/assets/svg/radar-origin.svg'
 import richTextOrigin from '@/assets/svg/rich-text-origin.svg'
 import sankeyOrigin from '@/assets/svg/sankey-origin.svg'
 import scatterOrigin from '@/assets/svg/scatter-origin.svg'
+import multiScatterOrigin from '@/assets/svg/multi-scatter-origin.svg'
 import stockLineOrigin from '@/assets/svg/stock-line-origin.svg'
 import symbolicMapOrigin from '@/assets/svg/symbolic-map-origin.svg'
 import tableInfoOrigin from '@/assets/svg/table-info-origin.svg'
@@ -293,6 +295,7 @@ const iconMap = {
   icon_graphical: icon_graphical,
   icon_search: icon_search,
   other_material_board: other_material_board,
+  dv_dynamic_background: dv_dynamic_background,
   dv_decoration: dv_decoration,
   other_material_icon: other_material_icon,
   'scroll-text': scrollText,
@@ -331,6 +334,7 @@ const iconMap = {
   'rich-text-origin': richTextOrigin,
   'sankey-origin': sankeyOrigin,
   'scatter-origin': scatterOrigin,
+  'multi-scatter-origin': multiScatterOrigin,
   'stock-line-origin': stockLineOrigin,
   'symbolic-map-origin': symbolicMapOrigin,
   'table-info-origin': tableInfoOrigin,
@@ -348,7 +352,7 @@ const iconMap = {
 const getIconName = item => {
   if (item.component === 'UserView') {
     const viewInfo = canvasViewInfo.value[item.id]
-    return iconMap[`${viewInfo?.type}-origin`]
+    return iconMap[`${viewInfo.type}-origin`]
   } else {
     return iconMap[item.icon]
   }
