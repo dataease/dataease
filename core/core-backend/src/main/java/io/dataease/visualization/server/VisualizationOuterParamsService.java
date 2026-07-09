@@ -362,7 +362,7 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
                         "{0} like concat('%', {1}, '%')",
                         qSnapshotDataVisualizationInfo.componentData,
                         qSnapshotCoreChartView.id
-                )).fetch();
+                )).distinct().fetch();
         if (!CollectionUtils.isEmpty(result)) {
             result.stream().forEach(item -> {
                 item.setDatasetViews(getViewInfo(item.getId(), visualizationId));
