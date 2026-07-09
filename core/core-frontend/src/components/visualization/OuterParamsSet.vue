@@ -495,6 +495,9 @@ const setArgRef = (el, id) => {
 const validateArgs = (val, id) => {
   const cref = argRefs.value[id]
   const e = cref.input
+  if (!e) {
+    return
+  }
   if (val === null || val === '' || typeof val === 'undefined') {
     e.style.color = null
     e.parentNode.removeAttribute('style')
