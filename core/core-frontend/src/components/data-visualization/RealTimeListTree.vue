@@ -726,7 +726,7 @@ const canvasChange = () => {
             .component-base {
               opacity: 1;
             }
-            max-width: 66px !important;
+            width: 66px !important;
           }
         }
 
