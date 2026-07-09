@@ -1208,7 +1208,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         List<Long> result = new ArrayList<>();
         DataVisualizationVO dvInfo = coreVisualizationManage.findDvInfo(dvId, null, resourceTable);
         List<CoreChartView> views;
-        if (resourceTable.equalsIgnoreCase("snapshot")) {
+        if (resourceTable.equalsIgnoreCase("core")) {
             views = coreChartViewRepository.findBySceneId(dvId);
         } else {
             views = snapshotCoreChartViewRepository.findBySceneId(dvId).stream().map(ele -> {
