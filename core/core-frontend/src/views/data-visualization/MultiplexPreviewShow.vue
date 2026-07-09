@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import bar from '@/assets/svg/bar.svg'
 import dbMoreWeb from '@/assets/svg/db-more-web.svg'
+import group from '@/assets/svg/group.svg'
 import dvMoreTimeClock from '@/assets/svg/dv-more-time-clock.svg'
 import dvPictureReal from '@/assets/svg/dv-picture-real.svg'
 import dvTab from '@/assets/svg/dv-tab.svg'
@@ -84,6 +85,7 @@ const targetViewCheckedChange = (val, data) => {
 }
 
 const iconMap = {
+  group: group,
   bar: bar,
   'db-more-web': dbMoreWeb,
   'dv-more-time-clock': dvMoreTimeClock,
