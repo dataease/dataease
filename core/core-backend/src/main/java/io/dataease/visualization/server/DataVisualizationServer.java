@@ -1137,26 +1137,21 @@ public class DataVisualizationServer implements DataVisualizationApi {
         if (DataVisualizationConstants.RESOURCE_OPT_TYPE.MOVE.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.RENAME.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.EDIT.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.COPY.equals(request.getOpt())) {
             if (request.getPid() == null) {
                 DataVisualizationInfo result = dataVisualizationInfoRepository.findById(request.getId()).orElse(null);
-                request.setPid(Long.valueOf(result.getPid()));
+                request.setPid(result.getPid());
             }
         }
 
         Specification<DataVisualizationInfo> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.isTrue(root.get("deleteFlag")));
+            predicates.add(cb.equal(root.get("deleteFlag"), DataVisualizationConstants.DELETE_FLAG.AVAILABLE));
             predicates.add(cb.equal(root.get("pid"), request.getPid()));
-            predicates.add(cb.notEqual(root.get("pid"), "-1"));
-            if (DataVisualizationConstants.RESOURCE_OPT_TYPE.MOVE.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.RENAME.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.EDIT.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.COPY.equals(request.getOpt())) {
-                if (DataVisualizationConstants.RESOURCE_OPT_TYPE.MOVE.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.RENAME.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.EDIT.equals(request.getOpt())) {
-                    predicates.add(cb.notEqual(root.get("id"), String.valueOf(request.getId())));
-                }
+            predicates.add(cb.notEqual(root.get("pid"), -1L));
+            if (DataVisualizationConstants.RESOURCE_OPT_TYPE.MOVE.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.RENAME.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.EDIT.equals(request.getOpt())) {
+                predicates.add(cb.notEqual(root.get("id"), request.getId()));
             }
             predicates.add(cb.equal(root.get("name"), request.getName().trim()));
             predicates.add(cb.equal(root.get("nodeType"), request.getNodeType()));
-            predicates.add(cb.equal(root.get("type"), request.getTaskId()));
-            /*if (AuthUtils.getUser().getDefaultOid() != null) {
-                predicates.add(cb.equal(root.get("orgId"), AuthUtils.getUser().getDefaultOid()));
-            }*/
+            predicates.add(cb.equal(root.get("type"), request.getType()));
             return cb.and(predicates.toArray(new Predicate[0]));
         };
         List<DataVisualizationInfo> existList = dataVisualizationInfoRepository.findAll(spec);
