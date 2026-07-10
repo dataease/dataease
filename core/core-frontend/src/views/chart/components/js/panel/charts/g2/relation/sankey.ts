@@ -167,7 +167,9 @@ export class G2ChartBar extends G2ChartView {
       const actionData = {
         data: {
           data: {
+            // 记录实际点击连接的起止节点，避免使用第一条模板数据导致选中错位
             name: source,
+            category: target,
             dimensionList: [{ id: templateData.dimensionList[0].id, value: source }],
             quotaList: [{ id: templateData.quotaList[0].id, value: e.data.data.value }]
           }

@@ -180,7 +180,8 @@ export class StockLine extends G2ChartView {
     handleChartDashboardHidden(chart, options)
     // 开始渲染
     newChart.options(options)
-    newChart.on(`interval:${ChartEvent.CLICK}`, evt => {
+    // K线柱与均线点共用同一份联动参数
+    const actionHandler = evt => {
       const selectDate = evt.data.data[dateAxis]
       const paramData = chart.data?.data
       const selectData = paramData.filter(item => item.field === selectDate)
@@ -203,7 +204,9 @@ export class StockLine extends G2ChartView {
         }
         action(param)
       }
-    })
+    }
+    newChart.on(`interval:${ChartEvent.CLICK}`, actionHandler)
+    newChart.on(`point:${ChartEvent.CLICK}`, actionHandler)
     return newChart
   }
 

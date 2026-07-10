@@ -170,6 +170,7 @@ export class ProgressBar extends HorizontalStackBar {
           tooltip: false
         },
         {
+          key: 'progress-background',
           type: 'interval',
           style: {
             radius: 0
@@ -193,7 +194,13 @@ export class ProgressBar extends HorizontalStackBar {
     newOptions.children = [options.children[1], options.children[0]]
     handleChartDashboardHidden(chart, newOptions)
     newChart.options(newOptions)
-    newChart.on('interval:click', action)
+    newChart.on('interval:click', param => {
+      if (param.data.data.type === 'target') {
+        // 点击背景柱时统一使用同维度的实际值数据
+        param.data.data = currentData.find(item => item.field === param.data.data.field)
+      }
+      action(param)
+    })
     listenerTooltipShow(newChart, chart)
     configAxisLengthLimit(chart, newChart, 'yAxis')
     return newChart

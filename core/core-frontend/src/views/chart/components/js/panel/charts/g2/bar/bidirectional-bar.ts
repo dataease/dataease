@@ -10,7 +10,7 @@ import {
 import { defaultsDeep, isEmpty, merge } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ChartEvent, Chart as G2Chart, G2Spec } from '@antv/g2'
+import { Chart as G2Chart, G2Spec } from '@antv/g2'
 import {
   configXAxisLengthLimit,
   formatAxisLabelWithLengthLimit,
@@ -26,6 +26,15 @@ const { t } = useI18n()
  * 对称柱状图
  */
 export class BidirectionalHorizontalBar extends G2ChartView {
+  /**
+   * 保存每个图表实例首次渲染后的布局校正任务
+   *
+   * 对称条形图的布局校正依赖 G2 首次 render 后生成的 view.layout，不能在 options 阶段提前计算
+   * 图表视图对象会被多个组件复用，因此任务必须按 G2Chart 实例隔离，避免并发渲染时串用其他图表的配置
+   * WeakMap 不会阻止已销毁的图表实例被回收，并且任务执行后会立即删除
+   */
+  private readonly afterRenderHandlers = new WeakMap<G2Chart, () => Promise<void>>()
+
   axisConfig = {
     ...this['axisConfig'],
     xAxis: {
@@ -190,7 +199,8 @@ export class BidirectionalHorizontalBar extends G2ChartView {
     const { basicStyle } = parseJson(chart.customAttr)
     const { xAxis } = parseJson(chart.customStyle)
     const [firstMark, secondMark] = this.getChartMarks(options)
-    newChart.once(ChartEvent.AFTER_RENDER, () => {
+    // 将依赖首次布局结果的修正注册为可等待任务，不在 AFTER_RENDER 事件中启动无法被外层感知的异步重绘
+    this.afterRenderHandlers.set(newChart, async () => {
       let reRenderMark = false
       if (
         basicStyle.layout === 'vertical' &&
@@ -247,7 +257,8 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       }
       if (reRenderMark) {
         handleChartDashboardHidden(chart, newChart)
-        newChart.render()
+        // 必须等待校正后的图形元素生成完成，联动 selected/unselected 状态才能应用到最终元素
+        await newChart.render()
       }
     })
     newChart.on('interval:click', action)
@@ -256,6 +267,18 @@ export class BidirectionalHorizontalBar extends G2ChartView {
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
     return newChart
+  }
+
+  public async afterRender(chart: G2Chart): Promise<void> {
+    // 只获取当前实例对应的任务，其他对称条形图实例及其他图表不会受本次布局校正影响
+    const handler = this.afterRenderHandlers.get(chart)
+    if (!handler) {
+      return
+    }
+    // 布局任务只应在首次渲染后执行一次，先删除可避免后续流程意外重复触发二次 render
+    this.afterRenderHandlers.delete(chart)
+    // 将二次 render 的完成时机传递给公共渲染组件，确保事件状态恢复发生在稳定画布上
+    await handler()
   }
 
   protected configBasicStyle(chart: Chart, options: G2Spec): G2Spec {

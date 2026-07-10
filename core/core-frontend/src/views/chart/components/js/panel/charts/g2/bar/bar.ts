@@ -116,10 +116,6 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
         background: true,
         region: true,
         single: true
-      },
-      elementSelect: {
-        background: true,
-        single: true
       }
     },
     tooltip: false,

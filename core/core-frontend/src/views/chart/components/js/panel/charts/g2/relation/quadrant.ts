@@ -20,6 +20,8 @@ const { t } = useI18n()
  * 象限图
  */
 export class Quadrant extends G2ChartView {
+  private readonly afterRenderHandlers = new WeakMap<G2Chart, () => Promise<void>>()
+
   properties: EditorProperty[] = [
     'background-overall-component',
     'border-style',
@@ -122,8 +124,8 @@ export class Quadrant extends G2ChartView {
     if (!chart.data?.data) {
       return
     }
-    // data
-    const data = chart.data.data
+    // 象限图仅有一个维度，补齐公共联动匹配使用的 name/category
+    const data = chart.data.data.map(item => ({ ...item, name: item.field, category: 'NO_DATA' }))
     // x轴基准线 默认值
     const xValues = data.map(item => item.value)
     const xBaseline = (Math.max(...xValues) + Math.min(...xValues)) / 2
@@ -164,7 +166,8 @@ export class Quadrant extends G2ChartView {
     newChart.on(`point:${ChartEvent.CLICK}`, action)
     newChart.on(`plot:${ChartEvent.CLICK}`, () => quadrantDefaultBaseline(defaultBaselineQuadrant))
     newChart.once(ChartEvent.AFTER_RENDER, () => quadrantDefaultBaseline(defaultBaselineQuadrant))
-    newChart.once(ChartEvent.AFTER_RENDER, () => {
+    // 等待象限区域二次渲染完成后再由外层恢复联动选中态
+    this.afterRenderHandlers.set(newChart, async () => {
       const rangeMark = newChart.getNodeByType('range')
       const xScale = newChart.getScaleByChannel('x')
       const [xMin, xMax] = xScale.getOptions().domain
@@ -176,10 +179,16 @@ export class Quadrant extends G2ChartView {
         { x: [xMin, xBaseline], y: [yMin, yBaseline], region: 2 },
         { x: [xBaseline, xMax], y: [yMin, yBaseline], region: 3 }
       ])
-      newChart.render()
+      await newChart.render()
     })
 
     return newChart
+  }
+
+  public async afterRender(chart: G2Chart): Promise<void> {
+    const handler = this.afterRenderHandlers.get(chart)
+    this.afterRenderHandlers.delete(chart)
+    await handler?.()
   }
 
   protected configTheme(chart: Chart, options: G2Spec): G2Spec {

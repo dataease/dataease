@@ -120,18 +120,7 @@ export class Line extends G2ChartView {
         {
           zIndex: -1,
           type: 'line',
-          encode: { series: 'category' },
-          interaction: {
-            elementHighlight: {
-              // 基础折线图保留悬浮定位，不绘制选中背景
-              background: false,
-              region: true
-            },
-            elementSelect: {
-              background: false,
-              single: true
-            }
-          }
+          encode: { series: 'category' }
         },
         { type: 'point', tooltip: false, zIndex: 0 }
       ]

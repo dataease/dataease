@@ -36,6 +36,15 @@ export abstract class G2ChartView<
 > extends AntVAbstractChartView {
   public abstract drawChart(drawOptions: G2DrawOptions<P>): P | Promise<P>
 
+  /**
+   * 图表首次 render 完成后的可选异步处理钩子
+   *
+   * 某些图表必须读取首次渲染生成的布局信息，修正配置后再执行一次 render
+   * 公共渲染组件会等待该钩子结束，再恢复联动等依赖最终图形元素的事件状态
+   * 未实现该钩子的图表不会增加额外处理或渲染，原有渲染流程保持不变
+   */
+  public afterRender?(chart: P): void | Promise<void>
+
   protected getLegend = (chart: Chart) => {
     let legend = {}
     let customStyle: CustomStyle

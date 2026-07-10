@@ -11,7 +11,7 @@ import {
 } from 'vue'
 import { getData } from '@/api/chart'
 import { ChartLibraryType } from '@/views/chart/components/js/panel/types'
-import { G2PlotChartView } from '@/views/chart/components/js/panel/types/impl/g2plot'
+import { G2ChartView } from '@/views/chart/components/js/panel/types/impl/g2'
 import { L7PlotChartView } from '@/views/chart/components/js/panel/types/impl/l7plot'
 import chartViewManager from '@/views/chart/components/js/panel'
 import { useAppStoreWithOut } from '@/store/modules/app'
@@ -30,7 +30,6 @@ import { L7ChartView } from '@/views/chart/components/js/panel/types/impl/l7'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ExportImage } from '@antv/l7'
 import { configEmptyDataStyle } from '@/views/chart/components/js/panel/common/common_antv'
-import { hasNextDrillLevel } from '@/views/chart/components/views/util/drill'
 import { ElMessage } from 'element-plus-secondary'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 const { t } = useI18n()
@@ -138,18 +137,37 @@ let chartData = shallowRef<Partial<Chart['data']>>({
 
 const containerId = 'container-' + showPosition.value + '-' + view.value.id + '-' + suffixId.value
 const viewTrack = ref(null)
+const chartStroke = computed(() =>
+  !isDashboard() || dvMainStore.canvasStyleData?.dashboard?.themeColor === 'dark' ? '#fff' : '#000'
+)
+const LINKAGE_STYLE_CACHE = '__deLinkageStyleCache__'
+const LINKAGE_STYLE_KEYS = ['opacity', 'stroke', 'lineWidth']
+const LINKAGE_SELECTED_STYLE = computed(() => ({
+  stroke: chartStroke.value,
+  lineWidth: 1,
+  linkStroke: chartStroke.value,
+  linkStrokeOpacity: chartStroke.value
+}))
+const LINKAGE_SELECTED_OPACITY_STYLE = { opacity: 1 }
+const LINKAGE_SELECTED_POINT_STYLE = computed(() => ({
+  ...LINKAGE_SELECTED_STYLE.value,
+  opacity: 1,
+  strokeOpacity: 1
+}))
+const LINKAGE_UNSELECTED_STYLE = { opacity: 0.5 }
+const LINKAGE_OPACITY_MARK_TYPES = ['line', 'point', 'area']
+const LINKAGE_IGNORE_MARK_TYPES = ['lineX', 'lineY']
+const LINKAGE_IGNORE_CLASS_REG = /crosshair|tooltip/
 
 const clearLinkage = () => {
   linkageActiveHistory.value = false
   try {
-    myChart?.emit('element:unselect', {})
-    myChart?.setState('active', () => true, false)
-    myChart?.setState('inactive', () => true, false)
-    myChart?.setState('selected', () => true, false)
-    // 清理联动时同步重置 unselected，避免柱图保留半透明状态
-    myChart?.setState('unselected', () => true, false)
+    resetLinkageElementState()
+    myChart?.emit('element:unselect', { nativeEvent: false })
+    myChart?.emit('element:unhighlight', { nativeEvent: false })
+    resetLinkageContentOpacity()
   } catch (e) {
-    console.warn('clearLinkage error')
+    console.warn('clearLinkage error', e)
   }
 }
 const reDrawView = () => {
@@ -166,42 +184,23 @@ const linkageActivePre = () => {
 const linkageActive = () => {
   linkageActiveHistory.value = true
   try {
-    myChart?.setState('active', () => true, false)
-    myChart?.setState('inactive', () => true, false)
-    myChart?.setState('selected', () => true, false)
-    // 回放前先清空 unselected，避免多次样式切换后未选中态叠加
-    myChart?.setState('unselected', () => true, false)
-    myChart?.setState('active', param => {
-      if (Array.isArray(param)) {
-        return false
-      } else {
-        return checkSelected(param)
-      }
+    const replayData = getLinkageReplayData()
+    if (!replayData) {
+      return
+    }
+    applyLinkageElementState()
+    // elementSelect 单选会切换已选元素；回放前先清空，避免重复选中时被反向取消
+    myChart?.emit('element:unselect', { nativeEvent: false })
+    myChart?.emit('element:select', {
+      nativeEvent: false,
+      data: { data: [replayData] }
     })
-    myChart?.setState('inactive', param => {
-      if (Array.isArray(param)) {
-        return false
-      } else {
-        return !checkSelected(param)
-      }
-    })
-    myChart?.setState('selected', param => {
-      if (Array.isArray(param)) {
-        return false
-      } else {
-        return checkSelected(param)
-      }
-    })
-    // G2 elementSelect 的柱图样式使用 selected/unselected，重绘回放时需要同步未选中态
-    myChart?.setState('unselected', param => {
-      if (Array.isArray(param)) {
-        return false
-      } else {
-        return !checkSelected(param)
-      }
-    })
+    const chart = myChart
+    if (chart === myChart && linkageActiveHistory.value) {
+      applyLinkageElementState(true)
+    }
   } catch (err) {
-    console.warn('linkageActive error')
+    console.warn('linkageActive error', err)
   }
 }
 // 只收集 primitive 字段，G2 selectElementByData 使用严格相等匹配
@@ -224,23 +223,153 @@ const replayLinkageActive = () => {
   if (!linkageActiveHistory.value || !state.linkageActiveParam) {
     return
   }
-  linkageActive()
-  const replayData = getLinkageReplayData()
-  if (!replayData) {
-    return
-  }
   const chart = myChart
   requestAnimationFrame(() => {
     if (chart !== myChart || !linkageActiveHistory.value) {
       return
     }
-    // G2 选中态重建依赖 elementSelect 内部状态；只用稳定原始字段，避免旧对象数组引用导致匹配失败
-    chart?.emit('element:select', {
-      nativeEvent: false,
-      data: { data: [replayData] }
-    })
     linkageActive()
   })
+}
+const getG2Elements = () => {
+  const document = myChart?.getContext?.()?.canvas?.document
+  return Array.from(document?.getElementsByClassName?.('element') || [])
+}
+const getElementDatum = element => {
+  const data = element?.__data__
+  if (data?.data) {
+    return data.data
+  }
+  const viewList = myChart?.getContext?.()?.views || []
+  const targetView = viewList.find(item => item.key === data?.viewKey) || viewList[0]
+  const targetMark = Array.from(targetView?.markState?.keys?.() || []).find(
+    (mark: any) => mark.key === data?.markKey
+  ) as any
+  return targetMark?.data?.[data?.index] ?? data
+}
+const eachElementShape = (element, callback) => {
+  if (!element) {
+    return
+  }
+  callback(element)
+  Array.from(element.childNodes || []).forEach(child => eachElementShape(child, callback))
+}
+const getShapeAttr = (shape, key) =>
+  typeof shape?.getAttribute === 'function' ? shape.getAttribute(key) : shape?.attributes?.[key]
+const setShapeAttr = (shape, key, value) => {
+  if (typeof shape?.setAttribute === 'function') {
+    shape.setAttribute(key, value)
+  }
+}
+const flushG2Canvas = () => {
+  myChart?.getContext?.()?.canvas?.render?.()
+}
+const isLinkageOpacityElement = element => LINKAGE_OPACITY_MARK_TYPES.includes(element?.markType)
+const getElementClassInfo = element => {
+  const info = []
+  eachElementShape(element, shape => {
+    info.push(shape?.className, shape?.id, shape?.name, getShapeAttr(shape, 'className'))
+  })
+  return info.filter(Boolean).join(' ').toLowerCase()
+}
+const isLinkageDataElement = element => {
+  if (LINKAGE_IGNORE_MARK_TYPES.includes(element?.markType)) {
+    return false
+  }
+  return !LINKAGE_IGNORE_CLASS_REG.test(getElementClassInfo(element))
+}
+const backupShapeStyle = shape => {
+  if (!shape?.[LINKAGE_STYLE_CACHE]) {
+    shape[LINKAGE_STYLE_CACHE] = LINKAGE_STYLE_KEYS.reduce((pre, key) => {
+      pre[key] = getShapeAttr(shape, key)
+      return pre
+    }, {})
+  }
+}
+const applyElementStyle = (element, style) => {
+  eachElementShape(element, shape => {
+    backupShapeStyle(shape)
+    Object.entries(style).forEach(([key, value]) => setShapeAttr(shape, key, value))
+  })
+}
+const getLinkageElementStyle = (element, selected) => {
+  if (view.value.type === 'sankey') {
+    // 联动触发后直接设置已渲染 polygon 的真实属性，不使用 Sankey spec 的 link 前缀
+    return selected
+      ? {
+          lineWidth: 1,
+          stroke: chartStroke.value,
+          strokeOpacity: 1
+        }
+      : LINKAGE_UNSELECTED_STYLE
+  }
+  // 子弹图仅实际值柱绘制选中描边，背景区间和目标值只按维度切换透明度
+  if (view.value.type === 'bullet-graph') {
+    if (!selected) {
+      return LINKAGE_UNSELECTED_STYLE
+    }
+    return element?.__data__?.markKey === '__de_bullet_measure__'
+      ? LINKAGE_SELECTED_STYLE.value
+      : LINKAGE_SELECTED_OPACITY_STYLE
+  }
+  // 进度条背景层只切换透明度，不绘制选中描边
+  if (element?.__data__?.markKey === 'progress-background') {
+    return selected ? LINKAGE_SELECTED_OPACITY_STYLE : LINKAGE_UNSELECTED_STYLE
+  }
+  if (element?.markType === 'point') {
+    return selected ? LINKAGE_SELECTED_POINT_STYLE.value : LINKAGE_UNSELECTED_STYLE
+  }
+  if (isLinkageOpacityElement(element)) {
+    return selected ? LINKAGE_SELECTED_OPACITY_STYLE : LINKAGE_UNSELECTED_STYLE
+  }
+  return selected ? LINKAGE_SELECTED_STYLE.value : LINKAGE_UNSELECTED_STYLE
+}
+const resetElementStyle = element => {
+  eachElementShape(element, shape => {
+    const cache = shape?.[LINKAGE_STYLE_CACHE]
+    if (!cache) {
+      return
+    }
+    Object.entries(cache).forEach(([key, value]) => setShapeAttr(shape, key, value))
+    delete shape[LINKAGE_STYLE_CACHE]
+  })
+}
+const resetLinkageElementState = () => {
+  getG2Elements().forEach(resetElementStyle)
+}
+const resetLinkageContentOpacity = () => {
+  let changed = false
+  getG2Elements().forEach(element => {
+    if (!isLinkageDataElement(element) || !isLinkageOpacityElement(element)) {
+      return
+    }
+    eachElementShape(element, shape => {
+      const opacity = Number(getShapeAttr(shape, 'opacity'))
+      if (opacity !== 0 && opacity < 1) {
+        setShapeAttr(shape, 'opacity', 1)
+        changed = true
+      }
+    })
+  })
+  changed && flushG2Canvas()
+}
+const applyLinkageElementState = (flush = false) => {
+  const elements = getG2Elements()
+  resetLinkageElementState()
+  elements.forEach(element => {
+    if (!isLinkageDataElement(element)) {
+      return
+    }
+    const datum = getElementDatum(element)
+    if (!datum || Array.isArray(datum)) {
+      return
+    }
+    const selected = checkSelected(datum)
+    // 折线/点/面积只改透明度，避免定位线或点被套成黑色选中描边
+    const style = getLinkageElementStyle(element, selected)
+    applyElementStyle(element, style)
+  })
+  flush && flushG2Canvas()
 }
 const checkSelected = param => {
   // 获取当前视图的所有联动字段ID
@@ -265,15 +394,27 @@ const checkSelected = param => {
   // 选中字段数据
   const { group, name, category } = state.linkageActiveParam
   // 选中字段数据匹配
-  if (g2TypeSeries1.includes(view.value.type)) {
+  if (view.value.type === 'sankey') {
+    // 桑基图联动只选中实际点击的连接，不选中起止节点
+    const sourceSelected = name === param?.source?.key
+    return view.value.xAxisExt?.length
+      ? sourceSelected && category === param?.target?.key
+      : sourceSelected
+  } else if (view.value.type === 'stock-line') {
+    // K线 datum 使用动态日期字段，联动参数中的 name 即对应日期值
+    return name === param[view.value.xAxis[0].dataeaseName]
+  } else if (g2TypeSeries1.includes(view.value.type)) {
     return name === param.field
   } else if (g2TypeSeries0.includes(view.value.type)) {
     return category === param.category
   } else if (g2TypeTree.includes(view.value.type)) {
-    if (param.path?.startsWith(name) || name === t('commons.all')) {
+    // pack 图元使用 d3 hierarchy 节点包装原始数据，联动匹配需读取节点的 data
+    const treeData = param?.data ?? param
+    const treePath = typeof treeData?.path === 'string' ? treeData.path : ''
+    if (treePath.startsWith(name) || name === t('commons.all')) {
       return true
     }
-    return name === param.name
+    return name === treeData?.name
   } else if (g2TypeGroup.includes(view.value.type)) {
     const isNameMatch = name === param.name || (name === 'NO_DATA' && !param.name)
     const isCategoryMatch = category === param.category
@@ -403,7 +544,7 @@ const renderChart = async (view, callback?) => {
       await renderL7(chart, chartView as L7ChartView<any, any>, callback)
       break
     case ChartLibraryType.G2:
-      await renderG2(chart, chartView as G2PlotChartView<any, any>)
+      await renderG2(chart, chartView as G2ChartView<any, any>)
       callback?.()
       break
     default:
@@ -412,7 +553,7 @@ const renderChart = async (view, callback?) => {
 }
 let myChart = null
 let g2Timer: number
-const renderG2 = async (chart, chartView: G2PlotChartView<any, any>) => {
+const renderG2 = async (chart, chartView: G2ChartView<any, any>) => {
   g2Timer && clearTimeout(g2Timer)
   g2Timer = setTimeout(async () => {
     try {
@@ -443,11 +584,16 @@ const renderG2 = async (chart, chartView: G2PlotChartView<any, any>) => {
         action,
         quadrantDefaultBaseline
       })
-      myChart?.render().then(() => {
-        myChart?.afterRender?.(myChart)
-        // 样式配置导致 G2 重绘后，回放当前联动选中态，避免标题/图例切换清空选中效果
+      // 固定本轮创建的实例，避免等待异步渲染期间新一轮 renderG2 替换全局 myChart 后误操作新实例
+      const chartInstance = myChart
+      // 先等待 G2 首次渲染，图表视图的 afterRender 才能安全读取 view.layout 等首次布局结果
+      await chartInstance?.render()
+      // 仅实现钩子的特殊图表会执行后处理；普通 G2 图表没有额外逻辑，也不会产生额外 render
+      await chartView.afterRender?.(chartInstance)
+      // 异步等待期间若图表已被新实例替换，本轮旧实例不再回放联动状态，避免污染当前画布
+      if (chartInstance === myChart) {
         replayLinkageActive()
-      })
+      }
     } catch (e) {
       console.error('renderG2Plot error', e)
     }

@@ -59,13 +59,17 @@ const DARK_TOOLTIP_CROSSHAIRS_STYLE = {
   crosshairsStroke: '#FFFFFF',
   crosshairsStrokeOpacity: 0.45
 }
+const LIGHT_TOOLTIP_CROSSHAIRS_STYLE = {
+  crosshairsStroke: '#000000',
+  crosshairsStrokeOpacity: 0.45
+}
 
 export function getTooltipCrosshairsStyle(chart: Chart) {
   const chartContext = chart as Chart & { isDataV?: boolean; themes?: string }
   // 数据大屏默认深色背景，折线类 tooltip 定位线需要提高对比度
   return chartContext?.isDataV || chartContext?.themes === 'dark'
     ? { ...DARK_TOOLTIP_CROSSHAIRS_STYLE }
-    : {}
+    : { ...LIGHT_TOOLTIP_CROSSHAIRS_STYLE }
 }
 
 export function getPadding(chart: Chart): number[] {

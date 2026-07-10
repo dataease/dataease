@@ -251,6 +251,8 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
     }
     // 实际值与目标值
     const measures = {
+      // 标识实际值 mark，联动恢复时只对该层绘制选中描边
+      key: BULLET_MEASURE_KEY,
       type: 'interval',
       encode: {
         x: 'title',
@@ -768,6 +770,9 @@ function mergeBulletData(chart): any[] {
     // 初始化子弹图条目结构
     const entry = {
       title: field,
+      // 保留公共联动匹配所需的维度语义，子弹图本身不区分系列维度
+      name: field,
+      category: 'NO_DATA',
       ranges: [],
       measures: [],
       target: [],

@@ -84,6 +84,15 @@ export class CirclePacking extends G2ChartView {
           color: {
             type: 'ordinal'
           }
+        },
+        state: {
+          selected: {
+            stroke: 'black',
+            lineWidth: 1
+          },
+          unselected: {
+            opacity: 0.5
+          }
         }
       }
       const options = this.setupOptions(chart, initOptions)
