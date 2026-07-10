@@ -145,9 +145,9 @@ const downLoadToAppPre = () => {
     appExportFormRef.value.init({
       appName: state.dvInfo.name,
       icon: null,
-      version: '2.0',
+      version: '3.0',
       creator: userName.value,
-      required: '2.9.0',
+      required: '3.0',
       description: null
     })
   }
