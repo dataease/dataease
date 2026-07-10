@@ -24,7 +24,7 @@ export interface Item {
   deType: number
   enumValue: string[]
   name: string
-  value: number
+  value: number | string | null
   filterTypeTime?: string
   timeValue: string
   dynamicTimeSetting?: SelectConfig
@@ -168,6 +168,18 @@ const filterTypeChange = () => {
   item.value.term = ''
   item.value.value = null
   initEnumOptions()
+}
+
+const normalizeNumericValue = (value: string | number) => {
+  const source = String(value ?? '')
+  let normalized = source.replace(/[^\d.-]/g, '')
+  normalized = normalized.replace(/(?!^)-/g, '')
+  const firstDot = normalized.indexOf('.')
+  if (firstDot !== -1) {
+    normalized =
+      normalized.slice(0, firstDot + 1) + normalized.slice(firstDot + 1).replace(/\./g, '')
+  }
+  item.value.value = normalized
 }
 
 const filterTypeChangeTime = () => {
@@ -567,13 +579,13 @@ const emits = defineEmits(['update:item', 'del'])
               !['null', 'empty', 'not_null', 'not_empty'].includes(item.term)
             "
           >
-            <el-input-number
+            <el-input
               class="w70 mar5"
               size="small"
-              effect="plain"
               v-model="item.value"
-              controls-position="right"
-            ></el-input-number>
+              inputmode="decimal"
+              @input="normalizeNumericValue"
+            />
             <div class="bottom-line"></div>
           </template>
           <template v-else-if="!['null', 'empty', 'not_null', 'not_empty'].includes(item.term)">
