@@ -3909,7 +3909,8 @@ export default {
     loginLimit: 'Limit login',
     loginLimitRate: 'Limit login failure times (times)',
     loginLimitTime: 'Limit login failure time (minutes)',
-    share_disable_tips: 'Dashboard and data screen sharing are invalid after turning on'
+    share_disable_tips: 'Dashboard and data screen sharing are invalid after turning on',
+    crossDs: 'Enable cross-datasource queries',
   },
   resource_sort: {
     time_asc: 'In ascending order by creation time',
