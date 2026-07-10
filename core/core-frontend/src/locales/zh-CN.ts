@@ -3808,7 +3808,8 @@ export default {
     loginLimit: '限制登录',
     loginLimitRate: '限制登录失败次数 (次)',
     loginLimitTime: '限制登录失败时间 (分)',
-    share_disable_tips: '开启后仪表板以及大屏分享无效'
+    share_disable_tips: '开启后仪表板以及大屏分享无效',
+    crossDs: '开启跨源'
   },
   resource_sort: {
     time_asc: '按创建时间升序',

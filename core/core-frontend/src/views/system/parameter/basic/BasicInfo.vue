@@ -185,7 +185,8 @@ const search = cb => {
         item.pkey === 'basic.pwdStrategy' ||
         item.pkey === 'basic.shareDisable' ||
         item.pkey === 'basic.sharePeRequire' ||
-        item.pkey === 'basic.loginLimit'
+        item.pkey === 'basic.loginLimit' || 
+        item.pkey === 'basic.crossDs'
       ) {
         item.pval = item.pval === 'true' ? t('chart.open') : t('system.not_enabled')
       } else if (item.pkey === 'basic.platformOid') {
