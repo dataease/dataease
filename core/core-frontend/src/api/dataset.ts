@@ -412,3 +412,9 @@ export const clearAllCopilot = async (): Promise<IResponse> => {
     return res?.data
   })
 }
+
+export const singleVal = async (): Promise<any> => {
+  return request.get({ url: 'sysParameter/singleVal/basic.disableCrossDs' }).then(res => {
+    return res?.data
+  })
+}

@@ -103,6 +103,9 @@ const state = reactive({
 
 const datasourceTableData = shallowRef([])
 const isCross = inject<Ref>('isCross')
+const singleValData = inject<Ref>('singleVal')
+const currentDsId = inject<Ref>('currentDsId')
+
 const paginationConfig = reactive({
   currentPage: 1,
   pageSize: 10,
@@ -353,10 +356,13 @@ watch(
   }
 )
 
-const treeProps = {
+const treeProps = ref({
   children: 'children',
-  label: 'name'
-}
+  label: 'name',
+  disabled: data => {
+    return !!currentDsId?.value && singleValData?.value && data.id !== currentDsId?.value
+  }
+})
 
 getDatasource()
 
