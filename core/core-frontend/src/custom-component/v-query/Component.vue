@@ -448,6 +448,9 @@ const queryDataForId = id => {
     return
   }
   if (!emitterList.length) return
+  if (!(dvMainStore.mobileInPc && !isMobile())) {
+    dvMainStore.setFirstLoadMap([...new Set([...emitterList, ...firstLoadMap.value])])
+  }
   fillRequireVal(emitterList)
   emitterList.forEach(ele => {
     emitter.emit(`query-data-${ele}`)
@@ -518,6 +521,9 @@ const isConfirmSearchNoRequiredName = id => {
     return
   }
   if (!emitterList.length) return
+  if (!(dvMainStore.mobileInPc && !isMobile())) {
+    dvMainStore.setFirstLoadMap([...new Set([...emitterList, ...firstLoadMap.value])])
+  }
   fillRequireVal(emitterList)
   emitterList.forEach(ele => {
     emitter.emit(`query-data-${ele}`)
