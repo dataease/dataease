@@ -20,7 +20,7 @@ import {
   iconFieldCalculatedMap,
   iconFieldCalculatedQMap
 } from '@/components/icon-group/field-calculated-list'
-import { enumValueDs } from '@/api/dataset'
+import { enumValueDs, singleVal } from '@/api/dataset'
 import {
   ref,
   toRaw,
@@ -123,7 +123,13 @@ const currentField = ref({
 })
 const isCross = ref(false)
 let isUpdate = false
-
+const singleValData = ref(false)
+const currentDsId = computed(() => {
+  const [first] = datasetDrag.value.getNodeList()
+  return first?.datasourceId
+})
+provide('singleVal', singleValData)
+provide('currentDsId', currentDsId)
 const fieldTypes = index => {
   return [
     t('dataset.text'),
@@ -1347,9 +1353,16 @@ onMounted(async () => {
   await initEdite()
   getDatasource(2)
   window.addEventListener('resize', handleResize)
+  getSingleVal()
   getSqlResultHeight()
   quotaTableHeight.value = sqlResultHeight.value - 242
 })
+
+const getSingleVal = () => {
+  singleVal().then(res => {
+    singleValData.value = res === 'true'
+  })
+}
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize)
@@ -1685,7 +1698,11 @@ const treeProps = {
   children: 'children',
   label: 'name',
   disabled: data => {
-    return (!data.children?.length && !data.leaf) || (data.extraFlag < 0 && data.type !== 'API')
+    return (
+      (!data.children?.length && !data.leaf) ||
+      (data.extraFlag < 0 && data.type !== 'API') ||
+      (currentDsId.value && singleValData.value && data.id !== currentDsId.value)
+    )
   }
 }
 
@@ -1771,6 +1788,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
           <el-switch
             style="margin-bottom: 8px"
             v-model="isCross"
+            v-if="!singleValData"
             @change="sourceChange"
             :active-text="$t('common.cross_source')"
             :inactive-text="$t('common.single_source')"
@@ -1880,7 +1898,13 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                 :title="datasourceTableData[index].tableName"
                 @dragstart="$event => dragstart($event, datasourceTableData[index])"
                 @dragend="maskShow = false"
-                :draggable="true"
+                :draggable="
+                  !singleValData ||
+                  !currentDsId ||
+                  (singleValData &&
+                    currentDsId &&
+                    datasourceTableData[index].datasourceId === currentDsId)
+                "
                 @click="setActiveName(datasourceTableData[index])"
               >
                 <el-icon class="icon-color">
