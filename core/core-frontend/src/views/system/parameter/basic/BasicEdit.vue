@@ -303,7 +303,7 @@ defineExpose({
             item.pkey === 'shareDisable' ||
             item.pkey === 'sharePeRequire' ||
             item.pkey === 'loginLimit' ||
-            item.pkey === 'crossDs'
+            item.pkey === 'disableCrossDs'
           "
           active-value="true"
           inactive-value="false"

@@ -94,6 +94,10 @@ const tooltips = [
   {
     key: 'setting_basic.shareDisable',
     val: t('setting_basic.share_disable_tips')
+  },
+  {
+    key: 'setting_basic.disableCrossDs',
+    val: t('setting_basic.disable_cross_ds_tips')
   }
 ]
 const loginSettings = [
@@ -186,7 +190,7 @@ const search = cb => {
         item.pkey === 'basic.shareDisable' ||
         item.pkey === 'basic.sharePeRequire' ||
         item.pkey === 'basic.loginLimit' ||
-        item.pkey === 'basic.crossDs'
+        item.pkey === 'basic.disableCrossDs'
       ) {
         item.pval = item.pval === 'true' ? t('chart.open') : t('system.not_enabled')
       } else if (item.pkey === 'basic.platformOid') {
