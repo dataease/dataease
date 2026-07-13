@@ -302,8 +302,8 @@ defineExpose({
             item.pkey === 'dip' ||
             item.pkey === 'shareDisable' ||
             item.pkey === 'sharePeRequire' ||
-            item.pkey === 'loginLimit' || 
-            item.pkey === 'basic.crossDs'
+            item.pkey === 'loginLimit' ||
+            item.pkey === 'crossDs'
           "
           active-value="true"
           inactive-value="false"
