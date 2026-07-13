@@ -1041,9 +1041,23 @@ onMounted(() => {
         renderChart(curView)
       } else {
         g2ResizeTimer && clearTimeout(g2ResizeTimer)
-        g2ResizeTimer = setTimeout(() => {
-          // 标题显隐和拖拽缩放只触发 forceFit，不会重新走 renderG2，这里也要补回 G2 选中态
-          myChart?.forceFit()?.then(replayLinkageActive)
+        g2ResizeTimer = setTimeout(async () => {
+          const chartView = chartViewManager.getChartView(curView.render, curView.type)
+          const chartInstance = myChart
+
+          if (
+            chartView.library !== ChartLibraryType.G2 ||
+            typeof chartInstance?.forceFit !== 'function'
+          ) {
+            return
+          }
+
+          // forceFit 完成后恢复 G2 联动选中态
+          await chartInstance.forceFit()
+
+          if (chartInstance === myChart) {
+            replayLinkageActive()
+          }
         }, 300)
       }
     }

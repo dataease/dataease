@@ -235,8 +235,9 @@
                           :placeholder="t('common.selectText')"
                           style="width: 100%"
                         >
+                          <!-- 联动目标字段用于过滤目标数据集，不要求已拖入目标图表 -->
                           <el-option
-                            v-for="item in targetLinkageInfoFilter"
+                            v-for="item in state.linkageInfo.targetViewFields"
                             :key="item.id"
                             :label="item.name"
                             :value="item.id"
@@ -378,6 +379,14 @@ const getLinkageFieldProps = chart => {
     props.push('extBubble')
   }
   if (['table-normal', 'indicator'].includes(chart?.type)) {
+    props.push('yAxis')
+  }
+  if (chart?.type === 'flow-map') {
+    props.push('flowMapStartName')
+    props.push('flowMapEndName')
+    props.push('yAxis')
+  }
+  if (chart?.type === 'heat-map') {
     props.push('yAxis')
   }
   return props
@@ -648,14 +657,6 @@ const sourceLinkageInfoFilter = computed(() => {
   } else {
     return []
   }
-})
-
-const targetLinkageInfoFilter = computed(() => {
-  if (!state.linkageInfo?.targetViewFields) {
-    return []
-  }
-  const targetChartDetails = canvasViewInfo.value[state.linkageInfo.targetViewId] as any
-  return filterDraggedFields(state.linkageInfo.targetViewFields, targetChartDetails)
 })
 
 const targetViewCheckedChange = (treeName, data) => {
