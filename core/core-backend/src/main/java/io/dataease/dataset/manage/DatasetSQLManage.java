@@ -36,6 +36,7 @@ import io.dataease.i18n.Translator;
 import io.dataease.license.utils.LicenseUtil;
 import io.dataease.permission.util.V3UserUtil;
 import io.dataease.system.manage.CorePermissionManage;
+import io.dataease.system.manage.SysParameterManage;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
 import jakarta.annotation.Resource;
@@ -70,6 +71,8 @@ public class DatasetSQLManage {
     private DatasetGroupManage datasetGroupManage;
     @Resource
     private CoreDatasetGroupRepository coreDatasetGroupRepository;
+    @Resource
+    private SysParameterManage sysParameterManage;
 
     private RowPermissionsApi getRowPermissionsApi() {
         return rowPermissionsApi;
@@ -301,6 +304,14 @@ public class DatasetSQLManage {
             sql = MessageFormat.format("SELECT {0} FROM {1}", f, TableUtils.getTableAndAlias(tableName, getDatasourceType(dsMap, currentDs.getDatasourceId()), isCross));
         }
         logger.debug("calcite origin sql: " + sql);
+        // 校验系统设置是否允许跨源，如果禁用跨源，则校验dsMap是否是同一数据源
+        String key = "basic.disableCrossDs";
+        String val = sysParameterManage.singleVal(key);
+        if (StringUtils.isEmpty(val) || StringUtils.equalsIgnoreCase(val,"true")) {
+            if (dsMap.size() > 1) {
+                DEException.throwException(Translator.get("i18n_sys_disable_cross_ds"));
+            }
+        }
         Map<String, Object> map = new HashMap<>();
         map.put("sql", sql);
         map.put("field", checkedFields);
