@@ -21,6 +21,8 @@ import io.dataease.visualization.dao.auto.mapper.VisualizationBackgroundReposito
 import io.dataease.visualization.dao.auto.mapper.VisualizationSubjectRepository;
 import io.dataease.visualization.dao.auto.mapper.VisualizationWatermarkRepository;
 import jakarta.annotation.Resource;
+import org.springframework.jdbc.core.ConnectionCallback;
+import org.springframework.jdbc.core.ParameterizedPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -30,6 +32,8 @@ import java.util.List;
 
 @Component
 public class CoreDataInit implements CoreSqlBlock {
+
+    private static final int AREA_BATCH_SIZE = 500;
 
     @Resource
     private CoreMenuRepository coreMenuRepository;
@@ -153,7 +157,27 @@ public class CoreDataInit implements CoreSqlBlock {
         areaList.addAll(buildAreas1());
         areaList.addAll(buildAreas2());
         areaList.addAll(buildAreas3());
-        areaRepository.saveAllAndFlush(areaList);
+        if (isOracleDatabase()) {
+            areaRepository.saveAllAndFlush(areaList);
+            return;
+        }
+        jdbcTemplate.batchUpdate(
+                "INSERT INTO area (id, level, name, pid) VALUES (?, ?, ?, ?)",
+                areaList,
+                AREA_BATCH_SIZE,
+                (ParameterizedPreparedStatementSetter<Area>) (ps, area) -> {
+                    ps.setString(1, area.getId());
+                    ps.setString(2, area.getLevel());
+                    ps.setString(3, area.getName());
+                    ps.setString(4, area.getPid());
+                }
+        );
+    }
+
+    private boolean isOracleDatabase() {
+        Boolean isOracle = jdbcTemplate.execute((ConnectionCallback<Boolean>) connection ->
+                connection.getMetaData().getDatabaseProductName().toLowerCase().contains("oracle"));
+        return Boolean.TRUE.equals(isOracle);
     }
 
     private void initVisualizationBackground() {
@@ -283,7 +307,6 @@ public class CoreDataInit implements CoreSqlBlock {
 
     List<Area> buildAreas1() {
         List<Area> areas = Arrays.asList(
-                createArea("156", "country", "中国", "000"),
                 createArea("156", "country", "中国", "000"),
                 createArea("156110000", "province", "北京市", "156"),
                 createArea("156420000", "province", "湖北省", "156"),
@@ -434,7 +457,6 @@ public class CoreDataInit implements CoreSqlBlock {
                 createArea("156610800", "city", "榆林市", "156610000"),
                 createArea("156640400", "city", "固原市", "156640000"),
                 createArea("156441400", "city", "梅州市", "156440000"),
-                createArea("156410500", "city", "安阳市", "156410000"),
                 createArea("156410500", "city", "安阳市", "156410000"),
                 createArea("156330700", "city", "金华市", "156330000"),
                 createArea("156640100", "city", "银川市", "156640000"),
@@ -3688,5 +3710,3 @@ public class CoreDataInit implements CoreSqlBlock {
         return areas;
     }
 }
-
-

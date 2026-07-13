@@ -531,7 +531,6 @@ public class CalciteProvider extends Provider {
     }
 
     public Map<String, Object> jdbcFetchResultField(DatasourceRequest datasourceRequest) throws DEException {
-        System.out.println("getQuery: " + datasourceRequest.getQuery());
         DatasourceSchemaDTO value = datasourceRequest.getDsList().entrySet().iterator().next().getValue();
         datasourceRequest.setDatasource(value);
 
@@ -1037,7 +1036,6 @@ public class CalciteProvider extends Provider {
                 Driver driver = (Driver) extendedJdbcClassLoader.loadClass(driverClass).newInstance();
                 DriverManager.registerDriver(new DriverShim(driver));
             } catch (Exception e) {
-                e.printStackTrace();
             }
         }
     }
