@@ -716,7 +716,7 @@ public class DatasetDataManage {
         return previewData;
     }
 
-    public List<String> getFieldEnum(MultFieldValuesRequest multFieldValuesRequest) throws Exception {
+    public List<String> getFieldEnum(MultFieldValuesRequest multFieldValuesRequest, boolean withPermissions) throws Exception {
         // 根据前端传的查询组件field ids，获取所有字段枚举值并去重合并
         List<List<String>> list = new ArrayList<>();
         for (Long id : multFieldValuesRequest.getFieldIds()) {
@@ -757,12 +757,14 @@ public class DatasetDataManage {
             // 获取allFields
             List<DatasetTableFieldDTO> fields = Collections.singletonList(field);
             Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
-            fields = permissionManage.filterColumnPermissions(fields, desensitizationList, datasetGroupInfoDTO.getId(), null);
-            if (ObjectUtils.isEmpty(fields)) {
-                DEException.throwException(Translator.get("i18n_no_column_permission"));
+            if (withPermissions) {
+                fields = permissionManage.filterColumnPermissions(fields, desensitizationList, datasetGroupInfoDTO.getId(), null);
+                if (ObjectUtils.isEmpty(fields)) {
+                    DEException.throwException(Translator.get("i18n_no_column_permission"));
+                }
+
             }
             buildFieldName(sqlMap, fields);
-
             List<String> dsList = new ArrayList<>();
             for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {
                 dsList.add(next.getValue().getType());
@@ -771,7 +773,7 @@ public class DatasetDataManage {
 
             List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = new ArrayList<>();
             Long uid = V3UserUtil.getUid();
-            if (uid != null) {
+            if (uid != null && withPermissions) {
                 rowPermissionsTree = permissionManage.getRowPermissionsTree(datasetGroupInfoDTO.getId(), uid);
             }
 

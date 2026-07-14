@@ -278,6 +278,10 @@ export const multFieldValuesForPermissions = (data = {}) => {
   return request.post({ url: '/datasetField/multFieldValuesForPermissions', data })
 }
 
+export const multFieldValues = (data = {}) => {
+  return request.post({ url: '/datasetField/multFieldValues', data })
+}
+
 export const listFieldsWithPermissions = (datasetId: number) => {
   return request.get({ url: '/datasetField/listWithPermissions/' + datasetId }).then(res => {
     originNameHandleBack(res?.data)
