@@ -401,7 +401,7 @@ const boardMoveActive = computed(() => {
   return element.value.isPlugin || CHARTS.includes(element.value.innerType)
 })
 const scaledInteractionMapActive = computed(() => {
-  return ['map', 'bubble-map'].includes(element.value.innerType)
+  return ['map', 'bubble-map', 'flow-map'].includes(element.value.innerType)
 })
 
 const dashboardActive = computed(() => {
