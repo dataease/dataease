@@ -3223,6 +3223,7 @@ export default {
     selected_view: '已選圖表',
     used_dataset: '所用數據集',
     to_select_view: '選擇圖表',
+    to_select_field: '選擇字段',
     same_dataset: '同數據集',
     diff_dataset: '不同數據集',
     no_available_view: '暫無可用圖表',
