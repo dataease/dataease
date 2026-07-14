@@ -3321,6 +3321,7 @@ export default {
     selected_view: 'Selected View',
     used_dataset: 'Used Dataset',
     to_select_view: 'Select View',
+    to_select_field: 'Select Field',
     show_selected_only: 'Show Selected Only',
     same_dataset: 'Same Dataset',
     diff_dataset: 'Different Dataset',
