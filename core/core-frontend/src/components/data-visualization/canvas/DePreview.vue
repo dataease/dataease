@@ -207,7 +207,7 @@ const canvasStyle = computed(() => {
     } else {
       style['height'] = dashboardActive.value
         ? downloadStatus.value
-          ? getDownloadStatusMainHeight()
+          ? getDownloadStatusMainHeightV3()
           : '100%'
         : !canvasStyleData.value?.screenAdaptor ||
           canvasStyleData.value?.screenAdaptor === 'widthFirst'
@@ -221,6 +221,25 @@ const canvasStyle = computed(() => {
   }
   return style
 })
+
+const getDownloadStatusMainHeightV3 = () => {
+  if (!previewCanvasInner.value?.childNodes) {
+    nextTick(() => {
+      canvasStyle.value.height = getDownloadStatusMainHeightV3()
+    })
+    return '100%'
+  }
+  const children = previewCanvasInner.value.childNodes
+  let maxHeight = 0
+
+  children.forEach(child => {
+    const height = (child.offsetHeight || 0) + (child.offsetTop || 0)
+    if (height > maxHeight) {
+      maxHeight = height
+    }
+  })
+  return `${maxHeight}px!important`
+}
 
 const getDownloadStatusMainHeight = () => {
   if (!previewCanvas.value?.childNodes) {
