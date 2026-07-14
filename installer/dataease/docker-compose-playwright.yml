@@ -1,15 +1,13 @@
-version: '3.8'
-
 services:
   api:
-    image: registry.cn-qingdao.aliyuncs.com/dataease/de-playwright-api:v1.58.2-noble
+    image: registry.cn-qingdao.aliyuncs.com/dataease/de-playwright-api:v1.58.2-noble-0421
     container_name: de-playwright-api
     privileged: true
     environment:
       - CONCURRENCY=${DE_PLAYWRIGHT_CONCURRENCY}
       - TZ=Asia/Shanghai
     volumes:
-      - ${DE_BASE}/dataease2.0/logs:/opt/app/logs
+      - ${DE_BASE}/dataease3.0/logs:/opt/app/logs
     restart: unless-stopped
     init: true
     ipc: host
@@ -21,4 +19,4 @@ services:
       retries: 3
       start_period: 10s
     networks:
-      - dataease-network
+      - dataease-network3

@@ -32,8 +32,8 @@ function check_and_prepare_env_params() {
 
    cd ${CURRENT_DIR}
    if [ -f /usr/bin/dectl ]; then
-      v2_version=$(dectl version | head -n 2 | grep "v3.")
-      if [[ -z $v2_version ]];then
+      v3_version=$(dectl version | head -n 2 | grep "v3.")
+      if [[ -z $v3_version ]];then
          echo "系统当前版本不是 DataEase v3 版本系列，不支持升级到 v3，请检查离线包版本。"
          exit 1;
       fi
@@ -76,13 +76,18 @@ function check_and_prepare_env_params() {
    fi
    set +a
 
-   read available_disk <<< $(df -H --output=avail ${DE_BASE} | tail -1)
-   available_disk=${available_disk%?}
-   available_disk=${available_disk%.*}
-   if [[ $available_disk -lt 20 ]];then
-      log_content "\033[31m[警告] DataEase 运行目录所在磁盘剩余空间不足 20G 可能无法正常启动!\033[0m"
-   fi
-}
+   read available_disk <<< $(df -H --output=avail "${DE_BASE}" | tail -1)
+   disk_num=${available_disk%[KMGTP]}
+   disk_unit=${available_disk##*[0-9.]}
+   case $disk_unit in
+     K) disk_gb=$(awk -v i="$disk_num" 'BEGIN{printf "%.0f\n", i / 1024 / 1024}') ;;
+     M) disk_gb=$(awk -v i="$disk_num" 'BEGIN{printf "%.0f\n", i / 1024}') ;;
+     G) disk_gb=${disk_num%.*} ;;
+     T) disk_gb=$(awk -v i="$disk_num" 'BEGIN{printf "%.0f\n", 1024 * i}') ;;
+     *) disk_gb=${disk_num%.*} ;;
+   esac
+   [[ $disk_gb -lt 20 ]] && log_content "\033[31m[警告] DataEase 运行目录所在磁盘剩余空间不足 20G 可能无法正常启动!\033[0m"
+   }
 
 function set_run_base_path() {
    log_title "设置运行目录"
@@ -128,6 +133,11 @@ function prepare_de_run_base() {
          envsubst < $i > $CONF_FOLDER/$i
       fi
    done
+
+   log_content "复制地图文件"
+   if [ -d ${DE_RUN_BASE}/data/map ] || [ -d ${DE_RUN_BASE}/mapFiles ]; then
+      cp -rf ${DE_RUN_BASE}/mapFiles/* ${DE_RUN_BASE}/data/map/
+   fi
 }
 
 function update_dectl() {
@@ -233,7 +243,7 @@ function install_docker_compose() {
             chmod +x /usr/bin/docker-compose
          else
             log_content "在线安装 docker-compose"
-            curl -L https://resource.fit2cloud.com/docker/compose/releases/download/v2.16.0/docker-compose-$(uname -s | tr A-Z a-z)-$(uname -m) -o /usr/local/bin/docker-compose 2>&1 | tee -a ${CURRENT_DIR}/install.log
+            curl -L https://resource.fit2cloud.com/docker/compose/releases/download/v2.29.2/docker-compose-$(uname -s | tr A-Z a-z)-$(uname -m) -o /usr/local/bin/docker-compose 2>&1 | tee -a ${CURRENT_DIR}/install.log
             if [[ ! -f /usr/local/bin/docker-compose ]];then
                log_content "docker-compose 下载失败，请稍候重试"
                exit 1
@@ -282,9 +292,32 @@ function load_de_images() {
 
 function set_de_service() {
    log_title "配置 DataEase 服务"
+
+   # 判断是否为wsl
+   local is_wsl= false
+   if grep -qE "(Microsoft|microsoft|WLS)" /proc/version; then
+      is_wsl=true
+   fi
+
+   if [[ -f /etc/init.d/dataease ]];then
+      if which chkconfig >/dev/null 2>&1;then
+         chkconfig dataease >/dev/null
+         if [ $? -eq 0 ]; then
+            chkconfig --del dataease
+         fi
+      fi
+      rm -f /etc/init.d/dataease
+   fi
+
    if [[ ! -f /etc/systemd/system/dataease.service ]];then
       log_content "配置 dataease Service"
       cp ${DE_RUN_BASE}/bin/dataease/dataease.service /etc/systemd/system/
+      #--- 如果是 WSL，则移除 service 文件中对 docker 的依赖 ---
+      if [ "$is_wsl" = true ]; then
+         log_content "检测到 WSL 环境，移除 dataease.service 中的 Docker 依赖配置"
+         sed -i '/docker.service/d' /etc/systemd/system/dataease.service
+      fi
+      #------------------------------------------------------
       chmod 644 /etc/systemd/system/dataease.service
       log_content "配置开机自启动"
       systemctl enable dataease >/dev/null 2>&1; systemctl daemon-reload | tee -a ${CURRENT_DIR}/install.log

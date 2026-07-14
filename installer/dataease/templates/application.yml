@@ -8,6 +8,8 @@ server:
     mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json,application/xml
     min-response-size: 1024
 spring:
+  profiles:
+    include: ${DE_SPRING_PROFILE}
   servlet:
     multipart:
       max-file-size: 500MB
@@ -27,10 +29,11 @@ dataease:
       limit: ${DE_EXPORT_DATASET_LIMIT}
   origin-list: ${DE_ORIGIN_LIST}
   login_timeout: ${DE_LOGIN_TIMEOUT}
-  selenium-server: ${DE_SELENIUM_SERVER}
   dataease-servers: ${DE_SERVERS}
+  playwright-server: ${DE_PLAYWRIGHT_SERVER}
 task:
   executor:
     address: http://sync-task-actuator:9001
     log:
       path: /opt/dataease3.0/logs/sync-task/task-handler-log
+

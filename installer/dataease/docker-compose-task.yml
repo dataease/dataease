@@ -1,4 +1,3 @@
-version: '3'
 services:
   task-actuator:
     image: registry.cn-qingdao.aliyuncs.com/dataease/dataease-sync-task:DE_TAG
