@@ -16,4 +16,15 @@ public class DeReflectUtil {
         }
         return null;
     }
+
+    public static Method findMethod(Class<?> cla, String methodName, int paramCount) {
+        Method[] methods = cla.getMethods();
+        if (ArrayUtils.isEmpty(methods)) return null;
+        for (Method method : methods) {
+            if (method.getName().equals(methodName) && method.getParameterCount() == paramCount){
+                return method;
+            }
+        }
+        return null;
+    }
 }
