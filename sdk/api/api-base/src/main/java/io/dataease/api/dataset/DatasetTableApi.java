@@ -64,6 +64,10 @@ public interface DatasetTableApi {
     @PostMapping("multFieldValuesForPermissions")
     List<String> multFieldValuesForPermissions(@RequestBody MultFieldValuesRequest multFieldValuesRequest) throws Exception;
 
+    @Operation(summary = "获取枚举值")
+    @PostMapping("multFieldValues")
+    List<String> multFieldValues(@RequestBody MultFieldValuesRequest multFieldValuesRequest) throws Exception;
+
     @Operation(summary = "获取计算字段函数")
     @PostMapping("getFunction")
     List<SQLFunctionDTO> getFunction();
