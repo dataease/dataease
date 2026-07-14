@@ -47,7 +47,7 @@ public class VisualizationOuterParamsTargetViewInfoVO implements Serializable {
      * 联动字段ID
      */
     @JsonSerialize(using = ToStringSerializer.class)
-    private Long targetFieldId;
+    private String targetFieldId;
 
     /**
      * 复制来源
@@ -58,4 +58,7 @@ public class VisualizationOuterParamsTargetViewInfoVO implements Serializable {
      * 复制来源ID
      */
     private String copyId;
+
+    private String matchMode;
+
 }

@@ -30,7 +30,7 @@ public class VisualizationOuterParamsTargetViewInfo {
 
     @Comment("联动字段ID")
     @Column(name = "target_field_id")
-    private Long targetFieldId;
+    private String targetFieldId;
 
     @Size(max = 255)
     @Comment("复制来源")
@@ -45,5 +45,10 @@ public class VisualizationOuterParamsTargetViewInfo {
     @Comment("联动数据集id/联动过滤组件id")
     @Column(name = "target_ds_id")
     private Long targetDsId;
+
+    @Size(max = 50)
+    @Comment("匹配方式")
+    @Column(name = "match_mode", length = 50)
+    private String matchMode;
 
 }

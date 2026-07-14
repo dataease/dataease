@@ -834,7 +834,8 @@ public class CoreVisualizationManage {
                         snapshotVisualizationOuterParamsTargetViewInfo.targetFieldId,
                         snapshotVisualizationOuterParamsTargetViewInfo.copyFrom,
                         snapshotVisualizationOuterParamsTargetViewInfo.copyId,
-                        snapshotVisualizationOuterParamsTargetViewInfo.targetDsId
+                        snapshotVisualizationOuterParamsTargetViewInfo.targetDsId,
+                        snapshotVisualizationOuterParamsTargetViewInfo.matchMode
                 )).from(snapshotVisualizationOuterParamsTargetViewInfo)
                 .leftJoin(snapshotVisualizationOuterParamsInfo).on(snapshotVisualizationOuterParamsTargetViewInfo.paramsInfoId.eq(snapshotVisualizationOuterParamsInfo.paramsInfoId))
                 .leftJoin(snapshotVisualizationOuterParams).on(snapshotVisualizationOuterParams.paramsId.eq(snapshotVisualizationOuterParamsInfo.paramsId))

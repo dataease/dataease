@@ -121,7 +121,7 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
                         qTargetViewInfo.targetViewId,
                         qTargetViewInfo.targetDsId,
                         qTargetViewInfo.targetFieldId,
-                        qTargetViewInfo.paramsInfoId))
+                        qTargetViewInfo.paramsInfoId, qTargetViewInfo.matchMode))
                 .from(qTargetViewInfo)
                 .where(qTargetViewInfo.paramsInfoId.in(paramsInfoIds))
                 .fetch();
