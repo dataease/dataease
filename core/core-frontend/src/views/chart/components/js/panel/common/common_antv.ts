@@ -32,6 +32,7 @@ import { defaults, find, groupBy, map, uniq } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 import { isMobile } from '@/utils/utils'
 import { ChartEvent } from '@antv/g2'
+import type { Chart as G2Chart } from '@antv/g2'
 import { Text } from '@antv/g'
 import { GaodeMap, TMap, TencentMap } from '@antv/l7-maps'
 import {
@@ -994,6 +995,43 @@ const dimensionSliderFilter = ({
       document.removeEventListener('pointerup', apply)
     }
   }
+}
+
+// G2 将 touchstart 转为 pointerdown 时仍保留 TouchEvent，需在 Slider 读取坐标前转换为 Touch
+export const installG2SliderTouchAdapter = (chart: G2Chart) => {
+  const boundTargets = new WeakSet<object>()
+  const bindSliders = () => {
+    const { canvas } = chart.getContext()
+    const sliders = Array.from(canvas?.document?.getElementsByClassName?.('slider') || []) as any[]
+    sliders.forEach(slider => {
+      const dragTargets = ['slider-handle', 'slider-selection', 'slider-brush-area'].flatMap(
+        className => Array.from(slider.getElementsByClassName?.(className) || []) as any[]
+      )
+      dragTargets.forEach(target => {
+        if (boundTargets.has(target)) {
+          return
+        }
+        boundTargets.add(target)
+        target.addEventListener(
+          'pointerdown',
+          event => {
+            if (event.pointerType !== 'touch') {
+              return
+            }
+            const touch = event.nativeEvent?.touches?.[0] || event.nativeEvent?.changedTouches?.[0]
+            if (!touch) {
+              return
+            }
+            event.nativeEvent = touch
+          },
+          { capture: true }
+        )
+      })
+    })
+  }
+  chart.on(ChartEvent.AFTER_RENDER, bindSliders)
+  bindSliders()
+  return () => chart.off(ChartEvent.AFTER_RENDER, bindSliders)
 }
 
 // 分类维度缩略轴统一入口：按离散维度域过滤，避免 G2 默认比例过滤导致标签和数据错位

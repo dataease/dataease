@@ -29,7 +29,10 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { L7ChartView } from '@/views/chart/components/js/panel/types/impl/l7'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ExportImage } from '@antv/l7'
-import { configEmptyDataStyle } from '@/views/chart/components/js/panel/common/common_antv'
+import {
+  configEmptyDataStyle,
+  installG2SliderTouchAdapter
+} from '@/views/chart/components/js/panel/common/common_antv'
 import { ElMessage } from 'element-plus-secondary'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 const { t } = useI18n()
@@ -553,6 +556,11 @@ const renderChart = async (view, callback?) => {
 }
 let myChart = null
 let g2Timer: number
+let g2SliderTouchCleanup: (() => void) | undefined
+const clearG2SliderTouchAdapter = () => {
+  g2SliderTouchCleanup?.()
+  g2SliderTouchCleanup = undefined
+}
 const renderG2 = async (chart, chartView: G2ChartView<any, any>) => {
   g2Timer && clearTimeout(g2Timer)
   g2Timer = setTimeout(async () => {
@@ -561,6 +569,7 @@ const renderG2 = async (chart, chartView: G2ChartView<any, any>) => {
       configEmptyDataStyle([1], containerId)
       // G2 重绘前先停掉 tooltip 轮播，避免旧实例残留高亮背景
       G2TooltipCarousel.destroyByContainer(containerId)
+      clearG2SliderTouchAdapter()
       myChart?.destroy()
       // 处理图表在右侧小区域时隐藏文本标识
       let dashboardHidden = props.element.dashboardHidden
@@ -592,6 +601,7 @@ const renderG2 = async (chart, chartView: G2ChartView<any, any>) => {
       await chartView.afterRender?.(chartInstance)
       // 异步等待期间若图表已被新实例替换，本轮旧实例不再回放联动状态，避免污染当前画布
       if (chartInstance === myChart) {
+        g2SliderTouchCleanup = installG2SliderTouchAdapter(chartInstance)
         replayLinkageActive()
       }
     } catch (e) {
@@ -623,6 +633,7 @@ const renderL7Plot = async (chart: ChartObj, chartView: L7PlotChartView<any, any
   mapTimer && clearTimeout(mapTimer)
   mapTimer = setTimeout(async () => {
     try {
+      clearG2SliderTouchAdapter()
       myChart?.destroy()
       if (chartContainer.value) {
         chartContainer.value.textContent = ''
@@ -1089,6 +1100,7 @@ const onWheel = (e: WheelEvent) => {
 onBeforeUnmount(() => {
   try {
     G2TooltipCarousel.destroyByContainer(containerId)
+    clearG2SliderTouchAdapter()
     myChart?.destroy()
     resizeObserver?.disconnect()
     intersectionObserver?.disconnect()
