@@ -17,7 +17,7 @@ import {
   getStackSeriesIndexMap,
   getStackSeriesOrder,
   getStackTooltipGroupName,
-  filterStackBreakLineNullData,
+  handleBarBreakLineNullData,
   handleEmptyDataStrategy,
   renderGroupedTooltipItems,
   sortStackTooltipItems,
@@ -167,7 +167,10 @@ export class StackBar extends Bar {
             const tooltipItems = originalItems
             const result = []
             tooltipItems.forEach(item => {
-              const value = valueFormatter(item.value, tooltip.tooltipFormatter)
+              const value =
+                item.value === null || item.value === undefined
+                  ? ''
+                  : valueFormatter(item.value, tooltip.tooltipFormatter)
               const name = isEmpty(item.category) ? item.field : item.category
               result.push({ ...item, name, value })
             })
@@ -229,8 +232,7 @@ export class StackBar extends Bar {
 
   protected configEmptyDataStrategy(chart: Chart, options: ViewSpec): ViewSpec {
     handleEmptyDataStrategy(chart, options)
-    // 普通和分组堆叠会覆盖基类流程，这里同步过滤保持为空补出的 null 片段
-    filterStackBreakLineNullData(chart, options)
+    handleBarBreakLineNullData(chart, options)
     return options
   }
 

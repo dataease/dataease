@@ -38,7 +38,7 @@ import {
   getStackTooltipGroupName,
   getTooltipItemFormatter,
   handleEmptyDataStrategy,
-  filterStackBreakLineNullData,
+  handleBarBreakLineNullData,
   isSeriesTooltipFormatterShown,
   isTooltipItemShown,
   renderGroupedTooltipItems,
@@ -182,8 +182,8 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     }, {})
     const showExtremumIds = Object.keys(formatterMap).filter(id => formatterMap[id].showExtremum)
     if (showExtremumIds?.length > 0) {
-      const { x: xField, y: yField, color: colorField } = children[0].encode
-      addExtremumText(children, showExtremumIds, xField, yField, colorField)
+      const { x: xField, color: colorField } = children[0].encode
+      addExtremumText(children, showExtremumIds, xField, 'value', colorField)
     }
     const position = {
       position: l.position === 'middle' ? 'inside' : l.position,
@@ -963,8 +963,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
 
   protected configEmptyDataStrategy(chart: Chart, options: ViewSpec): ViewSpec {
     handleEmptyDataStrategy(chart, options)
-    // 空值策略先补齐数据，再移除仅用于占位但不应绘制的堆叠空片段
-    filterStackBreakLineNullData(chart, options)
+    handleBarBreakLineNullData(chart, options)
     return options
   }
 

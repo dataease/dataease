@@ -70,8 +70,8 @@ export class GroupBar extends StackBar {
 
     const { children } = options
     if (labelAttr.showExtremum) {
-      const { x: xField, y: yField, color: colorField } = children[0].encode
-      addExtremumText(options.children, [], xField, yField, colorField, false)
+      const { x: xField, color: colorField } = children[0].encode
+      addExtremumText(options.children, [], xField, 'value', colorField, false)
     }
 
     if (!labelAttr.childrenShow) {

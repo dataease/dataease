@@ -164,10 +164,10 @@ export class HorizontalStackBar extends HorizontalBar {
             const tooltipItems = originalItems
             const result = []
             tooltipItems.forEach(item => {
-              if (item.value === null || item.value === undefined) {
-                return ''
-              }
-              const value = valueFormatter(item.value, tooltip.tooltipFormatter)
+              const value =
+                item.value === null || item.value === undefined
+                  ? ''
+                  : valueFormatter(item.value, tooltip.tooltipFormatter)
               const name = isEmpty(item.category) ? item.field : item.category
               result.push({ ...item, name, value })
             })

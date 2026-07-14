@@ -10,7 +10,7 @@ import {
   setUpStackSeriesColor
 } from '@/views/chart/components/js/util'
 import {
-  filterStackBreakLineNullData,
+  handleBarBreakLineNullData,
   handleEmptyDataStrategy,
   ViewSpec
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
@@ -332,8 +332,7 @@ export class HorizontalBar extends Bar {
 
   protected configEmptyDataStrategy(chart: Chart, options: ViewSpec): ViewSpec {
     handleEmptyDataStrategy(chart, options)
-    // 横向堆叠继承此流程，需要移除保持为空补出的 null 片段
-    filterStackBreakLineNullData(chart, options)
+    handleBarBreakLineNullData(chart, options)
     return options
   }
 

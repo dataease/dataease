@@ -135,7 +135,10 @@ export class GroupStackBar extends StackBar {
             const tooltipItems = originalItems
             const result = []
             tooltipItems.forEach(item => {
-              const value = valueFormatter(item.value, tooltip.tooltipFormatter)
+              const value =
+                item.value === null || item.value === undefined
+                  ? ''
+                  : valueFormatter(item.value, tooltip.tooltipFormatter)
               const name = `${isEmpty(item.category) ? item.field : item.category}${
                 item.group ? '-' + item.group : ''
               }`
