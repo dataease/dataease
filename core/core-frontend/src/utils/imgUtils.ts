@@ -146,7 +146,10 @@ export function downloadCanvas(type, canvasDom, name, callBack?) {
 }
 
 export function downloadCanvas2(type, canvasDom, name, callBack?) {
-  domToPng(canvasDom)
+  domToPng(canvasDom, {
+    // 按 2 倍(或更高)分辨率渲染,解决导出图片模糊问题
+    scale: Math.max(3, window.devicePixelRatio || 1)
+  })
     .then(dataUrl => {
       if (type === 'img') {
         const a = document.createElement('a')
