@@ -333,7 +333,14 @@ const resetElementStyle = element => {
     if (!cache) {
       return
     }
-    Object.entries(cache).forEach(([key, value]) => setShapeAttr(shape, key, value))
+    Object.entries(cache).forEach(([key, value]) => {
+      // 原始属性不存在时必须移除，否则 AntV G 会保留联动覆盖值
+      if (value === undefined || value === null) {
+        shape.removeAttribute?.(key)
+      } else {
+        setShapeAttr(shape, key, value)
+      }
+    })
     delete shape[LINKAGE_STYLE_CACHE]
   })
 }
@@ -600,7 +607,7 @@ const renderG2 = async (chart, chartView: G2ChartView<any, any>) => {
       // 仅实现钩子的特殊图表会执行后处理；普通 G2 图表没有额外逻辑，也不会产生额外 render
       await chartView.afterRender?.(chartInstance)
       // 异步等待期间若图表已被新实例替换，本轮旧实例不再回放联动状态，避免污染当前画布
-      if (chartInstance === myChart) {
+      if (chartInstance && chartInstance === myChart) {
         g2SliderTouchCleanup = installG2SliderTouchAdapter(chartInstance)
         replayLinkageActive()
       }
