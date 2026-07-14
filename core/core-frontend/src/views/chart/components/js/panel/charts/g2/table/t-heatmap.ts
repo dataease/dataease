@@ -3,12 +3,48 @@ import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/uti
 import { TOOLTIP_ITEM_TPL, TOOLTIP_TITLE_TPL } from '../../../common/common_antv'
 import { useI18n } from '@/hooks/web/useI18n'
 import { defaultsDeep, toString } from 'lodash-es'
-import { ChartEvent, Chart as G2Chart, G2Spec } from '@antv/g2'
+import { ChartEvent, Chart as G2Chart, extend, G2Spec, Runtime, stdlib } from '@antv/g2'
 import { Text } from '@antv/g'
+import { valueFormatter } from '../../../../formatter'
 
 const { t } = useI18n()
 
 const DEFAULT_DATA = []
+// 复制 G2 标准组件注册表，仅在热力图 Runtime 内覆盖图例实现
+const heatmapLibrary = stdlib() as Record<string, any>
+// 固定图例显示方向，避免 G2 根据停靠位置自动切换水平或垂直布局
+const withLegendOrientation = component => {
+  const customComponent = options => {
+    // 私有方向配置不继续透传给原始 G2 图例组件
+    const { dataeaseOrientation, ...rest } = options
+    const positionVertical = rest.position === 'left' || rest.position === 'right'
+    const directionMismatch = positionVertical !== (dataeaseOrientation === 'vertical')
+    // 方向与停靠边交叉时恢复原组件短边，避免图例挤入绘图区
+    const legendOptions = directionMismatch
+      ? { ...rest, length: component.props.defaultSize }
+      : rest
+    return component({
+      ...legendOptions,
+      style: {
+        orientation: dataeaseOrientation,
+        // 居中图例首帧先隐藏，避免布局完成前出现在错误位置
+        opacity: rest.layout?.justifyContent === 'center' ? 0 : 1
+      }
+    })
+  }
+  // 保留默认尺寸等静态配置，保证包装后仍参与 G2 布局计算
+  customComponent.props = component.props
+  return customComponent
+}
+// 分类图例和连续色带图例使用相同的方向修正规则
+heatmapLibrary['component.legendCategory'] = withLegendOrientation(
+  heatmapLibrary['component.legendCategory']
+)
+heatmapLibrary['component.legendContinuous'] = withLegendOrientation(
+  heatmapLibrary['component.legendContinuous']
+)
+// 创建热力图专用 G2 构造器，避免修改全局组件库影响其他图表
+const HeatmapG2Chart = extend(Runtime, heatmapLibrary) as typeof G2Chart
 /**
  * 热力图
  */
@@ -29,7 +65,7 @@ export class TableG2Chart extends G2ChartView {
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],
     'basic-style-selector': ['colors'],
-    'label-selector': ['fontSize', 'color'],
+    'label-selector': ['fontSize', 'color', 'labelFormatter'],
     'x-axis-selector': ['name', 'color', 'fontSize', 'position', 'axisLabel', 'axisLine'],
     'y-axis-selector': [
       'name',
@@ -53,7 +89,7 @@ export class TableG2Chart extends G2ChartView {
       'fontShadow'
     ],
     'legend-selector': ['orient', 'color', 'fontSize', 'hPosition', 'vPosition'],
-    'tooltip-selector': ['show', 'color', 'fontSize', 'backgroundColor'],
+    'tooltip-selector': ['show', 'color', 'fontSize', 'backgroundColor', 'tooltipFormatter'],
     'border-style': ['all']
   }
   axis: AxisType[] = ['xAxis', 'xAxisExt', 'extColor', 'filter']
@@ -93,7 +129,23 @@ export class TableG2Chart extends G2ChartView {
     const xFieldExt = xAxisExt[0].dataeaseName
     const extColorField = extColor[0].dataeaseName
     // data
-    const data = chart.data.tableRow
+    const tableRow = chart.data.tableRow
+    // G2 编码要求数组，中间态数据未就绪时跳过本轮渲染
+    if (!Array.isArray(tableRow)) {
+      return
+    }
+    // 空维度或空颜色值不绘制，数值 0 仍作为有效数据保留
+    const data = tableRow
+      .filter(item =>
+        [xField, xFieldExt, extColorField].every(
+          field => item[field] !== null && item[field] !== undefined && item[field] !== ''
+        )
+      )
+      .map(item => ({
+        ...item,
+        name: item[xField],
+        category: item[xFieldExt]
+      }))
     // options
     const initOptions: G2Spec = {
       type: 'cell',
@@ -114,7 +166,7 @@ export class TableG2Chart extends G2ChartView {
     }
     chart.container = container
     const options = this.setupOptions(chart, initOptions, { axisMap, container })
-    const newChart = new G2Chart({ container })
+    const newChart = new HeatmapG2Chart({ container })
     newChart.options(options)
     newChart.on('plot:click', param => {
       if (!param?.target?.__data__?.data) {
@@ -133,14 +185,16 @@ export class TableG2Chart extends G2ChartView {
           }
         })
       })
+      if (dimensionList.length === 0) {
+        return
+      }
       action({
         x: param.x,
         y: param.y,
         data: {
           data: {
             ...pointData,
-            value: dimensionList[1].value,
-            name: dimensionList[1].id,
+            value: dimensionList[1]?.value,
             dimensionList: dimensionList,
             quotaList: [dimensionList[1]]
           }
@@ -242,7 +296,9 @@ export class TableG2Chart extends G2ChartView {
         scale: {
           color: {
             type: 'linear',
-            nice: true,
+            // 不扩展数据范围，图例刻度直接使用实际最大最小值
+            nice: false,
+            tickMethod: (min, max) => [min, max],
             interpolate() {
               return c => {
                 if (isNaN(c)) return colors[0]
@@ -258,7 +314,42 @@ export class TableG2Chart extends G2ChartView {
     if (!legend.show) {
       return { ...options, legend: false }
     }
-    const baseLegend = this.getLegend(chart)
+    // 按 V2 语义分别计算位置和方向，位置变化不触发 G2 重新推断方向
+    const verticalLegend = legend.orient === 'vertical'
+    const centerHorizontal = legend.hPosition === 'center'
+    const centerVertical = legend.vPosition === 'center'
+    const position = centerHorizontal
+      ? centerVertical
+        ? 'top'
+        : legend.vPosition
+      : centerVertical || verticalLegend
+      ? legend.hPosition
+      : legend.vPosition
+    const alignPosition = position === legend.hPosition ? legend.vPosition : legend.hPosition
+    const positionVertical = position === 'left' || position === 'right'
+    const directionMismatch = positionVertical !== verticalLegend
+    const { container } = context
+    const containerDom = document.getElementById(container)
+    const baseLegend = {
+      ...this.getLegend(chart),
+      position,
+      dataeaseOrientation: legend.orient,
+      layout: {
+        justifyContent:
+          alignPosition === 'left' || alignPosition === 'top'
+            ? 'flex-start'
+            : alignPosition === 'right' || alignPosition === 'bottom'
+            ? 'flex-end'
+            : 'center'
+      },
+      maxCols: verticalLegend ? 1 : undefined,
+      maxRows: verticalLegend ? undefined : 1,
+      ...(directionMismatch
+        ? {
+            size: this.getDefaultLength(chart, legend)
+          }
+        : {})
+    }
     const tmpLegend = {
       legend: {
         color: {
@@ -271,17 +362,18 @@ export class TableG2Chart extends G2ChartView {
     }
     defaultsDeep(options, tmpLegend)
     if (colorField.groupType === 'q') {
-      const { container } = context
-      const containerDom = document.getElementById(container)
       const quotaLegendOption = {
         legend: {
           color: {
             color: colors,
-            label: false
+            // 连续图例显示比例尺生成的最大最小值
+            label: true,
+            labelFill: legend.color,
+            labelFontSize: legend.fontSize
           }
         }
       }
-      if (legend.orient === 'vertical') {
+      if (verticalLegend) {
         quotaLegendOption.legend.color.height = containerDom?.offsetHeight / 2
       } else {
         quotaLegendOption.legend.color.width = containerDom?.offsetWidth / 2
@@ -296,14 +388,17 @@ export class TableG2Chart extends G2ChartView {
     if (!label.show) {
       return options
     }
+    const colorField = chart.extColor[0].dataeaseName
     const labelStyle = {
       labels: [
         {
-          text: chart.extColor[0].dataeaseName,
+          text: d => toString(valueFormatter(d[colorField], label.labelFormatter)),
           position: 'inside',
           style: {
             fill: label.color,
-            fontSize: label.fontSize
+            fontSize: label.fontSize,
+            // 标签不参与命中测试，鼠标事件继续落到热力单元
+            pointerEvents: 'none'
           },
           transform: label.fullDisplay ? [] : [{ type: 'overflowHide' }]
         }
@@ -361,7 +456,11 @@ export class TableG2Chart extends G2ChartView {
             const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)
             const result = [
               { marker: head.color, label: axisMap[yField], value: head[yField] },
-              { marker: head.color, label: axisMap[colorField], value: head[colorField] }
+              {
+                marker: head.color,
+                label: axisMap[colorField],
+                value: valueFormatter(head[colorField], tooltip.tooltipFormatter)
+              }
             ]
             const itemsHtml = result
               .map(({ marker, label, value }) => {
