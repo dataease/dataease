@@ -14,6 +14,145 @@ import {
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
+// 均线周期
+const MOVING_AVERAGE_DAYS = [5, 10, 20, 60, 120, 180]
+
+/**
+ * 计算 K 线箱体与均线共同的 Y 轴范围
+ * 均线补位使用的 null 不参与极值计算
+ */
+const getStockYDomain = (stockData, avgDataSeries, yAxis) => {
+  let domainMin = Infinity
+  let domainMax = -Infinity
+  const collectDomainValue = value => {
+    if (value === null || value === undefined || value === '') {
+      return
+    }
+    const numberValue = Number(value)
+    if (Number.isFinite(numberValue)) {
+      domainMin = Math.min(domainMin, numberValue)
+      domainMax = Math.max(domainMax, numberValue)
+    }
+  }
+  stockData.forEach(row => {
+    yAxis.forEach(axis => collectDomainValue(row[axis.dataeaseName]))
+  })
+  avgDataSeries.forEach(item => collectDomainValue(item.value))
+  if (!Number.isFinite(domainMin) || !Number.isFinite(domainMax)) {
+    return
+  }
+  // 极值相等时增加少量上下边距，避免单值数据无法生成有效比例尺
+  if (domainMin === domainMax) {
+    const padding = Math.abs(domainMin) * 0.05 || 1
+    domainMin -= padding
+    domainMax += padding
+  }
+  return [domainMin, domainMax]
+}
+
+// 保留完整 mark 数据，只在缩略轴变化后同步当前可见区的 Y 轴范围
+const stockSliderFilter = ({ data, avgDataSeries, dimensionField, yAxis }) => {
+  return target => {
+    // 自定义交互只管当前图表的横向缩略轴
+    const slider = Array.from(target.container.getElementsByClassName?.('slider') || []).find(
+      (item: any) => item.attributes?.orientation === 'horizontal'
+    ) as any
+    if (!slider || !data.length) {
+      return
+    }
+    let pendingValues
+    let frameId
+    let lastRangeKey
+    const render = () => {
+      frameId = undefined
+      if (!pendingValues) {
+        return
+      }
+      const [start = 0, end = 1] = pendingValues
+      pendingValues = undefined
+      // 将 0 到 1 的滑块比例换算为原始 K 线数据索引
+      const startIndex = Math.max(0, Math.min(data.length - 1, Math.floor(start * data.length)))
+      const endIndex = Math.max(startIndex + 1, Math.min(data.length, Math.ceil(end * data.length)))
+      const rangeKey = `${startIndex}-${endIndex}`
+      // 减少拖动中的无效更新
+      if (rangeKey === lastRangeKey) {
+        return
+      }
+      lastRangeKey = rangeKey
+      const visibleStockData = data.slice(startIndex, endIndex)
+      const visibleDomain = visibleStockData.map(row => row[dimensionField])
+      const visibleDimensions = new Set(visibleDomain)
+      // 只取当前维度区间的均线值参与 Y 轴极值计算，仍保留完整 mark 数据
+      const visibleAvgData = avgDataSeries.filter(item =>
+        visibleDimensions.has(item[dimensionField])
+      )
+      const domain = getStockYDomain(visibleStockData, visibleAvgData, yAxis)
+      if (!domain) {
+        return
+      }
+      const patchMarks = marks =>
+        marks?.map(mark => ({
+          ...mark,
+          // 关闭均线形变动画，避免连续更新 domain 时路径过渡叠加
+          ...(['line', 'point'].includes(mark.type) ? { animate: false } : {}),
+          scale: {
+            ...mark.scale,
+            x: {
+              ...mark.scale?.x,
+              domain: visibleDomain,
+              nice: false
+            },
+            y: {
+              ...mark.scale?.y,
+              key: 'stock-y',
+              domain,
+              zero: false,
+              nice: false
+            }
+          },
+          ...(mark.slider?.x
+            ? {
+                slider: {
+                  ...mark.slider,
+                  // 重绘 mark 时保留当前手柄位置，避免缩略轴跳回初始范围
+                  x: { ...mark.slider.x, preserve: true }
+                }
+              }
+            : {})
+        }))
+      target.setState(slider, state => ({
+        ...state,
+        marks: patchMarks(state.marks),
+        children: patchMarks(state.children)
+      }))
+      target.update()
+    }
+    const onValueChange = event => {
+      pendingValues = event.detail?.value || slider.attributes?.values
+      // 拖动过程中每个动画帧最多触发一次图表更新
+      if (frameId === undefined) {
+        frameId = requestAnimationFrame(render)
+      }
+    }
+    const apply = () => {
+      if (frameId !== undefined) {
+        cancelAnimationFrame(frameId)
+      }
+      render()
+    }
+    slider.addEventListener('valuechange', onValueChange)
+    // 松开鼠标时立即应用最后一次范围，确保手柄和图形最终状态一致
+    document.addEventListener('pointerup', apply)
+    return () => {
+      if (frameId !== undefined) {
+        cancelAnimationFrame(frameId)
+      }
+      slider.removeEventListener('valuechange', onValueChange)
+      document.removeEventListener('pointerup', apply)
+    }
+  }
+}
+
 /**
  * K线图
  */
@@ -61,18 +200,19 @@ export class StockLine extends G2ChartView {
   }
 
   stockMarker = function (x, y, r) {
-    const width = r * 1
-    const height = r
+    const width = r
+    const bodyHalfHeight = r * 0.4
+    const wickHalfHeight = r * 0.85
     return [
       // 矩形框
-      ['M', x - width - 1 / 2, y - height / 2],
-      ['L', x + width + 1 / 2, y - height / 2],
-      ['L', x + width + 1 / 2, y + height / 2],
-      ['L', x - width - 1 / 2, y + height / 2],
+      ['M', x - width - 1 / 2, y - bodyHalfHeight],
+      ['L', x + width + 1 / 2, y - bodyHalfHeight],
+      ['L', x + width + 1 / 2, y + bodyHalfHeight],
+      ['L', x - width - 1 / 2, y + bodyHalfHeight],
       ['Z'],
       // 中线
-      ['M', x, y + 10 / 2],
-      ['L', x, y - 10 / 2]
+      ['M', x, y + wickHalfHeight],
+      ['L', x, y - wickHalfHeight]
     ]
   }
 
@@ -95,22 +235,26 @@ export class StockLine extends G2ChartView {
     const yAxisDataeaseName = yAxis[1].dataeaseName
     const result = []
     for (let i = 0; i < data.length; i++) {
-      if (i < dayCount) {
-        result.push({
-          series: `MA${dayCount}`,
-          [xAxisDataeaseName]: data[i][xAxisDataeaseName],
-          value: null
-        })
-      } else {
-        const sum = data
-          .slice(i - dayCount + 1, i + 1)
-          .reduce((sum, item) => sum + item[yAxisDataeaseName], 0)
-        result.push({
-          series: `MA${dayCount}`,
-          [xAxisDataeaseName]: data[i][xAxisDataeaseName],
-          value: parseFloat((sum / dayCount).toFixed(3))
-        })
+      let value = null
+      // 第 dayCount 条数据即可形成首个完整均线窗口
+      if (i >= dayCount - 1) {
+        const values = data.slice(i - dayCount + 1, i + 1).map(item => item[yAxisDataeaseName])
+        // 窗口内存在空值或非数值时保持空均线，防止生成错误平均值
+        const hasInvalidValue = values.some(
+          value =>
+            value === null || value === undefined || value === '' || !Number.isFinite(Number(value))
+        )
+        if (!hasInvalidValue) {
+          const sum = values.reduce((sum, value) => sum + Number(value), 0)
+          value = parseFloat((sum / dayCount).toFixed(3))
+        }
       }
+      // 每个日期保留均线占位，空值只用于 tooltip，不参与画线
+      result.push({
+        series: `MA${dayCount}`,
+        [xAxisDataeaseName]: data[i][xAxisDataeaseName],
+        value
+      })
     }
     return result
   }
@@ -145,9 +289,18 @@ export class StockLine extends G2ChartView {
       encode: {
         x: dateAxis
       },
+      // 为顶部图例保留少量间距，避免图例标记贴近绘图区
+      marginTop: 2,
       scale: {
+        color: {
+          // 固定颜色域，确保无有效数据的均线仍显示图例
+          domain: ['日K', ...MOVING_AVERAGE_DAYS.map(day => `MA${day}`)]
+        },
         y: {
-          key: '2'
+          key: '2',
+          // 初始渲染与缩略轴重算统一使用整刻度范围
+          zero: false,
+          nice: true
         }
       },
       children: [
@@ -166,7 +319,9 @@ export class StockLine extends G2ChartView {
           encode: { y: [yAxis[0].dataeaseName, yAxis[1].dataeaseName], color: () => '日K' },
           slider: {
             x: {
-              position: 'bottom'
+              position: 'bottom',
+              // 拖动事件时穿透文本到缩略轴
+              handleLabelPointerEvents: 'none'
             }
           },
           style: {
@@ -212,10 +367,25 @@ export class StockLine extends G2ChartView {
 
   protected configAvgLine(chart: Chart, options: G2Spec): G2Spec {
     const avgDataSeries = []
-    const averages = [5, 10, 20, 60, 120, 180]
-    averages.forEach(avgDay => {
+    MOVING_AVERAGE_DAYS.forEach(avgDay => {
       avgDataSeries.push(...this.calculateMovingAverage(options.data.value, avgDay, chart))
     })
+    const domain = getStockYDomain(options.data.value, avgDataSeries, chart.yAxis)
+    if (domain) {
+      options.scale = {
+        ...options.scale,
+        y: {
+          ...options.scale?.y,
+          // 所有 K 线与均线 mark 共享同一个比例尺
+          key: 'stock-y',
+          domain,
+          zero: false,
+          // 保留实际极值，不让 G2 再扩展或改写 domain
+          nice: false
+        }
+      }
+    }
+    // 均线 mark 保留 null 占位，保证缺失日期仍可参与共享 tooltip 和图例过滤
     const lineMark = {
       type: 'line',
       data: {
@@ -243,6 +413,19 @@ export class StockLine extends G2ChartView {
       tooltip: false
     }
     options.children.push(lineMark, pointMark)
+    const [, intervalMark] = options.children
+    intervalMark.interaction = {
+      ...intervalMark.interaction,
+      // 统一更新 X/Y 域
+      sliderFilter: false,
+      stockSliderFilter: {
+        type: stockSliderFilter,
+        data: options.data.value,
+        avgDataSeries,
+        dimensionField: options.encode.x,
+        yAxis: chart.yAxis
+      }
+    }
     return options
   }
 
@@ -345,7 +528,9 @@ export class StockLine extends G2ChartView {
               return 'stock'
             }
             return 'hyphen'
-          }
+          },
+          // 增加各均线图例项的水平间距，避免名称和标记拥挤
+          colPadding: 20
         }
       }
     }
@@ -459,6 +644,8 @@ export class StockLine extends G2ChartView {
           gridStrokeOpacity: 1,
           gridLineWidth: yAxis.splitLine.lineStyle.width,
           gridLineDash,
+          // 隐藏最低分割线，避免与底部 X 轴线重叠
+          gridFilter: (_, index) => index !== 0,
           labelTransform: `rotate(${yAxis.axisLabel.rotate || 0})`,
           labelFormatter: d => {
             return valueFormatter(d, yAxis.axisLabelFormatter)
@@ -497,7 +684,16 @@ export class StockLine extends G2ChartView {
       closeAxis.dataeaseName,
       openAxis.dataeaseName
     ]
-    const maKeys = ['MA5', 'MA10', 'MA20', 'MA60', 'MA120', 'MA180']
+    const maKeys = MOVING_AVERAGE_DAYS.map(day => `MA${day}`)
+    // 先建立完整均线 tooltip 占位，实际有值的项目会在 render 中覆盖
+    const emptyMaItems = maKeys.map((name, index) => {
+      const color = basicStyle.colors[index % basicStyle.colors.length]
+      return {
+        name,
+        value: '-',
+        color: color ? hexColorToRGBA(color, basicStyle.alpha) : this.GREY
+      }
+    })
     const intervalMarkTooltipOptions: G2Spec = {
       tooltip: {
         items: [d => d]
@@ -528,15 +724,26 @@ export class StockLine extends G2ChartView {
           },
           render: (_, { title, items }) => {
             const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)
-            const result = []
+            // K 线明细与固定顺序的均线项目分开整理，避免空均线改变展示顺序
+            const stockResult = []
+            const maResult = emptyMaItems.map(item => ({ ...item }))
             items.forEach(item => {
-              if (item.value === null || item.value === undefined) {
-                return
-              }
               if (maKeys.includes(item.name)) {
-                const value = valueFormatter(item.value, tooltipAttr.tooltipFormatter)
-                result[maKeys.indexOf(item.name)] = { ...item, value }
+                const index = maKeys.indexOf(item.name)
+                const value =
+                  item.value === null || item.value === undefined
+                    ? '-'
+                    : valueFormatter(item.value, tooltipAttr.tooltipFormatter)
+                maResult[index] = {
+                  ...maResult[index],
+                  ...item,
+                  value,
+                  color: item.color || maResult[index].color
+                }
               } else {
+                if (item.value === null || item.value === undefined) {
+                  return
+                }
                 const offset = item[openAxis.dataeaseName] - item[closeAxis.dataeaseName]
                 const color =
                   offset === 0
@@ -547,10 +754,12 @@ export class StockLine extends G2ChartView {
                 yAxisKeys.forEach(key => {
                   const axis = yAxisMap[key]
                   const value = valueFormatter(item[key], tooltipAttr.tooltipFormatter)
-                  result.unshift({ name: axis.chartShowName ?? axis.name, value, color })
+                  stockResult.unshift({ name: axis.chartShowName ?? axis.name, value, color })
                 })
               }
             })
+            // G2 不会返回未成形的均线项，渲染前按固定顺序补齐
+            const result = [...stockResult, ...maResult]
             const itemsHtml = result
               .map(item => {
                 if (isEmpty(item)) {
