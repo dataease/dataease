@@ -160,6 +160,17 @@ export abstract class G2ChartView<
     return axisOption
   }
 
+  protected getOverlapGridFilter(axis: DeepPartial<ChartAxisStyle>): Partial<AxisComponent> {
+    if (!axis?.show || !axis.axisLine?.show) {
+      return {}
+    }
+    return {
+      // 仅过滤与维度轴重合的数值轴边界网格线
+      gridFilter: (_, index, values) =>
+        axis.position === 'top' ? index < values.length - 1 : index > 0
+    }
+  }
+
   public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
     return setupSeriesColor(chart, data)
   }

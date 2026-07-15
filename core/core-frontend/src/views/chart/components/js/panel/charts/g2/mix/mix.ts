@@ -553,15 +553,16 @@ export class ColumnLineMix extends G2ChartView {
   }
 
   protected configYAxis(chart: Chart, options: G2Spec): G2Spec {
-    const { yAxis, yAxisExt } = parseJson(chart.customStyle)
+    const { xAxis, yAxis, yAxisExt } = parseJson(chart.customStyle)
     const [intervalMark, lineMark, pointMark] = options.children
     if (!yAxis.show) {
       intervalMark.axis.y = false
       lineMark.axis.y = false
       return options
     }
-    const yAxisOption = this.getAxis(yAxis)
-    const yAxisExtOption = this.getAxis(yAxisExt)
+    const overlapGridFilter = this.getOverlapGridFilter(xAxis)
+    const yAxisOption = { ...this.getAxis(yAxis), ...overlapGridFilter }
+    const yAxisExtOption = { ...this.getAxis(yAxisExt), ...overlapGridFilter }
     merge(intervalMark, {
       axis: {
         y: {

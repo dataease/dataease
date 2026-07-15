@@ -748,13 +748,16 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
         tickStroke: axis.axisLine.lineStyle.color,
         tickStrokeOpacity: 2
       }
+      const xAxis = customStyle.xAxis
+      const gridFilter = axisType === 'yAxis' ? this.getOverlapGridFilter(xAxis) : {}
       // 网格线
       const grid = {
         grid: axis.splitLine.show,
         gridLineWidth: axis.splitLine.lineStyle.width,
         gridStroke: axis.splitLine.lineStyle.color,
         gridStrokeOpacity: 1,
-        gridLineDash: getLineDash(axis.splitLine.lineStyle.style)
+        gridLineDash: getLineDash(axis.splitLine.lineStyle.style),
+        ...gridFilter
       }
       // 标签（刻度值）
       const label = {
