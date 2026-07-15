@@ -201,6 +201,7 @@ public class CalciteProvider extends Provider {
             }
             list = getDataResult(resultSet);
         } catch (Exception | AssertionError e) {
+            e.printStackTrace();
             String msg;
             if (e.getCause() != null && e.getCause().getCause() != null) {
                 msg = e.getMessage() + " [" + e.getCause().getCause().getMessage() + "]";
@@ -403,21 +404,22 @@ public class CalciteProvider extends Provider {
             TableFieldWithValue tableFieldWithValue = tableFieldWithValues.get(i);
             try {
                 Object valueObject = tableFieldWithValue.getValue();
-                if (valueObject instanceof String
-                        && datasourceType == DatasourceConfiguration.DatasourceType.oracle
-                        && StringUtils.isNotEmpty(oracleCharset)
-                        && StringUtils.isNotEmpty(oracleTargetCharset)) {
-                    valueObject = convertOracleText((String) valueObject, oracleTargetCharset, oracleCharset);
-                }
-                if (tableFieldWithValue.getType() != null && tableFieldWithValue.getType().equals(Types.CLOB) && valueObject instanceof String stringValue) {
-                    Reader reader = new StringReader(stringValue);
-                    preparedStatement.setCharacterStream(i + 1, reader, stringValue.length());
-                } else if (tableFieldWithValue.getType() != null) {
-                    preparedStatement.setObject(i + 1, valueObject, tableFieldWithValue.getType());
-                } else {
-                    preparedStatement.setObject(i + 1, valueObject);
-                }
-            } catch (SQLException | UnsupportedEncodingException e) {
+                ((PreparedStatement) statement).setObject(i + 1,  Timestamp.valueOf(valueObject.toString()), Types.TIMESTAMP);
+//                if (valueObject instanceof String
+//                        && datasourceType == DatasourceConfiguration.DatasourceType.oracle
+//                        && StringUtils.isNotEmpty(oracleCharset)
+//                        && StringUtils.isNotEmpty(oracleTargetCharset)) {
+//                    valueObject = convertOracleText((String) valueObject, oracleTargetCharset, oracleCharset);
+//                }
+//                if (tableFieldWithValue.getType() != null && tableFieldWithValue.getType().equals(Types.CLOB) && valueObject instanceof String stringValue) {
+//                    Reader reader = new StringReader(stringValue);
+//                    preparedStatement.setCharacterStream(i + 1, reader, stringValue.length());
+//                } else if (tableFieldWithValue.getType() != null) {
+//                    preparedStatement.setObject(i + 1, valueObject, tableFieldWithValue.getType());
+//                } else {
+//                    preparedStatement.setObject(i + 1, valueObject);
+//                }
+            } catch (SQLException e) {
                 throw new SQLException(e.getMessage() + ". VALUE: " + String.valueOf(tableFieldWithValue.getValue()) + " , TARGET TYPE: " + tableFieldWithValue.getColumnTypeName(), e);
             }
         }
@@ -555,21 +557,21 @@ public class CalciteProvider extends Provider {
                 for (int i = 0; i < datasourceRequest.getTableFieldWithValues().size(); i++) {
                     try {
                         Object valueObject = datasourceRequest.getTableFieldWithValues().get(i).getValue();
-
-                        if (valueObject instanceof String && DatasourceConfiguration.DatasourceType.valueOf(value.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
-                            if (StringUtils.isNotEmpty(oracleCharset) && StringUtils.isNotEmpty(oracleTargetCharset)) {
-                                //转换为数据库的字符集
-                                valueObject = convertOracleText((String) valueObject, oracleTargetCharset, oracleCharset);
-                            }
-                            if (datasourceRequest.getTableFieldWithValues().get(i).getType().equals(Types.CLOB)) {
-                                Reader reader = new StringReader((String) valueObject);
-                                ((PreparedStatement) statement).setCharacterStream(i + 1, reader, ((String) valueObject).length());
-                            } else {
-                                ((PreparedStatement) statement).setObject(i + 1, valueObject, datasourceRequest.getTableFieldWithValues().get(i).getType());
-                            }
-                        } else {
-                            ((PreparedStatement) statement).setObject(i + 1, valueObject, datasourceRequest.getTableFieldWithValues().get(i).getType());
-                        }
+                        ((PreparedStatement) statement).setObject(i + 1, valueObject, 93);
+//                        if (valueObject instanceof String && DatasourceConfiguration.DatasourceType.valueOf(value.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
+//                            if (StringUtils.isNotEmpty(oracleCharset) && StringUtils.isNotEmpty(oracleTargetCharset)) {
+//                                //转换为数据库的字符集
+//                                valueObject = convertOracleText((String) valueObject, oracleTargetCharset, oracleCharset);
+//                            }
+//                            if (datasourceRequest.getTableFieldWithValues().get(i).getType().equals(Types.CLOB)) {
+//                                Reader reader = new StringReader((String) valueObject);
+//                                ((PreparedStatement) statement).setCharacterStream(i + 1, reader, ((String) valueObject).length());
+//                            } else {
+//                                ((PreparedStatement) statement).setObject(i + 1, valueObject, datasourceRequest.getTableFieldWithValues().get(i).getType());
+//                            }
+//                        } else {
+//                            ((PreparedStatement) statement).setObject(i + 1, valueObject, datasourceRequest.getTableFieldWithValues().get(i).getType());
+//                        }
                         LogUtil.info("execWithPreparedStatement param[" + (i + 1) + "](" + datasourceRequest.getTableFieldWithValues().get(i).getColumnTypeName() + "): " + datasourceRequest.getTableFieldWithValues().get(i).getValue());
                     } catch (SQLException e) {
                         throw new SQLException(e.getMessage() + ". VALUE: " + datasourceRequest.getTableFieldWithValues().get(i).getValue().toString() + " , TARGET TYPE: " + datasourceRequest.getTableFieldWithValues().get(i).getColumnTypeName());
@@ -619,20 +621,21 @@ public class CalciteProvider extends Provider {
                 for (int i = 0; i < datasourceRequest.getTableFieldWithValues().size(); i++) {
                     try {
                         Object valueObject = datasourceRequest.getTableFieldWithValues().get(i).getValue();
-                        if (valueObject instanceof String && DatasourceConfiguration.DatasourceType.valueOf(value.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
-                            if (StringUtils.isNotEmpty(oracleCharset) && StringUtils.isNotEmpty(oracleTargetCharset)) {
-                                //转换为数据库的字符集
-                                valueObject = convertOracleText((String) valueObject, oracleTargetCharset, oracleCharset);
-                            }
-                            if (datasourceRequest.getTableFieldWithValues().get(i).getType().equals(Types.CLOB)) {
-                                Reader reader = new StringReader((String) valueObject);
-                                ((PreparedStatement) statement).setCharacterStream(i + 1, reader, ((String) valueObject).length());
-                            } else {
-                                ((PreparedStatement) statement).setObject(i + 1, valueObject, datasourceRequest.getTableFieldWithValues().get(i).getType());
-                            }
-                        } else {
-                            ((PreparedStatement) statement).setObject(i + 1, valueObject, datasourceRequest.getTableFieldWithValues().get(i).getType());
-                        }
+                        ((PreparedStatement) statement).setObject(i + 1, valueObject, 93);
+//                        if (valueObject instanceof String && DatasourceConfiguration.DatasourceType.valueOf(value.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
+//                            if (StringUtils.isNotEmpty(oracleCharset) && StringUtils.isNotEmpty(oracleTargetCharset)) {
+//                                //转换为数据库的字符集
+//                                valueObject = convertOracleText((String) valueObject, oracleTargetCharset, oracleCharset);
+//                            }
+//                            if (datasourceRequest.getTableFieldWithValues().get(i).getType().equals(Types.CLOB)) {
+//                                Reader reader = new StringReader((String) valueObject);
+//                                ((PreparedStatement) statement).setCharacterStream(i + 1, reader, ((String) valueObject).length());
+//                            } else {
+//                                ((PreparedStatement) statement).setObject(i + 1, valueObject, datasourceRequest.getTableFieldWithValues().get(i).getType());
+//                            }
+//                        } else {
+//                            ((PreparedStatement) statement).setObject(i + 1, valueObject, datasourceRequest.getTableFieldWithValues().get(i).getType());
+//                        }
                         LogUtil.info("execWithPreparedStatement param[" + (i + 1) + "](" + datasourceRequest.getTableFieldWithValues().get(i).getColumnTypeName() + "): " + datasourceRequest.getTableFieldWithValues().get(i).getValue());
                     } catch (SQLException e) {
                         throw new SQLException(e.getMessage() + ". VALUE: " + datasourceRequest.getTableFieldWithValues().get(i).getValue().toString() + " , TARGET TYPE: " + datasourceRequest.getTableFieldWithValues().get(i).getColumnTypeName());
