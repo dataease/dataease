@@ -70,7 +70,7 @@
     "vue-uuid": "^3.0.0",
     "vue3-ace-editor": "^2.2.2",
     "vuedraggable": "^4.1.0",
-    "vxe-table": "^4.16.20",
+    "vxe-table": ">=4.16.20 <=4.20.0",
     "web-storage-cache": "^1.1.1",
     "xss": "^1.0.14"
   },
