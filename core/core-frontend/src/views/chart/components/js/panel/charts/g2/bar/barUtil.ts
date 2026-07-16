@@ -273,21 +273,70 @@ export function tooltipWrapperId(container: string) {
   return 'G2-TOOLTIP-WRAPPER-' + container
 }
 
+export type TooltipDisplayMode = 'hover' | 'carousel'
+
+export const TOOLTIP_HOVER_LEAVE_EVENT = 'de-tooltip-hover-leave'
+
+export function getTooltipWrapper(container: string): HTMLElement | null {
+  return document.getElementById(tooltipWrapperId(container))
+}
+
+export function getTooltipDisplayMode(container: string): TooltipDisplayMode {
+  return getTooltipWrapper(container)?.dataset.tooltipDisplayMode === 'carousel'
+    ? 'carousel'
+    : 'hover'
+}
+
+export function switchTooltipWrapperHost(chart: Chart, mode: TooltipDisplayMode) {
+  const wrapper = getTooltipWrapper(chart.container)
+  const chartContainer = document.getElementById(chart.container)
+  const host = mode === 'hover' ? document.body : chartContainer
+  if (!wrapper || !host) return
+
+  const shouldResetTooltip =
+    wrapper.dataset.tooltipDisplayMode !== mode || wrapper.parentElement !== host
+  if (shouldResetTooltip) {
+    // 挂载点切换时先隐藏旧内容，等待新的 tooltip:show 再恢复
+    wrapper.querySelectorAll<HTMLElement>('.g2-tooltip').forEach(tooltip => {
+      tooltip.style.visibility = 'hidden'
+      tooltip.style.removeProperty('left')
+      tooltip.style.removeProperty('top')
+    })
+  }
+
+  // 复用同一个 G2 tooltip 节点，按触发来源切换挂载位置
+  wrapper.dataset.tooltipDisplayMode = mode
+  if (wrapper.parentElement !== host) {
+    host.appendChild(wrapper)
+  }
+
+  Object.assign(wrapper.style, {
+    position: mode === 'hover' ? 'fixed' : 'absolute',
+    inset: mode === 'hover' ? '0 auto auto 0' : '0',
+    width: mode === 'hover' ? '0px' : '100%',
+    height: mode === 'hover' ? '0px' : '100%',
+    overflow: 'visible',
+    pointerEvents: 'none',
+    zIndex: chart.container.includes('viewDialog') ? '9999' : '2000'
+  })
+  if (chart.fontFamily && chart.fontFamily !== 'inherit') {
+    wrapper.style.fontFamily = chart.fontFamily
+  } else {
+    wrapper.style.removeProperty('font-family')
+  }
+}
+
 export function createTooltipWrapper(chart: Chart) {
   const wrapperId = tooltipWrapperId(chart.container)
   let g2TooltipWrapper = document.getElementById(wrapperId)
   if (!g2TooltipWrapper) {
     g2TooltipWrapper = document.createElement('div')
     g2TooltipWrapper.id = wrapperId
-    g2TooltipWrapper.style.position = 'absolute'
     g2TooltipWrapper.style.pointerEvents = 'none'
-    g2TooltipWrapper.style.zIndex = '2000'
-    g2TooltipWrapper.style.top = '0px'
     document.body.appendChild(g2TooltipWrapper)
   }
-  // 如果开启轮播则不使用自定义tooltip容器
-  const customAttr = parseJson(chart.customAttr)
-  return customAttr?.tooltip?.carousel?.enable ? undefined : g2TooltipWrapper
+  switchTooltipWrapperHost(chart, 'hover')
+  return g2TooltipWrapper
 }
 
 export function tooltipCss(tooltipAttr: DeepPartial<ChartTooltipAttr>) {
@@ -531,46 +580,143 @@ export function sortMixTooltipItems<T extends { groupIndex: number; name: any }>
   })
 }
 
+const CAROUSEL_TOOLTIP_GAP = 8
+const G2_TOOLTIP_DEFAULT_MIN_WIDTH = 120
+
+type CarouselTooltipFrameState = {
+  fitFrame?: number
+}
+
+const carouselTooltipFrameState = new WeakMap<HTMLElement, CarouselTooltipFrameState>()
+
+function fitCarouselTooltipInChart(
+  container: string,
+  tooltipWrapper: HTMLElement,
+  tooltip: HTMLElement
+) {
+  const frameState = carouselTooltipFrameState.get(tooltip) || {}
+  if (frameState.fitFrame !== undefined) {
+    window.cancelAnimationFrame(frameState.fitFrame)
+    frameState.fitFrame = undefined
+  }
+  carouselTooltipFrameState.set(tooltip, frameState)
+
+  // 等待 G2 完成内容和原始位置计算后再进行边界修正
+  frameState.fitFrame = window.requestAnimationFrame(() => {
+    frameState.fitFrame = undefined
+    if (
+      !tooltip.isConnected ||
+      !tooltipWrapper.contains(tooltip) ||
+      getTooltipDisplayMode(container) !== 'carousel'
+    ) {
+      return
+    }
+
+    const wrapperWidth = tooltipWrapper.clientWidth
+    const wrapperHeight = tooltipWrapper.clientHeight
+    if (wrapperWidth <= CAROUSEL_TOOLTIP_GAP * 2 || wrapperHeight <= CAROUSEL_TOOLTIP_GAP * 2) {
+      return
+    }
+
+    const maxWidth = wrapperWidth - CAROUSEL_TOOLTIP_GAP * 2
+    const maxHeight = wrapperHeight - CAROUSEL_TOOLTIP_GAP * 2
+    const minWidth = Math.min(G2_TOOLTIP_DEFAULT_MIN_WIDTH, maxWidth)
+    tooltipWrapper.style.setProperty('--de-carousel-tooltip-min-width', `${minWidth}px`)
+    tooltipWrapper.style.setProperty('--de-carousel-tooltip-max-width', `${maxWidth}px`)
+    tooltipWrapper.style.setProperty('--de-carousel-tooltip-max-height', `${maxHeight}px`)
+
+    const tooltipWidth = tooltip.offsetWidth
+    const tooltipHeight = tooltip.offsetHeight
+    const originalLeft = Number.parseFloat(tooltip.style.left)
+    const originalTop = Number.parseFloat(tooltip.style.top)
+    const preferredLeft = Number.isFinite(originalLeft) ? originalLeft : tooltip.offsetLeft
+    const preferredTop = Number.isFinite(originalTop) ? originalTop : tooltip.offsetTop
+    const maxLeft = Math.max(
+      CAROUSEL_TOOLTIP_GAP,
+      wrapperWidth - tooltipWidth - CAROUSEL_TOOLTIP_GAP
+    )
+    const maxTop = Math.max(
+      CAROUSEL_TOOLTIP_GAP,
+      wrapperHeight - tooltipHeight - CAROUSEL_TOOLTIP_GAP
+    )
+    const left = Math.max(CAROUSEL_TOOLTIP_GAP, Math.min(preferredLeft, maxLeft))
+    const top = Math.max(CAROUSEL_TOOLTIP_GAP, Math.min(preferredTop, maxTop))
+
+    // 复用同一 tooltip 节点，让轮播坐标更新自然过渡
+    tooltip.style.left = `${left}px`
+    tooltip.style.top = `${top}px`
+    tooltip.style.visibility = 'visible'
+  })
+}
+
+function syncHoverTooltipEllipsisTitles(tooltip: HTMLElement) {
+  // 只管理公共模板的错误 title 和本方法生成的 title
+  tooltip
+    .querySelectorAll<HTMLElement>('.g2-tooltip-list-item-name-label, .g2-tooltip-list-item-value')
+    .forEach(element => {
+      const managed = element.dataset.deEllipsisTitle === 'true'
+      const canManage = !element.title || element.title === 'value' || managed
+      if (!canManage) return
+
+      const text = element.textContent?.trim() || ''
+      const isOverflowing = element.scrollWidth > element.clientWidth + 1
+      if (text && isOverflowing) {
+        element.title = text
+        element.dataset.deEllipsisTitle = 'true'
+      } else {
+        element.removeAttribute('title')
+        element.removeAttribute('data-de-ellipsis-title')
+      }
+    })
+}
+
 export function listenerTooltipShow(newChart: G2Chart, chart: Chart) {
   newChart.on('tooltip:show', event => {
-    const customAttr = parseJson(chart.customAttr)
-    const isCarousel = customAttr?.tooltip?.carousel?.enable
-    const tooltipWrapper = isCarousel
-      ? document.getElementById(chart.container)
-      : document.getElementById(tooltipWrapperId(chart.container))
+    const tooltipWrapper = getTooltipWrapper(chart.container)
     if (!tooltipWrapper) return
+
+    const isCarousel = getTooltipDisplayMode(chart.container) === 'carousel'
     tooltipWrapper.style.zIndex = chart.container.indexOf('viewDialog') > -1 ? '9999' : '2000'
-    const allTooltips = tooltipWrapper?.querySelectorAll('.g2-tooltip')
+    const allTooltips = tooltipWrapper.querySelectorAll<HTMLElement>('.g2-tooltip')
     if (!allTooltips) return
     allTooltips.forEach(item => {
-      const tooltip = item as HTMLElement
-      const tooltipMouseleave = () => {
-        tooltip.style.visibility = 'hidden'
+      const tooltip = item
+      if (tooltip.dataset.deTooltipLeaveBound !== 'true') {
+        tooltip.dataset.deTooltipLeaveBound = 'true'
+        tooltip.addEventListener('mouseleave', () => {
+          tooltip.style.visibility = 'hidden'
+          tooltipWrapper.dispatchEvent(new CustomEvent(TOOLTIP_HOVER_LEAVE_EVENT))
+        })
       }
-      tooltip.removeEventListener('mouseleave', tooltipMouseleave)
-      tooltip.addEventListener('mouseleave', tooltipMouseleave)
+      tooltip.style.setProperty('position', isCarousel ? 'absolute' : 'fixed', 'important')
       if (isCarousel) {
-        tooltip.style.top = '0px'
-      } else {
-        const clientY = event?.client?.y
-        if (!clientY) return
-        if (clientY < tooltip.getBoundingClientRect().height) {
-          tooltip.style.top = '0px'
-        } else {
-          tooltip.style.top = `${clientY - tooltip.getBoundingClientRect().height - 20}px`
-        }
-        const clientX = event.client?.x
-        const targetDiv = document.getElementById(chart.container)
-        if (!targetDiv || clientX == null) return
-
-        const tooltipWidth = tooltip.getBoundingClientRect().width
-        const left = clientX
-
-        tooltip.style.left =
-          left + tooltipWidth > targetDiv.getBoundingClientRect().right
-            ? `${clientX - tooltipWidth - 20}px`
-            : `${left + 20}px`
+        fitCarouselTooltipInChart(chart.container, tooltipWrapper, tooltip)
+        return
       }
+
+      const clientX = event?.client?.x
+      const clientY = event?.client?.y
+      if (clientX == null || clientY == null) {
+        tooltip.style.visibility = 'hidden'
+        return
+      }
+
+      const gap = 20
+      const { width, height } = tooltip.getBoundingClientRect()
+      const viewportWidth = document.documentElement.clientWidth
+      const viewportHeight = document.documentElement.clientHeight
+      let left = clientX + gap
+      let top = clientY - height - gap
+      if (left + width > viewportWidth) {
+        left = clientX - width - gap
+      }
+      if (top < 0) {
+        top = clientY + gap
+      }
+      tooltip.style.visibility = 'visible'
+      tooltip.style.left = `${Math.max(0, Math.min(left, viewportWidth - width))}px`
+      tooltip.style.top = `${Math.max(0, Math.min(top, viewportHeight - height))}px`
+      syncHoverTooltipEllipsisTitles(tooltip)
     })
   })
 }
