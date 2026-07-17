@@ -556,12 +556,22 @@ export class GroupLineMix extends G2ChartView {
       return options
     }
     const chartObj = context.chartObj as G2Chart
-    const formatterMap = tooltip.seriesTooltipFormatter
-      ?.filter(i => i.show)
-      .reduce((pre, next) => {
-        pre[next.id] = next
-        return pre
-      }, {}) as Record<string, SeriesFormatter>
+    const formatterMap = (tooltip.seriesTooltipFormatter || []).reduce((pre, next) => {
+      pre[next.id] = next
+      return pre
+    }, {}) as Record<string, SeriesFormatter>
+    const sourceTooltipItems = [
+      ...(context.leftData || []).map(item => ({ ...item, left: true })),
+      ...(context.rightData || [])
+    ]
+    const quotaIdOf = item => item?.quotaList?.[0]?.id
+    const completeTooltipItems = (title, items = []) => {
+      if (filterValidMixTooltipItems(items).length) {
+        return items
+      }
+      // 双线 shared tooltip 未返回有效指标时，仅按当前维度读取左右轴源数据
+      return sourceTooltipItems.filter(item => item.field === title)
+    }
     let g2TooltipWrapper = document.getElementById('G2-TOOLTIP-WRAPPER')
     if (!g2TooltipWrapper) {
       g2TooltipWrapper = document.createElement('div')
@@ -590,19 +600,20 @@ export class GroupLineMix extends G2ChartView {
           marker: false,
           render: (_, { title, items }) => {
             const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)
+            items = completeTooltipItems(title, items)
             if (tooltip.seriesTooltipFormatter?.length) {
-              items = items.filter(i => formatterMap[i.quotaList[0].id])
+              items = items.filter(item => formatterMap[quotaIdOf(item)]?.show !== false)
             }
             items = filterValidMixTooltipItems(items)
             const result = []
             const view = chartObj.getContext().views.find(v => v.key === 'chart')
             items.forEach(item => {
               const formatterCfg =
-                formatterMap[item.quotaList[0].id]?.formatterCfg ?? yAxis[0].formatterCfg
+                formatterMap[quotaIdOf(item)]?.formatterCfg ?? yAxis[0].formatterCfg
               const value = valueFormatter(item.value, formatterCfg)
               const name = item.category
-              const colorScale = item.left ? view.scale.color : view.scale.color2
-              const color = colorScale.map(name) ?? item.color
+              const colorScale = item.left ? view?.scale?.color : view?.scale?.color2
+              const color = colorScale?.map?.(name) ?? item.color
               // 记录 tooltip 项所属维度分组，供后续分组标题和排序使用
               result.push({
                 value,

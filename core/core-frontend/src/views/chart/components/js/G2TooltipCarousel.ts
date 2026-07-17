@@ -177,6 +177,10 @@ class G2TooltipCarousel {
     return this.chart.type === 'chart-mix-dual-line'
   }
 
+  private isCustomLegendMixChart(): boolean {
+    return ['chart-mix-group', 'chart-mix-stack', 'chart-mix-dual-line'].includes(this.chart.type)
+  }
+
   private isColumnChart(): boolean {
     return ['bar', 'bar-stack', 'bar-group', 'bar-group-stack', 'percentage-bar-stack'].includes(
       this.chart.type
@@ -604,15 +608,13 @@ class G2TooltipCarousel {
     // 轮播显示前切回图表容器，避免复用悬浮时的 body 坐标
     switchTooltipWrapperHost(this.chart, 'carousel')
     const { offsetX, offsetY } = this.getTooltipOffsetX(finalTooltipData)
+    // 组合图交由 G2 按当前 x 定位，避免不同图形命中不同维度
     if (this.isColumnMixChart()) {
-      this.newChart.emit('tooltip:show', {
-        ...finalTooltipData,
-        offsetX
-      })
+      this.newChart.emit('tooltip:show', finalTooltipData)
     } else {
       this.newChart.emit('tooltip:show', {
         ...finalTooltipData,
-        ...(offsetX && isLineOrMix && { offsetX }),
+        ...(!isMix && offsetX && isLineOrMix && { offsetX }),
         ...(offsetY && { offsetY })
       })
     }
@@ -897,7 +899,14 @@ class G2TooltipCarousel {
       const ctx = this.newChart?.getContext()
       if (!ctx) return {}
       const elements = ctx.canvas?.document?.getElementsByClassName('element') || []
-      const root = ctx.canvas?.document?.getElementsByClassName('plot')?.[0]
+      const plots = ctx.canvas?.document?.getElementsByClassName('plot') || []
+      // 独立图例也是 plot，组合图必须使用 key=chart 对应的真实绘图区
+      const chartView = this.isCustomLegendMixChart()
+        ? ctx.views?.find(view => view.key === 'chart')
+        : undefined
+      const root = chartView
+        ? Array.from(plots).find((plot: any) => plot.__data__ === chartView.layout)
+        : plots[0]
       if (!root || elements.length === 0) return {}
       const { insetLeft = 0, marginLeft = 0, paddingLeft = 0 } = root.__data__ || {}
       const plotPaddingLeft = insetLeft + marginLeft + paddingLeft
