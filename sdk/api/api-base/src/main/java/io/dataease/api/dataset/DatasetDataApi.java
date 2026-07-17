@@ -25,6 +25,7 @@ public interface DatasetDataApi {
     Map<String, Object> previewData(@RequestBody DatasetGroupInfoDTO datasetGroupInfoDTO) throws Exception;
 
     @Operation(summary = "获取数据集节点字段")
+    @DePermit({"#p0.datasourceId+':read'"})
     @PostMapping("tableField")
     List<DatasetTableFieldDTO> tableField(@RequestBody DatasetTableDTO datasetTableDTO) throws Exception;
 
@@ -32,10 +33,6 @@ public interface DatasetDataApi {
     @DePermit({"#p0.datasourceId+':read'"})
     @PostMapping("previewSql")
     Map<String, Object> previewSql(@RequestBody PreviewSqlDTO dto) throws Exception;
-
-    @Operation(summary = "sql片段校验", hidden = true)
-    @PostMapping("previewSqlCheck")
-    Map<String, Object> previewSqlCheck(@RequestBody PreviewSqlDTO dto) throws Exception;
 
     @Operation(summary = "数据集获取字段枚举值")
     @PostMapping("enumValueDs")
