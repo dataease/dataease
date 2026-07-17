@@ -233,8 +233,8 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
                         popi.required,
                         popi.defaultValue,
                         popi.enabledDefault,
-                        Expressions.stringTemplate("CONCAT({0}, '#', {1})",
-                                poptvi.targetViewId, poptvi.targetFieldId).as("targetInfo")))
+                        Expressions.stringTemplate("CONCAT({0}, '#', {1}, '#', {2})",
+                                poptvi.targetViewId, poptvi.targetFieldId,poptvi.matchMode).as("targetInfo")))
                 .from(pop)
                 .leftJoin(popi).on(pop.paramsId.eq(popi.paramsId))
                 .leftJoin(poptvi).on(popi.paramsInfoId.eq(poptvi.paramsInfoId))

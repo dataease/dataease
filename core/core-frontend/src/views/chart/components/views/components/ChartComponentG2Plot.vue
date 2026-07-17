@@ -1146,11 +1146,144 @@ onBeforeUnmount(() => {
   height: 100%;
   z-index: 0;
   .canvas-content {
+    position: relative;
     width: 100% !important;
     height: 100% !important;
     :deep(.g2-tooltip) {
       position: fixed !important;
     }
+    :deep([data-tooltip-display-mode='carousel'] .g2-tooltip) {
+      position: absolute !important;
+      box-sizing: border-box;
+      min-width: var(--de-carousel-tooltip-min-width) !important;
+      max-width: var(--de-carousel-tooltip-max-width) !important;
+      max-height: var(--de-carousel-tooltip-max-height) !important;
+      overflow: hidden !important;
+      overflow-y: hidden !important;
+      scrollbar-width: none !important;
+      -ms-overflow-style: none;
+      transition: left 400ms cubic-bezier(0.22, 1, 0.36, 1),
+        top 400ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+    }
+    // 轮播 tooltip 高度由外层约束，同时禁用内部滚动并隐藏滚动条
+    :deep([data-tooltip-display-mode='carousel'] .g2-tooltip-list) {
+      box-sizing: border-box;
+      width: 100%;
+      min-width: 0;
+      max-width: 100% !important;
+      max-height: none !important;
+      overflow-x: hidden;
+      overflow-y: hidden !important;
+      scrollbar-width: none !important;
+      -ms-overflow-style: none;
+    }
+    :deep([data-tooltip-display-mode='carousel'] .g2-tooltip::-webkit-scrollbar),
+    :deep([data-tooltip-display-mode='carousel'] .g2-tooltip-list::-webkit-scrollbar) {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+    :deep([data-tooltip-display-mode='carousel'] .g2-tooltip-list-item) {
+      box-sizing: border-box;
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      overflow: hidden;
+    }
+    :deep([data-tooltip-display-mode='carousel'] .g2-tooltip-list-item-name) {
+      flex: 3 1 0 !important;
+      min-width: 0 !important;
+      max-width: none !important;
+      overflow: hidden;
+    }
+    :deep([data-tooltip-display-mode='carousel'] .g2-tooltip-list-item-marker) {
+      flex: 0 0 auto;
+    }
+    :deep([data-tooltip-display-mode='carousel'] .g2-tooltip-list-item-name-label),
+    :deep([data-tooltip-display-mode='carousel'] .g2-tooltip-list-item-value) {
+      min-width: 0 !important;
+      max-width: none !important;
+      overflow: hidden !important;
+      white-space: nowrap !important;
+      text-overflow: ellipsis !important;
+    }
+    :deep([data-tooltip-display-mode='carousel'] .g2-tooltip-list-item-value) {
+      flex: 2 1 0 !important;
+      margin-left: 8px !important;
+    }
+  }
+}
+</style>
+
+<style lang="less">
+div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover'] {
+  // 悬浮 tooltip 使用稳定宽度并为移动端保留安全边距
+  .g2-tooltip {
+    box-sizing: border-box;
+    width: min(320px, calc(100vw - 24px)) !important;
+    max-width: calc(100vw - 24px) !important;
+    max-height: min(480px, 60vh) !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+  }
+
+  .g2-tooltip-list {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    max-width: 100% !important;
+    max-height: none !important;
+  }
+
+  // 悬浮 tooltip 优先保证数值完整显示
+  .g2-tooltip-list-item {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .g2-tooltip-list-item-name {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    overflow: hidden !important;
+  }
+
+  .g2-tooltip-list-item-marker {
+    flex: 0 0 auto;
+  }
+
+  .g2-tooltip-list-item-name-label {
+    min-width: 0 !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .g2-tooltip-list-item-value {
+    flex: 0 0 auto !important;
+    min-width: 0 !important;
+    max-width: 70% !important;
+    margin-left: 12px !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+  }
+}
+
+@supports (width: 100dvw) {
+  div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover'] .g2-tooltip {
+    width: min(
+      320px,
+      calc(100dvw - 24px - env(safe-area-inset-left) - env(safe-area-inset-right))
+    ) !important;
+    max-width: calc(
+      100dvw - 24px - env(safe-area-inset-left) - env(safe-area-inset-right)
+    ) !important;
+    max-height: min(480px, 60dvh) !important;
   }
 }
 </style>

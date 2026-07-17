@@ -26,9 +26,11 @@ import { colorStringToHex } from '@/utils/color'
 import { isMobile } from '@/utils/utils'
 import { mixColor } from '@/utils/color'
 import { isCascadeParentCleared } from './cascade-utils'
+import { ElMessage } from 'element-plus-secondary'
 
 interface SelectConfig {
   selectValue: any
+  required: false
   defaultMapValue: any
   mapValue: any
   displayFormat?: number
@@ -59,6 +61,7 @@ interface SelectConfig {
     label: string
     value: string
   }[]
+  optionFilter: []
 }
 
 const { t } = useI18n()
@@ -69,6 +72,7 @@ const props = defineProps({
     default: () => {
       return {
         selectValue: '',
+        required: false,
         displayFormat: 0,
         queryConditionWidth: 0,
         resultMode: 0,
@@ -77,7 +81,8 @@ const props = defineProps({
         defaultValueCheck: false,
         optionValueSource: 0,
         multiple: false,
-        checkedFieldsMap: {}
+        checkedFieldsMap: {},
+        optionFilter: []
       }
     }
   },
@@ -445,6 +450,19 @@ const handleFieldIdChange = (val: EnumValue) => {
         selectValue.value = Array.isArray(selectValue.value)
           ? [...selectValue.value]
           : selectValue.value
+      }
+      if (config.value?.required && config.value?.optionFilter?.length > 0) {
+        const isValid = selectValue.value?.some(value =>
+          options.value?.some(option => option.value === value)
+        )
+        if (!isValid) {
+          config.value.selectValue = null
+          ElMessage({
+            message: `【${config.value?.name}】${t('v_query.before_querying')}`,
+            type: 'error',
+            duration: 3000
+          })
+        }
       }
       setCascadeValueBack(config.value.mapValue)
       isFromRemote.value = false

@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { onBeforeUnmount, onMounted, toRefs } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, toRefs } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 
 const dvMainStore = dvMainStoreWithOut()
 
@@ -34,6 +35,12 @@ const fullscreenChange = () => {
   // 大屏编辑使用
   if (props.showPosition === 'dvEdit') {
     useEmitt().emitter.emit('canvasScrollRestore')
+    if (!isFullscreen) {
+      nextTick(() => {
+        // 等待全屏预览副本卸载后再恢复原编辑画布的轮播
+        G2TooltipCarousel.resume()
+      })
+    }
   }
 }
 

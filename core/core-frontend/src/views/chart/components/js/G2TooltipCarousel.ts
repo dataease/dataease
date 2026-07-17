@@ -1,5 +1,11 @@
 import { parseJson } from '@/views/chart/components/js/util'
-import { listenerTooltipShow } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
+import {
+  getTooltipDisplayMode,
+  getTooltipWrapper,
+  listenerTooltipShow,
+  switchTooltipWrapperHost,
+  TOOLTIP_HOVER_LEAVE_EVENT
+} from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 
 class G2TooltipCarousel {
   /**
@@ -40,7 +46,13 @@ class G2TooltipCarousel {
    */
   private intersectionObserver: IntersectionObserver
   private chartElement: HTMLElement
-  private timers = { interval: null, carousel: null, nextItem: null, rectTimer: null }
+  private timers = {
+    interval: null,
+    carousel: null,
+    nextItem: null,
+    rectTimer: null,
+    hoverLeave: null
+  }
   private isExecuting: boolean
   private isViewEnlarged: boolean
   private instanceId: number
@@ -49,6 +61,7 @@ class G2TooltipCarousel {
   // 事件处理函数引用
   private handleMouseEnter: EventListener
   private handleMouseLeave: EventListener
+  private handleTooltipMouseLeave: EventListener
   // 图表所在页面可见性变化处理函数引用
   private handleVisibility: EventListener
   private renderWaitCount: number
@@ -87,8 +100,9 @@ class G2TooltipCarousel {
     this.columnSelectionFrameIds = []
     this.isFirstColumnFrameReady = false
     // 事件处理函数绑定
-    this.handleMouseEnter = this.pause.bind(this)
+    this.handleMouseEnter = this.mouseEnter.bind(this)
     this.handleMouseLeave = this.mouseLeave.bind(this)
+    this.handleTooltipMouseLeave = this.tooltipMouseLeave.bind(this)
     this.handleVisibility = this.handleVisibilityChange.bind(this)
     const { tooltip } = parseJson(this.chart.customAttr)
     // 如果不显示tooltip，销毁实例
@@ -224,6 +238,12 @@ class G2TooltipCarousel {
     )
   }
 
+  private getTooltipElement(): HTMLElement | null {
+    return (
+      getTooltipWrapper(this.chart.container)?.querySelector<HTMLElement>('.g2-tooltip') || null
+    )
+  }
+
   /**
    * 页面可见性事件监听
    * 绑定时用同一函数引用，防止内存泄漏
@@ -232,6 +252,10 @@ class G2TooltipCarousel {
     document.addEventListener('visibilitychange', this.handleVisibility)
     this.chartElement.addEventListener('mouseenter', this.handleMouseEnter)
     this.chartElement.addEventListener('mouseleave', this.handleMouseLeave)
+    getTooltipWrapper(this.chart.container)?.addEventListener(
+      TOOLTIP_HOVER_LEAVE_EVENT,
+      this.handleTooltipMouseLeave
+    )
     if (!this.intersectionObserver) {
       this.intersectionObserver = new IntersectionObserver(this.handleIntersection.bind(this), {
         root: null,
@@ -265,6 +289,10 @@ class G2TooltipCarousel {
   private removeEventListeners() {
     this.chartElement.removeEventListener('mouseenter', this.handleMouseEnter)
     this.chartElement.removeEventListener('mouseleave', this.handleMouseLeave)
+    getTooltipWrapper(this.chart.container)?.removeEventListener(
+      TOOLTIP_HOVER_LEAVE_EVENT,
+      this.handleTooltipMouseLeave
+    )
     document.removeEventListener('visibilitychange', this.handleVisibility)
   }
 
@@ -302,10 +330,10 @@ class G2TooltipCarousel {
     const rect = el.getBoundingClientRect()
     let visibleHeight = Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 60)
     let visibleWidth = Math.min(rect.right, window.innerWidth) - Math.max(rect.left, 0)
-    const dvMainCenter =
-      document.getElementById('dv-main-center') ||
-      document.getElementById('preview-canvas-main') ||
-      document.getElementById('edit-canvas-main')
+    // 编辑画布和预览画布可能同时存在，只使用当前图表所属的画布计算可见区域
+    const dvMainCenter = el.closest<HTMLElement>(
+      '#dv-main-center, #preview-canvas-main, #edit-canvas-main'
+    )
     if (dvMainCenter) {
       const dvRect = dvMainCenter.getBoundingClientRect()
       visibleHeight = Math.min(rect.bottom, dvRect.bottom) - Math.max(rect.top, dvRect.top)
@@ -573,12 +601,21 @@ class G2TooltipCarousel {
         data: { data: highlightData }
       })
     }
+    // 轮播显示前切回图表容器，避免复用悬浮时的 body 坐标
+    switchTooltipWrapperHost(this.chart, 'carousel')
     const { offsetX, offsetY } = this.getTooltipOffsetX(finalTooltipData)
-    this.newChart.emit('tooltip:show', {
-      ...finalTooltipData,
-      ...(offsetX && isLineOrMix && { offsetX }),
-      ...(offsetY && { offsetY })
-    })
+    if (this.isColumnMixChart()) {
+      this.newChart.emit('tooltip:show', {
+        ...finalTooltipData,
+        offsetX
+      })
+    } else {
+      this.newChart.emit('tooltip:show', {
+        ...finalTooltipData,
+        ...(offsetX && isLineOrMix && { offsetX }),
+        ...(offsetY && { offsetY })
+      })
+    }
   }
 
   private getRenderedCarouselData(originalData?: any, renderedElements?: any[]) {
@@ -933,6 +970,14 @@ class G2TooltipCarousel {
   }
 
   /**
+   * 鼠标进入图表时只暂停轮播，不清理联动或选中状态
+   */
+  private mouseEnter() {
+    this.pause(true)
+    switchTooltipWrapperHost(this.chart, 'hover')
+  }
+
+  /**
    * 恢复轮播
    */
   resume(force = false) {
@@ -947,29 +992,34 @@ class G2TooltipCarousel {
     }
   }
 
-  /**
-   * 鼠标移出事件处理
-   * @param ev
-   */
-  mouseLeave(ev) {
-    const el = this.chartElement
-    setTimeout(() => {
-      // 获取鼠标位置
-      const mouseX = ev.clientX
-      const mouseY = ev.clientY
-      // 获取div的边界信息
-      const rect = el.getBoundingClientRect()
-      // 判断鼠标位置是否在div内
-      const isInside =
-        mouseX >= rect.left + 10 &&
-        mouseX <= rect.right - 10 &&
-        mouseY >= rect.top + 10 &&
-        mouseY <= rect.bottom - 10
-      if (!isInside) {
-        this.pause(true)
-        this.resume(true)
-      }
+  private mouseLeave() {
+    this.scheduleResumeAfterHover()
+  }
+
+  private tooltipMouseLeave() {
+    if (getTooltipDisplayMode(this.chart.container) !== 'hover') return
+    this.scheduleResumeAfterHover()
+  }
+
+  private scheduleResumeAfterHover() {
+    if (this.timers.hoverLeave) {
+      clearTimeout(this.timers.hoverLeave)
+    }
+    this.timers.hoverLeave = window.setTimeout(() => {
+      this.timers.hoverLeave = null
+      this.resumeAfterHover()
     }, 300)
+  }
+
+  private resumeAfterHover() {
+    if (this.isDestroyed) return
+    const chartHovered = this.chartElement?.matches(':hover')
+    const tooltipHovered = this.getTooltipElement()?.matches(':hover')
+    if (chartHovered || tooltipHovered) return
+
+    this.pause(true)
+    switchTooltipWrapperHost(this.chart, 'carousel')
+    this.resume(true)
   }
   /**
    * 销毁实例
@@ -1001,6 +1051,10 @@ class G2TooltipCarousel {
     if (this.timers.nextItem) {
       clearTimeout(this.timers.nextItem)
       this.timers.nextItem = null
+    }
+    if (this.timers.hoverLeave) {
+      clearTimeout(this.timers.hoverLeave)
+      this.timers.hoverLeave = null
     }
   }
 
