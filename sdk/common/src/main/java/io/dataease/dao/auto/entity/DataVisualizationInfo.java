@@ -130,4 +130,7 @@ public class DataVisualizationInfo {
     @Column(name = "check_version", length = 50)
     private String checkVersion;
 
+    @Transient
+    private Boolean orgRoot;
+
 }

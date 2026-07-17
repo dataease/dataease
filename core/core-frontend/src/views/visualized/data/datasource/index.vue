@@ -153,6 +153,7 @@ const dsTableDetail = reactive({
   name: ''
 })
 const rootManage = ref(false)
+const disabledMove = ref(true)
 const nickName = ref('')
 const dsName = ref('')
 const userDrawer = ref(false)
@@ -807,6 +808,11 @@ const { handleDrop, allowDrop, handleDragStart } = treeDraggble(
   originResourceTree
 )
 
+const allowDrag = (node: any) => {
+  if (disabledMove.value) return false
+  return !node.data?.orgRoot
+}
+
 const handleCopy = async data => {
   getById(data.id).then(res => {
     let {
@@ -1108,8 +1114,8 @@ const mouseleave = () => {
   appStore.setArrowSide(false)
 }
 
-const getMenuList = (val: boolean) => {
-  return !val
+const getMenuList = (val: boolean, data?: any) => {
+  let list = !val
     ? menuList
     : [
         {
@@ -1118,6 +1124,11 @@ const getMenuList = (val: boolean) => {
           command: 'copy'
         }
       ].concat(menuList)
+  return list.filter(item => {
+    if (disabledMove.value && item.command === 'move') return false
+    if (data?.orgRoot && (item.command === 'move' || item.command === 'delete')) return false
+    return true
+  })
 }
 </script>
 
@@ -1232,6 +1243,7 @@ const getMenuList = (val: boolean) => {
             :props="defaultProps"
             @node-drag-start="handleDragStart"
             :allow-drop="proxyAllowDrop"
+            :allow-drag="allowDrag"
             @node-drop="handleDrop"
             draggable
             @node-click="handleNodeClick"
@@ -1306,7 +1318,7 @@ const getMenuList = (val: boolean) => {
                     @handle-command="
                       cmd => operation(cmd, data, data.leaf ? 'datasource' : 'folder')
                     "
-                    :menu-list="getMenuList(!['Excel'].includes(data.type) && data.leaf)"
+                    :menu-list="getMenuList(!['Excel'].includes(data.type) && data.leaf, data)"
                   ></handle-more>
                 </div>
               </span>

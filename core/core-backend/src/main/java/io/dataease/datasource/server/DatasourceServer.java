@@ -253,9 +253,17 @@ public class DatasourceServer implements DatasourceApi {
             DEException.throwException("名称不能为空！");
         }
         CoreDatasource datasource = dataSourceManage.getDatasource(dataSourceDTO.getId());
+        boolean isOrgRoot = Boolean.TRUE.equals(busiDsRequest.getOrgRoot());
+        if (datasource == null && isOrgRoot) {
+            datasource = new CoreDatasource();
+            datasource.setId(dataSourceDTO.getId());
+            datasource.setName(dataSourceDTO.getName());
+        }
         datasource.setName(dataSourceDTO.getName());
         dataSourceDTO.setPid(datasource.getPid());
-        dataSourceManage.checkName(dataSourceDTO);
+        if (!isOrgRoot) {
+            dataSourceManage.checkName(dataSourceDTO);
+        }
         dataSourceManage.innerEditName(datasource);
         return dataSourceDTO;
     }

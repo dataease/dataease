@@ -241,6 +241,9 @@ public class CoreVisualizationManage {
 
     @XpackInteract(value = "visualizationResourceTree", before = false)
     public void innerEdit(DataVisualizationInfo visualizationInfo) {
+        if (Boolean.TRUE.equals(visualizationInfo.getOrgRoot())) {
+            return;
+        }
         // 镜像和主表保持名称一致
         Long uid = V3UserUtil.getUid();
         visualizationInfo.setUpdateTime(System.currentTimeMillis());

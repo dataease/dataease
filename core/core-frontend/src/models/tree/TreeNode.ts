@@ -7,6 +7,7 @@ export interface BusiTreeNode {
   ext?: number
   extraFlag: number
   extraFlag1: number
+  orgRoot?: boolean
   children?: BusiTreeNode[]
 }
 

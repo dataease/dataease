@@ -86,6 +86,7 @@ const defaultProps = {
 const mounted = ref(false)
 const rootManage = ref(false)
 const anyManage = ref(false)
+const disabledMove = ref(true)
 const { curCanvasType, showPosition } = toRefs(props)
 const resourceLabel =
   curCanvasType.value === 'dataV' ? t('work_branch.big_data_screen') : t('work_branch.dashboard')
@@ -174,6 +175,11 @@ const { handleDrop, allowDrop, handleDragStart } = treeDraggbleChart(
   'resourceTree',
   curCanvasType.value
 )
+
+const allowDrag = (node: any) => {
+  if (disabledMove.value) return false
+  return !node.data?.orgRoot
+}
 
 const menuListWeight = id => {
   const pWeight = state.pWeightMap[id]
@@ -781,6 +787,7 @@ defineExpose({
         @node-click="nodeClick"
         @node-drag-start="handleDragStart"
         :allow-drop="proxyAllowDrop"
+        :allow-drag="allowDrag"
         @node-drop="handleDrop"
         draggable
       >
@@ -859,6 +866,7 @@ defineExpose({
                 @handle-command="cmd => operation(cmd, data, data.leaf ? 'leaf' : 'folder')"
                 :node="data"
                 :any-manage="anyManage"
+                :disabled-move="disabledMove"
                 :resource-type="curCanvasType"
                 :menu-list="data.leaf ? menuListWeight(data.id) : state.folderMenuList"
               ></dv-handle-more>

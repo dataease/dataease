@@ -39,4 +39,7 @@ public class SpreadsheetEditor implements Serializable {
 
     @Schema(description = "备注")
     private String remark;
+
+    @Schema(description = "组织根节点")
+    private Boolean orgRoot;
 }

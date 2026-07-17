@@ -36,6 +36,7 @@ const nodeType = ref()
 const pid = ref()
 const id = ref()
 const oldName = ref()
+const orgRoot = ref(false)
 const cmd = ref('')
 const treeRef = ref()
 const filterText = ref('')
@@ -165,6 +166,7 @@ const createInit = (type, data: Tree, exec, name: string) => {
       datasetForm.pid = data.pid as string
       datasetForm.name = data.name
       oldName.value = data.name
+      orgRoot.value = data.orgRoot
     } else {
       datasetForm.pid = data.id as string
       pid.value = data.id
@@ -245,7 +247,8 @@ const saveDataset = () => {
     if (result) {
       const params: Omit<DatasetOrFolder, 'nodeType'> & { nodeType: 'folder' | 'datasource' } = {
         nodeType: nodeType.value as 'folder' | 'datasource',
-        name: datasetForm.name.trim()
+        name: datasetForm.name.trim(),
+        orgRoot: orgRoot.value
       }
       switch (cmd.value) {
         case 'move':

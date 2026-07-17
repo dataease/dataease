@@ -10,6 +10,7 @@ export interface ResourceOrFolder {
   type: string
   mobileLayout: boolean
   status: boolean
+  orgRoot?: boolean
 }
 
 export interface Panel {

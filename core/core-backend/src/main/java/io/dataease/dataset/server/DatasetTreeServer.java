@@ -45,6 +45,10 @@ public class DatasetTreeServer implements DatasetTreeApi {
     @DeLog(id = "#p0.id", ot = LogOT.MODIFY, st = LogST.DATASET)
     @Override
     public DatasetNodeDTO rename(DatasetGroupInfoDTO dto) throws Exception {
+        if (Boolean.TRUE.equals(dto.getOrgRoot())) {
+            datasetGroupManage.innerEdit(dto);
+            return dto;
+        }
         return datasetGroupManage.save(dto, true, false);
     }
 

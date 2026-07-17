@@ -37,7 +37,8 @@ const props = defineProps({
       return {}
     }
   },
-  anyManage: propTypes.bool.def(false)
+  anyManage: propTypes.bool.def(false),
+  disabledMove: propTypes.bool.def(false)
 })
 
 const shareDisable = computed(() => {
@@ -45,14 +46,23 @@ const shareDisable = computed(() => {
 })
 
 const shareComponent = ref(null)
-const menus = ref([
-  ...props.menuList.map(item => {
-    if (!props.anyManage && (item.command === 'copy' || item.command === 'move')) {
-      item.hidden = true
-    }
-    return item
-  })
-])
+const menus = ref(
+  props.menuList
+    .map(item => {
+      const copy = { ...item }
+      if (!props.anyManage && (copy.command === 'copy' || copy.command === 'move')) {
+        copy.hidden = true
+      }
+      if (props.node.orgRoot && (copy.command === 'move' || copy.command === 'delete')) {
+        copy.hidden = true
+      }
+      if (props.disabledMove && copy.command === 'move') {
+        copy.hidden = true
+      }
+      return copy
+    })
+    .filter(item => !item.hidden)
+)
 const handleCommand = (command: string | number | object) => {
   if (command === 'share') {
     // shareComponent.value.invokeMethod({ methodName: 'execute' })
@@ -96,8 +106,7 @@ const menuDisabledCheck = ele => {
           :key="ele.label"
           :disabled="menuDisabledCheck(ele)"
           :class="{
-            'de-hidden-drop-item':
-              ele.hidden || (ele.command === 'cancelPublish' && node.extraFlag1 === 0)
+            'de-hidden-drop-item': ele.command === 'cancelPublish' && node.extraFlag1 === 0
           }"
         >
           <el-icon class="handle-icon" color="#646a73" size="16" v-if="ele.svgName">

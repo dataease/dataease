@@ -95,4 +95,7 @@ public class DatasetNodeDTO implements Serializable {
      */
     private String unionSql;
 
+    @Schema(description = "组织根节点")
+    private Boolean orgRoot;
+
 }

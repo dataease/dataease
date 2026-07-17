@@ -187,6 +187,8 @@ public class DataVisualizationVO implements Serializable {
      */
     private VisualizationExport2AppVO appData;
 
+    private Boolean orgRoot;
+
     public DataVisualizationVO(Long id, String name, String type, Integer version, String canvasStyleData, String componentData,String appDataStr, Map<Long, ChartViewDTO> canvasViewInfo, Map<Long, VisualizationTemplateExtendDataDTO> extendDataInfo,Map<Long,Long> viewIdMap) {
         this.id = id;
         this.name = name;

@@ -90,4 +90,6 @@ public class DataFillingDTO implements Serializable {
     private String updater;
 
     private boolean useExistsTable;
+
+    private Boolean orgRoot;
 }

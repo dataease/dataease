@@ -106,6 +106,7 @@ interface Node {
 }
 const appStore = useAppStoreWithOut()
 const rootManage = ref(false)
+const disabledMove = ref(true)
 const showExport = ref(false)
 const rowAuth = ref()
 const exportDatasetLoading = ref(false)
@@ -265,6 +266,11 @@ const { handleDrop, allowDrop, handleDragStart } = treeDraggble(
   'dataset',
   originResourceTree
 )
+
+const allowDrag = (node: any) => {
+  if (disabledMove.value) return false
+  return !node.data?.orgRoot
+}
 
 const generateColumns = (arr: Field[]) =>
   arr.map(ele => ({
@@ -782,8 +788,8 @@ const mouseleave = () => {
   appStore.setArrowSide(false)
 }
 
-const getMenuList = (val: boolean) => {
-  return !val
+const getMenuList = (val: boolean, data?: any) => {
+  let list = !val
     ? menuList
     : [
         {
@@ -792,6 +798,11 @@ const getMenuList = (val: boolean) => {
           command: 'copy'
         }
       ].concat(menuList)
+  return list.filter(item => {
+    if (disabledMove.value && item.command === 'move') return false
+    if (data?.orgRoot && (item.command === 'move' || item.command === 'delete')) return false
+    return true
+  })
 }
 
 const proxyAllowDrop = throttle((arg1, arg2) => {
@@ -915,6 +926,7 @@ const proxyAllowDrop = throttle((arg1, arg2) => {
             highlight-current
             @node-drag-start="handleDragStart"
             :allow-drop="proxyAllowDrop"
+            :allow-drag="allowDrag"
             @node-drop="handleDrop"
             draggable
             @node-expand="nodeExpand"
@@ -956,7 +968,7 @@ const proxyAllowDrop = throttle((arg1, arg2) => {
                   </el-icon>
                   <handle-more
                     @handle-command="cmd => operation(cmd, data, data.leaf ? 'dataset' : 'folder')"
-                    :menu-list="getMenuList(data.leaf)"
+                    :menu-list="getMenuList(data.leaf, data)"
                   ></handle-more>
                 </div>
               </span>

@@ -43,6 +43,7 @@ const placeholder = ref('')
 const nodeType = ref()
 const pid = ref()
 const id = ref()
+const orgRoot = ref(false)
 const cmd = ref('')
 const treeRef = ref()
 const filterText = ref('')
@@ -173,6 +174,7 @@ const createInit = (type, data: Tree, exec, name: string) => {
         id.value = data.id
         datasetForm.pid = data.pid as string
         datasetForm.name = data.name
+        orgRoot.value = data.orgRoot
       } else {
         datasetForm.pid = data.id as string
         pid.value = data.id
@@ -242,7 +244,8 @@ const saveDataset = () => {
     if (result) {
       const params: DatasetOrFolder = {
         nodeType: nodeType.value as 'folder' | 'dataset',
-        name: datasetForm.name
+        name: datasetForm.name,
+        orgRoot: orgRoot.value
       }
 
       switch (cmd.value) {

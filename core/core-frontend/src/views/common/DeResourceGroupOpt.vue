@@ -259,7 +259,8 @@ const saveResource = () => {
         name: resourceForm.name,
         type: curCanvasType.value,
         mobileLayout: state.targetInfo?.extraFlag,
-        status: state.targetInfo?.extraFlag1
+        status: state.targetInfo?.extraFlag1,
+        orgRoot: state.targetInfo?.orgRoot
       }
 
       switch (cmd.value) {
@@ -283,7 +284,10 @@ const saveResource = () => {
       if (cmd.value === 'move' && !checkParent(params)) {
         return
       }
-      if (['newLeaf', 'newLeafAfter', 'newFolder', 'rename', 'move', 'copy'].includes(cmd.value)) {
+      if (
+        ['newLeaf', 'newLeafAfter', 'newFolder', 'rename', 'move', 'copy'].includes(cmd.value) &&
+        !params.orgRoot
+      ) {
         await dvNameCheck({ opt: cmd.value, ...params })
       }
       if (cmd.value === 'newLeaf') {
