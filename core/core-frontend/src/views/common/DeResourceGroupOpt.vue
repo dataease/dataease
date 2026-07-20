@@ -121,6 +121,32 @@ const dfs = (arr: BusiTreeNode[]) => {
   })
 }
 
+const findNodeById = (nodes: BusiTreeNode[], id: string): BusiTreeNode | null => {
+  for (const node of nodes) {
+    if (node.id === id) {
+      return node
+    }
+    if (node.children?.length) {
+      const found = findNodeById(node.children, id)
+      if (found) return found
+    }
+  }
+  return null
+}
+
+const findFirstValidFolder = (nodes: BusiTreeNode[]): BusiTreeNode | null => {
+  for (const node of nodes) {
+    if (node.weight > 0 && !node.leaf) {
+      return node
+    }
+    if (node.children?.length) {
+      const found = findFirstValidFolder(node.children)
+      if (found) return found
+    }
+  }
+  return null
+}
+
 const getDialogTitle = exec => {
   return {
     newFolder: t('visualization.new_folder'),
@@ -178,6 +204,13 @@ const optInit = (type, data: BusiTreeNode, exec, parentSelect = false, attachPar
     if (['newLeaf', 'newFolder'].includes(exec)) {
       resourceForm.pid = data.id as string
       pid.value = data.id
+      if (!findNodeById(state.tData, resourceForm.pid)) {
+        const firstValid = findFirstValidFolder(state.tData)
+        if (firstValid) {
+          resourceForm.pid = firstValid.id as string
+          pid.value = firstValid.id
+        }
+      }
     } else {
       id.value = data.id
     }

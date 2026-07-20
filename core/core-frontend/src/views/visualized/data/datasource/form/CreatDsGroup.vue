@@ -128,6 +128,15 @@ const dfs = (arr: Tree[]) => {
     }
   })
 }
+const formatRootMiss = (id: string | number, treeData: Tree[]) => {
+  if (!treeData?.length) {
+    return ''
+  }
+  if (id === '0' && treeData[0].id !== '0') {
+    return treeData[0].id
+  }
+  return id
+}
 let request = null
 let dsType = ''
 const sortList = ['time_asc', 'time_desc', 'name_asc', 'name_desc']
@@ -158,6 +167,13 @@ const createInit = (type, data: Tree, exec, name: string) => {
         let curSortType = sortList[Number(wsCache.get('TreeSort-backend')) ?? 1]
         curSortType = wsCache.get('TreeSort-datasource') ?? curSortType
         sortTypeChange(curSortType)
+        if (!exec) {
+          const correctedId = formatRootMiss(data.id, state.tData)
+          if (correctedId !== data.id) {
+            datasetForm.pid = correctedId as string
+            pid.value = correctedId
+          }
+        }
       })
     }
     if (exec) {
