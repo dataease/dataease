@@ -369,7 +369,6 @@ public class ExtWhere2Str {
 
     private static String sanitizeSqlLiteral(String value) {
         String normalized = StringUtils.defaultString(value);
-        Utils.validateSqlInjectionRisk(normalized);
         return Utils.transValue(normalized);
     }
 

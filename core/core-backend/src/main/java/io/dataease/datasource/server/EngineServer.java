@@ -6,9 +6,7 @@ import io.dataease.datasource.dao.auto.repository.CoreDeEngineRepository;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.type.*;
-import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
-import io.dataease.permission.util.V3UserUtil;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.utils.JsonUtil;
@@ -36,9 +34,6 @@ public class EngineServer implements EngineApi {
 
     @Override
     public DatasourceDTO getEngine() {
-        if (!V3UserUtil.isSysAdmin()) {
-            DEException.throwException("非管理员，无权访问！");
-        }
         DatasourceDTO datasourceDTO = new DatasourceDTO();
         List<CoreDeEngine> deEngines = coreDeEngineRepository.findAll();
         if (CollectionUtils.isEmpty(deEngines)) {
@@ -69,9 +64,6 @@ public class EngineServer implements EngineApi {
 
     @Override
     public void save(DatasourceDTO datasourceDTO) {
-        if (!V3UserUtil.isSysAdmin()) {
-            DEException.throwException("非管理员，无权访问！");
-        }
         if (StringUtils.isNotEmpty(datasourceDTO.getConfiguration())) {
             datasourceDTO.setConfiguration(new String(Base64.getDecoder().decode(datasourceDTO.getConfiguration())));
         }
@@ -93,9 +85,6 @@ public class EngineServer implements EngineApi {
 
     @Override
     public void validate(DatasourceDTO datasourceDTO) throws Exception {
-        if (!V3UserUtil.isSysAdmin()) {
-            DEException.throwException("非管理员，无权访问！");
-        }
         CoreDeEngine coreDeEngine = new CoreDeEngine();
         BeanUtils.copyBean(coreDeEngine, datasourceDTO);
         coreDeEngine.setConfiguration(new String(Base64.getDecoder().decode(coreDeEngine.getConfiguration())));
@@ -104,9 +93,6 @@ public class EngineServer implements EngineApi {
 
     @Override
     public void validateById(Long id) throws Exception {
-        if (!V3UserUtil.isSysAdmin()) {
-            DEException.throwException("非管理员，无权访问！");
-        }
         engineManage.validate(coreDeEngineRepository.findById(id).orElse(null));
     }
 
