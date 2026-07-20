@@ -123,7 +123,7 @@ public class CoreDataInit implements CoreSqlBlock {
                 createMenu(6L, 4L, 2, "datasource", "visualized/data/datasource", 2, null, "/datasource", false, true, true),
                 createMenu(11L, 0L, 2, "dataset-form", "visualized/data/dataset/form", 7, null, "/dataset-form", true, false, false),
                 createMenu(12L, 0L, 2, "datasource-form", "visualized/data/datasource/form", 7, null, "/ds-form", true, false, false),
-                createMenu(15L, 0L, 1, "sys-setting", null, 6, null, "/sys-setting", true, true, true),
+                createMenu(15L, 0L, 1, "sys-setting", null, 6, null, "/sys-setting", true, true, false),
                 createMenu(16L, 15L, 2, "parameter", "system/parameter", 4, "sys-parameter", "/parameter", false, true, true),
                 createMenu(19L, 0L, 2, "template-market", "template-market", 4, null, "/template-market", true, true, false),
                 createMenu(30L, 0L, 1, "toolbox", null, 7, "icon_template", "/toolbox", true, true, false),
