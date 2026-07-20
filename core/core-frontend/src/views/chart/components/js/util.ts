@@ -487,6 +487,9 @@ function getChartExcelTitle(preFix, viewTitle) {
 }
 
 export const exportExcelDownload = (chart, preFix, callBack?) => {
+  if (!chart.data) {
+    return
+  }
   const excelName = getChartExcelTitle(preFix, chart.title)
   const viewInfo = toRaw(chart)
   let request: any = {
