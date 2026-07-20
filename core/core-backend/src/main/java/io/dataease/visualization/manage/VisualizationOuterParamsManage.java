@@ -65,7 +65,7 @@ public class VisualizationOuterParamsManage {
                         qSnapshotDataVisualizationInfo.id.as("visualizationId"),
                         qSnapshotVisualizationOuterParams.checked.as("checked")
                 )).from(qSnapshotDataVisualizationInfo)
-                .leftJoin(qSnapshotVisualizationOuterParams).on(qSnapshotDataVisualizationInfo.id.eq(qSnapshotVisualizationOuterParams.visualizationId))
+                .leftJoin(qSnapshotVisualizationOuterParams).on(qSnapshotVisualizationOuterParams.visualizationId.eq(String.valueOf(visualizationId)))
                 .where(qSnapshotDataVisualizationInfo.id.eq(visualizationId)).fetchFirst();
         if (visualizationOuterParamsDTO != null && visualizationOuterParamsDTO.getChecked() == null) {
             visualizationOuterParamsDTO.setChecked(false);
@@ -74,9 +74,9 @@ public class VisualizationOuterParamsManage {
     }
 
     public void updateOuterParamsSet(VisualizationOuterParamsDTO outerParamsDTO) {
-        Long visualizationId = outerParamsDTO.getVisualizationId();
+        String visualizationId = outerParamsDTO.getVisualizationId();
         Assert.notNull(visualizationId, "visualizationId cannot be null");
-        Map<String, Long> paramsInfoNameIdMap = new HashMap<>();
+        Map<String, String> paramsInfoNameIdMap = new HashMap<>();
         QSnapshotVisualizationOuterParamsInfo qSnapshotVisualizationOuterParamsInfo = QSnapshotVisualizationOuterParamsInfo.snapshotVisualizationOuterParamsInfo;
         QSnapshotVisualizationOuterParams qSnapshotVisualizationOuterParams = QSnapshotVisualizationOuterParams.snapshotVisualizationOuterParams;
         List<SnapshotVisualizationOuterParamsInfo> paramsInfoNameIdList = queryFactory.select(Projections.fields(SnapshotVisualizationOuterParamsInfo.class,
@@ -93,7 +93,7 @@ public class VisualizationOuterParamsManage {
         QSnapshotVisualizationOuterParamsInfo snapshotVisualizationOuterParamsInfo = QSnapshotVisualizationOuterParamsInfo.snapshotVisualizationOuterParamsInfo;
         QSnapshotVisualizationOuterParams snapshotVisualizationOuterParams = QSnapshotVisualizationOuterParams.snapshotVisualizationOuterParams;
         QSnapshotVisualizationOuterParamsTargetViewInfo snapshotVisualizationOuterParamsTargetViewInfo = QSnapshotVisualizationOuterParamsTargetViewInfo.snapshotVisualizationOuterParamsTargetViewInfo;
-        List<Long> paramsInfoIds = queryFactory.select(snapshotVisualizationOuterParamsTargetViewInfo.targetId).from(snapshotVisualizationOuterParamsTargetViewInfo)
+        List<String> paramsInfoIds = queryFactory.select(snapshotVisualizationOuterParamsTargetViewInfo.targetId).from(snapshotVisualizationOuterParamsTargetViewInfo)
                 .innerJoin(snapshotVisualizationOuterParamsInfo).on(snapshotVisualizationOuterParamsTargetViewInfo.paramsInfoId.eq(snapshotVisualizationOuterParamsInfo.paramsInfoId))
                 .innerJoin(snapshotVisualizationOuterParams).on(snapshotVisualizationOuterParamsInfo.paramsId.eq(snapshotVisualizationOuterParams.paramsId))
                 .where(snapshotVisualizationOuterParams.visualizationId.eq(visualizationId)).fetch();
@@ -102,7 +102,7 @@ public class VisualizationOuterParamsManage {
             snapshotVisualizationOuterParamsTargetViewInfoRepository.deleteByParamsInfoIds(paramsInfoIds);
         }
 
-        List<Long> paramsIds = queryFactory.select(snapshotVisualizationOuterParamsInfo.paramsId).from(snapshotVisualizationOuterParamsInfo)
+        List<String> paramsIds = queryFactory.select(snapshotVisualizationOuterParamsInfo.paramsId).from(snapshotVisualizationOuterParamsInfo)
                 .innerJoin(snapshotVisualizationOuterParams).on(snapshotVisualizationOuterParamsInfo.paramsId.eq(snapshotVisualizationOuterParams.paramsId))
                 .where(snapshotVisualizationOuterParams.visualizationId.eq(visualizationId))
                 .fetch();
@@ -114,25 +114,25 @@ public class VisualizationOuterParamsManage {
             return;
         }
         // 插入新的数据
-        Long paramsId = IDUtils.snowID();
+        String paramsId = IDUtils.snowID().toString();
         outerParamsDTO.setParamsId(paramsId);
         SnapshotVisualizationOuterParams newOuterParams = new SnapshotVisualizationOuterParams();
         BeanUtils.copyBean(newOuterParams, outerParamsDTO);
         snapshotVisualizationOuterParamsRepository.saveAndFlush(newOuterParams);
-        Map<String, Long> finalParamsInfoNameIdMap = paramsInfoNameIdMap;
+        Map<String, String> finalParamsInfoNameIdMap = paramsInfoNameIdMap;
         Optional.ofNullable(outerParamsDTO.getOuterParamsInfoArray()).orElse(new ArrayList<>()).forEach(outerParamsInfo -> {
-            Long paramsInfoId = finalParamsInfoNameIdMap.get(outerParamsInfo.getParamName());
+            String paramsInfoId = finalParamsInfoNameIdMap.get(outerParamsInfo.getParamName());
             if (paramsInfoId == null) {
-                paramsInfoId = IDUtils.snowID();
+                paramsInfoId = IDUtils.snowID().toString();
             }
             outerParamsInfo.setParamsInfoId(paramsInfoId);
             outerParamsInfo.setParamsId(paramsId);
             SnapshotVisualizationOuterParamsInfo newOuterParamsInfo = new SnapshotVisualizationOuterParamsInfo();
             BeanUtils.copyBean(newOuterParamsInfo, outerParamsInfo);
             snapshotVisualizationOuterParamsInfoRepository.saveAndFlush(newOuterParamsInfo);
-            Long finalParamsInfoId = paramsInfoId;
+            String finalParamsInfoId = paramsInfoId;
             Optional.ofNullable(outerParamsInfo.getTargetViewInfoList()).orElse(new ArrayList<>()).forEach(targetViewInfo -> {
-                Long targetViewInfoId = IDUtils.snowID();
+                String targetViewInfoId = IDUtils.snowID().toString();
                 targetViewInfo.setTargetId(targetViewInfoId);
                 targetViewInfo.setParamsInfoId(finalParamsInfoId);
                 SnapshotVisualizationOuterParamsTargetViewInfo newOuterParamsTargetViewInfo = new SnapshotVisualizationOuterParamsTargetViewInfo();

@@ -18,11 +18,13 @@ public class SnapshotVisualizationOuterParamsInfo {
     @Id
     @Comment("主键")
     @Column(name = "params_info_id", nullable = false)
-    private Long paramsInfoId;
+    @Size(max = 50)
+    private String paramsInfoId;
 
     @Comment("visualization_outer_params 表的 ID")
     @Column(name = "params_id")
-    private Long paramsId;
+    @Size(max = 50)
+    private String paramsId;
 
     @Size(max = 255)
     @Comment("参数名")

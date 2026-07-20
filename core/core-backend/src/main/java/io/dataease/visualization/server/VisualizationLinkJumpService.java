@@ -289,7 +289,7 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
                             visualizationOuterParamsInfo.paramName.as("title")
                     )).from(visualizationOuterParamsInfo)
                     .leftJoin(visualizationOuterParams).on(visualizationOuterParamsInfo.paramsId.eq(visualizationOuterParams.paramsId))
-                    .where(visualizationOuterParams.visualizationId.eq(dvId)).fetch().forEach(outParamsJumpVO -> {
+                    .where(visualizationOuterParams.visualizationId.eq(String.valueOf(dvId))).fetch().forEach(outParamsJumpVO -> {
                         outParamsJumpVO.setType("outerParams");
                         outParamsJumpInfos.add(outParamsJumpVO);
                     });

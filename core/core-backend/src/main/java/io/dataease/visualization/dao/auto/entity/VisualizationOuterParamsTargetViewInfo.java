@@ -18,18 +18,22 @@ public class VisualizationOuterParamsTargetViewInfo {
     @Id
     @Comment("主键")
     @Column(name = "target_id", nullable = false)
-    private Long targetId;
+    @Size(max = 50)
+    private String targetId;
 
     @Comment("visualization_outer_params_info 表的 ID")
     @Column(name = "params_info_id")
-    private Long paramsInfoId;
+    @Size(max = 50)
+    private String paramsInfoId;
 
     @Comment("联动视图ID/联动过滤项ID")
     @Column(name = "target_view_id")
-    private Long targetViewId;
+    @Size(max = 50)
+    private String targetViewId;
 
     @Comment("联动字段ID")
     @Column(name = "target_field_id")
+    @Size(max = 50)
     private String targetFieldId;
 
     @Size(max = 255)
@@ -44,7 +48,7 @@ public class VisualizationOuterParamsTargetViewInfo {
 
     @Comment("联动数据集id/联动过滤组件id")
     @Column(name = "target_ds_id")
-    private Long targetDsId;
+    private String targetDsId;
 
     @Size(max = 50)
     @Comment("匹配方式")

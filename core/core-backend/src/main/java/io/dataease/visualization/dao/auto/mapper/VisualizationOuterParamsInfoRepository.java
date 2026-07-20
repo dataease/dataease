@@ -13,7 +13,7 @@ public interface VisualizationOuterParamsInfoRepository extends JpaRepository<Vi
 
 
     @Transactional
-    default void deleteByParamsIds(List<Long> paramsIds) {
+    default void deleteByParamsIds(List<String> paramsIds) {
         Specification<VisualizationOuterParamsInfo> spec = (root, query, cb) ->
                 cb.and(root.get("paramsId").in(paramsIds));
         List<VisualizationOuterParamsInfo> entities = findAll(spec);

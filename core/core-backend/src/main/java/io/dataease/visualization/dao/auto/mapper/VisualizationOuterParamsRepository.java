@@ -12,7 +12,7 @@ import java.util.List;
 public interface VisualizationOuterParamsRepository extends JpaRepository<VisualizationOuterParams, Long>, JpaSpecificationExecutor<VisualizationOuterParams> {
 
 
-    List<VisualizationOuterParams> findByVisualizationId(Long visualizationId);
+    List<VisualizationOuterParams> findByVisualizationId(String visualizationId);
 
     @Transactional
     default void deleteByVisualizationId(Long visualizationId) {

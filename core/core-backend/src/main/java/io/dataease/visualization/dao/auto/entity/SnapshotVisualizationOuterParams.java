@@ -17,11 +17,13 @@ public class SnapshotVisualizationOuterParams {
     @Id
     @Comment("主键")
     @Column(name = "params_id", nullable = false)
-    private Long paramsId;
+    @Size(max = 50)
+    private String paramsId;
 
     @Comment("可视化资源ID")
     @Column(name = "visualization_id")
-    private Long visualizationId;
+    @Size(max = 50)
+    private String visualizationId;
 
     @Comment("是否启用外部参数标识（1-是，0-否）")
     @Column(name = "checked")

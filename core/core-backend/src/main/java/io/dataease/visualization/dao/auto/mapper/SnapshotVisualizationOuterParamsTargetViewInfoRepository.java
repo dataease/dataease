@@ -17,7 +17,7 @@ public interface SnapshotVisualizationOuterParamsTargetViewInfoRepository extend
 
 
     @Transactional
-    default void deleteByParamsInfoIds(List<Long> paramsInfoIds) {
+    default void deleteByParamsInfoIds(List<String> paramsInfoIds) {
         Specification<SnapshotVisualizationOuterParamsTargetViewInfo> spec = (root, query, cb) ->
                 cb.and(root.get("paramsInfoId").in(paramsInfoIds));
         List<SnapshotVisualizationOuterParamsTargetViewInfo> entities = findAll(spec);
