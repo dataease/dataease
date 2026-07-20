@@ -2623,6 +2623,7 @@ export default {
     save_success: '保存成功',
     delete_success: '删除成功',
     copy_success: '复制成功',
+    no_data_now: '当前没有数据',
     modify_success: '修改成功',
     delete_cancel: '已取消删除',
     confirm: '确定',

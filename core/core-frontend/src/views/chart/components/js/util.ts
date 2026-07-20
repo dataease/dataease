@@ -488,6 +488,7 @@ function getChartExcelTitle(preFix, viewTitle) {
 
 export const exportExcelDownload = (chart, preFix, callBack?) => {
   if (!chart.data) {
+    ElMessage.warning(t('commons.no_data_now'))
     return
   }
   const excelName = getChartExcelTitle(preFix, chart.title)

@@ -2683,6 +2683,7 @@ export default {
     save_success: 'Save successfully',
     delete_success: 'Delete successfully',
     copy_success: 'Copy successfully',
+    no_data_now: 'No data currently',
     modify_success: 'Modify successfully',
     delete_cancel: 'Delete cancelled',
     confirm: 'Confirm',
