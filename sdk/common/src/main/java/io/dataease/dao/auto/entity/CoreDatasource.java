@@ -67,8 +67,7 @@ public class CoreDatasource {
     private Long updateBy;
 
     @Size(max = 50)
-    @Comment("主键")
-    @Column(name = "创建人ID", length = 50)
+    @Column(name = "create_by", length = 50)
     private String createBy;
 
     @Comment("数据源状态")
