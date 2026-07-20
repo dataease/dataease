@@ -16,6 +16,17 @@ import { ChartEvent, Chart as G2Chart, G2Spec } from '@antv/g2'
 import { valueFormatter } from '../../../../formatter'
 
 const { t } = useI18n()
+const BUBBLE_SIZE_RANGE = [5, 30]
+
+const isTextInCircle = (text: string, fontSize: number, radius: number) => {
+  const textWidth = Array.from(text).reduce((width, char) => {
+    return width + fontSize * (/[^\x00-\xff]/.test(char) ? 1 : 0.6)
+  }, 0)
+  const halfWidth = textWidth / 2
+  const halfHeight = fontSize / 2
+  return halfWidth * halfWidth + halfHeight * halfHeight <= radius * radius
+}
+
 /**
  * 象限图
  */
@@ -267,7 +278,7 @@ export class Quadrant extends G2ChartView {
         },
         scale: {
           size: {
-            range: [5, 30]
+            range: BUBBLE_SIZE_RANGE
           }
         }
       }
@@ -325,6 +336,11 @@ export class Quadrant extends G2ChartView {
           lineStrokeOpacity: 1,
           lineLineWidth: xAxis.axisLine.lineStyle.width,
           lineLineDash,
+          // 刻度线沿用轴线的显隐、颜色、宽度和透明度
+          tick: xAxis.axisLine.show,
+          tickStroke: xAxis.axisLine.lineStyle.color,
+          tickOpacity: 1,
+          tickLineWidth: xAxis.axisLine.lineStyle.width,
           label: xAxis.axisLabel.show,
           labelFill: xAxis.axisLabel.color,
           labelFillOpacity: 1,
@@ -407,6 +423,10 @@ export class Quadrant extends G2ChartView {
           lineStrokeOpacity: 1,
           lineLineWidth: yAxis.axisLine.lineStyle.width,
           lineLineDash,
+          tick: yAxis.axisLine.show,
+          tickStroke: yAxis.axisLine.lineStyle.color,
+          tickOpacity: 1,
+          tickLineWidth: yAxis.axisLine.lineStyle.width,
           label: yAxis.axisLabel.show,
           labelFill: yAxis.axisLabel.color,
           labelFillOpacity: 1,
@@ -522,22 +542,50 @@ export class Quadrant extends G2ChartView {
   }
 
   protected configLabel(chart: Chart, options: G2Spec): G2Spec {
-    const { label } = parseJson(chart.customAttr)
+    const { label, basicStyle } = parseJson(chart.customAttr)
     if (!label.show) {
       return options
+    }
+    const labelFontSize = Number(label.fontSize) || 12
+    const popSizes = (chart.data?.data || [])
+      .map(item => Number(item.popSize))
+      .filter(value => Number.isFinite(value))
+    const minPopSize = popSizes.length ? Math.min(...popSizes) : 0
+    const maxPopSize = popSizes.length ? Math.max(...popSizes) : 0
+    const getBubbleRadius = datum => {
+      if (!chart.extBubble?.length) {
+        return Number(basicStyle.scatterSymbolSize) || 0
+      }
+      const popSize = Number(datum.popSize)
+      const ratio =
+        Number.isFinite(popSize) && maxPopSize !== minPopSize
+          ? Math.max(0, Math.min(1, (popSize - minPopSize) / (maxPopSize - minPopSize)))
+          : 0.5
+      const [sizeMin, sizeMax] = BUBBLE_SIZE_RANGE
+      return sizeMin + ratio * (sizeMax - sizeMin)
     }
     const pointMark = options.children[2]
     const labelStyle = {
       labels: [
         {
-          text: 'field',
+          text: datum => {
+            const text = String(datum.field ?? '')
+            // 非全量显示时隐藏无法完整放入气泡的标签
+            return label.fullDisplay || isTextInCircle(text, labelFontSize, getBubbleRadius(datum))
+              ? text
+              : ''
+          },
           position: 'inside',
           style: {
             fill: label.color,
             fontSize: label.fontSize,
-            fillOpacity: 1
+            fillOpacity: 1,
+            pointerEvents: 'none',
+            textAlign: 'center',
+            textBaseline: 'middle'
           },
-          transform: label.fullDisplay ? [] : [{ type: 'overlapHide' }, { type: 'exceedAdjust' }]
+          // 保持标签位于散点内部，仅在非全量显示时隐藏碰撞标签
+          transform: label.fullDisplay ? [] : [{ type: 'overlapHide' }]
         }
       ]
     }
