@@ -153,6 +153,11 @@ export class Quadrant extends G2ChartView {
         {
           type: 'point',
           encode: { x: 'value', y: 'extValue', color: 'field' },
+          // 自动范围使用规整刻度
+          scale: {
+            x: { nice: true },
+            y: { nice: true }
+          },
           legend: { size: false }
         },
         { type: 'range', data: [], encode: { x: 'x', y: 'y' }, zIndex: -1 }
@@ -308,6 +313,9 @@ export class Quadrant extends G2ChartView {
     const axisStyle = {
       axis: {
         x: {
+          // 网格线显隐直接切换，并避免被象限区域遮挡
+          animate: false,
+          zIndex: 1,
           position: xAxis.position,
           title: xAxis.nameShow === false ? false : xAxis.name,
           titleFontSize: xAxis.fontSize,
@@ -322,11 +330,17 @@ export class Quadrant extends G2ChartView {
           labelFillOpacity: 1,
           labelFontSize: xAxis.axisLabel.fontSize,
           grid: xAxis.splitLine.show,
+          // 仅绘制末端刻度对应的网格线
+          gridFilter: (_, index, values) => index === values.length - 1,
           gridStroke: xAxis.splitLine.lineStyle.color,
           gridStrokeOpacity: 1,
           gridLineWidth: xAxis.splitLine.lineStyle.width,
           gridLineDash,
-          labelTransform: `rotate(${xAxis.axisLabel.rotate || 0})`
+          labelTransform: `rotate(${xAxis.axisLabel.rotate || 0})`,
+          // 应用横轴标签格式配置
+          labelFormatter: d => {
+            return valueFormatter(d, xAxis.axisLabelFormatter)
+          }
         }
       }
     }
@@ -350,6 +364,7 @@ export class Quadrant extends G2ChartView {
         }
       }
       defaultsDeep(pointMatk, scaleOpt)
+      pointMatk.scale.x.nice = false
     }
     return defaultsDeep(options, axisStyle)
   }
@@ -381,6 +396,8 @@ export class Quadrant extends G2ChartView {
     const axisOption = {
       axis: {
         y: {
+          animate: false,
+          zIndex: 1,
           position: yAxis.position,
           title: yAxis.nameShow === false ? false : yAxis.name,
           titleFontSize: yAxis.fontSize,
@@ -395,6 +412,7 @@ export class Quadrant extends G2ChartView {
           labelFillOpacity: 1,
           labelFontSize: yAxis.axisLabel.fontSize,
           grid: yAxis.splitLine.show,
+          gridFilter: (_, index, values) => index === values.length - 1,
           gridStroke: yAxis.splitLine.lineStyle.color,
           gridStrokeOpacity: 1,
           gridLineWidth: yAxis.splitLine.lineStyle.width,
@@ -426,6 +444,7 @@ export class Quadrant extends G2ChartView {
         }
       }
       defaultsDeep(pointMatk, scaleOpt)
+      pointMatk.scale.y.nice = false
     }
     return defaultsDeep(options, axisOption)
   }
