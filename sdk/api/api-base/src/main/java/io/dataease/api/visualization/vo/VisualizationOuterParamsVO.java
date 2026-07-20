@@ -21,14 +21,12 @@ public class VisualizationOuterParamsVO implements Serializable {
     /**
      * 主键
      */
-    @JsonSerialize(using = ToStringSerializer.class)
-    private Long paramsId;
+    private String paramsId;
 
     /**
      * 可视化资源ID
      */
-    @JsonSerialize(using = ToStringSerializer.class)
-    private Long visualizationId;
+    private String visualizationId;
 
     /**
      * 是否启用外部参数标识（1-是，0-否）
@@ -60,21 +58,36 @@ public class VisualizationOuterParamsVO implements Serializable {
      */
     private String defaultValue;
 
-
-    public Long getParamsId() {
+    public String getParamsId() {
         return paramsId;
     }
 
-    public void setParamsId(Long paramsId) {
+    public void setParamsId(String paramsId) {
         this.paramsId = paramsId;
     }
 
-    public Long getVisualizationId() {
+    public String getVisualizationId() {
         return visualizationId;
     }
 
-    public void setVisualizationId(Long visualizationId) {
+    public void setVisualizationId(String visualizationId) {
         this.visualizationId = visualizationId;
+    }
+
+    public Boolean getRequired() {
+        return required;
+    }
+
+    public void setRequired(Boolean required) {
+        this.required = required;
+    }
+
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
     }
 
     public Boolean getChecked() {

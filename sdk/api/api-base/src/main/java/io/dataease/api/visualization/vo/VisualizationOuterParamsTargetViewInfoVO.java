@@ -23,25 +23,25 @@ public class VisualizationOuterParamsTargetViewInfoVO implements Serializable {
      * 主键
      */
     @JsonSerialize(using = ToStringSerializer.class)
-    private Long targetId;
+    private String targetId;
 
     /**
      * visualization_outer_params_info 表的 ID
      */
     @JsonSerialize(using = ToStringSerializer.class)
-    private Long paramsInfoId;
+    private String paramsInfoId;
 
     /**
      * 联动视图ID
      */
     @JsonSerialize(using = ToStringSerializer.class)
-    private Long targetViewId;
+    private String targetViewId;
 
     /**
      * 联动数据集id/联动过滤组件id
      */
     @JsonSerialize(using = ToStringSerializer.class)
-    private Long targetDsId;
+    private String targetDsId;
 
     /**
      * 联动字段ID

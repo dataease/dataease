@@ -23,13 +23,13 @@ public class VisualizationOuterParamsInfoVO implements Serializable {
      * 主键
      */
     @JsonSerialize(using = ToStringSerializer.class)
-    private Long paramsInfoId;
+    private String paramsInfoId;
 
     /**
      * visualization_outer_params 表的 ID
      */
     @JsonSerialize(using = ToStringSerializer.class)
-    private Long paramsId;
+    private String paramsId;
 
     /**
      * 参数名
