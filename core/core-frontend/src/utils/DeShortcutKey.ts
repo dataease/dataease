@@ -16,6 +16,7 @@ const copyStore = copyStoreWithOut()
 const lockStore = lockStoreWithOut()
 const { curComponent, isInEditor, editMode } = storeToRefs(dvMainStore)
 const { areaData } = storeToRefs(composeStore)
+import { isDashboard } from '@/utils/canvasUtils'
 
 const ctrlKey = 17,
   shiftKey = 16, // shift
@@ -108,7 +109,7 @@ let isShiftDown = false
 // 全局监听按键操作并执行相应命令
 export function listenGlobalKeyDown() {
   window.onkeydown = e => {
-    if (editMode.value === 'preview' || checkDialog()) return
+    if (editMode.value === 'preview' || checkDialog() || isDashboard()) return
     const { keyCode } = e
     if (positionMoveKey[keyCode] && curComponent.value) {
       positionMoveKey[keyCode](keyCode)
