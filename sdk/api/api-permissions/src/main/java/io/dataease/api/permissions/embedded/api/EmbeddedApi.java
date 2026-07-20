@@ -7,6 +7,9 @@ import io.dataease.api.permissions.embedded.dto.EmbeddedEditor;
 import io.dataease.api.permissions.embedded.dto.EmbeddedOrigin;
 import io.dataease.api.permissions.embedded.dto.EmbeddedResetRequest;
 import io.dataease.api.permissions.embedded.vo.EmbeddedGridVO;
+import io.dataease.auth.DeApiPath;
+import io.dataease.auth.DePermit;
+import io.dataease.constant.AuthResourceEnum;
 import io.dataease.license.config.XpackResource;
 import io.dataease.model.KeywordRequest;
 import io.dataease.result.PageResult;
@@ -23,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 import java.util.Map;
 
+@DeApiPath(value = "/embedded", rt = AuthResourceEnum.EMBEDDED)
 @Tag(name = "嵌入式")
 @ApiSupport(order = 883, author = "fit2cloud-someone")
 @XpackResource
@@ -35,27 +39,32 @@ public interface EmbeddedApi {
 
     @Operation(summary = "创建")
     @ApiOperationSupport(order = 2)
+    @DePermit("m:read")
     @PostMapping("/create")
     void create(@RequestBody EmbeddedCreator creator);
 
     @Operation(summary = "编辑")
     @ApiOperationSupport(order = 3)
+    @DePermit({"m:read", "#p0.id + ':manage'"})
     @PostMapping("/edit")
     void edit(@RequestBody EmbeddedEditor editor);
 
     @Operation(summary = "删除")
     @ApiOperationSupport(order = 4)
     @Parameter(name = "id", description = "ID", required = true, in = ParameterIn.PATH)
+    @DePermit({"m:read", "#p0 + ':manage'"})
     @PostMapping("/delete/{id}")
     void delete(@PathVariable("id") Long id);
 
     @Operation(summary = "批量删除")
     @ApiOperationSupport(order = 4)
+    @DePermit({"m:read", "#p0 + ':manage'"})
     @PostMapping("/batchDelete")
     void batchDelete(@RequestBody List<Long> ids);
 
     @ApiOperationSupport(order = 5)
     @Operation(summary = "重置密钥")
+    @DePermit({"m:read", "#p0.id + ':manage'"})
     @PostMapping("/reset")
     void reset(@RequestBody EmbeddedResetRequest request);
 

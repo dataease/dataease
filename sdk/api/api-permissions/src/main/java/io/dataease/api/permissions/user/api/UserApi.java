@@ -184,6 +184,7 @@ public interface UserApi {
 
 
     @Hidden
+    @DePermit({"m:read", "#p0.uid + ':manage'"})
     @PostMapping("/admin/bind")
     void adminBind(@RequestBody AdminBindRequest request);
 
