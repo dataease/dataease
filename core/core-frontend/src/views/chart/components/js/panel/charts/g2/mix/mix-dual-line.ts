@@ -353,7 +353,7 @@ export class GroupLineMix extends G2ChartView {
     const leftColorScale = {
       scale: {
         color: {
-          key: 'left-color',
+          key: 'color',
           type: 'ordinal',
           independent: true,
           range: leftRange,

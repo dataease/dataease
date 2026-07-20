@@ -297,7 +297,7 @@ export class StackLineMix extends G2ChartView {
     const leftColorScale = {
       scale: {
         color: {
-          key: 'left-color',
+          key: 'color',
           type: 'ordinal',
           independent: true,
           // 固定左轴堆叠柱 color domain，保证图例、颜色和堆叠层级使用同一顺序

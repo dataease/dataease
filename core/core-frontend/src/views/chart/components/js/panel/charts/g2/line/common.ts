@@ -1,4 +1,4 @@
-import type { G2Spec } from '@antv/g2'
+import type { Chart as G2Chart, G2Spec } from '@antv/g2'
 import {
   getColorFormAlphaColor,
   getLineLabelColorByCondition,
@@ -81,14 +81,40 @@ export const LINE_AXIS_TYPE: AxisType[] = [
   'extTooltip'
 ]
 
+export type LineLegendState = {
+  visibleSeries?: ReadonlySet<string>
+}
+
+export const bindLineLegendState = (chartObj: G2Chart): LineLegendState => {
+  const state: LineLegendState = {}
+  chartObj.on('legend:filter', event => {
+    if (event?.data?.channel !== 'color') {
+      return
+    }
+    state.visibleSeries = new Set((event.data.values || []).map(value => `${value}`))
+  })
+  chartObj.on('legend:focus', event => {
+    if (event?.data?.channel !== 'color') {
+      return
+    }
+    state.visibleSeries = new Set([`${event.data.value}`])
+  })
+  chartObj.on('legend:reset', () => {
+    state.visibleSeries = undefined
+  })
+  return state
+}
+
 export const getLineTooltipSameDimensionItems = (
   options: G2Spec,
   customAttr: DeepPartial<ChartAttr>,
   title: string,
   originalItems: any[],
+  visibleSeries?: ReadonlySet<string>,
   formatColor?: (color: string) => string
 ) => {
   const allData = options.data?.value || []
+  const isSeriesVisible = item => !visibleSeries || visibleSeries.has(`${item.category}`)
   const colorMap = (options.scale?.color?.relations || []).reduce((pre, [name, color]) => {
     pre[`${name}`] = color
     return pre
@@ -136,12 +162,12 @@ export const getLineTooltipSameDimensionItems = (
   if (!field) {
     return originalItems
   }
+  const result = originalItems.filter(isSeriesVisible)
   const itemKeys = new Set(
-    originalItems.map(item => `${item.category ?? ''}-${item.quotaList?.[0]?.id ?? ''}`)
+    result.map(item => `${item.category ?? ''}-${item.quotaList?.[0]?.id ?? ''}`)
   )
-  const result = [...originalItems]
   allData.forEach(item => {
-    if (item.field !== field) {
+    if (item.field !== field || !isSeriesVisible(item)) {
       return
     }
     const key = `${item.category ?? ''}-${item.quotaList?.[0]?.id ?? ''}`

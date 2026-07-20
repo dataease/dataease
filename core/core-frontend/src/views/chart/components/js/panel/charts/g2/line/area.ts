@@ -24,6 +24,7 @@ import {
   configYAxisSeriesLegendDomain,
   getLineConditionLineYMarks,
   getLineTooltipSameDimensionItems,
+  bindLineLegendState,
   LINE_AXIS_TYPE,
   LINE_CONDITION_VISIBLE_DOMAIN_KEY,
   LINE_EDITOR_PROPERTY,
@@ -151,7 +152,8 @@ export class Area extends G2ChartView {
       }
     }
     const newChart = new G2Chart({ container })
-    const options = this.setupOptions(chart, initOptions, { chartObj: newChart })
+    const legendState = bindLineLegendState(newChart)
+    const options = this.setupOptions(chart, initOptions, { legendState })
     // 开始渲染
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
@@ -672,7 +674,7 @@ export class Area extends G2ChartView {
     return options
   }
 
-  protected configTooltip(chart: Chart, options: G2Spec): G2Spec {
+  protected configTooltip(chart: Chart, options: G2Spec, context: Record<string, any>): G2Spec {
     const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
     const tooltipAttr = customAttr.tooltip
     const lineMark = options.children[1]
@@ -701,6 +703,7 @@ export class Area extends G2ChartView {
               customAttr,
               title,
               originalItems,
+              context.legendState?.visibleSeries,
               color =>
                 customAttr.basicStyle?.gradient ? setGradientColor(color, true, 270) : color
             )
@@ -962,7 +965,7 @@ export class StackArea extends Area {
     return super.configLegend(chart, configStackOrderByYAxis(chart, options))
   }
 
-  protected configTooltip(chart: Chart, options: G2Spec): G2Spec {
+  protected configTooltip(chart: Chart, options: G2Spec, context: Record<string, any>): G2Spec {
     const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
     const tooltipAttr = customAttr.tooltip
     const lineMark = options.children[1]
@@ -987,8 +990,14 @@ export class StackArea extends Area {
             // G2 折线默认只返回当前命中的线段，按维度补齐同一 x 下的系列项
             sortTooltipItemsByYAxis(
               chart,
-              getLineTooltipSameDimensionItems(options, customAttr, title, items, color =>
-                customAttr.basicStyle?.gradient ? setGradientColor(color, true, 270) : color
+              getLineTooltipSameDimensionItems(
+                options,
+                customAttr,
+                title,
+                items,
+                context.legendState?.visibleSeries,
+                color =>
+                  customAttr.basicStyle?.gradient ? setGradientColor(color, true, 270) : color
               )
             ).forEach(item => {
               if (item.value === null || item.value === undefined) {

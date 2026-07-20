@@ -22,6 +22,7 @@ import {
   getLineConditionColorWithAlpha,
   getLineConditionLineYMarks,
   getLineTooltipSameDimensionItems,
+  bindLineLegendState,
   LINE_AXIS_TYPE,
   LINE_CONDITION_VISIBLE_DOMAIN_KEY,
   LINE_EDITOR_PROPERTY,
@@ -125,9 +126,10 @@ export class Line extends G2ChartView {
         { type: 'point', tooltip: false, zIndex: 0 }
       ]
     }
-    const options = this.setupOptions(chart, initOptions)
-    // 开始渲染
     const newChart = new G2Chart({ container })
+    const legendState = bindLineLegendState(newChart)
+    const options = this.setupOptions(chart, initOptions, { legendState })
+    // 开始渲染
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
     newChart.on('point:click', action)
@@ -718,7 +720,7 @@ export class Line extends G2ChartView {
     return options
   }
 
-  protected configTooltip(chart: Chart, options: G2Spec): G2Spec {
+  protected configTooltip(chart: Chart, options: G2Spec, context: Record<string, any>): G2Spec {
     const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
     const tooltipAttr = customAttr.tooltip
     const lineMark = options.children[0]
@@ -753,7 +755,8 @@ export class Line extends G2ChartView {
               options,
               customAttr,
               title,
-              originalItems
+              originalItems,
+              context.legendState?.visibleSeries
             )
             let tooltipItems = fullItems
             if (tooltipAttr.seriesTooltipFormatter?.length) {
@@ -859,7 +862,7 @@ export class Line extends G2ChartView {
     return options
   }
 
-  protected setupOptions(chart: Chart, options: G2Spec): G2Spec {
+  protected setupOptions(chart: Chart, options: G2Spec, context: Record<string, any>): G2Spec {
     return flow(
       this.configTheme,
       this.configEmptyDataStrategy,
@@ -873,7 +876,7 @@ export class Line extends G2ChartView {
       this.configAssistLine,
       this.configTooltip,
       this.configSlider
-    )(chart, options, {}, this)
+    )(chart, options, context, this)
   }
 
   constructor(name = 'line') {
