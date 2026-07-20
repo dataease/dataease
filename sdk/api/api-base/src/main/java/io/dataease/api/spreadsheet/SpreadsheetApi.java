@@ -30,6 +30,7 @@ public interface SpreadsheetApi {
     SpreadsheetVO createFolder(@RequestBody SpreadsheetCreator creator);
 
     @Operation(summary = "保存电子表格(创建/编辑)")
+    @DePermit({"#p0.pid+':manage'"})
     @PostMapping("/save")
     SpreadsheetVO save(@RequestBody SpreadsheetEditor editor);
 
@@ -38,6 +39,7 @@ public interface SpreadsheetApi {
     SpreadsheetVO get(@PathVariable("id") Long id);
 
     @Operation(summary = "获取电子表格详情")
+    @DePermit({"#p0.id+':read'"})
     @PostMapping("/findById")
     SpreadsheetVO findById(@RequestBody SpreadsheetEditor request);
 
@@ -65,6 +67,7 @@ public interface SpreadsheetApi {
     boolean nameCheck(@RequestBody SpreadsheetEditor editor);
 
     @Operation(summary = "更新发布状态")
+    @DePermit({"#p0.id+':manage'"})
     @PostMapping("/updateStatus")
     void updateStatus(@RequestBody SpreadsheetEditor editor);
 
