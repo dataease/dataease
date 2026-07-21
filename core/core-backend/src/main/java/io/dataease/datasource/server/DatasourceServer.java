@@ -1496,7 +1496,9 @@ public class DatasourceServer implements DatasourceApi {
             }
         }
         datasourceDTO.setConfiguration(RsaUtils.symmetricEncrypt(datasourceDTO.getConfiguration()));
-        datasourceDTO.setCreator(coreUserManage.getUserName(Long.valueOf(datasourceDTO.getCreateBy())));
+        if (StringUtils.isNotBlank(datasourceDTO.getCreateBy())) {
+            datasourceDTO.setCreator(coreUserManage.getUserName(Long.valueOf(datasourceDTO.getCreateBy())));
+        }
         return datasourceDTO;
     }
 
