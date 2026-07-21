@@ -426,7 +426,7 @@ const htmlToImage = () => {
   useEmitt().emitter.emit('renderChart-' + viewInfo.value.id)
   useEmitt().emitter.emit('l7-prepare-picture', viewInfo.value.id)
   // 表格和支持最值图表的渲染时间为2000毫秒，其他图表为500毫秒。
-  const renderTime = viewInfo.value.type?.includes('table') ? 2000 : 500
+  const renderTime = 2000
   setTimeout(() => {
     initWatermark()
     toPng(viewContainer.value)
