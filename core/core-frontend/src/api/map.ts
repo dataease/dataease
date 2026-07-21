@@ -9,8 +9,8 @@ export const getGeoJson = (areaId: string): Promise<IResponse<FeatureCollection>
   const isGeo = isCustomGeo(areaId)
   const areaCode = isGeo ? getBusiGeoCode(areaId) : areaId
 
-  // 中国区域走 /map, 其他走 /geo
-  const prefix = !isGeo || areaCode.startsWith('156') ? '/map' : '/geo'
+  // 内置地图走 map，所有上传地图统一走 geo
+  const prefix = isGeo ? '/geo' : '/map'
   const countryCode = areaCode.substring(0, 3)
   const url = `${prefix}/${countryCode}/${areaCode}.json`
 

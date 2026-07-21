@@ -18,7 +18,10 @@ public class StaticResourceConstants {
 
     public static String WORK_DIR = ensureSuffix(USER_HOME, FILE_SEPARATOR) + "static-resource" + FILE_SEPARATOR;
 
+    // 宿主机持久化目录仅保存用户修改后的内置地图覆盖文件
     public static String MAP_DIR = ensureSuffix(USER_HOME, FILE_SEPARATOR) + "map";
+    // 镜像内置地图只作为只读原始文件和静态资源回退来源
+    public static String MAP_ORIGIN_DIR = ensureSuffix(USER_HOME, FILE_SEPARATOR) + "map-origin";
     public static String CUSTOM_MAP_DIR = ensureSuffix(USER_HOME, FILE_SEPARATOR) + "geo";
     public static String APPEARANCE_DIR = ensureSuffix(USER_HOME, FILE_SEPARATOR) + "appearance";
     public static String REPORT_DIR = ensureSuffix(USER_HOME, FILE_SEPARATOR) + "report";

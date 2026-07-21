@@ -13,7 +13,7 @@ services:
       - ${DE_BASE}/dataease3.0/data/static-resource:/opt/dataease3.0/data/static-resource
       - ${DE_BASE}/dataease3.0/cache:/opt/dataease3.0/cache
       - ${DE_BASE}/dataease3.0/data/geo:/opt/dataease3.0/data/geo
-      - ${DE_BASE}/dataease2.0/data/map:/opt/dataease2.0/data/map
+      - ${DE_BASE}/dataease3.0/data/map:/opt/dataease3.0/data/map
       - ${DE_BASE}/dataease3.0/data/appearance:/opt/dataease3.0/data/appearance
       - ${DE_BASE}/dataease3.0/data/exportData:/opt/dataease3.0/data/exportData
       - ${DE_BASE}/dataease3.0/data/plugin:/opt/dataease3.0/data/plugin
