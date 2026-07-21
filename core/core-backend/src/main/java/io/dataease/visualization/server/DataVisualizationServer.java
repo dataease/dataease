@@ -830,10 +830,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Override
     public String updateCheckVersion(Long dvId) {
-        DataVisualizationInfo updateInfo = new DataVisualizationInfo();
-        updateInfo.setId(dvId);
-        updateInfo.setCheckVersion(coreLicManage.getVersion());
-        dataVisualizationInfoRepository.saveAndFlush(updateInfo);
+        dataVisualizationInfoRepository.updateCheckVersionById(dvId, coreLicManage.getVersion());
         return "";
     }
 
