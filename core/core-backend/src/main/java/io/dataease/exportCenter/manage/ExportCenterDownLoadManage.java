@@ -73,10 +73,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
-import java.nio.channels.Channels;
-import java.nio.channels.FileChannel;
-import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.*;
@@ -88,6 +86,8 @@ import java.util.stream.Collectors;
 @Component
 @Transactional(rollbackFor = Exception.class)
 public class ExportCenterDownLoadManage {
+    private static final String PLAIN_NUMBER_FORMAT = "0";
+
     @Resource
     private PermissionManage permissionManage;
     @Autowired
@@ -314,6 +314,7 @@ public class ExportCenterDownLoadManage {
                 cellStyle.setFont(font);
                 cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
                 cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                CellStyle plainNumberCellStyle = createPlainNumberCellStyle(wb);
 
                 for (Long s = 1L; s < sheetCount + 1; s++) {
                     Long sheetSize;
@@ -366,15 +367,7 @@ public class ExportCenterDownLoadManage {
                                                 cell.setCellStyle(cellStyle);
                                                 detailsSheet.setColumnWidth(j, 255 * 20);
                                             } else {
-                                                if ((allFields.get(j).getDeType().equals(DeTypeConstants.DE_INT) || allFields.get(j).getDeType() == DeTypeConstants.DE_FLOAT) && StringUtils.isNotEmpty(rowData.get(j))) {
-                                                    try {
-                                                        cell.setCellValue(Double.valueOf(rowData.get(j)));
-                                                    } catch (Exception e) {
-                                                        cell.setCellValue(rowData.get(j));
-                                                    }
-                                                } else {
-                                                    cell.setCellValue(rowData.get(j));
-                                                }
+                                                setDatasetCellValue(cell, allFields.get(j), rowData.get(j), plainNumberCellStyle);
                                             }
                                         }
                                     }
@@ -397,15 +390,7 @@ public class ExportCenterDownLoadManage {
                                 if (rowData != null) {
                                     for (int j = 0; j < rowData.size(); j++) {
                                         Cell cell = row.createCell(j);
-                                        if ((allFields.get(j).getDeType().equals(DeTypeConstants.DE_INT) || allFields.get(j).getDeType() == DeTypeConstants.DE_FLOAT) && StringUtils.isNotEmpty(rowData.get(j))) {
-                                            try {
-                                                cell.setCellValue(Double.valueOf(rowData.get(j)));
-                                            } catch (Exception e) {
-                                                cell.setCellValue(rowData.get(j));
-                                            }
-                                        } else {
-                                            cell.setCellValue(rowData.get(j));
-                                        }
+                                        setDatasetCellValue(cell, allFields.get(j), rowData.get(j), plainNumberCellStyle);
                                     }
                                 }
                             }
@@ -729,6 +714,7 @@ public class ExportCenterDownLoadManage {
             cellStyle.setFont(font);
             cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
             cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            CellStyle plainNumberCellStyle = createPlainNumberCellStyle(wb);
 
             for (Long s = 1L; s < sheetCount + 1; s++) {
                 Long sheetSize;
@@ -781,15 +767,7 @@ public class ExportCenterDownLoadManage {
                                             cell.setCellStyle(cellStyle);
                                             detailsSheet.setColumnWidth(j, 255 * 20);
                                         } else {
-                                            if ((allFields.get(j).getDeType().equals(DeTypeConstants.DE_INT) || allFields.get(j).getDeType() == DeTypeConstants.DE_FLOAT) && StringUtils.isNotEmpty(rowData.get(j))) {
-                                                try {
-                                                    cell.setCellValue(Double.valueOf(rowData.get(j)));
-                                                } catch (Exception e) {
-                                                    cell.setCellValue(rowData.get(j));
-                                                }
-                                            } else {
-                                                cell.setCellValue(rowData.get(j));
-                                            }
+                                            setDatasetCellValue(cell, allFields.get(j), rowData.get(j), plainNumberCellStyle);
                                         }
                                     }
                                 }
@@ -817,15 +795,7 @@ public class ExportCenterDownLoadManage {
                                         cell.setCellStyle(cellStyle);
                                         detailsSheet.setColumnWidth(j, 255 * 20);
                                     } else {
-                                        if ((allFields.get(j).getDeType().equals(DeTypeConstants.DE_INT) || allFields.get(j).getDeType() == DeTypeConstants.DE_FLOAT) && StringUtils.isNotEmpty(rowData.get(j))) {
-                                            try {
-                                                cell.setCellValue(Double.valueOf(rowData.get(j)));
-                                            } catch (Exception e) {
-                                                cell.setCellValue(rowData.get(j));
-                                            }
-                                        } else {
-                                            cell.setCellValue(rowData.get(j));
-                                        }
+                                        setDatasetCellValue(cell, allFields.get(j), rowData.get(j), plainNumberCellStyle);
                                     }
 
                                 }
@@ -844,6 +814,32 @@ public class ExportCenterDownLoadManage {
             DEException.throwException(e);
         }
     }
+
+    private CellStyle createPlainNumberCellStyle(Workbook workbook) {
+        CellStyle cellStyle = workbook.createCellStyle();
+        cellStyle.setDataFormat(workbook.createDataFormat().getFormat(PLAIN_NUMBER_FORMAT));
+        return cellStyle;
+    }
+
+    private void setDatasetCellValue(Cell cell, DatasetTableFieldDTO field, String value, CellStyle plainNumberCellStyle) {
+        if ((field.getDeType().equals(DeTypeConstants.DE_INT)) && StringUtils.isNotEmpty(value)) {
+            try {
+                cell.setCellValue(Double.parseDouble(value));
+                cell.setCellStyle(plainNumberCellStyle);
+                return;
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        if ((field.getDeType() == DeTypeConstants.DE_FLOAT) && StringUtils.isNotEmpty(value)) {
+            try {
+                cell.setCellValue(Double.parseDouble(value));
+                return;
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        cell.setCellValue(value);
+    }
+
 
     private void validateDownloadPath(String filePath) {
         try {
