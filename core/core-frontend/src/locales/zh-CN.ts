@@ -2816,7 +2816,8 @@ export default {
     char_count_limit: '不能超过{count}字符'
   },
   sql_variable: {
-    variable_mgm: '参数设置'
+    variable_mgm: '参数设置',
+    variable_name_empty: '参数名不能为空'
   },
   v_query: {
     display_sort: '显示字段和排序字段不一致，无法进行自定义排序',

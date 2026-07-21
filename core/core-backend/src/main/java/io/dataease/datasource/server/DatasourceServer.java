@@ -597,14 +597,31 @@ public class DatasourceServer implements DatasourceApi {
         if (datasource == null) {
             DEException.throwException(Translator.get("i18n_datasource_not_exists"));
         }
-        if (datasource.getType().contains("API")) {
-            datasource.setConfiguration("[]");
-        } else {
-            datasource.setConfiguration("");
-        }
-        datasource.setConfiguration("");
         DatasourceDTO datasourceDTO = new DatasourceDTO();
         BeanUtils.copyBean(datasourceDTO, datasource);
+        if (datasourceDTO.getType().contains(DatasourceConfiguration.DatasourceType.Excel.toString())) {
+            datasourceDTO.setFileName(ExcelUtils.getFileName(datasource));
+            datasourceDTO.setSize(ExcelUtils.getSize(datasource));
+        }
+        if (datasourceDTO.getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.ExcelRemote.name()) || datasourceDTO.getType().contains(DatasourceConfiguration.DatasourceType.API.toString())) {
+            CoreDatasourceTask coreDatasourceTask = datasourceTaskServer.selectByDSId(datasourceDTO.getId());
+            TaskDTO taskDTO = new TaskDTO();
+            BeanUtils.copyBean(taskDTO, coreDatasourceTask);
+            datasourceDTO.setSyncSetting(taskDTO);
+            CoreDatasourceTask task = datasourceTaskServer.selectByDSId(datasourceDTO.getId());
+            if (task != null) {
+                datasourceDTO.setLastSyncTime(task.getStartTime());
+            }
+        }
+        if (StringUtils.isNotBlank(datasourceDTO.getCreateBy())) {
+            datasourceDTO.setCreator(coreUserManage.getUserName(Long.valueOf(datasourceDTO.getCreateBy())));
+        }
+        if (datasourceDTO.getType().contains("API")) {
+            datasourceDTO.setConfiguration("[]");
+        } else {
+            datasourceDTO.setConfiguration("");
+        }
+        datasourceDTO.setConfiguration("");
         return datasourceDTO;
     }
 

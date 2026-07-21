@@ -2876,7 +2876,8 @@ export default {
     char_count_limit: 'Cannot exceed {count} characters'
   },
   sql_variable: {
-    variable_mgm: 'Parameter settings'
+    variable_mgm: 'Parameter settings',
+    variable_name_empty: 'Parameter name cannot be empty'
   },
   v_query: {
     display_sort: 'Display fields and sort fields are inconsistent, custom sorting is not possible',

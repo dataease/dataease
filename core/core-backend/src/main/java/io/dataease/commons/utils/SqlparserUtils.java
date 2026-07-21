@@ -62,6 +62,10 @@ public class SqlparserUtils {
     }
 
     public SqlVariableHandleResult handleVariableDefaultValueWithPreparedParams(String sql, String sqlVariableDetails, boolean isEdit, boolean isFromDataSet, List<SqlVariableDetails> parameters, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, PluginManageApi pluginManage, UserFormVO userEntity) {
+        if (StringUtils.isEmpty(sql)) {
+            DEException.throwException(Translator.get("i18n_sql_not_empty"));
+        }
+        validateParameterNames(sql, regex);
         Pattern r = Pattern.compile(deVariablePattern);
         Matcher m = r.matcher(sql);
         if (m.find()) {
@@ -69,9 +73,6 @@ public class SqlparserUtils {
         }
 
         DatasourceSchemaDTO ds = dsMap.entrySet().iterator().next().getValue();
-        if (StringUtils.isEmpty(sql)) {
-            DEException.throwException(Translator.get("i18n_sql_not_empty"));
-        }
         this.userEntity = userEntity;
         this.preparedBindings.clear();
         this.preparedBindingIndex = 0;
@@ -170,6 +171,15 @@ public class SqlparserUtils {
             e.printStackTrace();
         }
         return finalizePreparedSql(sql);
+    }
+
+    static void validateParameterNames(String sql, String parameterPattern) {
+        Matcher matcher = Pattern.compile(parameterPattern).matcher(sql);
+        while (matcher.find()) {
+            if (StringUtils.isBlank(matcher.group(1))) {
+                DEException.throwException(Translator.get("i18n_sql_variable_name_empty"));
+            }
+        }
     }
 
     private static boolean isParams(String paramId) {
