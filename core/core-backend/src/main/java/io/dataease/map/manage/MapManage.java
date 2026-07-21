@@ -34,14 +34,19 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -58,6 +63,10 @@ public class MapManage {
     private static final String FEATURE_COLLECTION = "FeatureCollection";
     private static final String FEATURE = "Feature";
     private static final String GEOMETRY_COLLECTION = "GeometryCollection";
+    private static final int MAX_MAPPING_KEY_LENGTH = 512;
+    private static final int MAX_MAPPING_VALUE_LENGTH = 512;
+    private static final long MAX_MAPPING_TOTAL_LENGTH = 2 * 1024 * 1024;
+    private static final ConcurrentMap<String, Object> MAPPING_FILE_LOCKS = new ConcurrentHashMap<>();
     private static final Set<String> GEOJSON_GEOMETRY_TYPES = Set.of(
             "Point",
             "MultiPoint",
@@ -176,7 +185,8 @@ public class MapManage {
         coreAreaCustom.setName(request.getName());
         coreAreaCustomMapper.insert(coreAreaCustom);
 
-        File geoFile = buildGeoFile(code);
+        // 上传地图统一写入 geo，是否属于中国只影响 GeoJSON 内容处理
+        File geoFile = buildCustomGeoFile(code);
         try {
             if (isChina(code)) {
                 writeGeoJsonToFile(geoJson, geoFile);
@@ -205,13 +215,9 @@ public class MapManage {
         childTreeIdList(List.of(code), codeResultList);
         coreAreaCustomMapper.deleteBatchIds(codeResultList);
         codeResultList.forEach(id -> {
-            // 删除目标必须是安全路径解析生成
-            Path file = buildGeoFile(id).toPath();
-            try {
-                Files.deleteIfExists(file);
-            } catch (IOException e) {
-                LogUtil.error(e.getMessage());
-            }
+            // 删除上传文件时同时清理历史版本遗留在 map 中的中国地图文件
+            deleteGeoFile(resolveCustomGeoFilePath(id));
+            deleteGeoFile(resolveLegacyCustomGeoFilePath(id));
         });
     }
 
@@ -311,12 +317,8 @@ public class MapManage {
         return StringUtils.startsWith(code, GEO_PREFIX) ? code.substring(GEO_PREFIX.length()) : code;
     }
 
-    private File buildGeoFile(String code) {
-        return resolveGeoFilePath(code).toFile();
-    }
-
-    private File buildGeoFile(String code, boolean allowWorld) {
-        return resolveGeoFilePath(code, allowWorld).toFile();
+    private File buildCustomGeoFile(String code) {
+        return resolveCustomGeoFilePath(code).toFile();
     }
 
     public void validateCode(String code) {
@@ -354,7 +356,7 @@ public class MapManage {
             }
             properties.put("adcode", setChildAdcode(code));
         }
-        mapper.writeValue(geoFile, geoJson);
+        writeJsonAtomically(mapper, geoJson, geoFile.toPath());
     }
 
     /**
@@ -397,19 +399,32 @@ public class MapManage {
      * 根据前端传入的区域编码和地名映射信息，将映射结果写入对应的 GeoJSON 文件的根节点 deMapping 字段中
      */
     public void placeNameMapping(String id, Map<String, String> req) {
-        // 地名映射读取已有世界地图文件时允许 000
-        File file = buildGeoFile(id, true);
-        if (!file.exists()) {
-            DEException.throwException("GeoJSON 文件不存在: " + file.getAbsolutePath());
+        boolean customGeo = isCustomGeoCode(id);
+        // 仅内置世界地图允许 000，上传地图仍遵循普通区域编码规则
+        String normalizedId = normalizeGeoCode(id, !customGeo);
+        validateMappingTarget(customGeo, normalizedId);
+
+        // 同一地图的复制和修改串行执行，避免并发请求产生不完整文件
+        Object fileLock = MAPPING_FILE_LOCKS.computeIfAbsent(
+                mappingLockKey(customGeo, normalizedId), key -> new Object());
+        synchronized (fileLock) {
+            Path targetFile = customGeo
+                    ? resolveCustomGeoFilePath(normalizedId)
+                    : resolveBuiltinMapFilePath(normalizedId, true);
+            Path sourceFile = resolveMappingSourceFile(customGeo, normalizedId, targetFile);
+            if (!Files.isRegularFile(sourceFile, LinkOption.NOFOLLOW_LINKS)) {
+                DEException.throwException("GeoJSON 文件不存在: " + id);
+            }
+            writeDeMappingToFile(sourceFile, targetFile, req);
         }
-        writeDeMappingToFile(file, req);
     }
 
-    private void writeDeMappingToFile(File file, Map<String, String> req) {
+    private void writeDeMappingToFile(Path sourceFile, Path targetFile, Map<String, String> req) {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            JsonNode root = mapper.readTree(file);
+            JsonNode root = mapper.readTree(sourceFile.toFile());
             validateGeoJson(root);
+            validatePlaceNameMapping(root, req);
             ObjectNode objectNode = (ObjectNode) root;
 
             ObjectNode deMappingNode = mapper.createObjectNode();
@@ -417,11 +432,81 @@ public class MapManage {
                 req.forEach(deMappingNode::put);
             }
             objectNode.set("deMapping", deMappingNode);
-            mapper.writerWithDefaultPrettyPrinter().writeValue(file, objectNode);
+            writeJsonAtomically(mapper, objectNode, targetFile);
         } catch (Exception e) {
             LogUtil.error(e.getMessage());
             DEException.throwException(e);
         }
+    }
+
+    /**
+     * 内置地图从 map-origin 回退，历史上传地图从旧 map 目录回退
+     */
+    private Path resolveMappingSourceFile(boolean customGeo, String id, Path targetFile) {
+        if (Files.isRegularFile(targetFile, LinkOption.NOFOLLOW_LINKS)) {
+            return targetFile;
+        }
+        if (customGeo) {
+            return resolveLegacyCustomGeoFilePath(id);
+        }
+        return resolveMapOriginFilePath(id);
+    }
+
+    private void validateMappingTarget(boolean customGeo, String id) {
+        if (customGeo) {
+            if (ObjectUtils.isEmpty(coreAreaCustomMapper.selectById(getDaoGeoCode(id)))) {
+                DEException.throwException("上传地图不存在: " + id);
+            }
+            return;
+        }
+        if (!isWorld(id) && ObjectUtils.isEmpty(areaMapper.selectById(id))) {
+            DEException.throwException("内置地图不存在: " + id);
+        }
+    }
+
+    private void validatePlaceNameMapping(JsonNode root, Map<String, String> req) {
+        if (req == null || req.isEmpty()) {
+            return;
+        }
+        int featureCount = root.path("features").size();
+        if (req.size() > featureCount) {
+            DEException.throwException("地名映射数量不能超过地图要素数量");
+        }
+        long totalLength = 0;
+        for (Map.Entry<String, String> entry : req.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            if (StringUtils.isBlank(key) || StringUtils.isBlank(value)
+                    || key.length() > MAX_MAPPING_KEY_LENGTH
+                    || value.length() > MAX_MAPPING_VALUE_LENGTH) {
+                DEException.throwException("地名映射名称为空或长度超出限制");
+            }
+            totalLength += key.length() + value.length();
+            if (totalLength > MAX_MAPPING_TOTAL_LENGTH) {
+                DEException.throwException("地名映射内容超出限制");
+            }
+        }
+    }
+
+    private void writeJsonAtomically(ObjectMapper mapper, JsonNode root, Path targetFile) throws IOException {
+        Path tempFile = Files.createTempFile(targetFile.getParent(), "." + targetFile.getFileName(), ".tmp");
+        try {
+            // 使用紧凑格式避免地名映射导致大体积 GeoJSON 显著膨胀
+            mapper.writeValue(tempFile.toFile(), root);
+            try {
+                Files.move(tempFile, targetFile,
+                        StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+            } catch (AtomicMoveNotSupportedException e) {
+                // 同目录不支持原子移动时仍使用单次替换，避免直接截断原文件
+                Files.move(tempFile, targetFile, StandardCopyOption.REPLACE_EXISTING);
+            }
+        } finally {
+            Files.deleteIfExists(tempFile);
+        }
+    }
+
+    private String mappingLockKey(boolean customGeo, String id) {
+        return (customGeo ? "geo:" : "map:") + id;
     }
 
     /**
@@ -458,7 +543,7 @@ public class MapManage {
 
     private void writeGeoJsonToFile(JsonNode geoJson, File geoFile) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        mapper.writeValue(geoFile, geoJson);
+        writeJsonAtomically(mapper, geoJson, geoFile.toPath());
     }
 
     /**
@@ -555,13 +640,17 @@ public class MapManage {
     /**
      * 规范化目标路径并确认文件始终位于地图目录内
      */
-    private Path resolveGeoFilePath(String code) {
-        return resolveGeoFilePath(code, false);
+    private Path resolveCustomGeoFilePath(String code) {
+        String id = normalizeGeoCode(code);
+        return resolveWritableGeoFilePath(StaticResourceConstants.CUSTOM_MAP_DIR, id);
     }
 
-    private Path resolveGeoFilePath(String code, boolean allowWorld) {
+    private Path resolveBuiltinMapFilePath(String code, boolean allowWorld) {
         String id = normalizeGeoCode(code, allowWorld);
-        String baseDir = isWorld(id) || isChina(id) ? StaticResourceConstants.MAP_DIR : StaticResourceConstants.CUSTOM_MAP_DIR;
+        return resolveWritableGeoFilePath(StaticResourceConstants.MAP_DIR, id);
+    }
+
+    private Path resolveWritableGeoFilePath(String baseDir, String id) {
         Path basePath = Paths.get(baseDir).toAbsolutePath().normalize();
         try {
             Files.createDirectories(basePath);
@@ -585,6 +674,55 @@ public class MapManage {
             DEException.throwException(e);
             return null;
         }
+    }
+
+    private Path resolveMapOriginFilePath(String code) {
+        String id = normalizeGeoCode(code, true);
+        return resolveReadableGeoFilePath(StaticResourceConstants.MAP_ORIGIN_DIR, id);
+    }
+
+    private Path resolveLegacyCustomGeoFilePath(String code) {
+        String id = normalizeGeoCode(code);
+        return resolveReadableGeoFilePath(StaticResourceConstants.MAP_DIR, id);
+    }
+
+    private Path resolveReadableGeoFilePath(String baseDir, String id) {
+        Path basePath = Paths.get(baseDir).toAbsolutePath().normalize();
+        Path targetPath = basePath.resolve(countryCodeOfValidated(id)).resolve(id + ".json").normalize();
+        if (!targetPath.startsWith(basePath) || Files.isSymbolicLink(targetPath)) {
+            DEException.throwException("非法地图文件路径");
+        }
+        if (!Files.exists(targetPath, LinkOption.NOFOLLOW_LINKS)) {
+            return targetPath;
+        }
+        try {
+            // 读取源文件时解析真实路径，阻止中间目录符号链接跳出地图目录
+            Path realBasePath = basePath.toRealPath();
+            Path realTargetPath = targetPath.toRealPath();
+            if (!realTargetPath.startsWith(realBasePath)
+                    || !Files.isRegularFile(realTargetPath, LinkOption.NOFOLLOW_LINKS)) {
+                DEException.throwException("非法地图文件路径");
+            }
+            return realTargetPath;
+        } catch (IOException e) {
+            LogUtil.error(e.getMessage());
+            DEException.throwException(e);
+            return null;
+        }
+    }
+
+    private void deleteGeoFile(Path file) {
+        try {
+            Files.deleteIfExists(file);
+        } catch (IOException e) {
+            LogUtil.error(e.getMessage());
+            // 文件删除失败时终止事务，避免接口静默返回成功
+            DEException.throwException("删除地图文件失败: " + file.getFileName());
+        }
+    }
+
+    private boolean isCustomGeoCode(String code) {
+        return StringUtils.startsWith(code, GEO_PREFIX);
     }
 
     private boolean isWorld(String code) {
