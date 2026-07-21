@@ -506,10 +506,8 @@ public class CoreVisualizationManage {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void removeDvCore(Long dvId) {
         if (dvId != null) {
-            // 清理历史数据
-            Set<Long> dvIds = new HashSet<>();
-            dvIds.add(dvId);
-            dataVisualizationInfoRepository.deleteAllByIdInBatch(dvIds);
+            // 清理历史数据（主表 data_visualization_info 不做删除，仅由 dvRestore 原地更新，
+            // 避免删除后残留的托管实体在刷新时对已删除行发起 UPDATE，导致 ObjectOptimisticLockingFailureException）
             coreChartViewRepository.deleteBySceneId(dvId);
             List<VisualizationLinkage> visualizationLinkages = visualizationLinkageRepository.findByDvId(dvId);
             if (CollectionUtils.isNotEmpty(visualizationLinkages)) {
@@ -715,6 +713,8 @@ public class CoreVisualizationManage {
 
     @Transactional
     public void dvRestore(Long dvId) {
+        // 主表行未被删除，此处按 dvId 原地更新（saveAndFlush 命中已存在行做 UPDATE），
+        // 将镜像表数据同步到主表
         snapshotDataVisualizationInfoRepository.findById(dvId).ifPresent(item -> {
             DataVisualizationInfo dataVisualizationInfo = new DataVisualizationInfo();
             BeanUtils.copyBean(dataVisualizationInfo, item, "updateTime");
