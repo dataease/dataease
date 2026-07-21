@@ -95,8 +95,8 @@ export class Funnel extends G2PlotChartView<FunnelOptions, G2Funnel> {
         {
           type: 'tooltip',
           cfg: {
-            start: [{ trigger: 'interval:mousemove', action: 'tooltip:show' }],
-            end: [{ trigger: 'interval:mouseleave', action: 'tooltip:hide' }]
+            start: [{ trigger: 'plot:mousemove', action: 'tooltip:show' }],
+            end: [{ trigger: 'plot:mouseleave', action: 'tooltip:hide' }]
           }
         }
       ],
@@ -137,6 +137,10 @@ export class Funnel extends G2PlotChartView<FunnelOptions, G2Funnel> {
               fontSize: l.fontSize
             },
             formatter: function (param: Datum) {
+              // G2Plot 不渲染 null 标签，显式保留空值文本
+              if (param.value === null) {
+                return 'null'
+              }
               return valueFormatter(param.value, l.quotaLabelFormatter)
             }
           }
@@ -174,6 +178,21 @@ export class Funnel extends G2PlotChartView<FunnelOptions, G2Funnel> {
       }
     }
     return options
+  }
+
+  protected configMultiSeriesTooltip(chart: Chart, options: FunnelOptions): FunnelOptions {
+    const result = super.configMultiSeriesTooltip(chart, options)
+    if (result.tooltip && result.tooltip.customItems) {
+      // 按维度区域查找数据，使零宽漏斗也能触发 tooltip
+      result.tooltip.shared = true
+      const customItems = result.tooltip.customItems
+      result.tooltip.customItems = originalItems => {
+        return customItems(originalItems).map(item =>
+          item.data?.value === null ? { ...item, value: 'null' } : item
+        )
+      }
+    }
+    return result
   }
 
   public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
