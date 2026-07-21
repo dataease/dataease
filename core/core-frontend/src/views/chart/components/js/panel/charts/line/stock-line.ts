@@ -7,7 +7,6 @@ import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/uti
 import { LINE_EDITOR_PROPERTY_INNER } from '@/views/chart/components/js/panel/charts/line/common'
 import { useI18n } from '@/hooks/web/useI18n'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
-import type { Options } from '@antv/g2plot/esm'
 import { MixOptions } from '@antv/g2plot'
 
 const { t } = useI18n()
@@ -59,6 +58,31 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
   }
 
   /**
+   * 在均线和纵轴范围计算前统一应用空值策略
+   * @param data
+   * @param chart
+   */
+  prepareDataByEmptyStrategy = (data, chart) => {
+    const strategy = parseJson(chart.senior).functionCfg.emptyDataStrategy
+    const result = data.map(item => ({ ...item }))
+    if (strategy === 'ignoreData') {
+      return result.filter(
+        item => !Object.keys(item).some(key => key.startsWith('f_') && item[key] === null)
+      )
+    }
+    if (strategy === 'setZero') {
+      result.forEach(item => {
+        Object.keys(item).forEach(key => {
+          if (key.startsWith('f_') && item[key] === null) {
+            item[key] = 0
+          }
+        })
+      })
+    }
+    return result
+  }
+
+  /**
    * 计算收盘价平均值
    * @param data
    * @param dayCount
@@ -72,21 +96,33 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
     // 收盘价字段
     const yAxisDataeaseName = yAxis[1].dataeaseName
     const result = []
+    const windowValues: Array<number | null> = []
+    let sum = 0
+    let validCount = 0
     for (let i = 0; i < data.length; i++) {
-      if (i < dayCount) {
-        result.push({
-          [xAxisDataeaseName]: data[i][xAxisDataeaseName],
-          value: null
-        })
-      } else {
-        const sum = data
-          .slice(i - dayCount + 1, i + 1)
-          .reduce((sum, item) => sum + item[yAxisDataeaseName], 0)
-        result.push({
-          [xAxisDataeaseName]: data[i][xAxisDataeaseName],
-          value: parseFloat((sum / dayCount).toFixed(3))
-        })
+      const rawValue = data[i][yAxisDataeaseName]
+      const numberValue = Number(rawValue)
+      const value = rawValue === null || !Number.isFinite(numberValue) ? null : numberValue
+      // 空值占据窗口位置但不加入总和，均值仍固定除以周期数
+      windowValues.push(value)
+      if (value !== null) {
+        sum += value
+        validCount++
       }
+      if (windowValues.length > dayCount) {
+        const removedValue = windowValues.shift()
+        if (typeof removedValue === 'number') {
+          sum -= removedValue
+          validCount--
+        }
+      }
+      result.push({
+        [xAxisDataeaseName]: data[i][xAxisDataeaseName],
+        value:
+          windowValues.length === dayCount && validCount > 0
+            ? parseFloat((sum / dayCount).toFixed(3))
+            : null
+      })
     }
     return result
   }
@@ -225,7 +261,10 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
     basicStyle.colors.forEach(ele => {
       colors.push(hexColorToRGBA(ele, alpha))
     })
-    const data = parseJson(chart.data?.tableRow)
+    const data = this.prepareDataByEmptyStrategy(parseJson(chart.data?.tableRow), chart)
+    if (!data.length) {
+      return
+    }
 
     // 时间字段
     const xAxisDataeaseName = xAxis[0].dataeaseName
@@ -259,12 +298,10 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
     averages.forEach(item => {
       averagesLineData.set('ma' + item, this.calculateMovingAverage(data, item, chart))
     })
-
     // 将均线数据设置到主数据中
-    data.forEach((item: any) => {
-      const date = item[xAxisDataeaseName]
+    data.forEach((item: any, dataIndex) => {
       for (const [key, value] of averagesLineData) {
-        item[key] = value.find(m => m[xAxisDataeaseName] === date)?.value
+        item[key] = value[dataIndex]?.value
       }
     })
 
@@ -629,36 +666,6 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
     }
   }
 
-  protected customConfigEmptyDataStrategy(chart: Chart, options: MixOptions): MixOptions {
-    const { data } = options as unknown as Options
-    if (!data?.length) {
-      return options
-    }
-    const strategy = parseJson(chart.senior).functionCfg.emptyDataStrategy
-    if (strategy === 'ignoreData') {
-      for (let i = data.length - 1; i >= 0; i--) {
-        const item = data[i]
-        Object.keys(item).forEach(key => {
-          if (key.startsWith('f_') && item[key] === null) {
-            data.splice(i, 1)
-          }
-        })
-      }
-    }
-    const updateValues = (strategy: 'breakLine' | 'setZero', data: any[]) => {
-      data.forEach(obj => {
-        Object.keys(obj).forEach(key => {
-          if (key.startsWith('f_') && obj[key] === null) {
-            obj[key] = strategy === 'breakLine' ? null : 0
-          }
-        })
-      })
-    }
-    if (strategy === 'breakLine' || strategy === 'setZero') {
-      updateValues(strategy, data)
-    }
-    return options
-  }
   protected configLegend(chart: Chart, options: MixOptions): MixOptions {
     let legend = {}
     let customStyle: CustomStyle
@@ -706,8 +713,7 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
       this.configXAxis,
       this.configYAxis,
       this.configTooltip,
-      this.configLegend,
-      this.customConfigEmptyDataStrategy
+      this.configLegend
     )(chart, options)
   }
 
