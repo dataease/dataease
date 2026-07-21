@@ -97,7 +97,7 @@ function createNew() {
   resourceTreeRef.value?.createNewObject()
 }
 
-const loadCanvasData = (dvId, weight?) => {
+const loadCanvasData = (dvId, weight?, ext?) => {
   // 复用不设置 dvMain 中的componentData 等画布信息
   const initMethod = showPosition.value === 'multiplexing' ? initCanvasDataPrepare : initCanvasData
   dataInitState.value = false
@@ -112,6 +112,7 @@ const loadCanvasData = (dvId, weight?) => {
       curPreviewGap
     }) {
       dvInfo['weight'] = weight
+      dvInfo['ext'] = ext || 0
       state.canvasDataPreview = canvasDataResult
       state.canvasStylePreview = canvasStyleResult
       state.canvasViewInfoPreview = canvasViewInfoPreview
@@ -197,11 +198,11 @@ const getPreviewStateInfo = () => {
 }
 
 const reload = id => {
-  loadCanvasData(id, state.dvInfo.weight)
+  loadCanvasData(id, state.dvInfo.weight, state.dvInfo.ext)
 }
 
 const resourceNodeClick = data => {
-  loadCanvasData(data.id, data.weight)
+  loadCanvasData(data.id, data.weight, data.ext)
   if (showPosition.value === 'multiplexing') {
     dvMainStore.initCurMultiplexingComponents()
   }
