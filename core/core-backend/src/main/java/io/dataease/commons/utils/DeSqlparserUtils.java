@@ -52,10 +52,11 @@ public class DeSqlparserUtils {
     }
 
     public SqlVariableHandleResult handleVariableDefaultValueWithPreparedParams(String sql, String sqlVariableDetails, boolean isEdit, boolean isFromDataSet, List<SqlVariableDetails> parameters, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, PluginManageApi pluginManage, UserFormVO userEntity) {
-        DatasourceSchemaDTO ds = dsMap.entrySet().iterator().next().getValue();
         if (StringUtils.isEmpty(sql)) {
             DEException.throwException(Translator.get("i18n_sql_not_empty"));
         }
+        SqlparserUtils.validateParameterNames(sql, sqlParamsRegex);
+        DatasourceSchemaDTO ds = dsMap.entrySet().iterator().next().getValue();
         this.userEntity = userEntity;
         this.preparedBindings.clear();
         this.preparedBindingIndex = 0;
