@@ -50,7 +50,13 @@ const toolTip = computed(() => {
 const emit = defineEmits(['onTooltipChange', 'onExtTooltipChange'])
 const curSeriesFormatter = ref<DeepPartial<SeriesFormatter>>({})
 const quotaData = ref<Axis[]>(inject('quotaData'))
-const tooltipQuotaData = computed(() => quotaData.value?.filter(item => item.id !== '-1') || [])
+const isMultiScatter = computed(() => props.chart.type === 'multi-scatter')
+const tooltipQuotaData = computed(() => {
+  if (isMultiScatter.value) {
+    return quotaData.value?.filter(item => item.id !== '-1') || []
+  }
+  return quotaData.value || []
+})
 const showSeriesTooltipFormatter = computed(() => {
   return (
     showProperty('seriesTooltipFormatter') &&
@@ -146,7 +152,7 @@ const quotaAxisIds = computed(() => {
 })
 
 function showOption(item) {
-  if (item.id === '-1') {
+  if (isMultiScatter.value && item.id === '-1') {
     return false
   }
   if (props.chart.type.includes('chart-mix')) {
@@ -164,7 +170,6 @@ const extTooltip = computed(() => {
       tooltipQuotaData.value?.findIndex(j => j.id === i.id) !== -1
   )
 })
-const isMultiScatter = computed(() => props.chart.type === 'multi-scatter')
 const showFormatterSummary = computed(() => {
   // 多维散点图不聚合，不显示汇总方式选择
   if (isMultiScatter.value) {
@@ -284,9 +289,11 @@ const init = () => {
       formatterSelector.value?.blur()
       // 新增图表
       const formatter = state.tooltipForm.seriesTooltipFormatter
-      for (let i = formatter.length - 1; i >= 0; i--) {
-        if (formatter[i].id === '-1') {
-          formatter.splice(i, 1)
+      if (isMultiScatter.value) {
+        for (let i = formatter.length - 1; i >= 0; i--) {
+          if (formatter[i].id === '-1') {
+            formatter.splice(i, 1)
+          }
         }
       }
       if (!formatter.length) {
@@ -453,7 +460,7 @@ const updateAxis = (form: AxisEditForm) => {
 }
 const allFields = computed(() => {
   return defaultTo(props.allFields, [])
-    .filter(item => item.id !== '-1')
+    .filter(item => !isMultiScatter.value || item.id !== '-1')
     .map(item => ({
       key: item.dataeaseName,
       name: item.name,
