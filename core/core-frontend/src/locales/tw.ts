@@ -2796,7 +2796,8 @@ export default {
     char_count_limit: '不能超過{count}字元'
   },
   sql_variable: {
-    variable_mgm: '參數設定'
+    variable_mgm: '參數設定',
+    variable_name_empty: '參數名稱不能為空'
   },
   v_query: {
     display_sort: '顯示欄位和排序欄位不一致，無法進行自訂排序',
