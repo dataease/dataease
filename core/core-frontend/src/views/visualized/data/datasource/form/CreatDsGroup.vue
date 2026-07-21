@@ -137,6 +137,18 @@ const formatRootMiss = (id: string | number, treeData: Tree[]) => {
   }
   return id
 }
+const findNodeById = (nodes: Tree[], id: string): Tree | null => {
+  for (const node of nodes) {
+    if (String(node.id) === String(id)) {
+      return node
+    }
+    if (node.children?.length) {
+      const found = findNodeById(node.children, id)
+      if (found) return found
+    }
+  }
+  return null
+}
 let request = null
 let dsType = ''
 const sortList = ['time_asc', 'time_desc', 'name_asc', 'name_desc']
@@ -172,6 +184,10 @@ const createInit = (type, data: Tree, exec, name: string) => {
           if (correctedId !== data.id) {
             datasetForm.pid = correctedId as string
             pid.value = correctedId
+          }
+          if (!findNodeById(state.tData, String(datasetForm.pid))) {
+            datasetForm.pid = ''
+            pid.value = ''
           }
         }
       })

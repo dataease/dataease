@@ -211,6 +211,17 @@ const optInit = (type, data: BusiTreeNode, exec, parentSelect = false, attachPar
           pid.value = firstValid.id
         }
       }
+    } else if ('copy' === exec) {
+      id.value = data.id
+      const sourcePid = data.pid as string
+      if (sourcePid) {
+        resourceForm.pid = sourcePid
+        pid.value = sourcePid
+        if (!findNodeById(state.tData, sourcePid)) {
+          resourceForm.pid = ''
+          pid.value = ''
+        }
+      }
     } else {
       id.value = data.id
     }
