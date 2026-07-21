@@ -56,6 +56,9 @@ export const deleteChartFieldByChartId = async (chartId): Promise<IResponse> => 
 export const getData = async (data): Promise<IResponse> => {
   delete data.data
   const copyData = cloneDeep(data)
+  if (copyData.type === 'stock-line' && copyData.xAxis?.length) {
+    copyData.xAxis[0].sort = 'desc'
+  }
   const fields = [
     'xAxis',
     'xAxisExt',

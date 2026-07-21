@@ -268,6 +268,15 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
 
     // 时间字段
     const xAxisDataeaseName = xAxis[0].dataeaseName
+    // K线图固定按维度升序计算和展示
+    data.sort((a, b) => {
+      const aValue = a[xAxisDataeaseName]
+      const bValue = b[xAxisDataeaseName]
+      if (aValue === bValue) return 0
+      if (aValue == null) return 1
+      if (bValue == null) return -1
+      return String(aValue).localeCompare(String(bValue), undefined, { numeric: true })
+    })
     const averages = [5, 10, 20, 60, 120, 180]
     const legendItems: any[] = [
       {
@@ -387,7 +396,8 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
           options: {
             meta: {
               [xAxisDataeaseName]: {
-                mask: dateFormat
+                mask: dateFormat,
+                tickCount: data.length
               }
             },
             stockStyle: {
@@ -634,7 +644,9 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
       label = {
         ...yAxisOptions['yAxis'].label,
         formatter: value => {
-          return valueFormatter(value, yAxis.axisLabelFormatter)
+          // 消除自动刻度计算产生的浮点尾差
+          const normalizedValue = Number(Number(value).toPrecision(15))
+          return valueFormatter(normalizedValue, yAxis.axisLabelFormatter)
         }
       }
     }
