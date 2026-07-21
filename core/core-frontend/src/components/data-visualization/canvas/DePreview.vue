@@ -545,6 +545,9 @@ const isFixedFlag = computed(
   () => isOverSize.value && canvasStyleData.value?.screenAdaptor !== 'keep'
 )
 
+const componentScale = computed(() => {
+  return !isDashboard() || (mobileInPc.value && isDashboard()) ? 100 : scaleMin.value
+})
 defineExpose({
   restore
 })
@@ -576,7 +579,7 @@ defineExpose({
         :canvas-style-data="canvasStyleData"
         :canvasViewInfo="canvasViewInfo"
         :pop-component-data="popComponentData"
-        :scale="scaleMin"
+        :scale="componentScale"
         :canvas-state="canvasState"
         :show-position="'preview'"
       ></PopArea>
@@ -603,7 +606,7 @@ defineExpose({
           :cur-style="getShapeItemShowStyle(item)"
           :show-position="showPosition"
           :search-count="curSearchCount"
-          :scale="mobileInPc && isDashboard() ? 100 : scaleMin"
+          :scale="componentScale"
           :is-selector="props.isSelector"
           :font-family="canvasStyleData.fontFamily || fontFamily"
           :scroll-main="state.scrollMain"
