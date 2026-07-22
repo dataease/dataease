@@ -303,6 +303,10 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
         ...tempOption.geometryOptions[0],
         ...configRoundAngle(chart, 'columnStyle')
       }
+      if (this.getLeftType() === 'column' && options.state) {
+        // 传入公共选中状态
+        Object.assign(tempOption.geometryOptions[0], { state: options.state })
+      }
     }
 
     let columnWidthRatio
