@@ -1713,6 +1713,11 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   lineSymbol: 'circle',
   lineSymbolSize: 4,
   lineSmooth: true,
+  // 左轴默认值需在画布缩放前补齐，保证双线组合图左右 geometry 尺寸一致
+  leftLineWidth: 2,
+  leftLineSymbol: 'circle',
+  leftLineSymbolSize: 4,
+  leftLineSmooth: true,
   barDefault: true,
   radiusColumnBar: 'rightAngle',
   columnBarRightAngleRadius: 20,
