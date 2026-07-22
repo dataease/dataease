@@ -76,11 +76,26 @@ export class Radar extends G2PlotChartView<RadarOptions, G2Radar> {
       return
     }
     const data = chart.data.data
+    const fieldValues = Array.from(new Set(data.map(item => item.field)))
+    const categoryValues = Array.from(new Set(data.map(item => item.category)))
+    // 过滤空值但保留原始维度与系列顺序，避免雷达轴和颜色映射重排
+    const validData = data.filter(item => {
+      const value = item.value
+      return value !== null && value !== undefined && !Number.isNaN(Number(value))
+    })
     const baseOptions: RadarOptions = {
-      data,
+      data: validData,
       xField: 'field',
       yField: 'value',
       seriesField: 'category',
+      meta: {
+        field: {
+          values: fieldValues
+        },
+        category: {
+          values: categoryValues
+        }
+      },
       appendPadding: [10, 10, 10, 10],
       interactions: [
         {
