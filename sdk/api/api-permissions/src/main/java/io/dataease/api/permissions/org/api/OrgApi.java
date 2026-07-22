@@ -29,7 +29,7 @@ public interface OrgApi {
 
     @Operation(summary = "查询组织树")
     @GetMapping("/page/tree")
-    @DePermit("m:read")
+    // @DePermit("m:read")
     List<OrgPageVO> pageTree();
 
     @Operation(summary = "懒加载组织树")

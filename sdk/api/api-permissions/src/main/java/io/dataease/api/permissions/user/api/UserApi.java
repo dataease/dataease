@@ -36,7 +36,7 @@ public interface UserApi {
             @Parameter(name = "pageSize", description = "每页容量", required = true, in = ParameterIn.PATH),
             @Parameter(name = "request", description = "过滤条件", required = true)
     })
-    @DePermit("m:read")
+    @DePermit(value = "m:read", busiFlag = "SYSUSER")
     @PostMapping("/pager/{goPage}/{pageSize}")
     PageResult<UserGridVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody UserGridRequest request);
 
@@ -52,7 +52,7 @@ public interface UserApi {
 
     @Operation(summary = "查询用户详情")
     @Parameter(name = "id", description = "ID", required = true, in = ParameterIn.PATH)
-    @DePermit({"m:read", "#p0 + ':read'"})
+    @DePermit(value = {"m:read", "#p0 + ':read'"}, busiFlag = "SYSUSER")
     @GetMapping("/queryById/{id}")
     UserFormVO queryById(@PathVariable("id") Long id);
 
@@ -70,17 +70,17 @@ public interface UserApi {
     CurIpVO ipInfo();
 
     @Operation(summary = "创建")
-    @DePermit("m:read")
+    @DePermit(value = "m:read", busiFlag = "SYSUSER")
     @PostMapping("/create")
     Long create(@RequestBody UserCreator creator);
 
     @Operation(summary = "创建第三方用户")
-    @DePermit("m:read")
+    @DePermit(value = "m:read", busiFlag = "SYSUSER")
     @PostMapping("/createPlatform")
     void createPlatform(@RequestBody PlatformUserCreator creator);
 
     @Operation(summary = "编辑")
-    @DePermit({"m:read", "#p0.id + ':manage'"})
+    @DePermit(value = {"m:read", "#p0.id + ':manage'"}, busiFlag = "SYSUSER")
     @PostMapping("/edit")
     void edit(@RequestBody UserEditor editor);
 
@@ -90,12 +90,12 @@ public interface UserApi {
 
     @Operation(summary = "删除")
     @Parameter(name = "id", description = "ID", required = true, in = ParameterIn.PATH)
-    @DePermit({"m:read", "#p0 + ':manage'"})
+    @DePermit(value = {"m:read", "#p0 + ':manage'"}, busiFlag = "SYSUSER")
     @PostMapping("/delete/{id}")
     void delete(@PathVariable("id") Long id);
 
     @Operation(summary = "批量删除")
-    @DePermit({"m:read", "#p0 + ':manage'"})
+    @DePermit(value = {"m:read", "#p0 + ':manage'"}, busiFlag = "SYSUSER")
     @PostMapping("/batchDel")
     void batchDel(@RequestBody List<Long> ids);
 
@@ -154,18 +154,18 @@ public interface UserApi {
     void clearErrorRecord(@PathVariable("key") String key);
 
     @Operation(summary = "查询默认密码")
-    @DePermit({"m:read"})
+    @DePermit(value = {"m:read"}, busiFlag = "SYSUSER")
     @GetMapping("/defaultPwd")
     String defaultPwd();
 
     @Operation(summary = "重置为默认密码")
     @Parameter(name = "id", description = "用户ID", required = true, in = ParameterIn.PATH)
-    @DePermit({"m:read", "#p0 + ':manage'"})
+    @DePermit(value = {"m:read", "#p0 + ':manage'"}, busiFlag = "SYSUSER")
     @PostMapping("/resetPwd/{id}")
     void resetPwd(@PathVariable("id") Long id);
 
     @Operation(summary = "切换用户状态")
-    @DePermit({"m:read", "#p0.id + ':manage'"})
+    @DePermit(value = {"m:read", "#p0.id + ':manage'"}, busiFlag = "SYSUSER")
     @PostMapping("/enable")
     void enable(@RequestBody EnableSwitchRequest request);
 
@@ -184,7 +184,7 @@ public interface UserApi {
 
 
     @Hidden
-    @DePermit({"m:read", "#p0.uid + ':manage'"})
+    @DePermit(value = {"m:read", "#p0.uid + ':manage'"}, busiFlag = "SYSUSER")
     @PostMapping("/admin/bind")
     void adminBind(@RequestBody AdminBindRequest request);
 
