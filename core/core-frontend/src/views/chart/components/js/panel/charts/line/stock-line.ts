@@ -255,7 +255,9 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
     if (yAxis.length != 4) {
       return
     }
-    const basicStyle = parseJson(chart.customAttr).basicStyle
+    const customAttr = parseJson(chart.customAttr)
+    const basicStyle = customAttr.basicStyle
+    const stockStrokeColor = basicStyle.themeContrastColor ?? customAttr.label?.color ?? '#000000'
     const colors = []
     const alpha = basicStyle.alpha
     basicStyle.colors.forEach(ele => {
@@ -385,6 +387,7 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
         start: 0.5,
         end: 1,
         textStyle: {
+          fill: stockStrokeColor,
           fontFamily: chart.fontFamily
         }
       },
@@ -401,7 +404,7 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
               }
             },
             stockStyle: {
-              stroke: 'black',
+              stroke: stockStrokeColor,
               lineWidth: 0.5
             },
             yAxis: {

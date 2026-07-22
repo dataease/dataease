@@ -291,6 +291,9 @@ export const THEME_STYLE_TRANS_SLAVE1 = {
 }
 
 export const THEME_ATTR_TRANS_MAIN = {
+  basicStyle: {
+    themeContrastColor: 'color'
+  },
   label: {
     color: 'color',
     proportionSeriesFormatter: ['color']

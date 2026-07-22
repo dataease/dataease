@@ -417,6 +417,10 @@ declare interface ChartBasicStyle {
    * 表格空数据提示字体大小
    */
   tableEmptyFontSize: number
+  /**
+   * 主题反色，浅色主题黑色，深色主题白色
+   */
+  themeContrastColor?: string
 }
 /**
  * 表头属性
