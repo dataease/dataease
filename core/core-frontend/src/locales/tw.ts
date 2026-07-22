@@ -4228,7 +4228,11 @@ export default {
       retrying_rate: '重試間隔（分鐘）',
       please_input_positive_int: '請輸入 {0} 正整數',
       rate: '發送頻率',
-      ext_wait_time: '額外等待時間（秒）'
+      ext_wait_time: '額外等待時間（秒）',
+      data_permission: '數據權限',
+      creator_permission: '創建人權限',
+      reci_permission: '接收人權限',
+      data_permission_tips: '接收人若為系統內用戶，則遵循設置的數據權限規則；否則使用創建人的權限'
     },
     filter: {
       title: '設置查詢組件默認值',

@@ -4246,7 +4246,11 @@ export default {
       retrying_rate: '重试间隔（分钟）',
       please_input_positive_int: '请输入 {0} 正整数',
       rate: '发送频率',
-      ext_wait_time: '额外等待时间（秒）'
+      ext_wait_time: '额外等待时间（秒）',
+      data_permission: '数据权限',
+      creator_permission: '创建人权限',
+      reci_permission: '接收人权限',
+      data_permission_tips: '接收人若为系统内用户，则遵循设置的数据权限规则；否则使用创建人的权限'
     },
     filter: {
       title: '设置查询组件默认值',

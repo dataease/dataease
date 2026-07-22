@@ -4356,7 +4356,11 @@ export default {
       retrying_rate: 'Retry Interval (minutes)',
       please_input_positive_int: 'Please input a positive integer for {0}',
       rate: 'Sending frequency',
-      ext_wait_time: 'additional waiting time(s)'
+      ext_wait_time: 'additional waiting time(s)',
+      data_permission: 'Data Permission',
+      creator_permission: 'Creator Permission',
+      reci_permission: 'Recipient Permission',
+      data_permission_tips: 'If the recipient is a system user, the data permission rules will be applied; otherwise, the creator\'s permission will be used'
     },
     filter: {
       title: 'Set Query Component Default Values',
