@@ -73,7 +73,7 @@ const showPid = computed(() => {
   if (nodeType.value === 'folder' && !!pid.value) {
     return false
   }
-  return !['rename', 'move'].includes(cmd.value) && !!pid.value
+  return cmd.value !== 'rename' && cmd.value !== 'move'
 })
 
 const labelName = computed(() => {

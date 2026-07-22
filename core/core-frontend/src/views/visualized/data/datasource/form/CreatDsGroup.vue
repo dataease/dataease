@@ -63,7 +63,7 @@ const showPid = computed(() => {
   if (nodeType.value === 'folder' && !!pid.value) {
     return false
   }
-  return !['rename', 'move'].includes(cmd.value) && !!pid.value
+  return cmd.value !== 'rename' && cmd.value !== 'move'
 })
 
 const labelName = computed(() => {
@@ -179,13 +179,18 @@ const createInit = (type, data: Tree, exec, name: string) => {
         let curSortType = sortList[Number(wsCache.get('TreeSort-backend')) ?? 1]
         curSortType = wsCache.get('TreeSort-datasource') ?? curSortType
         sortTypeChange(curSortType)
-        if (!exec) {
-          const correctedId = formatRootMiss(data.id, state.tData)
-          if (correctedId !== data.id) {
-            datasetForm.pid = correctedId as string
-            pid.value = correctedId
-          }
-          if (!findNodeById(state.tData, String(datasetForm.pid))) {
+        if (exec) {
+          pid.value = data.pid
+          id.value = data.id
+          datasetForm.pid = data.pid as string
+          datasetForm.name = data.name
+          oldName.value = data.name
+          orgRoot.value = data.orgRoot
+        } else {
+          data.id = formatRootMiss(data.id, state.tData) as string
+          datasetForm.pid = data.id as string
+          pid.value = data.id
+          if (!findNodeById(state.tData, String(data.id))) {
             datasetForm.pid = ''
             pid.value = ''
           }
@@ -199,9 +204,6 @@ const createInit = (type, data: Tree, exec, name: string) => {
       datasetForm.name = data.name
       oldName.value = data.name
       orgRoot.value = data.orgRoot
-    } else {
-      datasetForm.pid = data.id as string
-      pid.value = data.id
     }
   }
   cmd.value = data.id ? exec : ''
