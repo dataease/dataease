@@ -56,16 +56,20 @@ public class ShareTicketManage {
             CoreShareTicket ticketEntity = getByTicket(ticket);
             if (ObjectUtils.isNotEmpty(ticketEntity)) {
                 if (creator.isGenerateNew()) {
-                    ticketEntity.setAccessTime(null);
-                    ticketEntity.setTicket(CodingUtil.shortUuid());
                     coreShareTicketRepository.deleteById(ticketEntity.getId());
-                    coreShareTicketRepository.saveAndFlush(ticketEntity);
-                    return ticketEntity.getTicket();
+                    String newTicket = CodingUtil.shortUuid();
+                    CoreShareTicket newTicketEntity = new CoreShareTicket();
+                    newTicketEntity.setId(IDUtils.snowID());
+                    newTicketEntity.setTicket(newTicket);
+                    newTicketEntity.setArgs(creator.getArgs());
+                    newTicketEntity.setExp(creator.getExp());
+                    newTicketEntity.setUuid(creator.getUuid());
+                    coreShareTicketRepository.saveAndFlush(newTicketEntity);
+                    return newTicket;
                 }
                 ticketEntity.setArgs(creator.getArgs());
                 ticketEntity.setExp(creator.getExp());
                 ticketEntity.setUuid(creator.getUuid());
-                coreShareTicketRepository.deleteById(ticketEntity.getId());
                 coreShareTicketRepository.saveAndFlush(ticketEntity);
                 return ticketEntity.getTicket();
             }
