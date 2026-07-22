@@ -25,7 +25,7 @@ import static io.dataease.constant.AuthResourceEnum.SPREADSHEET;
 public interface SpreadsheetApi {
 
     @Operation(summary = "创建文件夹")
-    @DePermit({"#p0.pid+':create'"})
+    @DePermit({"#p0.pid+':manage'"})
     @PostMapping("/createFolder")
     SpreadsheetVO createFolder(@RequestBody SpreadsheetCreator creator);
 
@@ -48,7 +48,7 @@ public interface SpreadsheetApi {
     List<SpreadsheetTreeVO> tree(@RequestBody BusiNodeRequest request);
 
     @Operation(summary = "移动资源")
-    @DePermit({"#p0.id+':manage'", "#p0.pid+':create'"})
+    @DePermit({"#p0.id+':manage'", "#p0.pid+':manage'"})
     @PostMapping("/move")
     void move(@RequestBody SpreadsheetEditor editor);
 
@@ -58,7 +58,7 @@ public interface SpreadsheetApi {
     void rename(@RequestBody SpreadsheetEditor editor);
 
     @Operation(summary = "删除资源")
-    @DePermit({"#p0+':delete'"})
+    @DePermit({"#p0+':manage'"})
     @PostMapping("/delete/{id}")
     void delete(@PathVariable("id") Long id);
 
