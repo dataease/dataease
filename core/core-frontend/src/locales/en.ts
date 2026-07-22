@@ -4360,7 +4360,8 @@ export default {
       data_permission: 'Data Permission',
       creator_permission: 'Creator Permission',
       reci_permission: 'Recipient Permission',
-      data_permission_tips: 'If the recipient is a system user, the data permission rules will be applied; otherwise, the creator\'s permission will be used'
+      data_permission_tips:
+        "If the recipient is a system user, the data permission rules will be applied; otherwise, the creator's permission will be used"
     },
     filter: {
       title: 'Set Query Component Default Values',
