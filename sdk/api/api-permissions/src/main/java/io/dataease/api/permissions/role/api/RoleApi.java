@@ -67,7 +67,7 @@ public interface RoleApi {
 
     @Operation(summary = "删除角色")
     @Parameter(name = "rid", description = "角色ID", required = true, in = ParameterIn.PATH)
-    @DePermit({"m:manage", "#p0 + ':manage'"})
+    @DePermit({"m:read", "#p0 + ':manage'"})
     @PostMapping("/delete/{rid}")
     void delete(@PathVariable("rid") Long rid);
 
