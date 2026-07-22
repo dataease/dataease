@@ -793,7 +793,7 @@ public class CalciteProvider extends Provider {
                         break;
                     case Types.TIMESTAMP:
                         if (rs.getTimestamp(j + 1) != null) {
-                            row[j] = rs.getString(j + 1);
+                            row[j] = rs.getTimestamp(j + 1).toString();
                         }
                         break;
                     case Types.BOOLEAN:
