@@ -679,7 +679,7 @@ const generateColumns = (arr: Field[]) =>
             })}
           </Icon>
         </ElIcon>
-        <span class="ellipsis" title={column.title} style={{ width: '120px', marginLeft: '4px' }}>
+        <span class="ellipsis" title={column.title} style={{ minWidth: '30px', marginLeft: '4px' }}>
           {column.title}
         </span>
       </div>
@@ -2062,7 +2062,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                           ></component
                         ></Icon>
                       </ElIcon>
-                      <span class="ellipsis" :title="column.title" style="width: 120px">
+                      <span class="ellipsis" :title="column.title" style="min-width: 30px">
                         {{ column.title }}
                       </span>
                     </div>
