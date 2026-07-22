@@ -1372,7 +1372,12 @@ const getMenuList = (val: boolean, data?: any) => {
               ></dataset-detail>
             </el-popover>
             <div class="right-btn flex-align-center">
-              <el-button secondary @click="createDataset(null)" v-permission="['dataset']">
+              <el-button
+                secondary
+                @click="createDataset(null)"
+                v-permission="['dataset']"
+                v-if="nodeInfo.weight >= 2"
+              >
                 <template #icon>
                   <Icon name="icon_dataset_outlined"
                     ><icon_dataset_outlined class="svg-icon"
@@ -1545,6 +1550,7 @@ const getMenuList = (val: boolean, data?: any) => {
                       @click.stop="createDataset(scope.row.tableName)"
                       text
                       v-permission="['dataset']"
+                      v-if="nodeInfo.weight >= 2"
                     >
                       <template #icon>
                         <Icon name="icon_dataset_outlined"
