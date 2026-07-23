@@ -245,6 +245,12 @@ public interface UserApi {
     String userLang();
 
 
+    @Operation(summary = "解锁用户")
+    @Parameter(name = "id", description = "用户ID", required = true, in = ParameterIn.PATH)
+    @DePermit({"m:read", "#p0 + ':manage'"})
+    @PostMapping("/unlock/{id}")
+    void unlock(@PathVariable("id") Long id);
+
     @Hidden
     List<UserReciVO> getFormatRecipient(Long oid, List<Long> uidList, List<Long> ridList);
 

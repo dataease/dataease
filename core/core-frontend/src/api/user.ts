@@ -82,3 +82,5 @@ export const defaultPwdApi = () => request.get({ url: '/user/defaultPwd' })
 export const resetPwdApi = uid => request.post({ url: `/user/resetPwd/${uid}` })
 
 export const switchEnableApi = data => request.post({ url: '/user/enable', data })
+
+export const userUnlockApi = uid => request.post({ url: `/user/unlock/${uid}` })
