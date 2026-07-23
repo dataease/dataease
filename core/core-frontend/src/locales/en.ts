@@ -782,6 +782,7 @@ export default {
     reset_confirm: 'Do you want to restore to the initial password? ',
     reset_success: 'Reset successful',
     modify_cur_pwd: 'You need to log in again after modifying the current user password',
+    password_changed_relogin: 'Password changed, please login again',
     switch_success: 'Switch successful',
     user_name_pattern_error:
       "Only numbers and letters and {'@'}._- are allowed, and must start with a number or letter",

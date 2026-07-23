@@ -142,7 +142,12 @@ const showLoginImage = computed<boolean>(() => {
 
 const preheat = ref(true)
 const showLoginErrorMsg = () => {
+  debugger
   if (!loginErrorMsg.value) {
+    return
+  }
+  if (loginErrorMsg.value.includes('pwd has been changed')) {
+    ElMessage.error(t('user.password_changed_relogin'))
     return
   }
   if (loginErrorMsg.value.includes('token is empty')) {
