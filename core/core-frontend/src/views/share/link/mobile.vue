@@ -31,6 +31,7 @@ import { onMounted, nextTick, ref, reactive } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import PreviewCanvas from '@/views/data-visualization/PreviewCanvasMobile.vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import { useLoading } from '@/hooks/web/useLoading'
 import { ProxyInfo, shareProxy } from './ShareProxy'
 import PwdTips from './pwd.vue'
 import ErrorTemplate from './ErrorTemplate.vue'
@@ -44,6 +45,7 @@ const pwdValid = ref(false)
 const dvMainStore = dvMainStoreWithOut()
 const pcanvas = ref(null)
 const curType = ref('')
+const { close } = useLoading()
 const { t } = useI18n()
 const state = reactive({
   ticketValidVO: {
@@ -53,6 +55,7 @@ const state = reactive({
   }
 })
 onMounted(async () => {
+  close()
   const proxyInfo = (await shareProxy.loadProxy()) as ProxyInfo
   curType.value = proxyInfo.type || 'dashboard'
   dvMainStore.setInMobile(true)
