@@ -156,6 +156,39 @@ export class RangeBar extends HorizontalBar {
     return newChart
   }
 
+  protected configXAxis(chart: PanelChart, options: ViewSpec): ViewSpec {
+    const tmpOptions = super.configXAxis(chart, options)
+    const { yAxis } = parseJson(chart.customStyle)
+    if (tmpOptions.children[0].axis.x) {
+      const rotate = Math.abs(yAxis.axisLabel.rotate || 0)
+      const rotateRatio = Math.sin((rotate * Math.PI) / 180)
+      // 按旋转后的横向投影补偿半个字号，保持标签与轴线的视觉间距
+      tmpOptions.children[0].axis.x.labelSpacing = 4 + (yAxis.axisLabel.fontSize / 2) * rotateRatio
+      if (rotate) {
+        const { data, encode } = tmpOptions.children[0]
+        const edgeData = yAxis.position === 'right' ? data[data.length - 1] : data[0]
+        const label = `${edgeData[encode.x] ?? ''}`
+        const lengthLimit = yAxis.axisLabel.lengthLimit
+        const displayLabel =
+          lengthLimit && label.length > lengthLimit
+            ? `${label.substring(0, lengthLimit)}...`
+            : label
+        const labelWidth = Array.from(displayLabel).reduce(
+          (width, char) => width + yAxis.axisLabel.fontSize * (/[^\x00-\xff]/.test(char) ? 1 : 0.6),
+          0
+        )
+        // 为边缘标签旋转后的纵向投影预留空间，避免超出画布被裁剪
+        const edgeInset = Math.ceil((labelWidth * rotateRatio) / 2)
+        if (yAxis.position === 'right') {
+          tmpOptions.insetBottom = Math.max(tmpOptions.insetBottom || 0, edgeInset)
+        } else {
+          tmpOptions.insetTop = Math.max(tmpOptions.insetTop || 0, edgeInset)
+        }
+      }
+    }
+    return tmpOptions
+  }
+
   protected configYAxis(chart: PanelChart, options: ViewSpec): ViewSpec {
     const tmpOptions = super.configYAxis(chart, options)
     if (tmpOptions.children[0].axis?.y === false) {
