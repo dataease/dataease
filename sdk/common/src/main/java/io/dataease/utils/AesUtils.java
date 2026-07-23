@@ -56,15 +56,6 @@ public class AesUtils {
 
     }
 
-    public static Object aesEncrypt(Object o) {
-
-        return o == null ? null : aesEncrypt(o.toString(), "www.fit2cloud.co", "1234567890123456");
-    }
-
-    public static Object aesDecrypt(Object o) {
-        return o == null ? null : aesDecrypt(o.toString(), "www.fit2cloud.co", "1234567890123456");
-    }
-
     public static String aesEncryptWithIv(String src, String secretKey) {
         if (StringUtils.isBlank(secretKey)) {
             throw new RuntimeException("secretKey is empty");
