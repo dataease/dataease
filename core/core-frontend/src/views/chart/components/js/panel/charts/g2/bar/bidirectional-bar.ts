@@ -894,6 +894,8 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       },
       style: {
         opacity: 1,
+        // 标签不参与命中测试，避免遮挡柱体鼠标事件
+        pointerEvents: 'none',
         fontSize: d => {
           if (!label.seriesLabelFormatter?.length) {
             return 12

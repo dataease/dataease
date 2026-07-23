@@ -195,6 +195,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     const newLabel = {
       text: 'value',
       fillOpacity: 1,
+      pointerEvents: 'none',
       fill: data => {
         const labelCfg = formatterMap?.[data.quotaList[0].id] as SeriesFormatter
         if (!labelCfg) {

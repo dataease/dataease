@@ -88,6 +88,7 @@ export class PercentageStackBar extends GroupStackBar {
     const label = {
       text: 'value',
       fillOpacity: 1,
+      pointerEvents: 'none',
       fill: labelAttr.color,
       fontSize: labelAttr.fontSize,
       ...position,

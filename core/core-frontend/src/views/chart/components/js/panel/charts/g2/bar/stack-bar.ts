@@ -79,6 +79,7 @@ export class StackBar extends Bar {
       labels.push({
         text: 'value',
         fillOpacity: 1,
+        pointerEvents: 'none',
         fill: labelAttr.color,
         fontSize: labelAttr.fontSize,
         ...position,
@@ -113,6 +114,7 @@ export class StackBar extends Bar {
             {
               text: 'totalLabel',
               fillOpacity: 1,
+              pointerEvents: 'none',
               fill: labelAttr.color,
               fontSize: labelAttr.fontSize,
               position: 'top',

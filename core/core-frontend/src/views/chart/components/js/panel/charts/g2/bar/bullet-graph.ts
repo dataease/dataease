@@ -475,6 +475,7 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
     // 配置标签样式
     const label = {
       text: 'measures',
+      pointerEvents: 'none',
       fill: l.color,
       fontSize: l.fontSize,
       ...position,

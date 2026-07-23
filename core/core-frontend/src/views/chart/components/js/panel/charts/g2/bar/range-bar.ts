@@ -216,6 +216,7 @@ export class RangeBar extends HorizontalBar {
         return getRangeValues(data).map(formatRangeLabelValue).join(' ~ ')
       },
       fillOpacity: 1,
+      pointerEvents: 'none',
       fill: labelAttr.color,
       fontSize: labelAttr.fontSize,
       ...position,

@@ -79,6 +79,7 @@ export class GroupBar extends StackBar {
         const ghostLabel = {
           text: (d: any) => (d.extremum ? '' : ''),
           fillOpacity: 0,
+          pointerEvents: 'none',
           fontSize: 0
         } as any
         return {
@@ -103,6 +104,7 @@ export class GroupBar extends StackBar {
     const label = {
       text: 'value',
       fillOpacity: 1,
+      pointerEvents: 'none',
       fill: labelAttr.color,
       fontSize: labelAttr.fontSize,
       ...position,

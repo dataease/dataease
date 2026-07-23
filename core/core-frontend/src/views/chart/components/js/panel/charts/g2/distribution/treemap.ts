@@ -259,6 +259,8 @@ export class Treemap extends G2ChartView {
       style: {
         labelFill: labelAttr.color,
         labelFontSize: labelAttr.fontSize,
+        // 标签不参与命中测试，让鼠标事件落到矩形节点
+        labelPointerEvents: 'none',
         labelMaxLines:
           Number(!!labelAttr.showDimension) +
           Number(!!labelAttr.showQuota) +

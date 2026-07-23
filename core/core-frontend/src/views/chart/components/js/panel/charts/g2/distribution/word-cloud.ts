@@ -120,8 +120,10 @@ export class WordCloud extends G2ChartView {
       newChart.on('afterrender', () => {
         this.setDataRange(action, maxValue, minValue)
       })
-      newChart.on('point:click', param => {
-        action({ x: param.x, y: param.y, data: { data: param.data.data.datum } })
+      newChart.on('element:click', param => {
+        const pointData = param?.data?.data
+        if (!pointData) return
+        action({ ...param, data: { data: pointData } })
       })
       return newChart
     }

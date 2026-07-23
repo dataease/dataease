@@ -99,7 +99,7 @@ const emit = defineEmits([
 
 const g2TypeSeries1 = ['bidirectional-bar']
 const g2TypeSeries0 = ['bar-range']
-const g2TypeTree = ['circle-packing']
+const g2TypeTree = ['circle-packing', 'treemap']
 const g2TypeStack = [
   'bar-stack',
   'bar-group-stack',

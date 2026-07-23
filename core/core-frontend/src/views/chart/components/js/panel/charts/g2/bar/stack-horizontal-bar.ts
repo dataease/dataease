@@ -75,6 +75,7 @@ export class HorizontalStackBar extends HorizontalBar {
       labels.push({
         text: 'value',
         fillOpacity: 1,
+        pointerEvents: 'none',
         fill: labelAttr.color,
         fontSize: labelAttr.fontSize,
         ...position,
@@ -115,6 +116,7 @@ export class HorizontalStackBar extends HorizontalBar {
             {
               text: 'totalLabel',
               fillOpacity: 1,
+              pointerEvents: 'none',
               fill: labelAttr.color,
               fontSize: labelAttr.fontSize,
               position: 'right',

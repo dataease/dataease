@@ -93,6 +93,7 @@ export class PercentageStackBar extends HorizontalStackBar {
     const label = {
       text: 'value',
       fillOpacity: 1,
+      pointerEvents: 'none',
       fill: labelAttr.color,
       fontSize: labelAttr.fontSize,
       ...position,
