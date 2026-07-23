@@ -142,7 +142,6 @@ const showLoginImage = computed<boolean>(() => {
 
 const preheat = ref(true)
 const showLoginErrorMsg = () => {
-  debugger
   if (!loginErrorMsg.value) {
     return
   }

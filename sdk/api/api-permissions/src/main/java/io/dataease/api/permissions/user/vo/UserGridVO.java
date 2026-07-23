@@ -34,4 +34,6 @@ public class UserGridVO {
     private String sysVariable;
     @Schema(description = "用户来源")
     private Integer origin;
+    @Schema(description = "是否锁定")
+    private Boolean locked;
 }
