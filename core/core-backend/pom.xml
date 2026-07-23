@@ -126,10 +126,9 @@
                     </exclusions>
                 </dependency>
                 <dependency>
-                    <groupId>com.itextpdf</groupId>
-                    <artifactId>itext7-core</artifactId>
-                    <version>${itextpdf.version}</version>
-                    <type>pom</type>
+                    <groupId>com.github.librepdf</groupId>
+                    <artifactId>openpdf</artifactId>
+                    <version>${openpdf.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.vladsch.flexmark</groupId>
