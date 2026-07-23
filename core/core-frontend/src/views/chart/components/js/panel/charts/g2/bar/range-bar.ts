@@ -224,9 +224,12 @@ export class RangeBar extends HorizontalBar {
       dy: labelAttr.position === 'top' ? -10 : 0,
       dx: labelAttr.position === 'middle' ? 0 : 15
     }
-    const transform = labelAttr.fullDisplay
-      ? {}
-      : { transform: [{ type: 'exceedAdjust' }, { type: 'overlapHide' }] }
+    const transform = {
+      transform: [
+        { type: 'exceedAdjust', bounds: 'main' },
+        ...(labelAttr.fullDisplay ? [] : [{ type: 'overlapHide' }])
+      ]
+    }
     const rangeChart = asRangeDateChart(chart)
     const isDate = !!rangeChart.data.isDate
     const dateFormat = children[0].scale.y.mask
