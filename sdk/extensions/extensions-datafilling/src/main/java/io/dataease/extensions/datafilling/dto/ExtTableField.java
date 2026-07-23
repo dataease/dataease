@@ -108,6 +108,8 @@ public class ExtTableField implements Serializable {
         // item
 
         private String fieldId;
+        private String fieldType;
+        private int deType;
 
         private String filterType;// 'logic' or 'enum'
         private String term;//'eq','not_eq','lt','le','gt','ge','in','not in','like','not like','null','not_null','empty','not_empty','between
