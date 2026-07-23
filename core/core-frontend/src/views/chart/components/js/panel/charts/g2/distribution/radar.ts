@@ -78,10 +78,17 @@ export class Radar extends G2ChartView {
       return
     }
     const data = chart.data.data
+    const fieldValues = Array.from(new Set(data.map(item => item.field)))
+    const categoryValues = Array.from(new Set(data.map(item => item.category)))
+    // 过滤空值但保留原始维度与系列顺序，避免雷达轴和颜色映射重排
+    const validData = data.filter(item => {
+      const value = item.value
+      return value !== null && value !== undefined && !Number.isNaN(Number(value))
+    })
     const baseOptions: G2Spec = {
       type: 'view',
       autoFit: true,
-      data,
+      data: validData,
       coordinate: { type: 'polar' },
       children: [{ zIndex: 1, type: 'line', style: { lineWidth: 2 } }],
       encode: {
@@ -91,11 +98,15 @@ export class Radar extends G2ChartView {
       },
       scale: {
         x: {
+          domain: fieldValues,
           padding: 0.5,
           align: 0
         },
         y: {
           nice: true
+        },
+        color: {
+          domain: categoryValues
         }
       }
     }
