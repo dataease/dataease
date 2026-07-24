@@ -20,6 +20,9 @@ spring:
     type: jcache
     jcache:
       config: classpath:ehcache/ehcache.xml
+  autoconfigure:
+    exclude:
+      - com.github.xiaoymin.knife4j.spring.configuration.Knife4jAutoConfiguration
   data:
     redis:
       host: 127.0.0.1
@@ -69,5 +72,5 @@ springdoc:
 knife4j:
   enable: true
   setting:
-    language: zh_cn
+    language: zh-CN
     enable-swagger-models: false
