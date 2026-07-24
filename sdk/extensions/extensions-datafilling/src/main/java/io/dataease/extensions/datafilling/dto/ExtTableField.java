@@ -108,6 +108,7 @@ public class ExtTableField implements Serializable {
         // item
 
         private String fieldId;
+        private String name;
         private String fieldType;
         private int deType;
 
