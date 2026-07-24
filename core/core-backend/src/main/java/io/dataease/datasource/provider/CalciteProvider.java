@@ -295,6 +295,7 @@ public class CalciteProvider extends Provider {
             try {
                 CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
                 statement = calciteConnection.prepareStatement(datasourceRequest.getQuery());
+                bindPreparedStatementValues(statement, datasourceRequest.getTableFieldWithValues(), null, null, null);
                 resultSet = statement.executeQuery();
                 ResultSetMetaData metaData = resultSet.getMetaData();
                 int columnCount = metaData.getColumnCount();
@@ -323,11 +324,12 @@ public class CalciteProvider extends Provider {
         String table = datasourceRequest.getTable();
         if (StringUtils.isEmpty(table)) {
             ResultSet resultSet = null;
-            try (Connection con = getConnectionFromPool(datasourceRequest.getDatasource().getId()); Statement statement = getStatement(con, 30)) {
-                if (DatasourceConfiguration.DatasourceType.valueOf(datasourceSchemaDTO.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
-                    statement.executeUpdate("ALTER SESSION SET CURRENT_SCHEMA = " + datasourceConfiguration.getSchema());
-                }
-                resultSet = statement.executeQuery(datasourceRequest.getQuery());
+            String oracleCharset = normalizeOracleCharset(datasourceConfiguration.getCharset());
+            String oracleTargetCharset = normalizeOracleCharset(datasourceConfiguration.getTargetCharset());
+            try (Connection con = getConnectionFromPool(datasourceRequest.getDatasource().getId())) {
+                Statement statement = getStatement(datasourceSchemaDTO, con, datasourceRequest, datasourceConfiguration, null);
+                bindPreparedStatementValues(statement, datasourceRequest.getTableFieldWithValues(), DatasourceConfiguration.DatasourceType.valueOf(datasourceSchemaDTO.getType()), oracleCharset, oracleTargetCharset);
+                resultSet = executeQuery(statement, datasourceRequest.getQuery());
                 datasetTableFields.addAll(getField(resultSet, datasourceRequest));
             } catch (Exception e) {
                 DEException.throwException(e.getMessage());
