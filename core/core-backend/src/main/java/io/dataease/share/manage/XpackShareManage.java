@@ -311,7 +311,7 @@ public class XpackShareManage {
         queryWrapper.eq("uuid", uuid);
         XpackShare xpackShare = xpackShareMapper.selectOne(queryWrapper);
         boolean valid = StringUtils.equals(xpackShare.getUuid(), uuid) && StringUtils.equals(xpackShare.getPwd(), pwd);
-        if (valid) {
+        if (valid && !Boolean.TRUE.equals(xpackShare.getTicketRequire())) {
             generateLinkToken(xpackShare);
         }
         return valid;
@@ -327,8 +327,9 @@ public class XpackShareManage {
     }
 
     public Map<String, String> queryRelationByUserId(Long uid) {
+        Long currentUserId = AuthUtils.getUser().getUserId();
         QueryWrapper<XpackShare> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("creator", uid);
+        queryWrapper.eq("creator", currentUserId);
         List<XpackShare> result = xpackShareMapper.selectList(queryWrapper);
         if (CollectionUtils.isNotEmpty(result)) {
             return result.stream()

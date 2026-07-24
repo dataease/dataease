@@ -49,6 +49,16 @@ public class ShareTicketManage {
 
     @Transactional
     public String saveTicket(TicketCreator creator) {
+        String uuid = creator.getUuid();
+        if (StringUtils.isBlank(uuid)) {
+            DEException.throwException("uuid为必填参数");
+        }
+        QueryWrapper<XpackShare> shareQuery = new QueryWrapper<>();
+        shareQuery.eq("uuid", uuid);
+        shareQuery.eq("creator", AuthUtils.getUser().getUserId());
+        if (ObjectUtils.isEmpty(xpackShareMapper.selectOne(shareQuery))) {
+            DEException.throwException("无权操作此分享的Ticket");
+        }
         String ticket = creator.getTicket();
         if (StringUtils.isNotBlank(ticket)) {
             CoreShareTicket ticketEntity = getByTicket(ticket);
@@ -89,6 +99,16 @@ public class ShareTicketManage {
         String ticket = request.getTicket();
         if (StringUtils.isBlank(ticket)) {
             DEException.throwException("ticket为必填参数");
+        }
+        CoreShareTicket existingTicket = getByTicket(ticket);
+        if (ObjectUtils.isEmpty(existingTicket)) {
+            DEException.throwException("Ticket不存在");
+        }
+        QueryWrapper<XpackShare> shareQuery = new QueryWrapper<>();
+        shareQuery.eq("uuid", existingTicket.getUuid());
+        shareQuery.eq("creator", AuthUtils.getUser().getUserId());
+        if (ObjectUtils.isEmpty(xpackShareMapper.selectOne(shareQuery))) {
+            DEException.throwException("无权删除此Ticket");
         }
         QueryWrapper<CoreShareTicket> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("ticket", ticket);
@@ -148,6 +168,10 @@ public class ShareTicketManage {
         }
         CoreShareTicket linkTicket = getByTicket(ticket);
         if (ObjectUtils.isEmpty(linkTicket)) {
+            vo.setTicketValid(false);
+            return vo;
+        }
+        if (!StringUtils.equals(linkTicket.getUuid(), share.getUuid())) {
             vo.setTicketValid(false);
             return vo;
         }
