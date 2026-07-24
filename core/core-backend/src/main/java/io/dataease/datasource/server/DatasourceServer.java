@@ -1525,9 +1525,12 @@ public class DatasourceServer implements DatasourceApi {
         try {
             checkDatasourceStatus(datasourceDTO);
             if (!Arrays.asList("API", "Excel", "folder").contains(coreDatasource.getType()) && !coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name()) && !coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.ExcelRemote.name())) {
-                calciteProvider.updateDsPoolAfterCheckStatus(datasourceDTO);
+                if (ProviderFactory.getProvider(coreDatasource.getType()) instanceof CalciteProvider) {
+                    calciteProvider.updateDsPoolAfterCheckStatus(datasourceDTO);
+                }
             }
         } catch (DEException e) {
+            e.printStackTrace();
             datasourceDTO.setStatus("Error");
             DEException.throwException(e.getMessage());
         } catch (Exception e) {
