@@ -14,6 +14,7 @@ import { Chart as G2Column } from '@antv/g2'
 import { HorizontalBar } from '@/views/chart/components/js/panel/charts/g2/bar/horizontal-bar'
 import { G2DrawOptions } from '@/views/chart/components/js/panel/types/impl/g2'
 import { cloneDeep, isEmpty } from 'lodash-es'
+import dayjs from 'dayjs'
 import {
   configAxisLengthLimit,
   handleChartDashboardHidden,
@@ -27,18 +28,55 @@ const { t } = useI18n()
 type PanelChart = Parameters<HorizontalBar['setupOptions']>[0]
 type RangeDateChart = {
   data: { isDate?: boolean }
+  aggregate?: boolean
   yAxis?: Array<{ datePattern?: string; dateStyle?: string }>
 }
 type DateWithFormatter = Date & { format: (format: string) => string }
+type RangeDateTickUnit = 'year' | 'month' | 'day' | 'hour' | 'minute' | 'second'
+
+const RANGE_DATE_TICK_UNIT: Record<string, RangeDateTickUnit> = {
+  y: 'year',
+  y_M: 'month',
+  y_M_d: 'day',
+  M_d: 'day',
+  H_m_s: 'second',
+  y_M_d_H: 'hour',
+  y_M_d_H_m: 'minute',
+  y_M_d_H_m_s: 'second'
+}
 
 const asRangeDateChart = <T>(chart: T) => chart as T & RangeDateChart
 const formatRangeDate = (date: Date, dateFormat: string) =>
   (date as DateWithFormatter).format(dateFormat)
+const createRangeDateTickMethod =
+  (dateStyle?: string) =>
+  (min: Date, max: Date, count = 7) => {
+    const start = dayjs(min)
+    const end = dayjs(max)
+    if (!start.isValid() || !end.isValid() || end.isBefore(start)) {
+      return []
+    }
+    const unit = RANGE_DATE_TICK_UNIT[dateStyle] || 'second'
+    const tickCount = Math.max(2, count || 7)
+    const step = Math.max(1, Math.ceil(end.diff(start, unit, true) / tickCount))
+    const ticks: Date[] = []
+    // 按定义域起点生成自然时间刻度，避免同一日期的刻度与区间端点错位
+    for (let index = 0; index <= tickCount + 1; index++) {
+      const current = start.add(index * step, unit)
+      if (current.isAfter(end)) break
+      ticks.push(current.toDate())
+    }
+    if (ticks[ticks.length - 1]?.getTime() !== end.valueOf()) {
+      ticks.push(end.toDate())
+    }
+    return ticks
+  }
 const normalizeRangeValue = (value: any, isDate: boolean) => {
   if (value === null || value === undefined || value === '') {
     return null
   }
-  return isDate ? new Date(value).getTime() : value
+  // 日期区间按本地时间解析，避免无时区日期被当成 UTC
+  return isDate ? dayjs(value).valueOf() : value
 }
 const getRangeValues = (data: any) =>
   Array.isArray(data?.values) ? data.values : [data?.startValue, data?.endValue]
@@ -102,6 +140,7 @@ export class RangeBar extends HorizontalBar {
     let data = cloneDeep(drawOptions.chart.data?.data)
     const isDate = !!rangeChart.data.isDate
     const dateSplit = rangeChart.yAxis?.[0]?.datePattern === 'date_split' ? '/' : '-'
+    const dateStyle = rangeChart.yAxis?.[0]?.dateStyle
     const dateFormat =
       {
         y: 'yyyy',
@@ -110,7 +149,7 @@ export class RangeBar extends HorizontalBar {
         y_M_d_H: `yyyy${dateSplit}MM${dateSplit}dd hh`,
         y_M_d_H_m: `yyyy${dateSplit}MM${dateSplit}dd hh:mm`,
         y_M_d_H_m_s: `yyyy${dateSplit}MM${dateSplit}dd hh:mm:ss`
-      }[rangeChart.yAxis?.[0]?.dateStyle] || 'yyyy-MM-dd hh:mm:ss'
+      }[dateStyle] || 'yyyy-MM-dd hh:mm:ss'
     data = cloneDeep(data).map(item => {
       // 时间区间转为时间戳绘制，避免 G2 在 Date range interval 中生成异常 points
       const values = Array.isArray(item.values)
@@ -137,6 +176,13 @@ export class RangeBar extends HorizontalBar {
             ...(this.intervalOptions.scale || {}),
             y: {
               ...(this.intervalOptions.scale?.y || {}),
+              ...(isDate
+                ? {
+                    type: 'time',
+                    tickCount: 7,
+                    tickMethod: createRangeDateTickMethod(dateStyle)
+                  }
+                : {}),
               mask: isDate ? dateFormat : undefined,
               labelFormatter: val => (isDate ? formatRangeDate(new Date(val), dateFormat) : val)
             },
@@ -185,6 +231,19 @@ export class RangeBar extends HorizontalBar {
       labelFormatter: formatAxisLabel
     }
     return tmpOptions
+  }
+
+  protected configLegend(chart: PanelChart, options: ViewSpec): ViewSpec {
+    const rangeChart = asRangeDateChart(chart)
+    if (rangeChart.data.isDate && !rangeChart.aggregate) {
+      const { children } = options
+      // 对齐 V2：非聚合时间区间保留分类着色但不生成图例
+      return {
+        ...options,
+        children: [{ ...children[0], legend: false }, ...children.slice(1)]
+      }
+    }
+    return super.configLegend(chart, options)
   }
 
   protected configLabel(chart: PanelChart, options: ViewSpec): ViewSpec {
