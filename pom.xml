@@ -25,7 +25,6 @@
         <spring-cloud-alibaba.version>2023.0.1.0</spring-cloud-alibaba.version>
         <spring-cloud.version>2023.0.1</spring-cloud.version>
         <spring-boot.version>3.5.15</spring-boot.version>
-        <spring-framework.version>6.2.19</spring-framework.version>
         <tomcat.version>10.1.55</tomcat.version>
         <logback.version>1.5.34</logback.version>
         <netty.version>4.1.135.Final</netty.version>
@@ -33,7 +32,8 @@
         <maven.compiler.target>21</maven.compiler.target>
         <mybatis-plus.version>3.5.7</mybatis-plus.version>
         <h2.version>2.2.220</h2.version>
-        <knife4j.version>4.4.0</knife4j.version>
+        <knife4j.version>4.5.0</knife4j.version>
+        <springdoc.version>2.8.14</springdoc.version>
         <calcite-core.version>1.35.33</calcite-core.version>
         <commons-dbcp2.version>2.6.0</commons-dbcp2.version>
         <antlr.version>3.5.2</antlr.version>
@@ -89,13 +89,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
                 <version>${spring-boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-framework-bom</artifactId>
-                <version>${spring-framework.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -196,60 +189,11 @@
                 <artifactId>bcprov-jdk18on</artifactId>
                 <version>${bcprov-jdk18on.version}</version>
             </dependency>
+            <!-- 覆盖 knife4j BOM 中的 swagger-annotations 2.2.19，springdoc 2.8.x 需要 >= 2.2.20 -->
             <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-aop</artifactId>
-                <version>${spring-framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-beans</artifactId>
-                <version>${spring-framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-context</artifactId>
-                <version>${spring-framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-core</artifactId>
-                <version>${spring-framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-expression</artifactId>
-                <version>${spring-framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-jcl</artifactId>
-                <version>${spring-framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-messaging</artifactId>
-                <version>${spring-framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-tx</artifactId>
-                <version>${spring-framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-web</artifactId>
-                <version>${spring-framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-webmvc</artifactId>
-                <version>${spring-framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-websocket</artifactId>
-                <version>${spring-framework.version}</version>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-annotations-jakarta</artifactId>
+                <version>2.2.38</version>
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
