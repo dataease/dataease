@@ -51,6 +51,11 @@ import ChartCarouselTooltip, {
 
 const { t: tI18n } = useI18n()
 
+function useMobileTooltipLayout(): boolean {
+  // 移动端编辑器运行在桌面浏览器的窄 iframe 中，需要结合视口宽度判断
+  return !!isMobile() || window.innerWidth <= 768
+}
+
 export function getPadding(chart: Chart): number[] {
   if (chart.drill) {
     return [0, 10, 22, 10]
@@ -150,16 +155,26 @@ export function getTheme(chart: Chart) {
           },
           'g2-tooltip-list-item': {
             display: 'flex',
+            'flex-wrap': 'nowrap',
             'align-items': 'flex-start',
-            'justify-content': 'space-between',
+            'justify-content': 'flex-start',
+            'min-width': '0',
             'line-height': tooltipFontsize + 'px'
           },
           'g2-tooltip-name': {
             display: 'inline-block',
+            flex: '1 1 auto',
+            'min-width': '0',
+            overflow: 'hidden',
+            'text-overflow': 'ellipsis',
+            'white-space': 'nowrap',
             'line-height': tooltipFontsize + 'px'
           },
           'g2-tooltip-value': {
-            flex: 1,
+            flex: '0 0 auto',
+            'margin-left': '8px',
+            // 数值保持自然宽度，达到视口上限时优先压缩指标名称
+            'white-space': 'nowrap',
             display: 'inline-block',
             'text-align': 'end',
             'line-height': tooltipFontsize + 'px'
@@ -1703,6 +1718,58 @@ function shouldHideZoom(basicStyle: any): boolean {
 }
 
 const G2_TOOLTIP_WRAPPER = 'g2-tooltip-wrapper'
+const G2_TOOLTIP_VIEWPORT_GAP = 12
+const tooltipLayoutFrames = new WeakMap<HTMLElement, number>()
+
+function updateTooltipLayout(container: HTMLElement) {
+  const previousFrame = tooltipLayoutFrames.get(container)
+  if (previousFrame) {
+    window.cancelAnimationFrame(previousFrame)
+  }
+  const frame = window.requestAnimationFrame(() => {
+    tooltipLayoutFrames.delete(container)
+    if (!container.isConnected || container.style.display === 'none') {
+      return
+    }
+
+    container.querySelectorAll<HTMLElement>('.g2-tooltip-name').forEach(element => {
+      // 仅在指标名称实际被省略时提供完整悬浮文本
+      if (element.scrollWidth > element.clientWidth) {
+        element.title = element.textContent ?? ''
+      } else {
+        element.removeAttribute('title')
+      }
+    })
+
+    const rect = container.getBoundingClientRect()
+    const viewport = window.visualViewport
+    const viewportLeft = viewport?.offsetLeft ?? 0
+    const viewportTop = viewport?.offsetTop ?? 0
+    const viewportRight = viewportLeft + (viewport?.width ?? window.innerWidth)
+    const viewportBottom = viewportTop + (viewport?.height ?? window.innerHeight)
+    const minLeft = viewportLeft + G2_TOOLTIP_VIEWPORT_GAP
+    const minTop = viewportTop + G2_TOOLTIP_VIEWPORT_GAP
+    const maxRight = viewportRight - G2_TOOLTIP_VIEWPORT_GAP
+    const maxBottom = viewportBottom - G2_TOOLTIP_VIEWPORT_GAP
+    let offsetX = rect.right > maxRight ? maxRight - rect.right : 0
+    let offsetY = rect.bottom > maxBottom ? maxBottom - rect.bottom : 0
+
+    if (rect.left + offsetX < minLeft) {
+      offsetX += minLeft - (rect.left + offsetX)
+    }
+    if (rect.top + offsetY < minTop) {
+      offsetY += minTop - (rect.top + offsetY)
+    }
+    if (offsetX) {
+      container.style.left = `${Number.parseFloat(container.style.left || '0') + offsetX}px`
+    }
+    if (offsetY) {
+      container.style.top = `${Number.parseFloat(container.style.top || '0') + offsetY}px`
+    }
+  })
+  tooltipLayoutFrames.set(container, frame)
+}
+
 export function getTooltipContainer(id, chartContainer?: string) {
   let wrapperDom = document.getElementById(G2_TOOLTIP_WRAPPER)
   if (!wrapperDom) {
@@ -1719,9 +1786,14 @@ export function getTooltipContainer(id, chartContainer?: string) {
   const g2Tooltip = document.createElement('div')
   g2Tooltip.setAttribute('id', id)
   g2Tooltip.classList.add('g2-tooltip')
-  // 最多半屏，鼠标移入可滚动
+  // 优先按内容自然宽度展开，达到视口上限后再触发提示项换行
+  g2Tooltip.style.width = 'max-content'
+  g2Tooltip.style.boxSizing = 'border-box'
   g2Tooltip.style.maxHeight = '50%'
-  isMobile() ? (g2Tooltip.style.maxWidth = '50%') : (g2Tooltip.style.maxWidth = '25%')
+  g2Tooltip.style.maxWidth = useMobileTooltipLayout()
+    ? 'calc(100vw - 24px)'
+    : 'min(33.333333vw, calc(100vw - 24px))'
+  g2Tooltip.style.overflowX = 'hidden'
   g2Tooltip.style.overflowY = 'auto'
   g2Tooltip.style.display = 'none'
   g2Tooltip.style.position = 'fixed'
@@ -1904,6 +1976,7 @@ export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>
     const { x, y } = calculateTooltipPosition(chart, isCarousel, tooltipCtl, chartElement, event)
     plot.chart.getTheme().components.tooltip.x = x
     plot.chart.getTheme().components.tooltip.y = y
+    container && updateTooltipLayout(container)
   })
   // https://github.com/antvis/G2/blob/master/src/chart/controller/tooltip.ts#hideTooltip
   plot.on('plot:leave', () => {
@@ -1947,7 +2020,7 @@ export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>
 export const TOOLTIP_TPL =
   '<li class="g2-tooltip-list-item" data-index={index}>' +
   '<span class="g2-tooltip-marker" style="background:{color}"></span>' +
-  '<span class="g2-tooltip-name">{name}</span>:' +
+  '<span class="g2-tooltip-name">{name}:</span>' +
   '<span class="g2-tooltip-value">{value}</span>' +
   '</li>'
 
