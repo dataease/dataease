@@ -29,3 +29,18 @@ export const subjectTreeApi = (data: {
   lazy?: boolean
   pid?: number
 }) => request.post({ url: '/auth/subjectTree', data })
+
+export const rowPermissionsSubjectTreeApi = (data: {
+  system: boolean
+  datasetId: string
+  type: number
+  lazy?: boolean
+  pid?: number
+}) =>
+  request.post({
+    url: '/dataset/rowPermissions/subjectTree',
+    data: {
+      ...data,
+      pid: data.pid ?? 0
+    }
+  })
