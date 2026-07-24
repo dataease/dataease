@@ -18,6 +18,24 @@ export const getLegendNavButtonPath = (size: number) => [
   ['Z']
 ]
 
+let axisLabelMeasureContext: CanvasRenderingContext2D | null | undefined
+
+const measureAxisLabelWidth = (value: unknown, fontSize: number) => {
+  const label =
+    typeof value === 'object' && value !== null
+      ? `${value['label'] ?? value['value'] ?? ''}`
+      : `${value ?? ''}`
+  axisLabelMeasureContext ??= document.createElement('canvas').getContext('2d')
+  if (axisLabelMeasureContext) {
+    axisLabelMeasureContext.font = `${fontSize}px sans-serif`
+    return axisLabelMeasureContext.measureText(label).width
+  }
+  return Array.from(label).reduce(
+    (width, char) => width + fontSize * (/[^\x00-\xff]/.test(char) ? 1 : 0.6),
+    0
+  )
+}
+
 export interface G2DrawOptions<O> extends AntVDrawOptions<O> {
   /**
    * 缩放比例
@@ -41,9 +59,97 @@ export abstract class G2ChartView<
    *
    * 某些图表必须读取首次渲染生成的布局信息，修正配置后再执行一次 render
    * 公共渲染组件会等待该钩子结束，再恢复联动等依赖最终图形元素的事件状态
-   * 未实现该钩子的图表不会增加额外处理或渲染，原有渲染流程保持不变
+   * 未实现该钩子的图表不会增加专属处理，公共轴标签边界校正独立执行
    */
   public afterRender?(chart: P): void | Promise<void>
+
+  /**
+   * 轴标签超出画布时改用显式内边距，优先保留标签并压缩绘图区
+   */
+  public async adjustAxisLabelOverflow(chart: P): Promise<void> {
+    const context = chart?.getContext()
+    const canvas = context?.canvas
+    const axisViews = (context?.views ?? []).filter(view =>
+      view.components?.some(
+        component =>
+          `${component.type}`.startsWith('axis') &&
+          ['top', 'right', 'bottom', 'left'].includes(`${component.position}`)
+      )
+    )
+    if (!axisViews.length) {
+      return
+    }
+    const labels = canvas?.getRoot().querySelectorAll('.g2-axis-label-item') ?? []
+    if (!labels.length) {
+      return
+    }
+    const { width = chart.getContainer().clientWidth, height = chart.getContainer().clientHeight } =
+      canvas.getConfig()
+    const visibleBounds = labels
+      .filter(label => label.style.visibility !== 'hidden')
+      .map(label => label.getBBox())
+      .filter(({ width, height }) => width > 0 && height > 0)
+    if (!visibleBounds.length) {
+      return
+    }
+    const safeSpacing = 4
+    const minX = Math.min(...visibleBounds.map(({ x }) => x))
+    const minY = Math.min(...visibleBounds.map(({ y }) => y))
+    const maxX = Math.max(...visibleBounds.map(({ x, width }) => x + width))
+    const maxY = Math.max(...visibleBounds.map(({ y, height }) => y + height))
+    const overflow = {
+      paddingLeft: Math.max(0, safeSpacing - minX),
+      paddingRight: Math.max(0, maxX - width + safeSpacing),
+      paddingTop: Math.max(0, safeSpacing - minY),
+      paddingBottom: Math.max(0, maxY - height + safeSpacing)
+    }
+    if (Object.values(overflow).every(value => value < 1)) {
+      return
+    }
+    const options = chart.options()
+    Object.entries(overflow).forEach(([key, value]) => {
+      if (value < 1) {
+        return
+      }
+      const layoutValue = Math.max(0, ...axisViews.map(view => Number(view.layout?.[key]) || 0))
+      const optionValue = typeof options[key] === 'number' ? options[key] : 0
+      options[key] = Math.ceil(Math.max(layoutValue, optionValue) + value)
+    })
+    chart.options(options)
+    await chart.render()
+  }
+
+  /**
+   * 统一坐标轴标签的旋转锚点与轴线间距
+   */
+  protected getAxisLabelStyle(axis: DeepPartial<ChartAxisStyle>): Partial<AxisComponent> {
+    const position = axis.position
+    const rotate = Number(axis.axisLabel.rotate) || 0
+    const rotateRadian = (rotate * Math.PI) / 180
+    const rotateRatio = Math.sin(Math.abs(rotateRadian))
+    const fontSize = axis.axisLabel.fontSize || 12
+    if (position === 'top' || position === 'bottom') {
+      const direction = position === 'top' ? -1 : 1
+      return {
+        labelSpacing: 4,
+        labelTextAlign: 'center',
+        labelTextBaseline: position === 'top' ? 'bottom' : 'top',
+        labelTransform: value => {
+          const offset = (measureAxisLabelWidth(value, fontSize) * rotateRatio) / 2
+          return `translate(0, ${(direction * offset).toFixed(2)}px) rotate(${rotate})`
+        }
+      }
+    }
+    if (position === 'left' || position === 'right') {
+      return {
+        labelSpacing: 4 + (fontSize * rotateRatio) / 2,
+        labelTextAlign: position === 'left' ? 'right' : 'left',
+        labelTextBaseline: 'middle',
+        labelTransform: `rotate(${rotate})`
+      }
+    }
+    return { labelTransform: `rotate(${rotate})` }
+  }
 
   protected getLegend = (chart: Chart) => {
     let legend = {}
@@ -145,7 +251,7 @@ export abstract class G2ChartView<
       gridStrokeOpacity: 1,
       gridLineWidth: axis.splitLine.lineStyle.width,
       gridLineDash,
-      labelTransform: `rotate(${axis.axisLabel.rotate || 0})`,
+      ...this.getAxisLabelStyle(axis),
       transform: [
         {
           type: 'hide',

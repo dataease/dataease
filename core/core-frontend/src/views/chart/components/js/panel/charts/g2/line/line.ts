@@ -444,7 +444,7 @@ export class Line extends G2ChartView {
           gridStrokeOpacity: 1,
           gridLineWidth: xAxis.splitLine.lineStyle.width,
           gridLineDash,
-          labelTransform: `rotate(${xAxis.axisLabel.rotate || 0})`
+          ...this.getAxisLabelStyle(xAxis)
         }
       }
     }
@@ -497,7 +497,7 @@ export class Line extends G2ChartView {
           gridStrokeOpacity: 1,
           gridLineWidth: yAxis.splitLine.lineStyle.width,
           gridLineDash,
-          labelTransform: `rotate(${yAxis.axisLabel.rotate || 0})`,
+          ...this.getAxisLabelStyle(yAxis),
           labelFormatter: d => {
             return valueFormatter(d, yAxis.axisLabelFormatter)
           }

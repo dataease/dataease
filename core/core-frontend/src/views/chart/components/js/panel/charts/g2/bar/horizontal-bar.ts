@@ -272,7 +272,7 @@ export class HorizontalBar extends Bar {
         ...label,
         labelAutoHide: true,
         labelAutoRotate: false,
-        labelTransform: `rotate(${Math.abs(axis.axisLabel.rotate || 0)})`
+        ...this.getAxisLabelStyle(axis)
       }
       return x
     }

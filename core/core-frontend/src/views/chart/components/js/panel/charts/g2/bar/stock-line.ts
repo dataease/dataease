@@ -584,7 +584,7 @@ export class StockLine extends G2ChartView {
           gridStrokeOpacity: 1,
           gridLineWidth: xAxis.splitLine.lineStyle.width,
           gridLineDash,
-          labelTransform: `rotate(${xAxis.axisLabel.rotate || 0})`,
+          ...this.getAxisLabelStyle(xAxis),
           transform: [
             {
               type: 'hide',
@@ -646,7 +646,7 @@ export class StockLine extends G2ChartView {
           gridLineDash,
           // 隐藏最低分割线，避免与底部 X 轴线重叠
           gridFilter: (_, index) => index !== 0,
-          labelTransform: `rotate(${yAxis.axisLabel.rotate || 0})`,
+          ...this.getAxisLabelStyle(yAxis),
           labelFormatter: d => {
             return valueFormatter(d, yAxis.axisLabelFormatter)
           }

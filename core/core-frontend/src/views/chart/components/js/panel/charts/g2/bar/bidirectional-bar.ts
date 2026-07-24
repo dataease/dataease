@@ -487,7 +487,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
           gridStrokeOpacity: 1,
           gridLineWidth: xAxis.splitLine.lineStyle.width,
           gridLineDash,
-          labelTransform: `rotate(${xAxis.axisLabel.rotate || 0})`,
+          ...this.getAxisLabelStyle({ ...xAxis, position }),
           transform: [
             {
               type: 'hide',
@@ -583,6 +583,11 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       }
       merge(yAxisOption, { position: POSITION_MAP[yAxis.position] })
       merge(yAxisExtOption, { position: POSITION_MAP[yAxisExt.position] })
+      merge(yAxisOption, this.getAxisLabelStyle({ ...yAxis, position: yAxisOption.position }))
+      merge(
+        yAxisExtOption,
+        this.getAxisLabelStyle({ ...yAxisExt, position: yAxisExtOption.position })
+      )
       // 横向布局下数值轴在上下方，G2 默认轴高度偏保守，会挤出较大的底部/顶部空白
       const axisTickLength = 4
       const axisLabelSpacing = 4

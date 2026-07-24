@@ -509,7 +509,7 @@ export class TableG2Chart extends G2ChartView {
           label: xAxis.axisLabel.show,
           labelFill: xAxis.axisLabel.color,
           labelFontSize: xAxis.axisLabel.fontSize,
-          labelTransform: `rotate(${xAxis.axisLabel.rotate || 0})`
+          ...this.getAxisLabelStyle(xAxis)
         }
       }
     }
@@ -547,7 +547,7 @@ export class TableG2Chart extends G2ChartView {
           label: yAxis.axisLabel.show,
           labelFill: yAxis.axisLabel.color,
           labelFontSize: yAxis.axisLabel.fontSize,
-          labelTransform: `rotate(${yAxis.axisLabel.rotate || 0})`,
+          ...this.getAxisLabelStyle(yAxis),
           labelFormatter: d => {
             const str = toString(d)
             if (!str) {

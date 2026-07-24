@@ -602,9 +602,10 @@ const renderG2 = async (chart, chartView: G2ChartView<any, any>) => {
       })
       // 固定本轮创建的实例，避免等待异步渲染期间新一轮 renderG2 替换全局 myChart 后误操作新实例
       const chartInstance = myChart
-      // 先等待 G2 首次渲染，图表视图的 afterRender 才能安全读取 view.layout 等首次布局结果
+      // 先等待 G2 首次渲染，后续布局校正才能安全读取实际标签边界与 view.layout
       await chartInstance?.render()
-      // 仅实现钩子的特殊图表会执行后处理；普通 G2 图表没有额外逻辑，也不会产生额外 render
+      await chartView.adjustAxisLabelOverflow(chartInstance)
+      // 仅实现钩子的特殊图表会继续执行专属后处理
       await chartView.afterRender?.(chartInstance)
       // 异步等待期间若图表已被新实例替换，本轮旧实例不再回放联动状态，避免污染当前画布
       if (chartInstance && chartInstance === myChart) {

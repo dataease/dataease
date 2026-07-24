@@ -320,14 +320,16 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
   }
 
   protected configXAxis(chart: Chart): any {
-    return this.getAxisConfig(chart, 'xAxis')
+    const horizontal = parseJson(chart.customAttr).basicStyle.layout === 'horizontal'
+    return this.getAxisConfig(chart, 'xAxis', horizontal ? 'left' : 'bottom')
   }
 
   protected configYAxis(chart: Chart): any {
-    return this.getAxisConfig(chart, 'yAxis')
+    const horizontal = parseJson(chart.customAttr).basicStyle.layout === 'horizontal'
+    return this.getAxisConfig(chart, 'yAxis', horizontal ? 'bottom' : 'left')
   }
 
-  protected getAxisConfig(chart: Chart, axisType: string) {
+  protected getAxisConfig(chart: Chart, axisType: string, position: string) {
     const customStyle = parseJson(chart.customStyle)
     const axis = JSON.parse(JSON.stringify(customStyle[axisType]))
     if (customStyle[axisType] && axis.show) {
@@ -383,7 +385,7 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
         ...grid,
         // 刻度值
         ...label,
-        labelTransform: `rotate(${axis.axisLabel.rotate || 0})`
+        ...this.getAxisLabelStyle({ ...axis, position })
       }
       return x
     }

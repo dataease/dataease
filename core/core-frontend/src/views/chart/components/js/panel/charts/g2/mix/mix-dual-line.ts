@@ -711,7 +711,7 @@ export class GroupLineMix extends G2ChartView {
           gridStrokeOpacity: 1,
           gridLineWidth: xAxis.splitLine.lineStyle.width,
           gridLineDash,
-          labelTransform: `rotate(${xAxis.axisLabel.rotate || 0})`
+          ...this.getAxisLabelStyle(xAxis)
         }
       }
     }

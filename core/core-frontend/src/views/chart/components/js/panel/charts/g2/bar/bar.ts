@@ -792,7 +792,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
         ...label,
         labelAutoHide: true,
         labelAutoRotate: false,
-        labelTransform: `rotate(${axis.axisLabel.rotate || 0})`
+        ...this.getAxisLabelStyle(axis)
       }
       return x
     }

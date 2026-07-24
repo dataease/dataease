@@ -758,7 +758,7 @@ export class MultiScatter extends G2ChartView {
       gridStrokeOpacity: 1,
       gridLineWidth: axisStyle.splitLine.lineStyle.width,
       gridLineDash,
-      labelTransform: `rotate(${axisStyle.axisLabel.rotate || 0})`
+      ...this.getAxisLabelStyle(axisStyle)
     }
   }
 
