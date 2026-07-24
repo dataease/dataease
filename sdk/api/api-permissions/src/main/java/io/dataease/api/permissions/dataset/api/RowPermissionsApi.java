@@ -1,6 +1,11 @@
 package io.dataease.api.permissions.dataset.api;
 
-import io.dataease.api.permissions.dataset.dto.*;
+import io.dataease.api.permissions.auth.dto.PermissionSubjectRequest;
+import io.dataease.api.permissions.auth.vo.SubjectNode;
+import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
+import io.dataease.api.permissions.dataset.dto.DatasetRowPermissionsTreeRequest;
+import io.dataease.api.permissions.dataset.dto.Item;
+import io.dataease.api.permissions.dataset.dto.WhiteListUsersRequest;
 import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.auth.DeApiPath;
 import io.dataease.result.PageResult;
@@ -47,5 +52,8 @@ public interface RowPermissionsApi {
 
     public UserFormVO getUserById(Long id);
 
-    public List<DataSetRowPermissionsTreeDTO> list(DatasetRowPermissionsTreeRequest dataSetRowPermissionsTreeDTO) ;
+    public List<DataSetRowPermissionsTreeDTO> list(DatasetRowPermissionsTreeRequest dataSetRowPermissionsTreeDTO);
+
+    @PostMapping("/subjectTree")
+    List<SubjectNode> subjectTree(@RequestBody PermissionSubjectRequest request);
 }
