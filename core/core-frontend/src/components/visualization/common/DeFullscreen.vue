@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { onBeforeUnmount, onMounted } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import ChartCarouselTooltip from '@/views/chart/components/js/g2plot_tooltip_carousel'
 
 const dvMainStore = dvMainStoreWithOut()
 
@@ -33,6 +34,11 @@ const fullscreenChange = () => {
   // 大屏编辑使用
   if (props.showPosition === 'dvEdit') {
     useEmitt().emitter.emit('canvasScrollRestore')
+    if (!isFullscreen) {
+      nextTick(() => {
+        ChartCarouselTooltip.resume()
+      })
+    }
   }
 }
 
