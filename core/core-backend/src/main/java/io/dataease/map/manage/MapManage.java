@@ -152,6 +152,9 @@ public class MapManage {
     @CacheEvict(cacheNames = WORLD_MAP_CACHE, key = "'world_map'")
     @Transactional
     public void saveMapGeo(GeometryNodeCreator request, MultipartFile file) {
+        if (!AuthUtils.isSysAdmin()) {
+            DEException.throwException(Translator.get("i18n_no_permission"));
+        }
         if (ObjectUtils.isEmpty(request)) {
             DEException.throwException("geometry request is require");
         }
@@ -202,6 +205,9 @@ public class MapManage {
     @CacheEvict(cacheNames = WORLD_MAP_CACHE, key = "'world_map'")
     @Transactional
     public void deleteGeo(String code) {
+        if (!AuthUtils.isSysAdmin()) {
+            DEException.throwException(Translator.get("i18n_no_permission"));
+        }
         validateCode(code);
         if (!StringUtils.startsWith(code, GEO_PREFIX)) {
             DEException.throwException("内置Geometry，禁止删除");

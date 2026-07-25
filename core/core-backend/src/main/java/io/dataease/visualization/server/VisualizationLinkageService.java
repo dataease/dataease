@@ -1,6 +1,7 @@
 package io.dataease.visualization.server;
 
 import io.dataease.api.commons.BaseRspModel;
+import io.dataease.api.permissions.auth.dto.BusiPerCheckDTO;
 import io.dataease.api.visualization.VisualizationLinkageApi;
 import io.dataease.api.visualization.dto.LinkageInfoDTO;
 import io.dataease.api.visualization.dto.VisualizationLinkageDTO;
@@ -9,7 +10,9 @@ import io.dataease.api.visualization.vo.VisualizationLinkageFieldVO;
 import io.dataease.auth.DeLinkPermit;
 import io.dataease.chart.dao.auto.entity.CoreChartView;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
+import io.dataease.constant.AuthEnum;
 import io.dataease.constant.CommonConstants;
+import io.dataease.system.manage.CorePermissionManage;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.visualization.dao.auto.entity.*;
@@ -57,8 +60,12 @@ public class VisualizationLinkageService implements VisualizationLinkageApi {
     @Resource
     private SnapshotCoreChartViewMapper snapshotCoreChartViewMapper;
 
+    @Resource
+    private CorePermissionManage corePermissionManage;
+
     @Override
     public Map<String, VisualizationLinkageDTO> getViewLinkageGather(VisualizationLinkageRequest request) {
+        corePermissionManage.checkAuth(new BusiPerCheckDTO(request.getDvId(), AuthEnum.READ));
         if (CollectionUtils.isNotEmpty(request.getTargetViewIds())) {
             List<VisualizationLinkageDTO> linkageDTOList = null;
             if (CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(request.getResourceTable())) {
@@ -73,6 +80,7 @@ public class VisualizationLinkageService implements VisualizationLinkageApi {
 
     @Override
     public List<VisualizationLinkageDTO> getViewLinkageGatherArray(VisualizationLinkageRequest request) {
+        corePermissionManage.checkAuth(new BusiPerCheckDTO(request.getDvId(), AuthEnum.READ));
         if (CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(request.getResourceTable())) {
             return extVisualizationLinkageMapper.getViewLinkageGatherSnapshot(request.getDvId(), request.getSourceViewId(), request.getTargetViewIds());
         } else {
@@ -91,6 +99,8 @@ public class VisualizationLinkageService implements VisualizationLinkageApi {
 
         Assert.notNull(sourceViewId, "source View ID can not be null");
         Assert.notNull(dvId, "dvId can not be null");
+
+        corePermissionManage.checkAuth(new BusiPerCheckDTO(dvId, AuthEnum.MANAGE));
 
         // 清理原有关系
         extVisualizationLinkageMapper.deleteViewLinkageFieldSnapshot(dvId, sourceViewId);
@@ -129,6 +139,7 @@ public class VisualizationLinkageService implements VisualizationLinkageApi {
     @DeLinkPermit
     @Override
     public Map<String, List<String>> getVisualizationAllLinkageInfo(Long dvId, String resourceTable) {
+        corePermissionManage.checkAuth(new BusiPerCheckDTO(dvId, AuthEnum.READ));
         List<LinkageInfoDTO> info = null;
         if (CommonConstants.RESOURCE_TABLE.SNAPSHOT.equals(resourceTable)) {
             info = extVisualizationLinkageMapper.getPanelAllLinkageInfoSnapshot(dvId);
@@ -140,6 +151,7 @@ public class VisualizationLinkageService implements VisualizationLinkageApi {
 
     @Override
     public Map updateLinkageActive(VisualizationLinkageRequest request) {
+        corePermissionManage.checkAuth(new BusiPerCheckDTO(request.getDvId(), AuthEnum.MANAGE));
         SnapshotCoreChartView coreChartView = new SnapshotCoreChartView();
         coreChartView.setId(request.getSourceViewId());
         coreChartView.setLinkageActive(request.getActiveStatus());
@@ -149,6 +161,7 @@ public class VisualizationLinkageService implements VisualizationLinkageApi {
 
     @Override
     public void removeLinkage(VisualizationLinkageRequest request) {
+        corePermissionManage.checkAuth(new BusiPerCheckDTO(request.getDvId(), AuthEnum.MANAGE));
         // 清理原有关系
         extVisualizationLinkageMapper.deleteViewLinkageFieldSnapshot(request.getDvId(), request.getSourceViewId());
         extVisualizationLinkageMapper.deleteViewLinkageSnapshot(request.getDvId(), request.getSourceViewId());
