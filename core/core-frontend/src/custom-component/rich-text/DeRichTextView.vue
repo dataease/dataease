@@ -177,7 +177,7 @@ const init = ref({
   skin_url: formatDataEaseBi('./tinymce-dataease-private/skins/ui/oxide'), // 皮肤
   content_css: formatDataEaseBi('./tinymce-dataease-private/skins/content/default/content.css'),
   plugins:
-    'vertical-content advlist autolink link image lists charmap  media wordcount table contextmenu directionality pagebreak letterspacing', // 插件
+    'vertical-content advlist autolink link image lists charmap  media wordcount table directionality pagebreak letterspacing', // 插件
   // 工具栏
   toolbar:
     'undo redo | fontfamily fontsize |forecolor backcolor bold italic letterspacing |underline strikethrough link lineheight| blocks |' +
