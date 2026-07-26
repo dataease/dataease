@@ -9,7 +9,7 @@
     :style="richTextStyle"
   >
     <chart-error v-if="isError" :err-msg="errMsg" />
-    <Editor
+    <editor
       v-if="editShow && !isError"
       v-model="myValue"
       class="custom-text-content"
@@ -31,7 +31,17 @@
 <script setup lang="ts">
 import { formatDataEaseBi } from '@/utils/url'
 import tinymce from 'tinymce/tinymce' // tinymce默认hidden，不引入不显示
-import Editor from '@tinymce/tinymce-vue' // 编辑器引入
+import 'tinymce/tinymce'
+import Editor from '@tinymce/tinymce-vue'
+import 'tinymce/models/dom'
+import 'tinymce/themes/silver'
+// Icon
+import 'tinymce/icons/default'
+// 語言包
+import 'tinymce-i18n/langs6/zh-Hans.js'
+// 引入插件
+// 源代码
+import 'tinymce/plugins/code'
 import 'tinymce/themes/silver/theme' // 编辑器主题
 import 'tinymce/icons/default' // 引入编辑器图标icon，不引入则不显示对应图标
 // 引入编辑器插件（基本免费插件都在这儿了）
@@ -44,7 +54,6 @@ import 'tinymce/plugins/charmap' // 特殊字符
 import 'tinymce/plugins/media' // 插入编辑媒体
 import 'tinymce/plugins/wordcount' // 字数统计
 import 'tinymce/plugins/table' // 表格
-import 'tinymce/plugins/contextmenu' // contextmenu
 import 'tinymce/plugins/directionality'
 import 'tinymce/plugins/nonbreaking'
 import 'tinymce/plugins/pagebreak'
@@ -119,7 +128,6 @@ const props = defineProps({
 })
 
 const { element, editMode, active, disabled, showPosition, suffixId } = toRefs(props)
-
 const state = reactive({
   emptyValue: '-',
   data: null,
@@ -172,12 +180,12 @@ const init = ref({
     'vertical-content advlist autolink link image lists charmap  media wordcount table contextmenu directionality pagebreak letterspacing', // 插件
   // 工具栏
   toolbar:
-    'undo redo | fontselect fontsizeselect |forecolor backcolor bold italic letterspacing |underline strikethrough link lineheight| formatselect |' +
+    'undo redo | fontfamily fontsize |forecolor backcolor bold italic letterspacing |underline strikethrough link lineheight| blocks |' +
     'top-align center-align bottom-align | alignleft aligncenter alignright | bullist numlist |' +
     ' blockquote subscript superscript removeformat | table image ',
   toolbar_location: '/',
-  font_formats: curFontFamily(),
-  fontsize_formats:
+  font_family_formats: curFontFamily(),
+  font_size_formats:
     '12px 14px 16px 18px 20px 22px 24px 28px 32px 36px 42px 48px 56px 72px 80px 90px 100px 110px 120px 140px 150px 170px 190px 210px', // 字体大小
   menubar: false,
   placeholder: '',
@@ -187,7 +195,6 @@ const init = ref({
   relative_urls: false,
   remove_script_host: false,
   convert_urls: false,
-  icons: 'vertical-content',
   vertical_align: element.value.propValue.verticalAlign,
   table_default_styles: {
     width: '400px' // 或者使用 table_default_styles 设置宽度，单位为 px
@@ -299,7 +306,7 @@ watch(
   () => active.value,
   val => {
     if (!val) {
-      const ed = tinymce.editors[tinymceId]
+      const ed = tinymce.get(tinymceId)
       if (canEdit.value) {
         element.value.propValue.textValue = ed?.getContent()
       }
@@ -316,7 +323,7 @@ watch(
   () => myValue.value,
   () => {
     if (canEdit.value) {
-      const ed = tinymce.editors[tinymceId]
+      const ed = tinymce.get(tinymceId)
       element.value.propValue.textValue = ed?.getContent()
     }
     if (initReady.value && canEdit.value) {
@@ -361,7 +368,7 @@ const viewInit = () => {
 const initCurFieldsChange = () => {
   if (!canEdit.value) {
     myValue.value = assignment(element.value.propValue.textValue)
-    const ed = tinymce.editors[tinymceId]
+    const ed = tinymce.get(tinymceId)
     ed.setContent(myValue.value)
   }
 }
@@ -445,7 +452,7 @@ const initFontFamily = htmlText => {
   }
 }
 const fieldSelect = field => {
-  const ed = tinymce.editors[tinymceId]
+  const ed = tinymce.get(tinymceId)
   const fieldId = 'changeText-' + guid()
   const value =
     '<span id="' +
@@ -462,7 +469,11 @@ const fieldSelect = field => {
 }
 const onClick = () => {
   if (canEdit.value) {
-    const node = tinymce.activeEditor.selection.getNode()
+    const ed = tinymce.get(tinymceId)
+    if (!ed?.selection) {
+      return
+    }
+    const node = ed.selection.getNode()
     resetSelect(node)
   }
 }
@@ -518,7 +529,7 @@ const setEdit = () => {
       canEdit.value = true
       element.value['editing'] = true
       myValue.value = element.value.propValue.textValue
-      const ed = tinymce.editors[tinymceId]
+      const ed = tinymce.get(tinymceId)
       ed.setContent(myValue.value)
       reShow()
     }
@@ -535,17 +546,25 @@ const reShow = () => {
 const editCursor = () => {
   setTimeout(() => {
     const myDiv = document.getElementById(tinymceId)
-    // 让光标聚焦到文本末尾
+    // Focus the cursor on the end of the text
     const range = document.createRange()
     const sel = window.getSelection()
-    if (myDiv.childNodes) {
-      range.setStart(myDiv.childNodes[myDiv.childNodes.length - 1], 1)
+    if (myDiv && myDiv.childNodes.length) {
+      const lastNode = myDiv.childNodes[myDiv.childNodes.length - 1]
+      // 文本节点用字符长度，元素节点用子节点数量作为可用偏移的上限
+      const maxOffset =
+        lastNode.nodeType === Node.TEXT_NODE
+          ? lastNode.textContent?.length ?? 0
+          : lastNode.childNodes.length
+      range.setStart(lastNode, Math.min(1, maxOffset))
       range.collapse(false)
-      sel.removeAllRanges()
-      sel.addRange(range)
+      if (sel) {
+        sel.removeAllRanges()
+        sel.addRange(range)
+      }
     }
-    // 对于一些浏览器，可能需要设置光标到最后的另一种方式
-    if (myDiv.focus) {
+    // For some browsers, it may be necessary to set the cursor to the end in another way
+    if (myDiv && myDiv.focus) {
       myDiv.focus()
     }
     tinymce.init({
@@ -835,7 +854,7 @@ defineExpose({
 
 <style lang="less">
 .tox {
-  border-radius: 6px !important;
+  border-radius: 2px !important;
   border-bottom: 1px solid #ccc !important;
   z-index: 1000;
 }

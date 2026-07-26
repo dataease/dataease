@@ -1,5 +1,4 @@
 import { type Editor } from 'tinymce'
-import tinymce from 'tinymce/tinymce'
 import { useEmitt } from '@/hooks/web/useEmitt'
 const { emitter } = useEmitt()
 const TOP_ALIGN_BTN =
@@ -18,22 +17,31 @@ const BOTTOM_ALIGN_BTN =
   '<path d="M508.842667 42.666667a42.666667 42.666667 0 0 1 42.666666 42.666666V725.333333a42.666667 42.666667 0 0 1-85.333333 0l0-640a42.666667 42.666667 0 0 1 42.666667-42.666666z" fill="#373C43" p-id="17411"></path><path d="M502.314667 707.84l275.541333-266.069333a42.666667 42.666667 0 1 1 59.306667 61.44L531.029333 798.634667a42.538667 42.538667 0 0 1-60.16-0.853334l-291.242666-298.666666a42.666667 42.666667 0 0 1 61.098666-59.605334l261.589334 268.245334z" fill="#373C43" p-id="17412"></path><path d="M935.509333 981.333333m-42.666666 0l-768 0q-42.666667 0-42.666667-42.666666l0 0q0-42.666667 42.666667-42.666667l768 0q42.666667 0 42.666666 42.666667l0 0q0 42.666667-42.666666 42.666666Z" fill="#8D9399" p-id="17413">' +
   '</path>' +
   '</svg>'
-const pack = tinymce.IconManager.has('vertical-content')
-if (!pack) {
-  tinymce.IconManager.add('vertical-content', {
-    icons: {
-      'top-align': TOP_ALIGN_BTN,
-      'center-align': CENTER_ALIGN_BTN,
-      'bottom-align': BOTTOM_ALIGN_BTN
-    }
-  })
+const ALIGN_ICONS = {
+  'top-align': TOP_ALIGN_BTN,
+  'center-align': CENTER_ALIGN_BTN,
+  'bottom-align': BOTTOM_ALIGN_BTN
 }
 
 export default {
   name: 'vertical-content',
   plugin: function (editor: Editor) {
+    // TinyMCE 6: register custom option via editor.options.register()
+    editor.options.register('vertical_align', {
+      processor: 'string',
+      default: ''
+    })
+
+    // TinyMCE 6: register icons per-editor instead of relying on a global icon pack
+    const registeredIcons = editor.ui.registry.getAll().icons
+    for (const iconKey in ALIGN_ICONS) {
+      if (!registeredIcons[iconKey]) {
+        editor.ui.registry.addIcon(iconKey, ALIGN_ICONS[iconKey])
+      }
+    }
+
     const wrapperDom = editor.targetElm
-    const verticalAlign = editor.settings.vertical_align
+    const verticalAlign = editor.options.get('vertical_align')
     const btnMap = {
       'top-align': {
         component: null,
@@ -67,11 +75,14 @@ export default {
             }
           }
         },
-        onSetup(a) {
+        onSetup(api) {
+          btnMap[key].component = api
           if (verticalAlign === key) {
-            a.setActive(true)
+            api.setActive(true)
           }
-          return api => (btnMap[key].component = api)
+          return () => {
+            btnMap[key].component = null
+          }
         }
       })
     }

@@ -51,7 +51,7 @@ const props = defineProps({
   toolbar: {
     type: [String, Array],
     default:
-      'codesample bold italic underline alignleft aligncenter alignright alignjustify | undo redo | formatselect | fontselect | fontsizeselect | forecolor backcolor | bullist numlist outdent indent | lists link table code | removeformat letterspacing '
+      'codesample bold italic underline alignleft aligncenter alignright alignjustify | undo redo | blocks | fontfamily | fontsize | forecolor backcolor | bullist numlist outdent indent | lists link table code | removeformat letterspacing '
   } //必填
 })
 //用于接收外部传递进来的富文本
@@ -73,9 +73,9 @@ const init = reactive({
   image_dimensions: false, //去除宽高属性
   plugins: props.plugins, //这里的数据是在props里面就定义好了的
   toolbar: props.toolbar, //这里的数据是在props里面就定义好了的
-  font_formats:
+  font_family_formats:
     'Arial=arial,helvetica,sans-serif; 宋体=SimSun; 微软雅黑=Microsoft Yahei; Impact=impact,chicago;', //字体
-  fontsize_formats: '11px 12px 14px 16px 18px 24px 36px 48px 64px 72px', //文字大小
+  font_size_formats: '11px 12px 14px 16px 18px 24px 36px 48px 64px 72px', //文字大小
   paste_webkit_styles: 'all',
   paste_merge_formats: true,
   nonbreaking_force_tab: false,

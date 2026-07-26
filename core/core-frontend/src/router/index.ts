@@ -132,7 +132,7 @@ export const routes: AppRouteRecordRaw[] = [
     name: 'rich-text',
     hidden: true,
     meta: {},
-    component: () => import('@/custom-component/rich-text/DeRichTextView.vue')
+    component: () => import('@/custom-component/rich-text/DeRichTextViewV3.vue')
   },
   {
     path: '/modify-pwd',
