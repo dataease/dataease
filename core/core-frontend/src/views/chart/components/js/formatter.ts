@@ -198,17 +198,25 @@ function niceMin(min, max, tickCount = 5) {
 export const listenYAxisNiceMinEvents = (chart: Chart, newChart) => {
   const yAxis = parseJson(chart.customStyle).yAxis
   if (yAxis.axisValue?.auto) {
-    newChart.on('legend-item-group:click', e => {
+    const updateNiceMin = e => {
       if (e.view?.options?.scales) {
         const values = e.view.filteredData
           .map(d => d.value)
           ?.filter(v => v !== null && v !== undefined)
         const min = Math.min(...values)
         const max = Math.max(...values)
-        e.view.options.scales.value.min = niceMin(min, max)
+        if (min === max || !isFinite(min) || !isFinite(max)) {
+          // 全部隐藏或数值相等时，恢复自动范围
+          e.view.options.scales.value.min = undefined
+        } else {
+          const niceMinValue = niceMin(min, max)
+          e.view.options.scales.value.min = isNaN(niceMinValue) ? undefined : niceMinValue
+        }
         e.view.render(true)
       }
-    })
+    }
+    newChart.on('legend-item-group:click', updateNiceMin)
+    newChart.on('legend-item:click', updateNiceMin)
     newChart.on('slider:valuechanged', ev => {
       const values = ev.view.filteredData
         .map(d => d.value)
