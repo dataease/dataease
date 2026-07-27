@@ -96,6 +96,7 @@ public class MenuManage {
                 || coreMenu.getId().equals(14L)
                 || coreMenu.getId().equals(17L)
                 || coreMenu.getId().equals(18L)
+                || coreMenu.getId().equals(29L)
                 || coreMenu.getPid().equals(21L)
                 || coreMenu.getId().equals(25L)
                 || coreMenu.getId().equals(26L)
