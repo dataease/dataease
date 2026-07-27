@@ -102,6 +102,11 @@ public class CoreDataInit implements CoreSqlBlock {
             menu.setAuth(true);
             coreMenuRepository.save(menu);
         });
+        coreMenuRepository.findById(31L).ifPresent(menu -> {
+            menu.setMenuSort(20);
+            menu.setAuth(true);
+            coreMenuRepository.save(menu);
+        });
     }
 
     private void fixSchema() {
@@ -127,7 +132,7 @@ public class CoreDataInit implements CoreSqlBlock {
                 createMenu(16L, 15L, 2, "parameter", "system/parameter", 4, "sys-parameter", "/parameter", false, true, true),
                 createMenu(19L, 0L, 2, "template-market", "template-market", 4, null, "/template-market", true, true, false),
                 createMenu(30L, 0L, 1, "toolbox", null, 7, "icon_template", "/toolbox", true, true, false),
-                createMenu(31L, 30L, 2, "template-setting", "toolbox/template-setting", 1, "icon_template", "/template-setting", false, true, true),
+                createMenu(31L, 30L, 2, "template-setting", "toolbox/template-setting", 20, "icon_template", "/template-setting", false, true, true),
                 createMenu(64L, 15L, 2, "font", "system/font", 10, "icon_font", "/font", false, true, true),
                 createMenu(70L, 0L, 1, "msg", null, 200, null, "/msg", true, true, false)
         );

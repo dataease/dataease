@@ -2,6 +2,9 @@
 import toolboxData_fill from '@/assets/svg/toolbox-data_fill.svg'
 import toolboxIcon_template from '@/assets/svg/toolbox-icon_template.svg'
 import toolboxLog from '@/assets/svg/toolbox-log.svg'
+import toolboxReport from '@/assets/svg/toolbox-report.svg'
+import toolboxThreshold from '@/assets/svg/toolbox-threshold.svg'
+import toolboxAssociation from '@/assets/svg/toolbox-association.svg'
 import sysTools from '@/assets/svg/sys-tools.svg'
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router_2'
@@ -17,7 +20,10 @@ const cardInfoList = ref([] as unknown[])
 const iconMap = {
   'toolbox-data_fill': toolboxData_fill,
   'toolbox-icon_template': toolboxIcon_template,
-  'toolbox-log': toolboxLog
+  'toolbox-log': toolboxLog,
+  'toolbox-report': toolboxReport,
+  'toolbox-threshold': toolboxThreshold,
+  'toolbox-association': toolboxAssociation
 }
 const loadInfoList = () => {
   const toolboxMenu = resolve('/toolbox')

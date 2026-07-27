@@ -89,36 +89,7 @@ public class MenuManage {
         meta.setIcon(coreMenu.getIcon());
         menuVO.setMeta(meta);
 
-        menuVO.setPlugin(isXpackMenu(coreMenu));
+        menuVO.setPlugin(coreMenu.isPlugin());
         return menuVO;
-    }
-
-    private boolean isXpackMenu(CoreMenu coreMenu) {
-        if (coreMenu.getId().equals(21L)) return false;
-        return coreMenu.getId().equals(7L)
-                || coreMenu.getPid().equals(7L)
-                || coreMenu.getId().equals(9L)
-                || coreMenu.getId().equals(111L)
-                || coreMenu.getId().equals(112L)
-                || coreMenu.getId().equals(14L)
-                || coreMenu.getId().equals(17L)
-                || coreMenu.getId().equals(18L)
-                || coreMenu.getPid().equals(21L)
-                || coreMenu.getId().equals(25L)
-                || coreMenu.getId().equals(26L)
-                || coreMenu.getId().equals(27L)
-                || coreMenu.getId().equals(28L)
-                || coreMenu.getId().equals(35L)
-                || coreMenu.getId().equals(40L)
-                || coreMenu.getId().equals(50L)
-                || coreMenu.getId().equals(60L)
-                || coreMenu.getId().equals(61L)
-                || coreMenu.getId().equals(65L)
-                || coreMenu.getId().equals(80L)
-                || coreMenu.getId().equals(90L)
-                || coreMenu.getPid().equals(70L)
-                || coreMenu.getId().equals(100L)
-                || coreMenu.getId().equals(110L)
-                || coreMenu.getId().equals(120L);
     }
 }

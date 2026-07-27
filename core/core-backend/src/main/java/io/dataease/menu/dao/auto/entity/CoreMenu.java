@@ -70,4 +70,7 @@ public class CoreMenu {
     @Column(name = "auth", nullable = false)
     private Boolean auth = false;
 
+    @Transient
+    private boolean isPlugin;
+
 }
