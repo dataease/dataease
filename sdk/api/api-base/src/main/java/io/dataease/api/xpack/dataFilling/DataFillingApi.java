@@ -76,7 +76,11 @@ public interface DataFillingApi {
 
     @Operation(summary = "获取额外信息")
     @PostMapping("/form/extraDetails")
-    List<ExtraDetails> extraDetails(@RequestBody ExtraDetailsRequest request) throws Exception;
+    List<ExtraDetails> extraDetails(@RequestBody ExtraDetailsBaseRequest request) throws Exception;
+
+    @Operation(summary = "获取额外信息(预览)")
+    @PostMapping("/form/extraDetails/preview")
+    List<ExtraDetails> extraDetailsPreview(@RequestBody ExtraDetailsRequest request) throws Exception;
 
     @Operation(summary = "获取数据填报表内数据列表")
     @PostMapping("/form/{id}/tableData")
