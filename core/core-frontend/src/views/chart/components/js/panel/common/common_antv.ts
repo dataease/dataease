@@ -50,6 +50,8 @@ import ChartCarouselTooltip, {
 } from '@/views/chart/components/js/g2plot_tooltip_carousel'
 
 const { t: tI18n } = useI18n()
+const LEGEND_ITEM_MARGIN_BOTTOM = 6
+const VERTICAL_LEGEND_MAX_HEIGHT_RATIO = 0.5
 
 function useMobileTooltipLayout(): boolean {
   // 移动端编辑器运行在桌面浏览器的窄 iframe 中，需要结合视口宽度判断
@@ -338,6 +340,35 @@ export function getMultiSeriesTooltip(chart: Chart) {
   }
   return tooltip
 }
+
+function getCompactVerticalLegendOptions(
+  chart: Chart,
+  orient: string,
+  position: string,
+  itemHeight: number
+) {
+  const legendPosition = String(position || '').split('-')[0]
+  // 热力表使用连续图例，不参与分类图例分页高度计算
+  if (
+    chart.type === 't-heatmap' ||
+    orient !== 'vertical' ||
+    !['top', 'bottom'].includes(legendPosition)
+  ) {
+    return {}
+  }
+  const legendRowHeight = itemHeight + LEGEND_ITEM_MARGIN_BOTTOM
+  const containerHeight = document.getElementById(chart.container)?.clientHeight
+  const preferredLegendHeight = (containerHeight || 0) * VERTICAL_LEGEND_MAX_HEIGHT_RATIO
+  const itemsPerPage = Math.max(1, Math.floor(preferredLegendHeight / legendRowHeight) - 1)
+  const compactLegendHeight = legendRowHeight * (itemsPerPage + 1)
+  return {
+    itemMarginBottom: LEGEND_ITEM_MARGIN_BOTTOM,
+    maxHeightRatio: containerHeight
+      ? Math.min(1, compactLegendHeight / containerHeight)
+      : VERTICAL_LEGEND_MAX_HEIGHT_RATIO
+  }
+}
+
 // 通用legend
 export function getLegend(chart: Chart) {
   let legend = {}
@@ -401,6 +432,13 @@ export function getLegend(chart: Chart) {
             offsetY = 0
           }
         }
+        const itemHeight = (l.fontSize > l.size * 2 ? l.fontSize : l.size * 2) + 4
+        const compactVerticalLegendOptions = getCompactVerticalLegendOptions(
+          chart,
+          orient,
+          position,
+          itemHeight
+        )
 
         legend = {
           layout: orient,
@@ -419,7 +457,8 @@ export function getLegend(chart: Chart) {
               fontSize: l.fontSize
             }
           },
-          itemHeight: (l.fontSize > l.size * 2 ? l.fontSize : l.size * 2) + 4,
+          itemHeight,
+          ...compactVerticalLegendOptions,
           radio: false,
           pageNavigator: {
             marker: {
