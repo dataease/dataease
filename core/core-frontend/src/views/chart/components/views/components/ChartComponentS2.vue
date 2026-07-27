@@ -464,6 +464,9 @@ const action = param => {
   // 下钻 联动 跳转
   if (trackMenu.value.length < 2) {
     if (view.value.drillFields.length > 0 && trackMenu.value.length === 0) {
+      if (showPosition.value === 'viewDialog') {
+        return
+      }
       ElMessage.error(t('chart.last_layer'))
       return
     }
