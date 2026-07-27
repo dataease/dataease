@@ -990,6 +990,15 @@ export function configL7Style(chart: Chart): AreaOptions['style'] {
   }
 }
 
+export function formatL7TooltipValue(value, formatter) {
+  // 空值和非法数值不进入数值格式化，避免 tooltip 展示 NaN
+  if (value === null || value === undefined || value === '') {
+    return ''
+  }
+  const numberValue = typeof value === 'number' ? value : parseFloat(value)
+  return Number.isFinite(numberValue) ? valueFormatter(numberValue, formatter) : ''
+}
+
 export function configL7Tooltip(chart: Chart): TooltipOptions {
   const customAttr = parseJson(chart.customAttr)
   const tooltip = customAttr.tooltip
@@ -1038,8 +1047,7 @@ export function configL7Tooltip(chart: Chart): TooltipOptions {
       }
       const formatter = formatterMap[head.quotaList?.[0]?.id]
       if (!isEmpty(formatter)) {
-        const originValue = parseFloat(head.value as string)
-        const value = valueFormatter(originValue, formatter.formatterCfg)
+        const value = formatL7TooltipValue(head.value, formatter.formatterCfg)
         const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
         result.push({ ...head, name, value: `${value ?? ''}` })
       }
@@ -1048,7 +1056,7 @@ export function configL7Tooltip(chart: Chart): TooltipOptions {
         if (formatter) {
           const value =
             item.value != null
-              ? valueFormatter(parseFloat(item.value), formatter.formatterCfg)
+              ? formatL7TooltipValue(item.value, formatter.formatterCfg)
               : item.stringValue ?? ''
           const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
           result.push({ color: 'grey', name, value: `${value ?? ''}` })
