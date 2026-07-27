@@ -611,6 +611,9 @@ public class DatasourceServer implements DatasourceApi {
 
             if (datasourceDTO.getType().contains(DatasourceConfiguration.DatasourceType.API.toString())) {
                 List<ApiDefinition> apiDefinitionList = JsonUtil.parseList(datasourceDTO.getConfiguration(), listTypeReference);
+                if (apiDefinitionList == null) {
+                    apiDefinitionList = new ArrayList<>();
+                }
                 int success = 0;
                 for (ApiDefinition apiDefinition : apiDefinitionList) {
                     String status = null;
@@ -1346,6 +1349,9 @@ public class DatasourceServer implements DatasourceApi {
 
         if (datasourceDTO.getType().contains(DatasourceConfiguration.DatasourceType.API.toString())) {
             List<ApiDefinition> apiDefinitionList = JsonUtil.parseList(datasourceDTO.getConfiguration(), listTypeReference);
+            if (apiDefinitionList == null) {
+                apiDefinitionList = new ArrayList<>();
+            }
             List<ApiDefinition> apiDefinitionListWithStatus = new ArrayList<>();
             List<ApiDefinition> params = new ArrayList<>();
             int success = 0;
