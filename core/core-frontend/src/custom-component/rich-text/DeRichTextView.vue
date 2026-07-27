@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { formatDataEaseBi } from '@/utils/url'
+import { formatDataEaseBi, getResourceBaseUrl } from '@/utils/url'
 import tinymce from 'tinymce/tinymce' // tinymce默认hidden，不引入不显示
 import 'tinymce/tinymce'
 import Editor from '@tinymce/tinymce-vue'
@@ -171,10 +171,14 @@ const outerPlaceholder = t('visualization.component_input_tips')
 const init = ref({
   selector: '#' + tinymceId,
   toolbar_items_size: 'small',
-  language_url: formatDataEaseBi(`./tinymce-dataease-private/langs/${language}.js`), // 汉化路径是自定义的，一般放在public或static里面
+  language_url: formatDataEaseBi(
+    `${getResourceBaseUrl()}tinymce-dataease-private/langs/${language}.js`
+  ), // 汉化路径是自定义的，一般放在public或static里面
   language: language,
-  skin_url: formatDataEaseBi('./tinymce-dataease-private/skins/ui/oxide'), // 皮肤
-  content_css: formatDataEaseBi('./tinymce-dataease-private/skins/content/default/content.css'),
+  skin_url: formatDataEaseBi(`${getResourceBaseUrl()}tinymce-dataease-private/skins/ui/oxide`), // 皮肤
+  content_css: formatDataEaseBi(
+    `${getResourceBaseUrl()}tinymce-dataease-private/skins/content/default/content.css`
+  ),
   plugins:
     'vertical-content advlist autolink link image lists charmap  media wordcount table directionality pagebreak letterspacing', // 插件
   // 工具栏
