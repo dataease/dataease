@@ -243,6 +243,17 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
         }
       })
     })
+    // 保证均线和均线点始终位于 K 线箱体上方
+    plot.on('beforerender', () => {
+      plot.chart.geometries.forEach(geometry => {
+        if (geometry.type === 'schema') {
+          geometry.container.setZIndex(0)
+        }
+        if (geometry.type === 'line' || geometry.type === 'point') {
+          geometry.container.setZIndex(1)
+        }
+      })
+    })
   }
 
   async drawChart(drawOptions: G2PlotDrawOptions<Mix>): Promise<Mix> {
