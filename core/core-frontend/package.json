@@ -109,7 +109,7 @@
     "typescript": "^4.9.3",
     "unplugin-auto-import": "^0.15.1",
     "unplugin-vue-components-secondary": "^0.24.6",
-    "vite": "^6.4.2",
+    "vite": "6.4.2",
     "vite-plugin-compression": "^0.5.1",
     "vite-plugin-eslint": "^1.8.1",
     "vite-plugin-style-import": "^2.0.0",
