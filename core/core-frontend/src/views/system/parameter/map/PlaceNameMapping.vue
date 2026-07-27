@@ -115,11 +115,13 @@ const finishEdit = () => {
 }
 
 const updateAreaData = debounce(() => {
+  const keyword = search.value.trim().toLocaleLowerCase()
   const filteredData = state.currentData.filter(item => {
-    if (!search.value?.trim()) {
-      return item.originName
+    if (!keyword) {
+      return true
     }
-    return item.mappedName?.includes(search.value)
+    // 地名映射忽略大小写搜索
+    return item.mappedName?.toLocaleLowerCase().includes(keyword)
   })
   const start = (pageInfo.currentPage - 1) * pageInfo.pageSize
   const end = start + pageInfo.pageSize
