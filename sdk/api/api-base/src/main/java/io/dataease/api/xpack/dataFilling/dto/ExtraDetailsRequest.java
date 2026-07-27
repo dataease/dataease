@@ -2,6 +2,7 @@ package io.dataease.api.xpack.dataFilling.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import io.dataease.extensions.datafilling.dto.ExtTableField;
 import io.dataease.extensions.datafilling.dto.ExtraColumnItem;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -18,5 +19,7 @@ public class ExtraDetailsRequest {
     private String optionColumn;
     private List<ExtraColumnItem> extraColumns;
     private String value;
+
+    private ExtTableField.DfRowPermissionsTreeObj permissionsTree;
 
 }
