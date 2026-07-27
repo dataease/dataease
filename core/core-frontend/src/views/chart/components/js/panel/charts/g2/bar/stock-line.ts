@@ -11,6 +11,7 @@ import {
   TOOLTIP_ITEM_TPL,
   TOOLTIP_TITLE_TPL
 } from '../../../common/common_antv'
+import { createTooltipWrapper, listenerTooltipShow, tooltipCss } from './barUtil'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
@@ -261,6 +262,7 @@ export class StockLine extends G2ChartView {
 
   async drawChart(drawOptions: G2DrawOptions<G2Chart>): Promise<G2Chart> {
     const { chart, action, container } = drawOptions
+    chart.container = container
     const xAxis = chart.xAxis
     const yAxis = chart.yAxis
     const data = chart.data?.tableRow
@@ -362,6 +364,8 @@ export class StockLine extends G2ChartView {
     }
     newChart.on(`interval:${ChartEvent.CLICK}`, actionHandler)
     newChart.on(`point:${ChartEvent.CLICK}`, actionHandler)
+    // 默认向上展示，顶部越界时由公共监听切换到鼠标下方
+    listenerTooltipShow(newChart, chart)
     return newChart
   }
 
@@ -664,15 +668,6 @@ export class StockLine extends G2ChartView {
       defaultsDeep(intervalMark, { tooltip: false })
       return options
     }
-    let g2TooltipWrapper = document.getElementById('G2-TOOLTIP-WRAPPER')
-    if (!g2TooltipWrapper) {
-      g2TooltipWrapper = document.createElement('div')
-      g2TooltipWrapper.id = 'G2-TOOLTIP-WRAPPER'
-      g2TooltipWrapper.style.position = 'absolute'
-      g2TooltipWrapper.style.pointerEvents = 'none'
-      g2TooltipWrapper.style.zIndex = '9999'
-      document.body.appendChild(g2TooltipWrapper)
-    }
     const [openAxis, closeAxis, minAxis, maxAxis] = chart.yAxis
     const yAxisMap = chart.yAxis.reduce((acc, axis) => {
       acc[axis.dataeaseName] = axis
@@ -704,24 +699,8 @@ export class StockLine extends G2ChartView {
       interaction: {
         tooltip: {
           shared: true,
-          mount: g2TooltipWrapper,
-          css: {
-            '.g2-tooltip': {
-              background: tooltipAttr.backgroundColor
-            },
-            '.g2-tooltip-title': {
-              color: tooltipAttr.color,
-              'font-size': `${tooltipAttr.fontSize}px`
-            },
-            '.g2-tooltip-list-item-name-label': {
-              color: tooltipAttr.color,
-              'font-size': `${tooltipAttr.fontSize}px`
-            },
-            '.g2-tooltip-list-item-value': {
-              color: tooltipAttr.color,
-              'font-size': `${tooltipAttr.fontSize}px`
-            }
-          },
+          mount: createTooltipWrapper(chart),
+          css: tooltipCss(tooltipAttr),
           render: (_, { title, items }) => {
             const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)
             // K 线明细与固定顺序的均线项目分开整理，避免空均线改变展示顺序
