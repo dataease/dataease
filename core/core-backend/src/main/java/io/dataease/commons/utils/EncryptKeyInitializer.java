@@ -1,6 +1,7 @@
 package io.dataease.commons.utils;
 
 import io.dataease.rsa.manage.RsaManage;
+import io.dataease.utils.EncryptUtils;
 import jakarta.annotation.Resource;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
