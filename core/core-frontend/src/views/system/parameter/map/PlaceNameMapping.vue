@@ -45,6 +45,7 @@ const pageInfo = reactive({
 
 const init = () => {
   search.value = ''
+  pageInfo.currentPage = 1
   areaData.length = 0
   dialogVisible.value = true
   const chartObj = JSON.parse(selectedData.value.geoJson)
@@ -126,6 +127,12 @@ const updateAreaData = debounce(() => {
   pageInfo.total = filteredData.length
 }, 300)
 
+const handleSearch = () => {
+  // 搜索条件变化后从第一页展示匹配结果
+  pageInfo.currentPage = 1
+  updateAreaData()
+}
+
 const resetForm = () => {
   // 取消时恢复原始数据
   state.currentData = cloneDeep(originalData.value)
@@ -178,7 +185,7 @@ defineExpose({
               size="small"
               class="area-filter"
               :effect="themes"
-              @input="updateAreaData"
+              @input="handleSearch"
             />
           </template>
           <template #default="scope">
