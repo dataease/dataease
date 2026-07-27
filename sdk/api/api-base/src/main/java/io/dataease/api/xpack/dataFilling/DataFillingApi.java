@@ -67,8 +67,12 @@ public interface DataFillingApi {
     List<SimpleDatasourceDTO> listDatasourceListAll();
 
     @Operation(summary = "获取选项值列表")
-    @PostMapping("/form/{optionDatasource}/options")
-    List<ColumnOption> listColumnData(@PathVariable("optionDatasource") Long optionDatasource, @RequestBody DatasourceOptionsRequest request) throws Exception;
+    @GetMapping("/form/{formId}/field/{fieldId}/options")
+    List<ColumnOption> listColumnData(@PathVariable("formId") Long formId, @PathVariable("fieldId") String fieldId) throws Exception;
+
+    @Operation(summary = "获取选项值列表(预览)")
+    @PostMapping("/form/{optionDatasource}/options/preview")
+    List<ColumnOption> listColumnDataPreview(@PathVariable("optionDatasource") Long optionDatasource, @RequestBody DatasourceOptionsRequest request) throws Exception;
 
     @Operation(summary = "获取额外信息")
     @PostMapping("/form/extraDetails")
