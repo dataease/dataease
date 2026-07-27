@@ -13,7 +13,6 @@ import Editor from '@tinymce/tinymce-vue'
 import 'tinymce/models/dom'
 
 // 外觀
-import 'tinymce/skins/ui/oxide/skin.css'
 import 'tinymce/themes/silver'
 
 // Icon
