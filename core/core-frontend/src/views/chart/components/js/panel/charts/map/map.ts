@@ -15,6 +15,7 @@ import {
 } from '@/views/chart/components/js/util'
 import {
   configL7PlotZoom,
+  formatL7TooltipValue,
   handleGeoJson,
   mapRendered,
   mapRendering
@@ -165,6 +166,8 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     if (isPointOnlyGeoJson(geoJson)) {
       const { basicStyle } = parseJson(chart.customAttr)
       const dataColor = hexColorToRGBA(basicStyle.colors?.[0] || '#5470c6', basicStyle.alpha ?? 1)
+      const ignoredLabelFields = this.getIgnoredDataFields(chart)
+      sourceData = this.getDataByEmptyDataStrategy(chart, sourceData)
       const view = await drawPointFallbackChart(drawOption, chart, geoJson, sourceData, action, {
         dotSize: 6,
         dotColor: {
@@ -173,6 +176,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
         },
         dotName: 'dotLayer',
         disableInteraction: false,
+        hideLabel: name => ignoredLabelFields.has(name),
         customizeChoroplethOptions: (opts, c, dotData) => {
           this.customConfigLegend(c, opts)
           const legendSourceData = dotData
@@ -285,7 +289,12 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       // 禁用线上地图数据
       customFetchGeoData: () => null
     }
-    const context: Record<string, any> = { drawOption, geoJson, customSubArea }
+    const context: Record<string, any> = {
+      drawOption,
+      geoJson,
+      customSubArea,
+      ignoredLabelFields: this.getIgnoredDataFields(chart)
+    }
     options = this.setupOptions(chart, options, context)
     const { Choropleth } = await import('@antv/l7plot/dist/esm/plots/choropleth')
     const view = new Choropleth(container, options)
@@ -338,6 +347,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
   ): ChoroplethOptions {
     const { areaId }: L7PlotDrawOptions<any> = context.drawOption
     const geoJson: FeatureCollection = context.geoJson
+    const ignoredLabelFields: Set<string> = context.ignoredLabelFields
     const { basicStyle, label, misc } = parseJson(chart.customAttr)
     const senior = parseJson(chart.senior)
     const curAreaNameMapping = senior.areaMapping?.[areaId]
@@ -390,6 +400,10 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       const name = item.properties['name']
       // trick, maybe move to configLabel, here for perf
       if (label.show) {
+        if (ignoredLabelFields.has(name)) {
+          item.properties['_DE_LABEL_'] = ''
+          return
+        }
         const content = []
         if (label.showDimension) {
           content.push(name)
@@ -642,7 +656,8 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     }
     const customAttr = parseJson(chart.customAttr)
     const { label } = customAttr
-    const data = chart.data.data
+    const data = this.getDataByEmptyDataStrategy(chart, chart.data.data)
+    const ignoredLabelFields: Set<string> = context.ignoredLabelFields
     const areaMap = data?.reduce((obj, value) => {
       obj[value['field']] = value
       return obj
@@ -676,7 +691,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     if (label.show) {
       const labelLocation = []
       customSubArea.forEach(area => {
-        if (area.centroid) {
+        if (area.centroid && !ignoredLabelFields.has(area.name)) {
           const content = []
           if (label.showDimension) {
             content.push(area.name)
@@ -752,15 +767,17 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
         }
         const formatter = formatterMap[valItem.quotaList?.[0]?.id]
         if (!isEmpty(formatter)) {
-          const originValue = parseFloat(valItem.value as string)
-          const value = valueFormatter(originValue, formatter.formatterCfg)
+          const value = formatL7TooltipValue(valItem.value, formatter.formatterCfg)
           const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
           result.push({ ...valItem, name, value: `${value ?? ''}` })
         }
         valItem.dynamicTooltipValue?.forEach(item => {
           const formatter = formatterMap[item.fieldId]
           if (formatter) {
-            const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
+            const value =
+              item.value != null
+                ? formatL7TooltipValue(item.value, formatter.formatterCfg)
+                : item.stringValue ?? ''
             const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
             result.push({ color: 'grey', name, value: `${value ?? ''}` })
           }

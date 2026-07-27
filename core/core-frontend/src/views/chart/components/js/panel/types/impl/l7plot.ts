@@ -54,13 +54,14 @@ export abstract class L7PlotChartView<
     defaultsDeep(options, { legend })
     return options
   }
-  protected configEmptyDataStrategy(chart: Chart, options: O): O {
+
+  protected getDataByEmptyDataStrategy(chart: Chart, sourceData: any[]): any[] {
     const { functionCfg } = parseJson(chart.senior)
     const emptyDataStrategy = functionCfg.emptyDataStrategy
     if (!emptyDataStrategy || emptyDataStrategy === 'breakLine') {
-      return options
+      return sourceData
     }
-    const data = cloneDeep(options.source.data)
+    const data = cloneDeep(sourceData)
     if (emptyDataStrategy === 'setZero') {
       data.forEach(item => {
         item.value === null && (item.value = 0)
@@ -82,7 +83,26 @@ export abstract class L7PlotChartView<
         }
       }
     }
-    options.source.data = data
+    return data
+  }
+
+  protected getIgnoredDataFields(chart: Chart): Set<string> {
+    const { functionCfg } = parseJson(chart.senior)
+    if (functionCfg.emptyDataStrategy !== 'ignoreData') {
+      return new Set()
+    }
+    return (chart.data?.data || []).reduce((fields, item) => {
+      if (item.value === null) {
+        item.field !== undefined && fields.add(String(item.field))
+        item.name !== undefined && fields.add(String(item.name))
+      }
+      return fields
+    }, new Set<string>())
+  }
+
+  protected configEmptyDataStrategy(chart: Chart, options: O): O {
+    // 提前返回的地图渲染分支也复用同一份空值策略处理
+    options.source.data = this.getDataByEmptyDataStrategy(chart, options.source.data)
     return options
   }
 
