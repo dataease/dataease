@@ -57,7 +57,6 @@ import 'tinymce/plugins/table' // 表格
 import 'tinymce/plugins/directionality'
 import 'tinymce/plugins/nonbreaking'
 import 'tinymce/plugins/pagebreak'
-import '@npkg/tinymce-plugins/letterspacing'
 import './plugins' //自定义插件
 import { computed, nextTick, reactive, ref, toRefs, watch, onMounted, PropType } from 'vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'

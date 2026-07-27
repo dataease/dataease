@@ -20,7 +20,6 @@ import 'tinymce/plugins/lists' // 列表插件
 import 'tinymce/plugins/wordcount' // 字数统计插件
 import 'tinymce/plugins/code' // 源码
 import './plugins' //自定义插件
-import '@npkg/tinymce-plugins/letterspacing'
 
 //接下来定义编辑器所需要的插件数据
 import { reactive, ref } from 'vue'

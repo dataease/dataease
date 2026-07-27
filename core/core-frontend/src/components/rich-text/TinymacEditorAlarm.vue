@@ -21,7 +21,6 @@ import 'tinymce/plugins/charmap' // 特殊字符
 import 'tinymce/plugins/media' // 插入编辑媒体
 import 'tinymce/plugins/wordcount' // 字数统计
 import 'tinymce/plugins/table' // 表格
-import 'tinymce/plugins/contextmenu' // contextmenu
 import 'tinymce/plugins/directionality'
 import 'tinymce/plugins/nonbreaking'
 import 'tinymce/plugins/pagebreak'
