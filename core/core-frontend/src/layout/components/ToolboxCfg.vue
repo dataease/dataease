@@ -62,14 +62,17 @@ onMounted(() => {
     popper-class="toolbox-top-popover"
     placement="bottom-end"
     trigger="hover"
+    width="auto"
   >
-    <top-doc-card
-      :span="12"
-      v-for="(item, index) in cardInfoList"
-      :key="index"
-      :card-info="item"
-      @click="toRouter(item)"
-    ></top-doc-card>
+    <div :class="cardInfoList.length < 3 ? 'top-doc-card-wrap-small' : 'top-doc-card-wrap'">
+      <top-doc-card
+        :span="12"
+        v-for="(item, index) in cardInfoList"
+        :key="index"
+        :card-info="item"
+        @click="toRouter(item)"
+      ></top-doc-card>
+    </div>
     <template #reference>
       <div
         class="sys-setting"
@@ -88,12 +91,15 @@ onMounted(() => {
 
 <style lang="less">
 .toolbox-top-popover {
-  min-width: 208px !important;
-  width: auto !important;
   padding: 8px !important;
-  display: flex;
-  .doc-card {
-    margin: auto;
+  min-width: 100px !important;
+  .top-doc-card-wrap-small {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .top-doc-card-wrap {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(96px, max-content));
   }
 }
 </style>

@@ -43,15 +43,17 @@ const cardInfoList = [
     :show-arrow="false"
     popper-class="top-popover"
     placement="bottom-end"
-    width="210"
+    width="auto"
     trigger="hover"
   >
-    <top-doc-card
-      :span="12"
-      v-for="(item, index) in cardInfoList"
-      :key="index"
-      :card-info="item"
-    ></top-doc-card>
+    <div :class="cardInfoList.length < 3 ? 'top-doc-card-wrap-small' : 'top-doc-card-wrap'">
+      <top-doc-card
+        :span="12"
+        v-for="(item, index) in cardInfoList"
+        :key="index"
+        :card-info="item"
+      ></top-doc-card>
+    </div>
     <template #reference>
       <div
         class="sys-setting"
@@ -90,11 +92,15 @@ const cardInfoList = [
 
 <style lang="less">
 .top-popover {
-  display: flex;
   padding: 8px !important;
-  flex-wrap: wrap;
-  .doc-card {
-    margin: auto;
+  min-width: 100px !important;
+  .top-doc-card-wrap-small {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .top-doc-card-wrap {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(96px, max-content));
   }
 }
 </style>
