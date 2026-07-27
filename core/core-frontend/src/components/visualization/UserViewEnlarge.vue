@@ -321,7 +321,7 @@ const dialogInit = (canvasStyle, view, item, opt, params = { scale: 0.5 }) => {
       viewInfo.value['customAttr']['tableCell']['tableFontColor'] =
         canvasStyleData.value.dialogButton
     } else {
-      assign(viewInfo.value, DETAIL_TABLE_ATTR)
+      merge(viewInfo.value, DETAIL_TABLE_ATTR)
     }
     dataDetailsOpt()
   }
