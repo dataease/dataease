@@ -440,11 +440,20 @@ public class CalciteProvider extends Provider {
         if (StringUtils.isEmpty(configuration.getUrlType()) || configuration.getUrlType().equalsIgnoreCase("hostName")) {
             database = configuration.getDataBase();
         } else {
-            Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
-            Matcher matcher = WITH_SQL_FRAGMENT.matcher(configuration.getJdbcUrl());
-            matcher.find();
-            String[] databasePrams = matcher.group(3).split("\\?");
-            database = databasePrams[0];
+            if (configuration.getJdbcUrl().startsWith("jdbc:mysql")) {
+                Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
+                Matcher matcher = WITH_SQL_FRAGMENT.matcher(configuration.getJdbcUrl());
+                matcher.find();
+                String[] databasePrams = matcher.group(3).split("\\?");
+                database = databasePrams[0];
+            } else {
+                Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mariadb://(.*):(\\d+)/(.*)");
+                Matcher matcher = WITH_SQL_FRAGMENT.matcher(configuration.getJdbcUrl());
+                matcher.find();
+                String[] databasePrams = matcher.group(3).split("\\?");
+                database = databasePrams[0];
+            }
+
         }
         return database.contains(".");
     }
@@ -1281,11 +1290,21 @@ public class CalciteProvider extends Provider {
                 if (StringUtils.isEmpty(configuration.getUrlType()) || configuration.getUrlType().equalsIgnoreCase("hostName")) {
                     database = configuration.getDataBase();
                 } else {
-                    Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
-                    Matcher matcher = WITH_SQL_FRAGMENT.matcher(configuration.getJdbcUrl());
-                    matcher.find();
-                    String[] databasePrams = matcher.group(3).split("\\?");
-                    database = databasePrams[0];
+                    if (configuration.getJdbcUrl().startsWith("jdbc:mysql")) {
+                        Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
+                        Matcher matcher = WITH_SQL_FRAGMENT.matcher(configuration.getJdbcUrl());
+                        matcher.find();
+                        String[] databasePrams = matcher.group(3).split("\\?");
+                        database = databasePrams[0];
+
+                    } else {
+                        Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mariadb://(.*):(\\d+)/(.*)");
+                        Matcher matcher = WITH_SQL_FRAGMENT.matcher(configuration.getJdbcUrl());
+                        matcher.find();
+                        String[] databasePrams = matcher.group(3).split("\\?");
+                        database = databasePrams[0];
+                    }
+
                 }
                 if (database.contains(".")) {
                     sql = "select * from " + datasourceRequest.getTable() + " limit 0 offset 0 ";
@@ -1301,11 +1320,19 @@ public class CalciteProvider extends Provider {
                 if (StringUtils.isEmpty(configuration.getUrlType()) || configuration.getUrlType().equalsIgnoreCase("hostName")) {
                     database = configuration.getDataBase();
                 } else {
-                    Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
-                    Matcher matcher = WITH_SQL_FRAGMENT.matcher(configuration.getJdbcUrl());
-                    matcher.find();
-                    String[] databasePrams = matcher.group(3).split("\\?");
-                    database = databasePrams[0];
+                    if (configuration.getJdbcUrl().startsWith("jdbc:mysql")) {
+                        Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
+                        Matcher matcher = WITH_SQL_FRAGMENT.matcher(configuration.getJdbcUrl());
+                        matcher.find();
+                        String[] databasePrams = matcher.group(3).split("\\?");
+                        database = databasePrams[0];
+                    }else {
+                        Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mariadb://(.*):(\\d+)/(.*)");
+                        Matcher matcher = WITH_SQL_FRAGMENT.matcher(configuration.getJdbcUrl());
+                        matcher.find();
+                        String[] databasePrams = matcher.group(3).split("\\?");
+                        database = databasePrams[0];
+                    }
                 }
                 sql = String.format("SELECT COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT,IF(COLUMN_KEY='PRI',1,0),IF(EXTRA LIKE '%%auto_increment%%',1,0) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s'", database, datasourceRequest.getTable());
                 break;
@@ -1465,11 +1492,20 @@ public class CalciteProvider extends Provider {
                 if (StringUtils.isEmpty(configuration.getUrlType()) || configuration.getUrlType().equalsIgnoreCase("hostName")) {
                     database = configuration.getDataBase();
                 } else {
-                    Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
-                    Matcher matcher = WITH_SQL_FRAGMENT.matcher(configuration.getJdbcUrl());
-                    matcher.find();
-                    String[] databasePrams = matcher.group(3).split("\\?");
-                    database = databasePrams[0];
+                    if (configuration.getJdbcUrl().startsWith("jdbc:mysql")) {
+                        Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
+                        Matcher matcher = WITH_SQL_FRAGMENT.matcher(configuration.getJdbcUrl());
+                        matcher.find();
+                        String[] databasePrams = matcher.group(3).split("\\?");
+                        database = databasePrams[0];
+                    }else {
+                        Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mariadb://(.*):(\\d+)/(.*)");
+                        Matcher matcher = WITH_SQL_FRAGMENT.matcher(configuration.getJdbcUrl());
+                        matcher.find();
+                        String[] databasePrams = matcher.group(3).split("\\?");
+                        database = databasePrams[0];
+                    }
+
                 }
                 if (database.contains(".")) {
                     tableSqls.add(new QueryAndParams("show tables"));
@@ -1487,11 +1523,19 @@ public class CalciteProvider extends Provider {
                 if (StringUtils.isEmpty(configuration.getUrlType()) || configuration.getUrlType().equalsIgnoreCase("hostName")) {
                     database = configuration.getDataBase();
                 } else {
-                    Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
-                    Matcher matcher = WITH_SQL_FRAGMENT.matcher(configuration.getJdbcUrl());
-                    matcher.find();
-                    String[] databasePrams = matcher.group(3).split("\\?");
-                    database = databasePrams[0];
+                    if (configuration.getJdbcUrl().startsWith("jdbc:mysql")) {
+                        Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
+                        Matcher matcher = WITH_SQL_FRAGMENT.matcher(configuration.getJdbcUrl());
+                        matcher.find();
+                        String[] databasePrams = matcher.group(3).split("\\?");
+                        database = databasePrams[0];
+                    } else {
+                        Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mariadb://(.*):(\\d+)/(.*)");
+                        Matcher matcher = WITH_SQL_FRAGMENT.matcher(configuration.getJdbcUrl());
+                        matcher.find();
+                        String[] databasePrams = matcher.group(3).split("\\?");
+                        database = databasePrams[0];
+                    }
                 }
                 tableSqls.add(new QueryAndParams("SELECT TABLE_NAME,TABLE_COMMENT FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ?", database));
                 break;
