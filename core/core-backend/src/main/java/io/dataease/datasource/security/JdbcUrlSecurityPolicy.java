@@ -75,12 +75,16 @@ public final class JdbcUrlSecurityPolicy {
             "statementinterceptors",
             "detectcustomcollations",
             "connectionproperties",
-            "initsql"
+            "initsql",
+            "allowloadlocalinfile",
+            "allowurlinlocalinfile",
+            "allowloadlocalinfileinpath",
+            "allowmultiqueries"
     );
 
     private static final Map<String, Set<String>> TYPE_DANGEROUS_FRAGMENTS = Map.ofEntries(
             Map.entry("mysql", Set.of("maxallowedpacket", "allowloadlocalinfile", "allowurlinlocalinfile", "allowloadlocalinfileinpath", "allowmultiqueries")),
-            Map.entry("mongo", Set.of()),
+            Map.entry("mongo", Set.of("maxallowedpacket", "allowloadlocalinfile", "allowurlinlocalinfile", "allowloadlocalinfileinpath", "allowmultiqueries")),
             Map.entry("mariadb", Set.of("maxallowedpacket", "allowloadlocalinfile", "allowurlinlocalinfile", "allowloadlocalinfileinpath", "allowmultiqueries")),
             Map.entry("starrocks", Set.of("maxallowedpacket", "allowloadlocalinfile", "allowurlinlocalinfile", "allowloadlocalinfileinpath", "allowmultiqueries")),
             Map.entry("doris", Set.of("maxallowedpacket", "allowloadlocalinfile", "allowurlinlocalinfile", "allowloadlocalinfileinpath", "allowmultiqueries")),
