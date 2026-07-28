@@ -269,7 +269,7 @@ onMounted(() => {
 
 .header-light {
   background-color: #ffffff !important;
-  box-shadow: 0px 0.5px 0px 0px #1f232926 !important;
+  box-shadow: 0px 1px 0px 0px #1f232926 !important;
   .logo {
     color: #3371ff !important;
   }
