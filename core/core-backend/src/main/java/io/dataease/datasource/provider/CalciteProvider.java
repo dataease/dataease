@@ -492,7 +492,11 @@ public class CalciteProvider extends Provider {
 
     private DatasourceConfiguration parseDatasourceConfiguration(String config, DatasourceConfiguration.DatasourceType datasourceType) {
         return switch (datasourceType) {
-            case mysql, StarRocks, doris, TiDB, mariadb -> JsonUtil.parseObject(config, Mysql.class);
+            case mysql, StarRocks, doris, TiDB, mariadb -> {
+                Mysql configuration = JsonUtil.parseObject(config, Mysql.class);
+                configuration.setDriver("org.mariadb.jdbc.Driver");
+                yield configuration;
+            }
             case mongo -> JsonUtil.parseObject(config, Mongo.class);
             case impala -> JsonUtil.parseObject(config, Impala.class);
             case sqlServer -> JsonUtil.parseObject(config, Sqlserver.class);
