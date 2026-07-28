@@ -561,6 +561,9 @@ public class Utils {
             }
         } else if (originField.getDeType() == 1) {
             for (FieldGroupDTO fieldGroupDTO : dto.getGroupList()) {
+                Utils.validateSqlInjectionRisk(fieldGroupDTO.getStartTime());
+                Utils.validateSqlInjectionRisk(fieldGroupDTO.getEndTime());
+
                 exp.append(" WHEN ");
                 exp.append(fieldName).append(" >= ").append("'").append(fieldGroupDTO.getStartTime()).append("'");
                 exp.append(" AND ");
@@ -569,6 +572,9 @@ public class Utils {
             }
         } else if (originField.getDeType() == 2 || originField.getDeType() == 3 || originField.getDeType() == 4) {
             for (FieldGroupDTO fieldGroupDTO : dto.getGroupList()) {
+                Utils.validateSqlInjectionRisk(fieldGroupDTO.getMin());
+                Utils.validateSqlInjectionRisk(fieldGroupDTO.getMax());
+
                 exp.append(" WHEN ");
                 exp.append(fieldName).append(StringUtils.equalsIgnoreCase(fieldGroupDTO.getMinTerm(), "le") ? " >= " : " > ").append(fieldGroupDTO.getMin());
                 exp.append(" AND ");
