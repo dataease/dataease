@@ -494,6 +494,7 @@ const setDefaultValueFirstItem = () => {
     emitCascade()
     nextTick(() => {
       isConfirmSearch(config.value.id, !isFromFromCascade)
+      isFromFromCascade = false
     })
     return
   }
