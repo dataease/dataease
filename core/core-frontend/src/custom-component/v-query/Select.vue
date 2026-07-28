@@ -492,7 +492,7 @@ const setDefaultValueFirstItem = () => {
     setCascadeValueBack(config.value.mapValue)
     emitCascade()
     nextTick(() => {
-      isConfirmSearch(config.value.id, true)
+      isConfirmSearch(config.value.id, !isFromFromCascade)
     })
     return
   }
@@ -785,6 +785,7 @@ const getOptionFromCascade = () => {
     clearCascadeSelectValue()
     emitCascade()
   }
+  isFromFromCascade = true
   isFromRemote.value = true
   debounceOptions(1)
 }
@@ -797,7 +798,7 @@ const hideClick = id => {
   const vnode = single.value || mult.value
   vnode?.handleClickOutside?.()
 }
-
+let isFromFromCascade = false
 onBeforeMount(() => {
   init()
   useEmitt({
