@@ -244,6 +244,27 @@ public class EngineManage {
         }
     }
 
+    public static class MariadbJdbcUrlParser implements JdbcUrlParser {
+        private static final Pattern PATTERN = Pattern.compile("jdbc:mariadb://(.*):(\\d+)/(.*)\\?(.*)");
+
+        @Override
+        public Map<String, String> parse(String url, Environment env) {
+            Matcher matcher = PATTERN.matcher(url);
+            if (!matcher.find()) return null;
+            Map<String, String> config = new HashMap<>();
+            config.put("host", matcher.group(1));
+            config.put("port", matcher.group(2));
+            config.put("dataBase", matcher.group(3));
+            if (matcher.groupCount() == 4) {
+                config.put("extraParams", matcher.group(4));
+            }
+            config.put("type", "mysql");
+            config.put("username", env.getProperty("spring.datasource.username"));
+            config.put("password", env.getProperty("spring.datasource.password"));
+            return config;
+        }
+    }
+
 
     public static class PgJdbcUrlParser implements JdbcUrlParser {
         private static final Pattern PATTERN = Pattern.compile("jdbc:(?:postgresql|kingbase8|kingbase)://(.*):(\\d+)/(.*?)(?:\\?(.*))?$");
@@ -427,7 +448,9 @@ public class EngineManage {
                     if (jdbcUrl != null) {
                         if (jdbcUrl.startsWith("jdbc:mysql://")) {
                             parserMap.put("jdbc:mysql://", new MysqlJdbcUrlParser());
-                        } else if (jdbcUrl.startsWith("jdbc:oracle:thin:@")) {
+                        } if (jdbcUrl.startsWith("jdbc:mariadb://")) {
+                            parserMap.put("jdbc:mariadb://", new MariadbJdbcUrlParser());
+                        }else if (jdbcUrl.startsWith("jdbc:oracle:thin:@")) {
                             parserMap.put("jdbc:oracle:thin:@", new OracleJdbcUrlParser());
                         } else if (jdbcUrl.startsWith("jdbc:postgresql://")) {
                             parserMap.put("jdbc:postgresql://", new PgJdbcUrlParser());

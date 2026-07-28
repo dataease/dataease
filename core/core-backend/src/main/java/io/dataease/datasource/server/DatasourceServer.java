@@ -38,6 +38,7 @@ import io.dataease.datasource.type.Sqlserver;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.dto.*;
+import io.dataease.extensions.datasource.dto.PreviewDataRequest;
 import io.dataease.extensions.datasource.factory.ProviderFactory;
 import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.datasource.vo.Configuration;
@@ -1203,9 +1204,9 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @Override
-    public Map<String, Object> previewDataWithLimit(Map<String, Object> req) throws DEException {
-        String tableName = req.get("table").toString();
-        Long id = Long.valueOf(req.get("id").toString());
+    public Map<String, Object> previewDataWithLimit(PreviewDataRequest req) throws DEException {
+        String tableName = req.getTable();
+        Long id = Long.valueOf(req.getId());
         if (ObjectUtils.isEmpty(tableName) || ObjectUtils.isEmpty(id)) {
             return null;
         }
@@ -1227,6 +1228,11 @@ public class DatasourceServer implements DatasourceApi {
         previewSqlDTO.setDatasourceId(id);
         previewSqlDTO.setIsCross(false);
         return datasetDataManage.previewSql(previewSqlDTO);
+    }
+
+    @Override
+    public DatasourceDTO getById(Long datasourceId) throws DEException {
+        return dataSourceManage.getDs(datasourceId);
     }
 
     @Override

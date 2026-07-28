@@ -46,6 +46,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static io.dataease.engine.utils.Utils.validateSqlInjectionRisk;
+
 
 @Component("calciteProvider")
 public class CalciteProvider extends Provider {
@@ -257,6 +259,7 @@ public class CalciteProvider extends Provider {
 
     private Map<String, Integer> getTableTypeMap(DatasourceRequest datasourceRequest, DatasourceConfiguration datasourceConfiguration, String tableName) throws DEException {
         Map<String, Integer> map = new HashMap<>();
+        validateSqlInjectionRisk(datasourceConfiguration.getSchema());
         String schemaTable = (ObjectUtils.isNotEmpty(datasourceConfiguration.getSchema()) ? (datasourceConfiguration.getSchema() + "`.`") : "") + tableName;
         String sql = "SELECT * FROM `$TABLE_NAME$` LIMIT 0 OFFSET 0".replace("$TABLE_NAME$", schemaTable);
         sql = transSqlDialect(sql, datasourceRequest.getDsList());
@@ -436,11 +439,20 @@ public class CalciteProvider extends Provider {
         if (StringUtils.isEmpty(configuration.getUrlType()) || configuration.getUrlType().equalsIgnoreCase("hostName")) {
             database = configuration.getDataBase();
         } else {
-            Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
-            Matcher matcher = WITH_SQL_FRAGMENT.matcher(configuration.getJdbcUrl());
-            matcher.find();
-            String[] databasePrams = matcher.group(3).split("\\?");
-            database = databasePrams[0];
+            if (configuration.getJdbcUrl().startsWith("jdbc:mysql")) {
+                Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
+                Matcher matcher = WITH_SQL_FRAGMENT.matcher(configuration.getJdbcUrl());
+                matcher.find();
+                String[] databasePrams = matcher.group(3).split("\\?");
+                database = databasePrams[0];
+            } else {
+                Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mariadb://(.*):(\\d+)/(.*)");
+                Matcher matcher = WITH_SQL_FRAGMENT.matcher(configuration.getJdbcUrl());
+                matcher.find();
+                String[] databasePrams = matcher.group(3).split("\\?");
+                database = databasePrams[0];
+            }
+
         }
         return database.contains(".");
     }
@@ -1345,6 +1357,9 @@ public class CalciteProvider extends Provider {
                     database = configuration.getDataBase();
                 } else {
                     Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
+                    if (configuration.getJdbcUrl().startsWith("jdbc:mariadb")) {
+                        WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mariadb://(.*):(\\d+)/(.*)");
+                    }
                     Matcher matcher = WITH_SQL_FRAGMENT.matcher(configuration.getJdbcUrl());
                     matcher.find();
                     String[] databasePrams = matcher.group(3).split("\\?");
@@ -1365,6 +1380,9 @@ public class CalciteProvider extends Provider {
                     database = configuration.getDataBase();
                 } else {
                     Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
+                    if (configuration.getJdbcUrl().startsWith("jdbc:mariadb")) {
+                        WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mariadb://(.*):(\\d+)/(.*)");
+                    }
                     Matcher matcher = WITH_SQL_FRAGMENT.matcher(configuration.getJdbcUrl());
                     matcher.find();
                     String[] databasePrams = matcher.group(3).split("\\?");
@@ -1563,6 +1581,9 @@ public class CalciteProvider extends Provider {
                     database = configuration.getDataBase();
                 } else {
                     Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
+                    if(configuration.getJdbcUrl().startsWith("jdbc:mariadb")){
+                        WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mariadb://(.*):(\\d+)/(.*)");
+                    }
                     Matcher matcher = WITH_SQL_FRAGMENT.matcher(configuration.getJdbcUrl());
                     matcher.find();
                     String[] databasePrams = matcher.group(3).split("\\?");
@@ -1585,6 +1606,9 @@ public class CalciteProvider extends Provider {
                     database = configuration.getDataBase();
                 } else {
                     Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
+                    if(configuration.getJdbcUrl().startsWith("jdbc:mariadb")){
+                        WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mariadb://(.*):(\\d+)/(.*)");
+                    }
                     Matcher matcher = WITH_SQL_FRAGMENT.matcher(configuration.getJdbcUrl());
                     matcher.find();
                     String[] databasePrams = matcher.group(3).split("\\?");

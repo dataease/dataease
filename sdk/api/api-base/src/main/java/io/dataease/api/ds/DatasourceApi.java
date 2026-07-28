@@ -10,6 +10,7 @@ import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.result.PageResult;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
@@ -143,9 +144,10 @@ public interface DatasourceApi {
     @Operation(summary = "上传文件")
     ExcelFileData uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("id") long datasourceId, @RequestParam("editType") Integer editType) throws DEException;
 
+    @DePermit({"#p0.id+':read'"})
     @PostMapping("/previewData")
     @Operation(summary = "预览数据")
-    Map<String, Object> previewDataWithLimit(@RequestBody Map<String, Object> req) throws DEException;
+    Map<String, Object> previewDataWithLimit(@RequestBody PreviewDataRequest req) throws DEException;
 
     @PostMapping("/latestUse")
     @Operation(summary = "最近常用")
@@ -179,4 +181,7 @@ public interface DatasourceApi {
     @PostMapping("/loadRemoteFile")
     @Operation(summary = "加载文件")
     ExcelFileData loadRemoteFile(@RequestBody RemoteExcelRequest remoteExcelRequeste) throws DEException, IOException;
+
+    @Hidden
+    DatasourceDTO getById(@PathVariable("datasourceId") Long datasourceId) throws DEException;
 }

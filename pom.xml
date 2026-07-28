@@ -58,7 +58,6 @@
         <selenium-java.version>4.19.1</selenium-java.version>
         <playwright-java.version>1.55.0</playwright-java.version>
         <angus-mail.version>2.0.4</angus-mail.version>
-        <mysql-connector-j.version>8.2.0</mysql-connector-j.version>
         <openpdf.version>2.0.4</openpdf.version>
         <flexmark.version>0.62.2</flexmark.version>
         <jsqlparser.version>4.9</jsqlparser.version>
@@ -67,6 +66,7 @@
         <xmlsec.version>2.3.5</xmlsec.version>
         <woodstox-core.version>7.1.0</woodstox-core.version>
         <assertj.version>3.27.7</assertj.version>
+        <mariadb.version>3.5.3</mariadb.version>
     </properties>
 
     <dependencyManagement>
@@ -256,9 +256,9 @@
                 <version>${poi.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.mysql</groupId>
-                <artifactId>mysql-connector-j</artifactId>
-                <version>${mysql-connector-j.version}</version>
+                <groupId>org.mariadb.jdbc</groupId>
+                <artifactId>mariadb-java-client</artifactId>
+                <version>${mariadb.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
