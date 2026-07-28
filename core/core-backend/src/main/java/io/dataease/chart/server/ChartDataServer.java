@@ -594,7 +594,24 @@ public class ChartDataServer implements ChartDataApi {
                 }
             }
             if (CollectionUtils.isNotEmpty(mergeConfig)) {
-                mergeConfig.forEach(detailsSheet::addMergedRegionUnsafe);
+                for (CellRangeAddress range : mergeConfig) {
+                    detailsSheet.addMergedRegionUnsafe(range);
+                    for (int r = range.getFirstRow(); r <= range.getLastRow(); r++) {
+                        Row row = detailsSheet.getRow(r);
+                        if (row == null) {
+                            continue;
+                        }
+                        for (int c = range.getFirstColumn(); c <= range.getLastColumn(); c++) {
+                            if (r == range.getFirstRow() && c == range.getFirstColumn()) {
+                                continue;
+                            }
+                            Cell cell = row.getCell(c);
+                            if (cell != null) {
+                                cell.setBlank();
+                            }
+                        }
+                    }
+                }
             }
         }
     }
