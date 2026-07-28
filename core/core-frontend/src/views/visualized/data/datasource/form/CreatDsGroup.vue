@@ -166,19 +166,19 @@ const createInit = (type, data: Tree, exec, name: string) => {
   if (type === 'datasource') {
     request = data.request
   }
-  if (data.id) {
-    if (exec !== 'rename') {
-      listDatasources({ leaf: false, id: data.id, weight: 7 }).then(res => {
-        filterFreeFolder(res, 'datasource')
-        dfs(res as unknown as Tree[])
-        state.tData = (res as unknown as Tree[]) || []
-        if (state.tData.length && state.tData[0].name === 'root' && state.tData[0].id === '0') {
-          state.tData[0].name = t('data_source.data_source')
-        }
-        originResourceTree.value = cloneDeep(unref(state.tData))
-        let curSortType = sortList[Number(wsCache.get('TreeSort-backend')) ?? 1]
-        curSortType = wsCache.get('TreeSort-datasource') ?? curSortType
-        sortTypeChange(curSortType)
+  if (exec !== 'rename') {
+    listDatasources({ leaf: false, weight: 7 }).then(res => {
+      filterFreeFolder(res, 'datasource')
+      dfs(res as unknown as Tree[])
+      state.tData = (res as unknown as Tree[]) || []
+      if (state.tData.length && state.tData[0].name === 'root' && state.tData[0].id === '0') {
+        state.tData[0].name = t('data_source.data_source')
+      }
+      originResourceTree.value = cloneDeep(unref(state.tData))
+      let curSortType = sortList[Number(wsCache.get('TreeSort-backend')) ?? 1]
+      curSortType = wsCache.get('TreeSort-datasource') ?? curSortType
+      sortTypeChange(curSortType)
+      if (data.id) {
         if (exec) {
           pid.value = data.pid
           id.value = data.id
@@ -195,16 +195,16 @@ const createInit = (type, data: Tree, exec, name: string) => {
             pid.value = ''
           }
         }
-      })
-    }
-    if (exec) {
-      pid.value = data.pid
-      id.value = data.id
-      datasetForm.pid = data.pid as string
-      datasetForm.name = data.name
-      oldName.value = data.name
-      orgRoot.value = data.orgRoot
-    }
+      }
+    })
+  }
+  if (data.id && exec) {
+    pid.value = data.pid
+    id.value = data.id
+    datasetForm.pid = data.pid as string
+    datasetForm.name = data.name
+    oldName.value = data.name
+    orgRoot.value = data.orgRoot
   }
   cmd.value = data.id ? exec : ''
   name && (datasetForm.name = name)

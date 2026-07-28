@@ -167,19 +167,19 @@ const createInit = (type, data: Tree, exec, name: string) => {
     allfields = data.allfields
     isCross = data.isCross
   }
-  if (data.id) {
-    const request = { leaf: false, weight: 7 } as BusiTreeRequest
-    getDatasetTree(request).then(res => {
-      filterFreeFolder(res, 'dataset')
-      dfs(res as unknown as Tree[])
-      state.tData = (res as unknown as Tree[]) || []
-      let curSortType = sortList[Number(wsCache.get('TreeSort-backend')) ?? 1]
-      curSortType = wsCache.get('TreeSort-dataset') ?? curSortType
-      originResourceTree.value = cloneDeep(unref(state.tData))
-      state.tData = treeSort(originResourceTree.value, curSortType)
-      if (state.tData.length && state.tData[0].name === 'root' && state.tData[0].id === '0') {
-        state.tData[0].name = t('data_set.data_set')
-      }
+  const request = { leaf: false, weight: 7 } as BusiTreeRequest
+  getDatasetTree(request).then(res => {
+    filterFreeFolder(res, 'dataset')
+    dfs(res as unknown as Tree[])
+    state.tData = (res as unknown as Tree[]) || []
+    let curSortType = sortList[Number(wsCache.get('TreeSort-backend')) ?? 1]
+    curSortType = wsCache.get('TreeSort-dataset') ?? curSortType
+    originResourceTree.value = cloneDeep(unref(state.tData))
+    state.tData = treeSort(originResourceTree.value, curSortType)
+    if (state.tData.length && state.tData[0].name === 'root' && state.tData[0].id === '0') {
+      state.tData[0].name = t('data_set.data_set')
+    }
+    if (data.id) {
       data.id = formatRootMiss(data.id, state.tData)
       if (exec) {
         pid.value = data.pid
@@ -195,10 +195,10 @@ const createInit = (type, data: Tree, exec, name: string) => {
           pid.value = ''
         }
       }
-    })
+    }
+  })
 
-    cmd.value = exec
-  }
+  cmd.value = exec
   name && (datasetForm.name = name)
   createDataset.value = true
   datasetFormRules.value = {
