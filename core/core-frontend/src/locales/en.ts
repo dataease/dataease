@@ -98,7 +98,8 @@ export default {
     no_auth_tips: 'Missing menu permissions, please contact the administrator',
     no_menu_tips: 'Resource not found 401 error',
     no_permission_node: 'No permission for this node',
-    refresh_success: 'Refresh success'
+    refresh_success: 'Refresh success',
+    resource: 'Resource'
   },
   toolbox: {
     name: 'Toolbox',
@@ -4804,47 +4805,6 @@ export default {
     delete_api_key: 'Are you sure you want to delete this API key? ',
     api_key_desc:
       'API Key is your key to access DataEase API, which has full permissions for your account. Please keep it safe! Do not disclose API Key to external channels in any way to avoid security threats caused by others. '
-  },
-  free: {
-    title: 'Free Resource Management',
-    no_data: 'No Orphaned Resources',
-    sync: 'Migrate',
-    quick: 'One-click',
-    batch: 'Batch',
-    resource: 'Resource',
-    view_association: 'View Bloodline Relationship',
-    quick_sync_tips:
-      'All dashboards, data screens, datasets, and data sources will be migrated to the [Migrated Resources] folder.',
-    batch_sync_tips:
-      "1. Dashboards, data screens, datasets, and data sources related to the selected resources will also be migrated to the corresponding resource's [Migrated Resources] folder;",
-    batch_sync_tips1:
-      '2. The migrated folder will also migrate the subfolders and resources under that folder.',
-    quick_del_confirm: 'Are you sure to delete all orphaned resources?',
-    quick_del_tips: 'Resources cannot be revoked after deletion.',
-    quick_sync_confirm: 'Are you sure to migrate all orphaned resources?',
-    quick_sync_confirm_tips:
-      'Resources cannot be revoked after migration, please proceed with caution.',
-    batch_sync_confirm: 'Are you sure to migrate {0} items and their related orphaned resources?',
-    single_sync_confirm: 'Are you sure to migrate this resource?',
-    batch_del_confirm: 'Are you sure to delete {0} resources?',
-    batch_del_confirm_tips:
-      'Resources cannot be revoked after deletion, please proceed with caution.',
-    del_tips_dataset:
-      'Deleting the dataset will cause related datasets to become invalid, are you sure to delete?',
-    del_tips_datasource:
-      'Datasets are currently using these data sources, and they will become unusable after deletion, are you sure to delete?',
-    single_del_confirm: 'Are you sure to delete this {0}?',
-    single_del_tips_dataset:
-      'This dataset has the following bloodline relationships, and deleting it will cause related visualizations to become invalid, are you sure to delete?',
-    single_del_tips_datasource:
-      'There are {0} datasets currently using this data source, and they will become unusable after deletion, are you sure to delete?',
-    folder: 'Folder',
-    del_folder_tips:
-      'After deletion, all resources under this folder will be deleted, please proceed with caution.',
-    sync_to_org: 'Migrate to Target Organization',
-    sync_org_placeholder: 'Please select the target organization',
-    relation_picture: 'Bloodline Relationship Diagram',
-    save_error: "Prohibit operations on the 'Migration Resources' directory"
   },
   security: {
     title: 'Security Settings'

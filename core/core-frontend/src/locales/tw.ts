@@ -95,7 +95,8 @@ export default {
     no_auth_tips: '缺少選單權限，請聯絡管理員',
     no_menu_tips: '未找到資源401錯誤',
     no_permission_node: '對當前節點沒有權限',
-    refresh_success: '刷新成功'
+    refresh_success: '刷新成功',
+    resource: '資源'
   },
   toolbox: {
     name: '工具箱',
@@ -4659,38 +4660,6 @@ export default {
     delete_api_key: '確定刪除該API key 嗎? ',
     api_key_desc:
       'API Key 是您存取DataEase API 的金鑰，具有帳戶的完全權限，請務必妥善保管！不要以任何方式公開API Key 到外部頻道，避免被他人利用造成安全威脅。 '
-  },
-  free: {
-    title: '遊離資源管理',
-    no_data: '暫無遊離資源',
-    sync: '遷移',
-    quick: '一鍵',
-    batch: '批量',
-    resource: '資源',
-    view_association: '查看血緣關系',
-    quick_sync_tips: '所有儀表板、數據大屏、數據集、數據源，將全部遷移到【遷移資源】文件夾。',
-    batch_sync_tips:
-      '1. 與選中資源相關的儀表板、數據大屏、數據集、數據源，也將一並遷移到對應資源的【遷移資源】文件夾；',
-    batch_sync_tips1: '2. 遷移文件夾將同時遷移該文件夾下的子文件夾和資源。',
-    quick_del_confirm: '確定刪除所有遊離資源嗎？',
-    quick_del_tips: '資源刪除後，不可撤銷。',
-    quick_sync_confirm: '確定遷移所有遊離資源嗎？',
-    quick_sync_confirm_tips: '遷移資源後，不可撤銷，請謹慎操作。',
-    batch_sync_confirm: '確定遷移 {0} 項及其相關遊離資源嗎？',
-    single_sync_confirm: '確定遷移該資源嗎',
-    batch_del_confirm: '確定刪除 {0} 項資源嗎？',
-    batch_del_confirm_tips: '資源刪除後，不可撤銷，請謹慎操作。',
-    del_tips_dataset: '刪除數據集會造成相關數據集失效，確定刪除？',
-    del_tips_datasource: '有數據集正在使用這些數據源，刪除後數據集不可用，確定刪除？',
-    single_del_confirm: '確定刪除該{0}嗎？',
-    single_del_tips_dataset: '該數據集存在如下血緣關系，刪除會造成相關視圖失效，確定刪除？',
-    single_del_tips_datasource: '有 {0} 個數據集正在使用此數據源，刪除後數據集不可用，確定刪除？',
-    folder: '文件夾',
-    del_folder_tips: '刪除後，此文件夾下的所有資源都會被刪除，請謹慎操作。',
-    sync_to_org: '遷移至目標組織',
-    sync_org_placeholder: '請選擇目標組織',
-    relation_picture: '血緣關系圖',
-    save_error: '禁止操作【遷移資源】目錄'
   },
   security: {
     title: '安全設置'
