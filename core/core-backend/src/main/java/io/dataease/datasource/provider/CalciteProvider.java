@@ -264,7 +264,7 @@ public class CalciteProvider extends Provider {
     private Map<String, Integer> getTableTypeMap(DatasourceRequest datasourceRequest, DatasourceConfiguration datasourceConfiguration, String tableName) throws DEException {
         Map<String, Integer> map = new HashMap<>();
         String schemaTable = (ObjectUtils.isNotEmpty(datasourceConfiguration.getSchema()) ? (datasourceConfiguration.getSchema() + "`.`") : "") + tableName;
-        validateSqlInjectionRisk(schemaTable);
+        validateSqlInjectionRisk(datasourceConfiguration.getSchema());
         String sql = "SELECT * FROM `$TABLE_NAME$` LIMIT 0 OFFSET 0".replace("$TABLE_NAME$", schemaTable);
         sql = transSqlDialect(sql, datasourceRequest.getDsList());
         ResultSet resultSet = null;
