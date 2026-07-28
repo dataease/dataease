@@ -7,23 +7,13 @@ import org.apache.commons.lang3.StringUtils;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public final class JdbcUrlSecurityPolicy {
 
     private static final String DEFAULT_CUSTOM_DRIVER = "default";
 
     private static final Map<String, String> JDBC_PREFIXES = Map.ofEntries(
-            Map.entry("mysql", "jdbc:mysql"),
-            Map.entry("mongo", "jdbc:mysql"),
-            Map.entry("mariadb", "jdbc:mysql"),
-            Map.entry("starrocks", "jdbc:mysql"),
-            Map.entry("doris", "jdbc:mysql"),
-            Map.entry("tidb", "jdbc:mysql"),
             Map.entry("impala", "jdbc:impala"),
             Map.entry("sqlserver", "jdbc:sqlserver"),
             Map.entry("oracle", "jdbc:oracle"),
@@ -34,14 +24,15 @@ public final class JdbcUrlSecurityPolicy {
             Map.entry("ck", "jdbc:clickhouse"),
             Map.entry("sqlite", "jdbc:sqlite:")
     );
+    private static final List<String> mysqlType = Arrays.asList("mysql", "mongo", "mariadb", "starrocks", "doris", "tidb");
 
     private static final Map<String, String> DEFAULT_DRIVERS = Map.ofEntries(
-            Map.entry("mysql", "com.mysql.cj.jdbc.Driver"),
-            Map.entry("mongo", "com.mysql.cj.jdbc.Driver"),
-            Map.entry("mariadb", "com.mysql.cj.jdbc.Driver"),
-            Map.entry("starrocks", "com.mysql.cj.jdbc.Driver"),
-            Map.entry("doris", "com.mysql.cj.jdbc.Driver"),
-            Map.entry("tidb", "com.mysql.cj.jdbc.Driver"),
+            Map.entry("mysql", "org.mariadb.jdbc.Driver"),
+            Map.entry("mongo", "org.mariadb.jdbc.Driver"),
+            Map.entry("mariadb", "org.mariadb.jdbc.Driver"),
+            Map.entry("starrocks", "org.mariadb.jdbc.Driver"),
+            Map.entry("doris", "org.mariadb.jdbc.Driver"),
+            Map.entry("tidb", "org.mariadb.jdbc.Driver"),
             Map.entry("impala", "com.cloudera.impala.jdbc.Driver"),
             Map.entry("sqlserver", "com.microsoft.sqlserver.jdbc.SQLServerDriver"),
             Map.entry("oracle", "oracle.jdbc.driver.OracleDriver"),
@@ -110,8 +101,14 @@ public final class JdbcUrlSecurityPolicy {
         String normalizedUrl = canonicalize(jdbcUrl);
         String normalizedExtraParams = canonicalize(extraParams);
         String expectedPrefix = JDBC_PREFIXES.get(normalizedType);
-        if (StringUtils.isBlank(expectedPrefix) || !startsWithIgnoreCase(normalizedUrl, expectedPrefix)) {
+        if (!mysqlType.contains(normalizedType) && (StringUtils.isBlank(expectedPrefix) || !startsWithIgnoreCase(normalizedUrl, expectedPrefix))) {
             DEException.throwException("Illegal jdbcUrl: " + jdbcUrl);
+        }
+        if (mysqlType.contains(normalizedType)) {
+            if (!startsWithIgnoreCase(normalizedUrl, "jdbc:mysql") && !startsWithIgnoreCase(normalizedUrl, "jdbc:mariadb")) {
+                DEException.throwException("Illegal jdbcUrl: " + jdbcUrl);
+            }
+
         }
         Set<String> dangerousFragments = new LinkedHashSet<>(COMMON_DANGEROUS_FRAGMENTS);
         dangerousFragments.addAll(TYPE_DANGEROUS_FRAGMENTS.getOrDefault(normalizedType, Set.of()));
