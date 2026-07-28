@@ -727,7 +727,7 @@ const canvas2Picture = (pictureData, online) => {
   imgDom.style.position = 'absolute'
   imgDom.style.objectFit = 'cover'
   imgDom.style['z-index'] = '2'
-  imgDom.classList.add('prepare-picture-img')
+  //imgDom?.classList?.add('prepare-picture-img')
   imgDom.src = pictureData
   mapDom?.appendChild(imgDom)
 }
@@ -748,12 +748,15 @@ const preparePicture = id => {
         canvas2Picture(base64, true)
       }
     })
-    scene.addControl(zoom)
-    zoom.hide()
-    // 天地图
-    const getTmapImage = async () => {
-      const res = await scene.exportPng('png')
-      canvas2Picture(res, true)
+    let getTmapImage
+    if (scene) {
+      scene.addControl(zoom)
+      zoom.hide()
+      // 天地图
+      getTmapImage = async () => {
+        const res = await scene.exportPng('png')
+        canvas2Picture(res, true)
+      }
     }
     zoom
       .getImage()
@@ -761,7 +764,9 @@ const preparePicture = id => {
         canvas2Picture(res, true)
       })
       .catch(() => {
-        getTmapImage()
+        if (scene && getTmapImage) {
+          getTmapImage()
+        }
       })
   }
 }
