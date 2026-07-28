@@ -413,6 +413,8 @@ const assignment = content => {
           } else {
             content = content.replace(itm, !!value ? targetValue : '[获取中...]')
           }
+        } else if (!canEdit.value && !initReady.value) {
+          content = content.replace(itm, '<span class="de-field-loading">&nbsp;</span>')
         }
       })
     }
@@ -600,6 +602,14 @@ const checkCompareCalc = view => {
 }
 
 const calcData = (view: Chart, callback) => {
+  if (!canEdit.value) {
+    initReady.value = false
+    dataRowFiledName.value = []
+    dataRowSelect.value = {}
+    dataRowNameSelect.value = {}
+    dataRowNameSelectSource.value = {}
+    initCurFieldsChange()
+  }
   isError.value = false
   updateEmptyValue(view)
   if (view.tableId || view['dataFrom'] === 'template') {
@@ -916,6 +926,31 @@ defineExpose({
   border: none !important;
   ol {
     list-style-type: decimal;
+  }
+}
+
+.de-field-loading {
+  display: inline-block;
+  vertical-align: middle;
+  width: 1em;
+  height: 1em;
+  line-height: 0;
+  overflow: hidden;
+  border: 0.1em solid currentColor;
+  border-top-color: transparent;
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+  border-radius: 100%;
+  box-sizing: border-box;
+  animation: de-loading-circle infinite 0.75s linear;
+}
+
+@keyframes de-loading-circle {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
 </style>
