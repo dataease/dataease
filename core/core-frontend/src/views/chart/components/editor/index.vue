@@ -685,12 +685,21 @@ const disableUpdate = computed(() => {
   if (!axisConfig) {
     return flag
   }
+  // 优先使用当前数据集返回的实时脱敏结果
+  const currentFieldDesensitized = new Map<string, boolean>()
+  ;[...state.dimension, ...state.quota].forEach(field => {
+    currentFieldDesensitized.set(String(field.id), field.desensitized === true)
+  })
   for (const key in axisConfig) {
     if (Object.prototype.hasOwnProperty.call(axisConfig, key)) {
       const axis = view.value[key]
       if (axis instanceof Array) {
         axis.forEach(a => {
-          if (a.desensitized) {
+          const fieldId = String(a.id)
+          const desensitized = currentFieldDesensitized.has(fieldId)
+            ? currentFieldDesensitized.get(fieldId)
+            : a.desensitized === true
+          if (desensitized) {
             flag = true
           }
         })
