@@ -840,15 +840,15 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @Override
-    public List<TableField> getTableField(Map<String, String> req) throws DEException {
-        String tableName = req.get("tableName");
-        String datasourceId = req.get("datasourceId");
+    public List<TableField> getTableField(DatasetTableFieldRequest req) throws DEException {
+        String tableName = req.getTableName();
+        Long datasourceId = req.getDatasourceId();
         DatasetTableDTO datasetTableDTO = new DatasetTableDTO();
-        datasetTableDTO.setDatasourceId(Long.valueOf(datasourceId));
+        datasetTableDTO.setDatasourceId(datasourceId);
         if (!getTables(datasetTableDTO).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList()).contains(tableName)) {
             DEException.throwException("无效的表名！");
         }
-        CoreDatasource coreDatasource = dataSourceManage.getCoreDatasource(Long.parseLong(datasourceId));
+        CoreDatasource coreDatasource = dataSourceManage.getCoreDatasource(datasourceId);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(transDTO(coreDatasource));
         if (coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name()) || coreDatasource.getType().contains("Excel")) {
@@ -1137,9 +1137,9 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @Override
-    public Map<String, Object> previewDataWithLimit(Map<String, Object> req) throws DEException {
-        String tableName = req.get("table").toString();
-        Long id = Long.valueOf(req.get("id").toString());
+    public Map<String, Object> previewDataWithLimit(PreviewDataRequest req) throws DEException {
+        String tableName = req.getTable();
+        Long id = Long.valueOf(req.getId());
         if (ObjectUtils.isEmpty(tableName) || ObjectUtils.isEmpty(id)) {
             return null;
         }
