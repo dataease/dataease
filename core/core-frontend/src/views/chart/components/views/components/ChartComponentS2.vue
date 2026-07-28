@@ -467,6 +467,9 @@ const action = param => {
       if (showPosition.value === 'viewDialog') {
         return
       }
+      if (view.value.type === 'table-pivot') {
+        return
+      }
       ElMessage.error(t('chart.last_layer'))
       return
     }
@@ -622,7 +625,9 @@ const trackMenuCmp = computed(() => {
     (!mobileInPc.value || inMobile.value) &&
     trackMenuInfo.push('jump')
   linkageCount && view.value?.linkageActive && trackMenuInfo.push('linkage')
-  hasNextDrillLevel(view.value.drillFields, drillLength.value) && trackMenuInfo.push('drill')
+  view.value.type !== 'table-pivot' &&
+    hasNextDrillLevel(view.value.drillFields, drillLength.value) &&
+    trackMenuInfo.push('drill')
   // 如果同时配置jump linkage drill 切配置联动时同时下钻 在实际只显示两个 '跳转' '联动和下钻'
   if (trackMenuInfo.length === 3 && props.element.actionSelection.linkageActive === 'auto') {
     trackMenuInfo = ['jump', 'linkageAndDrill']
@@ -660,7 +665,7 @@ const trackMenuCalc = itemId => {
   if (isCurrentDrillField(view.value.drillFields, drillLength.value, itemId)) {
     drillCount++
   }
-  drillCount && trackMenuInfo.push('drill')
+  view.value.type !== 'table-pivot' && drillCount && trackMenuInfo.push('drill')
   // 如果同时配置jump linkage drill 切配置联动时同时下钻 在实际只显示两个 '跳转' '联动和下钻'
   if (trackMenuInfo.length === 3 && props.element.actionSelection.linkageActive === 'auto') {
     trackMenuInfo = ['jump', 'linkageAndDrill']

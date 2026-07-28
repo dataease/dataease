@@ -950,7 +950,9 @@ export const dvMainStore = defineStore('dataVisualization', {
         this.hiddenListStatus = !this.hiddenListStatus
       }
       if (this.dvInfo.type === 'dashboard') {
-        this.setBatchOptStatus(false)
+        if (this.batchOptStatus) {
+          this.setBatchOptStatus(false)
+        }
       }
     },
     removeCurBatchComponentWithId(id) {
