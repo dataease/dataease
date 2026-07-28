@@ -1826,6 +1826,7 @@ const parameterCompletion = ele => {
 
 const handleCondition = (item, idx = 0) => {
   handleDialogClick()
+  oldDisplayType = null
   if (activeConditionForRename.id) return
   activeCondition.value = item.id
   const obj = conditions.value.find(ele => ele.id === item.id)
@@ -3746,8 +3747,8 @@ defineExpose({
       height: calc(100% - 30px);
 
       &.condition {
-        height: calc(100% - 45px);
-        top: 45px;
+        height: 100%;
+        top: 0;
       }
     }
 
