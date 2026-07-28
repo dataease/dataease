@@ -9,20 +9,24 @@ import org.springframework.stereotype.Component;
 @Data
 @Component("mysql")
 public class Mysql extends DatasourceConfiguration {
-    private String driver = "com.mysql.cj.jdbc.Driver";
+    private String driver = "org.mariadb.jdbc.Driver";
     private String extraParams = "characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull";
 
     public String getJdbc() {
         String jdbcUrl = "";
         if (StringUtils.isNoneEmpty(getUrlType()) && !getUrlType().equalsIgnoreCase("hostName")) {
-            jdbcUrl = getJdbcUrl();
+            if(getJdbcUrl().trim().startsWith("jdbc:mariadb://")) {
+                jdbcUrl = getJdbcUrl();
+            }else {
+                jdbcUrl = getJdbcUrl().contains("?") ? getJdbcUrl() + "&permitMysqlScheme=true" : getJdbcUrl() + "?permitMysqlScheme=true";
+            }
         } else if (StringUtils.isEmpty(extraParams.trim())) {
-            jdbcUrl = "jdbc:mysql://HOSTNAME:PORT/DATABASE"
+            jdbcUrl = "jdbc:mariadb://HOSTNAME:PORT/DATABASE"
                     .replace("HOSTNAME", getLHost().trim())
                     .replace("PORT", getLPort().toString().trim())
                     .replace("DATABASE", getDataBase().trim());
         } else {
-            jdbcUrl = "jdbc:mysql://HOSTNAME:PORT/DATABASE?EXTRA_PARAMS"
+            jdbcUrl = "jdbc:mariadb://HOSTNAME:PORT/DATABASE?EXTRA_PARAMS"
                     .replace("HOSTNAME", getLHost().trim())
                     .replace("PORT", getLPort().toString().trim())
                     .replace("DATABASE", getDataBase().trim())

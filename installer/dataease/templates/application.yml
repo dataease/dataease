@@ -15,7 +15,8 @@ spring:
       max-file-size: 500MB
       max-request-size: 500MB
   datasource:
-    url: jdbc:mysql://${DE_MYSQL_HOST}:${DE_MYSQL_PORT}/${DE_MYSQL_DB}?${DE_MYSQL_PARAMS}
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://${DE_MYSQL_HOST}:${DE_MYSQL_PORT}/${DE_MYSQL_DB}?${DE_MYSQL_PARAMS}
     username: ${DE_MYSQL_USER}
     password: ${DE_MYSQL_PASSWORD}
 dataease:
