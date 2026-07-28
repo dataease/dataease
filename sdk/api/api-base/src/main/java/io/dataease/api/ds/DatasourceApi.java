@@ -110,6 +110,7 @@ public interface DatasourceApi {
     DatasourceDTO getSimpleDs(@PathVariable("datasourceId") Long datasourceId) throws DEException;
 
 
+    @DePermit({"#p0.datasourceId+':read'"})
     @PostMapping("/getTableField")
     @Operation(summary = "获取表字段")
     List<TableField> getTableField(@RequestBody Map<String, String> req) throws DEException;
@@ -145,6 +146,7 @@ public interface DatasourceApi {
     @Operation(summary = "上传文件")
     ExcelFileData uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("id") long datasourceId, @RequestParam("editType") Integer editType) throws DEException;
 
+    @DePermit({"#p0.id+':read'"})
     @PostMapping("/previewData")
     @Operation(summary = "预览数据")
     Map<String, Object> previewDataWithLimit(@RequestBody Map<String, Object> req) throws DEException;
