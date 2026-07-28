@@ -110,7 +110,7 @@ public interface DatasourceApi {
     DatasourceDTO getSimpleDs(@PathVariable("datasourceId") Long datasourceId) throws DEException;
 
 
-    @DePermit({"#p0.datasourceId+':read'"})
+//    @DePermit({"#p0.datasourceId+':read'"})
     @PostMapping("/getTableField")
     @Operation(summary = "获取表字段")
     List<TableField> getTableField(@RequestBody Map<String, String> req) throws DEException;
