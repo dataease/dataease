@@ -54,6 +54,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static io.dataease.engine.utils.Utils.validateSqlInjectionRisk;
+
 
 @Component("calciteProvider")
 public class CalciteProvider extends Provider {
@@ -262,6 +264,7 @@ public class CalciteProvider extends Provider {
     private Map<String, Integer> getTableTypeMap(DatasourceRequest datasourceRequest, DatasourceConfiguration datasourceConfiguration, String tableName) throws DEException {
         Map<String, Integer> map = new HashMap<>();
         String schemaTable = (ObjectUtils.isNotEmpty(datasourceConfiguration.getSchema()) ? (datasourceConfiguration.getSchema() + "`.`") : "") + tableName;
+        validateSqlInjectionRisk(schemaTable);
         String sql = "SELECT * FROM `$TABLE_NAME$` LIMIT 0 OFFSET 0".replace("$TABLE_NAME$", schemaTable);
         sql = transSqlDialect(sql, datasourceRequest.getDsList());
         ResultSet resultSet = null;
@@ -674,6 +677,7 @@ public class CalciteProvider extends Provider {
         Statement statement;
         if (DatasourceConfiguration.DatasourceType.valueOf(value.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
             statement = getStatement(con, datasourceConfiguration.getQueryTimeout());
+            validateSqlInjectionRisk(datasourceConfiguration.getSchema());
             statement.executeUpdate("ALTER SESSION SET CURRENT_SCHEMA = " + datasourceConfiguration.getSchema());
             statement.executeUpdate("ALTER SESSION SET NLS_TIMESTAMP_FORMAT = 'YYYY-MM-DD HH24:MI:SS'");
             //调整字符集
@@ -1280,9 +1284,10 @@ public class CalciteProvider extends Provider {
 
     private String getTableFiledSql(DatasourceRequest datasourceRequest) {
         String sql = "";
-        DatasourceConfiguration configuration = null;
+        DatasourceConfiguration configuration ;
         String database = "";
         DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(datasourceRequest.getDatasource().getType());
+        validateSqlInjectionRisk(datasourceRequest.getTable());
         switch (datasourceType) {
             case StarRocks:
             case doris:
@@ -1341,6 +1346,7 @@ public class CalciteProvider extends Provider {
                 if (StringUtils.isEmpty(configuration.getSchema())) {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
                 }
+                validateSqlInjectionRisk(configuration.getSchema());
                 sql = String.format("""
                         SELECT tc.COLUMN_NAME AS ColumnName,
                                tc.DATA_TYPE,
@@ -1376,6 +1382,7 @@ public class CalciteProvider extends Provider {
                 if (StringUtils.isEmpty(configuration.getSchema())) {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
                 }
+                validateSqlInjectionRisk(configuration.getSchema());
                 sql = String.format("SELECT COLNAME, TYPENAME, REMARKS, 0, 0 FROM SYSCAT.COLUMNS WHERE TABSCHEMA = '%s' AND TABNAME = '%s' ", configuration.getSchema(), datasourceRequest.getTable());
                 break;
             case sqlServer:
@@ -1383,7 +1390,7 @@ public class CalciteProvider extends Provider {
                 if (StringUtils.isEmpty(configuration.getSchema())) {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
                 }
-
+                validateSqlInjectionRisk(configuration.getSchema());
                 sql = String.format("""
                         SELECT
                             c.name,
@@ -1420,6 +1427,7 @@ public class CalciteProvider extends Provider {
                 if (StringUtils.isEmpty(configuration.getSchema())) {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
                 }
+                validateSqlInjectionRisk(configuration.getSchema());
                 sql = String.format("""
                         SELECT a.attname     AS ColumnName,
                                t.typname,
@@ -1699,6 +1707,7 @@ public class CalciteProvider extends Provider {
                 return "select name from sys.schemas;";
             case db2:
                 DatasourceConfiguration configuration = JsonUtil.parseObject(datasource.getConfiguration(), Db2.class);
+                validateSqlInjectionRisk(configuration.getUsername().toUpperCase());
                 return "select SCHEMANAME from syscat.SCHEMATA   WHERE \"DEFINER\" ='USER'".replace("USER", configuration.getUsername().toUpperCase());
             case pg:
                 return "SELECT nspname FROM pg_namespace;";

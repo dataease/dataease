@@ -30,16 +30,16 @@ public class Utils {
             Pattern.compile("\\b1'\\s*=\\s*'1\\b", Pattern.CASE_INSENSITIVE)
     );
 
-  // 类似 Arkhangel'sk、O'Brien 等包含引号的合法数据应允通过
-  public static final List<Pattern> SQL_INJECTION_PATTERNS_FOR_VALUES =
-      Arrays.asList(
-          Pattern.compile("[\";`]"),
-          Pattern.compile("--\\s*"),
-          Pattern.compile(
-              "\\b(or|and|union|select|insert|delete|update|drop|alter|exec|xp_cmdshell)\\b",
-              Pattern.CASE_INSENSITIVE),
-          Pattern.compile("\\b\\d+\\s*=\\s*\\d+\\b", Pattern.CASE_INSENSITIVE),
-          Pattern.compile("\\b1'\\s*=\\s*'1\\b", Pattern.CASE_INSENSITIVE));
+    // 类似 Arkhangel'sk、O'Brien 等包含引号的合法数据应允通过
+    public static final List<Pattern> SQL_INJECTION_PATTERNS_FOR_VALUES =
+            Arrays.asList(
+                    Pattern.compile("[\";`]"),
+                    Pattern.compile("--\\s*"),
+                    Pattern.compile(
+                            "\\b(or|and|union|select|insert|delete|update|drop|alter|exec|xp_cmdshell)\\b",
+                            Pattern.CASE_INSENSITIVE),
+                    Pattern.compile("\\b\\d+\\s*=\\s*\\d+\\b", Pattern.CASE_INSENSITIVE),
+                    Pattern.compile("\\b1'\\s*=\\s*'1\\b", Pattern.CASE_INSENSITIVE));
 
     public static boolean joinSort(String sort) {
         return (StringUtils.equalsIgnoreCase(sort, "asc") || StringUtils.equalsIgnoreCase(sort, "desc"));
@@ -608,7 +608,7 @@ public class Utils {
         }
         for (Pattern pattern : SQL_INJECTION_PATTERNS_FOR_VALUES) {
             if (pattern.matcher(normalized).find()) {
-                DEException.throwException("Illegal filter value");
+                DEException.throwException("Illegal value");
             }
         }
     }
