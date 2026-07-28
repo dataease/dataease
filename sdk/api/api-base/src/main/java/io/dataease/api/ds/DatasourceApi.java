@@ -145,7 +145,7 @@ public interface DatasourceApi {
     @DePermit({"#p0.id+':read'"})
     @PostMapping("/previewData")
     @Operation(summary = "预览数据")
-    Map<String, Object> previewDataWithLimit(@RequestBody Map<String, Object> req) throws DEException;
+    Map<String, Object> previewDataWithLimit(@RequestBody PreviewDataRequest req) throws DEException;
 
     @PostMapping("/latestUse")
     @Operation(summary = "最近常用")
