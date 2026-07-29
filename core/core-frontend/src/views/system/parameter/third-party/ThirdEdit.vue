@@ -98,7 +98,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     if (valid) {
       let url = `${
         state.form.domain.endsWith('/') ? state.form.domain : state.form.domain + '/'
-      }api/v1/system/assistant/info/${state.form.id}`
+      }api/v1/system/assistant/validate/${state.form.id}`
       fetch(url)
         .then(response => response.json())
         .finally(() => {
@@ -130,7 +130,7 @@ const closeLoading = () => {
 const validateHandlerOnly = () => {
   let url = `${
     state.form.domain.endsWith('/') ? state.form.domain : state.form.domain + '/'
-  }api/v1/system/assistant/info/${state.form.id}`
+  }api/v1/system/assistant/validate/${state.form.id}`
   fetch(url)
     .then(response => {
       if (!response.ok) {

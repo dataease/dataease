@@ -65,7 +65,7 @@ const save = () => {
 const validateHandler = () => {
   let url = `${
     info.value.domain.endsWith('/') ? info.value.domain : info.value.domain + '/'
-  }api/v1/system/assistant/info/${info.value.id}`
+  }api/v1/system/assistant/validate/${info.value.id}`
   fetch(url)
     .then(response => {
       if (!response.ok) {
