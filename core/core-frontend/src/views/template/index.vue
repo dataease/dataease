@@ -158,6 +158,7 @@
         ref="templateEditFormRef"
         label-position="top"
         class="de-form-item"
+        @submit.prevent
         :model="state.templateEditForm"
         :rules="state.templateEditFormRules"
       >
