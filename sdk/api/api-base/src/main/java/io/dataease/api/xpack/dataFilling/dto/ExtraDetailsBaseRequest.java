@@ -1,5 +1,7 @@
 package io.dataease.api.xpack.dataFilling.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -9,6 +11,8 @@ public class ExtraDetailsBaseRequest {
 
     private String value;
     private String columnId;
-    private String formId;
+
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long formId;
 
 }
