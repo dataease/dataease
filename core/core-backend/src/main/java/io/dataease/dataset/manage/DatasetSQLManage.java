@@ -19,6 +19,7 @@ import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.datasource.manage.DataSourceManage;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.engine.constant.ExtFieldConstant;
+import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;
@@ -171,6 +172,9 @@ public class DatasetSQLManage {
                         for (DatasetTableFieldDTO a_f: allFields) {
                             if (Objects.equals(a_f.getId(),f.getId())) {
                                 f.setDataeaseName(a_f.getDataeaseName());
+                            }
+                            if (f.getDeType() == 1 && f.getDeExtractType() == 0 && StringUtils.equalsIgnoreCase("custom", f.getDateFormatType())) {
+                                Utils.validateSqlInjectionRisk(f.getDateFormat());
                             }
                         }
 
@@ -502,10 +506,10 @@ public class DatasetSQLManage {
             Provider provider = ProviderFactory.getProvider(dsMap.entrySet().iterator().next().getValue().getType());
             // parser sql params and replace default value
             String s = new String(Base64.getDecoder().decode(infoDTO.getSql()));
+            s = provider.replaceComment(s);
             SqlVariableHandleResult sqlResult = new SqlparserUtils().handleVariableDefaultValueWithPreparedParams(s, currentDs.getSqlVariableDetails(), false, isFromDataSet, parameters, isCross, dsMap, pluginManage, getUserEntity());
             String sql = sqlResult.getSql();
             tableFieldWithValues.addAll(sqlResult.getTableFieldWithValues());
-            sql = provider.replaceComment(sql);
             // add table schema
             if (isCross) {
                 sql = SqlUtils.addSchema(sql, tableSchema);

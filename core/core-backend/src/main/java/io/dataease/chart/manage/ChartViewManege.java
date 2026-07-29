@@ -8,11 +8,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.api.chart.vo.ChartBaseVO;
 import io.dataease.api.chart.vo.ViewSelectorVO;
+import io.dataease.api.permissions.auth.dto.BusiPerCheckDTO;
 import io.dataease.chart.dao.auto.entity.CoreChartView;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
 import io.dataease.chart.dao.ext.entity.ChartBasePO;
 import io.dataease.chart.dao.ext.mapper.ExtChartViewMapper;
 import io.dataease.constant.AuthConstant;
+import io.dataease.constant.AuthEnum;
 import io.dataease.constant.CommonConstants;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableFieldMapper;
@@ -33,6 +35,7 @@ import io.dataease.extensions.view.filter.FilterTreeObj;
 import io.dataease.i18n.Lang;
 import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
+import io.dataease.system.manage.CorePermissionManage;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.utils.JsonUtil;
@@ -83,6 +86,9 @@ public class ChartViewManege {
     private DatasetTableFieldManage datasetTableFieldManage;
     @Autowired(required = false)
     private PluginManageApi pluginManage;
+
+    @Resource
+    private CorePermissionManage corePermissionManage;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -263,6 +269,10 @@ public class ChartViewManege {
         if (details == null) {
             return null;
         }
+        if (details.getSceneId() != null
+                && !corePermissionManage.checkAuth(new BusiPerCheckDTO(details.getSceneId(), AuthEnum.READ))) {
+            DEException.throwException(Translator.get("i18n_no_permission"));
+        }
         if (forThreshold) {
             ChartExtRequest chartExtRequest = details.getChartExtRequest();
             if (chartExtRequest == null) {
@@ -282,6 +292,13 @@ public class ChartViewManege {
     }
 
     public Map<String, List<ChartViewFieldDTO>> listByDQ(Long id, Long chartId, ChartViewDTO chartViewDTO) {
+        if (chartId != null) {
+            CoreChartView chart = coreChartViewMapper.selectById(chartId);
+            if (chart != null && chart.getSceneId() != null
+                    && !corePermissionManage.checkAuth(new BusiPerCheckDTO(chart.getSceneId(), AuthEnum.READ))) {
+                DEException.throwException(Translator.get("i18n_no_permission"));
+            }
+        }
         QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
         wrapper.eq("dataset_group_id", id);
         wrapper.eq("checked", true);

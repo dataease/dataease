@@ -14,6 +14,7 @@
               <el-select
                 :style="{ width: styleOptionKey.width }"
                 :effect="themes"
+                :disabled="disabled"
                 v-model="styleForm[styleOptionKey.value]"
                 size="small"
                 @change="
@@ -56,6 +57,7 @@
                 class="color-picker-style"
                 :prefix-icon="styleColorKey.icon"
                 :triggerWidth="styleColorKey.width"
+                :disabled="disabled"
                 is-custom
                 show-alpha
                 :predefine="state.predefineColors"
@@ -84,6 +86,7 @@
               <el-select
                 :style="{ width: styleOptionMountedKey.width }"
                 :effect="themes"
+                :disabled="disabled"
                 v-model="styleMounted[styleOptionMountedKey.value]"
                 size="small"
                 @change="sizeChange(styleOptionMountedKey.value)"
@@ -117,6 +120,7 @@
               <el-select
                 :style="{ width: styleOptionKey.width }"
                 :effect="themes"
+                :disabled="disabled"
                 v-model="styleForm[styleOptionKey.value]"
                 size="small"
                 @change="changeStylePre(styleOptionKey.value)"
@@ -143,7 +147,7 @@
           </template>
           <div
             class="icon-btn"
-            :class="{ dark: themes === 'dark', active: styleForm.fontWeight === 'bold' }"
+            :class="{ dark: themes === 'dark', active: styleForm.fontWeight === 'bold', disabled }"
             @click="checkBold"
           >
             <el-icon>
@@ -158,7 +162,7 @@
           </template>
           <div
             class="icon-btn"
-            :class="{ dark: themes === 'dark', active: styleForm.fontStyle === 'italic' }"
+            :class="{ dark: themes === 'dark', active: styleForm.fontStyle === 'italic', disabled }"
             @click="checkItalic"
           >
             <el-icon>
@@ -172,7 +176,11 @@
           </template>
           <div
             class="icon-btn"
-            :class="{ dark: themes === 'dark', active: styleForm.textDecoration === 'underline' }"
+            :class="{
+              dark: themes === 'dark',
+              active: styleForm.textDecoration === 'underline',
+              disabled
+            }"
             @click="checkTextDecoration"
           >
             <el-icon>
@@ -189,7 +197,11 @@
               </template>
               <div
                 class="icon-btn"
-                :class="{ dark: themes === 'dark', active: styleForm.textAlign === 'left' }"
+                :class="{
+                  dark: themes === 'dark',
+                  active: styleForm.textAlign === 'left',
+                  disabled
+                }"
                 @click="setPosition('textAlign', 'left')"
               >
                 <el-icon>
@@ -205,7 +217,11 @@
               </template>
               <div
                 class="icon-btn"
-                :class="{ dark: themes === 'dark', active: styleForm.textAlign === 'center' }"
+                :class="{
+                  dark: themes === 'dark',
+                  active: styleForm.textAlign === 'center',
+                  disabled
+                }"
                 @click="setPosition('textAlign', 'center')"
               >
                 <el-icon>
@@ -221,7 +237,11 @@
               </template>
               <div
                 class="icon-btn"
-                :class="{ dark: themes === 'dark', active: styleForm.textAlign === 'right' }"
+                :class="{
+                  dark: themes === 'dark',
+                  active: styleForm.textAlign === 'right',
+                  disabled
+                }"
                 @click="setPosition('textAlign', 'right')"
               >
                 <el-icon>
@@ -243,7 +263,8 @@
               class="icon-btn"
               :class="{
                 dark: themes === 'dark',
-                active: styleForm.headHorizontalPosition === 'left'
+                active: styleForm.headHorizontalPosition === 'left',
+                disabled
               }"
               @click="setPosition('headHorizontalPosition', 'left')"
             >
@@ -262,7 +283,8 @@
               class="icon-btn"
               :class="{
                 dark: themes === 'dark',
-                active: styleForm.headHorizontalPosition === 'center'
+                active: styleForm.headHorizontalPosition === 'center',
+                disabled
               }"
               @click="setPosition('headHorizontalPosition', 'center')"
             >
@@ -281,7 +303,8 @@
               class="icon-btn"
               :class="{
                 dark: themes === 'dark',
-                active: styleForm.headHorizontalPosition === 'right'
+                active: styleForm.headHorizontalPosition === 'right',
+                disabled
               }"
               @click="setPosition('headHorizontalPosition', 'right')"
             >
@@ -334,12 +357,14 @@ const props = withDefaults(
   defineProps<{
     themes?: EditorTheme
     element: any
+    disabled?: boolean
   }>(),
   {
-    themes: 'dark'
+    themes: 'dark',
+    disabled: false
   }
 )
-const { themes, element } = toRefs(props)
+const { themes, element, disabled } = toRefs(props)
 const emits = defineEmits(['onStyleAttrChange'])
 const styleMounted = ref({
   opacity: 1,
@@ -566,6 +591,7 @@ const changeStyle = params => {
 }
 
 const checkBold = () => {
+  if (disabled.value) return
   if (styleForm.value.fontWeight === 'normal') {
     styleForm.value.fontWeight = 'bold'
   } else {
@@ -575,6 +601,7 @@ const checkBold = () => {
 }
 
 const checkItalic = () => {
+  if (disabled.value) return
   if (styleForm.value.fontStyle === 'normal') {
     styleForm.value.fontStyle = 'italic'
   } else {
@@ -584,6 +611,7 @@ const checkItalic = () => {
 }
 
 const checkTextDecoration = () => {
+  if (disabled.value) return
   if (styleForm.value.textDecoration === 'none') {
     styleForm.value.textDecoration = 'underline'
   } else {
@@ -593,6 +621,7 @@ const checkTextDecoration = () => {
 }
 
 function setPosition(key, p: 'left' | 'center' | 'right') {
+  if (disabled.value) return
   styleForm.value[key] = p
   changeStyle({ key: key, value: p })
 }
@@ -616,13 +645,6 @@ watch(
 </style>
 
 <style scoped lang="less">
-.custom-item-text {
-  font-size: 12px !important;
-  font-weight: 400 !important;
-  line-height: 20px;
-  color: #646a73 !important;
-}
-
 :deep(.ed-radio) {
   margin-right: 0;
 }
@@ -688,6 +710,14 @@ watch(
   color: #1f2329;
 
   cursor: pointer;
+
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    &:hover {
+      background-color: transparent;
+    }
+  }
 
   &.dark {
     color: #a6a6a6;

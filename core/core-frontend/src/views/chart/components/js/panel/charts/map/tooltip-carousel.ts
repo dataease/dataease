@@ -1,10 +1,10 @@
 import { Popup } from '@antv/l7'
 import { Plot } from '@antv/l7plot/dist/lib/core/plot'
 import isEmpty from 'lodash-es/isEmpty'
-import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { parseJson } from '@/views/chart/components/js/util'
 import { Scene } from '@antv/l7-scene'
 import { deepCopy } from '@/utils/utils'
+import { formatL7TooltipValue } from '@/views/chart/components/js/panel/common/common_antv'
 
 export const configCarouselTooltip = (chart, view, data, scene, customSubArea?, drawOption?) => {
   if (['bubble-map', 'map'].includes(chart.type)) {
@@ -525,15 +525,17 @@ export class CarouselManager {
     const head = data
     const formatter = formatterMap[head.quotaList?.[0]?.id]
     if (!isEmpty(formatter)) {
-      const originValue = parseFloat(head.value as string)
-      const value = valueFormatter(originValue, formatter.formatterCfg)
+      const value = formatL7TooltipValue(head.value, formatter.formatterCfg)
       const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
       result.push({ ...head, name, value: `${value ?? ''}` })
     }
     head.dynamicTooltipValue?.forEach(item => {
       const formatter = formatterMap[item.fieldId]
       if (formatter) {
-        const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
+        const value =
+          item.value != null
+            ? formatL7TooltipValue(item.value, formatter.formatterCfg)
+            : item.stringValue ?? ''
         const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
         result.push({ color: 'grey', name, value: `${value ?? ''}` })
       }

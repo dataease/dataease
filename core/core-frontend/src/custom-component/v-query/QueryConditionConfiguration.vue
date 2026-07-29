@@ -1107,9 +1107,7 @@ const isInRange = (ele, startWindowTime, timeStamp) => {
         startTime = getThisStart('quarter')
         break
       case 'thisWeek':
-        startTime = new Date(
-          dayjs().startOf('week').add(1, 'day').startOf('day').format('YYYY/MM/DD HH:mm:ss')
-        )
+        startTime = getThisStart('week')
         break
       case 'today':
         startTime = getThisStart('day')
@@ -1828,6 +1826,7 @@ const parameterCompletion = ele => {
 
 const handleCondition = (item, idx = 0) => {
   handleDialogClick()
+  oldDisplayType = null
   if (activeConditionForRename.id) return
   activeCondition.value = item.id
   const obj = conditions.value.find(ele => ele.id === item.id)
@@ -2221,6 +2220,10 @@ const relativeToCurrentListRange = computed(() => {
         {
           label: t('common.month_to_yesterday'),
           value: 'monthToYesterday'
+        },
+        {
+          label: t('v_query.last_month_full'),
+          value: 'LastMonthFull'
         }
       ]
       break
@@ -3744,8 +3747,8 @@ defineExpose({
       height: calc(100% - 30px);
 
       &.condition {
-        height: calc(100% - 45px);
-        top: 45px;
+        height: 100%;
+        top: 0;
       }
     }
 

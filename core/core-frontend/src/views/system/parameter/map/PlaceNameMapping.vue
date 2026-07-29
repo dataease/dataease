@@ -45,6 +45,7 @@ const pageInfo = reactive({
 
 const init = () => {
   search.value = ''
+  pageInfo.currentPage = 1
   areaData.length = 0
   dialogVisible.value = true
   const chartObj = JSON.parse(selectedData.value.geoJson)
@@ -114,17 +115,25 @@ const finishEdit = () => {
 }
 
 const updateAreaData = debounce(() => {
+  const keyword = search.value.trim().toLocaleLowerCase()
   const filteredData = state.currentData.filter(item => {
-    if (!search.value?.trim()) {
-      return item.originName
+    if (!keyword) {
+      return true
     }
-    return item.mappedName?.includes(search.value)
+    // 地名映射忽略大小写搜索
+    return item.mappedName?.toLocaleLowerCase().includes(keyword)
   })
   const start = (pageInfo.currentPage - 1) * pageInfo.pageSize
   const end = start + pageInfo.pageSize
   areaData.splice(0, areaData.length, ...filteredData.slice(start, end))
   pageInfo.total = filteredData.length
 }, 300)
+
+const handleSearch = () => {
+  // 搜索条件变化后从第一页展示匹配结果
+  pageInfo.currentPage = 1
+  updateAreaData()
+}
 
 const resetForm = () => {
   // 取消时恢复原始数据
@@ -178,7 +187,7 @@ defineExpose({
               size="small"
               class="area-filter"
               :effect="themes"
-              @input="updateAreaData"
+              @input="handleSearch"
             />
           </template>
           <template #default="scope">

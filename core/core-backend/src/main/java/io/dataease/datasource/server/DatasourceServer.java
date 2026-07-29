@@ -611,6 +611,9 @@ public class DatasourceServer implements DatasourceApi {
 
             if (datasourceDTO.getType().contains(DatasourceConfiguration.DatasourceType.API.toString())) {
                 List<ApiDefinition> apiDefinitionList = JsonUtil.parseList(datasourceDTO.getConfiguration(), listTypeReference);
+                if (apiDefinitionList == null) {
+                    apiDefinitionList = new ArrayList<>();
+                }
                 int success = 0;
                 for (ApiDefinition apiDefinition : apiDefinitionList) {
                     String status = null;
@@ -837,15 +840,15 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @Override
-    public List<TableField> getTableField(Map<String, String> req) throws DEException {
-        String tableName = req.get("tableName");
-        String datasourceId = req.get("datasourceId");
+    public List<TableField> getTableField(DatasetTableFieldRequest req) throws DEException {
+        String tableName = req.getTableName();
+        Long datasourceId = req.getDatasourceId();
         DatasetTableDTO datasetTableDTO = new DatasetTableDTO();
-        datasetTableDTO.setDatasourceId(Long.valueOf(datasourceId));
+        datasetTableDTO.setDatasourceId(datasourceId);
         if (!getTables(datasetTableDTO).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList()).contains(tableName)) {
             DEException.throwException("无效的表名！");
         }
-        CoreDatasource coreDatasource = dataSourceManage.getCoreDatasource(Long.parseLong(datasourceId));
+        CoreDatasource coreDatasource = dataSourceManage.getCoreDatasource(datasourceId);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(transDTO(coreDatasource));
         if (coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name()) || coreDatasource.getType().contains("Excel")) {
@@ -964,6 +967,11 @@ public class DatasourceServer implements DatasourceApi {
             }
         }
         return excelFileData;
+    }
+
+    @Override
+    public DatasourceDTO getById(Long datasourceId) throws DEException {
+        return dataSourceManage.getDs(datasourceId);
     }
 
     private void mergeExcelEditConfig(ExcelFileData excelFileData, CoreDatasource coreDatasource, Integer editType) throws DEException {
@@ -1096,6 +1104,7 @@ public class DatasourceServer implements DatasourceApi {
 
     private void preCheckDs(DatasourceDTO datasource) throws DEException {
         List<String> list = datasourceTypes().stream().map(DatasourceConfiguration.DatasourceType::getType).collect(Collectors.toList());
+        list.remove(DatasourceConfiguration.DatasourceType.h2.getType());
         if (LicenseUtil.licenseValid()) {
             List<XpackPluginsDatasourceVO> xpackPluginsDatasourceVOS = pluginManage.queryPluginDs();
             xpackPluginsDatasourceVOS.forEach(ele -> list.add(ele.getType()));
@@ -1133,9 +1142,9 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @Override
-    public Map<String, Object> previewDataWithLimit(Map<String, Object> req) throws DEException {
-        String tableName = req.get("table").toString();
-        Long id = Long.valueOf(req.get("id").toString());
+    public Map<String, Object> previewDataWithLimit(PreviewDataRequest req) throws DEException {
+        String tableName = req.getTable();
+        Long id = Long.valueOf(req.getId());
         if (ObjectUtils.isEmpty(tableName) || ObjectUtils.isEmpty(id)) {
             return null;
         }
@@ -1345,6 +1354,9 @@ public class DatasourceServer implements DatasourceApi {
 
         if (datasourceDTO.getType().contains(DatasourceConfiguration.DatasourceType.API.toString())) {
             List<ApiDefinition> apiDefinitionList = JsonUtil.parseList(datasourceDTO.getConfiguration(), listTypeReference);
+            if (apiDefinitionList == null) {
+                apiDefinitionList = new ArrayList<>();
+            }
             List<ApiDefinition> apiDefinitionListWithStatus = new ArrayList<>();
             List<ApiDefinition> params = new ArrayList<>();
             int success = 0;

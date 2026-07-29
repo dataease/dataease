@@ -1,8 +1,15 @@
 import dayjs from 'dayjs'
 import type { ManipulateType, QUnitType } from 'dayjs'
+import 'dayjs/locale/zh-cn'
 import quarterOfYear from 'dayjs/plugin/quarterOfYear'
+import updateLocale from 'dayjs/plugin/updateLocale'
 type ManipulateTypeWithQuarter = ManipulateType | 'quarter'
 dayjs.extend(quarterOfYear)
+dayjs.extend(updateLocale)
+dayjs.updateLocale('zh-cn', {
+  weekStart: 1
+})
+dayjs.locale('zh-cn')
 
 function getThisStart(val = 'month' as ManipulateTypeWithQuarter) {
   return new Date(
@@ -39,24 +46,22 @@ function getYearToLastMonthEnd(): [Date, Date] {
 
 function getAround(val = 'month' as ManipulateType, type = 'add', num = 0) {
   if (val === 'week') {
-    return new Date(dayjs().endOf('week').add(1, 'day').endOf('day').format('YYYY/MM/DD HH:mm:ss'))
+    return new Date(dayjs().endOf('week').endOf('day').format('YYYY/MM/DD HH:mm:ss'))
   }
   return new Date(dayjs()[type](num, val).endOf('day').format('YYYY/MM/DD HH:mm:ss'))
 }
 
 function getAroundStart(val = 'month' as ManipulateType, type = 'add', num = 0) {
   if (val === 'week') {
-    return new Date(
-      dayjs().startOf('week').add(1, 'day').startOf('day').format('YYYY/MM/DD HH:mm:ss')
-    )
+    return new Date(dayjs().startOf('week').startOf('day').format('YYYY/MM/DD HH:mm:ss'))
   }
   return new Date(dayjs()[type](num, val).startOf('day').format('YYYY/MM/DD HH:mm:ss'))
 }
 
 function getThisWeek(): [Date, Date] {
   return [
-    new Date(dayjs().startOf('week').add(1, 'day').startOf('day').format('YYYY/MM/DD HH:mm:ss')),
-    new Date(dayjs().endOf('week').add(1, 'day').endOf('day').format('YYYY/MM/DD HH:mm:ss'))
+    new Date(dayjs().startOf('week').startOf('day').format('YYYY/MM/DD HH:mm:ss')),
+    new Date(dayjs().endOf('week').endOf('day').format('YYYY/MM/DD HH:mm:ss'))
   ]
 }
 

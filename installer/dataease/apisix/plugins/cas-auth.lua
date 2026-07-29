@@ -34,7 +34,8 @@ local schema = {
         idp_uri = {type = "string"},
         cas_callback_uri = {type = "string"},
         logout_uri = {type = "string"},
-        cas_callback_domain={type="string"}
+        cas_callback_domain={type="string"},
+        logout_redirect_url = {type = "string"}
     },
     required = {
         "idp_uri", "cas_callback_uri", "logout_uri"
@@ -160,7 +161,12 @@ local function logout(conf, ctx)
     store:delete(session_id)
     set_our_cookie(COOKIE_NAME, "deleted; Max-Age=0")
 
-    core.response.set_header("Location", conf.idp_uri .. "/logout")
+    local logout_url = conf.idp_uri .. "/logout"
+    if conf.logout_redirect_url and conf.logout_redirect_url ~= "" then
+        logout_url = logout_url .. "?service=" .. ngx.escape_uri(conf.logout_redirect_url)
+    end
+
+    core.response.set_header("Location", logout_url)
     return ngx.HTTP_MOVED_TEMPORARILY
 end
 

@@ -174,6 +174,22 @@ declare interface ChartBasicStyle {
    */
   lineSmooth: boolean
   /**
+   * 双线组合图左轴线宽
+   */
+  leftLineWidth: number
+  /**
+   * 双线组合图左轴折点形状
+   */
+  leftLineSymbol: string
+  /**
+   * 双线组合图左轴折点大小
+   */
+  leftLineSymbolSize: number
+  /**
+   * 双线组合图左轴平滑折线
+   */
+  leftLineSmooth: boolean
+  /**
    * 自适应
    */
   barDefault: boolean
@@ -401,6 +417,10 @@ declare interface ChartBasicStyle {
    * 表格空数据提示字体大小
    */
   tableEmptyFontSize: number
+  /**
+   * 主题反色，浅色主题黑色，深色主题白色
+   */
+  themeContrastColor?: string
 }
 /**
  * 表头属性

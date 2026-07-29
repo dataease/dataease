@@ -602,6 +602,9 @@ export default {
     incorrect_please_re_enter: 'The callback domain name format is incorrect, please re-enter',
     cas_settings: 'CAS settings',
     callback_domain_name: 'Callback domain name',
+    logout_redirect_url: 'Logout redirect URL',
+    logout_redirect_url_placeholder:
+      'The URL to redirect to after CAS logout. If empty, stays on CAS logout success page',
     authentication_settings: 'Authentication Settings',
     be_turned_on: 'After the test connection is valid, it can be turned on',
     platform_information_first: 'Please save the platform information first',
@@ -778,7 +781,11 @@ export default {
     reset_pwd: 'Reset password',
     reset_confirm: 'Do you want to restore to the initial password? ',
     reset_success: 'Reset successful',
+    unlock_user: 'Unlock',
+    confirm_unlock: 'Are you sure to unlock this user?',
+    unlock_user_success: 'Unlocked successfully',
     modify_cur_pwd: 'You need to log in again after modifying the current user password',
+    password_changed_relogin: 'Password changed, please login again',
     switch_success: 'Switch successful',
     user_name_pattern_error:
       "Only numbers and letters and {'@'}._- are allowed, and must start with a number or letter",
@@ -2144,6 +2151,7 @@ export default {
     map_type_tianditu: 'Tianditu',
     map_type_baidu: 'Baidu Map',
     map_type_tencent: 'Tencent Map',
+    map_type_custom_tile: 'Custom Map',
     bullet_chart: 'Bullet Chart',
     range_bg: 'Range Background',
     legend_name: 'Legend Name',
@@ -2866,7 +2874,8 @@ export default {
     char_count_limit: 'Cannot exceed {count} characters'
   },
   sql_variable: {
-    variable_mgm: 'Parameter settings'
+    variable_mgm: 'Parameter settings',
+    variable_name_empty: 'Parameter name cannot be empty'
   },
   v_query: {
     display_sort: 'Display fields and sort fields are inconsistent, custom sorting is not possible',
@@ -3313,10 +3322,12 @@ export default {
     selected_view: 'Selected View',
     used_dataset: 'Used Dataset',
     to_select_view: 'Select View',
+    to_select_field: 'Select Field',
     show_selected_only: 'Show Selected Only',
     same_dataset: 'Same Dataset',
     diff_dataset: 'Different Dataset',
     no_available_view: 'No available views currently',
+    no_available_chart: 'No selectable charts currently',
     linkage_setting_tips1: 'Configure the field association relationship between charts',
     current_chart_source_field: 'Current Chart Source Field',
     add_linkage_dependency_fields: 'Add Linkage Dependency Fields',
@@ -3702,6 +3713,8 @@ export default {
     play_circle: 'Loop Play',
     video_links: 'Video Links',
     web_url: 'Web URL',
+    app_embed: 'Embed Mode',
+    app_embed_code: 'Embed Code',
     video_add_tips: 'Please configure video information...',
     link_add_tips_pre: 'Please configure web information..',
     web_add_tips_suf: 'Add web information...',
@@ -3871,7 +3884,53 @@ export default {
   online_map: {
     geometry: 'Geographic information',
     onlinemap: 'Online map',
-    empty_desc: 'Please enter information on the left and save'
+    empty_desc: 'Please enter information on the left and save',
+    service_type: 'Service type',
+    raster_tile_url: 'Raster tile URL',
+    vector_style_json: 'Vector map Style JSON',
+    tile_url: 'Tile URL',
+    tile_url_placeholder: 'For example: http://localhost:18080/{z}/{x}/{y}.png',
+    tile_url_tip: 'Supports standard {z}/{x}/{y} URL templates and TMS through tile scheme',
+    style_url: 'Style JSON URL',
+    style_url_placeholder: 'For example: http://localhost:18081/styles/basic-preview/style.json',
+    style_url_tip:
+      'Enter a complete MapLibre Style JSON URL. Referenced tiles, fonts, and sprites must allow cross-origin access',
+    tile_scheme: 'Tile scheme',
+    tile_size: 'Tile size',
+    min_zoom: 'Minimum zoom',
+    max_zoom: 'Maximum zoom',
+    zoom_tip:
+      'Limits the interactive zoom range and does not add map detail unavailable from the service',
+    show_attribution: 'Show attribution',
+    attribution: 'Attribution',
+    raster_attribution_tip: 'Optional. Leave blank to hide custom attribution',
+    vector_attribution_tip:
+      'Optional. Replaces attribution from Style sources when set; leave blank to keep it',
+    map_load_error:
+      'Failed to load the map. Check the URL, CORS, referenced resources, and network settings',
+    map_network_offline_error:
+      'The browser is offline. Restore the network connection and try again',
+    map_mixed_content_error:
+      'This page uses HTTPS, so the browser blocked the HTTP map resource. Switch the map service to HTTPS',
+    map_localhost_error:
+      'The map URL uses localhost, which points to each visitor’s computer. Start the local service or use a server URL accessible from the browser',
+    map_style_request_error:
+      'Unable to access the Style JSON. Check the URL, network connection, or CORS settings',
+    map_style_http_error:
+      'The Style JSON request failed (HTTP {status}). Check the URL and service status',
+    map_style_json_error: 'The Style JSON response is not valid JSON',
+    map_style_format_error:
+      'The Style JSON is incomplete. It must contain version 8, sources, and layers',
+    map_tile_http_error:
+      'The map tile request failed (HTTP {status}). Check the URL template, available zoom levels, and service status',
+    map_tile_load_error:
+      'Failed to load map tiles. Check the URL template, available zoom levels, and CORS settings',
+    map_glyph_load_error: 'Failed to load map fonts. Check the glyphs URL and CORS settings',
+    map_sprite_load_error: 'Failed to load map icons. Check the sprite URL and CORS settings',
+    map_resource_http_error:
+      'The map resource request failed (HTTP {status}). Check the resource URLs in the Style',
+    map_resource_load_error:
+      'Failed to load a map resource. Check the resource URLs in the Style and CORS settings'
   },
   setting_basic: {
     default_open_tips: 'Interface for creating and editing resources like dashboards and screen',

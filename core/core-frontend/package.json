@@ -21,8 +21,8 @@
     "@antv/s2": "^1.49.0",
     "@babel/runtime": "^7.5.5",
     "@codemirror/lang-sql": "^6.4.0",
-    "@npkg/tinymce-plugins": "^0.0.7",
-    "@tinymce/tinymce-vue": "^5.1.0",
+    "@npkg/tinymce-plugins": "0.0.7",
+    "@tinymce/tinymce-vue": "5.1.1",
     "@turf/centroid": "^7.0.0",
     "@videojs-player/vue": "^1.0.0",
     "@vueuse/core": "^9.13.0",
@@ -33,7 +33,7 @@
     "decimal.js": "^10.5.0",
     "dingtalk-jsapi": "^3.1.0",
     "dompurify": "^3.4.2",
-    "echarts": "^5.5.1",
+    "echarts": "6.1.0",
     "element-plus-secondary": "^1.0.0",
     "element-resize-detector": "^1.2.4",
     "exceljs": "^4.4.0",
@@ -56,7 +56,8 @@
     "qs": "^6.11.0",
     "screenfull": "^6.0.2",
     "snowflake-id": "^1.1.0",
-    "tinymce": "^5.8.2",
+    "tinymce": "6.8.6",
+    "tinymce-i18n": "23.1.23",
     "vant": "^4.8.3",
     "video.js": "^7.21.6",
     "vue": "^3.3.4",
@@ -123,6 +124,7 @@
   "overrides": {
     "@intlify/message-compiler": "9.14.5",
     "@intlify/shared": "9.14.5",
+    "rollup": "4.62.2",
     "glob": {
       "inflight": "npm:inflight-lru@^1.0.0"
     }

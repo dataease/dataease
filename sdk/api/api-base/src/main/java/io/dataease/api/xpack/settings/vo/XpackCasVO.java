@@ -13,4 +13,6 @@ public class XpackCasVO implements Serializable {
     private String idpUri;
 
     private String casCallbackDomain;
+
+    private String logoutRedirectUrl;
 }

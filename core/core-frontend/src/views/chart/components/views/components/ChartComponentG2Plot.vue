@@ -32,6 +32,7 @@ import { ExportImage } from '@antv/l7'
 import { configEmptyDataStyle } from '@/views/chart/components/js/panel/common/common_antv'
 import { hasNextDrillLevel } from '@/views/chart/components/views/util/drill'
 import { ElMessage } from 'element-plus-secondary'
+import ChartCarouselTooltip from '@/views/chart/components/js/g2plot_tooltip_carousel'
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const { nowPanelTrackInfo, nowPanelJumpInfo, mobileInPc, embeddedCallBack, inMobile } =
@@ -726,7 +727,7 @@ const canvas2Picture = (pictureData, online) => {
   imgDom.style.position = 'absolute'
   imgDom.style.objectFit = 'cover'
   imgDom.style['z-index'] = '2'
-  imgDom.classList.add('prepare-picture-img')
+  imgDom?.classList?.add('prepare-picture-img')
   imgDom.src = pictureData
   mapDom?.appendChild(imgDom)
 }
@@ -747,12 +748,15 @@ const preparePicture = id => {
         canvas2Picture(base64, true)
       }
     })
-    scene.addControl(zoom)
-    zoom.hide()
-    // 天地图
-    const getTmapImage = async () => {
-      const res = await scene.exportPng('png')
-      canvas2Picture(res, true)
+    let getTmapImage
+    if (scene) {
+      scene.addControl(zoom)
+      zoom.hide()
+      // 天地图
+      getTmapImage = async () => {
+        const res = await scene.exportPng('png')
+        canvas2Picture(res, true)
+      }
     }
     zoom
       .getImage()
@@ -760,7 +764,9 @@ const preparePicture = id => {
         canvas2Picture(res, true)
       })
       .catch(() => {
-        getTmapImage()
+        if (scene && getTmapImage) {
+          getTmapImage()
+        }
       })
   }
 }
@@ -844,6 +850,7 @@ const onWheel = (e: WheelEvent) => {
 }
 onBeforeUnmount(() => {
   try {
+    ChartCarouselTooltip.destroyByContainer(containerId)
     myChart?.destroy()
     resizeObserver?.disconnect()
     intersectionObserver?.disconnect()

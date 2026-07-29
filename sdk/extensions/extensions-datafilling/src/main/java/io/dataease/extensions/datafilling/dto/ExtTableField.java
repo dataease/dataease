@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -35,7 +36,7 @@ public class ExtTableField implements Serializable {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class ExtTableFieldSetting implements Serializable  {
+    public static class ExtTableFieldSetting implements Serializable {
 
         @Serial
         private static final long serialVersionUID = 8776508642526681125L;
@@ -77,13 +78,65 @@ public class ExtTableField implements Serializable {
         private boolean enableDefaultTime;
         private boolean enableCurrentTime;
         private Long defaultTime;
+
+        private DfRowPermissionsTreeObj permissionsTree;
     }
 
     @Data
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class Option implements Serializable  {
+    public static class DfRowPermissionsTreeObj implements Serializable {
+
+        @Serial
+        private static final long serialVersionUID = 8490338227873293217L;
+
+        private String logic;
+        private List<DfPermissionsTreeItem> items;
+
+    }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class DfPermissionsTreeItem implements Serializable {
+        @Serial
+        private static final long serialVersionUID = -6794409706770999091L;
+
+        private String type;// 'item' or 'tree'
+        // item
+
+        private String fieldId;
+        private String name;
+        private String fieldType;
+        private int deType;
+
+        private String filterType;// 'logic' or 'enum'
+        private String term;//'eq','not_eq','lt','le','gt','ge','in','not in','like','not like','null','not_null','empty','not_empty','between
+
+        public String getValue() {
+            if (StringUtils.isNotEmpty(timeValue)) {
+                return timeValue;
+            }
+            return value;
+        }
+
+        private String value;// 'a'
+        private String timeValue;// 'a'
+        private List<String> enumValue;// ['a','b']
+
+        private String timeType; // 时间细粒度
+
+        private DfRowPermissionsTreeObj subTree;
+
+    }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Option implements Serializable {
 
         @Serial
         private static final long serialVersionUID = -1681618296840344071L;
@@ -97,7 +150,7 @@ public class ExtTableField implements Serializable {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class ExtTableFieldMapping implements Serializable  {
+    public static class ExtTableFieldMapping implements Serializable {
 
         @Serial
         private static final long serialVersionUID = 4233066732126872840L;
@@ -136,7 +189,7 @@ public class ExtTableField implements Serializable {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class TableField implements Serializable  {
+    public static class TableField implements Serializable {
 
         @Serial
         private static final long serialVersionUID = 85092190247927362L;

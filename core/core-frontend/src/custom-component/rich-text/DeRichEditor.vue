@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { formatDataEaseBi } from '@/utils/url'
+import { formatDataEaseBi, getResourceBaseUrl } from '@/utils/url'
 //JS部分
 //在js中引入所需的主题和组件
 import tinymce from 'tinymce/tinymce'
@@ -20,7 +20,6 @@ import 'tinymce/plugins/lists' // 列表插件
 import 'tinymce/plugins/wordcount' // 字数统计插件
 import 'tinymce/plugins/code' // 源码
 import './plugins' //自定义插件
-import '@npkg/tinymce-plugins/letterspacing'
 
 //接下来定义编辑器所需要的插件数据
 import { reactive, ref } from 'vue'
@@ -51,7 +50,7 @@ const props = defineProps({
   toolbar: {
     type: [String, Array],
     default:
-      'codesample bold italic underline alignleft aligncenter alignright alignjustify | undo redo | formatselect | fontselect | fontsizeselect | forecolor backcolor | bullist numlist outdent indent | lists link table code | removeformat letterspacing '
+      'codesample bold italic underline alignleft aligncenter alignright alignjustify | undo redo | blocks | fontfamily | fontsize | forecolor backcolor | bullist numlist outdent indent | lists link table code | removeformat letterspacing '
   } //必填
 })
 //用于接收外部传递进来的富文本
@@ -61,9 +60,9 @@ const tinymceId = ref('vue-tinymce-' + +new Date() + ((Math.random() * 1000).toF
 const init = reactive({
   // inline: true, // 开启内联模式
   selector: '#' + tinymceId.value, //富文本编辑器的id,
-  language_url: formatDataEaseBi('./tinymce-dataease-private/langs/zh_CN.js'), // 语言包的路径，具体路径看自己的项目，文档后面附上中文js文件
+  language_url: formatDataEaseBi(`${getResourceBaseUrl()}tinymce-dataease-private/langs/zh_CN.js`), // 语言包的路径，具体路径看自己的项目，文档后面附上中文js文件
   language: 'zh_CN', //语言
-  skin_url: formatDataEaseBi('./tinymce-dataease-private/skins/ui/oxide'), // skin路径，具体路径看自己的项目
+  skin_url: formatDataEaseBi(`${getResourceBaseUrl()}tinymce-dataease-private/skins/ui/oxide`), // skin路径，具体路径看自己的项目
   height: 400, //编辑器高度
   branding: false, //是否禁用”Powered by TinyMCE”
   relative_urls: false,
@@ -73,15 +72,17 @@ const init = reactive({
   image_dimensions: false, //去除宽高属性
   plugins: props.plugins, //这里的数据是在props里面就定义好了的
   toolbar: props.toolbar, //这里的数据是在props里面就定义好了的
-  font_formats:
+  font_family_formats:
     'Arial=arial,helvetica,sans-serif; 宋体=SimSun; 微软雅黑=Microsoft Yahei; Impact=impact,chicago;', //字体
-  fontsize_formats: '11px 12px 14px 16px 18px 24px 36px 48px 64px 72px', //文字大小
+  font_size_formats: '11px 12px 14px 16px 18px 24px 36px 48px 64px 72px', //文字大小
   paste_webkit_styles: 'all',
   paste_merge_formats: true,
   nonbreaking_force_tab: false,
   paste_auto_cleanup_on_paste: false,
   file_picker_types: 'file',
-  content_css: formatDataEaseBi('./tinymce-dataease-private/skins/content/default/content.css'), //以css文件方式自定义可编辑区域的css样式，css文件需自己创建并引入
+  content_css: formatDataEaseBi(
+    `${getResourceBaseUrl()}tinymce-dataease-private/skins/content/default/content.css`
+  ), //以css文件方式自定义可编辑区域的css样式，css文件需自己创建并引入
   //图片上传
   images_upload_handler: blobInfo =>
     new Promise((resolve, reject) => {

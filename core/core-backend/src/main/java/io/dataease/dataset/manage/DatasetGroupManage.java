@@ -386,6 +386,7 @@ public class DatasetGroupManage {
                         datasetTableFieldDTO.setDeExtractType(0);
                         datasetTableFieldDTO.setDeType(0);
                         datasetTableFieldDTO.setGroupType("d");
+                        datasetTableFieldDTO.setChecked(true);
                     }
                     datasetTableFieldDTO.setDatasetGroupId(datasetGroupId);
                 } else {

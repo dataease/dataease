@@ -44,8 +44,7 @@ export const logoutHandler = (justClean?: boolean, save_platform_status = false)
         pathname = pathname.replace('mobile.html', '')
       }
       pathname = pathname.substring(0, pathname.length - 1)
-      const uri = window.location.href
-      window.location.href = pathname + '/casbi/cas/logout?service=' + uri
+      window.location.href = pathname + '/casbi/cas/logout'
       return
     }
     pathname = pathname.substring(0, pathname.length - 1)

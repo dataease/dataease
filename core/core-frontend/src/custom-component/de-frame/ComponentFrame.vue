@@ -1,5 +1,13 @@
 <template>
-  <el-row class="main-frame">
+  <component-app-frame
+    v-if="element.frameLinks.isApp"
+    :prop-value="propValue"
+    :element="element"
+    :is-edit="isEdit"
+    :active="active"
+    :screen-shot="screenShot"
+  />
+  <el-row v-else class="main-frame">
     <div v-if="element.frameLinks.src" class="main-frame">
       <iframe
         v-if="state.frameShow"
@@ -32,6 +40,7 @@
 import { nextTick, onMounted, reactive, toRefs } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { useI18n } from '@/hooks/web/useI18n'
+import ComponentAppFrame from '@/custom-component/de-frame/ComponentAppFrame.vue'
 
 const { t } = useI18n()
 

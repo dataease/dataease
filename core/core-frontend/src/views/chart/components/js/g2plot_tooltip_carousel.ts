@@ -441,13 +441,18 @@ class ChartCarouselTooltip {
    */
   public hasParentWithSwitchHidden(element: HTMLElement) {
     let parent = element.parentElement
+    const isNotViewDialog = !this.chart.container.includes('viewDialog')
     const hasViewDialogInstance = Array.from(CAROUSEL_MANAGER_INSTANCES.keys()).some(key =>
       key.includes('viewDialog')
     )
-    const isNotViewDialog = !this.chart.container.includes('viewDialog')
-    if (hasViewDialogInstance && isNotViewDialog) {
+    const hasVisibleEnlargeDialog = Array.from(
+      document.querySelectorAll<HTMLElement>('#enlarge-inner-content')
+    ).some(dialog => dialog.getClientRects().length > 0)
+
+    if (isNotViewDialog && (hasViewDialogInstance || hasVisibleEnlargeDialog)) {
       return true
     }
+
     while (parent) {
       if (
         parent.classList.contains('switch-hidden') ||

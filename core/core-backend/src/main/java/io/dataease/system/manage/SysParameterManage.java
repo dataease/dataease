@@ -105,11 +105,14 @@ public class SysParameterManage {
             queryWrapper.eq("pkey", prefix + field);
             CoreSysSetting sysSetting = coreSysSettingMapper.selectOne(queryWrapper);
             var val = (String) BeanUtils.getFieldValueByName(field, editor);
+            if (val == null) {
+                return;
+            }
             if (ObjectUtils.isEmpty(sysSetting)) {
                 sysSetting = new CoreSysSetting();
                 sysSetting.setId(IDUtils.snowID());
                 sysSetting.setPkey(prefix + field);
-                sysSetting.setPval(val == null ? "" : val);
+                sysSetting.setPval(val);
                 sysSetting.setType("text");
                 sysSetting.setSort(1);
                 coreSysSettingMapper.insert(sysSetting);

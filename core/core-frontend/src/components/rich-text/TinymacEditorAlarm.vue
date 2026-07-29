@@ -6,7 +6,7 @@
 <script lang="ts" setup>
 import { ref, toRefs, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import { formatDataEaseBi } from '@/utils/url'
+import { formatDataEaseBi, getResourceBaseUrl } from '@/utils/url'
 import tinymce from 'tinymce/tinymce' // tinymce默认hidden，不引入不显示
 import Editor from '@tinymce/tinymce-vue' // 编辑器引入
 import 'tinymce/themes/silver/theme' // 编辑器主题
@@ -21,7 +21,6 @@ import 'tinymce/plugins/charmap' // 特殊字符
 import 'tinymce/plugins/media' // 插入编辑媒体
 import 'tinymce/plugins/wordcount' // 字数统计
 import 'tinymce/plugins/table' // 表格
-import 'tinymce/plugins/contextmenu' // contextmenu
 import 'tinymce/plugins/directionality'
 import 'tinymce/plugins/nonbreaking'
 import 'tinymce/plugins/pagebreak'
@@ -60,10 +59,12 @@ const tinymceId = 'tinymce-view-alarm'
 const init = ref({
   selector: '#' + tinymceId,
   toolbar_items_size: 'small',
-  language_url: formatDataEaseBi('./tinymce-dataease-private/langs/zh_CN.js'), // 汉化路径是自定义的，一般放在public或static里面
+  language_url: formatDataEaseBi(`${getResourceBaseUrl()}tinymce-dataease-private/langs/zh_CN.js`), // 汉化路径是自定义的，一般放在public或static里面
   language: 'zh_CN',
-  skin_url: formatDataEaseBi('./tinymce-dataease-private/skins/ui/oxide'), // 皮肤
-  content_css: formatDataEaseBi('./tinymce-dataease-private/skins/content/default/content.css'),
+  skin_url: formatDataEaseBi(`${getResourceBaseUrl()}tinymce-dataease-private/skins/ui/oxide`), // 皮肤
+  content_css: formatDataEaseBi(
+    `${getResourceBaseUrl()}tinymce-dataease-private/skins/content/default/content.css`
+  ),
   plugins:
     'advlist autolink link image lists charmap  media wordcount table contextmenu directionality pagebreak', // 插件
   // 工具栏

@@ -8,7 +8,9 @@ import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;
+import io.dataease.extensions.datasource.dto.DatasetTableFieldRequest;
 import io.dataease.extensions.datasource.dto.SimpleDatasourceDTO;
+import io.dataease.extensions.datasource.dto.TableField;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -67,12 +69,20 @@ public interface DataFillingApi {
     List<SimpleDatasourceDTO> listDatasourceListAll();
 
     @Operation(summary = "获取选项值列表")
-    @PostMapping("/form/{optionDatasource}/options")
-    List<ColumnOption> listColumnData(@PathVariable("optionDatasource") Long optionDatasource, @RequestBody DatasourceOptionsRequest request) throws Exception;
+    @GetMapping("/form/{formId}/field/{fieldId}/options")
+    List<ColumnOption> listColumnData(@PathVariable("formId") Long formId, @PathVariable("fieldId") String fieldId) throws Exception;
+
+    @Operation(summary = "获取选项值列表(预览)")
+    @PostMapping("/form/{optionDatasource}/options/preview")
+    List<ColumnOption> listColumnDataPreview(@PathVariable("optionDatasource") Long optionDatasource, @RequestBody DatasourceOptionsRequest request) throws Exception;
 
     @Operation(summary = "获取额外信息")
     @PostMapping("/form/extraDetails")
-    List<ExtraDetails> extraDetails(@RequestBody ExtraDetailsRequest request) throws Exception;
+    List<ExtraDetails> extraDetails(@RequestBody ExtraDetailsBaseRequest request) throws Exception;
+
+    @Operation(summary = "获取额外信息(预览)")
+    @PostMapping("/form/extraDetails/preview")
+    List<ExtraDetails> extraDetailsPreview(@RequestBody ExtraDetailsRequest request) throws Exception;
 
     @Operation(summary = "获取数据填报表内数据列表")
     @PostMapping("/form/{id}/tableData")
@@ -214,4 +224,9 @@ public interface DataFillingApi {
     @PostMapping("getBuiltInTables")
     @Operation(summary = "获取内置数据源表")
     List<DatasetTableDTO> getBuiltInTables() throws DEException;
+
+    @PostMapping("getBuiltInTableField")
+    @Operation(summary = "获取内置数据源表字段")
+    List<TableField> getBuiltInTableField(@RequestBody DatasetTableFieldRequest req) throws DEException;
+
 }

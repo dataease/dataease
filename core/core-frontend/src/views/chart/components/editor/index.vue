@@ -685,12 +685,21 @@ const disableUpdate = computed(() => {
   if (!axisConfig) {
     return flag
   }
+  // 优先使用当前数据集返回的实时脱敏结果
+  const currentFieldDesensitized = new Map<string, boolean>()
+  ;[...state.dimension, ...state.quota].forEach(field => {
+    currentFieldDesensitized.set(String(field.id), field.desensitized === true)
+  })
   for (const key in axisConfig) {
     if (Object.prototype.hasOwnProperty.call(axisConfig, key)) {
       const axis = view.value[key]
       if (axis instanceof Array) {
         axis.forEach(a => {
-          if (a.desensitized) {
+          const fieldId = String(a.id)
+          const desensitized = currentFieldDesensitized.has(fieldId)
+            ? currentFieldDesensitized.get(fieldId)
+            : a.desensitized === true
+          if (desensitized) {
             flag = true
           }
         })
@@ -2134,7 +2143,7 @@ const chartStyleScroll = (val: any) => {
           <el-icon
             :title="view.title"
             class="custom-icon"
-            size="20px"
+            size="16"
             @click="collapseChange('chartAreaCollapse')"
           >
             <Fold v-if="canvasCollapse.chartAreaCollapse" class="collapse-icon" />
@@ -3602,7 +3611,7 @@ const chartStyleScroll = (val: any) => {
           <el-icon
             :title="$t('visualization.dataset')"
             class="custom-icon"
-            size="20px"
+            size="16"
             @click="collapseChange('datasetAreaCollapse')"
           >
             <Fold v-if="canvasCollapse.datasetAreaCollapse" class="collapse-icon" />
@@ -4311,7 +4320,7 @@ const chartStyleScroll = (val: any) => {
   }
 }
 .collapse-icon {
-  color: @canvas-main-font-color;
+  color: #a6a6a6;
 }
 
 .hint-icon {
@@ -5091,8 +5100,8 @@ span {
 
 .custom-icon {
   position: absolute;
-  right: 5px;
-  top: 10px;
+  right: 9px;
+  top: 13px;
   cursor: pointer;
   z-index: 2;
 }

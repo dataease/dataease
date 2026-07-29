@@ -5,7 +5,11 @@ import { Dot } from '@antv/l7plot'
 import { TextLayer } from '@antv/l7plot/dist/esm'
 import { isEmpty } from 'lodash-es'
 import { hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
-import { mapRendered, mapRendering } from '@/views/chart/components/js/panel/common/common_antv'
+import {
+  formatL7TooltipValue,
+  mapRendered,
+  mapRendering
+} from '@/views/chart/components/js/panel/common/common_antv'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { configCarouselTooltip } from '@/views/chart/components/js/panel/charts/map/tooltip-carousel'
 import type { L7PlotDrawOptions } from '@/views/chart/components/js/panel/types/impl/l7plot'
@@ -24,6 +28,8 @@ export interface PointFallbackConfig {
   dotShape?: DotOptions['shape']
   /** 是否禁用所有地图交互 */
   disableInteraction: boolean
+  /** 是否隐藏指定点的标签 */
+  hideLabel?: (name: string) => boolean
   /** 自定义 Choropleth options 回调，用于注入图例等 */
   customizeChoroplethOptions?: (
     options: ChoroplethOptions,
@@ -122,11 +128,13 @@ export async function drawPointFallbackChart(
         content.push(valueFormatter(pt.matched.value, label.quotaLabelFormatter))
       }
     }
-    labelData.push({
-      x: pt.x,
-      y: pt.y,
-      name: content.join('\n\n') || pt.name
-    })
+    if (content.length && !config.hideLabel?.(pt.name)) {
+      labelData.push({
+        x: pt.x,
+        y: pt.y,
+        name: content.join('\n\n')
+      })
+    }
   })
 
   // 从 Point 坐标构造包围盒 Polygon，让 Choropleth 有真实的 geometry 来初始化 Scene
@@ -265,15 +273,17 @@ export async function drawPointFallbackChart(
       }
       const formatter = formatterMap[head.quotaList?.[0]?.id]
       if (!isEmpty(formatter)) {
-        const originValue = parseFloat(head.value as string)
-        const value = valueFormatter(originValue, formatter.formatterCfg)
+        const value = formatL7TooltipValue(head.value, formatter.formatterCfg)
         const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
         result.push({ ...head, name, value: `${value ?? ''}` })
       }
       head.dynamicTooltipValue?.forEach(item => {
         const formatter = formatterMap[item.fieldId]
         if (formatter) {
-          const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
+          const value =
+            item.value != null
+              ? formatL7TooltipValue(item.value, formatter.formatterCfg)
+              : item.stringValue ?? ''
           const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
           result.push({ color: 'grey', name, value: `${value ?? ''}` })
         }

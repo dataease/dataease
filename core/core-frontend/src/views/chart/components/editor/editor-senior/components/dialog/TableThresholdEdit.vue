@@ -423,6 +423,7 @@ const changeConditionItemType = item => {
     item.dynamicMinField.summary = 'value'
     item.dynamicMaxField.summary = 'value'
   }
+  changeThreshold()
 }
 const getFieldOptions = () => {
   return fieldOptions

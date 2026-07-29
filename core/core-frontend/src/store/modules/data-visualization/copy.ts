@@ -46,7 +46,17 @@ export const copyStore = defineStore('copy', {
       // eslint-disable-next-line @typescript-eslint/no-this-alias
       const _this = this
       const { scale } = canvasStyleData.value
-      Object.keys(outerMultiplexingComponents).forEach(function (componentId, index) {
+      const componentIds = Object.keys(outerMultiplexingComponents)
+      // 预生成 旧-新ID 全局映射，保证 VQuery.propValue 中引用的其他组件ID能被同步替换为新ID
+      const outerIdMap = {}
+      componentIds.forEach(function (componentId) {
+        const comp = outerMultiplexingComponents[componentId]
+        if (comp && comp.id) {
+          outerIdMap[comp.id] = generateID()
+        }
+      })
+      // 按原始顺序完成布局计算，收集待粘贴组件
+      const pendingComponents = componentIds.map(function (componentId, index) {
         const newComponent = deepCopy(outerMultiplexingComponents[componentId])
         newComponent.canvasId = 'canvas-main'
         if (keepSize) {
@@ -71,11 +81,33 @@ export const copyStore = defineStore('copy', {
           newComponent.style.left = 0
           newComponent.style.top = 0
         }
+        return newComponent
+      })
+      // VQuery(过滤组件) 先加入仪表板
+      pendingComponents.sort(function (a, b) {
+        const aIsQuery = a.component === 'VQuery' ? 0 : 1
+        const bIsQuery = b.component === 'VQuery' ? 0 : 1
+        return aIsQuery - bIsQuery
+      })
+      const oldIds = Object.keys(outerIdMap)
+      // 匹配任意旧组件ID，单次替换，避免链式替换污染
+      const idReplaceReg = oldIds.length ? new RegExp(oldIds.join('|'), 'g') : null
+      pendingComponents.forEach(function (newComponent, index) {
+        // VQuery.propValue 内引用了其他组件的旧ID，转字符串批量替换为新ID后还原
+        if (newComponent.component === 'VQuery' && newComponent.propValue && idReplaceReg) {
+          const propValueStr = JSON.stringify(newComponent.propValue)
+          newComponent.propValue = JSON.parse(
+            propValueStr.replace(idReplaceReg, function (matched) {
+              return outerIdMap[matched] || matched
+            })
+          )
+        }
         _this.copyData = {
           data: [newComponent],
           copyCanvasViewInfo: canvasViewInfoPreview,
           index: index,
-          copyFrom: copyFrom
+          copyFrom: copyFrom,
+          outerIdMap: outerIdMap
         }
         _this.paste()
       })
@@ -116,6 +148,11 @@ export const copyStore = defineStore('copy', {
           }
           // 旧-新ID映射关系
           const idMap = {}
+          // 预置当前组件的新ID，保证其最终ID与 VQuery.propValue 中引用的新ID一致
+          const presetId = copyDataTemp.outerIdMap?.[data.id]
+          if (presetId) {
+            idMap[data.id] = presetId
+          }
           const newComponent = deepCopyHelper(data, idMap)
           newComponent['category'] = 'base'
           if (newComponent.canvasId.includes('Group')) {
@@ -206,7 +243,8 @@ function deepCopyHelper(data, idMap) {
   if (result.freeze) {
     result.freeze = false
   }
-  const newComponentId = generateID()
+  // 若已在映射中预置新ID(如批量复用场景)，则复用，保证引用关系一致
+  const newComponentId = idMap[data.id] || generateID()
   idMap[data.id] = newComponentId
   result.id = newComponentId
   // 复制清理移动端样式

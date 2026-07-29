@@ -6,14 +6,11 @@ import io.dataease.api.ds.vo.*;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import io.dataease.exception.DEException;
-import io.dataease.extensions.datasource.dto.ApiDefinition;
-import io.dataease.extensions.datasource.dto.DatasetTableDTO;
-import io.dataease.extensions.datasource.dto.DatasourceDTO;
-import io.dataease.extensions.datasource.dto.TaskDTO;
-import io.dataease.extensions.datasource.dto.TableField;
+import io.dataease.extensions.datasource.dto.*;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
@@ -110,9 +107,10 @@ public interface DatasourceApi {
     DatasourceDTO getSimpleDs(@PathVariable("datasourceId") Long datasourceId) throws DEException;
 
 
+    @DePermit({"#p0.datasourceId+':read'"})
     @PostMapping("/getTableField")
     @Operation(summary = "获取表字段")
-    List<TableField> getTableField(@RequestBody Map<String, String> req) throws DEException;
+    List<TableField> getTableField(@RequestBody DatasetTableFieldRequest req) throws DEException;
 
     @PostMapping("/syncApiTable")
     @Operation(summary = "同步API数据表")
@@ -145,9 +143,10 @@ public interface DatasourceApi {
     @Operation(summary = "上传文件")
     ExcelFileData uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("id") long datasourceId, @RequestParam("editType") Integer editType) throws DEException;
 
+    @DePermit({"#p0.id+':read'"})
     @PostMapping("/previewData")
     @Operation(summary = "预览数据")
-    Map<String, Object> previewDataWithLimit(@RequestBody Map<String, Object> req) throws DEException;
+    Map<String, Object> previewDataWithLimit(@RequestBody PreviewDataRequest req) throws DEException;
 
     @PostMapping("/latestUse")
     @Operation(summary = "最近常用")
@@ -181,4 +180,7 @@ public interface DatasourceApi {
     @PostMapping("/loadRemoteFile")
     @Operation(summary = "加载文件")
     ExcelFileData loadRemoteFile(@RequestBody RemoteExcelRequest remoteExcelRequeste) throws DEException, IOException;
+
+    @Hidden
+    DatasourceDTO getById(@PathVariable("datasourceId") Long datasourceId) throws DEException;
 }

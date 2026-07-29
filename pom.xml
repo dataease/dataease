@@ -19,22 +19,22 @@
     </parent>
 
     <properties>
-        <dataease.version>2.10.25</dataease.version>
+        <dataease.version>2.10.26</dataease.version>
         <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-cloud-alibaba.version>2023.0.1.0</spring-cloud-alibaba.version>
         <spring-cloud.version>2023.0.1</spring-cloud.version>
         <spring-boot.version>3.5.15</spring-boot.version>
-        <spring-framework.version>6.2.19</spring-framework.version>
         <tomcat.version>10.1.55</tomcat.version>
         <logback.version>1.5.34</logback.version>
-        <netty.version>4.1.135.Final</netty.version>
+        <netty.version>4.1.136.Final</netty.version>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <mybatis-plus.version>3.5.7</mybatis-plus.version>
         <h2.version>2.2.220</h2.version>
-        <knife4j.version>4.4.0</knife4j.version>
-        <calcite-core.version>1.35.30</calcite-core.version>
+        <knife4j.version>4.5.0</knife4j.version>
+        <springdoc.version>2.8.14</springdoc.version>
+        <calcite-core.version>1.35.33</calcite-core.version>
         <commons-dbcp2.version>2.6.0</commons-dbcp2.version>
         <antlr.version>3.5.2</antlr.version>
         <java-jwt.version>3.12.1</java-jwt.version>
@@ -58,8 +58,7 @@
         <selenium-java.version>4.19.1</selenium-java.version>
         <playwright-java.version>1.55.0</playwright-java.version>
         <angus-mail.version>2.0.4</angus-mail.version>
-        <mysql-connector-j.version>8.2.0</mysql-connector-j.version>
-        <itextpdf.version>8.0.4</itextpdf.version>
+        <openpdf.version>2.0.4</openpdf.version>
         <flexmark.version>0.62.2</flexmark.version>
         <mybatis-spring.version>3.0.3</mybatis-spring.version>
         <commons-compress.version>1.26.2</commons-compress.version>
@@ -67,6 +66,7 @@
         <xmlsec.version>2.3.5</xmlsec.version>
         <woodstox-core.version>7.1.0</woodstox-core.version>
         <assertj.version>3.27.7</assertj.version>
+        <mariadb.version>3.5.3</mariadb.version>
     </properties>
 
     <dependencyManagement>
@@ -89,13 +89,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
                 <version>${spring-boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-framework-bom</artifactId>
-                <version>${spring-framework.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -196,60 +189,11 @@
                 <artifactId>bcprov-jdk18on</artifactId>
                 <version>${bcprov-jdk18on.version}</version>
             </dependency>
+            <!-- 覆盖 knife4j BOM 中的 swagger-annotations 2.2.19，springdoc 2.8.x 需要 >= 2.2.20 -->
             <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-aop</artifactId>
-                <version>${spring-framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-beans</artifactId>
-                <version>${spring-framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-context</artifactId>
-                <version>${spring-framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-core</artifactId>
-                <version>${spring-framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-expression</artifactId>
-                <version>${spring-framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-jcl</artifactId>
-                <version>${spring-framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-messaging</artifactId>
-                <version>${spring-framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-tx</artifactId>
-                <version>${spring-framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-web</artifactId>
-                <version>${spring-framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-webmvc</artifactId>
-                <version>${spring-framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-websocket</artifactId>
-                <version>${spring-framework.version}</version>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-annotations-jakarta</artifactId>
+                <version>2.2.38</version>
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
@@ -297,17 +241,6 @@
                 <version>${easyexcel.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.quartz-scheduler</groupId>
-                <artifactId>quartz</artifactId>
-                <version>2.3.2</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.mchange</groupId>
-                        <artifactId>mchange-commons-java</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.poi</groupId>
                 <artifactId>poi</artifactId>
                 <version>${poi.version}</version>
@@ -323,9 +256,9 @@
                 <version>${poi.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.mysql</groupId>
-                <artifactId>mysql-connector-j</artifactId>
-                <version>${mysql-connector-j.version}</version>
+                <groupId>org.mariadb.jdbc</groupId>
+                <artifactId>mariadb-java-client</artifactId>
+                <version>${mariadb.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>

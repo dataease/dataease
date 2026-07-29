@@ -544,11 +544,16 @@ public class ChartDataServer implements ChartDataApi {
                                     try {
                                         FormatterCfgDTO formatterCfgDTO = exportFields.get(j).getFormatterCfg() == null ? new FormatterCfgDTO().setUnitLanguage(Lang.isChinese() ? "ch" : "en") : exportFields.get(j).getFormatterCfg();
                                         String exportNumericValue = cellValue(formatterCfgDTO, new BigDecimal(cellValObj.toString()));
+                                        if ("auto".equalsIgnoreCase(formatterCfgDTO.getType())) {
+                                            // 不保留无意义的小数尾零
+                                            exportNumericValue = new BigDecimal(exportNumericValue).stripTrailingZeros().toPlainString();
+                                        }
                                         CellStyle currentStyle = styles.get(j);
                                         if (formatterCfgDTO != null && "auto".equalsIgnoreCase(formatterCfgDTO.getType())) {
+                                            String formatterValue = exportNumericValue;
                                             currentStyle = autoFormatterStyles.computeIfAbsent(
-                                                    buildFormatterStyleCacheKey(formatterCfgDTO, exportNumericValue),
-                                                    key -> createCellStyle(styleWorkbook, formatterCfgDTO, exportNumericValue)
+                                                    buildFormatterStyleCacheKey(formatterCfgDTO, formatterValue),
+                                                    key -> createCellStyle(styleWorkbook, formatterCfgDTO, formatterValue)
                                             );
                                         }
                                         if (currentStyle != null) {
@@ -589,7 +594,24 @@ public class ChartDataServer implements ChartDataApi {
                 }
             }
             if (CollectionUtils.isNotEmpty(mergeConfig)) {
-                mergeConfig.forEach(detailsSheet::addMergedRegionUnsafe);
+                for (CellRangeAddress range : mergeConfig) {
+                    detailsSheet.addMergedRegionUnsafe(range);
+                    for (int r = range.getFirstRow(); r <= range.getLastRow(); r++) {
+                        Row row = detailsSheet.getRow(r);
+                        if (row == null) {
+                            continue;
+                        }
+                        for (int c = range.getFirstColumn(); c <= range.getLastColumn(); c++) {
+                            if (r == range.getFirstRow() && c == range.getFirstColumn()) {
+                                continue;
+                            }
+                            Cell cell = row.getCell(c);
+                            if (cell != null) {
+                                cell.setBlank();
+                            }
+                        }
+                    }
+                }
             }
         }
     }

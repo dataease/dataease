@@ -26,6 +26,7 @@ import {
 } from '@/views/chart/components/js/panel/charts/map/common'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { find } from 'lodash-es'
+import { CUSTOM_TILE_MAP_TYPE, VECTOR_STYLE_SERVICE_TYPE } from '@/utils/onlineMap'
 
 const dvMainStore = dvMainStoreWithOut()
 const localeStore = useLocaleStoreWithOut()
@@ -49,8 +50,17 @@ const showProperty = prop => {
   if (!has) {
     return false
   }
-  if (props.chart.type.includes('map') && mapType.value === 'tianditu' && prop === 'showLabel') {
-    return false
+  if (props.chart.type.includes('map') && prop === 'showLabel') {
+    if (mapType.value === 'tianditu') {
+      return false
+    }
+    // 自定义地图仅矢量 Style 支持独立控制底图地名
+    if (
+      mapType.value === CUSTOM_TILE_MAP_TYPE &&
+      mapStore.mapKey.serviceType !== VECTOR_STYLE_SERVICE_TYPE
+    ) {
+      return false
+    }
   }
   return has
 }
@@ -319,7 +329,7 @@ const symbolOptions = [
 const mapStore = useMapStoreWithOut()
 
 const getMapKey = async () => {
-  if (!mapStore.mapKey.key) {
+  if (!mapStore.mapKeyLoaded) {
     await queryMapKeyApi().then(res => mapStore.setKey(res.data))
   }
   if (mapStore.mapKey.securityCode) {
@@ -334,6 +344,8 @@ const mapType = ref<string>(undefined)
 
 const mapStyleOptions = computed(() => {
   switch (mapType.value) {
+    case CUSTOM_TILE_MAP_TYPE:
+      return []
     case 'tianditu':
       return tdtMapStyleOptions
     case 'qq':
@@ -582,7 +594,7 @@ onMounted(async () => {
       </el-select>
     </el-form-item>
     <div class="map-style" v-if="showProperty('mapBaseStyle') || showProperty('heatMapStyle')">
-      <el-row style="flex: 1">
+      <el-row style="flex: 1" v-if="mapType !== CUSTOM_TILE_MAP_TYPE">
         <el-col>
           <el-form-item
             :label="t('chart.map_style')"
@@ -604,7 +616,10 @@ onMounted(async () => {
           </el-form-item>
         </el-col>
       </el-row>
-      <el-row style="flex: 1" v-if="state.basicStyleForm.mapStyle === 'custom'">
+      <el-row
+        style="flex: 1"
+        v-if="mapType !== CUSTOM_TILE_MAP_TYPE && state.basicStyleForm.mapStyle === 'custom'"
+      >
         <el-col>
           <el-form-item
             :label="t('chart.map_style_url')"

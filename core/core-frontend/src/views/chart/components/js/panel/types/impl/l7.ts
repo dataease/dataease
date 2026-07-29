@@ -128,7 +128,7 @@ export abstract class L7ChartView<
   }
 
   protected getMapKey = async () => {
-    if (!mapStore.mapKey.key) {
+    if (!mapStore.mapKeyLoaded) {
       await queryMapKeyApi().then(res => mapStore.setKey(res.data))
     }
     if (mapStore.mapKey.securityCode) {

@@ -12,8 +12,9 @@ const rsaKey = '-pk_separator-'
 const crypt = new JSEncrypt()
 
 const aesDecrypt = (word, keyStr) => {
-  const keyHex = CryptoJS.enc.Utf8.parse(keyStr) //
-  const ivHex = CryptoJS.enc.Utf8.parse('0000000000000000')
+  const keyHex = CryptoJS.enc.Utf8.parse(keyStr)
+  const ivWordArray = CryptoJS.SHA256(keyStr)
+  const ivHex = CryptoJS.lib.WordArray.create(ivWordArray.words.slice(0, 4))
   const decrypt = CryptoJS.AES.decrypt(word, keyHex, {
     iv: ivHex,
     mode: CryptoJS.mode.CBC,
@@ -34,10 +35,12 @@ export const rsaEncryp = word => {
 }
 
 export const symmetricDecrypt = (data, keyStr) => {
-  const iv = CryptoJS.enc.Utf8.parse('0000000000000000')
+  const combined = CryptoJS.enc.Base64.parse(data)
+  const combinedHex = CryptoJS.enc.Hex.parse(combined.toString(CryptoJS.enc.Hex))
+  const iv = CryptoJS.lib.WordArray.create(combinedHex.words.slice(0, 4))
+  const cipherHex = CryptoJS.lib.WordArray.create(combinedHex.words.slice(4))
   const key = CryptoJS.enc.Base64.parse(keyStr)
-  const decodedCiphertext = CryptoJS.enc.Base64.parse(data)
-  const decrypted = CryptoJS.AES.decrypt({ ciphertext: decodedCiphertext }, key, {
+  const decrypted = CryptoJS.AES.decrypt({ ciphertext: cipherHex }, key, {
     iv: iv,
     mode: CryptoJS.mode.CBC,
     padding: CryptoJS.pad.Pkcs7

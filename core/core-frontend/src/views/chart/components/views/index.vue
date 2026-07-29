@@ -403,7 +403,7 @@ const chartClick = param => {
 
 // 仪表板和大屏所有额外过滤参数都在此处
 const filter = (firstLoad?: boolean) => {
-  const { filter } = useFilter(view.value.id, firstLoad)
+  const { filter } = useFilter(view.value.id, firstLoad, showPosition.value)
   const result = {
     user: wsCache.get('user.uid'),
     filter,

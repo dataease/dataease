@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 public class TenantDatasourceProvider {
 
-    private static final String MYSQL_DRIVER_CLASS_NAME = "com.mysql.cj.jdbc.Driver";
+    private static final String MYSQL_DRIVER_CLASS_NAME = "org.mariadb.jdbc.Driver";
 
     private static final String DS_NAME_PREFIX = "tenant_%s_%s";
 
