@@ -36,12 +36,23 @@ import type { PickOptions } from '@antv/g2plot/lib/core/plot'
 import { defaults, find } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 import { isMobile } from '@/utils/utils'
-import { GaodeMap, TMap, TencentMap } from '@antv/l7-maps'
+import { GaodeMap, MapLibre, TMap, TencentMap } from '@antv/l7-maps'
 import {
   gaodeMapStyleOptions,
   qqMapStyleOptions,
   tdtMapStyleOptions
 } from '@/views/chart/components/js/panel/charts/map/common'
+import {
+  buildCustomMapStyle,
+  CUSTOM_TILE_MAP_TYPE,
+  getCustomMapAttributionOptions,
+  getCustomMapZoomRange,
+  isCustomMapAttributionEnabled,
+  replaceVectorStyleAttribution,
+  setVectorStyleLabelVisibility,
+  VECTOR_STYLE_SERVICE_TYPE,
+  type OnlineMapConfig
+} from '@/utils/onlineMap'
 import ChartCarouselTooltip, {
   isPie,
   isColumn,
@@ -1240,16 +1251,43 @@ const ZOOM_OUT_BTN =
 export class CustomZoom extends Zoom {
   resetButtonGroup(container) {
     DOM.clearChildren(container)
+    const isCustomTileMap = this.controlOption['mapType'] === CUSTOM_TILE_MAP_TYPE
+    const zoomIn = () => {
+      if (isCustomTileMap) {
+        this.mapsService.zoomIn({ duration: 0 })
+      } else {
+        this.zoomIn()
+      }
+    }
+    const zoomOut = () => {
+      if (isCustomTileMap) {
+        this.mapsService.zoomOut({ duration: 0 })
+      } else {
+        this.zoomOut()
+      }
+    }
     this['zoomInButton'] = this['createButton'](
       this.controlOption.zoomInText,
       this.controlOption.zoomInTitle,
       'l7-button-control',
       container,
-      this.zoomIn
+      zoomIn
     )
     // 抽出重置事件，方便其他事件（移动端触摸）触发
     const zoomReset = () => {
-      if (this.mapsService.map?.deMapProvider == 'qq') {
+      if (isCustomTileMap) {
+        if (this.controlOption['bounds']) {
+          this.mapsService.fitBounds(this.controlOption['bounds'], {
+            animate: false,
+            duration: 0
+          })
+        } else {
+          this.mapsService.map?.jumpTo({
+            zoom: this.controlOption['initZoom'],
+            center: this.controlOption['center']
+          })
+        }
+      } else if (this.mapsService.map?.deMapProvider == 'qq') {
         if (this.mapsService.map.deMapAutoFit) {
           this.mapsService.setZoomAndCenter(this.mapsService.map.deMapAutoZoom, [
             this.mapsService.map.deMapAutoLng,
@@ -1292,7 +1330,7 @@ export class CustomZoom extends Zoom {
       this.controlOption.zoomOutTitle,
       'l7-button-control',
       container,
-      this.zoomOut
+      zoomOut
     )
     const { buttonBackground } = this.controlOption as any
     const elements = [this['zoomResetButton'], this['zoomInButton'], this['zoomOutButton']]
@@ -1332,11 +1370,7 @@ export class CustomZoom extends Zoom {
     } as IZoomControlOption
   }
 }
-export function configL7Zoom(
-  chart: Chart,
-  scene: Scene,
-  mapKey?: { key: string; securityCode: string; mapType: string }
-) {
+export function configL7Zoom(chart: Chart, scene: Scene, mapKey?: OnlineMapConfig) {
   const { basicStyle } = parseJson(chart.customAttr)
   const zoomOption = scene?.getControlByName('zoom')
   if (zoomOption) {
@@ -1384,6 +1418,24 @@ export function configL7Zoom(
               scene.addControl(new CustomZoom(newZoomOptions))
             }
             break
+          case CUSTOM_TILE_MAP_TYPE:
+            {
+              const initZoom = basicStyle.autoFit === false ? basicStyle.zoomLevel : scene.getZoom()
+              const mapCenter = scene.map.getCenter()
+              const center =
+                basicStyle.autoFit === false
+                  ? [basicStyle.mapCenter.longitude, basicStyle.mapCenter.latitude]
+                  : [mapCenter.lng, mapCenter.lat]
+              const newZoomOptions = {
+                initZoom,
+                center,
+                mapType: mapKey?.mapType,
+                buttonColor: basicStyle.zoomButtonColor,
+                buttonBackground: basicStyle.zoomBackground
+              } as any
+              scene.addControl(new CustomZoom(newZoomOptions))
+            }
+            break
           default:
             scene.map.on('complete', () => {
               const initZoom = basicStyle.autoFit === false ? basicStyle.zoomLevel : scene.getZoom()
@@ -1403,6 +1455,7 @@ export function configL7Zoom(
       })
     } else {
       const newZoomOptions = {
+        mapType: mapKey?.mapType,
         buttonColor: basicStyle.zoomButtonColor,
         buttonBackground: basicStyle.zoomBackground
       } as any
@@ -1558,12 +1611,12 @@ export function getMapCenter(basicStyle: ChartBasicStyle) {
   return center
 }
 
-export function getMapStyle(
-  mapKey: { key: string; securityCode: string; mapType: string },
-  basicStyle: ChartBasicStyle
-) {
-  let mapStyle: string
+export function getMapStyle(mapKey: OnlineMapConfig, basicStyle: ChartBasicStyle) {
+  let mapStyle: any
   switch (mapKey.mapType) {
+    case CUSTOM_TILE_MAP_TYPE:
+      mapStyle = buildCustomMapStyle(mapKey)
+      break
     case 'tianditu':
       if (!find(tdtMapStyleOptions, s => s.value === basicStyle.mapStyle)) {
         mapStyle = 'normal'
@@ -1598,19 +1651,70 @@ export async function getMapScene(
   chart: Chart,
   scene: Scene,
   container: string,
-  mapKey: { key: string; securityCode: string; mapType: string },
+  mapKey: OnlineMapConfig,
   basicStyle: ChartBasicStyle,
   miscStyle: ChartMiscAttr,
-  mapStyle: string,
+  mapStyle: any,
   center?: [number, number]
 ) {
+  const customVectorMap =
+    mapKey.mapType === CUSTOM_TILE_MAP_TYPE && mapKey.serviceType === VECTOR_STYLE_SERVICE_TYPE
+  const customAttribution =
+    customVectorMap && isCustomMapAttributionEnabled(mapKey) ? mapKey.styleAttribution?.trim() : ''
+  if (customVectorMap && (customAttribution || basicStyle.showLabel === false)) {
+    try {
+      const response = await fetch(mapKey.styleUrl.trim())
+      if (response.ok) {
+        let resolvedStyle = await response.json()
+        if (customAttribution) {
+          resolvedStyle = replaceVectorStyleAttribution(
+            resolvedStyle,
+            customAttribution,
+            mapKey.styleUrl
+          )
+        }
+        mapStyle = setVectorStyleLabelVisibility(
+          resolvedStyle,
+          basicStyle.showLabel !== false,
+          mapKey.styleUrl
+        )
+      }
+    } catch (e) {
+      console.warn('Failed to prepare custom vector map style', e)
+    }
+  }
+  const mapIdentity =
+    mapKey.mapType === CUSTOM_TILE_MAP_TYPE
+      ? [
+          mapKey.mapType,
+          mapKey.serviceType,
+          mapKey.tileUrl,
+          mapKey.styleUrl,
+          mapKey.tileScheme,
+          mapKey.tileSize,
+          mapKey.tileMinZoom,
+          mapKey.tileMaxZoom,
+          mapKey.tileAttribution,
+          mapKey.styleAttribution,
+          mapKey.tileAttributionEnabled,
+          mapKey.styleAttributionEnabled
+        ].join('|')
+      : mapKey.mapType
+  const currentMapIdentity = (scene as any)?.deMapIdentity
+  if (scene && currentMapIdentity && currentMapIdentity !== mapIdentity) {
+    // 地图适配器或自定义服务配置变化时重建 Scene
+    scene.destroy()
+    scene = undefined
+  }
   if (!scene) {
     scene = new Scene({
       id: container,
       logoVisible: false,
       map: getMapObject(mapKey, basicStyle, miscStyle, mapStyle, center)
     })
+    ;(scene as any).deMapIdentity = mapIdentity
   } else {
+    ;(scene as any).deMapIdentity = mapIdentity
     if (mapKey.mapType === 'tianditu') {
       scene.map?.checkResize()
     }
@@ -1629,7 +1733,9 @@ export async function getMapScene(
         scene.setMapStyle(mapStyle)
       }
 
-      scene.map.showLabel = !(basicStyle.showLabel === false)
+      if (mapKey.mapType !== CUSTOM_TILE_MAP_TYPE) {
+        scene.map.showLabel = !(basicStyle.showLabel === false)
+      }
       if (mapKey.mapType === 'qq') {
         scene.map.setBaseMap({
           //底图设置（参数为：VectorBaseMap对象）
@@ -1708,13 +1814,36 @@ export async function getMapScene(
 }
 
 export function getMapObject(
-  mapKey: { key: string; securityCode: string; mapType: string },
+  mapKey: OnlineMapConfig,
   basicStyle: ChartBasicStyle,
   miscStyle: ChartMiscAttr,
-  mapStyle: string,
+  mapStyle: any,
   center?: [number, number]
 ) {
   switch (mapKey.mapType) {
+    case CUSTOM_TILE_MAP_TYPE: {
+      const { minZoom, maxZoom } = getCustomMapZoomRange(mapKey)
+      const defaultZoom = Math.min(Math.max(3, minZoom), maxZoom)
+      const initialZoom =
+        basicStyle.autoFit === false
+          ? Math.min(Math.max(Number(basicStyle.zoomLevel) || defaultZoom, minZoom), maxZoom)
+          : defaultZoom
+      return new MapLibre({
+        style: mapStyle,
+        pitch: miscStyle.mapPitch,
+        // MapLibre 初始化必须有有效视图；数据图层加载后仍会按 autoFit 自动定位
+        center: center ?? [105, 35],
+        zoom: initialZoom,
+        minZoom,
+        maxZoom,
+        ...getCustomMapAttributionOptions(mapKey),
+        // 关闭地图淡入，避免与 L7 叠加画布出现短暂的相对位移
+        fadeDuration: 0,
+        // 与栅格瓦片保持一致，横向循环世界副本避免持续拖动露出空白
+        renderWorldCopies: true,
+        preserveDrawingBuffer: true
+      })
+    }
     case 'tianditu':
       return new TMap({
         token: mapKey?.key ?? undefined,
@@ -2766,6 +2895,16 @@ function onlineMapStatusOption(chart: Chart, mapType: string, scene: Scene, enab
  */
 function setMapStatusOption(chart: Chart, mapType: string, scene: Scene, enable = false) {
   switch (mapType) {
+    case CUSTOM_TILE_MAP_TYPE: {
+      const method = enable ? 'enable' : 'disable'
+      scene.map?.dragPan?.[method]()
+      scene.map?.scrollZoom?.[method]()
+      scene.map?.doubleClickZoom?.[method]()
+      scene.map?.dragRotate?.[method]()
+      scene.map?.keyboard?.[method]()
+      scene.map?.touchZoomRotate?.[method]()
+      break
+    }
     case 'tianditu': {
       const method = enable ? 'enable' : 'disable'
       scene.map?.[`${method}Drag`]()
