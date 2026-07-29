@@ -175,4 +175,7 @@ public interface DataVisualizationApi {
 
     @Hidden
     List<DatasetPermissionTemplate> queruDatasetPermissionTemplate(Long resourceId);
+
+    @Hidden
+    DataVisualizationVO findDataVisualizationById(@RequestBody DataVisualizationBaseRequest request);
 }

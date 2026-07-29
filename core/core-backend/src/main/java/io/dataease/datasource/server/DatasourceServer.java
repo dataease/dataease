@@ -969,6 +969,11 @@ public class DatasourceServer implements DatasourceApi {
         return excelFileData;
     }
 
+    @Override
+    public DatasourceDTO getById(Long datasourceId) throws DEException {
+        return dataSourceManage.getDs(datasourceId);
+    }
+
     private void mergeExcelEditConfig(ExcelFileData excelFileData, CoreDatasource coreDatasource, Integer editType) throws DEException {
         if (coreDatasource == null) {
             return;
