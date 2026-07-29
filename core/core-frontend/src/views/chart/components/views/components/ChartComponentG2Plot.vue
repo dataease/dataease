@@ -727,7 +727,7 @@ const canvas2Picture = (pictureData, online) => {
   imgDom.style.position = 'absolute'
   imgDom.style.objectFit = 'cover'
   imgDom.style['z-index'] = '2'
-  //imgDom?.classList?.add('prepare-picture-img')
+  imgDom?.classList?.add('prepare-picture-img')
   imgDom.src = pictureData
   mapDom?.appendChild(imgDom)
 }
