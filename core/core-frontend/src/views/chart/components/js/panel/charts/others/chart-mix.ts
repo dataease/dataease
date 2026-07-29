@@ -824,7 +824,7 @@ export class StackColumnLineMix extends ColumnLineMix {
       if (extStack?.length) {
         const seriesSet = new Set()
         data[0]?.forEach(d => d.category !== null && seriesSet.add(d.category))
-        let tmp = [...seriesSet]
+        const tmp = [...seriesSet]
         const stackAxis = extStack[0]
         if (stackAxis.sort !== 'none') {
           if (stackAxis.sort === 'asc') {
@@ -888,7 +888,7 @@ export class StackColumnLineMix extends ColumnLineMix {
         }
         seriesSet.add(d.category)
       })
-      let cats = [...seriesSet]
+      const cats = [...seriesSet]
       const stackAxis = extStack[0]
       if (stackAxis.sort !== 'none') {
         if (stackAxis.sort === 'asc') {
