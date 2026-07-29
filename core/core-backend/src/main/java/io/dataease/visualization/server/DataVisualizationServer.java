@@ -1244,4 +1244,18 @@ public class DataVisualizationServer implements DataVisualizationApi {
     public List<DatasetPermissionTemplate> queruDatasetPermissionTemplate(Long resourceId) {
         return resourcePermissionManage.queruDatasetPermissionTemplate(resourceId);
     }
+
+    @Override
+    public DataVisualizationVO findDataVisualizationById(DataVisualizationBaseRequest request) {
+        Long dvId = request.getId();
+        String busiFlag = request.getBusiFlag();
+        String resourceTable = request.getResourceTable();
+        DataVisualizationVO result = extDataVisualizationMapper.findDvInfo(dvId, busiFlag, resourceTable);
+        if (result != null) {
+            return result;
+        } else {
+            DEException.throwException(Translator.get("i18n_resource_not_exists"));
+        }
+        return null;
+    }
 }

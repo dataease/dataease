@@ -10,6 +10,7 @@ import io.dataease.extensions.datasource.dto.*;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
@@ -179,4 +180,7 @@ public interface DatasourceApi {
     @PostMapping("/loadRemoteFile")
     @Operation(summary = "加载文件")
     ExcelFileData loadRemoteFile(@RequestBody RemoteExcelRequest remoteExcelRequeste) throws DEException, IOException;
+
+    @Hidden
+    DatasourceDTO getById(@PathVariable("datasourceId") Long datasourceId) throws DEException;
 }
