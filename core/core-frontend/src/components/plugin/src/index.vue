@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import noLic from './nolic.vue'
-import { ref, useAttrs, onMounted } from 'vue'
+import { ref, useAttrs, onMounted, shallowRef } from 'vue'
 import { execute, randomKey, formatArray } from './convert'
 import { load, loadDistributed, xpackModelApi } from '@/api/plugin'
 import configGlobal from '@/components/config-global/src/ConfigGlobal.vue'
@@ -17,7 +17,7 @@ import { isNull } from '@/utils/utils'
 
 const { wsCache } = useCache()
 
-const plugin = ref()
+const plugin = shallowRef()
 
 const loading = ref(false)
 
