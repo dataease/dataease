@@ -66,6 +66,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       mobileComponentData: [],
       isInEditor: false, // 是否在编辑器中，用于判断复制、粘贴组件时是否生效，如果在编辑器外，则无视这些操作
       componentData: [], // 画布组件数据
+      componentDataMultiply: [], // 复用仪表板组件
       curComponent: null,
       curTabName: null, // 当前选中的tabName 大屏图层区域使用
       curComponentIndex: null,
@@ -410,6 +411,10 @@ export const dvMainStore = defineStore('dataVisualization', {
 
     setComponentData(componentData = []) {
       this.componentData = componentData
+    },
+
+    setComponentDataMultiply(componentDataMultiply = []) {
+      this.componentDataMultiply = componentDataMultiply
     },
 
     addCopyComponent(component, idMap, canvasViewInfoPre = this.canvasViewInfo) {
@@ -1750,6 +1755,7 @@ export const dvMainStore = defineStore('dataVisualization', {
     canvasDataInit() {
       this.canvasViewInfo = {}
       this.componentData = []
+      this.componentDataMultiply = []
       this.dvInfo = {
         dataState: null,
         optType: null,
