@@ -8,7 +8,9 @@ import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;
+import io.dataease.extensions.datasource.dto.DatasetTableFieldRequest;
 import io.dataease.extensions.datasource.dto.SimpleDatasourceDTO;
+import io.dataease.extensions.datasource.dto.TableField;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -222,4 +224,9 @@ public interface DataFillingApi {
     @PostMapping("getBuiltInTables")
     @Operation(summary = "获取内置数据源表")
     List<DatasetTableDTO> getBuiltInTables() throws DEException;
+
+    @PostMapping("getBuiltInTableField")
+    @Operation(summary = "获取内置数据源表字段")
+    List<TableField> getBuiltInTableField(@RequestBody DatasetTableFieldRequest req) throws DEException;
+
 }
