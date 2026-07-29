@@ -15,7 +15,13 @@ import {
   setGradientColor,
   TOOLTIP_TPL
 } from '../../common/common_antv'
-import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
+import {
+  convertToAlphaColor,
+  flow,
+  hexColorToRGBA,
+  isAlphaColor,
+  parseJson
+} from '@/views/chart/components/js/util'
 import {
   cloneDeep,
   isEmpty,
@@ -113,12 +119,13 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
     const isGroup = this.name === 'chart-mix-group' && chart.xAxisExt?.length > 0
     const isStack = this.name === 'chart-mix-stack' && chart.extStack?.length > 0
     const seriesField = 'category'
-    const seriesField2 = 'category'
+    const seriesField2 = 'rightCategory'
 
     const data1 = defaultTo(left[0]?.data, [])
     const data2 = map(defaultTo(right[0]?.data, []), d => {
       return {
         ...d,
+        rightCategory: d.category,
         valueExt: d.value
       }
     })
@@ -817,7 +824,21 @@ export class StackColumnLineMix extends ColumnLineMix {
       if (extStack?.length) {
         const seriesSet = new Set()
         data[0]?.forEach(d => d.category !== null && seriesSet.add(d.category))
-        const tmp = [...seriesSet]
+        let tmp = [...seriesSet]
+        const stackAxis = extStack[0]
+        if (stackAxis.sort !== 'none') {
+          if (stackAxis.sort === 'asc') {
+            tmp.sort((a: any, b: any) => `${a}`.localeCompare(`${b}`))
+          } else if (stackAxis.sort === 'desc') {
+            tmp.sort((a: any, b: any) => `${b}`.localeCompare(`${a}`))
+          } else if (stackAxis.customSort?.length) {
+            tmp.sort((a, b) => {
+              const aIndex = stackAxis.customSort.indexOf(a)
+              const bIndex = stackAxis.customSort.indexOf(b)
+              return (aIndex === -1 ? 999 : aIndex) - (bIndex === -1 ? 999 : bIndex)
+            })
+          }
+        }
         tmp.forEach((c, i) => {
           const curAxisColor = seriesMap[c as string]
           if (curAxisColor) {
@@ -866,10 +887,27 @@ export class StackColumnLineMix extends ColumnLineMix {
           return
         }
         seriesSet.add(d.category)
+      })
+      let cats = [...seriesSet]
+      const stackAxis = extStack[0]
+      if (stackAxis.sort !== 'none') {
+        if (stackAxis.sort === 'asc') {
+          cats.sort((a, b) => `${a}`.localeCompare(`${b}`))
+        } else if (stackAxis.sort === 'desc') {
+          cats.sort((a, b) => `${b}`.localeCompare(`${a}`))
+        } else if (stackAxis.customSort?.length) {
+          cats.sort((a, b) => {
+            const aIndex = stackAxis.customSort.indexOf(a)
+            const bIndex = stackAxis.customSort.indexOf(b)
+            return (aIndex === -1 ? 999 : aIndex) - (bIndex === -1 ? 999 : bIndex)
+          })
+        }
+      }
+      cats.forEach((c, i) => {
         result.push({
-          id: d.category,
-          name: d.category,
-          color: colors[(seriesSet.size - 1) % colors.length]
+          id: c,
+          name: c,
+          color: colors[i % colors.length]
         })
       })
     } else {
@@ -886,6 +924,56 @@ export class StackColumnLineMix extends ColumnLineMix {
       })
     }
     return result
+  }
+
+  protected configCategoryMeta(chart: Chart, options: DualAxesOptions): DualAxesOptions {
+    const extStack = chart.extStack?.[0]
+    if (!extStack || extStack.sort === 'none') {
+      return options
+    }
+    const leftData = options.data?.[0] || []
+    const cats =
+      leftData.reduce((p, n) => {
+        if (n.category !== null && n.category !== undefined && !p.includes(n.category)) {
+          p.push(n.category)
+        }
+        return p
+      }, []) || []
+
+    let values: string[] = []
+
+    if (extStack.sort === 'asc') {
+      values = [...cats].sort((a, b) => `${a}`.localeCompare(`${b}`))
+    } else if (extStack.sort === 'desc') {
+      values = [...cats].sort((a, b) => `${b}`.localeCompare(`${a}`))
+    } else if (extStack.customSort?.length > 0) {
+      const sort = extStack.customSort
+      const tmpCats = [...cats]
+      values = sort.reduce((p, n) => {
+        if (tmpCats.includes(n)) {
+          const index = tmpCats.indexOf(n)
+          if (index !== -1) {
+            tmpCats.splice(index, 1)
+          }
+          p.push(n)
+        }
+        return p
+      }, [])
+      tmpCats.length > 0 && values.push(...tmpCats)
+    }
+
+    if (!values.length) {
+      return options
+    }
+
+    options.meta = {
+      ...options.meta,
+      category: {
+        type: 'cat',
+        values
+      }
+    }
+    return options
   }
 
   protected configData(chart: Chart, options: DualAxesOptions): DualAxesOptions {
@@ -905,7 +993,7 @@ export class StackColumnLineMix extends ColumnLineMix {
   }
 
   protected setupOptions(chart: Chart, options: DualAxesOptions): DualAxesOptions {
-    const tmpOptions = flow(this.configData)(chart, options, {}, this)
+    const tmpOptions = flow(this.configData, this.configCategoryMeta)(chart, options, {}, this)
     return super.setupOptions(chart, tmpOptions)
   }
 
