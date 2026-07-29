@@ -309,6 +309,8 @@ const emits = defineEmits(['finish', 'onDatasetSave'])
     class="create-dialog"
     :width="cmd === 'move' ? '600px' : '420px'"
     :before-close="resetForm"
+    :close-on-click-modal="false"
+    :close-on-press-escape="false"
   >
     <el-form
       label-position="top"
