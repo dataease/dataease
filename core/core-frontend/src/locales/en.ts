@@ -871,7 +871,7 @@ export default {
     org_admin: 'Organization administrator',
     confirm_delete: 'Confirm to delete this role? ',
     delete_tips:
-      '<div id="u7755_text" class="text" style="font-size: 12px;"><p><span style="color:#F59A23;">Friendly reminder, after the role is deleted, the users belonging to the role will be processed as follows:</span></p><p><span style="color:#7F7F7F;">1. If the user has other roles in the current organization, then after the role is deleted, the user will be removed from the role.</span></p><p><span style="color:#7F7F7F;">2. This role is the only role the user has in the current organization, but the user has roles in other organizations, then after the role is deleted, the user will also be removed from the current organization.</span></p><p><span style="color:#7F7F7F;">3. This role is the only role the user has in the current organization, and the user does not have any roles in other organizations in the system, then after the role is deleted, the user will also be deleted from the current system. </span></p><p><span style="color:#7F7F7F;"><br></span></p></div>',
+      '<div id="u7755_text" class="text" style="font-size: 12px;"><p><span style="color:#F59A23;">Friendly reminder, after the role is deleted, users will be removed from this role.</span></p></div>',
     confirm_unbind_user: 'Are you sure you want to remove the user from the role? ',
     clear_in_system:
       'Friendly reminder, after being removed from the current role, the user no longer has any role in any organization and will be deleted from the system. ',

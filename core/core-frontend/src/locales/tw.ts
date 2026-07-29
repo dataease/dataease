@@ -831,7 +831,7 @@ export default {
     org_admin: '組織管理員',
     confirm_delete: '確認刪除該角色嗎？ ',
     delete_tips:
-      '<div id="u7755_text" class="text" style="font-size: 12px;"><p><span style="color:#F59A23;">友情提示，角色刪除後，歸屬於角色的用戶將做以下處理：</span></p><p><span style="color:#7F7F7F;">1、使用者擁有目前組織的其他角色，那麼角色被刪除後，將使用者從該角色中移除。 </span></p><p><span style="color:#7F7F7F;">2、該角色是使用者在目前組織下擁有的唯一角色，但使用者擁有其他組織下的角色，那麼角色被刪除後，使用者也將從目前組織中移除。 </span></p><p><span style="color:#7F7F7F;">3、該角色是使用者在目前組織下擁有的唯一角色，使用者在系統的其他組織下也沒有任何角色，那麼角色被刪除後，使用者也將從目前系統中刪除。 </span></p><p><span style="color:#7F7F7F;"><br></span></p></div>',
+      '<div id="u7755_text" class="text" style="font-size: 12px;"><p><span style="color:#F59A23;">友情提示，角色刪除後，將用戶從該角色中移除</span></p></div>',
     confirm_unbind_user: '確定將該使用者從角色中移除嗎？ ',
     clear_in_system:
       '友情提示，從目前角色移除後，該使用者已沒有任何組織的任何角色，使用者將從系統中刪除。 ',
