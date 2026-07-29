@@ -5,7 +5,7 @@ import dayjs from 'dayjs'
 import { getDynamicRange, getCustomTime } from '@/custom-component/v-query/time-format'
 import { getCustomRange } from '@/custom-component/v-query/time-format-dayjs'
 const dvMainStore = dvMainStoreWithOut()
-const { componentData, canvasStyleData } = storeToRefs(dvMainStore)
+const { componentData, canvasStyleData, componentDataMultiply } = storeToRefs(dvMainStore)
 
 const getDynamicRangeTime = (type: number, selectValue: any, timeGranularityMultiple: string) => {
   const timeType = (timeGranularityMultiple || '').split('range')[0]
@@ -155,17 +155,19 @@ const getValueByDefaultValueCheckOrFirstLoad = (
   return selectValue ? selectValue : multiple ? [] : ''
 }
 
-export const useFilter = (curComponentId: string, firstLoad = false) => {
+export const useFilter = (curComponentId: string, firstLoad = false, showPosition: any) => {
   // 弹窗区域过滤组件是否生效
   const popupAvailable = canvasStyleData.value.popupAvailable
   const filter = []
-  const queryComponentList = componentData.value.filter(
+  const componentDataCustom =
+    showPosition === 'multiplexing' ? componentDataMultiply.value : componentData.value
+  const queryComponentList = componentDataCustom.filter(
     ele =>
       ele.component === 'VQuery' &&
       (popupAvailable || (!popupAvailable && ele.category !== 'hidden'))
   )
   searchQuery(queryComponentList, filter, curComponentId, firstLoad)
-  componentData.value.forEach(ele => {
+  componentDataCustom.forEach(ele => {
     if (ele.component === 'Group') {
       const list = ele.propValue.filter(
         item =>

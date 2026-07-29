@@ -126,6 +126,9 @@ const loadCanvasData = (dvId, weight?) => {
       state.canvasViewInfoPreview = canvasViewInfoPreview
       state.dvInfo = dvInfo
       state.curPreviewGap = curPreviewGap
+      if (showPosition.value === 'multiplexing') {
+        dvMainStore.setComponentDataMultiply(state.canvasDataPreview)
+      }
       dataInitState.value = true
       nextTick(() => {
         dashboardPreview.value.restore()
