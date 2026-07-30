@@ -179,7 +179,7 @@ public class EngineManage {
         if (!datasourceMapper.exists(queryWrapper) && !deTemplateVersionMapper.exists(queryVersionWrapper) && !ModelUtils.isDesktop()) {
             Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)\\?(.*)");
             if(env.getProperty("spring.datasource.url").startsWith("jdbc:mariadb")) {
-                WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mariadb://(.*):(\\d+)/(.*)");
+                WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mariadb://(.*):(\\d+)/(.*)\\?(.*)");
             }
             Matcher matcher = WITH_SQL_FRAGMENT.matcher(env.getProperty("spring.datasource.url"));
             if (!matcher.find()) {
