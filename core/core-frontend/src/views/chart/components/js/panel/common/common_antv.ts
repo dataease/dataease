@@ -40,6 +40,12 @@ import {
   qqMapStyleOptions,
   tdtMapStyleOptions
 } from '@/views/chart/components/js/panel/charts/map/common'
+import {
+  getCustomOnlineMapScene,
+  getCustomOnlineMapStyle,
+  isCustomOnlineMapScene
+} from '@/views/chart/components/js/panel/charts/map/custom-online-map'
+import { CUSTOM_TILE_MAP_TYPE, type OnlineMapConfig } from '@/utils/onlineMap'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 
 const { t: tI18n } = useI18n()
@@ -1608,6 +1614,140 @@ export class CustomZoom extends Zoom {
   }
 }
 
+class CustomTileZoom extends CustomZoom {
+  resetButtonGroup(container) {
+    DOM.clearChildren(container)
+    const zoomIn = () => this.mapsService.zoomIn({ duration: 0 })
+    const zoomOut = () => this.mapsService.zoomOut({ duration: 0 })
+    const zoomReset = () => {
+      if (this.controlOption['bounds']) {
+        this.mapsService.fitBounds(this.controlOption['bounds'], {
+          animate: false,
+          duration: 0
+        })
+      } else {
+        this.mapsService.map?.jumpTo({
+          zoom: this.controlOption['initZoom'],
+          center: this.controlOption['center']
+        })
+      }
+    }
+    this['zoomInButton'] = this['createButton'](
+      this.controlOption.zoomInText,
+      this.controlOption.zoomInTitle,
+      'l7-button-control',
+      container,
+      zoomIn
+    )
+    this['zoomResetButton'] = this['createButton'](
+      this.controlOption['resetText'],
+      'Reset',
+      'l7-button-control',
+      container,
+      zoomReset
+    )
+    if (this.controlOption.showZoom) {
+      this['zoomNumDiv'] = this['createButton'](
+        '0',
+        '',
+        'l7-button-control l7-control-zoom__number',
+        container
+      )
+    }
+    this['zoomOutButton'] = this['createButton'](
+      this.controlOption.zoomOutText,
+      this.controlOption.zoomOutTitle,
+      'l7-button-control',
+      container,
+      zoomOut
+    )
+    const { buttonBackground } = this.controlOption as any
+    const elements = [this['zoomResetButton'], this['zoomInButton'], this['zoomOutButton']]
+    if (buttonBackground) {
+      setStyle(elements, 'background', buttonBackground)
+    }
+    setStyle(elements, 'border-bottom', 'none')
+    this['updateDisabled']()
+  }
+}
+
+const ONLINE_MAP_INTERACTION_ENABLED = '__deOnlineMapInteractionEnabled'
+const ONLINE_MAP_INTERACTION_TYPE = '__deOnlineMapInteractionType'
+const ONLINE_MAP_INTERACTION_PENDING = '__deOnlineMapInteractionPending'
+
+function applyOnlineMapInteraction(scene: Scene, mapType: string | undefined, enable: boolean) {
+  const map = scene.map as any
+  if (!map) {
+    return
+  }
+  switch (mapType) {
+    case CUSTOM_TILE_MAP_TYPE: {
+      const method = enable ? 'enable' : 'disable'
+      ;[
+        'dragPan',
+        'scrollZoom',
+        'boxZoom',
+        'doubleClickZoom',
+        'dragRotate',
+        'keyboard',
+        'touchPitch',
+        'touchZoomRotate'
+      ].forEach(handler => map[handler]?.[method]?.())
+      break
+    }
+    case 'tianditu': {
+      const method = enable ? 'enable' : 'disable'
+      map[`${method}Drag`]?.()
+      map[`${method}ScrollWheelZoom`]?.()
+      map[`${method}DoubleClickZoom`]?.()
+      map[`${method}Keyboard`]?.()
+      map[`${method}PinchToZoom`]?.()
+      break
+    }
+    case 'qq':
+      map.setDraggable?.(enable)
+      map.setScrollable?.(enable)
+      map.setDoubleClickZoom?.(enable)
+      map.setTouchZoomable?.(enable)
+      map.setPitchable?.(enable)
+      map.setRotatable?.(enable)
+      break
+    default:
+      map.setStatus?.({
+        dragEnable: enable,
+        keyboardEnable: enable,
+        doubleClickZoom: enable,
+        rotateEnable: enable,
+        pitchEnable: enable,
+        scrollWheel: enable,
+        touchZoom: enable
+      })
+  }
+}
+
+function configOnlineMapInteraction(scene: Scene, mapType: string | undefined, enable: boolean) {
+  const sceneState = scene as any
+  sceneState[ONLINE_MAP_INTERACTION_ENABLED] = enable
+  sceneState[ONLINE_MAP_INTERACTION_TYPE] = mapType
+  const applyLatestStatus = () => {
+    sceneState[ONLINE_MAP_INTERACTION_PENDING] = false
+    applyOnlineMapInteraction(
+      scene,
+      sceneState[ONLINE_MAP_INTERACTION_TYPE],
+      sceneState[ONLINE_MAP_INTERACTION_ENABLED]
+    )
+  }
+  if (scene.loaded) {
+    applyLatestStatus()
+    return
+  }
+  if (!sceneState[ONLINE_MAP_INTERACTION_PENDING]) {
+    // 沿用 v2 语义：隐藏缩放按钮时同步锁定地图交互
+    sceneState[ONLINE_MAP_INTERACTION_PENDING] = true
+    scene.once('loaded', applyLatestStatus)
+  }
+}
+
 const L7_SCALED_INTERACTION_FLAG = '__deScaledInteractionPatched'
 const L7_SCALED_INTERACTION_CHARTS = ['map', 'bubble-map']
 
@@ -1715,18 +1855,20 @@ function configL7ScaledInteraction(chart: Chart, scene?: Scene) {
   rebindL7MouseMoveListener(interactionService, originalOnHover)
 }
 
-export function configL7Zoom(
-  chart: Chart,
-  scene: Scene,
-  mapKey?: { key: string; securityCode: string; mapType: string }
-) {
+export function configL7Zoom(chart: Chart, scene: Scene, mapKey?: OnlineMapConfig) {
   configL7ScaledInteraction(chart, scene)
   const { basicStyle } = parseJson(chart.customAttr)
   const zoomOption = scene?.getControlByName('zoom')
   if (zoomOption) {
     scene.removeControl(zoomOption)
   }
-  if (shouldHideZoom(basicStyle)) {
+  const hideZoom = shouldHideZoom(basicStyle)
+  configOnlineMapInteraction(scene, mapKey?.mapType, !hideZoom)
+  if (hideZoom) {
+    return
+  }
+  if (mapKey?.mapType === CUSTOM_TILE_MAP_TYPE) {
+    configCustomTileZoom(chart, scene, basicStyle)
     return
   }
   if (!scene?.getControlByName('zoom')) {
@@ -1818,6 +1960,49 @@ export function configL7Zoom(
       }
       scene.addControl(new CustomZoom(newZoomOptions))
     }
+  }
+}
+
+function configCustomTileZoom(chart: Chart, scene: Scene, basicStyle: ChartBasicStyle) {
+  const addControl = () => {
+    if (scene.getControlByName('zoom')) {
+      return
+    }
+    const mapCenter = scene.map?.getCenter()
+    const options = {
+      initZoom: basicStyle.autoFit === false ? basicStyle.zoomLevel : scene.getZoom(),
+      center:
+        basicStyle.autoFit === false
+          ? [basicStyle.mapCenter.longitude, basicStyle.mapCenter.latitude]
+          : [mapCenter?.lng ?? 105, mapCenter?.lat ?? 35],
+      buttonColor: basicStyle.zoomButtonColor,
+      buttonBackground: basicStyle.zoomBackground
+    } as any
+    if (basicStyle.autoFit !== false) {
+      const coordinates: number[][] = []
+      const appendCoordinates = (axis: ChartViewField[]) => {
+        if (axis?.length !== 2) {
+          return
+        }
+        chart.data?.tableRow?.forEach(row => {
+          coordinates.push([row[axis[0].dataeaseName], row[axis[1].dataeaseName]])
+        })
+      }
+      appendCoordinates(chart.xAxis)
+      if (chart.type === 'flow-map') {
+        appendCoordinates(chart.xAxisExt)
+      }
+      if (coordinates.length) {
+        options.bounds = calculateBounds(coordinates)
+      }
+    }
+    // MapLibre 使用独立缩放控制，避免改变区域地图共享控件行为
+    scene.addControl(new CustomTileZoom(options))
+  }
+  if (scene.loaded) {
+    addControl()
+  } else {
+    scene.once('loaded', addControl)
   }
 }
 /**
@@ -1915,12 +2100,12 @@ export function getMapCenter(basicStyle: ChartBasicStyle) {
   return center
 }
 
-export function getMapStyle(
-  mapKey: { key: string; securityCode: string; mapType: string },
-  basicStyle: ChartBasicStyle
-) {
-  let mapStyle: string
+export function getMapStyle(mapKey: OnlineMapConfig, basicStyle: ChartBasicStyle) {
+  let mapStyle: any
   switch (mapKey.mapType) {
+    case CUSTOM_TILE_MAP_TYPE:
+      mapStyle = getCustomOnlineMapStyle(mapKey)
+      break
     case 'tianditu':
       if (!find(tdtMapStyleOptions, s => s.value === basicStyle.mapStyle)) {
         mapStyle = 'normal'
@@ -1955,12 +2140,34 @@ export async function getMapScene(
   chart: Chart,
   scene: Scene,
   container: string,
-  mapKey: { key: string; securityCode: string; mapType: string },
+  mapKey: OnlineMapConfig,
   basicStyle: ChartBasicStyle,
   miscStyle: ChartMiscAttr,
-  mapStyle: string,
+  mapStyle: any,
   center?: [number, number]
 ) {
+  if (mapKey.mapType === CUSTOM_TILE_MAP_TYPE) {
+    scene = await getCustomOnlineMapScene({
+      scene,
+      container,
+      mapConfig: mapKey,
+      basicStyle,
+      miscStyle,
+      mapStyle,
+      center
+    })
+    mapRendering(container)
+    if (scene.loaded) {
+      mapRendered(container)
+    } else {
+      scene.once('loaded', () => mapRendered(container))
+    }
+    return scene
+  }
+  if (isCustomOnlineMapScene(scene)) {
+    scene.destroy()
+    scene = undefined
+  }
   if (!scene) {
     scene = new Scene({
       id: container,
@@ -2065,10 +2272,10 @@ export async function getMapScene(
 }
 
 export function getMapObject(
-  mapKey: { key: string; securityCode: string; mapType: string },
+  mapKey: OnlineMapConfig,
   basicStyle: ChartBasicStyle,
   miscStyle: ChartMiscAttr,
-  mapStyle: string,
+  mapStyle: any,
   center?: [number, number]
 ) {
   switch (mapKey.mapType) {

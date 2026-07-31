@@ -24,11 +24,13 @@ import {
   qqMapStyleOptions,
   tdtMapStyleOptions
 } from '@/views/chart/components/js/panel/charts/map/common'
+import { CUSTOM_TILE_MAP_TYPE, RASTER_TILE_SERVICE_TYPE } from '@/utils/onlineMap'
 
 const dvMainStore = dvMainStoreWithOut()
 const localeStore = useLocaleStoreWithOut()
 const { batchOptStatus, mobileInPc } = storeToRefs(dvMainStore)
 const { t } = useI18n()
+const ONLINE_MAP_CHART_TYPES = ['flow-map', 'heat-map', 'symbolic-map']
 const props = defineProps({
   chart: {
     type: Object as PropType<ChartObj>,
@@ -47,8 +49,16 @@ const showProperty = prop => {
   if (!has) {
     return false
   }
-  if (props.chart.type.includes('map') && mapType.value === 'tianditu' && prop === 'showLabel') {
-    return false
+  if (ONLINE_MAP_CHART_TYPES.includes(props.chart.type) && prop === 'showLabel') {
+    if (mapType.value === 'tianditu') {
+      return false
+    }
+    if (
+      mapType.value === CUSTOM_TILE_MAP_TYPE &&
+      mapStore.mapKey.serviceType === RASTER_TILE_SERVICE_TYPE
+    ) {
+      return false
+    }
   }
   return has
 }
@@ -292,7 +302,7 @@ const symbolOptions = [
 const mapStore = useMapStoreWithOut()
 
 const getMapKey = async () => {
-  if (!mapStore.mapKey.key) {
+  if (!mapStore.mapKeyLoaded) {
     await queryMapKeyApi().then(res => mapStore.setKey(res.data))
   }
   if (mapStore.mapKey.securityCode) {
@@ -307,6 +317,8 @@ const mapType = ref<string>(undefined)
 
 const mapStyleOptions = computed(() => {
   switch (mapType.value) {
+    case CUSTOM_TILE_MAP_TYPE:
+      return []
     case 'tianditu':
       return tdtMapStyleOptions
     case 'qq':
@@ -359,6 +371,9 @@ const validateInput = (value, field) => {
 }
 onMounted(() => {
   init()
+  if (!ONLINE_MAP_CHART_TYPES.includes(props.chart.type)) {
+    return
+  }
   getMapKey().then(res => {
     if (res) {
       mapType.value = res.mapType
@@ -546,7 +561,7 @@ onMounted(() => {
       </el-select>
     </el-form-item>
     <div class="map-style" v-if="showProperty('mapBaseStyle') || showProperty('heatMapStyle')">
-      <el-row style="flex: 1">
+      <el-row v-if="mapType !== CUSTOM_TILE_MAP_TYPE" style="flex: 1">
         <el-col>
           <el-form-item
             :label="t('chart.map_style')"
@@ -568,7 +583,10 @@ onMounted(() => {
           </el-form-item>
         </el-col>
       </el-row>
-      <el-row style="flex: 1" v-if="state.basicStyleForm.mapStyle === 'custom'">
+      <el-row
+        v-if="mapType !== CUSTOM_TILE_MAP_TYPE && state.basicStyleForm.mapStyle === 'custom'"
+        style="flex: 1"
+      >
         <el-col>
           <el-form-item
             :label="t('chart.map_style_url')"

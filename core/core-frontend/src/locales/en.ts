@@ -2157,6 +2157,7 @@ export default {
     map_type_tianditu: 'Tianditu',
     map_type_baidu: 'Baidu Map',
     map_type_tencent: 'Tencent Map',
+    map_type_custom_tile: 'Custom Map',
     bullet_chart: 'Bullet Chart',
     range_bg: 'Range Background',
     legend_name: 'Legend Name',
@@ -3884,7 +3885,51 @@ export default {
   online_map: {
     geometry: 'Geographic information',
     onlinemap: 'Online map',
-    empty_desc: 'Please enter information on the left and save'
+    empty_desc: 'Please enter information on the left and save',
+    service_type: 'Service type',
+    raster_tile_url: 'Raster tile URL',
+    vector_style_json: 'Vector map Style JSON',
+    tile_url: 'Tile URL',
+    tile_url_placeholder: 'For example: http://localhost:18080/{z}/{x}/{y}.png',
+    tile_url_tip: 'Supports standard {z}/{x}/{y} URL templates and TMS through tile scheme',
+    style_url: 'Style JSON URL',
+    style_url_placeholder: 'For example: http://localhost:18081/styles/basic-preview/style.json',
+    style_url_tip:
+      'Enter a complete MapLibre Style JSON URL. Referenced tiles, fonts, and sprites must allow cross-origin access',
+    tile_scheme: 'Tile scheme',
+    tile_size: 'Tile size',
+    min_zoom: 'Minimum zoom',
+    max_zoom: 'Maximum zoom',
+    zoom_tip:
+      'Zoom range is 0–24 with at most one decimal place; it does not add map detail unavailable from the service',
+    show_attribution: 'Show attribution',
+    attribution: 'Attribution',
+    raster_attribution_tip: 'Optional. Leave blank to hide custom attribution',
+    vector_attribution_tip:
+      'Optional. Replaces attribution from Style sources when set; leave blank to keep it',
+    map_network_offline_error:
+      'The browser is offline. Restore the network connection and try again',
+    map_mixed_content_error:
+      'This page uses HTTPS, so the browser blocked the HTTP map resource. Switch the map service to HTTPS',
+    map_localhost_error:
+      'The map URL uses localhost, which points to each visitor’s computer. Start the local service or use a server URL accessible from the browser',
+    map_style_request_error:
+      'Unable to access the Style JSON. Check the URL, network connection, or CORS settings',
+    map_style_http_error:
+      'The Style JSON request failed (HTTP {status}). Check the URL and service status',
+    map_style_json_error: 'The Style JSON response is not valid JSON',
+    map_style_format_error:
+      'The Style JSON is incomplete. It must contain version 8, sources, and layers',
+    map_tile_http_error:
+      'The map tile request failed (HTTP {status}). Check the URL template, available zoom levels, and service status',
+    map_tile_load_error:
+      'Failed to load map tiles. Check the URL template, available zoom levels, and CORS settings',
+    map_glyph_load_error: 'Failed to load map fonts. Check the glyphs URL and CORS settings',
+    map_sprite_load_error: 'Failed to load map icons. Check the sprite URL and CORS settings',
+    map_resource_http_error:
+      'The map resource request failed (HTTP {status}). Check the resource URLs in the Style',
+    map_resource_load_error:
+      'Failed to load a map resource. Check the resource URLs in the Style and CORS settings'
   },
   setting_basic: {
     default_open_tips: 'Interface for creating and editing resources like dashboards and screen',

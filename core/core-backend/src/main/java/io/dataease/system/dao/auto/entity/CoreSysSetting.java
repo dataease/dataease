@@ -8,8 +8,11 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.Length;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Getter
 @Setter
@@ -28,9 +31,9 @@ public class CoreSysSetting {
     @Column(name = "pkey", nullable = false)
     private String pkey;
 
-    @Size(max = 255)
     @NotNull
     @Comment("值")
+    @JdbcTypeCode(SqlTypes.LONG32VARCHAR)
     @Column(name = "pval", nullable = false)
     private String pval;
 
