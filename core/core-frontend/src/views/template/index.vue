@@ -183,6 +183,8 @@
       v-model="state.templateDialog.visible"
       :show-close="true"
       :destroy-on-close="true"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
       class="de-dialog-form create-dialog"
       width="600px"
     >
