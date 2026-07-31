@@ -9,6 +9,7 @@ import lombok.Data;
 public class DatasourceRequest extends DatasourceDTO {
     private String query;
     private String table;
+    private Integer fetchSize = 10000;
     private boolean tableExtract;
     private String targetDbId;
 
