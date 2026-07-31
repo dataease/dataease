@@ -36,7 +36,7 @@ public class ShareSecretManage {
     @Value("${dataease.default-link-pwd:}")
     private String configuredPwd;
 
-    @Value("${dataease.path.share-secret:/opt/dataease2.0/conf/share-secret.json}")
+    @Value("${dataease.path.share-secret:/opt/dataease3.0/conf/share-secret.json}")
     private String secretFilePath;
 
     @Resource

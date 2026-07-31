@@ -1,8 +1,11 @@
 package io.dataease.config;
 
+import org.hibernate.boot.Metadata;
+import org.hibernate.boot.model.relational.SqlStringGenerationContext;
 import org.hibernate.dialect.OracleDialect;
 import org.hibernate.dialect.identity.IdentityColumnSupport;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
+import org.hibernate.mapping.Table;
 import org.hibernate.query.spi.Limit;
 import org.hibernate.query.sqm.FetchClauseType;
 import org.hibernate.sql.ast.SqlAstTranslator;
@@ -12,6 +15,8 @@ import org.hibernate.sql.ast.spi.StandardSqlAstTranslatorFactory;
 import org.hibernate.sql.ast.tree.Statement;
 import org.hibernate.sql.ast.tree.expression.Expression;
 import org.hibernate.sql.exec.spi.JdbcOperation;
+import org.hibernate.tool.schema.internal.StandardTableExporter;
+import org.hibernate.tool.schema.spi.Exporter;
 
 import java.util.*;
 
@@ -22,6 +27,33 @@ import java.util.*;
  * @date 2025/7/4 16:40
  **/
 public class DataEaseOracle11gDialect extends OracleDialect {
+
+    @Override
+    public Exporter<Table> getTableExporter() {
+        return new StandardTableExporter(this) {
+            @Override
+            public String[] getSqlCreateStrings(org.hibernate.mapping.Table table, Metadata metadata, SqlStringGenerationContext context) {
+                String[] createStrings = super.getSqlCreateStrings(table, metadata, context);
+                return processBooleanDefaults(createStrings);
+            }
+
+            private String[] processBooleanDefaults(String[] sqlStrings) {
+                for (int i = 0; i < sqlStrings.length; i++) {
+                    sqlStrings[i] = sqlStrings[i]
+                            .replace(" default false", " DEFAULT 0")
+                            .replace(" default true", " DEFAULT 1")
+                            .replace(" varbinary(16777216)", " BLOB")
+                            .replace(" varchar(16777216)", " TEXT");
+                }
+                return sqlStrings;
+            }
+        };
+    }
+
+    @Override
+    public String toBooleanValueString(boolean bool) {
+        return bool ? "1" : "0";
+    }
 
     @Override
     public IdentityColumnSupport getIdentityColumnSupport() {
