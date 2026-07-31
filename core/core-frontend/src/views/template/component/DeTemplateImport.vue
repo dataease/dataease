@@ -5,6 +5,7 @@
       class="de-form-item"
       :model="state.templateInfo"
       :rules="state.templateInfoRules"
+      @submit.prevent
       label-position="top"
     >
       <el-form-item :label="t('template_manage.template_name')" prop="name">
