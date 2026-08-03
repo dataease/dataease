@@ -909,6 +909,7 @@ export default {
     members: '人',
     selected_count: '已选 {0} 人',
     select_org_first: '请先在左侧选择组织',
+    select_org_first_top: '请先在上方选择组织',
     search_name_account: '搜索姓名、账号',
     select_member_role: '请选择成员角色',
     no_selected_member: '暂无已选成员'

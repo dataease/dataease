@@ -14,9 +14,10 @@ const props = defineProps({
   title: propTypes.string,
   property: {
     type: Object,
-    default: () => {
-      placeholder: ''
-    }
+    default: () => ({
+      placeholder: '',
+      customPlaceholder: ''
+    })
   }
 })
 
@@ -53,7 +54,9 @@ defineExpose({
         v-model="state.activeStatus"
         value-key="id"
         filterable
-        :placeholder="t('common.please_select') + props.property.placeholder"
+        :placeholder="
+          props.property.customPlaceholder || t('common.please_select') + props.property.placeholder
+        "
         multiple
         @change="selectStatus"
       >
