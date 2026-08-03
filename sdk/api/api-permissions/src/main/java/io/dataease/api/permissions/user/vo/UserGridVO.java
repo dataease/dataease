@@ -37,4 +37,6 @@ public class UserGridVO {
     private Integer origin;
     @Schema(description = "组织")
     private UserOrgItem orgItem;
+    @Schema(description = "是否锁定")
+    private Boolean locked;
 }

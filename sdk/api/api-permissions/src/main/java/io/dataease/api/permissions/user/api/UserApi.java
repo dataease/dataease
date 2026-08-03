@@ -164,6 +164,12 @@ public interface UserApi {
     @PostMapping("/resetPwd/{id}")
     void resetPwd(@PathVariable("id") Long id);
 
+    @Operation(summary = "解锁用户")
+    @Parameter(name = "id", description = "用户ID", required = true, in = ParameterIn.PATH)
+    @DePermit(value = {"m:read", "#p0 + ':manage'"}, busiFlag = "SYSUSER")
+    @PostMapping("/unlock/{id}")
+    void unlock(@PathVariable("id") Long id);
+
     @Operation(summary = "切换用户状态")
     @DePermit(value = {"m:read", "#p0.id + ':manage'"}, busiFlag = "SYSUSER")
     @PostMapping("/enable")

@@ -786,6 +786,9 @@ export default {
     reset_success: 'Reset successful',
     modify_cur_pwd: 'You need to log in again after modifying the current user password',
     password_changed_relogin: 'Password changed, please login again',
+    unlock_user: 'Unlock',
+    confirm_unlock: 'Are you sure to unlock this user?',
+    unlock_user_success: 'Unlocked successfully',
     switch_success: 'Switch successful',
     user_name_pattern_error:
       "Only numbers and letters and {'@'}._- are allowed, and must start with a number or letter",
