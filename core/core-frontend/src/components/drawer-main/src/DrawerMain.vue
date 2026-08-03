@@ -150,6 +150,7 @@ defineExpose({
         :option-list="component.option"
         :title="component.title"
         :property="component.property"
+        :disabled="component.disabled"
         @filter-change="v => filterChange(v, component.field, 'in')"
       />
       <drawer-enum-filter

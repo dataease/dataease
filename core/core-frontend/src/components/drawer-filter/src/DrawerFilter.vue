@@ -18,6 +18,10 @@ const props = defineProps({
       placeholder: '',
       customPlaceholder: ''
     })
+  },
+  disabled: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -54,6 +58,7 @@ defineExpose({
         v-model="state.activeStatus"
         value-key="id"
         filterable
+        :disabled="disabled"
         :placeholder="
           props.property.customPlaceholder || t('common.please_select') + props.property.placeholder
         "
