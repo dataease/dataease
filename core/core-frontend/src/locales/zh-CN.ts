@@ -762,6 +762,7 @@ export default {
     reset_confirm: '是否恢复为初始密码？',
     reset_success: '重置成功',
     modify_cur_pwd: '修改当前用户密码后需要重新登录',
+    password_changed_relogin: '密码变更，请重新登录',
     switch_success: '切换成功',
     user_name_pattern_error: "只允许数字字母以及{'@'}._-且必须数字或字母开头",
     pwd_pattern_error: '8-20位且至少一位大写字母、小写字母、数字、特殊字符',

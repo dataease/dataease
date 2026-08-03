@@ -145,6 +145,10 @@ const showLoginErrorMsg = () => {
   if (!loginErrorMsg.value) {
     return
   }
+  if (loginErrorMsg.value.includes('pwd has been changed')) {
+    ElMessage.error(t('user.password_changed_relogin'))
+    return
+  }
   if (loginErrorMsg.value.includes('token is empty')) {
     ElMessage.error('token为空！')
     return
