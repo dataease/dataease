@@ -31,10 +31,10 @@ public class DynamicCaseNamingStrategy extends CamelCaseToUnderscoresNamingStrat
             "MINUS", "MLSLABEL", "MODE", "MODIFY", "NOAUDIT", "NOCOMPRESS", "NOT",
             "NOWAIT", "NULL", "NUMBER", "OF", "OFFLINE", "ON", "ONLINE", "OPTION",
             "OR", "ORDER", "PCTFREE", "PRIOR", "PRIVILEGES", "PUBLIC", "RAW",
-            "RENAME", "RESOURCE", "REVOKE", "ROW", "ROWID", "ROWNUM", "ROWS",
+            "RENAME", "REVOKE", "ROW", "ROWID", "ROWNUM", "ROWS",
             "SELECT", "SESSION", "SET", "SHARE", "SIZE", "SMALLINT", "START",
             "SUCCESSFUL", "SYNONYM", "SYSDATE", "TABLE", "THEN", "TO", "TRIGGER",
-            "UID", "UNION", "UNIQUE", "UPDATE", "USER", "VALIDATE", "VALUES",
+            "UNION", "UNIQUE", "UPDATE", "USER", "VALIDATE", "VALUES",
             "VARCHAR", "VARCHAR2", "VIEW", "WHENEVER", "WHERE", "WITH"
     );
 
