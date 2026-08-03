@@ -23,11 +23,15 @@ public interface CoreExportTaskRepository extends JpaRepository<CoreExportTask, 
         return count(spec);
     }
 
-    @Transactional
-    default void deleteByExportTimeLessThan(long threshold) {
+    default List<CoreExportTask> findByExportTimeLessThan(long threshold) {
         Specification<CoreExportTask> spec = (root, query, cb) ->
                 cb.lessThan(root.get("exportTime"), threshold);
-        List<CoreExportTask> tasks = findAll(spec);
+        return findAll(spec);
+    }
+
+    @Transactional
+    default void deleteByExportTimeLessThan(long threshold) {
+        List<CoreExportTask> tasks = findByExportTimeLessThan(threshold);
         if (!tasks.isEmpty()) {
             deleteAll(tasks);
         }

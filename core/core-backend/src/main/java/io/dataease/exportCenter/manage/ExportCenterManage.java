@@ -309,8 +309,11 @@ public class ExportCenterManage implements BaseExportApi {
         }
         long expTime = Long.parseLong(val) * 24L * 3600L * 1000L;
         long threshold = System.currentTimeMillis() - expTime;
+        List<CoreExportTask> expiredTasks = coreExportTaskRepository.findByExportTimeLessThan(threshold);
+        for (CoreExportTask task : expiredTasks) {
+            deleteExportTaskDirectory(resolveExportTaskDirectory(task.getId()));
+        }
         coreExportTaskRepository.deleteByExportTimeLessThan(threshold);
-
     }
 
     public void addWatermarkTools(Workbook wb) {
