@@ -70,6 +70,10 @@ public interface TaskApi {
     @GetMapping("/query2Root/{id}")
     String query2Root(@PathVariable("id") Long id);
 
+    default String query2Root(Long id, String resourceUuid) {
+        return query2Root(id);
+    }
+
     @GetMapping("/getLogResourceId/{id}")
     Long getLogResourceId(@PathVariable("id") String id);
 
