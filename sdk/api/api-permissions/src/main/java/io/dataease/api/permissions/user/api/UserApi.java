@@ -72,7 +72,7 @@ public interface UserApi {
     @Operation(summary = "创建")
     @DePermit(value = "m:read", busiFlag = "SYSUSER")
     @PostMapping("/create")
-    Long create(@RequestBody UserCreator creator);
+    String create(@RequestBody UserCreator creator);
 
     @Operation(summary = "创建第三方用户")
     @DePermit(value = "m:read", busiFlag = "SYSUSER")
