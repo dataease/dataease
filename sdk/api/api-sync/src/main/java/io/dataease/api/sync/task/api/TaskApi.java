@@ -66,4 +66,10 @@ public interface TaskApi {
     @GetMapping("/count")
     Long count() throws DEException;
 
+    @GetMapping("/query2Root/{id}")
+    String query2Root(@PathVariable("id") Long id);
+
+    @GetMapping("/getLogResourceId/{id}")
+    Long getLogResourceId(@PathVariable("id") String id);
+
 }

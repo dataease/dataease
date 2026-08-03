@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.Map;
+
 import static io.dataease.constant.AuthResourceEnum.TASK;
 
 /**
@@ -43,5 +45,11 @@ public interface TaskLogApi {
 
     @PostMapping("terminationTask/{logId}")
     void terminationTask(@PathVariable("logId") String logId);
+
+    @PostMapping("/getLogResourceId")
+    Long getLogResourceId(@RequestBody Map<String, String> params);
+
+    @PostMapping("/query2Root")
+    String query2Root(@RequestBody Map<String, String> params);
 
 }
