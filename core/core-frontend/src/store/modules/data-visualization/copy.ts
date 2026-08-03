@@ -54,6 +54,14 @@ export const copyStore = defineStore('copy', {
         if (comp && comp.id) {
           outerIdMap[comp.id] = generateID()
         }
+        // VQuery 的 propValue 中每个查询条件项都有独立ID，一并预生成映射，避免复用后条件项ID冲突
+        if (comp && comp.component === 'VQuery' && Array.isArray(comp.propValue)) {
+          comp.propValue.forEach(function (item) {
+            if (item && item.id) {
+              outerIdMap[item.id] = generateID()
+            }
+          })
+        }
       })
       // 按原始顺序完成布局计算，收集待粘贴组件
       const pendingComponents = componentIds.map(function (componentId, index) {
@@ -85,8 +93,8 @@ export const copyStore = defineStore('copy', {
       })
       // VQuery(过滤组件) 先加入仪表板
       pendingComponents.sort(function (a, b) {
-        const aIsQuery = a.component === 'VQuery' ? 0 : 1
-        const bIsQuery = b.component === 'VQuery' ? 0 : 1
+        const aIsQuery = a.component !== 'VQuery' ? 0 : 1
+        const bIsQuery = b.component !== 'VQuery' ? 0 : 1
         return aIsQuery - bIsQuery
       })
       const oldIds = Object.keys(outerIdMap)
@@ -98,6 +106,12 @@ export const copyStore = defineStore('copy', {
           const propValueStr = JSON.stringify(newComponent.propValue)
           newComponent.propValue = JSON.parse(
             propValueStr.replace(idReplaceReg, function (matched) {
+              return outerIdMap[matched] || matched
+            })
+          )
+          const cascadeStr = JSON.stringify(newComponent.cascade)
+          newComponent.cascade = JSON.parse(
+            cascadeStr.replace(idReplaceReg, function (matched) {
               return outerIdMap[matched] || matched
             })
           )
@@ -147,12 +161,7 @@ export const copyStore = defineStore('copy', {
             data.y = data.y + data.sizeY
           }
           // 旧-新ID映射关系
-          const idMap = {}
-          // 预置当前组件的新ID，保证其最终ID与 VQuery.propValue 中引用的新ID一致
-          const presetId = copyDataTemp.outerIdMap?.[data.id]
-          if (presetId) {
-            idMap[data.id] = presetId
-          }
+          const idMap = deepCopy(copyDataTemp.outerIdMap || {})
           const newComponent = deepCopyHelper(data, idMap)
           newComponent['category'] = 'base'
           if (newComponent.canvasId.includes('Group')) {
@@ -253,8 +262,16 @@ function deepCopyHelper(data, idMap) {
   delete result.mEvents
   delete result.mCommonBackground
   if (result.component === 'VQuery') {
+    const idMapValues = new Set(Object.values(idMap))
     result.propValue?.forEach(queryItem => {
-      queryItem.id = generateID()
+      if (idMap[queryItem.id]) {
+        // 命中映射，替换为预生成的新ID
+        queryItem.id = idMap[queryItem.id]
+      } else if (!idMapValues.has(queryItem.id)) {
+        // 既不是旧ID也不是已生成的新ID，才需要生成
+        queryItem.id = generateID()
+      }
+      // 否则 queryItem.id 已是新ID，保持不变
     })
   }
   if (result.component === 'Group') {
