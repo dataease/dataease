@@ -4,7 +4,79 @@ import isEmpty from 'lodash-es/isEmpty'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { parseJson } from '@/views/chart/components/js/util'
 import { Scene } from '@antv/l7-scene'
-import { deepCopy } from '@/utils/utils'
+import { deepCopy, sanitizeTooltipHtml } from '@/utils/utils'
+
+const MAP_TOOLTIP_BACKGROUND_COLOR_VAR = '--de-map-tooltip-background-color'
+const MAP_TOOLTIP_FONT_SIZE_VAR = '--de-map-tooltip-font-size'
+const DEFAULT_TOOLTIP_BACKGROUND_COLOR = '#FFFFFF'
+const DEFAULT_TOOLTIP_COLOR = '#000000'
+const DEFAULT_TOOLTIP_FONT_SIZE = 10
+const INVALID_CSS_VALUE_PATTERN = /[;{}<>]/
+
+const normalizeTooltipColor = (value: unknown, fallback: string): string => {
+  if (typeof value !== 'string') {
+    return fallback
+  }
+  const color = value.trim()
+  if (!color || INVALID_CSS_VALUE_PATTERN.test(color)) {
+    return fallback
+  }
+  const style = document.createElement('span').style
+  style.color = color
+  return style.color ? color : fallback
+}
+
+const normalizeTooltipFontSize = (value: unknown): number => {
+  const fontSize = typeof value === 'number' ? value : Number.parseFloat(`${value ?? ''}`)
+  if (!Number.isFinite(fontSize)) {
+    return DEFAULT_TOOLTIP_FONT_SIZE
+  }
+  return Math.min(200, Math.max(8, fontSize))
+}
+
+export const escapeTooltipHtml = (value: unknown): string => {
+  return `${value ?? ''}`.replace(
+    /[&<>'"]/g,
+    char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char])
+  )
+}
+
+export const setupMapTooltipStyle = (
+  container: string,
+  backgroundColor: unknown,
+  fontSize?: unknown
+): string => {
+  const containerElement = document.getElementById(container)
+  if (containerElement) {
+    // 动态样式值仅通过 CSSOM 写入，避免进入样式文本
+    containerElement.style.setProperty(
+      MAP_TOOLTIP_BACKGROUND_COLOR_VAR,
+      normalizeTooltipColor(backgroundColor, DEFAULT_TOOLTIP_BACKGROUND_COLOR)
+    )
+    if (fontSize !== undefined) {
+      containerElement.style.setProperty(
+        MAP_TOOLTIP_FONT_SIZE_VAR,
+        `${normalizeTooltipFontSize(fontSize)}px`
+      )
+    }
+  }
+  return `#${CSS.escape(container)}`
+}
+
+export const createSymbolicTooltipElement = (
+  content: string,
+  tooltip: Record<string, unknown>,
+  fontFamily?: unknown
+): HTMLElement => {
+  const element = document.createElement('div')
+  element.style.fontSize = `${normalizeTooltipFontSize(tooltip.fontSize)}px`
+  element.style.color = normalizeTooltipColor(tooltip.color, DEFAULT_TOOLTIP_COLOR)
+  if (typeof fontFamily === 'string') {
+    element.style.fontFamily = fontFamily
+  }
+  element.innerHTML = sanitizeTooltipHtml(content)
+  return element
+}
 
 export const configCarouselTooltip = (chart, view, data, scene, customSubArea?, drawOption?) => {
   if (['bubble-map', 'map'].includes(chart.type)) {
@@ -333,49 +405,28 @@ export class CarouselManager {
     const tooltipFontSize = tooltipStyle['l7plot-tooltip']['font-size']
     const style = document.createElement('style')
     style.id = 'style-' + this.chart.container
-    style.innerHTML = `
-            #${this.chart.container} .l7-popup-content {
-                background-color: ${tooltipBackgroundColor} !important;
-                font-size: ${tooltipFontSize};
+    const tooltipSelector = setupMapTooltipStyle(
+      this.chart.container,
+      tooltipBackgroundColor,
+      tooltipFontSize
+    )
+    style.textContent = `
+            ${tooltipSelector} .l7-popup-content {
+                background-color: var(${MAP_TOOLTIP_BACKGROUND_COLOR_VAR}, ${DEFAULT_TOOLTIP_BACKGROUND_COLOR}) !important;
+                font-size: var(${MAP_TOOLTIP_FONT_SIZE_VAR}, ${DEFAULT_TOOLTIP_FONT_SIZE}px);
                 padding: 10px 10px 6px;
                 line-height: 1.6;
             }
-            #${this.chart.container} .l7-popup-tip {
-                border-top-color: ${tooltipBackgroundColor} !important;
+            ${tooltipSelector} .l7-popup-tip {
+                border-top-color: var(${MAP_TOOLTIP_BACKGROUND_COLOR_VAR}, ${DEFAULT_TOOLTIP_BACKGROUND_COLOR}) !important;
             }
         `
     document.head.appendChild(style)
 
     const popupData = this.getPopupData(index)
     if (popupData?.data && popupData.centroid?.length >= 2) {
-      let tooltipItem = ''
-      this.getTooltipItems(popupData.data).forEach(fieldData => {
-        tooltipItem += `
-                    <li style="list-style-type: none; margin-bottom: 4px; white-space: nowrap; display: flex; justify-content: space-between;">
-                        <span style="${this.objectToSemicolonSeparated(
-                          tooltipStyle['l7plot-tooltip__name']
-                        )}">${fieldData.name}</span>
-                        <span style="${this.objectToSemicolonSeparated(
-                          tooltipStyle['l7plot-tooltip__value']
-                        )}">${fieldData.value}</span>
-                    </li>`
-      })
-
-      const html = `
-                <div>
-                <div style="${this.objectToSemicolonSeparated(
-                  tooltipStyle['l7plot-tooltip__title']
-                )}">${popupData.data.name}</div>
-                    <ul style="${this.objectToSemicolonSeparated(
-                      tooltipStyle['l7plot-tooltip__list']
-                    )}">
-                        ${tooltipItem}
-                    </ul>
-                </div>
-            `
-
       this.popup.setLngLat({ lng: popupData.centroid[0], lat: popupData.centroid[1] })
-      this.popup.setHTML(html)
+      this.popup.setHTML(this.createPopupContent(popupData.data, tooltipStyle))
       this.popup.closeButton = false
       this.view.addLayer(this.popup)
       // 地图层高亮
@@ -459,19 +510,42 @@ export class CarouselManager {
     }
   }
 
-  /**
-   * 将对象转换为 CSS 属性
-   * @param obj
-   * @private
-   */
-  private objectToSemicolonSeparated(obj: any): string {
-    let result = ''
-    for (const key in obj) {
-      if (obj.hasOwnProperty(key)) {
-        result += `${this.convertToSnakeCase(key)}:${obj[key]};`
+  private createPopupContent(data, tooltipStyle): HTMLElement {
+    const content = document.createElement('div')
+    const title = document.createElement('div')
+    this.applyElementStyles(title, tooltipStyle['l7plot-tooltip__title'])
+    title.textContent = `${data.name ?? ''}`
+    content.appendChild(title)
+
+    const list = document.createElement('ul')
+    this.applyElementStyles(list, tooltipStyle['l7plot-tooltip__list'])
+    this.getTooltipItems(data).forEach(fieldData => {
+      const item = document.createElement('li')
+      item.style.listStyleType = 'none'
+      item.style.marginBottom = '4px'
+      item.style.whiteSpace = 'nowrap'
+      item.style.display = 'flex'
+      item.style.justifyContent = 'space-between'
+
+      const name = document.createElement('span')
+      this.applyElementStyles(name, tooltipStyle['l7plot-tooltip__name'])
+      name.textContent = `${fieldData.name ?? ''}`
+      const value = document.createElement('span')
+      this.applyElementStyles(value, tooltipStyle['l7plot-tooltip__value'])
+      value.textContent = `${fieldData.value ?? ''}`
+      item.append(name, value)
+      list.appendChild(item)
+    })
+    content.appendChild(list)
+    return content
+  }
+
+  private applyElementStyles(element: HTMLElement, styles: Record<string, unknown>): void {
+    Object.entries(styles || {}).forEach(([key, value]) => {
+      if (value !== null && value !== undefined) {
+        element.style.setProperty(this.convertToSnakeCase(key), `${value}`)
       }
-    }
-    return result
+    })
   }
 
   private cancelHighlightLayer(index?: number): void {
@@ -590,21 +664,20 @@ export class CarouselManager {
         }
         const style = document.createElement('style')
         style.id = 'style-' + this.chart.container
-        style.innerHTML = `
-          #${this.chart.container} .l7-popup-content {
-            background-color: ${tooltip.backgroundColor} !important;
+        const tooltipSelector = setupMapTooltipStyle(this.chart.container, tooltip.backgroundColor)
+        style.textContent = `
+          ${tooltipSelector} .l7-popup-content {
+            background-color: var(${MAP_TOOLTIP_BACKGROUND_COLOR_VAR}, ${DEFAULT_TOOLTIP_BACKGROUND_COLOR}) !important;
             padding: 6px 10px 6px;
             line-height: 1.6;
           }
-          #${this.chart.container} .l7-popup-tip {
-           border-top-color: ${tooltip.backgroundColor} !important;
+          ${tooltipSelector} .l7-popup-tip {
+           border-top-color: var(${MAP_TOOLTIP_BACKGROUND_COLOR_VAR}, ${DEFAULT_TOOLTIP_BACKGROUND_COLOR}) !important;
           }
         `
         document.head.appendChild(style)
         const lngField = this.chart.xAxis[0].dataeaseName
         const latField = this.chart.xAxis[1].dataeaseName
-        const htmlPrefix = `<div style='font-size:${tooltip.fontSize}px;color:${tooltip.color};'>`
-        const htmlSuffix = '</div>'
         const data = this.view.sourceOption.data[index]
         if (data && data.details?.length) {
           const fieldData = {
@@ -612,12 +685,11 @@ export class CarouselManager {
             ...Object.fromEntries(mergeDetailsToMap(data.details))
           }
           const content = buildTooltipContent(tooltip, fieldData, showFields)
-          const html = `${htmlPrefix}${content}${htmlSuffix}`
           this.popup.setLngLat({
             lng: data[lngField],
             lat: data[latField]
           })
-          this.popup.setHTML(html)
+          this.popup.setHTML(createSymbolicTooltipElement(content, tooltip))
           this.popup.closeButton = false
           this.scene.addPopup(this.popup)
           this.popup.addTo(this.scene)
@@ -652,13 +724,16 @@ export class CarouselManager {
       if (tooltip.customContent) {
         content = tooltip.customContent
         showFields.forEach(field => {
-          content = content.replace(`\${${field.split('@')[1]}}`, fieldData[field.split('@')[0]])
+          content = content.replace(
+            `\${${field.split('@')[1]}}`,
+            escapeTooltipHtml(fieldData[field.split('@')[0]])
+          )
         })
       } else {
         showFields.forEach(field => {
-          content += `<span style="margin-bottom: 4px">${field.split('@')[1]}: ${
+          content += `<span>${escapeTooltipHtml(field.split('@')[1])}: ${escapeTooltipHtml(
             fieldData[field.split('@')[0]]
-          }</span><br>`
+          )}</span><br>`
         })
       }
       return content.replace(/\n/g, '<br>')

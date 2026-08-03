@@ -2064,7 +2064,8 @@ export default {
     carousel_enable: '开启轮播',
     carousel_stay_time: '停留时长（秒）',
     carousel_interval: '轮播间隔（秒）',
-    custom_tooltip_content_tip: "可以${'{'}fieldName{'}'}的形式读取字段值（支持HTML）",
+    custom_tooltip_content_tip:
+      "可以${'{'}fieldName{'}'}的形式读取字段值（支持部分安全HTML标签，不支持属性和样式）",
     legend_range_division: '图例区间划分',
     legend_equal_range: '等分区间',
     legend_custom_range: '自定义区间',

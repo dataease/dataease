@@ -2110,7 +2110,7 @@ export default {
     carousel_stay_time: 'Stay Duration (seconds)',
     carousel_interval: 'Carousel Interval (seconds)',
     custom_tooltip_content_tip:
-      "Can read field values in the form of ${'{'}fieldName{'}'} (Support HTML) ",
+      "Can read field values in the form of ${'{'}fieldName{'}'} (Supports limited safe HTML tags without attributes or styles)",
     legend_range_division: 'Legend range division',
     legend_equal_range: 'Equal range',
     legend_custom_range: 'Custom range',

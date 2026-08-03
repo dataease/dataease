@@ -23,7 +23,12 @@ import {
   mapRendered,
   qqMapRendered
 } from '@/views/chart/components/js/panel/common/common_antv'
-import { configCarouselTooltip } from '@/views/chart/components/js/panel/charts/map/tooltip-carousel'
+import {
+  configCarouselTooltip,
+  createSymbolicTooltipElement,
+  escapeTooltipHtml,
+  setupMapTooltipStyle
+} from '@/views/chart/components/js/panel/charts/map/tooltip-carousel'
 import { filter } from 'lodash-es'
 const { t } = useI18n()
 
@@ -445,20 +450,19 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
       }
       const style = document.createElement('style')
       style.id = styleId
-      style.innerHTML = `
-          #${container} .l7-popup-content {
-            background-color: ${tooltip.backgroundColor} !important;
+      const tooltipSelector = setupMapTooltipStyle(container, tooltip.backgroundColor)
+      style.textContent = `
+          ${tooltipSelector} .l7-popup-content {
+            background-color: var(--de-map-tooltip-background-color, #FFFFFF) !important;
             padding: 6px 10px 6px;
             line-height: 1.6;
             border-top-left-radius: 3px;
           }
-          #${container} .l7-popup-tip {
-           border-top-color: ${tooltip.backgroundColor} !important;
+          ${tooltipSelector} .l7-popup-tip {
+           border-top-color: var(--de-map-tooltip-background-color, #FFFFFF) !important;
           }
         `
       document.head.appendChild(style)
-      const htmlPrefix = `<div style='font-size:${tooltip.fontSize}px;color:${tooltip.color};font-family: ${chart.fontFamily}'>`
-      const htmlSuffix = '</div>'
       const containerElement = document.getElementById(container)
       if (containerElement) {
         containerElement.addEventListener('mousemove', event => {
@@ -498,7 +502,7 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
             title: '',
             closeButton: false,
             closeOnClick: true,
-            html: `${htmlPrefix}${content}${htmlSuffix}`
+            html: createSymbolicTooltipElement(content, tooltip, chart.fontFamily)
           })
           scene.addPopup(popup)
         }
@@ -515,7 +519,7 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
                 ...Object.fromEntries(this.mergeDetailsToMap(item.details))
               }
               const content = this.buildTooltipContent(tooltip, fieldData, showFields)
-              return `${htmlPrefix}${content}${htmlSuffix}`
+              return createSymbolicTooltipElement(content, tooltip, chart.fontFamily)
             }
           }
         ],
@@ -537,13 +541,16 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
     if (tooltip.customContent) {
       content = tooltip.customContent
       showFields.forEach(field => {
-        content = content.replace(`\${${field.split('@')[1]}}`, fieldData[field.split('@')[0]])
+        content = content.replace(
+          `\${${field.split('@')[1]}}`,
+          escapeTooltipHtml(fieldData[field.split('@')[0]])
+        )
       })
     } else {
       showFields.forEach(field => {
-        content += `<span style="margin-bottom: 4px">${field.split('@')[1]}: ${
+        content += `<span>${escapeTooltipHtml(field.split('@')[1])}: ${escapeTooltipHtml(
           fieldData[field.split('@')[0]]
-        }</span><br>`
+        )}</span><br>`
       })
     }
     return content.replace(/\n/g, '<br>')
