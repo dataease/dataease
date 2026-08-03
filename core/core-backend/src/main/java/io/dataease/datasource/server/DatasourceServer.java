@@ -1221,7 +1221,6 @@ public class DatasourceServer implements DatasourceApi {
         DsTypeDTO datasourceType = datasetSQLManage.getDatasourceType(dsMap, datasourceSchemaDTO.getId());
         String sql = "SELECT * FROM " + schema + datasourceType.getPrefix() + tableName + datasourceType.getSuffix();
         Provider provider = ProviderFactory.getProvider(datasourceSchemaDTO.getType());
-        sql = provider.transSqlDialect(sql, dsMap);
         sql = new String(Base64.getEncoder().encode(sql.getBytes()));
         PreviewSqlDTO previewSqlDTO = new PreviewSqlDTO();
         previewSqlDTO.setSql(sql);
