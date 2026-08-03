@@ -26,7 +26,6 @@ public class CheckDsStatusJob implements Job {
         LogUtil.info("Begin to check ds status...");
         try {
             LicenseUtil.validate();
-            datasourceServer.updateDatasourceStatus();
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
         }
