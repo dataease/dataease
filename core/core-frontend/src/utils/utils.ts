@@ -69,12 +69,12 @@ export const setColorName = (obj, keyword: string, key?: string, colorKey?: stri
     return
   }
   const name = obj[key]
-  const index = name.indexOf(keyword)
+  const index = name.toLowerCase().indexOf(keyword.toLowerCase())
   if (index > -1) {
     const textCode =
       name.substring(0, index) +
       '<span class="search-key-span">' +
-      keyword +
+      name.substring(index, index + keyword.length) +
       '</span>' +
       name.substring(index + keyword.length, name.length)
     obj[colorKey] = DOMPurify.sanitize(textCode, {
@@ -95,7 +95,7 @@ export const getHighlightSegments = (text: string, keyword: string): HighlightSe
   if (!keyword) {
     return [{ text, highlight: false }]
   }
-  const index = text.indexOf(keyword)
+  const index = text.toLowerCase().indexOf(keyword.toLowerCase())
   if (index < 0) {
     return [{ text, highlight: false }]
   }
@@ -103,7 +103,7 @@ export const getHighlightSegments = (text: string, keyword: string): HighlightSe
   if (index > 0) {
     segments.push({ text: text.slice(0, index), highlight: false })
   }
-  segments.push({ text: keyword, highlight: true })
+  segments.push({ text: text.slice(index, index + keyword.length), highlight: true })
   const suffix = text.slice(index + keyword.length)
   if (suffix) {
     segments.push({ text: suffix, highlight: false })
