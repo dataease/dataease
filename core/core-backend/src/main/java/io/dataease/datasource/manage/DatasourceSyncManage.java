@@ -272,6 +272,9 @@ public class DatasourceSyncManage {
         datasourceRequest.setDatasource(coreDatasource);
         EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());
         int pageNumber = 1000; //一次插入 1000条
+        if (engine.getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.oracle.name())) {
+            pageNumber = 1;
+        }
         int totalPage;
         if (dataList.size() % pageNumber > 0) {
             totalPage = dataList.size() / pageNumber + 1;
@@ -337,6 +340,7 @@ public class DatasourceSyncManage {
         datasourceRequest.setDatasource(coreDatasource);
         EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());
         datasourceRequest.setQuery(engineProvider.createTableSql(tableName, tableFields, engine));
+        System.out.println(datasourceRequest.getQuery());
         if (engineProvider.needCheckExistTable()) {
             if (!provider.getTables(datasourceRequest).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList()).contains(tableName)) {
                 provider.execDDL(datasourceRequest);
