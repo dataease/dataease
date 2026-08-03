@@ -2,6 +2,9 @@ package io.dataease.config;
 
 import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
 import org.hibernate.boot.model.naming.Identifier;
+import org.hibernate.dialect.Dialect;
+import org.hibernate.dialect.DmDialect;
+import org.hibernate.dialect.OracleDialect;
 import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
 
 import java.nio.charset.StandardCharsets;
@@ -67,9 +70,9 @@ public class DynamicCaseNamingStrategy extends CamelCaseToUnderscoresNamingStrat
         if (name.getText().startsWith("QRTZ_")) {
             identifier = Identifier.toIdentifier(name.getText().toUpperCase());
         }
-        // 通过context获取数据库类型,判断是否是 Oracle
-        String dialectClassName = context.getDialect().getClass().getName();
-        if (dialectClassName.contains("Oracle")) {
+        // Oracle及兼容数据库(达梦等)特殊处理
+        Dialect dialect = context.getDialect();
+        if (dialect instanceof OracleDialect || dialect instanceof DmDialect) {
             identifier = truncateWithHashFromStart(identifier);
             identifier =  addQuotesIfOracleKeyword(identifier);
         }
@@ -83,10 +86,14 @@ public class DynamicCaseNamingStrategy extends CamelCaseToUnderscoresNamingStrat
         if (currentTableName.get().startsWith("QRTZ_")) {
             identifier = Identifier.toIdentifier(name.getText().toUpperCase());
         }
-        // 通过context获取数据库类型,判断是否是 Oracle
-        String dialectClassName = context.getDialect().getClass().getName();
-        if (dialectClassName.contains("Oracle")) {
-            identifier = addQuotesIfOracleKeyword(identifier);
+        // Oracle及兼容数据库(达梦等)特殊处理
+        Dialect dialect = context.getDialect();
+        if (dialect instanceof OracleDialect || dialect instanceof DmDialect) {
+            if ("uid".equalsIgnoreCase(identifier.getText())) {
+                identifier = Identifier.toIdentifier("UID", true);
+            } else {
+                identifier = addQuotesIfOracleKeyword(identifier);
+            }
         }
         return identifier;
 
