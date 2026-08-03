@@ -153,7 +153,7 @@ export class FlowMap extends L7ChartView<Scene, L7Config> {
     }
     const asteriskField = '*'
     const data = []
-    chart.data?.tableRow.forEach(item => {
+    chart.data?.tableRow?.forEach(item => {
       const newKey = 'f_record'
       const newObj = Object.keys(item).reduce((acc, key) => {
         if (key === asteriskField) {
