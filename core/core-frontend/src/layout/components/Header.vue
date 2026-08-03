@@ -145,15 +145,6 @@ onMounted(() => {
       <HeaderMenuItem v-for="menu in routers" :key="menu.path" :menu="menu"></HeaderMenuItem>
     </el-menu>
     <div class="operate-setting" v-if="!desktop">
-      <el-tooltip effect="dark" :content="t('commons.assistant')" placement="bottom">
-        <el-icon
-          style="margin: 0 10px"
-          class="ai-icon"
-          v-if="aiBaseUrl && !showOverlay && appearanceStore.getShowAi"
-        >
-          <Icon name="dv-ai"><dvAi @click="handleAiClick" class="svg-icon" /></Icon>
-        </el-icon>
-      </el-tooltip>
       <el-tooltip effect="dark" :content="t('data_export.export_center')" placement="bottom">
         <el-icon
           class="preview-download_icon"
