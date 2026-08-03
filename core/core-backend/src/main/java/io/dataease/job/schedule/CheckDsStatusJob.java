@@ -25,9 +25,8 @@ public class CheckDsStatusJob implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
         LogUtil.info("Begin to check ds status...");
         try {
-            // 兼容同步管理
-            // datasourceServer.updateDatasourceStatus() 前补 LicenseUtil.validate()，让 Quartz 线程先初始化 license ThreadLocal
             LicenseUtil.validate();
+            datasourceServer.updateDatasourceStatus();
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
         }
