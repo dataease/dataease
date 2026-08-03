@@ -61,6 +61,42 @@ export const sanitizeHtml = (html: string): string => {
   return DOMPurify.sanitize(html)
 }
 
+const TOOLTIP_ALLOWED_TAGS = [
+  'div',
+  'span',
+  'br',
+  'p',
+  'b',
+  'strong',
+  'i',
+  'em',
+  'u',
+  's',
+  'small',
+  'sub',
+  'sup',
+  'ul',
+  'ol',
+  'li',
+  'table',
+  'thead',
+  'tbody',
+  'tr',
+  'th',
+  'td',
+  'code',
+  'pre'
+]
+
+export const sanitizeTooltipHtml = (html: string): string => {
+  // 提示框仅保留格式标签，避免自定义内容携带事件、外链或动态样式
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: TOOLTIP_ALLOWED_TAGS,
+    ALLOWED_ATTR: [],
+    ALLOW_DATA_ATTR: false
+  })
+}
+
 export const setColorName = (obj, keyword: string, key?: string, colorKey?: string) => {
   key = key || 'name'
   colorKey = colorKey || 'colorName'
