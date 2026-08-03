@@ -7,8 +7,7 @@ import lombok.Data;
 @Data
 public class VisualizationOutParamsJumpVO {
 
-    @JsonSerialize(using = ToStringSerializer.class)
-    private Long id;
+    private String id;
 
     private String type;
 

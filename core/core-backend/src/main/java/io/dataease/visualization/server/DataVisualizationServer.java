@@ -548,7 +548,12 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 VisualizationLinkJumpTargetViewInfo visualizationLinkJumpTargetViewInfo = new VisualizationLinkJumpTargetViewInfo();
                 BeanUtils.copyBean(visualizationLinkJumpTargetViewInfo, visualizationLinkJumpTargetViewInfoVO);
                 visualizationLinkJumpTargetViewInfo.setTargetId(newId);
-                visualizationLinkJumpTargetViewInfoVO.setTargetFieldId(Long.valueOf(String.valueOf(linkJumpInfoIdMap.get(visualizationLinkJumpTargetViewInfoVO.getTargetFieldId()))));
+                visualizationLinkJumpTargetViewInfo.setLinkJumpInfoId(linkJumpInfoIdMap.get(visualizationLinkJumpTargetViewInfoVO.getLinkJumpInfoId()));
+                try{
+                    visualizationLinkJumpTargetViewInfoVO.setTargetFieldId(String.valueOf(dsTableFieldsIdMap.get(Long.valueOf(visualizationLinkJumpTargetViewInfoVO.getTargetFieldId()))));
+                }catch (Exception e){
+                    LogUtil.warn(e);
+                }
             });
         }
         //保存图表信息

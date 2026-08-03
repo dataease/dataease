@@ -19,10 +19,8 @@ public class VisualizationLinkJumpTargetViewInfoVO {
      */
     @JsonSerialize(using = ToStringSerializer.class)
     private Long sourceFieldActiveId;
-    @JsonSerialize(using = ToStringSerializer.class)
-    private Long targetViewId;
-    @JsonSerialize(using = ToStringSerializer.class)
-    private Long targetFieldId;
+    private String targetViewId;
+    private String targetFieldId;
     @JsonSerialize(using = ToStringSerializer.class)
     private Long copyFrom;
     @JsonSerialize(using = ToStringSerializer.class)
