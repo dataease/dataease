@@ -894,6 +894,7 @@ export default {
     members: '人',
     selected_count: '已選 {0} 人',
     select_org_first: '請先在左側選擇組織',
+    select_org_first_top: '請先在上方選擇組織',
     search_name_account: '搜尋姓名、帳號',
     select_member_role: '請選擇成員角色',
     no_selected_member: '暫無已選成員'

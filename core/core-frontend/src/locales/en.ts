@@ -936,6 +936,7 @@ export default {
     members: 'members',
     selected_count: 'Selected {0} members',
     select_org_first: 'Please select an organization from the left panel',
+    select_org_first_top: 'Please select an organization from the top panel',
     search_name_account: 'Search name or account',
     select_member_role: 'Please select member role',
     no_selected_member: 'No members selected'
