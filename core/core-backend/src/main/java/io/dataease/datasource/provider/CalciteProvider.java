@@ -468,6 +468,7 @@ public class CalciteProvider extends Provider {
                 configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Mysql.class);
                 configuration.setDriver("org.mariadb.jdbc.Driver");
             }
+            break;
             case impala:
                 configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Impala.class);
                 break;
