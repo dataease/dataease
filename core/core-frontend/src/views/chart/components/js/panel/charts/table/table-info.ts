@@ -87,6 +87,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
     let fields = chart.data?.fields ?? []
     const columns = []
     const meta = []
+    const displayFieldSet = new Set<string>()
     const axisMap = chart.xAxis.reduce((pre, cur) => {
       pre[cur.dataeaseName] = cur
       return pre
@@ -114,6 +115,11 @@ export class TableInfo extends S2ChartView<TableSheet> {
       if (f?.hide === true) {
         return
       }
+      // 同一字段可能同时参与指标和动态值计算，明细中只保留一个展示列
+      if (displayFieldSet.has(ele.dataeaseName)) {
+        return
+      }
+      displayFieldSet.add(ele.dataeaseName)
       columns.push({ field: ele.dataeaseName, title: ele.chartShowName ?? ele.name })
       meta.push({
         field: ele.dataeaseName,
