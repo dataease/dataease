@@ -24,9 +24,7 @@ public class LiquidHandler extends NumericalChartHandler {
         Map<String, Object> customAttr = view.getCustomAttr();
         Map<String, Object> misc = (Map<String, Object>) customAttr.get("misc");
         ChartViewFieldDTO liquidMaxViewField = getDynamicField(misc, "liquidMaxType", "liquidMaxField");
-        if (liquidMaxViewField != null) {
-            yAxis.add(liquidMaxViewField);
-        }
+        appendDynamicField(yAxis, liquidMaxViewField, view.getIsExcelExport());
         axisMap.put(ChartAxis.xAxis, new ArrayList<>());
         axisMap.put(ChartAxis.yAxis, yAxis);
         var context = new HashMap<String, Object>();

@@ -98,6 +98,18 @@ public class NumericalChartHandler extends DefaultChartHandler {
         return null;
     }
 
+    protected void appendDynamicField(List<ChartViewFieldDTO> yAxis, ChartViewFieldDTO dynamicField, boolean excelExport) {
+        if (dynamicField == null) {
+            return;
+        }
+        // Excel 表头按 dataeaseName 去重，导出查询需同步跳过重复动态字段
+        boolean duplicated = excelExport && yAxis.stream()
+                .anyMatch(field -> StringUtils.equals(field.getDataeaseName(), dynamicField.getDataeaseName()));
+        if (!duplicated) {
+            yAxis.add(dynamicField);
+        }
+    }
+
     protected void resetDynamicField(Map<String, Object> target, String type, String field) {
         target.put(type, "fix");
         target.put(field, Map.of("id", "", "summary", ""));
