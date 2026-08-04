@@ -7,6 +7,7 @@ import mobileWholeBg from '@/assets/img/bg-mobile.png'
 import mobileDeTop from '@/assets/img/mobile-de-top.png'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { showToast } from 'vant'
+import xss from 'xss'
 import { loginApi, queryDekey } from '@/api/login'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { useUserStoreWithOut } from '@/store/modules/user'
@@ -70,6 +71,9 @@ const inputFocus = ref('')
 const handleFocus = val => {
   inputFocus.value = val
 }
+const showFoot = ref(false)
+const footContent = ref(null)
+
 const mobileLogin = ref('')
 const mobileLoginBg = ref('')
 const loadAppearance = () => {
@@ -79,6 +83,35 @@ const loadAppearance = () => {
 
   if (appearanceStore.getMobileLoginBg) {
     mobileLoginBg.value = appearanceStore.getMobileLoginBg
+  }
+
+  if (appearanceStore.getFoot) {
+    showFoot.value = appearanceStore.getFoot === 'true'
+    if (showFoot.value) {
+      const content = appearanceStore.getFootContent
+      const myXss = new xss['FilterXSS']({
+        css: {
+          whiteList: {
+            'background-color': true,
+            'text-align': true,
+            color: true,
+            'margin-top': true,
+            'margin-bottom': true,
+            'line-height': true,
+            'box-sizing': true,
+            'padding-top': true,
+            'padding-bottom': true,
+            'font-size': true
+          }
+        },
+        whiteList: {
+          ...xss['whiteList'],
+          p: ['style'],
+          span: ['style']
+        }
+      })
+      footContent.value = myXss.process(content)
+    }
   }
 }
 loadAppearance()
@@ -252,7 +285,9 @@ const loadFail = () => {
         </van-cell-group>
         <van-button block type="primary" native-type="submit"> 登录 </van-button>
       </van-form>
+      <div v-if="showFoot" class="dynamic-login-foot" v-html="footContent" />
     </div>
+
     <XpackComponent
       jsname="L2NvbXBvbmVudC9sb2dpbi9Nb2JpbGVIYW5kbGVy"
       @switch-type="switchType"
@@ -295,11 +330,22 @@ const loadFail = () => {
   background-size: contain;
   background-repeat: no-repeat;
 
+  .dynamic-login-foot {
+    width: calc(100% - 32px);
+    position: absolute;
+    bottom: 20px;
+    word-break: break-word;
+  }
+
   .mobile-login_bg {
     width: 100%;
     height: 100%;
     position: relative;
     z-index: 1;
+  }
+
+  .mobile-handler-container {
+    bottom: 70px !important;
   }
 
   .mobile-login-content {
