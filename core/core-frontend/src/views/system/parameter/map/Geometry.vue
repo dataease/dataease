@@ -207,9 +207,7 @@
   <el-dialog
     v-model="customAreaDialog"
     class="create-dialog"
-    :title="`${editedCustomArea.id ? t('common.edit') : t('common.add')} ${t(
-      'system.custom_area'
-    )}`"
+    :title="`${editedCustomArea.id ? t('common.edit') : t('common.add')}${t('system.custom_area')}`"
     width="500"
     destroy-on-close
   >
@@ -217,6 +215,7 @@
       ref="areaFormRef"
       :model="editedCustomArea"
       label-position="top"
+      @submit.prevent
       label-width="auto"
       :rules="areaRules"
     >
@@ -241,6 +240,7 @@
       ref="subAreaFormRef"
       :model="customSubArea"
       label-position="top"
+      @submit.prevent
       label-width="auto"
       :rules="areaRules"
     >
