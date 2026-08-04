@@ -196,6 +196,7 @@ const loadArrearance = () => {
             'background-color': true,
             'text-align': true,
             color: true,
+            'text-decoration': true,
             'margin-top': true,
             'margin-bottom': true,
             'line-height': true,
