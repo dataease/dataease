@@ -10,10 +10,101 @@ import { valueFormatter } from '../../../../formatter'
 const { t } = useI18n()
 
 const DEFAULT_DATA = []
+// 标记已修正的图例实例，避免 G2 重绘复用对象时重复覆盖内部换算方法
+const CONTINUOUS_LEGEND_RANGE_FIXED = Symbol('continuousLegendRangeFixed')
+
+// 从当前图例实例读取实时数据域，避免数据刷新后继续使用旧的最大最小值
+const getContinuousLegendDomain = legend => {
+  const domain = legend?.attributes?.domain
+  if (!Array.isArray(domain) || domain.length < 2) {
+    return
+  }
+  const [min, max] = domain
+  if (!Number.isFinite(min) || !Number.isFinite(max) || min > max) {
+    return
+  }
+  return [min, max] as [number, number]
+}
+
+// 按数据量级计算浮点容差，用于识别经过运算后仍代表同一端点的数值
+const isSameLegendValue = (current: number, target: number, min: number, max: number) => {
+  if (!Number.isFinite(current) || !Number.isFinite(target)) {
+    return false
+  }
+  const tolerance = Math.max(1, Math.abs(min), Math.abs(max)) * Number.EPSILON * 8
+  return Math.abs(current - target) <= tolerance
+}
+
+// 将接近端点的结果吸附回原始值，同时阻止换算结果越过真实数据域
+const snapLegendValue = (value: number, min: number, max: number) => {
+  if (isSameLegendValue(value, min, min, max)) {
+    return min
+  }
+  if (isSameLegendValue(value, max, min, max)) {
+    return max
+  }
+  return Math.max(min, Math.min(max, value))
+}
+
+// 用全量区间探测 AntV 是否仍返回 [0, max - min]，防止上游修复后被二次补偿
+const hasBrokenVerticalRange = (legend, getRealSelection) => {
+  const domain = getContinuousLegendDomain(legend)
+  if (!domain) {
+    return false
+  }
+  const [min, max] = domain
+  const fullRange = getRealSelection.call(legend, domain)
+  if (!Array.isArray(fullRange) || fullRange.length < 2) {
+    return false
+  }
+  const usesZeroBasedRange =
+    isSameLegendValue(fullRange[0], 0, min, max) &&
+    isSameLegendValue(fullRange[1], max - min, min, max)
+  const alreadyMatchesDomain =
+    isSameLegendValue(fullRange[0], min, min, max) && isSameLegendValue(fullRange[1], max, min, max)
+  return usesZeroBasedRange && !alreadyMatchesDomain
+}
+
+// 同时修正图例筛选范围和悬浮指示值，使交互数据与图例标签保持同一数据域
+const fixVerticalContinuousLegendRange = legend => {
+  if (!legend || legend[CONTINUOUS_LEGEND_RANGE_FIXED]) {
+    return
+  }
+  const getRealSelection = legend.getRealSelection
+  const getRealValue = legend.getRealValue
+  if (typeof getRealSelection !== 'function' || typeof getRealValue !== 'function') {
+    return
+  }
+  legend.getRealSelection = function (range) {
+    const selection = getRealSelection.call(this, range)
+    const domain = getContinuousLegendDomain(this)
+    if (!domain || !hasBrokenVerticalRange(this, getRealSelection)) {
+      return selection
+    }
+    const [min, max] = domain
+    // 旧实现缺少 min 偏移，将零基区间平移回真实数据域
+    return [
+      snapLegendValue(selection[0] + min, min, max),
+      snapLegendValue(selection[1] + min, min, max)
+    ]
+  }
+  legend.getRealValue = function (value) {
+    const realValue = getRealValue.call(this, value)
+    const domain = getContinuousLegendDomain(this)
+    if (!domain || !hasBrokenVerticalRange(this, getRealSelection)) {
+      return realValue
+    }
+    const [min, max] = domain
+    // indicator 使用相同偏移规则，避免筛选正确但悬浮值仍少一个 min
+    return snapLegendValue(realValue + min, min, max)
+  }
+  legend[CONTINUOUS_LEGEND_RANGE_FIXED] = true
+}
+
 // 复制 G2 标准组件注册表，仅在热力图 Runtime 内覆盖图例实现
 const heatmapLibrary = stdlib() as Record<string, any>
 // 固定图例显示方向，避免 G2 根据停靠位置自动切换水平或垂直布局
-const withLegendOrientation = component => {
+const withLegendOrientation = (component, fixContinuousRange = false) => {
   const customComponent = options => {
     // 私有方向配置不继续透传给原始 G2 图例组件
     const { dataeaseOrientation, ...rest } = options
@@ -23,7 +114,7 @@ const withLegendOrientation = component => {
     const legendOptions = directionMismatch
       ? { ...rest, length: component.props.defaultSize }
       : rest
-    return component({
+    const renderComponent = component({
       ...legendOptions,
       style: {
         orientation: dataeaseOrientation,
@@ -31,6 +122,18 @@ const withLegendOrientation = component => {
         opacity: rest.layout?.justifyContent === 'center' ? 0 : 1
       }
     })
+    if (!fixContinuousRange || dataeaseOrientation !== 'vertical') {
+      return renderComponent
+    }
+    // 在图例组件绑定交互前修正实例方法，不改变 G2 全局组件库
+    return context => {
+      const layout = renderComponent(context)
+      const continuousLegend = layout?.children?.find(
+        child => typeof child?.getRealSelection === 'function'
+      )
+      fixVerticalContinuousLegendRange(continuousLegend)
+      return layout
+    }
   }
   // 保留默认尺寸等静态配置，保证包装后仍参与 G2 布局计算
   customComponent.props = component.props
@@ -40,8 +143,10 @@ const withLegendOrientation = component => {
 heatmapLibrary['component.legendCategory'] = withLegendOrientation(
   heatmapLibrary['component.legendCategory']
 )
+// 仅热力图的连续图例启用非零最小值兼容逻辑，分类图例保持原行为
 heatmapLibrary['component.legendContinuous'] = withLegendOrientation(
-  heatmapLibrary['component.legendContinuous']
+  heatmapLibrary['component.legendContinuous'],
+  true
 )
 // 创建热力图专用 G2 构造器，避免修改全局组件库影响其他图表
 const HeatmapG2Chart = extend(Runtime, heatmapLibrary) as typeof G2Chart
