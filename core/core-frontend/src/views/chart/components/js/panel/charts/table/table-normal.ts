@@ -83,7 +83,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
 
     const columns = []
     const meta = []
-    const drillFieldMap = {}
+    const drillFieldMap: Record<string, string> = {}
     if (chart.drill) {
       // 下钻过滤字段
       const filterFields = chart.drillFilters.map(i => i.fieldId)
@@ -192,7 +192,11 @@ export class TableNormal extends S2ChartView<TableSheet> {
         enable: tableHeader.showIndex,
         text: tableHeader.indexLabel ?? t('chart.index')
       },
-      conditions: this.configConditions(chart),
+      conditions: this.configConditions(
+        chart,
+        meta.map(item => item.field),
+        drillFieldMap
+      ),
       tooltip: {
         getContainer: () => containerDom,
         render: sheet => new SortTooltip(sheet)

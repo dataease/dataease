@@ -62,8 +62,12 @@ export abstract class S2ChartView<P extends SpreadSheet> extends AntVAbstractCha
     configHeaderInteraction(chart, option)
   }
 
-  protected configConditions(chart: Chart) {
-    return getConditions(chart)
+  protected configConditions(
+    chart: Chart,
+    displayFieldNames?: string[],
+    drillFieldMap: Record<string, string> = {}
+  ) {
+    return getConditions(chart, displayFieldNames, drillFieldMap)
   }
 
   protected configMergeCells(chart: Chart, option: S2Options, dataConfig: S2DataConfig) {

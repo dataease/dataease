@@ -33,7 +33,7 @@ import {
   defaultsDeep,
   omit
 } from 'lodash-es'
-import { copyContent, CustomDataCell } from '../../common/common_table'
+import { copyContent, CustomDataCell, getPivotConditions } from '../../common/common_table'
 import Decimal from 'decimal.js'
 import { DEFAULT_TABLE_HEADER } from '@/views/chart/components/editor/util/chart'
 import { Text } from '@antv/g'
@@ -425,7 +425,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       height: containerDom.offsetHeight,
       totals: pivotTotals,
       cornerExtraFieldText: basicStyle.quotaColLabel ?? t('dataset.value'),
-      conditions: this.configConditions(chart),
+      conditions: getPivotConditions(chart),
       tooltip: {
         getContainer: () => containerDom
       },

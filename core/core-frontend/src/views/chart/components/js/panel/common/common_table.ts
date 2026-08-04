@@ -33,6 +33,7 @@ import {
   S2Event,
   S2Options,
   S2Theme,
+  EXTRA_FIELD,
   SERIES_NUMBER_FIELD,
   setTooltipContainerStyle,
   SHAPE_STYLE_MAP,
@@ -614,7 +615,11 @@ export function getCurrentField(valueFieldList: Axis[], field: ChartViewField) {
   return res
 }
 
-export function getConditions(chart: Chart) {
+export function getConditions(
+  chart: Chart,
+  displayFieldNames?: string[],
+  drillFieldMap: Record<string, string> = {}
+) {
   const {threshold} = parseJson(chart.senior)
   if (!threshold.enable) {
     return
@@ -623,9 +628,15 @@ export function getConditions(chart: Chart) {
     text: [],
     background: []
   }
-  const conditions = threshold.tableThreshold ?? []
-
-  const dimFields = [...chart.xAxis, ...chart.xAxisExt].map(i => i.dataeaseName)
+  const conditions = getEffectiveTableConditions(threshold.tableThreshold ?? [])
+  const allFields = chart.type === 'table-normal' ? [...chart.xAxis, ...chart.yAxis] : [...chart.xAxis]
+  const fieldIdToName = allFields.reduce((acc, field) => {
+    acc[field.id] = field.dataeaseName
+    return acc
+  }, {})
+  const allColumnNames = displayFieldNames?.length
+    ? displayFieldNames
+    : allFields.map(field => field.dataeaseName)
   if (conditions?.length > 0) {
     const {tableCell, basicStyle, tableHeader} = parseJson(chart.customAttr)
     // 合并单元格时斑马纹失效
@@ -638,60 +649,86 @@ export function getConditions(chart: Chart) {
       : isAlphaColor(tableCell.tableItemBgColor)
         ? tableCell.tableItemBgColor
         : hexColorToRGBA(tableCell.tableItemBgColor, basicStyle.alpha)
-    const headerValueColor = tableHeader.tableHeaderFontColor
-    const headerValueBgColor = isAlphaColor(tableHeader.tableHeaderBgColor)
-      ? tableHeader.tableHeaderBgColor
-      : hexColorToRGBA(tableHeader.tableHeaderBgColor, basicStyle.alpha)
     const filedValueMap = getFieldValueMap(chart)
+    const targetRulesMap = {}
+
     for (let i = 0; i < conditions.length; i++) {
-      const field = conditions[i]
-      let defaultValueColor = valueColor
-      let defaultBgColor = valueBgColor
-      // 透视表表头颜色配置
-      if (chart.type === 'table-pivot' && dimFields.includes(field.field.dataeaseName)) {
-        defaultValueColor = headerValueColor
-        defaultBgColor = headerValueBgColor
-      }
-      res.text.push({
-        field: field.field.dataeaseName,
-        mapping(value, rowData) {
-          // 总计小计
-          if (rowData?.isTotals) {
-            return null
+      const fieldItem = conditions[i]
+      if (!fieldItem.conditions) continue
+
+      for (let j = 0; j < fieldItem.conditions.length; j++) {
+        const rule = fieldItem.conditions[j]
+        let targets = []
+        if (rule.target === 'total_row') {
+          targets = [...allColumnNames]
+          if (tableHeader.showIndex) {
+            targets.push(SERIES_NUMBER_FIELD)
           }
-          // 表头
-          if (rowData?.id && rowData?.field === rowData.id) {
+        } else if (rule.target === 'custom' && rule.targetFieldId) {
+          const targetName = resolveDisplayFieldName(
+            fieldIdToName[rule.targetFieldId],
+            drillFieldMap
+          )
+          if (targetName) targets = [targetName]
+        } else {
+          // 兼容历史配置，缺少 target 时仍作用于当前字段
+          targets = [resolveDisplayFieldName(fieldItem.field.dataeaseName, drillFieldMap)]
+        }
+
+        new Set(targets).forEach(targetName => {
+          if (!targetRulesMap[targetName]) {
+            targetRulesMap[targetName] = []
+          }
+          targetRulesMap[targetName].push({
+            rule,
+            sourceField: fieldItem.field,
+            fieldIndex: i,
+            conditionIndex: j
+          })
+        })
+      }
+    }
+
+    for (const targetName in targetRulesMap) {
+      const rules = sortTableTargetRules(targetRulesMap[targetName])
+      res.text.push({
+        field: targetName,
+        mapping(value, rowData) {
+          if (value === undefined && !rowData) {
             return null
           }
           return {
-            fill: getMappingColorValue(
-              mappingColor(value, defaultValueColor, field, 'color', filedValueMap, rowData)
+            fill: mappingRulesColor(
+              value,
+              valueColor,
+              rules,
+              'color',
+              filedValueMap,
+              rowData,
+              targetName
             )
           }
         }
       })
       res.background.push({
-        field: field.field.dataeaseName,
+        field: targetName,
         mapping(value, rowData) {
-          if (rowData?.isTotals) {
+          if (value === undefined && !rowData) {
             return null
           }
-          if (rowData?.id && rowData?.field === rowData.id) {
-            return null
-          }
-          const fill = mappingColor(
+          const fill = mappingRulesColor(
             value,
-            defaultBgColor,
-            field,
+            valueBgColor,
+            rules,
             'backgroundColor',
             filedValueMap,
-            rowData
+            rowData,
+            targetName
           )
-          const fillColor = getMappingColorValue(fill)
-          if (isTransparent(fillColor)) {
+          if (isTransparent(fill)) {
             return null
           }
-          return { fill: fillColor }
+          return {fill}
         }
       })
     }
@@ -699,12 +736,277 @@ export function getConditions(chart: Chart) {
   return res
 }
 
-function getMappingColorValue(mappingResult) {
-  // S2 条件样式的 fill 只能接收颜色字符串
-  if (mappingResult && typeof mappingResult === 'object' && 'color' in mappingResult) {
-    return mappingResult.color
+export function getPivotConditions(chart: Chart) {
+  const {threshold} = parseJson(chart.senior)
+  if (!threshold.enable) {
+    return
   }
-  return mappingResult
+  const res = {
+    text: [],
+    background: []
+  }
+  const conditions = getEffectiveTableConditions(threshold.tableThreshold ?? [])
+  if (!conditions.length) {
+    return res
+  }
+
+  const allFields = [...chart.xAxis, ...chart.xAxisExt, ...chart.yAxis]
+  const fieldIdToName = allFields.reduce((acc, field) => {
+    acc[field.id] = field.dataeaseName
+    return acc
+  }, {})
+  const xFields = chart.xAxis.map(field => field.dataeaseName)
+  const xExtFields = chart.xAxisExt.map(field => field.dataeaseName)
+  const yFields = chart.yAxis.map(field => field.dataeaseName)
+  const {tableCell, basicStyle, tableHeader} = parseJson(chart.customAttr)
+  const valueColor = getTableConditionColor(tableCell.tableFontColor, basicStyle.alpha)
+  const valueBgColor = tableCell.enableTableCrossBG
+    ? null
+    : getTableConditionColor(tableCell.tableItemBgColor, basicStyle.alpha)
+  const colHeaderValueColor = getTableConditionColor(
+    tableHeader.tableHeaderFontColor,
+    basicStyle.alpha
+  )
+  const colHeaderBgColor = getTableConditionColor(
+    tableHeader.tableHeaderBgColor,
+    basicStyle.alpha
+  )
+  const rowHeaderValueColor = getTableConditionColor(
+    tableHeader.tableHeaderColFontColor,
+    basicStyle.alpha
+  )
+  const rowHeaderBgColor = getTableConditionColor(
+    tableHeader.tableHeaderColBgColor,
+    basicStyle.alpha
+  )
+  const filedValueMap = getFieldValueMap(chart)
+  const targetRulesMap = {}
+
+  for (let i = 0; i < conditions.length; i++) {
+    const fieldItem = conditions[i]
+    if (!fieldItem.conditions) continue
+
+    for (let j = 0; j < fieldItem.conditions.length; j++) {
+      const rule = fieldItem.conditions[j]
+      let targets = []
+      if (rule.target === 'total_row') {
+        if (xFields.includes(fieldItem.field.dataeaseName)) {
+          targets.push(...xFields)
+          if (basicStyle.quotaPosition === 'row') targets.push(EXTRA_FIELD)
+        }
+        if (xExtFields.includes(fieldItem.field.dataeaseName)) {
+          targets.push(...xExtFields)
+          if (basicStyle.quotaPosition !== 'row') targets.push(EXTRA_FIELD)
+        }
+        targets.push(...yFields)
+      } else if (rule.target === 'custom' && rule.targetFieldId) {
+        const targetName = fieldIdToName[rule.targetFieldId]
+        if (targetName) targets = [targetName]
+      } else {
+        targets = [fieldItem.field.dataeaseName]
+      }
+
+      new Set(targets).forEach(targetName => {
+        if (!targetRulesMap[targetName]) {
+          targetRulesMap[targetName] = []
+        }
+        targetRulesMap[targetName].push({
+          rule,
+          sourceField: fieldItem.field,
+          fieldIndex: i,
+          conditionIndex: j
+        })
+      })
+    }
+  }
+
+  for (const targetName in targetRulesMap) {
+    const rules = sortTableTargetRules(targetRulesMap[targetName])
+    let defaultValueColor = valueColor
+    let defaultBgColor = valueBgColor
+    if (xFields.includes(targetName)) {
+      defaultValueColor = rowHeaderValueColor
+      defaultBgColor = rowHeaderBgColor
+    } else if (xExtFields.includes(targetName)) {
+      defaultValueColor = colHeaderValueColor
+      defaultBgColor = colHeaderBgColor
+    }
+
+    res.text.push({
+      field: targetName,
+      mapping(value, rowData) {
+        if (rowData?.cornerType) return null
+        return {
+          fill: mappingRulesColor(
+            value,
+            defaultValueColor,
+            rules,
+            'color',
+            filedValueMap,
+            rowData,
+            targetName,
+            true
+          )
+        }
+      }
+    })
+    res.background.push({
+      field: targetName,
+      mapping(value, rowData) {
+        if (rowData?.cornerType) return null
+        const fill = mappingRulesColor(
+          value,
+          defaultBgColor,
+          rules,
+          'backgroundColor',
+          filedValueMap,
+          rowData,
+          targetName,
+          true
+        )
+        if (isTransparent(fill)) return null
+        return {fill}
+      }
+    })
+  }
+  return res
+}
+
+function getTableConditionColor(color, alpha) {
+  return isAlphaColor(color) ? color : hexColorToRGBA(color, alpha)
+}
+
+function getEffectiveTableConditions(conditions: TableThreshold[]) {
+  const lastFieldIndex = new Map()
+  conditions.forEach((item, index) => {
+    lastFieldIndex.set(item.field?.dataeaseName, index)
+  })
+  // S2 同一字段重复配置时最后一组生效，保持存量规则优先级
+  return conditions.filter((item, index) => lastFieldIndex.get(item.field?.dataeaseName) === index)
+}
+
+function sortTableTargetRules(rules) {
+  return [...rules].sort((a, b) => {
+    if (a.fieldIndex === b.fieldIndex) {
+      return a.conditionIndex - b.conditionIndex
+    }
+    return b.fieldIndex - a.fieldIndex
+  })
+}
+
+function resolveDisplayFieldName(fieldName: string, drillFieldMap: Record<string, string>) {
+  if (!fieldName) return fieldName
+  return Object.keys(drillFieldMap).find(name => drillFieldMap[name] === fieldName) ?? fieldName
+}
+
+function mappingRulesColor(
+  value,
+  defaultColor,
+  rules,
+  type,
+  filedValueMap,
+  rowData,
+  targetName,
+  pivot = false
+) {
+  for (let i = 0; i < rules.length; i++) {
+    const {rule, sourceField} = rules[i]
+    if (
+      pivot &&
+      (rowData?.isTotals ||
+        rowData?.isGrandTotals ||
+        rowData?.isSubTotals ||
+        rowData?.field === EXTRA_FIELD) &&
+      rule.target !== 'total_row'
+    ) {
+      continue
+    }
+
+    const sourceValue = getRuleSourceValue(value, rowData, sourceField.dataeaseName, targetName)
+    if (!sourceValue.found) continue
+    if (matchTableCondition(sourceValue.value, rule, sourceField, filedValueMap, rowData)) {
+      return rule[type]
+    }
+  }
+  return defaultColor
+}
+
+function getRuleSourceValue(value, rowData, sourceName, targetName) {
+  if (rowData && Object.prototype.hasOwnProperty.call(rowData, sourceName)) {
+    return {found: true, value: rowData[sourceName]}
+  }
+  if (rowData?.query && Object.prototype.hasOwnProperty.call(rowData.query, sourceName)) {
+    return {found: true, value: rowData.query[sourceName]}
+  }
+  if (sourceName === targetName) {
+    return {found: true, value}
+  }
+  return {found: false, value: undefined}
+}
+
+function matchTableCondition(value, rule, sourceField, filedValueMap, rowData) {
+  const empty = value === null || value === undefined || value === ''
+  if (rule.term === 'null') return empty
+  if (rule.term === 'not_null') return !empty
+  if (rule.term === 'default') return true
+
+  let targetValue
+  let min
+  let max
+  if (rule.type === 'dynamic') {
+    if (rule.term === 'between') {
+      min = parseFloat(getValue(rule.dynamicMinField, filedValueMap, rowData))
+      max = parseFloat(getValue(rule.dynamicMaxField, filedValueMap, rowData))
+    } else {
+      targetValue = getValue(rule.dynamicField, filedValueMap, rowData)
+    }
+  } else if (rule.term === 'between') {
+    min = parseFloat(rule.min)
+    max = parseFloat(rule.max)
+  } else {
+    targetValue = rule.value
+  }
+
+  if ([2, 3, 4].includes(sourceField.deType)) {
+    const current = parseFloat(value)
+    const target = parseFloat(targetValue)
+    if (rule.term === 'between') return !empty && min <= current && current <= max
+    if (rule.term === 'eq') return current === target
+    if (rule.term === 'not_eq') return current !== target
+    if (rule.term === 'lt') return current < target
+    if (rule.term === 'gt') return current > target
+    if (rule.term === 'le') return !empty && current <= target
+    if (rule.term === 'ge') return !empty && current >= target
+    return false
+  }
+
+  if ([0, 5].includes(sourceField.deType)) {
+    if (rule.term === 'eq') return value === targetValue
+    if (rule.term === 'not_eq') return value !== targetValue
+    if (rule.term === 'like') return !empty && String(value).includes(String(targetValue))
+    if (rule.term === 'not like') return !empty && !String(value).includes(String(targetValue))
+    return false
+  }
+
+  if (empty || targetValue === null || targetValue === undefined || targetValue === '') {
+    return false
+  }
+  const isSpecialTimeFormat =
+    sourceField.dateStyle === 'H_m_s' ||
+    (sourceField.dateStyle && sourceField.dateStyle.length > 5 && sourceField.dateStyle.length < 11)
+  const current = isSpecialTimeFormat
+    ? String(value)
+    : new Date(String(value).replace(/-/g, '/') + ' GMT+8').getTime()
+  const target = isSpecialTimeFormat
+    ? String(targetValue)
+    : new Date(String(targetValue).replace(/-/g, '/') + ' GMT+8').getTime()
+  if (rule.term === 'eq') return current === target
+  if (rule.term === 'not_eq') return current !== target
+  if (rule.term === 'lt') return current < target
+  if (rule.term === 'gt') return current > target
+  if (rule.term === 'le') return current <= target
+  if (rule.term === 'ge') return current >= target
+  return false
 }
 
 export function mappingColor(value, defaultColor, field, type, filedValueMap?, rowData?) {
