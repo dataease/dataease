@@ -17,6 +17,7 @@ public class SystemSettingUtils {
                 XpackSettingConstants.DEFAULT_LOGIN,
                 XpackSettingConstants.THRESHOLD_LOG_LIVE_TIME,
                 XpackSettingConstants.DATA_FILLING_LOG_LIVE_TIME,
+                XpackSettingConstants.EMBEDDED_EXPORT_MODE,
                 XpackSettingConstants.LOGIN_LIMIT,
                 XpackSettingConstants.LOGIN_LIMIT_RATE,
                 XpackSettingConstants.LOGIN_LIMIT_TIME);
