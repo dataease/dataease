@@ -886,9 +886,10 @@ function getEffectiveTableConditions(conditions: TableThreshold[]) {
 }
 
 function sortTableTargetRules(rules) {
+  // 同一字段内和字段组之间都按后配置的样式优先
   return [...rules].sort((a, b) => {
     if (a.fieldIndex === b.fieldIndex) {
-      return a.conditionIndex - b.conditionIndex
+      return b.conditionIndex - a.conditionIndex
     }
     return b.fieldIndex - a.fieldIndex
   })
