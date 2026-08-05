@@ -34,7 +34,12 @@ export const rsaEncryp = word => {
   return crypt.encrypt(word)
 }
 
-export const symmetricDecrypt = (data, keyStr) => {
+export const symmetricDecrypt = data => {
+  const separator = Base64.encodeURI(rsaKey) + '='
+  const dekey = wsCache.get(appStore.getDekey)
+  const keyArray = dekey.split(separator)
+  const k2 = keyArray[1]
+  const keyStr = Base64.encode(k2)
   const combined = CryptoJS.enc.Base64.parse(data)
   const combinedHex = CryptoJS.enc.Hex.parse(combined.toString(CryptoJS.enc.Hex))
   const iv = CryptoJS.lib.WordArray.create(combinedHex.words.slice(0, 4))
