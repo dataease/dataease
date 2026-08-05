@@ -678,11 +678,16 @@ const init = (nodeInfo: Form | Param, id?: string, res?: object, supportSetKey: 
     } else {
       Object.assign(form, cloneDeep(nodeInfo))
       Object.assign(origin, cloneDeep(nodeInfo))
-      if (form.hasOwnProperty('configuration') && form.configuration.urlType == undefined) {
-        form.configuration.urlType = 'hostName'
-      }
-      if (form.hasOwnProperty('configuration') && form.configuration.sshType == undefined) {
-        form.configuration.sshType = 'password'
+      if (form.hasOwnProperty('configuration')) {
+        if (!form.configuration) {
+          form.configuration = {}
+        }
+        if (form.configuration.urlType == undefined) {
+          form.configuration.urlType = 'hostName'
+        }
+        if (form.configuration.sshType == undefined) {
+          form.configuration.sshType = 'password'
+        }
       }
     }
     pid.value = nodeInfo.pid || '0'
