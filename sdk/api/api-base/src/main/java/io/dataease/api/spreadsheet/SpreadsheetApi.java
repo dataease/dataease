@@ -29,10 +29,15 @@ public interface SpreadsheetApi {
     @PostMapping("/createFolder")
     SpreadsheetVO createFolder(@RequestBody SpreadsheetCreator creator);
 
-    @Operation(summary = "保存电子表格(创建/编辑)")
+    @Operation(summary = "创建电子表格")
     @DePermit({"#p0.pid+':manage'"})
-    @PostMapping("/save")
-    SpreadsheetVO save(@RequestBody SpreadsheetEditor editor);
+    @PostMapping("/create")
+    SpreadsheetVO create(@RequestBody SpreadsheetEditor editor);
+
+    @Operation(summary = "更新电子表格")
+    @DePermit({"#p0.id+':manage'"})
+    @PostMapping("/update")
+    SpreadsheetVO update(@RequestBody SpreadsheetEditor editor);
 
     @Operation(summary = "根据ID查询电子表格")
     @GetMapping("/get/{id}")
