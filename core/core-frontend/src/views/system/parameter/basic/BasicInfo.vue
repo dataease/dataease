@@ -118,18 +118,8 @@ const state = reactive({
   templateList: [] as SettingRecord[],
   orgOptions: [],
   roleOptions: [
-    {
-      value: 'admin',
-      label: t('role.org_admin'),
-      children: null,
-      disabled: false
-    },
-    {
-      value: 'readonly',
-      label: t('role.average_role'),
-      children: null,
-      disabled: false
-    }
+    { label: t('role.system_role'), options: [] },
+    { label: t('role.custom_role'), options: [] }
   ],
   loginOptions: [
     { value: '0', label: t('system.normal_login') },
@@ -304,8 +294,8 @@ const loadRoleOptions = async () => {
   const res = await request.get({ url: `/role/queryWithOid/${selectedOid.value}` })
   const data = res.data
   const map = groupBy(data)
-  state.roleOptions[0].children = map.get(false)
-  state.roleOptions[1].children = map.get(true)
+  state.roleOptions[0].options = map.get(true) || []
+  state.roleOptions[1].options = map.get(false) || []
 }
 const formatOrg = list => {
   const stack = [...list]
@@ -330,13 +320,13 @@ const groupBy = list => {
     if (selectedRid.value.includes(item.id)) {
       selectedRName.value.push(item.name)
     }
-    const readonly = item.readonly
-    let arr = map.get(readonly)
+    const root = item.root
+    let arr = map.get(root)
     if (!arr) {
       arr = []
     }
-    arr.push({ value: item.id, label: item.name, disabled: false })
-    map.set(readonly, arr)
+    arr.push(item)
+    map.set(root, arr)
   })
   return map
 }

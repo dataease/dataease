@@ -50,7 +50,10 @@ const state = reactive({
   }),
   settingList: [],
   orgOptions: [],
-  roleOptions: [],
+  roleOptions: [
+    { label: t('role.system_role'), options: [] },
+    { label: t('role.custom_role'), options: [] }
+  ],
   loginOptions: [
     { value: '0', label: t('system.normal_login') },
     { value: '1', label: 'LDAP' },
@@ -231,19 +234,19 @@ const loadRoleOptions = async () => {
   const res = await request.get({ url: `/role/queryWithOid/${oid}` })
   const data = res.data
   const map = groupBy(data)
-  state.roleOptions[0].children = map.get(false)
-  state.roleOptions[1].children = map.get(true)
+  state.roleOptions[0].options = map.get(true) || []
+  state.roleOptions[1].options = map.get(false) || []
 }
 const groupBy = list => {
   const map = new Map()
   list.forEach(item => {
-    const readonly = item.readonly
-    let arr = map.get(readonly)
+    const root = item.root
+    let arr = map.get(root)
     if (!arr) {
       arr = []
     }
-    arr.push({ value: item.id, label: item.name, disabled: false })
-    map.set(readonly, arr)
+    arr.push(item)
+    map.set(root, arr)
   })
   return map
 }
@@ -375,17 +378,41 @@ defineExpose({
           />
         </div>
         <div v-else-if="item.pkey === 'platformRid'">
-          <el-tree-select
+          <el-select
             class="edit-all-line"
             v-model="state.form[item.pkey]"
-            :data="state.roleOptions"
-            :highlight-current="true"
             multiple
-            :render-after-expand="false"
-            :placeholder="$t('common.please_select') + $t('user.role')"
-            show-checkbox
-            check-on-click-node
-          />
+            filterable
+            :disabled="!state.form['platformOid']"
+            :placeholder="
+              state.form['platformOid']
+                ? $t('common.please_select') + $t('user.role')
+                : $t('org.select_org_first')
+            "
+          >
+            <el-option-group
+              v-for="group in state.roleOptions"
+              :key="group.label"
+              :label="group.label"
+            >
+              <el-option
+                v-for="role in group.options"
+                :key="role.id"
+                :value="role.id"
+                :label="role.name"
+              >
+                <span>{{ role.name }}</span>
+                <span v-if="role.root" class="role-mark">{{ $t('role.system') }}</span>
+                <span v-else class="role-mark-de">{{
+                  role.typeCode === 0
+                    ? $t('role.staff')
+                    : role.typeCode === 7
+                    ? $t('role.analyst')
+                    : $t('role.manager')
+                }}</span>
+              </el-option>
+            </el-option-group>
+          </el-select>
         </div>
         <div v-else-if="item.pkey === 'pvp'">
           <el-select v-model="state.form[item.pkey]" class="edit-all-line">
@@ -535,5 +562,27 @@ defineExpose({
 }
 .de-basic-switch {
   height: 22px;
+}
+.role-mark {
+  height: 16px;
+  border-radius: 2px;
+  margin-left: 8px;
+  background-color: var(--ed-color-primary-33, #3370ff33);
+  color: var(--ed-menu-active-color);
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 13px;
+  padding: 0 4px;
+}
+.role-mark-de {
+  height: 16px;
+  border-radius: 2px;
+  margin-left: 8px;
+  background-color: rgb(232 233 233);
+  color: #646a73;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 13px;
+  padding: 0 4px;
 }
 </style>
