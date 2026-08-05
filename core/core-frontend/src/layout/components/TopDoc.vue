@@ -69,7 +69,7 @@ const cardInfoList = [
 
 <style lang="less" scoped>
 .sys-setting {
-  margin: 0 10px;
+  margin-left: 10px;
   padding: 5px;
   height: 28px;
   width: 28px;
