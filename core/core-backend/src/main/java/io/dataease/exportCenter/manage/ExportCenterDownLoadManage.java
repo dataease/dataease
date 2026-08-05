@@ -51,6 +51,7 @@ import io.dataease.model.ExportTaskDTO;
 import io.dataease.permission.util.V3UserUtil;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.CommonBeanFactory;
+import io.dataease.utils.IPUtils;
 import io.dataease.utils.JsonUtil;
 import io.dataease.utils.LogUtil;
 import io.dataease.visualization.dao.auto.entity.VisualizationWatermark;
@@ -215,9 +216,11 @@ public class ExportCenterDownLoadManage {
     public void startDatasetTask(CoreExportTask exportTask, ExportTaskFileTarget exportTarget, Long exportFrom, DataSetExportRequest request) {
         exportTarget.createParentDirectory();
         Long uid = V3UserUtil.getUid();
+        String clientIp = IPUtils.get();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
             coreExportTaskRepository.saveAndFlush(exportTask);
             V3UserUtil.setUid(uid);
+            IPUtils.set(clientIp);
             LicenseUtil.validate();
             try {
                 updateExportTask(exportTarget.taskId(), "IN_PROGRESS", null, null, null, null);
@@ -413,6 +416,8 @@ public class ExportCenterDownLoadManage {
             } catch (Exception e) {
                 LogUtil.error("Failed to export data", e);
                 updateExportTask(exportTarget.taskId(), "FAILED", null, e.getMessage(), null, null);
+            } finally {
+                IPUtils.remove();
             }
         });
         Running_Task.put(exportTarget.taskId(), future);
@@ -448,8 +453,10 @@ public class ExportCenterDownLoadManage {
     public void startViewTask(CoreExportTask exportTask, ExportTaskFileTarget exportTarget, ChartExcelRequest request) {
         exportTarget.createParentDirectory();
         Long uid = V3UserUtil.getUid();
+        String clientIp = IPUtils.get();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
             V3UserUtil.setUid(uid);
+            IPUtils.set(clientIp);
             coreExportTaskRepository.saveAndFlush(exportTask);
             LicenseUtil.validate();
             try {
@@ -529,6 +536,8 @@ public class ExportCenterDownLoadManage {
             } catch (Exception e) {
                 LogUtil.error("Failed to export data", e);
                 updateExportTask(exportTarget.taskId(), "FAILED", null, e.getMessage(), null, null);
+            } finally {
+                IPUtils.remove();
             }
         });
         Running_Task.put(exportTarget.taskId(), future);
