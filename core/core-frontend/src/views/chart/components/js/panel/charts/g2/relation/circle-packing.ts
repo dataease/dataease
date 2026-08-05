@@ -410,6 +410,21 @@ export class CirclePacking extends G2ChartView {
       return { ...options, legend: false }
     }
     const baseLegend = this.getLegend(chart)
+    const position = baseLegend['position']
+    const horizontal = position === 'top' || position === 'bottom'
+    const legendFontSize = Number(legend.fontSize) || 12
+    const legendMarkerSize = Number(legend.size) || 4
+    const getTextWidth = value =>
+      Array.from(`${value ?? ''}`).reduce(
+        (width, char) => width + (char.charCodeAt(0) > 255 ? legendFontSize : legendFontSize * 0.6),
+        0
+      )
+    const legendLabels = [t('commons.all'), ...chart.data.data.map(item => item.field)]
+    const overlaySize = horizontal
+      ? Math.ceil(Math.max(legendFontSize * 1.3, legendMarkerSize) + 12)
+      : Math.ceil(
+          Math.max(80, ...legendLabels.map(label => getTextWidth(label) + legendMarkerSize + 24))
+        )
     const tmpLegend = {
       style: {
         zIndex: d => -d.height
@@ -417,6 +432,10 @@ export class CirclePacking extends G2ChartView {
       legend: {
         color: {
           ...baseLegend,
+          // 图例覆盖绘图区且不压缩 pack 布局
+          size: overlaySize,
+          crossPadding: -overlaySize,
+          zIndex: 1,
           itemMarkerSize: legend.size,
           itemMarker: legend.icon
         }
