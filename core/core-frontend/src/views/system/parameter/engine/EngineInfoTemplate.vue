@@ -48,7 +48,6 @@ import InfoTemplate from '@/views/system/common/InfoTemplate.vue'
 import { dsTypes } from '@/views/visualized/data/datasource/form/option'
 import { getDeEngine } from '@/api/datasource'
 import request from '@/config/axios'
-import { querySymmetricKey } from '@/api/login'
 import { symmetricDecrypt } from '@/utils/encryption'
 import { XpackComponent } from '@/components/plugin'
 const { t } = useI18n()
@@ -64,84 +63,82 @@ const templateList = ref<SettingRecord[]>([])
 const templateListTime = ref<SettingRecord[]>([])
 const xPackInfo = ref({ enableDataFill: false, type: undefined })
 const getEngine = () => {
-  querySymmetricKey().then(response => {
-    getDeEngine().then(res => {
-      let { id, type, configuration } = res.data
-      xPackInfo.value.enableDataFill = !!res.data.enableDataFill
-      xPackInfo.value.type = type
-      if (configuration) {
-        configuration = JSON.parse(symmetricDecrypt(configuration, response.data))
+  getDeEngine().then(res => {
+    let { id, type, configuration } = res.data
+    xPackInfo.value.enableDataFill = !!res.data.enableDataFill
+    xPackInfo.value.type = type
+    if (configuration) {
+      configuration = JSON.parse(symmetricDecrypt(configuration))
+    }
+    nodeInfoId = id
+    templateListTime.value = [
+      {
+        pkey: 'datasource.initial_pool_size',
+        pval: configuration?.initialPoolSize || 5,
+        type: '',
+        sort: 0
+      },
+      {
+        pkey: 'datasource.min_pool_size',
+        pval: configuration?.minPoolSize || 5,
+        type: '',
+        sort: 0
+      },
+      {
+        pkey: 'datasource.max_pool_size',
+        pval: configuration?.maxPoolSize || 5,
+        type: '',
+        sort: 0
+      },
+      {
+        pkey: 'datasource.query_timeout',
+        pval: `${configuration?.queryTimeout || 30}${t('common.second')}`,
+        type: '',
+        sort: 0
       }
-      nodeInfoId = id
-      templateListTime.value = [
-        {
-          pkey: 'datasource.initial_pool_size',
-          pval: configuration?.initialPoolSize || 5,
-          type: '',
-          sort: 0
-        },
-        {
-          pkey: 'datasource.min_pool_size',
-          pval: configuration?.minPoolSize || 5,
-          type: '',
-          sort: 0
-        },
-        {
-          pkey: 'datasource.max_pool_size',
-          pval: configuration?.maxPoolSize || 5,
-          type: '',
-          sort: 0
-        },
-        {
-          pkey: 'datasource.query_timeout',
-          pval: `${configuration?.queryTimeout || 30}${t('common.second')}`,
-          type: '',
-          sort: 0
-        }
-      ]
+    ]
 
-      templateList.value = [
-        {
-          pkey: t('system.engine_type'),
-          pval: typeMap[type],
-          type: '',
-          sort: 0
-        },
-        {
-          pkey: 'datasource.host',
-          pval: configuration?.host,
-          type: '',
-          sort: 0
-        },
-        {
-          pkey: 'datasource.port',
-          pval: configuration?.port,
-          type: '',
-          sort: 0
-        },
-        {
-          pkey: 'datasource.data_base',
-          pval: configuration?.dataBase,
-          type: '',
-          sort: 0
-        },
-        {
-          pkey: 'datasource.user_name',
-          pval: configuration?.username,
-          type: '',
-          sort: 0
-        },
-        {
-          pkey: 'datasource.extra_params',
-          pval: configuration?.extraParams,
-          type: '',
-          sort: 0
-        }
-      ]
-      nextTick(() => {
-        infoTemplate.value.init()
-        infoTemplateTime.value.init()
-      })
+    templateList.value = [
+      {
+        pkey: t('system.engine_type'),
+        pval: typeMap[type],
+        type: '',
+        sort: 0
+      },
+      {
+        pkey: 'datasource.host',
+        pval: configuration?.host,
+        type: '',
+        sort: 0
+      },
+      {
+        pkey: 'datasource.port',
+        pval: configuration?.port,
+        type: '',
+        sort: 0
+      },
+      {
+        pkey: 'datasource.data_base',
+        pval: configuration?.dataBase,
+        type: '',
+        sort: 0
+      },
+      {
+        pkey: 'datasource.user_name',
+        pval: configuration?.username,
+        type: '',
+        sort: 0
+      },
+      {
+        pkey: 'datasource.extra_params',
+        pval: configuration?.extraParams,
+        type: '',
+        sort: 0
+      }
+    ]
+    nextTick(() => {
+      infoTemplate.value.init()
+      infoTemplateTime.value.init()
     })
   })
 }
