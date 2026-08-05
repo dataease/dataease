@@ -805,7 +805,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             String componentData = newDv.getComponentData();
             // componentData viewId 数据  并保存
             for (CoreChartView viewInfo : viewList) {
-                componentData = componentData.replaceAll(String.valueOf(viewInfo.getCopyFrom()), String.valueOf(viewInfo.getId()));
+                componentData = componentData.replace(String.valueOf(viewInfo.getCopyFrom()), String.valueOf(viewInfo.getId()));
             }
             newDv.setComponentData(componentData);
         }
