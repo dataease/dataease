@@ -150,6 +150,9 @@ export interface Configuration {
   host: string
   authMethod: string
   port: string
+  sslCA: string
+  sslCert: string
+  sslKey: string
   initialPoolSize: string
   minPoolSize: string
   maxPoolSize: string

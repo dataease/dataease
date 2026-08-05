@@ -1092,6 +1092,13 @@ export default {
     please_choose_schema: 'Please select database Schema',
     please_choose_charset: 'Please select database character set',
     please_choose_targetCharset: 'Please select target character set',
+    ck_ssl_ca: 'SSL CA Certificate',
+    ck_ssl_client_cert: 'SSL Client Certificate',
+    ck_ssl_client_key: 'SSL Client Private Key',
+    ck_ssl_upload: 'Upload Certificate',
+    ck_ssl_upload_hint: 'Supports .pem/.crt/.cer/.key; content will be auto-filled after upload',
+    ck_ssl_pem_placeholder: 'Enter or upload PEM content',
+    ck_ssl_read_failed: 'Failed to read SSL certificate file',
     edit_datasource_msg:
       'Modifying the Datasource information may make the Dataset under the Datasource unavailable. Confirm the modification? ',
     repeat_datasource_msg: 'Datasource information with the same configuration already exists, ',
