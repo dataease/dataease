@@ -31,5 +31,5 @@ public interface ResourceAuthApi {
     @Operation(summary = "查询全部用户或角色")
     @ApiOperationSupport(order = 2)
     @GetMapping("/queryAllSubjects/{type}")
-    List<SubjectVO> queryAllSubjects(@PathVariable Integer type);
+    List<SubjectVO> queryAllSubjects(@PathVariable("type") Integer type);
 }
