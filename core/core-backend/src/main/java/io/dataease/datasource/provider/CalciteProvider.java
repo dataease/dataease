@@ -1695,7 +1695,19 @@ public class CalciteProvider extends Provider {
                 return "select name from sys.schemas;";
             case db2:
                 DatasourceConfiguration configuration = JsonUtil.parseObject(datasource.getConfiguration(), Db2.class);
-                return "select SCHEMANAME from syscat.SCHEMATA   WHERE \"DEFINER\" ='USER'".replace("USER", configuration.getUsername().toUpperCase());
+                String username = configuration.getUsername();
+                if (StringUtils.isEmpty(username)
+                        && StringUtils.isNotEmpty(configuration.getUrlType())
+                        && configuration.getUrlType().equalsIgnoreCase("jdbcUrl")) {
+                    String[] params = configuration.getJdbcUrl().split(";");
+                    for (String param : params) {
+                        if (param.toLowerCase().startsWith("user=")) {
+                            username = param.substring(param.indexOf("=") + 1);
+                            break;
+                        }
+                    }
+                }
+                return "select SCHEMANAME from syscat.SCHEMATA WHERE \"DEFINER\" ='USER'".replace("USER", username.toUpperCase());
             case pg:
                 return "SELECT nspname FROM pg_namespace;";
             case kingbase:
