@@ -16,6 +16,8 @@ import { useUserStoreWithOut } from '@/store/modules/user'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import treeSort from '@/utils/treeSortUtils'
 
+type DatasetTreeNode = Tree & { weight?: number }
+
 const dvMainStore = dvMainStoreWithOut()
 const { wsCache } = useCache('localStorage')
 const userStore = useUserStoreWithOut()
@@ -73,6 +75,9 @@ const initDataset = () => {
     .then(res => {
       sortTypeChange((res as unknown as Tree[]) || [])
     })
+    .catch(() => {
+      emits('onDatasetWeightChange', 0)
+    })
     .finally(() => {
       loadingDatasetTree.value = false
       formRef.value?.validate()
@@ -83,6 +88,7 @@ const emits = defineEmits([
   'update:modelValue',
   'update:stateObj',
   'onDatasetChange',
+  'onDatasetWeightChange',
   'addDsWindow'
 ])
 
@@ -136,9 +142,18 @@ const flattedTree = computed(() => {
   return _.filter(flatTree(computedTree.value), node => node.leaf)
 })
 
-const selectedNode = computed(() => {
+const selectedNode = computed<DatasetTreeNode | undefined>(() => {
   return _.find(flattedTree.value, node => node.id === _modelValue.value)
 })
+
+watch(
+  () => selectedNode.value?.weight,
+  weight => {
+    // 数据集树异步加载完成后同步当前数据集权限
+    emits('onDatasetWeightChange', weight ?? 0)
+  },
+  { immediate: true }
+)
 
 const exist = computed(() => {
   if (_modelValue.value) {

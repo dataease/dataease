@@ -107,8 +107,10 @@ const ChartTypeSelect = defineAsyncComponent(
 const { t } = useI18n()
 const loading = ref(false)
 const tabActive = ref('data')
-const datasetSelector = ref(null)
 const curDatasetWeight = ref(0)
+const onDatasetWeightChange = (weight?: number) => {
+  curDatasetWeight.value = weight ?? 0
+}
 const renameForm = ref<FormInstance>()
 const { emitter } = useEmitt({
   name: 'set-table-column-width',
@@ -283,10 +285,6 @@ watch(
       const nodeId = view.value['tableId']
       if (!!nodeId) {
         cacheId = nodeId as unknown as string
-      }
-      const node = datasetSelector?.value?.getNode(nodeId)
-      if (node?.data) {
-        curDatasetWeight.value = node.data.weight
       }
     })
   },
@@ -1598,12 +1596,13 @@ const editDs = () => {
     ElMessage.warning(t('visualization.save_page_tips'))
     return
   }
-  let routeData = router.resolve({
+  const routeLocation = {
     path: path,
     query: {
       id: view.value.tableId
     }
-  })
+  }
+  const routeData = router.resolve(routeLocation)
   // 检查是否保存
   if (openType === '_self') {
     if (!dvInfo.value.id) {
@@ -1612,8 +1611,8 @@ const editDs = () => {
     }
     canvasSave(() => {
       wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
-      const newWindow = window.open(routeData.href, openType)
-      initOpenHandler(newWindow)
+      // 当前窗口使用路由跳转以保留返回仪表板的历史记录
+      router.push(routeLocation)
     })
   } else {
     const newWindow = window.open(routeData.href, openType)
@@ -3610,7 +3609,6 @@ const chartStyleScroll = (val: any) => {
             <el-main class="dataset-main-top">
               <el-row class="dataset-select">
                 <dataset-select
-                  ref="datasetSelector"
                   v-model="view.tableId"
                   style="flex: 1"
                   :view-id="view.id"
@@ -3618,6 +3616,7 @@ const chartStyleScroll = (val: any) => {
                   :themes="themes"
                   @add-ds-window="addDsWindow"
                   @on-dataset-change="changeDataset"
+                  @on-dataset-weight-change="onDatasetWeightChange"
                 />
                 <el-tooltip
                   :effect="toolTip"
