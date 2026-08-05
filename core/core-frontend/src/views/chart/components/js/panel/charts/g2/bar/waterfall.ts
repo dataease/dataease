@@ -34,7 +34,9 @@ export class Waterfall extends Bar {
     'function-cfg',
     'x-axis-selector',
     'y-axis-selector',
-    'threshold'
+    'threshold',
+    'jump-set',
+    'linkage'
   ]
   propertyInner = {
     ...this['propertyInner'],

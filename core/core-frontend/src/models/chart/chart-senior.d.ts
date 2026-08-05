@@ -224,6 +224,14 @@ declare interface Threshold {
    * 动态值最大值字段 仅当term为between时使用
    */
   dynamicMaxField: ThresholdDynamicField
+  /**
+   * 条件样式作用范围
+   */
+  target?: 'self' | 'total_row' | 'custom'
+  /**
+   * 自定义作用字段
+   */
+  targetFieldId?: string | null
 }
 
 declare interface ThresholdDynamicField {

@@ -152,8 +152,7 @@ public class CoreDataInit implements CoreSqlBlock {
                 new CoreSysSetting(1048232869488627718L, "basic.sharePeRequire", "false", "text", 12),
                 new CoreSysSetting(1048232869488627719L, "basic.defaultSort", "1", "text", 13),
                 new CoreSysSetting(1048232869488627720L, "basic.defaultOpen", "false", "text", 14),
-                new CoreSysSetting(1048232869488627721L, "basic.disableCrossDs", "true", "text", 15),
-                new CoreSysSetting(1198624362962489353L, "basic.embeddedExportMode", "sync", "text", 16)
+                new CoreSysSetting(1048232869488627721L, "basic.disableCrossDs", "true", "text", 15)
         );
         coreSysSettingRepository.saveAllAndFlush(settings);
     }

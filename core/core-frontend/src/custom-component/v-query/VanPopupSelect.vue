@@ -20,11 +20,11 @@ const props = defineProps({
 })
 
 const showSelect = ref(false)
-let oldCheckList = []
 const checkAll = ref(false)
 const isIndeterminate = ref(false)
 const checkTableList = ref([])
 const checkList = ref([])
+const checkListRadio = ref()
 const keywords = ref('')
 const tableListWithSearch = computed(() => {
   if (!keywords.value) return props.options
@@ -34,7 +34,7 @@ const tableListWithSearch = computed(() => {
 })
 const emits = defineEmits(['onClear', 'onConfirm'])
 const reset = () => {
-  oldCheckList = []
+  checkListRadio.value = ''
   showSelect.value = false
   checkAll.value = false
   isIndeterminate.value = false
@@ -45,10 +45,9 @@ const showPopup = () => {
   if (props.multiple) {
     checkList.value = [...props.selectValue]
   } else {
-    checkList.value = Array.isArray(props.selectValue)
-      ? [...props.selectValue]
-      : [props.selectValue]
-    oldCheckList = [...checkList.value]
+    checkListRadio.value = Array.isArray(props.selectValue)
+      ? props.selectValue[0]
+      : props.selectValue
   }
   showSelect.value = true
 }
@@ -63,19 +62,13 @@ const onConfirm = () => {
   checkAll.value = false
   isIndeterminate.value = false
   keywords.value = ''
-  emits('onConfirm', checkList.value)
+  emits(
+    'onConfirm',
+    props.multiple ? checkList.value : checkListRadio.value ? [checkListRadio.value] : []
+  )
 }
 
 const handleCheckedTablesChange = (value: any[]) => {
-  if (!props.multiple) {
-    if (!oldCheckList.length) {
-      oldCheckList = [...value]
-    } else {
-      checkList.value = value.filter(ele => !oldCheckList.includes(ele))
-      oldCheckList = [...checkList.value]
-    }
-    return
-  }
   const checkedCount = value.length
   checkAll.value = checkedCount === tableListWithSearch.value.length
   isIndeterminate.value = checkedCount > 0 && checkedCount < tableListWithSearch.value.length
@@ -133,6 +126,7 @@ const handleCheckAllChange = (val: any) => {
       </div>
       <el-checkbox-group
         v-model="checkList"
+        v-if="multiple"
         style="position: relative"
         @change="handleCheckedTablesChange"
       >
@@ -154,6 +148,25 @@ const handleCheckAllChange = (val: any) => {
           </template>
         </FixedSizeList>
       </el-checkbox-group>
+      <el-radio-group v-model="checkListRadio" v-else style="position: relative; display: block">
+        <FixedSizeList
+          :item-size="32"
+          :data="tableListWithSearch"
+          :total="tableListWithSearch.length"
+          :height="460"
+          :scrollbar-always-on="true"
+          class-name="ed-select-dropdown__list"
+          layout="vertical"
+        >
+          <template #default="{ index, style }">
+            <div class="list-item_primary" :style="style">
+              <el-radio :value="tableListWithSearch[index].value">
+                {{ tableListWithSearch[index].label }}</el-radio
+              >
+            </div>
+          </template>
+        </FixedSizeList>
+      </el-radio-group>
     </div>
   </van-popup>
 </template>
@@ -188,6 +201,10 @@ const handleCheckAllChange = (val: any) => {
   .ed-checkbox__label {
     display: inline-flex;
     align-items: center;
+    color: #1f2329 !important;
+  }
+
+  .ed-radio__label {
     color: #1f2329 !important;
   }
 

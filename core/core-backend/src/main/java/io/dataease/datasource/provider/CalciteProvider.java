@@ -462,15 +462,13 @@ public class CalciteProvider extends Provider {
         ConnectionObj connectionObj = new ConnectionObj();
         DatasourceConfiguration configuration = null;
         DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(coreDatasource.getType());
+
         switch (datasourceType) {
-            case mysql:
-            case mongo:
-            case StarRocks:
-            case doris:
-            case TiDB:
-            case mariadb:
+            case mysql, StarRocks, doris, TiDB, mariadb, mongo: {
                 configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Mysql.class);
-                break;
+                configuration.setDriver("org.mariadb.jdbc.Driver");
+            }
+            break;
             case impala:
                 configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Impala.class);
                 break;
@@ -1581,7 +1579,7 @@ public class CalciteProvider extends Provider {
                     database = configuration.getDataBase();
                 } else {
                     Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
-                    if(configuration.getJdbcUrl().startsWith("jdbc:mariadb")){
+                    if (configuration.getJdbcUrl().startsWith("jdbc:mariadb")) {
                         WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mariadb://(.*):(\\d+)/(.*)");
                     }
                     Matcher matcher = WITH_SQL_FRAGMENT.matcher(configuration.getJdbcUrl());
@@ -1606,7 +1604,7 @@ public class CalciteProvider extends Provider {
                     database = configuration.getDataBase();
                 } else {
                     Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
-                    if(configuration.getJdbcUrl().startsWith("jdbc:mariadb")){
+                    if (configuration.getJdbcUrl().startsWith("jdbc:mariadb")) {
                         WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mariadb://(.*):(\\d+)/(.*)");
                     }
                     Matcher matcher = WITH_SQL_FRAGMENT.matcher(configuration.getJdbcUrl());

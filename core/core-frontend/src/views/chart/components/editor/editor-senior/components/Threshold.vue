@@ -200,6 +200,10 @@ const changeTableThreshold = () => {
         ElMessage.error(t('chart.exp_can_not_empty'))
         return
       }
+      if (ele.target === 'custom' && !ele.targetFieldId) {
+        ElMessage.error(t('chart.field_can_not_empty'))
+        return
+      }
       if (ele.type !== 'dynamic') {
         if (ele.term === 'between') {
           if (
@@ -1105,7 +1109,7 @@ init()
       v-model="state.editTableThresholdDialog"
       :title="t('chart.threshold')"
       :visible="state.editTableThresholdDialog"
-      width="1050px"
+      width="min(1250px, calc(100vw - 32px))"
       class="dialog-css"
       append-to-body
     >

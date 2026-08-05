@@ -219,6 +219,7 @@ if (showSystem.value) {
   align-items: center;
   border-radius: 6px;
   overflow: hidden;
+  margin-left: 10px;
   cursor: pointer;
   &:hover {
     background-color: #1e2738;

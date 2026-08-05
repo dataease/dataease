@@ -28,13 +28,9 @@ public class GaugeHandler extends NumericalChartHandler {
         Map<String, Object> customAttr = view.getCustomAttr();
         Map<String, Object> size = (Map<String, Object>) customAttr.get("misc");
         ChartViewFieldDTO gaugeMinViewField = getDynamicField(size, "gaugeMinType", "gaugeMinField");
-        if (gaugeMinViewField != null) {
-            yAxis.add(gaugeMinViewField);
-        }
+        appendDynamicField(yAxis, gaugeMinViewField, view.getIsExcelExport());
         ChartViewFieldDTO gaugeMaxViewField = getDynamicField(size, "gaugeMaxType", "gaugeMaxField");
-        if (gaugeMaxViewField != null) {
-            yAxis.add(gaugeMaxViewField);
-        }
+        appendDynamicField(yAxis, gaugeMaxViewField, view.getIsExcelExport());
         axisMap.put(ChartAxis.xAxis, new ArrayList<>());
         axisMap.put(ChartAxis.yAxis, yAxis);
         var context = new HashMap<String, Object>();

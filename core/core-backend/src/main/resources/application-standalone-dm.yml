@@ -12,6 +12,7 @@ spring:
     properties:
       hibernate:
         dialect: io.dataease.config.CustomDMDialect
+        auto_quote_keyword: false
         jdbc:
           batch_size: 1000
           lob:

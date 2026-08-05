@@ -434,9 +434,16 @@ export const getGeoJsonFile = async (
 
 const getExcelDownloadRequest = (data, type?) => {
   let fields = JSON.parse(JSON.stringify(data.fields))
-  // liquid gauge 只需要导出一个字段
+  // 动态值可能复用指标字段，导出时按数据键保留所有不重复字段
   if (['gauge', 'liquid'].includes(type) && fields.length > 1) {
-    fields = fields.slice(1)
+    const fieldKeySet = new Set<string>()
+    fields = fields.filter(item => {
+      if (fieldKeySet.has(item.dataeaseName)) {
+        return false
+      }
+      fieldKeySet.add(item.dataeaseName)
+      return true
+    })
   }
   const tableRow = JSON.parse(JSON.stringify(data.tableRow))
   const excelHeader = fields.map(item => item.chartShowName ?? item.name)

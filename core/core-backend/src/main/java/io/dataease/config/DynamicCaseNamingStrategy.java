@@ -2,6 +2,9 @@ package io.dataease.config;
 
 import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
 import org.hibernate.boot.model.naming.Identifier;
+import org.hibernate.dialect.Dialect;
+import org.hibernate.dialect.DmDialect;
+import org.hibernate.dialect.OracleDialect;
 import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
 
 import java.nio.charset.StandardCharsets;
@@ -20,6 +23,20 @@ public class DynamicCaseNamingStrategy extends CamelCaseToUnderscoresNamingStrat
      * 参考:
      * <a href="https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/Oracle-SQL-Reserved-Words.html">...</a>
      */
+    /**
+     * Oracle 库中由 MyBatis 建表的表（uid 列存储为大写 UID，需要大写引号）。
+     * 后续若发现其他表也需要大写引号，在此添加表名即可。
+     */
+    private static final Set<String> UID_UPPERCASE_TABLES = Set.of(
+            "per_user_role"
+    );
+
+    /**
+     * 同上：level 列存储为大写 LEVEL 的表。
+     */
+    private static final Set<String> LEVEL_UPPERCASE_TABLES = Set.of(
+    );
+
     private static final Set<String> ORACLE_KEYWORDS = Set.of(
             "ACCESS", "ADD", "ALL", "ALTER", "AND", "ANY", "AS", "ASC", "AUDIT",
             "BETWEEN", "BY", "CHAR", "CHECK", "CLUSTER", "COLUMN", "COMMENT",
@@ -31,10 +48,10 @@ public class DynamicCaseNamingStrategy extends CamelCaseToUnderscoresNamingStrat
             "MINUS", "MLSLABEL", "MODE", "MODIFY", "NOAUDIT", "NOCOMPRESS", "NOT",
             "NOWAIT", "NULL", "NUMBER", "OF", "OFFLINE", "ON", "ONLINE", "OPTION",
             "OR", "ORDER", "PCTFREE", "PRIOR", "PRIVILEGES", "PUBLIC", "RAW",
-            "RENAME", "RESOURCE", "REVOKE", "ROW", "ROWID", "ROWNUM", "ROWS",
+            "RENAME", "REVOKE", "ROW", "ROWID", "ROWNUM", "ROWS",
             "SELECT", "SESSION", "SET", "SHARE", "SIZE", "SMALLINT", "START",
             "SUCCESSFUL", "SYNONYM", "SYSDATE", "TABLE", "THEN", "TO", "TRIGGER",
-            "UID", "UNION", "UNIQUE", "UPDATE", "USER", "VALIDATE", "VALUES",
+            "UNION", "UNIQUE", "UPDATE", "USER", "VALIDATE", "VALUES",
             "VARCHAR", "VARCHAR2", "VIEW", "WHENEVER", "WHERE", "WITH"
     );
 
@@ -67,9 +84,9 @@ public class DynamicCaseNamingStrategy extends CamelCaseToUnderscoresNamingStrat
         if (name.getText().startsWith("QRTZ_")) {
             identifier = Identifier.toIdentifier(name.getText().toUpperCase());
         }
-        // 通过context获取数据库类型,判断是否是 Oracle
-        String dialectClassName = context.getDialect().getClass().getName();
-        if (dialectClassName.contains("Oracle")) {
+        // Oracle及兼容数据库(达梦等)特殊处理
+        Dialect dialect = context.getDialect();
+        if (dialect instanceof OracleDialect || dialect instanceof DmDialect) {
             identifier = truncateWithHashFromStart(identifier);
             identifier =  addQuotesIfOracleKeyword(identifier);
         }
@@ -83,10 +100,26 @@ public class DynamicCaseNamingStrategy extends CamelCaseToUnderscoresNamingStrat
         if (currentTableName.get().startsWith("QRTZ_")) {
             identifier = Identifier.toIdentifier(name.getText().toUpperCase());
         }
-        // 通过context获取数据库类型,判断是否是 Oracle
-        String dialectClassName = context.getDialect().getClass().getName();
-        if (dialectClassName.contains("Oracle")) {
-            identifier = addQuotesIfOracleKeyword(identifier);
+        // Oracle及兼容数据库(达梦等)特殊处理
+        Dialect dialect = context.getDialect();
+        if (dialect instanceof OracleDialect || dialect instanceof DmDialect) {
+            if ("uid".equalsIgnoreCase(identifier.getText())) {
+                String tableName = currentTableName.get();
+                if (UID_UPPERCASE_TABLES.contains(tableName)) {
+                    identifier = Identifier.toIdentifier("UID", true);
+                } else {
+                    identifier = Identifier.toIdentifier("uid", true);
+                }
+            } else if ("level".equalsIgnoreCase(identifier.getText())) {
+                String tableName = currentTableName.get();
+                if (LEVEL_UPPERCASE_TABLES.contains(tableName)) {
+                    identifier = Identifier.toIdentifier("LEVEL", true);
+                } else {
+                    identifier = Identifier.toIdentifier("level", true);
+                }
+            } else {
+                identifier = addQuotesIfOracleKeyword(identifier);
+            }
         }
         return identifier;
 
