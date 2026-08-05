@@ -23,15 +23,17 @@
           <span class="top-area-text" style="margin-left: 0"
             >{{ t('visualization.selected_view') }}：</span
           >
-          <span class="top-area-value">
+          <span class="top-area-value view-title-value">
             <Icon class-name="view-type-icon"
               ><component
                 class="svg-icon view-type-icon"
                 :is="iconChartMap[state.curLinkageViewInfo.type]"
               ></component
             ></Icon>
-            {{ state.curLinkageViewInfo.title }}</span
-          >
+            <span class="top-area-title" :title="state.curLinkageViewInfo.title">
+              {{ state.curLinkageViewInfo.title }}
+            </span>
+          </span>
           <span class="top-area-text">{{ t('visualization.used_dataset') }}：</span>
           <span class="top-area-value">
             <Icon class-name="view-type-icon" name="dataset-outline"
@@ -901,6 +903,8 @@ span {
   display: flex;
   flex-direction: row;
   align-items: center;
+  width: 100%;
+  min-width: 0;
 }
 
 .top-area-text {
@@ -917,6 +921,19 @@ span {
   display: flex;
   flex-direction: row;
   align-items: center;
+}
+
+/* 长标题单行省略，避免撑高弹窗 */
+.view-title-value {
+  flex: 1;
+  min-width: 0;
+}
+
+.top-area-title {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 .view-type-icon {
   color: var(--ed-color-primary);
