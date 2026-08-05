@@ -48,6 +48,7 @@ public class StaticResourceServer implements StaticResourceApi {
             if (!isImage(file)) {
                 DEException.throwException("Multipart file must be image");
             }
+            FileUtils.validateUploadFilename(fileId);
             String originName = file.getOriginalFilename();
             FileUtils.validateUploadFilename(originName);
             String newFileName = fileId + originName.substring(originName.lastIndexOf("."), originName.length());

@@ -170,7 +170,7 @@ onMounted(() => {
         placement="bottom"
       >
         <el-badge
-          style="margin-right: 10px"
+          style="margin-left: 10px"
           :hidden="[0, '0'].includes(badgeCount)"
           :value="badgeCount"
           class="ed-badge_custom"
