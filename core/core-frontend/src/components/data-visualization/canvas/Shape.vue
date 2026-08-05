@@ -71,7 +71,8 @@
         :id="viewDemoInnerId"
         :style="componentBackgroundStyle"
         @click="selectCurComponent"
-        @mousedown="handleInnerMouseDownOnShape"
+        @pointerdown="isS2Table && handleInnerMouseDownOnShape($event)"
+        @mousedown="!isS2Table && handleInnerMouseDownOnShape($event)"
       >
         <!-- 背景模糊层 由于父层的backdrop-filter是作用于背后内容，无法模糊自身背景图 -->
         <div v-if="blurBgEnable" class="blur-bg" :style="blurBgStyle"></div>
@@ -384,6 +385,11 @@ const isGroupArea = computed(() => {
 const active = computed(() => {
   return curComponent.value?.id === element.value.id
 })
+
+// 表格使用 pointer 事件完成组件聚焦
+const isS2Table = computed(() =>
+  ['table-info', 'table-normal', 'table-pivot'].includes(element.value.innerType)
+)
 
 const boardMoveActive = computed(() => {
   const CHARTS = [
