@@ -87,6 +87,7 @@ public class TableNormalHandler extends DefaultChartHandler {
         }
         boolean crossDs = ((DatasetGroupInfoDTO) formatResult.getContext().get("dataset")).getIsCross();
         DatasourceRequest datasourceRequest = new DatasourceRequest();
+        fillDatasourceRequest(datasourceRequest, crossDs, dsMap, sqlMap);
         datasourceRequest.setIsCross(crossDs);
         datasourceRequest.setDsList(dsMap);
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
