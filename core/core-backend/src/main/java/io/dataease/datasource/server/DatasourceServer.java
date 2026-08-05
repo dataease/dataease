@@ -1351,6 +1351,16 @@ public class DatasourceServer implements DatasourceApi {
     private DatasourceDTO convertCoreDatasource(Long datasourceId, boolean hidePw, CoreDatasource datasource) {
         DatasourceDTO datasourceDTO = new DatasourceDTO();
         BeanUtils.copyBean(datasourceDTO, datasource);
+        if (ObjectUtils.isNotEmpty(datasourceDTO.getConfiguration())) {
+            try {
+                objectMapper.readTree(datasourceDTO.getConfiguration());
+            } catch (Exception e) {
+                LogUtil.error("解析数据源配置失败", e);
+                datasourceDTO.setConfiguration(null);
+                return datasourceDTO;
+
+            }
+        }
 
         if (datasourceDTO.getType().contains(DatasourceConfiguration.DatasourceType.API.toString())) {
             List<ApiDefinition> apiDefinitionList = JsonUtil.parseList(datasourceDTO.getConfiguration(), listTypeReference);
