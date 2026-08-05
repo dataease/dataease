@@ -11,7 +11,6 @@ import { cloneDeep } from 'lodash-es'
 import { getDeEngine, getSchema } from '@/api/datasource'
 import { CustomPassword } from '@/components/custom-password'
 import { Base64 } from 'js-base64'
-import { querySymmetricKey } from '@/api/login'
 import { symmetricDecrypt } from '@/utils/encryption'
 import { Icon } from '@/components/icon-custom'
 import { XpackComponent } from '@/components/plugin'
@@ -163,49 +162,47 @@ const defaultInfo = {
 }
 const nodeInfo = reactive(cloneDeep(defaultInfo))
 const edit = () => {
-  querySymmetricKey().then(response => {
-    getDeEngine()
-      .then(res => {
-        let {
-          name,
-          createBy,
-          id,
-          createTime,
-          creator,
-          type,
-          pid,
-          configuration,
-          syncSetting,
-          fileName,
-          size,
-          description,
-          lastSyncTime,
-          enableDataFill
-        } = res.data
-        if (configuration) {
-          configuration = JSON.parse(symmetricDecrypt(configuration, response.data))
-        }
-        Object.assign(nodeInfo, {
-          name,
-          pid,
-          description,
-          fileName,
-          size,
-          createTime,
-          creator,
-          createBy,
-          id,
-          type,
-          configuration,
-          syncSetting,
-          lastSyncTime,
-          enableDataFill
-        })
+  getDeEngine()
+    .then(res => {
+      let {
+        name,
+        createBy,
+        id,
+        createTime,
+        creator,
+        type,
+        pid,
+        configuration,
+        syncSetting,
+        fileName,
+        size,
+        description,
+        lastSyncTime,
+        enableDataFill
+      } = res.data
+      if (configuration) {
+        configuration = JSON.parse(symmetricDecrypt(configuration))
+      }
+      Object.assign(nodeInfo, {
+        name,
+        pid,
+        description,
+        fileName,
+        size,
+        createTime,
+        creator,
+        createBy,
+        id,
+        type,
+        configuration,
+        syncSetting,
+        lastSyncTime,
+        enableDataFill
       })
-      .finally(() => {
-        dialogVisible.value = true
-      })
-  })
+    })
+    .finally(() => {
+      dialogVisible.value = true
+    })
 }
 const basicForm = ref()
 

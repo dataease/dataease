@@ -2,6 +2,7 @@ package io.dataease.commons.utils;
 
 import io.dataease.rsa.manage.RsaManage;
 import io.dataease.utils.EncryptUtils;
+import io.dataease.utils.RsaUtils;
 import jakarta.annotation.Resource;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -18,5 +19,6 @@ public class EncryptKeyInitializer implements ApplicationRunner {
         rsaManage.check();
         String aesKey = rsaManage.query().getAesKey();
         EncryptUtils.initKeys(aesKey);
+        RsaUtils.initAesKey(aesKey);
     }
 }

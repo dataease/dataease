@@ -89,7 +89,6 @@ import { useEmbedded } from '@/store/modules/embedded'
 import { XpackComponent } from '@/components/plugin'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import { iconDatasourceMap } from '@/components/icon-group/datasource-list'
-import { querySymmetricKey } from '@/api/login'
 import { symmetricDecrypt } from '@/utils/encryption'
 import { isFreeFolder } from '@/utils/utils'
 import { AnyColumns } from 'element-plus-secondary/es/components/table-v2/src/types'
@@ -485,7 +484,6 @@ const saveDsFolder = (params, successCb, finallyCb, cmd) => {
 const dsLoading = ref(false)
 const mounted = ref(false)
 const isSupportSetKey = ref(false)
-const symmetricKey = ref('')
 
 const listDs = () => {
   rawDatasourceList.value = []
@@ -617,13 +615,13 @@ const handleNodeClick = data => {
       enableDataFill
     } = res.data
     if (configuration) {
-      configuration = JSON.parse(symmetricDecrypt(configuration, symmetricKey.value))
+      configuration = JSON.parse(symmetricDecrypt(configuration))
     }
     if (paramsStr) {
-      paramsStr = JSON.parse(symmetricDecrypt(paramsStr, symmetricKey.value))
+      paramsStr = JSON.parse(symmetricDecrypt(paramsStr))
     }
     if (apiConfigurationStr) {
-      apiConfigurationStr = JSON.parse(symmetricDecrypt(apiConfigurationStr, symmetricKey.value))
+      apiConfigurationStr = JSON.parse(symmetricDecrypt(apiConfigurationStr))
     }
     Object.assign(nodeInfo, {
       name,
@@ -762,13 +760,13 @@ const editDatasource = (editType?: number) => {
       enableDataFill
     } = res.data
     if (configuration) {
-      configuration = JSON.parse(symmetricDecrypt(configuration, symmetricKey.value))
+      configuration = JSON.parse(symmetricDecrypt(configuration))
     }
     if (paramsStr) {
-      paramsStr = JSON.parse(symmetricDecrypt(paramsStr, symmetricKey.value))
+      paramsStr = JSON.parse(symmetricDecrypt(paramsStr))
     }
     if (apiConfigurationStr) {
-      apiConfigurationStr = JSON.parse(symmetricDecrypt(apiConfigurationStr, symmetricKey.value))
+      apiConfigurationStr = JSON.parse(symmetricDecrypt(apiConfigurationStr))
     }
     let datasource = reactive<Node>(cloneDeep(defaultInfo))
     Object.assign(datasource, {
@@ -837,13 +835,13 @@ const handleCopy = async data => {
       return ele.type == res.data.type
     })
     if (configuration) {
-      configuration = JSON.parse(symmetricDecrypt(configuration, symmetricKey.value))
+      configuration = JSON.parse(symmetricDecrypt(configuration))
     }
     if (paramsStr) {
-      paramsStr = JSON.parse(symmetricDecrypt(paramsStr, symmetricKey.value))
+      paramsStr = JSON.parse(symmetricDecrypt(paramsStr))
     }
     if (apiConfigurationStr) {
-      apiConfigurationStr = JSON.parse(symmetricDecrypt(apiConfigurationStr, symmetricKey.value))
+      apiConfigurationStr = JSON.parse(symmetricDecrypt(apiConfigurationStr))
     }
     let datasource = reactive<Node>(cloneDeep(defaultInfo))
     Object.assign(datasource, {
@@ -1096,9 +1094,6 @@ onMounted(() => {
   if (opt && opt === 'create') {
     datasourceEditor.value.init(null, null, null, isSupportSetKey.value)
   }
-  querySymmetricKey().then(res => {
-    symmetricKey.value = res.data
-  })
 })
 
 const sideTreeStatus = ref(true)
@@ -1594,7 +1589,7 @@ const getMenuList = (val: boolean, data?: any) => {
                     <ExcelInfoBase :name="nodeInfo.fileName" :size="nodeInfo.size"></ExcelInfoBase>
                   </BaseInfoItem>
                 </el-col>
-                <el-col v-if="nodeInfo.type === 'ExcelRemote'" :span="12">
+                <el-col v-if="nodeInfo.type === 'ExcelRemote' && nodeInfo.configuration" :span="12">
                   <BaseInfoItem :label="t('datasource.remote_excel_url')">
                     {{ nodeInfo.configuration.url }}
                   </BaseInfoItem>
@@ -1612,6 +1607,7 @@ const getMenuList = (val: boolean, data?: any) => {
               </el-row>
               <template
                 v-if="
+                  nodeInfo.configuration &&
                   !['Excel', 'es'].includes(nodeInfo.type) &&
                   !nodeInfo.type.startsWith('API') &&
                   !nodeInfo.type.startsWith('Excel') &&
@@ -1770,7 +1766,7 @@ const getMenuList = (val: boolean, data?: any) => {
             v-slot="slotProps"
             :name="t('datasource.data_table')"
           >
-            <div class="api-card-content" v-if="slotProps.active">
+            <div class="api-card-content" v-if="slotProps.active && nodeInfo.apiConfiguration">
               <div v-for="api in nodeInfo.apiConfiguration" :key="api.id" class="api-card">
                 <el-row>
                   <el-col :span="19">

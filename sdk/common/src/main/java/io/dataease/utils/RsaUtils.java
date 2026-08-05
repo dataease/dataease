@@ -12,7 +12,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -41,6 +40,12 @@ public class RsaUtils {
     private static final String PK_SEPARATOR = "-pk_separator-";
 
     private static RsaManage rsaManage;
+
+    private static String staticAesKey;
+
+    public static void initAesKey(String aesKey) {
+        RsaUtils.staticAesKey = aesKey;
+    }
 
     @Resource
     public void setRsaManage(RsaManage rsaManage) {
@@ -217,22 +222,9 @@ public class RsaUtils {
 
 
     private static final String ALGORITHM = "AES";
-    public static String symmetricKey = null;
-    private static final int KEY_SIZE = 128;
-
 
     public static String generateSymmetricKey() {
-        try {
-            if (StringUtils.isEmpty(symmetricKey)) {
-                KeyGenerator keyGenerator = KeyGenerator.getInstance(ALGORITHM);
-                keyGenerator.init(KEY_SIZE, new SecureRandom());
-                SecretKey secretKey = keyGenerator.generateKey();
-                symmetricKey = Base64.getEncoder().encodeToString(secretKey.getEncoded());
-            }
-            return symmetricKey;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return Base64.getEncoder().encodeToString(staticAesKey.getBytes(StandardCharsets.UTF_8));
     }
 
     public static String symmetricEncrypt(String data) {
@@ -241,7 +233,7 @@ public class RsaUtils {
             new SecureRandom().nextBytes(iv);
             IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            SecretKeySpec secretKeySpec = new SecretKeySpec(Base64.getDecoder().decode(generateSymmetricKey()), ALGORITHM);
+            SecretKeySpec secretKeySpec = new SecretKeySpec(staticAesKey.getBytes(StandardCharsets.UTF_8), ALGORITHM);
             cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, ivParameterSpec);
             byte[] ciphertext = cipher.doFinal(data.getBytes("UTF-8"));
 
@@ -266,7 +258,7 @@ public class RsaUtils {
             byte[] ciphertext = new byte[decoded.length - 16];
             System.arraycopy(decoded, 16, ciphertext, 0, ciphertext.length);
 
-            SecretKeySpec secretKeySpec = new SecretKeySpec(Base64.getDecoder().decode(generateSymmetricKey()), ALGORITHM);
+            SecretKeySpec secretKeySpec = new SecretKeySpec(staticAesKey.getBytes(StandardCharsets.UTF_8), ALGORITHM);
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, ivParameterSpec);
             byte[] decryptedText = cipher.doFinal(ciphertext);
