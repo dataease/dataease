@@ -222,7 +222,7 @@ export function activeWatermark(
     watermark_txt = userLoginInfo.name
   } else if (watermarkForm.type === 'ip') {
     watermark_txt = userLoginInfo.ip
-    watermark_width = 150
+    watermark_width = 190
   } else if (watermarkForm.type === 'time') {
     watermark_txt = getNow()
     watermark_width = 200
