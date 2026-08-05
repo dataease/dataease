@@ -903,7 +903,7 @@ defineExpose({
           v-show="activeStep !== 2"
         >
           <el-input
-            v-model="form.name"
+            v-model.trim="form.name"
             autocomplete="off"
             :placeholder="t('datasource.input_name')"
           />
