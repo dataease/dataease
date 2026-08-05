@@ -45,8 +45,5 @@ export const rowPermissionsSubjectTreeApi = (data: {
     }
   })
 
-export const querySubjectByResourceApi = (data: any) =>
-  request.post({ url: '/resourceAuth/querySubjectByResource', data })
-
 export const queryAllSubjectsApi = (type: number) =>
   request.get({ url: `/resourceAuth/queryAllSubjects/${type}` })

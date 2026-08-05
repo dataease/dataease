@@ -23,10 +23,10 @@ public interface ResourceAuthApi {
     @Hidden
     List<ResourcePermissionVO> queryResourcePermission(ResourcePermissionRequest request);
 
-    @Operation(summary = "查询资源授权主体")
+    @Operation(summary = "查询资源已授权用户ID")
     @ApiOperationSupport(order = 1)
-    @PostMapping("/querySubjectByResource")
-    List<SubjectVO> querySubjectByResource(@RequestBody SubjectByResourceRequest request);
+    @PostMapping("/queryAuthorizedUserIds")
+    List<Long> queryAuthorizedUserIds(@RequestBody SubjectByResourceRequest request);
 
     @Operation(summary = "查询全部用户或角色")
     @ApiOperationSupport(order = 2)
