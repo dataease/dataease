@@ -23,7 +23,11 @@ const textOptionsForSysParams = sysParams.map(formatEnum)
 const sysParamsEnum = ['userId', 'userName', 'userEmail', 'userPhone']
 
 const sysParamsIlns = sysParamsEnum.map(_ => {
-  return { value: `\${sysParams.${_}}`, label: `auth.sysParams_type.${toLine(_)}`, type: _ === 'userPhone' ? 'num' : 'text' }
+  return {
+    value: `\${sysParams.${_}}`,
+    label: `auth.sysParams_type.${toLine(_)}`,
+    type: _ === 'userPhone' ? 'num' : 'text'
+  }
 })
 
 const fieldEnums = ['text', 'time', 'value', 'value', 'value', 'location', 'binary', 'url']
