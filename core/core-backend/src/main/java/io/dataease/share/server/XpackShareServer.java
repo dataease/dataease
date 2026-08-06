@@ -54,7 +54,7 @@ public class XpackShareServer implements XpackShareApi {
 
     @Override
     public List<XpackShareGridVO> query(VisualizationWorkbranchQueryRequest request) {
-        return xpackShareManage.query(1, 20, request);
+        return xpackShareManage.query(1, 20, request).getRecords();
     }
 
     @Override

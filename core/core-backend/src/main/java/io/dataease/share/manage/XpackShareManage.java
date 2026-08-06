@@ -1,6 +1,7 @@
 package io.dataease.share.manage;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.dataease.api.system.vo.ShareBaseVO;
@@ -17,6 +18,7 @@ import io.dataease.dao.auto.entity.QDataVisualizationInfo;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
+import io.dataease.result.PageResult;
 import io.dataease.license.utils.LicenseUtil;
 import io.dataease.permission.util.V3UserUtil;
 import io.dataease.share.dao.auto.entity.QXpackShare;
@@ -190,7 +192,7 @@ public class XpackShareManage {
                         Projections.fields(XpackSharePO.class,
                                 xpackShare.id.as("shareId"),
                                 dataVisualizationInfo.id.as("resourceId"),
-                                dataVisualizationInfo.mobileLayout.as("extFlag"),
+                                new CaseBuilder().when(dataVisualizationInfo.mobileLayout.isTrue()).then(1).otherwise(0).as("extFlag"),
                                 dataVisualizationInfo.status.as("extFlag1"),
                                 dataVisualizationInfo.type.as("type"),
                                 xpackShare.creator.as("creator"),
@@ -237,7 +239,7 @@ public class XpackShareManage {
     }
 
     @XpackInteract(value = "perFilterShareManage", recursion = true, invalid = true)
-    public List<XpackShareGridVO> query(int pageNum, int pageSize, VisualizationWorkbranchQueryRequest request) {
+    public PageResult<XpackShareGridVO> query(int pageNum, int pageSize, VisualizationWorkbranchQueryRequest request) {
         Page<XpackSharePO> poiPage = proxy().querySharePage(pageNum, pageSize, request);
         List<XpackShareGridVO> vos = proxy().formatResult(poiPage.getContent());
         if (!org.springframework.util.CollectionUtils.isEmpty(vos)) {
@@ -245,7 +247,7 @@ public class XpackShareManage {
                 item.setCreator(StringUtils.equals(item.getCreator(), "1") ? Translator.get("i18n_sys_admin") : item.getCreator());
             });
         }
-        return vos;
+        return new PageResult<>(vos, poiPage.getTotalElements(), poiPage.getPageable());
     }
 
     public List<XpackShareGridVO> formatResult(List<XpackSharePO> pos) {
