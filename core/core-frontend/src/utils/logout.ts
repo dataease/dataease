@@ -10,6 +10,10 @@ const userStore = useUserStoreWithOut()
 const interactiveStore = interactiveStoreWithOut()
 
 export const logoutHandler = (justClean?: boolean, save_platform_status = false) => {
+  // 清除 Vue Router 中动态添加的路由
+  permissionStore.getAddRouters.forEach(route => {
+    route.name && router.removeRoute(route.name)
+  })
   userStore.clear()
   userStore.$reset()
   permissionStore.clear()
