@@ -128,6 +128,16 @@ export class GroupBar extends StackBar {
     }
   }
 
+  protected getTooltipItemName(chart: Chart, item: any): string {
+    const quota = chart.yAxis?.[0]
+    const quotaName = quota?.chartShowName || quota?.name
+    const categoryName = chart.xAxisExt?.length ? super.getTooltipItemName(chart, item) : ''
+    // marker 后展示指标名称
+    return [quotaName, categoryName]
+      .filter(name => name !== null && name !== undefined && `${name}`.trim() !== '')
+      .join(' - ')
+  }
+
   public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
     return setUpGroupSeriesColor(chart, data)
   }

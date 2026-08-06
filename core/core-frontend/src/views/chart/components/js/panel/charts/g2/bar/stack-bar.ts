@@ -173,7 +173,7 @@ export class StackBar extends Bar {
                 item.value === null || item.value === undefined
                   ? ''
                   : valueFormatter(item.value, tooltip.tooltipFormatter)
-              const name = isEmpty(item.category) ? item.field : item.category
+              const name = this.getTooltipItemName(chart, item)
               result.push({ ...item, name, value })
             })
             // tooltip 内系列顺序与堆叠层级保持一致
@@ -203,6 +203,10 @@ export class StackBar extends Bar {
       ...options,
       children: [{ ...children[0], ...tooltipOptions }, ...children.slice(1)]
     }
+  }
+
+  protected getTooltipItemName(_chart: Chart, item: any): string {
+    return isEmpty(item.category) ? item.field : item.category
   }
 
   protected configData(chart: Chart, options: ViewSpec): ViewSpec {
