@@ -3,7 +3,7 @@ import dvFolder from '@/assets/svg/dv-folder.svg'
 import icon_dataset from '@/assets/svg/icon_dataset.svg'
 import icon_done_outlined from '@/assets/svg/icon_done_outlined.svg'
 import { Tree } from '../../../../visualized/data/dataset/form/CreatDsGroup.vue'
-import { computed, ref, watch, onMounted } from 'vue'
+import { computed, ref, watch, onMounted, nextTick } from 'vue'
 import { Plus, Search } from '@element-plus/icons-vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useAppStoreWithOut } from '@/store/modules/app'
@@ -111,10 +111,6 @@ const dsSelectProps = {
 const formRef = ref<FormInstance>()
 const searchStr = ref<string>()
 
-watch(searchStr, val => {
-  datasetSelector.value.filter(val)
-})
-
 const showTree = computed(() => {
   return (
     datasetTree.value && datasetTree.value.length > 0 && !loadingDatasetTree.value && orgCheck.value
@@ -137,6 +133,45 @@ const computedTree = computed(() => {
   }
   return datasetTree.value
 })
+
+// 收集命中节点及其完整祖先路径，使父级目录可以直接通过过滤
+function collectMatchedNodeIds(
+  tree: Tree[],
+  keyword: string,
+  ancestors: Tree['id'][] = [],
+  result = new Set<Tree['id']>()
+) {
+  tree.forEach(node => {
+    const nodePath = [...ancestors, node.id]
+    if (node.name?.includes(keyword)) {
+      nodePath.forEach(id => result.add(id))
+    }
+    if (node.children?.length) {
+      collectMatchedNodeIds(node.children, keyword, nodePath, result)
+    }
+  })
+  return result
+}
+
+// el-tree 超过 80 个同级节点时会分批异步过滤，父级可能早于子级完成可见计算
+const matchedNodeIds = computed(() => {
+  const keyword = searchStr.value
+  return keyword ? collectMatchedNodeIds(computedTree.value || [], keyword) : new Set<Tree['id']>()
+})
+
+const filterNode = (_value: string, data: Tree) => {
+  if (!searchStr.value) return true
+  return matchedNodeIds.value.has(data.id)
+}
+
+// 数据集刷新或组织切换会重建树，等待渲染完成后重新应用当前搜索条件
+watch(
+  [searchStr, computedTree],
+  () => {
+    nextTick(() => datasetSelector.value?.filter(searchStr.value))
+  },
+  { flush: 'post' }
+)
 
 const flattedTree = computed(() => {
   return _.filter(flatTree(computedTree.value), node => node.leaf)
@@ -199,10 +234,6 @@ function flatTree(tree: Tree[]) {
 }
 const onDatasetChange = val => {
   emits('onDatasetChange', val)
-}
-const filterNode = (value: string, data: Tree) => {
-  if (!value) return true
-  return data.name?.includes(value)
 }
 
 const refresh = () => {
