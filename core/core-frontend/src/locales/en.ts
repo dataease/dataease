@@ -3732,6 +3732,8 @@ export default {
     play_circle: 'Loop Play',
     video_links: 'Video Links',
     web_url: 'Web URL',
+    app_embed: 'Embed Mode',
+    app_embed_code: 'Embed Code',
     video_add_tips: 'Please configure video information...',
     link_add_tips_pre: 'Please configure web information..',
     web_add_tips_suf: 'Add web information...',

@@ -3645,6 +3645,8 @@ export default {
     play_circle: '循环播放',
     video_links: '视频链接',
     web_url: '网页地址',
+    app_embed: '嵌入模式',
+    app_embed_code: '嵌入代码',
     video_add_tips: '请配置视频信息...',
     link_add_tips_pre: '请配置网页信息..',
     web_add_tips_suf: '添加网页信息...',

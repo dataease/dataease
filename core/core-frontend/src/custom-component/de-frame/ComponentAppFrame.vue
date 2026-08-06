@@ -1,18 +1,10 @@
 <template>
-  <component-app-frame
-    v-if="element.frameLinks.isApp"
-    :prop-value="propValue"
-    :element="element"
-    :is-edit="isEdit"
-    :active="active"
-    :screen-shot="screenShot"
-  />
-  <el-row v-else class="main-frame">
+  <el-row class="main-frame">
     <div v-if="element.frameLinks.src" class="main-frame">
       <iframe
         v-if="state.frameShow"
-        :id="'iframe-' + element.id"
-        :src="element.frameLinks.src"
+        :id="'app-iframe-' + element.id"
+        :srcdoc="srcDoc"
         scrolling="auto"
         frameborder="0"
         class="main-frame main-de-iframe"
@@ -24,10 +16,6 @@
           }}</span>
         </span>
       </div>
-      <!--Here are three 15px wide masks(left top right) for easy clicking on the display jump button-->
-      <div v-if="isEdit" class="frame-mask preview-top-mask" />
-      <div v-if="isEdit" class="frame-mask preview-right-mask" />
-      <div v-if="isEdit" class="frame-mask preview-left-mask" />
       <div v-if="screenShot" class="frame-mask" />
     </div>
     <div v-else class="info-class">
@@ -37,14 +25,9 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, reactive, toRefs } from 'vue'
+import { computed, nextTick, onMounted, reactive, toRefs } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { useI18n } from '@/hooks/web/useI18n'
-import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { storeToRefs } from 'pinia'
-import ComponentAppFrame from '@/custom-component/de-frame/ComponentAppFrame.vue'
-const dvMainStore = dvMainStoreWithOut()
-const { canvasStyleData } = storeToRefs(dvMainStore)
 
 const { t } = useI18n()
 
@@ -72,11 +55,26 @@ const props = defineProps({
   }
 })
 
-const { propValue, element, isEdit, active, screenShot } = toRefs(props)
+const { element, isEdit, screenShot } = toRefs(props)
 
 const state = reactive({
-  pOption: {},
   frameShow: true
+})
+
+// 纯 JS 代码（如立即执行函数）需包裹成 script 才能执行；含 script 标签的直接放入
+const buildBody = (src: string) => {
+  if (/<script[\s>]/i.test(src)) {
+    return src
+  }
+  return `<script>${src}<\/script>`
+}
+
+// 每个嵌入应用渲染在独立的 srcdoc iframe 中：相互隔离，删除组件即彻底销毁
+const srcDoc = computed(() => {
+  const src = element.value?.frameLinks?.src || ''
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>html,body{margin:0;padding:0;height:100%;width:100%;overflow:auto;}.copilot{height:100%;width:100%;}</style></head><body><div class="copilot"></div>${buildBody(
+    src
+  )}</body></html>`
 })
 
 const frameLinksChange = () => {
@@ -120,7 +118,6 @@ onMounted(() => {
   position: absolute;
   top: 0px;
   z-index: 1;
-  display: flex;
   align-items: center;
   justify-content: center;
 }
@@ -130,23 +127,5 @@ onMounted(() => {
   background-color: #5c5e61;
   height: 100% !important;
   width: 100% !important;
-}
-
-.preview-top-mask {
-  left: 0px;
-  height: 15px !important;
-  width: 100% !important;
-}
-
-.preview-right-mask {
-  right: 0px;
-  height: 100% !important;
-  width: 15px !important;
-}
-
-.preview-left-mask {
-  left: 0px;
-  height: 100% !important;
-  width: 15px !important;
 }
 </style>

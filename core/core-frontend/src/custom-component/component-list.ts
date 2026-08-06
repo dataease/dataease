@@ -157,7 +157,8 @@ export const HYPERLINKS = {
 
 // 嵌套页面信息
 export const FRAMELINKS = {
-  src: ''
+  src: '',
+  isApp: false
 }
 
 export const defaultStyleValue = {
