@@ -76,9 +76,10 @@ export const formatRoute = (arr: AppCustomRouteRecordRaw[]): AppCustomRouteRecor
 
 // 包装一层父级目录
 export const decorate = (router: AppCustomRouteRecordRaw): AppCustomRouteRecordRaw => {
-  const { path, meta, children = [], inLayout, hidden } = router
+  const { path, name, meta, children = [], inLayout, hidden } = router
   const parent = {
     path,
+    name,
     meta,
     inLayout,
     component: 'Layout',
