@@ -317,8 +317,8 @@ export class Line extends G2ChartView {
             return labelCfg.position === 'top' ? 'bottom' : 'top'
           },
           transform: labelAttr.fullDisplay
-            ? [{ type: 'exceedAdjust' }]
-            : [{ type: 'exceedAdjust' }, { type: 'overlapHide' }],
+            ? [{ type: 'exceedAdjust', bounds: 'main' }]
+            : [{ type: 'exceedAdjust', bounds: 'main' }, { type: 'overlapHide' }],
           fontFamily: chart.fontFamily
         }
       ]

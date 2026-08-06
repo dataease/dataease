@@ -23,6 +23,14 @@ export const getAssistLineAxisIndex = (yAxisType?: string): number => {
   return yAxisType === 'right' ? 1 : 0
 }
 
+export const getMixLabelTransform = (fullDisplay: boolean) => {
+  const transform = [{ type: 'exceedAdjust', bounds: 'main' }]
+  if (!fullDisplay) {
+    transform.push({ type: 'overlapHide' })
+  }
+  return transform
+}
+
 export const CHART_MIX_EDITOR_PROPERTY: EditorProperty[] = [
   'background-overall-component',
   'border-style',

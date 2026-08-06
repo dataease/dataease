@@ -4,6 +4,7 @@ import {
 } from '@/views/chart/components/js/panel/charts/g2/bar/common'
 import { flow, parseJson } from '@/views/chart/components/js/util'
 import {
+  getHorizontalBarAxisSafeLabelStyle,
   listenerTooltipShow,
   createTooltipWrapper,
   tooltipCss,
@@ -256,7 +257,8 @@ export class RangeBar extends HorizontalBar {
       position: labelAttr.position === 'middle' ? 'inside' : labelAttr.position,
       textAlign: 'center',
       dy: labelAttr.position === 'top' ? -10 : 0,
-      dx: labelAttr.position === 'middle' ? 0 : 15
+      dx: labelAttr.position === 'middle' ? 0 : 15,
+      ...getHorizontalBarAxisSafeLabelStyle(chart, labelAttr.position, 15)
     }
     const transform = {
       transform: [

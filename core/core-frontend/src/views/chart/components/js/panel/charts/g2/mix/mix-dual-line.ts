@@ -26,7 +26,8 @@ import {
   CHART_MIX_EDITOR_PROPERTY_INNER,
   configMixCustomLegend,
   filterValidMixTooltipItems,
-  getAssistLineAxisIndex
+  getAssistLineAxisIndex,
+  getMixLabelTransform
 } from './common'
 import { registerSymbol, Symbols } from '@antv/g2/esm/utils/marker'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
@@ -521,9 +522,7 @@ export class GroupLineMix extends G2ChartView {
             middle: 'middle',
             bottom: 'top'
           }[label.position],
-          transform: label.fullDisplay
-            ? [{ type: 'exceedAdjust' }]
-            : [{ type: 'exceedAdjust' }, { type: 'overlapDodgeY' }, { type: 'overlapHide' }],
+          transform: getMixLabelTransform(label.fullDisplay),
           fontFamily: chart.fontFamily
         }
       ]

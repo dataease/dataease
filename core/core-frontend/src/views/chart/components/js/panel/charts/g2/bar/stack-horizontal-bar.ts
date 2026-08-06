@@ -6,6 +6,7 @@ import { flow, parseJson } from '@/views/chart/components/js/util'
 import {
   configStackSeriesOrder,
   createTooltipWrapper,
+  getHorizontalBarAxisSafeLabelStyle,
   getStackSeriesIndexMap,
   getStackSeriesOrder,
   getStackTooltipGroupName,
@@ -63,7 +64,8 @@ export class HorizontalStackBar extends HorizontalBar {
       position: labelAttr.position === 'middle' ? 'inside' : labelAttr.position,
       textAlign: 'start',
       dy: labelAttr.position === 'top' ? -10 : 0,
-      dx: 0
+      dx: 0,
+      ...getHorizontalBarAxisSafeLabelStyle(chart, labelAttr.position)
     }
     const transform = [
       { type: 'exceedAdjust' },
@@ -123,7 +125,8 @@ export class HorizontalStackBar extends HorizontalBar {
               dx: 4,
               dy: 0,
               transform,
-              textAlign: 'start'
+              textAlign: 'start',
+              ...getHorizontalBarAxisSafeLabelStyle(chart, 'right')
             }
           ],
           tooltip: false

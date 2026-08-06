@@ -3,6 +3,7 @@ import { flow, parseJson } from '@/views/chart/components/js/util'
 import {
   configStackSeriesOrder,
   createTooltipWrapper,
+  getHorizontalBarAxisSafeLabelStyle,
   getStackSeriesIndexMap,
   getStackSeriesOrder,
   getStackTooltipGroupName,
@@ -87,7 +88,8 @@ export class PercentageStackBar extends HorizontalStackBar {
       textAlign:
         labelAttr.position === 'left' ? 'start' : labelAttr.position === 'right' ? 'end' : 'center',
       dy: labelAttr.position === 'top' ? -10 : 0,
-      dx: labelAttr.position === 'left' ? 4 : labelAttr.position === 'right' ? -4 : 0
+      dx: labelAttr.position === 'left' ? 4 : labelAttr.position === 'right' ? -4 : 0,
+      ...getHorizontalBarAxisSafeLabelStyle(chart, labelAttr.position)
     }
     const position = {
       // 零宽标签根据左右落点向绘图区内侧对齐，避免覆盖维度轴标签

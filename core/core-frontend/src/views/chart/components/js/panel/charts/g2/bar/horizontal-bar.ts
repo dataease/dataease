@@ -10,6 +10,7 @@ import {
   setUpStackSeriesColor
 } from '@/views/chart/components/js/util'
 import {
+  getHorizontalBarAxisSafeLabelStyle,
   handleBarBreakLineNullData,
   handleEmptyDataStrategy,
   ViewSpec
@@ -126,9 +127,11 @@ export class HorizontalBar extends Bar {
     const tmpOptions = super.configLabel(chart, options)
     const { children } = tmpOptions
     if (children?.[0].labels?.length) {
+      const { label: labelAttr } = parseJson(chart.customAttr) || {}
       const newLabel = {
         ...children[0].labels[0],
-        textAlign: 'start'
+        textAlign: 'start',
+        ...getHorizontalBarAxisSafeLabelStyle(chart, labelAttr.position)
       }
       return {
         ...tmpOptions,

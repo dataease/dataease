@@ -44,6 +44,22 @@ export type Transform = {
   [key: string]: any
 }
 
+// 仅在横向柱形标签与可见分类轴同侧时向绘图区内收
+export function getHorizontalBarAxisSafeLabelStyle(chart: Chart, position: string, offset = 4) {
+  const categoryAxis = parseJson(chart.customStyle)?.yAxis
+  if (!categoryAxis?.show || categoryAxis.axisLabel?.show === false) {
+    return {}
+  }
+  const labelPosition = position === 'middle' ? 'inside' : position
+  const axisPosition = categoryAxis.position === 'right' ? 'right' : 'left'
+  if (labelPosition !== axisPosition) {
+    return {}
+  }
+  return labelPosition === 'left'
+    ? { textAlign: 'start', dx: offset }
+    : { textAlign: 'end', dx: -offset }
+}
+
 // 保留堆叠系列原始类型，避免数值或布尔分组在 color domain 中被误转
 type StackSeriesValue = string | number | boolean
 
