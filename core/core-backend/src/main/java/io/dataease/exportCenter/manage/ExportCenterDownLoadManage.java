@@ -204,7 +204,9 @@ public class ExportCenterDownLoadManage {
         exportTarget.createParentDirectory();
 
         TokenUserBO tokenUserBO = AuthUtils.getUser();
+        String clientIp = IPUtils.get();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
+            IPUtils.set(clientIp);
             LicenseUtil.validate();
             AuthUtils.setUser(tokenUserBO);
             try {
@@ -416,6 +418,8 @@ public class ExportCenterDownLoadManage {
             } catch (Exception e) {
                 LogUtil.error("Failed to export data", e);
                 updateExportTask(exportTarget.taskId(), "FAILED", null, e.getMessage(), null, null);
+            } finally {
+                IPUtils.remove();
             }
         });
         Running_Task.put(exportTarget.taskId(), future);
@@ -451,7 +455,9 @@ public class ExportCenterDownLoadManage {
     public void startViewTask(ExportTaskFileTarget exportTarget, ChartExcelRequest request) {
         exportTarget.createParentDirectory();
         TokenUserBO tokenUserBO = AuthUtils.getUser();
+        String clientIp = IPUtils.get();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
+            IPUtils.set(clientIp);
             LicenseUtil.validate();
             AuthUtils.setUser(tokenUserBO);
             try {
@@ -531,6 +537,8 @@ public class ExportCenterDownLoadManage {
             } catch (Exception e) {
                 LogUtil.error("Failed to export data", e);
                 updateExportTask(exportTarget.taskId(), "FAILED", null, e.getMessage(), null, null);
+            } finally {
+                IPUtils.remove();
             }
         });
         Running_Task.put(exportTarget.taskId(), future);
