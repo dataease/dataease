@@ -26,10 +26,13 @@ import {
   configPercentageStackEmptyAnchorStyle,
   configPercentageStackEmptyAnchorTooltipGuard,
   configPercentageStackEmptyDataStrategy,
+  filterPercentageStackEmptyAnchorTooltipItem,
   filterPercentageStackTooltipItems,
   formatPercentageStackRatio,
   getPercentageStackFieldTotal,
   getPercentageStackOptionsData,
+  isPercentageStackZeroLabelItem,
+  isPercentageStackZeroAnchor,
   shouldHidePercentageStackLabelValue
 } from '@/views/chart/components/js/panel/charts/g2/bar/percentage-stack-helper'
 
@@ -76,7 +79,13 @@ export class PercentageStackBar extends GroupStackBar {
 
     const { children } = options
     const position = {
-      position: labelAttr.position === 'middle' ? 'inside' : labelAttr.position,
+      // 零宽标签从基线向绘图区内侧展开，避免覆盖分类轴标签
+      position: data =>
+        isPercentageStackZeroLabelItem(data)
+          ? 'bottom'
+          : labelAttr.position === 'middle'
+          ? 'inside'
+          : labelAttr.position,
       textAlign: 'center',
       dy: labelAttr.position === 'top' ? -10 : 0,
       dx: 0
@@ -93,7 +102,7 @@ export class PercentageStackBar extends GroupStackBar {
       fontSize: labelAttr.fontSize,
       ...position,
       formatter: (value, _data, _, o) => {
-        const numberValue = Number(value)
+        const numberValue = isPercentageStackZeroAnchor(_data) ? 0 : Number(value)
         // 计算与当前数据相同 field 的 value 总和
         const sum = getPercentageStackFieldTotal(o, _data.field)
         if (shouldHidePercentageStackLabelValue(value, _data, sum)) return ''
@@ -154,10 +163,15 @@ export class PercentageStackBar extends GroupStackBar {
           enterable: true,
           shared: true,
           position: 'top-right',
+          filter: filterPercentageStackEmptyAnchorTooltipItem,
           render: (_, { title, items: originalItems }) => {
             const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)
-            // 锚点只负责鼠标命中，不应出现在 tooltip 明细里
-            const tooltipItems = filterPercentageStackTooltipItems(originalItems)
+            // 从源数据补齐零宽系列，纯空锚点仍不展示
+            const tooltipItems = filterPercentageStackTooltipItems(
+              originalItems,
+              options,
+              seriesOrder
+            )
             if (!tooltipItems.length) return ''
             const sum = tooltipItems?.reduce(
               (acc, { value = 0 }: { value: number }) => acc + value,

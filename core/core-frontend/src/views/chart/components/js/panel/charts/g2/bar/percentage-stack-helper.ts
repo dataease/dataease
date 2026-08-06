@@ -2,17 +2,28 @@ import { parseJson } from '@/views/chart/components/js/util'
 import type { ViewSpec } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 import type { Chart as G2Column } from '@antv/g2'
 
-// 空值锚点只用于保留空维度的命中区域，不参与图例、标签和 tooltip 展示。
+// 空值锚点用于保留全空或全 0 维度的布局与命中区域
 export const PERCENTAGE_STACK_EMPTY_ANCHOR_FIELD = '__DE_PERCENTAGE_STACK_EMPTY_ANCHOR__'
 const PERCENTAGE_STACK_EMPTY_ANCHOR_VALUE = 1e-12
+const PERCENTAGE_STACK_ZERO_ANCHOR_FIELD = '__DE_PERCENTAGE_STACK_ZERO_ANCHOR__'
+const PERCENTAGE_STACK_TOOLTIP_SOURCE_CACHE = new WeakMap<any[], Map<any, any[]>>()
 
 export function isPercentageStackEmptyAnchor(item) {
   return !!item?.[PERCENTAGE_STACK_EMPTY_ANCHOR_FIELD]
 }
 
+export function isPercentageStackZeroAnchor(item) {
+  return isPercentageStackEmptyAnchor(item) && !!item?.[PERCENTAGE_STACK_ZERO_ANCHOR_FIELD]
+}
+
+export function filterPercentageStackEmptyAnchorTooltipItem(item) {
+  // 在 G2 更新 tooltip DOM 前过滤纯空锚点，避免极小占位值闪现
+  return !isPercentageStackEmptyAnchor(item) || isPercentageStackZeroAnchor(item)
+}
+
 export function configPercentageStackEmptyAnchorTooltipGuard(newChart: G2Column) {
   newChart.on('tooltip:show', event => {
-    // 鼠标只命中空值锚点时，隐藏 tooltip，避免展示一条假的空数据提示。
+    // 纯空锚点继续隐藏，真实全 0 锚点交给 tooltip 恢复零值明细
     if (isOnlyPercentageStackEmptyAnchorTooltip(event)) {
       newChart.emit('tooltip:hide')
     }
@@ -28,12 +39,14 @@ export function configPercentageStackEmptyDataStrategy(
   const data = getPercentageStackOptionsData(options)
   // 先记录原始维度顺序和示例数据，空值处理后才能把锚点补回正确位置。
   const anchorContext = buildEmptyAnchorContext(data)
+  // 沿用原空值策略，保持为空与置为 0 的展示语义分离
   handleEmptyDataStrategy()
-  // 隐藏空值策略的语义是删除空维度，不补锚点，避免空柱子继续占位。
-  if (strategy === 'ignoreData') {
-    return options
-  }
-  appendEmptyAnchors(getPercentageStackOptionsData(options), anchorContext)
+  // 隐藏空值时不恢复已删空维度，但真实全 0 维度仍需锚点支撑标签和 tooltip
+  appendEmptyAnchors(
+    getPercentageStackOptionsData(options),
+    anchorContext,
+    strategy !== 'ignoreData'
+  )
   return options
 }
 
@@ -89,28 +102,87 @@ export function getPercentageStackFieldTotal(dataItems: any[], field) {
   )
 }
 
-export function getPercentageStackZeroTotalFields(data: any[]) {
-  const fieldTotalMap = new Map<any, number>()
-  data?.forEach(item => {
-    if (isPercentageStackEmptyAnchor(item)) return
-    fieldTotalMap.set(
-      item?.field,
-      (fieldTotalMap.get(item?.field) || 0) + (Number(item.value) || 0)
-    )
-  })
-  return new Set([...fieldTotalMap].filter(([, total]) => total === 0).map(([field]) => field))
-}
-
 export function shouldHidePercentageStackLabelValue(value, item, fieldTotal) {
+  if (isPercentageStackEmptyAnchor(item)) {
+    return !isPercentageStackZeroAnchor(item)
+  }
   const numberValue = Number(value)
-  if (isPercentageStackEmptyAnchor(item) || !Number.isFinite(numberValue)) {
+  if (!Number.isFinite(numberValue)) {
     return true
   }
-  return numberValue === 0 && fieldTotal > 0
+  // 全 0 维度只由锚点显示一个标签，避免每个零值系列重复占位
+  return numberValue === 0 && fieldTotal === 0
 }
 
-export function filterPercentageStackTooltipItems(items: any[] = []) {
-  return items?.filter(item => !isPercentageStackEmptyAnchor(item)) ?? []
+export function isPercentageStackZeroLabelItem(item) {
+  return (
+    isPercentageStackZeroAnchor(item) ||
+    (!isPercentageStackEmptyAnchor(item) && isPercentageStackZeroValue(item?.value))
+  )
+}
+
+export function getPercentageStackZeroLabelAlignMap(data: any[], seriesOrder: any[]) {
+  const alignMap = new WeakMap<object, 'start' | 'center' | 'end'>()
+  const fieldItemsMap = new Map<any, any[]>()
+  const seriesRank = new Map(seriesOrder.map((series, index) => [`${series}`, index]))
+
+  data.forEach(item => {
+    if (isPercentageStackEmptyAnchor(item)) return
+    const fieldItems = fieldItemsMap.get(item?.field) ?? []
+    fieldItems.push(item)
+    fieldItemsMap.set(item?.field, fieldItems)
+  })
+
+  fieldItemsMap.forEach(fieldItems => {
+    const orderedItems = [...fieldItems].sort(
+      (first, second) =>
+        (seriesRank.get(`${first?.category}`) ?? seriesOrder.length) -
+        (seriesRank.get(`${second?.category}`) ?? seriesOrder.length)
+    )
+    const total = orderedItems.reduce((sum, item) => sum + (Number(item?.value) || 0), 0)
+    if (total <= 0) return
+
+    let cumulative = 0
+    const tolerance = Math.max(total, 1) * Number.EPSILON * 10
+    orderedItems.forEach(item => {
+      const value = Number(item?.value)
+      if (isPercentageStackZeroValue(item?.value)) {
+        // 零宽标签按堆叠落点向绘图区内侧展开
+        const align =
+          cumulative <= tolerance ? 'start' : cumulative >= total - tolerance ? 'end' : 'center'
+        alignMap.set(item, align)
+        return
+      }
+      if (Number.isFinite(value)) cumulative += value
+    })
+  })
+
+  return alignMap
+}
+
+export function filterPercentageStackTooltipItems(
+  items: any[] = [],
+  options?: ViewSpec,
+  seriesOrder: any[] = []
+) {
+  const realItems = items?.filter(item => !isPercentageStackEmptyAnchor(item)) ?? []
+  const field = items?.find(item => item?.field !== undefined)?.field
+  const sourceItems = getPercentageStackTooltipSourceItems(options, field)
+  if (sourceItems.length) {
+    // 零宽 interval 可能不进入 G2 命中结果，从图形源数据补齐同维度系列
+    return sourceItems.map(item => {
+      const renderedItem = realItems.find(candidate => isSamePercentageStackSeries(candidate, item))
+      return {
+        ...item,
+        value: Number(item.value),
+        color:
+          renderedItem?.color ??
+          getPercentageStackSeriesColor(item, options, seriesOrder, items?.[0]?.color)
+      }
+    })
+  }
+  if (realItems.length) return realItems
+  return []
 }
 
 export function formatPercentageStackRatio(value, total, decimalCount) {
@@ -123,7 +195,8 @@ function isOnlyPercentageStackEmptyAnchorTooltip(event) {
   return (
     Array.isArray(items) &&
     items.length > 0 &&
-    items.every(item => isPercentageStackEmptyAnchor(item))
+    items.every(item => isPercentageStackEmptyAnchor(item)) &&
+    !items.some(item => isPercentageStackZeroAnchor(item))
   )
 }
 
@@ -148,11 +221,13 @@ function buildEmptyAnchorContext(data: any[]) {
   return { fields, sampleByField, indexByField, fallbackSample }
 }
 
-function appendEmptyAnchors(data: any[], anchorContext) {
+function appendEmptyAnchors(data: any[], anchorContext, restoreMissingField) {
   if (!data?.length && !anchorContext?.fields?.length) return
 
   anchorContext.fields.forEach(field => {
-    // 仅对全空或全 0 的维度补一个极小值锚点，避免 normalizeY 出现无可命中的空维度。
+    const hasFieldData = data.some(item => item?.field === field)
+    if (!restoreMissingField && !hasFieldData) return
+    // 仅对全空或总和为 0 的维度补极小值锚点，避免 normalizeY 无法生成图形
     if (!needsEmptyAnchor(data, field)) return
     const sample = anchorContext.sampleByField.get(field) ?? anchorContext.fallbackSample ?? {}
     data.splice(getEmptyAnchorInsertIndex(data, field, anchorContext), 0, {
@@ -162,9 +237,73 @@ function appendEmptyAnchors(data: any[], anchorContext) {
       group: sample.group ?? anchorContext.fallbackSample?.group,
       quotaList: sample.quotaList ?? anchorContext.fallbackSample?.quotaList,
       value: PERCENTAGE_STACK_EMPTY_ANCHOR_VALUE,
-      [PERCENTAGE_STACK_EMPTY_ANCHOR_FIELD]: true
+      [PERCENTAGE_STACK_EMPTY_ANCHOR_FIELD]: true,
+      [PERCENTAGE_STACK_ZERO_ANCHOR_FIELD]: isPercentageStackZeroField(data, field)
     })
   })
+}
+
+function isPercentageStackZeroField(data: any[], field) {
+  const fieldData = data.filter(
+    item => item?.field === field && !isPercentageStackEmptyAnchor(item)
+  )
+  const hasZeroValue = fieldData.some(item => isPercentageStackZeroValue(item?.value))
+  const hasNonZeroValue = fieldData.some(item => {
+    if (item?.value === null || item?.value === undefined) return false
+    const numberValue = Number(item.value)
+    return !Number.isFinite(numberValue) || numberValue !== 0
+  })
+  return hasZeroValue && !hasNonZeroValue
+}
+
+function isPercentageStackZeroValue(value) {
+  if (value === null || value === undefined || value === '') return false
+  const numberValue = Number(value)
+  return Number.isFinite(numberValue) && numberValue === 0
+}
+
+function isPercentageStackTooltipValue(value) {
+  if (value === null || value === undefined || value === '') return false
+  return Number.isFinite(Number(value))
+}
+
+function getPercentageStackTooltipSourceItems(options, field) {
+  if (!options) return []
+  const data = getPercentageStackOptionsData(options)
+  let sourceMap = PERCENTAGE_STACK_TOOLTIP_SOURCE_CACHE.get(data)
+  if (!sourceMap) {
+    // 按数据数组缓存维度索引，避免 hover 时反复全量扫描
+    sourceMap = new Map<any, any[]>()
+    data.forEach(item => {
+      if (isPercentageStackEmptyAnchor(item) || !isPercentageStackTooltipValue(item?.value)) return
+      const sourceItems = sourceMap.get(item?.field) ?? []
+      sourceItems.push(item)
+      sourceMap.set(item?.field, sourceItems)
+    })
+    PERCENTAGE_STACK_TOOLTIP_SOURCE_CACHE.set(data, sourceMap)
+  }
+  return sourceMap.get(field) ?? []
+}
+
+function isSamePercentageStackSeries(first, second) {
+  return `${first?.category}` === `${second?.category}` && `${first?.group}` === `${second?.group}`
+}
+
+function getPercentageStackSeriesColor(item, options, seriesOrder, fallbackColor) {
+  const series = item?.category
+  const colorScale = options?.scale?.color ?? {}
+  const relation = colorScale.relations?.find(([key]) => `${key}` === `${series}`)
+  if (relation?.[1]) return relation[1]
+
+  const domain = colorScale.domain?.length ? colorScale.domain : seriesOrder
+  const range = options?.children?.[0]?.scale?.color?.range?.length
+    ? options.children[0].scale.color.range
+    : options?.theme?.category10
+  const seriesIndex = domain?.findIndex(value => `${value}` === `${series}`) ?? -1
+  if (seriesIndex >= 0 && range?.length) {
+    return range[seriesIndex % range.length]
+  }
+  return fallbackColor
 }
 
 function getEmptyAnchorInsertIndex(data: any[], field, anchorContext) {

@@ -25,12 +25,14 @@ import {
   configPercentageStackEmptyAnchorStyle,
   configPercentageStackEmptyAnchorTooltipGuard,
   configPercentageStackEmptyDataStrategy,
+  filterPercentageStackEmptyAnchorTooltipItem,
   filterPercentageStackTooltipItems,
   formatPercentageStackRatio,
   getPercentageStackFieldTotal,
   getPercentageStackOptionsData,
-  getPercentageStackZeroTotalFields,
-  isPercentageStackEmptyAnchor
+  getPercentageStackZeroLabelAlignMap,
+  isPercentageStackEmptyAnchor,
+  isPercentageStackZeroAnchor
 } from '@/views/chart/components/js/panel/charts/g2/bar/percentage-stack-helper'
 
 /**
@@ -71,20 +73,43 @@ export class PercentageStackBar extends HorizontalStackBar {
   protected configLabel(chart: Chart, options: ViewSpec): ViewSpec {
     const customAttr = parseJson(chart.customAttr)
     const { label: labelAttr } = customAttr
-    const { emptyDataStrategy } = parseJson(chart.senior).functionCfg
     if (!labelAttr.show) return options
 
     const { children } = options
-    const zeroTotalFields = getPercentageStackZeroTotalFields(
-      getPercentageStackOptionsData(options)
-    )
-    const isZeroTotalField = data => zeroTotalFields.has(data?.field)
-    const isLeftPosition = labelAttr.position === 'left'
-    const position = {
+    const chartData = getPercentageStackOptionsData(options)
+    const seriesOrder = getStackSeriesOrder(chart, chartData)
+    const zeroLabelAlignMap = getPercentageStackZeroLabelAlignMap(chartData, seriesOrder)
+    const getZeroLabelAlign = data =>
+      isPercentageStackZeroAnchor(data) ? 'start' : zeroLabelAlignMap.get(data)
+    const defaultPosition = {
       position: labelAttr.position === 'middle' ? 'inside' : labelAttr.position,
-      textAlign: data => (isLeftPosition || isZeroTotalField(data) ? 'start' : 'center'),
+      // 百分比条形左右边界标签向绘图区内侧展开，避免覆盖同侧维度轴
+      textAlign:
+        labelAttr.position === 'left' ? 'start' : labelAttr.position === 'right' ? 'end' : 'center',
       dy: labelAttr.position === 'top' ? -10 : 0,
-      dx: data => (isLeftPosition || isZeroTotalField(data) ? 4 : 0)
+      dx: labelAttr.position === 'left' ? 4 : labelAttr.position === 'right' ? -4 : 0
+    }
+    const position = {
+      // 零宽标签根据左右落点向绘图区内侧对齐，避免覆盖维度轴标签
+      position: data => {
+        const zeroAlign = getZeroLabelAlign(data)
+        if (zeroAlign === 'start') return 'left'
+        if (zeroAlign === 'end') return 'right'
+        if (zeroAlign === 'center') return 'inside'
+        return defaultPosition.position
+      },
+      textAlign: data => {
+        const zeroAlign = getZeroLabelAlign(data)
+        if (zeroAlign) return zeroAlign
+        return defaultPosition.textAlign
+      },
+      dy: defaultPosition.dy,
+      dx: data => {
+        const zeroAlign = getZeroLabelAlign(data)
+        if (zeroAlign === 'start') return 4
+        if (zeroAlign === 'end') return -4
+        return defaultPosition.dx
+      }
     }
     const transform = labelAttr.fullDisplay
       ? { transform: [{ type: 'exceedAdjust' }] }
@@ -98,12 +123,13 @@ export class PercentageStackBar extends HorizontalStackBar {
       fontSize: labelAttr.fontSize,
       ...position,
       formatter: (value, _data, _, o) => {
-        if (isPercentageStackEmptyAnchor(_data)) return ''
-        const numberValue = Number(value)
+        const isZeroAnchor = isPercentageStackZeroAnchor(_data)
+        if (isPercentageStackEmptyAnchor(_data) && !isZeroAnchor) return ''
+        const numberValue = isZeroAnchor ? 0 : Number(value)
         if (!Number.isFinite(numberValue)) return ''
         // 计算与当前数据相同 field 的 value 总和
         const sum = getPercentageStackFieldTotal(o, _data.field)
-        if (emptyDataStrategy !== 'setZero' && numberValue === 0 && sum > 0) return ''
+        if (!isZeroAnchor && numberValue === 0 && sum === 0) return ''
         const showQuota = labelAttr.showQuota === true
         const showProportion = labelAttr.showProportion ?? true
         if (!showQuota && !showProportion) return ''
@@ -157,10 +183,15 @@ export class PercentageStackBar extends HorizontalStackBar {
             y: 0
           },
           position: 'top-right',
+          filter: filterPercentageStackEmptyAnchorTooltipItem,
           render: (_, { title, items: originalItems }) => {
             const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)
-            // 锚点只负责鼠标命中，不应出现在 tooltip 明细里
-            const tooltipItems = filterPercentageStackTooltipItems(originalItems)
+            // 从源数据补齐零宽系列，纯空锚点仍不展示
+            const tooltipItems = filterPercentageStackTooltipItems(
+              originalItems,
+              options,
+              seriesOrder
+            )
             if (!tooltipItems.length) return ''
             const sum = tooltipItems?.reduce(
               (acc, { value = 0 }: { value: number }) => acc + value,
