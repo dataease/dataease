@@ -84,7 +84,11 @@ public class StaticResourceServer implements StaticResourceApi {
             for (Map.Entry<String, String> entry : resource.entrySet()) {
                 String path = entry.getKey();
                 String fileName = extractFileName(path);
-                saveSingleFileToServe(fileName, entry.getValue());
+                try {
+                    saveSingleFileToServe(fileName, entry.getValue());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
