@@ -1221,11 +1221,12 @@ onBeforeUnmount(() => {
 
 <style lang="less">
 div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover'] {
-  // 悬浮 tooltip 使用稳定宽度并为移动端保留安全边距
+  // 悬浮 tooltip 随内容伸缩，并为长文本和移动端保留宽度边界
   .g2-tooltip {
     box-sizing: border-box;
-    width: min(320px, calc(100vw - 24px)) !important;
-    max-width: calc(100vw - 24px) !important;
+    width: max-content !important;
+    min-width: min(120px, calc(100vw - 24px)) !important;
+    max-width: min(320px, calc(100vw - 24px)) !important;
     max-height: min(480px, 60vh) !important;
     overflow-x: hidden !important;
     overflow-y: auto !important;
@@ -1280,12 +1281,13 @@ div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover'] {
 
 @supports (width: 100dvw) {
   div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover'] .g2-tooltip {
-    width: min(
-      320px,
+    min-width: min(
+      120px,
       calc(100dvw - 24px - env(safe-area-inset-left) - env(safe-area-inset-right))
     ) !important;
-    max-width: calc(
-      100dvw - 24px - env(safe-area-inset-left) - env(safe-area-inset-right)
+    max-width: min(
+      320px,
+      calc(100dvw - 24px - env(safe-area-inset-left) - env(safe-area-inset-right))
     ) !important;
     max-height: min(480px, 60dvh) !important;
   }
