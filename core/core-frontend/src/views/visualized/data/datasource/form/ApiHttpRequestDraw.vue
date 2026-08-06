@@ -286,6 +286,15 @@ const saveItem = () => {
     return
   }
   if (apiItem.type === 'params') {
+    for (let i = 0; i < paramsList.length; i++) {
+      if (
+        paramsList[i].name === apiItem.name &&
+        apiItem.serialNumber !== paramsList[i].serialNumber
+      ) {
+        ElMessage.error(t('data_source.name_already_exists_de'))
+        return
+      }
+    }
     for (let i = 0; i < apiItem.fields.length; i++) {
       for (let j = 0; j < paramsList.length; j++) {
         for (let k = 0; k < paramsList[j].fields.length; k++) {
