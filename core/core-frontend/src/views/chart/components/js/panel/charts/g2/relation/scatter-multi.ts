@@ -633,7 +633,7 @@ export class MultiScatter extends G2ChartView {
   }
 
   protected configYAxis(chart: Chart, options: G2Spec): G2Spec {
-    const { yAxis } = parseJson(chart.customStyle)
+    const { xAxis, yAxis } = parseJson(chart.customStyle)
     if (!yAxis.show) {
       return defaultsDeep(options, { axis: { y: false } })
     }
@@ -641,6 +641,7 @@ export class MultiScatter extends G2ChartView {
       axis: {
         y: {
           ...this.getAxisStyle(yAxis),
+          ...this.getOverlapGridFilter(xAxis),
           labelFormatter: d => valueFormatter(d, yAxis.axisLabelFormatter)
         }
       }

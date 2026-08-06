@@ -603,7 +603,7 @@ export class StockLine extends G2ChartView {
   }
 
   protected configYAxis(chart: Chart, options: G2Spec): G2Spec {
-    const { yAxis } = parseJson(chart.customStyle)
+    const { xAxis, yAxis } = parseJson(chart.customStyle)
     if (!yAxis.show) {
       const axisHide = {
         axis: {
@@ -648,8 +648,7 @@ export class StockLine extends G2ChartView {
           gridStrokeOpacity: 1,
           gridLineWidth: yAxis.splitLine.lineStyle.width,
           gridLineDash,
-          // 隐藏最低分割线，避免与底部 X 轴线重叠
-          gridFilter: (_, index) => index !== 0,
+          ...this.getOverlapGridFilter(xAxis),
           ...this.getAxisLabelStyle(yAxis),
           labelFormatter: d => {
             return valueFormatter(d, yAxis.axisLabelFormatter)

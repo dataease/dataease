@@ -452,7 +452,7 @@ export class Line extends G2ChartView {
   }
 
   protected configYAxis(chart: Chart, options: G2Spec): G2Spec {
-    const { yAxis } = parseJson(chart.customStyle)
+    const { xAxis, yAxis } = parseJson(chart.customStyle)
     if (!yAxis.show) {
       const axisHide = {
         axis: {
@@ -497,6 +497,8 @@ export class Line extends G2ChartView {
           gridStrokeOpacity: 1,
           gridLineWidth: yAxis.splitLine.lineStyle.width,
           gridLineDash,
+          // 避免数值轴边界网格线覆盖维度轴轴线样式
+          ...this.getOverlapGridFilter(xAxis),
           ...this.getAxisLabelStyle(yAxis),
           labelFormatter: d => {
             return valueFormatter(d, yAxis.axisLabelFormatter)
