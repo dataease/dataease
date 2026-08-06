@@ -445,6 +445,27 @@ export class ProgressBar extends HorizontalStackBar {
     )(chart, options, {}, this)
   }
 
+  setupDefaultOptions(chart: ChartObj): ChartObj {
+    chart.customStyle.yAxis = {
+      ...chart.customStyle.yAxis,
+      position: 'left',
+      axisLine: {
+        show: false,
+        lineStyle: chart.customStyle.yAxis.axisLine.lineStyle
+      },
+      splitLine: {
+        show: false,
+        lineStyle: chart.customStyle.yAxis.axisLine.lineStyle
+      }
+    }
+    chart.customStyle.legend.show = false
+    chart.customAttr.label.show = true
+    chart.customAttr.label.position = 'right'
+    chart.customAttr.label.showQuota = false
+    chart.customAttr.label.showProportion = true
+    return super.setupDefaultOptions(chart)
+  }
+
   constructor(name = 'progress-bar') {
     super(name)
     this.axis = [...BAR_AXIS_TYPE, 'yAxisExt']
