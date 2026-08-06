@@ -318,8 +318,8 @@ watch(
     }
     if (initReady.value && canEdit.value) {
       snapshotStore.recordSnapshotCache('renderChart', element.value.id)
-      initFontFamily(myValue.value)
     }
+    initFontFamily(myValue.value)
   }
 )
 const ALIGN_MAP = {
