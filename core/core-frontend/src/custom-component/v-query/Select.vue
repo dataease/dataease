@@ -932,6 +932,7 @@ defineExpose({
     clearable
     :style="selectStyle"
     collapse-tags
+    :persistent="false"
     :options="options"
     collapse-tags-tooltip
   ></el-select-v2>
