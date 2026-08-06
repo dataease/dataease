@@ -220,7 +220,7 @@
       :rules="areaRules"
     >
       <el-form-item label-position="top" required prop="name">
-        <el-input v-model="editedCustomArea.name" :minlenegth="1" :maxlength="50" />
+        <el-input v-model.trim="editedCustomArea.name" :minlenegth="1" :maxlength="50" />
       </el-form-item>
     </el-form>
     <template #footer>
