@@ -1053,8 +1053,11 @@ onMounted(() => {
     }
     const isMapLikeChart = RESIZE_MONITOR_CHARTS.includes(view.value.type)
     const isNowVisible = size.inlineSize > 1 && size.blockSize > 1
-    // L7 图表在初次挂载高度为 0 时会提前返回；容器变为可见后需要允许一次重新渲染。
-    const canResizeRender = preSize[1] > 1 || (isMapLikeChart && isNowVisible)
+    // 隐藏态取消待执行的尺寸调整，避免图表按零尺寸自适应
+    if (!isNowVisible) {
+      g2ResizeTimer && clearTimeout(g2ResizeTimer)
+    }
+    const canResizeRender = isNowVisible
     if (myChart && canResizeRender) {
       if (isMapLikeChart) {
         renderChart(curView)
