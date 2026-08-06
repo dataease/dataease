@@ -156,7 +156,6 @@
                     <artifactId>flexmark-all</artifactId>
                     <version>${flexmark.version}</version>
                 </dependency>
-
             </dependencies>
 
             <build>
