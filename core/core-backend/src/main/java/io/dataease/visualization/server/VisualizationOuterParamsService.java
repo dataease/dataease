@@ -68,7 +68,7 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
         QSnapshotDataVisualizationInfo qSnapshotDataVisualizationInfo = QSnapshotDataVisualizationInfo.snapshotDataVisualizationInfo;
         QSnapshotVisualizationOuterParams qSnapshotVisualizationOuterParams = QSnapshotVisualizationOuterParams.snapshotVisualizationOuterParams;
         VisualizationOuterParamsDTO visualizationOuterParamsDTO = queryFactory.select(Projections.fields(VisualizationOuterParamsDTO.class,
-                        qSnapshotDataVisualizationInfo.id.as("visualizationId"),
+                        qSnapshotDataVisualizationInfo.id.stringValue().as("visualizationId"),
                         qSnapshotVisualizationOuterParams.checked.as("checked")
                 )).from(qSnapshotDataVisualizationInfo)
                 .leftJoin(qSnapshotVisualizationOuterParams).on(qSnapshotVisualizationOuterParams.visualizationId.eq(String.valueOf(visualizationId)))
@@ -233,8 +233,10 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
                         popi.required,
                         popi.defaultValue,
                         popi.enabledDefault,
-                        Expressions.stringTemplate("CONCAT({0}, '#', {1}, '#', {2})",
-                                poptvi.targetViewId, poptvi.targetFieldId,poptvi.matchMode).as("targetInfo")))
+                        // matchMode 为后加的可空列, 存量数据可能为 NULL; CONCAT 中任一参数为 NULL 会导致整体为 NULL,
+                        // 进而 targetInfo 为空被后续过滤掉, 故用 COALESCE 兜底; 为空时默认 'self'(与前端默认值一致)
+                        Expressions.stringTemplate("CONCAT({0}, '#', {1}, '#', COALESCE({2}, 'self'))",
+                                poptvi.targetViewId, poptvi.targetFieldId, poptvi.matchMode).as("targetInfo")))
                 .from(pop)
                 .leftJoin(popi).on(pop.paramsId.eq(popi.paramsId))
                 .leftJoin(poptvi).on(popi.paramsInfoId.eq(poptvi.paramsInfoId))
