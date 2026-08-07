@@ -46,5 +46,7 @@ public class ThresholdCreator extends BaseReciDTO implements Serializable {
 
     private Boolean repeatSend = true;
 
+    private Boolean showFieldValue = false;
+
     private String resourceTable = CommonConstants.RESOURCE_TABLE.CORE;
 }
