@@ -36,6 +36,11 @@ public class XpackPluginsSyncDatasourceVO implements Serializable {
 
     private Integer datasourceRole;
 
+    /**
+     * 转换为系统数据源后的类型，为空表示不支持转换
+     */
+    private String systemDatasourceType;
+
     private Map<String, String> staticMap;
 
 }
