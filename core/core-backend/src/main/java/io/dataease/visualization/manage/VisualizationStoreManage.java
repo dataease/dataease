@@ -14,6 +14,7 @@ import io.dataease.license.config.XpackInteract;
 import io.dataease.permission.util.V3UserUtil;
 import io.dataease.result.PageResult;
 import io.dataease.utils.CommonBeanFactory;
+import io.dataease.utils.CommunityUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.visualization.dao.auto.entity.CoreStore;
 import io.dataease.visualization.dao.auto.entity.QCoreStore;
@@ -134,11 +135,17 @@ public class VisualizationStoreManage {
             query.where(dataVisualizationInfo.name.lower().likeIgnoreCase("%" + request.getKeyword().toUpperCase() + "%"));
         }
 
-        //TODO CommunityUtils.getInfo
-//        String info = CommunityUtils.getInfo();
-//        if (StringUtils.isNotBlank(info)) {
-//            queryWrapper.notExists(String.format(info, "s.resource_id"));
-//        }
+        if (CommunityUtils.isCommunityMode()) {
+            if (StringUtils.isNotBlank(request.getType())) {
+                int rtId = BusiResourceEnum.valueOf(request.getType().toUpperCase()).getFlag();
+                query.where(CommunityUtils.buildNotExistsCondition(dataVisualizationInfo, rtId));
+            } else {
+                query.where(
+                        CommunityUtils.buildNotExistsCondition(dataVisualizationInfo, BusiResourceEnum.PANEL.getFlag())
+                                .and(CommunityUtils.buildNotExistsCondition(dataVisualizationInfo, BusiResourceEnum.SCREEN.getFlag()))
+                );
+            }
+        }
 
         Pageable pageable = PageRequest.of(goPage - 1, pageSize);
         long total = query.fetchCount();

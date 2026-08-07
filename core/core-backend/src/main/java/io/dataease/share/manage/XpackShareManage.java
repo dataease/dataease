@@ -28,6 +28,7 @@ import io.dataease.share.dao.ext.po.XpackSharePO;
 import io.dataease.share.util.LinkTokenUtil;
 import io.dataease.system.manage.SysParameterManage;
 import io.dataease.utils.CommonBeanFactory;
+import io.dataease.utils.CommunityUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.utils.RsaUtils;
 import io.dataease.utils.ServletUtils;
@@ -219,11 +220,17 @@ public class XpackShareManage {
             query.where(dataVisualizationInfo.name.like("%" + request.getKeyword() + "%"));
         }
 
-        //TODO CommunityUtils.getInfo
-//        String info = CommunityUtils.getInfo();
-//        if (StringUtils.isNotBlank(info)) {
-//            queryWrapper.notExists(String.format(info, "s.resource_id"));
-//        }
+        if (CommunityUtils.isCommunityMode()) {
+            if (StringUtils.isNotBlank(request.getType())) {
+                int rtId = BusiResourceEnum.valueOf(request.getType().toUpperCase()).getFlag();
+                query.where(CommunityUtils.buildNotExistsCondition(dataVisualizationInfo, rtId));
+            } else {
+                query.where(
+                        CommunityUtils.buildNotExistsCondition(dataVisualizationInfo, BusiResourceEnum.PANEL.getFlag())
+                                .and(CommunityUtils.buildNotExistsCondition(dataVisualizationInfo, BusiResourceEnum.SCREEN.getFlag()))
+                );
+            }
+        }
         query.orderBy(request.isAsc() ? xpackShare.time.asc() : xpackShare.time.desc());
         Pageable pageable = PageRequest.of(goPage - 1, pageSize);
         long total = query.fetchCount();
