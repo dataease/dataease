@@ -355,7 +355,12 @@ onMounted(() => {
       <template #reference>
         <el-form ref="formRef" :model="form">
           <el-form-item prop="name" :rules="rules">
-            <el-tooltip effect="dark" :content="selectedNodeName" placement="top">
+            <el-tooltip
+              :effect="themes"
+              :content="selectedNodeName"
+              :disabled="!selectedNodeName"
+              placement="top"
+            >
               <el-input
                 :effect="themes"
                 v-model="selectedNodeName"
