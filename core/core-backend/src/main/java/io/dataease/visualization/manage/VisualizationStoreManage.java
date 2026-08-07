@@ -1,6 +1,7 @@
 package io.dataease.visualization.manage;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.dataease.api.visualization.request.VisualizationStoreRequest;
@@ -11,6 +12,7 @@ import io.dataease.dao.auto.entity.QDataVisualizationInfo;
 import io.dataease.exception.DEException;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.permission.util.V3UserUtil;
+import io.dataease.result.PageResult;
 import io.dataease.utils.CommonBeanFactory;
 import io.dataease.utils.IDUtils;
 import io.dataease.visualization.dao.auto.entity.CoreStore;
@@ -78,13 +80,13 @@ public class VisualizationStoreManage {
     }
 
     @XpackInteract(value = "perFilterManage", recursion = true, invalid = true)
-    public Page<VisualizationStoreVO> query(int pageNum, int pageSize, VisualizationWorkbranchQueryRequest request) {
+    public PageResult<VisualizationStoreVO> query(int pageNum, int pageSize, VisualizationWorkbranchQueryRequest request) {
         Page<StorePO> storePOIPage = proxy().queryStorePage(pageNum, pageSize, request);
-        if (ObjectUtils.isEmpty(storePOIPage)) return null;
+        if (ObjectUtils.isEmpty(storePOIPage)) return new PageResult<>();
         List<VisualizationStoreVO> vos = proxy().formatResult(storePOIPage.getContent());
 
         Pageable pageable = PageRequest.of(pageNum - 1, pageSize);
-        return new PageImpl<>(vos, pageable, storePOIPage.getTotalElements());
+        return new PageResult<>(vos, storePOIPage.getTotalElements(), pageable);
     }
 
     public VisualizationStoreManage proxy() {
@@ -96,7 +98,7 @@ public class VisualizationStoreManage {
         return pos.stream().map(po ->
                 new VisualizationStoreVO(
                         po.getStoreId(), po.getResourceId(), po.getName(),
-                        po.getType(), String.valueOf(po.getCreator()), ObjectUtils.isEmpty(po.getEditor()) ? null : String.valueOf(po.getEditor()),
+                        po.getType(), po.getCreator(), ObjectUtils.isEmpty(po.getEditor()) ? null : po.getEditor(),
                         po.getEditTime(), 9, po.getExtFlag(), po.getExtFlag1())).toList();
     }
 
@@ -113,9 +115,9 @@ public class VisualizationStoreManage {
                         dataVisualizationInfo.updateBy.as("editor"),
                         dataVisualizationInfo.updateTime.as("editTime"),
                         dataVisualizationInfo.name,
-                        dataVisualizationInfo.mobileLayout.as("extFlag")))
+                        new CaseBuilder().when(dataVisualizationInfo.mobileLayout.isTrue()).then(1).otherwise(0).as("extFlag")))
                 .from(coreStore)
-                .innerJoin(dataVisualizationInfo).on(coreStore.resourceId.eq(Long.valueOf(dataVisualizationInfo.id.toString())))
+                .innerJoin(dataVisualizationInfo).on(coreStore.resourceId.eq(dataVisualizationInfo.id))
                 .where(coreStore.uid.eq(uid))
                 .where(coreStore.resourceId.isNotNull())
                 .orderBy(request.isAsc() ? dataVisualizationInfo.updateTime.asc() : dataVisualizationInfo.updateTime.desc());

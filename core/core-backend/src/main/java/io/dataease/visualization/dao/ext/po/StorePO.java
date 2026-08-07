@@ -14,9 +14,9 @@ public class StorePO implements Serializable {
 
     private String type;
 
-    private Long creator;
+    private String creator;
 
-    private Long editor;
+    private String editor;
 
     private Long editTime;
 
