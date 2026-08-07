@@ -54,6 +54,12 @@ quartz:
 dataease:
   version: '@project.version@'
   login_timeout: 2880
+  sqlbot:
+    encrypt: false
+    aes-key: y5txe1mRmS_JpOrUzFzHEu-kIQn3lf7l
+    aes-iv: sqlbot_em_aes_iv
+    log: false
+    ds-id-fixed: false
   xpack-front-distributed: true
   origin-list: http://localhost:8080
   apisix-api:

@@ -147,6 +147,22 @@ export const routes: AppRouteRecordRaw[] = [
     hidden: true,
     meta: {},
     component: () => import('@/views/template/indexInject.vue')
+  },
+  {
+    path: '/sqlbot',
+    name: 'sqlbot',
+    hidden: true,
+    meta: {},
+    component: () => import('@/layout/index.vue'),
+    children: [
+      {
+        path: 'index',
+        name: 'sqlbotIndex',
+        hidden: true,
+        component: () => import('@/views/sqlbot/index.vue'),
+        meta: { hidden: true }
+      }
+    ]
   }
 ]
 

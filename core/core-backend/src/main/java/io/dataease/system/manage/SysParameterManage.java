@@ -1,6 +1,7 @@
 package io.dataease.system.manage;
 
 import io.dataease.api.system.request.OnlineMapEditor;
+import io.dataease.api.system.request.SQLBotConfigCreator;
 import io.dataease.api.system.vo.SettingItemVO;
 import io.dataease.api.system.vo.ShareBaseVO;
 import io.dataease.datasource.server.DatasourceServer;
@@ -344,6 +345,44 @@ public class SysParameterManage {
         datasourceServer.addJob(sysSettings);
     }
 
+
+    public void saveSqlBotConfig(SQLBotConfigCreator configVO) {
+        String key = "sqlbot.";
+        coreSysSettingRepository.deleteByPkey(key + "domain");
+        coreSysSettingRepository.deleteByPkey(key + "id");
+        coreSysSettingRepository.deleteByPkey(key + "enabled");
+        coreSysSettingRepository.deleteByPkey(key + "valid");
+
+        CoreSysSetting domainVo = new CoreSysSetting();
+        domainVo.setPkey(key + "domain");
+        domainVo.setPval(configVO.getDomain());
+        domainVo.setType("text");
+        domainVo.setSort(0);
+        domainVo.setId(IDUtils.snowID());
+
+        CoreSysSetting idVo = new CoreSysSetting();
+        idVo.setPkey(key + "id");
+        idVo.setPval(configVO.getId());
+        idVo.setType("text");
+        idVo.setSort(0);
+        idVo.setId(IDUtils.snowID());
+
+        CoreSysSetting enabledVo = new CoreSysSetting();
+        enabledVo.setPkey(key + "enabled");
+        enabledVo.setPval(configVO.getEnabled().toString());
+        enabledVo.setType("text");
+        enabledVo.setSort(0);
+        enabledVo.setId(IDUtils.snowID());
+
+        CoreSysSetting validVo = new CoreSysSetting();
+        validVo.setPkey(key + "valid");
+        validVo.setPval(configVO.getValid().toString());
+        validVo.setType("text");
+        validVo.setSort(0);
+        validVo.setId(IDUtils.snowID());
+
+        coreSysSettingRepository.saveAll(List.of(domainVo, idVo, enabledVo, validVo));
+    }
 
     @XpackInteract(value = "perSetting", before = false)
     @Transactional
