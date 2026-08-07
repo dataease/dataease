@@ -244,7 +244,36 @@ const addDataset = () => {
 }
 
 const datasetSelectorPopover = ref()
+const expandNodePath = (node: any) => {
+  let currentNode = node?.parent
+  while (currentNode && currentNode.level > 0) {
+    currentNode.expanded = true
+    currentNode = currentNode.parent
+  }
+}
 
+const scrollCurrentNodeIntoView = async () => {
+  if (!selectedNode.value) {
+    return
+  }
+
+  const treeInstance = datasetSelector.value as any
+  if (!treeInstance) {
+    return
+  }
+
+  const currentTreeNode = treeInstance.getNode?.(selectedNode.value.id)
+  if (!currentTreeNode) {
+    return
+  }
+
+  expandNodePath(currentTreeNode)
+  await nextTick()
+  treeInstance.setCurrentKey?.(selectedNode.value.id)
+  treeInstance.$el
+    .querySelector('.ed-tree-node.is-current')
+    ?.scrollIntoView?.({ block: 'center', behavior: 'smooth' })
+}
 const dsClick = (data: Tree) => {
   if (data.leaf) {
     if (_modelValue.value !== data.id) {
@@ -257,8 +286,9 @@ const dsClick = (data: Tree) => {
   }
 }
 const _popoverShow = ref(false)
-function onPopoverShow() {
+async function onPopoverShow() {
   _popoverShow.value = true
+  await scrollCurrentNodeIntoView()
 }
 function onPopoverHide() {
   _popoverShow.value = false
@@ -325,32 +355,34 @@ onMounted(() => {
       <template #reference>
         <el-form ref="formRef" :model="form">
           <el-form-item prop="name" :rules="rules">
-            <el-input
-              :effect="themes"
-              v-model="selectedNodeName"
-              class="data-set-dark"
-              @focus="handleFocus"
-              :disabled="disabled"
-              :placeholder="selectSource"
-            >
-              <template #suffix>
-                <el-icon
-                  v-show="!disabled"
-                  class="input-arrow-icon"
-                  :class="{ reverse: _popoverShow }"
-                >
-                  <ArrowDown />
-                </el-icon>
-                <el-icon
-                  v-show="!disabled"
-                  v-if="clearShow"
-                  class="input-custom-clear-icon"
-                  @click="handleClear"
-                >
-                  <CircleClose />
-                </el-icon>
-              </template>
-            </el-input>
+            <el-tooltip effect="dark" :content="selectedNodeName" placement="top">
+              <el-input
+                :effect="themes"
+                v-model="selectedNodeName"
+                class="data-set-dark"
+                @focus="handleFocus"
+                :disabled="disabled"
+                :placeholder="selectSource"
+              >
+                <template #suffix>
+                  <el-icon
+                    v-show="!disabled"
+                    class="input-arrow-icon"
+                    :class="{ reverse: _popoverShow }"
+                  >
+                    <ArrowDown />
+                  </el-icon>
+                  <el-icon
+                    v-show="!disabled"
+                    v-if="clearShow"
+                    class="input-custom-clear-icon"
+                    @click="handleClear"
+                  >
+                    <CircleClose />
+                  </el-icon>
+                </template>
+              </el-input>
+            </el-tooltip>
           </el-form-item>
         </el-form>
       </template>
@@ -381,6 +413,7 @@ onMounted(() => {
                 v-if="showTree"
                 ref="datasetSelector"
                 node-key="id"
+                :current-node-key="_modelValue"
                 :data="computedTree"
                 :teleported="false"
                 :props="dsSelectProps"
