@@ -6,7 +6,6 @@ import io.dataease.extensions.datafilling.provider.ExtDDLProvider;
 import io.dataease.extensions.datafilling.vo.XpackPluginsDfVO;
 import io.dataease.extensions.datasource.utils.SpringContextUtil;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
-import io.dataease.license.utils.LicenseUtil;
 import io.dataease.license.utils.LogUtil;
 import io.dataease.plugins.factory.DataEasePluginFactory;
 
@@ -55,6 +54,15 @@ public class ExtDDLProviderFactory {
     public static List<XpackPluginsDfVO> getDfConfigList() {
         //if (!LicenseUtil.licenseValid()) DEException.throwException("插件功能只对企业版本可用！");
         return templateMap.values().stream().map(DataFillingPlugin::getConfig).toList();
+    }
+
+    public static XpackPluginsDfVO getDfConfig(String type) {
+        //if (!LicenseUtil.licenseValid()) DEException.throwException("插件功能只对企业版本可用！");
+        String key = "df_" + type;
+        if (templateMap.get(key) != null) {
+            return templateMap.get(key).getConfig();
+        }
+        return null;
     }
 
 }

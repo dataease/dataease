@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface DfPluginManageApi {
     List<XpackPluginsDfVO> queryPluginDf();
+    XpackPluginsDfVO queryPluginDf(String type);
 }

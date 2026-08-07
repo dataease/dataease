@@ -30,6 +30,9 @@ public interface XpackComponentApi {
     @GetMapping("/dfPlugins")
     List<XpackPluginsDfVO> dfPlugins();
 
+    @GetMapping("/dfPlugin/{type}")
+    XpackPluginsDfVO dfPlugin(@PathVariable("type") String type);
+
     @GetMapping("/syncPlugins")
     List<XpackPluginsSyncDatasourceVO> syncPlugins();
 
