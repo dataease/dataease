@@ -332,7 +332,8 @@ export class ColumnLineMix extends G2ChartView {
       legend: {
         color: {
           ...baseLegend,
-          itemMarkerSize: legend.size,
+          itemMarkerSize: legend.size * 2,
+          navButtonSize: legend.size * 2,
           itemMarker: legend.icon
         }
       }

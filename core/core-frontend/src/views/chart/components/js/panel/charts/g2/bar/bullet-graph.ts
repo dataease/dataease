@@ -425,6 +425,7 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
       color: {
         ...baseLegend,
         itemMarkerSize: ranges.symbolSize,
+        itemMarkerLineWidth: 2,
         itemMarker: d => {
           const key = getLegendKey(d)
           if (key === BULLET_TARGET_KEY) {

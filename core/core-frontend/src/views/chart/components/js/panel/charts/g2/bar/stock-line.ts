@@ -527,6 +527,7 @@ export class StockLine extends G2ChartView {
             flexDirection: 'row'
           },
           itemMarkerSize: 12,
+          itemMarkerLineWidth: 2,
           itemMarker: d => {
             if (d === '日K') {
               return 'stock'

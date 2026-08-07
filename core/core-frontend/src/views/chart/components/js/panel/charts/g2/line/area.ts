@@ -585,7 +585,7 @@ export class Area extends G2ChartView {
       legend: {
         color: {
           ...baseLegend,
-          itemMarkerSize: legend.size,
+          itemMarkerSize: legend.size * 2,
           itemMarker: legend.icon
         }
       }

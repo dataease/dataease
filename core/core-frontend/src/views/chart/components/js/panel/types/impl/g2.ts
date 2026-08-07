@@ -18,6 +18,26 @@ export const getLegendNavButtonPath = (size: number) => [
   ['Z']
 ]
 
+// 统一分类图例的 marker、label 与分页器样式，避免各图表配置漂移
+export const getCategoryLegendStyle = (markerSize: number, fontSize: number, color: string) => ({
+  itemMarkerSize: markerSize,
+  itemLabelFontSize: fontSize,
+  itemLabelFill: color,
+  itemLabelFillOpacity: 1,
+  itemLabelOpacity: 1,
+  itemMarkerLineWidth: 0,
+  navPageNumFontSize: fontSize,
+  navPageNumFill: color,
+  navPageNumFillOpacity: 1,
+  navButtonD: getLegendNavButtonPath(markerSize),
+  navButtonSize: markerSize,
+  navButtonFill: color,
+  navButtonFillOpacity: 1,
+  navOrientation: 'horizontal',
+  navControllerPadding: LEGEND_NAV_CONTROLLER_PADDING,
+  navControllerSpacing: LEGEND_NAV_CONTROLLER_SPACING
+})
+
 let axisLabelMeasureContext: CanvasRenderingContext2D | null | undefined
 
 const measureAxisLabelWidth = (value: unknown, fontSize: number) => {
@@ -187,21 +207,7 @@ export abstract class G2ChartView<
               justifyContent: layoutJustifyContent
             },
             itemMarker: legendSymbol,
-            itemMarkerSize: legendSize,
-            itemLabelFontSize: legendFontSize,
-            itemLabelFill: legendColor,
-            itemLabelFillOpacity: 1,
-            itemLabelOpacity: 1,
-            navPageNumFontSize: legendFontSize,
-            navPageNumFill: legendColor,
-            navPageNumFillOpacity: 1,
-            navButtonD: getLegendNavButtonPath(legendSize),
-            navButtonSize: legendSize,
-            navButtonFill: legendColor,
-            navButtonFillOpacity: 1,
-            navOrientation: 'horizontal',
-            navControllerPadding: LEGEND_NAV_CONTROLLER_PADDING,
-            navControllerSpacing: LEGEND_NAV_CONTROLLER_SPACING,
+            ...getCategoryLegendStyle(legendSize, legendFontSize, legendColor),
             ...(verticalLegend ? { maxCols: 1 } : { maxRows: 1 })
           }
         } else {

@@ -1,5 +1,6 @@
 import type { G2Spec } from '@antv/g2'
 import { parseJson } from '@/views/chart/components/js/util'
+import { getCategoryLegendStyle } from '@/views/chart/components/js/panel/types/impl/g2'
 
 type MixLegendRelation = [string, string]
 
@@ -136,7 +137,7 @@ export const configMixCustomLegend = (
     return Number.isFinite(numberValue) && numberValue > 0 ? numberValue : defaultValue
   }
   const legendFontSize = getPositiveNumber(legend.fontSize, 12)
-  const legendMarkerSize = getPositiveNumber(legend.size, 4)
+  const legendMarkerSize = getPositiveNumber(legend.size, 4) * 2
   const legendIcon = legend.icon || 'circle'
   const legendColor = legend.color || '#333333'
   const legendChartGap = 8
@@ -197,11 +198,7 @@ export const configMixCustomLegend = (
     },
     crossPadding: 0,
     itemMarker: legendIcon,
-    itemMarkerSize: legendMarkerSize,
-    itemLabelFontSize: legendFontSize,
-    itemLabelFill: legendColor,
-    itemLabelOpacity: 1,
-    itemLabelFillOpacity: 1
+    ...getCategoryLegendStyle(legendMarkerSize, legendFontSize, legendColor)
   }
   unionRelations.forEach(([key, value]) => {
     legendMark.scale.color.domain.push(key)

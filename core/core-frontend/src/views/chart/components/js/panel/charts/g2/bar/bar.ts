@@ -1,9 +1,8 @@
 import { Chart as G2Column } from '@antv/g2'
 import {
+  getCategoryLegendStyle,
   G2ChartView,
-  G2DrawOptions,
-  LEGEND_NAV_CONTROLLER_PADDING,
-  getLegendNavButtonPath
+  G2DrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2'
 import {
   BAR_AXIS_TYPE,
@@ -519,7 +518,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
         if (l.show) {
           let position
           const legendSymbol = l.icon
-          const legendSize = l.size
+          const legendSize = l.size * 2
           const legendFontSize = l.fontSize
           const legendColor = l.color
           // position 图例布局
@@ -545,20 +544,8 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
                 justifyContent: layoutJustifyContent
               },
               itemMarker: legendSymbol,
-              itemMarkerSize: legendSize,
-              itemLabelFontSize: legendFontSize,
-              itemLabelFill: legendColor,
-              navPageNumFontSize: legendFontSize,
-              navPageNumFill: legendColor,
-              navPageNumFillOpacity: 1,
-              navButtonD: getLegendNavButtonPath(legendSize),
-              navButtonSize: legendSize,
-              navButtonFill: legendColor,
-              navButtonFillOpacity: 1,
-              navOrientation: 'horizontal',
-              ...(verticalLegend ? { maxCols: 1 } : { maxRows: 1 }),
-              navControllerPadding: LEGEND_NAV_CONTROLLER_PADDING,
-              navControllerSpacing: 20
+              ...getCategoryLegendStyle(legendSize, legendFontSize, legendColor),
+              ...(verticalLegend ? { maxCols: 1 } : { maxRows: 1 })
             }
           }
         } else {
