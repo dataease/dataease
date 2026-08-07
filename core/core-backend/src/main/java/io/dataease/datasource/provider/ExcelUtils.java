@@ -288,7 +288,7 @@ public class ExcelUtils {
         for (ExcelSheetData excelSheetData : returnSheetDataList) {
             excelSheetData.setLastUpdateTime(System.currentTimeMillis());
             excelSheetData.setTableName(excelSheetData.getExcelLabel());
-            excelSheetData.setDeTableName("excel_" + excelSheetData.getExcelLabel().toLowerCase() + "_" + UUID.randomUUID().toString().replace("-", "").substring(0, 10));
+            excelSheetData.setDeTableName("excel_" + excelSheetData.getExcelLabel() + "_" + UUID.randomUUID().toString().replace("-", "").substring(0, 10));
             excelSheetData.setPath(filePath);
             excelSheetData.setSheetId(UUID.randomUUID().toString());
             excelSheetData.setSheetExcelId(excelId);
@@ -366,7 +366,7 @@ public class ExcelUtils {
         for (ExcelSheetData excelSheetData : returnSheetDataList) {
             excelSheetData.setLastUpdateTime(System.currentTimeMillis());
             excelSheetData.setTableName(excelSheetData.getExcelLabel());
-            excelSheetData.setDeTableName("excel_" + excelSheetData.getExcelLabel().toLowerCase() + "_" + UUID.randomUUID().toString().replace("-", "").substring(0, 10));
+            excelSheetData.setDeTableName("excel_" + excelSheetData.getExcelLabel() + "_" + UUID.randomUUID().toString().replace("-", "").substring(0, 10));
             excelSheetData.setPath(path + fileNames.get("tranName"));
             excelSheetData.setSheetId(UUID.randomUUID().toString());
             excelSheetData.setSheetExcelId(fileNames.get("tranName").split("\\.")[0]);
