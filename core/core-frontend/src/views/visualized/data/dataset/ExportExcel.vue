@@ -74,6 +74,12 @@ const handleClick = tab => {
   if (tab) {
     activeName.value = tab.paneName
   }
+  clearInterval(timer)
+  if (activeName.value === 'IN_PROGRESS' && !isDataEaseBi.value && !appStore.getIsIframe) {
+    timer = setInterval(() => {
+      getExportTasks()
+    }, 5000)
+  }
   if (activeName.value === 'ALL') {
     description.value = t('data_export.no_file')
   } else if (activeName.value === 'FAILED') {
@@ -147,12 +153,6 @@ const init = params => {
     activeName.value = params.activeName
   }
   handleClick()
-  if (isDataEaseBi.value || appStore.getIsIframe) {
-    return
-  }
-  timer = setInterval(() => {
-    getExportTasks()
-  }, 5000)
 }
 const appStore = useAppStoreWithOut()
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
