@@ -346,6 +346,7 @@ public class SysParameterManage {
     }
 
 
+    @Transactional
     public void saveSqlBotConfig(SQLBotConfigCreator configVO) {
         String key = "sqlbot.";
         coreSysSettingRepository.deleteByPkey(key + "domain");
