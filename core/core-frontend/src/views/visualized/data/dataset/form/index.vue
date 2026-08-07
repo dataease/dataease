@@ -1530,7 +1530,13 @@ const setDeTypeSelection = () => {
     ...dimensionsTable.value.getSelectionRows(),
     ...quotaTable.value.getSelectionRows()
   ]
-  deTypeSelection.value = fieldSelection.value.map(ele => ele.deExtractType)
+
+  deTypeSelection.value = fieldSelection.value.map(ele => {
+    if (ele.extField === 2 && ele.deExtractType === undefined) {
+      return ele.deType
+    }
+    return ele.deExtractType
+  })
   let deTypes = fieldSelection.value.map(ele => ele.deType)
   const [obj] = fieldSelection.value
   nextTick(() => {
