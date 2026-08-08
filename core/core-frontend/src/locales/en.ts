@@ -4876,6 +4876,14 @@ export default {
   security: {
     title: 'Security Settings'
   },
+  setting_hmac: {
+    title: 'HMAC Settings',
+    enable: 'Enable HMAC Authentication',
+    clock_skew: 'Clock skew',
+    clock_skew_tips:
+      'Unit: seconds, default is 300, which allows a time difference of up to 5 minutes between the request time and server time',
+    clock_skew_range: 'Clock skew range is 1-{0} seconds'
+  },
   setting_mfa: {
     title: 'MFA Settings',
     status: 'Global MFA Authentication Enabled',
