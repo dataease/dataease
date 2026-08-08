@@ -452,11 +452,11 @@ public class DatasetSQLBotManage {
 
         SQLMeta sqlMeta = new SQLMeta();
         Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", false);
-        Field2SQLObj.field2sqlObj(sqlMeta, fields, fields, false, dsMap, Utils.getParams(fields), null, pluginManage);
+        Field2SQLObj.field2sqlObj(sqlMeta, fields, fields, false, dsMap, Utils.getParams(fields), null, pluginManage, true);
         WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, fields, false, dsMap, Utils.getParams(fields), null, pluginManage);
         Order2SQLObj.getOrders(sqlMeta, datasetGroupInfoDTO.getSortFields(), fields, false, dsMap, Utils.getParams(fields), null, pluginManage);
         String querySQL = SQLProvider.createQuerySQL(sqlMeta, false, needOrder, false);
-        querySQL = provider.rebuildSQL(querySQL, sqlMeta, false, dsMap);
+        querySQL = provider.rebuildSQL(querySQL, sqlMeta, false, dsMap, true);
         for (int i = 0; i < sqlMeta.getXFields().size(); i++) {
             SQLObj fieldObj = sqlMeta.getXFields().get(i);
             if (fieldObj.getFieldAlias().endsWith("_" + i + '`')) {

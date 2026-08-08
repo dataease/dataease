@@ -17,12 +17,14 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
+import static io.dataease.constant.SQLConstants.FIELD_DOT_FIX;
+
 /**
  * @Author Junjun
  */
 public class Field2SQLObj {
 
-    public static void field2sqlObj(SQLMeta meta, List<DatasetTableFieldDTO> fields, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, List<CalParam> fieldParam, List<CalParam> chartParam, PluginManageApi pluginManage) {
+    public static void field2sqlObj(SQLMeta meta, List<DatasetTableFieldDTO> fields, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, List<CalParam> fieldParam, List<CalParam> chartParam, PluginManageApi pluginManage, boolean forSqlbot) {
         SQLObj tableObj = meta.getTable();
         if (ObjectUtils.isEmpty(tableObj)) {
             return;
@@ -38,6 +40,7 @@ public class Field2SQLObj {
         }
 
         if (ObjectUtils.isNotEmpty(fields)) {
+            Set<String> aliasSet = new HashSet<>();
             for (int i = 0; i < fields.size(); i++) {
                 DatasetTableFieldDTO x = fields.get(i);
                 String originField;
@@ -79,12 +82,27 @@ public class Field2SQLObj {
                     }
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
+                if (forSqlbot) {
+                    fieldAlias = x.getOriginName();
+                    if (ObjectUtils.isNotEmpty(x.getExtField()) && !x.getExtField().equals(ExtFieldConstant.EXT_NORMAL) && StringUtils.isNotBlank(x.getName())) {
+                        fieldAlias = x.getName();
+                    }
+                    if (aliasSet.contains(fieldAlias)) {
+                        fieldAlias += ('_' + String.valueOf(i));
+                    }
+                    aliasSet.add(fieldAlias);
+                    fieldAlias = String.format(FIELD_DOT_FIX, fieldAlias);
+                }
                 // 处理横轴字段
                 xFields.add(getXFields(x, originField, fieldAlias, isCross));
             }
         }
         meta.setXFields(xFields);
         meta.setXFieldsDialect(fieldsDialect);
+    }
+
+    public static void field2sqlObj(SQLMeta meta, List<DatasetTableFieldDTO> fields, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, List<CalParam> fieldParam, List<CalParam> chartParam, PluginManageApi pluginManage) {
+        field2sqlObj(meta, fields, originFields, isCross, dsMap, fieldParam, chartParam, pluginManage, false);
     }
 
     public static SQLObj getXFields(DatasetTableFieldDTO f, String originField, String fieldAlias, boolean isCross) {
