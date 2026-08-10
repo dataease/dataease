@@ -15,6 +15,8 @@ import { deepCopy } from '@/utils/utils'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { merge } from 'lodash-es'
 import SeniorStyleSetting from '@/components/dashboard/subject-setting/dashboard-style/SeniorStyleSetting.vue'
+import ValueFormatterSetting from '@/components/dashboard/subject-setting/dashboard-style/ValueFormatterSetting.vue'
+import { formatterViewInfo } from '@/views/chart/components/js/formatter'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const { canvasStyleData, componentData, canvasViewInfo } = storeToRefs(dvMainStore)
@@ -65,12 +67,18 @@ const onColorChange = val => {
 const onTextChange = val => {
   themeAttrChange('customStyle', 'text', val)
 }
+
+const onFormatterItemChange = val => {
+  themeAttrChange('formatterCfg', 'formatterCfg', val)
+}
 const themeAttrChange = (custom, property, value) => {
   if (canvasAttrInit) {
     Object.keys(canvasViewInfo.value).forEach(function (viewId) {
       const viewInfo = canvasViewInfo.value[viewId]
       try {
-        if (custom === 'customAttr') {
+        if (custom === 'formatterCfg') {
+          formatterViewInfo(viewInfo, value)
+        } else if (custom === 'customAttr') {
           merge(viewInfo['customAttr'], value)
         } else {
           Object.keys(value).forEach(function (key) {
@@ -168,6 +176,12 @@ const saveSelfSubject = () => {
           class="no-padding no-border-bottom"
         >
           <filter-style-simple-selector />
+        </el-collapse-item>
+        <el-collapse-item :title="t('visualization.number_formatter')" name="formatterItem">
+          <ValueFormatterSetting
+            :formatter-cfg="canvasStyleData.component.formatterItem"
+            @onFormatterItemChange="onFormatterItemChange"
+          ></ValueFormatterSetting>
         </el-collapse-item>
         <el-collapse-item
           :title="t('components.advanced_style_settings')"
