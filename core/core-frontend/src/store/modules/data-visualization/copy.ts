@@ -49,19 +49,41 @@ export const copyStore = defineStore('copy', {
       const componentIds = Object.keys(outerMultiplexingComponents)
       // 预生成 旧-新ID 全局映射，保证 VQuery.propValue 中引用的其他组件ID能被同步替换为新ID
       const outerIdMap = {}
-      componentIds.forEach(function (componentId) {
-        const comp = outerMultiplexingComponents[componentId]
-        if (comp && comp.id) {
+      // 递归收集组件及其嵌套子组件的旧ID，DeTabs/Group 内层组件也需一并预生成映射
+      const collectOuterIds = function (comp) {
+        if (!comp) {
+          return
+        }
+        if (comp.id) {
           outerIdMap[comp.id] = generateID()
         }
         // VQuery 的 propValue 中每个查询条件项都有独立ID，一并预生成映射，避免复用后条件项ID冲突
-        if (comp && comp.component === 'VQuery' && Array.isArray(comp.propValue)) {
+        if (comp.component === 'VQuery' && Array.isArray(comp.propValue)) {
           comp.propValue.forEach(function (item) {
             if (item && item.id) {
               outerIdMap[item.id] = generateID()
             }
           })
         }
+        // Group 的 propValue 为嵌套子组件数组，逐个递归收集
+        if (comp.component === 'Group' && Array.isArray(comp.propValue)) {
+          comp.propValue.forEach(function (child) {
+            collectOuterIds(child)
+          })
+        }
+        // DeTabs 的 propValue 为多个 Tab，每个 Tab 的 componentData 为该页内的组件数组，逐个递归收集
+        if (comp.component === 'DeTabs' && Array.isArray(comp.propValue)) {
+          comp.propValue.forEach(function (tabItem) {
+            if (tabItem && Array.isArray(tabItem.componentData)) {
+              tabItem.componentData.forEach(function (child) {
+                collectOuterIds(child)
+              })
+            }
+          })
+        }
+      }
+      componentIds.forEach(function (componentId) {
+        collectOuterIds(outerMultiplexingComponents[componentId])
       })
       // 按原始顺序完成布局计算，收集待粘贴组件
       const pendingComponents = componentIds.map(function (componentId, index) {
@@ -101,22 +123,44 @@ export const copyStore = defineStore('copy', {
       const oldIds = Object.keys(outerIdMap)
       // 匹配任意旧组件ID，单次替换，避免链式替换污染
       const idReplaceReg = oldIds.length ? new RegExp(oldIds.join('|'), 'g') : null
-      pendingComponents.forEach(function (newComponent, index) {
-        // VQuery.propValue 内引用了其他组件的旧ID，转字符串批量替换为新ID后还原
-        if (newComponent.component === 'VQuery' && newComponent.propValue && idReplaceReg) {
-          const propValueStr = JSON.stringify(newComponent.propValue)
-          newComponent.propValue = JSON.parse(
+      // VQuery.propValue/cascade 内引用了其他组件的旧ID，转字符串批量替换为新ID后还原
+      const replaceQueryRefs = function (comp) {
+        if (!comp || !idReplaceReg) {
+          return
+        }
+        if (comp.component === 'VQuery' && comp.propValue) {
+          const propValueStr = JSON.stringify(comp.propValue)
+          comp.propValue = JSON.parse(
             propValueStr.replace(idReplaceReg, function (matched) {
               return outerIdMap[matched] || matched
             })
           )
-          const cascadeStr = JSON.stringify(newComponent.cascade)
-          newComponent.cascade = JSON.parse(
+          const cascadeStr = JSON.stringify(comp.cascade)
+          comp.cascade = JSON.parse(
             cascadeStr.replace(idReplaceReg, function (matched) {
               return outerIdMap[matched] || matched
             })
           )
         }
+        // Group 内层组件递归处理
+        if (comp.component === 'Group' && Array.isArray(comp.propValue)) {
+          comp.propValue.forEach(function (child) {
+            replaceQueryRefs(child)
+          })
+        }
+        // DeTabs 每个 Tab 的 componentData 内层组件递归处理
+        if (comp.component === 'DeTabs' && Array.isArray(comp.propValue)) {
+          comp.propValue.forEach(function (tabItem) {
+            if (tabItem && Array.isArray(tabItem.componentData)) {
+              tabItem.componentData.forEach(function (child) {
+                replaceQueryRefs(child)
+              })
+            }
+          })
+        }
+      }
+      pendingComponents.forEach(function (newComponent, index) {
+        replaceQueryRefs(newComponent)
         _this.copyData = {
           data: [newComponent],
           copyCanvasViewInfo: canvasViewInfoPreview,
