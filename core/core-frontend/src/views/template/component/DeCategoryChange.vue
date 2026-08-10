@@ -65,9 +65,11 @@ const state = reactive({
 })
 
 const initCategories = () => {
-  const firstId = props.templateIds?.[0]
-  if (!firstId) return
-  findOne(firstId).then(rsp => {
+  if (!props.templateIds?.length || props.templateIds.length > 1) {
+    state.templateInfo.categories = []
+    return
+  }
+  findOne(props.templateIds[0]).then(rsp => {
     state.templateInfo.categories = rsp.data?.categories || []
   })
 }
