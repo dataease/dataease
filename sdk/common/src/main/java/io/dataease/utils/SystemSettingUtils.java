@@ -20,7 +20,8 @@ public class SystemSettingUtils {
                 XpackSettingConstants.EMBEDDED_EXPORT_MODE,
                 XpackSettingConstants.LOGIN_LIMIT,
                 XpackSettingConstants.LOGIN_LIMIT_RATE,
-                XpackSettingConstants.LOGIN_LIMIT_TIME);
+                XpackSettingConstants.LOGIN_LIMIT_TIME,
+                XpackSettingConstants.SPREADSHEET_QUERY_LIMIT);
         return xpackSettingList.contains(pkey);
     }
 }

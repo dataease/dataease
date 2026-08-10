@@ -19,4 +19,7 @@ public class XpackSettingConstants {
     public static final String LOGIN_LIMIT_RATE = "basic.loginLimitRate";
     public static final String LOGIN_LIMIT_TIME = "basic.loginLimitTime";
     public static final String DATA_FILLING_LOG_LIVE_TIME = "basic.dataFillingLogLiveTime";
+    public static final String SPREADSHEET_QUERY_LIMIT = "basic.spreadsheetQueryLimit";
+    public static final long DEFAULT_SPREADSHEET_QUERY_LIMIT = 100_000L;
+    public static final long DEFAULT_SPREADSHEET_PLUGIN_QUERY_LIMIT = 1_000L;
 }
