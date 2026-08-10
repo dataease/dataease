@@ -40,7 +40,8 @@ const requireKeys = [
   'frontTimeOut',
   'loginLimitTime',
   'loginLimitRate',
-  'thresholdLimit'
+  'thresholdLimit',
+  'spreadsheetQueryLimit'
 ]
 const state = reactive({
   form: reactive({
@@ -477,6 +478,19 @@ defineExpose({
             class="text-left edit-all-line"
             :min="1"
             :max="50"
+            :placeholder="t('common.inputText')"
+            controls-position="right"
+            type="number"
+          />
+        </div>
+        <div v-else-if="item.pkey === 'spreadsheetQueryLimit'">
+          <el-input-number
+            v-model="state.form[item.pkey]"
+            autocomplete="off"
+            step-strictly
+            class="text-left edit-all-line"
+            :min="1"
+            :precision="0"
             :placeholder="t('common.inputText')"
             controls-position="right"
             type="number"
