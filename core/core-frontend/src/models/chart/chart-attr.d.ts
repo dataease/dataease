@@ -425,6 +425,10 @@ declare interface ChartBasicStyle {
    * 副轴平滑折线开关
    */
   leftLineSmooth: boolean
+  /**
+   * 主题反色，浅色主题黑色，深色主题白色
+   */
+  themeContrastColor?: string
 }
 /**
  * 表头属性

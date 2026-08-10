@@ -56,6 +56,10 @@ export const deleteChartFieldByChartId = async (chartId): Promise<IResponse> => 
 export const getData = async (data): Promise<IResponse> => {
   delete data.data
   const copyData = cloneDeep(data)
+  // K线图查询时先按横轴降序取最新数据，渲染阶段再恢复升序
+  if (copyData.type === 'stock-line' && copyData.xAxis?.length) {
+    copyData.xAxis[0].sort = 'desc'
+  }
   const fields = [
     'xAxis',
     'xAxisExt',
