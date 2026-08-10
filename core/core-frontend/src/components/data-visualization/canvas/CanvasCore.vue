@@ -555,31 +555,17 @@ const handleContextMenu = event => {
   const mouseX = event.clientX
   const mouseY = event.clientY
 
-  // 获取最外层 div 的偏移量
-  const rect = container.value.getBoundingClientRect()
+  // 右键菜单始终渲染在主画布的 editor 容器内(position:absolute)
+  // 因此坐标需要相对于主画布 editor 计算。主画布右键时该容器即当前容器,
+  // tab 内部画布右键时当前容器是 tab 的 editor,需改用主画布 editor 作为原点
+  const mainEditor = editorMap.value['canvas-main'] || container.value
+  const rect = mainEditor.getBoundingClientRect()
   const offsetX = rect.left
   const offsetY = rect.top
 
-  // 计算鼠标相对于最外层 div 的坐标
+  // 计算鼠标相对于主画布 editor 的坐标
   let left = (mouseX - offsetX) / canvasStyleData.value.tScale
   let top = (mouseY - offsetY) / canvasStyleData.value.tScale
-
-  const curDomId = event.currentTarget?.id
-  if (curDomId) {
-    const curDomSplitParams = curDomId.split('-')
-    if (
-      curDomSplitParams.length > 1 &&
-      curDomSplitParams[curDomSplitParams.length - 1] !== 'canvas'
-    ) {
-      const tabDom = document.getElementById(
-        `shape-id-${curDomSplitParams[curDomSplitParams.length - 1]}`
-      )
-      if (tabDom) {
-        left = left + tabDom.offsetLeft
-        top = top + tabDom.offsetTop
-      }
-    }
-  }
   // 组件处于编辑状态的时候 如富文本 不弹出右键菜单
   if (!curComponent.value || (curComponent.value && !curComponent.value.editing)) {
     if (
