@@ -70,11 +70,13 @@ export function filterParamsOptions(params, paramsOption) {
   if (!paramsOption || paramsOption.length === 0) {
     return null
   }
+  // 数字与字符串按值相等（1 与 "1" 视为相等），统一转成字符串处理
+  const toStr = value => (typeof value === 'number' ? String(value) : value)
   // 创建 paramsOption 集合和前缀集合用于快速查找
-  const optionSet = new Set(paramsOption)
+  const optionSet = new Set(paramsOption.map(toStr))
   const prefixSet = new Set()
   // 收集所有可能的父级前缀
-  paramsOption.forEach(option => {
+  optionSet.forEach(option => {
     if (typeof option === 'string' && option.includes('-de-')) {
       const parts = option.split('-de-')
       // 收集所有前缀：父级、祖父级等
@@ -86,7 +88,9 @@ export function filterParamsOptions(params, paramsOption) {
   })
 
   // 检查一个值是否在 paramsOption 中存在（考虑层级关系）
-  function checkValueExists(value) {
+  function checkValueExists(rawValue) {
+    // 统一转成字符串，使数字能与字符串选项匹配
+    const value = toStr(rawValue)
     // 直接存在
     if (optionSet.has(value)) {
       return true
@@ -120,14 +124,16 @@ export function filterParamsOptions(params, paramsOption) {
     }
     return false
   }
-  // 处理单值情况（字符串）
-  if (typeof params === 'string') {
+  // 处理单值情况（字符串或数字）
+  if (typeof params === 'string' || typeof params === 'number') {
     return checkValueExists(params) ? params : null
   }
   // 处理数组情况
   if (Array.isArray(params)) {
     // 过滤出存在的值
-    const filtered = params.filter(value => typeof value === 'string' && checkValueExists(value))
+    const filtered = params.filter(
+      value => (typeof value === 'string' || typeof value === 'number') && checkValueExists(value)
+    )
     // 如果过滤后为空，返回 null，否则返回过滤后的数组
     return filtered.length > 0 ? filtered : null
   }
