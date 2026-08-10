@@ -392,6 +392,8 @@ const jumpTargetAdaptor = () => {
 
 const assignment = content => {
   if (content) {
+    // data-mce-content 属性内的占位符只是 tinymce 元数据，展示时无需处理，先移除避免重复匹配
+    content = content.replace(/\sdata-mce-content="[^"]*"/g, '')
     const on = content?.match(/\[(.+?)\]/g) || []
     if (on) {
       const thresholdStyleInfo = conditionAdaptor(state.viewDataInfo)
@@ -457,9 +459,7 @@ const fieldSelect = field => {
   const value =
     '<span id="' +
     fieldId +
-    '"><span class="mceNonEditable" contenteditable="false" data-mce-content="[' +
-    field.name +
-    ']">[' +
+    '"><span class="mceNonEditable" contenteditable="false">[' +
     field.name +
     ']</span></span>'
   const attachValue = '<span id="attachValue">&nbsp;</span>'
