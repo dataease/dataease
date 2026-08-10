@@ -116,6 +116,7 @@ public class VisualizationStoreManage {
                         dataVisualizationInfo.updateBy.as("editor"),
                         dataVisualizationInfo.updateTime.as("editTime"),
                         dataVisualizationInfo.name,
+                        dataVisualizationInfo.status.as("extFlag1"),
                         new CaseBuilder().when(dataVisualizationInfo.mobileLayout.isTrue()).then(1).otherwise(0).as("extFlag")))
                 .from(coreStore)
                 .innerJoin(dataVisualizationInfo).on(coreStore.resourceId.eq(dataVisualizationInfo.id))
