@@ -18,6 +18,31 @@ const DEFAULT_DATA = []
 // 均线周期
 const MOVING_AVERAGE_DAYS = [5, 10, 20, 60, 120, 180]
 
+const getStockThemeContrastColor = chart => {
+  const customAttr = parseJson(chart.customAttr)
+  return customAttr.basicStyle?.themeContrastColor ?? customAttr.label?.color ?? '#000000'
+}
+
+/**
+ * 计算实体或影线范围
+ */
+const getStockRange = (row, yAxis, rangeType: 'body' | 'wick') => {
+  const values = yAxis.map(axis => row[axis.dataeaseName])
+  if (
+    values.some(
+      value =>
+        value === null || value === undefined || value === '' || !Number.isFinite(Number(value))
+    )
+  ) {
+    return [null, null]
+  }
+  // 影线取四值极值，实体取中间两值
+  const sortedValues = values.map(Number).sort((a, b) => a - b)
+  return rangeType === 'wick'
+    ? [sortedValues[0], sortedValues[3]]
+    : [sortedValues[1], sortedValues[2]]
+}
+
 /**
  * 计算 K 线箱体与均线共同的 Y 轴范围
  * 均线补位使用的 null 不参与极值计算
@@ -270,17 +295,24 @@ export class StockLine extends G2ChartView {
       return
     }
     const basicStyle = parseJson(chart.customAttr).basicStyle
+    const stockStrokeColor = getStockThemeContrastColor(chart)
     const colors = []
     const alpha = basicStyle.alpha
     basicStyle.colors.forEach(ele => {
       colors.push(hexColorToRGBA(ele, alpha))
     })
 
-    const [, , minAxis, maxAxis] = yAxis
     // 时间字段
     const dateAxis = xAxis[0].dataeaseName
-    // 时间排序
-    data.sort((a, b) => new Date(a[dateAxis]).getTime() - new Date(b[dateAxis]).getTime())
+    // K线图固定按维度升序计算和展示
+    data.sort((a, b) => {
+      const aValue = a[dateAxis]
+      const bValue = b[dateAxis]
+      if (aValue === bValue) return 0
+      if (aValue == null) return 1
+      if (bValue == null) return -1
+      return String(aValue).localeCompare(String(bValue), undefined, { numeric: true })
+    })
 
     const initOptions: G2Spec = {
       type: 'view',
@@ -308,26 +340,33 @@ export class StockLine extends G2ChartView {
       children: [
         {
           type: 'interval',
-          // 使用窄区间柱绘制影线，避免 link 端点推断异常
           encode: {
-            y: [minAxis.dataeaseName, maxAxis.dataeaseName],
+            y: (row): any => getStockRange(row, yAxis, 'wick'),
             color: () => '日K',
-            size: 1
+            size: 0.5
           },
           tooltip: false
         },
         {
           type: 'interval',
-          encode: { y: [yAxis[0].dataeaseName, yAxis[1].dataeaseName], color: () => '日K' },
+          encode: {
+            y: (row): any => getStockRange(row, yAxis, 'body'),
+            color: () => '日K'
+          },
           slider: {
             x: {
               position: 'bottom',
-              // 拖动事件时穿透文本到缩略轴
-              handleLabelPointerEvents: 'none'
+              style: {
+                handleLabelFill: stockStrokeColor,
+                handleLabelFillOpacity: 1,
+                // 拖动事件时穿透文本到缩略轴
+                handleLabelPointerEvents: 'none'
+              }
             }
           },
           style: {
-            stroke: 'black'
+            stroke: stockStrokeColor,
+            lineWidth: 0.5
           }
         }
       ]
@@ -457,6 +496,7 @@ export class StockLine extends G2ChartView {
 
   protected configBasicStyle(chart: Chart, options: G2Spec): G2Spec {
     const { basicStyle } = parseJson(chart.customAttr)
+    const stockStrokeColor = getStockThemeContrastColor(chart)
     const [, , lineMark, pointMark] = options.children
     const lineStyleOpt = {
       encode: {
@@ -482,14 +522,9 @@ export class StockLine extends G2ChartView {
     const grey = hexColorToRGBA(this.GREY, basicStyle.alpha)
     const wickOpt = {
       style: {
-        stroke: d => {
-          const offset = d[startAxis.dataeaseName] - d[endAxis.dataeaseName]
-          return offset === 0 ? grey : offset > 0 ? green : red
-        },
-        fill: d => {
-          const offset = d[startAxis.dataeaseName] - d[endAxis.dataeaseName]
-          return offset === 0 ? grey : offset > 0 ? green : red
-        }
+        lineWidth: 0,
+        stroke: stockStrokeColor,
+        fill: stockStrokeColor
       }
     }
     defaultsDeep(wickMark, wickOpt)
@@ -574,6 +609,7 @@ export class StockLine extends G2ChartView {
           title: xAxis.nameShow === false ? false : xAxis.name,
           titleFontSize: xAxis.fontSize,
           titleFill: xAxis.color,
+          titleOpacity: 1,
           line: xAxis.axisLine.show,
           lineStroke: xAxis.axisLine.lineStyle.color,
           lineStrokeOpacity: 1,
@@ -582,8 +618,10 @@ export class StockLine extends G2ChartView {
           label: xAxis.axisLabel.show,
           labelFill: xAxis.axisLabel.color,
           labelFillOpacity: 1,
+          labelOpacity: 1,
           labelFontSize: xAxis.axisLabel.fontSize,
           tick: xAxis.axisLabel.show,
+          tickOpacity: 1,
           grid: xAxis.splitLine.show,
           gridStroke: xAxis.splitLine.lineStyle.color,
           gridStrokeOpacity: 1,
@@ -634,6 +672,7 @@ export class StockLine extends G2ChartView {
           title: yAxis.nameShow === false ? false : yAxis.name,
           titleFontSize: yAxis.fontSize,
           titleFill: yAxis.color,
+          titleOpacity: 1,
           line: yAxis.axisLine.show,
           lineStroke: yAxis.axisLine.lineStyle.color,
           lineStrokeOpacity: 1,
@@ -642,6 +681,7 @@ export class StockLine extends G2ChartView {
           label: yAxis.axisLabel.show,
           labelFill: yAxis.axisLabel.color,
           labelFillOpacity: 1,
+          labelOpacity: 1,
           labelFontSize: yAxis.axisLabel.fontSize,
           tick: false,
           grid: yAxis.splitLine.show,

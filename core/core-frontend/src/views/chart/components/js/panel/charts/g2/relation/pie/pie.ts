@@ -220,7 +220,7 @@ export class Pie extends G2ChartView {
       }
     }
     const reserveDecimalCount = label.reserveDecimalCount
-    const seriesTotalMap = getTooltipSeriesTotalMap(options.data.value.children)
+    const seriesTotalMap = getTooltipSeriesTotalMap(options.data.value)
     const formatterMap = tooltipAttr.seriesTooltipFormatter
       ?.filter(i => i.show)
       .reduce((pre, next) => {

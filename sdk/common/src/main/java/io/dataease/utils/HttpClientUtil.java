@@ -778,7 +778,11 @@ public class HttpClientUtil {
                 }
                 HttpEntity entity = response.getEntity();
                 byte[] bytes = EntityUtils.toByteArray(entity);          // raw bytes
-                String contentType = response.getFirstHeader("Content-Type").getValue();
+                Header contentTypeHeader = response.getFirstHeader("Content-Type");
+                if (contentTypeHeader == null) {
+                    throw new IOException("No Content-Type header in response from Playwright server, status: " + response.getStatusLine());
+                }
+                String contentType = contentTypeHeader.getValue();
                 if (contentType.startsWith("multipart/")) {
                     return MultipartParser.parse(bytes, contentType);   // see util below
                 } else {
