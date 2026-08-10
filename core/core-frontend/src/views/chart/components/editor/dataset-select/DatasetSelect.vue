@@ -356,7 +356,7 @@ onMounted(() => {
         <el-form ref="formRef" :model="form">
           <el-form-item prop="name" :rules="rules">
             <el-tooltip
-              :effect="themes"
+              :effect="themes === 'dark' ? 'light' : 'dark'"
               :content="selectedNodeName"
               :disabled="!selectedNodeName"
               placement="top"
