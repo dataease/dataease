@@ -389,6 +389,11 @@ const action = param => {
   // 下钻 联动 跳转
   if (trackMenu.value.length < 2) {
     if (view.value.drillFields.length > 0 && trackMenu.value.length === 0) {
+      // 存在下钻时，只有点击当前下钻层级的字段才提示已到最后一层，点击其他字段不提示
+      const currentDrillField = view.value.drillFields[drillLength.value]
+      if (currentDrillField?.id !== state.curActionId) {
+        return
+      }
       ElMessage.error(t('chart.last_layer'))
       return
     }
