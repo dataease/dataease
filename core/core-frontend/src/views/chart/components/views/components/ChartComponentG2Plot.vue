@@ -999,11 +999,26 @@ const preparePicture = id => {
         canvas2Picture(base64, true)
       }
     })
-    scene.addControl(zoom)
-    zoom.hide()
-    zoom.getImage().then(res => {
-      canvas2Picture(res, true)
-    })
+    let getTmapImage
+    if (scene) {
+      scene.addControl(zoom)
+      zoom.hide()
+      // 天地图
+      getTmapImage = async () => {
+        const res = await scene.exportPng('png')
+        canvas2Picture(res, true)
+      }
+    }
+    zoom
+      .getImage()
+      .then(res => {
+        canvas2Picture(res, true)
+      })
+      .catch(() => {
+        if (scene && getTmapImage) {
+          getTmapImage()
+        }
+      })
   }
 }
 const unPreparePicture = id => {
