@@ -72,7 +72,9 @@
         :style="componentBackgroundStyle"
         @click="selectCurComponent"
         @pointerdown="isS2Table && handleInnerMouseDownOnShape($event)"
-        @mousedown="!isS2Table && handleInnerMouseDownOnShape($event)"
+        @mousedown="
+          isS2Table ? handleS2MouseDownOnShape($event) : handleInnerMouseDownOnShape($event)
+        "
       >
         <!-- 背景模糊层 由于父层的backdrop-filter是作用于背后内容，无法模糊自身背景图 -->
         <div v-if="blurBgEnable" class="blur-bg" :style="blurBgStyle"></div>
@@ -533,6 +535,16 @@ const handleDbClick = () => {
 const hasChartMouseEvent = () => {
   const chartContainer = document.getElementById(`container-canvas-${element.value.id}-common`)
   return chartContainer && window.getComputedStyle(chartContainer).cursor !== 'default'
+}
+
+/**
+ * 阻止空白区事件冒泡后清空选中状态
+ */
+const handleS2MouseDownOnShape = e => {
+  if (!canvasActive.value) {
+    return
+  }
+  e.stopPropagation()
 }
 
 const handleInnerMouseDownOnShape = e => {
