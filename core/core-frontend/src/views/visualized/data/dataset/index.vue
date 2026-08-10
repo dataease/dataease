@@ -1450,13 +1450,17 @@ const proxyAllowDrop = throttle((arg1, arg2) => {
   padding-right: 4px;
 
   .label-tooltip {
-    width: 100%;
+    width: calc(100% - 40px);
     margin-left: 8.75px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 18px;
   }
 
   .icon-more {
     margin-left: auto;
-    display: none;
+    opacity: 0;
   }
 
   &:hover {
@@ -1465,7 +1469,7 @@ const proxyAllowDrop = throttle((arg1, arg2) => {
     }
 
     .icon-more {
-      display: inline-flex;
+      opacity: 1;
     }
   }
 }
