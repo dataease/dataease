@@ -116,6 +116,8 @@ export const dvMainStore = defineStore('dataVisualization', {
       },
       // 图表信息
       canvasViewInfo: {},
+      // 图表信息
+      canvasViewInfoMultiply: {},
       // 图表展示数据信息
       canvasViewDataInfo: {},
       // 图表实例信息
@@ -456,8 +458,9 @@ export const dvMainStore = defineStore('dataVisualization', {
       this.componentData = componentData
     },
 
-    setComponentDataMultiply(componentDataMultiply = []) {
+    setCanvasMultiply(componentDataMultiply = [], canvasViewInfoMultiply = {}) {
       this.componentDataMultiply = componentDataMultiply
+      this.canvasViewInfoMultiply = canvasViewInfoMultiply
     },
 
     addCopyComponent(component, idMap, canvasViewInfoPre = this.canvasViewInfo) {
@@ -1832,6 +1835,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       this.canvasViewInfo = {}
       this.componentData = []
       this.componentDataMultiply = []
+      this.canvasViewInfoMultiply = {}
       this.dvInfo = {
         dataState: null,
         optType: null,

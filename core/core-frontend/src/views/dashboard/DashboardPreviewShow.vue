@@ -119,7 +119,7 @@ const loadCanvasData = (dvId, weight?, ext?) => {
       state.dvInfo = dvInfo
       state.curPreviewGap = curPreviewGap
       if (showPosition.value === 'multiplexing') {
-        dvMainStore.setComponentDataMultiply(state.canvasDataPreview)
+        dvMainStore.setCanvasMultiply(state.canvasDataPreview, state.canvasViewInfoPreview)
       }
       dataInitState.value = true
       nextTick(() => {

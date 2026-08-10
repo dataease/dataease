@@ -9,14 +9,19 @@ interface DatasetField {
   tableId: string
 }
 const dvMainStore = dvMainStoreWithOut()
-const { componentData, canvasViewInfo } = storeToRefs(dvMainStore)
+const { componentData, componentDataMultiply, canvasViewInfo, canvasViewInfoMultiply } =
+  storeToRefs(dvMainStore)
 
-export const comInfo = () => {
+export const comInfo = showPosition => {
+  const componentDataCustom =
+    showPosition === 'multiplexing' ? componentDataMultiply.value : componentData.value
+  const canvasViewInfoCustom =
+    showPosition === 'multiplexing' ? canvasViewInfoMultiply.value : canvasViewInfo.value
   const dfsComponentData = () => {
-    let arr = componentData.value.filter(
+    let arr = componentDataCustom.filter(
       com => !['VQuery', 'DeTabs'].includes(com.innerType) && com.component !== 'Group'
     )
-    componentData.value.forEach(ele => {
+    componentDataCustom.forEach(ele => {
       if (ele.innerType === 'DeTabs') {
         ele.propValue?.forEach(itx => {
           arr = [
@@ -66,7 +71,7 @@ export const comInfo = () => {
   const datasetFieldList = computed(() => {
     return dfsComponentData()
       .map(ele => {
-        const obj = canvasViewInfo.value[ele.id]
+        const obj = canvasViewInfoCustom[ele.id]
         if (!obj) return null
         const { id, title, tableId, type } = obj as DatasetField
         return !!id && !!tableId
