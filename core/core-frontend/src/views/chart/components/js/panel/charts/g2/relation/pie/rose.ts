@@ -64,6 +64,17 @@ export class Rose extends G2ChartView {
         x: 'field',
         y: 'value'
       },
+      // 关闭比例间距并使用固定角度细缝，避免少量数据时间隔被放大
+      scale: {
+        x: {
+          padding: 0,
+          paddingInner: 0,
+          paddingOuter: 0
+        }
+      },
+      style: {
+        inset: data.length > 1 ? 1 : 0
+      },
       axis: false,
       coordinate: {
         type: 'polar'
@@ -225,7 +236,7 @@ export class Rose extends G2ChartView {
       }
     }
     const reserveDecimalCount = label.reserveDecimalCount
-    const seriesTotalMap = getTooltipSeriesTotalMap(options.data.value.children)
+    const seriesTotalMap = getTooltipSeriesTotalMap(options.data.value)
     const formatterMap = tooltipAttr.seriesTooltipFormatter
       ?.filter(i => i.show)
       .reduce((pre, next) => {
