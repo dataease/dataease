@@ -42,13 +42,12 @@ export class Rose extends G2ChartView {
 
   async drawChart(drawOptions: G2DrawOptions<G2Chart>): Promise<G2Chart> {
     const { chart, container, action } = drawOptions
-    this.configEmptyDataStyle(chart.data?.data, container, null, t('chart.no_data_or_not_positive'))
+    const data = chart.data?.data || []
+    this.configEmptyDataStyle(data, container, null, t('chart.no_data_or_not_positive'))
     chart.container = container
-    if (!chart.data?.data?.length) {
+    if (!data.length) {
       return
     }
-    // data
-    const data = chart.data.data
     // custom color
     const customAttr = parseJson(chart.customAttr)
     // options
