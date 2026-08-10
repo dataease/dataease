@@ -991,17 +991,22 @@ defineExpose({
   align-items: center;
   box-sizing: content-box;
   padding-right: 4px;
+  position: relative;
 
   .label-tooltip {
-    width: 100%;
+    width: calc(100% - 40px);
     margin-left: 8.75px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 18px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
   }
   .icon-more {
     margin-left: auto;
-    display: none;
+    opacity: 0;
   }
 
   &:hover {
@@ -1010,7 +1015,7 @@ defineExpose({
     }
 
     .icon-more {
-      display: inline-flex;
+      opacity: 1;
     }
   }
 
