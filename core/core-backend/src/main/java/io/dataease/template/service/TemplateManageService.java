@@ -255,7 +255,6 @@ public class TemplateManageService implements TemplateManageApi {
         // 如何是最后一个 则实际模板需要删除
         Specification<VisualizationTemplateCategoryMap> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("categoryId"), categoryId));
             predicates.add(cb.equal(root.get("templateId"), id));
             return cb.and(predicates.toArray(new Predicate[0]));
         };
