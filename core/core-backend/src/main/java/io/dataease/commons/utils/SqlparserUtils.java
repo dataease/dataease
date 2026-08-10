@@ -1011,24 +1011,54 @@ public class SqlparserUtils {
         return CollectionUtils.isEmpty(sqlVariableDetails.getValue()) ? Collections.emptyList() : Collections.singletonList(sqlVariableDetails.getValue().get(0));
     }
 
+    public static int resolveDeType(SqlVariableDetails sqlVariableDetails) {
+        if (sqlVariableDetails.getDeType() > 0) {
+            return sqlVariableDetails.getDeType();
+        }
+        if (CollectionUtils.isEmpty(sqlVariableDetails.getType())) {
+            return 0;
+        }
+        String typeLabel = sqlVariableDetails.getType().get(0).toUpperCase();
+        switch (typeLabel) {
+            case "TEXT":
+                return 0;
+            case "LONG":
+                return 2;
+            case "DOUBLE":
+                return 3;
+            default:
+                if (typeLabel.startsWith("DATETIME")) {
+                    return 1;
+                }
+                return 0;
+        }
+    }
+
     private TableFieldWithValue buildPreparedValue(SqlVariableDetails sqlVariableDetails, String value) {
         TableFieldWithValue tableFieldWithValue = new TableFieldWithValue();
         tableFieldWithValue.setFiledName(sqlVariableDetails.getVariableName());
         tableFieldWithValue.setTerm(sqlVariableDetails.getOperator());
-        tableFieldWithValue.setDeExtractType(sqlVariableDetails.getDeType());
-        if (sqlVariableDetails.getDeType() == 2) {
-            tableFieldWithValue.setType(Types.BIGINT);
-            tableFieldWithValue.setColumnTypeName("BIGINT");
-            tableFieldWithValue.setValue(Long.parseLong(value));
-            return tableFieldWithValue;
+        int deType = resolveDeType(sqlVariableDetails);
+        tableFieldWithValue.setDeExtractType(deType);
+        if (deType == 2) {
+            try {
+                tableFieldWithValue.setType(Types.BIGINT);
+                tableFieldWithValue.setColumnTypeName("BIGINT");
+                tableFieldWithValue.setValue(Long.parseLong(value));
+                return tableFieldWithValue;
+            } catch (NumberFormatException ignored) {
+            }
         }
-        if (sqlVariableDetails.getDeType() == 3) {
-            tableFieldWithValue.setType(Types.DECIMAL);
-            tableFieldWithValue.setColumnTypeName("DECIMAL");
-            tableFieldWithValue.setValue(new BigDecimal(value));
-            return tableFieldWithValue;
+        if (deType == 3) {
+            try {
+                tableFieldWithValue.setType(Types.DECIMAL);
+                tableFieldWithValue.setColumnTypeName("DECIMAL");
+                tableFieldWithValue.setValue(new BigDecimal(value));
+                return tableFieldWithValue;
+            } catch (NumberFormatException ignored) {
+            }
         }
-        if (sqlVariableDetails.getDeType() == 4) {
+        if (deType == 4) {
             if (StringUtils.equalsAnyIgnoreCase(value, "true", "false")) {
                 tableFieldWithValue.setType(Types.BOOLEAN);
                 tableFieldWithValue.setColumnTypeName("BOOLEAN");

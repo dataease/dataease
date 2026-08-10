@@ -528,20 +528,27 @@ public class DeSqlparserUtils {
         TableFieldWithValue tableFieldWithValue = new TableFieldWithValue();
         tableFieldWithValue.setFiledName(sqlVariableDetails.getVariableName());
         tableFieldWithValue.setTerm(sqlVariableDetails.getOperator());
-        tableFieldWithValue.setDeExtractType(sqlVariableDetails.getDeType());
-        if (sqlVariableDetails.getDeType() == 2) {
-            tableFieldWithValue.setType(Types.BIGINT);
-            tableFieldWithValue.setColumnTypeName("BIGINT");
-            tableFieldWithValue.setValue(Long.parseLong(value));
-            return tableFieldWithValue;
+        int deType = SqlparserUtils.resolveDeType(sqlVariableDetails);
+        tableFieldWithValue.setDeExtractType(deType);
+        if (deType == 2) {
+            try {
+                tableFieldWithValue.setType(Types.BIGINT);
+                tableFieldWithValue.setColumnTypeName("BIGINT");
+                tableFieldWithValue.setValue(Long.parseLong(value));
+                return tableFieldWithValue;
+            } catch (NumberFormatException ignored) {
+            }
         }
-        if (sqlVariableDetails.getDeType() == 3) {
-            tableFieldWithValue.setType(Types.DECIMAL);
-            tableFieldWithValue.setColumnTypeName("DECIMAL");
-            tableFieldWithValue.setValue(new BigDecimal(value));
-            return tableFieldWithValue;
+        if (deType == 3) {
+            try {
+                tableFieldWithValue.setType(Types.DECIMAL);
+                tableFieldWithValue.setColumnTypeName("DECIMAL");
+                tableFieldWithValue.setValue(new BigDecimal(value));
+                return tableFieldWithValue;
+            } catch (NumberFormatException ignored) {
+            }
         }
-        if (sqlVariableDetails.getDeType() == 4) {
+        if (deType == 4) {
             if (StringUtils.equalsAnyIgnoreCase(value, "true", "false")) {
                 tableFieldWithValue.setType(Types.BOOLEAN);
                 tableFieldWithValue.setColumnTypeName("BOOLEAN");
