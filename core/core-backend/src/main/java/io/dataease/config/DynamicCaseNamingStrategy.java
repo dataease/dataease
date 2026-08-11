@@ -24,15 +24,7 @@ public class DynamicCaseNamingStrategy extends CamelCaseToUnderscoresNamingStrat
      * <a href="https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/Oracle-SQL-Reserved-Words.html">...</a>
      */
     /**
-     * Oracle 库中由 MyBatis 建表的表（uid 列存储为大写 UID，需要大写引号）。
-     * 后续若发现其他表也需要大写引号，在此添加表名即可。
-     */
-    private static final Set<String> UID_UPPERCASE_TABLES = Set.of(
-            "per_user_role"
-    );
-
-    /**
-     * 同上：level 列存储为大写 LEVEL 的表。
+     * level 列存储为大写 LEVEL 的表（level 是 Oracle 保留字，必须加引号）。
      */
     private static final Set<String> LEVEL_UPPERCASE_TABLES = Set.of(
     );
@@ -104,12 +96,7 @@ public class DynamicCaseNamingStrategy extends CamelCaseToUnderscoresNamingStrat
         Dialect dialect = context.getDialect();
         if (dialect instanceof OracleDialect || dialect instanceof DmDialect) {
             if ("uid".equalsIgnoreCase(identifier.getText())) {
-                String tableName = currentTableName.get();
-                if (UID_UPPERCASE_TABLES.contains(tableName)) {
-                    identifier = Identifier.toIdentifier("UID", true);
-                } else {
-                    identifier = Identifier.toIdentifier("uid", true);
-                }
+                identifier = Identifier.toIdentifier("uid", true);
             } else if ("level".equalsIgnoreCase(identifier.getText())) {
                 String tableName = currentTableName.get();
                 if (LEVEL_UPPERCASE_TABLES.contains(tableName)) {

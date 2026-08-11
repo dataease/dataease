@@ -243,7 +243,6 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
                 .where(pop.visualizationId.eq(String.valueOf(visualizationId))
                         .and(pop.checked.eq(true))  // 数据库中是 1/0，但 QueryDSL 实体应该是 boolean
                         .and(popi.checked.eq(true)))
-                .distinct()
                 .fetch();
 
         return groupQueryResults(queryResults);
