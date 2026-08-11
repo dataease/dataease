@@ -14,7 +14,10 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,6 +26,15 @@ public class VisualizationExcelUtils {
 
     private static final String suffix = ".xlsx";
     private static final String BASE_ROOT = getBaseRoot();
+    private static final Map<Workbook, CellStyle> NUMERIC_STYLE_CACHE = new HashMap<>();
+
+    private static CellStyle getNumericCellStyle(Workbook workbook) {
+        return NUMERIC_STYLE_CACHE.computeIfAbsent(workbook, wb -> {
+            CellStyle style = wb.createCellStyle();
+            style.setDataFormat(wb.createDataFormat().getFormat("#.##########"));
+            return style;
+        });
+    }
 
     public static String getBaseRoot() {
         if (LocalModelUtils.isDesktop()) {
@@ -68,7 +80,8 @@ public class VisualizationExcelUtils {
                             Cell cell = row.createCell(j);
                             // with DataType
                             if (i > 0 && (fieldTypes.get(j).equals(DeTypeConstants.DE_INT) || fieldTypes.get(j).equals(DeTypeConstants.DE_FLOAT)) && StringUtils.isNotEmpty(rowData.get(j))) {
-                                cell.setCellValue(Double.valueOf(rowData.get(j)));
+                                cell.setCellStyle(getNumericCellStyle(wb));
+                                cell.setCellValue(new BigDecimal(rowData.get(j)).stripTrailingZeros().doubleValue());
                             } else {
                                 cell.setCellValue(rowData.get(j));
                             }

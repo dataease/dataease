@@ -245,7 +245,7 @@ public class ChartDataServer implements ChartDataApi {
         HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         String linkToken = httpServletRequest.getHeader(AuthConstant.LINK_TOKEN_KEY);
         LogUtil.info(request.getViewInfo().getId() + " " + StringUtils.isNotEmpty(linkToken) + " " + request.isDataEaseBi());
-        boolean embeddedSyncExport = request.isDataEaseBi() && StringUtils.isEmpty(linkToken) && !StringUtils.equalsIgnoreCase(exportCenterManage.singleValue(XpackSettingConstants.EMBEDDED_EXPORT_MODE), "async"); ;
+        boolean embeddedSyncExport = request.isDataEaseBi() && StringUtils.isEmpty(linkToken) && !StringUtils.equalsIgnoreCase(exportCenterManage.singleValue(XpackSettingConstants.EMBEDDED_EXPORT_MODE), "async");
         if ((StringUtils.isNotEmpty(linkToken) && !request.isDataEaseBi()) || embeddedSyncExport) {
             OutputStream outputStream = response.getOutputStream();
             try {
@@ -388,9 +388,7 @@ public class ChartDataServer implements ChartDataApi {
             for (ChartViewFieldDTO tmpAxis : exportFields) {
                 if (tmpAxis.getDeType().equals(DeTypeConstants.DE_INT) || tmpAxis.getDeType().equals(DeTypeConstants.DE_FLOAT)) {
                     FormatterCfgDTO formatterCfg = tmpAxis.getFormatterCfg();
-                    CellStyle formatterCellStyle = formatterCfg != null && "auto".equalsIgnoreCase(formatterCfg.getType())
-                            ? null
-                            : createCellStyle(styleWorkbook, formatterCfg, null);
+                    CellStyle formatterCellStyle = formatterCfg != null && "auto".equalsIgnoreCase(formatterCfg.getType()) ? null : createCellStyle(styleWorkbook, formatterCfg, null);
                     styles.add(formatterCellStyle);
                 } else {
                     styles.add(null);
@@ -554,15 +552,18 @@ public class ChartDataServer implements ChartDataApi {
                                         }
                                         if (currentStyle != null) {
                                             row.getCell(j).setCellStyle(currentStyle);
+                                        } else {
+                                            row.getCell(j).setCellStyle(getNumericCellStyle(styleWorkbook));
                                         }
-                                        row.getCell(j).setCellValue(Double.valueOf(exportNumericValue));
+                                        setNumericCellValue(row.getCell(j), new BigDecimal(exportNumericValue));
                                     } catch (Exception e) {
                                         cell.setCellValue(cellValObj.toString());
                                     }
                                 } else {
                                     Integer excelType = getExcelType(j, excelTypes, exportFields, viewInfo);
                                     if ((Objects.equals(excelType, DeTypeConstants.DE_INT) || Objects.equals(excelType, DeTypeConstants.DE_FLOAT)) && StringUtils.isNotEmpty(cellValObj.toString())) {
-                                        cell.setCellValue(Double.valueOf(cellValObj.toString()));
+                                        cell.setCellStyle(getNumericCellStyle(styleWorkbook));
+                                        setNumericCellValue(cell, new BigDecimal(cellValObj.toString()));
                                     } else if (cellValObj != null) {
                                         cell.setCellValue(cellValObj.toString());
                                     }
@@ -765,6 +766,20 @@ public class ChartDataServer implements ChartDataApi {
         }
     }
 
+    private static final Map<Workbook, CellStyle> NUMERIC_STYLE_CACHE = new HashMap<>();
+
+    private static CellStyle getNumericCellStyle(Workbook workbook) {
+        return NUMERIC_STYLE_CACHE.computeIfAbsent(workbook, wb -> {
+            CellStyle style = wb.createCellStyle();
+            style.setDataFormat(wb.createDataFormat().getFormat("#.##########"));
+            return style;
+        });
+    }
+
+    private static void setNumericCellValue(Cell cell, BigDecimal value) {
+        cell.setCellValue(value.stripTrailingZeros().doubleValue());
+    }
+
     private static void createCell(TableHeader tableHeader, TableHeader.ColumnInfo column, Integer width, Integer depth, Sheet sheet, CellStyle cellStyle, Integer totalDepth, Map<String, Row> rowMap, List<ChartViewFieldDTO> xAxis) {
         if (org.springframework.util.CollectionUtils.isEmpty(column.getChildren())) {
             Integer toDepth = totalDepth - 1 > depth ? totalDepth - 1 : depth;
@@ -845,9 +860,9 @@ public class ChartDataServer implements ChartDataApi {
 
     private static String cellValue(FormatterCfgDTO formatterCfgDTO, BigDecimal value) {
         if (formatterCfgDTO.getType().equalsIgnoreCase("percent")) {
-            return value.toString();
+            return value.stripTrailingZeros().toPlainString();
         } else {
-            return value.divide(BigDecimal.valueOf(formatterCfgDTO.getUnit())).toString();
+            return value.divide(BigDecimal.valueOf(formatterCfgDTO.getUnit())).stripTrailingZeros().toPlainString();
         }
     }
 
