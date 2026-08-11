@@ -166,7 +166,7 @@ public interface UserApi {
 
     @Operation(summary = "解锁用户")
     @Parameter(name = "id", description = "用户ID", required = true, in = ParameterIn.PATH)
-    @DePermit(value = {"m:read", "#p0 + ':manage'"}, busiFlag = "SYSUSER")
+    @DePermit(value = {"m:read"}, busiFlag = "SYSUSER|USER")
     @PostMapping("/unlock/{id}")
     void unlock(@PathVariable("id") Long id);
 
