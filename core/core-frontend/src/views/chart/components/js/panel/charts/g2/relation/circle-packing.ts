@@ -3,6 +3,7 @@ import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { useI18n } from '@/hooks/web/useI18n'
 import { cloneDeep, defaultsDeep } from 'lodash-es'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
+import { Renderer as SVGRenderer } from '@antv/g-svg'
 import { G2ChartView, G2DrawOptions } from '../../../types/impl/g2'
 import { handleChartDashboardHidden, TOOLTIP_ITEM_TPL } from '../../../common/common_antv'
 
@@ -96,7 +97,7 @@ export class CirclePacking extends G2ChartView {
         }
       }
       const options = this.setupOptions(chart, initOptions)
-      const newChart = new G2Chart({ container })
+      const newChart = new G2Chart({ container, renderer: new SVGRenderer() })
       handleChartDashboardHidden(chart, options)
       newChart.options(options)
       const handlePointClick = param => {

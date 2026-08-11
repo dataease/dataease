@@ -10,6 +10,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { defaultsDeep, isEmpty } from 'lodash-es'
 import { DEFAULT_MISC } from '@/views/chart/components/editor/util/chart'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
+import { Renderer as SVGRenderer } from '@antv/g-svg'
 import { G2ChartView, G2DrawOptions } from '../../../types/impl/g2'
 import { TOOLTIP_ITEM_TPL, TOOLTIP_TITLE_TPL } from '../../../common/common_antv'
 
@@ -112,7 +113,7 @@ export class WordCloud extends G2ChartView {
         axis: false
       }
       const options = this.setupOptions(chart, initOptions)
-      const newChart = new G2Chart({ container })
+      const newChart = new G2Chart({ container, renderer: new SVGRenderer() })
       newChart.options(options)
       newChart.on('click', () => {
         this.setDataRange(action, maxValue, minValue)

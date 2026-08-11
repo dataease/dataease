@@ -22,6 +22,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { cloneDeep, defaultsDeep, isEmpty } from 'lodash-es'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
+import { Renderer as SVGRenderer } from '@antv/g-svg'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 import {
   createTooltipWrapper,
@@ -87,7 +88,7 @@ export class Rose extends G2ChartView {
     }
     const total = data.reduce((pre, next) => pre + (next.value ?? 0), 0)
     const options = this.setupOptions(chart, initOptions, { total })
-    const newChart = new G2Chart({ container })
+    const newChart = new G2Chart({ container, renderer: new SVGRenderer() })
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
     newChart.on('interval:click', d => {

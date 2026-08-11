@@ -11,6 +11,7 @@ import { defaultsDeep, isEmpty, merge } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
+import { Renderer as SVGRenderer } from '@antv/g-svg'
 import {
   configXAxisLengthLimit,
   formatAxisLabelWithLengthLimit,
@@ -212,7 +213,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
         }
       ]
     }
-    const newChart = new G2Chart({ container })
+    const newChart = new G2Chart({ container, renderer: new SVGRenderer() })
     const options = this.setupOptions(chart, initOptions)
     const { basicStyle } = parseJson(chart.customAttr)
     const { xAxis } = parseJson(chart.customStyle)

@@ -5,6 +5,7 @@ import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { LINE_EDITOR_PROPERTY_INNER } from '../line/common'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ChartEvent, Chart as G2Chart, G2Spec } from '@antv/g2'
+import { Renderer as SVGRenderer } from '@antv/g-svg'
 import { registerSymbol, Symbols } from '@antv/g2/esm/utils/marker'
 import {
   handleChartDashboardHidden,
@@ -371,7 +372,7 @@ export class StockLine extends G2ChartView {
         }
       ]
     }
-    const newChart = new G2Chart({ container })
+    const newChart = new G2Chart({ container, renderer: new SVGRenderer() })
     const options = this.setupOptions(chart, initOptions)
     handleChartDashboardHidden(chart, options)
     // 开始渲染

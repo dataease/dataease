@@ -8,6 +8,7 @@ import {
 import { useI18n } from '@/hooks/web/useI18n'
 import { defaultsDeep, isEmpty, toString } from 'lodash-es'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
+import { Renderer as SVGRenderer } from '@antv/g-svg'
 import { valueFormatter } from '../../../../formatter'
 
 const { t } = useI18n()
@@ -251,7 +252,7 @@ export class MultiScatter extends G2ChartView {
       }
     }
     const options: G2Spec = this.setupOptions(chart, baseOptions, scatterContext)
-    const newChart = new G2Chart({ container })
+    const newChart = new G2Chart({ container, renderer: new SVGRenderer() })
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
     newChart.on('point:click', action)

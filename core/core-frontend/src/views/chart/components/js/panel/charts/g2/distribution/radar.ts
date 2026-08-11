@@ -4,6 +4,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { defaultsDeep, isEmpty } from 'lodash-es'
 import { DEFAULT_LABEL } from '@/views/chart/components/editor/util/chart'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
+import { Renderer as SVGRenderer } from '@antv/g-svg'
 import { G2ChartView, G2DrawOptions } from '../../../types/impl/g2'
 import {
   handleChartDashboardHidden,
@@ -111,7 +112,7 @@ export class Radar extends G2ChartView {
       }
     }
     const options = this.setupOptions(chart, baseOptions)
-    const newChart = new G2Chart({ container })
+    const newChart = new G2Chart({ container, renderer: new SVGRenderer() })
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
     const handleClick = e => {
