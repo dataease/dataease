@@ -163,21 +163,23 @@ getExampleValue()
         </el-row>
       </template>
 
-      <el-form-item
-        :effect="themes"
-        class="form-item"
-        :class="'form-item-' + themes"
-        :label="t('chart.value_formatter_suffix')"
-      >
-        <el-input
-          v-model="formatterCfg.suffix"
+      <template v-if="formatterCfg.type !== 'percent'">
+        <el-form-item
           :effect="themes"
-          size="small"
-          clearable
-          :placeholder="t('commons.input_content')"
-          @change="onFormatChange"
-        />
-      </el-form-item>
+          class="form-item"
+          :class="'form-item-' + themes"
+          :label="t('chart.value_formatter_suffix')"
+        >
+          <el-input
+            v-model="formatterCfg.suffix"
+            :effect="themes"
+            size="small"
+            clearable
+            :placeholder="t('commons.input_content')"
+            @change="onFormatChange"
+          />
+        </el-form-item>
+      </template>
 
       <el-form-item class="form-item" :class="'form-item-' + themes" :effect="themes">
         <el-checkbox
