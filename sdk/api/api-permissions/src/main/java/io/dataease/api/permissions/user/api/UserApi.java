@@ -154,13 +154,13 @@ public interface UserApi {
     void clearErrorRecord(@PathVariable("key") String key);
 
     @Operation(summary = "查询默认密码")
-    @DePermit(value = {"m:read"}, busiFlag = "SYSUSER")
+    @DePermit(value = {"m:read"}, busiFlag = "SYSUSER|USER")
     @GetMapping("/defaultPwd")
     String defaultPwd();
 
     @Operation(summary = "重置为默认密码")
     @Parameter(name = "id", description = "用户ID", required = true, in = ParameterIn.PATH)
-    @DePermit(value = {"m:read", "#p0 + ':manage'"}, busiFlag = "SYSUSER")
+    @DePermit(value = {"m:read"}, busiFlag = "SYSUSER|USER")
     @PostMapping("/resetPwd/{id}")
     void resetPwd(@PathVariable("id") Long id);
 
