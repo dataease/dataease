@@ -167,7 +167,8 @@ const baseComponentData = computed(() =>
     ele =>
       ele?.category !== 'hidden' &&
       ele.component !== 'GroupArea' &&
-      (!ele?.dashboardHidden || (ele?.dashboardHidden && isMobile()))
+      (!ele?.dashboardHidden || (ele?.dashboardHidden && isMobile())) &&
+      ele.isShow
   )
 )
 const canvasStyleInner = computed(() => {
@@ -593,7 +594,6 @@ defineExpose({
       <template v-if="renderReady && !showUnpublishFlag">
         <component-wrapper
           v-for="(item, index) in baseComponentData"
-          v-show="item.isShow"
           :active="item.id === (curComponent || {})['id']"
           :canvas-id="canvasId"
           :canvas-style-data="canvasStyleData"
