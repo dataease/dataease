@@ -256,7 +256,7 @@ public interface UserApi {
 
 
     @Hidden
-    List<UserReciVO> getFormatRecipient(Long oid, List<Long> uidList, List<Long> ridList);
+    List<UserReciVO> getFormatRecipient(List<Long> uidList, List<Long> ridList);
 
     @Operation(summary = "查询用户")
     @GetMapping("/query")

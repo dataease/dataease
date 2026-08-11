@@ -80,6 +80,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       'color',
       'fontSize',
       'axisLabel',
+      'showLengthLimit',
       'axisLine',
       'splitLine',
       'axisValue',
@@ -121,6 +122,23 @@ export class BidirectionalHorizontalBar extends G2ChartView {
 
   private getChartMarks(options: G2Spec) {
     return this.getChartOptions(options)?.children || []
+  }
+
+  private getValueAxis(axis: DeepPartial<ChartAxisStyle>) {
+    const axisOption = this.getAxis(axis)
+    const originLabelFormatter = axisOption.labelFormatter
+    // 两个数值轴都在数值格式化后按各自配置截断刻度文本
+    axisOption.labelFormatter = value => {
+      const label = typeof originLabelFormatter === 'function' ? originLabelFormatter(value) : value
+      return formatAxisLabelWithLengthLimit(label, axis.axisLabel.lengthLimit)
+    }
+    // 数值先按轴格式化配置生成文本，再由 G2 测量边界并分配轴空间
+    delete axisOption.transform
+    return {
+      ...axisOption,
+      labelAutoHide: true,
+      labelAutoRotate: false
+    }
   }
 
   async drawChart(drawOptions: G2DrawOptions<G2Chart>): Promise<G2Chart> {
@@ -564,8 +582,8 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       secondMark.axis.y = false
       return options
     }
-    const yAxisOption = this.getAxis(yAxis)
-    const yAxisExtOption = this.getAxis(yAxisExt)
+    const yAxisOption = this.getValueAxis(yAxis)
+    const yAxisExtOption = this.getValueAxis(yAxisExt)
     if (
       yAxisOption.label &&
       yAxisExtOption.label &&
@@ -588,57 +606,6 @@ export class BidirectionalHorizontalBar extends G2ChartView {
         yAxisExtOption,
         this.getAxisLabelStyle({ ...yAxisExt, position: yAxisExtOption.position })
       )
-      // 横向布局下数值轴在上下方，G2 默认轴高度偏保守，会挤出较大的底部/顶部空白
-      const axisTickLength = 4
-      const axisLabelSpacing = 4
-      const axisTitleSpacing = 12
-      const axisClipPadding = 6
-      const getHorizontalAxisSize = (axisOption, axisStyle) => {
-        if (axisStyle.axisLabel?.rotate) {
-          return undefined
-        }
-        const labelSize = axisOption.label ? axisStyle.axisLabel.fontSize ?? 12 : 0
-        const tickSize = axisOption.tick ? axisTickLength : 0
-        const labelSpacing = axisOption.label ? axisLabelSpacing : 0
-        const titleSize = axisOption.title ? axisStyle.fontSize ?? 12 : 0
-        const titleSpacing = axisOption.title ? axisTitleSpacing : 0
-        // 顶部轴标题会靠近组件裁剪边界，补齐 G2 默认间距并额外预留抗裁切空间
-        return Math.max(
-          18,
-          labelSize + tickSize + labelSpacing + titleSize + titleSpacing + axisClipPadding
-        )
-      }
-      const compactHorizontalAxis = (axisOption, axisStyle) => {
-        const axisSize = getHorizontalAxisSize(axisOption, axisStyle)
-        if (!axisSize) {
-          return
-        }
-        // 横向布局的数值轴只收紧轴组件预留高度，不改变轴线、标签、标题等样式配置
-        merge(axisOption, {
-          size: axisSize,
-          crossPadding: 0,
-          padding: 0,
-          tickLength: axisOption.tick ? axisTickLength : 0,
-          labelSpacing: axisOption.label ? axisLabelSpacing : 0,
-          titleSpacing: axisOption.title ? axisTitleSpacing : 0
-        })
-      }
-      compactHorizontalAxis(yAxisOption, yAxis)
-      compactHorizontalAxis(yAxisExtOption, yAxisExt)
-      const getHorizontalPlotLayout = (axisOption, axisStyle) => {
-        const axisSize = getHorizontalAxisSize(axisOption, axisStyle) ?? 18
-        return {
-          marginTop: 0,
-          marginBottom: 0,
-          paddingTop: axisOption.position === 'top' ? axisSize + 4 : 2,
-          paddingBottom: axisOption.position === 'bottom' ? axisSize + 10 : 8,
-          insetTop: 0,
-          insetBottom: 0
-        }
-      }
-      // 默认 view margin/padding 会参与布局留白；横向对称条形图改成固定上下布局，避免顶部图例下方过空、底部 plot 贴边
-      merge(firstMark, getHorizontalPlotLayout(yAxisOption, yAxis))
-      merge(secondMark, getHorizontalPlotLayout(yAxisExtOption, yAxisExt))
     }
     if (yAxis.axisValue.auto === false) {
       merge(firstMark, {

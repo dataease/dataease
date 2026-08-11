@@ -9,7 +9,7 @@ spring:
   flyway:
     enabled: false
   jpa:
-    database-platform: org.hibernate.dialect.OracleDialect
+    database-platform: org.hibernate.dialect.MySQL8Dialect
     properties:
       hibernate:
         # dialect: io.dataease.config.DataEaseOracle11gDialect
