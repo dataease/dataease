@@ -8,6 +8,7 @@ import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { useI18n } from '@/hooks/web/useI18n'
 import { defaultsDeep, isEmpty } from 'lodash-es'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
+import { Renderer as SVGRenderer } from '@antv/g-svg'
 import { G2ChartView, G2DrawOptions } from '../../../types/impl/g2'
 import {
   getTooltipSeriesTotalMap,
@@ -86,7 +87,7 @@ export class Treemap extends G2ChartView {
       }
     }
     const total = data.reduce((pre, next) => pre + (next.value ?? 0), 0)
-    const newChart = new G2Chart({ container })
+    const newChart = new G2Chart({ container, renderer: new SVGRenderer() })
     const options = this.setupOptions(chart, baseOptions, { total, chartObj: newChart })
     handleChartDashboardHidden(chart, options)
     newChart.options(options)

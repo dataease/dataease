@@ -294,7 +294,7 @@ watch(
   () => relativeToCurrentTypeList.value,
   val => {
     if (!val.some(ele => ele.value === timeRange.value.relativeToCurrentType)) {
-      timeRange.value.relativeToCurrentType = val[0].value as ManipulateType
+      timeRange.value.relativeToCurrentType = (val[0]?.value || 'custom') as ManipulateType
     }
   },
   { immediate: true }

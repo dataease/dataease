@@ -125,6 +125,11 @@ public class CoreDatasetTableField {
     @Column(name = "params", length = 16777216)
     private String params;
 
+    @Comment("排序字段")
+    @ColumnDefault("false")
+    @Column(name = "order_checked")
+    private Boolean orderChecked;
+
     public CoreDatasetTableField() {
     }
 

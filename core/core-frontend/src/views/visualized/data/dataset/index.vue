@@ -1448,6 +1448,7 @@ const proxyAllowDrop = throttle((arg1, arg2) => {
   align-items: center;
   box-sizing: content-box;
   padding-right: 4px;
+  position: relative;
 
   .label-tooltip {
     width: calc(100% - 40px);

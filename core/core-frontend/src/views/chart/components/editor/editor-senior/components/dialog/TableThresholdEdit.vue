@@ -305,6 +305,9 @@ const addField = item => {
       if (item.dynamicField?.fieldId === ele.id) {
         item.dynamicField.field = JSON.parse(JSON.stringify(ele))
         initOptions(item, item.dynamicField.field)
+        if ([0, 5].includes(ele.deType)) {
+          item.dynamicField.summary = 'value'
+        }
       }
       if (item.dynamicMinField?.fieldId === ele.id) {
         item.dynamicMinField.field = JSON.parse(JSON.stringify(ele))

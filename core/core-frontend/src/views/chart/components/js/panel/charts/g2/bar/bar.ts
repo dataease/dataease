@@ -1,4 +1,5 @@
 import { Chart as G2Column } from '@antv/g2'
+import { Renderer as SVGRenderer } from '@antv/g-svg'
 import {
   getCategoryLegendStyle,
   G2ChartView,
@@ -146,7 +147,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
       ]
     }
     const options: ViewSpec = this.setupOptions(chart, initOptions)
-    const newChart = new G2Column({ container, autoFit: true })
+    const newChart = new G2Column({ container, autoFit: true, renderer: new SVGRenderer() })
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
     newChart.on('interval:click', action)

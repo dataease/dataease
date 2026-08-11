@@ -13,6 +13,7 @@ import {
 import { useI18n } from '@/hooks/web/useI18n'
 import { defaultsDeep } from 'lodash-es'
 import { G2Spec, Chart as G2Chart } from '@antv/g2'
+import { Renderer as SVGRenderer } from '@antv/g-svg'
 import { G2ChartView, G2DrawOptions } from '../../../types/impl/g2'
 import { RuntimeOptions } from '@antv/g2/lib/api/runtime'
 
@@ -99,7 +100,7 @@ export class Gauge extends G2ChartView {
       }
     }
     const options = this.setupOptions(chart, initOptions, { scale })
-    const newChart = new G2Chart({ container })
+    const newChart = new G2Chart({ container, renderer: new SVGRenderer() })
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
     newChart.on('afterrender', () => {

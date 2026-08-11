@@ -204,7 +204,8 @@ const handleInnerMouseDown = e => {
     dvMainStore.mobileInPc
   ) {
     onClick()
-    if (e.target?.className?.includes('ed-input__inner')) return
+    const target = e.target as Element | null
+    if (target?.classList.contains('ed-input__inner')) return
     e?.stopPropagation()
     e?.preventDefault()
   }
@@ -214,7 +215,7 @@ onMounted(() => {
   currentInstance = getCurrentInstance()
 })
 
-const onClick = e => {
+const onClick = () => {
   // 将当前点击组件的事件传播出去
   eventBus.emit('componentClick')
   dvMainStore.setInEditorStatus(true)

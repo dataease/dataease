@@ -14,6 +14,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { defaultsDeep, isEmpty } from 'lodash-es'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
+import { Renderer as SVGRenderer } from '@antv/g-svg'
 
 const { t } = useI18n()
 
@@ -84,7 +85,7 @@ export class Funnel extends G2ChartView {
       labels: []
     }
     const options = this.setupOptions(chart, baseOptions)
-    const newChart = new G2Chart({ container })
+    const newChart = new G2Chart({ container, renderer: new SVGRenderer() })
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
     newChart.on('interval:click', action)
