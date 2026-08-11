@@ -141,7 +141,6 @@
               :effect="themes"
               :trigger-width="computedBackgroundColorPickerWidth"
               is-custom
-              show-alpha
               class="color-picker-style"
               :predefine="state.predefineColors"
               @change="onBackgroundChange"
