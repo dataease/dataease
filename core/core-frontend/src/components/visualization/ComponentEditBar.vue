@@ -209,7 +209,13 @@
         </el-dropdown-menu>
       </template>
     </el-dropdown>
-    <el-popover v-if="selectFieldShow" width="200" trigger="click" @mousedown="fieldsAreaDown">
+    <el-popover
+      v-if="selectFieldShow"
+      width="200"
+      trigger="click"
+      popper-class="field-popover-high-z"
+      @mousedown="fieldsAreaDown"
+    >
       <template #reference>
         <el-icon class="bar-base-icon">
           <Icon name="database"><database class="svg-icon" /></Icon
@@ -739,5 +745,8 @@ watch(
   &:hover {
     background-color: #1f23291a;
   }
+}
+.field-popover-high-z {
+  z-index: 3000 !important;
 }
 </style>
