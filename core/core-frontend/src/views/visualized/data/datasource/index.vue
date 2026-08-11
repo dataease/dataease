@@ -2370,6 +2370,7 @@ const getMenuList = (val: boolean, data?: any) => {
         font-family: var(--de-custom_font, 'PingFang');
         font-size: 16px;
         font-weight: 500;
+        height: 32px;
 
         .ed-icon {
           font-size: 24px;
