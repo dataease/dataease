@@ -325,7 +325,7 @@ watch(
   () => relativeToCurrentList.value,
   val => {
     if (!val.some(ele => ele.value === timeRange.value.relativeToCurrent)) {
-      timeRange.value.relativeToCurrent = val[0].value
+      timeRange.value.relativeToCurrent = val[0]?.value || 'custom'
     }
   },
   { immediate: true }
@@ -335,11 +335,11 @@ watch(
   () => relativeToCurrentTypeList.value,
   val => {
     if (!val.some(ele => ele.value === timeRange.value.relativeToCurrentType)) {
-      timeRange.value.relativeToCurrentType = val[0].value as ManipulateType
+      timeRange.value.relativeToCurrentType = (val[0]?.value || 'custom') as ManipulateType
     }
 
     if (!val.some(ele => ele.value === timeRange.value.relativeToCurrentTypeRange)) {
-      timeRange.value.relativeToCurrentTypeRange = val[0].value as ManipulateType
+      timeRange.value.relativeToCurrentTypeRange = (val[0]?.value || 'custom') as ManipulateType
     }
   },
   { immediate: true }

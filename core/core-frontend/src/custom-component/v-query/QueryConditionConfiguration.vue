@@ -25,7 +25,7 @@ import {
 import { storeToRefs } from 'pinia'
 import { enumValueObj } from '@/api/dataset'
 import CustomSortFilter from './CustomSortFilter.vue'
-import { addQueryCriteriaConfig } from './options'
+import { addQueryCriteriaConfig, attributes } from './options'
 import { getCustomTime } from './time-format'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import {
@@ -672,6 +672,14 @@ const duplicateRemoval = arr => {
     }
   }
   return objList
+}
+
+const fieldClear = () => {
+  nextTick(() => {
+    setToDefault(curComponent.value)
+    curComponent.value.timeGranularity = 'year'
+    curComponent.value.timeGranularityMultiple = 'yearrange'
+  })
 }
 
 const setParameters = field => {
@@ -1751,64 +1759,6 @@ const weightlessness = () => {
 }
 
 const parameterCompletion = ele => {
-  const attributes = {
-    timeType: 'fixed',
-    hideConditionSwitching: false,
-    required: false,
-    defaultMapValue: [],
-    mapValue: [],
-    parametersStart: null,
-    conditionType: 0,
-    conditionValueOperatorF: 'eq',
-    conditionValueF: '',
-    conditionValueOperatorS: 'like',
-    conditionValueS: '',
-    resultMode: 0,
-    defaultConditionValueOperatorF: 'eq',
-    defaultConditionValueF: '',
-    defaultConditionValueOperatorS: 'like',
-    defaultConditionValueS: '',
-    parametersEnd: null,
-    relativeToCurrent: 'custom',
-    timeNum: 0,
-    relativeToCurrentRange: 'custom',
-    relativeToCurrentType: 'year',
-    around: 'f',
-    arbitraryTime: new Date(),
-    timeNumRange: 0,
-    relativeToCurrentTypeRange: 'year',
-    aroundRange: 'f',
-    treeDatasetId: '',
-    displayId: '',
-    sortId: '',
-    sort: 'asc',
-    arbitraryTimeRange: new Date(),
-    setTimeRange: false,
-    showEmpty: false,
-    defaultNumValueStart: null,
-    defaultNumValueEnd: null,
-    numValueEnd: null,
-    numValueStart: null,
-    displayFormat: 0,
-    timeRange: {
-      intervalType: 'none',
-      dynamicWindow: false,
-      maximumSingleQuery: 0,
-      regularOrTrends: 'fixed',
-      regularOrTrendsValue: '',
-      relativeToCurrent: 'custom',
-      timeNum: 0,
-      relativeToCurrentType: 'year',
-      around: 'f',
-      timeNumRange: 0,
-      relativeToCurrentTypeRange: 'year',
-      aroundRange: 'f'
-    },
-    oldTreeLoad: false,
-    treeCheckedList: [],
-    defaultValueFirstItem: false,
-    treeFieldList: []
-  }
   Object.entries(attributes).forEach(([key, val]) => {
     ele[key] ?? (ele[key] = val)
   })
@@ -1822,6 +1772,20 @@ const parameterCompletion = ele => {
   }
 
   return ele
+}
+
+const setToDefault = ele => {
+  Object.entries(attributes).forEach(([key, val]) => {
+    ele[key] = val
+  })
+
+  if (!ele.treeDatasetId) {
+    ele.treeDatasetId = ele.dataset.id
+  }
+
+  if (!ele.timeRange.relativeToCurrentRange) {
+    ele.timeRange.relativeToCurrentRange = 'custom'
+  }
 }
 
 const handleCondition = (item, idx = 0) => {
@@ -2581,6 +2545,7 @@ defineExpose({
                   @change="val => setParametersArr(val, field.componentId)"
                   @focus="handleDialogClick"
                   multiple
+                  @clear="fieldClear"
                   filterable
                   collapse-tags
                   collapse-tags-tooltip
