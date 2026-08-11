@@ -4,6 +4,7 @@ import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { useI18n } from '@/hooks/web/useI18n'
 import { G2ChartView, G2DrawOptions } from '../../../types/impl/g2'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
+import { Renderer as SVGRenderer } from '@antv/g-svg'
 import { defaultsDeep } from 'lodash-es'
 import { handleChartDashboardHidden } from '@/views/chart/components/js/panel/common/common_antv'
 
@@ -68,7 +69,7 @@ export class Liquid extends G2ChartView {
       container
     }
     const options = this.setupOptions(chart, initOptions, context)
-    const newChart = new G2Chart({ container })
+    const newChart = new G2Chart({ container, renderer: new SVGRenderer() })
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
     newChart.on('afterrender', () => {

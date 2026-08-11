@@ -1,4 +1,5 @@
 import { Chart as G2Bullet } from '@antv/g2'
+import { Renderer as SVGRenderer } from '@antv/g-svg'
 import { G2ChartView, G2DrawOptions } from '@/views/chart/components/js/panel/types/impl/g2'
 import {
   BAR_AXIS_TYPE,
@@ -98,6 +99,7 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
     const initOptions = {
       container,
       autoFit: true,
+      renderer: new SVGRenderer(),
       data: result
     }
     const options = this.setupOptions(chart, initOptions)
