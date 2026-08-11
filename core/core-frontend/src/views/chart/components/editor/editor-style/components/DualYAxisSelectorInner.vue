@@ -497,6 +497,25 @@ onMounted(() => {
           />
         </el-form-item>
 
+        <!-- 对称条形图的左右数值轴分别维护长度限制 -->
+        <el-form-item
+          class="form-item"
+          :class="'form-item-' + themes"
+          :label="t('chart.length_limit')"
+          v-if="showProperty('showLengthLimit')"
+        >
+          <el-input-number
+            :disabled="!state.axisForm.axisLabel.show"
+            style="width: 100%"
+            :effect="props.themes"
+            v-model="state.axisForm.axisLabel.lengthLimit"
+            :min="1"
+            size="small"
+            controls-position="right"
+            @change="changeAxisStyle('axisLabel.lengthLimit')"
+          />
+        </el-form-item>
+
         <template v-if="showProperty('axisLabelFormatter')">
           <el-form-item
             class="form-item"

@@ -80,6 +80,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       'color',
       'fontSize',
       'axisLabel',
+      'showLengthLimit',
       'axisLine',
       'splitLine',
       'axisValue',
@@ -125,6 +126,12 @@ export class BidirectionalHorizontalBar extends G2ChartView {
 
   private getValueAxis(axis: DeepPartial<ChartAxisStyle>) {
     const axisOption = this.getAxis(axis)
+    const originLabelFormatter = axisOption.labelFormatter
+    // 两个数值轴都在数值格式化后按各自配置截断刻度文本
+    axisOption.labelFormatter = value => {
+      const label = typeof originLabelFormatter === 'function' ? originLabelFormatter(value) : value
+      return formatAxisLabelWithLengthLimit(label, axis.axisLabel.lengthLimit)
+    }
     // 数值先按轴格式化配置生成文本，再由 G2 测量边界并分配轴空间
     delete axisOption.transform
     return {
