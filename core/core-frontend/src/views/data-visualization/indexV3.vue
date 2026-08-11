@@ -260,7 +260,7 @@ const initDataset = () => {
   })
 }
 
-const scrollOffset = computed(() => (canvasStyleData.value.scale < 150 ? 1.5 : 2))
+const scrollOffset = computed(() => (canvasStyleData.value.tScale < 1.5 ? 1.5 : 2.1))
 
 // 全局监听按键事件
 listenGlobalKeyDown()
