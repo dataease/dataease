@@ -51,7 +51,10 @@ import { useUserStoreWithOut } from '@/store/modules/user'
 import TabsGroup from '@/custom-component/component-group/TabsGroup.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { updatePublishStatus } from '@/api/visualization/dataVisualization'
+import { tryShowLoading, tryHideLoading } from '@/utils/loading'
+import { usePermissionStoreWithOut } from '@/store/modules/permission'
 
+const permissionStore = usePermissionStoreWithOut()
 let nameEdit = ref(false)
 let inputName = ref('')
 let nameInput = ref(null)
@@ -178,6 +181,11 @@ const saveCanvasWithCheck = (withPublish = false, status?) => {
 const saveResource = (checkParams?) => {
   if (styleChangeTimes.value > 0 || checkParams.withPublish) {
     eventBus.emit('hideArea-canvas-main')
+    const loadingKey = permissionStore.getCurrentPath
+    // 保存 + 发布合并为一次 loading：先占一个引用，保证两次请求之间计数不归零
+    if (checkParams.withPublish) {
+      tryShowLoading(loadingKey)
+    }
     nextTick(() => {
       canvasSaveWithParams(checkParams, () => {
         snapshotStore.resetStyleChangeTimes()
@@ -203,7 +211,9 @@ const saveResource = (checkParams?) => {
           })
         }
         if (checkParams.withPublish) {
-          publishStatusChange(checkParams.status)
+          publishStatusChange(checkParams.status).finally(() => {
+            tryHideLoading(loadingKey)
+          })
         } else {
           ElMessage.success(t('commons.save_success'))
         }
@@ -324,7 +334,7 @@ const publishStatusChange = status => {
   const targetViewIds = []
   findAllViewsId(componentData.value, targetViewIds)
   // do update
-  updatePublishStatus({
+  return updatePublishStatus({
     id: dvInfo.value.id,
     name: dvInfo.value.name,
     mobileLayout: dvInfo.value.mobileLayout,

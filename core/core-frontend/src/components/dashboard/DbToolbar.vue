@@ -61,6 +61,9 @@ import { useCache } from '@/hooks/web/useCache'
 import DeFullscreen from '@/components/visualization/common/DeFullscreen.vue'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { updatePublishStatus } from '@/api/visualization/dataVisualization'
+import { tryShowLoading, tryHideLoading } from '@/utils/loading'
+import { usePermissionStoreWithOut } from '@/store/modules/permission'
+const permissionStore = usePermissionStoreWithOut()
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -202,7 +205,7 @@ const publishStatusChange = status => {
   const targetViewIds = []
   findAllViewsId(componentData.value, targetViewIds)
   // do update
-  updatePublishStatus({
+  return updatePublishStatus({
     id: dvInfo.value.id,
     name: dvInfo.value.name,
     mobileLayout: dvInfo.value.mobileLayout,
@@ -268,6 +271,11 @@ const saveResource = (checkParams?) => {
     queryList.value.forEach(ele => {
       useEmitt().emitter.emit(`updateQueryCriteria${ele.id}`)
     })
+    const loadingKey = permissionStore.getCurrentPath
+    // 保存 + 发布合并为一次 loading：先占一个引用，保证两次请求之间计数不归零
+    if (checkParams.withPublish) {
+      tryShowLoading(loadingKey)
+    }
     try {
       canvasSaveWithParams(checkParams, () => {
         snapshotStore.resetStyleChangeTimes()
@@ -299,13 +307,18 @@ const saveResource = (checkParams?) => {
           )
         }
         if (checkParams.withPublish) {
-          publishStatusChange(checkParams.status)
+          publishStatusChange(checkParams.status).finally(() => {
+            tryHideLoading(loadingKey)
+          })
         } else {
           ElMessage.success(t('commons.save_success'))
         }
       })
     } catch (e) {
       console.error(e)
+      if (checkParams.withPublish) {
+        tryHideLoading(loadingKey)
+      }
     }
   }
 }
