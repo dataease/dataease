@@ -125,7 +125,7 @@ public class TemplateCenterManage {
             return baseResponseV2Trans(templateQuery(templateParams), searchTemplateFromManage(), templateParams.get("template.url"));
         } catch (Exception e) {
             LogUtil.error(e);
-            e.printStackTrace();
+            LogUtil.error(e);
         }
         return null;
     }
@@ -236,7 +236,7 @@ public class TemplateCenterManage {
             return template.getCategories().stream()
                     .anyMatch(category -> categoryNameMatch.equals(category.getName()));
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
             return false;
         }
     }

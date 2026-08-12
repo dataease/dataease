@@ -1,4 +1,5 @@
 package io.dataease.utils;
+import io.dataease.utils.LogUtil;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
@@ -107,7 +108,7 @@ public class StaticResourceUtils {
                     // Close InputStream
                     inputStream.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LogUtil.error(e);
                 }
             }
         }

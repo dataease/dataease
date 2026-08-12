@@ -1,4 +1,5 @@
 package io.dataease.datasource.provider;
+import io.dataease.utils.LogUtil;
 
 import com.jcraft.jsch.*;
 import io.dataease.constant.SQLConstants;
@@ -81,7 +82,7 @@ public class CalciteProvider extends Provider {
                         try {
                             extendedJdbcClassLoader.addFile(tmp);
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            LogUtil.error(e);
                         }
                     }
                 }
@@ -231,7 +232,7 @@ public class CalciteProvider extends Provider {
             SqlNode sqlNode = parser.parseStmt();
             return sqlNode.toSqlString(getDialect(value)).toString();
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
             DEException.throwException(e.getMessage());
         }
         return null;
@@ -275,13 +276,13 @@ public class CalciteProvider extends Provider {
                 map.put(name, type);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         } finally {
             if (resultSet != null) {
                 try {
                     resultSet.close();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    LogUtil.error(e);
                 }
             }
         }
@@ -341,7 +342,7 @@ public class CalciteProvider extends Provider {
                     try {
                         resultSet.close();
                     } catch (SQLException e) {
-                        e.printStackTrace();
+                        LogUtil.error(e);
                     }
                 }
             }
@@ -384,7 +385,7 @@ public class CalciteProvider extends Provider {
                     try {
                         resultSet.close();
                     } catch (SQLException e) {
-                        e.printStackTrace();
+                        LogUtil.error(e);
                     }
                 }
             }
@@ -515,7 +516,7 @@ public class CalciteProvider extends Provider {
             conn = driverClass.connect(configuration.getJdbc(), props);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
             DEException.throwException(e.getMessage());
         }
         connectionObj.setConnection(conn);
@@ -591,7 +592,7 @@ public class CalciteProvider extends Provider {
             fieldList = getField(resultSet, datasourceRequest);
             dataList = getData(resultSet, datasourceRequest);
         } catch (SQLException e) {
-            e.printStackTrace();
+            LogUtil.error(e);
             DEException.throwException("SQL ERROR: " + e.getMessage());
         } catch (Exception e) {
             DEException.throwException("Datasource connection exception: " + e.getMessage());
@@ -600,7 +601,7 @@ public class CalciteProvider extends Provider {
                 try {
                     resultSet.close();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    LogUtil.error(e);
                 }
             }
         }
@@ -660,7 +661,7 @@ public class CalciteProvider extends Provider {
                 try {
                     resultSet.close();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    LogUtil.error(e);
                 }
             }
         }
@@ -748,7 +749,7 @@ public class CalciteProvider extends Provider {
                 try {
                     resultSet.close();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    LogUtil.error(e);
                 }
             }
         }

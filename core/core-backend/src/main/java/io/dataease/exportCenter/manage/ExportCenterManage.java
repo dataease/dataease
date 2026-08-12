@@ -52,11 +52,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ReflectionUtils;
 import io.dataease.visualization.dto.WatermarkContentDTO;
 import io.dataease.api.permissions.user.vo.UserFormVO;
 
-import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -531,14 +529,6 @@ public class ExportCenterManage implements BaseExportApi {
         } else {
             V3BaseUser user = V3UserUtil.getUser(userId);
             secret = user.getPwd() + RsaUtils.publicKey();
-            /*Object apisixCacheManage = CommonBeanFactory.getBean("apisixCacheManage");
-            Method userCacheMethod = DeReflectUtil.findMethod(apisixCacheManage.getClass(), "userCacheBO");
-            Object cacheBO = ReflectionUtils.invokeMethod(userCacheMethod, apisixCacheManage, userId);
-            Method secretMethod = DeReflectUtil.findMethod(cacheBO.getClass(), "getSecret");
-            Object secretObj = ReflectionUtils.invokeMethod(secretMethod, cacheBO);
-            if (secretObj != null) {
-                secret = secretObj.toString();
-            }*/
 
         }
         if (StringUtils.isBlank(secret)) {

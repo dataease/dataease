@@ -49,7 +49,6 @@ export const importXpackTool = async (methodName: string) => {
   } else {
     distributed = wsCache.get(key)
   }
-  // distributed = true
   if (isNull(distributed) || !distributed) {
     return null
   }

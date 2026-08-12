@@ -1,4 +1,5 @@
 package io.dataease.extensions.sync.utils;
+import io.dataease.utils.LogUtil;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -33,7 +34,7 @@ public class JsonUtil {
             t = objectMapper.readValue(json, new TypeReference<T>() {
             });
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         }
         return t;
     }
@@ -44,7 +45,7 @@ public class JsonUtil {
         try {
             t = objectMapper.readValue(json, classOfT);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         }
         return t;
     }
@@ -55,7 +56,7 @@ public class JsonUtil {
         try {
             t = objectMapper.readValue(json, typeReference);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         }
         return t;
     }
@@ -66,7 +67,7 @@ public class JsonUtil {
         try {
             t = objectMapper.readValue(json, classOfT);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         }
         return t;
     }
@@ -76,7 +77,7 @@ public class JsonUtil {
         try {
             return objectMapper.writeValueAsString(o);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            LogUtil.error(e);
             return null;
         }
     }
@@ -100,7 +101,7 @@ public class JsonUtil {
         try {
             return objectMapper.writeValueAsString(obj);
         } catch (IOException e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         }
         return null;
     }

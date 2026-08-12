@@ -1344,7 +1344,6 @@ export const dvMainStore = defineStore('dataVisualization', {
                 }
               }
               // 不存在该条件 且 条件有效 直接保存该条件
-              // !filterExist && vValid && currentFilters.push(condition)
 
               currentFilters.push(condition)
             }
@@ -1519,7 +1518,6 @@ export const dvMainStore = defineStore('dataVisualization', {
         preActiveComponentIds.includes(element.id) || preActiveComponentIds.push(element.id)
       }
       // 联动的图表情况历史条件
-      // const currentFilters = []
       const skipEmptyValue = this.canvasViewInfo[viewId]?.type === 'multi-scatter'
       checkQDList.forEach(QDItem => {
         const hasTimeRange = QDItem.timeValue && Array.isArray(QDItem.timeValue)
@@ -1579,7 +1577,6 @@ export const dvMainStore = defineStore('dataVisualization', {
                   }
                 }
                 // 不存在该条件 且 条件有效 直接保存该条件
-                // !filterExist && vValid && currentFilters.push(condition)
                 currentFilters.push(condition)
               }
             }

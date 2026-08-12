@@ -1,4 +1,5 @@
 package io.dataease.datasource.provider;
+import io.dataease.utils.LogUtil;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
@@ -83,7 +84,7 @@ public class EsProvider extends Provider {
             result.put("data", fetchResultData(response));
             result.put("fields", fetchResultField4Sql(response));
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
             DEException.throwException(e);
         }
         return result;

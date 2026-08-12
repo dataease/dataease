@@ -1,4 +1,5 @@
 package io.dataease.chart.charts.impl.line;
+import io.dataease.utils.LogUtil;
 
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.chart.charts.impl.YoyChartHandler;
@@ -124,7 +125,7 @@ public class StackAreaHandler extends YoyChartHandler {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         }
         return result;
     }

@@ -1,4 +1,5 @@
 package io.dataease.datasource.provider;
+import io.dataease.utils.LogUtil;
 
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -433,7 +434,7 @@ public class ApiUtils {
                         try {
                             rootNode = objectMapper.readValue(JsonUtil.toJSONString(apiDefinition.getRequest().getBody().get("kvs")).toString(), listTypeReference);
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            LogUtil.error(e);
                             DEException.throwException(e);
                         }
                         for (JsonNode jsonNode : rootNode) {
@@ -840,7 +841,7 @@ public class ApiUtils {
                 field.put("children", fieldArrayChildren);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
             DEException.throwException(e);
         }
 

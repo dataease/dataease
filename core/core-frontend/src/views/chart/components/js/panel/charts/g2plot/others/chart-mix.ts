@@ -105,8 +105,6 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
     const left = cloneDeep(chart.data?.left?.data)
     const right = cloneDeep(chart.data?.right?.data)
 
-    // const data1Type = (left[0]?.type === 'bar' ? 'column' : left[0]?.type) ?? 'column'
-    // const data2Type = (right[0]?.type === 'bar' ? 'column' : right[0]?.type) ?? 'column'
     const data1Type = this.getLeftType()
     const data2Type = this.getRightType()
 

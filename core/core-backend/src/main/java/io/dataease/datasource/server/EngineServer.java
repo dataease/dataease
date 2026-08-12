@@ -1,4 +1,5 @@
 package io.dataease.datasource.server;
+import io.dataease.utils.LogUtil;
 
 import io.dataease.api.ds.EngineApi;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
@@ -79,7 +80,7 @@ public class EngineServer implements EngineApi {
         try {
             calciteProvider.update(datasourceDTO);
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         }
     }
 

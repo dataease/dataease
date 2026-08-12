@@ -1,0 +1,25 @@
+# http://editorconfig.org
+root = true
+
+# 全局默认：空格缩进，LF 行尾
+[*]
+charset = utf-8
+indent_style = space
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Java 后端：4 空格缩进（core-backend / sdk / drivers / installer 等）
+[*.java]
+indent_size = 4
+
+[*.{xml,yml,yaml,sql}]
+indent_size = 4
+
+# JSON / 前端相关由 core/core-frontend/.editorconfig 管理（2 空格）
+[*.json]
+indent_size = 2
+
+[*.md]
+insert_final_newline = false
+trim_trailing_whitespace = false

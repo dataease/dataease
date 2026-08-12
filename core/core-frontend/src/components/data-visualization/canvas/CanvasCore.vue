@@ -8,7 +8,7 @@ import {
   syncShapeItemStyle
 } from '@/utils/style'
 import $ from 'jquery'
-import { _$, isPreventDrop } from '@/utils/utils'
+import { _$ } from '@/utils/utils'
 import Area from './Area.vue'
 import eventBus from '@/utils/eventBus'
 import { changeStyleWithScale } from '@/utils/translate'
@@ -398,10 +398,6 @@ const handleMouseDown = e => {
   // 右键返回
   if (e.buttons === 2) {
     return
-  }
-  // 如果没有选中组件 在画布上点击时需要调用 e.preventDefault() 防止触发 drop 事件
-  if (!curComponent.value || isPreventDrop(curComponent.value.component)) {
-    // e.preventDefault()
   }
   hideArea()
   const rectInfo = editorMap.value[canvasId.value].getBoundingClientRect()
@@ -1088,7 +1084,6 @@ function calcDiff(parent, son, size) {
 function moveItemUp(item, size) {
   removeItemFromPositionBox(item)
   let belowItems = findBelowItems(item)
-  // item.y -= size;
   setPlayerPosition(item, {
     y: item.y - size
   })

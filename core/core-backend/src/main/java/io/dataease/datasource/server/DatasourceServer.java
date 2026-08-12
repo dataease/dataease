@@ -1,4 +1,5 @@
 package io.dataease.datasource.server;
+import io.dataease.utils.LogUtil;
 
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -969,7 +970,7 @@ public class DatasourceServer implements DatasourceApi {
 
             return newList;
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
             return null;
         }
     }
@@ -1327,7 +1328,7 @@ public class DatasourceServer implements DatasourceApi {
         try {
             doUpdate();
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         } finally {
             this.isUpdatingStatus = false;
         }
@@ -1548,7 +1549,7 @@ public class DatasourceServer implements DatasourceApi {
                 }
             }
         } catch (DEException e) {
-            e.printStackTrace();
+            LogUtil.error(e);
             datasourceDTO.setStatus("Error");
             DEException.throwException(e.getMessage());
         } catch (Exception e) {

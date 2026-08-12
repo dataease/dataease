@@ -1,4 +1,5 @@
 package io.dataease.extensions.sync.utils;
+import io.dataease.utils.LogUtil;
 
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.provider.ExtendedJdbcClassLoader;
@@ -71,7 +72,7 @@ public class ProviderUtil {
         try {
             stat.setQueryTimeout(queryTimeout);
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         }
         return stat;
     }
@@ -96,7 +97,7 @@ public class ProviderUtil {
         try {
             stat.setQueryTimeout(queryTimeout);
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         }
         return stat;
     }

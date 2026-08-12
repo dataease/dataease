@@ -1,4 +1,5 @@
 package io.dataease.commons.utils;
+import io.dataease.utils.LogUtil;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.permissions.user.vo.UserFormVO;
@@ -178,7 +179,7 @@ public class DeSqlparserUtils {
                             replaceParamItem = true;
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LogUtil.error(e);
                     }
                 }
                 if (!replaceParamItem) {
@@ -240,7 +241,7 @@ public class DeSqlparserUtils {
                 sql = replaceQuotedIdentifiers(sql, prefix, suffix);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         }
         return finalizePreparedSql(sql);
     }

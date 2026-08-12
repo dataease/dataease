@@ -1,4 +1,5 @@
 package io.dataease.chart.charts.impl.mix;
+import io.dataease.utils.LogUtil;
 
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.chart.charts.impl.YoyChartHandler;
@@ -115,7 +116,7 @@ public class MixHandler extends YoyChartHandler {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         }
 
         AxisFormatResult rightFormatResult = new AxisFormatResult();
@@ -181,7 +182,7 @@ public class MixHandler extends YoyChartHandler {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         }
         var mixResult = (T) new ChartCalcDataResult();
         var data = new HashMap<String, Object>();
