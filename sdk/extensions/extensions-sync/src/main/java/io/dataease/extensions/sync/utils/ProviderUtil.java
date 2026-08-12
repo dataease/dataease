@@ -1,5 +1,5 @@
 package io.dataease.extensions.sync.utils;
-import io.dataease.utils.LogUtil;
+import io.dataease.license.utils.LogUtil;
 
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.provider.ExtendedJdbcClassLoader;

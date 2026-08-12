@@ -1,5 +1,5 @@
 package io.dataease.extensions.datasource.provider;
-import io.dataease.utils.LogUtil;
+import io.dataease.license.utils.LogUtil;
 
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;

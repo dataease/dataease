@@ -1,5 +1,5 @@
 package io.dataease.extensions.datasource.provider;
-import io.dataease.utils.LogUtil;
+import io.dataease.license.utils.LogUtil;
 
 
 import java.io.File;
@@ -91,6 +91,7 @@ public class ExtendedJdbcClassLoader extends URLClassLoader {
         try {
             this.addURL(u);
         } catch (Throwable t) {
+            LogUtil.error(t);
             LogUtil.error(t);
             throw new IOException("Error, could not add URL to system classloader");
         }
