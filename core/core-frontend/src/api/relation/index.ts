@@ -18,8 +18,8 @@ export function getPanelRelationship(id) {
   })
 }
 
-export function resourceCheckPermission(id) {
+export function resourceCheckPermission(id, type) {
   return request.post({
-    url: `/resource/checkPermission/${id}`
+    url: `/resource/checkPermission/${id}/${type}`
   })
 }
