@@ -99,7 +99,8 @@ export default {
     no_menu_tips: 'Resource not found 401 error',
     no_permission_node: 'No permission for this node',
     refresh_success: 'Refresh success',
-    resource: 'Resource'
+    resource: 'Resource',
+    create_success: 'Create successfully'
   },
   toolbox: {
     name: 'Toolbox',
@@ -4945,6 +4946,7 @@ export default {
     new_folder: 'New Folder',
     new_sheet: 'New Spreadsheet',
     new_spreadsheet: 'New Spreadsheet',
+    default_sheet_name: 'Sheet1',
     edit_sheet: 'Edit Spreadsheet',
     save: 'Save',
     save_success: 'Saved successfully',
