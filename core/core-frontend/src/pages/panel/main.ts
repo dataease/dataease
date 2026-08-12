@@ -64,7 +64,7 @@ dom.removeChild = <T extends Node>(node: T) => {
 import { App, createApp } from 'vue'
 import '@/style/index.less'
 import 'normalize.css/normalize.css'
-import '@antv/s2/dist/style.min.css'
+import '@antv/s2/dist/s2.min.css'
 import AppElement from './App.vue'
 import { setupStore } from '@/store'
 import { useEmbedded } from '@/store/modules/embedded'
