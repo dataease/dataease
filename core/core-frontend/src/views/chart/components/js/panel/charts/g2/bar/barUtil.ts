@@ -598,6 +598,7 @@ export function sortMixTooltipItems<T extends { groupIndex: number; name: any }>
 
 const CAROUSEL_TOOLTIP_GAP = 8
 const G2_TOOLTIP_DEFAULT_MIN_WIDTH = 120
+const G2_TOOLTIP_DEFAULT_MAX_WIDTH = 320
 
 type CarouselTooltipFrameState = {
   fitFrame?: number
@@ -634,7 +635,8 @@ function fitCarouselTooltipInChart(
       return
     }
 
-    const maxWidth = wrapperWidth - CAROUSEL_TOOLTIP_GAP * 2
+    // 轮播沿用悬浮 tooltip 的宽度上限，同时不能超出图表容器
+    const maxWidth = Math.min(G2_TOOLTIP_DEFAULT_MAX_WIDTH, wrapperWidth - CAROUSEL_TOOLTIP_GAP * 2)
     const maxHeight = wrapperHeight - CAROUSEL_TOOLTIP_GAP * 2
     const minWidth = Math.min(G2_TOOLTIP_DEFAULT_MIN_WIDTH, maxWidth)
     tooltipWrapper.style.setProperty('--de-carousel-tooltip-min-width', `${minWidth}px`)

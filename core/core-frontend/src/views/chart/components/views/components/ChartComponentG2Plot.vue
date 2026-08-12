@@ -1203,6 +1203,8 @@ onBeforeUnmount(() => {
     :deep([data-tooltip-display-mode='carousel'] .g2-tooltip) {
       position: absolute !important;
       box-sizing: border-box;
+      // 轮播与悬浮 tooltip 一致，按内容展开并受最大宽度限制
+      width: max-content !important;
       min-width: var(--de-carousel-tooltip-min-width) !important;
       max-width: var(--de-carousel-tooltip-max-width) !important;
       max-height: var(--de-carousel-tooltip-max-height) !important;
@@ -1239,7 +1241,7 @@ onBeforeUnmount(() => {
       overflow: hidden;
     }
     :deep([data-tooltip-display-mode='carousel'] .g2-tooltip-list-item-name) {
-      flex: 3 1 0 !important;
+      flex: 1 1 0 !important;
       min-width: 0 !important;
       max-width: none !important;
       overflow: hidden;
@@ -1256,8 +1258,9 @@ onBeforeUnmount(() => {
       text-overflow: ellipsis !important;
     }
     :deep([data-tooltip-display-mode='carousel'] .g2-tooltip-list-item-value) {
-      flex: 2 1 0 !important;
-      margin-left: 8px !important;
+      flex: 0 0 auto !important;
+      max-width: 70% !important;
+      margin-left: 12px !important;
     }
   }
 }
