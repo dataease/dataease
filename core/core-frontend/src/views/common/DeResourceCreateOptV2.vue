@@ -37,6 +37,9 @@ defineExpose({
 <style lang="less">
 .market-create-dialog {
   padding: 0 !important;
+  &:has(.img-main-create) {
+    padding: 16px !important;
+  }
 
   overflow: hidden;
   .ed-dialog__body {
