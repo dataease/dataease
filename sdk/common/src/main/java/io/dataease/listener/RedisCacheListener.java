@@ -26,7 +26,7 @@ public class RedisCacheListener implements ApplicationListener<ApplicationReadyE
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
         try {
-            deleteKeysContainingString(redisTemplate, "de_v2_");
+            deleteKeysContainingString(redisTemplate, "de_v3_");
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
         }

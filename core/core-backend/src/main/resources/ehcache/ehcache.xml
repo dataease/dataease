@@ -21,89 +21,89 @@
     </cache-template>
 
 
-    <cache alias="de_v2_rsa" uses-template="common-cache">
+    <cache alias="de_v3_rsa" uses-template="common-cache">
         <key-type>java.lang.String</key-type>
         <value-type>io.dataease.rsa.dao.entity.CoreRsa</value-type>
     </cache>
 
     <!--以下属于权限系统缓存-->
     <!--用户角色缓存-->
-    <cache alias="de_v2_user_roles" uses-template="common-cache">
+    <cache alias="de_v3_user_roles" uses-template="common-cache">
         <key-type>java.lang.String</key-type>
         <value-type>java.util.List</value-type>
     </cache>
 
     <!--用户资源权限缓存-->
-    <cache alias="de_v2_user_busi_pers" uses-template="common-cache">
+    <cache alias="de_v3_user_busi_pers" uses-template="common-cache">
         <key-type>java.lang.String</key-type>
         <value-type>java.util.List</value-type>
     </cache>
     <!--角色资源权限缓存-->
-    <cache alias="de_v2_role_busi_pers" uses-template="common-cache">
+    <cache alias="de_v3_role_busi_pers" uses-template="common-cache">
         <key-type>java.lang.String</key-type>
         <value-type>java.util.List</value-type>
     </cache>
     <!--角色菜单权限缓存-->
-    <cache alias="de_v2_role_menu_pers" uses-template="common-cache">
+    <cache alias="de_v3_role_menu_pers" uses-template="common-cache">
         <key-type>java.lang.String</key-type>
         <value-type>java.util.List</value-type>
     </cache>
     <!--组织内所有资源缓存 包括 用户 角色 数据源 数据集 仪表板 大屏 key由什么组成？组织id+flag 例如orgid + '1'-->
-    <cache alias="de_v2_org_global_resource" uses-template="common-cache">
+    <cache alias="de_v3_org_global_resource" uses-template="common-cache">
         <key-type>java.lang.String</key-type>
         <value-type>java.util.List</value-type>
     </cache>
-    <cache alias="de_v2_all_oid_flag_resource" uses-template="common-cache">
+    <cache alias="de_v3_all_oid_flag_resource" uses-template="common-cache">
         <key-type>java.lang.String</key-type>
         <value-type>java.util.List</value-type>
     </cache>
 
-    <cache alias="de_v2_user_count" uses-template="common-cache">
+    <cache alias="de_v3_user_count" uses-template="common-cache">
         <key-type>java.lang.String</key-type>
         <value-type>java.lang.Integer</value-type>
     </cache>
 
-    <cache alias="de_v2_user_echelon" uses-template="common-cache">
+    <cache alias="de_v3_user_echelon" uses-template="common-cache">
         <key-type>java.lang.String</key-type>
         <value-type>java.util.List</value-type>
     </cache>
 
-    <cache alias="de_v2_role_busi_pers_interactive" uses-template="common-cache">
+    <cache alias="de_v3_role_busi_pers_interactive" uses-template="common-cache">
         <key-type>java.lang.String</key-type>
         <value-type>java.util.List</value-type>
     </cache>
 
-    <cache alias="de_v2_user_busi_pers_interactive" uses-template="common-cache">
+    <cache alias="de_v3_user_busi_pers_interactive" uses-template="common-cache">
         <key-type>java.lang.String</key-type>
         <value-type>java.util.List</value-type>
     </cache>
 
-    <cache alias="de_v2_lic_cache_result" uses-template="common-cache">
+    <cache alias="de_v3_lic_cache_result" uses-template="common-cache">
         <key-type>java.lang.String</key-type>
         <value-type>io.dataease.license.bo.F2CLicResult</value-type>
     </cache>
-    <cache alias="de_v2_world_map" uses-template="common-cache">
+    <cache alias="de_v3_world_map" uses-template="common-cache">
         <key-type>java.lang.String</key-type>
         <value-type>io.dataease.api.map.vo.AreaNode</value-type>
     </cache>
 
-    <cache alias="de_v2_custom_geo" uses-template="common-cache">
+    <cache alias="de_v3_custom_geo" uses-template="common-cache">
         <key-type>java.lang.String</key-type>
         <value-type>java.util.List</value-type>
     </cache>
-    <cache alias="de_v2_global_mfa" uses-template="common-cache">
+    <cache alias="de_v3_global_mfa" uses-template="common-cache">
         <key-type>java.lang.String</key-type>
         <value-type>java.lang.Object</value-type>
     </cache>
-    <cache alias="de_v2_global_hmac" uses-template="common-cache">
+    <cache alias="de_v3_global_hmac" uses-template="common-cache">
         <key-type>java.lang.String</key-type>
         <value-type>java.lang.Object</value-type>
     </cache>
-    <cache alias="de_v2_user_community_language" uses-template="common-cache">
+    <cache alias="de_v3_user_community_language" uses-template="common-cache">
         <key-type>java.lang.String</key-type>
         <value-type>java.lang.Object</value-type>
     </cache>
-    <cache alias="de_v2_user_token_cache">
+    <cache alias="de_v3_user_token_cache">
         <key-type>java.lang.String</key-type>
         <value-type>java.lang.Integer</value-type>
         <expiry>
@@ -127,7 +127,7 @@
         </resources>
     </cache>
 
-    <cache alias="de_v2_embedded_token_cache" uses-template="common-cache">
+    <cache alias="de_v3_embedded_token_cache" uses-template="common-cache">
         <key-type>java.lang.String</key-type>
         <value-type>java.lang.Integer</value-type>
         <resources>
@@ -137,7 +137,7 @@
         </resources>
     </cache>
 
-    <cache alias="de_v2_dingtalk_ticket_cache">
+    <cache alias="de_v3_dingtalk_ticket_cache">
         <key-type>java.lang.String</key-type>
         <value-type>java.lang.String</value-type>
         <expiry>
@@ -149,17 +149,17 @@
         </resources>
     </cache>
 
-    <cache alias="de_v2_all_resources" uses-template="common-cache">
+    <cache alias="de_v3_all_resources" uses-template="common-cache">
         <key-type>java.lang.String</key-type>
         <value-type>java.util.List</value-type>
     </cache>
 
-    <cache alias="de_v2_dataset_table" uses-template="common-cache">
+    <cache alias="de_v3_dataset_table" uses-template="common-cache">
         <key-type>java.lang.String</key-type>
         <value-type>java.util.List</value-type>
     </cache>
 
-    <cache alias="de_v2_dataset_field" uses-template="common-cache">
+    <cache alias="de_v3_dataset_field" uses-template="common-cache">
         <key-type>java.lang.String</key-type>
         <value-type>java.util.List</value-type>
     </cache>
