@@ -428,7 +428,7 @@ const handleFieldIdChange = (val: EnumValue) => {
           ? [...config.value.defaultValue]
           : config.value.defaultValue
         let shouldReSearch = false
-        if (unMountSelect.value.includes(config.value.id)) {
+        if (unMountSelect?.value.includes(config.value.id)) {
           const mapValue = setDefaultMapValue(
             Array.isArray(selectValue.value) ? [...selectValue.value] : [selectValue.value]
           )
