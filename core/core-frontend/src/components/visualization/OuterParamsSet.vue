@@ -1,7 +1,8 @@
 <template>
   <el-dialog
     class="params-class"
-    :append-to-body="true"
+    append-to-body
+    :before-close="cancelDialog"
     :title="t('visualization.outer_param_set')"
     v-model="state.outerParamsSetVisible"
     width="80vw"
@@ -491,7 +492,16 @@ const setArgRef = (el, id) => {
     argRefs.value[id] = el
   }
 }
-
+const cancelDialog = () => {
+  if (state.outerParamsInfo?.filterInfo?.length || state.outerParamsInfo?.datasetInfo?.length) {
+    state.outerParamsInfo.filterInfo = []
+    state.outerParamsInfo.datasetInfo = []
+    state.outerParamsInfoArray = []
+    state.curNodeId = null
+  }
+  state.outerParamsSetVisible = false
+  curEditDataId.value = null
+}
 const validateArgs = (val, id) => {
   const cref = argRefs.value[id]
   const e = cref.input
