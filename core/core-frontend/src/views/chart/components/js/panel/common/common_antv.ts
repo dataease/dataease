@@ -2039,10 +2039,36 @@ export function calculateBounds(coordinates: number[][]): {
   ]
 }
 
+function configL7PlotInteraction(scene: Scene, enable: boolean) {
+  const applyInteraction = () => {
+    const map = scene?.map as any
+    const method = enable ? 'enable' : 'disable'
+    // 沿用在线地图语义：隐藏缩放按钮时同步锁定地图交互
+    ;[
+      'zoomEnable',
+      'dragEnable',
+      'dragPan',
+      'scrollZoom',
+      'boxZoom',
+      'doubleClickZoom',
+      'dragRotate',
+      'touchPitch',
+      'touchZoomRotate'
+    ].forEach(handler => map?.[handler]?.[method]?.())
+  }
+  if (scene?.loaded) {
+    applyInteraction()
+  } else {
+    scene?.once('loaded', applyInteraction)
+  }
+}
+
 export function configL7PlotZoom(chart: Chart, plot: L7Plot<PlotOptions>) {
   configL7ScaledInteraction(chart, plot?.scene as Scene)
   const { basicStyle } = parseJson(chart.customAttr)
-  if (shouldHideZoom(basicStyle)) {
+  const hideZoom = shouldHideZoom(basicStyle)
+  configL7PlotInteraction(plot?.scene as Scene, !hideZoom)
+  if (hideZoom) {
     return
   }
   plot.once('loaded', () => {
