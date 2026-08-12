@@ -97,7 +97,8 @@ export default {
     no_menu_tips: '未找到资源 401错误',
     no_permission_node: '对当前节点没有权限',
     refresh_success: '刷新成功',
-    resource: '资源'
+    resource: '资源',
+    create_success: '创建成功'
   },
   toolbox: {
     name: '工具箱',
@@ -4804,6 +4805,7 @@ export default {
     new_folder: '新建文件夹',
     new_sheet: '新建表格',
     new_spreadsheet: '新建电子表格',
+    default_sheet_name: '工作表1',
     edit_sheet: '编辑表格',
     save: '保存',
     save_success: '保存成功',
