@@ -118,6 +118,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       'tableScrollBarColor',
       'alpha',
       'tableLayoutMode',
+      'tableRowHeaderMode',
       'showHoverStyle',
       'quotaPosition',
       'quotaColLabel'
@@ -458,9 +459,14 @@ export class TablePivot extends S2ChartView<PivotSheet> {
     }
     // options
     s2Options.style = defaultsDeep(this.configStyle(chart, s2DataConfig), { rowCell: {} })
-    // 默认展开层级
     if (basicStyle.tableLayoutMode === 'tree') {
-      const { defaultExpandLevel } = basicStyle
+      const {
+        defaultExpandLevel,
+        tableRowHeaderMode,
+        tableRowHeaderWidth,
+        tableRowHeaderWidthPercent
+      } = basicStyle
+      // 默认展开层级
       if (isNumber(defaultExpandLevel)) {
         if (defaultExpandLevel >= chart.xAxis.length) {
           s2Options.style.rowCell.expandDepth = defaultExpandLevel
@@ -473,6 +479,22 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       }
       if (!defaultExpandLevel) {
         s2Options.style.rowCell.collapseAll = true
+      }
+
+      // 行头宽度
+      if (tableRowHeaderMode === 'fixed') {
+        let treeRowWidth = tableRowHeaderWidth ?? 120
+        if (treeRowWidth < 10) {
+          treeRowWidth = 120
+        }
+        s2Options.style.rowCell.treeWidth = treeRowWidth
+      }
+      if (tableRowHeaderMode === 'percent') {
+        let treeRowWidthPercent = tableRowHeaderWidthPercent ?? 20
+        if (treeRowWidthPercent < 1 || treeRowWidthPercent > 80) {
+          treeRowWidthPercent = 20
+        }
+        s2Options.style.rowCell.treeWidth = containerDom.offsetWidth * (treeRowWidthPercent / 100)
       }
     }
     // 列汇总别名
@@ -602,14 +624,47 @@ export class TablePivot extends S2ChartView<PivotSheet> {
           return
         }
         const containerWidth = containerDom.offsetWidth
-        const scale = containerWidth / (ev.colsHierarchy.width + ev.rowsHierarchy.width)
+        let scale = containerWidth / (ev.colsHierarchy.width + ev.rowsHierarchy.width)
+        let totalRowWidth = Math.round(ev.rowsHierarchy.width * scale)
+        const isCustomTreeRowWidth =
+          basicStyle.tableLayoutMode === 'tree' &&
+          (basicStyle.tableRowHeaderMode === 'fixed' || basicStyle.tableRowHeaderMode === 'percent')
+        if (isCustomTreeRowWidth) {
+          if (basicStyle.tableRowHeaderMode === 'fixed') {
+            totalRowWidth = basicStyle.tableRowHeaderWidth ?? 120
+            if (totalRowWidth < 10) {
+              totalRowWidth = 120
+            }
+          }
+          if (basicStyle.tableRowHeaderMode === 'percent') {
+            let treeRowWidthPercent = basicStyle.tableRowHeaderWidthPercent ?? 20
+            if (treeRowWidthPercent < 1 || treeRowWidthPercent > 80) {
+              treeRowWidthPercent = 20
+            }
+            totalRowWidth = containerWidth * (treeRowWidthPercent / 100)
+          }
+          if (tableHeader.rowHeaderFreeze !== false) {
+            // 表头冻结时给数据列保留至少一半的可视区域
+            const maxRowWidth = containerWidth / 2
+            if (totalRowWidth > maxRowWidth) {
+              totalRowWidth = maxRowWidth
+            }
+          }
+          // 自定义行头宽度不参与列宽自适应缩放，百分比会随容器尺寸重新计算
+          ev.rowsHierarchy.width = totalRowWidth
+          ev.rowNodes.forEach(n => {
+            n.width = totalRowWidth
+          })
+          scale = (containerWidth - totalRowWidth) / ev.colsHierarchy.width
+        }
         if (scale <= 1) {
           return
         }
-        const totalRowWidth = Math.round(ev.rowsHierarchy.width * scale)
-        ev.rowNodes.forEach(n => {
-          n.width = Math.round(n.width * scale)
-        })
+        if (!isCustomTreeRowWidth) {
+          ev.rowNodes.forEach(n => {
+            n.width = Math.round(n.width * scale)
+          })
+        }
         if (basicStyle.tableLayoutMode !== 'tree') {
           ev.rowNodes.forEach(n => {
             n.x = 0

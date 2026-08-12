@@ -117,6 +117,18 @@ declare interface ChartBasicStyle {
    */
   quotaColLabel: string
   /**
+   * 透视表行头宽度模式
+   */
+  tableRowHeaderMode: 'adapt' | 'fixed' | 'percent'
+  /**
+   * 透视表行头固定宽度
+   */
+  tableRowHeaderWidth: number
+  /**
+   * 透视表行头宽度百分比
+   */
+  tableRowHeaderWidthPercent: number
+  /**
    * 仪表盘样式
    */
   gaugeStyle: string

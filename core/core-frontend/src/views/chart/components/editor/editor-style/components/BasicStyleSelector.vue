@@ -73,11 +73,41 @@ const state = reactive({
     fieldId: '',
     width: 0
   },
-  fileList: []
+  fileList: [],
+  treeRowWidth: DEFAULT_BASIC_STYLE.tableRowHeaderWidth
 })
 const emit = defineEmits(['onBasicStyleChange', 'onMiscChange'])
 const changeBasicStyle = (prop?: string, requestData = false, render = true) => {
   emit('onBasicStyleChange', { data: state.basicStyleForm, requestData, render }, prop)
+}
+
+const getTreeRowWidth = (basicStyle: ChartBasicStyle) => {
+  if (basicStyle.tableRowHeaderMode === 'percent') {
+    const width = basicStyle.tableRowHeaderWidthPercent
+    return width >= 1 && width <= 80 ? width : DEFAULT_BASIC_STYLE.tableRowHeaderWidthPercent
+  }
+  const width = basicStyle.tableRowHeaderWidth
+  return width >= 10 ? width : DEFAULT_BASIC_STYLE.tableRowHeaderWidth
+}
+
+const changeTreeRowMode = () => {
+  state.treeRowWidth = getTreeRowWidth(state.basicStyleForm)
+  changeBasicStyle('tableRowHeaderMode')
+}
+
+const changeTreeRowWidth = () => {
+  // 固定值参与画布缩放，百分比则单独保存并始终相对当前容器计算
+  if (state.basicStyleForm.tableRowHeaderMode === 'percent') {
+    state.basicStyleForm.tableRowHeaderWidthPercent = state.treeRowWidth
+  }
+  if (state.basicStyleForm.tableRowHeaderMode === 'fixed') {
+    state.basicStyleForm.tableRowHeaderWidth = state.treeRowWidth
+  }
+  changeBasicStyle(
+    state.basicStyleForm.tableRowHeaderMode === 'percent'
+      ? 'tableRowHeaderWidthPercent'
+      : 'tableRowHeaderWidth'
+  )
 }
 const onAlphaChange = v => {
   const _v = parseInt(v)
@@ -149,6 +179,7 @@ const init = () => {
       }
       tableExpandLevelOptions.push({ name, value: i })
     }
+    state.treeRowWidth = getTreeRowWidth(state.basicStyleForm)
   }
   const lastPageInfo = dvMainStore.getViewPageInfo(props.chart.id)
   if (lastPageInfo) {
@@ -991,6 +1022,46 @@ onMounted(() => {
       >
         <template #append>%</template>
       </el-input>
+    </el-form-item>
+    <el-form-item
+      :label="t('chart.table_row_header_width')"
+      class="form-item"
+      :class="'form-item-' + themes"
+      v-if="showProperty('tableRowHeaderMode') && state.basicStyleForm.tableLayoutMode === 'tree'"
+    >
+      <el-radio-group
+        v-model="state.basicStyleForm.tableRowHeaderMode"
+        @change="changeTreeRowMode"
+        class="table-column-mode"
+      >
+        <el-radio value="adapt" :effect="themes">
+          {{ t('chart.table_row_header_adapt') }}
+        </el-radio>
+        <el-radio value="fixed" :effect="themes">
+          {{ t('chart.table_row_header_fixed') }}
+        </el-radio>
+        <el-radio value="percent" :effect="themes">
+          {{ t('chart.table_row_header_percent') }}
+        </el-radio>
+      </el-radio-group>
+    </el-form-item>
+    <el-form-item
+      v-if="
+        showProperty('tableRowHeaderMode') &&
+        state.basicStyleForm.tableLayoutMode === 'tree' &&
+        state.basicStyleForm.tableRowHeaderMode !== 'adapt'
+      "
+      class="form-item form-item-slider"
+      :class="'form-item-' + themes"
+    >
+      <el-input-number
+        :effect="themes"
+        v-model.number="state.treeRowWidth"
+        :min="state.basicStyleForm.tableRowHeaderMode === 'percent' ? 1 : 10"
+        :max="state.basicStyleForm.tableRowHeaderMode === 'percent' ? 80 : 100000"
+        controls-position="right"
+        @change="changeTreeRowWidth"
+      />
     </el-form-item>
     <el-form-item v-if="showProperty('autoWrap')" class="form-item" :class="'form-item-' + themes">
       <el-checkbox
