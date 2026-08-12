@@ -1,4 +1,5 @@
 package io.dataease.chart.charts.impl.table;
+import io.dataease.utils.LogUtil;
 
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.chart.charts.impl.GroupChartHandler;
@@ -70,7 +71,7 @@ public class TablePivotHandler extends GroupChartHandler {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         }
         return result;
     }

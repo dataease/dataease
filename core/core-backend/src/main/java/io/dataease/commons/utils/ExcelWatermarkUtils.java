@@ -1,4 +1,5 @@
 package io.dataease.commons.utils;
+import io.dataease.utils.LogUtil;
 
 import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.i18n.Translator;
@@ -141,7 +142,7 @@ public class ExcelWatermarkUtils {
         try {
             ImageIO.write(image, "png", baos);
         } catch (IOException e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         }
         return baos.toByteArray();
     }

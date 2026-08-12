@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { computed, reactive, watch } from 'vue'
+import { computed, reactive } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { reverseColor } from '../util/util'
 import { ArrowRight } from '@element-plus/icons-vue'
@@ -34,14 +34,6 @@ const state = reactive({
 const textColor = computed(
   () => dvMainStore.canvasStyleData.component.seniorStyleSetting.drillLayerColor
 )
-
-// watch(
-//   [() => props.themeStyle?.backgroundColorSelect, () => props.themeStyle?.color],
-//   () => {
-//     loadThemeStyle()
-//   },
-//   { deep: true }
-// )
 
 const drillJump = index => {
   if (index < props.drillFilters.length) {

@@ -861,9 +861,6 @@ public class ChartDataManage {
                 }
             });
             // 阈值告警处理 统一在发布时处理
-//            if (CollectionUtils.isNotEmpty(disuseChartIdList)) {
-//                chartViewManege.disuse(disuseChartIdList);
-//            }
         }
     }
 

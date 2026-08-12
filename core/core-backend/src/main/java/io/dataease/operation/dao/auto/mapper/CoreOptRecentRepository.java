@@ -31,7 +31,6 @@ public interface CoreOptRecentRepository extends JpaRepository<CoreOptRecent, Lo
             if (resourceId == null) predicates.add(cb.isNull(root.get("resourceId")));
             if (resourceName != null) predicates.add(cb.equal(root.get("resourceName"), resourceName));
             if (resourceName == null) predicates.add(cb.isNull(root.get("resourceName")));
-            //predicates.add(cb.equal(root.get("optType"), optType));
             return cb.and(predicates.toArray(new Predicate[0]));
         };
         List<CoreOptRecent> results = findAll(spec);

@@ -168,7 +168,7 @@ public class SqlparserUtils {
             this.removeSysParams = true;
             sql = removeVariables(sql, ds.getType());
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         }
         return finalizePreparedSql(sql);
     }
@@ -312,7 +312,7 @@ public class SqlparserUtils {
                     selectItem.setExpression(parenthesedSelect);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                LogUtil.error(e);
             }
             selectItems.add(selectItem);
         }
@@ -598,7 +598,7 @@ public class SqlparserUtils {
                         subSelect.setSelect(select);
                         inExpression.setRightExpression(subSelect);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LogUtil.error(e);
                     }
                     inExpression.getRightExpression().accept(this);
                 }
@@ -622,7 +622,7 @@ public class SqlparserUtils {
                     ((PlainSelect) subSelect.getSelectBody()).setWhere(where);
                     getBuffer().append(subSelect.getSelectBody());
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LogUtil.error(e);
                 }
             }
 
@@ -640,7 +640,7 @@ public class SqlparserUtils {
                         BinaryExpression leftBinaryExpression = (BinaryExpression) parenthesis.getExpression();
                         hasSubBinaryExpression = leftBinaryExpression instanceof AndExpression || leftBinaryExpression instanceof OrExpression;
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LogUtil.error(e);
                     }
                 }
                 if (expr.getLeftExpression() instanceof BinaryExpression) {
@@ -648,7 +648,7 @@ public class SqlparserUtils {
                         BinaryExpression leftBinaryExpression = (BinaryExpression) expr.getLeftExpression();
                         hasSubBinaryExpression = leftBinaryExpression instanceof AndExpression || leftBinaryExpression instanceof OrExpression;
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LogUtil.error(e);
                     }
                 }
                 if ((expr.getLeftExpression() instanceof BinaryExpression || expr.getLeftExpression() instanceof Parenthesis) && !hasSubBinaryExpression && hasVariable(expr.getLeftExpression().toString())) {
@@ -672,7 +672,7 @@ public class SqlparserUtils {
                         BinaryExpression rightBinaryExpression = (BinaryExpression) expr.getRightExpression();
                         hasSubBinaryExpression = rightBinaryExpression instanceof AndExpression || rightBinaryExpression instanceof OrExpression;
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LogUtil.error(e);
                     }
                 }
 

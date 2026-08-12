@@ -32,8 +32,12 @@ export interface ISource {
 export interface ITableField {
   id: string
   fieldSource: string
+  fieldSourceType?: string
+  fieldSourceStandardType?: string
   fieldName: string
   fieldType: string
+  fieldElementType?: string
+  fieldMappingMessage?: string
   remarks: string
   fieldSize: number
   fieldPrecision: number
@@ -111,6 +115,7 @@ export interface ITarget {
   tableName: string
   datasourceId: string
   targetProperty: string
+  fieldMappingVersion?: number
   dsList?: []
   multipleSelection?: ITableField[]
   property: ITargetProperty
@@ -122,6 +127,8 @@ export interface ITarget {
   incrementOffset: number
   incrementOffsetUnit: string
 }
+
+export type SinkKeyPolicy = 'OPTIONAL' | 'REQUIRED' | 'PROVIDER_GENERATED'
 
 export class ITaskInfoRes {
   id: string
@@ -232,6 +239,10 @@ export const modifyApi = (data: ITaskInfoUpdateReq) => {
 
 export const findTaskInfoByIdApi = (taskId: string) => {
   return request.get({ url: `/sync/task/get/${taskId}` })
+}
+
+export const getSinkKeyPolicyApi = (target: ITarget) => {
+  return request.post({ url: '/sync/task/target/keyPolicy', data: target })
 }
 
 export const getDatasourceTableListApi = (dsId: string) => {

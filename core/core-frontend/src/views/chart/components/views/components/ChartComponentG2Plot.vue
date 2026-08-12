@@ -568,6 +568,34 @@ const clearG2SliderTouchAdapter = () => {
   g2SliderTouchCleanup?.()
   g2SliderTouchCleanup = undefined
 }
+const installG2SvgCoordinateScaleAdapter = chartInstance => {
+  const canvas = chartInstance?.getContext?.()?.canvas
+  const svg = canvas?.getContextService?.()?.getDomElement?.()
+  if (!(svg instanceof SVGSVGElement)) {
+    return
+  }
+  const scalableSvg = svg as SVGSVGElement & {
+    offsetWidth?: number
+    offsetHeight?: number
+  }
+  const dimensions = [
+    ['offsetWidth', 'width'],
+    ['offsetHeight', 'height']
+  ] as const
+  dimensions.forEach(([offsetKey, sizeKey]) => {
+    if (Number(scalableSvg[offsetKey]) > 0) {
+      return
+    }
+    // SVG 节点没有 HTMLElement 的 offsetWidth/offsetHeight，补齐逻辑尺寸供 AntV G 识别外层 transform 缩放
+    Reflect.defineProperty(scalableSvg, offsetKey, {
+      configurable: true,
+      get: () =>
+        Number(canvas.getConfig?.()?.[sizeKey]) ||
+        Number.parseFloat(svg.getAttribute(sizeKey) || '') ||
+        svg.getBoundingClientRect()[sizeKey]
+    })
+  })
+}
 const renderG2 = async (chart, chartView: G2ChartView<any, any>) => {
   g2Timer && clearTimeout(g2Timer)
   g2Timer = setTimeout(async () => {
@@ -604,6 +632,7 @@ const renderG2 = async (chart, chartView: G2ChartView<any, any>) => {
       const chartInstance = myChart
       // 先等待 G2 首次渲染，后续布局校正才能安全读取实际标签边界与 view.layout
       await chartInstance?.render()
+      installG2SvgCoordinateScaleAdapter(chartInstance)
       await chartView.adjustAxisLabelOverflow(chartInstance)
       // 仅实现钩子的特殊图表会继续执行专属后处理
       await chartView.afterRender?.(chartInstance)

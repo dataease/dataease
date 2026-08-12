@@ -72,7 +72,6 @@ public class CoreDataInit implements CoreSqlBlock {
         } else {
             LogUtil.info("=== CoreDataInit fresh install mode ===");
             executeInitSteps();
-            // executeUpgradeSteps();
         }
     }
 

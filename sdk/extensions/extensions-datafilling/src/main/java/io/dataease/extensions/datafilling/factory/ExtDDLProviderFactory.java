@@ -32,13 +32,11 @@ public class ExtDDLProviderFactory {
     }
 
     public static ExtDDLProvider getInstance(String type) {
-        //if (!LicenseUtil.licenseValid()) DEException.throwException("插件功能只对企业版本可用！");
         String key = "df_" + type;
         return templateMap.get(key);
     }
 
     public static void loadPlugin(String type, DataFillingPlugin plugin) {
-        //if (!LicenseUtil.licenseValid()) DEException.throwException("插件功能只对企业版本可用！");
         String key = "df_" + type;
         if (templateMap.containsKey(key)) return;
         templateMap.put(key, plugin);
@@ -52,12 +50,10 @@ public class ExtDDLProviderFactory {
     }
 
     public static List<XpackPluginsDfVO> getDfConfigList() {
-        //if (!LicenseUtil.licenseValid()) DEException.throwException("插件功能只对企业版本可用！");
         return templateMap.values().stream().map(DataFillingPlugin::getConfig).toList();
     }
 
     public static XpackPluginsDfVO getDfConfig(String type) {
-        //if (!LicenseUtil.licenseValid()) DEException.throwException("插件功能只对企业版本可用！");
         String key = "df_" + type;
         if (templateMap.get(key) != null) {
             return templateMap.get(key).getConfig();

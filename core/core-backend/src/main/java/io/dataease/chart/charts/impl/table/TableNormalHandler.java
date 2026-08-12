@@ -1,4 +1,5 @@
 package io.dataease.chart.charts.impl.table;
+import io.dataease.utils.LogUtil;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.chart.dto.PageInfo;
@@ -205,7 +206,7 @@ public class TableNormalHandler extends DefaultChartHandler {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         }
         return calcResult;
     }

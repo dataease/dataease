@@ -96,7 +96,8 @@ export default {
     no_menu_tips: '未找到資源401錯誤',
     no_permission_node: '對當前節點沒有權限',
     refresh_success: '刷新成功',
-    resource: '資源'
+    resource: '資源',
+    create_success: '創建成功'
   },
   toolbox: {
     name: '工具箱',
@@ -4112,6 +4113,10 @@ export default {
     please_enter_sql: '請輸入查詢SQL',
     msg_confirm_delete_field: '確定刪除該欄位？ ',
     source_field: '來源字段',
+    source_field_type: '來源類型',
+    field_mapping_warning_title: '目前有 {0} 個欄位存在同步風險',
+    field_mapping_warning_item: '{0}：{1}',
+    field_name_separator: '、',
     field_type: '類型',
     field_length: '長度',
     field_precision: '精度',
@@ -4783,6 +4788,7 @@ export default {
     new_folder: '新建文件夾',
     new_sheet: '新建表格',
     new_spreadsheet: '新建電子表格',
+    default_sheet_name: '工作表1',
     edit_sheet: '編輯表格',
     save: '保存',
     save_success: '保存成功',

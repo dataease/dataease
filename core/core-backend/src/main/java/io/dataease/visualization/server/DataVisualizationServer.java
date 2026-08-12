@@ -1,4 +1,5 @@
 package io.dataease.visualization.server;
+import io.dataease.utils.LogUtil;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.querydsl.core.types.Projections;
@@ -954,7 +955,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             staticResourceServer.saveFilesToServe(staticResource);
             return new DataVisualizationVO(newDvId, name, dvType, version, templateStyle, templateData, appDataStr, canvasViewInfo, null,viewIdsMap);
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
             DEException.throwException("解析错误");
             return null;
         }

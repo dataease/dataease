@@ -1,4 +1,5 @@
 package io.dataease.extensions.datasource.provider;
+import io.dataease.utils.LogUtil;
 
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
@@ -157,7 +158,7 @@ public abstract class Provider {
                     value.setDsVersion(connection.getConnection().getMetaData().getDatabaseMajorVersion());
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                LogUtil.error(e);
                 DEException.throwException(e.getMessage());
             }
         }
@@ -170,7 +171,7 @@ public abstract class Provider {
             }
             return dialect;
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
             DEException.throwException(e.getMessage());
         }
         return null;

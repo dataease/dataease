@@ -99,7 +99,8 @@ export default {
     no_menu_tips: 'Resource not found 401 error',
     no_permission_node: 'No permission for this node',
     refresh_success: 'Refresh success',
-    resource: 'Resource'
+    resource: 'Resource',
+    create_success: 'Create successfully'
   },
   toolbox: {
     name: 'Toolbox',
@@ -4245,10 +4246,17 @@ export default {
     please_enter_sql: 'Please enter the query SQL',
     msg_confirm_delete_field: 'Are you sure you want to delete this field? ',
     source_field: 'Source field',
+    source_field_type: 'Source type',
+    field_mapping_warning_title: 'Fields with synchronization risks: {0}',
+    field_mapping_warning_item: '{0}: {1}',
+    field_name_separator: ', ',
     field_type: 'Type',
     field_length: 'Length',
     field_precision: 'Precision',
     field_key: 'Key',
+    key_required_by_target:
+      'The selected target database and synchronization mode require at least one Key field',
+    key_policy_load_failed: 'Failed to load the target database Key policy',
     field_index: 'Index',
     field_comment: 'Comment',
     confirm_delete_field: 'Are you sure you want to delete the {0} field? ',
@@ -4945,6 +4953,7 @@ export default {
     new_folder: 'New Folder',
     new_sheet: 'New Spreadsheet',
     new_spreadsheet: 'New Spreadsheet',
+    default_sheet_name: 'Sheet1',
     edit_sheet: 'Edit Spreadsheet',
     save: 'Save',
     save_success: 'Saved successfully',

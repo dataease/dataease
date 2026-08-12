@@ -53,3 +53,7 @@ core/core-frontend/src/assets/fsSvg.html
 /core/backend/
 /classpath:substitule.json
 /core/core-frontend/.claude/settings.json
+
+.workbuddy/
+docs/
+

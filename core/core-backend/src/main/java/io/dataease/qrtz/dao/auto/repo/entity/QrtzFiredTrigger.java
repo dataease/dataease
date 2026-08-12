@@ -19,7 +19,7 @@ public class QrtzFiredTrigger {
     @Column(name = "SCHED_NAME", nullable = false, length = 120)
     private String schedName;
 
-   @Id
+    @Id
     @Column(name = "ENTRY_ID", nullable = false, length = 95)
     private String entryId;
 

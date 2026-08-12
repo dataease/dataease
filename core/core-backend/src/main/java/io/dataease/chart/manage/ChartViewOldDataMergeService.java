@@ -1,4 +1,5 @@
 package io.dataease.chart.manage;
+import io.dataease.utils.LogUtil;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.dao.auto.entity.CoreChartView;
@@ -65,7 +66,7 @@ public class ChartViewOldDataMergeService {
                 coreChartViewRepository.saveAndFlush(view);
             } catch (Exception e) {
                 // do nothing,to continue
-                e.printStackTrace();
+                LogUtil.error(e);
             }
         }
     }
@@ -179,7 +180,7 @@ public class ChartViewOldDataMergeService {
                 coreChartViewRepository.saveAndFlush(view);
             } catch (Exception e) {
                 // do nothing,to continue
-                e.printStackTrace();
+                LogUtil.error(e);
             }
         }
     }

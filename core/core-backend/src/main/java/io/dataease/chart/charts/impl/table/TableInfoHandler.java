@@ -1,4 +1,5 @@
 package io.dataease.chart.charts.impl.table;
+import io.dataease.utils.LogUtil;
 
 import io.dataease.api.chart.dto.PageInfo;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
@@ -175,7 +176,7 @@ public class TableInfoHandler extends DefaultChartHandler {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         }
         return calcResult;
     }

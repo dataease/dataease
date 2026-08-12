@@ -65,7 +65,6 @@ const menus = ref(
 )
 const handleCommand = (command: string | number | object) => {
   if (command === 'share') {
-    // shareComponent.value.invokeMethod({ methodName: 'execute' })
     shareComponent.value.execute()
     return
   }
@@ -82,7 +81,6 @@ const callBack = param => {
 const emit = defineEmits(['handleCommand'])
 
 const menuDisabledCheck = ele => {
-  // do return
   return ele.disabled || (props.node.extraFlag1 === 0 && ['share', 'copy'].includes(ele.command))
 }
 </script>

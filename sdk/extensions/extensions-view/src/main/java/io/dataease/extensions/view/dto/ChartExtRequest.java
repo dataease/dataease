@@ -30,8 +30,6 @@ public class ChartExtRequest {
 
     private Long user = null;
 
-    // private PermissionProxy proxy;
-
     private Long goPage;
 
     private Long pageSize;

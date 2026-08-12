@@ -46,7 +46,6 @@ export function watermark(settings, domId) {
   // 获取页面最大高度
   let page_height = watermarkDom.scrollHeight - 56
   page_height = page_height < 220 ? 220 : page_height
-  // page_height = Math.max(page_height, window.innerHeight - 30)
   // 如果将水印列数设置为0，或水印列数设置过大，超过页面最大宽度，则重新计算水印列数和水印x轴间隔
   if (
     defaultSettings.watermark_cols === 0 ||

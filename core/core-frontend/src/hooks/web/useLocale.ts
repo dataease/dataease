@@ -43,7 +43,6 @@ export const useLocale = () => {
       })
       langModule = await loadRemoteI18n(cMap)
     }
-    // const langModule = await import(`../../locales/${locale}.ts`)
 
     globalI18n.setLocaleMessage(locale, langModule.default)
 

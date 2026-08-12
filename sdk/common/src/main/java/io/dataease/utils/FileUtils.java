@@ -1,4 +1,5 @@
 package io.dataease.utils;
+import io.dataease.utils.LogUtil;
 
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
@@ -196,7 +197,7 @@ public class FileUtils {
             str = sb.toString();
             return str;
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
             return null;
         }
     }
@@ -286,7 +287,7 @@ public class FileUtils {
 
             fis.close();
         } catch (Exception var11) {
-            var11.printStackTrace();
+            LogUtil.error(var11);
         }
 
         return bytes;

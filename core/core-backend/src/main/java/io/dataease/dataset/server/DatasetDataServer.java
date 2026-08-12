@@ -48,7 +48,6 @@ public class DatasetDataServer implements DatasetDataApi {
         try {
             return datasetDataManage.getFieldEnumDs(map);
         } catch (Exception e) {
-            e.printStackTrace();
             LogUtil.error(e);
             return null;
         }
@@ -59,7 +58,6 @@ public class DatasetDataServer implements DatasetDataApi {
         try {
             return datasetDataManage.getFieldEnum(multFieldValuesRequest, true);
         } catch (Exception e) {
-            e.printStackTrace();
             LogUtil.error(e);
             return null;
         }
@@ -70,7 +68,6 @@ public class DatasetDataServer implements DatasetDataApi {
         try {
             return datasetDataManage.getFieldEnumObj(request);
         } catch (Exception e) {
-            e.printStackTrace();
             LogUtil.error(e);
             return null;
         }
@@ -91,7 +88,6 @@ public class DatasetDataServer implements DatasetDataApi {
         try {
             return datasetDataManage.getFieldValueTree(multFieldValuesRequest);
         } catch (Exception e) {
-            e.printStackTrace();
             LogUtil.error(e);
             return null;
         }

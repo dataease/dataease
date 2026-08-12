@@ -114,7 +114,6 @@ public class XpackShareManage {
         xpackShare.setTime(System.currentTimeMillis());
         xpackShare.setResourceId(resourceId);
         xpackShare.setUuid(RandomStringUtils.randomAlphanumeric(8));
-        // xpackShare.setOid(user.getDefaultOid());
 
 
         QDataVisualizationInfo qVisualization = QDataVisualizationInfo.dataVisualizationInfo;

@@ -6,7 +6,7 @@ type CacheType = 'localStorage' | 'sessionStorage'
 const getPathPrefix = () => {
   const pathname = window.location.pathname.replace('mobile.html', '')
   const match = pathname.match(/^\/([^\/]+)/)
-  return match ? `${match[1]}_` : 'de_v2_'
+  return match ? `${match[1]}_` : 'de_v3_'
 }
 
 export const useCache = (type: CacheType = 'localStorage') => {

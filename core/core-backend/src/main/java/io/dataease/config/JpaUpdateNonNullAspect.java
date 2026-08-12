@@ -119,9 +119,8 @@ public class JpaUpdateNonNullAspect {
                 if (value != null) {
                     Class<?> setterType = setter.getParameterTypes()[0];
                     if (!setterType.isAssignableFrom(value.getClass())) {
-                        System.out.println("属性类型不一致: " + pd.getName() +
-                                " getter返回: " + value.getClass().getName() +
-                                " setter参数: " + setterType.getName());
+                        LogUtil.debug("属性类型不一致: {} getter返回: {} setter参数: {}",
+                                pd.getName(), value.getClass().getName(), setterType.getName());
                         continue;
                     }
                     setter.invoke(target, value);

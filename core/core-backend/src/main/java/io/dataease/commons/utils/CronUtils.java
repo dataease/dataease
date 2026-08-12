@@ -74,7 +74,7 @@ public class CronUtils {
         try {
             date = sdf.parse(rateVal);
         } catch (ParseException e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         }
         Calendar instance = Calendar.getInstance();
         assert date != null;

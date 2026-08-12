@@ -219,7 +219,7 @@ export const setTitle = (title?: string) => {
     return
   }
   const jsUrl = 'https://g.alicdn.com/dingding/dingtalk-jsapi/3.0.25/dingtalk.open.js'
-  const jsId = 'fit2cloud-dataease-v2-platform-client-dingtalk'
+  const jsId = 'fit2cloud-dataease-v3-platform-client-dingtalk'
   if (window['dd'] && window['dd'].biz?.navigation?.setTitle) {
     window['dd'].biz.navigation.setTitle({
       title: title

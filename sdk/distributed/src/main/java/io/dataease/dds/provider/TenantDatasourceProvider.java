@@ -1,4 +1,5 @@
 package io.dataease.dds.provider;
+import io.dataease.utils.LogUtil;
 
 
 import com.zaxxer.hikari.HikariConfig;
@@ -43,7 +44,7 @@ public class TenantDatasourceProvider {
                 return mapList.stream().collect(Collectors.toMap(TenantDatasourceProvider::getDsKey, TenantDatasourceProvider::buildHikari));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         } finally {
             close(connection,statement, resultSet);
         }
@@ -68,7 +69,7 @@ public class TenantDatasourceProvider {
                 return mapList.stream().collect(Collectors.toMap(TenantDatasourceProvider::getDsKey, TenantDatasourceProvider::buildHikari));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         } finally {
             close(connection,statement, resultSet);
         }
@@ -118,21 +119,21 @@ public class TenantDatasourceProvider {
                 connection.close();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         }
         try {
             if (statement != null) {
                 statement.close();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         }
         try {
             if (rs != null && !rs.isClosed()) {
                 rs.close();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         }
 
 

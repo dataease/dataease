@@ -59,7 +59,6 @@ public class StackMixHandler extends MixHandler {
             var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
             var drillAxis = xAxis.stream().filter(axis -> FieldSource.DRILL == axis.getSource()).toList();
             var xAxisBase = xAxis.subList(0, xAxis.size() - extStack.size() - drillAxis.size());
-            //var xAxisBase = (List<ChartViewFieldDTO>) formatResult.getContext().get("xAxisBase");
             return ChartDataBuild.transMixChartStackDataAntV(xAxisBase, xAxis, extStack, yAxis, view, data, isDrill);
         } else {
             //无堆叠左轴和右轴还是走原逻辑

@@ -1,4 +1,5 @@
 package io.dataease.utils;
+import io.dataease.utils.LogUtil;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -117,14 +118,14 @@ public class BeanUtils {
                         descriptor.getWriteMethod().invoke(bean, convertedValue);
                     } catch (IllegalArgumentException e) {
                         // 类型不匹配时跳过该属性，而不是抛出异常
-                        System.err.println("类型不匹配跳过属性: " + propertyName + ", 期望类型: " +
-                                descriptor.getPropertyType() + ", 实际类型: " + value.getClass());
+                        LogUtil.debug("类型不匹配跳过属性: {} 期望类型: {} 实际类型: {}",
+                                propertyName, descriptor.getPropertyType(), value.getClass());
                     }
                 }
             }
             return bean;
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
             throw new RuntimeException("Map转Bean失败", e);
         }
     }
@@ -171,7 +172,7 @@ public class BeanUtils {
             // 可以继续添加其他类型的转换...
         } catch (Exception e) {
             // 转换失败时返回原值，让后续逻辑处理
-            System.err.println("类型转换失败: " + value + " to " + targetType);
+            LogUtil.debug("类型转换失败: {} to {}", value, targetType);
         }
 
         return value; // 无法转换时返回原值

@@ -208,7 +208,7 @@ public class DatasourceSyncManage {
                 datasetTableTaskLog.setTaskStatus(TaskStatus.Error.toString());
                 datasetTableTaskLog.setEndTime(System.currentTimeMillis());
 
-                e.printStackTrace();
+                LogUtil.error(e);
             } finally {
                 datasourceTaskServer.saveLog(datasetTableTaskLog);
             }
@@ -309,7 +309,7 @@ public class DatasourceSyncManage {
         }
         for (int page = 1; page <= totalPage; page++) {
             datasourceRequest.setQuery(engineProvider.insertSql(DatasourceConfiguration.DatasourceType.Excel.name(), request.getTable(), extractType, dataList, page, pageNumber, tableFields, engine));
-            System.out.println(datasourceRequest.getQuery());
+            LogUtil.debug(datasourceRequest.getQuery());
             provider.execDDL(datasourceRequest);
         }
     }
@@ -340,7 +340,7 @@ public class DatasourceSyncManage {
         datasourceRequest.setDatasource(coreDatasource);
         EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());
         datasourceRequest.setQuery(engineProvider.createTableSql(tableName, tableFields, engine));
-        System.out.println(datasourceRequest.getQuery());
+        LogUtil.debug(datasourceRequest.getQuery());
         if (engineProvider.needCheckExistTable()) {
             if (!provider.getTables(datasourceRequest).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList()).contains(tableName)) {
                 provider.execDDL(datasourceRequest);
