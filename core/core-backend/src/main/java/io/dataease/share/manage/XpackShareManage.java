@@ -12,6 +12,7 @@ import io.dataease.api.xpack.share.request.XpackShareUuidEditor;
 import io.dataease.api.xpack.share.vo.TicketValidVO;
 import io.dataease.api.xpack.share.vo.XpackShareGridVO;
 import io.dataease.api.xpack.share.vo.XpackShareProxyVO;
+import io.dataease.api.xpack.share.vo.XpackShareSubVO;
 import io.dataease.constant.AuthConstant;
 import io.dataease.constant.BusiResourceEnum;
 import io.dataease.dao.auto.entity.QDataVisualizationInfo;
@@ -367,6 +368,23 @@ public class XpackShareManage {
         HttpServletResponse response = ServletUtils.response();
         assert response != null;
         response.addHeader(AuthConstant.LINK_TOKEN_KEY, linkToken);
+    }
+
+    /**
+     * 公共链接场景：查询子资源（tab 内嵌画布）是否已开启分享。
+     * 前端据此决定：无分享则在 tab 内提示；有分享则用 /de-link/{uuid} 加载
+     * 子 iframe，由子页面在其独立上下文中完成公共链接鉴权（密码/过期等）。
+     * 注意：此处不生成 linkToken，避免写入响应头后被父页面响应拦截器
+     * 采集，覆盖掉父资源自身的 linkToken。
+     */
+    public XpackShareSubVO subShareInfo(Long resourceId) {
+        XpackShare xpackShare = queryByResource(resourceId);
+        if (ObjectUtils.isEmpty(xpackShare)) {
+            return new XpackShareSubVO(false, null, false, false);
+        }
+        boolean expired = linkExp(xpackShare);
+        boolean pwdRequired = StringUtils.isNotBlank(xpackShare.getPwd());
+        return new XpackShareSubVO(true, xpackShare.getUuid(), expired, pwdRequired);
     }
 
     public Map<String, String> queryRelationByUserId(Long uid) {

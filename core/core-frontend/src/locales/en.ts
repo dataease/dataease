@@ -3884,7 +3884,8 @@ export default {
     iframe_error:
       'Only embedded version and enterprise version support iframe embedding of public links!',
     link_error: 'Link does not exist!',
-    link_exp_error: 'Link has expired!'
+    link_exp_error: 'Link has expired!',
+    sub_link_absent: 'This page has no public link and cannot be viewed.'
   },
   pblink: {
     key_pwd: 'Please enter the password to open the link',

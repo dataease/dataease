@@ -5,7 +5,9 @@ import io.dataease.api.xpack.share.XpackShareApi;
 import io.dataease.api.xpack.share.request.*;
 import io.dataease.api.xpack.share.vo.XpackShareGridVO;
 import io.dataease.api.xpack.share.vo.XpackShareProxyVO;
+import io.dataease.api.xpack.share.vo.XpackShareSubVO;
 import io.dataease.api.xpack.share.vo.XpackShareVO;
+import io.dataease.auth.DeLinkPermit;
 import io.dataease.utils.BeanUtils;
 import io.dataease.share.dao.auto.entity.XpackShare;
 import io.dataease.share.manage.XpackShareManage;
@@ -75,5 +77,11 @@ public class XpackShareServer implements XpackShareApi {
     @Override
     public String editUuid(XpackShareUuidEditor editor) {
         return xpackShareManage.editUuid(editor);
+    }
+
+    @Override
+    @DeLinkPermit(value = "#p0", subResource = true)
+    public XpackShareSubVO subShareInfo(Long resourceId) {
+        return xpackShareManage.subShareInfo(resourceId);
     }
 }

@@ -7,6 +7,8 @@ import io.dataease.constant.AuthConstant;
 import io.dataease.exception.DEException;
 import io.dataease.utils.LogUtil;
 import io.dataease.utils.ServletUtils;
+import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoRepository;
+import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -22,6 +24,8 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Aspect
 @Component
@@ -31,6 +35,12 @@ public class DeLinkAop {
     private static final String SPRING_EL_FLAG = "#";
 
     private final ExpressionParser parser = new SpelExpressionParser();
+
+    // 匹配父画布 componentData 中内嵌子画布的 screenId 字段（值可能为字符串或数字）
+    private static final Pattern SCREEN_ID_PATTERN = Pattern.compile("\"screenId\"\\s*:\\s*\"?(\\d+)\"?");
+
+    @Resource
+    private DataVisualizationInfoRepository dataVisualizationInfoRepository;
 
 
     @Around(value = "@annotation(io.dataease.auth.DeLinkPermit)")
@@ -48,9 +58,13 @@ public class DeLinkAop {
             Long id = getExpression(params, value);
             DecodedJWT jwt = JWT.decode(linkToken);
             Long resourceId = jwt.getClaim("resourceId").asLong();
-            if (!id.equals(resourceId)) {
-                DEException.throwException("link token invalid");
-                return false;
+            if (!Objects.equals(id, resourceId)) {
+                // 子资源模式：token 绑定的是父画布，参数 id 是内嵌子画布。
+                // 校验子画布确实内嵌于父画布中，否则视为越权（防止枚举任意资源）。
+                if (!(deLinkPermit.subResource() && isSubResourceOf(resourceId, id))) {
+                    DEException.throwException("link token invalid");
+                    return false;
+                }
             }
         }
         try {
@@ -59,6 +73,27 @@ public class DeLinkAop {
             LogUtil.error(e.getMessage());
             throw e;
         }
+    }
+
+    /**
+     * 校验 childId 是否作为内嵌子画布存在于 parentId 对应父画布的 componentData 中。
+     */
+    private boolean isSubResourceOf(Long parentId, Long childId) {
+        if (ObjectUtils.isEmpty(parentId) || ObjectUtils.isEmpty(childId)) {
+            return false;
+        }
+        String componentData = dataVisualizationInfoRepository.queryComponentData(parentId);
+        if (StringUtils.isBlank(componentData)) {
+            return false;
+        }
+        Matcher matcher = SCREEN_ID_PATTERN.matcher(componentData);
+        String childIdStr = childId.toString();
+        while (matcher.find()) {
+            if (childIdStr.equals(matcher.group(1))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public Long getExpression(Object[] params, String expression) {

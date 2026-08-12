@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { useLinkStoreWithOut } from '@/store/modules/link'
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import router from '@/router'
@@ -22,6 +23,7 @@ import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
 const routeWatch = useRoute()
 
 const dvMainStore = dvMainStoreWithOut()
+const linkStore = useLinkStoreWithOut()
 const { t } = useI18n()
 const embeddedStore = useEmbedded()
 const previewCanvasContainer = ref(null)
@@ -207,6 +209,11 @@ onMounted(async () => {
     await Promise.all([new Promise(r => (p = r)), new Promise(r => (p1 = r))])
   }
   console.info('Preview Canvas Promise End')
+  // 公共链接 iframe 场景：父页面将 linkToken 注入 URL，在第一个 API 请求发出前初始化
+  const { linkToken } = router.currentRoute.value.query
+  if (linkToken) {
+    linkStore.setLinkToken(linkToken as string)
+  }
   let dvId = props.outerId || embeddedStore.dvId || router.currentRoute.value.query.dvId
   if (router.currentRoute.value.query.jumpInfoParam && router.currentRoute.value.query.dvId) {
     dvId = router.currentRoute.value.query.dvId

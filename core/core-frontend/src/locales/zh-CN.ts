@@ -3784,7 +3784,8 @@ export default {
     pe_require_error: '已设置有效期密码必填，当前链接无效！',
     iframe_error: '仅嵌入式版和企业版支持iframe方式内嵌公共链接！',
     link_error: '链接不存在！',
-    link_exp_error: '链接已过期！'
+    link_exp_error: '链接已过期！',
+    sub_link_absent: '该页面未开启公共链接，无法查看。'
   },
   pblink: {
     key_pwd: '请输入密码打开链接',

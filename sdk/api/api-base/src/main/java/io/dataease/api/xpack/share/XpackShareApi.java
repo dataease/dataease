@@ -4,6 +4,7 @@ import io.dataease.api.xpack.share.request.*;
 import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest;
 import io.dataease.api.xpack.share.vo.XpackShareGridVO;
 import io.dataease.api.xpack.share.vo.XpackShareProxyVO;
+import io.dataease.api.xpack.share.vo.XpackShareSubVO;
 import io.dataease.api.xpack.share.vo.XpackShareVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -62,4 +63,9 @@ public interface XpackShareApi {
     @Operation(summary = "编辑分享uuid")
     @PostMapping("/editUuid")
     String editUuid(@RequestBody XpackShareUuidEditor editor);
+
+    @Operation(summary = "公共链接场景查询子资源分享信息")
+    @Parameter(name = "resourceId", description = "子资源ID", required = true, in = ParameterIn.PATH)
+    @GetMapping("/subShareInfo/{resourceId}")
+    XpackShareSubVO subShareInfo(@PathVariable("resourceId") Long resourceId);
 }
