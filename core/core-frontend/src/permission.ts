@@ -35,6 +35,11 @@ router.beforeEach(async (to, from, next) => {
   }
   start()
   loadStart()
+  // 分页组件内嵌的 tab（TabScreenPreview 的 iframe）会带 embeddedTab=true，
+  // 标识当前 SPA 运行在分页组件的内嵌 iframe 中，用于导出等场景下的差异化处理
+  if (to.query.embeddedTab === 'true') {
+    appStore.setEmbeddedTab(true)
+  }
   const platform = checkPlatform()
   let isDesktop = wsCache.get('app.desktop')
   if (isDesktop === null) {

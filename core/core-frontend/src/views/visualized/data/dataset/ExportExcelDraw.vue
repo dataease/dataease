@@ -78,6 +78,10 @@ const openMessageLoading = (text, type = 'success', cb) => {
 }
 
 const taskExportTopicCall = task => {
+  // 分页组件内嵌 tab 场景下，不弹出导出成功/失败的跳转提示
+  if (appStore.getEmbeddedTab) {
+    return
+  }
   if (!linkStore.getLinkToken && !isDataEaseBi.value && !appStore.getIsIframe) {
     if (JSON.parse(task).exportStatus === 'SUCCESS') {
       openMessageLoading(

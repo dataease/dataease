@@ -11,6 +11,7 @@ interface AppState {
   desktop: boolean
   isDataEaseBi: boolean
   isIframe: boolean
+  embeddedTab: boolean
   arrowSide: boolean
 }
 
@@ -23,6 +24,7 @@ export const useAppStore = defineStore('app', {
       dekey: 'DataEaseKey',
       isDataEaseBi: false,
       isIframe: false,
+      embeddedTab: false,
       desktop: false,
       arrowSide: false
     }
@@ -45,6 +47,9 @@ export const useAppStore = defineStore('app', {
     },
     getIsIframe(): boolean {
       return this.isIframe
+    },
+    getEmbeddedTab(): boolean {
+      return this.embeddedTab
     },
     getDekey(): string {
       return this.dekey
@@ -71,6 +76,9 @@ export const useAppStore = defineStore('app', {
     },
     setIsIframe(isIframe: boolean) {
       this.isIframe = isIframe
+    },
+    setEmbeddedTab(embeddedTab: boolean) {
+      this.embeddedTab = embeddedTab
     },
     setPageLoading(pageLoading: boolean) {
       this.pageLoading = pageLoading

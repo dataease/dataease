@@ -255,6 +255,8 @@ import { XpackComponent } from '@/components/plugin'
 import { exportPermission, isMobile } from '@/utils/utils'
 import { layerStoreWithOut } from '@/store/modules/data-visualization/layer'
 import { isMainCanvas } from '@/utils/canvasUtils'
+import { useAppStoreWithOut } from '@/store/modules/app'
+const appStore = useAppStoreWithOut()
 const layerStore = layerStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -442,6 +444,17 @@ const showBarTooltipPosition = computed(() => {
 const openMessageLoading = cb => {
   const iconClass = `el-icon-loading`
   const customClass = `de-message-loading de-message-export`
+  // 分页组件内嵌 tab 场景下，无法跳转到导出中心，仅提示后台导出中即可
+  if (appStore.getEmbeddedTab) {
+    ElMessage({
+      message: '后台导出中',
+      iconClass,
+      icon: h(RefreshLeft),
+      showClose: true,
+      customClass
+    })
+    return
+  }
   ElMessage({
     message: h('p', null, [
       '后台导出中,可前往',

@@ -34,11 +34,11 @@ const frameSrc = computed(() => {
   // 注意：ShareProxy.setUuid 以 lastIndexOf('?') 作为 uuid 结束边界，
   // 因此此处不能在 hash 前加 ?时间戳，否则会破坏 uuid 解析（刷新已由 frameShow 重建保证）
   if (publicLinkMode.value) {
-    return `#/de-link/${subUuid.value}`
+    return `#/de-link/${subUuid.value}?embeddedTab=true`
   }
   return `?${new Date().getTime()}#/preview?dvId=${props.screenId}&dvType=${
     props.dvType
-  }&ignoreParams=true`
+  }&ignoreParams=true&embeddedTab=true`
 })
 
 // screenId 变化时重建 iframe，避免复用旧上下文
