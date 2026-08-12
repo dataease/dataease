@@ -1,8 +1,5 @@
 const suffix = `${import.meta.env.VITE_VERSION}-dataease`
 
-const dom = document.querySelector('head')
-const cb = dom.appendChild.bind(dom)
-
 const formatterUrl = <T extends Node>(node: T, prefix: string) => {
   if (['SCRIPT', 'LINK'].includes(node.nodeName)) {
     let url = ''
@@ -14,7 +11,7 @@ const formatterUrl = <T extends Node>(node: T, prefix: string) => {
 
     if (url.includes(suffix) || url.includes('dataease-private')) {
       const currentUrlprefix = new URL(url).origin
-      const newUrl = url.replace(currentUrlprefix, prefix)
+      const newUrl = url.startsWith(prefix) ? url : url.replace(currentUrlprefix, prefix)
       if (node instanceof HTMLLinkElement) {
         node.href = newUrl
       } else if (node instanceof HTMLScriptElement) {
@@ -49,20 +46,25 @@ const getPrefix = (): string => {
 }
 const element = document.createElement('head')
 document.body.appendChild(element)
-document.querySelector('head').appendChild = <T extends Node>(node: T) => {
+const dom = document.querySelector('head')
+dom.appendChild = <T extends Node>(node: T) => {
   const newNode = formatterUrl(node, getPrefix())
   element.appendChild(newNode)
   return newNode
 }
-
-document.querySelector('head').removeChild = <T extends Node>(node: T) => {
-  element.removeChild(node)
+const rmc = dom.removeChild
+dom.removeChild = <T extends Node>(node: T) => {
+  if (element.contains(node)) {
+    element.removeChild(node)
+  } else {
+    rmc.bind(dom, node)
+  }
   return node
 }
 import { App, createApp } from 'vue'
 import '@/style/index.less'
 import 'normalize.css/normalize.css'
-import '@antv/s2/dist/s2.min.css'
+import '@antv/s2/dist/style.min.css'
 import AppElement from './App.vue'
 import { setupStore } from '@/store'
 import { useEmbedded } from '@/store/modules/embedded'
