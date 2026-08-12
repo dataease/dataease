@@ -2,18 +2,25 @@ package io.dataease.extensions.sync.utils;
 
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.provider.ExtendedJdbcClassLoader;
+import io.dataease.extensions.sync.model.TableFieldDTO;
 import io.dataease.extensions.sync.model.datasource.ConnectionObj;
 import io.dataease.extensions.sync.vo.DatasourceConfiguration;
 import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.Driver;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  *
@@ -92,6 +99,44 @@ public class ProviderUtil {
             e.printStackTrace();
         }
         return stat;
+    }
+
+    /**
+     * 根据 JDBC 元数据标记物理表的真实主键字段
+     *
+     * @param connection 数据库连接
+     * @param catalog     数据库目录；数据库不使用目录时传空
+     * @param schema      Schema；数据库不使用 Schema 时传空
+     * @param tableName   物理表名称
+     * @param fields      表字段列表
+     */
+    public static void markPrimaryKeyFields(
+            Connection connection,
+            String catalog,
+            String schema,
+            String tableName,
+            List<TableFieldDTO> fields) throws SQLException {
+        if (fields == null || fields.isEmpty()) {
+            return;
+        }
+        // 每次读取物理表字段时重新以数据库元数据为准，避免沿用错误或过期的主键标记
+        fields.forEach(field -> field.setFieldPk(false));
+        if (connection == null || StringUtils.isBlank(tableName)) {
+            return;
+        }
+
+        DatabaseMetaData metadata = connection.getMetaData();
+        Set<String> primaryKeyColumns = new HashSet<>();
+        try (ResultSet resultSet = metadata.getPrimaryKeys(catalog, schema, tableName)) {
+            while (resultSet.next()) {
+                String columnName = resultSet.getString("COLUMN_NAME");
+                if (StringUtils.isNotBlank(columnName)) {
+                    primaryKeyColumns.add(columnName);
+                }
+            }
+        }
+        fields.forEach(field -> field.setFieldPk(primaryKeyColumns.stream()
+                .anyMatch(column -> StringUtils.equalsIgnoreCase(column, field.getFieldName()))));
     }
 
     /**

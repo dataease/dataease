@@ -131,6 +131,29 @@ public interface SinkProvider {
     void validateTarget(Target taskTargetDataSource);
 
     /**
+     * 执行已保存任务时验证目标参数
+     * 默认沿用保存校验，目标插件可以为历史任务提供兼容校验
+     *
+     * @param taskTargetDataSource 目标数据源
+     */
+    default void validateTargetForExecution(Target taskTargetDataSource) {
+        validateTarget(taskTargetDataSource);
+    }
+
+    /**
+     * 获取当前同步模式下的 Key 配置策略。
+     *
+     * <p>默认允许不配置 Key，避免新增扩展点破坏尚未适配的历史目标插件。
+     * 需要 Key 或能够自动生成 Key 的目标连接器应显式覆盖此方法。</p>
+     *
+     * @param taskTargetDataSource 目标数据源及同步模式
+     * @return Key 配置策略
+     */
+    default SinkKeyPolicy keyPolicy(Target taskTargetDataSource) {
+        return SinkKeyPolicy.OPTIONAL;
+    }
+
+    /**
      * 生成Sink
      * 更多属性配置参考 SeaTunnel 官网：<a href="https://seatunnel.apache.org/zh-CN/docs/2.3.12/connector-v2/sink">...</a>
      *

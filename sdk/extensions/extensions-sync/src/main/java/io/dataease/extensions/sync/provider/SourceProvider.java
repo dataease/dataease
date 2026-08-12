@@ -29,6 +29,9 @@ public interface SourceProvider {
 
     /**
      * 获取表字段信息
+     * 物理表存在主键时，应将对应字段的 fieldPk 设置为 true；没有主键时保持 false
+     * fieldSourceType 应保留源数据库返回的原始类型
+     * fieldSourceStandardType 和 fieldType 应返回 DataEase 标准类型
      *
      * @param datasourceRequest 数据源请求
      * @return 表字段信息列表
@@ -39,7 +42,7 @@ public interface SourceProvider {
     /**
      * 通过SQL获取字段信息
      * fieldSource 可不用赋值
-     * 主要的字段有 fieldName, fieldType, fieldSize, fieldPrecision
+     * 主要的字段有 fieldName, fieldSourceType, fieldSourceStandardType, fieldType, fieldSize, fieldPrecision
      *
      * @param datasourceRequest 数据源请求参数
      * @return 字段信息列表

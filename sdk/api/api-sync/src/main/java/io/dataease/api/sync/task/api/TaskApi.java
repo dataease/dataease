@@ -4,7 +4,9 @@ import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.sync.task.dto.TaskGridRequest;
 import io.dataease.auth.DeApiPath;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.sync.model.task.Target;
 import io.dataease.extensions.sync.model.task.TaskInfoVO;
+import io.dataease.extensions.sync.provider.SinkKeyPolicy;
 import io.dataease.result.PageResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -53,6 +55,10 @@ public interface TaskApi {
     @Operation(hidden = true)
     @GetMapping("/get/{id}")
     TaskInfoVO getOneById(@PathVariable(value = "id") String id) throws DEException;
+
+    @Operation(hidden = true)
+    @PostMapping("/target/keyPolicy")
+    SinkKeyPolicy targetKeyPolicy(@RequestBody Target target) throws DEException;
 
     @Operation(summary = "执行一次任务")
     @GetMapping("/execute/{id}")
