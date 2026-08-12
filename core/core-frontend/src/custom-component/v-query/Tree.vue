@@ -529,6 +529,12 @@ function filterTree(treeData, filterIds) {
 
   return buildFilteredTree(treeData)
 }
+const treeKey = ref(0)
+const visibleChange = val => {
+  if (!val) {
+    treeKey.value = +new Date()
+  }
+}
 </script>
 
 <template>
@@ -541,6 +547,7 @@ function filterTree(treeData, filterIds) {
     :render-after-expand="false"
     show-checkbox
     showBtn
+    @visible-change="visibleChange"
     @change="handleValueChange"
     :placeholder="placeholderText"
     collapse-tags
@@ -548,7 +555,7 @@ function filterTree(treeData, filterIds) {
     :showWholePath="showWholePath"
     collapse-tags-tooltip
     :tagColor="tagColor"
-    :key="'multipleTree' + getCustomWidth()"
+    :key="'multipleTree' + getCustomWidth() + treeKey"
     filterable
     :style="selectStyle"
     multiple
