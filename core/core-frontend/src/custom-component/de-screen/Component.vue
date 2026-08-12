@@ -90,11 +90,12 @@
         v-for="tabItem in element.propValue"
         :class="{ 'switch-hidden': element.editableTabsValue !== tabItem.name }"
       >
-        <PreviewCanvas
+        <TabScreenPreview
           v-if="tabItem.screenId"
-          :outer-id="tabItem.screenId"
+          :screen-id="tabItem.screenId"
+          :dv-type="dvInfo.type"
           :ref="'dashboardPreview'"
-        ></PreviewCanvas>
+        ></TabScreenPreview>
         <div v-else class="chose-screen">
           <span
             ><el-button
@@ -168,7 +169,7 @@ import { imgUrlTrans } from '@/utils/imgUtils'
 import Board from '@/components/de-board/Board.vue'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 import { debounce } from 'lodash-es'
-import PreviewCanvas from '@/views/data-visualization/PreviewCanvas.vue'
+import TabScreenPreview from '@/custom-component/de-screen/TabScreenPreview.vue'
 import SelectScreenDialog from '@/custom-component/de-screen/SelectScreenDialog.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
