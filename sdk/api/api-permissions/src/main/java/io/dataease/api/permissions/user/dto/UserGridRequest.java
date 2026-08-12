@@ -18,5 +18,7 @@ public class UserGridRequest extends KeywordRequest implements Serializable {
 
     private Long oid;
 
+    private Boolean isSystem = true;
+
     private Boolean timeDesc;
 }
