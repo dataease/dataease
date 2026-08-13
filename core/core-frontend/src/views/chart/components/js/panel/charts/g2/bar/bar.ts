@@ -105,6 +105,9 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
       }
     },
     state: {
+      active: {
+        backgroundPointerEvents: 'none'
+      },
       selected: {
         stroke: 'black',
         lineWidth: 1
