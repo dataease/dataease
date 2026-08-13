@@ -975,10 +975,10 @@ function mappingRulesColor(
 ) {
   for (let i = 0; i < rules.length; i++) {
     const {rule, sourceField} = rules[i]
+    // S2 的 isTotals 也用于普通层级节点，仅排除明确的汇总节点
     if (
       pivot &&
-      (rowData?.isTotals ||
-        rowData?.isGrandTotals ||
+      (rowData?.isGrandTotals ||
         rowData?.isSubTotals ||
         rowData?.field === EXTRA_FIELD) &&
       rule.target !== 'total_row'
@@ -1256,7 +1256,13 @@ function getFieldValueMap(view) {
 
 function getValue(field, filedValueMap, rowData) {
   if (field.summary === 'value') {
-    return rowData ? rowData[field.field?.dataeaseName] : undefined
+    const fieldName = field.field?.dataeaseName
+    // S2 透视表头将维度值存放在 query 中
+    let value = rowData?.[fieldName]
+    if (value === undefined) {
+      value = rowData?.query?.[fieldName]
+    }
+    return value
   } else {
     return filedValueMap[field.summary + '-' + field.fieldId]
   }
