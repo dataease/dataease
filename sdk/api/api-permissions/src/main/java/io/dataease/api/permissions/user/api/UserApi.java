@@ -218,10 +218,6 @@ public interface UserApi {
     @GetMapping("/defaultOrgAdmin")
     boolean defaultOrgAdmin();
 
-    /*@Hidden
-    @PostMapping("/subOrgUser")
-    List<UserItem> subOrgUser(@RequestBody List<Long> oidList);*/
-
     List<Long> getRecipientUserIds(UserReciRequest request);
 
     List<Long> getUserIdByAccount(String account);
@@ -262,4 +258,11 @@ public interface UserApi {
     @GetMapping("/query")
     List<UserOptionVO> query();
 
+    @Hidden
+    @PostMapping("/all")
+    List<UserItem> all(@RequestBody KeywordRequest request);
+
+    @Hidden
+    @PostMapping("/subOrgUser")
+    List<UserItem> subOrgUser(@RequestBody List<Long> oidList);
 }
