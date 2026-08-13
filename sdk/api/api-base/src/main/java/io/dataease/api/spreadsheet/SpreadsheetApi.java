@@ -48,6 +48,11 @@ public interface SpreadsheetApi {
     @PostMapping("/findById")
     SpreadsheetVO findById(@RequestBody SpreadsheetEditor request);
 
+    @Operation(summary = "获取电子表格编辑稿")
+    @DePermit({"#p0.id+':manage'"})
+    @PostMapping("/findEditById")
+    SpreadsheetVO findEditById(@RequestBody SpreadsheetEditor request);
+
     @Operation(summary = "获取资源树")
     @PostMapping("/tree")
     List<SpreadsheetTreeVO> tree(@RequestBody BusiNodeRequest request);
@@ -74,6 +79,11 @@ public interface SpreadsheetApi {
     @Operation(summary = "更新发布状态")
     @DePermit({"#p0.id+':manage'"})
     @PostMapping("/updateStatus")
-    void updateStatus(@RequestBody SpreadsheetEditor editor);
+    SpreadsheetVO updateStatus(@RequestBody SpreadsheetEditor editor);
+
+    @Operation(summary = "恢复到发布版本")
+    @DePermit({"#p0.id+':manage'"})
+    @PostMapping("/recoverToPublished")
+    SpreadsheetVO recoverToPublished(@RequestBody SpreadsheetEditor editor);
 
 }
