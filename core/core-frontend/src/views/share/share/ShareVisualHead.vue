@@ -24,7 +24,7 @@
         {{ t('visualization.share') }}
       </el-button>
     </template>
-    <div v-if="!shareDisable" class="share-container">
+    <div v-if="!shareDisable" ref="shareContainerRef" class="share-container">
       <div class="share-title share-padding">{{ t('work_branch.public_link_share') }}</div>
       <div class="open-share flex-align-center share-padding">
         <el-switch size="small" v-model="shareEnable" @change="enableSwitcher" />
@@ -251,6 +251,7 @@ const pwdRef = ref(null)
 const expCheckbox = ref()
 const pwdCheckbox = ref()
 const loadingInstance = ref<any>(null)
+const shareContainerRef = ref()
 const overTimeEnable = ref(false)
 const passwdEnable = ref(false)
 const shareEnable = ref(false)
@@ -371,14 +372,17 @@ const disabledDate = date => {
 }
 
 const showLoading = () => {
-  loadingInstance.value = ElLoading.service({ target: '.share-dialog-container' })
+  if (!shareContainerRef.value) return
+  if (loadingInstance.value) return
+  loadingInstance.value = ElLoading.service({ target: shareContainerRef.value })
 }
 const closeLoading = () => {
   loadingInstance.value?.close()
+  loadingInstance.value = null
 }
 
 const share = () => {
-  loadShareInfo(validatePeRequire)
+  nextTick(() => loadShareInfo(validatePeRequire))
 }
 
 const loadShareInfo = cb => {
@@ -414,11 +418,17 @@ const setPageInfo = () => {
 }
 
 const enableSwitcher = () => {
+  showLoading()
   const resourceId = props.resourceId
   const url = `/share/switcher/${resourceId}`
-  request.post({ url }).then(() => {
-    loadShareInfo(null)
-  })
+  request
+    .post({ url })
+    .then(() => {
+      loadShareInfo(null)
+    })
+    .finally(() => {
+      closeLoading()
+    })
 }
 
 const formatLinkAddr = () => {

@@ -109,7 +109,7 @@ public class ShareTicketManage {
             predicates.add(cb.equal(root.get("creator"), V3UserUtil.getUid()));
             return cb.and(predicates.toArray(new Predicate[0]));
         };
-        XpackShare xpackShare = xpackShareRepository.findOne(xpackShareSpec).orElse(null);
+        XpackShare xpackShare = xpackShareRepository.findAll(xpackShareSpec).stream().findFirst().orElse(null);
         xpackShare.setTicketRequire(require);
         xpackShareRepository.saveAndFlush(xpackShare);
     }
@@ -128,7 +128,7 @@ public class ShareTicketManage {
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 
-        XpackShare xpackShare = xpackShareRepository.findOne(xpackShareSpec).orElse(null);
+        XpackShare xpackShare = xpackShareRepository.findAll(xpackShareSpec).stream().findFirst().orElse(null);
         if (ObjectUtils.isEmpty(xpackShare)) return null;
         String uuid = xpackShare.getUuid();
         if (StringUtils.isBlank(uuid)) return null;
