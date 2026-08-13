@@ -9,6 +9,8 @@ import { findComponentById, mobileViewStyleSwitch } from '@/utils/canvasUtils'
 import { deepCopy } from '@/utils/utils'
 const panelInit = ref(false)
 const dvMainStore = dvMainStoreWithOut()
+import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
+const appearanceStore = useAppearanceStoreWithOut()
 
 const checkItemPosition = component => {
   component.x = 1
@@ -193,6 +195,7 @@ onBeforeMount(() => {
       curComponentChangeHandle(type, value)
     }
   })
+  appearanceStore.setFontList()
 })
 
 const mobileStatusChange = (type, value) => {
