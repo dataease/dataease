@@ -36,11 +36,11 @@ public class VisualizationSubjectService implements VisualizationSubjectApi {
         QueryWrapper<VisualizationSubject> wrapper = new QueryWrapper<>();
         wrapper.eq("delete_flag", 0);
         List<VisualizationSubject> result =subjectMapper.selectList(wrapper);
-       return result.stream().map(subject ->{
-           VisualizationSubjectVO subjectVO = new VisualizationSubjectVO();
-           BeanUtils.copyBean(subject,subjectVO);
-           return subjectVO;
-       }).collect(Collectors.toList());
+        return result.stream().map(subject ->{
+            VisualizationSubjectVO subjectVO = new VisualizationSubjectVO();
+            BeanUtils.copyBean(subject,subjectVO);
+            return subjectVO;
+        }).collect(Collectors.toList());
     }
 
     @Override
@@ -94,5 +94,4 @@ public class VisualizationSubjectService implements VisualizationSubjectApi {
         Assert.notNull(id, "subjectId should not be null");
         subjectMapper.deleteById(id);
     }
-
 }

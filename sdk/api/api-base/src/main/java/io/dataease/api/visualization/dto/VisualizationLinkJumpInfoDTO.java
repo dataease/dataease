@@ -26,5 +26,4 @@ public class VisualizationLinkJumpInfoDTO extends VisualizationLinkJumpInfoVO {
     private String targetDvType;
 
     private List<VisualizationLinkJumpTargetViewInfoVO> targetViewInfoList=new ArrayList<>();// linkType = inner 时使用
-
 }

@@ -21,5 +21,4 @@ public class ExtraDetailsRequest {
     private String value;
 
     private ExtTableField.DfRowPermissionsTreeObj permissionsTree;
-
 }

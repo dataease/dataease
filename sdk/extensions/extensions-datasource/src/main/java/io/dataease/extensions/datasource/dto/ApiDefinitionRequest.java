@@ -1,6 +1,5 @@
 package io.dataease.extensions.datasource.dto;
 
-
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -16,7 +15,6 @@ public class ApiDefinitionRequest {
     private List<Map<String, String>> rest = new ArrayList<>();
     private AuthManager authManager = new AuthManager();
     private Page page = new Page();
-
 
     @Data
     public static class AuthManager {
@@ -46,5 +44,4 @@ public class ApiDefinitionRequest {
         private String resolutionPath;
         private String resolutionPathType;
     }
-
 }

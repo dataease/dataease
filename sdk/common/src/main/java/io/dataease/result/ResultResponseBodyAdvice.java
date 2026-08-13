@@ -47,11 +47,8 @@ public class ResultResponseBodyAdvice implements ResponseBodyAdvice<Object> {
         return o;
     }
 
-
     // i18n
     private Object translate(Object obj) {
         return Translator.translateObject(obj);
     }
-
-
 }

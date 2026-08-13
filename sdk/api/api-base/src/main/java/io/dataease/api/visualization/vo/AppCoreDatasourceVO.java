@@ -87,5 +87,4 @@ public class AppCoreDatasourceVO implements Serializable {
      * 映射系统数据源ID
      */
     private Long systemDatasourceId;
-
 }

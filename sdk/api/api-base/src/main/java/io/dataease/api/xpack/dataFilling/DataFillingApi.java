@@ -228,5 +228,4 @@ public interface DataFillingApi {
     @PostMapping("getBuiltInTableField")
     @Operation(summary = "获取内置数据源表字段")
     List<TableField> getBuiltInTableField(@RequestBody DatasetTableFieldRequest req) throws DEException;
-
 }

@@ -13,5 +13,4 @@ import java.util.List;
 public class MarketTemplateInnerResult {
 
     private List<TemplateMarketDTO> content;
-
 }

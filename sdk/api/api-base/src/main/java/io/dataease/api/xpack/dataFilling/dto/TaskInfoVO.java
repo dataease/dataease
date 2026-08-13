@@ -74,8 +74,6 @@ public class TaskInfoVO implements Serializable {
     private Long lastExecTime;
     private Long nextExecTime;
 
-
     private String formExtSetting;
     private String formFilterSetting;
-
 }

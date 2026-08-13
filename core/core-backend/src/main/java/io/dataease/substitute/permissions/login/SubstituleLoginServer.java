@@ -45,7 +45,6 @@ public class SubstituleLoginServer {
         return generate(tokenUserBO, SubstituleLoginConfig.getTokenSecret());
     }
 
-
     @GetMapping("/logout")
     public void logout() {
         LogUtil.info("substitule logout");

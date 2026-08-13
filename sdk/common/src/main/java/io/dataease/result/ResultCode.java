@@ -44,7 +44,6 @@ public enum ResultCode {
 
     USER_NO_QUOTA(80001, "没有用户配额");
 
-
     private Integer code;
 
     private String message;

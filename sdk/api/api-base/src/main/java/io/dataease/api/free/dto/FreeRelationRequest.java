@@ -11,5 +11,4 @@ public class FreeRelationRequest implements Serializable {
     private static final long serialVersionUID = -316612770549936486L;
 
     private Long id;
-
 }

@@ -19,4 +19,3 @@ public class SysVariableDto {
     private boolean root = false;
     private boolean disabled = false;
 }
-

@@ -75,6 +75,4 @@ public interface SyncDatasourceApi {
 
     @GetMapping("/getLogResourceId/{id}")
     Long getLogResourceId(@PathVariable("id") String id);
-
-
 }

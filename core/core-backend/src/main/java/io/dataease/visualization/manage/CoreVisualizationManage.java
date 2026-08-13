@@ -40,7 +40,6 @@ import java.util.*;
 @Transactional
 public class CoreVisualizationManage {
 
-
     @Resource
     private CoreVisualiationExtMapper extMapper;
 
@@ -356,5 +355,4 @@ public class CoreVisualizationManage {
         //xpack 阈值告警
         chartViewManege.restoreThreshold(dvId, CommonConstants.RESOURCE_TABLE.CORE);
     }
-
 }

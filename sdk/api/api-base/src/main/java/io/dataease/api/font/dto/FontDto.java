@@ -33,4 +33,3 @@ public class FontDto {
     private Double size;
     private String sizeType;
 }
-

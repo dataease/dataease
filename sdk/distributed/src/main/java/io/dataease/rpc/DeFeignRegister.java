@@ -109,7 +109,6 @@ public class DeFeignRegister implements ImportBeanDefinitionRegistrar, ResourceL
         registerDeFeigns(metadata, registry);
     }
 
-
     public void registerDeFeigns(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
         LinkedHashSet<BeanDefinition> candidateComponents = new LinkedHashSet<>();
         Map<String, Object> attrs = metadata.getAnnotationAttributes(EnableFeignClients.class.getName());
@@ -375,7 +374,6 @@ public class DeFeignRegister implements ImportBeanDefinitionRegistrar, ResourceL
         }
         return !qualifierList.isEmpty() ? qualifierList.toArray(new String[0]) : null;
     }
-
 
     @Override
     public void setEnvironment(Environment environment) {

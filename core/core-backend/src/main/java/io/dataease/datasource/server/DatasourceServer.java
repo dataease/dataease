@@ -73,7 +73,6 @@ import java.util.stream.Collectors;
 import static io.dataease.datasource.server.DatasourceTaskServer.ScheduleType.MANUAL;
 import static io.dataease.datasource.server.DatasourceTaskServer.ScheduleType.RIGHTNOW;
 
-
 @RestController
 @RequestMapping("/datasource")
 public class DatasourceServer implements DatasourceApi {
@@ -125,7 +124,6 @@ public class DatasourceServer implements DatasourceApi {
     private CommonThreadPool commonThreadPool;
     private boolean isUpdatingStatus = false;
     private static List<Long> syncDsIds = new ArrayList<>();
-
 
     @Override
     public List<DatasourceDTO> query(String keyWord) {
@@ -415,7 +413,6 @@ public class DatasourceServer implements DatasourceApi {
             List<DatasetTableDTO> datasetTableDTOS = dataSourceDTO.getType().contains(DatasourceConfiguration.DatasourceType.API.name()) ? (List<DatasetTableDTO>) invokeMethod(sourceData.getType(), "getApiTables", DatasourceRequest.class, datasourceRequest) : ExcelUtils.getTables(datasourceRequest);
             List<String> tables = datasetTableDTOS.stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList());
 
-
             checkName(datasetTableDTOS.stream().map(DatasetTableDTO::getName).collect(Collectors.toList()));
             toCreateTables = tables.stream().filter(table -> !sourceTables.contains(table)).collect(Collectors.toList());
             toDeleteTables = sourceTables.stream().filter(table -> !tables.contains(table)).collect(Collectors.toList());
@@ -510,7 +507,6 @@ public class DatasourceServer implements DatasourceApi {
         }
         return dataSourceDTO;
     }
-
 
     @Override
     public List<DatasourceConfiguration.DatasourceType> datasourceTypes() {
@@ -727,7 +723,6 @@ public class DatasourceServer implements DatasourceApi {
         }
     }
 
-
     @Override
     public DatasourceDTO validate(Long datasourceId) throws DEException {
         CoreDatasource coreDatasource = new CoreDatasource();
@@ -913,7 +908,7 @@ public class DatasourceServer implements DatasourceApi {
 
             return newList;
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
             return null;
         }
     }
@@ -1009,7 +1004,6 @@ public class DatasourceServer implements DatasourceApi {
             }
         }
     }
-
 
     private boolean isEqual(List<TableField> newTableFields, List<TableField> oldTableFields) {
         if (CollectionUtils.isEmpty(newTableFields) || CollectionUtils.isEmpty(oldTableFields)) {
@@ -1137,7 +1131,6 @@ public class DatasourceServer implements DatasourceApi {
         }
     }
 
-
     public void updateDemoDs() {
     }
 
@@ -1206,7 +1199,6 @@ public class DatasourceServer implements DatasourceApi {
         return pager;
     }
 
-
     public void updateDatasourceStatus() {
         QueryWrapper<CoreDatasource> wrapper = new QueryWrapper<>();
         wrapper.notIn("type", Arrays.asList("Excel", "folder"));
@@ -1238,7 +1230,7 @@ public class DatasourceServer implements DatasourceApi {
         try {
             doUpdate();
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         } finally {
             this.isUpdatingStatus = false;
         }
@@ -1279,7 +1271,6 @@ public class DatasourceServer implements DatasourceApi {
         return coreDsFinishPageMapper.selectById(AuthUtils.getUser().getUserId()) == null;
     }
 
-
     public void setShowFinishPage() throws DEException {
         CoreDsFinishPage coreDsFinishPage = new CoreDsFinishPage();
         coreDsFinishPage.setId(AuthUtils.getUser().getUserId());
@@ -1291,7 +1282,6 @@ public class DatasourceServer implements DatasourceApi {
         BeanUtils.copyBean(datasourceDTO, record);
         return datasourceDTO;
     }
-
 
     private void filterDs(List<BusiNodeVO> busiNodeVOS, List<Long> ids, String type, Long id) {
         for (BusiNodeVO busiNodeVO : busiNodeVOS) {
@@ -1392,7 +1382,6 @@ public class DatasourceServer implements DatasourceApi {
                 if (log != null) {
                     apiDefinition.setUpdateTime(log.getStartTime());
                 }
-
 
                 if (StringUtils.isEmpty(apiDefinition.getType()) || apiDefinition.getType().equalsIgnoreCase("table")) {
                     apiDefinitionListWithStatus.add(apiDefinition);

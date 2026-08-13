@@ -32,5 +32,4 @@ public interface PluginApi {
     @Operation(summary = "更新")
     @PostMapping(value = "/update", consumes = {"multipart/form-data"})
     void update(@RequestPart("request") PluginEditor request, @RequestPart(value = "file") MultipartFile file);
-
 }

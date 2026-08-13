@@ -79,5 +79,4 @@ public interface SysParameterApi {
     @PostMapping("/sqlbot")
     @Operation(summary = "查询sqlbot嵌入配置")
     void saveSqlBotConfig(@RequestBody SQLBotConfigCreator configVO);
-
 }

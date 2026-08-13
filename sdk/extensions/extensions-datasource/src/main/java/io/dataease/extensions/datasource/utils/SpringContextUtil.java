@@ -21,13 +21,9 @@ public class SpringContextUtil implements ApplicationContextAware {
         return (DefaultListableBeanFactory) getApplicationContext().getAutowireCapableBeanFactory();
     }
 
-
-
     public static List<Map<String, Object>> getAllBean() {
 
-
         List<Map<String, Object>> list = new ArrayList<>();
-
 
         String[] beans = getApplicationContext()
                 .getBeanDefinitionNames();
@@ -48,14 +44,10 @@ public class SpringContextUtil implements ApplicationContextAware {
         return list;
     }
 
-
-
-
     /**
      * 上下文对象实例
      */
     private static ApplicationContext applicationContext;
-
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
@@ -69,7 +61,6 @@ public class SpringContextUtil implements ApplicationContextAware {
     public static ApplicationContext getApplicationContext() {
         return applicationContext;
     }
-
 
     public static Object getBean(String name) {
         return getApplicationContext().getBean(name);

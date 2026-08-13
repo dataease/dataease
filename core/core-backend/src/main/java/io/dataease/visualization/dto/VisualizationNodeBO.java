@@ -21,6 +21,4 @@ public class VisualizationNodeBO implements TreeBaseModel {
     private Long pid;
     private Integer extraFlag;
     private Integer extraFlag1;
-
-
 }

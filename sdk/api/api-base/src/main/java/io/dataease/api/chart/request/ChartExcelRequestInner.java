@@ -7,7 +7,6 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
-
 @Data
 public class ChartExcelRequestInner implements Serializable {
     @Serial
@@ -22,5 +21,4 @@ public class ChartExcelRequestInner implements Serializable {
     private ViewDetailField[] detailFields;
 
     private List<String> excelHeaderKeys;
-
 }

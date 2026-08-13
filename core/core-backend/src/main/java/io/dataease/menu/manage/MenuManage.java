@@ -30,7 +30,6 @@ public class MenuManage {
     @Resource
     private CoreMenuMapper coreMenuMapper;
 
-
     @XpackInteract(value = "menuApi")
     public List<MenuVO> query(List<CoreMenu> coreMenus) {
         List<MenuTreeNode> menuTreeNodes = new ArrayList<>(coreMenus.stream().map(menu -> BeanUtils.copyBean(new MenuTreeNode(), menu)).toList());
@@ -44,7 +43,6 @@ public class MenuManage {
         wrapper.orderByAsc("menu_sort");
         return coreMenuMapper.selectList(wrapper);
     }
-
 
     private List<MenuTreeNode> buildPOTree(List<MenuTreeNode> coreMenus) {
         List<MenuTreeNode> result = new ArrayList<>();

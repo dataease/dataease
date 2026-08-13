@@ -15,8 +15,6 @@ public class AuthConstant {
     public final static String DE_CASAPI_PREFIX = "/casbi/de2api";
     public final static String DE_OIDCAPI_PREFIX = "/oidcbi/de2api";
 
-    // public final static String REFRESH_TOKEN_KEY = "X-DE-REFRESH-TOKEN";
-
     public final static String USER_IMPORT_ERROR_KEY = "USER-IMPORT-ERROR-KEY";
 
     public final static String LINK_TOKEN_KEY = "X-DE-LINK-TOKEN";
@@ -24,6 +22,4 @@ public class AuthConstant {
 
     public final static String DE_EXECUTE_VERSION = "X-DE-EXECUTE-VERSION";
     public final static String DE_LDAP_AUTHORIZATION = "Authorization";
-
-
 }

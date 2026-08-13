@@ -72,7 +72,6 @@ public class TemplateManageService implements TemplateManageApi {
         return extTemplateMapper.findTemplateList(request);
     }
 
-
     @Transactional
     @Override
     public TemplateManageDTO save(TemplateManageRequest request) {
@@ -323,5 +322,3 @@ public class TemplateManageService implements TemplateManageApi {
         });
     }
 }
-
-

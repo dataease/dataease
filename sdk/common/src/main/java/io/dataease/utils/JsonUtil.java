@@ -1,6 +1,5 @@
 package io.dataease.utils;
 
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.StreamReadConstraints;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -79,5 +78,4 @@ public class JsonUtil {
             return null;
         }
     }
-
 }

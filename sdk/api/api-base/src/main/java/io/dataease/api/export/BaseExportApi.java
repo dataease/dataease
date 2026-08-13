@@ -8,6 +8,4 @@ import java.util.HashMap;
 public interface BaseExportApi {
 
     void addTask(String exportFromId, String exportFromType, HashMap<String, Object> request, Long userId, Long org);
-
-
 }

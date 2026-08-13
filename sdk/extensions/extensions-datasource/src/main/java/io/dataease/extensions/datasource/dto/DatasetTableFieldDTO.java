@@ -140,7 +140,6 @@ public class DatasetTableFieldDTO implements Serializable {
 
     private Boolean orderChecked;
 
-
     /**
      * 计算字段参数
      */

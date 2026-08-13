@@ -13,5 +13,4 @@ import java.util.List;
 public class MarketTemplateBaseResponse {
 
     private MarketTemplateInnerResult data;
-
 }

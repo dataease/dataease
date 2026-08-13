@@ -32,7 +32,6 @@ public class RedisCacheListener implements ApplicationListener<ApplicationReadyE
         }
     }
 
-
     public void deleteKeysContainingString(RedisTemplate<String, String> redisTemplate, String searchString) {
         // 扫描所有的key
         ScanOptions scanOptions = ScanOptions.scanOptions().match("*" + searchString + "*").count(1000).build();

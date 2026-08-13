@@ -15,7 +15,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import java.util.Arrays;
 import java.util.List;
 
-
 @Component
 public class LinkInterceptor implements HandlerInterceptor {
 
@@ -56,6 +55,4 @@ public class LinkInterceptor implements HandlerInterceptor {
         }
         return true;
     }
-
-
 }

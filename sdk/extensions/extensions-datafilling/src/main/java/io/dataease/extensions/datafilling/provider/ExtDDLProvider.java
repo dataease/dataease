@@ -1,6 +1,5 @@
 package io.dataease.extensions.datafilling.provider;
 
-
 import io.dataease.extensions.datafilling.dto.ExtIndexField;
 import io.dataease.extensions.datafilling.dto.ExtTableField;
 import io.dataease.extensions.datasource.dto.TableField;
@@ -200,5 +199,4 @@ public abstract class ExtDDLProvider {
     public int getMaxParams() {
         return -1;
     }
-
 }

@@ -100,7 +100,6 @@ public class TaskInfoDTO {
      */
     private String stopTime;
 
-
     /**
      * 源数据源信息
      */

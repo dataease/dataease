@@ -10,6 +10,4 @@ public interface PanelTreeAPi {
 
     @GetMapping("/tree/{keyword}")
     List<PanelTreeNodeVO> tree(@PathVariable("keyword") String keyword);
-
-
 }

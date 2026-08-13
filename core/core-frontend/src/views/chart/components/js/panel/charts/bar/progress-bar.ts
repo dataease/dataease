@@ -307,12 +307,6 @@ export class ProgressBar extends G2PlotChartView<BarOptions, G2Progress> {
       baseOption.yAxis.label.style.textAlign = textAlign
     }
 
-    /*if (baseOption.yAxis.position === 'left') {
-      baseOption.yAxis.position = 'bottom'
-    }
-    if (baseOption.yAxis.position === 'right') {
-      baseOption.yAxis.position = 'top'
-    }*/
     return baseOption
   }
   setupDefaultOptions(chart: ChartObj): ChartObj {

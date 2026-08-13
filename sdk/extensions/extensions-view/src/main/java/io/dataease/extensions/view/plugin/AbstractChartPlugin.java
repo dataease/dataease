@@ -7,7 +7,6 @@ import io.dataease.extensions.view.dto.*;
 import java.util.List;
 import java.util.Map;
 
-
 public abstract class AbstractChartPlugin {
 
     /**
@@ -58,4 +57,3 @@ public abstract class AbstractChartPlugin {
      */
     public abstract ChartViewDTO buildChart(ChartViewDTO view, ChartCalcDataResult calcResult, AxisFormatResult formatResult, CustomFilterResult filterResult);
 }
-

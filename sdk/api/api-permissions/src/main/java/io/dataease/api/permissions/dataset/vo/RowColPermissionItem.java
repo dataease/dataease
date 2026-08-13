@@ -25,5 +25,4 @@ public class RowColPermissionItem implements Serializable {
     private String type;
 
     private List<ColPermissionInfo> colPermissionInfos;
-
 }

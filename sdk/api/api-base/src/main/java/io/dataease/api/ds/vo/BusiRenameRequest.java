@@ -22,5 +22,4 @@ public class BusiRenameRequest implements Serializable {
     private String  nodeType;
     @Schema(description = "操作类型", requiredMode = Schema.RequiredMode.REQUIRED)
     private String  action;
-
 }

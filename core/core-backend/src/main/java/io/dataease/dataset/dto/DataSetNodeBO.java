@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serial;
 
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

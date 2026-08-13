@@ -85,7 +85,7 @@ public class StaticResourceServer implements StaticResourceApi {
                 try {
                     saveSingleFileToServe(fileName, entry.getValue());
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LogUtil.error(e);
                 }
             }
         }

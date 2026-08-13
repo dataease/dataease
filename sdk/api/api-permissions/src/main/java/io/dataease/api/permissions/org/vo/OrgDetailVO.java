@@ -16,5 +16,4 @@ public class OrgDetailVO {
     private Long pid;
 
     private String rootPath;
-
 }

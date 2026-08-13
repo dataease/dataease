@@ -25,5 +25,4 @@ public interface EmailApi {
     @Operation(summary = "校验邮件设置")
     @PostMapping("/setting/validate")
     void validate(@RequestBody List<SettingItemVO> settingItemVOS);
-
 }

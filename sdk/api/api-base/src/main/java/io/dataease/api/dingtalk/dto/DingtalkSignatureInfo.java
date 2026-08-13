@@ -21,6 +21,4 @@ public class DingtalkSignatureInfo implements Serializable {
     private Integer type = 0;
 
     private List<String> jsApiList = List.of("chooseChat");
-
-
 }

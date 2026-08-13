@@ -37,12 +37,10 @@ public interface ExtChartViewMapper {
             """)
     ChartViewDTO findChartViewAround(@Param("viewId") String viewId);
 
-
     @Select("""
             select DISTINCT table_id from core_chart_view_snapshot where scene_id=#{dvId}
             """)
     List<Long> findDatasetGroupIdByDvId(@Param("dvId") String dvId);
-
 
     @Select("""
             SELECT
@@ -60,6 +58,4 @@ public interface ExtChartViewMapper {
             	sccv.scene_id = #{dvId}
             """)
     List<DataSQLBotDatasetVO> findDataSQLBotDatasetDvId(@Param("dvId") String dvId);
-
-
 }

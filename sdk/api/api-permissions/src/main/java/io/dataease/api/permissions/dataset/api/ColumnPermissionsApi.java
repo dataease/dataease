@@ -37,5 +37,4 @@ public interface ColumnPermissionsApi {
     public DataSetColumnPermissionsDTO DataSetColumnPermissionInfo(@RequestBody DataSetColumnPermissionsDTO request);
 
     public List<DataSetColumnPermissionsDTO> list(@RequestBody DataSetColumnPermissionsDTO request);
-
 }

@@ -136,5 +136,4 @@ public class TaskInfoVO {
      * 所有内容可编辑
      */
     private boolean editable;
-
 }

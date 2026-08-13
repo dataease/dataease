@@ -122,7 +122,6 @@ export const useLocaleStore = defineStore('locales', {
   },
   actions: {
     async setCurrentLocale(localeMap: LocaleDropdownType) {
-      // this.locale = Object.assign(this.locale, localeMap)
       this.currentLocale.lang = localeMap?.lang
       const baseLocale = elLocaleMap[localeMap?.lang]
       const customData = await loadCustomLocaleData(localeMap?.lang)
@@ -134,7 +133,6 @@ export const useLocaleStore = defineStore('locales', {
       if (this.currentLocale.elLocale) {
         setElementPlusLocale(this.currentLocale.elLocale)
       }
-      // wsCache.set('lang', localeMap?.lang)
     },
     async setLang(language: string) {
       this.currentLocale.lang = language

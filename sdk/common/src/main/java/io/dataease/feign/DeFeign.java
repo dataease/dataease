@@ -44,12 +44,9 @@ public @interface DeFeign {
      */
     boolean dismiss404() default false;
 
-
     Class<?>[] configuration() default {};
 
-
     Class<?> fallback() default void.class;
-
 
     Class<?> fallbackFactory() default void.class;
 

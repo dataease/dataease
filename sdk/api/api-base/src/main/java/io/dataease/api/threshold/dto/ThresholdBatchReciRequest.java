@@ -14,5 +14,4 @@ public class ThresholdBatchReciRequest extends BaseReciDTO implements Serializab
     private static final long serialVersionUID = -2831988863396898760L;
 
     private List<Long> idList;
-
 }

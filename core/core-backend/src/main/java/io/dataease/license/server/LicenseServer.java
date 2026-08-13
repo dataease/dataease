@@ -25,7 +25,6 @@ public class LicenseServer implements LicenseApi {
     @Resource
     private F2CLicManage f2CLicManage;
 
-
     @Override
     public F2CLicResult update(LicenseRequest request) {
         return f2CLicManage.updateLicense(product, request.getLicense());

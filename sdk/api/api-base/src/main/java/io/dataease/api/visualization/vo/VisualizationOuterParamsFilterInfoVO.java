@@ -11,5 +11,4 @@ public class VisualizationOuterParamsFilterInfoVO {
     private  String filterComponentId;
 
     private  String filterId;
-
 }

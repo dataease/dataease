@@ -23,7 +23,6 @@ import static io.dataease.constant.AuthResourceEnum.DATASOURCE;
 @ApiSupport(order = 971)
 public interface ExportCenterApi {
 
-
     @PostMapping("/exportTasks/records")
     public Map<String, Long> exportTasks();
 
@@ -57,5 +56,4 @@ public interface ExportCenterApi {
 
     @PostMapping("/exportLimit")
     public String exportLimit();
-
 }

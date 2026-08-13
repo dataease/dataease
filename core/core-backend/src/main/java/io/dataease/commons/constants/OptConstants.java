@@ -29,5 +29,4 @@ public class OptConstants {
         //模板
         public static final int TEMPLATE = 6;
     }
-
 }

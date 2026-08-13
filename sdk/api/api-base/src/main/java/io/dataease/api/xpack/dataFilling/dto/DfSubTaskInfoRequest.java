@@ -14,5 +14,4 @@ public class DfSubTaskInfoRequest implements Serializable {
 
     @JsonSerialize(using = ToStringSerializer.class)
     private Long taskId;
-
 }

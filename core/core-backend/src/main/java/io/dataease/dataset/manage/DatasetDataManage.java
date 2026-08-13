@@ -1,4 +1,5 @@
 package io.dataease.dataset.manage;
+import io.dataease.utils.LogUtil;
 
 import io.dataease.api.chart.dto.DeSortField;
 import io.dataease.api.dataset.dto.*;
@@ -425,7 +426,7 @@ public class DatasetDataManage {
             sqlLogDTO.setSpend(sqlLogDTO.getEndTime() - sqlLogDTO.getStartTime());
             sqlLogDTO.setStatus("Completed");
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
             sqlLogDTO.setStatus("Error");
             DEException.throwException(e.getMessage());
         } finally {

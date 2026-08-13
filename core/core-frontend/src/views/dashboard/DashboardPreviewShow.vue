@@ -398,7 +398,6 @@ defineExpose({
     overflow-x: hidden;
     overflow-y: auto;
     position: relative;
-    //transition: 0.5s;
 
     &.no-data {
       background-color: rgba(245, 246, 247, 1);

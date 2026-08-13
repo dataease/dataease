@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-
 @Component
 public class CoreVisualizationExportManage {
     @Resource
@@ -313,5 +312,4 @@ public class CoreVisualizationExportManage {
         }
         return result;
     }
-
 }

@@ -15,7 +15,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
  */
 public class DSInterceptor implements HandlerInterceptor {
 
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String tenant = request.getHeader("tenant");

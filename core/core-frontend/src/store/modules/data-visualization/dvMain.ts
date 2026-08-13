@@ -1301,7 +1301,6 @@ export const dvMainStore = defineStore('dataVisualization', {
                 }
               }
               // 不存在该条件 且 条件有效 直接保存该条件
-              // !filterExist && vValid && currentFilters.push(condition)
 
               currentFilters.push(condition)
             }
@@ -1465,7 +1464,6 @@ export const dvMainStore = defineStore('dataVisualization', {
         }
       }
       // 联动的图表情况历史条件
-      // const currentFilters = []
       checkQDList.forEach(QDItem => {
         let sourceInfo = viewId + '#' + QDItem.id
         if (sourceData.option === 'jump') {
@@ -1516,7 +1514,6 @@ export const dvMainStore = defineStore('dataVisualization', {
                   }
                 }
                 // 不存在该条件 且 条件有效 直接保存该条件
-                // !filterExist && vValid && currentFilters.push(condition)
                 currentFilters.push(condition)
               }
             }
@@ -1597,9 +1594,6 @@ export const dvMainStore = defineStore('dataVisualization', {
         } else if (item.component === 'DeTabs') {
           item.propValue.forEach(tabItem => {
             tabItem.componentData?.forEach(tabComponent => {
-              console.log(
-                '==test1==' + tabComponent.id + JSON.stringify(tabComponent.linkageFilters)
-              )
               if (tabComponent.linkageFilters && tabComponent.linkageFilters.length > 0) {
                 tabComponent.linkageFilters.splice(0, tabComponent.linkageFilters.length)
                 useEmitt().emitter.emit('query-data-' + tabComponent.id)

@@ -1,6 +1,5 @@
 package io.dataease.job.schedule;
 
-
 import io.dataease.datasource.server.DatasourceServer;
 import io.dataease.utils.CommonBeanFactory;
 import io.dataease.utils.LogUtil;
@@ -9,7 +8,6 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.stereotype.Component;
-
 
 @Component
 public class CheckDsStatusJob implements Job {
@@ -25,5 +23,4 @@ public class CheckDsStatusJob implements Job {
         LogUtil.info("Begin to check ds status...");
         datasourceServer.updateDatasourceStatus();
     }
-
 }

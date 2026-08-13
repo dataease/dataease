@@ -771,7 +771,6 @@ public class HttpClientUtil {
             HttpEntity requestEntity = entityBuilder.build();
             httpPost.setEntity(requestEntity);
 
-
             try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
                 if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
                     throw new DEException(response.getStatusLine().getStatusCode(), response.toString());

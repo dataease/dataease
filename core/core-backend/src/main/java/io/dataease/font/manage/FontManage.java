@@ -75,7 +75,6 @@ public class FontManage {
         return fontDto;
     }
 
-
     public FontDto edit(FontDto fontDto) {
         if (ObjectUtils.isEmpty(fontDto.getId())) {
             return create(fontDto);
@@ -270,5 +269,4 @@ public class FontManage {
 
     private record UploadedFont(byte[] bytes, Font font) {
     }
-
 }

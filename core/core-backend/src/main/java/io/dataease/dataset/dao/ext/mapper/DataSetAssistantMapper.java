@@ -126,8 +126,6 @@ public interface DataSetAssistantMapper {
     """)
     List<Map<String, Object>> queryCommunity(@Param("ew") QueryWrapper queryWrapper);
 
-
-
     @Select("""
     <script>
     WITH user_ds_permissions AS (
@@ -219,7 +217,6 @@ public interface DataSetAssistantMapper {
     </script>
 """)
     List<Map<String, Object>> queryEnterprise(@Param("oid") Long oid, @Param("uid") Long uid, @Param("orgAdmin") boolean orgAdmin, @Param("ew") QueryWrapper queryWrapper);
-
 
     @Select("select pr.id, pr.readonly, pr.pid from per_user_role pur left join per_role pr on pur.rid = pr.id where pur.uid = #{uid} and pur.oid = #{oid} ")
     List<Map<String, Object>> roleInfoByUid(@Param("uid") Long uid, @Param("oid") Long oid);

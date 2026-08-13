@@ -16,7 +16,6 @@ import java.util.List;
 @ApiSupport(order = 899)
 public interface XpackAuthenticationApi {
 
-
     @Operation(summary = "查询列表")
     @GetMapping("/grid")
     List<XpackAuthenticationVO> grid();
@@ -92,5 +91,4 @@ public interface XpackAuthenticationApi {
     @Operation(summary = "查询状态")
     @GetMapping("/status")
     List<XpackAuthenticationStatusVO> status();
-
 }

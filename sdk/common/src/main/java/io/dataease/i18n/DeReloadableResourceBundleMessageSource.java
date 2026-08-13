@@ -15,5 +15,4 @@ public class DeReloadableResourceBundleMessageSource extends ReloadableResourceB
     private int compare(String o1, String o2) {
         return o1.substring(0, 1).compareTo(o2.substring(0, 1));
     }
-
 }

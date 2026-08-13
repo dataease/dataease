@@ -77,29 +77,23 @@ watch(editorValue, newValue => {
   emit('update:modelValue', newValue)
 })
 
-onMounted(() => {
-  console.log('初始化tinymce')
-})
+onMounted(() => {})
 
 /*
  * 图片上传 配置项
  * */
 function getImageOption() {
   return {
-    // images_upload_url: 'http://192.168.3.103:9890/common/upload',
     images_upload_handler: (blobInfo, progress) =>
       new Promise(async (resolve, reject) => {
-        // console.log(blobInfo.blobUri())
         const formData = new FormData()
         formData.append('file', blobInfo.blob(), blobInfo.filename())
-        // console.log(formData)
         // 模拟调用图片上传接口之后的结果，返回的数据如下格式
         // 格式非固定，根据业务调整
         const res = {
           code: 200,
           url: 'https://dummyimage.com/600x400'
         }
-        // console.log(res)
         if (res.code === 200) {
           // 给出的是url地址
           resolve(res.url)
@@ -116,10 +110,7 @@ function getImageOption() {
  * */
 function getPasteOption() {
   return {
-    paste_preprocess: (editor, args) => {
-      console.log(args.content)
-    },
-    // paste_remove_styles_if_webkit: false,
+    paste_preprocess: (editor, args) => {},
     /*
      * 此选项允许您指定在 WebKit 中粘贴时要保留的样式。WebKit 有一个怪癖，
      * 它将获取元素的所有计算 CSS 属性并将它们添加到编辑器中的 span 中。由于大多数用户不希望在整个文档中添加随机跨度，

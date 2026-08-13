@@ -42,7 +42,6 @@ public interface PerSettingApi {
     @GetMapping("/mfaStatus")
     Integer mfaStatus();
 
-
     @Operation(summary = "查询Hmac设置")
     @GetMapping("/hmac/query")
     List<PerSettingItemVO> hmacSetting();

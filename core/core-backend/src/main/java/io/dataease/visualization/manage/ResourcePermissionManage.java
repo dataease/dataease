@@ -23,10 +23,8 @@ import java.util.stream.Collectors;
 @Component
 public class ResourcePermissionManage {
 
-
     @Resource
     private ResourcePermissionMapper resourcePermissionMapper;
-
 
     public static final String regex2 = "\\$f2cde\\[(.*?)\\]";
 
@@ -87,7 +85,6 @@ public class ResourcePermissionManage {
         return userViewList;
     }
 
-
     private List<DatasetPermissionTemplate> getDatasetPermissionTemplate(List<CoreDatasetGroup> datasetGroups) {
         TypeReference<List<UnionDTO>> typeReference = new TypeReference<>() {
         };
@@ -137,5 +134,4 @@ public class ResourcePermissionManage {
         });
         return templateList;
     }
-
 }

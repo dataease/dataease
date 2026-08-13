@@ -18,5 +18,4 @@ public class MyBatisPlusPaginationInnerConfig {
         interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
         return interceptor;
     }
-
 }

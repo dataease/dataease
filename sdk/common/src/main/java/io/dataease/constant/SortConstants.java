@@ -10,5 +10,4 @@ public class SortConstants {
     public static final String TIME_DESC = "time_desc";
     // 时间正序
     public static final String TIME_ASC = "time_asc";
-
 }

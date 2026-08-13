@@ -40,5 +40,4 @@ public class VisualizationLinkageDTO extends VisualizationLinkageVO {
      */
     @JsonSerialize(using = ToStringSerializer.class)
     private Long tableId;
-
 }

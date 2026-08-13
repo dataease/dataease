@@ -1,6 +1,5 @@
 package io.dataease.api.permissions.auth.api;
 
-
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.permissions.auth.dto.*;
@@ -28,7 +27,6 @@ public interface InteractiveAuthApi {
     @ApiOperationSupport(order = 1)
     @GetMapping("/menuIds")
     List<Long> menuIds();
-
 
     @Operation(summary = "查询资源树")
     @ApiOperationSupport(order = 2)

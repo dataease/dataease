@@ -177,5 +177,4 @@ public class Quota2SQLObj {
         String normalized = StringUtils.defaultString(value);
         return Utils.transValue(normalized);
     }
-
 }

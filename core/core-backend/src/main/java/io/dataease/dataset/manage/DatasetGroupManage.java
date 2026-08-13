@@ -75,7 +75,6 @@ public class DatasetGroupManage {
     @Resource
     private CoreDatasourceMapper coreDatasourceMapper;
 
-
     @Resource
     private CoreUserManage coreUserManage;
 
@@ -90,7 +89,6 @@ public class DatasetGroupManage {
     private static final String leafType = "dataset";
 
     private Lock lock = new ReentrantLock();
-
 
     @Transactional
     public DatasetGroupInfoDTO save(DatasetGroupInfoDTO datasetGroupInfoDTO, boolean rename, boolean encode) throws Exception {
@@ -233,7 +231,6 @@ public class DatasetGroupManage {
             }
         }
     }
-
 
     @XpackInteract(value = "authResourceTree", replace = true, invalid = true)
     public List<BusiNodeVO> tree(BusiNodeRequest request) {

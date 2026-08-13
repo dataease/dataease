@@ -1,6 +1,5 @@
 package io.dataease.utils;
 
-
 import io.dataease.exception.DEException;
 import io.dataease.model.RSAModel;
 import io.dataease.rsa.dao.entity.CoreRsa;
@@ -31,7 +30,6 @@ public class RsaUtils {
         }
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
     }
-
 
     private static final int MAX_ENCRYPT_BLOCK = 245;
 
@@ -219,7 +217,6 @@ public class RsaUtils {
         }
 
     }
-
 
     private static final String ALGORITHM = "AES";
 

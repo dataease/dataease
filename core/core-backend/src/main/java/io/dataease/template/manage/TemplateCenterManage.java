@@ -124,7 +124,7 @@ public class TemplateCenterManage {
             return baseResponseV2Trans(templateQuery(templateParams), searchTemplateFromManage(), templateParams.get("template.url"));
         } catch (Exception e) {
             LogUtil.error(e);
-            e.printStackTrace();
+            LogUtil.error(e);
         }
         return null;
     }
@@ -155,7 +155,6 @@ public class TemplateCenterManage {
         });
         return result;
     }
-
 
     public MarketBaseResponse searchTemplateRecommend() {
         MarketTemplateV2BaseResponse v2BaseResponse = null;
@@ -197,7 +196,7 @@ public class TemplateCenterManage {
             return template.getCategories().stream()
                     .anyMatch(category -> categoryNameMatch.equals(category.getName()));
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
             return false;
         }
     }
@@ -263,7 +262,6 @@ public class TemplateCenterManage {
         Collections.sort(contents);
         return new MarketBaseResponse(url, categoryVO.stream().filter(node -> activeCategoriesName.contains(node.getLabel())).collect(Collectors.toList()), contents);
     }
-
 
     public List<String> getCategories() {
         return getCategoriesV2().stream().map(MarketMetaDataVO::getLabel)

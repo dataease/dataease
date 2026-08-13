@@ -110,7 +110,6 @@ public class DataSourceManage {
         return TreeUtils.mergeTree(nodes, BusiNodeVO.class, false);
     }
 
-
     @XpackInteract(value = "datasourceResourceTree", before = false)
     public void innerSave(DatasourceDTO dataSourceDTO) {
         CoreDatasource coreDatasource = new CoreDatasource();
@@ -158,7 +157,6 @@ public class DataSourceManage {
         return null;
     }
 
-
     @XpackInteract(value = "datasourceResourceTree", before = false)
     public void innerEdit(CoreDatasource coreDatasource) {
         UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
@@ -169,7 +167,6 @@ public class DataSourceManage {
         coreDatasourceMapper.update(coreDatasource, updateWrapper);
         coreOptRecentManage.saveOpt(coreDatasource.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE, OptConstants.OPT_TYPE.UPDATE);
     }
-
 
     @XpackInteract(value = "datasourceResourceTree", before = false)
     public void innerEditName(CoreDatasource coreDatasource) {
@@ -190,7 +187,6 @@ public class DataSourceManage {
         coreDatasourceMapper.update(null, updateWrapper);
     }
 
-
     @XpackInteract(value = "datasourceResourceTree", before = false)
     public void move(DatasourceDTO dataSourceDTO) {
         Long id = dataSourceDTO.getId();
@@ -210,7 +206,6 @@ public class DataSourceManage {
 
         coreOptRecentManage.saveOpt(sourceData.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE, OptConstants.OPT_TYPE.UPDATE);
     }
-
 
     public void encryptDsConfig() {
         coreDatasourceMapper.selectList(null).forEach(dataSource -> {

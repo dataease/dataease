@@ -1706,7 +1706,6 @@ public class ChartDataBuild {
                 List<ChartDimensionDTO> dimensionList = new ArrayList<>();
                 List<ChartQuotaDTO> quotaList = new ArrayList<>();
 
-
                 for (int j = 0; j < xAxis.size(); j++) {
                     ChartDimensionDTO chartDimensionDTO = new ChartDimensionDTO();
                     chartDimensionDTO.setId(xAxis.get(j).getId());
@@ -1777,7 +1776,6 @@ public class ChartDataBuild {
                 }
             }
 
-
             Map<String, Object> obj = new HashMap<>();
             obj.put("field", xField.toString());
             obj.put("category", xField.toString());
@@ -1798,7 +1796,6 @@ public class ChartDataBuild {
                 dimensionList.add(chartDimensionDTO);
             }
             obj.put("dimensionList", dimensionList);
-
 
             List<Object> values = new ArrayList<>();
 
@@ -2053,5 +2050,4 @@ public class ChartDataBuild {
         map.put("tableRow", tableRow);
         return map;
     }
-
 }

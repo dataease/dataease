@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class VisualizationTemplateExtendDataDTO extends VisualizationTemplateExtendDataVO {
 
-
     public VisualizationTemplateExtendDataDTO(Long dvId, Long viewId, String viewDetails) {
         super();
         super.setId(IDUtils.snowID());

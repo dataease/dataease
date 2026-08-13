@@ -65,7 +65,6 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
     @Autowired
     private SnapshotDataVisualizationInfoMapper snapshotDataVisualizationInfoMapper;
 
-
     @Override
     public VisualizationOuterParamsDTO queryWithVisualizationId(String visualizationId) {
         VisualizationOuterParamsDTO visualizationOuterParamsDTO = extOuterParamsMapper.queryWithVisualizationIdSnapshot(visualizationId);

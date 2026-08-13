@@ -1267,8 +1267,6 @@ export function getPivotConditions(chart: Chart) {
       : hexColorToRGBA(tableHeader.tableHeaderColBgColor, basicStyle.alpha)
     const filedValueMap = getFieldValueMap(chart)
 
-
-
     const targetRulesMap = {} // columnName -> Array<{ rule, sourceField }>
     const xFields = chart.xAxis.map(f => f.dataeaseName)
     const xExtFields = chart.xAxisExt.map(f => f.dataeaseName)
@@ -2919,7 +2917,6 @@ class CustomMergedCell extends MergedCell {
       lineHeight: cellTheme.horizontalBorderWidth
     })
   }
-
 
   protected getTextStyle() {
     const textStyle = super.getTextStyle()

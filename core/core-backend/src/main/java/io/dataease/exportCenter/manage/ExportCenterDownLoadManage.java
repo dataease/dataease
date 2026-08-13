@@ -1,6 +1,5 @@
 package io.dataease.exportCenter.manage;
 
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.chart.dto.DeSortField;
 import io.dataease.api.chart.dto.ViewDetailField;

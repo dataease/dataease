@@ -14,5 +14,4 @@ public class MarketTemplateV2ItemResult {
     private MarketApplicationVO application;
 
     private MarketLatestReleaseVO latestRelease;
-
 }

@@ -1,6 +1,5 @@
 package io.dataease.extensions.datasource.dto;
 
-
 import lombok.Data;
 
 import java.util.ArrayList;

@@ -91,7 +91,6 @@ public class XpackShareManage {
         return xpackShareMapper.selectOne(queryWrapper);
     }
 
-
     @Transactional
     public void switcher(Long resourceId) {
         XpackShare originData = queryByResource(resourceId);
@@ -166,7 +165,6 @@ public class XpackShareManage {
         originData.setAutoPwd(ObjectUtils.isEmpty(autoPwd) || autoPwd);
         xpackShareMapper.updateById(originData);
     }
-
 
     public IPage<XpackSharePO> querySharePage(int goPage, int pageSize, VisualizationWorkbranchQueryRequest request) {
         Long uid = AuthUtils.getUser().getUserId();

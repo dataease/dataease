@@ -56,6 +56,4 @@ public class SyncDatasourceDTO {
     private String status;
 
     private String statusRemark;
-
-
 }

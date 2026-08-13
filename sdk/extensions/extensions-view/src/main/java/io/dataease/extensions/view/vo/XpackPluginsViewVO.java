@@ -28,5 +28,4 @@ public class XpackPluginsViewVO implements Serializable {
     private String render;
 
     private Map<String, String> staticMap;
-
 }

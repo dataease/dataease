@@ -86,12 +86,6 @@ const navigateBg = computed(() => appearanceStore.getNavigateBg)
 const navigate = computed(() => appearanceStore.getNavigate)
 
 const initAiBase = async () => {
-  // const aiTipsCheck = wsCache.get('DE-AI-TIPS-CHECK')
-  // if (aiTipsCheck === 'CHECKED') {
-  //   showOverlay.value = false
-  // } else {
-  //   showOverlay.value = true
-  // }
   await findBaseParams().then(rsp => {
     const params = rsp.data
     if (params && params['ai.baseUrl']) {

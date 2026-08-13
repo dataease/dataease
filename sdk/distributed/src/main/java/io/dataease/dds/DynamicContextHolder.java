@@ -12,16 +12,13 @@ public class DynamicContextHolder {
         }
     };
 
-
     public static String peek() {
         return CONTEXT_HOLDER.get().peek();
     }
 
-
     public static void push(String dataSource) {
         CONTEXT_HOLDER.get().push(dataSource);
     }
-
 
     public static void poll() {
         Deque<String> deque = CONTEXT_HOLDER.get();
@@ -30,5 +27,4 @@ public class DynamicContextHolder {
             CONTEXT_HOLDER.remove();
         }
     }
-
 }

@@ -167,10 +167,6 @@ service.interceptors.response.use(
     response: AxiosResponse<any> & { config: InternalAxiosRequestConfig & { loading?: boolean } }
   ) => {
     executeVersionHandler(response)
-    /* if (response.headers['x-de-refresh-token']) {
-      wsCache.set('user.token', response.headers['x-de-refresh-token'])
-      wsCache.set('user.exp', new Date().getTime() + 90000)
-    } */
     if (response.headers['x-de-link-token']) {
       linkStore.setLinkToken(response.headers['x-de-link-token'])
     }
@@ -280,9 +276,6 @@ service.interceptors.response.use(
     if (header.has('DE-FORBIDDEN-FLAG')) {
       showMsg('当前权限不允许访问，请联系管理员', '-changed-')
     }
-    /* if ([400, 401].includes(error?.response.status)) {
-      return Promise.reject(error)
-    } */
     if (error?.response.status === 400) {
       return Promise.reject(error)
     }

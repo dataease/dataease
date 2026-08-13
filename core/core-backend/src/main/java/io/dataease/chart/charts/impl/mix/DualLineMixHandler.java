@@ -28,5 +28,4 @@ public class DualLineMixHandler extends GroupMixHandler {
         var xAxisBase = xAxis.subList(0, xAxis.size() - xAxisExt.size());
         return ChartDataBuild.transMixChartDataAntV(xAxisBase, xAxis, xAxisExt, yAxis, view, data, isDrill, true);
     }
-
 }

@@ -261,10 +261,6 @@ const loadPluginCategory = data => {
         }
       }
 
-      .li-custom a:hover {
-        //background: none;
-      }
-
       .li-a {
         color: #1f2329;
       }

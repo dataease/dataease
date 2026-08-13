@@ -1,4 +1,5 @@
 package io.dataease.chart.charts.impl.table;
+import io.dataease.utils.LogUtil;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.chart.dto.PageInfo;
@@ -243,7 +244,7 @@ public class TableNormalHandler extends DefaultChartHandler {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         }
         // 自定义汇总
         var basicStyle = (Map<String, Object>) view.getCustomAttr().get("basicStyle");

@@ -24,7 +24,6 @@ public class XpackSaml2VO implements Serializable {
 
     private String mapping;
 
-
     @JsonIgnore
     private PrivateKey spPrivateKey;
     @JsonIgnore
@@ -35,5 +34,4 @@ public class XpackSaml2VO implements Serializable {
     private int assertionValidityTime = 300;
     private boolean wantAssertionsSigned = true;
     private boolean wantAuthnRequestsSigned = true;
-
 }

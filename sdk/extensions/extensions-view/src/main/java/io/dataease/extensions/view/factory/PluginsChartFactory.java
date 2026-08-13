@@ -16,7 +16,6 @@ public class PluginsChartFactory {
 
     private static final Map<String, DataEaseChartPlugin> templateMap = new ConcurrentHashMap<>();
 
-
     public static AbstractChartPlugin getInstance(String render, String type) {
         if (!LicenseUtil.licenseValid()) DEException.throwException("插件功能只对企业版本可用！");
         String key = render + "_" + type;

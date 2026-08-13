@@ -4640,7 +4640,6 @@ span {
   .drag-list {
     height: calc(100% - 26px);
     min-height: 24px;
-    //overflow: auto;
     padding: 2px 0;
   }
 

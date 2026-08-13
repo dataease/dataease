@@ -51,5 +51,4 @@ public interface TaskLogApi {
 
     @GetMapping("/query2Root")
     String query2Root(@PathVariable("params") Map<String, String> params);
-
 }

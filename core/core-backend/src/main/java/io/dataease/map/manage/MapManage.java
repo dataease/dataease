@@ -572,7 +572,6 @@ public class MapManage {
         }
     }
 
-
     /**
      * 校验地图文件内容 GeoJSON 做 FeatureCollection 校验
      */
@@ -591,7 +590,6 @@ public class MapManage {
             DEException.throwException("GeoJSON properties 必须是对象");
         }
     }
-
 
     /**
      * 校验 GeoJSON 里每个 Feature.geometry 是否合法

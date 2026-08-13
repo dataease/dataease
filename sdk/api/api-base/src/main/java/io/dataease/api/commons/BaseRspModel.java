@@ -1,6 +1,5 @@
 package io.dataease.api.commons;
 
-
 import lombok.Data;
 
 import java.io.Serializable;
@@ -13,6 +12,4 @@ public class BaseRspModel implements Serializable {
     private String requestId;
 
     private Object responseInfo;
-
-
 }

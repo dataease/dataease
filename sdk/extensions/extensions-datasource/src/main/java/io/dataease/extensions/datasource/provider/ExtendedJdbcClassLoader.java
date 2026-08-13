@@ -1,5 +1,5 @@
 package io.dataease.extensions.datasource.provider;
-
+import io.dataease.utils.LogUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +16,6 @@ public class ExtendedJdbcClassLoader extends URLClassLoader {
     public void setDriver(String driver) {
         this.driver = driver;
     }
-
 
     public ExtendedJdbcClassLoader(URL[] urls, ClassLoader parent) {
         super(urls, parent);
@@ -46,7 +45,6 @@ public class ExtendedJdbcClassLoader extends URLClassLoader {
                 // Ignore
             }
 
-
             try {
                 if (getParent() != null) {
                     c = super.loadClass(name, resolve);
@@ -75,8 +73,6 @@ public class ExtendedJdbcClassLoader extends URLClassLoader {
         }
     }
 
-
-
     public void addFile(String s) throws IOException {
         File f = new File(s);
         addFile(f);
@@ -90,7 +86,7 @@ public class ExtendedJdbcClassLoader extends URLClassLoader {
         try {
             this.addURL(u);
         } catch (Throwable t) {
-            t.printStackTrace();
+            LogUtil.error(t);
             throw new IOException("Error, could not add URL to system classloader");
         }
     }

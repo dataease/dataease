@@ -16,7 +16,6 @@ public class XpackSharePwdValidator implements Serializable {
     @Serial
     private static final long serialVersionUID = 5723073697210793005L;
 
-
     @Schema(description = "密钥")
     private String ciphertext;
 }

@@ -1,6 +1,5 @@
 package io.dataease.commons.utils;
 
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -42,5 +41,4 @@ public class MybatisInterceptorConfig {
         this.undoClass = interceptorClass.getName();
         this.undoMethod = undoMethod;
     }
-
 }

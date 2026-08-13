@@ -163,5 +163,4 @@ public class Dimension2SQLObj {
                 .fieldAlias(fieldAlias)
                 .build();
     }
-
 }

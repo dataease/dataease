@@ -16,7 +16,6 @@ public abstract class DataFillingPlugin extends ExtDDLProvider implements DataEa
         ExtDDLProviderFactory.loadPlugin(viewConfig.getType(), this);
     }
 
-
     public XpackPluginsDfVO getConfig() {
         DataEasePluginVO pluginInfo = null;
         try {

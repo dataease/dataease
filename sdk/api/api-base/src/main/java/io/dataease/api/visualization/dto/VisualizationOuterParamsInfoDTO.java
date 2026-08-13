@@ -9,7 +9,6 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Data
 public class VisualizationOuterParamsInfoDTO extends VisualizationOuterParamsInfoVO {
     private String dvId;
@@ -25,5 +24,4 @@ public class VisualizationOuterParamsInfoDTO extends VisualizationOuterParamsInf
     private List<VisualizationOuterParamsDsInfoVO> dsInfoVOList = new ArrayList<>();
 
     private List<VisualizationOuterParamsFilterInfoVO> filterInfoVOList = new ArrayList<>();
-
 }

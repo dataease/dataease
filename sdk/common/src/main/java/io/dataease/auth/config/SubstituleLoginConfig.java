@@ -34,7 +34,6 @@ public class SubstituleLoginConfig {
 
     private static boolean ready = false;
 
-
     @ConditionalOnMissingBean(name = "loginServer")
     @Bean
     public Map<String, Object> substituleLoginData(ResourceLoader resourceLoader) throws IOException {

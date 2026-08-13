@@ -158,7 +158,6 @@ onMounted(() => {
   height: 84px;
   margin: 0 auto;
   overflow: hidden;
-  //inset: 0 0 30px;
   box-sizing: border-box;
   background-size: contain;
 }

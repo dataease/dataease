@@ -37,5 +37,4 @@ public class VisualizationStoreVO implements Serializable {
     private Integer extFlag;
 
     private Integer extFlag1;
-
 }

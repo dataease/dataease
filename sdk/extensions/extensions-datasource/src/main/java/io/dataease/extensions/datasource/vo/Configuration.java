@@ -50,7 +50,6 @@ public class Configuration {
     private String sshKeyPassword;
     private String url;
 
-
     public String getLHost(){
         if(useSSH){
             return "127.0.0.1";
@@ -127,5 +126,4 @@ public class Configuration {
             convertDatabase(jdbcUrl);
         }
     }
-
 }

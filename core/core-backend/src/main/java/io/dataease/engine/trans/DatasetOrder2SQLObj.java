@@ -34,10 +34,8 @@ public class DatasetOrder2SQLObj {
                     }
                 }
 
-
             }
             meta.setXOrders(xOrders);
         }
     }
-
 }

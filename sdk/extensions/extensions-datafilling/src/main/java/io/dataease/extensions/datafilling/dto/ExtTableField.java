@@ -184,7 +184,6 @@ public class ExtTableField implements Serializable {
         datetime //日期
     }
 
-
     @Data
     @Builder
     @AllArgsConstructor
@@ -212,5 +211,4 @@ public class ExtTableField implements Serializable {
         private String comment;
 
     }
-
 }

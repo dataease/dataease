@@ -34,5 +34,4 @@ public class TaskInfoGridVO implements Serializable {
     private String creator;
 
     private Long createTime;
-
 }

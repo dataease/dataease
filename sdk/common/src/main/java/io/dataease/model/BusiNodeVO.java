@@ -13,7 +13,6 @@ import java.util.List;
 @Data
 public class BusiNodeVO implements TreeResultModel<BusiNodeVO>, Serializable {
 
-
     @Serial
     private static final long serialVersionUID = 8191619596741217494L;
 

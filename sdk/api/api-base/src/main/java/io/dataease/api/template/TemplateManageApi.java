@@ -36,7 +36,6 @@ public interface TemplateManageApi {
     @Operation(summary = "明细查询")
     List<String> findCategoriesByTemplateIds(@RequestBody TemplateManageRequest request) throws Exception;
 
-
     @PostMapping("/find")
     @Operation(summary = "查询")
     List<TemplateManageDTO> find(@RequestBody TemplateManageRequest request);
@@ -64,5 +63,4 @@ public interface TemplateManageApi {
     @PostMapping("/batchDelete")
     @Operation(summary = "批量删除")
     void batchDelete(@RequestBody TemplateManageBatchRequest request);
-
 }

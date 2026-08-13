@@ -126,5 +126,4 @@ public class Order2SQLObj {
                 .orderDirection(f.getOrderDirection().equalsIgnoreCase("asc") ? "asc" : "desc").build();
         return result;
     }
-
 }

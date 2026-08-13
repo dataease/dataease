@@ -1,4 +1,5 @@
 package io.dataease.commons.utils;
+import io.dataease.utils.LogUtil;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.permissions.user.vo.UserFormVO;
@@ -27,7 +28,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 
 import static io.dataease.chart.manage.ChartDataManage.START_END_SEPARATOR;
 
@@ -178,7 +178,7 @@ public class DeSqlparserUtils {
                             replaceParamItem = true;
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LogUtil.error(e);
                     }
                 }
                 if (!replaceParamItem) {
@@ -240,7 +240,7 @@ public class DeSqlparserUtils {
                 sql = replaceQuotedIdentifiers(sql, prefix, suffix);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         }
         return finalizePreparedSql(sql);
     }
@@ -261,7 +261,6 @@ public class DeSqlparserUtils {
         }
         return false;
     }
-
 
     private SqlVariableDetails findSqlVariableDetail(List<SqlVariableDetails> sqlVariableDetails, String variableName) {
         if (CollectionUtils.isEmpty(sqlVariableDetails)) {

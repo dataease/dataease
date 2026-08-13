@@ -123,7 +123,6 @@ public class SysParameterManage {
         });
     }
 
-
     public Map<String, String> groupVal(String groupKey) {
         QueryWrapper<CoreSysSetting> queryWrapper = new QueryWrapper<>();
         queryWrapper.likeRight("pkey", groupKey);
@@ -167,7 +166,6 @@ public class SysParameterManage {
         item.put("pval", pval);
         return item;
     }
-
 
     @Transactional
     public void saveGroup(List<SettingItemVO> vos, String groupKey) {
@@ -223,7 +221,6 @@ public class SysParameterManage {
         validVo.setId(IDUtils.snowID());
         configList.add(validVo);
 
-
         QueryWrapper<CoreSysSetting> queryWrapper = new QueryWrapper<>();
         queryWrapper.likeRight("pkey", key);
         coreSysSettingMapper.delete(queryWrapper);
@@ -258,5 +255,4 @@ public class SysParameterManage {
     public void insert(CoreSysSetting coreSysSetting) {
         coreSysSettingMapper.insert(coreSysSetting);
     }
-
 }

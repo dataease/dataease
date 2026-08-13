@@ -21,5 +21,4 @@ public class TaskLogVO {
     private String executorAddress;
 
     private String clearType;
-
 }

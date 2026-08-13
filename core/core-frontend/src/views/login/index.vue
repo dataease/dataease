@@ -534,8 +534,6 @@ onMounted(async () => {
   }
 
   .login-image {
-    //object-fit: cover;
-    //background: url(../../assets/login-desc-de.png);
     background-size: 100% 100%;
     width: 100%;
     height: 100%;

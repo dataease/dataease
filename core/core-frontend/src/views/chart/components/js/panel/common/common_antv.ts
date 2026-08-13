@@ -1768,9 +1768,6 @@ export async function getMapScene(
 
       scene.map.deMapProvider = 'qq'
       scene.map.deMapAutoFit = !!basicStyle.autoFit
-      // scene.map.deMapAutoZoom = scene.map.getZoom()
-      // scene.map.deMapAutoLng = scene.map.getCenter().getLng()
-      // scene.map.deMapAutoLat = scene.map.getCenter().getLat()
     }
     // 去除天地图自己的缩放按钮
     if (mapKey.mapType === 'tianditu') {

@@ -31,10 +31,8 @@ import java.util.stream.Collectors;
 @Component("chartViewThresholdManage")
 public class ChartViewThresholdManage {
 
-
     @Resource
     private ChartViewManege chartViewManege;
-
 
     public String convertThresholdRules(Long chartId, String thresholdRules, String resourceTable) {
         ChartViewDTO details = chartViewManege.getDetails(chartId, resourceTable);
@@ -516,7 +514,6 @@ public class ChartViewThresholdManage {
         }
     }
 
-
     private String formatValue(List<Map<String, Object>> rows, FilterTreeItem item) {
         DatasetTableFieldDTO field = item.getField();
         String dataeaseName = field.getDataeaseName();
@@ -694,5 +691,4 @@ public class ChartViewThresholdManage {
             return valueLong == targetLong;
         }
     }
-
 }

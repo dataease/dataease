@@ -40,7 +40,6 @@ public class ShareTicketManage {
     @Resource
     private XpackShareExtMapper xpackShareExtMapper;
 
-
     public CoreShareTicket getByTicket(String ticket) {
         QueryWrapper<CoreShareTicket> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("ticket", ticket);

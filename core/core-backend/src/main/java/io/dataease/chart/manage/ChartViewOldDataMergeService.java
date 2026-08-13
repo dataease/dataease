@@ -1,4 +1,5 @@
 package io.dataease.chart.manage;
+import io.dataease.utils.LogUtil;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -66,7 +67,7 @@ public class ChartViewOldDataMergeService {
                 coreChartViewMapper.updateById(view);
             } catch (Exception e) {
                 // do nothing,to continue
-                e.printStackTrace();
+                LogUtil.error(e);
             }
         }
     }
@@ -180,7 +181,7 @@ public class ChartViewOldDataMergeService {
                 coreChartViewMapper.updateById(view);
             } catch (Exception e) {
                 // do nothing,to continue
-                e.printStackTrace();
+                LogUtil.error(e);
             }
         }
     }

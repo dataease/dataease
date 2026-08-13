@@ -22,5 +22,4 @@ public class SysVariableValueItem {
     private boolean valid = true;
     private List<SysVariableValueDto> valueList;
     private SysVariableDto sysVariableDto;
-
 }

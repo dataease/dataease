@@ -14,5 +14,4 @@ public class DataSQLBotDatasetVO implements Serializable {
     private String dsId;
 
     private String dsName;
-
 }

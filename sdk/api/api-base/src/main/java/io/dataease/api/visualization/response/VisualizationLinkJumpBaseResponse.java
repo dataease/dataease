@@ -19,7 +19,6 @@ public class VisualizationLinkJumpBaseResponse {
     // 获取仪表板类型映射
     private Map<String, List<String>> baseJumpInfoVisualizationMap;
 
-
     public VisualizationLinkJumpBaseResponse(Map<String, VisualizationLinkJumpInfoDTO> baseJumpInfoMap, Map<String, List<String>> baseJumpInfoVisualizationMap) {
         this.baseJumpInfoMap = baseJumpInfoMap;
         this.baseJumpInfoVisualizationMap = baseJumpInfoVisualizationMap;

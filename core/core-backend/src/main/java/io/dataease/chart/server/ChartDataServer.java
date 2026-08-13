@@ -79,7 +79,6 @@ public class ChartDataServer implements ChartDataApi {
     private Integer extractPageSize;
     private final Long sheetLimit = 1000000L;
 
-
     @DeLinkPermit("#p0.sceneId")
     @Override
     public ChartViewDTO getData(ChartViewDTO chartViewDTO) throws Exception {
@@ -158,7 +157,6 @@ public class ChartDataServer implements ChartDataApi {
         return Math.toIntExact(viewLimit);
     }
 
-
     public static String valueFormatter(BigDecimal value, FormatterCfgDTO formatter) {
         if (value == null) {
             return null;
@@ -226,7 +224,6 @@ public class ChartDataServer implements ChartDataApi {
         return sb.toString();
     }
 
-
     private static String addThousandSeparator(String numStr, Pattern pattern) {
         Matcher matcher = pattern.matcher(numStr);
         StringBuffer sb = new StringBuffer();
@@ -236,7 +233,6 @@ public class ChartDataServer implements ChartDataApi {
         matcher.appendTail(sb);
         return sb.toString();
     }
-
 
     @DeLinkPermit("#p0.dvId")
     @Override
@@ -372,7 +368,6 @@ public class ChartDataServer implements ChartDataApi {
     public static void setExcelData(Sheet detailsSheet, CellStyle cellStyle, Object[] header, List<Object[]> details, ViewDetailField[] detailFields, Integer[] excelTypes, ChartViewDTO viewInfo, Workbook wb) {
         setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, null, viewInfo, wb);
     }
-
 
     public static void setExcelData(Sheet detailsSheet, CellStyle cellStyle, Object[] header, List<Object[]> details, ViewDetailField[] detailFields, Integer[] excelTypes, Comment comment, ChartViewDTO viewInfo, Workbook wb) {
         List<CellStyle> styles = new ArrayList<>();
@@ -1208,5 +1203,4 @@ public class ChartDataServer implements ChartDataApi {
         public Map<String, Long> countMap = new HashMap<>();
         public Map<String, BigDecimal> sumOfSquaresMap = new HashMap<>();
     }
-
 }

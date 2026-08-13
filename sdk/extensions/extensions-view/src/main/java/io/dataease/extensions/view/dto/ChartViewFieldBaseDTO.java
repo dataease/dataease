@@ -47,5 +47,4 @@ public class ChartViewFieldBaseDTO extends DatasetTableFieldDTO implements Seria
     private FormatterCfgDTO formatterCfg;
 
     private String chartShowName;
-
 }

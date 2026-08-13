@@ -1,6 +1,5 @@
 package io.dataease.constant;
 
-
 public enum BusiResourceEnum {
     PANEL(1), SCREEN(2), DATASET(3), DATASOURCE(4), DATA_FILLING(8);
 

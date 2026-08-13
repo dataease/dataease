@@ -33,12 +33,10 @@ public abstract class DataEaseDatasourcePlugin extends Provider implements DataE
     private final String DEFAULT_FILE_PATH = "/opt/dataease2.0/drivers/plugin";
     private static final Pattern SAFE_DRIVER_FILE_NAME = Pattern.compile("[A-Za-z0-9._-]+\\.jar");
 
-
     @Override
     public List<String> getSchema(DatasourceRequest datasourceRequest) {
         return new ArrayList<>();
     }
-
 
     @Override
     public void loadPlugin() {

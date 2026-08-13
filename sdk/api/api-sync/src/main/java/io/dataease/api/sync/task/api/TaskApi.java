@@ -76,5 +76,4 @@ public interface TaskApi {
 
     @GetMapping("/getLogResourceId/{id}")
     Long getLogResourceId(@PathVariable("id") String id);
-
 }

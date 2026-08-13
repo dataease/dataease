@@ -8,7 +8,6 @@ import org.apache.ibatis.annotations.*;
 @Mapper
 public interface DataSourceExtMapper extends BaseMapper<DataSourceNodePO> {
 
-
     @Select("select  unix_timestamp(current_timestamp())  as currentTimestamp")
     @Results(
             id = "selectTimestamp",
@@ -17,5 +16,4 @@ public interface DataSourceExtMapper extends BaseMapper<DataSourceNodePO> {
             }
     )
     Ctimestamp selectTimestamp();
-
 }

@@ -255,7 +255,6 @@ public class ChartDataManage {
             filters.addAll(chartExtRequest.getWebParamsFilters());
         }
 
-
         //联动过滤条件和外部参数过滤条件全部加上
         if (ObjectUtils.isNotEmpty(filters)) {
             for (ChartExtFilterDTO request : filters) {
@@ -854,9 +853,6 @@ public class ChartDataManage {
                 }
             });
             // 阈值告警处理 统一在发布时处理
-//            if (CollectionUtils.isNotEmpty(disuseChartIdList)) {
-//                chartViewManege.disuse(disuseChartIdList);
-//            }
         }
     }
 

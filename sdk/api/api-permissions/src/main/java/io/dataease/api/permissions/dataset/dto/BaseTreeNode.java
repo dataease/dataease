@@ -1,6 +1,5 @@
 package io.dataease.api.permissions.dataset.dto;
 
-
 import io.dataease.model.ITreeBase;
 import lombok.Data;
 
@@ -25,5 +24,4 @@ public class BaseTreeNode implements ITreeBase<BaseTreeNode> {
         this.text = text;
         this.nodeType = nodeType;
     }
-
 }

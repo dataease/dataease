@@ -1,6 +1,5 @@
 package io.dataease.api.permissions.variable.api;
 
-
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.permissions.variable.dto.SysVariableDto;
@@ -71,5 +70,4 @@ public interface SysVariablesApi {
 
     @Hidden
     Map<Long, Map<String, String>> queryBatchSysVariable(List<Long> uids);
-
 }

@@ -13,5 +13,4 @@ public class ChartFieldCompareCustomDTO {
     private String compareTime;
     private List<String> currentTimeRange;
     private List<String> compareTimeRange;
-
 }

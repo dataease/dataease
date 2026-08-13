@@ -14,7 +14,6 @@ public class WhitelistUtils {
 
     private static String contextPath;
 
-
     public static String getContextPath() {
         if (StringUtils.isBlank(contextPath)) {
             contextPath = Objects.requireNonNull(CommonBeanFactory.getBean(Environment.class)).getProperty("server.servlet.context-path", String.class);

@@ -56,7 +56,6 @@ import java.util.stream.Collectors;
 
 import static io.dataease.engine.utils.Utils.validateSqlInjectionRisk;
 
-
 @Component("calciteProvider")
 public class CalciteProvider extends Provider {
 
@@ -91,7 +90,7 @@ public class CalciteProvider extends Provider {
                         try {
                             extendedJdbcClassLoader.addFile(tmp);
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            LogUtil.error(e);
                         }
                     }
                 }
@@ -203,7 +202,7 @@ public class CalciteProvider extends Provider {
             }
             list = getDataResult(resultSet);
         } catch (Exception | AssertionError e) {
-            e.printStackTrace();
+            LogUtil.error(e);
             String msg;
             if (e.getCause() != null && e.getCause().getCause() != null) {
                 msg = e.getMessage() + " [" + e.getCause().getCause().getMessage() + "]";
@@ -279,13 +278,13 @@ public class CalciteProvider extends Provider {
                 map.put(name, type);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         } finally {
             if (resultSet != null) {
                 try {
                     resultSet.close();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    LogUtil.error(e);
                 }
             }
         }
@@ -345,7 +344,7 @@ public class CalciteProvider extends Provider {
                     try {
                         resultSet.close();
                     } catch (SQLException e) {
-                        e.printStackTrace();
+                        LogUtil.error(e);
                     }
                 }
             }
@@ -388,7 +387,7 @@ public class CalciteProvider extends Provider {
                     try {
                         resultSet.close();
                     } catch (SQLException e) {
-                        e.printStackTrace();
+                        LogUtil.error(e);
                     }
                 }
             }
@@ -606,7 +605,7 @@ public class CalciteProvider extends Provider {
                 try {
                     resultSet.close();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    LogUtil.error(e);
                 }
             }
         }
@@ -668,7 +667,7 @@ public class CalciteProvider extends Provider {
                 try {
                     resultSet.close();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    LogUtil.error(e);
                 }
             }
         }
@@ -761,7 +760,7 @@ public class CalciteProvider extends Provider {
                 try {
                     resultSet.close();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    LogUtil.error(e);
                 }
             }
         }
@@ -1013,7 +1012,7 @@ public class CalciteProvider extends Provider {
                 Driver driver = (Driver) extendedJdbcClassLoader.loadClass(driverClass).newInstance();
                 DriverManager.registerDriver(new DriverShim(driver));
             } catch (Exception e) {
-                e.printStackTrace();
+                LogUtil.error(e);
             }
         }
     }
@@ -1673,7 +1672,6 @@ public class CalciteProvider extends Provider {
                     tableSqls.add(new QueryAndParams("SELECT name, comment FROM system.tables where database = ?", database));
                 }
 
-
                 break;
             default:
                 tableSqls.add(new QueryAndParams("show tables"));
@@ -1804,7 +1802,7 @@ public class CalciteProvider extends Provider {
                         try {
                             customJdbcClassLoader.addFile(tmp);
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            LogUtil.error(e);
                         }
                     }
                 }

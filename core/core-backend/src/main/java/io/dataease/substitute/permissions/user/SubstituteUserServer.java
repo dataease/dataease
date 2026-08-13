@@ -1,6 +1,5 @@
 package io.dataease.substitute.permissions.user;
 
-
 import io.dataease.api.permissions.user.dto.LangSwitchRequest;
 import io.dataease.api.permissions.user.vo.CurIpVO;
 import io.dataease.api.permissions.user.vo.UserFormVO;

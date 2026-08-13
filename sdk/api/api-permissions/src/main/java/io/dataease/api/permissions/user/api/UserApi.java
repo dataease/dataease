@@ -25,7 +25,6 @@ import java.util.Map;
 
 import static io.dataease.constant.AuthResourceEnum.USER;
 
-
 @Tag(name = "用户")
 @ApiSupport(order = 888, author = "fit2cloud-someone")
 @DeApiPath(value = "/user", rt = USER)
@@ -46,7 +45,6 @@ public interface UserApi {
     @DePermit({"m:read", "#p0 + ':read'"})
     @GetMapping("/queryById/{id}")
     UserFormVO queryById(@PathVariable("id") Long id);
-
 
     @Operation(summary = "查询个人信息")
     @GetMapping("/personInfo")
@@ -136,7 +134,6 @@ public interface UserApi {
     @Operation(summary = "批量导入")
     @PostMapping("/batchImport")
     UserImportVO batchImport(@RequestPart(value = "file") MultipartFile file);
-
 
     @Operation(summary = "下载批量导入失败记录")
     @Parameter(name = "key", description = "导入结果key", required = true, in = ParameterIn.PATH)
@@ -244,7 +241,6 @@ public interface UserApi {
     @GetMapping("/lang")
     String userLang();
 
-
     @Operation(summary = "解锁用户")
     @Parameter(name = "id", description = "用户ID", required = true, in = ParameterIn.PATH)
     @DePermit({"m:read", "#p0 + ':manage'"})
@@ -253,5 +249,4 @@ public interface UserApi {
 
     @Hidden
     List<UserReciVO> getFormatRecipient(Long oid, List<Long> uidList, List<Long> ridList);
-
 }

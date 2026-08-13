@@ -22,5 +22,4 @@ public class WatermarkContentDTO {
     private Integer watermark_y_space;
 
     private Integer watermark_fontsize;
-
 }

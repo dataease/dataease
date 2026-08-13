@@ -15,7 +15,4 @@ public class WsMessage<T> implements Serializable {
     private String topic;
 
     private T data;
-
-
 }
-

@@ -25,5 +25,4 @@ public class EsResponse {
         private String name;
         private String type;
     }
-
 }

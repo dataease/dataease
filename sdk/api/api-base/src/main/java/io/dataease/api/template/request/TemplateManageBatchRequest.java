@@ -17,5 +17,4 @@ public class TemplateManageBatchRequest {
     private List<String> templateIds;
 
     private List<String> categories;
-
 }

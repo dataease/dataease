@@ -51,6 +51,4 @@ public class ServletUtils {
     public static boolean apisixCheck() {
         return true;
     }
-
-
 }

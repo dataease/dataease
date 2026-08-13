@@ -15,7 +15,6 @@ public class TenantFlywayUtil {
     private static final String FLYWAY_LOCATION = "classpath:db/migration";
     private static final String FLYWAY_MANAGE_LOCATION = "classpath:db/distributed/manage";
 
-
     private static Configuration buildConfiguration(DataSource dataSource, boolean isManager, String appName) {
         ClassicConfiguration configuration = new ClassicConfiguration();
         configuration.setValidateOnMigrate(true);
@@ -38,5 +37,4 @@ public class TenantFlywayUtil {
     private static String getVersionTableName(String appName) {
         return String.format(FLYWAY_TABLENAME_FORMAT, appName);
     }
-
 }

@@ -1,6 +1,5 @@
 package io.dataease.dataset.manage;
 
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.permissions.dataset.api.ColumnPermissionsApi;
 import io.dataease.api.permissions.dataset.api.RowPermissionsApi;

@@ -546,7 +546,6 @@ const handleInnerMouseDownOnShape = e => {
 
 const handleMouseDownOnShape = e => {
   if (element.value['editing']) {
-    // e.preventDefault()
     e.stopPropagation()
     return
   }
@@ -555,9 +554,6 @@ const handleMouseDownOnShape = e => {
   nextTick(() => eventBus.emit('componentClick'))
   dvMainStore.setInEditorStatus(true)
   dvMainStore.setClickComponentStatus(true)
-  // if (isPreventDrop(element.value.component)) {
-  //   e.preventDefault()
-  // }
 
   e.stopPropagation()
   // 锁定 非编辑状态 冻结状态 不进行移动

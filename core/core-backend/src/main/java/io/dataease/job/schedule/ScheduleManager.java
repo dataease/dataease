@@ -1,6 +1,5 @@
 package io.dataease.job.schedule;
 
-
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
 import io.dataease.utils.LogUtil;
@@ -396,7 +395,7 @@ public class ScheduleManager {
                 returnMap.put("groupName", groupName);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         }
 
         return returnMap;

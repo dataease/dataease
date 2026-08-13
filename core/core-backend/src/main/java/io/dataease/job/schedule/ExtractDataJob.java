@@ -1,6 +1,5 @@
 package io.dataease.job.schedule;
 
-
 import io.dataease.datasource.manage.DatasourceSyncManage;
 import io.dataease.utils.CommonBeanFactory;
 import org.quartz.JobExecutionContext;
@@ -18,5 +17,4 @@ public class ExtractDataJob extends DeScheduleJob {
     void businessExecute(JobExecutionContext context) {
         datasourceSyncManage.extractData(datasetTableId, taskId, context);
     }
-
 }

@@ -1,6 +1,5 @@
 package io.dataease.datasource.provider;
 
-
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.server.DatasourceServer;
@@ -17,7 +16,6 @@ public class H2EngineProvider extends EngineProvider {
     private static final String creatTableSql =
             "CREATE TABLE IF NOT EXISTS \"TABLE_NAME\"" +
                     "Column_Fields;";
-
 
     @Override
     public String createView(String name, String viewSQL) {
@@ -59,7 +57,6 @@ public class H2EngineProvider extends EngineProvider {
         return (insertSql + values.substring(0, values.length() - 1)).replaceAll("'null'", "null");
     }
 
-
     @Override
     public String dropTable(String name) {
         return "DROP TABLE IF EXISTS `" + name + "`";
@@ -74,7 +71,6 @@ public class H2EngineProvider extends EngineProvider {
     public String replaceTable(String name) {
         return "ALTER TABLE `FROM_TABLE` rename to `FROM_TABLE_tmp`; ALTER TABLE `TO_TABLE` rename to `FROM_TABLE`; DROP TABLE IF EXISTS `FROM_TABLE_tmp`;".replace("FROM_TABLE", name).replace("TO_TABLE", TableUtils.tmpName(name));
     }
-
 
     @Override
     public String createTableSql(String tableName, List<TableField> tableFields, CoreDeEngine engine) {

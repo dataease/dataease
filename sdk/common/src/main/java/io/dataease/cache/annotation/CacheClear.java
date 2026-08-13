@@ -16,5 +16,4 @@ public @interface CacheClear {
     String[] cacheNames() default {};
 
     String key() default "";
-
 }

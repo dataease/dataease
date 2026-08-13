@@ -12,5 +12,4 @@ public class CoreLicManage {
     public String getVersion() {
         return version;
     }
-
 }

@@ -24,5 +24,4 @@ public class TableField {
     private boolean fieldPk;
     private boolean fieldIndex;
     private Object defaultValue;
-
 }

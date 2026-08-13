@@ -40,11 +40,9 @@ public interface DataVisualizationApi {
     @Operation(summary = "查询可视化资源")
     DataVisualizationVO findById(@RequestBody DataVisualizationBaseRequest request);
 
-
     @GetMapping("/findCopyResource/{dvId}/{busiFlag}")
     @Operation(summary = "查询临时复制资源")
     DataVisualizationVO findCopyResource(@PathVariable("dvId") Long dvId, @PathVariable("busiFlag") String busiFlag);
-
 
     @PostMapping("/saveCanvas")
     @DePermit(value = {"#p0.pid + ':manage'"}, busiFlag = "#p0.type")
@@ -60,12 +58,10 @@ public interface DataVisualizationApi {
     @Operation(summary = "画布变动校验")
     String checkCanvasChange(@RequestBody DataVisualizationBaseRequest request);
 
-
     @PostMapping("/updateCanvas")
     @DePermit(value = {"#p0.id + ':manage'"}, busiFlag = "#p0.type")
     @Operation(summary = "画布更新")
     DataVisualizationVO updateCanvas(@RequestBody DataVisualizationBaseRequest request);
-
 
     @PostMapping("/updatePublishStatus")
     @DePermit(value = {"#p0.id + ':manage'"}, busiFlag = "#p0.type")
@@ -118,11 +114,9 @@ public interface DataVisualizationApi {
     @Operation(summary = "查询可视化资源类型")
     String findDvType(@PathVariable("dvId") Long dvId);
 
-
     @GetMapping("/updateCheckVersion/{dvId}")
     @Operation(summary = "更新校验版本")
     String updateCheckVersion(@PathVariable("dvId") Long dvId);
-
 
     /**
      * 从模板解压可视化资源 模板来源包括 模板市场、内部模板管理
@@ -142,7 +136,6 @@ public interface DataVisualizationApi {
     @Operation(summary = "解析可视化资源模板文件信息")
     DataVisualizationVO decompressionLocalFile(@RequestPart(value = "file") MultipartFile file);
 
-
     @GetMapping("/viewDetailList/{dvId}")
     @Operation(summary = "仪表板视图明细数据")
     List<VisualizationViewTableDTO> detailList(@PathVariable("dvId") Long dvId);
@@ -151,27 +144,21 @@ public interface DataVisualizationApi {
     @Operation(summary = "仪表板视图明细数据")
     VisualizationExport2AppVO export2AppCheck(@RequestBody VisualizationAppExportRequest appExportRequest);
 
-
     @PostMapping("/exportLogApp")
     @Operation(summary = "导出应用模板日志记录")
     void exportLogApp(@RequestBody DataVisualizationBaseRequest request) throws Exception;
-
 
     @PostMapping("/exportLogTemplate")
     @Operation(summary = "导出样式模板日志记录")
     void exportLogTemplate(@RequestBody DataVisualizationBaseRequest request) throws Exception;
 
-
-
     @PostMapping("/exportLogPDF")
     @Operation(summary = "导出PDF日志记录")
     void exportLogPDF(@RequestBody DataVisualizationBaseRequest request) throws Exception;
 
-
     @PostMapping("/exportLogImg")
     @Operation(summary = "导出图片日志记录")
     void exportLogImg(@RequestBody DataVisualizationBaseRequest request) throws Exception;
-
 
     @Hidden
     List<DatasetPermissionTemplate> queruDatasetPermissionTemplate(Long resourceId);

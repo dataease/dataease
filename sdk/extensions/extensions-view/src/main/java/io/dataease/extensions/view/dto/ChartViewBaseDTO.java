@@ -238,5 +238,4 @@ public class ChartViewBaseDTO implements Serializable {
      * 字段排序优先级
      */
     List<SortAxis> sortPriority;
-
 }

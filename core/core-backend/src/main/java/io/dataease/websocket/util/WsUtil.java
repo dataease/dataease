@@ -1,6 +1,5 @@
 package io.dataease.websocket.util;
 
-
 import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.utils.AuthUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -36,6 +35,4 @@ public class WsUtil {
     public static boolean isOnLine(Long userId) {
         return ONLINE_USERS.contains(userId);
     }
-
-
 }

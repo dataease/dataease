@@ -49,7 +49,6 @@ public class StaticResourceUtils {
         return prefix + StringUtils.removeStart(string, prefix);
     }
 
-
     /**
      * Ensures the string contain suffix.
      *
@@ -107,7 +106,7 @@ public class StaticResourceUtils {
                     // Close InputStream
                     inputStream.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LogUtil.error(e);
                 }
             }
         }
@@ -143,5 +142,4 @@ public class StaticResourceUtils {
         }
         return false;
     }
-
 }

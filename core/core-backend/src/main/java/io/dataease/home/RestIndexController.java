@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping
 public class RestIndexController {
 
-
     @Resource
     private DeIndexManage deIndexManage;
 
@@ -29,18 +28,15 @@ public class RestIndexController {
         return RsaUtils.generateSymmetricKey();
     }
 
-
     @GetMapping("/model")
     @ResponseBody
     public boolean model() {
         return ModelUtils.isDesktop();
     }
 
-
     @GetMapping("/xpackModel")
     @ResponseBody
     public Boolean xpackModel() {
         return deIndexManage.xpackModel();
     }
-
 }

@@ -50,7 +50,6 @@ public class EngineManage {
     @Resource
     private DeTemplateVersionMapper deTemplateVersionMapper;
 
-
     public CoreDeEngine info() throws DEException {
         List<CoreDeEngine> deEngines = deEngineMapper.selectList(null);
         if (CollectionUtils.isEmpty(deEngines)) {
@@ -68,7 +67,6 @@ public class EngineManage {
         BeanUtils.copyBean(coreDatasource, deEngines.get(0));
         return coreDatasource;
     }
-
 
     public CoreDatasource deEngine() {
         List<CoreDeEngine> deEngines = deEngineMapper.selectList(null);
@@ -153,7 +151,6 @@ public class EngineManage {
         engine.setDescription("默认引擎");
         deEngineMapper.insert(engine);
     }
-
 
     public enum engineType {
         mysql("Mysql"),

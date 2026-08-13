@@ -1,6 +1,5 @@
 package io.dataease.datasource.provider;
 
-
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.server.DatasourceServer;
@@ -26,7 +25,6 @@ public class MysqlEngineProvider extends EngineProvider {
     private static final String creatTableSql =
             "CREATE TABLE IF NOT EXISTS `TABLE_NAME`" +
                     "Column_Fields;";
-
 
     @Override
     public String createView(String name, String viewSQL) {
@@ -83,7 +81,6 @@ public class MysqlEngineProvider extends EngineProvider {
 
         return insetSql;
     }
-
 
     @Override
     public String dropTable(String name) {

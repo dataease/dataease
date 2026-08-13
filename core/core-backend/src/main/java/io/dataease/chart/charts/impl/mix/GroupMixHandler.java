@@ -48,5 +48,4 @@ public class GroupMixHandler extends MixHandler {
     public Map<String, Object> buildNormalResult(ChartViewDTO view, AxisFormatResult formatResult, CustomFilterResult filterResult, List<String[]> data) {
         return super.buildNormalResult(view, formatResult, filterResult, data);
     }
-
 }

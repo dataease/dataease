@@ -5,7 +5,6 @@ import io.dataease.datasource.server.DatasourceServer;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
 
-
 @Component
 public class Schedular {
 
@@ -16,5 +15,4 @@ public class Schedular {
     public void updateStopJobStatus() {
         datasourceServer.updateStopJobStatus();
     }
-
 }

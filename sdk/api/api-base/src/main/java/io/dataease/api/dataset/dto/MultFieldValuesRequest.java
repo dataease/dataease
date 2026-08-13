@@ -1,6 +1,5 @@
 package io.dataease.api.dataset.dto;
 
-
 import io.dataease.extensions.view.dto.ChartExtFilterDTO;
 import lombok.Data;
 
@@ -15,5 +14,4 @@ public class MultFieldValuesRequest {
 
     private DeSortDTO sort;
     private Integer resultMode = 0;
-
 }

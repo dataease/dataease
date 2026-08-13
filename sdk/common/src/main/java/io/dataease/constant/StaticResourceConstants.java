@@ -7,7 +7,6 @@ import java.io.File;
 
 import static io.dataease.utils.StaticResourceUtils.ensureSuffix;
 
-
 public class StaticResourceConstants {
 
     public static final String FILE_PROTOCOL = "file:";

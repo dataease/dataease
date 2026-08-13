@@ -10,7 +10,6 @@ import java.io.Serializable;
 @Data
 public class DatasourceDTO implements Serializable {
 
-
     @Serial
     private static final long serialVersionUID = 1175287571828910222L;
 
@@ -81,7 +80,6 @@ public class DatasourceDTO implements Serializable {
      * 上次成功更新时间
      */
     private Long lastSyncTime;
-
 
     private String qrtzInstance;
 

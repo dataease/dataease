@@ -26,18 +26,13 @@ public class ChartBasePO implements Serializable {
 
     private String xAxis;
 
-
     private String xAxisExt;
-
 
     private String yAxis;
 
-
     private String yAxisExt;
 
-
     private String extStack;
-
 
     private String extBubble;
 

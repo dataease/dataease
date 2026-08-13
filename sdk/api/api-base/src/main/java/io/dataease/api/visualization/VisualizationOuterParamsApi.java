@@ -12,7 +12,6 @@ import java.util.List;
 @Tag(name = "可视化管理:外部参数")
 public interface VisualizationOuterParamsApi {
 
-
     @GetMapping("/queryWithVisualizationId/{dvId}")
     @Operation(summary = "查询")
     VisualizationOuterParamsDTO queryWithVisualizationId(@PathVariable("dvId") String dvId);

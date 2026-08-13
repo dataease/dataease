@@ -14,7 +14,6 @@ public class ColumnPermissionItem {
 
     private DesensitizationRule desensitizationRule;
 
-
     @Data
     public class DesensitizationRule {
         private BuiltInRule builtInRule;

@@ -1,6 +1,5 @@
 package io.dataease.chart.charts.impl;
 
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.engine.sql.SQLProvider;

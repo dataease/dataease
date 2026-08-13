@@ -1,6 +1,5 @@
 package io.dataease.datasource.provider;
 
-
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.context.AnalysisContext;
@@ -42,7 +41,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
 
 public class ExcelUtils {
     public static final String UFEFF = "\uFEFF";
@@ -617,7 +615,6 @@ public class ExcelUtils {
         }
     }
 
-
     private List<ExcelSheetData> parseExcel(String filename, InputStream inputStream, boolean isPreview, String originFilename) throws IOException {
         List<ExcelSheetData> excelSheetDataList = new ArrayList<>();
         String suffix = filename.substring(filename.lastIndexOf(".") + 1);
@@ -933,5 +930,4 @@ public class ExcelUtils {
             }
         }
     }
-
 }

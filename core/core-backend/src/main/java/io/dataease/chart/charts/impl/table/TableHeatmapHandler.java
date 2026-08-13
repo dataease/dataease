@@ -78,6 +78,4 @@ public class TableHeatmapHandler extends DefaultChartHandler {
         calcResult.setOriginData(data);
         return calcResult;
     }
-
 }
-

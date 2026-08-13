@@ -138,5 +138,4 @@ public class TokenFilter implements Filter {
         }
         httpResponse.getWriter().write(Objects.requireNonNull(JsonUtil.toJSONString(responseEntity.getBody()).toString()));
     }
-
 }

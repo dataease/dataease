@@ -16,5 +16,3 @@ public class BubbleMapHandler extends ExtQuotaChartHandler {
         return super.formatAxis(view);
     }
 }
-
-

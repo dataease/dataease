@@ -19,7 +19,6 @@ public class CorsConfig implements WebMvcConfigurer {
     @Value("${dataease.cors-strict:false}")
     private boolean corsStrict;
 
-
     @Value("#{'${dataease.origin-list:http://127.0.0.1:8100}'.split(',')}")
     private List<String> originList;
 

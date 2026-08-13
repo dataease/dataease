@@ -112,5 +112,4 @@ public class SqlUtils {
             DEException.throwException("使用 Calcite 进行语法分析发生了异常:" + e);
         }
     }
-
 }

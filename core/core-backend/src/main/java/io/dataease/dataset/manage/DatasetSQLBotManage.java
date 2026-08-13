@@ -61,7 +61,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.sql.Types;
 
-
 @Component
 public class DatasetSQLBotManage {
 
@@ -129,7 +128,6 @@ public class DatasetSQLBotManage {
         DataSetColumnPermissionsDTO dataSetColumnPermissionsDTO = new DataSetColumnPermissionsDTO();
         dataSetColumnPermissionsDTO.setAuthTargetId(uid);
         dataSetColumnPermissionsDTO.setAuthTargetType("user");
-        // dataSetColumnPermissionsDTO.setEnable(true);
         List<DataSetColumnPermissionsDTO> dataSetColumnPermissionsDTOS = columnPermissionsApi.list(dataSetColumnPermissionsDTO);
 
         if (CollectionUtils.isNotEmpty(roleIds)) {
@@ -141,11 +139,9 @@ public class DatasetSQLBotManage {
                 for (DataSetColumnPermissionsDTO dto : roleDataSetColumnPermissionsDTOS) {
                     List<Long> userIdList = JsonUtil.parseList(dto.getWhiteListUser(), listTypeReference);
                     if (CollectionUtils.isEmpty(userIdList) || !userIdList.contains(uid)) {
-                        //  roleColumnPermissionsDTOS.add(columnPermissionsDTO);
                         dataSetColumnPermissionsDTOS.add(dto);
                     }
                 }
-                // dataSetColumnPermissionsDTOS.addAll(roleDataSetColumnPermissionsDTOS);
             }
         }
         if (CollectionUtils.isEmpty(dataSetColumnPermissionsDTOS)) {
@@ -158,7 +154,6 @@ public class DatasetSQLBotManage {
         List<DataSetRowPermissionsTreeDTO> datasetRowPermissions = permissionManage.getRowPermissionsTree(null, uid);
         return datasetRowPermissions.stream().collect(Collectors.groupingBy(DataSetRowPermissionsTreeDTO::getDatasetId));
     }
-
 
     public List<DataSQLBotDatasetVO> getDatasetList(String dvInfo) {
         return extChartViewMapper.findDataSQLBotDatasetDvId(dvInfo);
@@ -401,7 +396,6 @@ public class DatasetSQLBotManage {
                 }
                 return fieldColumnPermissionItems.stream().map(ColumnPermissionItem::getOpt).toList().contains(ColumnPermissionConstants.Desensitization);
             }).collect(Collectors.toList());
-            // fields = permissionManage.filterColumnPermissions(fields, desensitizationList, datasetGroupInfoDTO.getId(), null);
             if (ObjectUtils.isEmpty(fields)) {
                 DEException.throwException(Translator.get("i18n_no_column_permission"));
             }
@@ -478,22 +472,6 @@ public class DatasetSQLBotManage {
                 voIterator.remove();
             }
         }
-        /*vos.forEach(vo -> {
-            Map<String, Object> dsRowData = vo.getRowData();
-            List<SQLBotAssistanTable> tables = vo.getTables();
-            tables.forEach(table -> {
-                Long datasetGroupId = table.getDatasetGroupId();
-                List<DataSetColumnPermissionsDTO> columnPermissionsDTOS = ObjectUtils.isEmpty(colPermissionMap) ? null : colPermissionMap.get(datasetGroupId);
-                List<DataSetRowPermissionsTreeDTO> rowPermissionsTreeDTOS = ObjectUtils.isEmpty(rowPermissionMap) ? null : rowPermissionMap.get(datasetGroupId);
-                if (table.isNeedTransform() || ObjectUtils.isNotEmpty(columnPermissionsDTOS) || ObjectUtils.isNotEmpty(rowPermissionsTreeDTOS)) {
-                    try {
-                        rebuildTable(table, columnPermissionsDTOS, rowPermissionsTreeDTOS, dsRowData);
-                    } catch (Exception e) {
-                        LogUtil.error(e);
-                    }
-                }
-            });
-        });*/
     }
 
     private SQLBotAssistantField buildField(Map<String, Object> row) {
@@ -522,7 +500,6 @@ public class DatasetSQLBotManage {
         field.setRowData(fieldRowData);
         return field;
     }
-
 
     private DataSQLBotAssistantVO buildDs(Map<String, Object> row) {
         Object dsConfig = row.get("cd_configuration");
@@ -573,7 +550,6 @@ public class DatasetSQLBotManage {
                     coreDatasource = engineManage.getDeEngine();
                 }
                 if (StringUtils.isNotEmpty(coreDatasource.getStatus()) && !"Error".equalsIgnoreCase(coreDatasource.getStatus())) {
-//                    DEException.throwException(Translator.get("i18n_invalid_ds"));
                     BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
                     datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
                     Provider provider = ProviderFactory.getProvider(coreDatasource.getType());
@@ -700,5 +676,4 @@ public class DatasetSQLBotManage {
         }
         return "'" + value.toString().replace("'", "''") + "'";
     }
-
 }
