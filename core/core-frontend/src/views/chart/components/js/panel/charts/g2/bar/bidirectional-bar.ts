@@ -20,6 +20,7 @@ import {
   TOOLTIP_ITEM_TPL,
   TOOLTIP_TITLE_TPL
 } from '../../../common/common_antv'
+import { bindPlotBackgroundClick } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 
 const { t } = useI18n()
 
@@ -281,6 +282,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       }
     })
     newChart.on('interval:click', action)
+    bindPlotBackgroundClick(newChart, { axis: basicStyle.layout === 'vertical' ? 'x' : 'y' })
     configXAxisLengthLimit(chart, newChart)
     // 开始渲染
     handleChartDashboardHidden(chart, options)

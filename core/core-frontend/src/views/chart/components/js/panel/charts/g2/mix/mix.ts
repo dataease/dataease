@@ -33,7 +33,9 @@ import {
 } from './common'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 import {
+  bindPlotBackgroundClick,
   createTooltipWrapper,
+  getBackgroundInteractionState,
   getSeriesIndexMapByRelations,
   getMixTooltipGroupIndex,
   getMixTooltipGroupName,
@@ -122,6 +124,7 @@ export class ColumnLineMix extends G2ChartView {
       children: [
         {
           type: 'interval',
+          state: getBackgroundInteractionState(),
           data: {
             type: 'inline',
             value: leftData,
@@ -154,6 +157,7 @@ export class ColumnLineMix extends G2ChartView {
         },
         {
           type: 'line',
+          state: getBackgroundInteractionState(),
           data: rightData,
           encode: {
             x: 'field',
@@ -176,6 +180,7 @@ export class ColumnLineMix extends G2ChartView {
         },
         {
           type: 'point',
+          state: getBackgroundInteractionState(),
           data: rightData,
           encode: {
             x: 'field',
@@ -218,6 +223,7 @@ export class ColumnLineMix extends G2ChartView {
 
     newChart.on('point:click', action)
     newChart.on('interval:click', action)
+    bindPlotBackgroundClick(newChart, { markTypes: ['interval', 'point'] })
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
     new G2TooltipCarousel(newChart, chart, [...leftData, ...rightData]).start()

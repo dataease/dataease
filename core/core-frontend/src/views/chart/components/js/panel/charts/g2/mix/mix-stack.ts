@@ -35,7 +35,9 @@ import {
 import { registerSymbol, Symbols } from '@antv/g2/esm/utils/marker'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 import {
+  bindPlotBackgroundClick,
   createTooltipWrapper,
+  getBackgroundInteractionState,
   getSeriesIndexMapByRelations,
   getMixTooltipGroupIndex,
   getMixTooltipGroupName,
@@ -141,6 +143,7 @@ export class StackLineMix extends G2ChartView {
           children: [
             {
               type: 'interval',
+              state: getBackgroundInteractionState(),
               data: {
                 type: 'inline',
                 value: leftData,
@@ -172,6 +175,7 @@ export class StackLineMix extends G2ChartView {
             },
             {
               type: 'line',
+              state: getBackgroundInteractionState(),
               data: rightData,
               encode: {
                 x: 'field',
@@ -197,6 +201,7 @@ export class StackLineMix extends G2ChartView {
             },
             {
               type: 'point',
+              state: getBackgroundInteractionState(),
               data: rightData,
               encode: {
                 x: 'field',
@@ -241,6 +246,7 @@ export class StackLineMix extends G2ChartView {
 
     newChart.on('point:click', action)
     newChart.on('interval:click', action)
+    bindPlotBackgroundClick(newChart, { markTypes: ['interval', 'point'] })
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
     new G2TooltipCarousel(newChart, chart, [...leftData, ...rightData]).start()
