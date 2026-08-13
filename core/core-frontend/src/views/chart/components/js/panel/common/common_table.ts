@@ -574,6 +574,69 @@ export function getStyle(chart: Chart, dataConfig: S2DataConfig): S2Style {
         style.colCell.width = basicStyle.tableColumnWidth
         break
       }
+      case 'colAdapt': {
+        style.layoutWidthType = 'colAdaptive'
+        const parentNodeWidthMap = {}
+        const nodeMaxWidthMap = {}
+        const quotaLabelMap = chart.yAxis?.reduce((p, n) => {
+          p[n.dataeaseName] = n.chartShowName || n.name
+          return p
+        }, {}) || {}
+        let calcCount = 50
+        // 透视表列自适应仅按最后两层列头内容计算宽度，最多采样 50 个节点
+        style.colCell.width = node => {
+          const spreadsheet = node.spreadsheet
+          const colHeaderTheme = spreadsheet.theme.colCell.bolderText
+          const padding = spreadsheet.theme.colCell.cell.padding
+          const paddingWidth = (padding?.left || 8) + (padding?.right || 8) + 12
+          // 小计、总计和第一层表头直接按文本宽度计算
+          if (node.isTotals || node.parent.id === 'root') {
+            let label = node.value
+            if (node.field === EXTRA_FIELD) {
+              label = quotaLabelMap[node.value] || label
+            }
+            return spreadsheet.measureTextWidth(label, colHeaderTheme) + paddingWidth
+          }
+
+          const parentWidth = parentNodeWidthMap[node.parent.id]
+          if (!parentWidth || calcCount < 50) {
+            const parentLabel = node.parent.value
+            const parentTextWidth =
+              spreadsheet.measureTextWidth(parentLabel, colHeaderTheme) + paddingWidth
+            parentNodeWidthMap[node.parent.id] = parentTextWidth
+            const siblingsTextWidthMap = {}
+            const siblingsWidth = node.parent.children.reduce((p, sibling) => {
+              let label = sibling.value
+              if (sibling.field === EXTRA_FIELD) {
+                label = quotaLabelMap[sibling.value] || label
+              }
+              const pureTextWidth = spreadsheet.measureTextWidth(label, colHeaderTheme)
+              if (sibling.field === EXTRA_FIELD) {
+                siblingsTextWidthMap[sibling.value] = pureTextWidth
+              }
+              calcCount++
+              return p + pureTextWidth + paddingWidth
+            }, 0)
+            const siblingFields = Object.keys(siblingsTextWidthMap)
+            const expandOffsetWidth =
+              siblingFields.length && siblingsWidth < parentTextWidth
+                ? (parentTextWidth - siblingsWidth) / siblingFields.length
+                : 0
+            siblingFields.forEach(field => {
+              const width =
+                siblingsTextWidthMap[field] + Math.ceil(expandOffsetWidth) + paddingWidth
+              nodeMaxWidthMap[field] = Math.max(nodeMaxWidthMap[field] || 0, width)
+            })
+            return nodeMaxWidthMap[node.value]
+          }
+
+          return (
+            nodeMaxWidthMap[node.value] ||
+            spreadsheet.measureTextWidth(node.value, colHeaderTheme) + paddingWidth
+          )
+        }
+        break
+      }
       // 查看详情用，均分铺满
       default: {
         delete style.layoutWidthType

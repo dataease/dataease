@@ -2,6 +2,7 @@ import { parseJson } from '@/views/chart/components/js/util'
 import {
   getTooltipDisplayMode,
   getTooltipWrapper,
+  getThemeContrastColor,
   listenerTooltipShow,
   switchTooltipWrapperHost,
   TOOLTIP_HOVER_LEAVE_EVENT
@@ -159,6 +160,10 @@ class G2TooltipCarousel {
     return this.chart.type === 'line'
   }
 
+  private isPieChart(): boolean {
+    return ['pie', 'pie-donut', 'pie-rose', 'pie-donut-rose'].includes(this.chart.type)
+  }
+
   /**
    * 判断图表是否为混合图表
    * @private
@@ -183,6 +188,12 @@ class G2TooltipCarousel {
 
   private isColumnChart(): boolean {
     return ['bar', 'bar-stack', 'bar-group', 'bar-group-stack', 'percentage-bar-stack'].includes(
+      this.chart.type
+    )
+  }
+
+  private isGroupedOrStackedColumnChart(): boolean {
+    return ['bar-stack', 'bar-group', 'bar-group-stack', 'percentage-bar-stack'].includes(
       this.chart.type
     )
   }
@@ -570,6 +581,7 @@ class G2TooltipCarousel {
     const isColumn = this.isColumnChart()
     const isColumnMix = this.isColumnMixChart()
     const isDualLineMix = this.isDualLineMixChart()
+    const isPie = this.isPieChart()
     const renderedData = this.getRenderedCarouselData(originalData || tooltipData.data.data)
     if (isColumn && !renderedData) {
       this.clearElementState()
@@ -585,19 +597,29 @@ class G2TooltipCarousel {
       return
     }
     if (isColumn) {
-      // 柱图轮播只保留当前柱子的选中框，其它柱子不进入淡化态
+      const selectionData = this.getColumnSelectionMatchData(highlightData)
+      // 分组和堆叠柱按当前维度选中全部子柱，其它维度不进入淡化态
       this.newChart.emit('element:select', {
-        data: { data: [highlightData] }
+        data: { data: [selectionData] }
       })
-      this.applyColumnSelectionState(highlightData)
-      this.scheduleColumnSelectionState(highlightData)
+      // 所有柱形图复用已有背景高亮能力，轮播时同时展示当前分类背景
+      this.newChart.emit('element:highlight', {
+        data: { data: finalTooltipData.data.data }
+      })
+      this.applyColumnSelectionState(selectionData)
+      this.scheduleColumnSelectionState(selectionData)
     } else if (isColumnMix && highlightData) {
-      // 含柱组合图轮播也需要走 select，避免只显示 tooltip/背景而没有选中态
+      // 含柱组合图轮播只选中当前柱形元素
       this.newChart.emit('element:select', {
         data: { data: [highlightData] }
       })
       this.applyColumnSelectionState(highlightData)
       this.scheduleColumnSelectionState(highlightData)
+    } else if (isPie && highlightData) {
+      // 饼图轮播使用 selected，避免覆盖普通悬浮 active 样式
+      this.newChart.emit('element:select', {
+        data: { data: [highlightData] }
+      })
     } else if (!isDualLineMix && highlightData) {
       // 双线组合图轮播只展示 tooltip，避免 G2 region 高亮使用历史坐标造成错位选中
       // G2 elementHighlight 从 e.data.data 读取 datum，不能复用 elementSelect 的数组结构
@@ -695,6 +717,16 @@ class G2TooltipCarousel {
     return Object.keys(matchData).length ? matchData : undefined
   }
 
+  private getColumnSelectionMatchData(matchData: Record<string, any>) {
+    if (!this.isGroupedOrStackedColumnChart()) {
+      return matchData
+    }
+    const dimensionMatchData = Object.fromEntries(
+      Object.entries(matchData).filter(([key]) => !['category', 'group'].includes(key))
+    )
+    return Object.keys(dimensionMatchData).length ? dimensionMatchData : matchData
+  }
+
   private applyColumnSelectionState(matchData: Record<string, any>) {
     if (typeof this.newChart?.setState !== 'function') {
       this.applyColumnSelectionAttributes(matchData)
@@ -726,12 +758,15 @@ class G2TooltipCarousel {
   }
 
   private applyColumnSelectionAttributes(matchData: Record<string, any>) {
-    this.getRenderedElements('interval').forEach(element => {
+    const intervalElements = this.getRenderedElements('interval')
+    let selectedElement
+    intervalElements.forEach(element => {
       if (this.isMatchData(this.getElementDatum(element), matchData)) {
+        selectedElement = element
         this.setDisplayObjectAttributes(element, {
           opacity: 1,
           fillOpacity: 1,
-          stroke: 'black',
+          stroke: getThemeContrastColor(this.chart),
           lineWidth: 1
         })
         return
@@ -741,7 +776,50 @@ class G2TooltipCarousel {
         fillOpacity: 1
       })
     })
+    if (selectedElement) {
+      this.alignColumnSelectionBackground(selectedElement, intervalElements)
+    }
     this.flushCanvasRender()
+  }
+
+  private alignColumnSelectionBackground(selectedElement: any, intervalElements: any[]) {
+    const selectedDimension = this.getDatumField(this.getElementDatum(selectedElement))
+    const dimensionElements =
+      selectedDimension === undefined || selectedDimension === null
+        ? [selectedElement]
+        : intervalElements.filter(element => {
+            const dimension = this.getDatumField(this.getElementDatum(element))
+            return `${dimension}` === `${selectedDimension}`
+          })
+    const dimensionBounds = dimensionElements
+      .map(element => element.getRenderBounds?.())
+      .filter(bounds => Number.isFinite(bounds?.min?.[0]) && Number.isFinite(bounds?.max?.[0]))
+    if (!dimensionBounds.length) {
+      return
+    }
+    const dimensionCenterX =
+      (Math.min(...dimensionBounds.map(bounds => bounds.min[0])) +
+        Math.max(...dimensionBounds.map(bounds => bounds.max[0]))) /
+      2
+    const backgrounds = Array.from(
+      this.newChart
+        ?.getContext?.()
+        ?.canvas?.document?.getElementsByClassName?.('element-background') || []
+    ) as any[]
+    backgrounds.forEach(background => {
+      const backgroundBounds = background.getRenderBounds?.()
+      const backgroundCenterX = (backgroundBounds?.min?.[0] + backgroundBounds?.max?.[0]) / 2
+      const backgroundX = Number(this.getDisplayObjectAttribute(background, 'x'))
+      if (!Number.isFinite(backgroundCenterX) || !Number.isFinite(backgroundX)) {
+        return
+      }
+      // 基础柱按单柱中心，分组和堆叠柱按同一维度整体中心校准背景
+      this.setDisplayObjectAttribute(
+        background,
+        'x',
+        backgroundX + dimensionCenterX - backgroundCenterX
+      )
+    })
   }
 
   private isMatchData(data: any, matchData: Record<string, any>) {
@@ -854,14 +932,15 @@ class G2TooltipCarousel {
   }
 
   private clearElementState() {
-    const shouldClearSelect = this.isColumnChart() || this.isColumnMixChart()
+    const shouldClearColumnSelect = this.isColumnChart() || this.isColumnMixChart()
+    const shouldClearSelect = shouldClearColumnSelect || this.isPieChart()
     // 基础折线和双线组合图不展示轮播背景，但需要清掉历史交互残留
     const shouldClearBackground =
-      shouldClearSelect || this.isDualLineMixChart() || this.isBasicLineChart()
+      shouldClearColumnSelect || this.isDualLineMixChart() || this.isBasicLineChart()
     if (shouldClearSelect) {
       this.newChart.emit('element:unselect', {})
     }
-    if (shouldClearSelect) {
+    if (shouldClearColumnSelect) {
       this.clearColumnSelectionState()
     }
     this.newChart.emit('element:unhighlight', {})

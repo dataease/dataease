@@ -28,7 +28,7 @@
     width="480px"
     :show-close="false"
   >
-    <div class="share-dialog-container">
+    <div ref="shareDialogRef" class="share-dialog-container">
       <div class="copy-link">
         <div class="open-share flex-align-center">
           <el-switch size="small" v-model="shareEnable" @change="enableSwitcher" />
@@ -251,6 +251,7 @@ const pwdRef = ref(null)
 const expCheckbox = ref()
 const pwdCheckbox = ref()
 const loadingInstance = ref<any>(null)
+const shareDialogRef = ref()
 const dialogVisible = ref(false)
 const overTimeEnable = ref(false)
 const passwdEnable = ref(false)
@@ -376,16 +377,19 @@ const disabledDate = date => {
 }
 
 const showLoading = () => {
-  loadingInstance.value = ElLoading.service({ target: '.share-dialog-container' })
+  if (!shareDialogRef.value) return
+  if (loadingInstance.value) return
+  loadingInstance.value = ElLoading.service({ target: shareDialogRef.value })
 }
 const closeLoading = () => {
   loadingInstance.value?.close()
+  loadingInstance.value = null
 }
 
 const share = () => {
   if (!props.disabled) {
     dialogVisible.value = true
-    loadShareInfo(validatePeRequire)
+    nextTick(() => loadShareInfo(validatePeRequire))
   }
 }
 
@@ -418,11 +422,17 @@ const setPageInfo = () => {
 }
 
 const enableSwitcher = () => {
+  showLoading()
   const resourceId = props.resourceId
   const url = `/share/switcher/${resourceId}`
-  request.post({ url }).then(() => {
-    loadShareInfo(null)
-  })
+  request
+    .post({ url })
+    .then(() => {
+      loadShareInfo(null)
+    })
+    .finally(() => {
+      closeLoading()
+    })
 }
 
 const formatLinkAddr = () => {

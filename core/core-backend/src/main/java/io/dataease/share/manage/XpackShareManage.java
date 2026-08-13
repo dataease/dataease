@@ -52,6 +52,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -76,38 +77,54 @@ public class XpackShareManage {
 
     public XpackShare queryByResource(Long resourceId) {
         Long userId = V3UserUtil.getUid();
-        Specification<XpackShare> xpackShareSpec = (root, query, cb) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("creator"), userId));
-            predicates.add(cb.equal(root.get("resourceId"), resourceId));
-            return cb.and(predicates.toArray(new Predicate[0]));
-        };
-
-        return xpackShareRepository.findOne(xpackShareSpec).orElse(null);
+        QXpackShare qXpackShare = QXpackShare.xpackShare;
+        return queryFactory.selectFrom(qXpackShare)
+                .where(qXpackShare.creator.eq(userId).and(qXpackShare.resourceId.eq(resourceId)))
+                .orderBy(qXpackShare.time.asc(), qXpackShare.id.asc())
+                .fetchFirst();
     }
 
     public String queryPwd(Long resourceId, Long userId) {
-        Specification<XpackShare> xpackShareSpec = (root, query, cb) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("creator"), userId));
-            predicates.add(cb.equal(root.get("resourceId"), resourceId));
-            return cb.and(predicates.toArray(new Predicate[0]));
-        };
-
-        XpackShare xpackShare = xpackShareRepository.findOne(xpackShareSpec).orElse(null);
+        QXpackShare qXpackShare = QXpackShare.xpackShare;
+        XpackShare xpackShare = queryFactory.selectFrom(qXpackShare)
+                .where(qXpackShare.creator.eq(userId).and(qXpackShare.resourceId.eq(resourceId)))
+                .orderBy(qXpackShare.time.asc(), qXpackShare.id.asc())
+                .fetchFirst();
         if (ObjectUtils.isEmpty(xpackShare)) return null;
         return xpackShare.getPwd();
     }
 
-    @Transactional
+    private final ConcurrentHashMap<String, Object> switcherLocks = new ConcurrentHashMap<>();
+
+    /**
+     * 开关切换入口：按 userId+resourceId 加 JVM 锁串行化并发请求，避免 check-then-act 竞态产生重复记录。
+     * 锁必须在事务外，保证前一请求事务提交后才放行下一请求（否则 REPEATABLE READ 快照看不到未提交的插入）。
+     */
     public void switcher(Long resourceId) {
-        XpackShare originData = queryByResource(resourceId);
-        if (ObjectUtils.isNotEmpty(originData)) {
-            xpackShareRepository.deleteById(originData.getId());
-            shareTicketManage.deleteByShare(originData.getUuid());
+        Long userId = V3UserUtil.getUid();
+        String key = userId + ":" + resourceId;
+        Object lock = switcherLocks.computeIfAbsent(key, k -> new Object());
+        synchronized (lock) {
+            proxy().doSwitcher(resourceId);
+        }
+    }
+
+    @Transactional
+    public void doSwitcher(Long resourceId) {
+        Long userId = V3UserUtil.getUid();
+        QXpackShare qXpackShare = QXpackShare.xpackShare;
+        List<XpackShare> exists = queryFactory.selectFrom(qXpackShare)
+                .where(qXpackShare.creator.eq(userId).and(qXpackShare.resourceId.eq(resourceId)))
+                .orderBy(qXpackShare.time.asc(), qXpackShare.id.asc())
+                .fetch();
+        if (CollectionUtils.isNotEmpty(exists)) {
+            // 关闭：删除该用户+资源的全部记录（兼容存量重复数据，一次清干净）
+            queryFactory.delete(qXpackShare)
+                    .where(qXpackShare.creator.eq(userId).and(qXpackShare.resourceId.eq(resourceId)))
+                    .execute();
+            exists.forEach(item -> shareTicketManage.deleteByShare(item.getUuid()));
             return;
         }
-        Long userId = V3UserUtil.getUid();
         XpackShare xpackShare = new XpackShare();
         xpackShare.setId(IDUtils.snowID());
         xpackShare.setCreator(userId);
@@ -396,7 +413,7 @@ public class XpackShareManage {
         List<XpackShare> result = xpackShareRepository.findAll(xpackShareSpec);
         if (CollectionUtils.isNotEmpty(result)) {
             return result.stream()
-                    .collect(Collectors.toMap(xpackShare -> String.valueOf(xpackShare.getResourceId()), XpackShare::getUuid));
+                    .collect(Collectors.toMap(xpackShare -> String.valueOf(xpackShare.getResourceId()), XpackShare::getUuid, (a, b) -> a));
         }
         return new HashMap<>();
     }

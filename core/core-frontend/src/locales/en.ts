@@ -1775,6 +1775,7 @@ export default {
     table_column_adapt: 'Adaptive',
     table_column_fixed: 'Fixed column width',
     table_column_custom: 'Custom',
+    table_column_col_adapt: 'Column adaptive',
     table_row_header_width: 'Table Row Header Width',
     table_row_header_adapt: 'Adaptive',
     table_row_header_fixed: 'Fixed',

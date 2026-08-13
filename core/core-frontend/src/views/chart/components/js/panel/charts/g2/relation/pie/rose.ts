@@ -26,6 +26,7 @@ import { Renderer as SVGRenderer } from '@antv/g-svg'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 import {
   createTooltipWrapper,
+  getThemeSelectedState,
   tooltipCss
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 
@@ -120,7 +121,8 @@ export class Rose extends G2ChartView {
         viewFill: bgColor
       }
     }
-    return { ...options, theme }
+    const state = getThemeSelectedState(chart, options.state)
+    return { ...options, theme, state }
   }
 
   protected configBasicStyle(chart: Chart, options: G2Spec): G2Spec {
