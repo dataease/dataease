@@ -10,6 +10,7 @@ import {
   inject,
   Ref,
   onBeforeMount,
+  onUnmounted,
   shallowRef
 } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
@@ -529,12 +530,19 @@ function filterTree(treeData, filterIds) {
 
   return buildFilteredTree(treeData)
 }
+let time
 const treeKey = ref(0)
 const visibleChange = val => {
   if (!val) {
-    treeKey.value = +new Date()
+    clearTimeout(time)
+    time = setTimeout(() => {
+      treeKey.value = +new Date()
+    }, 100)
   }
 }
+onUnmounted(() => {
+  clearTimeout(time)
+})
 </script>
 
 <template>

@@ -4958,6 +4958,8 @@ export default {
     new_folder: 'New Folder',
     new_sheet: 'New Spreadsheet',
     new_spreadsheet: 'New Spreadsheet',
+    spreadsheet_name: 'Spreadsheet name',
+    spreadsheet_name_placeholder: 'Please enter the spreadsheet name',
     default_sheet_name: 'Sheet1',
     edit_sheet: 'Edit Spreadsheet',
     save: 'Save',

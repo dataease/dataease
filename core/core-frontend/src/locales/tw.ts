@@ -4793,6 +4793,8 @@ export default {
     new_folder: '新建文件夾',
     new_sheet: '新建表格',
     new_spreadsheet: '新建電子表格',
+    spreadsheet_name: '電子表格名稱',
+    spreadsheet_name_placeholder: '請輸入電子表格名稱',
     default_sheet_name: '工作表1',
     edit_sheet: '編輯表格',
     save: '保存',
