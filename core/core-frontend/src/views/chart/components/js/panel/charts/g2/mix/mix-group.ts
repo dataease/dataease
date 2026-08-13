@@ -145,7 +145,7 @@ export class GroupLineMix extends G2ChartView {
           children: [
             {
               type: 'interval',
-              state: getBackgroundInteractionState(),
+              state: getBackgroundInteractionState(chart),
               data: {
                 type: 'inline',
                 value: leftData,
@@ -232,7 +232,8 @@ export class GroupLineMix extends G2ChartView {
           background: true,
           region: true
         },
-        elementSelect: {
+        // 鼠标点击按 X 维度选中整组柱，并自动取消上一维度
+        elementSelectByX: {
           background: true,
           single: true
         }

@@ -140,9 +140,17 @@ let chartData = shallowRef<Partial<Chart['data']>>({
 
 const containerId = 'container-' + showPosition.value + '-' + view.value.id + '-' + suffixId.value
 const viewTrack = ref(null)
-const chartStroke = computed(() =>
-  !isDashboard() || dvMainStore.canvasStyleData?.dashboard?.themeColor === 'dark' ? '#fff' : '#000'
-)
+const chartStroke = computed(() => {
+  const customAttr = parseJson(view.value.customAttr)
+  // 联动选中态优先使用主题转换后的反色
+  return (
+    customAttr?.basicStyle?.themeContrastColor ??
+    customAttr?.label?.color ??
+    (!isDashboard() || dvMainStore.canvasStyleData?.dashboard?.themeColor === 'dark'
+      ? '#fff'
+      : '#000')
+  )
+})
 const LINKAGE_STYLE_CACHE = '__deLinkageStyleCache__'
 const LINKAGE_STYLE_KEYS = ['opacity', 'stroke', 'lineWidth']
 const LINKAGE_SELECTED_STYLE = computed(() => ({

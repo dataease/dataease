@@ -124,7 +124,7 @@ export class ColumnLineMix extends G2ChartView {
       children: [
         {
           type: 'interval',
-          state: getBackgroundInteractionState(),
+          state: getBackgroundInteractionState(chart),
           data: {
             type: 'inline',
             value: leftData,

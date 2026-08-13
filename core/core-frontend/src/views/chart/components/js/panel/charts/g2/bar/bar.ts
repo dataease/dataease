@@ -37,6 +37,7 @@ import {
   getSeriesTooltipFormatter,
   getSeriesTooltipFormatterMap,
   getStackTooltipGroupName,
+  getThemeSelectedState,
   getTooltipItemFormatter,
   handleEmptyDataStrategy,
   handleBarBreakLineNullData,
@@ -108,10 +109,6 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     state: {
       active: {
         backgroundPointerEvents: 'none'
-      },
-      selected: {
-        stroke: 'black',
-        lineWidth: 1
       },
       unselected: { opacity: 0.5 }
     },
@@ -814,6 +811,8 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
         viewFill: bgColor
       }
     }
+    const [intervalMark] = options.children
+    intervalMark.state = getThemeSelectedState(chart, intervalMark.state)
     return { ...options, theme }
   }
 

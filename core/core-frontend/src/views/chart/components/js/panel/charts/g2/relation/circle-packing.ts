@@ -6,6 +6,7 @@ import { Chart as G2Chart, G2Spec } from '@antv/g2'
 import { Renderer as SVGRenderer } from '@antv/g-svg'
 import { G2ChartView, G2DrawOptions } from '../../../types/impl/g2'
 import { handleChartDashboardHidden, TOOLTIP_ITEM_TPL } from '../../../common/common_antv'
+import { getThemeSelectedState } from '../bar/barUtil'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
@@ -88,7 +89,6 @@ export class CirclePacking extends G2ChartView {
         },
         state: {
           selected: {
-            stroke: 'black',
             lineWidth: 1
           },
           unselected: {
@@ -145,7 +145,8 @@ export class CirclePacking extends G2ChartView {
         viewFill: bgColor
       }
     }
-    return { ...options, theme }
+    const state = getThemeSelectedState(chart, options.state)
+    return { ...options, theme, state }
   }
 
   protected configBasicStyle(chart: Chart, options: G2Spec): G2Spec {

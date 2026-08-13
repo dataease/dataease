@@ -24,7 +24,7 @@ import { cloneDeep, defaultsDeep, isEmpty } from 'lodash-es'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
 import { Renderer as SVGRenderer } from '@antv/g-svg'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
-import { createTooltipWrapper, tooltipCss } from '../../bar/barUtil'
+import { createTooltipWrapper, getThemeSelectedState, tooltipCss } from '../../bar/barUtil'
 
 const { t } = useI18n()
 
@@ -105,7 +105,8 @@ export class Pie extends G2ChartView {
         viewFill: bgColor
       }
     }
-    return { ...options, theme }
+    const state = getThemeSelectedState(chart, options.state)
+    return { ...options, theme, state }
   }
 
   protected configBasicStyle(chart: Chart, options: G2Spec): G2Spec {

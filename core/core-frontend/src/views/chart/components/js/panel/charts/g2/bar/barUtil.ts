@@ -49,11 +49,24 @@ type PlotBackgroundClickOptions = {
   markTypes?: string[]
 }
 
-export function getBackgroundInteractionState() {
-  return {
+export function getThemeContrastColor(chart: Chart) {
+  const customAttr = parseJson(chart.customAttr)
+  return customAttr?.basicStyle?.themeContrastColor ?? customAttr?.label?.color ?? '#000000'
+}
+
+export function getThemeSelectedState(chart: Chart, state: Record<string, any> = {}) {
+  // 只调整选中态描边，保留现有 active 等交互状态
+  return defaultsDeep({}, state, {
+    selected: { stroke: getThemeContrastColor(chart), lineWidth: 1 }
+  })
+}
+
+export function getBackgroundInteractionState(chart?: Chart) {
+  const state = {
     active: { backgroundPointerEvents: 'none' },
     selected: { backgroundPointerEvents: 'none' }
   }
+  return chart ? getThemeSelectedState(chart, state) : state
 }
 
 export function bindPlotBackgroundClick(
