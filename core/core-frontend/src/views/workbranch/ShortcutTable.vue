@@ -242,7 +242,7 @@ const executeStore = rowInfo => {
 }
 
 const checkDisabled = row => {
-  return activeName.value === 'store' && !row.extFlag1
+  return !row.extFlag1
 }
 
 const executeCancelStore = rowInfo => {

@@ -89,7 +89,7 @@ public class VisualizationRecentManage {
                         0L,
                         0L,
                         ds.getLastUpdateTime(),
-                        false, 0, 0
+                        false, 0, 0,1
                 ))
                 .collect(Collectors.toList());
     }
@@ -105,7 +105,7 @@ public class VisualizationRecentManage {
                         0L,
                         0L,
                         ds.getUpdateTime(),
-                        false, 0, 0
+                        false, 0, 0,1
                 ))
                 .collect(Collectors.toList());
     }
@@ -121,7 +121,7 @@ public class VisualizationRecentManage {
                         0L,
                         0L,
                         dv.getUpdateTime(),
-                        false, 0, 0
+                        false, 0, 0,1
                 ))
                 .collect(Collectors.toList());
     }

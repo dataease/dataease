@@ -293,7 +293,7 @@ public class CoreVisualizationManage {
             return new VisualizationResourceVO(
                     po.getId(), po.getResourceId(), po.getName(),
                     po.getType(), String.valueOf(po.getCreator()), String.valueOf(po.getLastEditor()), po.getLastEditTime(),
-                    po.getFavorite(), 9, po.getExtFlag());
+                    po.getFavorite(), 9, po.getExtFlag(), po.getExtFlag1());
         });
         return new PageResult<>(visualizationResourcePOPageIPage);
     }
@@ -315,19 +315,19 @@ public class CoreVisualizationManage {
         String keyword = request.getKeyword();
 
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT dvResource.id, dvResource.resource_id, dvResource.name, dvResource.ext_flag, ");
+        sql.append("SELECT dvResource.id, dvResource.resource_id, dvResource.name, dvResource.ext_flag, dvResource.ext_flag1, ");
         sql.append("dvResource.type, dvResource.creator, core_opt_recent.uid AS last_editor, ");
         sql.append("core_opt_recent.time AS last_edit_time, ");
         sql.append("(CASE WHEN core_store.resource_id IS NULL THEN 0 ELSE 1 END) AS favorite ");
         sql.append("FROM (");
-        sql.append("SELECT core_dataset_group.id, core_dataset_group.id AS resource_id, core_dataset_group.name, 0 as ext_flag, 'dataset' AS type, core_dataset_group.create_by AS creator FROM core_dataset_group WHERE core_dataset_group.node_type = 'dataset' ");
+        sql.append("SELECT core_dataset_group.id, core_dataset_group.id AS resource_id, core_dataset_group.name, 0 as ext_flag, 1 as ext_flag1, 'dataset' AS type, core_dataset_group.create_by AS creator FROM core_dataset_group WHERE core_dataset_group.node_type = 'dataset' ");
         sql.append("UNION ALL ");
-        sql.append("SELECT core_datasource.id, core_datasource.id AS resource_id, core_datasource.name, 0 as ext_flag, 'datasource' AS type, core_datasource.create_by AS creator FROM core_datasource WHERE core_datasource.type <> 'folder' ");
+        sql.append("SELECT core_datasource.id, core_datasource.id AS resource_id, core_datasource.name, 0 as ext_flag, 1 as ext_flag1, 'datasource' AS type, core_datasource.create_by AS creator FROM core_datasource WHERE core_datasource.type <> 'folder' ");
         sql.append("UNION ALL ");
-        sql.append("SELECT data_visualization_info.id, data_visualization_info.id AS resource_id, data_visualization_info.name, data_visualization_info.mobile_layout as ext_flag, ");
+        sql.append("SELECT data_visualization_info.id, data_visualization_info.id AS resource_id, data_visualization_info.name, data_visualization_info.mobile_layout as ext_flag, data_visualization_info.status as ext_flag1, ");
         sql.append("(CASE data_visualization_info.type WHEN 'dataV' THEN 'screen' ELSE 'panel' END) AS type, ");
         sql.append("data_visualization_info.create_by AS creator FROM data_visualization_info ");
-        sql.append("WHERE data_visualization_info.delete_flag = 0 AND node_type = 'leaf' AND data_visualization_info.status <> 0");
+        sql.append("WHERE data_visualization_info.delete_flag = 0 AND node_type = 'leaf'");
         sql.append(") dvResource ");
         sql.append("LEFT JOIN core_store ON dvResource.id = core_store.resource_id AND core_store.uid = :uid ");
         sql.append("INNER JOIN core_opt_recent ON dvResource.resource_id = core_opt_recent.resource_id AND core_opt_recent.uid = :uid ");
@@ -386,11 +386,12 @@ public class CoreVisualizationManage {
             po.setResourceId(toLong(row[1]));
             po.setName(row[2] != null ? row[2].toString() : null);
             po.setExtFlag(row[3] != null ? toInt(row[3]) : 0);
-            po.setType(row[4] != null ? row[4].toString() : null);
-            po.setCreator(toLong(row[5]));
-            po.setLastEditor(toLong(row[6]));
-            po.setLastEditTime(toLong(row[7]));
-            po.setFavorite(row[8] != null && toInt(row[8]) == 1);
+            po.setExtFlag1(row[4] != null ? toInt(row[4]) : 1);
+            po.setType(row[5] != null ? row[5].toString() : null);
+            po.setCreator(toLong(row[6]));
+            po.setLastEditor(toLong(row[7]));
+            po.setLastEditTime(toLong(row[8]));
+            po.setFavorite(row[9] != null && toInt(row[9]) == 1);
             return po;
         }).collect(Collectors.toList());
 
