@@ -35,6 +35,8 @@ import { useLoading } from '@/hooks/web/useLoading'
 import { ProxyInfo, shareProxy } from './ShareProxy'
 import PwdTips from './pwd.vue'
 import ErrorTemplate from './ErrorTemplate.vue'
+import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
+const appearanceStore = useAppearanceStoreWithOut()
 const disableError = ref(true)
 const peRequireError = ref(true)
 const linkExist = ref(false)
@@ -55,6 +57,7 @@ const state = reactive({
   }
 })
 onMounted(async () => {
+  await appearanceStore.setFontList()
   close()
   const proxyInfo = (await shareProxy.loadProxy()) as ProxyInfo
   curType.value = proxyInfo.type || 'dashboard'
