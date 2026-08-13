@@ -4816,6 +4816,8 @@ export default {
     new_folder: '新建文件夹',
     new_sheet: '新建表格',
     new_spreadsheet: '新建电子表格',
+    spreadsheet_name: '电子表格名称',
+    spreadsheet_name_placeholder: '请输入电子表格名称',
     default_sheet_name: '工作表1',
     edit_sheet: '编辑表格',
     save: '保存',
