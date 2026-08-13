@@ -336,7 +336,11 @@ const save = () => {
             :canvas-view-info-mobile="canvasViewInfoMobile"
           ></component-style-editor>
         </div>
-        <div class="config-mobile-tab" v-if="activeCollapse === 'com'">
+        <div
+          class="config-mobile-tab"
+          v-if="activeCollapse === 'com'"
+          :style="{ fontFamily: canvasStyleData.fontFamily || 'PingFang' }"
+        >
           <div
             :style="{ height: '196px', width: '196px' }"
             class="mobile-wrapper-inner-adaptor"
