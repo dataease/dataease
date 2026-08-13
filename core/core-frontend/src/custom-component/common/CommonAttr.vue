@@ -283,6 +283,12 @@ onMounted(() => {
     border-top: none;
   }
 
+  :deep(.ed-collapse-item--dark) {
+    .ed-collapse-item__header {
+      color: #ebebeb !important;
+    }
+  }
+
   :deep(.ed-collapse-item__header) {
     height: 36px !important;
     line-height: 36px !important;

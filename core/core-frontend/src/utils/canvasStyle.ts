@@ -575,6 +575,7 @@ export function adaptCurThemeCommonStyle(component) {
     // 图表-Begin
     const curViewInfo = dvMainStore.canvasViewInfo[component.id]
     adaptCurTheme(curViewInfo.customStyle, curViewInfo.customAttr)
+    adaptTitleFontFamily(dvMainStore.canvasStyleData.fontFamily, curViewInfo)
     useEmitt().emitter.emit('renderChart-' + component.id, curViewInfo)
     // 图表-Begin
   } else if (component.component === 'Group') {
