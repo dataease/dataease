@@ -1723,6 +1723,7 @@ export default {
     table_column_adapt: '自適應',
     table_column_fixed: '固定列寬',
     table_column_custom: '自訂',
+    table_column_col_adapt: '列自適應',
     table_row_header_width: '行頭寬度',
     table_row_header_adapt: '自適應',
     table_row_header_fixed: '固定寬度',

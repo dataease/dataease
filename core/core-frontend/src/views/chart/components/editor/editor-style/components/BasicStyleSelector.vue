@@ -979,6 +979,9 @@ onMounted(() => {
         <el-radio v-show="chart.type !== 'table-pivot'" label="field" :effect="themes">
           {{ t('chart.table_column_custom') }}
         </el-radio>
+        <el-radio v-show="chart.type === 'table-pivot'" label="colAdapt" :effect="themes">
+          {{ t('chart.table_column_col_adapt') }}
+        </el-radio>
       </el-radio-group>
     </el-form-item>
     <el-form-item
@@ -1724,7 +1727,7 @@ onMounted(() => {
 }
 .table-column-mode {
   :deep(.ed-radio) {
-    margin-right: 10px !important;
+    margin-right: 8px !important;
   }
 }
 .basic-input-number {

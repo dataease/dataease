@@ -70,6 +70,11 @@ export class TableNormal extends S2ChartView<TableSheet> {
 
   setupDefaultOptions(chart: ChartObj): ChartObj {
     chart.xAxis = []
+    const customAttr = parseJson(chart.customAttr)
+    // 列自适应仅适用于透视表，切换图表类型时恢复普通自适应
+    if (customAttr.basicStyle.tableColumnMode === 'colAdapt') {
+      customAttr.basicStyle.tableColumnMode = 'adapt'
+    }
     return chart
   }
 

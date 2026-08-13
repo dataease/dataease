@@ -1742,6 +1742,7 @@ export default {
     table_column_adapt: '自适应',
     table_column_fixed: '固定列宽',
     table_column_custom: '自定义',
+    table_column_col_adapt: '列自适应',
     table_row_header_width: '行头宽度',
     table_row_header_adapt: '自适应',
     table_row_header_fixed: '固定宽度',

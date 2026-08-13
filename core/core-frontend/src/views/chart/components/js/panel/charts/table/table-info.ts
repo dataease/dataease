@@ -358,7 +358,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
         if (totalWidth > containerWidth) {
           lastNode.width = Math.floor(lastNode.width - (totalWidth - containerWidth))
         }
-        ev.colsHierarchy.width = lastNode.x + lastNode.width
+        ev.colsHierarchy.width = lastNode?.x + lastNode?.width
       })
     }
     // click
@@ -530,6 +530,15 @@ export class TableInfo extends S2ChartView<TableSheet> {
       }
       return new CustomDataCell(viewMeta, sheet)
     }
+  }
+
+  setupDefaultOptions(chart: ChartObj): ChartObj {
+    const customAttr = parseJson(chart.customAttr)
+    // 列自适应仅适用于透视表，切换图表类型时恢复普通自适应
+    if (customAttr.basicStyle.tableColumnMode === 'colAdapt') {
+      customAttr.basicStyle.tableColumnMode = 'adapt'
+    }
+    return chart
   }
 
   constructor() {
