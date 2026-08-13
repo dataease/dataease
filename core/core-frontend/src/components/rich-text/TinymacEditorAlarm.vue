@@ -218,10 +218,6 @@ defineExpose({
   .tox-statusbar {
     display: none !important;
   }
-
-  .tox-split-button {
-    height: 24px !important;
-  }
 }
 </style>
 <style>
