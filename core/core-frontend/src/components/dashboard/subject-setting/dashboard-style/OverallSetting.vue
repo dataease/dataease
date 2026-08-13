@@ -65,7 +65,9 @@
       <el-form-item
         class="form-item"
         :class="'form-item-' + themes"
-        v-show="canvasStyleData.dashboard.gapMode === 'custom'"
+        v-show="
+          canvasStyleData.dashboard.gap === 'yes' && canvasStyleData.dashboard.gapMode === 'custom'
+        "
       >
         <el-input-number
           v-model="canvasStyleData.dashboard.gapSize"
