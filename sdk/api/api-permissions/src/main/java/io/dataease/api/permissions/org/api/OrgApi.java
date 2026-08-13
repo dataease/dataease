@@ -5,10 +5,12 @@ import io.dataease.api.permissions.org.dto.OrgCreator;
 import io.dataease.api.permissions.org.dto.OrgEditor;
 import io.dataease.api.permissions.org.dto.OrgLazyRequest;
 import io.dataease.api.permissions.org.vo.LazyTreeVO;
+import io.dataease.api.permissions.org.vo.MountedVO;
 import io.dataease.api.permissions.org.vo.OrgDetailVO;
 import io.dataease.api.permissions.org.vo.OrgPageVO;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
+import io.dataease.model.KeywordRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -53,7 +55,19 @@ public interface OrgApi {
     @DePermit({"m:read", "#p0+':manage'"})
     void delete(@PathVariable("id") Long id);
 
+    @Operation(summary = "查询权限内组织树")
+    @PostMapping("/mounted")
+    List<MountedVO> mounted(@RequestBody KeywordRequest request);
+
+    @Operation(summary = "当前用户日志数据范围(null=全局,空=普通用户,非空=组织范围)")
+    @GetMapping("/logScope")
+    List<Long> logScope();
+
     @Operation(hidden = true)
     @GetMapping("/detail/{oid}")
     OrgDetailVO detail(@PathVariable("oid") Long oid);
+
+    @Operation(hidden = true)
+    @GetMapping("/subOrgs")
+    List<String> subOrgs();
 }
