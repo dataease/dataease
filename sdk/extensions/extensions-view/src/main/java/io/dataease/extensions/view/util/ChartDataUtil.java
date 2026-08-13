@@ -3,6 +3,7 @@ package io.dataease.extensions.view.util;
 import io.dataease.extensions.view.dto.*;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
@@ -50,10 +51,11 @@ public class ChartDataUtil {
                         for (String[] d : res) {
                             StringBuilder stringBuilder = new StringBuilder();
                             for (int j = 0; j < i; j++) {
-                                if (StringUtils.equalsIgnoreCase(axisList.get(j).getSort(), "none")) {
+                                var axis = axisList.get(j);
+                                if (Strings.CI.equals(axis.getSort(), "none") || StringUtils.isBlank(axis.getSort())) {
                                     continue;
                                 }
-                                stringBuilder.append(d[dataIndexMap.get(axisList.get(j).getId())]);
+                                stringBuilder.append(d[dataIndexMap.get(axis.getId())]);
                             }
                             if (ObjectUtils.isEmpty(map.get(stringBuilder.toString()))) {
                                 map.put(stringBuilder.toString(), new ArrayList<>());
