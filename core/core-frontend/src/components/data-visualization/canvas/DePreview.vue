@@ -186,7 +186,7 @@ const canvasStyleInner = computed(() => {
       transform: 'scale(' + curScale + ') translateZ(0)'
     }
   } else {
-    return {}
+    return { height: '100%' }
   }
 })
 const canvasStyle = computed(() => {
@@ -669,5 +669,6 @@ defineExpose({
 
 .datav-preview-unpublish {
   background-color: inherit !important;
+  background-image: none !important;
 }
 </style>
