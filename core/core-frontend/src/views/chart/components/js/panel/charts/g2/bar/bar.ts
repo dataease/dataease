@@ -32,6 +32,7 @@ import {
   DEFAULT_YAXIS_STYLE
 } from '@/views/chart/components/editor/util/chart'
 import {
+  bindPlotBackgroundClick,
   createTooltipWrapper,
   getSeriesTooltipFormatter,
   getSeriesTooltipFormatterMap,
@@ -154,6 +155,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
     newChart.on('interval:click', action)
+    bindPlotBackgroundClick(newChart, { axis: this.name.includes('horizontal') ? 'y' : 'x' })
     new G2TooltipCarousel(newChart, chart, data).start()
     extremumEvt(newChart, chart, options.children[0], container, scale, this.name === 'bar')
     this.configLengthLimitTooltip(chart, newChart)

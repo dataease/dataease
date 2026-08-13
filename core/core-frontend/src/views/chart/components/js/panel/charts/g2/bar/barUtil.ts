@@ -44,6 +44,69 @@ export type Transform = {
   [key: string]: any
 }
 
+type PlotBackgroundClickOptions = {
+  axis?: 'x' | 'y'
+  markTypes?: string[]
+}
+
+export function getBackgroundInteractionState() {
+  return {
+    active: { backgroundPointerEvents: 'none' },
+    selected: { backgroundPointerEvents: 'none' }
+  }
+}
+
+export function bindPlotBackgroundClick(
+  chart: G2Chart,
+  { axis = 'x', markTypes = ['interval'] }: PlotBackgroundClickOptions = {}
+) {
+  chart.on('plot:click', event => {
+    if (event.target?.className !== 'plot') {
+      return
+    }
+    let view = event.target
+    while (view && view.className !== 'view') {
+      view = view.parentNode
+    }
+    const viewKey = view?.id ?? view?.attributes?.id
+    const pointer = axis === 'x' ? event.x : event.y
+    if (!Number.isFinite(pointer)) {
+      return
+    }
+    const axisIndex = axis === 'x' ? 0 : 1
+    const elements = Array.from(
+      chart.getContext()?.canvas?.document?.getElementsByClassName?.('element') || []
+    ) as any[]
+    // 按当前子视图和分类轴距离选择真实图形，兼容对称图的多视图结构
+    const nearest = elements.reduce((result, element) => {
+      if (
+        element.__removed__ ||
+        !markTypes.includes(element.markType) ||
+        (viewKey && element.__data__?.viewKey !== viewKey)
+      ) {
+        return result
+      }
+      const bounds = element.getRenderBounds?.()
+      const start = bounds?.min?.[axisIndex]
+      const end = bounds?.max?.[axisIndex]
+      if (!Number.isFinite(start) || !Number.isFinite(end)) {
+        return result
+      }
+      const distance = pointer < start ? start - pointer : pointer > end ? pointer - end : 0
+      return !result || distance < result.distance ? { element, distance } : result
+    }, undefined)
+    const datum = nearest?.element?.__data__?.data
+    if (!datum) {
+      return
+    }
+    // 复用实际 mark 的点击事件，统一进入联动、下钻和跳转流程
+    chart.emit(`${nearest.element.markType}:click`, {
+      ...event,
+      data: { data: { ...datum } }
+    })
+  })
+}
+
 // 仅在横向柱形标签与可见分类轴同侧时向绘图区内收
 export function getHorizontalBarAxisSafeLabelStyle(chart: Chart, position: string, offset = 4) {
   const categoryAxis = parseJson(chart.customStyle)?.yAxis
