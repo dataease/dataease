@@ -428,7 +428,9 @@ public class ChartDataBuild {
                 // pop
                 if (ObjectUtils.isNotEmpty(extBubble)) {
                     try {
-                        axisChartDataDTO.setPopSize(StringUtils.isEmpty(row[2]) ? null : new BigDecimal(row[2]));
+                        // 气泡字段位于普通指标之后、动态标签和提示之前
+                        int popIndex = size - extSize;
+                        axisChartDataDTO.setPopSize(StringUtils.isEmpty(row[popIndex]) ? null : new BigDecimal(row[popIndex]));
                         ChartQuotaDTO bubbleQuotaDTO = new ChartQuotaDTO();
                         bubbleQuotaDTO.setId(extBubble.get(0).getId());
                         quotaList.add(bubbleQuotaDTO);
