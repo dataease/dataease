@@ -40,7 +40,7 @@ public class SpreadsheetVO implements Serializable {
     @Schema(description = "版本号")
     private Integer version;
 
-    @Schema(description = "状态: 0-未发布, 1-已发布")
+    @Schema(description = "状态: 0-未发布, 1-已发布, 2-已保存未发布")
     private Integer status;
 
     @Schema(description = "排序")

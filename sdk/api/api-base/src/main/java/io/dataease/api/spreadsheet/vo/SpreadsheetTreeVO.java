@@ -36,7 +36,7 @@ public class SpreadsheetTreeVO implements Serializable, TreeResultModel<Spreadsh
     @Schema(description = "层级")
     private Integer level;
 
-    @Schema(description = "状态: 0-未发布, 1-已发布")
+    @Schema(description = "状态: 0-未发布, 1-已发布, 2-已保存未发布")
     private Integer status;
 
     @Schema(description = "创建时间")
