@@ -123,6 +123,19 @@ const dateOptions = [
         label: t('chart.filter_ge')
       }
     ]
+  },
+  {
+    label: '',
+    options: [
+      {
+        value: 'null',
+        label: t('chart.filter_null')
+      },
+      {
+        value: 'not_null',
+        label: t('chart.filter_not_null')
+      }
+    ]
   }
 ]
 const valueOptions = [
@@ -171,6 +184,19 @@ const valueOptions = [
       {
         value: 'between',
         label: t('chart.filter_between')
+      }
+    ]
+  },
+  {
+    label: '',
+    options: [
+      {
+        value: 'null',
+        label: t('chart.filter_null')
+      },
+      {
+        value: 'not_null',
+        label: t('chart.filter_not_null')
       }
     ]
   }
