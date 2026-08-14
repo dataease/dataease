@@ -1149,7 +1149,8 @@ const slotStyle = computed(() => {
     const paddingX = (newWidth - width) / 2
     const paddingY = (newHeight - height) / 2
     // 日期时间组件不需要 padding
-    const isDateTimeComponent = element.value.component === 'DeTimeClock' || element.value.innerType === 'DeTimeClock'
+    const isDateTimeComponent =
+      element.value.component === 'DeTimeClock' || element.value.innerType === 'DeTimeClock'
 
     return {
       padding: isDateTimeComponent ? '0' : `${paddingY}px ${paddingX}px`,
