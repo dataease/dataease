@@ -352,6 +352,15 @@ export const dvMainStore = defineStore('dataVisualization', {
         this.curComponent['resizing'] = false
         this.curComponent['dragging'] = false
         this.curComponent['canvasActive'] = false
+        if (!this.curComponent['multiDimensional']['x']) {
+          this.curComponent['multiDimensional']['x'] = 0
+        }
+        if (!this.curComponent['multiDimensional']['y']) {
+          this.curComponent['multiDimensional']['y'] = 0
+        }
+        if (!this.curComponent['multiDimensional']['z']) {
+          this.curComponent['multiDimensional']['z'] = 0
+        }
         // 如果当前组件不在主画布中 对应的分组的canvasActive 也要设置为false
         if (this.curComponent.canvasId !== 'canvas-main') {
           this.componentData.forEach(componentItem => {

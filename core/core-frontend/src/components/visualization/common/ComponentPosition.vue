@@ -48,7 +48,7 @@
             size="small"
             :effect="themes"
             v-model="curComponent.multiDimensional.enable"
-            @change="multiDimensionalChange"
+            @change="snapshotChange"
           >
             {{ t('visualization.rotation_3d') }}
           </el-checkbox>
@@ -62,7 +62,7 @@
               :max="360"
               :step="1"
               v-model="curComponent.multiDimensional.x"
-              @change="multiDimensionalChange"
+              @change="val => multiDimensionalChange('x', val)"
               controls-position="right"
             />
           </el-form-item>
@@ -74,7 +74,7 @@
               :max="360"
               :step="1"
               v-model="curComponent.multiDimensional.y"
-              @change="multiDimensionalChange"
+              @change="val => multiDimensionalChange('y', val)"
               controls-position="right"
             />
           </el-form-item>
@@ -86,7 +86,7 @@
               :max="360"
               :step="1"
               v-model="curComponent.multiDimensional.z"
-              @change="multiDimensionalChange"
+              @change="val => multiDimensionalChange('z', val)"
               controls-position="right"
             />
           </el-form-item>
@@ -192,8 +192,10 @@ const maintainRadioChange = () => {
   curComponent.value.aspectRatio = curComponent.value.style.width / curComponent.value.style.height
   snapshotStore.recordSnapshotCache('maintainRadioChange')
 }
-const multiDimensionalChange = () => {
-  // do change
+const multiDimensionalChange = (key: string, val: number) => {
+  if (val === null || val === undefined) {
+    curComponent.value.multiDimensional[key] = 0
+  }
   snapshotStore.recordSnapshotCache('multiDimensionalChange')
 }
 
