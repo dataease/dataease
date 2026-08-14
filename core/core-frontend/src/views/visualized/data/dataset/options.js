@@ -11,8 +11,8 @@ function toLine(name) {
 const textEnum = ['eq', 'not_eq', 'like', 'not like', 'null', 'not_null', 'empty', 'not_empty']
 const textOptions = textEnum.map(formatEnum)
 
-const dateEnum = ['eq', 'not_eq', 'lt', 'gt', 'le', 'ge']
-const dateOptions = dateEnum.concat(['null', 'not_null']).map(formatEnum)
+const dateEnum = ['eq', 'not_eq', 'lt', 'gt', 'le', 'ge', 'null', 'not_null']
+const dateOptions = dateEnum.map(formatEnum)
 
 const valueEnum = [...dateEnum]
 const valueOptions = valueEnum.map(formatEnum)
