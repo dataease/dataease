@@ -205,7 +205,7 @@ const valueOptions = [
 const predefineColors = COLOR_PANEL
 
 const targetOptions = computed(() => {
-  if (props.chart.type === 'rich-text') {
+  if (['rich-text', 'table-pivot'].includes(props.chart.type)) {
     return [
       { label: t('chart.self'), value: 'self' },
       { label: t('chart.custom'), value: 'custom' }
