@@ -19,4 +19,6 @@ public class UserItem implements Serializable {
     private Long id;
     @Schema(description = "用户名称")
     private String name;
+    @Schema(description = "账号")
+    private String account;
 }
