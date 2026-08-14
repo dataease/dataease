@@ -37,7 +37,7 @@ const props = defineProps({
 })
 
 watch(
-  [() => props.chart.customAttr.tableHeader, () => props.chart.xAxis],
+  [() => props.chart.customAttr.tableHeader, () => props.chart.xAxis, () => props.chart.yAxis],
   () => {
     init()
   },
@@ -137,7 +137,7 @@ const changeAlignConfig = () => {
     alignConfig.align = selected.align
   }
 }
-const showCustomAlign = computed(() => props.chart.type === 'table-info')
+const showCustomAlign = computed(() => ['table-info', 'table-normal'].includes(props.chart.type))
 
 const init = () => {
   const tableHeader = props.chart?.customAttr?.tableHeader
@@ -169,7 +169,11 @@ const init = () => {
       )
     }
   }
-  if (props.chart.type === 'table-info') {
+  if (showCustomAlign.value) {
+    const axis = [...props.chart.xAxis]
+    if (props.chart.type === 'table-normal') {
+      axis.push(...props.chart.yAxis)
+    }
     const alignCfgMap = (props.chart.customAttr.tableHeader.alignConfig ?? []).reduce(
       (pre, cur) => {
         pre[cur.id] = cur.align
@@ -186,8 +190,8 @@ const init = () => {
       })
     }
     const displayFieldSet = new Set<string>()
-    props.chart.xAxis.forEach(item => {
-      // 明细表相同字段只展示一次，对齐配置项与实际表头保持一致
+    axis.forEach(item => {
+      // 表格相同字段只展示一次，对齐配置项与实际表头保持一致
       if (item.hide === true || displayFieldSet.has(item.dataeaseName)) {
         return
       }

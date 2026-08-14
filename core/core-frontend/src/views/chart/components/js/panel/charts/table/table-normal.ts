@@ -21,6 +21,7 @@ import {
   S2DataConfig,
   S2Event,
   S2Options,
+  S2Theme,
   ScrollbarPositionType,
   TableColCell,
   TableSheet,
@@ -30,6 +31,29 @@ import { isEqual, isNumber } from 'lodash-es'
 import { TABLE_EDITOR_PROPERTY, TABLE_EDITOR_PROPERTY_INNER } from './common'
 import { Renderer } from '@antv/g-svg'
 const { t } = useI18n()
+
+type TableHeaderAlign = Exclude<ChartTableHeaderAttr['tableHeaderAlign'], 'custom'>
+type TableHeaderTheme = S2Theme & {
+  colCellAlignConfig?: Record<string, TableHeaderAlign>
+}
+
+class CustomTableColCell extends TableColCell {
+  protected getTextStyle() {
+    const textStyle = super.getTextStyle()
+    const alignConfig = (this.theme as TableHeaderTheme).colCellAlignConfig
+    if (alignConfig) {
+      if (this.meta.children?.length) {
+        textStyle.textAlign = 'center'
+        return textStyle
+      }
+      const align = alignConfig[this.meta.field]
+      if (align) {
+        textStyle.textAlign = align
+      }
+    }
+    return textStyle
+  }
+}
 /**
  * 汇总表
  */
@@ -251,6 +275,9 @@ export class TableNormal extends S2ChartView<TableSheet> {
       // header interaction
       chart.container = container
       this.configHeaderInteraction(chart, s2Options)
+      s2Options.colCell = (node, sheet, config) => {
+        return new CustomTableColCell(node, sheet, config)
+      }
     }
     // 配置总计和序号列
     this.configSummaryRowAndIndex(chart, pageInfo, s2Options, s2DataConfig)
@@ -371,6 +398,19 @@ export class TableNormal extends S2ChartView<TableSheet> {
     newChart.setThemeCfg({ theme: customTheme })
 
     return newChart
+  }
+
+  protected configTheme(chart: Chart): S2Theme {
+    const theme = super.configTheme(chart)
+    const { tableHeader } = parseJson(chart.customAttr)
+    if (tableHeader.tableHeaderAlign === 'custom') {
+      const tableHeaderTheme = theme as TableHeaderTheme
+      tableHeaderTheme.colCellAlignConfig = (tableHeader.alignConfig ?? []).reduce((pre, cur) => {
+        pre[cur.id] = cur.align
+        return pre
+      }, {} as Record<string, TableHeaderAlign>)
+    }
+    return theme
   }
 
   protected configSummaryRowAndIndex(

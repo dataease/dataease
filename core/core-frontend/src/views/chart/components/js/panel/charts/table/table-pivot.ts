@@ -937,6 +937,10 @@ export class TablePivot extends S2ChartView<PivotSheet> {
     if (customAttr.basicStyle.tableColumnMode === 'field') {
       customAttr.basicStyle.tableColumnMode = 'custom'
     }
+    // 透视表不支持字段级表头对齐
+    if (customAttr.tableHeader.tableHeaderAlign === 'custom') {
+      customAttr.tableHeader.tableHeaderAlign = 'left'
+    }
     return chart
   }
 
