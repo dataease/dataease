@@ -337,4 +337,12 @@ const cancelRequestBatch = cancelKey => {
     }
   }
 }
-export { service, cancelMap, cancelRequestBatch }
+
+const cancelAllRequest = () => {
+  Object.keys(cancelMap).forEach(key => {
+    cancelMap[key]?.(() => {
+      console.warn('Operation canceled by the user,url:' + key)
+    })
+  })
+}
+export { service, cancelMap, cancelRequestBatch, cancelAllRequest }

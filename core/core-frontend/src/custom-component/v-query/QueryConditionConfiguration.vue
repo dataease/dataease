@@ -20,6 +20,7 @@ import {
   watch,
   defineAsyncComponent,
   provide,
+  onUnmounted,
   unref
 } from 'vue'
 import { storeToRefs } from 'pinia'
@@ -55,6 +56,7 @@ import { iconChartMap } from '@/components/icon-group/chart-list'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import treeSort from '@/utils/treeSortUtils'
 import { useCache } from '@/hooks/web/useCache'
+import { cancelAllRequest } from '@/config/axios/service'
 
 const { t } = useI18n()
 const { wsCache } = useCache()
@@ -1823,6 +1825,39 @@ const parameterCompletion = ele => {
 
   return ele
 }
+let fastClickId
+let fastDbClickId
+let fastDbDelayClickId
+const fastClickLoading = ref(false)
+const fastDbClickLoading = ref(false)
+const handelFastClick = (item, idx = 0) => {
+  clearTimeout(fastDbDelayClickId)
+  fastDbDelayClickId = setTimeout(() => {
+    if (fastDbClickLoading.value) {
+      return
+    }
+    clearTimeout(fastClickId)
+    fastClickLoading.value = true
+    cancelAllRequest()
+    handleCondition(item, idx)
+    fastClickId = setTimeout(() => {
+      fastClickLoading.value = false
+    }, 800)
+  }, 200)
+}
+const handelFastDbClick = (cmd, condition, index) => {
+  clearTimeout(fastDbClickId)
+  fastDbClickLoading.value = true
+  addOperation(cmd, condition, index)
+  fastDbClickId = setTimeout(() => {
+    fastDbClickLoading.value = false
+  }, 800)
+}
+onUnmounted(() => {
+  clearTimeout(fastClickId)
+  clearTimeout(fastDbClickId)
+  clearTimeout(fastDbDelayClickId)
+})
 
 const handleCondition = (item, idx = 0) => {
   handleDialogClick()
@@ -2298,7 +2333,7 @@ const setRenameInput = val => {
 const relationshipChartIndex = ref(0)
 const notCurrentEle = (ele, index) => {
   if (activeCondition.value !== ele.id) {
-    handleCondition(ele, index)
+    handelFastClick(ele, index)
   } else {
     handleRelationshipChart(index)
   }
@@ -2353,9 +2388,10 @@ const addOperation = (cmd, condition, index) => {
       curComponent.value = null
       break
     case 'rename':
+      clearTimeout(fastDbClickId)
       renameInput.value = []
       Object.assign(activeConditionForRename, condition)
-      setTimeout(() => {
+      fastDbClickId = setTimeout(() => {
         nextTick(() => {
           renameInput.value[0].focus()
         })
@@ -2443,8 +2479,8 @@ defineExpose({
           <template #item="{ element, index }">
             <div
               :key="element.id"
-              @dblclick.stop="addOperation('rename', element, index)"
-              @click.stop="handleCondition(element)"
+              @dblclick.stop="handelFastDbClick('rename', element, index)"
+              @click.stop="handelFastClick(element)"
               class="list-item_box"
               :style="{
                 marginBottom: element.treeFieldList
