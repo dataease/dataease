@@ -471,7 +471,7 @@ declare interface ChartTableHeaderAttr {
   /**
    * 表头对齐方式
    */
-  tableHeaderAlign: 'left' | 'center' | 'right'
+  tableHeaderAlign: 'left' | 'center' | 'right' | 'custom'
   tableHeaderCornerAlign: 'left' | 'center' | 'right'
   tableHeaderColAlign: 'left' | 'center' | 'right'
   /**
@@ -552,6 +552,13 @@ declare interface ChartTableHeaderAttr {
    * 透视表行头冻结
    */
   rowHeaderFreeze: boolean
+  /**
+   * 字段级表头对齐设置
+   */
+  alignConfig: {
+    id: string
+    align: 'left' | 'center' | 'right'
+  }[]
 }
 /**
  * 单元格属性

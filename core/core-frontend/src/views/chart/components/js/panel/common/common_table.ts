@@ -75,7 +75,10 @@ export function getCustomTheme(chart: Chart): S2Theme {
     DEFAULT_TABLE_HEADER.tableHeaderBgColor,
     DEFAULT_BASIC_STYLE.alpha
   )
-  const headerAlign = DEFAULT_TABLE_HEADER.tableHeaderAlign
+  const headerAlign =
+    DEFAULT_TABLE_HEADER.tableHeaderAlign === 'custom'
+      ? 'left'
+      : DEFAULT_TABLE_HEADER.tableHeaderAlign
   const itemColor = hexColorToRGBA(DEFAULT_TABLE_CELL.tableItemBgColor, DEFAULT_BASIC_STYLE.alpha)
   const itemAlign = DEFAULT_TABLE_CELL.tableItemAlign
   const borderColor = hexColorToRGBA(
@@ -270,6 +273,8 @@ export function getCustomTheme(chart: Chart): S2Theme {
       const fontStyle = tableHeader.isItalic ? 'italic' : 'normal'
       const fontWeight = tableHeader.isBolder === false ? 'normal' : 'bold'
       const {tableHeaderAlign, tableTitleFontSize} = tableHeader
+      // 自定义模式由具体表头单元格按字段覆盖，主题先使用左对齐兜底
+      const resolvedTableHeaderAlign = tableHeaderAlign === 'custom' ? 'left' : tableHeaderAlign
       const tmpTheme: S2Theme = {
         cornerCell: {
           cell: {
@@ -278,7 +283,7 @@ export function getCustomTheme(chart: Chart): S2Theme {
           bolderText: {
             fill: tableHeaderFontColor,
             fontSize: tableTitleFontSize,
-            textAlign: tableHeaderAlign,
+            textAlign: resolvedTableHeaderAlign,
             fontStyle,
             fontWeight,
             fontFamily: textFontFamily
@@ -286,7 +291,7 @@ export function getCustomTheme(chart: Chart): S2Theme {
           text: {
             fill: tableHeaderFontColor,
             fontSize: tableTitleFontSize,
-            textAlign: tableHeaderAlign,
+            textAlign: resolvedTableHeaderAlign,
             fontStyle,
             fontWeight,
             fontFamily: textFontFamily
@@ -294,7 +299,7 @@ export function getCustomTheme(chart: Chart): S2Theme {
           measureText: {
             fill: tableHeaderFontColor,
             fontSize: tableTitleFontSize,
-            textAlign: tableHeaderAlign,
+            textAlign: resolvedTableHeaderAlign,
             fontStyle,
             fontWeight,
             fontFamily: textFontFamily
@@ -307,7 +312,7 @@ export function getCustomTheme(chart: Chart): S2Theme {
           bolderText: {
             fill: tableHeaderFontColor,
             fontSize: tableTitleFontSize,
-            textAlign: tableHeaderAlign,
+            textAlign: resolvedTableHeaderAlign,
             fontStyle,
             fontWeight,
             fontFamily: textFontFamily
@@ -315,7 +320,7 @@ export function getCustomTheme(chart: Chart): S2Theme {
           text: {
             fill: tableHeaderFontColor,
             fontSize: tableTitleFontSize,
-            textAlign: tableHeaderAlign,
+            textAlign: resolvedTableHeaderAlign,
             fontStyle,
             fontWeight,
             fontFamily: textFontFamily
@@ -323,7 +328,7 @@ export function getCustomTheme(chart: Chart): S2Theme {
           measureText: {
             fill: tableHeaderFontColor,
             fontSize: tableTitleFontSize,
-            textAlign: tableHeaderAlign,
+            textAlign: resolvedTableHeaderAlign,
             fontStyle,
             fontWeight,
             fontFamily: textFontFamily
