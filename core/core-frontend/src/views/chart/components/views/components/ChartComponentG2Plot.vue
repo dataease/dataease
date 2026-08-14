@@ -614,10 +614,12 @@ const renderG2 = async (chart, chartView: G2ChartView<any, any>) => {
       G2TooltipCarousel.destroyByContainer(containerId)
       clearG2SliderTouchAdapter()
       myChart?.destroy()
-      // 处理图表在右侧小区域时隐藏文本标识
+      // 仅在移动端配置右侧缩略区域隐藏图表文本
       let dashboardHidden = props.element.dashboardHidden
       if (dvMainStore.mobileInPc) {
-        dashboardHidden = !props.element.inMobile
+        dashboardHidden = !!document
+          .getElementById(containerId)
+          ?.closest('.mobile-wrapper-inner-adaptor')
       }
       const tScale = dvMainStore.canvasStyleData?.tScale
       const isDataV = !isDashboard()

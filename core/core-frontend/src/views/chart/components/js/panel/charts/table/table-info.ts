@@ -41,6 +41,29 @@ class ImageCell extends TableDataCell {
     drawImage.apply(this)
   }
 }
+
+type TableHeaderAlign = Exclude<ChartTableHeaderAttr['tableHeaderAlign'], 'custom'>
+type TableHeaderTheme = S2Theme & {
+  colCellAlignConfig?: Record<string, TableHeaderAlign>
+}
+
+class CustomTableColCell extends TableColCell {
+  protected getTextStyle() {
+    const textStyle = super.getTextStyle()
+    const alignConfig = (this.theme as TableHeaderTheme).colCellAlignConfig
+    if (alignConfig) {
+      if (this.meta.children?.length) {
+        textStyle.textAlign = 'center'
+        return textStyle
+      }
+      const align = alignConfig[this.meta.field]
+      if (align) {
+        textStyle.textAlign = align
+      }
+    }
+    return textStyle
+  }
+}
 /**
  * 明细表
  */
@@ -265,6 +288,9 @@ export class TableInfo extends S2ChartView<TableSheet> {
       // header interaction
       chart.container = container
       this.configHeaderInteraction(chart, s2Options)
+      s2Options.colCell = (node, sheet, config) => {
+        return new CustomTableColCell(node, sheet, config)
+      }
     }
     // 序列号和总计行
     this.configSummaryRowAndIndex(chart, pageInfo, s2Options, s2DataConfig)
@@ -418,7 +444,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
 
   protected configTheme(chart: Chart): S2Theme {
     const theme = super.configTheme(chart)
-    const { basicStyle, tableCell } = parseJson(chart.customAttr)
+    const { basicStyle, tableCell, tableHeader } = parseJson(chart.customAttr)
     if (tableCell.mergeCells) {
       const tableFontColor = hexColorToRGBA(tableCell.tableFontColor, basicStyle.alpha)
       let tableItemBgColor = tableCell.tableItemBgColor
@@ -475,6 +501,14 @@ export class TableInfo extends S2ChartView<TableSheet> {
         }
       }
       merge(theme, mergeCellTheme)
+    }
+    if (tableHeader.tableHeaderAlign === 'custom') {
+      // 将样式面板中的字段级配置交给自定义表头单元格消费
+      const tableHeaderTheme = theme as TableHeaderTheme
+      tableHeaderTheme.colCellAlignConfig = (tableHeader.alignConfig ?? []).reduce((pre, cur) => {
+        pre[cur.id] = cur.align
+        return pre
+      }, {} as Record<string, TableHeaderAlign>)
     }
     return theme
   }

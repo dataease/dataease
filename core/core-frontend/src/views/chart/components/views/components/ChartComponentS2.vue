@@ -195,17 +195,19 @@ const handleDefaultVal = (chart: Chart) => {
     const { tableHeader } = customAttr
     // 存量透视表处理
     if (!tableHeader.tableHeaderColBgColor) {
+      const tableHeaderAlign =
+        tableHeader.tableHeaderAlign === 'custom' ? 'left' : tableHeader.tableHeaderAlign
       tableHeader.tableHeaderColBgColor = tableHeader.tableHeaderBgColor
       tableHeader.tableHeaderColFontColor = tableHeader.tableHeaderFontColor
       tableHeader.tableTitleColFontSize = tableHeader.tableTitleFontSize
-      tableHeader.tableHeaderColAlign = tableHeader.tableHeaderAlign
+      tableHeader.tableHeaderColAlign = tableHeaderAlign
       tableHeader.isColBolder = tableHeader.isBolder
       tableHeader.isColItalic = tableHeader.isItalic
 
       tableHeader.tableHeaderCornerBgColor = tableHeader.tableHeaderBgColor
       tableHeader.tableHeaderCornerFontColor = tableHeader.tableHeaderFontColor
       tableHeader.tableTitleCornerFontSize = tableHeader.tableTitleFontSize
-      tableHeader.tableHeaderCornerAlign = tableHeader.tableHeaderAlign
+      tableHeader.tableHeaderCornerAlign = tableHeaderAlign
       tableHeader.isCornerBolder = tableHeader.isBolder
       tableHeader.isCornerItalic = tableHeader.isItalic
     }

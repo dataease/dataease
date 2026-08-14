@@ -8,6 +8,10 @@ import { COLOR_PANEL } from '../../../util/chart'
 import { fieldType } from '@/utils/attr'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import { cloneDeep } from 'lodash-es'
+import {
+  transDateFormat,
+  transDatePickerType
+} from '@/views/chart/components/editor/util/DateFormatUtil'
 
 const { t } = useI18n()
 
@@ -119,6 +123,19 @@ const dateOptions = [
         label: t('chart.filter_ge')
       }
     ]
+  },
+  {
+    label: '',
+    options: [
+      {
+        value: 'null',
+        label: t('chart.filter_null')
+      },
+      {
+        value: 'not_null',
+        label: t('chart.filter_not_null')
+      }
+    ]
   }
 ]
 const valueOptions = [
@@ -169,12 +186,26 @@ const valueOptions = [
         label: t('chart.filter_between')
       }
     ]
+  },
+  {
+    label: '',
+    options: [
+      {
+        value: 'null',
+        label: t('chart.filter_null')
+      },
+      {
+        value: 'not_null',
+        label: t('chart.filter_not_null')
+      }
+    ]
   }
 ]
 const predefineColors = COLOR_PANEL
 
 const targetOptions = computed(() => {
-  if (props.chart.type === 'rich-text') {
+  // 富文本和透视表不提供普通表格的整行应用范围
+  if (['rich-text', 'table-pivot'].includes(props.chart.type)) {
     return [
       { label: t('chart.self'), value: 'self' },
       { label: t('chart.custom'), value: 'custom' }
@@ -415,8 +446,16 @@ const changeConditionItemType = item => {
   }
   changeThreshold()
 }
-const getFieldOptions = fieldItem => {
+const getFieldOptions = () => {
   return fieldOptions
+}
+
+const datePickerFormat = (fieldItem: { dateStyle?: string; datePattern?: string }) => {
+  return transDateFormat(fieldItem.dateStyle, fieldItem.datePattern)
+}
+
+const datePickerType = (fieldItem: { dateStyle?: string }) => {
+  return transDatePickerType(fieldItem.dateStyle)
 }
 
 init()
@@ -520,7 +559,7 @@ init()
                   style="width: 100%"
                 >
                   <el-option
-                    v-for="opt in getFieldOptions(fieldItem)"
+                    v-for="opt in getFieldOptions()"
                     :key="opt.value"
                     :label="opt.label"
                     :value="opt.value"
@@ -542,6 +581,19 @@ init()
                   controls-position="right"
                   class="value-item"
                   clearable
+                  @change="changeThreshold"
+                />
+                <el-date-picker
+                  v-model="item.value"
+                  v-else-if="fieldItem.field.deType === 1"
+                  :type="datePickerType(fieldItem.field)"
+                  :placeholder="t('chart.drag_block_label_value')"
+                  :format="datePickerFormat(fieldItem.field)"
+                  :value-format="datePickerFormat(fieldItem.field)"
+                  size="default"
+                  class="value-item"
+                  clearable
+                  style="width: 100%"
                   @change="changeThreshold"
                 />
                 <el-input
