@@ -21,7 +21,7 @@
       :border-active-color="borderActiveColor"
       :hide-title="!showTabTitleFlag"
     >
-      <template :key="tabItem.name" v-for="tabItem in element.propValue">
+      <template :key="tabItem.name" v-for="tabItem in visibleTabs">
         <el-tab-pane
           class="el-tab-pane-custom"
           :lazy="isEditMode"
@@ -67,6 +67,9 @@
                         <el-dropdown-item :command="beforeHandleCommand('editTitle', tabItem)">
                           {{ t('visualization.edit_title') }}
                         </el-dropdown-item>
+                        <el-dropdown-item :command="beforeHandleCommand('copyCur', tabItem)">
+                          {{ t('visualization.copy') }}
+                        </el-dropdown-item>
                         <el-dropdown-item
                           v-if="element.propValue.length > 1"
                           :command="beforeHandleCommand('deleteCur', tabItem)"
@@ -87,7 +90,7 @@
         :key="tabItem.name + '-content'"
         @mouseenter="handleMouseEnter"
         @mouseleave="handleMouseLeave"
-        v-for="tabItem in element.propValue"
+        v-for="tabItem in visibleTabs"
         :class="{ 'switch-hidden': element.editableTabsValue !== tabItem.name }"
       >
         <TabScreenPreview
@@ -322,6 +325,10 @@ const showTabTitleFlag = computed(() => {
   }
 })
 
+const visibleTabs = computed(() => {
+  return element.value.propValue.filter(tabItem => !tabItem.hidden)
+})
+
 const isEditMode = computed(() => editMode.value === 'edit' && isEdit.value && !mobileInPc.value)
 const curThemes = isDashboard() ? 'light' : 'dark'
 const calcTabLength = () => {
@@ -387,13 +394,13 @@ function deleteCur(param) {
     }
   }
 }
+
 function copyCur(param) {
   addTab()
   const newTabItem = element.value.propValue[element.value.propValue.length - 1]
-  const idMap = {}
-  const newCanvasId = element.value.id + '--' + newTabItem.name
-  newTabItem.componentData = deepCopyTabItemHelper(newCanvasId, param.componentData, idMap)
-  dvMainStore.updateCopyCanvasView(idMap)
+  newTabItem.title = param.title + ' - ' + t('visualization.copy')
+  newTabItem.screenId = param.screenId
+  snapshotStore.recordSnapshotCache('copyCur')
 }
 
 function editCurTitle(param) {
@@ -730,8 +737,11 @@ onBeforeUnmount(() => {
     eventBus.off('onTabMoveIn-' + element.value.id, componentMoveIn)
     eventBus.off('onTabMoveOut-' + element.value.id, componentMoveOut)
     eventBus.off('onTabSortChange-' + element.value.id, reShow)
+    eventBus.off('onTabDelete-' + element.value.id, deleteCur)
+    eventBus.off('onTabCopy-' + element.value.id, copyCur)
   }
 })
+
 onBeforeMount(() => {
   if (carouselTimer) {
     clearInterval(carouselTimer)
