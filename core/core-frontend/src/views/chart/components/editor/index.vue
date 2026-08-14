@@ -788,7 +788,7 @@ const addAxis = (e, axis: AxisType) => {
     ((view.value.type === 'symbolic-map' || view.value.type === 'heat-map') && axis === 'xAxis') ||
     (view.value.type === 'flow-map' && (axis === 'xAxis' || axis === 'xAxisExt'))
   ) {
-    typeValid = dragCheckMapType(view.value[axis])
+    typeValid = dragCheckType(view.value[axis], type) && dragCheckMapType(view.value[axis])
   } else if (type) {
     typeValid = dragCheckType(view.value[axis], type)
   }
