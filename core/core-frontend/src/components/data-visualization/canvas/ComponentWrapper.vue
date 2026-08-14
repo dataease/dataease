@@ -360,8 +360,13 @@ const slotStyle = computed(() => {
     // 计算需要的 padding
     const paddingX = (newWidth - width) / 2
     const paddingY = (newHeight - height) / 2
+
+    // 日期时间组件不需要 padding
+    const isDateTimeComponent =
+      config.value.component === 'DeTimeClock' || config.value.innerType === 'DeTimeClock'
+
     return {
-      padding: `${paddingY}px ${paddingX}px`,
+      padding: isDateTimeComponent ? '0' : `${paddingY}px ${paddingX}px`,
       transform: `rotateX(${config.value['multiDimensional'].x}deg) rotateY(${config.value['multiDimensional'].y}deg) rotateZ(${config.value['multiDimensional'].z}deg)`
     }
   } else {
