@@ -174,7 +174,8 @@ const valueOptions = [
 const predefineColors = COLOR_PANEL
 
 const targetOptions = computed(() => {
-  if (props.chart.type === 'rich-text') {
+  // 富文本和透视表不提供普通表格的整行应用范围
+  if (['rich-text', 'table-pivot'].includes(props.chart.type)) {
     return [
       { label: t('chart.self'), value: 'self' },
       { label: t('chart.custom'), value: 'custom' }
