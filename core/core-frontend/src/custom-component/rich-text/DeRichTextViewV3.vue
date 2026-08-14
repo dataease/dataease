@@ -77,8 +77,6 @@ watch(editorValue, newValue => {
   emit('update:modelValue', newValue)
 })
 
-onMounted(() => {})
-
 /*
  * 图片上传 配置项
  * */
@@ -110,7 +108,6 @@ function getImageOption() {
  * */
 function getPasteOption() {
   return {
-    paste_preprocess: (editor, args) => {},
     /*
      * 此选项允许您指定在 WebKit 中粘贴时要保留的样式。WebKit 有一个怪癖，
      * 它将获取元素的所有计算 CSS 属性并将它们添加到编辑器中的 span 中。由于大多数用户不希望在整个文档中添加随机跨度，
