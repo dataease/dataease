@@ -96,7 +96,10 @@
           :dv-type="dvInfo.type"
           :ref="'dashboardPreview'"
         ></TabScreenPreview>
-        <div v-else class="chose-screen">
+        <div
+          v-else-if="['canvas', 'canvasDataV', 'edit'].includes(showPosition) && !mobileInPc"
+          class="chose-screen"
+        >
           <span
             ><el-button
               @click="selectDashboard(tabItem.screenId)"
