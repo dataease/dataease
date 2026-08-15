@@ -52,6 +52,8 @@ public class ReportInfoVO implements Serializable {
 
     private Integer extWaitTime;
 
+    private Integer renderTime;
+
     private Integer rateType;
 
     private String rateVal;
