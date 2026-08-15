@@ -4406,7 +4406,8 @@ export default {
       retrying_rate: 'Retry Interval (minutes)',
       please_input_positive_int: 'Please input a positive integer for {0}',
       rate: 'Sending frequency',
-      ext_wait_time: 'additional waiting time(s)'
+      ext_wait_time: 'timeout(s)',
+      render_time: 'render time(s)'
     },
     filter: {
       title: 'Set Query Component Default Values',

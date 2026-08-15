@@ -50,6 +50,8 @@ public class ReportCreator implements Serializable {
 
     private Integer extWaitTime = 0;
 
+    private Integer renderTime = 2;
+
     private Integer rateType;
 
     private String rateVal;
