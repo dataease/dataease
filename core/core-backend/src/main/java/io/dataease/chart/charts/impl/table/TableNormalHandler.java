@@ -5,11 +5,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.chart.dto.PageInfo;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.chart.charts.impl.DefaultChartHandler;
+import io.dataease.constant.DeTypeConstants;
+import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.Dimension2SQLObj;
 import io.dataease.engine.trans.ExtWhere2Str;
 import io.dataease.engine.trans.Quota2SQLObj;
 import io.dataease.engine.utils.Utils;
+import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.datasource.model.SQLMeta;
@@ -17,17 +20,18 @@ import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.view.dto.*;
 import io.dataease.extensions.view.util.ChartDataUtil;
 import io.dataease.extensions.view.util.FieldUtil;
+import io.dataease.utils.IDUtils;
 import io.dataease.utils.JsonUtil;
 import lombok.Getter;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author jianneng
@@ -207,6 +211,62 @@ public class TableNormalHandler extends DefaultChartHandler {
             }
         } catch (Exception e) {
             LogUtil.error(e);
+        }
+        // 自定义汇总公式需要脱离当前维度单独聚合
+        var basicStyle = (Map<String, Object>) view.getCustomAttr().get("basicStyle");
+        var showSummary = BooleanUtils.isTrue((Boolean) basicStyle.get("showSummary"));
+        if (showSummary) {
+            var fieldList = (List) basicStyle.get("seriesSummary");
+            if (CollectionUtils.isNotEmpty(fieldList)) {
+                var customCalcFields = new ArrayList<ChartViewFieldDTO>();
+                var seriesList = JsonUtil.parseList(JsonUtil.toJSONString(fieldList).toString(), new TypeReference<List<ChartViewFieldDTO>>() {
+                });
+                var quotaIds = allFields.stream().map(DatasetTableFieldDTO::getDataeaseName).collect(Collectors.toSet());
+                seriesList.forEach(field -> {
+                    if (!BooleanUtils.isTrue(field.getShow()) || !"custom".equalsIgnoreCase(field.getSummary())) {
+                        return;
+                    }
+                    if (StringUtils.isBlank(field.getOriginName()) || !quotaIds.contains(field.getField())) {
+                        return;
+                    }
+                    field.setSummary("");
+                    field.setDeType(DeTypeConstants.DE_FLOAT);
+                    field.setId(IDUtils.snowID());
+                    field.setExtField(ExtFieldConstant.EXT_CALC);
+                    customCalcFields.add(field);
+                });
+                if (CollectionUtils.isNotEmpty(customCalcFields)) {
+                    var xFields = sqlMeta.getXFields();
+                    var xOrders = sqlMeta.getXOrders();
+                    sqlMeta.setXFields(Collections.emptyList());
+                    sqlMeta.setXOrders(Collections.emptyList());
+                    List<DatasetTableFieldDTO> tmpList = FieldUtil.transFields(allFields);
+                    tmpList.addAll(customCalcFields);
+                    Quota2SQLObj.quota2sqlObj(sqlMeta, customCalcFields, tmpList, crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
+                    String customSumSql = SQLProvider.createQuerySQL(sqlMeta, false, !StringUtils.equalsIgnoreCase(dsMap.values().iterator().next().getType(), "es"), view);
+                    customSumSql = provider.rebuildSQL(customSumSql, sqlMeta, crossDs, dsMap);
+                    var customSumReq = new DatasourceRequest();
+                    fillDatasourceRequest(customSumReq, crossDs, dsMap, sqlMap);
+                    customSumReq.setQuery(customSumSql);
+                    var customSumData = (List<String[]>) provider.fetchResultField(customSumReq).get("data");
+                    if (CollectionUtils.isNotEmpty(customSumData)) {
+                        var customSumResult = new HashMap<String, BigDecimal>();
+                        var customSumArr = customSumData.getFirst();
+                        for (int i = 0; i < customSumArr.length; i++) {
+                            if (customCalcFields.get(i) != null && customSumArr[i] != null) {
+                                try {
+                                    customSumResult.put(customCalcFields.get(i).getField(), new BigDecimal(customSumArr[i]));
+                                } catch (Exception e) {
+                                    customSumResult.put(customCalcFields.get(i).getField(), BigDecimal.ZERO);
+                                }
+                            }
+                        }
+                        result.put("customSumResult", customSumResult);
+                    }
+                    sqlMeta.setXFields(xFields);
+                    sqlMeta.setXOrders(xOrders);
+                }
+            }
         }
         return calcResult;
     }

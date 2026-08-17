@@ -532,7 +532,12 @@ export class TableInfo extends S2ChartView<TableSheet> {
       // 计算汇总加入到数据里，冻结最后一行
       s2Options.frozen.trailingRowCount = 1
       const axis = filter(xAxis, axis => [2, 3, 4].includes(axis.deType))
-      const summaryObj = getSummaryRow(data, axis, basicStyle.seriesSummary) as any
+      const summaryObj = getSummaryRow(
+        data,
+        axis,
+        basicStyle.seriesSummary,
+        chart.data.customSumResult
+      ) as any
       data.push(summaryObj)
     }
     s2Options.dataCell = (viewMeta, sheet) => {

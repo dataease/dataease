@@ -2559,7 +2559,7 @@ export class CustomDataCell extends TableDataCell {
 
 }
 
-export function getSummaryRow(data, axis, sumCon = []) {
+export function getSummaryRow(data, axis, sumCon = [], customSumResult = {}) {
   const summaryObj = { SUMMARY: true }
   for (let i = 0; i < axis.length; i++) {
     const a = axis[i].dataeaseName
@@ -2618,6 +2618,9 @@ export function getSummaryRow(data, axis, sumCon = []) {
           const sampleVariance = sum(squaredDeviations) / (size(data) - 1) // 样本方差（分母n-1）
           summaryObj[a] = Math.sqrt(sampleVariance) // 样本标准差
         }
+        break
+      case 'custom':
+        summaryObj[a] = customSumResult[a]
         break
     }
   }

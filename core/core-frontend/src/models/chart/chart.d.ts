@@ -33,6 +33,7 @@ declare interface Chart {
       tableRow: []
     }
     customCalc: any
+    customSumResult?: Record<string, any>
   }
   xAxis?: Axis[]
   xAxisExt?: Axis[]
