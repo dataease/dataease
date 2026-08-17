@@ -344,7 +344,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
         if (totalWidth > containerWidth) {
           lastNode.width = Math.floor(lastNode.width - (totalWidth - containerWidth))
         }
-        ev.colsHierarchy.width = lastNode.x + lastNode.width
+        if (lastNode) ev.colsHierarchy.width = lastNode?.x + lastNode.width
       })
     }
     // click
