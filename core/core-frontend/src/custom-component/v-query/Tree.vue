@@ -43,6 +43,7 @@ interface SelectConfig {
   }
   defaultValueCheck: boolean
   multiple: boolean
+  optionFilter: []
 }
 
 const customStyle: any = inject('$custom-style-filter')
@@ -61,7 +62,8 @@ const props = defineProps({
         defaultValueCheck: false,
         multiple: false,
         checkedFieldsMap: {},
-        treeFieldList: []
+        treeFieldList: [],
+        optionFilter: []
       }
     }
   },
@@ -358,7 +360,7 @@ const getTreeOption = debounce(() => {
     filter: getCascadeFieldId()
   })
     .then(res => {
-      treeOptionList.value = dfs(res)
+      treeOptionList.value = filterTree(dfs(res), config.value.optionFilter)
       if (config.value?.required && config.value?.optionFilter?.length > 0) {
         const isValid = containsNodeById(treeOptionList.value, config.value.selectValue)
         if (!isValid) {
