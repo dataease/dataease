@@ -16,6 +16,7 @@ const EMPTY_FEATURE_COLLECTION: FeatureCollection = {
   features: []
 }
 const appStore = useAppStoreWithOut()
+const { wsCache } = useCache()
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 
 const { t } = useI18n()
