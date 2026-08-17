@@ -70,7 +70,7 @@ const handleClick = val => {
   border: 1px solid #dee0e3;
   background: #fff;
   cursor: pointer;
-  z-index: 10;
+  z-index: 11;
   &:hover {
     .ed-icon {
       color: var(--ed-color-primary);
