@@ -139,15 +139,19 @@ public class DatasetSQLBotManage {
     TypeReference<List<CalParam>> typeToken = new TypeReference<>() {
     };
 
-    private Map<Long, List<DataSetColumnPermissionsDTO>> getColPermission(List<Long> roleIds) {
+    private Map<Long, List<DataSetColumnPermissionsDTO>> getColPermission(List<Long> roleIds, boolean proxy) {
         Long uid = V3UserUtil.getUid();
         ColumnPermissionsApi columnPermissionsApi = CommonBeanFactory.getBean(ColumnPermissionsApi.class);
         Objects.requireNonNull(columnPermissionsApi);
 
         DataSetColumnPermissionsDTO dataSetColumnPermissionsDTO = new DataSetColumnPermissionsDTO();
-        dataSetColumnPermissionsDTO.setAuthTargetId(uid);
-        dataSetColumnPermissionsDTO.setAuthTargetType("user");
-        List<DataSetColumnPermissionsDTO> dataSetColumnPermissionsDTOS = columnPermissionsApi.list(dataSetColumnPermissionsDTO);
+        List<DataSetColumnPermissionsDTO> dataSetColumnPermissionsDTOS = new ArrayList<>();
+        // 代理管理员：不查当前用户级列权限
+        if (!proxy) {
+            dataSetColumnPermissionsDTO.setAuthTargetId(uid);
+            dataSetColumnPermissionsDTO.setAuthTargetType("user");
+            dataSetColumnPermissionsDTOS.addAll(columnPermissionsApi.list(dataSetColumnPermissionsDTO));
+        }
 
         if (CollectionUtils.isNotEmpty(roleIds)) {
             dataSetColumnPermissionsDTO.setAuthTargetId(null);
@@ -156,6 +160,11 @@ public class DatasetSQLBotManage {
             List<DataSetColumnPermissionsDTO> roleDataSetColumnPermissionsDTOS = columnPermissionsApi.list(dataSetColumnPermissionsDTO);
             if (CollectionUtils.isNotEmpty(roleDataSetColumnPermissionsDTOS)) {
                 for (DataSetColumnPermissionsDTO dto : roleDataSetColumnPermissionsDTOS) {
+                    // 代理管理员：不做用户白名单剔除（豁免真实用户与代理身份无关）
+                    if (proxy) {
+                        dataSetColumnPermissionsDTOS.add(dto);
+                        continue;
+                    }
                     List<Long> userIdList = JsonUtil.parseList(dto.getWhiteListUser(), listTypeReference);
                     if (CollectionUtils.isEmpty(userIdList) || !userIdList.contains(uid)) {
                         dataSetColumnPermissionsDTOS.add(dto);
@@ -171,6 +180,11 @@ public class DatasetSQLBotManage {
 
     private Map<Long, List<DataSetRowPermissionsTreeDTO>> getRowPermission(Long uid) {
         List<DataSetRowPermissionsTreeDTO> datasetRowPermissions = permissionManage.getRowPermissionsTree(null, uid);
+        return datasetRowPermissions.stream().collect(Collectors.groupingBy(DataSetRowPermissionsTreeDTO::getDatasetId));
+    }
+
+    private Map<Long, List<DataSetRowPermissionsTreeDTO>> getRowPermissionByRoles(List<Long> roleIds) {
+        List<DataSetRowPermissionsTreeDTO> datasetRowPermissions = permissionManage.getRowPermissionsTreeByRoles(null, roleIds);
         return datasetRowPermissions.stream().collect(Collectors.groupingBy(DataSetRowPermissionsTreeDTO::getDatasetId));
     }
 
@@ -241,15 +255,17 @@ public class DatasetSQLBotManage {
                 return Collections.emptyList();
             }
             Long uid = V3UserUtil.getUid();
+            // 代理管理员：只按代理组织内置管理员角色过滤，不查当前用户自己的资源
+            boolean proxy = V3UserUtil.getProxy().isProxy();
             List<Map<String, Object>> roleMapList = enterpriseService.queryUserRoles();
             if (CollectionUtils.isNotEmpty(roleMapList)) {
                 List<Long> roleIds = roleMapList.stream()
                         .map(item -> Long.parseLong(item.get("id").toString()))
                         .distinct().collect(Collectors.toList());
                 if (!roleIds.isEmpty()) {
-                    colPermissionMap = getColPermission(roleIds);
+                    colPermissionMap = getColPermission(roleIds, proxy);
                 }
-                rowPermissionMap = getRowPermission(uid);
+                rowPermissionMap = proxy ? getRowPermissionByRoles(roleIds) : getRowPermission(uid);
             }
             list = enterpriseService.queryEnterprise(dsId, datasetId);
         }
@@ -556,6 +572,7 @@ public class DatasetSQLBotManage {
     }
 
     private DataSQLBotAssistantVO buildDs(Map<String, Object> row) {
+        String datasourceId = row.get("cd_id").toString();
         Object dsConfig = row.get("cd_configuration");
         if (ObjectUtils.isEmpty(dsConfig) || StringUtils.isBlank(dsConfig.toString())) {
             return null;
@@ -583,6 +600,8 @@ public class DatasetSQLBotManage {
             config.setHost(dsHost);
         }
         DataSQLBotAssistantVO vo = new DataSQLBotAssistantVO();
+        Long dsId = Long.valueOf(datasourceId);
+        vo.setId(dsId);
         vo.setDataBase(config.getDataBase());
         vo.setExtraParams(config.getExtraParams());
         vo.setHost(dsType.contains(DatasourceConfiguration.DatasourceType.es.name()) ? config.getUrl() : config.getHost());
@@ -597,8 +616,7 @@ public class DatasetSQLBotManage {
         if (dsType.contains(DatasourceConfiguration.DatasourceType.sqlServer.name())) {
             ConnectionObj connection = null;
             try {
-                String datasourceId = row.get("cd_id").toString();
-                CoreDatasource coreDatasource = dataSourceManage.getCoreDatasource(Long.valueOf(datasourceId));
+                CoreDatasource coreDatasource = dataSourceManage.getCoreDatasource(dsId);
                 DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
                 if (coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.Excel.name()) || coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
                     coreDatasource = engineManage.getDeEngine();

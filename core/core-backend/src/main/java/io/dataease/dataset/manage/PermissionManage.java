@@ -146,6 +146,34 @@ public class PermissionManage {
         return records;
     }
 
+    public List<DataSetRowPermissionsTreeDTO> getRowPermissionsTreeByRoles(Long datasetId, List<Long> roleIds) {
+        // 按角色获取行权限（代理管理员场景：仅代理组织的内置管理员角色，用户个人不参与匹配，不查 sysParams 级）
+        List<DataSetRowPermissionsTreeDTO> records = new ArrayList<>();
+        DatasetRowPermissionsTreeRequest dataSetRowPermissionsDTO = new DatasetRowPermissionsTreeRequest();
+        dataSetRowPermissionsDTO.setDatasetId(datasetId);
+        dataSetRowPermissionsDTO.setEnable(true);
+
+        if (CollectionUtils.isNotEmpty(roleIds)) {
+            dataSetRowPermissionsDTO.setAuthTargetIds(roleIds);
+            dataSetRowPermissionsDTO.setAuthTargetType("role");
+            records.addAll(getRowPermissionsApi().list(dataSetRowPermissionsDTO));
+        }
+
+        // 白名单过滤：仅按角色白名单剔除（不按用户、部门）
+        List<DataSetRowPermissionsTreeDTO> result = new ArrayList<>();
+        TypeReference<List<Long>> listTypeReference = new TypeReference<>() {
+        };
+        for (DataSetRowPermissionsTreeDTO record : records) {
+            List<Long> roleIdList = JsonUtil.parseList(record.getWhiteListRole(), listTypeReference);
+            if (CollectionUtils.isNotEmpty(roleIds) && CollectionUtils.isNotEmpty(roleIdList) && CollectionUtils.isNotEmpty(intersectionForList(roleIds, roleIdList))) {
+                continue;
+            }
+            getField(record.getTree());
+            result.add(record);
+        }
+        return result;
+    }
+
     private List<DataSetRowPermissionsTreeDTO> rowPermissionsTree(Long datasetId, Long userId) {
         List<DataSetRowPermissionsTreeDTO> datasetRowPermissions = new ArrayList<>();
         userId = userId != null ? userId : V3UserUtil.getUid();
