@@ -110,7 +110,7 @@ const offsetX = ref(0)
 const offsetY = ref(0)
 const showLeft = ref(true)
 const maskShow = ref(false)
-const loading = ref(false)
+const loading = ref(true)
 const updateCustomTime = ref(false)
 const editorName = ref()
 const nameMap = ref({})
@@ -734,12 +734,13 @@ const initEdite = async () => {
     dataSource.value = datasourceId as string
     getTableName(datasourceId as string, tableName)
   }
-  if (!id && !copyId) return
+  if (!id && !copyId) {
+    loading.value = false
+    return
+  }
 
-  loading.value = true
   try {
     const res = await getDatasetDetails(copyId || id)
-    loading.value = false
     let arr = []
     const { pid, name } = res || {}
     nodeInfo = {
@@ -758,6 +759,7 @@ const initEdite = async () => {
     dataSource.value = fir?.currentDs?.datasourceId
     dsChange(dataSource.value)
     datasetDrag.value.initState(arr)
+    loading.value = false
   } catch (error) {
     console.error(error)
     loading.value = false
