@@ -623,9 +623,9 @@ public class ChartViewThresholdManage {
                 } else if (StringUtils.equals(term, "not_in")) {
                     return !Arrays.stream(item.getValue().split(",")).toList().contains(valueObj.toString());
                 } else if (StringUtils.equals(term, "like")) {
-                    return StringUtils.contains(item.getValue(), valueObj.toString());
+                    return StringUtils.contains(valueObj.toString(), item.getValue());
                 } else if (StringUtils.equals(term, "not_like")) {
-                    return !StringUtils.contains(item.getValue(), valueObj.toString());
+                    return !StringUtils.contains(valueObj.toString(), item.getValue());
                 } else if (StringUtils.equals(term, "null")) {
                     return false;
                 } else if (StringUtils.equals(term, "not_null")) {
