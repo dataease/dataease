@@ -3987,6 +3987,7 @@ export default {
     loginLimitRate: 'Limit login failure times (times)',
     loginLimitTime: 'Limit login failure time (minutes)',
     share_disable_tips: 'Dashboard and data screen sharing are invalid after turning on',
+    thresholdLimit: 'Alarm data limitation',
     disableCrossDs: 'Disabled cross-datasource queries',
     disable_cross_ds_tips: 'After activation, the dataset does not allow cross-data-source usage'
   },
