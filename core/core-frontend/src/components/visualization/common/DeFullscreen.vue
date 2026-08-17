@@ -25,6 +25,10 @@ const { themes } = toRefs(props)
 
 const fullscreenChange = () => {
   const isFullscreen = !!document.fullscreenElement
+
+  if (props.showPosition === 'dvEdit' && isFullscreen) {
+    G2TooltipCarousel.suspendExistingForFullscreen()
+  }
   dvMainStore.setFullscreenFlag(isFullscreen)
 
   // 编辑界面使用

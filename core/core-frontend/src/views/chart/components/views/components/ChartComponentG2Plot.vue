@@ -1094,6 +1094,7 @@ let resizeObserver
 const TOLERANCE = 0.01
 const RESIZE_MONITOR_CHARTS = ['map', 'bubble-map', 'flow-map', 'heat-map']
 let g2ResizeTimer: number
+let chartComponentUnmounted = false
 onMounted(() => {
   const containerDom = document.getElementById(containerId)
   const { offsetWidth, offsetHeight } = containerDom
@@ -1117,23 +1118,26 @@ onMounted(() => {
         renderChart(curView)
       } else {
         g2ResizeTimer && clearTimeout(g2ResizeTimer)
-        g2ResizeTimer = setTimeout(async () => {
-          const chartView = chartViewManager.getChartView(curView.render, curView.type)
-          const chartInstance = myChart
+        g2ResizeTimer = setTimeout(() => {
+          G2TooltipCarousel.enqueueResize(containerId, async () => {
+            const chartView = chartViewManager.getChartView(curView.render, curView.type)
+            const chartInstance = myChart
 
-          if (
-            chartView.library !== ChartLibraryType.G2 ||
-            typeof chartInstance?.forceFit !== 'function'
-          ) {
-            return
-          }
+            if (
+              chartComponentUnmounted ||
+              chartView.library !== ChartLibraryType.G2 ||
+              typeof chartInstance?.forceFit !== 'function'
+            ) {
+              return
+            }
 
-          // forceFit 完成后恢复 G2 联动选中态
-          await chartInstance.forceFit()
+            // forceFit 完成后恢复 G2 联动选中态
+            await chartInstance.forceFit()
 
-          if (chartInstance === myChart) {
-            replayLinkageActive()
-          }
+            if (!chartComponentUnmounted && chartInstance === myChart) {
+              replayLinkageActive()
+            }
+          })
         }, 300)
       }
     }
@@ -1164,6 +1168,9 @@ const onWheel = (e: WheelEvent) => {
 }
 onBeforeUnmount(() => {
   try {
+    chartComponentUnmounted = true
+    g2ResizeTimer && clearTimeout(g2ResizeTimer)
+    G2TooltipCarousel.dequeueResize(containerId)
     G2TooltipCarousel.destroyByContainer(containerId)
     clearG2SliderTouchAdapter()
     myChart?.destroy()
