@@ -3855,6 +3855,7 @@ export default {
     loginLimitRate: '限制登入失敗次數 (次)',
     loginLimitTime: '限制登入失敗時間 (分)',
     share_disable_tips: '開啟後儀表板以及大屏分享無效',
+    thresholdLimit: '告警數據限製',
     disableCrossDs: '限制數據集跨源',
     disable_cross_ds_tips: '開啓後數據集不允許跨數據源使用'
   },

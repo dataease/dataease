@@ -792,11 +792,11 @@ strong {
 }
 
 .tox-toolbar__overflow {
-  transform: translateY(-59px)!important;
+  transform: translateY(-59px) !important;
 }
 
 .tox-tinymce-inline {
-  transform: translateY(-8px)!important;
+  transform: translateY(-8px) !important;
 }
 
 .tox-tinymce-inline {
@@ -1169,11 +1169,82 @@ strong {
   padding-left: 12px !important;
 }
 
-
 body:has(.de-tinymce-content_alarm) {
   .tox-collection__group {
     .tox-collection__item-label {
       word-break: keep-all;
     }
+  }
+}
+
+body:has(.proxy-warn-bar) {
+  .ed-header.header-flex {
+    margin-top: 24px;
+  }
+
+  .common-layout .layout-container .layout-sidebar {
+    height: calc(100vh - 130px);
+  }
+
+  .user-table .user-table__content {
+    height: calc(100vh - 210px) !important;
+  }
+
+  .auth-table__content,
+  .sys-setting-p {
+    height: calc(100vh - 179px) !important;
+  }
+
+  .appearance-table__content {
+    height: calc(100vh - 196px) !important;
+  }
+
+  .org-table__content {
+    height: calc(100vh - 131px) !important;
+  }
+
+  .font-management_system .font-content_overflow {
+    height: calc(100vh - 170px) !important;
+  }
+
+  .plugin-top-area {
+    top: 94px !important;
+  }
+
+  .plugin-container {
+    height: calc(100% - 69px) !important;
+  }
+
+  .watermark-table__content {
+    height: calc(100% - 32px) !important;
+  }
+
+  .dataset-manage .dataset-content .dataset-table-info {
+    height: calc(100% - 162px) !important;
+  }
+
+  .datasource-manage .datasource-content,
+  .datasource-manage .datasource-height {
+    height: calc(100vh - 80px) !important;
+  }
+
+  .datasource-manage .datasource-content .datasource-table {
+    height: calc(100vh - 224px) !important;
+  }
+
+  .spreadsheet-preview-area {
+    height: calc(100% - 80px) !important;
+  }
+
+  .dv-preview {
+    height: calc(100% - 24px) !important;
+  }
+
+  #de-preview-content {
+    height: calc(100vh - 124px) !important;
+  }
+
+  .resource-tree .custom-tree {
+    height: calc(100vh - 180px) !important;
   }
 }
