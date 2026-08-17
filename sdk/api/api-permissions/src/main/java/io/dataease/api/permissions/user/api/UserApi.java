@@ -265,4 +265,8 @@ public interface UserApi {
     @Hidden
     @PostMapping("/subOrgUser")
     List<UserItem> subOrgUser(@RequestBody List<Long> oidList);
+
+    @Hidden
+    @PostMapping("/proxyClear")
+    void proxyClear();
 }
