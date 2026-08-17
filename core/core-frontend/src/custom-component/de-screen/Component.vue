@@ -718,9 +718,9 @@ onMounted(() => {
   }
   calcTabLength()
   if (['canvas', 'canvasDataV', 'edit'].includes(showPosition.value) && !mobileInPc.value) {
-    eventBus.on('onTabMoveIn-' + element.value.id, componentMoveIn)
-    eventBus.on('onTabMoveOut-' + element.value.id, componentMoveOut)
     eventBus.on('onTabSortChange-' + element.value.id, reShow)
+    eventBus.on('onTabDelete-' + element.value.id, deleteCur)
+    eventBus.on('onTabCopy-' + element.value.id, copyCur)
   }
   currentInstance = getCurrentInstance()
   initCarousel()
