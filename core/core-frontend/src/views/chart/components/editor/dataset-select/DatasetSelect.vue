@@ -3,7 +3,7 @@ import dvFolder from '@/assets/svg/dv-folder.svg'
 import icon_dataset from '@/assets/svg/icon_dataset.svg'
 import icon_done_outlined from '@/assets/svg/icon_done_outlined.svg'
 import { Tree } from '../../../../visualized/data/dataset/form/CreatDsGroup.vue'
-import { computed, ref, watch, onMounted, nextTick } from 'vue'
+import { computed, ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { Plus, Search } from '@element-plus/icons-vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useAppStoreWithOut } from '@/store/modules/app'
@@ -105,10 +105,6 @@ const dsSelectProps = {
 const formRef = ref<FormInstance>()
 const searchStr = ref<string>()
 
-watch(searchStr, val => {
-  datasetSelector.value.filter(val)
-})
-
 const showTree = computed(() => {
   return (
     datasetTree.value && datasetTree.value.length > 0 && !loadingDatasetTree.value && orgCheck.value
@@ -131,6 +127,37 @@ const computedTree = computed(() => {
   }
   return datasetTree.value
 })
+
+// 预计算可见节点 ID 集合，避免树组件异步过滤时丢失匹配节点的父级路径
+const visibleNodeIds = new Set<string | number>()
+
+const buildVisibleIds = (nodes: Tree[], keyword: string): boolean => {
+  let anyMatch = false
+  for (const node of nodes) {
+    const selfMatch = !!node.name?.toLowerCase().includes(keyword)
+    const childMatch = node.children?.length ? buildVisibleIds(node.children, keyword) : false
+    if (selfMatch || childMatch) {
+      visibleNodeIds.add(node.id)
+      anyMatch = true
+    }
+  }
+  return anyMatch
+}
+
+let searchTimer: ReturnType<typeof setTimeout>
+watch(searchStr, val => {
+  clearTimeout(searchTimer)
+  searchTimer = setTimeout(() => {
+    const keyword = val?.trim().toLowerCase()
+    visibleNodeIds.clear()
+    if (keyword) {
+      buildVisibleIds(computedTree.value || [], keyword)
+    }
+    datasetSelector.value.filter(val?.trim())
+  }, 300)
+})
+
+onBeforeUnmount(() => clearTimeout(searchTimer))
 
 const flattedTree = computed(() => {
   return _.filter(flatTree(computedTree.value), node => node.leaf)
@@ -186,8 +213,8 @@ const onDatasetChange = val => {
   emits('onDatasetChange', val)
 }
 const filterNode = (value: string, data: Tree) => {
-  if (!value) return true
-  return data.name?.includes(value)
+  if (!value?.trim()) return true
+  return visibleNodeIds.has(data.id)
 }
 
 const refresh = () => {
