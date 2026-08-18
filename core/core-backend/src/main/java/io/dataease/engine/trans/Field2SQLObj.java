@@ -127,7 +127,7 @@ public class Field2SQLObj {
                 if (Objects.equals(f.getDeType(), DeTypeConstants.DE_INT)) {
                     fieldName = String.format(SQLConstants.CAST, originField, SQLConstants.DEFAULT_INT_FORMAT);
                 } else if (Objects.equals(f.getDeType(), DeTypeConstants.DE_FLOAT)) {
-                    fieldName = String.format(SQLConstants.CAST, originField, SQLConstants.DEFAULT_FLOAT_FORMAT);
+                    fieldName = skipDecimalCast(f.getType()) ? originField : String.format(SQLConstants.CAST, originField, SQLConstants.DEFAULT_FLOAT_FORMAT);
                 } else if (Objects.equals(f.getDeType(), DeTypeConstants.DE_TIME)) {
                     fieldName = StringUtils.isEmpty(f.getDateFormat()) ? String.format(SQLConstants.DE_STR_TO_DATE, originField, SQLConstants.DEFAULT_DATE_FORMAT) :
                             String.format(SQLConstants.DE_STR_TO_DATE, originField, f.getDateFormat());
@@ -141,7 +141,7 @@ public class Field2SQLObj {
                 } else if (Objects.equals(f.getDeType(), DeTypeConstants.DE_INT)) {
                     fieldName = String.format(SQLConstants.CAST, originField, SQLConstants.DEFAULT_INT_FORMAT);
                 } else if (Objects.equals(f.getDeType(), DeTypeConstants.DE_FLOAT)) {
-                    fieldName = String.format(SQLConstants.CAST, originField, SQLConstants.DEFAULT_FLOAT_FORMAT);
+                    fieldName = skipDecimalCast(f.getType()) ? originField : String.format(SQLConstants.CAST, originField, SQLConstants.DEFAULT_FLOAT_FORMAT);
                 } else {
                     fieldName = originField;
                 }
@@ -153,6 +153,14 @@ public class Field2SQLObj {
                 .fieldName(fieldName)
                 .fieldAlias(fieldAlias)
                 .build();
+    }
+
+    /**
+     * Oracle 的 NUMBER/FLOAT 能存 38 位有效数字，转成固定精度 DECIMAL(38,8) 会因整数位超 30 位而报 ORA-01438，
+     * 这类类型直接返回原始值，不做 DECIMAL 转换。
+     */
+    private static boolean skipDecimalCast(String type) {
+        return "NUMBER".equalsIgnoreCase(type) || "FLOAT".equalsIgnoreCase(type);
     }
 
 }

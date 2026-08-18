@@ -823,7 +823,7 @@ public class CalciteProvider extends Provider {
                         String columnTypeName = metaData.getColumnTypeName(j + 1);
                         if ("blob".equalsIgnoreCase(columnTypeName) || "bytea".equalsIgnoreCase(columnTypeName) || "binary".equalsIgnoreCase(columnTypeName) || "varbinary".equalsIgnoreCase(columnTypeName)) {
                             row[j] = readBinaryValue(rs, j + 1, columnTypeName);
-                        } else if ("bfile".equalsIgnoreCase(columnTypeName)) {
+                        } else if ("bfile".equalsIgnoreCase(columnTypeName) || columnTypeName.toUpperCase().endsWith("XMLTYPE")) {
                             row[j] = "";
                         } else if (targetCharset != null && StringUtils.isNotEmpty(rs.getString(j + 1)) && columnType == Types.CLOB) {
                             if (originCharset == null) {
@@ -1335,7 +1335,7 @@ public class CalciteProvider extends Provider {
                             String columnTypeName = metaData.getColumnTypeName(j + 1);
                             if ("blob".equalsIgnoreCase(columnTypeName) || "bytea".equalsIgnoreCase(columnTypeName) || "binary".equalsIgnoreCase(columnTypeName) || "varbinary".equalsIgnoreCase(columnTypeName)) {
                                 row[j] = readBinaryValue(rs, j + 1, columnTypeName);
-                            } else if ("bfile".equalsIgnoreCase(columnTypeName)) {
+                            } else if ("bfile".equalsIgnoreCase(columnTypeName) || columnTypeName.toUpperCase().endsWith("XMLTYPE")) {
                                 row[j] = "";
                             } else {
                                 row[j] = rs.getString(j + 1);
