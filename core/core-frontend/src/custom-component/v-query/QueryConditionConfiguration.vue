@@ -1830,7 +1830,7 @@ let fastDbClickId
 let fastDbDelayClickId
 const fastClickLoading = ref(false)
 const fastDbClickLoading = ref(false)
-const handelFastClick = (item, idx = 0) => {
+const handleFastClick = (item, idx = 0) => {
   clearTimeout(fastDbDelayClickId)
   fastDbDelayClickId = setTimeout(() => {
     if (fastDbClickLoading.value) {
@@ -1845,7 +1845,7 @@ const handelFastClick = (item, idx = 0) => {
     }, 800)
   }, 200)
 }
-const handelFastDbClick = (cmd, condition, index) => {
+const handleFastDbClick = (cmd, condition, index) => {
   clearTimeout(fastDbClickId)
   fastDbClickLoading.value = true
   addOperation(cmd, condition, index)
@@ -2333,7 +2333,7 @@ const setRenameInput = val => {
 const relationshipChartIndex = ref(0)
 const notCurrentEle = (ele, index) => {
   if (activeCondition.value !== ele.id) {
-    handelFastClick(ele, index)
+    handleFastClick(ele, index)
   } else {
     handleRelationshipChart(index)
   }
@@ -2479,8 +2479,8 @@ defineExpose({
           <template #item="{ element, index }">
             <div
               :key="element.id"
-              @dblclick.stop="handelFastDbClick('rename', element, index)"
-              @click.stop="handelFastClick(element)"
+              @dblclick.stop="handleFastDbClick('rename', element, index)"
+              @click.stop="handleFastClick(element)"
               class="list-item_box"
               :style="{
                 marginBottom: element.treeFieldList
