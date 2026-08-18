@@ -15,6 +15,17 @@ class G2TooltipCarousel {
    */
   private static instanceCache = new Map<string, G2TooltipCarousel>()
   private static COLUMN_CAROUSEL_ORIGIN_STYLE = '__deTooltipCarouselOriginStyle__'
+  private static readonly CAROUSEL_START_GAP = 40
+  private static readonly RESIZE_EXECUTION_GAP = 32
+  private static readonly SCROLL_IDLE_DELAY = 160
+  private static startQueue: G2TooltipCarousel[] = []
+  private static startQueueTimer: number | null = null
+  private static resizeQueue = new Map<string, () => Promise<void>>()
+  private static resizeQueueRunning = false
+  private static resizeQueueTimer: number | null = null
+  private static scrollEndTimer: number | null = null
+  private static pageScrolling = false
+  private static pageScrollListenerReady = false
   // 支持轮播的图表类型
   private static SUPPORT_CHART_TYPES = [
     'bar',
@@ -51,7 +62,6 @@ class G2TooltipCarousel {
     interval: null,
     carousel: null,
     nextItem: null,
-    rectTimer: null,
     hoverLeave: null
   }
   private isExecuting: boolean
@@ -128,6 +138,134 @@ class G2TooltipCarousel {
     this.checkStopOnViewChange()
     this.init()
     G2TooltipCarousel.instanceCache.set(chart.container, this)
+    G2TooltipCarousel.ensurePageScrollListener()
+  }
+
+  /**
+   * 页面滚动期间暂停轮播，滚动停止后通过全局队列错峰恢复
+   */
+  private static readonly handlePageScroll = (event: Event) => {
+    const target = event.target
+    if (target instanceof Element && target.closest('.g2-tooltip')) {
+      return
+    }
+    if (!G2TooltipCarousel.pageScrolling) {
+      G2TooltipCarousel.pageScrolling = true
+      G2TooltipCarousel.instanceCache.forEach(instance => instance.suspendForPageScroll())
+    }
+    if (G2TooltipCarousel.scrollEndTimer) {
+      clearTimeout(G2TooltipCarousel.scrollEndTimer)
+    }
+    G2TooltipCarousel.scrollEndTimer = window.setTimeout(() => {
+      G2TooltipCarousel.scrollEndTimer = null
+      G2TooltipCarousel.pageScrolling = false
+      G2TooltipCarousel.instanceCache.forEach(instance => instance.resumeAfterPageScroll())
+    }, G2TooltipCarousel.SCROLL_IDLE_DELAY)
+  }
+
+  private static ensurePageScrollListener() {
+    if (G2TooltipCarousel.pageScrollListenerReady) {
+      return
+    }
+    // scroll 不冒泡，使用捕获阶段统一覆盖预览页和内部滚动容器
+    document.addEventListener('scroll', G2TooltipCarousel.handlePageScroll, {
+      capture: true,
+      passive: true
+    })
+    G2TooltipCarousel.pageScrollListenerReady = true
+  }
+
+  private static releasePageScrollListener() {
+    if (G2TooltipCarousel.instanceCache.size || !G2TooltipCarousel.pageScrollListenerReady) {
+      return
+    }
+    document.removeEventListener('scroll', G2TooltipCarousel.handlePageScroll, true)
+    G2TooltipCarousel.pageScrollListenerReady = false
+    G2TooltipCarousel.pageScrolling = false
+    if (G2TooltipCarousel.scrollEndTimer) {
+      clearTimeout(G2TooltipCarousel.scrollEndTimer)
+      G2TooltipCarousel.scrollEndTimer = null
+    }
+    if (G2TooltipCarousel.startQueueTimer) {
+      clearTimeout(G2TooltipCarousel.startQueueTimer)
+      G2TooltipCarousel.startQueueTimer = null
+    }
+    G2TooltipCarousel.startQueue = []
+  }
+
+  private static enqueueStart(instance: G2TooltipCarousel) {
+    if (
+      instance.isDestroyed ||
+      instance.isPaused ||
+      G2TooltipCarousel.pageScrolling ||
+      G2TooltipCarousel.startQueue.includes(instance)
+    ) {
+      return
+    }
+    G2TooltipCarousel.startQueue.push(instance)
+    G2TooltipCarousel.drainStartQueue()
+  }
+
+  private static dequeueStart(instance: G2TooltipCarousel) {
+    G2TooltipCarousel.startQueue = G2TooltipCarousel.startQueue.filter(item => item !== instance)
+  }
+
+  private static drainStartQueue() {
+    if (
+      G2TooltipCarousel.startQueueTimer ||
+      G2TooltipCarousel.pageScrolling ||
+      G2TooltipCarousel.resizeQueueRunning ||
+      G2TooltipCarousel.resizeQueueTimer ||
+      G2TooltipCarousel.resizeQueue.size
+    ) {
+      return
+    }
+    let instance = G2TooltipCarousel.startQueue.shift()
+    while (instance && (instance.isDestroyed || instance.isPaused)) {
+      instance = G2TooltipCarousel.startQueue.shift()
+    }
+    if (instance) {
+      instance.startFromQueue()
+      // 保留启动冷却窗口，避免同一批新实例绕过错峰队列
+      G2TooltipCarousel.startQueueTimer = window.setTimeout(() => {
+        G2TooltipCarousel.startQueueTimer = null
+        G2TooltipCarousel.drainStartQueue()
+      }, G2TooltipCarousel.CAROUSEL_START_GAP)
+    }
+  }
+
+  static enqueueResize(containerId: string, resizeTask: () => Promise<void>) {
+    G2TooltipCarousel.instanceCache.get(containerId)?.suspendForPageScroll()
+    G2TooltipCarousel.resizeQueue.set(containerId, resizeTask)
+    G2TooltipCarousel.drainResizeQueue()
+  }
+
+  static dequeueResize(containerId: string) {
+    G2TooltipCarousel.resizeQueue.delete(containerId)
+  }
+
+  private static drainResizeQueue() {
+    if (G2TooltipCarousel.resizeQueueRunning || G2TooltipCarousel.resizeQueueTimer) {
+      return
+    }
+    const [nextResize] = G2TooltipCarousel.resizeQueue.entries()
+    if (!nextResize) {
+      G2TooltipCarousel.instanceCache.forEach(instance => instance.resumeAfterPageScroll())
+      return
+    }
+    const [containerId, resizeTask] = nextResize
+    G2TooltipCarousel.resizeQueue.delete(containerId)
+    G2TooltipCarousel.resizeQueueRunning = true
+    resizeTask()
+      .catch(error => console.warn(error))
+      .finally(() => {
+        G2TooltipCarousel.resizeQueueRunning = false
+        // 全屏尺寸变化时逐个执行图表适配，避免所有 forceFit 同帧抢占主线程
+        G2TooltipCarousel.resizeQueueTimer = window.setTimeout(() => {
+          G2TooltipCarousel.resizeQueueTimer = null
+          G2TooltipCarousel.drainResizeQueue()
+        }, G2TooltipCarousel.RESIZE_EXECUTION_GAP)
+      })
   }
 
   /**
@@ -226,11 +364,14 @@ class G2TooltipCarousel {
   /**
    * 销毁指定容器的 G2TooltipCarousel 实例
    */
-  static destroyByContainer(containerId?: string) {
+  static destroyByContainer(containerId?: string, restoreHoverTooltip = false) {
     if (containerId) {
       const instance = G2TooltipCarousel.instanceCache.get(containerId)
       if (instance) {
         instance.destroy()
+        if (restoreHoverTooltip) {
+          switchTooltipWrapperHost(instance.chart, 'hover')
+        }
       }
     }
   }
@@ -278,24 +419,7 @@ class G2TooltipCarousel {
       })
     }
     this.intersectionObserver?.observe(this.chartElement)
-    let lastRect = this.chartElement.getBoundingClientRect()
-    this.timers.rectTimer = setInterval(() => {
-      const chartElement = this.getChartElement()
-      if (!chartElement) return
-      const newRect = chartElement.getBoundingClientRect()
-      if (newRect.top !== lastRect.top || newRect.left !== lastRect.left) {
-        this.restart()
-        lastRect = newRect
-      }
-    }, 16)
   }
-
-  private restart = this.debounce(() => {
-    G2TooltipCarousel.instanceCache?.forEach(instance => {
-      instance.stop()
-      instance.start()
-    })
-  }, 1000)
 
   /**
    * 移除事件监听
@@ -312,29 +436,27 @@ class G2TooltipCarousel {
   }
 
   /**
-   * 防抖
-   */
-  private debounce(func: (...args: any[]) => void, delay: number): (...args: any[]) => void {
-    let timeout: number | null = null
-    return (...args: any[]) => {
-      if (timeout) clearTimeout(timeout)
-      timeout = window.setTimeout(() => {
-        func(...args)
-      }, delay)
-    }
-  }
-
-  /**
    * IntersectionObserver回调，处理元素进入/离开视口
    * 只有可见区域大于70%时才恢复轮播，否则暂停
    */
   private handleIntersection() {
     if (!this.isActuallyVisible(this.chartElement) || this.chart.dashboardHidden) {
-      this.hideTooltipAtData()
       this.chartIsVisible = false
+      if (G2TooltipCarousel.pageScrolling) {
+        // 滚动期间只停调度，避免跨越视口时批量触发 SVG 状态重置
+        this.isPaused = true
+        this.suspendForPageScroll()
+        return
+      }
+      this.hideTooltipAtData()
       this.pause(true)
     } else {
       this.chartIsVisible = true
+      if (G2TooltipCarousel.pageScrolling) {
+        this.isPaused = false
+        this.suspendForPageScroll()
+        return
+      }
       this.resume(true)
     }
   }
@@ -388,6 +510,7 @@ class G2TooltipCarousel {
   private shouldPauseCarousel(): boolean {
     return (
       this.isPaused ||
+      G2TooltipCarousel.pageScrolling ||
       !this.data ||
       this.data.length === 0 ||
       this.hasParentWithSwitchHidden() ||
@@ -1039,11 +1162,50 @@ class G2TooltipCarousel {
    * 增加防重入判断，避免多次启动导致多个定时器
    */
   start() {
+    // 未完成初始化或已被替换的实例不进入全局启动队列
+    if (this.isDestroyed || G2TooltipCarousel.instanceCache.get(this.chart?.container) !== this) {
+      return
+    }
     // 防止多次启动
     if (!this.isPaused && this.isExecuting) return
     this.isPaused = false
+    this.isExecuting = false
     this.index = 0
+    G2TooltipCarousel.enqueueStart(this)
+  }
+
+  private startFromQueue() {
+    if (this.isDestroyed || this.isPaused || G2TooltipCarousel.pageScrolling) {
+      return
+    }
+    this.isExecuting = false
     this.next()
+  }
+
+  private suspendForPageScroll() {
+    this.isExecuting = false
+    this.clearTimer()
+    this.cancelColumnSelectionFrames()
+    const tooltip = this.getTooltipElement()
+    if (tooltip) {
+      tooltip.style.visibility = 'hidden'
+    }
+  }
+
+  private resumeAfterPageScroll() {
+    if (
+      this.isDestroyed ||
+      this.isPaused ||
+      !this.chartIsVisible ||
+      document.hidden ||
+      this.hasParentWithSwitchHidden() ||
+      this.chartElement?.matches(':hover') ||
+      this.getTooltipElement()?.matches(':hover')
+    ) {
+      return
+    }
+    this.isExecuting = false
+    G2TooltipCarousel.enqueueStart(this)
   }
 
   /**
@@ -1076,7 +1238,7 @@ class G2TooltipCarousel {
     if (!this.isPaused) {
       this.clearTimer()
       this.isExecuting = false
-      this.next()
+      G2TooltipCarousel.enqueueStart(this)
     }
   }
 
@@ -1117,17 +1279,16 @@ class G2TooltipCarousel {
     this.stop()
     this.removeEventListeners()
     this.intersectionObserver?.disconnect()
-    if (this.timers.rectTimer) {
-      clearTimeout(this.timers.rectTimer)
-      this.timers.rectTimer = null
-    }
+    G2TooltipCarousel.dequeueStart(this)
     G2TooltipCarousel.instanceCache.delete(this.chart.container)
+    G2TooltipCarousel.releasePageScrollListener()
   }
 
   /**
    * 清除所有定时器
    */
   private clearTimer() {
+    G2TooltipCarousel.dequeueStart(this)
     if (this.timers.carousel) {
       clearTimeout(this.timers.carousel)
       this.timers.carousel = null
@@ -1174,6 +1335,14 @@ class G2TooltipCarousel {
       if (!id || instance.chart.id === id) {
         setTimeout(() => instance.stop(), 200)
       }
+    })
+  }
+
+  static suspendExistingForFullscreen() {
+    // 全屏副本挂载前仅暂停现有实例，避免底层画布与全屏画布同时轮播
+    G2TooltipCarousel.instanceCache?.forEach(instance => {
+      instance.isPaused = true
+      instance.suspendForPageScroll()
     })
   }
 

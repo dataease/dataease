@@ -390,6 +390,7 @@ export function switchTooltipWrapperHost(chart: Chart, mode: TooltipDisplayMode)
   if (shouldResetTooltip) {
     // 挂载点切换时先隐藏旧内容，等待新的 tooltip:show 再恢复
     wrapper.querySelectorAll<HTMLElement>('.g2-tooltip').forEach(tooltip => {
+      resetHoverTooltipPosition(tooltip)
       tooltip.style.visibility = 'hidden'
       tooltip.style.removeProperty('left')
       tooltip.style.removeProperty('top')
@@ -678,9 +679,50 @@ const G2_TOOLTIP_DEFAULT_MAX_WIDTH = 320
 
 type CarouselTooltipFrameState = {
   fitFrame?: number
+  hoverReadyFrame?: number
 }
 
 const carouselTooltipFrameState = new WeakMap<HTMLElement, CarouselTooltipFrameState>()
+
+function resetHoverTooltipPosition(tooltip: HTMLElement) {
+  const frameState = carouselTooltipFrameState.get(tooltip)
+  if (frameState?.hoverReadyFrame !== undefined) {
+    window.cancelAnimationFrame(frameState.hoverReadyFrame)
+    frameState.hoverReadyFrame = undefined
+  }
+  tooltip.removeAttribute('data-de-tooltip-position-ready')
+  tooltip.removeAttribute('data-de-tooltip-position-pending')
+}
+
+function markHoverTooltipPositionReady(
+  container: string,
+  tooltipWrapper: HTMLElement,
+  tooltip: HTMLElement
+) {
+  if (
+    tooltip.dataset.deTooltipPositionReady === 'true' ||
+    tooltip.dataset.deTooltipPositionPending === 'true'
+  ) {
+    return
+  }
+  const frameState = carouselTooltipFrameState.get(tooltip) || {}
+  carouselTooltipFrameState.set(tooltip, frameState)
+  tooltip.dataset.deTooltipPositionPending = 'true'
+  // 先绘制一次最终坐标，再恢复 AntV 后续 left/top 平滑过渡
+  frameState.hoverReadyFrame = window.requestAnimationFrame(() => {
+    frameState.hoverReadyFrame = window.requestAnimationFrame(() => {
+      frameState.hoverReadyFrame = undefined
+      tooltip.removeAttribute('data-de-tooltip-position-pending')
+      if (
+        tooltip.isConnected &&
+        tooltipWrapper.contains(tooltip) &&
+        getTooltipDisplayMode(container) === 'hover'
+      ) {
+        tooltip.dataset.deTooltipPositionReady = 'true'
+      }
+    })
+  })
+}
 
 function fitCarouselTooltipInChart(
   container: string,
@@ -807,9 +849,10 @@ export function listenerTooltipShow(newChart: G2Chart, chart: Chart) {
       if (top < 0) {
         top = clientY + gap
       }
-      tooltip.style.visibility = 'visible'
       tooltip.style.left = `${Math.max(0, Math.min(left, viewportWidth - width))}px`
       tooltip.style.top = `${Math.max(0, Math.min(top, viewportHeight - height))}px`
+      tooltip.style.visibility = 'visible'
+      markHoverTooltipPositionReady(chart.container, tooltipWrapper, tooltip)
       syncHoverTooltipEllipsisTitles(tooltip)
     })
   })

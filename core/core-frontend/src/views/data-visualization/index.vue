@@ -534,7 +534,9 @@ eventBus.on('tabSort', tabSort)
 </script>
 
 <template>
+  <!-- 全屏期间移出编辑器布局树，只保留全屏预览画布 -->
   <div
+    v-show="!fullscreenFlag"
     ref="dvLayout"
     class="dv-common-layout"
     :class="isDataEaseBi && !newWindowFromDiv && 'dataease-w-h'"

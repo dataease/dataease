@@ -129,6 +129,8 @@ const userViewEnlargeRef = ref(null)
 const searchCount = ref(0)
 const refreshTimer = ref(null)
 const renderReady = ref(false)
+let resizeDetector: ReturnType<typeof elementResizeDetectorMaker> | null = null
+let resizeDetectorTarget: HTMLElement | null = null
 const dashboardActive = computed(() => {
   return dvInfo.value.type === 'dashboard'
 })
@@ -443,11 +445,14 @@ onMounted(() => {
   initRefreshTimer()
   resetLayout()
   window.addEventListener('resize', restore)
-  const erd = elementResizeDetectorMaker()
-  erd.listenTo(document.getElementById(domId), () => {
-    restore()
-    initWatermark()
-  })
+  resizeDetectorTarget = document.getElementById(domId)
+  if (resizeDetectorTarget) {
+    resizeDetector = elementResizeDetectorMaker()
+    resizeDetector.listenTo(resizeDetectorTarget, () => {
+      restore()
+      initWatermark()
+    })
+  }
   window.addEventListener('message', winMsgHandle)
 })
 
@@ -455,7 +460,12 @@ onBeforeUnmount(() => {
   //初始化隐藏弹框区
   dvMainStore.canvasStateChange({ key: 'curPointArea', value: 'base' })
   clearInterval(refreshTimer.value)
+  window.removeEventListener('resize', restore)
   window.removeEventListener('message', winMsgHandle)
+  // 全屏预览副本卸载时同步移除探测节点和监听，避免反复进入全屏后累积
+  if (resizeDetector && resizeDetectorTarget) {
+    resizeDetector.uninstall(resizeDetectorTarget)
+  }
 })
 
 const userViewEnlargeOpen = (opt, item) => {

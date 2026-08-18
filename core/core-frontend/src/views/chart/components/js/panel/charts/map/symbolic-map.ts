@@ -159,6 +159,9 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
       chart.container = container
       configCarouselTooltip(chart, symbolicLayer, symbolicLayer.sourceOption.data, scene)
       qqMapRendered(scene)
+      if (tooltipLayer && mapKey.mapType === 'qq') {
+        this.setTooltipPopupZIndex(scene)
+      }
     })
     symbolicLayer.on('click', ev => {
       const data = ev.feature
@@ -422,6 +425,18 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
   clearPopup = container => {
     const containerElement = document.getElementById(container)
     containerElement?.querySelectorAll('.l7-popup').forEach((element: Element) => element.remove())
+  }
+
+  /**
+   * 设置 tooltip popup 的 zIndex
+   * @param scene
+   */
+  setTooltipPopupZIndex = (scene: Scene) => {
+    // 获取 markerContainer 元素并设置 zIndex
+    const markerContainer = scene.getMapService().getMarkerContainer()
+    if (markerContainer) {
+      markerContainer.style.zIndex = '4'
+    }
   }
 
   /**

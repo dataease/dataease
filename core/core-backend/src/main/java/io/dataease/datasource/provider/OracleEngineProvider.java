@@ -123,9 +123,9 @@ public class OracleEngineProvider extends EngineProvider {
             switch (tableField.getDeExtractType()) {
                 case 0:
                     if (StringUtils.isNotEmpty(tableField.getLength())) {
-                        columnFields.append("VARCHAR(length)".replace("length", tableField.getLength())).append(",\"");
+                        columnFields.append("VARCHAR2(length)".replace("length", tableField.getLength())).append(",\"");
                     } else {
-                        columnFields.append("CLOB").append(",\"");
+                        columnFields.append("VARCHAR2(4000)").append(",\"");
                     }
                     break;
                 case 1:

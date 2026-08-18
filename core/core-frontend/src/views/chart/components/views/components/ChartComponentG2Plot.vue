@@ -605,6 +605,14 @@ const installG2SvgCoordinateScaleAdapter = chartInstance => {
   })
 }
 const renderG2 = async (chart, chartView: G2ChartView<any, any>) => {
+  if (
+    !chart.customAttr?.tooltip?.carousel?.enable &&
+    G2TooltipCarousel.getInstanceByContainerId(containerId)
+  ) {
+    // 关闭轮播时立即释放当前实例，不等待防抖重绘
+    G2TooltipCarousel.destroyByContainer(containerId, true)
+    replayLinkageActive()
+  }
   g2Timer && clearTimeout(g2Timer)
   g2Timer = setTimeout(async () => {
     try {
@@ -1094,6 +1102,7 @@ let resizeObserver
 const TOLERANCE = 0.01
 const RESIZE_MONITOR_CHARTS = ['map', 'bubble-map', 'flow-map', 'heat-map']
 let g2ResizeTimer: number
+let chartComponentUnmounted = false
 onMounted(() => {
   const containerDom = document.getElementById(containerId)
   const { offsetWidth, offsetHeight } = containerDom
@@ -1117,23 +1126,26 @@ onMounted(() => {
         renderChart(curView)
       } else {
         g2ResizeTimer && clearTimeout(g2ResizeTimer)
-        g2ResizeTimer = setTimeout(async () => {
-          const chartView = chartViewManager.getChartView(curView.render, curView.type)
-          const chartInstance = myChart
+        g2ResizeTimer = setTimeout(() => {
+          G2TooltipCarousel.enqueueResize(containerId, async () => {
+            const chartView = chartViewManager.getChartView(curView.render, curView.type)
+            const chartInstance = myChart
 
-          if (
-            chartView.library !== ChartLibraryType.G2 ||
-            typeof chartInstance?.forceFit !== 'function'
-          ) {
-            return
-          }
+            if (
+              chartComponentUnmounted ||
+              chartView.library !== ChartLibraryType.G2 ||
+              typeof chartInstance?.forceFit !== 'function'
+            ) {
+              return
+            }
 
-          // forceFit 完成后恢复 G2 联动选中态
-          await chartInstance.forceFit()
+            // forceFit 完成后恢复 G2 联动选中态
+            await chartInstance.forceFit()
 
-          if (chartInstance === myChart) {
-            replayLinkageActive()
-          }
+            if (!chartComponentUnmounted && chartInstance === myChart) {
+              replayLinkageActive()
+            }
+          })
         }, 300)
       }
     }
@@ -1164,6 +1176,9 @@ const onWheel = (e: WheelEvent) => {
 }
 onBeforeUnmount(() => {
   try {
+    chartComponentUnmounted = true
+    g2ResizeTimer && clearTimeout(g2ResizeTimer)
+    G2TooltipCarousel.dequeueResize(containerId)
     G2TooltipCarousel.destroyByContainer(containerId)
     clearG2SliderTouchAdapter()
     myChart?.destroy()
@@ -1277,6 +1292,12 @@ onBeforeUnmount(() => {
 </style>
 
 <style lang="less">
+div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover']
+  .g2-tooltip:not([data-de-tooltip-position-ready='true']) {
+  // 仅首次定位禁用位移过渡，稳定后恢复 AntV 的平滑跟随
+  transition: visibility 0.2s cubic-bezier(0.23, 1, 0.32, 1) !important;
+}
+
 div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover'] {
   // 悬浮 tooltip 随内容伸缩，并为长文本和移动端保留宽度边界
   .g2-tooltip {
