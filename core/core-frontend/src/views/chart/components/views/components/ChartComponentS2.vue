@@ -174,6 +174,7 @@ const calcData = (viewInfo: Chart, callback, resetPageInfo = true) => {
 }
 // 图表对象不用响应式
 let myChart: SpreadSheet = null
+let chartComponentUnmounted = false
 // 实际渲染的图表信息，适应缩放
 let actualChart: ChartObj
 const renderChartFromDialog = (viewInfo: Chart, chartDataInfo) => {
@@ -233,6 +234,9 @@ const renderChart = (viewInfo: Chart, resetPageInfo: boolean) => {
 }
 
 const debounceRender = debounce(resetPageInfo => {
+  if (chartComponentUnmounted) {
+    return
+  }
   myChart?.facet?.timer?.stop()
   myChart?.facet?.cancelScrollFrame()
   myChart?.destroy()
@@ -637,14 +641,24 @@ let timer
 const resize = (width, height) => {
   if (timer) {
     clearTimeout(timer)
+    timer = null
+  }
+  // 全屏切换会将原编辑画布短暂隐藏，零尺寸不能写入 S2 实例
+  if (chartComponentUnmounted || width <= 1 || height <= 1) {
+    return
   }
   timer = setTimeout(() => {
+    timer = null
+    if (chartComponentUnmounted) {
+      return
+    }
     if (!myChart?.facet) {
       debounceRender(false)
     } else {
       myChart?.facet?.timer?.stop()
       myChart?.changeSheetSize(width, height)
       myChart?.render()
+      dvMainStore.setViewInstanceInfo(actualChart.id, myChart)
     }
     initScroll()
   }, 500)
@@ -674,7 +688,12 @@ onMounted(() => {
 })
 onBeforeUnmount(() => {
   try {
-    myChart?.facet.timer?.stop()
+    chartComponentUnmounted = true
+    timer && clearTimeout(timer)
+    scrollTimer && clearTimeout(scrollTimer)
+    debounceRender.cancel()
+    myChart?.facet?.timer?.stop()
+    myChart?.facet?.cancelScrollFrame()
     myChart?.destroy()
     myChart = null
     resizeObserver?.disconnect()

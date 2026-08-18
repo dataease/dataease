@@ -605,6 +605,14 @@ const installG2SvgCoordinateScaleAdapter = chartInstance => {
   })
 }
 const renderG2 = async (chart, chartView: G2ChartView<any, any>) => {
+  if (
+    !chart.customAttr?.tooltip?.carousel?.enable &&
+    G2TooltipCarousel.getInstanceByContainerId(containerId)
+  ) {
+    // 关闭轮播时立即释放当前实例，不等待防抖重绘
+    G2TooltipCarousel.destroyByContainer(containerId, true)
+    replayLinkageActive()
+  }
   g2Timer && clearTimeout(g2Timer)
   g2Timer = setTimeout(async () => {
     try {
@@ -1284,6 +1292,12 @@ onBeforeUnmount(() => {
 </style>
 
 <style lang="less">
+div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover']
+  .g2-tooltip:not([data-de-tooltip-position-ready='true']) {
+  // 仅首次定位禁用位移过渡，稳定后恢复 AntV 的平滑跟随
+  transition: visibility 0.2s cubic-bezier(0.23, 1, 0.32, 1) !important;
+}
+
 div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover'] {
   // 悬浮 tooltip 随内容伸缩，并为长文本和移动端保留宽度边界
   .g2-tooltip {

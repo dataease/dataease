@@ -364,11 +364,14 @@ class G2TooltipCarousel {
   /**
    * 销毁指定容器的 G2TooltipCarousel 实例
    */
-  static destroyByContainer(containerId?: string) {
+  static destroyByContainer(containerId?: string, restoreHoverTooltip = false) {
     if (containerId) {
       const instance = G2TooltipCarousel.instanceCache.get(containerId)
       if (instance) {
         instance.destroy()
+        if (restoreHoverTooltip) {
+          switchTooltipWrapperHost(instance.chart, 'hover')
+        }
       }
     }
   }
@@ -1159,6 +1162,10 @@ class G2TooltipCarousel {
    * 增加防重入判断，避免多次启动导致多个定时器
    */
   start() {
+    // 未完成初始化或已被替换的实例不进入全局启动队列
+    if (this.isDestroyed || G2TooltipCarousel.instanceCache.get(this.chart?.container) !== this) {
+      return
+    }
     // 防止多次启动
     if (!this.isPaused && this.isExecuting) return
     this.isPaused = false
