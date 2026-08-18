@@ -302,6 +302,16 @@ public class ScheduleManager {
     }
 
     /**
+     * 若 Job 已存在但 Trigger 缺失（数据不一致，如 Trigger 被单独删除），
+     * 先清理孤儿 Job，避免 scheduler.scheduleJob 因 JobKey 冲突抛出 ObjectAlreadyExistsException。
+     */
+    private void deleteJobIfExists(JobKey jobKey) throws SchedulerException {
+        if (scheduler.checkExists(jobKey)) {
+            scheduler.deleteJob(jobKey);
+        }
+    }
+
+    /**
      * 新增或者修改 simpleJob
      *
      * @param jobKey
@@ -317,6 +327,7 @@ public class ScheduleManager {
         if (scheduler.checkExists(triggerKey)) {
             modifySimpleJobTime(triggerKey, intervalTime);
         } else {
+            deleteJobIfExists(jobKey);
             addSimpleJob(jobKey, triggerKey, clz, intervalTime, jobDataMap);
         }
 
@@ -328,6 +339,7 @@ public class ScheduleManager {
             if (scheduler.checkExists(triggerKey)) {
                 modifySingleJobTime(triggerKey, date);
             } else {
+                deleteJobIfExists(jobKey);
                 addSingleJob(jobKey, triggerKey, clz, date, jobDataMap);
             }
         } catch (Exception e) {
@@ -363,6 +375,7 @@ public class ScheduleManager {
             if (scheduler.checkExists(triggerKey)) {
                 modifyCronJobTime(triggerKey, cron, startTime, endTime);
             } else {
+                deleteJobIfExists(jobKey);
                 addCronJob(jobKey, triggerKey, jobClass, cron, startTime, endTime, jobDataMap);
             }
         } catch (Exception e) {
@@ -456,6 +469,7 @@ public class ScheduleManager {
         if (scheduler.checkExists(triggerKey)) {
             modifySimpleJobTimeForCustomTime(triggerKey, period, startTime, endTime);
         } else {
+            deleteJobIfExists(jobKey);
             addSimpleJobForCustomTime(jobKey, triggerKey, clz, period, startTime, endTime, jobDataMap);
         }
 
