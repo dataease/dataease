@@ -125,9 +125,9 @@ public class Field2SQLObj {
                 }
             } else if (Objects.equals(f.getDeExtractType(), DeTypeConstants.DE_STRING)) {
                 if (Objects.equals(f.getDeType(), DeTypeConstants.DE_INT)) {
-                    fieldName = String.format(SQLConstants.CAST, originField, SQLConstants.DEFAULT_INT_FORMAT);
+                    fieldName = skipNumericCast(f.getType()) ? originField : String.format(SQLConstants.CAST, originField, SQLConstants.DEFAULT_INT_FORMAT);
                 } else if (Objects.equals(f.getDeType(), DeTypeConstants.DE_FLOAT)) {
-                    fieldName = String.format(SQLConstants.CAST, originField, SQLConstants.DEFAULT_FLOAT_FORMAT);
+                    fieldName = skipNumericCast(f.getType()) ? originField : String.format(SQLConstants.CAST, originField, SQLConstants.DEFAULT_FLOAT_FORMAT);
                 } else if (Objects.equals(f.getDeType(), DeTypeConstants.DE_TIME)) {
                     fieldName = StringUtils.isEmpty(f.getDateFormat()) ? String.format(SQLConstants.DE_STR_TO_DATE, originField, SQLConstants.DEFAULT_DATE_FORMAT) :
                             String.format(SQLConstants.DE_STR_TO_DATE, originField, f.getDateFormat());
@@ -139,9 +139,9 @@ public class Field2SQLObj {
                     String cast = String.format(SQLConstants.CAST, originField, SQLConstants.DEFAULT_INT_FORMAT);
                     fieldName = String.format(SQLConstants.FROM_UNIXTIME, cast, SQLConstants.DEFAULT_DATE_FORMAT);
                 } else if (Objects.equals(f.getDeType(), DeTypeConstants.DE_INT)) {
-                    fieldName = String.format(SQLConstants.CAST, originField, SQLConstants.DEFAULT_INT_FORMAT);
+                    fieldName = skipNumericCast(f.getType()) ? originField : String.format(SQLConstants.CAST, originField, SQLConstants.DEFAULT_INT_FORMAT);
                 } else if (Objects.equals(f.getDeType(), DeTypeConstants.DE_FLOAT)) {
-                    fieldName = String.format(SQLConstants.CAST, originField, SQLConstants.DEFAULT_FLOAT_FORMAT);
+                    fieldName = skipNumericCast(f.getType()) ? originField : String.format(SQLConstants.CAST, originField, SQLConstants.DEFAULT_FLOAT_FORMAT);
                 } else {
                     fieldName = originField;
                 }
@@ -153,6 +153,15 @@ public class Field2SQLObj {
                 .fieldName(fieldName)
                 .fieldAlias(fieldAlias)
                 .build();
+    }
+
+    /**
+     * 浮点/超大范围数值类型（Oracle NUMBER/FLOAT、DB2 DECFLOAT/REAL/DOUBLE、MySQL/PG FLOAT/DOUBLE、Doris LARGEINT 等）
+     * 转成固定精度 DECIMAL 会溢出（ORA-01438 / DB2 SQLCODE=-413 / Doris Arithmetic overflow 等），这类类型直接返回原始值。
+     */
+    private static boolean skipNumericCast(String type) {
+        return "NUMBER".equalsIgnoreCase(type) || "FLOAT".equalsIgnoreCase(type) || "DOUBLE".equalsIgnoreCase(type)
+                || "REAL".equalsIgnoreCase(type) || "DECFLOAT".equalsIgnoreCase(type) || "LARGEINT".equalsIgnoreCase(type);
     }
 
 }

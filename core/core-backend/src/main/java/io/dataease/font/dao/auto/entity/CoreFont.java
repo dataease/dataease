@@ -51,7 +51,7 @@ public class CoreFont {
 
     @Comment("是否内置")
     @ColumnDefault("false")
-    @Column(name = "is_BuiltIn")
+    @Column(name = "is_builtin")
     private Boolean isBuiltin;
 
     @Column(name = "size")

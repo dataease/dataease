@@ -222,9 +222,6 @@ export class RangeBar extends HorizontalBar {
       return valueFormatter(val, axis.axisLabelFormatter)
     }
     const formatAxisLabel = (val, index, ticks) => {
-      if (ticks?.length > 1 && index === ticks.length - 1) {
-        return ''
-      }
       return formatAxisValue(val)
     }
     tmpOptions.children[0].axis.y = {

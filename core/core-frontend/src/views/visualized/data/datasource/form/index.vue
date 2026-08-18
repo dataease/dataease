@@ -95,11 +95,40 @@ const selectDsType = (type: string) => {
   currentDsType.value = type
   activeStep.value = 1
   activeApiStep.value = 1
+  // 切换数据源类型时同步重置表单，避免残留上一个数据源的信息
+  form.type = type
+  if (!type.startsWith('API') && !type.startsWith('Excel')) {
+    form.configuration = {
+      dataBase: '',
+      jdbcUrl: '',
+      urlType: 'hostName',
+      sshType: 'password',
+      extraParams: '',
+      username: '',
+      password: '',
+      host: '',
+      authMethod: '',
+      port: '',
+      sslCA: '',
+      sslCert: '',
+      sslKey: '',
+      initialPoolSize: 50,
+      minPoolSize: 50,
+      maxPoolSize: 100,
+      queryTimeout: 30,
+      useSSH: false,
+      sshHost: '',
+      sshPort: '',
+      sshUserName: '',
+      sshPassword: '',
+      sshKey: ''
+    }
+  }
   nextTick(() => {
     detail?.value?.initForm(type, pluginDs.value, pluginIndex.value, isPlugin.value) ||
       xpack?.value?.invokeMethod({
         methodName: 'initForm',
-        args: type
+        args: [type]
       })
     excelRemote?.value?.initForm(type)
     if (!dsTree.value) return
