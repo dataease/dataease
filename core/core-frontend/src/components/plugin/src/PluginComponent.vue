@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import noLic from './nolic.vue'
-import { ref, useAttrs, onMounted, shallowRef } from 'vue'
+import { ref, useAttrs, onMounted, shallowRef, nextTick, watch } from 'vue'
 import { execute, randomKey, formatArray } from './convert'
 import { loadPluginApi, xpackModelApi } from '@/api/plugin'
 import { useCache } from '@/hooks/web/useCache'
@@ -91,13 +91,26 @@ const storeCacheProxy = byteArray => {
   wsCache.set(`de-plugin-proxy-${moduleName}`, JSON.stringify(result))
 }
 const pluginProxy = ref(null)
+const pendingMethods = []
 const invokeMethod = param => {
+  if (!pluginProxy.value) {
+    pendingMethods.push(param)
+    return
+  }
   if (pluginProxy.value['invokeMethod']) {
     pluginProxy.value['invokeMethod'](param)
   } else {
     pluginProxy.value[param.methodName]?.(...param.args)
   }
 }
+const flushPendingMethods = () => {
+  if (!pendingMethods.length) return
+  const pending = pendingMethods.splice(0)
+  pending.forEach(invokeMethod)
+}
+watch(plugin, () => {
+  nextTick(flushPendingMethods)
+})
 
 onMounted(async () => {
   const key = 'xpack-model-distributed'
