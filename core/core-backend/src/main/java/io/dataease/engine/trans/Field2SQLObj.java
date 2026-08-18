@@ -130,7 +130,7 @@ public class Field2SQLObj {
                     fieldName = skipNumericCast(f.getType()) ? originField : String.format(SQLConstants.CAST, originField, SQLConstants.DEFAULT_FLOAT_FORMAT);
                 } else if (Objects.equals(f.getDeType(), DeTypeConstants.DE_TIME)) {
                     fieldName = StringUtils.isEmpty(f.getDateFormat()) ? String.format(SQLConstants.DE_STR_TO_DATE, originField, SQLConstants.DEFAULT_DATE_FORMAT) :
-                            String.format(SQLConstants.DE_STR_TO_DATE, originField, f.getDateFormat());
+                        String.format(SQLConstants.DE_STR_TO_DATE, originField, f.getDateFormat());
                 } else {
                     fieldName = originField;
                 }
@@ -150,9 +150,9 @@ public class Field2SQLObj {
             fieldName = "'-'";
         }
         return SQLObj.builder()
-                .fieldName(fieldName)
-                .fieldAlias(fieldAlias)
-                .build();
+            .fieldName(fieldName)
+            .fieldAlias(fieldAlias)
+            .build();
     }
 
     /**
@@ -161,7 +161,7 @@ public class Field2SQLObj {
      */
     private static boolean skipNumericCast(String type) {
         return "NUMBER".equalsIgnoreCase(type) || "FLOAT".equalsIgnoreCase(type) || "DOUBLE".equalsIgnoreCase(type)
-                || "REAL".equalsIgnoreCase(type) || "DECFLOAT".equalsIgnoreCase(type) || "LARGEINT".equalsIgnoreCase(type);
+            || "REAL".equalsIgnoreCase(type) || "DECFLOAT".equalsIgnoreCase(type) || "LARGEINT".equalsIgnoreCase(type) || "BIGINT UNSIGNED".equalsIgnoreCase(type);
     }
 
 }
