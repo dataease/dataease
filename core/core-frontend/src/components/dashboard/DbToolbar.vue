@@ -683,18 +683,10 @@ const userGroupShow = ref(false)
             :content="t('visualization.outer_param_set')"
             placement="bottom"
           >
-            <component-button
-              :tips="t('visualization.outer_param_set')"
-              @custom-click="openOuterParamsSet"
-              :icon-name="icon_params_setting"
-            />
+            <component-button @custom-click="openOuterParamsSet" :icon-name="icon_params_setting" />
           </el-tooltip>
           <el-tooltip effect="dark" :content="t('visualization.batch_opt')" placement="bottom">
-            <component-button
-              :tips="t('visualization.batch_opt')"
-              @custom-click="batchOptStatusChange(true)"
-              :icon-name="dvBatch"
-            />
+            <component-button @custom-click="batchOptStatusChange(true)" :icon-name="dvBatch" />
           </el-tooltip>
 
           <el-tooltip
@@ -702,22 +694,14 @@ const userGroupShow = ref(false)
             :content="t('components.dashboard_configuration')"
             placement="bottom"
           >
-            <component-button
-              :tips="t('components.dashboard_configuration')"
-              @custom-click="openDataBoardSetting"
-              :icon-name="dvDashboard"
-            />
+            <component-button @custom-click="openDataBoardSetting" :icon-name="dvDashboard" />
           </el-tooltip>
           <el-tooltip
             effect="dark"
             :content="t('visualization.hidden_components')"
             placement="bottom"
           >
-            <component-button
-              :tips="t('visualization.hidden_components')"
-              @custom-click="openHiddenList"
-              :icon-name="dvHidden"
-            />
+            <component-button @custom-click="openHiddenList" :icon-name="dvHidden" />
           </el-tooltip>
           <div class="divider"></div>
           <template v-if="!desktop">
@@ -728,7 +712,6 @@ const userGroupShow = ref(false)
               placement="bottom"
             >
               <component-button
-                :tips="t('components.to_mobile_layout')"
                 @custom-click="openMobileSetting"
                 :icon-name="icon_phone_outlined"
               />
