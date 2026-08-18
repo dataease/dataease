@@ -2,6 +2,9 @@ package io.dataease.visualization.manage;
 
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.ExpressionUtils;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.dataease.api.visualization.dto.VisualizationViewTableDTO;
@@ -17,6 +20,11 @@ import io.dataease.commons.constants.OptConstants;
 import io.dataease.constant.BusiResourceEnum;
 import io.dataease.constant.CommonConstants;
 import io.dataease.dao.auto.entity.*;
+import io.dataease.dao.auto.entity.QCoreDatasetGroup;
+import io.dataease.dao.auto.entity.QCoreDatasource;
+import io.dataease.dao.auto.entity.QDataVisualizationInfo;
+import io.dataease.dao.auto.entity.QPerBusiResource;
+import io.dataease.operation.dao.auto.entity.QCoreOptRecent;
 import io.dataease.dao.auto.repo.VisualizationReportFilterRepository;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
@@ -28,6 +36,7 @@ import io.dataease.permission.util.V3UserUtil;
 import io.dataease.result.PageResult;
 import io.dataease.utils.*;
 import io.dataease.visualization.dao.auto.entity.*;
+import io.dataease.visualization.dao.auto.entity.QCoreStore;
 import io.dataease.visualization.dao.auto.mapper.*;
 import io.dataease.visualization.dao.ext.po.VisualizationNodePO;
 import io.dataease.visualization.dao.ext.po.VisualizationResourcePO;
@@ -299,7 +308,6 @@ public class CoreVisualizationManage {
     }
 
 
-    @SuppressWarnings("unchecked")
     public Page<VisualizationResourcePO> queryVisualizationPage(int goPage, int pageSize, VisualizationWorkbranchQueryRequest request) {
         Long uid = V3UserUtil.getUid();
         String type = null;
@@ -314,108 +322,157 @@ public class CoreVisualizationManage {
         boolean isAsc = request.isAsc();
         String keyword = request.getKeyword();
 
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT dvResource.id, dvResource.resource_id, dvResource.name, dvResource.ext_flag, dvResource.ext_flag1, ");
-        sql.append("dvResource.type, dvResource.creator, core_opt_recent.uid AS last_editor, ");
-        sql.append("core_opt_recent.time AS last_edit_time, ");
-        sql.append("(CASE WHEN core_store.resource_id IS NULL THEN 0 ELSE 1 END) AS favorite ");
-        sql.append("FROM (");
-        sql.append("SELECT core_dataset_group.id, core_dataset_group.id AS resource_id, core_dataset_group.name, 0 as ext_flag, 1 as ext_flag1, 'dataset' AS type, core_dataset_group.create_by AS creator FROM core_dataset_group WHERE core_dataset_group.node_type = 'dataset' ");
-        sql.append("UNION ALL ");
-        sql.append("SELECT core_datasource.id, core_datasource.id AS resource_id, core_datasource.name, 0 as ext_flag, 1 as ext_flag1, 'datasource' AS type, core_datasource.create_by AS creator FROM core_datasource WHERE core_datasource.type <> 'folder' ");
-        sql.append("UNION ALL ");
-        sql.append("SELECT data_visualization_info.id, data_visualization_info.id AS resource_id, data_visualization_info.name, data_visualization_info.mobile_layout as ext_flag, data_visualization_info.status as ext_flag1, ");
-        sql.append("(CASE data_visualization_info.type WHEN 'dataV' THEN 'screen' ELSE 'panel' END) AS type, ");
-        sql.append("data_visualization_info.create_by AS creator FROM data_visualization_info ");
-        sql.append("WHERE data_visualization_info.delete_flag = 0 AND node_type = 'leaf'");
-        sql.append(") dvResource ");
-        sql.append("LEFT JOIN core_store ON dvResource.id = core_store.resource_id AND core_store.uid = :uid ");
-        sql.append("INNER JOIN core_opt_recent ON dvResource.resource_id = core_opt_recent.resource_id AND core_opt_recent.uid = :uid ");
-        sql.append("WHERE 1=1 ");
+        // Use QueryDSL for database-agnostic queries
+        QCoreDatasetGroup dataset = QCoreDatasetGroup.coreDatasetGroup;
+        QCoreDatasource datasource = QCoreDatasource.coreDatasource;
+        QDataVisualizationInfo visualization = QDataVisualizationInfo.dataVisualizationInfo;
+        QCoreOptRecent optRecent = QCoreOptRecent.coreOptRecent;
+        QCoreStore store = QCoreStore.coreStore;
+        QPerBusiResource perBusiResource = QPerBusiResource.perBusiResource;
 
+        // Build three separate queries for UNION ALL logic
+        // 1. Dataset query
+        JPAQuery<VisualizationResourcePO> datasetQuery = queryFactory
+                .select(Projections.bean(VisualizationResourcePO.class,
+                        dataset.id.as("id"),
+                        dataset.id.as("resourceId"),
+                        dataset.name.as("name"),
+                        ExpressionUtils.as(Expressions.constant(0), "extFlag"),
+                        ExpressionUtils.as(Expressions.constant(1), "extFlag1"),
+                        ExpressionUtils.as(Expressions.constant("dataset"), "type"),
+                        dataset.createBy.castToNum(Long.class).as("creator"),
+                        optRecent.uid.as("lastEditor"),
+                        optRecent.time.as("lastEditTime"),
+                        ExpressionUtils.as(store.resourceId.isNotNull(), "favorite")
+                ))
+                .from(dataset)
+                .innerJoin(optRecent).on(dataset.id.eq(optRecent.resourceId).and(optRecent.uid.eq(uid)))
+                .leftJoin(store).on(dataset.id.eq(store.resourceId).and(store.uid.eq(uid)))
+                .where(dataset.nodeType.eq("dataset"));
+
+        // Apply filters to dataset query
         if (StringUtils.isNotBlank(keyword)) {
-            sql.append("AND LOWER(dvResource.name) LIKE :keyword ");
+            datasetQuery.where(dataset.name.lower().like("%" + keyword.toLowerCase() + "%"));
         }
-        if (StringUtils.isNotBlank(type)) {
-            sql.append("AND dvResource.type = :type ");
+        if (StringUtils.isNotBlank(type) && !"dataset".equals(type)) {
+            // If type filter doesn't match, return empty for this query
+            datasetQuery.where(Expressions.FALSE);
         }
         if (isCommunityMode) {
-            sql.append("AND NOT EXISTS(SELECT 1 FROM per_busi_resource community WHERE core_opt_recent.resource_id = community.id) ");
+            datasetQuery.where(JPAExpressions
+                    .selectOne()
+                    .from(perBusiResource)
+                    .where(perBusiResource.id.eq(dataset.id))
+                    .notExists());
         }
 
-        if (isAsc) {
-            sql.append("ORDER BY core_opt_recent.time ASC ");
-        } else {
-            sql.append("ORDER BY core_opt_recent.time DESC ");
-        }
+        // 2. Datasource query
+        JPAQuery<VisualizationResourcePO> datasourceQuery = queryFactory
+                .select(Projections.bean(VisualizationResourcePO.class,
+                        datasource.id.as("id"),
+                        datasource.id.as("resourceId"),
+                        datasource.name.as("name"),
+                        ExpressionUtils.as(Expressions.constant(0), "extFlag"),
+                        ExpressionUtils.as(Expressions.constant(1), "extFlag1"),
+                        ExpressionUtils.as(Expressions.constant("datasource"), "type"),
+                        datasource.createBy.castToNum(Long.class).as("creator"),
+                        optRecent.uid.as("lastEditor"),
+                        optRecent.time.as("lastEditTime"),
+                        ExpressionUtils.as(store.resourceId.isNotNull(), "favorite")
+                ))
+                .from(datasource)
+                .innerJoin(optRecent).on(datasource.id.eq(optRecent.resourceId).and(optRecent.uid.eq(uid)))
+                .leftJoin(store).on(datasource.id.eq(store.resourceId).and(store.uid.eq(uid)))
+                .where(datasource.type.ne("folder"));
 
-        // Count query
-        StringBuilder countSql = new StringBuilder();
-        countSql.append("SELECT COUNT(*) FROM (").append(sql).append(") cnt_table");
-        Query countQuery = entityManager.createNativeQuery(countSql.toString());
-        countQuery.setParameter("uid", uid);
         if (StringUtils.isNotBlank(keyword)) {
-            countQuery.setParameter("keyword", "%" + keyword.toLowerCase() + "%");
+            datasourceQuery.where(datasource.name.lower().like("%" + keyword.toLowerCase() + "%"));
         }
-        if (StringUtils.isNotBlank(type)) {
-            countQuery.setParameter("type", type);
+        if (StringUtils.isNotBlank(type) && !"datasource".equals(type)) {
+            datasourceQuery.where(Expressions.FALSE);
         }
-        long total = ((Number) countQuery.getSingleResult()).longValue();
+        if (isCommunityMode) {
+            datasourceQuery.where(JPAExpressions
+                    .selectOne()
+                    .from(perBusiResource)
+                    .where(perBusiResource.id.eq(datasource.id))
+                    .notExists());
+        }
 
+        // 3. Visualization query (screen/panel)
+        JPAQuery<VisualizationResourcePO> visualizationQuery = queryFactory
+                .select(Projections.bean(VisualizationResourcePO.class,
+                        visualization.id.as("id"),
+                        visualization.id.as("resourceId"),
+                        visualization.name.as("name"),
+                        ExpressionUtils.as(
+                                Expressions.cases()
+                                        .when(visualization.mobileLayout.isTrue()).then(1)
+                                        .otherwise(0),
+                                "extFlag"),
+                        visualization.status.as("extFlag1"),
+                        ExpressionUtils.as(
+                                Expressions.cases()
+                                        .when(visualization.type.eq("dataV")).then("screen")
+                                        .otherwise("panel"),
+                                "type"),
+                        visualization.createBy.castToNum(Long.class).as("creator"),
+                        optRecent.uid.as("lastEditor"),
+                        optRecent.time.as("lastEditTime"),
+                        ExpressionUtils.as(store.resourceId.isNotNull(), "favorite")
+                ))
+                .from(visualization)
+                .innerJoin(optRecent).on(visualization.id.eq(optRecent.resourceId).and(optRecent.uid.eq(uid)))
+                .leftJoin(store).on(visualization.id.eq(store.resourceId).and(store.uid.eq(uid)))
+                .where(visualization.deleteFlag.eq(false).and(visualization.nodeType.eq("leaf")));
+
+        if (StringUtils.isNotBlank(keyword)) {
+            visualizationQuery.where(visualization.name.lower().like("%" + keyword.toLowerCase() + "%"));
+        }
+        if (StringUtils.isNotBlank(type) && !"screen".equals(type) && !"panel".equals(type)) {
+            visualizationQuery.where(Expressions.FALSE);
+        } else if ("screen".equals(type)) {
+            visualizationQuery.where(visualization.type.eq("dataV"));
+        } else if ("panel".equals(type)) {
+            visualizationQuery.where(visualization.type.ne("dataV"));
+        }
+        if (isCommunityMode) {
+            visualizationQuery.where(JPAExpressions
+                    .selectOne()
+                    .from(perBusiResource)
+                    .where(perBusiResource.id.eq(visualization.id))
+                    .notExists());
+        }
+
+        // Execute all three queries and merge results
+        List<VisualizationResourcePO> datasetResults = datasetQuery.fetch();
+        List<VisualizationResourcePO> datasourceResults = datasourceQuery.fetch();
+        List<VisualizationResourcePO> visualizationResults = visualizationQuery.fetch();
+
+        // Merge all results
+        List<VisualizationResourcePO> allResults = new ArrayList<>();
+        allResults.addAll(datasetResults);
+        allResults.addAll(datasourceResults);
+        allResults.addAll(visualizationResults);
+
+        // Sort by lastEditTime
+        allResults.sort((a, b) -> {
+            Long timeA = a.getLastEditTime() != null ? a.getLastEditTime() : 0L;
+            Long timeB = b.getLastEditTime() != null ? b.getLastEditTime() : 0L;
+            return isAsc ? timeA.compareTo(timeB) : timeB.compareTo(timeA);
+        });
+
+        // Apply pagination
+        int total = allResults.size();
         if (total == 0) {
             return Page.empty();
         }
 
-        // Data query with pagination (setFirstResult/setMaxResults delegates to Hibernate dialect)
-        Query dataQuery = entityManager.createNativeQuery(sql.toString());
-        dataQuery.setParameter("uid", uid);
-        if (StringUtils.isNotBlank(keyword)) {
-            dataQuery.setParameter("keyword", "%" + keyword.toLowerCase() + "%");
-        }
-        if (StringUtils.isNotBlank(type)) {
-            dataQuery.setParameter("type", type);
-        }
-        int offset = (goPage - 1) * pageSize;
-        dataQuery.setFirstResult(offset);
-        dataQuery.setMaxResults(pageSize);
+        int start = (goPage - 1) * pageSize;
+        int end = Math.min(start + pageSize, total);
+        List<VisualizationResourcePO> pageResults = allResults.subList(start, end);
 
-        List<Object[]> results = dataQuery.getResultList();
-        List<VisualizationResourcePO> records = results.stream().map(row -> {
-            VisualizationResourcePO po = new VisualizationResourcePO();
-            po.setId(toLong(row[0]));
-            po.setResourceId(toLong(row[1]));
-            po.setName(row[2] != null ? row[2].toString() : null);
-            po.setExtFlag(row[3] != null ? toInt(row[3]) : 0);
-            po.setExtFlag1(row[4] != null ? toInt(row[4]) : 1);
-            po.setType(row[5] != null ? row[5].toString() : null);
-            po.setCreator(toLong(row[6]));
-            po.setLastEditor(toLong(row[7]));
-            po.setLastEditTime(toLong(row[8]));
-            po.setFavorite(row[9] != null && toInt(row[9]) == 1);
-            return po;
-        }).collect(Collectors.toList());
-
-        return new PageImpl<>(records, PageRequest.of(goPage - 1, pageSize), total);
-    }
-
-    private Long toLong(Object value) {
-        if (value == null) return null;
-        if (value instanceof Number) return ((Number) value).longValue();
-        try {
-            return Long.parseLong(value.toString());
-        } catch (NumberFormatException e) {
-            return null;
-        }
-    }
-
-    private int toInt(Object value) {
-        if (value == null) return 0;
-        if (value instanceof Number) return ((Number) value).intValue();
-        try {
-            return Integer.parseInt(value.toString());
-        } catch (NumberFormatException e) {
-            return 0;
-        }
+        return new PageImpl<>(pageResults, PageRequest.of(goPage - 1, pageSize), total);
     }
 
     @Transactional
