@@ -192,7 +192,7 @@ public class CalciteProvider extends Provider {
                 tableField.setOriginName(metaData.getColumnLabel(i));
                 tableField.setType(metaData.getColumnTypeName(i));
                 tableField.setPrecision(metaData.getPrecision(i));
-                int deType = FieldUtils.transType2DeType(tableField.getType());
+                int deType = transType2DeType(tableField.getType(), datasourceRequest);
                 tableField.setDeExtractType(deType);
                 tableField.setDeType(deType);
                 tableField.setScale(metaData.getScale(i));
@@ -308,7 +308,7 @@ public class CalciteProvider extends Provider {
                     tableField.setOriginName(metaData.getColumnLabel(i));
                     tableField.setType(metaData.getColumnTypeName(i));
                     tableField.setPrecision(metaData.getPrecision(i));
-                    int deType = FieldUtils.transType2DeType(tableField.getType());
+                    int deType = transType2DeType(tableField.getType(), datasourceRequest);
                     tableField.setDeExtractType(deType);
                     tableField.setDeType(deType);
                     tableField.setScale(metaData.getScale(i));
@@ -773,6 +773,9 @@ public class CalciteProvider extends Provider {
             field.setName(l);
             field.setFieldType(t);
             field.setType(t);
+            int deType = transType2DeType(t, datasourceRequest);
+            field.setDeExtractType(deType);
+            field.setDeType(deType);
             fieldList.add(field);
         }
         return fieldList;
@@ -817,10 +820,12 @@ public class CalciteProvider extends Provider {
                         row[j] = bigDecimal == null ? null : bigDecimal.toString();
                         break;
                     default:
-                        if (metaData.getColumnTypeName(j + 1).toLowerCase().equalsIgnoreCase("blob")) {
-                            row[j] = rs.getBlob(j + 1) == null ? "" : rs.getBlob(j + 1).toString();
-                        }
-                        if (targetCharset != null && StringUtils.isNotEmpty(rs.getString(j + 1)) && columnType == Types.CLOB) {
+                        String columnTypeName = metaData.getColumnTypeName(j + 1);
+                        if ("blob".equalsIgnoreCase(columnTypeName) || "bytea".equalsIgnoreCase(columnTypeName) || "binary".equalsIgnoreCase(columnTypeName) || "varbinary".equalsIgnoreCase(columnTypeName)) {
+                            row[j] = readBinaryValue(rs, j + 1, columnTypeName);
+                        } else if ("bfile".equalsIgnoreCase(columnTypeName)) {
+                            row[j] = "";
+                        } else if (targetCharset != null && StringUtils.isNotEmpty(rs.getString(j + 1)) && columnType == Types.CLOB) {
                             if (originCharset == null) {
                                 row[j] = new String(rs.getString(j + 1).getBytes(), targetCharset);
                             } else {
@@ -1008,7 +1013,7 @@ public class CalciteProvider extends Provider {
         tableField.setOriginName(resultSet.getString(1));
         tableField.setType(resultSet.getString(2).toUpperCase());
         tableField.setFieldType(tableField.getType());
-        int deType = FieldUtils.transType2DeType(tableField.getType());
+        int deType = transType2DeType(tableField.getType(), datasourceRequest);
         tableField.setDeExtractType(deType);
         tableField.setDeType(deType);
         tableField.setName(resultSet.getString(commentIndex));
@@ -1327,8 +1332,11 @@ public class CalciteProvider extends Provider {
                             row[j] = rs.getBoolean(j + 1) ? "true" : "false";
                             break;
                         default:
-                            if (metaData.getColumnTypeName(j + 1).toLowerCase().equalsIgnoreCase("blob")) {
-                                row[j] = rs.getBlob(j + 1) == null ? "" : rs.getBlob(j + 1).toString();
+                            String columnTypeName = metaData.getColumnTypeName(j + 1);
+                            if ("blob".equalsIgnoreCase(columnTypeName) || "bytea".equalsIgnoreCase(columnTypeName) || "binary".equalsIgnoreCase(columnTypeName) || "varbinary".equalsIgnoreCase(columnTypeName)) {
+                                row[j] = readBinaryValue(rs, j + 1, columnTypeName);
+                            } else if ("bfile".equalsIgnoreCase(columnTypeName)) {
+                                row[j] = "";
                             } else {
                                 row[j] = rs.getString(j + 1);
                             }
@@ -1341,6 +1349,40 @@ public class CalciteProvider extends Provider {
             DEException.throwException(e.getMessage());
         }
         return list;
+    }
+
+    private String readBinaryValue(ResultSet rs, int columnIndex, String typeName) throws SQLException {
+        byte[] bytes;
+        long totalLength;
+        if ("bytea".equalsIgnoreCase(typeName) || "binary".equalsIgnoreCase(typeName) || "varbinary".equalsIgnoreCase(typeName)) {
+            bytes = rs.getBytes(columnIndex);
+            if (bytes == null) {
+                return "";
+            }
+            totalLength = bytes.length;
+        } else {
+            Blob blob = rs.getBlob(columnIndex);
+            if (blob == null) {
+                return "";
+            }
+            totalLength = blob.length();
+            if (totalLength <= 0) {
+                return "";
+            }
+            int blobReadLen = (int) Math.min(totalLength, 1024L);
+            bytes = blob.getBytes(1, blobReadLen);
+        }
+        int readLen = (int) Math.min(totalLength, 1024L);
+        StringBuilder sb = new StringBuilder(readLen * 2);
+        for (int i = 0; i < readLen && i < bytes.length; i++) {
+            sb.append(String.format("%02X", bytes[i] & 0xFF));
+        }
+        return totalLength > readLen ? sb.append("...").toString() : sb.toString();
+    }
+
+    private int transType2DeType(String type, DatasourceRequest datasourceRequest) {
+        DatasourceDTO datasource = datasourceRequest == null ? null : datasourceRequest.getDatasource();
+        return FieldUtils.transType2DeType(type, datasource == null ? null : datasource.getType());
     }
 
     private String getTableFiledSql(DatasourceRequest datasourceRequest) {
