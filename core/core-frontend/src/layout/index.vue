@@ -5,8 +5,9 @@ import Main from './components/Main.vue'
 import CollapseBar from './components/CollapseBar.vue'
 import { ElContainer } from 'element-plus-secondary'
 import { useRoute } from 'vue-router_2'
-import { XpackComponent } from '@/components/plugin'
 import { useI18n } from '@/hooks/web/useI18n'
+import PwdInvalidTips from '@/views/component/login/PwdInvalidTips.vue'
+import ProxyWarn from '@/views/component/proxy-warn/index.vue'
 const route = useRoute()
 const systemMenu = computed(() => route.path.includes('system'))
 const settingMenu = computed(() => route.path.includes('sys-setting'))
@@ -67,8 +68,8 @@ const Menu = defineAsyncComponent(() => import('./components/Menu.vue'))
       ></Main>
     </el-container>
   </div>
-  <XpackComponent jsname="L2NvbXBvbmVudC9sb2dpbi9Qd2RJbnZhbGlkVGlwcw==" />
-  <XpackComponent jsname="L2NvbXBvbmVudC9wcm94eS13YXJuL2luZGV4" />
+  <PwdInvalidTips></PwdInvalidTips>
+  <ProxyWarn></ProxyWarn>
 </template>
 
 <style lang="less" scoped>

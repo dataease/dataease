@@ -17,13 +17,15 @@ import { rsaEncryp } from '@/utils/encryption'
 import VanForm from 'vant/es/form'
 import VanField from 'vant/es/field'
 import VanButton from 'vant/es/button'
-import { XpackComponent } from '@/components/plugin'
 import { useI18n } from '@/hooks/web/useI18n'
 import 'vant/es/button/style'
 import 'vant/es/toast/style'
 import 'vant/es/field/style'
 import 'vant/es/form/style'
 import 'vant/es/cell-group/style'
+import MobileHandler from '@/views/component/login/MobileHandler.vue'
+import InvalidPwd from '@/views/component/login/InvalidPwd.vue'
+import MfaStep from '@/views/component/login/MfaStep.vue'
 
 const { t } = useI18n()
 const { wsCache } = useCache()
@@ -289,24 +291,13 @@ const loadFail = () => {
       <div v-if="showFoot" class="dynamic-login-foot" v-html="footContent" />
     </div>
 
-    <XpackComponent
-      jsname="L2NvbXBvbmVudC9sb2dpbi9Nb2JpbGVIYW5kbGVy"
-      @switch-type="switchType"
-      @to-mfa="toMfa"
-      @to-main="toMain"
-    />
+    <MobileHandler @switch-type="switchType" @to-mfa="toMfa" @to-main="toMain" />
   </div>
-  <XpackComponent
-    ref="xpackInvalidPwd"
-    jsname="L2NvbXBvbmVudC9sb2dpbi9JbnZhbGlkUHdk"
-    @load-fail="loadFail"
-    @call-back="invalidPwdCb"
-  />
-  <XpackComponent
+  <InvalidPwd ref="xpackInvalidPwd" @load-fail="loadFail" @call-back="invalidPwdCb" />
+  <MfaStep
     ref="mfaRef"
     v-if="showMfa"
     :mfa-data="mfaData"
-    jsname="L2NvbXBvbmVudC9sb2dpbi9NZmFTdGVw"
     @close="closeMfa"
     @success="mfaSuccess"
   />

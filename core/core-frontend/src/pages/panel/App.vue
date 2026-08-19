@@ -31,8 +31,15 @@ const TemplateManage = defineAsyncComponent(() => import('@/views/template/index
 
 const Preview = defineAsyncComponent(() => import('@/views/data-visualization/PreviewCanvas.vue'))
 const DashboardEmpty = defineAsyncComponent(() => import('@/views/mobile/panel/DashboardEmpty.vue'))
-
-const XpackComponent = defineAsyncComponent(() => import('@/components/plugin/src/index.vue'))
+const DataFillingManage = defineAsyncComponent(
+  () => import('@/views/menu/data/data-filling/manage/index.vue')
+)
+const DataFillingForm = defineAsyncComponent(
+  () => import('@/views/menu/data/data-filling/manage/form/index.vue')
+)
+const DataFillingTabPaneTable = defineAsyncComponent(
+  () => import('@/views/menu/data/data-filling/fill/TabPaneTable.vue')
+)
 
 const props = defineProps({
   componentName: propTypes.string.def('Iframe')
@@ -57,23 +64,20 @@ const componentMap = {
 }
 
 const isDataFilling = ref(false)
-const dataFillingPath = ref('')
 const showComponent = ref(false)
+const dataFillingComponentMap = {
+  DataFilling: DataFillingManage,
+  DataFillingEditor: DataFillingForm,
+  DataFillingHandler: DataFillingTabPaneTable
+}
 
 const changeCurrentComponent = val => {
   isDataFilling.value = false
   showComponent.value = true
   currentComponent.value = undefined
   if (val && val.includes('DataFilling')) {
-    if (val === 'DataFilling') {
-      dataFillingPath.value = 'L21lbnUvZGF0YS9kYXRhLWZpbGxpbmcvbWFuYWdlL2luZGV4'
-    } else if (val === 'DataFillingEditor') {
-      dataFillingPath.value = 'L21lbnUvZGF0YS9kYXRhLWZpbGxpbmcvbWFuYWdlL2Zvcm0vaW5kZXg='
-    } else if (val === 'DataFillingHandler') {
-      dataFillingPath.value = 'L21lbnUvZGF0YS9kYXRhLWZpbGxpbmcvZmlsbC9UYWJQYW5lVGFibGU='
-    }
     nextTick(() => {
-      currentComponent.value = XpackComponent
+      currentComponent.value = dataFillingComponentMap[val] || DataFillingManage
       isDataFilling.value = true
     })
   } else {
@@ -96,7 +100,7 @@ onMounted(() => {
 <template>
   <component :is="currentComponent" v-if="!isDataFilling && !showComponent"></component>
   <template v-else>
-    <component :is="currentComponent" :jsname="dataFillingPath"></component>
+    <component :is="currentComponent"></component>
   </template>
   <ExportCenterWindow></ExportCenterWindow>
 </template>

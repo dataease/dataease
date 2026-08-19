@@ -61,7 +61,6 @@ import { useDraggable } from '@vueuse/core'
 import { PluginComponent } from '@/components/plugin'
 import { Field, getFieldByDQ, copyChartField, deleteChartField } from '@/api/chart'
 import ChartTemplateInfo from '@/views/chart/components/editor/common/ChartTemplateInfo.vue'
-import { XpackComponent } from '@/components/plugin'
 import { useEmbedded } from '@/store/modules/embedded'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import {
@@ -70,6 +69,7 @@ import {
 } from '@/components/icon-group/field-calculated-list'
 import { useCache } from '@/hooks/web/useCache'
 import { canvasSave } from '@/utils/canvasUtils'
+import OpenHandler from '@/views/component/embedded-iframe/OpenHandler.vue'
 
 const { wsCache } = useCache('localStorage')
 const embeddedStore = useEmbedded()
@@ -4215,7 +4215,7 @@ const chartStyleScroll = (val: any) => {
     </el-dialog>
   </div>
   <FilterTree ref="filterTree" @filter-data="changeFilterData" />
-  <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
+  <OpenHandler ref="openHandler" />
   <Teleport v-if="componentNameEdit" :to="'#component-name'">
     <input
       ref="componentNameInput"

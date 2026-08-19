@@ -10,13 +10,13 @@ import { getOuterParamsInfo } from '@/api/visualization/outerParams'
 import { ElMessage } from 'element-plus-secondary'
 import { useEmbedded } from '@/store/modules/embedded'
 import { useI18n } from '@/hooks/web/useI18n'
-import { XpackComponent } from '@/components/plugin'
 import { propTypes } from '@/utils/propTypes'
 import { setTitle } from '@/utils/utils'
 import EmptyBackground from '../../components/empty-background/src/EmptyBackground.vue'
 import { filterEnumMapSync } from '@/utils/componentUtils'
 import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
 import { useLoading } from '@/hooks/web/useLoading'
+import NewWindowHandler from '@/views/component/embedded-iframe/NewWindowHandler.vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const { t } = useI18n()
@@ -213,11 +213,7 @@ defineExpose({
     :description="t('visualization.no_params_tips')"
     img-type="noneWhite"
   />
-  <XpackComponent
-    jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvTmV3V2luZG93SGFuZGxlcg=="
-    @loaded="XpackLoaded"
-    @load-fail="XpackLoaded"
-  />
+  <NewWindowHandler @loaded="XpackLoaded" @load-fail="XpackLoaded"></NewWindowHandler>
 </template>
 
 <style lang="less" scoped>

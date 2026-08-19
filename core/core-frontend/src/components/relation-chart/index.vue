@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref, reactive, nextTick } from 'vue'
-import { XpackComponent } from '@/components/plugin'
 import { cloneDeep } from 'lodash-es'
+import Chart from '@/views/menu/system/association/Chart.vue'
 import {
   getDatasourceRelationship as getDatasourceRelation,
   getDatasetRelationship as getDatasetRelation
@@ -99,13 +99,7 @@ defineExpose({
     direction="rtl"
   >
     <div v-loading="tableLoading" class="relation-drawer_content">
-      <XpackComponent
-        ref="consanguinity"
-        :chart-size="chartSize"
-        :current="current"
-        detailDisabled
-        jsname="L21lbnUvc3lzdGVtL2Fzc29jaWF0aW9uL0NoYXJ0"
-      />
+      <Chart ref="consanguinity" :chart-size="chartSize" :current="current" detailDisabled> </Chart>
     </div>
   </el-drawer>
 </template>

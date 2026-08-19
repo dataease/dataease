@@ -40,7 +40,7 @@ const loadHmacInfo = async (baseUrl: string) => {
   const prefix = secretInfoText.substring(0, 16)
   const suffix = secretInfoText.substring(secretInfoText.length - 16)
   const originSecretInfo = secretInfoText.substring(16, secretInfoText.length - 16)
-  const infoJson = aesDecryptWithIv(originSecretInfo, prefix+suffix)
+  const infoJson = aesDecryptWithIv(originSecretInfo, prefix + suffix)
   const info = JSON.parse(infoJson)
   if (!info?.enable) {
     window['de_secret_key'] = 1
@@ -52,33 +52,29 @@ const loadHmacInfo = async (baseUrl: string) => {
 
 const aesDecryptWithIv = (encryptedBase64: string, secretKey: string): string => {
   try {
-    const combined = CryptoJS.enc.Base64.parse(encryptedBase64);
-    const combinedBytes = CryptoJS.enc.Hex.parse(combined.toString(CryptoJS.enc.Hex));
-    
-    const ivBytes = CryptoJS.lib.WordArray.create(combinedBytes.words.slice(0, 4));
-    const ciphertextBytes = CryptoJS.lib.WordArray.create(combinedBytes.words.slice(4));
-    
-    const key = CryptoJS.enc.Utf8.parse(secretKey);
-    
-    const decrypted = CryptoJS.AES.decrypt(
-      { ciphertext: ciphertextBytes },
-      key,
-      {
-        iv: ivBytes,
-        mode: CryptoJS.mode.CBC,
-        padding: CryptoJS.pad.Pkcs7
-      }
-    );
-    
-    const result = decrypted.toString(CryptoJS.enc.Utf8);
-    
+    const combined = CryptoJS.enc.Base64.parse(encryptedBase64)
+    const combinedBytes = CryptoJS.enc.Hex.parse(combined.toString(CryptoJS.enc.Hex))
+
+    const ivBytes = CryptoJS.lib.WordArray.create(combinedBytes.words.slice(0, 4))
+    const ciphertextBytes = CryptoJS.lib.WordArray.create(combinedBytes.words.slice(4))
+
+    const key = CryptoJS.enc.Utf8.parse(secretKey)
+
+    const decrypted = CryptoJS.AES.decrypt({ ciphertext: ciphertextBytes }, key, {
+      iv: ivBytes,
+      mode: CryptoJS.mode.CBC,
+      padding: CryptoJS.pad.Pkcs7
+    })
+
+    const result = decrypted.toString(CryptoJS.enc.Utf8)
+
     if (!result) {
-      throw new Error('解密失败，请检查密钥是否正确');
+      throw new Error('解密失败，请检查密钥是否正确')
     }
-    
-    return result;
+
+    return result
   } catch (error: any) {
-    throw new Error(`AES解密失败: ${error.message}`);
+    throw new Error(`AES解密失败: ${error.message}`)
   }
 }
 

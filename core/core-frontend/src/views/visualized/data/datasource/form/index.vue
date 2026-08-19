@@ -29,9 +29,11 @@ import FinishPage from '../FinishPage.vue'
 import { cloneDeep } from 'lodash-es'
 import { useCache } from '@/hooks/web/useCache'
 import Icon from '@/components/icon-custom/src/Icon.vue'
-import { XpackComponent, PluginComponent } from '@/components/plugin'
+import { PluginComponent } from '@/components/plugin'
+
 import { iconDatasourceMap } from '@/components/icon-group/datasource-list'
 import ExcelRemoteDetail from '@/views/visualized/data/datasource/form/ExcelRemoteDetail.vue'
+import DsCategoryHandler from '@/views/component/plugins-handler/DsCategoryHandler.vue'
 
 interface Node {
   name: string
@@ -1019,10 +1021,7 @@ defineExpose({
         v-if="showFinishPage"
       ></FinishPage>
 
-      <XpackComponent
-        jsname="L2NvbXBvbmVudC9wbHVnaW5zLWhhbmRsZXIvRHNDYXRlZ29yeUhhbmRsZXI="
-        @load-ds-plugin="loadDsPlugin"
-      />
+      <DsCategoryHandler @load-ds-plugin="loadDsPlugin" />
     </div>
   </el-drawer>
   <creat-ds-group

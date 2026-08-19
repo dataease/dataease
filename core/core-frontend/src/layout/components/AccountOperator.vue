@@ -6,7 +6,6 @@ import { Icon } from '@/components/icon-custom'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { logoutApi } from '@/api/login'
 import { logoutHandler } from '@/utils/logout'
-import { XpackComponent } from '@/components/plugin'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import AboutPage from '@/views/about/index.vue'
@@ -16,6 +15,7 @@ import { useCache } from '@/hooks/web/useCache'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { usePermissionStore } from '@/store/modules/permission'
 import { useRouter } from 'vue-router_2'
+import UcenterHandler from '@/views/component/menu-handler/UcenterHandler.vue'
 const appearanceStore = useAppearanceStoreWithOut()
 const navigateBg = computed(() => appearanceStore.getNavigateBg)
 const { wsCache } = useCache()
@@ -195,7 +195,7 @@ if (showSystem.value) {
   </el-popover>
 
   <AboutPage />
-  <XpackComponent jsname="dWNlbnRlci1oYW5kbGVy" @loaded="xpackLinkLoaded" />
+  <UcenterHandler @loaded="xpackLinkLoaded"></UcenterHandler>
 </template>
 
 <style lang="less">
