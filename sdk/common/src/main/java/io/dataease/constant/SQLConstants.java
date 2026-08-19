@@ -70,9 +70,9 @@ public class SQLConstants {
     public static final String DEFAULT_YEAR_MONTH_FORMAT = "yyyy-MM";
     public static final String DEFAULT_YEAR_MONTH_DAY_FORMAT = "yyyy-MM-dd";
 
-    public static final String DEFAULT_INT_FORMAT = "DECIMAL(19,0)";
+    public static final String DEFAULT_INT_FORMAT = "DECIMAL(31,0)";
 
-    public static final String DEFAULT_FLOAT_FORMAT = "DECIMAL(26,8)";
+    public static final String DEFAULT_FLOAT_FORMAT = "DECIMAL(31,8)";
 
     public static final String WHERE_VALUE_NULL = "(NULL,'')";
 
