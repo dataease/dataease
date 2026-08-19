@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto'
+import { readFileSync } from 'node:fs'
 import path from 'path'
 import type { Plugin as EsbuildPlugin } from 'esbuild'
 import type { Plugin as VitePlugin } from 'vite'
@@ -14,16 +16,28 @@ const isG2LayoutImport = (source: string, importer = '') =>
 const resolveG2LayoutAdapter = (root: string) => path.resolve(root, G2_LAYOUT_ADAPTER)
 
 /**
- * 仅替换 G2 runtime/plot 对同目录 layout 的引用，避免影响项目内其他同名模块
- * 风险：升级 G2 后若内部文件路径或导出发生变化，需要同步检查该精确匹配
+ * 将布局适配器的内容摘要放进 Vite 与 esbuild 插件名
+ * Vite optimizeDeps 只把插件名写入缓存键，适配器源码变化本身不会触发重新预构建
+ * 适配器每次变化都会在下次启动时重建 G2 依赖，增加一次开发环境启动耗时
+ */
+const getG2LayoutPluginName = (adapter: string) => {
+  const version = createHash('sha256').update(readFileSync(adapter)).digest('hex').slice(0, 8)
+  return `dataease-g2-layout-${version}`
+}
+
+/**
+ * 仅将 G2 runtime/plot 对同目录 layout 的引用替换为 DataEase 布局适配器
+ * 轴标签边界必须在 G2 最终绘制前参与布局，业务层渲染后修正会产生二次渲染闪动
+ * 升级 G2 后若内部文件路径或导出发生变化，需要同步检查该精确匹配
  */
 export const createG2LayoutPlugin = (root: string): VitePlugin => {
   const adapter = resolveG2LayoutAdapter(root)
+  const name = getG2LayoutPluginName(adapter)
   let productionBuild = false
   let g2Included = false
   let redirectVerified = false
   return {
-    name: 'dataease-g2-layout',
+    name,
     enforce: 'pre',
     configResolved(config) {
       productionBuild = config.command === 'build'
@@ -60,12 +74,14 @@ export const createG2LayoutPlugin = (root: string): VitePlugin => {
 }
 
 /**
- * Vite 开发环境会预构建 G2，需与生产构建使用相同的精确重定向规则
+ * 让开发环境依赖预构建使用与生产构建相同的 G2 layout 重定向
+ * 开发环境中的 G2 会先被 esbuild 打包，普通 Vite resolveId 无法覆盖其内部导入
+ * esbuild 或 G2 调整内部解析入口时，此处规则可能失效并需要同步适配
  */
 export const createG2LayoutOptimizerPlugin = (root: string): EsbuildPlugin => {
   const adapter = resolveG2LayoutAdapter(root)
   return {
-    name: 'dataease-g2-layout',
+    name: getG2LayoutPluginName(adapter),
     setup(build) {
       build.onResolve({ filter: /^\.\/layout$/ }, args => {
         if (isG2LayoutImport(args.path, args.importer)) {

@@ -18,6 +18,7 @@ export { computeRoughPlotSize, placeComponents, processAxisZ }
 
 const AXIS_POSITIONS = ['top', 'right', 'bottom', 'left'] as const
 const SAFE_SPACING = 4
+// 保证边界修正后仍保留至少四分之一的 Plot 内容区，避免超长标签吞掉全部图形区域
 const MIN_CONTENT_RATIO = 1 / 4
 
 type AxisPosition = (typeof AXIS_POSITIONS)[number]
@@ -26,6 +27,16 @@ type Overflow = {
   right: number
   bottom: number
   left: number
+}
+type LabelBounds = {
+  x: number
+  y: number
+  width: number
+  height: number
+}
+type PositionedLabel = {
+  index: number
+  bounds: LabelBounds
 }
 
 const getTicks = (
@@ -57,6 +68,11 @@ const getAxisCallbackNumber = (option, value: unknown, index: number, ticks: unk
   return Number(result) || 0
 }
 
+/**
+ * 还原当前轴最终会交给 G2 的 hide transform 配置
+ * 显式 transform 会覆盖 labelAutoHide，布局预判必须遵守与 G2 inferLabelOverlap 相同的优先级
+ * 依赖 G2 5.4.x 的 transform 合并规则，升级 G2 后需要复核优先级
+ */
 const getHideTransform = (component: G2GuideComponentOptions) => {
   const transforms = Array.isArray(component.transform) ? component.transform : []
   // 与 G2 inferLabelOverlap 保持一致：显式 transform 存在时不再合并 labelAutoHide
@@ -71,16 +87,116 @@ const getHideTransform = (component: G2GuideComponentOptions) => {
     : { type: 'hide' }
 }
 
-const getBoundaryLabelIndexes = (component: G2GuideComponentOptions, tickCount: number) => {
+const parseSpacing = (spacing: unknown): [number, number, number, number] => {
+  if (typeof spacing === 'number') {
+    return [spacing, spacing, spacing, spacing]
+  }
+  if (!Array.isArray(spacing)) {
+    return [0, 0, 0, 0]
+  }
+  const values = spacing.map(value => Number(value) || 0)
+  if (values.length === 1) {
+    return [values[0], values[0], values[0], values[0]]
+  }
+  if (values.length === 2) {
+    return [values[0], values[1], values[0], values[1]]
+  }
+  if (values.length === 3) {
+    return [values[0], values[1], values[2], values[1]]
+  }
+  return [values[0], values[1], values[2], values[3]]
+}
+
+const hasLabelOverlap = (labels: PositionedLabel[], margin: unknown) => {
+  const [top, right, bottom, left] = parseSpacing(margin)
+  let previous: PositionedLabel | undefined
+  return labels.some(current => {
+    if (!previous || previous.index === current.index) {
+      previous = current
+      return false
+    }
+    const first = previous.bounds
+    const second = current.bounds
+    previous = current
+    const overlapX =
+      first.x - left < second.x + second.width + right &&
+      second.x - left < first.x + first.width + right
+    const overlapY =
+      first.y - top < second.y + second.height + bottom &&
+      second.y - top < first.y + first.height + bottom
+    return overlapX && overlapY
+  })
+}
+
+/**
+ * 在绘制前预判 autoHide 抽样后首尾标签是否仍然可见
+ * 只按 keepTail 猜测会出现两类错误，隐藏尾标签仍占留白或可见尾标签被画布裁切
+ * 这里只同步 G2 5.4.x 的 parity 核心抽样规则，G2 更换隐藏算法后必须同步调整
+ */
+const getBoundaryLabelIndexes = (component: G2GuideComponentOptions, labels: PositionedLabel[]) => {
+  const tickCount = labels.length
   if (tickCount <= 1) {
-    return [0]
+    return labels.map(({ index }) => index)
   }
+  const headIndex = labels[0].index
+  const tailIndex = labels[tickCount - 1].index
   const hideTransform = getHideTransform(component)
-  if (!hideTransform) {
-    return [0, tickCount - 1]
+  if (!hideTransform || hideTransform.keepTail) {
+    return [headIndex, tailIndex]
   }
-  // G2 hide 算法始终从首标签开始抽样；尾标签只有显式 keepTail 时才能在绘制前确定可见
-  return hideTransform.keepTail ? [0, tickCount - 1] : [0]
+
+  const header = hideTransform.keepHeader ? labels[0] : undefined
+  const source = header ? labels.slice(1) : [...labels]
+  let visible = [...labels]
+  let sequence = 2
+  // 与 G2 autoHide 的 parity 抽样保持一致，避免为已隐藏尾标签留白或裁掉仍可见尾标签
+  while (sequence < tickCount) {
+    const candidates = header ? [header, ...visible] : visible
+    if (!hasLabelOverlap(candidates, hideTransform.margin)) {
+      break
+    }
+    visible = source.filter((_, index) => index % sequence === 0)
+    sequence += 1
+  }
+  return visible.some(({ index }) => index === tailIndex) ? [headIndex, tailIndex] : [headIndex]
+}
+
+/**
+ * 判断极端长文本是否只能保留首标签
+ * 首尾标签总尺寸超过可用视图时，即使当前互不重叠也无法同时完整显示
+ * 此降级优先保证 Plot 可读性，未显式 keepTail 的尾标签可能被主动隐藏
+ */
+const shouldKeepOnlyHeadLabel = (
+  component: G2GuideComponentOptions,
+  labels: PositionedLabel[],
+  position: AxisPosition,
+  layout: Layout
+) => {
+  const hideTransform = getHideTransform(component)
+  if (!hideTransform || hideTransform.keepTail || labels.length <= 1) {
+    return false
+  }
+  const head = labels[0].bounds
+  const tail = labels[labels.length - 1].bounds
+  const horizontal = position === 'top' || position === 'bottom'
+  const boundarySize = horizontal ? head.width + tail.width : head.height + tail.height
+  const viewSize = horizontal
+    ? layout.width - layout.marginLeft - layout.marginRight
+    : layout.height - layout.marginTop - layout.marginBottom
+  return boundarySize + SAFE_SPACING * 2 > viewSize
+}
+
+/**
+ * 把布局阶段的单标签降级同步到 G2 实际绘制阶段
+ * 只减少布局留白而不写入 labelFilter 会让尾标签继续绘制并被画布裁切
+ * 需要保留原有 labelFilter 结果，避免覆盖图表自身的标签过滤约束
+ */
+const keepOnlyHeadLabel = (component: G2GuideComponentOptions, headIndex: number) => {
+  const originalFilter =
+    typeof component.labelFilter === 'function' ? component.labelFilter : undefined
+  // 极端长文本无法同时完整容纳首尾标签时，固定保留首标签避免绘制结果与布局判断不一致
+  component.labelFilter = (value, index, values) =>
+    index === headIndex && (originalFilter?.(value, index, values) ?? true)
 }
 
 const getLabelVector = (position: AxisPosition, direction: string) => {
@@ -103,6 +219,11 @@ const updateOverflow = (
   overflow.bottom = Math.max(overflow.bottom, bounds.y + bounds.height - height + SAFE_SPACING)
 }
 
+/**
+ * 按 G2 formatter 与 transform 的真实结果计算轴标签边界溢出
+ * 字体大小、旋转角度和格式化文本都会改变 BBox，不能只依据配置值估算留白
+ * 密集刻度会测量整轴标签 BBox，极端数据量下会增加单次布局计算开销
+ */
 const measureAxisOverflow = (
   component: G2GuideComponentOptions,
   layout: Layout,
@@ -132,17 +253,14 @@ const measureAxisOverflow = (
     return
   }
 
-  // 仅处理绘制前能够确定可见的边界标签，避免为自动隐藏的尾标签错误扩充留白
-  const indexes = getBoundaryLabelIndexes(component, ticks.length)
   const { bbox } = component
   const showTick = style.tick !== false && style.showTick !== false
   const sameDirection = isSameDirection(style.labelDirection, style.tickDirection)
   const labelVector = getLabelVector(position, style.labelDirection)
-  indexes.forEach(index => {
-    const value = ticks[index]
+  const positionedLabels = ticks.map((value, index): PositionedLabel | undefined => {
     const labelBBox = labelBounds[index]
     if (!labelBBox) {
-      return
+      return undefined
     }
     const ratio = getTickRatio(scale, value, position, transpose)
     const labelSpacing = getAxisCallbackNumber(style.labelSpacing, value, index, ticks)
@@ -160,17 +278,28 @@ const measureAxisOverflow = (
     }
     x += labelVector[0] * offset
     y += labelVector[1] * offset
-    updateOverflow(
-      overflow,
-      {
+    return {
+      index,
+      bounds: {
         x: x + labelBBox.x,
         y: y + labelBBox.y,
         width: labelBBox.width,
         height: labelBBox.height
-      },
-      layout.width,
-      layout.height
-    )
+      }
+    }
+  })
+  const visibleLabels = positionedLabels.filter((label): label is PositionedLabel => !!label)
+  let indexes = getBoundaryLabelIndexes(component, visibleLabels)
+  if (shouldKeepOnlyHeadLabel(component, visibleLabels, position, layout)) {
+    const headIndex = visibleLabels[0].index
+    keepOnlyHeadLabel(component, headIndex)
+    indexes = [headIndex]
+  }
+  indexes.forEach(index => {
+    const label = visibleLabels.find(item => item.index === index)
+    if (label) {
+      updateOverflow(overflow, label.bounds, layout.width, layout.height)
+    }
   })
 }
 
@@ -180,7 +309,7 @@ const limitCorrection = (start: number, end: number, innerSize: number, viewSize
   if (total <= available || total === 0) {
     return [start, end]
   }
-  // 极小画布或超长标签不能吞掉全部绘图区，必要时允许标签保留少量裁切
+  // 风险取舍：极小画布优先保留 Plot 内容区，必要时允许未自动隐藏的超长标签保留少量裁切
   const ratio = available / total
   return [Math.floor(start * ratio), Math.floor(end * ratio)]
 }
