@@ -46,9 +46,10 @@ public class JwtSecretProvider implements ApplicationRunner {
             SystemParameter parameter = new SystemParameter();
             parameter.setParamKey(ParamConstants.BASIC.JWT_SECRET.getValue());
             parameter.setParamValue(UUID.randomUUID().toString().replace("-", "") + UUID.randomUUID().toString().replace("-", ""));
-            // type 列 NOT NULL 无默认值，必须显式赋值（'text' 原样存取，避免走 password 类型的 AES 加解密，否则重启读取到密文导致 token 全部失效）
+
             parameter.setType(ParamConstants.Type.TEXT.getValue());
             parameter.setSort(0);
+
             systemParameterMapper.insert(parameter);
             jwtSecret = parameter.getParamValue();
         } else {
