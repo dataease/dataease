@@ -1,18 +1,21 @@
 <script lang="ts" setup>
-import { ref, reactive, nextTick } from 'vue'
+import { ref, reactive, nextTick, defineAsyncComponent } from 'vue'
 import { cloneDeep } from 'lodash-es'
-import Chart from '@/views/menu/system/association/Chart.vue'
+import { useUserStoreWithOut } from '@/store/modules/user'
 import {
   getDatasourceRelationship as getDatasourceRelation,
   getDatasetRelationship as getDatasetRelation
 } from '@/api/relation/index'
+
+const userStore = useUserStoreWithOut()
+const Chart = defineAsyncComponent(() => import('@/views/menu/system/association/Chart.vue'))
 const relationDrawer = ref(false)
 const chartSize = reactive({
   height: 0,
   width: 0
 })
 const getChartSize = () => {
-  const dom = document.querySelector('.relation-drawer_content')
+  const dom = document.querySelector('.relation-drawer_content') as HTMLElement | null
   if (!dom) return
   Object.assign(chartSize, {
     height: dom.offsetHeight + 'px',
@@ -22,6 +25,15 @@ const getChartSize = () => {
 
 const consanguinity = ref()
 let resRef = null
+const invokeChartData = () => {
+  if (!userStore.hasXapck || !consanguinity.value?.getChartData) {
+    return
+  }
+  consanguinity.value.getChartData({
+    info: current,
+    res: resRef
+  })
+}
 const getDatasourceRelationship = id => {
   getDatasourceRelation(id)
     .then(res => {
@@ -30,13 +42,7 @@ const getDatasourceRelationship = id => {
     .finally(() => {
       tableLoading.value = false
       nextTick(() => {
-        consanguinity.value.invokeMethod({
-          methodName: 'getChartData',
-          args: {
-            info: current,
-            res: resRef
-          }
-        })
+        invokeChartData()
       })
     })
 }
@@ -48,13 +54,7 @@ const getDatasetRelationship = id => {
     .finally(() => {
       tableLoading.value = false
       nextTick(() => {
-        consanguinity.value.invokeMethod({
-          methodName: 'getChartData',
-          args: {
-            info: current,
-            res: resRef
-          }
-        })
+        invokeChartData()
       })
     })
 }
@@ -67,6 +67,11 @@ const current = {
 const tableLoading = ref(false)
 const getChartData = obj => {
   Object.assign(current, obj || {})
+  if (!userStore.hasXapck) {
+    relationDrawer.value = true
+    tableLoading.value = false
+    return
+  }
   const { queryType, num } = current
   tableLoading.value = true
   relationDrawer.value = true
@@ -99,7 +104,14 @@ defineExpose({
     direction="rtl"
   >
     <div v-loading="tableLoading" class="relation-drawer_content">
-      <Chart ref="consanguinity" :chart-size="chartSize" :current="current" detailDisabled> </Chart>
+      <Chart
+        v-if="userStore.hasXapck"
+        ref="consanguinity"
+        :chart-size="chartSize"
+        :current="current"
+        detailDisabled
+      >
+      </Chart>
     </div>
   </el-drawer>
 </template>

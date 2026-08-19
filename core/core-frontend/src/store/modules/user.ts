@@ -13,6 +13,7 @@ interface UserState {
   oid: string
   language: string
   exp: number
+  hasXapck: boolean
   time: number
   proxyInfo: {
     proxy: boolean
@@ -25,6 +26,7 @@ export const userStore = defineStore('user', {
   state: (): UserState => {
     return {
       token: null,
+      hasXapck: false,
       uid: null,
       name: null,
       oid: null,
@@ -60,6 +62,9 @@ export const userStore = defineStore('user', {
     getTime(): number {
       return this.time
     },
+    getXpack(): boolean {
+      return this.hasXapck
+    },
     getProxyInfo(): { proxy: boolean; proxyOid: string | null; proxySecret: string | null } {
       return this.proxyInfo
     }
@@ -67,6 +72,7 @@ export const userStore = defineStore('user', {
   actions: {
     async setUser() {
       const user = await import('@/api/user')
+      const plugin = await import('@/api/plugin')
       const res = await user.userInfo()
       const data = res.data
       data.token = wsCache.get('user.token')
@@ -87,11 +93,16 @@ export const userStore = defineStore('user', {
       if (locale.getCurrentLocale?.lang !== this.language && !window.DataEaseBi) {
         window.location.reload()
       }
+      const hasXapck = await plugin.xpackModelApi()
+      this.setXpack(hasXapck.data || false)
       this.setLanguage(this.language)
     },
     setToken(token: string) {
       wsCache.set('user.token', token)
       this.token = token
+    },
+    setXpack(hasXapck: boolean) {
+      this.hasXapck = hasXapck
     },
     setExp(exp: number) {
       wsCache.set('user.exp', exp)

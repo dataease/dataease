@@ -9,7 +9,7 @@ import deDelete from '@/assets/svg/de-delete.svg'
 import icon_warning_filled from '@/assets/svg/icon_warning_filled.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
-import { ref, reactive, h, computed, toRefs, nextTick, watch } from 'vue'
+import { ref, reactive, h, computed, toRefs, nextTick, watch, defineAsyncComponent } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
@@ -28,8 +28,12 @@ import { PluginComponent } from '@/components/plugin'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import { boolean } from 'mathjs'
 import dayjs from 'dayjs'
-import DatasourceEnableDataFilling from '@/views/component/data-filling/DatasourceEnableDataFilling.vue'
+import { useUserStoreWithOut } from '@/store/modules/user'
+const DatasourceEnableDataFilling = defineAsyncComponent(
+  () => import('@/views/component/data-filling/DatasourceEnableDataFilling.vue')
+)
 const { t } = useI18n()
+const userStore = useUserStoreWithOut()
 const prop = defineProps({
   form: {
     required: false,
@@ -1564,7 +1568,7 @@ defineExpose({
           </template>
 
           <!--    数据填报      -->
-          <DatasourceEnableDataFilling :form="form" />
+          <DatasourceEnableDataFilling v-if="userStore.hasXapck" :form="form" />
         </template>
       </el-form>
       <el-form

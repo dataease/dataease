@@ -30,7 +30,8 @@ import {
   nextTick,
   unref,
   h,
-  provide
+  provide,
+  defineAsyncComponent
 } from 'vue'
 import ArrowSide from '@/views/common/DeResourceArrow.vue'
 import { useEmbedded } from '@/store/modules/embedded'
@@ -82,12 +83,20 @@ import { useCache } from '@/hooks/web/useCache'
 import { RefreshLeft } from '@element-plus/icons-vue'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import { exportPermission, isFreeFolder } from '@/utils/utils'
-import Pane from '@/views/component/row-col-permission/pane/index.vue'
-import DatasetRowPermissions from '@/views/component/row-col-permission/dataset-row-permissions/index.vue'
-import DatasetColumnPermissions from '@/views/component/row-col-permission/dataset-column-permissions/index.vue'
+import { useUserStoreWithOut } from '@/store/modules/user'
+const Pane = defineAsyncComponent(
+  () => import('@/views/component/row-col-permission/pane/index.vue')
+)
+const DatasetRowPermissions = defineAsyncComponent(
+  () => import('@/views/component/row-col-permission/dataset-row-permissions/index.vue')
+)
+const DatasetColumnPermissions = defineAsyncComponent(
+  () => import('@/views/component/row-col-permission/dataset-column-permissions/index.vue')
+)
 const { t } = useI18n()
 const interactiveStore = interactiveStoreWithOut()
 const { wsCache } = useCache()
+const userStore = useUserStoreWithOut()
 interface Field {
   fieldShortName: string
   name: string
@@ -1057,7 +1066,7 @@ const proxyAllowDrop = throttle((arg1, arg2) => {
                 :name="ele.name"
               ></el-tab-pane>
             </el-tabs>
-            <Pane @loaded="panelLoad" />
+            <Pane v-if="userStore.hasXapck" @loaded="panelLoad" />
           </div>
         </div>
         <div class="dataset-table-info">
@@ -1129,8 +1138,16 @@ const proxyAllowDrop = throttle((arg1, arg2) => {
           </template>
           <template v-if="['row', 'column'].includes(activeName)">
             <div class="table-row-column">
-              <DatasetRowPermissions :active-name="activeName" :dataset-id="nodeInfo.id" />
-              <DatasetColumnPermissions :active-name="activeName" :dataset-id="nodeInfo.id" />
+              <DatasetRowPermissions
+                v-if="userStore.hasXapck"
+                :active-name="activeName"
+                :dataset-id="nodeInfo.id"
+              />
+              <DatasetColumnPermissions
+                v-if="userStore.hasXapck"
+                :active-name="activeName"
+                :dataset-id="nodeInfo.id"
+              />
             </div>
           </template>
         </div>

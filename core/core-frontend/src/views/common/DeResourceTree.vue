@@ -21,7 +21,16 @@ import dvSortDesc from '@/assets/svg/dv-sort-desc.svg'
 import dvFolder from '@/assets/svg/dv-folder.svg'
 import icon_operationAnalysis_outlined from '@/assets/svg/icon_operation-analysis_outlined.svg'
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
-import { onMounted, reactive, ref, toRefs, watch, nextTick, computed } from 'vue'
+import {
+  onMounted,
+  reactive,
+  ref,
+  toRefs,
+  watch,
+  nextTick,
+  computed,
+  defineAsyncComponent
+} from 'vue'
 import {
   copyResource,
   deleteLogic,
@@ -35,6 +44,7 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { HandleMore } from '@/components/handle-more'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
 import { useEmbedded } from '@/store/modules/embedded'
+import { useUserStoreWithOut } from '@/store/modules/user'
 import { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useAppStoreWithOut } from '@/store/modules/app'
@@ -53,8 +63,11 @@ import treeSort, { treeParentWeight } from '@/utils/treeSortUtils'
 import router from '@/router'
 import { cancelRequestBatch } from '@/config/axios/service'
 import { isFreeFolder } from '@/utils/utils'
-import OpenHandler from '@/views/component/embedded-iframe/OpenHandler.vue'
+const OpenHandler = defineAsyncComponent(
+  () => import('@/views/component/embedded-iframe/OpenHandler.vue')
+)
 const { wsCache } = useCache()
+const userStore = useUserStoreWithOut()
 
 const dvMainStore = dvMainStoreWithOut()
 const appStore = useAppStoreWithOut()
@@ -886,7 +899,7 @@ defineExpose({
       ></de-resource-create-opt-v2>
     </el-scrollbar>
   </div>
-  <OpenHandler ref="openHandler" />
+  <OpenHandler v-if="userStore.hasXapck" ref="openHandler" />
 </template>
 <style lang="less" scoped>
 .filter-icon-span {

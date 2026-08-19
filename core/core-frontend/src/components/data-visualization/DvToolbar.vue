@@ -15,7 +15,15 @@ import dvRecoverOutlined from '@/assets/svg/dv-recover_outlined.svg'
 import dvCancelPublish from '@/assets/svg/icon_undo_outlined.svg'
 import { ElIcon, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import eventBus from '@/utils/eventBus'
-import { ref, nextTick, computed, toRefs, onBeforeUnmount, onMounted } from 'vue'
+import {
+  ref,
+  nextTick,
+  computed,
+  toRefs,
+  onBeforeUnmount,
+  onMounted,
+  defineAsyncComponent
+} from 'vue'
 import { useEmbedded } from '@/store/modules/embedded'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -52,7 +60,9 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { updatePublishStatus } from '@/api/visualization/dataVisualization'
 import { tryShowLoading, tryHideLoading } from '@/utils/loading'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
-import OpenHandler from '@/views/component/embedded-iframe/OpenHandler.vue'
+const OpenHandler = defineAsyncComponent(
+  () => import('@/views/component/embedded-iframe/OpenHandler.vue')
+)
 
 const permissionStore = usePermissionStoreWithOut()
 let nameEdit = ref(false)
@@ -265,14 +275,10 @@ const backHandler = (url: string) => {
     return
   }
   if (window['dataease-embedded-host'] && openHandler?.value) {
-    const pm = {
-      methodName: 'embeddedInteractive',
-      args: {
-        eventName: 'de-dashboard-editor-back',
-        args: 'Just a demo that descript dataease embedded interactive'
-      }
-    }
-    openHandler.value.invokeMethod(pm)
+    openHandler.value.embeddedInteractive({
+      eventName: 'de-dashboard-editor-back',
+      args: 'Just a demo that descript dataease embedded interactive'
+    })
     return
   }
   dvMainStore.canvasStateChange({ key: 'curPointArea', value: 'base' })
@@ -576,7 +582,7 @@ const fullScreenPreview = () => {
   <de-fullscreen ref="fullScreeRef" show-position="dvEdit"></de-fullscreen>
   <multiplexing-canvas ref="multiplexingRef"></multiplexing-canvas>
   <outer-params-set ref="outerParamsSetRef"></outer-params-set>
-  <OpenHandler ref="openHandler"></OpenHandler>
+  <OpenHandler v-if="userStore.hasXapck" ref="openHandler"></OpenHandler>
 </template>
 
 <style lang="less" scoped>

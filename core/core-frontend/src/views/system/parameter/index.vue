@@ -7,24 +7,28 @@
       <map-setting v-if="activeName === 'map'" />
       <basic-info v-if="activeName === 'basic'" />
       <engine-info v-if="activeName === 'engine'" />
-      <Email v-if="activeName === 'email'" />
+      <Email v-if="userStore.hasXapck && activeName === 'email'" />
       <third-party v-if="activeName === 'third_party'" />
     </div>
   </div>
-  <EmailHandler @loaded="addTable" />
+  <EmailHandler v-if="userStore.hasXapck" @loaded="addTable" />
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, defineAsyncComponent } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import MapSetting from './map/MapSetting.vue'
 import BasicInfo from './basic/BasicInfo.vue'
 import ThirdParty from './third-party/index.vue'
 import EngineInfo from '@/views/system/parameter/engine/EngineInfo.vue'
-import Email from '@/views/menu/setting/email/index.vue'
-import EmailHandler from '@/views/component/menu-handler/EmailHandler.vue'
+import { useUserStoreWithOut } from '@/store/modules/user'
+const EmailHandler = defineAsyncComponent(
+  () => import('@/views/component/menu-handler/EmailHandler.vue')
+)
+const Email = defineAsyncComponent(() => import('@/views/menu/setting/email/index.vue'))
 /* import EmailInfo from './email/EmailInfo.vue' */
 const { t } = useI18n()
+const userStore = useUserStoreWithOut()
 
 const tabArray = ref([
   { label: t('system.basic_settings'), name: 'basic' },

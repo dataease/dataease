@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import userImg from '@/assets/svg/user-img.svg'
 import icon_expandDown_filled from '@/assets/svg/icon_expand-down_filled.svg'
-import { computed, ref, unref } from 'vue'
+import { computed, ref, unref, defineAsyncComponent } from 'vue'
 import { Icon } from '@/components/icon-custom'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { logoutApi } from '@/api/login'
@@ -15,7 +15,9 @@ import { useCache } from '@/hooks/web/useCache'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { usePermissionStore } from '@/store/modules/permission'
 import { useRouter } from 'vue-router_2'
-import UcenterHandler from '@/views/component/menu-handler/UcenterHandler.vue'
+const UcenterHandler = defineAsyncComponent(
+  () => import('@/views/component/menu-handler/UcenterHandler.vue')
+)
 const appearanceStore = useAppearanceStoreWithOut()
 const navigateBg = computed(() => appearanceStore.getNavigateBg)
 const { wsCache } = useCache()
@@ -195,7 +197,7 @@ if (showSystem.value) {
   </el-popover>
 
   <AboutPage />
-  <UcenterHandler @loaded="xpackLinkLoaded"></UcenterHandler>
+  <UcenterHandler v-if="userStore.hasXapck" @loaded="xpackLinkLoaded"></UcenterHandler>
 </template>
 
 <style lang="less">

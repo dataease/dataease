@@ -6,9 +6,13 @@ import CollapseBar from './components/CollapseBar.vue'
 import { ElContainer } from 'element-plus-secondary'
 import { useRoute } from 'vue-router_2'
 import { useI18n } from '@/hooks/web/useI18n'
-import PwdInvalidTips from '@/views/component/login/PwdInvalidTips.vue'
-import ProxyWarn from '@/views/component/proxy-warn/index.vue'
+import { useUserStoreWithOut } from '@/store/modules/user'
+const PwdInvalidTips = defineAsyncComponent(
+  () => import('@/views/component/login/PwdInvalidTips.vue')
+)
+const ProxyWarn = defineAsyncComponent(() => import('@/views/component/proxy-warn/index.vue'))
 const route = useRoute()
+const userStore = useUserStoreWithOut()
 const systemMenu = computed(() => route.path.includes('system'))
 const settingMenu = computed(() => route.path.includes('sys-setting'))
 const marketMenu = computed(() => route.path.includes('template-market'))
@@ -68,8 +72,8 @@ const Menu = defineAsyncComponent(() => import('./components/Menu.vue'))
       ></Main>
     </el-container>
   </div>
-  <PwdInvalidTips></PwdInvalidTips>
-  <ProxyWarn></ProxyWarn>
+  <PwdInvalidTips v-if="userStore.hasXapck"></PwdInvalidTips>
+  <ProxyWarn v-if="userStore.hasXapck"></ProxyWarn>
 </template>
 
 <style lang="less" scoped>

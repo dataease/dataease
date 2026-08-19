@@ -2,7 +2,17 @@
 import { getCanvasStyle, getShapeItemStyle } from '@/utils/style'
 import ComponentWrapper from './ComponentWrapper.vue'
 import { changeStyleWithScale } from '@/utils/translate'
-import { computed, nextTick, ref, toRefs, watch, onBeforeUnmount, onMounted, reactive } from 'vue'
+import {
+  computed,
+  nextTick,
+  ref,
+  toRefs,
+  watch,
+  onBeforeUnmount,
+  onMounted,
+  reactive,
+  defineAsyncComponent
+} from 'vue'
 import { changeRefComponentsSizeWithScalePoint } from '@/utils/changeComponentsSizeWithScale'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
@@ -22,8 +32,12 @@ import LinkOptBar from '@/components/data-visualization/canvas/LinkOptBar.vue'
 import { isDesktop } from '@/utils/ModelUtil'
 import { isMobile } from '@/utils/utils'
 import { useI18n } from '@/hooks/web/useI18n'
-import OpenHandler from '@/views/component/embedded-iframe/OpenHandler.vue'
+import { useUserStoreWithOut } from '@/store/modules/user'
+const OpenHandler = defineAsyncComponent(
+  () => import('@/views/component/embedded-iframe/OpenHandler.vue')
+)
 const dvMainStore = dvMainStoreWithOut()
+const userStore = useUserStoreWithOut()
 const { pcMatrixCount, curComponent, mobileInPc, canvasState, inMobile } = storeToRefs(dvMainStore)
 const openHandler = ref(null)
 const customDatasetParamsRef = ref(null)
@@ -490,14 +504,10 @@ const onPointClick = param => {
   try {
     console.info('de_inner_params send')
     if (window['dataease-embedded-host'] && openHandler?.value) {
-      const pm = {
-        methodName: 'embeddedInteractive',
-        args: {
-          eventName: 'de_inner_params',
-          args: param
-        }
-      }
-      openHandler.value.invokeMethod(pm)
+      openHandler.value.embeddedInteractive({
+        eventName: 'de_inner_params',
+        args: param
+      })
     } else {
       console.info('de_inner_params send to host')
       const targetPm = {
@@ -637,7 +647,7 @@ defineExpose({
     <empty-background v-if="!state.initState" description="参数不能为空" img-type="noneWhite" />
     <de-fullscreen ref="fullScreeRef"></de-fullscreen>
     <dataset-params-component ref="customDatasetParamsRef"></dataset-params-component>
-    <OpenHandler ref="openHandler"></OpenHandler>
+    <OpenHandler v-if="userStore.hasXapck" ref="openHandler"></OpenHandler>
     <link-opt-bar
       v-if="linkOptBarShow"
       ref="link-opt-bar"

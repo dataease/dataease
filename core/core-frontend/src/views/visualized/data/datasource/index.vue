@@ -24,7 +24,18 @@ import icon_succeed_filled from '@/assets/svg/icon_succeed_filled.svg'
 import icon_close_filled from '@/assets/svg/icon_close_filled.svg'
 import icon_replace_outlined from '@/assets/svg/icon_replace_outlined.svg'
 import iconMaybe_outlined from '@/assets/svg/icon-maybe_outlined.svg'
-import { computed, h, unref, reactive, ref, shallowRef, nextTick, watch, onMounted } from 'vue'
+import {
+  computed,
+  h,
+  unref,
+  reactive,
+  ref,
+  shallowRef,
+  nextTick,
+  watch,
+  onMounted,
+  defineAsyncComponent
+} from 'vue'
 import { dsTypes } from '@/views/visualized/data/datasource/form/option'
 import type { TabPaneName, ElMessageBoxOptions } from 'element-plus-secondary'
 import {
@@ -86,13 +97,18 @@ import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import treeSort from '@/utils/treeSortUtils'
 import { useCache } from '@/hooks/web/useCache'
 import { useEmbedded } from '@/store/modules/embedded'
+import { useUserStoreWithOut } from '@/store/modules/user'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import { iconDatasourceMap } from '@/components/icon-group/datasource-list'
 import { symmetricDecrypt } from '@/utils/encryption'
 import { isFreeFolder } from '@/utils/utils'
 import { AnyColumns } from 'element-plus-secondary/es/components/table-v2/src/types'
-import DatasourceDataFillingInfo from '@/views/component/data-filling/DatasourceDataFillingInfo.vue'
-import DsCategoryHandler from '@/views/component/plugins-handler/DsCategoryHandler.vue'
+const DatasourceDataFillingInfo = defineAsyncComponent(
+  () => import('@/views/component/data-filling/DatasourceDataFillingInfo.vue')
+)
+const DsCategoryHandler = defineAsyncComponent(
+  () => import('@/views/component/plugins-handler/DsCategoryHandler.vue')
+)
 const route = useRoute()
 const interactiveStore = interactiveStoreWithOut()
 interface Field {
@@ -106,6 +122,7 @@ const { wsCache } = useCache()
 const { t } = useI18n()
 const router = useRouter()
 const appStore = useAppStoreWithOut()
+const userStore = useUserStoreWithOut()
 const state = reactive({
   datasourceTree: [] as BusiTreeNode[],
   dsTableData: [],
@@ -1745,7 +1762,7 @@ const getMenuList = (val: boolean, data?: any) => {
                 </template>
 
                 <!--    数据填报      -->
-                <DatasourceDataFillingInfo :nodeInfo="nodeInfo" />
+                <DatasourceDataFillingInfo v-if="userStore.hasXapck" :nodeInfo="nodeInfo" />
               </template>
               <template v-if="['es'].includes(nodeInfo.type) && nodeInfo.weight >= 7">
                 <el-row :gutter="24">
@@ -2065,7 +2082,7 @@ const getMenuList = (val: boolean, data?: any) => {
     </el-dialog>
     <relationChart ref="relationChartRef"></relationChart>
 
-    <DsCategoryHandler @load-ds-plugin="loadDsPlugin" />
+    <DsCategoryHandler v-if="userStore.hasXapck" @load-ds-plugin="loadDsPlugin" />
   </div>
 </template>
 
