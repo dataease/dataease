@@ -188,7 +188,7 @@ public abstract class QueryProvider {
         String tableAlias = tableObj.getTableAlias();
         return xFields.stream().map(xField -> {
             String whereName = xField.getFieldOriginName();
-            return whereName + " LIKE '%" + keyword + "%'";
+            return whereName + " LIKE ?";
         }).collect(Collectors.joining(" or "));
     }
 
