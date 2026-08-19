@@ -49,6 +49,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,6 +83,23 @@ public class XpackShareManage {
                 .where(qXpackShare.creator.eq(userId).and(qXpackShare.resourceId.eq(resourceId)))
                 .orderBy(qXpackShare.time.asc(), qXpackShare.id.asc())
                 .fetchFirst();
+    }
+
+    /**
+     * 按资源 ID 集合批量删除分享及其凭证（用于组织删除级联清理）
+     */
+    @Transactional
+    public void deleteBatchByResourceIds(Collection<Long> resourceIds) {
+        if (CollectionUtils.isEmpty(resourceIds)) return;
+        QXpackShare qXpackShare = QXpackShare.xpackShare;
+        List<XpackShare> shares = queryFactory.selectFrom(qXpackShare)
+                .where(qXpackShare.resourceId.in(resourceIds))
+                .fetch();
+        if (CollectionUtils.isEmpty(shares)) return;
+        queryFactory.delete(qXpackShare)
+                .where(qXpackShare.resourceId.in(resourceIds))
+                .execute();
+        shares.stream().map(XpackShare::getUuid).distinct().forEach(uuid -> shareTicketManage.deleteByShare(uuid));
     }
 
     public String queryPwd(Long resourceId, Long userId) {

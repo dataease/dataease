@@ -2,6 +2,7 @@ package io.dataease.api.permissions.org.api;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.permissions.org.dto.OrgCreator;
+import io.dataease.api.permissions.org.dto.OrgDelRequest;
 import io.dataease.api.permissions.org.dto.OrgEditor;
 import io.dataease.api.permissions.org.dto.OrgLazyRequest;
 import io.dataease.api.permissions.org.vo.LazyTreeVO;
@@ -12,8 +13,6 @@ import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import io.dataease.model.KeywordRequest;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,10 +49,9 @@ public interface OrgApi {
     void edit(@RequestBody OrgEditor editor);
 
     @Operation(summary = "删除")
-    @Parameter(name = "id", description = "ID", required = true, in = ParameterIn.PATH)
-    @PostMapping("/page/delete/{id}")
-    @DePermit({"m:read", "#p0+':manage'"})
-    void delete(@PathVariable("id") Long id);
+    @PostMapping("/page/delete")
+    @DePermit({"m:read", "#p0.id+':manage'"})
+    void delete(@RequestBody OrgDelRequest request);
 
     @Operation(summary = "查询权限内组织树")
     @PostMapping("/mounted")

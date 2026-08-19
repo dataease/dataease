@@ -926,6 +926,9 @@ export default {
     confirm_delete: 'Are you sure you want to delete this organization? ',
     delete_children_first:
       'Please delete the child organization first, then delete the current organization',
+    delete_role_tips: 'Friendly reminder: All roles under the organization will be deleted',
+    sync_delete_resource:
+      'Synchronize and delete resources. This operation cannot be undone. Please confirm carefully before deleting resources.',
     confirm_content:
       'A friendly reminder: After an organization is deleted, the resources under it will be treated as free-floating resources.',
     give_up_resource: 'Give up resources and delete directly',

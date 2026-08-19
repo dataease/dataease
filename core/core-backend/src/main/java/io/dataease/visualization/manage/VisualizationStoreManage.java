@@ -31,8 +31,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Component
@@ -78,6 +80,16 @@ public class VisualizationStoreManage {
             return cb.and(predicates.toArray(new Predicate[0]));
         };
         return coreStoreRepository.exists(spec);
+    }
+
+    /**
+     * 按资源 ID 集合删除收藏记录（用于组织删除级联清理）
+     */
+    @Transactional
+    public void deleteByResourceIds(Collection<Long> resourceIds) {
+        if (CollectionUtils.isEmpty(resourceIds)) return;
+        Specification<CoreStore> spec = (root, query, cb) -> root.get("resourceId").in(resourceIds);
+        coreStoreRepository.delete(spec);
     }
 
     @XpackInteract(value = "perFilterManage", recursion = true, invalid = true)

@@ -900,6 +900,8 @@ export default {
     cannot_delete: '无法删除',
     confirm_delete: '确定删除该组织吗？',
     delete_children_first: '请先删除子组织后，再删除当前组织',
+    delete_role_tips: '友情提示：组织下的角色都将被删除',
+    sync_delete_resource: '同步删除资源，该操作无法恢复，请在删除资源前仔细确认',
     confirm_content: '友情提示，组织被删除后，组织下的资源将作为游离资源处理',
     give_up_resource: '放弃资源，直接删除',
     move_resource_first: '先迁移资源',

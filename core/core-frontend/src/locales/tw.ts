@@ -885,6 +885,8 @@ export default {
     cannot_delete: '無法刪除',
     confirm_delete: '確定刪除該組織嗎？ ',
     delete_children_first: '請先刪除子組織後，再刪除目前組織',
+    delete_role_tips: '友情提示：組織下的角色都將被刪除',
+    sync_delete_resource: '同步刪除資源，該操作無法恢復，請在刪除資源前仔細確認',
     confirm_content: '友情提示，組織被刪除後，組織下的資源將作為遊離資源處理',
     give_up_resource: '放棄資源，直接刪除',
     move_resource_first: '先遷移資源',
