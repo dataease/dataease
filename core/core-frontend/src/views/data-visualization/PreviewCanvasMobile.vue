@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { onMounted, onUnmounted, reactive } from 'vue'
+import { onMounted, onUnmounted, reactive, defineAsyncComponent, ref } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import router from '@/router/mobile'
 import { initCanvasDataMobile, initCanvasData } from '@/utils/canvasUtils'
@@ -16,7 +16,11 @@ import EmptyBackground from '../../components/empty-background/src/EmptyBackgrou
 import { filterEnumMapSync } from '@/utils/componentUtils'
 import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
 import { useLoading } from '@/hooks/web/useLoading'
-import NewWindowHandler from '@/views/component/embedded-iframe/NewWindowHandler.vue'
+import { useUserStoreWithOut } from '@/store/modules/user'
+const NewWindowHandler = defineAsyncComponent(
+  () => import('@/views/component/embedded-iframe/NewWindowHandler.vue')
+)
+const userStore = useUserStoreWithOut()
 
 const dvMainStore = dvMainStoreWithOut()
 const { t } = useI18n()
@@ -213,7 +217,11 @@ defineExpose({
     :description="t('visualization.no_params_tips')"
     img-type="noneWhite"
   />
-  <NewWindowHandler @loaded="XpackLoaded" @load-fail="XpackLoaded"></NewWindowHandler>
+  <NewWindowHandler
+    v-if="userStore.hasXapck"
+    @loaded="XpackLoaded"
+    @load-fail="XpackLoaded"
+  ></NewWindowHandler>
 </template>
 
 <style lang="less" scoped>

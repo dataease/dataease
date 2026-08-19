@@ -8,7 +8,8 @@ import {
   getCurrentInstance,
   computed,
   nextTick,
-  onBeforeUnmount
+  onBeforeUnmount,
+  defineAsyncComponent
 } from 'vue'
 import findComponent from '@/utils/components'
 import { downloadCanvas2, imgUrlTrans } from '@/utils/imgUtils'
@@ -34,8 +35,12 @@ import replaceOutlined from '@/assets/svg/icon_replace_outlined.svg'
 import { CommonBackground } from '@/components/visualization/component-background/Types'
 import { ShorthandMode } from '@/Types'
 import { useI18n } from '@/hooks/web/useI18n'
-import OpenHandler from '@/views/component/embedded-iframe/OpenHandler.vue'
+import { useUserStoreWithOut } from '@/store/modules/user'
+const OpenHandler = defineAsyncComponent(
+  () => import('@/views/component/embedded-iframe/OpenHandler.vue')
+)
 const { t } = useI18n()
+const userStore = useUserStoreWithOut()
 
 const componentWrapperInnerRef = ref(null)
 const componentEditBarRef = ref(null)
@@ -440,11 +445,7 @@ const onWrapperClick = e => {
 const openHandler = ref(null)
 const initOpenHandler = newWindow => {
   if (openHandler?.value) {
-    const pm = {
-      methodName: 'initOpenHandler',
-      args: newWindow
-    }
-    openHandler.value.invokeMethod(pm)
+    openHandler.value.initOpenHandler(newWindow)
   }
 }
 const deepScale = computed(() => scale.value / 100)
@@ -624,7 +625,7 @@ onBeforeUnmount(() => {
         :name="commonBackgroundSvgInner"
       ></Board>
     </div>
-    <OpenHandler ref="openHandler"></OpenHandler>
+    <OpenHandler v-if="userStore.hasXapck" ref="openHandler"></OpenHandler>
     <DePreviewPopDialog ref="dePreviewPopDialogRef"></DePreviewPopDialog>
   </div>
 </template>

@@ -185,7 +185,7 @@
       </el-row>
     </el-row>
   </el-row>
-  <OpenHandler ref="openHandler" />
+  <OpenHandler v-if="userStore.hasXapck" ref="openHandler" />
 </template>
 
 <script setup lang="ts">
@@ -194,7 +194,7 @@ import { searchMarket } from '@/api/templateMarket'
 import { useEmbedded } from '@/store/modules/embedded'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import elementResizeDetectorMaker from 'element-resize-detector'
-import { nextTick, reactive, watch, onMounted, ref, computed } from 'vue'
+import { nextTick, reactive, watch, onMounted, ref, computed, defineAsyncComponent } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElMessage } from 'element-plus-secondary'
 import { useCache } from '@/hooks/web/useCache'
@@ -206,8 +206,12 @@ import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { Base64 } from 'js-base64'
 import { getActiveCategories } from '@/utils/utils'
-import OpenHandler from '@/views/component/embedded-iframe/OpenHandler.vue'
+import { useUserStoreWithOut } from '@/store/modules/user'
+const OpenHandler = defineAsyncComponent(
+  () => import('@/views/component/embedded-iframe/OpenHandler.vue')
+)
 const { t } = useI18n()
+const userStore = useUserStoreWithOut()
 const { wsCache } = useCache()
 const embeddedStore = useEmbedded()
 const appStore = useAppStoreWithOut()

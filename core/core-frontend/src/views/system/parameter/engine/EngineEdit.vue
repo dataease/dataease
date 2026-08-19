@@ -2,7 +2,7 @@
 import icon_down_outlined1 from '@/assets/svg/icon_down_outlined-1.svg'
 import icon_down_outlined from '@/assets/svg/icon_down_outlined.svg'
 import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
-import { ref, reactive } from 'vue'
+import { ref, reactive, defineAsyncComponent } from 'vue'
 import { ElMessage, ElLoading } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import request from '@/config/axios'
@@ -13,8 +13,12 @@ import { CustomPassword } from '@/components/custom-password'
 import { Base64 } from 'js-base64'
 import { symmetricDecrypt } from '@/utils/encryption'
 import { Icon } from '@/components/icon-custom'
-import DatasourceEnableDataFilling from '@/views/component/data-filling/DatasourceEnableDataFilling.vue'
+import { useUserStoreWithOut } from '@/store/modules/user'
+const DatasourceEnableDataFilling = defineAsyncComponent(
+  () => import('@/views/component/data-filling/DatasourceEnableDataFilling.vue')
+)
 const { t } = useI18n()
+const userStore = useUserStoreWithOut()
 const dialogVisible = ref(false)
 const loadingInstance = ref(null)
 
@@ -503,7 +507,7 @@ defineExpose({
         </el-row>
       </template>
       <!--    数据填报      -->
-      <DatasourceEnableDataFilling :form="nodeInfo" />
+      <DatasourceEnableDataFilling v-if="userStore.hasXapck" :form="nodeInfo" />
     </el-form>
     <template #footer>
       <span class="dialog-footer">

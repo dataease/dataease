@@ -30,14 +30,18 @@
     :setting-data="templateListTime"
   />
   <!--    数据填报      -->
-  <DatasourceDataFillingInfo style="max-width: 100%; padding: 0 24px 8px" :nodeInfo="xPackInfo">
+  <DatasourceDataFillingInfo
+    v-if="userStore.hasXapck"
+    style="max-width: 100%; padding: 0 24px 8px"
+    :nodeInfo="xPackInfo"
+  >
   </DatasourceDataFillingInfo>
 </template>
 
 <script lang="ts" setup>
 import icon_down_outlined1 from '@/assets/svg/icon_down_outlined-1.svg'
 import icon_down_outlined from '@/assets/svg/icon_down_outlined.svg'
-import { ref, nextTick } from 'vue'
+import { ref, nextTick, defineAsyncComponent } from 'vue'
 import { SettingRecord } from '@/views/system/common/SettingTemplate'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -46,8 +50,12 @@ import { dsTypes } from '@/views/visualized/data/datasource/form/option'
 import { getDeEngine } from '@/api/datasource'
 import request from '@/config/axios'
 import { symmetricDecrypt } from '@/utils/encryption'
-import DatasourceDataFillingInfo from '@/views/component/data-filling/DatasourceDataFillingInfo.vue'
+import { useUserStoreWithOut } from '@/store/modules/user'
+const DatasourceDataFillingInfo = defineAsyncComponent(
+  () => import('@/views/component/data-filling/DatasourceDataFillingInfo.vue')
+)
 const { t } = useI18n()
+const userStore = useUserStoreWithOut()
 const typeMap = dsTypes.reduce((pre, next) => {
   pre[next.type] = next.name
   return pre

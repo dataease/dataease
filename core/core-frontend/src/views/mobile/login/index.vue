@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import icon_invisible_outlined from '@/assets/svg/icon_invisible_outlined.svg'
 import icon_visible_outlined from '@/assets/svg/icon_visible_outlined.svg'
-import { ref } from 'vue'
+import { ref, defineAsyncComponent } from 'vue'
 import VanCellGroup from 'vant/es/cell-group'
 import mobileWholeBg from '@/assets/img/bg-mobile.png'
 import mobileDeTop from '@/assets/img/mobile-de-top.png'
@@ -23,9 +23,11 @@ import 'vant/es/toast/style'
 import 'vant/es/field/style'
 import 'vant/es/form/style'
 import 'vant/es/cell-group/style'
-import MobileHandler from '@/views/component/login/MobileHandler.vue'
-import InvalidPwd from '@/views/component/login/InvalidPwd.vue'
-import MfaStep from '@/views/component/login/MfaStep.vue'
+const MobileHandler = defineAsyncComponent(
+  () => import('@/views/component/login/MobileHandler.vue')
+)
+const InvalidPwd = defineAsyncComponent(() => import('@/views/component/login/InvalidPwd.vue'))
+const MfaStep = defineAsyncComponent(() => import('@/views/component/login/MfaStep.vue'))
 
 const { t } = useI18n()
 const { wsCache } = useCache()
@@ -171,11 +173,7 @@ const onSubmit = async () => {
     .then(res => {
       const { token, exp, mfa } = res.data
       if (!isLdap && !xpackLoadFail.value && xpackInvalidPwd.value?.invokeMethod) {
-        const param = {
-          methodName: 'init',
-          args: res.data
-        }
-        xpackInvalidPwd?.value.invokeMethod(param)
+        xpackInvalidPwd?.value.init(res.data)
         return
       }
       showMfa.value = false
@@ -291,12 +289,22 @@ const loadFail = () => {
       <div v-if="showFoot" class="dynamic-login-foot" v-html="footContent" />
     </div>
 
-    <MobileHandler @switch-type="switchType" @to-mfa="toMfa" @to-main="toMain" />
+    <MobileHandler
+      v-if="userStore.hasXapck"
+      @switch-type="switchType"
+      @to-mfa="toMfa"
+      @to-main="toMain"
+    />
   </div>
-  <InvalidPwd ref="xpackInvalidPwd" @load-fail="loadFail" @call-back="invalidPwdCb" />
+  <InvalidPwd
+    v-if="userStore.hasXapck"
+    ref="xpackInvalidPwd"
+    @load-fail="loadFail"
+    @call-back="invalidPwdCb"
+  />
   <MfaStep
+    v-if="userStore.hasXapck && showMfa"
     ref="mfaRef"
-    v-if="showMfa"
     :mfa-data="mfaData"
     @close="closeMfa"
     @success="mfaSuccess"

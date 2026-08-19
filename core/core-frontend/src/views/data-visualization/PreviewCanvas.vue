@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useLinkStoreWithOut } from '@/store/modules/link'
-import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, reactive, ref, watch, defineAsyncComponent } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import router from '@/router'
 import { useEmitt } from '@/hooks/web/useEmitt'
@@ -19,14 +19,20 @@ import EmptyBackground from '../../components/empty-background/src/EmptyBackgrou
 import { useRoute } from 'vue-router_2'
 import { filterEnumMapSync } from '@/utils/componentUtils'
 import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
-import NewWindowHandler from '@/views/component/embedded-iframe/NewWindowHandler.vue'
-import Entrances from '@/views/component/embedded-iframe/Entrances.vue'
+import { useUserStoreWithOut } from '@/store/modules/user'
+const NewWindowHandler = defineAsyncComponent(
+  () => import('@/views/component/embedded-iframe/NewWindowHandler.vue')
+)
+const Entrances = defineAsyncComponent(
+  () => import('@/views/component/embedded-iframe/Entrances.vue')
+)
 const routeWatch = useRoute()
 
 const dvMainStore = dvMainStoreWithOut()
 const linkStore = useLinkStoreWithOut()
 const { t } = useI18n()
 const embeddedStore = useEmbedded()
+const userStore = useUserStoreWithOut()
 const previewCanvasContainer = ref(null)
 const downloadStatus = ref(false)
 const state = reactive({
@@ -286,9 +292,14 @@ defineExpose({
       img-type="noneWhite"
     />
   </div>
-  <NewWindowHandler @loaded="XpackLoaded" @load-fail="XpackLoaded"> </NewWindowHandler>
+  <NewWindowHandler v-if="userStore.hasXapck" @loaded="XpackLoaded" @load-fail="XpackLoaded">
+  </NewWindowHandler>
 
-  <Entrances @init-iframe="initIframe" @load-fail="initIframe"></Entrances>
+  <Entrances
+    v-if="userStore.hasXapck"
+    @init-iframe="initIframe"
+    @load-fail="initIframe"
+  ></Entrances>
 </template>
 
 <style lang="less" scoped>

@@ -1,7 +1,16 @@
 <script setup lang="ts">
 import dvRuler from '@/assets/svg/dv-ruler.svg'
 import CanvasAttr from '@/components/data-visualization/CanvasAttr.vue'
-import { computed, watch, onMounted, reactive, ref, nextTick, onUnmounted } from 'vue'
+import {
+  computed,
+  watch,
+  onMounted,
+  reactive,
+  ref,
+  nextTick,
+  onUnmounted,
+  defineAsyncComponent
+} from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
@@ -47,10 +56,16 @@ import ChartStyleBatchSet from '@/views/chart/components/editor/editor-style/Cha
 import CustomTabsSort from '@/custom-component/de-tabs/CustomTabsSort.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { recoverToPublished } from '@/api/visualization/dataVisualization'
-import NewWindowHandler from '@/views/component/embedded-iframe/NewWindowHandler.vue'
-import ThresholdDialog from '@/views/component/threshold-warning/ThresholdDialog.vue'
+import { useUserStoreWithOut } from '@/store/modules/user'
+const NewWindowHandler = defineAsyncComponent(
+  () => import('@/views/component/embedded-iframe/NewWindowHandler.vue')
+)
+const ThresholdDialog = defineAsyncComponent(
+  () => import('@/views/component/threshold-warning/ThresholdDialog.vue')
+)
 const interactiveStore = interactiveStoreWithOut()
 const embeddedStore = useEmbedded()
+const userStore = useUserStoreWithOut()
 const { wsCache } = useCache()
 const dvPreviewRef = ref(null)
 const { t } = useI18n()
@@ -678,8 +693,12 @@ eventBus.on('tabSort', tabSort)
       </div>
     </el-container>
   </div>
-  <NewWindowHandler @loaded="XpackLoaded" @load-fail="XpackLoaded"></NewWindowHandler>
-  <ThresholdDialog></ThresholdDialog>
+  <NewWindowHandler
+    v-if="userStore.hasXapck"
+    @loaded="XpackLoaded"
+    @load-fail="XpackLoaded"
+  ></NewWindowHandler>
+  <ThresholdDialog v-if="userStore.hasXapck"></ThresholdDialog>
   <canvas-cache-dialog ref="canvasCacheOutRef" @doUseCache="doUseCache"></canvas-cache-dialog>
   <dv-preview
     v-if="fullscreenFlag"

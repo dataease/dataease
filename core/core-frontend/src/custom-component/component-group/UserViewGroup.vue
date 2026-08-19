@@ -1,13 +1,16 @@
 <script setup lang="tsx">
 import { iconChartMap } from '@/components/icon-group/chart-list'
-import { computed, reactive, ref, toRefs } from 'vue'
+import { computed, reactive, ref, toRefs, defineAsyncComponent } from 'vue'
 import eventBus from '@/utils/eventBus'
 import { CHART_TYPE_CONFIGS } from '@/views/chart/components/editor/util/chart'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import { commonHandleDragEnd, commonHandleDragStart } from '@/utils/canvasUtils'
 import { ElScrollbar } from 'element-plus-secondary'
 import { iconChartDarkMap } from '@/components/icon-group/chart-dark-list'
-import ViewCategoryHandler from '@/views/component/plugins-handler/ViewCategoryHandler.vue'
+import { useUserStoreWithOut } from '@/store/modules/user'
+const ViewCategoryHandler = defineAsyncComponent(
+  () => import('@/views/component/plugins-handler/ViewCategoryHandler.vue')
+)
 
 const props = defineProps({
   propValue: {
@@ -33,6 +36,7 @@ const props = defineProps({
 })
 
 const { dvModel } = toRefs(props)
+const userStore = useUserStoreWithOut()
 
 const userViewGroup = ref<InstanceType<typeof ElScrollbar>>()
 
@@ -194,7 +198,8 @@ const loadPluginCategory = data => {
       </el-row>
     </el-scrollbar>
   </el-row>
-  <ViewCategoryHandler @load-plugin-category="loadPluginCategory"> </ViewCategoryHandler>
+  <ViewCategoryHandler v-if="userStore.hasXapck" @load-plugin-category="loadPluginCategory">
+  </ViewCategoryHandler>
 </template>
 
 <style lang="less" scoped>

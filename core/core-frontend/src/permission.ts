@@ -14,7 +14,6 @@ import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { useEmbedded } from '@/store/modules/embedded'
 import { useLoading } from '@/hooks/web/useLoading'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
-const appearanceStore = useAppearanceStoreWithOut()
 const { wsCache } = useCache()
 const permissionStore = usePermissionStoreWithOut()
 const interactiveStore = interactiveStoreWithOut()

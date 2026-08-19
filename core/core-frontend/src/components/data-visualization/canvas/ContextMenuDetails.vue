@@ -6,13 +6,17 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import { layerStoreWithOut } from '@/store/modules/data-visualization/layer'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { storeToRefs } from 'pinia'
-import { computed, toRefs } from 'vue'
+import { computed, toRefs, defineAsyncComponent } from 'vue'
 import { ElDivider } from 'element-plus-secondary'
 import eventBus from '@/utils/eventBus'
 import { componentArraySort, getCurInfo } from '@/store/modules/data-visualization/common'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { useI18n } from '@/hooks/web/useI18n'
-import EditBarHandler from '@/views/component/threshold-warning/EditBarHandler.vue'
+import { useUserStoreWithOut } from '@/store/modules/user'
+const EditBarHandler = defineAsyncComponent(
+  () => import('@/views/component/threshold-warning/EditBarHandler.vue')
+)
+const userStore = useUserStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const copyStore = copyStoreWithOut()
 const lockStore = lockStoreWithOut()
@@ -331,7 +335,12 @@ const editQueryCriteria = () => {
             <li @click="customSort" v-if="curComponent.component === 'DeTabs'">
               {{ t('visualization.sort') }}
             </li>
-            <EditBarHandler :chart="curComponent" is-screen resource-table="snapshot">
+            <EditBarHandler
+              v-if="userStore.hasXapck"
+              :chart="curComponent"
+              is-screen
+              resource-table="snapshot"
+            >
             </EditBarHandler>
             <li @click="categoryChange('hidden')" v-show="showMoveMenu">
               {{ t('visualization.move_to_pop_area') }}
