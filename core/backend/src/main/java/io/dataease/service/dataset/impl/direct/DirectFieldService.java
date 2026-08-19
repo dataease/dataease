@@ -36,6 +36,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.sql.Types;
 import java.text.Collator;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -228,6 +229,16 @@ public class DirectFieldService implements DataSetFieldService {
         }
 
         LogUtil.info(datasourceRequest.getQuery());
+        if (StringUtils.isNotBlank(keyword)) {
+            int keywordParameterCount = StringUtils.countMatches(createSQL, " LIKE ?");
+            List<DatasourceRequest.TableFieldWithValue> keywordParameters = new ArrayList<>(keywordParameterCount);
+            for (int i = 0; i < keywordParameterCount; i++) {
+                keywordParameters.add(new DatasourceRequest.TableFieldWithValue()
+                        .setValue("%" + keyword + "%")
+                        .setType(Types.VARCHAR));
+            }
+            datasourceRequest.setTableFieldWithValues(keywordParameters);
+        }
         datasourceRequest.setPermissionFields(permissionFields);
         assert datasourceProvider != null;
         List<String[]> rows = datasourceProvider.getData(datasourceRequest);
