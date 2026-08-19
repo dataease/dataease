@@ -18,9 +18,9 @@ export const ApplyDetailTableOperation: ICommand = {
     try {
       const { univerApi, config, startCell } = params
       const fillService = accessor.get(TableFillService)
-      await fillService.fillTable(univerApi, config, startCell)
+      const result = await fillService.fillTable(univerApi, config, startCell)
 
-      return true
+      return result !== false
     } catch (error) {
       console.error('[DataPlugin] Failed to apply detail table:', error)
       ElMessage.error(`Update failed: ${error instanceof Error ? error.message : 'Unknown error'}`)

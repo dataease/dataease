@@ -22,6 +22,10 @@ export function validatePivotZoneUpdate(
   zoneId: string,
   fields: FieldItemData[]
 ): string | undefined {
+  const currentFields = config.data?.zones?.[zoneId as 'rows' | 'columns'] || []
+  if (fields.length < currentFields.length) {
+    return undefined
+  }
   const rows = zoneId === 'rows' ? fields : config.data?.zones?.rows || []
   const columns = zoneId === 'columns' ? fields : config.data?.zones?.columns || []
   return validatePivotZones(rows, columns, true)
