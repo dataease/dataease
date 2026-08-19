@@ -76,7 +76,6 @@ public class WhitelistUtils {
                 || StringUtils.startsWithAny(requestURI, "/xpackComponent/content")
                 || StringUtils.startsWithAny(requestURI, "/xpackComponent/pluginStaticInfo")
                 || StringUtils.startsWithAny(requestURI, "/geo/")
-                || StringUtils.startsWithAny(requestURI, "/customGeo/")
                 || StringUtils.startsWithAny(requestURI, "/websocket")
                 || StringUtils.startsWithAny(requestURI, "/map/")
                 || StringUtils.startsWithAny(requestURI, "/oauth2/")
