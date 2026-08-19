@@ -55,33 +55,33 @@ export class DetailTableRangeService extends Disposable {
     value: any,
     univerApi?: any
   ): string | undefined {
-    const isFieldUpdate = key.startsWith('data.zones.')
     const isIndexUpdate = key === 'style.header.showIndex'
     const isTotalUpdate = key === 'style.total.enable'
     const isHeaderVisibilityUpdate = key === 'style.base.hideHeader'
-    if (!isFieldUpdate && !isIndexUpdate && !isTotalUpdate && !isHeaderVisibilityUpdate) {
+    if (!isIndexUpdate && !isTotalUpdate && !isHeaderVisibilityUpdate) {
       return undefined
     }
 
     const currentState = this.displayStateService.get(config.id)
-    const colCount = isTotalUpdate || isHeaderVisibilityUpdate
-      ? currentState?.colCount ?? this.getConfiguredFieldCount(config)
-      : isIndexUpdate
-      ? this.getNextIndexColumnCount(config, currentState?.colCount, value)
-      : this.getNextFieldCount(config, key, value) + (config.style?.header?.showIndex ? 1 : 0)
+    if (!currentState || currentState.rowCount <= 0 || currentState.colCount <= 0) {
+      return undefined
+    }
+
+    const colCount = isIndexUpdate
+      ? this.getNextIndexColumnCount(config, currentState.colCount, value)
+      : currentState.colCount
     if (colCount <= 0) {
       return undefined
     }
 
-    const currentRowCount = currentState?.rowCount ?? this.getConfiguredRowCount(config)
-    let rowCount = currentRowCount
+    let rowCount = currentState.rowCount
     if (isTotalUpdate) {
       rowCount += Number(!!value) - Number(!!config.style?.total?.enable)
     } else if (isHeaderVisibilityUpdate) {
       rowCount += Number(!value) - Number(!config.style?.base?.hideHeader)
     }
-    const startCell = currentState?.startCell || config.placement.startCell
-    const sheetId = currentState?.sheetId || config.placement.sheetId
+    const startCell = currentState.startCell || config.placement.startCell
+    const sheetId = currentState.sheetId || config.placement.sheetId
     const startPos = this.parseCell(startCell)
 
     const targetRange: SheetRange = {
@@ -190,15 +190,6 @@ export class DetailTableRangeService extends Disposable {
     return this.getRenderedRanges().find(range => range.pluginId === pluginId)
   }
 
-  private getNextFieldCount(config: DetailTableConfig, key: string, value: any): number {
-    const zoneId = key.replace('data.zones.', '')
-    const zones = {
-      ...(config.data?.zones || {}),
-      [zoneId]: Array.isArray(value) ? value : []
-    }
-    return Object.values(zones).reduce((count, fields) => count + (fields?.length || 0), 0)
-  }
-
   private getNextIndexColumnCount(
     config: DetailTableConfig,
     renderedColumnCount: number | undefined,
@@ -221,12 +212,6 @@ export class DetailTableRangeService extends Disposable {
       ? Math.floor(Number(resultLimit))
       : 1000
     return 1 + normalizedLimit
-  }
-
-  private getConfiguredRowCount(config: DetailTableConfig): number {
-    return this.getRowCountByResultLimit(config.data?.resultLimit) -
-      (config.style?.base?.hideHeader ? 1 : 0) +
-      (config.style?.total?.enable ? 1 : 0)
   }
 
   private hasExternalCellValue(worksheet: any, targetRange: SheetRange, allowedRange?: SheetRange): boolean {

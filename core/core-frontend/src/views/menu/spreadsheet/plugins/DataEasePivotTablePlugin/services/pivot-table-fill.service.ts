@@ -45,23 +45,41 @@ export class PivotTableFillService {
     config: PivotTableConfig,
     options: PivotTableFillOptions = {}
   ): Promise<boolean> {
-    const validateMessage = validatePivotConfig(config)
-    if (validateMessage) {
-      ElMessage.warning(validateMessage)
-      return false
-    }
-
     const workbook = univerApi.getActiveWorkbook?.()
     const worksheet = workbook
       ?.getSheets?.()
-      ?.find(sheet => sheet.getSheetId?.() === config.placement.sheetId)
+      ?.find(sheet => sheet.getSheetId?.() === config.placement.sheetId) || workbook?.getActiveSheet?.()
     if (!workbook || !worksheet) {
       throw new Error('未找到透视表目标工作表')
     }
 
-    const start = this.rangeService.parseCell(config.placement.startCell)
     const unitId = workbook.getId?.() || workbook.getUnitId?.()
     const sheetId = worksheet.getSheetId()
+
+    const validateMessage = validatePivotConfig(config)
+    if (validateMessage) {
+      ElMessage.warning(validateMessage)
+      try {
+        await this.clearPrevious(univerApi, config.id, worksheet, config.placement.startCell, true)
+      } catch (clearError) {
+        console.warn('[PivotTableFillService] Failed to clear previous data on validation failure:', clearError)
+      }
+      if (unitId) {
+        pluginRenderStatusService.set({
+          pluginId: config.id,
+          type: 'pivot',
+          status: 'error',
+          reason: validateMessage,
+          unitId,
+          sheetId,
+          startCell: config.placement.startCell,
+          updatedAt: Date.now()
+        })
+      }
+      return false
+    }
+
+    const start = this.rangeService.parseCell(config.placement.startCell)
     const previousState = this.displayStateService.get(config.id)
     const previousRange = previousState?.sheetId === sheetId &&
       previousState.rowCount > 0 && previousState.columnCount > 0

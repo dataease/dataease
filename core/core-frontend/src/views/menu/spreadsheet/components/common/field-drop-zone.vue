@@ -51,12 +51,17 @@ watch(
   }
 )
 
-const updateFields = (fields: FieldItemData[], options?: { syncLocal?: boolean }) => {
-  const validateMessage = props.validateUpdate?.(fields)
-  if (validateMessage) {
-    localFields.value = [...props.modelValue]
-    ElMessage.warning(validateMessage)
-    return false
+const updateFields = (
+  fields: FieldItemData[],
+  options?: { syncLocal?: boolean; skipValidation?: boolean }
+) => {
+  if (!options?.skipValidation) {
+    const validateMessage = props.validateUpdate?.(fields)
+    if (validateMessage) {
+      localFields.value = [...props.modelValue]
+      ElMessage.warning(validateMessage)
+      return false
+    }
   }
   if (options?.syncLocal) {
     localFields.value = [...fields]
@@ -146,7 +151,7 @@ const handleDrop = (e: DragEvent) => {
 const handleRemove = (index: number) => {
   const field = localFields.value[index]
   const newFields = localFields.value.filter((_, i) => i !== index)
-  updateFields(newFields)
+  updateFields(newFields, { syncLocal: true, skipValidation: true })
   emit('fieldRemove', field, index)
 }
 

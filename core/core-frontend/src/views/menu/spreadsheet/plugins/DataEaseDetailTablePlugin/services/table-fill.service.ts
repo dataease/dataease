@@ -18,6 +18,7 @@ import {
   getFieldNumberFormat,
   toNativeCellValue
 } from '../utils/field-format'
+import { validateDetailConfig } from '../utils/detail-config-validator'
 import { ensureSheetSize } from '../utils/sheet-size'
 import { PluginRenderLoadingService } from '../../../services/plugin-render-loading.service'
 import { pluginRenderStatusService } from '../../../services/plugin-render-status.service'
@@ -60,7 +61,7 @@ export class TableFillService {
     univerApi: any,
     config: DetailTableConfig,
     options: TableFillOptions = {}
-  ): Promise<void> {
+  ): Promise<boolean> {
     const workbook = univerApi.getActiveWorkbook()
     if (!workbook) {
       throw new Error('No active workbook found')
@@ -71,10 +72,10 @@ export class TableFillService {
       .find(sheet => sheet.getSheetId() === config.placement.sheetId)
 
     if (!targetSheet) {
-      return
+      return false
     }
 
-    await this.fillTable(univerApi, config, config.placement.startCell, targetSheet, options)
+    return this.fillTable(univerApi, config, config.placement.startCell, targetSheet, options)
   }
 
   async fillTable(
@@ -83,7 +84,7 @@ export class TableFillService {
     startCell: string,
     targetWorksheet?: any,
     options: TableFillOptions = {}
-  ): Promise<void> {
+  ): Promise<boolean> {
     console.log('[TableFillService] Starting fillTable:', { startCell, config })
 
     const startPos = this.parseCell(startCell)
@@ -128,6 +129,30 @@ export class TableFillService {
         startCell,
         updatedAt: Date.now()
       })
+    }
+
+    const validateMessage = validateDetailConfig(config)
+    if (validateMessage) {
+      ElMessage.warning(validateMessage)
+      try {
+        await this.clearPreviousData(univerApi, config.id, startCell, fWorksheet)
+      } catch (clearError) {
+        console.warn('[TableFillService] Failed to clear previous data on validation failure:', clearError)
+      }
+      if (unitId) {
+        pluginRenderStatusService.set({
+          pluginId: config.id,
+          type: 'detail',
+          status: 'error',
+          reason: validateMessage,
+          unitId,
+          sheetId,
+          startCell,
+          updatedAt: Date.now()
+        })
+      }
+      loading?.dispose()
+      return false
     }
 
     try {
@@ -176,7 +201,7 @@ export class TableFillService {
             updatedAt: Date.now()
           })
         }
-        return
+        return false
       }
 
       await this.clearPreviousData(univerApi, config.id, startCell, fWorksheet)
@@ -278,6 +303,7 @@ export class TableFillService {
       }
 
       console.log('[TableFillService] Complete')
+      return true
     } catch (error) {
       console.error('[TableFillService] Failed to fill detail table:', error)
       try {
@@ -297,6 +323,7 @@ export class TableFillService {
           updatedAt: Date.now()
         })
       }
+      return false
     } finally {
       loading?.dispose()
     }

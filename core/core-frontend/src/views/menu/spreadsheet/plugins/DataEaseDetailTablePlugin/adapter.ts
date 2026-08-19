@@ -1,5 +1,5 @@
 import { DeepPartial, TablePluginAdapter } from "../../types/adapter";
-import { FieldZoneSchema, StyleSchema } from "../../types/plugin";
+import { FieldItemData, FieldZoneSchema, StyleSchema } from "../../types/plugin";
 import { DetailTableConfig } from "./types";
 import TableCellEditor from './components/editor/TableCellEditor.vue'
 import TableBaseEditor from './components/editor/TableBaseEditor.vue'
@@ -7,6 +7,7 @@ import TableHeaderEditor from './components/editor/TableHeaderEditor.vue'
 import TableTotalEditor from './components/editor/TableTotalEditor.vue'
 import DetailTableFieldItem from './components/editor/DetailTableFieldItem.vue'
 import { createDefaultTableBorderConfig } from '../../components/table-border/border-config'
+import { validateDetailZoneUpdate } from './utils/detail-config-validator'
 
 export class DetailTableAdapter extends TablePluginAdapter<DetailTableConfig> {
     constructor() {
@@ -50,6 +51,14 @@ export class DetailTableAdapter extends TablePluginAdapter<DetailTableConfig> {
               fieldItemComponent: DetailTableFieldItem
             }
           ]
+    }
+
+    validateZoneUpdate(
+        config: DetailTableConfig,
+        zoneId: string,
+        fields: FieldItemData[]
+    ): string | undefined {
+        return validateDetailZoneUpdate(config, zoneId, fields)
     }
 
     getDefaultConfig() {

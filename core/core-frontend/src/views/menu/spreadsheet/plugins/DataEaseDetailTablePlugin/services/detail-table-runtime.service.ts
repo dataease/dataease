@@ -11,6 +11,9 @@ import { DetailTableDisplayStateService } from './detail-table-display-state.ser
 import { DetailTableRenderStyleService } from './detail-table-render-style.service'
 import { pluginRenderStatusService } from '../../../services/plugin-render-status.service'
 
+import type { FieldItemData } from '../../../types/plugin'
+import { validateDetailZoneUpdate } from '../utils/detail-config-validator'
+
 export class DetailTableRuntimeService implements SpreadsheetPluginRuntime<DetailTableConfig> {
   readonly type = 'detail' as const
 
@@ -48,6 +51,10 @@ export class DetailTableRuntimeService implements SpreadsheetPluginRuntime<Detai
     key: string
     value: any
   }): string | undefined {
+    if (key.startsWith('data.zones.')) {
+      const zoneId = key.replace('data.zones.', '')
+      return validateDetailZoneUpdate(config, zoneId, (value || []) as FieldItemData[])
+    }
     return this.detailTableRangeService.validateConfigUpdate(config, key, value, univerApi)
   }
 
