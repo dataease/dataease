@@ -2,6 +2,7 @@ package io.dataease.service.panel;
 
 import io.dataease.auth.config.RsaProperties;
 import io.dataease.auth.util.JWTUtils;
+import io.dataease.auth.util.LinkSecretProvider;
 import io.dataease.auth.util.RsaUtil;
 import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.AuthUtils;
@@ -233,7 +234,7 @@ public class PanelLinkService {
         if (!panelLink.getEnablePwd() || StringUtils.isEmpty(token) || StringUtils.equals("undefined", token)
                 || StringUtils.equals("null", token)) {
             String resourceId = panelLink.getResourceId();
-            String pwd = "dataease";
+            String pwd = LinkSecretProvider.linkSecret();
             String tk = JWTUtils.signLink(resourceId, panelLink.getUserId(), pwd);
             HttpServletResponse httpServletResponse = ServletUtils.response();
             httpServletResponse.addHeader("Access-Control-Expose-Headers", "LINK-PWD-TOKEN");
