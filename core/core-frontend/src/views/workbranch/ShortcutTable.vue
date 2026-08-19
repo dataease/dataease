@@ -10,7 +10,7 @@ import dvDashboardSpineMobile from '@/assets/svg/dv-dashboard-spine-mobile.svg'
 import icon_pc_outlined from '@/assets/svg/icon_pc_outlined.svg'
 import dvDashboardSpineMobileDisabled from '@/assets/svg/dv-dashboard-spine-mobile-disabled.svg'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, reactive, onMounted, computed, watch } from 'vue'
+import { ref, reactive, onMounted, computed, watch, defineAsyncComponent } from 'vue'
 import type { TabsPaneContext } from 'element-plus-secondary'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { useRouter } from 'vue-router_2'
@@ -34,8 +34,12 @@ const embeddedStore = useEmbedded()
 
 import { useShareStoreWithOut } from '@/store/modules/share'
 import { cloneDeep } from 'lodash-es'
-import TabPaneTable from '@/views/menu/data/data-filling/fill/TabPaneTable.vue'
-import TabPane from '@/views/menu/data/data-filling/fill/TabPane.vue'
+const TabPaneTable = defineAsyncComponent(
+  () => import('@/views/menu/data/data-filling/fill/TabPaneTable.vue')
+)
+const TabPane = defineAsyncComponent(
+  () => import('@/views/menu/data/data-filling/fill/TabPane.vue')
+)
 const shareStore = useShareStoreWithOut()
 const { push } = useRouter()
 defineProps({
@@ -499,14 +503,14 @@ const getEmptyDesc = (): string => {
         </GridTable>
       </div>
     </template>
-    <TabPaneTable v-if="activeName === 'data-filling'" />
+    <TabPaneTable v-if="userStore.hasXapck && activeName === 'data-filling'" />
   </div>
   <el-empty
     class="dashboard-type"
     v-else
     :description="t('work_branch.administrator_for_authorization')"
   />
-  <TabPane @loaded="loadedDataFilling" />
+  <TabPane v-if="userStore.hasXapck" @loaded="loadedDataFilling" />
 </template>
 
 <style lang="less" scoped>

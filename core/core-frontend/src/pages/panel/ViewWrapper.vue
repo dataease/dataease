@@ -1,5 +1,13 @@
 <script lang="ts" setup>
-import { ref, onBeforeMount, reactive, inject, nextTick, onMounted } from 'vue'
+import {
+  ref,
+  onBeforeMount,
+  reactive,
+  inject,
+  nextTick,
+  onMounted,
+  defineAsyncComponent
+} from 'vue'
 import { initCanvasData, onInitReady } from '@/utils/canvasUtils'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { useEmbedded } from '@/store/modules/embedded'
@@ -9,10 +17,14 @@ import { getOuterParamsInfo } from '@/api/visualization/outerParams'
 import { ElMessage } from 'element-plus-secondary'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useI18n } from '@/hooks/web/useI18n'
+import { useUserStoreWithOut } from '@/store/modules/user'
 import EmptyBackground from '../../components/empty-background/src/EmptyBackground.vue'
 import exeRequest from '@/config/axios'
-import OpenHandler from '@/views/component/embedded-iframe/OpenHandler.vue'
+const OpenHandler = defineAsyncComponent(
+  () => import('@/views/component/embedded-iframe/OpenHandler.vue')
+)
 const { wsCache } = useCache()
+const userStore = useUserStoreWithOut()
 const interactiveStore = interactiveStoreWithOut()
 const embeddedStore = useEmbedded()
 const embeddedParamsDiv = inject('embeddedParams') as object
@@ -160,14 +172,10 @@ const onPointClick = param => {
   try {
     console.info('de_inner_params send')
     if (window['dataease-embedded-host'] && openHandler?.value) {
-      const pm = {
-        methodName: 'embeddedInteractive',
-        args: {
-          eventName: 'de_inner_params',
-          args: param
-        }
-      }
-      openHandler.value.invokeMethod(pm)
+      openHandler.value.embeddedInteractive({
+        eventName: 'de_inner_params',
+        args: param
+      })
     } else {
       console.info('de_inner_params send to host')
       const targetPm = {
@@ -218,7 +226,7 @@ onMounted(() => {
     <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>
   </div>
   <empty-background v-if="!state.initState" description="参数不能为空" img-type="noneWhite" />
-  <OpenHandler ref="openHandler" />
+  <OpenHandler v-if="userStore.hasXapck" ref="openHandler" />
 </template>
 
 <style lang="less" scoped>

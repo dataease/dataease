@@ -38,8 +38,14 @@ import eventBus from '@/utils/eventBus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { recoverToPublished } from '@/api/visualization/dataVisualization'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
-import NewWindowHandler from '@/views/component/embedded-iframe/NewWindowHandler.vue'
-import ThresholdDialog from '@/views/component/threshold-warning/ThresholdDialog.vue'
+import { useUserStoreWithOut } from '@/store/modules/user'
+const NewWindowHandler = defineAsyncComponent(
+  () => import('@/views/component/embedded-iframe/NewWindowHandler.vue')
+)
+const ThresholdDialog = defineAsyncComponent(
+  () => import('@/views/component/threshold-warning/ThresholdDialog.vue')
+)
+const userStore = useUserStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 const embeddedStore = useEmbedded()
 const { wsCache } = useCache()
@@ -452,8 +458,12 @@ onUnmounted(() => {
     @pcMode="mobileConfig = false"
     v-else-if="loadFinish && mobileConfig"
   ></MobileConfigPanel>
-  <NewWindowHandler @loaded="XpackLoaded" @load-fail="XpackLoaded"></NewWindowHandler>
-  <ThresholdDialog></ThresholdDialog>
+  <NewWindowHandler
+    v-if="userStore.hasXapck"
+    @loaded="XpackLoaded"
+    @load-fail="XpackLoaded"
+  ></NewWindowHandler>
+  <ThresholdDialog v-if="userStore.hasXapck"></ThresholdDialog>
   <canvas-cache-dialog
     v-show="canvasCacheOutRefShow"
     ref="canvasCacheOutRef"

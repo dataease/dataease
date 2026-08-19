@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import icon_close_outlined from '@/assets/svg/icon_close_outlined.svg'
 import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
-import { reactive, ref, computed, watch, nextTick } from 'vue'
+import { reactive, ref, computed, watch, nextTick, defineAsyncComponent } from 'vue'
 import { ElIcon, ElMessage, ElMessageBox, ElMessageBoxOptions } from 'element-plus-secondary'
 import CreatDsGroup from './CreatDsGroup.vue'
 import type { DsType } from './DsTypeList.vue'
@@ -33,7 +33,10 @@ import { PluginComponent } from '@/components/plugin'
 
 import { iconDatasourceMap } from '@/components/icon-group/datasource-list'
 import ExcelRemoteDetail from '@/views/visualized/data/datasource/form/ExcelRemoteDetail.vue'
-import DsCategoryHandler from '@/views/component/plugins-handler/DsCategoryHandler.vue'
+import { useUserStoreWithOut } from '@/store/modules/user'
+const DsCategoryHandler = defineAsyncComponent(
+  () => import('@/views/component/plugins-handler/DsCategoryHandler.vue')
+)
 
 interface Node {
   name: string
@@ -64,6 +67,7 @@ const creatDsFolder = ref()
 const router = useRouter()
 const { wsCache } = useCache()
 const dsLoading = ref(false)
+const userStore = useUserStoreWithOut()
 let isFormUpdate = false
 let isForm2Update = false
 let isUpdate = false
@@ -1021,7 +1025,7 @@ defineExpose({
         v-if="showFinishPage"
       ></FinishPage>
 
-      <DsCategoryHandler @load-ds-plugin="loadDsPlugin" />
+      <DsCategoryHandler v-if="userStore.hasXapck" @load-ds-plugin="loadDsPlugin" />
     </div>
   </el-drawer>
   <creat-ds-group

@@ -1,10 +1,11 @@
 <script lang="ts" setup>
-import { ref, computed, onMounted, reactive, watch } from 'vue'
+import { ref, computed, onMounted, reactive, watch, defineAsyncComponent } from 'vue'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { useI18n } from '@/hooks/web/useI18n'
 import { shortcutOption } from '@/views/workbranch/ShortcutOption'
 import { useRouter } from 'vue-router_2'
 import { useCache } from '@/hooks/web/useCache'
+import { useUserStoreWithOut } from '@/store/modules/user'
 import Workbranch from '@/views/mobile/components/Workbranch.vue'
 import request from '@/config/axios'
 import nothingNone from '@/assets/img/none.png'
@@ -17,11 +18,16 @@ import 'vant/es/tab/style'
 import 'vant/es/nav-bar/style'
 import 'vant/es/tabs/style'
 import { cloneDeep, map } from 'lodash-es'
-import TabPaneTable from '@/views/menu/data/data-filling/fill/TabPaneTable.vue'
-import TabPane from '@/views/menu/data/data-filling/fill/TabPane.vue'
+const TabPaneTable = defineAsyncComponent(
+  () => import('@/views/menu/data/data-filling/fill/TabPaneTable.vue')
+)
+const TabPane = defineAsyncComponent(
+  () => import('@/views/menu/data/data-filling/fill/TabPane.vue')
+)
 const router = useRouter()
 const { t } = useI18n()
 const { wsCache } = useCache('sessionStorage')
+const userStore = useUserStoreWithOut()
 
 const activeTab = ref('store')
 const emptyTips = ref('')
@@ -190,7 +196,7 @@ const formatterTime = val => {
           :time="formatterTime(ele.lastEditTime || ele.time)"
         />
       </template>
-      <TabPaneTable v-else-if="activeTab === 'data-filling'" />
+      <TabPaneTable v-else-if="userStore.hasXapck && activeTab === 'data-filling'" />
     </div>
     <div class="empty-img-mobile" v-if="!!emptyTips">
       <img width="125" height="125" :src="nothingNone" alt="" />
@@ -200,7 +206,7 @@ const formatterTime = val => {
     </div>
   </div>
 
-  <TabPane @loaded="loadedDataFilling" />
+  <TabPane v-if="userStore.hasXapck" @loaded="loadedDataFilling" />
 </template>
 
 <style lang="less" scoped>

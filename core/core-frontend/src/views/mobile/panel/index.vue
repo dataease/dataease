@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onBeforeMount, ref, onBeforeUnmount } from 'vue'
+import { onBeforeMount, ref, onBeforeUnmount, defineAsyncComponent } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import eventBus from '@/utils/eventBus'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -9,8 +9,12 @@ import { deepCopy } from '@/utils/utils'
 const panelInit = ref(false)
 const dvMainStore = dvMainStoreWithOut()
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
-import Entrances from '@/views/component/embedded-iframe/Entrances.vue'
+import { useUserStoreWithOut } from '@/store/modules/user'
+const Entrances = defineAsyncComponent(
+  () => import('@/views/component/embedded-iframe/Entrances.vue')
+)
 const appearanceStore = useAppearanceStoreWithOut()
+const userStore = useUserStoreWithOut()
 
 const checkItemPosition = component => {
   component.x = 1
@@ -214,7 +218,7 @@ onBeforeUnmount(() => {
   <div class="panel-mobile">
     <de-preview-mobile v-if="panelInit"></de-preview-mobile>
   </div>
-  <Entrances @initIframe="initIframe" />
+  <Entrances v-if="userStore.hasXapck" @initIframe="initIframe" />
 </template>
 
 <style lang="less" scoped>

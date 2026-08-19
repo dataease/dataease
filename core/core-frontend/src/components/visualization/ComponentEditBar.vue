@@ -166,6 +166,7 @@
           >
 
           <EditBarHandler
+            v-if="userStore.hasXapck"
             :chart="element"
             resource-table="snapshot"
             @close-item="closeItem"
@@ -236,7 +237,17 @@ import dvBarUnLinkage from '@/assets/svg/dv-bar-unLinkage.svg'
 import database from '@/assets/svg/database.svg'
 import icon_more_outlined from '@/assets/svg/icon_more_outlined.svg'
 import dvPreviewDownload from '@/assets/svg/icon_download_outlined.svg'
-import { computed, h, onBeforeUnmount, onMounted, reactive, ref, toRefs, watch } from 'vue'
+import {
+  computed,
+  h,
+  onBeforeUnmount,
+  onMounted,
+  reactive,
+  ref,
+  toRefs,
+  watch,
+  defineAsyncComponent
+} from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -254,8 +265,12 @@ import { exportPermission, isMobile } from '@/utils/utils'
 import { layerStoreWithOut } from '@/store/modules/data-visualization/layer'
 import { isMainCanvas } from '@/utils/canvasUtils'
 import { useAppStoreWithOut } from '@/store/modules/app'
-import EditBarHandler from '@/views/component/threshold-warning/EditBarHandler.vue'
+import { useUserStoreWithOut } from '@/store/modules/user'
+const EditBarHandler = defineAsyncComponent(
+  () => import('@/views/component/threshold-warning/EditBarHandler.vue')
+)
 const appStore = useAppStoreWithOut()
+const userStore = useUserStoreWithOut()
 const layerStore = layerStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()

@@ -1,10 +1,13 @@
 <script lang="ts" setup>
-import { shallowRef, PropType, computed } from 'vue'
+import { shallowRef, PropType, computed, defineAsyncComponent } from 'vue'
 import { dsTypes, typeList, nameMap } from './option'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import { iconDatasourceMap } from '@/components/icon-group/datasource-list'
 import { useI18n } from '@/hooks/web/useI18n'
-import DsCategoryHandler from '@/views/component/plugins-handler/DsCategoryHandler.vue'
+import { useUserStoreWithOut } from '@/store/modules/user'
+const DsCategoryHandler = defineAsyncComponent(
+  () => import('@/views/component/plugins-handler/DsCategoryHandler.vue')
+)
 
 export type DsType = 'OLTP' | 'OLAP' | 'DL' | 'OTHER' | 'LOCAL' | 'latestUse' | 'all'
 const props = defineProps({
@@ -21,6 +24,7 @@ const props = defineProps({
   }
 })
 const { t } = useI18n()
+const userStore = useUserStoreWithOut()
 
 const databaseList = shallowRef([])
 const currentTypeList = computed(() => {
@@ -131,7 +135,7 @@ const selectDs = ({ type }) => {
       </div>
     </template>
 
-    <DsCategoryHandler @load-ds-plugin="loadDsPlugin" />
+    <DsCategoryHandler v-if="userStore.hasXapck" @load-ds-plugin="loadDsPlugin" />
   </div>
 </template>
 

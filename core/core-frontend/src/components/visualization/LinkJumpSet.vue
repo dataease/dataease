@@ -617,7 +617,7 @@
         </el-button>
       </el-row>
     </div>
-    <OpenHandler ref="openHandler"></OpenHandler>
+    <OpenHandler v-if="userStore.hasXapck" ref="openHandler"></OpenHandler>
   </el-dialog>
 </template>
 
@@ -637,7 +637,7 @@ import {
   updateJumpSet,
   viewTableDetailList
 } from '@/api/visualization/linkJump'
-import { reactive, ref, nextTick, computed, watch } from 'vue'
+import { reactive, ref, nextTick, computed, watch, defineAsyncComponent } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { fieldType } from '@/utils/attr'
 import { storeToRefs } from 'pinia'
@@ -655,10 +655,14 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { useCache } from '@/hooks/web/useCache'
 import { useEmbedded } from '@/store/modules/embedded'
+import { useUserStoreWithOut } from '@/store/modules/user'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 import treeSort from '@/utils/treeSortUtils'
-import OpenHandler from '@/views/component/embedded-iframe/OpenHandler.vue'
+const OpenHandler = defineAsyncComponent(
+  () => import('@/views/component/embedded-iframe/OpenHandler.vue')
+)
 const dvMainStore = dvMainStoreWithOut()
+const userStore = useUserStoreWithOut()
 const { dvInfo, canvasViewInfo, componentData } = storeToRefs(dvMainStore)
 const linkJumpInfoTree = ref(null)
 const { t } = useI18n()
@@ -1111,11 +1115,7 @@ const resourceEdit = async resourceId => {
 const openHandler = ref(null)
 const initOpenHandler = newWindow => {
   if (openHandler?.value) {
-    const pm = {
-      methodName: 'initOpenHandler',
-      args: newWindow
-    }
-    openHandler.value.invokeMethod(pm)
+    openHandler.value.initOpenHandler(newWindow)
   }
 }
 

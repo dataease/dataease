@@ -309,10 +309,7 @@ const delMappingField = (row: ITableField) => {
   })
       .then(() => {
         clearIncrementField(row)
-        isPlugin.value ? targetPropertyFormRef.value?.invokeMethod({
-              methodName: "delMappingFieldHandler",
-              args: [row]
-            }) :
+        isPlugin.value ? targetPropertyFormRef.value?.delMappingFieldHandler?.(row) :
             targetPropertyFormRef.value?.delMappingFieldHandler(row);
         form.value.target.fieldList = remove(form.value.target.fieldList, (v) => {
           return !includes(map([row], "fieldName"), v["fieldName"]);
@@ -458,10 +455,7 @@ const batchDelMappingField = () => {
     showClose: false
   }).then(() => {
     clearIncrementField()
-    isPlugin.value ? targetPropertyFormRef.value?.invokeMethod({
-      methodName: "delMappingFieldHandler",
-      args: [{}]
-    }) : targetPropertyFormRef.value?.batchDelMappingFieldHandler();
+    isPlugin.value ? targetPropertyFormRef.value?.delMappingFieldHandler?.({}) : targetPropertyFormRef.value?.batchDelMappingFieldHandler();
     form.value.target.fieldList = form.value.target.fieldList.filter(
         v => !new Set(map(form.value.target.multipleSelection, "fieldSource")).has(v.fieldSource)
     );
@@ -536,12 +530,10 @@ function handleValidateFieldList(_, callback) {
 const validate = async (loading?: Ref<boolean>) => {
   let targetPropertyValid = false
   if (isPlugin.value) {
-    await targetPropertyFormRef.value?.invokeMethod({
-      methodName: "targetPropertyValidate", args: [{
-        callback: (res: boolean) => {
-          targetPropertyValid = res
-        }
-      }]
+    await targetPropertyFormRef.value?.targetPropertyValidate?.({
+      callback: (res: boolean) => {
+        targetPropertyValid = res
+      }
     })
   } else {
     await targetPropertyFormRef.value?.targetPropertyValidate((res: boolean) => {
@@ -635,13 +627,11 @@ const getPluginStatic = type => {
           : null
 }
 const pluginComponentLoadDone = () => {
-  targetPropertyFormRef?.value?.invokeMethod({methodName: 'initTargetCustomProperty', args: [{}]})
-  targetPropertyFormRef.value?.invokeMethod({
-    methodName: "getSupportedIncrementFieldType", args: [{
-      callback: (res) => {
-        targetSupportedIncrementFieldType.value = res
-      }
-    }]
+  targetPropertyFormRef?.value?.initTargetCustomProperty?.({})
+  targetPropertyFormRef.value?.getSupportedIncrementFieldType?.({
+    callback: res => {
+      targetSupportedIncrementFieldType.value = res
+    }
   })
 }
 //将方法暴露出去

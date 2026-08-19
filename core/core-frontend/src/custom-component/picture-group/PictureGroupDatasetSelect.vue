@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, PropType, reactive, ref, toRefs } from 'vue'
+import { nextTick, PropType, reactive, ref, toRefs, defineAsyncComponent } from 'vue'
 import { BASE_VIEW_CONFIG } from '@/views/chart/components/editor/util/chart'
 import DatasetSelect from '@/views/chart/components/editor/dataset-select/DatasetSelect.vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -12,10 +12,14 @@ import { useEmbedded } from '@/store/modules/embedded'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { useRouter } from 'vue-router_2'
 import { useCache } from '@/hooks/web/useCache'
-import OpenHandler from '@/views/component/embedded-iframe/OpenHandler.vue'
+import { useUserStoreWithOut } from '@/store/modules/user'
+const OpenHandler = defineAsyncComponent(
+  () => import('@/views/component/embedded-iframe/OpenHandler.vue')
+)
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const { t } = useI18n()
+const userStore = useUserStoreWithOut()
 const embeddedStore = useEmbedded()
 const appStore = useAppStoreWithOut()
 const router = useRouter()
@@ -74,11 +78,7 @@ const addDsWindow = () => {
 const openHandler = ref(null)
 const initOpenHandler = newWindow => {
   if (openHandler?.value) {
-    const pm = {
-      methodName: 'initOpenHandler',
-      args: newWindow
-    }
-    openHandler.value.invokeMethod(pm)
+    openHandler.value.initOpenHandler(newWindow)
   }
 }
 </script>
@@ -95,7 +95,7 @@ const initOpenHandler = newWindow => {
     @add-ds-window="addDsWindow"
     :state-obj="state"
   />
-  <OpenHandler ref="openHandler"></OpenHandler>
+  <OpenHandler v-if="userStore.hasXapck" ref="openHandler"></OpenHandler>
 </template>
 
 <style lang="less" scoped>

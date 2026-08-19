@@ -9,7 +9,7 @@ import Threshold from '@/views/chart/components/editor/editor-senior/components/
 import MapMapping from '@/views/chart/components/editor/editor-senior/components/MapMapping.vue'
 import CollapseSwitchItem from '@/components/collapse-switch-item/src/CollapseSwitchItem.vue'
 import { useAppStoreWithOut } from '@/store/modules/app'
-import { computed, onMounted, PropType, ref, toRefs, watch } from 'vue'
+import { computed, onMounted, PropType, ref, toRefs, watch, defineAsyncComponent } from 'vue'
 import LinkJumpSet from '@/components/visualization/LinkJumpSet.vue'
 import LinkageSet from '@/components/visualization/LinkageSet.vue'
 import { canvasSave } from '@/utils/canvasUtils'
@@ -33,7 +33,11 @@ import BubbleAnimateCfg from '@/views/chart/components/editor/editor-senior/comp
 import CarouselSetting from '@/custom-component/common/CarouselSetting.vue'
 import { Icon } from 'vant'
 import CommonEvent from '@/custom-component/common/CommonEvent.vue'
-import SeniorHandler from '@/views/component/threshold-warning/SeniorHandler.vue'
+import { useUserStoreWithOut } from '@/store/modules/user'
+const SeniorHandler = defineAsyncComponent(
+  () => import('@/views/component/threshold-warning/SeniorHandler.vue')
+)
+const userStore = useUserStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 
 const { nowPanelTrackInfo, nowPanelJumpInfo, dvInfo, componentData, curComponent, batchOptStatus } =
@@ -330,7 +334,7 @@ const removeJumpSenior = () => {
           </collapse-switch-item>
 
           <SeniorHandler
-            v-if="chart.id"
+            v-if="userStore.hasXapck && chart.id"
             :chart="chart"
             :themes="themes"
             :is-screen="dvInfo.type === 'dataV'"

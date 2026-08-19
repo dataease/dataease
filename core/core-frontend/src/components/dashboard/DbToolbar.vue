@@ -90,7 +90,9 @@ import OuterParamsSet from '@/components/visualization/OuterParamsSet.vue'
 import UserViewGroup from '@/custom-component/component-group/UserViewGroup.vue'
 import DeAppApply from '@/views/common/DeAppApply.vue'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
-import OpenHandler from '@/views/component/embedded-iframe/OpenHandler.vue'
+const OpenHandler = defineAsyncComponent(
+  () => import('@/views/component/embedded-iframe/OpenHandler.vue')
+)
 
 const multiplexingRef = ref(null)
 const fullScreeRef = ref(null)
@@ -357,14 +359,10 @@ const backHandler = (url: string) => {
     return
   }
   if (window['dataease-embedded-host'] && openHandler?.value) {
-    const pm = {
-      methodName: 'embeddedInteractive',
-      args: {
-        eventName: 'de-dashboard-editor-back',
-        args: 'Just a demo that descript dataease embedded interactive'
-      }
-    }
-    openHandler.value.invokeMethod(pm)
+    openHandler.value.embeddedInteractive({
+      eventName: 'de-dashboard-editor-back',
+      args: 'Just a demo that descript dataease embedded interactive'
+    })
     return
   }
   wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
@@ -548,11 +546,7 @@ const isEmbedded = computed(() => appStore.getIsDataEaseBi || appStore.getIsIfra
 const openHandler = ref(null)
 const initOpenHandler = newWindow => {
   if (openHandler?.value) {
-    const pm = {
-      methodName: 'initOpenHandler',
-      args: newWindow
-    }
-    openHandler.value.invokeMethod(pm)
+    openHandler.value.initOpenHandler(newWindow)
   }
 }
 const userGroupShow = ref(false)
@@ -865,7 +859,7 @@ const userGroupShow = ref(false)
     <outer-params-set v-if="outerParamsSetShow" ref="outerParamsSetRef"> </outer-params-set>
   </div>
   <de-fullscreen show-position="edit" ref="fullScreeRef"></de-fullscreen>
-  <OpenHandler ref="openHandler"></OpenHandler>
+  <OpenHandler v-if="userStore.hasXapck" ref="openHandler"></OpenHandler>
   <de-app-apply
     ref="resourceAppOpt"
     :component-data="componentData"

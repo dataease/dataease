@@ -62,6 +62,7 @@ import { PluginComponent } from '@/components/plugin'
 import { Field, getFieldByDQ, copyChartField, deleteChartField } from '@/api/chart'
 import ChartTemplateInfo from '@/views/chart/components/editor/common/ChartTemplateInfo.vue'
 import { useEmbedded } from '@/store/modules/embedded'
+import { useUserStoreWithOut } from '@/store/modules/user'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import {
   iconFieldCalculatedMap,
@@ -69,9 +70,12 @@ import {
 } from '@/components/icon-group/field-calculated-list'
 import { useCache } from '@/hooks/web/useCache'
 import { canvasSave } from '@/utils/canvasUtils'
-import OpenHandler from '@/views/component/embedded-iframe/OpenHandler.vue'
+const OpenHandler = defineAsyncComponent(
+  () => import('@/views/component/embedded-iframe/OpenHandler.vue')
+)
 
 const { wsCache } = useCache('localStorage')
+const userStore = useUserStoreWithOut()
 const embeddedStore = useEmbedded()
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
@@ -1568,11 +1572,7 @@ const collapseChange = type => {
 const openHandler = ref(null)
 const initOpenHandler = newWindow => {
   if (openHandler?.value) {
-    const pm = {
-      methodName: 'initOpenHandler',
-      args: newWindow
-    }
-    openHandler.value.invokeMethod(pm)
+    openHandler.value.initOpenHandler(newWindow)
   }
 }
 const addDsWindow = () => {
@@ -4215,7 +4215,7 @@ const chartStyleScroll = (val: any) => {
     </el-dialog>
   </div>
   <FilterTree ref="filterTree" @filter-data="changeFilterData" />
-  <OpenHandler ref="openHandler" />
+  <OpenHandler v-if="userStore.hasXapck" ref="openHandler" />
   <Teleport v-if="componentNameEdit" :to="'#component-name'">
     <input
       ref="componentNameInput"

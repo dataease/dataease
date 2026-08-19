@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import DataEase from '@/assets/svg/DataEase.svg'
-import { ref, reactive, onMounted, computed, nextTick } from 'vue'
+import { ref, reactive, onMounted, computed, nextTick, defineAsyncComponent } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { FormRules, FormInstance } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
@@ -18,8 +18,8 @@ import DeImage from '@/assets/login-desc-de.png'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import { cleanPlatformFlag } from '@/utils/utils'
 import xss from 'xss'
-import Handler from '@/views/component/login/Handler.vue'
-import InvalidPwd from '@/views/component/login/InvalidPwd.vue'
+const Handler = defineAsyncComponent(() => import('@/views/component/login/Handler.vue'))
+const InvalidPwd = defineAsyncComponent(() => import('@/views/component/login/InvalidPwd.vue'))
 const { wsCache } = useCache()
 const appStore = useAppStoreWithOut()
 const userStore = useUserStoreWithOut()
@@ -95,11 +95,7 @@ const handleLogin = () => {
         .then(res => {
           const { token, exp, mfa } = res.data
           if (!isLdap && !xpackLoadFail.value && xpackInvalidPwd.value?.invokeMethod) {
-            const param = {
-              methodName: 'init',
-              args: res.data
-            }
-            xpackInvalidPwd?.value.invokeMethod(param)
+            xpackInvalidPwd?.value.init(res.data)
             return
           }
           if (!isLdap && mfa?.enabled) {
@@ -346,12 +342,14 @@ onMounted(async () => {
               </div>
 
               <Handler
+                v-if="userStore.hasXapck"
                 ref="xpackLoginHandler"
                 @switch-tab="switchTab"
                 @auto-callback="autoCallback"
                 @load-fail="handlerFail"
               />
               <InvalidPwd
+                v-if="userStore.hasXapck"
                 ref="xpackInvalidPwd"
                 @load-fail="() => (xpackLoadFail = true)"
                 @call-back="invalidPwdCb"

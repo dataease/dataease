@@ -14,6 +14,7 @@ import { PluginComponent } from '@/components/plugin'
 import {
   computed,
   CSSProperties,
+  defineAsyncComponent,
   nextTick,
   onBeforeMount,
   onMounted,
@@ -56,9 +57,15 @@ import { store } from '@/store'
 // import { clearExtremum } from '@/views/chart/components/js/extremumUitl'
 import DePreviewPopDialog from '@/components/visualization/DePreviewPopDialog.vue'
 import { useRoute } from 'vue-router_2'
-import OpenHandler from '@/views/component/embedded-iframe/OpenHandler.vue'
-import ViewCategoryHandler from '@/views/component/plugins-handler/ViewCategoryHandler.vue'
+import { useUserStoreWithOut } from '@/store/modules/user'
+const OpenHandler = defineAsyncComponent(
+  () => import('@/views/component/embedded-iframe/OpenHandler.vue')
+)
+const ViewCategoryHandler = defineAsyncComponent(
+  () => import('@/views/component/plugins-handler/ViewCategoryHandler.vue')
+)
 const route = useRoute()
+const userStore = useUserStoreWithOut()
 const { wsCache } = useCache()
 const chartComponent = ref<any>()
 const { t } = useI18n()
@@ -466,11 +473,7 @@ const onDrillFilters = param => {
 const openHandler = ref(null)
 const initOpenHandler = newWindow => {
   if (openHandler?.value) {
-    const pm = {
-      methodName: 'initOpenHandler',
-      args: newWindow
-    }
-    openHandler.value.invokeMethod(pm)
+    openHandler.value.initOpenHandler(newWindow)
   }
 }
 
@@ -1350,9 +1353,9 @@ const clearG2Tooltip = () => {
       :drill-filters="state.drillFilters"
       @onDrillJump="drillJump"
     />
-    <OpenHandler ref="openHandler" />
+    <OpenHandler v-if="userStore.hasXapck" ref="openHandler" />
     <ViewCategoryHandler
-      v-if="!pluginLoaded && view.isPlugin"
+      v-if="userStore.hasXapck && !pluginLoaded && view.isPlugin"
       @load-plugin-category="loadPluginCategory"
     >
     </ViewCategoryHandler>
