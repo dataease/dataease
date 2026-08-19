@@ -46,6 +46,10 @@ public class JwtSecretProvider implements ApplicationRunner {
             SystemParameter parameter = new SystemParameter();
             parameter.setParamKey(ParamConstants.BASIC.JWT_SECRET.getValue());
             parameter.setParamValue(UUID.randomUUID().toString().replace("-", "") + UUID.randomUUID().toString().replace("-", ""));
+
+            parameter.setType(ParamConstants.Type.TEXT.getValue());
+            parameter.setSort(0);
+
             systemParameterMapper.insert(parameter);
             jwtSecret = parameter.getParamValue();
         } else {
