@@ -138,6 +138,8 @@ export class BidirectionalHorizontalBar extends G2ChartView {
     delete axisOption.transform
     return {
       ...axisOption,
+      // 两个子 View 的数值轴共享对称边界，按单个 View 校正会破坏左右比例和零点对齐
+      dataeaseAxisLabelOverflow: false,
       labelAutoHide: true,
       labelAutoRotate: false
     }
@@ -486,6 +488,8 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       axis: {
         x: {
           zIndex: 1,
+          // 中间维度轴刻意跨越两个子 View，继续交由本图表现有 afterRender 逻辑居中
+          dataeaseAxisLabelOverflow: false,
           position: position,
           size: centerAxisSize,
           crossPadding: centerAxisSize ? 2 : undefined,

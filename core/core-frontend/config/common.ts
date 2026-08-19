@@ -13,6 +13,7 @@ import svgLoader from 'vite-svg-loader'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components-secondary/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components-secondary/resolvers'
+import { createG2LayoutOptimizerPlugin, createG2LayoutPlugin } from './g2-layout'
 const root = process.cwd()
 
 export function pathResolve(dir: string) {
@@ -21,6 +22,8 @@ export function pathResolve(dir: string) {
 export default {
   base: './',
   plugins: [
+    // 在 G2 模块解析前接入 DataEase 布局校正，升级 G2 时需验证内部 layout 入口
+    createG2LayoutPlugin(root),
     Vue(),
     svgLoader({
       svgo: false,
@@ -84,6 +87,10 @@ export default {
     ]
   },
   optimizeDeps: {
+    esbuildOptions: {
+      // 开发依赖预构建不会经过常规 Rollup 解析，需要保持与生产构建一致
+      plugins: [createG2LayoutOptimizerPlugin(root)]
+    },
     include: [
       'vue',
       'vue-router',

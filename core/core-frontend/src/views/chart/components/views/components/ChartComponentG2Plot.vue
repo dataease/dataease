@@ -648,11 +648,10 @@ const renderG2 = async (chart, chartView: G2ChartView<any, any>) => {
       })
       // 固定本轮创建的实例，避免等待异步渲染期间新一轮 renderG2 替换全局 myChart 后误操作新实例
       const chartInstance = myChart
-      // 先等待 G2 首次渲染，后续布局校正才能安全读取实际标签边界与 view.layout
+      // 等待 G2 完成包含轴边界校正的最终布局
       await chartInstance?.render()
       installG2SvgCoordinateScaleAdapter(chartInstance)
-      await chartView.adjustAxisLabelOverflow(chartInstance)
-      // 仅实现钩子的特殊图表会继续执行专属后处理
+      // 双向条形图、象限图仍依赖首次布局，必须等待其专属处理后再恢复联动状态
       await chartView.afterRender?.(chartInstance)
       // 异步等待期间若图表已被新实例替换，本轮旧实例不再回放联动状态，避免污染当前画布
       if (chartInstance && chartInstance === myChart) {
@@ -1157,8 +1156,9 @@ onMounted(() => {
     if (RESIZE_MONITOR_CHARTS.includes(view.value.type)) {
       return
     }
-    if (entry.intersectionRatio <= 0) {
-      myChart?.emit('tooltip:hidden')
+    if (entry.intersectionRatio <= 0 && typeof myChart?.emit === 'function') {
+      // L7 等非 G2 实例不保证提供 emit，离屏时只通知支持事件总线的图表
+      myChart.emit('tooltip:hidden')
     }
   })
   intersectionObserver.observe(containerDom)
