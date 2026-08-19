@@ -134,7 +134,8 @@ public interface ParamConstants {
         SCAN_CREATE_USER("loginlimit.scanCreateUser"),
 
         MULTI_LOGIN("loginlimit.multiLogin"),
-        TEMPLATE_ACCESS_KEY("basic.templateAccessKey");
+        TEMPLATE_ACCESS_KEY("basic.templateAccessKey"),
+        JWT_SECRET("jwt.secret");
 
         private String value;
 

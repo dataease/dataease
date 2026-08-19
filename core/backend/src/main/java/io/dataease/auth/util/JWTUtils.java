@@ -39,7 +39,7 @@ public class JWTUtils {
      */
     public static boolean verify(String token, TokenInfo tokenInfo, String secret) {
 
-        Algorithm algorithm = Algorithm.HMAC256(secret);
+        Algorithm algorithm = Algorithm.HMAC256(combinedSecret(secret));
         Verification verification = JWT.require(algorithm)
                 .withClaim("username", tokenInfo.getUsername())
                 .withClaim("userId", tokenInfo.getUserId());
@@ -129,7 +129,7 @@ public class JWTUtils {
         Long userId = tokenInfo.getUserId();
         long expireTimeMillis = getExpireTime();
         Date date = new Date(System.currentTimeMillis() + expireTimeMillis);
-        Algorithm algorithm = Algorithm.HMAC256(secret);
+        Algorithm algorithm = Algorithm.HMAC256(combinedSecret(secret));
         Builder builder = JWT.create()
                 .withClaim("username", tokenInfo.getUsername())
                 .withClaim("forShot", true)
@@ -154,7 +154,7 @@ public class JWTUtils {
         }
         long expireTimeMillis = getExpireTime();
         Date date = new Date(System.currentTimeMillis() + expireTimeMillis);
-        Algorithm algorithm = Algorithm.HMAC256(secret);
+        Algorithm algorithm = Algorithm.HMAC256(combinedSecret(secret));
         Builder builder = JWT.create()
                 .withClaim("username", tokenInfo.getUsername())
                 .withClaim("userId", userId);
@@ -184,6 +184,15 @@ public class JWTUtils {
         } else {
             return JWT.create().withClaim("resourceId", resourceId).withClaim("userId", userId).sign(algorithm);
         }
+    }
+
+    /**
+     * 组合签名密钥 = 服务端密钥 + ":" + 用户密码哈希。
+     * 签名与校验都基于组合密钥：服务端密钥在 DB 中不可预测，用户密码哈希随改密变化，
+     * 从而既防止仅凭已知密码哈希伪造 token，又保留"改密码后旧 token 失效"行为。
+     */
+    private static String combinedSecret(String userSecret) {
+        return JwtSecretProvider.jwtSecret() + ":" + (userSecret == null ? "" : userSecret);
     }
 
     public static boolean verifyLink(String token, String resourceId, Long userId, String secret) {

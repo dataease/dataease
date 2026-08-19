@@ -118,6 +118,8 @@ public class DatasourceController {
         return datasourceService.getDatasourceList(request);
     }
 
+    @RequiresPermissions("datasource:read")
+    @DePermission(type = DePermissionType.DATASOURCE, value = "id")
     @ApiOperation("查询数据源详情")
     @PostMapping("/get/{id}")
     public DatasourceDTO getDatasource(@PathVariable String id) throws Exception {
