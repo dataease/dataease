@@ -342,14 +342,12 @@ onMounted(async () => {
               </div>
 
               <Handler
-                v-if="userStore.hasXapck"
                 ref="xpackLoginHandler"
                 @switch-tab="switchTab"
                 @auto-callback="autoCallback"
                 @load-fail="handlerFail"
               />
               <InvalidPwd
-                v-if="userStore.hasXapck"
                 ref="xpackInvalidPwd"
                 @load-fail="() => (xpackLoadFail = true)"
                 @call-back="invalidPwdCb"
