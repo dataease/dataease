@@ -136,9 +136,7 @@ public class DataSetTableController {
 
     @ApiOperation("查询原始字段")
     @PostMapping("getFields")
-    @DePermissions(value = {
-            @DePermission(type = DePermissionType.DATASOURCE, value = "dataSourceId", level = ResourceAuthLevel.DATASOURCE_LEVEL_USE)
-    }, logical = Logical.AND)
+    @DePermission(type = DePermissionType.DATASOURCE, value = "dataSourceId", level = ResourceAuthLevel.DATASOURCE_LEVEL_USE)
     public List<TableField> getFields(@RequestBody DatasetTable datasetTable) throws Exception {
         return dataSetTableService.getFields(datasetTable);
     }
