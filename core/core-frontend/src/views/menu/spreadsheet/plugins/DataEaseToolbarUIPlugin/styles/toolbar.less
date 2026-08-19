@@ -1,0 +1,210 @@
+.univer-sheet-container {
+  [data-u-comp='ribbon-header-menu'] {
+    display: none !important;
+  }
+
+  div:has(> [data-u-comp='ribbon-toolbar']) {
+    display: none !important;
+  }
+}
+
+.dataease-spreadsheet-ribbon {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  height: 56px;
+  padding: 0 16px;
+  border-bottom: 1px solid rgba(31, 35, 41, 0.15);
+  background: #ffffff;
+  color: #1f2329;
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  font-family: var(--de-custom_font, 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif);
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  &__group {
+    height: 56px;
+    padding: 0 12px;
+    border-right: 1px solid rgba(31, 35, 41, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+
+    &:first-child {
+      padding-left: 0;
+    }
+
+    &:last-child {
+      border-right: 0;
+    }
+  }
+
+  &__group--single {
+    min-width: 40px;
+  }
+
+  &__group--business {
+    background: #ffffff;
+  }
+
+  &__group--query-control {
+    margin-left: 4px;
+    padding-right: 0;
+  }
+
+  &__group--numfmt-tools {
+    .dataease-spreadsheet-ribbon__tool-row {
+      width: 100%;
+    }
+
+    [data-ribbon-item='sheet.operation.open.numfmt.panel'] {
+      width: 100%;
+
+      > span,
+      > span > span,
+      > span > span > .univer-h-full {
+        width: 100% !important;
+        display: block !important;
+      }
+
+      .univer-toolbar-selector-root {
+        width: 100% !important;
+        justify-content: space-between !important;
+      }
+    }
+  }
+
+  &__group--history-tools,
+  &__group--font-tools,
+  &__group--layout-tools,
+  &__group--numfmt-tools,
+  &__group--data-tools,
+  &__group--insert-media-tools,
+  &__group--utility-tools {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  &__group--stacked {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(2, 24px);
+    align-content: center;
+    align-items: center;
+    row-gap: 4px;
+    column-gap: 12px;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__tool-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 24px;
+  }
+
+  &__item--business {
+    [data-u-command] {
+      color: #1f2329 !important;
+    }
+  }
+
+  [data-u-command],
+  button {
+    font-family: inherit !important;
+  }
+
+  [data-u-command] {
+    min-height: 24px !important;
+  }
+
+  [data-ribbon-item='dataease.operation.insert-dropdown'] {
+    min-width: 28px;
+  }
+
+  .univer-toolbar-button-selector-root,
+  .univer-toolbar-selector-root {
+    height: 24px !important;
+    font-size: 12px !important;
+  }
+
+  &__item--insert {
+    width: 28px;
+    height: 38px;
+    margin-top: auto;
+    margin-bottom: auto;
+    overflow: visible;
+
+    > span,
+    .univer-h-full {
+      width: 28px !important;
+      height: 38px !important;
+      overflow: visible !important;
+      display: block !important;
+    }
+
+    .univer-toolbar-selector-root {
+      box-sizing: border-box !important;
+      width: 28px !important;
+      height: 38px !important;
+      min-height: 38px !important;
+      padding: 0 !important;
+      border-radius: 6px !important;
+      color: #1f2329 !important;
+      display: block !important;
+      position: relative !important;
+      overflow: visible !important;
+      background: transparent !important;
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: -4px;
+        top: -4px;
+        width: 36px;
+        height: 44px;
+        border-radius: 6px;
+        background: transparent;
+        pointer-events: none;
+      }
+
+      &:hover::before {
+        background: rgba(31, 35, 41, 0.1) !important;
+      }
+    }
+
+    .univer-toolbar-selector-root > div:first-child {
+      width: 28px !important;
+      height: 38px !important;
+      display: flex !important;
+      align-items: flex-start !important;
+      justify-content: flex-start !important;
+      overflow: visible !important;
+    }
+
+    .univer-toolbar-selector-trigger {
+      display: none !important;
+    }
+  }
+}
+
+// 仅在非外部网页链接（如工作表、单元格区域、命名区域等）时隐藏复制按钮，保留普通链接类型的复制
+.univer-max-w-80:not(:has(.univerjs-icon-link-icon, #link-icon)) .univer-size-6:has(.univerjs-icon-copy-icon, [id*="copy-icon"]) {
+  display: none !important;
+}
