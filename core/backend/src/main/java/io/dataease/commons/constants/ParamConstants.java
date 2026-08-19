@@ -135,7 +135,10 @@ public interface ParamConstants {
 
         MULTI_LOGIN("loginlimit.multiLogin"),
         TEMPLATE_ACCESS_KEY("basic.templateAccessKey"),
-        JWT_SECRET("jwt.secret");
+
+        JWT_SECRET("jwt.secret"),
+        LINK_SECRET("link.secret");
+
 
         private String value;
 

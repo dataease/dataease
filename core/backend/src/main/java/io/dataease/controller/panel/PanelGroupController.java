@@ -8,6 +8,7 @@ import io.dataease.auth.annotation.DePermissionProxy;
 import io.dataease.auth.annotation.DePermissions;
 import io.dataease.auth.filter.F2CLinkFilter;
 import io.dataease.auth.service.impl.ExtAuthServiceImpl;
+import io.dataease.auth.util.PanelLinkAccessChecker;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.PanelConstants;
 import io.dataease.commons.constants.ResourceAuthLevel;
@@ -18,7 +19,9 @@ import io.dataease.dto.PermissionProxy;
 import io.dataease.dto.authModel.VAuthModelDTO;
 import io.dataease.dto.panel.PanelExport2App;
 import io.dataease.dto.panel.PanelGroupDTO;
+import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.PanelGroup;
+import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.service.exportCenter.ExportCenterService;
 import io.dataease.service.panel.PanelGroupService;
 import io.swagger.annotations.Api;
@@ -54,6 +57,8 @@ public class PanelGroupController {
     private ExtAuthServiceImpl authService;
     @Resource
     private ExportCenterService exportCenterService;
+    @Resource
+    private PanelLinkAccessChecker panelLinkAccessChecker;
 
     @ApiOperation("查询树")
     @PostMapping("/tree")
@@ -172,7 +177,12 @@ public class PanelGroupController {
                 .getRequest();
         String linkToken = httpServletRequest.getHeader(F2CLinkFilter.LINK_TOKEN_KEY);
         DecodedJWT jwt = JWT.decode(linkToken);
+        String resourceId = jwt.getClaim("resourceId").asString();
         Long userId = jwt.getClaim("userId").asLong();
+        // 校验所导出视图确属于分享面板，防止越权导出其它面板视图/数据集
+        if (!panelLinkAccessChecker.viewBelongsPanel(resourceId, request.getViewId())) {
+            DataEaseException.throwException(Translator.get("i18n_dataset_no_permission"));
+        }
         request.setUserId(userId);
         if("dataset".equals(request.getDownloadType())){
             panelGroupService.exportDatasetDetails(request, response);

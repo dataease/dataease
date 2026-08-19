@@ -3,6 +3,7 @@ package io.dataease.auth.filter;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import io.dataease.auth.util.JWTUtils;
+import io.dataease.auth.util.LinkSecretProvider;
 import io.dataease.auth.util.LinkUtil;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.plugins.common.base.domain.PanelLink;
@@ -27,13 +28,12 @@ public class F2CLinkFilter extends AnonymousFilter {
             Long userId = jwt.getClaim("userId").asLong();
             PanelLink panelLink = LinkUtil.queryLink(resourceId, userId);
             if (ObjectUtils.isEmpty(panelLink)) return false;
-            String pwd;
-            if (!panelLink.getEnablePwd()) {
-                panelLink.setPwd("dataease");
-                pwd = panelLink.getPwd();
-            } else {
-                pwd = panelLink.getPwd();
-            }
+            // 分享已关闭或已过期则拒绝访问
+            if (!Boolean.TRUE.equals(panelLink.getValid())) return false;
+            Long overTime = panelLink.getOverTime();
+            if (overTime != null && System.currentTimeMillis() > overTime) return false;
+            // 未启用密码的分享使用服务端随机密钥（不可伪造），启用密码的使用面板真实密码
+            String pwd = panelLink.getEnablePwd() ? panelLink.getPwd() : LinkSecretProvider.linkSecret();
             return JWTUtils.verifyLink(linkToken, resourceId, userId, pwd);
         } catch (Exception e) {
             LogUtil.error(e);
