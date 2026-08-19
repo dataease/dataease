@@ -699,7 +699,7 @@ defineExpose({
             <el-icon
               class="custom-icon btn"
               style="margin-right: 20px"
-              @click="addOperation('newFolder', null, 'folder')"
+              @click="addOperation('newFolder', null, 'folder', true)"
             >
               <Icon name="dv-new-folder"><dvNewFolder class="svg-icon" /></Icon>
             </el-icon>

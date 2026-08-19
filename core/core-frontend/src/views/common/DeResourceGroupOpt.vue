@@ -87,7 +87,9 @@ const nameValidator = (_, value, callback) => {
 }
 
 const showPid = computed(() => {
-  return ['newLeaf', 'copy', 'newLeafAfter'].includes(cmd.value) && showParentSelected.value
+  return (
+    ['newLeaf', 'copy', 'newLeafAfter', 'newFolder'].includes(cmd.value) && showParentSelected.value
+  )
 })
 
 const showName = computed(() => {
