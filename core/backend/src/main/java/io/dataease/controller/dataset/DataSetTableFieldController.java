@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import io.dataease.auth.annotation.DePermission;
 import io.dataease.auth.annotation.DePermissions;
 import io.dataease.auth.filter.F2CLinkFilter;
+import io.dataease.auth.util.PanelLinkAccessChecker;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
@@ -58,6 +59,8 @@ public class DataSetTableFieldController {
     private DataSetTableFieldsService dataSetTableFieldsService;
     @Autowired
     private DataSetFieldService dataSetFieldService;
+    @Resource
+    private PanelLinkAccessChecker panelLinkAccessChecker;
     @Resource
     private DataSetTableService dataSetTableService;
     @Resource
@@ -224,7 +227,12 @@ public class DataSetTableFieldController {
                 .getRequest();
         String linkToken = request.getHeader(F2CLinkFilter.LINK_TOKEN_KEY);
         DecodedJWT jwt = JWT.decode(linkToken);
+        String resourceId = jwt.getClaim("resourceId").asString();
         Long userId = jwt.getClaim("userId").asLong();
+        // 校验所取字段确属于分享面板内视图所用数据集，防止越权读取其它数据集字段值
+        if (!panelLinkAccessChecker.fieldsBelongPanel(resourceId, multFieldValuesRequest.getFieldIds())) {
+            DataEaseException.throwException(Translator.get("i18n_dataset_no_permission"));
+        }
         multFieldValuesRequest.setUserId(userId);
         return multFieldValues(multFieldValuesRequest);
     }
@@ -251,7 +259,12 @@ public class DataSetTableFieldController {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         String linkToken = request.getHeader(F2CLinkFilter.LINK_TOKEN_KEY);
         DecodedJWT jwt = JWT.decode(linkToken);
+        String resourceId = jwt.getClaim("resourceId").asString();
         Long userId = jwt.getClaim("userId").asLong();
+        // 校验所取字段确属于分享面板内视图所用数据集，防止越权读取其它数据集字段值
+        if (!panelLinkAccessChecker.fieldsBelongPanel(resourceId, multFieldValuesRequest.getFieldIds())) {
+            DataEaseException.throwException(Translator.get("i18n_dataset_no_permission"));
+        }
         multFieldValuesRequest.setUserId(userId);
         return dataSetFieldService.fieldValues(multFieldValuesRequest.getFieldIds(), multFieldValuesRequest.getSort(), multFieldValuesRequest.getUserId(), true, true, false, multFieldValuesRequest.getKeyword());
     }

@@ -17,6 +17,7 @@ import java.util.List;
 public class XLdapServer {
 
 
+    @RequiresPermissions("sysparam:read")
     @GetMapping("/info")
     public LdapInfo getLdapInfo() {
         LdapXpackService ldapXpackService = SpringContextUtil.getBean(LdapXpackService.class);
@@ -30,6 +31,7 @@ public class XLdapServer {
         ldapXpackService.save(settings);
     }
 
+    @RequiresPermissions("sysparam:read")
     @PostMapping("/testConn")
     public void testConn(@RequestBody List<SysSettingDto> settings) {
         LdapXpackService ldapXpackService = SpringContextUtil.getBean(LdapXpackService.class);
@@ -40,6 +42,7 @@ public class XLdapServer {
         } 
     }
 
+    @RequiresPermissions("sysparam:read")
     @PostMapping("/users")
     public List<XpackLdapUserEntity> users() {
         LdapXpackService ldapXpackService = SpringContextUtil.getBean(LdapXpackService.class);

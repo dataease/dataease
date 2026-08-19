@@ -3,6 +3,8 @@ package io.dataease.controller.panel.server;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import io.dataease.auth.filter.F2CLinkFilter;
+import io.dataease.auth.util.LinkUtil;
+import io.dataease.auth.util.PanelLinkAccessChecker;
 import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.DeLogUtils;
 import io.dataease.controller.panel.api.LinkApi;
@@ -11,10 +13,12 @@ import io.dataease.controller.request.panel.link.*;
 import io.dataease.dto.panel.link.GenerateDto;
 import io.dataease.dto.panel.link.TicketDto;
 import io.dataease.dto.panel.link.ValidateDto;
+import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.PanelGroupWithBLOBs;
 import io.dataease.plugins.common.base.domain.PanelLink;
 import io.dataease.plugins.common.base.domain.PanelLinkMapping;
 import io.dataease.plugins.common.base.domain.PanelLinkTicket;
+import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.service.chart.ChartViewService;
 import io.dataease.service.panel.PanelLinkService;
 import org.apache.commons.lang3.ObjectUtils;
@@ -41,6 +45,9 @@ public class LinkServer implements LinkApi {
 
     @Resource
     private ChartViewService chartViewService;
+
+    @Resource
+    private PanelLinkAccessChecker panelLinkAccessChecker;
 
     @Override
     public void replacePwd(@RequestBody PasswordRequest request) {
@@ -130,7 +137,12 @@ public class LinkServer implements LinkApi {
                 .getRequest();
         String linkToken = request.getHeader(F2CLinkFilter.LINK_TOKEN_KEY);
         DecodedJWT jwt = JWT.decode(linkToken);
+        String resourceId = jwt.getClaim("resourceId").asString();
         Long userId = jwt.getClaim("userId").asLong();
+        // 校验所请求视图确属于分享面板，防止越权读取其它面板视图数据
+        if (!panelLinkAccessChecker.viewBelongsPanel(resourceId, viewId)) {
+            DataEaseException.throwException(Translator.get("i18n_dataset_no_permission"));
+        }
         requestList.setUser(userId);
         return chartViewService.getData(viewId, requestList);
     }

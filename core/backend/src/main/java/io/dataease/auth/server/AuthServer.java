@@ -114,6 +114,11 @@ public class AuthServer implements AuthApi {
         int loginType = loginDto.getLoginType();
         boolean isSupportLdap = authUserService.supportLdap();
         if (loginType == 1 && isSupportLdap) {
+            // 空用户名/密码直接拒绝，防止空密码绕过 LDAP 绑定（纵深防御，插件侧亦有校验）
+            if (StringUtils.isBlank(username) || StringUtils.isBlank(pwd)) {
+                AccountLockStatus lockStatus = authUserService.recordLoginFail(username, 1);
+                DataEaseException.throwException(appendLoginErrorMsg(Translator.get("i18n_id_or_pwd_error"), lockStatus));
+            }
             AccountLockStatus accountLockStatus = authUserService.lockStatus(username, 1);
             if (accountLockStatus.getLocked()) {
                 String msg = Translator.get("I18N_ACCOUNT_LOCKED");
