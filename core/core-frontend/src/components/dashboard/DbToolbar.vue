@@ -55,7 +55,6 @@ import {
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { copyStoreWithOut } from '@/store/modules/data-visualization/copy'
 import TabsGroup from '@/custom-component/component-group/TabsGroup.vue'
-import { XpackComponent } from '@/components/plugin'
 import DbMoreComGroup from '@/custom-component/component-group/DbMoreComGroup.vue'
 import { useCache } from '@/hooks/web/useCache'
 import DeFullscreen from '@/components/visualization/common/DeFullscreen.vue'
@@ -91,6 +90,7 @@ import OuterParamsSet from '@/components/visualization/OuterParamsSet.vue'
 import UserViewGroup from '@/custom-component/component-group/UserViewGroup.vue'
 import DeAppApply from '@/views/common/DeAppApply.vue'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
+import OpenHandler from '@/views/component/embedded-iframe/OpenHandler.vue'
 
 const multiplexingRef = ref(null)
 const fullScreeRef = ref(null)
@@ -865,7 +865,7 @@ const userGroupShow = ref(false)
     <outer-params-set v-if="outerParamsSetShow" ref="outerParamsSetRef"> </outer-params-set>
   </div>
   <de-fullscreen show-position="edit" ref="fullScreeRef"></de-fullscreen>
-  <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
+  <OpenHandler ref="openHandler"></OpenHandler>
   <de-app-apply
     ref="resourceAppOpt"
     :component-data="componentData"

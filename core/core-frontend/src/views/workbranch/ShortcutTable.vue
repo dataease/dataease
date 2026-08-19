@@ -24,7 +24,6 @@ import ShareGrid from '@/views/share/share/ShareGrid.vue'
 import ShareHandler from '@/views/share/share/ShareHandler.vue'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { useEmbedded } from '@/store/modules/embedded'
-import { XpackComponent } from '@/components/plugin'
 const userStore = useUserStoreWithOut()
 const { resolve } = useRouter()
 const { t } = useI18n()
@@ -35,6 +34,8 @@ const embeddedStore = useEmbedded()
 
 import { useShareStoreWithOut } from '@/store/modules/share'
 import { cloneDeep } from 'lodash-es'
+import TabPaneTable from '@/views/menu/data/data-filling/fill/TabPaneTable.vue'
+import TabPane from '@/views/menu/data/data-filling/fill/TabPane.vue'
 const shareStore = useShareStoreWithOut()
 const { push } = useRouter()
 defineProps({
@@ -498,20 +499,14 @@ const getEmptyDesc = (): string => {
         </GridTable>
       </div>
     </template>
-    <XpackComponent
-      jsname="L21lbnUvZGF0YS9kYXRhLWZpbGxpbmcvZmlsbC9UYWJQYW5lVGFibGU="
-      v-if="activeName === 'data-filling'"
-    />
+    <TabPaneTable v-if="activeName === 'data-filling'" />
   </div>
   <el-empty
     class="dashboard-type"
     v-else
     :description="t('work_branch.administrator_for_authorization')"
   />
-  <XpackComponent
-    jsname="L21lbnUvZGF0YS9kYXRhLWZpbGxpbmcvZmlsbC9UYWJQYW5l"
-    @loaded="loadedDataFilling"
-  />
+  <TabPane @loaded="loadedDataFilling" />
 </template>
 
 <style lang="less" scoped>

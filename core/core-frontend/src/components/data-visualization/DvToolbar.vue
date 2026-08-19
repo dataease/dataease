@@ -37,7 +37,6 @@ import {
 } from '@/utils/canvasUtils'
 import { changeSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 import MoreComGroup from '@/custom-component/component-group/MoreComGroup.vue'
-import { XpackComponent } from '@/components/plugin'
 import { useCache } from '@/hooks/web/useCache'
 import QueryGroup from '@/custom-component/component-group/QueryGroup.vue'
 import ComponentButton from '@/components/visualization/ComponentButton.vue'
@@ -53,6 +52,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { updatePublishStatus } from '@/api/visualization/dataVisualization'
 import { tryShowLoading, tryHideLoading } from '@/utils/loading'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
+import OpenHandler from '@/views/component/embedded-iframe/OpenHandler.vue'
 
 const permissionStore = usePermissionStoreWithOut()
 let nameEdit = ref(false)
@@ -576,7 +576,7 @@ const fullScreenPreview = () => {
   <de-fullscreen ref="fullScreeRef" show-position="dvEdit"></de-fullscreen>
   <multiplexing-canvas ref="multiplexingRef"></multiplexing-canvas>
   <outer-params-set ref="outerParamsSetRef"></outer-params-set>
-  <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
+  <OpenHandler ref="openHandler"></OpenHandler>
 </template>
 
 <style lang="less" scoped>

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref, watch, useAttrs, shallowRef } from 'vue'
 import { propTypes } from '@/utils/propTypes'
-import { proxyMapping } from "./mapping"
+import { proxyMapping } from './mapping'
 const props = defineProps({
   jsname: propTypes.string.def('')
 })
@@ -25,9 +25,13 @@ const importPlugin = (path: string) => {
   } else if (pathArray.length === 4) {
     promise = import(`../${pathArray[0]}/${pathArray[1]}/${pathArray[2]}/${pathArray[3]}.vue`)
   } else if (pathArray.length === 5) {
-    promise = import(`../${pathArray[0]}/${pathArray[1]}/${pathArray[2]}/${pathArray[3]}/${pathArray[4]}.vue`)
+    promise = import(
+      `../${pathArray[0]}/${pathArray[1]}/${pathArray[2]}/${pathArray[3]}/${pathArray[4]}.vue`
+    )
   } else if (pathArray.length === 6) {
-    promise = import(`../${pathArray[0]}/${pathArray[1]}/${pathArray[2]}/${pathArray[3]}/${pathArray[4]}/${pathArray[5]}.vue`)
+    promise = import(
+      `../${pathArray[0]}/${pathArray[1]}/${pathArray[2]}/${pathArray[3]}/${pathArray[4]}/${pathArray[5]}.vue`
+    )
   }
   promise
     .then((res: any) => {
@@ -43,7 +47,7 @@ watch(
   () => {
     const path = proxyMapping[props.jsname]
     if (path) {
-        importPlugin(path)
+      importPlugin(path)
     }
   },
   {

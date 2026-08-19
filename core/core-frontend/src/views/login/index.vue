@@ -13,12 +13,13 @@ import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { rsaEncryp } from '@/utils/encryption'
 import router from '@/router'
 import { ElMessage } from 'element-plus-secondary'
-import { XpackComponent } from '@/components/plugin'
 import { logoutHandler } from '@/utils/logout'
 import DeImage from '@/assets/login-desc-de.png'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import { cleanPlatformFlag } from '@/utils/utils'
 import xss from 'xss'
+import Handler from '@/views/component/login/Handler.vue'
+import InvalidPwd from '@/views/component/login/InvalidPwd.vue'
 const { wsCache } = useCache()
 const appStore = useAppStoreWithOut()
 const userStore = useUserStoreWithOut()
@@ -344,16 +345,14 @@ onMounted(async () => {
                 </div>
               </div>
 
-              <XpackComponent
+              <Handler
                 ref="xpackLoginHandler"
-                jsname="L2NvbXBvbmVudC9sb2dpbi9IYW5kbGVy"
                 @switch-tab="switchTab"
                 @auto-callback="autoCallback"
                 @load-fail="handlerFail"
               />
-              <XpackComponent
+              <InvalidPwd
                 ref="xpackInvalidPwd"
-                jsname="L2NvbXBvbmVudC9sb2dpbi9JbnZhbGlkUHdk"
                 @load-fail="() => (xpackLoadFail = true)"
                 @call-back="invalidPwdCb"
               />

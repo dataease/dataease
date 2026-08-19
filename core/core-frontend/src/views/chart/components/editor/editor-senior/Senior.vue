@@ -30,10 +30,10 @@ import { storeToRefs } from 'pinia'
 import { BASE_VIEW_CONFIG } from '../util/chart'
 import { cloneDeep, defaultsDeep } from 'lodash-es'
 import BubbleAnimateCfg from '@/views/chart/components/editor/editor-senior/components/BubbleAnimateCfg.vue'
-import { XpackComponent } from '@/components/plugin'
 import CarouselSetting from '@/custom-component/common/CarouselSetting.vue'
 import { Icon } from 'vant'
 import CommonEvent from '@/custom-component/common/CommonEvent.vue'
+import SeniorHandler from '@/views/component/threshold-warning/SeniorHandler.vue'
 const dvMainStore = dvMainStoreWithOut()
 
 const { nowPanelTrackInfo, nowPanelJumpInfo, dvInfo, componentData, curComponent, batchOptStatus } =
@@ -329,13 +329,12 @@ const removeJumpSenior = () => {
             />
           </collapse-switch-item>
 
-          <xpack-component
+          <SeniorHandler
             v-if="chart.id"
             :chart="chart"
             :themes="themes"
             :is-screen="dvInfo.type === 'dataV'"
             :resource-table="'snapshot'"
-            jsname="L2NvbXBvbmVudC90aHJlc2hvbGQtd2FybmluZy9TZW5pb3JIYW5kbGVy"
           />
 
           <collapse-switch-item

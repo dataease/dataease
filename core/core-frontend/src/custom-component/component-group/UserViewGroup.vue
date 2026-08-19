@@ -6,8 +6,8 @@ import { CHART_TYPE_CONFIGS } from '@/views/chart/components/editor/util/chart'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import { commonHandleDragEnd, commonHandleDragStart } from '@/utils/canvasUtils'
 import { ElScrollbar } from 'element-plus-secondary'
-import { XpackComponent } from '@/components/plugin'
 import { iconChartDarkMap } from '@/components/icon-group/chart-dark-list'
+import ViewCategoryHandler from '@/views/component/plugins-handler/ViewCategoryHandler.vue'
 
 const props = defineProps({
   propValue: {
@@ -194,10 +194,7 @@ const loadPluginCategory = data => {
       </el-row>
     </el-scrollbar>
   </el-row>
-  <XpackComponent
-    jsname="L2NvbXBvbmVudC9wbHVnaW5zLWhhbmRsZXIvVmlld0NhdGVnb3J5SGFuZGxlcg=="
-    @load-plugin-category="loadPluginCategory"
-  />
+  <ViewCategoryHandler @load-plugin-category="loadPluginCategory"> </ViewCategoryHandler>
 </template>
 
 <style lang="less" scoped>

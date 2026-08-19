@@ -13,7 +13,7 @@ import { CustomPassword } from '@/components/custom-password'
 import { Base64 } from 'js-base64'
 import { symmetricDecrypt } from '@/utils/encryption'
 import { Icon } from '@/components/icon-custom'
-import { XpackComponent } from '@/components/plugin'
+import DatasourceEnableDataFilling from '@/views/component/data-filling/DatasourceEnableDataFilling.vue'
 const { t } = useI18n()
 const dialogVisible = ref(false)
 const loadingInstance = ref(null)
@@ -503,10 +503,7 @@ defineExpose({
         </el-row>
       </template>
       <!--    数据填报      -->
-      <XpackComponent
-        :form="nodeInfo"
-        jsname="L2NvbXBvbmVudC9kYXRhLWZpbGxpbmcvRGF0YXNvdXJjZUVuYWJsZURhdGFGaWxsaW5n"
-      />
+      <DatasourceEnableDataFilling :form="nodeInfo" />
     </el-form>
     <template #footer>
       <span class="dialog-footer">

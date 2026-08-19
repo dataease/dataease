@@ -24,10 +24,11 @@ import { CustomPassword } from '@/components/custom-password'
 import { ElForm, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import Cron from '@/components/cron/src/Cron.vue'
 import { ComponentPublicInstance } from 'vue'
-import { PluginComponent, XpackComponent } from '@/components/plugin'
+import { PluginComponent } from '@/components/plugin'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import { boolean } from 'mathjs'
 import dayjs from 'dayjs'
+import DatasourceEnableDataFilling from '@/views/component/data-filling/DatasourceEnableDataFilling.vue'
 const { t } = useI18n()
 const prop = defineProps({
   form: {
@@ -1563,10 +1564,7 @@ defineExpose({
           </template>
 
           <!--    数据填报      -->
-          <XpackComponent
-            :form="form"
-            jsname="L2NvbXBvbmVudC9kYXRhLWZpbGxpbmcvRGF0YXNvdXJjZUVuYWJsZURhdGFGaWxsaW5n"
-          />
+          <DatasourceEnableDataFilling :form="form" />
         </template>
       </el-form>
       <el-form

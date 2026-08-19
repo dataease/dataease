@@ -49,11 +49,11 @@ import _ from 'lodash'
 import DeResourceCreateOptV2 from '@/views/common/DeResourceCreateOptV2.vue'
 import { useCache } from '@/hooks/web/useCache'
 import { findParentIdByChildIdRecursive, onInitReady } from '@/utils/canvasUtils'
-import { XpackComponent } from '@/components/plugin'
 import treeSort, { treeParentWeight } from '@/utils/treeSortUtils'
 import router from '@/router'
 import { cancelRequestBatch } from '@/config/axios/service'
 import { isFreeFolder } from '@/utils/utils'
+import OpenHandler from '@/views/component/embedded-iframe/OpenHandler.vue'
 const { wsCache } = useCache()
 
 const dvMainStore = dvMainStoreWithOut()
@@ -886,7 +886,7 @@ defineExpose({
       ></de-resource-create-opt-v2>
     </el-scrollbar>
   </div>
-  <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
+  <OpenHandler ref="openHandler" />
 </template>
 <style lang="less" scoped>
 .filter-icon-span {

@@ -2,9 +2,9 @@
 import { shallowRef, PropType, computed } from 'vue'
 import { dsTypes, typeList, nameMap } from './option'
 import Icon from '@/components/icon-custom/src/Icon.vue'
-import { XpackComponent } from '@/components/plugin'
 import { iconDatasourceMap } from '@/components/icon-group/datasource-list'
 import { useI18n } from '@/hooks/web/useI18n'
+import DsCategoryHandler from '@/views/component/plugins-handler/DsCategoryHandler.vue'
 
 export type DsType = 'OLTP' | 'OLAP' | 'DL' | 'OTHER' | 'LOCAL' | 'latestUse' | 'all'
 const props = defineProps({
@@ -131,10 +131,7 @@ const selectDs = ({ type }) => {
       </div>
     </template>
 
-    <XpackComponent
-      jsname="L2NvbXBvbmVudC9wbHVnaW5zLWhhbmRsZXIvRHNDYXRlZ29yeUhhbmRsZXI="
-      @load-ds-plugin="loadDsPlugin"
-    />
+    <DsCategoryHandler @load-ds-plugin="loadDsPlugin" />
   </div>
 </template>
 

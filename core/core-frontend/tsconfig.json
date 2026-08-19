@@ -3,6 +3,7 @@
     "jsx": "preserve",
     "module": "esnext",
     "target": "esnext",
+    "skipLibCheck": true,
     "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,

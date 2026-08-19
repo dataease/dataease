@@ -67,9 +67,11 @@ import {
 import type { Table } from '@/api/dataset'
 import DatasetUnion from './DatasetUnion.vue'
 import { cloneDeep, debounce } from 'lodash-es'
-import { XpackComponent } from '@/components/plugin'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import { iconDatasourceMap } from '@/components/icon-group/datasource-list'
+import NewWindowHandler from '@/views/component/embedded-iframe/NewWindowHandler.vue'
+import DsCategoryHandler from '@/views/component/plugins-handler/DsCategoryHandler.vue'
+import Dataset from '@/views/component/dataset/index.vue'
 interface DragEvent extends MouseEvent {
   dataTransfer: DataTransfer
 }
@@ -2883,23 +2885,15 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
       <el-button type="primary" @click="confirmGroupField">{{ t('dataset.confirm') }} </el-button>
     </template>
   </el-dialog>
-  <XpackComponent
-    jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvTmV3V2luZG93SGFuZGxlcg=="
-    @loaded="XpackLoaded"
-    @load-fail="XpackLoaded"
-  />
-  <XpackComponent
-    jsname="L2NvbXBvbmVudC9wbHVnaW5zLWhhbmRsZXIvRHNDYXRlZ29yeUhhbmRsZXI="
-    @load-ds-plugin="loadDsPlugin"
-  />
-  <XpackComponent
+  <NewWindowHandler @loaded="XpackLoaded" @load-fail="XpackLoaded" />
+  <DsCategoryHandler @load-ds-plugin="loadDsPlugin" />
+  <Dataset
     v-if="state.dataSourceList"
     ref="datasetCheckRef"
     :is-edit="isEdit"
     :ds-list="state.dataSourceList"
     :ds-id="dataSource"
     @back="pushDataset"
-    jsname="L2NvbXBvbmVudC9kYXRhc2V0L2luZGV4"
   />
 </template>
 
