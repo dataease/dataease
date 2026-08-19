@@ -406,10 +406,16 @@ const action = param => {
     // 只有一个事件直接调用
     trackClick(trackMenu.value[0])
   } else {
+    let pointX = param.x
+    let pointY = param.y
+    if (!isDashboard() && showPosition.value === 'canvas') {
+      pointX = pointX / dvMainStore.canvasStyleData.tScale
+      pointY = pointY / dvMainStore.canvasStyleData.tScale
+    }
     // 图表关联多个事件
     const barStyleTemp = {
-      left: param.x - 50,
-      top: param.y + 10
+      left: pointX - 50,
+      top: pointY + 10
     }
     trackBarStyleCheck(props.element, barStyleTemp, props.scale, trackMenu.value.length)
     if (dataVMobile) {
