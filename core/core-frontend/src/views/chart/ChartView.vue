@@ -9,10 +9,10 @@ import {
   nextTick
 } from 'vue'
 import { debounce } from 'lodash-es'
-import { XpackComponent } from '@/components/plugin'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { useLoading } from '@/hooks/web/useLoading'
 import ExportCenterWindow from '@/pages/panel/ExportCenterWindow.vue'
+import Entrances from '@/views/component/embedded-iframe/Entrances.vue'
 
 const { close } = useLoading()
 const currentComponent = shallowRef()
@@ -37,8 +37,15 @@ const DashboardPanel = defineAsyncComponent(
   () => import('@/views/dashboard/DashboardPreviewShow.vue')
 )
 const TemplateManage = defineAsyncComponent(() => import('@/views/template/indexInject.vue'))
-
-const AsyncXpackComponent = defineAsyncComponent(() => import('@/components/plugin/src/index.vue'))
+const DataFillingManage = defineAsyncComponent(
+  () => import('@/views/menu/data/data-filling/manage/index.vue')
+)
+const DataFillingForm = defineAsyncComponent(
+  () => import('@/views/menu/data/data-filling/manage/form/index.vue')
+)
+const DataFillingTabPaneTable = defineAsyncComponent(
+  () => import('@/views/menu/data/data-filling/fill/TabPaneTable.vue')
+)
 
 const componentMap = {
   DashboardEditor,
@@ -52,6 +59,11 @@ const componentMap = {
   DashboardPanel,
   TemplateManage,
   ExportExcel
+}
+const dataFillingComponentMap = {
+  DataFilling: DataFillingManage,
+  DataFillingEditor: DataFillingForm,
+  DataFillingHandler: DataFillingTabPaneTable
 }
 const iframeStyle = ref(null)
 const setStyle = debounce(() => {
@@ -72,20 +84,12 @@ onBeforeUnmount(() => {
 })
 
 const showComponent = ref(false)
-const dataFillingPath = ref('')
 
 const initIframe = (name: string) => {
   showComponent.value = false
   if (name && name.includes('DataFilling')) {
-    if (name === 'DataFilling') {
-      dataFillingPath.value = 'L21lbnUvZGF0YS9kYXRhLWZpbGxpbmcvbWFuYWdlL2luZGV4'
-    } else if (name === 'DataFillingEditor') {
-      dataFillingPath.value = 'L21lbnUvZGF0YS9kYXRhLWZpbGxpbmcvbWFuYWdlL2Zvcm0vaW5kZXg='
-    } else if (name === 'DataFillingHandler') {
-      dataFillingPath.value = 'L21lbnUvZGF0YS9kYXRhLWZpbGxpbmcvZmlsbC9UYWJQYW5lVGFibGU='
-    }
     nextTick(() => {
-      currentComponent.value = AsyncXpackComponent
+      currentComponent.value = dataFillingComponentMap[name] || DataFillingManage
       showComponent.value = true
     })
   } else {
@@ -103,12 +107,9 @@ useEmitt({
 </script>
 
 <template>
-  <XpackComponent
-    jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvRW50cmFuY2Vz"
-    @init-iframe="initIframe"
-  />
+  <Entrances @init-iframe="initIframe"></Entrances>
   <div :style="iframeStyle">
-    <component :is="currentComponent" :jsname="dataFillingPath" v-if="showComponent"></component>
+    <component :is="currentComponent" v-if="showComponent"></component>
   </div>
   <ExportCenterWindow></ExportCenterWindow>
 </template>

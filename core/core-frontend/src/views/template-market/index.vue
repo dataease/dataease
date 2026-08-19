@@ -185,7 +185,7 @@
       </el-row>
     </el-row>
   </el-row>
-  <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
+  <OpenHandler ref="openHandler" />
 </template>
 
 <script setup lang="ts">
@@ -203,10 +203,10 @@ import { imgUrlTrans } from '@/utils/imgUtils'
 import CategoryTemplateV2 from '@/views/template-market/component/CategoryTemplateV2.vue'
 import TemplateSkeleton from '@/views/template-market/component/TemplateSkeleton.vue'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
-import { XpackComponent } from '@/components/plugin'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { Base64 } from 'js-base64'
 import { getActiveCategories } from '@/utils/utils'
+import OpenHandler from '@/views/component/embedded-iframe/OpenHandler.vue'
 const { t } = useI18n()
 const { wsCache } = useCache()
 const embeddedStore = useEmbedded()

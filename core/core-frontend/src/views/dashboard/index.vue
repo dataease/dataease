@@ -29,7 +29,6 @@ import { useEmbedded } from '@/store/modules/embedded'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { watermarkFind } from '@/api/watermark'
-import { XpackComponent } from '@/components/plugin'
 import { Base64 } from 'js-base64'
 import { deepCopy } from '@/utils/utils'
 const interactiveStore = interactiveStoreWithOut()
@@ -39,6 +38,8 @@ import eventBus from '@/utils/eventBus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { recoverToPublished } from '@/api/visualization/dataVisualization'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
+import NewWindowHandler from '@/views/component/embedded-iframe/NewWindowHandler.vue'
+import ThresholdDialog from '@/views/component/threshold-warning/ThresholdDialog.vue'
 const contextmenuStore = contextmenuStoreWithOut()
 const embeddedStore = useEmbedded()
 const { wsCache } = useCache()
@@ -451,12 +452,8 @@ onUnmounted(() => {
     @pcMode="mobileConfig = false"
     v-else-if="loadFinish && mobileConfig"
   ></MobileConfigPanel>
-  <XpackComponent
-    jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvTmV3V2luZG93SGFuZGxlcg=="
-    @loaded="XpackLoaded"
-    @load-fail="XpackLoaded"
-  />
-  <xpack-component jsname="L2NvbXBvbmVudC90aHJlc2hvbGQtd2FybmluZy9UaHJlc2hvbGREaWFsb2c=" />
+  <NewWindowHandler @loaded="XpackLoaded" @load-fail="XpackLoaded"></NewWindowHandler>
+  <ThresholdDialog></ThresholdDialog>
   <canvas-cache-dialog
     v-show="canvasCacheOutRefShow"
     ref="canvasCacheOutRef"

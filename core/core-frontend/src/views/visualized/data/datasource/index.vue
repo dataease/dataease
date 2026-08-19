@@ -86,12 +86,13 @@ import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import treeSort from '@/utils/treeSortUtils'
 import { useCache } from '@/hooks/web/useCache'
 import { useEmbedded } from '@/store/modules/embedded'
-import { XpackComponent } from '@/components/plugin'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import { iconDatasourceMap } from '@/components/icon-group/datasource-list'
 import { symmetricDecrypt } from '@/utils/encryption'
 import { isFreeFolder } from '@/utils/utils'
 import { AnyColumns } from 'element-plus-secondary/es/components/table-v2/src/types'
+import DatasourceDataFillingInfo from '@/views/component/data-filling/DatasourceDataFillingInfo.vue'
+import DsCategoryHandler from '@/views/component/plugins-handler/DsCategoryHandler.vue'
 const route = useRoute()
 const interactiveStore = interactiveStoreWithOut()
 interface Field {
@@ -1744,10 +1745,7 @@ const getMenuList = (val: boolean, data?: any) => {
                 </template>
 
                 <!--    数据填报      -->
-                <XpackComponent
-                  :nodeInfo="nodeInfo"
-                  jsname="L2NvbXBvbmVudC9kYXRhLWZpbGxpbmcvRGF0YXNvdXJjZURhdGFGaWxsaW5nSW5mbw=="
-                />
+                <DatasourceDataFillingInfo :nodeInfo="nodeInfo" />
               </template>
               <template v-if="['es'].includes(nodeInfo.type) && nodeInfo.weight >= 7">
                 <el-row :gutter="24">
@@ -2067,10 +2065,7 @@ const getMenuList = (val: boolean, data?: any) => {
     </el-dialog>
     <relationChart ref="relationChartRef"></relationChart>
 
-    <XpackComponent
-      jsname="L2NvbXBvbmVudC9wbHVnaW5zLWhhbmRsZXIvRHNDYXRlZ29yeUhhbmRsZXI="
-      @load-ds-plugin="loadDsPlugin"
-    />
+    <DsCategoryHandler @load-ds-plugin="loadDsPlugin" />
   </div>
 </template>
 

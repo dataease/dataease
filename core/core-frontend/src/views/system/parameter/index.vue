@@ -7,14 +7,11 @@
       <map-setting v-if="activeName === 'map'" />
       <basic-info v-if="activeName === 'basic'" />
       <engine-info v-if="activeName === 'engine'" />
-      <xpack-component
-        jsname="L21lbnUvc2V0dGluZy9lbWFpbC9pbmRleA=="
-        v-if="activeName === 'email'"
-      />
+      <Email v-if="activeName === 'email'" />
       <third-party v-if="activeName === 'third_party'" />
     </div>
   </div>
-  <xpack-component jsname="L2NvbXBvbmVudC9tZW51LWhhbmRsZXIvRW1haWxIYW5kbGVy" @loaded="addTable" />
+  <EmailHandler @loaded="addTable" />
 </template>
 
 <script lang="ts" setup>
@@ -24,7 +21,8 @@ import MapSetting from './map/MapSetting.vue'
 import BasicInfo from './basic/BasicInfo.vue'
 import ThirdParty from './third-party/index.vue'
 import EngineInfo from '@/views/system/parameter/engine/EngineInfo.vue'
-import { XpackComponent } from '@/components/plugin'
+import Email from '@/views/menu/setting/email/index.vue'
+import EmailHandler from '@/views/component/menu-handler/EmailHandler.vue'
 /* import EmailInfo from './email/EmailInfo.vue' */
 const { t } = useI18n()
 

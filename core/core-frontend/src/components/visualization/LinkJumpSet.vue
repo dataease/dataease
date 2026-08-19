@@ -617,10 +617,7 @@
         </el-button>
       </el-row>
     </div>
-    <XpackComponent
-      ref="openHandler"
-      jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI="
-    />
+    <OpenHandler ref="openHandler"></OpenHandler>
   </el-dialog>
 </template>
 
@@ -656,11 +653,11 @@ import EmptyBackground from '@/components/empty-background/src/EmptyBackground.v
 import { filterEmptyFolderTree } from '@/utils/canvasUtils'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { useAppStoreWithOut } from '@/store/modules/app'
-import { XpackComponent } from '@/components/plugin'
 import { useCache } from '@/hooks/web/useCache'
 import { useEmbedded } from '@/store/modules/embedded'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 import treeSort from '@/utils/treeSortUtils'
+import OpenHandler from '@/views/component/embedded-iframe/OpenHandler.vue'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo, canvasViewInfo, componentData } = storeToRefs(dvMainStore)
 const linkJumpInfoTree = ref(null)

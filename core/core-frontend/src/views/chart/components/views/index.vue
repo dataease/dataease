@@ -10,7 +10,6 @@ import DeIndicator from '@/custom-component/indicator/DeIndicator.vue'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { useEmbedded } from '@/store/modules/embedded'
-import { XpackComponent } from '@/components/plugin'
 import { PluginComponent } from '@/components/plugin'
 import {
   computed,
@@ -57,6 +56,8 @@ import { store } from '@/store'
 // import { clearExtremum } from '@/views/chart/components/js/extremumUitl'
 import DePreviewPopDialog from '@/components/visualization/DePreviewPopDialog.vue'
 import { useRoute } from 'vue-router_2'
+import OpenHandler from '@/views/component/embedded-iframe/OpenHandler.vue'
+import ViewCategoryHandler from '@/views/component/plugins-handler/ViewCategoryHandler.vue'
 const route = useRoute()
 const { wsCache } = useCache()
 const chartComponent = ref<any>()
@@ -1349,15 +1350,12 @@ const clearG2Tooltip = () => {
       :drill-filters="state.drillFilters"
       @onDrillJump="drillJump"
     />
-    <XpackComponent
-      ref="openHandler"
-      jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI="
-    />
-    <XpackComponent
+    <OpenHandler ref="openHandler" />
+    <ViewCategoryHandler
       v-if="!pluginLoaded && view.isPlugin"
-      jsname="L2NvbXBvbmVudC9wbHVnaW5zLWhhbmRsZXIvVmlld0NhdGVnb3J5SGFuZGxlcg=="
       @load-plugin-category="loadPluginCategory"
-    />
+    >
+    </ViewCategoryHandler>
     <DePreviewPopDialog ref="dePreviewPopDialogRef"></DePreviewPopDialog>
   </div>
 </template>

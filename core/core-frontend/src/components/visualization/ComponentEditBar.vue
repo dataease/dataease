@@ -165,12 +165,11 @@
             >{{ t('visualization.hidden') }}</el-dropdown-item
           >
 
-          <xpack-component
+          <EditBarHandler
             :chart="element"
             resource-table="snapshot"
-            jsname="L2NvbXBvbmVudC90aHJlc2hvbGQtd2FybmluZy9FZGl0QmFySGFuZGxlcg=="
             @close-item="closeItem"
-          />
+          ></EditBarHandler>
           <el-dropdown-item divided @click="deleteComponent" v-if="barShowCheck('delete')">{{
             t('visualization.delete')
           }}</el-dropdown-item>
@@ -251,11 +250,11 @@ import { RefreshLeft } from '@element-plus/icons-vue'
 import { ElMessage, ElTooltip, ElButton } from 'element-plus-secondary'
 import CustomTabsSort from '@/custom-component/de-tabs/CustomTabsSort.vue'
 import { exportPivotExcel } from '@/views/chart/components/js/panel/common/common_table'
-import { XpackComponent } from '@/components/plugin'
 import { exportPermission, isMobile } from '@/utils/utils'
 import { layerStoreWithOut } from '@/store/modules/data-visualization/layer'
 import { isMainCanvas } from '@/utils/canvasUtils'
 import { useAppStoreWithOut } from '@/store/modules/app'
+import EditBarHandler from '@/views/component/threshold-warning/EditBarHandler.vue'
 const appStore = useAppStoreWithOut()
 const layerStore = layerStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()

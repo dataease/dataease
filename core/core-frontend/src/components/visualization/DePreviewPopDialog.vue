@@ -25,15 +25,15 @@
       />
     </div>
   </el-dialog>
-  <XpackComponent ref="xpackIframe" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvSWZyYW1lU2VsZg==" />
+  <IframeSelf ref="xpackIframe" />
 </template>
 
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
 import { useEmbedded } from '@/store/modules/embedded'
-import { XpackComponent } from '@/components/plugin'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
+import IframeSelf from '@/views/component/embedded-iframe/IframeSelf.vue'
 const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData } = storeToRefs(dvMainStore)
 const state = reactive({

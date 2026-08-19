@@ -12,7 +12,6 @@ import { getOuterParamsInfo } from '@/api/visualization/outerParams'
 import { ElMessage } from 'element-plus-secondary'
 import { useEmbedded } from '@/store/modules/embedded'
 import { useI18n } from '@/hooks/web/useI18n'
-import { XpackComponent } from '@/components/plugin'
 import { propTypes } from '@/utils/propTypes'
 import { downloadCanvas2 } from '@/utils/imgUtils'
 import { isLink, setTitle } from '@/utils/utils'
@@ -20,6 +19,8 @@ import EmptyBackground from '../../components/empty-background/src/EmptyBackgrou
 import { useRoute } from 'vue-router_2'
 import { filterEnumMapSync } from '@/utils/componentUtils'
 import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
+import NewWindowHandler from '@/views/component/embedded-iframe/NewWindowHandler.vue'
+import Entrances from '@/views/component/embedded-iframe/Entrances.vue'
 const routeWatch = useRoute()
 
 const dvMainStore = dvMainStoreWithOut()
@@ -285,17 +286,9 @@ defineExpose({
       img-type="noneWhite"
     />
   </div>
-  <XpackComponent
-    jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvTmV3V2luZG93SGFuZGxlcg=="
-    @loaded="XpackLoaded"
-    @load-fail="XpackLoaded"
-  />
+  <NewWindowHandler @loaded="XpackLoaded" @load-fail="XpackLoaded"> </NewWindowHandler>
 
-  <XpackComponent
-    jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvRW50cmFuY2Vz"
-    @init-iframe="initIframe"
-    @load-fail="initIframe"
-  />
+  <Entrances @init-iframe="initIframe" @load-fail="initIframe"></Entrances>
 </template>
 
 <style lang="less" scoped>

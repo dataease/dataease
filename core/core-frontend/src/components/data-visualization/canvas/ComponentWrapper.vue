@@ -26,7 +26,6 @@ import {
   getBlurBgStyle,
   getComponentBackgroundStyle
 } from '@/utils/backgroundStyleUtils'
-import { XpackComponent } from '@/components/plugin'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import DePreviewPopDialog from '@/components/visualization/DePreviewPopDialog.vue'
 import Icon from '../../icon-custom/src/Icon.vue'
@@ -35,6 +34,7 @@ import replaceOutlined from '@/assets/svg/icon_replace_outlined.svg'
 import { CommonBackground } from '@/components/visualization/component-background/Types'
 import { ShorthandMode } from '@/Types'
 import { useI18n } from '@/hooks/web/useI18n'
+import OpenHandler from '@/views/component/embedded-iframe/OpenHandler.vue'
 const { t } = useI18n()
 
 const componentWrapperInnerRef = ref(null)
@@ -624,10 +624,7 @@ onBeforeUnmount(() => {
         :name="commonBackgroundSvgInner"
       ></Board>
     </div>
-    <XpackComponent
-      ref="openHandler"
-      jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI="
-    />
+    <OpenHandler ref="openHandler"></OpenHandler>
     <DePreviewPopDialog ref="dePreviewPopDialogRef"></DePreviewPopDialog>
   </div>
 </template>
