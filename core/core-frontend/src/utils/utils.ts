@@ -327,7 +327,7 @@ export const isFreeFolder = (node, flag) => {
 }
 
 export const filterFreeFolder = (list, flagText) => {
-  const flagArray = ['dashboard', 'dataV', 'dataset', 'datasource']
+  const flagArray = ['dashboard', 'dataV', 'dataset', 'datasource', 'data-filling']
   const index = flagArray.findIndex(item => item === flagText)
   const oid = wsCache.get('user.oid')
   if (!oid || index < 0) {
