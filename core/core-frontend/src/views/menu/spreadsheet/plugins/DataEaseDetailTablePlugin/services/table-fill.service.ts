@@ -923,11 +923,11 @@ export class TableFillService {
 
     let col = 0
     for (let i = 0; i < colStr.length; i++) {
-      col = col * 26 + (colStr.charCodeAt(i) - 65)
+      col = col * 26 + (colStr.charCodeAt(i) - 64)
     }
 
     const row = parseInt(rowStr, 10) - 1
 
-    return { row, col }
+    return { row, col: col - 1 }
   }
 }

@@ -617,12 +617,12 @@ export class DetailTableEditProtectionService {
     const colStr = match[1].toUpperCase()
     let col = 0
     for (let i = 0; i < colStr.length; i++) {
-      col = col * 26 + (colStr.charCodeAt(i) - 65)
+      col = col * 26 + (colStr.charCodeAt(i) - 64)
     }
 
     return {
       row: parseInt(match[2], 10) - 1,
-      col
+      col: col - 1
     }
   }
 }
