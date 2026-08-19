@@ -122,7 +122,6 @@ public class DatasourceController {
     @DePermission(type = DePermissionType.DATASOURCE, value = "id")
     @ApiOperation("查询数据源详情")
     @PostMapping("/get/{id}")
-    @DePermission(type = DePermissionType.DATASOURCE, value = "id", level = ResourceAuthLevel.DATASOURCE_LEVEL_USE)
     public DatasourceDTO getDatasource(@PathVariable String id) throws Exception {
         return datasourceService.getDataSourceDetails(id);
     }
