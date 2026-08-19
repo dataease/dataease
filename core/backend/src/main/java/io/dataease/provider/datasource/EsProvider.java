@@ -58,6 +58,11 @@ public class EsProvider extends Provider {
             }
             Request request = new Request();
             request.setQuery(dsr.getQuery());
+            if (dsr.getTableFieldWithValues() != null && !dsr.getTableFieldWithValues().isEmpty()) {
+                request.setParams(dsr.getTableFieldWithValues().stream()
+                        .map(DatasourceRequest.TableFieldWithValue::getValue)
+                        .collect(Collectors.toList()));
+            }
             request.setFetch_size(dsr.getFetchSize());
             String url = esConfiguration.getUrl().endsWith("/") ? esConfiguration.getUrl() + esConfiguration.getUri() + "?format=json" : esConfiguration.getUrl() + "/" + esConfiguration.getUri() + "?format=json";
             String response = HttpClientUtil.post(url, new Gson().toJson(request), httpClientConfig);
