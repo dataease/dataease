@@ -58,7 +58,7 @@ pnpm-debug.log*
 ### Spring flatten ###
 .flattened-pom.xml
 
-package-lock.json
+#package-lock.json
 /core/core-frontend/
 /core/core-backend/
 /sdk/common/
