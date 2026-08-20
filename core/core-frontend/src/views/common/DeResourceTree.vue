@@ -59,7 +59,7 @@ import _ from 'lodash'
 import DeResourceCreateOptV2 from '@/views/common/DeResourceCreateOptV2.vue'
 import { useCache } from '@/hooks/web/useCache'
 import { findParentIdByChildIdRecursive, onInitReady } from '@/utils/canvasUtils'
-import treeSort, { treeParentWeight } from '@/utils/treeSortUtils'
+import treeSort from '@/utils/treeSortUtils'
 import router from '@/router'
 import { cancelRequestBatch } from '@/config/axios/service'
 import { isFreeFolder } from '@/utils/utils'
@@ -113,7 +113,6 @@ const resourceGroupOpt = ref()
 const resourceCreateOpt = ref()
 const returnMounted = ref(false)
 const state = reactive({
-  pWeightMap: {},
   curSortType: 'time_desc',
   resourceTree: [] as BusiTreeNode[],
   originResourceTree: [] as BusiTreeNode[],
@@ -194,10 +193,6 @@ const allowDrag = (node: any) => {
   return !node.data?.orgRoot
 }
 
-const menuListWeight = id => {
-  const pWeight = state.pWeightMap[id]
-  return pWeight < 7 ? menuList : menuListWithCopy
-}
 const menuListWithCopy = [
   {
     label: t('visualization.cancel_publish'), //取消发布
@@ -214,30 +209,6 @@ const menuListWithCopy = [
     label: t('visualization.move_to'), //'移动到',
     command: 'move',
     svgName: dvMove
-  },
-  {
-    label: t('visualization.rename'), //'重命名',
-    command: 'rename',
-    svgName: dvRename
-  },
-  {
-    label: t('visualization.delete'), //'删除',
-    command: 'delete',
-    svgName: dvDelete,
-    divided: true
-  }
-]
-const menuList = [
-  {
-    label: t('visualization.cancel_publish'), //取消发布
-    command: 'cancelPublish',
-    svgName: dvCancelPublish
-  },
-  {
-    label: t('visualization.move_to'), //'移动到',
-    command: 'move',
-    svgName: dvMove,
-    divided: true
   },
   {
     label: t('visualization.rename'), //'重命名',
@@ -384,7 +355,6 @@ function flatTree(tree: BusiTreeNode[]) {
 }
 
 const afterTreeInit = (notOpen = false) => {
-  state.pWeightMap = treeParentWeight(state.originResourceTree, rootManage.value ? 9 : 0)
   mounted.value = true
   if (selectedNodeKey.value && returnMounted.value) {
     expandedArray.value = getDefaultExpandedKeys()
@@ -877,7 +847,7 @@ defineExpose({
                 :any-manage="anyManage"
                 :disabled-move="disabledMove"
                 :resource-type="curCanvasType"
-                :menu-list="data.leaf ? menuListWeight(data.id) : state.folderMenuList"
+                :menu-list="data.leaf ? menuListWithCopy : state.folderMenuList"
               ></dv-handle-more>
             </div>
           </span>

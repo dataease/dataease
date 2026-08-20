@@ -110,7 +110,7 @@ public interface DataVisualizationApi {
 
     @PostMapping("/copy")
     @JsonSerialize(using = ToStringSerializer.class)
-    @DePermit(value = {"#p0.id+':manage'", "#p0.pid+':manage'"}, busiFlag = "#p0.type")
+    @DePermit(value = {"#p0.id+':manage'"}, busiFlag = "#p0.type")
     @Operation(summary = "复制")
     String copy(@RequestBody DataVisualizationBaseRequest request);
 
