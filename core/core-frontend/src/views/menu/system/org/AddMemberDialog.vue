@@ -339,6 +339,7 @@ defineExpose({ open });
   .role-mark {
     color: var(--ed-color-primary);
     background: var(--ed-color-primary-33);
+    line-height: 20px;
   }
 
   .role-mark-de {
