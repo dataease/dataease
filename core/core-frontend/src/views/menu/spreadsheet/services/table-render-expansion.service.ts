@@ -20,10 +20,12 @@ import { DetailTableRenderStyleService } from '../plugins/DataEaseDetailTablePlu
 import { PivotTableDisplayStateService } from '../plugins/DataEasePivotTablePlugin/services/pivot-table-display-state.service'
 import { PivotTableInstanceService } from '../plugins/DataEasePivotTablePlugin/services/pivot-table-instance.service'
 import { PivotTableRenderStyleService } from '../plugins/DataEasePivotTablePlugin/services/pivot-table-render-style.service'
-import { pluginRenderStatusService } from './plugin-render-status.service'
-import { PluginRenderHoverLayerService } from './plugin-render-hover-layer.service'
-import { PluginRenderHoverService } from './plugin-render-hover.service'
-import { PluginRenderLoadingService } from './plugin-render-loading.service'
+import {
+  PluginRenderHoverLayerService,
+  PluginRenderHoverService,
+  PluginRenderLoadingService,
+  PluginRenderStatusService
+} from '../plugins/DataEaseRuntimePlugin/services/table'
 import { SpreadsheetModeService } from './spreadsheet-mode.service'
 
 const INSERT_ROW_COMMAND_ID = 'sheet.command.insert-row'
@@ -84,7 +86,9 @@ export class TableRenderExpansionService extends Disposable {
     @Inject(PluginRenderHoverService)
     private readonly pluginRenderHoverService: PluginRenderHoverService,
     @Inject(PluginRenderHoverLayerService)
-    private readonly pluginRenderHoverLayerService: PluginRenderHoverLayerService
+    private readonly pluginRenderHoverLayerService: PluginRenderHoverLayerService,
+    @Inject(PluginRenderStatusService)
+    private readonly pluginRenderStatusService: PluginRenderStatusService
   ) {
     super()
     this.disposeWithMe(
@@ -620,7 +624,7 @@ export class TableRenderExpansionService extends Disposable {
     this.detailRenderStyleService.shiftRows(unitId, sheetId, position, count, targetPluginId)
     this.pivotRenderStyleService.shiftRows(unitId, sheetId, position, count, targetPluginId)
     this.pluginRenderLoadingService.shiftRows(unitId, sheetId, position, count, targetPluginId)
-    pluginRenderStatusService.shiftRows(unitId, sheetId, position, count, targetPluginId)
+    this.pluginRenderStatusService.shiftRows(unitId, sheetId, position, count, targetPluginId)
     this.clearTransientHover()
   }
 
@@ -650,7 +654,7 @@ export class TableRenderExpansionService extends Disposable {
     this.detailRenderStyleService.shiftColumns(unitId, sheetId, position, count, targetPluginId)
     this.pivotRenderStyleService.shiftColumns(unitId, sheetId, position, count, targetPluginId)
     this.pluginRenderLoadingService.shiftColumns(unitId, sheetId, position, count, targetPluginId)
-    pluginRenderStatusService.shiftColumns(unitId, sheetId, position, count, targetPluginId)
+    this.pluginRenderStatusService.shiftColumns(unitId, sheetId, position, count, targetPluginId)
     this.clearTransientHover()
   }
 

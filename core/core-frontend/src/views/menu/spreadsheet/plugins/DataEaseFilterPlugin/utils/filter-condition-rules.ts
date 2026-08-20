@@ -59,8 +59,14 @@ export const normalizeSpreadsheetFilterTextSearchClauses = (
   const count = conditionType === 'single' ? 1 : 2
   return defaults.slice(0, count).map((fallback, index) => {
     const clause = clauses?.[index]
+    const operator = clause?.operator
+    // 两种合法匹配方式都需要保留，避免第二个条件被默认的模糊匹配覆盖。
+    let normalizedOperator = fallback.operator
+    if (operator === 'eq' || operator === 'like') {
+      normalizedOperator = operator
+    }
     return {
-      operator: clause?.operator === 'like' ? 'like' : fallback.operator,
+      operator: normalizedOperator,
       value: String(clause?.value ?? '')
     }
   })

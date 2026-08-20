@@ -128,6 +128,7 @@ const normalizeCondition = (
   sortFieldId: condition.sortFieldId,
   sortFieldName: condition.sortFieldName,
   sortType: condition.sortType,
+  sortList: Array.isArray(condition.sortList) ? [...condition.sortList] : undefined,
   manualOptions: Array.isArray(condition.manualOptions) ? condition.manualOptions : [],
   displayForm: condition.displayForm || 'dropdown',
   optionCountMode: condition.optionCountMode || 'default',

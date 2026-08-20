@@ -3,7 +3,7 @@ import type { IRangeSelectResult } from '../../RangeSelectPlugin/type'
 import {
   TableRangeConflictService,
   type TableOccupiedRange
-} from '../../../services/table-range-conflict.service'
+} from '../../DataEaseRuntimePlugin/services/table'
 import type { PivotTableConfig } from '../types'
 import { PivotTableDisplayStateService } from './pivot-table-display-state.service'
 

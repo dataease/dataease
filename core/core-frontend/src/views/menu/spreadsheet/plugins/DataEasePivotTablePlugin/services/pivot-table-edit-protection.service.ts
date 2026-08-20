@@ -64,7 +64,7 @@ import {
 import { ElMessage } from 'element-plus-secondary'
 import { PivotTableDisplayStateService } from './pivot-table-display-state.service'
 import type { PivotTableDisplayState } from './pivot-table-display-state.service'
-import { pluginRenderStatusService } from '../../../services/plugin-render-status.service'
+import { PluginRenderStatusService } from '../../DataEaseRuntimePlugin/services/table'
 import { SpreadsheetModeService } from '../../../services/spreadsheet-mode.service'
 import { isPresentationOnlyCellValueMutation } from '../../../services/plugin-render-range-edit-policy'
 import {
@@ -170,7 +170,9 @@ export class PivotTableEditProtectionService {
     @Inject(SheetsFilterService)
     private readonly sheetsFilterService: SheetsFilterService,
     @Inject(SpreadsheetModeService)
-    private readonly spreadsheetModeService: SpreadsheetModeService
+    private readonly spreadsheetModeService: SpreadsheetModeService,
+    @Inject(PluginRenderStatusService)
+    private readonly pluginRenderStatusService: PluginRenderStatusService
   ) {}
 
   runWithoutProtection<T>(handler: () => T): T {
@@ -427,7 +429,7 @@ export class PivotTableEditProtectionService {
       .filter(state => !sheetId || state.sheetId === sheetId)
       .map(state => this.toProtectedRange(state))
 
-    const placeholderRanges = pluginRenderStatusService
+    const placeholderRanges = this.pluginRenderStatusService
       .list()
       .filter(
         status =>

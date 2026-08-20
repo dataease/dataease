@@ -1,3 +1,4 @@
+import { Disposable } from '@univerjs/core'
 import { Subject } from 'rxjs'
 
 export type PluginRenderStatusKind =
@@ -72,7 +73,7 @@ interface CellPosition {
  * 该服务为模块级单例，明细表与汇总表两个插件共享同一份状态，
  * 供占位符 overlay、关闭草稿确认以及点选重开配置面板使用。
  */
-export class PluginRenderStatusService {
+export class PluginRenderStatusService extends Disposable {
   private readonly _states = new Map<string, PluginRenderStatus>()
   private readonly _changed = new Subject<void>()
   readonly changed$ = this._changed.asObservable()
@@ -260,6 +261,11 @@ export class PluginRenderStatusService {
     } while (current >= 0)
     return `${columnName}${row + 1}`
   }
-}
 
-export const pluginRenderStatusService = new PluginRenderStatusService()
+  override dispose(): void {
+    // 状态只服务于当前 Univer，实例销毁后不得影响后续预览或新建工作簿。
+    this._states.clear()
+    this._changed.complete()
+    super.dispose()
+  }
+}

@@ -240,9 +240,9 @@ export class DataEaseFilterController extends Disposable {
       return
     }
     const affectedPluginIds = this._spreadsheetFilterRuntimeService.getAffectedPluginIds(unitId)
-    const currentValues = this._spreadsheetFilterRuntimeService.getValues(unitId)
     const normalizedConfig = this._filterInstanceService.setConfigForUnit(unitId, payload.config)
-    const values = await resolveSpreadsheetFilterValues(normalizedConfig, currentValues)
+    // 与仪表板一致，保存查询组件后不沿用运行态选择：有默认值恢复默认值，无默认值清空。
+    const values = await resolveSpreadsheetFilterValues(normalizedConfig, {}, false)
     if (this._filterInstanceService.get(unitId) !== normalizedConfig) {
       return
     }

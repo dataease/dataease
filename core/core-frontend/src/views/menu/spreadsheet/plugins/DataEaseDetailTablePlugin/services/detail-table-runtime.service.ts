@@ -9,7 +9,7 @@ import { DetailTableInstanceService } from './detail-table-instance.service'
 import { DetailTableRangeService } from './detail-table-range.service'
 import { DetailTableDisplayStateService } from './detail-table-display-state.service'
 import { DetailTableRenderStyleService } from './detail-table-render-style.service'
-import { pluginRenderStatusService } from '../../../services/plugin-render-status.service'
+import { PluginRenderStatusService } from '../../DataEaseRuntimePlugin/services/table'
 
 import type { FieldItemData } from '../../../types/plugin'
 import { validateDetailZoneUpdate } from '../utils/detail-config-validator'
@@ -25,7 +25,9 @@ export class DetailTableRuntimeService implements SpreadsheetPluginRuntime<Detai
     @Inject(DetailTableDisplayStateService)
     private readonly detailTableDisplayStateService: DetailTableDisplayStateService,
     @Inject(DetailTableRenderStyleService)
-    private readonly detailTableRenderStyleService: DetailTableRenderStyleService
+    private readonly detailTableRenderStyleService: DetailTableRenderStyleService,
+    @Inject(PluginRenderStatusService)
+    private readonly pluginRenderStatusService: PluginRenderStatusService
   ) {}
 
   async refreshData({ univerApi, config }: { univerApi: any; config: DetailTableConfig }): Promise<boolean | void> {
@@ -70,7 +72,7 @@ export class DetailTableRuntimeService implements SpreadsheetPluginRuntime<Detai
     if (unitId) {
       this.detailTableInstanceService.remove(unitId, config.id)
     }
-    pluginRenderStatusService.delete(config.id)
+    this.pluginRenderStatusService.delete(config.id)
   }
 
   private syncInstance(univerApi: any, config: DetailTableConfig): void {

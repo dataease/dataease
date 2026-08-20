@@ -10,7 +10,7 @@ import { Inject } from '@univerjs/core'
 import { PivotTableFillService } from './pivot-table-fill.service'
 import { PivotTableDisplayStateService } from './pivot-table-display-state.service'
 import { PivotTableRenderStyleService } from './pivot-table-render-style.service'
-import { pluginRenderStatusService } from '../../../services/plugin-render-status.service'
+import { PluginRenderStatusService } from '../../DataEaseRuntimePlugin/services/table'
 
 export class PivotTableRuntimeService implements SpreadsheetPluginRuntime<PivotTableConfig> {
   readonly type = 'pivot' as const
@@ -23,7 +23,9 @@ export class PivotTableRuntimeService implements SpreadsheetPluginRuntime<PivotT
     @Inject(PivotTableDisplayStateService)
     private readonly pivotTableDisplayStateService: PivotTableDisplayStateService,
     @Inject(PivotTableRenderStyleService)
-    private readonly pivotTableRenderStyleService: PivotTableRenderStyleService
+    private readonly pivotTableRenderStyleService: PivotTableRenderStyleService,
+    @Inject(PluginRenderStatusService)
+    private readonly pluginRenderStatusService: PluginRenderStatusService
   ) {}
 
   async refreshData({
@@ -106,6 +108,6 @@ export class PivotTableRuntimeService implements SpreadsheetPluginRuntime<PivotT
     if (unitId) {
       this.pivotTableInstanceService.remove(unitId, config.id)
     }
-    pluginRenderStatusService.delete(config.id)
+    this.pluginRenderStatusService.delete(config.id)
   }
 }

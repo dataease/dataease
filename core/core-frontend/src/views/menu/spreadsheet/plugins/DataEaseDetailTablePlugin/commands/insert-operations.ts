@@ -16,7 +16,7 @@ import Adapter from '../adapter'
 import { DetailTableInstanceService } from '../services/detail-table-instance.service'
 import { DetailTableInsertionService } from '../services/detail-table-insertion.service'
 import { DetailTableRangeService } from '../services/detail-table-range.service'
-import { pluginRenderStatusService } from '../../../services/plugin-render-status.service'
+import { PluginRenderStatusService } from '../../DataEaseRuntimePlugin/services/table'
 import type { DetailTableConfig } from '../types'
 
 const { emitter } = useEmitt()
@@ -129,7 +129,7 @@ function registerDetailTable(accessor: IAccessor, config: DetailTableConfig): vo
   }
 
   accessor.get(DetailTableInstanceService).addOrUpdate(unitId, config)
-  pluginRenderStatusService.set({
+  accessor.get(PluginRenderStatusService).set({
     pluginId: config.id,
     type: 'detail',
     status: 'draft',

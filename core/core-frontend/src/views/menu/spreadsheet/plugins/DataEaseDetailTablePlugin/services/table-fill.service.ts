@@ -20,8 +20,10 @@ import {
 } from '../utils/field-format'
 import { validateDetailConfig } from '../utils/detail-config-validator'
 import { ensureSheetSize } from '../utils/sheet-size'
-import { PluginRenderLoadingService } from '../../../services/plugin-render-loading.service'
-import { pluginRenderStatusService } from '../../../services/plugin-render-status.service'
+import {
+  PluginRenderLoadingService,
+  PluginRenderStatusService
+} from '../../DataEaseRuntimePlugin/services/table'
 import {
   addWorksheetMergesSilently,
   removeWorksheetMergesSilently
@@ -57,7 +59,9 @@ export class TableFillService {
     @Inject(PluginRenderLoadingService)
     private readonly pluginRenderLoadingService: PluginRenderLoadingService,
     @Inject(TableRenderExpansionService)
-    private readonly tableRenderExpansionService: TableRenderExpansionService
+    private readonly tableRenderExpansionService: TableRenderExpansionService,
+    @Inject(PluginRenderStatusService)
+    private readonly pluginRenderStatusService: PluginRenderStatusService
   ) {}
 
   async fillTableByConfig(
@@ -154,7 +158,7 @@ export class TableFillService {
       : undefined
 
     if (unitId) {
-      pluginRenderStatusService.set({
+      this.pluginRenderStatusService.set({
         pluginId: config.id,
         type: 'detail',
         status: 'loading',
@@ -174,7 +178,7 @@ export class TableFillService {
         console.warn('[TableFillService] Failed to clear previous data on validation failure:', clearError)
       }
       if (unitId) {
-        pluginRenderStatusService.set({
+        this.pluginRenderStatusService.set({
           pluginId: config.id,
           type: 'detail',
           status: 'error',
@@ -258,7 +262,7 @@ export class TableFillService {
       if (conflictMessage) {
         ElMessage.warning(conflictMessage)
         if (unitId) {
-          pluginRenderStatusService.set({
+          this.pluginRenderStatusService.set({
             pluginId: config.id,
             type: 'detail',
             status: 'error',
@@ -355,7 +359,7 @@ export class TableFillService {
       await this.applyStyleOnly(univerApi, config)
 
       if (unitId) {
-        pluginRenderStatusService.set({
+        this.pluginRenderStatusService.set({
           pluginId: config.id,
           type: 'detail',
           status: rowCount > 0 ? 'rendered' : 'empty',
@@ -376,7 +380,7 @@ export class TableFillService {
         console.warn('[TableFillService] Failed to clear previous data:', clearError)
       }
       if (unitId) {
-        pluginRenderStatusService.set({
+        this.pluginRenderStatusService.set({
           pluginId: config.id,
           type: 'detail',
           status: 'error',
