@@ -1016,6 +1016,7 @@ if (props.initialAction === 'add') {
               class="spreadsheet-filter-config-dialog__plugin-field-select"
               popper-class="spreadsheet-filter-field-select-popper"
               clearable
+              filterable
               :disabled="!row.fields.length"
               @change="fieldId => selectPluginField(row, fieldId)"
               @clear="selectPluginField(row)"
