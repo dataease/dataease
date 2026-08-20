@@ -27,11 +27,20 @@ public class VisualizationExcelUtils {
     private static final String suffix = ".xlsx";
     private static final String BASE_ROOT = getBaseRoot();
     private static final Map<Workbook, CellStyle> NUMERIC_STYLE_CACHE = new HashMap<>();
+    private static final Map<Workbook, CellStyle> INTEGER_STYLE_CACHE = new HashMap<>();
 
     private static CellStyle getNumericCellStyle(Workbook workbook) {
         return NUMERIC_STYLE_CACHE.computeIfAbsent(workbook, wb -> {
             CellStyle style = wb.createCellStyle();
             style.setDataFormat(wb.createDataFormat().getFormat("#.##########"));
+            return style;
+        });
+    }
+
+    private static CellStyle getIntegerCellStyle(Workbook workbook) {
+        return INTEGER_STYLE_CACHE.computeIfAbsent(workbook, wb -> {
+            CellStyle style = wb.createCellStyle();
+            style.setDataFormat(wb.createDataFormat().getFormat("0"));
             return style;
         });
     }
@@ -80,8 +89,13 @@ public class VisualizationExcelUtils {
                             Cell cell = row.createCell(j);
                             // with DataType
                             if (i > 0 && (fieldTypes.get(j).equals(DeTypeConstants.DE_INT) || fieldTypes.get(j).equals(DeTypeConstants.DE_FLOAT)) && StringUtils.isNotEmpty(rowData.get(j))) {
-                                cell.setCellStyle(getNumericCellStyle(wb));
-                                cell.setCellValue(new BigDecimal(rowData.get(j)).stripTrailingZeros().doubleValue());
+                                BigDecimal decimal = new BigDecimal(rowData.get(j)).stripTrailingZeros();
+                                if (decimal.scale() <= 0) {
+                                    cell.setCellStyle(getIntegerCellStyle(wb));
+                                } else {
+                                    cell.setCellStyle(getNumericCellStyle(wb));
+                                }
+                                cell.setCellValue(decimal.doubleValue());
                             } else {
                                 cell.setCellValue(rowData.get(j));
                             }
