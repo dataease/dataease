@@ -12,11 +12,19 @@ import {
 } from '@/utils/changeComponentsSizeWithScale'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { useI18n } from '@/hooks/web/useI18n'
+import { debounce } from 'lodash-es'
+
 const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData, editMode } = storeToRefs(dvMainStore)
 const snapshotStore = snapshotStoreWithOut()
 const scale = ref(60)
 const { t } = useI18n()
+
+// 防抖调用 renderChart-all 事件
+const emitRenderChartAll = debounce(() => {
+  useEmitt().emitter.emit('renderChart-all')
+}, 300)
+
 const handleScaleChange = () => {
   snapshotStore.recordSnapshotCache('handleScaleChange')
   // 画布比例设一个最小值，不能为 0
@@ -24,6 +32,9 @@ const handleScaleChange = () => {
   scale.value = scale.value < 10 ? 10 : scale.value
   scale.value = scale.value > 200 ? 200 : scale.value
   canvasStyleData.value.tScale = scale.value / 100
+
+  // 防抖调用图表重渲染
+  emitRenderChartAll()
 }
 
 const scaleDecrease = (speed = 1) => {
