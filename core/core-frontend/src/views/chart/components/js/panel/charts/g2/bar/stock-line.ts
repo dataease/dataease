@@ -778,8 +778,15 @@ export class StockLine extends G2ChartView {
                 })
               }
             })
+            const stockGroup = stockResult.length
+              ? [{ name: '日K', value: '', color: stockResult[0].color }]
+              : []
             // G2 不会返回未成形的均线项，渲染前按固定顺序补齐
-            const result = [...stockResult, ...maResult]
+            const result = [
+              ...stockGroup,
+              ...stockResult.map(item => ({ ...item, compactMarker: true })),
+              ...maResult
+            ]
             const itemsHtml = result
               .map(item => {
                 if (isEmpty(item)) {
@@ -788,7 +795,22 @@ export class StockLine extends G2ChartView {
                 const marker = item.color
                 const label = item.name
                 const value = item.value
-                return TOOLTIP_ITEM_TPL.replace('{marker}', marker)
+                const markerSize = item.compactMarker ? 5 : 10
+                const markerMarginRight = item.compactMarker ? 9 : 5
+                const markerMarginLeft = item.compactMarker ? 2 : 0
+                // 使用独立 class，避免 AntV 挂载后将所有 marker 重新写成默认 8px
+                return TOOLTIP_ITEM_TPL.replace(
+                  'class="g2-tooltip-list-item-marker"',
+                  'class="de-stock-tooltip-list-item-marker"'
+                )
+                  .replace('width: 8px;', `width: ${markerSize}px;`)
+                  .replace('height: 8px;', `height: ${markerSize}px;`)
+                  .replace('display: inline-block;', 'display: inline-block; flex: 0 0 auto;')
+                  .replace(
+                    'margin-right: 4px;',
+                    `margin-right: ${markerMarginRight}px; margin-left: ${markerMarginLeft}px;`
+                  )
+                  .replace('{marker}', marker)
                   .replace('{label}', label)
                   .replace('{value}', value)
               })
