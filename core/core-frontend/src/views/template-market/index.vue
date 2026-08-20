@@ -541,11 +541,7 @@ const apply = template => {
 const openHandler = ref(null)
 const initOpenHandler = newWindow => {
   if (openHandler?.value) {
-    const pm = {
-      methodName: 'initOpenHandler',
-      args: newWindow
-    }
-    openHandler.value?.invokeMethod(pm)
+    openHandler.value?.initOpenHandler(newWindow)
   }
 }
 

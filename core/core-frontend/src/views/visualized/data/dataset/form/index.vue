@@ -1390,11 +1390,7 @@ const getDatasource = (weight?: number) => {
       state.dataSourceList = dfsChild(_list)
     }
     nextTick(() => {
-      const param = {
-        methodName: 'execute',
-        args: null
-      }
-      datasetCheckRef.value?.invokeMethod(param)
+      datasetCheckRef.value?.execute(null)
     })
   })
 }
