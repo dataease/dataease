@@ -891,13 +891,6 @@ onMounted(() => {
   margin-bottom: 8px !important;
 }
 
-.series-select-option {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 0 11px;
-}
-
 .invalid-field {
   :deep(.ed-input__wrapper) {
     box-shadow: 0 0 0 1px rgb(245, 74, 69) inset !important;

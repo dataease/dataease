@@ -611,13 +611,6 @@ span {
     background: rgba(31, 35, 41, 0.2) !important;
   }
 }
-
-.series-select-option {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 0 11px;
-}
 </style>
 
 <style lang="less">
