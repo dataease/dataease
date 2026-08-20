@@ -4,6 +4,10 @@ import { getCategoryLegendStyle } from '@/views/chart/components/js/panel/types/
 
 type MixLegendRelation = [string, string]
 
+interface MixLegendOptions {
+  supportOrient?: boolean
+}
+
 export const filterValidMixTooltipItems = <T extends { value?: any }>(items: T[] = []): T[] => {
   // 组合图 shared tooltip 会补齐同一维度下的空系列，渲染前只保留真实有值的项
   return items.filter(item => {
@@ -113,7 +117,8 @@ export const configMixCustomLegend = (
   chart: Chart,
   options: G2Spec,
   leftRelations: MixLegendRelation[] = [],
-  rightRelations: MixLegendRelation[] = []
+  rightRelations: MixLegendRelation[] = [],
+  legendOptions: MixLegendOptions = {}
 ): G2Spec => {
   const { legend } = parseJson(chart.customStyle) || {}
   if (!legend?.show || !options.children?.length) {
@@ -141,9 +146,34 @@ export const configMixCustomLegend = (
   const legendIcon = legend.icon || 'circle'
   const legendColor = legend.color || '#333333'
   const legendChartGap = 8
-  const getLegendChartGap = (direction: 'col' | 'row', legendFirst = false) =>
-    direction === 'col' && !legendFirst ? 4 : legendChartGap
-  const getLegendRatio = (direction: 'col' | 'row', legendFirst = false) => {
+  const legendRowPadding = 8
+  const legendNavigatorWidth = 55
+  const legendItemHeight = Math.ceil(Math.max(legendFontSize * 1.3, legendMarkerSize))
+  const legendNavigatorHeight = legendItemHeight + 12
+  const getTextWidth = text => {
+    return Array.from(`${text ?? ''}`).reduce((width, char) => {
+      return width + (char.charCodeAt(0) > 255 ? legendFontSize : legendFontSize * 0.6)
+    }, 0)
+  }
+  const legendItemWidths = unionRelations.map(
+    ([name]) => getTextWidth(name) + legendMarkerSize + 40
+  )
+  const getLegendChartGap = (
+    direction: 'col' | 'row',
+    legendFirst = false,
+    verticalLegend = direction === 'row'
+  ) =>
+    legendOptions.supportOrient && direction === 'col' && !legendFirst && !verticalLegend
+      ? 0
+      : direction === 'col' && !legendFirst
+      ? 4
+      : legendChartGap
+  const getLegendRatio = (
+    direction: 'col' | 'row',
+    legendFirst = false,
+    verticalLegend = direction === 'row',
+    flexGap = 0
+  ) => {
     const chartContainer = chart.container as unknown
     const containerDom =
       typeof document === 'undefined' || !chartContainer
@@ -155,28 +185,35 @@ export const configMixCustomLegend = (
         : undefined
     const containerRect = containerDom?.getBoundingClientRect()
     const mainSize = direction === 'col' ? containerRect?.height : containerRect?.width
-    const getTextWidth = text => {
-      return Array.from(`${text ?? ''}`).reduce((width, char) => {
-        return width + (char.charCodeAt(0) > 255 ? legendFontSize : legendFontSize * 0.6)
-      }, 0)
-    }
-    const crossGap = getLegendChartGap(direction, legendFirst)
+    const crossGap = getLegendChartGap(direction, legendFirst, verticalLegend)
     // spaceFlex 按比例切分子层，这里把图例字号/图标尺寸换算成近似像素层高，避免图例放大后覆盖绘图区
-    const legendLineSize = Math.ceil(Math.max(legendFontSize * 1.3, legendMarkerSize) + crossGap)
+    const legendLineSize = legendItemHeight + (verticalLegend ? legendRowPadding : crossGap)
     const legendMainSize =
       direction === 'col'
-        ? Math.max(24, legendLineSize)
+        ? Math.max(
+            legendOptions.supportOrient && !legendFirst && !verticalLegend ? 16 : 24,
+            verticalLegend
+              ? legendLineSize * unionRelations.length - legendRowPadding + crossGap
+              : legendLineSize
+          )
         : Math.max(
             80,
-            ...unionRelations.map(([name]) => getTextWidth(name) + legendMarkerSize + 40)
+            verticalLegend
+              ? Math.max(...legendItemWidths)
+              : legendItemWidths.reduce((sum, width) => sum + width, 0)
           )
     if (!mainSize || mainSize <= 0) {
       const fallbackLegendRatio = Math.max(2, Math.ceil(legendMainSize / 16))
       return legendFirst ? [fallbackLegendRatio, 20] : [20, fallbackLegendRatio]
     }
+    // 垂直图例优先按内容完整展示；超过图表高度一半后固定占一半并启用分页
+    const maxLegendMainSize =
+      legendOptions.supportOrient && direction === 'col' && verticalLegend
+        ? Math.max(1, mainSize / 2 - flexGap)
+        : mainSize - 1
     // ratio 使用像素等价值，让图例层随内容增长，同时至少给绘图区保留 1px，避免极小容器下异常
-    const safeLegendSize = Math.max(1, Math.min(legendMainSize, mainSize - 1))
-    const chartMainSize = Math.max(mainSize - safeLegendSize, 1)
+    const safeLegendSize = Math.max(1, Math.min(legendMainSize, maxLegendMainSize, mainSize - 1))
+    const chartMainSize = Math.max(mainSize - flexGap - safeLegendSize, 1)
     return legendFirst ? [safeLegendSize, chartMainSize] : [chartMainSize, safeLegendSize]
   }
   // 双轴组合图左右 mark 使用独立 color scale，G2 内置 legend 无法直接合并，因此手工生成 legends 子层
@@ -196,7 +233,7 @@ export const configMixCustomLegend = (
       justifyContent: 'center',
       alignItems: 'center'
     },
-    crossPadding: 0,
+    crossPadding: 10,
     itemMarker: legendIcon,
     ...getCategoryLegendStyle(legendMarkerSize, legendFontSize, legendColor)
   }
@@ -204,6 +241,86 @@ export const configMixCustomLegend = (
     legendMark.scale.color.domain.push(key)
     legendMark.scale.color.range.push(value)
   })
+  if (legendOptions.supportOrient) {
+    // 按 V2 语义分离图例方向与停靠位置，仅由启用该能力的图表进入此分支
+    const verticalLegend = legend.orient === 'vertical'
+    const centerHorizontal = hPosition === 'center'
+    const centerVertical = vPosition === 'center'
+    const position = centerHorizontal
+      ? centerVertical
+        ? 'top'
+        : vPosition
+      : centerVertical || verticalLegend
+      ? hPosition
+      : vPosition
+    const alignPosition = position === hPosition ? vPosition : hPosition
+    const positionVertical = position === 'left' || position === 'right'
+    const direction = positionVertical ? 'row' : 'col'
+    const legendFirst = position === 'top' || position === 'left'
+    // 独立图例子层不叠加 G2 默认外边距，图表间距统一交给 crossPadding 控制
+    legendMark.margin = 0
+    const chartView = options.children.find(child => child.key === 'chart')
+    if (chartView) {
+      // 外层组合布局已负责整体留白，清除内层 view 的默认外边距以扩大绘图区
+      chartView.margin = 0
+    }
+    legendMark.position = position
+    legendMark.dataeaseOrientation = verticalLegend ? 'vertical' : 'horizontal'
+    // 垂直图例的分页器位于图例项下方，分页按钮内部仍按左右方向排列
+    legendMark.navOrientation = 'horizontal'
+    legendMark.layout.justifyContent =
+      alignPosition === 'left' || alignPosition === 'top'
+        ? 'flex-start'
+        : alignPosition === 'right' || alignPosition === 'bottom'
+        ? 'flex-end'
+        : 'center'
+    if (verticalLegend) {
+      legendMark.maxCols = 1
+    } else {
+      legendMark.maxRows = 1
+    }
+    options.direction = direction
+    const legendFlexGap = direction === 'col' && verticalLegend ? 4 : 0
+    options.padding = legendFlexGap
+    // 底部横向图例按单行实际高度占位，避免独立子层留下不可见空白
+    legendMark.crossPadding = getLegendChartGap(direction, legendFirst, verticalLegend)
+    options.ratio = getLegendRatio(direction, legendFirst, verticalLegend, legendFlexGap)
+    if (positionVertical !== verticalLegend) {
+      const legendLayerSize = legendFirst ? options.ratio[0] : options.ratio[1]
+      legendMark.size = Math.max(1, legendLayerSize - legendMark.crossPadding)
+      if (verticalLegend) {
+        // 方向与停靠边交叉时按真实可用高度计算单列行数，仅在确实放不下时启用分页
+        const rowsWithoutNavigator = Math.max(
+          1,
+          Math.floor((legendMark.size + legendRowPadding) / (legendItemHeight + legendRowPadding))
+        )
+        const showNavigator = rowsWithoutNavigator < unionRelations.length
+        const legendItemsSize = Math.max(
+          1,
+          legendMark.size - (showNavigator ? legendNavigatorHeight : 0)
+        )
+        const visibleRows = Math.max(
+          1,
+          Math.min(
+            unionRelations.length,
+            Math.floor((legendItemsSize + legendRowPadding) / (legendItemHeight + legendRowPadding))
+          )
+        )
+        legendMark.cols = 1
+        legendMark.gridRow = visibleRows
+        legendMark.rowPadding = legendRowPadding
+        legendMark.dataeaseNavBelow = showNavigator
+        legendMark.length =
+          Math.max(...legendItemWidths) + (showNavigator ? legendNavigatorWidth : 0)
+      }
+    }
+    if (legendFirst) {
+      options.children.unshift(legendMark)
+    } else {
+      options.children.push(legendMark)
+    }
+    return options
+  }
   if (hPosition === 'center') {
     options.direction = 'col'
     legendMark.maxRows = 1

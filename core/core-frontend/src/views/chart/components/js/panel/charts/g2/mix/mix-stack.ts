@@ -10,7 +10,7 @@ import {
 import { cloneDeep, defaultsDeep, isEmpty, merge, random } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { useI18n } from '@/hooks/web/useI18n'
-import { Chart as G2Chart, G2Spec } from '@antv/g2'
+import { Chart as G2Chart, extend, G2Spec, Runtime, stdlib } from '@antv/g2'
 import {
   DEFAULT_BASIC_STYLE,
   DEFAULT_YAXIS_STYLE
@@ -48,6 +48,78 @@ import {
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 
 const { t } = useI18n()
+
+const stackMixLibrary = stdlib() as Record<string, any>
+const stackMixLegendCategory = stackMixLibrary['component.legendCategory']
+const findLegendNavigator = node => {
+  if (
+    typeof node?.getContainer === 'function' &&
+    typeof node?.goTo === 'function' &&
+    typeof node?.totalPages === 'number'
+  ) {
+    return node
+  }
+  for (const child of node?.children || []) {
+    const navigator = findLegendNavigator(child)
+    if (navigator) {
+      return navigator
+    }
+  }
+}
+
+const placeLegendNavigatorBelow = (layout, controllerSpacing: number) => {
+  const navigator = findLegendNavigator(layout)
+  if (!navigator || navigator.totalPages < 2) {
+    return
+  }
+  const playWindow = navigator.getContainer()
+  const contentGroup = playWindow?.parentNode
+  const controller = navigator.querySelector?.('.navigator-controller')
+  const page = playWindow?.children?.[0]
+  if (!contentGroup || !controller || !page) {
+    return
+  }
+  const pageBBox = page.getBBox()
+  const controllerBBox = controller.getBBox()
+  const contentOffset = 55 / 2
+  // G2 默认把分页器放在右侧，这里将图例项和分页器作为一个整体居中并上下排列
+  contentGroup.setLocalPosition(contentOffset, 0)
+  controller.setLocalPosition(
+    contentOffset + Math.max(0, (pageBBox.width - controllerBBox.width) / 2),
+    pageBBox.height + controllerSpacing + controllerBBox.height / 2
+  )
+}
+
+const fixedOrientLegendCategory = options => {
+  const { dataeaseOrientation, dataeaseNavBelow, ...rest } = options
+  if (!['horizontal', 'vertical'].includes(dataeaseOrientation)) {
+    return stackMixLegendCategory(rest)
+  }
+  const positionVertical = rest.position === 'left' || rest.position === 'right'
+  const directionMismatch = positionVertical !== (dataeaseOrientation === 'vertical')
+  const legendOptions = directionMismatch
+    ? { ...rest, length: rest.length ?? stackMixLegendCategory.props.defaultSize }
+    : rest
+  const renderLegend = stackMixLegendCategory({
+    ...legendOptions,
+    style: {
+      ...rest.style,
+      orientation: dataeaseOrientation
+    }
+  })
+  if (!dataeaseNavBelow) {
+    return renderLegend
+  }
+  return context => {
+    const layout = renderLegend(context)
+    placeLegendNavigatorBelow(layout, Number(rest.navControllerSpacing) || 12)
+    return layout
+  }
+}
+fixedOrientLegendCategory.props = stackMixLegendCategory.props
+stackMixLibrary['component.legendCategory'] = fixedOrientLegendCategory
+const StackMixG2Chart = extend(Runtime, stackMixLibrary) as typeof G2Chart
+
 /**
  * 柱线混合图
  */
@@ -55,7 +127,7 @@ export class StackLineMix extends G2ChartView {
   properties: EditorProperty[] = CHART_MIX_EDITOR_PROPERTY
   propertyInner: EditorPropertyInner = {
     ...CHART_MIX_EDITOR_PROPERTY_INNER,
-    'legend-selector': ['icon', 'fontSize', 'color', 'hPosition', 'vPosition'],
+    'legend-selector': ['icon', 'orient', 'fontSize', 'color', 'hPosition', 'vPosition'],
     'label-selector': ['vPosition', 'seriesLabelFormatter'],
     'tooltip-selector': [
       'fontSize',
@@ -239,7 +311,7 @@ export class StackLineMix extends G2ChartView {
       }
     }
     // 注入公共渲染器配置以响应 SVG 渲染开关
-    const newChart = new G2Chart({ container, ...getG2Renderer() })
+    const newChart = new StackMixG2Chart({ container, ...getG2Renderer() })
     const options = this.setupOptions(chart, initOptions, {
       chartObj: newChart,
       leftData,
@@ -416,7 +488,9 @@ export class StackLineMix extends G2ChartView {
     const [intervalMark, lineMark] = options.children[0].children
     const leftRelations = intervalMark.scale.color.relations
     const rightRelations = lineMark.scale.color.relations
-    return configMixCustomLegend(chart, options, leftRelations, rightRelations)
+    return configMixCustomLegend(chart, options, leftRelations, rightRelations, {
+      supportOrient: true
+    })
   }
 
   protected configLabel(chart: Chart, options: G2Spec): G2Spec {
@@ -673,8 +747,17 @@ export class StackLineMix extends G2ChartView {
       return options
     }
     const overlapGridFilter = this.getOverlapGridFilter(xAxis)
-    const yAxisOption = { ...this.getAxis(yAxis), ...overlapGridFilter }
-    const yAxisExtOption = { ...this.getAxis(yAxisExt), ...overlapGridFilter }
+    // 左右纵轴刻度线统一跟随各自轴线显示，避免右轴隐藏后仍残留刻度线
+    const yAxisOption = {
+      ...this.getAxis(yAxis),
+      ...overlapGridFilter,
+      tick: yAxis.axisLine.show
+    }
+    const yAxisExtOption = {
+      ...this.getAxis(yAxisExt),
+      ...overlapGridFilter,
+      tick: yAxisExt.axisLine.show
+    }
     merge(intervalMark, {
       axis: {
         y: {
