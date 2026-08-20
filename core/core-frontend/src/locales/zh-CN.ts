@@ -3208,8 +3208,9 @@ export default {
     display_auxiliary_grid: '显示辅助网格',
     show_pop_button: '显示弹窗区查询按钮',
     show_zoom_button: '显示放大、导出等悬浮按钮',
-    enable_svg_renderer: '启用 SVG 渲染器',
-    svg_renderer_tips: '启用后图表将使用 SVG 渲染方式，适用于需要高质量矢量图形的场景',
+    enable_svg_renderer: '启用矢量渲染器',
+    svg_renderer_tips:
+      '启用后图表将使用 SVG 渲染方式，适用于需要高质量矢量图形的场景，但会增加资源消耗',
     keep_ratio: '保持宽高比',
     rotation_3d: '3D旋转',
     keep_size: '调整大小保持内部组件尺寸',

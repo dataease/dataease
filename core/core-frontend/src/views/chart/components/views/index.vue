@@ -867,25 +867,30 @@ onMounted(() => {
       })
     }
   })
-  useEmitt({
-    name: 'renderChart-' + view.value.id,
-    callback: function (val) {
-      if (!state.initReady) {
+  const handleRenderChart = function (val) {
+    if (!state.initReady) {
+      return
+    }
+    initTitle()
+    const viewInfo = val ? val : view.value
+    nextTick(() => {
+      if (view.value?.plugin?.isPlugin) {
+        chartComponent?.value?.invokeMethod({
+          methodName: 'renderChart',
+          args: [viewInfo]
+        })
         return
       }
-      initTitle()
-      const viewInfo = val ? val : view.value
-      nextTick(() => {
-        if (view.value?.plugin?.isPlugin) {
-          chartComponent?.value?.invokeMethod({
-            methodName: 'renderChart',
-            args: [viewInfo]
-          })
-          return
-        }
-        chartComponent?.value?.renderChart?.(viewInfo)
-      })
-    }
+      chartComponent?.value?.renderChart?.(viewInfo)
+    })
+  }
+  useEmitt({
+    name: 'renderChart-' + view.value.id,
+    callback: handleRenderChart
+  })
+  useEmitt({
+    name: 'renderChart-all',
+    callback: handleRenderChart
   })
   useEmitt({
     name: 'resetDrill-' + view.value.id,

@@ -142,6 +142,7 @@ const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData } = storeToRefs(dvMainStore)
 const appearanceStore = useAppearanceStoreWithOut()
+import { useEmitt } from '@/hooks/web/useEmitt'
 
 const isDesktopFlag = isDesktop()
 
@@ -165,6 +166,7 @@ const onThemeChange = () => {
 }
 const onRendererChange = () => {
   snapshotStore.recordSnapshotCache('renderChart')
+  useEmitt().emitter.emit('renderChart-all')
 }
 
 withDefaults(

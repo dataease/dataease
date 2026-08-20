@@ -285,7 +285,7 @@
       v-show="dvInfo.type === 'dashboard'"
       class="form-item"
       :class="'form-item-' + themes"
-      style="margin-bottom: 0"
+      style="margin-bottom: 8px"
     >
       <el-checkbox
         :effect="themes"
@@ -294,6 +294,26 @@
         @change="themeChange"
         >{{ t('visualization.display_auxiliary_grid') }}</el-checkbox
       >
+    </el-form-item>
+    <el-form-item class="form-item" :class="'form-item-' + themes" style="margin-bottom: 0">
+      <el-checkbox
+        :effect="themes"
+        size="small"
+        v-model="canvasStyleData.enableSvgRenderer"
+        @change="onRendererChange"
+      >
+        <div style="display: flex; line-height: 14px">
+          <span style="margin-right: 4px">{{ t('visualization.enable_svg_renderer') }}</span>
+          <el-tooltip class="item" :effect="themes" placement="bottom">
+            <template #content>
+              <div>{{ t('visualization.svg_renderer_tips') }}</div>
+            </template>
+            <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
+              <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
+            </el-icon>
+          </el-tooltip>
+        </div>
+      </el-checkbox>
     </el-form-item>
   </el-form>
 </template>
@@ -339,6 +359,7 @@ import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { isDesktop } from '@/utils/ModelUtil'
 import eventBus from '@/utils/eventBus'
 import { resetValueFormatter } from '@/views/chart/components/editor/drag-item/utils'
+import { useEmitt } from '@/hooks/web/useEmitt'
 const appearanceStore = useAppearanceStoreWithOut()
 const isDesktopFlag = isDesktop()
 const snapshotStore = snapshotStoreWithOut()
@@ -436,6 +457,11 @@ const colorButtonClick = val => {
   } else {
     canvasStyleData.value.dashboard.themeColor = val
   }
+}
+
+const onRendererChange = () => {
+  snapshotStore.recordSnapshotCache('renderChart')
+  useEmitt().emitter.emit('renderChart-all')
 }
 </script>
 
