@@ -50,69 +50,12 @@ export class DetailTableRangeService extends Disposable {
   }
 
   validateConfigUpdate(
-    config: DetailTableConfig,
-    key: string,
-    value: any,
-    univerApi?: any
+    _config: DetailTableConfig,
+    _key: string,
+    _value: any,
+    _univerApi?: any
   ): string | undefined {
-    const isIndexUpdate = key === 'style.header.showIndex'
-    const isTotalUpdate = key === 'style.total.enable'
-    const isHeaderVisibilityUpdate = key === 'style.base.hideHeader'
-    if (!isIndexUpdate && !isTotalUpdate && !isHeaderVisibilityUpdate) {
-      return undefined
-    }
-
-    const currentState = this.displayStateService.get(config.id)
-    if (!currentState || currentState.rowCount <= 0 || currentState.colCount <= 0) {
-      return undefined
-    }
-
-    const colCount = isIndexUpdate
-      ? this.getNextIndexColumnCount(config, currentState.colCount, value)
-      : currentState.colCount
-    if (colCount <= 0) {
-      return undefined
-    }
-
-    let rowCount = currentState.rowCount
-    if (isTotalUpdate) {
-      rowCount += Number(!!value) - Number(!!config.style?.total?.enable)
-    } else if (isHeaderVisibilityUpdate) {
-      rowCount += Number(!value) - Number(!config.style?.base?.hideHeader)
-    }
-    const startCell = currentState.startCell || config.placement.startCell
-    const sheetId = currentState.sheetId || config.placement.sheetId
-    const startPos = this.parseCell(startCell)
-
-    const targetRange: SheetRange = {
-      pluginId: config.id,
-      sheetId,
-      startRow: startPos.row,
-      endRow: startPos.row + rowCount - 1,
-      startColumn: startPos.col,
-      endColumn: startPos.col + colCount - 1
-    }
-    const overlapMessage = this.validateNoOverlap(targetRange)
-    if (overlapMessage) {
-      return overlapMessage
-    }
-
-    const worksheet = univerApi
-      ?.getActiveWorkbook?.()
-      ?.getSheets?.()
-      ?.find(sheet => sheet.getSheetId() === sheetId)
-    const expandsRange =
-      (isIndexUpdate && !!value) ||
-      (isTotalUpdate && !!value) ||
-      (isHeaderVisibilityUpdate && !value)
-    if (
-      expandsRange &&
-      worksheet &&
-      this.hasExternalCellValue(worksheet, targetRange, this.getCurrentRenderedRange(config.id))
-    ) {
-      return '渲染区域已有数据，请更换位置或清理后重试'
-    }
-
+    // 扩容冲突需要基于查询后的真实行列数统一规划，这里不再提前阻断配置更新。
     return undefined
   }
 
@@ -188,23 +131,6 @@ export class DetailTableRangeService extends Disposable {
 
   private getCurrentRenderedRange(pluginId: string): SheetRange | undefined {
     return this.getRenderedRanges().find(range => range.pluginId === pluginId)
-  }
-
-  private getNextIndexColumnCount(
-    config: DetailTableConfig,
-    renderedColumnCount: number | undefined,
-    value: any
-  ): number {
-    const currentShowIndex = !!config.style?.header?.showIndex
-    const nextShowIndex = !!value
-    const currentColumnCount = renderedColumnCount ?? this.getConfiguredFieldCount(config)
-    return currentColumnCount + Number(nextShowIndex) - Number(currentShowIndex)
-  }
-
-  private getConfiguredFieldCount(config: DetailTableConfig): number {
-    const fieldCount = Object.values(config.data?.zones || {})
-      .reduce((count, fields) => count + (fields?.length || 0), 0)
-    return fieldCount + (config.style?.header?.showIndex ? 1 : 0)
   }
 
   private getRowCountByResultLimit(resultLimit?: number): number {

@@ -101,6 +101,38 @@ export class PluginRenderLoadingService extends Disposable {
     this._removeVisibleShape(key)
   }
 
+  shiftRows(
+    unitId: string,
+    sheetId: string,
+    position: number,
+    count: number,
+    excludedPluginId?: string
+  ): void {
+    this._shiftPositions(unitId, sheetId, excludedPluginId, state => {
+      if (state.startRow >= position) {
+        state.startRow += count
+        return true
+      }
+      return false
+    })
+  }
+
+  shiftColumns(
+    unitId: string,
+    sheetId: string,
+    position: number,
+    count: number,
+    excludedPluginId?: string
+  ): void {
+    this._shiftPositions(unitId, sheetId, excludedPluginId, state => {
+      if (state.startColumn >= position) {
+        state.startColumn += count
+        return true
+      }
+      return false
+    })
+  }
+
   private _end(key: string): void {
     const current = this._states.get(key)
     if (!current) {
@@ -117,6 +149,30 @@ export class PluginRenderLoadingService extends Disposable {
 
     this._states.delete(key)
     this._removeVisibleShape(key)
+  }
+
+  private _shiftPositions(
+    unitId: string,
+    sheetId: string,
+    excludedPluginId: string | undefined,
+    shift: (state: PluginRenderLoadingState) => boolean
+  ): void {
+    let changed = false
+    this._states.forEach((state, key) => {
+      if (
+        state.pluginId === excludedPluginId ||
+        state.unitId !== unitId ||
+        state.sheetId !== sheetId ||
+        !shift(state)
+      ) {
+        return
+      }
+      this._removeVisibleShape(key)
+      changed = true
+    })
+    if (changed) {
+      this._reconcileVisibleShapes()
+    }
   }
 
   private _reconcileVisibleShapes(): void {

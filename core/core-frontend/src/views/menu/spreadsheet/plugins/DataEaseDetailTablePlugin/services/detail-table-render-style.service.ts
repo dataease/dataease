@@ -46,6 +46,44 @@ export class DetailTableRenderStyleService {
     this._ranges.clear()
   }
 
+  shiftRows(
+    unitId: string,
+    sheetId: string,
+    position: number,
+    count: number,
+    excludedPluginId?: string
+  ): void {
+    this._ranges.forEach(range => {
+      if (range.unitId === unitId && range.sheetId === sheetId && range.startRow >= position) {
+        range.startRow += count
+        if (range.pluginId !== excludedPluginId) {
+          range.config.placement.startCell = this.toCellAddress(range.startRow, range.startColumn)
+        }
+      }
+    })
+  }
+
+  shiftColumns(
+    unitId: string,
+    sheetId: string,
+    position: number,
+    count: number,
+    excludedPluginId?: string
+  ): void {
+    this._ranges.forEach(range => {
+      if (
+        range.unitId === unitId &&
+        range.sheetId === sheetId &&
+        range.startColumn >= position
+      ) {
+        range.startColumn += count
+        if (range.pluginId !== excludedPluginId) {
+          range.config.placement.startCell = this.toCellAddress(range.startRow, range.startColumn)
+        }
+      }
+    })
+  }
+
   findRangeAt(
     unitId: string,
     sheetId: string,
@@ -187,6 +225,16 @@ export class DetailTableRenderStyleService {
 
   private getRangeKey(unitId: string, sheetId: string, pluginId: string): string {
     return `${unitId}|${sheetId}|${pluginId}`
+  }
+
+  private toCellAddress(row: number, column: number): string {
+    let columnName = ''
+    let current = column
+    do {
+      columnName = String.fromCharCode(65 + (current % 26)) + columnName
+      current = Math.floor(current / 26) - 1
+    } while (current >= 0)
+    return `${columnName}${row + 1}`
   }
 
 }

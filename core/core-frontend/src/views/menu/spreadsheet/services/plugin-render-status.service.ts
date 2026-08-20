@@ -128,6 +128,34 @@ export class PluginRenderStatusService {
     this._changed.next()
   }
 
+  shiftRows(
+    unitId: string,
+    sheetId: string,
+    position: number,
+    count: number,
+    excludedPluginId?: string
+  ): void {
+    this.shiftPositions(unitId, sheetId, excludedPluginId, start => {
+      return start.row >= position
+        ? { row: start.row + count, col: start.col }
+        : start
+    })
+  }
+
+  shiftColumns(
+    unitId: string,
+    sheetId: string,
+    position: number,
+    count: number,
+    excludedPluginId?: string
+  ): void {
+    this.shiftPositions(unitId, sheetId, excludedPluginId, start => {
+      return start.col >= position
+        ? { row: start.row, col: start.col + count }
+        : start
+    })
+  }
+
   /** 需要展示占位符的状态（渲染失败 / 数据为空）。 */
   isPlaceholder(pluginId: string): boolean {
     const status = this._states.get(pluginId)?.status
@@ -191,6 +219,46 @@ export class PluginRenderStatusService {
       row: parseInt(match[2], 10) - 1,
       col: col - 1
     }
+  }
+
+  private shiftPositions(
+    unitId: string,
+    sheetId: string,
+    excludedPluginId: string | undefined,
+    resolvePosition: (start: CellPosition) => CellPosition
+  ): void {
+    let changed = false
+    this._states.forEach(state => {
+      if (
+        state.pluginId === excludedPluginId ||
+        state.unitId !== unitId ||
+        state.sheetId !== sheetId ||
+        !state.startCell
+      ) {
+        return
+      }
+      const start = this.parseCellAddress(state.startCell)
+      const next = resolvePosition(start)
+      if (next.row === start.row && next.col === start.col) {
+        return
+      }
+      state.startCell = this.toCellAddress(next.row, next.col)
+      state.updatedAt = Date.now()
+      changed = true
+    })
+    if (changed) {
+      this._changed.next()
+    }
+  }
+
+  private toCellAddress(row: number, column: number): string {
+    let columnName = ''
+    let current = column
+    do {
+      columnName = String.fromCharCode(65 + (current % 26)) + columnName
+      current = Math.floor(current / 26) - 1
+    } while (current >= 0)
+    return `${columnName}${row + 1}`
   }
 }
 
