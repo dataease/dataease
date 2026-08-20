@@ -1,4 +1,4 @@
-import { importXpackTool } from '@/components/plugin/src/ImportXpackTool'
+import { securityConfig as se } from '@/views/tools/HmacTool'
 
 const hmac_white_list = ['/xpackModel']
 export const securityConfig = async (config: any, requestPath: string) => {
@@ -6,11 +6,10 @@ export const securityConfig = async (config: any, requestPath: string) => {
     return
   }
   try {
-    const method = await importXpackTool('securityConfig')
-    if (!method) {
+    if (!se) {
       return
     }
-    return method(config, requestPath)
+    return se(config, requestPath)
   } catch (error) {
     console.error('Failed to load securityConfig method:', error)
     return
