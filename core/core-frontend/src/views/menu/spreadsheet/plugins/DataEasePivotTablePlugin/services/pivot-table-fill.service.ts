@@ -9,8 +9,10 @@ import { PivotTableEditProtectionService } from './pivot-table-edit-protection.s
 import { PivotTableLayoutService } from './pivot-table-layout.service'
 import { PivotTableRangeService } from './pivot-table-range.service'
 import { PivotTableRenderStyleService } from './pivot-table-render-style.service'
-import { PluginRenderLoadingService } from '../../../services/plugin-render-loading.service'
-import { pluginRenderStatusService } from '../../../services/plugin-render-status.service'
+import {
+  PluginRenderLoadingService,
+  PluginRenderStatusService
+} from '../../DataEaseRuntimePlugin/services/table'
 import { SpreadsheetFilterRuntimeService } from '../../DataEaseFilterPlugin/services/filter-runtime.service'
 import {
   addWorksheetMergesSilently,
@@ -40,7 +42,9 @@ export class PivotTableFillService {
     @Inject(SpreadsheetFilterRuntimeService)
     private readonly spreadsheetFilterRuntimeService: SpreadsheetFilterRuntimeService,
     @Inject(TableRenderExpansionService)
-    private readonly tableRenderExpansionService: TableRenderExpansionService
+    private readonly tableRenderExpansionService: TableRenderExpansionService,
+    @Inject(PluginRenderStatusService)
+    private readonly pluginRenderStatusService: PluginRenderStatusService
   ) {}
 
   async fillByConfig(
@@ -99,7 +103,7 @@ export class PivotTableFillService {
         console.warn('[PivotTableFillService] Failed to clear previous data on validation failure:', clearError)
       }
       if (unitId) {
-        pluginRenderStatusService.set({
+        this.pluginRenderStatusService.set({
           pluginId: config.id,
           type: 'pivot',
           status: 'error',
@@ -135,7 +139,7 @@ export class PivotTableFillService {
       : undefined
 
     if (unitId) {
-      pluginRenderStatusService.set({
+      this.pluginRenderStatusService.set({
         pluginId: config.id,
         type: 'pivot',
         status: 'loading',
@@ -194,7 +198,7 @@ export class PivotTableFillService {
       if (rangeMessage) {
         ElMessage.warning(rangeMessage)
         if (unitId) {
-          pluginRenderStatusService.set({
+          this.pluginRenderStatusService.set({
             pluginId: config.id,
             type: 'pivot',
             status: 'error',
@@ -239,7 +243,7 @@ export class PivotTableFillService {
       this.updateRenderStyleRange(univerApi, config)
       this.refreshTargetSheet(univerApi, worksheet.getSheetId())
       if (unitId) {
-        pluginRenderStatusService.set({
+        this.pluginRenderStatusService.set({
           pluginId: config.id,
           type: 'pivot',
           status: 'rendered',
@@ -258,7 +262,7 @@ export class PivotTableFillService {
         console.warn('[PivotTableFillService] Failed to clear previous data:', clearError)
       }
       if (unitId) {
-        pluginRenderStatusService.set({
+        this.pluginRenderStatusService.set({
           pluginId: config.id,
           type: 'pivot',
           status: 'error',

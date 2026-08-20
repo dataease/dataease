@@ -17,7 +17,7 @@ import type { PivotTableConfig } from '../types'
 import { PivotTableInstanceService } from '../services/pivot-table-instance.service'
 import { PivotTableInsertionService } from '../services/pivot-table-insertion.service'
 import { PivotTableRangeService } from '../services/pivot-table-range.service'
-import { pluginRenderStatusService } from '../../../services/plugin-render-status.service'
+import { PluginRenderStatusService } from '../../DataEaseRuntimePlugin/services/table'
 
 const { emitter } = useEmitt()
 
@@ -132,7 +132,7 @@ function finishInsertion(accessor: IAccessor, config: PivotTableConfig): void {
   const unitId = univerApi.getActiveWorkbook()?.getId?.()
   if (unitId) {
     accessor.get(PivotTableInstanceService).addOrUpdate(unitId, config)
-    pluginRenderStatusService.set({
+    accessor.get(PluginRenderStatusService).set({
       pluginId: config.id,
       type: 'pivot',
       status: 'draft',

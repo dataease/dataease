@@ -15,6 +15,35 @@ import { resolveDynamicTimeDefault } from './time-filter'
 
 export type SpreadsheetFilterValueMap = Record<string, unknown>
 
+const getCustomSortValueKey = (value: unknown) =>
+  `${typeof value}:${String(value ?? '').toLowerCase()}`
+
+export const sortSpreadsheetFilterDatasetRows = (
+  rows: Record<string, unknown>[],
+  condition: SpreadsheetFilterCondition
+) => {
+  const sortFieldId = condition.sortFieldId
+  if (condition.sortType !== 'customSort' || !sortFieldId || !condition.sortList?.length) {
+    return rows
+  }
+
+  const sortRanks = new Map(
+    condition.sortList.map((value, index) => [getCustomSortValueKey(value), index])
+  )
+  // 未加入自定义列表的值放在已配置值之后，并维持接口返回的相对顺序。
+  return rows
+    .map((row, index) => ({ row, index }))
+    .sort((left, right) => {
+      const leftRank = sortRanks.get(getCustomSortValueKey(left.row[sortFieldId]))
+      const rightRank = sortRanks.get(getCustomSortValueKey(right.row[sortFieldId]))
+      if (leftRank === undefined && rightRank === undefined) return left.index - right.index
+      if (leftRank === undefined) return 1
+      if (rightRank === undefined) return -1
+      return leftRank - rightRank || left.index - right.index
+    })
+    .map(item => item.row)
+}
+
 export interface SpreadsheetFilterValidationIssue {
   condition: SpreadsheetFilterCondition
   type: 'required' | 'incomplete-range' | 'invalid-number-range' | 'incomplete-text'
@@ -123,7 +152,7 @@ const resolveSelectFirstItem = async (
     const queryId = condition.queryFieldId
     const displayId = condition.displayFieldId
     const sortId = condition.sortFieldId
-    if (!queryId || !displayId || !sortId) {
+    if (!queryId || !displayId) {
       return getSpreadsheetFilterEmptyValue(condition)
     }
     const rows = await enumSpreadsheetFilterValueObj({
@@ -134,7 +163,8 @@ const resolveSelectFirstItem = async (
       resultMode,
       searchText: ''
     })
-    const first = rows.find(row => {
+    const sortedRows = sortSpreadsheetFilterDatasetRows(rows, condition)
+    const first = sortedRows.find(row => {
       const value = row[queryId]
       return value !== undefined && value !== null
     })

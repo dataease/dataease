@@ -51,13 +51,13 @@ import { DetailTableInsertionService } from '../services/detail-table-insertion.
 import { DetailTableRenderStyleService } from '../services/detail-table-render-style.service'
 import { DetailTableEditProtectionService } from '../services/detail-table-edit-protection.service'
 import { SpreadsheetFilterRuntimeService } from '../../DataEaseFilterPlugin/services/filter-runtime.service'
-import { PluginRenderHoverService } from '../../../services/plugin-render-hover.service'
-import { PluginRenderHoverLayerService } from '../../../services/plugin-render-hover-layer.service'
 import {
-  pluginRenderStatusService,
+  PluginRenderHoverLayerService,
+  PluginRenderHoverService,
+  PluginRenderStatusService,
   getPlaceholderPresentation,
   type PluginRenderStatus
-} from '../../../services/plugin-render-status.service'
+} from '../../DataEaseRuntimePlugin/services/table'
 import { DATAEASE_TABLE_STYLE_INTERCEPTOR_PRIORITY } from '../../../services/plugin-render-range-edit-policy'
 import {
   offSpreadsheetFilterQuery,
@@ -96,7 +96,9 @@ export class DataEaseDetailTableController extends Disposable {
     @Inject(PluginRenderHoverService)
     private readonly _pluginRenderHoverService: PluginRenderHoverService,
     @Inject(PluginRenderHoverLayerService)
-    private readonly _pluginRenderHoverLayerService: PluginRenderHoverLayerService
+    private readonly _pluginRenderHoverLayerService: PluginRenderHoverLayerService,
+    @Inject(PluginRenderStatusService)
+    private readonly _pluginRenderStatusService: PluginRenderStatusService
   ) {
     super()
     this._tableFillService = this._injector.get(TableFillService)
@@ -190,7 +192,7 @@ export class DataEaseDetailTableController extends Disposable {
         onUnLoad: unitId => {
           this._pendingRestoreUnits.delete(unitId)
           this._detailTableInstanceService.delete(unitId)
-          pluginRenderStatusService.deleteByUnit(unitId)
+          this._pluginRenderStatusService.deleteByUnit(unitId)
           this._clearHoverRange()
           this._detailTableRenderStyleService.deleteUnit(unitId)
         },
@@ -224,7 +226,7 @@ export class DataEaseDetailTableController extends Disposable {
           if (!pluginStyle) {
             // 渲染失败 / 数据为空的占位符：用原生 cell markers 画左上角小三角，
             // 并在单元格内显示状态文字。
-            const placeholder = pluginRenderStatusService.findByCell(
+            const placeholder = this._pluginRenderStatusService.findByCell(
               context.unitId,
               context.subUnitId,
               context.row,
@@ -371,7 +373,13 @@ export class DataEaseDetailTableController extends Disposable {
     const range = this._detailTableRenderStyleService.findRangeAt(unitId, sheetId, row, col)
     if (!range) {
       // 渲染失败 / 数据为空的占位符：hover 时显示灰色遮罩 + 原因 tooltip。
-      const placeholder = pluginRenderStatusService.findByCell(unitId, sheetId, row, col, 'detail')
+      const placeholder = this._pluginRenderStatusService.findByCell(
+        unitId,
+        sheetId,
+        row,
+        col,
+        'detail'
+      )
       if (placeholder) {
         console.log('[DE detail] placeholder hover', { row, col, unitId, sheetId, reason: placeholder.reason })
         this._showPlaceholderHover(worksheet, placeholder, unitId, sheetId, row, col)
@@ -582,7 +590,7 @@ export class DataEaseDetailTableController extends Disposable {
     // 状态变化（draft/loading/rendered/empty/error）后刷新画布，
     // 让 CELL_CONTENT 拦截器重算并绘制占位符角标。
     this.disposeWithMe(
-      pluginRenderStatusService.changed$.subscribe(() => {
+      this._pluginRenderStatusService.changed$.subscribe(() => {
         const workbook = this._univerApi.getActiveWorkbook()
         const sheetId = workbook?.getActiveSheet?.()?.getSheetId?.()
         if (sheetId) {
@@ -593,7 +601,7 @@ export class DataEaseDetailTableController extends Disposable {
   }
 
   private _markRestoreError(unitId: string, plugin: DetailTableConfig, error: unknown): void {
-    pluginRenderStatusService.set({
+    this._pluginRenderStatusService.set({
       pluginId: plugin.id,
       type: 'detail',
       status: 'error',
@@ -627,7 +635,7 @@ export class DataEaseDetailTableController extends Disposable {
       worksheet
     )
     this._detailTableInstanceService.remove(unitId, payload.pluginId)
-    pluginRenderStatusService.delete(payload.pluginId)
+    this._pluginRenderStatusService.delete(payload.pluginId)
     if (this._pluginRenderHoverService.clearHoverRange()) {
       this._refreshSheetCanvas(payload.sheetId)
     }
@@ -727,7 +735,7 @@ export class DataEaseDetailTableController extends Disposable {
     }
 
     // 异常 / 空数据占位符也可点选重开配置面板。
-    const placeholder = pluginRenderStatusService.findByCell(
+    const placeholder = this._pluginRenderStatusService.findByCell(
       unitId,
       activeSheetId,
       startRow,

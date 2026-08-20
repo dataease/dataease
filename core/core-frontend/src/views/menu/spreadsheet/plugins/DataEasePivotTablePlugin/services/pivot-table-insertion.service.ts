@@ -1,5 +1,5 @@
 import { Inject } from '@univerjs/core'
-import { TableInsertionService } from '../../../services/table-insertion.service'
+import { TableInsertionService } from '../../DataEaseRuntimePlugin/services/table'
 
 export class PivotTableInsertionService {
   constructor(

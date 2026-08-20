@@ -64,7 +64,7 @@ import {
 import { ElMessage } from 'element-plus-secondary'
 import { DetailTableDisplayStateService } from './detail-table-display-state.service'
 import type { DetailTableDisplayState } from './detail-table-display-state.service'
-import { pluginRenderStatusService } from '../../../services/plugin-render-status.service'
+import { PluginRenderStatusService } from '../../DataEaseRuntimePlugin/services/table'
 import { SpreadsheetModeService } from '../../../services/spreadsheet-mode.service'
 import { isPresentationOnlyCellValueMutation } from '../../../services/plugin-render-range-edit-policy'
 import {
@@ -172,7 +172,9 @@ export class DetailTableEditProtectionService {
     @Inject(SheetsFilterService)
     private readonly sheetsFilterService: SheetsFilterService,
     @Inject(SpreadsheetModeService)
-    private readonly spreadsheetModeService: SpreadsheetModeService
+    private readonly spreadsheetModeService: SpreadsheetModeService,
+    @Inject(PluginRenderStatusService)
+    private readonly pluginRenderStatusService: PluginRenderStatusService
   ) {}
 
   runWithoutProtection<T>(handler: () => T): T {
@@ -439,7 +441,7 @@ export class DetailTableEditProtectionService {
       .filter(state => !sheetId || state.sheetId === sheetId)
       .map(state => this.toProtectedRange(state))
 
-    const placeholderRanges = pluginRenderStatusService
+    const placeholderRanges = this.pluginRenderStatusService
       .list()
       .filter(
         status =>

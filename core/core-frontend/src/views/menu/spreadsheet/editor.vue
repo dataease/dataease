@@ -32,7 +32,7 @@ import type { DatasetReplacementScope } from './plugins/DataEaseDatasetReplaceme
 import { clearUniverProtectionResources } from './plugins/DataEaseToolbarUIPlugin/config/protection-config'
 import { pluginSnapshotCleaningService } from './services/plugin-snapshot-cleaning.service'
 import { pluginRuntimeRegistry } from './services/plugin-runtime.service'
-import { pluginRenderStatusService } from './services/plugin-render-status.service'
+import { PluginRenderStatusService } from './plugins/DataEaseRuntimePlugin/services/table'
 import { PluginAdapterManager } from './types/adapter'
 
 const { t } = useI18n()
@@ -82,6 +82,11 @@ const closeNativeSidebar = () => {
   if (sidebarService?.visible) {
     sidebarService.close()
   }
+}
+
+const getPluginRenderStatusService = (): PluginRenderStatusService | undefined => {
+  const injector = univerInstanceRef.value?.univer?.__getInjector?.()
+  return injector?.get(PluginRenderStatusService)
 }
 
 useEmitt({
@@ -134,7 +139,7 @@ const handleClosePluginEditor = async (): Promise<void> => {
   }
 
   // 已成功渲染的实例直接关闭；draft / error 实例关闭前二次确认并清除实例。
-  if (!pluginRenderStatusService.needsCloseConfirm(config.id)) {
+  if (!getPluginRenderStatusService()?.needsCloseConfirm(config.id)) {
     currentPluginConfig.value = null
     showEditor.value = false
     return

@@ -1,6 +1,6 @@
 import { Disposable, Inject } from '@univerjs/core'
 import type { IRangeSelectResult } from '../../RangeSelectPlugin/type'
-import { TableRangeConflictService } from '../../../services/table-range-conflict.service'
+import { TableRangeConflictService } from '../../DataEaseRuntimePlugin/services/table'
 import type { DetailTableConfig } from '../types'
 import { DetailTableDisplayStateService } from './detail-table-display-state.service'
 

@@ -47,13 +47,11 @@ const emit = defineEmits<{
 const customSortDialogVisible = ref(false)
 const valueFormatterDialogVisible = ref(false)
 
-const dateStyleOptions: Array<{ label: string; value: FieldDateStyle }> = [
+const dateStyleOptions: Array<{ label: string; value: FieldDateStyle; divided?: boolean }> = [
   { label: '年', value: 'y' },
-  { label: '年-季度', value: 'y_Q' },
   { label: '年-月', value: 'y_M' },
-  { label: '年-周', value: 'y_W' },
   { label: '年-月-日', value: 'y_M_d' },
-  { label: '时:分:秒', value: 'H_m_s' },
+  { label: '时:分:秒', value: 'H_m_s', divided: true },
   { label: '年-月-日 时', value: 'y_M_d_H' },
   { label: '年-月-日 时:分', value: 'y_M_d_H_m' },
   { label: '年-月-日 时:分:秒', value: 'y_M_d_H_m_s' }
@@ -409,6 +407,7 @@ const getFieldColor = (groupType: string) => {
                   v-for="option in dateStyleOptions"
                   :key="option.value"
                   :command="option.value"
+                  :divided="option.divided"
                 >
                   <span
                     class="sub-menu-content date-style-menu-content"

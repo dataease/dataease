@@ -179,6 +179,7 @@ export interface SpreadsheetFilterCondition {
   sortFieldId?: string | number
   sortFieldName?: string
   sortType?: 'asc' | 'desc' | 'customSort'
+  sortList?: Array<string | number>
   manualOptions: Array<string | number>
   displayForm: 'dropdown' | 'tile'
   optionCountMode: 'default' | 'all'

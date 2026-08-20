@@ -12,12 +12,7 @@ import { DetailTableRenderStyleService } from './services/detail-table-render-st
 import { DetailTableEditProtectionService } from './services/detail-table-edit-protection.service'
 import { pluginSnapshotCleaningService } from '../../services/plugin-snapshot-cleaning.service'
 import { pluginRuntimeRegistry } from '../../services/plugin-runtime.service'
-import { PluginRenderHoverService } from '../../services/plugin-render-hover.service'
-import { PluginRenderHoverLayerService } from '../../services/plugin-render-hover-layer.service'
-import { PluginRenderLoadingService } from '../../services/plugin-render-loading.service'
 import { DetailTableDatasetReplacementAdapter } from './services/detail-table-dataset-replacement.adapter'
-import { TableRangeConflictService } from '../../services/table-range-conflict.service'
-import { TableInsertionService } from '../../services/table-insertion.service'
 import { TableRenderExpansionService } from '../../services/table-render-expansion.service'
 
 export const DATAEASE_DETAIL_TABLE_PLUGIN = 'DATAEASE_DETAIL_TABLE_PLUGIN'
@@ -37,16 +32,11 @@ export class DataEaseDetailTablePlugin extends Plugin {
       [DetailTableDisplayStateService],
       [DetailTableSnapshotCleaner],
       [DetailTableRuntimeService],
-      [TableInsertionService],
       [DetailTableInsertionService],
-      [TableRangeConflictService],
       [TableRenderExpansionService],
       [DetailTableRangeService],
       [DetailTableRenderStyleService],
       [DetailTableEditProtectionService],
-      [PluginRenderHoverService],
-      [PluginRenderHoverLayerService],
-      [PluginRenderLoadingService],
       [DetailTableDatasetReplacementAdapter],
       [TableFillService]
     ]
@@ -61,16 +51,11 @@ export class DataEaseDetailTablePlugin extends Plugin {
       [DetailTableDisplayStateService],
       [DetailTableSnapshotCleaner],
       [DetailTableRuntimeService],
-      [TableInsertionService],
       [DetailTableInsertionService],
-      [TableRangeConflictService],
       [TableRenderExpansionService],
       [DetailTableRangeService],
       [DetailTableRenderStyleService],
       [DetailTableEditProtectionService],
-      [PluginRenderHoverService],
-      [PluginRenderHoverLayerService],
-      [PluginRenderLoadingService],
       [DetailTableDatasetReplacementAdapter],
       [TableFillService]
     ])
