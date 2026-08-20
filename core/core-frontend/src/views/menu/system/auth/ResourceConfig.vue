@@ -166,6 +166,7 @@ const activaNameChangeHandler = async (tabName) => {
     state.treeMap[cacheKey] = treeData;
   }
   state.tableData = state.treeMap[cacheKey];
+  filterTarget("");
 };
 
 const activeAuthChange = async (tabName) => {
@@ -1239,7 +1240,7 @@ defineExpose({
             :column-config="{ resizable: true }"
             :row-config="{ keyField: 'id' }"
             :virtual-y-config="{ enabled: true, gt: 0 }"
-            :tree-config="{ children: 'children', indent: 20 }"
+            :tree-config="{ children: 'children', indent: 20, expandAll: true }"
             class="table-container ed-table--border"
             :data="state.tableData"
             style="width: 100%"

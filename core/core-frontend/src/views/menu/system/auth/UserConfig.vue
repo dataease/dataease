@@ -91,6 +91,8 @@ const activeNameChange = (tabName) => {
     state.tableData = state.treeMap[id] || [];
   }
   filterTarget("");
+  resourceKeyword.value = "";
+  resourceFilter("");
 
   loadTree(tabName === "user" ? 0 : 1);
 };
@@ -141,6 +143,7 @@ const authActiveChange = async (tabName) => {
     getColumn(id);
     state.tableData = state.treeMap[id];
   }
+  resourceFilter("");
 };
 
 const resourceTypeList = [
@@ -300,8 +303,7 @@ const loadTree = async (type: number) => {
   const res = await subjectTreeApi({
     system: isSystem,
     type,
-    lazy: true,
-    pid: 0,
+    lazy: false,
   });
   const nodes = (res.data || []).map((n: any) => ({
     ...n,
@@ -311,23 +313,6 @@ const loadTree = async (type: number) => {
   state.treeData = nodes;
   leftLoading.value = false;
   nextTick(() => selectFirstSubject());
-};
-
-const handleNodeExpand = (data: any) => {
-  if (data.children?.length) return;
-
-  subjectTreeApi({
-    system: isSystem,
-    type: activeName.value === "user" ? 0 : 1,
-    lazy: true,
-    pid: data.id,
-  }).then((res) => {
-    data.children = (res.data || []).map((n: any) => ({
-      ...n,
-      disabled: n.type === 2,
-      isLeaf: n.type !== 2,
-    }));
-  });
 };
 const hideSysMenu = () => {
   const hiddenMenuIds = ["7"];
@@ -1132,7 +1117,6 @@ defineExpose({
         ref="subjectTreeRef"
         :data="state.treeData"
         node-key="id"
-        lazy
         :props="{
           children: 'children',
           label: 'name',
@@ -1141,8 +1125,8 @@ defineExpose({
         }"
         :highlight-current="true"
         :expand-on-click-node="false"
+        :default-expand-all="true"
         :filter-node-method="filterSubjectNode"
-        @node-expand="handleNodeExpand"
         @node-click="subjectNodeClick"
       >
         <template #default="{ node, data }">
