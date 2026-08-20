@@ -3,6 +3,10 @@ import {useI18n} from '@/hooks/web/useI18n'
 import {computed} from "vue";
 
 const props = defineProps({
+  id: {
+    type: String,
+    default: '-'
+  },
   creator: {
     type: String,
     default: '-'
@@ -47,6 +51,12 @@ const _updater = computed(() => {
 
 <template>
   <div class="info-card">
+    <div class="info-title">
+      ID
+    </div>
+    <div class="info-content">
+      {{ id }}
+    </div>
     <div class="info-title">
       {{ t('dataset.create_by') }}
     </div>

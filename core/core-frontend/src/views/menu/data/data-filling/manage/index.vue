@@ -1255,6 +1255,7 @@ function getMultipleValueList(data) {
                 </el-icon>
               </template>
               <InfoDetail
+                :id="selectedItem.id"
                 :creator="selectedItem.creator"
                 :updater="selectedItem.updater"
                 :create-time="timestampFormatDate(selectedItem.createTime)"
