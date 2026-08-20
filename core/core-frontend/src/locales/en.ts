@@ -5021,6 +5021,7 @@ export default {
       'After deletion, all resources under this folder will be deleted, please proceed with caution.',
     save_before_leave: 'Do you want to save before leaving?',
     unsaved_changes: 'There are unsaved changes',
+    preview_select_tips: 'Please select a spreadsheet on the left',
     loading: 'Loading...',
     no_data: 'No data',
     save_first: 'Please save the spreadsheet first',

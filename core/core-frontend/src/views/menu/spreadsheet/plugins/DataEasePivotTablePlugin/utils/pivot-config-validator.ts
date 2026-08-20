@@ -66,6 +66,19 @@ function validatePivotZones(
     return '指标字段只能全部位于行或列的一侧'
   }
 
+  if (rows.some(field => isQuota(field) && field.hidden === true)) {
+    return '透视表行区域的指标字段不能隐藏'
+  }
+
+  if (columns.some(field => !isQuota(field) && field.hidden === true)) {
+    return '透视表列区域的维度字段不能隐藏'
+  }
+
+  const allFields = [...rows, ...columns]
+  if (allFields.length > 0 && allFields.every(field => field.hidden === true)) {
+    return '透视表至少需要保留一个可见字段'
+  }
+
   return validateQuotaPositions(rows, '行') || validateQuotaPositions(columns, '列')
 }
 

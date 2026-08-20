@@ -209,7 +209,17 @@ export class TableFillService {
         startPos = this.parseCell(startCell)
       }
 
-      const fieldCount = dataResult.data.fields.length
+      const configuredFields = config.data?.zones?.fields || []
+      // 查询仍保留完整字段，仅在写入工作表时投影出可见字段。
+      const renderFields = dataResult.data.fields
+        .map(field => ({
+          field,
+          configuredField: findConfiguredField(configuredFields, field)
+        }))
+        .filter(item => item.configuredField?.hidden !== true)
+      const resultFields = renderFields.map(item => item.field)
+      const resolvedFields = renderFields.map(item => item.configuredField)
+      const fieldCount = resultFields.length
       const showIndex = !!config.style?.header?.showIndex
       const indexLabel = config.style?.header?.indexLabel?.trim() || '序号'
       const hideHeader = !!config.style?.base?.hideHeader
@@ -264,12 +274,8 @@ export class TableFillService {
 
       await this.clearPreviousData(univerApi, config.id, startCell, fWorksheet)
 
-      const configuredFields = config.data?.zones?.fields || []
-      const resolvedFields = dataResult.data.fields.map(field =>
-        findConfiguredField(configuredFields, field)
-      )
       const dataValues = dataResult.data.rowData.map((row, rowIndex) => {
-        const rowValues = dataResult.data.fields.map((column, index) => {
+        const rowValues = resultFields.map((column, index) => {
           const value = toNativeCellValue(row[column.dataeaseName], resolvedFields[index])
           const numberFormat = getFieldNumberFormat(resolvedFields[index], value)
           if (!numberFormat || value === '') {
@@ -298,11 +304,11 @@ export class TableFillService {
             ]
           : rowValues
       })
-      const headerValues = dataResult.data.fields.map(column => column.chartShowName || column.name)
+      const headerValues = resultFields.map(column => column.chartShowName || column.name)
       const totalValues = totalEnabled
         ? this.buildTotalRow(
             dataValues,
-            dataResult.data.fields,
+            resultFields,
             config,
             showIndex,
             columnCount,
@@ -456,7 +462,7 @@ export class TableFillService {
     this.updateRenderStyleRange(univerApi, config)
 
     if (dataRange && config.style?.base?.mergeCell) {
-      await this.mergeDimensionCells(univerApi, config, state, dataRange, unitId)
+      await this.mergeDimensionCells(univerApi, state, dataRange, unitId)
     }
 
     this.refreshTargetSheet(univerApi, state.sheetId)
@@ -464,12 +470,12 @@ export class TableFillService {
 
   private async mergeDimensionCells(
     univerApi: any,
-    config: DetailTableConfig,
     state: DetailTableDisplayState,
     dataRange: { startRow: number; endRow: number; startColumn: number; endColumn: number },
     unitId: string
   ): Promise<void> {
-    const fields = config.data?.zones?.fields || []
+    // 合并层级以实际渲染字段为准，隐藏字段不占列也不形成合并边界。
+    const fields = state.fields || []
     const indexColumnOffset = state.showIndex ? 1 : 0
     const mergeColumnCount = this.getMergeColumnCount(fields, state.colCount - indexColumnOffset)
     if (mergeColumnCount <= 0) {
@@ -505,7 +511,10 @@ export class TableFillService {
     await this.applyMergeAlignment(univerApi, unitId, state.sheetId, mergeRanges)
   }
 
-  private getMergeColumnCount(fields: Array<{ groupType?: string }>, colCount: number): number {
+  private getMergeColumnCount(
+    fields: Array<{ groupType?: string } | undefined>,
+    colCount: number
+  ): number {
     if (!fields.length || fields[0]?.groupType === 'q') {
       return 0
     }
@@ -737,11 +746,12 @@ export class TableFillService {
   ): Promise<void> {
     await this.detailTableEditProtectionService.runWithoutProtection(async () => {
       for (const range of ranges) {
+        // 未启用单元格样式时，合并后的维度字段仍与普通维度字段保持左对齐。
         await univerApi.executeCommand?.(SetStyleCommand.id, {
           unitId,
           subUnitId: sheetId,
           range,
-          style: { type: 'ht', value: HorizontalAlign.CENTER }
+          style: { type: 'ht', value: HorizontalAlign.LEFT }
         })
         await univerApi.executeCommand?.(SetStyleCommand.id, {
           unitId,

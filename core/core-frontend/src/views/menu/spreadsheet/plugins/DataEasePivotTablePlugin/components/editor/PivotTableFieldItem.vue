@@ -18,6 +18,7 @@ import type {
   FieldDateStyle,
   FieldFormatterConfig,
   FieldItemData,
+  FieldZoneSchema,
   PluginDataConfig,
   FieldSortType
 } from '../../../../types/plugin'
@@ -34,6 +35,7 @@ const props = defineProps<{
   index: number
   pluginType?: string
   dataConfig?: PluginDataConfig
+  zoneSchema?: FieldZoneSchema
 }>()
 
 const emit = defineEmits<{
@@ -105,6 +107,26 @@ const currentSortLabel = computed(() => {
 const showSortIcon = computed(() => currentSort.value !== 'none')
 const isDateField = computed(() => props.field.deType === 1)
 const isQuotaField = computed(() => props.field.groupType === 'q')
+const visibleFieldCount = computed(() => {
+  if (!props.dataConfig) {
+    return Number.POSITIVE_INFINITY
+  }
+  const zones = props.dataConfig?.zones || {}
+  return Object.values(zones)
+    .flat()
+    .filter(field => field.hidden !== true).length
+})
+const allowHideField = computed(() => {
+  const zoneId = props.zoneSchema?.id
+  if (zoneId === 'rows') {
+    return !isQuotaField.value
+  }
+  if (zoneId === 'columns') {
+    return isQuotaField.value
+  }
+  return false
+})
+const disableHideField = computed(() => !props.field.hidden && visibleFieldCount.value <= 1)
 const currentDateStyle = computed(() => props.field.dateStyle ?? DEFAULT_DATE_STYLE)
 const currentDatePattern = computed(() => props.field.datePattern ?? DEFAULT_DATE_PATTERN)
 const currentDateStyleLabel = computed(
@@ -442,7 +464,11 @@ const getFieldColor = (groupType: string) => {
           <el-icon><Edit /></el-icon>
           <span>编辑显示名称</span>
         </el-dropdown-item>
-        <el-dropdown-item command="toggleHidden">
+        <el-dropdown-item
+          v-if="field.hidden || allowHideField"
+          command="toggleHidden"
+          :disabled="disableHideField"
+        >
           <el-icon>
             <View v-if="field.hidden" />
             <Hide v-else />
