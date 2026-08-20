@@ -4,6 +4,7 @@ import { ElMessage, ElLoading } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import type { FormInstance, FormRules, ElMessageBox, ElForm, ElFormItem, ElInput } from 'element-plus-secondary'
 import { groupBy } from './options'
+import { EMAIL_REGEX } from '@/utils/validate'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { propTypes } from '@/utils/propTypes'
 import request from "@/config/axios";
@@ -200,7 +201,7 @@ const rule = reactive<FormRules>({
     },
     {
       required: true,
-      pattern: /^[a-zA-Z0-9_._-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
+      pattern: EMAIL_REGEX,
       message: t('user.email_format_is_incorrect'),
       trigger: 'blur'
     }

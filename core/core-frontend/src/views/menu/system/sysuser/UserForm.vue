@@ -7,6 +7,7 @@ import useClipboard from "vue-clipboard3";
 import { ElMessage, ElLoading } from "element-plus-secondary";
 import { Icon } from "@/components/icon-custom";
 import { useI18n } from "@/hooks/web/useI18n";
+import { EMAIL_REGEX } from "@/utils/validate";
 import type { FormInstance, FormRules } from "element-plus-secondary";
 import { useUserStoreWithOut } from "@/store/modules/user";
 import {
@@ -194,7 +195,7 @@ const rule = reactive<FormRules>({
     },
     {
       required: true,
-      pattern: /^[a-zA-Z0-9_._-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
+      pattern: EMAIL_REGEX,
       message: t("user.email_format_is_incorrect"),
       trigger: "blur",
     },
