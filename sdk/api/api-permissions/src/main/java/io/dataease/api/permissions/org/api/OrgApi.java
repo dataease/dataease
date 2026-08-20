@@ -50,7 +50,7 @@ public interface OrgApi {
 
     @Operation(summary = "删除")
     @PostMapping("/page/delete")
-    @DePermit({"m:read", "#p0.id+':manage'"})
+    @DePermit({"m:read"})
     void delete(@RequestBody OrgDelRequest request);
 
     @Operation(summary = "查询权限内组织树")

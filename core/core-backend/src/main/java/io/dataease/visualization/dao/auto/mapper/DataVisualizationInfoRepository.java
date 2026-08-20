@@ -44,8 +44,10 @@ public interface DataVisualizationInfoRepository extends JpaRepository<DataVisua
 
 
     default List<Long> queryChildrenId(@Param("pid") Long pid) {
+        // 存活(未删除)节点 deleteFlag=false;JPA 迁移时误写成 true 会导致收集不到子节点、递归删不掉子树
         Specification<DataVisualizationInfo> spec = (root, query, cb) ->
-                cb.and(cb.equal(root.get("pid"), pid), cb.equal(root.get("deleteFlag"), true));
+                cb.and(cb.equal(root.get("pid"), pid),
+                        cb.or(cb.equal(root.get("deleteFlag"), false), cb.isNull(root.get("deleteFlag"))));
         return findAll(spec).stream()
                 .map(DataVisualizationInfo::getId)
                 .toList();

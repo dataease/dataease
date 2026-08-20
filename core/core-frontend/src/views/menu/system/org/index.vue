@@ -8,12 +8,13 @@ import icon_more_outlined from "@/assets/svg/icon_more_outlined.svg";
 import icon_ban_filled from "@/assets/svg/icon_ban_filled.svg";
 import icon_succeed_filled from "@/assets/svg/icon_succeed_filled.svg";
 import icon_assigned_outlined from "@/assets/svg/icon_assigned_outlined.svg";
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, onMounted, h } from "vue";
 import {
   ElIcon,
   ElMessage,
   ElMessageBox,
   ElTree,
+  ElCheckbox
 } from "element-plus-secondary";
 import { useI18n } from "@/hooks/web/useI18n";
 import { Icon } from "@/components/icon-custom";
@@ -41,7 +42,7 @@ const keyword = ref("");
 const currentOrgId = ref<string | null>(null);
 const currentOrgName = ref("");
 const expandRowKeys = ref<string[]>([]);
-
+const syncDelResource = ref<boolean>(false);
 interface OrgNode {
   id: string;
   name: string;
@@ -133,22 +134,49 @@ const handleRename = (data: OrgNode) => {
 };
 
 const handleDelete = (data: OrgNode) => {
-  ElMessageBox.confirm(t("org.confirm_delete"), {
+  if (data.id === 1 || data.id === "1") {
+    ElMessage.warning(t("org.default_cannot_move"));
+    return;
+  }
+  /* ElMessageBox.confirm(t("org.confirm_delete"), {
     confirmButtonType: "danger",
     type: "warning",
     confirmButtonText: t("common.delete"),
     cancelButtonText: t("dataset.cancel"),
     autofocus: false,
     showClose: false,
+  }) */
+  syncDelResource.value = false
+  ElMessageBox.confirm(t("org.confirm_delete"), {
+    confirmButtonType: "danger",
+    type: "warning",
+    autofocus: false,
+    confirmButtonText: t("common.delete"),
+    cancelButtonText: t("dataset.cancel"),
+    title: t("org.confirm_delete"),
+    message: () =>
+      h('div', { class: 'org-del-container' }, [
+        h('p', { class: 'org-del-tips' }, t('org.delete_role_tips')),
+        h(ElCheckbox, {
+          modelValue: syncDelResource.value,
+          label: t('org.sync_delete_resource'),
+          'onUpdate:modelValue': (val: boolean | string | number) => {
+            syncDelResource.value = val as boolean;
+          },
+        }),
+      ]),
+    showClose: false,
   }).then(() => {
-    deleteApi(data.id).then(() => {
+    deleteApi({ id: data.id, delResource: syncDelResource.value }).then(() => {
       ElMessage.success(t("common.delete_success"));
       loadTree();
       if (currentOrgId.value === data.id) {
         currentOrgId.value = null;
       }
     });
-  });
+  }).finally(() => {
+    syncDelResource.value = false;
+  })
 
 };
 
@@ -351,7 +379,7 @@ onMounted(async () => {
                         <el-icon><Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon></el-icon>
                         {{ t("dataset.rename") }}
                       </el-dropdown-item>
-                      <el-dropdown-item command="delete">
+                      <el-dropdown-item v-if="data.id !== 1 && data.id !== '1'" command="delete">
                         <el-icon><Icon name="icon_delete-trash_outlined"><icon_deleteTrash_outlined class="svg-icon" /></Icon></el-icon>
                         <span>{{ t("common.delete") }}</span>
                       </el-dropdown-item>
@@ -654,6 +682,33 @@ onMounted(async () => {
 </style>
 
 <style lang="less">
+.org-del-container {
+  margin-top: 8px;
+  display: flex !important;
+  flex-direction: column;
+  gap: 4px;
+  .org-del-tips {
+    font-size: 12px;
+    color: #F59A23;
+    white-space: normal;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+  .ed-checkbox {
+    display: flex;
+    align-items: flex-start;
+    height: auto;
+    white-space: normal;
+    .ed-checkbox__label {
+      font-size: 12px;
+      color: var(--ed-color-danger, #8F959E);
+      white-space: normal;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      line-height: 1.4;
+    }
+  }
+}
 .org-node-menu {
   min-width: 120px;
   margin-top: -2px !important;
@@ -690,7 +745,7 @@ onMounted(async () => {
       flex-direction: column;
       height: fit-content;
     }
-    
+
     :deep(.ed-checkbox) {
       height: 26px;
     }
