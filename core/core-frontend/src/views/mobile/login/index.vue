@@ -172,7 +172,7 @@ const onSubmit = async () => {
   loginApi(param)
     .then(res => {
       const { token, exp, mfa } = res.data
-      if (!isLdap && !xpackLoadFail.value && xpackInvalidPwd.value?.invokeMethod) {
+      if (!isLdap && !xpackLoadFail.value && xpackInvalidPwd.value?.init) {
         xpackInvalidPwd?.value.init(res.data)
         return
       }

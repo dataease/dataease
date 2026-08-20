@@ -94,12 +94,12 @@ const handleLogin = () => {
       loginApi(param)
         .then(res => {
           const { token, exp, mfa } = res.data
-          if (!isLdap && !xpackLoadFail.value && xpackInvalidPwd.value?.invokeMethod) {
+          if (!isLdap && !xpackLoadFail.value && xpackInvalidPwd.value?.init) {
             xpackInvalidPwd?.value.init(res.data)
             return
           }
           if (!isLdap && mfa?.enabled) {
-            xpackLoginHandler.value?.invokeMethod({ methodName: 'toMfa', args: mfa })
+            xpackLoginHandler.value?.toMfa(mfa)
             duringLogin.value = false
             return
           }
@@ -121,7 +121,7 @@ const invalidPwdCb = cbParam => {
   if (val) {
     const mfa = cbParam['mfa']
     if (mfa?.enabled) {
-      xpackLoginHandler.value?.invokeMethod({ methodName: 'toMfa', args: mfa })
+      xpackLoginHandler.value?.toMfa(mfa)
       duringLogin.value = false
       return
     }
