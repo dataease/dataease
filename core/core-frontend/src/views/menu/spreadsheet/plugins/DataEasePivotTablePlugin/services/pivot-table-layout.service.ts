@@ -33,6 +33,7 @@ interface AxisEntry {
   key: string
   labels: unknown[]
   labelFields: Array<FieldItemData | undefined>
+  mergeKeys: string[]
   metric?: PivotTableField
 }
 
@@ -47,6 +48,11 @@ export class PivotTableLayoutService {
     const records = result.data.rowData || []
     const quotaInRows = rowConfigured.some(field => field.groupType === 'q')
     const quotaInColumns = columnConfigured.some(field => field.groupType === 'q')
+    const configuredFields = [...rowConfigured, ...columnConfigured]
+    const visibleQuotaFields = quotaFields.filter(field => {
+      const configuredField = findConfiguredField(configuredFields, field)
+      return configuredField?.hidden !== true
+    })
 
     const rowEntries = this.buildAxisEntries(
       rowConfigured,
@@ -63,7 +69,7 @@ export class PivotTableLayoutService {
 
     const rowDepth = rowEntries[0]?.labels.length || 0
     const columnDepth = columnEntries[0]?.labels.length || 0
-    const hasQuota = quotaFields.length > 0
+    const hasQuota = visibleQuotaFields.length > 0
     const topRows = columnDepth > 0 ? columnDepth : (rowDepth > 0 ? 1 : 0)
     const leftColumns = rowDepth > 0
       ? rowDepth
@@ -100,7 +106,7 @@ export class PivotTableLayoutService {
     this.fillSingleAxisLabels(
       values,
       rowConfigured,
-      columnConfigured.length > 0,
+      this.axisDisplayFields(columnConfigured).length > 0,
       quotaInRows,
       topRows,
       leftColumns,
@@ -158,30 +164,48 @@ export class PivotTableLayoutService {
     }
 
     const dimensionTuples = this.uniqueDimensionTuples(dimensionFields, records)
-    const labelFields = dimensionFields.map(field =>
+    const configuredDimensionFields = dimensionFields.map(field =>
       findConfiguredField(configuredFields, field) ?? field
     )
-    if (!quotaFields.length) {
-      return dimensionTuples.map(tuple => ({
-        key: this.axisKey(tuple.values),
-        labels: tuple.values,
-        labelFields
-      }))
+    // 完整维度元组继续用于轴定位，标签和合并键只保留实际展示的层级。
+    const visibleDimensionIndexes = configuredDimensionFields
+      .map((field, index) => field.hidden === true ? -1 : index)
+      .filter(index => index >= 0)
+    const labelFields = visibleDimensionIndexes.map(index => configuredDimensionFields[index])
+    const visibleQuotaFields = quotaFields.filter(field => {
+      const configuredField = findConfiguredField(configuredFields, field)
+      return configuredField?.hidden !== true
+    })
+    if (!visibleQuotaFields.length) {
+      return dimensionTuples.map(tuple => {
+        const labels = visibleDimensionIndexes.map(index => tuple.values[index])
+        return {
+          key: this.axisKey(tuple.values),
+          labels,
+          labelFields,
+          mergeKeys: this.buildMergeKeys(labels)
+        }
+      })
     }
 
     const tuples = dimensionTuples.length
       ? dimensionTuples
       : [{ values: [] as unknown[] }]
-    const quotaFirst = configuredFields[0]?.groupType === 'q'
+    const visibleConfiguredFields = configuredFields.filter(field => field.hidden !== true)
+    const quotaFirst = visibleConfiguredFields[0]?.groupType === 'q'
     const entries: AxisEntry[] = []
 
     if (quotaFirst) {
-      for (const quota of quotaFields) {
+      for (const quota of visibleQuotaFields) {
         for (const tuple of tuples) {
+          const dimensionLabels = visibleDimensionIndexes.map(index => tuple.values[index])
+          const labels = [this.fieldLabel(quota), ...dimensionLabels]
+          const mergeValues = [{ quotaId: String(quota.id) }, ...dimensionLabels]
           entries.push({
             key: this.axisKey(tuple.values, quota),
-            labels: [this.fieldLabel(quota), ...tuple.values],
+            labels,
             labelFields: [undefined, ...labelFields],
+            mergeKeys: this.buildMergeKeys(mergeValues),
             metric: quota
           })
         }
@@ -190,11 +214,15 @@ export class PivotTableLayoutService {
     }
 
     for (const tuple of tuples) {
-      for (const quota of quotaFields) {
+      for (const quota of visibleQuotaFields) {
+        const dimensionLabels = visibleDimensionIndexes.map(index => tuple.values[index])
+        const labels = [...dimensionLabels, this.fieldLabel(quota)]
+        const mergeValues = [...dimensionLabels, { quotaId: String(quota.id) }]
         entries.push({
           key: this.axisKey(tuple.values, quota),
-          labels: [...tuple.values, this.fieldLabel(quota)],
+          labels,
           labelFields: [...labelFields, undefined],
+          mergeKeys: this.buildMergeKeys(mergeValues),
           metric: quota
         })
       }
@@ -349,6 +377,9 @@ export class PivotTableLayoutService {
         }
 
         const configuredQuota = findConfiguredField(configuredFields, quota)
+        if (configuredQuota?.hidden === true) {
+          continue
+        }
         const rawValue = record[quota.dataeaseName || '']
         const nativeValue = toNativeCellValue(rawValue, configuredQuota)
         const numberFormat = getFieldNumberFormat(configuredQuota, nativeValue)
@@ -373,6 +404,9 @@ export class PivotTableLayoutService {
     const labels: string[] = []
     let quotaAdded = false
     for (const field of fields) {
+      if (field.hidden === true) {
+        continue
+      }
       if (field.groupType === 'q') {
         if (!quotaAdded) {
           labels.push('指标')
@@ -383,6 +417,13 @@ export class PivotTableLayoutService {
       }
     }
     return labels
+  }
+
+  private buildMergeKeys(values: unknown[]): string[] {
+    // 每一级都带上之前的可见父层级，避免跨可见父层级合并。
+    return values.map((_, index) => JSON.stringify(
+      values.slice(0, index + 1).map(value => value == null ? null : value)
+    ))
   }
 
   private axisKey(values: unknown[], quota?: PivotTableField): string {
@@ -433,8 +474,8 @@ export class PivotTableLayoutService {
       for (const group of groups) {
         let runStart = group.start
         for (let index = group.start + 1; index <= group.end + 1; index++) {
-          const current = index <= group.end ? this.mergeValue(entries[index]?.labels[level]) : undefined
-          const previous = this.mergeValue(entries[index - 1]?.labels[level])
+          const current = index <= group.end ? entries[index]?.mergeKeys[level] : undefined
+          const previous = entries[index - 1]?.mergeKeys[level]
 
           if (index <= group.end && current === previous) {
             continue
@@ -474,8 +515,8 @@ export class PivotTableLayoutService {
       for (const group of groups) {
         let runStart = group.start
         for (let index = group.start + 1; index <= group.end + 1; index++) {
-          const current = index <= group.end ? this.mergeValue(entries[index]?.labels[level]) : undefined
-          const previous = this.mergeValue(entries[index - 1]?.labels[level])
+          const current = index <= group.end ? entries[index]?.mergeKeys[level] : undefined
+          const previous = entries[index - 1]?.mergeKeys[level]
 
           if (index <= group.end && current === previous) {
             continue
@@ -498,9 +539,5 @@ export class PivotTableLayoutService {
     }
 
     return merges
-  }
-
-  private mergeValue(value: unknown): string {
-    return value == null ? '' : String(value)
   }
 }

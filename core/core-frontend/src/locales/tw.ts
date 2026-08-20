@@ -4850,6 +4850,7 @@ export default {
     delete_folder_confirm: '刪除後，此文件夾下的所有資源都會被刪除，請謹慎操作。',
     save_before_leave: '離開前是否保存？',
     unsaved_changes: '有未保存的更改',
+    preview_select_tips: '請在左側選擇電子表格',
     loading: '加載中...',
     no_data: '暫無資料',
     save_first: '請先保存表格',

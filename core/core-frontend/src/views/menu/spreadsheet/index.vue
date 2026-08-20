@@ -965,7 +965,7 @@ onBeforeUnmount(() => {
       </template>
       <template v-else-if="mounted">
         <empty-background
-          :description="t('visualization.preview_select_tips')"
+          :description="t('spreadsheet.preview_select_tips')"
           img-type="select"
         />
       </template>

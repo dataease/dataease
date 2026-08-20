@@ -93,6 +93,14 @@ const currentSortLabel = computed(() => {
 const showSortIcon = computed(() => currentSort.value !== 'none')
 const isDateField = computed(() => props.field.deType === 1)
 const isQuotaField = computed(() => props.field.groupType === 'q')
+const visibleFieldCount = computed(() => {
+  if (!props.dataConfig) {
+    return Number.POSITIVE_INFINITY
+  }
+  const fields = props.dataConfig?.zones?.fields || []
+  return fields.filter(field => field.hidden !== true).length
+})
+const disableHideField = computed(() => !props.field.hidden && visibleFieldCount.value <= 1)
 const currentDateStyle = computed(() => props.field.dateStyle ?? DEFAULT_DATE_STYLE)
 const currentDatePattern = computed(() => props.field.datePattern ?? DEFAULT_DATE_PATTERN)
 const currentDateStyleLabel = computed(
@@ -446,7 +454,7 @@ const getFieldColor = (groupType: string) => {
           <el-icon><Edit /></el-icon>
           <span>编辑显示名称</span>
         </el-dropdown-item>
-        <el-dropdown-item command="toggleHidden">
+        <el-dropdown-item command="toggleHidden" :disabled="disableHideField">
           <el-icon>
             <View v-if="field.hidden" />
             <Hide v-else />
