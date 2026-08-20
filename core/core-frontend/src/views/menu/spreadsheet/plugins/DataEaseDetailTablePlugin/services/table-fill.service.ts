@@ -26,6 +26,7 @@ import {
   addWorksheetMergesSilently,
   removeWorksheetMergesSilently
 } from '../../../utils/silent-worksheet-merge'
+import { TableRenderExpansionService } from '../../../services/table-render-expansion.service'
 
 export interface TableFillState {
   startCell: string
@@ -54,7 +55,9 @@ export class TableFillService {
     @Inject(SpreadsheetFilterRuntimeService)
     private readonly spreadsheetFilterRuntimeService: SpreadsheetFilterRuntimeService,
     @Inject(PluginRenderLoadingService)
-    private readonly pluginRenderLoadingService: PluginRenderLoadingService
+    private readonly pluginRenderLoadingService: PluginRenderLoadingService,
+    @Inject(TableRenderExpansionService)
+    private readonly tableRenderExpansionService: TableRenderExpansionService
   ) {}
 
   async fillTableByConfig(
@@ -85,10 +88,30 @@ export class TableFillService {
     targetWorksheet?: any,
     options: TableFillOptions = {}
   ): Promise<boolean> {
-    console.log('[TableFillService] Starting fillTable:', { startCell, config })
+    const workbook = univerApi.getActiveWorkbook?.()
+    const worksheet = targetWorksheet || workbook?.getActiveSheet?.()
+    if (!workbook || !worksheet) {
+      throw new Error('No active worksheet found')
+    }
+    const unitId = workbook.getId?.() || workbook.getUnitId?.()
+    const sheetId = worksheet.getSheetId?.()
+    if (!unitId || !sheetId) {
+      return this.fillTableSerial(univerApi, config, startCell, worksheet, options)
+    }
 
-    const startPos = this.parseCell(startCell)
-    console.log('[TableFillService] Start position:', startPos)
+    return this.tableRenderExpansionService.runExclusive(unitId, sheetId, () =>
+      this.fillTableSerial(univerApi, config, startCell, worksheet, options)
+    )
+  }
+
+  private async fillTableSerial(
+    univerApi: any,
+    config: DetailTableConfig,
+    startCell: string,
+    targetWorksheet?: any,
+    options: TableFillOptions = {}
+  ): Promise<boolean> {
+    console.log('[TableFillService] Starting fillTable:', { startCell, config })
 
     const fWorkbook = univerApi.getActiveWorkbook()
     const fWorksheet = targetWorksheet || fWorkbook.getActiveSheet()
@@ -99,6 +122,17 @@ export class TableFillService {
 
     const unitId = fWorkbook?.getId?.() || fWorkbook?.getUnitId?.()
     const sheetId = fWorksheet.getSheetId()
+    if (unitId) {
+      startCell = this.tableRenderExpansionService.resolveStartCell(
+        unitId,
+        'detail',
+        config.id,
+        startCell
+      )
+      config.placement.startCell = startCell
+    }
+    let startPos = this.parseCell(startCell)
+    console.log('[TableFillService] Start position:', startPos)
     const previousState = this.displayStateService.get(config.id)
     const previousRange = previousState?.sheetId === sheetId &&
       previousState.rowCount > 0 && previousState.colCount > 0
@@ -163,6 +197,17 @@ export class TableFillService {
         ? this.spreadsheetFilterRuntimeService.applyQueryFilterToConfig(unitId, config)
         : config
       const dataResult = await this.dataService.queryData(queryConfig)
+      if (unitId) {
+        // 查询期间可能发生合法的行列删除，写入前必须重新读取实例的最新坐标。
+        startCell = this.tableRenderExpansionService.resolveStartCell(
+          unitId,
+          'detail',
+          config.id,
+          startCell
+        )
+        config.placement.startCell = startCell
+        startPos = this.parseCell(startCell)
+      }
 
       const fieldCount = dataResult.data.fields.length
       const showIndex = !!config.style?.header?.showIndex
@@ -177,18 +222,31 @@ export class TableFillService {
       await this.detailTableEditProtectionService.runWithoutProtection(() =>
         ensureSheetSize(univerApi, fWorksheet, startPos.row + rowCount, startPos.col + columnCount)
       )
-      const conflictMessage = this.detailTableRangeService.validateRenderRangeBeforeFill(
-        univerApi,
-        config,
-        startCell,
-        rowCount,
-        columnCount,
-        fWorksheet,
-        options.initialRestore === true
-      )
+      const expansionMessage = unitId
+        ? await this.tableRenderExpansionService.ensureRenderSpace({
+            unitId,
+            sheetId,
+            pluginId: config.id,
+            tableType: 'detail',
+            worksheet: fWorksheet,
+            startCell,
+            rowCount,
+            columnCount,
+            initialRestore: options.initialRestore === true
+          })
+        : undefined
+      const conflictMessage = expansionMessage ||
+        this.detailTableRangeService.validateRenderRangeBeforeFill(
+          univerApi,
+          config,
+          startCell,
+          rowCount,
+          columnCount,
+          fWorksheet,
+          options.initialRestore === true
+        )
       if (conflictMessage) {
         ElMessage.warning(conflictMessage)
-        await this.clearPreviousData(univerApi, config.id, startCell, fWorksheet)
         if (unitId) {
           pluginRenderStatusService.set({
             pluginId: config.id,

@@ -209,7 +209,11 @@ export class DetailTableEditProtectionService {
   }
 
   shouldBlock(commandInfo: Readonly<ICommandInfo>): boolean {
-    if (this._suspendCount > 0 || this.pluginCommandIds.has(commandInfo.id)) {
+    if (
+      this._suspendCount > 0 ||
+      this.spreadsheetModeService.isSystemWrite() ||
+      this.pluginCommandIds.has(commandInfo.id)
+    ) {
       return false
     }
 
@@ -352,20 +356,31 @@ export class DetailTableEditProtectionService {
   private isRangeAffected(commandId: string, range: ProtectedRange, protectedRange: ProtectedRange): boolean {
     if (
       commandId === INSERT_ROW_COMMAND_ID ||
-      commandId === REMOVE_ROW_COMMAND_ID ||
-      commandId === InsertRowByRangeCommand.id ||
-      commandId === RemoveRowByRangeCommand.id
+      commandId === InsertRowByRangeCommand.id
     ) {
       return this.isRowShiftAffected(range, protectedRange)
     }
 
     if (
       commandId === INSERT_COL_COMMAND_ID ||
-      commandId === REMOVE_COL_COMMAND_ID ||
-      commandId === InsertColByRangeCommand.id ||
-      commandId === RemoveColByRangeCommand.id
+      commandId === InsertColByRangeCommand.id
     ) {
       return this.isColumnShiftAffected(range, protectedRange)
+    }
+
+    if (
+      commandId === REMOVE_ROW_COMMAND_ID ||
+      commandId === RemoveRowByRangeCommand.id
+    ) {
+      // 删除整行只禁止切到实例内部；实例之前的删除由共享服务负责同步坐标。
+      return this.rowsOverlap(range, protectedRange)
+    }
+
+    if (
+      commandId === REMOVE_COL_COMMAND_ID ||
+      commandId === RemoveColByRangeCommand.id
+    ) {
+      return this.columnsOverlap(range, protectedRange)
     }
 
     if (

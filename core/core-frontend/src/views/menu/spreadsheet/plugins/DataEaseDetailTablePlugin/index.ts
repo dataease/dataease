@@ -18,6 +18,7 @@ import { PluginRenderLoadingService } from '../../services/plugin-render-loading
 import { DetailTableDatasetReplacementAdapter } from './services/detail-table-dataset-replacement.adapter'
 import { TableRangeConflictService } from '../../services/table-range-conflict.service'
 import { TableInsertionService } from '../../services/table-insertion.service'
+import { TableRenderExpansionService } from '../../services/table-render-expansion.service'
 
 export const DATAEASE_DETAIL_TABLE_PLUGIN = 'DATAEASE_DETAIL_TABLE_PLUGIN'
 
@@ -39,6 +40,7 @@ export class DataEaseDetailTablePlugin extends Plugin {
       [TableInsertionService],
       [DetailTableInsertionService],
       [TableRangeConflictService],
+      [TableRenderExpansionService],
       [DetailTableRangeService],
       [DetailTableRenderStyleService],
       [DetailTableEditProtectionService],
@@ -62,6 +64,7 @@ export class DataEaseDetailTablePlugin extends Plugin {
       [TableInsertionService],
       [DetailTableInsertionService],
       [TableRangeConflictService],
+      [TableRenderExpansionService],
       [DetailTableRangeService],
       [DetailTableRenderStyleService],
       [DetailTableEditProtectionService],
