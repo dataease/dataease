@@ -12,7 +12,6 @@ import {
 import { cloneDeep, defaultTo } from 'lodash-es'
 import { G2DrawOptions } from '@/views/chart/components/js/panel/types/impl/g2'
 import { Chart as G2Column } from '@antv/g2'
-import { Renderer as SVGRenderer } from '@antv/g-svg'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
   configAxisLengthLimit,
@@ -190,7 +189,7 @@ export class ProgressBar extends HorizontalStackBar {
       ]
     }
     const options: ViewSpec = this.setupOptions(chart, initOptions)
-    const newChart = new G2Column({ container, autoFit: true, renderer: new SVGRenderer() })
+    const newChart = new G2Column({ container, autoFit: true, ...getG2Renderer() })
     const newOptions = cloneDeep(options)
     newOptions.children = [options.children[1], options.children[0]]
     handleChartDashboardHidden(chart, newOptions)

@@ -12,7 +12,8 @@ import {
   calcTreeWidth,
   getStartPosition,
   mapKeyToField,
-  setupColumnTitle
+  setupColumnTitle,
+  getS2Renderer
 } from '@/views/chart/components/js/panel/common/common_table'
 import { S2ChartView, S2DrawOptions } from '@/views/chart/components/js/panel/types/impl/s2'
 import { parseJson } from '@/views/chart/components/js/util'
@@ -29,7 +30,6 @@ import {
 } from '@antv/s2'
 import { isEqual, isNumber } from 'lodash-es'
 import { TABLE_EDITOR_PROPERTY, TABLE_EDITOR_PROPERTY_INNER } from './common'
-import { Renderer } from '@antv/g-svg'
 const { t } = useI18n()
 
 type TableHeaderAlign = Exclude<ChartTableHeaderAttr['tableHeaderAlign'], 'custom'>
@@ -244,7 +244,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
       },
       transformCanvasConfig() {
         return {
-          renderer: new Renderer(),
+          renderer: getS2Renderer(),
           supportsCSSTransform: true
         }
       }
