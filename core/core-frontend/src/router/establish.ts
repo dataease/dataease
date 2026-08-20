@@ -1,9 +1,9 @@
 import { isExternal } from '@/utils/validate'
 import { cloneDeep } from 'lodash'
-import { proxyMapping } from '@/views/proxy/mapping'
+// import { proxyMapping } from '@/views/proxy/mapping'
 const modules = import.meta.glob('../views/**/*.vue')
 export const Layout = () => import('@/layout/index.vue')
-const xpackComName = 'components/plugin'
+//const xpackComName = 'components/plugin'
 export const LayoutTransition = () => import('@/layout/components/LayoutTransition.vue')
 // 后端控制路由生成
 export const generateRoutesFn2 = (routes: AppCustomRouteRecordRaw[]): AppRouteRecordRaw[] => {
@@ -17,10 +17,10 @@ export const generateRoutesFn2 = (routes: AppCustomRouteRecordRaw[]): AppRouteRe
     }
 
     if (route.plugin) {
-      const jsName = route.component
-      route.component = xpackComName
+      // const jsName = route.component
+      // route.component = xpackComName
       route.props = {
-        jsname: jsName,
+        // jsname: jsName,
         inLayout: route.inLayout
       }
     }
@@ -30,14 +30,14 @@ export const generateRoutesFn2 = (routes: AppCustomRouteRecordRaw[]): AppRouteRe
       hidden: route.hidden,
       name: route.name,
       redirect: route.redirect,
-      meta: route.meta,
+      meta: route.meta as any,
       props: route.props as Recordable
     }
 
     if (route.component) {
-      let comModule = null
-      if (route.component === xpackComName) {
-        comModule = modules[`../views${proxyMapping[route.props.jsname]}.vue`]
+      let comModule = null as any
+      if (route.plugin) {
+        comModule = modules[`../views${route.component}.vue`]
       } else if (!route.component.startsWith('Layout')) {
         comModule = modules[`../views/${route.component}/index.vue`]
       }
