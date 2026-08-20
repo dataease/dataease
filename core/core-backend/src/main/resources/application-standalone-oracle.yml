@@ -1,8 +1,8 @@
 spring:
     datasource:
-        url: jdbc:oracle:thin:@139.129.117.162:1521/ORCLPDB?useUnicode=true&characterEncoding=UTF-8
-        username: JPA
-        password: Jpa_2025#Secure
+        url: jdbc:oracle:thin:@hostname:1522/helowin?useUnicode=true&characterEncoding=UTF-8
+        username: user
+        password: passwd
         driver-class-name: oracle.jdbc.OracleDriver
         hikari:
             connection-init-sql: ALTER SESSION SET CURRENT_SCHEMA = JPA
