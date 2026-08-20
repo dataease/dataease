@@ -11,6 +11,414 @@ import { valueFormatter } from '../../../formatter'
 
 export const LEGEND_NAV_CONTROLLER_PADDING = 10
 export const LEGEND_NAV_CONTROLLER_SPACING = 12
+
+// 统一阈值按估算出的数据 mark 工作量判断，而不是只看后端返回的记录数
+// 这样可以把多指标展开、多个 mark 复用同一份数据以及数据标签带来的额外开销都计算在内
+// 阈值以下继续保留动画和标签体验，超过阈值后优先保证首次渲染、刷新和容器缩放的响应速度
+const LARGE_DATA_RENDER_COUNT = 1000
+
+// 大数据图表最多创建的普通标签图元数量
+// 超出后支持的基础图表按维度均匀抽取标签载体，其它图表暂时关闭超量标签以保证渲染稳定
+const LARGE_DATA_LABEL_RENDER_COUNT = 1000
+
+// 全量显示会跳过标签防重叠，因此允许展示更多由用户明确启用的标签
+// 上限与单维度最大数据量保持一致，避免多指标展开后一次创建数千个文本图元
+const LARGE_DATA_FULL_LABEL_RENDER_COUNT = 1500
+
+// 采样标签使用独立的不可见数据 mark 承载，通过固定 key 前缀与真实业务图元区分
+const LARGE_DATA_LABEL_MARK_KEY_PREFIX = '__de_large_data_label__'
+
+// 基础柱状图的标签依附 interval，基础折线图的标签依附 point
+// 只为明确验证过定位方式的图表创建标签载体，避免影响其它图表的几何语义
+const LARGE_DATA_LABEL_MARK_TYPES = new Map([
+  ['bar', new Set(['interval'])],
+  ['line', new Set(['point'])]
+])
+
+// 只统计图元数量会随数据量线性增长的基础 mark
+// 辅助线和液体图、仪表盘、词云、桑基图等结构型图表不在此处统一降级，避免改变其动画语义
+const LARGE_DATA_MARK_TYPES = new Set(['interval', 'point', 'line', 'area', 'cell'])
+
+// elementHighlight 会为大量柱体建立高亮命中区域，基础柱状图在多指标大数据下开销最明显
+// 目前只对白名单中的基础柱状图关闭该交互，其它图表继续保留原有高亮行为
+const LARGE_DATA_DISABLE_HIGHLIGHT_CHARTS = new Set(['bar'])
+
+// 用于遍历最终 G2 Spec 的内部结构类型
+// children 兼容静态子 mark 数组和 G2 支持的函数形式，data 兼容不同的内联数据写法
+type LargeDataSpec = G2Spec & {
+  children?: LargeDataSpec[] | ((...args: any[]) => LargeDataSpec)
+  data?: unknown
+  labels?: Record<string, any>[]
+  interaction?: Record<string, any>
+  animate?: unknown
+}
+
+/**
+ * 提取当前 Spec 节点直接持有的内联数据
+ *
+ * DataEase 的 G2 数据既可能直接传入数组，也可能包装在 `{ value }` 中
+ * 无法识别时返回 undefined，让子 mark 可以继续继承父 View 的数据
+ */
+const getInlineData = (data: unknown): unknown[] | undefined => {
+  if (Array.isArray(data)) {
+    return data
+  }
+  if (data && typeof data === 'object') {
+    const value = (data as { value?: unknown }).value
+    if (Array.isArray(value)) {
+      return value
+    }
+  }
+}
+
+/**
+ * 提取当前 Spec 节点直接持有的内联数据长度
+ *
+ * 统计阶段只读取数组 length，不遍历业务字段，避免公共性能判断本身随数据量明显变慢
+ */
+const getInlineDataLength = (data: unknown): number | undefined => getInlineData(data)?.length
+
+/**
+ * 从有序集合中均匀抽取指定数量的元素
+ *
+ * 首尾元素始终保留，中间元素按等距索引选择，让采样标签覆盖完整的维度范围
+ *
+ * @param values 原始有序集合
+ * @param limit 最大保留数量
+ * @returns 不超过 limit 且保持原顺序的采样结果
+ */
+const sampleEvenly = <T>(values: T[], limit: number): T[] => {
+  if (values.length <= limit) {
+    return values
+  }
+  if (limit <= 1) {
+    return values.slice(0, 1)
+  }
+  const step = (values.length - 1) / (limit - 1)
+  return Array.from({ length: limit }, (_, index) => values[Math.round(index * step)])
+}
+
+/**
+ * 合并父 View 与当前 mark 的编码字段
+ *
+ * 折线图的 point mark 会从父 View 继承 x、y 和 color，柱状图则直接在 interval 上声明编码
+ * 在生成标签载体前统一合并，可以同时取得分类维度和系列字段
+ *
+ * @param inheritedEncode 父 View 已生效的编码
+ * @param encode 当前 mark 自己声明的编码
+ * @returns 当前 mark 实际使用的编码集合
+ */
+const mergeEncode = (
+  inheritedEncode?: Record<string, any>,
+  encode?: Record<string, any>
+): Record<string, any> => ({ ...inheritedEncode, ...encode })
+
+/**
+ * 判断单条数据经过现有标签文本规则后是否会产生可见内容
+ *
+ * 柱状图使用 text 字段加 formatter，折线图使用 text 函数，两种写法都在这里复用
+ * 先过滤未勾选的指标可以避免 G2 为返回空文本的数据仍然创建标签图元
+ * 标签函数出现异常时保守保留数据，让正式渲染流程继续暴露原有问题而不是静默丢标签
+ *
+ * @param labels 当前 mark 的标签配置
+ * @param datum 待判断的数据记录
+ * @returns 至少一个标签配置是否会输出非空文本
+ */
+const hasVisibleLabelText = (labels: Record<string, any>[], datum: unknown): boolean => {
+  return labels.some(label => {
+    try {
+      const record = datum as Record<string, unknown>
+      const text =
+        typeof label.text === 'function'
+          ? label.text(record)
+          : typeof label.text === 'string'
+          ? record?.[label.text]
+          : label.text
+      const formattedText =
+        typeof label.formatter === 'function' ? label.formatter(text, record) : text
+      return formattedText !== '' && formattedText !== null && formattedText !== undefined
+    } catch {
+      return true
+    }
+  })
+}
+
+/**
+ * 识别标签是否开启全量显示
+ *
+ * 当前柱状图和折线图在非全量模式下都会追加 overlapHide
+ * 不包含隐藏重叠标签变换时视为全量显示，并使用更高但仍有边界的渲染上限
+ *
+ * @param labels 当前 mark 的标签配置
+ * @returns 是否跳过了重叠隐藏处理
+ */
+const isFullDisplayLabel = (labels: Record<string, any>[]): boolean => {
+  return labels.some(label => {
+    const transforms = Array.isArray(label.transform) ? label.transform : []
+    return !transforms.some(transform => ['overlapHide', 'overflowHide'].includes(transform?.type))
+  })
+}
+
+/**
+ * 计算当前标签模式允许创建的数据载体数量
+ *
+ * 每条载体数据会为每个 label 配置创建一个文本图元，因此需要按配置数量均分总预算
+ * 全量显示只扩大安全预算，不解除硬上限，防止多个指标同时启用时重新卡死页面
+ *
+ * @param labels 当前 mark 的标签配置
+ * @returns 当前 mark 最多保留的数据记录数
+ */
+const getLabelDataRenderLimit = (labels: Record<string, any>[]): number => {
+  const totalLimit = isFullDisplayLabel(labels)
+    ? LARGE_DATA_FULL_LABEL_RENDER_COUNT
+    : LARGE_DATA_LABEL_RENDER_COUNT
+  return Math.max(1, Math.floor(totalLimit / Math.max(1, labels.length)))
+}
+
+/**
+ * 按字段提取保持原始顺序的唯一值域
+ *
+ * 柱状图过滤未显示标签的指标后仍需保留完整系列域，否则 dodgeX 会把标签移动到组内错误位置
+ *
+ * @param data 完整的 mark 数据
+ * @param field 系列编码字段
+ * @returns 去重且保持首次出现顺序的字段值
+ */
+const getFieldDomain = (data: unknown[], field: unknown): unknown[] => {
+  if (typeof field !== 'string') {
+    return []
+  }
+  return Array.from(
+    new Map(
+      data.map(item => {
+        const value = (item as Record<string, unknown>)?.[field]
+        return [`${value instanceof Date ? value.getTime() : value}`, value]
+      })
+    ).values()
+  )
+}
+
+/**
+ * 按分类维度均匀抽取标签载体数据
+ *
+ * 柱状图的同一维度通常包含多个指标，采样时整组保留可以维持 dodgeX 后的柱体位置
+ * 无法识别分类字段时退化为按数据行均匀抽取，仍确保标签数量不会失控
+ *
+ * @param data 当前数据 mark 使用的数据
+ * @param dimensionField 分类维度对应的字段名
+ * @param limit 标签载体允许保留的最大数据行数
+ * @returns 用于承载有限标签的数据子集
+ */
+const sampleLabelData = (data: unknown[], dimensionField: unknown, limit: number): unknown[] => {
+  if (data.length <= limit) {
+    return data
+  }
+  if (typeof dimensionField !== 'string') {
+    return sampleEvenly(data, limit)
+  }
+  const groups = new Map<unknown, unknown[]>()
+  data.forEach(item => {
+    const dimension = (item as Record<string, unknown>)?.[dimensionField]
+    const group = groups.get(dimension)
+    if (group) {
+      group.push(item)
+    } else {
+      groups.set(dimension, [item])
+    }
+  })
+  const dimensionGroups = Array.from(groups.values())
+  const maxGroupSize = Math.max(...dimensionGroups.map(group => group.length))
+  const groupLimit = Math.max(1, Math.floor(limit / maxGroupSize))
+  const sampledData = sampleEvenly(dimensionGroups, groupLimit).flat()
+  return sampledData.length <= limit ? sampledData : sampleEvenly(data, limit)
+}
+
+/**
+ * 用采样数据替换 mark 的内联数据，同时保留原有数据转换配置
+ *
+ * 条件色等逻辑会把数据包装为 `{ value, transform }`，只替换 value 可以继续复用原转换链
+ *
+ * @param originalData mark 原始 data 配置
+ * @param sampledData 已完成采样的数据子集
+ * @returns 可直接写回 G2 Spec 的数据配置
+ */
+const replaceInlineData = (originalData: unknown, sampledData: unknown[]): unknown => {
+  if (originalData && !Array.isArray(originalData) && typeof originalData === 'object') {
+    return { ...originalData, value: sampledData }
+  }
+  return sampledData
+}
+
+/**
+ * 为指定基础图表生成有限数量的标签载体 mark
+ *
+ * 真实 interval 或 point 不再配置超量 labels，避免 G2 为全部数据创建文本图元
+ * 标签载体先执行现有文本规则过滤未启用的指标，再按分类维度均匀采样
+ * 柱状图通过完整 series 域保持 dodgeX 位置，折线图继续使用完整 line 绘制原始趋势
+ * 标签载体保留主 mark 的轴和图例配置，防止共享比例尺合并时把公共 guide 覆盖为空
+ * 缩略轴字段在构造完成后彻底移除，避免重复创建控件或覆盖主 mark 的缩略轴配置
+ *
+ * @param spec 当前需要处理的 Spec 节点
+ * @param labelMarkTypes 当前图表允许使用标签载体的 mark 类型
+ * @param inheritedData 从父 View 继承的内联数据
+ * @param inheritedEncode 从父 View 继承的编码字段
+ * @param path 当前节点路径，用于生成稳定且唯一的 mark key
+ * @returns 已将超量标签替换为受控标签载体的新 Spec
+ */
+const sampleLargeDataLabels = (
+  spec: LargeDataSpec,
+  labelMarkTypes: Set<string>,
+  inheritedData?: unknown[],
+  inheritedEncode?: Record<string, any>,
+  path = '0'
+): LargeDataSpec => {
+  const data = getInlineData(spec.data) ?? inheritedData
+  const encode = mergeEncode(inheritedEncode, spec.encode as Record<string, any>)
+  if (!Array.isArray(spec.children)) {
+    return spec
+  }
+  let changed = false
+  const children = spec.children.flatMap((child, index) => {
+    const childPath = `${path}-${index}`
+    const preparedChild = sampleLargeDataLabels(child, labelMarkTypes, data, encode, childPath)
+    const childData = getInlineData(preparedChild.data) ?? data
+    const childEncode = mergeEncode(encode, preparedChild.encode as Record<string, any>)
+    const labels = Array.isArray(preparedChild.labels) ? preparedChild.labels : []
+    if (
+      !labelMarkTypes.has(preparedChild.type) ||
+      !childData ||
+      labels.length === 0 ||
+      childData.length * labels.length <= LARGE_DATA_LABEL_RENDER_COUNT
+    ) {
+      changed ||= preparedChild !== child
+      return [preparedChild]
+    }
+    changed = true
+    const visibleLabelData = childData.filter(datum => hasVisibleLabelText(labels, datum))
+    if (!visibleLabelData.length) {
+      return [{ ...preparedChild, labels: [] }]
+    }
+    const sampledData = sampleLabelData(
+      visibleLabelData,
+      childEncode.x,
+      getLabelDataRenderLimit(labels)
+    )
+    const seriesField = childEncode.series ?? childEncode.color
+    const seriesDomain =
+      preparedChild.type === 'interval' ? getFieldDomain(childData, seriesField) : []
+    const labelMark = {
+      ...preparedChild,
+      key: `${LARGE_DATA_LABEL_MARK_KEY_PREFIX}${childPath}`,
+      data: replaceInlineData(preparedChild.data, sampledData),
+      ...(seriesDomain.length && {
+        scale: {
+          ...preparedChild.scale,
+          series: { ...preparedChild.scale?.series, domain: seriesDomain }
+        }
+      }),
+      tooltip: false,
+      animate: false,
+      style: {
+        ...preparedChild.style,
+        fillOpacity: 0,
+        strokeOpacity: 0,
+        pointerEvents: 'none'
+      }
+    } as LargeDataSpec
+    // G2 会把 axis、legend 和 slider 写入比例尺后再合并多个 mark
+    // 对共享组件赋值 false 会生成空 guide 并覆盖主图，因此这里只移除载体独有的交互字段
+    // 不声明 slider 才表示载体不创建缩略轴，同时不会破坏主 mark 已有的可交互缩略轴
+    delete labelMark.slider
+    delete labelMark.interaction
+    delete labelMark.state
+    return [{ ...preparedChild, labels: [] }, labelMark]
+  })
+  return changed ? ({ ...spec, children } as LargeDataSpec) : spec
+}
+
+/**
+ * 判断 mark key 是否属于大数据采样标签载体
+ *
+ * 渲染组件使用该判断跳过联动样式回放，避免不可见载体被选中描边重新显示
+ *
+ * @param markKey G2 图元关联的 mark key
+ * @returns 是否为大数据采样标签载体
+ */
+export const isLargeDataLabelMark = (markKey: unknown): boolean =>
+  typeof markKey === 'string' && markKey.startsWith(LARGE_DATA_LABEL_MARK_KEY_PREFIX)
+
+/**
+ * 递归估算最终 G2 Spec 需要处理的数据 mark 工作量
+ *
+ * 每个基础数据 mark 按其有效数据长度计数，同一份数据被 line 和 point 复用时会分别累计
+ * 每组 labels 还会为每个图元生成标签，因此按额外的数据 mark 倍数计入
+ * 使用 setupOptions 完成后的最终 Spec，可以覆盖图表按样式动态追加的 mark、data 和 label
+ *
+ * @param spec 当前需要统计的 Spec 或子 mark
+ * @param inheritedDataLength 从父 View 继承的数据长度
+ * @returns 当前节点及其全部静态子 mark 的估算工作量
+ */
+const getLargeDataRenderCount = (spec: LargeDataSpec, inheritedDataLength = 0): number => {
+  const dataLength = getInlineDataLength(spec.data) ?? inheritedDataLength
+  const labelCount = Array.isArray(spec.labels) ? spec.labels.length : 0
+  const markCount = LARGE_DATA_MARK_TYPES.has(spec.type) ? dataLength * (1 + labelCount) : 0
+  const children = Array.isArray(spec.children) ? spec.children : []
+  return children.reduce(
+    (count, child) => count + getLargeDataRenderCount(child, dataLength),
+    markCount
+  )
+}
+
+/**
+ * 在不修改原 Spec 对象的前提下，递归生成大数据优化版本
+ *
+ * 关闭基础数据 mark 的 enter、update 和 exit 动画，保留辅助元素及结构型图表的动画语义
+ * G2 会先创建全部标签图元再执行 overlapHide，因此大数据场景必须在 render 前限制 labels
+ * 单独绘制的极值、参考线等 text mark 不受影响，tooltip 配置也保持原样
+ * 只有显式列入策略的图表才关闭已经存在的 elementHighlight，tooltip 和选择交互保持原样
+ * 返回新对象可以避免污染图表类复用的默认配置，也能让 G2 options 正确感知配置变化
+ *
+ * @param spec 当前需要优化的 Spec 或子 mark
+ * @param disableElementHighlight 是否关闭当前 Spec 树中的元素高亮交互
+ * @returns 保留原业务配置并应用大数据降级策略的新 Spec
+ */
+const optimizeLargeDataSpec = (
+  spec: LargeDataSpec,
+  disableElementHighlight: boolean,
+  inheritedData?: unknown[]
+): LargeDataSpec => {
+  const data = getInlineData(spec.data) ?? inheritedData
+  const children = Array.isArray(spec.children)
+    ? spec.children.map(child => optimizeLargeDataSpec(child, disableElementHighlight, data))
+    : spec.children
+  const interaction =
+    disableElementHighlight && spec.interaction && spec.interaction.elementHighlight !== undefined
+      ? { ...spec.interaction, elementHighlight: false }
+      : spec.interaction
+  const isLargeDataMark = LARGE_DATA_MARK_TYPES.has(spec.type)
+  const disableAnimation = isLargeDataMark && spec.animate !== false
+  const labelCount = Array.isArray(spec.labels) ? spec.labels.length : 0
+  const disableLabels =
+    isLargeDataMark &&
+    !isLargeDataLabelMark(spec.key) &&
+    (data?.length ?? 0) * labelCount > LARGE_DATA_LABEL_RENDER_COUNT
+  if (
+    children === spec.children &&
+    interaction === spec.interaction &&
+    !disableAnimation &&
+    !disableLabels
+  ) {
+    return spec
+  }
+  return {
+    ...spec,
+    ...(disableAnimation ? { animate: false } : {}),
+    ...(disableLabels ? { labels: [] } : {}),
+    ...(interaction !== spec.interaction ? { interaction } : {}),
+    ...(children !== spec.children ? { children } : {})
+  } as LargeDataSpec
+}
+
 export const getLegendNavButtonPath = (size: number) => [
   ['M', -size / 2, -size / 2],
   ['L', size / 2, -size / 2],
@@ -73,6 +481,38 @@ export abstract class G2ChartView<
   P extends G2Chart = G2Chart
 > extends AntVAbstractChartView {
   public abstract drawChart(drawOptions: G2DrawOptions<P>): P | Promise<P>
+
+  /**
+   * 在 drawChart 完成最终 options 装配且首次 render 尚未开始时应用公共性能策略
+   *
+   * 小于等于阈值时保持原动画、标签和交互，不改变常规数据量下的视觉体验
+   * 超过阈值时关闭数据 mark 动画并限制普通标签，避免大量文本创建和碰撞检测阻塞主线程
+   * 优化后的 Spec 会写回图表实例，让首次 render、刷新和后续 forceFit 复用相同行为
+   * chart 参数允许为空，用于兼容空数据或图表实例尚未创建成功的场景
+   *
+   * @param chart drawChart 创建的 G2 图表实例
+   */
+  public optimizeLargeData(chart?: P): void {
+    if (!chart) {
+      return
+    }
+    const options = chart.options() as LargeDataSpec
+    if (getLargeDataRenderCount(options) <= LARGE_DATA_RENDER_COUNT) {
+      return
+    }
+    // 仅基础柱状图关闭全量区域高亮索引，其它图表保留原有交互
+    // 图表类型在这里统一判断，避免各图表实现重复维护阈值和降级规则
+    // 基础柱状图和折线图使用受控标签载体，其它图表仍执行通用超量标签保护
+    const labelMarkTypes = LARGE_DATA_LABEL_MARK_TYPES.get(this.name)
+    const preparedOptions = labelMarkTypes
+      ? sampleLargeDataLabels(options, labelMarkTypes)
+      : options
+    const optimizedOptions = optimizeLargeDataSpec(
+      preparedOptions,
+      LARGE_DATA_DISABLE_HIGHLIGHT_CHARTS.has(this.name)
+    )
+    chart.options(optimizedOptions)
+  }
 
   /**
    * 图表首次 render 完成后的可选异步处理钩子
