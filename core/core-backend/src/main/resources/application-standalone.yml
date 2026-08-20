@@ -12,8 +12,6 @@ spring:
     database-platform: org.hibernate.dialect.MySQL8Dialect
     properties:
       hibernate:
-        # dialect: io.dataease.config.DataEaseOracle11gDialect
-        # dialect: io.dataease.config.DataEaseOracleDialect
         dialect: org.hibernate.dialect.MySQL8Dialect
         jdbc:
           batch_size: 1000
