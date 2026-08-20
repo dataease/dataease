@@ -15,6 +15,7 @@ import { Chart as G2Column } from '@antv/g2'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
   configAxisLengthLimit,
+  getG2Renderer,
   handleChartDashboardHidden,
   setGradientColor,
   toLinearGradient,
@@ -189,6 +190,7 @@ export class ProgressBar extends HorizontalStackBar {
       ]
     }
     const options: ViewSpec = this.setupOptions(chart, initOptions)
+    // 注入公共渲染器配置以响应 SVG 渲染开关
     const newChart = new G2Column({ container, autoFit: true, ...getG2Renderer() })
     const newOptions = cloneDeep(options)
     newOptions.children = [options.children[1], options.children[0]]
