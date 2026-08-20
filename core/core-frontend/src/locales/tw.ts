@@ -3188,6 +3188,8 @@ export default {
     display_auxiliary_grid: '顯示輔助網格',
     show_pop_button: '顯示彈窗區查詢按鈕',
     show_zoom_button: '顯示放大、導出等懸浮按鈕',
+    enable_svg_renderer: '啟用 SVG 渲染器',
+    svg_renderer_tips: '啟用後圖表將使用 SVG 渲染方式，適用於需要高質量矢量圖形的場景',
     keep_ratio: '保持寬高比',
     rotation_3d: '3D旋轉',
     keep_size: '調整大小保持內部組件尺寸',

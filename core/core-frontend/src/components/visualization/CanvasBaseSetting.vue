@@ -100,6 +100,27 @@
           >{{ t('visualization.display_auxiliary_grid') }}</el-checkbox
         >
       </el-form-item>
+
+      <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
+        <el-checkbox
+          :effect="themes"
+          size="small"
+          v-model="canvasStyleData.enableSvgRenderer"
+          @change="onRendererChange"
+        >
+          <div style="display: flex; line-height: 14px">
+            <span style="margin-right: 4px">{{ t('visualization.enable_svg_renderer') }}</span>
+            <el-tooltip class="item" :effect="themes" placement="bottom">
+              <template #content>
+                <div>{{ t('visualization.svg_renderer_tips') }}</div>
+              </template>
+              <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
+                <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
+              </el-icon>
+            </el-tooltip>
+          </div>
+        </el-checkbox>
+      </el-form-item>
     </el-form>
   </div>
 </template>
@@ -141,6 +162,9 @@ const onFontFamilyChange = () => {
 }
 const onThemeChange = () => {
   snapshotStore.recordSnapshotCache('onThemeChange')
+}
+const onRendererChange = () => {
+  snapshotStore.recordSnapshotCache('renderChart')
 }
 
 withDefaults(

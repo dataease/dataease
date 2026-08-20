@@ -12,13 +12,13 @@ import {
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Chart as G2Column } from '@antv/g2'
-import { Renderer as SVGRenderer } from '@antv/g-svg'
 import { HorizontalBar } from '@/views/chart/components/js/panel/charts/g2/bar/horizontal-bar'
 import { G2DrawOptions } from '@/views/chart/components/js/panel/types/impl/g2'
 import { cloneDeep, isEmpty } from 'lodash-es'
 import dayjs from 'dayjs'
 import {
   configAxisLengthLimit,
+  getG2Renderer,
   handleChartDashboardHidden,
   TOOLTIP_ITEM_TPL,
   TOOLTIP_TITLE_TPL
@@ -195,7 +195,7 @@ export class RangeBar extends HorizontalBar {
       ]
     }
     const options: ViewSpec = this.setupOptions(chart, initOptions)
-    const newChart = new G2Column({ container, autoFit: true, renderer: new SVGRenderer() })
+    const newChart = new G2Column({ container, autoFit: true, ...getG2Renderer() })
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
     newChart.on('interval:click', action)

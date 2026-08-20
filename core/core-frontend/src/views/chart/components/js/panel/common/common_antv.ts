@@ -47,8 +47,22 @@ import {
 } from '@/views/chart/components/js/panel/charts/map/custom-online-map'
 import { CUSTOM_TILE_MAP_TYPE, type OnlineMapConfig } from '@/utils/onlineMap'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
+import { Renderer as SVGRenderer } from '@antv/g-svg'
+import { Renderer as CanvasRenderer } from '@antv/g-canvas'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 
 const { t: tI18n } = useI18n()
+
+/**
+ * 获取 G2 图表渲染器配置
+ * 根据 dvMainStore 中的 enableSvgRenderer 配置决定是否使用 SVG 渲染器
+ * @returns 渲染器配置对象，如果启用 SVG 则返回 { renderer: new SVGRenderer() }，否则返回空对象使用默认 Canvas 渲染
+ */
+export function getG2Renderer() {
+  const dvMainStore = dvMainStoreWithOut()
+  const enableSvgRenderer = dvMainStore?.canvasStyleData?.enableSvgRenderer
+  return enableSvgRenderer ? { renderer: new SVGRenderer() } : {}
+}
 
 const G2_TOOLTIP_CAROUSEL_CHART_TYPES = {
   COLUMN: ['bar', 'bar-stack', 'bar-group', 'bar-group-stack', 'percentage-bar-stack'],

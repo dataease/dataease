@@ -33,14 +33,18 @@ import {
   defaultsDeep,
   omit
 } from 'lodash-es'
-import { copyContent, CustomDataCell, getPivotConditions } from '../../common/common_table'
+import {
+  copyContent,
+  CustomDataCell,
+  getPivotConditions,
+  getS2Renderer
+} from '../../common/common_table'
 import Decimal from 'decimal.js'
 import { DEFAULT_TABLE_HEADER } from '@/views/chart/components/editor/util/chart'
 import { Text } from '@antv/g'
 import { getAggregationAndCalcFuncByQuery } from '@antv/s2/esm/utils/data-set-operate'
 import { calcActionByType } from '@antv/s2/esm/utils/number-calculate'
 import { CellData } from '@antv/s2'
-import { Renderer } from '@antv/g-svg'
 
 type DataItem = Record<string, any>
 
@@ -449,7 +453,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       },
       transformCanvasConfig() {
         return {
-          renderer: new Renderer(),
+          renderer: getS2Renderer(),
           supportsCSSTransform: true
         }
       },

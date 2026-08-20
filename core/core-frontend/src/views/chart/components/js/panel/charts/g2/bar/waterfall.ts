@@ -1,5 +1,4 @@
 import { Chart as G2Column } from '@antv/g2'
-import { Renderer as SVGRenderer } from '@antv/g-svg'
 import { G2DrawOptions } from '@/views/chart/components/js/panel/types/impl/g2'
 import { useI18n } from '@/hooks/web/useI18n'
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
@@ -11,6 +10,7 @@ import {
 import {
   configAxisLengthLimit,
   formatAxisLabelWithLengthLimit,
+  getG2Renderer,
   handleChartDashboardHidden,
   setGradientColor
 } from '@/views/chart/components/js/panel/common/common_antv'
@@ -180,7 +180,7 @@ export class Waterfall extends Bar {
       ]
     }
     const options = this.setupOptions(chart, initOptions)
-    const newChart = new G2Column({ container, autoFit: true, renderer: new SVGRenderer() })
+    const newChart = new G2Column({ container, autoFit: true, ...getG2Renderer() })
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
     newChart.on('interval:click', action)

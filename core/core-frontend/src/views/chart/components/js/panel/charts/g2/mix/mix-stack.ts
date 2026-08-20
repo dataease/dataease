@@ -11,7 +11,6 @@ import { cloneDeep, defaultsDeep, isEmpty, merge, random } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
-import { Renderer as SVGRenderer } from '@antv/g-svg'
 import {
   DEFAULT_BASIC_STYLE,
   DEFAULT_YAXIS_STYLE
@@ -238,7 +237,7 @@ export class StackLineMix extends G2ChartView {
         }
       }
     }
-    const newChart = new G2Chart({ container, renderer: new SVGRenderer() })
+    const newChart = new G2Chart({ container, ...getG2Renderer() })
     const options = this.setupOptions(chart, initOptions, {
       chartObj: newChart,
       leftData,

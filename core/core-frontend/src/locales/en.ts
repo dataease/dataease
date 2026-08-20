@@ -3284,6 +3284,8 @@ export default {
     display_auxiliary_grid: 'Display Auxiliary Grid',
     show_pop_button: 'Show Pop-up Area Query Button',
     show_zoom_button: 'Show floating buttons',
+    enable_svg_renderer: 'Enable SVG Renderer',
+    svg_renderer_tips: 'Charts will use SVG rendering for high-quality vector graphics',
     keep_ratio: 'Keep Aspect Ratio',
     rotation_3d: '3D Rotation',
     keep_size: 'Adjust size & keeping inner',

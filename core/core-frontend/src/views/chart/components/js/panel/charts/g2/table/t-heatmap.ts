@@ -1,10 +1,9 @@
 import { G2ChartView, G2DrawOptions } from '../../../types/impl/g2'
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
-import { TOOLTIP_ITEM_TPL, TOOLTIP_TITLE_TPL } from '../../../common/common_antv'
+import { getG2Renderer, TOOLTIP_ITEM_TPL, TOOLTIP_TITLE_TPL } from '../../../common/common_antv'
 import { useI18n } from '@/hooks/web/useI18n'
 import { defaultsDeep, toString } from 'lodash-es'
 import { ChartEvent, Chart as G2Chart, extend, G2Spec, Runtime, stdlib } from '@antv/g2'
-import { Renderer as SVGRenderer } from '@antv/g-svg'
 import { Text } from '@antv/g'
 import { valueFormatter } from '../../../../formatter'
 
@@ -272,7 +271,7 @@ export class TableG2Chart extends G2ChartView {
     }
     chart.container = container
     const options = this.setupOptions(chart, initOptions, { axisMap, container })
-    const newChart = new HeatmapG2Chart({ container, renderer: new SVGRenderer() })
+    const newChart = new HeatmapG2Chart({ container, ...getG2Renderer() })
     newChart.options(options)
     newChart.on('plot:click', param => {
       if (!param?.target?.__data__?.data) {

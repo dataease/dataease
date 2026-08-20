@@ -34,7 +34,6 @@ import {
 import { useI18n } from '@/hooks/web/useI18n'
 import { addExtremumText, extremumEvt } from '@/views/chart/components/js/extremumUitl'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
-import { Renderer as SVGRenderer } from '@antv/g-svg'
 import { DEFAULT_YAXIS_STYLE } from '@/views/chart/components/editor/util/chart'
 import {
   configDimensionSlider,
@@ -152,7 +151,7 @@ export class Area extends G2ChartView {
         value: data
       }
     }
-    const newChart = new G2Chart({ container, renderer: new SVGRenderer() })
+    const newChart = new G2Chart({ container, ...getG2Renderer() })
     const legendState = bindLineLegendState(newChart)
     const options = this.setupOptions(chart, initOptions, { legendState })
     // 开始渲染

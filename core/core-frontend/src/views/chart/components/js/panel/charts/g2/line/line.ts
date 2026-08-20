@@ -31,7 +31,6 @@ import {
 } from './common'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
-import { Renderer as SVGRenderer } from '@antv/g-svg'
 import { DEFAULT_YAXIS_STYLE } from '@/views/chart/components/editor/util/chart'
 import {
   configDimensionSlider,
@@ -127,7 +126,7 @@ export class Line extends G2ChartView {
         { type: 'point', tooltip: false, zIndex: 0 }
       ]
     }
-    const newChart = new G2Chart({ container, renderer: new SVGRenderer() })
+    const newChart = new G2Chart({ container, ...getG2Renderer() })
     const legendState = bindLineLegendState(newChart)
     const options = this.setupOptions(chart, initOptions, { legendState })
     // 开始渲染
