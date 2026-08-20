@@ -9,6 +9,8 @@ import io.dataease.api.chart.request.ChartExcelRequestInner;
 import io.dataease.api.dataset.dto.DataSetExportRequest;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.UnionDTO;
+import io.dataease.api.log.LogApi;
+import io.dataease.api.log.dto.LogGridRequest;
 import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
 import io.dataease.api.permissions.user.api.UserApi;
 import io.dataease.api.permissions.user.vo.UserFormVO;
@@ -69,6 +71,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -123,6 +126,8 @@ public class ExportCenterDownLoadManage {
     private final Long sheetLimit = 1000000L;
     @Autowired(required = false)
     private DataFillingApi dataFillingApi = null;
+    @Autowired(required = false)
+    private LogApi logApi = null;
     @Resource
     private CoreChartViewRepository coreChartViewRepository;
     @Resource
@@ -143,6 +148,10 @@ public class ExportCenterDownLoadManage {
 
     private DataFillingApi getDataFillingApi() {
         return dataFillingApi;
+    }
+
+    private LogApi getLogApi() {
+        return logApi;
     }
 
     @PostConstruct
@@ -188,6 +197,9 @@ public class ExportCenterDownLoadManage {
         if (exportTaskDTO.getExportFromType().equalsIgnoreCase("data_filling")) {
             exportTaskDTO.setExportFromName(getDataFillingApi().get(exportTaskDTO.getExportFrom()).getName());
         }
+        if (exportTaskDTO.getExportFromType().equalsIgnoreCase("log")) {
+            exportTaskDTO.setExportFromName("操作日志");
+        }
     }
 
     @DeLog(id = "#p2", ot = LogOT.EXPORT, st = LogST.DATA_FILLING)
@@ -210,6 +222,45 @@ public class ExportCenterDownLoadManage {
             }
         });
         Running_Task.put(exportTarget.taskId(), future);
+    }
+
+    public void startLogTask(CoreExportTask exportTask, ExportTaskFileTarget exportTarget, Long userId, HashMap<String, Object> request) {
+        if (ObjectUtils.isEmpty(getLogApi())) {
+            return;
+        }
+        exportTarget.createParentDirectory();
+        String clientIp = IPUtils.get();
+        Future future = scheduledThreadPoolExecutor.submit(() -> {
+            coreExportTaskRepository.saveAndFlush(exportTask);
+            V3UserUtil.setUid(userId);
+            IPUtils.set(clientIp);
+            LocaleContextHolder.setLocale(parseLocale(request));
+            try {
+                updateExportTask(exportTarget.taskId(), "IN_PROGRESS", null, null, null, null);
+                LogGridRequest logGridRequest = JsonUtil.parseObject(request.get("logGridRequest").toString(), LogGridRequest.class);
+                getLogApi().writeExcel(exportTarget.filePath(), logGridRequest);
+                updateExportTaskSuccess(exportTarget, "100");
+            } catch (Exception e) {
+                LogUtil.error("Failed to export data", e);
+                updateExportTask(exportTarget.taskId(), "FAILED", null, e.getMessage(), null, null);
+            } finally {
+                LocaleContextHolder.resetLocaleContext();
+                IPUtils.remove();
+            }
+        });
+        Running_Task.put(exportTarget.taskId(), future);
+    }
+
+    private Locale parseLocale(HashMap<String, Object> request) {
+        Object localeValue = request.get("locale");
+        if (ObjectUtils.isNotEmpty(localeValue)) {
+            try {
+                return Locale.forLanguageTag(localeValue.toString().replace('_', '-'));
+            } catch (Exception e) {
+                LogUtil.error(e.getMessage());
+            }
+        }
+        return Locale.getDefault();
     }
 
     @DeLog(id = "#p2", ot = LogOT.EXPORT, st = LogST.DATASET)

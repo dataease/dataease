@@ -384,6 +384,7 @@ defineExpose({
             <span v-if="scope.row.exportFromType === 'data_filling'">{{
               t('data_fill.data_fill')
             }}</span>
+            <span v-if="scope.row.exportFromType === 'log'">{{ t('operate_log.name') }}</span>
           </template>
         </el-table-column>
         <el-table-column

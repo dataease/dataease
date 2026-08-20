@@ -7,6 +7,7 @@ import { Icon } from '@/components/icon-custom'
 import { FilterText, convertFilterText } from '@/components/filter-text'
 import DrawerMain from '@/components/drawer-main/src/DrawerMain.vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import { useEmitt } from '@/hooks/web/useEmitt'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { filterOption } from './options'
@@ -64,17 +65,9 @@ const exportLog = () => {
     callback: (action: Action) => {
       if (action === 'confirm') {
         const param = buildParam()
-        exportApi(param).then((res) => {
-          const blobData = res.data
-          const blob = new Blob([blobData], { type: 'application/vnd.ms-excel' })
-          const link = document.createElement('a')
-          link.style.display = 'none'
-          link.href = URL.createObjectURL(blob)
-          link.download = `${t('operate_log.excel_file_name')}.xlsx` // 下载的文件名
-          document.body.appendChild(link)
-          link.click()
-          document.body.removeChild(link)
+        exportApi(param).then(() => {
           ElMessage.success(t('operate_log.export_success'))
+          useEmitt().emitter.emit('data-export-center', { activeName: 'IN_PROGRESS' })
         })
       }
     }

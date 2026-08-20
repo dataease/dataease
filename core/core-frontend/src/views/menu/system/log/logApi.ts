@@ -8,7 +8,7 @@ export const allUserApi = (keyword?: string) => request.post({ url: '/user/all',
 
 export const queryApi = (i: number, j: number, data) => request.post({ url: `/log/pager/${i}/${j}`, data })
 
-export const exportApi = (data) => request.post({ url: '/log/export', data, responseType: 'blob' })
+export const exportApi = (data) => request.post({ url: '/log/export', data })
 
 export const queryUserApi = (data) => request.post({ url: '/user/subOrgUser', data })
 
