@@ -1,27 +1,25 @@
 spring:
-  datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://hostname:3306/database?autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
-    username: dataease
-    password: passwd
-  messages:
-    basename: i18n/lic,i18n/core,i18n/permissions,i18n/xpack,i18n/sync
-  flyway:
-    enabled: false
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
-        jdbc:
-          batch_size: 1000
-          lob:
-            non_contextual_creation: true
-        order_inserts: true
-        order_updates: true
-        temp:
-          use_jdbc_metadata_defaults: false
-    hibernate:
-      naming:
-        physical-strategy:  io.dataease.config.DynamicCaseNamingStrategy
-      ddl-auto: update
-    show-sql: true
+    datasource:
+        driver-class-name: org.mariadb.jdbc.Driver
+        url: jdbc:mariadb://hostname:3306/database?autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+        username: dataease
+        password: passwd
+
+    jpa:
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.MySQL8Dialect
+                jdbc:
+                    batch_size: 1000
+                    lob:
+                        non_contextual_creation: true
+                order_inserts: true
+                order_updates: true
+                temp:
+                    use_jdbc_metadata_defaults: false
+        hibernate:
+            naming:
+                physical-strategy: io.dataease.config.DynamicCaseNamingStrategy
+            ddl-auto: update
+        show-sql: false
 

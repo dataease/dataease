@@ -1,31 +1,29 @@
 spring:
-  datasource:
-    url: jdbc:oracle:thin:@hostname:1522/helowin?useUnicode=true&characterEncoding=UTF-8
-    username: user
-    password: passwd
-    driver-class-name: oracle.jdbc.OracleDriver
-    hikari:
-      connection-init-sql: ALTER SESSION SET CURRENT_SCHEMA = JIANNENG1
-  messages:
-    basename: i18n/lic,i18n/core,i18n/permissions,i18n/xpack,i18n/sync
-  flyway:
-    enabled: false
-  jpa:
-    database-platform: org.hibernate.dialect.OracleDialect
-    properties:
-      hibernate:
-        dialect: io.dataease.config.DataEaseOracle11gDialect
-        auto_quote_keyword: false
-        jdbc:
-          batch_size: 1000
-          lob:
-            non_contextual_creation: true
-        order_inserts: true
-        order_updates: true
-        temp:
-          use_jdbc_metadata_defaults: false
-    hibernate:
-      naming:
-        physical-strategy: io.dataease.config.DynamicCaseNamingStrategy
-      ddl-auto: update
-    show-sql: true
+    datasource:
+        url: jdbc:oracle:thin:@139.129.117.162:1521/ORCLPDB?useUnicode=true&characterEncoding=UTF-8
+        username: JPA
+        password: Jpa_2025#Secure
+        driver-class-name: oracle.jdbc.OracleDriver
+        hikari:
+            connection-init-sql: ALTER SESSION SET CURRENT_SCHEMA = JPA
+
+
+    jpa:
+        database-platform: org.hibernate.dialect.OracleDialect
+        properties:
+            hibernate:
+                dialect: io.dataease.config.DataEaseOracle11gDialect
+                auto_quote_keyword: false
+                jdbc:
+                    batch_size: 1000
+                    lob:
+                        non_contextual_creation: true
+                order_inserts: true
+                order_updates: true
+                temp:
+                    use_jdbc_metadata_defaults: false
+        hibernate:
+            naming:
+                physical-strategy: io.dataease.config.DynamicCaseNamingStrategy
+            ddl-auto: update
+        show-sql: false

@@ -4,10 +4,7 @@ spring:
     username: user
     password: passwd
     driver-class-name: com.kingbase8.Driver
-  messages:
-    basename: i18n/lic,i18n/core,i18n/permissions,i18n/xpack,i18n/sync
-  flyway:
-    enabled: false
+
   jpa:
     properties:
       hibernate:
@@ -24,7 +21,7 @@ spring:
       naming:
         physical-strategy:  io.dataease.config.DynamicCaseNamingStrategy
       ddl-auto: update
-    show-sql: true
+    show-sql: false
 
 
 quartz:

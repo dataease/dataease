@@ -4,10 +4,8 @@ spring:
     username: sa
     password: Calong@2015
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-  messages:
-    basename: i18n/lic,i18n/core,i18n/permissions,i18n/xpack,i18n/sync
-  flyway:
-    enabled: false
+
+
   jpa:
     properties:
       hibernate:
@@ -25,8 +23,7 @@ spring:
       naming:
         physical-strategy:  io.dataease.config.DynamicCaseNamingStrategy
       ddl-auto: update
-    show-sql: true
-
+    show-sql: false
 
 quartz:
   enabled: true

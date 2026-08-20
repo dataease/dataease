@@ -4,10 +4,6 @@ spring:
     username: user
     password: passwd
     driver-class-name: dm.jdbc.driver.DmDriver
-  messages:
-    basename: i18n/lic,i18n/core,i18n/permissions,i18n/xpack,i18n/sync
-  flyway:
-    enabled: false
   jpa:
     properties:
       hibernate:
@@ -26,10 +22,9 @@ spring:
       naming:
         physical-strategy:  io.dataease.config.DynamicCaseNamingStrategy
       ddl-auto: update
-    show-sql: true
+    show-sql: false
 
 
 quartz:
   enabled: true
   scheduler-name: deSyncJob
-#  properties.org.quartz.jobStore.driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
