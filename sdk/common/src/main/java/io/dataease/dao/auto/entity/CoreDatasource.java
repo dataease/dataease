@@ -83,7 +83,7 @@ public class CoreDatasource {
     @Column(name = "task_status", length = 50)
     private String taskStatus;
 
-    @ColumnDefault("0")
+    @ColumnDefault("false")
     @Comment("启用数据填报功能")
     @Column(name = "enable_data_fill")
     private Boolean enableDataFill;
