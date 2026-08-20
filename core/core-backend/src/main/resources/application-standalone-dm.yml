@@ -9,7 +9,6 @@ spring:
       hibernate:
         dialect: io.dataease.config.CustomDMDialect
         auto_quote_keyword: false
-        globally_quoted_identifiers: true
         jdbc:
           batch_size: 1000
           lob:
