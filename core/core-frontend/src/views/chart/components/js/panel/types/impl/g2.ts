@@ -202,13 +202,9 @@ export abstract class G2ChartView<
       gridLineWidth: axis.splitLine.lineStyle.width,
       gridLineDash,
       ...this.getAxisLabelStyle(axis),
-      transform: [
-        {
-          type: 'hide',
-          keepHeader: true,
-          keepTail: true
-        }
-      ],
+      // 交由公共布局按真实标签尺寸等距抽稀，避免强保尾标签后挤出画布
+      labelAutoHide: true,
+      labelAutoRotate: false,
       labelFormatter: d => {
         return valueFormatter(d, axis.axisLabelFormatter)
       }
