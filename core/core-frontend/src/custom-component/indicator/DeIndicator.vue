@@ -257,6 +257,7 @@ const showSuffix = ref<boolean>(DEFAULT_INDICATOR_STYLE.suffixEnable)
 const suffixContent = ref('')
 
 const indicatorNameShow = ref(false)
+const indicatorNamePositionBottom = ref(true)
 
 const indicatorNameWrapperStyle = reactive<CSSProperties>({
   'margin-top': DEFAULT_INDICATOR_NAME_STYLE.nameValueSpacing + 'px'
@@ -371,8 +372,11 @@ const renderChart = async view => {
       }
       indicatorNameWrapperStyle['margin-top'] =
         (indicatorName.nameValueSpacing ?? DEFAULT_INDICATOR_NAME_STYLE.nameValueSpacing) + 'px'
+      // 兼容旧图表数据，未配置时名称默认显示在指标值下方
+      indicatorNamePositionBottom.value = indicatorName.namePosition !== 'top'
     } else {
       indicatorNameShow.value = false
+      indicatorNamePositionBottom.value = false
     }
   }
 }
@@ -603,11 +607,16 @@ defineExpose({
       @trackClick="trackClick"
       :is-data-v-mobile="dataVMobile"
     />
+    <div v-if="indicatorNameShow && !indicatorNamePositionBottom">
+      <span :style="indicatorNameClass">{{ resultName }}</span>
+      <div :style="indicatorNameWrapperStyle"></div>
+    </div>
     <div>
       <span :style="indicatorClass">{{ formattedResult }}</span>
       <span :style="indicatorSuffixClass" v-if="showSuffix">{{ suffixContent }}</span>
     </div>
-    <div :style="indicatorNameWrapperStyle" v-if="indicatorNameShow">
+    <div v-if="indicatorNameShow && indicatorNamePositionBottom">
+      <div :style="indicatorNameWrapperStyle"></div>
       <span :style="indicatorNameClass">{{ resultName }}</span>
     </div>
   </div>
