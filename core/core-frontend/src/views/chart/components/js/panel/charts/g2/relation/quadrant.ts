@@ -417,6 +417,7 @@ export class Quadrant extends G2ChartView {
           zIndex: 1,
           position: yAxis.position,
           title: yAxis.nameShow === false ? false : yAxis.name,
+          dataeaseAxisTitleSafeMargin: true,
           titleFontSize: yAxis.fontSize,
           titleFill: yAxis.color,
           line: yAxis.axisLine.show,
@@ -527,13 +528,12 @@ export class Quadrant extends G2ChartView {
     if (!legend.show) {
       return { ...options, legend: false }
     }
-    const baseLegend = this.getLegend(chart)
+    const baseLegend = this.getLegend(chart, 2)
     const tmpLegend = {
       legend: {
         color: {
-          ...baseLegend,
-          itemMarkerSize: legend.size,
-          itemMarker: legend.icon
+          // 与柱状图、折线图复用统一的图例标记和分页器尺寸
+          ...baseLegend
         }
       }
     }

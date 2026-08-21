@@ -813,6 +813,11 @@ type DimensionSliderMark = {
 type DimensionSliderOptions = {
   interactionName?: string
   dimensionField?: string
+  valueScale?: {
+    field: string
+    includeZero?: boolean
+  }
+  valueScaleDomain?: [number, number]
   stableKey?: boolean
   disableMorph?: boolean
   syncChildren?: boolean
@@ -854,6 +859,9 @@ const normalizeSliderValues = (values?: number[]): SliderValues => {
   return [Math.max(0, Math.min(start, end)), Math.min(1, Math.max(start, end))]
 }
 
+const getSliderDomainKey = (value: unknown): string =>
+  `${value instanceof Date ? value.getTime() : value}`
+
 // 从数组数据或 G2 data.value 中提取离散维度域，并保留原始值顺序
 const getSliderDimensionDomain = (data: any, field: string): any[] => {
   const sourceData = Array.isArray(data) ? data : Array.isArray(data?.value) ? data.value : []
@@ -861,10 +869,64 @@ const getSliderDimensionDomain = (data: any, field: string): any[] => {
     new Map(
       sourceData.map(item => {
         const value = item?.[field]
-        return [`${value instanceof Date ? value.getTime() : value}`, value]
+        return [getSliderDomainKey(value), value]
       })
     ).values()
   )
+}
+
+// 按维度预聚合数值范围，缩略轴拖动时不再重复扫描全量数据
+const createSliderValueDomainGetter = (
+  data: any,
+  dimensionField: string,
+  valueScale?: DimensionSliderOptions['valueScale']
+) => {
+  if (!valueScale?.field) {
+    return undefined
+  }
+  const sourceData = Array.isArray(data) ? data : Array.isArray(data?.value) ? data.value : []
+  const valueRanges = new Map<string, [number, number]>()
+  sourceData.forEach(item => {
+    const rawValue = item?.[valueScale.field]
+    const values = Array.isArray(rawValue) ? rawValue : [rawValue]
+    values.forEach(value => {
+      if (value === null || value === undefined || value === '') {
+        return
+      }
+      const numberValue = Number(value)
+      if (!Number.isFinite(numberValue)) {
+        return
+      }
+      const key = getSliderDomainKey(item?.[dimensionField])
+      const range = valueRanges.get(key)
+      if (range) {
+        range[0] = Math.min(range[0], numberValue)
+        range[1] = Math.max(range[1], numberValue)
+      } else {
+        valueRanges.set(key, [numberValue, numberValue])
+      }
+    })
+  })
+  return (selectedDomain: any[]): [number, number] | undefined => {
+    let min = Number.POSITIVE_INFINITY
+    let max = Number.NEGATIVE_INFINITY
+    selectedDomain.forEach(value => {
+      const range = valueRanges.get(getSliderDomainKey(value))
+      if (!range) {
+        return
+      }
+      min = Math.min(min, range[0])
+      max = Math.max(max, range[1])
+    })
+    if (!Number.isFinite(min) || !Number.isFinite(max)) {
+      return undefined
+    }
+    if (valueScale.includeZero) {
+      min = Math.min(0, min)
+      max = Math.max(0, max)
+    }
+    return [min, max]
+  }
 }
 
 // 将滑块百分比范围换算为实际需要保留的维度值
@@ -916,7 +978,13 @@ const patchDimensionDomainMark = (
       exit: { ...mark.animate?.exit, type: null }
     }
   }),
-  scale: { ...mark.scale, x: { ...mark.scale?.x, domain, nice: false } }
+  scale: {
+    ...mark.scale,
+    x: { ...mark.scale?.x, domain, nice: false },
+    ...(options.valueScaleDomain && {
+      y: { ...mark.scale?.y, domain: options.valueScaleDomain, nice: true }
+    })
+  }
 })
 
 // 更新承载 slider 的 mark，同时继承离散维度域和样式补丁
@@ -949,7 +1017,8 @@ const dimensionSliderFilter = ({
   disableMorph,
   syncChildren,
   sliderMarkIndex = 0,
-  onSelectedDomainChange
+  onSelectedDomainChange,
+  getValueScaleDomain
 }: any) => {
   const domain = getSliderDimensionDomain(data, field)
   return (target: any) => {
@@ -961,9 +1030,18 @@ const dimensionSliderFilter = ({
     }
     let pendingValues: number[] | undefined
     let frameId: number | undefined
-    const render = () => {
+    let updateRunning = false
+    let applyAfterUpdate = false
+    let destroyed = false
+    const scheduleRender = () => {
+      if (destroyed || updateRunning || frameId !== undefined) {
+        return
+      }
+      frameId = requestAnimationFrame(() => void render())
+    }
+    const render = async () => {
       frameId = undefined
-      if (!pendingValues) {
+      if (destroyed || updateRunning || !pendingValues) {
         return
       }
       // valuechange 只记录最新范围，实际更新在同一帧内合并执行
@@ -972,7 +1050,12 @@ const dimensionSliderFilter = ({
       const selectedDomain = getSelectedSliderDomain(domain, values)
       onSelectedDomainChange?.(selectedDomain)
       const formatter = getSliderLabelFormatter(selectedDomain, values)
-      const options = { dimensionField: field, stableKey, disableMorph }
+      const options = {
+        dimensionField: field,
+        stableKey,
+        disableMorph,
+        valueScaleDomain: getValueScaleDomain?.(selectedDomain)
+      }
       const patchMarks = (marks?: DimensionSliderMark[]) =>
         marks?.map((mark, index) => {
           if (index === sliderMarkIndex) {
@@ -989,25 +1072,50 @@ const dimensionSliderFilter = ({
         marks: patchMarks(state.marks),
         children: patchMarks(state.children)
       }))
-      target.update()
+      updateRunning = true
+      try {
+        // G2 update 未完成时不启动新一轮完整更新，期间始终保留最新范围
+        await target.update()
+      } catch (error) {
+        console.warn(error)
+      } finally {
+        updateRunning = false
+        if (destroyed) {
+          return
+        }
+        if (pendingValues) {
+          if (applyAfterUpdate) {
+            applyAfterUpdate = false
+            void render()
+          } else {
+            scheduleRender()
+          }
+        } else {
+          applyAfterUpdate = false
+        }
+      }
     }
     const onValueChange = (event: any) => {
       pendingValues = event.detail?.value || slider.attributes?.values
       // 拖动中按帧刷新，避免 pointermove 频繁触发 G2 重绘
-      if (frameId === undefined) {
-        frameId = requestAnimationFrame(render)
-      }
+      scheduleRender()
     }
     const apply = () => {
       if (frameId !== undefined) {
         cancelAnimationFrame(frameId)
+        frameId = undefined
+      }
+      if (updateRunning) {
+        applyAfterUpdate = true
+        return
       }
       // pointerup 时立即落地最后一次范围，避免松手后缩略轴和图形不同步
-      render()
+      void render()
     }
     slider.addEventListener('valuechange', onValueChange)
     document.addEventListener('pointerup', apply)
     return () => {
+      destroyed = true
       if (frameId !== undefined) {
         cancelAnimationFrame(frameId)
       }
@@ -1076,7 +1184,16 @@ export const configDimensionSlider = (
 
   const selectedDomain = getSelectedSliderDomain(domain, values)
   options.onSelectedDomainChange?.(selectedDomain)
-  const dimensionOptions = { ...options, dimensionField }
+  const getValueScaleDomain = createSliderValueDomainGetter(
+    sourceData,
+    dimensionField,
+    options.valueScale
+  )
+  const dimensionOptions = {
+    ...options,
+    dimensionField,
+    valueScaleDomain: getValueScaleDomain?.(selectedDomain)
+  }
   // 初始渲染时先把主 mark 收敛到缩略轴默认范围
   Object.assign(
     sliderMark,
@@ -1116,7 +1233,8 @@ export const configDimensionSlider = (
       sliderMarkIndex: options.sliderMarkIndex,
       stableKey: options.stableKey,
       disableMorph: options.disableMorph,
-      onSelectedDomainChange: options.onSelectedDomainChange
+      onSelectedDomainChange: options.onSelectedDomainChange,
+      getValueScaleDomain
     }
   }
   return true
@@ -2779,6 +2897,144 @@ export function configXAxisLengthLimit(
   configAxisLengthLimit(chart, chartObj, 'xAxis', formatOriginText)
 }
 
+type AxisTooltipOptions = {
+  maxWidth?: string
+  wordBreak?: string
+  transition?: boolean
+}
+
+const getAxisTooltipDom = (
+  tooltipId: string,
+  tooltip: Record<string, any>,
+  options: AxisTooltipOptions = {}
+) => {
+  let parentDom = document.getElementById('G2-TOOLTIP-WRAPPER')
+  if (!parentDom) {
+    parentDom = document.createElement('div')
+    parentDom.id = 'G2-TOOLTIP-WRAPPER'
+    parentDom.style.position = 'absolute'
+    parentDom.style.pointerEvents = 'none'
+    parentDom.style.zIndex = '9999'
+    document.body.appendChild(parentDom)
+  }
+
+  let tooltipDom = document.getElementById(tooltipId)
+  if (!tooltipDom) {
+    tooltipDom = document.createElement('div')
+    tooltipDom.id = tooltipId
+    tooltipDom.className = 'g2-axis-label-tooltip'
+    parentDom.appendChild(tooltipDom)
+  }
+  Object.assign(tooltipDom.style, {
+    position: 'fixed',
+    display: 'none',
+    color: tooltip.color ?? '#333333',
+    backgroundColor: tooltip.backgroundColor ?? '#ffffff',
+    fontSize: `${tooltip.fontSize ?? 12}px`,
+    padding: '4px 8px',
+    borderRadius: '4px',
+    maxWidth: options.maxWidth ?? '',
+    wordBreak: options.wordBreak ?? '',
+    cursor: 'default',
+    pointerEvents: 'none',
+    boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 8px 0px',
+    transition: options.transition
+      ? 'left 0.4s cubic-bezier(0.23, 1, 0.32, 1), top 0.4s cubic-bezier(0.23, 1, 0.32, 1)'
+      : ''
+  })
+  return tooltipDom
+}
+
+const hideAxisTooltip = (tooltipId: string) => {
+  const tooltipDom = document.getElementById(tooltipId)
+  if (tooltipDom) {
+    tooltipDom.style.display = 'none'
+  }
+}
+
+const showAxisTooltip = (tooltipDom: HTMLElement, text: string, event: any) => {
+  tooltipDom.innerText = text
+  tooltipDom.style.display = 'block'
+
+  const { width, height } = tooltipDom.getBoundingClientRect()
+  const clientX = event.client?.x ?? event.x ?? 0
+  const clientY = event.client?.y ?? event.y ?? 0
+  const gap = 10
+  let left = clientX + gap
+  let top = clientY + gap
+  if (left + width > window.innerWidth) {
+    left = Math.max(gap, clientX - width - gap)
+  }
+  if (top + height > window.innerHeight) {
+    top = Math.max(gap, clientY - height - gap)
+  }
+  tooltipDom.style.left = `${left}px`
+  tooltipDom.style.top = `${top}px`
+}
+
+const hasAxisTitleSafeMargin = (spec: any): boolean => {
+  const axes = spec?.axis
+  if (
+    axes &&
+    typeof axes === 'object' &&
+    Object.values(axes).some((axis: any) => axis?.dataeaseAxisTitleSafeMargin === true)
+  ) {
+    return true
+  }
+  return Array.isArray(spec?.children) && spec.children.some(hasAxisTitleSafeMargin)
+}
+
+/**
+ * 纵轴标题被 G2 截断时，悬浮展示完整标题。
+ * 仅带 dataeaseAxisTitleSafeMargin 的左轴会在布局阶段产生截断，其它轴标题不受影响。
+ */
+export function configAxisTitleOverflowTooltip(chart: Chart, chartObj: any): void {
+  if (!chartObj) {
+    return
+  }
+  // 只有启用安全边距的目标图表才注册轴标题事件，避免给全部 G2 实例增加监听器
+  if (!hasAxisTitleSafeMargin(chartObj.options?.())) {
+    return
+  }
+  const { tooltip = {} } = parseJson(chart.customAttr)
+  const tooltipId = `AXIS_TITLE_TIP-${chart.container || chart.id || 'default'}`
+  const hideTooltip = () => hideAxisTooltip(tooltipId)
+
+  chartObj.on(`axis-title:${ChartEvent.POINTER_MOVE}`, event => {
+    const target = event.target
+    const originalValue = target?.attributes?.dataeaseOriginalText
+    if (originalValue === undefined || originalValue === null) {
+      hideTooltip()
+      return
+    }
+    const overflowing =
+      typeof target?.isOverflowing === 'function'
+        ? target.isOverflowing()
+        : target?.parsedStyle?.isOverflowing === true
+    if (!overflowing) {
+      hideTooltip()
+      return
+    }
+
+    const originalText = String(originalValue)
+    if (!originalText) {
+      hideTooltip()
+      return
+    }
+
+    showAxisTooltip(
+      getAxisTooltipDom(tooltipId, tooltip, {
+        maxWidth: '200px',
+        wordBreak: 'break-all'
+      }),
+      originalText,
+      event
+    )
+  })
+
+  chartObj.on(`axis-title:${ChartEvent.POINTER_OUT}`, hideTooltip)
+}
+
 export function configAxisLengthLimit(
   chart: Chart,
   chartObj: any,
@@ -2791,7 +3047,6 @@ export function configAxisLengthLimit(
   }
   let hideTimer: ReturnType<typeof setTimeout>
   const { tooltip = {} } = parseJson(chart.customAttr)
-  const tooltipFontSize = tooltip.fontSize ?? 12
   const tooltipId = `AXIS_LABEL_TIP-${chart.container || chart.id || 'default'}-${axisType}`
 
   const getOriginText = (event: any) => {
@@ -2804,45 +3059,7 @@ export function configAxisLengthLimit(
     )
   }
 
-  const getTooltipDom = () => {
-    let parentDom = document.getElementById('G2-TOOLTIP-WRAPPER')
-    if (!parentDom) {
-      parentDom = document.createElement('div')
-      parentDom.id = 'G2-TOOLTIP-WRAPPER'
-      parentDom.style.position = 'absolute'
-      parentDom.style.pointerEvents = 'none'
-      parentDom.style.zIndex = '9999'
-      document.body.appendChild(parentDom)
-    }
-
-    let tooltipDom = document.getElementById(tooltipId)
-    if (!tooltipDom) {
-      tooltipDom = document.createElement('div')
-      tooltipDom.id = tooltipId
-      tooltipDom.className = 'g2-axis-label-tooltip'
-      tooltipDom.style.position = 'fixed'
-      tooltipDom.style.display = 'none'
-      tooltipDom.style.color = tooltip.color ?? '#333333'
-      tooltipDom.style.backgroundColor = tooltip.backgroundColor ?? '#ffffff'
-      tooltipDom.style.fontSize = `${tooltipFontSize}px`
-      tooltipDom.style.padding = '4px 8px'
-      tooltipDom.style.boxShadow = 'rgba(0, 0, 0, 0.1) 0px 4px 8px 0px'
-      tooltipDom.style.borderRadius = '4px'
-      tooltipDom.style.cursor = 'default'
-      tooltipDom.style.pointerEvents = 'none'
-      tooltipDom.style.transition =
-        'left 0.4s cubic-bezier(0.23, 1, 0.32, 1), top 0.4s cubic-bezier(0.23, 1, 0.32, 1)'
-      parentDom.appendChild(tooltipDom)
-    }
-    return tooltipDom
-  }
-
-  const hideTooltip = () => {
-    const tooltipDom = document.getElementById(tooltipId)
-    if (tooltipDom) {
-      tooltipDom.style.display = 'none'
-    }
-  }
+  const hideTooltip = () => hideAxisTooltip(tooltipId)
 
   chartObj?.on(`axis-label-item:${ChartEvent.POINTER_MOVE}`, event => {
     const showText = event.target?.attributes?.text
@@ -2858,26 +3075,7 @@ export function configAxisLengthLimit(
     if (hideTimer) {
       clearTimeout(hideTimer)
     }
-    const tooltipDom = getTooltipDom()
-    tooltipDom.innerText = originText
-    tooltipDom.style.display = 'block'
-
-    const { width, height } = tooltipDom.getBoundingClientRect()
-    const clientX = event.client?.x ?? event.x ?? 0
-    const clientY = event.client?.y ?? event.y ?? 0
-    const gap = 10
-    let left = clientX + gap
-    let top = clientY + gap
-
-    if (left + width > window.innerWidth) {
-      left = Math.max(gap, clientX - width - gap)
-    }
-    if (top + height > window.innerHeight) {
-      top = Math.max(gap, clientY - height - gap)
-    }
-
-    tooltipDom.style.left = `${left}px`
-    tooltipDom.style.top = `${top}px`
+    showAxisTooltip(getAxisTooltipDom(tooltipId, tooltip, { transition: true }), originText, event)
   })
 
   chartObj?.on(`axis-label-item:${ChartEvent.POINTER_OUT}`, () => {

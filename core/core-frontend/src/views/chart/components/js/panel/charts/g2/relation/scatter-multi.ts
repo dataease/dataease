@@ -642,6 +642,7 @@ export class MultiScatter extends G2ChartView {
       axis: {
         y: {
           ...this.getAxisStyle(yAxis),
+          dataeaseAxisTitleSafeMargin: true,
           ...this.getOverlapGridFilter(xAxis),
           labelFormatter: d => valueFormatter(d, yAxis.axisLabelFormatter)
         }
@@ -681,13 +682,12 @@ export class MultiScatter extends G2ChartView {
     if (!legend.show) {
       return { ...options, legend: false }
     }
-    const baseLegend = this.getLegend(chart)
+    const baseLegend = this.getLegend(chart, 2)
     return defaultsDeep(options, {
       legend: {
         color: {
-          ...baseLegend,
-          itemMarkerSize: legend.size,
-          itemMarker: legend.icon
+          // 与柱状图、折线图复用统一的图例标记和分页器尺寸
+          ...baseLegend
         }
       }
     })

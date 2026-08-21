@@ -581,13 +581,12 @@ export class Area extends G2ChartView {
     if (!legend.show) {
       return { ...options, legend: false }
     }
-    const baseLegend = this.getLegend(chart)
+    const baseLegend = this.getLegend(chart, 2)
     const tmpLegend = {
       legend: {
         color: {
-          ...baseLegend,
-          itemMarkerSize: legend.size * 2,
-          itemMarker: legend.icon
+          // 面积与堆叠折线沿用基础柱状图的分页按钮尺寸
+          ...baseLegend
         }
       }
     }
@@ -775,6 +774,8 @@ export class Area extends G2ChartView {
     }
     const lineMark = options.children[1]
     const conditionVisibleDomain = lineMark[LINE_CONDITION_VISIBLE_DOMAIN_KEY]
+    const yAxis = parseJson(chart.customStyle)?.yAxis
+    const valueField = options.encode?.y
     // 面积图由 area、line、point 多个 mark 组成，缩略轴过滤维度时必须同步 x 域
     configDimensionSlider(lineMark, options.data, functionCfg, {
       dimensionField: options.encode?.x,
@@ -782,6 +783,11 @@ export class Area extends G2ChartView {
       syncChildren: true,
       sliderMarkIndex: 1,
       syncMarks: [options.children[0], ...options.children.slice(2)],
+      ...(this.name === 'area' &&
+        yAxis?.axisValue?.auto !== false &&
+        typeof valueField === 'string' && {
+          valueScale: { field: valueField, includeZero: true }
+        }),
       // 条件渐变需要和缩略轴可见维度域保持一致
       onSelectedDomainChange: domain => {
         if (conditionVisibleDomain) {

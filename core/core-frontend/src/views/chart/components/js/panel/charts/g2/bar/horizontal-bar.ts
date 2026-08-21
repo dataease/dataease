@@ -348,9 +348,10 @@ export class HorizontalBar extends Bar {
     }
 
     const lineMark = options.children[0]
-    // 标题显隐和容器 resize 后需要重新布局，避免底部缩略轴和数值轴、图例重叠
+    // 大数据标签载体必须和真实条形同步维度域，避免共享比例尺把拖动范围重新撑满
     configDimensionSlider(lineMark, lineMark.data ?? options.data, functionCfg, {
-      interactionName: 'horizontalBarDimensionSliderFilter'
+      interactionName: 'horizontalBarDimensionSliderFilter',
+      syncChildren: true
     })
     return options
   }

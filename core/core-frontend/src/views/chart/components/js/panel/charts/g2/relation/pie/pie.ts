@@ -11,7 +11,7 @@ import {
   PIE_EDITOR_PROPERTY,
   PIE_EDITOR_PROPERTY_INNER
 } from '@/views/chart/components/js/panel/charts/g2plot/pie/common'
-import { configSingleSectorScale } from './common'
+import { configSingleSectorScale, createCircularLabelLayout } from './common'
 import {
   getG2Renderer,
   getTooltipSeriesTotalMap,
@@ -27,6 +27,7 @@ import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 import { createTooltipWrapper, getThemeSelectedState, tooltipCss } from '../../bar/barUtil'
 
 const { t } = useI18n()
+const configCircularLabelLayout = createCircularLabelLayout(true)
 
 export class Pie extends G2ChartView {
   axis: AxisType[] = PIE_AXIS_TYPE
@@ -174,9 +175,11 @@ export class Pie extends G2ChartView {
       return options
     }
     const { total } = context
+    const isInnerLabel = labelAttr.position === 'inner'
     const label = {
-      transform: [{ type: 'exceedAdjust' }],
-      position: labelAttr.position === 'inner' ? 'inside' : 'spider',
+      // 普通外标签 spider 排布，全量显示时跳过自动隐藏
+      transform: labelAttr.fullDisplay && !isInnerLabel ? [] : [{ type: 'exceedAdjust' }],
+      position: isInnerLabel ? 'inside' : labelAttr.fullDisplay ? 'outside' : 'spider',
       style: {
         fill: labelAttr.color,
         fontSize: labelAttr.fontSize,
@@ -206,7 +209,8 @@ export class Pie extends G2ChartView {
       },
       connectorStroke: (_data, _index, _dataList, { element }) => element.__data__.color
     }
-    if (!labelAttr.fullDisplay) {
+    // 外部 spider 标签不做重叠隐藏，避免密集饼图只剩少量标签
+    if (!labelAttr.fullDisplay && isInnerLabel) {
       label.transform.push({ type: 'overlapHide' })
     }
     return { ...options, labels: [label] }
@@ -348,7 +352,8 @@ export class Pie extends G2ChartView {
       this.configColor,
       this.configLegend,
       this.configLabel,
-      this.configTooltip
+      this.configTooltip,
+      configCircularLabelLayout
     )(chart, options, context, this)
   }
 

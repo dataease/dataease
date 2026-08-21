@@ -30,6 +30,7 @@ import { L7ChartView } from '@/views/chart/components/js/panel/types/impl/l7'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ExportImage } from '@antv/l7'
 import {
+  configAxisTitleOverflowTooltip,
   configEmptyDataStyle,
   installG2SliderTouchAdapter
 } from '@/views/chart/components/js/panel/common/common_antv'
@@ -652,6 +653,13 @@ const renderG2 = async (chart, chartView: G2ChartView<any, any>) => {
       })
       // 固定本轮创建的实例，避免等待异步渲染期间新一轮 renderG2 替换全局 myChart 后误操作新实例
       const chartInstance = myChart
+      configAxisTitleOverflowTooltip(
+        {
+          ...chart,
+          container: containerId
+        },
+        chartInstance
+      )
       // 此时 drawChart 已经完成最终 Spec 装配，但 G2 尚未开始首次绘制
       // 在这里统一应用性能策略，可以避免大数据首次进入页面时创建海量标签并执行昂贵动画
       // 优化后的 options 会保留在当前实例中，刷新和容器调整触发 forceFit 时也会直接复用

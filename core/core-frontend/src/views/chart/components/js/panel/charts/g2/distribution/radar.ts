@@ -91,7 +91,7 @@ export class Radar extends G2ChartView {
       autoFit: true,
       data: validData,
       coordinate: { type: 'polar' },
-      children: [{ zIndex: 1, type: 'line', style: { lineWidth: 2 } }],
+      children: [{ zIndex: -1, type: 'line', style: { lineWidth: 2 } }],
       encode: {
         x: 'field',
         y: 'value',
@@ -200,7 +200,8 @@ export class Radar extends G2ChartView {
 
     if (radarShowPoint) {
       options.children.push({
-        zIndex: 2,
+        // G2 标签层固定为 0，数据点保持略低层级，确保标签不会被 point 覆盖
+        zIndex: -0.5,
         type: 'point',
         encode: {
           x: 'field',
@@ -215,6 +216,7 @@ export class Radar extends G2ChartView {
     if (radarAreaColor) {
       const areaBaseline = Number(options.scale?.y?.domainMin)
       options.children.push({
+        zIndex: -2,
         type: 'area',
         encode: {
           x: 'field',
@@ -233,9 +235,41 @@ export class Radar extends G2ChartView {
   }
 
   protected configLabel(chart: Chart, options: G2Spec): G2Spec {
-    const labelAttr = parseJson(chart.customAttr).label
+    const customAttr = parseJson(chart.customAttr)
+    const labelAttr = customAttr.label
     if (!labelAttr.show) {
       return options
+    }
+    const { radarShowPoint, radarPointSize } = customAttr.basicStyle
+    const fieldDomain = Array.isArray(options.scale?.x?.domain) ? options.scale.x.domain : []
+    const pointOffset = radarShowPoint ? Math.max(8, Number(radarPointSize) + 4) : 8
+    const fieldPositionMap = new Map(
+      fieldDomain.map((field, index) => {
+        const angle = (index / fieldDomain.length) * Math.PI * 2
+        const dx = Math.sin(angle) * pointOffset
+        const dy = -Math.cos(angle) * pointOffset
+        return [
+          field,
+          {
+            dx,
+            dy,
+            textAlign: Math.abs(dx) < 1 ? 'center' : dx > 0 ? 'start' : 'end',
+            textBaseline: Math.abs(dy) < 1 ? 'middle' : dy > 0 ? 'top' : 'bottom'
+          }
+        ] as const
+      })
+    )
+    const getLabelPosition = data => {
+      const position = fieldPositionMap.get(data.field)
+      if (position) {
+        return position
+      }
+      return {
+        dx: 0,
+        dy: -pointOffset,
+        textAlign: 'center',
+        textBaseline: 'bottom'
+      }
     }
     const formatterMap = labelAttr.seriesLabelFormatter?.reduce((pre, next) => {
       pre[next.id] = next
@@ -268,6 +302,11 @@ export class Radar extends G2ChartView {
           }
           return labelCfg.fontSize
         },
+        // 极坐标折线标签默认与数据点重合，按雷达轴方向向圆外偏移
+        dx: data => getLabelPosition(data).dx,
+        dy: data => getLabelPosition(data).dy,
+        textAlign: data => getLabelPosition(data).textAlign,
+        textBaseline: data => getLabelPosition(data).textBaseline,
         opacity: 1
       },
       formatter: (value, data) => {

@@ -226,6 +226,7 @@ export class RangeBar extends HorizontalBar {
     }
     tmpOptions.children[0].axis.y = {
       ...tmpOptions.children[0].axis.y,
+      dataeaseAxisTitleSafeMargin: true,
       labelAutoHide: { keepHeader: true },
       labelFormatter: formatAxisLabel
     }

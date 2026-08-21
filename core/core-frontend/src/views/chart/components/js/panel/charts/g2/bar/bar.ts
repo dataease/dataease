@@ -901,11 +901,19 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
       return options
     }
     const lineMark = options.children[0]
+    const yAxis = parseJson(chart.customStyle)?.yAxis
+    const valueField = lineMark.encode?.y ?? options.encode?.y
     // 垂直柱状图按离散维度域过滤缩略轴，并固定元素 key 避免切换范围时动画方向错乱
     configDimensionSlider(lineMark, lineMark.data ?? options.data, functionCfg, {
       interactionName: 'barDimensionSliderFilter',
       stableKey: true,
       disableMorph: true,
+      // 基础柱状图仅在数值轴自动模式下跟随可见维度重新计算范围
+      ...(this.name === 'bar' &&
+        yAxis?.axisValue?.auto !== false &&
+        typeof valueField === 'string' && {
+          valueScale: { field: valueField, includeZero: true }
+        }),
       // 大数据标签使用独立 interval 承载，缩略轴拖动时必须同步它的离散维度域
       syncChildren: true
     })

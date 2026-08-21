@@ -481,6 +481,7 @@ export class Line extends G2ChartView {
         y: {
           position: yAxis.position,
           title: yAxis.nameShow === false ? false : yAxis.name,
+          dataeaseAxisTitleSafeMargin: true,
           titleFontSize: yAxis.fontSize,
           titleFill: yAxis.color,
           line: yAxis.axisLine.show,
@@ -582,13 +583,12 @@ export class Line extends G2ChartView {
     if (!legend.show) {
       return { ...options, legend: false }
     }
-    const baseLegend = this.getLegend(chart)
+    const baseLegend = this.getLegend(chart, 2)
     const tmpLegend = {
       legend: {
         color: {
-          ...baseLegend,
-          itemMarkerSize: legend.size * 2,
-          itemMarker: legend.icon
+          // 与基础柱状图复用同一分类图例尺寸，分页按钮和图例标记保持一致
+          ...baseLegend
         }
       }
     }
@@ -817,12 +817,18 @@ export class Line extends G2ChartView {
     }
     const lineMark = options.children[0]
     const conditionVisibleDomain = lineMark[LINE_CONDITION_VISIBLE_DOMAIN_KEY]
+    const yAxis = parseJson(chart.customStyle)?.yAxis
+    const valueField = options.encode?.y
     // 折线图包含 line、point、辅助线等多个 mark，缩略轴切换维度域时需要同步 x 域
     configDimensionSlider(lineMark, options.data, functionCfg, {
       dimensionField: options.encode?.x,
       interactionName: 'lineDimensionSliderFilter',
       syncChildren: true,
       syncMarks: options.children.slice(1),
+      ...(yAxis?.axisValue?.auto !== false &&
+        typeof valueField === 'string' && {
+          valueScale: { field: valueField }
+        }),
       // 条件渐变需要和缩略轴可见维度域保持一致
       onSelectedDomainChange: domain => {
         if (conditionVisibleDomain) {

@@ -105,30 +105,53 @@ export const bindLineLegendState = (chartObj: G2Chart): LineLegendState => {
   return state
 }
 
-export const getLineTooltipSameDimensionItems = (
-  options: G2Spec,
-  customAttr: DeepPartial<ChartAttr>,
-  title: string,
-  originalItems: any[],
-  visibleSeries?: ReadonlySet<string>,
-  formatColor?: (color: string) => string
-) => {
-  const allData = options.data?.value || []
-  const isSeriesVisible = item => !visibleSeries || visibleSeries.has(`${item.category}`)
-  const colorMap = (options.scale?.color?.relations || []).reduce((pre, [name, color]) => {
+type LineTooltipDataIndex = {
+  data: any[]
+  colorDomain?: unknown
+  colorRelations?: unknown
+  itemsByField: Map<unknown, any[]>
+  colorMap: Record<string, string>
+  seriesList: any[]
+  seriesOrderMap: Record<string, number>
+}
+
+const lineTooltipDataIndexCache = new WeakMap<object, LineTooltipDataIndex>()
+
+const getLineTooltipDataIndex = (options: G2Spec): LineTooltipDataIndex => {
+  const data = options.data?.value || []
+  const colorDomain = options.scale?.color?.domain
+  const colorRelations = options.scale?.color?.relations
+  const cached = lineTooltipDataIndexCache.get(options)
+  if (
+    cached?.data === data &&
+    cached.colorDomain === colorDomain &&
+    cached.colorRelations === colorRelations
+  ) {
+    return cached
+  }
+  const itemsByField = new Map<unknown, any[]>()
+  data.forEach(item => {
+    const items = itemsByField.get(item.field)
+    if (items) {
+      items.push(item)
+    } else {
+      itemsByField.set(item.field, [item])
+    }
+  })
+  const colorMap = (colorRelations || []).reduce((pre, [name, color]) => {
     pre[`${name}`] = color
     return pre
   }, {} as Record<string, string>)
-  const seriesList = [...(options.scale?.color?.domain || [])]
-  if (!seriesList.length && options.scale?.color?.relations?.length) {
-    options.scale.color.relations.forEach(([name]) => {
+  const seriesList = [...(colorDomain || [])]
+  if (!seriesList.length && colorRelations?.length) {
+    colorRelations.forEach(([name]) => {
       if (!seriesList.includes(name)) {
         seriesList.push(name)
       }
     })
   }
   if (!seriesList.length) {
-    allData.forEach(item => {
+    data.forEach(item => {
       if (item.category === null || item.category === undefined) {
         return
       }
@@ -141,6 +164,30 @@ export const getLineTooltipSameDimensionItems = (
     pre[`${category}`] = index
     return pre
   }, {} as Record<string, number>)
+  // Tooltip 移动期间只读取当前维度分组，避免每次扫描全量折线数据
+  const index = {
+    data,
+    colorDomain,
+    colorRelations,
+    itemsByField,
+    colorMap,
+    seriesList,
+    seriesOrderMap
+  }
+  lineTooltipDataIndexCache.set(options, index)
+  return index
+}
+
+export const getLineTooltipSameDimensionItems = (
+  options: G2Spec,
+  customAttr: DeepPartial<ChartAttr>,
+  title: string,
+  originalItems: any[],
+  visibleSeries?: ReadonlySet<string>,
+  formatColor?: (color: string) => string
+) => {
+  const { itemsByField, colorMap, seriesList, seriesOrderMap } = getLineTooltipDataIndex(options)
+  const isSeriesVisible = item => !visibleSeries || visibleSeries.has(`${item.category}`)
   const basicStyle = customAttr.basicStyle
   const paletteColorMap: Record<string, string> = {}
   if (basicStyle?.colors?.length) {
@@ -166,8 +213,9 @@ export const getLineTooltipSameDimensionItems = (
   const itemKeys = new Set(
     result.map(item => `${item.category ?? ''}-${item.quotaList?.[0]?.id ?? ''}`)
   )
-  allData.forEach(item => {
-    if (item.field !== field || !isSeriesVisible(item)) {
+  const dimensionItems = itemsByField.get(field) || []
+  dimensionItems.forEach(item => {
+    if (!isSeriesVisible(item)) {
       return
     }
     const key = `${item.category ?? ''}-${item.quotaList?.[0]?.id ?? ''}`

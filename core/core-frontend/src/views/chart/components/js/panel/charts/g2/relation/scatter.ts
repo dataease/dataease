@@ -248,7 +248,9 @@ export class Scatter extends G2ChartView {
             fontSize: label.fontSize,
             textAlign: 'center',
             textBaseline: 'middle',
-            fillOpacity: 1
+            fillOpacity: 1,
+            // 标签只负责展示，鼠标事件穿透到下方散点以保持提示和点击命中
+            pointerEvents: 'none'
           },
           transform: label.fullDisplay
             ? [{ type: 'exceedAdjust' }]
@@ -450,6 +452,7 @@ export class Scatter extends G2ChartView {
         y: {
           position: yAxis.position,
           title: yAxis.nameShow === false ? false : yAxis.name,
+          dataeaseAxisTitleSafeMargin: true,
           titleFontSize: yAxis.fontSize,
           titleFill: yAxis.color,
           line: yAxis.axisLine.show,
@@ -508,13 +511,12 @@ export class Scatter extends G2ChartView {
     if (!legend.show) {
       return { ...options, legend: false }
     }
-    const baseLegend = this.getLegend(chart)
+    const baseLegend = this.getLegend(chart, 2)
     const tmpLegend = {
       legend: {
         color: {
-          ...baseLegend,
-          itemMarkerSize: legend.size,
-          itemMarker: legend.icon
+          // 与柱状图、折线图复用统一的图例标记和分页器尺寸
+          ...baseLegend
         }
       }
     }

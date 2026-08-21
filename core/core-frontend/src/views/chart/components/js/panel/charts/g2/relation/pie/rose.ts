@@ -11,7 +11,7 @@ import {
   PIE_EDITOR_PROPERTY,
   PIE_EDITOR_PROPERTY_INNER
 } from '@/views/chart/components/js/panel/charts/g2plot/pie/common'
-import { configSingleSectorScale } from './common'
+import { configSingleSectorScale, createCircularLabelLayout } from './common'
 import {
   getG2Renderer,
   getTooltipSeriesTotalMap,
@@ -31,6 +31,7 @@ import {
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 
 const { t } = useI18n()
+const configCircularLabelLayout = createCircularLabelLayout(false)
 
 export class Rose extends G2ChartView {
   axis: AxisType[] = PIE_AXIS_TYPE
@@ -190,9 +191,10 @@ export class Rose extends G2ChartView {
       return options
     }
     const { total } = context
+    const isInnerLabel = labelAttr.position === 'inner'
     const label = {
-      transform: [{ type: 'exceedAdjust' }],
-      position: labelAttr.position === 'inner' ? 'inside' : 'outside',
+      transform: labelAttr.fullDisplay && !isInnerLabel ? [] : [{ type: 'exceedAdjust' }],
+      position: isInnerLabel ? 'inside' : 'outside',
       style: {
         fill: labelAttr.color,
         fontSize: labelAttr.fontSize,
@@ -222,7 +224,8 @@ export class Rose extends G2ChartView {
       },
       connectorStroke: (_data, _index, _dataList, { element }) => element.__data__.color
     }
-    if (!labelAttr.fullDisplay) {
+    // 外部标签不做重叠隐藏，内部标签继续保留防重叠策略
+    if (!labelAttr.fullDisplay && isInnerLabel) {
       label.transform.push({ type: 'overlapHide' })
     }
     return { ...options, labels: [label] }
@@ -364,7 +367,8 @@ export class Rose extends G2ChartView {
       this.configColor,
       this.configLegend,
       this.configLabel,
-      this.configTooltip
+      this.configTooltip,
+      configCircularLabelLayout
     )(chart, options, context, this)
   }
 

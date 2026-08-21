@@ -18,21 +18,40 @@ export const LEGEND_NAV_CONTROLLER_SPACING = 12
 const LARGE_DATA_RENDER_COUNT = 1000
 
 // 大数据图表最多创建的普通标签图元数量
-// 超出后支持的基础图表按维度均匀抽取标签载体，其它图表暂时关闭超量标签以保证渲染稳定
-const LARGE_DATA_LABEL_RENDER_COUNT = 1000
-
-// 全量显示会跳过标签防重叠，因此允许展示更多由用户明确启用的标签
-// 上限与单维度最大数据量保持一致，避免多指标展开后一次创建数千个文本图元
-const LARGE_DATA_FULL_LABEL_RENDER_COUNT = 1500
+// 超出后白名单图表按维度均匀抽取标签载体，其它图表保留各自原有标签策略
+// 2000 可覆盖约 280 个维度值乘 7 个指标的常见展开规模
+const LARGE_DATA_LABEL_RENDER_COUNT = 2000
 
 // 采样标签使用独立的不可见数据 mark 承载，通过固定 key 前缀与真实业务图元区分
-const LARGE_DATA_LABEL_MARK_KEY_PREFIX = '__de_large_data_label__'
+export const LARGE_DATA_LABEL_MARK_KEY_PREFIX = '__de_large_data_label__'
 
-// 基础柱状图的标签依附 interval，基础折线图的标签依附 point
-// 只为明确验证过定位方式的图表创建标签载体，避免影响其它图表的几何语义
+// 仅为定位方式已确认的图表创建采样载体，根 point 会先包装为共享尺度的 view
+// 其它根图元和极坐标图表保留各自原有标签策略，避免改变比例尺或几何布局
 const LARGE_DATA_LABEL_MARK_TYPES = new Map([
   ['bar', new Set(['interval'])],
-  ['line', new Set(['point'])]
+  ['bar-horizontal', new Set(['interval'])],
+  ['bar-stack', new Set(['interval', 'point'])],
+  ['bar-stack-horizontal', new Set(['interval', 'point'])],
+  ['bar-group', new Set(['interval'])],
+  ['bar-group-stack', new Set(['interval'])],
+  ['percentage-bar-stack', new Set(['interval'])],
+  ['percentage-bar-stack-horizontal', new Set(['interval'])],
+  ['progress-bar', new Set(['interval'])],
+  ['bar-range', new Set(['interval'])],
+  ['waterfall', new Set(['interval'])],
+  ['bidirectional-bar', new Set(['interval'])],
+  ['bullet-graph', new Set(['interval'])],
+  ['line', new Set(['point'])],
+  ['area', new Set(['point'])],
+  ['area-stack', new Set(['point'])],
+  ['chart-mix', new Set(['interval', 'point'])],
+  ['chart-mix-group', new Set(['interval', 'point'])],
+  ['chart-mix-stack', new Set(['interval', 'point'])],
+  ['chart-mix-dual-line', new Set(['point'])],
+  ['radar', new Set(['line'])],
+  ['scatter', new Set(['point'])],
+  ['multi-scatter', new Set(['point'])],
+  ['quadrant', new Set(['point'])]
 ])
 
 // 只统计图元数量会随数据量线性增长的基础 mark
@@ -116,7 +135,7 @@ const mergeEncode = (
 /**
  * 判断单条数据经过现有标签文本规则后是否会产生可见内容
  *
- * 柱状图使用 text 字段加 formatter，折线图使用 text 函数，两种写法都在这里复用
+ * 不同图表分别使用 text 字段或 text 函数，两种写法都在这里复用
  * 先过滤未勾选的指标可以避免 G2 为返回空文本的数据仍然创建标签图元
  * 标签函数出现异常时保守保留数据，让正式渲染流程继续暴露原有问题而不是静默丢标签
  *
@@ -144,35 +163,16 @@ const hasVisibleLabelText = (labels: Record<string, any>[], datum: unknown): boo
 }
 
 /**
- * 识别标签是否开启全量显示
- *
- * 当前柱状图和折线图在非全量模式下都会追加 overlapHide
- * 不包含隐藏重叠标签变换时视为全量显示，并使用更高但仍有边界的渲染上限
- *
- * @param labels 当前 mark 的标签配置
- * @returns 是否跳过了重叠隐藏处理
- */
-const isFullDisplayLabel = (labels: Record<string, any>[]): boolean => {
-  return labels.some(label => {
-    const transforms = Array.isArray(label.transform) ? label.transform : []
-    return !transforms.some(transform => ['overlapHide', 'overflowHide'].includes(transform?.type))
-  })
-}
-
-/**
  * 计算当前标签模式允许创建的数据载体数量
  *
  * 每条载体数据会为每个 label 配置创建一个文本图元，因此需要按配置数量均分总预算
- * 全量显示只扩大安全预算，不解除硬上限，防止多个指标同时启用时重新卡死页面
+ * 普通和全量显示共用统一预算，避免不同模式下出现容量差异
  *
  * @param labels 当前 mark 的标签配置
  * @returns 当前 mark 最多保留的数据记录数
  */
 const getLabelDataRenderLimit = (labels: Record<string, any>[]): number => {
-  const totalLimit = isFullDisplayLabel(labels)
-    ? LARGE_DATA_FULL_LABEL_RENDER_COUNT
-    : LARGE_DATA_LABEL_RENDER_COUNT
-  return Math.max(1, Math.floor(totalLimit / Math.max(1, labels.length)))
+  return Math.max(1, Math.floor(LARGE_DATA_LABEL_RENDER_COUNT / Math.max(1, labels.length)))
 }
 
 /**
@@ -250,11 +250,72 @@ const replaceInlineData = (originalData: unknown, sampledData: unknown[]): unkno
 }
 
 /**
- * 为指定基础图表生成有限数量的标签载体 mark
+ * 将单个标签数据 mark 拆分为完整主图元与有限标签载体
  *
- * 真实 interval 或 point 不再配置超量 labels，避免 G2 为全部数据创建文本图元
+ * @param mark 当前标签所属的数据 mark
+ * @param labelMarkTypes 当前图表允许使用标签载体的 mark 类型
+ * @param data 当前 mark 实际使用的数据
+ * @param encode 当前 mark 实际使用的编码
+ * @param path 当前节点路径
+ * @returns 无需处理时返回 undefined，否则返回主图元和标签载体
+ */
+const createSampledLabelMarks = (
+  mark: LargeDataSpec,
+  labelMarkTypes: Set<string>,
+  data: unknown[] | undefined,
+  encode: Record<string, any>,
+  path: string
+): LargeDataSpec[] | undefined => {
+  const labels = Array.isArray(mark.labels) ? mark.labels : []
+  if (
+    !labelMarkTypes.has(mark.type) ||
+    !data ||
+    labels.length === 0 ||
+    data.length * labels.length <= LARGE_DATA_LABEL_RENDER_COUNT
+  ) {
+    return
+  }
+  const visibleLabelData = data.filter(datum => hasVisibleLabelText(labels, datum))
+  if (!visibleLabelData.length) {
+    return [{ ...mark, labels: [] }]
+  }
+  const sampledData = sampleLabelData(visibleLabelData, encode.x, getLabelDataRenderLimit(labels))
+  const seriesField = encode.series ?? encode.color
+  const seriesDomain = mark.type === 'interval' ? getFieldDomain(data, seriesField) : []
+  const labelMark = {
+    ...mark,
+    key: `${LARGE_DATA_LABEL_MARK_KEY_PREFIX}${path}`,
+    data: replaceInlineData(mark.data, sampledData),
+    ...(seriesDomain.length && {
+      scale: {
+        ...mark.scale,
+        series: { ...mark.scale?.series, domain: seriesDomain }
+      }
+    }),
+    tooltip: false,
+    animate: false,
+    style: {
+      ...mark.style,
+      fillOpacity: 0,
+      strokeOpacity: 0,
+      pointerEvents: 'none'
+    }
+  } as LargeDataSpec
+  // G2 会把 axis、legend 和 slider 写入比例尺后再合并多个 mark
+  // 对共享组件赋值 false 会生成空 guide 并覆盖主图，因此这里只移除载体独有的交互字段
+  // 不声明 slider 才表示载体不创建缩略轴，同时不会破坏主 mark 已有的可交互缩略轴
+  delete labelMark.slider
+  delete labelMark.interaction
+  delete labelMark.state
+  return [{ ...mark, labels: [] }, labelMark]
+}
+
+/**
+ * 为指定图表生成有限数量的标签载体 mark
+ *
+ * 真实数据 mark 不再配置超量 labels，避免 G2 为全部数据创建文本图元
  * 标签载体先执行现有文本规则过滤未启用的指标，再按分类维度均匀采样
- * 柱状图通过完整 series 域保持 dodgeX 位置，折线图继续使用完整 line 绘制原始趋势
+ * interval 通过完整 series 域保持分组位置，主图元继续使用完整数据绘制
  * 标签载体保留主 mark 的轴和图例配置，防止共享比例尺合并时把公共 guide 覆盖为空
  * 缩略轴字段在构造完成后彻底移除，避免重复创建控件或覆盖主 mark 的缩略轴配置
  *
@@ -275,6 +336,17 @@ const sampleLargeDataLabels = (
   const data = getInlineData(spec.data) ?? inheritedData
   const encode = mergeEncode(inheritedEncode, spec.encode as Record<string, any>)
   if (!Array.isArray(spec.children)) {
+    const rootMarks =
+      path === '0' ? createSampledLabelMarks(spec, labelMarkTypes, data, encode, path) : undefined
+    if (rootMarks) {
+      // 根 point 无法直接添加兄弟标签 mark，包装为 view 后继续复用原比例尺和事件图元
+      return {
+        type: 'view',
+        autoFit: spec.autoFit,
+        theme: spec.theme,
+        children: rootMarks
+      } as LargeDataSpec
+    }
     return spec
   }
   let changed = false
@@ -283,55 +355,19 @@ const sampleLargeDataLabels = (
     const preparedChild = sampleLargeDataLabels(child, labelMarkTypes, data, encode, childPath)
     const childData = getInlineData(preparedChild.data) ?? data
     const childEncode = mergeEncode(encode, preparedChild.encode as Record<string, any>)
-    const labels = Array.isArray(preparedChild.labels) ? preparedChild.labels : []
-    if (
-      !labelMarkTypes.has(preparedChild.type) ||
-      !childData ||
-      labels.length === 0 ||
-      childData.length * labels.length <= LARGE_DATA_LABEL_RENDER_COUNT
-    ) {
+    const sampledMarks = createSampledLabelMarks(
+      preparedChild,
+      labelMarkTypes,
+      childData,
+      childEncode,
+      childPath
+    )
+    if (!sampledMarks) {
       changed ||= preparedChild !== child
       return [preparedChild]
     }
     changed = true
-    const visibleLabelData = childData.filter(datum => hasVisibleLabelText(labels, datum))
-    if (!visibleLabelData.length) {
-      return [{ ...preparedChild, labels: [] }]
-    }
-    const sampledData = sampleLabelData(
-      visibleLabelData,
-      childEncode.x,
-      getLabelDataRenderLimit(labels)
-    )
-    const seriesField = childEncode.series ?? childEncode.color
-    const seriesDomain =
-      preparedChild.type === 'interval' ? getFieldDomain(childData, seriesField) : []
-    const labelMark = {
-      ...preparedChild,
-      key: `${LARGE_DATA_LABEL_MARK_KEY_PREFIX}${childPath}`,
-      data: replaceInlineData(preparedChild.data, sampledData),
-      ...(seriesDomain.length && {
-        scale: {
-          ...preparedChild.scale,
-          series: { ...preparedChild.scale?.series, domain: seriesDomain }
-        }
-      }),
-      tooltip: false,
-      animate: false,
-      style: {
-        ...preparedChild.style,
-        fillOpacity: 0,
-        strokeOpacity: 0,
-        pointerEvents: 'none'
-      }
-    } as LargeDataSpec
-    // G2 会把 axis、legend 和 slider 写入比例尺后再合并多个 mark
-    // 对共享组件赋值 false 会生成空 guide 并覆盖主图，因此这里只移除载体独有的交互字段
-    // 不声明 slider 才表示载体不创建缩略轴，同时不会破坏主 mark 已有的可交互缩略轴
-    delete labelMark.slider
-    delete labelMark.interaction
-    delete labelMark.state
-    return [{ ...preparedChild, labels: [] }, labelMark]
+    return sampledMarks
   })
   return changed ? ({ ...spec, children } as LargeDataSpec) : spec
 }
@@ -373,7 +409,7 @@ const getLargeDataRenderCount = (spec: LargeDataSpec, inheritedDataLength = 0): 
  * 在不修改原 Spec 对象的前提下，递归生成大数据优化版本
  *
  * 关闭基础数据 mark 的 enter、update 和 exit 动画，保留辅助元素及结构型图表的动画语义
- * G2 会先创建全部标签图元再执行 overlapHide，因此大数据场景必须在 render 前限制 labels
+ * 标签数量仅由白名单图表的采样载体控制，其它几何结构保留各自原有标签策略
  * 单独绘制的极值、参考线等 text mark 不受影响，tooltip 配置也保持原样
  * 只有显式列入策略的图表才关闭已经存在的 elementHighlight，tooltip 和选择交互保持原样
  * 返回新对象可以避免污染图表类复用的默认配置，也能让 G2 options 正确感知配置变化
@@ -397,23 +433,12 @@ const optimizeLargeDataSpec = (
       : spec.interaction
   const isLargeDataMark = LARGE_DATA_MARK_TYPES.has(spec.type)
   const disableAnimation = isLargeDataMark && spec.animate !== false
-  const labelCount = Array.isArray(spec.labels) ? spec.labels.length : 0
-  const disableLabels =
-    isLargeDataMark &&
-    !isLargeDataLabelMark(spec.key) &&
-    (data?.length ?? 0) * labelCount > LARGE_DATA_LABEL_RENDER_COUNT
-  if (
-    children === spec.children &&
-    interaction === spec.interaction &&
-    !disableAnimation &&
-    !disableLabels
-  ) {
+  if (children === spec.children && interaction === spec.interaction && !disableAnimation) {
     return spec
   }
   return {
     ...spec,
     ...(disableAnimation ? { animate: false } : {}),
-    ...(disableLabels ? { labels: [] } : {}),
     ...(interaction !== spec.interaction ? { interaction } : {}),
     ...(children !== spec.children ? { children } : {})
   } as LargeDataSpec
@@ -486,7 +511,7 @@ export abstract class G2ChartView<
    * 在 drawChart 完成最终 options 装配且首次 render 尚未开始时应用公共性能策略
    *
    * 小于等于阈值时保持原动画、标签和交互，不改变常规数据量下的视觉体验
-   * 超过阈值时关闭数据 mark 动画并限制普通标签，避免大量文本创建和碰撞检测阻塞主线程
+   * 超过阈值时关闭数据 mark 动画，并对支持的图表限制普通标签数量
    * 优化后的 Spec 会写回图表实例，让首次 render、刷新和后续 forceFit 复用相同行为
    * chart 参数允许为空，用于兼容空数据或图表实例尚未创建成功的场景
    *
@@ -502,7 +527,7 @@ export abstract class G2ChartView<
     }
     // 仅基础柱状图关闭全量区域高亮索引，其它图表保留原有交互
     // 图表类型在这里统一判断，避免各图表实现重复维护阈值和降级规则
-    // 基础柱状图和折线图使用受控标签载体，其它图表仍执行通用超量标签保护
+    // 白名单图表使用受控标签载体，其它图表保留各自原有标签策略
     const labelMarkTypes = LARGE_DATA_LABEL_MARK_TYPES.get(this.name)
     const preparedOptions = labelMarkTypes
       ? sampleLargeDataLabels(options, labelMarkTypes)
@@ -555,7 +580,7 @@ export abstract class G2ChartView<
     return { labelTransform: `rotate(${rotate})` }
   }
 
-  protected getLegend = (chart: Chart) => {
+  protected getLegend = (chart: Chart, markerSizeScale = 1) => {
     let legend = {}
     let customStyle: CustomStyle
     if (chart.customStyle) {
@@ -567,7 +592,7 @@ export abstract class G2ChartView<
           let position
           let layoutJustifyContent = 'center'
           const legendSymbol = l.icon
-          const legendSize = l.size
+          const legendSize = l.size * markerSizeScale
           const legendFontSize = l.fontSize
           const legendColor = l.color
           // position 图例布局

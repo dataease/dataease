@@ -18,7 +18,10 @@ export { computeRoughPlotSize, placeComponents, processAxisZ }
 
 const AXIS_POSITIONS = ['top', 'right', 'bottom', 'left'] as const
 const SAFE_SPACING = 4
+const LEFT_AXIS_TITLE_SAFE_MARGIN = SAFE_SPACING + 8
+const AXIS_TITLE_MAX_LENGTH_RATIO = 0.8
 const AXIS_LABEL_MIN_GAP = 6
+const VERTICAL_AXIS_TOP_SAFE_PADDING = SAFE_SPACING + 8
 const MAX_OVERFLOW_CORRECTION_PASSES = 2
 // 保证边界修正后仍保留至少四分之一的 Plot 内容区，避免超长标签吞掉全部图形区域
 const MIN_CONTENT_RATIO = 1 / 4
@@ -57,6 +60,33 @@ type AxisMeasurement = {
 
 const originalAxisTickFilters = new WeakMap<G2GuideComponentOptions, AxisTickFilter | undefined>()
 const managedAxisAutoHide = new WeakSet<G2GuideComponentOptions>()
+
+/**
+ * 左轴标题保持单行，并按最终 Plot 高度限制长度。
+ * G2 Text 原生负责真实字形测量和省略，避免中英文混排时按字符数误截断。
+ */
+const applyLeftAxisTitleOverflow = (components: G2GuideComponentOptions[], layout: Layout) => {
+  const maxLength = Math.max(1, Math.floor(layout.innerHeight * AXIS_TITLE_MAX_LENGTH_RATIO))
+  components.forEach(component => {
+    if (
+      component.position !== 'left' ||
+      component.dataeaseAxisTitleSafeMargin !== true ||
+      component.title === false ||
+      component.title === null ||
+      component.title === undefined ||
+      component.title === ''
+    ) {
+      return
+    }
+    component.titleWordWrap = true
+    component.titleWordWrapWidth = maxLength
+    component.titleMaxLines = 1
+    component.titleTextOverflow = '...'
+    component.titleDataeaseOriginalText = Array.isArray(component.title)
+      ? component.title.join(',')
+      : `${component.title}`
+  })
+}
 
 /**
  * 对齐 G2Plot 的轴标签策略：默认关闭自动旋转，并以 6px 间距等距抽稀
@@ -505,9 +535,26 @@ export function computeLayout(
     'marginBottom',
     'marginLeft'
   ].some(key => options[key] !== undefined)
+  const needsLeftAxisTitleSafeMargin = axisComponents.some(
+    component =>
+      component.position === 'left' &&
+      component.dataeaseAxisTitleSafeMargin === true &&
+      component.title !== false &&
+      component.title !== null &&
+      component.title !== undefined &&
+      component.title !== ''
+  )
   // G2 自动 padding 已覆盖轴和图例尺寸，标准直角坐标图无需再叠加默认 16px 外 margin
   const layoutOptions =
-    axisComponents.length && !hasExplicitMargin ? { ...options, margin: 0 } : options
+    axisComponents.length && !hasExplicitMargin
+      ? {
+          ...options,
+          margin: 0,
+          marginTop: 2,
+          // 左轴标题默认向画布外平移 8px，额外保留安全空间避免字形上半部被裁剪
+          ...(needsLeftAxisTitleSafeMargin ? { marginLeft: LEFT_AXIS_TITLE_SAFE_MARGIN } : {})
+        }
+      : options
   const originalAxisSizes = new Map(axisComponents.map(component => [component, component.size]))
   let layout = computeG2Layout(components, layoutOptions, theme, library)
   if (!layout) {
@@ -521,6 +568,7 @@ export function computeLayout(
     component => component.dataeaseAxisLabelOverflow !== false
   )
   if (!measurableAxisComponents.length) {
+    applyLeftAxisTitleOverflow(axisComponents, layout)
     return layout
   }
 
@@ -596,5 +644,24 @@ export function computeLayout(
     }
     correctedLayout = applyLayoutCorrection(correctedLayout, top, right, bottom, left)
   }
+  const hasVisibleVerticalAxisLabel = measurableAxisComponents.some(
+    component =>
+      (component.position === 'left' || component.position === 'right') && component.label !== false
+  )
+  const currentTopCorrection = correctedLayout.paddingTop - layout.paddingTop
+  const missingTopPadding = hasVisibleVerticalAxisLabel
+    ? Math.max(0, VERTICAL_AXIS_TOP_SAFE_PADDING - currentTopCorrection)
+    : 0
+  if (missingTopPadding) {
+    // 纵向轴首个刻度需要固定顶部安全区，避免交互重布局后贴住 Plot 裁剪边界
+    const [safeTopPadding] = limitCorrection(
+      missingTopPadding,
+      0,
+      correctedLayout.innerHeight,
+      viewHeight
+    )
+    correctedLayout = applyLayoutCorrection(correctedLayout, safeTopPadding, 0, 0, 0)
+  }
+  applyLeftAxisTitleOverflow(axisComponents, correctedLayout)
   return correctedLayout
 }
