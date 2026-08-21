@@ -578,7 +578,9 @@ const handleMouseDownOnShape = (e, forceMove = false) => {
     return
   }
   const { tOffsetX, tOffsetY, tOffsetSpeed } = getTransformParams()
-  dashboardActive.value && emit('onStartMove', e)
+  const shouldStartMove = forceMove || !hasChartMouseEvent()
+  // 只有实际绑定组件移动事件时才创建拖动占位，避免图表内部交互误显示拖动阴影
+  dashboardActive.value && shouldStartMove && emit('onStartMove', e)
   // 将当前点击组件的事件传播出去
   nextTick(() => eventBus.emit('componentClick'))
   dvMainStore.setInEditorStatus(true)
@@ -749,7 +751,7 @@ const handleMouseDownOnShape = (e, forceMove = false) => {
     handleGroupComponent()
   }
   // 图表专用拖动区域需要绕过图表内部 cursor 判定
-  if (forceMove || !hasChartMouseEvent()) {
+  if (shouldStartMove) {
     document.addEventListener('mousemove', move)
     document.addEventListener('mouseup', up)
   }
