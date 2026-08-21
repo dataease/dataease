@@ -63,6 +63,7 @@ const pickerOptions = computed(() => ({
 
 <style scoped>
 .spreadsheet-filter-time {
-  width: 100%;
+  width: 100% !important;
+  min-width: 0;
 }
 </style>

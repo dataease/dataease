@@ -36,12 +36,11 @@ export class DetailTableRangeService extends Disposable {
     )
   }
 
-  validateSelectedRange(range: IRangeSelectResult, resultLimit = 1000): string | undefined {
-    const rowCount = this.getRowCountByResultLimit(resultLimit)
+  validateSelectedRange(range: IRangeSelectResult): string | undefined {
     const selectedRange: SheetRange = {
       sheetId: range.sheetId,
       startRow: range.startRowNumber,
-      endRow: range.startRowNumber + rowCount - 1,
+      endRow: range.endRowNumber,
       startColumn: range.startColumnNumber,
       endColumn: range.endColumnNumber
     }
@@ -131,13 +130,6 @@ export class DetailTableRangeService extends Disposable {
 
   private getCurrentRenderedRange(pluginId: string): SheetRange | undefined {
     return this.getRenderedRanges().find(range => range.pluginId === pluginId)
-  }
-
-  private getRowCountByResultLimit(resultLimit?: number): number {
-    const normalizedLimit = Number.isFinite(resultLimit) && Number(resultLimit) > 0
-      ? Math.floor(Number(resultLimit))
-      : 1000
-    return 1 + normalizedLimit
   }
 
   private hasExternalCellValue(worksheet: any, targetRange: SheetRange, allowedRange?: SheetRange): boolean {

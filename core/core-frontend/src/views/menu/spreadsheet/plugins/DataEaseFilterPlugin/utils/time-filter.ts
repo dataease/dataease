@@ -29,6 +29,173 @@ export const getTimeValueFormat = (granularity: TimeGranularity) => {
   return 'YYYY-MM-DD'
 }
 
+export const getSingleRelativeOptions = (granularity: string) => {
+  const base = (granularity || '').replace('range', '')
+  if (base === 'year') {
+    return [
+      { label: '今年', value: 'thisYear' },
+      { label: '去年', value: 'lastYear' },
+      { label: '自定义', value: 'custom' }
+    ]
+  }
+  if (base === 'month') {
+    return [
+      { label: '本月', value: 'thisMonth' },
+      { label: '上月', value: 'lastMonth' },
+      { label: '自定义', value: 'custom' }
+    ]
+  }
+  return [
+    { label: '今天', value: 'today' },
+    { label: '昨天', value: 'yesterday' },
+    { label: '月初', value: 'monthBeginning' },
+    { label: '月底', value: 'monthEnd' },
+    { label: '年初', value: 'yearBeginning' },
+    { label: '自定义', value: 'custom' }
+  ]
+}
+
+export const getRangeRelativeOptions = (granularity: string) => {
+  const base = (granularity || '').replace('range', '')
+  if (base === 'year') {
+    return [
+      { label: '今年', value: 'thisYear' },
+      { label: '去年', value: 'lastYear' },
+      { label: '自定义', value: 'custom' }
+    ]
+  }
+  if (base === 'month') {
+    return [
+      { label: '本月', value: 'thisMonth' },
+      { label: '上月', value: 'lastMonth' },
+      { label: '本季度', value: 'thisQuarter' },
+      { label: '最近3个月', value: 'LastThreeMonths' },
+      { label: '最近6个月', value: 'LastSixMonths' },
+      { label: '最近12个月', value: 'LastTwelveMonths' },
+      { label: '年初至本月', value: 'YearToThisMonth' },
+      { label: '年初至上月末', value: 'YearToLastMonthEnd' },
+      { label: '自定义', value: 'custom' }
+    ]
+  }
+  return [
+    { label: '今天', value: 'today' },
+    { label: '昨天', value: 'yesterday' },
+    { label: '本周', value: 'thisWeek' },
+    { label: '本月', value: 'thisMonth' },
+    { label: '最近3天', value: 'LastThreeDays' },
+    { label: '月初至今', value: 'monthBeginning' },
+    { label: '年初至今', value: 'yearBeginning' },
+    { label: '年初至上月末', value: 'YearToLastMonthEnd' },
+    { label: '月初至昨天', value: 'monthToYesterday' },
+    { label: '完整上月', value: 'LastMonthFull' },
+    { label: '自定义', value: 'custom' }
+  ]
+}
+
+export const getAllowedUnits = (granularity: string) => {
+  const base = (granularity || '').replace('range', '')
+  if (base === 'year') return ['year']
+  if (base === 'month') return ['year', 'month']
+  return ['year', 'month', 'day']
+}
+
+export const resetTimeFilterRangeOnGranularityChange = (
+  range: SpreadsheetFilterTimeFilterRange | undefined,
+  granularity: string
+) => {
+  if (!range) return
+  const singleOptions = getSingleRelativeOptions(granularity)
+  const rangeOptions = getRangeRelativeOptions(granularity)
+  const allowedUnits = getAllowedUnits(granularity)
+  const fallbackUnit = allowedUnits[allowedUnits.length - 1] || 'year'
+
+  // 重置“开始于”动态时间
+  if (range.start?.dynamic) {
+    if (!singleOptions.some(opt => opt.value === range.start!.dynamic!.relativeToCurrent)) {
+      range.start.dynamic.relativeToCurrent = singleOptions[0]?.value || 'custom'
+    }
+    if (!allowedUnits.includes(range.start.dynamic.unit)) {
+      range.start.dynamic.unit = fallbackUnit as any
+    }
+  }
+
+  // 重置“结束于”动态时间
+  if (range.end?.dynamic) {
+    if (!singleOptions.some(opt => opt.value === range.end!.dynamic!.relativeToCurrent)) {
+      range.end.dynamic.relativeToCurrent = singleOptions[0]?.value || 'custom'
+    }
+    if (!allowedUnits.includes(range.end.dynamic.unit)) {
+      range.end.dynamic.unit = fallbackUnit as any
+    }
+  }
+
+  // 重置“时间区间”动态时间
+  if (range.relativeToCurrentRange) {
+    if (!rangeOptions.some(opt => opt.value === range.relativeToCurrentRange)) {
+      range.relativeToCurrentRange = rangeOptions[0]?.value || 'custom'
+    }
+  }
+}
+
+export const resetTimeConditionOnGranularityChange = (
+  condition: SpreadsheetFilterCondition
+) => {
+  if (!condition) return
+  const isRange = condition.displayType === 'timeRange'
+  const granularity = isRange ? condition.timeRangeGranularity : condition.timeGranularity
+  const singleOptions = getSingleRelativeOptions(granularity)
+  const rangeOptions = getRangeRelativeOptions(granularity)
+  const allowedUnits = getAllowedUnits(granularity)
+  const fallbackUnit = allowedUnits[allowedUnits.length - 1] || 'year'
+
+  // 1. 重置筛选范围（开始于、结束于、时间区间）
+  if (condition.timeFilterRange) {
+    resetTimeFilterRangeOnGranularityChange(condition.timeFilterRange, granularity)
+  }
+
+  // 2. 重置默认值动态时间
+  if (isRange) {
+    if (condition.timeRangeDynamicDefault?.start) {
+      if (!rangeOptions.some(opt => opt.value === condition.timeRangeDynamicDefault.start.relativeToCurrent)) {
+        condition.timeRangeDynamicDefault.start.relativeToCurrent = rangeOptions[0]?.value || 'custom'
+      }
+      if (!allowedUnits.includes(condition.timeRangeDynamicDefault.start.unit)) {
+        condition.timeRangeDynamicDefault.start.unit = fallbackUnit as any
+      }
+    }
+    if (condition.timeRangeDynamicDefault?.end) {
+      if (!rangeOptions.some(opt => opt.value === condition.timeRangeDynamicDefault.end.relativeToCurrent)) {
+        condition.timeRangeDynamicDefault.end.relativeToCurrent = rangeOptions[0]?.value || 'custom'
+      }
+      if (!allowedUnits.includes(condition.timeRangeDynamicDefault.end.unit)) {
+        condition.timeRangeDynamicDefault.end.unit = fallbackUnit as any
+      }
+    }
+  } else {
+    if (condition.timeDynamicDefault?.offset) {
+      if (!singleOptions.some(opt => opt.value === condition.timeDynamicDefault.offset.relativeToCurrent)) {
+        condition.timeDynamicDefault.offset.relativeToCurrent = singleOptions[0]?.value || 'custom'
+      }
+      if (!allowedUnits.includes(condition.timeDynamicDefault.offset.unit)) {
+        condition.timeDynamicDefault.offset.unit = fallbackUnit as any
+      }
+    }
+  }
+}
+
+export const preventInvalidNumberKeys = (e: KeyboardEvent) => {
+  if (['e', 'E', '+', '-', '.'].includes(e.key)) {
+    e.preventDefault()
+  }
+}
+
+export const onPasteNumber = (e: ClipboardEvent) => {
+  const pasteData = e.clipboardData?.getData('text') || ''
+  if (!/^\d+$/.test(pasteData)) {
+    e.preventDefault()
+  }
+}
+
 export const resolveRelativeTime = (
   relative: SpreadsheetFilterRelativeTime,
   base: Dayjs = dayjs()

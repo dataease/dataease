@@ -4,7 +4,14 @@ import dayjs from 'dayjs'
 import { ElConfigProvider } from 'element-plus-secondary'
 import { useLocaleStoreWithOut } from '@/store/modules/locale'
 import type { SpreadsheetFilterTimeFilterRange } from '../../../../types/plugin'
-import { resolveTimeFilterBounds } from '../../utils/time-filter'
+import {
+  getSingleRelativeOptions,
+  getRangeRelativeOptions,
+  onPasteNumber,
+  preventInvalidNumberKeys,
+  resetTimeFilterRangeOnGranularityChange,
+  resolveTimeFilterBounds
+} from '../../utils/time-filter'
 
 const localeStore = useLocaleStoreWithOut()
 const elLocale = computed(() => localeStore.getCurrentLocale.elLocale)
@@ -51,56 +58,8 @@ const pickerValueFormat = computed(() => {
   if (baseGranularity.value === 'datetime') return 'YYYY-MM-DD HH:mm:ss'
   return 'YYYY-MM-DD'
 })
-const singleRelativeOptions = computed(() => {
-  const granularity = props.granularity.replace('range', '')
-  if (granularity === 'year') {
-    return [
-      { label: '今年', value: 'thisYear' },
-      { label: '去年', value: 'lastYear' },
-      { label: '自定义', value: 'custom' }
-    ]
-  }
-  if (granularity === 'month') {
-    return [
-      { label: '本月', value: 'thisMonth' },
-      { label: '上月', value: 'lastMonth' },
-      { label: '自定义', value: 'custom' }
-    ]
-  }
-  return [
-    { label: '今天', value: 'today' },
-    { label: '昨天', value: 'yesterday' },
-    { label: '月初', value: 'monthBeginning' },
-    { label: '年初', value: 'yearBeginning' },
-    { label: '自定义', value: 'custom' }
-  ]
-})
-const rangeRelativeOptions = computed(() => {
-  const granularity = props.granularity.replace('range', '')
-  if (granularity === 'year') return singleRelativeOptions.value
-  if (granularity === 'month')
-    return [
-      { label: '本月', value: 'thisMonth' },
-      { label: '上月', value: 'lastMonth' },
-      { label: '本季度', value: 'thisQuarter' },
-      { label: '最近3个月', value: 'LastThreeMonths' },
-      { label: '最近6个月', value: 'LastSixMonths' },
-      { label: '最近12个月', value: 'LastTwelveMonths' },
-      { label: '年初至本月', value: 'YearToThisMonth' },
-      { label: '年初至上月末', value: 'YearToLastMonthEnd' },
-      { label: '自定义', value: 'custom' }
-    ]
-  return [
-    { label: '今天', value: 'today' },
-    { label: '昨天', value: 'yesterday' },
-    { label: '最近3天', value: 'LastThreeDays' },
-    { label: '月初至今', value: 'monthBeginning' },
-    { label: '年初至今', value: 'yearBeginning' },
-    { label: '年初至上月末', value: 'YearToLastMonthEnd' },
-    { label: '月初至昨天', value: 'monthToYesterday' },
-    { label: '自定义', value: 'custom' }
-  ]
-})
+const singleRelativeOptions = computed(() => getSingleRelativeOptions(props.granularity))
+const rangeRelativeOptions = computed(() => getRangeRelativeOptions(props.granularity))
 
 const ensure = () => {
   Object.assign(local, JSON.parse(JSON.stringify(props.value || { intervalType: 'none' })))
@@ -116,6 +75,7 @@ const ensure = () => {
   local.start.dynamic.time ||= dayjs().format('HH:mm:ss')
   local.end.dynamic.time ||= dayjs().format('HH:mm:ss')
   local.relativeToCurrentRange ||= 'custom'
+  resetTimeFilterRangeOnGranularityChange(local, props.granularity)
 }
 watch(() => props.value, ensure, { immediate: true, deep: true })
 watch(
@@ -172,10 +132,22 @@ const activeSides = computed<Array<'start' | 'end'>>(() =>
     : [local.intervalType === 'end' ? 'end' : 'start']
 )
 watch(
-  () => local.start?.type,
-  type => {
-    if (local.intervalType === 'timeInterval' && local.end && type) local.end.type = type
-  }
+  () => props.granularity,
+  (granularity, previousGranularity) => {
+    if (granularity === previousGranularity) return
+    resetTimeFilterRangeOnGranularityChange(local, granularity)
+  },
+  { flush: 'sync' }
+)
+watch(
+  () => [local.intervalType, local.start?.type] as const,
+  ([intervalType, startType]) => {
+    // 从“开始于”切到“时间区间”时开始类型可能没有变化，也要同步结束边界类型。
+    if (intervalType === 'timeInterval' && local.end && startType) {
+      local.end.type = startType
+    }
+  },
+  { immediate: true }
 )
 </script>
 
@@ -217,10 +189,14 @@ watch(
                 :class="{ 'time-range-popover__custom--with-time': baseGranularity === 'datetime' }"
               >
                 <el-input-number
-                  step-strictly
                   v-model="local[side]!.dynamic!.value"
                   :min="0"
+                  :step="1"
+                  :precision="0"
+                  step-strictly
                   controls-position="right"
+                  @keydown="preventInvalidNumberKeys"
+                  @paste="onPasteNumber"
                 />
                 <el-select v-model="local[side]!.dynamic!.unit" :teleported="false"
                   ><el-option v-for="unit in units" :key="unit.value" v-bind="unit"
@@ -270,6 +246,7 @@ watch(
               :model-value="preview"
               style="width: 100%"
               :type="pickerType"
+              :value-format="pickerValueFormat"
               disabled
             />
             <el-date-picker
@@ -277,6 +254,7 @@ watch(
               :model-value="preview"
               style="width: 100%"
               :type="pickerType"
+              :value-format="pickerValueFormat"
               disabled
             />
           </div>

@@ -2,7 +2,10 @@ import type { IAccessor, ICommand } from '@univerjs/core'
 import { CommandType, ICommandService } from '@univerjs/core'
 import { InsertDetailTableOperation } from '../../DataEaseDetailTablePlugin/commands/insert-operations'
 import { InsertPivotTableOperation } from '../../DataEasePivotTablePlugin/commands/insert-operations'
-import { TableInsertionService } from '../../DataEaseRuntimePlugin/services/table'
+import {
+  PluginRenderStatusService,
+  TableInsertionService
+} from '../../DataEaseRuntimePlugin/services/table'
 import {
   DATAEASE_ADD_NOTE_MENU_ID,
   DATAEASE_INSERT_LINK_MENU_ID
@@ -21,6 +24,10 @@ export const DataEaseInsertDropdownOperation: ICommand = {
   handler: async (accessor: IAccessor, params?: string | { value?: string; commandId?: string }) => {
     const commandId = normalizeCommandId(params)
     if (!commandId) {
+      return false
+    }
+    // 与工具栏禁用规则保持一致，草稿未结束前不分发任何插入菜单命令。
+    if (accessor.get(PluginRenderStatusService).hasDraft()) {
       return false
     }
     if (

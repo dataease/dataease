@@ -153,7 +153,7 @@ onBeforeUnmount(_resetState)
     </el-radio-group>
 
     <div v-if="placement === 'existing'" class="range-selection-section">
-      <div class="label">选择现有工作表中的区域：</div>
+      <div class="label">点击选择现有工作表中的区域：</div>
       <div class="range-input-wrapper" @click="handleRangeClick">
         <el-input
           v-model="existingRange"

@@ -86,6 +86,16 @@ export class PluginRenderStatusService extends Disposable {
     return Array.from(this._states.values())
   }
 
+  /** 草稿实例尚未完成配置时，不允许再次进入表格插入流程。 */
+  hasDraft(): boolean {
+    for (const state of this._states.values()) {
+      if (state.status === 'draft') {
+        return true
+      }
+    }
+    return false
+  }
+
   set(status: PluginRenderStatus): void {
     const previous = this._states.get(status.pluginId)
     this._states.set(status.pluginId, status)
