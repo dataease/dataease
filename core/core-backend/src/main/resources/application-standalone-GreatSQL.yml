@@ -4,7 +4,8 @@ spring:
         url: jdbc:mariadb://hostname:3306/database?autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
         username: dataease
         password: passwd
-
+    flyway:
+        enabled: false
     jpa:
         properties:
             hibernate:

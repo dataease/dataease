@@ -4,7 +4,8 @@ spring:
     username: dataease
     password: passwd
     driver-class-name: org.postgresql.Driver
-
+  flyway:
+      enabled: false
   jpa:
     properties:
       hibernate:
