@@ -377,6 +377,8 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
       const x = {
         // 标题
         title: axis.nameShow && axis.name ? axis.name : false,
+        // 左轴标题复用条形图的安全留白，避免贴近轴标签或画布边界
+        ...(position === 'left' ? { dataeaseAxisTitleSafeMargin: true } : {}),
         titleFontSize: axis.fontSize,
         titleFill: axis.color,
         // 轴线

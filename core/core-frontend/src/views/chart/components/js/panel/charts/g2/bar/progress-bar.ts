@@ -158,7 +158,8 @@ export class ProgressBar extends HorizontalStackBar {
             y: false,
             x: {
               title: '',
-              titleSpacing: -15,
+              // 对齐条形图的左轴标题布局，避免负间距让标题挤入分类标签区域
+              dataeaseAxisTitleSafeMargin: true,
               labelSpacing: 15,
               tick: false,
               line: false
