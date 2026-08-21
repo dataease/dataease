@@ -3,6 +3,7 @@ package io.dataease.config;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.model.relational.SqlStringGenerationContext;
 import org.hibernate.dialect.DmDialect;
+import org.hibernate.query.sqm.CastType;
 
 import org.hibernate.mapping.Table;
 import org.hibernate.tool.schema.extract.spi.TableInformation;
@@ -39,6 +40,16 @@ public class CustomDMDialect extends DmDialect {
     @Override
     public String toBooleanValueString(boolean bool) {
         return bool ? "1" : "0";
+    }
+
+    @Override
+    public String castPattern(CastType from, CastType to) {
+        // 达梦的 DmDialect 将 boolean 转数字生成为 decode(?1,false,0,true,1,null)，
+        // 达梦数据库中 false/true 与数值列比较会报 Data type mismatch，改为 0/1。
+        if (from == CastType.BOOLEAN && to.isNumeric()) {
+            return "decode(?1,0,0,1,1,null)";
+        }
+        return super.castPattern(from, to);
     }
 
     @Override
