@@ -24,7 +24,8 @@ spring:
       ddl-auto: update
     show-sql: false
 
-
+  flyway:
+      enabled: false
 quartz:
   enabled: true
   scheduler-name: deSyncJob

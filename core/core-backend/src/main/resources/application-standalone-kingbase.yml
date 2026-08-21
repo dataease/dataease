@@ -4,7 +4,8 @@ spring:
     username: user
     password: passwd
     driver-class-name: com.kingbase8.Driver
-
+  flyway:
+      enabled: false
   jpa:
     properties:
       hibernate:

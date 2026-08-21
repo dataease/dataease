@@ -14,28 +14,30 @@ spring:
     multipart:
       max-file-size: 500MB
       max-request-size: 500MB
+  flyway:
+      enabled: false
   datasource:
     url: jdbc:mariadb://${DE_MYSQL_HOST}:${DE_MYSQL_PORT}/${DE_MYSQL_DB}?${DE_MYSQL_PARAMS}
     username: ${DE_MYSQL_USER}
     password: ${DE_MYSQL_PASSWORD}
-jpa:
-  database-platform: org.hibernate.dialect.MySQL8Dialect
-  properties:
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    properties:
       hibernate:
-          dialect: org.hibernate.dialect.MySQL8Dialect
-          jdbc:
-              batch_size: 1000
-              lob:
-                  non_contextual_creation: true
-          order_inserts: true
-          order_updates: true
-          temp:
-              use_jdbc_metadata_defaults: false
-  hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        jdbc:
+          batch_size: 1000
+          lob:
+            non_contextual_creation: true
+        order_inserts: true
+        order_updates: true
+        temp:
+          use_jdbc_metadata_defaults: false
+    hibernate:
       naming:
-          physical-strategy:  io.dataease.config.DynamicCaseNamingStrategy
+        physical-strategy: io.dataease.config.DynamicCaseNamingStrategy
       ddl-auto: update
-  show-sql: false
+    show-sql: false
 dataease:
   apisix-api:
     domain: http://apisix:9180
@@ -54,4 +56,3 @@ task:
     address: http://sync-task-actuator:9001
     log:
       path: /opt/dataease3.0/logs/sync-task/task-handler-log
-

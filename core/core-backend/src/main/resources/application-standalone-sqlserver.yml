@@ -4,7 +4,8 @@ spring:
     username: sa
     password: Calong@2015
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-
+  flyway:
+      enabled: false
 
   jpa:
     properties:
