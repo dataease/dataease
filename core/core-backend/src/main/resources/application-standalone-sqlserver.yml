@@ -19,7 +19,6 @@ spring:
         order_updates: true
         temp:
           use_jdbc_metadata_defaults: false
-        default_schema: jinlong
     hibernate:
       naming:
         physical-strategy:  io.dataease.config.DynamicCaseNamingStrategy
