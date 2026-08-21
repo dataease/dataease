@@ -2,16 +2,18 @@
 import docs from '@/assets/svg/docs.svg'
 import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
 import iconFilter from '@/assets/svg/icon-filter.svg'
-import { ref, reactive, onMounted, computed, onBeforeUnmount } from 'vue'
+import { ref, reactive, onMounted, computed, onBeforeUnmount, h } from 'vue'
+import { RefreshLeft } from '@element-plus/icons-vue'
 import { Icon } from '@/components/icon-custom'
 import { FilterText, convertFilterText } from '@/components/filter-text'
 import DrawerMain from '@/components/drawer-main/src/DrawerMain.vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import { useEmitt } from '@/hooks/web/useEmitt'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { filterOption } from './options'
 import { optionsApi, queryApi, mountedOrg, allUserApi, exportApi, queryUserApi, queryAdminOrgApi } from './logApi'
-import { ElMessage, ElMessageBox, Action } from 'element-plus-secondary'
+import { ElMessage, ElMessageBox, ElButton, Action } from 'element-plus-secondary'
 const userStore = useUserStoreWithOut()
 const { t } = useI18n()
 
@@ -64,20 +66,37 @@ const exportLog = () => {
     callback: (action: Action) => {
       if (action === 'confirm') {
         const param = buildParam()
-        exportApi(param).then((res) => {
-          const blobData = res.data
-          const blob = new Blob([blobData], { type: 'application/vnd.ms-excel' })
-          const link = document.createElement('a')
-          link.style.display = 'none'
-          link.href = URL.createObjectURL(blob)
-          link.download = `${t('operate_log.excel_file_name')}.xlsx` // 下载的文件名
-          document.body.appendChild(link)
-          link.click()
-          document.body.removeChild(link)
-          ElMessage.success(t('operate_log.export_success'))
+        exportApi(param).then(() => {
+          openMessageLoading(() => {
+            useEmitt().emitter.emit('data-export-center', { activeName: 'IN_PROGRESS' })
+          })
         })
       }
     }
+  })
+}
+const openMessageLoading = cb => {
+  ElMessage({
+    message: h('p', null, [
+      t('data_set.can_go_to'),
+      h(
+        ElButton,
+        {
+          text: true,
+          size: 'small',
+          class: 'btn-text',
+          onClick: () => {
+            cb()
+          }
+        },
+        t('data_export.export_center')
+      ),
+      t('data_set.progress_and_download')
+    ]),
+    iconClass: 'el-icon-loading',
+    icon: h(RefreshLeft),
+    showClose: true,
+    customClass: 'de-message-loading de-message-export'
   })
 }
 const isProxyOrgMode = computed(() => {

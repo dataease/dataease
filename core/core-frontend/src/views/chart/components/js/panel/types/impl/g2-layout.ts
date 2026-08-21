@@ -18,6 +18,8 @@ export { computeRoughPlotSize, placeComponents, processAxisZ }
 
 const AXIS_POSITIONS = ['top', 'right', 'bottom', 'left'] as const
 const SAFE_SPACING = 4
+const AXIS_LABEL_MIN_GAP = 6
+const MAX_OVERFLOW_CORRECTION_PASSES = 2
 // 保证边界修正后仍保留至少四分之一的 Plot 内容区，避免超长标签吞掉全部图形区域
 const MIN_CONTENT_RATIO = 1 / 4
 
@@ -36,7 +38,76 @@ type LabelBounds = {
 }
 type PositionedLabel = {
   index: number
+  axisCoordinate: number
   bounds: LabelBounds
+}
+type AxisTickFilter = (value: unknown, index: number, values: unknown[]) => boolean
+type AxisTick = {
+  value: unknown
+  sourceIndex: number
+}
+type AxisMeasurement = {
+  scale: any
+  style: Record<string, any>
+  ticks: AxisTick[]
+  labelBounds: LabelBounds[]
+  sampledIndexes?: Set<number>
+  sampled?: boolean
+}
+
+const originalAxisTickFilters = new WeakMap<G2GuideComponentOptions, AxisTickFilter | undefined>()
+const managedAxisAutoHide = new WeakSet<G2GuideComponentOptions>()
+
+/**
+ * 对齐 G2Plot 的轴标签策略：默认关闭自动旋转，并以 6px 间距等距抽稀
+ * G2 5 会同时扩张相邻标签的检测边界，因此单侧使用一半间距
+ */
+const applyAxisLabelOverlapDefaults = (components: G2GuideComponentOptions[]) => {
+  components.forEach(component => {
+    if (
+      typeof component.type !== 'string' ||
+      !component.type.startsWith('axis') ||
+      !AXIS_POSITIONS.includes(component.position as AxisPosition)
+    ) {
+      return
+    }
+    if (component.labelAutoRotate === undefined) {
+      component.labelAutoRotate = false
+    }
+    const transforms = Array.isArray(component.transform) ? component.transform : []
+    if (component.labelAutoHide === false) {
+      managedAxisAutoHide.delete(component)
+      return
+    }
+    // 记录 G2 自动布局前的来源，避免内部补写 hide transform 后被误判为用户显式配置
+    if (!transforms.length) {
+      managedAxisAutoHide.add(component)
+    }
+    if (!managedAxisAutoHide.has(component)) {
+      return
+    }
+    // 字号或画布变化时先移除上一轮抽样，确保本轮始终从完整候选刻度重新计算
+    if (!originalAxisTickFilters.has(component)) {
+      originalAxisTickFilters.set(
+        component,
+        typeof component.tickFilter === 'function' ? component.tickFilter : undefined
+      )
+    }
+    const originalTickFilter = originalAxisTickFilters.get(component)
+    if (originalTickFilter) {
+      component.tickFilter = originalTickFilter
+    } else {
+      delete component.tickFilter
+    }
+    const autoHide =
+      component.labelAutoHide && typeof component.labelAutoHide === 'object'
+        ? component.labelAutoHide
+        : {}
+    component.labelAutoHide = {
+      margin: AXIS_LABEL_MIN_GAP / 2,
+      ...autoHide
+    }
+  })
 }
 
 const getTicks = (
@@ -44,7 +115,9 @@ const getTicks = (
   tickFilter?: (value: unknown, index: number, values: unknown[]) => boolean
 ) => {
   const ticks = scale.getTicks?.() ?? scale.getOptions().domain ?? []
-  return tickFilter ? ticks.filter(tickFilter) : ticks
+  return ticks
+    .map((value, sourceIndex) => ({ value, sourceIndex }))
+    .filter(({ value, sourceIndex }) => tickFilter?.(value, sourceIndex, ticks) ?? true)
 }
 
 const getTickRatio = (scale, value: unknown, position: AxisPosition, transpose: boolean) => {
@@ -75,6 +148,11 @@ const getAxisCallbackNumber = (option, value: unknown, index: number, ticks: unk
  */
 const getHideTransform = (component: G2GuideComponentOptions) => {
   const transforms = Array.isArray(component.transform) ? component.transform : []
+  if (managedAxisAutoHide.has(component) && component.labelAutoHide) {
+    return typeof component.labelAutoHide === 'object'
+      ? { type: 'hide', ...component.labelAutoHide }
+      : { type: 'hide' }
+  }
   // 与 G2 inferLabelOverlap 保持一致：显式 transform 存在时不再合并 labelAutoHide
   if (transforms.length) {
     return transforms.find(transform => transform.type === 'hide')
@@ -107,58 +185,104 @@ const parseSpacing = (spacing: unknown): [number, number, number, number] => {
   return [values[0], values[1], values[2], values[3]]
 }
 
-const hasLabelOverlap = (labels: PositionedLabel[], margin: unknown) => {
+const getAxisLabelGap = (position: AxisPosition, margin: unknown) => {
   const [top, right, bottom, left] = parseSpacing(margin)
-  let previous: PositionedLabel | undefined
-  return labels.some(current => {
-    if (!previous || previous.index === current.index) {
-      previous = current
-      return false
-    }
-    const first = previous.bounds
-    const second = current.bounds
-    previous = current
-    const overlapX =
-      first.x - left < second.x + second.width + right &&
-      second.x - left < first.x + first.width + right
-    const overlapY =
-      first.y - top < second.y + second.height + bottom &&
-      second.y - top < first.y + first.height + bottom
-    return overlapX && overlapY
-  })
+  return position === 'top' || position === 'bottom' ? left + right : top + bottom
 }
 
 /**
- * 在绘制前预判 autoHide 抽样后首尾标签是否仍然可见
- * 只按 keepTail 猜测会出现两类错误，隐藏尾标签仍占留白或可见尾标签被画布裁切
- * 这里只同步 G2 5.4.x 的 parity 核心抽样规则，G2 更换隐藏算法后必须同步调整
+ * 对齐 G2Plot：根据最大标签投影、最小刻度间距和安全间隔一次算出抽样步长
+ * 相比逐级尝试 parity 序列，密集分类轴从最坏平方复杂度降为线性复杂度
  */
-const getBoundaryLabelIndexes = (component: G2GuideComponentOptions, labels: PositionedLabel[]) => {
-  const tickCount = labels.length
-  if (tickCount <= 1) {
-    return labels.map(({ index }) => index)
+const getSampledLabels = (
+  component: G2GuideComponentOptions,
+  labels: PositionedLabel[],
+  position: AxisPosition,
+  layout: Layout
+) => {
+  if (labels.length <= 1) {
+    return labels
   }
-  const headIndex = labels[0].index
-  const tailIndex = labels[tickCount - 1].index
   const hideTransform = getHideTransform(component)
-  if (!hideTransform || hideTransform.keepTail) {
-    return [headIndex, tailIndex]
+  if (!hideTransform) {
+    return labels
   }
-
-  const header = hideTransform.keepHeader ? labels[0] : undefined
-  const source = header ? labels.slice(1) : [...labels]
-  let visible = [...labels]
-  let sequence = 2
-  // 与 G2 autoHide 的 parity 抽样保持一致，避免为已隐藏尾标签留白或裁掉仍可见尾标签
-  while (sequence < tickCount) {
-    const candidates = header ? [header, ...visible] : visible
-    if (!hasLabelOverlap(candidates, hideTransform.margin)) {
-      break
+  const horizontal = position === 'top' || position === 'bottom'
+  const maxLabelSize = labels.reduce(
+    (size, label) => Math.max(size, horizontal ? label.bounds.width : label.bounds.height),
+    0
+  )
+  let minTickDistance = Number.POSITIVE_INFINITY
+  for (let index = 1; index < labels.length; index++) {
+    const distance = Math.abs(labels[index].axisCoordinate - labels[index - 1].axisCoordinate)
+    if (distance > 0) {
+      minTickDistance = Math.min(minTickDistance, distance)
     }
-    visible = source.filter((_, index) => index % sequence === 0)
-    sequence += 1
   }
-  return visible.some(({ index }) => index === tailIndex) ? [headIndex, tailIndex] : [headIndex]
+  if (!Number.isFinite(minTickDistance)) {
+    return labels
+  }
+  const head = labels[0]
+  const tail = labels[labels.length - 1]
+  const axisSpan = Math.abs(tail.axisCoordinate - head.axisCoordinate)
+  const canvasSize = horizontal ? layout.width : layout.height
+  const headStart = horizontal ? head.bounds.x : head.bounds.y
+  const tailEnd = horizontal
+    ? tail.bounds.x + tail.bounds.width
+    : tail.bounds.y + tail.bounds.height
+  const boundaryCorrection =
+    Math.max(0, SAFE_SPACING - headStart) + Math.max(0, tailEnd - canvasSize + SAFE_SPACING)
+  // 预留首尾标签进入 Canvas 所需空间，抽样直接按最终可用轴长计算
+  const safeSpanRatio = axisSpan
+    ? Math.min(1, Math.max(1, axisSpan - boundaryCorrection) / axisSpan)
+    : 1
+  const safeTickDistance = minTickDistance * safeSpanRatio
+  const gap = getAxisLabelGap(position, hideTransform.margin)
+  const step = Math.max(1, Math.ceil((maxLabelSize + gap) / safeTickDistance))
+  if (step === 1) {
+    return labels
+  }
+  const sampled = labels.filter((_, index) => index % step === 0)
+  if (hideTransform.keepTail) {
+    const tail = labels[labels.length - 1]
+    if (sampled[sampled.length - 1]?.index !== tail.index) {
+      sampled.push(tail)
+    }
+  }
+  return sampled
+}
+
+const getOriginalAxisTickFilter = (
+  component: G2GuideComponentOptions,
+  currentFilter?: AxisTickFilter
+) => {
+  if (!originalAxisTickFilters.has(component)) {
+    originalAxisTickFilters.set(
+      component,
+      typeof currentFilter === 'function' ? currentFilter : undefined
+    )
+  }
+  return originalAxisTickFilters.get(component)
+}
+
+/**
+ * 将抽样索引同步到真实轴数据，同时减少标签、刻度线和对应网格线
+ */
+const applyAxisTickIndexes = (
+  component: G2GuideComponentOptions,
+  originalFilter: AxisTickFilter | undefined,
+  indexes?: Set<number>
+) => {
+  if (!indexes) {
+    if (originalFilter) {
+      component.tickFilter = originalFilter
+    } else {
+      delete component.tickFilter
+    }
+    return
+  }
+  component.tickFilter = (value, index, values) =>
+    indexes.has(index) && (originalFilter?.(value, index, values) ?? true)
 }
 
 /**
@@ -184,19 +308,6 @@ const shouldKeepOnlyHeadLabel = (
     ? layout.width - layout.marginLeft - layout.marginRight
     : layout.height - layout.marginTop - layout.marginBottom
   return boundarySize + SAFE_SPACING * 2 > viewSize
-}
-
-/**
- * 把布局阶段的单标签降级同步到 G2 实际绘制阶段
- * 只减少布局留白而不写入 labelFilter 会让尾标签继续绘制并被画布裁切
- * 需要保留原有 labelFilter 结果，避免覆盖图表自身的标签过滤约束
- */
-const keepOnlyHeadLabel = (component: G2GuideComponentOptions, headIndex: number) => {
-  const originalFilter =
-    typeof component.labelFilter === 'function' ? component.labelFilter : undefined
-  // 极端长文本无法同时完整容纳首尾标签时，固定保留首标签避免绘制结果与布局判断不一致
-  component.labelFilter = (value, index, values) =>
-    index === headIndex && (originalFilter?.(value, index, values) ?? true)
 }
 
 const getLabelVector = (position: AxisPosition, direction: string) => {
@@ -230,8 +341,9 @@ const measureAxisOverflow = (
   theme: G2Theme,
   library: G2Library,
   transpose: boolean,
-  overflow: Overflow
-) => {
+  overflow: Overflow,
+  measurementCache: Map<G2GuideComponentOptions, AxisMeasurement>
+): boolean => {
   const position = component.position as AxisPosition
   // 多 View 图表在自身轴配置中显式退出，公共布局层不感知具体图表类型
   if (
@@ -239,33 +351,47 @@ const measureAxisOverflow = (
     !component.bbox ||
     component.dataeaseAxisLabelOverflow === false
   ) {
-    return
+    return false
   }
-  const style = styleOf(component, position, theme)
-  if (style.labelOpacity === 0 || style.labelFillOpacity === 0) {
-    return
+  let measurement = measurementCache.get(component)
+  if (!measurement) {
+    const style = styleOf(component, position, theme)
+    if (style.labelOpacity === 0 || style.labelFillOpacity === 0) {
+      return false
+    }
+    const scale = createScale(component, library)
+    const originalTickFilter = getOriginalAxisTickFilter(component, style.tickFilter)
+    const ticks = getTicks(scale, originalTickFilter)
+    // 字体度量与布局尺寸无关，同一轮布局收敛中只计算一次
+    const measurementStyle = { ...style, tickFilter: originalTickFilter }
+    const labelBounds = computeLabelsBBox(measurementStyle, scale)
+    if (!ticks.length || !labelBounds?.length) {
+      return false
+    }
+    measurement = { style: measurementStyle, scale, ticks, labelBounds }
+    measurementCache.set(component, measurement)
   }
-  const scale = createScale(component, library)
-  const ticks = getTicks(scale, style.tickFilter)
-  // 使用 G2 自身 formatter/transform 保证测量一致；代价是密集刻度仍会计算整轴标签 BBox
-  const labelBounds = computeLabelsBBox(style, scale)
-  if (!ticks.length || !labelBounds?.length) {
-    return
-  }
+  const { style, scale, ticks, labelBounds } = measurement
 
   const { bbox } = component
   const showTick = style.tick !== false && style.showTick !== false
   const sameDirection = isSameDirection(style.labelDirection, style.tickDirection)
   const labelVector = getLabelVector(position, style.labelDirection)
-  const positionedLabels = ticks.map((value, index): PositionedLabel | undefined => {
-    const labelBBox = labelBounds[index]
-    if (!labelBBox) {
-      return undefined
-    }
-    const ratio = getTickRatio(scale, value, position, transpose)
-    const labelSpacing = getAxisCallbackNumber(style.labelSpacing, value, index, ticks)
+  const tickEntries = ticks
+    .map((tick, index) => ({ tick, labelBBox: labelBounds[index] }))
+    .filter(
+      ({ tick, labelBBox }) =>
+        !!labelBBox &&
+        (!measurement.sampledIndexes || measurement.sampledIndexes.has(tick.sourceIndex))
+    )
+  const tickValues = tickEntries.map(({ tick }) => tick.value)
+  const positionedLabels = tickEntries.map(({ tick, labelBBox }, index): PositionedLabel => {
+    const ratio = getTickRatio(scale, tick.value, position, transpose)
+    const labelSpacing = getAxisCallbackNumber(style.labelSpacing, tick.value, index, tickValues)
     const tickLength =
-      showTick && sameDirection ? getAxisCallbackNumber(style.tickLength, value, index, ticks) : 0
+      showTick && sameDirection
+        ? getAxisCallbackNumber(style.tickLength, tick.value, index, tickValues)
+        : 0
     const offset = tickLength + labelSpacing
     let x = 0
     let y = 0
@@ -279,7 +405,8 @@ const measureAxisOverflow = (
     x += labelVector[0] * offset
     y += labelVector[1] * offset
     return {
-      index,
+      index: tick.sourceIndex,
+      axisCoordinate: position === 'top' || position === 'bottom' ? x : y,
       bounds: {
         x: x + labelBBox.x,
         y: y + labelBBox.y,
@@ -289,18 +416,41 @@ const measureAxisOverflow = (
     }
   })
   const visibleLabels = positionedLabels.filter((label): label is PositionedLabel => !!label)
-  let indexes = getBoundaryLabelIndexes(component, visibleLabels)
-  if (shouldKeepOnlyHeadLabel(component, visibleLabels, position, layout)) {
-    const headIndex = visibleLabels[0].index
-    keepOnlyHeadLabel(component, headIndex)
-    indexes = [headIndex]
-  }
-  indexes.forEach(index => {
-    const label = visibleLabels.find(item => item.index === index)
-    if (label) {
-      updateOverflow(overflow, label.bounds, layout.width, layout.height)
+  let sampledIndexes = measurement.sampledIndexes
+  let sampledLabels: PositionedLabel[]
+  if (sampledIndexes) {
+    sampledLabels = visibleLabels
+  } else {
+    sampledLabels = getSampledLabels(component, visibleLabels, position, layout)
+    if (shouldKeepOnlyHeadLabel(component, sampledLabels, position, layout)) {
+      sampledLabels = [sampledLabels[0]]
     }
-  })
+    // 同一轮收敛固定首次抽样结果，避免边界修正后更换末端标签并遗留陈旧 padding
+    sampledIndexes = new Set(sampledLabels.map(({ index }) => index))
+    measurement.sampledIndexes = sampledIndexes
+    measurement.sampled = sampledLabels.length < visibleLabels.length
+  }
+  const managedAutoHide = managedAxisAutoHide.has(component)
+  if (managedAutoHide || sampledLabels.length === 1) {
+    applyAxisTickIndexes(
+      component,
+      getOriginalAxisTickFilter(component),
+      measurement.sampled ? sampledIndexes : undefined
+    )
+  }
+  if (managedAutoHide) {
+    // tickFilter 已是最终抽样结果，关闭 G2 二次 hide，避免预留空间对应的标签再次消失
+    component.transform = []
+    component.labelAutoHide = false
+  }
+  const boundaryLabels =
+    sampledLabels.length <= 1
+      ? sampledLabels
+      : [sampledLabels[0], sampledLabels[sampledLabels.length - 1]]
+  boundaryLabels.forEach(label =>
+    updateOverflow(overflow, label.bounds, layout.width, layout.height)
+  )
+  return !!measurement.sampled
 }
 
 const limitCorrection = (start: number, end: number, innerSize: number, viewSize: number) => {
@@ -314,6 +464,22 @@ const limitCorrection = (start: number, end: number, innerSize: number, viewSize
   return [Math.floor(start * ratio), Math.floor(end * ratio)]
 }
 
+const applyLayoutCorrection = (
+  layout: Layout,
+  top: number,
+  right: number,
+  bottom: number,
+  left: number
+): Layout => ({
+  ...layout,
+  paddingTop: layout.paddingTop + top,
+  paddingRight: layout.paddingRight + right,
+  paddingBottom: layout.paddingBottom + bottom,
+  paddingLeft: layout.paddingLeft + left,
+  innerWidth: Math.max(1, layout.innerWidth - left - right),
+  innerHeight: Math.max(1, layout.innerHeight - top - bottom)
+})
+
 /**
  * 在 G2 最终绘制前修正旋转轴标签边界，避免业务层 render 后再次测量和重绘
  * 仅处理标准直角坐标轴；多 View 共享边界可在轴配置中设置 dataeaseAxisLabelOverflow: false
@@ -325,47 +491,110 @@ export function computeLayout(
   theme: G2Theme,
   library: G2Library
 ): Layout {
-  const layout = computeG2Layout(components, options, theme, library)
-  if (!layout) {
-    return layout
-  }
+  applyAxisLabelOverlapDefaults(components)
   const axisComponents = components.filter(
     component =>
       typeof component.type === 'string' &&
       component.type.startsWith('axis') &&
       AXIS_POSITIONS.includes(component.position as AxisPosition)
   )
+  const hasExplicitMargin = [
+    'margin',
+    'marginTop',
+    'marginRight',
+    'marginBottom',
+    'marginLeft'
+  ].some(key => options[key] !== undefined)
+  // G2 自动 padding 已覆盖轴和图例尺寸，标准直角坐标图无需再叠加默认 16px 外 margin
+  const layoutOptions =
+    axisComponents.length && !hasExplicitMargin ? { ...options, margin: 0 } : options
+  const originalAxisSizes = new Map(axisComponents.map(component => [component, component.size]))
+  let layout = computeG2Layout(components, layoutOptions, theme, library)
+  if (!layout) {
+    return layout
+  }
   if (!axisComponents.length) {
     return layout
   }
 
-  const coordinate = createCoordinate(layout, options, library)
-  placeComponents(groupComponents(components), coordinate, layout)
-  const transpose =
-    (options.coordinates ?? []).filter(item => item.type === 'transpose').length % 2 === 1
-  const overflow: Overflow = { top: 0, right: 0, bottom: 0, left: 0 }
-  axisComponents.forEach(component =>
-    measureAxisOverflow(component, layout, theme, library, transpose, overflow)
+  const measurableAxisComponents = axisComponents.filter(
+    component => component.dataeaseAxisLabelOverflow !== false
   )
-
-  const rawTop = Math.max(0, Math.ceil(overflow.top))
-  const rawRight = Math.max(0, Math.ceil(overflow.right))
-  const rawBottom = Math.max(0, Math.ceil(overflow.bottom))
-  const rawLeft = Math.max(0, Math.ceil(overflow.left))
-  const viewWidth = layout.width - layout.marginLeft - layout.marginRight
-  const viewHeight = layout.height - layout.marginTop - layout.marginBottom
-  const [left, right] = limitCorrection(rawLeft, rawRight, layout.innerWidth, viewWidth)
-  const [top, bottom] = limitCorrection(rawTop, rawBottom, layout.innerHeight, viewHeight)
-  if (top + right + bottom + left === 0) {
+  if (!measurableAxisComponents.length) {
     return layout
   }
-  return {
-    ...layout,
-    paddingTop: layout.paddingTop + top,
-    paddingRight: layout.paddingRight + right,
-    paddingBottom: layout.paddingBottom + bottom,
-    paddingLeft: layout.paddingLeft + left,
-    innerWidth: Math.max(1, layout.innerWidth - left - right),
-    innerHeight: Math.max(1, layout.innerHeight - top - bottom)
+
+  const transpose =
+    (layoutOptions.coordinates ?? []).filter(item => item.type === 'transpose').length % 2 === 1
+  const measurementCache = new Map<G2GuideComponentOptions, AxisMeasurement>()
+
+  const initialCoordinate = createCoordinate(layout, layoutOptions, library)
+  placeComponents(groupComponents(components), initialCoordinate, layout)
+  const initialOverflow: Overflow = { top: 0, right: 0, bottom: 0, left: 0 }
+  const hasSampledAxis = measurableAxisComponents
+    .map(component =>
+      measureAxisOverflow(
+        component,
+        layout,
+        theme,
+        library,
+        transpose,
+        initialOverflow,
+        measurementCache
+      )
+    )
+    .some(Boolean)
+  if (hasSampledAxis) {
+    // 首次布局只提供刻度位置，抽样后恢复自动尺寸并按真实可见标签重新计算轴留白
+    axisComponents.forEach(component => {
+      const originalSize = originalAxisSizes.get(component)
+      if (originalSize === undefined) {
+        delete component.size
+      } else {
+        component.size = originalSize
+      }
+    })
+    const sampledLayout = computeG2Layout(components, layoutOptions, theme, library)
+    if (sampledLayout) {
+      layout = sampledLayout
+    }
   }
+  const viewWidth = layout.width - layout.marginLeft - layout.marginRight
+  const viewHeight = layout.height - layout.marginTop - layout.marginBottom
+  let correctedLayout = layout
+
+  // 可见刻度与自动轴尺寸确定后，最多两次吸收边界位置修正
+  for (let pass = 0; pass < MAX_OVERFLOW_CORRECTION_PASSES; pass++) {
+    const coordinate = createCoordinate(correctedLayout, layoutOptions, library)
+    placeComponents(groupComponents(components), coordinate, correctedLayout)
+    const overflow: Overflow = { top: 0, right: 0, bottom: 0, left: 0 }
+    measurableAxisComponents.forEach(component =>
+      measureAxisOverflow(
+        component,
+        correctedLayout,
+        theme,
+        library,
+        transpose,
+        overflow,
+        measurementCache
+      )
+    )
+
+    const rawTop = Math.max(0, Math.ceil(overflow.top))
+    const rawRight = Math.max(0, Math.ceil(overflow.right))
+    const rawBottom = Math.max(0, Math.ceil(overflow.bottom))
+    const rawLeft = Math.max(0, Math.ceil(overflow.left))
+    const [left, right] = limitCorrection(rawLeft, rawRight, correctedLayout.innerWidth, viewWidth)
+    const [top, bottom] = limitCorrection(
+      rawTop,
+      rawBottom,
+      correctedLayout.innerHeight,
+      viewHeight
+    )
+    if (top + right + bottom + left === 0) {
+      break
+    }
+    correctedLayout = applyLayoutCorrection(correctedLayout, top, right, bottom, left)
+  }
+  return correctedLayout
 }

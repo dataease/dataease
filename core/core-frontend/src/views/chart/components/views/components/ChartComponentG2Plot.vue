@@ -11,7 +11,7 @@ import {
 } from 'vue'
 import { getData } from '@/api/chart'
 import { ChartLibraryType } from '@/views/chart/components/js/panel/types'
-import { G2ChartView } from '@/views/chart/components/js/panel/types/impl/g2'
+import { G2ChartView, isLargeDataLabelMark } from '@/views/chart/components/js/panel/types/impl/g2'
 import { L7PlotChartView } from '@/views/chart/components/js/panel/types/impl/l7plot'
 import chartViewManager from '@/views/chart/components/js/panel'
 import { useAppStoreWithOut } from '@/store/modules/app'
@@ -284,6 +284,10 @@ const getElementClassInfo = element => {
   return info.filter(Boolean).join(' ').toLowerCase()
 }
 const isLinkageDataElement = element => {
+  // 采样标签载体只负责定位文本，不参与联动选中和透明度回放
+  if (isLargeDataLabelMark(element?.__data__?.markKey)) {
+    return false
+  }
   if (LINKAGE_IGNORE_MARK_TYPES.includes(element?.markType)) {
     return false
   }
@@ -648,6 +652,10 @@ const renderG2 = async (chart, chartView: G2ChartView<any, any>) => {
       })
       // 固定本轮创建的实例，避免等待异步渲染期间新一轮 renderG2 替换全局 myChart 后误操作新实例
       const chartInstance = myChart
+      // 此时 drawChart 已经完成最终 Spec 装配，但 G2 尚未开始首次绘制
+      // 在这里统一应用性能策略，可以避免大数据首次进入页面时创建海量标签并执行昂贵动画
+      // 优化后的 options 会保留在当前实例中，刷新和容器调整触发 forceFit 时也会直接复用
+      chartView.optimizeLargeData(chartInstance)
       // 等待 G2 完成包含轴边界校正的最终布局
       await chartInstance?.render()
       installG2SvgCoordinateScaleAdapter(chartInstance)

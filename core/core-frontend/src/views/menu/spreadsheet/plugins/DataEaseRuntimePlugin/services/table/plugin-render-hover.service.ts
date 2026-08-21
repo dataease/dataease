@@ -1,3 +1,5 @@
+import { Disposable } from '@univerjs/core'
+
 export interface PluginRenderHoverRange {
   pluginId: string
   unitId: string
@@ -8,7 +10,7 @@ export interface PluginRenderHoverRange {
   colCount: number
 }
 
-export class PluginRenderHoverService {
+export class PluginRenderHoverService extends Disposable {
   private _hoverRange?: PluginRenderHoverRange
 
   getHoverRange(): PluginRenderHoverRange | undefined {
@@ -61,5 +63,10 @@ export class PluginRenderHoverService {
       current.rowCount === next.rowCount &&
       current.colCount === next.colCount
     )
+  }
+
+  override dispose(): void {
+    this._hoverRange = undefined
+    super.dispose()
   }
 }

@@ -2,7 +2,7 @@ import type { IAccessor, ICommand } from '@univerjs/core'
 import { CommandType, ICommandService } from '@univerjs/core'
 import { InsertDetailTableOperation } from '../../DataEaseDetailTablePlugin/commands/insert-operations'
 import { InsertPivotTableOperation } from '../../DataEasePivotTablePlugin/commands/insert-operations'
-import { TableInsertionService } from '../../../services/table-insertion.service'
+import { TableInsertionService } from '../../DataEaseRuntimePlugin/services/table'
 import {
   DATAEASE_ADD_NOTE_MENU_ID,
   DATAEASE_INSERT_LINK_MENU_ID

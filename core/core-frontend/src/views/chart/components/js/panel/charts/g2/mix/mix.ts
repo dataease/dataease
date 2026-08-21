@@ -16,6 +16,7 @@ import {
   DEFAULT_YAXIS_STYLE
 } from '@/views/chart/components/editor/util/chart'
 import {
+  getG2Renderer,
   getTooltipCrosshairsStyle,
   handleChartDashboardHidden,
   setGradientColor,
@@ -213,6 +214,7 @@ export class ColumnLineMix extends G2ChartView {
         }
       }
     }
+    // 注入公共渲染器配置以响应 SVG 渲染开关
     const newChart = new G2Chart({ container, ...getG2Renderer() })
     const options = this.setupOptions(chart, initOptions, {
       chartObj: newChart,

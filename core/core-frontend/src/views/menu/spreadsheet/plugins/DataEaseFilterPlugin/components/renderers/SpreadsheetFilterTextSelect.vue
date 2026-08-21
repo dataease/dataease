@@ -7,6 +7,7 @@ import {
   getSpreadsheetFilterEnumValue,
   getSpreadsheetFilterFieldTree
 } from '../../../../api/filter-option'
+import { sortSpreadsheetFilterDatasetRows } from '../../utils/filter-values'
 
 interface SelectOption {
   label: string
@@ -90,7 +91,8 @@ const loadAutoOptions = async () => {
 const loadDatasetOptions = async () => {
   const queryId = getDatasetQueryFieldId()
   const displayId = getDatasetDisplayFieldId()
-  if (!queryId || !displayId || !props.condition.sortFieldId) {
+  // 排序字段是可选配置，未设置时仍应按查询字段和显示字段加载候选值。
+  if (!queryId || !displayId) {
     options.value = []
     return
   }
@@ -105,7 +107,8 @@ const loadDatasetOptions = async () => {
   })
 
   const optionMap = new Map<string, SelectOption>()
-  values.forEach(item => {
+  const sortedValues = sortSpreadsheetFilterDatasetRows(values, props.condition)
+  sortedValues.forEach(item => {
     const value = item[queryId]
     if (value === undefined || value === null) {
       return
@@ -165,9 +168,9 @@ const loadOptions = async () => {
     if (
       props.condition.defaultValueEnabled &&
       props.condition.defaultValueFirstItem &&
-      options.value.length &&
-      !selectedValues.value.length
+      options.value.length
     ) {
+      // 与仪表板一致，勾选首项后始终用当前排序结果的第一项覆盖手动选择值。
       emit(
         'update:modelValue',
         props.condition.multiple ? [options.value[0].value] : options.value[0].value
@@ -191,6 +194,7 @@ watch(
     props.condition.displayFieldId,
     props.condition.sortFieldId,
     props.condition.sortType,
+    JSON.stringify(props.condition.sortList || []),
     props.condition.optionCountMode,
     props.condition.defaultValueEnabled,
     props.condition.defaultValueFirstItem,

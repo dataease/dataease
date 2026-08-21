@@ -33,8 +33,7 @@ public class CoreSysSetting {
 
     @NotNull
     @Comment("值")
-    @JdbcTypeCode(SqlTypes.LONG32VARCHAR)
-    @Column(name = "pval", nullable = false)
+    @Column(name = "pval", nullable = false, length = 16777216)
     private String pval;
 
     @Size(max = 255)

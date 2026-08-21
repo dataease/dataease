@@ -59,7 +59,7 @@ public class CoreDeEngine {
     @Column(name = "status", length = 45)
     private String status;
 
-    @ColumnDefault("1")
+    @ColumnDefault("true")
     @Comment("启用数据填报功能")
     @Column(name = "enable_data_fill")
     private Boolean enableDataFill;

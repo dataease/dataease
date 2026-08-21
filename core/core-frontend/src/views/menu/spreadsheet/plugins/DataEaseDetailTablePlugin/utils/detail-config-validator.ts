@@ -26,6 +26,10 @@ export function validateDetailFields(fields: FieldItemData[], allowEmpty = false
     return '明细表的数据列不能为空'
   }
 
+  if (fields.length > 0 && fields.every(field => field.hidden === true)) {
+    return '明细表至少需要保留一个可见字段'
+  }
+
   const fieldIds = new Set<string>()
   for (const field of fields) {
     const fieldId = String(field.id)

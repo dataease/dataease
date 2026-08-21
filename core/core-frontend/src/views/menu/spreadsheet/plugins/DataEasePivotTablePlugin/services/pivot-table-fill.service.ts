@@ -9,13 +9,16 @@ import { PivotTableEditProtectionService } from './pivot-table-edit-protection.s
 import { PivotTableLayoutService } from './pivot-table-layout.service'
 import { PivotTableRangeService } from './pivot-table-range.service'
 import { PivotTableRenderStyleService } from './pivot-table-render-style.service'
-import { PluginRenderLoadingService } from '../../../services/plugin-render-loading.service'
-import { pluginRenderStatusService } from '../../../services/plugin-render-status.service'
+import {
+  PluginRenderLoadingService,
+  PluginRenderStatusService
+} from '../../DataEaseRuntimePlugin/services/table'
 import { SpreadsheetFilterRuntimeService } from '../../DataEaseFilterPlugin/services/filter-runtime.service'
 import {
   addWorksheetMergesSilently,
   removeWorksheetMergesSilently
 } from '../../../utils/silent-worksheet-merge'
+import { TableRenderExpansionService } from '../../../services/table-render-expansion.service'
 
 interface PivotTableFillOptions {
   initialRestore?: boolean
@@ -37,7 +40,11 @@ export class PivotTableFillService {
     @Inject(PluginRenderLoadingService)
     private readonly pluginRenderLoadingService: PluginRenderLoadingService,
     @Inject(SpreadsheetFilterRuntimeService)
-    private readonly spreadsheetFilterRuntimeService: SpreadsheetFilterRuntimeService
+    private readonly spreadsheetFilterRuntimeService: SpreadsheetFilterRuntimeService,
+    @Inject(TableRenderExpansionService)
+    private readonly tableRenderExpansionService: TableRenderExpansionService,
+    @Inject(PluginRenderStatusService)
+    private readonly pluginRenderStatusService: PluginRenderStatusService
   ) {}
 
   async fillByConfig(
@@ -52,9 +59,40 @@ export class PivotTableFillService {
     if (!workbook || !worksheet) {
       throw new Error('未找到透视表目标工作表')
     }
+    const unitId = workbook.getId?.() || workbook.getUnitId?.()
+    const sheetId = worksheet.getSheetId?.()
+    if (!unitId || !sheetId) {
+      return this.fillByConfigSerial(univerApi, config, options)
+    }
+
+    return this.tableRenderExpansionService.runExclusive(unitId, sheetId, () =>
+      this.fillByConfigSerial(univerApi, config, options)
+    )
+  }
+
+  private async fillByConfigSerial(
+    univerApi: any,
+    config: PivotTableConfig,
+    options: PivotTableFillOptions = {}
+  ): Promise<boolean> {
+    const workbook = univerApi.getActiveWorkbook?.()
+    const worksheet = workbook
+      ?.getSheets?.()
+      ?.find(sheet => sheet.getSheetId?.() === config.placement.sheetId) || workbook?.getActiveSheet?.()
+    if (!workbook || !worksheet) {
+      throw new Error('未找到透视表目标工作表')
+    }
 
     const unitId = workbook.getId?.() || workbook.getUnitId?.()
     const sheetId = worksheet.getSheetId()
+    if (unitId) {
+      config.placement.startCell = this.tableRenderExpansionService.resolveStartCell(
+        unitId,
+        'pivot',
+        config.id,
+        config.placement.startCell
+      )
+    }
 
     const validateMessage = validatePivotConfig(config)
     if (validateMessage) {
@@ -65,7 +103,7 @@ export class PivotTableFillService {
         console.warn('[PivotTableFillService] Failed to clear previous data on validation failure:', clearError)
       }
       if (unitId) {
-        pluginRenderStatusService.set({
+        this.pluginRenderStatusService.set({
           pluginId: config.id,
           type: 'pivot',
           status: 'error',
@@ -79,7 +117,7 @@ export class PivotTableFillService {
       return false
     }
 
-    const start = this.rangeService.parseCell(config.placement.startCell)
+    let start = this.rangeService.parseCell(config.placement.startCell)
     const previousState = this.displayStateService.get(config.id)
     const previousRange = previousState?.sheetId === sheetId &&
       previousState.rowCount > 0 && previousState.columnCount > 0
@@ -101,7 +139,7 @@ export class PivotTableFillService {
       : undefined
 
     if (unitId) {
-      pluginRenderStatusService.set({
+      this.pluginRenderStatusService.set({
         pluginId: config.id,
         type: 'pivot',
         status: 'loading',
@@ -120,6 +158,16 @@ export class PivotTableFillService {
         ? this.spreadsheetFilterRuntimeService.applyQueryFilterToConfig(unitId, config)
         : config
       const result = await this.dataService.queryData(queryConfig)
+      if (unitId) {
+        // 查询期间可能发生合法的行列删除，写入前必须重新读取实例的最新坐标。
+        config.placement.startCell = this.tableRenderExpansionService.resolveStartCell(
+          unitId,
+          'pivot',
+          config.id,
+          config.placement.startCell
+        )
+        start = this.rangeService.parseCell(config.placement.startCell)
+      }
       const layout = this.layoutService.build(config, result)
       await this.ensureSheetSize(
         univerApi,
@@ -127,7 +175,20 @@ export class PivotTableFillService {
         start.row + layout.rowCount,
         start.col + layout.columnCount
       )
-      const rangeMessage = this.rangeService.validateBeforeFill(
+      const expansionMessage = unitId
+        ? await this.tableRenderExpansionService.ensureRenderSpace({
+            unitId,
+            sheetId,
+            pluginId: config.id,
+            tableType: 'pivot',
+            worksheet,
+            startCell: config.placement.startCell,
+            rowCount: layout.rowCount,
+            columnCount: layout.columnCount,
+            initialRestore: options.initialRestore === true
+          })
+        : undefined
+      const rangeMessage = expansionMessage || this.rangeService.validateBeforeFill(
         worksheet,
         config,
         layout.rowCount,
@@ -136,9 +197,8 @@ export class PivotTableFillService {
       )
       if (rangeMessage) {
         ElMessage.warning(rangeMessage)
-        await this.clearPrevious(univerApi, config.id, worksheet, config.placement.startCell, true)
         if (unitId) {
-          pluginRenderStatusService.set({
+          this.pluginRenderStatusService.set({
             pluginId: config.id,
             type: 'pivot',
             status: 'error',
@@ -183,7 +243,7 @@ export class PivotTableFillService {
       this.updateRenderStyleRange(univerApi, config)
       this.refreshTargetSheet(univerApi, worksheet.getSheetId())
       if (unitId) {
-        pluginRenderStatusService.set({
+        this.pluginRenderStatusService.set({
           pluginId: config.id,
           type: 'pivot',
           status: 'rendered',
@@ -202,7 +262,7 @@ export class PivotTableFillService {
         console.warn('[PivotTableFillService] Failed to clear previous data:', clearError)
       }
       if (unitId) {
-        pluginRenderStatusService.set({
+        this.pluginRenderStatusService.set({
           pluginId: config.id,
           type: 'pivot',
           status: 'error',

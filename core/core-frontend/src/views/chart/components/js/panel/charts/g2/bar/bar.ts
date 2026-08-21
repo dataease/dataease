@@ -905,7 +905,9 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     configDimensionSlider(lineMark, lineMark.data ?? options.data, functionCfg, {
       interactionName: 'barDimensionSliderFilter',
       stableKey: true,
-      disableMorph: true
+      disableMorph: true,
+      // 大数据标签使用独立 interval 承载，缩略轴拖动时必须同步它的离散维度域
+      syncChildren: true
     })
     return options
   }

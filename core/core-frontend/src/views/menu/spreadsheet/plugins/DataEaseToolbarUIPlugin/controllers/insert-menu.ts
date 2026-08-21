@@ -1,7 +1,7 @@
 import type { IAccessor } from '@univerjs/core'
 import type { IMenuSelectorItem } from '@univerjs/ui'
 import { MenuItemType } from '@univerjs/ui'
-import { TableInsertionService } from '../../../services/table-insertion.service'
+import { TableInsertionService } from '../../DataEaseRuntimePlugin/services/table'
 import {
   DATAEASE_INSERT_DROPDOWN_COMPONENT,
   DATAEASE_INSERT_DROPDOWN_MENU_ID

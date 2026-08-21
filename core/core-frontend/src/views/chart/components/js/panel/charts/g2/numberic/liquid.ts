@@ -1,6 +1,6 @@
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
 import { DEFAULT_MISC } from '@/views/chart/components/editor/util/chart'
-import { valueFormatter } from '@/views/chart/components/js/formatter'
+import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
 import { useI18n } from '@/hooks/web/useI18n'
 import { G2ChartView, G2DrawOptions } from '../../../types/impl/g2'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
@@ -29,7 +29,7 @@ export class Liquid extends G2ChartView {
     'background-overall-component': ['all'],
     'border-style': ['all'],
     'basic-style-selector': ['colors', 'alpha'],
-    'label-selector': ['fontSize', 'color', 'labelFormatter'],
+    'label-selector': ['fontSize', 'color', 'showQuota', 'showProportion'],
     'misc-selector': ['liquidShape', 'liquidSize', 'liquidMaxType', 'liquidMaxField'],
     'title-selector': [
       'title',
@@ -171,9 +171,20 @@ export class Liquid extends G2ChartView {
       return options
     }
     const label = customAttr.label
-    const labelFormatter = label.labelFormatter
+    const showQuota = label.showQuota === true
+    const showProportion = label.showProportion ?? true
+    // 水波图在中心文本中组合指标值与占比，支持两个配置项独立切换
+    const quotaText = showQuota
+      ? valueFormatter(
+          chart.data.series[0].data[0],
+          label.quotaLabelFormatter ?? label.labelFormatter ?? formatterItem
+        )
+      : ''
+    const proportionText = showProportion
+      ? `${(originVal * 100).toFixed(label.reserveDecimalCount ?? 2)}%`
+      : ''
     labelStyle.contentFontSize = label.fontSize
-    labelStyle.contentText = valueFormatter(originVal, labelFormatter)
+    labelStyle.contentText = [quotaText, proportionText].filter(Boolean).join('\n')
     labelStyle.contentFill = label.color
     defaultsDeep(options, { style: labelStyle })
     return options

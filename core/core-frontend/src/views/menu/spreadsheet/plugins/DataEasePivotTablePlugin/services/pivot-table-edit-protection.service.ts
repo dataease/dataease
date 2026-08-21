@@ -64,7 +64,7 @@ import {
 import { ElMessage } from 'element-plus-secondary'
 import { PivotTableDisplayStateService } from './pivot-table-display-state.service'
 import type { PivotTableDisplayState } from './pivot-table-display-state.service'
-import { pluginRenderStatusService } from '../../../services/plugin-render-status.service'
+import { PluginRenderStatusService } from '../../DataEaseRuntimePlugin/services/table'
 import { SpreadsheetModeService } from '../../../services/spreadsheet-mode.service'
 import { isPresentationOnlyCellValueMutation } from '../../../services/plugin-render-range-edit-policy'
 import {
@@ -170,7 +170,9 @@ export class PivotTableEditProtectionService {
     @Inject(SheetsFilterService)
     private readonly sheetsFilterService: SheetsFilterService,
     @Inject(SpreadsheetModeService)
-    private readonly spreadsheetModeService: SpreadsheetModeService
+    private readonly spreadsheetModeService: SpreadsheetModeService,
+    @Inject(PluginRenderStatusService)
+    private readonly pluginRenderStatusService: PluginRenderStatusService
   ) {}
 
   runWithoutProtection<T>(handler: () => T): T {
@@ -207,7 +209,11 @@ export class PivotTableEditProtectionService {
   }
 
   private shouldBlock(commandInfo: Readonly<ICommandInfo>): boolean {
-    if (this.suspendCount > 0 || this.pluginCommandIds.has(commandInfo.id)) {
+    if (
+      this.suspendCount > 0 ||
+      this.spreadsheetModeService.isSystemWrite() ||
+      this.pluginCommandIds.has(commandInfo.id)
+    ) {
       return false
     }
 
@@ -348,20 +354,31 @@ export class PivotTableEditProtectionService {
   private isRangeAffected(commandId: string, range: ProtectedRange, protectedRange: ProtectedRange): boolean {
     if (
       commandId === INSERT_ROW_COMMAND_ID ||
-      commandId === REMOVE_ROW_COMMAND_ID ||
-      commandId === InsertRowByRangeCommand.id ||
-      commandId === RemoveRowByRangeCommand.id
+      commandId === InsertRowByRangeCommand.id
     ) {
       return range.startRow <= protectedRange.endRow
     }
 
     if (
       commandId === INSERT_COL_COMMAND_ID ||
-      commandId === REMOVE_COL_COMMAND_ID ||
-      commandId === InsertColByRangeCommand.id ||
-      commandId === RemoveColByRangeCommand.id
+      commandId === InsertColByRangeCommand.id
     ) {
       return range.startColumn <= protectedRange.endColumn
+    }
+
+    if (
+      commandId === REMOVE_ROW_COMMAND_ID ||
+      commandId === RemoveRowByRangeCommand.id
+    ) {
+      // 删除整行只禁止切到实例内部；实例之前的删除由共享服务负责同步坐标。
+      return this.rowsOverlap(range, protectedRange)
+    }
+
+    if (
+      commandId === REMOVE_COL_COMMAND_ID ||
+      commandId === RemoveColByRangeCommand.id
+    ) {
+      return this.columnsOverlap(range, protectedRange)
     }
 
     if (
@@ -412,7 +429,7 @@ export class PivotTableEditProtectionService {
       .filter(state => !sheetId || state.sheetId === sheetId)
       .map(state => this.toProtectedRange(state))
 
-    const placeholderRanges = pluginRenderStatusService
+    const placeholderRanges = this.pluginRenderStatusService
       .list()
       .filter(
         status =>

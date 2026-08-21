@@ -42,6 +42,7 @@ import {
 } from '../plugins/DataEaseToolbarUIPlugin/locales'
 import { DATAEASE_PROTECTION_MENU_CONFIG } from '../plugins/DataEaseToolbarUIPlugin/config/protection-config'
 import { DataEasePreviewModePlugin } from '../plugins/DataEasePreviewModePlugin'
+import { DataEaseRuntimePlugin } from '../plugins/DataEaseRuntimePlugin'
 import { PREVIEW_MENU_CONFIG } from '../plugins/DataEasePreviewModePlugin/config/preview-menu-config'
 import { RangeSelectPlugin } from '../plugins/RangeSelectPlugin'
 import type { SpreadsheetRuntimeOptions } from '../types/mode'
@@ -267,6 +268,8 @@ export function createUniverInstance(
   univer.registerPlugin(UniverSheetsCrosshairHighlightPlugin)
   univer.registerPlugin(UniverVue3AdapterPlugin)
   univer.registerPlugin(DataEasePreviewModePlugin, { mode })
+  // 共享运行时服务必须先于具体业务插件注册，确保同一 Univer 内只创建一套实例。
+  univer.registerPlugin(DataEaseRuntimePlugin)
   univer.registerPlugin(DataEaseImagePlugin)
   univer.registerPlugin(DataEaseDatasetReplacementPlugin)
   univer.registerPlugin(DataEaseFilterPlugin)

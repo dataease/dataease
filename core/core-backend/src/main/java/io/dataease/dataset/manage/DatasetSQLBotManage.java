@@ -12,8 +12,12 @@ import io.dataease.api.dataset.vo.DataSQLBotDatasetVO;
 import io.dataease.api.dataset.vo.SQLBotAssistanTable;
 import io.dataease.api.dataset.vo.SQLBotAssistantField;
 import io.dataease.api.permissions.dataset.api.ColumnPermissionsApi;
+import io.dataease.api.permissions.dataset.api.RowPermissionsApi;
 import io.dataease.api.permissions.dataset.dto.DataSetColumnPermissionsDTO;
 import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
+import io.dataease.api.permissions.user.vo.UserFormVO;
+import io.dataease.commons.utils.SqlVariableHandleResult;
+import io.dataease.commons.utils.SqlparserUtils;
 import io.dataease.constant.ColumnPermissionConstants;
 import io.dataease.dao.auto.entity.*;
 import io.dataease.dataset.dao.ext.mapper.DataSetAssistantMapper;
@@ -87,6 +91,9 @@ public class DatasetSQLBotManage {
 
     @Autowired(required = false)
     private PluginManageApi pluginManage;
+
+    @Autowired(required = false)
+    private RowPermissionsApi rowPermissionsApi;
 
     @Resource
     private JPAQueryFactory queryFactory;
@@ -290,7 +297,7 @@ public class DatasetSQLBotManage {
             String tableId = row.get("cdg_id").toString();
             SQLBotAssistanTable table = tableFlagMap.get(tableId);
             if (ObjectUtils.isEmpty(table)) {
-                table = buildTable(row);
+                table = buildTable(row, vo.getRowData());
                 if (ObjectUtils.isEmpty(table))
                     continue;
                 tableFlagMap.put(tableId, table);
@@ -544,6 +551,34 @@ public class DatasetSQLBotManage {
         return "'" + value.toString().replace("'", "''") + "'";
     }
 
+    private UserFormVO getUserEntity() {
+        if (rowPermissionsApi == null) {
+            return null;
+        }
+        return rowPermissionsApi.getUserById(V3UserUtil.getUid());
+    }
+
+    private String resolveSqlVariables(String sql, Map<String, Object> dsRowData, String sqlVariableDetails) {
+        CoreDatasource coreDatasource;
+        String dsType = dsRowData.get("type").toString();
+        if (dsType.contains(DatasourceConfiguration.DatasourceType.Excel.name())
+                || dsType.contains(DatasourceConfiguration.DatasourceType.API.name())) {
+            coreDatasource = getDeEngine();
+        } else {
+            coreDatasource = BeanUtils.mapToBean(dsRowData, CoreDatasource.class);
+        }
+        DatasourceSchemaDTO dto = new DatasourceSchemaDTO();
+        BeanUtils.copyBean(dto, coreDatasource);
+        dto.setSchemaAlias(String.format(io.dataease.constant.SQLConstants.SCHEMA, dto.getId()));
+        Map<Long, DatasourceSchemaDTO> dsMap = new LinkedHashMap<>();
+        dsMap.put(dto.getId(), dto);
+        Provider provider = ProviderFactory.getProvider(dto.getType());
+        String s = provider.replaceComment(sql);
+        SqlVariableHandleResult sqlResult = new SqlparserUtils().handleVariableDefaultValueWithPreparedParams(
+                s, sqlVariableDetails, true, true, null, false, dsMap, pluginManage, getUserEntity());
+        return replacePreparedPlaceholders(sqlResult.getSql(), sqlResult.getTableFieldWithValues());
+    }
+
     private SQLBotAssistantField buildField(Map<String, Object> row) {
         SQLBotAssistantField field = new SQLBotAssistantField();
         if (ObjectUtils.isNotEmpty(row.get("cdtf_id"))) {
@@ -686,7 +721,7 @@ public class DatasetSQLBotManage {
         }
     }
 
-    private SQLBotAssistanTable buildTable(Map<String, Object> row) {
+    private SQLBotAssistanTable buildTable(Map<String, Object> row, Map<String, Object> dsRowData) {
         SQLBotAssistanTable table = new SQLBotAssistanTable();
         table.setName(row.get("cdg_name").toString());
         table.setComment(row.get("cdg_name").toString());
@@ -700,6 +735,15 @@ public class DatasetSQLBotManage {
                 String sql = new String(Base64.getDecoder().decode(tableInfoDTO.getSql()));
                 if (StringUtils.isNotBlank(sql) && StringUtils.contains(sql, "$DE_PARAM")) {
                     table.setNeedTransform(true);
+                }
+                if (StringUtils.isNotBlank(sql) && !StringUtils.contains(sql, "$DE_PARAM") && StringUtils.contains(sql, "$f2cde[")) {
+                    try {
+                        Object variableDetails = row.get("cdt_sql_variable_details");
+                        sql = resolveSqlVariables(sql, dsRowData, variableDetails == null ? null : variableDetails.toString());
+                    } catch (Exception e) {
+                        LogUtil.error(e);
+                        // 变量替换失败时保留原始 SQL,不丢表、不影响返回
+                    }
                 }
                 table.setSql(sql);
             }

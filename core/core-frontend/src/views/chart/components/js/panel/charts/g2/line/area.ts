@@ -37,6 +37,7 @@ import { Chart as G2Chart, G2Spec } from '@antv/g2'
 import { DEFAULT_YAXIS_STYLE } from '@/views/chart/components/editor/util/chart'
 import {
   configDimensionSlider,
+  getG2Renderer,
   getTooltipCrosshairsStyle,
   handleChartDashboardHidden,
   setGradientColor,

@@ -37,4 +37,6 @@ public interface LogApi {
     @Operation(summary = "操作类型")
     @GetMapping("/options")
     List<LogOpVO> logOptions();
+
+    void writeExcel(String filePath, LogGridRequest request);
 }

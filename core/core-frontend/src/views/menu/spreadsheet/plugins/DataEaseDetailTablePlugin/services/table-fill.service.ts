@@ -20,12 +20,15 @@ import {
 } from '../utils/field-format'
 import { validateDetailConfig } from '../utils/detail-config-validator'
 import { ensureSheetSize } from '../utils/sheet-size'
-import { PluginRenderLoadingService } from '../../../services/plugin-render-loading.service'
-import { pluginRenderStatusService } from '../../../services/plugin-render-status.service'
+import {
+  PluginRenderLoadingService,
+  PluginRenderStatusService
+} from '../../DataEaseRuntimePlugin/services/table'
 import {
   addWorksheetMergesSilently,
   removeWorksheetMergesSilently
 } from '../../../utils/silent-worksheet-merge'
+import { TableRenderExpansionService } from '../../../services/table-render-expansion.service'
 
 export interface TableFillState {
   startCell: string
@@ -54,7 +57,11 @@ export class TableFillService {
     @Inject(SpreadsheetFilterRuntimeService)
     private readonly spreadsheetFilterRuntimeService: SpreadsheetFilterRuntimeService,
     @Inject(PluginRenderLoadingService)
-    private readonly pluginRenderLoadingService: PluginRenderLoadingService
+    private readonly pluginRenderLoadingService: PluginRenderLoadingService,
+    @Inject(TableRenderExpansionService)
+    private readonly tableRenderExpansionService: TableRenderExpansionService,
+    @Inject(PluginRenderStatusService)
+    private readonly pluginRenderStatusService: PluginRenderStatusService
   ) {}
 
   async fillTableByConfig(
@@ -85,10 +92,30 @@ export class TableFillService {
     targetWorksheet?: any,
     options: TableFillOptions = {}
   ): Promise<boolean> {
-    console.log('[TableFillService] Starting fillTable:', { startCell, config })
+    const workbook = univerApi.getActiveWorkbook?.()
+    const worksheet = targetWorksheet || workbook?.getActiveSheet?.()
+    if (!workbook || !worksheet) {
+      throw new Error('No active worksheet found')
+    }
+    const unitId = workbook.getId?.() || workbook.getUnitId?.()
+    const sheetId = worksheet.getSheetId?.()
+    if (!unitId || !sheetId) {
+      return this.fillTableSerial(univerApi, config, startCell, worksheet, options)
+    }
 
-    const startPos = this.parseCell(startCell)
-    console.log('[TableFillService] Start position:', startPos)
+    return this.tableRenderExpansionService.runExclusive(unitId, sheetId, () =>
+      this.fillTableSerial(univerApi, config, startCell, worksheet, options)
+    )
+  }
+
+  private async fillTableSerial(
+    univerApi: any,
+    config: DetailTableConfig,
+    startCell: string,
+    targetWorksheet?: any,
+    options: TableFillOptions = {}
+  ): Promise<boolean> {
+    console.log('[TableFillService] Starting fillTable:', { startCell, config })
 
     const fWorkbook = univerApi.getActiveWorkbook()
     const fWorksheet = targetWorksheet || fWorkbook.getActiveSheet()
@@ -99,6 +126,17 @@ export class TableFillService {
 
     const unitId = fWorkbook?.getId?.() || fWorkbook?.getUnitId?.()
     const sheetId = fWorksheet.getSheetId()
+    if (unitId) {
+      startCell = this.tableRenderExpansionService.resolveStartCell(
+        unitId,
+        'detail',
+        config.id,
+        startCell
+      )
+      config.placement.startCell = startCell
+    }
+    let startPos = this.parseCell(startCell)
+    console.log('[TableFillService] Start position:', startPos)
     const previousState = this.displayStateService.get(config.id)
     const previousRange = previousState?.sheetId === sheetId &&
       previousState.rowCount > 0 && previousState.colCount > 0
@@ -120,7 +158,7 @@ export class TableFillService {
       : undefined
 
     if (unitId) {
-      pluginRenderStatusService.set({
+      this.pluginRenderStatusService.set({
         pluginId: config.id,
         type: 'detail',
         status: 'loading',
@@ -140,7 +178,7 @@ export class TableFillService {
         console.warn('[TableFillService] Failed to clear previous data on validation failure:', clearError)
       }
       if (unitId) {
-        pluginRenderStatusService.set({
+        this.pluginRenderStatusService.set({
           pluginId: config.id,
           type: 'detail',
           status: 'error',
@@ -163,8 +201,29 @@ export class TableFillService {
         ? this.spreadsheetFilterRuntimeService.applyQueryFilterToConfig(unitId, config)
         : config
       const dataResult = await this.dataService.queryData(queryConfig)
+      if (unitId) {
+        // 查询期间可能发生合法的行列删除，写入前必须重新读取实例的最新坐标。
+        startCell = this.tableRenderExpansionService.resolveStartCell(
+          unitId,
+          'detail',
+          config.id,
+          startCell
+        )
+        config.placement.startCell = startCell
+        startPos = this.parseCell(startCell)
+      }
 
-      const fieldCount = dataResult.data.fields.length
+      const configuredFields = config.data?.zones?.fields || []
+      // 查询仍保留完整字段，仅在写入工作表时投影出可见字段。
+      const renderFields = dataResult.data.fields
+        .map(field => ({
+          field,
+          configuredField: findConfiguredField(configuredFields, field)
+        }))
+        .filter(item => item.configuredField?.hidden !== true)
+      const resultFields = renderFields.map(item => item.field)
+      const resolvedFields = renderFields.map(item => item.configuredField)
+      const fieldCount = resultFields.length
       const showIndex = !!config.style?.header?.showIndex
       const indexLabel = config.style?.header?.indexLabel?.trim() || '序号'
       const hideHeader = !!config.style?.base?.hideHeader
@@ -177,20 +236,33 @@ export class TableFillService {
       await this.detailTableEditProtectionService.runWithoutProtection(() =>
         ensureSheetSize(univerApi, fWorksheet, startPos.row + rowCount, startPos.col + columnCount)
       )
-      const conflictMessage = this.detailTableRangeService.validateRenderRangeBeforeFill(
-        univerApi,
-        config,
-        startCell,
-        rowCount,
-        columnCount,
-        fWorksheet,
-        options.initialRestore === true
-      )
+      const expansionMessage = unitId
+        ? await this.tableRenderExpansionService.ensureRenderSpace({
+            unitId,
+            sheetId,
+            pluginId: config.id,
+            tableType: 'detail',
+            worksheet: fWorksheet,
+            startCell,
+            rowCount,
+            columnCount,
+            initialRestore: options.initialRestore === true
+          })
+        : undefined
+      const conflictMessage = expansionMessage ||
+        this.detailTableRangeService.validateRenderRangeBeforeFill(
+          univerApi,
+          config,
+          startCell,
+          rowCount,
+          columnCount,
+          fWorksheet,
+          options.initialRestore === true
+        )
       if (conflictMessage) {
         ElMessage.warning(conflictMessage)
-        await this.clearPreviousData(univerApi, config.id, startCell, fWorksheet)
         if (unitId) {
-          pluginRenderStatusService.set({
+          this.pluginRenderStatusService.set({
             pluginId: config.id,
             type: 'detail',
             status: 'error',
@@ -206,12 +278,8 @@ export class TableFillService {
 
       await this.clearPreviousData(univerApi, config.id, startCell, fWorksheet)
 
-      const configuredFields = config.data?.zones?.fields || []
-      const resolvedFields = dataResult.data.fields.map(field =>
-        findConfiguredField(configuredFields, field)
-      )
       const dataValues = dataResult.data.rowData.map((row, rowIndex) => {
-        const rowValues = dataResult.data.fields.map((column, index) => {
+        const rowValues = resultFields.map((column, index) => {
           const value = toNativeCellValue(row[column.dataeaseName], resolvedFields[index])
           const numberFormat = getFieldNumberFormat(resolvedFields[index], value)
           if (!numberFormat || value === '') {
@@ -240,11 +308,11 @@ export class TableFillService {
             ]
           : rowValues
       })
-      const headerValues = dataResult.data.fields.map(column => column.chartShowName || column.name)
+      const headerValues = resultFields.map(column => column.chartShowName || column.name)
       const totalValues = totalEnabled
         ? this.buildTotalRow(
             dataValues,
-            dataResult.data.fields,
+            resultFields,
             config,
             showIndex,
             columnCount,
@@ -291,7 +359,7 @@ export class TableFillService {
       await this.applyStyleOnly(univerApi, config)
 
       if (unitId) {
-        pluginRenderStatusService.set({
+        this.pluginRenderStatusService.set({
           pluginId: config.id,
           type: 'detail',
           status: rowCount > 0 ? 'rendered' : 'empty',
@@ -312,7 +380,7 @@ export class TableFillService {
         console.warn('[TableFillService] Failed to clear previous data:', clearError)
       }
       if (unitId) {
-        pluginRenderStatusService.set({
+        this.pluginRenderStatusService.set({
           pluginId: config.id,
           type: 'detail',
           status: 'error',
@@ -398,7 +466,7 @@ export class TableFillService {
     this.updateRenderStyleRange(univerApi, config)
 
     if (dataRange && config.style?.base?.mergeCell) {
-      await this.mergeDimensionCells(univerApi, config, state, dataRange, unitId)
+      await this.mergeDimensionCells(univerApi, state, dataRange, unitId)
     }
 
     this.refreshTargetSheet(univerApi, state.sheetId)
@@ -406,12 +474,12 @@ export class TableFillService {
 
   private async mergeDimensionCells(
     univerApi: any,
-    config: DetailTableConfig,
     state: DetailTableDisplayState,
     dataRange: { startRow: number; endRow: number; startColumn: number; endColumn: number },
     unitId: string
   ): Promise<void> {
-    const fields = config.data?.zones?.fields || []
+    // 合并层级以实际渲染字段为准，隐藏字段不占列也不形成合并边界。
+    const fields = state.fields || []
     const indexColumnOffset = state.showIndex ? 1 : 0
     const mergeColumnCount = this.getMergeColumnCount(fields, state.colCount - indexColumnOffset)
     if (mergeColumnCount <= 0) {
@@ -447,7 +515,10 @@ export class TableFillService {
     await this.applyMergeAlignment(univerApi, unitId, state.sheetId, mergeRanges)
   }
 
-  private getMergeColumnCount(fields: Array<{ groupType?: string }>, colCount: number): number {
+  private getMergeColumnCount(
+    fields: Array<{ groupType?: string } | undefined>,
+    colCount: number
+  ): number {
     if (!fields.length || fields[0]?.groupType === 'q') {
       return 0
     }
@@ -679,11 +750,12 @@ export class TableFillService {
   ): Promise<void> {
     await this.detailTableEditProtectionService.runWithoutProtection(async () => {
       for (const range of ranges) {
+        // 未启用单元格样式时，合并后的维度字段仍与普通维度字段保持左对齐。
         await univerApi.executeCommand?.(SetStyleCommand.id, {
           unitId,
           subUnitId: sheetId,
           range,
-          style: { type: 'ht', value: HorizontalAlign.CENTER }
+          style: { type: 'ht', value: HorizontalAlign.LEFT }
         })
         await univerApi.executeCommand?.(SetStyleCommand.id, {
           unitId,

@@ -47,13 +47,11 @@ const emit = defineEmits<{
 const customSortDialogVisible = ref(false)
 const valueFormatterDialogVisible = ref(false)
 
-const dateStyleOptions: Array<{ label: string; value: FieldDateStyle }> = [
+const dateStyleOptions: Array<{ label: string; value: FieldDateStyle; divided?: boolean }> = [
   { label: '年', value: 'y' },
-  { label: '年-季度', value: 'y_Q' },
   { label: '年-月', value: 'y_M' },
-  { label: '年-周', value: 'y_W' },
   { label: '年-月-日', value: 'y_M_d' },
-  { label: '时:分:秒', value: 'H_m_s' },
+  { label: '时:分:秒', value: 'H_m_s', divided: true },
   { label: '年-月-日 时', value: 'y_M_d_H' },
   { label: '年-月-日 时:分', value: 'y_M_d_H_m' },
   { label: '年-月-日 时:分:秒', value: 'y_M_d_H_m_s' }
@@ -93,6 +91,14 @@ const currentSortLabel = computed(() => {
 const showSortIcon = computed(() => currentSort.value !== 'none')
 const isDateField = computed(() => props.field.deType === 1)
 const isQuotaField = computed(() => props.field.groupType === 'q')
+const visibleFieldCount = computed(() => {
+  if (!props.dataConfig) {
+    return Number.POSITIVE_INFINITY
+  }
+  const fields = props.dataConfig?.zones?.fields || []
+  return fields.filter(field => field.hidden !== true).length
+})
+const disableHideField = computed(() => !props.field.hidden && visibleFieldCount.value <= 1)
 const currentDateStyle = computed(() => props.field.dateStyle ?? DEFAULT_DATE_STYLE)
 const currentDatePattern = computed(() => props.field.datePattern ?? DEFAULT_DATE_PATTERN)
 const currentDateStyleLabel = computed(
@@ -391,6 +397,7 @@ const getFieldColor = (groupType: string) => {
                   v-for="option in dateStyleOptions"
                   :key="option.value"
                   :command="option.value"
+                  :divided="option.divided"
                 >
                   <span
                     class="sub-menu-content date-style-menu-content"
@@ -446,7 +453,7 @@ const getFieldColor = (groupType: string) => {
           <el-icon><Edit /></el-icon>
           <span>编辑显示名称</span>
         </el-dropdown-item>
-        <el-dropdown-item command="toggleHidden">
+        <el-dropdown-item command="toggleHidden" :disabled="disableHideField">
           <el-icon>
             <View v-if="field.hidden" />
             <Hide v-else />

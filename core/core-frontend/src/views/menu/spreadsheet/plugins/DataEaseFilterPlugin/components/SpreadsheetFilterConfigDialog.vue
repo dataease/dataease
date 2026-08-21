@@ -14,6 +14,7 @@ import EmptyBackground from '@/components/empty-background/src/EmptyBackground.v
 import { fieldType } from '@/utils/attr'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import SpreadsheetFilterRenderer from './renderers/SpreadsheetFilterRenderer.vue'
+import SpreadsheetFilterCustomSortDialog from './config/SpreadsheetFilterCustomSortDialog.vue'
 import SpreadsheetFilterTextSearchConfig from './config/SpreadsheetFilterTextSearchConfig.vue'
 import SpreadsheetFilterTreeConfig from './config/SpreadsheetFilterTreeConfig.vue'
 import SpreadsheetFilterTimeConfig from './config/SpreadsheetFilterTimeConfig.vue'
@@ -33,7 +34,10 @@ import {
   shouldShowSpreadsheetFilterOptionSource,
   supportsSpreadsheetFilterDatasetOptionSource
 } from '../utils/filter-condition-rules'
-import { isSpreadsheetFilterEmptyValue } from '../utils/filter-values'
+import {
+  getSpreadsheetFilterEmptyValue,
+  isSpreadsheetFilterEmptyValue
+} from '../utils/filter-values'
 import type {
   SpreadsheetFilterAvailableField,
   SpreadsheetFilterAvailablePlugin
@@ -79,6 +83,9 @@ const optionDatasetFields = ref<SpreadsheetFilterAvailableField[]>([])
 const datasetFieldCache = new Map<string, SpreadsheetFilterAvailableField[]>()
 const manualPopoverRef = ref()
 const manualOptionDraft = ref<Array<string | number>>([])
+const customSortDialogVisible = ref(false)
+const customSortSelectionPending = ref(false)
+const sortTypeBeforeChange = ref<SpreadsheetFilterCondition['sortType']>()
 const activeTreeLevelIndex = ref(0)
 const expandedTreeConditions = ref<Record<string, boolean>>(
   Object.fromEntries(
@@ -121,6 +128,13 @@ const initializeTreeDatasetFromFirstLinkedField = (condition: SpreadsheetFilterC
 const setActiveLinkedFields = (linkedFields: SpreadsheetFilterLinkedField[]) => {
   const condition = activeCondition.value
   if (!condition) return
+  if (
+    !condition.defaultValueEnabled &&
+    !isSpreadsheetFilterEmptyValue(condition.selectValue)
+  ) {
+    // 未要求默认值时，关联字段操作后不再保留原先的选中值。
+    condition.selectValue = getSpreadsheetFilterEmptyValue(condition)
+  }
   if (condition.displayType !== 'treeSelect' || activeTreeLevelIndex.value === 0) {
     condition.linkedFields = linkedFields
     initializeTreeDatasetFromFirstLinkedField(condition)
@@ -169,10 +183,10 @@ const displayDatasetFields = computed(() =>
 const sortDatasetFields = computed(() =>
   filterSpreadsheetFilterDatasetFields(activeCondition.value, optionDatasetFields.value, 'sort')
 )
-const customSortDisabled = computed(() =>
-  !activeCondition.value?.displayFieldId ||
-  !activeCondition.value?.sortFieldId ||
-  String(activeCondition.value.displayFieldId) !== String(activeCondition.value.sortFieldId)
+const customSortAvailable = computed(() =>
+  !!activeCondition.value?.displayFieldId &&
+  !!activeCondition.value?.sortFieldId &&
+  String(activeCondition.value.displayFieldId) === String(activeCondition.value.sortFieldId)
 )
 const availablePluginRows = computed(() => props.availablePlugins || [])
 const selectablePluginRows = computed(() =>
@@ -186,14 +200,19 @@ const allFieldsSelected = computed({
     if (!activeCondition.value) {
       return
     }
-    const linkedFields = checked
-      ? selectablePluginRows.value
-        .map(row => {
-          const field = getCompatibleDatasetFields(row)[0]
-          return field ? toLinkedField(row, field) : undefined
-        })
-        .filter((field): field is SpreadsheetFilterLinkedField => !!field)
-      : []
+    let linkedFields: SpreadsheetFilterLinkedField[] = []
+    if (checked) {
+      linkedFields = [...getActiveLinkedFields()]
+      const selectedPluginIds = new Set(linkedFields.map(field => field.pluginId))
+      selectablePluginRows.value.forEach(row => {
+        if (selectedPluginIds.has(row.pluginId)) return
+        const field = getCompatibleDatasetFields(row).find(item => !item.desensitized)
+        if (!field) return
+        // 全选仅补齐尚未关联的图表，已有字段及其顺序必须保持不变。
+        linkedFields.push(toLinkedField(row, field))
+        selectedPluginIds.add(row.pluginId)
+      })
+    }
     setActiveLinkedFields(linkedFields)
     if (activeTreeLevelIndex.value === 0) syncActiveConditionFieldOptions()
   }
@@ -485,6 +504,7 @@ const clearLinkedFields = () => {
   activeCondition.value.sortFieldId = undefined
   activeCondition.value.sortFieldName = undefined
   activeCondition.value.sortType = undefined
+  activeCondition.value.sortList = undefined
   normalizeSpreadsheetFilterConditionByRules(activeCondition.value)
 }
 
@@ -499,6 +519,8 @@ const syncActiveConditionFieldOptions = () => {
     activeCondition.value.displayFieldName = undefined
     activeCondition.value.sortFieldId = undefined
     activeCondition.value.sortFieldName = undefined
+    activeCondition.value.sortType = undefined
+    activeCondition.value.sortList = undefined
     return
   }
   clearInvalidOptionDatasetFields()
@@ -518,7 +540,13 @@ const handleOptionSourceChange = () => {
     return
   }
   normalizeSpreadsheetFilterConditionByRules(activeCondition.value)
-  syncActiveConditionFieldOptions()
+  if (activeCondition.value.optionSource === 'dataset') {
+    void initializeOptionDatasetFromFirstLinkedField()
+  } else {
+    syncActiveConditionFieldOptions()
+    activeCondition.value.sortType = undefined
+    activeCondition.value.sortList = undefined
+  }
   activeCondition.value.defaultValue = activeCondition.value.multiple ? [] : ''
   activeCondition.value.defaultValueFirstItem = false
 }
@@ -538,14 +566,51 @@ const updateConditionFieldName = (target: 'query' | 'display' | 'sort', fieldId:
     activeCondition.value.queryFieldName = field?.fieldName
   } else if (target === 'display') {
     activeCondition.value.displayFieldName = field?.fieldName
+    if (!customSortAvailable.value && activeCondition.value.sortType === 'customSort') {
+      activeCondition.value.sortType = undefined
+      activeCondition.value.sortList = undefined
+    }
   } else {
     activeCondition.value.sortFieldName = field?.fieldName
-  }
-  if (customSortDisabled.value && activeCondition.value.sortType === 'customSort') {
-    activeCondition.value.sortType = undefined
+    // 自定义排序值只属于原排序字段，字段切换后统一从升序重新开始。
+    activeCondition.value.sortType = field ? 'asc' : undefined
+    activeCondition.value.sortList = undefined
   }
   activeCondition.value.defaultValue = activeCondition.value.multiple ? [] : ''
   activeCondition.value.defaultValueFirstItem = false
+}
+
+const handleSortTypeVisibleChange = (visible: boolean) => {
+  if (visible) sortTypeBeforeChange.value = activeCondition.value?.sortType
+}
+
+const handleSortTypeChange = (sortType: SpreadsheetFilterCondition['sortType']) => {
+  if (!activeCondition.value) return
+  if (sortType === 'customSort') return
+  activeCondition.value.sortList = undefined
+}
+
+const handleCustomSortOptionClick = () => {
+  nextTick(() => {
+    if (activeCondition.value?.sortType !== 'customSort') return
+    customSortSelectionPending.value = sortTypeBeforeChange.value !== 'customSort'
+    customSortDialogVisible.value = true
+  })
+}
+
+const handleCustomSortDialogVisibleChange = (visible: boolean) => {
+  customSortDialogVisible.value = visible
+  if (visible || !customSortSelectionPending.value || !activeCondition.value) return
+  // 首次选择自定义排序后取消弹窗时，恢复进入弹窗前的排序类型。
+  activeCondition.value.sortType = sortTypeBeforeChange.value || 'asc'
+  customSortSelectionPending.value = false
+}
+
+const confirmCustomSort = (values: Array<string | number>) => {
+  if (!activeCondition.value) return
+  activeCondition.value.sortList = values
+  activeCondition.value.sortType = 'customSort'
+  customSortSelectionPending.value = false
 }
 
 const clearInvalidOptionDatasetFields = () => {
@@ -570,8 +635,9 @@ const clearInvalidOptionDatasetFields = () => {
   clearRole('query')
   clearRole('display')
   clearRole('sort')
-  if (customSortDisabled.value && condition.sortType === 'customSort') {
+  if (!condition.sortFieldId) {
     condition.sortType = undefined
+    condition.sortList = undefined
   }
   if (changed) {
     condition.defaultValue = condition.multiple ? [] : ''
@@ -588,6 +654,7 @@ const resetOptionDatasetConfig = () => {
   activeCondition.value.sortFieldId = undefined
   activeCondition.value.sortFieldName = undefined
   activeCondition.value.sortType = undefined
+  activeCondition.value.sortList = undefined
   activeCondition.value.defaultValue = activeCondition.value.multiple ? [] : ''
   activeCondition.value.defaultValueFirstItem = false
 }
@@ -645,6 +712,42 @@ const handleOptionDatasetChange = async (datasetId: string | number) => {
   await loadOptionDatasetFields(datasetId)
 }
 
+const initializeOptionDatasetFromFirstLinkedField = async () => {
+  const condition = activeCondition.value
+  if (!condition) return
+  const firstLinkedField = condition.linkedFields[0]
+  const hasDataset = firstLinkedField?.datasetId !== undefined &&
+    firstLinkedField.datasetId !== null &&
+    firstLinkedField.datasetId !== ''
+  const hasField = firstLinkedField?.fieldId !== undefined &&
+    firstLinkedField.fieldId !== null &&
+    firstLinkedField.fieldId !== ''
+  if (!firstLinkedField || !hasDataset || !hasField) {
+    resetOptionDatasetConfig()
+    return
+  }
+
+  condition.optionDatasetId = firstLinkedField.datasetId
+  condition.optionDatasetName = firstLinkedField.datasetName
+  resetOptionDatasetConfig()
+  await loadOptionDatasetFields(firstLinkedField.datasetId)
+  if (activeCondition.value !== condition || condition.optionSource !== 'dataset') return
+
+  const linkedField = optionDatasetFields.value.find(
+    field => String(field.fieldId) === String(firstLinkedField.fieldId)
+  )
+  if (!linkedField || linkedField.desensitized) return
+
+  // 数据集来源初始配置与第一个关联图表保持一致，避免用户重复选择同一字段。
+  condition.queryFieldId = linkedField.fieldId
+  condition.queryFieldName = linkedField.fieldName
+  condition.displayFieldId = linkedField.fieldId
+  condition.displayFieldName = linkedField.fieldName
+  condition.sortFieldId = linkedField.fieldId
+  condition.sortFieldName = linkedField.fieldName
+  condition.sortType = 'asc'
+}
+
 const openManualOptions = () => {
   manualOptionDraft.value = cloneDeep(activeCondition.value?.manualOptions?.length
     ? activeCondition.value.manualOptions
@@ -678,8 +781,7 @@ const canRenderDefaultPreview = computed(() => {
   return !!(
     condition.optionDatasetId &&
     condition.queryFieldId &&
-    condition.displayFieldId &&
-    condition.sortFieldId
+    condition.displayFieldId
   )
 })
 
@@ -742,8 +844,7 @@ const hasEffectiveDefaultValue = (condition: SpreadsheetFilterCondition) => {
       : !!(
         condition.optionDatasetId &&
         condition.queryFieldId &&
-        condition.displayFieldId &&
-        condition.sortFieldId
+        condition.displayFieldId
       )
   if (condition.defaultValueFirstItem && shouldShowSpreadsheetFilterOptionSource(condition)) {
     return sourceReady
@@ -796,6 +897,15 @@ const save = () => {
   if (inconsistentCondition) {
     activeConditionId.value = inconsistentCondition.id
     ElMessage.error('所选字段类型不一致，无法进行查询配置')
+    return
+  }
+  const invalidDatasetCondition = localConfig.value.conditions.find(condition =>
+    shouldShowSpreadsheetFilterDatasetFields(condition) &&
+    (!condition.optionDatasetId || !condition.queryFieldId || !condition.displayFieldId)
+  )
+  if (invalidDatasetCondition) {
+    activeConditionId.value = invalidDatasetCondition.id
+    ElMessage.warning('请选择数据集、查询字段和显示字段')
     return
   }
   const invalidDefaultValueCondition = localConfig.value.conditions.find(
@@ -1016,6 +1126,7 @@ if (props.initialAction === 'add') {
               class="spreadsheet-filter-config-dialog__plugin-field-select"
               popper-class="spreadsheet-filter-field-select-popper"
               clearable
+              filterable
               :disabled="!row.fields.length"
               @change="fieldId => selectPluginField(row, fieldId)"
               @clear="selectPluginField(row)"
@@ -1290,6 +1401,7 @@ if (props.initialAction === 'add') {
                       v-model="activeCondition.sortFieldId"
                       placeholder="请选择排序字段"
                       class="spreadsheet-filter-config-dialog__sort-field"
+                      clearable
                       @change="value => updateConditionFieldName('sort', value)"
                     >
                       <template #prefix>
@@ -1324,10 +1436,18 @@ if (props.initialAction === 'add') {
                       v-model="activeCondition.sortType"
                       placeholder="请选择"
                       class="spreadsheet-filter-config-dialog__sort-type"
+                      :disabled="!activeCondition.sortFieldId"
+                      @visible-change="handleSortTypeVisibleChange"
+                      @change="handleSortTypeChange"
                     >
                       <el-option label="升序" value="asc" />
                       <el-option label="降序" value="desc" />
-                      <el-option label="自定义排序" value="customSort" :disabled="customSortDisabled" />
+                      <el-option
+                        label="自定义排序"
+                        value="customSort"
+                        :disabled="!customSortAvailable"
+                        @click="handleCustomSortOptionClick"
+                      />
                     </el-select>
                   </div>
                 </div>
@@ -1421,6 +1541,13 @@ if (props.initialAction === 'add') {
         <el-button type="primary" @click="save">确定</el-button>
       </div>
     </div>
+    <SpreadsheetFilterCustomSortDialog
+      v-if="activeCondition"
+      :model-value="customSortDialogVisible"
+      :condition="activeCondition"
+      @update:model-value="handleCustomSortDialogVisibleChange"
+      @confirm="confirmCustomSort"
+    />
   </div>
 </template>
 

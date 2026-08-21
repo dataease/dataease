@@ -44,7 +44,7 @@ public class DynamicCaseNamingStrategy extends CamelCaseToUnderscoresNamingStrat
             "SELECT", "SESSION", "SET", "SHARE", "SIZE", "SMALLINT", "START",
             "SUCCESSFUL", "SYNONYM", "SYSDATE", "TABLE", "THEN", "TO", "TRIGGER",
             "UNION", "UNIQUE", "UPDATE", "USER", "VALIDATE", "VALUES",
-            "VARCHAR", "VARCHAR2", "VIEW", "WHENEVER", "WHERE", "WITH"
+            "VARCHAR", "VARCHAR2", "VIEW", "WHENEVER", "WHERE", "WITH", "DOMAIN","AREA"
     );
 
     private static boolean isOracleKeyword(String word) {

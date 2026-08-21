@@ -4874,6 +4874,7 @@ export default {
     delete_folder_confirm: '删除后，此文件夹下的所有资源都会被删除，请谨慎操作。',
     save_before_leave: '离开前是否保存？',
     unsaved_changes: '有未保存的更改',
+    preview_select_tips: '请在左侧选择电子表格',
     loading: '加载中...',
     no_data: '暂无数据',
     save_first: '请先保存表格',

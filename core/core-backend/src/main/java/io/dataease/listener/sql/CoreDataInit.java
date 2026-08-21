@@ -161,7 +161,7 @@ public class CoreDataInit implements CoreSqlBlock {
         areaList.addAll(buildAreas1());
         areaList.addAll(buildAreas2());
         areaList.addAll(buildAreas3());
-        if (isOracleDatabase()) {
+        if (isOracleOrDmDatabase()) {
             areaRepository.saveAllAndFlush(areaList);
             return;
         }
@@ -178,10 +178,13 @@ public class CoreDataInit implements CoreSqlBlock {
         );
     }
 
-    private boolean isOracleDatabase() {
-        Boolean isOracle = jdbcTemplate.execute((ConnectionCallback<Boolean>) connection ->
-                connection.getMetaData().getDatabaseProductName().toLowerCase().contains("oracle"));
-        return Boolean.TRUE.equals(isOracle);
+    private boolean isOracleOrDmDatabase() {
+        Boolean isOracleOrDm = jdbcTemplate.execute((ConnectionCallback<Boolean>) connection -> {
+            String productName = connection.getMetaData().getDatabaseProductName().toLowerCase();
+            // Oracle 及兼容数据库(达梦等)统一走 JPA 路径，避免原生 SQL 因大小写/引号导致表名找不到
+            return productName.contains("oracle") || productName.contains("dm");
+        });
+        return Boolean.TRUE.equals(isOracleOrDm);
     }
 
     private void initVisualizationBackground() {

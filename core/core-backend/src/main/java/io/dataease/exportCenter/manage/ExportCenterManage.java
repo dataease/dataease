@@ -155,6 +155,10 @@ public class ExportCenterManage implements BaseExportApi {
             HashMap request = JsonUtil.parseObject(exportTask.getParams(), HashMap.class);
             exportCenterDownLoadManage.startDataFillingTask(exportTask, resolveExportTaskFileTarget(safeTaskId), exportTask.getExportFrom(), exportTask.getUserId(), request);
         }
+        if (exportTask.getExportFromType().equalsIgnoreCase("log")) {
+            HashMap request = JsonUtil.parseObject(exportTask.getParams(), HashMap.class);
+            exportCenterDownLoadManage.startLogTask(exportTask, resolveExportTaskFileTarget(safeTaskId), exportTask.getUserId(), request);
+        }
     }
 
     public PageResult<ExportTaskDTO> pager(int goPage, int pageSize, String status) {
@@ -229,6 +233,9 @@ public class ExportCenterManage implements BaseExportApi {
             List<String> finalFullName = fullName;
             exportTaskDTO.setExportFromName(String.join("/", finalFullName));
         }
+        if (exportTaskDTO.getExportFromType().equalsIgnoreCase("log")) {
+            exportTaskDTO.setExportFromName("操作日志");
+        }
     }
 
     private String hostName() {
@@ -296,6 +303,10 @@ public class ExportCenterManage implements BaseExportApi {
         if (StringUtils.equals(exportFromType, "data_filling")) {
             String safeTaskId = validateExportTaskId(exportTask.getId());
             exportCenterDownLoadManage.startDataFillingTask(exportTask, resolveExportTaskFileTarget(safeTaskId), exportTask.getExportFrom(), exportTask.getUserId(), request);
+        }
+        if (StringUtils.equals(exportFromType, "log")) {
+            String safeTaskId = validateExportTaskId(exportTask.getId());
+            exportCenterDownLoadManage.startLogTask(exportTask, resolveExportTaskFileTarget(safeTaskId), exportTask.getUserId(), request);
         }
     }
 

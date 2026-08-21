@@ -27,13 +27,13 @@ import {
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { SPREADSHEET_EVENTS } from '../../../utils/events'
 import { PIVOT_TABLE_PLUGIN_RESOURCE_NAME } from '../../../utils/plugin-resource'
-import { PluginRenderHoverService } from '../../../services/plugin-render-hover.service'
-import { PluginRenderHoverLayerService } from '../../../services/plugin-render-hover-layer.service'
 import {
-  pluginRenderStatusService,
+  PluginRenderHoverLayerService,
+  PluginRenderHoverService,
+  PluginRenderStatusService,
   getPlaceholderPresentation,
   type PluginRenderStatus
-} from '../../../services/plugin-render-status.service'
+} from '../../DataEaseRuntimePlugin/services/table'
 import { DATAEASE_TABLE_STYLE_INTERCEPTOR_PRIORITY } from '../../../services/plugin-render-range-edit-policy'
 import { getPluginActionToolbarPosition, getPluginCellViewportRect } from '../../../utils/plugin-action-toolbar'
 import { isPluginEditorCellSelection } from '../../../utils/plugin-editor-selection'
@@ -97,7 +97,9 @@ export class DataEasePivotTableController extends Disposable {
     @Inject(SheetInterceptorService)
     private readonly sheetInterceptorService: SheetInterceptorService,
     @Inject(SpreadsheetFilterRuntimeService)
-    private readonly spreadsheetFilterRuntimeService: SpreadsheetFilterRuntimeService
+    private readonly spreadsheetFilterRuntimeService: SpreadsheetFilterRuntimeService,
+    @Inject(PluginRenderStatusService)
+    private readonly pluginRenderStatusService: PluginRenderStatusService
   ) {
     super()
     this.univerApi = FUniver.newAPI(this.injector)
@@ -179,7 +181,7 @@ export class DataEasePivotTableController extends Disposable {
         onUnLoad: unitId => {
           this.pendingRestoreUnits.delete(unitId)
           this.pivotTableInstanceService.delete(unitId)
-          pluginRenderStatusService.deleteByUnit(unitId)
+          this.pluginRenderStatusService.deleteByUnit(unitId)
           this.pivotTableDisplayStateService.clear()
           this.clearHoverRange()
           this.pivotTableRenderStyleService.deleteUnit(unitId)
@@ -246,7 +248,7 @@ export class DataEasePivotTableController extends Disposable {
           if (!pluginStyle) {
             // 渲染失败 / 数据为空的占位符：用原生 cell markers 画左上角小三角，
             // 并在单元格内显示状态文字。
-            const placeholder = pluginRenderStatusService.findByCell(
+            const placeholder = this.pluginRenderStatusService.findByCell(
               context.unitId,
               context.subUnitId,
               context.row,
@@ -342,7 +344,13 @@ export class DataEasePivotTableController extends Disposable {
     const range = this.pivotTableRenderStyleService.findRangeAt(unitId, sheetId, row, column)
     if (!range) {
       // 渲染失败 / 数据为空的占位符：hover 时显示灰色遮罩 + 原因 tooltip。
-      const placeholder = pluginRenderStatusService.findByCell(unitId, sheetId, row, column, 'pivot')
+      const placeholder = this.pluginRenderStatusService.findByCell(
+        unitId,
+        sheetId,
+        row,
+        column,
+        'pivot'
+      )
       if (placeholder) {
         this.showPlaceholderHover(worksheet, placeholder, unitId, sheetId, row, column)
       } else {
@@ -561,7 +569,7 @@ export class DataEasePivotTableController extends Disposable {
     // 状态变化（draft/loading/rendered/empty/error）后刷新画布，
     // 让 CELL_CONTENT 拦截器重算并绘制占位符角标。
     this.disposeWithMe(
-      pluginRenderStatusService.changed$.subscribe(() => {
+      this.pluginRenderStatusService.changed$.subscribe(() => {
         const workbook = this.univerApi.getActiveWorkbook()
         const sheetId = workbook?.getActiveSheet?.()?.getSheetId?.()
         if (sheetId) {
@@ -572,7 +580,7 @@ export class DataEasePivotTableController extends Disposable {
   }
 
   private markRestoreError(unitId: string, plugin: PivotTableConfig, error: unknown): void {
-    pluginRenderStatusService.set({
+    this.pluginRenderStatusService.set({
       pluginId: plugin.id,
       type: 'pivot',
       status: 'error',
@@ -593,7 +601,7 @@ export class DataEasePivotTableController extends Disposable {
 
     await this.pivotTableFillService.clearTableData(this.univerApi, payload.pluginId)
     this.pivotTableInstanceService.remove(unitId, payload.pluginId)
-    pluginRenderStatusService.delete(payload.pluginId)
+    this.pluginRenderStatusService.delete(payload.pluginId)
     if (this.pluginRenderHoverService.clearHoverRange()) {
       this.refreshSheetCanvas(payload.sheetId)
     }
@@ -722,7 +730,7 @@ export class DataEasePivotTableController extends Disposable {
     }
 
     // 异常 / 空数据占位符也可点选重开配置面板。
-    const placeholder = pluginRenderStatusService.findByCell(
+    const placeholder = this.pluginRenderStatusService.findByCell(
       unitId,
       activeSheetId,
       startRow,

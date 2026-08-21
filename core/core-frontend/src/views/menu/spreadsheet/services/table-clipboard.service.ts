@@ -15,7 +15,7 @@ import { PivotTableDisplayStateService } from '../plugins/DataEasePivotTablePlug
 import { PivotTableFillService } from '../plugins/DataEasePivotTablePlugin/services/pivot-table-fill.service'
 import { PivotTableInstanceService } from '../plugins/DataEasePivotTablePlugin/services/pivot-table-instance.service'
 import { TableClipboardLayerService } from './table-clipboard-layer.service'
-import { pluginRenderStatusService } from './plugin-render-status.service'
+import { PluginRenderStatusService } from '../plugins/DataEaseRuntimePlugin/services/table'
 
 type TableClipboardMode = 'copy' | 'cut'
 type TableConfig = DetailTableConfig | PivotTableConfig
@@ -53,7 +53,9 @@ export class TableClipboardService extends Disposable {
     @Inject(PivotTableFillService)
     private readonly pivotTableFillService: PivotTableFillService,
     @Inject(TableClipboardLayerService)
-    private readonly tableClipboardLayerService: TableClipboardLayerService
+    private readonly tableClipboardLayerService: TableClipboardLayerService,
+    @Inject(PluginRenderStatusService)
+    private readonly pluginRenderStatusService: PluginRenderStatusService
   ) {
     super()
     this.disposeWithMe(
@@ -182,7 +184,7 @@ export class TableClipboardService extends Disposable {
     // 粘贴前先注册实例并标记为草稿：渲染失败时占位符也能据此重新打开配置面板，
     // 与「插入明细表」的注册时机保持一致。
     this.detailTableInstanceService.addOrUpdate(unitId, config)
-    pluginRenderStatusService.set({
+    this.pluginRenderStatusService.set({
       pluginId: config.id,
       type: 'detail',
       status: 'draft',
@@ -207,7 +209,7 @@ export class TableClipboardService extends Disposable {
     // 粘贴前先注册实例并标记为草稿：渲染失败时占位符也能据此重新打开配置面板，
     // 与「插入透视表」的注册时机保持一致。
     this.pivotTableInstanceService.addOrUpdate(unitId, config)
-    pluginRenderStatusService.set({
+    this.pluginRenderStatusService.set({
       pluginId: config.id,
       type: 'pivot',
       status: 'draft',
