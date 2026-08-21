@@ -265,11 +265,10 @@ const saveDataset = () => {
       }
       loading.value = true
       let method, message
-      switch (cmd) {
+      switch (cmd.value) {
         case "move":
           method = move;
           message = t("data_fill.move_success");
-
           break;
         case "rename":
           method = reName;
