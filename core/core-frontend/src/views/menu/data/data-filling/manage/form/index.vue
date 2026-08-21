@@ -1052,9 +1052,9 @@ const dfSave = () => {
         }
       } else {
         if (
-          f.settings.optionDatasource === undefined ||
-          f.settings.optionTable === undefined ||
-          f.settings.optionColumn === undefined
+          f.settings.optionDatasource == undefined ||
+          f.settings.optionTable == undefined ||
+          f.settings.optionColumn == undefined
         ) {
           selectItem(f.id);
           ElMessage({
@@ -2087,6 +2087,7 @@ provide("scrollbarClick", scrollbarClick);
                 </el-radio-group>
               </el-form-item>
 
+              {{selectedComponentItem.settings.optionSourceType}}
               <template
                 v-if="selectedComponentItem.settings.optionSourceType === 1"
               >
