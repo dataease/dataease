@@ -556,7 +556,6 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
         }
       }
     }
-    debugger
     return legend
   }
 
