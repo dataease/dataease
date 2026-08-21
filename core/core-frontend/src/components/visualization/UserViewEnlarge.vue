@@ -172,6 +172,7 @@ import { activeWatermarkCheckUser } from '@/components/watermark/watermark'
 import { getCanvasStyle } from '@/utils/style'
 import EmptyBackground from '../empty-background/src/EmptyBackground.vue'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
+import { toPng } from 'html-to-image'
 
 const downLoading = ref(false)
 const dvMainStore = dvMainStoreWithOut()
