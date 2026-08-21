@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:dm://hostname:5236
+    url: jdbc:dm://hostname:5236?schema=SYSDBA
     username: user
     password: passwd
     driver-class-name: dm.jdbc.driver.DmDriver
@@ -17,7 +17,6 @@ spring:
         order_updates: true
         temp:
           use_jdbc_metadata_defaults: false
-        default_schema: SYSDBA
     hibernate:
       naming:
         physical-strategy:  io.dataease.config.DynamicCaseNamingStrategy
