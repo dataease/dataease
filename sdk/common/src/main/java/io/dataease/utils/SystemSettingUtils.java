@@ -21,6 +21,7 @@ public class SystemSettingUtils {
                 XpackSettingConstants.LOGIN_LIMIT,
                 XpackSettingConstants.LOGIN_LIMIT_RATE,
                 XpackSettingConstants.LOGIN_LIMIT_TIME,
+                XpackSettingConstants.THRESHOLD_LIMIT,
                 XpackSettingConstants.SPREADSHEET_QUERY_LIMIT);
         return xpackSettingList.contains(pkey);
     }
