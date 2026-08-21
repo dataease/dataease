@@ -548,7 +548,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
               },
               itemMarker: legendSymbol,
               ...getCategoryLegendStyle(legendSize, legendFontSize, legendColor),
-              ...(verticalLegend ? { maxCols: 1 } : { maxRows: 1 })
+              ...(verticalLegend ? { navOrientation: 'vertical', maxCols: 2 } : { maxRows: 1 })
             }
           }
         } else {
@@ -556,6 +556,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
         }
       }
     }
+    debugger
     return legend
   }
 

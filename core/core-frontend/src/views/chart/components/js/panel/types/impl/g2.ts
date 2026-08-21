@@ -462,7 +462,6 @@ export const getCategoryLegendStyle = (markerSize: number, fontSize: number, col
   navPageNumFontSize: fontSize,
   navPageNumFill: color,
   navPageNumFillOpacity: 1,
-  navButtonD: getLegendNavButtonPath(markerSize),
   navButtonSize: markerSize,
   navButtonFill: color,
   navButtonFillOpacity: 1,
@@ -617,7 +616,7 @@ export abstract class G2ChartView<
             },
             itemMarker: legendSymbol,
             ...getCategoryLegendStyle(legendSize, legendFontSize, legendColor),
-            ...(verticalLegend ? { maxCols: 1 } : { maxRows: 1 })
+            ...(verticalLegend ? { navOrientation: 'vertical', maxCols: 2 } : { maxRows: 1 })
           }
         } else {
           legend = false

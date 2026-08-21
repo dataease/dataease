@@ -190,6 +190,20 @@ export const configMixCustomLegend = (
     const containerRect = containerDom?.getBoundingClientRect()
     const mainSize = direction === 'col' ? containerRect?.height : containerRect?.width
     const crossGap = getLegendChartGap(direction, legendFirst, verticalLegend)
+    const sideLegendColumns = (() => {
+      if (direction !== 'row') {
+        return 1
+      }
+      const crossSize = containerRect?.height
+      if (!crossSize || crossSize <= 0) {
+        return Math.min(2, unionRelations.length)
+      }
+      const rowsPerColumn = Math.max(
+        1,
+        Math.floor((crossSize + legendRowPadding) / (legendItemHeight + legendRowPadding))
+      )
+      return Math.min(2, Math.ceil(unionRelations.length / rowsPerColumn))
+    })()
     // spaceFlex 按比例切分子层，这里把图例字号/图标尺寸换算成近似像素层高，避免图例放大后覆盖绘图区
     const legendLineSize = legendItemHeight + (verticalLegend ? legendRowPadding : crossGap)
     const legendMainSize =
@@ -206,9 +220,8 @@ export const configMixCustomLegend = (
           )
         : Math.max(
             80,
-            verticalLegend
-              ? Math.max(...legendItemWidths)
-              : legendItemWidths.reduce((sum, width) => sum + width, 0)
+            // 左右侧图例按最终列数预留宽度，避免第二列从独立子层溢出到 plot
+            Math.max(...legendItemWidths) * sideLegendColumns
           )
     if (!mainSize || mainSize <= 0) {
       const fallbackLegendRatio = Math.max(2, Math.ceil(legendMainSize / 16))
@@ -274,17 +287,21 @@ export const configMixCustomLegend = (
     }
     legendMark.position = position
     legendMark.dataeaseOrientation = verticalLegend ? 'vertical' : 'horizontal'
-    // 垂直图例的分页器位于图例项下方，分页按钮内部仍按左右方向排列
-    legendMark.navOrientation = 'horizontal'
     legendMark.layout.justifyContent =
       alignPosition === 'left' || alignPosition === 'top'
         ? 'flex-start'
         : alignPosition === 'right' || alignPosition === 'bottom'
         ? 'flex-end'
         : 'center'
-    if (verticalLegend) {
+    // 左右侧图例沿纵向分页，单页最多排列两列
+    if (positionVertical) {
+      legendMark.navOrientation = 'vertical'
+      legendMark.maxCols = 2
+    } else if (verticalLegend) {
+      legendMark.navOrientation = 'horizontal'
       legendMark.maxCols = 1
     } else {
+      legendMark.navOrientation = 'horizontal'
       legendMark.maxRows = 1
     }
     options.direction = direction
@@ -357,7 +374,9 @@ export const configMixCustomLegend = (
   }
   if (vPosition === 'center') {
     options.direction = 'row'
-    legendMark.maxCols = 1
+    // 左右侧图例沿纵向分页，单页最多排列两列
+    legendMark.navOrientation = 'vertical'
+    legendMark.maxCols = 2
     if (hPosition === 'left') {
       legendMark.position = 'left'
       legendMark.crossPadding = getLegendChartGap('row', true)
