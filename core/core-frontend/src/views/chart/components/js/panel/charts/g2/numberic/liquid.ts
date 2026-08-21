@@ -30,7 +30,15 @@ export class Liquid extends G2ChartView {
     'border-style': ['all'],
     'basic-style-selector': ['colors', 'alpha'],
     'label-selector': ['fontSize', 'color', 'showQuota', 'showProportion'],
-    'misc-selector': ['liquidShape', 'liquidSize', 'liquidMaxType', 'liquidMaxField'],
+    'misc-selector': [
+      'liquidShape',
+      'liquidSize',
+      'liquidMaxType',
+      'liquidMaxField',
+      'liquidShowBorder',
+      'liquidBorderWidth',
+      'liquidBorderDistance'
+    ],
     'title-selector': [
       'title',
       'fontSize',
@@ -146,7 +154,14 @@ export class Liquid extends G2ChartView {
       data: value / max,
       style: {
         shape,
-        waveLength: lessLength ? lessLength * radius * 0.3 : 128
+        waveLength: lessLength ? lessLength * radius * 0.3 : 128,
+        // G2 水波图默认绘制边框，关闭时需显式将宽度设为 0
+        outlineBorder: customAttr.misc?.liquidShowBorder
+          ? customAttr.misc.liquidBorderWidth ?? DEFAULT_MISC.liquidBorderWidth
+          : 0,
+        outlineDistance: customAttr.misc?.liquidShowBorder
+          ? customAttr.misc.liquidBorderDistance ?? DEFAULT_MISC.liquidBorderDistance
+          : 0
       }
     }
     defaultsDeep(options, tmpOptions)
