@@ -466,7 +466,10 @@ export class GroupLineMix extends G2ChartView {
     const [leftLineMark, _, lineMark] = options.children[0].children
     const leftRelations = leftLineMark.scale.color.relations
     const rightRelations = lineMark.scale.color.relations
-    return configMixCustomLegend(chart, options, leftRelations, rightRelations)
+    // 底部水平图例与柱线、堆叠柱线组合图保持相同的留白位置
+    return configMixCustomLegend(chart, options, leftRelations, rightRelations, {
+      alignBottom: true
+    })
   }
 
   protected configLabel(chart: Chart, options: G2Spec): G2Spec {

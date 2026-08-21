@@ -6,6 +6,7 @@ type MixLegendRelation = [string, string]
 
 interface MixLegendOptions {
   supportOrient?: boolean
+  alignBottom?: boolean
 }
 
 export const filterValidMixTooltipItems = <T extends { value?: any }>(items: T[] = []): T[] => {
@@ -163,7 +164,10 @@ export const configMixCustomLegend = (
     legendFirst = false,
     verticalLegend = direction === 'row'
   ) =>
-    legendOptions.supportOrient && direction === 'col' && !legendFirst && !verticalLegend
+    (legendOptions.supportOrient || legendOptions.alignBottom) &&
+    direction === 'col' &&
+    !legendFirst &&
+    !verticalLegend
       ? 0
       : direction === 'col' && !legendFirst
       ? 4
@@ -191,7 +195,11 @@ export const configMixCustomLegend = (
     const legendMainSize =
       direction === 'col'
         ? Math.max(
-            legendOptions.supportOrient && !legendFirst && !verticalLegend ? 16 : 24,
+            (legendOptions.supportOrient || legendOptions.alignBottom) &&
+              !legendFirst &&
+              !verticalLegend
+              ? 16
+              : 24,
             verticalLegend
               ? legendLineSize * unionRelations.length - legendRowPadding + crossGap
               : legendLineSize
@@ -320,6 +328,15 @@ export const configMixCustomLegend = (
       options.children.push(legendMark)
     }
     return options
+  }
+  if (legendOptions.alignBottom && vPosition === 'bottom') {
+    // 水平左、中、右只改变横向对齐，底部图例统一使用相同的纵向留白
+    legendMark.margin = 0
+    options.padding = 0
+    const chartView = options.children.find(child => child.key === 'chart')
+    if (chartView) {
+      chartView.margin = 0
+    }
   }
   if (hPosition === 'center') {
     options.direction = 'col'
