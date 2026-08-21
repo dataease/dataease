@@ -290,20 +290,20 @@ const loadFail = () => {
     </div>
 
     <MobileHandler
-      v-if="userStore.hasXapck"
+      v-if="appStore.getXpackValid"
       @switch-type="switchType"
       @to-mfa="toMfa"
       @to-main="toMain"
     />
   </div>
   <InvalidPwd
-    v-if="userStore.hasXapck"
+    v-if="appStore.getXpackValid"
     ref="xpackInvalidPwd"
     @load-fail="loadFail"
     @call-back="invalidPwdCb"
   />
   <MfaStep
-    v-if="userStore.hasXapck && showMfa"
+    v-if="appStore.getXpackValid && showMfa"
     ref="mfaRef"
     :mfa-data="mfaData"
     @close="closeMfa"

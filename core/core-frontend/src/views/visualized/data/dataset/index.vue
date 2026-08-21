@@ -83,7 +83,6 @@ import { useCache } from '@/hooks/web/useCache'
 import { RefreshLeft } from '@element-plus/icons-vue'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import { exportPermission, isFreeFolder } from '@/utils/utils'
-import { useUserStoreWithOut } from '@/store/modules/user'
 const Pane = defineAsyncComponent(
   () => import('@/views/component/row-col-permission/pane/index.vue')
 )
@@ -96,7 +95,6 @@ const DatasetColumnPermissions = defineAsyncComponent(
 const { t } = useI18n()
 const interactiveStore = interactiveStoreWithOut()
 const { wsCache } = useCache()
-const userStore = useUserStoreWithOut()
 interface Field {
   fieldShortName: string
   name: string
@@ -1066,7 +1064,7 @@ const proxyAllowDrop = throttle((arg1, arg2) => {
                 :name="ele.name"
               ></el-tab-pane>
             </el-tabs>
-            <Pane v-if="userStore.hasXapck" @loaded="panelLoad" />
+            <Pane v-if="appStore.getXpackValid" @loaded="panelLoad" />
           </div>
         </div>
         <div class="dataset-table-info">
@@ -1139,12 +1137,12 @@ const proxyAllowDrop = throttle((arg1, arg2) => {
           <template v-if="['row', 'column'].includes(activeName)">
             <div class="table-row-column">
               <DatasetRowPermissions
-                v-if="userStore.hasXapck"
+                v-if="appStore.getXpackValid"
                 :active-name="activeName"
                 :dataset-id="nodeInfo.id"
               />
               <DatasetColumnPermissions
-                v-if="userStore.hasXapck"
+                v-if="appStore.getXpackValid"
                 :active-name="activeName"
                 :dataset-id="nodeInfo.id"
               />

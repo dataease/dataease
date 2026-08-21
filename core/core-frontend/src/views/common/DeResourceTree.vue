@@ -44,7 +44,6 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { HandleMore } from '@/components/handle-more'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
 import { useEmbedded } from '@/store/modules/embedded'
-import { useUserStoreWithOut } from '@/store/modules/user'
 import { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useAppStoreWithOut } from '@/store/modules/app'
@@ -67,7 +66,6 @@ const OpenHandler = defineAsyncComponent(
   () => import('@/views/component/embedded-iframe/OpenHandler.vue')
 )
 const { wsCache } = useCache()
-const userStore = useUserStoreWithOut()
 
 const dvMainStore = dvMainStoreWithOut()
 const appStore = useAppStoreWithOut()
@@ -865,7 +863,7 @@ defineExpose({
       ></de-resource-create-opt-v2>
     </el-scrollbar>
   </div>
-  <OpenHandler v-if="userStore.hasXapck" ref="openHandler" />
+  <OpenHandler v-if="appStore.getXpackValid" ref="openHandler" />
 </template>
 <style lang="less" scoped>
 .filter-icon-span {

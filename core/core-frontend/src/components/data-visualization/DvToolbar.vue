@@ -582,7 +582,7 @@ const fullScreenPreview = () => {
   <de-fullscreen ref="fullScreeRef" show-position="dvEdit"></de-fullscreen>
   <multiplexing-canvas ref="multiplexingRef"></multiplexing-canvas>
   <outer-params-set ref="outerParamsSetRef"></outer-params-set>
-  <OpenHandler v-if="userStore.hasXapck" ref="openHandler"></OpenHandler>
+  <OpenHandler v-if="appStore.getXpackValid" ref="openHandler"></OpenHandler>
 </template>
 
 <style lang="less" scoped>

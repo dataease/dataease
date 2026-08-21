@@ -22,7 +22,6 @@ import { useShareStoreWithOut } from '@/store/modules/share'
 import { exportPermission } from '@/utils/utils'
 import { useCache } from '@/hooks/web/useCache'
 import { isDesktop } from '@/utils/ModelUtil'
-import { useUserStoreWithOut } from '@/store/modules/user'
 const OpenHandler = defineAsyncComponent(
   () => import('@/views/component/embedded-iframe/OpenHandler.vue')
 )
@@ -35,7 +34,6 @@ const { dvInfo } = storeToRefs(dvMainStore)
 const emit = defineEmits(['reload', 'download', 'downloadAsAppTemplate'])
 const { t } = useI18n()
 const embeddedStore = useEmbedded()
-const userStore = useUserStoreWithOut()
 const openType = wsCache.get('open-backend') === '1' ? '_self' : '_blank'
 const favorited = ref(false)
 const preview = () => {
@@ -229,7 +227,7 @@ const initOpenHandler = newWindow => {
       </el-dropdown>
     </div>
   </div>
-  <OpenHandler v-if="userStore.hasXapck" ref="openHandler" />
+  <OpenHandler v-if="appStore.getXpackValid" ref="openHandler" />
 </template>
 
 <style lang="less">

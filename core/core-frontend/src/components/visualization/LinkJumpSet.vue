@@ -617,7 +617,7 @@
         </el-button>
       </el-row>
     </div>
-    <OpenHandler v-if="userStore.hasXapck" ref="openHandler"></OpenHandler>
+    <OpenHandler v-if="appStore.getXpackValid" ref="openHandler"></OpenHandler>
   </el-dialog>
 </template>
 
@@ -655,14 +655,12 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { useCache } from '@/hooks/web/useCache'
 import { useEmbedded } from '@/store/modules/embedded'
-import { useUserStoreWithOut } from '@/store/modules/user'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 import treeSort from '@/utils/treeSortUtils'
 const OpenHandler = defineAsyncComponent(
   () => import('@/views/component/embedded-iframe/OpenHandler.vue')
 )
 const dvMainStore = dvMainStoreWithOut()
-const userStore = useUserStoreWithOut()
 const { dvInfo, canvasViewInfo, componentData } = storeToRefs(dvMainStore)
 const linkJumpInfoTree = ref(null)
 const { t } = useI18n()

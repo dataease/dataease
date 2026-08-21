@@ -57,7 +57,6 @@ import { store } from '@/store'
 // import { clearExtremum } from '@/views/chart/components/js/extremumUitl'
 import DePreviewPopDialog from '@/components/visualization/DePreviewPopDialog.vue'
 import { useRoute } from 'vue-router_2'
-import { useUserStoreWithOut } from '@/store/modules/user'
 const OpenHandler = defineAsyncComponent(
   () => import('@/views/component/embedded-iframe/OpenHandler.vue')
 )
@@ -65,7 +64,6 @@ const ViewCategoryHandler = defineAsyncComponent(
   () => import('@/views/component/plugins-handler/ViewCategoryHandler.vue')
 )
 const route = useRoute()
-const userStore = useUserStoreWithOut()
 const { wsCache } = useCache()
 const chartComponent = ref<any>()
 const { t } = useI18n()
@@ -1361,9 +1359,9 @@ const clearG2Tooltip = () => {
       :drill-filters="state.drillFilters"
       @onDrillJump="drillJump"
     />
-    <OpenHandler v-if="userStore.hasXapck" ref="openHandler" />
+    <OpenHandler v-if="appStore.getXpackValid" ref="openHandler" />
     <ViewCategoryHandler
-      v-if="userStore.hasXapck && !pluginLoaded && view.isPlugin"
+      v-if="appStore.getXpackValid && !pluginLoaded && view.isPlugin"
       @load-plugin-category="loadPluginCategory"
     >
     </ViewCategoryHandler>

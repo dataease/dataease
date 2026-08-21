@@ -5,7 +5,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { shortcutOption } from '@/views/workbranch/ShortcutOption'
 import { useRouter } from 'vue-router_2'
 import { useCache } from '@/hooks/web/useCache'
-import { useUserStoreWithOut } from '@/store/modules/user'
+import { useAppStoreWithOut } from '@/store/modules/app'
 import Workbranch from '@/views/mobile/components/Workbranch.vue'
 import request from '@/config/axios'
 import nothingNone from '@/assets/img/none.png'
@@ -27,7 +27,7 @@ const TabPane = defineAsyncComponent(
 const router = useRouter()
 const { t } = useI18n()
 const { wsCache } = useCache('sessionStorage')
-const userStore = useUserStoreWithOut()
+const appStore = useAppStoreWithOut()
 
 const activeTab = ref('store')
 const emptyTips = ref('')
@@ -196,7 +196,7 @@ const formatterTime = val => {
           :time="formatterTime(ele.lastEditTime || ele.time)"
         />
       </template>
-      <TabPaneTable v-else-if="userStore.hasXapck && activeTab === 'data-filling'" />
+      <TabPaneTable v-else-if="appStore.getXpackValid && activeTab === 'data-filling'" />
     </div>
     <div class="empty-img-mobile" v-if="!!emptyTips">
       <img width="125" height="125" :src="nothingNone" alt="" />
@@ -206,7 +206,7 @@ const formatterTime = val => {
     </div>
   </div>
 
-  <TabPane v-if="userStore.hasXapck" @loaded="loadedDataFilling" />
+  <TabPane v-if="appStore.getXpackValid" @loaded="loadedDataFilling" />
 </template>
 
 <style lang="less" scoped>

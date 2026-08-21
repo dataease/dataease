@@ -33,11 +33,9 @@ import BubbleAnimateCfg from '@/views/chart/components/editor/editor-senior/comp
 import CarouselSetting from '@/custom-component/common/CarouselSetting.vue'
 import { Icon } from 'vant'
 import CommonEvent from '@/custom-component/common/CommonEvent.vue'
-import { useUserStoreWithOut } from '@/store/modules/user'
 const SeniorHandler = defineAsyncComponent(
   () => import('@/views/component/threshold-warning/SeniorHandler.vue')
 )
-const userStore = useUserStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 
 const { nowPanelTrackInfo, nowPanelJumpInfo, dvInfo, componentData, curComponent, batchOptStatus } =
@@ -334,7 +332,7 @@ const removeJumpSenior = () => {
           </collapse-switch-item>
 
           <SeniorHandler
-            v-if="userStore.hasXapck && chart.id"
+            v-if="appStore.getXpackValid && chart.id"
             :chart="chart"
             :themes="themes"
             :is-screen="dvInfo.type === 'dataV'"

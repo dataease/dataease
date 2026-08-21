@@ -16,11 +16,11 @@ import EmptyBackground from '../../components/empty-background/src/EmptyBackgrou
 import { filterEnumMapSync } from '@/utils/componentUtils'
 import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
 import { useLoading } from '@/hooks/web/useLoading'
-import { useUserStoreWithOut } from '@/store/modules/user'
+import { useAppStoreWithOut } from '@/store/modules/app'
 const NewWindowHandler = defineAsyncComponent(
   () => import('@/views/component/embedded-iframe/NewWindowHandler.vue')
 )
-const userStore = useUserStoreWithOut()
+const appStore = useAppStoreWithOut()
 
 const dvMainStore = dvMainStoreWithOut()
 const { t } = useI18n()
@@ -218,7 +218,7 @@ defineExpose({
     img-type="noneWhite"
   />
   <NewWindowHandler
-    v-if="userStore.hasXapck"
+    v-if="appStore.getXpackValid"
     @loaded="XpackLoaded"
     @load-fail="XpackLoaded"
   ></NewWindowHandler>

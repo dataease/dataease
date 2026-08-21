@@ -25,7 +25,7 @@
       />
     </div>
   </el-dialog>
-  <IframeSelf v-if="userStore.hasXapck" ref="xpackIframe" />
+  <IframeSelf v-if="appStore.getXpackValid" ref="xpackIframe" />
 </template>
 
 <script setup lang="ts">
@@ -33,12 +33,12 @@ import { computed, reactive, ref, defineAsyncComponent } from 'vue'
 import { useEmbedded } from '@/store/modules/embedded'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import { useUserStoreWithOut } from '@/store/modules/user'
+import { useAppStoreWithOut } from '@/store/modules/app'
 const IframeSelf = defineAsyncComponent(
   () => import('@/views/component/embedded-iframe/IframeSelf.vue')
 )
 const dvMainStore = dvMainStoreWithOut()
-const userStore = useUserStoreWithOut()
+const appStore = useAppStoreWithOut()
 const { canvasStyleData } = storeToRefs(dvMainStore)
 const state = reactive({
   dialogShow: false,

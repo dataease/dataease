@@ -12,14 +12,14 @@ import { debounce } from 'lodash-es'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { useLoading } from '@/hooks/web/useLoading'
 import ExportCenterWindow from '@/pages/panel/ExportCenterWindow.vue'
-import { useUserStoreWithOut } from '@/store/modules/user'
+import { useAppStoreWithOut } from '@/store/modules/app'
 const Entrances = defineAsyncComponent(
   () => import('@/views/component/embedded-iframe/Entrances.vue')
 )
 
 const { close } = useLoading()
 const currentComponent = shallowRef()
-const userStore = useUserStoreWithOut()
+const appStore = useAppStoreWithOut()
 const Preview = defineAsyncComponent(() => import('@/views/data-visualization/PreviewCanvas.vue'))
 const VisualizationEditor = defineAsyncComponent(
   () => import('@/views/data-visualization/indexV3.vue')
@@ -103,7 +103,6 @@ const initIframe = (name: string) => {
     })
   }
 }
-
 useEmitt({
   name: 'changeCurrentComponent',
   callback: initIframe
@@ -111,7 +110,7 @@ useEmitt({
 </script>
 
 <template>
-  <Entrances v-if="userStore.hasXapck" @init-iframe="initIframe"></Entrances>
+  <Entrances v-if="appStore.getXpackValid" @init-iframe="initIframe"></Entrances>
   <div :style="iframeStyle">
     <component :is="currentComponent" v-if="showComponent"></component>
   </div>

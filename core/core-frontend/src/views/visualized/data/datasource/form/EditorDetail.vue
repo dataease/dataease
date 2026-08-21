@@ -28,12 +28,12 @@ import { PluginComponent } from '@/components/plugin'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import { boolean } from 'mathjs'
 import dayjs from 'dayjs'
-import { useUserStoreWithOut } from '@/store/modules/user'
+import { useAppStoreWithOut } from '@/store/modules/app'
 const DatasourceEnableDataFilling = defineAsyncComponent(
   () => import('@/views/component/data-filling/DatasourceEnableDataFilling.vue')
 )
 const { t } = useI18n()
-const userStore = useUserStoreWithOut()
+const appStore = useAppStoreWithOut()
 const prop = defineProps({
   form: {
     required: false,
@@ -1568,7 +1568,7 @@ defineExpose({
           </template>
 
           <!--    数据填报      -->
-          <DatasourceEnableDataFilling v-if="userStore.hasXapck" :form="form" />
+          <DatasourceEnableDataFilling v-if="appStore.getXpackValid" :form="form" />
         </template>
       </el-form>
       <el-form

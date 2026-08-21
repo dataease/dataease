@@ -38,14 +38,12 @@ import eventBus from '@/utils/eventBus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { recoverToPublished } from '@/api/visualization/dataVisualization'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
-import { useUserStoreWithOut } from '@/store/modules/user'
 const NewWindowHandler = defineAsyncComponent(
   () => import('@/views/component/embedded-iframe/NewWindowHandler.vue')
 )
 const ThresholdDialog = defineAsyncComponent(
   () => import('@/views/component/threshold-warning/ThresholdDialog.vue')
 )
-const userStore = useUserStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 const embeddedStore = useEmbedded()
 const { wsCache } = useCache()
@@ -459,11 +457,11 @@ onUnmounted(() => {
     v-else-if="loadFinish && mobileConfig"
   ></MobileConfigPanel>
   <NewWindowHandler
-    v-if="userStore.hasXapck"
+    v-if="appStore.getXpackValid"
     @loaded="XpackLoaded"
     @load-fail="XpackLoaded"
   ></NewWindowHandler>
-  <ThresholdDialog v-if="userStore.hasXapck"></ThresholdDialog>
+  <ThresholdDialog v-if="appStore.getXpackValid"></ThresholdDialog>
   <canvas-cache-dialog
     v-show="canvasCacheOutRefShow"
     ref="canvasCacheOutRef"

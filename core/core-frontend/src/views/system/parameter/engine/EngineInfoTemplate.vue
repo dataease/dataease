@@ -31,7 +31,7 @@
   />
   <!--    数据填报      -->
   <DatasourceDataFillingInfo
-    v-if="userStore.hasXapck"
+    v-if="appStore.getXpackValid"
     style="max-width: 100%; padding: 0 24px 8px"
     :nodeInfo="xPackInfo"
   >
@@ -50,12 +50,12 @@ import { dsTypes } from '@/views/visualized/data/datasource/form/option'
 import { getDeEngine } from '@/api/datasource'
 import request from '@/config/axios'
 import { symmetricDecrypt } from '@/utils/encryption'
-import { useUserStoreWithOut } from '@/store/modules/user'
+import { useAppStoreWithOut } from '@/store/modules/app'
 const DatasourceDataFillingInfo = defineAsyncComponent(
   () => import('@/views/component/data-filling/DatasourceDataFillingInfo.vue')
 )
 const { t } = useI18n()
-const userStore = useUserStoreWithOut()
+const appStore = useAppStoreWithOut()
 const typeMap = dsTypes.reduce((pre, next) => {
   pre[next.type] = next.name
   return pre

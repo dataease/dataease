@@ -7,7 +7,7 @@ import Icon from '@/components/icon-custom/src/Icon.vue'
 import { commonHandleDragEnd, commonHandleDragStart } from '@/utils/canvasUtils'
 import { ElScrollbar } from 'element-plus-secondary'
 import { iconChartDarkMap } from '@/components/icon-group/chart-dark-list'
-import { useUserStoreWithOut } from '@/store/modules/user'
+import { useAppStoreWithOut } from '@/store/modules/app'
 const ViewCategoryHandler = defineAsyncComponent(
   () => import('@/views/component/plugins-handler/ViewCategoryHandler.vue')
 )
@@ -36,7 +36,7 @@ const props = defineProps({
 })
 
 const { dvModel } = toRefs(props)
-const userStore = useUserStoreWithOut()
+const appStore = useAppStoreWithOut()
 
 const userViewGroup = ref<InstanceType<typeof ElScrollbar>>()
 
@@ -198,7 +198,7 @@ const loadPluginCategory = data => {
       </el-row>
     </el-scrollbar>
   </el-row>
-  <ViewCategoryHandler v-if="userStore.hasXapck" @load-plugin-category="loadPluginCategory">
+  <ViewCategoryHandler v-if="appStore.getXpackValid" @load-plugin-category="loadPluginCategory">
   </ViewCategoryHandler>
 </template>
 

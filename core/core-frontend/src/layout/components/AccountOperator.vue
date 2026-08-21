@@ -4,6 +4,7 @@ import icon_expandDown_filled from '@/assets/svg/icon_expand-down_filled.svg'
 import { computed, ref, unref, defineAsyncComponent } from 'vue'
 import { Icon } from '@/components/icon-custom'
 import { useUserStoreWithOut } from '@/store/modules/user'
+import { useAppStoreWithOut } from '@/store/modules/app'
 import { logoutApi } from '@/api/login'
 import { logoutHandler } from '@/utils/logout'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -22,6 +23,7 @@ const appearanceStore = useAppearanceStoreWithOut()
 const navigateBg = computed(() => appearanceStore.getNavigateBg)
 const { wsCache } = useCache()
 const userStore = useUserStoreWithOut()
+const appStore = useAppStoreWithOut()
 const { t } = useI18n()
 const { push, resolve } = useRouter()
 
@@ -197,7 +199,7 @@ if (showSystem.value) {
   </el-popover>
 
   <AboutPage />
-  <UcenterHandler v-if="userStore.hasXapck" @loaded="xpackLinkLoaded"></UcenterHandler>
+  <UcenterHandler v-if="appStore.getXpackValid" @loaded="xpackLinkLoaded"></UcenterHandler>
 </template>
 
 <style lang="less">

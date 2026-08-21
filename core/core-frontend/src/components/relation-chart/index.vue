@@ -1,13 +1,13 @@
 <script lang="ts" setup>
 import { ref, reactive, nextTick, defineAsyncComponent } from 'vue'
 import { cloneDeep } from 'lodash-es'
-import { useUserStoreWithOut } from '@/store/modules/user'
+import { useAppStoreWithOut } from '@/store/modules/app'
 import {
   getDatasourceRelationship as getDatasourceRelation,
   getDatasetRelationship as getDatasetRelation
 } from '@/api/relation/index'
 
-const userStore = useUserStoreWithOut()
+const appStore = useAppStoreWithOut()
 const Chart = defineAsyncComponent(() => import('@/views/menu/system/association/Chart.vue'))
 const relationDrawer = ref(false)
 const chartSize = reactive({
@@ -26,7 +26,7 @@ const getChartSize = () => {
 const consanguinity = ref()
 let resRef = null
 const invokeChartData = () => {
-  if (!userStore.hasXapck || !consanguinity.value?.getChartData) {
+  if (!appStore.getXpackValid || !consanguinity.value?.getChartData) {
     return
   }
   consanguinity.value.getChartData({
@@ -67,7 +67,7 @@ const current = {
 const tableLoading = ref(false)
 const getChartData = obj => {
   Object.assign(current, obj || {})
-  if (!userStore.hasXapck) {
+  if (!appStore.getXpackValid) {
     relationDrawer.value = true
     tableLoading.value = false
     return
@@ -105,7 +105,7 @@ defineExpose({
   >
     <div v-loading="tableLoading" class="relation-drawer_content">
       <Chart
-        v-if="userStore.hasXapck"
+        v-if="appStore.getXpackValid"
         ref="consanguinity"
         :chart-size="chartSize"
         :current="current"

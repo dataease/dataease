@@ -13,12 +13,12 @@ import { CustomPassword } from '@/components/custom-password'
 import { Base64 } from 'js-base64'
 import { symmetricDecrypt } from '@/utils/encryption'
 import { Icon } from '@/components/icon-custom'
-import { useUserStoreWithOut } from '@/store/modules/user'
+import { useAppStoreWithOut } from '@/store/modules/app'
 const DatasourceEnableDataFilling = defineAsyncComponent(
   () => import('@/views/component/data-filling/DatasourceEnableDataFilling.vue')
 )
 const { t } = useI18n()
-const userStore = useUserStoreWithOut()
+const appStore = useAppStoreWithOut()
 const dialogVisible = ref(false)
 const loadingInstance = ref(null)
 
@@ -507,7 +507,7 @@ defineExpose({
         </el-row>
       </template>
       <!--    数据填报      -->
-      <DatasourceEnableDataFilling v-if="userStore.hasXapck" :form="nodeInfo" />
+      <DatasourceEnableDataFilling v-if="appStore.getXpackValid" :form="nodeInfo" />
     </el-form>
     <template #footer>
       <span class="dialog-footer">
