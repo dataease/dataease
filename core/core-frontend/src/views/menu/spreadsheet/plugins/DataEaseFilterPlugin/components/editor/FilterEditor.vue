@@ -4,7 +4,10 @@ import { Expand, Fold } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import FilterStyleEditor from './FilterStyleEditor.vue'
 import type { SpreadsheetFilterConfig } from '../../../../types/plugin'
-import { dispatchSpreadsheetFilterConfigChange } from '../../utils/events'
+import {
+  dispatchSpreadsheetFilterConfigChange,
+  getSpreadsheetFilterConfig
+} from '../../utils/events'
 
 const pluginConfig = inject<Ref<SpreadsheetFilterConfig>>('pluginConfig')
 if (!pluginConfig) {
@@ -15,6 +18,11 @@ const collapsed = ref(false)
 const currentConfig = computed(() => pluginConfig.value)
 
 const updatePluginConfig = (key: string, value: any) => {
+  const latestConfig = getSpreadsheetFilterConfig()
+  if (latestConfig && latestConfig.id === pluginConfig.value.id) {
+    // 配置弹窗可能在样式面板打开期间替换配置对象，写样式前必须合并到最新条件列表。
+    pluginConfig.value = latestConfig
+  }
   const keys = key.split('.')
   let target: any = pluginConfig.value
   for (let i = 0; i < keys.length - 1; i++) {

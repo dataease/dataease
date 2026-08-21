@@ -99,9 +99,16 @@ const conditionStyle = computed(() => ({
 }))
 const isDoubleTextSearch = (condition: SpreadsheetFilterCondition) =>
   condition.displayType === 'textSearch' && condition.textSearchConditionType !== 'single'
+const getConditionWidth = (condition: SpreadsheetFilterCondition) => {
+  if (isDoubleTextSearch(condition)) return '502px'
+  // 时间区间保留完整输入空间，但不再占用两个普通条件的宽度。
+  if (condition.displayType === 'timeRange') return '350px'
+  return '235px'
+}
 const getConditionStyle = (condition: SpreadsheetFilterCondition) => ({
   ...conditionStyle.value,
-  width: isDoubleTextSearch(condition) ? '502px' : '235px'
+  width: getConditionWidth(condition),
+  flexShrink: condition.displayType === 'timeRange' ? 0 : undefined
 })
 const conditionNameStyle = computed(() => ({
   color: styleConfig.value?.conditionName?.color || '#1f2329',
@@ -177,9 +184,7 @@ const getControlStyle = (condition: SpreadsheetFilterCondition) => ({
   ...controlStyle.value,
   width: styleConfig.value?.conditionName?.position === 'left'
     ? 'auto'
-    : isDoubleTextSearch(condition)
-      ? '502px'
-      : '235px'
+    : getConditionWidth(condition)
 })
 const getButtonTypography = () => ({
   fontSize: `${styleConfig.value?.button?.fontSize ?? 12}px`,
@@ -437,34 +442,38 @@ onBeforeUnmount(() => {
             class="spreadsheet-query-bar__control-wrap"
             :style="conditionControlStyle"
           >
-            <SpreadsheetFilterRenderer
-              :model-value="conditionValues[condition.id]"
-              :condition="condition"
-              :popper-append-to="popperAppendTo"
-              :popper-options="controlPopperOptions"
-              class="spreadsheet-query-bar__control"
-              :style="getControlStyle(condition)"
-              @update:model-value="value => updateConditionValue(condition, value)"
-              @commit="commitConditionValue"
-            />
             <div
-              v-if="!isPreview"
-              class="spreadsheet-query-bar__condition-toolbar"
+              class="spreadsheet-query-bar__control-anchor"
+              :style="getControlStyle(condition)"
             >
-              <button
-                class="spreadsheet-query-bar__condition-tool"
-                title="编辑查询条件"
-                @click.stop="editCondition(condition.id)"
+              <SpreadsheetFilterRenderer
+                :model-value="conditionValues[condition.id]"
+                :condition="condition"
+                :popper-append-to="popperAppendTo"
+                :popper-options="controlPopperOptions"
+                class="spreadsheet-query-bar__control"
+                @update:model-value="value => updateConditionValue(condition, value)"
+                @commit="commitConditionValue"
+              />
+              <div
+                v-if="!isPreview"
+                class="spreadsheet-query-bar__condition-toolbar"
               >
-                <el-icon><Edit /></el-icon>
-              </button>
-              <button
-                class="spreadsheet-query-bar__condition-tool"
-                title="删除查询条件"
-                @click.stop="deleteCondition(condition.id)"
-              >
-                <el-icon><Delete /></el-icon>
-              </button>
+                <button
+                  class="spreadsheet-query-bar__condition-tool"
+                  title="编辑查询条件"
+                  @click.stop="editCondition(condition.id)"
+                >
+                  <el-icon><Edit /></el-icon>
+                </button>
+                <button
+                  class="spreadsheet-query-bar__condition-tool"
+                  title="删除查询条件"
+                  @click.stop="deleteCondition(condition.id)"
+                >
+                  <el-icon><Delete /></el-icon>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -587,8 +596,9 @@ onBeforeUnmount(() => {
     margin-left: 2px;
   }
 
-  &__control {
-    width: 235px;
+  &__control-anchor {
+    min-width: 0;
+    position: relative;
 
     :deep(.ed-input__wrapper),
     :deep(.ed-select__wrapper),
@@ -611,9 +621,12 @@ onBeforeUnmount(() => {
     }
   }
 
+  &__control {
+    width: 100%;
+  }
+
   &__control-wrap {
     min-width: 0;
-    position: relative;
   }
 
   &__condition-toolbar {

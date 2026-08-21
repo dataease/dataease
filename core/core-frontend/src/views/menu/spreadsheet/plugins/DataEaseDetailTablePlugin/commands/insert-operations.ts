@@ -25,6 +25,11 @@ export const InsertDetailTableOperation: ICommand = {
   id: 'dataease.operation.insert-detail-table',
   type: CommandType.OPERATION,
   handler: async (accessor: IAccessor) => {
+    // 工具栏禁用之外保留命令级校验，避免直接调用命令绕过草稿互斥规则。
+    if (accessor.get(PluginRenderStatusService).hasDraft()) {
+      return false
+    }
+
     const commandService = accessor.get(ICommandService)
     const insertionService = accessor.get(DetailTableInsertionService)
     const initialRange = getCurrentRangeSelection(accessor.get(Injector))
@@ -48,8 +53,8 @@ export const InsertDetailTableOperation: ICommand = {
       onClose: () => {
         insertionService.cancel()
       },
-      validateRange: (range: IRangeSelectResult, resultLimit: number, silent = false) => {
-        const message = accessor.get(DetailTableRangeService).validateSelectedRange(range, resultLimit)
+      validateRange: (range: IRangeSelectResult, _resultLimit: number, silent = false) => {
+        const message = accessor.get(DetailTableRangeService).validateSelectedRange(range)
         if (message && !silent) {
           ElMessage.warning(message)
         }

@@ -10,7 +10,14 @@ import type {
 } from '../../../../types/plugin'
 import SpreadsheetFilterRenderer from '../renderers/SpreadsheetFilterRenderer.vue'
 import SpreadsheetFilterTimeRangeDialog from './SpreadsheetFilterTimeRangeDialog.vue'
-import { resolveDynamicTimeDefault } from '../../utils/time-filter'
+import {
+  getSingleRelativeOptions,
+  getRangeRelativeOptions,
+  onPasteNumber,
+  preventInvalidNumberKeys,
+  resetTimeConditionOnGranularityChange,
+  resolveDynamicTimeDefault
+} from '../../utils/time-filter'
 
 const localeStore = useLocaleStoreWithOut()
 const elLocale = computed(() => localeStore.getCurrentLocale.elLocale)
@@ -24,67 +31,19 @@ const allUnits = [
   { label: '日', value: 'day' }
 ]
 const currentGranularity = computed(() =>
-  (isRange.value ? props.condition.timeRangeGranularity : props.condition.timeGranularity).replace(
-    'range',
-    ''
-  )
+  isRange.value ? props.condition.timeRangeGranularity : props.condition.timeGranularity
 )
+const baseGranularity = computed(() => currentGranularity.value.replace('range', ''))
 const units = computed(() => {
   const count =
-    currentGranularity.value === 'year' ? 1 : currentGranularity.value === 'month' ? 2 : 3
+    baseGranularity.value === 'year' ? 1 : baseGranularity.value === 'month' ? 2 : 3
   return allUnits.slice(0, count)
 })
-const relativeOptions = computed(() => {
-  const granularity = isRange.value
-    ? props.condition.timeRangeGranularity.replace('range', '')
-    : props.condition.timeGranularity
-  if (granularity === 'year')
-    return [
-      { label: '今年', value: 'thisYear' },
-      { label: '去年', value: 'lastYear' },
-      { label: '自定义', value: 'custom' }
-    ]
-  if (granularity === 'month') {
-    const base = [
-      { label: '本月', value: 'thisMonth' },
-      { label: '上月', value: 'lastMonth' }
-    ]
-    return isRange.value
-      ? [
-          ...base,
-          { label: '本季度', value: 'thisQuarter' },
-          { label: '最近3个月', value: 'LastThreeMonths' },
-          { label: '最近6个月', value: 'LastSixMonths' },
-          { label: '最近12个月', value: 'LastTwelveMonths' },
-          { label: '年初至本月', value: 'YearToThisMonth' },
-          { label: '年初至上月末', value: 'YearToLastMonthEnd' },
-          { label: '自定义', value: 'custom' }
-        ]
-      : [...base, { label: '自定义', value: 'custom' }]
-  }
-  if (isRange.value)
-    return [
-      { label: '今天', value: 'today' },
-      { label: '昨天', value: 'yesterday' },
-      { label: '本周', value: 'thisWeek' },
-      { label: '本月', value: 'thisMonth' },
-      { label: '最近3天', value: 'LastThreeDays' },
-      { label: '月初至今', value: 'monthBeginning' },
-      { label: '年初至今', value: 'yearBeginning' },
-      { label: '年初至上月末', value: 'YearToLastMonthEnd' },
-      { label: '月初至昨天', value: 'monthToYesterday' },
-      { label: '完整上月', value: 'LastMonthFull' },
-      { label: '自定义', value: 'custom' }
-    ]
-  return [
-    { label: '今天', value: 'today' },
-    { label: '昨天', value: 'yesterday' },
-    { label: '月初', value: 'monthBeginning' },
-    { label: '月底', value: 'monthEnd' },
-    { label: '年初', value: 'yearBeginning' },
-    { label: '自定义', value: 'custom' }
-  ]
-})
+const relativeOptions = computed(() =>
+  isRange.value
+    ? getRangeRelativeOptions(currentGranularity.value)
+    : getSingleRelativeOptions(currentGranularity.value)
+)
 const dynamicPreview = computed(() => resolveDynamicTimeDefault(props.condition))
 const rangeConfigured = computed(() => {
   const range = props.condition.timeFilterRange
@@ -111,6 +70,14 @@ const normalizeRelativeDefaults = () => {
 }
 normalizeRelativeDefaults()
 watch(
+  () => [props.condition.id, currentGranularity.value] as const,
+  ([conditionId, granularity], [previousConditionId, previousGranularity]) => {
+    if (conditionId !== previousConditionId || granularity === previousGranularity) return
+    resetTimeConditionOnGranularityChange(props.condition)
+  },
+  { flush: 'sync' }
+)
+watch(
   units,
   options => {
     const allowed = new Set(options.map(item => item.value))
@@ -121,6 +88,10 @@ watch(
     for (const side of ['start', 'end'] as const) {
       if (!allowed.has(props.condition.timeRangeDynamicDefault[side].unit)) {
         props.condition.timeRangeDynamicDefault[side].unit = fallback
+      }
+      const filterRangeDynamic = props.condition.timeFilterRange[side]?.dynamic
+      if (filterRangeDynamic && !allowed.has(filterRangeDynamic.unit)) {
+        filterRangeDynamic.unit = fallback
       }
     }
   },
@@ -198,11 +169,17 @@ watch(
       </div>
       <template v-else-if="!isRange">
         <div class="time-config__nested-row">
-          <el-radio-group v-model="condition.timeDynamicDefault.offset.relativeToCurrent">
-            <el-radio v-for="item in relativeOptions" :key="item.value" :label="item.value">{{
-              item.label
-            }}</el-radio>
-          </el-radio-group>
+          <el-select
+            v-model="condition.timeDynamicDefault.offset.relativeToCurrent"
+            class="time-config__relative-select"
+          >
+            <el-option
+              v-for="item in relativeOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
         </div>
         <el-form-item
           v-if="condition.timeDynamicDefault.offset.relativeToCurrent === 'custom'"
@@ -213,10 +190,14 @@ watch(
             :class="{ 'time-config__custom--with-time': condition.timeGranularity === 'datetime' }"
           >
             <el-input-number
-              step-strictly
               v-model="condition.timeDynamicDefault.offset.value"
               :min="0"
+              :step="1"
+              :precision="0"
+              step-strictly
               controls-position="right"
+              @keydown="preventInvalidNumberKeys"
+              @paste="onPasteNumber"
             />
             <el-select v-model="condition.timeDynamicDefault.offset.unit"
               ><el-option v-for="unit in units" :key="unit.value" v-bind="unit"
@@ -240,11 +221,17 @@ watch(
       </template>
       <template v-else>
         <div class="time-config__nested-row">
-          <el-radio-group v-model="condition.timeRangeDynamicDefault.start.relativeToCurrent">
-            <el-radio v-for="item in relativeOptions" :key="item.value" :label="item.value">{{
-              item.label
-            }}</el-radio>
-          </el-radio-group>
+          <el-select
+            v-model="condition.timeRangeDynamicDefault.start.relativeToCurrent"
+            class="time-config__relative-select"
+          >
+            <el-option
+              v-for="item in relativeOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
         </div>
         <template v-if="condition.timeRangeDynamicDefault.start.relativeToCurrent === 'custom'">
           <el-form-item
@@ -261,8 +248,12 @@ watch(
               <el-input-number
                 v-model="condition.timeRangeDynamicDefault[side].value"
                 :min="0"
+                :step="1"
+                :precision="0"
                 step-strictly
                 controls-position="right"
+                @keydown="preventInvalidNumberKeys"
+                @paste="onPasteNumber"
               />
               <el-select v-model="condition.timeRangeDynamicDefault[side].unit"
                 ><el-option v-for="unit in units" :key="unit.value" v-bind="unit"
@@ -302,6 +293,9 @@ watch(
 .time-config__nested-row {
   margin-bottom: 18px;
   padding-left: 48px;
+}
+.time-config__relative-select {
+  width: 100%;
 }
 .time-config__fixed-value {
   width: calc(100% - 48px);

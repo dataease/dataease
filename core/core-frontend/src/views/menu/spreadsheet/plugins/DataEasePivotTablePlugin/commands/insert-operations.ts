@@ -25,6 +25,11 @@ export const InsertPivotTableOperation: ICommand = {
   id: 'dataease.operation.insert-pivot-table',
   type: CommandType.OPERATION,
   handler: async (accessor: IAccessor) => {
+    // 工具栏禁用之外保留命令级校验，避免直接调用命令绕过草稿互斥规则。
+    if (accessor.get(PluginRenderStatusService).hasDraft()) {
+      return false
+    }
+
     const insertionService = accessor.get(PivotTableInsertionService)
     const initialRange = getCurrentRangeSelection(accessor.get(Injector))
     if (!insertionService.start()) {

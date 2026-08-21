@@ -172,6 +172,19 @@ const timeList = [
   }
 ]
 
+const preventInvalidNumberKeys = (e: KeyboardEvent) => {
+  if (['e', 'E', '+', '-', '.'].includes(e.key)) {
+    e.preventDefault()
+  }
+}
+
+const onPasteNumber = (e: ClipboardEvent) => {
+  const pasteData = e.clipboardData?.getData('text') || ''
+  if (!/^\d+$/.test(pasteData)) {
+    e.preventDefault()
+  }
+}
+
 defineExpose({
   init,
   curComponent
@@ -206,7 +219,16 @@ defineExpose({
         class="no-with-date"
         :class="curComponent.timeGranularity === 'datetime' && 'with-date'"
       >
-        <el-input-number v-model="curComponent.timeNum" :min="0" controls-position="right" />
+        <el-input-number
+          v-model="curComponent.timeNum"
+          :min="0"
+          :step="1"
+          :precision="0"
+          step-strictly
+          controls-position="right"
+          @keydown="preventInvalidNumberKeys"
+          @paste="onPasteNumber"
+        />
         <el-select v-model="curComponent.relativeToCurrentType">
           <el-option
             v-for="item in relativeToCurrentTypeList"
