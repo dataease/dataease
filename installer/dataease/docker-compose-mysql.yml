@@ -2,9 +2,9 @@ services:
 
   DE_MYSQL_HOST:
     image: registry.cn-qingdao.aliyuncs.com/dataease/mysql:8.4.5
-    container_name: ${DE_MYSQL_HOST}
+    container_name: ${DE_DB_HOST}
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-u${DE_MYSQL_USER}", "-p${DE_MYSQL_PASSWORD}", "--protocol","tcp"]
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-u${DE_DB_USER}", "-p${DE_DB_PASSWORD}", "--protocol","tcp"]
       interval: 5s
       timeout: 3s
       retries: 10

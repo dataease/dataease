@@ -16,28 +16,6 @@ spring:
       max-request-size: 500MB
   flyway:
       enabled: false
-  datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://${DE_MYSQL_HOST}:${DE_MYSQL_PORT}/${DE_MYSQL_DB}?${DE_MYSQL_PARAMS}
-    username: ${DE_MYSQL_USER}
-    password: ${DE_MYSQL_PASSWORD}
-  jpa:
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
-        jdbc:
-          batch_size: 1000
-          lob:
-            non_contextual_creation: true
-        order_inserts: true
-        order_updates: true
-        temp:
-          use_jdbc_metadata_defaults: false
-    hibernate:
-      naming:
-        physical-strategy: io.dataease.config.DynamicCaseNamingStrategy
-      ddl-auto: update
-    show-sql: false
 dataease:
   apisix-api:
     domain: http://apisix:9180

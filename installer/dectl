@@ -24,7 +24,7 @@ if [ $? -ne 0 ]; then
    fi
 fi
 
-if [[ ! ${DE_EXTERNAL_MYSQL} ]] || [ "${DE_EXTERNAL_MYSQL}" = "false" ]; then
+if [[ ! ${DE_EXTERNAL_DB} ]] || [ "${DE_EXTERNAL_DB}" = "false" ]; then
   compose_files="${compose_files} -f docker-compose-mysql.yml"
 fi
 
