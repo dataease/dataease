@@ -22,7 +22,139 @@ function log_content () {
 }
 
 function prop {
-   [ -f "$1" ] | grep -P "^\s*[^#]?${2}=.*$" $1 | cut -d'=' -f2
+   [ -f "$1" ] && grep -P "^\s*[^#]?${2}=.*$" "$1" | cut -d'=' -f2
+}
+
+# ==================== 数据库类型相关 ====================
+# 根据数据库类型设置默认端口、默认 JDBC 参数、驱动 jar
+function db_defaults() {
+   case "$1" in
+      mysql)
+         DB_DEFAULT_PORT=3306
+         DB_DEFAULT_PARAMS="autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true"
+         DB_DRIVER_JAR="mariadb-java-client-3.5.3.jar"
+         ;;
+      pg)
+         DB_DEFAULT_PORT=5432
+         DB_DEFAULT_PARAMS="connectTimeout=10"
+         DB_DRIVER_JAR="postgresql-42.7.11.jar"
+         ;;
+      oracle)
+         DB_DEFAULT_PORT=1521
+         DB_DEFAULT_PARAMS="useUnicode=true&characterEncoding=UTF-8"
+         DB_DRIVER_JAR="ojdbc10-19.19.0.0.jar"
+         ;;
+      dm)
+         DB_DEFAULT_PORT=5236
+         DB_DEFAULT_PARAMS="charset=UTF-8&loginTimeout=10&connectTimeout=10000"
+         DB_DRIVER_JAR="DmJdbcDriver18.jar"
+         ;;
+      kingbase)
+         DB_DEFAULT_PORT=54321
+         DB_DEFAULT_PARAMS="connectTimeout=10"
+         DB_DRIVER_JAR="kingbase8-9.0.1.jar"
+         ;;
+      sqlserver)
+         DB_DEFAULT_PORT=1433
+         DB_DEFAULT_PARAMS="encrypt=false"
+         DB_DRIVER_JAR="mssql-jdbc-13.4.0.jre11.jar"
+         ;;
+      greatsql)
+         DB_DEFAULT_PORT=3306
+         DB_DEFAULT_PARAMS="autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true"
+         DB_DRIVER_JAR="mariadb-java-client-3.5.3.jar"
+         ;;
+      *)
+         DB_DEFAULT_PORT=3306
+         DB_DEFAULT_PARAMS=""
+         DB_DRIVER_JAR=""
+         ;;
+   esac
+}
+
+# 询问外部数据库连接信息
+function prompt_db_connection() {
+   local answer
+   read -r -p "请输入数据库地址 [localhost]: " answer; DE_DB_HOST="${answer:-localhost}"
+   read -r -p "请输入数据库端口 [${DB_DEFAULT_PORT}]: " answer; DE_DB_PORT="${answer:-$DB_DEFAULT_PORT}"
+   read -r -p "请输入数据库用户名 [root]: " answer; DE_DB_USER="${answer:-root}"
+   read -r -s -p "请输入数据库密码: " answer; echo; DE_DB_PASSWORD="$answer"
+   read -r -p "请输入数据库名 [dataease]: " answer; DE_DB_DATABASE="${answer:-dataease}"
+   read -r -p "请输入数据库 schema（MySQL/GreatSQL 可留空）: " answer; DE_DB_SCHEMA="$answer"
+   read -r -p "请输入 JDBC 连接参数 [${DB_DEFAULT_PARAMS}]: " answer; DE_DB_PARAMS="${answer:-$DB_DEFAULT_PARAMS}"
+}
+
+# 询问运行数据库类型（仅全新安装）
+function prompt_database_config() {
+   # 升级安装不允许切换数据库
+   [[ $INSTALL_TYPE == 'upgrade' ]] && return
+   # 非交互模式（无 TTY）直接使用 install.conf 配置
+   [[ ! -t 0 ]] && return
+
+   log_title "选择运行数据库"
+   echo -e "请选择 DataEase 运行数据库类型："
+   echo -e "  1) MySQL"
+   echo -e "  2) PostgreSQL"
+   echo -e "  3) Oracle"
+   echo -e "  4) DM (达梦)"
+   echo -e "  5) Kingbase (人大金仓)"
+   echo -e "  6) SQLServer"
+   echo -e "  7) GreatSQL"
+   local answer
+   read -r -p "请输入序号 [1-7]，默认 1 (MySQL): " answer
+   case "${answer:-1}" in
+      2) DE_DB_TYPE=pg ;;
+      3) DE_DB_TYPE=oracle ;;
+      4) DE_DB_TYPE=dm ;;
+      5) DE_DB_TYPE=kingbase ;;
+      6) DE_DB_TYPE=sqlserver ;;
+      7) DE_DB_TYPE=greatsql ;;
+      *) DE_DB_TYPE=mysql ;;
+   esac
+
+   if [[ "$DE_DB_TYPE" == "mysql" ]]; then
+      read -r -p "是否使用 DataEase 内置 MySQL？[Y/n]（默认内置）: " answer
+      case "${answer:-Y}" in
+         [nN]|[nN][oO]) DE_EXTERNAL_DB=true ;;
+         *) DE_EXTERNAL_DB=false ;;
+      esac
+   else
+      DE_EXTERNAL_DB=true
+   fi
+
+   db_defaults "$DE_DB_TYPE"
+
+   if [[ "$DE_EXTERNAL_DB" == "true" ]]; then
+      log_content "配置外部数据库连接信息"
+      prompt_db_connection
+   fi
+
+   # 设置 spring profile，用于加载对应数据库的 jpa 配置
+   DE_SPRING_PROFILE="$DE_DB_TYPE"
+
+   export DE_DB_TYPE DE_EXTERNAL_DB DE_DB_HOST DE_DB_PORT DE_DB_DATABASE DE_DB_SCHEMA \
+          DE_DB_USER DE_DB_PASSWORD DE_DB_PARAMS DE_SPRING_PROFILE
+
+   log_content "数据库类型: ${DE_DB_TYPE}, 使用外置数据库: ${DE_EXTERNAL_DB}"
+}
+
+# 复制数据库驱动到 data/driver
+function copy_db_driver() {
+   db_defaults "$DE_DB_TYPE"
+   if [[ -z "$DB_DRIVER_JAR" ]]; then
+      log_content "[警告] ${DE_DB_TYPE} 未配置驱动 jar，请确认 drivers 目录包含对应驱动"
+      return
+   fi
+   local drivers_folder="${CURRENT_DIR}/drivers"
+   [[ -d "$drivers_folder" ]] || drivers_folder="${CURRENT_DIR}/../drivers"
+   local driver_source="${drivers_folder}/${DB_DRIVER_JAR}"
+   if [[ -f "$driver_source" ]]; then
+      mkdir -p ${DE_RUN_BASE}/data/driver
+      cp "$driver_source" ${DE_RUN_BASE}/data/driver/
+      log_content "已复制数据库驱动: ${DB_DRIVER_JAR}"
+   else
+      log_content "[警告] 未找到驱动 ${driver_source}，请检查安装包是否包含该驱动"
+   fi
 }
 
 function check_and_prepare_env_params() {
@@ -76,6 +208,8 @@ function check_and_prepare_env_params() {
    fi
    set +a
 
+   prompt_database_config
+
    read available_disk <<< $(df -H --output=avail "${DE_BASE}" | tail -1)
    disk_num=${available_disk%[KMGTP]}
    disk_unit=${available_disk##*[0-9.]}
@@ -109,15 +243,15 @@ function prepare_de_run_base() {
    env | grep DE_ >.env
 
    mkdir -p ${DE_RUN_BASE}/{cache,logs,conf}
-   mkdir -p ${DE_RUN_BASE}/data/{mysql,static-resource,map,etcd_data,geo,appearance,exportData,plugin,font,i18n,report}
+   mkdir -p ${DE_RUN_BASE}/data/{mysql,static-resource,map,etcd_data,geo,appearance,exportData,plugin,font,i18n,report,driver}
    mkdir -p ${DE_RUN_BASE}/apisix/logs
    mkdir -p ${DE_RUN_BASE}/task/logs
    chmod 777 ${DE_RUN_BASE}/apisix/logs ${DE_RUN_BASE}/data/etcd_data ${DE_RUN_BASE}/task/logs
 
-   if [ "${DE_EXTERNAL_MYSQL}" = "false" ]; then
-      sed -i -e "s/^      DE_MYSQL_HOST/      ${DE_MYSQL_HOST}/g" docker-compose.yml
-      sed -i -e "s/^. DE_MYSQL_HOST/  ${DE_MYSQL_HOST}/g" docker-compose-mysql.yml
-      export DE_MYSQL_PORT=3306
+   if [ "${DE_EXTERNAL_DB}" = "false" ]; then
+      sed -i -e "s/^      DE_MYSQL_HOST/      ${DE_DB_HOST}/g" docker-compose.yml
+      sed -i -e "s/^. DE_MYSQL_HOST/  ${DE_DB_HOST}/g" docker-compose-mysql.yml
+      export DE_DB_PORT=3306
    else
       sed -i -e "/^    depends_on/,+2d" docker-compose.yml
    fi
@@ -133,6 +267,17 @@ function prepare_de_run_base() {
          envsubst < $i > $CONF_FOLDER/$i
       fi
    done
+
+   # 生成数据库 jpa 配置（application-<profile>.yml）
+   if [[ -n "$DE_SPRING_PROFILE" && -f "jpa/application-${DE_SPRING_PROFILE}.yml" ]]; then
+      envsubst < "jpa/application-${DE_SPRING_PROFILE}.yml" > "$CONF_FOLDER/application-${DE_SPRING_PROFILE}.yml"
+      log_content "已启用数据库配置 profile: ${DE_SPRING_PROFILE}"
+   else
+      log_content "[警告] 未找到数据库 jpa 模板 jpa/application-${DE_SPRING_PROFILE}.yml"
+   fi
+
+   # 复制数据库驱动到 data/driver
+   copy_db_driver
 
    # 内置地图由镜像 map-origin 提供，持久化 map 仅保存用户覆盖文件
 }

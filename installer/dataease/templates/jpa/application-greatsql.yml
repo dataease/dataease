@@ -1,0 +1,25 @@
+spring:
+    datasource:
+        driver-class-name: org.mariadb.jdbc.Driver
+        url: jdbc:mariadb://${DE_DB_HOST}:${DE_DB_PORT}/${DE_DB_DATABASE}?${DE_DB_PARAMS}
+        username: ${DE_DB_USER}
+        password: ${DE_DB_PASSWORD}
+
+    jpa:
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.MySQL8Dialect
+                jdbc:
+                    batch_size: 1000
+                    lob:
+                        non_contextual_creation: true
+                order_inserts: true
+                order_updates: true
+                temp:
+                    use_jdbc_metadata_defaults: false
+        hibernate:
+            naming:
+                physical-strategy: io.dataease.config.DynamicCaseNamingStrategy
+            ddl-auto: update
+        show-sql: false
+

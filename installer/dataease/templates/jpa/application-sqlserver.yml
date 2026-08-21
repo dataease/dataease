@@ -1,0 +1,30 @@
+spring:
+  datasource:
+    url: jdbc:sqlserver://${DE_DB_HOST}:${DE_DB_PORT};DatabaseName=${DE_DB_DATABASE};currentSchema=${DE_DB_SCHEMA};${DE_DB_PARAMS}
+    username: ${DE_DB_USER}
+    password: ${DE_DB_PASSWORD}
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: io.dataease.config.CustomSQLServerDialect
+        jdbc:
+          batch_size: 1000
+          lob:
+            non_contextual_creation: true
+        order_inserts: true
+        order_updates: true
+        temp:
+          use_jdbc_metadata_defaults: false
+    hibernate:
+      naming:
+        physical-strategy:  io.dataease.config.DynamicCaseNamingStrategy
+      ddl-auto: update
+    show-sql: false
+
+quartz:
+  enabled: true
+  scheduler-name: deSyncJob
+  properties.org.quartz.jobStore.driverDelegateClass: org.quartz.impl.jdbcjobstore.MSSQLDelegate
+
