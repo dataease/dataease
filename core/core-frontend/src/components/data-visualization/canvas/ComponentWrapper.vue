@@ -35,12 +35,10 @@ import replaceOutlined from '@/assets/svg/icon_replace_outlined.svg'
 import { CommonBackground } from '@/components/visualization/component-background/Types'
 import { ShorthandMode } from '@/Types'
 import { useI18n } from '@/hooks/web/useI18n'
-import { useUserStoreWithOut } from '@/store/modules/user'
 const OpenHandler = defineAsyncComponent(
   () => import('@/views/component/embedded-iframe/OpenHandler.vue')
 )
 const { t } = useI18n()
-const userStore = useUserStoreWithOut()
 
 const componentWrapperInnerRef = ref(null)
 const componentEditBarRef = ref(null)
@@ -625,7 +623,7 @@ onBeforeUnmount(() => {
         :name="commonBackgroundSvgInner"
       ></Board>
     </div>
-    <OpenHandler v-if="userStore.hasXapck" ref="openHandler"></OpenHandler>
+    <OpenHandler v-if="appStore.getXpackValid" ref="openHandler"></OpenHandler>
     <DePreviewPopDialog ref="dePreviewPopDialogRef"></DePreviewPopDialog>
   </div>
 </template>

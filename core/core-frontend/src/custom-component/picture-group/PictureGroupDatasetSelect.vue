@@ -12,14 +12,12 @@ import { useEmbedded } from '@/store/modules/embedded'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { useRouter } from 'vue-router_2'
 import { useCache } from '@/hooks/web/useCache'
-import { useUserStoreWithOut } from '@/store/modules/user'
 const OpenHandler = defineAsyncComponent(
   () => import('@/views/component/embedded-iframe/OpenHandler.vue')
 )
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const { t } = useI18n()
-const userStore = useUserStoreWithOut()
 const embeddedStore = useEmbedded()
 const appStore = useAppStoreWithOut()
 const router = useRouter()
@@ -95,7 +93,7 @@ const initOpenHandler = newWindow => {
     @add-ds-window="addDsWindow"
     :state-obj="state"
   />
-  <OpenHandler v-if="userStore.hasXapck" ref="openHandler"></OpenHandler>
+  <OpenHandler v-if="appStore.getXpackValid" ref="openHandler"></OpenHandler>
 </template>
 
 <style lang="less" scoped>

@@ -17,11 +17,11 @@ spring:
   flyway:
       enabled: false
   datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
     url: jdbc:mariadb://${DE_MYSQL_HOST}:${DE_MYSQL_PORT}/${DE_MYSQL_DB}?${DE_MYSQL_PARAMS}
     username: ${DE_MYSQL_USER}
     password: ${DE_MYSQL_PASSWORD}
   jpa:
-    database-platform: org.hibernate.dialect.MySQL8Dialect
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect

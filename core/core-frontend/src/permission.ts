@@ -87,6 +87,7 @@ router.beforeEach(async (to, from, next) => {
   }
   await appearanceStore.setAppearance()
   await appearanceStore.setFontList()
+  await appStore.setXpackValid()
   const defaultSort = await getDefaultSettings()
   wsCache.set('TreeSort-backend', defaultSort['basic.defaultSort'] ?? '1')
   wsCache.set('open-backend', defaultSort['basic.defaultOpen'] ?? '0')

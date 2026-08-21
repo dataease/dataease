@@ -166,7 +166,7 @@
           >
 
           <EditBarHandler
-            v-if="userStore.hasXapck"
+            v-if="appStore.getXpackValid"
             :chart="element"
             resource-table="snapshot"
             @close-item="closeItem"
@@ -265,12 +265,10 @@ import { exportPermission, isMobile } from '@/utils/utils'
 import { layerStoreWithOut } from '@/store/modules/data-visualization/layer'
 import { isMainCanvas } from '@/utils/canvasUtils'
 import { useAppStoreWithOut } from '@/store/modules/app'
-import { useUserStoreWithOut } from '@/store/modules/user'
 const EditBarHandler = defineAsyncComponent(
   () => import('@/views/component/threshold-warning/EditBarHandler.vue')
 )
 const appStore = useAppStoreWithOut()
-const userStore = useUserStoreWithOut()
 const layerStore = layerStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()

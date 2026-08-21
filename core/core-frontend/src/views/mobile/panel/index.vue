@@ -9,12 +9,12 @@ import { deepCopy } from '@/utils/utils'
 const panelInit = ref(false)
 const dvMainStore = dvMainStoreWithOut()
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
-import { useUserStoreWithOut } from '@/store/modules/user'
+import { useAppStoreWithOut } from '@/store/modules/app'
 const Entrances = defineAsyncComponent(
   () => import('@/views/component/embedded-iframe/Entrances.vue')
 )
 const appearanceStore = useAppearanceStoreWithOut()
-const userStore = useUserStoreWithOut()
+const appStore = useAppStoreWithOut()
 
 const checkItemPosition = component => {
   component.x = 1
@@ -218,7 +218,7 @@ onBeforeUnmount(() => {
   <div class="panel-mobile">
     <de-preview-mobile v-if="panelInit"></de-preview-mobile>
   </div>
-  <Entrances v-if="userStore.hasXapck" @initIframe="initIframe" />
+  <Entrances v-if="appStore.getXpackValid" @initIframe="initIframe" />
 </template>
 
 <style lang="less" scoped>

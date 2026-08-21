@@ -33,7 +33,7 @@ import { PluginComponent } from '@/components/plugin'
 
 import { iconDatasourceMap } from '@/components/icon-group/datasource-list'
 import ExcelRemoteDetail from '@/views/visualized/data/datasource/form/ExcelRemoteDetail.vue'
-import { useUserStoreWithOut } from '@/store/modules/user'
+import { useAppStoreWithOut } from '@/store/modules/app'
 const DsCategoryHandler = defineAsyncComponent(
   () => import('@/views/component/plugins-handler/DsCategoryHandler.vue')
 )
@@ -67,7 +67,7 @@ const creatDsFolder = ref()
 const router = useRouter()
 const { wsCache } = useCache()
 const dsLoading = ref(false)
-const userStore = useUserStoreWithOut()
+const appStore = useAppStoreWithOut()
 let isFormUpdate = false
 let isForm2Update = false
 let isUpdate = false
@@ -1025,7 +1025,7 @@ defineExpose({
         v-if="showFinishPage"
       ></FinishPage>
 
-      <DsCategoryHandler v-if="userStore.hasXapck" @load-ds-plugin="loadDsPlugin" />
+      <DsCategoryHandler v-if="appStore.getXpackValid" @load-ds-plugin="loadDsPlugin" />
     </div>
   </el-drawer>
   <creat-ds-group

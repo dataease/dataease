@@ -1,10 +1,11 @@
 spring:
   datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
     url: jdbc:mariadb://hostname:3306/database?autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
     username: root
     password: 123456
   flyway:
-      enabled: false
+    enabled: false
   jpa:
     properties:
       hibernate:

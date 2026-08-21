@@ -32,12 +32,12 @@ import LinkOptBar from '@/components/data-visualization/canvas/LinkOptBar.vue'
 import { isDesktop } from '@/utils/ModelUtil'
 import { isMobile } from '@/utils/utils'
 import { useI18n } from '@/hooks/web/useI18n'
-import { useUserStoreWithOut } from '@/store/modules/user'
+import { useAppStoreWithOut } from '@/store/modules/app'
 const OpenHandler = defineAsyncComponent(
   () => import('@/views/component/embedded-iframe/OpenHandler.vue')
 )
 const dvMainStore = dvMainStoreWithOut()
-const userStore = useUserStoreWithOut()
+const appStore = useAppStoreWithOut()
 const { pcMatrixCount, curComponent, mobileInPc, canvasState, inMobile } = storeToRefs(dvMainStore)
 const openHandler = ref(null)
 const customDatasetParamsRef = ref(null)
@@ -647,7 +647,7 @@ defineExpose({
     <empty-background v-if="!state.initState" description="参数不能为空" img-type="noneWhite" />
     <de-fullscreen ref="fullScreeRef"></de-fullscreen>
     <dataset-params-component ref="customDatasetParamsRef"></dataset-params-component>
-    <OpenHandler v-if="userStore.hasXapck" ref="openHandler"></OpenHandler>
+    <OpenHandler v-if="appStore.getXpackValid" ref="openHandler"></OpenHandler>
     <link-opt-bar
       v-if="linkOptBarShow"
       ref="link-opt-bar"

@@ -7,11 +7,11 @@
       <map-setting v-if="activeName === 'map'" />
       <basic-info v-if="activeName === 'basic'" />
       <engine-info v-if="activeName === 'engine'" />
-      <Email v-if="userStore.hasXapck && activeName === 'email'" />
+      <Email v-if="appStore.getXpackValid && activeName === 'email'" />
       <third-party v-if="activeName === 'third_party'" />
     </div>
   </div>
-  <EmailHandler v-if="userStore.hasXapck" @loaded="addTable" />
+  <EmailHandler v-if="appStore.getXpackValid" @loaded="addTable" />
 </template>
 
 <script lang="ts" setup>
@@ -21,14 +21,14 @@ import MapSetting from './map/MapSetting.vue'
 import BasicInfo from './basic/BasicInfo.vue'
 import ThirdParty from './third-party/index.vue'
 import EngineInfo from '@/views/system/parameter/engine/EngineInfo.vue'
-import { useUserStoreWithOut } from '@/store/modules/user'
+import { useAppStoreWithOut } from '@/store/modules/app'
 const EmailHandler = defineAsyncComponent(
   () => import('@/views/component/menu-handler/EmailHandler.vue')
 )
 const Email = defineAsyncComponent(() => import('@/views/menu/setting/email/index.vue'))
 /* import EmailInfo from './email/EmailInfo.vue' */
 const { t } = useI18n()
-const userStore = useUserStoreWithOut()
+const appStore = useAppStoreWithOut()
 
 const tabArray = ref([
   { label: t('system.basic_settings'), name: 'basic' },

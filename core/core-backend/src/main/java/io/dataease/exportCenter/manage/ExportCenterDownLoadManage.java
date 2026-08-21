@@ -214,7 +214,9 @@ public class ExportCenterDownLoadManage {
                 V3UserUtil.setUid(uid);
                 coreExportTaskRepository.saveAndFlush(exportTask);
                 updateExportTask(exportTarget.taskId(), "IN_PROGRESS", null, null, null, null);
-                getDataFillingApi().writeExcel(exportTarget.filePath(), new DataFillFormTableDataRequest().setId(exportFrom).setWithoutLogs(true), userId, Long.parseLong(request.get("org").toString()));
+                Object orgObj = request.get("org");
+                Long org = ObjectUtils.isNotEmpty(orgObj) ? Long.parseLong(orgObj.toString()) : null;
+                getDataFillingApi().writeExcel(exportTarget.filePath(), new DataFillFormTableDataRequest().setId(exportFrom).setWithoutLogs(true), userId, org);
                 updateExportTaskSuccess(exportTarget, "100");
             } catch (Exception e) {
                 LogUtil.error("Failed to export data", e);

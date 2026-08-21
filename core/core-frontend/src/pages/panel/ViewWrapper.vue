@@ -17,14 +17,14 @@ import { getOuterParamsInfo } from '@/api/visualization/outerParams'
 import { ElMessage } from 'element-plus-secondary'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useI18n } from '@/hooks/web/useI18n'
-import { useUserStoreWithOut } from '@/store/modules/user'
+import { useAppStoreWithOut } from '@/store/modules/app'
 import EmptyBackground from '../../components/empty-background/src/EmptyBackground.vue'
 import exeRequest from '@/config/axios'
 const OpenHandler = defineAsyncComponent(
   () => import('@/views/component/embedded-iframe/OpenHandler.vue')
 )
 const { wsCache } = useCache()
-const userStore = useUserStoreWithOut()
+const appStore = useAppStoreWithOut()
 const interactiveStore = interactiveStoreWithOut()
 const embeddedStore = useEmbedded()
 const embeddedParamsDiv = inject('embeddedParams') as object
@@ -226,7 +226,7 @@ onMounted(() => {
     <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>
   </div>
   <empty-background v-if="!state.initState" description="参数不能为空" img-type="noneWhite" />
-  <OpenHandler v-if="userStore.hasXapck" ref="openHandler" />
+  <OpenHandler v-if="appStore.getXpackValid" ref="openHandler" />
 </template>
 
 <style lang="less" scoped>

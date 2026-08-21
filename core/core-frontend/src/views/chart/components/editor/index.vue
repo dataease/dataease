@@ -62,7 +62,6 @@ import { PluginComponent } from '@/components/plugin'
 import { Field, getFieldByDQ, copyChartField, deleteChartField } from '@/api/chart'
 import ChartTemplateInfo from '@/views/chart/components/editor/common/ChartTemplateInfo.vue'
 import { useEmbedded } from '@/store/modules/embedded'
-import { useUserStoreWithOut } from '@/store/modules/user'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import {
   iconFieldCalculatedMap,
@@ -75,7 +74,6 @@ const OpenHandler = defineAsyncComponent(
 )
 
 const { wsCache } = useCache('localStorage')
-const userStore = useUserStoreWithOut()
 const embeddedStore = useEmbedded()
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
@@ -4215,7 +4213,7 @@ const chartStyleScroll = (val: any) => {
     </el-dialog>
   </div>
   <FilterTree ref="filterTree" @filter-data="changeFilterData" />
-  <OpenHandler v-if="userStore.hasXapck" ref="openHandler" />
+  <OpenHandler v-if="appStore.getXpackValid" ref="openHandler" />
   <Teleport v-if="componentNameEdit" :to="'#component-name'">
     <input
       ref="componentNameInput"

@@ -1145,6 +1145,9 @@ function hasDataInit(res) {
       forEach(formSettings.value.tableIndexes, (f) => {
         f.old = false;
       });
+      forEach(formSettings.value.forms, (f) => {
+        f.settings.mapping.useExistsTable = false
+      });
     }
 
     disableCreateIndex.value = copy.value ? false : res.createIndex;

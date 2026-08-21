@@ -8,6 +8,7 @@ import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { useLinkStoreWithOut } from '@/store/modules/link'
+import { useAppStoreWithOut } from '@/store/modules/app'
 import { useLoading } from '@/hooks/web/useLoading'
 import { h } from 'vue'
 
@@ -15,6 +16,7 @@ const permissionStore = usePermissionStoreWithOut()
 const { wsCache } = useCache()
 const userStore = useUserStoreWithOut()
 const linkStore = useLinkStoreWithOut()
+const appStore = useAppStoreWithOut()
 // 简化版骨架屏
 const skeletonContent = h(
   'div',
@@ -66,6 +68,7 @@ router.beforeEach(async (to, _, next) => {
   loadStart()
   const appearanceStore = useAppearanceStoreWithOut()
   await appearanceStore.setAppearance()
+  await appStore.setXpackValid()
   if (to.name === 'link') {
     next()
   } else if (wsCache.get('user.token')) {

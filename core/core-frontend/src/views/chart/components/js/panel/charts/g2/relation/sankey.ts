@@ -249,6 +249,11 @@ export class G2ChartBar extends G2ChartView {
         tooltip: false
       }
     }
+    // 按起点汇总流出量，用于计算每条连线的占比
+    const outTotal: Record<string, number> = {}
+    chart.data.data.forEach(d => {
+      outTotal[d.source] = (outTotal[d.source] || 0) + d.value
+    })
     let g2TooltipWrapper = document.getElementById('G2-TOOLTIP-WRAPPER')
     if (!g2TooltipWrapper) {
       g2TooltipWrapper = document.createElement('div')
@@ -298,6 +303,14 @@ export class G2ChartBar extends G2ChartView {
             if (head.source) {
               label = head.source.key + ' -> ' + head.target.key
               value = valueFormatter(head.value, tooltip.tooltipFormatter)
+              if (tooltip.tooltipFormatter.showTotalPercent) {
+                const sourceTotal = outTotal[head.source.key]
+                if (sourceTotal) {
+                  const { decimalCount = 2 } = tooltip.tooltipFormatter
+                  const ratio = ((head.value / sourceTotal) * 100).toFixed(decimalCount)
+                  value += ` (${ratio}%)`
+                }
+              }
             }
             //  右边节点
             if (head.targetLinks?.length) {

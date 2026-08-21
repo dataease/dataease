@@ -3,6 +3,7 @@ import { store } from '../index'
 import { useCache } from '@/hooks/web/useCache'
 const { wsCache } = useCache()
 import { modelApi } from '@/api/login'
+import { xpackModelApi } from '@/api/plugin'
 interface AppState {
   size: boolean
   pageLoading: boolean
@@ -13,6 +14,8 @@ interface AppState {
   isIframe: boolean
   embeddedTab: boolean
   arrowSide: boolean
+  xpackValid: boolean
+  xpackValidLoaded: boolean
 }
 
 export const useAppStore = defineStore('app', {
@@ -26,7 +29,9 @@ export const useAppStore = defineStore('app', {
       isIframe: false,
       embeddedTab: false,
       desktop: false,
-      arrowSide: false
+      arrowSide: false,
+      xpackValid: false,
+      xpackValidLoaded: false
     }
   },
   getters: {
@@ -56,6 +61,9 @@ export const useAppStore = defineStore('app', {
     },
     getDesktop(): string {
       return this.desktop
+    },
+    getXpackValid(): boolean {
+      return this.xpackValid
     }
   },
   actions: {
@@ -64,6 +72,14 @@ export const useAppStore = defineStore('app', {
       const data = res.data
       this.desktop = data
       wsCache.set('app.desktop', this.desktop)
+    },
+    async setXpackValid() {
+      if (this.xpackValidLoaded) {
+        return
+      }
+      this.xpackValidLoaded = true
+      const res = await xpackModelApi()
+      this.xpackValid = res.data || false
     },
     setSize(size: boolean) {
       this.size = size

@@ -503,14 +503,14 @@ const getEmptyDesc = (): string => {
         </GridTable>
       </div>
     </template>
-    <TabPaneTable v-if="userStore.hasXapck && activeName === 'data-filling'" />
+    <TabPaneTable v-if="appStore.getXpackValid && activeName === 'data-filling'" />
   </div>
   <el-empty
     class="dashboard-type"
     v-else
     :description="t('work_branch.administrator_for_authorization')"
   />
-  <TabPane v-if="userStore.hasXapck" @loaded="loadedDataFilling" />
+  <TabPane v-if="appStore.getXpackValid" @loaded="loadedDataFilling" />
 </template>
 
 <style lang="less" scoped>

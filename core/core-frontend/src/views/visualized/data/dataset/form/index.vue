@@ -70,7 +70,6 @@ import DatasetUnion from './DatasetUnion.vue'
 import { cloneDeep, debounce } from 'lodash-es'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import { iconDatasourceMap } from '@/components/icon-group/datasource-list'
-import { useUserStoreWithOut } from '@/store/modules/user'
 const NewWindowHandler = defineAsyncComponent(
   () => import('@/views/component/embedded-iframe/NewWindowHandler.vue')
 )
@@ -93,7 +92,6 @@ const { wsCache } = useCache()
 const appStore = useAppStoreWithOut()
 const embeddedStore = useEmbedded()
 const { t } = useI18n()
-const userStore = useUserStoreWithOut()
 const route = useRoute()
 const { push } = useRouter() || {
   push: val => {
@@ -2888,10 +2886,10 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
       <el-button type="primary" @click="confirmGroupField">{{ t('dataset.confirm') }} </el-button>
     </template>
   </el-dialog>
-  <NewWindowHandler v-if="userStore.hasXapck" @loaded="XpackLoaded" @load-fail="XpackLoaded" />
-  <DsCategoryHandler v-if="userStore.hasXapck" @load-ds-plugin="loadDsPlugin" />
+  <NewWindowHandler v-if="appStore.getXpackValid" @loaded="XpackLoaded" @load-fail="XpackLoaded" />
+  <DsCategoryHandler v-if="appStore.getXpackValid" @load-ds-plugin="loadDsPlugin" />
   <Dataset
-    v-if="userStore.hasXapck && state.dataSourceList"
+    v-if="appStore.getXpackValid && state.dataSourceList"
     ref="datasetCheckRef"
     :is-edit="isEdit"
     :ds-list="state.dataSourceList"

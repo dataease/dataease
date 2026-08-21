@@ -12,11 +12,11 @@ import eventBus from '@/utils/eventBus'
 import { componentArraySort, getCurInfo } from '@/store/modules/data-visualization/common'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { useI18n } from '@/hooks/web/useI18n'
-import { useUserStoreWithOut } from '@/store/modules/user'
+import { useAppStoreWithOut } from '@/store/modules/app'
 const EditBarHandler = defineAsyncComponent(
   () => import('@/views/component/threshold-warning/EditBarHandler.vue')
 )
-const userStore = useUserStoreWithOut()
+const appStore = useAppStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const copyStore = copyStoreWithOut()
 const lockStore = lockStoreWithOut()
@@ -336,7 +336,7 @@ const editQueryCriteria = () => {
               {{ t('visualization.sort') }}
             </li>
             <EditBarHandler
-              v-if="userStore.hasXapck"
+              v-if="appStore.getXpackValid"
               :chart="curComponent"
               is-screen
               resource-table="snapshot"

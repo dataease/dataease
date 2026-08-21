@@ -185,7 +185,7 @@
       </el-row>
     </el-row>
   </el-row>
-  <OpenHandler v-if="userStore.hasXapck" ref="openHandler" />
+  <OpenHandler v-if="appStore.getXpackValid" ref="openHandler" />
 </template>
 
 <script setup lang="ts">
@@ -206,12 +206,10 @@ import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { Base64 } from 'js-base64'
 import { getActiveCategories } from '@/utils/utils'
-import { useUserStoreWithOut } from '@/store/modules/user'
 const OpenHandler = defineAsyncComponent(
   () => import('@/views/component/embedded-iframe/OpenHandler.vue')
 )
 const { t } = useI18n()
-const userStore = useUserStoreWithOut()
 const { wsCache } = useCache()
 const embeddedStore = useEmbedded()
 const appStore = useAppStoreWithOut()

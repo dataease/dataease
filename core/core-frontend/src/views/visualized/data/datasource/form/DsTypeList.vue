@@ -4,7 +4,7 @@ import { dsTypes, typeList, nameMap } from './option'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import { iconDatasourceMap } from '@/components/icon-group/datasource-list'
 import { useI18n } from '@/hooks/web/useI18n'
-import { useUserStoreWithOut } from '@/store/modules/user'
+import { useAppStoreWithOut } from '@/store/modules/app'
 const DsCategoryHandler = defineAsyncComponent(
   () => import('@/views/component/plugins-handler/DsCategoryHandler.vue')
 )
@@ -24,7 +24,7 @@ const props = defineProps({
   }
 })
 const { t } = useI18n()
-const userStore = useUserStoreWithOut()
+const appStore = useAppStoreWithOut()
 
 const databaseList = shallowRef([])
 const currentTypeList = computed(() => {
@@ -135,7 +135,7 @@ const selectDs = ({ type }) => {
       </div>
     </template>
 
-    <DsCategoryHandler v-if="userStore.hasXapck" @load-ds-plugin="loadDsPlugin" />
+    <DsCategoryHandler v-if="appStore.getXpackValid" @load-ds-plugin="loadDsPlugin" />
   </div>
 </template>
 

@@ -56,7 +56,6 @@ import ChartStyleBatchSet from '@/views/chart/components/editor/editor-style/Cha
 import CustomTabsSort from '@/custom-component/de-tabs/CustomTabsSort.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { recoverToPublished } from '@/api/visualization/dataVisualization'
-import { useUserStoreWithOut } from '@/store/modules/user'
 const NewWindowHandler = defineAsyncComponent(
   () => import('@/views/component/embedded-iframe/NewWindowHandler.vue')
 )
@@ -65,7 +64,6 @@ const ThresholdDialog = defineAsyncComponent(
 )
 const interactiveStore = interactiveStoreWithOut()
 const embeddedStore = useEmbedded()
-const userStore = useUserStoreWithOut()
 const { wsCache } = useCache()
 const dvPreviewRef = ref(null)
 const { t } = useI18n()
@@ -694,11 +692,11 @@ eventBus.on('tabSort', tabSort)
     </el-container>
   </div>
   <NewWindowHandler
-    v-if="userStore.hasXapck"
+    v-if="appStore.getXpackValid"
     @loaded="XpackLoaded"
     @load-fail="XpackLoaded"
   ></NewWindowHandler>
-  <ThresholdDialog v-if="userStore.hasXapck"></ThresholdDialog>
+  <ThresholdDialog v-if="appStore.getXpackValid"></ThresholdDialog>
   <canvas-cache-dialog ref="canvasCacheOutRef" @doUseCache="doUseCache"></canvas-cache-dialog>
   <dv-preview
     v-if="fullscreenFlag"

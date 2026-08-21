@@ -19,7 +19,7 @@ import EmptyBackground from '../../components/empty-background/src/EmptyBackgrou
 import { useRoute } from 'vue-router_2'
 import { filterEnumMapSync } from '@/utils/componentUtils'
 import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
-import { useUserStoreWithOut } from '@/store/modules/user'
+import { useAppStoreWithOut } from '@/store/modules/app'
 const NewWindowHandler = defineAsyncComponent(
   () => import('@/views/component/embedded-iframe/NewWindowHandler.vue')
 )
@@ -32,7 +32,7 @@ const dvMainStore = dvMainStoreWithOut()
 const linkStore = useLinkStoreWithOut()
 const { t } = useI18n()
 const embeddedStore = useEmbedded()
-const userStore = useUserStoreWithOut()
+const appStore = useAppStoreWithOut()
 const previewCanvasContainer = ref(null)
 const downloadStatus = ref(false)
 const state = reactive({
@@ -292,11 +292,11 @@ defineExpose({
       img-type="noneWhite"
     />
   </div>
-  <NewWindowHandler v-if="userStore.hasXapck" @loaded="XpackLoaded" @load-fail="XpackLoaded">
+  <NewWindowHandler v-if="appStore.getXpackValid" @loaded="XpackLoaded" @load-fail="XpackLoaded">
   </NewWindowHandler>
 
   <Entrances
-    v-if="userStore.hasXapck"
+    v-if="appStore.getXpackValid"
     @init-iframe="initIframe"
     @load-fail="initIframe"
   ></Entrances>

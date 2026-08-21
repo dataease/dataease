@@ -97,7 +97,6 @@ import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import treeSort from '@/utils/treeSortUtils'
 import { useCache } from '@/hooks/web/useCache'
 import { useEmbedded } from '@/store/modules/embedded'
-import { useUserStoreWithOut } from '@/store/modules/user'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import { iconDatasourceMap } from '@/components/icon-group/datasource-list'
 import { symmetricDecrypt } from '@/utils/encryption'
@@ -122,7 +121,6 @@ const { wsCache } = useCache()
 const { t } = useI18n()
 const router = useRouter()
 const appStore = useAppStoreWithOut()
-const userStore = useUserStoreWithOut()
 const state = reactive({
   datasourceTree: [] as BusiTreeNode[],
   dsTableData: [],
@@ -1762,7 +1760,7 @@ const getMenuList = (val: boolean, data?: any) => {
                 </template>
 
                 <!--    数据填报      -->
-                <DatasourceDataFillingInfo v-if="userStore.hasXapck" :nodeInfo="nodeInfo" />
+                <DatasourceDataFillingInfo v-if="appStore.getXpackValid" :nodeInfo="nodeInfo" />
               </template>
               <template v-if="['es'].includes(nodeInfo.type) && nodeInfo.weight >= 7">
                 <el-row :gutter="24">
@@ -2082,7 +2080,7 @@ const getMenuList = (val: boolean, data?: any) => {
     </el-dialog>
     <relationChart ref="relationChartRef"></relationChart>
 
-    <DsCategoryHandler v-if="userStore.hasXapck" @load-ds-plugin="loadDsPlugin" />
+    <DsCategoryHandler v-if="appStore.getXpackValid" @load-ds-plugin="loadDsPlugin" />
   </div>
 </template>
 
