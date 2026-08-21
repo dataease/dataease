@@ -100,11 +100,11 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
                         qOuterParamsInfo.enabledDefault,
                         qOuterParamsInfo.required,
                         qOuterParamsInfo.defaultValue,
-                        Expressions.booleanTemplate("ifnull({0}, 0)", qOuterParamsInfo.checked).as("checked")))
+                        Expressions.booleanTemplate("coalesce({0}, false)", qOuterParamsInfo.checked).as("checked")))
                 .from(qOuterParams)
                 .leftJoin(qOuterParamsInfo).on(qOuterParams.paramsId.eq(qOuterParamsInfo.paramsId))
                 .where(qOuterParams.visualizationId.eq(String.valueOf(visualizationId)))
-                .orderBy(Expressions.numberTemplate(Integer.class, "ifnull({0}, 0)", qOuterParamsInfo.checked).desc())
+                .orderBy(Expressions.numberTemplate(Integer.class, "case when coalesce({0}, false) then 1 else 0 end", qOuterParamsInfo.checked).desc())
                 .fetch();
 
         if (paramsInfoList.isEmpty()) {
