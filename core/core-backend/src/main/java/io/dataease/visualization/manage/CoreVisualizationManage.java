@@ -585,15 +585,15 @@ public class CoreVisualizationManage {
                     .execute();
             visualizationLinkageRepository.deleteByDvId(dvId);
 
-            QSnapshotVisualizationLinkJumpInfo snapshotVisualizationLinkJumpInfo = QSnapshotVisualizationLinkJumpInfo.snapshotVisualizationLinkJumpInfo;
-            QSnapshotVisualizationLinkJump snapshotVisualizationLinkJump = QSnapshotVisualizationLinkJump.snapshotVisualizationLinkJump;
-            List<Long> linkJumpInfoIds = queryFactory.select(snapshotVisualizationLinkJumpInfo.id).from(snapshotVisualizationLinkJumpInfo)
-                    .join(snapshotVisualizationLinkJump).on(snapshotVisualizationLinkJumpInfo.linkJumpId.eq(snapshotVisualizationLinkJump.id))
-                    .where(snapshotVisualizationLinkJump.sourceDvId.eq(dvId))
+            QVisualizationLinkJumpInfo visualizationLinkJumpInfo = QVisualizationLinkJumpInfo.visualizationLinkJumpInfo;
+            QVisualizationLinkJump visualizationLinkJump = QVisualizationLinkJump.visualizationLinkJump;
+            List<Long> linkJumpInfoIds = queryFactory.select(visualizationLinkJumpInfo.id).from(visualizationLinkJumpInfo)
+                    .join(visualizationLinkJump).on(visualizationLinkJumpInfo.linkJumpId.eq(visualizationLinkJump.id))
+                    .where(visualizationLinkJump.sourceDvId.eq(dvId))
                     .fetch();
 
             if (CollectionUtils.isNotEmpty(linkJumpInfoIds)) {
-                snapshotVisualizationLinkJumpTargetViewInfoRepository.deleteByLinkJumpInfoIds(linkJumpInfoIds);
+                visualizationLinkJumpTargetViewInfoRepository.deleteByLinkJumpInfoIds(linkJumpInfoIds);
             }
             QVisualizationLinkJump linkJump = QVisualizationLinkJump.visualizationLinkJump;
             List<Long> linkJumpIds = queryFactory.select(linkJump.id).from(linkJump)
@@ -603,22 +603,20 @@ public class CoreVisualizationManage {
             }
 
             visualizationLinkJumpRepository.deleteBySourceDvId(dvId);
-            QSnapshotVisualizationOuterParamsTargetViewInfo snapshotVisualizationOuterParamsTargetViewInfo = QSnapshotVisualizationOuterParamsTargetViewInfo.snapshotVisualizationOuterParamsTargetViewInfo;
-            QSnapshotVisualizationOuterParamsInfo snapshotVisualizationOuterParamsInfo = QSnapshotVisualizationOuterParamsInfo.snapshotVisualizationOuterParamsInfo;
-            QSnapshotVisualizationOuterParams snapshotVisualizationOuterParams = QSnapshotVisualizationOuterParams.snapshotVisualizationOuterParams;
-
-            List<String> paramsInfoIds = queryFactory.select(snapshotVisualizationOuterParamsTargetViewInfo.targetId)
-                    .from(snapshotVisualizationOuterParamsTargetViewInfo)
-                    .innerJoin(snapshotVisualizationOuterParamsInfo).on(snapshotVisualizationOuterParamsTargetViewInfo.paramsInfoId.eq(snapshotVisualizationOuterParamsInfo.paramsInfoId))
-                    .innerJoin(snapshotVisualizationOuterParams).on(snapshotVisualizationOuterParamsInfo.paramsId.eq(snapshotVisualizationOuterParams.paramsId))
-                    .where(snapshotVisualizationOuterParams.visualizationId.eq(String.valueOf(dvId))).fetch();
-            if (CollectionUtils.isNotEmpty(paramsInfoIds)) {
-                snapshotVisualizationOuterParamsTargetViewInfoRepository.deleteByParamsInfoIds(paramsInfoIds);
-            }
-
+            QVisualizationOuterParamsTargetViewInfo visualizationOuterParamsTargetViewInfo = QVisualizationOuterParamsTargetViewInfo.visualizationOuterParamsTargetViewInfo;
             QVisualizationOuterParamsInfo visualizationOuterParamsInfo = QVisualizationOuterParamsInfo.visualizationOuterParamsInfo;
             QVisualizationOuterParams visualizationOuterParams = QVisualizationOuterParams.visualizationOuterParams;
-            List<String> paramsIds = queryFactory.select(visualizationOuterParamsInfo.paramsId).from(visualizationOuterParamsInfo)
+
+            List<String> paramsInfoIds = queryFactory.select(visualizationOuterParamsTargetViewInfo.targetId)
+                    .from(visualizationOuterParamsTargetViewInfo)
+                    .innerJoin(visualizationOuterParamsInfo).on(visualizationOuterParamsTargetViewInfo.paramsInfoId.eq(visualizationOuterParamsInfo.paramsInfoId))
+                    .innerJoin(visualizationOuterParams).on(visualizationOuterParamsInfo.paramsId.eq(visualizationOuterParams.paramsId))
+                    .where(visualizationOuterParams.visualizationId.eq(String.valueOf(dvId))).fetch();
+            if (CollectionUtils.isNotEmpty(paramsInfoIds)) {
+                visualizationOuterParamsTargetViewInfoRepository.deleteByParamsInfoIds(paramsInfoIds);
+            }
+
+           List<String> paramsIds = queryFactory.select(visualizationOuterParamsInfo.paramsId).from(visualizationOuterParamsInfo)
                     .leftJoin(visualizationOuterParams).on(visualizationOuterParamsInfo.paramsId.eq(visualizationOuterParams.paramsId))
                     .where(visualizationOuterParams.visualizationId.eq(String.valueOf(dvId))).fetch();
 
