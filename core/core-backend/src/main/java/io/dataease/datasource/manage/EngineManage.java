@@ -347,7 +347,8 @@ public class EngineManage {
     }
 
     public static class DmJdbcUrlParser implements JdbcUrlParser {
-        private static final Pattern PATTERN = Pattern.compile("jdbc:dm://(.*):(\\d+)(.*)");
+        private static final Pattern PATTERN = Pattern.compile("jdbc:dm://(.*):(\\d+)(?:\\?(.*))?$");
+        private static final Pattern SCHEMA_PATTERN = Pattern.compile("(^|&)schema=([^&]+)");
 
         @Override
         public Map<String, String> parse(String url, Environment env) {
@@ -356,10 +357,20 @@ public class EngineManage {
             Map<String, String> config = new HashMap<>();
             config.put("host", matcher.group(1));
             config.put("port", matcher.group(2));
-            config.put("schema", env.getProperty("spring.jpa.properties.hibernate.default_schema"));
-
-            if (matcher.groupCount() == 3) {
-                config.put("extraParams", matcher.group(3).startsWith("/") ? matcher.group(3).substring(1) : matcher.group(3));
+            String params = matcher.group(3);
+            if (StringUtils.isNotEmpty(params)) {
+                Matcher schemaMatcher = SCHEMA_PATTERN.matcher(params);
+                if (schemaMatcher.find()) {
+                    config.put("schema", schemaMatcher.group(2));
+                }
+                config.put("extraParams", Arrays.stream(params.split("&"))
+                        .filter(item -> !item.startsWith("schema="))
+                        .collect(java.util.stream.Collectors.joining("&")));
+            } else {
+                config.put("extraParams", "");
+            }
+            if (StringUtils.isEmpty(config.get("schema"))) {
+                config.put("schema", env.getProperty("spring.jpa.properties.hibernate.default_schema"));
             }
             config.put("type", "dm");
             config.put("username", env.getProperty("spring.datasource.username"));

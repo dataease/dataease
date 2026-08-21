@@ -6,7 +6,6 @@ import io.dataease.font.dao.auto.entity.CoreFont;
 import io.dataease.font.dao.auto.mapper.CoreFontRepository;
 import io.dataease.initSql.Version;
 import io.dataease.map.dao.auto.entity.Area;
-import io.dataease.map.dao.auto.mapper.AreaRepository;
 import io.dataease.menu.dao.auto.entity.CoreMenu;
 import io.dataease.menu.dao.auto.mapper.CoreMenuRepository;
 import io.dataease.startup.dao.auto.entity.CoreSysStartupJob;
@@ -37,8 +36,6 @@ public class CoreDataInit implements CoreSqlBlock {
 
     @Resource
     private CoreMenuRepository coreMenuRepository;
-    @Resource
-    private AreaRepository areaRepository;
     @Resource
     private VisualizationBackgroundRepository visualizationBackgroundRepository;
     @Resource
@@ -161,12 +158,8 @@ public class CoreDataInit implements CoreSqlBlock {
         areaList.addAll(buildAreas1());
         areaList.addAll(buildAreas2());
         areaList.addAll(buildAreas3());
-        if (isOracleOrDmDatabase()) {
-            areaRepository.saveAllAndFlush(areaList);
-            return;
-        }
         jdbcTemplate.batchUpdate(
-                "INSERT INTO area (id, level, name, pid) VALUES (?, ?, ?, ?)",
+                getAreaInsertSql(),
                 areaList,
                 AREA_BATCH_SIZE,
                 (ParameterizedPreparedStatementSetter<Area>) (ps, area) -> {
@@ -178,13 +171,28 @@ public class CoreDataInit implements CoreSqlBlock {
         );
     }
 
-    private boolean isOracleOrDmDatabase() {
-        Boolean isOracleOrDm = jdbcTemplate.execute((ConnectionCallback<Boolean>) connection -> {
-            String productName = connection.getMetaData().getDatabaseProductName().toLowerCase();
-            // Oracle 及兼容数据库(达梦等)统一走 JPA 路径，避免原生 SQL 因大小写/引号导致表名找不到
-            return productName.contains("oracle") || productName.contains("dm");
-        });
-        return Boolean.TRUE.equals(isOracleOrDm);
+    private String getAreaInsertSql() {
+        String productName = getDatabaseProductName();
+        if (productName.contains("oracle") || productName.contains("dm")) {
+            // Oracle 及达梦等兼容数据库中 LEVEL 是关键字，且 DataEase 实际创建的是小写 "level" 列，需要加双引号
+            return "INSERT INTO AREA (ID, \"level\", NAME, PID) VALUES (?, ?, ?, ?)";
+        }
+        if (productName.contains("sql server") || productName.contains("sqlserver")) {
+            return "INSERT INTO area (id, level, name, pid) VALUES (?, ?, ?, ?)";
+        }
+        if (productName.contains("kingbase")) {
+            return "INSERT INTO area (id, level, name, pid) VALUES (?, ?, ?, ?)";
+        }
+        if (productName.contains("postgresql")) {
+            return "INSERT INTO area (id, level, name, pid) VALUES (?, ?, ?, ?)";
+        }
+        return "INSERT INTO area (id, level, name, pid) VALUES (?, ?, ?, ?)";
+    }
+
+    private String getDatabaseProductName() {
+        String productName = jdbcTemplate.execute((ConnectionCallback<String>) connection ->
+                connection.getMetaData().getDatabaseProductName().toLowerCase());
+        return productName == null ? "" : productName;
     }
 
     private void initVisualizationBackground() {
