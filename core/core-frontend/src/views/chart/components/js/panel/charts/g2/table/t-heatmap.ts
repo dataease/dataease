@@ -436,7 +436,7 @@ export class TableG2Chart extends G2ChartView {
     const { container } = context
     const containerDom = document.getElementById(container)
     const baseLegend = {
-      ...this.getLegend(chart),
+      ...this.getLegend(chart, colorField.groupType === 'q' ? 1 : 2),
       position,
       dataeaseOrientation: legend.orient,
       layout: {
@@ -459,8 +459,6 @@ export class TableG2Chart extends G2ChartView {
       legend: {
         color: {
           ...baseLegend,
-          itemMarkerSize: legend.size,
-          itemMarker: legend.icon,
           title: false
         }
       }

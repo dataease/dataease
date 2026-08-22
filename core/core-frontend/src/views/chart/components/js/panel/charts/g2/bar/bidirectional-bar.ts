@@ -991,9 +991,9 @@ export class BidirectionalHorizontalBar extends G2ChartView {
     const { basicStyle } = parseJson(chart.customAttr)
     const [firstData, secondData] = chart.data.data
     const flexOptions = options as any
-    // 旧图表配置可能没有 legend.size/fontSize，先兜底，避免图例空间计算出现 NaN
+    // DataEase size 使用半径语义，换算为 G2 marker 直径后再参与图例层测量
     const legendFontSize = legend.fontSize ?? 12
-    const legendMarkerSize = legend.size ?? 8
+    const legendMarkerSize = (legend.size ?? 4) * 2
     const topLegend = legend.vPosition === 'top'
     const getLegendRatio = (direction: 'col' | 'row', legendFirst = false) => {
       // spaceFlex 的 ratio 是纯比例切分，小容器下固定 [20, 1] 会把图例层压到不可见；这里按实际容器给图例预留最小像素空间

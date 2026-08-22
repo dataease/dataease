@@ -446,8 +446,8 @@ const optimizeLargeDataSpec = (
 
 export const getLegendNavButtonPath = (size: number) => [
   ['M', -size / 2, -size / 2],
-  ['L', size / 2, -size / 2],
-  ['L', 0, size / 2],
+  ['L', size / 2, 0],
+  ['L', -size / 2, size / 2],
   ['Z']
 ]
 
@@ -462,6 +462,8 @@ export const getCategoryLegendStyle = (markerSize: number, fontSize: number, col
   navPageNumFontSize: fontSize,
   navPageNumFill: color,
   navPageNumFillOpacity: 1,
+  // 直接提供目标像素大小的路径，避免 Navigator 重绘时基于旧 transform 交替缩放按钮
+  navButtonD: getLegendNavButtonPath(markerSize),
   navButtonSize: markerSize,
   navButtonFill: color,
   navButtonFillOpacity: 1,

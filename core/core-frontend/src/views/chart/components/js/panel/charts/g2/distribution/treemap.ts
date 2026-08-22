@@ -341,13 +341,11 @@ export class Treemap extends G2ChartView {
     if (!legend.show) {
       return { ...options, legend: false }
     }
-    const baseLegend = this.getLegend(chart)
+    const baseLegend = this.getLegend(chart, 2)
     const tmpLegend = {
       legend: {
         color: {
-          ...baseLegend,
-          itemMarkerSize: legend.size,
-          itemMarker: legend.icon
+          ...baseLegend
         }
       }
     }
