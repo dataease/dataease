@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class PgEngineProvider extends EngineProvider {
 
     private static final String creatTableSql =
-            "CREATE TABLE IF NOT EXISTS TABLE_NAME" +
+            "CREATE TABLE IF NOT EXISTS \"TABLE_NAME\" " +
                     "Column_Fields;";
 
 
@@ -44,7 +44,7 @@ public class PgEngineProvider extends EngineProvider {
                 break;
         }
 
-        String insertSql = "INSERT INTO TABLE_NAME VALUES ".replace("TABLE_NAME", engineTableName);
+        String insertSql = "INSERT INTO \"TABLE_NAME\" VALUES ".replace("TABLE_NAME", engineTableName);
         StringBuffer values = new StringBuffer();
 
         Integer realSize = page * pageNumber < dataList.size() ? page * pageNumber : dataList.size();
@@ -89,7 +89,7 @@ public class PgEngineProvider extends EngineProvider {
 
     @Override
     public String dropTable(String name, CoreDeEngine engine) {
-        return "DROP TABLE IF EXISTS " + name + "";
+        return "DROP TABLE IF EXISTS \"" + name + "\"";
     }
 
     @Override
@@ -99,14 +99,14 @@ public class PgEngineProvider extends EngineProvider {
 
     @Override
     public String dropView(String name) {
-        return "DROP VIEW IF EXISTS " + name + "";
+        return "DROP VIEW IF EXISTS \"" + name + "\"";
     }
 
     @Override
     public String replaceTable(String name, CoreDeEngine engine) {
-        String replaceTableSql = "ALTER table FROM_TABLE RENAME to FROM_TABLE_tmp; ALTER table TO_TABLE RENAME to FROM_TABLE; ALTER table FROM_TABLE_tmp RENAME to TO_TABLE"
+        String replaceTableSql = "ALTER table \"FROM_TABLE\" RENAME to \"FROM_TABLE_tmp\"; ALTER table \"TO_TABLE\" RENAME to \"FROM_TABLE\"; ALTER table \"FROM_TABLE_tmp\" RENAME to \"TO_TABLE\""
                 .replace("FROM_TABLE", name).replace("TO_TABLE", TableUtils.tmpName(name));
-        String dropTableSql = "DROP TABLE IF EXISTS TABLE_NAME".replace("TABLE_NAME", TableUtils.tmpName(name));
+        String dropTableSql = "DROP TABLE IF EXISTS \"TABLE_NAME\"".replace("TABLE_NAME", TableUtils.tmpName(name));
         return replaceTableSql + ";" + dropTableSql;
     }
 
@@ -117,46 +117,47 @@ public class PgEngineProvider extends EngineProvider {
     }
 
     private String createTableSql(final List<TableField> tableFields) {
-        StringBuilder columnFields = new StringBuilder("");
+        StringBuilder columnFields = new StringBuilder("\"");
         StringBuilder key = new StringBuilder();
         for (TableField tableField : tableFields) {
             if (!tableField.isChecked()) {
                 continue;
             }
             if (tableField.isPrimaryKey()) {
-                key.append("").append(tableField.getName()).append(", ");
+                key.append("\"").append(tableField.getName()).append("\", ");
             }
-            columnFields.append(tableField.getName()).append(" ");
+            columnFields.append(tableField.getName()).append("\"");
             int size = tableField.getPrecision() * 4;
             switch (tableField.getDeExtractType()) {
                 case 0:
                     if (StringUtils.isNotEmpty(tableField.getLength())) {
-                        columnFields.append("varchar(length)".replace("length", tableField.getLength())).append(",");
+                        columnFields.append("varchar(length)".replace("length", tableField.getLength())).append(",\"");
                     } else {
-                        columnFields.append("text").append(",");
+                        columnFields.append("text").append(",\"");
                     }
                     break;
                 case 1:
-                    columnFields.append("timestamp").append(",");
+                    columnFields.append("timestamp").append(",\"");
                     break;
                 case 2:
-                    columnFields.append("bigint").append(",");
+                    columnFields.append("bigint").append(",\"");
                     break;
                 case 3:
-                    columnFields.append("numeric(27,8)").append(",");
+                    columnFields.append("numeric(27,8)").append(",\"");
                     break;
                 case 4:
-                    columnFields.append("BOOLEAN".replace("length", String.valueOf(tableField.getPrecision()))).append(",");
+                    columnFields.append("BOOLEAN".replace("length", String.valueOf(tableField.getPrecision()))).append(",\"");
                     break;
                 default:
-                    columnFields.append("text").append(",");
+                    columnFields.append("text").append(",\"");
                     break;
             }
         }
         if (StringUtils.isEmpty(key.toString())) {
-            columnFields = new StringBuilder(columnFields.substring(0, columnFields.length() - 1));
+            columnFields = new StringBuilder(columnFields.substring(0, columnFields.length() - 2));
         } else {
             key = new StringBuilder(key.substring(0, key.length() - 2));
+            columnFields = new StringBuilder(columnFields.substring(0, columnFields.length() - 1));
             columnFields.append(" PRIMARY KEY (PRIMARYKEY)".replace("PRIMARYKEY", key.toString()));
         }
 
