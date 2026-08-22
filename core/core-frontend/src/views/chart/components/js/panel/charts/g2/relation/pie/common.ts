@@ -191,6 +191,8 @@ export const limitCircularChartLabels = (
         x: { ...options.scale?.x, domain: xDomain }
       })
     },
+    // 仅关闭内部透明度通道图例，保留主图原有颜色图例
+    legend: options.legend === false ? false : { ...options.legend, opacity: false },
     tooltip: false,
     animate: false,
     style: {
