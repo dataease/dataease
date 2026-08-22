@@ -1,4 +1,4 @@
-import type { G2Spec } from '@antv/g2'
+import { Chart as G2Chart, extend, Runtime, stdlib, type G2Spec } from '@antv/g2'
 import { parseJson } from '@/views/chart/components/js/util'
 import { getCategoryLegendStyle } from '@/views/chart/components/js/panel/types/impl/g2'
 
@@ -8,6 +8,96 @@ interface MixLegendOptions {
   supportOrient?: boolean
   alignBottom?: boolean
 }
+
+const MIX_LEGEND_NAVIGATOR_RESERVED_WIDTH = 55
+const MIX_LEGEND_LAYOUT_SAFETY = 4
+
+const getPositiveNumber = (value: unknown, defaultValue: number) => {
+  const numberValue = Number(value)
+  return Number.isFinite(numberValue) && numberValue > 0 ? numberValue : defaultValue
+}
+
+const getNonNegativeNumber = (value: unknown, defaultValue: number) => {
+  const numberValue = Number(value)
+  return Number.isFinite(numberValue) && numberValue >= 0 ? numberValue : defaultValue
+}
+
+const getLegendTextWidth = (text: unknown, fontSize: number) =>
+  Array.from(`${text ?? ''}`).reduce(
+    (width, char) => width + (char.charCodeAt(0) > 255 ? fontSize : fontSize * 0.6),
+    0
+  )
+
+const getLegendDomain = context => {
+  const scale = context?.scales?.find(item => item?.getOptions?.().domain?.length)
+  return scale?.getOptions?.().domain ?? []
+}
+
+export const createResponsiveMixLegendCategory = baseLegendCategory => {
+  const responsiveLegendCategory = options => context => {
+    const position = options.position
+    const bboxWidth = Number(context?.value?.bbox?.width)
+    if (!['top', 'bottom'].includes(position) || !Number.isFinite(bboxWidth) || bboxWidth <= 0) {
+      return baseLegendCategory(options)(context)
+    }
+    const domain = getLegendDomain(context)
+    const itemFontSize = getPositiveNumber(
+      options.itemLabelFontSize ?? context?.theme?.legendCategory?.itemLabelFontSize,
+      12
+    )
+    const markerSize = getPositiveNumber(
+      options.itemMarkerSize ?? context?.theme?.legendCategory?.itemMarkerSize,
+      8
+    )
+    const itemSpacing = Array.isArray(options.itemSpacing)
+      ? getNonNegativeNumber(options.itemSpacing[0], 8)
+      : getNonNegativeNumber(options.itemSpacing, 8)
+    const itemGap = getNonNegativeNumber(options.colPadding, 8)
+    const labelFormatter = options.labelFormatter
+    const estimatedItemsWidth = domain.reduce((width, value, index) => {
+      const label = typeof labelFormatter === 'function' ? labelFormatter(value, index) : value
+      // G2 布局阶段已缓存标签尺寸，优先复用该结果；无缓存时才使用字符宽度估算
+      const cachedLabelWidth = Number(options.indexBBox?.get?.(index)?.[1]?.width)
+      const labelWidth =
+        Number.isFinite(cachedLabelWidth) && cachedLabelWidth >= 0
+          ? cachedLabelWidth
+          : getLegendTextWidth(label, itemFontSize)
+      return width + markerSize + itemSpacing + labelWidth + itemGap
+    }, 0)
+    const configuredLength = getPositiveNumber(options.length, bboxWidth)
+    const availableLength = Math.min(configuredLength, bboxWidth)
+    if (domain.length < 2 || estimatedItemsWidth <= availableLength) {
+      return baseLegendCategory(options)(context)
+    }
+    const buttonSize = getPositiveNumber(options.navButtonSize, 12)
+    const pageFontSize = getPositiveNumber(options.navPageNumFontSize, 12)
+    const controllerPadding = getNonNegativeNumber(options.navControllerPadding, 5)
+    const controllerSpacing = getNonNegativeNumber(options.navControllerSpacing, 5)
+    const maxPageTextWidth = getLegendTextWidth(`${domain.length}/${domain.length}`, pageFontSize)
+    const navigatorOverflow = Math.max(
+      0,
+      Math.ceil(
+        controllerSpacing +
+          buttonSize * 1.5 +
+          maxPageTextWidth +
+          controllerPadding * 2 -
+          MIX_LEGEND_NAVIGATOR_RESERVED_WIDTH +
+          MIX_LEGEND_LAYOUT_SAFETY
+      )
+    )
+    const length = Math.max(1, availableLength - navigatorOverflow)
+    // 在当前帧创建图例前一次性收紧内容区，避免右对齐分页器溢出后反向裁剪首项
+    return baseLegendCategory({ ...options, length })(context)
+  }
+  responsiveLegendCategory.props = baseLegendCategory.props
+  return responsiveLegendCategory
+}
+
+const mixLegendLibrary = stdlib() as Record<string, any>
+mixLegendLibrary['component.legendCategory'] = createResponsiveMixLegendCategory(
+  mixLegendLibrary['component.legendCategory']
+)
+export const MixG2Chart = extend(Runtime, mixLegendLibrary) as typeof G2Chart
 
 export const filterValidMixTooltipItems = <T extends { value?: any }>(items: T[] = []): T[] => {
   // 组合图 shared tooltip 会补齐同一维度下的空系列，渲染前只保留真实有值的项
@@ -138,10 +228,6 @@ export const configMixCustomLegend = (
     ? legend.vPosition
     : 'bottom'
   const vPosition = hPosition === 'center' && rawVPosition === 'center' ? 'top' : rawVPosition
-  const getPositiveNumber = (value: unknown, defaultValue: number) => {
-    const numberValue = Number(value)
-    return Number.isFinite(numberValue) && numberValue > 0 ? numberValue : defaultValue
-  }
   const legendFontSize = getPositiveNumber(legend.fontSize, 12)
   const legendMarkerSize = getPositiveNumber(legend.size, 4) * 2
   const legendIcon = legend.icon || 'circle'
@@ -152,9 +238,7 @@ export const configMixCustomLegend = (
   const legendItemHeight = Math.ceil(Math.max(legendFontSize * 1.3, legendMarkerSize))
   const legendNavigatorHeight = legendItemHeight + 12
   const getTextWidth = text => {
-    return Array.from(`${text ?? ''}`).reduce((width, char) => {
-      return width + (char.charCodeAt(0) > 255 ? legendFontSize : legendFontSize * 0.6)
-    }, 0)
+    return getLegendTextWidth(text, legendFontSize)
   }
   const legendItemWidths = unionRelations.map(
     ([name]) => getTextWidth(name) + legendMarkerSize + 40
@@ -262,6 +346,17 @@ export const configMixCustomLegend = (
     legendMark.scale.color.domain.push(key)
     legendMark.scale.color.range.push(value)
   })
+  const clearLegendMainAxisMargin = (direction: 'col' | 'row') => {
+    // 只清除图例与绘图区排列方向的外边距，保留分页器首尾方向的默认安全边距
+    if (direction === 'col') {
+      legendMark.marginTop = 0
+      legendMark.marginBottom = 0
+      legendMark.size = legendItemHeight
+    } else {
+      legendMark.marginLeft = 0
+      legendMark.marginRight = 0
+    }
+  }
   if (legendOptions.supportOrient) {
     // 按 V2 语义分离图例方向与停靠位置，仅由启用该能力的图表进入此分支
     const verticalLegend = legend.orient === 'vertical'
@@ -278,8 +373,8 @@ export const configMixCustomLegend = (
     const positionVertical = position === 'left' || position === 'right'
     const direction = positionVertical ? 'row' : 'col'
     const legendFirst = position === 'top' || position === 'left'
-    // 独立图例子层不叠加 G2 默认外边距，图表间距统一交给 crossPadding 控制
-    legendMark.margin = 0
+    // 独立图例子层与绘图区的间距统一交给 crossPadding 控制
+    clearLegendMainAxisMargin(direction)
     const chartView = options.children.find(child => child.key === 'chart')
     if (chartView) {
       // 外层组合布局已负责整体留白，清除内层 view 的默认外边距以扩大绘图区
@@ -348,7 +443,7 @@ export const configMixCustomLegend = (
   }
   if (legendOptions.alignBottom && vPosition === 'bottom') {
     // 水平左、中、右只改变横向对齐，底部图例统一使用相同的纵向留白
-    legendMark.margin = 0
+    clearLegendMainAxisMargin('col')
     options.padding = 0
     const chartView = options.children.find(child => child.key === 'chart')
     if (chartView) {

@@ -31,7 +31,8 @@ import {
   configMixCustomLegend,
   filterValidMixTooltipItems,
   getAssistLineAxisIndex,
-  getMixLabelTransform
+  getMixLabelTransform,
+  MixG2Chart
 } from './common'
 import { registerSymbol, Symbols } from '@antv/g2/esm/utils/marker'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
@@ -239,7 +240,7 @@ export class GroupLineMix extends G2ChartView {
         }
       }
     }
-    const newChart = new G2Chart({ container, ...getG2Renderer() })
+    const newChart = new MixG2Chart({ container, ...getG2Renderer() })
     const options = this.setupOptions(chart, initOptions, {
       chartObj: newChart,
       leftData,

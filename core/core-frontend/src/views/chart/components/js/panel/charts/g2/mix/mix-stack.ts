@@ -28,6 +28,7 @@ import {
   CHART_MIX_EDITOR_PROPERTY,
   CHART_MIX_EDITOR_PROPERTY_INNER,
   configMixCustomLegend,
+  createResponsiveMixLegendCategory,
   filterValidMixTooltipItems,
   getAssistLineAxisIndex,
   getMixLabelTransform
@@ -51,6 +52,7 @@ const { t } = useI18n()
 
 const stackMixLibrary = stdlib() as Record<string, any>
 const stackMixLegendCategory = stackMixLibrary['component.legendCategory']
+const responsiveStackMixLegendCategory = createResponsiveMixLegendCategory(stackMixLegendCategory)
 const findLegendNavigator = node => {
   if (
     typeof node?.getContainer === 'function' &&
@@ -93,14 +95,17 @@ const placeLegendNavigatorBelow = (layout, controllerSpacing: number) => {
 const fixedOrientLegendCategory = options => {
   const { dataeaseOrientation, dataeaseNavBelow, ...rest } = options
   if (!['horizontal', 'vertical'].includes(dataeaseOrientation)) {
-    return stackMixLegendCategory(rest)
+    return responsiveStackMixLegendCategory(rest)
   }
   const positionVertical = rest.position === 'left' || rest.position === 'right'
   const directionMismatch = positionVertical !== (dataeaseOrientation === 'vertical')
   const legendOptions = directionMismatch
     ? { ...rest, length: rest.length ?? stackMixLegendCategory.props.defaultSize }
     : rest
-  const renderLegend = stackMixLegendCategory({
+  const legendCategory = dataeaseNavBelow
+    ? stackMixLegendCategory
+    : responsiveStackMixLegendCategory
+  const renderLegend = legendCategory({
     ...legendOptions,
     style: {
       ...rest.style,

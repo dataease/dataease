@@ -29,7 +29,8 @@ import {
   CHART_MIX_EDITOR_PROPERTY_INNER,
   filterValidMixTooltipItems,
   getAssistLineAxisIndex,
-  getMixLabelTransform
+  getMixLabelTransform,
+  MixG2Chart
 } from './common'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 import {
@@ -215,7 +216,7 @@ export class ColumnLineMix extends G2ChartView {
       }
     }
     // 注入公共渲染器配置以响应 SVG 渲染开关
-    const newChart = new G2Chart({ container, ...getG2Renderer() })
+    const newChart = new MixG2Chart({ container, ...getG2Renderer() })
     const options = this.setupOptions(chart, initOptions, {
       chartObj: newChart,
       leftData,
@@ -335,13 +336,17 @@ export class ColumnLineMix extends G2ChartView {
     if (!legend.show) {
       return { ...options, legend: false }
     }
-    const baseLegend = this.getLegend(chart)
+    const baseLegend = this.getLegend(chart, 2)
+    const horizontalLegend = ['top', 'bottom'].includes(baseLegend['position'])
+    const legendFontSize = Number(legend.fontSize) > 0 ? Number(legend.fontSize) : 12
+    const legendMarkerSize = Number(legend.size) > 0 ? Number(legend.size) * 2 : 8
+    const legendItemHeight = Math.ceil(Math.max(legendFontSize * 1.3, legendMarkerSize))
     const tmpLegend = {
       legend: {
         color: {
           ...baseLegend,
-          itemMarkerSize: legend.size * 2,
-          navButtonSize: legend.size * 2,
+          // 横向图例在布局前同步声明行高，避免放大文字或图标后上下被裁剪
+          ...(horizontalLegend ? { size: legendItemHeight } : {}),
           itemMarker: legend.icon
         }
       }
