@@ -123,46 +123,47 @@ public class SqlServerEngineProvider extends EngineProvider {
     }
 
     private String createTableSql(final List<TableField> tableFields) {
-        StringBuilder columnFields = new StringBuilder("");
+        StringBuilder columnFields = new StringBuilder("\"");
         StringBuilder key = new StringBuilder();
         for (TableField tableField : tableFields) {
             if (!tableField.isChecked()) {
                 continue;
             }
             if (tableField.isPrimaryKey()) {
-                key.append("").append(tableField.getName()).append(", ");
+                key.append("\"").append(tableField.getName()).append("\", ");
             }
-            columnFields.append(tableField.getName()).append(" ");
+            columnFields.append(tableField.getName()).append("\" ");
             int size = tableField.getPrecision() * 4;
             switch (tableField.getDeExtractType()) {
                 case 0:
                     if (StringUtils.isNotEmpty(tableField.getLength())) {
-                        columnFields.append("varchar(length)".replace("length", tableField.getLength())).append(",");
+                        columnFields.append("varchar(length)".replace("length", tableField.getLength())).append(",\"");
                     } else {
-                        columnFields.append("varchar(max)").append(",");
+                        columnFields.append("varchar(max)").append(",\"");
                     }
                     break;
                 case 1:
-                    columnFields.append("DATETIME").append(",");
+                    columnFields.append("DATETIME").append(",\"");
                     break;
                 case 2:
-                    columnFields.append("bigint").append(",");
+                    columnFields.append("bigint").append(",\"");
                     break;
                 case 3:
-                    columnFields.append("DECIMAL(27,8)").append(",");
+                    columnFields.append("DECIMAL(27,8)").append(",\"");
                     break;
                 case 4:
-                    columnFields.append("TINYINT".replace("length", String.valueOf(tableField.getPrecision()))).append(",");
+                    columnFields.append("TINYINT".replace("length", String.valueOf(tableField.getPrecision()))).append(",\"");
                     break;
                 default:
-                    columnFields.append("varchar(max)").append(",");
+                    columnFields.append("varchar(max)").append(",\"");
                     break;
             }
         }
         if (StringUtils.isEmpty(key.toString())) {
-            columnFields = new StringBuilder(columnFields.substring(0, columnFields.length() - 1));
+            columnFields = new StringBuilder(columnFields.substring(0, columnFields.length() - 2));
         } else {
             key = new StringBuilder(key.substring(0, key.length() - 2));
+            columnFields = new StringBuilder(columnFields.substring(0, columnFields.length() - 1));
             columnFields.append(" PRIMARY KEY (PRIMARYKEY)".replace("PRIMARYKEY", key.toString()));
         }
 
