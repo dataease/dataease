@@ -43,6 +43,12 @@ public class CustomDMDialect extends DmDialect {
     }
 
     @Override
+    public int getMaxVarcharLength() {
+        // 达梦 VARCHAR 最大长度限制，避免 Hibernate 生成 varchar(2147483647) 导致 Precision is out of range
+        return 8188;
+    }
+
+    @Override
     public String castPattern(CastType from, CastType to) {
         // 达梦的 DmDialect 将 boolean 转数字生成为 decode(?1,false,0,true,1,null)，
         // 达梦数据库中 false/true 与数值列比较会报 Data type mismatch，改为 0/1。

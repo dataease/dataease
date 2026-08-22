@@ -373,6 +373,7 @@ public class EngineManage {
                 config.put("schema", env.getProperty("spring.jpa.properties.hibernate.default_schema"));
             }
             config.put("type", "dm");
+            config.put("dataBase", "");
             config.put("username", env.getProperty("spring.datasource.username"));
             config.put("password", env.getProperty("spring.datasource.password"));
             return config;
