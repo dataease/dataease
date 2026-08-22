@@ -1821,15 +1821,28 @@ public class CalciteProvider extends Provider {
             BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
             datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
             dsMap.put(datasourceSchemaDTO.getId(), datasourceSchemaDTO);
-            commonThreadPool.addTask(() -> {
+            if (engine != null && coreDatasource.getId().equals(engine.getId())) {
                 try {
-                    connection = initConnection(dsMap);
-                } catch (Exception ignore) {
+                    initEngineSchema(datasourceSchemaDTO);
+                } catch (Exception e) {
+                    LogUtil.error("Fail to init engine connection: " + e.getMessage(), e);
                 }
-            });
+            } else {
+                commonThreadPool.addTask(() -> {
+                    try {
+                        connection = initConnection(dsMap);
+                    } catch (Exception ignore) {
+                    }
+                });
+            }
         }
         LogUtil.info("dsMap size..." + coreDatasources.size());
 
+    }
+
+    private void initEngineSchema(DatasourceSchemaDTO datasourceSchemaDTO) throws Exception {
+        CalciteConnection calciteConnection = take().unwrap(CalciteConnection.class);
+        buildSchema(datasourceSchemaDTO, calciteConnection.getRootSchema());
     }
 
     public void update(DatasourceDTO datasourceDTO) throws Exception {

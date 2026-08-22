@@ -43,6 +43,8 @@ public class RsaUtils {
 
     private static String staticAesKey;
 
+    private static final Object RSA_INIT_LOCK = new Object();
+
     public static void initAesKey(String aesKey) {
         RsaUtils.staticAesKey = aesKey;
     }
@@ -170,17 +172,32 @@ public class RsaUtils {
     }
 
     public static String privateKey() {
-        CoreRsa coreRsa = rsaManage.query();
+        CoreRsa coreRsa = getOrCreateRsa();
         return coreRsa.getPrivateKey();
     }
 
     public static String publicKey() {
-        CoreRsa coreRsa = rsaManage.query();
+        CoreRsa coreRsa = getOrCreateRsa();
         String publicKey = coreRsa.getPublicKey();
         String aesKey = coreRsa.getAesKey();
         String pk = ascEncrypt(publicKey, aesKey).replaceAll("[\\s*\t\n\r]", "");
         String separator = Base64.getUrlEncoder().encodeToString(PK_SEPARATOR.getBytes(StandardCharsets.UTF_8));
         return pk + separator + aesKey;
+    }
+
+    private static CoreRsa getOrCreateRsa() {
+        CoreRsa coreRsa = rsaManage.query();
+        if (coreRsa != null) {
+            return coreRsa;
+        }
+        synchronized (RSA_INIT_LOCK) {
+            coreRsa = rsaManage.query();
+            if (coreRsa == null) {
+                rsaManage.check();
+                coreRsa = rsaManage.query();
+            }
+        }
+        return coreRsa;
     }
 
     private static String generateAesKey() {
