@@ -16,7 +16,9 @@
  * - 普通 G2 直角坐标图会使用轴标签抽稀和边界修正，例如柱状图、折线图、面积图和散点图
  * - 开启 dataeaseSideLegendAutoLayout 的左右图例会使用宽度限制、单行省略和分页器占位
  * - 开启 dataeaseAxisTitleSafeMargin 的左轴标题会使用单行省略和额外安全边距
- * - 设置 dataeaseAxisLabelOverflow 为 false 的轴会退出公共边界修正，目前双向条形图使用这个开关
+ * - 设置 dataeaseAxisLabelOverflow 为 false 的轴会退出公共边界修正
+ * - 双向条形图通过 dataeaseAxisLabelCenter 让中轴文字在两个子 View 之间居中
+ * - 双向条形图通过 dataeaseAxisLabelOverflowSides 修正类目轴首尾和数值轴外侧越界
  *
  * 不影响的内容
  * - 不修改图表数据、比例尺数据范围、数据集查询、权限、联动条件和后端接口
@@ -56,6 +58,8 @@ export { computeRoughPlotSize, placeComponents, processAxisZ }
 
 // 这里只处理最常见的上、右、下、左四种直角坐标轴
 const AXIS_POSITIONS = ['top', 'right', 'bottom', 'left'] as const
+// 多 View 图表可以只开放指定方向，避免外侧越界修正同时推开中间共享边界
+const OVERFLOW_SIDES = ['top', 'right', 'bottom', 'left'] as const
 // 标签和画布边缘之间至少保留 4px，避免文字笔画贴边或被抗锯齿裁切
 const SAFE_SPACING = 4
 // 左轴标题除了 4px 安全距离，还需要给 G2 默认向外偏移的标题多留 8px
@@ -72,6 +76,7 @@ const MAX_OVERFLOW_CORRECTION_PASSES = 2
 const MIN_CONTENT_RATIO = 1 / 4
 
 type AxisPosition = (typeof AXIS_POSITIONS)[number]
+type OverflowSide = (typeof OVERFLOW_SIDES)[number]
 // 记录标签分别超出画布四条边多少像素，最终转换成对应方向的 padding
 type Overflow = {
   top: number
@@ -326,6 +331,130 @@ const applyLeftAxisTitleOverflow = (components: G2GuideComponentOptions[], layou
     component.titleDataeaseOriginalText = Array.isArray(component.title)
       ? component.title.join(',')
       : `${component.title}`
+  })
+}
+
+// visible 轴显示中轴文字，reserve 轴在另一张子图中保留同样的半份空间
+type CenteredAxisRole = 'visible' | 'reserve'
+
+/**
+ * 清除中轴上一轮布局留下的尺寸和偏移
+ *
+ * G2 resize 会复用轴组件，必须让当前画布重新测量文字并计算中心位置
+ */
+const resetCenteredAxisMeasurement = (components: G2GuideComponentOptions[]) => {
+  components.forEach(component => {
+    const role = component.dataeaseAxisLabelCenter as CenteredAxisRole
+    if (!['visible', 'reserve'].includes(role)) {
+      return
+    }
+    delete component.size
+    delete component.labelDx
+    delete component.labelDy
+    component.crossPadding = 0
+  })
+}
+
+/**
+ * 计算中轴标签之外必须完整保留的刻度线和文字间距
+ *
+ * 这部分不能平均拆开，否则文字会重新贴到轴线或刻度线上
+ */
+const getCenteredAxisPadding = (component: G2GuideComponentOptions, theme: G2Theme) => {
+  const position = component.position as AxisPosition
+  const style = styleOf(component, position, theme)
+  const showTick = style.tick !== false && style.showTick !== false
+  const sameDirection = isSameDirection(style.labelDirection, style.tickDirection)
+  const tickLength = showTick && sameDirection ? Number(style.tickLength) || 0 : 0
+  const labelSpacing = Number(style.labelSpacing) || 0
+  return tickLength + labelSpacing
+}
+
+/**
+ * 把中轴文字占用的厚度平均分给相邻两个子 View
+ *
+ * 双向条形图的 visible 轴显示文字，reserve 轴使用透明文字取得同样的测量结果
+ * 两边各承担一半文字厚度后，中轴文字的中心会落在两张子图的正中间
+ */
+const applyCenteredAxisSizes = (components: G2GuideComponentOptions[], theme: G2Theme) => {
+  let changed = false
+  components.forEach(component => {
+    const role = component.dataeaseAxisLabelCenter as CenteredAxisRole
+    if (!['visible', 'reserve'].includes(role)) {
+      return
+    }
+    const position = component.position as AxisPosition
+    if (!AXIS_POSITIONS.includes(position)) {
+      return
+    }
+    const size = Number(component.size)
+    if (!Number.isFinite(size)) {
+      return
+    }
+    const axisPadding = getCenteredAxisPadding(component, theme)
+    // 刻度和间距完整保留，只把剩余的文字厚度平均分给两张子图
+    component.size = Math.ceil(Math.max(0, size - axisPadding) / 2 + axisPadding)
+    component.crossPadding = 0
+    changed = true
+  })
+  return changed
+}
+
+/**
+ * 把中轴半份占位固定到对应方向，避免 G2 第二轮再次按完整文字自动扩张
+ */
+const getCenteredAxisLayoutOptions = (options: G2View, components: G2GuideComponentOptions[]) => {
+  const centeredOptions = { ...options }
+  const paddingKeys: Record<AxisPosition, string> = {
+    top: 'paddingTop',
+    right: 'paddingRight',
+    bottom: 'paddingBottom',
+    left: 'paddingLeft'
+  }
+  components.forEach(component => {
+    const role = component.dataeaseAxisLabelCenter as CenteredAxisRole
+    const position = component.position as AxisPosition
+    const size = Number(component.size)
+    if (!['visible', 'reserve'].includes(role) || !AXIS_POSITIONS.includes(position)) {
+      return
+    }
+    if (Number.isFinite(size)) {
+      centeredOptions[paddingKeys[position]] = size
+    }
+  })
+  return centeredOptions
+}
+
+/**
+ * 把可见中轴文字移动到两张子图共同预留空间的中心
+ *
+ * 横向布局使用 labelDx 左右移动，纵向布局使用 labelDy 上下移动
+ */
+const applyCenteredAxisLabelOffset = (
+  components: G2GuideComponentOptions[],
+  layout: Layout,
+  theme: G2Theme
+) => {
+  components.forEach(component => {
+    if (component.dataeaseAxisLabelCenter !== 'visible' || component.label === false) {
+      return
+    }
+    const position = component.position as AxisPosition
+    if (position !== 'right' && position !== 'bottom') {
+      return
+    }
+    const offset = Math.max(
+      0,
+      (position === 'right' ? layout.paddingRight : layout.paddingBottom) -
+        getCenteredAxisPadding(component, theme)
+    )
+    if (position === 'right') {
+      component.labelDx = offset
+      component.labelTextAlign = 'center'
+    } else {
+      component.labelDy = offset
+      component.labelTextBaseline = 'middle'
+    }
   })
 }
 
@@ -669,18 +798,28 @@ const isSameDirection = (first: string, second: string) =>
  * 根据一个标签的最终边界，累计画布四边分别还需要多少空间
  *
  * 例如标签最左边是 -6px，而安全距离要求 4px，则左侧需要补 10px
- * 当前所有进入公共边界修正的标准轴都会统一检查上、右、下、左四条边
+ * dataeaseAxisLabelOverflowSides 可以只检查指定外边界，避免双 View 的中间边界被推开
  */
 const updateOverflow = (
   overflow: Overflow,
   bounds: { x: number; y: number; width: number; height: number },
   width: number,
-  height: number
+  height: number,
+  overflowSides?: OverflowSide[]
 ) => {
-  overflow.left = Math.max(overflow.left, SAFE_SPACING - bounds.x)
-  overflow.right = Math.max(overflow.right, bounds.x + bounds.width - width + SAFE_SPACING)
-  overflow.top = Math.max(overflow.top, SAFE_SPACING - bounds.y)
-  overflow.bottom = Math.max(overflow.bottom, bounds.y + bounds.height - height + SAFE_SPACING)
+  const enabled = (side: OverflowSide) => !overflowSides || overflowSides.includes(side)
+  if (enabled('left')) {
+    overflow.left = Math.max(overflow.left, SAFE_SPACING - bounds.x)
+  }
+  if (enabled('right')) {
+    overflow.right = Math.max(overflow.right, bounds.x + bounds.width - width + SAFE_SPACING)
+  }
+  if (enabled('top')) {
+    overflow.top = Math.max(overflow.top, SAFE_SPACING - bounds.y)
+  }
+  if (enabled('bottom')) {
+    overflow.bottom = Math.max(overflow.bottom, bounds.y + bounds.height - height + SAFE_SPACING)
+  }
 }
 
 /**
@@ -695,8 +834,8 @@ const updateOverflow = (
  * 6 只用最终可见的边界标签计算画布还需要补多少 padding
  *
  * dataeaseAxisLabelOverflow 为 false 时整个轴退出公共边界修正
- * 当前双向条形图使用这个开关，避免左右子 View 被分别挤压后失去对称
- * 透明标签不会参与测量，密集刻度会测量整轴文字，因此极端数据量下会增加布局时间
+ * 多 View 图表可以对隐藏轴或不允许移动的共享轴使用这个开关
+ * 隐藏或透明标签不会参与测量，密集刻度会测量整轴文字，因此极端数据量下会增加布局时间
  */
 const measureAxisOverflow = (
   component: G2GuideComponentOptions,
@@ -712,6 +851,7 @@ const measureAxisOverflow = (
   if (
     !AXIS_POSITIONS.includes(position) ||
     !component.bbox ||
+    component.label === false ||
     component.dataeaseAxisLabelOverflow === false
   ) {
     return false
@@ -735,6 +875,11 @@ const measureAxisOverflow = (
     measurementCache.set(component, measurement)
   }
   const { style, scale, ticks, labelBounds } = measurement
+  const overflowSides = Array.isArray(component.dataeaseAxisLabelOverflowSides)
+    ? component.dataeaseAxisLabelOverflowSides.filter(side =>
+        OVERFLOW_SIDES.includes(side as OverflowSide)
+      )
+    : undefined
 
   const { bbox } = component
   const showTick = style.tick !== false && style.showTick !== false
@@ -814,7 +959,7 @@ const measureAxisOverflow = (
       ? sampledLabels
       : [sampledLabels[0], sampledLabels[sampledLabels.length - 1]]
   boundaryLabels.forEach(label =>
-    updateOverflow(overflow, label.bounds, layout.width, layout.height)
+    updateOverflow(overflow, label.bounds, layout.width, layout.height, overflowSides)
   )
   return !!measurement.sampled
 }
@@ -869,18 +1014,20 @@ const applyLayoutCorrection = (
  * 处理顺序
  * 1 安装轴标签防重叠默认规则，并找出标准直角坐标轴
  * 2 去掉重复的默认外边距，为目标左轴标题补安全空间
- * 3 重置侧边图例旧尺寸，让 resize 按当前画布重新测量
+ * 3 重置侧边图例和中轴旧尺寸，让 resize 按当前画布重新测量
  * 4 调用 G2 原生布局得到图例行列数、轴组件大小和基础 Plot 空间
  * 5 如果侧边图例真的分页，为分页器补宽度并重新布局
- * 6 按真实文字大小决定轴标签抽稀，抽稀后再让 G2 计算一次准确轴宽
- * 7 最多两轮补足首尾标签越界空间，同时保证 Plot 至少保留四分之一
- * 8 应用纵轴顶部安全距离和左轴标题省略，返回最终结果
+ * 6 如果图表启用了中轴居中，平均分配两张子图的文字占位并重新布局
+ * 7 按真实文字大小决定轴标签抽稀，抽稀后再让 G2 计算一次准确轴宽
+ * 8 最多两轮补足允许方向的首尾标签越界空间，同时保证 Plot 至少保留四分之一
+ * 9 应用纵轴顶部安全距离、中轴偏移和左轴标题省略，返回最终结果
  *
  * 直接影响
  * - 带普通坐标轴的 G2 图表四周留白、轴标签数量、刻度线和网格线数量
  * - 开启侧边图例自动布局的 G2 图表图例宽度、省略文字、悬浮完整提示和分页器位置
  * - 开启左轴标题安全边距的图表标题长度和左侧留白
  * - 设置 dataeaseAxisLabelOverflow 为 false 后退出公共边界修正的多 View 图表
+ * - 显式使用中轴居中和按边修正开关的双向条形图
  *
  * 不直接影响
  * - mark 的数据值、柱线点形状、颜色、比例尺数据范围和后端返回结果
@@ -937,6 +1084,8 @@ export function computeLayout(
       : options
   // 侧边图例第一轮先按未分页宽度处理，G2 布局后才能知道当前高度是否真的分页
   const sideLegends = prepareSideLegendLayout(components, layoutOptions, theme)
+  // 中轴组件会被 resize 复用，第一轮前先删除旧画布留下的轴尺寸和标签偏移
+  resetCenteredAxisMeasurement(axisComponents)
   // 保存图表原始轴尺寸，抽稀后需要恢复它们，让 G2 按更少的标签重新测量
   const originalAxisSizes = new Map(axisComponents.map(component => [component, component.size]))
   // 第一次调用 G2 原生布局，得到基础 padding、组件大小和侧边图例行列数
@@ -956,24 +1105,37 @@ export function computeLayout(
     return layout
   }
 
+  // 中轴两侧各承担半份文字空间，第二次布局使用固定 padding 防止恢复成完整宽度
+  let effectiveLayoutOptions = layoutOptions
+  if (applyCenteredAxisSizes(axisComponents, theme)) {
+    effectiveLayoutOptions = getCenteredAxisLayoutOptions(layoutOptions, axisComponents)
+    const centeredLayout = computeG2Layout(components, effectiveLayoutOptions, theme, library)
+    if (centeredLayout) {
+      layout = centeredLayout
+    }
+  }
+
   // 多 View 图表可以对指定轴设置 false，避免公共边界修正破坏共享边界或左右对称
   const measurableAxisComponents = axisComponents.filter(
     component => component.dataeaseAxisLabelOverflow !== false
   )
-  // 全部轴都退出边界测量时仍需完成左轴标题处理
+  // 全部轴都退出边界测量时仍需完成中轴位置和左轴标题处理
   if (!measurableAxisComponents.length) {
+    applyCenteredAxisLabelOffset(axisComponents, layout, theme)
     applyLeftAxisTitleOverflow(axisComponents, layout)
     return layout
   }
 
   // transpose 出现奇数次表示最终方向发生交换，标签像素位置需要按转置后的方向计算
   const transpose =
-    (layoutOptions.coordinates ?? []).filter(item => item.type === 'transpose').length % 2 === 1
+    (effectiveLayoutOptions.coordinates ?? []).filter(item => item.type === 'transpose').length %
+      2 ===
+    1
   // 同一轮修正复用字体测量，避免每补一次 padding 都重新测量整轴文字
   const measurementCache = new Map<G2GuideComponentOptions, AxisMeasurement>()
 
   // G2 基础布局只有组件大小，先实际放置组件，轴才会拥有可用于像素定位的 bbox
-  const initialCoordinate = createCoordinate(layout, layoutOptions, library)
+  const initialCoordinate = createCoordinate(layout, effectiveLayoutOptions, library)
   placeComponents(groupComponents(components), initialCoordinate, layout)
   const initialOverflow: Overflow = { top: 0, right: 0, bottom: 0, left: 0 }
   const hasSampledAxis = measurableAxisComponents
@@ -1002,6 +1164,14 @@ export function computeLayout(
     const sampledLayout = computeG2Layout(components, layoutOptions, theme, library)
     if (sampledLayout) {
       layout = sampledLayout
+      // 数值轴抽稀后，中轴尺寸也要按新的基础布局再次写回半份空间
+      if (applyCenteredAxisSizes(axisComponents, theme)) {
+        effectiveLayoutOptions = getCenteredAxisLayoutOptions(layoutOptions, axisComponents)
+        const centeredLayout = computeG2Layout(components, effectiveLayoutOptions, theme, library)
+        if (centeredLayout) {
+          layout = centeredLayout
+        }
+      }
     }
   }
   const viewWidth = layout.width - layout.marginLeft - layout.marginRight
@@ -1010,7 +1180,7 @@ export function computeLayout(
 
   // padding 增加后轴位置会跟着移动，因此最多再测两轮，让边界逐步稳定
   for (let pass = 0; pass < MAX_OVERFLOW_CORRECTION_PASSES; pass++) {
-    const coordinate = createCoordinate(correctedLayout, layoutOptions, library)
+    const coordinate = createCoordinate(correctedLayout, effectiveLayoutOptions, library)
     placeComponents(groupComponents(components), coordinate, correctedLayout)
     const overflow: Overflow = { top: 0, right: 0, bottom: 0, left: 0 }
     measurableAxisComponents.forEach(component =>
@@ -1046,7 +1216,10 @@ export function computeLayout(
   // 左右纵轴的第一个标签即使当前刚好没越界，也固定保留顶部安全距离
   const hasVisibleVerticalAxisLabel = measurableAxisComponents.some(
     component =>
-      (component.position === 'left' || component.position === 'right') && component.label !== false
+      (component.position === 'left' || component.position === 'right') &&
+      component.label !== false &&
+      (!Array.isArray(component.dataeaseAxisLabelOverflowSides) ||
+        component.dataeaseAxisLabelOverflowSides.includes('top'))
   )
   const currentTopCorrection = correctedLayout.paddingTop - layout.paddingTop
   const missingTopPadding = hasVisibleVerticalAxisLabel
@@ -1062,6 +1235,8 @@ export function computeLayout(
     )
     correctedLayout = applyLayoutCorrection(correctedLayout, safeTopPadding, 0, 0, 0)
   }
+  // 最终 padding 确定后再移动中轴文字，避免使用修正过程中的旧中心位置
+  applyCenteredAxisLabelOffset(axisComponents, correctedLayout, theme)
   // 标题最大长度依赖最终 innerHeight，因此必须放在所有 padding 修正之后
   applyLeftAxisTitleOverflow(axisComponents, correctedLayout)
   return correctedLayout

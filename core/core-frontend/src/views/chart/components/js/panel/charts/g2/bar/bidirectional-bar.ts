@@ -138,8 +138,6 @@ export class BidirectionalHorizontalBar extends G2ChartView {
     delete axisOption.transform
     return {
       ...axisOption,
-      // 两个子 View 的数值轴共享对称边界，按单个 View 校正会破坏左右比例和零点对齐
-      dataeaseAxisLabelOverflow: false,
       labelAutoHide: true,
       labelAutoRotate: false
     }
@@ -219,7 +217,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
     const newChart = new G2Chart({ container, ...getG2Renderer() })
     const options = this.setupOptions(chart, initOptions)
     const { basicStyle } = parseJson(chart.customAttr)
-    const { xAxis } = parseJson(chart.customStyle)
+    const { xAxis, yAxis, yAxisExt } = parseJson(chart.customStyle)
     const [firstMark, secondMark] = this.getChartMarks(options)
     // 将依赖首次布局结果的修正注册为可等待任务，不在 AFTER_RENDER 事件中启动无法被外层感知的异步重绘
     this.afterRenderHandlers.set(newChart, async () => {
@@ -247,33 +245,80 @@ export class BidirectionalHorizontalBar extends G2ChartView {
           reRenderMark = true
         }
       }
-      if (xAxis.show && xAxis.axisLabel?.show && xAxis.position === 'bottom') {
-        // 处理维度轴标签居中
+      if (
+        !chart.dashboardHidden &&
+        basicStyle.layout === 'vertical' &&
+        xAxis.show &&
+        xAxis.axisLabel?.show
+      ) {
+        // 上下对称布局的类目文字沿水平方向排列，首尾修正后同步左右边距以保持两张子图刻度对齐
         const [first, second] = newChart.getContext().views.filter(c => c.key !== 'legends')
-        if (basicStyle.layout === 'horizontal') {
-          const firstEmptySpace =
-            first.layout.paddingRight + first.layout.marginRight + first.layout.insetRight
-          const secondEmptySpace = second.layout.paddingLeft + second.layout.insetLeft
-          const emptySpace = firstEmptySpace + secondEmptySpace
-          const labelDx = emptySpace / 2
-          const firstMark = newChart.children
+        const paddingAttrs = ['paddingLeft', 'paddingRight']
+        const chartMark = newChart.children.find(c => c.value.key === 'chart')
+        paddingAttrs.forEach(paddingAttr => {
+          const firstPadding = Number(first.layout[paddingAttr]) || 0
+          const secondPadding = Number(second.layout[paddingAttr]) || 0
+          if (Math.abs(firstPadding - secondPadding) <= 1) {
+            return
+          }
+          if (firstPadding < secondPadding) {
+            chartMark.children.find(c => c.value.key === 'first').attr(paddingAttr, secondPadding)
+          } else {
+            chartMark.children.find(c => c.value.key === 'second').attr(paddingAttr, firstPadding)
+          }
+          reRenderMark = true
+        })
+      }
+      if (
+        !chart.dashboardHidden &&
+        xAxis.show &&
+        xAxis.axisLabel?.show &&
+        xAxis.position === 'top'
+      ) {
+        const [first, second] = newChart.getContext().views.filter(c => c.key !== 'legends')
+        const mainSizeAttr = basicStyle.layout === 'horizontal' ? 'width' : 'height'
+        const innerSizeAttr = basicStyle.layout === 'horizontal' ? 'innerWidth' : 'innerHeight'
+        const firstSize = Number(first.layout[mainSizeAttr]) || 0
+        const secondSize = Number(second.layout[mainSizeAttr]) || 0
+        const firstNonPlotSize = Math.max(0, firstSize - Number(first.layout[innerSizeAttr]))
+        const secondNonPlotSize = Math.max(0, secondSize - Number(second.layout[innerSizeAttr]))
+        const sharedPlotSize = (firstSize + secondSize - firstNonPlotSize - secondNonPlotSize) / 2
+        if (
+          sharedPlotSize > 1 &&
+          Math.abs(first.layout[innerSizeAttr] - second.layout[innerSizeAttr]) > 1
+        ) {
+          // 外置类目轴只增加承载它的 View 比例，让两边 Plot 等大，不再向另一端复制空白
+          newChart.children
             .find(c => c.value.key === 'chart')
-            .children.find(c => c.value.key === 'first')
-          const xAxisAttr = firstMark.value.axis?.x
-          firstMark.axis('x', merge({}, xAxisAttr, { labelDx, labelTextAlign: 'center' }))
+            .attr('ratio', [sharedPlotSize + firstNonPlotSize, sharedPlotSize + secondNonPlotSize])
           reRenderMark = true
         }
-        if (basicStyle.layout === 'vertical') {
-          const firstEmptySpace =
-            first.layout.paddingBottom + first.layout.marginBottom + first.layout.insetBottom
-          const secondEmptySpace = second.layout.paddingTop + second.layout.insetTop
-          const emptySpace = firstEmptySpace + secondEmptySpace
-          const labelDy = emptySpace / 2
-          const firstMark = newChart.children
-            .find(c => c.value.key === 'chart')
-            .children.find(c => c.value.key === 'first')
-          const xAxisAttr = firstMark.value.axis?.x
-          firstMark.axis('x', merge({}, xAxisAttr, { labelDy, labelTextBaseline: 'middle' }))
+      }
+      if (
+        !chart.dashboardHidden &&
+        yAxis.show &&
+        (yAxis.axisLabel?.show || yAxisExt.axisLabel?.show) &&
+        // 上方类目轴会占用第一个 View 的外侧总 padding，不能把这部分误复制到第二个 View
+        !(xAxis.show && xAxis.axisLabel?.show && xAxis.position === 'top')
+      ) {
+        // 两张子图的外边界取较大留白，既容纳首尾刻度文字，也保持柱长和零点对称
+        const [first, second] = newChart.getContext().views.filter(c => c.key !== 'legends')
+        const firstPaddingAttr = basicStyle.layout === 'horizontal' ? 'paddingLeft' : 'paddingTop'
+        const secondPaddingAttr =
+          basicStyle.layout === 'horizontal' ? 'paddingRight' : 'paddingBottom'
+        const firstPadding = Number(first.layout[firstPaddingAttr]) || 0
+        const secondPadding = Number(second.layout[secondPaddingAttr]) || 0
+        if (Math.abs(firstPadding - secondPadding) > 1) {
+          const chartMark = newChart.children.find(c => c.value.key === 'chart')
+          if (firstPadding < secondPadding) {
+            chartMark.children
+              .find(c => c.value.key === 'first')
+              .attr(firstPaddingAttr, secondPadding)
+          } else {
+            chartMark.children
+              .find(c => c.value.key === 'second')
+              .attr(secondPaddingAttr, firstPadding)
+          }
           reRenderMark = true
         }
       }
@@ -457,43 +502,27 @@ export class BidirectionalHorizontalBar extends G2ChartView {
         position = 'left'
       }
     }
-    // G2 默认轴组件会按完整标签宽度预留空间，横向对称条形图只需要按文本宽度估算中间轴占位
-    const labelFontSize = xAxis.axisLabel.fontSize ?? 12
-    const formatXAxisLabelText = value => {
-      const label = `${value ?? ''}`
-      const lengthLimit = xAxis.axisLabel.lengthLimit
-      return lengthLimit && label.length > lengthLimit
-        ? label.substring(0, lengthLimit) + '...'
-        : label
-    }
     const formatXAxisLabel = value => {
       const originLabel = `${value ?? ''}`
       return formatAxisLabelWithLengthLimit(originLabel, xAxis.axisLabel.lengthLimit)
     }
-    const getLabelTextWidth = text => {
-      return Array.from(`${text ?? ''}`).reduce((width, char) => {
-        return width + (char.charCodeAt(0) > 255 ? labelFontSize : labelFontSize * 0.6)
-      }, 0)
-    }
-    let centerAxisSize: number
-    if (basicStyle.layout === 'horizontal' && position === 'right' && xAxis.axisLabel.show) {
-      const fields = (firstMark.data?.value || []).map(item => item.field)
-      const maxLabelWidth = fields.reduce((maxWidth, field) => {
-        return Math.max(maxWidth, getLabelTextWidth(formatXAxisLabelText(field)))
-      }, 0)
-      // 中间维度轴只需要左右各预留半个标签宽度和少量间距，避免 G2 默认轴宽把两侧空白撑大
-      centerAxisSize = Math.ceil(Math.max(labelFontSize + 8, maxLabelWidth / 2 + 8))
-    }
+    const visibleCategoryAxisLabel = !chart.dashboardHidden && xAxis.axisLabel.show
+    const centerAxisLabel = visibleCategoryAxisLabel && xAxis.position === 'bottom'
+    // 上下对称布局中的类目文字横向排列，最左和最右文字确实可能伸出画布，需要修正左右边界
+    // 左右对称布局中的类目文字纵向落在各自带宽中心，额外修正上下 padding 会重复压缩 Plot 高度
+    const protectCategoryAxisBoundary = visibleCategoryAxisLabel && basicStyle.layout === 'vertical'
     const axisStyle = {
       axis: {
         x: {
           zIndex: 1,
-          // 中间维度轴刻意跨越两个子 View，继续交由本图表现有 afterRender 逻辑居中
-          dataeaseAxisLabelOverflow: false,
+          // 类目轴只修正沿刻度排列方向的首尾越界，居中偏移仍然只用于共享中轴
+          dataeaseAxisLabelOverflow: protectCategoryAxisBoundary ? undefined : false,
+          dataeaseAxisLabelOverflowSides: protectCategoryAxisBoundary
+            ? ['left', 'right']
+            : undefined,
+          dataeaseAxisLabelCenter: centerAxisLabel ? 'visible' : undefined,
+          // 轴组件间距继续使用 G2 布局的统一处理，不在业务图表重复覆盖
           position: position,
-          size: centerAxisSize,
-          crossPadding: centerAxisSize ? 2 : undefined,
-          padding: centerAxisSize ? 0 : undefined,
           line: xAxis.axisLine.show,
           lineStroke: xAxis.axisLine.lineStyle.color,
           lineStrokeOpacity: 1,
@@ -531,8 +560,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       top: 'top',
       bottom: 'top'
     }
-    const reserveHiddenCenterLabel =
-      basicStyle.layout === 'horizontal' && position === 'right' && xAxis.axisLabel.show
+    const reserveHiddenCenterLabel = centerAxisLabel
     // 根因是维度轴标签实际挂在左侧子图上，右侧如果完全隐藏该轴，左右绘图区宽度会不一致
     const secondXAxis = {
       label: false,
@@ -541,11 +569,12 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       line: xAxis.axisLine.show && ['right', 'bottom'].includes(position)
     }
     if (reserveHiddenCenterLabel) {
-      // 横向布局的维度轴标签显示在左右图中间，右侧子图也保留一份不可见标签空间，避免左侧因承载标签而绘图区变窄
+      // 相邻子图使用透明文字取得相同尺寸，再由公共布局各保留半份空间
       merge(secondXAxis, {
         label: true,
         labelOpacity: 0,
-        labelFillOpacity: 0
+        labelFillOpacity: 0,
+        dataeaseAxisLabelCenter: 'reserve'
       })
     }
     merge(secondMark, axisStyle, {
@@ -553,28 +582,25 @@ export class BidirectionalHorizontalBar extends G2ChartView {
         x: secondXAxis
       }
     })
+    // 中间接缝只清理 inset 和 padding，单独设置某一侧 margin 会让 G2 的默认上下留白重新生效
     if (position === 'left') {
       defaultsDeep(firstMark, {
         insetRight: 0,
-        paddingRight: 0,
-        marginRight: 0
+        paddingRight: 0
       })
       defaultsDeep(secondMark, {
         insetLeft: 0,
-        paddingLeft: 0,
-        marginLeft: 0
+        paddingLeft: 0
       })
     }
     if (position === 'top') {
       defaultsDeep(firstMark, {
         insetBottom: 0,
-        paddingBottom: 0,
-        marginBottom: 0
+        paddingBottom: 0
       })
       defaultsDeep(secondMark, {
         insetTop: 0,
-        paddingTop: 0,
-        marginTop: 0
+        paddingTop: 0
       })
     }
     return options
@@ -614,6 +640,15 @@ export class BidirectionalHorizontalBar extends G2ChartView {
         this.getAxisLabelStyle({ ...yAxisExt, position: yAxisExtOption.position })
       )
     }
+    const firstViewOuterSide = basicStyle.layout === 'horizontal' ? 'left' : 'top'
+    const secondViewOuterSide = basicStyle.layout === 'horizontal' ? 'right' : 'bottom'
+    // 数值轴只修正各自的外边界和轴所在外侧，中间共享边界继续保持不动
+    yAxisOption.dataeaseAxisLabelOverflowSides = Array.from(
+      new Set([firstViewOuterSide, yAxisOption.position])
+    )
+    yAxisExtOption.dataeaseAxisLabelOverflowSides = Array.from(
+      new Set([secondViewOuterSide, yAxisExtOption.position])
+    )
     if (yAxis.axisValue.auto === false) {
       merge(firstMark, {
         scale: {
@@ -985,7 +1020,8 @@ export class BidirectionalHorizontalBar extends G2ChartView {
 
   protected configLegend(chart: Chart, options: G2Spec): G2Spec {
     const { legend } = parseJson(chart.customStyle)
-    if (!legend.show) {
+    // 隐藏组件时不创建独立图例子层，避免图例消失后仍保留 ratio 占位
+    if (chart.dashboardHidden || !legend.show) {
       return options
     }
     const { basicStyle } = parseJson(chart.customAttr)
