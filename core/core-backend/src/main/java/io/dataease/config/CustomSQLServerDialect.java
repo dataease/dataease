@@ -14,7 +14,15 @@ public class CustomSQLServerDialect extends SQLServerDialect {
             @Override
             public String[] getSqlCreateStrings(org.hibernate.mapping.Table table, Metadata metadata, SqlStringGenerationContext context) {
                 String[] createStrings = super.getSqlCreateStrings(table, metadata, context);
+                createStrings = processVarcharToNvarchar(createStrings);
                 return processBooleanDefaults(createStrings);
+            }
+
+            private String[] processVarcharToNvarchar(String[] sqlStrings) {
+                for (int i = 0; i < sqlStrings.length; i++) {
+                    sqlStrings[i] = sqlStrings[i].replaceAll("(?i)(?<!n)varchar", "nvarchar");
+                }
+                return sqlStrings;
             }
 
             private String[] processBooleanDefaults(String[] sqlStrings) {

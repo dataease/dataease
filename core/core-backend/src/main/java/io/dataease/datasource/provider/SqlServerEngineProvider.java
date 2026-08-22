@@ -137,9 +137,9 @@ public class SqlServerEngineProvider extends EngineProvider {
             switch (tableField.getDeExtractType()) {
                 case 0:
                     if (StringUtils.isNotEmpty(tableField.getLength())) {
-                        columnFields.append("varchar(length)".replace("length", tableField.getLength())).append(",\"");
+                        columnFields.append("nvarchar(length)".replace("length", tableField.getLength())).append(",\"");
                     } else {
-                        columnFields.append("varchar(max)").append(",\"");
+                        columnFields.append("nvarchar(max)").append(",\"");
                     }
                     break;
                 case 1:
@@ -155,7 +155,7 @@ public class SqlServerEngineProvider extends EngineProvider {
                     columnFields.append("TINYINT".replace("length", String.valueOf(tableField.getPrecision()))).append(",\"");
                     break;
                 default:
-                    columnFields.append("varchar(max)").append(",\"");
+                    columnFields.append("nvarchar(max)").append(",\"");
                     break;
             }
         }
