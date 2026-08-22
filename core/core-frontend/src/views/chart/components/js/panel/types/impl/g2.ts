@@ -9,8 +9,16 @@ import { parseJson, setupSeriesColor } from '../../../util'
 import { isEmpty } from 'lodash-es'
 import { valueFormatter } from '../../../formatter'
 
-export const LEGEND_NAV_CONTROLLER_PADDING = 10
-export const LEGEND_NAV_CONTROLLER_SPACING = 12
+export const LEGEND_NAV_CONTROLLER_PADDING = 5
+export const LEGEND_NAV_CONTROLLER_SPACING = 5
+const LEGEND_NAV_BUTTON_MIN_SIZE = 8
+const LEGEND_NAV_BUTTON_MAX_SIZE = 12
+const LEGEND_NAV_PAGE_FONT_MIN_SIZE = 10
+const LEGEND_NAV_PAGE_FONT_MAX_SIZE = 12
+const HORIZONTAL_LEGEND_LABEL_MIN_WIDTH = 120
+const HORIZONTAL_LEGEND_LABEL_MAX_WIDTH = 240
+const HORIZONTAL_LEGEND_LABEL_EM = 12
+const HORIZONTAL_LEGEND_NAV_CONTROLLER_SPACING = 8
 
 // 统一阈值按估算出的数据 mark 工作量判断，而不是只看后端返回的记录数
 // 这样可以把多指标展开、多个 mark 复用同一份数据以及数据标签带来的额外开销都计算在内
@@ -452,25 +460,36 @@ export const getLegendNavButtonPath = (size: number) => [
 ]
 
 // 统一分类图例的 marker、label 与分页器样式，避免各图表配置漂移
-export const getCategoryLegendStyle = (markerSize: number, fontSize: number, color: string) => ({
-  itemMarkerSize: markerSize,
-  itemLabelFontSize: fontSize,
-  itemLabelFill: color,
-  itemLabelFillOpacity: 1,
-  itemLabelOpacity: 1,
-  itemMarkerLineWidth: 0,
-  navPageNumFontSize: fontSize,
-  navPageNumFill: color,
-  navPageNumFillOpacity: 1,
-  // 直接提供目标像素大小的路径，避免 Navigator 重绘时基于旧 transform 交替缩放按钮
-  navButtonD: getLegendNavButtonPath(markerSize),
-  navButtonSize: markerSize,
-  navButtonFill: color,
-  navButtonFillOpacity: 1,
-  navOrientation: 'horizontal',
-  navControllerPadding: LEGEND_NAV_CONTROLLER_PADDING,
-  navControllerSpacing: LEGEND_NAV_CONTROLLER_SPACING
-})
+export const getCategoryLegendStyle = (markerSize: number, fontSize: number, color: string) => {
+  // 分页器使用 AntV 55px 固定区域，不跟随超大图标和文本继续放大
+  const navButtonSize = Math.min(
+    LEGEND_NAV_BUTTON_MAX_SIZE,
+    Math.max(LEGEND_NAV_BUTTON_MIN_SIZE, markerSize)
+  )
+  const navPageNumFontSize = Math.min(
+    LEGEND_NAV_PAGE_FONT_MAX_SIZE,
+    Math.max(LEGEND_NAV_PAGE_FONT_MIN_SIZE, fontSize)
+  )
+  return {
+    itemMarkerSize: markerSize,
+    itemLabelFontSize: fontSize,
+    itemLabelFill: color,
+    itemLabelFillOpacity: 1,
+    itemLabelOpacity: 1,
+    itemMarkerLineWidth: 0,
+    navPageNumFontSize,
+    navPageNumFill: color,
+    navPageNumFillOpacity: 1,
+    // 直接提供目标像素大小的路径，避免 Navigator 重绘时基于旧 transform 交替缩放按钮
+    navButtonD: getLegendNavButtonPath(navButtonSize),
+    navButtonSize,
+    navButtonFill: color,
+    navButtonFillOpacity: 1,
+    navOrientation: 'horizontal',
+    navControllerPadding: LEGEND_NAV_CONTROLLER_PADDING,
+    navControllerSpacing: LEGEND_NAV_CONTROLLER_SPACING
+  }
+}
 
 let axisLabelMeasureContext: CanvasRenderingContext2D | null | undefined
 
@@ -488,6 +507,76 @@ const measureAxisLabelWidth = (value: unknown, fontSize: number) => {
     (width, char) => width + fontSize * (/[^\x00-\xff]/.test(char) ? 1 : 0.6),
     0
   )
+}
+
+const escapeLegendPoptipText = (value: unknown) =>
+  `${value ?? ''}`
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;')
+
+export const getHorizontalLegendLabelMaxWidth = (fontSize: number) => {
+  const safeFontSize = Number.isFinite(fontSize) && fontSize > 0 ? fontSize : 12
+  return Math.min(
+    HORIZONTAL_LEGEND_LABEL_MAX_WIDTH,
+    Math.max(HORIZONTAL_LEGEND_LABEL_MIN_WIDTH, safeFontSize * HORIZONTAL_LEGEND_LABEL_EM)
+  )
+}
+
+const truncateHorizontalLegendLabel = (value: unknown, fontSize: number, maxWidth: number) => {
+  const label =
+    typeof value === 'object' && value !== null
+      ? `${value['label'] ?? value['value'] ?? ''}`
+      : `${value ?? ''}`
+  if (measureAxisLabelWidth(label, fontSize) <= maxWidth) {
+    return label
+  }
+  const chars = Array.from(label)
+  const suffix = '...'
+  const suffixWidth = measureAxisLabelWidth(suffix, fontSize)
+  let start = 0
+  let end = chars.length
+  while (start < end) {
+    const middle = Math.ceil((start + end) / 2)
+    const text = chars.slice(0, middle).join('')
+    if (measureAxisLabelWidth(text, fontSize) + suffixWidth <= maxWidth) {
+      start = middle
+    } else {
+      end = middle - 1
+    }
+  }
+  return `${chars.slice(0, start).join('')}${suffix}`
+}
+
+/**
+ * 上下图例必须在 G2 首次测量前限制单项文本宽度
+ * 否则任意分页中的超长项都会把所有页面和分页器之间的距离一起撑大
+ */
+export const getHorizontalLegendTextStyle = (fontSize: number) => {
+  const safeFontSize = Number.isFinite(fontSize) && fontSize > 0 ? fontSize : 12
+  const maxWidth = getHorizontalLegendLabelMaxWidth(safeFontSize)
+  return {
+    labelFormatter: value => truncateHorizontalLegendLabel(value, safeFontSize, maxWidth),
+    itemLabelWordWrap: true,
+    itemLabelWordWrapWidth: maxWidth,
+    itemLabelMaxLines: 1,
+    itemLabelTextOverflow: '...',
+    // 上下图例项与分页器保持一个 8px 基础间距，分页器内部间距继续沿用公共配置
+    navControllerSpacing: HORIZONTAL_LEGEND_NAV_CONTROLLER_SPACING,
+    poptip: {
+      // id 始终保留原始图例值，省略后悬停仍能查看完整内容
+      render: ({ id, label }) => escapeLegendPoptipText(id ?? label),
+      domStyles: {
+        '.component-poptip': {
+          maxWidth: '320px',
+          whiteSpace: 'normal',
+          wordBreak: 'break-all'
+        }
+      }
+    }
+  }
 }
 
 export interface G2DrawOptions<O> extends AntVDrawOptions<O> {
@@ -618,7 +707,17 @@ export abstract class G2ChartView<
             },
             itemMarker: legendSymbol,
             ...getCategoryLegendStyle(legendSize, legendFontSize, legendColor),
-            ...(verticalLegend ? { navOrientation: 'vertical', maxCols: 2 } : { maxRows: 1 })
+            ...(verticalLegend
+              ? {
+                  // 侧边图例由布局阶段按实际分页和文本宽度自适应
+                  dataeaseSideLegendAutoLayout: true,
+                  navOrientation: 'vertical',
+                  maxCols: 1
+                }
+              : {
+                  ...getHorizontalLegendTextStyle(legendFontSize),
+                  maxRows: 1
+                })
           }
         } else {
           legend = false

@@ -29,6 +29,7 @@ import {
   CHART_MIX_EDITOR_PROPERTY_INNER,
   configMixCustomLegend,
   createResponsiveMixLegendCategory,
+  createResponsiveMixSpaceFlex,
   filterValidMixTooltipItems,
   getAssistLineAxisIndex,
   getMixLabelTransform
@@ -123,6 +124,9 @@ const fixedOrientLegendCategory = options => {
 }
 fixedOrientLegendCategory.props = stackMixLegendCategory.props
 stackMixLibrary['component.legendCategory'] = fixedOrientLegendCategory
+stackMixLibrary['composition.spaceFlex'] = createResponsiveMixSpaceFlex(
+  stackMixLibrary['composition.spaceFlex']
+)
 const StackMixG2Chart = extend(Runtime, stackMixLibrary) as typeof G2Chart
 
 /**

@@ -1,6 +1,7 @@
 import { Chart as G2Column } from '@antv/g2'
 import {
   getCategoryLegendStyle,
+  getHorizontalLegendTextStyle,
   G2ChartView,
   G2DrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2'
@@ -548,7 +549,17 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
               },
               itemMarker: legendSymbol,
               ...getCategoryLegendStyle(legendSize, legendFontSize, legendColor),
-              ...(verticalLegend ? { navOrientation: 'vertical', maxCols: 2 } : { maxRows: 1 })
+              ...(verticalLegend
+                ? {
+                    // 横向条形图的侧边图例与其他 G2 图表共用自适应规则
+                    dataeaseSideLegendAutoLayout: true,
+                    navOrientation: 'vertical',
+                    maxCols: 1
+                  }
+                : {
+                    ...getHorizontalLegendTextStyle(legendFontSize),
+                    maxRows: 1
+                  })
             }
           }
         } else {
