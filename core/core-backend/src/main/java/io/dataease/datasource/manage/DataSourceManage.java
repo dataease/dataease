@@ -70,6 +70,9 @@ public class DataSourceManage {
                 flag = datasourceType.getFlag();
             }
         }
+        if(type.equalsIgnoreCase("dm")){
+            return 23;
+        }
         if (ObjectUtils.isEmpty(flag) && ObjectUtils.isNotEmpty(CommonBeanFactory.getBean(PluginManageApi.class))) {
             List<XpackPluginsDatasourceVO> xpackPluginsDatasourceVOS = pluginManage.queryPluginDs();
             List<XpackPluginsDatasourceVO> list = xpackPluginsDatasourceVOS.stream().filter(ele -> StringUtils.equals(ele.getType(), type)).toList();
