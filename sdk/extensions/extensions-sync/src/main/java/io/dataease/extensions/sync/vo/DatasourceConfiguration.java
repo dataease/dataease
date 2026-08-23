@@ -1,6 +1,7 @@
 package io.dataease.extensions.sync.vo;
 
 import io.dataease.extensions.datasource.vo.Configuration;
+import io.dataease.extensions.sync.model.datasource.DatasourceRole;
 import lombok.Data;
 
 import java.util.List;
@@ -11,19 +12,19 @@ public class DatasourceConfiguration extends Configuration {
     private List<String> showTableSqls;
 
     public enum DatasourceType {
-        mysql("mysql", "MySQL", "OLTP", "`", "`", 27, 1, "mySQLSourceProvider"),
-        es("elasticsearch", "Elasticsearch", "OLAP", "\"", "\"", 14, 1, "elasticsearchSourceProvider"),
-        doris("doris", "Apache Doris", "OLAP", "`", "`", 26, 2, "dorisSinkProvider"),
-        oracle("oracle", "ORACLE", "OLTP", "\"", "\"", 1, 1, "oracleSourceProvider"),
-        db2("db2", "DB2", "OLTP", "", "", 12, 1, "db2SourceProvider"),
-        sqlServer("sqlServer", "SQL Server", "DL", "[", "]", 2, 1, "sqlServerSourceProvider");
+        mysql("mysql", "MySQL", "OLTP", "`", "`", 27, DatasourceRole.SOURCE, "mySQLSourceProvider"),
+        es("elasticsearch", "Elasticsearch", "OLAP", "\"", "\"", 14, DatasourceRole.SOURCE, "elasticsearchSourceProvider"),
+        doris("doris", "Apache Doris", "OLAP", "`", "`", 26, DatasourceRole.TARGET, "dorisSinkProvider"),
+        oracle("oracle", "ORACLE", "OLTP", "\"", "\"", 1, DatasourceRole.SOURCE, "oracleSourceProvider"),
+        db2("db2", "DB2", "OLTP", "", "", 12, DatasourceRole.SOURCE, "db2SourceProvider"),
+        sqlServer("sqlServer", "SQL Server", "DL", "[", "]", 2, DatasourceRole.SOURCE, "sqlServerSourceProvider");
         private String type;
         private String name;
         private Integer flag;
         private String catalog;
         private String prefix;
         private String suffix;
-        // 0 - source, 1 - target
+        // 与 per_sync_datasource.datasource_role、任务 JSON 和插件元数据一致：1 为源端，2 为目标端。
         private Integer datasourceRole;
         private String providerClassName;
 

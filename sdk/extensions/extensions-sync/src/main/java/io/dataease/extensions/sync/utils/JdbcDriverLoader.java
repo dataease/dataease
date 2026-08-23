@@ -1,10 +1,13 @@
 package io.dataease.extensions.sync.utils;
 
 import io.dataease.extensions.datasource.provider.ExtendedJdbcClassLoader;
+import io.dataease.extensions.datasource.utils.SpringContextUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -14,6 +17,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date 2025/11/12 16:12
  **/
 public final class JdbcDriverLoader {
+    private static final String DEFAULT_DRIVER_PATH = "/opt/dataease3.0/drivers";
+    private static final Path LEGACY_DRIVER_PATH = Paths.get(DEFAULT_DRIVER_PATH).toAbsolutePath().normalize();
     /**
      * key 可以是 dirPath（默认复用）或 dirPath + "::" + driverClassName（按驱动隔离）
      */
@@ -46,10 +51,12 @@ public final class JdbcDriverLoader {
         if (dirPath.isEmpty()) {
             throw new IllegalArgumentException("driver path is empty");
         }
-        String key = (driverClassName == null || driverClassName.isEmpty()) ? dirPath : dirPath + SEP + driverClassName;
+        String resolvedDirPath = resolveDriverDirectory(dirPath);
+        String key = (driverClassName == null || driverClassName.isEmpty())
+                ? resolvedDirPath : resolvedDirPath + SEP + driverClassName;
         return CACHE.computeIfAbsent(key, k -> {
             try {
-                return createLoader(dirPath);
+                return createLoader(resolvedDirPath);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -63,7 +70,7 @@ public final class JdbcDriverLoader {
         if (dirPath == null) {
             return;
         }
-        CACHE.remove(dirPath);
+        CACHE.remove(resolveDriverDirectory(dirPath));
     }
 
     /**
@@ -73,7 +80,28 @@ public final class JdbcDriverLoader {
         if (dirPath == null || driverClassName == null) {
             return;
         }
-        CACHE.remove(dirPath + SEP + driverClassName);
+        CACHE.remove(resolveDriverDirectory(dirPath) + SEP + driverClassName);
+    }
+
+    /**
+     * 将历史插件内硬编码的 /opt/dataease3.0/drivers 路径映射到当前应用的 dataease.path.driver。
+     *
+     * <p>PostgreSQL V3 插件仍会以旧绝对路径调用本加载器，而插件驱动已经由
+     * DataEaseSyncDatasourcePlugin 解压到当前应用目录。这里使用同一映射规则，保证解压目录和加载目录一致；
+     * 非旧根目录下的显式路径保持原值。</p>
+     */
+    static String resolveDriverDirectory(String dirPath) {
+        String applicationDriverPath = DEFAULT_DRIVER_PATH;
+        if (SpringContextUtil.getApplicationContext() != null) {
+            applicationDriverPath = SpringContextUtil.getApplicationContext().getEnvironment()
+                    .getProperty("dataease.path.driver", DEFAULT_DRIVER_PATH);
+        }
+        Path requestedPath = Paths.get(dirPath).toAbsolutePath().normalize();
+        if (!requestedPath.startsWith(LEGACY_DRIVER_PATH)) {
+            return requestedPath.toString();
+        }
+        Path currentDriverPath = Paths.get(applicationDriverPath).toAbsolutePath().normalize();
+        return currentDriverPath.resolve(LEGACY_DRIVER_PATH.relativize(requestedPath)).normalize().toString();
     }
 
     private static ExtendedJdbcClassLoader createLoader(String dirPath) throws IOException {

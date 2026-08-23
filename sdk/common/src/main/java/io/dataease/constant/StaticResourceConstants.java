@@ -1,7 +1,6 @@
 package io.dataease.constant;
 
 import io.dataease.utils.ConfigUtils;
-import io.dataease.utils.LocalModelUtils;
 
 import java.io.File;
 
@@ -42,11 +41,12 @@ public class StaticResourceConstants {
      */
     public static final String URL_SEPARATOR = "/";
 
+    /**
+     * 所有运行模式都优先使用外部 dataease.path.data 配置。
+     * 迁移后的 V3 可以将持久化文件保存在独立目录，而不必写入固定的 /opt/dataease3.0/data；
+     * 未配置时仍回退到原默认路径，保持现有部署兼容性。
+     */
     public static String getHomeData() {
-        if (LocalModelUtils.isDesktop()) {
-            return ConfigUtils.getConfig("dataease.path.data", "/opt/dataease3.0/data");
-        } else {
-            return "/opt/dataease3.0/data";
-        }
+        return ConfigUtils.getConfig("dataease.path.data", "/opt/dataease3.0/data");
     }
 }

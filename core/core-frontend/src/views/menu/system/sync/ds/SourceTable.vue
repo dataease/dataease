@@ -201,12 +201,20 @@ const drawerMainOpen = async () => {
 const drawerMainClose = () => {
   drawerMainRef.value.close();
 };
+// 同一种数据库可能同时存在源端和目标端插件（例如 PostgreSQL）。
+// 只按 type 匹配会随机取到另一角色的 staticMap，导致校验按钮不发请求或表单无法保存，
+// 因此必须使用 type + datasourceRole 唯一确定插件实现。
+const findSyncPlugin = (data) => {
+  return pluginDs.value.find(
+    (ele) =>
+      ele.type === data.type &&
+      Number(ele.datasourceRole) === Number(data.datasourceRole)
+  );
+};
 const dsInfo = ref();
 const getDsInfo = (data) => {
   return getByIdApi(data.id).then((res) => {
-    let arr = pluginDs.value.filter(ele => {
-      return ele.type == res.data.type
-    })
+    const pluginInfo = findSyncPlugin(res.data);
     let {
       configuration,
       datasourceRole,
@@ -231,14 +239,17 @@ const getDsInfo = (data) => {
       status,
       statusRemark,
       type,
-      isPlugin: arr && arr.length > 0,
-      staticMap: arr[0]?.staticMap
+      isPlugin: !!pluginInfo,
+      staticMap: pluginInfo?.staticMap,
+      systemDatasourceType: pluginInfo?.systemDatasourceType
     });
   });
 };
 const edit = async (row) => {
   await getDsInfo(row);
-  datasourceEditor.value.init(dsInfo, false);
+  // 当前组件只展示源数据库，编辑器的第二个参数必须保持为 true，
+  // 否则编辑器会按目标数据库初始化并使用错误的校验/保存接口。
+  datasourceEditor.value.init(dsInfo, true);
 };
 const delHandler = (row) => {
   ElMessageBox.confirm(t("sync_datasource.ds_delete_confirm"), {

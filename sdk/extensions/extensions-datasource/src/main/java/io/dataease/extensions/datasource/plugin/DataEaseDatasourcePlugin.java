@@ -4,6 +4,7 @@ import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
 import io.dataease.extensions.datasource.factory.ProviderFactory;
 import io.dataease.extensions.datasource.provider.Provider;
+import io.dataease.extensions.datasource.utils.SpringContextUtil;
 import io.dataease.extensions.datasource.vo.XpackPluginsDatasourceVO;
 import io.dataease.license.utils.JsonUtil;
 import io.dataease.plugins.template.DataEasePlugin;
@@ -29,7 +30,9 @@ import java.util.regex.Pattern;
  * @Author Junjun
  */
 public abstract class DataEaseDatasourcePlugin extends Provider implements DataEasePlugin {
-    private final String DEFAULT_FILE_PATH = "/opt/dataease3.0/drivers/plugin";
+    private static final String DEFAULT_DRIVER_PATH = "/opt/dataease3.0/drivers";
+    private static final Path LEGACY_PLUGIN_DRIVER_PATH = Paths.get(DEFAULT_DRIVER_PATH, "plugin")
+            .toAbsolutePath().normalize();
     private static final Pattern SAFE_DRIVER_FILE_NAME = Pattern.compile("[A-Za-z0-9._-]+\\.jar");
 
 
@@ -52,7 +55,7 @@ public abstract class DataEaseDatasourcePlugin extends Provider implements DataE
 
     private void loadDriver() throws Exception {
         XpackPluginsDatasourceVO config = getConfig();
-        String localPath = StringUtils.isEmpty(config.getDriverPath()) ? DEFAULT_FILE_PATH : config.getDriverPath();
+        Path localPath = resolveDriverDirectory(config.getDriverPath());
         ProtectionDomain protectionDomain = this.getClass().getProtectionDomain();
         URI uri = protectionDomain.getCodeSource().getLocation().toURI();
         try (JarFile jarFile = new JarFile(new File(uri))) {
@@ -89,11 +92,36 @@ public abstract class DataEaseDatasourcePlugin extends Provider implements DataE
         return vo;
     }
 
-    private Path resolveDriverPath(String localPath, JarEntry entry) {
+    /**
+     * 解析插件 JDBC 驱动的实际落盘目录。
+     *
+     * <p>历史插件元数据可能保存 /opt/dataease3.0/drivers/plugin 下的绝对路径。迁移到自定义目录后，
+     * 这类“默认根目录路径”要等价映射到 dataease.path.driver/plugin，并保留其相对子目录；
+     * 用户显式配置的其他外部路径则保持不变。加载和卸载共用该方法，避免从新目录加载却误删旧目录文件。</p>
+     */
+    private Path resolveDriverDirectory(String configuredPath) {
+        String driverPath = DEFAULT_DRIVER_PATH;
+        if (SpringContextUtil.getApplicationContext() != null) {
+            driverPath = SpringContextUtil.getApplicationContext().getEnvironment()
+                    .getProperty("dataease.path.driver", DEFAULT_DRIVER_PATH);
+        }
+        Path applicationPluginPath = Paths.get(driverPath, "plugin").toAbsolutePath().normalize();
+        if (StringUtils.isBlank(configuredPath)) {
+            return applicationPluginPath;
+        }
+
+        Path pluginPath = Paths.get(configuredPath).toAbsolutePath().normalize();
+        if (pluginPath.startsWith(LEGACY_PLUGIN_DRIVER_PATH)) {
+            // 例如 /opt/dataease3.0/drivers/plugin/dmDriver -> ${dataease.path.driver}/plugin/dmDriver。
+            return applicationPluginPath.resolve(LEGACY_PLUGIN_DRIVER_PATH.relativize(pluginPath)).normalize();
+        }
+        return pluginPath;
+    }
+
+    private Path resolveDriverPath(Path localPath, JarEntry entry) {
         String fileName = extractSafeDriverFileName(entry);
-        Path targetDirectory = Paths.get(localPath).toAbsolutePath().normalize();
-        Path targetFile = targetDirectory.resolve(fileName).normalize();
-        if (!targetFile.startsWith(targetDirectory)) {
+        Path targetFile = localPath.resolve(fileName).normalize();
+        if (!targetFile.startsWith(localPath)) {
             DEException.throwException("Invalid driver file path");
         }
         return targetFile;
@@ -126,6 +154,7 @@ public abstract class DataEaseDatasourcePlugin extends Provider implements DataE
     @Override
     public void unloadPlugin() {
         try {
+            Path localPath = resolveDriverDirectory(getConfig().getDriverPath());
             ProtectionDomain protectionDomain = this.getClass().getProtectionDomain();
             URI uri = protectionDomain.getCodeSource().getLocation().toURI();
             try (JarFile jarFile = new JarFile(new File(uri))) {
@@ -134,7 +163,7 @@ public abstract class DataEaseDatasourcePlugin extends Provider implements DataE
                     JarEntry entry = entries.nextElement();
                     String name = entry.getName();
                     if (!entry.isDirectory() && StringUtils.endsWith(entry.getName(), ".jar")) {
-                        Path file = resolveDriverPath(DEFAULT_FILE_PATH, entry);
+                        Path file = resolveDriverPath(localPath, entry);
                         Files.deleteIfExists(file);
                     }
                 }
