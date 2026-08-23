@@ -29,7 +29,7 @@ import {
   updateApi,
   validateApi
 } from "@/api/sync/syncDatasource";
-import {DsType, dsTypes, nameMap, typeList} from "./option";
+import {DsType, dsTypes, nameMap, SYNC_DATASOURCE_ROLE, typeList} from "./option";
 import {cloneDeep} from "lodash-es";
 import {useCache} from "@/hooks/web/useCache";
 import {Base64} from "js-base64";
@@ -112,30 +112,66 @@ const state = reactive({
 const activeStep = ref(0);
 const detail = ref();
 const xpack = ref()
+const pluginReady = ref(false)
+const pluginLoadFailed = ref(false)
 const latestUseTypes = ref([]);
 const currentType = ref<DsType>("OLTP");
 const filterText = ref("");
 const currentDsType = ref();
-const sourceActive = ref();
+const sourceActive = ref(true);
+const activeDatasourceRole = computed(() => sourceActive.value
+    ? SYNC_DATASOURCE_ROLE.SOURCE
+    : SYNC_DATASOURCE_ROLE.TARGET)
 const isPlugin = ref(false)
 const emits = defineEmits(["refresh"]);
 const pluginComponentLoadDone = () => {
-  xpack?.value?.invokeMethod({methodName: 'initForm', args: [{edit: editDs.value, ...form}]})
+  try {
+    xpack?.value?.invokeMethod({methodName: 'initForm', args: [{edit: editDs.value, ...form}]})
+    pluginReady.value = true
+    pluginLoadFailed.value = false
+  } catch (error) {
+    pluginComponentLoadFail()
+  }
+}
+const pluginComponentLoadFail = () => {
+  pluginReady.value = false
+  pluginLoadFailed.value = true
+  loading.value = false
+  ElMessage.error(t("sync_datasource.plugin_load_failed"))
 }
 const selectDsType = (dsInfo) => {
+  const selectedDatasource = typeof dsInfo === "string"
+      ? currentTypeList.value
+          .map((item) => item.dbList)
+          .flat()
+          .find((item) => item.type === dsInfo)
+      : dsInfo
   const type = typeof dsInfo === "string" ? dsInfo : dsInfo.type;
+  // type 不能唯一标识 PostgreSQL：源端和目标端是两个独立插件。
+  // 在渲染表单前直接使用用户选中的节点确定插件身份，不能再按 type 取列表中的第一个元素。
+  isPlugin.value = !!selectedDatasource?.isPlugin
+  pluginIndex.value = isPlugin.value ? selectedDatasource?.staticMap?.index || '' : ''
+  pluginReady.value = false
+  pluginLoadFailed.value = false
+  // 动态插件初始化读取的是 form.type；新建场景若只更新 currentDsType，
+  // PostgreSQL 插件会继续拿到默认的 OLTP，从而不渲染 Schema 配置项。
+  form.type = type
+  form.datasourceRole = activeDatasourceRole.value
   currentDsType.value = type;
   activeStep.value = 1;
   nextTick(() => {
-    detail.value.initForm(type)
+    if (!isPlugin.value) {
+      detail.value?.initForm(type)
+    }
     if (!dsTree.value) return;
     currentTypeList.value
         .map((ele) => ele.dbList)
         .flat()
         .some((ele) => {
-          if (ele.type === currentDsType.value) {
+          const sameRole = !ele.isPlugin ||
+              Number(ele.datasourceRole) === activeDatasourceRole.value
+          if (ele.type === currentDsType.value && sameRole) {
             dsTree.value.setCurrentNode(ele);
-            isPlugin.value = ele['isPlugin']
             return true;
           }
           return false;
@@ -145,7 +181,6 @@ const selectDsType = (dsInfo) => {
 
 const handleDsNodeClick = (data) => {
   if (!data.type) return;
-  isPlugin.value = data['isPlugin']
   selectDsType(data);
 };
 
@@ -187,38 +222,34 @@ const databaseList = ref();
 const currentTypeList = computed(() => {
   return typeList
       .map((ele, index) => {
-        return {name: nameMap[ele], dbList: databaseList.value[index]};
+        const dbList = (databaseList.value[index] || []).filter((item) => {
+          return !item.isPlugin || Number(item.datasourceRole) === activeDatasourceRole.value
+        })
+        return {name: nameMap[ele], dbList};
       })
       .filter((ele) => {
         return filterTypeByActiveName(ele.name);
       });
 });
 
-const getDatasourceTypes = () => {
+const pluginIndex = ref('')
+const pluginDs = ref([])
+const rebuildDatasourceTypes = () => {
   const arr = [[], [], [], [], []] as any[];
   dsTypes.forEach((item) => {
+    if (Number(item.datasourceRole) !== activeDatasourceRole.value) return
     const index = typeList.findIndex((ele) => ele === item.catalog);
     if (index !== -1) {
       arr[index].push(item);
     }
   });
-  databaseList.value = arr.map((ele) => {
-    return ele.sort((a: any, b: any) => {
-      return (
-          a.name.toLowerCase().charCodeAt(0) - b.name.toLowerCase().charCodeAt(0)
-      );
-    });
-  });
-};
-getDatasourceTypes();
-const pluginIndex = ref('')
-const pluginDs = ref([])
-const listSyncPlugin = () => {
-  loadSyncPlugin().then(res => {
-        pluginDs.value = res.data
-        res.data?.forEach(item => {
-          const {name, category, type, icon, extraParams, staticMap, datasourceRole} = item
-          const node = {
+  pluginDs.value
+      .filter((item) => Number(item.datasourceRole) === activeDatasourceRole.value)
+      .forEach((item) => {
+        const {name, category, type, icon, extraParams, staticMap, datasourceRole} = item
+        const index = typeList.findIndex((catalog) => catalog === category)
+        if (index !== -1) {
+          arr[index].push({
             name,
             catalog: category,
             type,
@@ -227,14 +258,22 @@ const listSyncPlugin = () => {
             isPlugin: true,
             staticMap,
             datasourceRole
-          }
-          const index = typeList.findIndex(ele => ele === node.catalog)
-          if (index !== -1) {
-            let copiedArr = JSON.parse(JSON.stringify(databaseList.value))
-            copiedArr[index].push(node)
-            databaseList.value = copiedArr
-          }
-        })
+          })
+        }
+      })
+  databaseList.value = arr.map((ele) => {
+    return ele.sort((a: any, b: any) => {
+      return (
+          a.name.toLowerCase().charCodeAt(0) - b.name.toLowerCase().charCodeAt(0)
+      );
+    });
+  });
+};
+rebuildDatasourceTypes();
+const listSyncPlugin = () => {
+  loadSyncPlugin().then(res => {
+        pluginDs.value = res.data || []
+        rebuildDatasourceTypes()
       }
   )
 }
@@ -242,7 +281,8 @@ listSyncPlugin();
 
 const getPluginStatic = type => {
   const arr = pluginDs.value.filter(ele => {
-    return ele.type === type && ele.datasourceRole === (sourceActive?.value ? 1 : 2)
+    return ele.type?.toLowerCase() === type?.toLowerCase() &&
+        Number(ele.datasourceRole) === activeDatasourceRole.value
   })
   return pluginIndex.value
       ? pluginIndex.value
@@ -250,12 +290,26 @@ const getPluginStatic = type => {
           ? arr[0].staticMap?.index
           : null
 }
+const currentPluginStatic = computed(() => getPluginStatic(currentDsType.value))
 
-// Schema 请求统一由同步管理外层发起，源/目标数据源插件只接收这个固定函数，不接触 token 和 HTTP 客户端
-const getSyncDatasourcePluginSchema = data => getSchemaApi(data)
+// Schema 请求统一由同步管理外层发起，并覆盖当前页面角色；插件内部即使传入字符串 "2"，
+// 发往 V3 JPA 接口的 datasourceRole 仍保持数字 1/2，避免源目标插件匹配发生偏移。
+const getSyncDatasourcePluginSchema = data => getSchemaApi({
+  ...data,
+  datasourceRole: activeDatasourceRole.value
+})
+
+const finishPluginAction = () => {
+  loading.value = false
+  ElMessage.error(t("sync_datasource.plugin_load_failed"))
+}
 
 const handleSubmit = param => {
-  const validateFrom = param.validate
+  const validateFrom = param?.validate
+  if (typeof validateFrom !== 'function') {
+    finishPluginAction()
+    return
+  }
   if (param.eventName === 'saveDs') {
     validateFrom(val => {
       if (val) {
@@ -268,6 +322,8 @@ const handleSubmit = param => {
     validateFrom(val => {
       if (val) {
         doValidateDs(param.args)
+      } else {
+        loading.value = false
       }
     })
   }
@@ -297,19 +353,44 @@ const prev = () => {
   activeStep.value = activeStep.value - 1;
 };
 
-const validateDS = () => {
+const buildDatasourceRequest = () => {
   const request = JSON.parse(JSON.stringify(form)) as unknown as Omit<
       Form,
       "configuration"
   > & {
     configuration: string;
   };
-  request.configuration = Base64.encode(JSON.stringify(request.configuration));
+  request.type = currentDsType.value || form.type
+  request.datasourceRole = activeDatasourceRole.value
+  request.configuration = Base64.encode(JSON.stringify(request.configuration || {}));
+  return request
+}
+
+const ensurePluginReady = () => {
+  if (!currentPluginStatic.value || pluginLoadFailed.value) {
+    ElMessage.error(t("sync_datasource.plugin_load_failed"))
+    return false
+  }
+  if (!pluginReady.value) {
+    ElMessage.warning(t("sync_datasource.plugin_loading"))
+    return false
+  }
+  return true
+}
+
+const validateDS = () => {
+  const request = buildDatasourceRequest()
   if (isPlugin.value) {
-    xpack?.value?.invokeMethod({
-      methodName: 'submitForm',
-      args: [{eventName: 'validateDs', args: request}]
-    })
+    if (!ensurePluginReady()) return
+    loading.value = true
+    try {
+      xpack?.value?.invokeMethod({
+        methodName: 'submitForm',
+        args: [{eventName: 'validateDs', args: request}]
+      })
+    } catch (error) {
+      finishPluginAction()
+    }
   } else {
     loading.value = true;
     const validateFrom = detail.value.submitForm();
@@ -348,21 +429,20 @@ const typeTitle = computed(() => {
 });
 
 const saveDS = () => {
-  console.log("saveDS");
-  loading.value = true;
-  const request = JSON.parse(JSON.stringify(form)) as unknown as Omit<
-      Form,
-      "configuration"
-  > & {
-    configuration: string;
-  };
-  request.configuration = Base64.encode(JSON.stringify(request.configuration));
+  const request = buildDatasourceRequest()
   if (isPlugin.value) {
-    xpack?.value?.invokeMethod({
-      methodName: 'submitForm',
-      args: [{eventName: 'saveDs', args: request}]
-    })
+    if (!ensurePluginReady()) return
+    loading.value = true;
+    try {
+      xpack?.value?.invokeMethod({
+        methodName: 'submitForm',
+        args: [{eventName: 'saveDs', args: request}]
+      })
+    } catch (error) {
+      finishPluginAction()
+    }
   } else {
+    loading.value = true;
     const validate = detail.value.submitForm();
     validate((val) => {
       if (val) {
@@ -390,6 +470,9 @@ const doSaveDs = (request) => {
         })
         .catch(() => {
           loading.value = false;
+        })
+        .finally(() => {
+          loading.value = false;
         });
   } else {
     saveApi(request)
@@ -402,6 +485,9 @@ const doSaveDs = (request) => {
         })
         .catch(() => {
           loading.value = false;
+        })
+        .finally(() => {
+          loading.value = false;
         });
   }
 }
@@ -410,7 +496,7 @@ const doValidateDs = request => {
   loading.value = true
   validateApi(request)
       .then(() => {
-        ElMessage.success(t('datasource.validate_success'))
+        ElMessage.success(t('sync_datasource.validate_success'))
       })
       .finally(() => {
         loading.value = false
@@ -463,9 +549,12 @@ const init = (dsInfo: Form, source: boolean) => {
   activeStep.value = Number(editDs.value);
   visible.value = true;
   sourceActive.value = source;
+  rebuildDatasourceTypes();
   currentDsType.value = dsInfo?.type || "";
   isPlugin.value = dsInfo?.isPlugin || false
   pluginIndex.value = isPlugin.value ? dsInfo?.staticMap?.index : null
+  pluginReady.value = false
+  pluginLoadFailed.value = false
   getLatestUseTypes();
   if (!!dsInfo) {
     nextTick(() => {
@@ -486,7 +575,7 @@ const init = (dsInfo: Form, source: boolean) => {
       })
     });
   } else {
-    defaultForm.datasourceRole = source ? 1 : 2;
+    defaultForm.datasourceRole = activeDatasourceRole.value;
     Object.assign(form, cloneDeep(defaultForm));
   }
 };
@@ -662,6 +751,7 @@ defineExpose({
               @select-ds-type="selectDsType"
               :current-type="currentType"
               :latest-use-types="latestUseTypes"
+              :datasource-role="activeDatasourceRole"
           ></ds-type-list>
           <editor-detail
               ref="detail"
@@ -671,7 +761,7 @@ defineExpose({
               v-show="activeStep !== 0 && currentDsType && !isPlugin"
           ></editor-detail>
           <plugin-component
-              :jsname="getPluginStatic(currentDsType)"
+              :jsname="currentPluginStatic"
               :get-sync-datasource-schema="getSyncDatasourcePluginSchema"
               ref="xpack"
               :form="form"
@@ -679,11 +769,13 @@ defineExpose({
               :active-step="activeStep"
               @submitForm="handleSubmit"
               @pluginComponentLoadDone="pluginComponentLoadDone"
+              @loadFail="pluginComponentLoadFail"
               v-if="
               activeStep !== 0 &&
               currentDsType &&
               visible &&
-              isPlugin
+              isPlugin &&
+              currentPluginStatic
             ">
           </plugin-component>
         </div>

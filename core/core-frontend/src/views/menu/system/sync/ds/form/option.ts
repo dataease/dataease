@@ -2,6 +2,15 @@ import { useI18n } from "@/hooks/web/useI18n";
 
 const { t } = useI18n()
 
+/**
+ * 同步数据源角色必须与 V3 JPA 字段 per_sync_datasource.datasource_role、
+ * 后端插件元数据以及同步任务参数保持一致：1 为源端，2 为目标端。
+ */
+export const SYNC_DATASOURCE_ROLE = {
+    SOURCE: 1,
+    TARGET: 2
+} as const
+
 export type DsType =
     | "OLTP"
     | "OLAP"
@@ -16,7 +25,7 @@ export const dsTypes = [
         type: 'mysql',
         name: 'MySQL',
         catalog: 'OLTP',
-        datasourceRole: 1,
+        datasourceRole: SYNC_DATASOURCE_ROLE.SOURCE,
         extraParams:
             'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
     },
@@ -24,7 +33,7 @@ export const dsTypes = [
         type: 'doris',
         name: 'Apache Doris',
         catalog: 'OLAP',
-        datasourceRole: 2,
+        datasourceRole: SYNC_DATASOURCE_ROLE.TARGET,
         extraParams:
             'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
     },
@@ -32,7 +41,7 @@ export const dsTypes = [
         type: 'sqlServer',
         name: 'SQL Server',
         catalog: 'OLTP',
-        datasourceRole: 1,
+        datasourceRole: SYNC_DATASOURCE_ROLE.SOURCE,
         extraParams: 'encrypt=false'
     },
     {
@@ -40,7 +49,7 @@ export const dsTypes = [
         name: 'Oracle',
         catalog: 'OLTP',
         extraParams: '',
-        datasourceRole: 1,
+        datasourceRole: SYNC_DATASOURCE_ROLE.SOURCE,
         charset: [
             'Default',
             'GBK',
@@ -59,13 +68,13 @@ export const dsTypes = [
         name: 'Db2',
         catalog: 'OLTP',
         extraParams: '',
-        datasourceRole: 1,
+        datasourceRole: SYNC_DATASOURCE_ROLE.SOURCE,
     },
     {
         type: 'elasticsearch',
         name: 'Elasticsearch',
         catalog: 'OLTP',
-        datasourceRole: 1,
+        datasourceRole: SYNC_DATASOURCE_ROLE.SOURCE,
         extraParams: ''
     }
 ]

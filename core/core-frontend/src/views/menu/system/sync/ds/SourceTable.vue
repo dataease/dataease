@@ -192,10 +192,14 @@ const search = () => {
 };
 
 const drawerMainOpen = async () => {
-  filterOption[0].option = dsTypes.map((item) => ({
-    id: item.type,
-    name: item.name,
-  }));
+  await listSyncPlugin();
+  const datasourceRole = activeSource.value ? 1 : 2
+  const typeOptions = [...dsTypes, ...pluginDs.value]
+      .filter((item) => Number(item.datasourceRole) === datasourceRole)
+      .map((item) => [item.type, {id: item.type, name: item.name}] as const)
+  filterOption[0].option = Array.from(
+      new Map<string, {id: string; name: string}>(typeOptions).values()
+  );
   drawerMainRef.value.init();
 };
 const drawerMainClose = () => {
@@ -207,7 +211,7 @@ const drawerMainClose = () => {
 const findSyncPlugin = (data) => {
   return pluginDs.value.find(
     (ele) =>
-      ele.type === data.type &&
+      ele.type?.toLowerCase() === data.type?.toLowerCase() &&
       Number(ele.datasourceRole) === Number(data.datasourceRole)
   );
 };
@@ -246,6 +250,9 @@ const getDsInfo = (data) => {
   });
 };
 const edit = async (row) => {
+  // 插件列表和数据源详情是两个独立请求；必须先拿到插件元数据，
+  // 否则快速点击编辑会把 PostgreSQL 误判为内置数据源并打开错误表单。
+  await listSyncPlugin();
   await getDsInfo(row);
   // 当前组件只展示源数据库，编辑器的第二个参数必须保持为 true，
   // 否则编辑器会按目标数据库初始化并使用错误的校验/保存接口。
@@ -307,16 +314,25 @@ const typeMap = dsTypes.reduce((pre, next) => {
   return pre
 }, {})
 const pluginDs = ref([])
+let syncPluginLoadPromise: Promise<void> | null = null
 
 const listSyncPlugin = () => {
-  loadSyncPlugin().then(res=>{
-    pluginDs.value = res.data
-    pluginDs.value.forEach(ele => {
-      typeMap[ele.type] = ele.name
-    })
-  })
+  if (!syncPluginLoadPromise) {
+    syncPluginLoadPromise = loadSyncPlugin()
+        .then(res=>{
+          pluginDs.value = res.data || []
+          pluginDs.value.forEach(ele => {
+            typeMap[ele.type] = ele.name
+          })
+        })
+        .catch(error => {
+          syncPluginLoadPromise = null
+          throw error
+        })
+  }
+  return syncPluginLoadPromise
 }
-listSyncPlugin()
+void listSyncPlugin().catch(() => undefined)
 
 </script>
 

@@ -3967,6 +3967,8 @@ export default {
     please_input_fe_port: '請輸入FE HTTP埠',
     modify: '編輯資料來源',
     validate_failed: '校驗失敗',
+    plugin_loading: '同步資料來源外掛正在載入，請稍後重試',
+    plugin_load_failed: '同步資料來源外掛載入失敗，請檢查外掛安裝狀態後重試',
     oracle_connection_type: '服務名/SID',
     oracle_sid: 'SID',
     oracle_service_name: '服務名',

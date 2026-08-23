@@ -3988,6 +3988,8 @@ export default {
     please_input_fe_port: '请输入FE HTTP端口',
     modify: '编辑数据源',
     validate_failed: '校验失败',
+    plugin_loading: '同步数据源插件正在加载，请稍后重试',
+    plugin_load_failed: '同步数据源插件加载失败，请检查插件安装状态后重试',
     oracle_connection_type: '服务名/SID',
     oracle_sid: 'SID',
     oracle_service_name: '服务名',

@@ -4102,6 +4102,9 @@ export default {
     please_input_fe_port: 'Please enter FE HTTP port',
     modify: 'Edit Datasource',
     validate_failed: 'Validation failed',
+    plugin_loading: 'The sync datasource plugin is loading. Please try again later',
+    plugin_load_failed:
+      'Failed to load the sync datasource plugin. Check the plugin installation and try again',
     oracle_connection_type: 'Service name/SID',
     oracle_sid: 'SID',
     oracle_service_name: 'Service name',

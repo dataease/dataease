@@ -26,11 +26,13 @@ const props = withDefaults(
     defineProps<{
       currentType: string | PropType<DsType>;
       filterText: string;
-      latestUseTypes: [];
+      latestUseTypes: string[];
+      datasourceRole: number;
     }>(),
     {
       currentType: "OLAP",
       filterText: "",
+      datasourceRole: 1,
     }
 );
 
@@ -54,51 +56,52 @@ const iconMap = {
 };
 
 const databaseList = shallowRef();
+const isCurrentRoleDatasource = (datasource) => {
+  return !datasource.isPlugin ||
+      Number(datasource.datasourceRole) === Number(props.datasourceRole)
+}
+const filterByName = (datasource) => {
+  return datasource.name.toLowerCase().includes(props.filterText.trim())
+}
 const currentTypeList = computed(() => {
   if (props.currentType == "all") {
     return typeList.map((ele, index) => {
       return {
         name: nameMap[ele],
-        dbList: databaseList.value[index].filter((ele) =>
-            ele.name.toLowerCase().includes(props.filterText.trim())
-        ),
+        dbList: databaseList.value[index]
+            .filter(isCurrentRoleDatasource)
+            .filter(filterByName),
       };
     });
   }
   if (props.currentType === "latestUse") {
-    let catalogList = [] as string[];
-    let dstypes = [] as any[];
-    props.latestUseTypes.forEach((type) => {
-      dsTypes.forEach((item) => {
-        if (item.type === type && catalogList.indexOf(item.catalog) === -1) {
-          catalogList.push(item.catalog);
-        }
-      });
-    });
-    let dbList = [] as any[];
-    catalogList.forEach((catalog) => {
-      props.latestUseTypes.forEach((type) => {
-        dsTypes.forEach((item) => {
-          if (item.type === type && item.catalog === catalog) {
-            dbList.push(item);
+    const latestTypeSet = new Set(props.latestUseTypes)
+    const latestDatasourceMap = new Map()
+    databaseList.value
+        .flat()
+        .filter(isCurrentRoleDatasource)
+        .filter((item) => latestTypeSet.has(item.type))
+        .filter(filterByName)
+        .forEach((item) => {
+          const current = latestDatasourceMap.get(item.type)
+          // 同 type 同时存在内置定义和插件定义时优先插件，确保 PostgreSQL 打开动态表单。
+          if (!current || item.isPlugin) {
+            latestDatasourceMap.set(item.type, item)
           }
-        });
-      });
-    });
-    dbList = dbList.filter((ele) =>
-        ele.name.toLowerCase().includes(props.filterText.trim())
-    );
-    dstypes.push({name: t("sync_datasource.recently_created"), dbList});
-    return dstypes;
+        })
+    return [{
+      name: t("sync_datasource.recently_created"),
+      dbList: Array.from(latestDatasourceMap.values())
+    }]
   }
   const index = typeList.findIndex((ele) => props.currentType === ele);
   return (
       [
         {
           name: nameMap[props.currentType as string],
-          dbList: databaseList.value[index].filter((ele) =>
-              ele.name.toLowerCase().includes(props.filterText.trim())
-          ),
+          dbList: databaseList.value[index]
+              .filter(isCurrentRoleDatasource)
+              .filter(filterByName),
         },
       ] || []
   );
@@ -159,7 +162,7 @@ const selectDs = dbInfo => {
       <div class="item-container">
         <div
             v-for="db in ele.dbList"
-            :key="db.type"
+            :key="`${db.type}-${db.datasourceRole || 'builtin'}`"
             class="db-card"
             @click="selectDs(db)"
         >

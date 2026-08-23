@@ -195,10 +195,14 @@ const search = () => {
 };
 
 const drawerMainOpen = async () => {
-  filterOption[0].option = dsTypes.map((item) => ({
-    id: item.type,
-    name: item.name,
-  }));
+  await listSyncPlugin();
+  const datasourceRole = activeSource.value ? 1 : 2
+  const typeOptions = [...dsTypes, ...pluginDs.value]
+      .filter((item) => Number(item.datasourceRole) === datasourceRole)
+      .map((item) => [item.type, {id: item.type, name: item.name}] as const)
+  filterOption[0].option = Array.from(
+      new Map<string, {id: string; name: string}>(typeOptions).values()
+  );
   drawerMainRef.value.init();
 };
 const drawerMainClose = () => {
@@ -208,7 +212,7 @@ const pluginDs = ref([])
 // 同步插件由类型和数据源角色共同确定
 const findSyncPlugin = data => {
   return pluginDs.value.find(ele =>
-    ele.type === data.type &&
+    ele.type?.toLowerCase() === data.type?.toLowerCase() &&
     Number(ele.datasourceRole) === Number(data.datasourceRole)
   )
 }
@@ -247,6 +251,8 @@ const getDsInfo = (data) => {
   });
 };
 const edit = async (row) => {
+  // 等待插件元数据后再判断表单类型，避免 PostgreSQL 被误判为内置目标数据源。
+  await listSyncPlugin();
   await getDsInfo(row);
   datasourceEditor.value.init(dsInfo, false);
 };
@@ -304,6 +310,7 @@ const timestampFormatDate = (value) => {
 const syncFormDialogRef = ref();
 const showSyncFormDialog = async (row) => {
   syncFormDialogRef.value.syncTargetToDatasourceFormVisible = true;
+  await listSyncPlugin();
   await getDsInfo(row);
   syncFormDialogRef.value.init(dsInfo);
 };
@@ -315,15 +322,24 @@ const typeMap = dsTypes.reduce((pre, next) => {
   pre[next.type] = next.name
   return pre
 }, {})
+let syncPluginLoadPromise: Promise<void> | null = null
 const listSyncPlugin = () => {
-  loadSyncPlugin().then(res => {
-    pluginDs.value = res.data
-    pluginDs.value.forEach(ele => {
-      typeMap[ele.type] = ele.name
-    })
-  })
+  if (!syncPluginLoadPromise) {
+    syncPluginLoadPromise = loadSyncPlugin()
+        .then(res => {
+          pluginDs.value = res.data || []
+          pluginDs.value.forEach(ele => {
+            typeMap[ele.type] = ele.name
+          })
+        })
+        .catch(error => {
+          syncPluginLoadPromise = null
+          throw error
+        })
+  }
+  return syncPluginLoadPromise
 }
-listSyncPlugin()
+void listSyncPlugin().catch(() => undefined)
 </script>
 
 <template>
