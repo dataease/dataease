@@ -72,7 +72,7 @@ const AXIS_LABEL_MIN_GAP = 6
 const VERTICAL_AXIS_TOP_SAFE_PADDING = SAFE_SPACING + 8
 // 边界修正最多重新计算两轮，吸收位置变化，同时避免布局反复计算
 const MAX_OVERFLOW_CORRECTION_PASSES = 2
-// 标签再长也要给柱、线、点等图形保留至少四分之一内容区
+// 轴标签最多挤压四分之三内容区，剩余仍放不下的左右轴标签直接隐藏
 const MIN_CONTENT_RATIO = 1 / 4
 
 type AxisPosition = (typeof AXIS_POSITIONS)[number]
@@ -108,12 +108,16 @@ type AxisMeasurement = {
   style: Record<string, any>
   ticks: AxisTick[]
   labelBounds: LabelBounds[]
+  positionedLabels?: PositionedLabel[]
   sampledIndexes?: Set<number>
   sampled?: boolean
+  canHide: boolean
 }
 
 // 保存图表原本的刻度过滤条件，公共抽稀不能覆盖业务自己设置的过滤规则
 const originalAxisTickFilters = new WeakMap<G2GuideComponentOptions, AxisTickFilter | undefined>()
+// 保存公共逻辑接管前的自动隐藏配置，重复布局时先恢复再重新测量
+const originalAxisAutoHideOptions = new WeakMap<G2GuideComponentOptions, unknown>()
 // 只记录由本文件接管自动隐藏的轴，用户显式配置的 transform 继续交给 G2
 const managedAxisAutoHide = new WeakSet<G2GuideComponentOptions>()
 
@@ -461,7 +465,7 @@ const applyCenteredAxisLabelOffset = (
 /**
  * 给标准直角坐标轴统一安装 DataEase 的标签防重叠规则
  *
- * 图表没有明确要求自动旋转时保持文字角度不变，空间不足优先等距减少标签
+ * 图表没有明确要求自动旋转时保持文字角度不变，空间不足按真实包络减少标签
  * 图表明确设置 labelAutoHide 为 false 时完全尊重配置，不进行公共抽稀
  * 图表已经提供 transform 时继续采用图表自己的隐藏策略，不重复接管
  * 本文件接管的轴默认要求相邻标签保留 6px，G2 从两个标签各扩一半，所以写入 3px
@@ -481,13 +485,25 @@ const applyAxisLabelOverlapDefaults = (components: G2GuideComponentOptions[]) =>
     if (component.labelAutoRotate === undefined) {
       component.labelAutoRotate = false
     }
+    if (managedAxisAutoHide.has(component)) {
+      const originalAutoHide = originalAxisAutoHideOptions.get(component)
+      if (originalAutoHide === undefined) {
+        delete component.labelAutoHide
+      } else {
+        component.labelAutoHide = originalAutoHide
+      }
+    }
     const transforms = Array.isArray(component.transform) ? component.transform : []
     if (component.labelAutoHide === false) {
       managedAxisAutoHide.delete(component)
+      originalAxisAutoHideOptions.delete(component)
       return
     }
     // 只有没有显式 transform 的轴才由公共逻辑接管，避免覆盖图表自己的隐藏策略
     if (!transforms.length) {
+      if (!managedAxisAutoHide.has(component)) {
+        originalAxisAutoHideOptions.set(component, component.labelAutoHide)
+      }
       managedAxisAutoHide.add(component)
     }
     if (!managedAxisAutoHide.has(component)) {
@@ -537,14 +553,17 @@ const getTicks = (
  * 把一个刻度值换算成沿坐标轴的 0 到 1 位置
  *
  * 分类刻度加一半带宽后落在柱子或分类区间中心
- * 左右纵轴和转置坐标的显示方向与比例尺默认方向相反，所以需要用 1 减去原比例
+ * 左右轴的 G2 轴线从下向上绘制，内部 value 已反转一次，换算到画布 y 时应继续使用原比例
+ * 转置后的横向连续轴仍按 G2 getData 规则反转，确保测量位置与最终渲染位置一致
  */
 const getTickRatio = (scale, value: unknown, position: AxisPosition, transpose: boolean) => {
   const offset = scale.getBandWidth?.(value) / 2 || 0
   const ratio = scale.map(value) + offset
   const vertical = position === 'left' || position === 'right'
-  const reverse = vertical || (transpose && !!scale.getTicks)
-  return reverse ? 1 - ratio : ratio
+  if (vertical) {
+    return ratio
+  }
+  return transpose && !!scale.getTicks ? 1 - ratio : ratio
 }
 
 /**
@@ -636,15 +655,11 @@ const getAxisLabelGap = (position: AxisPosition, margin: unknown) => {
 }
 
 /**
- * 根据标签大小和刻度间距，一次算出每隔几个标签显示一个
+ * 按标签旋转后的真实区间顺序保留不相交标签
  *
- * 先找出沿轴方向最大的标签，再找出相邻刻度之间最小的像素距离
- * 抽样步长等于 向上取整的 标签大小加期望间隔 除以 刻度距离
- * 例如标签需要 66px、相邻刻度只有 20px，则每 4 个刻度显示一个标签
- * 如果首尾标签已经伸出画布，会先扣掉把它们移回画布需要的空间，再计算可用刻度距离
- * hide 配置要求 keepTail 时，最后一个标签即使不在等距序列中也会补回来
- *
- * 这样密集分类轴只需要顺序扫描标签，不需要反复尝试多种隐藏组合
+ * 每个角度、字号和文本都会直接生成连续变化的 BBox，不设置角度或字号档位
+ * padding 改变轴长后会用新位置再次执行，因此不会沿用较宽 Plot 下的旧抽样结果
+ * hide 配置要求 keepTail 时优先保留末端，并移除与末端真实相交的前一项
  */
 const getSampledLabels = (
   component: G2GuideComponentOptions,
@@ -655,50 +670,57 @@ const getSampledLabels = (
   if (labels.length <= 1) {
     return labels
   }
+  const horizontal = position === 'top' || position === 'bottom'
+  const ordered = [...labels].sort((first, second) => first.axisCoordinate - second.axisCoordinate)
   const hideTransform = getHideTransform(component)
   if (!hideTransform) {
-    return labels
+    return ordered
   }
-  const horizontal = position === 'top' || position === 'bottom'
-  const maxLabelSize = labels.reduce(
-    (size, label) => Math.max(size, horizontal ? label.bounds.width : label.bounds.height),
-    0
-  )
-  let minTickDistance = Number.POSITIVE_INFINITY
-  for (let index = 1; index < labels.length; index++) {
-    const distance = Math.abs(labels[index].axisCoordinate - labels[index - 1].axisCoordinate)
-    if (distance > 0) {
-      minTickDistance = Math.min(minTickDistance, distance)
-    }
-  }
-  if (!Number.isFinite(minTickDistance)) {
-    return labels
-  }
-  const head = labels[0]
-  const tail = labels[labels.length - 1]
-  const axisSpan = Math.abs(tail.axisCoordinate - head.axisCoordinate)
-  const canvasSize = horizontal ? layout.width : layout.height
-  const headStart = horizontal ? head.bounds.x : head.bounds.y
-  const tailEnd = horizontal
-    ? tail.bounds.x + tail.bounds.width
-    : tail.bounds.y + tail.bounds.height
-  const boundaryCorrection =
-    Math.max(0, SAFE_SPACING - headStart) + Math.max(0, tailEnd - canvasSize + SAFE_SPACING)
-  // 首尾越界需要占用一部分轴长，先把这部分从可用刻度距离中扣掉
-  const safeSpanRatio = axisSpan
-    ? Math.min(1, Math.max(1, axisSpan - boundaryCorrection) / axisSpan)
-    : 1
-  const safeTickDistance = minTickDistance * safeSpanRatio
   const gap = getAxisLabelGap(position, hideTransform.margin)
-  // 步长为 1 表示全部显示，步长为 2 表示每两个显示一个，依次类推
-  const step = Math.max(1, Math.ceil((maxLabelSize + gap) / safeTickDistance))
-  if (step === 1) {
-    return labels
-  }
-  const sampled = labels.filter((_, index) => index % step === 0)
-  if (hideTransform.keepTail) {
+  if (horizontal) {
+    const maxLabelSize = labels.reduce((size, label) => Math.max(size, label.bounds.width), 0)
+    let minTickDistance = Number.POSITIVE_INFINITY
+    for (let index = 1; index < labels.length; index++) {
+      const distance = Math.abs(labels[index].axisCoordinate - labels[index - 1].axisCoordinate)
+      if (distance > 0) {
+        minTickDistance = Math.min(minTickDistance, distance)
+      }
+    }
+    if (!Number.isFinite(minTickDistance)) {
+      return labels
+    }
+    const head = labels[0]
     const tail = labels[labels.length - 1]
+    const axisSpan = Math.abs(tail.axisCoordinate - head.axisCoordinate)
+    const boundaryCorrection =
+      Math.max(0, SAFE_SPACING - head.bounds.x) +
+      Math.max(0, tail.bounds.x + tail.bounds.width - layout.width + SAFE_SPACING)
+    const safeSpanRatio = axisSpan
+      ? Math.min(1, Math.max(1, axisSpan - boundaryCorrection) / axisSpan)
+      : 1
+    const step = Math.max(1, Math.ceil((maxLabelSize + gap) / (minTickDistance * safeSpanRatio)))
+    const sampled = step === 1 ? labels : labels.filter((_, index) => index % step === 0)
+    if (hideTransform.keepTail && sampled[sampled.length - 1]?.index !== tail.index) {
+      sampled.push(tail)
+    }
+    return sampled
+  }
+  const intervalOf = ({ bounds }: PositionedLabel) => [bounds.y, bounds.y + bounds.height]
+  const sampled: PositionedLabel[] = []
+  ordered.forEach(label => {
+    const [start] = intervalOf(label)
+    const previous = sampled[sampled.length - 1]
+    if (!previous || start >= intervalOf(previous)[1] + gap) {
+      sampled.push(label)
+    }
+  })
+  if (hideTransform.keepTail) {
+    const tail = ordered[ordered.length - 1]
     if (sampled[sampled.length - 1]?.index !== tail.index) {
+      const [tailStart] = intervalOf(tail)
+      while (sampled.length && intervalOf(sampled[sampled.length - 1])[1] + gap > tailStart) {
+        sampled.pop()
+      }
       sampled.push(tail)
     }
   }
@@ -746,33 +768,6 @@ const applyAxisTickIndexes = (
   }
   component.tickFilter = (value, index, values) =>
     indexes.has(index) && (originalFilter?.(value, index, values) ?? true)
-}
-
-/**
- * 判断极端长文本下是否只能保留第一个标签
- *
- * 如果首标签和尾标签加起来已经超过整个可用 View，它们不可能同时完整放进画布
- * 图表明确要求 keepTail 时仍保留尾标签，否则优先保留首标签和 Plot 内容区
- * 这个降级只会出现在画布很小或文本特别长的情况
- */
-const shouldKeepOnlyHeadLabel = (
-  component: G2GuideComponentOptions,
-  labels: PositionedLabel[],
-  position: AxisPosition,
-  layout: Layout
-) => {
-  const hideTransform = getHideTransform(component)
-  if (!hideTransform || hideTransform.keepTail || labels.length <= 1) {
-    return false
-  }
-  const head = labels[0].bounds
-  const tail = labels[labels.length - 1].bounds
-  const horizontal = position === 'top' || position === 'bottom'
-  const boundarySize = horizontal ? head.width + tail.width : head.height + tail.height
-  const viewSize = horizontal
-    ? layout.width - layout.marginLeft - layout.marginRight
-    : layout.height - layout.marginTop - layout.marginBottom
-  return boundarySize + SAFE_SPACING * 2 > viewSize
 }
 
 /**
@@ -829,7 +824,7 @@ const updateOverflow = (
  * 1 取得 G2 合并主题和图表配置后的真实轴样式
  * 2 用 G2 的比例尺取得完整刻度，用真实 formatter、字体和旋转角度测量文字边界
  * 3 根据轴的 bbox、刻度线长度和文字间距算出每个标签在画布上的实际位置
- * 4 空间不足时按等距规则抽稀，极端长文本下可能只保留第一个标签
+ * 4 空间不足时按相邻真实包络抽稀，布局收缩后继续检查新碰撞
  * 5 把抽样索引写回 tickFilter，让标签、刻度线和网格线一起减少
  * 6 只用最终可见的边界标签计算画布还需要补多少 padding
  *
@@ -871,10 +866,17 @@ const measureAxisOverflow = (
     if (!ticks.length || !labelBounds?.length) {
       return false
     }
-    measurement = { style: measurementStyle, scale, ticks, labelBounds }
+    measurement = {
+      style: measurementStyle,
+      scale,
+      ticks,
+      labelBounds,
+      canHide: !!getHideTransform(component)
+    }
     measurementCache.set(component, measurement)
   }
-  const { style, scale, ticks, labelBounds } = measurement
+  const style = measurement.style
+  const { scale, ticks, labelBounds } = measurement
   const overflowSides = Array.isArray(component.dataeaseAxisLabelOverflowSides)
     ? component.dataeaseAxisLabelOverflowSides.filter(side =>
         OVERFLOW_SIDES.includes(side as OverflowSide)
@@ -887,11 +889,7 @@ const measureAxisOverflow = (
   const labelVector = getLabelVector(position, style.labelDirection)
   const tickEntries = ticks
     .map((tick, index) => ({ tick, labelBBox: labelBounds[index] }))
-    .filter(
-      ({ tick, labelBBox }) =>
-        !!labelBBox &&
-        (!measurement.sampledIndexes || measurement.sampledIndexes.has(tick.sourceIndex))
-    )
+    .filter(({ labelBBox }) => !!labelBBox)
   const tickValues = tickEntries.map(({ tick }) => tick.value)
   const positionedLabels = tickEntries.map(({ tick, labelBBox }, index): PositionedLabel => {
     const ratio = getTickRatio(scale, tick.value, position, transpose)
@@ -926,20 +924,21 @@ const measureAxisOverflow = (
     }
   })
   const visibleLabels = positionedLabels.filter((label): label is PositionedLabel => !!label)
-  let sampledIndexes = measurement.sampledIndexes
-  let sampledLabels: PositionedLabel[]
-  if (sampledIndexes) {
-    sampledLabels = visibleLabels
-  } else {
-    sampledLabels = getSampledLabels(component, visibleLabels, position, layout)
-    if (shouldKeepOnlyHeadLabel(component, sampledLabels, position, layout)) {
-      sampledLabels = [sampledLabels[0]]
-    }
-    // 同一轮固定第一次抽样结果，避免补 padding 后又换一批标签造成布局反复变化
-    sampledIndexes = new Set(sampledLabels.map(({ index }) => index))
-    measurement.sampledIndexes = sampledIndexes
-    measurement.sampled = sampledLabels.length < visibleLabels.length
-  }
+  const vertical = position === 'left' || position === 'right'
+  const previousIndexes = measurement.sampledIndexes
+  // 只有左右轴会在 Plot 收缩后继续检查，横轴保留原有的一次抽样行为
+  const candidates = previousIndexes
+    ? visibleLabels.filter(label => previousIndexes.has(label.index))
+    : visibleLabels
+  const sampledLabels =
+    previousIndexes && !vertical
+      ? candidates
+      : getSampledLabels(component, candidates, position, layout)
+  const sampledIndexes = new Set(sampledLabels.map(({ index }) => index))
+  const sampledThisPass = sampledLabels.length < candidates.length
+  measurement.sampledIndexes = sampledIndexes
+  measurement.sampled = sampledLabels.length < visibleLabels.length
+  measurement.positionedLabels = sampledLabels
   const managedAutoHide = managedAxisAutoHide.has(component)
   if (managedAutoHide || sampledLabels.length === 1) {
     applyAxisTickIndexes(
@@ -953,23 +952,75 @@ const measureAxisOverflow = (
     component.transform = []
     component.labelAutoHide = false
   }
-  // 抽稀后中间标签不会沿轴方向超过首尾标签，只需检查最终可见的第一个和最后一个
-  const boundaryLabels =
-    sampledLabels.length <= 1
+  // 左右轴用全部可见标签中的最大横向包络挤压 Plot，上下轴仍只检查首尾越界
+  const overflowLabels =
+    vertical || sampledLabels.length <= 1
       ? sampledLabels
       : [sampledLabels[0], sampledLabels[sampledLabels.length - 1]]
-  boundaryLabels.forEach(label =>
+  overflowLabels.forEach(label =>
     updateOverflow(overflow, label.bounds, layout.width, layout.height, overflowSides)
   )
-  return !!measurement.sampled
+  return sampledThisPass
+}
+
+/**
+ * 隐藏在最终 Plot 下仍无法完整进入画布的左右轴标签
+ *
+ * 这里只处理真实 BBox 与画布边界，不按角度、字号或字符数设置降级档位
+ * 显式关闭自动隐藏的轴继续尊重业务配置，不由公共布局删减标签
+ */
+const pruneUnfitAxisLabels = (
+  components: G2GuideComponentOptions[],
+  measurementCache: Map<G2GuideComponentOptions, AxisMeasurement>,
+  layout: Layout
+) => {
+  components.forEach(component => {
+    const measurement = measurementCache.get(component)
+    if (
+      !['left', 'right'].includes(component.position) ||
+      !measurement?.canHide ||
+      !measurement.positionedLabels?.length
+    ) {
+      return
+    }
+    const overflowSides = Array.isArray(component.dataeaseAxisLabelOverflowSides)
+      ? component.dataeaseAxisLabelOverflowSides.filter(side =>
+          OVERFLOW_SIDES.includes(side as OverflowSide)
+        )
+      : OVERFLOW_SIDES
+    const checks = new Set(overflowSides)
+    const fittedLabels = measurement.positionedLabels.filter(({ bounds }) => {
+      if (checks.has('left') && bounds.x < SAFE_SPACING) {
+        return false
+      }
+      if (checks.has('right') && bounds.x + bounds.width > layout.width - SAFE_SPACING) {
+        return false
+      }
+      if (checks.has('top') && bounds.y < SAFE_SPACING) {
+        return false
+      }
+      return !checks.has('bottom') || bounds.y + bounds.height <= layout.height - SAFE_SPACING
+    })
+    if (fittedLabels.length === measurement.positionedLabels.length) {
+      return
+    }
+    measurement.positionedLabels = fittedLabels
+    measurement.sampledIndexes = new Set(fittedLabels.map(({ index }) => index))
+    measurement.sampled = true
+    applyAxisTickIndexes(
+      component,
+      getOriginalAxisTickFilter(component),
+      measurement.sampledIndexes
+    )
+  })
 }
 
 /**
  * 限制一对相反方向最多可以补多少 padding
  *
  * start 和 end 分别表示左加右或上加下的修正量
- * 如果全部补上会让 Plot 小于 View 的四分之一，就按比例缩小两边修正量
- * 这种极端情况下宁可允许特别长的标签保留少量裁切，也不能让柱、线、点完全没有空间
+ * 最多使用 View 的四分之三容纳可见标签，给 Plot 保留基本内容区
+ * 超过这部分空间的左右轴标签由最终可见性检查隐藏
  */
 const limitCorrection = (start: number, end: number, innerSize: number, viewSize: number) => {
   const available = Math.max(0, innerSize - Math.max(1, viewSize * MIN_CONTENT_RATIO))
@@ -1019,7 +1070,7 @@ const applyLayoutCorrection = (
  * 5 如果侧边图例真的分页，为分页器补宽度并重新布局
  * 6 如果图表启用了中轴居中，平均分配两张子图的文字占位并重新布局
  * 7 按真实文字大小决定轴标签抽稀，抽稀后再让 G2 计算一次准确轴宽
- * 8 最多两轮补足允许方向的首尾标签越界空间，同时保证 Plot 至少保留四分之一
+ * 8 最多两轮补足允许方向的首尾标签越界空间，最终隐藏无法放入画布的项
  * 9 应用纵轴顶部安全距离、中轴偏移和左轴标题省略，返回最终结果
  *
  * 直接影响
@@ -1226,7 +1277,6 @@ export function computeLayout(
     ? Math.max(0, VERTICAL_AXIS_TOP_SAFE_PADDING - currentTopCorrection)
     : 0
   if (missingTopPadding) {
-    // 同样受四分之一 Plot 保护限制，极小画布不会为了 12px 安全区吞掉内容
     const [safeTopPadding] = limitCorrection(
       missingTopPadding,
       0,
@@ -1235,6 +1285,25 @@ export function computeLayout(
     )
     correctedLayout = applyLayoutCorrection(correctedLayout, safeTopPadding, 0, 0, 0)
   }
+  // 最终轴长确定后只复查左右轴，仍无法完整进入画布的标签直接隐藏
+  const verticalAxisComponents = measurableAxisComponents.filter(component =>
+    ['left', 'right'].includes(component.position)
+  )
+  const finalCoordinate = createCoordinate(correctedLayout, effectiveLayoutOptions, library)
+  placeComponents(groupComponents(components), finalCoordinate, correctedLayout)
+  const finalOverflow: Overflow = { top: 0, right: 0, bottom: 0, left: 0 }
+  verticalAxisComponents.forEach(component =>
+    measureAxisOverflow(
+      component,
+      correctedLayout,
+      theme,
+      library,
+      transpose,
+      finalOverflow,
+      measurementCache
+    )
+  )
+  pruneUnfitAxisLabels(verticalAxisComponents, measurementCache, correctedLayout)
   // 最终 padding 确定后再移动中轴文字，避免使用修正过程中的旧中心位置
   applyCenteredAxisLabelOffset(axisComponents, correctedLayout, theme)
   // 标题最大长度依赖最终 innerHeight，因此必须放在所有 padding 修正之后
