@@ -103,8 +103,16 @@ const sourceFieldType = computed(() => {
 });
 
 const fieldMappingMessage = computed(() => {
-  return state.form.fieldMappingMessage || "";
+  if (state.form.fieldMappingMessage) {
+    return state.form.fieldMappingMessage;
+  }
+  return state.form.fieldType?.trim().toUpperCase() === "UNKNOWN"
+    ? t("sync_task.field_mapping_unknown_detail")
+    : "";
 });
+const fieldMappingMessageType = computed(() =>
+  state.form.fieldType?.trim().toUpperCase() === "UNKNOWN" ? "error" : "warning"
+);
 
 /**
  * 数组类型使用 PostgreSQL 原生写法展示，保存值仍使用稳定的内部标识
@@ -374,7 +382,7 @@ defineExpose({
             <el-alert
               v-if="fieldMappingMessage"
               :title="fieldMappingMessage"
-              type="warning"
+              :type="fieldMappingMessageType"
               :closable="false"
               show-icon
               class="field-mapping-alert"

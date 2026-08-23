@@ -4259,9 +4259,23 @@ export default {
     msg_confirm_delete_field: 'Are you sure you want to delete this field? ',
     source_field: 'Source field',
     source_field_type: 'Source type',
-    field_mapping_warning_title: 'Fields with synchronization risks: {0}',
+    field_mapping_blocking_title: '{0} fields must be resolved before saving',
+    field_mapping_unknown_detail:
+      'The target type has not been confirmed. Select a field type supported by the target database',
+    field_mapping_blocking_save_tip:
+      '{0} target field types are still unresolved: {1}. Resolve them before saving',
+    field_mapping_warning_title:
+      '{0} fields have synchronization risks (you can confirm and continue saving)',
     field_mapping_warning_item: '{0}: {1}',
     field_name_separator: ', ',
+    field_name_more_suffix: ', plus {0} more',
+    field_mapping_warning_confirm_title: 'Synchronization risks detected',
+    field_mapping_warning_confirm_message:
+      '{0} fields have non-blocking synchronization risks. Details are shown above the field mapping table. Save anyway?',
+    field_mapping_save_anyway: 'Save anyway',
+    field_mapping_back_to_check: 'Review fields',
+    field_mapping_expand_all: 'Show all ({0} fields)',
+    field_mapping_collapse: 'Collapse',
     field_type: 'Type',
     field_length: 'Length',
     field_precision: 'Precision',

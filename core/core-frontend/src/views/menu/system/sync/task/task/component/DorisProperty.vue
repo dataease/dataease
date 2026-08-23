@@ -338,8 +338,10 @@ const filterPartitionTimeUnitList = computed(() => {
   }
 });
 
-const targetPropertyValidate = (params) => {
-  dsForm.value.validate((valid: boolean) => {
+const targetPropertyValidate = async (params?) => {
+  let valid = false;
+  try {
+    valid = !!(await dsForm.value?.validate());
     if (valid) {
       const property = form.value.target.property;
       if (property) {
@@ -350,8 +352,11 @@ const targetPropertyValidate = (params) => {
         form.value.target.targetProperty = JSON.stringify(copied);
       }
     }
-    params?.callback?.(valid)
-  });
+  } catch {
+    valid = false;
+  }
+  params?.callback?.(valid);
+  return valid;
 }
 
 

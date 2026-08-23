@@ -460,7 +460,7 @@ const next = (btn: string) => {
   }
   if (activeStep.value === 2) {
     taskFormRef.value?.validate(async (valid: boolean) => {
-      const targetValid = targetConfigRef.value?.validate(formLoading)
+      const targetValid = await targetConfigRef.value?.validate(formLoading)
       if (valid && targetValid) {
         onSubmit();
       } else {

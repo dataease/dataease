@@ -241,24 +241,31 @@ const targetFieldList = computed(() => {
   return [];
 });
 
+const isUnknownField = (field: ITableField) =>
+  field.fieldType?.trim().toUpperCase() === "UNKNOWN";
+
 const resolveFieldMappingMessage = (field: ITableField) => {
-  return field.fieldMappingMessage || "";
+  if (field.fieldMappingMessage) {
+    return field.fieldMappingMessage;
+  }
+  return isUnknownField(field)
+    ? t("sync_task.field_mapping_unknown_detail")
+    : "";
 };
 
-/**
- * 汇总字段自动映射阶段产生的全部风险提示
- * 目标字段存在时只统计已加入同步的字段，避免源字段和目标字段重复展示
- */
-const fieldMappingWarnings = computed(() => {
+const mappingWarningFields = computed(() => {
   const targetFields = form.value.target.fieldList || [];
-  const fields = targetFields.length > 0
+  return targetFields.length > 0
     ? targetFields
     : form.value.source.fieldList || [];
+});
+
+const groupFieldMappingWarnings = (fields: ITableField[]) => {
   const warningFields = new Map<string, string>();
   fields.forEach(field => {
     const message = resolveFieldMappingMessage(field);
     if (message) {
-      warningFields.set(field.fieldName, message);
+      warningFields.set(field.fieldName || field.fieldSource || "-", message);
     }
   });
 
@@ -272,14 +279,93 @@ const fieldMappingWarnings = computed(() => {
     message,
     fieldNames
   }));
-});
+};
 
-const fieldMappingWarningCount = computed(() =>
-  fieldMappingWarnings.value.reduce(
-    (count, warning) => count + warning.fieldNames.length,
-    0
+/**
+ * UNKNOWN 属于阻断项，必须选择目标数据库支持的类型后才能保存
+ */
+const blockingFieldMappingWarnings = computed(() =>
+  groupFieldMappingWarnings(mappingWarningFields.value.filter(isUnknownField))
+);
+
+/**
+ * 其余映射提示属于非阻断风险，用户确认后仍可保存
+ */
+const fieldMappingWarnings = computed(() =>
+  groupFieldMappingWarnings(
+    mappingWarningFields.value.filter(field => !isUnknownField(field))
   )
 );
+
+const countWarningFields = (warnings: { fieldNames: string[] }[]) =>
+  warnings.reduce((count, warning) => count + warning.fieldNames.length, 0);
+
+const blockingFieldMappingWarningCount = computed(() =>
+  countWarningFields(blockingFieldMappingWarnings.value)
+);
+
+const fieldMappingWarningCount = computed(() =>
+  countWarningFields(fieldMappingWarnings.value)
+);
+
+const MAPPING_WARNING_PREVIEW_LIMIT = 3;
+const showAllBlockingWarnings = ref(false);
+const showAllFieldMappingWarnings = ref(false);
+const visibleBlockingFieldMappingWarnings = computed(() =>
+  showAllBlockingWarnings.value
+    ? blockingFieldMappingWarnings.value
+    : blockingFieldMappingWarnings.value.slice(0, MAPPING_WARNING_PREVIEW_LIMIT)
+);
+const visibleFieldMappingWarnings = computed(() =>
+  showAllFieldMappingWarnings.value
+    ? fieldMappingWarnings.value
+    : fieldMappingWarnings.value.slice(0, MAPPING_WARNING_PREVIEW_LIMIT)
+);
+const fieldMappingPanelRef = ref<HTMLElement>();
+
+const scrollToFieldMappingWarnings = () => {
+  nextTick(() => {
+    fieldMappingPanelRef.value?.scrollIntoView({behavior: "smooth", block: "center"});
+  });
+};
+
+const summarizeFieldNames = (fields: ITableField[]) => {
+  const fieldNames = Array.from(new Set(
+    fields.map(field => field.fieldName || field.fieldSource || "-")
+  ));
+  const previewNames = fieldNames.slice(0, 5).join(t("sync_task.field_name_separator"));
+  if (fieldNames.length <= 5) {
+    return previewNames;
+  }
+  return `${previewNames}${t("sync_task.field_name_more_suffix", [fieldNames.length - 5])}`;
+};
+
+const confirmFieldMappingWarnings = async (loading?: Ref<boolean>) => {
+  if (!fieldMappingWarningCount.value) {
+    return true;
+  }
+  try {
+    await ElMessageBox.confirm(
+      t("sync_task.field_mapping_warning_confirm_message", [fieldMappingWarningCount.value]),
+      {
+        title: t("sync_task.field_mapping_warning_confirm_title"),
+        type: "warning",
+        autofocus: false,
+        showClose: false,
+        confirmButtonText: t("sync_task.field_mapping_save_anyway"),
+        cancelButtonText: t("sync_task.field_mapping_back_to_check")
+      }
+    );
+    return true;
+  } catch {
+    formLoading.value = false;
+    if (loading) {
+      loading.value = false;
+    }
+    scrollToFieldMappingWarnings();
+    return false;
+  }
+};
 
 /**
  * 编辑目标字段信息
@@ -309,7 +395,10 @@ const delMappingField = (row: ITableField) => {
   })
       .then(() => {
         clearIncrementField(row)
-        isPlugin.value ? targetPropertyFormRef.value?.delMappingFieldHandler?.(row) :
+        isPlugin.value ? targetPropertyFormRef.value?.invokeMethod({
+              methodName: "delMappingFieldHandler",
+              args: [row]
+            }) :
             targetPropertyFormRef.value?.delMappingFieldHandler(row);
         form.value.target.fieldList = remove(form.value.target.fieldList, (v) => {
           return !includes(map([row], "fieldName"), v["fieldName"]);
@@ -455,7 +544,10 @@ const batchDelMappingField = () => {
     showClose: false
   }).then(() => {
     clearIncrementField()
-    isPlugin.value ? targetPropertyFormRef.value?.delMappingFieldHandler?.({}) : targetPropertyFormRef.value?.batchDelMappingFieldHandler();
+    isPlugin.value ? targetPropertyFormRef.value?.invokeMethod({
+      methodName: "delMappingFieldHandler",
+      args: [{}]
+    }) : targetPropertyFormRef.value?.batchDelMappingFieldHandler();
     form.value.target.fieldList = form.value.target.fieldList.filter(
         v => !new Set(map(form.value.target.multipleSelection, "fieldSource")).has(v.fieldSource)
     );
@@ -471,15 +563,18 @@ const batchDelMappingField = () => {
  */
 const validateFieldList = () => {
   const list = form.value.target.fieldList || [];
-  const unresolvedField = list.find(f => f.fieldType === "UNKNOWN");
-  const result = list.length > 0 && !list.some(f => !f.fieldName) && !unresolvedField;
-  const unresolvedFieldMessage = unresolvedField
-    ? resolveFieldMappingMessage(unresolvedField)
-    : "";
-  if (unresolvedFieldMessage) {
-    ElMessage.warning(unresolvedFieldMessage);
+  const unresolvedFields = list.filter(isUnknownField);
+  if (unresolvedFields.length) {
+    ElMessage.warning(t("sync_task.field_mapping_blocking_save_tip", [
+      unresolvedFields.length,
+      summarizeFieldNames(unresolvedFields)
+    ]));
     formLoading.value = false;
-  } else if (!result) {
+    scrollToFieldMappingWarnings();
+    return false;
+  }
+  const result = list.length > 0 && !list.some(field => !field.fieldName?.trim());
+  if (!result) {
     ElMessage.warning(t("sync_task.msg_field_list_empty_tip"));
     formLoading.value = false;
   }
@@ -528,20 +623,30 @@ function handleValidateFieldList(_, callback) {
 
 // region 数据验证
 const validate = async (loading?: Ref<boolean>) => {
-  let targetPropertyValid = false
-  if (isPlugin.value) {
-    await targetPropertyFormRef.value?.targetPropertyValidate?.({
-      callback: (res: boolean) => {
-        targetPropertyValid = res
-      }
-    })
-  } else {
-    await targetPropertyFormRef.value?.targetPropertyValidate((res: boolean) => {
-      targetPropertyValid = res
-    });
+  if (!validateFieldList()) {
+    return false;
   }
-  const keyPolicyValid = await validateSinkKeyPolicy();
-  return targetPropertyValid && validateFieldList() && keyPolicyValid;
+  if (!targetPropertyFormRef.value) {
+    return false;
+  }
+  let targetPropertyValid: boolean;
+  if (isPlugin.value) {
+    targetPropertyValid = await new Promise<boolean>((resolve) => {
+      targetPropertyFormRef.value.invokeMethod({
+        methodName: "targetPropertyValidate",
+        args: [{callback: resolve}]
+      });
+    });
+  } else {
+    targetPropertyValid = await targetPropertyFormRef.value.targetPropertyValidate();
+  }
+  if (!targetPropertyValid) {
+    return false;
+  }
+  if (!(await validateSinkKeyPolicy())) {
+    return false;
+  }
+  return confirmFieldMappingWarnings(loading);
 }
 const closeLoading = () => {
   formLoading.value = false;
@@ -627,11 +732,13 @@ const getPluginStatic = type => {
           : null
 }
 const pluginComponentLoadDone = () => {
-  targetPropertyFormRef?.value?.initTargetCustomProperty?.({})
-  targetPropertyFormRef.value?.getSupportedIncrementFieldType?.({
-    callback: res => {
-      targetSupportedIncrementFieldType.value = res
-    }
+  targetPropertyFormRef?.value?.invokeMethod({methodName: 'initTargetCustomProperty', args: [{}]})
+  targetPropertyFormRef.value?.invokeMethod({
+    methodName: "getSupportedIncrementFieldType", args: [{
+      callback: (res) => {
+        targetSupportedIncrementFieldType.value = res
+      }
+    }]
   })
 }
 //将方法暴露出去
@@ -724,29 +831,76 @@ defineExpose({validate, closeLoading});
     </FormTitle>
     <el-row :gutter="24">
       <el-col style="height: calc(100% - 500px)">
-        <el-alert
-          v-if="fieldMappingWarnings.length"
-          type="warning"
-          :closable="false"
-          show-icon
-          class="field-mapping-alert"
-        >
-          <template #title>
-            {{ t("sync_task.field_mapping_warning_title", [fieldMappingWarningCount]) }}
-          </template>
-          <div class="field-mapping-warning-list">
-            <div
-              v-for="warning in fieldMappingWarnings"
-              :key="warning.message"
-              class="field-mapping-warning-item"
-            >
-              {{ t("sync_task.field_mapping_warning_item", [
-                warning.fieldNames.join(t("sync_task.field_name_separator")),
-                warning.message
-              ]) }}
+        <div ref="fieldMappingPanelRef">
+          <el-alert
+            v-if="blockingFieldMappingWarnings.length"
+            type="error"
+            :closable="false"
+            show-icon
+            class="field-mapping-alert"
+          >
+            <template #title>
+              {{ t("sync_task.field_mapping_blocking_title", [blockingFieldMappingWarningCount]) }}
+            </template>
+            <div class="field-mapping-warning-list">
+              <div
+                v-for="warning in visibleBlockingFieldMappingWarnings"
+                :key="warning.message"
+                class="field-mapping-warning-item"
+              >
+                {{ t("sync_task.field_mapping_warning_item", [
+                  warning.fieldNames.join(t("sync_task.field_name_separator")),
+                  warning.message
+                ]) }}
+              </div>
+              <el-button
+                v-if="blockingFieldMappingWarnings.length > MAPPING_WARNING_PREVIEW_LIMIT"
+                link
+                type="danger"
+                class="field-mapping-warning-toggle"
+                @click="showAllBlockingWarnings = !showAllBlockingWarnings"
+              >
+                {{ showAllBlockingWarnings
+                  ? t("sync_task.field_mapping_collapse")
+                  : t("sync_task.field_mapping_expand_all", [blockingFieldMappingWarningCount]) }}
+              </el-button>
             </div>
-          </div>
-        </el-alert>
+          </el-alert>
+          <el-alert
+            v-if="fieldMappingWarnings.length"
+            type="warning"
+            :closable="false"
+            show-icon
+            class="field-mapping-alert"
+          >
+            <template #title>
+              {{ t("sync_task.field_mapping_warning_title", [fieldMappingWarningCount]) }}
+            </template>
+            <div class="field-mapping-warning-list">
+              <div
+                v-for="warning in visibleFieldMappingWarnings"
+                :key="warning.message"
+                class="field-mapping-warning-item"
+              >
+                {{ t("sync_task.field_mapping_warning_item", [
+                  warning.fieldNames.join(t("sync_task.field_name_separator")),
+                  warning.message
+                ]) }}
+              </div>
+              <el-button
+                v-if="fieldMappingWarnings.length > MAPPING_WARNING_PREVIEW_LIMIT"
+                link
+                type="warning"
+                class="field-mapping-warning-toggle"
+                @click="showAllFieldMappingWarnings = !showAllFieldMappingWarnings"
+              >
+                {{ showAllFieldMappingWarnings
+                  ? t("sync_task.field_mapping_collapse")
+                  : t("sync_task.field_mapping_expand_all", [fieldMappingWarningCount]) }}
+              </el-button>
+            </div>
+          </el-alert>
+        </div>
         <div class="field-table-body">
           <GridTable
               ref="multipleTableRef"
@@ -950,6 +1104,11 @@ defineExpose({validate, closeLoading});
 
   .field-mapping-alert {
     margin-bottom: 12px;
+
+    :deep(.el-alert__content) {
+      width: 100%;
+      min-width: 0;
+    }
   }
 
   .field-mapping-warning-list {
@@ -958,8 +1117,19 @@ defineExpose({validate, closeLoading});
     line-height: 20px;
   }
 
+  .field-mapping-warning-item {
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
   .field-mapping-warning-item + .field-mapping-warning-item {
     margin-top: 4px;
+  }
+
+  .field-mapping-warning-toggle {
+    height: auto;
+    margin-top: 6px;
+    padding: 0;
   }
 
   .increment-info-body {

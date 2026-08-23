@@ -120,7 +120,7 @@ const sourceActive = ref();
 const isPlugin = ref(false)
 const emits = defineEmits(["refresh"]);
 const pluginComponentLoadDone = () => {
-  xpack?.value?.initForm?.({ edit: editDs.value, ...form })
+  xpack?.value?.invokeMethod({methodName: 'initForm', args: [{edit: editDs.value, ...form}]})
 }
 const selectDsType = (dsInfo) => {
   const type = typeof dsInfo === "string" ? dsInfo : dsInfo.type;
@@ -306,7 +306,10 @@ const validateDS = () => {
   };
   request.configuration = Base64.encode(JSON.stringify(request.configuration));
   if (isPlugin.value) {
-    xpack?.value?.submitForm?.({ eventName: 'validateDs', args: request })
+    xpack?.value?.invokeMethod({
+      methodName: 'submitForm',
+      args: [{eventName: 'validateDs', args: request}]
+    })
   } else {
     loading.value = true;
     const validateFrom = detail.value.submitForm();
@@ -355,7 +358,10 @@ const saveDS = () => {
   };
   request.configuration = Base64.encode(JSON.stringify(request.configuration));
   if (isPlugin.value) {
-    xpack?.value?.submitForm?.({ eventName: 'saveDs', args: request })
+    xpack?.value?.invokeMethod({
+      methodName: 'submitForm',
+      args: [{eventName: 'saveDs', args: request}]
+    })
   } else {
     const validate = detail.value.submitForm();
     validate((val) => {
@@ -473,7 +479,10 @@ const init = (dsInfo: Form, source: boolean) => {
       form.configuration = dsInfo.configuration;
       nextTick(() => {
         detail.value.clearForm()
-        xpack?.value?.clearForm?.()
+        xpack?.value?.invokeMethod({
+          methodName: 'clearForm',
+          args: []
+        })
       })
     });
   } else {
