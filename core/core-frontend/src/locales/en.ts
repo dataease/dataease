@@ -4235,6 +4235,8 @@ export default {
     edit_success: 'Modification successful',
     add_success: 'Added successfully',
     target_database_status_is_abnormal: 'Target database status abnormal',
+    editable_check_failed:
+      'Unable to confirm the target table status. Editing the sync structure is temporarily disabled. Check the target datasource configuration',
     edit_task: 'Edit task',
     basic_information: 'Basic information',
     source_database: 'Source database',

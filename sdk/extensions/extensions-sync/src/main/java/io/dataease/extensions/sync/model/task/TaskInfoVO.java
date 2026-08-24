@@ -34,6 +34,7 @@ public class TaskInfoVO {
     private Target target;
     private boolean editing;
     private boolean editable;
+    private boolean editableCheckFailed;
 
     private String userName;
     private String lastExecuteStatus;

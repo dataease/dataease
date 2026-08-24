@@ -4117,6 +4117,7 @@ export default {
     edit_success: '修改成功',
     add_success: '添加成功',
     target_database_status_is_abnormal: '目标数据库状态异常',
+    editable_check_failed: '无法确认目标表状态，已暂时禁止修改同步结构，请检查目标数据源配置',
     edit_task: '编辑任务',
     basic_information: '基本信息',
     source_database: '源数据库',

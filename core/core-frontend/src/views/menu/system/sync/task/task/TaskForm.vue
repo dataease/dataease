@@ -60,34 +60,43 @@ const getPeriod = (value) => {
  */
 const getTaskInfo = () => {
   formLoading.value = true;
-  findTaskInfoByIdApi(props.taskId).then((res) => {
-    formLoading.value = false;
-    formState.value = {
-      ...deepCopy(defaultFormState),
-      ...res.data,
-    };
-    if (formState.value.stopTimeString != null) {
-      formState.value.stopTimeString = dayjs(formState.value.stopTimeString).format(
-          "YYYY-MM-DD HH:mm"
-      );
-    }
-    if (formState.value.startTimeString != null) {
-      formState.value.startTimeString = dayjs(formState.value.startTimeString).format(
-          "YYYY-MM-DD HH:mm"
-      );
-    }
-    formState.value.target.property = JSON.parse(
-        formState.value.target.targetProperty
-    );
-    if (
-        formState.value.schedulerType === "FIX_RATE" &&
-        formState.value.schedulerConf
-    ) {
-      formState.value.schedulerOption = getPeriod(
-          formState.value.schedulerConf
-      );
-    }
-  });
+  findTaskInfoByIdApi(props.taskId)
+      .then((res) => {
+        formState.value = {
+          ...deepCopy(defaultFormState),
+          ...res.data,
+        };
+        if (formState.value.stopTimeString != null) {
+          formState.value.stopTimeString = dayjs(formState.value.stopTimeString).format(
+              "YYYY-MM-DD HH:mm"
+          );
+        }
+        if (formState.value.startTimeString != null) {
+          formState.value.startTimeString = dayjs(formState.value.startTimeString).format(
+              "YYYY-MM-DD HH:mm"
+          );
+        }
+        formState.value.target.property = JSON.parse(
+            formState.value.target.targetProperty
+        );
+        if (
+            formState.value.schedulerType === "FIX_RATE" &&
+            formState.value.schedulerConf
+        ) {
+          formState.value.schedulerOption = getPeriod(
+              formState.value.schedulerConf
+          );
+        }
+        if (res.data.editableCheckFailed) {
+          ElMessage.warning(t("sync_task.editable_check_failed"));
+        }
+      })
+      .catch(() => {
+        // 请求层已展示错误信息，此处只消费异常，避免产生未处理的 Promise。
+      })
+      .finally(() => {
+        formLoading.value = false;
+      });
 };
 
 const emit = defineEmits(["taskAddVisibleClose", "refreshList"]);
@@ -111,6 +120,7 @@ const defaultFormState = {
     property: {} as ITargetProperty,
   } as ITarget,
   status: false,
+  editableCheckFailed: false,
   startTimeString: "", //dayjs(new Date()).format('YYYY-MM-DD HH:mm'),
   stopTimeString: "",
   schedulerOption: {
@@ -761,7 +771,7 @@ defineExpose({taskFormVisible});
           {{ t("sync_task.confirm") }}
         </el-button>
         <el-button
-            :disabled="formLoading"
+            :disabled="formLoading || formState.editableCheckFailed"
             v-show="isEdit"
             type="primary"
             @click="next('save')"

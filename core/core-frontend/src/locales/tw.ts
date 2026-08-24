@@ -4099,6 +4099,7 @@ export default {
     edit_success: '修改成功',
     add_success: '新增成功',
     target_database_status_is_abnormal: '目標資料庫狀態異常',
+    editable_check_failed: '無法確認目標表狀態，已暫時禁止修改同步結構，請檢查目標資料來源配置',
     edit_task: '編輯任務',
     basic_information: '基本資訊',
     source_database: '來源資料庫',
