@@ -87,6 +87,16 @@ export class G2ChartBar extends G2ChartView {
       }
     })
 
+    const sourceNodeCount = new Set(
+      data.map(d => d.source).filter(value => value !== undefined && value !== null)
+    ).size
+    const targetNodeCount = new Set(
+      data.map(d => d.target).filter(value => value !== undefined && value !== null)
+    ).size
+    const maxNodeCount = Math.max(sourceNodeCount, targetNodeCount)
+    // G2 默认间距在单层节点达到 51 个时会耗尽布局高度
+    const nodePadding = maxNodeCount >= 51 ? 0.5 / (maxNodeCount - 1) : 0.02
+
     const initOptions: G2Spec = {
       type: 'sankey',
       autoFit: true,
@@ -114,6 +124,7 @@ export class G2ChartBar extends G2ChartView {
         }
       },
       layout: {
+        nodePadding,
         nodeSort: (a, b) => {
           // 这里是前端自己排序
           if (chart.yAxis?.[0]) {
@@ -229,13 +240,14 @@ export class G2ChartBar extends G2ChartView {
       }
       return defaultsDeep(options, hiedLabel)
     }
+    // 先调整越界位置再执行碰撞隐藏，避免重新显示已隐藏的标签
     const labelStyle = {
       style: {
         labelText: d => d.key || '',
         labelFill: label.color,
         labelFontSize: label.fontSize,
         labelFillOpacity: 1,
-        labelTransform: label.fullDisplay ? [] : [{ type: 'overlapHide' }, { type: 'exceedAdjust' }]
+        labelTransform: label.fullDisplay ? [] : [{ type: 'exceedAdjust' }, { type: 'overlapHide' }]
       }
     }
     return defaultsDeep(options, labelStyle)
