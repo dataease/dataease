@@ -9,6 +9,7 @@ import io.dataease.chart.constant.ChartConstants;
 import io.dataease.constant.DeTypeConstants;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.sql.SQLProvider;
+import io.dataease.engine.trans.CustomWhere2Str;
 import io.dataease.engine.trans.Dimension2SQLObj;
 import io.dataease.engine.trans.ExtWhere2Str;
 import io.dataease.engine.trans.Quota2SQLObj;
@@ -19,6 +20,7 @@ import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.datasource.model.SQLMeta;
 import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.view.dto.*;
+import io.dataease.extensions.view.filter.FilterTreeObj;
 import io.dataease.extensions.view.util.ChartDataUtil;
 import io.dataease.extensions.view.util.FieldUtil;
 import io.dataease.utils.IDUtils;
@@ -75,10 +77,20 @@ public class TableNormalHandler extends DefaultChartHandler {
         String originFilterJson = (String) JsonUtil.toJSONString(filterList);
         List<ChartExtFilterDTO> originFilter = JsonUtil.parseList(originFilterJson, new TypeReference<>() {
         });
+        // 检查仪表板外部过滤组件条件
         boolean yoyFiltered = checkYoyFilter(originFilter, yAxis);
         if (yoyFiltered) {
             formatResult.getContext().put("expandedFilter", originFilter);
             formatResult.getContext().put("yoyFiltered", true);
+        }
+
+        // 检查汇总表自身配置的过滤器 (customFilter)
+        if (ObjectUtils.isNotEmpty(view.getCustomFilter())) {
+            FilterTreeObj expandedCustomFilter = getExpandedCustomFilter(view.getCustomFilter(), yAxis);
+            if (expandedCustomFilter != null) {
+                formatResult.getContext().put("expandedCustomFilter", expandedCustomFilter);
+                formatResult.getContext().put("yoyFiltered", true);
+            }
         }
         return (T) new CustomFilterResult(filterList, formatResult.getContext());
     }
@@ -140,10 +152,27 @@ public class TableNormalHandler extends DefaultChartHandler {
         var yoyFiltered = filterResult.getContext().get("yoyFiltered") != null;
         if (yoyFiltered) {
             // 这里没加分页，因为加了分页参数可能会把原始数据挤出去
+            String originCustomWheres = sqlMeta.getCustomWheres();
+            Map<String, String> originCustomWheresDialect = sqlMeta.getCustomWheresDialect();
+            String originExtWheres = sqlMeta.getExtWheres();
+            Map<String, String> originExtWheresDialect = sqlMeta.getExtWheresDialect();
+
             var expandedFilter = (List<ChartExtFilterDTO>) filterResult.getContext().get("expandedFilter");
-            ExtWhere2Str.extWhere2sqlOjb(sqlMeta, expandedFilter, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
+            if (expandedFilter != null) {
+                ExtWhere2Str.extWhere2sqlOjb(sqlMeta, expandedFilter, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
+            }
+            var expandedCustomFilter = (FilterTreeObj) filterResult.getContext().get("expandedCustomFilter");
+            if (expandedCustomFilter != null) {
+                CustomWhere2Str.customWhere2sqlObj(sqlMeta, expandedCustomFilter, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
+            }
             var expandedSql = SQLProvider.createQuerySQL(sqlMeta, true, !StringUtils.equalsIgnoreCase(dsMap.values().iterator().next().getType(), "es"), view);
             expandedSql = provider.rebuildSQL(expandedSql, sqlMeta, crossDs, dsMap);
+
+            // 还原 sqlMeta 的原始过滤条件，避免影响后续辅助线或自定义汇总计算
+            sqlMeta.setCustomWheres(originCustomWheres);
+            sqlMeta.setCustomWheresDialect(originCustomWheresDialect);
+            sqlMeta.setExtWheres(originExtWheres);
+            sqlMeta.setExtWheresDialect(originExtWheresDialect);
             var expandedReq = new DatasourceRequest();
             expandedReq.setIsCross(crossDs);
             expandedReq.setDsList(dsMap);

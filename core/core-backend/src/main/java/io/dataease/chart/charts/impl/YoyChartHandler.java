@@ -4,6 +4,7 @@ package io.dataease.chart.charts.impl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.engine.sql.SQLProvider;
+import io.dataease.engine.trans.CustomWhere2Str;
 import io.dataease.engine.trans.ExtWhere2Str;
 import io.dataease.engine.utils.Utils;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
@@ -11,9 +12,11 @@ import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.datasource.model.SQLMeta;
 import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.view.dto.*;
+import io.dataease.extensions.view.filter.FilterTreeObj;
 import io.dataease.extensions.view.util.FieldUtil;
 import io.dataease.utils.JsonUtil;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
@@ -38,6 +41,22 @@ public class YoyChartHandler extends DefaultChartHandler {
             });
             formatResult.getContext().put("originFilter", originFilter);
             formatResult.getContext().put("yoyFiltered", true);
+        }
+
+        // 检查图表自身配置的过滤器 (customFilter)
+        if (ObjectUtils.isNotEmpty(view.getCustomFilter())) {
+            FilterTreeObj expandedCustomFilter = getExpandedCustomFilter(view.getCustomFilter(), yAxis);
+            if (expandedCustomFilter != null) {
+                String originCustomFilterJson = (String) JsonUtil.toJSONString(view.getCustomFilter());
+                FilterTreeObj originCustomFilter = JsonUtil.parseObject(originCustomFilterJson, FilterTreeObj.class);
+                if (chartFilterTreeService != null) {
+                    chartFilterTreeService.searchFieldAndSet(originCustomFilter);
+                    originCustomFilter = chartFilterTreeService.charReplace(originCustomFilter);
+                }
+                view.setCustomFilter(expandedCustomFilter);
+                formatResult.getContext().put("originCustomFilter", originCustomFilter);
+                formatResult.getContext().put("yoyFiltered", true);
+            }
         }
         return (T) result;
     }
@@ -82,8 +101,15 @@ public class YoyChartHandler extends DefaultChartHandler {
         var yoyFiltered = filterResult.getContext().get("yoyFiltered") != null;
         if (yoyFiltered) {
             var originFilter = (List<ChartExtFilterDTO>) filterResult.getContext().get("originFilter");
+            var originCustomFilter = (FilterTreeObj) filterResult.getContext().get("originCustomFilter");
             var allFields = (List<ChartViewFieldDTO>) filterResult.getContext().get("allFields");
-            ExtWhere2Str.extWhere2sqlOjb(sqlMeta, originFilter, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
+            if (originFilter != null) {
+                ExtWhere2Str.extWhere2sqlOjb(sqlMeta, originFilter, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
+            }
+            if (originCustomFilter != null) {
+                CustomWhere2Str.customWhere2sqlObj(sqlMeta, originCustomFilter, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
+                view.setCustomFilter(originCustomFilter);
+            }
             var originSql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             originSql = provider.rebuildSQL(originSql, sqlMeta, crossDs, dsMap);
             var request = new DatasourceRequest();
