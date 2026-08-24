@@ -442,6 +442,10 @@ declare interface ChartBasicStyle {
    * 主题反色，浅色主题黑色，深色主题白色
    */
   themeContrastColor?: string
+  /**
+   * 表格空数据提示字体颜色
+   */
+  tableEmptyFontColor: string
 }
 /**
  * 表头属性
@@ -580,7 +584,7 @@ declare interface ChartTableCellAttr {
   /**
    * 单元格对齐方式
    */
-  tableItemAlign: 'left' | 'center' | 'right'
+  tableItemAlign: 'left' | 'center' | 'right' | 'custom'
   /**
    * 单元格行高
    */
@@ -630,6 +634,13 @@ declare interface ChartTableCellAttr {
    * 合并单元格
    */
   mergeCells: boolean
+  /**
+   * 对齐设置
+   */
+  alignConfig: {
+    id: string
+    align: string
+  }[]
 }
 
 /**

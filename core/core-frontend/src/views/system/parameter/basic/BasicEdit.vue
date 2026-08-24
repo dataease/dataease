@@ -224,6 +224,7 @@ const edit = (
     return item
   })
 
+  state.form['defaultOpen'] = state.form['defaultOpen'] === 'false' ? '0' : '1'
   settingList.value = state.settingList.filter(ele => settingListVal.includes(ele.pkey))
   dialogVisible.value = true
 }

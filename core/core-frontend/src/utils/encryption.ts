@@ -3,6 +3,7 @@ import JSEncrypt from 'jsencrypt/bin/jsencrypt.min'
 import { Base64 } from 'js-base64'
 import { useCache } from '@/hooks/web/useCache'
 import { useAppStoreWithOut } from '@/store/modules/app'
+import { queryDekey } from '@/api/login'
 
 const appStore = useAppStoreWithOut()
 
@@ -10,6 +11,16 @@ const { wsCache } = useCache()
 
 const rsaKey = '-pk_separator-'
 const crypt = new JSEncrypt()
+
+export const ensureDekey = async () => {
+  let dekey = wsCache.get(appStore.getDekey)
+  if (!dekey) {
+    const res = await queryDekey()
+    dekey = res.data
+    wsCache.set(appStore.getDekey, dekey)
+  }
+  return dekey
+}
 
 const aesDecrypt = (word, keyStr) => {
   const keyHex = CryptoJS.enc.Utf8.parse(keyStr)

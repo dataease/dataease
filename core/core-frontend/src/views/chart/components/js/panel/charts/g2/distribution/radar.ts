@@ -307,7 +307,8 @@ export class Radar extends G2ChartView {
         dy: data => getLabelPosition(data).dy,
         textAlign: data => getLabelPosition(data).textAlign,
         textBaseline: data => getLabelPosition(data).textBaseline,
-        opacity: 1
+        opacity: 1,
+        fillOpacity: 1
       },
       formatter: (value, data) => {
         if (!labelAttr.seriesLabelFormatter?.length) {

@@ -86,14 +86,6 @@ const filterOption = [
         name: t("sync_task.status_failed"),
       },
       {
-        id: "FAIL_RETRY",
-        name: t("sync_task.status_failed"),
-      },
-      {
-        id: "NO_PROCESS",
-        name: t("sync_task.status_failed"),
-      },
-      {
         id: "RUNNING",
         name: t("sync_task.status_running"),
       },
@@ -107,7 +99,7 @@ const filterOption = [
       },
     ],
     field: "logStatus",
-    title: t("sync_task.last_execute_result"),
+    title: t("sync_task.recent_execute_status"),
     operate: "in",
   },
   {
@@ -583,10 +575,7 @@ const drawerMainClose = () => {
   drawerMainRef.value.close();
 };
 const partDataUpdate = () => {
-  const param = {
-    keyword: keyword.value || undefined,
-    conditions: state.conditions,
-  };
+  const param = buildParam();
   getTaskInfoListApi(
       state.paginationConfig.currentPage,
       state.paginationConfig.pageSize,
@@ -768,7 +757,7 @@ const copyInfo = async (val) => {
           <el-table-column
               prop="lastExecuteStatus"
               key="lastExecuteStatus"
-              :label="t('sync_task.last_execute_result')"
+              :label="t('sync_task.recent_execute_status')"
               show-overflow-tooltip
               min-width="180"
           >

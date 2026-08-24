@@ -8,8 +8,7 @@ import { useAppStoreWithOut } from '@/store/modules/app'
 import { onBeforeMount, onBeforeUnmount } from 'vue'
 import { initApi } from './embedded'
 import { useCache } from '@/hooks/web/useCache'
-import { rsaEncryp } from '@/utils/encryption'
-import {  queryDekey } from '@/api/login'
+import { rsaEncryp, ensureDekey } from '@/utils/encryption'
 import { ElMessage } from 'element-plus-secondary'
 const { wsCache } = useCache()
 const embeddedStore = () => useEmbedded()
@@ -19,10 +18,7 @@ const communicationCb = async event => {
   if (!event.data['de-embedded']) {
     return
   }
-  if (!wsCache.get(appStore().getDekey)) {
-    const res = await queryDekey()
-    wsCache.set(appStore().getDekey, res.data)
-  }
+  await ensureDekey()
   const origin = event.origin
   if(origin === window.location.origin) {
     embeddedStore().setIframeData(event.data)
@@ -57,7 +53,7 @@ const isInIframe = () => {
     return true
   }
 }
-onBeforeMount(() => {
+onBeforeMount(async () => {
   if (window.location.href.includes('#/preview?dvId=') && (wsCache.get('user.token') || !isInIframe())) {
     emits('initIframe', false)
     return
@@ -70,6 +66,7 @@ onBeforeMount(() => {
     emits('initIframe', false)
     return
   }
+  await ensureDekey()
   window.addEventListener('message', communicationCb)
   const readyData = {
     ready: true,

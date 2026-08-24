@@ -28,7 +28,7 @@ import {
   TableSheet,
   ViewMeta
 } from '@antv/s2'
-import { isEqual, isNumber } from 'lodash-es'
+import { isEqual, isNumber, merge } from 'lodash-es'
 import { TABLE_EDITOR_PROPERTY, TABLE_EDITOR_PROPERTY_INNER } from './common'
 const { t } = useI18n()
 
@@ -50,6 +50,9 @@ class CustomTableColCell extends TableColCell {
       if (align) {
         textStyle.textAlign = align
       }
+    }
+    if (textStyle.textAlign === 'custom') {
+      textStyle.textAlign = 'left'
     }
     return textStyle
   }
@@ -244,7 +247,6 @@ export class TableNormal extends S2ChartView<TableSheet> {
       },
       transformCanvasConfig() {
         return {
-          renderer: getS2Renderer(),
           supportsCSSTransform: true
         }
       }
@@ -258,6 +260,8 @@ export class TableNormal extends S2ChartView<TableSheet> {
     }
     // tooltip
     this.configTooltip(chart, s2Options)
+    // svg renderer
+    this.configRenderer(s2Options)
     // 隐藏表头，保留顶部的分割线, 禁用表头横向 resize
     if (tableHeader.showTableHeader === false) {
       s2Options.style.colCell.height = 1
@@ -402,13 +406,23 @@ export class TableNormal extends S2ChartView<TableSheet> {
 
   protected configTheme(chart: Chart): S2Theme {
     const theme = super.configTheme(chart)
-    const { tableHeader } = parseJson(chart.customAttr)
+    const { tableHeader, tableCell } = parseJson(chart.customAttr)
     if (tableHeader.tableHeaderAlign === 'custom') {
       const tableHeaderTheme = theme as TableHeaderTheme
       tableHeaderTheme.colCellAlignConfig = (tableHeader.alignConfig ?? []).reduce((pre, cur) => {
         pre[cur.id] = cur.align
         return pre
       }, {} as Record<string, TableHeaderAlign>)
+    }
+    if (tableCell.tableItemAlign === 'custom') {
+      const { alignConfig } = tableCell
+      const alignMap = (alignConfig ?? []).reduce((p, n) => {
+        p[n.id] = n.align
+        return p
+      }, {})
+      merge(theme, {
+        dataCellAlignConfig: alignMap
+      })
     }
     return theme
   }

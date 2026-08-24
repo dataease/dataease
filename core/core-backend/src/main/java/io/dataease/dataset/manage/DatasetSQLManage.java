@@ -79,6 +79,8 @@ public class DatasetSQLManage {
 
     private static Logger logger = LoggerFactory.getLogger(DatasetSQLManage.class);
 
+    private static String[] invalidCrossDs = {"es", "hive", "dm", "doris"};
+
     private List<SqlVariableDetails> filterParameters(ChartExtRequest chartExtRequest, Long datasetTableId) {
         List<SqlVariableDetails> parameters = new ArrayList<>();
         if (chartExtRequest != null && ObjectUtils.isNotEmpty(chartExtRequest.getOuterParamsFilters())) {

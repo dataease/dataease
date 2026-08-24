@@ -198,7 +198,7 @@ export class Rose extends G2ChartView {
       style: {
         fill: labelAttr.color,
         fontSize: labelAttr.fontSize,
-        fillOpacoty: 1
+        fillOpacity: 1
       },
       text: param => {
         let res = param.value

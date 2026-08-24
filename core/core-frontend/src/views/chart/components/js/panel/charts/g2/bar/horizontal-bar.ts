@@ -231,7 +231,8 @@ export class HorizontalBar extends Bar {
         tick: axis.axisLine.show,
         tickLineWidth: axis.axisLine.lineStyle.width,
         tickStroke: axis.axisLine.lineStyle.color,
-        tickStrokeOpacity: 2
+        tickOpacity: 1,
+        tickStrokeOpacity: 1
       }
       // 网格线
       const grid = {

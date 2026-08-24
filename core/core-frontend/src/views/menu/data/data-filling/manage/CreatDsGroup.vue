@@ -10,8 +10,8 @@ import { useI18n } from '@/hooks/web/useI18n'
 import nothingTree from '@/assets/img/nothing-tree.png'
 import { BusiTreeRequest } from '@/models/tree/TreeNode'
 import { filterFreeFolder, getHighlightSegments } from '@/utils/utils'
-import {createFolder, listDataFillingForms, move, reName, save} from '../data-filling'
-import type {DataFillingOrFolder, Tree} from '../data-filling'
+import { createFolder, listDataFillingForms, move, reName, save } from '../data-filling'
+import type { DataFillingOrFolder, Tree } from '../data-filling'
 const { t } = useI18n()
 const { wsCache } = useCache()
 const state = reactive<{
@@ -144,7 +144,7 @@ const createInit = (type, data: Tree, exec, name: string) => {
   filterText.value = ''
   nodeType.value = type
   placeholder.value =
-      type === 'folder' ? t('data_set.a_folder_name') : t('data_set.the_dataset_name')
+    type === 'folder' ? t('data_set.a_folder_name') : t('data_set.the_dataset_name')
   if (type === 'dataset') {
     union = data.union
     allfields = data.allfields
@@ -266,29 +266,29 @@ const saveDataset = () => {
       loading.value = true
       let method, message
       switch (cmd.value) {
-        case "move":
-          method = move;
-          message = t("data_fill.move_success");
-          break;
-        case "rename":
-          method = reName;
-          message = t("data_fill.rename_success");
-          break;
+        case 'move':
+          method = move
+          message = t('data_fill.move_success')
+          break
+        case 'rename':
+          method = reName
+          message = t('data_fill.rename_success')
+          break
         default:
-          method = createFolder;
-          message = t("data_fill.create_success");
-          break;
+          method = createFolder
+          message = t('data_fill.create_success')
+          break
       }
       method(params)
-          .then(res => {
-            dataFilling.value.resetFields()
-            createDataset.value = false
-            emits('finish', params, cmd.value)
-            ElMessage.success(message);
-          })
-          .finally(() => {
-            loading.value = false
-          })
+        .then(res => {
+          dataFilling.value.resetFields()
+          createDataset.value = false
+          emits('finish', params, cmd.value)
+          ElMessage.success(message)
+        })
+        .finally(() => {
+          loading.value = false
+        })
     }
   })
 }
@@ -303,36 +303,36 @@ const emits = defineEmits(['finish', 'onDfSave'])
 
 <template>
   <el-dialog
-      :title="dialogTitle"
-      v-model="createDataset"
-      class="create-dialog"
-      :width="cmd === 'move' ? '600px' : '420px'"
-      :before-close="resetForm"
-      :close-on-click-modal="false"
-      :close-on-press-escape="false"
+    :title="dialogTitle"
+    v-model="createDataset"
+    class="create-dialog"
+    :width="cmd === 'move' ? '600px' : '420px'"
+    :before-close="resetForm"
+    :close-on-click-modal="false"
+    :close-on-press-escape="false"
   >
     <el-form
-        label-position="top"
-        require-asterisk-position="right"
-        ref="dataFilling"
-        @keydown.stop.prevent.enter
-        :model="datasetForm"
-        :rules="datasetFormRules"
+      label-position="top"
+      require-asterisk-position="right"
+      ref="dataFilling"
+      @keydown.stop.prevent.enter
+      :model="datasetForm"
+      :rules="datasetFormRules"
     >
       <el-form-item v-if="showName" :label="labelName" prop="name">
         <el-input :placeholder="placeholder" v-model="datasetForm.name" />
       </el-form-item>
       <el-form-item v-if="showPid" :label="t('deDataset.folder')" prop="pid">
         <el-tree-select
-            v-model="datasetForm.pid"
-            :data="state.tData"
-            popper-class="dataset-tree-select"
-            :render-after-expand="false"
-            style="width: 100%"
-            :props="props"
-            @node-click="nodeClick"
-            :filter-node-method="filterMethod"
-            filterable
+          v-model="datasetForm.pid"
+          :data="state.tData"
+          popper-class="dataset-tree-select"
+          :render-after-expand="false"
+          style="width: 100%"
+          :props="props"
+          @node-click="nodeClick"
+          :filter-node-method="filterMethod"
+          filterable
         >
           <template #default="{ data: { name } }">
             <el-icon>
@@ -347,22 +347,22 @@ const emits = defineEmits(['finish', 'onDfSave'])
           <template #prefix>
             <el-icon>
               <Icon name="icon_search-outline_outlined"
-              ><icon_searchOutline_outlined class="svg-icon"
+                ><icon_searchOutline_outlined class="svg-icon"
               /></Icon>
             </el-icon>
           </template>
         </el-input>
         <div class="tree-content">
           <el-tree
-              ref="treeRef"
-              :filter-node-method="filterNode"
-              filterable
-              v-model="datasetForm.pid"
-              menu
-              empty-text=""
-              :data="state.tData"
-              :props="props"
-              @node-click="nodeClick"
+            ref="treeRef"
+            :filter-node-method="filterNode"
+            filterable
+            v-model="datasetForm.pid"
+            menu
+            empty-text=""
+            :data="state.tData"
+            :props="props"
+            @node-click="nodeClick"
           >
             <template #default="{ data }">
               <span class="custom-tree-node">
@@ -371,8 +371,8 @@ const emits = defineEmits(['finish', 'onDfSave'])
                 </el-icon>
                 <span class="node-text" :title="data.name">
                   <template
-                      v-for="(segment, index) in getHighlightSegments(data.name, filterText)"
-                      :key="`${data.id}-${index}`"
+                    v-for="(segment, index) in getHighlightSegments(data.name, filterText)"
+                    :key="`${data.id}-${index}`"
                   >
                     <span v-if="segment.highlight" class="highLight">{{ segment.text }}</span>
                     <template v-else>{{ segment.text }}</template>
@@ -390,8 +390,8 @@ const emits = defineEmits(['finish', 'onDfSave'])
     </el-form>
     <template #footer>
       <el-button secondary @click="resetForm">{{ t('dataset.cancel') }} </el-button>
-      <el-button v-loading="loading" type="primary" @click="saveDataset"
-      >{{ t('dataset.confirm') }}
+      <el-button :loading="loading" type="primary" @click="saveDataset"
+        >{{ t('dataset.confirm') }}
       </el-button>
     </template>
   </el-dialog>

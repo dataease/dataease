@@ -67,8 +67,6 @@ import {saveAs} from 'file-saver'
 import {ElMessage} from 'element-plus-secondary'
 import {useI18n} from '@/hooks/web/useI18n'
 import { Image as GImage } from '@antv/g'
-import { Renderer as SVGRenderer } from '@antv/g-svg'
-import { Renderer as CanvasRenderer } from '@antv/g-canvas'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 
 const {t: i18nt} = useI18n()
@@ -260,6 +258,15 @@ export function getCustomTheme(chart: Chart): S2Theme {
           thumbColor: tableScrollBarColor,
           thumbHoverColor: resetRgbOpacity(tableScrollBarColor, 1.5)
         }
+      }
+      if(basicStyle.tableEmptyFontColor) {
+        merge(theme, {
+          empty: {
+            description: {
+              fill: basicStyle.tableEmptyFontColor
+            }
+          }
+        })
       }
       merge(theme, tmpTheme)
     }
@@ -2536,6 +2543,21 @@ class CustomMergedCell extends MergedCell {
     })
   }
 
+  protected getTextStyle() {
+    const textStyle = super.getTextStyle()
+    const dataCellAlignConfig = (this.theme as any).dataCellAlignConfig
+    if (dataCellAlignConfig) {
+      const align = dataCellAlignConfig[this.meta.valueField]
+      if (align) {
+        textStyle.textAlign = align
+      }
+    }
+    if (textStyle.textAlign === 'custom') {
+      textStyle.textAlign = 'left'
+    }
+    return textStyle
+  }
+
   drawTextShape(): void {
     if (this.meta.deFieldType === 7) {
       drawImage.apply(this)
@@ -2546,6 +2568,21 @@ class CustomMergedCell extends MergedCell {
 }
 
 export class CustomDataCell extends TableDataCell {
+  protected getTextStyle() {
+    const textStyle = super.getTextStyle()
+    const dataCellAlignConfig = (this.theme as any).dataCellAlignConfig
+    if (dataCellAlignConfig) {
+      const align = dataCellAlignConfig[this.meta.valueField]
+      if (align) {
+        textStyle.textAlign = align
+      }
+    }
+    if (textStyle.textAlign === 'custom') {
+      textStyle.textAlign = 'left'
+    }
+    return textStyle
+  }
+
   /**
    * 重写这个方法是为了处理底部的汇总行取消 hover 状态时设置 border 为 1,
    * 这样会导致单元格隐藏横边边框失败，出现一条白线
@@ -2674,7 +2711,15 @@ export function getStartPosition(node) {
 export class SummaryCell extends CustomDataCell {
   getTextStyle() {
     const textStyle = cloneDeep(this.theme.colCell.bolderText)
-    textStyle.textAlign = this.theme.dataCell.text.textAlign
+    const dataCellAlignConfig = (this.theme as any).dataCellAlignConfig
+    if (dataCellAlignConfig) {
+      const align = dataCellAlignConfig[this.meta.valueField]
+      if (align) {
+        textStyle.textAlign = align
+      }
+    } else {
+      textStyle.textAlign = this.theme.dataCell.text.textAlign
+    }
     return textStyle
   }
 
@@ -2960,14 +3005,4 @@ export function mappingColorCustom(value, defaultColor, field, type, filedValueM
       color
     }
   }
-}
-
-/**
- * 获取 S2 表格的渲染器
- * @returns Renderer 实例
- */
-export function getS2Renderer() {
-  const dvMainStore = dvMainStoreWithOut()
-  const enableSvgRenderer = dvMainStore?.canvasStyleData?.enableSvgRenderer
-  return enableSvgRenderer ? new SVGRenderer() : new CanvasRenderer()
 }

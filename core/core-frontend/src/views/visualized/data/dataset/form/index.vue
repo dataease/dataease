@@ -1358,7 +1358,9 @@ let p = null
 const XpackLoaded = () => p(true)
 onMounted(async () => {
   isEdit.value = false
-  await new Promise(r => (p = r))
+  if (appStore.getXpackValid) {
+    await new Promise(r => (p = r))
+  }
   await initEdite()
   getDatasource(2)
   window.addEventListener('resize', handleResize)
@@ -1977,7 +1979,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
               <el-button
                 style="min-width: 70px"
                 :disabled="!allfields.length"
-                v-loading="datasetPreviewLoading"
+                :loading="datasetPreviewLoading"
                 @click="datasetPreview"
                 secondary
               >

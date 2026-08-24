@@ -748,7 +748,8 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
         tick: axis.axisLine.show,
         tickLineWidth: axis.axisLine.lineStyle.width,
         tickStroke: axis.axisLine.lineStyle.color,
-        tickStrokeOpacity: 2
+        tickOpacity: 1,
+        tickStrokeOpacity: 1
       }
       const xAxis = customStyle.xAxis
       const gridFilter = axisType === 'yAxis' ? this.getOverlapGridFilter(xAxis) : {}

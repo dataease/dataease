@@ -200,7 +200,7 @@ const confirm = () => {
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="cancel">{{ t('userimport.cancel') }}</el-button>
-        <el-button v-loading="loading" type="primary" @click="confirm">
+        <el-button :loading="loading" type="primary" @click="confirm">
           {{ t('userimport.sure') }}
         </el-button>
       </div>

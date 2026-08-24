@@ -24,7 +24,9 @@ import {
   handleTableEmptyStrategy
 } from '@/views/chart/components/js/panel/common/common_table'
 import '@antv/s2/dist/s2.min.css'
-import { find } from 'lodash-es'
+import { find, merge } from 'lodash-es'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { Renderer as SVGRenderer } from '@antv/g-svg'
 
 declare interface PageInfo {
   currentPage: number
@@ -37,6 +39,7 @@ export interface S2DrawOptions<O> extends AntVDrawOptions<O> {
   resizeAction?: (...args: any) => void
   touchAction?: (...args: any) => void
 }
+
 export abstract class S2ChartView<P extends SpreadSheet> extends AntVAbstractChartView {
   public abstract drawChart(drawOption: S2DrawOptions<P>): P
   protected constructor(name: string, defaultData: any[]) {
@@ -169,5 +172,23 @@ export abstract class S2ChartView<P extends SpreadSheet> extends AntVAbstractCha
         touchAction(callback)
       })
     })
+  }
+
+  protected configRenderer(option: S2Options) {
+    const dvMainStore = dvMainStoreWithOut()
+    const enableSvgRenderer = dvMainStore?.canvasStyleData?.enableSvgRenderer
+    if (enableSvgRenderer) {
+      merge(option, {
+        transformCanvasConfig() {
+          return {
+            renderer: new SVGRenderer(),
+            supportsCSSTransform: true
+          }
+        },
+        csp: {
+          iconStrategy: 'path'
+        }
+      })
+    }
   }
 }

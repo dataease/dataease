@@ -61,6 +61,9 @@ class CustomTableColCell extends TableColCell {
         textStyle.textAlign = align
       }
     }
+    if (textStyle.textAlign === 'custom') {
+      textStyle.textAlign = 'left'
+    }
     return textStyle
   }
 }
@@ -248,7 +251,6 @@ export class TableInfo extends S2ChartView<TableSheet> {
       },
       transformCanvasConfig() {
         return {
-          renderer: getS2Renderer(),
           supportsCSSTransform: true
         }
       }
@@ -270,6 +272,8 @@ export class TableInfo extends S2ChartView<TableSheet> {
     }
     // tooltip
     this.configTooltip(chart, s2Options)
+    // svg renderer
+    this.configRenderer(s2Options)
     // 合并单元格
     this.configMergeCells(chart, s2Options, s2DataConfig)
     // 隐藏表头，保留顶部的分割线, 禁用表头横向 resize
@@ -502,6 +506,16 @@ export class TableInfo extends S2ChartView<TableSheet> {
         }
       }
       merge(theme, mergeCellTheme)
+    }
+    if (tableCell.tableItemAlign === 'custom') {
+      const { alignConfig } = tableCell
+      const alignMap = (alignConfig ?? []).reduce((p, n) => {
+        p[n.id] = n.align
+        return p
+      }, {})
+      merge(theme, {
+        dataCellAlignConfig: alignMap
+      })
     }
     if (tableHeader.tableHeaderAlign === 'custom') {
       // 将样式面板中的字段级配置交给自定义表头单元格消费

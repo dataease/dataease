@@ -60,10 +60,12 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { updatePublishStatus } from '@/api/visualization/dataVisualization'
 import { tryShowLoading, tryHideLoading } from '@/utils/loading'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
+import { useRouter } from 'vue-router_2'
 const OpenHandler = defineAsyncComponent(
   () => import('@/views/component/embedded-iframe/OpenHandler.vue')
 )
 
+const router = useRouter()
 const permissionStore = usePermissionStoreWithOut()
 let nameEdit = ref(false)
 let inputName = ref('')
@@ -197,19 +199,19 @@ const saveResource = (checkParams?) => {
       tryShowLoading(loadingKey)
     }
     nextTick(() => {
-      canvasSaveWithParams(checkParams, () => {
+      canvasSaveWithParams(checkParams, async () => {
         snapshotStore.resetStyleChangeTimes()
         wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
-        let url = window.location.href
-        url = url.replace(/(#\/[^?]*)(?:\?[^#]*)?/, `$1?dvId=${dvInfo.value.id}`)
         if (!embeddedStore.baseUrl) {
-          window.history.replaceState(
-            {
-              path: url
-            },
-            '',
-            url
-          )
+          // 改用 router.replace 保留原位替换语义并同步路由状态，确保数据集编辑后返回当前大屏
+          try {
+            await router.replace({
+              name: 'dvCanvas',
+              query: { dvId: String(dvInfo.value.id) }
+            })
+          } catch (e) {
+            console.error(e)
+          }
         }
         if (appData.value) {
           initCanvasData(dvInfo.value.id, { busiFlag: 'dataV', resourceTable: 'snapshot' }, () => {

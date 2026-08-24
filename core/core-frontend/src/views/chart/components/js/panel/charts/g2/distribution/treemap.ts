@@ -259,6 +259,7 @@ export class Treemap extends G2ChartView {
     const label: G2Spec = {
       style: {
         labelFill: labelAttr.color,
+        labelFillOpacity: 1,
         labelFontSize: labelAttr.fontSize,
         // 标签不参与命中测试，让鼠标事件落到矩形节点
         labelPointerEvents: 'none',

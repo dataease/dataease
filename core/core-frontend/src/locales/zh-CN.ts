@@ -4072,6 +4072,7 @@ export default {
     log: '日志',
     show_log: '查看日志',
     last_execute_result: '上次执行结果',
+    recent_execute_status: '最近执行状态',
     execute_result: '执行结果',
     task_status: '任务状态',
     sync: '同步',

@@ -533,7 +533,8 @@ export const DEFAULT_TABLE_CELL: ChartTableCellAttr = {
   tableFreeze: false,
   tableColumnFreezeHead: 0,
   tableRowFreezeHead: 0,
-  mergeCells: true
+  mergeCells: true,
+  alignConfig: []
 }
 export const DEFAULT_TITLE_STYLE: ChartTextStyle = {
   show: true,

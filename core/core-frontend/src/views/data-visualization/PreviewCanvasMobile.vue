@@ -156,7 +156,9 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
 let p = null
 const XpackLoaded = () => p(true)
 onMounted(async () => {
-  await new Promise(r => (p = r))
+  if (appStore.getXpackValid) {
+    await new Promise(r => (p = r))
+  }
   dvMainStore.setMobileInPc(true)
   dvMainStore.setInMobile(true)
   const dvId = embeddedStore.dvId || router.currentRoute.value.query.dvId
