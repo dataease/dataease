@@ -27,7 +27,11 @@ import io.dataease.utils.JsonUtil;
 import io.dataease.visualization.dao.auto.entity.*;
 import io.dataease.visualization.dao.auto.mapper.*;
 import jakarta.annotation.Resource;
+import jakarta.persistence.EntityManager;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Session;
+import org.hibernate.dialect.Dialect;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
@@ -47,6 +51,8 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
 
     @Resource
     private JPAQueryFactory queryFactory;
+    @Resource
+    private EntityManager entityManager;
     @Resource
     private SnapshotVisualizationOuterParamsRepository snapshotVisualizationOuterParamsRepository;
     @Resource
@@ -104,7 +110,7 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
                 .from(qOuterParams)
                 .leftJoin(qOuterParamsInfo).on(qOuterParams.paramsId.eq(qOuterParamsInfo.paramsId))
                 .where(qOuterParams.visualizationId.eq(String.valueOf(visualizationId)))
-                .orderBy(Expressions.numberTemplate(Integer.class, "case when coalesce({0}, false) then 1 else 0 end", qOuterParamsInfo.checked).desc())
+                .orderBy(qOuterParamsInfo.checked.desc().nullsLast())
                 .fetch();
 
         if (paramsInfoList.isEmpty()) {
@@ -326,10 +332,7 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
                 .where(ccv.tableId.eq(datasetGroupId)
                         .and(ccv.type.ne("VQuery"))
                         .and(dvi.id.eq(visualizationId))
-                        .and(Expressions.booleanTemplate(
-                                "{0} like concat('%', {1}, '%')",
-                                dvi.componentData,
-                                ccv.id)))
+                        .and(buildClobLikePredicate(dvi.componentData, ccv.id)))
                 .distinct()
                 .fetch();
     }
@@ -340,6 +343,9 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
         QCoreDatasetGroup qCoreDatasetGroup = QCoreDatasetGroup.coreDatasetGroup;
         QSnapshotCoreChartView qSnapshotCoreChartView = QSnapshotCoreChartView.snapshotCoreChartView;
         QSnapshotDataVisualizationInfo qSnapshotDataVisualizationInfo = QSnapshotDataVisualizationInfo.snapshotDataVisualizationInfo;
+
+        // Oracle 不支持对包含 CLOB 字段的结果使用 DISTINCT
+        // 所以先不选择 info 字段，使用 GROUP BY 去重
         List<CoreDatasetGroupVO> result = queryFactory.select(Projections.fields(CoreDatasetGroupVO.class,
                         qCoreDatasetGroup.id,
                         qCoreDatasetGroup.name,
@@ -348,7 +354,6 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
                         qCoreDatasetGroup.nodeType,
                         qCoreDatasetGroup.type,
                         qCoreDatasetGroup.mode,
-                        qCoreDatasetGroup.info,
                         qCoreDatasetGroup.createBy,
                         qCoreDatasetGroup.createTime,
                         qCoreDatasetGroup.qrtzInstance,
@@ -358,12 +363,38 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
                 )).from(qCoreDatasetGroup)
                 .innerJoin(qSnapshotCoreChartView).on(qCoreDatasetGroup.id.eq(qSnapshotCoreChartView.tableId).and(qSnapshotCoreChartView.type.ne("VQuery")))
                 .innerJoin(qSnapshotDataVisualizationInfo).on(qSnapshotCoreChartView.sceneId.eq(qSnapshotDataVisualizationInfo.id))
-                .where(qSnapshotCoreChartView.sceneId.eq(visualizationId).and(qSnapshotDataVisualizationInfo.id.eq(visualizationId)))
-                .where(Expressions.booleanTemplate(
-                        "{0} like concat('%', {1}, '%')",
-                        qSnapshotDataVisualizationInfo.componentData,
-                        qSnapshotCoreChartView.id
-                )).distinct().fetch();
+                .where(qSnapshotCoreChartView.sceneId.eq(visualizationId)
+                        .and(qSnapshotDataVisualizationInfo.id.eq(visualizationId))
+                        .and(buildClobLikePredicate(qSnapshotDataVisualizationInfo.componentData, qSnapshotCoreChartView.id)))
+                .groupBy(qCoreDatasetGroup.id,
+                        qCoreDatasetGroup.name,
+                        qCoreDatasetGroup.pid,
+                        qCoreDatasetGroup.level,
+                        qCoreDatasetGroup.nodeType,
+                        qCoreDatasetGroup.type,
+                        qCoreDatasetGroup.mode,
+                        qCoreDatasetGroup.createBy,
+                        qCoreDatasetGroup.createTime,
+                        qCoreDatasetGroup.qrtzInstance,
+                        qCoreDatasetGroup.syncStatus,
+                        qCoreDatasetGroup.updateBy,
+                        qCoreDatasetGroup.lastUpdateTime)
+                .fetch();
+
+        // 单独查询 info 字段并设置到结果中
+        if (!CollectionUtils.isEmpty(result)) {
+            List<Long> ids = result.stream().map(CoreDatasetGroupVO::getId).collect(Collectors.toList());
+            Map<Long, String> infoMap = queryFactory.select(qCoreDatasetGroup.id, qCoreDatasetGroup.info)
+                    .from(qCoreDatasetGroup)
+                    .where(qCoreDatasetGroup.id.in(ids))
+                    .fetch()
+                    .stream()
+                    .collect(Collectors.toMap(
+                            tuple -> tuple.get(qCoreDatasetGroup.id),
+                            tuple -> tuple.get(qCoreDatasetGroup.info)
+                    ));
+            result.forEach(item -> item.setInfo(infoMap.get(item.getId())));
+        }
         if (!CollectionUtils.isEmpty(result)) {
             result.stream().forEach(item -> {
                 item.setDatasetViews(getViewInfo(item.getId(), visualizationId));
@@ -394,5 +425,34 @@ public class VisualizationOuterParamsService implements VisualizationOuterParams
             });
         }
         return result;
+    }
+
+    /**
+     * 构建跨数据库兼容的 CLOB 字段 LIKE 查询条件
+     * Oracle 不支持直接对 CLOB 使用 LIKE，需要使用 DBMS_LOB.INSTR
+     */
+    private com.querydsl.core.types.dsl.BooleanExpression buildClobLikePredicate(
+            com.querydsl.core.types.dsl.StringPath clobField,
+            com.querydsl.core.types.dsl.NumberPath<Long> searchValue) {
+
+        Session session = entityManager.unwrap(Session.class);
+        Dialect dialect = ((SessionFactoryImplementor) session.getSessionFactory()).getJdbcServices().getDialect();
+        String dialectName = dialect.getClass().getSimpleName().toLowerCase();
+
+        // Oracle 使用 DBMS_LOB.INSTR
+        if (dialectName.contains("oracle")) {
+            return Expressions.numberTemplate(Integer.class,
+                    "DBMS_LOB.INSTR(dbms_lob.substr({0}, 4000, 1), to_char({1}))",
+                    clobField,
+                    searchValue
+            ).gt(0);
+        }
+
+        // 其他数据库使用标准 LIKE + CONCAT
+        return Expressions.booleanTemplate(
+                "{0} like concat('%', cast({1} as string), '%')",
+                clobField,
+                searchValue
+        );
     }
 }
