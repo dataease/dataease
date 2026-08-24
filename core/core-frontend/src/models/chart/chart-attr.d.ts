@@ -584,7 +584,7 @@ declare interface ChartTableCellAttr {
   /**
    * 单元格对齐方式
    */
-  tableItemAlign: 'left' | 'center' | 'right'
+  tableItemAlign: 'left' | 'center' | 'right' | 'custom'
   /**
    * 单元格行高
    */
@@ -634,6 +634,13 @@ declare interface ChartTableCellAttr {
    * 合并单元格
    */
   mergeCells: boolean
+  /**
+   * 对齐设置
+   */
+  alignConfig: {
+    id: string
+    align: string
+  }[]
 }
 
 /**

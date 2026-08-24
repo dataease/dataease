@@ -61,6 +61,9 @@ class CustomTableColCell extends TableColCell {
         textStyle.textAlign = align
       }
     }
+    if (textStyle.textAlign === 'custom') {
+      textStyle.textAlign = 'left'
+    }
     return textStyle
   }
 }
@@ -502,6 +505,16 @@ export class TableInfo extends S2ChartView<TableSheet> {
         }
       }
       merge(theme, mergeCellTheme)
+    }
+    if (tableCell.tableItemAlign === 'custom') {
+      const { alignConfig } = tableCell
+      const alignMap = (alignConfig ?? []).reduce((p, n) => {
+        p[n.id] = n.align
+        return p
+      }, {})
+      merge(theme, {
+        dataCellAlignConfig: alignMap
+      })
     }
     if (tableHeader.tableHeaderAlign === 'custom') {
       // 将样式面板中的字段级配置交给自定义表头单元格消费
