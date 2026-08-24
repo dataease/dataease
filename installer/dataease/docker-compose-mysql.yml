@@ -1,7 +1,7 @@
 services:
 
   DE_MYSQL_HOST:
-    image: registry.cn-qingdao.aliyuncs.com/dataease/mysql:8.4.5
+    image: registry.cn-qingdao.aliyuncs.com/dataease/mysql:8.4.11
     container_name: ${DE_DB_HOST}
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-u${DE_DB_USER}", "-p${DE_DB_PASSWORD}", "--protocol","tcp"]
