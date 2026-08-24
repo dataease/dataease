@@ -1,32 +1,23 @@
 <script lang="tsx" setup>
-import icon_intoItem_outlined from "@/assets/svg/icon_into-item_outlined.svg";
-import icon_rename_outlined from "@/assets/svg/icon_rename_outlined.svg";
-import icon_deleteTrash_outlined from "@/assets/svg/icon_delete-trash_outlined.svg";
-import icon_download_outlined from "@/assets/svg/icon_download_outlined.svg";
-import icon_dataset from "@/assets/svg/icon_dataset.svg";
-import dvNewFolder from "@/assets/svg/dv-new-folder.svg";
-import icon_fileAdd_outlined from "@/assets/svg/icon_file-add_outlined.svg";
-import icon_searchOutline_outlined from "@/assets/svg/icon_search-outline_outlined.svg";
-import dvFolder from "@/assets/svg/dv-folder.svg";
-import icon_file_doc_colorful from "@/assets/svg/icon_file-doc_colorful.svg";
-import dvSortAsc from "@/assets/svg/dv-sort-asc.svg";
-import dvSortDesc from "@/assets/svg/dv-sort-desc.svg";
-import icon_add_outlined from "@/assets/svg/icon_add_outlined.svg";
-import icon_info_outlined from "@/assets/svg/icon_info_outlined.svg";
-import icon_edit_outlined from "@/assets/svg/icon_edit_outlined.svg";
-import icon_upload_outlined from "@/assets/svg/icon_upload_outlined.svg";
-import icon_describe_outlined from "@/assets/svg/icon_describe_outlined.svg";
-import icon_copy_filled from "@/assets/svg/icon_copy_filled.svg";
-import {
-  computed,
-  h,
-  nextTick,
-  onMounted,
-  reactive,
-  ref,
-  unref,
-  watch,
-} from "vue";
+import icon_intoItem_outlined from '@/assets/svg/icon_into-item_outlined.svg'
+import icon_rename_outlined from '@/assets/svg/icon_rename_outlined.svg'
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
+import icon_download_outlined from '@/assets/svg/icon_download_outlined.svg'
+import icon_dataset from '@/assets/svg/icon_dataset.svg'
+import dvNewFolder from '@/assets/svg/dv-new-folder.svg'
+import icon_fileAdd_outlined from '@/assets/svg/icon_file-add_outlined.svg'
+import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
+import dvFolder from '@/assets/svg/dv-folder.svg'
+import icon_file_doc_colorful from '@/assets/svg/icon_file-doc_colorful.svg'
+import dvSortAsc from '@/assets/svg/dv-sort-asc.svg'
+import dvSortDesc from '@/assets/svg/dv-sort-desc.svg'
+import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
+import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
+import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
+import icon_upload_outlined from '@/assets/svg/icon_upload_outlined.svg'
+import icon_describe_outlined from '@/assets/svg/icon_describe_outlined.svg'
+import icon_copy_filled from '@/assets/svg/icon_copy_filled.svg'
+import { computed, h, nextTick, onBeforeUnmount, onMounted, reactive, ref, unref, watch } from 'vue'
 import {
   ElButton,
   ElDrawer,
@@ -35,14 +26,14 @@ import {
   ElMessageBox,
   ElMessageBoxOptions,
   ElScrollbar,
-  TabPaneName,
-} from "element-plus-secondary";
-import CreatDsGroup from "./CreatDsGroup.vue";
-import RowDataForm from "./form/RowDataForm.vue";
-import FilterSearchDrawer from "./FilterSearchDrawer.vue";
-import ArrowSide from "@/views/common/DeResourceArrow.vue";
-import { HandleMore } from "@/components/handle-more";
-import { Icon } from "@/components/icon-custom";
+  TabPaneName
+} from 'element-plus-secondary'
+import CreatDsGroup from './CreatDsGroup.vue'
+import RowDataForm from './form/RowDataForm.vue'
+import FilterSearchDrawer from './FilterSearchDrawer.vue'
+import ArrowSide from '@/views/common/DeResourceArrow.vue'
+import { HandleMore } from '@/components/handle-more'
+import { Icon } from '@/components/icon-custom'
 import {
   batchDeleteRowData,
   ColumnItem,
@@ -55,41 +46,32 @@ import {
   innerExport,
   searchTable,
   Tree,
-  truncateRowData,
-} from "../data-filling";
-import { useI18n } from "@/hooks/web/useI18n";
-import router from "@/router";
-import EmptyBackground from "@/components/empty-background/src/EmptyBackground.vue";
-import { useAppStoreWithOut } from "@/store/modules/app";
-import type { BusiTreeNode } from "@/models/tree/TreeNode";
-import { useMoveLine } from "@/hooks/web/useMoveLine";
-import {
-  cloneDeep,
-  filter,
-  forEach,
-  forIn,
-  includes,
-  join,
-  map,
-  some,
-} from "lodash-es";
-import treeSort from "@/utils/treeSortUtils";
-import { useCache } from "@/hooks/web/useCache";
-import InfoDetail from "./InfoDetail.vue";
-import GridTable from "@/components/grid-table/src/GridTable.vue";
-import TaskGrid from "./TaskGrid.vue";
-import LogGrid from "./LogGrid.vue";
-import ExcelBatchUpload from "./ExcelBatchUpload.vue";
-import { initModuleAuth, InnerInteractive } from "./DataFillAuth";
-import { RefreshLeft } from "@element-plus/icons-vue";
-import { useEmitt } from "@/hooks/web/useEmitt";
-import { useEmbedded } from "@/store/modules/embedded";
-import iconFilter from "@/assets/svg/icon-filter.svg";
-import dayjs from "dayjs";
+  truncateRowData
+} from '../data-filling'
+import { useI18n } from '@/hooks/web/useI18n'
+import router from '@/router'
+import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
+import { useAppStoreWithOut } from '@/store/modules/app'
+import type { BusiTreeNode } from '@/models/tree/TreeNode'
+import { useMoveLine } from '@/hooks/web/useMoveLine'
+import { cloneDeep, filter, forEach, forIn, includes, join, map, some } from 'lodash-es'
+import treeSort from '@/utils/treeSortUtils'
+import { useCache } from '@/hooks/web/useCache'
+import InfoDetail from './InfoDetail.vue'
+import GridTable from '@/components/grid-table/src/GridTable.vue'
+import TaskGrid from './TaskGrid.vue'
+import LogGrid from './LogGrid.vue'
+import ExcelBatchUpload from './ExcelBatchUpload.vue'
+import { initModuleAuth, InnerInteractive } from './DataFillAuth'
+import { RefreshLeft } from '@element-plus/icons-vue'
+import { useEmitt } from '@/hooks/web/useEmitt'
+import { useEmbedded } from '@/store/modules/embedded'
+import iconFilter from '@/assets/svg/icon-filter.svg'
+import dayjs from 'dayjs'
 
-const { wsCache } = useCache();
-const { t } = useI18n();
-const appStore = useAppStoreWithOut();
+const { wsCache } = useCache()
+const { t } = useI18n()
+const appStore = useAppStoreWithOut()
 const state = reactive({
   datasourceTree: [] as BusiTreeNode[],
   dfTableData: [],
@@ -98,265 +80,300 @@ const state = reactive({
     currentPage: 1,
     pageSize: 10,
     total: 0,
-    key: "",
+    key: ''
   },
-  curSortType: "time_desc",
-  filterTable: [],
-});
+  curSortType: 'time_desc',
+  filterTable: []
+})
 const moduleAuthData = ref<InnerInteractive>({
   rootManage: false,
   anyManage: false,
   treeNodes: [],
   leafNodeCount: 0,
-  menuAuth: true,
-});
-const emptyDesc = ref("");
-const imgType = ref("noneWhite");
+  menuAuth: true
+})
+const emptyDesc = ref('')
+const imgType = ref('noneWhite')
 
-const embeddedStore = useEmbedded();
-const isEmbedded = computed(
-  () => appStore.getIsDataEaseBi || appStore.getIsIframe,
-);
-const embeddedSyncExport = computed(
-  () => wsCache.get("embeddedExportMode-backend") !== "async",
-);
+const embeddedStore = useEmbedded()
+const isEmbedded = computed(() => appStore.getIsDataEaseBi || appStore.getIsIframe)
+const embeddedSyncExport = computed(() => wsCache.get('embeddedExportMode-backend') !== 'async')
 
-const isDataEaseBi = computed(() => appStore.getIsDataEaseBi);
-const isIframe = computed(() => appStore.getIsIframe);
+const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
+const isIframe = computed(() => appStore.getIsIframe)
+const datasourceManageRef = ref<HTMLElement | null>(null)
+const datasourceContentHeight = ref<number | undefined>()
+let datasourceManageResizeObserver: ResizeObserver | undefined
 
-const showDownloadDrawer = ref(false);
+const updateDatasourceContentHeight = () => {
+  if (!isIframe.value && !isDataEaseBi.value) {
+    datasourceContentHeight.value = undefined
+    return
+  }
 
-const { width, node } = useMoveLine("DATA-FILLING");
+  const containerHeight = datasourceManageRef.value?.clientHeight
+  if (!containerHeight) {
+    return
+  }
 
-const rootManage = ref(false);
-const disabledMove = ref(true);
-const dsName = ref("");
-const rawDatasourceList = ref([]);
+  datasourceContentHeight.value = Math.max(containerHeight, 0)
+}
+
+const datasourceContentStyle = computed(() => {
+  if (!isIframe.value && !isDataEaseBi.value) {
+    return undefined
+  }
+
+  if (typeof datasourceContentHeight.value !== 'number') {
+    return undefined
+  }
+
+  return {
+    height: `${datasourceContentHeight.value}px`
+  }
+})
+
+const customTreeStyle = computed(() => {
+  if (!isIframe.value && !isDataEaseBi.value) {
+    return undefined
+  }
+
+  if (typeof datasourceContentHeight.value !== 'number') {
+    return undefined
+  }
+
+  return {
+    height: `${datasourceContentHeight.value - 178}px`
+  }
+})
+
+const showDownloadDrawer = ref(false)
+
+const { width, node } = useMoveLine('DATA-FILLING')
+
+const rootManage = ref(false)
+const disabledMove = ref(true)
+const dsName = ref('')
+const rawDatasourceList = ref([])
 
 const menuList = [
   {
-    label: t("data_fill.move_to"),
+    label: t('data_fill.move_to'),
     svgName: icon_intoItem_outlined,
-    command: "move",
+    command: 'move'
   },
   {
-    label: t("data_fill.rename"),
+    label: t('data_fill.rename'),
     svgName: icon_rename_outlined,
-    command: "rename",
+    command: 'rename'
   },
   {
-    label: t("data_fill.delete"),
+    label: t('data_fill.delete'),
     divided: true,
     svgName: icon_deleteTrash_outlined,
-    command: "delete",
-  },
-];
+    command: 'delete'
+  }
+]
 
 const timestampFormatDate = (timestamp, showMs?: boolean) => {
   if (!timestamp || timestamp === -1) {
-    return "-";
+    return '-'
   }
 
-  const date = new Date(timestamp);
+  const date = new Date(timestamp)
 
-  const y = date.getFullYear();
+  const y = date.getFullYear()
 
-  let MM = date.getMonth() + 1;
-  MM = (MM < 10 ? "0" + MM : MM) as number;
+  let MM = date.getMonth() + 1
+  MM = (MM < 10 ? '0' + MM : MM) as number
 
-  let d = date.getDate();
-  d = (d < 10 ? "0" + d : d) as number;
+  let d = date.getDate()
+  d = (d < 10 ? '0' + d : d) as number
 
-  let h = date.getHours();
-  h = (h < 10 ? "0" + h : h) as number;
+  let h = date.getHours()
+  h = (h < 10 ? '0' + h : h) as number
 
-  let m = date.getMinutes();
-  m = (m < 10 ? "0" + m : m) as number;
+  let m = date.getMinutes()
+  m = (m < 10 ? '0' + m : m) as number
 
-  let s = date.getSeconds();
-  s = (s < 10 ? "0" + s : s) as number;
+  let s = date.getSeconds()
+  s = (s < 10 ? '0' + s : s) as number
 
-  let format = y + "-" + MM + "-" + d + " " + h + ":" + m + ":" + s;
+  let format = y + '-' + MM + '-' + d + ' ' + h + ':' + m + ':' + s
 
   if (showMs === true) {
-    const ms = date.getMilliseconds();
-    format += ":" + ms;
+    const ms = date.getMilliseconds()
+    format += ':' + ms
   }
 
-  return format;
-};
+  return format
+}
 
 const addOptionTypeList = computed(() => {
   return [
     {
-      label: t("data_fill.create_form"),
+      label: t('data_fill.create_form'),
       svgName: icon_dataset,
-      command: "data-filling",
+      command: 'data-filling'
     },
     {
-      label: t("data_fill.create_folder"),
+      label: t('data_fill.create_folder'),
       divided: true,
       svgName: dvFolder,
-      command: "folder",
-    },
-  ];
-});
-
-let originResourceTree = [];
-const handleSortTypeChange = (sortType) => {
-  state.datasourceTree = treeSort(originResourceTree, sortType);
-  state.curSortType = sortType;
-  wsCache.set("TreeSort-dataFillingForm", state.curSortType);
-};
-
-const sortTypeChange = (sortType) => {
-  state.datasourceTree = treeSort(originResourceTree, sortType);
-  state.curSortType = sortType;
-};
-
-let listScrollTop = 0;
-const handleScroll = (val) => {
-  listScrollTop = val.scrollTop;
-};
-
-const scrollbarRef = ref();
-
-const getDsIconName = (data) => {
-  if (!data.leaf) return dvFolder;
-  return icon_file_doc_colorful;
-};
-
-const selectedItemId = ref<string | undefined>();
-
-const selectedItem = ref<DfFormSetting | undefined>();
-
-const dsLoading = ref(false);
-const mounted = ref(false);
-
-const listDf = () => {
-  rawDatasourceList.value = [];
-  dsLoading.value = true;
-  initModuleAuth({ busiFlag: "data_filling" })
-    .then((res) => {
-      moduleAuthData.value = res;
-
-      rootManage.value = moduleAuthData.value.rootManage;
-      const nodeData =
-        (moduleAuthData.value.treeNodes as unknown as BusiTreeNode[]) || [];
-      if (
-        nodeData.length &&
-        nodeData[0]["id"] === "0" &&
-        nodeData[0]["name"] === "root"
-      ) {
-        state.datasourceTree = nodeData[0]["children"] || [];
-      } else {
-        state.datasourceTree = moduleAuthData.value.treeNodes;
-      }
-      originResourceTree = cloneDeep(unref(state.datasourceTree));
-      let curSortType =
-        sortList[Number(wsCache.get("TreeSort-backend")) ?? 1].value;
-      curSortType = wsCache.get("TreeSort-dataFillingForm") ?? curSortType;
-      sortTypeChange(curSortType);
-    })
-    .finally(() => {
-      mounted.value = true;
-      dsLoading.value = false;
-      updateTreeExpand();
-      const id = selectedItemId.value;
-      if (!!id) {
-        const pid = selectedItem.value?.pid;
-        dfsDatasourceTree(state.datasourceTree, id);
-        setTimeout(() => {
-          if (pid) {
-            const node = dsListTree.value.getNode(pid);
-            if (node && !node.expanded) {
-              node.expand();
-            }
-          }
-          dsListTree.value.setCurrentKey(id, true);
-        }, 100);
-      }
-    });
-};
-
-const dfsDatasourceTree = (ds, id) => {
-  const has = findNode(ds, id);
-  if (has) {
-    selectedItemId.value = id;
-  } else {
-    selectedItemId.value = undefined;
-  }
-};
-
-function findNode(ds, id) {
-  return some(ds, (ele) => {
-    if (ele.id === id) {
-      handleNodeClick(ele);
-      return true;
-    } else if (ele.children?.length > 0) {
-      return findNode(ele.children, id);
+      command: 'folder'
     }
-    return false;
-  });
+  ]
+})
+
+let originResourceTree = []
+const handleSortTypeChange = sortType => {
+  state.datasourceTree = treeSort(originResourceTree, sortType)
+  state.curSortType = sortType
+  wsCache.set('TreeSort-dataFillingForm', state.curSortType)
 }
 
-const creatDsFolder = ref();
-const rowDataFormRef = ref();
+const sortTypeChange = sortType => {
+  state.datasourceTree = treeSort(originResourceTree, sortType)
+  state.curSortType = sortType
+}
+
+let listScrollTop = 0
+const handleScroll = val => {
+  listScrollTop = val.scrollTop
+}
+
+const scrollbarRef = ref()
+
+const getDsIconName = data => {
+  if (!data.leaf) return dvFolder
+  return icon_file_doc_colorful
+}
+
+const selectedItemId = ref<string | undefined>()
+
+const selectedItem = ref<DfFormSetting | undefined>()
+
+const dsLoading = ref(false)
+const mounted = ref(false)
+
+const listDf = () => {
+  rawDatasourceList.value = []
+  dsLoading.value = true
+  initModuleAuth({ busiFlag: 'data_filling' })
+    .then(res => {
+      moduleAuthData.value = res
+
+      rootManage.value = moduleAuthData.value.rootManage
+      const nodeData = (moduleAuthData.value.treeNodes as unknown as BusiTreeNode[]) || []
+      if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
+        state.datasourceTree = nodeData[0]['children'] || []
+      } else {
+        state.datasourceTree = moduleAuthData.value.treeNodes
+      }
+      originResourceTree = cloneDeep(unref(state.datasourceTree))
+      let curSortType = sortList[Number(wsCache.get('TreeSort-backend')) ?? 1].value
+      curSortType = wsCache.get('TreeSort-dataFillingForm') ?? curSortType
+      sortTypeChange(curSortType)
+    })
+    .finally(() => {
+      mounted.value = true
+      dsLoading.value = false
+      updateTreeExpand()
+      const id = selectedItemId.value
+      if (!!id) {
+        const pid = selectedItem.value?.pid
+        dfsDatasourceTree(state.datasourceTree, id)
+        setTimeout(() => {
+          if (pid) {
+            const node = dsListTree.value.getNode(pid)
+            if (node && !node.expanded) {
+              node.expand()
+            }
+          }
+          dsListTree.value.setCurrentKey(id, true)
+        }, 100)
+      }
+    })
+}
+
+const dfsDatasourceTree = (ds, id) => {
+  const has = findNode(ds, id)
+  if (has) {
+    selectedItemId.value = id
+  } else {
+    selectedItemId.value = undefined
+  }
+}
+
+function findNode(ds, id) {
+  return some(ds, ele => {
+    if (ele.id === id) {
+      handleNodeClick(ele)
+      return true
+    } else if (ele.children?.length > 0) {
+      return findNode(ele.children, id)
+    }
+    return false
+  })
+}
+
+const creatDsFolder = ref()
+const rowDataFormRef = ref()
 
 function onCloseToRefresh() {
-  search(searchConditions.value);
+  search(searchConditions.value)
 }
 
 const sortList = [
   {
-    name: t("visualization.time_asc"),
-    value: "time_asc",
+    name: t('visualization.time_asc'),
+    value: 'time_asc'
   },
   {
-    name: t("visualization.time_desc"),
-    value: "time_desc",
-    divided: true,
+    name: t('visualization.time_desc'),
+    value: 'time_desc',
+    divided: true
   },
   {
-    name: t("visualization.name_asc"),
-    value: "name_asc",
+    name: t('visualization.name_asc'),
+    value: 'name_asc'
   },
   {
-    name: t("visualization.name_desc"),
-    value: "name_desc",
-  },
-];
+    name: t('visualization.name_desc'),
+    value: 'name_desc'
+  }
+]
 
 const sortTypeTip = computed(() => {
-  return sortList.find((ele) => ele.value === state.curSortType)?.name;
-});
+  return sortList.find(ele => ele.value === state.curSortType)?.name
+})
 
-const mainLoading = ref(false);
+const mainLoading = ref(false)
 
-const handleNodeClick = (data) => {
+const handleNodeClick = data => {
   try {
     if (router.currentRoute.value.query?.id) {
       //清理url路径上的id
-      router.replace({ name: "data-filling-manage" });
+      router.replace({ name: 'data-filling-manage' })
     }
   } catch (e) {}
 
   if (!data.leaf) {
-    dsListTree.value.setCurrentKey(null);
-    return;
+    dsListTree.value.setCurrentKey(null)
+    return
   }
 
   if (selectedItemId.value !== data.id) {
-    state.dfTableData = [];
-    searchConditions.value = [];
+    state.dfTableData = []
+    searchConditions.value = []
   }
 
-  selectedItemId.value = data.id;
-  selectedItem.value = undefined;
+  selectedItemId.value = data.id
+  selectedItem.value = undefined
 
-  mainLoading.value = true;
+  mainLoading.value = true
   return getDataFilling(data.id)
-    .then((res) => {
+    .then(res => {
       const {
         id,
         name,
@@ -368,8 +385,8 @@ const handleNodeClick = (data) => {
         creator,
         updater,
         createTime,
-        updateTime,
-      } = res;
+        updateTime
+      } = res
 
       const obj = {
         id,
@@ -383,230 +400,249 @@ const handleNodeClick = (data) => {
         updater,
         createTime,
         updateTime,
-        weight: data.weight,
-      };
+        weight: data.weight
+      }
 
-      selectedItem.value = obj;
+      selectedItem.value = obj
 
-      state.paginationConfig.currentPage = 1;
+      state.paginationConfig.currentPage = 1
 
-      activeName.value = "dataPreview";
-      state.multipleSelection = [];
-      handleClick("dataPreview");
+      activeName.value = 'dataPreview'
+      state.multipleSelection = []
+      handleClick('dataPreview')
     })
     .finally(() => {
-      mainLoading.value = false;
-    });
-};
+      mainLoading.value = false
+    })
+}
 
-const dsListTree = ref();
-const expandedKey = ref([]);
-const dsListTreeShow = ref(true);
+const dsListTree = ref()
+const expandedKey = ref([])
+const dsListTreeShow = ref(true)
 watch(dsName, (val: string) => {
-  dsListTree.value.filter(val);
-});
+  dsListTree.value.filter(val)
+})
 const updateTreeExpand = () => {
-  dsListTreeShow.value = false;
+  dsListTreeShow.value = false
   nextTick(() => {
-    dsListTreeShow.value = true;
+    dsListTreeShow.value = true
     nextTick(() => {
-      scrollbarRef.value?.setScrollTop(listScrollTop);
-    });
-  });
-};
+      scrollbarRef.value?.setScrollTop(listScrollTop)
+    })
+  })
+}
 
-const nodeExpand = (data) => {
+const nodeExpand = data => {
   if (data.id) {
-    expandedKey.value.push(data.id);
+    expandedKey.value.push(data.id)
   }
-};
+}
 
-const nodeCollapse = (data) => {
+const nodeCollapse = data => {
   if (data.id) {
-    expandedKey.value.splice(expandedKey.value.indexOf(data.id), 1);
+    expandedKey.value.splice(expandedKey.value.indexOf(data.id), 1)
   }
-};
+}
 
 const filterNode = (value: string, data: BusiTreeNode) => {
-  if (!value) return true;
-  return data.name?.toLowerCase().includes(value.toLowerCase());
-};
+  if (!value) return true
+  return data.name?.toLowerCase().includes(value.toLowerCase())
+}
 
-const handleEdit = async (data) => {
-  await handleNodeClick(data);
-  editForm(data.id);
-};
+const handleEdit = async data => {
+  await handleNodeClick(data)
+  editForm(data.id)
+}
 
 const createForm = (data?: Tree) => {
   if (isEmbedded.value) {
-    embeddedStore.clearState();
-    embeddedStore.setOpt("create");
-    embeddedStore.setDfId(undefined);
-    embeddedStore.setPid(data?.id);
-    useEmitt().emitter.emit("changeCurrentComponent", "DataFillingEditor");
-    return;
+    embeddedStore.clearState()
+    embeddedStore.setOpt('create')
+    embeddedStore.setDfId(undefined)
+    embeddedStore.setPid(data?.id)
+    useEmitt().emitter.emit('changeCurrentComponent', 'DataFillingEditor')
+    return
   }
   router.push({
-    path: "/df-form",
+    path: '/df-form',
     query: {
-      pid: data?.id,
-    },
-  });
-};
+      pid: data?.id
+    }
+  })
+}
 
 function editForm(id) {
   if (isEmbedded.value) {
-    embeddedStore.clearState();
-    embeddedStore.setOpt("edit");
-    embeddedStore.setDfId(id);
-    useEmitt().emitter.emit("changeCurrentComponent", "DataFillingEditor");
-    return;
+    embeddedStore.clearState()
+    embeddedStore.setOpt('edit')
+    embeddedStore.setDfId(id)
+    useEmitt().emitter.emit('changeCurrentComponent', 'DataFillingEditor')
+    return
   }
   router.push({
-    path: "/df-form",
+    path: '/df-form',
     query: {
-      id: id,
-    },
-  });
+      id: id
+    }
+  })
 }
 
 function copyForm(id) {
   if (isEmbedded.value) {
-    embeddedStore.clearState();
-    embeddedStore.setOpt("copy");
-    embeddedStore.setDfId(id);
-    useEmitt().emitter.emit("changeCurrentComponent", "DataFillingEditor");
-    return;
+    embeddedStore.clearState()
+    embeddedStore.setOpt('copy')
+    embeddedStore.setDfId(id)
+    useEmitt().emitter.emit('changeCurrentComponent', 'DataFillingEditor')
+    return
   }
   router.push({
-    path: "/df-form",
+    path: '/df-form',
     query: {
-      copyId: id,
-    },
-  });
+      copyId: id
+    }
+  })
 }
 
-const handleCopy = async (data) => {
-  await handleNodeClick(data);
-  copyForm(data.id);
-};
+const handleCopy = async data => {
+  await handleNodeClick(data)
+  copyForm(data.id)
+}
 
 const handleFormTree = (cmd: string, data?: Tree) => {
-  if (cmd === "data-filling") {
-    createForm(data);
+  if (cmd === 'data-filling') {
+    createForm(data)
   }
-  if (cmd === "folder") {
-    creatDsFolder.value.createInit(cmd, data || {});
+  if (cmd === 'folder') {
+    creatDsFolder.value.createInit(cmd, data || {})
   }
-};
+}
 const operation = (cmd: string, data: Tree, nodeType: string) => {
-  if (cmd === "copy") {
-    handleCopy(data);
-  } else if (cmd === "delete") {
+  if (cmd === 'copy') {
+    handleCopy(data)
+  } else if (cmd === 'delete') {
     let options = {
-      confirmButtonText: t("common.sure"),
-      cancelButtonText: t("common.cancel"),
-      confirmButtonType: "danger",
-      type: "warning",
-      tip: "",
+      confirmButtonText: t('common.sure'),
+      cancelButtonText: t('common.cancel'),
+      confirmButtonType: 'danger',
+      type: 'warning',
+      tip: '',
       autofocus: false,
-      showClose: false,
-    };
+      showClose: false
+    }
     if (!!data.children?.length) {
-      options.tip = t("data_fill.delete_folder_hint");
+      options.tip = t('data_fill.delete_folder_hint')
     } else {
-      delete options.tip;
+      delete options.tip
     }
     ElMessageBox.confirm(
-      nodeType === "folder"
-        ? t("data_fill.confirm_delete_folder")
-        : t("data_fill.confirm_delete_form"),
-      options as ElMessageBoxOptions,
+      nodeType === 'folder'
+        ? t('data_fill.confirm_delete_folder')
+        : t('data_fill.confirm_delete_form'),
+      options as ElMessageBoxOptions
     ).then(() => {
       deleteById(data.id as string).then(() => {
-        listDf();
-        ElMessage.success(t("dataset.delete_success"));
-      });
-    });
+        listDf()
+        ElMessage.success(t('dataset.delete_success'))
+      })
+    })
   } else {
-    creatDsFolder.value.createInit(nodeType, data, cmd);
+    creatDsFolder.value.createInit(nodeType, data, cmd)
   }
-};
+}
 
 const defaultProps = {
-  children: "children",
-  label: "name",
-  disabled: (data) => !data.weight,
-};
+  children: 'children',
+  label: 'name',
+  disabled: data => !data.weight
+}
 
 const sortInit = () => {
-  const historyTreeSort = wsCache.get("TreeSort-dataFillingForm");
+  const historyTreeSort = wsCache.get('TreeSort-dataFillingForm')
   if (historyTreeSort) {
-    state.curSortType = historyTreeSort;
+    state.curSortType = historyTreeSort
   }
-};
+}
 
 onMounted(async () => {
-  sortInit();
-  listDf();
-  selectedItemId.value = router.currentRoute.value.query?.id;
-});
+  sortInit()
+  listDf()
+  selectedItemId.value = router.currentRoute.value.query?.id
 
-const sideTreeStatus = ref(true);
-const changeSideTreeStatus = (val) => {
-  sideTreeStatus.value = val;
-};
+  nextTick(() => {
+    updateDatasourceContentHeight()
+    if (typeof ResizeObserver !== 'undefined' && datasourceManageRef.value) {
+      datasourceManageResizeObserver = new ResizeObserver(() => {
+        updateDatasourceContentHeight()
+      })
+      datasourceManageResizeObserver.observe(datasourceManageRef.value)
+    }
+  })
+})
+
+onBeforeUnmount(() => {
+  datasourceManageResizeObserver?.disconnect()
+})
+
+watch([isIframe, isDataEaseBi], () => {
+  nextTick(() => {
+    updateDatasourceContentHeight()
+  })
+})
+
+const sideTreeStatus = ref(true)
+const changeSideTreeStatus = val => {
+  sideTreeStatus.value = val
+}
 
 const mouseenter = () => {
-  appStore.setArrowSide(true);
-};
+  appStore.setArrowSide(true)
+}
 
 const mouseleave = () => {
-  appStore.setArrowSide(false);
-};
+  appStore.setArrowSide(false)
+}
 
 const getMenuList = (val: boolean, data?: any) => {
   let list = !val
     ? menuList
     : [
         {
-          label: t("common.copy"),
+          label: t('common.copy'),
           svgName: icon_copy_filled,
-          command: "copy",
-        },
-      ].concat(menuList);
-  return list.filter((item) => {
-    if (disabledMove.value && item.command === "move") return false;
-    if (data?.orgRoot && (item.command === "move" || item.command === "delete"))
-      return false;
-    return true;
-  });
-};
+          command: 'copy'
+        }
+      ].concat(menuList)
+  return list.filter(item => {
+    if (disabledMove.value && item.command === 'move') return false
+    if (data?.orgRoot && (item.command === 'move' || item.command === 'delete')) return false
+    return true
+  })
+}
 
-const activeName = ref("dataPreview");
+const activeName = ref('dataPreview')
 
 const handleClick = (tabName: TabPaneName) => {
   switch (tabName) {
-    case "dataPreview":
-      search(searchConditions.value);
-      break;
-    case "record":
-      state.multipleSelection = [];
-      break;
-    case "task":
-      state.multipleSelection = [];
-      break;
+    case 'dataPreview':
+      search(searchConditions.value)
+      break
+    case 'record':
+      state.multipleSelection = []
+      break
+    case 'task':
+      state.multipleSelection = []
+      break
   }
-};
+}
 
 const existsForms = computed<Array<DfFormItem>>(() => {
-  return filter(selectedItem.value?.forms, (f) => !f.removed);
-});
+  return filter(selectedItem.value?.forms, f => !f.removed)
+})
 
 const columns = computed<Array<ColumnItem>>(() => {
-  const _list: Array<ColumnItem> = [];
-  forEach(existsForms.value, (f) => {
-    if (f.type === "dateRange") {
+  const _list: Array<ColumnItem> = []
+  forEach(existsForms.value, f => {
+    if (f.type === 'dateRange') {
       _list.push({
         id: f.id,
         props: f.settings?.mapping?.columnName1,
@@ -616,8 +652,8 @@ const columns = computed<Array<ColumnItem>>(() => {
         dateType: f.settings?.dateType,
         type: f.type,
         multiple: !!f.settings.multiple,
-        rangeIndex: 0,
-      } as ColumnItem);
+        rangeIndex: 0
+      } as ColumnItem)
       _list.push({
         id: f.id,
         props: f.settings?.mapping?.columnName2,
@@ -627,15 +663,15 @@ const columns = computed<Array<ColumnItem>>(() => {
         dateType: f.settings?.dateType,
         type: f.type,
         multiple: !!f.settings.multiple,
-        rangeIndex: 1,
-      } as ColumnItem);
+        rangeIndex: 1
+      } as ColumnItem)
     } else {
       _list.push({
         id: f.id,
         props: f.settings?.mapping?.columnName,
         label: f.settings?.name,
-        date: f.type === "date",
-        number: f.settings.inputType === "number",
+        date: f.type === 'date',
+        number: f.settings.inputType === 'number',
         dateType: f.settings?.dateType,
         type: f.type,
         multiple: !!f.settings.multiple,
@@ -644,60 +680,57 @@ const columns = computed<Array<ColumnItem>>(() => {
           optionDatasource: f.settings.optionDatasource,
           optionTable: f.settings.optionTable,
           optionColumn: f.settings.optionColumn,
-          optionOrder: f.settings.optionOrder,
+          optionOrder: f.settings.optionOrder
         },
         options: f.settings.options,
         tempId:
           f.settings.optionDatasource +
-          "_" +
+          '_' +
           f.settings.optionTable +
-          "_" +
+          '_' +
           f.settings.optionColumn +
-          "_" +
-          f.settings.optionOrder,
-      } as ColumnItem);
+          '_' +
+          f.settings.optionOrder
+      } as ColumnItem)
     }
-  });
-  return _list;
-});
+  })
+  return _list
+})
 
 const dateFormatColumns = computed(() => {
   return map(
-    filter(columns.value, (c) => c.date),
-    "props",
-  );
-});
+    filter(columns.value, c => c.date),
+    'props'
+  )
+})
 
 const search = (condition = []) => {
-  searchConditions.value = condition;
+  searchConditions.value = condition
   if (!selectedItem.value?.id) {
-    return;
+    return
   }
-  dsLoading.value = true;
+  dsLoading.value = true
 
-  const _condition: Array<any> = [];
+  const _condition: Array<any> = []
   for (let i = 0; i < searchConditions.value.length; i++) {
-    const c = searchConditions.value[i];
+    const c = searchConditions.value[i]
     if (c.date) {
-      if (c.term === "between") {
+      if (c.term === 'between') {
         _condition.push({
           field: c.column,
           value: undefined,
-          values: [
-            dayjs(c.values[0]).toDate().getTime(),
-            dayjs(c.values[1]).toDate().getTime(),
-          ],
+          values: [dayjs(c.values[0]).toDate().getTime(), dayjs(c.values[1]).toDate().getTime()],
           term: c.term,
-          multiple: c.multiple,
-        });
+          multiple: c.multiple
+        })
       } else {
         _condition.push({
           field: c.column,
           value: dayjs(c.value).toDate().getTime(),
           values: [],
           term: c.term,
-          multiple: c.multiple,
-        });
+          multiple: c.multiple
+        })
       }
     } else {
       _condition.push({
@@ -705,289 +738,269 @@ const search = (condition = []) => {
         value: c.value,
         values: c.values,
         term: c.term,
-        multiple: c.multiple,
-      });
+        multiple: c.multiple
+      })
     }
   }
 
   searchTable(selectedItem.value.id, {
     currentPage: state.paginationConfig.currentPage,
     pageSize: state.paginationConfig.pageSize,
-    searchParams: _condition,
+    searchParams: _condition
   })
-    .then((res) => {
+    .then(res => {
       if (res.data) {
-        state.paginationConfig.key = res.data.key;
-        state.paginationConfig.total = res.data.total;
-        state.paginationConfig.currentPage = res.data.currentPage;
-        const _data = [];
-        forEach(res.data.data, (d) => {
-          const obj = {};
+        state.paginationConfig.key = res.data.key
+        state.paginationConfig.total = res.data.total
+        state.paginationConfig.currentPage = res.data.currentPage
+        const _data = []
+        forEach(res.data.data, d => {
+          const obj = {}
           forIn(d.data, (value, key) => {
             if (includes(dateFormatColumns.value, key)) {
               if (value) {
-                obj[key] = new Date(value);
+                obj[key] = new Date(value)
               } else {
-                obj[key] = undefined;
+                obj[key] = undefined
               }
             } else {
-              obj[key] = value === null ? undefined : value;
+              obj[key] = value === null ? undefined : value
             }
-          });
+          })
           _data.push({
             data: obj,
-            logInfo: d.logInfo ? JSON.parse(d.logInfo) : undefined,
-          });
-        });
-        state.dfTableData = _data;
+            logInfo: d.logInfo ? JSON.parse(d.logInfo) : undefined
+          })
+        })
+        state.dfTableData = _data
       }
     })
     .finally(() => {
-      dsLoading.value = false;
-    });
-};
+      dsLoading.value = false
+    })
+}
 
-const pageChange = (index) => {
-  if (typeof index !== "number") {
-    return;
+const pageChange = index => {
+  if (typeof index !== 'number') {
+    return
   }
-  state.paginationConfig.currentPage = index;
-  search(searchConditions.value);
-};
+  state.paginationConfig.currentPage = index
+  search(searchConditions.value)
+}
 
-const sizeChange = (size) => {
-  state.paginationConfig.pageSize = size;
-  state.paginationConfig.currentPage = 1;
-  search(searchConditions.value);
-};
-const sortChange = (param) => {
-  state.orders = [];
-  if (param.order && param.prop === "createTime") {
-    const type = param.order.substring(0, param.order.indexOf("ending"));
-    state.orders.push("create_time " + type);
-    search(searchConditions.value);
+const sizeChange = size => {
+  state.paginationConfig.pageSize = size
+  state.paginationConfig.currentPage = 1
+  search(searchConditions.value)
+}
+const sortChange = param => {
+  state.orders = []
+  if (param.order && param.prop === 'createTime') {
+    const type = param.order.substring(0, param.order.indexOf('ending'))
+    state.orders.push('create_time ' + type)
+    search(searchConditions.value)
   }
-};
+}
 
-const multipleTableRef = ref();
+const multipleTableRef = ref()
 
-const handleSelectionChange = (rows) => {
-  state.multipleSelection = rows;
-};
+const handleSelectionChange = rows => {
+  state.multipleSelection = rows
+}
 
 const clearSelection = () => {
-  multipleTableRef.value?.clearSelection();
-};
+  multipleTableRef.value?.clearSelection()
+}
 
 const batchDelHandler = () => {
   ElMessageBox.confirm(
-    t("data_fill.confirm_delete_multiple_data", [
-      state.multipleSelection.length,
-    ]),
+    t('data_fill.confirm_delete_multiple_data', [state.multipleSelection.length]),
     {
-      confirmButtonType: "danger",
-      type: "warning",
-      confirmButtonText: t("common.delete"),
-      cancelButtonText: t("dataset.cancel"),
+      confirmButtonType: 'danger',
+      type: 'warning',
+      confirmButtonText: t('common.delete'),
+      cancelButtonText: t('dataset.cancel'),
       autofocus: false,
-      showClose: false,
-    },
+      showClose: false
+    }
   )
-    .then((res) => {
-      batchDel();
+    .then(res => {
+      batchDel()
     })
     .catch(() => {
-      clearSelection();
-    });
-};
+      clearSelection()
+    })
+}
 
 const batchDel = () => {
   if (selectedItemId.value) {
-    const key = state.paginationConfig.key;
-    const ids = state.multipleSelection.map((item) => item.data[key]);
-    dsLoading.value = true;
+    const key = state.paginationConfig.key
+    const ids = state.multipleSelection.map(item => item.data[key])
+    dsLoading.value = true
 
     batchDeleteRowData(selectedItemId.value, ids)
-      .then((res) => {
-        ElMessage.success(t("common.delete_success"));
-        search(searchConditions.value);
+      .then(res => {
+        ElMessage.success(t('common.delete_success'))
+        search(searchConditions.value)
       })
-      .catch((e) => {
-        dsLoading.value = false;
-      });
+      .catch(e => {
+        dsLoading.value = false
+      })
   }
-};
+}
 
 const addRowData = () => {
-  rowDataFormRef.value?.init(
-    selectedItemId.value,
-    true,
-    true,
-    undefined,
-    undefined,
-    true,
-  );
-};
+  rowDataFormRef.value?.init(selectedItemId.value, true, true, undefined, undefined, true)
+}
 
 function openRow(item) {
-  const id = item[state.paginationConfig.key];
-  rowDataFormRef.value?.init(selectedItemId.value, true, false, [
-    { rowDataId: id },
-  ]);
+  const id = item[state.paginationConfig.key]
+  rowDataFormRef.value?.init(selectedItemId.value, true, false, [{ rowDataId: id }])
 }
 
 function updateRow(item) {
-  const id = item[state.paginationConfig.key];
-  rowDataFormRef.value?.init(
-    selectedItemId.value,
-    true,
-    true,
-    [{ rowDataId: id }],
-    undefined,
-    true,
-  );
+  const id = item[state.paginationConfig.key]
+  rowDataFormRef.value?.init(selectedItemId.value, true, true, [{ rowDataId: id }], undefined, true)
 }
 
 function deleteRow(id) {
-  ElMessageBox.confirm(t("data_fill.confirm_delete_data"), {
-    confirmButtonType: "danger",
-    type: "warning",
-    confirmButtonText: t("common.delete"),
-    cancelButtonText: t("dataset.cancel"),
+  ElMessageBox.confirm(t('data_fill.confirm_delete_data'), {
+    confirmButtonType: 'danger',
+    type: 'warning',
+    confirmButtonText: t('common.delete'),
+    cancelButtonText: t('dataset.cancel'),
     autofocus: false,
-    showClose: false,
+    showClose: false
   }).then(() => {
-    dsLoading.value = true;
+    dsLoading.value = true
     deleteRowData(selectedItemId.value, id)
-      .then((res) => {
-        ElMessage.success(t("common.delete_success"));
-        search(searchConditions.value);
+      .then(res => {
+        ElMessage.success(t('common.delete_success'))
+        search(searchConditions.value)
       })
-      .catch((e) => {
-        dsLoading.value = false;
-      });
-  });
+      .catch(e => {
+        dsLoading.value = false
+      })
+  })
 }
 
 function truncateTable() {
-  ElMessageBox.confirm(t("data_fill.confirm_truncate_table"), {
-    confirmButtonType: "danger",
-    type: "warning",
-    confirmButtonText: t("data_fill.truncate"),
-    cancelButtonText: t("dataset.cancel"),
+  ElMessageBox.confirm(t('data_fill.confirm_truncate_table'), {
+    confirmButtonType: 'danger',
+    type: 'warning',
+    confirmButtonText: t('data_fill.truncate'),
+    cancelButtonText: t('dataset.cancel'),
     autofocus: false,
-    showClose: false,
+    showClose: false
   }).then(() => {
-    dsLoading.value = true;
+    dsLoading.value = true
     truncateRowData(selectedItemId.value)
-      .then((res) => {
-        ElMessage.success(t("common.delete_success"));
-        search(searchConditions.value);
+      .then(res => {
+        ElMessage.success(t('common.delete_success'))
+        search(searchConditions.value)
       })
-      .catch((e) => {
-        dsLoading.value = false;
-      });
-  });
+      .catch(e => {
+        dsLoading.value = false
+      })
+  })
 }
 
 function openUploadData() {
-  showDownloadDrawer.value = true;
+  showDownloadDrawer.value = true
 }
 
 function closeUpload() {
-  showDownloadDrawer.value = false;
+  showDownloadDrawer.value = false
 }
 
 function downloadData() {
   innerExport(selectedItemId.value, isEmbedded.value)
-    .then((res) => {
+    .then(res => {
       if (isEmbedded.value && embeddedSyncExport.value) {
-        const blobData = res.data;
-        const temp = res.headers["content-disposition"]
-          ?.split(";")[1]
-          ?.split("filename*=utf-8''")[1];
-        const fileName = temp
-          ? decodeURIComponent(temp)
-          : `${selectedItem.value.name}.xlsx`;
+        const blobData = res.data
+        const temp = res.headers['content-disposition']
+          ?.split(';')[1]
+          ?.split("filename*=utf-8''")[1]
+        const fileName = temp ? decodeURIComponent(temp) : `${selectedItem.value.name}.xlsx`
         const blob = new Blob([blobData], {
           type:
-            res.headers["content-type"] ??
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8",
-        });
-        const link = document.createElement("a");
-        link.style.display = "none";
-        link.href = URL.createObjectURL(blob);
-        link.download = fileName; // 下载的文件名
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+            res.headers['content-type'] ??
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8'
+        })
+        const link = document.createElement('a')
+        link.style.display = 'none'
+        link.href = URL.createObjectURL(blob)
+        link.download = fileName // 下载的文件名
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
       } else {
-        openMessageLoading(exportData);
+        openMessageLoading(exportData)
       }
     })
     .catch(() => {
-      console.error("Excel download error");
-    });
+      console.error('Excel download error')
+    })
 }
 
 const exportData = () => {
-  useEmitt().emitter.emit("data-export-center", { activeName: "IN_PROGRESS" });
-};
+  useEmitt().emitter.emit('data-export-center', { activeName: 'IN_PROGRESS' })
+}
 
-const openMessageLoading = (cb) => {
-  const iconClass = `el-icon-loading`;
-  const customClass = `de-message-loading de-message-export`;
+const openMessageLoading = cb => {
+  const iconClass = `el-icon-loading`
+  const customClass = `de-message-loading de-message-export`
   ElMessage({
-    message: h("p", null, [
-      t("data_fill.exporting"),
+    message: h('p', null, [
+      t('data_fill.exporting'),
       h(
         ElButton,
         {
           text: true,
-          size: "small",
-          class: "btn-text",
+          size: 'small',
+          class: 'btn-text',
           onClick: () => {
-            cb();
-          },
+            cb()
+          }
         },
-        t("data_export.export_center"),
+        t('data_export.export_center')
       ),
-      t("data_fill.progress_to_download"),
+      t('data_fill.progress_to_download')
     ]),
     iconClass,
     icon: h(RefreshLeft),
     showClose: true,
-    customClass,
-  });
-};
-
-function finishUpload() {
-  closeUpload();
-  search(searchConditions.value);
+    customClass
+  })
 }
 
-const showFilter = ref(false);
-const searchConditions = ref([]);
+function finishUpload() {
+  closeUpload()
+  search(searchConditions.value)
+}
+
+const showFilter = ref(false)
+const searchConditions = ref([])
 const drawerMainOpen = async () => {
   //todo
-  showFilter.value = true;
-};
+  showFilter.value = true
+}
 const drawerMainClose = () => {
-  showFilter.value = false;
-};
+  showFilter.value = false
+}
 
 function getMultipleValueList(data) {
   try {
-    return join(JSON.parse(data), "; ");
+    return join(JSON.parse(data), '; ')
   } catch (e) {
-    console.error(e);
+    console.error(e)
   }
-  return "";
+  return ''
 }
 </script>
 
 <template>
-  <div class="datasource-manage" v-loading="dsLoading">
+  <div class="datasource-manage" ref="datasourceManageRef" v-loading="dsLoading">
     <ArrowSide
       :style="{ left: (sideTreeStatus ? width - 12 : 0) + 'px' }"
       @change-side-tree-status="changeSideTreeStatus"
@@ -1009,11 +1022,8 @@ function getMultipleValueList(data) {
       <div class="resource-tree">
         <div class="tree-header">
           <div class="icon-methods">
-            <span class="title"> {{ t("data_fill.data_fill") }} </span>
-            <div
-              v-if="rootManage || moduleAuthData.anyManage"
-              class="flex-align-center"
-            >
+            <span class="title"> {{ t('data_fill.data_fill') }} </span>
+            <div v-if="rootManage || moduleAuthData.anyManage" class="flex-align-center">
               <el-tooltip
                 effect="dark"
                 offset="14"
@@ -1065,26 +1075,12 @@ function getMultipleValueList(data) {
           </el-input>
           <el-dropdown @command="handleSortTypeChange" trigger="click">
             <el-icon class="filter-icon-span">
-              <el-tooltip
-                :offset="16"
-                effect="dark"
-                :content="sortTypeTip"
-                placement="top"
-              >
-                <Icon
-                  v-if="state.curSortType.includes('asc')"
-                  name="dv-sort-asc"
-                  class="opt-icon"
-                >
+              <el-tooltip :offset="16" effect="dark" :content="sortTypeTip" placement="top">
+                <Icon v-if="state.curSortType.includes('asc')" name="dv-sort-asc" class="opt-icon">
                   <dvSortAsc />
                 </Icon>
               </el-tooltip>
-              <el-tooltip
-                :offset="16"
-                effect="dark"
-                :content="sortTypeTip"
-                placement="top"
-              >
+              <el-tooltip :offset="16" effect="dark" :content="sortTypeTip" placement="top">
                 <Icon
                   v-if="state.curSortType.includes('desc')"
                   name="dv-sort-desc"
@@ -1104,10 +1100,7 @@ function getMultipleValueList(data) {
                   >
                     {{ ele.name }}
                   </el-dropdown-item>
-                  <li
-                    v-if="ele.divided"
-                    class="ed-dropdown-menu__item--divided"
-                  ></li>
+                  <li v-if="ele.divided" class="ed-dropdown-menu__item--divided"></li>
                 </template>
               </el-dropdown-menu>
             </template>
@@ -1116,6 +1109,7 @@ function getMultipleValueList(data) {
         <el-scrollbar
           @scroll="handleScroll"
           ref="scrollbarRef"
+          :style="customTreeStyle"
           class="custom-tree"
         >
           <el-tree
@@ -1132,14 +1126,8 @@ function getMultipleValueList(data) {
             @node-click="handleNodeClick"
           >
             <template #default="{ node, data }">
-              <span
-                class="custom-tree-node"
-                :class="{ 'node-disabled-custom': !data.weight }"
-              >
-                <el-icon
-                  :class="data.leaf && 'icon-border'"
-                  style="font-size: 18px"
-                >
+              <span class="custom-tree-node" :class="{ 'node-disabled-custom': !data.weight }">
+                <el-icon :class="data.leaf && 'icon-border'" style="font-size: 18px">
                   <Icon>
                     <component :is="getDsIconName(data)"></component>
                   </Icon>
@@ -1167,7 +1155,7 @@ function getMultipleValueList(data) {
                 <div class="icon-more" v-if="data.weight >= 7">
                   <handle-more
                     icon-size="24px"
-                    @handle-command="(cmd) => handleFormTree(cmd, data)"
+                    @handle-command="cmd => handleFormTree(cmd, data)"
                     :menu-list="addOptionTypeList"
                     :icon-name="icon_add_outlined"
                     placement="bottom-start"
@@ -1178,24 +1166,14 @@ function getMultipleValueList(data) {
                     @click.stop="handleEdit(data)"
                     v-else-if="data.type !== 'Excel'"
                   >
-                    <icon name="icon_edit_outlined"
-                      ><icon_edit_outlined class="svg-icon"
-                    /></icon>
+                    <icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></icon>
                   </el-icon>
                   <handle-more
                     @handle-command="
-                      (cmd) =>
-                        operation(
-                          cmd,
-                          data,
-                          data.leaf ? 'data-filling' : 'folder',
-                        )
+                      cmd => operation(cmd, data, data.leaf ? 'data-filling' : 'folder')
                     "
                     :menu-list="
-                      getMenuList(
-                        !['Excel', 'API'].includes(data.type) && data.leaf,
-                        data,
-                      )
+                      getMenuList(!['Excel', 'API'].includes(data.type) && data.leaf, data)
                     "
                   ></handle-more>
                 </div>
@@ -1209,24 +1187,22 @@ function getMultipleValueList(data) {
     <div
       class="datasource-content"
       :class="{
-        auto: isIframe || isDataEaseBi,
-        h100: isDataEaseBi || isIframe,
+        auto: isEmbedded,
+        h100: isIframe,
+        h90: isDataEaseBi
       }"
+      :style="datasourceContentStyle"
       v-loading="mainLoading"
     >
       <template v-if="!state.datasourceTree.length && mounted">
         <empty-background :description="t('data_fill.no_form')" img-type="none">
-          <el-button
-            v-if="rootManage"
-            @click="() => createForm()"
-            type="primary"
-          >
+          <el-button v-if="rootManage" @click="() => createForm()" type="primary">
             <template #icon>
               <Icon name="icon_add_outlined">
                 <icon_add_outlined class="svg-icon" />
               </Icon>
             </template>
-            {{ t("data_fill.create_form") }}
+            {{ t('data_fill.create_form') }}
           </el-button>
         </empty-background>
       </template>
@@ -1238,15 +1214,9 @@ function getMultipleValueList(data) {
             </span>
             <el-divider style="margin: 0 12px" direction="vertical" />
             <span class="create-user">
-              {{ t("visualization.create_by") }}:{{ selectedItem.creator }}
+              {{ t('visualization.create_by') }}:{{ selectedItem.creator }}
             </span>
-            <el-popover
-              :offset="8"
-              show-arrow
-              placement="bottom"
-              width="290"
-              trigger="hover"
-            >
+            <el-popover :offset="8" show-arrow placement="bottom" width="290" trigger="hover">
               <template #reference>
                 <el-icon size="16px" class="create-user">
                   <Icon name="icon_info_outlined">
@@ -1275,16 +1245,13 @@ function getMultipleValueList(data) {
                     <icon_edit_outlined class="svg-icon" />
                   </Icon>
                 </template>
-                {{ t("common.edit") }}
+                {{ t('common.edit') }}
               </el-button>
             </div>
           </div>
           <div class="tab-border">
             <el-tabs v-model="activeName" @tab-change="handleClick">
-              <el-tab-pane
-                :label="t('data_fill.form.list')"
-                name="dataPreview"
-              />
+              <el-tab-pane :label="t('data_fill.form.list')" name="dataPreview" />
               <el-tab-pane :label="t('data_fill.form.record')" name="record" />
               <el-tab-pane
                 :label="t('data_fill.form.task_manage')"
@@ -1299,43 +1266,25 @@ function getMultipleValueList(data) {
           v-if="activeName === 'dataPreview'"
           class="df-table-container"
           :class="{
-            'df-table-container-no-bottom': state.multipleSelection.length,
+            'df-table-container-no-bottom': state.multipleSelection.length
           }"
         >
-          <div
-            style="
-              display: flex;
-              height: 100%;
-              width: 100%;
-              flex-direction: column;
-            "
-          >
+          <div style="display: flex; height: 100%; width: 100%; flex-direction: column">
             <div
               class="df-table"
               :class="{
-                'df-table-bottom': state.multipleSelection.length,
+                'df-table-bottom': state.multipleSelection.length
               }"
             >
-              <div
-                style="
-                  width: 100%;
-                  display: flex;
-                  flex-direction: row;
-                  margin-bottom: 16px;
-                "
-              >
-                <div
-                  class="search-operate"
-                  v-if="selectedItem?.weight >= 7"
-                  style="flex: 1"
-                >
+              <div style="width: 100%; display: flex; flex-direction: row; margin-bottom: 16px">
+                <div class="search-operate" v-if="selectedItem?.weight >= 7" style="flex: 1">
                   <el-button secondary @click="addRowData">
                     <template #icon>
                       <Icon name="icon_add_outlined">
                         <icon_add_outlined class="svg-icon" />
                       </Icon>
                     </template>
-                    {{ t("data_fill.data.add_data") }}
+                    {{ t('data_fill.data.add_data') }}
                   </el-button>
                   <el-button secondary @click="openUploadData">
                     <template #icon>
@@ -1343,7 +1292,7 @@ function getMultipleValueList(data) {
                         <icon_upload_outlined />
                       </Icon>
                     </template>
-                    {{ t("data_fill.data.batch_upload") }}
+                    {{ t('data_fill.data.batch_upload') }}
                   </el-button>
                   <el-button secondary @click="downloadData">
                     <template #icon>
@@ -1351,20 +1300,16 @@ function getMultipleValueList(data) {
                         <icon_download_outlined />
                       </Icon>
                     </template>
-                    {{ t("data_fill.data.download") }}
+                    {{ t('data_fill.data.download') }}
                   </el-button>
                   <el-button secondary @click="truncateTable">
-                    {{ t("data_fill.truncate_table") }}
+                    {{ t('data_fill.truncate_table') }}
                   </el-button>
                 </div>
                 <el-button
                   @click="drawerMainOpen"
                   :plain="!!searchConditions.length"
-                  :class="
-                    searchConditions.length
-                      ? 'filter-condition-button'
-                      : 'filter-button'
-                  "
+                  :class="searchConditions.length ? 'filter-condition-button' : 'filter-button'"
                 >
                   <template #icon>
                     <Icon name="icon-filter">
@@ -1372,17 +1317,12 @@ function getMultipleValueList(data) {
                     </Icon>
                   </template>
                   {{
-                    t("common.filter") +
-                    (searchConditions.length
-                      ? `(${searchConditions?.length})`
-                      : "")
+                    t('common.filter') +
+                    (searchConditions.length ? `(${searchConditions?.length})` : '')
                   }}
                 </el-button>
               </div>
-              <div
-                class="info-table-full"
-                :class="{ 'info-table': selectedItem?.weight >= 7 }"
-              >
+              <div class="info-table-full" :class="{ 'info-table': selectedItem?.weight >= 7 }">
                 <GridTable
                   ref="multipleTableRef"
                   :pagination="state.paginationConfig"
@@ -1396,24 +1336,12 @@ function getMultipleValueList(data) {
                   @selection-change="handleSelectionChange"
                   border
                 >
-                  <el-table-column
-                    type="selection"
-                    width="36"
-                    v-if="selectedItem?.weight >= 7"
-                  />
-                  <el-table-column
-                    v-for="c in columns"
-                    :key="c.props"
-                    :prop="c.props"
-                  >
+                  <el-table-column type="selection" width="36" v-if="selectedItem?.weight >= 7" />
+                  <el-table-column v-for="c in columns" :key="c.props" :prop="c.props">
                     <template #header>
                       {{ c.label }}
-                      <span v-if="c.rangeIndex === 0"
-                        >({{ t("data_fill.data.start") }})</span
-                      >
-                      <span v-if="c.rangeIndex === 1"
-                        >({{ t("data_fill.data.end") }})</span
-                      >
+                      <span v-if="c.rangeIndex === 0">({{ t('data_fill.data.start') }})</span>
+                      <span v-if="c.rangeIndex === 1">({{ t('data_fill.data.end') }})</span>
                     </template>
                     <template #default="scope">
                       <span
@@ -1425,8 +1353,7 @@ function getMultipleValueList(data) {
                       </span>
                       <template
                         v-else-if="
-                          ((c.type === 'select' && c.multiple) ||
-                            c.type === 'checkbox') &&
+                          ((c.type === 'select' && c.multiple) || c.type === 'checkbox') &&
                           scope.row.data[c.props]
                         "
                       >
@@ -1461,16 +1388,10 @@ function getMultipleValueList(data) {
                     width="180"
                   >
                     <template #default="scope">
-                      {{
-                        formatDate(scope.row.logInfo?.commitTime, "datetime")
-                      }}
+                      {{ formatDate(scope.row.logInfo?.commitTime, 'datetime') }}
                     </template>
                   </el-table-column>
-                  <el-table-column
-                    :label="t('data_fill.form.operation')"
-                    width="160"
-                    fixed="right"
-                  >
+                  <el-table-column :label="t('data_fill.form.operation')" width="160" fixed="right">
                     <template #default="scope">
                       <div style="display: flex; flex-direction: row">
                         <el-button text @click="openRow(scope.row.data)">
@@ -1494,11 +1415,7 @@ function getMultipleValueList(data) {
                         <el-button
                           text
                           v-if="selectedItem?.weight >= 7"
-                          @click="
-                            deleteRow(
-                              scope.row.data[state.paginationConfig.key],
-                            )
-                          "
+                          @click="deleteRow(scope.row.data[state.paginationConfig.key])"
                         >
                           <template #icon>
                             <Icon name="icon_delete-trash_outlined">
@@ -1516,36 +1433,24 @@ function getMultipleValueList(data) {
               v-if="state.multipleSelection.length && selectedItem?.weight >= 7"
               class="df-bottom-bar flex-align-center"
             >
-              <el-button
-                type="danger"
-                class="batch-delete-button"
-                plain
-                @click="batchDelHandler"
-              >
-                {{ t("user.batch_del") }}
+              <el-button type="danger" class="batch-delete-button" plain @click="batchDelHandler">
+                {{ t('user.batch_del') }}
               </el-button>
               <span class="bottom-info">
-                {{ t("user.selection_info", [state.multipleSelection.length]) }}
+                {{ t('user.selection_info', [state.multipleSelection.length]) }}
               </span>
               <el-button text @click="clearSelection">
-                {{ t("data_fill.clear_selection") }}
+                {{ t('data_fill.clear_selection') }}
               </el-button>
             </div>
           </div>
         </div>
 
         <div v-if="activeName === 'record'" class="df-table-container">
-          <LogGrid
-            :form-id="selectedItemId"
-            :has-manage-permission="selectedItem?.weight >= 7"
-          />
+          <LogGrid :form-id="selectedItemId" :has-manage-permission="selectedItem?.weight >= 7" />
         </div>
 
-        <div
-          v-if="activeName === 'task'"
-          class="df-table-container"
-          style="padding: 0"
-        >
+        <div v-if="activeName === 'task'" class="df-table-container" style="padding: 0">
           <TaskGrid
             :form-id="selectedItemId"
             :form-name="selectedItem?.name"
@@ -1555,10 +1460,7 @@ function getMultipleValueList(data) {
         </div>
       </template>
       <template v-else-if="mounted">
-        <empty-background
-          :description="t('data_fill.on_the_left')"
-          img-type="select"
-        />
+        <empty-background :description="t('data_fill.on_the_left')" img-type="select" />
       </template>
     </div>
   </div>
@@ -1597,7 +1499,7 @@ function getMultipleValueList(data) {
 </template>
 
 <style lang="less" scoped>
-@import "@/style/mixin.less";
+@import '@/style/mixin.less';
 
 .filter-icon-span {
   border: 1px solid #d9dcdf;
@@ -1678,7 +1580,7 @@ function getMultipleValueList(data) {
           &:hover {
             cursor: pointer;
             &::after {
-              content: "";
+              content: '';
               background-color: var(--ed-color-primary-1a, #3370ff1a);
               width: 28px;
               height: 28px;
@@ -1760,7 +1662,7 @@ function getMultipleValueList(data) {
     border-radius: 4px;
     margin: 0 0 16px 16px;
     padding: 16px;
-    font-family: var(--de-custom_font, "PingFang");
+    font-family: var(--de-custom_font, 'PingFang');
 
     .name {
       font-size: 16px;
@@ -1834,7 +1736,7 @@ function getMultipleValueList(data) {
   }
 
   .de-expand {
-    font-family: var(--de-custom_font, "PingFang");
+    font-family: var(--de-custom_font, 'PingFang');
     font-size: 14px;
     font-weight: 400;
     line-height: 22px;
@@ -1857,7 +1759,13 @@ function getMultipleValueList(data) {
 
     &.h100 {
       .df-table-container {
-        height: calc(100% - 140px);
+        height: calc(100% - 90px);
+      }
+    }
+
+    &.h90 {
+      .df-table-container {
+        height: calc(100% - 148px);
       }
     }
   }
@@ -1901,7 +1809,7 @@ function getMultipleValueList(data) {
         width: 100%;
         display: flex;
         align-items: center;
-        font-family: var(--de-custom_font, "PingFang");
+        font-family: var(--de-custom_font, 'PingFang');
         font-size: 16px;
         font-weight: 500;
 
@@ -2000,15 +1908,20 @@ function getMultipleValueList(data) {
   align-items: center;
   box-sizing: content-box;
   padding-right: 4px;
+  position: relative;
 
   .label-tooltip {
-    width: 100%;
+    width: calc(100% - 40px);
     margin-left: 8.75px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 18px;
   }
 
   .icon-more {
     margin-left: auto;
-    display: none;
+    opacity: 0;
   }
 
   &:hover {
@@ -2021,7 +1934,7 @@ function getMultipleValueList(data) {
     }
 
     .icon-more {
-      display: inline-flex;
+      opacity: 1;
     }
   }
 }
@@ -2098,7 +2011,7 @@ function getMultipleValueList(data) {
 
   .table-value,
   .table-name {
-    font-family: var(--de-custom_font, "PingFang");
+    font-family: var(--de-custom_font, 'PingFang');
     font-size: 14px;
     font-weight: 400;
     margin: 0;
