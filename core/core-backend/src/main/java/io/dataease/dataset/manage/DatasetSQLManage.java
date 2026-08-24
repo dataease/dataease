@@ -210,10 +210,6 @@ public class DatasetSQLManage {
                 getUnionForEdit(datasetTable, table, unionDTO.getChildrenDs(), checkedInfo, unionList, checkedFields, dsMap, chartExtRequest, isCross, allFields, tableFieldWithValues);
             }
         }
-        // 跨源且包含不支持的数据源，则报错提示
-        if (dsMap.size() > 1 && Arrays.asList(invalidCrossDs).contains(dsMap.entrySet().iterator().next().getValue().getType())) {
-            DEException.throwException(Translator.get("i18n_ds_cross_error"));
-        }
         // build sql
         boolean isFullJoin = false;
         if (!CollectionUtils.isEmpty(unionList)) {
