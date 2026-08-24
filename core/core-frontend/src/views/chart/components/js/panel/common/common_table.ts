@@ -261,6 +261,15 @@ export function getCustomTheme(chart: Chart): S2Theme {
           thumbHoverColor: resetRgbOpacity(tableScrollBarColor, 1.5)
         }
       }
+      if(basicStyle.tableEmptyFontColor) {
+        merge(theme, {
+          empty: {
+            description: {
+              fill: basicStyle.tableEmptyFontColor
+            }
+          }
+        })
+      }
       merge(theme, tmpTheme)
     }
     // header

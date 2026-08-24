@@ -711,7 +711,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       s2.on(S2Event.DATA_CELL_HOVER, event => this.showTooltip(s2, event, meta))
     }
     // empty data tip
-    configEmptyDataStyle(s2, newData)
+    configEmptyDataStyle(s2, newData, basicStyle)
     // click
     s2.on(S2Event.DATA_CELL_CLICK, ev => this.dataCellClickAction(chart, ev, s2, action))
     s2.on(S2Event.ROW_CELL_CLICK, ev => this.headerCellClickAction(chart, ev, s2, action))
@@ -1334,14 +1334,16 @@ class EmptyDataCell extends MergedCell {
     const offsetX = columnHeader.headerConfig.viewportWidth / 2
     const offsetY = rowHeader.headerConfig.viewportHeight / 2
     const style = this.getTextStyle()
+    const meta = this.meta as any
     this.appendChild(
       new Text({
         style: {
           ...style,
+          fill: meta?.fontColor ?? style.fill,
           x: offsetX,
           y: offsetY,
           text: t('data_set.no_data'),
-          opacity: 1,
+          opacity: meta?.opacity ?? 1,
           textAlign: 'center',
           textBaseline: 'middle'
         }
@@ -1353,6 +1355,42 @@ class EmptyDataCell extends MergedCell {
     const cellTheme = this.theme.dataCell.cell
     cellTheme.backgroundColor = setColorOpacity(cellTheme.backgroundColor, 1)
     super.drawBackgroundShape()
+  }
+}
+
+export function splitColorAndOpacity(color: string): { color: string; opacity: number } {
+  if (!color) {
+    return { color, opacity: 1 }
+  }
+  const rgbaMatch = color.match(/^rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d.]+)\s*\)$/i)
+  if (rgbaMatch) {
+    return {
+      color: `rgb(${rgbaMatch[1]}, ${rgbaMatch[2]}, ${rgbaMatch[3]})`,
+      opacity: Number(rgbaMatch[4])
+    }
+  }
+  if (/^#[0-9a-fA-F]{8}$/.test(color)) {
+    const alphaHex = color.slice(7, 9)
+    const opacity = Math.round((parseInt(alphaHex, 16) / 255) * 100) / 100
+    return {
+      color: color.slice(0, 7),
+      opacity
+    }
+  }
+  if (/^#[0-9a-fA-F]{4}$/.test(color)) {
+    const r = color[1]
+    const g = color[2]
+    const b = color[3]
+    const a = color[4]
+    const opacity = Math.round((parseInt(a + a, 16) / 255) * 100) / 100
+    return {
+      color: `#${r}${r}${g}${g}${b}${b}`,
+      opacity
+    }
+  }
+  return {
+    color,
+    opacity: 1
   }
 }
 
@@ -1376,7 +1414,11 @@ export function setColorOpacity(color: string, opacity: number) {
   return color
 }
 
-function configEmptyDataStyle(instance: PivotSheet, data: any[]) {
+function configEmptyDataStyle(
+  instance: PivotSheet,
+  data: any[],
+  basicStyle: DeepPartial<ChartBasicStyle>
+) {
   if (data?.length) {
     return
   }
@@ -1391,7 +1433,14 @@ function configEmptyDataStyle(instance: PivotSheet, data: any[]) {
         mergedCells.push({ rowIndex, colIndex })
       })
     })
-    instance.options.mergedCell = (s, c, m) => new EmptyDataCell(s, c, m)
+    instance.options.mergedCell = (s, c, m = {} as any) => {
+      if (basicStyle.tableEmptyFontColor) {
+        const { color, opacity } = splitColorAndOpacity(basicStyle.tableEmptyFontColor)
+        m.fontColor = color
+        m.opacity = opacity
+      }
+      return new EmptyDataCell(s, c, m)
+    }
     instance.interaction.mergeCells(mergedCells)
   })
 }
