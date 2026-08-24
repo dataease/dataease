@@ -62,7 +62,9 @@ import { useUserStoreWithOut } from '@/store/modules/user'
 import { updatePublishStatus } from '@/api/visualization/dataVisualization'
 import { tryShowLoading, tryHideLoading } from '@/utils/loading'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
+import { useRouter } from 'vue-router_2'
 const permissionStore = usePermissionStoreWithOut()
+const router = useRouter()
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -279,18 +281,18 @@ const saveResource = (checkParams?) => {
       tryShowLoading(loadingKey)
     }
     try {
-      canvasSaveWithParams(checkParams, () => {
+      canvasSaveWithParams(checkParams, async () => {
         snapshotStore.resetStyleChangeTimes()
-        let url = window.location.href
-        url = url.replace(/(#\/[^?]*)(?:\?[^#]*)?/, `$1?resourceId=${dvInfo.value.id}`)
         if (!embeddedStore.baseUrl) {
-          window.history.replaceState(
-            {
-              path: url
-            },
-            '',
-            url
-          )
+          // 改用 router.replace 保留原位替换语义并同步路由状态，确保数据集编辑后返回当前仪表板
+          try {
+            await router.replace({
+              name: 'dashboard',
+              query: { resourceId: String(dvInfo.value.id) }
+            })
+          } catch (e) {
+            console.error(e)
+          }
         }
         if (appData.value) {
           initCanvasData(
