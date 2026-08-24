@@ -49,6 +49,12 @@ import {
   SIDE_LEGEND_MIN_LABEL_WIDTH,
   SIDE_LEGEND_NAVIGATOR_WIDTH
 } from './g2-legend'
+import {
+  LEGEND_POPTIP_FOLLOW_DOM_STYLE,
+  measureLegendTextWidth,
+  prepareLegendPoptip,
+  renderLegendPoptipText
+} from './g2-legend-poptip'
 
 /**
  * 这个文件替换了 G2 整个 layout 模块，所以必须继续提供 G2 原本依赖的三个导出
@@ -147,19 +153,6 @@ const getSideLegendStyle = (component: G2GuideComponentOptions, theme: G2Theme) 
 })
 
 /**
- * 把完整图例文字转成可以安全放进提示层的文本
- *
- * 主要防止图例名称中的尖括号或引号被浏览器当成 HTML
- */
-const escapeLegendPoptipText = (value: unknown) =>
-  `${value ?? ''}`
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;')
-
-/**
  * 清除本文件上一轮给侧边图例添加的省略配置
  *
  * resize 会复用 G2 图例组件，不清理就会继续使用旧画布算出的文字宽度
@@ -174,6 +167,10 @@ const resetManagedLegendTextOverflow = (component: G2GuideComponentOptions) => {
   delete component.itemLabelMaxLines
   delete component.itemLabelTextOverflow
   delete component.dataeaseLegendTextOverflowManaged
+  if (component.dataeaseLegendPoptipManaged === true) {
+    delete component.itemPoptip
+    delete component.dataeaseLegendPoptipManaged
+  }
 }
 
 /**
@@ -182,22 +179,40 @@ const resetManagedLegendTextOverflow = (component: G2GuideComponentOptions) => {
  * Canvas 文字没有浏览器原生 title，所以同时安装 G2 poptip，悬浮时显示完整原文
  * 只在图表没有自己配置 poptip 时补默认提示，避免覆盖业务配置
  */
-const applyLegendTextOverflow = (component: G2GuideComponentOptions, labelWidth: number) => {
+const applyLegendTextOverflow = (
+  component: G2GuideComponentOptions,
+  labelWidth: number,
+  theme: G2Theme
+) => {
+  prepareLegendPoptip()
   component.itemLabelWordWrap = true
   component.itemLabelWordWrapWidth = labelWidth
   component.itemLabelMaxLines = 1
   component.itemLabelTextOverflow = '...'
   component.dataeaseLegendTextOverflowManaged = true
-  component.poptip ??= {
-    // Canvas 文字没有原生 title，悬浮时通过 G2 提示层展示完整原文
-    render: ({ label }) => escapeLegendPoptipText(label),
-    domStyles: {
-      '.component-poptip': {
-        maxWidth: '320px',
-        whiteSpace: 'normal',
-        wordBreak: 'break-all'
+  if (!component.poptip && !component.itemPoptip) {
+    const style = getSideLegendStyle(component, theme)
+    const itemLabelFontSize = Number(style.itemLabelFontSize) || 12
+    const itemLabelFontFamily = `${style.itemLabelFontFamily || 'sans-serif'}`
+    const itemLabelFontWeight = style.itemLabelFontWeight || 'normal'
+    const truncatedItemPoptip = {
+      render: ({ label }) => renderLegendPoptipText(label),
+      domStyles: {
+        '.component-poptip': {
+          ...LEGEND_POPTIP_FOLLOW_DOM_STYLE,
+          maxWidth: '320px',
+          whiteSpace: 'normal',
+          wordBreak: 'break-all'
+        }
       }
     }
+    // 分页后可用宽度会再次缩短，因此回调读取组件当前的最终宽度
+    component.itemPoptip = ({ label }) =>
+      measureLegendTextWidth(label, itemLabelFontSize, itemLabelFontFamily, itemLabelFontWeight) >
+      Number(component.itemLabelWordWrapWidth || labelWidth)
+        ? truncatedItemPoptip
+        : undefined
+    component.dataeaseLegendPoptipManaged = true
   }
 }
 
@@ -254,7 +269,11 @@ const prepareSideLegendLayout = (
     delete component.cols
     delete component.gridRow
     delete component.colPadding
-    applyLegendTextOverflow(component, getSideLegendLabelWidth(component, options, theme, false))
+    applyLegendTextOverflow(
+      component,
+      getSideLegendLabelWidth(component, options, theme, false),
+      theme
+    )
   })
   return sideLegends
 }

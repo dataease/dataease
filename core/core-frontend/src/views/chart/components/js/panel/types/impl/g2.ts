@@ -8,6 +8,12 @@ import { configEmptyDataStyle } from '@/views/chart/components/js/panel/common/c
 import { parseJson, setupSeriesColor } from '../../../util'
 import { isEmpty } from 'lodash-es'
 import { valueFormatter } from '../../../formatter'
+import {
+  LEGEND_POPTIP_FOLLOW_DOM_STYLE,
+  measureLegendTextWidth,
+  prepareLegendPoptip,
+  renderLegendPoptipText
+} from './g2-legend-poptip'
 
 export const LEGEND_NAV_CONTROLLER_PADDING = 5
 export const LEGEND_NAV_CONTROLLER_SPACING = 5
@@ -491,31 +497,13 @@ export const getCategoryLegendStyle = (markerSize: number, fontSize: number, col
   }
 }
 
-let axisLabelMeasureContext: CanvasRenderingContext2D | null | undefined
-
 const measureAxisLabelWidth = (value: unknown, fontSize: number) => {
   const label =
     typeof value === 'object' && value !== null
       ? `${value['label'] ?? value['value'] ?? ''}`
       : `${value ?? ''}`
-  axisLabelMeasureContext ??= document.createElement('canvas').getContext('2d')
-  if (axisLabelMeasureContext) {
-    axisLabelMeasureContext.font = `${fontSize}px sans-serif`
-    return axisLabelMeasureContext.measureText(label).width
-  }
-  return Array.from(label).reduce(
-    (width, char) => width + fontSize * (/[^\x00-\xff]/.test(char) ? 1 : 0.6),
-    0
-  )
+  return measureLegendTextWidth(label, fontSize)
 }
-
-const escapeLegendPoptipText = (value: unknown) =>
-  `${value ?? ''}`
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;')
 
 export const getHorizontalLegendLabelMaxWidth = (fontSize: number) => {
   const safeFontSize = Number.isFinite(fontSize) && fontSize > 0 ? fontSize : 12
@@ -555,8 +543,21 @@ const truncateHorizontalLegendLabel = (value: unknown, fontSize: number, maxWidt
  * 否则任意分页中的超长项都会把所有页面和分页器之间的距离一起撑大
  */
 export const getHorizontalLegendTextStyle = (fontSize: number) => {
+  prepareLegendPoptip()
   const safeFontSize = Number.isFinite(fontSize) && fontSize > 0 ? fontSize : 12
   const maxWidth = getHorizontalLegendLabelMaxWidth(safeFontSize)
+  const truncatedItemPoptip = {
+    // id 始终保留原始图例值，省略后悬停展示完整内容
+    render: ({ id, label }) => renderLegendPoptipText(id ?? label),
+    domStyles: {
+      '.component-poptip': {
+        ...LEGEND_POPTIP_FOLLOW_DOM_STYLE,
+        maxWidth: '320px',
+        whiteSpace: 'normal',
+        wordBreak: 'break-all'
+      }
+    }
+  }
   return {
     labelFormatter: value => truncateHorizontalLegendLabel(value, safeFontSize, maxWidth),
     itemLabelWordWrap: true,
@@ -565,17 +566,9 @@ export const getHorizontalLegendTextStyle = (fontSize: number) => {
     itemLabelTextOverflow: '...',
     // 上下图例项与分页器保持一个 8px 基础间距，分页器内部间距继续沿用公共配置
     navControllerSpacing: HORIZONTAL_LEGEND_NAV_CONTROLLER_SPACING,
-    poptip: {
-      // id 始终保留原始图例值，省略后悬停仍能查看完整内容
-      render: ({ id, label }) => escapeLegendPoptipText(id ?? label),
-      domStyles: {
-        '.component-poptip': {
-          maxWidth: '320px',
-          whiteSpace: 'normal',
-          wordBreak: 'break-all'
-        }
-      }
-    }
+    // AntV 会按图例项解析 itemPoptip，未省略的文字不创建提示绑定
+    itemPoptip: ({ id, label }) =>
+      `${id ?? label ?? ''}` !== `${label ?? ''}` ? truncatedItemPoptip : undefined
   }
 }
 
