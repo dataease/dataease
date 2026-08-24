@@ -82,9 +82,11 @@ onBeforeMount(() => {
 })
 onMounted(() => {
   close()
+  document.documentElement.style.overflowX = 'hidden'
 })
 onBeforeUnmount(() => {
   window.removeEventListener('resize', setStyle)
+  document.documentElement.style.overflowX = ''
 })
 
 const showComponent = ref(false)
