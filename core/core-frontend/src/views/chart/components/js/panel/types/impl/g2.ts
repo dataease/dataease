@@ -647,9 +647,15 @@ export abstract class G2ChartView<
     const rotateRadian = (rotate * Math.PI) / 180
     const rotateRatio = Math.sin(Math.abs(rotateRadian))
     const fontSize = axis.axisLabel.fontSize || 12
+    // 主题文本色按配置原值渲染，避免叠加 G2 默认透明度
+    const opacityStyle = {
+      labelOpacity: 1,
+      labelFillOpacity: 1
+    }
     if (position === 'top' || position === 'bottom') {
       const direction = position === 'top' ? -1 : 1
       return {
+        ...opacityStyle,
         labelSpacing: 4,
         labelTextAlign: 'center',
         labelTextBaseline: position === 'top' ? 'bottom' : 'top',
@@ -661,13 +667,14 @@ export abstract class G2ChartView<
     }
     if (position === 'left' || position === 'right') {
       return {
+        ...opacityStyle,
         labelSpacing: 4 + (fontSize * rotateRatio) / 2,
         labelTextAlign: position === 'left' ? 'right' : 'left',
         labelTextBaseline: 'middle',
         labelTransform: `rotate(${rotate})`
       }
     }
-    return { labelTransform: `rotate(${rotate})` }
+    return { ...opacityStyle, labelTransform: `rotate(${rotate})` }
   }
 
   protected getLegend = (chart: Chart, markerSizeScale = 1) => {

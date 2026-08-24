@@ -268,6 +268,7 @@ export class CirclePacking extends G2ChartView {
     const labelStyle = {
       style: {
         labelFill: label.color,
+        labelFillOpacity: 1,
         labelFontSize: label.fontSize,
         labelText: d => {
           if (d.height) {

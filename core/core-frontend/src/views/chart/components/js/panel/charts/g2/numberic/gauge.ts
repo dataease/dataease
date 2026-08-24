@@ -347,8 +347,10 @@ export class Gauge extends G2ChartView {
       axis: {
         y: {
           labelFill: axisLabelColor,
+          labelOpacity: 1,
           labelFillOpacity: 1,
           tickStroke: axisLabelColor,
+          tickOpacity: 1,
           tickStrokeOpacity: 1,
           lineStroke: axisLabelColor,
           lineStrokeOpacity: 1,

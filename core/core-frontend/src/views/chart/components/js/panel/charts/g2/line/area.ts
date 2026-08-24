@@ -475,6 +475,7 @@ export class Area extends G2ChartView {
           labelFillOpacity: 1,
           labelFontSize: xAxis.axisLabel.fontSize,
           tick: xAxis.axisLabel.show,
+          tickOpacity: 1,
           grid: xAxis.splitLine.show,
           gridStroke: xAxis.splitLine.lineStyle.color,
           gridStrokeOpacity: 1,
@@ -894,6 +895,7 @@ export class StackArea extends Area {
           },
           style: {
             opacity: 1,
+            fillOpacity: 1,
             fontSize: d => {
               if (d.extremum) {
                 return 0

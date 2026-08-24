@@ -484,6 +484,8 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
       text: 'measures',
       pointerEvents: 'none',
       fill: l.color,
+      // 标签颜色按配置原值渲染，避免叠加 G2 默认透明度
+      fillOpacity: 1,
       fontSize: l.fontSize,
       ...position,
       formatter: d => valueFormatter(d, l.labelFormatter),

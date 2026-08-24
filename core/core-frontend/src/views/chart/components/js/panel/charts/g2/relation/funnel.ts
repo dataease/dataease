@@ -146,6 +146,7 @@ export class Funnel extends G2ChartView {
     if (!label.show) {
       return options
     }
+    // 数据标签颜色按主题配置原值渲染，避免叠加 G2 默认透明度
     if (label.showQuota) {
       options.labels.push({
         text: d => {
@@ -154,6 +155,7 @@ export class Funnel extends G2ChartView {
         position: label.position === 'middle' ? 'inside' : label.position,
         fontSize: label.fontSize,
         fill: label.color,
+        fillOpacity: 1,
         transform: label.fullDisplay === true ? [] : [{ type: 'overlapHide' }]
       })
     }
@@ -182,7 +184,8 @@ export class Funnel extends G2ChartView {
           textBaseline: 'middle',
           dx: 60,
           fontSize: label.fontSize,
-          fill: label.color
+          fill: label.color,
+          fillOpacity: 1
         }
       ]
       options.labels.push(...conversionTagArr)

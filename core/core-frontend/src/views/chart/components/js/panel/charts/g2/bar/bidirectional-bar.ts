@@ -908,6 +908,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       },
       style: {
         opacity: 1,
+        fillOpacity: 1,
         // 标签不参与命中测试，避免遮挡柱体鼠标事件
         pointerEvents: 'none',
         fontSize: d => {
@@ -1103,6 +1104,8 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       itemMarkerSize: legendMarkerSize,
       itemLabelFontSize: legendFontSize,
       itemLabelFill: legend.color,
+      itemLabelOpacity: 1,
+      itemLabelFillOpacity: 1,
       ...(topLegend
         ? {
             margin: 0,

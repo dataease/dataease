@@ -473,6 +473,7 @@ export class TableG2Chart extends G2ChartView {
             // 连续图例显示比例尺生成的最大最小值
             label: true,
             labelFill: legend.color,
+            labelFillOpacity: 1,
             labelFontSize: legend.fontSize
           }
         }
@@ -500,6 +501,7 @@ export class TableG2Chart extends G2ChartView {
           position: 'inside',
           style: {
             fill: label.color,
+            fillOpacity: 1,
             fontSize: label.fontSize,
             // 标签不参与命中测试，鼠标事件继续落到热力单元
             pointerEvents: 'none'
@@ -608,6 +610,7 @@ export class TableG2Chart extends G2ChartView {
           titleFill: xAxis.color,
           line: xAxis.axisLine.show,
           lineStroke: xAxis.axisLine.lineStyle.color,
+          lineStrokeOpacity: 1,
           lineLineWidth: xAxis.axisLine.lineStyle.width,
           lineLineDash,
           label: xAxis.axisLabel.show,
@@ -646,6 +649,7 @@ export class TableG2Chart extends G2ChartView {
           titleFill: yAxis.color,
           line: yAxis.axisLine.show,
           lineStroke: yAxis.axisLine.lineStyle.color,
+          lineStrokeOpacity: 1,
           lineLineWidth: yAxis.axisLine.lineStyle.width,
           lineLineDash,
           label: yAxis.axisLabel.show,
