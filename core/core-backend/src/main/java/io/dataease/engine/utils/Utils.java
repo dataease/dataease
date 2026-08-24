@@ -23,23 +23,23 @@ import java.util.stream.Collectors;
 
 public class Utils {
     public static final List<Pattern> SQL_INJECTION_PATTERNS = Arrays.asList(
-            Pattern.compile("[\\'\";`]"),
-            Pattern.compile("--\\s*|#"),
-            Pattern.compile("\\b(or|and|union|select|insert|delete|update|drop|alter|exec|xp_cmdshell)\\b", Pattern.CASE_INSENSITIVE),
-            Pattern.compile("\\b\\d+\\s*=\\s*\\d+\\b", Pattern.CASE_INSENSITIVE),
-            Pattern.compile("\\b1'\\s*=\\s*'1\\b", Pattern.CASE_INSENSITIVE)
+        Pattern.compile("[\\'\";`]"),
+        Pattern.compile("--\\s*|#"),
+        Pattern.compile("\\b(or|and|union|select|insert|delete|update|drop|alter|exec|xp_cmdshell)\\b", Pattern.CASE_INSENSITIVE),
+        Pattern.compile("\\b\\d+\\s*=\\s*\\d+\\b", Pattern.CASE_INSENSITIVE),
+        Pattern.compile("\\b1'\\s*=\\s*'1\\b", Pattern.CASE_INSENSITIVE)
     );
 
     // 类似 Arkhangel'sk、O'Brien 等包含引号的合法数据应允通过
     public static final List<Pattern> SQL_INJECTION_PATTERNS_FOR_VALUES =
-            Arrays.asList(
-                    Pattern.compile("[\";`]"),
-                    Pattern.compile("--\\s*"),
-                    Pattern.compile(
-                            "\\b(or|and|union|select|insert|delete|update|drop|alter|exec|xp_cmdshell)\\b",
-                            Pattern.CASE_INSENSITIVE),
-                    Pattern.compile("\\b\\d+\\s*=\\s*\\d+\\b", Pattern.CASE_INSENSITIVE),
-                    Pattern.compile("\\b1'\\s*=\\s*'1\\b", Pattern.CASE_INSENSITIVE));
+        Arrays.asList(
+            Pattern.compile("[\";`]"),
+            Pattern.compile("--\\s*"),
+            Pattern.compile(
+                "\\b(or|and|union|select|insert|delete|update|drop|alter|exec|xp_cmdshell)\\b",
+                Pattern.CASE_INSENSITIVE),
+            Pattern.compile("\\b\\d+\\s*=\\s*\\d+\\b", Pattern.CASE_INSENSITIVE),
+            Pattern.compile("\\b1'\\s*=\\s*'1\\b", Pattern.CASE_INSENSITIVE));
 
     public static boolean joinSort(String sort) {
         return (StringUtils.equalsIgnoreCase(sort, "asc") || StringUtils.equalsIgnoreCase(sort, "desc"));
@@ -556,6 +556,11 @@ public class Utils {
             fieldName = datasourceType.getPrefix() + originField.getDataeaseName() + datasourceType.getSuffix();
         }
 
+        String nPrefix = "";
+        if (StringUtils.equalsIgnoreCase(datasourceType.getType(), "sqlServer")) {
+            nPrefix = SQLConstants.MSSQL_N_PREFIX;
+        }
+
         StringBuilder exp = new StringBuilder();
         exp.append(" (CASE ");
         if (originField.getDeType() == 0) {
@@ -568,7 +573,7 @@ public class Utils {
                         exp.append(" OR ");
                     }
                 }
-                exp.append(" THEN '").append(transValue(fieldGroupDTO.getName())).append("'");
+                exp.append(" THEN '").append(nPrefix).append(transValue(fieldGroupDTO.getName())).append("'");
             }
         } else if (originField.getDeType() == 1) {
             for (FieldGroupDTO fieldGroupDTO : dto.getGroupList()) {
@@ -579,7 +584,7 @@ public class Utils {
                 exp.append(fieldName).append(" >= ").append("'").append(fieldGroupDTO.getStartTime()).append("'");
                 exp.append(" AND ");
                 exp.append(fieldName).append(" <= ").append("'").append(fieldGroupDTO.getEndTime()).append("'");
-                exp.append(" THEN '").append(transValue(fieldGroupDTO.getName())).append("'");
+                exp.append(" THEN '").append(nPrefix).append(transValue(fieldGroupDTO.getName())).append("'");
             }
         } else if (originField.getDeType() == 2 || originField.getDeType() == 3 || originField.getDeType() == 4) {
             for (FieldGroupDTO fieldGroupDTO : dto.getGroupList()) {
@@ -590,10 +595,10 @@ public class Utils {
                 exp.append(fieldName).append(StringUtils.equalsIgnoreCase(fieldGroupDTO.getMinTerm(), "le") ? " >= " : " > ").append(fieldGroupDTO.getMin());
                 exp.append(" AND ");
                 exp.append(fieldName).append(StringUtils.equalsIgnoreCase(fieldGroupDTO.getMaxTerm(), "le") ? " <= " : " < ").append(fieldGroupDTO.getMax());
-                exp.append(" THEN '").append(transValue(fieldGroupDTO.getName())).append("'");
+                exp.append(" THEN '").append(nPrefix).append(transValue(fieldGroupDTO.getName())).append("'");
             }
         }
-        exp.append(" ELSE ").append("'").append(transValue(dto.getOtherGroup())).append("'").append(" END) ");
+        exp.append(" ELSE ").append("'").append(nPrefix).append(transValue(dto.getOtherGroup())).append("'").append(" END) ");
         return exp.toString();
     }
 
