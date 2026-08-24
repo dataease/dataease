@@ -1020,7 +1020,7 @@ const dfSave = () => {
       }
     }
     if (f.type === "date") {
-      if (f.settings.enableDefaultTime && !f.settings.enableCurrentTime) {
+      if (f.settings.enableDefaultTime && !f.settings.enableCurrentTime && f.settings.defaultTime === undefined || f.settings.defaultTime === null) {
         selectItem(f.id, true);
         return;
       }
