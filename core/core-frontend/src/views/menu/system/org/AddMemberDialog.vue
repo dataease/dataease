@@ -231,7 +231,7 @@ const confirmAdd = async () => {
     userIds: Array.from(selectedUserIds.value),
     roleIds: selectedRoleIds.value,
   });
-  ElMessage.success(t("common.add_success"));
+  ElMessage.success(t("sync_task.add_success"));
   dialogVisible.value = false;
   emit("saved");
 };
