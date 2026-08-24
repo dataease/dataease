@@ -454,7 +454,6 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       },
       transformCanvasConfig() {
         return {
-          renderer: getS2Renderer(),
           supportsCSSTransform: true
         }
       },
@@ -545,6 +544,8 @@ export class TablePivot extends S2ChartView<PivotSheet> {
     }
     // tooltip
     this.configTooltip(chart, s2Options)
+    // svg renderer
+    this.configRenderer(s2Options)
     // 开始渲染
     const s2 = new PivotSheet(containerDom, s2DataConfig, s2Options as unknown as S2Options)
     // 自适应铺满

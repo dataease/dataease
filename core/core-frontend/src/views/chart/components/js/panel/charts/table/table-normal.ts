@@ -247,7 +247,6 @@ export class TableNormal extends S2ChartView<TableSheet> {
       },
       transformCanvasConfig() {
         return {
-          renderer: getS2Renderer(),
           supportsCSSTransform: true
         }
       }
@@ -261,6 +260,8 @@ export class TableNormal extends S2ChartView<TableSheet> {
     }
     // tooltip
     this.configTooltip(chart, s2Options)
+    // svg renderer
+    this.configRenderer(s2Options)
     // 隐藏表头，保留顶部的分割线, 禁用表头横向 resize
     if (tableHeader.showTableHeader === false) {
       s2Options.style.colCell.height = 1
