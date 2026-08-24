@@ -45,26 +45,26 @@ public interface EmbeddedApi {
 
     @Operation(summary = "编辑")
     @ApiOperationSupport(order = 3)
-    @DePermit({"m:read", "#p0.id + ':manage'"})
+    @DePermit({"m:read"})
     @PostMapping("/edit")
     void edit(@RequestBody EmbeddedEditor editor);
 
     @Operation(summary = "删除")
     @ApiOperationSupport(order = 4)
     @Parameter(name = "id", description = "ID", required = true, in = ParameterIn.PATH)
-    @DePermit({"m:read", "#p0 + ':manage'"})
+    @DePermit({"m:read"})
     @PostMapping("/delete/{id}")
     void delete(@PathVariable("id") Long id);
 
     @Operation(summary = "批量删除")
     @ApiOperationSupport(order = 4)
-    @DePermit({"m:read", "#p0 + ':manage'"})
+    @DePermit({"m:read"})
     @PostMapping("/batchDelete")
     void batchDelete(@RequestBody List<Long> ids);
 
     @ApiOperationSupport(order = 5)
     @Operation(summary = "重置密钥")
-    @DePermit({"m:read", "#p0.id + ':manage'"})
+    @DePermit({"m:read"})
     @PostMapping("/reset")
     void reset(@RequestBody EmbeddedResetRequest request);
 
