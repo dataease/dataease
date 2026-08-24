@@ -105,6 +105,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
   public drawChart(drawOption: S2DrawOptions<TableSheet>): TableSheet {
     const { container, chart, pageInfo, action, resizeAction } = drawOption
     const containerDom = document.getElementById(container)
+    if (!containerDom) return
 
     // fields
     let fields = chart.data?.fields ?? []

@@ -435,6 +435,7 @@ export class TableG2Chart extends G2ChartView {
     const directionMismatch = positionVertical !== verticalLegend
     const { container } = context
     const containerDom = document.getElementById(container)
+    if (!containerDom) return
     const baseLegend = {
       ...this.getLegend(chart, colorField.groupType === 'q' ? 1 : 2),
       position,

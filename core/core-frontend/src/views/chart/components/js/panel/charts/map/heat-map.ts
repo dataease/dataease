@@ -62,8 +62,11 @@ export class HeatMap extends L7ChartView<Scene, L7Config> {
   async drawChart(drawOption: L7DrawConfig<L7Config>) {
     const { chart, container } = drawOption
     const containerDom = document.getElementById(container)
-    const rect = containerDom?.getBoundingClientRect()
-    if (rect?.height <= 0) {
+    if (!containerDom) {
+      return new L7Wrapper(drawOption.chartObj?.getScene(), [])
+    }
+    const rect = containerDom.getBoundingClientRect()
+    if (rect.height <= 0) {
       return new L7Wrapper(drawOption.chartObj?.getScene(), [])
     }
     const xAxis = deepCopy(chart.xAxis)

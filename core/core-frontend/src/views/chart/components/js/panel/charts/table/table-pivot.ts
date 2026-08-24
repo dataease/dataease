@@ -148,6 +148,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
   public drawChart(drawOption: S2DrawOptions<PivotSheet>): PivotSheet {
     const { container, chart, chartObj, action } = drawOption
     const containerDom = document.getElementById(container)
+    if (!containerDom) return
 
     const { xAxisExt: columnFields, xAxis: rowFields, yAxis: valueFields } = chart
     const [c, r, v] = [columnFields, rowFields, valueFields].map(arr =>

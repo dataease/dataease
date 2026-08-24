@@ -145,7 +145,11 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       const { bubbleCfg } = parseJson(chart.senior)
       const curAreaNameMapping = useGlobalAreaMapping ? undefined : senior.areaMapping?.[areaId]
       handleGeoJson(geoJson, curAreaNameMapping, useGlobalAreaMapping)
-      const { offsetHeight, offsetWidth } = document.getElementById(container)
+      const containerDom = document.getElementById(container)
+      if (!containerDom) {
+        return new L7Wrapper(drawOption.chartObj?.getScene(), [])
+      }
+      const { offsetHeight, offsetWidth } = containerDom
       const sizeRange: [number, number] = bubbleCfg?.enable
         ? [10, Math.min(offsetHeight, offsetWidth) / 10]
         : [5, Math.min(offsetHeight, offsetWidth) / 20]

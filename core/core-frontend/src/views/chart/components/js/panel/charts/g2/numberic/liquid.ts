@@ -145,6 +145,7 @@ export class Liquid extends G2ChartView {
     }
     const { container } = context
     const dom = document.getElementById(container)
+    if (!dom) return
     const lessLength = Math.min(dom.clientWidth, dom.clientHeight)
     if (lessLength) {
       const margin = (lessLength * (1 - radius)) / 2
