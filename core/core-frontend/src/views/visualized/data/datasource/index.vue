@@ -99,7 +99,7 @@ import { useCache } from '@/hooks/web/useCache'
 import { useEmbedded } from '@/store/modules/embedded'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import { iconDatasourceMap } from '@/components/icon-group/datasource-list'
-import { symmetricDecrypt } from '@/utils/encryption'
+import { symmetricDecrypt, ensureDekey } from '@/utils/encryption'
 import { isFreeFolder } from '@/utils/utils'
 import { AnyColumns } from 'element-plus-secondary/es/components/table-v2/src/types'
 const DatasourceDataFillingInfo = defineAsyncComponent(
@@ -610,7 +610,8 @@ const handleNodeClick = data => {
   if (data.weight < 7) {
     method = getSimpleDs
   }
-  return method(data.id).then(res => {
+  return method(data.id).then(async res => {
+    await ensureDekey()
     let {
       name,
       createBy,
@@ -752,7 +753,8 @@ const editDatasource = (editType?: number) => {
   if (nodeInfo.type.startsWith('Excel')) {
     nodeInfo.editType = editType
   }
-  return getById(nodeInfo.id).then(res => {
+  return getById(nodeInfo.id).then(async res => {
+    await ensureDekey()
     let arr = pluginDs.value.filter(ele => {
       return ele.type == res.data.type
     })
@@ -827,7 +829,8 @@ const allowDrag = (node: any) => {
 }
 
 const handleCopy = async data => {
-  getById(data.id).then(res => {
+  getById(data.id).then(async res => {
+    await ensureDekey()
     let {
       name,
       createBy,
