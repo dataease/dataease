@@ -343,7 +343,7 @@ public class CustomWhere2Str {
         return normalized;
     }
 
-    private static String fixValue(FilterTreeItem item) {
+    public static String fixValue(FilterTreeItem item) {
         if (StringUtils.isNotEmpty(item.getFilterTypeTime()) && StringUtils.equalsIgnoreCase(item.getFilterTypeTime(), "dynamicDate")) {
             DynamicTimeSetting dynamicTimeSetting = item.getDynamicTimeSetting();
             Calendar instance = Calendar.getInstance();

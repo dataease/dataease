@@ -23,7 +23,11 @@ import io.dataease.extensions.datasource.model.SQLMeta;
 import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.extensions.datasource.vo.XpackPluginsDatasourceVO;
+import io.dataease.chart.manage.ChartFilterTreeService;
+import io.dataease.engine.trans.CustomWhere2Str;
 import io.dataease.extensions.view.dto.*;
+import io.dataease.extensions.view.filter.FilterTreeItem;
+import io.dataease.extensions.view.filter.FilterTreeObj;
 import io.dataease.extensions.view.plugin.AbstractChartPlugin;
 import io.dataease.extensions.view.util.ChartDataUtil;
 import io.dataease.extensions.view.util.FieldUtil;
@@ -58,6 +62,8 @@ public class DefaultChartHandler extends AbstractChartPlugin {
     protected DatasetTableFieldManage datasetTableFieldManage;
     @Resource
     protected ChartViewManege chartViewManege;
+    @Resource
+    protected ChartFilterTreeService chartFilterTreeService;
     @Getter
     private String render = "antv";
     @Getter
@@ -806,7 +812,124 @@ public class DefaultChartHandler extends AbstractChartPlugin {
         return flag;
     }
 
-    ;
+    /**
+     * 检查并生成往前推1年的扩展图表自身过滤器（expandedCustomFilter）
+     */
+    protected FilterTreeObj getExpandedCustomFilter(FilterTreeObj customFilter, List<ChartViewFieldDTO> yoyAxis) {
+        if (ObjectUtils.isEmpty(customFilter) || CollectionUtils.isEmpty(customFilter.getItems()) || CollectionUtils.isEmpty(yoyAxis)) {
+            return null;
+        }
+        String customFilterJson = (String) JsonUtil.toJSONString(customFilter);
+        FilterTreeObj expandedCustomFilter = JsonUtil.parseObject(customFilterJson, FilterTreeObj.class);
+        if (chartFilterTreeService != null) {
+            chartFilterTreeService.searchFieldAndSet(expandedCustomFilter);
+            expandedCustomFilter = chartFilterTreeService.charReplace(expandedCustomFilter);
+        }
+        boolean customYoyFiltered = checkYoyCustomFilter(expandedCustomFilter, yoyAxis);
+        if (customYoyFiltered) {
+            return expandedCustomFilter;
+        }
+        return null;
+    }
+
+    /**
+     * 检查图表自身配置的过滤器中是否包含同环比指标对应的时间字段，并扩充时间范围（往前推1年）
+     */
+    protected boolean checkYoyCustomFilter(FilterTreeObj customFilter, List<ChartViewFieldDTO> yoyAxis) {
+        if (ObjectUtils.isEmpty(customFilter) || CollectionUtils.isEmpty(customFilter.getItems()) || CollectionUtils.isEmpty(yoyAxis)) {
+            return false;
+        }
+        return checkYoyCustomFilterItems(customFilter.getItems(), yoyAxis);
+    }
+
+    private boolean checkYoyCustomFilterItems(List<FilterTreeItem> items, List<ChartViewFieldDTO> yoyAxis) {
+        boolean flag = false;
+        if (CollectionUtils.isEmpty(items)) {
+            return false;
+        }
+        for (FilterTreeItem item : items) {
+            if (item == null) {
+                continue;
+            }
+            if (StringUtils.equalsIgnoreCase(item.getType(), "tree") || (item.getSubTree() != null && CollectionUtils.isNotEmpty(item.getSubTree().getItems()))) {
+                if (checkYoyCustomFilterItems(item.getSubTree().getItems(), yoyAxis)) {
+                    flag = true;
+                }
+            } else if (item.getFieldId() != null) {
+                for (ChartViewFieldDTO chartViewFieldDTO : yoyAxis) {
+                    ChartFieldCompareDTO compareCalc = chartViewFieldDTO.getCompareCalc();
+                    if (ObjectUtils.isEmpty(compareCalc)) {
+                        continue;
+                    }
+                    if (StringUtils.isNotEmpty(compareCalc.getType())
+                            && !StringUtils.equalsIgnoreCase(compareCalc.getType(), "none")) {
+                        if (Arrays.asList(ChartConstants.M_Y).contains(compareCalc.getType())) {
+                            DatasetTableFieldDTO fieldDTO = item.getField();
+                            if (fieldDTO == null && datasetTableFieldManage != null) {
+                                fieldDTO = datasetTableFieldManage.selectById(item.getFieldId());
+                                item.setField(fieldDTO);
+                            }
+                            if (StringUtils.equalsIgnoreCase(String.valueOf(compareCalc.getField()), String.valueOf(item.getFieldId()))
+                                    && (fieldDTO != null && fieldDTO.getDeType() == 1)) {
+                                try {
+                                    String val = CustomWhere2Str.fixValue(item);
+                                    if (StringUtils.isNotBlank(val)) {
+                                        Map<String, Long> timeMap = Utils.parseDateTimeValue(val);
+                                        Long startTime = timeMap.get("startTime");
+                                        Long endTime = timeMap.get("endTime");
+                                        if (startTime != null && endTime != null && startTime > 0) {
+                                            Calendar calendar = Calendar.getInstance();
+                                            calendar.setTime(new Date(startTime));
+                                            calendar.add(Calendar.YEAR, -1);
+                                            long expandedStartTime = calendar.getTime().getTime();
+
+                                            String term = item.getTerm();
+                                            if (StringUtils.equalsIgnoreCase(term, "eq")) {
+                                                // 将单个 eq 转换为包含起始时间向前推1年的 subTree 范围 (ge expandedStartTime AND le endTime)
+                                                item.setType("tree");
+                                                FilterTreeObj subTree = new FilterTreeObj();
+                                                subTree.setLogic("and");
+
+                                                FilterTreeItem startItem = new FilterTreeItem();
+                                                BeanUtils.copyBean(startItem, item);
+                                                startItem.setType("item");
+                                                startItem.setTerm("ge");
+                                                startItem.setValue(Utils.transLong2Str(expandedStartTime));
+                                                startItem.setFilterTypeTime("dateValue");
+                                                startItem.setDynamicTimeSetting(null);
+                                                startItem.setSubTree(null);
+
+                                                FilterTreeItem endItem = new FilterTreeItem();
+                                                BeanUtils.copyBean(endItem, item);
+                                                endItem.setType("item");
+                                                endItem.setTerm("le");
+                                                endItem.setValue(Utils.transLong2Str(endTime));
+                                                endItem.setFilterTypeTime("dateValue");
+                                                endItem.setDynamicTimeSetting(null);
+                                                endItem.setSubTree(null);
+
+                                                subTree.setItems(Arrays.asList(startItem, endItem));
+                                                item.setSubTree(subTree);
+                                                flag = true;
+                                            } else if (StringUtils.equalsIgnoreCase(term, "ge") || StringUtils.equalsIgnoreCase(term, "gt")) {
+                                                item.setValue(Utils.transLong2Str(expandedStartTime));
+                                                item.setFilterTypeTime("dateValue");
+                                                item.setDynamicTimeSetting(null);
+                                                flag = true;
+                                            }
+                                        }
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("checkYoyCustomFilter error", e);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return flag;
+    }
 
     protected void groupStackDrill(List<ChartViewFieldDTO> xAxis,
                                    List<ChartExtFilterDTO> filterList,
