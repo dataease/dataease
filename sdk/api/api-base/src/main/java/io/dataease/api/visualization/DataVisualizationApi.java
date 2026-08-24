@@ -40,6 +40,10 @@ public interface DataVisualizationApi {
     @Operation(summary = "查询可视化资源")
     DataVisualizationVO findById(@RequestBody DataVisualizationBaseRequest request);
 
+    @PostMapping("/findNameById")
+    @Operation(summary = "查询可视化资源名称", hidden = true)
+    DataVisualizationVO findNameById(@RequestBody DataVisualizationBaseRequest request);
+
 
     @GetMapping("/findCopyResource/{dvId}/{busiFlag}")
     @Operation(summary = "查询临时复制资源")

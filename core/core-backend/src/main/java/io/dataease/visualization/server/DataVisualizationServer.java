@@ -237,6 +237,11 @@ public class DataVisualizationServer implements DataVisualizationApi {
         return null;
     }
 
+    @Override
+    public DataVisualizationVO findNameById(DataVisualizationBaseRequest request) {
+        return coreVisualizationManage.findDvInfo(request.getId(), request.getBusiFlag(), request.getResourceTable());
+    }
+
     @DeLog(id = "#p0.id", pid = "#p0.pid", ot = LogOT.CREATE, stExp = "#p0.type")
     @Override
     @Transactional
