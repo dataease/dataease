@@ -46,7 +46,7 @@ public class TemplateLocalParseManage {
                 String templateName = templateFile.getFilename();
                 Specification<DeTemplateVersion> spec = (root, query, cb) -> {
                     List<Predicate> predicates = new ArrayList<>();
-                    predicates.add(cb.equal(root.get("script"), "templateName"));
+                    predicates.add(cb.equal(root.get("script"), templateName));
                     return cb.and(predicates.toArray(new Predicate[0]));
                 };
 
