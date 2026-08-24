@@ -4054,6 +4054,7 @@ export default {
     log: '日誌',
     show_log: '查看日誌',
     last_execute_result: '上次執行結果',
+    recent_execute_status: '最近執行狀態',
     execute_result: '執行結果',
     task_status: '任務狀態',
     sync: '同步',

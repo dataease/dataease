@@ -18,7 +18,6 @@ import ClearJobLogForm from "./ClearJobLogForm.vue";
 import { useI18n } from "@/hooks/web/useI18n";
 import { propTypes } from "@/utils/propTypes";
 import { convertFilterText, FilterText } from "@/components/filter-text";
-import { deepCopy } from "@/utils/utils";
 
 const { t } = useI18n();
 const keyword = ref(null);
@@ -113,18 +112,7 @@ const search = () => {
   });;
 };
 const partDataUpdate = () => {
-  const param = {
-    keyword: keyword.value || undefined,
-    conditions: deepCopy(state.conditions),
-  };
-  if (props.jobId !== "") {
-    const taskIdOption = {
-      field: "taskId",
-      value: props.jobId,
-      operator: "eq",
-    };
-    param.conditions.push(taskIdOption);
-  }
+  const param = buildParam();
   getTaskLogListApi(
     state.paginationConfig.currentPage,
     state.paginationConfig.pageSize,
@@ -290,14 +278,6 @@ const filterOption = [
       },
       {
         id: "FAIL",
-        name: t("sync_task.status_failed"),
-      },
-      {
-        id: "FAIL_RETRY",
-        name: t("sync_task.status_failed"),
-      },
-      {
-        id: "NO_PROCESS",
         name: t("sync_task.status_failed"),
       },
       {

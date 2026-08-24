@@ -4188,6 +4188,7 @@ export default {
     log: 'Log',
     show_log: 'View log',
     last_execute_result: 'Last execution result',
+    recent_execute_status: 'Latest execution status',
     execute_result: 'Execution result',
     task_status: 'Task status',
     sync: 'Synchronize',
