@@ -1979,7 +1979,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
               <el-button
                 style="min-width: 70px"
                 :disabled="!allfields.length"
-                v-loading="datasetPreviewLoading"
+                :loading="datasetPreviewLoading"
                 @click="datasetPreview"
                 secondary
               >

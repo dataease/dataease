@@ -1420,7 +1420,7 @@ const getMenuList = (val: boolean, data?: any) => {
                   name="file"
                 >
                   <template #trigger>
-                    <el-button v-loading="replaceLoading" class="replace-excel" type="primary">
+                    <el-button :loading="replaceLoading" class="replace-excel" type="primary">
                       <template #icon>
                         <Icon name="icon_edit_outlined"
                           ><icon_edit_outlined class="svg-icon"
@@ -1443,7 +1443,7 @@ const getMenuList = (val: boolean, data?: any) => {
                   name="file"
                 >
                   <template #trigger>
-                    <el-button v-loading="addLoading" type="primary">
+                    <el-button :loading="addLoading" type="primary">
                       <template #icon>
                         <Icon name="icon_new-item_outlined"
                           ><icon_newItem_outlined class="svg-icon"
