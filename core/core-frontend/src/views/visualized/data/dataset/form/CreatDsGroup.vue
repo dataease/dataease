@@ -410,7 +410,7 @@ const emits = defineEmits(['finish', 'onDatasetSave'])
     </el-form>
     <template #footer>
       <el-button secondary @click="resetForm">{{ t('dataset.cancel') }} </el-button>
-      <el-button v-loading="loading" type="primary" @click="saveDataset"
+      <el-button :loading="loading" type="primary" @click="saveDataset"
         >{{ t('dataset.confirm') }}
       </el-button>
     </template>

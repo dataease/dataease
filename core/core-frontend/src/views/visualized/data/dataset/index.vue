@@ -1194,7 +1194,7 @@ const proxyAllowDrop = throttle((arg1, arg2) => {
     <template v-slot:footer>
       <div class="dialog-footer">
         <el-button secondary @click="closeExport">{{ $t('dataset.cancel') }} </el-button>
-        <el-button v-loading="exportDatasetLoading" type="primary" @click="exportDatasetRequest"
+        <el-button :loading="exportDatasetLoading" type="primary" @click="exportDatasetRequest"
           >{{ $t('dataset.confirm') }}
         </el-button>
       </div>
