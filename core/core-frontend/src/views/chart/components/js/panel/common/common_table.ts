@@ -2545,6 +2545,21 @@ class CustomMergedCell extends MergedCell {
     })
   }
 
+  protected getTextStyle() {
+    const textStyle = super.getTextStyle()
+    const dataCellAlignConfig = (this.theme as any).dataCellAlignConfig
+    if (dataCellAlignConfig) {
+      const align = dataCellAlignConfig[this.meta.valueField]
+      if (align) {
+        textStyle.textAlign = align
+      }
+    }
+    if (textStyle.textAlign === 'custom') {
+      textStyle.textAlign = 'left'
+    }
+    return textStyle
+  }
+
   drawTextShape(): void {
     if (this.meta.deFieldType === 7) {
       drawImage.apply(this)
@@ -2555,6 +2570,21 @@ class CustomMergedCell extends MergedCell {
 }
 
 export class CustomDataCell extends TableDataCell {
+  protected getTextStyle() {
+    const textStyle = super.getTextStyle()
+    const dataCellAlignConfig = (this.theme as any).dataCellAlignConfig
+    if (dataCellAlignConfig) {
+      const align = dataCellAlignConfig[this.meta.valueField]
+      if (align) {
+        textStyle.textAlign = align
+      }
+    }
+    if (textStyle.textAlign === 'custom') {
+      textStyle.textAlign = 'left'
+    }
+    return textStyle
+  }
+
   /**
    * 重写这个方法是为了处理底部的汇总行取消 hover 状态时设置 border 为 1,
    * 这样会导致单元格隐藏横边边框失败，出现一条白线
@@ -2683,7 +2713,15 @@ export function getStartPosition(node) {
 export class SummaryCell extends CustomDataCell {
   getTextStyle() {
     const textStyle = cloneDeep(this.theme.colCell.bolderText)
-    textStyle.textAlign = this.theme.dataCell.text.textAlign
+    const dataCellAlignConfig = (this.theme as any).dataCellAlignConfig
+    if (dataCellAlignConfig) {
+      const align = dataCellAlignConfig[this.meta.valueField]
+      if (align) {
+        textStyle.textAlign = align
+      }
+    } else {
+      textStyle.textAlign = this.theme.dataCell.text.textAlign
+    }
     return textStyle
   }
 

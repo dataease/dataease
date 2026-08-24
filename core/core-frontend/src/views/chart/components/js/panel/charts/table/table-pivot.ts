@@ -946,6 +946,9 @@ export class TablePivot extends S2ChartView<PivotSheet> {
     if (customAttr.tableHeader.tableHeaderAlign === 'custom') {
       customAttr.tableHeader.tableHeaderAlign = 'left'
     }
+    if (customAttr.tableCell.tableItemAlign === 'custom') {
+      customAttr.tableCell.tableItemAlign = 'left'
+    }
     return chart
   }
 
