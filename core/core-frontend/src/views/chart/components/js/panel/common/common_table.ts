@@ -67,8 +67,6 @@ import {saveAs} from 'file-saver'
 import {ElMessage} from 'element-plus-secondary'
 import {useI18n} from '@/hooks/web/useI18n'
 import { Image as GImage } from '@antv/g'
-import { Renderer as SVGRenderer } from '@antv/g-svg'
-import { Renderer as CanvasRenderer } from '@antv/g-canvas'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 
 const {t: i18nt} = useI18n()
@@ -3007,14 +3005,4 @@ export function mappingColorCustom(value, defaultColor, field, type, filedValueM
       color
     }
   }
-}
-
-/**
- * 获取 S2 表格的渲染器
- * @returns Renderer 实例
- */
-export function getS2Renderer() {
-  const dvMainStore = dvMainStoreWithOut()
-  const enableSvgRenderer = dvMainStore?.canvasStyleData?.enableSvgRenderer
-  return enableSvgRenderer ? new SVGRenderer() : new CanvasRenderer()
 }
