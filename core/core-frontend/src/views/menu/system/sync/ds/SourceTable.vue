@@ -22,7 +22,7 @@ import EditorDatasource from "./form/index.vue";
 import {ElIcon, ElMessage, ElMessageBox} from "element-plus-secondary";
 import {dsTypes, filterOption} from "./form/option";
 import DrawerMain from "@/components/drawer-main/src/DrawerMain.vue";
-import {symmetricDecrypt} from "@/utils/encryption";
+import {symmetricDecryptJson} from "@/utils/encryption";
 
 const props = defineProps({
   activeName: {
@@ -216,8 +216,8 @@ const findSyncPlugin = (data) => {
   );
 };
 const dsInfo = ref();
-const getDsInfo = (data) => {
-  return getByIdApi(data.id).then((res) => {
+const getDsInfo = async (data) => {
+  return getByIdApi(data.id).then(async (res) => {
     const pluginInfo = findSyncPlugin(res.data);
     let {
       configuration,
@@ -230,9 +230,12 @@ const getDsInfo = (data) => {
       type,
     } = res.data;
     if (configuration) {
-      configuration = JSON.parse(
-          symmetricDecrypt(configuration)
-      );
+      try {
+        configuration = await symmetricDecryptJson(configuration);
+      } catch {
+        ElMessage.error(t("sync_datasource.configuration_decrypt_failed"));
+        return false;
+      }
     }
     Object.assign(dsInfo, {
       configuration,
@@ -247,13 +250,17 @@ const getDsInfo = (data) => {
       staticMap: pluginInfo?.staticMap,
       systemDatasourceType: pluginInfo?.systemDatasourceType
     });
+    return true;
   });
 };
 const edit = async (row) => {
   // 插件列表和数据源详情是两个独立请求；必须先拿到插件元数据，
   // 否则快速点击编辑会把 PostgreSQL 误判为内置数据源并打开错误表单。
   await listSyncPlugin();
-  await getDsInfo(row);
+  const loaded = await getDsInfo(row);
+  if (!loaded) {
+    return;
+  }
   // 当前组件只展示源数据库，编辑器的第二个参数必须保持为 true，
   // 否则编辑器会按目标数据库初始化并使用错误的校验/保存接口。
   datasourceEditor.value.init(dsInfo, true);

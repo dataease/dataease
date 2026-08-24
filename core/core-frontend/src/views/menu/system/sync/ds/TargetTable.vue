@@ -24,7 +24,7 @@ import {ElIcon, ElMessage, ElMessageBox} from "element-plus-secondary";
 import {dsTypes, filterOption} from "./form/option";
 import DrawerMain from "@/components/drawer-main/src/DrawerMain.vue";
 import SyncForm from "./SyncForm.vue";
-import {symmetricDecrypt} from "@/utils/encryption";
+import {symmetricDecryptJson} from "@/utils/encryption";
 
 const props = defineProps({
   activeName: {
@@ -217,8 +217,8 @@ const findSyncPlugin = data => {
   )
 }
 const dsInfo = ref();
-const getDsInfo = (data) => {
-  return getByIdApi(data.id).then((res) => {
+const getDsInfo = async (data) => {
+  return getByIdApi(data.id).then(async (res) => {
     const pluginInfo = findSyncPlugin(res.data)
     let {
       configuration,
@@ -231,9 +231,12 @@ const getDsInfo = (data) => {
       type,
     } = res.data;
     if (configuration) {
-      configuration = JSON.parse(
-          symmetricDecrypt(configuration)
-      );
+      try {
+        configuration = await symmetricDecryptJson(configuration);
+      } catch {
+        ElMessage.error(t("sync_datasource.configuration_decrypt_failed"));
+        return false;
+      }
     }
     Object.assign(dsInfo, {
       configuration,
@@ -248,12 +251,16 @@ const getDsInfo = (data) => {
       staticMap: pluginInfo?.staticMap,
       systemDatasourceType: pluginInfo?.systemDatasourceType
     });
+    return true;
   });
 };
 const edit = async (row) => {
   // 等待插件元数据后再判断表单类型，避免 PostgreSQL 被误判为内置目标数据源。
   await listSyncPlugin();
-  await getDsInfo(row);
+  const loaded = await getDsInfo(row);
+  if (!loaded) {
+    return;
+  }
   datasourceEditor.value.init(dsInfo, false);
 };
 const delHandler = (row) => {

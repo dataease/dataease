@@ -4062,6 +4062,8 @@ export default {
     prev: 'Previous step',
     validate: 'Validation',
     validate_success: 'Validation success',
+    configuration_decrypt_failed:
+      'Failed to decrypt the datasource configuration. Refresh the page and try again.',
     select_type: 'Please select the Datasource type',
     extra_params: 'Additional JDBC connection string',
     remark: 'Remarks',

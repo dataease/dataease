@@ -3950,6 +3950,7 @@ export default {
     prev: '上一步',
     validate: '校验',
     validate_success: '校验成功',
+    configuration_decrypt_failed: '数据源配置解密失败，请刷新页面后重试',
     select_type: '请选择数据源类型',
     extra_params: '额外的 JDBC 连接字符串',
     remark: '备注',

@@ -10,16 +10,41 @@ const appStore = useAppStoreWithOut()
 const { wsCache } = useCache()
 
 const rsaKey = '-pk_separator-'
+const dekeySeparator = Base64.encodeURI(rsaKey) + '='
 const crypt = new JSEncrypt()
 
-export const ensureDekey = async () => {
-  let dekey = wsCache.get(appStore.getDekey)
-  if (!dekey) {
+const isValidDekey = (dekey: unknown): dekey is string => {
+  if (typeof dekey !== 'string') {
+    return false
+  }
+  const separatorIndex = dekey.lastIndexOf(dekeySeparator)
+  return separatorIndex > 0 && separatorIndex + dekeySeparator.length < dekey.length
+}
+
+export const ensureDekey = async (forceRefresh = false) => {
+  let dekey = forceRefresh ? undefined : wsCache.get(appStore.getDekey)
+  if (!isValidDekey(dekey)) {
     const res = await queryDekey()
     dekey = res.data
+    if (!isValidDekey(dekey)) {
+      wsCache.delete(appStore.getDekey)
+      throw new Error('Invalid encryption key')
+    }
     wsCache.set(appStore.getDekey, dekey)
   }
   return dekey
+}
+
+const getDekeyParts = () => {
+  const dekey = wsCache.get(appStore.getDekey)
+  if (!isValidDekey(dekey)) {
+    throw new Error('Invalid encryption key')
+  }
+  const separatorIndex = dekey.lastIndexOf(dekeySeparator)
+  return [
+    dekey.substring(0, separatorIndex),
+    dekey.substring(separatorIndex + dekeySeparator.length)
+  ]
 }
 
 const aesDecrypt = (word, keyStr) => {
@@ -35,23 +60,22 @@ const aesDecrypt = (word, keyStr) => {
 }
 
 export const rsaEncryp = word => {
-  const separator = Base64.encodeURI(rsaKey) + '='
-  const dekey = wsCache.get(appStore.getDekey)
-  const keyArray = dekey.split(separator)
-  const k1 = keyArray[0]
-  const k2 = keyArray[1]
+  const [k1, k2] = getDekeyParts()
   const pk = aesDecrypt(k1, k2)
   crypt.setKey(pk)
   return crypt.encrypt(word)
 }
 
 export const symmetricDecrypt = data => {
-  const separator = Base64.encodeURI(rsaKey) + '='
-  const dekey = wsCache.get(appStore.getDekey)
-  const keyArray = dekey.split(separator)
-  const k2 = keyArray[1]
+  if (typeof data !== 'string' || !data) {
+    throw new Error('Invalid encrypted data')
+  }
+  const [, k2] = getDekeyParts()
   const keyStr = Base64.encode(k2)
   const combined = CryptoJS.enc.Base64.parse(data)
+  if (combined.sigBytes <= 16) {
+    throw new Error('Invalid encrypted data')
+  }
   const combinedHex = CryptoJS.enc.Hex.parse(combined.toString(CryptoJS.enc.Hex))
   const iv = CryptoJS.lib.WordArray.create(combinedHex.words.slice(0, 4))
   const cipherHex = CryptoJS.lib.WordArray.create(combinedHex.words.slice(4))
@@ -61,5 +85,19 @@ export const symmetricDecrypt = data => {
     mode: CryptoJS.mode.CBC,
     padding: CryptoJS.pad.Pkcs7
   })
-  return decrypted.toString(CryptoJS.enc.Utf8)
+  const result = decrypted.toString(CryptoJS.enc.Utf8)
+  if (!result) {
+    throw new Error('Failed to decrypt data')
+  }
+  return result
+}
+
+export const symmetricDecryptJson = async <T = unknown>(data: string): Promise<T> => {
+  await ensureDekey()
+  try {
+    return JSON.parse(symmetricDecrypt(data)) as T
+  } catch {
+    await ensureDekey(true)
+    return JSON.parse(symmetricDecrypt(data)) as T
+  }
 }

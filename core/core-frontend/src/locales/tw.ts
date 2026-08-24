@@ -3929,6 +3929,7 @@ export default {
     prev: '上一步',
     validate: '校驗',
     validate_success: '校驗成功',
+    configuration_decrypt_failed: '資料來源配置解密失敗，請重新整理頁面後重試',
     select_type: '請選擇資料來源類型',
     extra_params: '額外的JDBC 連接字串',
     remark: '備註',
