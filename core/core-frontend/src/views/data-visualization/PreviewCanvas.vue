@@ -212,7 +212,7 @@ onMounted(async () => {
     }
   })
   console.info('Preview Canvas init')
-  if (!props.outerId) {
+  if (!props.outerId && appStore.getXpackValid) {
     await Promise.all([new Promise(r => (p = r)), new Promise(r => (p1 = r))])
   }
   console.info('Preview Canvas Promise End')

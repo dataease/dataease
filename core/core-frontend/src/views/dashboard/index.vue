@@ -228,7 +228,9 @@ onMounted(async () => {
   if (window.location.hash.includes('#/dashboard')) {
     newWindowFromDiv.value = true
   }
-  await new Promise(r => (p = r))
+  if (appStore.getXpackValid) {
+    await new Promise(r => (p = r))
+  }
   loadFinish.value = true
   useEmitt({
     name: 'mobileConfig',
