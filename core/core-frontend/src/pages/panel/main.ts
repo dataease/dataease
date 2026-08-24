@@ -71,6 +71,7 @@ import { useEmbedded } from '@/store/modules/embedded'
 import { setupElementPlus, setupElementPlusIcons } from '@/plugins/element-plus'
 import { setupRouter } from '@/router/embedded'
 import { useCache } from '@/hooks/web/useCache'
+import { queryDekey } from '@/api/login'
 
 const setupAll = async (
   dom: string,
@@ -132,6 +133,10 @@ const setupAll = async (
   wsCache.set('TreeSort-backend', defaultSort['basic.defaultSort'] ?? '1')
   wsCache.set('open-backend', defaultSort['basic.defaultOpen'] ?? '0')
   wsCache.set('embeddedExportMode-backend', defaultSort['basic.embeddedExportMode'] ?? 'sync')
+  if (!wsCache.get(appStore.getDekey)) {
+    const res = await queryDekey()
+    wsCache.set(appStore.getDekey, res.data)
+  }
   app.mount(dom)
   return app
 }
