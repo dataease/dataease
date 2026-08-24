@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Comment;
 
-import java.time.Instant;
 import java.util.Date;
 
 @Getter
@@ -21,41 +20,43 @@ public class DemoTeaOrder {
     @Column(name = "shop", length = 16777216)
     private String shop;
 
-    @Column(name = "product", length = 16777216)
-    private String product;
+    @Column(name = "product_line", length = 16777216)
+    private String productLine;
 
-    @Column(name = "dish", length = 16777216)
-    private String dish;
+    @Column(name = "dish_name", length = 16777216)
+    private String dishName;
 
     @Column(name = "temperature", length = 16777216)
     private String temperature;
 
-    @Column(name = "specifications", length = 16777216)
-    private String specifications;
+    @Column(name = "specification", length = 16777216)
+    private String specification;
 
-    @Column(name = "sales")
-    private Long sales;
+    @Column(name = "sales_quantity")
+    private Long salesQuantity;
 
-    @Column(name = "price")
-    private Long price;
+    @Column(name = "unit_price")
+    private Long unitPrice;
 
-    @Column(name = "serial", length = 16777216)
-    private String serial;
+    @Column(name = "bill_number", length = 16777216)
+    private String billNumber;
 
-    @Column(name = "sale_date")
-    private Date saleDate;
+    @Column(name = "sales_date")
+    private Date salesDate;
 
-    public DemoTeaOrder(Integer id, String shop, String product, String dish, String temperature, String specifications, Integer sales, Integer price, String serial, Date saleDate) {
+    public DemoTeaOrder(Integer id, String shop, String productLine, String dishName, String temperature,
+                        String specification, Integer salesQuantity, Integer unitPrice,
+                        String billNumber, Date salesDate) {
         this.id = id;
         this.shop = shop;
-        this.product = product;
-        this.dish = dish;
+        this.productLine = productLine;
+        this.dishName = dishName;
         this.temperature = temperature;
-        this.specifications = specifications;
-        this.sales = Long.valueOf(sales);
-        this.price = Long.valueOf(price);
-        this.serial = serial;
-        this.saleDate = saleDate;
+        this.specification = specification;
+        this.salesQuantity = Long.valueOf(salesQuantity);
+        this.unitPrice = Long.valueOf(unitPrice);
+        this.billNumber = billNumber;
+        this.salesDate = salesDate;
     }
 
     public DemoTeaOrder() {

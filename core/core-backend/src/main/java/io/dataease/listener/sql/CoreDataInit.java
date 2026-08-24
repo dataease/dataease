@@ -1,10 +1,23 @@
 package io.dataease.listener.sql;
 
 import io.dataease.dao.auto.entity.DeStandaloneVersion;
+import io.dataease.dao.auto.entity.CoreChartView;
+import io.dataease.dao.auto.entity.CoreDatasetGroup;
+import io.dataease.dao.auto.entity.CoreDatasetTable;
+import io.dataease.dao.auto.entity.CoreDatasetTableField;
+import io.dataease.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.dao.auto.repo.DeStandaloneVersionRepository;
+import io.dataease.dao.auto.repo.CoreDatasetTableFieldRepository;
+import io.dataease.chart.dao.auto.mapper.CoreChartViewRepository;
+import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupRepository;
+import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableRepository;
 import io.dataease.font.dao.auto.entity.CoreFont;
 import io.dataease.font.dao.auto.mapper.CoreFontRepository;
 import io.dataease.initSql.Version;
+import io.dataease.listener.demo.DemoTeaMaterial;
+import io.dataease.listener.demo.DemoTeaMaterialRepository;
+import io.dataease.listener.demo.DemoTeaOrder;
+import io.dataease.listener.demo.DemoTeaOrderRepository;
 import io.dataease.map.dao.auto.entity.Area;
 import io.dataease.menu.dao.auto.entity.CoreMenu;
 import io.dataease.menu.dao.auto.mapper.CoreMenuRepository;
@@ -19,6 +32,7 @@ import io.dataease.visualization.dao.auto.entity.VisualizationWatermark;
 import io.dataease.visualization.dao.auto.mapper.VisualizationBackgroundRepository;
 import io.dataease.visualization.dao.auto.mapper.VisualizationSubjectRepository;
 import io.dataease.visualization.dao.auto.mapper.VisualizationWatermarkRepository;
+import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoRepository;
 import jakarta.annotation.Resource;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.ParameterizedPreparedStatementSetter;
@@ -27,15 +41,40 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+
+import static io.dataease.listener.sql.DemoDataInitUtils.isRootNode;
+import static io.dataease.listener.sql.DemoDataInitUtils.loadInsertStatements;
+import static io.dataease.listener.sql.DemoDataInitUtils.toBoolean;
+import static io.dataease.listener.sql.DemoDataInitUtils.toDate;
+import static io.dataease.listener.sql.DemoDataInitUtils.toInteger;
+import static io.dataease.listener.sql.DemoDataInitUtils.toLong;
+import static io.dataease.listener.sql.DemoDataInitUtils.toText;
 
 @Component
 public class CoreDataInit implements CoreSqlBlock {
 
     private static final int AREA_BATCH_SIZE = 500;
+    private static final String DEMO_DATA_INIT_SQL = "template/sql/demo_data_init.sql";
 
     @Resource
     private CoreMenuRepository coreMenuRepository;
+    @Resource
+    private CoreDatasetGroupRepository coreDatasetGroupRepository;
+    @Resource
+    private CoreDatasetTableRepository coreDatasetTableRepository;
+    @Resource
+    private CoreDatasetTableFieldRepository coreDatasetTableFieldRepository;
+    @Resource
+    private CoreChartViewRepository coreChartViewRepository;
+    @Resource
+    private DataVisualizationInfoRepository dataVisualizationInfoRepository;
+    @Resource
+    private DemoTeaOrderRepository demoTeaOrderRepository;
+    @Resource
+    private DemoTeaMaterialRepository demoTeaMaterialRepository;
     @Resource
     private VisualizationBackgroundRepository visualizationBackgroundRepository;
     @Resource
@@ -81,6 +120,7 @@ public class CoreDataInit implements CoreSqlBlock {
         initVisualizationWatermark();
         initCoreSysStartupJob();
         initFont();
+        initDemoData();
     }
 
     private void executeUpgradeSteps() {
@@ -252,6 +292,235 @@ public class CoreDataInit implements CoreSqlBlock {
         font.setIsBuiltin(true);
         font.setUpdateTime(0L);
         coreFontRepository.saveAndFlush(font);
+    }
+
+    private void initDemoData() {
+        List<CoreDatasetGroup> datasetGroups = new ArrayList<>();
+        List<CoreDatasetTable> datasetTables = new ArrayList<>();
+        List<CoreDatasetTableField> datasetTableFields = new ArrayList<>();
+        List<CoreChartView> chartViews = new ArrayList<>();
+        List<DataVisualizationInfo> visualizationInfos = new ArrayList<>();
+        List<DemoTeaMaterial> teaMaterials = new ArrayList<>();
+        List<DemoTeaOrder> teaOrders = new ArrayList<>();
+
+        int materialId = 1;
+        int orderId = 1;
+        for (DemoDataInitUtils.DemoInsertStatement statement : loadInsertStatements(DEMO_DATA_INIT_SQL)) {
+            Map<String, Object> values = statement.getValues();
+            switch (statement.getTableName()) {
+                case "core_dataset_group":
+                    datasetGroups.add(createDemoDatasetGroup(values));
+                    break;
+                case "core_dataset_table":
+                    datasetTables.add(createDemoDatasetTable(values));
+                    break;
+                case "core_dataset_table_field":
+                    datasetTableFields.add(createDemoDatasetTableField(values));
+                    break;
+                case "core_chart_view":
+                    chartViews.add(createDemoChartView(values));
+                    break;
+                case "data_visualization_info":
+                    visualizationInfos.add(createDemoVisualizationInfo(values));
+                    break;
+                case "demo_tea_material":
+                    teaMaterials.add(createDemoTeaMaterial(materialId++, values));
+                    break;
+                case "demo_tea_order":
+                    teaOrders.add(createDemoTeaOrder(orderId++, values));
+                    break;
+                default:
+                    LogUtil.warn("Skip unsupported demo init table: " + statement.getTableName());
+                    break;
+            }
+        }
+
+        datasetGroups.sort(Comparator.comparingInt(group -> isRootNode(group.getPid()) ? 0 : 1));
+        visualizationInfos.sort(Comparator.comparingInt(info -> isRootNode(info.getPid()) ? 0 : 1));
+
+        coreDatasetGroupRepository.saveAllAndFlush(datasetGroups);
+        coreDatasetTableRepository.saveAllAndFlush(datasetTables);
+        coreDatasetTableFieldRepository.saveAllAndFlush(datasetTableFields);
+        dataVisualizationInfoRepository.saveAllAndFlush(visualizationInfos);
+        coreChartViewRepository.saveAllAndFlush(chartViews);
+        demoTeaMaterialRepository.saveAllAndFlush(teaMaterials);
+        demoTeaOrderRepository.saveAllAndFlush(teaOrders);
+        LogUtil.info("Demo data initialized. datasetGroups=" + datasetGroups.size()
+                + ", datasetTables=" + datasetTables.size()
+                + ", fields=" + datasetTableFields.size()
+                + ", chartViews=" + chartViews.size()
+                + ", visualizationInfos=" + visualizationInfos.size()
+                + ", teaMaterials=" + teaMaterials.size()
+                + ", teaOrders=" + teaOrders.size());
+    }
+
+    private CoreDatasetGroup createDemoDatasetGroup(Map<String, Object> values) {
+        CoreDatasetGroup datasetGroup = new CoreDatasetGroup();
+        datasetGroup.setId(toLong(values, "id"));
+        datasetGroup.setCreateBy(toText(values, "create_by"));
+        datasetGroup.setCreateTime(toLong(values, "create_time"));
+        datasetGroup.setInfo(toText(values, "info"));
+        datasetGroup.setIsCross(toBoolean(values, "is_cross"));
+        datasetGroup.setLastUpdateTime(toLong(values, "last_update_time"));
+        datasetGroup.setLevel(toInteger(values, "level"));
+        datasetGroup.setMode(toInteger(values, "mode"));
+        datasetGroup.setName(toText(values, "name"));
+        datasetGroup.setNodeType(toText(values, "node_type"));
+        datasetGroup.setPid(toLong(values, "pid"));
+        datasetGroup.setQrtzInstance(toText(values, "qrtz_instance"));
+        datasetGroup.setSyncStatus(toText(values, "sync_status"));
+        datasetGroup.setType(toText(values, "type"));
+        datasetGroup.setUnionSql(toText(values, "union_sql"));
+        datasetGroup.setUpdateBy(toText(values, "update_by"));
+        return datasetGroup;
+    }
+
+    private CoreDatasetTable createDemoDatasetTable(Map<String, Object> values) {
+        CoreDatasetTable datasetTable = new CoreDatasetTable();
+        datasetTable.setId(toLong(values, "id"));
+        datasetTable.setDatasetGroupId(toLong(values, "dataset_group_id"));
+        datasetTable.setDatasourceId(toLong(values, "datasource_id"));
+        datasetTable.setInfo(toText(values, "info"));
+        datasetTable.setName(toText(values, "name"));
+        datasetTable.setSqlVariableDetails(toText(values, "sql_variable_details"));
+        datasetTable.setTableName(toText(values, "table_name"));
+        datasetTable.setType(toText(values, "type"));
+        return datasetTable;
+    }
+
+    private CoreDatasetTableField createDemoDatasetTableField(Map<String, Object> values) {
+        CoreDatasetTableField field = new CoreDatasetTableField();
+        field.setId(toLong(values, "id"));
+        field.setAccuracy(toInteger(values, "accuracy"));
+        field.setChartId(toLong(values, "chart_id"));
+        field.setChecked(toBoolean(values, "checked"));
+        field.setColumnIndex(toInteger(values, "column_index"));
+        field.setDataeaseName(toText(values, "dataease_name"));
+        field.setDatasetGroupId(toLong(values, "dataset_group_id"));
+        field.setDatasetTableId(toLong(values, "dataset_table_id"));
+        field.setDatasourceId(toLong(values, "datasource_id"));
+        field.setDateFormat(toText(values, "date_format"));
+        field.setDateFormatType(toText(values, "date_format_type"));
+        field.setDeExtractType(toInteger(values, "de_extract_type"));
+        field.setDeType(toInteger(values, "de_type"));
+        field.setDescription(toText(values, "description"));
+        field.setExtField(toInteger(values, "ext_field"));
+        field.setFieldShortName(toText(values, "field_short_name"));
+        field.setGroupList(toText(values, "group_list"));
+        field.setGroupType(toText(values, "group_type"));
+        field.setLastSyncTime(toLong(values, "last_sync_time"));
+        field.setName(toText(values, "name"));
+        field.setOrderChecked(toBoolean(values, "order_checked"));
+        field.setOriginName(toText(values, "origin_name"));
+        field.setOtherGroup(toText(values, "other_group"));
+        field.setParams(toText(values, "params"));
+        field.setSize(toInteger(values, "size"));
+        field.setType(toText(values, "type"));
+        return field;
+    }
+
+    private CoreChartView createDemoChartView(Map<String, Object> values) {
+        CoreChartView chartView = new CoreChartView();
+        chartView.setId(toLong(values, "id"));
+        chartView.setAggregate(toBoolean(values, "aggregate"));
+        chartView.setChartType(toText(values, "chart_type"));
+        chartView.setCopyFrom(toLong(values, "copy_from"));
+        chartView.setCopyId(toLong(values, "copy_id"));
+        chartView.setCreateBy(toText(values, "create_by"));
+        chartView.setCreateTime(toLong(values, "create_time"));
+        chartView.setCustomAttr(toText(values, "custom_attr"));
+        chartView.setCustomAttrMobile(toText(values, "custom_attr_mobile"));
+        chartView.setCustomFilter(toText(values, "custom_filter"));
+        chartView.setCustomStyle(toText(values, "custom_style"));
+        chartView.setCustomStyleMobile(toText(values, "custom_style_mobile"));
+        chartView.setDataFrom(toText(values, "data_from"));
+        chartView.setDrillFields(toText(values, "drill_fields"));
+        chartView.setExtBubble(toText(values, "ext_bubble"));
+        chartView.setExtColor(toText(values, "ext_color"));
+        chartView.setExtLabel(toText(values, "ext_label"));
+        chartView.setExtStack(toText(values, "ext_stack"));
+        chartView.setExtTooltip(toText(values, "ext_tooltip"));
+        chartView.setFlowMapEndName(toText(values, "flow_map_end_name"));
+        chartView.setFlowMapStartName(toText(values, "flow_map_start_name"));
+        chartView.setIsPlugin(toBoolean(values, "is_plugin"));
+        chartView.setJumpActive(toBoolean(values, "jump_active"));
+        chartView.setLinkageActive(toBoolean(values, "linkage_active"));
+        chartView.setRefreshTime(toInteger(values, "refresh_time"));
+        chartView.setRefreshUnit(toText(values, "refresh_unit"));
+        chartView.setRefreshViewEnable(toBoolean(values, "refresh_view_enable"));
+        chartView.setRender(toText(values, "render"));
+        chartView.setResultCount(toInteger(values, "result_count"));
+        chartView.setResultMode(toText(values, "result_mode"));
+        chartView.setSceneId(toLong(values, "scene_id"));
+        chartView.setSenior(toText(values, "senior"));
+        chartView.setSnapshot(toText(values, "snapshot"));
+        chartView.setSortPriority(toText(values, "sort_priority"));
+        chartView.setStylePriority(toText(values, "style_priority"));
+        chartView.setTableId(toLong(values, "table_id"));
+        chartView.setTitle(toText(values, "title"));
+        chartView.setType(toText(values, "type"));
+        chartView.setUpdateTime(toLong(values, "update_time"));
+        chartView.setViewFields(toText(values, "view_fields"));
+        chartView.setXAxis(toText(values, "x_axis"));
+        chartView.setXAxisExt(toText(values, "x_axis_ext"));
+        chartView.setYAxis(toText(values, "y_axis"));
+        chartView.setYAxisExt(toText(values, "y_axis_ext"));
+        return chartView;
+    }
+
+    private DataVisualizationInfo createDemoVisualizationInfo(Map<String, Object> values) {
+        DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
+        visualizationInfo.setId(toLong(values, "id"));
+        visualizationInfo.setCanvasStyleData(toText(values, "canvas_style_data"));
+        visualizationInfo.setCheckVersion(toText(values, "check_version"));
+        visualizationInfo.setComponentData(toText(values, "component_data"));
+        visualizationInfo.setContentId(toText(values, "content_id"));
+        visualizationInfo.setCreateBy(toText(values, "create_by"));
+        visualizationInfo.setCreateTime(toLong(values, "create_time"));
+        visualizationInfo.setDeleteBy(toText(values, "delete_by"));
+        visualizationInfo.setDeleteFlag(toBoolean(values, "delete_flag"));
+        visualizationInfo.setDeleteTime(toLong(values, "delete_time"));
+        visualizationInfo.setLevel(toInteger(values, "level"));
+        visualizationInfo.setMobileLayout(toBoolean(values, "mobile_layout"));
+        visualizationInfo.setName(toText(values, "name"));
+        visualizationInfo.setNodeType(toText(values, "node_type"));
+        visualizationInfo.setOrgId(toLong(values, "org_id"));
+        visualizationInfo.setPid(toLong(values, "pid"));
+        visualizationInfo.setRemark(toText(values, "remark"));
+        visualizationInfo.setSelfWatermarkStatus(toBoolean(values, "self_watermark_status"));
+        visualizationInfo.setSort(toInteger(values, "sort"));
+        visualizationInfo.setSource(toText(values, "source"));
+        visualizationInfo.setStatus(toInteger(values, "status"));
+        visualizationInfo.setType(toText(values, "type"));
+        visualizationInfo.setUpdateBy(toText(values, "update_by"));
+        visualizationInfo.setUpdateTime(toLong(values, "update_time"));
+        visualizationInfo.setVersion(toInteger(values, "version"));
+        return visualizationInfo;
+    }
+
+    private DemoTeaMaterial createDemoTeaMaterial(Integer id, Map<String, Object> values) {
+        DemoTeaMaterial material = new DemoTeaMaterial();
+        material.setId(id);
+        material.setDate(toDate(values, "date"));
+        material.setShop(toText(values, "shop"));
+        material.setPurpose(toText(values, "purpose"));
+        material.setAmount(toLong(values, "amount"));
+        return material;
+    }
+
+    private DemoTeaOrder createDemoTeaOrder(Integer id, Map<String, Object> values) {
+        DemoTeaOrder order = new DemoTeaOrder();
+        order.setId(id);
+        order.setShop(toText(values, "shop"));
+        order.setProductLine(toText(values, "product_line"));
+        order.setDishName(toText(values, "dish_name"));
+        order.setTemperature(toText(values, "temperature"));
+        order.setSpecification(toText(values, "specification"));
+        order.setSalesQuantity(toLong(values, "sales_quantity"));
+        order.setUnitPrice(toLong(values, "unit_price"));
+        order.setBillNumber(toText(values, "bill_number"));
+        order.setSalesDate(toDate(values, "sales_date"));
+        return order;
     }
 
     private CoreMenu createMenu(Long id, Long pid, Integer type, String name, String component,
