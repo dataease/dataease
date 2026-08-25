@@ -335,8 +335,7 @@ public class VisualizationLinkJumpManage {
             ));
         }
         query.where(ccv.id.eq(sourceViewId).and(ccv.type.ne("VQuery")));
-        query.orderBy(cdtf.name.asc());
-        return query.fetch();
+        return fetchSortedBySourceFieldName(query);
     }
 
     private List<VisualizationLinkJumpInfoExtendDTO> queryBaseLinkJumpInfo(Long id, Long sourceViewId, Long uid, boolean isDesktop) {
@@ -411,8 +410,15 @@ public class VisualizationLinkJumpManage {
             ));
         }
         query.where(ccv.id.eq(sourceViewId).and(ccv.type.ne("VQuery")));
-        query.orderBy(cdtf.name.asc());
-        return query.fetch();
+        return fetchSortedBySourceFieldName(query);
+    }
+
+    private List<VisualizationLinkJumpInfoExtendDTO> fetchSortedBySourceFieldName(JPAQuery<VisualizationLinkJumpInfoExtendDTO> query) {
+        return query.fetch().stream()
+                .sorted(Comparator.comparing(
+                        VisualizationLinkJumpInfoExtendDTO::getSourceFieldName,
+                        Comparator.nullsLast(String::compareTo)))
+                .collect(Collectors.toList());
     }
 
     private List<VisualizationLinkJumpInfoDTO> aggregateTargetViewInfo(List<VisualizationLinkJumpInfoExtendDTO> baseResults) {
