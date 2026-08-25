@@ -51,10 +51,10 @@ import {
 } from '../utils/events'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { SPREADSHEET_EVENTS } from '../../../utils/events'
-import { defineComponent, h } from 'vue'
+import { h, render } from 'vue'
 import { SpreadsheetModeService } from '../../../services/spreadsheet-mode.service'
 import { getDsDetailsWithPerm, type DatasetDetail } from '@/api/dataset'
-import { cloneDeep, isEqual } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 import {
   getSpreadsheetFilterInitialValues,
   resolveSpreadsheetFilterValues,
@@ -65,6 +65,8 @@ const SPREADSHEET_QUERY_BAR_COMPONENT = 'SpreadsheetQueryBar'
 const { emitter } = useEmitt()
 
 export class DataEaseFilterController extends Disposable {
+  private readonly _valuesReadyResolvers = new Map<string, () => void>()
+
   constructor(
     @Inject(Injector) private readonly _injector: Injector,
     @ICommandService private readonly _commandService: ICommandService,
@@ -119,10 +121,25 @@ export class DataEaseFilterController extends Disposable {
 
   private _initComponents(): void {
     const mode = this._spreadsheetModeService.getMode()
-    const queryBar = defineComponent({
-      name: 'SpreadsheetQueryBarHost',
-      setup: () => () => h(SpreadsheetQueryBar, { mode })
-    })
+    const { createElement, useEffect, useRef } = this._componentManager.reactUtils
+    const QueryBarHost = () => {
+      const containerRef = useRef<HTMLElement | null>(null)
+      useEffect(() => {
+        const container = containerRef.current
+        if (!container) {
+          return
+        }
+        // Univer 的通用 Vue 适配器会在 React props 引用变化时重挂载组件；
+        // 查询栏不依赖这些 props，保持同一个 Vue 实例可避免初始化 options 被重复加载。
+        render(h(SpreadsheetQueryBar, {
+          mode,
+          isInitialValuesPending: () => this._getPendingValuesUnitId() !== undefined,
+          onInitialValuesReady: values => this._handleValuesReady(values)
+        }), container)
+        return () => render(null, container)
+      }, [])
+      return createElement('div', { ref: containerRef })
+    }
 
     this.disposeWithMe(
       this._componentManager.register('DataEaseQueryControlIcon', DataEaseQueryControlIcon, {
@@ -130,9 +147,7 @@ export class DataEaseFilterController extends Disposable {
       })
     )
     this.disposeWithMe(
-      this._componentManager.register(SPREADSHEET_QUERY_BAR_COMPONENT, queryBar, {
-        framework: 'vue3'
-      })
+      this._componentManager.register(SPREADSHEET_QUERY_BAR_COMPONENT, QueryBarHost)
     )
   }
 
@@ -160,13 +175,14 @@ export class DataEaseFilterController extends Disposable {
             this._withSelectValues(loadedConfig, values)
           )
           this._spreadsheetFilterRuntimeService.setValues(unitId, values)
+          const valuesReady = this._createValuesReady(unitId, config)
+          this._spreadsheetFilterRuntimeService.setValuesReady(unitId, valuesReady)
           dispatchSpreadsheetFilterVisibleChange(config.visible)
           dispatchSpreadsheetFilterConfigChange(config)
-          const valuesReady = this._resolveLoadedConfigValues(unitId, config, values)
-          this._spreadsheetFilterRuntimeService.setValuesReady(unitId, valuesReady)
-          dispatchSpreadsheetFilterQuery({ unitId, config, values })
+          // 首次查询由明细表、透视表在默认值就绪后统一执行，资源加载本身不广播刷新。
         },
         onUnLoad: unitId => {
+          this._resolveValuesReady(unitId)
           this._filterInstanceService.delete(unitId)
           this._filterInstanceService.setVisible(false)
           this._spreadsheetFilterRuntimeService.clearValues(unitId)
@@ -262,21 +278,57 @@ export class DataEaseFilterController extends Disposable {
     })
   }
 
-  private async _resolveLoadedConfigValues(
-    unitId: string,
-    loadedConfig: SpreadsheetFilterConfig,
-    initialValues: SpreadsheetFilterValueMap
-  ): Promise<void> {
-    const values = await resolveSpreadsheetFilterValues(loadedConfig)
-    if (this._filterInstanceService.get(unitId) !== loadedConfig || isEqual(values, initialValues)) {
+  private _createValuesReady(unitId: string, config: SpreadsheetFilterConfig): Promise<void> {
+    this._resolveValuesReady(unitId)
+    const requiresOptions = config.visible && config.conditions.some(condition =>
+      condition.visible &&
+      condition.defaultValueEnabled &&
+      condition.defaultValueFirstItem &&
+      ['textSelect', 'numberSelect', 'treeSelect'].includes(condition.displayType)
+    )
+    if (!requiresOptions) {
+      return Promise.resolve()
+    }
+
+    return new Promise<void>(resolve => {
+      this._valuesReadyResolvers.set(unitId, resolve)
+    })
+  }
+
+  private _handleValuesReady(values: SpreadsheetFilterValueMap): void {
+    const unitId = this._getPendingValuesUnitId()
+    if (!unitId) {
       return
     }
-    const config = this._filterInstanceService.setConfigForUnit(
+
+    // QueryBar 已持有相同的值，这里只更新资源状态，不再反向广播配置变化。
+    const config = this._filterInstanceService.get(unitId)
+    this._filterInstanceService.setConfigForUnit(
       unitId,
-      this._withSelectValues(loadedConfig, values)
+      this._withSelectValues(config, values)
     )
     this._spreadsheetFilterRuntimeService.setValues(unitId, values)
-    dispatchSpreadsheetFilterConfigChange(config)
+    this._resolveValuesReady(unitId)
+  }
+
+  private _getPendingValuesUnitId(): string | undefined {
+    const unitId = this._getCurrentUnitId()
+    if (unitId && this._valuesReadyResolvers.has(unitId)) {
+      return unitId
+    }
+    if (this._valuesReadyResolvers.size === 1) {
+      return this._valuesReadyResolvers.keys().next().value
+    }
+    return undefined
+  }
+
+  private _resolveValuesReady(unitId: string): void {
+    const resolve = this._valuesReadyResolvers.get(unitId)
+    if (!resolve) {
+      return
+    }
+    this._valuesReadyResolvers.delete(unitId)
+    resolve()
   }
 
   private _withSelectValues(
