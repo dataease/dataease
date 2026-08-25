@@ -6,7 +6,7 @@ import {
   serializeSheetData
 } from '../utils/univerConfig'
 import type { UniverInstance } from '../utils/univerConfig'
-import type { IWorkbookData } from '@univerjs/core'
+import { ICommandService, type IWorkbookData } from '@univerjs/core'
 import { IRenderManagerService } from '@univerjs/engine-render'
 import type { SpreadsheetMode } from '../types/mode'
 
@@ -24,7 +24,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: Partial<IWorkbookData>): void
-  (e: 'change', value: Partial<IWorkbookData>): void
+  (e: 'change'): void
   (e: 'ready'): void
 }>()
 
@@ -33,6 +33,7 @@ let univerInstance: UniverInstance | null
 const isReady = ref(false)
 const isInitializing = ref(false)
 let rafId: number | null = null
+let commandExecutedDisposable: { dispose: () => void } | undefined
 
 // Internal data tracking
 let workbookData: Partial<IWorkbookData> = props.modelValue || createDefaultWorkbookData()
@@ -69,6 +70,9 @@ const initUniver = async () => {
       workbookData,
       { mode: props.mode }
     )
+    const commandService = univerInstance.univer.__getInjector().get(ICommandService)
+    // Univer 的原生编辑、插件命令最终都会经过命令服务，由上层统一比较持久化快照。
+    commandExecutedDisposable = commandService.onCommandExecuted(() => emit('change'))
     isReady.value = true
     emit('ready')
   } catch (error) {
@@ -132,6 +136,8 @@ const resize = () => {
  * Dispose instance
  */
 const disposeInstance = () => {
+  commandExecutedDisposable?.dispose()
+  commandExecutedDisposable = undefined
   if (rafId !== null) {
     cancelAnimationFrame(rafId)
     rafId = null

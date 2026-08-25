@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, nextTick } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus-secondary'
+import { ElMessage } from 'element-plus-secondary'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import icon_left_outlined from '@/assets/svg/icon_left_outlined.svg'
@@ -14,7 +14,6 @@ const { t } = useI18n()
 
 const props = defineProps<{
   name: string
-  hasChanges?: boolean
   saving?: boolean
   publishing?: boolean
   recovering?: boolean
@@ -71,20 +70,7 @@ const closeEditCanvasName = () => {
 }
 
 const handleBack = () => {
-  if (props.hasChanges) {
-    ElMessageBox.confirm(t('components.sure_to_exit'), {
-      confirmButtonText: t('commons.confirm'),
-      cancelButtonText: t('commons.cancel'),
-      confirmButtonType: 'primary',
-      type: 'warning',
-      autofocus: false,
-      showClose: false
-    }).then(() => {
-      emit('back')
-    })
-  } else {
-    emit('back')
-  }
+  emit('back')
 }
 
 const handleSave = () => {

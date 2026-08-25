@@ -33,6 +33,9 @@ const emit = defineEmits<{
 // 注入插件配置
 const pluginConfig = inject('pluginConfig') as any
 const datasetFields = inject<Ref<{ dimensions: FieldItemData[]; quotas: FieldItemData[] }>>('datasetFields')
+const beforeCreateDataset = inject<() => boolean | Promise<boolean>>(
+  'beforeCreateSpreadsheetDataset'
+)
 const datasetSelectRef = ref<InstanceType<typeof DatasetSelect>>()
 const collapsed = ref(false)
 const curDatasetWeight = ref(0)
@@ -422,7 +425,11 @@ const openEmbeddedDatasetEditor = (datasetId?: string | number) => {
   useEmitt().emitter.emit('changeCurrentComponent', 'DatasetEditor')
 }
 
-const handleAddDataset = () => {
+const handleAddDataset = async () => {
+  if (beforeCreateDataset && !(await beforeCreateDataset())) {
+    return
+  }
+
   if (isDataEaseBi.value) {
     openEmbeddedDatasetEditor()
     return
