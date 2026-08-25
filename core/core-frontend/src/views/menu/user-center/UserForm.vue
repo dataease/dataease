@@ -2,19 +2,21 @@
 import { ref, reactive, onMounted, computed, toRefs, h } from 'vue'
 import { ElMessage, ElLoading } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
-import type { FormInstance, FormRules, ElMessageBox, ElForm, ElFormItem, ElInput } from 'element-plus-secondary'
+import type {
+  FormInstance,
+  FormRules,
+  ElMessageBox,
+  ElForm,
+  ElFormItem,
+  ElInput
+} from 'element-plus-secondary'
 import { groupBy } from './options'
 import { EMAIL_REGEX } from '@/utils/validate'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { propTypes } from '@/utils/propTypes'
-import request from "@/config/axios";
+import request from '@/config/axios'
 import MfaStep from '../../component/login/MfaStep.vue'
-import {
-  userCreateApi,
-  personEditApi,
-  roleOptionForUserApi,
-  personInfoApi
-} from '@/api/user'
+import { userCreateApi, personEditApi, roleOptionForUserApi, personInfoApi } from '@/api/user'
 interface UserForm {
   id?: string | number
   account: string
@@ -33,14 +35,17 @@ const props = defineProps({
 })
 
 const mfaSwitchDisable = computed(() => {
-  return state.form.mfaEnable && (props.globalMfaStatus === 1 || (props.globalMfaStatus === 2 && userStore.getUid === '1'))
+  return (
+    state.form.mfaEnable &&
+    (props.globalMfaStatus === 1 || (props.globalMfaStatus === 2 && userStore.getUid === '1'))
+  )
 })
 const mfaSwitchTips = computed(() => {
-  if(!state.form.mfaEnable || props.globalMfaStatus !== 1) return ''
+  if (!state.form.mfaEnable || props.globalMfaStatus !== 1) return ''
   return t('setting_mfa.enable_switch_tips')
 })
 const bindVisible = ref(false)
-const { userMfaBound } = toRefs(props);
+const { userMfaBound } = toRefs(props)
 const userStore = useUserStoreWithOut()
 const curUid = computed(() => userStore.getUid)
 const mfaData = computed(() => {
@@ -105,12 +110,12 @@ const validateUsername = (_, value, callback) => {
 
 const validateNickname = (_, value, callback) => {
   if (value.startsWith(' ') || value.endsWith(' ')) {
-    const msg = t("user.special_characters_are_not_supported");
-    callback(new Error(msg));
-    return;
+    const msg = t('user.special_characters_are_not_supported')
+    callback(new Error(msg))
+    return
   }
   const pattern =
-    "[\\u00A0\"`~!@#$%^&*()+=|{}':;',\\[\\]<>/?~！@#￥%……&*（）——+|{}【】‘；：”“'。，、？]";
+    "[\\u00A0\"`~!@#$%^&*()+=|{}':;',\\[\\]<>/?~！@#￥%……&*（）——+|{}【】‘；：”“'。，、？]"
   const regep = new RegExp(pattern)
 
   if (regep.test(value)) {
@@ -134,7 +139,7 @@ const phoneRegex = (_, value, callback) => {
     callback()
   }
 }
-const mfaRule = reactive<FormRules>({ 
+const mfaRule = reactive<FormRules>({
   code: [
     {
       required: true,
@@ -143,7 +148,7 @@ const mfaRule = reactive<FormRules>({
     },
     { pattern: /^\d{6}$/, message: t('setting_mfa.code_input_msg', [6]), trigger: 'blur' }
   ]
- })
+})
 const rule = reactive<FormRules>({
   account: [
     {
@@ -227,7 +232,7 @@ const queryForm = () => {
 const emits = defineEmits(['saved', 'refreshMfa'])
 const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
-  await formEl.validate((valid) => {
+  await formEl.validate(valid => {
     if (valid) {
       const param = { ...state.form }
       const method = formType.value === 'modify' ? personEditApi : userCreateApi
@@ -289,7 +294,6 @@ const bindMfa = () => {
   dialogVisible.value = false
 }
 
-
 const beforeMfaUnbindClose = async (action, instance, done) => {
   if (action !== 'confirm') {
     done()
@@ -320,7 +324,7 @@ const beforeMfaUnbindClose = async (action, instance, done) => {
   }
 }
 const setCodeError = () => {
-  const ruleArray: any[] = mfaRule.code as any []
+  const ruleArray: any[] = mfaRule.code as any[]
   const len = ruleArray.length
   if (!unbindMsg.value && len > 2) {
     ruleArray.splice(2, 1)
@@ -340,32 +344,36 @@ const setCodeError = () => {
   }
   mfaForm.value?.validate()
 }
-const mfaUnbindCb = (action) => {
+const mfaUnbindCb = action => {
   if (action === 'confirm') {
     ElMessage.success(t('userCenter.unbind_success'))
   }
   state.mfaForm.code = ''
 }
-const updateCode = (val) => {
+const updateCode = val => {
   state.mfaForm.code = val
 }
 
 const unbindMfa = () => {
   const confirmMsg = t('setting_mfa.unbind_confirm')
-  const drawForm = () => h("div", { class: "unbind-tip-box-div" }, [
-    h('p', null, confirmMsg),
-    h(ElForm, { model: state.mfaForm, ref: mfaForm, rules: mfaRule, 'labelPosition': 'top' }, [
+  const drawForm = () =>
+    h('div', { class: 'unbind-tip-box-div' }, [
+      h('p', null, confirmMsg),
+      h(ElForm, { model: state.mfaForm, ref: mfaForm, rules: mfaRule, labelPosition: 'top' }, [
         h(ElFormItem, { label: t('setting_mfa.mfa_code'), prop: 'code' }, [
-          h(ElInput, { 'modelValue': state.mfaForm.code, 'onUpdate:modelValue': updateCode, placeholder: t('setting_mfa.code_input_msg', [6]) })
+          h(ElInput, {
+            modelValue: state.mfaForm.code,
+            'onUpdate:modelValue': updateCode,
+            placeholder: t('setting_mfa.code_input_msg', [6])
+          })
         ])
-      ]
-    )
-  ])
+      ])
+    ])
   const boxOption = {
-    confirmButtonType: "danger",
-    type: "warning",
+    confirmButtonType: 'danger',
+    type: 'warning',
     confirmButtonText: t('commons.unbind'),
-    cancelButtonText: t("dataset.cancel"),
+    cancelButtonText: t('dataset.cancel'),
     autofocus: false,
     showClose: false,
     dangerouslyUseHTMLString: true,
@@ -379,7 +387,7 @@ const stepClose = () => {
   bindVisible.value = false
   dialogVisible.value = true
 }
-const refreshBind = (val) => {
+const refreshBind = val => {
   bindVisible.value = false
   dialogVisible.value = true
   userMfaBound.value = val
@@ -463,31 +471,39 @@ onMounted(() => {
       <el-form-item :label="t('user.state')" prop="enabled">
         <el-switch :disabled="state.form.id === curUid" v-model="state.form.enable" />
       </el-form-item>
-      
-      <el-form-item :label="t('setting_mfa.user_enable')" prop="mfaEnable" class="dynamic-form-label">
+
+      <el-form-item
+        :label="t('setting_mfa.user_enable')"
+        prop="mfaEnable"
+        class="dynamic-form-label"
+      >
         <template v-slot:label>
           <div class="user-form-info-tips">
             <span class="custom-form-item__label">{{ t('setting_mfa.user_enable') }}</span>
             <div class="mfa-bind-label">
-              <div v-if="userMfaBound" class="mfa-bind is-active"><span>{{ t('setting_mfa.bind_ready') }}</span></div>
-              <div v-else class="mfa-bind"><span>{{ t('setting_mfa.bind_unready') }}</span></div>
+              <div v-if="userMfaBound" class="mfa-bind is-active">
+                <span>{{ t('setting_mfa.bind_ready') }}</span>
+              </div>
+              <div v-else class="mfa-bind">
+                <span>{{ t('setting_mfa.bind_unready') }}</span>
+              </div>
             </div>
             <div class="mfa-bind-btn">
-              <el-button v-if="userMfaBound" @click="unbindMfa">{{ t('commons.unbind') }}</el-button>
+              <el-button v-if="userMfaBound" @click="unbindMfa">{{
+                t('commons.unbind')
+              }}</el-button>
               <el-button v-else type="primary" @click="bindMfa">{{ t('commons.bind') }}</el-button>
             </div>
           </div>
         </template>
-        
-        <el-switch v-if="!mfaSwitchTips" :disabled="mfaSwitchDisable" v-model="state.form.mfaEnable" />
-        <el-tooltip
-          v-else
-          class="box-item"
-          effect="dark"
-          :content="mfaSwitchTips"
-          placement="top"
-        >
-          <el-switch :disabled="mfaSwitchDisable" v-model="state.form.mfaEnable" />  
+
+        <el-switch
+          v-if="!mfaSwitchTips"
+          :disabled="mfaSwitchDisable"
+          v-model="state.form.mfaEnable"
+        />
+        <el-tooltip v-else class="box-item" effect="dark" :content="mfaSwitchTips" placement="top">
+          <el-switch :disabled="mfaSwitchDisable" v-model="state.form.mfaEnable" />
         </el-tooltip>
       </el-form-item>
     </el-form>
@@ -500,7 +516,13 @@ onMounted(() => {
       </span>
     </template>
   </el-drawer>
-  <mfa-step v-if="bindVisible" :mfa-data="mfaData" :is-login="false" @close="stepClose" @refresh-bind="refreshBind"/>
+  <mfa-step
+    v-if="bindVisible"
+    :mfa-data="mfaData"
+    :is-login="false"
+    @close="stepClose"
+    @refresh-bind="refreshBind"
+  />
 </template>
 
 <style lang="less">
@@ -516,32 +538,6 @@ onMounted(() => {
   }
 }
 .personal-info-drawer {
-  .editer-form-title {
-    width: 100%;
-    border-radius: 4px;
-    background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
-    margin-bottom: 16px;
-    height: 40px;
-    padding-left: 16px;
-
-    i {
-      color: var(--ed-color-primary);
-      font-size: 14.666666030883789px;
-    }
-
-    .pwd {
-      font-family: var(--de-custom_font, 'PingFang');
-      font-size: 14px;
-      font-weight: 400;
-      line-height: 22px;
-      text-align: left;
-    }
-
-    .pwd {
-      margin: 0 8px;
-      color: #1f2329;
-    }
-  }
   .input-with-select {
     .ed-input-group__prepend {
       width: 72px;
@@ -584,15 +580,15 @@ onMounted(() => {
           padding: 0 4px;
           line-height: 16px;
           border-radius: 2px;
-          background-color: #1F23291A;
-          color: #646A73;
+          background-color: #1f23291a;
+          color: #646a73;
           span {
             font-size: 10px;
           }
         }
         .is-active {
-          background-color: #34C72433;
-          color: #2CA91F;
+          background-color: #34c72433;
+          color: #2ca91f;
         }
       }
       .mfa-bind-btn {
