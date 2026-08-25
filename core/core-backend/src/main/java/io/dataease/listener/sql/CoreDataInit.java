@@ -264,7 +264,7 @@ public class CoreDataInit implements CoreSqlBlock {
     }
 
     private void initVisualizationWatermark() {
-        String settingContent = "{\"enable\":false,\"enablePanelCustom\":true,\"type\":\"custom\",\"content\":\"水印\",\"watermark_color\":\"#DD1010\",\"watermark_x_space\":12,\"watermark_y_space\":36,\"watermark_fontsize\":15}";
+        String settingContent = "{\"enable\":false,\"enablePanelCustom\":true,\"type\":\"custom\",\"content\":\"${username}\",\"watermark_color\":\"#DD1010\",\"watermark_x_space\":12,\"watermark_y_space\":36,\"watermark_fontsize\":15}";
         VisualizationWatermark watermark = new VisualizationWatermark(
                 "system_default",
                 "1.0",
