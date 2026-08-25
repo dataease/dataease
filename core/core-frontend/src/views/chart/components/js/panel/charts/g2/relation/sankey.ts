@@ -96,6 +96,68 @@ export class G2ChartBar extends G2ChartView {
     const maxNodeCount = Math.max(sourceNodeCount, targetNodeCount)
     // G2 默认间距在单层节点达到 51 个时会耗尽布局高度
     const nodePadding = maxNodeCount >= 51 ? 0.5 / (maxNodeCount - 1) : 0.02
+    // 原逻辑固定先判断指标排序，指标启用升降序后会直接返回，导致更高优先级的维度排序无法执行
+    // 将字段规则按 sortPriority 重排，确保排序冲突时优先采用用户设置的高优先级字段
+    const sortPriority = new Map(
+      (chart.sortPriority ?? []).map((field, index) => [field.id, index])
+    )
+    // 指标可比较两侧节点，起点和终点维度仅比较各自对应的左右节点层级
+    const sortRules = [
+      {
+        field: chart.yAxis?.[0],
+        defaultPriority: 0,
+        applicable: () => true,
+        compare: (a, b) => {
+          if (chart.yAxis[0].sort === 'asc') {
+            return a.value - b.value
+          } else if (chart.yAxis[0].sort === 'desc') {
+            return b.value - a.value
+          }
+          return 0
+        }
+      },
+      {
+        field: chart.xAxis?.[0],
+        defaultPriority: 1,
+        applicable: (a, b) => a.sourceLinks.length > 0 && b.sourceLinks.length > 0,
+        compare: (a, b) => {
+          if (chart.xAxis[0].sort === 'custom_sort' && chart.xAxis[0].customSort) {
+            return (
+              chart.xAxis[0].customSort.indexOf(a.key) - chart.xAxis[0].customSort.indexOf(b.key)
+            )
+          } else if (chart.xAxis[0].sort === 'asc') {
+            return a.key.localeCompare(b.key)
+          } else if (chart.xAxis[0].sort === 'desc') {
+            return b.key.localeCompare(a.key)
+          }
+          return 0
+        }
+      },
+      {
+        field: chart.xAxisExt?.[0],
+        defaultPriority: 2,
+        applicable: (a, b) => a.targetLinks.length > 0 && b.targetLinks.length > 0,
+        compare: (a, b) => {
+          if (chart.xAxisExt[0].sort === 'custom_sort' && chart.xAxisExt[0].customSort) {
+            return (
+              chart.xAxisExt[0].customSort.indexOf(a.key) -
+              chart.xAxisExt[0].customSort.indexOf(b.key)
+            )
+          } else if (chart.xAxisExt[0].sort === 'asc') {
+            return a.key.localeCompare(b.key)
+          } else if (chart.xAxisExt[0].sort === 'desc') {
+            return b.key.localeCompare(a.key)
+          }
+          return 0
+        }
+      }
+    ]
+      .filter(rule => rule.field)
+      .sort((a, b) => {
+        const aPriority = sortPriority.get(a.field.id) ?? sortPriority.size + a.defaultPriority
+        const bPriority = sortPriority.get(b.field.id) ?? sortPriority.size + b.defaultPriority
+        return aPriority - bPriority
+      })
 
     const initOptions: G2Spec = {
       type: 'sankey',
@@ -126,39 +188,15 @@ export class G2ChartBar extends G2ChartView {
       layout: {
         nodePadding,
         nodeSort: (a, b) => {
-          // 这里是前端自己排序
-          if (chart.yAxis?.[0]) {
-            if (chart.yAxis[0].sort === 'asc') {
-              return a.value - b.value
-            } else if (chart.yAxis[0].sort === 'desc') {
-              return b.value - a.value
+          // 高优先级字段结果相同时继续比较下一级，保证多字段排序的级联语义
+          for (const rule of sortRules) {
+            if (rule.applicable(a, b)) {
+              const result = rule.compare(a, b)
+              if (result !== 0) {
+                return result
+              }
             }
           }
-
-          if (chart.xAxis?.[0] && a.sourceLinks.length > 0) {
-            if (chart.xAxis[0].sort === 'custom_sort' && chart.xAxis[0].customSort) {
-              return (
-                chart.xAxis[0].customSort.indexOf(a.key) - chart.xAxis[0].customSort.indexOf(b.key)
-              )
-            } else if (chart.xAxis[0].sort === 'asc') {
-              return a.key.localeCompare(b.key)
-            } else if (chart.xAxis[0].sort === 'desc') {
-              return b.key.localeCompare(a.key)
-            }
-          }
-          if (chart.xAxisExt?.[0] && a.targetLinks.length > 0) {
-            if (chart.xAxisExt[0].sort === 'custom_sort' && chart.xAxisExt[0].customSort) {
-              return (
-                chart.xAxisExt[0].customSort.indexOf(a.key) -
-                chart.xAxisExt[0].customSort.indexOf(b.key)
-              )
-            } else if (chart.xAxisExt[0].sort === 'asc') {
-              return a.key.localeCompare(b.key)
-            } else if (chart.xAxisExt[0].sort === 'desc') {
-              return b.key.localeCompare(a.key)
-            }
-          }
-
           return b.value - a.value
         }
       }
