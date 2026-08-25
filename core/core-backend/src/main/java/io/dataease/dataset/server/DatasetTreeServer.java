@@ -17,6 +17,7 @@ import io.dataease.extensions.view.dto.*;
 import io.dataease.log.DeLog;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
+import io.dataease.model.ResourceDeleteRequest;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
@@ -71,10 +72,10 @@ public class DatasetTreeServer implements DatasetTreeApi {
         return datasetGroupManage.perDelete(id);
     }
 
-    @DeLog(id = "#p0", ot = LogOT.DELETE, st = LogST.DATASET)
+    @DeLog(id = "#p0.id", ot = LogOT.DELETE, st = LogST.DATASET)
     @Override
-    public void delete(Long id) {
-        datasetGroupManage.delete(id);
+    public void delete(ResourceDeleteRequest request) {
+        datasetGroupManage.delete(request.getId(), Boolean.TRUE.equals(request.getRootOrgNode()));
     }
 
 

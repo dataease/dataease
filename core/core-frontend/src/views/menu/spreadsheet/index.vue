@@ -268,8 +268,7 @@ const menuList = [
 const getMenuList = (data?: SpreadsheetTreeNode) => {
   const filteredMenu = menuList.filter((item) => {
     if (disabledMove.value && item.command === "move") return false;
-    if (data?.orgRoot && (item.command === "move" || item.command === "delete"))
-      return false;
+    if (data?.orgRoot && item.command === "move") return false;
     return true;
   });
   const status = data ? getSpreadsheetStatus(data) : SpreadsheetPublishStatus.Unpublished;
@@ -510,7 +509,9 @@ const operation = async (
       tip: "",
     };
 
-    if (!!data.children?.length) {
+    if (data?.orgRoot) {
+      options.tip = t("common.org_root_delete_tips", [data.name]);
+    } else if (!!data.children?.length) {
       options.tip = t("spreadsheet.delete_folder_confirm");
     } else {
       delete options.tip;
@@ -518,7 +519,7 @@ const operation = async (
 
     try {
       await ElMessageBox.confirm(t("spreadsheet.delete_confirm"), options);
-      await deleteResource(data.id as number);
+      await deleteResource({ id: data.id as number, rootOrgNode: !!data.orgRoot });
       if (selectedNodeInfo.id === data.id) {
         await resetPreview();
       }

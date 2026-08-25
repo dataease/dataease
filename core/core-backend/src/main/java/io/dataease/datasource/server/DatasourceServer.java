@@ -53,6 +53,7 @@ import io.dataease.license.utils.LicenseUtil;
 import io.dataease.log.DeLog;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
+import io.dataease.model.ResourceDeleteRequest;
 import io.dataease.permission.util.V3UserUtil;
 import io.dataease.qrtz.dao.auto.repo.entity.QrtzSchedulerState;
 import io.dataease.result.PageResult;
@@ -728,10 +729,30 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @Transactional
-    @DeLog(id = "#p0", ot = LogOT.DELETE, st = LogST.DATASOURCE)
+    @DeLog(id = "#p0.id", ot = LogOT.DELETE, st = LogST.DATASOURCE)
     @Override
+    public void delete(ResourceDeleteRequest request) throws DEException {
+        io.dataease.utils.CommonBeanFactory.getBean(DatasourceServer.class)
+                .delete(request.getId(), Boolean.TRUE.equals(request.getRootOrgNode()));
+    }
+
+    public void delete(Long datasourceId) {
+        delete(datasourceId, false);
+    }
+
     @XpackInteract(value = "datasourceResourceTree", before = false)
-    public void delete(Long datasourceId) throws DEException {
+    public void delete(Long datasourceId, boolean rootOrgNode) throws DEException {
+        if (rootOrgNode) {
+            // 组织同名根目录为虚拟目录：跳过自身，递归删除 pid 指向它的子节点
+            Specification<CoreDatasource> findByPidSpec = (root, query, cb) -> cb.equal(root.get("pid"), datasourceId);
+            List<CoreDatasource> coreDatasources = coreDatasourceRepository.findAll(findByPidSpec);
+            if (ObjectUtils.isNotEmpty(coreDatasources)) {
+                for (CoreDatasource record : coreDatasources) {
+                    recursionDel(record.getId());
+                }
+            }
+            return;
+        }
         Objects.requireNonNull(io.dataease.utils.CommonBeanFactory.getBean(DatasourceServer.class)).recursionDel(datasourceId);
     }
 

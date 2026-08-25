@@ -70,6 +70,7 @@ export default {
     save_success: '保存成功',
     roger_that: '知道了',
     delete_success: '删除成功',
+    org_root_delete_tips: '该资源目录为 {0} 组织默认资源目录，删除后将影响该组织的资源使用',
     copy: '复制',
     operating: '操作',
     label: '备注',

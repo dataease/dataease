@@ -8,6 +8,7 @@ import io.dataease.api.spreadsheet.vo.SpreadsheetVO;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import io.dataease.model.BusiNodeRequest;
+import io.dataease.model.ResourceDeleteRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -68,9 +69,9 @@ public interface SpreadsheetApi {
     void rename(@RequestBody SpreadsheetEditor editor);
 
     @Operation(summary = "删除资源")
-    @DePermit({"#p0+':manage'"})
-    @PostMapping("/delete/{id}")
-    void delete(@PathVariable("id") Long id);
+    @DePermit({"#p0.id+':manage'"})
+    @PostMapping("/delete")
+    void delete(@RequestBody ResourceDeleteRequest request);
 
     @Operation(summary = "名称检查")
     @PostMapping("/nameCheck")

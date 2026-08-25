@@ -142,8 +142,11 @@ export const barInfoApi = async (id): Promise<IResponse> => {
   })
 }
 
-export const delDatasetTree = async (id): Promise<IResponse> => {
-  return request.post({ url: `/datasetTree/delete/${id}`, data: {} }).then(res => {
+export const delDatasetTree = async (data: {
+  id: number
+  rootOrgNode?: boolean
+}): Promise<IResponse> => {
+  return request.post({ url: `/datasetTree/delete`, data }).then(res => {
     return res?.data
   })
 }

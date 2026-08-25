@@ -15,6 +15,7 @@ import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
+import io.dataease.model.ResourceDeleteRequest;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -86,10 +87,10 @@ public interface DataVisualizationApi {
     @Operation(summary = "可视化资源基础信息更新")
     void updateBase(@RequestBody DataVisualizationBaseRequest request);
 
-    @PostMapping("/deleteLogic/{dvId}/{busiFlag}")
-    @DePermit(value = {"#p0+':manage'"}, busiFlag = "#p1")
+    @PostMapping("/deleteLogic")
+    @DePermit(value = {"#p0.id+':manage'"}, busiFlag = "#p0.busiFlag")
     @Operation(summary = "可视化资源删除")
-    void deleteLogic(@PathVariable("dvId") Long dvId, @PathVariable("busiFlag") String busiFlag);
+    void deleteLogic(@RequestBody ResourceDeleteRequest request);
 
     @PostMapping("/tree")
     @Operation(summary = "查询可视化资源树")

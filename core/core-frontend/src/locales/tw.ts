@@ -69,6 +69,7 @@ export default {
     save_success: '保存成功',
     roger_that: '知道了',
     delete_success: '刪除成功',
+    org_root_delete_tips: '該資源目錄為 {0} 組織默認資源目錄，刪除後將影響該組織的資源使用',
     copy: '複製',
     operating: '操作',
     label: '備註',

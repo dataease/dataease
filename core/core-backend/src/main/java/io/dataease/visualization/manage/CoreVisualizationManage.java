@@ -165,20 +165,33 @@ public class CoreVisualizationManage {
         }
     }
 
-    @XpackInteract(value = "visualizationResourceTree", before = false)
     public void delete(Long id) {
-        DataVisualizationInfo info = dataVisualizationInfoRepository.findById(id).orElse(null);
-        if (ObjectUtils.isEmpty(info)) {
-            DEException.throwException("resource not exist");
+        delete(id, false);
+    }
+
+    @XpackInteract(value = "visualizationResourceTree", before = false)
+    public void delete(Long id, boolean rootOrgNode) {
+        if (!rootOrgNode) {
+            DataVisualizationInfo info = dataVisualizationInfoRepository.findById(id).orElse(null);
+            if (ObjectUtils.isEmpty(info)) {
+                return;
+            }
         }
         Set<Long> delIds = new LinkedHashSet<>();
         Stack<Long> stack = new Stack<>();
-        stack.add(id);
+        if (rootOrgNode) {
+            // 组织同名根目录为虚拟目录，业务表无自身记录，直接从其子节点开始收集
+            List<Long> childrenIdList = dataVisualizationInfoRepository.queryChildrenId(id);
+            if (CollectionUtils.isNotEmpty(childrenIdList)) {
+                childrenIdList.forEach(stack::add);
+            }
+        } else {
+            stack.add(id);
+        }
         while (!stack.isEmpty()) {
             Long tempPid = stack.pop();
             if (isTopNode(tempPid)) continue;
             delIds.add(tempPid);
-
 
             List<Long> childrenIdList = dataVisualizationInfoRepository.queryChildrenId(tempPid);
             if (CollectionUtils.isNotEmpty(childrenIdList)) {
@@ -197,8 +210,9 @@ public class CoreVisualizationManage {
         coreChartViewRepository.deleteBySceneIds(delIds);
         snapshotCoreChartViewRepository.deleteBySceneIds(delIds);
 
-
-        coreOptRecentManage.saveOpt(id, OptConstants.OPT_RESOURCE_TYPE.VISUALIZATION, OptConstants.OPT_TYPE.DELETE);
+        if (!rootOrgNode) {
+            coreOptRecentManage.saveOpt(id, OptConstants.OPT_RESOURCE_TYPE.VISUALIZATION, OptConstants.OPT_TYPE.DELETE);
+        }
     }
 
     @XpackInteract(value = "visualizationResourceTree", before = false)

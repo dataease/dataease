@@ -185,8 +185,8 @@ export const rename = async (data: SpreadsheetEditor): Promise<void> => {
 /**
  * 删除资源
  */
-export const deleteResource = async (id: number | string): Promise<void> => {
-  return request.post({ url: `/spreadsheet/delete/${id}` })
+export const deleteResource = async (data: { id: number | string; rootOrgNode?: boolean }): Promise<void> => {
+  return request.post({ url: `/spreadsheet/delete`, data })
 }
 
 /**

@@ -529,7 +529,9 @@ const operation = (cmd: string, data: Tree, nodeType: string) => {
       autofocus: false,
       showClose: false
     }
-    if (!!data.children?.length) {
+    if (data?.orgRoot) {
+      options.tip = t('common.org_root_delete_tips', [data.name])
+    } else if (!!data.children?.length) {
       options.tip = t('data_fill.delete_folder_hint')
     } else {
       delete options.tip
@@ -540,7 +542,7 @@ const operation = (cmd: string, data: Tree, nodeType: string) => {
         : t('data_fill.confirm_delete_form'),
       options as ElMessageBoxOptions
     ).then(() => {
-      deleteById(data.id as string).then(() => {
+      deleteById({ id: data.id as string, rootOrgNode: !!data.orgRoot }).then(() => {
         listDf()
         ElMessage.success(t('dataset.delete_success'))
       })
@@ -614,7 +616,7 @@ const getMenuList = (val: boolean, data?: any) => {
       ].concat(menuList)
   return list.filter(item => {
     if (disabledMove.value && item.command === 'move') return false
-    if (data?.orgRoot && (item.command === 'move' || item.command === 'delete')) return false
+    if (data?.orgRoot && item.command === 'move') return false
     return true
   })
 }

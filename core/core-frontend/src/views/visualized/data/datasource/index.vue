@@ -918,7 +918,9 @@ const operation = (cmd: string, data: Tree, nodeType: string) => {
       autofocus: false,
       showClose: false
     }
-    if (!!data.children?.length) {
+    if (data?.orgRoot) {
+      options.tip = t('common.org_root_delete_tips', [data.name])
+    } else if (!!data.children?.length) {
       options.tip = t('data_source.operate_with_caution')
     } else {
       delete options.tip
@@ -952,7 +954,7 @@ const operation = (cmd: string, data: Tree, nodeType: string) => {
               )
             ])
           }).then(() => {
-            deleteById(data.id as number).then(() => {
+            deleteById({ id: data.id as number, rootOrgNode: !!data.orgRoot }).then(() => {
               if (data.id === nodeInfo.id) {
                 Object.assign(nodeInfo, cloneDeep(defaultInfo))
               }
@@ -965,7 +967,7 @@ const operation = (cmd: string, data: Tree, nodeType: string) => {
             t('datasource.this_data_source'),
             options as ElMessageBoxOptions
           ).then(() => {
-            deleteById(data.id as number).then(() => {
+            deleteById({ id: data.id as number, rootOrgNode: !!data.orgRoot }).then(() => {
               if (data.id === nodeInfo.id) {
                 Object.assign(nodeInfo, cloneDeep(defaultInfo))
               }
@@ -978,7 +980,7 @@ const operation = (cmd: string, data: Tree, nodeType: string) => {
     } else {
       ElMessageBox.confirm(t('data_set.delete_this_folder'), options as ElMessageBoxOptions).then(
         () => {
-          deleteById(data.id as number).then(() => {
+          deleteById({ id: data.id as number, rootOrgNode: !!data.orgRoot }).then(() => {
             if (data.id === nodeInfo.id) {
               Object.assign(nodeInfo, cloneDeep(defaultInfo))
             }
@@ -1139,7 +1141,7 @@ const getMenuList = (val: boolean, data?: any) => {
       ].concat(menuList)
   return list.filter(item => {
     if (disabledMove.value && item.command === 'move') return false
-    if (data?.orgRoot && (item.command === 'move' || item.command === 'delete')) return false
+    if (data?.orgRoot && item.command === 'move') return false
     return true
   })
 }

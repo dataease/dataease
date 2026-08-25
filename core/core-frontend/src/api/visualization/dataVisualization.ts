@@ -100,8 +100,8 @@ export const moveResource = data => request.post({ url: '/dataVisualization/move
 
 export const copyResource = data => request.post({ url: '/dataVisualization/copy', data })
 
-export const deleteLogic = (dvId, busiFlag) =>
-  request.post({ url: '/dataVisualization/deleteLogic/' + dvId + '/' + busiFlag })
+export const deleteLogic = (data: { id: number; busiFlag: string; rootOrgNode?: boolean }) =>
+  request.post({ url: '/dataVisualization/deleteLogic', data })
 
 export const querySubjectWithGroupApi = data =>
   request.post({ url: '/visualizationSubject/querySubjectWithGroup', data })

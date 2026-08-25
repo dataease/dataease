@@ -11,6 +11,7 @@ import io.dataease.extensions.datasource.dto.DatasetTableDTO;
 import io.dataease.extensions.view.dto.SqlVariableDetails;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
+import io.dataease.model.ResourceDeleteRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
@@ -68,9 +69,9 @@ public interface DatasetTreeApi {
     boolean perDelete(@PathVariable("id") Long id);
 
     @Operation(summary = "删除数据集")
-    @DePermit({"#p0+':manage'"})
-    @PostMapping("delete/{id}")
-    void delete(@PathVariable("id") Long id);
+    @DePermit({"#p0.id+':manage'"})
+    @PostMapping("delete")
+    void delete(@RequestBody ResourceDeleteRequest request);
 
     @Operation(summary = "查询文件夹以及数据集tree")
     @PostMapping("tree")

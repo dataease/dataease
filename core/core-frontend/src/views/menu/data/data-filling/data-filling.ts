@@ -209,8 +209,8 @@ export const getDataFillingTemplateSettings = async (userTaskId: string): Promis
     })
 }
 
-export const deleteById = (id: string): Promise<any> => {
-    return request.get({url: '/data-filling/delete/' + id})
+export const deleteById = (data: { id: string; rootOrgNode?: boolean }): Promise<any> => {
+    return request.post({url: '/data-filling/delete', data})
 }
 
 export const deleteRowData = (formId: string, id: number): Promise<any> => {

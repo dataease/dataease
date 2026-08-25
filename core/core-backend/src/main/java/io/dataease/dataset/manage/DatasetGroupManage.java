@@ -216,14 +216,23 @@ public class DatasetGroupManage {
         return false;
     }
 
-    @XpackInteract(value = "authResourceTree", before = false)
     public void delete(Long id) {
-        CoreDatasetGroup coreDatasetGroup = coreDatasetGroupRepository.findById(id).orElse(null);
-        if (ObjectUtils.isEmpty(coreDatasetGroup)) {
-            DEException.throwException("resource not exist");
+        delete(id, false);
+    }
+
+    @XpackInteract(value = "authResourceTree", before = false)
+    public void delete(Long id, boolean rootOrgNode) {
+        if (!rootOrgNode) {
+            CoreDatasetGroup coreDatasetGroup = coreDatasetGroupRepository.findById(id).orElse(null);
+            if (ObjectUtils.isEmpty(coreDatasetGroup)) {
+                return;
+            }
+            Objects.requireNonNull(CommonBeanFactory.getBean(this.getClass())).recursionDel(id);
+            coreOptRecentManage.saveOpt(coreDatasetGroup.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASET, OptConstants.OPT_TYPE.DELETE);
+            return;
         }
+        // 组织同名根目录为虚拟目录：自身 deleteById 幂等，同时删除挂载其下的数据集并递归子组
         Objects.requireNonNull(CommonBeanFactory.getBean(this.getClass())).recursionDel(id);
-        coreOptRecentManage.saveOpt(coreDatasetGroup.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASET, OptConstants.OPT_TYPE.DELETE);
     }
 
     public void recursionDel(Long id) {
