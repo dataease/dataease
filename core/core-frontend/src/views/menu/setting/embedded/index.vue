@@ -1,9 +1,5 @@
 <template>
-  <div
-    class="org-table__content"
-    v-loading="loading"
-    v-if="state.instanceList?.length || keyword"
-  >
+  <div class="org-table__content" v-loading="loading" v-if="state.instanceList?.length || keyword">
     <el-row class="top-operate">
       <el-col :span="12">
         <el-tooltip
@@ -13,11 +9,11 @@
           placement="top"
         >
           <el-button disabled @click="addHandler" type="info">
-            {{ t("system.create_embedded_application") }}
+            {{ t('system.create_embedded_application') }}
           </el-button>
         </el-tooltip>
         <el-button v-else @click="addHandler" type="primary">
-          {{ t("system.create_embedded_application") }}
+          {{ t('system.create_embedded_application') }}
         </el-button>
       </el-col>
 
@@ -56,31 +52,19 @@
         <el-table-column type="selection" width="40" />
         <el-table-column key="name" show-overflow-tooltip prop="name">
           <template #header>
-            <span
-              style="white-space: nowrap"
-              :title="t('system.application_name')"
-              >{{ t("system.application_name") }}</span
-            >
+            <span style="white-space: nowrap" :title="t('system.application_name')">{{
+              t('system.application_name')
+            }}</span>
           </template>
           <template v-slot:default="scope">
             <span>{{ scope.row.name }}</span>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="appId"
-          key="appId"
-          label="APP ID"
-          show-overflow-tooltip
-          width="200"
-        >
+        <el-table-column prop="appId" key="appId" label="APP ID" show-overflow-tooltip width="200">
           <template v-slot:default="scope">
             <div class="embedded-line-item">
               <span v-html="scope.row.appId" />
-              <el-tooltip
-                effect="dark"
-                :content="t('common.copy')"
-                placement="top"
-              >
+              <el-tooltip effect="dark" :content="t('common.copy')" placement="top">
                 <el-button text @click="copyAppId(scope.row)">
                   <template #icon>
                     <Icon name="de-copy"><deCopy class="svg-icon" /></Icon>
@@ -106,21 +90,12 @@
                 :content="scope.row.appSecret"
                 placement="top"
               >
-                <span
-                  class="ellipsis"
-                  style="display: inline-block; width: 110px"
-                  >{{ scope.row.appSecret }}</span
-                >
+                <span class="ellipsis" style="display: inline-block; width: 110px">{{
+                  scope.row.appSecret
+                }}</span>
               </el-tooltip>
-              <span
-                v-else
-                v-html="scope.row.show ? scope.row.appSecret : '**********'"
-              />
-              <el-tooltip
-                effect="dark"
-                :content="t('common.copy')"
-                placement="top"
-              >
+              <span v-else v-html="scope.row.show ? scope.row.appSecret : '**********'" />
+              <el-tooltip effect="dark" :content="t('common.copy')" placement="top">
                 <el-button text @click="copyAppSecret(scope.row)">
                   <template #icon>
                     <Icon name="de-copy"><deCopy class="svg-icon" /></Icon>
@@ -130,35 +105,25 @@
 
               <el-tooltip
                 effect="dark"
-                :content="
-                  scope.row.show
-                    ? t('system.click_to_hide')
-                    : t('system.click_to_show')
-                "
+                :content="scope.row.show ? t('system.click_to_hide') : t('system.click_to_show')"
                 placement="top"
               >
                 <el-button text @click="viewSecret(scope.row)">
                   <template #icon>
                     <Icon>
-                      <component
-                        :is="scope.row.show ? eyeOpen : eye"
-                      ></component>
+                      <component :is="scope.row.show ? eyeOpen : eye"></component>
                     </Icon>
                   </template>
                 </el-button>
               </el-tooltip>
 
               <div @click="scope.row.resetInfoShow = true">
-                <el-tooltip
-                  effect="dark"
-                  :content="t('dataset.update')"
-                  placement="top"
-                >
+                <el-tooltip effect="dark" :content="t('dataset.update')" placement="top">
                   <el-button
                     text
                     :ref="
-                      (el) => {
-                        setButtonRef(el, scope.row);
+                      el => {
+                        setButtonRef(el, scope.row)
                       }
                     "
                     v-click-outside="onClickOutside(scope.row)"
@@ -177,8 +142,8 @@
                   :virtual-ref="scope.row.buttonRef"
                   trigger="click"
                   :ref="
-                    (el) => {
-                      setPopoverRef(el, scope.row);
+                    el => {
+                      setPopoverRef(el, scope.row)
                     }
                   "
                   :show-arrow="true"
@@ -192,19 +157,17 @@
                           /></Icon>
                         </el-icon>
                       </span>
-                      <span class="header-span">{{
-                        t("system.update_app_secret")
-                      }}</span>
+                      <span class="header-span">{{ t('system.update_app_secret') }}</span>
                     </div>
                     <div class="confirm-content">
-                      <span>{{ t("system.operate_with_caution") }}</span>
+                      <span>{{ t('system.operate_with_caution') }}</span>
                     </div>
                     <div class="confirm-foot">
                       <el-button secondary @click="closeResetInfo(scope.row)">{{
-                        t("common.cancel")
+                        t('common.cancel')
                       }}</el-button>
                       <el-button type="primary" @click="resetSecret(scope.row)">
-                        {{ t("common.sure") }}
+                        {{ t('common.sure') }}
                       </el-button>
                     </div>
                   </div>
@@ -222,33 +185,18 @@
           width="200"
         />
 
-        <el-table-column
-          width="124"
-          fixed="right"
-          key="_operation"
-          :label="t('common.operate')"
-        >
+        <el-table-column width="124" fixed="right" key="_operation" :label="t('common.operate')">
           <template #default="scope">
             <div class="operate-icon-container">
-              <el-tooltip
-                effect="dark"
-                :content="t('common.edit')"
-                placement="top"
-              >
+              <el-tooltip effect="dark" :content="t('common.edit')" placement="top">
                 <el-button text @click="editHandler(scope.row)">
                   <template #icon>
-                    <Icon name="icon_edit_outlined"
-                      ><icon_edit_outlined class="svg-icon"
-                    /></Icon>
+                    <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
                   </template>
                 </el-button>
               </el-tooltip>
 
-              <el-tooltip
-                effect="dark"
-                :content="t('common.delete')"
-                placement="top"
-              >
+              <el-tooltip effect="dark" :content="t('common.delete')" placement="top">
                 <el-button text @click="delHandler(scope.row)">
                   <template #icon>
                     <Icon name="icon_delete-trash_outlined"
@@ -264,270 +212,256 @@
     </div>
   </div>
   <div v-else class="org-table__content">
-    <el-empty
-      class="embedded-empty"
-      :image="nothingNone"
-      :description="t('system.no_application')"
-    >
+    <el-empty class="embedded-empty" :image="nothingNone" :description="t('system.no_application')">
       <el-button type="primary" @click="addHandler">{{
-        t("system.create_embedded_application")
+        t('system.create_embedded_application')
       }}</el-button>
     </el-empty>
   </div>
-  <div
-    v-if="state.multipleSelection.length"
-    class="bottom-bar flex-align-center"
-  >
-    <el-button
-      type="danger"
-      class="batch-delete-button"
-      plain
-      @click="batchDelHandler"
-    >
-      {{ t("sync_task.batch_del") }}
+  <div v-if="state.multipleSelection.length" class="bottom-bar flex-align-center">
+    <el-button type="danger" class="batch-delete-button" plain @click="batchDelHandler">
+      {{ t('sync_task.batch_del') }}
     </el-button>
     <span class="bottom-info">{{
-      t("sync_task.selection_info", [state.multipleSelection.length])
+      t('sync_task.selection_info', [state.multipleSelection.length])
     }}</span>
     <el-button text @click="allSelection">{{
-      `${t("dataset.check_all")} ${state.paginationConfig.pageSize} 项`
+      `${t('dataset.check_all')} ${state.paginationConfig.pageSize} 项`
     }}</el-button>
-    <el-button text @click="clearSelection">{{
-      t("sync_task.clear_button")
-    }}</el-button>
+    <el-button text @click="clearSelection">{{ t('sync_task.clear_button') }}</el-button>
   </div>
   <editor ref="formEditor" @saved="search" />
 </template>
 
 <script lang="ts" setup>
-import eyeOpen from "@/assets/svg/eye-open.svg";
-import icon_searchOutline_outlined from "@/assets/svg/icon_search-outline_outlined.svg";
-import eye from "@/assets/svg/eye.svg";
-import deCopy from "@/assets/svg/de-copy.svg";
-import icon_refresh_outlined from "@/assets/svg/icon_refresh_outlined.svg";
-import icon_warning_filled from "@/assets/svg/icon_warning_filled.svg";
-import icon_edit_outlined from "@/assets/svg/icon_edit_outlined.svg";
-import icon_deleteTrash_outlined from "@/assets/svg/icon_delete-trash_outlined.svg";
-import { ref, reactive, unref } from "vue";
-import { useI18n } from "@/hooks/web/useI18n";
-import nothingNone from "@/assets/img/nothing-none.png";
-import request from "@/config/axios";
-import GridTable from "@/components/grid-table/src/GridTable.vue";
-import { ElMessage, ElMessageBox } from "element-plus-secondary";
-import useClipboard from "vue-clipboard3";
-import editor from "./editor.vue";
-const { t } = useI18n();
-const loading = ref(false);
-const formEditor = ref();
-const limitCount = ref(0);
-const keyword = ref("");
-const multipleTableRef = ref();
+import eyeOpen from '@/assets/svg/eye-open.svg'
+import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
+import eye from '@/assets/svg/eye.svg'
+import deCopy from '@/assets/svg/de-copy.svg'
+import icon_refresh_outlined from '@/assets/svg/icon_refresh_outlined.svg'
+import icon_warning_filled from '@/assets/svg/icon_warning_filled.svg'
+import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
+import { ref, reactive, unref } from 'vue'
+import { useI18n } from '@/hooks/web/useI18n'
+import nothingNone from '@/assets/img/nothing-none.png'
+import request from '@/config/axios'
+import GridTable from '@/components/grid-table/src/GridTable.vue'
+import { ElMessage, ElMessageBox } from 'element-plus-secondary'
+import useClipboard from 'vue-clipboard3'
+import editor from './editor.vue'
+const { t } = useI18n()
+const loading = ref(false)
+const formEditor = ref()
+const limitCount = ref(0)
+const keyword = ref('')
+const multipleTableRef = ref()
 const state = reactive({
   instanceList: [],
   paginationConfig: {
     currentPage: 1,
     pageSize: 10,
-    total: 0,
+    total: 0
   },
-  multipleSelection: [],
-});
-const { toClipboard } = useClipboard();
+  multipleSelection: []
+})
+const { toClipboard } = useClipboard()
 
-const handleSelectionChange = (val) => {
-  state.multipleSelection = val;
-};
-const pageChange = (index) => {
-  if (typeof index !== "number") {
-    return;
+const handleSelectionChange = val => {
+  state.multipleSelection = val
+}
+const pageChange = index => {
+  if (typeof index !== 'number') {
+    return
   }
-  state.paginationConfig.currentPage = index;
-  search();
-};
-const sizeChange = (size) => {
-  state.paginationConfig.currentPage = 1;
-  state.paginationConfig.pageSize = size;
-  search();
-};
+  state.paginationConfig.currentPage = index
+  search()
+}
+const sizeChange = size => {
+  state.paginationConfig.currentPage = 1
+  state.paginationConfig.pageSize = size
+  search()
+}
 
 const allSelection = () => {
-  multipleTableRef.value?.toggleAllSelection();
-};
+  multipleTableRef.value?.toggleAllSelection()
+}
 const clearSelection = () => {
-  multipleTableRef.value?.clearSelection();
-};
+  multipleTableRef.value?.clearSelection()
+}
 const batchDelHandler = () => {
-  const len = state.multipleSelection.length;
-  const confirmMsg = t("system.embedded_del_confirm", [len]);
+  const len = state.multipleSelection.length
+  const confirmMsg = t('system.embedded_del_confirm', [len])
   const boxOption = {
-    confirmButtonType: "danger",
-    type: "warning",
-    confirmButtonText: t("common.delete"),
-    cancelButtonText: t("dataset.cancel"),
+    confirmButtonType: 'danger',
+    type: 'warning',
+    confirmButtonText: t('common.delete'),
+    cancelButtonText: t('dataset.cancel'),
     autofocus: false,
-    showClose: false,
-  };
+    showClose: false
+  }
   ElMessageBox.confirm(confirmMsg, boxOption)
     .then(() => {
-      const url = "/embedded/batchDelete";
-      const ids = state.multipleSelection.map((item) => item["id"]);
+      const url = '/embedded/batchDelete'
+      const ids = state.multipleSelection.map(item => item['id'])
       if (ids?.length) {
         request.post({ url, data: ids }).then(() => {
-          ElMessage.success(t("common.delete_success"));
-          search();
-        });
+          ElMessage.success(t('common.delete_success'))
+          pageChange(1)
+        })
       }
     })
-    .finally(() => {});
-};
+    .finally(() => {})
+}
 
 const getLimitCount = () => {
-  const url = "/embedded/limitCount";
-  request.get({ url }).then((res) => {
-    limitCount.value = res.data;
-  });
-};
-const imgType = ref();
-const emptyDesc = ref("");
+  const url = '/embedded/limitCount'
+  request.get({ url }).then(res => {
+    limitCount.value = res.data
+  })
+}
+const imgType = ref()
+const emptyDesc = ref('')
 const getEmptyImg = (): string => {
   if (keyword.value) {
-    return "tree";
+    return 'tree'
   }
-  return "noneWhite";
-};
+  return 'noneWhite'
+}
 const getEmptyDesc = (): string => {
   if (keyword.value) {
-    return t("work_branch.relevant_content_found");
+    return t('work_branch.relevant_content_found')
   }
-  return "";
-};
+  return ''
+}
 const search = () => {
-  const url = `/embedded/pager/${state.paginationConfig.currentPage}/${state.paginationConfig.pageSize}`;
-  loading.value = true;
-  const param = { keyword: keyword.value };
+  const url = `/embedded/pager/${state.paginationConfig.currentPage}/${state.paginationConfig.pageSize}`
+  loading.value = true
+  const param = { keyword: keyword.value }
   request
     .post({ url, data: param })
-    .then((res) => {
-      const data = res.data.records;
+    .then(res => {
+      const data = res.data.records
       if (data?.length) {
-        const list = data.map((item) => {
-          item["show"] = false;
-          return item;
-        });
-        state.instanceList = list;
+        const list = data.map(item => {
+          item['show'] = false
+          return item
+        })
+        state.instanceList = list
       } else {
-        state.instanceList = [];
+        state.instanceList = []
       }
-      imgType.value = getEmptyImg();
-      emptyDesc.value = getEmptyDesc();
-      state.paginationConfig.total = res.data.total;
+      imgType.value = getEmptyImg()
+      emptyDesc.value = getEmptyDesc()
+      state.paginationConfig.total = res.data.total
     })
     .finally(() => {
-      loading.value = false;
-    });
-};
+      loading.value = false
+    })
+}
 const createLimit = (count?: number) => {
-  const realCount = count ? count : state.instanceList.length || 0;
+  const realCount = count ? count : state.instanceList.length || 0
   if (limitCount.value > 0 && realCount >= limitCount.value) {
-    ElMessageBox.confirm(t("dataset.tips"), {
-      confirmButtonType: "primary",
-      type: "warning",
-      confirmButtonText: t("common.roger_that"),
-      cancelButtonText: t("dataset.cancel"),
+    ElMessageBox.confirm(t('dataset.tips'), {
+      confirmButtonType: 'primary',
+      type: 'warning',
+      confirmButtonText: t('common.roger_that'),
+      cancelButtonText: t('dataset.cancel'),
       autofocus: false,
       showClose: false,
       showCancelButton: false,
-      tip: t("system.to_5_applications", [limitCount.value]),
-    });
-    return false;
+      tip: t('system.to_5_applications', [limitCount.value])
+    })
+    return false
   }
-  return true;
-};
+  return true
+}
 const addHandler = () => {
   if (createLimit()) {
-    formEditor?.value.edit();
+    formEditor?.value.edit()
   }
-};
+}
 
-const editHandler = (row) => {
-  formEditor?.value.edit(row);
-};
+const editHandler = row => {
+  formEditor?.value.edit(row)
+}
 
-const delHandler = (row) => {
-  ElMessageBox.confirm(t("system.delete_this_application"), {
-    confirmButtonType: "danger",
-    type: "warning",
-    confirmButtonText: t("common.delete"),
-    cancelButtonText: t("dataset.cancel"),
+const delHandler = row => {
+  ElMessageBox.confirm(t('system.delete_this_application'), {
+    confirmButtonType: 'danger',
+    type: 'warning',
+    confirmButtonText: t('common.delete'),
+    cancelButtonText: t('dataset.cancel'),
     autofocus: false,
-    showClose: false,
+    showClose: false
   })
     .then(() => {
-      loading.value = true;
-      const id = row.id;
-      const url = `embedded/delete/${id}`;
+      loading.value = true
+      const id = row.id
+      const url = `embedded/delete/${id}`
       request.post({ url }).then(() => {
-        ElMessage.success(t("common.delete_success"));
-        search();
-      });
+        ElMessage.success(t('common.delete_success'))
+        pageChange(1)
+      })
     })
     .finally(() => {
-      loading.value = false;
-    });
-};
+      loading.value = false
+    })
+}
 
-const copyAppId = async (row) => {
+const copyAppId = async row => {
   try {
-    await toClipboard(row.appId);
-    ElMessage.success(t("common.copy_success"));
+    await toClipboard(row.appId)
+    ElMessage.success(t('common.copy_success'))
   } catch (e) {
-    ElMessage.warning(t("common.copy_unsupported"), e);
+    ElMessage.warning(t('common.copy_unsupported'), e)
   }
-};
-const copyAppSecret = async (row) => {
+}
+const copyAppSecret = async row => {
   try {
-    await toClipboard(row.appSecret);
-    ElMessage.success(t("common.copy_success"));
+    await toClipboard(row.appSecret)
+    ElMessage.success(t('common.copy_success'))
   } catch (e) {
-    ElMessage.warning(t("common.copy_unsupported"), e);
+    ElMessage.warning(t('common.copy_unsupported'), e)
   }
-};
-const viewSecret = (row) => {
-  const show = !!row.show;
-  row["show"] = !show;
-};
-const resetSecret = (row) => {
-  const url = "/embedded/reset";
-  const data = { id: row.id, appSecret: row.appSecret };
-  loading.value = true;
+}
+const viewSecret = row => {
+  const show = !!row.show
+  row['show'] = !show
+}
+const resetSecret = row => {
+  const url = '/embedded/reset'
+  const data = { id: row.id, appSecret: row.appSecret }
+  loading.value = true
   request
     .post({ url, data })
     .then(() => {
-      ElMessage.success(t("user.reset_success"));
-      search();
+      ElMessage.success(t('user.reset_success'))
+      pageChange(1)
     })
     .finally(() => {
-      loading.value = false;
-    });
-};
+      loading.value = false
+    })
+}
 
 const setPopoverRef = (el, row) => {
-  row.popoverRef = el;
-};
+  row.popoverRef = el
+}
 const setButtonRef = (el, row) => {
-  row.buttonRef = el;
-};
-const onClickOutside = (row) => {
+  row.buttonRef = el
+}
+const onClickOutside = row => {
   if (row.popoverRef) {
-    unref(row.popoverRef).popperRef?.delayHide?.();
+    unref(row.popoverRef).popperRef?.delayHide?.()
   }
-};
-const closeResetInfo = (row) => {
-  row.popoverRef?.hide();
-  row.resetInfoShow = false;
-};
+}
+const closeResetInfo = row => {
+  row.popoverRef?.hide()
+  row.resetInfoShow = false
+}
 
-search();
-getLimitCount();
+search()
+getLimitCount()
 </script>
 
 <style lang="less" scoped>

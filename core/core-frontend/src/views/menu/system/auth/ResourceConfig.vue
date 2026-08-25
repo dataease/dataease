@@ -621,7 +621,7 @@ const cascadeCheckAll = (item) => {
     whileLoop(state.tableColumn, true, (col) => {
       if (
         level >= col.weightLevel &&
-        (!checkStandalone || col.weightLevel === 1 || col.weightLevel === level)
+        (!checkStandalone || col.weightLevel <= 2 || col.weightLevel === level)
       ) {
         col["checkAll"] = true;
       }
@@ -731,7 +731,7 @@ const rowWeightChanged = (row, level) => {
     whileLoop(state.tableColumn, true, (col) => {
       if (
         level >= col.weightLevel &&
-        (!checkStandalone || col.weightLevel === 1 || col.weightLevel === level)
+        (!checkStandalone || col.weightLevel <= 2 || col.weightLevel === level)
       ) {
         row["value" + col.weightLevel] = true;
       }

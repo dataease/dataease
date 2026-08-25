@@ -122,10 +122,16 @@ public class TableNormalHandler extends DefaultChartHandler {
         Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
         Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
         String originSql = SQLProvider.createQuerySQL(sqlMeta, true, !StringUtils.equalsIgnoreCase(dsMap.values().iterator().next().getType(), "es"), view);// 分页强制加排序
-        String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " LIMIT " + pageInfo.getPageSize() + " OFFSET " + (pageInfo.getGoPage() - 1) * chartExtRequest.getPageSize() : "");
+        var tablePageMode = (String) filterResult.getContext().get("tablePageMode");
+        // 原逻辑先按页查询再执行 quickCalc，跨月或跨年的对比行可能不在当前页，无法匹配时结果会被置空
+        // 分页汇总表存在同环比指标时取消 SQL 分页，保留完整时间序列参与计算
+        boolean periodComparePaged = StringUtils.equalsIgnoreCase(tablePageMode, "page") && yAxis.stream().anyMatch(axis -> {
+            var compareCalc = axis.getCompareCalc();
+            return ObjectUtils.isNotEmpty(compareCalc) && Arrays.asList(ChartConstants.M_Y).contains(compareCalc.getType());
+        });
+        String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null && !periodComparePaged) ? " LIMIT " + pageInfo.getPageSize() + " OFFSET " + (pageInfo.getGoPage() - 1) * chartExtRequest.getPageSize() : "");
         var querySql = originSql + limit;
 
-        var tablePageMode = (String) filterResult.getContext().get("tablePageMode");
         var totalPageSql = "SELECT COUNT(*) FROM (" + SQLProvider.createQuerySQLNoSort(sqlMeta, true, view) + ") COUNT_TEMP";
         if (StringUtils.isNotEmpty(totalPageSql) && StringUtils.equalsIgnoreCase(tablePageMode, "page")) {
             totalPageSql = provider.rebuildSQL(totalPageSql, sqlMeta, crossDs, dsMap);
@@ -234,6 +240,14 @@ public class TableNormalHandler extends DefaultChartHandler {
             quickCalc(xAxis, quickCalcAxis, Collections.emptyList(), Collections.emptyList(), view.getType(), data);
         } else {
             quickCalc(xAxis, yAxis, Collections.emptyList(), Collections.emptyList(), view.getType(), data);
+        }
+        // 完整序列完成同环比计算后再按原页码截取，保证计算正确且保持分页返回条数
+        if (periodComparePaged) {
+            long fromIndex = (pageInfo.getGoPage() - 1) * chartExtRequest.getPageSize();
+            long toIndex = Math.min(fromIndex + pageInfo.getPageSize(), data.size());
+            data = fromIndex < data.size()
+                    ? new ArrayList<>(data.subList(Math.toIntExact(fromIndex), Math.toIntExact(toIndex)))
+                    : new ArrayList<>();
         }
         //数据重组逻辑可重载
         var result = this.buildResult(view, formatResult, filterResult, data);
