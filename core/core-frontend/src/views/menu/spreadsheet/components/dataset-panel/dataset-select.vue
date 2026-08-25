@@ -23,6 +23,7 @@ interface Props {
   clearable?: boolean
   clearConfirmText?: string
   showDatasetIcon?: boolean
+  showCreateDataset?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -30,7 +31,8 @@ const props = withDefaults(defineProps<Props>(), {
   popoverWidth: 280,
   clearable: false,
   clearConfirmText: '',
-  showDatasetIcon: false
+  showDatasetIcon: false,
+  showCreateDataset: true
 })
 
 const emit = defineEmits<{
@@ -351,7 +353,10 @@ defineExpose({
               </el-tree>
             </el-scrollbar>
           </el-main>
-          <el-footer v-if="!isDataEaseBi" class="dataset-select-footer">
+          <el-footer
+            v-if="!isDataEaseBi && props.showCreateDataset"
+            class="dataset-select-footer"
+          >
             <div class="footer-container">
               <el-button type="primary" link class="add-btn" @click="addDataset">
                 <el-icon><Plus /></el-icon>

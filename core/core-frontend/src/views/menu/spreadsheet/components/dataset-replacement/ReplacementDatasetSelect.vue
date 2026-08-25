@@ -71,6 +71,7 @@ defineExpose({ open })
     :popover-width="props.popoverWidth"
     :clearable="props.clearable"
     :show-dataset-icon="props.showDatasetIcon"
+    :show-create-dataset="false"
     :clear-confirm-text="t('spreadsheet.dataset_replacement.clear_matches_confirm')"
     @dataset-change="handleDatasetChange"
     @dataset-node-change="selectedNode = $event"
