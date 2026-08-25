@@ -19,6 +19,7 @@ import { getDynamicColorScale } from '@/views/chart/components/js/util'
 import CustomSortEdit from '@/views/chart/components/editor/drag-item/components/CustomSortEdit.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
+import chartViewManager from '@/views/chart/components/js/panel'
 const dvMainStore = dvMainStoreWithOut()
 const { batchOptStatus } = storeToRefs(dvMainStore)
 const { t } = useI18n()
@@ -67,6 +68,11 @@ const state = reactive({
 const chartType = computed(() => {
   const chart = JSON.parse(JSON.stringify(props.chart))
   return chart?.type
+})
+
+const supportLegendOrient = computed(() => {
+  return chartViewManager.getChartView(props.chart.render, props.chart.type)?.legendCapabilities
+    ?.orient
 })
 
 const fontSizeList = computed(() => {
@@ -568,7 +574,7 @@ onMounted(() => {
       :label="t('chart.orient')"
       class="form-item"
       :class="'form-item-' + themes"
-      v-if="['t-heatmap', 'chart-mix-stack'].includes(chartType) && showProperty('orient')"
+      v-if="supportLegendOrient && showProperty('orient')"
     >
       <el-radio-group
         v-model="state.legendForm.orient"

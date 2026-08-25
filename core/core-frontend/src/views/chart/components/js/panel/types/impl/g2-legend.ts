@@ -59,6 +59,35 @@ export const SIDE_LEGEND_MIN_MAX_WIDTH = 80
 export const SIDE_LEGEND_MIN_LABEL_WIDTH = 24
 
 /**
+ * 左右侧水平图例最多使用两列
+ *
+ * 侧边栏本身只占画布的一小部分，继续增加列数会让文字过度省略
+ */
+export const SIDE_HORIZONTAL_LEGEND_MAX_COLS = 2
+
+export interface SideHorizontalLegendGridOptions {
+  containerWidth: number
+  containerHeight: number
+  itemCount: number
+  itemHeight: number
+  rowPadding: number
+  itemMarkerSize: number
+  itemSpacing: number
+  crossPadding: number
+  maxWidthRatio?: number
+}
+
+export interface SideHorizontalLegendGrid {
+  columns: number
+  rowsPerPage: number
+  visibleRows: number
+  paged: boolean
+  colPadding: number
+  labelWidth: number
+  length: number
+}
+
+/**
  * 计算左右侧图例允许占用的最大宽度
  *
  * 计算方式可以直接理解为
@@ -101,4 +130,70 @@ export const getSideLegendRowsPerPage = (
     return 1
   }
   return Math.max(1, Math.floor((containerHeight + rowPadding) / (itemHeight + rowPadding)))
+}
+
+/**
+ * 为左右侧水平分类图例计算两列网格
+ *
+ * 宽度允许时图例按“先左右、再向下”排列，极窄场景会自动降级为单列
+ * 分页器只占一份 55px 区域，平均分摊到各列的布局间距中
+ */
+export const getSideHorizontalLegendGrid = (
+  options: SideHorizontalLegendGridOptions
+): SideHorizontalLegendGrid => {
+  const {
+    containerWidth,
+    containerHeight,
+    itemCount,
+    itemHeight,
+    rowPadding,
+    itemMarkerSize,
+    itemSpacing,
+    crossPadding,
+    maxWidthRatio
+  } = options
+  const safeItemCount = Math.max(1, itemCount)
+  const rowsPerPage = getSideLegendRowsPerPage(containerHeight, itemHeight, rowPadding)
+  const maxLegendWidth = getSideLegendMaxWidth(containerWidth, maxWidthRatio)
+  let columns = Math.min(SIDE_HORIZONTAL_LEGEND_MAX_COLS, safeItemCount)
+  while (columns > 1) {
+    const paged = safeItemCount > rowsPerPage * columns
+    const requiredWidth =
+      crossPadding +
+      columns *
+        (itemMarkerSize +
+          itemSpacing +
+          SIDE_LEGEND_MIN_LABEL_WIDTH +
+          SIDE_LEGEND_DEFAULT_COL_PADDING) +
+      (paged ? SIDE_LEGEND_NAVIGATOR_WIDTH : 0)
+    if (requiredWidth <= maxLegendWidth) {
+      break
+    }
+    columns--
+  }
+  const paged = safeItemCount > rowsPerPage * columns
+  const colPadding =
+    SIDE_LEGEND_DEFAULT_COL_PADDING + (paged ? SIDE_LEGEND_NAVIGATOR_WIDTH / columns : 0)
+  const labelWidth = Math.max(
+    SIDE_LEGEND_MIN_LABEL_WIDTH,
+    Math.floor(
+      (maxLegendWidth - crossPadding) / columns - itemMarkerSize - itemSpacing - colPadding
+    )
+  )
+  const visibleRows = Math.max(1, Math.min(rowsPerPage, Math.ceil(safeItemCount / columns)))
+  const gridLength = visibleRows * (itemHeight + rowPadding)
+  const length =
+    Number.isFinite(containerHeight) && containerHeight > 0
+      ? Math.min(containerHeight, gridLength)
+      : gridLength
+  return {
+    columns,
+    rowsPerPage,
+    visibleRows,
+    paged,
+    colPadding,
+    labelWidth,
+    // G2 测量单项高度时已把 rowPadding 计入每一行
+    length: Math.max(1, length)
+  }
 }

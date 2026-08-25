@@ -133,6 +133,11 @@ const StackMixG2Chart = extend(Runtime, stackMixLibrary) as typeof G2Chart
  * 柱线混合图
  */
 export class StackLineMix extends G2ChartView {
+  legendCapabilities: LegendCapabilities = {
+    orient: true,
+    type: 'category',
+    source: 'custom'
+  }
   properties: EditorProperty[] = CHART_MIX_EDITOR_PROPERTY
   propertyInner: EditorPropertyInner = {
     ...CHART_MIX_EDITOR_PROPERTY_INNER,

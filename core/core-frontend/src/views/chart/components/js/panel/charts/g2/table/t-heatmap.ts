@@ -112,7 +112,7 @@ const withLegendOrientation = (component, fixContinuousRange = false) => {
     const directionMismatch = positionVertical !== (dataeaseOrientation === 'vertical')
     // 方向与停靠边交叉时恢复原组件短边，避免图例挤入绘图区
     const legendOptions = directionMismatch
-      ? { ...rest, length: component.props.defaultSize }
+      ? { ...rest, length: rest.length ?? component.props.defaultSize }
       : rest
     const renderComponent = component({
       ...legendOptions,
@@ -154,6 +154,11 @@ const HeatmapG2Chart = extend(Runtime, heatmapLibrary) as typeof G2Chart
  * 热力图
  */
 export class TableG2Chart extends G2ChartView {
+  legendCapabilities: LegendCapabilities = {
+    orient: true,
+    type: 'dynamic',
+    source: 'native'
+  }
   properties: EditorProperty[] = [
     'basic-style-selector',
     'background-overall-component',
@@ -440,6 +445,10 @@ export class TableG2Chart extends G2ChartView {
       ...this.getLegend(chart, colorField.groupType === 'q' ? 1 : 2),
       position,
       dataeaseOrientation: legend.orient,
+      // 显式写入两个方向，避免同一图表切换配置后复用旧的水平网格标记
+      ...(positionVertical
+        ? { dataeaseLegendOrientLayout: verticalLegend ? 'vertical' : 'horizontal' }
+        : {}),
       layout: {
         justifyContent:
           alignPosition === 'left' || alignPosition === 'top'
