@@ -94,6 +94,19 @@ export function getCustomTheme(chart: Chart): S2Theme {
     background: {
       color: '#00000000'
     },
+    // 空数据状态：隐藏默认图标并清空边距，使提示文字垂直居中
+    empty: {
+      icon: {
+        width: 0,
+        height: 0,
+        margin: {
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: 0
+        }
+      }
+    },
     splitLine: {
       horizontalBorderColor: borderColor,
       horizontalBorderColorOpacity: 1,

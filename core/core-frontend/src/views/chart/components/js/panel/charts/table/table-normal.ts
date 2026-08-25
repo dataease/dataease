@@ -242,6 +242,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
       frozen: {},
       placeholder: {
         empty: {
+          icon: '',
           description: t('data_set.no_data')
         }
       },
