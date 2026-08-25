@@ -42,6 +42,14 @@ declare type EditorSelectorSpec = {
     title: string
   }
 }
+
+declare type LegendType = 'category' | 'continuous' | 'dynamic'
+declare type LegendSource = 'native' | 'custom'
+declare interface LegendCapabilities {
+  orient: boolean
+  type: LegendType
+  source: LegendSource
+}
 /**
  * 轴类型
  */

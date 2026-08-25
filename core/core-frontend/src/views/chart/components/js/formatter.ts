@@ -1,9 +1,16 @@
 import { find, merge } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 import { getLocale } from '@/utils/utils'
-import { parseJson } from '@/views/chart/components/js/util'
 
 const { t } = useI18n()
+
+// 保持格式化模块独立，避免图表默认配置初始化时形成循环依赖
+const parseChartConfig = <T>(value: T | JSONString<T>): T => {
+  if (typeof value !== 'string') {
+    return value as T
+  }
+  return JSON.parse(value) as T
+}
 
 export const isEnLocal = !['zh', 'zh-cn', 'zh-CN', 'tw'].includes(getLocale())
 
@@ -199,7 +206,7 @@ function niceMin(min, max, tickCount = 5) {
  * @param newChart
  */
 export const listenYAxisNiceMinEvents = (chart: Chart, newChart) => {
-  const yAxis = parseJson(chart.customStyle).yAxis
+  const yAxis = parseChartConfig(chart.customStyle).yAxis
   if (yAxis.axisValue?.auto) {
     newChart.on('legend-item-group:click', e => {
       if (e.view?.options?.scales) {
@@ -234,7 +241,7 @@ export const listenYAxisNiceMinEvents = (chart: Chart, newChart) => {
 export const calcNiceMinValue = (chart, options, tmpOptions) => {
   let filteredData
   let cfg
-  const senior = parseJson(chart.senior)
+  const senior = parseChartConfig(chart.senior)
   if (senior.functionCfg && senior.functionCfg.sliderShow) {
     cfg = {
       start: senior.functionCfg.sliderRange[0] / 100,

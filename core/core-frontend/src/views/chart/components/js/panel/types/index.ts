@@ -29,6 +29,12 @@ export abstract class AbstractChartView {
   library: ChartLibraryType
   name: string
   title: string
+  // 能力默认关闭，避免新图例布局透传到未显式接入的图表
+  legendCapabilities: LegendCapabilities = {
+    orient: false,
+    type: 'category',
+    source: 'native'
+  }
   abstract properties: EditorProperty[]
   abstract propertyInner: EditorPropertyInner
   abstract axis: AxisType[]

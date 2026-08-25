@@ -44,6 +44,7 @@ import { createCoordinate } from '@antv/g2/esm/runtime/coordinate'
 import type { Layout, G2Theme } from '@antv/g2/esm/runtime/types/common'
 import type { G2GuideComponentOptions, G2Library, G2View } from '@antv/g2/esm/runtime/types/options'
 import {
+  getSideHorizontalLegendGrid,
   getSideLegendMaxWidth,
   SIDE_LEGEND_DEFAULT_COL_PADDING,
   SIDE_LEGEND_MIN_LABEL_WIDTH,
@@ -259,7 +260,8 @@ const getSideLegendLabelWidth = (
 const prepareSideLegendLayout = (
   components: G2GuideComponentOptions[],
   options: G2View,
-  theme: G2Theme
+  theme: G2Theme,
+  library: G2Library
 ) => {
   const sideLegends = getSideLegendComponents(components)
   sideLegends.forEach(component => {
@@ -269,6 +271,36 @@ const prepareSideLegendLayout = (
     delete component.cols
     delete component.gridRow
     delete component.colPadding
+    delete component.dataeaseLegendOrientColumns
+    if (component.dataeaseLegendOrientLayout === 'horizontal') {
+      const style = getSideLegendStyle(component, theme)
+      const itemMarkerSize = Number(style.itemMarkerSize) || 0
+      const itemLabelFontSize = Number(style.itemLabelFontSize) || 12
+      const itemSpacing = Array.isArray(style.itemSpacing)
+        ? Number(style.itemSpacing[0]) || 0
+        : Number(style.itemSpacing) || 0
+      const rowPadding = Number(style.rowPadding) || 0
+      const crossPadding = Number(style.crossPadding) || 0
+      const domain = createScale(component, library).getOptions().domain ?? []
+      const grid = getSideHorizontalLegendGrid({
+        containerWidth: Number(options.width),
+        containerHeight: Number(options.height),
+        itemCount: domain.length,
+        itemHeight: Math.ceil(Math.max(itemLabelFontSize * 1.3, itemMarkerSize)),
+        rowPadding,
+        itemMarkerSize,
+        itemSpacing,
+        crossPadding,
+        maxWidthRatio: Number(component.dataeaseSideLegendMaxWidthRatio)
+      })
+      // 专用标记才会固定水平侧栏网格，普通左右图例仍交给 G2 单列推导
+      component.maxCols = grid.columns
+      component.length = grid.length
+      component.colPadding = grid.colPadding
+      component.dataeaseLegendOrientColumns = grid.columns
+      applyLegendTextOverflow(component, grid.labelWidth, theme)
+      return
+    }
     applyLegendTextOverflow(
       component,
       getSideLegendLabelWidth(component, options, theme, false),
@@ -309,6 +341,9 @@ const applyPagedSideLegendLayout = (
 ) => {
   let changed = false
   sideLegends.forEach(component => {
+    if (component.dataeaseLegendOrientLayout === 'horizontal') {
+      return
+    }
     if (!isSideLegendPaged(component, library)) {
       return
     }
@@ -1086,11 +1121,12 @@ const applyLayoutCorrection = (
  * 2 去掉重复的默认外边距，为目标左轴标题补安全空间
  * 3 重置侧边图例和中轴旧尺寸，让 resize 按当前画布重新测量
  * 4 调用 G2 原生布局得到图例行列数、轴组件大小和基础 Plot 空间
- * 5 如果侧边图例真的分页，为分页器补宽度并重新布局
- * 6 如果图表启用了中轴居中，平均分配两张子图的文字占位并重新布局
- * 7 按真实文字大小决定轴标签抽稀，抽稀后再让 G2 计算一次准确轴宽
- * 8 最多两轮补足允许方向的首尾标签越界空间，最终隐藏无法放入画布的项
- * 9 应用纵轴顶部安全距离、中轴偏移和左轴标题省略，返回最终结果
+ * 5 对显式启用的左右侧水平分类图例固定两列网格，窄画布自动降为单列
+ * 6 如果普通侧边图例真的分页，为分页器补宽度并重新布局
+ * 7 如果图表启用了中轴居中，平均分配两张子图的文字占位并重新布局
+ * 8 按真实文字大小决定轴标签抽稀，抽稀后再让 G2 计算一次准确轴宽
+ * 9 最多两轮补足允许方向的首尾标签越界空间，最终隐藏无法放入画布的项
+ * 10 应用纵轴顶部安全距离、中轴偏移和左轴标题省略，返回最终结果
  *
  * 直接影响
  * - 带普通坐标轴的 G2 图表四周留白、轴标签数量、刻度线和网格线数量
@@ -1153,7 +1189,7 @@ export function computeLayout(
         }
       : options
   // 侧边图例第一轮先按未分页宽度处理，G2 布局后才能知道当前高度是否真的分页
-  const sideLegends = prepareSideLegendLayout(components, layoutOptions, theme)
+  const sideLegends = prepareSideLegendLayout(components, layoutOptions, theme, library)
   // 中轴组件会被 resize 复用，第一轮前先删除旧画布留下的轴尺寸和标签偏移
   resetCenteredAxisMeasurement(axisComponents)
   // 保存图表原始轴尺寸，抽稀后需要恢复它们，让 G2 按更少的标签重新测量

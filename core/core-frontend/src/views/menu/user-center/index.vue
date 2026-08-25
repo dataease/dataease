@@ -223,7 +223,9 @@ const queryBindStatus = () => {
     if (list?.length) {
       const mappingArray = { 6: 0, 5: 1, 4: 2, 7: 3 };
       list.forEach((item) => {
-        bindList.value[mappingArray[item]].bind = true;
+        if (bindList.value[mappingArray[item]]) {
+          bindList.value[mappingArray[item]].bind = true;
+        }
       });
     }
   });

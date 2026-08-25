@@ -9,6 +9,7 @@ import {
   getSideLegendMaxWidth,
   getSideLegendRowsPerPage,
   SIDE_LEGEND_DEFAULT_COL_PADDING,
+  SIDE_HORIZONTAL_LEGEND_MAX_COLS,
   SIDE_LEGEND_NAVIGATOR_WIDTH
 } from '@/views/chart/components/js/panel/types/impl/g2-legend'
 
@@ -22,6 +23,7 @@ interface MixLegendOptions {
 interface MixSideLegendLayout {
   legendFirst: boolean
   itemCount: number
+  columns: number
   itemHeight: number
   rowPadding: number
   contentWidth: number
@@ -62,10 +64,12 @@ const getMixSideLegendWidth = (
     layout.rowPadding
   )
   const navigatorExtra =
-    layout.itemCount > rowsPerPage
-      ? SIDE_LEGEND_NAVIGATOR_WIDTH - SIDE_LEGEND_DEFAULT_COL_PADDING
+    layout.itemCount > rowsPerPage * layout.columns
+      ? layout.columns > 1
+        ? SIDE_LEGEND_NAVIGATOR_WIDTH
+        : SIDE_LEGEND_NAVIGATOR_WIDTH - SIDE_LEGEND_DEFAULT_COL_PADDING
       : 0
-  const contentWidth = layout.contentWidth + layout.crossPadding + navigatorExtra
+  const contentWidth = layout.contentWidth * layout.columns + layout.crossPadding + navigatorExtra
   return Math.max(1, Math.min(contentWidth, getSideLegendMaxWidth(containerWidth)))
 }
 
@@ -373,6 +377,10 @@ export const configMixCustomLegend = (
               ? getMixSideLegendWidth(mainSize, crossSize, {
                   legendFirst,
                   itemCount: unionRelations.length,
+                  columns:
+                    legendOptions.supportOrient && !verticalLegend
+                      ? Math.min(SIDE_HORIZONTAL_LEGEND_MAX_COLS, unionRelations.length)
+                      : 1,
                   itemHeight: legendItemHeight,
                   rowPadding: legendRowPadding,
                   contentWidth: Math.max(...sideLegendItemWidths),
@@ -415,13 +423,20 @@ export const configMixCustomLegend = (
     itemMarker: legendIcon,
     ...getCategoryLegendStyle(legendMarkerSize, legendFontSize, legendColor)
   }
-  const enableSideLegendLayout = (legendFirst: boolean) => {
+  const enableSideLegendLayout = (legendFirst: boolean, horizontal = false) => {
+    const columns = horizontal
+      ? Math.min(SIDE_HORIZONTAL_LEGEND_MAX_COLS, unionRelations.length)
+      : 1
     // 独立图例子层已在外层限制为画布宽度的 30%，内层只需使用完整可用宽度
     legendMark.dataeaseSideLegendAutoLayout = true
     legendMark.dataeaseSideLegendMaxWidthRatio = 1
+    if (horizontal) {
+      legendMark.dataeaseLegendOrientLayout = 'horizontal'
+    }
     ;(options as any).dataeaseSideLegendLayout = {
       legendFirst,
       itemCount: unionRelations.length,
+      columns,
       itemHeight: legendItemHeight,
       rowPadding: legendRowPadding,
       contentWidth: Math.max(...sideLegendItemWidths),
@@ -470,6 +485,10 @@ export const configMixCustomLegend = (
     }
     legendMark.position = position
     legendMark.dataeaseOrientation = verticalLegend ? 'vertical' : 'horizontal'
+    if (positionVertical) {
+      // 显式写入两个方向，避免同一图表切换配置后复用旧的水平网格标记
+      legendMark.dataeaseLegendOrientLayout = verticalLegend ? 'vertical' : 'horizontal'
+    }
     legendMark.layout.justifyContent =
       alignPosition === 'left' || alignPosition === 'top'
         ? 'flex-start'
@@ -478,7 +497,7 @@ export const configMixCustomLegend = (
         : 'center'
     if (positionVertical) {
       legendMark.navOrientation = 'vertical'
-      legendMark.maxCols = 1
+      legendMark.maxCols = verticalLegend ? 1 : SIDE_HORIZONTAL_LEGEND_MAX_COLS
     } else if (verticalLegend) {
       legendMark.navOrientation = 'horizontal'
       legendMark.maxCols = 1
@@ -492,7 +511,7 @@ export const configMixCustomLegend = (
     // 底部横向图例按单行实际高度占位，避免独立子层留下不可见空白
     legendMark.crossPadding = getLegendChartGap(direction, legendFirst, verticalLegend)
     if (positionVertical) {
-      enableSideLegendLayout(legendFirst)
+      enableSideLegendLayout(legendFirst, !verticalLegend)
     } else {
       enableHorizontalLegendText()
     }

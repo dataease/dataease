@@ -296,6 +296,9 @@ const setupPage = (chart: ChartObj, resetPageInfo?: boolean) => {
 }
 
 const mouseMove = () => {
+  if (scrollTimer) {
+    clearTimeout(scrollTimer)
+  }
   myChart?.facet?.timer?.stop()
 }
 
@@ -303,12 +306,12 @@ const mouseLeave = () => {
   initScroll()
 }
 
-let scrollTimer
+let scrollTimer: ReturnType<typeof setTimeout> | null = null
 const initScroll = () => {
-  scrollTimer && clearTimeout(scrollTimer)
+  if (scrollTimer) {
+    clearTimeout(scrollTimer)
+  }
   scrollTimer = setTimeout(() => {
-    // 首先回到最顶部，然后计算行高*行数作为top，最后判断：如果top<数据量*行高，继续滚动，否则回到顶部
-    const customAttr = actualChart?.customAttr
     const senior = actualChart?.senior
     if (
       myChart &&
@@ -317,40 +320,51 @@ const initScroll = () => {
       PAGE_CHARTS.includes(props.view.type) &&
       !state.showPage
     ) {
-      // 防止多次渲染
-      myChart.facet.timer?.stop()
-      // 已滚动的距离
-      let scrolledOffset = myChart.store.get('scrollY') || 0
-      // 平滑滚动，兼容原有的滚动速率设置
-      // 假设原设定为 2 行间隔 2 秒，换算公式为: 滚动到底部的时间 = 未展示部分行数 / 2行 * 2秒
-      const offsetHeight = document.getElementById(containerId).offsetHeight
-      // 没显示就不滚了
-      if (!offsetHeight) {
+      // 停止可能正在执行的滚动动画
+      myChart.facet?.timer?.stop()
+
+      const containerDom = document.getElementById(containerId)
+      if (!containerDom || !containerDom.offsetHeight) {
         return
       }
-      const rowHeight = customAttr.tableCell.tableItemHeight
-      const headerHeight =
-        customAttr.tableHeader.showTableHeader === false
-          ? 1
-          : customAttr.tableHeader.tableTitleHeight
-      const scrollBarSize = myChart.theme.scrollBar.size
-      const scrollHeight =
-        rowHeight * chartData.value.tableRow.length + headerHeight - offsetHeight + scrollBarSize
-      // 显示内容没撑满
-      if (scrollHeight < scrollBarSize) {
+
+      // 获取 S2 真实的最大可滚动垂直偏移量
+      const maxScrollY =
+        (myChart.facet as any)?.getAdjustedScrollOffset?.({ scrollY: 99999999 })?.scrollY ?? 0
+
+      // 内容未超出视口，无需滚动
+      if (maxScrollY <= 0) {
         return
       }
-      // 到底了重置一下,1是误差
-      if (scrolledOffset >= scrollHeight - 1) {
+
+      // 当前已滚动的距离
+      let scrolledOffset =
+        (myChart.facet as any)?.getScrollOffset?.()?.scrollY ?? myChart.store.get('scrollY') ?? 0
+
+      // 触底判断（允许 2px 容差）：如果已到底部，重置回到顶部并等待下一次循环
+      if (scrolledOffset >= maxScrollY - 2) {
+        myChart.facet?.scrollImmediately?.({ offsetY: { value: 0 } })
         myChart.store.set('scrollY', 0)
-        myChart.render()
-        scrolledOffset = 0
+        // 回到顶部后，延时开启下一次从头滚动
+        initScroll()
+        return
       }
-      const viewedHeight = offsetHeight - headerHeight - scrollBarSize + scrolledOffset
-      const scrollViewCount = chartData.value.tableRow.length - viewedHeight / rowHeight
-      const duration = (scrollViewCount / senior.scrollCfg.row) * senior.scrollCfg.interval
+
+      // 计算剩余需要滚动的距离
+      const remainingOffset = maxScrollY - scrolledOffset
+      // 计算每行平均高度以估算剩余行数和滚动时长
+      const totalRendererHeight = (myChart.facet as any)?.getRendererHeight?.() || maxScrollY
+      const totalRowCount = chartData.value.tableRow.length
+      const avgRowHeight = totalRowCount > 0 ? totalRendererHeight / totalRowCount : 36
+      const remainRows = remainingOffset / avgRowHeight
+
+      const scrollRow = senior.scrollCfg.row || 1
+      const scrollInterval = senior.scrollCfg.interval || 2000
+      const duration = Math.max(200, (remainRows / scrollRow) * scrollInterval)
+
+      // 平滑滚动到底部，并在滚动结束时回调触发 initScroll 进行触底重置
       myChart.facet.scrollWithAnimation(
-        { offsetY: { value: scrollHeight, animate: false } },
+        { offsetY: { value: maxScrollY, animate: false } },
         duration,
         initScroll
       )

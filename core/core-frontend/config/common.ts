@@ -95,6 +95,8 @@ export default {
       'vue',
       'vue-router',
       'vue-types',
+      // 组件样式由按需插件注入，提前预构建以避免访问懒加载路由时刷新依赖哈希
+      'element-plus-secondary/es/components/**/style/css',
       'element-plus-secondary/es/locale/lang/zh-cn',
       'element-plus-secondary/es/locale/lang/en',
       '@vueuse/core',

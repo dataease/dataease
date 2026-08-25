@@ -447,11 +447,6 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       dataCell: meta => {
         return new CustomDataCell(meta, meta.spreadsheet)
       },
-      placeholder: {
-        empty: {
-          description: t('data_set.no_data')
-        }
-      },
       transformCanvasConfig() {
         return {
           supportsCSSTransform: true
