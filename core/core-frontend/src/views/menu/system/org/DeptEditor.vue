@@ -1,146 +1,146 @@
 <script lang="ts" setup>
-import { ref, reactive, computed, onBeforeUnmount } from "vue";
-import { ElMessage, ElLoading } from "element-plus-secondary";
-import { useI18n } from "@/hooks/web/useI18n";
-import type { FormInstance, FormRules } from "element-plus-secondary";
-import { saveApi, updateApi, searchApi } from "@/api/org";
-import { sysOrgMemberCandidatesApi } from "./api";
-import { useUserStoreWithOut } from "@/store/modules/user";
-const userStore = useUserStoreWithOut();
-const isAdmin = computed(() => userStore.getUid === "1");
+import { ref, reactive, computed, onBeforeUnmount } from 'vue'
+import { ElMessage, ElLoading } from 'element-plus-secondary'
+import { useI18n } from '@/hooks/web/useI18n'
+import type { FormInstance, FormRules } from 'element-plus-secondary'
+import { saveApi, updateApi, searchApi } from '@/api/org'
+import { sysOrgMemberCandidatesApi } from './api'
+import { useUserStoreWithOut } from '@/store/modules/user'
+const userStore = useUserStoreWithOut()
+const isAdmin = computed(() => userStore.getUid === '1')
 export interface Org {
-  id: string;
-  name: string;
-  children?: [];
-  readOnly: boolean;
-  subCount: number;
-  createTime: number;
+  id: string
+  name: string
+  children?: []
+  readOnly: boolean
+  subCount: number
+  createTime: number
 }
 
 interface OrgForm {
-  pid: number | string;
-  name: string;
-  id?: number | string;
-  adminIds?: number[];
+  pid: number | string
+  name: string
+  id?: number | string
+  adminIds?: number[]
 }
 const state = reactive({
   treeData: [] as Org[]
 })
 
 const treeProps = {
-  value: "id",
-  label: "name",
-  disabled: "readOnly",
-};
-const { t } = useI18n();
+  value: 'id',
+  label: 'name',
+  disabled: 'readOnly'
+}
+const { t } = useI18n()
 
-const orgForm = ref<FormInstance>();
-const loadingInstance = ref(null);
-const formType = ref("add");
-const searchNodeLoading = ref(false);
-const dialogTableVisible = ref(false);
+const orgForm = ref<FormInstance>()
+const loadingInstance = ref(null)
+const formType = ref('add')
+const searchNodeLoading = ref(false)
+const dialogTableVisible = ref(false)
 
 const form = reactive<OrgForm>({
-  pid: "",
-  name: "",
-});
+  pid: '',
+  name: ''
+})
 
-const adminIds = ref<number[]>([]);
-const candidateAdmins = ref<any[]>([]);
+const adminIds = ref<number[]>([])
+const candidateAdmins = ref<any[]>([])
 
 const rule = reactive<FormRules>({
   name: [
-    { required: true, trigger: "blur", message: t("common.required") },
+    { required: true, trigger: 'blur', message: t('common.required') },
     {
       min: 1,
       max: 50,
-      message: t("common.input_limit", [1, 50]),
-      trigger: "blur",
-    },
-  ],
-});
+      message: t('common.input_limit', [1, 50]),
+      trigger: 'blur'
+    }
+  ]
+})
 
 const createOrg = (pid?: number) => {
-  formType.value = "add";
-  form.name = "";
-  form.pid = pid;
-  adminIds.value = [];
-  dialogTableVisible.value = true;
+  formType.value = 'add'
+  form.name = ''
+  form.pid = pid
+  adminIds.value = []
+  dialogTableVisible.value = true
 
   searchApi({}).then(res => {
     state.treeData = res.data
   })
 
   // Load candidate admins (users not in any org)
-  sysOrgMemberCandidatesApi({ keyword: "" }).then(res => {
-    candidateAdmins.value = res.data || [];
-  });
-};
+  sysOrgMemberCandidatesApi({ keyword: '' }).then(res => {
+    candidateAdmins.value = res.data || []
+  })
+}
 const editOrg = ({ id, name }) => {
-  formType.value = "modify";
-  form.name = name;
-  form.id = id;
-  dialogTableVisible.value = true;
-};
+  formType.value = 'modify'
+  form.name = name
+  form.id = id
+  dialogTableVisible.value = true
+}
 const reset = () => {
-  form.name = "";
-  form.pid = "";
-  form.id = "";
-  adminIds.value = [];
-  candidateAdmins.value = [];
-  orgForm.value.resetFields();
-  dialogTableVisible.value = false;
-};
-const emits = defineEmits(["saved"]);
+  form.name = ''
+  form.pid = ''
+  form.id = ''
+  adminIds.value = []
+  candidateAdmins.value = []
+  orgForm.value.resetFields()
+  dialogTableVisible.value = false
+}
+const emits = defineEmits(['saved'])
 const save = () => {
-  orgForm.value.validate((valid) => {
+  orgForm.value.validate(valid => {
     if (valid) {
-      const param = { ...form };
-      if (formType.value === "add") {
-        param.adminIds = adminIds.value;
+      const param = { ...form }
+      if (formType.value === 'add') {
+        param.adminIds = adminIds.value
       }
-      const method = formType.value === "modify" ? updateApi : saveApi;
-      showLoading();
+      const method = formType.value === 'modify' ? updateApi : saveApi
+      showLoading()
       method(param)
         .then(() => {
-          ElMessage.success(t("common.save_success"));
+          ElMessage.success(t('common.save_success'))
           param['formType'] = formType.value
-          emits("saved", param);
-          reset();
-          closeLoading();
+          emits('saved', param)
+          reset()
+          closeLoading()
         })
         .finally(() => {
-          closeLoading();
-        });
+          closeLoading()
+        })
     } else {
-      return false;
+      return false
     }
-  });
-};
+  })
+}
 const showLoading = () => {
-  loadingInstance.value = ElLoading.service({ target: ".org-form-dialog" });
-};
+  loadingInstance.value = ElLoading.service({ target: '.org-form-dialog' })
+}
 const closeLoading = () => {
-  loadingInstance.value?.close();
-};
+  loadingInstance.value?.close()
+}
 const keyFunction = (e: any) => {
   if (e?.keyCode === 13) {
-    save();
+    save()
   }
-};
+}
 const removeKeyDown = () => {
-  window.removeEventListener("keydown", keyFunction);
-};
+  window.removeEventListener('keydown', keyFunction)
+}
 const addKeyDown = () => {
-  window.addEventListener("keydown", keyFunction);
-};
+  window.addEventListener('keydown', keyFunction)
+}
 onBeforeUnmount(() => {
-  removeKeyDown();
-});
+  removeKeyDown()
+})
 defineExpose({
   createOrg,
-  editOrg,
-});
+  editOrg
+})
 </script>
 <template>
   <el-dialog
@@ -159,7 +159,7 @@ defineExpose({
       require-asterisk-position="right"
       label-position="top"
       ref="orgForm"
-      class="org-editer-form"
+      class="org-editor-form"
       :model="form"
       :rules="rule"
     >
@@ -185,9 +185,7 @@ defineExpose({
               check-strictly
               :render-after-expand="false"
               :placeholder="`${t('common.please_select')}${t('org.parent')}${
-                isAdmin
-                  ? t('org.admin_parent_tips')
-                  : t('org.default_parent_tips')
+                isAdmin ? t('org.admin_parent_tips') : t('org.default_parent_tips')
               }`"
             />
           </el-form-item>
@@ -217,8 +215,8 @@ defineExpose({
       </el-row>
     </el-form>
     <template #footer>
-      <el-button secondary @click="reset">{{ t("common.cancel") }}</el-button>
-      <el-button type="primary" @click="save">{{ t("common.sure") }}</el-button>
+      <el-button secondary @click="reset">{{ t('common.cancel') }}</el-button>
+      <el-button type="primary" @click="save">{{ t('common.sure') }}</el-button>
     </template>
   </el-dialog>
 </template>
@@ -233,7 +231,7 @@ defineExpose({
 .org-tree-select {
   width: 100%;
 }
-.org-editer-form {
+.org-editor-form {
   :deep(.ed-form-item) {
     margin-bottom: 16px;
   }
