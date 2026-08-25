@@ -253,25 +253,9 @@ useEmitt({
   callback: markSpreadsheetChanged
 })
 
-useEmitt({
-  name: SPREADSHEET_EVENTS.OPEN_PLUGIN_EDITOR,
-  callback: (payload: PluginEditPayload) => {
-    if (previewVisible.value || !payload?.config) {
-      return
-    }
-    currentPluginConfig.value = payload.config
-    const adapter = PluginAdapterManager.getAdapter(payload.config.type)
-    if (!adapter) {
-      return
-    }
-    // 自动选区入口会在原生侧边栏打开时提前返回；进入此处的主动请求先关闭原生侧边栏。
-    closeNativeSidebar()
-    editorComponent.value = adapter.getEditor()
-    showEditor.value = true
-  }
-})
-
-const closePromptVisible = ref(false)
+let pendingPluginEditorPayload: PluginEditPayload | null | undefined
+let pluginEditorTransitionScheduled = false
+let pluginEditorTransitionRunning = false
 
 const removeDraftInstance = async (config: PluginConfig): Promise<void> => {
   const runtime = pluginRuntimeRegistry.get(config.type)
@@ -281,25 +265,49 @@ const removeDraftInstance = async (config: PluginConfig): Promise<void> => {
   }
 }
 
-const handleClosePluginEditor = async (): Promise<void> => {
+const applyPluginEditorPayload = (payload: PluginEditPayload | null): void => {
+  if (!payload) {
+    currentPluginConfig.value = null
+    showEditor.value = false
+    return
+  }
+
+  if (previewVisible.value || !payload.config) {
+    return
+  }
+
+  const adapter = PluginAdapterManager.getAdapter(payload.config.type)
+  if (!adapter) {
+    return
+  }
+
+  // 自动选区入口会在原生侧边栏打开时提前返回；进入此处的主动请求先关闭原生侧边栏。
+  closeNativeSidebar()
+  currentPluginConfig.value = payload.config
+  editorComponent.value = adapter.getEditor()
+  showEditor.value = true
+}
+
+const handlePluginEditorTransition = async (
+  requestedPayload: PluginEditPayload | null
+): Promise<void> => {
   const config = currentPluginConfig.value
+  if (requestedPayload?.config.id === config?.id) {
+    applyPluginEditorPayload(requestedPayload)
+    return
+  }
+
   if (!config || !showEditor.value) {
-    currentPluginConfig.value = null
-    showEditor.value = false
+    applyPluginEditorPayload(requestedPayload)
     return
   }
 
-  // 已成功渲染的实例直接关闭；draft / error 实例关闭前二次确认并清除实例。
+  // 已成功渲染的实例直接切换；draft 实例切换前二次确认并清除实例。
   if (!getPluginRenderStatusService()?.needsCloseConfirm(config.id)) {
-    currentPluginConfig.value = null
-    showEditor.value = false
+    applyPluginEditorPayload(requestedPayload)
     return
   }
 
-  if (closePromptVisible.value) {
-    return
-  }
-  closePromptVisible.value = true
   try {
     await ElMessageBox.confirm(
       t('spreadsheet.draft_close_message'),
@@ -312,19 +320,72 @@ const handleClosePluginEditor = async (): Promise<void> => {
       }
     )
     await removeDraftInstance(config)
-    currentPluginConfig.value = null
-    showEditor.value = false
+
+    // 确认期间可能收到多个选区事件，最终打开最新命中的实例。
+    let targetPayload = requestedPayload
+    if (pendingPluginEditorPayload !== undefined) {
+      targetPayload = pendingPluginEditorPayload
+    }
+    pendingPluginEditorPayload = undefined
+    applyPluginEditorPayload(targetPayload)
   } catch {
-    // 用户取消，保持面板打开。
-  } finally {
-    closePromptVisible.value = false
+    // 用户取消时必须保留 draft 面板，避免实例失去配置入口后持续禁用插入。
+    pendingPluginEditorPayload = undefined
   }
 }
+
+const processPluginEditorTransition = async (): Promise<void> => {
+  if (pluginEditorTransitionRunning || pendingPluginEditorPayload === undefined) {
+    return
+  }
+
+  pluginEditorTransitionRunning = true
+  const requestedPayload = pendingPluginEditorPayload
+  pendingPluginEditorPayload = undefined
+  try {
+    await handlePluginEditorTransition(requestedPayload)
+  } finally {
+    pluginEditorTransitionRunning = false
+    if (pendingPluginEditorPayload !== undefined) {
+      schedulePluginEditorTransition()
+    }
+  }
+}
+
+const schedulePluginEditorTransition = (): void => {
+  if (pluginEditorTransitionScheduled || pluginEditorTransitionRunning) {
+    return
+  }
+
+  pluginEditorTransitionScheduled = true
+  queueMicrotask(() => {
+    pluginEditorTransitionScheduled = false
+    void processPluginEditorTransition()
+  })
+}
+
+const requestPluginEditorTransition = (payload: PluginEditPayload | null): void => {
+  // 同一次选区变化中，非命中插件可能先发出关闭事件；实际命中的打开请求应优先。
+  if (payload || pendingPluginEditorPayload === undefined) {
+    pendingPluginEditorPayload = payload
+  }
+  schedulePluginEditorTransition()
+}
+
+useEmitt({
+  name: SPREADSHEET_EVENTS.OPEN_PLUGIN_EDITOR,
+  callback: (payload: PluginEditPayload) => {
+    if (!payload?.config) {
+      return
+    }
+    requestPluginEditorTransition(payload)
+  }
+})
 
 useEmitt({
   name: SPREADSHEET_EVENTS.CLOSE_PLUGIN_EDITOR,
   callback: () => {
-    void handleClosePluginEditor()
+    requestPluginEditorTransition(null)
   }
 })
 
