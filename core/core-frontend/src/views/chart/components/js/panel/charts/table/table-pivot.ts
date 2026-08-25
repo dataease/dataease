@@ -209,6 +209,12 @@ export class TablePivot extends S2ChartView<PivotSheet> {
 
     // 解析合计、小计排序
     const sortParams = []
+    // 原逻辑按指标、列维度、行维度的固定顺序追加，没有读取 sortPriority
+    // S2 中后加入的 sortParam 优先级更高，普通字段规则需按用户优先级反向追加
+    const fieldSortParams: Array<{ fieldId: string; sort: Record<string, any> }> = []
+    const sortPriority = new Map(
+      (chart.sortPriority ?? []).map((field, index) => [field.id, index])
+    )
     let rowTotalSort = false
     if (
       tableTotal.row.totalSort &&
@@ -251,7 +257,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       })
       colTotalSort = true
     }
-    //列维度为空，行排序按照指标列来排序，取第一个有排序设置的指标
+    // 沿用原有指标排序边界，仅在无列维度时取第一个已设置排序的指标
     if (!columnFields?.length) {
       const sortField = valueFields?.find(v => !['none', 'custom_sort'].includes(v.sort))
       if (sortField) {
@@ -263,7 +269,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
             [EXTRA_FIELD]: sortField.dataeaseName
           }
         }
-        sortParams.push(sort)
+        fieldSortParams.push({ fieldId: sortField.id, sort })
       }
     }
     // 自定义总计小计
@@ -348,7 +354,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
             sort.sortBy = uniqueValues
           }
         }
-        sortParams.push(sort)
+        fieldSortParams.push({ fieldId: valueFieldMap[f].id, sort })
       })
     }
     if (!colTotalSort) {
@@ -387,9 +393,26 @@ export class TablePivot extends S2ChartView<PivotSheet> {
             sort.sortBy = uniqueValues
           }
         }
-        sortParams.push(sort)
+        fieldSortParams.push({ fieldId: valueFieldMap[f].id, sort })
       })
     }
+    if (sortPriority.size) {
+      fieldSortParams.sort((a, b) => {
+        const aPriority = sortPriority.get(a.fieldId)
+        const bPriority = sortPriority.get(b.fieldId)
+        if (aPriority === undefined && bPriority === undefined) {
+          return 0
+        }
+        if (aPriority === undefined) {
+          return -1
+        }
+        if (bPriority === undefined) {
+          return 1
+        }
+        return bPriority - aPriority
+      })
+    }
+    sortParams.push(...fieldSortParams.map(({ sort }) => sort))
     // data config
     const s2DataConfig: S2DataConfig = {
       fields: {
