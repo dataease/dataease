@@ -667,7 +667,7 @@ const cascadeCheckAll = (item) => {
     whileLoop(state.tableColumn, true, (col) => {
       if (
         level >= col.weightLevel &&
-        (!checkStandalone || col.weightLevel === 1 || col.weightLevel === level)
+        (!checkStandalone || col.weightLevel <= 2 || col.weightLevel === level)
       ) {
         col["checkAll"] = true;
       }
@@ -711,11 +711,11 @@ const rowWeightChanged = (row, level) => {
   const checkStandalone = standaloneNode(level);
   let hasExport = false;
   if (check) {
-    // 如果是独立节点 勾选自己以及1节点；否则勾选小于等于当前权重的节点
+    // 如果是独立节点 勾选自己以及基础权限节点(1/2)；否则勾选小于等于当前权重的节点
     whileLoop(state.tableColumn, true, (col) => {
       if (
         level >= col.weightLevel &&
-        (!checkStandalone || col.weightLevel === 1 || col.weightLevel === level)
+        (!checkStandalone || col.weightLevel <= 2 || col.weightLevel === level)
       ) {
         row["value" + col.weightLevel] = true;
       }
