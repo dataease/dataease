@@ -21,6 +21,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   'update:modelValue': [value: unknown]
   commit: []
+  'options-ready': []
 }>()
 
 const component = computed(() => {
@@ -52,5 +53,6 @@ const component = computed(() => {
     :popper-options="popperOptions"
     @update:model-value="value => emit('update:modelValue', value)"
     @commit="emit('commit')"
+    @options-ready="emit('options-ready')"
   />
 </template>

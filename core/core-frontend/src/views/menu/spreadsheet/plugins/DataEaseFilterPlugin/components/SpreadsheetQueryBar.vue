@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { Delete, Edit, Plus, Setting } from '@element-plus/icons-vue'
 import type { Options } from '@popperjs/core'
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { ElConfigProvider, ElMessage } from 'element-plus-secondary'
+import { debounce, isEqual } from 'lodash-es'
 import { useLocaleStoreWithOut } from '@/store/modules/locale'
 import type {
   SpreadsheetFilterCondition,
@@ -33,7 +34,11 @@ import {
   resolveSpreadsheetFilterValues
 } from '../utils/filter-values'
 
-const props = withDefaults(defineProps<{ mode?: SpreadsheetMode }>(), {
+const props = withDefaults(defineProps<{
+  mode?: SpreadsheetMode
+  isInitialValuesPending?: () => boolean
+  onInitialValuesReady?: (values: Record<string, unknown>) => void
+}>(), {
   mode: 'edit'
 })
 
@@ -47,6 +52,7 @@ const configDialogPayload = ref<SpreadsheetFilterConfigDialogPayload>()
 const configDialogKey = ref(0)
 const conditionValues = ref<Record<string, unknown>>({})
 const lastAutoQuerySignature = ref('')
+const pendingOptionConditionIds = new Set<string>()
 const isPreview = computed(() => props.mode === 'preview')
 const popperAppendTo = ref('body')
 
@@ -213,12 +219,6 @@ const secondaryButtonStyle = computed(() => {
 const buttonList = computed(() => styleConfig.value?.button?.btnList || ['sure'])
 const autoQueryEnabled = computed(() => !buttonList.value.includes('sure'))
 
-watch(autoQueryEnabled, (enabled, prevEnabled) => {
-  if (enabled && !prevEnabled) {
-    void nextTick(autoQuery)
-  }
-})
-
 const handleVisibleChange = (nextVisible: boolean) => {
   visible.value = nextVisible
 }
@@ -226,6 +226,7 @@ const handleVisibleChange = (nextVisible: boolean) => {
 const handleConfigChange = (nextConfig: SpreadsheetFilterConfig) => {
   config.value = nextConfig
   syncConditionValues(nextConfig)
+  beginValuesInitialization(nextConfig)
 }
 
 const closeConfigDialog = () => {
@@ -303,8 +304,38 @@ const disable = () => {
 }
 
 const syncConditionValues = (nextConfig?: SpreadsheetFilterConfig) => {
+  debouncedAutoQuery.cancel()
   conditionValues.value = getSpreadsheetFilterSelectedValues(nextConfig)
   lastAutoQuerySignature.value = ''
+}
+
+const beginValuesInitialization = (nextConfig?: SpreadsheetFilterConfig) => {
+  if (!nextConfig || !props.isInitialValuesPending?.()) {
+    return
+  }
+  pendingOptionConditionIds.clear()
+  nextConfig.conditions.forEach(condition => {
+    if (
+      nextConfig.visible &&
+      condition.visible &&
+      condition.defaultValueEnabled &&
+      condition.defaultValueFirstItem &&
+      ['textSelect', 'numberSelect', 'treeSelect'].includes(condition.displayType)
+    ) {
+      pendingOptionConditionIds.add(condition.id)
+    }
+  })
+}
+
+const completeConditionOptions = (conditionId: string) => {
+  if (!pendingOptionConditionIds.delete(conditionId)) {
+    return
+  }
+  if (pendingOptionConditionIds.size) {
+    return
+  }
+
+  props.onInitialValuesReady?.({ ...conditionValues.value })
 }
 
 const getQuerySignature = () => JSON.stringify(
@@ -342,15 +373,22 @@ const autoQuery = () => {
   query(true, true)
 }
 
+// 防抖只合并初始化完成后的连续交互，不参与修正初始化查询顺序。
+const debouncedAutoQuery = debounce(autoQuery, 300)
+
 const updateConditionValue = (condition: SpreadsheetFilterCondition, value: unknown) => {
+  if (isEqual(conditionValues.value[condition.id], value)) {
+    return
+  }
   conditionValues.value[condition.id] = value
-  if (condition.displayType !== 'textSearch') {
-    void nextTick(autoQuery)
+  if (!pendingOptionConditionIds.size && condition.displayType !== 'textSearch') {
+    debouncedAutoQuery()
   }
 }
 
 const commitConditionValue = () => {
-  void nextTick(autoQuery)
+  if (pendingOptionConditionIds.size) return
+  debouncedAutoQuery()
 }
 
 const clear = () => {
@@ -381,11 +419,13 @@ onMounted(() => {
   visible.value = getSpreadsheetFilterVisible()
   config.value = getSpreadsheetFilterConfig()
   syncConditionValues(config.value)
+  beginValuesInitialization(config.value)
   onSpreadsheetFilterVisibleChange(handleVisibleChange)
   onSpreadsheetFilterConfigChange(handleConfigChange)
 })
 
 onBeforeUnmount(() => {
+  debouncedAutoQuery.cancel()
   document.removeEventListener('fullscreenchange', syncPopperAppendTo)
   offSpreadsheetFilterVisibleChange(handleVisibleChange)
   offSpreadsheetFilterConfigChange(handleConfigChange)
@@ -454,6 +494,7 @@ onBeforeUnmount(() => {
                 class="spreadsheet-query-bar__control"
                 @update:model-value="value => updateConditionValue(condition, value)"
                 @commit="commitConditionValue"
+                @options-ready="completeConditionOptions(condition.id)"
               />
               <div
                 v-if="!isPreview"
