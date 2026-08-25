@@ -252,8 +252,9 @@ public class MapManage {
     public void saveCustomGeoArea(CustomGeoArea geoArea) {
         var coreCustomGeoArea = new CoreCustomGeoArea();
         BeanUtils.copyBean(coreCustomGeoArea, geoArea);
+        coreCustomGeoArea.setName(normalizeGeoAreaName(coreCustomGeoArea.getName()));
         var q = new QueryWrapper<CoreCustomGeoArea>();
-        q.eq("name", geoArea.getName());
+        q.eq("name", coreCustomGeoArea.getName());
         if (StringUtils.isNotBlank(coreCustomGeoArea.getId())) {
             q.ne("id", coreCustomGeoArea.getId());
         }
@@ -279,8 +280,9 @@ public class MapManage {
     public void saveCustomGeoSubArea(CustomGeoSubArea customGeoSubArea) {
         var geoSubArea = new CoreCustomGeoSubArea();
         BeanUtils.copyBean(geoSubArea, customGeoSubArea);
+        geoSubArea.setName(normalizeGeoAreaName(geoSubArea.getName()));
         var q = new QueryWrapper<CoreCustomGeoSubArea>();
-        q.eq("name", customGeoSubArea.getName());
+        q.eq("name", geoSubArea.getName());
         q.eq("geo_area_id", customGeoSubArea.getGeoAreaId());
         if (ObjectUtils.isNotEmpty(customGeoSubArea.getId())) {
             q.ne("id", customGeoSubArea.getId());
@@ -296,6 +298,14 @@ public class MapManage {
         } else {
             coreCustomGeoSubAreaMapper.updateById(geoSubArea);
         }
+    }
+
+    private String normalizeGeoAreaName(String name) {
+        // Manage 层兜底校验，避免绕过前端校验写入空白名称
+        if (StringUtils.isBlank(name)) {
+            DEException.throwException(Translator.get("i18n_geo_name_can_not_empty"));
+        }
+        return StringUtils.trim(name);
     }
 
     public List<AreaNode> getCustomGeoSubAreaOptions() {
