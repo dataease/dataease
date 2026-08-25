@@ -1154,7 +1154,7 @@ if (props.initialAction === 'add') {
                   @click.stop
                 >
                   <el-tab-pane label="维度" name="d" />
-                  <el-tab-pane label="指标" name="q" />
+                  <el-tab-pane :disabled="activeCondition && activeCondition.displayType === 'treeSelect'" label="指标" name="q" />
                 </el-tabs>
               </template>
               <el-option
