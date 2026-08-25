@@ -375,7 +375,12 @@ const emit = defineEmits(['nodeClick'])
 
 const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
   if (cmd === 'delete') {
-    const msg = data.leaf ? '' : t('visualization.delete_tips')
+    let msg = ''
+    if (!data.leaf) {
+      msg = data.orgRoot
+        ? t('common.org_root_delete_tips', [data.name])
+        : t('visualization.delete_tips')
+    }
     const tips_label = data.leaf ? resourceLabel : t('visualization.folder')
     ElMessageBox.confirm(t('visualization.delete_warn', [tips_label]), {
       confirmButtonType: 'danger',
@@ -384,10 +389,12 @@ const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
       autofocus: false,
       showClose: false
     }).then(() => {
-      deleteLogic(data.id, curCanvasType.value).then(() => {
-        ElMessage.success(t('visualization.delete_success'))
-        getTree(true)
-      })
+      deleteLogic({ id: data.id, busiFlag: curCanvasType.value, rootOrgNode: !!data.orgRoot }).then(
+        () => {
+          ElMessage.success(t('visualization.delete_success'))
+          getTree(true)
+        }
+      )
     })
   } else if (cmd === 'cancelPublish') {
     const params = {

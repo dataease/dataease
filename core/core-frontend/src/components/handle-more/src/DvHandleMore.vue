@@ -53,7 +53,7 @@ const menus = ref(
       if (!props.anyManage && (copy.command === 'copy' || copy.command === 'move')) {
         copy.hidden = true
       }
-      if (props.node.orgRoot && (copy.command === 'move' || copy.command === 'delete')) {
+      if (props.node.orgRoot && copy.command === 'move') {
         copy.hidden = true
       }
       if (props.disabledMove && copy.command === 'move') {

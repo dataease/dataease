@@ -44,6 +44,7 @@ import io.dataease.license.manage.CoreLicManage;
 import io.dataease.log.DeLog;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
+import io.dataease.model.ResourceDeleteRequest;
 import io.dataease.operation.manage.CoreOptRecentManage;
 import io.dataease.permission.util.V3UserUtil;
 import io.dataease.result.PageResult;
@@ -699,11 +700,11 @@ public class DataVisualizationServer implements DataVisualizationApi {
     /**
      * @Description: 逻辑删除可视化信息；将delete_flag 置为0
      */
-    @DeLog(id = "#p0", ot = LogOT.DELETE, stExp = "#p1")
+    @DeLog(id = "#p0.id", ot = LogOT.DELETE, stExp = "#p0.busiFlag")
     @Transactional
     @Override
-    public void deleteLogic(Long dvId, String busiFlag) {
-        coreVisualizationManage.delete(dvId);
+    public void deleteLogic(ResourceDeleteRequest request) {
+        coreVisualizationManage.delete(request.getId(), Boolean.TRUE.equals(request.getRootOrgNode()));
     }
 
     private void resourceTreeTypeAdaptor(List<BusiNodeVO> tree, String type) {

@@ -12,6 +12,7 @@ import io.dataease.extensions.datasource.dto.SimpleDatasourceDTO;
 import io.dataease.extensions.datasource.dto.TableField;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
+import io.dataease.model.ResourceDeleteRequest;
 import io.dataease.result.PageResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -56,9 +57,9 @@ public interface DataFillingApi {
     DataFillingDTO rename(@RequestBody DataFillingDTO dataFillingDTO);
 
     @Operation(summary = "删除数据填报")
-    @DePermit({"#p0+':manage'"})
-    @GetMapping("delete/{id}")
-    void delete(@PathVariable("id") Long id);
+    @DePermit({"#p0.id+':manage'"})
+    @PostMapping("delete")
+    void delete(@RequestBody ResourceDeleteRequest request);
 
     @Operation(summary = "获取创建数据填报表单用的数据源列表")
     @GetMapping("/datasource/list")

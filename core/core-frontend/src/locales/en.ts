@@ -72,6 +72,8 @@ export default {
     save_success: 'Save successfully',
     roger_that: 'Got it',
     delete_success: 'Delete successfully',
+    org_root_delete_tips:
+      "This directory is the default resource directory of the {0} organization. Deleting it will affect the organization's resource usage",
     copy: 'Copy',
     operating: 'Operation',
     label: 'Notes',

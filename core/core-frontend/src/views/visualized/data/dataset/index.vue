@@ -589,7 +589,9 @@ const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
       tip: ''
     }
 
-    if (!!data.children?.length) {
+    if (data?.orgRoot) {
+      options.tip = t('common.org_root_delete_tips', [data.name])
+    } else if (!!data.children?.length) {
       options.tip = t('data_set.operate_with_caution')
     } else {
       delete options.tip
@@ -623,7 +625,7 @@ const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
               )
             ])
           }).then(() => {
-            delDatasetTree(data.id).then(() => {
+            delDatasetTree({ id: data.id, rootOrgNode: !!data.orgRoot }).then(() => {
               getData()
               ElMessage.success(t('dataset.delete_success'))
             })
@@ -633,7 +635,7 @@ const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
             t('datasource.delete_this_dataset'),
             options as ElMessageBoxOptions
           ).then(() => {
-            delDatasetTree(data.id).then(() => {
+            delDatasetTree({ id: data.id, rootOrgNode: !!data.orgRoot }).then(() => {
               getData()
               ElMessage.success(t('dataset.delete_success'))
             })
@@ -643,7 +645,7 @@ const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
     } else {
       ElMessageBox.confirm(t('data_set.delete_this_folder'), options as ElMessageBoxOptions).then(
         () => {
-          delDatasetTree(data.id).then(() => {
+          delDatasetTree({ id: data.id, rootOrgNode: !!data.orgRoot }).then(() => {
             getData()
             ElMessage.success(t('dataset.delete_success'))
           })
@@ -809,7 +811,7 @@ const getMenuList = (val: boolean, data?: any) => {
       ].concat(menuList)
   return list.filter(item => {
     if (disabledMove.value && item.command === 'move') return false
-    if (data?.orgRoot && (item.command === 'move' || item.command === 'delete')) return false
+    if (data?.orgRoot && item.command === 'move') return false
     return true
   })
 }

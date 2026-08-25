@@ -9,6 +9,7 @@ import io.dataease.extensions.datasource.dto.*;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
+import io.dataease.model.ResourceDeleteRequest;
 import io.dataease.result.PageResult;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
@@ -87,10 +88,10 @@ public interface DatasourceApi {
     @Operation(summary = "是否有数据集正在使用此数据源")
     boolean perDelete(@PathVariable("datasourceId") Long datasourceId);
 
-    @DePermit({"#p0+':manage'"})
-    @GetMapping("/delete/{datasourceId}")
+    @DePermit({"#p0.id+':manage'"})
+    @PostMapping("/delete")
     @Operation(summary = "删除")
-    void delete(@PathVariable("datasourceId") Long datasourceId) throws DEException;
+    void delete(@RequestBody ResourceDeleteRequest request) throws DEException;
 
     @DePermit({"#p0+':manage'"})
     @GetMapping("/get/{datasourceId}")
