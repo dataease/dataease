@@ -248,9 +248,10 @@ public class MapManage {
     public void saveCustomGeoArea(CustomGeoArea geoArea) {
         var coreCustomGeoArea = new CoreCustomGeoArea();
         BeanUtils.copyBean(coreCustomGeoArea, geoArea);
+        coreCustomGeoArea.setName(normalizeGeoAreaName(coreCustomGeoArea.getName()));
         Specification<CoreCustomGeoArea> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("name"), geoArea.getName()));
+            predicates.add(cb.equal(root.get("name"), coreCustomGeoArea.getName()));
             if (geoArea.getId() != null && !geoArea.getId().isEmpty()) {
                 predicates.add(cb.notEqual(root.get("id"), geoArea.getId()));
             }
@@ -279,9 +280,10 @@ public class MapManage {
     public void saveCustomGeoSubArea(CustomGeoSubArea customGeoSubArea) {
         var geoSubArea = new CoreCustomGeoSubArea();
         BeanUtils.copyBean(geoSubArea, customGeoSubArea);
+        geoSubArea.setName(normalizeGeoAreaName(geoSubArea.getName()));
         Specification<CoreCustomGeoSubArea> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("name"), customGeoSubArea.getName()));
+            predicates.add(cb.equal(root.get("name"), geoSubArea.getName()));
             predicates.add(cb.equal(root.get("geoAreaId"), customGeoSubArea.getGeoAreaId()));
             if (customGeoSubArea.getId() != null) {
                 predicates.add(cb.notEqual(root.get("id"), customGeoSubArea.getId()));
@@ -299,6 +301,14 @@ public class MapManage {
         } else {
             coreCustomGeoSubAreaRepository.saveAndFlush(geoSubArea);
         }
+    }
+
+    private String normalizeGeoAreaName(String name) {
+        // Manage 层兜底校验，避免绕过前端校验写入空白名称
+        if (StringUtils.isBlank(name)) {
+            DEException.throwException(Translator.get("i18n_geo_name_can_not_empty"));
+        }
+        return StringUtils.trim(name);
     }
 
     public List<AreaNode> getCustomGeoSubAreaOptions() {
