@@ -14,7 +14,8 @@ import {
   Aggregation,
   S2DataConfig,
   MergedCell,
-  LayoutResult
+  LayoutResult,
+  RowCell
 } from '@antv/s2'
 import { formatterItem, valueFormatter } from '../../../formatter'
 import { hexColorToRGBA, isAlphaColor, parseJson } from '../../../util'
@@ -81,6 +82,16 @@ class CustomPivotDataset extends PivotDataSet {
         query[EXTRA_FIELD]
       )
     }
+  }
+}
+
+class CustomPivotRowCell extends RowCell {
+  protected showTreeIcon(): boolean {
+    // 纯树形模式的末级节点没有可展开内容，不显示无效的展开图标
+    if (this.spreadsheet.isHierarchyTreeType() && this.meta.isLeaf) {
+      return false
+    }
+    return super.showTreeIcon()
   }
 }
 /**
@@ -469,6 +480,9 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       },
       dataCell: meta => {
         return new CustomDataCell(meta, meta.spreadsheet)
+      },
+      rowCell: (node, spreadsheet, headerConfig) => {
+        return new CustomPivotRowCell(node, spreadsheet, headerConfig)
       },
       transformCanvasConfig() {
         return {
