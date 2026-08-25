@@ -1425,7 +1425,7 @@ provide("scrollbarClick", scrollbarClick);
           {{ formSettings.name }}
         </span>
       </span>
-      <span class="oprate">
+      <span class="operate">
         <el-button :disabled="showInput" type="primary" @click="dfSaveAndBack">
           {{ t("data_set.save_and_return") }}
         </el-button>
