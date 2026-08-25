@@ -5045,7 +5045,8 @@ export default {
       'After deletion, all resources under this folder will be deleted, please proceed with caution.',
     save_before_leave: 'Do you want to save before leaving?',
     unsaved_changes: 'There are unsaved changes',
-    confirm_exit_without_save: 'Current changes have not been saved. Are you sure you want to exit?',
+    confirm_exit_without_save:
+      'Current changes have not been saved. Are you sure you want to exit?',
     save_current_before_create_dataset: 'Please save the current spreadsheet first',
     cache_use_tips:
       'An unsaved spreadsheet from the previous session was found. Do you want to restore it?',
