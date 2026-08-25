@@ -75,7 +75,7 @@ const findDs = () => {
 }
 
 const hideOperate = () => {
-  const classList = ['oprate', 'field-data']
+  const classList = ['operate', 'field-data']
   classList.forEach(c => {
     const domList = document.getElementsByClassName(c)
     if (domList?.length) {
