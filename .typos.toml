@@ -8,8 +8,7 @@ ws = "ws"
 guid = "guid"
 yoy = "yoy"
 Ein = "Ein"
-cpy1 = "cpy1"
-cpy2 = "cpy2"
-getCellDatas = "getCellDatas"
+cpy = "cpy"
+Datas = "Datas"
 [files]
 extend-exclude = ["mapFiles/**", "docs"]

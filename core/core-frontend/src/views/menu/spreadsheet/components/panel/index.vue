@@ -5,6 +5,7 @@ import DatasetPanel from '../dataset-panel/index.vue'
 import type { FieldItemData, PluginConfig, TablePluginConfig } from '../../types/plugin'
 import { ElMessage } from 'element-plus-secondary'
 import { pluginRuntimeRegistry } from '../../services/plugin-runtime.service'
+import { dispatchSpreadsheetContentChanged } from '../../utils/events'
 
 const univerApi = inject('univerApi') as any
 
@@ -87,6 +88,7 @@ const updateConfig = async (key: string, value: any) => {
     }
 
     updatePluginConfig(key, value)
+    dispatchSpreadsheetContentChanged()
     if (key.startsWith('style.')) {
       await runtime?.applyStyle?.({ univerApi: api, config })
     }
