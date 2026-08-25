@@ -177,9 +177,15 @@ let myChart: SpreadSheet = null
 let chartComponentUnmounted = false
 // 实际渲染的图表信息，适应缩放
 let actualChart: ChartObj
+let renderChartResolvers: Array<() => void> = []
+const resolveRenderChart = () => {
+  const resolvers = renderChartResolvers
+  renderChartResolvers = []
+  resolvers.forEach(resolve => resolve())
+}
 const renderChartFromDialog = (viewInfo: Chart, chartDataInfo) => {
   chartData.value = chartDataInfo
-  renderChart(viewInfo, false)
+  return renderChart(viewInfo, false)
 }
 // 处理存量图表的默认值
 const handleDefaultVal = (chart: Chart) => {
@@ -214,9 +220,9 @@ const handleDefaultVal = (chart: Chart) => {
     }
   }
 }
-const renderChart = (viewInfo: Chart, resetPageInfo: boolean) => {
+const renderChart = (viewInfo: Chart, resetPageInfo?: boolean) => {
   if (!viewInfo) {
-    return
+    return Promise.resolve()
   }
   handleDefaultVal(viewInfo)
   // view 为引用对象 需要存库 view.data 直接赋值会导致保存不必要的数据
@@ -230,33 +236,40 @@ const renderChart = (viewInfo: Chart, resetPageInfo: boolean) => {
   recursionTransObj(customStyleTrans, actualChart.customStyle, scale.value, terminal.value)
 
   setupPage(actualChart, resetPageInfo)
-  nextTick(() => debounceRender(resetPageInfo))
+  return new Promise<void>(resolve => {
+    renderChartResolvers.push(resolve)
+    nextTick(() => debounceRender())
+  })
 }
 
-const debounceRender = debounce(resetPageInfo => {
-  if (chartComponentUnmounted) {
-    return
+const debounceRender = debounce(() => {
+  try {
+    if (chartComponentUnmounted) {
+      return
+    }
+    myChart?.facet?.timer?.stop()
+    myChart?.facet?.cancelScrollFrame()
+    myChart?.destroy()
+    myChart?.getCanvasElement()?.remove()
+    const chartView = chartViewManager.getChartView(
+      actualChart.render,
+      actualChart.type
+    ) as S2ChartView<any>
+    myChart = chartView.drawChart({
+      container: containerId,
+      chart: toRaw(actualChart),
+      chartObj: myChart,
+      pageInfo: state.pageInfo,
+      action,
+      resizeAction,
+      touchAction
+    })
+    myChart?.render()
+    dvMainStore.setViewInstanceInfo(actualChart.id, myChart)
+    initScroll()
+  } finally {
+    resolveRenderChart()
   }
-  myChart?.facet?.timer?.stop()
-  myChart?.facet?.cancelScrollFrame()
-  myChart?.destroy()
-  myChart?.getCanvasElement()?.remove()
-  const chartView = chartViewManager.getChartView(
-    actualChart.render,
-    actualChart.type
-  ) as S2ChartView<any>
-  myChart = chartView.drawChart({
-    container: containerId,
-    chart: toRaw(actualChart),
-    chartObj: myChart,
-    pageInfo: state.pageInfo,
-    action,
-    resizeAction,
-    touchAction
-  })
-  myChart?.render()
-  dvMainStore.setViewInstanceInfo(actualChart.id, myChart)
-  initScroll()
 }, 500)
 
 const setupPage = (chart: ChartObj, resetPageInfo?: boolean) => {
@@ -659,7 +672,7 @@ const resize = (width, height) => {
       return
     }
     if (!myChart?.facet) {
-      debounceRender(false)
+      debounceRender()
     } else {
       myChart?.facet?.timer?.stop()
       myChart?.changeSheetSize(width, height)
@@ -698,6 +711,7 @@ onBeforeUnmount(() => {
     timer && clearTimeout(timer)
     scrollTimer && clearTimeout(scrollTimer)
     debounceRender.cancel()
+    resolveRenderChart()
     myChart?.facet?.timer?.stop()
     myChart?.facet?.cancelScrollFrame()
     myChart?.destroy()

@@ -56,6 +56,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { recoverToPublished } from '@/api/visualization/dataVisualization'
 import ComponentToolBarV3 from '@/components/data-visualization/ComponentToolBarV3.vue'
 import DeRulerV3 from '@/custom-component/common/DeRulerV3.vue'
+import { useRenderChartAllLoading } from '@/views/chart/components/views/renderChartAll'
 const NewWindowHandler = defineAsyncComponent(
   () => import('@/views/component/embedded-iframe/NewWindowHandler.vue')
 )
@@ -92,6 +93,7 @@ const deWRulerRef = ref(null)
 const deHRulerRef = ref(null)
 const requestStore = useRequestStoreWithOut()
 const permissionStore = usePermissionStoreWithOut()
+const renderChartAllLoading = useRenderChartAllLoading()
 const {
   fullscreenFlag,
   componentData,
@@ -105,6 +107,11 @@ const {
   batchOptStatus
 } = storeToRefs(dvMainStore)
 const { editorMap, isSpaceDown } = storeToRefs(composeStore)
+const pageLoading = computed(
+  () =>
+    (requestStore.loadingMap && requestStore.loadingMap[permissionStore.currentPath]) ||
+    renderChartAllLoading.value
+)
 const canvasOut = ref(null)
 const canvasInner = ref(null)
 const leftSidebarRef = ref(null)
@@ -563,7 +570,7 @@ eventBus.on('tabSort', tabSort)
     <div class="custom-dv-divider" />
     <el-container
       v-if="loadFinish"
-      v-loading="requestStore.loadingMap && requestStore.loadingMap[permissionStore.currentPath]"
+      v-loading="pageLoading"
       element-loading-background="rgba(0, 0, 0, 0)"
       class="dv-layout-container"
       :class="{ 'preview-layout-container': previewStatus }"

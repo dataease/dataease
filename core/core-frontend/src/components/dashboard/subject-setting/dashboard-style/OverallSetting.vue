@@ -359,7 +359,7 @@ import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { isDesktop } from '@/utils/ModelUtil'
 import eventBus from '@/utils/eventBus'
 import { resetValueFormatter } from '@/views/chart/components/editor/drag-item/utils'
-import { useEmitt } from '@/hooks/web/useEmitt'
+import { emitRenderChartAllWithLoading } from '@/views/chart/components/views/renderChartAll'
 const appearanceStore = useAppearanceStoreWithOut()
 const isDesktopFlag = isDesktop()
 const snapshotStore = snapshotStoreWithOut()
@@ -461,7 +461,7 @@ const colorButtonClick = val => {
 
 const onRendererChange = () => {
   snapshotStore.recordSnapshotCache('renderChart')
-  useEmitt().emitter.emit('renderChart-all')
+  emitRenderChartAllWithLoading('svg-renderer')
 }
 </script>
 

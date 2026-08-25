@@ -38,6 +38,7 @@ import eventBus from '@/utils/eventBus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { recoverToPublished } from '@/api/visualization/dataVisualization'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
+import { useRenderChartAllLoading } from '@/views/chart/components/views/renderChartAll'
 const NewWindowHandler = defineAsyncComponent(
   () => import('@/views/component/embedded-iframe/NewWindowHandler.vue')
 )
@@ -79,6 +80,10 @@ const dataInitState = ref(false)
 const appStore = useAppStoreWithOut()
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 const { t } = useI18n()
+const renderChartAllLoading = useRenderChartAllLoading()
+const pageLoading = computed(
+  () => requestStore.loadingMap[permissionStore.currentPath] || renderChartAllLoading.value
+)
 
 const state = reactive({
   datasetTree: [],
@@ -377,7 +382,7 @@ onUnmounted(() => {
   <div
     class="dv-common-layout dv-teleport-query"
     :class="isDataEaseBi && !newWindowFromDiv && 'dataease-w-h'"
-    v-loading="requestStore.loadingMap[permissionStore.currentPath]"
+    v-loading="pageLoading"
     v-if="loadFinish && !mobileConfig"
   >
     <DbToolbar @recoverToPublished="doRecoverToPublished" />

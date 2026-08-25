@@ -57,6 +57,13 @@ import { store } from '@/store'
 // import { clearExtremum } from '@/views/chart/components/js/extremumUitl'
 import DePreviewPopDialog from '@/components/visualization/DePreviewPopDialog.vue'
 import { useRoute } from 'vue-router_2'
+import {
+  isRenderChartAllPayload,
+  RENDER_CHART_ALL,
+  RENDER_CHART_ALL_ITEM_FINISH,
+  RENDER_CHART_ALL_ITEM_START,
+  type RenderChartAllPayload
+} from './renderChartAll'
 const OpenHandler = defineAsyncComponent(
   () => import('@/views/component/embedded-iframe/OpenHandler.vue')
 )
@@ -865,21 +872,61 @@ onMounted(() => {
       })
     }
   })
+  const waitNextFrame = () =>
+    new Promise<void>(resolve => {
+      if (!window.requestAnimationFrame) {
+        resolve()
+        return
+      }
+      window.requestAnimationFrame(() => resolve())
+    })
+
+  const waitRenderPaint = async () => {
+    await nextTick()
+    await waitNextFrame()
+  }
+
+  const notifyRenderChartAllItem = (eventName: string, payload: RenderChartAllPayload) => {
+    emitter.emit(eventName, {
+      ...payload,
+      viewId: `${showPosition.value}-${view.value.id}-${suffixId.value}`
+    })
+  }
+
+  const renderChartByViewInfo = async viewInfo => {
+    if (view.value?.plugin?.isPlugin) {
+      const renderResult = chartComponent?.value?.invokeMethod({
+        methodName: 'renderChart',
+        args: [viewInfo]
+      })
+      await Promise.resolve(renderResult)
+      return
+    }
+    const renderResult = chartComponent?.value?.renderChart?.(viewInfo)
+    await Promise.resolve(renderResult)
+  }
+
   const handleRenderChart = function (val) {
     if (!state.initReady) {
       return
     }
     initTitle()
-    const viewInfo = val ? val : view.value
-    nextTick(() => {
-      if (view.value?.plugin?.isPlugin) {
-        chartComponent?.value?.invokeMethod({
-          methodName: 'renderChart',
-          args: [viewInfo]
-        })
-        return
+    const renderAllPayload = isRenderChartAllPayload(val) ? val : null
+    const viewInfo = renderAllPayload ? view.value : val ? val : view.value
+    if (renderAllPayload) {
+      notifyRenderChartAllItem(RENDER_CHART_ALL_ITEM_START, renderAllPayload)
+    }
+    nextTick(async () => {
+      try {
+        await renderChartByViewInfo(viewInfo)
+      } catch (e) {
+        console.warn('renderChart error', e)
+      } finally {
+        if (renderAllPayload) {
+          await waitRenderPaint()
+          notifyRenderChartAllItem(RENDER_CHART_ALL_ITEM_FINISH, renderAllPayload)
+        }
       }
-      chartComponent?.value?.renderChart?.(viewInfo)
     })
   }
   useEmitt({
@@ -887,7 +934,7 @@ onMounted(() => {
     callback: handleRenderChart
   })
   useEmitt({
-    name: 'renderChart-all',
+    name: RENDER_CHART_ALL,
     callback: handleRenderChart
   })
   useEmitt({
