@@ -2,6 +2,7 @@
 import { toRefs } from 'vue'
 import CanvasCore from '@/components/data-visualization/canvas/CanvasCore.vue'
 import GroupPreview from '@/custom-component/group/GroupPreview.vue'
+const emits = defineEmits(['onPointClick'])
 
 const props = defineProps({
   canvasStyleData: {
@@ -61,6 +62,10 @@ const props = defineProps({
 })
 const { element, isEdit, showPosition, canvasStyleData, canvasViewInfo, dvInfo, componentData } =
   toRefs(props)
+
+const onPointClick = param => {
+  emits('onPointClick', param)
+}
 </script>
 
 <template>
@@ -86,6 +91,7 @@ const { element, isEdit, showPosition, canvasStyleData, canvasViewInfo, dvInfo, 
     :scale="scale * 100"
     :canvas-view-info="canvasViewInfo"
     :font-family="fontFamily"
+    @onPointClick="onPointClick"
   ></group-preview>
 </template>
 

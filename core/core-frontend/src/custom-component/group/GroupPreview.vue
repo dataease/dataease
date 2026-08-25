@@ -6,6 +6,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import UserViewEnlarge from '@/components/visualization/UserViewEnlarge.vue'
 const dvMainStore = dvMainStoreWithOut()
 const userViewEnlargeRef = ref(null)
+const emits = defineEmits(['onPointClick'])
 
 const props = defineProps({
   propValue: {
@@ -71,6 +72,10 @@ const userViewEnlargeOpen = (opt, item) => {
     { scale: scale.value }
   )
 }
+
+const onPointClick = param => {
+  emits('onPointClick', param)
+}
 </script>
 
 <template>
@@ -91,6 +96,7 @@ const userViewEnlargeOpen = (opt, item) => {
         :scale="scale"
         :font-family="fontFamily"
         @userViewEnlargeOpen="userViewEnlargeOpen($event, item)"
+        @onPointClick="onPointClick"
       />
     </div>
     <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>

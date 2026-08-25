@@ -9,6 +9,7 @@ import { groupSizeStyleAdaptor } from '@/utils/style'
 const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData, curComponent } = storeToRefs(dvMainStore)
 const sourceCanvasStyle = deepCopy(DEFAULT_CANVAS_STYLE_DATA_DARK)
+const emits = defineEmits(['onPointClick'])
 const props = defineProps({
   propValue: {
     type: Array,
@@ -77,6 +78,9 @@ const setCanvasActive = () => {
   element.value['canvasActive'] = true
 }
 
+const onPointClick = param => {
+  emits('onPointClick', param)
+}
 watch(
   () => props.active,
   () => {
@@ -119,6 +123,7 @@ onMounted(() => {
       :scale="scale"
       :search-count="searchCount"
       :font-family="fontFamily"
+      @onPointClick="onPointClick"
     >
     </canvas-group>
   </div>

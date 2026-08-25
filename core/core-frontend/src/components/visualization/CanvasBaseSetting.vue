@@ -137,12 +137,12 @@ import { CHART_FONT_FAMILY_ORIGIN } from '@/views/chart/components/editor/util/c
 import { adaptTitleFontFamilyAll } from '@/utils/canvasStyle'
 import { useI18n } from '@/hooks/web/useI18n'
 import { isDesktop } from '@/utils/ModelUtil'
+import { emitRenderChartAllWithLoading } from '@/views/chart/components/views/renderChartAll'
 const snapshotStore = snapshotStoreWithOut()
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData } = storeToRefs(dvMainStore)
 const appearanceStore = useAppearanceStoreWithOut()
-import { useEmitt } from '@/hooks/web/useEmitt'
 
 const isDesktopFlag = isDesktop()
 
@@ -166,7 +166,7 @@ const onThemeChange = () => {
 }
 const onRendererChange = () => {
   snapshotStore.recordSnapshotCache('renderChart')
-  useEmitt().emitter.emit('renderChart-all')
+  emitRenderChartAllWithLoading('svg-renderer')
 }
 
 withDefaults(
