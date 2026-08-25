@@ -210,23 +210,17 @@ export function activeWatermark(
     watermark_txt = watermark_txt.replaceAll('${username}', userLoginInfo.account)
     watermark_txt = watermark_txt.replaceAll('${nickName}', userLoginInfo.name)
     watermark_txt = watermark_txt.replaceAll('${time}', getNow())
-    watermark_width = watermark_txt.length * watermarkForm.watermark_fontsize * 0.75
-    watermark_width = watermark_width > 350 ? 350 : watermark_width
   } else if (watermarkForm.type === 'nickName') {
     watermark_txt = userLoginInfo.name
-    watermark_width = watermark_txt.length * watermarkForm.watermark_fontsize * 0.75
-    watermark_width = watermark_width > 200 ? 200 : watermark_width
   } else if (watermarkForm.type === 'ip') {
     watermark_txt = userLoginInfo.ip
-    watermark_width = 190
   } else if (watermarkForm.type === 'time') {
     watermark_txt = getNow()
-    watermark_width = 200
   } else {
     watermark_txt = userLoginInfo.account
-    watermark_width = watermark_txt.length * watermarkForm.watermark_fontsize * 0.75
-    watermark_width = watermark_width > 200 ? 200 : watermark_width
   }
+  watermark_width = watermark_txt.length * watermarkForm.watermark_fontsize * 0.75
+  watermark_width = watermark_width > 350 ? 350 : watermark_width
   const settings = {
     watermark_txt: watermark_txt,
     watermark_width: watermark_width * scale,
