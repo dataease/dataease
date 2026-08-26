@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import logo from '@/assets/svg/logo.svg'
 import msgNotice from '@/assets/svg/icon_notification_outlined.svg'
-import dvAi from '@/assets/svg/dv-ai.svg'
+// import dvAi from '@/assets/svg/dv-ai.svg'
 import dvPreviewDownload from '@/assets/svg/icon_download_outlined.svg'
 import logo_sqlbot from '@/assets/svg/logo_sqlbot.svg'
 import { computed, onMounted, ref } from 'vue'
@@ -31,7 +31,7 @@ const route = useRoute()
 import { useCache } from '@/hooks/web/useCache'
 import { useI18n } from '@/hooks/web/useI18n'
 import { msgCountApi } from '@/api/msg'
-import request from '@/config/axios'
+// import request from '@/config/axios'
 const { wsCache } = useCache('localStorage')
 const aiBaseUrl = ref('https://maxkb.fit2cloud.com/ui/chat/2ddd8b594ce09dbb?mode=embed') as any
 const sqlbotEnabled = ref(false)
@@ -40,9 +40,9 @@ const handleIconClick = () => {
   push('/workbranch/index')
 }
 
-const handleAiClick = () => {
+/* const handleAiClick = () => {
   useEmitt().emitter.emit('aiComponentChange')
-}
+} */
 const { t } = useI18n()
 
 const desktop = isDesktop()
@@ -117,21 +117,21 @@ const handleSqlbotClick = () => {
   push('/sqlbot/index')
 }
 
-const initSqlbot = () => {
+/* const initSqlbot = () => {
   request.get({ url: '/sysParameter/sqlbot' }).then(res => {
     if (res && res.data) {
       const { domain, id, enabled, valid } = res.data
       sqlbotEnabled.value = domain && id && enabled && valid
     }
   })
-}
+} */
 
 onMounted(() => {
   initShowSystem()
   initShowToolbox()
   initShowMsg()
   initAiBase()
-  initSqlbot()
+  /* initSqlbot() */
 
   msgCountApi().then(res => {
     badgeCount.value = (res?.data > 99 ? '99+' : res?.data) || '0'
