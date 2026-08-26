@@ -21,6 +21,7 @@ import {
 } from '@univerjs/ui'
 import {
   INTERCEPTOR_POINT,
+  RemoveSheetCommand,
   SetWorksheetActiveOperation,
   SheetInterceptorService
 } from '@univerjs/sheets'
@@ -35,6 +36,10 @@ import {
   InsertDetailTableOperation,
   OpenDetailTableCreateDialogOperation
 } from '../commands/insert-operations'
+import {
+  SetDetailTableInstancesMutation,
+  type ISetDetailTableInstancesMutationParams
+} from '../commands/instance-mutations'
 import type { DetailTableConfig } from '../types'
 import { TableFillService } from '../services/table-fill.service'
 import { DETAIL_TABLE_PLUGIN_RESOURCE_NAME } from '../../../utils/plugin-resource'
@@ -111,6 +116,7 @@ export class DataEaseDetailTableController extends Disposable {
     this._initRenderStatusListener()
     this._initEditProtection()
     this._initSheetSwitchListener()
+    this._initSheetDeleteLifecycle()
     this._initLifecycleEvents()
     this._initSidebarListener()
     this._initFilterListener()
@@ -132,7 +138,8 @@ export class DataEaseDetailTableController extends Disposable {
       InsertDetailTableOperation,
       ApplyDetailTableOperation,
       ApplyDetailTableStyleOperation,
-      ClearDetailTableOperation
+      ClearDetailTableOperation,
+      SetDetailTableInstancesMutation
     ]
 
     commands.forEach(command => {
@@ -157,6 +164,85 @@ export class DataEaseDetailTableController extends Disposable {
         }
 
         // 切换前终止当前插入流程，避免旧 Sheet 的弹窗和状态残留到目标 Sheet。
+        this._dialogService.close('RangeSelectDialog')
+        this._dialogService.close('DetailTableCreateDialog')
+        this._detailTableInsertionService.cancel()
+        emitter.emit(SPREADSHEET_EVENTS.CLOSE_PLUGIN_EDITOR)
+      })
+    )
+  }
+
+  private _initSheetDeleteLifecycle(): void {
+    this.disposeWithMe(
+      this._sheetInterceptorService.interceptCommand({
+        getMutations: commandInfo => {
+          if (commandInfo.id !== RemoveSheetCommand.id) {
+            return { redos: [], undos: [] }
+          }
+
+          const { unitId, subUnitId } = commandInfo.params || {}
+          const workbook = unitId
+            ? this._univerInstanceService.getUnit(unitId, UniverInstanceType.UNIVER_SHEET)
+            : this._univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET)
+          const targetUnitId = unitId || workbook?.getUnitId()
+          if (!targetUnitId || !subUnitId) {
+            return { redos: [], undos: [] }
+          }
+
+          const previousInstances = [...this._detailTableInstanceService.get(targetUnitId)]
+          const draftIds = new Set(
+            previousInstances
+              .filter(plugin => {
+                const status = this._pluginRenderStatusService.get(plugin.id)
+                return plugin.placement.sheetId === subUnitId && status?.status === 'draft'
+              })
+              .map(plugin => plugin.id)
+          )
+          const nextInstances = previousInstances.filter(
+            plugin => plugin.placement.sheetId !== subUnitId
+          )
+          if (nextInstances.length === previousInstances.length) {
+            return { redos: [], undos: [] }
+          }
+
+          const restoredInstances = previousInstances.filter(plugin => !draftIds.has(plugin.id))
+
+          // 已完成实例跟随 Sheet 进入撤销栈；未完成草稿删除后不再恢复。
+          return {
+            // 删除草稿状态必须早于原生 Sheet mutation，避免 Sheet 切换先触发关闭确认。
+            preRedos: [
+              {
+                id: SetDetailTableInstancesMutation.id,
+                params: {
+                  unitId: targetUnitId,
+                  instances: nextInstances,
+                  discardedDraftIds: [...draftIds]
+                }
+              }
+            ],
+            redos: [],
+            undos: [
+              {
+                id: SetDetailTableInstancesMutation.id,
+                params: { unitId: targetUnitId, instances: restoredInstances }
+              }
+            ]
+          }
+        }
+      })
+    )
+
+    this.disposeWithMe(
+      this._commandService.onCommandExecuted(commandInfo => {
+        if (commandInfo.id !== SetDetailTableInstancesMutation.id) {
+          return
+        }
+
+        const params = commandInfo.params as ISetDetailTableInstancesMutationParams | undefined
+        if (!params?.discardedDraftIds?.length) {
+          return
+        }
+
         this._dialogService.close('RangeSelectDialog')
         this._dialogService.close('DetailTableCreateDialog')
         this._detailTableInsertionService.cancel()
@@ -196,10 +282,27 @@ export class DataEaseDetailTableController extends Disposable {
           this._clearHoverRange()
           this._detailTableRenderStyleService.deleteUnit(unitId)
         },
-        toJson: unitId => JSON.stringify(this._detailTableInstanceService.get(unitId)),
+        toJson: unitId => JSON.stringify(this._getSerializableInstances(unitId)),
         parseJson: data => JSON.parse(data) as DetailTableConfig[]
       })
     )
+  }
+
+  private _getSerializableInstances(unitId: string): DetailTableConfig[] {
+    const instances = this._detailTableInstanceService.get(unitId)
+    const workbook = this._univerInstanceService.getUnit(unitId, UniverInstanceType.UNIVER_SHEET)
+    const sheets = workbook?.getSheets?.()
+    if (!sheets) {
+      return instances
+    }
+
+    const sheetIds = new Set(sheets.map(sheet => sheet.getSheetId()))
+    const validInstances = instances.filter(plugin => sheetIds.has(plugin.placement.sheetId))
+    if (validInstances.length !== instances.length) {
+      // 保存前兜底清理无归属 Sheet 的历史实例，内存态与持久化结果保持一致。
+      this._detailTableInstanceService.set(unitId, validInstances)
+    }
+    return validInstances
   }
 
   private _initCellContentInterceptor(): void {
@@ -666,7 +769,7 @@ export class DataEaseDetailTableController extends Disposable {
     for (const plugin of detailPlugins) {
       const queryConfig = this._spreadsheetFilterRuntimeService.applyQueryFilterToConfig(unitId, plugin)
       try {
-        await this._tableFillService.fillTableByConfig(this._univerApi, queryConfig)
+        await this._tableFillService.fillTable(this._univerApi, queryConfig)
       } catch (error) {
         console.error('[DataEaseDetailTableController] Failed to refresh detail table by filter:', error)
         this._markRestoreError(unitId, queryConfig, error)
@@ -848,12 +951,10 @@ export class DataEaseDetailTableController extends Disposable {
     this._restoringUnits.add(unitId)
 
     try {
-      // 过滤默认值先初始化完成，首次查询直接携带最终条件，避免初始化后再次刷新。
-      await this._spreadsheetFilterRuntimeService.waitForValues(unitId)
       // 每个实例独立处理：单个实例加载失败只标记该实例，不影响其他实例的恢复。
       for (const plugin of detailPlugins) {
         try {
-          await this._tableFillService.fillTableByConfig(this._univerApi, plugin, {
+          await this._tableFillService.fillTable(this._univerApi, plugin, {
             initialRestore: true
           })
         } catch (error) {

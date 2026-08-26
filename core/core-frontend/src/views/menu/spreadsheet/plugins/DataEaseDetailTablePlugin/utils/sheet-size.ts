@@ -1,3 +1,8 @@
+import {
+  setWorksheetColumnCountSilently,
+  setWorksheetRowCountSilently
+} from '../../../utils/silent-worksheet-write'
+
 export async function ensureSheetSize(
   univerApi: any,
   worksheet: any,
@@ -65,34 +70,17 @@ async function expandRows(
     return
   }
 
-  if (await callFirstAvailable(worksheet, [
-    ['setRowCount', requiredRows],
-    ['setRowsCount', requiredRows],
-    ['resizeRows', requiredRows],
-    ['insertRowsAfter', currentRows - 1, appendCount],
-    ['insertRows', currentRows, appendCount],
-    ['appendRows', appendCount]
-  ])) {
-    return
+  const workbook = univerApi.getActiveWorkbook?.()
+  const unitId = workbook?.getId?.() || workbook?.getUnitId?.()
+  const sheetId = worksheet?.getSheetId?.()
+  if (!unitId || !sheetId) {
+    throw new Error('工作表空间不足，且无法自动扩容')
   }
 
-  const sheetModel = worksheet?.getSheet?.()
-  if (await callFirstAvailable(sheetModel, [
-    ['setRowCount', requiredRows],
-    ['setRowsCount', requiredRows],
-    ['resizeRows', requiredRows],
-    ['insertRowsAfter', currentRows - 1, appendCount],
-    ['insertRows', currentRows, appendCount],
-    ['appendRows', appendCount]
-  ])) {
-    return
-  }
-
-  await executeInsertCommand(univerApi, worksheet, 'sheet.command.insert-row', {
-    startRow: currentRows,
-    endRow: requiredRows - 1,
-    startColumn: 0,
-    endColumn: Math.max(getSheetColumnCount(worksheet) - 1, 0)
+  await setWorksheetRowCountSilently(univerApi, {
+    unitId,
+    sheetId,
+    count: requiredRows
   })
 }
 
@@ -107,72 +95,16 @@ async function expandColumns(
     return
   }
 
-  if (await callFirstAvailable(worksheet, [
-    ['setColumnCount', requiredColumns],
-    ['setColumnsCount', requiredColumns],
-    ['resizeColumns', requiredColumns],
-    ['insertColumnsAfter', currentColumns - 1, appendCount],
-    ['insertColumns', currentColumns, appendCount],
-    ['insertCols', currentColumns, appendCount],
-    ['appendColumns', appendCount],
-    ['appendCols', appendCount]
-  ])) {
-    return
-  }
-
-  const sheetModel = worksheet?.getSheet?.()
-  if (await callFirstAvailable(sheetModel, [
-    ['setColumnCount', requiredColumns],
-    ['setColumnsCount', requiredColumns],
-    ['resizeColumns', requiredColumns],
-    ['insertColumnsAfter', currentColumns - 1, appendCount],
-    ['insertColumns', currentColumns, appendCount],
-    ['insertCols', currentColumns, appendCount],
-    ['appendColumns', appendCount],
-    ['appendCols', appendCount]
-  ])) {
-    return
-  }
-
-  await executeInsertCommand(univerApi, worksheet, 'sheet.command.insert-col', {
-    startRow: 0,
-    endRow: Math.max(getSheetRowCount(worksheet) - 1, 0),
-    startColumn: currentColumns,
-    endColumn: requiredColumns - 1
-  })
-}
-
-async function callFirstAvailable(target: any, calls: Array<[string, ...unknown[]]>): Promise<boolean> {
-  if (!target) {
-    return false
-  }
-
-  for (const [method, ...args] of calls) {
-    if (typeof target[method] !== 'function') {
-      continue
-    }
-    await Promise.resolve(target[method](...args))
-    return true
-  }
-  return false
-}
-
-async function executeInsertCommand(
-  univerApi: any,
-  worksheet: any,
-  commandId: string,
-  range: { startRow: number; endRow: number; startColumn: number; endColumn: number }
-): Promise<void> {
   const workbook = univerApi.getActiveWorkbook?.()
   const unitId = workbook?.getId?.() || workbook?.getUnitId?.()
-  const subUnitId = worksheet?.getSheetId?.()
-  if (!unitId || !subUnitId) {
+  const sheetId = worksheet?.getSheetId?.()
+  if (!unitId || !sheetId) {
     throw new Error('工作表空间不足，且无法自动扩容')
   }
 
-  await univerApi.executeCommand?.(commandId, {
+  await setWorksheetColumnCountSilently(univerApi, {
     unitId,
-    subUnitId,
-    range
+    sheetId,
+    count: requiredColumns
   })
 }

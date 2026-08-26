@@ -59,20 +59,18 @@ export class DetailTableRangeService extends Disposable {
   }
 
   validateRenderRangeBeforeFill(
-    univerApi: any,
     config: DetailTableConfig,
     startCell: string,
     rowCount: number,
     colCount: number,
-    targetWorksheet?: any,
+    targetWorksheet: any,
     skipExistingCellValidation = false
   ): string | undefined {
     if (rowCount <= 0 || colCount <= 0) {
       return undefined
     }
 
-    const workbook = univerApi.getActiveWorkbook?.()
-    const worksheet = targetWorksheet || workbook?.getActiveSheet?.()
+    const worksheet = targetWorksheet
     const sheetId = worksheet?.getSheetId?.()
     if (!worksheet || !sheetId) {
       return undefined

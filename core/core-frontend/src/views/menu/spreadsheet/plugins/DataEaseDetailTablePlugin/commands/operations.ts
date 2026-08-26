@@ -18,7 +18,9 @@ export const ApplyDetailTableOperation: ICommand = {
     try {
       const { univerApi, config, startCell } = params
       const fillService = accessor.get(TableFillService)
-      const result = await fillService.fillTable(univerApi, config, startCell)
+      config.placement.startCell = startCell
+      // 查询期间活动 Sheet 可能变化，始终按实例创建时记录的 Sheet 定位渲染目标。
+      const result = await fillService.fillTable(univerApi, config)
 
       return result !== false
     } catch (error) {
@@ -44,7 +46,11 @@ export const ClearDetailTableOperation: ICommand = {
     try {
       const { univerApi, startCell, rowCount, colCount } = params
       const fillService = accessor.get(TableFillService)
-      await fillService.clearTableData(univerApi, startCell, rowCount, colCount)
+      const worksheet = univerApi.getActiveWorkbook?.()?.getActiveSheet?.()
+      if (!worksheet) {
+        return false
+      }
+      await fillService.clearTableData(univerApi, startCell, rowCount, colCount, worksheet)
       return true
     } catch (error) {
       console.error('[DataPlugin] Failed to clear detail table:', error)
