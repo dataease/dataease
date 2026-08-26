@@ -214,7 +214,10 @@ const allFieldsSelected = computed({
       })
     }
     setActiveLinkedFields(linkedFields)
-    if (activeTreeLevelIndex.value === 0) syncActiveConditionFieldOptions()
+    if (activeTreeLevelIndex.value !== 0) return
+    // 全选与单个字段选择使用同一套类型规则，避免日期字段仍保留文本展示类型。
+    normalizeSpreadsheetFilterConditionByRules(activeCondition.value)
+    syncActiveConditionFieldOptions()
   }
 })
 
@@ -356,6 +359,27 @@ const initializeTreeLevelMappings = (newTreeFieldIds: Array<string | number>) =>
 
 const getSelectedFieldId = (pluginId: string) =>
   getActiveLinkedFields().find(field => field.pluginId === pluginId)?.fieldId
+
+const hasDatasetId = (datasetId?: string | number) =>
+  datasetId !== undefined && datasetId !== null && datasetId !== ''
+
+const getDefaultLinkedFieldId = (row: SpreadsheetFilterAvailablePlugin) => {
+  const availableFields = getCompatibleDatasetFields(row).filter(field => !field.desensitized)
+  const fallbackFieldId = availableFields[0]?.fieldId
+  if (!hasDatasetId(row.datasetId)) return fallbackFieldId
+
+  // 同数据集图表优先复用第一个已关联字段，保持多图表过滤字段一致。
+  const sameDatasetLinkedField = getActiveLinkedFields().find(
+    field =>
+      hasDatasetId(field.datasetId) && String(field.datasetId) === String(row.datasetId)
+  )
+  if (!sameDatasetLinkedField) return fallbackFieldId
+
+  const sameField = availableFields.find(
+    field => String(field.fieldId) === String(sameDatasetLinkedField.fieldId)
+  )
+  return sameField?.fieldId ?? fallbackFieldId
+}
 
 const selectPluginField = (row: SpreadsheetFilterAvailablePlugin, fieldId?: unknown) => {
   if (!activeCondition.value) {
@@ -767,7 +791,15 @@ const confirmManualOptions = () => {
     ElMessage.warning('选项值不能为空')
     return
   }
-  activeCondition.value.manualOptions = values
+  const optionValueSet = new Set<string>()
+  const uniqueValues = values.filter(value => {
+    // 运行时统一按字符串值查询，手动选项也按相同语义去重并保留首次出现项。
+    const optionValue = String(value)
+    if (optionValueSet.has(optionValue)) return false
+    optionValueSet.add(optionValue)
+    return true
+  })
+  activeCondition.value.manualOptions = uniqueValues
   activeCondition.value.defaultValue = activeCondition.value.multiple ? [] : ''
   activeCondition.value.defaultValueFirstItem = false
   manualPopoverRef.value?.hide?.()
@@ -1110,7 +1142,7 @@ if (props.initialAction === 'add') {
           >
             <el-checkbox
               :model-value="!!getSelectedFieldId(row.pluginId)"
-              @change="checked => selectPluginField(row, checked ? getCompatibleDatasetFields(row)[0]?.fieldId : undefined)"
+              @change="checked => selectPluginField(row, checked ? getDefaultLinkedFieldId(row) : undefined)"
             />
             <span class="spreadsheet-filter-config-dialog__plugin-name">
               <component
