@@ -420,7 +420,7 @@ function load_de_images() {
    if [[ -d images ]]; then
       for i in $(ls images); do
          # 使用外部数据库时，跳过内置 MySQL 镜像
-         if [[ "${DE_EXTERNAL_MYSQL}" != "false" ]] && [[ "${i,,}" == *mysql* ]]; then
+         if [[ "${DE_EXTERNAL_DB}" != "false" ]] && [[ "${i,,}" == *mysql* ]]; then
             log_content "使用外部数据库，跳过内置 MySQL 镜像 ${i}"
             continue
          fi
