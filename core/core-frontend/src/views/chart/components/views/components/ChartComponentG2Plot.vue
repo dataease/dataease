@@ -34,6 +34,7 @@ import {
   configEmptyDataStyle,
   installG2SliderTouchAdapter
 } from '@/views/chart/components/js/panel/common/common_antv'
+import { installG2SideLegendPaginationAdapter } from '@/views/chart/components/js/panel/types/impl/g2-legend-pagination'
 import { ElMessage } from 'element-plus-secondary'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 const { t } = useI18n()
@@ -577,9 +578,14 @@ const renderChart = async (view, callback?) => {
 let myChart = null
 let g2Timer: number
 let g2SliderTouchCleanup: (() => void) | undefined
+let g2LegendPaginationCleanup: (() => void) | undefined
 const clearG2SliderTouchAdapter = () => {
   g2SliderTouchCleanup?.()
   g2SliderTouchCleanup = undefined
+}
+const clearG2LegendPaginationAdapter = () => {
+  g2LegendPaginationCleanup?.()
+  g2LegendPaginationCleanup = undefined
 }
 const installG2SvgCoordinateScaleAdapter = chartInstance => {
   const canvas = chartInstance?.getContext?.()?.canvas
@@ -626,6 +632,7 @@ const renderG2 = async (chart, chartView: G2ChartView<any, any>) => {
       // G2 重绘前先停掉 tooltip 轮播，避免旧实例残留高亮背景
       G2TooltipCarousel.destroyByContainer(containerId)
       clearG2SliderTouchAdapter()
+      clearG2LegendPaginationAdapter()
       myChart?.destroy()
       // 仅在移动端配置右侧缩略区域隐藏图表文本
       let dashboardHidden = props.element.dashboardHidden
@@ -672,6 +679,10 @@ const renderG2 = async (chart, chartView: G2ChartView<any, any>) => {
       // 异步等待期间若图表已被新实例替换，本轮旧实例不再回放联动状态，避免污染当前画布
       if (chartInstance && chartInstance === myChart) {
         g2SliderTouchCleanup = installG2SliderTouchAdapter(chartInstance)
+        // 侧边图例翻页后重新计算整体占宽，并在 Plot 重排完成后恢复联动选中态
+        g2LegendPaginationCleanup = installG2SideLegendPaginationAdapter(chartInstance, {
+          afterPageLayout: replayLinkageActive
+        })
         replayLinkageActive()
       }
     } catch (e) {
@@ -704,6 +715,7 @@ const renderL7Plot = async (chart: ChartObj, chartView: L7PlotChartView<any, any
   mapTimer = setTimeout(async () => {
     try {
       clearG2SliderTouchAdapter()
+      clearG2LegendPaginationAdapter()
       myChart?.destroy()
       if (chartContainer.value) {
         chartContainer.value.textContent = ''
@@ -1197,6 +1209,7 @@ onBeforeUnmount(() => {
     G2TooltipCarousel.dequeueResize(containerId)
     G2TooltipCarousel.destroyByContainer(containerId)
     clearG2SliderTouchAdapter()
+    clearG2LegendPaginationAdapter()
     myChart?.destroy()
     resizeObserver?.disconnect()
     intersectionObserver?.disconnect()

@@ -27,6 +27,9 @@ interface MixSideLegendLayout {
   itemHeight: number
   rowPadding: number
   contentWidth: number
+  // 组合图外层分栏无法读取 Navigator，保存逐项宽度和页码供翻页后重新分配 Plot
+  itemWidths?: number[]
+  currentPage?: number
   crossPadding: number
 }
 
@@ -69,7 +72,18 @@ const getMixSideLegendWidth = (
         ? SIDE_LEGEND_NAVIGATOR_WIDTH
         : SIDE_LEGEND_NAVIGATOR_WIDTH - SIDE_LEGEND_DEFAULT_COL_PADDING
       : 0
-  const contentWidth = layout.contentWidth * layout.columns + layout.crossPadding + navigatorExtra
+  const pageSize = Math.max(1, rowsPerPage * layout.columns)
+  const totalPages = Math.max(1, Math.ceil(layout.itemCount / pageSize))
+  const currentPage = Math.max(0, Math.min(Number(layout.currentPage) || 0, totalPages - 1))
+  const currentPageItemWidths =
+    layout.columns === 1 && Array.isArray(layout.itemWidths)
+      ? layout.itemWidths.slice(currentPage * pageSize, (currentPage + 1) * pageSize)
+      : []
+  // 单列侧边图例按当前页最长项收紧外层图例层，多列布局保持原网格宽度
+  const pageContentWidth = currentPageItemWidths.length
+    ? Math.max(...currentPageItemWidths)
+    : layout.contentWidth
+  const contentWidth = pageContentWidth * layout.columns + layout.crossPadding + navigatorExtra
   return Math.max(1, Math.min(contentWidth, getSideLegendMaxWidth(containerWidth)))
 }
 
@@ -384,6 +398,8 @@ export const configMixCustomLegend = (
                   itemHeight: legendItemHeight,
                   rowPadding: legendRowPadding,
                   contentWidth: Math.max(...sideLegendItemWidths),
+                  itemWidths: sideLegendItemWidths,
+                  currentPage: 0,
                   crossPadding: crossGap
                 })
               : Math.max(...sideLegendItemWidths) + crossGap
@@ -440,6 +456,8 @@ export const configMixCustomLegend = (
       itemHeight: legendItemHeight,
       rowPadding: legendRowPadding,
       contentWidth: Math.max(...sideLegendItemWidths),
+      itemWidths: sideLegendItemWidths,
+      currentPage: 0,
       crossPadding: Number(legendMark.crossPadding) || 0
     } satisfies MixSideLegendLayout
   }
