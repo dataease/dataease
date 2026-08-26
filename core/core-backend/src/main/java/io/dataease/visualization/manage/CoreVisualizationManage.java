@@ -355,8 +355,8 @@ public class CoreVisualizationManage {
                         ExpressionUtils.as(Expressions.constant(1), "extFlag1"),
                         ExpressionUtils.as(Expressions.constant("dataset"), "type"),
                         dataset.createBy.castToNum(Long.class).as("creator"),
-                        optRecent.uid.as("lastEditor"),
-                        optRecent.time.as("lastEditTime"),
+                        dataset.updateBy.castToNum(Long.class).as("lastEditor"),
+                        dataset.lastUpdateTime.as("lastEditTime"),
                         ExpressionUtils.as(store.resourceId.isNotNull(), "favorite")
                 ))
                 .from(dataset)
@@ -390,8 +390,8 @@ public class CoreVisualizationManage {
                         ExpressionUtils.as(Expressions.constant(1), "extFlag1"),
                         ExpressionUtils.as(Expressions.constant("datasource"), "type"),
                         datasource.createBy.castToNum(Long.class).as("creator"),
-                        optRecent.uid.as("lastEditor"),
-                        optRecent.time.as("lastEditTime"),
+                        datasource.updateBy.as("lastEditor"),
+                        datasource.updateTime.as("lastEditTime"),
                         ExpressionUtils.as(store.resourceId.isNotNull(), "favorite")
                 ))
                 .from(datasource)
@@ -431,8 +431,8 @@ public class CoreVisualizationManage {
                                         .otherwise("panel"),
                                 "type"),
                         visualization.createBy.castToNum(Long.class).as("creator"),
-                        optRecent.uid.as("lastEditor"),
-                        optRecent.time.as("lastEditTime"),
+                        visualization.updateBy.castToNum(Long.class).as("lastEditor"),
+                        visualization.updateTime.as("lastEditTime"),
                         ExpressionUtils.as(store.resourceId.isNotNull(), "favorite")
                 ))
                 .from(visualization)
@@ -1072,4 +1072,3 @@ public class CoreVisualizationManage {
     }
 
 }
-
