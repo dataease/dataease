@@ -88,6 +88,10 @@ const yAxisIds = computed(() => {
   return map(yAxis.value, y => y.seriesId)
 })
 
+const isAxisSpecificSeries = computed(() => {
+  return props.chart.type.includes('chart-mix') || props.chart.type === 'bidirectional-bar'
+})
+
 watch(
   [() => yAxisIds.value, () => props.chart.type],
   () => {
@@ -97,7 +101,7 @@ watch(
 )
 
 const computedIdKey = computed(() => {
-  if (props.chart.type.includes('chart-mix')) {
+  if (isAxisSpecificSeries.value) {
     return 'seriesId'
   }
   return 'id'
@@ -118,7 +122,8 @@ const initSeriesLabel = () => {
 
   const seriesAxisMap = formatter.reduce((pre, next) => {
     const id = next.seriesId ?? next.id
-    pre[next[computedIdKey.value]] = { ...next, seriesId: id }
+    const key = isAxisSpecificSeries.value ? id : next.id
+    pre[key] = { ...next, seriesId: id }
     return pre
   }, {})
   formatter.splice(0, formatter.length)
@@ -129,24 +134,21 @@ const initSeriesLabel = () => {
   let initFlag = false
   const themeColor = dvMainStore.canvasStyleData.dashboard.themeColor
   const axisMap = yAxis.value.reduce((pre, next) => {
+    const axisName = props.chart.type.includes('chart-mix')
+      ? next.axisType === 'yAxis'
+        ? t('chart.left_axis')
+        : t('chart.right_axis')
+      : props.chart.type === 'bidirectional-bar'
+      ? next.axisType === 'yAxis'
+        ? t('chart.drag_block_value_axis')
+        : t('chart.drag_block_value_axis_ext')
+      : ''
     const optionLabel: string = `${next.chartShowName ?? next.name}${
       next.summary !== '' ? '(' + t('chart.' + next.summary) + ')' : ''
-    }${
-      props.chart.type.includes('chart-mix')
-        ? next.axisType === 'yAxis'
-          ? `(${t('chart.left_axis')})`
-          : `(${t('chart.right_axis')})`
-        : ''
-    }` as string
+    }${axisName ? `(${axisName})` : ''}` as string
     const optionShowName: string = `${next.chartShowName ?? next.name}${
       next.summary !== '' ? '(' + t('chart.' + next.summary) + ')' : ''
-    }${
-      props.chart.type.includes('chart-mix')
-        ? next.axisType === 'yAxis'
-          ? `(${t('chart.left_axis')})`
-          : `(${t('chart.right_axis')})`
-        : ''
-    }` as string
+    }${axisName ? `(${axisName})` : ''}` as string
     let tmp = {
       ...next,
       optionLabel: optionLabel,
@@ -157,16 +159,17 @@ const initSeriesLabel = () => {
       showExtremum: false,
       position: 'top'
     } as SeriesFormatter
-    if (seriesAxisMap[next[computedIdKey.value]]) {
-      initFormatCfgUnit(seriesAxisMap[next[computedIdKey.value]].formatterCfg)
+    const seriesFormatter = seriesAxisMap[next[computedIdKey.value]] ?? seriesAxisMap[next.id]
+    if (seriesFormatter) {
+      initFormatCfgUnit(seriesFormatter.formatterCfg)
       tmp = {
         ...tmp,
-        formatterCfg: seriesAxisMap[next[computedIdKey.value]].formatterCfg,
-        show: seriesAxisMap[next[computedIdKey.value]].show,
-        color: seriesAxisMap[next[computedIdKey.value]].color,
-        fontSize: seriesAxisMap[next[computedIdKey.value]].fontSize,
-        showExtremum: seriesAxisMap[next[computedIdKey.value]].showExtremum,
-        position: seriesAxisMap[next[computedIdKey.value]].position
+        formatterCfg: seriesFormatter.formatterCfg,
+        show: seriesFormatter.show,
+        color: seriesFormatter.color,
+        fontSize: seriesFormatter.fontSize,
+        showExtremum: seriesFormatter.showExtremum,
+        position: seriesFormatter.position
       }
     } else {
       initFlag = true

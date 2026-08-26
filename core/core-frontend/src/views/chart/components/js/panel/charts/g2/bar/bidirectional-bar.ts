@@ -20,7 +20,12 @@ import {
   TOOLTIP_ITEM_TPL,
   TOOLTIP_TITLE_TPL
 } from '../../../common/common_antv'
-import { bindPlotBackgroundClick } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
+import {
+  bindPlotBackgroundClick,
+  getSeriesTooltipFormatter,
+  getSeriesTooltipFormatterMap,
+  isSeriesTooltipFormatterShown
+} from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 
 const { t } = useI18n()
 
@@ -764,12 +769,12 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       merge(secondMark, { tooltip: false })
       return options
     }
-    const formatterMap = tooltipAttr.seriesTooltipFormatter
-      ?.filter(i => i.show)
-      .reduce((pre, next) => {
-        pre[next.id] = next
-        return pre
-      }, {}) as Record<string, SeriesFormatter>
+    const formatterMap = getSeriesTooltipFormatterMap(tooltipAttr)
+    const getAxisFormatter = (item, axisType: 'yAxis' | 'yAxisExt') => {
+      const axis = axisType === 'yAxis' ? yAxis : yAxisExt
+      const fieldId = item?.quotaList?.[0]?.id ?? axis[0]?.id
+      return getSeriesTooltipFormatter(formatterMap, fieldId, axis, axisType) ?? axis[0]
+    }
     let g2TooltipWrapper = document.getElementById('G2-TOOLTIP-WRAPPER')
     if (!g2TooltipWrapper) {
       g2TooltipWrapper = document.createElement('div')
@@ -806,14 +811,13 @@ export class BidirectionalHorizontalBar extends G2ChartView {
             let hideLeft = false
             let hideRight = false
             if (tooltipAttr.seriesTooltipFormatter?.length) {
-              hideLeft = formatterMap[yAxis[0].id] ? false : true
-              hideRight = formatterMap[yAxisExt[0].id] ? false : true
+              hideLeft = !isSeriesTooltipFormatterShown(formatterMap, yAxis[0]?.id, 'yAxis')
+              hideRight = !isSeriesTooltipFormatterShown(formatterMap, yAxisExt[0]?.id, 'yAxisExt')
             }
             const result = []
             const [item] = items
             if ((item.left && !hideLeft) || (item.right && !hideRight)) {
-              const formatter =
-                formatterMap[item.quotaList[0].id] ?? (item.left ? yAxis[0] : yAxisExt[0])
+              const formatter = getAxisFormatter(item, item.left ? 'yAxis' : 'yAxisExt')
               const value = valueFormatter(item.value, formatter.formatterCfg)
               const name = isEmpty(formatter.chartShowName)
                 ? formatter.name
@@ -825,8 +829,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
               const anotherSeries = item.left ? secondMark.data.value : firstMark.data.value
               const anotherItem = anotherSeries.find(d => d.field === item.field)
               if (anotherItem?.value !== undefined && anotherItem?.value !== null) {
-                const formatter =
-                  formatterMap[anotherItem.quotaList[0].id] ?? (item.left ? yAxis[0] : yAxisExt[0])
+                const formatter = getAxisFormatter(anotherItem, item.left ? 'yAxisExt' : 'yAxis')
                 const value = valueFormatter(anotherItem.value, formatter.formatterCfg)
                 const name = isEmpty(formatter.chartShowName)
                   ? formatter.name
@@ -838,8 +841,12 @@ export class BidirectionalHorizontalBar extends G2ChartView {
               }
             }
             item.dynamicTooltipValue?.forEach(item => {
-              const formatter = formatterMap[item.fieldId]
-              if (formatter) {
+              const formatter = getSeriesTooltipFormatter(
+                formatterMap,
+                item.fieldId,
+                chart.extTooltip
+              )
+              if (formatter && isSeriesTooltipFormatterShown(formatterMap, item.fieldId)) {
                 const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
                 const name = isEmpty(formatter.chartShowName)
                   ? formatter.name
@@ -883,13 +890,22 @@ export class BidirectionalHorizontalBar extends G2ChartView {
     const [firstMark, secondMark] = this.getChartMarks(options)
     const conditions = getLineConditions(chart)
     const formatterMap = label.seriesLabelFormatter?.reduce((pre, next) => {
-      pre[next.id] = next
+      const seriesId = next.seriesId ?? next.id
+      pre[seriesId] = next
+      if (!next.seriesId || next.seriesId === next.id) {
+        pre[next.id] = next
+      }
       return pre
-    }, {})
+    }, {} as Record<string, SeriesFormatter>)
+    // 同一字段可同时占用主副值轴，系列样式按字段与槽位组合键读取
+    const getLabelFormatter = (data, axisType: 'yAxis' | 'yAxisExt') => {
+      const fieldId = data?.quotaList?.[0]?.id ?? data?.id
+      return formatterMap?.[`${fieldId}-${axisType}`] ?? formatterMap?.[fieldId]
+    }
     if (label.seriesLabelFormatter?.every(item => !item.show)) {
       return options
     }
-    const labelOpt = {
+    const getLabelOpt = (axisType: 'yAxis' | 'yAxisExt') => ({
       text: d => {
         if (d.value === null) {
           return ''
@@ -897,7 +913,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
         if (!label.seriesLabelFormatter?.length) {
           return d.value
         }
-        const labelCfg = formatterMap?.[d.quotaList[0].id] as SeriesFormatter
+        const labelCfg = getLabelFormatter(d, axisType)
         if (!labelCfg) {
           return d.value
         }
@@ -915,7 +931,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
           if (!label.seriesLabelFormatter?.length) {
             return 12
           }
-          const labelCfg = formatterMap?.[d.quotaList[0].id] as SeriesFormatter
+          const labelCfg = getLabelFormatter(d, axisType)
           if (!labelCfg) {
             return 12
           }
@@ -928,7 +944,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
           if (!label.seriesLabelFormatter?.length) {
             return 'black'
           }
-          const labelCfg = formatterMap?.[d.quotaList[0].id] as SeriesFormatter
+          const labelCfg = getLabelFormatter(d, axisType)
           if (!labelCfg?.show) {
             return 'black'
           }
@@ -940,7 +956,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
           if (!label.seriesLabelFormatter?.length) {
             return 'top'
           }
-          const labelCfg = formatterMap?.[d.quotaList[0].id] as SeriesFormatter
+          const labelCfg = getLabelFormatter(d, axisType)
           if (!labelCfg?.show) {
             return 'top'
           }
@@ -951,8 +967,8 @@ export class BidirectionalHorizontalBar extends G2ChartView {
         ? [{ type: 'exceedAdjust' }]
         : [{ type: 'exceedAdjust' }, { type: 'overlapHide' }],
       fontFamily: chart.fontFamily
-    }
-    if (formatterMap[yAxis[0].id]?.show !== false) {
+    })
+    if (getLabelFormatter(yAxis[0], 'yAxis')?.show !== false) {
       let position = label.position === 'middle' ? 'inside' : label.position
       if (basicStyle.layout === 'horizontal') {
         position = {
@@ -975,7 +991,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
         top: 'bottom',
         bottom: 'bottom'
       }[position]
-      const firstLabelOpt = merge({}, labelOpt, {
+      const firstLabelOpt = merge({}, getLabelOpt('yAxis'), {
         style: {
           position,
           textAlign,
@@ -984,7 +1000,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       })
       merge(firstMark, { labels: [firstLabelOpt] })
     }
-    if (formatterMap[yAxisExt[0].id]?.show !== false) {
+    if (getLabelFormatter(yAxisExt[0], 'yAxisExt')?.show !== false) {
       let position = label.position === 'middle' ? 'inside' : label.position
       if (basicStyle.layout === 'vertical') {
         position = {
@@ -1007,7 +1023,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
         top: 'top',
         bottom: 'top'
       }[position]
-      const secondLabelOpt = merge({}, labelOpt, {
+      const secondLabelOpt = merge({}, getLabelOpt('yAxisExt'), {
         style: {
           position,
           textAlign,

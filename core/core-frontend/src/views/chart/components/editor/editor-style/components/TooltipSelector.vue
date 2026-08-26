@@ -161,6 +161,28 @@ function showOption(item) {
   return true
 }
 
+const getFormatterOptionName = item => {
+  const name = `${item.name}${item.summary !== '' ? '(' + t('chart.' + item.summary) + ')' : ''}`
+  if (props.chart.type !== 'bidirectional-bar') {
+    return name
+  }
+  const axisType =
+    item.axisType ??
+    (item.seriesId?.endsWith('-yAxisExt')
+      ? 'yAxisExt'
+      : item.seriesId?.endsWith('-yAxis')
+      ? 'yAxis'
+      : undefined)
+  if (!axisType) {
+    return name
+  }
+  const axisName =
+    axisType === 'yAxisExt'
+      ? t('chart.drag_block_value_axis_ext')
+      : t('chart.drag_block_value_axis')
+  return `${name}(${axisName})`
+}
+
 const extTooltip = computed(() => {
   const quotaIds = quotaAxis.value?.map(i => i.id)
   return state.tooltipForm.seriesTooltipFormatter.filter(
@@ -803,9 +825,7 @@ onMounted(() => {
             <el-option
               class="series-select-option"
               :value="item"
-              :label="`${item.name}${
-                item.summary !== '' ? '(' + t('chart.' + item.summary) + ')' : ''
-              }`"
+              :label="getFormatterOptionName(item)"
               v-if="showOption(item)"
             >
               <el-icon style="margin-right: 8px">
@@ -817,8 +837,7 @@ onMounted(() => {
                   ></component
                 ></Icon>
               </el-icon>
-              {{ item.name }}
-              {{ item.summary !== '' ? '(' + t('chart.' + item.summary) + ')' : '' }}
+              {{ getFormatterOptionName(item) }}
             </el-option>
           </template>
         </el-select>
