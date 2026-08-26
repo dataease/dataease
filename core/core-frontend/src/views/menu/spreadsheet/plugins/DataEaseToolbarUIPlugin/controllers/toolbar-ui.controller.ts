@@ -58,6 +58,7 @@ import {
   DATAEASE_SORT_MENU_ID
 } from '../config/ribbon-config'
 import { SpreadsheetModeService } from '../../../services/spreadsheet-mode.service'
+import { TableUserStyleService } from '../../DataEaseRuntimePlugin/services/table'
 import { DATAEASE_BLOCKED_PROTECTION_COMMAND_IDS } from '../config/protection-config'
 
 export class DataEaseToolbarUIController extends Disposable {
@@ -68,6 +69,8 @@ export class DataEaseToolbarUIController extends Disposable {
     @IUIPartsService private readonly uiPartsService: IUIPartsService,
     @IFormatPainterService private readonly formatPainterService: IFormatPainterService,
     @Inject(ComponentManager) private readonly componentManager: ComponentManager,
+    @Inject(TableUserStyleService)
+    private readonly tableUserStyleService: TableUserStyleService,
     @Inject(SpreadsheetModeService)
     private readonly spreadsheetModeService: SpreadsheetModeService
   ) {
@@ -98,7 +101,13 @@ export class DataEaseToolbarUIController extends Disposable {
   private initFormatPainterHook(): void {
     this.formatPainterService.addHook({
       id: 'dataease-format-painter',
-      onBeforeApply: ({ redoMutationsInfo, undoMutationsInfo }) => {
+      onBeforeApply: ({ unitId, subUnitId, redoMutationsInfo, undoMutationsInfo }) => {
+        this.tableUserStyleService.sanitizeFormatPainter(
+          redoMutationsInfo,
+          undoMutationsInfo,
+          unitId,
+          subUnitId
+        )
         this.markFormatPainterStyleMutations(redoMutationsInfo)
         this.markFormatPainterStyleMutations(undoMutationsInfo)
         return true

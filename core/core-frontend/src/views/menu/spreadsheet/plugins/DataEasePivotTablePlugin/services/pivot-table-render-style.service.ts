@@ -216,7 +216,8 @@ export class PivotTableRenderStyleService {
     }
 
     return applyTableBorderStyle({
-      ...(headerStyle.backgroundColor ? { bg: { rgb: headerStyle.backgroundColor } } : {}),
+      // 区域样式开启后，空背景色表示透明，仍需覆盖用户自定义背景色。
+      bg: headerStyle.backgroundColor ? { rgb: headerStyle.backgroundColor } : null,
       cl: { rgb: headerStyle.textColor || '#333333' },
       fs: headerStyle.fontSize || 12,
       bl: headerStyle.bold ? BooleanNumber.TRUE : BooleanNumber.FALSE,
@@ -312,7 +313,7 @@ export class PivotTableRenderStyleService {
 
   private convertCellStyle(cellStyle: PivotTableCellStyle): Partial<IStyleData> {
     return {
-      ...(cellStyle.backgroundColor ? { bg: { rgb: cellStyle.backgroundColor } } : {}),
+      bg: cellStyle.backgroundColor ? { rgb: cellStyle.backgroundColor } : null,
       cl: { rgb: cellStyle.textColor || '#333333' },
       fs: cellStyle.fontSize || 12,
       bl: cellStyle.bold ? BooleanNumber.TRUE : BooleanNumber.FALSE,

@@ -6,7 +6,8 @@ import {
   PluginRenderLoadingService,
   PluginRenderStatusService,
   TableInsertionService,
-  TableRangeConflictService
+  TableRangeConflictService,
+  TableUserStyleService
 } from './services/table'
 
 export const DATAEASE_RUNTIME_PLUGIN = 'DATAEASE_RUNTIME_PLUGIN'
@@ -30,7 +31,8 @@ export class DataEaseRuntimePlugin extends Plugin {
       [PluginRenderHoverLayerService],
       [PluginRenderLoadingService],
       [TableInsertionService],
-      [TableRangeConflictService]
+      [TableRangeConflictService],
+      [TableUserStyleService]
     ]
     dependencies.forEach(dependency => this.injector.add(dependency))
   }
@@ -42,7 +44,8 @@ export class DataEaseRuntimePlugin extends Plugin {
       [PluginRenderHoverLayerService],
       [PluginRenderLoadingService],
       [TableInsertionService],
-      [TableRangeConflictService]
+      [TableRangeConflictService],
+      [TableUserStyleService]
     ])
   }
 }
