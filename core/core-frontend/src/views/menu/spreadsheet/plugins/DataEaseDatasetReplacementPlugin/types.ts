@@ -13,6 +13,7 @@ export interface ReplacementField {
   dataeaseName?: string
   groupType: ReplacementFieldGroup
   deType?: number
+  extField?: number
   type?: string
   [key: string]: unknown
 }
@@ -23,6 +24,7 @@ export interface FieldUsageFragment {
   dataeaseName?: string
   groupType: ReplacementFieldGroup
   deType?: number
+  extField?: number
   type?: string
   occurrences?: number
   metadataComplete?: boolean

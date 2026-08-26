@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { fieldType } from '@/utils/attr'
-import { iconFieldMap } from '@/components/icon-group/field-list'
 import type { FieldItemData } from '../../types/plugin'
+import { getSpreadsheetFieldIcon } from '../../utils/field-icon'
 
 interface Props {
   field: FieldItemData
@@ -35,7 +35,7 @@ const fieldIconType = computed(() => {
 })
 
 const fieldTypeIcon = computed(() => {
-  return iconFieldMap[fieldIconType.value] || iconFieldMap.text
+  return getSpreadsheetFieldIcon(props.field)
 })
 
 // 获取字段类型颜色
@@ -74,11 +74,11 @@ const handleClick = (e: MouseEvent) => {
 </script>
 
 <template>
-  <div 
+  <div
     class="field-item"
-    :class="{ 
+    :class="{
       dragged: props.dragged,
-      selected: props.selected 
+      selected: props.selected
     }"
     :data-id="field.id"
     draggable="true"
@@ -110,20 +110,20 @@ const handleClick = (e: MouseEvent) => {
   cursor: move;
   transition: background 0.2s;
   border-radius: 4px;
-  
+
   &:hover {
     background: #f5f7fa;
   }
-  
+
   &.dragged {
     opacity: 0.5;
   }
-  
+
   &.selected {
     background: #e6f0ff;
     border: 1px solid #3370ff;
   }
-  
+
   .field-icon {
     font-size: 14px;
     font-weight: 500;
@@ -131,7 +131,7 @@ const handleClick = (e: MouseEvent) => {
     width: 16px;
     text-align: center;
   }
-  
+
   .field-name {
     font-size: 13px;
     color: #4e5969;

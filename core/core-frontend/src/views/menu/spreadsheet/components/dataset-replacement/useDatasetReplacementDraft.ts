@@ -18,6 +18,7 @@ const normalizeField = (field: Field): ReplacementField => ({
   dataeaseName: (field as any).dataeaseName,
   groupType: field.groupType === 'q' ? 'q' : 'd',
   deType: field.deType,
+  extField: field.extField,
   type: (field as any).type
 })
 

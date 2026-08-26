@@ -12,7 +12,6 @@ import {
   View
 } from '@element-plus/icons-vue'
 import { fieldType } from '@/utils/attr'
-import { iconFieldMap } from '@/components/icon-group/field-list'
 import type {
   FieldDatePattern,
   FieldDateStyle,
@@ -22,6 +21,7 @@ import type {
   PluginDataConfig,
   FieldSortType
 } from '../../../../types/plugin'
+import { getSpreadsheetFieldIcon } from '../../../../utils/field-icon'
 import SpreadsheetCustomSortDialog from '../../../../components/common/spreadsheet-custom-sort-dialog.vue'
 import ValueFormatterDialog from './ValueFormatterDialog.vue'
 import {
@@ -229,7 +229,7 @@ const fieldIconType = computed(() => {
 })
 
 const fieldTypeIcon = computed(() => {
-  return iconFieldMap[fieldIconType.value] || iconFieldMap.text
+  return getSpreadsheetFieldIcon(props.field)
 })
 
 const getFieldColor = (groupType: string) => {
