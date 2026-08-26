@@ -1,4 +1,6 @@
 package io.dataease.extensions.datasource.provider;
+
+import io.dataease.extensions.datasource.utils.SqlUtil;
 import io.dataease.license.utils.LogUtil;
 
 import com.jcraft.jsch.JSch;
@@ -179,10 +181,10 @@ public abstract class Provider {
 
     public String replaceTablePlaceHolder(String s, String placeholder) {
         s = s.replaceAll("\r\n", " ")
-                .replaceAll("\n", " ")
-                .replaceAll(SqlPlaceholderConstants.TABLE_PLACEHOLDER_REGEX, Matcher.quoteReplacement(placeholder))
-                .replaceAll("ASYMMETRIC", "")
-                .replaceAll("SYMMETRIC", "");
+            .replaceAll("\n", " ")
+            .replaceAll(SqlPlaceholderConstants.TABLE_PLACEHOLDER_REGEX, Matcher.quoteReplacement(placeholder))
+            .replaceAll("ASYMMETRIC", "")
+            .replaceAll("SYMMETRIC", "");
         return s;
     }
 
@@ -223,8 +225,7 @@ public abstract class Provider {
     }
 
     public String replaceComment(String s) {
-        String regex = "/\\*[\\s\\S]*?\\*/|--.*";
-        return s.replaceAll(regex, " ");
+        return SqlUtil.removeSqlComments(s);
     }
 
     public SqlDialect getDialect(DatasourceSchemaDTO coreDatasource) {

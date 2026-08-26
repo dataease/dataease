@@ -1,4 +1,5 @@
 package io.dataease.extensions.sync.utils;
+import io.dataease.extensions.datasource.utils.SqlUtil;
 import io.dataease.license.utils.LogUtil;
 
 

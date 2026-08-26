@@ -1,4 +1,4 @@
-package io.dataease.extensions.sync.utils;
+package io.dataease.extensions.datasource.utils;
 
 import java.util.ArrayList;
 import java.util.List;
