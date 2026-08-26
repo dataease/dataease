@@ -80,7 +80,8 @@ export const formatterType = [
 
 export function valueFormatter(value, formatter) {
   if (value === null || value === undefined) {
-    return null
+    // 展示层统一用空文本表示空值，避免不同渲染器将 null 字符串化
+    return ''
   }
   // 1.unit 2.decimal 3.thousand separator and suffix
   let result
