@@ -4,6 +4,7 @@ import { FUniver } from '@univerjs/core/facade'
 import { IDialogService } from '@univerjs/ui'
 import { ElMessage } from 'element-plus-secondary'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { useI18n } from '@/hooks/web/useI18n'
 import type {
   ITableCreateDialogParams,
   ITableCreateResult,
@@ -20,6 +21,7 @@ import { PluginRenderStatusService } from '../../DataEaseRuntimePlugin/services/
 import type { DetailTableConfig } from '../types'
 
 const { emitter } = useEmitt()
+const { t } = useI18n()
 
 export const InsertDetailTableOperation: ICommand = {
   id: 'dataease.operation.insert-detail-table',
@@ -76,15 +78,15 @@ function handleCreateNewSheet(accessor: IAccessor, resultLimit?: number) {
   const univerApi = FUniver.newAPI(injector)
   const fWorkbook = univerApi.getActiveWorkbook()
 
-  let newSheetName = 'Sheet2'
+  const sheetPrefix = t('spreadsheet.sheet_prefix', '工作表')
+  let newSheetNum = 2
+  let newSheetName = `${sheetPrefix}${newSheetNum}`
 
   if (fWorkbook) {
     const sheetNames = fWorkbook.getSheets().map((sheet: any) => sheet.getSheetName())
-    let newSheetNum = 2
-    newSheetName = `Sheet${newSheetNum}`
     while (sheetNames.includes(newSheetName)) {
       newSheetNum++
-      newSheetName = `Sheet${newSheetNum}`
+      newSheetName = `${sheetPrefix}${newSheetNum}`
     }
 
     const newSheet = fWorkbook.create(newSheetName, 1000, 26)

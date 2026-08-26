@@ -4994,6 +4994,7 @@ export default {
     spreadsheet_name: 'Spreadsheet name',
     spreadsheet_name_placeholder: 'Please enter the spreadsheet name',
     default_sheet_name: 'Sheet1',
+    sheet_prefix: 'Sheet',
     edit_sheet: 'Edit Spreadsheet',
     save: 'Save',
     save_success: 'Saved successfully',
