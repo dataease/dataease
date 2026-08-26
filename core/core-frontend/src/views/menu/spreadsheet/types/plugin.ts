@@ -32,6 +32,7 @@ export interface FieldItemData {
   desc?: string
   groupType: 'd' | 'q'
   deType?: number
+  extField?: number
   sort?: FieldSortType
   customSort?: Array<string | number>
   summary?: string

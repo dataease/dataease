@@ -2,15 +2,13 @@
 import { computed, ref } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import iconCalendarOutlined from '@/assets/svg/icon_calendar_outlined.svg'
-import iconNumberOutlined from '@/assets/svg/icon_number_outlined.svg'
-import iconTextOutlined from '@/assets/svg/icon_text_outlined.svg'
 import type {
   DatasetMapping,
   FieldUsage,
   ReplacementField
 } from '../../plugins/DataEaseDatasetReplacementPlugin/types'
 import { filterCompatibleFields } from '../../plugins/DataEaseDatasetReplacementPlugin/utils/field-compatibility'
+import { getSpreadsheetFieldIcon } from '../../utils/field-icon'
 
 const props = defineProps<{
   mapping: DatasetMapping
@@ -37,13 +35,6 @@ const visibleFields = computed(() => {
 const selectTarget = (fieldKey: string, targetId: string) => {
   const target = props.mapping.targetFields.find(field => field.id === targetId)
   if (target) emit('selectField', fieldKey, target)
-}
-
-const getFieldTypeIcon = (field: Pick<FieldUsage, 'deType' | 'groupType'>) => {
-  const deType = Number(field.deType)
-  if (deType === 1) return iconCalendarOutlined
-  if ([2, 3, 4].includes(deType) || field.groupType === 'q') return iconNumberOutlined
-  return iconTextOutlined
 }
 
 const getCompatibleTargetFields = (source: FieldUsage) =>
@@ -104,7 +95,7 @@ const handleTargetVisibleChange = (fieldKey: string, visible: boolean) => {
           <div class="source-field">
             <el-icon class="field-type" :class="item.source.groupType">
               <Icon>
-                <component :is="getFieldTypeIcon(item.source)" class="svg-icon" />
+                <component :is="getSpreadsheetFieldIcon(item.source)" class="svg-icon" />
               </Icon>
             </el-icon>
             <span class="field-name">{{ item.source.name }}</span>
@@ -125,7 +116,7 @@ const handleTargetVisibleChange = (fieldKey: string, visible: boolean) => {
             <template v-if="item.target" #prefix>
               <el-icon class="target-field-type" :class="item.target.groupType">
                 <Icon>
-                  <component :is="getFieldTypeIcon(item.target)" class="svg-icon" />
+                  <component :is="getSpreadsheetFieldIcon(item.target)" class="svg-icon" />
                 </Icon>
               </el-icon>
             </template>
@@ -158,7 +149,7 @@ const handleTargetVisibleChange = (fieldKey: string, visible: boolean) => {
               <div class="target-field-option">
                 <el-icon class="target-field-type" :class="field.groupType">
                   <Icon>
-                    <component :is="getFieldTypeIcon(field)" class="svg-icon" />
+                    <component :is="getSpreadsheetFieldIcon(field)" class="svg-icon" />
                   </Icon>
                 </el-icon>
                 <span>{{ field.name }}</span>

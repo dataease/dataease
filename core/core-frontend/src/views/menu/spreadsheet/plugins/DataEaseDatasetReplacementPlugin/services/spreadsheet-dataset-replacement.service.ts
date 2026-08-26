@@ -75,6 +75,7 @@ export class SpreadsheetDatasetReplacementService {
           dataeaseName: metadata.dataeaseName,
           groupType: metadata.groupType,
           deType: metadata.deType,
+          extField: metadata.extField,
           type: metadata.type,
           metadataComplete: true
         }
@@ -291,6 +292,7 @@ export class SpreadsheetDatasetReplacementService {
             existing.dataeaseName = field.dataeaseName
             existing.groupType = field.groupType
             existing.deType = field.deType
+            existing.extField = field.extField
             existing.type = field.type
             existing.metadataComplete = true
           }

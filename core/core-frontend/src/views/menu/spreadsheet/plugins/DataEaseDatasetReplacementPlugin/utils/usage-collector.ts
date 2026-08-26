@@ -12,6 +12,7 @@ export const toUsageField = (
   dataeaseName: field.dataeaseName,
   groupType: asGroup(field.groupType),
   deType: field.deType,
+  extField: field.extField,
   occurrences,
   metadataComplete: Boolean(field.name && field.groupType && field.deType !== undefined)
 })
