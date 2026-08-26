@@ -139,11 +139,12 @@
           <div class="index-config">
             <el-checkbox
               :model-value="headerStyle.showIndex"
+              :disabled="!headerStyle.enable"
               @change="value => updateHeaderStyle('showIndex', value)"
               >显示序号</el-checkbox
             >
 
-            <div v-if="headerStyle.showIndex" class="index-label-field">
+            <div v-if="headerStyle.enable && headerStyle.showIndex" class="index-label-field">
               <div class="field-label">序号标签</div>
               <el-input
                 v-model="headerStyle.indexLabel"

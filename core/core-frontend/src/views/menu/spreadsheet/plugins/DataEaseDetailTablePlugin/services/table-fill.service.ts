@@ -16,6 +16,7 @@ import {
 } from '../utils/field-format'
 import { validateDetailConfig } from '../utils/detail-config-validator'
 import { ensureSheetSize } from '../utils/sheet-size'
+import { isDetailTableIndexVisible } from '../utils/table-style-state'
 import {
   PluginRenderLoadingService,
   PluginRenderStatusService
@@ -205,7 +206,7 @@ export class TableFillService {
       const resultFields = renderFields.map(item => item.field)
       const resolvedFields = renderFields.map(item => item.configuredField)
       const fieldCount = resultFields.length
-      const showIndex = !!config.style?.header?.showIndex
+      const showIndex = isDetailTableIndexVisible(config)
       const indexLabel = config.style?.header?.indexLabel?.trim() || '序号'
       const hideHeader = !!config.style?.base?.hideHeader
       const headerRowCount = hideHeader ? 0 : 1
@@ -392,7 +393,7 @@ export class TableFillService {
       return
     }
 
-    const showIndex = !!config.style?.header?.showIndex
+    const showIndex = isDetailTableIndexVisible(config)
     const indexLabel = config.style?.header?.indexLabel?.trim() || '序号'
     const hideHeader = !!config.style?.base?.hideHeader
     if (!!state.hideHeader !== hideHeader) {
