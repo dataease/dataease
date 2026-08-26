@@ -1465,6 +1465,12 @@ const validate = () => {
     }
 
     if (ele.displayType === '2') {
+      if (ele.optionValueSource === 1 && !ele.field.id) {
+        ElMessage.error(
+          !ele.dataset?.id ? t('v_query.option_value_field') : t('v_query.the_data_set')
+        )
+        return true
+      }
       if (!ele.defaultValueCheck) return false
       if (
         (Array.isArray(ele.defaultValue) && !ele.defaultValue.length) ||
