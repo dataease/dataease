@@ -3853,6 +3853,7 @@ export default {
     port: 'SMTP連接埠',
     account: 'SMTP帳號',
     pwd: 'SMTP密碼',
+    from: '寄件者地址',
     reci: '測試收件者',
     ssl: 'SSL',
     tsl: 'TSL'
