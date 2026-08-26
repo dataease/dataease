@@ -1,30 +1,35 @@
 <script lang="ts" setup>
-import { ref, reactive } from "vue";
-import { ElMessage, ElLoading } from "element-plus-secondary";
-import { useI18n } from "@/hooks/web/useI18n";
-import type { FormInstance, FormRules } from "element-plus-secondary";
-import request from "@/config/axios";
+import { ref, reactive } from 'vue'
+import { ElMessage, ElLoading } from 'element-plus-secondary'
+import { useI18n } from '@/hooks/web/useI18n'
+import type { FormInstance, FormRules } from 'element-plus-secondary'
+import request from '@/config/axios'
 import dvInfo from '@/assets/svg/dv-info.svg'
-import { config as ddConfig, ready as ddReady, error as ddError, chooseChat as ddChooseChat } from 'dingtalk-jsapi'
-import icon_add_outlined from "@/assets/svg/icon_add_outlined.svg";
-const { t } = useI18n();
-const dialogVisible = ref(false);
-const loadingInstance = ref(null);
-const dingtalkForm = ref<FormInstance>();
+import {
+  config as ddConfig,
+  ready as ddReady,
+  error as ddError,
+  chooseChat as ddChooseChat
+} from 'dingtalk-jsapi'
+import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
+const { t } = useI18n()
+const dialogVisible = ref(false)
+const loadingInstance = ref(null)
+const dingtalkForm = ref<FormInstance>()
 interface DingtalkChat {
-  name: string;
-  id: string;
+  name: string
+  id: string
 }
 interface DingtalkForm {
-  corpId: string | null;
-  agentId: string | null;
-  appKey: string | null;
-  appSecret: string | null;
-  callBack: string | null;
-  enable: string | null;
-  valid: string | null;
-  robotCode: string | null;
-  chatList: DingtalkChat[];
+  corpId: string | null
+  agentId: string | null
+  appKey: string | null
+  appSecret: string | null
+  callBack: string | null
+  enable: string | null
+  valid: string | null
+  robotCode: string | null
+  chatList: DingtalkChat[]
 }
 const isDingTalkEnv = ref(false)
 const dingtalkStatusLoaded = ref(false)
@@ -35,104 +40,104 @@ const state = reactive({
     appKey: null,
     appSecret: null,
     callBack: null,
-    enable: "false",
-    valid: "false",
+    enable: 'false',
+    valid: 'false',
     robotCode: null,
-    chatList: [] as DingtalkChat[],
-  }),
-});
+    chatList: [] as DingtalkChat[]
+  })
+})
 const validateUrl = (rule, value, callback) => {
-  const reg = new RegExp(/(http|https):\/\/([\w.]+\/?)\S*/);
+  const reg = new RegExp(/(http|https):\/\/([\w.]+\/?)\S*/)
   if (!reg.test(value)) {
-    callback(new Error(t("system.incorrect_please_re_enter")));
+    callback(new Error(t('system.incorrect_please_re_enter')))
   } else {
-    callback();
+    callback()
   }
-};
+}
 const rule = reactive<FormRules>({
   corpId: [
     {
       required: true,
-      message: t("common.require"),
-      trigger: "blur",
+      message: t('common.require'),
+      trigger: 'blur'
     },
     {
       min: 5,
       max: 255,
-      message: t("commons.input_limit", [5, 255]),
-      trigger: "blur",
-    },
+      message: t('commons.input_limit', [5, 255]),
+      trigger: 'blur'
+    }
   ],
   agentId: [
     {
       required: true,
-      message: t("common.require"),
-      trigger: "blur",
+      message: t('common.require'),
+      trigger: 'blur'
     },
     {
       min: 5,
       max: 20,
-      message: t("commons.input_limit", [5, 20]),
-      trigger: "blur",
-    },
+      message: t('commons.input_limit', [5, 20]),
+      trigger: 'blur'
+    }
   ],
   appKey: [
     {
       required: true,
-      message: t("common.require"),
-      trigger: "blur",
+      message: t('common.require'),
+      trigger: 'blur'
     },
     {
       min: 5,
       max: 20,
-      message: t("commons.input_limit", [5, 20]),
-      trigger: "blur",
-    },
+      message: t('commons.input_limit', [5, 20]),
+      trigger: 'blur'
+    }
   ],
   appSecret: [
     {
       required: true,
-      message: t("common.require"),
-      trigger: "blur",
+      message: t('common.require'),
+      trigger: 'blur'
     },
     {
       min: 5,
       max: 100,
-      message: t("commons.input_limit", [5, 100]),
-      trigger: "blur",
-    },
+      message: t('commons.input_limit', [5, 100]),
+      trigger: 'blur'
+    }
   ],
   callBack: [
     {
       required: true,
-      message: t("common.require"),
-      trigger: "blur",
+      message: t('common.require'),
+      trigger: 'blur'
     },
     {
       min: 10,
       max: 100,
-      message: t("commons.input_limit", [10, 100]),
-      trigger: "blur",
+      message: t('commons.input_limit', [10, 100]),
+      trigger: 'blur'
     },
-    { required: true, validator: validateUrl, trigger: "blur" },
+    { required: true, validator: validateUrl, trigger: 'blur' }
   ],
   enable: [
     {
       required: true,
-      message: t("common.require"),
-      trigger: "change",
-    },
+      message: t('common.require'),
+      trigger: 'change'
+    }
   ],
   valid: [
     {
       required: true,
-      message: t("common.require"),
-      trigger: "change",
-    },
-  ],
-});
+      message: t('common.require'),
+      trigger: 'change'
+    }
+  ]
+})
 
-const edit = (row) => {
+const edit = row => {
   state.form = {
     corpId: row.corpId,
     agentId: row.agentId,
@@ -142,73 +147,73 @@ const edit = (row) => {
     enable: row.enable,
     valid: row.valid,
     robotCode: row.robotCode,
-    chatList: row.chatList || [],
-  };
-  dialogVisible.value = true;
-};
+    chatList: row.chatList || []
+  }
+  dialogVisible.value = true
+}
 
-const emits = defineEmits(["saved"]);
+const emits = defineEmits(['saved'])
 const submitForm = async (formEl: FormInstance | undefined) => {
-  if (!formEl) return;
-  await formEl.validate((valid) => {
+  if (!formEl) return
+  await formEl.validate(valid => {
     if (valid) {
-      const param = { ...state.form };
-      const method = request.post({ url: "/dingtalk/create", data: param });
-      showLoading();
+      const param = { ...state.form }
+      const method = request.post({ url: '/dingtalk/create', data: param })
+      showLoading()
       method
-        .then((res) => {
+        .then(res => {
           if (!res.msg) {
-            ElMessage.success(t("common.save_success"));
-            emits("saved");
-            reset();
+            ElMessage.success(t('common.save_success'))
+            emits('saved')
+            reset()
           }
-          closeLoading();
+          closeLoading()
         })
         .catch(() => {
-          closeLoading();
-        });
+          closeLoading()
+        })
     }
-  });
-};
+  })
+}
 
 const resetForm = (formEl: FormInstance | undefined) => {
-  if (!formEl) return;
-  formEl.resetFields();
-  dialogVisible.value = false;
-};
+  if (!formEl) return
+  formEl.resetFields()
+  dialogVisible.value = false
+}
 
 const reset = () => {
-  resetForm(dingtalkForm.value);
-};
+  resetForm(dingtalkForm.value)
+}
 
 const showLoading = () => {
   loadingInstance.value = ElLoading.service({
-    target: ".platform-info-drawer",
-  });
-};
+    target: '.platform-info-drawer'
+  })
+}
 const closeLoading = () => {
-  loadingInstance.value?.close();
-};
+  loadingInstance.value?.close()
+}
 
 const validate = () => {
-  const url = "/dingtalk/validate";
-  const data = state.form;
-  showLoading();
+  const url = '/dingtalk/validate'
+  const data = state.form
+  showLoading()
   request
     .post({ url, data })
     .then(() => {
-      state.form.valid = "true";
-      ElMessage.success(t("datasource.validate_success"));
+      state.form.valid = 'true'
+      ElMessage.success(t('datasource.validate_success'))
     })
     .catch(() => {
-      state.form.enable = "false";
-      state.form.valid = "false";
+      state.form.enable = 'false'
+      state.form.valid = 'false'
     })
     .finally(() => {
-      closeLoading();
-      emits("saved");
-    });
-};
+      closeLoading()
+      emits('saved')
+    })
+}
 
 const DD_READY_STATUS = 'ddReadyStatus' as string
 
@@ -231,7 +236,7 @@ const ddJsApiAuth = (): Promise<void> => {
 
     try {
       const param = {
-        currentUrl: window.location.href.split('#')[0],
+        currentUrl: window.location.href.split('#')[0]
       }
       const res = await request.post({ url: '/dingtalk/getSignatureInfo', data: param })
       const signatureInfo = res.data
@@ -261,21 +266,23 @@ const addChatRow = async () => {
   if (!dingtalkStatusLoaded.value) {
     showLoading()
     await Promise.race([
-      new Promise<void>((resolve) => {
+      new Promise<void>(resolve => {
         ddReady(() => {
-          isDingTalkEnv.value = true;
-          resolve();
+          isDingTalkEnv.value = true
+          resolve()
         })
       }),
-      new Promise<void>((resolve) => setTimeout(resolve, 3000))
-    ]);
+      new Promise<void>(resolve => setTimeout(resolve, 3000))
+    ])
     dingtalkStatusLoaded.value = true
   }
-  
+
   if (!isDingTalkEnv.value) {
     var corpId = state.form.corpId
     var path = `/?client=dingtalk&corpId=${corpId}#/sys-setting/platform?edit=dingtalk`
-    var linkUrl = `https://applink.dingtalk.com/page/h5_app_open?appId=${state.form.agentId}&corpId=${corpId}&appType=2&target=workbench&path=${encodeURIComponent(path)}`
+    var linkUrl = `https://applink.dingtalk.com/page/h5_app_open?appId=${
+      state.form.agentId
+    }&corpId=${corpId}&appType=2&target=workbench&path=${encodeURIComponent(path)}`
     window.open(linkUrl, '_blank')
     closeLoading()
     return
@@ -290,25 +297,31 @@ const addChatRow = async () => {
     success: (res: any) => {
       const { chatId, openConversationId, title } = res
       if (!chatId || !openConversationId) {
-        alert('只能选择当前应用所在的群聊，请重新选择');
+        alert('只能选择当前应用所在的群聊，请重新选择')
         return
       }
-      if (state.form.chatList?.length && state.form.chatList.some(item => item.id === openConversationId)) {
-        alert('当前群聊已选择，请勿重复选择');
+      if (
+        state.form.chatList?.length &&
+        state.form.chatList.some(item => item.id === openConversationId)
+      ) {
+        alert('当前群聊已选择，请勿重复选择')
         return
       }
       const chat = { name: title, id: openConversationId } as any
 
-      request.post({ url: '/dingtalk/checkChat', data: { chatId: openConversationId } }).then(() => {
-        addRowHandler(chat)
-      }).catch((e: any) => {
-        alert(e)
-      })
+      request
+        .post({ url: '/dingtalk/checkChat', data: { chatId: openConversationId } })
+        .then(() => {
+          addRowHandler(chat)
+        })
+        .catch((e: any) => {
+          alert(e)
+        })
     },
-    fail: (e) => {
-      console.error('ddChooseChat fail--: ' + JSON.stringify(e));
+    fail: e => {
+      console.error('ddChooseChat fail--: ' + JSON.stringify(e))
     },
-    complete: () => {},
+    complete: () => {}
   })
 }
 const addRowHandler = (row: DingtalkChat) => {
@@ -318,9 +331,8 @@ const delChatRow = (index: number) => {
   state.form.chatList.splice(index, 1)
 }
 defineExpose({
-  edit,
+  edit
 })
-
 </script>
 
 <template>
@@ -329,6 +341,7 @@ defineExpose({
     v-model="dialogVisible"
     modal-class="platform-info-drawer"
     size="600px"
+    destroy-on-close
     direction="rtl"
   >
     <el-form
@@ -340,22 +353,13 @@ defineExpose({
       label-position="top"
     >
       <el-form-item label="CorpId" prop="corpId">
-        <el-input
-          v-model="state.form.corpId"
-          :placeholder="t('common.please_input')"
-        />
+        <el-input v-model="state.form.corpId" :placeholder="t('common.please_input')" />
       </el-form-item>
       <el-form-item label="AgentId" prop="agentId">
-        <el-input
-          v-model="state.form.agentId"
-          :placeholder="t('common.please_input')"
-        />
+        <el-input v-model="state.form.agentId" :placeholder="t('common.please_input')" />
       </el-form-item>
       <el-form-item label="APP Key" prop="appKey">
-        <el-input
-          v-model="state.form.appKey"
-          :placeholder="t('common.please_input')"
-        />
+        <el-input v-model="state.form.appKey" :placeholder="t('common.please_input')" />
       </el-form-item>
 
       <el-form-item label="APP Secret" prop="appSecret">
@@ -367,17 +371,11 @@ defineExpose({
         />
       </el-form-item>
       <el-form-item :label="t('system.callback_domain_name')" prop="callBack">
-        <el-input
-          v-model="state.form.callBack"
-          :placeholder="t('common.please_input')"
-        />
+        <el-input v-model="state.form.callBack" :placeholder="t('common.please_input')" />
       </el-form-item>
 
       <el-form-item label="Robot Code" prop="robotCode">
-        <el-input
-          v-model="state.form.robotCode"
-          :placeholder="t('report.robot_code_place')"
-        />
+        <el-input v-model="state.form.robotCode" :placeholder="t('report.robot_code_place')" />
       </el-form-item>
 
       <el-form-item :label="t('report.dingtalk_groups')" class="last-form-item">
@@ -393,13 +391,18 @@ defineExpose({
         </template>
         <div class="dingtalk-chat-div">
           <div v-for="(row, index) in state.form.chatList" :key="index">
-            <el-tag class="dingtalk-chat-tag" closable type="info" :disable-transitions="true" @close="delChatRow(index)">
+            <el-tag
+              class="dingtalk-chat-tag"
+              closable
+              type="info"
+              :disable-transitions="true"
+              @close="delChatRow(index)"
+            >
               <span class="dingtalk-chat-tag-span">{{ row['name'] }}</span>
             </el-tag>
           </div>
-          <span class="input-placeholder">{{t('report.click_add_chat')}}</span>
+          <span class="input-placeholder">{{ t('report.click_add_chat') }}</span>
         </div>
-        
       </el-form-item>
 
       <div class="dingtalk-chat-add">
@@ -414,19 +417,15 @@ defineExpose({
     </el-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="resetForm(dingtalkForm)">{{
-          t("common.cancel")
-        }}</el-button>
+        <el-button @click="resetForm(dingtalkForm)">{{ t('common.cancel') }}</el-button>
         <el-button
-          :disabled="
-            !state.form.appKey || !state.form.appSecret || !state.form.callBack
-          "
+          :disabled="!state.form.appKey || !state.form.appSecret || !state.form.callBack"
           @click="validate"
         >
-          {{ t("commons.validate") }}
+          {{ t('commons.validate') }}
         </el-button>
         <el-button type="primary" @click="submitForm(dingtalkForm)">
-          {{ t("commons.save") }}
+          {{ t('commons.save') }}
         </el-button>
       </span>
     </template>
@@ -447,10 +446,7 @@ defineExpose({
     line-height: 22px !important;
     height: 22px !important;
   }
-
-  
 }
-
 </style>
 <style lang="less" scoped>
 .platform-info-drawer {
@@ -467,7 +463,7 @@ defineExpose({
       padding: 0 20px;
       color: #1f2329;
       text-align: center;
-      font-family: var(--de-custom_font, "PingFang");
+      font-family: var(--de-custom_font, 'PingFang');
       font-size: 14px;
       font-style: normal;
       font-weight: 400;
@@ -502,7 +498,7 @@ defineExpose({
       padding: 1px 8px;
       .input-placeholder {
         color: rgba(0, 0, 0, 0.25);
-        font-family: var(--de-custom_font, "PingFang");
+        font-family: var(--de-custom_font, 'PingFang');
         font-size: 14px;
         font-style: normal;
         font-weight: 400;
@@ -514,7 +510,7 @@ defineExpose({
 .dingtalk-chat-tag {
   max-width: 100%;
   ::v-deep(.ed-tag__content) {
-   max-width: calc(100% - 16px);
+    max-width: calc(100% - 16px);
   }
   .dingtalk-chat-tag-span {
     display: inline-block;
@@ -524,6 +520,4 @@ defineExpose({
     text-overflow: ellipsis;
   }
 }
-
-
 </style>
