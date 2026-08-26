@@ -4015,6 +4015,7 @@ export default {
     port: 'SMTP port',
     account: 'SMTP account',
     pwd: 'SMTP password',
+    from: 'Sender address',
     reci: 'Test recipient',
     ssl: 'SSL',
     tsl: 'TSL'

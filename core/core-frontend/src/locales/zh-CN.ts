@@ -3902,6 +3902,7 @@ export default {
     port: 'SMTP端口',
     account: 'SMTP账号',
     pwd: 'SMTP密码',
+    from: '发件人地址',
     reci: '测试收件人',
     ssl: 'SSL',
     tsl: 'TSL'
