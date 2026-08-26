@@ -701,11 +701,15 @@ export class ColumnLineMix extends G2ChartView {
         const assistLineMark: G2Spec = {
           type: 'lineY',
           encode: { y: 'value' },
+          // 组合图辅助线不参与图例过滤和分页
+          legend: false,
           scale: {
             y: {
               key: index === 0 ? 'left' : 'right'
             }
           },
+          // 右轴辅助线使用独立比例尺，只关闭其自动生成的冗余轴
+          ...(index === 1 ? { axis: { y: false } } : {}),
           data: lineData,
           style: {
             stroke: d => d.color,

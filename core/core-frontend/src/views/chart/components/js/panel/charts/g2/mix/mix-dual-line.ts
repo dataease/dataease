@@ -31,7 +31,6 @@ import {
   getMixLabelTransform,
   MixG2Chart
 } from './common'
-import { registerSymbol, Symbols } from '@antv/g2/esm/utils/marker'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 import {
   bindPlotBackgroundClick,
@@ -107,8 +106,6 @@ export class GroupLineMix extends G2ChartView {
       allowEmpty: true
     }
   }
-
-  EMPTY_MARKER = () => []
 
   // 提取参与 y 轴域计算的有效数值，避免空值把轴域拉偏
   protected getYAxisValues(data: Record<string, any>[]): number[] {
@@ -829,16 +826,6 @@ export class GroupLineMix extends G2ChartView {
     return options
   }
 
-  private randomString(length: number): string {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-    let result = ''
-    for (let i = 0; i < length; i++) {
-      const randomIndex = Math.floor(Math.random() * chars.length)
-      result += chars[randomIndex]
-    }
-    return result
-  }
-
   protected configAssistLine(chart: Chart, options: G2Spec): G2Spec {
     const { assistLineCfg } = parseJson(chart.senior)
     if (!assistLineCfg.enable || !assistLineCfg.assistLine?.length) {
@@ -876,7 +863,6 @@ export class GroupLineMix extends G2ChartView {
       yAxisExt.axisLabelFormatter ?? DEFAULT_YAXIS_STYLE.axisLabelFormatter
     const view = options.children.find(c => c.key === 'chart')
     const [leftLineMark, , rightLineMark] = view.children
-    const randomAssistColorScale = this.randomString(6)
     splitLineData.forEach((lineData, index) => {
       const assistLineScaleY = index === 0 ? leftLineMark.scale?.y : rightLineMark.scale?.y
       // 辅助线只在对应轴当前可见轴域内显示，超出轴域时连同标签一起隐藏
@@ -897,7 +883,7 @@ export class GroupLineMix extends G2ChartView {
       if (visibleLineData.length) {
         const assistLineMark: G2Spec = {
           type: 'lineY',
-          encode: { y: 'value', color: () => randomAssistColorScale },
+          encode: { y: 'value' },
           scale: {
             y: {
               ...assistLineScaleY,
@@ -935,37 +921,12 @@ export class GroupLineMix extends G2ChartView {
             }
           ],
           tooltip: false,
+          // 无 color 通道且关闭图例，图例筛选不会再触达辅助线
           legend: false
         }
         view.children.push(assistLineMark)
       }
     })
-    const assistFlag = splitLineData.some(l => l.length > 0)
-    const { legend } = parseJson(chart.customStyle)
-    // 处理 legend 点击辅助线会消失，创建一个隐藏的 legend 项
-    if (assistFlag && legend.show) {
-      const legendMark = options.children.find(c => c.key === 'legend')
-      legendMark.scale.color.domain.push(randomAssistColorScale)
-      legendMark.scale.color.relations.push([randomAssistColorScale, '#000000'])
-      if (!Symbols.has('empty')) {
-        registerSymbol('empty', this.EMPTY_MARKER)
-      }
-      const originMarker = legendMark.itemMarker
-      merge(legendMark, {
-        itemMarker: d => {
-          if (d === randomAssistColorScale || d.id === randomAssistColorScale) {
-            return 'empty'
-          }
-          return originMarker
-        },
-        itemLabelText: d => {
-          if (d.id === randomAssistColorScale) {
-            return ''
-          }
-          return d.id
-        }
-      })
-    }
     return options
   }
 
@@ -1101,7 +1062,6 @@ export class GroupLineMix extends G2ChartView {
 
   constructor(name = 'chart-mix-dual-line') {
     super(name, [])
-    this.EMPTY_MARKER.style = []
   }
 }
 
