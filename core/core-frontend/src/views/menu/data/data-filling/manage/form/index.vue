@@ -1377,7 +1377,12 @@ const confirmEditBindColumn = () => {
     doEditBindColumn();
     return;
   }
-  rowAuth.value.submit();
+  if (!rowAuth.value){
+    doEditBindColumn();
+    return;
+  } else {
+    rowAuth.value.submit();
+  }
 };
 const scrollbar = ref();
 const scrollbarClick = () => {
