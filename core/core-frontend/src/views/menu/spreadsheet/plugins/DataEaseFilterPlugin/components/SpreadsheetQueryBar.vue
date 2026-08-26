@@ -103,6 +103,9 @@ const conditionStyle = computed(() => ({
   alignItems: styleConfig.value?.conditionName?.position === 'left' ? 'center' : 'stretch',
   gap: `${styleConfig.value?.conditionName?.gap ?? 8}px`
 }))
+const isConditionNameLeft = computed(
+  () => styleConfig.value?.conditionName?.position === 'left'
+)
 const isDoubleTextSearch = (condition: SpreadsheetFilterCondition) =>
   condition.displayType === 'textSearch' && condition.textSearchConditionType !== 'single'
 const getConditionWidth = (condition: SpreadsheetFilterCondition) => {
@@ -111,11 +114,16 @@ const getConditionWidth = (condition: SpreadsheetFilterCondition) => {
   if (condition.displayType === 'timeRange') return '350px'
   return '235px'
 }
-const getConditionStyle = (condition: SpreadsheetFilterCondition) => ({
-  ...conditionStyle.value,
-  width: getConditionWidth(condition),
-  flexShrink: condition.displayType === 'timeRange' ? 0 : undefined
-})
+const getConditionStyle = (condition: SpreadsheetFilterCondition) => {
+  const controlWidth = getConditionWidth(condition)
+  const keepFullWidth = isConditionNameLeft.value || condition.displayType === 'timeRange'
+  return {
+    ...conditionStyle.value,
+    // 名称在左侧时，条件总宽度需要额外容纳名称，不能挤占控件的预设宽度。
+    width: isConditionNameLeft.value ? 'auto' : controlWidth,
+    flexShrink: keepFullWidth ? 0 : undefined
+  }
+}
 const conditionNameStyle = computed(() => ({
   color: styleConfig.value?.conditionName?.color || '#1f2329',
   fontSize: `${styleConfig.value?.conditionName?.fontSize ?? 12}px`,
@@ -124,7 +132,7 @@ const conditionNameStyle = computed(() => ({
 }))
 const conditionNameVisible = computed(() => styleConfig.value?.conditionName?.show !== false)
 const conditionControlStyle = computed(() => ({
-  flex: styleConfig.value?.conditionName?.position === 'left' ? '1 1 0' : undefined,
+  flex: isConditionNameLeft.value ? '0 0 auto' : undefined,
   minWidth: 0
 }))
 const controlStyle = computed(() => ({
@@ -188,9 +196,7 @@ const controlPopperOptions = computed<Partial<Options>>(() => {
 })
 const getControlStyle = (condition: SpreadsheetFilterCondition) => ({
   ...controlStyle.value,
-  width: styleConfig.value?.conditionName?.position === 'left'
-    ? 'auto'
-    : getConditionWidth(condition)
+  width: getConditionWidth(condition)
 })
 const getButtonTypography = () => ({
   fontSize: `${styleConfig.value?.button?.fontSize ?? 12}px`,

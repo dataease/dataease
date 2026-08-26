@@ -4912,6 +4912,9 @@ export default {
     update_success: '更新成功',
     update_error: '更新失败',
     select_required: '请选择数据集',
+    select_dataset_first: '请先选择数据集',
+    field_required: '请配置至少一个字段',
+    query_data_error: '查询数据失败，请稍后重试',
     dataset_replacement: {
       title: '替换数据集',
       global_title: '替换全局数据集',

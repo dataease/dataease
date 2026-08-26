@@ -257,8 +257,8 @@ const isEmpty = computed(() => localFields.value.length === 0)
   align-items: center;
 
   &.is-drag-over {
-    border-color: #3370ff;
-    background: #f0f7ff;
+    border-color: var(--ed-color-primary, #3370ff);
+    background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
   }
 
   &.is-empty {
@@ -285,8 +285,8 @@ const isEmpty = computed(() => localFields.value.length === 0)
     padding: 4px 0;
 
       .field-wrapper {
-        background: #e6f0ff;
-        border: 1px solid #3370ff;
+        background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
+        border: 1px solid var(--ed-color-primary, #3370ff);
         border-radius: 4px;
         overflow: hidden;
 
@@ -296,7 +296,7 @@ const isEmpty = computed(() => localFields.value.length === 0)
       }
 
       &:hover {
-        background: #d6e8ff;
+        background: var(--ed-color-primary-33, rgba(51, 112, 255, 0.2));
       }
     }
   }
@@ -310,7 +310,7 @@ const isEmpty = computed(() => localFields.value.length === 0)
 
   :deep(.ghost) {
     opacity: 0.5;
-    background: #f0f7ff;
+    background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
   }
 
   :deep(.dragging) {

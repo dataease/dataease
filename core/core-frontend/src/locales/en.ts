@@ -5068,6 +5068,9 @@ export default {
     update_success: 'Updated successfully',
     update_error: 'Failed to update',
     select_required: 'Please select a dataset',
+    select_dataset_first: 'Please select a dataset first',
+    field_required: 'Please configure at least one field',
+    query_data_error: 'Query data failed, please try again later',
     dataset_replacement: {
       title: 'Replace Dataset',
       global_title: 'Replace Global Datasets',
