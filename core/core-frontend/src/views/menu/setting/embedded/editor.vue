@@ -1,17 +1,17 @@
 <script lang="ts" setup>
-import { ref, reactive } from "vue";
-import { ElMessage, ElLoading, ElMessageBox } from "element-plus-secondary";
-import { useI18n } from "@/hooks/web/useI18n";
-import type { FormInstance, FormRules } from "element-plus-secondary";
-import request from "@/config/axios";
-const { t } = useI18n();
-const dialogVisible = ref(false);
-const loadingInstance = ref(null);
-const embeddedForm = ref<FormInstance>();
+import { ref, reactive } from 'vue'
+import { ElMessage, ElLoading, ElMessageBox } from 'element-plus-secondary'
+import { useI18n } from '@/hooks/web/useI18n'
+import type { FormInstance, FormRules } from 'element-plus-secondary'
+import request from '@/config/axios'
+const { t } = useI18n()
+const dialogVisible = ref(false)
+const loadingInstance = ref(null)
+const embeddedForm = ref<FormInstance>()
 interface EmbeddedForm {
-  id?: string;
-  name?: string;
-  domain?: string;
+  id?: string
+  name?: string
+  domain?: string
   secretLength: number
 }
 const state = reactive({
@@ -20,92 +20,91 @@ const state = reactive({
     name: null,
     domain: null,
     secretLength: 16
-  }),
-});
-const formType = ref("add");
+  })
+})
+const formType = ref('add')
 const originSecretLen = ref()
 const validateUrl = (rule, value, callback) => {
-  const reg = new RegExp(/(http|https):\/\/([\w.]+\/?)\S*/);
+  const reg = new RegExp(/(http|https):\/\/([\w.]+\/?)\S*/)
   if (!reg.test(value)) {
-    callback(new Error(t("system.wrong_please_re_enter")));
+    callback(new Error(t('system.wrong_please_re_enter')))
   } else {
-    callback();
+    callback()
   }
-};
+}
 const rule = reactive<FormRules>({
   name: [
     {
       required: true,
-      message: t("common.require"),
-      trigger: "blur",
+      message: t('common.require'),
+      trigger: 'blur'
     },
     {
       min: 1,
       max: 50,
-      message: t("commons.input_limit", [1, 50]),
-      trigger: "blur",
-    },
+      message: t('commons.input_limit', [1, 50]),
+      trigger: 'blur'
+    }
   ],
   domain: [
     {
       required: true,
-      message: t("common.require"),
-      trigger: "blur",
+      message: t('common.require'),
+      trigger: 'blur'
     },
     {
       min: 10,
       max: 100,
-      message: t("commons.input_limit", [10, 100]),
-      trigger: "blur",
+      message: t('commons.input_limit', [10, 100]),
+      trigger: 'blur'
     },
-    { required: true, validator: validateUrl, trigger: "blur" },
+    { required: true, validator: validateUrl, trigger: 'blur' }
   ],
   secretLength: [
     {
       required: true,
-      message: t("common.require"),
-      trigger: "blur",
+      message: t('common.require'),
+      trigger: 'blur'
     }
   ]
-});
+})
 
-const edit = (data) => {
+const edit = data => {
   if (!data?.id) {
-    add();
-    return;
+    add()
+    return
   }
   state.form = {
     id: data.id,
     name: data.name,
     domain: data.domain,
     secretLength: data.secretLength || 16
-  };
+  }
   originSecretLen.value = data.secretLength
-  formType.value = "edit";
-  dialogVisible.value = true;
-};
+  formType.value = 'edit'
+  dialogVisible.value = true
+}
 const add = () => {
   state.form = {
     secretLength: 16
-  };
-  formType.value = "add";
-  dialogVisible.value = true;
-};
+  }
+  formType.value = 'add'
+  dialogVisible.value = true
+}
 
-const emits = defineEmits(["saved"]);
+const emits = defineEmits(['saved'])
 const submitForm = async (formEl: FormInstance | undefined) => {
-
-  if (!formEl) return;
-  await formEl.validate((valid) => {
+  if (!formEl) return
+  await formEl.validate(valid => {
     if (valid) {
       if (checkSecretLenUpdate()) {
-        ElMessageBox.confirm(t("system.embedded_secret_len_change"), {
-          confirmButtonType: "primary",
-          type: "warning",
-          confirmButtonText: t("common.sure"),
-          cancelButtonText: t("dataset.cancel"),
+        ElMessageBox.confirm(t('system.embedded_secret_len_change'), {
+          confirmButtonType: 'primary',
+          type: 'warning',
+          confirmButtonText: t('common.sure'),
+          cancelButtonText: t('dataset.cancel'),
           autofocus: false,
-          showClose: false,
+          showClose: false
         }).then(() => {
           saveHandler()
         })
@@ -113,53 +112,53 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       }
       saveHandler()
     }
-  });
-};
+  })
+}
 
 const saveHandler = () => {
-  const param = { ...state.form };
+  const param = { ...state.form }
   const method = request.post({
-    url: formType.value === "add" ? "/embedded/create" : "/embedded/edit",
-    data: param,
-  });
-  showLoading();
+    url: formType.value === 'add' ? '/embedded/create' : '/embedded/edit',
+    data: param
+  })
+  showLoading()
   method
-    .then((res) => {
+    .then(res => {
       if (!res.msg) {
-        ElMessage.success(t("common.save_success"));
-        emits("saved");
-        reset();
+        ElMessage.success(t('common.save_success'))
+        emits('saved')
+        reset()
       }
     })
     .finally(() => {
-      closeLoading();
-    });
+      closeLoading()
+    })
 }
 const checkSecretLenUpdate = () => {
   return formType.value === 'edit' && originSecretLen.value !== state.form.secretLength
 }
 
 const resetForm = (formEl: FormInstance | undefined) => {
-  if (!formEl) return;
-  formEl.resetFields();
-  dialogVisible.value = false;
-};
+  if (!formEl) return
+  formEl.resetFields()
+  dialogVisible.value = false
+}
 
 const reset = () => {
-  resetForm(embeddedForm.value);
-};
+  resetForm(embeddedForm.value)
+}
 
 const showLoading = () => {
   loadingInstance.value = ElLoading.service({
-    target: ".embedded-info-drawer",
-  });
-};
+    target: '.embedded-info-drawer'
+  })
+}
 const closeLoading = () => {
-  loadingInstance.value?.close();
-};
+  loadingInstance.value?.close()
+}
 defineExpose({
-  edit,
-});
+  edit
+})
 </script>
 
 <template>
@@ -172,6 +171,7 @@ defineExpose({
     v-model="dialogVisible"
     modal-class="embedded-info-drawer"
     size="600px"
+    destroy-on-close
     direction="rtl"
   >
     <el-form
@@ -184,17 +184,11 @@ defineExpose({
       label-position="top"
     >
       <el-form-item :label="t('system.application_name')" prop="name">
-        <el-input
-          v-model="state.form.name"
-          :placeholder="t('common.please_input')"
-        />
+        <el-input v-model="state.form.name" :placeholder="t('common.please_input')" />
       </el-form-item>
 
       <el-form-item :label="t('system.cross_domain_settings')" prop="domain">
-        <el-input
-          v-model="state.form.domain"
-          :placeholder="t('common.please_input')"
-        />
+        <el-input v-model="state.form.domain" :placeholder="t('common.please_input')" />
       </el-form-item>
 
       <el-form-item :label="t('system.secret_length')" prop="secretLength">
@@ -213,11 +207,9 @@ defineExpose({
     </el-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button secondary @click="resetForm(embeddedForm)">{{
-          t("common.cancel")
-        }}</el-button>
+        <el-button secondary @click="resetForm(embeddedForm)">{{ t('common.cancel') }}</el-button>
         <el-button type="primary" @click="submitForm(embeddedForm)">
-          {{ t("commons.save") }}
+          {{ t('commons.save') }}
         </el-button>
       </span>
     </template>
@@ -255,7 +247,7 @@ defineExpose({
       padding: 0 20px;
       color: #1f2329;
       text-align: center;
-      font-family: var(--de-custom_font, "PingFang");
+      font-family: var(--de-custom_font, 'PingFang');
       font-size: 14px;
       font-style: normal;
       font-weight: 400;
