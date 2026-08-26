@@ -61,5 +61,16 @@ const updateValue = (index: 0 | 1, value: number | undefined) => {
     min-width: 0;
     flex: 1;
   }
+
+  // 步进按钮使用默认白底时会遮住输入框的自定义粗边框，改为透明后保持边框和填充连续。
+  :deep(.ed-input-number__increase),
+  :deep(.ed-input-number__decrease) {
+    background-color: transparent !important;
+    border-color: var(--dataease-filter-border-color) !important;
+
+    [class*='ed-icon'] {
+      color: var(--dataease-filter-control-color) !important;
+    }
+  }
 }
 </style>
