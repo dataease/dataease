@@ -21,6 +21,7 @@ import {
 } from '@univerjs/ui'
 import {
   INTERCEPTOR_POINT,
+  RemoveSheetCommand,
   SetWorksheetActiveOperation,
   SheetInterceptorService
 } from '@univerjs/sheets'
@@ -46,6 +47,10 @@ import {
 } from '../../DataEaseFilterPlugin/utils/events'
 import { DATAEASE_INSERT_DROPDOWN_ID } from '../../DataEaseInsertPlugin/controllers/menu'
 import { InsertPivotTableOperation } from '../commands/insert-operations'
+import {
+  SetPivotTableInstancesMutation,
+  type ISetPivotTableInstancesMutationParams
+} from '../commands/instance-mutations'
 import PivotTableCreateDialog from '../components/PivotTableCreateDialog.vue'
 import { PivotTableDisplayStateService } from '../services/pivot-table-display-state.service'
 import { PivotTableEditProtectionService } from '../services/pivot-table-edit-protection.service'
@@ -113,6 +118,7 @@ export class DataEasePivotTableController extends Disposable {
     this.initRenderStatusListener()
     this.initEditProtection()
     this.initSheetSwitchListener()
+    this.initSheetDeleteLifecycle()
     this.initHoverListener()
     this.initActionToolbarListener()
   }
@@ -126,7 +132,10 @@ export class DataEasePivotTableController extends Disposable {
   }
 
   private initCommands(): void {
-    this.disposeWithMe(this.commandService.registerCommand(InsertPivotTableOperation))
+    const commands = [InsertPivotTableOperation, SetPivotTableInstancesMutation]
+    commands.forEach(command => {
+      this.disposeWithMe(this.commandService.registerCommand(command))
+    })
   }
 
   private initSheetSwitchListener(): void {
@@ -146,6 +155,85 @@ export class DataEasePivotTableController extends Disposable {
         }
 
         // 切换前终止当前插入流程，避免旧 Sheet 的弹窗和状态残留到目标 Sheet。
+        this.dialogService.close('RangeSelectDialog')
+        this.dialogService.close('PivotTableCreateDialog')
+        this.pivotTableInsertionService.cancel()
+        emitter.emit(SPREADSHEET_EVENTS.CLOSE_PLUGIN_EDITOR)
+      })
+    )
+  }
+
+  private initSheetDeleteLifecycle(): void {
+    this.disposeWithMe(
+      this.sheetInterceptorService.interceptCommand({
+        getMutations: commandInfo => {
+          if (commandInfo.id !== RemoveSheetCommand.id) {
+            return { redos: [], undos: [] }
+          }
+
+          const { unitId, subUnitId } = commandInfo.params || {}
+          const workbook = unitId
+            ? this.univerInstanceService.getUnit(unitId, UniverInstanceType.UNIVER_SHEET)
+            : this.univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET)
+          const targetUnitId = unitId || workbook?.getUnitId()
+          if (!targetUnitId || !subUnitId) {
+            return { redos: [], undos: [] }
+          }
+
+          const previousInstances = [...this.pivotTableInstanceService.get(targetUnitId)]
+          const draftIds = new Set(
+            previousInstances
+              .filter(plugin => {
+                const status = this.pluginRenderStatusService.get(plugin.id)
+                return plugin.placement.sheetId === subUnitId && status?.status === 'draft'
+              })
+              .map(plugin => plugin.id)
+          )
+          const nextInstances = previousInstances.filter(
+            plugin => plugin.placement.sheetId !== subUnitId
+          )
+          if (nextInstances.length === previousInstances.length) {
+            return { redos: [], undos: [] }
+          }
+
+          const restoredInstances = previousInstances.filter(plugin => !draftIds.has(plugin.id))
+
+          // 已完成实例跟随 Sheet 进入撤销栈；未完成草稿删除后不再恢复。
+          return {
+            // 删除草稿状态必须早于原生 Sheet mutation，避免 Sheet 切换先触发关闭确认。
+            preRedos: [
+              {
+                id: SetPivotTableInstancesMutation.id,
+                params: {
+                  unitId: targetUnitId,
+                  instances: nextInstances,
+                  discardedDraftIds: [...draftIds]
+                }
+              }
+            ],
+            redos: [],
+            undos: [
+              {
+                id: SetPivotTableInstancesMutation.id,
+                params: { unitId: targetUnitId, instances: restoredInstances }
+              }
+            ]
+          }
+        }
+      })
+    )
+
+    this.disposeWithMe(
+      this.commandService.onCommandExecuted(commandInfo => {
+        if (commandInfo.id !== SetPivotTableInstancesMutation.id) {
+          return
+        }
+
+        const params = commandInfo.params as ISetPivotTableInstancesMutationParams | undefined
+        if (!params?.discardedDraftIds?.length) {
+          return
+        }
+
         this.dialogService.close('RangeSelectDialog')
         this.dialogService.close('PivotTableCreateDialog')
         this.pivotTableInsertionService.cancel()
@@ -186,10 +274,27 @@ export class DataEasePivotTableController extends Disposable {
           this.clearHoverRange()
           this.pivotTableRenderStyleService.deleteUnit(unitId)
         },
-        toJson: unitId => JSON.stringify(this.pivotTableInstanceService.get(unitId)),
+        toJson: unitId => JSON.stringify(this.getSerializableInstances(unitId)),
         parseJson: data => JSON.parse(data) as PivotTableConfig[]
       })
     )
+  }
+
+  private getSerializableInstances(unitId: string): PivotTableConfig[] {
+    const instances = this.pivotTableInstanceService.get(unitId)
+    const workbook = this.univerInstanceService.getUnit(unitId, UniverInstanceType.UNIVER_SHEET)
+    const sheets = workbook?.getSheets?.()
+    if (!sheets) {
+      return instances
+    }
+
+    const sheetIds = new Set(sheets.map(sheet => sheet.getSheetId()))
+    const validInstances = instances.filter(plugin => sheetIds.has(plugin.placement.sheetId))
+    if (validInstances.length !== instances.length) {
+      // 保存前兜底清理无归属 Sheet 的历史实例，内存态与持久化结果保持一致。
+      this.pivotTableInstanceService.set(unitId, validInstances)
+    }
+    return validInstances
   }
 
   private initLifecycleEvents(): void {
@@ -666,8 +771,6 @@ export class DataEasePivotTableController extends Disposable {
 
     this.restoringUnits.add(unitId)
     try {
-      // 过滤默认值先初始化完成，首次查询直接携带最终条件，避免初始化后再次刷新。
-      await this.spreadsheetFilterRuntimeService.waitForValues(unitId)
       // 每个实例独立处理：单个实例加载失败只标记该实例，不影响其他实例的恢复。
       for (const plugin of pivotPlugins) {
         try {

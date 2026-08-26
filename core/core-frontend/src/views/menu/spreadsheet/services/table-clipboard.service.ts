@@ -194,7 +194,7 @@ export class TableClipboardService extends Disposable {
       updatedAt: Date.now()
     })
 
-    await this.tableFillService.fillTableByConfig(univerApi, config)
+    await this.tableFillService.fillTable(univerApi, config)
     const state = this.detailTableDisplayStateService.get(config.id)
     const pasted = state?.sheetId === config.placement.sheetId &&
       state.startCell === config.placement.startCell

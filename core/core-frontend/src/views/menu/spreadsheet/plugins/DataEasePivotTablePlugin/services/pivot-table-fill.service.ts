@@ -1,5 +1,4 @@
 import { Inject } from '@univerjs/core'
-import { ClearSelectionFormatCommand } from '@univerjs/sheets'
 import { ElMessage } from 'element-plus-secondary'
 import type { PivotTableConfig } from '../types'
 import { validatePivotConfig } from '../utils/pivot-config-validator'
@@ -18,6 +17,12 @@ import {
   addWorksheetMergesSilently,
   removeWorksheetMergesSilently
 } from '../../../utils/silent-worksheet-merge'
+import {
+  clearWorksheetFormatsSilently,
+  setWorksheetColumnCountSilently,
+  setWorksheetRowCountSilently,
+  setWorksheetValuesSilently
+} from '../../../utils/silent-worksheet-write'
 import { TableRenderExpansionService } from '../../../services/table-render-expansion.service'
 
 interface PivotTableFillOptions {
@@ -53,32 +58,35 @@ export class PivotTableFillService {
     options: PivotTableFillOptions = {}
   ): Promise<boolean> {
     const workbook = univerApi.getActiveWorkbook?.()
-    const worksheet = workbook
-      ?.getSheets?.()
-      ?.find(sheet => sheet.getSheetId?.() === config.placement.sheetId) || workbook?.getActiveSheet?.()
-    if (!workbook || !worksheet) {
-      throw new Error('未找到透视表目标工作表')
-    }
-    const unitId = workbook.getId?.() || workbook.getUnitId?.()
-    const sheetId = worksheet.getSheetId?.()
-    if (!unitId || !sheetId) {
-      return this.fillByConfigSerial(univerApi, config, options)
+    if (!workbook) {
+      throw new Error('未找到当前工作簿')
     }
 
-    return this.tableRenderExpansionService.runExclusive(unitId, sheetId, () =>
-      this.fillByConfigSerial(univerApi, config, options)
+    const configuredSheetId = config.placement.sheetId
+    const worksheet = workbook
+      .getSheets?.()
+      ?.find(sheet => sheet.getSheetId?.() === configuredSheetId)
+    if (!worksheet) {
+      throw new Error(`未找到透视表目标工作表: ${configuredSheetId || '未配置 Sheet ID'}`)
+    }
+    const unitId = workbook.getId?.() || workbook.getUnitId?.()
+    if (!unitId) {
+      return this.fillByConfigSerial(univerApi, config, worksheet, options)
+    }
+
+    // 首次恢复可能在等待过滤器或排队期间切换 Sheet，队列内必须继续使用配置绑定的工作表。
+    return this.tableRenderExpansionService.runExclusive(unitId, configuredSheetId, () =>
+      this.fillByConfigSerial(univerApi, config, worksheet, options)
     )
   }
 
   private async fillByConfigSerial(
     univerApi: any,
     config: PivotTableConfig,
+    worksheet: any,
     options: PivotTableFillOptions = {}
   ): Promise<boolean> {
     const workbook = univerApi.getActiveWorkbook?.()
-    const worksheet = workbook
-      ?.getSheets?.()
-      ?.find(sheet => sheet.getSheetId?.() === config.placement.sheetId) || workbook?.getActiveSheet?.()
     if (!workbook || !worksheet) {
       throw new Error('未找到透视表目标工作表')
     }
@@ -218,11 +226,19 @@ export class PivotTableFillService {
         worksheet,
         config.placement.startCell
       )
-      this.editProtectionService.runWithoutProtection(() => {
-        worksheet
-          .getRange(start.row, start.col, layout.rowCount, layout.columnCount)
-          .setValues(layout.values)
-      })
+      await this.editProtectionService.runWithoutProtection(() =>
+        setWorksheetValuesSilently(univerApi, {
+          unitId,
+          sheetId,
+          range: {
+            startRow: start.row,
+            endRow: start.row + layout.rowCount - 1,
+            startColumn: start.col,
+            endColumn: start.col + layout.columnCount - 1
+          },
+          values: layout.values
+        })
+      )
       if (config.style?.base?.mergeCell) {
         await this.applyMerges(univerApi, worksheet, start, layout.merges)
       }
@@ -387,9 +403,9 @@ export class PivotTableFillService {
 
       if (clearFormat || moved) {
         await this.editProtectionService.runWithoutProtection(() =>
-          univerApi.executeCommand?.(ClearSelectionFormatCommand.id, {
+          clearWorksheetFormatsSilently(univerApi, {
             unitId,
-            subUnitId: previous.sheetId,
+            sheetId: previous.sheetId,
             ranges: [{
               startRow: start.row,
               endRow: start.row + previous.rowCount - 1,
@@ -404,11 +420,21 @@ export class PivotTableFillService {
     const emptyValues = Array.from({ length: previous.rowCount }, () =>
       Array.from({ length: previous.columnCount }, () => '')
     )
-    this.editProtectionService.runWithoutProtection(() => {
-      worksheet
-        .getRange(start.row, start.col, previous.rowCount, previous.columnCount)
-        .setValues(emptyValues)
-    })
+    if (unitId) {
+      await this.editProtectionService.runWithoutProtection(() =>
+        setWorksheetValuesSilently(univerApi, {
+          unitId,
+          sheetId: previous.sheetId,
+          range: {
+            startRow: start.row,
+            endRow: start.row + previous.rowCount - 1,
+            startColumn: start.col,
+            endColumn: start.col + previous.columnCount - 1
+          },
+          values: emptyValues
+        })
+      )
+    }
 
     if (moved) {
       this.refreshTargetSheet(univerApi, previous.sheetId)
@@ -549,35 +575,20 @@ export class PivotTableFillService {
       return
     }
 
-    if (await this.callFirstAvailable(worksheet, [
-      ['setRowCount', requiredRows],
-      ['setRowsCount', requiredRows],
-      ['resizeRows', requiredRows],
-      ['insertRowsAfter', currentRows - 1, appendCount],
-      ['insertRows', currentRows, appendCount],
-      ['appendRows', appendCount]
-    ])) {
-      return
+    const workbook = univerApi.getActiveWorkbook?.()
+    const unitId = workbook?.getId?.() || workbook?.getUnitId?.()
+    const sheetId = worksheet?.getSheetId?.()
+    if (!unitId || !sheetId) {
+      throw new Error('工作表空间不足，且无法自动扩容')
     }
 
-    const sheetModel = worksheet?.getSheet?.()
-    if (await this.callFirstAvailable(sheetModel, [
-      ['setRowCount', requiredRows],
-      ['setRowsCount', requiredRows],
-      ['resizeRows', requiredRows],
-      ['insertRowsAfter', currentRows - 1, appendCount],
-      ['insertRows', currentRows, appendCount],
-      ['appendRows', appendCount]
-    ])) {
-      return
-    }
-
-    await this.executeInsertCommand(univerApi, worksheet, 'sheet.command.insert-row', {
-      startRow: currentRows,
-      endRow: requiredRows - 1,
-      startColumn: 0,
-      endColumn: Math.max(this.getSheetColumnCount(worksheet) - 1, 0)
-    })
+    await this.editProtectionService.runWithoutProtection(() =>
+      setWorksheetRowCountSilently(univerApi, {
+        unitId,
+        sheetId,
+        count: requiredRows
+      })
+    )
   }
 
   private async expandColumns(
@@ -591,74 +602,18 @@ export class PivotTableFillService {
       return
     }
 
-    if (await this.callFirstAvailable(worksheet, [
-      ['setColumnCount', requiredColumns],
-      ['setColumnsCount', requiredColumns],
-      ['resizeColumns', requiredColumns],
-      ['insertColumnsAfter', currentColumns - 1, appendCount],
-      ['insertColumns', currentColumns, appendCount],
-      ['insertCols', currentColumns, appendCount],
-      ['appendColumns', appendCount],
-      ['appendCols', appendCount]
-    ])) {
-      return
-    }
-
-    const sheetModel = worksheet?.getSheet?.()
-    if (await this.callFirstAvailable(sheetModel, [
-      ['setColumnCount', requiredColumns],
-      ['setColumnsCount', requiredColumns],
-      ['resizeColumns', requiredColumns],
-      ['insertColumnsAfter', currentColumns - 1, appendCount],
-      ['insertColumns', currentColumns, appendCount],
-      ['insertCols', currentColumns, appendCount],
-      ['appendColumns', appendCount],
-      ['appendCols', appendCount]
-    ])) {
-      return
-    }
-
-    await this.executeInsertCommand(univerApi, worksheet, 'sheet.command.insert-col', {
-      startRow: 0,
-      endRow: Math.max(this.getSheetRowCount(worksheet) - 1, 0),
-      startColumn: currentColumns,
-      endColumn: requiredColumns - 1
-    })
-  }
-
-  private async callFirstAvailable(target: any, calls: Array<[string, ...unknown[]]>): Promise<boolean> {
-    if (!target) {
-      return false
-    }
-
-    for (const [method, ...args] of calls) {
-      if (typeof target[method] !== 'function') {
-        continue
-      }
-      await Promise.resolve(target[method](...args))
-      return true
-    }
-    return false
-  }
-
-  private async executeInsertCommand(
-    univerApi: any,
-    worksheet: any,
-    commandId: string,
-    range: { startRow: number; endRow: number; startColumn: number; endColumn: number }
-  ): Promise<void> {
     const workbook = univerApi.getActiveWorkbook?.()
     const unitId = workbook?.getId?.() || workbook?.getUnitId?.()
-    const subUnitId = worksheet?.getSheetId?.()
-    if (!unitId || !subUnitId) {
+    const sheetId = worksheet?.getSheetId?.()
+    if (!unitId || !sheetId) {
       throw new Error('工作表空间不足，且无法自动扩容')
     }
 
     await this.editProtectionService.runWithoutProtection(() =>
-      univerApi.executeCommand?.(commandId, {
+      setWorksheetColumnCountSilently(univerApi, {
         unitId,
-        subUnitId,
-        range
+        sheetId,
+        count: requiredColumns
       })
     )
   }

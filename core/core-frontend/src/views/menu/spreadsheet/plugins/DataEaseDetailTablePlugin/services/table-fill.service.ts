@@ -1,8 +1,4 @@
 import { HorizontalAlign, Inject, VerticalAlign } from '@univerjs/core'
-import {
-  ClearSelectionFormatCommand,
-  SetStyleCommand
-} from '@univerjs/sheets'
 import type { DetailTableConfig } from '../types'
 import type { CellPosition } from '../types'
 import { TableDataService } from './table-data.service'
@@ -28,6 +24,11 @@ import {
   addWorksheetMergesSilently,
   removeWorksheetMergesSilently
 } from '../../../utils/silent-worksheet-merge'
+import {
+  clearWorksheetFormatsSilently,
+  setWorksheetStylesSilently,
+  setWorksheetValuesSilently
+} from '../../../utils/silent-worksheet-write'
 import { TableRenderExpansionService } from '../../../services/table-render-expansion.service'
 
 export interface TableFillState {
@@ -64,42 +65,26 @@ export class TableFillService {
     private readonly pluginRenderStatusService: PluginRenderStatusService
   ) {}
 
-  async fillTableByConfig(
-    univerApi: any,
-    config: DetailTableConfig,
-    options: TableFillOptions = {}
-  ): Promise<boolean> {
-    const workbook = univerApi.getActiveWorkbook()
-    if (!workbook) {
-      throw new Error('No active workbook found')
-    }
-
-    const targetSheet = workbook
-      .getSheets()
-      .find(sheet => sheet.getSheetId() === config.placement.sheetId)
-
-    if (!targetSheet) {
-      return false
-    }
-
-    return this.fillTable(univerApi, config, config.placement.startCell, targetSheet, options)
-  }
-
   async fillTable(
     univerApi: any,
     config: DetailTableConfig,
-    startCell: string,
-    targetWorksheet?: any,
     options: TableFillOptions = {}
   ): Promise<boolean> {
     const workbook = univerApi.getActiveWorkbook?.()
-    const worksheet = targetWorksheet || workbook?.getActiveSheet?.()
-    if (!workbook || !worksheet) {
-      throw new Error('No active worksheet found')
+    if (!workbook) {
+      throw new Error('未找到当前工作簿')
     }
+
+    const sheetId = config.placement.sheetId
+    const worksheet = workbook
+      .getSheets?.()
+      ?.find(sheet => sheet.getSheetId?.() === sheetId)
+    if (!worksheet) {
+      throw new Error(`未找到明细表目标工作表: ${sheetId || '未配置 Sheet ID'}`)
+    }
+    const startCell = config.placement.startCell
     const unitId = workbook.getId?.() || workbook.getUnitId?.()
-    const sheetId = worksheet.getSheetId?.()
-    if (!unitId || !sheetId) {
+    if (!unitId) {
       return this.fillTableSerial(univerApi, config, startCell, worksheet, options)
     }
 
@@ -112,17 +97,13 @@ export class TableFillService {
     univerApi: any,
     config: DetailTableConfig,
     startCell: string,
-    targetWorksheet?: any,
+    targetWorksheet: any,
     options: TableFillOptions = {}
   ): Promise<boolean> {
     console.log('[TableFillService] Starting fillTable:', { startCell, config })
 
     const fWorkbook = univerApi.getActiveWorkbook()
-    const fWorksheet = targetWorksheet || fWorkbook.getActiveSheet()
-
-    if (!fWorksheet) {
-      throw new Error('No active worksheet found')
-    }
+    const fWorksheet = targetWorksheet
 
     const unitId = fWorkbook?.getId?.() || fWorkbook?.getUnitId?.()
     const sheetId = fWorksheet.getSheetId()
@@ -251,7 +232,6 @@ export class TableFillService {
         : undefined
       const conflictMessage = expansionMessage ||
         this.detailTableRangeService.validateRenderRangeBeforeFill(
-          univerApi,
           config,
           startCell,
           rowCount,
@@ -331,11 +311,19 @@ export class TableFillService {
           colCount: columnCount
         })
 
-        this.detailTableEditProtectionService.runWithoutProtection(() => {
-          fWorksheet
-            .getRange(startPos.row, startPos.col, values.length, columnCount)
-            .setValues(values)
-        })
+        await this.detailTableEditProtectionService.runWithoutProtection(() =>
+          setWorksheetValuesSilently(univerApi, {
+            unitId,
+            sheetId,
+            range: {
+              startRow: startPos.row,
+              endRow: startPos.row + values.length - 1,
+              startColumn: startPos.col,
+              endColumn: startPos.col + columnCount - 1
+            },
+            values
+          })
+        )
       }
 
       this.displayStateService.set({
@@ -408,15 +396,15 @@ export class TableFillService {
     const indexLabel = config.style?.header?.indexLabel?.trim() || '序号'
     const hideHeader = !!config.style?.base?.hideHeader
     if (!!state.hideHeader !== hideHeader) {
-      await this.fillTableByConfig(univerApi, config)
+      await this.fillTable(univerApi, config)
       return
     }
     if (state.totalDataSignature !== this.getTotalDataSignature(config)) {
-      await this.fillTableByConfig(univerApi, config)
+      await this.fillTable(univerApi, config)
       return
     }
     if (!!state.showIndex !== showIndex) {
-      await this.fillTableByConfig(univerApi, config)
+      await this.fillTable(univerApi, config)
       return
     }
 
@@ -432,9 +420,19 @@ export class TableFillService {
         .getSheets?.()
         ?.find(sheet => sheet.getSheetId() === state.sheetId)
       if (!hideHeader) {
-        this.detailTableEditProtectionService.runWithoutProtection(() => {
-          worksheet?.getRange(startPos.row, startPos.col, 1, 1).setValues([[indexLabel]])
-        })
+        await this.detailTableEditProtectionService.runWithoutProtection(() =>
+          setWorksheetValuesSilently(univerApi, {
+            unitId,
+            sheetId: state.sheetId,
+            range: {
+              startRow: startPos.row,
+              endRow: startPos.row,
+              startColumn: startPos.col,
+              endColumn: startPos.col
+            },
+            values: [[indexLabel]]
+          })
+        )
       }
       this.displayStateService.set({
         ...state,
@@ -699,10 +697,11 @@ export class TableFillService {
     const dataValues = state.dataValues
 
     const workbook = univerApi.getActiveWorkbook()
+    const unitId = workbook?.getId?.() || workbook?.getUnitId?.()
     const worksheet = workbook
       ?.getSheets?.()
       ?.find(sheet => sheet.getSheetId() === state.sheetId)
-    if (!worksheet) {
+    if (!unitId || !worksheet) {
       return
     }
 
@@ -715,16 +714,20 @@ export class TableFillService {
         startPos.col + state.colCount
       )
     )
-    this.detailTableEditProtectionService.runWithoutProtection(() => {
-      worksheet
-        .getRange(
-          startPos.row + (state.hideHeader ? 0 : 1),
-          startPos.col,
-          dataValues.length,
-          state.colCount
-        )
-        .setValues(dataValues)
-    })
+    const dataStartRow = startPos.row + (state.hideHeader ? 0 : 1)
+    await this.detailTableEditProtectionService.runWithoutProtection(() =>
+      setWorksheetValuesSilently(univerApi, {
+        unitId,
+        sheetId: state.sheetId,
+        range: {
+          startRow: dataStartRow,
+          endRow: dataStartRow + dataValues.length - 1,
+          startColumn: startPos.col,
+          endColumn: startPos.col + state.colCount - 1
+        },
+        values: dataValues
+      })
+    )
   }
 
   private async removeMerges(
@@ -748,30 +751,25 @@ export class TableFillService {
     sheetId: string,
     ranges: Array<{ startRow: number; endRow: number; startColumn: number; endColumn: number }>
   ): Promise<void> {
-    await this.detailTableEditProtectionService.runWithoutProtection(async () => {
-      for (const range of ranges) {
-        // 未启用单元格样式时，合并后的维度字段仍与普通维度字段保持左对齐。
-        await univerApi.executeCommand?.(SetStyleCommand.id, {
-          unitId,
-          subUnitId: sheetId,
-          range,
-          style: { type: 'ht', value: HorizontalAlign.LEFT }
-        })
-        await univerApi.executeCommand?.(SetStyleCommand.id, {
-          unitId,
-          subUnitId: sheetId,
-          range,
-          style: { type: 'vt', value: VerticalAlign.MIDDLE }
-        })
-      }
-    })
+    // 未启用单元格样式时，合并后的维度字段仍与普通维度字段保持左对齐。
+    await this.detailTableEditProtectionService.runWithoutProtection(() =>
+      setWorksheetStylesSilently(univerApi, {
+        unitId,
+        sheetId,
+        ranges,
+        style: {
+          ht: HorizontalAlign.LEFT,
+          vt: VerticalAlign.MIDDLE
+        }
+      })
+    )
   }
 
   private async clearPreviousData(
     univerApi: any,
     pluginId: string,
     targetStartCell: string,
-    targetWorksheet?: any
+    targetWorksheet: any
   ): Promise<void> {
     const state = this.displayStateService.get(pluginId)
     if (!state) return
@@ -840,11 +838,11 @@ export class TableFillService {
   private async clearTableValues(
     univerApi: any,
     state: DetailTableDisplayState,
-    targetWorksheet?: any
+    targetWorksheet: any
   ): Promise<void> {
     const startPos = this.parseCell(state.startCell)
     const fWorkbook = univerApi.getActiveWorkbook()
-    const fWorksheet = targetWorksheet || fWorkbook.getActiveSheet()
+    const fWorksheet = targetWorksheet
     const unitId = fWorkbook?.getId?.() || fWorkbook?.getUnitId?.()
     const subUnitId = fWorksheet?.getSheetId?.()
 
@@ -876,15 +874,21 @@ export class TableFillService {
       Array.from({ length: state.colCount }, () => '')
     )
 
-    this.detailTableEditProtectionService.runWithoutProtection(() => {
-      const range = fWorksheet.getRange(
-        startPos.row,
-        startPos.col,
-        state.rowCount,
-        state.colCount
+    if (unitId && subUnitId) {
+      await this.detailTableEditProtectionService.runWithoutProtection(() =>
+        setWorksheetValuesSilently(univerApi, {
+          unitId,
+          sheetId: subUnitId,
+          range: {
+            startRow: startPos.row,
+            endRow: startPos.row + state.rowCount - 1,
+            startColumn: startPos.col,
+            endColumn: startPos.col + state.colCount - 1
+          },
+          values: emptyValues
+        })
       )
-      range.setValues(emptyValues)
-    })
+    }
   }
 
   async clearTableData(
@@ -892,11 +896,11 @@ export class TableFillService {
     startCell: string,
     rowCount: number,
     colCount: number,
-    targetWorksheet?: any
+    targetWorksheet: any
   ): Promise<void> {
     const startPos = this.parseCell(startCell)
     const fWorkbook = univerApi.getActiveWorkbook()
-    const fWorksheet = targetWorksheet || fWorkbook.getActiveSheet()
+    const fWorksheet = targetWorksheet
     const unitId = fWorkbook?.getId?.() || fWorkbook?.getUnitId?.()
     const subUnitId = fWorksheet?.getSheetId?.()
     const state = subUnitId ? this.displayStateService.findByLocation(subUnitId, startCell) : undefined
@@ -935,11 +939,21 @@ export class TableFillService {
       Array.from({ length: colCount }, () => '')
     )
 
-    this.detailTableEditProtectionService.runWithoutProtection(() => {
-      fWorksheet
-        .getRange(startPos.row, startPos.col, rowCount, colCount)
-        .setValues(emptyValues)
-    })
+    if (unitId && subUnitId) {
+      await this.detailTableEditProtectionService.runWithoutProtection(() =>
+        setWorksheetValuesSilently(univerApi, {
+          unitId,
+          sheetId: subUnitId,
+          range: {
+            startRow: startPos.row,
+            endRow: startPos.row + rowCount - 1,
+            startColumn: startPos.col,
+            endColumn: startPos.col + colCount - 1
+          },
+          values: emptyValues
+        })
+      )
+    }
 
     if (state) {
       this.displayStateService.delete(state.pluginId)
@@ -960,9 +974,9 @@ export class TableFillService {
 
     const start = this.parseCell(startCell)
     await this.detailTableEditProtectionService.runWithoutProtection(() =>
-      univerApi.executeCommand?.(ClearSelectionFormatCommand.id, {
+      clearWorksheetFormatsSilently(univerApi, {
         unitId,
-        subUnitId: sheetId,
+        sheetId,
         ranges: [{
           startRow: start.row,
           endRow: start.row + rowCount - 1,
