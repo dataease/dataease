@@ -1,5 +1,4 @@
 import {
-  ClearSelectionAllCommand,
   ClearSelectionContentCommand,
   DeleteRangeMoveLeftCommand,
   DeleteRangeMoveUpCommand,
@@ -32,7 +31,6 @@ import {
 } from '@univerjs/sheets-filter'
 import { OpenFilterPanelOperation } from '@univerjs/sheets-filter-ui'
 import {
-  ApplyFormatPainterCommand,
   DeleteRangeMoveLeftConfirmCommand,
   DeleteRangeMoveUpConfirmCommand,
   IEditorBridgeService,
@@ -88,16 +86,15 @@ const REMOVE_TABLE_COL_COMMAND_ID = 'sheet.command.table-remove-col'
 const SORT_RANGE_COMMAND_ID = 'sheet.command.sort-range'
 
 export class DetailTableEditProtectionService {
+  // 格式刷和“清除全部”由共享白名单策略收敛为纯用户样式写入，不再作为内容编辑拦截。
   private readonly valueCommandIds = new Set([
     SetRangeValuesCommand.id,
     SetRangeValuesMutation.id,
-    ClearSelectionAllCommand.id,
     ClearSelectionContentCommand.id,
     TextToNumberCommand.id,
     SplitTextToColumnsCommand.id,
     AutoFillCommand.id,
     AutoClearContentCommand.id,
-    ApplyFormatPainterCommand.id,
     SetCellEditVisibleOperation.id,
     SheetCutCommand.id,
     SheetCutCommand.name
@@ -283,7 +280,6 @@ export class DetailTableEditProtectionService {
         }
       case SetRangeValuesMutation.id:
         return withRanges(this.matrixToRanges(params.cellValue), params.subUnitId || sheetId)
-      case ClearSelectionAllCommand.id:
       case ClearSelectionContentCommand.id:
       case TextToNumberCommand.id:
       case SheetCutCommand.id:
@@ -318,8 +314,6 @@ export class DetailTableEditProtectionService {
         ]
       case AutoClearContentCommand.id:
         return withSheet(params.clearRange, sheetId)
-      case ApplyFormatPainterCommand.id:
-        return withSheet(params.range, params.subUnitId || sheetId)
       case SetCellEditVisibleOperation.id:
         {
           if (params.visible !== true) {
@@ -612,9 +606,17 @@ export class DetailTableEditProtectionService {
       return false
     }
 
+    const protectedRanges = this.getProtectedRanges(sheetId)
+
     return isPresentationOnlyCellValueMutation(
       params.cellValue,
-      (row, column) => worksheet.getCellRaw?.(row, column)
+      (row, column) => worksheet.getCellRaw?.(row, column),
+      (row, column) => protectedRanges.some(range =>
+        row >= range.startRow &&
+        row <= range.endRow &&
+        column >= range.startColumn &&
+        column <= range.endColumn
+      )
     )
   }
 

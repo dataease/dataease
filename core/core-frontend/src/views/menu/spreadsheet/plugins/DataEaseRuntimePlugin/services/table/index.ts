@@ -12,6 +12,7 @@ export type {
   PluginRenderStatusKind
 } from './plugin-render-status.service'
 export { TableInsertionService } from './table-insertion.service'
+export { TableUserStyleService } from './table-user-style.service'
 export {
   TableRangeConflictService
 } from './table-range-conflict.service'

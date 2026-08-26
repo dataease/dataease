@@ -32,7 +32,8 @@ export class TableStyleService {
    */
   convertHeaderStyle(style: DetailTableHeaderStyle): Partial<IStyleData> {
     return {
-      ...(style.backgroundColor ? { bg: { rgb: style.backgroundColor } } : {}),
+      // 区域样式开启后，空背景色也要显式覆盖用户自定义背景色。
+      bg: style.backgroundColor ? { rgb: style.backgroundColor } : null,
       cl: { rgb: style.textColor },
       fs: style.fontSize,
       bl: style.bold ? BooleanNumber.TRUE : BooleanNumber.FALSE,
@@ -49,7 +50,7 @@ export class TableStyleService {
    */
   convertCellStyle(style: DetailTableCellStyle): Partial<IStyleData> {
     return {
-      ...(style.backgroundColor ? { bg: { rgb: style.backgroundColor } } : {}),
+      bg: style.backgroundColor ? { rgb: style.backgroundColor } : null,
       cl: { rgb: style.textColor },
       fs: style.fontSize,
       bl: style.bold ? BooleanNumber.TRUE : BooleanNumber.FALSE,
@@ -66,7 +67,7 @@ export class TableStyleService {
    */
   convertTotalRowStyle(style: DetailTableTotalStyle): Partial<IStyleData> {
     return {
-      ...(style.backgroundColor ? { bg: { rgb: style.backgroundColor } } : {}),
+      bg: style.backgroundColor ? { rgb: style.backgroundColor } : null,
       cl: { rgb: style.textColor },
       fs: style.fontSize,
       bl: style.bold ? BooleanNumber.TRUE : BooleanNumber.FALSE,
