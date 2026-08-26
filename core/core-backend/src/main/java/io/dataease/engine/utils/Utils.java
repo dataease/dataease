@@ -618,4 +618,13 @@ public class Utils {
             }
         }
     }
+
+    // 校验自定义日期格式，仅允许日期格式相关字符（任意语言字母、数字、空白及常见分隔符），拒绝可造成 SQL 注入的字符
+    public static boolean isValidDateFormat(String value) {
+        String normalized = StringUtils.defaultString(value);
+        if (StringUtils.isEmpty(normalized)) {
+            return true;
+        }
+        return normalized.matches("[\\p{L}\\p{N}\\s%\\-/:._]+");
+    }
 }

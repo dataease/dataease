@@ -104,7 +104,7 @@ public class Order2SQLObj {
                 fieldName = String.format(SQLConstants.CAST, originField, SQLConstants.DEFAULT_FLOAT_FORMAT);
             } else if (Objects.equals(f.getDeType(), DeTypeConstants.DE_TIME)) {
                 fieldName = StringUtils.isEmpty(f.getDateFormat()) ? String.format(SQLConstants.DE_STR_TO_DATE, originField, SQLConstants.DEFAULT_DATE_FORMAT) :
-                        String.format(SQLConstants.DE_DATE_FORMAT, String.format(SQLConstants.DE_STR_TO_DATE, originField, f.getDateFormat()), SQLConstants.DEFAULT_DATE_FORMAT);
+                        String.format(SQLConstants.DE_DATE_FORMAT, String.format(SQLConstants.DE_STR_TO_DATE, originField, Utils.isValidDateFormat(f.getDateFormat()) ? Utils.transValue(f.getDateFormat()) : SQLConstants.DEFAULT_DATE_FORMAT), SQLConstants.DEFAULT_DATE_FORMAT);
             } else {
                 fieldName = originField;
             }
