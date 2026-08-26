@@ -45,7 +45,6 @@ import {
   TOOLTIP_ITEM_TPL,
   TOOLTIP_TITLE_TPL
 } from '../../../common/common_antv'
-import { registerSymbol, Symbols } from '@antv/g2/esm/utils/marker'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 import {
   createTooltipWrapper,
@@ -136,8 +135,6 @@ export class Area extends G2ChartView {
       { type: 'point', tooltip: false, zIndex: 0 }
     ]
   }
-  EMPTY_MARKER = () => []
-
   async drawChart(drawOptions: G2DrawOptions<G2Chart>): Promise<G2Chart> {
     const { chart, action, container, scale } = drawOptions
     chart.container = container
@@ -625,6 +622,13 @@ export class Area extends G2ChartView {
       const assistLineMark: G2Spec = {
         type: 'lineY',
         encode: { y: 'value', color: () => randomAssistColorScale },
+        scale: {
+          color: {
+            independent: true
+          }
+        },
+        // 只关闭辅助线独立比例尺的图例，避免影响系列图例
+        legend: false,
         data: lineData,
         zIndex: 0,
         style: {
@@ -651,27 +655,6 @@ export class Area extends G2ChartView {
         ]
       }
       options.children.push(assistLineMark)
-      if (options.legend?.color) {
-        const colorLegend = options.legend.color
-        if (!Symbols.has('empty')) {
-          registerSymbol('empty', this.EMPTY_MARKER)
-        }
-        const originMarker = colorLegend.itemMarker
-        merge(colorLegend, {
-          itemMarker: d => {
-            if (d === randomAssistColorScale || d.id === randomAssistColorScale) {
-              return 'empty'
-            }
-            return originMarker
-          },
-          itemLabelText: d => {
-            if (d.id === randomAssistColorScale) {
-              return ''
-            }
-            return d.id
-          }
-        })
-      }
     }
     return options
   }
@@ -851,7 +834,6 @@ export class Area extends G2ChartView {
 
   constructor(name = 'area') {
     super(name, DEFAULT_DATA)
-    this.EMPTY_MARKER.style = []
   }
 }
 
@@ -1110,6 +1092,13 @@ export class StackArea extends Area {
         const assistLineMark: G2Spec = {
           type: 'lineY',
           encode: { y: 'value', color: () => randomAssistColorScale },
+          scale: {
+            color: {
+              independent: true
+            }
+          },
+          // 堆叠面积图也只关闭辅助线自身的图例
+          legend: false,
           data: [line],
           zIndex: 0,
           style: {
@@ -1135,27 +1124,6 @@ export class StackArea extends Area {
         }
         options.children.push(assistLineMark)
       })
-      if (options.legend?.color) {
-        const colorLegend = options.legend.color
-        if (!Symbols.has('empty')) {
-          registerSymbol('empty', this.EMPTY_MARKER)
-        }
-        const originMarker = colorLegend.itemMarker
-        merge(colorLegend, {
-          itemMarker: d => {
-            if (d === randomAssistColorScale || d.id === randomAssistColorScale) {
-              return 'empty'
-            }
-            return originMarker
-          },
-          itemLabelText: d => {
-            if (d.id === randomAssistColorScale) {
-              return ''
-            }
-            return d.id
-          }
-        })
-      }
     }
     return options
   }

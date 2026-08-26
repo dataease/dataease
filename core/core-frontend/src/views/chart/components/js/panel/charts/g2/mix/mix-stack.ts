@@ -7,7 +7,7 @@ import {
   hexColorToRGBA,
   parseJson
 } from '@/views/chart/components/js/util'
-import { cloneDeep, defaultsDeep, isEmpty, merge, random } from 'lodash-es'
+import { cloneDeep, defaultsDeep, isEmpty, merge } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Chart as G2Chart, extend, G2Spec, Runtime, stdlib } from '@antv/g2'
@@ -34,7 +34,6 @@ import {
   getAssistLineAxisIndex,
   getMixLabelTransform
 } from './common'
-import { registerSymbol, Symbols } from '@antv/g2/esm/utils/marker'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 import {
   bindPlotBackgroundClick,
@@ -195,8 +194,6 @@ export class StackLineMix extends G2ChartView {
       allowEmpty: true
     }
   }
-
-  EMPTY_MARKER = () => []
 
   protected getLeftType(): string {
     return 'column'
@@ -843,16 +840,6 @@ export class StackLineMix extends G2ChartView {
     return options
   }
 
-  private randomString(length: number): string {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-    let result = ''
-    for (let i = 0; i < length; i++) {
-      const randomIndex = Math.floor(Math.random() * chars.length)
-      result += chars[randomIndex]
-    }
-    return result
-  }
-
   protected configAssistLine(chart: Chart, options: G2Spec): G2Spec {
     const { assistLineCfg } = parseJson(chart.senior)
     if (!assistLineCfg.enable || !assistLineCfg.assistLine?.length) {
@@ -889,17 +876,18 @@ export class StackLineMix extends G2ChartView {
     const yAxisExtFormatterCfg =
       yAxisExt.axisLabelFormatter ?? DEFAULT_YAXIS_STYLE.axisLabelFormatter
     const view = options.children.find(c => c.key === 'chart')
-    const randomAssistColorScale = this.randomString(6)
     splitLineData.forEach((lineData, index) => {
       if (lineData.length) {
         const assistLineMark: G2Spec = {
           type: 'lineY',
-          encode: { y: 'value', color: () => randomAssistColorScale },
+          encode: { y: 'value' },
           scale: {
             y: {
               key: index === 0 ? 'left' : 'right'
             }
           },
+          // 右轴辅助线使用独立比例尺，只关闭其自动生成的冗余轴
+          ...(index === 1 ? { axis: { y: false } } : {}),
           data: lineData,
           style: {
             stroke: d => d.color,
@@ -928,37 +916,12 @@ export class StackLineMix extends G2ChartView {
             }
           ],
           tooltip: false,
+          // 无 color 通道且关闭图例，图例筛选不会再触达辅助线
           legend: false
         }
         view.children.push(assistLineMark)
       }
     })
-    const assistFlag = splitLineData.some(l => l.length > 0)
-    const { legend } = parseJson(chart.customStyle)
-    // 处理 legend 点击辅助线会消失，创建一个隐藏的 legend 项
-    if (assistFlag && legend.show) {
-      const legendMark = options.children.find(c => c.key === 'legend')
-      legendMark.scale.color.domain.push(randomAssistColorScale)
-      legendMark.scale.color.relations.push([randomAssistColorScale, '#000000'])
-      if (!Symbols.has('empty')) {
-        registerSymbol('empty', this.EMPTY_MARKER)
-      }
-      const originMarker = legendMark.itemMarker
-      merge(legendMark, {
-        itemMarker: d => {
-          if (d === randomAssistColorScale || d.id === randomAssistColorScale) {
-            return 'empty'
-          }
-          return originMarker
-        },
-        itemLabelText: d => {
-          if (d.id === randomAssistColorScale) {
-            return ''
-          }
-          return d.id
-        }
-      })
-    }
     return options
   }
 
@@ -1084,7 +1047,6 @@ export class StackLineMix extends G2ChartView {
 
   constructor(name = 'chart-mix-stack') {
     super(name, [])
-    this.EMPTY_MARKER.style = []
   }
 }
 

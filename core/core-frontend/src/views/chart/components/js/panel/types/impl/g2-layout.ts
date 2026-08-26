@@ -36,6 +36,7 @@ import {
 } from '@antv/g2/esm/runtime/layout'
 import {
   computeLabelsBBox,
+  computeTitleBBox,
   createScale,
   groupComponents,
   styleOf
@@ -324,6 +325,96 @@ const isSideLegendPaged = (component: G2GuideComponentOptions, library: G2Librar
   }
   const domain = createScale(component, library).getOptions().domain ?? []
   return domain.length > cols * rows
+}
+
+/**
+ * 按当前可见页的最长图例项计算侧边图例占宽
+ *
+ * G2 默认使用所有分页中的最长文本计算 component.size，这会让短文本页仍然挤压 Plot
+ * 这里只处理单列左右图例，多列横向侧栏继续沿用 G2 原网格宽度
+ */
+const getCurrentSideLegendPageSize = (
+  component: G2GuideComponentOptions,
+  theme: G2Theme,
+  library: G2Library
+) => {
+  const columns = Number(component.cols)
+  const rows = Number(component.gridRow)
+  if (
+    component.dataeaseLegendOrientLayout === 'horizontal' ||
+    columns !== 1 ||
+    !Number.isFinite(rows) ||
+    rows <= 0
+  ) {
+    return undefined
+  }
+  const scale = createScale(component, library)
+  const domain = scale.getOptions().domain ?? []
+  const pageSize = Math.max(1, rows * columns)
+  const totalPages = Math.max(1, Math.ceil(domain.length / pageSize))
+  const currentPage = Math.max(
+    0,
+    Math.min(Number(component.dataeaseSideLegendCurrentPage) || 0, totalPages - 1)
+  )
+  const start = currentPage * pageSize
+  const end = Math.min(domain.length, start + pageSize)
+  const legendStyle = getSideLegendStyle(component, theme)
+  const labelBounds = computeLabelsBBox(legendStyle, scale, 'itemLabel') ?? []
+  const valueBounds =
+    legendStyle.itemValueText !== undefined
+      ? computeLabelsBBox(legendStyle, scale, 'itemValue') ?? []
+      : []
+  const itemSpacing = Array.isArray(legendStyle.itemSpacing)
+    ? legendStyle.itemSpacing.map(value => Number(value) || 0)
+    : [Number(legendStyle.itemSpacing) || 0, 0, 0]
+  const markerWidth = Number(legendStyle.itemMarkerSize) || 0
+  const focusWidth = legendStyle.focus ? Number(legendStyle.focusMarkerSize) || 12 : 0
+  let maxItemWidth = 0
+  for (let index = start; index < end; index++) {
+    const labelWidth = Number(labelBounds[index]?.width) || 0
+    const valueWidth = Number(valueBounds[index]?.width) || 0
+    const valueSpacing = valueBounds[index] ? itemSpacing[1] || 0 : 0
+    const focusSpacing = focusWidth ? itemSpacing[2] || 0 : 0
+    maxItemWidth = Math.max(
+      maxItemWidth,
+      markerWidth +
+        labelWidth +
+        valueWidth +
+        (itemSpacing[0] || 0) +
+        valueSpacing +
+        focusWidth +
+        focusSpacing
+    )
+  }
+  const titleWidth = Number(computeTitleBBox(legendStyle)?.width) || 0
+  const navigatorWidth = Number(legendStyle.colPadding) || SIDE_LEGEND_NAVIGATOR_WIDTH
+  return Math.max(1, titleWidth, maxItemWidth + navigatorWidth)
+}
+
+const applyCurrentSideLegendPageSize = (
+  sideLegends: G2GuideComponentOptions[],
+  theme: G2Theme,
+  library: G2Library
+) => {
+  let changed = false
+  sideLegends.forEach(component => {
+    if (!isSideLegendPaged(component, library)) {
+      return
+    }
+    const currentPageSize = getCurrentSideLegendPageSize(component, theme, library)
+    if (!Number.isFinite(currentPageSize) || currentPageSize <= 0) {
+      return
+    }
+    const originalSize = Number(component.size)
+    const safePageSize = Number.isFinite(originalSize)
+      ? Math.min(originalSize, currentPageSize)
+      : currentPageSize
+    if (!Number.isFinite(originalSize) || Math.abs(originalSize - safePageSize) > 0.5) {
+      component.size = safePageSize
+      changed = true
+    }
+  })
+  return changed
 }
 
 /**
@@ -1204,6 +1295,13 @@ export function computeLayout(
     const pagedLegendLayout = computeG2Layout(components, layoutOptions, theme, library)
     if (pagedLegendLayout) {
       layout = pagedLegendLayout
+    }
+  }
+  // 分页完成后再按当前页最长文本收紧图例占宽，让 Plot 同步使用释放出的空间
+  if (applyCurrentSideLegendPageSize(sideLegends, theme, library)) {
+    const currentPageLegendLayout = computeG2Layout(components, layoutOptions, theme, library)
+    if (currentPageLegendLayout) {
+      layout = currentPageLegendLayout
     }
   }
   // 没有标准轴时无需执行轴标签处理，但上面的侧边图例处理仍然有效

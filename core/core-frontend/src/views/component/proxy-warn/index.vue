@@ -17,16 +17,19 @@ const { t } = useI18n()
 const userStore = useUserStoreWithOut()
 
 const exitProxy = () => {
+  const original = userStore.proxyInfo
+  // 先清代理信息：点击后新请求立即不再携带 X-DE-ADMIN-PROXY header
+  userStore.setProxyInfo({
+    proxy: false,
+    proxyOid: null,
+    proxySecret: null
+  })
   request.post({url: '/user/proxyClear'}).then(() => {
-    userStore.setProxyInfo({
-      proxy: false,
-      proxyOid: null,
-      proxySecret: null
-    })
     userStore.setUid('')
     location.href = location.origin + location.pathname
+  }).catch(() => {
+    userStore.setProxyInfo(original)
   })
-  
 }
 </script>
 

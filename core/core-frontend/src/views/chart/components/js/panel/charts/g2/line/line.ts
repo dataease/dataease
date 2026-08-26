@@ -41,7 +41,6 @@ import {
   TOOLTIP_TITLE_TPL
 } from '../../../common/common_antv'
 import { extremumEvt, addExtremumText } from '@/views/chart/components/js/extremumUitl'
-import { registerSymbol, Symbols } from '@antv/g2/esm/utils/marker'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 import {
   createTooltipWrapper,
@@ -88,8 +87,6 @@ export class Line extends G2ChartView {
       type: 'q'
     }
   }
-
-  EMPTY_MARKER = () => []
 
   async drawChart(drawOptions: G2DrawOptions<G2Chart>): Promise<G2Chart> {
     const { chart, action, container, scale } = drawOptions
@@ -673,6 +670,13 @@ export class Line extends G2ChartView {
         type: 'lineY',
         zIndex: 0,
         encode: { y: 'value', color: () => randomAssistColorScale },
+        scale: {
+          color: {
+            independent: true
+          }
+        },
+        // 只关闭辅助线独立比例尺的图例，避免影响系列图例
+        legend: false,
         data: lineData,
         style: {
           stroke: d => d.color,
@@ -698,27 +702,6 @@ export class Line extends G2ChartView {
         ]
       }
       options.children.push(assistLineMark)
-      if (options.legend?.color) {
-        const colorLegend = options.legend.color
-        if (!Symbols.has('empty')) {
-          registerSymbol('empty', this.EMPTY_MARKER)
-        }
-        const originMarker = colorLegend.itemMarker
-        merge(colorLegend, {
-          itemMarker: d => {
-            if (d === randomAssistColorScale || d.id === randomAssistColorScale) {
-              return 'empty'
-            }
-            return originMarker
-          },
-          itemLabelText: d => {
-            if (d.id === randomAssistColorScale) {
-              return ''
-            }
-            return d.id
-          }
-        })
-      }
     }
     return options
   }
@@ -890,6 +873,5 @@ export class Line extends G2ChartView {
 
   constructor(name = 'line') {
     super(name, DEFAULT_DATA)
-    this.EMPTY_MARKER.style = []
   }
 }

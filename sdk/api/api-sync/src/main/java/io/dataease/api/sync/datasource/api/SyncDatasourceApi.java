@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Map;
@@ -64,7 +65,9 @@ public interface SyncDatasourceApi {
     Map<String, Object> getFields(@RequestBody DatasourceRequest getDsRequest) throws DEException;
 
     @GetMapping("/list/{type}")
-    List<DatasourceDTO> listByType(@PathVariable("type") String type) throws DEException;
+    List<DatasourceDTO> listByType(
+            @PathVariable("type") String type,
+            @RequestParam("datasourceRole") Integer datasourceRole) throws DEException;
 
     @GetMapping("/table/list/{dsId}")
     List<DBTableDTO> getTableList(@PathVariable("dsId") String dsId) throws DEException;

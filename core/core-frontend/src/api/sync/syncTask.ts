@@ -202,8 +202,8 @@ export interface IDsTable {
   datasetPath: string
 }
 
-export const getDatasourceListByTypeApi = (type: string) => {
-  return request.get({ url: `/sync/datasource/list/${type}` })
+export const getDatasourceListByTypeApi = (type: string, datasourceRole: number) => {
+  return request.get({ url: `/sync/datasource/list/${type}`, params: { datasourceRole } })
 }
 export const getTaskInfoListApi = (current: number, size: number, data) => {
   return request.post({ url: `/sync/task/pager/${current}/${size}`, data: data })
