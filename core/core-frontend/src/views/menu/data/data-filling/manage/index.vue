@@ -143,7 +143,7 @@ const customTreeStyle = computed(() => {
   }
 
   return {
-    height: `${datasourceContentHeight.value - 178}px`
+    height: `${datasourceContentHeight.value - 105}px`
   }
 })
 
@@ -1767,7 +1767,7 @@ function getMultipleValueList(data) {
 
     &.h90 {
       .df-table-container {
-        height: calc(100% - 148px);
+        height: calc(100% - 90px);
       }
     }
   }
