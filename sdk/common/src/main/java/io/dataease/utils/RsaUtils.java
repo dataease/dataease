@@ -162,7 +162,8 @@ public class RsaUtils {
 
     public static String encryptStr(String data) {
         try {
-            return encrypt(data, getPublicKey(publicKey()));
+            CoreRsa coreRsa = rsaManage.query();
+            return encrypt(data, getPublicKey(coreRsa.getPublicKey()));
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
             throw new RuntimeException(e);
