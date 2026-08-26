@@ -21,6 +21,7 @@ import {deepCopy} from "@/utils/utils";
 import dvInfo from "@/assets/svg/dv-info.svg";
 import DorisProperty from "./component/DorisProperty.vue";
 import PluginComponent from "@/components/plugin/src/PluginComponent.vue";
+import {SYNC_DATASOURCE_ROLE} from "../../ds/form/option";
 
 const {t} = useI18n();
 
@@ -49,7 +50,10 @@ const form = computed<ITaskInfoRes>({
   }
 });
 const databaseList = ref(deepCopy(props.dsTypeListData))
-const isPlugin = ref(false)
+const isPlugin = computed(() => {
+  const currentDs = props.dsTypeListData?.find(item => item.type === form.value.target.type);
+  return !!currentDs?.isPlugin;
+})
 const sinkKeyPolicy = ref<SinkKeyPolicy>("OPTIONAL")
 // 目标数据库自定义属性组件
 const targetPropertyFormRef = ref();
@@ -149,14 +153,20 @@ onMounted(() => {
   if (!props.isEdit && !form.value.target.datasourceId) {
     form.value.target.type = "doris";
   }
-  getDatasourceListByTypeApi(form.value.target.type).then((res) => {
+  getDatasourceListByTypeApi(form.value.target.type, SYNC_DATASOURCE_ROLE.TARGET).then((res) => {
     if (res) {
-      form.value.target.dsList = res.data;
+      // PostgreSQL 源端和目标端共用 type，目标表单必须只保留角色 2
+      form.value.target.dsList = (res.data || []).filter(
+          item => item.datasourceRole === SYNC_DATASOURCE_ROLE.TARGET
+      );
       if (!form.value.target.datasourceId) {
-        form.value.target.datasourceId = res.data[0]?.id as string;
+        form.value.target.datasourceId = (form.value.target.dsList?.[0]?.id || '') as string;
       }
       void refreshSinkKeyPolicy();
-      targetPropertyFormRef.value?.initTargetCustomProperty();
+      // 内置目标组件直接初始化，插件组件由加载完成事件通过 invokeMethod 初始化
+      if (!isPlugin.value) {
+        targetPropertyFormRef.value?.initTargetCustomProperty();
+      }
     }
   }).catch((err) => {
     ElMessage.error(err.message);
@@ -470,12 +480,13 @@ const sizeChange = (size) => {
   pageState.paginationConfig.pageSize = size;
 };
 const changeTargetType = () => {
-  const currentDs = props.dsTypeListData?.find(item => item.type === form.value.target.type);
-  isPlugin.value = !!currentDs && currentDs.isPlugin;
-  getDatasourceListByTypeApi(form.value.target.type).then((res) => {
+  pluginLoadFailed.value = false;
+  getDatasourceListByTypeApi(form.value.target.type, SYNC_DATASOURCE_ROLE.TARGET).then((res) => {
     if (res) {
-      form.value.target.dsList = res.data?.filter(i => i.datasourceRole === 2);
-      const id = form.value.target.dsList?.length?.[0]?.id || '';
+      form.value.target.dsList = (res.data || []).filter(
+          item => item.datasourceRole === SYNC_DATASOURCE_ROLE.TARGET
+      );
+      const id = form.value.target.dsList?.[0]?.id || '';
       form.value.target.datasourceId = id as string;
       if (!isPlugin.value) {
         targetPropertyFormRef.value?.initTargetCustomProperty();
@@ -622,23 +633,71 @@ function handleValidateFieldList(_, callback) {
 //endregion
 
 // region 数据验证
+const PLUGIN_VALIDATE_TIMEOUT = 10000;
+const pluginLoadFailed = ref(false);
+
+const pluginComponentLoadFail = () => {
+  pluginLoadFailed.value = true;
+};
+
+const validatePluginTargetProperty = () => {
+  return new Promise<boolean>((resolve, reject) => {
+    let settled = false;
+    const settle = (result: boolean) => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timeoutId);
+      resolve(result);
+    };
+    const fail = (error: unknown) => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timeoutId);
+      reject(error);
+    };
+    // 同时兼容返回 Promise<boolean> 的新插件和使用 callback 的历史插件
+    const timeoutId = window.setTimeout(() => {
+      fail(new Error("Plugin validation timeout"));
+    }, PLUGIN_VALIDATE_TIMEOUT);
+    Promise.resolve(targetPropertyFormRef.value.invokeMethod({
+      methodName: "targetPropertyValidate",
+      args: [{callback: settle}]
+    })).then(result => {
+      if (typeof result === "boolean") {
+        settle(result);
+      }
+    }).catch(fail);
+  });
+};
+
 const validate = async (loading?: Ref<boolean>) => {
   if (!validateFieldList()) {
     return false;
   }
   if (!targetPropertyFormRef.value) {
+    if (isPlugin.value) {
+      ElMessage.error(t("sync_datasource.plugin_load_failed"));
+    }
     return false;
   }
   let targetPropertyValid: boolean;
-  if (isPlugin.value) {
-    targetPropertyValid = await new Promise<boolean>((resolve) => {
-      targetPropertyFormRef.value.invokeMethod({
-        methodName: "targetPropertyValidate",
-        args: [{callback: resolve}]
-      });
-    });
-  } else {
-    targetPropertyValid = await targetPropertyFormRef.value.targetPropertyValidate();
+  try {
+    if (isPlugin.value) {
+      if (pluginLoadFailed.value) {
+        ElMessage.error(t("sync_datasource.plugin_load_failed"));
+        return false;
+      }
+      targetPropertyValid = await validatePluginTargetProperty();
+    } else {
+      targetPropertyValid = await targetPropertyFormRef.value.targetPropertyValidate();
+    }
+  } catch (error) {
+    console.error(error);
+    ElMessage.error(t("sync_datasource.plugin_load_failed"));
+    if (loading) {
+      loading.value = false;
+    }
+    return false;
   }
   if (!targetPropertyValid) {
     return false;
@@ -732,6 +791,7 @@ const getPluginStatic = type => {
           : null
 }
 const pluginComponentLoadDone = () => {
+  pluginLoadFailed.value = false
   targetPropertyFormRef?.value?.invokeMethod({methodName: 'initTargetCustomProperty', args: [{}]})
   targetPropertyFormRef.value?.invokeMethod({
     methodName: "getSupportedIncrementFieldType", args: [{
@@ -1082,6 +1142,7 @@ defineExpose({validate, closeLoading});
         :ds-type-list-data="dsTypeListData"
         @validateFieldList="handleValidateFieldList"
         @pluginComponentLoadDone="pluginComponentLoadDone"
+        @loadFail="pluginComponentLoadFail"
         v-if="isPlugin">
     </plugin-component>
   </div>

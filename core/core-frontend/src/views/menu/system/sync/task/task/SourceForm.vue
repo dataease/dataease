@@ -6,6 +6,7 @@ import {Icon} from "@/components/icon-custom";
 import {ElIcon, ElMessage} from "element-plus-secondary";
 import {validateByIdApi} from "@/api/sync/syncDatasource";
 import {useI18n} from "@/hooks/web/useI18n";
+import {SYNC_DATASOURCE_ROLE} from "../../ds/form/option";
 
 const {t} = useI18n();
 
@@ -149,8 +150,9 @@ const clearSourceForm = () => {
 };
 
 const getDataSourceList = () => {
-  getDatasourceListByTypeApi(form.value.source.type).then((data) => {
-    const res = data.data?.filter(i => i.datasourceRole === 1);
+  getDatasourceListByTypeApi(form.value.source.type, SYNC_DATASOURCE_ROLE.SOURCE).then((data) => {
+    // 后端按角色查询，前端继续防御性过滤迁移或插件异常数据
+    const res = (data.data || []).filter(i => i.datasourceRole === SYNC_DATASOURCE_ROLE.SOURCE);
     form.value.source.dsList = res;
     if (res.length === 0) {
       clearSourceForm();

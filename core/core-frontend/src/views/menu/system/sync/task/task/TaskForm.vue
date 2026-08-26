@@ -397,36 +397,30 @@ const onSubmit = () => {
         formState.value.schedulerOption.unit;
   }
   if (requestData.target.datasourceId) {
-    validateByIdApi(requestData.target.datasourceId).then((data) => {
-      if (data.data) {
-        if (id) {
-          modifyApi(requestData)
-              .then(() => {
-                emit("refreshList");
-                ElMessage.success(t("sync_task.edit_success"));
-                cancelClick();
-              })
-              .finally(() => {
-                formLoading.value = false;
-                targetConfigRef.value?.closeLoading();
-              });
-        } else {
-          addApi(requestData)
-              .then(() => {
-                emit("refreshList");
-                ElMessage.success(t("sync_task.add_success"));
-                cancelClick();
-              })
-              .finally(() => {
-                formLoading.value = false;
-                targetConfigRef.value?.closeLoading();
-              });
-        }
-      } else {
-        ElMessage.error(t("sync_task.target_database_status_is_abnormal"));
-        formLoading.value = false;
-      }
-    });
+    validateByIdApi(requestData.target.datasourceId)
+        .then((data) => {
+          if (!data.data) {
+            ElMessage.error(t("sync_task.target_database_status_is_abnormal"));
+            return;
+          }
+          const submitRequest = id ? modifyApi(requestData) : addApi(requestData);
+          return submitRequest.then(() => {
+            emit("refreshList");
+            ElMessage.success(t(id ? "sync_task.edit_success" : "sync_task.add_success"));
+            cancelClick();
+          });
+        })
+        .catch(() => {
+          // 请求错误提示由公共请求层统一处理
+        })
+        .finally(() => {
+          // 数据源校验和任务提交任一环节结束后都必须关闭 loading
+          formLoading.value = false;
+          targetConfigRef.value?.closeLoading();
+        });
+  } else {
+    formLoading.value = false;
+    targetConfigRef.value?.closeLoading();
   }
 };
 
