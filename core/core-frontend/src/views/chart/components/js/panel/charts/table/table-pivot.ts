@@ -14,7 +14,8 @@ import {
   Aggregation,
   S2DataConfig,
   MergedCell,
-  LayoutResult
+  LayoutResult,
+  RowCell
 } from '@antv/s2'
 import { formatterItem, valueFormatter } from '../../../formatter'
 import { hexColorToRGBA, isAlphaColor, parseJson } from '../../../util'
@@ -33,12 +34,7 @@ import {
   defaultsDeep,
   omit
 } from 'lodash-es'
-import {
-  copyContent,
-  CustomDataCell,
-  getPivotConditions,
-  getS2Renderer
-} from '../../common/common_table'
+import { copyContent, CustomDataCell, getPivotConditions } from '../../common/common_table'
 import Decimal from 'decimal.js'
 import { DEFAULT_TABLE_HEADER } from '@/views/chart/components/editor/util/chart'
 import { Text } from '@antv/g'
@@ -81,6 +77,16 @@ class CustomPivotDataset extends PivotDataSet {
         query[EXTRA_FIELD]
       )
     }
+  }
+}
+
+class CustomPivotRowCell extends RowCell {
+  protected showTreeIcon(): boolean {
+    // 纯树形模式的末级节点没有可展开内容，不显示无效的展开图标
+    if (this.spreadsheet.isHierarchyTreeType() && this.meta.isLeaf) {
+      return false
+    }
+    return super.showTreeIcon()
   }
 }
 /**
@@ -454,7 +460,8 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       height: containerDom.offsetHeight,
       totals: pivotTotals,
       cornerExtraFieldText: basicStyle.quotaColLabel ?? t('dataset.value'),
-      conditions: getPivotConditions(chart),
+      // 传入空值策略处理后的数据，用于解析父级节点所属分组的动态字段值
+      conditions: getPivotConditions(chart, newData),
       tooltip: {
         getContainer: () => containerDom
       },
@@ -469,6 +476,9 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       },
       dataCell: meta => {
         return new CustomDataCell(meta, meta.spreadsheet)
+      },
+      rowCell: (node, spreadsheet, headerConfig) => {
+        return new CustomPivotRowCell(node, spreadsheet, headerConfig)
       },
       transformCanvasConfig() {
         return {

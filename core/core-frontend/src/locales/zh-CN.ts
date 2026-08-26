@@ -3902,6 +3902,7 @@ export default {
     port: 'SMTP端口',
     account: 'SMTP账号',
     pwd: 'SMTP密码',
+    from: '发件人地址',
     reci: '测试收件人',
     ssl: 'SSL',
     tsl: 'TSL'
@@ -4891,6 +4892,9 @@ export default {
     delete_folder_confirm: '删除后，此文件夹下的所有资源都会被删除，请谨慎操作。',
     save_before_leave: '离开前是否保存？',
     unsaved_changes: '有未保存的更改',
+    confirm_exit_without_save: '当前的更改尚未保存，确定退出吗？',
+    save_current_before_create_dataset: '请先保存当前电子表格',
+    cache_use_tips: '检查到上次有电子表格未能正常保存，是否使用上次未保存的电子表格？',
     preview_select_tips: '请在左侧选择电子表格',
     loading: '加载中...',
     no_data: '暂无数据',

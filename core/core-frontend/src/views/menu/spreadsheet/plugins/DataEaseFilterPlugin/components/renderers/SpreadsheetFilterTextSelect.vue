@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import type { Options } from '@popperjs/core'
-import { computed, ref, watch } from 'vue'
+import { computed, onBeforeMount, onBeforeUnmount, ref, watch } from 'vue'
+import { debounce, isEqual } from 'lodash-es'
 import type { SpreadsheetFilterCondition } from '../../../../types/plugin'
 import {
   enumSpreadsheetFilterValueObj,
-  getSpreadsheetFilterEnumValue,
-  getSpreadsheetFilterFieldTree
+  getSpreadsheetFilterEnumValue
 } from '../../../../api/filter-option'
 import { sortSpreadsheetFilterDatasetRows } from '../../utils/filter-values'
 
@@ -27,13 +27,12 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'update:modelValue': [value: unknown]
+  'options-ready': []
 }>()
 
 const loading = ref(false)
 const options = ref<SelectOption[]>([])
-const treeOptions = ref<SelectOption[]>([])
 
-const isTreeSelect = computed(() => props.condition.displayType === 'treeSelect')
 const resultMode = computed(() => props.condition.optionCountMode === 'all' ? 1 : 0)
 const selectedValues = computed(() =>
   (Array.isArray(props.modelValue) ? props.modelValue : [props.modelValue])
@@ -55,24 +54,10 @@ const getDatasetQueryFieldId = () =>
 const getDatasetDisplayFieldId = () =>
   props.condition.displayFieldId
 
-const mapTreeOptions = (nodes: Record<string, unknown>[] = []): SelectOption[] =>
-  nodes.map(node => {
-    const children = Array.isArray(node.children)
-      ? mapTreeOptions(node.children as Record<string, unknown>[])
-      : []
-    const value = String(node.id ?? node.value ?? node.text ?? node.label ?? '')
-    return {
-      label: String(node.text ?? node.label ?? node.name ?? value),
-      value,
-      children
-    }
-  })
-
-const loadAutoOptions = async () => {
+const loadAutoOptions = async (): Promise<SelectOption[]> => {
   const fieldIds = getAutoFieldIds()
   if (!fieldIds.length) {
-    options.value = []
-    return
+    return []
   }
 
   const values = await getSpreadsheetFilterEnumValue({
@@ -80,7 +65,7 @@ const loadAutoOptions = async () => {
     resultMode: resultMode.value
   })
 
-  options.value = values
+  return values
     .filter(value => value !== undefined && value !== null)
     .map(value => ({
       label: String(value),
@@ -88,13 +73,12 @@ const loadAutoOptions = async () => {
     }))
 }
 
-const loadDatasetOptions = async () => {
+const loadDatasetOptions = async (): Promise<SelectOption[]> => {
   const queryId = getDatasetQueryFieldId()
   const displayId = getDatasetDisplayFieldId()
   // 排序字段是可选配置，未设置时仍应按查询字段和显示字段加载候选值。
   if (!queryId || !displayId) {
-    options.value = []
-    return
+    return []
   }
 
   const values = await enumSpreadsheetFilterValueObj({
@@ -123,88 +107,115 @@ const loadDatasetOptions = async () => {
     })
   })
 
-  options.value = Array.from(optionMap.values())
+  return Array.from(optionMap.values())
 }
 
-const loadTreeOptions = async () => {
-  const fieldIds = (
-    props.condition.optionSource === 'dataset'
-      ? [getDatasetQueryFieldId()].filter(
-        (fieldId): fieldId is string | number =>
-          fieldId !== undefined && fieldId !== null && fieldId !== ''
-      )
-      : getAutoFieldIds()
-  )
-  if (!fieldIds.length) {
-    treeOptions.value = []
+const optionRequestKey = computed(() => {
+  const condition = props.condition
+  if (condition.optionSource === 'manual') {
+    return JSON.stringify(['manual', condition.manualOptions])
+  }
+  if (condition.optionSource === 'dataset') {
+    return JSON.stringify([
+      'dataset',
+      condition.queryFieldId,
+      condition.displayFieldId,
+      condition.sortFieldId,
+      condition.sortType === 'customSort' ? 'asc' : condition.sortType || 'asc',
+      condition.sortList || [],
+      resultMode.value
+    ])
+  }
+  return JSON.stringify([
+    'auto',
+    getAutoFieldIds(),
+    resultMode.value
+  ])
+})
+
+const syncDefaultFirstItem = () => {
+  if (
+    !props.condition.defaultValueEnabled ||
+    !props.condition.defaultValueFirstItem
+  ) {
     return
   }
 
-  const values = await getSpreadsheetFilterFieldTree({
-    fieldIds,
-    resultMode: resultMode.value
-  })
-
-  treeOptions.value = mapTreeOptions(values)
-}
-
-const loadOptions = async () => {
-  loading.value = true
-  try {
-    if (props.condition.optionSource === 'manual') {
-      options.value = props.condition.manualOptions.map(value => ({
-        label: String(value),
-        value: String(value)
-      }))
-      treeOptions.value = []
-    } else if (isTreeSelect.value) {
-      await loadTreeOptions()
-    } else if (props.condition.optionSource === 'dataset') {
-      await loadDatasetOptions()
-    } else {
-      await loadAutoOptions()
-    }
-
-    if (
-      props.condition.defaultValueEnabled &&
-      props.condition.defaultValueFirstItem &&
-      options.value.length
-    ) {
-      // 与仪表板一致，勾选首项后始终用当前排序结果的第一项覆盖手动选择值。
-      emit(
-        'update:modelValue',
-        props.condition.multiple ? [options.value[0].value] : options.value[0].value
-      )
-    }
-  } catch (error) {
-    options.value = []
-    treeOptions.value = []
-    console.error('[SpreadsheetFilterTextSelect] Failed to load filter options:', error)
-  } finally {
-    loading.value = false
+  const firstOption = options.value[0]
+  let firstValue: unknown = props.condition.multiple ? [] : ''
+  if (firstOption) {
+    firstValue = props.condition.multiple ? [firstOption.value] : firstOption.value
+  }
+  if (!isEqual(props.modelValue, firstValue)) {
+    emit('update:modelValue', firstValue)
   }
 }
 
+let loadSequence = 0
+
+const loadOptions = async () => {
+  const requestKey = optionRequestKey.value
+  const sequence = ++loadSequence
+  loading.value = true
+  try {
+    let nextOptions: SelectOption[] = []
+    if (props.condition.optionSource === 'manual') {
+      nextOptions = props.condition.manualOptions.map(value => ({
+        label: String(value),
+        value: String(value)
+      }))
+    } else if (props.condition.optionSource === 'dataset') {
+      nextOptions = await loadDatasetOptions()
+    } else {
+      nextOptions = await loadAutoOptions()
+    }
+
+    if (sequence !== loadSequence || requestKey !== optionRequestKey.value) {
+      return
+    }
+    options.value = nextOptions
+    // 默认首项属于初始化结果，父组件会等待所有候选项就绪后再放行实例首次查询。
+    syncDefaultFirstItem()
+  } catch (error) {
+    if (sequence !== loadSequence || requestKey !== optionRequestKey.value) {
+      return
+    }
+    options.value = []
+    console.error('[SpreadsheetFilterTextSelect] Failed to load filter options:', error)
+  } finally {
+    if (sequence === loadSequence && requestKey === optionRequestKey.value) {
+      loading.value = false
+      emit('options-ready')
+    }
+  }
+}
+
+const debounceLoadOptions = debounce(() => {
+  void loadOptions()
+}, 300)
+
+// 查询栏宿主已保证组件稳定挂载，首次加载直接执行，后续配置变化再防抖合并。
+onBeforeMount(() => {
+  void loadOptions()
+})
+
+onBeforeUnmount(() => {
+  debounceLoadOptions.cancel()
+  loadSequence += 1
+})
+
 watch(
-  () => [
-    props.condition.id,
-    props.condition.displayType,
-    props.condition.optionSource,
-    props.condition.queryFieldId,
-    props.condition.displayFieldId,
-    props.condition.sortFieldId,
-    props.condition.sortType,
-    JSON.stringify(props.condition.sortList || []),
-    props.condition.optionCountMode,
-    props.condition.defaultValueEnabled,
-    props.condition.defaultValueFirstItem,
-    props.condition.manualOptions.join(','),
-    props.condition.linkedFields.map(field => `${field.pluginId}:${field.fieldId}`).join(',')
+  optionRequestKey,
+  () => debounceLoadOptions()
+)
+
+watch(
+  [
+    () => props.condition.defaultValueEnabled,
+    () => props.condition.defaultValueFirstItem,
+    () => props.condition.multiple
   ],
-  () => {
-    void loadOptions()
-  },
-  { immediate: true }
+  syncDefaultFirstItem
 )
 
 watch(
@@ -263,7 +274,7 @@ const handleTileWheel = (event: WheelEvent) => {
 
 <template>
   <el-scrollbar
-    v-if="!isTreeSelect && condition.displayForm === 'tile'"
+    v-if="condition.displayForm === 'tile'"
     ref="tileScrollbarRef"
     class="spreadsheet-filter-tile-scrollbar"
     @wheel="handleTileWheel"
@@ -285,23 +296,6 @@ const handleTileWheel = (event: WheelEvent) => {
       </button>
     </div>
   </el-scrollbar>
-  <el-tree-select
-    v-else-if="isTreeSelect"
-    :model-value="modelValue"
-    :data="treeOptions"
-    :placeholder="placeholder || '请选择'"
-    :loading="loading"
-    :disabled="disabled"
-    :multiple="condition.multiple"
-    :show-checkbox="condition.multiple"
-    :append-to="popperAppendTo"
-    popper-class="spreadsheet-filter-runtime-popper"
-    :popper-options="popperOptions"
-    check-strictly
-    filterable
-    clearable
-    @update:model-value="value => emit('update:modelValue', value)"
-  />
   <el-select
     v-else
     ref="selectRef"

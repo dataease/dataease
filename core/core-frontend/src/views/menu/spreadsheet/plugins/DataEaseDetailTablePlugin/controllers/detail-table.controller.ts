@@ -848,6 +848,8 @@ export class DataEaseDetailTableController extends Disposable {
     this._restoringUnits.add(unitId)
 
     try {
+      // 过滤默认值先初始化完成，首次查询直接携带最终条件，避免初始化后再次刷新。
+      await this._spreadsheetFilterRuntimeService.waitForValues(unitId)
       // 每个实例独立处理：单个实例加载失败只标记该实例，不影响其他实例的恢复。
       for (const plugin of detailPlugins) {
         try {

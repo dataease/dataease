@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Options } from '@popperjs/core'
-import { computed, ref, watch } from 'vue'
+import { computed, onBeforeMount, onBeforeUnmount, ref, watch } from 'vue'
+import { debounce, isEqual } from 'lodash-es'
 import type {
   SpreadsheetFilterCondition,
   SpreadsheetFilterTreePath
@@ -35,16 +36,21 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'update:modelValue': [value: SpreadsheetFilterTreePath | SpreadsheetFilterTreePath[] | undefined]
+  'options-ready': []
 }>()
 
 const loading = ref(false)
 const options = ref<TreeOption[]>([])
-const pathMap = new Map<string, SpreadsheetFilterTreePath>()
+let pathMap = new Map<string, SpreadsheetFilterTreePath>()
 
 const makeKey = (path: SpreadsheetFilterTreePath) =>
   path.map(item => `${String(item.treeFieldId)}:${encodeURIComponent(String(item.value))}`).join('/')
 
-const mapOptions = (nodes: SourceTreeNode[], parentPath: SpreadsheetFilterTreePath = []): TreeOption[] =>
+const mapOptions = (
+  nodes: SourceTreeNode[],
+  targetPathMap: Map<string, SpreadsheetFilterTreePath>,
+  parentPath: SpreadsheetFilterTreePath = []
+): TreeOption[] =>
   (nodes || []).map((node, index) => {
     const treeField = props.condition.treeFields[parentPath.length]
     const path = treeField
@@ -57,11 +63,11 @@ const mapOptions = (nodes: SourceTreeNode[], parentPath: SpreadsheetFilterTreePa
         ]
       : parentPath
     const value = makeKey(path) || `unknown-${index}`
-    pathMap.set(value, path)
+    targetPathMap.set(value, path)
     return {
       value,
       label: node.text ?? String(node.id),
-      children: mapOptions(node.children || [], path)
+      children: mapOptions(node.children || [], targetPathMap, path)
     }
   })
 
@@ -88,15 +94,44 @@ const selectedKeys = computed({
 
 const emitFirstItem = () => {
   const first = options.value[0]
-  if (!first) return
-  emit('update:modelValue', props.condition.multiple ? [pathMap.get(first.value)!] : pathMap.get(first.value))
+  const firstPath = first ? pathMap.get(first.value) : undefined
+  let firstValue: SpreadsheetFilterTreePath | SpreadsheetFilterTreePath[] | undefined
+  if (firstPath) {
+    firstValue = props.condition.multiple ? [firstPath] : firstPath
+  } else {
+    firstValue = props.condition.multiple ? [] : undefined
+  }
+  if (!isEqual(props.modelValue, firstValue)) {
+    emit('update:modelValue', firstValue)
+  }
 }
 
+const optionRequestKey = computed(() => JSON.stringify([
+  props.condition.treeFields.map(field => field.fieldId).filter(Boolean),
+  props.condition.optionCountMode === 'all' ? 1 : 0
+]))
+
+const syncDefaultFirstItem = () => {
+  if (
+    props.condition.defaultValueEnabled &&
+    props.condition.defaultValueFirstItem
+  ) {
+    emitFirstItem()
+  }
+}
+
+let loadSequence = 0
+
 const loadOptions = async () => {
+  const requestKey = optionRequestKey.value
+  const sequence = ++loadSequence
   const fieldIds = props.condition.treeFields.map(field => field.fieldId).filter(Boolean)
-  pathMap.clear()
   if (!fieldIds.length) {
     options.value = []
+    pathMap.clear()
+    loading.value = false
+    syncDefaultFirstItem()
+    emit('options-ready')
     return
   }
   loading.value = true
@@ -105,30 +140,48 @@ const loadOptions = async () => {
       fieldIds,
       resultMode: props.condition.optionCountMode === 'all' ? 1 : 0
     })
-    options.value = mapOptions((values || []) as SourceTreeNode[])
-    if (
-      props.condition.defaultValueEnabled &&
-      props.condition.defaultValueFirstItem &&
-      !normalizePaths(props.modelValue).length
-    ) {
-      emitFirstItem()
+    if (sequence !== loadSequence || requestKey !== optionRequestKey.value) {
+      return
     }
+    const nextPathMap = new Map<string, SpreadsheetFilterTreePath>()
+    options.value = mapOptions((values || []) as SourceTreeNode[], nextPathMap)
+    pathMap = nextPathMap
+    // 默认首项属于初始化结果，父组件会等待所有候选项就绪后再放行实例首次查询。
+    syncDefaultFirstItem()
   } finally {
-    loading.value = false
+    if (sequence === loadSequence && requestKey === optionRequestKey.value) {
+      loading.value = false
+      emit('options-ready')
+    }
   }
 }
 
+const debounceLoadOptions = debounce(() => {
+  void loadOptions()
+}, 300)
+
+// 查询栏宿主已保证组件稳定挂载，首次加载直接执行，后续配置变化再防抖合并。
+onBeforeMount(() => {
+  void loadOptions()
+})
+
+onBeforeUnmount(() => {
+  debounceLoadOptions.cancel()
+  loadSequence += 1
+})
+
 watch(
-  () => props.condition.treeFields.map(field => field.fieldId).join(','),
-  loadOptions,
-  { immediate: true }
+  optionRequestKey,
+  () => debounceLoadOptions()
 )
 
 watch(
-  () => props.condition.defaultValueFirstItem,
-  enabled => {
-    if (enabled && options.value.length) emitFirstItem()
-  }
+  [
+    () => props.condition.defaultValueEnabled,
+    () => props.condition.defaultValueFirstItem,
+    () => props.condition.multiple
+  ],
+  syncDefaultFirstItem
 )
 </script>
 

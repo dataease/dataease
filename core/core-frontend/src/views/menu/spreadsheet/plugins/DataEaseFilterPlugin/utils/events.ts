@@ -1,5 +1,6 @@
 import { useEmitt } from '@/hooks/web/useEmitt'
 import type { SpreadsheetFilterConfig } from '../../../types/plugin'
+import { dispatchSpreadsheetContentChanged } from '../../../utils/events'
 
 export interface SpreadsheetFilterQueryPayload {
   unitId?: string
@@ -81,6 +82,7 @@ export const dispatchSpreadsheetFilterConfigChange = (config: SpreadsheetFilterC
   currentConfig = config
   currentVisible = config.visible
   emitter.emit(SPREADSHEET_FILTER_EVENTS.CONFIG_CHANGE, config)
+  dispatchSpreadsheetContentChanged()
 }
 
 export const dispatchSpreadsheetFilterRequestConfigContext = (

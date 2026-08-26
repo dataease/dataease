@@ -1,5 +1,15 @@
 <script lang="ts" setup>
-import { computed, ref, shallowRef, provide, type Component } from 'vue'
+import {
+  computed,
+  ref,
+  shallowRef,
+  provide,
+  nextTick,
+  onBeforeMount,
+  onMounted,
+  onBeforeUnmount,
+  type Component
+} from 'vue'
 import router from '@/router'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -20,7 +30,6 @@ import PluginRenderIndicator from './components/PluginRenderIndicator.vue'
 import DatasetReplacementDialog from './components/dataset-replacement/DatasetReplacementDialog.vue'
 import SpreadsheetPreviewOverlay from './components/SpreadsheetPreviewOverlay.vue'
 import { useLocaleStoreWithOut } from '@/store/modules/locale'
-import { nextTick, onBeforeMount } from 'vue'
 import type { IWorkbookData } from '@univerjs/core'
 import { ISidebarService } from '@univerjs/ui'
 import { createDefaultWorkbookData, parseSheetData, serializeSheetData } from './utils/univerConfig'
@@ -34,6 +43,12 @@ import { pluginSnapshotCleaningService } from './services/plugin-snapshot-cleani
 import { pluginRuntimeRegistry } from './services/plugin-runtime.service'
 import { PluginRenderStatusService } from './plugins/DataEaseRuntimePlugin/services/table'
 import { PluginAdapterManager } from './types/adapter'
+import {
+  deleteSpreadsheetDraftCache,
+  getSpreadsheetDraftCache,
+  setSpreadsheetDraftCache,
+  type SpreadsheetDraftCache
+} from './utils/draft-cache'
 
 const { t } = useI18n()
 const localeStore = useLocaleStoreWithOut()
@@ -74,7 +89,138 @@ const editorComponent = shallowRef<Component | null>(null)
 const createLocalizedDefaultWorkbookData = () =>
   createDefaultWorkbookData(t('spreadsheet.default_sheet_name'))
 
+let baselineSheetData = ''
+let baselineSpreadsheetName = ''
+let draftCacheTimer: ReturnType<typeof setTimeout> | undefined
+let draftCheckRevision = 0
+let draftCheckPending = false
+let discardAndLeave = false
+
+const getCurrentRawSheetData = () =>
+  univerSheetRef.value?.getSheetData() ||
+  serializeSheetData(workbookData.value || createLocalizedDefaultWorkbookData())
+
+const cleanSheetData = async (sheetData: string): Promise<string> => {
+  const snapshot = parseSheetData(sheetData) ?? createLocalizedDefaultWorkbookData()
+  const cleanedSnapshot = await pluginSnapshotCleaningService.clean(snapshot)
+  return serializeSheetData(cleanedSnapshot)
+}
+
+const updateSavedBaseline = (sheetData: string, name: string) => {
+  baselineSheetData = sheetData
+  baselineSpreadsheetName = name
+}
+
+const buildDraftCache = (sheetData: string): SpreadsheetDraftCache | undefined => {
+  if (routeMode.value !== 'edit' || !routeSheetId.value) {
+    return undefined
+  }
+  return {
+    sheetId: routeSheetId.value,
+    sourceVersion: spreadsheetVersion.value,
+    name: spreadsheetName.value,
+    remark: spreadsheetRemark.value,
+    sheetData,
+    cachedAt: Date.now()
+  }
+}
+
+const cacheCurrentDraft = (sheetData: string) => {
+  const cache = buildDraftCache(sheetData)
+  if (!cache) {
+    return
+  }
+  try {
+    setSpreadsheetDraftCache(cache)
+  } catch (error) {
+    // 本地存储空间不足不能影响正常编辑和保存。
+    console.warn('[Spreadsheet] Failed to cache spreadsheet draft:', error)
+  }
+}
+
+const syncDraftCache = async () => {
+  if (routeMode.value !== 'edit' || !routeSheetId.value || !baselineSheetData) {
+    return
+  }
+
+  const currentRevision = draftCheckRevision
+  try {
+    const currentSheetData = await cleanSheetData(getCurrentRawSheetData())
+    if (currentRevision !== draftCheckRevision) {
+      return
+    }
+
+    draftCheckPending = false
+    const contentChanged = currentSheetData !== baselineSheetData
+    const nameChanged = spreadsheetName.value !== baselineSpreadsheetName
+    hasChanges.value = contentChanged || nameChanged
+    if (hasChanges.value) {
+      cacheCurrentDraft(currentSheetData)
+    } else {
+      deleteSpreadsheetDraftCache(routeSheetId.value)
+    }
+  } catch (error) {
+    draftCheckPending = false
+    hasChanges.value = true
+    cacheCurrentDraft(getCurrentRawSheetData())
+    console.warn('[Spreadsheet] Failed to compare spreadsheet draft:', error)
+  }
+}
+
+const markSpreadsheetChanged = () => {
+  if (routeMode.value !== 'edit' || !routeSheetId.value) {
+    hasChanges.value = true
+    return
+  }
+
+  draftCheckRevision++
+  draftCheckPending = true
+  if (draftCacheTimer) {
+    clearTimeout(draftCacheTimer)
+  }
+  // 合并连续输入和样式操作，避免每条 Univer 命令都序列化整个工作簿。
+  draftCacheTimer = setTimeout(() => {
+    draftCacheTimer = undefined
+    void syncDraftCache()
+  }, 1000)
+}
+
+const flushDraftBeforeLeaving = async () => {
+  if (draftCacheTimer) {
+    clearTimeout(draftCacheTimer)
+    draftCacheTimer = undefined
+  }
+  while (draftCheckPending) {
+    await syncDraftCache()
+  }
+}
+
+const cacheRawDraftBeforeUnload = () => {
+  if (!hasChanges.value && !draftCheckPending) {
+    return
+  }
+  if (
+    !draftCheckPending &&
+    routeSheetId.value &&
+    getSpreadsheetDraftCache(routeSheetId.value)
+  ) {
+    return
+  }
+  // 页面卸载阶段不能等待异步清理；恢复时会再次经过快照清理器。
+  cacheCurrentDraft(getCurrentRawSheetData())
+}
+
+const handleBeforeCreateDataset = async (): Promise<boolean> => {
+  if (routeMode.value !== 'edit' || !routeSheetId.value) {
+    ElMessage.warning(t('spreadsheet.save_current_before_create_dataset'))
+    return false
+  }
+  await flushDraftBeforeLeaving()
+  return true
+}
+
 provide('pluginConfig', currentPluginConfig)
+provide('beforeCreateSpreadsheetDataset', handleBeforeCreateDataset)
 
 const closeNativeSidebar = () => {
   const injector = univerInstanceRef.value?.univer?.__getInjector?.()
@@ -103,24 +249,13 @@ useEmitt({
 })
 
 useEmitt({
-  name: SPREADSHEET_EVENTS.OPEN_PLUGIN_EDITOR,
-  callback: (payload: PluginEditPayload) => {
-    if (previewVisible.value || !payload?.config) {
-      return
-    }
-    currentPluginConfig.value = payload.config
-    const adapter = PluginAdapterManager.getAdapter(payload.config.type)
-    if (!adapter) {
-      return
-    }
-    // 自动选区入口会在原生侧边栏打开时提前返回；进入此处的主动请求先关闭原生侧边栏。
-    closeNativeSidebar()
-    editorComponent.value = adapter.getEditor()
-    showEditor.value = true
-  }
+  name: SPREADSHEET_EVENTS.CONTENT_CHANGED,
+  callback: markSpreadsheetChanged
 })
 
-const closePromptVisible = ref(false)
+let pendingPluginEditorPayload: PluginEditPayload | null | undefined
+let pluginEditorTransitionScheduled = false
+let pluginEditorTransitionRunning = false
 
 const removeDraftInstance = async (config: PluginConfig): Promise<void> => {
   const runtime = pluginRuntimeRegistry.get(config.type)
@@ -130,25 +265,49 @@ const removeDraftInstance = async (config: PluginConfig): Promise<void> => {
   }
 }
 
-const handleClosePluginEditor = async (): Promise<void> => {
+const applyPluginEditorPayload = (payload: PluginEditPayload | null): void => {
+  if (!payload) {
+    currentPluginConfig.value = null
+    showEditor.value = false
+    return
+  }
+
+  if (previewVisible.value || !payload.config) {
+    return
+  }
+
+  const adapter = PluginAdapterManager.getAdapter(payload.config.type)
+  if (!adapter) {
+    return
+  }
+
+  // 自动选区入口会在原生侧边栏打开时提前返回；进入此处的主动请求先关闭原生侧边栏。
+  closeNativeSidebar()
+  currentPluginConfig.value = payload.config
+  editorComponent.value = adapter.getEditor()
+  showEditor.value = true
+}
+
+const handlePluginEditorTransition = async (
+  requestedPayload: PluginEditPayload | null
+): Promise<void> => {
   const config = currentPluginConfig.value
+  if (requestedPayload?.config.id === config?.id) {
+    applyPluginEditorPayload(requestedPayload)
+    return
+  }
+
   if (!config || !showEditor.value) {
-    currentPluginConfig.value = null
-    showEditor.value = false
+    applyPluginEditorPayload(requestedPayload)
     return
   }
 
-  // 已成功渲染的实例直接关闭；draft / error 实例关闭前二次确认并清除实例。
+  // 已成功渲染的实例直接切换；draft 实例切换前二次确认并清除实例。
   if (!getPluginRenderStatusService()?.needsCloseConfirm(config.id)) {
-    currentPluginConfig.value = null
-    showEditor.value = false
+    applyPluginEditorPayload(requestedPayload)
     return
   }
 
-  if (closePromptVisible.value) {
-    return
-  }
-  closePromptVisible.value = true
   try {
     await ElMessageBox.confirm(
       t('spreadsheet.draft_close_message'),
@@ -161,19 +320,72 @@ const handleClosePluginEditor = async (): Promise<void> => {
       }
     )
     await removeDraftInstance(config)
-    currentPluginConfig.value = null
-    showEditor.value = false
+
+    // 确认期间可能收到多个选区事件，最终打开最新命中的实例。
+    let targetPayload = requestedPayload
+    if (pendingPluginEditorPayload !== undefined) {
+      targetPayload = pendingPluginEditorPayload
+    }
+    pendingPluginEditorPayload = undefined
+    applyPluginEditorPayload(targetPayload)
   } catch {
-    // 用户取消，保持面板打开。
-  } finally {
-    closePromptVisible.value = false
+    // 用户取消时必须保留 draft 面板，避免实例失去配置入口后持续禁用插入。
+    pendingPluginEditorPayload = undefined
   }
 }
+
+const processPluginEditorTransition = async (): Promise<void> => {
+  if (pluginEditorTransitionRunning || pendingPluginEditorPayload === undefined) {
+    return
+  }
+
+  pluginEditorTransitionRunning = true
+  const requestedPayload = pendingPluginEditorPayload
+  pendingPluginEditorPayload = undefined
+  try {
+    await handlePluginEditorTransition(requestedPayload)
+  } finally {
+    pluginEditorTransitionRunning = false
+    if (pendingPluginEditorPayload !== undefined) {
+      schedulePluginEditorTransition()
+    }
+  }
+}
+
+const schedulePluginEditorTransition = (): void => {
+  if (pluginEditorTransitionScheduled || pluginEditorTransitionRunning) {
+    return
+  }
+
+  pluginEditorTransitionScheduled = true
+  queueMicrotask(() => {
+    pluginEditorTransitionScheduled = false
+    void processPluginEditorTransition()
+  })
+}
+
+const requestPluginEditorTransition = (payload: PluginEditPayload | null): void => {
+  // 同一次选区变化中，非命中插件可能先发出关闭事件；实际命中的打开请求应优先。
+  if (payload || pendingPluginEditorPayload === undefined) {
+    pendingPluginEditorPayload = payload
+  }
+  schedulePluginEditorTransition()
+}
+
+useEmitt({
+  name: SPREADSHEET_EVENTS.OPEN_PLUGIN_EDITOR,
+  callback: (payload: PluginEditPayload) => {
+    if (!payload?.config) {
+      return
+    }
+    requestPluginEditorTransition(payload)
+  }
+})
 
 useEmitt({
   name: SPREADSHEET_EVENTS.CLOSE_PLUGIN_EDITOR,
   callback: () => {
-    void handleClosePluginEditor()
+    requestPluginEditorTransition(null)
   }
 })
 
@@ -185,7 +397,7 @@ useEmitt({
     if (nextConfig) {
       currentPluginConfig.value = nextConfig
     }
-    hasChanges.value = true
+    markSpreadsheetChanged()
   }
 })
 
@@ -205,13 +417,14 @@ const persistSpreadsheet = async (
 
   saving.value = true
   try {
+    await flushDraftBeforeLeaving()
     const rawSheetDataStr =
       univerSheetRef.value?.getSheetData() ||
       JSON.stringify(workbookData.value || createLocalizedDefaultWorkbookData())
     const cleanedSheetData = await pluginSnapshotCleaningService.clean(
       JSON.parse(rawSheetDataStr)
     )
-    const currentSheetDataStr = JSON.stringify(cleanedSheetData)
+    const currentSheetDataStr = serializeSheetData(cleanedSheetData)
 
     const editor: SpreadsheetEditor = {
       name: destination ? destination.name : spreadsheetName.value,
@@ -242,6 +455,12 @@ const persistSpreadsheet = async (
       resourceGroupOptShow.value = false
       spreadsheetName.value = destination.name
     }
+    updateSavedBaseline(currentSheetDataStr, editor.name || spreadsheetName.value)
+    deleteSpreadsheetDraftCache(result.id)
+    // 保存请求期间工作簿仍可编辑，保存完成后重新比较，避免把后续输入误判为已保存。
+    draftCheckRevision++
+    draftCheckPending = true
+    await syncDraftCache()
     return result
   } catch (e) {
     console.error(e)
@@ -334,10 +553,14 @@ const handleRecoverPublished = async () => {
     spreadsheetVersion.value = result.version ?? spreadsheetVersion.value
     loading.value = true
     await nextTick()
-    workbookData.value = clearUniverProtectionResources(
+    const recoveredWorkbookData = clearUniverProtectionResources(
       parseSheetData(result.sheetData) ?? createLocalizedDefaultWorkbookData()
     )
+    const recoveredSheetData = await cleanSheetData(serializeSheetData(recoveredWorkbookData))
+    workbookData.value = parseSheetData(recoveredSheetData) ?? createLocalizedDefaultWorkbookData()
+    updateSavedBaseline(recoveredSheetData, spreadsheetName.value)
     hasChanges.value = false
+    deleteSpreadsheetDraftCache(routeSheetId.value)
     loading.value = false
     ElMessage.success(t('spreadsheet.recover_publish_success'))
   } catch (error) {
@@ -364,6 +587,7 @@ const handleCancelPublish = async () => {
       status: SpreadsheetPublishStatus.Unpublished
     })
     spreadsheetStatus.value = result.status ?? SpreadsheetPublishStatus.Unpublished
+    spreadsheetVersion.value = result.version ?? spreadsheetVersion.value
     ElMessage.success(t('spreadsheet.cancel_publish_success'))
   } catch (error) {
     console.error(error)
@@ -374,23 +598,29 @@ const handleCancelPublish = async () => {
 }
 
 const handleBack = async () => {
-  if (hasChanges.value) {
+  await flushDraftBeforeLeaving()
+  const isCreateMode = routeMode.value !== 'edit' || !routeSheetId.value
+  if (isCreateMode || hasChanges.value) {
     try {
       await ElMessageBox.confirm(
-        t('spreadsheet.save_before_leave'),
+        t('spreadsheet.confirm_exit_without_save'),
         t('spreadsheet.unsaved_changes'),
         {
-          confirmButtonText: t('spreadsheet.save'),
-          cancelButtonText: t('spreadsheet.discard'),
-          distinguishCancelAndClose: true
+          confirmButtonText: t('commons.confirm'),
+          cancelButtonText: t('commons.cancel'),
+          confirmButtonType: 'primary',
+          type: 'warning',
+          autofocus: false,
+          showClose: false
         }
       )
-      await handleSave()
-    } catch (e) {
-      // User chose to discard or closed dialog
+    } catch {
+      return
     }
   }
-  router.push('/spreadsheet/index')
+  discardAndLeave = true
+  deleteSpreadsheetDraftCache(routeSheetId.value)
+  await router.push('/spreadsheet/index')
 }
 
 const handleDatasetBinding = async (binding: DatasetBindDTO) => {
@@ -404,6 +634,7 @@ const handleDatasetUnbind = async (datasetId: number) => {
 const handleRename = (name: string) => {
   if (spreadsheetName.value === name) return
   spreadsheetName.value = name
+  markSpreadsheetChanged()
 }
 
 const handleExport = () => {
@@ -481,7 +712,48 @@ onBeforeMount(async () => {
           spreadsheetInfo.status ?? SpreadsheetPublishStatus.Unpublished
         spreadsheetRemark.value = spreadsheetInfo.remark ?? ''
         spreadsheetVersion.value = spreadsheetInfo.version ?? 1
-        workbookData.value = cleanedWorkbookData
+        const serverSheetData = serializeSheetData(cleanedWorkbookData)
+        const serverWorkbookData = cleanedWorkbookData
+        updateSavedBaseline(serverSheetData, spreadsheetInfo.name)
+
+        let nextWorkbookData = serverWorkbookData
+        const cachedDraft = getSpreadsheetDraftCache(routeSheetId.value)
+        if (cachedDraft && cachedDraft.sourceVersion === spreadsheetVersion.value) {
+          try {
+            const cachedWorkbookData = clearUniverProtectionResources(
+              parseSheetData(cachedDraft.sheetData) ?? createLocalizedDefaultWorkbookData()
+            )
+            const cachedSheetData = serializeSheetData(cachedWorkbookData)
+            const cacheHasChanges =
+              cachedSheetData !== serverSheetData || cachedDraft.name !== spreadsheetInfo.name
+            if (cacheHasChanges) {
+              await ElMessageBox.confirm(t('spreadsheet.cache_use_tips'), {
+                confirmButtonText: t('visualization.yes'),
+                cancelButtonText: t('visualization.no'),
+                confirmButtonType: 'primary',
+                type: 'warning',
+                autofocus: false,
+                showClose: false
+              })
+              nextWorkbookData = cachedWorkbookData
+              spreadsheetName.value = cachedDraft.name
+              spreadsheetRemark.value = cachedDraft.remark
+              hasChanges.value = true
+              // 工作簿完成恢复后，命令监听会重新生成清理后的缓存快照。
+              cacheCurrentDraft(cachedSheetData)
+            } else {
+              deleteSpreadsheetDraftCache(routeSheetId.value)
+            }
+          } catch {
+            // 用户拒绝恢复或缓存内容损坏时均回退到服务端版本。
+            deleteSpreadsheetDraftCache(routeSheetId.value)
+          }
+        } else if (cachedDraft) {
+          // 服务端版本已经变化时，旧缓存不能覆盖较新的数据。
+          deleteSpreadsheetDraftCache(routeSheetId.value)
+        }
+
+        workbookData.value = nextWorkbookData
         loading.value = false
       }
     } catch (e) {
@@ -495,13 +767,26 @@ onBeforeMount(async () => {
   }
 })
 
+onMounted(() => {
+  window.addEventListener('pagehide', cacheRawDraftBeforeUnload)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('pagehide', cacheRawDraftBeforeUnload)
+  if (draftCacheTimer) {
+    clearTimeout(draftCacheTimer)
+  }
+  if (!discardAndLeave) {
+    cacheRawDraftBeforeUnload()
+  }
+})
+
 </script>
 
 <template>
   <div ref="editorRootRef" class="spreadsheet-editor" v-loading="loading">
     <SpreadsheetToolbar
       :name="spreadsheetName"
-      :has-changes="hasChanges"
       :saving="saving"
       :publishing="publishing"
       :recovering="recovering"
@@ -525,6 +810,7 @@ onBeforeMount(async () => {
           ref="univerSheetRef"
           :model-value="workbookData || undefined"
           mode="edit"
+          @change="markSpreadsheetChanged"
           @ready="handleUniverReady"
         />
 

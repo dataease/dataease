@@ -53,22 +53,28 @@ const settingList = reactive([
     sort: 4,
   },
   {
+    pkey: "email.from",
+    pval: "",
+    type: "text",
+    sort: 5,
+  },
+  {
     pkey: "email.reci",
     pval: "",
     type: "pwd",
-    sort: 5,
+    sort: 6,
   },
   {
     pkey: "email.ssl",
     pval: "false",
     type: "text",
-    sort: 6,
+    sort: 7,
   },
   {
     pkey: "email.tsl",
     pval: "false",
     type: "text",
-    sort: 7,
+    sort: 8,
   },
 ]);
 
@@ -97,7 +103,11 @@ const search = (cb) => {
   originData = [];
   state.templateList = [];
   request.get({ url }).then(async (res) => {
-    const data = res.data?.length ? res.data : settingList;
+    const dbList = res.data?.length ? res.data : [];
+    const data = settingList.map((item) => {
+      const found = dbList.find((d) => d.pkey === item.pkey);
+      return found || { ...item };
+    });
     originData = cloneDeep(data);
     for (let index = 0; index < data.length; index++) {
       const item = data[index];

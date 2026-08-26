@@ -3881,6 +3881,7 @@ export default {
     port: 'SMTP連接埠',
     account: 'SMTP帳號',
     pwd: 'SMTP密碼',
+    from: '寄件者地址',
     reci: '測試收件者',
     ssl: 'SSL',
     tsl: 'TSL'
@@ -4867,6 +4868,9 @@ export default {
     delete_folder_confirm: '刪除後，此文件夾下的所有資源都會被刪除，請謹慎操作。',
     save_before_leave: '離開前是否保存？',
     unsaved_changes: '有未保存的更改',
+    confirm_exit_without_save: '目前的變更尚未儲存，確定退出嗎？',
+    save_current_before_create_dataset: '請先儲存目前電子表格',
+    cache_use_tips: '檢查到上次有電子表格未能正常儲存，是否使用上次未儲存的電子表格？',
     preview_select_tips: '請在左側選擇電子表格',
     loading: '加載中...',
     no_data: '暫無資料',
