@@ -97,6 +97,10 @@ const previewDataKey = ref(0);
 const previewLoading = ref(false);
 const isPreviewFocus = ref(false);
 const isFullscreenPreview = ref(false);
+// 普通列表需扣除顶部导航，进入预览后直接使用完整视口高度。
+const spreadsheetHeightOffset = computed(() =>
+  isPreviewFocus.value ? "0px" : "56px",
+);
 const previewShellRef = ref<HTMLElement>();
 let previewFocusBeforeFullscreen = false;
 
@@ -1053,6 +1057,8 @@ onBeforeUnmount(() => {
   position: relative;
 
   &.preview-focus {
+    height: calc(100vh - v-bind(spreadsheetHeightOffset));
+
     .resource-area,
     .spreadsheet-info {
       display: none;
@@ -1147,7 +1153,7 @@ onBeforeUnmount(() => {
   }
 
   .spreadsheet-content {
-    height: calc(100vh - 56px);
+    height: calc(100vh - v-bind(spreadsheetHeightOffset));
     overflow: auto;
     position: relative;
     background: #f5f6f7;
