@@ -827,7 +827,7 @@ export function getConditions(
   return res
 }
 
-export function getPivotConditions(chart: Chart) {
+export function getPivotConditions(chart: Chart, pivotData: Record<string, any>[] = []) {
   const {threshold} = parseJson(chart.senior)
   if (!threshold.enable) {
     return
@@ -871,6 +871,8 @@ export function getPivotConditions(chart: Chart) {
     basicStyle.alpha
   )
   const filedValueMap = getFieldValueMap(chart)
+  // 复用分组字段解析结果，避免文字和背景条件重复遍历透视数据
+  const pivotValueResolver = createPivotFieldValueResolver(pivotData)
   const targetRulesMap = {}
 
   for (let i = 0; i < conditions.length; i++) {
@@ -936,7 +938,8 @@ export function getPivotConditions(chart: Chart) {
             filedValueMap,
             rowData,
             targetName,
-            true
+            true,
+            pivotValueResolver
           )
         }
       }
@@ -953,7 +956,8 @@ export function getPivotConditions(chart: Chart) {
           filedValueMap,
           rowData,
           targetName,
-          true
+          true,
+          pivotValueResolver
         )
         if (isTransparent(fill)) return null
         return {fill}
@@ -999,7 +1003,8 @@ function mappingRulesColor(
   filedValueMap,
   rowData,
   targetName,
-  pivot = false
+  pivot = false,
+  pivotValueResolver?: PivotValueResolver
 ) {
   for (let i = 0; i < rules.length; i++) {
     const {rule, sourceField} = rules[i]
@@ -1016,12 +1021,24 @@ function mappingRulesColor(
 
     const sourceValue = getRuleSourceValue(value, rowData, sourceField.dataeaseName, targetName)
     if (!sourceValue.found) continue
-    if (matchTableCondition(sourceValue.value, rule, sourceField, filedValueMap, rowData)) {
+    if (
+      matchTableCondition(
+        sourceValue.value,
+        rule,
+        sourceField,
+        filedValueMap,
+        rowData,
+        pivotValueResolver
+      )
+    ) {
       return rule[type]
     }
   }
   return defaultColor
 }
+
+type PivotValueResult = { found: boolean; value?: any }
+type PivotValueResolver = (fieldName: string, rowData: any) => PivotValueResult
 
 function getRuleSourceValue(value, rowData, sourceName, targetName) {
   if (rowData && Object.prototype.hasOwnProperty.call(rowData, sourceName)) {
@@ -1036,7 +1053,14 @@ function getRuleSourceValue(value, rowData, sourceName, targetName) {
   return {found: false, value: undefined}
 }
 
-function matchTableCondition(value, rule, sourceField, filedValueMap, rowData) {
+function matchTableCondition(
+  value,
+  rule,
+  sourceField,
+  filedValueMap,
+  rowData,
+  pivotValueResolver?: PivotValueResolver
+) {
   const empty = value === null || value === undefined || value === ''
   if (rule.term === 'null') return empty
   if (rule.term === 'not_null') return !empty
@@ -1047,10 +1071,14 @@ function matchTableCondition(value, rule, sourceField, filedValueMap, rowData) {
   let max
   if (rule.type === 'dynamic') {
     if (rule.term === 'between') {
-      min = parseFloat(getValue(rule.dynamicMinField, filedValueMap, rowData))
-      max = parseFloat(getValue(rule.dynamicMaxField, filedValueMap, rowData))
+      min = parseFloat(
+        getValue(rule.dynamicMinField, filedValueMap, rowData, pivotValueResolver)
+      )
+      max = parseFloat(
+        getValue(rule.dynamicMaxField, filedValueMap, rowData, pivotValueResolver)
+      )
     } else {
-      targetValue = getValue(rule.dynamicField, filedValueMap, rowData)
+      targetValue = getValue(rule.dynamicField, filedValueMap, rowData, pivotValueResolver)
     }
   } else if (rule.term === 'between') {
     min = parseFloat(rule.min)
@@ -1282,13 +1310,70 @@ function getFieldValueMap(view) {
   return fieldValueMap
 }
 
-function getValue(field, filedValueMap, rowData) {
+function getPivotValueIdentity(value) {
+  if (value === null) return 'null'
+  if (value === undefined) return 'undefined'
+  if (value instanceof Date) return `date:${value.getTime()}`
+  if (typeof value === 'object') return `object:${JSON.stringify(value)}`
+  return `${typeof value}:${String(value)}`
+}
+
+function createPivotFieldValueResolver(pivotData: Record<string, any>[]): PivotValueResolver {
+  const data = Array.isArray(pivotData) ? pivotData : []
+  const cache = new Map<string, PivotValueResult>()
+
+  return (fieldName, rowData) => {
+    const queryEntries = Object.entries(rowData?.query ?? {}).filter(
+      ([name, value]) => name !== EXTRA_FIELD && value !== undefined
+    )
+    if (!fieldName || !data.length || !queryEntries.length) {
+      return {found: false}
+    }
+
+    const cacheKey = JSON.stringify([fieldName, queryEntries])
+    const cachedValue = cache.get(cacheKey)
+    if (cachedValue) {
+      return cachedValue
+    }
+
+    // 父级表头缺少子级字段时，仅允许使用当前分组内的唯一值
+    const values = new Map<string, any>()
+    for (const item of data) {
+      const matchesQuery = queryEntries.every(([name, value]) => item[name] === value)
+      if (!matchesQuery) continue
+      const fieldValue = item[fieldName]
+      values.set(getPivotValueIdentity(fieldValue), fieldValue)
+      if (values.size > 1) break
+    }
+
+    const result =
+      values.size === 1
+        ? {found: true, value: values.values().next().value}
+        : {found: false}
+    cache.set(cacheKey, result)
+    return result
+  }
+}
+
+function getValue(
+  field,
+  filedValueMap,
+  rowData,
+  pivotValueResolver?: PivotValueResolver
+) {
   if (field.summary === 'value') {
     const fieldName = field.field?.dataeaseName
     // S2 透视表头将维度值存放在 query 中
     let value = rowData?.[fieldName]
     if (value === undefined) {
       value = rowData?.query?.[fieldName]
+    }
+    if (value === undefined) {
+      // 当前节点不含子级字段时，从该节点所属分组补取唯一动态值
+      const resolvedValue = pivotValueResolver?.(fieldName, rowData)
+      if (resolvedValue?.found) {
+        value = resolvedValue.value
+      }
     }
     return value
   } else {

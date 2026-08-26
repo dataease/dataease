@@ -34,12 +34,7 @@ import {
   defaultsDeep,
   omit
 } from 'lodash-es'
-import {
-  copyContent,
-  CustomDataCell,
-  getPivotConditions,
-  getS2Renderer
-} from '../../common/common_table'
+import { copyContent, CustomDataCell, getPivotConditions } from '../../common/common_table'
 import Decimal from 'decimal.js'
 import { DEFAULT_TABLE_HEADER } from '@/views/chart/components/editor/util/chart'
 import { Text } from '@antv/g'
@@ -465,7 +460,8 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       height: containerDom.offsetHeight,
       totals: pivotTotals,
       cornerExtraFieldText: basicStyle.quotaColLabel ?? t('dataset.value'),
-      conditions: getPivotConditions(chart),
+      // 传入空值策略处理后的数据，用于解析父级节点所属分组的动态字段值
+      conditions: getPivotConditions(chart, newData),
       tooltip: {
         getContainer: () => containerDom
       },
