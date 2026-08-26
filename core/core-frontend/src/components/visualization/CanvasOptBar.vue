@@ -117,7 +117,7 @@ const existLinkage = computed(() => {
 
 .bar-main-preview-fixed {
   position: fixed;
-  top: 120px;
+  top: 5px;
   right: 5px;
 }
 
