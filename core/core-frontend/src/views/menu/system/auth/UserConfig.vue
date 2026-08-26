@@ -465,6 +465,10 @@ const generateInnerPermissions = (vo) => {
               origin.permissions = tempOriginPermissions;
               return;
             }
+          } else {
+            // 组织同名根目录不存在（如已被删除）时，避免遍历整棵树并全量展开导致页面卡死
+            origin.permissions = tempOriginPermissions;
+            return;
           }
         }
         const stack = [...rootNodes];
