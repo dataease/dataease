@@ -4,6 +4,7 @@ import { FUniver } from '@univerjs/core/facade'
 import { IDialogService } from '@univerjs/ui'
 import { ElMessage } from 'element-plus-secondary'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { useI18n } from '@/hooks/web/useI18n'
 import type {
   ITableCreateDialogParams,
   ITableCreateResult,
@@ -20,6 +21,7 @@ import { PivotTableRangeService } from '../services/pivot-table-range.service'
 import { PluginRenderStatusService } from '../../DataEaseRuntimePlugin/services/table'
 
 const { emitter } = useEmitt()
+const { t } = useI18n()
 
 export const InsertPivotTableOperation: ICommand = {
   id: 'dataease.operation.insert-pivot-table',
@@ -100,13 +102,14 @@ function createOnNewSheet(accessor: IAccessor, resultLimit?: number): void {
   const config = Adapter.getDefaultConfig() as PivotTableConfig
   const univerApi = FUniver.newAPI(accessor.get(Injector))
   const workbook = univerApi.getActiveWorkbook()
-  let sheetName = 'Sheet2'
+  const sheetPrefix = t('spreadsheet.sheet_prefix', '工作表')
+  let sheetNumber = 2
+  let sheetName = `${sheetPrefix}${sheetNumber}`
 
   if (workbook) {
     const sheetNames = workbook.getSheets().map((sheet: any) => sheet.getSheetName())
-    let sheetNumber = 2
     while (sheetNames.includes(sheetName)) {
-      sheetName = `Sheet${++sheetNumber}`
+      sheetName = `${sheetPrefix}${++sheetNumber}`
     }
     const worksheet = workbook.create(sheetName, 1000, 26)
     workbook.setActiveSheet(worksheet)

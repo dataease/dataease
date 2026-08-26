@@ -4844,6 +4844,7 @@ export default {
     spreadsheet_name: '电子表格名称',
     spreadsheet_name_placeholder: '请输入电子表格名称',
     default_sheet_name: '工作表1',
+    sheet_prefix: '工作表',
     edit_sheet: '编辑表格',
     save: '保存',
     save_success: '保存成功',
