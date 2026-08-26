@@ -41,7 +41,7 @@ const fieldTypeIcon = computed(() => {
 // 获取字段类型颜色
 const fieldTypeColor = computed(() => {
   const { groupType } = props.field
-  return groupType === 'd' ? '#3370ff' : '#34c724'
+  return groupType === 'd' ? 'var(--ed-color-primary, #3370ff)' : '#34c724'
 })
 
 // 获取显示名称
@@ -120,8 +120,8 @@ const handleClick = (e: MouseEvent) => {
   }
 
   &.selected {
-    background: #e6f0ff;
-    border: 1px solid #3370ff;
+    background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
+    border: 1px solid var(--ed-color-primary, #3370ff);
   }
 
   .field-icon {

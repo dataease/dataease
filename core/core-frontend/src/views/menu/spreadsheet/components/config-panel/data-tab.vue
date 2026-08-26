@@ -3,6 +3,7 @@ import { ref, inject, computed, onMounted, type Ref } from 'vue'
 import { Delete, InfoFilled, Filter } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus-secondary'
 import { cloneDeep } from 'lodash-es'
+import { useI18n } from '@/hooks/web/useI18n'
 import FieldDropZone from '../common/field-drop-zone.vue'
 import FilterTree from './filter/FilterTree.vue'
 import type { FieldItemData, FilterTree as FilterTreeData, PluginConfig, TablePluginConfig } from '../../types/plugin'
@@ -22,6 +23,8 @@ const pluginConfig = inject<Ref<TablePluginConfig>>('pluginConfig')
 if (!pluginConfig) {
   throw new Error('data-tab: missing required injections')
 }
+
+const { t } = useI18n()
 
 const loading = ref(false)
 const filterTree = ref<InstanceType<typeof FilterTree>>()
@@ -117,12 +120,12 @@ const queryData = async () => {
   if (loading.value) return
 
   if (!hasFields.value) {
-    ElMessage.warning('Please configure at least one field')
+    ElMessage.warning(t('spreadsheet.field_required'))
     return
   }
 
   if (!currentConfig.value.data.datasetId) {
-    ElMessage.warning('Please select a dataset first')
+    ElMessage.warning(t('spreadsheet.select_dataset_first'))
     return
   }
 
@@ -146,7 +149,7 @@ const queryData = async () => {
     })
   } catch (error) {
     console.error('Query data failed:', error)
-    ElMessage.error('Query data failed, please try again later')
+    ElMessage.error(t('spreadsheet.query_data_error'))
   } finally {
     loading.value = false
   }

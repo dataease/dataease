@@ -4888,6 +4888,9 @@ export default {
     update_success: '更新成功',
     update_error: '更新失敗',
     select_required: '請選擇數據集',
+    select_dataset_first: '請先選擇數據集',
+    field_required: '請配置至少一個欄位',
+    query_data_error: '查詢數據失敗，請稍後重試',
     dataset_replacement: {
       title: '替換數據集',
       global_title: '替換全局數據集',

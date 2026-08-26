@@ -106,7 +106,10 @@ const handleTargetVisibleChange = (fieldKey: string, visible: boolean) => {
             v-if="mapping.target"
             :model-value="item.target?.id"
             class="target-field-select"
-            :class="{ 'is-unmatched': !item.target }"
+            :class="{
+              'is-matched': !!item.target,
+              'is-unmatched': !item.target
+            }"
             popper-class="replacement-target-field-popper"
             :no-data-text="t('spreadsheet.dataset_replacement.no_search_result')"
             :placeholder="t('spreadsheet.dataset_replacement.select_field')"
@@ -175,6 +178,11 @@ const handleTargetVisibleChange = (fieldKey: string, visible: boolean) => {
   align-items: center;
   gap: 8px;
 }
+
+.field-type {
+  color: var(--ed-color-primary, #3370ff);
+}
+
 .field-name {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -240,14 +248,14 @@ const handleTargetVisibleChange = (fieldKey: string, visible: boolean) => {
   .source-field {
     height: 32px;
     padding: 0 10px;
-    background: #e8f0ff;
-    border: 1px solid #3370ff;
+    background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
+    border: 1px solid var(--ed-color-primary, #3370ff);
     border-radius: 4px;
   }
 
   .source-field:has(.field-type.q) {
-    background: #e8fffb;
-    border-color: #00b8a9;
+    background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
+    border-color: var(--ed-color-primary, #3370ff);
   }
 
   .field-type {
@@ -276,7 +284,7 @@ const handleTargetVisibleChange = (fieldKey: string, visible: boolean) => {
       min-height: 32px;
       padding: 4px 12px;
       border-radius: 6px;
-      box-shadow: 0 0 0 1px #d9dcdf inset;
+      box-shadow: 0 0 0 1px var(--ed-color-primary, #3370ff) inset;
     }
 
     :deep(.ed-select__selected-item) {
@@ -296,11 +304,17 @@ const handleTargetVisibleChange = (fieldKey: string, visible: boolean) => {
     }
   }
 
+  .target-field-select.is-matched {
+    :deep(.ed-select__wrapper) {
+      background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
+    }
+  }
+
   .target-field-type {
     width: 16px;
     height: 16px;
     flex-shrink: 0;
-    color: #3370ff;
+    color: var(--ed-color-primary, #3370ff);
 
     &.q {
       color: #04b49c;
@@ -404,21 +418,21 @@ const handleTargetVisibleChange = (fieldKey: string, visible: boolean) => {
   .source-field {
     height: 32px;
     padding: 0 8px;
-    background: rgba(51, 112, 255, 0.1);
-    border: 1px solid #3370ff;
+    background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
+    border: 1px solid var(--ed-color-primary, #3370ff);
     border-radius: 6px;
   }
 
   .source-field:has(.field-type.q) {
-    background: rgba(4, 180, 156, 0.1);
-    border-color: #04b49c;
+    background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
+    border-color: var(--ed-color-primary, #3370ff);
   }
 
   .field-type {
     width: 16px;
     height: 16px;
     flex-shrink: 0;
-    color: #3370ff;
+    color: var(--ed-color-primary, #3370ff);
     background: transparent;
     border-radius: 0;
 
@@ -446,7 +460,7 @@ const handleTargetVisibleChange = (fieldKey: string, visible: boolean) => {
       min-height: 32px;
       padding: 4px 12px;
       border-radius: 6px;
-      box-shadow: 0 0 0 1px #d9dcdf inset;
+      box-shadow: 0 0 0 1px var(--ed-color-primary, #3370ff) inset;
     }
 
     :deep(.ed-select__selected-item) {
@@ -466,11 +480,17 @@ const handleTargetVisibleChange = (fieldKey: string, visible: boolean) => {
     }
   }
 
+  .target-field-select.is-matched {
+    :deep(.ed-select__wrapper) {
+      background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
+    }
+  }
+
   .target-field-type {
     width: 16px;
     height: 16px;
     flex-shrink: 0;
-    color: #3370ff;
+    color: var(--ed-color-primary, #3370ff);
 
     &.q {
       color: #04b49c;
@@ -551,8 +571,8 @@ const handleTargetVisibleChange = (fieldKey: string, visible: boolean) => {
     font-size: 14px;
     font-weight: 400;
     line-height: 22px;
-    background: rgba(51, 112, 255, 0.1);
-    border: 1px solid #3370ff;
+    background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
+    border: 1px solid var(--ed-color-primary, #3370ff);
     border-radius: 6px;
 
     &:last-child {
@@ -560,18 +580,18 @@ const handleTargetVisibleChange = (fieldKey: string, visible: boolean) => {
     }
 
     &.q {
-      background: rgba(4, 180, 156, 0.1);
-      border-color: #04b49c;
+      background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
+      border-color: var(--ed-color-primary, #3370ff);
     }
 
     &.is-hovering,
     &:hover {
-      background: rgba(51, 112, 255, 0.16);
+      background: var(--ed-color-primary-33, rgba(51, 112, 255, 0.2));
     }
 
     &.q.is-hovering,
     &.q:hover {
-      background: rgba(4, 180, 156, 0.16);
+      background: var(--ed-color-primary-33, rgba(51, 112, 255, 0.2));
     }
 
     &.selected {
@@ -602,7 +622,7 @@ const handleTargetVisibleChange = (fieldKey: string, visible: boolean) => {
     width: 16px;
     height: 16px;
     flex-shrink: 0;
-    color: #3370ff;
+    color: var(--ed-color-primary, #3370ff);
 
     &.q {
       color: #04b49c;

@@ -220,7 +220,7 @@ const fieldTypeIcon = computed(() => {
 })
 
 const getFieldColor = (groupType: string) => {
-  return groupType === 'd' ? '#3370ff' : '#34c724'
+  return groupType === 'd' ? 'var(--ed-color-primary, #3370ff)' : '#34c724'
 }
 </script>
 
