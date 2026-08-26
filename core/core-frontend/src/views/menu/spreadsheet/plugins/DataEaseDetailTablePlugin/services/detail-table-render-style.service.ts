@@ -5,6 +5,7 @@ import type { DetailTableConfig } from '../types'
 import type { FieldItemData } from '../../../types/plugin'
 import { TableStyleService } from './table-style.service'
 import { getFieldDisplayScale } from '../utils/field-format'
+import { isDetailTableIndexVisible } from '../utils/table-style-state'
 
 const DEFAULT_RENDER_STYLE: Partial<IStyleData> = {
   ht: HorizontalAlign.LEFT
@@ -195,7 +196,7 @@ export class DetailTableRenderStyleService {
       return value
     }
 
-    const showIndex = !!range.config.style?.header?.showIndex
+    const showIndex = isDetailTableIndexVisible(range.config)
     const fieldIndex = col - range.startColumn - (showIndex ? 1 : 0)
     const field = range.fields?.[fieldIndex]
     const displayScale = getFieldDisplayScale(field)
