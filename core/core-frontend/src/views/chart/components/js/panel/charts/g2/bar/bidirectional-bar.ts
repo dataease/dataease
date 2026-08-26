@@ -1,16 +1,14 @@
-import { G2ChartView, G2DrawOptions } from '../../../types/impl/g2'
 import {
-  flow,
-  getLineConditions,
-  getLineLabelColorByCondition,
-  hexColorToRGBA,
-  hexToRgba,
-  parseJson
-} from '@/views/chart/components/js/util'
+  G2ChartView,
+  G2DrawOptions,
+  getCategoryLegendStyle,
+  getHorizontalLegendTextStyle
+} from '../../../types/impl/g2'
+import { flow, hexColorToRGBA, hexToRgba, parseJson } from '@/views/chart/components/js/util'
 import { defaultsDeep, isEmpty, merge } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { useI18n } from '@/hooks/web/useI18n'
-import { Chart as G2Chart, G2Spec } from '@antv/g2'
+import { Chart as G2Chart, extend, G2Spec, Runtime, stdlib } from '@antv/g2'
 import {
   configXAxisLengthLimit,
   formatAxisLabelWithLengthLimit,
@@ -26,6 +24,61 @@ import {
   getSeriesTooltipFormatterMap,
   isSeriesTooltipFormatterShown
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
+import {
+  getSideLegendMaxWidth,
+  SIDE_LEGEND_DEFAULT_COL_PADDING,
+  SIDE_LEGEND_MIN_LABEL_WIDTH
+} from '../../../types/impl/g2-legend'
+import { measureLegendTextWidth } from '../../../types/impl/g2-legend-poptip'
+
+interface BidirectionalLegendFlexLayout {
+  direction: 'col' | 'row'
+  legendFirst: boolean
+  legendContentSize: number
+}
+
+const createResponsiveBidirectionalSpaceFlex = baseSpaceFlex => {
+  const responsiveSpaceFlex = (...args) => {
+    const layout = baseSpaceFlex(...args)
+    return options => {
+      const legendLayout = options.dataeaseBidirectionalLegendFlex as BidirectionalLegendFlexLayout
+      if (!legendLayout) {
+        return layout(options)
+      }
+      const mainSize = Number(legendLayout.direction === 'col' ? options.height : options.width)
+      if (!Number.isFinite(mainSize) || mainSize <= 0) {
+        return layout(options)
+      }
+      const padding = Math.max(0, Number(options.padding) || 0)
+      const childCount = Array.isArray(options.children) ? options.children.length : 2
+      const availableMainSize = Math.max(1, mainSize - padding * Math.max(0, childCount - 1))
+      const sideLegendMaxWidth = getSideLegendMaxWidth(Number(options.width))
+      const legendMainSize = Math.max(
+        1,
+        Math.min(
+          legendLayout.direction === 'row'
+            ? Math.min(legendLayout.legendContentSize, sideLegendMaxWidth)
+            : legendLayout.legendContentSize,
+          availableMainSize - 1
+        )
+      )
+      const chartMainSize = Math.max(1, availableMainSize - legendMainSize)
+      const ratio = legendLayout.legendFirst
+        ? [legendMainSize, chartMainSize]
+        : [chartMainSize, legendMainSize]
+      // 每轮布局都按当前容器尺寸重算分栏，避免 resize 沿用旧比例放大图例留白
+      return layout({ ...options, ratio })
+    }
+  }
+  responsiveSpaceFlex.props = baseSpaceFlex.props
+  return responsiveSpaceFlex
+}
+
+const bidirectionalLibrary = stdlib() as Record<string, any>
+bidirectionalLibrary['composition.spaceFlex'] = createResponsiveBidirectionalSpaceFlex(
+  bidirectionalLibrary['composition.spaceFlex']
+)
+const BidirectionalG2Chart = extend(Runtime, bidirectionalLibrary) as typeof G2Chart
 
 const { t } = useI18n()
 
@@ -219,7 +272,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
         }
       ]
     }
-    const newChart = new G2Chart({ container, ...getG2Renderer() })
+    const newChart = new BidirectionalG2Chart({ container, ...getG2Renderer() })
     const options = this.setupOptions(chart, initOptions)
     const { basicStyle } = parseJson(chart.customAttr)
     const { xAxis, yAxis, yAxisExt } = parseJson(chart.customStyle)
@@ -888,7 +941,6 @@ export class BidirectionalHorizontalBar extends G2ChartView {
     }
     const { yAxis, yAxisExt } = chart
     const [firstMark, secondMark] = this.getChartMarks(options)
-    const conditions = getLineConditions(chart)
     const formatterMap = label.seriesLabelFormatter?.reduce((pre, next) => {
       const seriesId = next.seriesId ?? next.id
       pre[seriesId] = next
@@ -948,9 +1000,8 @@ export class BidirectionalHorizontalBar extends G2ChartView {
           if (!labelCfg?.show) {
             return 'black'
           }
-          const color =
-            getLineLabelColorByCondition(conditions, d.value, d.quotaList[0].id) || labelCfg.color
-          return color
+          // 条件样式只改变柱体颜色，数据标签继续使用标签面板配置
+          return labelCfg.color
         },
         position: d => {
           if (!label.seriesLabelFormatter?.length) {
@@ -1043,46 +1094,97 @@ export class BidirectionalHorizontalBar extends G2ChartView {
     }
     const { basicStyle } = parseJson(chart.customAttr)
     const [firstData, secondData] = chart.data.data
+    const [firstAxis] = chart.yAxis
+    const [secondAxis] = chart.yAxisExt
     const flexOptions = options as any
-    // DataEase size 使用半径语义，换算为 G2 marker 直径后再参与图例层测量
+    const chartOptions = this.getChartOptions(options)
     const legendFontSize = legend.fontSize ?? 12
     const legendMarkerSize = (legend.size ?? 4) * 2
-    const topLegend = legend.vPosition === 'top'
-    const getLegendRatio = (direction: 'col' | 'row', legendFirst = false) => {
-      // spaceFlex 的 ratio 是纯比例切分，小容器下固定 [20, 1] 会把图例层压到不可见；这里按实际容器给图例预留最小像素空间
-      const containerRect =
-        typeof document === 'undefined' || !chart.container
-          ? undefined
-          : document.getElementById(chart.container)?.getBoundingClientRect()
-      const mainSize = direction === 'col' ? containerRect?.height : containerRect?.width
-      const getTextWidth = text => {
-        return Array.from(`${text ?? ''}`).reduce((width, char) => {
-          return width + (char.charCodeAt(0) > 255 ? legendFontSize : legendFontSize * 0.6)
-        }, 0)
+    const legendItemSpacing = 8
+    const legendRowPadding = 8
+    const getDisplayName = (axis, fallback) => {
+      const name = isEmpty(axis?.chartShowName) ? axis?.name : axis.chartShowName
+      return `${name ?? fallback ?? ''}`
+    }
+    // 图例内部键只负责区分主副值轴，展示名称始终读取当前轴字段配置
+    const legendItems = [
+      {
+        key: `yAxis-${firstAxis?.id ?? 'first'}`,
+        name: getDisplayName(firstAxis, firstData.name),
+        color: hexColorToRGBA(basicStyle.colors[0], basicStyle.alpha)
+      },
+      {
+        key: `yAxisExt-${secondAxis?.id ?? 'second'}`,
+        name: getDisplayName(secondAxis, secondData.name),
+        color: hexColorToRGBA(basicStyle.colors[1], basicStyle.alpha)
       }
-      // 图例字体或图形放大后，图例层也要随之增高；否则图例会从独立 legends 子层溢出到图表边界外
-      const legendGap = topLegend && direction === 'col' ? 8 : 14
-      const legendLineSize = Math.ceil(Math.max(legendFontSize * 1.3, legendMarkerSize) + legendGap)
+    ]
+    const legendNameMap = legendItems.reduce((map, item) => {
+      map[item.key] = item.name
+      return map
+    }, {} as Record<string, string>)
+    const getLegendName = value => {
+      const legendKey =
+        typeof value === 'object' && value !== null ? value.id ?? value.value ?? value.label : value
+      return legendNameMap[legendKey] ?? `${legendKey ?? ''}`
+    }
+    const chartContainer = chart.container as unknown
+    const containerDom =
+      typeof document === 'undefined' || !chartContainer
+        ? undefined
+        : typeof chartContainer === 'string'
+        ? document.getElementById(chartContainer)
+        : typeof (chartContainer as HTMLElement).getBoundingClientRect === 'function'
+        ? (chartContainer as HTMLElement)
+        : undefined
+    const containerRect = containerDom?.getBoundingClientRect()
+    const legendItemHeight = Math.ceil(Math.max(legendFontSize * 1.3, legendMarkerSize))
+    const legendItemWidths = legendItems.map(item =>
+      Math.ceil(
+        Math.max(
+          SIDE_LEGEND_MIN_LABEL_WIDTH,
+          measureLegendTextWidth(item.name, legendFontSize, chart.fontFamily || 'sans-serif')
+        ) +
+          legendMarkerSize +
+          legendItemSpacing +
+          SIDE_LEGEND_DEFAULT_COL_PADDING
+      )
+    )
+    const getLegendGap = (direction: 'col' | 'row', legendFirst: boolean) =>
+      direction === 'row' ? 8 : legendFirst ? 8 : 4
+    const getLegendContentSize = (direction: 'col' | 'row', legendFirst = false) => {
+      const legendGap = getLegendGap(direction, legendFirst)
+      return direction === 'col'
+        ? legendItemHeight + legendGap
+        : Math.max(...legendItemWidths) + legendGap
+    }
+    const getLegendRatio = (direction: 'col' | 'row', legendFirst = false) => {
+      const mainSize = direction === 'col' ? containerRect?.height : containerRect?.width
+      const legendContentSize = getLegendContentSize(direction, legendFirst)
       const legendMainSize =
-        direction === 'col'
-          ? Math.max(topLegend ? 28 : 32, legendLineSize)
-          : Math.max(
-              80,
-              getTextWidth(firstData.name) + legendMarkerSize + 40,
-              getTextWidth(secondData.name) + legendMarkerSize + 40
-            )
+        direction === 'row'
+          ? Math.min(legendContentSize, getSideLegendMaxWidth(Number(containerRect?.width)))
+          : legendContentSize
       if (!mainSize || mainSize <= 0) {
-        return legendFirst ? [1, 20] : [20, 1]
+        const fallbackLegendRatio = Math.max(1, Math.ceil(legendMainSize / 16))
+        return legendFirst ? [fallbackLegendRatio, 20] : [20, fallbackLegendRatio]
       }
       const safeLegendSize = Math.max(1, Math.min(legendMainSize, mainSize - 1))
       const chartMainSize = Math.max(mainSize - safeLegendSize, 1)
       return legendFirst ? [safeLegendSize, chartMainSize] : [chartMainSize, safeLegendSize]
     }
+    const setLegendRatio = (direction: 'col' | 'row', legendFirst = false) => {
+      flexOptions.dataeaseBidirectionalLegendFlex = {
+        direction,
+        legendFirst,
+        legendContentSize: getLegendContentSize(direction, legendFirst)
+      } satisfies BidirectionalLegendFlexLayout
+      flexOptions.ratio = getLegendRatio(direction, legendFirst)
+    }
     const keepTopLegendPlotInset = () => {
-      if (!topLegend || basicStyle.layout !== 'horizontal') {
+      if (basicStyle.layout !== 'horizontal') {
         return
       }
-      const chartOptions = this.getChartOptions(options)
       if (!chartOptions) {
         return
       }
@@ -1101,84 +1203,117 @@ export class BidirectionalHorizontalBar extends G2ChartView {
         })
       })
     }
+    const horizontalLegendTextStyle = getHorizontalLegendTextStyle(legendFontSize)
+    const enableHorizontalLegendText = legendOption => {
+      Object.assign(legendOption, horizontalLegendTextStyle)
+      const labelFormatter = horizontalLegendTextStyle.labelFormatter
+      const itemPoptip = horizontalLegendTextStyle.itemPoptip
+      legendOption.labelFormatter = value => labelFormatter(getLegendName(value))
+      legendOption.itemPoptip = ({ id, label }) => itemPoptip({ id: getLegendName(id), label })
+    }
+    const enableSideLegendLayout = legendOption => {
+      legendOption.dataeaseSideLegendAutoLayout = true
+      legendOption.dataeaseSideLegendMaxWidthRatio = 1
+      legendOption.navOrientation = 'vertical'
+      legendOption.maxCols = 1
+    }
     const legendOpt: any = {
       key: 'legends',
       type: 'legends',
       scale: {
         color: {
           type: 'ordinal',
-          domain: [firstData.name, secondData.name],
-          range: [
-            hexColorToRGBA(basicStyle.colors[0], basicStyle.alpha),
-            hexColorToRGBA(basicStyle.colors[1], basicStyle.alpha)
-          ]
+          domain: legendItems.map(item => item.key),
+          range: legendItems.map(item => item.color)
         }
       },
       position: 'top',
-      layout: {},
+      layout: {
+        justifyContent: 'center',
+        alignItems: 'center'
+      },
+      crossPadding: 8,
+      rowPadding: legendRowPadding,
+      colPadding: SIDE_LEGEND_DEFAULT_COL_PADDING,
+      itemSpacing: [legendItemSpacing, legendItemSpacing, legendItemSpacing],
       itemMarker: legend.icon,
-      itemMarkerSize: legendMarkerSize,
-      itemLabelFontSize: legendFontSize,
-      itemLabelFill: legend.color,
-      itemLabelOpacity: 1,
-      itemLabelFillOpacity: 1,
-      ...(topLegend
-        ? {
-            margin: 0,
-            rowPadding: 2,
-            colPadding: 6,
-            crossPadding: 2,
-            itemSpacing: [4, 4, 2],
-            maxRows: 1
-          }
-        : {
-            margin: 8
-          })
+      labelFormatter: getLegendName,
+      ...getCategoryLegendStyle(legendMarkerSize, legendFontSize, legend.color)
     }
-    if (legend.hPosition === 'center') {
-      legendOpt.layout.justifyContent = 'center'
+    const hPosition = ['left', 'center', 'right'].includes(legend.hPosition)
+      ? legend.hPosition
+      : 'center'
+    const rawVPosition = ['top', 'center', 'bottom'].includes(legend.vPosition)
+      ? legend.vPosition
+      : 'bottom'
+    const vPosition = hPosition === 'center' && rawVPosition === 'center' ? 'top' : rawVPosition
+    if (hPosition === 'center') {
+      flexOptions.direction = 'col'
       legendOpt.layout.flexDirection = 'row'
-      if (legend.vPosition === 'top') {
-        flexOptions.ratio = getLegendRatio('col', true)
+      legendOpt.maxRows = 1
+      enableHorizontalLegendText(legendOpt)
+      if (vPosition === 'top') {
+        legendOpt.position = 'top'
+        legendOpt.crossPadding = getLegendGap('col', true)
+        legendOpt.marginTop = 0
+        legendOpt.marginBottom = 0
+        setLegendRatio('col', true)
         flexOptions.children.unshift(legendOpt)
         keepTopLegendPlotInset()
       }
-      if (legend.vPosition === 'bottom') {
-        flexOptions.ratio = getLegendRatio('col')
+      if (vPosition === 'bottom') {
+        legendOpt.position = 'bottom'
+        legendOpt.crossPadding = getLegendGap('col', false)
+        legendOpt.marginTop = 0
+        legendOpt.marginBottom = 0
+        setLegendRatio('col')
         flexOptions.children.push(legendOpt)
       }
-    } else {
-      if (legend.vPosition === 'center') {
-        flexOptions.direction = 'row'
-        legendOpt.position = 'left'
-        legendOpt.layout.justifyContent = 'center'
-        legendOpt.layout.flexDirection = 'col'
-        if (legend.hPosition === 'left') {
-          flexOptions.ratio = getLegendRatio('row', true)
-          flexOptions.children.unshift(legendOpt)
-        }
-        if (legend.hPosition === 'right') {
-          flexOptions.ratio = getLegendRatio('row')
-          flexOptions.children.push(legendOpt)
-        }
-      } else {
-        flexOptions.direction = 'col'
-        if (legend.hPosition === 'left') {
-          legendOpt.layout.justifyContent = 'flex-start'
-        }
-        if (legend.hPosition === 'right') {
-          legendOpt.layout.justifyContent = 'flex-end'
-        }
-        if (legend.vPosition === 'top') {
-          flexOptions.ratio = getLegendRatio('col', true)
-          flexOptions.children.unshift(legendOpt)
-          keepTopLegendPlotInset()
-        }
-        if (legend.vPosition === 'bottom') {
-          flexOptions.ratio = getLegendRatio('col')
-          flexOptions.children.push(legendOpt)
-        }
+      return options
+    }
+    if (vPosition === 'center') {
+      flexOptions.direction = 'row'
+      flexOptions.padding = 0
+      if (chartOptions) {
+        chartOptions.margin = 0
       }
+      legendOpt.position = hPosition
+      legendOpt.layout.justifyContent = 'center'
+      legendOpt.layout.flexDirection = 'col'
+      legendOpt.crossPadding = getLegendGap('row', hPosition === 'left')
+      legendOpt.marginLeft = 0
+      legendOpt.marginRight = 0
+      enableSideLegendLayout(legendOpt)
+      if (hPosition === 'left') {
+        setLegendRatio('row', true)
+        flexOptions.children.unshift(legendOpt)
+      }
+      if (hPosition === 'right') {
+        setLegendRatio('row')
+        flexOptions.children.push(legendOpt)
+      }
+      return options
+    }
+    flexOptions.direction = 'col'
+    legendOpt.position = vPosition
+    legendOpt.layout.justifyContent = hPosition === 'left' ? 'flex-start' : 'flex-end'
+    legendOpt.layout.flexDirection = 'row'
+    legendOpt.maxRows = 1
+    enableHorizontalLegendText(legendOpt)
+    if (vPosition === 'top') {
+      legendOpt.crossPadding = getLegendGap('col', true)
+      legendOpt.marginTop = 0
+      legendOpt.marginBottom = 0
+      setLegendRatio('col', true)
+      flexOptions.children.unshift(legendOpt)
+      keepTopLegendPlotInset()
+    }
+    if (vPosition === 'bottom') {
+      legendOpt.crossPadding = getLegendGap('col', false)
+      legendOpt.marginTop = 0
+      legendOpt.marginBottom = 0
+      setLegendRatio('col')
+      flexOptions.children.push(legendOpt)
     }
     return options
   }
