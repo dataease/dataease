@@ -315,6 +315,8 @@ export class RangeBar extends HorizontalBar {
       const date = dateVal instanceof Date ? dateVal : new Date(dateVal)
       return Number.isNaN(date.getTime()) ? '' : formatRangeDate(date, dateFormat)
     }
+    const formatTooltipValue = (value: any) =>
+      isDate ? formatDateLabel(value) : valueFormatter(value, tooltip.tooltipFormatter)
     const tooltipOptions: ViewSpec = {
       tooltip: {
         items: [
@@ -343,14 +345,11 @@ export class RangeBar extends HorizontalBar {
             const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)
             const itemsHtml = originalItems
               .map(item => {
+                const values = Array.isArray(item.value) ? item.value : []
+                // 保留“开始值 ~ 结束值”语义，空间不足时交给公共 tooltip 样式省略
                 const value =
-                  item.value
-                    .map((dateStr: string) =>
-                      isDate
-                        ? formatDateLabel(dateStr)
-                        : valueFormatter(dateStr, tooltip.tooltipFormatter)
-                    )
-                    .join(' ~ ') + (tooltip.showGap ? ` (${item.original_data.gap})` : '')
+                  values.map(formatTooltipValue).join(' ~ ') +
+                  (tooltip.showGap ? ` (${item.original_data.gap ?? ''})` : '')
                 const name = isEmpty(item.original_data.category)
                   ? item.original_data.field
                   : item.original_data.category
