@@ -233,9 +233,10 @@ const handleDrop = e => {
   const componentInfo = e.dataTransfer.getData('id')
   const rectInfo = editorMap.value[state.canvasId].getBoundingClientRect()
   if (componentInfo) {
+    const tScale = Number(canvasStyleData.value.tScale) || 1
     const component = findDragComponent(componentInfo)
-    component.style.top = e.clientY - rectInfo.y
-    component.style.left = e.clientX - rectInfo.x
+    component.style.top = (e.clientY - rectInfo.y) / tScale
+    component.style.left = (e.clientX - rectInfo.x) / tScale
     component.id = guid()
     changeComponentSizeWithScale(component)
     dvMainStore.addComponent({ component: component, index: undefined })
