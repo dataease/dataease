@@ -86,6 +86,122 @@ type LargeDataSpec = G2Spec & {
   animate?: unknown
 }
 
+/** G2 公共字体处理需要访问的可选 Spec 字段 */
+type G2FontSpec = LargeDataSpec & {
+  layout?: Record<string, any>
+  style?: Record<string, any>
+  theme?: string | Record<string, any>
+}
+
+/** 主题字段可能是字符串或数组，只合并普通对象以避免破坏原配置 */
+const isRecord = (value: unknown): value is Record<string, any> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value)
+
+/** 补齐 G2 内置组件的字体主题，同时保留图表已有的主题属性 */
+const applyG2FontTheme = (theme: G2FontSpec['theme'], fontFamily: string): Record<string, any> => {
+  const currentTheme = typeof theme === 'string' ? { type: theme } : isRecord(theme) ? theme : {}
+  const tooltip = isRecord(currentTheme.tooltip) ? currentTheme.tooltip : {}
+  const tooltipCss = isRecord(tooltip.css) ? tooltip.css : {}
+  const tooltipStyle = isRecord(tooltipCss['.g2-tooltip']) ? tooltipCss['.g2-tooltip'] : {}
+  return {
+    ...currentTheme,
+    axis: {
+      ...(isRecord(currentTheme.axis) ? currentTheme.axis : {}),
+      labelFontFamily: fontFamily,
+      titleFontFamily: fontFamily
+    },
+    legendCategory: {
+      ...(isRecord(currentTheme.legendCategory) ? currentTheme.legendCategory : {}),
+      itemLabelFontFamily: fontFamily,
+      itemValueFontFamily: fontFamily,
+      navPageNumFontFamily: fontFamily,
+      titleFontFamily: fontFamily
+    },
+    legendContinuous: {
+      ...(isRecord(currentTheme.legendContinuous) ? currentTheme.legendContinuous : {}),
+      handleLabelFontFamily: fontFamily,
+      labelFontFamily: fontFamily,
+      titleFontFamily: fontFamily
+    },
+    label: {
+      ...(isRecord(currentTheme.label) ? currentTheme.label : {}),
+      fontFamily
+    },
+    innerLabel: {
+      ...(isRecord(currentTheme.innerLabel) ? currentTheme.innerLabel : {}),
+      fontFamily
+    },
+    htmlLabel: {
+      ...(isRecord(currentTheme.htmlLabel) ? currentTheme.htmlLabel : {}),
+      fontFamily
+    },
+    slider: {
+      ...(isRecord(currentTheme.slider) ? currentTheme.slider : {}),
+      handleLabelFontFamily: fontFamily
+    },
+    title: {
+      ...(isRecord(currentTheme.title) ? currentTheme.title : {}),
+      titleFontFamily: fontFamily,
+      subtitleFontFamily: fontFamily
+    },
+    tooltip: {
+      ...tooltip,
+      css: {
+        ...tooltipCss,
+        '.g2-tooltip': {
+          ...tooltipStyle,
+          // G2 默认在 tooltip 节点写入 sans-serif，需要显式覆盖而不能只依赖父容器继承
+          'font-family': fontFamily
+        }
+      }
+    }
+  }
+}
+
+/** 递归处理组合图表的 Spec，并适配不同图形使用的字体字段 */
+const applyG2FontFamily = (spec: G2FontSpec, fontFamily: string): G2FontSpec => {
+  const style = isRecord(spec.style) ? { ...spec.style } : undefined
+  if (style) {
+    // text、层级图、仪表盘和水波图在 G2 中分别使用不同的字体属性
+    if (spec.type === 'text') {
+      style.fontFamily = fontFamily
+    }
+    if ('labelText' in style || 'labelFontSize' in style) {
+      style.labelFontFamily = fontFamily
+    }
+    if ('textContent' in style || 'textFontSize' in style) {
+      style.textFontFamily = fontFamily
+    }
+    if ('contentText' in style || 'contentFontSize' in style) {
+      style.contentFontFamily = fontFamily
+    }
+  }
+  // 同时覆盖标签根属性与 style，兼容各图表当前采用的两种标签写法
+  const labels = Array.isArray(spec.labels)
+    ? spec.labels.map(label => ({
+        ...label,
+        fontFamily,
+        ...(isRecord(label.style) && { style: { ...label.style, fontFamily } })
+      }))
+    : spec.labels
+  // mix、spaceFlex 等组合图表会把实际图形放在 children 中
+  const children = Array.isArray(spec.children)
+    ? spec.children.map(child => applyG2FontFamily(child, fontFamily))
+    : spec.children
+  return {
+    ...spec,
+    // 最终 Spec 统一只注入字体属性，保留各图表已有的颜色、字号和布局配置
+    theme: applyG2FontTheme(spec.theme, fontFamily),
+    ...(style && { style }),
+    ...(labels && { labels }),
+    // 词云在布局阶段就需要字体信息，否则测量结果会与最终绘制不一致
+    ...(spec.type === 'wordCloud' && {
+      layout: { ...(isRecord(spec.layout) ? spec.layout : {}), font: fontFamily }
+    }),
+    ...(children && { children })
+  }
+}
+
 /**
  * 提取当前 Spec 节点直接持有的内联数据
  *
@@ -589,6 +705,14 @@ export abstract class G2ChartView<
   P extends G2Chart = G2Chart
 > extends AntVAbstractChartView {
   public abstract drawChart(drawOptions: G2DrawOptions<P>): P | Promise<P>
+
+  /** 在首次渲染前统一应用视图主题字体 */
+  public applyThemeFont(chart?: P, fontFamily?: string): void {
+    if (!chart || !fontFamily || fontFamily === 'inherit') {
+      return
+    }
+    chart.options(applyG2FontFamily(chart.options() as G2FontSpec, fontFamily))
+  }
 
   /**
    * 在 drawChart 完成最终 options 装配且首次 render 尚未开始时应用公共性能策略

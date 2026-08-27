@@ -239,7 +239,10 @@ export class CirclePacking extends G2ChartView {
       if (!ctx) {
         return true
       }
-      ctx.font = `${fontSize}px sans-serif`
+      // 使用主题字体测量文本，避免标签的隐藏判断与最终绘制结果不一致
+      const fontFamily =
+        chart.fontFamily && chart.fontFamily !== 'inherit' ? chart.fontFamily : 'sans-serif'
+      ctx.font = `${fontSize}px ${fontFamily}`
 
       const r = diameter / 2
       const lineHeight = fontSize * 1.05

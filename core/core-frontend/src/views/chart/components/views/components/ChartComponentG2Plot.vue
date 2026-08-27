@@ -671,6 +671,8 @@ const renderG2 = async (chart, chartView: G2ChartView<any, any>) => {
         chartInstance
       )
       // 此时 drawChart 已经完成最终 Spec 装配，但 G2 尚未开始首次绘制
+      // 主题字体在公共入口注入，让坐标轴、图例、标签和特殊文本使用同一字体
+      chartView.applyThemeFont(chartInstance, chart.fontFamily)
       // 在这里统一应用性能策略，可以避免大数据首次进入页面时创建海量标签并执行昂贵动画
       // 优化后的 options 会保留在当前实例中，刷新和容器调整触发 forceFit 时也会直接复用
       chartView.optimizeLargeData(chartInstance)
