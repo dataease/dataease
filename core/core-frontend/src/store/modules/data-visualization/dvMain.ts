@@ -307,6 +307,28 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
 
     setCanvasStyle(style) {
+      const dvType = style.dvType || this.dvInfo?.type
+      const setDefaultTransformScale = (
+        key: 'tScale' | 'tScaleWidth' | 'tScaleHeight',
+        fallback: number
+      ) => {
+        const currentScale = Number(style[key])
+        if (Number.isFinite(currentScale) && currentScale > 0) {
+          return
+        }
+        style[key] = Number.isFinite(fallback) && fallback > 0 ? fallback : 1
+      }
+      // 仪表板风格和旧模板整对象替换 canvasStyleData 时，可能缺少 transform 缩放字段
+      // 仅补齐缺失或非法值，避免拖拽及缩放坐标变为 NaN，并保留已有合法配置
+      setDefaultTransformScale('tScale', dvType === 'dataV' ? Number(style.scale) / 100 : 1)
+      setDefaultTransformScale(
+        'tScaleWidth',
+        dvType === 'dataV' ? Number(style.scaleWidth) / 100 : 1
+      )
+      setDefaultTransformScale(
+        'tScaleHeight',
+        dvType === 'dataV' ? Number(style.scaleHeight) / 100 : 1
+      )
       style.component = style.component || {}
       const isLightTheme = style.dashboard?.themeColor === 'light'
       const defaultColorCase = isLightTheme ? DEFAULT_COLOR_CASE_LIGHT : DEFAULT_COLOR_CASE_DARK
