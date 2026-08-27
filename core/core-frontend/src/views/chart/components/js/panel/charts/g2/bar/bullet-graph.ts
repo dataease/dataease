@@ -92,7 +92,10 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
     // 处理自定义目标值
     if (bullet.bar.target.showType === 'fixed') {
       const customTarget = bullet.bar.target.value || 0
-      result.forEach(item => (item.target = customTarget))
+      result.forEach(item => {
+        item.target = customTarget
+        item.tooltipTarget = customTarget
+      })
     } else {
       result.forEach(item => (item.target = item.originalTarget))
     }
@@ -185,6 +188,11 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
     const showRangeLegend = customStyleLegend?.showRange
     const rangeLegendKeys: string[] = []
     const rangeLegendLabelMap: Record<string, string> = {}
+    const hoverState = () => ({
+      active: {
+        backgroundPointerEvents: 'none'
+      }
+    })
     // 背景颜色，固定区间背景时，按大小降序
     const rangeColor = isDynamic
       ? chart.extBubble?.length
@@ -221,6 +229,7 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
           maxWidth: bullet.bar.ranges.size,
           ...(showRangeLegend ? {} : { fill: item.fill })
         },
+        state: hoverState(),
         tooltip: false
       }
       childrens.push(range)
@@ -247,6 +256,7 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
             maxWidth: bullet.bar.ranges.size,
             ...(showRangeLegend ? {} : { fill: [].concat(bullet.bar.ranges.fill)[0] })
           },
+          state: hoverState(),
           tooltip: false
         })
       }
@@ -268,6 +278,7 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
       style: {
         maxWidth: bullet.bar.measures.size
       },
+      state: hoverState(),
       tooltip: tooltip.show
         ? {
             title: d => d.title,
@@ -287,6 +298,7 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
       interaction: {
         legendFilter: false
       },
+      state: hoverState(),
       tooltip: tooltip.show
         ? {
             title: false,
@@ -296,8 +308,32 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
     }
     childrens.push(measures)
     childrens.push(target)
+    if (tooltip.show) {
+      // 空数据 line 仅用于启用 series tooltip，让分类带空白区域按最近维度命中
+      childrens.push({
+        type: 'line',
+        data: [],
+        encode: {
+          x: 'title',
+          y: 'measures'
+        },
+        tooltip: {
+          title: d => d.title,
+          items: [{ channel: 'y' }]
+        }
+      })
+    }
     options = {
       ...options,
+      interaction: {
+        ...options.interaction,
+        // 与基础柱状图一致，按最近维度绘制分类带悬浮背景
+        elementHighlight: {
+          background: true,
+          region: true,
+          single: true
+        }
+      },
       scale: {
         color: {
           domain: [
@@ -713,6 +749,7 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
           mount: createTooltipWrapper(chart),
           css: tooltipCss(tooltipAttr),
           shared: true,
+          series: true,
           enterable: true,
           render: (_, { title, items: originalItems }) => {
             if (!originalItems?.length) {
