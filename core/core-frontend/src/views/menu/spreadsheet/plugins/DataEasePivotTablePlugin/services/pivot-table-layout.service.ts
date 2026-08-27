@@ -18,6 +18,18 @@ export interface PivotLayoutRange {
   endColumn: number
 }
 
+export interface PivotTableCornerLayout {
+  range: PivotLayoutRange
+  values: any[][]
+  twoParts: [string, string]
+  threeParts: [string, string, string]
+}
+
+export interface PivotTableValueRegion {
+  range: PivotLayoutRange
+  values: any[][]
+}
+
 export interface PivotTableLayout {
   values: any[][]
   displayScales: number[][]
@@ -27,6 +39,8 @@ export interface PivotTableLayout {
   headerColumnCount: number
   dataRange?: PivotLayoutRange
   merges: PivotLayoutRange[]
+  axisHeaderValues: PivotTableValueRegion[]
+  corner?: PivotTableCornerLayout
 }
 
 interface AxisEntry {
@@ -49,6 +63,11 @@ export class PivotTableLayoutService {
     const quotaInRows = rowConfigured.some(field => field.groupType === 'q')
     const quotaInColumns = columnConfigured.some(field => field.groupType === 'q')
     const configuredFields = [...rowConfigured, ...columnConfigured]
+    const rowFieldLabels = this.axisDisplayFields(rowConfigured)
+    const columnFieldLabels = this.axisDisplayFields(columnConfigured)
+    const hasVisibleQuota = configuredFields.some(
+      field => field.groupType === 'q' && field.hidden !== true
+    )
     const visibleQuotaFields = quotaFields.filter(field => {
       const configuredField = findConfiguredField(configuredFields, field)
       return configuredField?.hidden !== true
@@ -67,8 +86,9 @@ export class PivotTableLayoutService {
       records
     )
 
-    const rowDepth = rowEntries[0]?.labels.length || 0
-    const columnDepth = columnEntries[0]?.labels.length || 0
+    // 角头尺寸必须由最终可见字段决定，空数据时也要保留字段名表头。
+    const rowDepth = rowFieldLabels.length
+    const columnDepth = columnFieldLabels.length
     const hasQuota = visibleQuotaFields.length > 0
     const topRows = columnDepth > 0 ? columnDepth : (rowDepth > 0 ? 1 : 0)
     const leftColumns = rowDepth > 0
@@ -98,15 +118,15 @@ export class PivotTableLayoutService {
     )
     this.fillAxisFieldHeaders(
       values,
-      rowConfigured,
-      columnConfigured,
+      rowFieldLabels,
+      columnFieldLabels,
       topRows,
       leftColumns
     )
     this.fillSingleAxisLabels(
       values,
-      rowConfigured,
-      this.axisDisplayFields(columnConfigured).length > 0,
+      rowFieldLabels,
+      columnFieldLabels.length > 0,
       quotaInRows,
       topRows,
       leftColumns,
@@ -140,6 +160,23 @@ export class PivotTableLayoutService {
       ...this.buildRowHeaderMerges(rowEntries, topRows),
       ...this.buildColumnHeaderMerges(columnEntries, leftColumns)
     ]
+    const axisHeaderValues = this.buildAxisHeaderValueRegions(
+      values,
+      rowCount,
+      columnCount,
+      topRows,
+      leftColumns
+    )
+    const corner = this.buildCornerLayout(
+      values,
+      rowConfigured,
+      columnConfigured,
+      rowFieldLabels,
+      columnFieldLabels,
+      hasVisibleQuota,
+      topRows,
+      leftColumns
+    )
 
     return {
       values,
@@ -149,7 +186,9 @@ export class PivotTableLayoutService {
       headerRowCount: topRows,
       headerColumnCount: leftColumns,
       dataRange,
-      merges
+      merges,
+      axisHeaderValues,
+      corner
     }
   }
 
@@ -276,14 +315,11 @@ export class PivotTableLayoutService {
 
   private fillAxisFieldHeaders(
     values: any[][],
-    rowFields: PivotTableField[],
-    columnFields: PivotTableField[],
+    rowFieldLabels: string[],
+    columnFieldLabels: string[],
     topRows: number,
     leftColumns: number
   ): void {
-    const rowFieldLabels = this.axisDisplayFields(rowFields)
-    const columnFieldLabels = this.axisDisplayFields(columnFields)
-
     if (rowFieldLabels.length && columnFieldLabels.length && topRows > 0 && leftColumns > 0) {
       const rowHeaderRow = topRows - 1
       rowFieldLabels.forEach((label, index) => {
@@ -320,16 +356,15 @@ export class PivotTableLayoutService {
 
   private fillSingleAxisLabels(
     values: any[][],
-    rowFields: PivotTableField[],
+    rowFieldLabels: string[],
     hasColumnFields: boolean,
     quotaInRows: boolean,
     topRows: number,
     leftColumns: number,
     dataColumns: number
   ): void {
-    if (rowFields.length && !hasColumnFields && topRows > 0) {
-      const visibleFields = this.axisDisplayFields(rowFields)
-      visibleFields.forEach((field, index) => {
+    if (rowFieldLabels.length && !hasColumnFields && topRows > 0) {
+      rowFieldLabels.forEach((field, index) => {
         if (index < leftColumns) {
           values[0][index] = field
         }
@@ -417,6 +452,89 @@ export class PivotTableLayoutService {
       }
     }
     return labels
+  }
+
+  private axisDimensionLabels(fields: PivotTableField[]): string[] {
+    return fields
+      .filter(field => field.groupType !== 'q' && field.hidden !== true)
+      .map(field => this.fieldLabel(field))
+  }
+
+  private buildAxisHeaderValueRegions(
+    values: any[][],
+    rowCount: number,
+    columnCount: number,
+    topRows: number,
+    leftColumns: number
+  ): PivotTableValueRegion[] {
+    const regions: PivotTableValueRegion[] = []
+
+    if (topRows > 0 && leftColumns < columnCount) {
+      regions.push(this.buildValueRegion(values, {
+        startRow: 0,
+        endRow: topRows - 1,
+        startColumn: leftColumns,
+        endColumn: columnCount - 1
+      }))
+    }
+
+    if (leftColumns > 0 && topRows < rowCount) {
+      regions.push(this.buildValueRegion(values, {
+        startRow: topRows,
+        endRow: rowCount - 1,
+        startColumn: 0,
+        endColumn: leftColumns - 1
+      }))
+    }
+
+    return regions
+  }
+
+  private buildValueRegion(
+    values: any[][],
+    range: PivotLayoutRange
+  ): PivotTableValueRegion {
+    const regionValues = values
+      .slice(range.startRow, range.endRow + 1)
+      .map(row => row.slice(range.startColumn, range.endColumn + 1))
+    return { range, values: regionValues }
+  }
+
+  private buildCornerLayout(
+    values: any[][],
+    rowFields: PivotTableField[],
+    columnFields: PivotTableField[],
+    rowFieldLabels: string[],
+    columnFieldLabels: string[],
+    hasVisibleQuota: boolean,
+    topRows: number,
+    leftColumns: number
+  ): PivotTableCornerLayout | undefined {
+    if (topRows <= 0 || leftColumns <= 0) {
+      return undefined
+    }
+
+    // 默认字段名矩阵作为关闭斜线表头时的恢复源，不能依赖合并后的单元格值。
+    const range: PivotLayoutRange = {
+      startRow: 0,
+      endRow: topRows - 1,
+      startColumn: 0,
+      endColumn: leftColumns - 1
+    }
+    const cornerValues = this.buildValueRegion(values, range).values
+    const rowDimensionLabels = this.axisDimensionLabels(rowFields)
+    const columnDimensionLabels = this.axisDimensionLabels(columnFields)
+
+    return {
+      range,
+      values: cornerValues,
+      twoParts: [rowFieldLabels.join('/'), columnFieldLabels.join('/')],
+      threeParts: [
+        rowDimensionLabels.join('/'),
+        columnDimensionLabels.join('/'),
+        hasVisibleQuota ? '指标' : ''
+      ]
+    }
   }
 
   private buildMergeKeys(values: unknown[]): string[] {

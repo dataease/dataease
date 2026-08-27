@@ -4,6 +4,7 @@ import type {
   TablePluginConfig
 } from '../../types/plugin'
 import type { TableBorderConfig } from '../../components/table-border/border-config'
+import type { SlashCellType } from '../DataEaseSlashCellPlugin/types'
 
 export type PivotAggregation =
   | 'sum'
@@ -28,6 +29,8 @@ export interface PivotTableBaseStyle {
   customBlockName: boolean
   blockName: string
   mergeCell: boolean
+  slashHeader: boolean
+  slashHeaderType: SlashCellType
 }
 
 export interface PivotTableCellStyle {

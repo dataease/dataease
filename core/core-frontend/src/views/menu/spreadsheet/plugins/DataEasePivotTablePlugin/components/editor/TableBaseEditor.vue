@@ -27,6 +27,25 @@
               >合并表头</el-checkbox
             >
           </div>
+
+          <div class="slash-header-config">
+            <el-checkbox
+              :model-value="baseStyle.slashHeader"
+              @change="value => updateBaseStyle('slashHeader', value)"
+              >斜线表头</el-checkbox
+            >
+          </div>
+
+          <div class="slash-header-type">
+            <el-select
+              :model-value="baseStyle.slashHeaderType"
+              :disabled="!baseStyle.slashHeader"
+              @change="value => updateBaseStyle('slashHeaderType', value)"
+            >
+              <el-option label="二分斜线单元格" value="two" />
+              <el-option label="三分斜线单元格" value="three" />
+            </el-select>
+          </div>
         </div>
       </el-form>
     </el-collapse-item>
@@ -48,7 +67,9 @@ const emit = defineEmits<{
 const baseStyle = ref<PivotTableBaseStyle>({
   customBlockName: false,
   blockName: '',
-  mergeCell: false
+  mergeCell: false,
+  slashHeader: false,
+  slashHeaderType: 'two'
 })
 const defaultBlockName = ref('')
 
@@ -56,13 +77,19 @@ const initBaseStyle = () => {
   defaultBlockName.value = `${props.config?.placement?.sheetName || ''}!${props.config?.placement?.startCell || ''}`
   const customBlockName = props.config?.style?.base?.customBlockName ?? false
   const mergeCell = props.config?.style?.base?.mergeCell ?? false
+  const slashHeader = props.config?.style?.base?.slashHeader ?? false
+  const slashHeaderType = props.config?.style?.base?.slashHeaderType === 'three'
+    ? 'three'
+    : 'two'
   baseStyle.value = {
     ...props.config?.style?.base,
     customBlockName,
     blockName: customBlockName
       ? props.config?.style?.base?.blockName || defaultBlockName.value
       : defaultBlockName.value,
-    mergeCell
+    mergeCell,
+    slashHeader,
+    slashHeaderType
   }
 }
 
@@ -95,5 +122,17 @@ const handleCustomBlockNameChange = (value: boolean) => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.slash-header-config {
+  margin-top: 16px;
+}
+
+.slash-header-type {
+  margin-top: 8px;
+
+  :deep(.ed-select) {
+    width: 100%;
+  }
 }
 </style>
