@@ -312,6 +312,12 @@ export class StackBar extends Bar {
     )(chart, options, {}, this)
   }
 
+  setupDefaultOptions(chart: ChartObj): ChartObj {
+    const chartTmp = super.setupDefaultOptions(chart)
+    chartTmp.customAttr.label.showStackQuota = true
+    return chartTmp
+  }
+
   constructor(name = 'bar-stack') {
     super(name)
     this.intervalOptions.transform = [{ type: 'stackY', reverse: true }]
