@@ -1272,11 +1272,8 @@ onBeforeUnmount(() => {
     // 轮播 tooltip 高度由外层约束，同时禁用内部滚动并隐藏滚动条
     :deep([data-tooltip-display-mode='carousel'] .g2-tooltip-list) {
       box-sizing: border-box;
-      width: 100%;
       min-width: 0;
-      max-width: 100% !important;
       max-height: none !important;
-      overflow-x: hidden;
       overflow-y: hidden !important;
       scrollbar-width: none !important;
       -ms-overflow-style: none;
@@ -1289,14 +1286,12 @@ onBeforeUnmount(() => {
     }
     :deep([data-tooltip-display-mode='carousel'] .g2-tooltip-list-item) {
       box-sizing: border-box;
-      width: 100%;
       min-width: 0;
-      max-width: 100%;
-      overflow: hidden;
     }
     :deep([data-tooltip-display-mode='carousel'] .g2-tooltip-list-item-name) {
-      flex: 1 1 0 !important;
-      min-width: 0 !important;
+      // 名称优先收缩，但至少保留标记和一个可识别的省略片段
+      flex: 1 9999 auto !important;
+      min-width: calc(12px + 2em) !important;
       max-width: none !important;
       overflow: hidden;
     }
@@ -1312,8 +1307,8 @@ onBeforeUnmount(() => {
       text-overflow: ellipsis !important;
     }
     :deep([data-tooltip-display-mode='carousel'] .g2-tooltip-list-item-value) {
-      flex: 0 0 auto !important;
-      max-width: 70% !important;
+      flex: 0 1 auto !important;
+      max-width: max(0px, calc(var(--de-carousel-tooltip-max-width) - 48px - 2em)) !important;
       margin-left: 12px !important;
     }
   }
@@ -1333,7 +1328,7 @@ div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover'] {
     box-sizing: border-box;
     width: max-content !important;
     min-width: min(120px, calc(100vw - 24px)) !important;
-    max-width: min(480px, calc(100vw - 24px)) !important;
+    max-width: min(33.333333vw, calc(100vw - 24px)) !important;
     max-height: min(480px, 60vh) !important;
     overflow-x: hidden !important;
     overflow-y: auto !important;
@@ -1342,24 +1337,25 @@ div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover'] {
 
   .g2-tooltip-list {
     box-sizing: border-box;
-    width: 100%;
+    // 子列表按真实内容参与 tooltip 的 max-content 计算，不回落到图表内的可用宽度
+    width: max-content;
     min-width: 0;
-    max-width: 100% !important;
+    max-width: max(0px, calc(var(--de-hover-tooltip-max-width) - 24px)) !important;
     max-height: none !important;
   }
 
   // 悬浮 tooltip 优先保证数值完整显示
   .g2-tooltip-list-item {
     box-sizing: border-box;
-    width: 100%;
+    width: max-content;
     min-width: 0;
-    max-width: 100%;
-    overflow: hidden;
+    max-width: max(0px, calc(var(--de-hover-tooltip-max-width) - 24px));
   }
 
   .g2-tooltip-list-item-name {
-    flex: 1 1 0 !important;
-    min-width: 0 !important;
+    // 名称先省略，数值自身超过剩余空间后再省略
+    flex: 1 9999 auto !important;
+    min-width: calc(12px + 2em) !important;
     max-width: none !important;
     overflow: hidden !important;
   }
@@ -1378,11 +1374,18 @@ div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover'] {
   .g2-tooltip-list-item-value {
     flex: 0 1 auto !important;
     min-width: 0 !important;
-    max-width: 80% !important;
+    max-width: max(0px, calc(var(--de-hover-tooltip-max-width) - 48px - 2em)) !important;
     margin-left: 12px !important;
     overflow: hidden !important;
     white-space: nowrap !important;
     text-overflow: ellipsis !important;
+  }
+}
+
+@media (max-width: 768px) {
+  div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover'] .g2-tooltip {
+    // 移动端按内容展开到整屏宽度，保留左右安全间距
+    max-width: calc(100vw - 24px) !important;
   }
 }
 
@@ -1393,10 +1396,18 @@ div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover'] {
       calc(100dvw - 24px - env(safe-area-inset-left) - env(safe-area-inset-right))
     ) !important;
     max-width: min(
-      480px,
+      33.333333dvw,
       calc(100dvw - 24px - env(safe-area-inset-left) - env(safe-area-inset-right))
     ) !important;
     max-height: min(480px, 60dvh) !important;
+  }
+
+  @media (max-width: 768px) {
+    div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover'] .g2-tooltip {
+      max-width: calc(
+        100dvw - 24px - env(safe-area-inset-left) - env(safe-area-inset-right)
+      ) !important;
+    }
   }
 }
 </style>

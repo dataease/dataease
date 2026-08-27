@@ -5,6 +5,7 @@ import {
   handleSetZeroSingleDimension,
   parseJson
 } from '@/views/chart/components/js/util'
+import { isMobile } from '@/utils/utils'
 import { Chart as G2Chart } from '@antv/g2'
 import { defaultsDeep } from 'lodash-es'
 
@@ -394,6 +395,11 @@ export function switchTooltipWrapperHost(chart: Chart, mode: TooltipDisplayMode)
       tooltip.style.visibility = 'hidden'
       tooltip.style.removeProperty('left')
       tooltip.style.removeProperty('top')
+      tooltip.style.removeProperty('min-width')
+      tooltip.style.removeProperty('max-width')
+      tooltip.style.removeProperty('max-height')
+      tooltip.style.removeProperty('transform')
+      tooltip.style.removeProperty('transform-origin')
     })
   }
 
@@ -674,6 +680,7 @@ export function sortMixTooltipItems<T extends { groupIndex: number; name: any }>
 }
 
 const CAROUSEL_TOOLTIP_GAP = 8
+const TOOLTIP_VIEWPORT_GAP = 12
 const G2_TOOLTIP_DEFAULT_MIN_WIDTH = 120
 const G2_TOOLTIP_DEFAULT_MAX_WIDTH = 320
 
@@ -683,6 +690,49 @@ type CarouselTooltipFrameState = {
 }
 
 const carouselTooltipFrameState = new WeakMap<HTMLElement, CarouselTooltipFrameState>()
+
+function getChartVisualScale(container: string) {
+  let element = document.getElementById(container)
+  let scale = 1
+  while (element && element !== document.body) {
+    const transform = window.getComputedStyle(element).transform
+    if (transform && transform !== 'none') {
+      try {
+        const matrix = new DOMMatrixReadOnly(transform)
+        const currentScale = Math.hypot(matrix.a, matrix.b)
+        if (Number.isFinite(currentScale) && currentScale > 0) {
+          scale *= currentScale
+        }
+      } catch {
+        // 非矩阵 transform 交给浏览器原有布局处理，不影响 tooltip 展示
+      }
+    }
+    element = element.parentElement
+  }
+  return scale
+}
+
+function getTooltipViewport() {
+  const viewport = window.visualViewport
+  const left = viewport?.offsetLeft ?? 0
+  const top = viewport?.offsetTop ?? 0
+  const width = viewport?.width ?? document.documentElement.clientWidth
+  const height = viewport?.height ?? document.documentElement.clientHeight
+  return { left, top, width, height, right: left + width, bottom: top + height }
+}
+
+function getHoverTooltipLogicalMaxWidth(container: string) {
+  const visualScale = getChartVisualScale(container)
+  const { width } = getTooltipViewport()
+  const viewportMaxWidth = Math.max(0, width - TOOLTIP_VIEWPORT_GAP * 2)
+  // PC 最大占可视屏幕三分之一，移动端可使用整屏并保留安全间距
+  const screenMaxWidth =
+    !!isMobile() || width <= 768 ? viewportMaxWidth : Math.min(width / 3, viewportMaxWidth)
+  return {
+    visualScale,
+    maxWidth: screenMaxWidth / visualScale
+  }
+}
 
 function resetHoverTooltipPosition(tooltip: HTMLElement) {
   const frameState = carouselTooltipFrameState.get(tooltip)
@@ -753,7 +803,7 @@ function fitCarouselTooltipInChart(
       return
     }
 
-    // 轮播沿用悬浮 tooltip 的宽度上限，同时不能超出图表容器
+    // 轮播维持原有图表内布局，宽度同时受默认上限和图表容器约束
     const maxWidth = Math.min(G2_TOOLTIP_DEFAULT_MAX_WIDTH, wrapperWidth - CAROUSEL_TOOLTIP_GAP * 2)
     const maxHeight = wrapperHeight - CAROUSEL_TOOLTIP_GAP * 2
     const minWidth = Math.min(G2_TOOLTIP_DEFAULT_MIN_WIDTH, maxWidth)
@@ -826,6 +876,12 @@ export function listenerTooltipShow(newChart: G2Chart, chart: Chart) {
       }
       tooltip.style.setProperty('position', isCarousel ? 'absolute' : 'fixed', 'important')
       if (isCarousel) {
+        // 轮播位于图表容器内，天然继承大屏缩放；清除悬浮态的补偿，避免重复缩放
+        tooltip.style.removeProperty('min-width')
+        tooltip.style.removeProperty('max-width')
+        tooltip.style.removeProperty('max-height')
+        tooltip.style.removeProperty('transform')
+        tooltip.style.removeProperty('transform-origin')
         fitCarouselTooltipInChart(chart.container, tooltipWrapper, tooltip)
         return
       }
@@ -837,20 +893,37 @@ export function listenerTooltipShow(newChart: G2Chart, chart: Chart) {
         return
       }
 
+      // 悬浮提示挂载在 body，不会继承大屏 transform，需要补齐与轮播一致的视觉缩放
+      const { visualScale, maxWidth } = getHoverTooltipLogicalMaxWidth(chart.container)
+      const minWidth = Math.min(G2_TOOLTIP_DEFAULT_MIN_WIDTH, maxWidth)
+      // 子项使用同一逻辑上限，避免百分比宽度反向限制 max-content 扩容
+      tooltipWrapper.style.setProperty('--de-hover-tooltip-max-width', `${maxWidth}px`)
+      tooltip.style.setProperty('min-width', `${minWidth}px`, 'important')
+      tooltip.style.setProperty('max-width', `${maxWidth}px`, 'important')
+      tooltip.style.setProperty('transform-origin', 'top left', 'important')
+      tooltip.style.setProperty('transform', `scale(${visualScale})`, 'important')
+
       const gap = 20
       const { width, height } = tooltip.getBoundingClientRect()
-      const viewportWidth = document.documentElement.clientWidth
-      const viewportHeight = document.documentElement.clientHeight
+      const viewport = getTooltipViewport()
       let left = clientX + gap
       let top = clientY - height - gap
-      if (left + width > viewportWidth) {
+      if (left + width > viewport.right - TOOLTIP_VIEWPORT_GAP) {
         left = clientX - width - gap
       }
-      if (top < 0) {
+      if (top < viewport.top + TOOLTIP_VIEWPORT_GAP) {
         top = clientY + gap
       }
-      tooltip.style.left = `${Math.max(0, Math.min(left, viewportWidth - width))}px`
-      tooltip.style.top = `${Math.max(0, Math.min(top, viewportHeight - height))}px`
+      const maxLeft = viewport.right - width - TOOLTIP_VIEWPORT_GAP
+      const maxTop = viewport.bottom - height - TOOLTIP_VIEWPORT_GAP
+      tooltip.style.left = `${Math.max(
+        viewport.left + TOOLTIP_VIEWPORT_GAP,
+        Math.min(left, maxLeft)
+      )}px`
+      tooltip.style.top = `${Math.max(
+        viewport.top + TOOLTIP_VIEWPORT_GAP,
+        Math.min(top, maxTop)
+      )}px`
       tooltip.style.visibility = 'visible'
       markHoverTooltipPositionReady(chart.container, tooltipWrapper, tooltip)
       syncHoverTooltipEllipsisTitles(tooltip)

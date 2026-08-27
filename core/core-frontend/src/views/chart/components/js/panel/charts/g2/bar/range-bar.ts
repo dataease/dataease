@@ -317,6 +317,8 @@ export class RangeBar extends HorizontalBar {
     }
     const formatTooltipValue = (value: any) =>
       isDate ? formatDateLabel(value) : valueFormatter(value, tooltip.tooltipFormatter)
+    const formatTooltipGap = (value: any) =>
+      isDate ? value ?? '' : valueFormatter(value, tooltip.tooltipFormatter)
     const tooltipOptions: ViewSpec = {
       tooltip: {
         items: [
@@ -346,10 +348,10 @@ export class RangeBar extends HorizontalBar {
             const itemsHtml = originalItems
               .map(item => {
                 const values = Array.isArray(item.value) ? item.value : []
-                // 保留“开始值 ~ 结束值”语义，空间不足时交给公共 tooltip 样式省略
+                // 保留“开始值 ~ 结束值”语义，数值按内容自然展开，达到视口边界后再限制
                 const value =
                   values.map(formatTooltipValue).join(' ~ ') +
-                  (tooltip.showGap ? ` (${item.original_data.gap ?? ''})` : '')
+                  (tooltip.showGap ? ` (${formatTooltipGap(item.original_data.gap)})` : '')
                 const name = isEmpty(item.original_data.category)
                   ? item.original_data.field
                   : item.original_data.category
