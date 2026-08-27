@@ -51,6 +51,9 @@ public class Pg extends DatasourceConfiguration {
                     .replace("PORT", getLPort().toString().trim())
                     .replace("DATABASE", getDataBase().trim())
                     .replace("EXTRA_PARAMS", getExtraParams().trim());
+            if (StringUtils.isNotEmpty(getSchema()) && !getExtraParams().contains("currentSchema")) {
+                jdbcUrl += "&currentSchema=\"" + getSchema().trim() + "\"";
+            }
 
         }
         for (String illegalParameter : illegalParameters) {
