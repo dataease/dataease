@@ -9,6 +9,7 @@ import { SpreadsheetModeService } from '../../services/spreadsheet-mode.service'
 import type { SpreadsheetRuntimeOptions } from '../../types/mode'
 import { PreviewCommandGuardController } from './controllers/preview-command-guard.controller'
 import { PreviewSheetTabContextMenuController } from './controllers/preview-sheet-tab-context-menu.controller'
+import './styles/preview.less'
 
 export const DATAEASE_PREVIEW_MODE_PLUGIN = 'DATAEASE_PREVIEW_MODE_PLUGIN'
 

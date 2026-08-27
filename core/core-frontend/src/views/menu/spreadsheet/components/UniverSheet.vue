@@ -205,7 +205,10 @@ defineExpose({
 </script>
 
 <template>
-  <div class="univer-sheet-container">
+  <div
+    class="univer-sheet-container"
+    :class="{ 'dataease-univer-preview': props.mode === 'preview' }"
+  >
     <div ref="containerRef" class="univer-container"></div>
   </div>
 </template>

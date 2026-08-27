@@ -1,0 +1,22 @@
+// Univer 的 Sheet 快捷菜单通过 Portal 挂载到 body，使用预览容器状态限定样式作用域。
+body:has(.univer-sheet-container.dataease-univer-preview) {
+  // 快捷菜单保留可见 Sheet，仅隐藏带有隐藏状态图标的 Sheet 项。
+  [data-slot='dropdown-menu-content']
+    [data-slot='dropdown-menu-item']:has(
+      .univerjs-icon-eyelash-icon,
+      [id*='eyelash-icon']
+    ) {
+    display: none !important;
+  }
+
+  // 预览态链接浮层只保留跳转和允许展示的复制操作，不暴露编辑、取消链接入口。
+  .univer-max-w-80
+    .univer-size-6:has(
+      .univerjs-icon-write-icon,
+      [id*='write-icon'],
+      .univerjs-icon-unlink-icon,
+      [id*='unlink-icon']
+    ) {
+    display: none !important;
+  }
+}
