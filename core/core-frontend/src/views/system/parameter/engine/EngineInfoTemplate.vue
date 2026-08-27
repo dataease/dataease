@@ -60,6 +60,15 @@ const typeMap = dsTypes.reduce((pre, next) => {
   pre[next.type] = next.name
   return pre
 }, {})
+typeMap['h2'] = 'H2'
+const loadDsPlugin = () => {
+  if (!appStore.getXpackValid) return Promise.resolve()
+  return request.get({ url: '/xpackComponent/dsPlugins' }).then(res => {
+    ;(res?.data || []).forEach(item => {
+      typeMap[item.type] = item.name
+    })
+  })
+}
 const showPriority = ref(true)
 let nodeInfoId
 const infoTemplate = ref()
@@ -147,7 +156,7 @@ const getEngine = () => {
     })
   })
 }
-getEngine()
+loadDsPlugin().finally(getEngine)
 
 defineExpose({
   getEngine
