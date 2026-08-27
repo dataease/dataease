@@ -5,6 +5,8 @@ import componentList, {
   BASE_EVENTS,
   COMMON_COMPONENT_BACKGROUND_DARK,
   COMMON_COMPONENT_BACKGROUND_LIGHT,
+  COMMON_TAB_COMPONENT_BACKGROUND_DARK,
+  COMMON_TAB_COMPONENT_BACKGROUND_LIGHT,
   COMMON_TAB_TITLE_BACKGROUND,
   MULTI_DIMENSIONAL
 } from '@/custom-component/component-list'
@@ -103,9 +105,17 @@ export function findNewComponent(componentName, innerType, staticMap?) {
         }
       }
       if (dvMainStore.curOriginThemes === 'light') {
-        newComponent['commonBackground'] = cloneDeep(COMMON_COMPONENT_BACKGROUND_LIGHT)
+        newComponent['commonBackground'] = cloneDeep(
+          newComponent.component === 'DeTabs'
+            ? COMMON_TAB_COMPONENT_BACKGROUND_LIGHT
+            : COMMON_COMPONENT_BACKGROUND_LIGHT
+        )
       } else {
-        newComponent['commonBackground'] = cloneDeep(COMMON_COMPONENT_BACKGROUND_DARK)
+        newComponent['commonBackground'] = cloneDeep(
+          newComponent.component === 'DeTabs'
+            ? COMMON_TAB_COMPONENT_BACKGROUND_DARK
+            : COMMON_COMPONENT_BACKGROUND_DARK
+        )
       }
     }
   })
