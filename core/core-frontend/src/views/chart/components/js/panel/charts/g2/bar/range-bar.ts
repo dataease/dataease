@@ -390,7 +390,11 @@ export class RangeBar extends HorizontalBar {
       return false
     }
 
-    const strategy = parseJson(chart.senior).functionCfg.emptyDataStrategy
+    const rangeChart = asRangeDateChart(chart)
+    const isDate = !!rangeChart.data.isDate
+    const configuredStrategy = parseJson(chart.senior)?.functionCfg?.emptyDataStrategy
+    // 日期区间不把空端点转换为 Unix 时间零点
+    const strategy = isDate && configuredStrategy === 'setZero' ? 'breakLine' : configuredStrategy
 
     // RangeBar 的数值是 [start, end]，不能复用普通柱图单值逻辑。
     if (strategy === 'ignoreData') {
@@ -412,10 +416,11 @@ export class RangeBar extends HorizontalBar {
     if (strategy === 'setZero') {
       // 仅替换空端点为 0，非空值保持原始数据。
       data.forEach(item => {
-        if (item.values) {
+        if (Array.isArray(item.values) && item.values.length >= 2) {
           item.values = item.values.map(v => (isEmptyValue(v) ? 0 : v))
           item.startValue = item.values[0]
           item.endValue = item.values[1]
+          item.gap = Number(item.endValue) - Number(item.startValue)
         }
       })
     }

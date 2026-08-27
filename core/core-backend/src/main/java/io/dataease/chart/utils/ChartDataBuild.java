@@ -1780,10 +1780,6 @@ public class ChartDataBuild {
 
             List<Object> values = new ArrayList<>();
 
-            if (row[xAxisBase.size()] == null || row[xAxisBase.size() + 1] == null) {
-                continue;
-            }
-
             if (isDate) {
                 int index;
                 if (BooleanUtils.isTrue(view.getAggregate())) {
@@ -1792,37 +1788,40 @@ public class ChartDataBuild {
                     index = xAxisBase.size();
                 }
 
-                values.add(row[index]);
-                values.add(row[index + 1]);
+                String startValue = StringUtils.trimToNull(row[index]);
+                String endValue = StringUtils.trimToNull(row[index + 1]);
+                values.add(startValue);
+                values.add(endValue);
                 obj.put("values", values);
-                Date date1 = null, date2 = null;
-                try {
-                    date1 = sdf.parse(row[index]);
-                    if (date1 != null) {
-                        dates.add(date1);
-                    }
-                } catch (Exception ignore) {
+                Date date1 = parseBarRangeDate(sdf, startValue);
+                Date date2 = parseBarRangeDate(sdf, endValue);
+                if (date1 != null) {
+                    dates.add(date1);
                 }
-                try {
-                    date2 = sdf.parse(row[index + 1]);
-                    if (date2 != null) {
-                        dates.add(date2);
-                    }
-                } catch (Exception ignore) {
+                if (date2 != null) {
+                    dates.add(date2);
                 }
                 //间隔时间
-                obj.put("gap", getTimeGap(date1, date2, dateAxis1.getDateStyle()));
+                obj.put("gap", date1 != null && date2 != null ? getTimeGap(date1, date2, dateAxis1.getDateStyle()) : null);
 
             } else {
-                values.add(new BigDecimal(row[xAxis.size()]));
-                values.add(new BigDecimal(row[xAxis.size() + 1]));
+                int index = xAxis.size();
+                // 保留空端点交给前端空值策略处理
+                BigDecimal startValue = parseBarRangeNumber(row[index]);
+                BigDecimal endValue = parseBarRangeNumber(row[index + 1]);
+                values.add(startValue);
+                values.add(endValue);
                 obj.put("values", values);
 
-                numbers.add(new BigDecimal(row[xAxis.size()]));
-                numbers.add(new BigDecimal(row[xAxis.size() + 1]));
+                if (startValue != null) {
+                    numbers.add(startValue);
+                }
+                if (endValue != null) {
+                    numbers.add(endValue);
+                }
 
                 //间隔差
-                obj.put("gap", new BigDecimal(row[xAxis.size() + 1]).subtract(new BigDecimal(row[xAxis.size()])));
+                obj.put("gap", startValue != null && endValue != null ? endValue.subtract(startValue) : null);
             }
 
             dataList.add(obj);
@@ -1846,6 +1845,21 @@ public class ChartDataBuild {
         map.put("data", dataList);
         return map;
 
+    }
+
+    private static BigDecimal parseBarRangeNumber(String value) {
+        return StringUtils.isBlank(value) ? null : new BigDecimal(value);
+    }
+
+    private static Date parseBarRangeDate(SimpleDateFormat sdf, String value) {
+        if (StringUtils.isBlank(value)) {
+            return null;
+        }
+        try {
+            return sdf.parse(value);
+        } catch (Exception ignore) {
+            return null;
+        }
     }
 
     private static String getDateFormat(String dateStyle, String datePattern) {

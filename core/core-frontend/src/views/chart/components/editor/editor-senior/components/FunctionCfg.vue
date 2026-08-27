@@ -41,6 +41,25 @@ const changeFunctionCfg = () => {
   emit('onFunctionCfgChange', state.functionForm)
 }
 
+const isBarRangeDate = computed(() => {
+  if (props.chart.type !== 'bar-range') return false
+  return [props.chart.yAxis?.[0], props.chart.yAxisExt?.[0]].some(
+    field => field?.groupType === 'd' && field?.deType === 1
+  )
+})
+
+const normalizeBarRangeDateStrategy = () => {
+  if (isBarRangeDate.value && state.functionForm.emptyDataStrategy === 'setZero') {
+    // 日期区间不支持置零，历史配置统一回退为默认策略
+    state.functionForm.emptyDataStrategy = 'breakLine'
+    changeFunctionCfg()
+  }
+}
+
+watch(isBarRangeDate, isDate => {
+  if (isDate) normalizeBarRangeDateStrategy()
+})
+
 const showProperty = prop => props.propertyInner?.includes(prop)
 
 const init = () => {
@@ -50,6 +69,7 @@ const init = () => {
     if (senior.functionCfg) {
       state.functionForm = senior.functionCfg
     }
+    normalizeBarRangeDateStrategy()
     initFieldCtrl()
   }
 }
@@ -95,6 +115,9 @@ const initFieldCtrl = () => {
 }
 const isCirclePacking = computed(() => {
   return equalsAny(props.chart.type, 'circle-packing')
+})
+const showSetZeroOption = computed(() => {
+  return !isCirclePacking.value && !isBarRangeDate.value
 })
 onMounted(() => {
   init()
@@ -201,7 +224,7 @@ onMounted(() => {
             {{ t('visualization.custom') }}
           </el-radio>
           <template v-if="!isRichText">
-            <el-radio v-if="!isCirclePacking" :effect="themes" :label="'setZero'">{{
+            <el-radio v-if="showSetZeroOption" :effect="themes" :label="'setZero'">{{
               t('chart.set_zero')
             }}</el-radio>
             <el-radio v-if="showIgnoreOption" :effect="themes" :label="'ignoreData'">
