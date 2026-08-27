@@ -4673,6 +4673,7 @@ export default {
     notification_user: '通知人',
     notification_email: '邮件通知',
     please_enter_email: '请输入邮箱，回车确认',
+    please_choose_dingtalk_group: '请选择钉钉群',
     please_choose_lark_group: '请选择飞书群',
     notification_content: '通知内容',
     default_msg: '默认消息',

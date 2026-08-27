@@ -4650,6 +4650,7 @@ export default {
     notification_user: '通知人',
     notification_email: '郵件通知',
     please_enter_email: '請輸入郵箱，回車確認',
+    please_choose_dingtalk_group: '請選擇釘釘群',
     please_choose_lark_group: '請選擇飛書群',
     notification_content: '通知內容',
     default_msg: '默認消息',

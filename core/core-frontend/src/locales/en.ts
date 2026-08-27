@@ -4814,6 +4814,7 @@ export default {
     notification_user: 'Notifier',
     notification_email: 'Email notification',
     please_enter_email: 'Please enter email, press Enter to confirm',
+    please_choose_dingtalk_group: 'Please select dingtalk group',
     please_choose_lark_group: 'Please select lark group',
     notification_content: 'Notification content',
     default_msg: 'Default message',
