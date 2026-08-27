@@ -1644,8 +1644,12 @@ defineExpose({
       :matrix-style="matrixStyle"
       :themes="themes"
     ></de-grid-screen>
+    <!-- 按下时 moveItem 仅初始化拖动上下文，普通移动待 isPlayer 后显示阴影，缩放保持即时显示，避免图表内部点击闪现占位 -->
     <drag-shadow
       v-if="infoBox && infoBox.moveItem && editMode !== 'preview'"
+      :style="{
+        visibility: infoBox.resizeItem || infoBox.moveItem.isPlayer ? 'visible' : 'hidden'
+      }"
       :base-height="dashboardScaleWithWidth ? baseWidth * 1.6 : baseHeight"
       :base-width="baseWidth"
       :cur-gap="curGap"
