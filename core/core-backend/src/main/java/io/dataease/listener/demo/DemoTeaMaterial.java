@@ -20,10 +20,10 @@ public class DemoTeaMaterial {
     @Column(name = "date")
     private Date date;
 
-    @Column(name = "shop", length = 16777216)
+    @Column(name = "shop", length = 255)
     private String shop;
 
-    @Column(name = "purpose", length = 16777216)
+    @Column(name = "purpose", length = 255)
     private String purpose;
 
     @Column(name = "amount")
