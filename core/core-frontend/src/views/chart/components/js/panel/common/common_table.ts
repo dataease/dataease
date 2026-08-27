@@ -50,16 +50,12 @@ import {
   find,
   intersection,
   keys,
-  map,
   maxBy,
-  meanBy,
   merge,
   minBy,
-  repeat,
-  sumBy,
-  size,
-  sum
+  repeat
 } from 'lodash-es'
+import Decimal from 'decimal.js'
 import {createVNode, render} from 'vue'
 import TableTooltip from '@/views/chart/components/editor/common/TableTooltip.vue'
 import Exceljs from 'exceljs'
@@ -2719,12 +2715,14 @@ export function getSummaryRow(data, axis, sumCon = [], customSumResult = {}) {
     if (!savedAxis.show) {
       continue
     }
+    // 用十进制运算避免 JavaScript number 连续统计产生浮点尾差
+    const fieldValues = data.map(d => new Decimal(parseFloat(d[a]) || 0))
     switch (savedAxis.summary) {
       case 'sum':
-        summaryObj[a] = sumBy(data, d => parseFloat(d[a]) || 0)
+        summaryObj[a] = Decimal.sum(...fieldValues).toNumber()
         break
       case 'avg':
-        summaryObj[a] = meanBy(data, d => parseFloat(d[a]) || 0)
+        summaryObj[a] = Decimal.sum(...fieldValues).dividedBy(fieldValues.length).toNumber()
         break
       case 'max':
         summaryObj[a] = maxBy(
@@ -2742,19 +2740,23 @@ export function getSummaryRow(data, axis, sumCon = [], customSumResult = {}) {
         if (data.length < 2) {
           continue
         } else {
-          const mean = meanBy(data, d => parseFloat(d[a]) || 0) // 计算均值
-          const squaredDeviations = map(data, d => ((parseFloat(d[a]) || 0) - mean) ** 2) // 计算偏差平方
-          summaryObj[a] = sum(squaredDeviations) / (size(data) - 1) // 样本方差（分母n-1）
+          const mean = Decimal.sum(...fieldValues).dividedBy(fieldValues.length) // 计算均值
+          const squaredDeviations = fieldValues.map(value => value.minus(mean).pow(2)) // 计算偏差平方
+          summaryObj[a] = Decimal.sum(...squaredDeviations)
+            .dividedBy(fieldValues.length - 1)
+            .toNumber() // 样本方差（分母n-1）
         }
         break
       case 'stddev_pop': //标准差
         if (data.length < 2) {
           continue
         } else {
-          const mean = meanBy(data, d => parseFloat(d[a]) || 0) // 计算均值
-          const squaredDeviations = map(data, d => ((parseFloat(d[a]) || 0) - mean) ** 2) // 计算偏差平方
-          const sampleVariance = sum(squaredDeviations) / (size(data) - 1) // 样本方差（分母n-1）
-          summaryObj[a] = Math.sqrt(sampleVariance) // 样本标准差
+          const mean = Decimal.sum(...fieldValues).dividedBy(fieldValues.length) // 计算均值
+          const squaredDeviations = fieldValues.map(value => value.minus(mean).pow(2)) // 计算偏差平方
+          const sampleVariance = Decimal.sum(...squaredDeviations).dividedBy(
+            fieldValues.length - 1
+          ) // 样本方差（分母n-1）
+          summaryObj[a] = sampleVariance.sqrt().toNumber() // 样本标准差
         }
         break
       case 'custom':
