@@ -212,9 +212,13 @@ public class ExportCenterDownLoadManage {
         }
         exportTarget.createParentDirectory();
         Long uid = V3UserUtil.getUid();
+        Long proxyOid = V3UserUtil.getProxy().getProxyOid();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
             try {
                 V3UserUtil.setUid(uid);
+                if (ObjectUtils.isNotEmpty(proxyOid) && proxyOid > 0) {
+                    V3UserUtil.setProxy(proxyOid);
+                }
                 coreExportTaskRepository.saveAndFlush(exportTask);
                 updateExportTask(exportTarget.taskId(), "IN_PROGRESS", null, null, null, null);
                 Object orgObj = request.get("org");
@@ -295,13 +299,17 @@ public class ExportCenterDownLoadManage {
     public void startDatasetTask(CoreExportTask exportTask, ExportTaskFileTarget exportTarget, Long exportFrom, DataSetExportRequest request) {
         exportTarget.createParentDirectory();
         Long uid = V3UserUtil.getUid();
+        Long proxyOid = V3UserUtil.getProxy().getProxyOid();
         String clientIp = IPUtils.get();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
-            coreExportTaskRepository.saveAndFlush(exportTask);
-            V3UserUtil.setUid(uid);
-            IPUtils.set(clientIp);
-            LicenseUtil.validate();
             try {
+                V3UserUtil.setUid(uid);
+                if (ObjectUtils.isNotEmpty(proxyOid) && proxyOid > 0) {
+                    V3UserUtil.setProxy(proxyOid);
+                }
+                IPUtils.set(clientIp);
+                coreExportTaskRepository.saveAndFlush(exportTask);
+                LicenseUtil.validate();
                 updateExportTask(exportTarget.taskId(), "IN_PROGRESS", null, null, null, null);
                 CoreDatasetGroup coreDatasetGroup = coreDatasetGroupRepository.findById(exportFrom).orElse(null);
                 if (coreDatasetGroup == null) {
@@ -533,13 +541,17 @@ public class ExportCenterDownLoadManage {
     public void startViewTask(CoreExportTask exportTask, ExportTaskFileTarget exportTarget, ChartExcelRequest request) {
         exportTarget.createParentDirectory();
         Long uid = V3UserUtil.getUid();
+        Long proxyOid = V3UserUtil.getProxy().getProxyOid();
         String clientIp = IPUtils.get();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
-            V3UserUtil.setUid(uid);
-            IPUtils.set(clientIp);
-            coreExportTaskRepository.saveAndFlush(exportTask);
-            LicenseUtil.validate();
             try {
+                V3UserUtil.setUid(uid);
+                if (ObjectUtils.isNotEmpty(proxyOid) && proxyOid > 0) {
+                    V3UserUtil.setProxy(proxyOid);
+                }
+                IPUtils.set(clientIp);
+                coreExportTaskRepository.saveAndFlush(exportTask);
+                LicenseUtil.validate();
                 updateExportTask(exportTarget.taskId(), "IN_PROGRESS", null, null, null, null);
                 Workbook wb = new SXSSFWorkbook();
                 CellStyle cellStyle = wb.createCellStyle();
