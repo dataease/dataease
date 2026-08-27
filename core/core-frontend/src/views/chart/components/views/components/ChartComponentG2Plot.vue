@@ -37,6 +37,7 @@ import {
 import { installG2SideLegendPaginationAdapter } from '@/views/chart/components/js/panel/types/impl/g2-legend-pagination'
 import { ElMessage } from 'element-plus-secondary'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
+import { listenerTooltipShow } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const { nowPanelTrackInfo, nowPanelJumpInfo, mobileInPc, embeddedCallBack, inMobile } =
@@ -660,6 +661,8 @@ const renderG2 = async (chart, chartView: G2ChartView<any, any>) => {
       })
       // 固定本轮创建的实例，避免等待异步渲染期间新一轮 renderG2 替换全局 myChart 后误操作新实例
       const chartInstance = myChart
+      // 数据 tooltip 的缩放补偿统一在公共入口接入，幂等保护避免轮播图重复绑定
+      listenerTooltipShow(chartInstance, { ...chart, container: containerId })
       configAxisTitleOverflowTooltip(
         {
           ...chart,

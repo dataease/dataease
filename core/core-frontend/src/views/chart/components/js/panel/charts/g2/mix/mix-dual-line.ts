@@ -576,15 +576,6 @@ export class GroupLineMix extends G2ChartView {
       // 双线 shared tooltip 未返回有效指标时，仅按当前维度读取左右轴源数据
       return sourceTooltipItems.filter(item => item.field === title)
     }
-    let g2TooltipWrapper = document.getElementById('G2-TOOLTIP-WRAPPER')
-    if (!g2TooltipWrapper) {
-      g2TooltipWrapper = document.createElement('div')
-      g2TooltipWrapper.id = 'G2-TOOLTIP-WRAPPER'
-      g2TooltipWrapper.style.position = 'absolute'
-      g2TooltipWrapper.style.pointerEvents = 'none'
-      g2TooltipWrapper.style.zIndex = '9999'
-      document.body.appendChild(g2TooltipWrapper)
-    }
     const yAxis = chart.yAxis
     // 读取左右轴 color relations，保持 tooltip 系列顺序与图例一致
     const seriesIndexMap = getSeriesIndexMapByRelations([

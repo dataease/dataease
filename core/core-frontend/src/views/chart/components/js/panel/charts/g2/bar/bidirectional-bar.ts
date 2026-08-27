@@ -20,6 +20,7 @@ import {
 } from '../../../common/common_antv'
 import {
   bindPlotBackgroundClick,
+  createTooltipWrapper,
   getSeriesTooltipFormatter,
   getSeriesTooltipFormatterMap,
   isSeriesTooltipFormatterShown
@@ -867,20 +868,11 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       const fieldId = item?.quotaList?.[0]?.id ?? axis[0]?.id
       return getSeriesTooltipFormatter(formatterMap, fieldId, axis, axisType) ?? axis[0]
     }
-    let g2TooltipWrapper = document.getElementById('G2-TOOLTIP-WRAPPER')
-    if (!g2TooltipWrapper) {
-      g2TooltipWrapper = document.createElement('div')
-      g2TooltipWrapper.id = 'G2-TOOLTIP-WRAPPER'
-      g2TooltipWrapper.style.position = 'absolute'
-      g2TooltipWrapper.style.pointerEvents = 'none'
-      g2TooltipWrapper.style.zIndex = '9999'
-      document.body.appendChild(g2TooltipWrapper)
-    }
     const tooltipOptions: G2Spec = {
       interaction: {
         tooltip: {
           crosshairsLineDash: [4, 4],
-          mount: g2TooltipWrapper,
+          mount: createTooltipWrapper(chart),
           css: {
             '.g2-tooltip': {
               background: tooltipAttr.backgroundColor

@@ -690,6 +690,7 @@ type CarouselTooltipFrameState = {
 }
 
 const carouselTooltipFrameState = new WeakMap<HTMLElement, CarouselTooltipFrameState>()
+const tooltipShowListenerCharts = new WeakSet<G2Chart>()
 
 function getChartVisualScale(container: string) {
   let element = document.getElementById(container)
@@ -731,6 +732,34 @@ function getHoverTooltipLogicalMaxWidth(container: string) {
   return {
     visualScale,
     maxWidth: screenMaxWidth / visualScale
+  }
+}
+
+function getTooltipClientPosition(event: any, container: string) {
+  const rawClientX = event?.client?.x
+  const rawClientY = event?.client?.y
+  if (rawClientX != null && rawClientY != null) {
+    const clientX = Number(rawClientX)
+    const clientY = Number(rawClientY)
+    if (Number.isFinite(clientX) && Number.isFinite(clientY)) {
+      return { x: clientX, y: clientY }
+    }
+  }
+
+  const rawOffsetX = event?.offsetX
+  const rawOffsetY = event?.offsetY
+  if (rawOffsetX == null || rawOffsetY == null) return
+  const offsetX = Number(rawOffsetX)
+  const offsetY = Number(rawOffsetY)
+  const chartContainer = document.getElementById(container)
+  if (!chartContainer || !Number.isFinite(offsetX) || !Number.isFinite(offsetY)) return
+
+  const chartRect = chartContainer.getBoundingClientRect()
+  const visualScale = getChartVisualScale(container)
+  // 主动触发的 tooltip 只有画布坐标，需要换算到 body 使用的视口坐标
+  return {
+    x: chartRect.left + offsetX * visualScale,
+    y: chartRect.top + offsetY * visualScale
   }
 }
 
@@ -857,6 +886,9 @@ function syncHoverTooltipEllipsisTitles(tooltip: HTMLElement) {
 }
 
 export function listenerTooltipShow(newChart: G2Chart, chart: Chart) {
+  if (!newChart || tooltipShowListenerCharts.has(newChart)) return
+  // 公共渲染入口和轮播入口可能同时接入，按图表实例保证只注册一次
+  tooltipShowListenerCharts.add(newChart)
   newChart.on('tooltip:show', event => {
     const tooltipWrapper = getTooltipWrapper(chart.container)
     if (!tooltipWrapper) return
@@ -886,12 +918,12 @@ export function listenerTooltipShow(newChart: G2Chart, chart: Chart) {
         return
       }
 
-      const clientX = event?.client?.x
-      const clientY = event?.client?.y
-      if (clientX == null || clientY == null) {
+      const clientPosition = getTooltipClientPosition(event, chart.container)
+      if (!clientPosition) {
         tooltip.style.visibility = 'hidden'
         return
       }
+      const { x: clientX, y: clientY } = clientPosition
 
       // 悬浮提示挂载在 body，不会继承大屏 transform，需要补齐与轮播一致的视觉缩放
       const { visualScale, maxWidth } = getHoverTooltipLogicalMaxWidth(chart.container)

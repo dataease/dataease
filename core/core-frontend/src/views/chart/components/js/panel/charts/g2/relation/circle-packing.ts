@@ -9,7 +9,7 @@ import {
   handleChartDashboardHidden,
   TOOLTIP_ITEM_TPL
 } from '../../../common/common_antv'
-import { getThemeSelectedState } from '../bar/barUtil'
+import { createTooltipWrapper, getThemeSelectedState } from '../bar/barUtil'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
@@ -298,15 +298,6 @@ export class CirclePacking extends G2ChartView {
         tooltip: false
       }
     }
-    let g2TooltipWrapper = document.getElementById('G2-TOOLTIP-WRAPPER')
-    if (!g2TooltipWrapper) {
-      g2TooltipWrapper = document.createElement('div')
-      g2TooltipWrapper.id = 'G2-TOOLTIP-WRAPPER'
-      g2TooltipWrapper.style.position = 'absolute'
-      g2TooltipWrapper.style.pointerEvents = 'none'
-      g2TooltipWrapper.style.zIndex = '9999'
-      document.body.appendChild(g2TooltipWrapper)
-    }
 
     const tooltipMap = function (a) {
       return a
@@ -317,7 +308,7 @@ export class CirclePacking extends G2ChartView {
       tooltip: tooltipMap,
       interaction: {
         tooltip: {
-          mount: g2TooltipWrapper,
+          mount: createTooltipWrapper(chart),
           css: {
             '.g2-tooltip': {
               background: tooltip.backgroundColor

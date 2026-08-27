@@ -10,6 +10,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { defaultsDeep, isEmpty, toString } from 'lodash-es'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
 import { valueFormatter } from '../../../../formatter'
+import { createTooltipWrapper } from '../bar/barUtil'
 
 const { t } = useI18n()
 const DEFAULT_LIGHTNESS_RANGE = [0.25, 1]
@@ -513,20 +514,11 @@ export class MultiScatter extends G2ChartView {
         pre[next.id] = next
         return pre
       }, {}) as Record<string, SeriesFormatter>
-    let g2TooltipWrapper = document.getElementById('G2-TOOLTIP-WRAPPER')
-    if (!g2TooltipWrapper) {
-      g2TooltipWrapper = document.createElement('div')
-      g2TooltipWrapper.id = 'G2-TOOLTIP-WRAPPER'
-      g2TooltipWrapper.style.position = 'absolute'
-      g2TooltipWrapper.style.pointerEvents = 'none'
-      g2TooltipWrapper.style.zIndex = '9999'
-      document.body.appendChild(g2TooltipWrapper)
-    }
     const tooltipOptions: G2Spec = {
       tooltip: d => d,
       interaction: {
         tooltip: {
-          mount: g2TooltipWrapper,
+          mount: createTooltipWrapper(chart),
           css: {
             '.g2-tooltip': {
               background: tooltipAttr.backgroundColor
