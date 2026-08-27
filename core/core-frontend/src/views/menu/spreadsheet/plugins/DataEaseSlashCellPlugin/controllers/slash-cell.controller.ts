@@ -6,7 +6,8 @@ import {
   InterceptorEffectEnum,
   Inject,
   IUniverInstanceService,
-  UniverInstanceType
+  UniverInstanceType,
+  type IRange
 } from '@univerjs/core'
 import { IRenderManagerService } from '@univerjs/engine-render'
 import { IMenuManagerService, RibbonStartGroup } from '@univerjs/ui'
@@ -17,6 +18,7 @@ import {
   ApplyTwoSlashCellOperation,
   ClearSlashCellOperation
 } from '../commands/operations'
+import { SetSlashCellItemsMutation } from '../commands/state-mutations'
 import {
   ClearSlashCellMenuFactory,
   DATAEASE_SLASH_CELL_DROPDOWN_ID,
@@ -28,6 +30,11 @@ import { SlashCellRenderService } from '../services/slash-cell-render.service'
 import { SlashCellStateService } from '../services/slash-cell-state.service'
 import { SlashCellStyleHiderService } from '../services/slash-cell-style-hider.service'
 import type { SlashCellItem } from '../types'
+
+const INSERT_ROW_COMMAND_ID = 'sheet.command.insert-row'
+const INSERT_COLUMN_COMMAND_ID = 'sheet.command.insert-col'
+const REMOVE_ROW_COMMAND_ID = 'sheet.command.remove-row'
+const REMOVE_COLUMN_COMMAND_ID = 'sheet.command.remove-col'
 
 export class DataEaseSlashCellController extends Disposable {
   private readonly nativeSlashTokens = ['diagonal', 'tlbr', 'bltr', 'tlbc', 'tlmr', 'mltr', 'bctr']
@@ -54,6 +61,7 @@ export class DataEaseSlashCellController extends Disposable {
     this.initCommands()
     this.initMenus()
     this.initResourceHook()
+    this.initStructureMutationListener()
     this.initCellContentInterceptor()
     this.initNativeDiagonalGuard()
     this.styleHiderService.mount()
@@ -64,6 +72,7 @@ export class DataEaseSlashCellController extends Disposable {
     ;[ApplyTwoSlashCellOperation, ApplyThreeSlashCellOperation, ClearSlashCellOperation].forEach(command => {
       this.disposeWithMe(this.commandService.registerCommand(command))
     })
+    this.disposeWithMe(this.commandService.registerCommand(SetSlashCellItemsMutation))
   }
 
   private initMenus(): void {
@@ -142,6 +151,107 @@ export class DataEaseSlashCellController extends Disposable {
             ]
           })
         }
+      })
+    )
+  }
+
+  private initStructureMutationListener(): void {
+    this.disposeWithMe(
+      this.sheetInterceptorService.interceptCommand({
+        getMutations: commandInfo => {
+          const params = (commandInfo.params || {}) as any
+          let workbook: any
+          if (params.unitId) {
+            workbook = this.univerInstanceService.getUnit(
+              params.unitId,
+              UniverInstanceType.UNIVER_SHEET
+            )
+          } else {
+            workbook = this.univerInstanceService
+              .getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET)
+          }
+          const unitId = params.unitId || workbook?.getUnitId?.() || workbook?.getId?.()
+          const sheetId = params.subUnitId || workbook?.getActiveSheet?.()?.getSheetId?.()
+          const range = params.range as IRange | undefined
+          if (!unitId || !sheetId || !range) {
+            return { redos: [], undos: [] }
+          }
+
+          const previousItems = this.stateService.list(unitId)
+          let nextItems = previousItems
+          if (commandInfo.id === INSERT_ROW_COMMAND_ID) {
+            nextItems = this.stateService.getAfterInsertRows(
+              unitId,
+              sheetId,
+              range.startRow,
+              range.endRow - range.startRow + 1
+            )
+          } else if (commandInfo.id === INSERT_COLUMN_COMMAND_ID) {
+            nextItems = this.stateService.getAfterInsertColumns(
+              unitId,
+              sheetId,
+              range.startColumn,
+              range.endColumn - range.startColumn + 1
+            )
+          } else if (commandInfo.id === REMOVE_ROW_COMMAND_ID) {
+            nextItems = this.stateService.getAfterRemoveRows(
+              unitId,
+              sheetId,
+              range.startRow,
+              range.endRow
+            )
+          } else if (commandInfo.id === REMOVE_COLUMN_COMMAND_ID) {
+            nextItems = this.stateService.getAfterRemoveColumns(
+              unitId,
+              sheetId,
+              range.startColumn,
+              range.endColumn
+            )
+          } else {
+            return { redos: [], undos: [] }
+          }
+
+          const itemCountChanged = nextItems.length !== previousItems.length
+          const itemPositionChanged = nextItems.some(
+            (item, index) => item !== previousItems[index]
+          )
+          const stateChanged = itemCountChanged || itemPositionChanged
+          if (!stateChanged) {
+            return { redos: [], undos: [] }
+          }
+
+          // 结构命令和斜线坐标使用同一 Undo/Redo 事务，删除后撤销才能恢复插件状态。
+          return {
+            redos: [{
+              id: SetSlashCellItemsMutation.id,
+              params: {
+                unitId,
+                items: nextItems.map(item => ({ ...item }))
+              }
+            }],
+            undos: [{
+              id: SetSlashCellItemsMutation.id,
+              params: {
+                unitId,
+                items: previousItems.map(item => ({ ...item }))
+              }
+            }]
+          }
+        }
+      })
+    )
+
+    this.disposeWithMe(
+      this.commandService.onCommandExecuted(commandInfo => {
+        if (commandInfo.id !== SetSlashCellItemsMutation.id) {
+          return
+        }
+        const params = (commandInfo.params || {}) as any
+        const unitId = params.unitId
+        if (!unitId) {
+          return
+        }
+        this.refreshUnit(unitId)
       })
     )
   }

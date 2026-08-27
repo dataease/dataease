@@ -91,7 +91,9 @@ export class PivotTableAdapter extends TablePluginAdapter<PivotTableConfig> {
         base: {
           customBlockName: false,
           blockName: '',
-          mergeCell: false
+          mergeCell: false,
+          slashHeader: false,
+          slashHeaderType: 'two'
         },
         rowHeader: {
           enable: false,

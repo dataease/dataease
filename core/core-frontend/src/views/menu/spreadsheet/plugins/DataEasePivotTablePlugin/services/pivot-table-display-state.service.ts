@@ -1,5 +1,9 @@
 import { Subject } from 'rxjs'
-import type { PivotLayoutRange } from './pivot-table-layout.service'
+import type {
+  PivotLayoutRange,
+  PivotTableCornerLayout,
+  PivotTableValueRegion
+} from './pivot-table-layout.service'
 
 export interface PivotTableDisplayState {
   pluginId: string
@@ -12,6 +16,8 @@ export interface PivotTableDisplayState {
   displayScales?: number[][]
   dataRange?: PivotLayoutRange
   merges?: PivotLayoutRange[]
+  axisHeaderValues?: PivotTableValueRegion[]
+  corner?: PivotTableCornerLayout
   updatedAt: number
 }
 

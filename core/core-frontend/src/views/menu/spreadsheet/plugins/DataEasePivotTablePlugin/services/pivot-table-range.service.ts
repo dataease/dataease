@@ -1,10 +1,16 @@
-import { Disposable, Inject } from '@univerjs/core'
+import {
+  Disposable,
+  Inject,
+  IUniverInstanceService,
+  UniverInstanceType
+} from '@univerjs/core'
 import type { IRangeSelectResult } from '../../RangeSelectPlugin/type'
 import {
   TableRangeConflictService,
   type TableOccupiedRange
 } from '../../DataEaseRuntimePlugin/services/table'
 import type { PivotTableConfig } from '../types'
+import { SlashCellStateService } from '../../DataEaseSlashCellPlugin/services/slash-cell-state.service'
 import { PivotTableDisplayStateService } from './pivot-table-display-state.service'
 
 interface SheetRange {
@@ -21,7 +27,11 @@ export class PivotTableRangeService extends Disposable {
     @Inject(PivotTableDisplayStateService)
     private readonly displayStateService: PivotTableDisplayStateService,
     @Inject(TableRangeConflictService)
-    private readonly conflictService: TableRangeConflictService
+    private readonly conflictService: TableRangeConflictService,
+    @Inject(SlashCellStateService)
+    private readonly slashCellStateService: SlashCellStateService,
+    @IUniverInstanceService
+    private readonly univerInstanceService: IUniverInstanceService
   ) {
     super()
     this.disposeWithMe(
@@ -64,6 +74,9 @@ export class PivotTableRangeService extends Disposable {
     }
     if (this.conflictService.findConflict(target)) {
       return '当前渲染区域与已有表格区域重合'
+    }
+    if (this.hasSlashCellConflict(target)) {
+      return '当前渲染区域存在斜线单元格，请更换位置或先清除斜线单元格'
     }
 
     if (skipExistingCellValidation) {
@@ -114,6 +127,48 @@ export class PivotTableRangeService extends Disposable {
       row < start.row + state.rowCount &&
       column >= start.col &&
       column < start.col + state.columnCount
+  }
+
+  private hasSlashCellConflict(target: SheetRange): boolean {
+    const workbook = this.univerInstanceService
+      .getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET) as any
+    const unitId = workbook?.getUnitId?.() || workbook?.getId?.()
+    if (!unitId) {
+      return false
+    }
+
+    const worksheet = workbook?.getSheetBySheetId?.(target.sheetId) || workbook
+      ?.getSheets?.()
+      ?.find(sheet => sheet.getSheetId?.() === target.sheetId)
+
+    return this.slashCellStateService.list(unitId).some(item => {
+      if (item.sheetId !== target.sheetId) {
+        return false
+      }
+
+      // 普通斜线状态只记录合并主单元格，冲突判断必须扩展到实际合并范围。
+      const mergedRange = worksheet?.getMergedCell?.(item.row, item.col)
+      const occupiedRange: SheetRange = {
+        sheetId: item.sheetId,
+        startRow: mergedRange?.startRow ?? item.row,
+        endRow: mergedRange?.endRow ?? item.row,
+        startColumn: mergedRange?.startColumn ?? mergedRange?.startCol ?? item.col,
+        endColumn: mergedRange?.endColumn ?? mergedRange?.endCol ?? item.col
+      }
+      return this.isOverlap(target, occupiedRange)
+    })
+  }
+
+  private isOverlap(a: SheetRange, b: SheetRange): boolean {
+    if (a.sheetId !== b.sheetId) {
+      return false
+    }
+    return !(
+      a.endRow < b.startRow ||
+      a.startRow > b.endRow ||
+      a.endColumn < b.startColumn ||
+      a.startColumn > b.endColumn
+    )
   }
 
   private getRenderedRanges(): TableOccupiedRange[] {

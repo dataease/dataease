@@ -2,7 +2,9 @@ import { BooleanNumber, HorizontalAlign, VerticalAlign } from '@univerjs/core'
 import type { IStyleData } from '@univerjs/core'
 import type { TableBorderCellContext } from '../../../components/table-border/border-style'
 import { applyTableBorderStyle } from '../../../components/table-border/border-style'
+import type { SlashCellType } from '../../DataEaseSlashCellPlugin/types'
 import type { PivotTableCellStyle, PivotTableConfig, PivotTableHeaderStyle } from '../types'
+import type { PivotTableCornerLayout } from './pivot-table-layout.service'
 
 const DEFAULT_RENDER_STYLE: Partial<IStyleData> = {
   ht: HorizontalAlign.LEFT
@@ -37,7 +39,13 @@ export interface PivotTableRenderRange {
     startColumn: number
     endColumn: number
   }
+  corner?: PivotTableCornerLayout
   config: PivotTableConfig
+}
+
+export interface PivotTableSlashHeaderRender {
+  type: SlashCellType
+  parts: string[]
 }
 
 interface PivotTableHeaderSection {
@@ -120,6 +128,36 @@ export class PivotTableRenderStyleService {
       column >= range.startColumn &&
       column < range.startColumn + range.columnCount
     )
+  }
+
+  getSlashHeaderRender(
+    unitId: string,
+    sheetId: string,
+    row: number,
+    column: number
+  ): PivotTableSlashHeaderRender | undefined {
+    const range = this.findRangeAt(unitId, sheetId, row, column)
+    const corner = range?.corner
+    if (!range?.config.style?.base?.slashHeader || !corner) {
+      return undefined
+    }
+
+    const relativeRow = row - range.startRow
+    const relativeColumn = column - range.startColumn
+    if (
+      relativeRow !== corner.range.startRow ||
+      relativeColumn !== corner.range.startColumn
+    ) {
+      return undefined
+    }
+
+    const type = range.config.style.base.slashHeaderType === 'three'
+      ? 'three'
+      : 'two'
+    return {
+      type,
+      parts: type === 'three' ? corner.threeParts : corner.twoParts
+    }
   }
 
   hasRange(pluginId: string): boolean {

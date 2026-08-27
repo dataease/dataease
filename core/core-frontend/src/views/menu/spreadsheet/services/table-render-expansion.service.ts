@@ -20,6 +20,7 @@ import { DetailTableRenderStyleService } from '../plugins/DataEaseDetailTablePlu
 import { PivotTableDisplayStateService } from '../plugins/DataEasePivotTablePlugin/services/pivot-table-display-state.service'
 import { PivotTableInstanceService } from '../plugins/DataEasePivotTablePlugin/services/pivot-table-instance.service'
 import { PivotTableRenderStyleService } from '../plugins/DataEasePivotTablePlugin/services/pivot-table-render-style.service'
+import { SlashCellStateService } from '../plugins/DataEaseSlashCellPlugin/services/slash-cell-state.service'
 import {
   PluginRenderHoverLayerService,
   PluginRenderHoverService,
@@ -81,6 +82,8 @@ export class TableRenderExpansionService extends Disposable {
     private readonly pivotDisplayStateService: PivotTableDisplayStateService,
     @Inject(PivotTableRenderStyleService)
     private readonly pivotRenderStyleService: PivotTableRenderStyleService,
+    @Inject(SlashCellStateService)
+    private readonly slashCellStateService: SlashCellStateService,
     @Inject(PluginRenderLoadingService)
     private readonly pluginRenderLoadingService: PluginRenderLoadingService,
     @Inject(PluginRenderHoverService)
@@ -274,11 +277,17 @@ export class TableRenderExpansionService extends Disposable {
     worksheet: any,
     targetRange: TableRange
   ): Promise<string | undefined> {
-    const conflictingAnchors = this.getInstanceAnchors(
+    const tableAnchors = this.getInstanceAnchors(
       unitId,
       targetRange.sheetId,
       targetRange.pluginId
-    ).filter(anchor => this.containsCell(targetRange, anchor.startRow, anchor.startColumn))
+    )
+      .filter(anchor => this.containsCell(targetRange, anchor.startRow, anchor.startColumn))
+      .map(anchor => ({ startRow: anchor.startRow, startColumn: anchor.startColumn }))
+    const slashAnchors = this.getSlashCellRanges(unitId, worksheet)
+      .filter(range => this.intersects(targetRange, range))
+      .map(range => ({ startRow: range.startRow, startColumn: range.startColumn }))
+    const conflictingAnchors = [...tableAnchors, ...slashAnchors]
     if (!conflictingAnchors.length) {
       return undefined
     }
@@ -333,7 +342,7 @@ export class TableRenderExpansionService extends Disposable {
       return undefined
     }
 
-    return '初始渲染区域包含其他表格起始位置，且可用插入位置会穿过现有表格或合并单元格'
+    return '初始渲染区域包含其他表格或斜线单元格，且可用插入位置会穿过现有表格或合并单元格'
   }
 
   private async ensureInitialPlacementSpace(
@@ -399,7 +408,7 @@ export class TableRenderExpansionService extends Disposable {
       return undefined
     }
 
-    return '渲染区域已有数据，且可用插入位置会穿过现有表格实例'
+    return '渲染区域已有数据，且可用插入位置会穿过现有表格或合并单元格'
   }
 
   private validateInsertLine(
@@ -491,8 +500,44 @@ export class TableRenderExpansionService extends Disposable {
       return true
     }
 
+    // 空值斜线单元格只存在于插件资源中，也应像普通单元格一样触发结构避让。
+    const hasSlashCell = this.getSlashCellRanges(unitId, worksheet).some(slashRange => {
+      if (!this.intersects(range, slashRange)) {
+        return false
+      }
+      return !allowedRange || !this.containsRange(allowedRange, slashRange)
+    })
+    if (hasSlashCell) {
+      return true
+    }
+
     return this.getTrackedRanges(unitId, worksheet.getSheetId())
       .some(item => item.pluginId !== pluginId && this.intersects(range, item))
+  }
+
+  private getSlashCellRanges(unitId: string, worksheet: any): IRange[] {
+    const sheetId = worksheet?.getSheetId?.()
+    if (!sheetId) {
+      return []
+    }
+
+    return this.slashCellStateService.list(unitId).flatMap(item => {
+      if (
+        item.sheetId !== sheetId ||
+        !Number.isInteger(item.row) ||
+        !Number.isInteger(item.col)
+      ) {
+        return []
+      }
+
+      const mergedRange = worksheet?.getMergedCell?.(item.row, item.col)
+      return [{
+        startRow: mergedRange?.startRow ?? item.row,
+        endRow: mergedRange?.endRow ?? item.row,
+        startColumn: mergedRange?.startColumn ?? mergedRange?.startCol ?? item.col,
+        endColumn: mergedRange?.endColumn ?? mergedRange?.endCol ?? item.col
+      }]
+    })
   }
 
   private async insertRows(
