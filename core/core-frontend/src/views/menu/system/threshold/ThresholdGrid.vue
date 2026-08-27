@@ -1,296 +1,280 @@
 <script lang="ts" setup>
-import icon_dashboard_outlined from "@/assets/svg/icon_dashboard_outlined.svg";
-import icon_operationAnalysis_outlined from "@/assets/svg/icon_operation-analysis_outlined.svg";
-import icon_searchOutline_outlined from "@/assets/svg/icon_search-outline_outlined.svg";
-import iconFilter from "@/assets/svg/icon-filter.svg";
-import threshold_full from "@/assets/svg/threshold_full.svg";
-import icon_edit_outlined from "@/assets/svg/icon_edit_outlined.svg";
-import clock from "@/assets/svg/clock.svg";
-import icon_deleteTrash_outlined from "@/assets/svg/icon_delete-trash_outlined.svg";
-import { onMounted, reactive, ref, defineEmits, nextTick } from "vue";
-import { thresholdGridApi, thresholdDelApi, thresholdSwitchApi } from "./api";
-import GridTable from "@/components/grid-table/src/GridTable.vue";
-import { ElIcon, ElMessage, ElMessageBox } from "element-plus-secondary";
-import { map } from "lodash-es";
-import { useI18n } from "@/hooks/web/useI18n";
-import { Icon } from "@/components/icon-custom";
-import dayjs from "dayjs";
-import DrawerMain from "@/components/drawer-main/src/DrawerMain.vue";
-import { convertFilterText, FilterText } from "@/components/filter-text";
-import { filterOption } from "./options";
+import icon_dashboard_outlined from '@/assets/svg/icon_dashboard_outlined.svg'
+import icon_operationAnalysis_outlined from '@/assets/svg/icon_operation-analysis_outlined.svg'
+import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
+import iconFilter from '@/assets/svg/icon-filter.svg'
+import threshold_full from '@/assets/svg/threshold_full.svg'
+import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
+import clock from '@/assets/svg/clock.svg'
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
+import { onMounted, reactive, ref, defineEmits, nextTick } from 'vue'
+import { thresholdGridApi, thresholdDelApi, thresholdSwitchApi } from './api'
+import GridTable from '@/components/grid-table/src/GridTable.vue'
+import { ElIcon, ElMessage, ElMessageBox } from 'element-plus-secondary'
+import { map } from 'lodash-es'
+import { useI18n } from '@/hooks/web/useI18n'
+import { Icon } from '@/components/icon-custom'
+import dayjs from 'dayjs'
+import DrawerMain from '@/components/drawer-main/src/DrawerMain.vue'
+import { convertFilterText, FilterText } from '@/components/filter-text'
+import { filterOption } from './options'
 // import BatchReciDialog from "../../../component/threshold-warning/form/BatchReciDialog.vue";
-import ThresholdDrawer from "../../../component/threshold-warning/ThresholdDrawer.vue";
+import ThresholdDrawer from '../../../component/threshold-warning/ThresholdDrawer.vue'
 
 interface FieldSort {
-  field: string;
-  type: boolean;
+  field: string
+  type: boolean
 }
-const { t } = useI18n();
-const drawerVisible = ref(false);
-const drawerMainRef = ref();
-const keyword = ref(null);
-const multipleTableRef = ref();
-const tableLoading = ref<boolean>(true);
-const thresholdDrawer = ref();
-const imgType = ref();
-const emptyDesc = ref("");
+const { t } = useI18n()
+const drawerVisible = ref(false)
+const drawerMainRef = ref()
+const keyword = ref(null)
+const multipleTableRef = ref()
+const tableLoading = ref<boolean>(true)
+const thresholdDrawer = ref()
+const imgType = ref()
+const emptyDesc = ref('')
 const getEmptyImg = (): string => {
   if (keyword.value) {
-    return "tree";
+    return 'tree'
   }
-  return "noneWhite";
-};
+  return 'noneWhite'
+}
 
 const getEmptyDesc = (): string => {
   if (keyword.value) {
-    return t("work_branch.relevant_content_found");
+    return t('work_branch.relevant_content_found')
   }
 
-  return "";
-};
+  return ''
+}
 // const reciDialog = ref();
 
 const statusFilterList = [
-  { value: -1, text: t("threshold_warn.all") },
-  { value: 0, text: t("threshold_warn.normal") },
-  { value: 1, text: t("threshold_warn.abnormal") },
-];
-const selectedStatusFilter = ref<number>(-1);
+  { value: -1, text: t('threshold_warn.all') },
+  { value: 0, text: t('threshold_warn.normal') },
+  { value: 1, text: t('threshold_warn.abnormal') }
+]
+const selectedStatusFilter = ref<number>(-1)
 const state = reactive({
   taskList: [],
   filterTexts: [],
   paginationConfig: {
     currentPage: 1,
     pageSize: 10,
-    total: 0,
+    total: 0
   },
   conditions: [],
   orders: [] as FieldSort[],
-  multipleSelection: [],
-});
+  multipleSelection: []
+})
 
-state.filterTexts = [];
-const searchCondition = (conditions) => {
-  state.conditions = conditions;
-  search();
-  fillFilterText();
-  drawerMainClose();
-};
+state.filterTexts = []
+const searchCondition = conditions => {
+  state.conditions = conditions
+  search()
+  fillFilterText()
+  drawerMainClose()
+}
 const fillFilterText = () => {
   const textArray = state.conditions?.length
     ? convertFilterText(state.conditions, filterOption)
-    : [];
-  state.filterTexts = [...textArray];
-  Object.assign(state.filterTexts, textArray);
-};
+    : []
+  state.filterTexts = [...textArray]
+  Object.assign(state.filterTexts, textArray)
+}
 const clearFilter = (params?: number) => {
-  let index = params ? params : 0;
+  let index = params ? params : 0
   if (isNaN(index)) {
-    state.filterTexts = [];
+    state.filterTexts = []
   } else {
-    state.filterTexts.splice(index, 1);
+    state.filterTexts.splice(index, 1)
   }
-  drawerMainRef.value.clearFilter(index);
-};
+  drawerMainRef.value.clearFilter(index)
+}
 
 const drawerReset = () => {
-  drawerVisible.value = false;
-};
-const emits = defineEmits(["openTaskLog"]);
-const openTaskLogList = (row) => {
-  emits("openTaskLog", { taskId: row.id, taskName: row.name });
-};
+  drawerVisible.value = false
+}
+const emits = defineEmits(['openTaskLog'])
+const openTaskLogList = row => {
+  emits('openTaskLog', { taskId: row.id, taskName: row.name })
+}
 
-const timestampFormatDate = (value) => {
+const timestampFormatDate = value => {
   if (!value) {
-    return "-";
+    return '-'
   }
-  return dayjs(new Date(value)).format("YYYY-MM-DD HH:mm:ss");
-};
+  return dayjs(new Date(value)).format('YYYY-MM-DD HH:mm:ss')
+}
 
 const buildParam = () => {
-  const param = {};
+  const param = {}
   if (state.conditions?.length) {
-    state.conditions.forEach((condition) => {
-      if (condition["value"]) {
-        param[condition["field"]] = condition["value"];
+    state.conditions.forEach(condition => {
+      if (condition['value']) {
+        param[condition['field']] = condition['value']
       }
-    });
+    })
   }
   if (selectedStatusFilter.value === -1) {
-    delete param["statusList"];
+    delete param['statusList']
   } else {
-    param["statusList"] = [selectedStatusFilter.value];
+    param['statusList'] = [selectedStatusFilter.value]
   }
   if (keyword.value) {
-    param["keyword"] = keyword.value;
+    param['keyword'] = keyword.value
   }
   if (state.orders?.length) {
-    state.orders.forEach((item) => {
-      param[item["field"]] = item.type;
-    });
+    state.orders.forEach(item => {
+      param[item['field']] = item.type
+    })
   }
-  return param;
-};
+  return param
+}
 const search = () => {
-  const param = buildParam();
-  tableLoading.value = true;
-  thresholdGridApi(
-    state.paginationConfig.currentPage,
-    state.paginationConfig.pageSize,
-    param
-  )
-    .then((res) => {
-      state.taskList = res.data.records;
-      if (
-        state.paginationConfig.currentPage > 1 &&
-        state.taskList.length === 0
-      ) {
-        state.paginationConfig.currentPage--;
-        search();
+  const param = buildParam()
+  tableLoading.value = true
+  thresholdGridApi(state.paginationConfig.currentPage, state.paginationConfig.pageSize, param)
+    .then(res => {
+      state.taskList = res.data.records
+      if (state.paginationConfig.currentPage > 1 && state.taskList.length === 0) {
+        state.paginationConfig.currentPage--
+        search()
       }
-      state.paginationConfig.total = res.data.total;
-      imgType.value = getEmptyImg();
-      emptyDesc.value = getEmptyDesc();
+      state.paginationConfig.total = res.data.total
+      imgType.value = getEmptyImg()
+      emptyDesc.value = getEmptyDesc()
     })
     .finally(() => {
-      tableLoading.value = false;
-    });
-};
+      tableLoading.value = false
+    })
+}
 
 onMounted(async () => {
-  search();
-});
+  search()
+})
 
 const batchDelHandler = () => {
-  ElMessageBox.confirm(
-    t("threshold_warn.batch_del_confirm", [state.multipleSelection.length]),
-    {
-      confirmButtonText: t("common.delete"),
-      cancelButtonText: t("commons.cancel"),
-      showCancelButton: true,
-      confirmButtonType: "danger",
-      type: "warning",
-      autofocus: false,
-      showClose: false,
-    }
-  ).then(() => {
-    tableLoading.value = true;
-    thresholdDelApi(map(state.multipleSelection, "id")).then(() => {
-      tableLoading.value = false;
+  ElMessageBox.confirm(t('threshold_warn.batch_del_confirm', [state.multipleSelection.length]), {
+    confirmButtonText: t('common.delete'),
+    cancelButtonText: t('commons.cancel'),
+    showCancelButton: true,
+    confirmButtonType: 'danger',
+    type: 'warning',
+    autofocus: false,
+    showClose: false
+  }).then(() => {
+    tableLoading.value = true
+    thresholdDelApi(map(state.multipleSelection, 'id')).then(() => {
+      tableLoading.value = false
       ElMessage({
-        message: t("common.delete_success"),
-        type: "success",
-      });
-      search();
-    });
-  });
-};
+        message: t('common.delete_success'),
+        type: 'success'
+      })
+      search()
+    })
+  })
+}
 /*const batcReciHandler = () => {
   reciDialog.value.init(state.multipleSelection.map((item) => item.id));
 };*/
 
 const handleSelectionChange = (rows: any) => {
-  state.multipleSelection = rows;
-};
+  state.multipleSelection = rows
+}
 const clearSelection = () => {
-  multipleTableRef.value?.clearSelection();
-};
+  multipleTableRef.value?.clearSelection()
+}
 const allSelection = () => {
   if (
     Math.min(state.paginationConfig.pageSize, state.paginationConfig.total) ==
     state.multipleSelection.length
   ) {
-    return;
+    return
   }
-  multipleTableRef.value?.toggleAllSelection();
-};
+  multipleTableRef.value?.toggleAllSelection()
+}
 
 const pageChange = (index: any) => {
-  if (typeof index !== "number") {
-    return;
+  if (typeof index !== 'number') {
+    return
   }
-  state.paginationConfig.currentPage = index;
-  search();
-};
-const sizeChange = (size) => {
-  state.paginationConfig.currentPage = 1;
-  state.paginationConfig.pageSize = size;
-  search();
-};
-const sortChange = (param) => {
-  state.orders = [];
-  if (param.order && param.prop === "lastExecTime") {
-    const type = param.order.substring(0, param.order.indexOf("ending"));
+  state.paginationConfig.currentPage = index
+  search()
+}
+const sizeChange = size => {
+  state.paginationConfig.currentPage = 1
+  state.paginationConfig.pageSize = size
+  search()
+}
+const sortChange = param => {
+  state.orders = []
+  if (param.order && param.prop === 'lastExecTime') {
+    const type = param.order.substring(0, param.order.indexOf('ending'))
     state.orders.push({
-      field: "timeDesc",
-      type: type !== "asc",
-    });
-    search();
+      field: 'timeDesc',
+      type: type !== 'asc'
+    })
+    search()
   }
-};
+}
 
-const delHandler = (row) => {
-  ElMessageBox.confirm(t("data_source.sure_to_delete"), {
-    confirmButtonText: t("commons.delete"),
-    cancelButtonText: t("commons.cancel"),
+const delHandler = row => {
+  ElMessageBox.confirm(t('data_source.sure_to_delete'), {
+    confirmButtonText: t('commons.delete'),
+    cancelButtonText: t('commons.cancel'),
     showCancelButton: true,
-    confirmButtonType: "danger",
-    type: "warning",
+    confirmButtonType: 'danger',
+    type: 'warning',
     autofocus: false,
-    showClose: false,
+    showClose: false
   }).then(() => {
-    tableLoading.value = true;
+    tableLoading.value = true
     thresholdDelApi([row.id]).then(() => {
-      tableLoading.value = false;
-      ElMessage.success(t("commons.delete_success"));
-      search();
-    });
-  });
-};
+      tableLoading.value = false
+      ElMessage.success(t('commons.delete_success'))
+      search()
+    })
+  })
+}
 
-const enableChange = (row) => {
-  const param = { id: row.id, enable: row.enable };
+const enableChange = row => {
+  const param = { id: row.id, enable: row.enable }
   thresholdSwitchApi(param).then(() => {
-    ElMessage.success(t("user.switch_success"));
-  });
-};
-const editHandler = (row) => {
-  drawerVisible.value = true;
+    ElMessage.success(t('user.switch_success'))
+  })
+}
+const editHandler = row => {
+  drawerVisible.value = true
   nextTick(() => {
-    thresholdDrawer.value?.open({ id: row.id });
-  });
-};
-const editChartHandler = (row) => {
-  const baseUrl =
-    row.resourceType === "dataV"
-      ? "#/dvCanvas?dvId="
-      : "#/dashboard?resourceId=";
-  const thresholdToken = `${row.id}-fit2cloud-de-v2-${row.chartId}`;
-  window.open(
-    baseUrl + row.resourceId + `&thresholdToken=${thresholdToken}`,
-    "_blank"
-  );
-};
+    thresholdDrawer.value?.open({ id: row.id })
+  })
+}
+const editChartHandler = row => {
+  const baseUrl = row.resourceType === 'dataV' ? '#/dvCanvas?dvId=' : '#/dashboard?resourceId='
+  const thresholdToken = `${row.id}-fit2cloud-de-v2-${row.chartId}`
+  window.open(baseUrl + row.resourceId + `&thresholdToken=${thresholdToken}`, '_blank')
+}
 const statusFilterChange = (value: number) => {
   if (selectedStatusFilter.value === value) {
-    return;
+    return
   }
-  selectedStatusFilter.value = value;
-  search();
-};
+  selectedStatusFilter.value = value
+  search()
+}
 
 const drawerMainOpen = async () => {
-  drawerMainRef.value.init();
-};
+  drawerMainRef.value.init()
+}
 const drawerMainClose = () => {
-  drawerMainRef.value.close();
-};
+  drawerMainRef.value.close()
+}
 </script>
 <template>
   <div
     :class="!!state.multipleSelection.length && 'report-table-selection'"
-    class="report-table de-search-table"
+    class="report-table de-search-table threshold-table"
   >
     <el-row class="report-table__filter top-operate">
       <el-col :span="12">
@@ -314,27 +298,20 @@ const drawerMainClose = () => {
         >
           <template #prefix>
             <el-icon>
-              <Icon name="icon_search-outline_outlined"
-                ><icon_searchOutline_outlined
-              /></Icon>
+              <Icon name="icon_search-outline_outlined"><icon_searchOutline_outlined /></Icon>
             </el-icon>
           </template>
         </el-input>
         <el-button
           @click="drawerMainOpen"
           :plain="!!state.conditions.length"
-          :class="
-            state.conditions.length
-              ? 'filter-condition-button'
-              : 'filter-button'
-          "
+          :class="state.conditions.length ? 'filter-condition-button' : 'filter-button'"
         >
           <template #icon>
             <Icon name="icon-filter"><iconFilter class="svg-icon" /></Icon>
           </template>
           {{
-            t("common.filter") +
-            (state.conditions.length ? `(${state.conditions?.length})` : "")
+            t('common.filter') + (state.conditions.length ? `(${state.conditions?.length})` : '')
           }}
         </el-button>
       </el-col>
@@ -344,11 +321,7 @@ const drawerMainClose = () => {
       :total="state.paginationConfig.total"
       :filter-texts="state.filterTexts"
     ></filter-text>
-    <div
-      :class="[
-        state.filterTexts.length ? 'is-in-filter' : 'report-table__content',
-      ]"
-    >
+    <div :class="[state.filterTexts.length ? 'is-in-filter' : 'report-table__content']">
       <GridTable
         ref="multipleTableRef"
         :pagination="state.paginationConfig"
@@ -419,24 +392,17 @@ const drawerMainClose = () => {
         >
           <template #default="scope">
             <span>{{
-              scope.row.resourceType === "dataV"
-                ? t("work_branch.big_data_screen")
-                : t("work_branch.dashboard")
+              scope.row.resourceType === 'dataV'
+                ? t('work_branch.big_data_screen')
+                : t('work_branch.dashboard')
             }}</span>
           </template>
         </el-table-column>
-        <el-table-column
-          key="status"
-          prop="status"
-          :label="t('threshold.status')"
-          width="105"
-        >
+        <el-table-column key="status" prop="status" :label="t('threshold.status')" width="105">
           <template #default="scope">
             <span v-if="scope.row.status">
               <el-icon>
-                <Icon name="threshold_full"
-                  ><threshold_full class="svg-icon"
-                /></Icon>
+                <Icon name="threshold_full"><threshold_full class="svg-icon" /></Icon>
               </el-icon>
             </span>
             <span v-else />
@@ -449,13 +415,8 @@ const drawerMainClose = () => {
           width="105"
         >
           <template #default="scope">
-            <div
-              class="threshold_enable"
-              :class="`threshold_enable_${!!scope.row.enable}`"
-            >
-              <span>{{
-                scope.row.enable ? t("chart.open") : t("commons.close")
-              }}</span>
+            <div class="threshold_enable" :class="`threshold_enable_${!!scope.row.enable}`">
+              <span>{{ scope.row.enable ? t('chart.open') : t('commons.close') }}</span>
             </div>
           </template>
         </el-table-column>
@@ -466,11 +427,7 @@ const drawerMainClose = () => {
           :label="t('report.creator')"
           width="120"
         />
-        <el-table-column
-          prop="createTime"
-          :label="t('report.create_time')"
-          width="175"
-        >
+        <el-table-column prop="createTime" :label="t('report.create_time')" width="175">
           <template #default="scope">
             <span>{{ timestampFormatDate(scope.row.createTime) }}</span>
           </template>
@@ -489,46 +446,26 @@ const drawerMainClose = () => {
                 size="small"
               />
               <el-divider style="margin: 0 12px" direction="vertical" />
-              <el-tooltip
-                effect="dark"
-                :content="t('common.edit')"
-                placement="top"
-              >
+              <el-tooltip effect="dark" :content="t('common.edit')" placement="top">
                 <el-button text @click="editHandler(scope.row)" size="small">
                   <template #icon>
-                    <Icon name="icon_edit_outlined"
-                      ><icon_edit_outlined
-                    /></Icon>
+                    <Icon name="icon_edit_outlined"><icon_edit_outlined /></Icon>
                   </template>
                 </el-button>
               </el-tooltip>
 
-              <el-tooltip
-                effect="dark"
-                :content="t('threshold.record')"
-                placement="top"
-              >
-                <el-button
-                  text
-                  @click="openTaskLogList(scope.row)"
-                  size="small"
-                >
+              <el-tooltip effect="dark" :content="t('threshold.record')" placement="top">
+                <el-button text @click="openTaskLogList(scope.row)" size="small">
                   <template #icon>
                     <Icon name="clock"><clock class="svg-icon" /></Icon>
                   </template>
                 </el-button>
               </el-tooltip>
 
-              <el-tooltip
-                effect="dark"
-                :content="t('common.delete')"
-                placement="top"
-              >
+              <el-tooltip effect="dark" :content="t('common.delete')" placement="top">
                 <el-button text @click="delHandler(scope.row)" size="small">
                   <template #icon>
-                    <Icon name="icon_delete-trash_outlined"
-                      ><icon_deleteTrash_outlined
-                    /></Icon>
+                    <Icon name="icon_delete-trash_outlined"><icon_deleteTrash_outlined /></Icon>
                   </template>
                 </el-button>
               </el-tooltip>
@@ -538,10 +475,7 @@ const drawerMainClose = () => {
       </GridTable>
     </div>
   </div>
-  <div
-    v-if="state.multipleSelection.length"
-    class="bottom-bar flex-align-center"
-  >
+  <div v-if="state.multipleSelection.length" class="bottom-bar flex-align-center">
     <!--
     <el-button
       type="primary"
@@ -552,26 +486,19 @@ const drawerMainClose = () => {
       {{ t("threshold.recipient_setting") }}
     </el-button>
     -->
-    <el-button
-      type="danger"
-      class="batch-delete-button"
-      plain
-      @click="batchDelHandler"
-    >
-      {{ t("sync_task.batch_del") }}
+    <el-button type="danger" class="batch-delete-button" plain @click="batchDelHandler">
+      {{ t('sync_task.batch_del') }}
     </el-button>
     <span class="bottom-info">{{
-      t("sync_task.selection_info", [state.multipleSelection.length])
+      t('sync_task.selection_info', [state.multipleSelection.length])
     }}</span>
     <el-button text @click="allSelection">{{
-      `${t("dataset.check_all")} ${Math.min(
+      `${t('dataset.check_all')} ${Math.min(
         state.paginationConfig.pageSize,
         state.paginationConfig.total
-      )} ${t("deDataset.item")}`
+      )} ${t('deDataset.item')}`
     }}</el-button>
-    <el-button text @click="clearSelection">{{
-      t("sync_task.clear_button")
-    }}</el-button>
+    <el-button text @click="clearSelection">{{ t('sync_task.clear_button') }}</el-button>
   </div>
   <drawer-main
     :filter-options="filterOption"
@@ -728,7 +655,7 @@ const drawerMainClose = () => {
     color: var(--ed-color-primary) !important;
     border: 0 solid transparent;
     background-color: transparent;
-    font-family: var(--de-custom_font, "PingFang");
+    font-family: var(--de-custom_font, 'PingFang');
     font-size: 14px;
     font-weight: 400;
     line-height: 26px;
