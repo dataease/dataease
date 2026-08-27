@@ -96,6 +96,7 @@ const handleConfirm = () => {
     :model-value="modelValue"
     title="自定义排序"
     width="480px"
+    append-to-body
     :close-on-click-modal="false"
     :close-on-press-escape="false"
     :show-close="true"
