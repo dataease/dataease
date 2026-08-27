@@ -51,6 +51,7 @@ public interface CustomGeoApi {
     void saveCustomGeoSubArea(@RequestBody CustomGeoSubArea geoSubArea);
 
     @Operation(summary = "获取子区域下拉框可选列表")
+    @DePermit
     @GetMapping("/geoSubArea/options")
     List<AreaNode> getCustomGeoSubAreaOptions();
 }
