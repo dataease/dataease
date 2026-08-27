@@ -14,6 +14,7 @@ import { PluginRenderStatusService } from '../../DataEaseRuntimePlugin/services/
 
 export class PivotTableRuntimeService implements SpreadsheetPluginRuntime<PivotTableConfig> {
   readonly type = 'pivot' as const
+  private readonly styleApplyTasks = new Map<string, Promise<boolean | void>>()
 
   constructor(
     @Inject(PivotTableInstanceService)
@@ -60,11 +61,26 @@ export class PivotTableRuntimeService implements SpreadsheetPluginRuntime<PivotT
     univerApi: any
     config: PivotTableConfig
   }): Promise<boolean | void> {
-    const filled = await this.pivotTableFillService.applyStyleOnly(univerApi, config)
-    if (filled) {
-      this.syncInstance(univerApi, config)
+    const previousTask = this.styleApplyTasks.get(config.id) || Promise.resolve()
+    // 同一透视表的样式变更包含解除合并、恢复值和重新合并，必须串行提交。
+    const currentTask = previousTask
+      .catch(() => undefined)
+      .then(async () => {
+        const filled = await this.pivotTableFillService.applyStyleOnly(univerApi, config)
+        if (filled) {
+          this.syncInstance(univerApi, config)
+        }
+        return filled
+      })
+
+    this.styleApplyTasks.set(config.id, currentTask)
+    try {
+      return await currentTask
+    } finally {
+      if (this.styleApplyTasks.get(config.id) === currentTask) {
+        this.styleApplyTasks.delete(config.id)
+      }
     }
-    return filled
   }
 
   validateConfigUpdate({

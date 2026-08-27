@@ -1,11 +1,16 @@
 import { Inject } from '@univerjs/core'
+import { IRenderManagerService } from '@univerjs/engine-render'
 import { ElMessage } from 'element-plus-secondary'
 import type { PivotTableConfig } from '../types'
 import { validatePivotConfig } from '../utils/pivot-config-validator'
 import { PivotTableDataService } from './pivot-table-data.service'
 import { PivotTableDisplayStateService } from './pivot-table-display-state.service'
 import { PivotTableEditProtectionService } from './pivot-table-edit-protection.service'
-import { PivotTableLayoutService } from './pivot-table-layout.service'
+import {
+  PivotTableLayoutService,
+  type PivotLayoutRange,
+  type PivotTableValueRegion
+} from './pivot-table-layout.service'
 import { PivotTableRangeService } from './pivot-table-range.service'
 import { PivotTableRenderStyleService } from './pivot-table-render-style.service'
 import {
@@ -49,7 +54,9 @@ export class PivotTableFillService {
     @Inject(TableRenderExpansionService)
     private readonly tableRenderExpansionService: TableRenderExpansionService,
     @Inject(PluginRenderStatusService)
-    private readonly pluginRenderStatusService: PluginRenderStatusService
+    private readonly pluginRenderStatusService: PluginRenderStatusService,
+    @Inject(IRenderManagerService)
+    private readonly renderManagerService: IRenderManagerService
   ) {}
 
   async fillByConfig(
@@ -239,8 +246,13 @@ export class PivotTableFillService {
           values: layout.values
         })
       )
-      if (config.style?.base?.mergeCell) {
-        await this.applyMerges(univerApi, worksheet, start, layout.merges)
+      const effectiveMerges = this.getEffectiveMerges(
+        config,
+        layout.merges,
+        layout.corner?.range
+      )
+      if (effectiveMerges.length) {
+        await this.applyMerges(univerApi, worksheet, start, effectiveMerges)
       }
 
       this.displayStateService.set({
@@ -254,6 +266,8 @@ export class PivotTableFillService {
         displayScales: layout.displayScales,
         dataRange: layout.dataRange,
         merges: layout.merges,
+        axisHeaderValues: layout.axisHeaderValues,
+        corner: layout.corner,
         updatedAt: Date.now()
       })
       this.updateRenderStyleRange(univerApi, config)
@@ -324,8 +338,33 @@ export class PivotTableFillService {
       })
     )
 
-    if (config.style?.base?.mergeCell && state.merges?.length) {
-      await this.applyMerges(univerApi, worksheet, start, state.merges)
+    const valueRegionsToRestore: PivotTableValueRegion[] = []
+    if (!config.style?.base?.mergeCell) {
+      valueRegionsToRestore.push(...(state.axisHeaderValues || []))
+    }
+    if (!config.style?.base?.slashHeader && state.corner) {
+      valueRegionsToRestore.push({
+        range: state.corner.range,
+        values: state.corner.values
+      })
+    }
+    if (valueRegionsToRestore.length) {
+      await this.restoreValueRegions(
+        univerApi,
+        unitId,
+        state.sheetId,
+        start,
+        valueRegionsToRestore
+      )
+    }
+
+    const effectiveMerges = this.getEffectiveMerges(
+      config,
+      state.merges || [],
+      state.corner?.range
+    )
+    if (effectiveMerges.length) {
+      await this.applyMerges(univerApi, worksheet, start, effectiveMerges)
     }
 
     this.updateRenderStyleRange(univerApi, config)
@@ -474,6 +513,51 @@ export class PivotTableFillService {
     )
   }
 
+  private getEffectiveMerges(
+    config: PivotTableConfig,
+    headerMerges: PivotLayoutRange[],
+    cornerRange?: PivotLayoutRange
+  ): PivotLayoutRange[] {
+    const merges = config.style?.base?.mergeCell ? [...headerMerges] : []
+    if (
+      config.style?.base?.slashHeader &&
+      cornerRange &&
+      this.isMultiCellRange(cornerRange)
+    ) {
+      merges.push(cornerRange)
+    }
+    return merges
+  }
+
+  private async restoreValueRegions(
+    univerApi: any,
+    unitId: string,
+    sheetId: string,
+    start: { row: number; col: number },
+    regions: PivotTableValueRegion[]
+  ): Promise<void> {
+    // 合并 Mutation 会清空非主单元格，关闭对应合并能力时必须恢复布局阶段的原始表头值。
+    await this.editProtectionService.runWithoutProtection(async () => {
+      for (const region of regions) {
+        await setWorksheetValuesSilently(univerApi, {
+          unitId,
+          sheetId,
+          range: {
+            startRow: start.row + region.range.startRow,
+            endRow: start.row + region.range.endRow,
+            startColumn: start.col + region.range.startColumn,
+            endColumn: start.col + region.range.endColumn
+          },
+          values: region.values
+        })
+      }
+    })
+  }
+
+  private isMultiCellRange(range: PivotLayoutRange): boolean {
+    return range.startRow !== range.endRow || range.startColumn !== range.endColumn
+  }
+
   private updateRenderStyleRange(univerApi: any, config: PivotTableConfig): void {
     const state = this.displayStateService.get(config.id)
     const workbook = univerApi.getActiveWorkbook?.()
@@ -495,13 +579,21 @@ export class PivotTableFillService {
       headerColumnCount: state.headerColumnCount,
       displayScales: state.displayScales,
       dataRange: state.dataRange,
+      corner: state.corner,
       config
     })
   }
 
   private refreshTargetSheet(univerApi: any, sheetId: string): void {
-    const worksheet = univerApi
-      .getActiveWorkbook?.()
+    const workbook = univerApi.getActiveWorkbook?.()
+    const unitId = workbook?.getId?.() || workbook?.getUnitId?.()
+    const currentRender = unitId
+      ? this.renderManagerService.getRenderById(unitId) as any
+      : undefined
+    currentRender?.mainComponent?.makeDirty?.(true)
+    currentRender?.scene?.makeDirty?.(true)
+
+    const worksheet = workbook
       ?.getSheets?.()
       ?.find(sheet => sheet.getSheetId?.() === sheetId)
 

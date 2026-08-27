@@ -46,6 +46,7 @@ import {
   type SpreadsheetFilterQueryPayload
 } from '../../DataEaseFilterPlugin/utils/events'
 import { DATAEASE_INSERT_DROPDOWN_ID } from '../../DataEaseInsertPlugin/controllers/menu'
+import { SlashCellRenderService } from '../../DataEaseSlashCellPlugin/services/slash-cell-render.service'
 import { InsertPivotTableOperation } from '../commands/insert-operations'
 import {
   SetPivotTableInstancesMutation,
@@ -103,6 +104,8 @@ export class DataEasePivotTableController extends Disposable {
     private readonly sheetInterceptorService: SheetInterceptorService,
     @Inject(SpreadsheetFilterRuntimeService)
     private readonly spreadsheetFilterRuntimeService: SpreadsheetFilterRuntimeService,
+    @Inject(SlashCellRenderService)
+    private readonly slashCellRenderService: SlashCellRenderService,
     @Inject(PluginRenderStatusService)
     private readonly pluginRenderStatusService: PluginRenderStatusService
   ) {
@@ -402,9 +405,34 @@ export class DataEasePivotTableController extends Disposable {
             context.col,
             rawCell?.v
           )
+          const slashHeader = this.pivotTableRenderStyleService.getSlashHeaderRender(
+            context.unitId,
+            context.subUnitId,
+            context.row,
+            context.col
+          )
+          let customRender: any[] | undefined
+          if (slashHeader) {
+            const cell = (rawCell || {}) as any
+            let existingCustomRender: any[] = []
+            if (Array.isArray(cell.customRender)) {
+              existingCustomRender = cell.customRender.filter(
+                (render: any) => render?.uKey !== this.slashCellRenderService.customRenderKey
+              )
+            }
+            // 透视表只复用斜线绘制能力，角头状态仍由透视表配置和 DisplayState 持有。
+            customRender = [
+              ...existingCustomRender,
+              this.slashCellRenderService.createCustomRenderByParts(
+                slashHeader.type,
+                slashHeader.parts
+              )
+            ]
+          }
           return next({
             ...rawCell,
             ...(displayValue === rawCell?.v ? {} : { v: displayValue }),
+            ...(customRender ? { customRender } : {}),
             s: mergedStyle
           })
         }

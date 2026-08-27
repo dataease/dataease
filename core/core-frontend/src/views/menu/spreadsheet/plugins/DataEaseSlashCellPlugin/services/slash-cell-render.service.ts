@@ -64,13 +64,27 @@ export class SlashCellRenderService {
   createCustomRender(type: SlashCellType, value: unknown) {
     const layout = this.getTextLayout(type, value)
 
+    return this.createCustomRenderByParts(type, [
+      layout.lowerLeft,
+      layout.upperRight,
+      layout.center
+    ])
+  }
+
+  createCustomRenderByParts(type: SlashCellType, parts: string[]) {
+    const normalizedParts = [
+      parts[0] || '',
+      parts[1] || '',
+      type === 'three' ? parts[2] || '' : ''
+    ]
+
     return {
       uKey: this.customRenderKey,
       zIndex: 999,
       drawWith: (ctx: CanvasLikeContext, info: SlashCellCustomRenderInfo) => {
         this.renderSlashCell(ctx, {
           type,
-          parts: [layout.lowerLeft, layout.upperRight, layout.center],
+          parts: normalizedParts,
           rect: this.getRect(info),
           style: info.style
         })

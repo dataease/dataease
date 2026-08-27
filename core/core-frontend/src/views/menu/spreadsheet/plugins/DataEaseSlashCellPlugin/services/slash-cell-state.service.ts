@@ -54,6 +54,83 @@ export class SlashCellStateService {
     })
   }
 
+  // 结构命令先基于旧状态生成完整快照，再由 Mutation 写入，确保删除场景可撤销恢复。
+  getAfterInsertRows(
+    unitId: string,
+    sheetId: string,
+    position: number,
+    count: number
+  ): SlashCellItem[] {
+    if (count <= 0) {
+      return this.list(unitId)
+    }
+    return this.mapCells(unitId, item => {
+      if (item.sheetId !== sheetId || item.row < position) {
+        return item
+      }
+      return { ...item, row: item.row + count }
+    })
+  }
+
+  getAfterInsertColumns(
+    unitId: string,
+    sheetId: string,
+    position: number,
+    count: number
+  ): SlashCellItem[] {
+    if (count <= 0) {
+      return this.list(unitId)
+    }
+    return this.mapCells(unitId, item => {
+      if (item.sheetId !== sheetId || item.col < position) {
+        return item
+      }
+      return { ...item, col: item.col + count }
+    })
+  }
+
+  getAfterRemoveRows(
+    unitId: string,
+    sheetId: string,
+    startRow: number,
+    endRow: number
+  ): SlashCellItem[] {
+    const count = endRow - startRow + 1
+    if (count <= 0) {
+      return this.list(unitId)
+    }
+    return this.mapCells(unitId, item => {
+      if (item.sheetId !== sheetId || item.row < startRow) {
+        return item
+      }
+      if (item.row <= endRow) {
+        return undefined
+      }
+      return { ...item, row: item.row - count }
+    })
+  }
+
+  getAfterRemoveColumns(
+    unitId: string,
+    sheetId: string,
+    startColumn: number,
+    endColumn: number
+  ): SlashCellItem[] {
+    const count = endColumn - startColumn + 1
+    if (count <= 0) {
+      return this.list(unitId)
+    }
+    return this.mapCells(unitId, item => {
+      if (item.sheetId !== sheetId || item.col < startColumn) {
+        return item
+      }
+      if (item.col <= endColumn) {
+        return undefined
+      }
+      return { ...item, col: item.col - count }
+    })
+  }
+
   deleteUnit(unitId: string): void {
     this.statesByUnitId.delete(unitId)
   }
@@ -71,6 +148,25 @@ export class SlashCellStateService {
     return unitMap
   }
 
+  private mapCells(
+    unitId: string,
+    transform: (item: SlashCellItem) => SlashCellItem | undefined
+  ): SlashCellItem[] {
+    const unitMap = this.statesByUnitId.get(unitId)
+    if (!unitMap?.size) {
+      return []
+    }
+
+    const items: SlashCellItem[] = []
+    unitMap.forEach(item => {
+      const nextItem = transform(item)
+      if (nextItem) {
+        items.push(nextItem)
+      }
+    })
+    return items
+  }
+
   private normalizeItem(item: SlashCellItem, fallbackUnitId: string): SlashCellItem {
     return {
       unitId: item.unitId || fallbackUnitId,
@@ -82,4 +178,3 @@ export class SlashCellStateService {
     }
   }
 }
-
