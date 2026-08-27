@@ -188,6 +188,13 @@ const handleTargetVisibleChange = (fieldKey: string, visible: boolean) => {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+// 单组件与全局替换共用映射面板高度，避免字段过多时持续撑高弹窗。
+.mapping-content {
+  max-height: 248px;
+  overflow-y: auto;
+}
+
 .field-mapping.is-component {
   position: absolute;
   z-index: 10;
@@ -392,11 +399,6 @@ const handleTargetVisibleChange = (fieldKey: string, visible: boolean) => {
     padding: 0 12px;
     border-radius: 6px;
     box-shadow: 0 0 0 1px #d9dcdf inset;
-  }
-
-  .mapping-content {
-    max-height: 248px;
-    overflow-y: auto;
   }
 
   .mapping-row {
