@@ -38,5 +38,5 @@ public interface LogApi {
     @GetMapping("/options")
     List<LogOpVO> logOptions();
 
-    void writeExcel(String filePath, LogGridRequest request);
+    void writeExcel(String filePath, LogGridRequest request, List<Long> scope);
 }

@@ -12,6 +12,7 @@ import io.dataease.api.dataset.union.UnionDTO;
 import io.dataease.api.log.LogApi;
 import io.dataease.api.log.dto.LogGridRequest;
 import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
+import io.dataease.api.permissions.org.api.OrgApi;
 import io.dataease.api.permissions.user.api.UserApi;
 import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.api.xpack.dataFilling.DataFillingApi;
@@ -128,6 +129,8 @@ public class ExportCenterDownLoadManage {
     private DataFillingApi dataFillingApi = null;
     @Autowired(required = false)
     private LogApi logApi = null;
+    @Autowired(required = false)
+    private OrgApi orgApi = null;
     @Resource
     private CoreChartViewRepository coreChartViewRepository;
     @Resource
@@ -221,6 +224,8 @@ public class ExportCenterDownLoadManage {
             } catch (Exception e) {
                 LogUtil.error("Failed to export data", e);
                 updateExportTask(exportTarget.taskId(), "FAILED", null, e.getMessage(), null, null);
+            } finally {
+                V3UserUtil.clear();
             }
         });
         Running_Task.put(exportTarget.taskId(), future);
@@ -232,15 +237,21 @@ public class ExportCenterDownLoadManage {
         }
         exportTarget.createParentDirectory();
         String clientIp = IPUtils.get();
+        Object proxyObj = request.get("proxy");
+        Long proxyOid = ObjectUtils.isNotEmpty(proxyObj) ? Long.parseLong(proxyObj.toString()) : null;
+        final List<Long> scope = resolveLogScope(request);
         Future future = scheduledThreadPoolExecutor.submit(() -> {
             coreExportTaskRepository.saveAndFlush(exportTask);
             V3UserUtil.setUid(userId);
+            if (ObjectUtils.isNotEmpty(proxyOid) && proxyOid > 0) {
+                V3UserUtil.setProxy(proxyOid);
+            }
             IPUtils.set(clientIp);
             LocaleContextHolder.setLocale(parseLocale(request));
             try {
                 updateExportTask(exportTarget.taskId(), "IN_PROGRESS", null, null, null, null);
                 LogGridRequest logGridRequest = JsonUtil.parseObject(request.get("logGridRequest").toString(), LogGridRequest.class);
-                getLogApi().writeExcel(exportTarget.filePath(), logGridRequest);
+                getLogApi().writeExcel(exportTarget.filePath(), logGridRequest, scope);
                 updateExportTaskSuccess(exportTarget, "100");
             } catch (Exception e) {
                 LogUtil.error("Failed to export data", e);
@@ -248,9 +259,24 @@ public class ExportCenterDownLoadManage {
             } finally {
                 LocaleContextHolder.resetLocaleContext();
                 IPUtils.remove();
+                V3UserUtil.clear();
             }
         });
         Running_Task.put(exportTarget.taskId(), future);
+    }
+
+    private List<Long> resolveLogScope(HashMap<String, Object> request) {
+        Object scopeObj = request.get("logScope");
+        if (scopeObj != null) {
+            // 新任务:export() 已序列化 JSON 字符串,三态可区分("null"/"[]"/"[...]")
+            return JsonUtil.parseObject(scopeObj.toString(), new TypeReference<List<Long>>() {
+            });
+        }
+        if (orgApi != null) {
+            // 旧任务兼容:HTTP 线程按页面查询同逻辑重算
+            return orgApi.logScope();
+        }
+        return null;
     }
 
     private Locale parseLocale(HashMap<String, Object> request) {
@@ -471,6 +497,7 @@ public class ExportCenterDownLoadManage {
                 updateExportTask(exportTarget.taskId(), "FAILED", null, e.getMessage(), null, null);
             } finally {
                 IPUtils.remove();
+                V3UserUtil.clear();
             }
         });
         Running_Task.put(exportTarget.taskId(), future);
@@ -591,6 +618,7 @@ public class ExportCenterDownLoadManage {
                 updateExportTask(exportTarget.taskId(), "FAILED", null, e.getMessage(), null, null);
             } finally {
                 IPUtils.remove();
+                V3UserUtil.clear();
             }
         });
         Running_Task.put(exportTarget.taskId(), future);
