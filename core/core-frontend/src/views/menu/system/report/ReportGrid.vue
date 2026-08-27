@@ -1,476 +1,461 @@
 <script lang="ts" setup>
-import icon_succeed_filled from "@/assets/svg/icon_succeed_filled.svg";
-import icon_close_filled from "@/assets/svg/icon_close_filled.svg";
-import icon_sync_progress from "@/assets/svg/icon_sync_progress.svg";
-import iconMaybe_outlined from "@/assets/svg/icon-maybe_outlined.svg";
-import icon_searchOutline_outlined from "@/assets/svg/icon_search-outline_outlined.svg";
-import iconFilter from "@/assets/svg/icon-filter.svg";
-import icon_edit_outlined from "@/assets/svg/icon_edit_outlined.svg";
-import icon_syncPlayRound_outlined from "@/assets/svg/icon_sync-play-round_outlined.svg";
-import { onMounted, reactive, ref, defineEmits } from "vue";
+import icon_succeed_filled from '@/assets/svg/icon_succeed_filled.svg'
+import icon_close_filled from '@/assets/svg/icon_close_filled.svg'
+import icon_sync_progress from '@/assets/svg/icon_sync_progress.svg'
+import iconMaybe_outlined from '@/assets/svg/icon-maybe_outlined.svg'
+import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
+import iconFilter from '@/assets/svg/icon-filter.svg'
+import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
+import icon_syncPlayRound_outlined from '@/assets/svg/icon_sync-play-round_outlined.svg'
+import { onMounted, reactive, ref, defineEmits } from 'vue'
 import {
   reportGridApi,
   reportFireApi,
   reportStopApi,
   reportStartApi,
   reportDelApi,
-  isOrgAdminApi,
-} from "./api";
-import { queryAllSubjectsApi } from "@/api/auth";
-import GridTable from "@/components/grid-table/src/GridTable.vue";
-import { ElIcon, ElMessage, ElMessageBox } from "element-plus-secondary";
-import ReportForm from "./form/ReportForm.vue";
-import { find, map } from "lodash-es";
-import { useI18n } from "@/hooks/web/useI18n";
-import { HandleMore } from "@/components/handle-more";
-import { Icon } from "@/components/icon-custom";
-import dayjs from "dayjs";
-import LogDetails from "./LogDetails.vue";
-import DrawerMain from "@/components/drawer-main/src/DrawerMain.vue";
-import { convertFilterText, FilterText } from "@/components/filter-text";
-import { filterOption } from "./options";
-import { useEmitt } from "@/hooks/web/useEmitt";
-import { useCache } from "@/hooks/web/useCache";
+  isOrgAdminApi
+} from './api'
+import { queryAllSubjectsApi } from '@/api/auth'
+import GridTable from '@/components/grid-table/src/GridTable.vue'
+import { ElIcon, ElMessage, ElMessageBox } from 'element-plus-secondary'
+import ReportForm from './form/ReportForm.vue'
+import { find, map } from 'lodash-es'
+import { useI18n } from '@/hooks/web/useI18n'
+import { HandleMore } from '@/components/handle-more'
+import { Icon } from '@/components/icon-custom'
+import dayjs from 'dayjs'
+import LogDetails from './LogDetails.vue'
+import DrawerMain from '@/components/drawer-main/src/DrawerMain.vue'
+import { convertFilterText, FilterText } from '@/components/filter-text'
+import { filterOption } from './options'
+import { useEmitt } from '@/hooks/web/useEmitt'
+import { useCache } from '@/hooks/web/useCache'
 
 interface FieldSort {
-  field: string;
-  type: boolean;
+  field: string
+  type: boolean
 }
-const { t } = useI18n();
-const isOrgAdmin = ref(false);
-const { wsCache } = useCache();
-const reportFormDialogRef = ref();
-const drawerMainRef = ref();
-const taskId = ref<string>("");
-const keyword = ref(null);
-const multipleTableRef = ref();
-const tableLoading = ref<boolean>(false);
-const imgType = ref();
-const emptyDesc = ref("");
+const { t } = useI18n()
+const isOrgAdmin = ref(false)
+const { wsCache } = useCache()
+const reportFormDialogRef = ref()
+const drawerMainRef = ref()
+const taskId = ref<string>('')
+const keyword = ref(null)
+const multipleTableRef = ref()
+const tableLoading = ref<boolean>(false)
+const imgType = ref()
+const emptyDesc = ref('')
 const getEmptyImg = (): string => {
   if (keyword.value) {
-    return "tree";
+    return 'tree'
   }
-  return "noneWhite";
-};
+  return 'noneWhite'
+}
 
 const getEmptyDesc = (): string => {
   if (keyword.value) {
-    return t("work_branch.relevant_content_found");
+    return t('work_branch.relevant_content_found')
   }
 
-  return "";
-};
+  return ''
+}
 const state = reactive({
   taskList: [],
   filterTexts: [],
   paginationConfig: {
     currentPage: 1,
     pageSize: 10,
-    total: 0,
+    total: 0
   },
   conditions: [],
   orders: [] as FieldSort[],
-  multipleSelection: [],
-});
-state.filterTexts = [];
-const searchCondition = (conditions) => {
-  state.conditions = conditions;
-  search();
-  fillFilterText();
-  drawerMainClose();
-};
+  multipleSelection: []
+})
+state.filterTexts = []
+const searchCondition = conditions => {
+  state.conditions = conditions
+  search()
+  fillFilterText()
+  drawerMainClose()
+}
 const fillFilterText = () => {
   const textArray = state.conditions?.length
     ? convertFilterText(state.conditions, filterOption)
-    : [];
-  state.filterTexts = [...textArray];
-  Object.assign(state.filterTexts, textArray);
-};
+    : []
+  state.filterTexts = [...textArray]
+  Object.assign(state.filterTexts, textArray)
+}
 const clearFilter = (params?: number) => {
-  let index = params ? params : 0;
+  let index = params ? params : 0
   if (isNaN(index)) {
-    state.filterTexts = [];
+    state.filterTexts = []
   } else {
-    state.filterTexts.splice(index, 1);
+    state.filterTexts.splice(index, 1)
   }
-  drawerMainRef.value.clearFilter(index);
-};
+  drawerMainRef.value.clearFilter(index)
+}
 
-const getMoreList = (row) => {
+const getMoreList = row => {
   const stopMenu = {
-    label: t("sync_task.stop"),
+    label: t('sync_task.stop'),
     divided: false,
-    command: "stop",
-  };
+    command: 'stop'
+  }
   const startMenu = {
-    label: t("sync_task.start"),
+    label: t('sync_task.start'),
     divided: false,
-    command: "start",
-  };
+    command: 'start'
+  }
   const moreList = [
     {
-      label: t("sync_task.show_log"),
+      label: t('sync_task.show_log'),
       divided: false,
-      command: "showLog",
+      command: 'showLog'
     },
     {
-      label: t("commons.delete"),
+      label: t('commons.delete'),
       divided: false,
-      command: "delete",
-    },
-  ];
+      command: 'delete'
+    }
+  ]
   if (row.status === 2) {
-    moreList.splice(0, 0, startMenu);
+    moreList.splice(0, 0, startMenu)
   } else if (row.status < 2) {
-    moreList.splice(0, 0, stopMenu);
+    moreList.splice(0, 0, stopMenu)
   }
-  return moreList;
-};
-const emits = defineEmits(["openTaskLog"]);
-const openTaskLogList = (row) => {
-  emits("openTaskLog", { id: row.id, name: row.name });
-};
+  return moreList
+}
+const emits = defineEmits(['openTaskLog'])
+const openTaskLogList = row => {
+  emits('openTaskLog', { id: row.id, name: row.name })
+}
 const moreHandler = (cmd: string, row) => {
-  if (cmd === "stop" || cmd === "start") {
-    changeStatus(row);
-    return;
+  if (cmd === 'stop' || cmd === 'start') {
+    changeStatus(row)
+    return
   }
-  if (cmd === "showLog") {
-    openTaskLogList(row);
-    return;
+  if (cmd === 'showLog') {
+    openTaskLogList(row)
+    return
   }
-  if (cmd === "delete") {
-    delHandler(row);
-    return;
+  if (cmd === 'delete') {
+    delHandler(row)
+    return
   }
-};
+}
 
-const timestampFormatDate = (value) => {
+const timestampFormatDate = value => {
   if (!value) {
-    return "-";
+    return '-'
   }
-  return dayjs(new Date(value)).format("YYYY-MM-DD HH:mm:ss");
-};
+  return dayjs(new Date(value)).format('YYYY-MM-DD HH:mm:ss')
+}
 
 const lastStatus = [
-  { label: t("report.last_status_running"), value: 1 },
-  { label: t("report.last_status_success"), value: 2 },
-  { label: t("report.last_status_fail"), value: 3 },
-];
+  { label: t('report.last_status_running'), value: 1 },
+  { label: t('report.last_status_success'), value: 2 },
+  { label: t('report.last_status_fail'), value: 3 }
+]
 
 const taskStatus = [
-  { label: t("report.status_wait"), value: 0 },
-  { label: t("report.status_send"), value: 1 },
-  { label: t("report.status_stop"), value: 2 },
-  { label: t("report.status_finish"), value: 3 },
-];
+  { label: t('report.status_wait'), value: 0 },
+  { label: t('report.status_send'), value: 1 },
+  { label: t('report.status_stop'), value: 2 },
+  { label: t('report.status_finish'), value: 3 }
+]
 
-const getLogStatusIcon = (value) => {
+const getLogStatusIcon = value => {
   const iconObj = {
-    icon: "-",
-    color: "",
-  };
+    icon: '-',
+    color: ''
+  }
   if (value === 2) {
-    iconObj.icon = icon_succeed_filled;
-    iconObj.color = "#34C724";
+    iconObj.icon = icon_succeed_filled
+    iconObj.color = '#34C724'
   }
   if (value === 3) {
-    iconObj.icon = icon_close_filled;
-    iconObj.color = "#F54A45";
+    iconObj.icon = icon_close_filled
+    iconObj.color = '#F54A45'
   }
   if (value === 1) {
-    iconObj.icon = icon_sync_progress;
-    iconObj.color = "#2c5fd9";
+    iconObj.icon = icon_sync_progress
+    iconObj.color = '#2c5fd9'
   }
-  return iconObj;
-};
-const getStatusLabel = (value) => {
+  return iconObj
+}
+const getStatusLabel = value => {
   if (value !== null && value !== undefined) {
-    const status = find(taskStatus, ["value", value]);
+    const status = find(taskStatus, ['value', value])
     if (status) {
-      return status.label;
+      return status.label
     }
   }
-  return "-";
-};
+  return '-'
+}
 
-const getLastStatusLabel = (value) => {
+const getLastStatusLabel = value => {
   if (value !== null && value !== undefined) {
-    const status = find(lastStatus, ["value", value]);
+    const status = find(lastStatus, ['value', value])
     if (status) {
-      return status.label;
+      return status.label
     }
   }
-  return "-";
-};
+  return '-'
+}
 const buildParam = () => {
-  const param = {};
+  const param = {}
   if (state.conditions?.length) {
-    state.conditions.forEach((condition) => {
-      if (condition["value"]) {
-        param[condition["field"]] = condition["value"];
+    state.conditions.forEach(condition => {
+      if (condition['value']) {
+        param[condition['field']] = condition['value']
       }
-    });
+    })
   }
   if (keyword.value) {
-    param["keyword"] = keyword.value;
+    param['keyword'] = keyword.value
   }
   if (state.orders?.length) {
-    state.orders.forEach((item) => {
-      param[item["field"]] = item.type;
-    });
+    state.orders.forEach(item => {
+      param[item['field']] = item.type
+    })
   }
-  return param;
-};
+  return param
+}
 const search = () => {
-  const param = buildParam();
-  tableLoading.value = true;
-  reportGridApi(
-    state.paginationConfig.currentPage,
-    state.paginationConfig.pageSize,
-    param
-  )
-    .then((res) => {
-      state.taskList = res.data.records;
-      if (
-        state.paginationConfig.currentPage > 1 &&
-        state.taskList.length === 0
-      ) {
-        state.paginationConfig.currentPage--;
-        search();
+  const param = buildParam()
+  tableLoading.value = true
+  reportGridApi(state.paginationConfig.currentPage, state.paginationConfig.pageSize, param)
+    .then(res => {
+      state.taskList = res.data.records
+      if (state.paginationConfig.currentPage > 1 && state.taskList.length === 0) {
+        state.paginationConfig.currentPage--
+        search()
       }
-      state.paginationConfig.total = res.data.total;
-      imgType.value = getEmptyImg();
-      emptyDesc.value = getEmptyDesc();
+      state.paginationConfig.total = res.data.total
+      imgType.value = getEmptyImg()
+      emptyDesc.value = getEmptyDesc()
     })
     .finally(() => {
-      tableLoading.value = false;
-    });
-};
+      tableLoading.value = false
+    })
+}
 
-const noticeCall = (args) => {
-  const argObj = JSON.parse(args);
+const noticeCall = args => {
+  const argObj = JSON.parse(args)
   if (!state.taskList?.length || !argObj?.taskId) {
-    return;
+    return
   }
-  if (state.taskList.some((item) => item["id"] === argObj.taskId)) {
-    search();
+  if (state.taskList.some(item => item['id'] === argObj.taskId)) {
+    search()
   }
-};
+}
 
 onMounted(async () => {
-  useEmitt({ name: "report-notice-call", callback: noticeCall });
-  const res = await isOrgAdminApi();
-  isOrgAdmin.value = res.data;
-  search();
-});
+  useEmitt({ name: 'report-notice-call', callback: noticeCall })
+  const res = await isOrgAdminApi()
+  isOrgAdmin.value = res.data
+  search()
+})
 
 const batchDelHandler = () => {
-  ElMessageBox.confirm(t("report.batch_confirm"), {
-    confirmButtonText: t("common.delete"),
-    cancelButtonText: t("commons.cancel"),
+  ElMessageBox.confirm(t('report.batch_confirm'), {
+    confirmButtonText: t('common.delete'),
+    cancelButtonText: t('commons.cancel'),
     showCancelButton: true,
-    confirmButtonType: "danger",
-    type: "warning",
+    confirmButtonType: 'danger',
+    type: 'warning',
     autofocus: false,
-    showClose: false,
+    showClose: false
   }).then(() => {
-    tableLoading.value = true;
-    reportDelApi(map(state.multipleSelection, "id")).then(() => {
-      tableLoading.value = false;
+    tableLoading.value = true
+    reportDelApi(map(state.multipleSelection, 'id')).then(() => {
+      tableLoading.value = false
       ElMessage({
-        message: t("free.batch") + t("common.delete_success"),
-        type: "success",
-      });
-      search();
-    });
-  });
-};
+        message: t('free.batch') + t('common.delete_success'),
+        type: 'success'
+      })
+      search()
+    })
+  })
+}
 
 const handleSelectionChange = (rows: any) => {
-  state.multipleSelection = rows;
-};
+  state.multipleSelection = rows
+}
 const clearSelection = () => {
-  multipleTableRef.value?.clearSelection();
-};
+  multipleTableRef.value?.clearSelection()
+}
 
 const pageChange = (index: any) => {
-  if (typeof index !== "number") {
-    return;
+  if (typeof index !== 'number') {
+    return
   }
-  state.paginationConfig.currentPage = index;
-  search();
-};
-const sizeChange = (size) => {
-  state.paginationConfig.currentPage = 1;
-  state.paginationConfig.pageSize = size;
-  search();
-};
-const sortChange = (param) => {
-  state.orders = [];
-  if (param.order && param.prop === "lastExecTime") {
-    const type = param.order.substring(0, param.order.indexOf("ending"));
+  state.paginationConfig.currentPage = index
+  search()
+}
+const sizeChange = size => {
+  state.paginationConfig.currentPage = 1
+  state.paginationConfig.pageSize = size
+  search()
+}
+const sortChange = param => {
+  state.orders = []
+  if (param.order && param.prop === 'lastExecTime') {
+    const type = param.order.substring(0, param.order.indexOf('ending'))
     state.orders.push({
-      field: "timeDesc",
-      type: type !== "asc",
-    });
-    search();
+      field: 'timeDesc',
+      type: type !== 'asc'
+    })
+    search()
   }
-};
+}
 
 const handleAddTask = () => {
-  reportFormDialogRef.value.reportFormVisible = true;
-};
+  reportFormDialogRef.value.reportFormVisible = true
+}
 
 const taskAddVisibleClose = () => {
-  taskId.value = "";
-  reportFormDialogRef.value.reportFormVisible = false;
-};
+  taskId.value = ''
+  reportFormDialogRef.value.reportFormVisible = false
+}
 
 const refreshList = () => {
-  search();
-};
+  search()
+}
 
-const edit = (row) => {
-  taskId.value = row.id;
-  reportFormDialogRef.value.edit(taskId.value);
-};
+const edit = row => {
+  taskId.value = row.id
+  reportFormDialogRef.value.edit(taskId.value)
+}
 
-const changeStatus = (row) => {
+const changeStatus = row => {
   ElMessageBox.confirm(
-    (row.status === 2 ? t("sync_task.start") : t("sync_task.stop")) +
-      t("sync_task.task_text"),
+    (row.status === 2 ? t('sync_task.start') : t('sync_task.stop')) + t('sync_task.task_text'),
     {
-      confirmButtonText: "",
-      cancelButtonText: t("commons.cancel"),
+      confirmButtonText: '',
+      cancelButtonText: t('commons.cancel'),
       showCancelButton: true,
-      confirmButtonType: "primary",
-      type: "warning",
+      confirmButtonType: 'primary',
+      type: 'warning',
       autofocus: false,
-      showClose: false,
+      showClose: false
     }
   ).then(() => {
     if (row.status === 2) {
       reportStartApi(row.id).then(() => {
-        ElMessage.success(t("sync_task.start") + t("sync_task.status_success"));
-        search();
-      });
+        ElMessage.success(t('sync_task.start') + t('sync_task.status_success'))
+        search()
+      })
     } else {
       reportStopApi(row.id).then(() => {
-        ElMessage.success(t("sync_task.stop") + t("sync_task.status_success"));
-        search();
-      });
+        ElMessage.success(t('sync_task.stop') + t('sync_task.status_success'))
+        search()
+      })
     }
-  });
-};
+  })
+}
 
-const execute = (row) => {
-  const key = `fire-report-${row.id}`;
+const execute = row => {
+  const key = `fire-report-${row.id}`
   if (wsCache.get(key)) {
-    ElMessage.error(t("report.fire_now_tips"));
-    return;
+    ElMessage.error(t('report.fire_now_tips'))
+    return
   }
   if (row.status === 1) {
-    ElMessage.error(t("report.task_running_tips"));
-    return;
+    ElMessage.error(t('report.task_running_tips'))
+    return
   }
-  ElMessageBox.confirm(t("commons.confirm") + t("sync_task.running_one"), {
-    confirmButtonText: t("commons.confirm"),
-    cancelButtonText: t("commons.cancel"),
+  ElMessageBox.confirm(t('commons.confirm') + t('sync_task.running_one'), {
+    confirmButtonText: t('commons.confirm'),
+    cancelButtonText: t('commons.cancel'),
     showCancelButton: true,
-    confirmButtonType: "primary",
-    type: "warning",
+    confirmButtonType: 'primary',
+    type: 'warning',
     autofocus: false,
-    showClose: false,
+    showClose: false
   }).then(() => {
-    wsCache.set(key, 1, { exp: 5 });
+    wsCache.set(key, 1, { exp: 5 })
     reportFireApi(row.id).then(() => {
-      ElMessage.success(t("report.start_success"));
-      search();
-    });
-  });
-};
+      ElMessage.success(t('report.start_success'))
+      search()
+    })
+  })
+}
 
-const delHandler = (row) => {
-  ElMessageBox.confirm(t("data_source.sure_to_delete"), {
-    confirmButtonText: t("commons.delete"),
-    cancelButtonText: t("commons.cancel"),
+const delHandler = row => {
+  ElMessageBox.confirm(t('data_source.sure_to_delete'), {
+    confirmButtonText: t('commons.delete'),
+    cancelButtonText: t('commons.cancel'),
     showCancelButton: true,
-    confirmButtonType: "danger",
-    type: "warning",
+    confirmButtonType: 'danger',
+    type: 'warning',
     autofocus: false,
-    showClose: false,
+    showClose: false
   }).then(() => {
-    tableLoading.value = true;
+    tableLoading.value = true
     reportDelApi([row.id]).then(() => {
-      tableLoading.value = false;
-      ElMessage.success(t("commons.delete_success"));
-      search();
-    });
-  });
-};
+      tableLoading.value = false
+      ElMessage.success(t('commons.delete_success'))
+      search()
+    })
+  })
+}
 
-const jobLogDetailRef = ref();
-const showLogDetail = (row) => {
-  jobLogDetailRef.value.jobLogDetailVisible = true;
-  jobLogDetailRef.value?.startInterval(null, row.id);
-};
+const jobLogDetailRef = ref()
+const showLogDetail = row => {
+  jobLogDetailRef.value.jobLogDetailVisible = true
+  jobLogDetailRef.value?.startInterval(null, row.id)
+}
 
 const jobLogDetailVisibleClose = () => {
-  jobLogDetailRef.value.jobLogDetailVisible = false;
-};
+  jobLogDetailRef.value.jobLogDetailVisible = false
+}
 
 const drawerMainOpen = async () => {
   if (!isOrgAdmin.value && filterOption.length === 4) {
-    filterOption.splice(0, 1);
+    filterOption.splice(0, 1)
   } else if (isOrgAdmin.value && filterOption.length === 3) {
     filterOption.splice(0, 0, {
-      type: "select",
+      type: 'select',
       option: [],
-      field: "uidList",
-      title: t("report.creator"),
-      operate: "in",
+      field: 'uidList',
+      title: t('report.creator'),
+      operate: 'in',
       property: {
-        placeholder: t("report.creator"),
-      },
-    });
-    const res = await queryAllSubjectsApi(0);
-    let options = res.data;
+        placeholder: t('report.creator')
+      }
+    })
+    const res = await queryAllSubjectsApi(0)
+    let options = res.data
     if (!options) {
-      options = [];
+      options = []
     }
     /*options.splice(0, 0, {
       id: "1",
       name: "管理员",
     });*/
-    filterOption[0].option = options;
+    filterOption[0].option = options
   }
 
-  drawerMainRef.value.init();
-};
+  drawerMainRef.value.init()
+}
 const drawerMainClose = () => {
-  drawerMainRef.value.close();
-};
+  drawerMainRef.value.close()
+}
 </script>
 <template>
   <div
     :class="!!state.multipleSelection.length && 'report-table-selection'"
-    class="report-table de-search-table"
+    class="report-table de-search-table report-list_table"
   >
     <el-row class="report-table__filter top-operate">
       <el-col :span="12">
-        <el-button @click="handleAddTask" type="primary">{{
-          t("sync_task.add_task")
-        }}</el-button>
+        <el-button @click="handleAddTask" type="primary">{{ t('sync_task.add_task') }}</el-button>
       </el-col>
       <el-col :span="12" class="right-filter">
-        <el-input
-          v-model="keyword"
-          clearable
-          :placeholder="t('auth.search_name')"
-          @change="search"
-        >
+        <el-input v-model="keyword" clearable :placeholder="t('auth.search_name')" @change="search">
           <template #prefix>
             <el-icon>
               <Icon name="icon_search-outline_outlined"
@@ -482,18 +467,13 @@ const drawerMainClose = () => {
         <el-button
           @click="drawerMainOpen"
           :plain="!!state.conditions.length"
-          :class="
-            state.conditions.length
-              ? 'filter-condition-button'
-              : 'filter-button'
-          "
+          :class="state.conditions.length ? 'filter-condition-button' : 'filter-button'"
         >
           <template #icon>
             <Icon name="icon-filter"><iconFilter class="svg-icon" /></Icon>
           </template>
           {{
-            t("common.filter") +
-            (state.conditions.length ? `(${state.conditions?.length})` : "")
+            t('common.filter') + (state.conditions.length ? `(${state.conditions?.length})` : '')
           }}
         </el-button>
       </el-col>
@@ -503,11 +483,7 @@ const drawerMainClose = () => {
       :total="state.paginationConfig.total"
       :filter-texts="state.filterTexts"
     ></filter-text>
-    <div
-      :class="[
-        state.filterTexts.length ? 'is-in-filter' : 'report-table__content',
-      ]"
-    >
+    <div :class="[state.filterTexts.length ? 'is-in-filter' : 'report-table__content']">
       <GridTable
         ref="multipleTableRef"
         :pagination="state.paginationConfig"
@@ -563,10 +539,7 @@ const drawerMainClose = () => {
               >
                 <Icon
                   ><component
-                    :style="
-                      'color:' +
-                      getLogStatusIcon(scope.row.lastExecStatus).color
-                    "
+                    :style="'color:' + getLogStatusIcon(scope.row.lastExecStatus).color"
                     :is="getLogStatusIcon(scope.row.lastExecStatus).icon"
                   ></component
                 ></Icon>
@@ -579,9 +552,7 @@ const drawerMainClose = () => {
                 class="error-info"
                 v-if="scope.row.lastExecStatus === 3"
               >
-                <icon name="icon-maybe_outlined"
-                  ><iconMaybe_outlined class="svg-icon"
-                /></icon>
+                <icon name="icon-maybe_outlined"><iconMaybe_outlined class="svg-icon" /></icon>
               </el-icon>
             </div>
           </template>
@@ -608,16 +579,8 @@ const drawerMainClose = () => {
             <span>{{ timestampFormatDate(scope.row.nextExecTime) }}</span>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="creator"
-          :label="t('report.creator')"
-          min-width="100"
-        />
-        <el-table-column
-          prop="createTime"
-          :label="t('report.create_time')"
-          min-width="170"
-        >
+        <el-table-column prop="creator" :label="t('report.creator')" min-width="100" />
+        <el-table-column prop="createTime" :label="t('report.create_time')" min-width="170">
           <template #default="scope">
             <span>{{ timestampFormatDate(scope.row.createTime) }}</span>
           </template>
@@ -630,24 +593,14 @@ const drawerMainClose = () => {
         >
           <template #default="scope">
             <div class="operate-icon-container">
-              <el-tooltip
-                effect="dark"
-                :content="t('commons.edit')"
-                placement="top"
-              >
+              <el-tooltip effect="dark" :content="t('commons.edit')" placement="top">
                 <el-button text @click="edit(scope.row)">
                   <template #icon>
-                    <Icon name="icon_edit_outlined"
-                      ><icon_edit_outlined class="svg-icon"
-                    /></Icon>
+                    <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
                   </template>
                 </el-button>
               </el-tooltip>
-              <el-tooltip
-                effect="dark"
-                :content="t('sync_task.running_one')"
-                placement="top"
-              >
+              <el-tooltip effect="dark" :content="t('sync_task.running_one')" placement="top">
                 <el-button text @click="execute(scope.row)">
                   <template #icon>
                     <Icon name="icon_sync-play-round_outlined"
@@ -659,7 +612,7 @@ const drawerMainClose = () => {
               <div class="icon-more">
                 <handle-more
                   class="task-handle-more"
-                  @handle-command="(cmd) => moreHandler(cmd, scope.row)"
+                  @handle-command="cmd => moreHandler(cmd, scope.row)"
                   :menu-list="getMoreList(scope.row)"
                 />
               </div>
@@ -669,24 +622,14 @@ const drawerMainClose = () => {
       </GridTable>
     </div>
   </div>
-  <div
-    v-if="state.multipleSelection.length"
-    class="bottom-bar flex-align-center"
-  >
-    <el-button
-      type="danger"
-      class="batch-delete-button"
-      plain
-      @click="batchDelHandler"
-    >
-      {{ t("sync_task.batch_del") }}
+  <div v-if="state.multipleSelection.length" class="bottom-bar flex-align-center">
+    <el-button type="danger" class="batch-delete-button" plain @click="batchDelHandler">
+      {{ t('sync_task.batch_del') }}
     </el-button>
     <span class="bottom-info">{{
-      t("sync_task.selection_info", [state.multipleSelection.length])
+      t('sync_task.selection_info', [state.multipleSelection.length])
     }}</span>
-    <el-button text @click="clearSelection">{{
-      t("sync_task.clear_button")
-    }}</el-button>
+    <el-button text @click="clearSelection">{{ t('sync_task.clear_button') }}</el-button>
   </div>
   <report-form
     ref="reportFormDialogRef"
@@ -768,7 +711,7 @@ const drawerMainClose = () => {
     color: var(--ed-color-primary) !important;
     border: 0 solid transparent;
     background-color: transparent;
-    font-family: var(--de-custom_font, "PingFang");
+    font-family: var(--de-custom_font, 'PingFang');
     font-size: 14px;
     font-weight: 400;
     line-height: 26px;

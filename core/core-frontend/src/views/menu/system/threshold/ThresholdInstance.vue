@@ -1,122 +1,117 @@
 <script setup lang="ts">
-import icon_searchOutline_outlined from "@/assets/svg/icon_search-outline_outlined.svg";
-import threshold_full from "@/assets/svg/threshold_full.svg";
-import GridTable from "@/components/grid-table/src/GridTable.vue";
-import { ElIcon } from "element-plus-secondary";
-import { Icon } from "@/components/icon-custom";
-import { onMounted, reactive, ref } from "vue";
-import { thresholdInstanceGridApi } from "./api";
-import dayjs from "dayjs";
-import { useI18n } from "@/hooks/web/useI18n";
-import { sanitizeHtml } from "@/utils/utils";
-import { TaskParam } from "./options";
+import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
+import threshold_full from '@/assets/svg/threshold_full.svg'
+import GridTable from '@/components/grid-table/src/GridTable.vue'
+import { ElIcon } from 'element-plus-secondary'
+import { Icon } from '@/components/icon-custom'
+import { onMounted, reactive, ref } from 'vue'
+import { thresholdInstanceGridApi } from './api'
+import dayjs from 'dayjs'
+import { useI18n } from '@/hooks/web/useI18n'
+import { sanitizeHtml } from '@/utils/utils'
+import { TaskParam } from './options'
 
-const { t } = useI18n();
-const keyword = ref();
-const imgType = ref();
-const tableLoading = ref(true);
-const emptyDesc = ref("");
+const { t } = useI18n()
+const keyword = ref()
+const imgType = ref()
+const tableLoading = ref(true)
+const emptyDesc = ref('')
 const getEmptyImg = (): string => {
   if (keyword.value) {
-    return "tree";
+    return 'tree'
   }
-  return "noneWhite";
-};
+  return 'noneWhite'
+}
 
 const getEmptyDesc = (): string => {
   if (keyword.value) {
-    return t("work_branch.relevant_content_found");
+    return t('work_branch.relevant_content_found')
   }
 
-  return "";
-};
-const first = ref(true);
+  return ''
+}
+const first = ref(true)
 
 const props = defineProps<{
-  task: TaskParam;
-}>();
+  task: TaskParam
+}>()
 
 const state = reactive({
   taskLogList: [],
   paginationConfig: {
     currentPage: 1,
     pageSize: 10,
-    total: 0,
+    total: 0
   },
   conditions: [],
-  multipleSelection: [],
-});
+  multipleSelection: []
+})
 
 const buildParam = () => {
-  const param = {};
+  const param = {}
   if (props?.task?.taskId && first.value) {
-    param["thresholdId"] = props.task.taskId;
-    keyword.value = props.task.taskName;
+    param['thresholdId'] = props.task.taskId
+    keyword.value = props.task.taskName
   }
   if (keyword.value) {
-    param["keyword"] = keyword.value;
+    param['keyword'] = keyword.value
   }
-  return param;
-};
+  return param
+}
 const search = () => {
-  const param = buildParam();
-  tableLoading.value = true;
+  const param = buildParam()
+  tableLoading.value = true
   thresholdInstanceGridApi(
     state.paginationConfig.currentPage,
     state.paginationConfig.pageSize,
     param
   )
-    .then((res) => {
-      state.taskLogList = res.data.records;
-      if (
-        state.paginationConfig.currentPage > 1 &&
-        state.taskLogList.length === 0
-      ) {
-        state.paginationConfig.currentPage--;
-        search();
+    .then(res => {
+      state.taskLogList = res.data.records
+      if (state.paginationConfig.currentPage > 1 && state.taskLogList.length === 0) {
+        state.paginationConfig.currentPage--
+        search()
       }
-      state.paginationConfig.total = res.data.total;
-      imgType.value = getEmptyImg();
-      emptyDesc.value = getEmptyDesc();
+      state.paginationConfig.total = res.data.total
+      imgType.value = getEmptyImg()
+      emptyDesc.value = getEmptyDesc()
     })
     .finally(() => {
-      tableLoading.value = false;
-    });
-};
+      tableLoading.value = false
+    })
+}
 const keywordChange = () => {
-  first.value = false;
-  search();
-};
+  first.value = false
+  search()
+}
 onMounted(() => {
-  search();
-});
+  search()
+})
 
 const pageChange = (index: any) => {
-  if (typeof index !== "number") {
-    return;
+  if (typeof index !== 'number') {
+    return
   }
-  state.paginationConfig.currentPage = index;
-  search();
-};
-const sizeChange = (size) => {
-  state.paginationConfig.currentPage = 1;
-  state.paginationConfig.pageSize = size;
-  search();
-};
-const timestampFormatDate = (value) => {
+  state.paginationConfig.currentPage = index
+  search()
+}
+const sizeChange = size => {
+  state.paginationConfig.currentPage = 1
+  state.paginationConfig.pageSize = size
+  search()
+}
+const timestampFormatDate = value => {
   if (!value) {
-    return "-";
+    return '-'
   }
-  return dayjs(new Date(value)).format("YYYY-MM-DD HH:mm:ss");
-};
+  return dayjs(new Date(value)).format('YYYY-MM-DD HH:mm:ss')
+}
 </script>
 
 <template>
   <div
-    :class="
-      !!state.multipleSelection.length && 'report-instance-table-selection'
-    "
-    class="report-instance-table de-search-table"
+    :class="!!state.multipleSelection.length && 'report-instance-table-selection'"
+    class="report-instance-table de-search-table threshold-warn_table"
   >
     <el-row class="report-instance-table__filter top-operate">
       <el-col :span="12">
@@ -160,28 +155,17 @@ const timestampFormatDate = (value) => {
           width="220"
         />
 
-        <el-table-column
-          prop="execTime"
-          :label="t('threshold.detection_time')"
-          width="175"
-        >
+        <el-table-column prop="execTime" :label="t('threshold.detection_time')" width="175">
           <template #default="scope">
             <span>{{ timestampFormatDate(scope.row.execTime) }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column
-          key="status"
-          prop="status"
-          :label="t('threshold.status')"
-          width="105"
-        >
+        <el-table-column key="status" prop="status" :label="t('threshold.status')" width="105">
           <template #default="scope">
             <span v-if="scope.row.status">
               <el-icon>
-                <Icon name="threshold_full"
-                  ><threshold_full class="svg-icon"
-                /></Icon>
+                <Icon name="threshold_full"><threshold_full class="svg-icon" /></Icon>
               </el-icon>
             </span>
             <span v-else />

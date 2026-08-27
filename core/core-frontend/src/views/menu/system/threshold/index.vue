@@ -4,7 +4,7 @@
     <el-tab-pane :label="t('threshold.grid')" name="threshold"></el-tab-pane>
     <el-tab-pane :label="t('threshold.record')" name="instance"></el-tab-pane>
   </el-tabs>
-  <threshold-grid v-if="activeName === 'threshold'" @open-task-Log="openTaskLog"/>
+  <threshold-grid v-if="activeName === 'threshold'" @open-task-Log="openTaskLog" />
   <threshold-instance :task="taskParam" ref="thresholdInstance" v-else />
 </template>
 <script lang="ts" setup>
@@ -31,13 +31,12 @@ const openTaskLog = (task: TaskParam) => {
 
 <style lang="less" scoped>
 .threshold-title {
-  color: #1F2329;
+  color: #1f2329;
   font-feature-settings: 'clig' off, 'liga' off;
   font-family: var(--de-custom_font, 'PingFang');
   font-size: 20px;
   font-style: normal;
   font-weight: 500;
-  line-height: 28px; 
+  line-height: 28px;
 }
-
 </style>
