@@ -659,12 +659,18 @@ export abstract class G2ChartView<
       }
     }
     if (position === 'left' || position === 'right') {
+      const direction = position === 'left' ? 1 : -1
       return {
         ...opacityStyle,
         labelSpacing: 4 + (fontSize * rotateRatio) / 2,
         labelTextAlign: position === 'left' ? 'right' : 'left',
         labelTextBaseline: 'middle',
-        labelTransform: `rotate(${rotate})`
+        labelTransform: value => {
+          // 保留靠近轴线的端点锚点，并沿刻度方向补偿旋转后的半个文本投影
+          const offset =
+            (direction * measureAxisLabelWidth(value, fontSize) * Math.sin(rotateRadian)) / 2
+          return `translate(0, ${offset.toFixed(2)}px) rotate(${rotate})`
+        }
       }
     }
     return { ...opacityStyle, labelTransform: `rotate(${rotate})` }

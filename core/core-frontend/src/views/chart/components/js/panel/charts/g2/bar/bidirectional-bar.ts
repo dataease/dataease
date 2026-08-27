@@ -184,11 +184,18 @@ export class BidirectionalHorizontalBar extends G2ChartView {
     return this.getChartOptions(options)?.children || []
   }
 
-  private getValueAxis(axis: DeepPartial<ChartAxisStyle>) {
+  private getValueAxis(axis: DeepPartial<ChartAxisStyle>, hideInnerBaselineLabel = false) {
     const axisOption = this.getAxis(axis)
     const originLabelFormatter = axisOption.labelFormatter
+    const configuredBaseline = Number(axis.axisValue.min)
+    const baseline =
+      axis.axisValue.auto === false && Number.isFinite(configuredBaseline) ? configuredBaseline : 0
     // 两个数值轴都在数值格式化后按各自配置截断刻度文本
     axisOption.labelFormatter = value => {
+      // 共享中线的基线文字直接隐藏，刻度线、网格线和手动范围保持原配置
+      if (hideInnerBaselineLabel && Number(value) === baseline) {
+        return ''
+      }
       const label = typeof originLabelFormatter === 'function' ? originLabelFormatter(value) : value
       return formatAxisLabelWithLengthLimit(label, axis.axisLabel.lengthLimit)
     }
@@ -198,6 +205,21 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       ...axisOption,
       labelAutoHide: true,
       labelAutoRotate: false
+    }
+  }
+
+  private getCenteredCategoryAxisLabelStyle(axis: DeepPartial<ChartAxisStyle>) {
+    const rotate = Number(axis.axisLabel.rotate) || 0
+    const rotateRatio = Math.sin(Math.abs((rotate * Math.PI) / 180))
+    const fontSize = axis.axisLabel.fontSize || 12
+    return {
+      labelOpacity: 1,
+      labelFillOpacity: 1,
+      labelSpacing: 4 + (fontSize * rotateRatio) / 2,
+      labelTextAlign: 'center',
+      labelTextBaseline: 'middle',
+      // 中轴始终以文字中心为旋转原点，使文字中心落在对应刻度上
+      labelTransform: `rotate(${rotate})`
     }
   }
 
@@ -566,9 +588,21 @@ export class BidirectionalHorizontalBar extends G2ChartView {
     }
     const visibleCategoryAxisLabel = !chart.dashboardHidden && xAxis.axisLabel.show
     const centerAxisLabel = visibleCategoryAxisLabel && xAxis.position === 'bottom'
+    const centeredVerticalCategoryAxis = centerAxisLabel && basicStyle.layout === 'horizontal'
+    const categoryAxisRotate = Number(xAxis.axisLabel.rotate) || 0
+    const rotatedCategoryAxisHasVerticalProjection =
+      Math.abs(Math.sin((categoryAxisRotate * Math.PI) / 180)) > 0.001
+    const keepCategoryAxisLabelInsidePlot =
+      visibleCategoryAxisLabel &&
+      basicStyle.layout === 'horizontal' &&
+      (centeredVerticalCategoryAxis || rotatedCategoryAxisHasVerticalProjection)
     // 上下对称布局中的类目文字横向排列，最左和最右文字确实可能伸出画布，需要修正左右边界
-    // 左右对称布局中的类目文字纵向落在各自带宽中心，额外修正上下 padding 会重复压缩 Plot 高度
-    const protectCategoryAxisBoundary = visibleCategoryAxisLabel && basicStyle.layout === 'vertical'
+    const protectCategoryAxisBoundary =
+      visibleCategoryAxisLabel &&
+      (basicStyle.layout === 'vertical' || keepCategoryAxisLabelInsidePlot)
+    const categoryAxisLabelStyle = centeredVerticalCategoryAxis
+      ? this.getCenteredCategoryAxisLabelStyle(xAxis)
+      : this.getAxisLabelStyle({ ...xAxis, position })
     const axisStyle = {
       axis: {
         x: {
@@ -576,8 +610,12 @@ export class BidirectionalHorizontalBar extends G2ChartView {
           // 类目轴只修正沿刻度排列方向的首尾越界，居中偏移仍然只用于共享中轴
           dataeaseAxisLabelOverflow: protectCategoryAxisBoundary ? undefined : false,
           dataeaseAxisLabelOverflowSides: protectCategoryAxisBoundary
-            ? ['left', 'right']
+            ? basicStyle.layout === 'vertical'
+              ? ['left', 'right']
+              : ['top', 'bottom']
             : undefined,
+          // 中轴及旋转后的外置分类轴只显示完整落在 Plot 内的文字
+          dataeaseAxisLabelInsidePlot: keepCategoryAxisLabelInsidePlot ? true : undefined,
           dataeaseAxisLabelCenter: centerAxisLabel ? 'visible' : undefined,
           // 轴组件间距继续使用 G2 布局的统一处理，不在业务图表重复覆盖
           position: position,
@@ -599,7 +637,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
           gridStrokeOpacity: 1,
           gridLineWidth: xAxis.splitLine.lineStyle.width,
           gridLineDash,
-          ...this.getAxisLabelStyle({ ...xAxis, position }),
+          ...categoryAxisLabelStyle,
           transform: [
             {
               type: 'hide',
@@ -628,7 +666,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
     }
     if (reserveHiddenCenterLabel) {
       // 相邻子图使用透明文字取得相同尺寸，再由公共布局各保留半份空间
-      merge(secondXAxis, {
+      merge(secondXAxis, categoryAxisLabelStyle, {
         label: true,
         labelOpacity: 0,
         labelFillOpacity: 0,
@@ -673,8 +711,9 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       secondMark.axis.y = false
       return options
     }
-    const yAxisOption = this.getValueAxis(yAxis)
-    const yAxisExtOption = this.getValueAxis(yAxisExt)
+    const hideInnerBaselineLabel = basicStyle.layout === 'horizontal'
+    const yAxisOption = this.getValueAxis(yAxis, hideInnerBaselineLabel)
+    const yAxisExtOption = this.getValueAxis(yAxisExt, hideInnerBaselineLabel)
     if (
       yAxisOption.label &&
       yAxisExtOption.label &&

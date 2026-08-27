@@ -800,6 +800,31 @@ const getAxisLabelGap = (position: AxisPosition, margin: unknown) => {
 }
 
 /**
+ * 只保留完整落在 Plot 内部的标签
+ *
+ * 对称条形图的分类轴会和相交的数值轴、标题或图例共享画布边缘
+ * 使用最终旋转 BBox 判断可见性，因此正负角度不需要分别推断越界方向
+ */
+const filterLabelsInsidePlot = (
+  labels: PositionedLabel[],
+  position: AxisPosition,
+  layout: Layout
+) => {
+  const horizontal = position === 'top' || position === 'bottom'
+  const start = horizontal
+    ? layout.marginLeft + layout.paddingLeft + layout.insetLeft + SAFE_SPACING
+    : layout.marginTop + layout.paddingTop + layout.insetTop + SAFE_SPACING
+  const end = horizontal
+    ? layout.width - layout.marginRight - layout.paddingRight - layout.insetRight - SAFE_SPACING
+    : layout.height - layout.marginBottom - layout.paddingBottom - layout.insetBottom - SAFE_SPACING
+  return labels.filter(({ bounds }) => {
+    const labelStart = horizontal ? bounds.x : bounds.y
+    const labelEnd = labelStart + (horizontal ? bounds.width : bounds.height)
+    return labelStart >= start && labelEnd <= end
+  })
+}
+
+/**
  * 按标签旋转后的真实区间顺序保留不相交标签
  *
  * 每个角度、字号和文本都会直接生成连续变化的 BBox，不设置角度或字号档位
@@ -1069,23 +1094,32 @@ const measureAxisOverflow = (
     }
   })
   const visibleLabels = positionedLabels.filter((label): label is PositionedLabel => !!label)
+  const labelsInsideBoundary =
+    component.dataeaseAxisLabelInsidePlot === true
+      ? filterLabelsInsidePlot(visibleLabels, position, layout)
+      : visibleLabels
   const vertical = position === 'left' || position === 'right'
   const previousIndexes = measurement.sampledIndexes
   // 只有左右轴会在 Plot 收缩后继续检查，横轴保留原有的一次抽样行为
   const candidates = previousIndexes
-    ? visibleLabels.filter(label => previousIndexes.has(label.index))
-    : visibleLabels
+    ? labelsInsideBoundary.filter(label => previousIndexes.has(label.index))
+    : labelsInsideBoundary
   const sampledLabels =
     previousIndexes && !vertical
       ? candidates
       : getSampledLabels(component, candidates, position, layout)
   const sampledIndexes = new Set(sampledLabels.map(({ index }) => index))
-  const sampledThisPass = sampledLabels.length < candidates.length
+  const sampledThisPass =
+    sampledLabels.length < candidates.length || labelsInsideBoundary.length < visibleLabels.length
   measurement.sampledIndexes = sampledIndexes
   measurement.sampled = sampledLabels.length < visibleLabels.length
   measurement.positionedLabels = sampledLabels
   const managedAutoHide = managedAxisAutoHide.has(component)
-  if (managedAutoHide || sampledLabels.length === 1) {
+  if (
+    managedAutoHide ||
+    component.dataeaseAxisLabelInsidePlot === true ||
+    sampledLabels.length === 1
+  ) {
     applyAxisTickIndexes(
       component,
       getOriginalAxisTickFilter(component),
