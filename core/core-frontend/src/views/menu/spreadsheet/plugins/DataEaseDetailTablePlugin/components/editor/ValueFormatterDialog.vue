@@ -97,6 +97,7 @@ const confirm = () => {
     :model-value="modelValue"
     :title="`数值格式 - ${fieldName}`"
     width="480px"
+    append-to-body
     destroy-on-close
     @close="close"
   >
