@@ -621,9 +621,10 @@ public class ChartViewThresholdManage {
                 } else if (StringUtils.equals(term, "not_in")) {
                     return !Arrays.stream(item.getValue().split(",")).toList().contains(valueObj.toString());
                 } else if (StringUtils.equals(term, "like")) {
-                    return StringUtils.contains(item.getValue(), valueObj.toString());
+                    // 与 SQL 侧 field LIKE '%value%' 语义保持一致：行字段值包含配置的过滤值
+                    return StringUtils.contains(valueObj.toString(), item.getValue());
                 } else if (StringUtils.equals(term, "not_like")) {
-                    return !StringUtils.contains(item.getValue(), valueObj.toString());
+                    return !StringUtils.contains(valueObj.toString(), item.getValue());
                 } else if (StringUtils.equals(term, "null")) {
                     return false;
                 } else if (StringUtils.equals(term, "not_null")) {
