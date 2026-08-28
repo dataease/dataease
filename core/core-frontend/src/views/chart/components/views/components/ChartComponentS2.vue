@@ -220,6 +220,47 @@ const handleDefaultVal = (chart: Chart) => {
     }
   }
 }
+// 样式配置触发本地重绘时 view 不包含接口返回的下钻状态
+const restoreDrillState = (chart: ChartObj) => {
+  if (chart.drill === true && chart.drillFilters?.length) {
+    return
+  }
+  const drillRequests = chart.chartExtRequest?.drill ?? []
+  const drillFields = chart.drillFields ?? []
+  if (!drillRequests.length || drillRequests.length >= drillFields.length) {
+    return
+  }
+
+  // 请求层级、配置字段与返回数据必须同时匹配
+  const entryField = drillFields[0]
+  const currentDrillField = drillFields[drillRequests.length]
+  const entryFieldExists = chart.xAxis?.some(field => String(field.id) === String(entryField?.id))
+  const currentFieldExists = chart.data?.fields?.some(
+    field => String(field.id) === String(currentDrillField?.id)
+  )
+  if (!entryFieldExists || !currentFieldExists) {
+    return
+  }
+
+  const restoredFilters: Filter[] = []
+  for (let index = 0; index < drillRequests.length; index++) {
+    const drillField = drillFields[index]
+    const dimension = drillRequests[index].dimensionList?.find(
+      item => String(item.id) === String(drillField?.id)
+    )
+    if (!dimension || !drillField) {
+      return
+    }
+    restoredFilters.push({
+      fieldId: String(dimension.id),
+      datasetTableField: drillField
+    })
+  }
+
+  // 完整校验后整体恢复，避免产生半有效的下钻状态
+  chart.drill = true
+  chart.drillFilters = restoredFilters
+}
 const renderChart = (viewInfo: Chart, resetPageInfo?: boolean) => {
   if (!viewInfo) {
     return Promise.resolve()
@@ -232,6 +273,8 @@ const renderChart = (viewInfo: Chart, resetPageInfo?: boolean) => {
     fontFamily: props.fontFamily
   } as ChartObj)
 
+  // 在样式转换前恢复，确保表格按当前下钻层级构造列
+  restoreDrillState(actualChart)
   recursionTransObj(customAttrTrans, actualChart.customAttr, scale.value, terminal.value)
   recursionTransObj(customStyleTrans, actualChart.customStyle, scale.value, terminal.value)
 
