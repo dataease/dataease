@@ -4,6 +4,7 @@ import {
   getFieldNumberFormat,
   toNativeCellValue
 } from '../utils/field-format'
+import { sortPivotDimensionTuples } from '../utils/pivot-axis-sort'
 import type { FieldItemData } from '../../../types/plugin'
 import type {
   PivotTableConfig,
@@ -202,9 +203,12 @@ export class PivotTableLayoutService {
       return []
     }
 
-    const dimensionTuples = this.uniqueDimensionTuples(dimensionFields, records)
     const configuredDimensionFields = dimensionFields.map(field =>
       findConfiguredField(configuredFields, field) ?? field
+    )
+    const dimensionTuples = sortPivotDimensionTuples(
+      configuredDimensionFields,
+      this.uniqueDimensionTuples(dimensionFields, records)
     )
     // 完整维度元组继续用于轴定位，标签和合并键只保留实际展示的层级。
     const visibleDimensionIndexes = configuredDimensionFields
