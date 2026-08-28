@@ -376,6 +376,10 @@ public class EngineManage {
             config.put("dataBase", "");
             config.put("username", env.getProperty("spring.datasource.username"));
             config.put("password", env.getProperty("spring.datasource.password"));
+            config.put("initialPoolSize", "50");
+            config.put("minPoolSize", "50");
+            config.put("maxPoolSize", "100");
+            config.put("queryTimeout", "30");
             return config;
         }
     }
