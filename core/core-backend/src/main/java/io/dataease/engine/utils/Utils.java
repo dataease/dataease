@@ -581,9 +581,9 @@ public class Utils {
                 Utils.validateSqlInjectionRisk(fieldGroupDTO.getEndTime());
 
                 exp.append(" WHEN ");
-                exp.append(fieldName).append(" >= ").append("'").append(fieldGroupDTO.getStartTime()).append("'");
+                exp.append(fieldName).append(" >= ").append(String.format(SQLConstants.DE_STR_TO_DATE, "'" + fieldGroupDTO.getStartTime() + "'", SQLConstants.DEFAULT_DATE_FORMAT));
                 exp.append(" AND ");
-                exp.append(fieldName).append(" <= ").append("'").append(fieldGroupDTO.getEndTime()).append("'");
+                exp.append(fieldName).append(" <= ").append(String.format(SQLConstants.DE_STR_TO_DATE, "'" + fieldGroupDTO.getEndTime() + "'", SQLConstants.DEFAULT_DATE_FORMAT));
                 exp.append(" THEN '").append(nPrefix).append(transValue(fieldGroupDTO.getName())).append("'");
             }
         } else if (originField.getDeType() == 2 || originField.getDeType() == 3 || originField.getDeType() == 4) {
