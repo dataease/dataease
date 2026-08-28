@@ -17,19 +17,19 @@ public class DemoTeaOrder {
     @Column(name = "\"id\"", nullable = false)
     private Integer id;
 
-    @Column(name = "\"shop\"", length = 16777216)
+    @Column(name = "\"shop\"")
     private String shop;
 
-    @Column(name = "\"product_line\"", length = 16777216)
+    @Column(name = "\"product_line\"")
     private String productLine;
 
-    @Column(name = "\"dish_name\"", length = 16777216)
+    @Column(name = "\"dish_name\"")
     private String dishName;
 
-    @Column(name = "\"temperature\"", length = 16777216)
+    @Column(name = "\"temperature\"")
     private String temperature;
 
-    @Column(name = "\"specification\"", length = 16777216)
+    @Column(name = "\"specification\"")
     private String specification;
 
     @Column(name = "\"sales_quantity\"")
@@ -38,7 +38,7 @@ public class DemoTeaOrder {
     @Column(name = "\"unit_price\"")
     private Long unitPrice;
 
-    @Column(name = "\"bill_number\"", length = 16777216)
+    @Column(name = "\"bill_number\"")
     private String billNumber;
 
     @Column(name = "\"sales_date\"")
