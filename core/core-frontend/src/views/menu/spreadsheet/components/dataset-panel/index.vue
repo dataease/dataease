@@ -52,16 +52,86 @@ const lastLoadedDatasetKey = ref('')
 const searchKeyword = ref('')
 
 // 拖拽分隔线相关
+type ScrollbarExpose = {
+  update: () => void
+}
+
+type FieldListLayout = {
+  contentTop: number
+  sectionHeight: number
+}
+
+const DEFAULT_DIMENSION_RATIO = 0.6
+const MIN_FIELD_SECTION_HEIGHT = 60
 const isDragging = ref(false)
 const dimensionHeight = ref(200) // 维度区域默认高度
-const minHeight = 60 // 最小高度
 const fieldListRef = ref<HTMLElement>()
-const totalHeight = ref(400)
+const dimensionScrollbarRef = ref<ScrollbarExpose>()
+const quotaScrollbarRef = ref<ScrollbarExpose>()
+let fieldListResizeObserver: ResizeObserver | undefined
+let fieldListInitialized = false
 
-// 计算指标区域高度
-const quotaHeight = computed(() => {
-  return Math.max(minHeight, totalHeight.value - dimensionHeight.value - 12) // 12是分隔线高度
-})
+const parsePixel = (value: string) => Number.parseFloat(value) || 0
+
+const getFieldListLayout = (): FieldListLayout | undefined => {
+  const fieldList = fieldListRef.value
+  if (!fieldList) return
+
+  const fieldListStyle = window.getComputedStyle(fieldList)
+  const paddingTop = parsePixel(fieldListStyle.paddingTop)
+  const paddingBottom = parsePixel(fieldListStyle.paddingBottom)
+  const divider = fieldList.querySelector<HTMLElement>('.divider-drag')
+  let dividerOuterHeight = 0
+
+  if (divider) {
+    const dividerStyle = window.getComputedStyle(divider)
+    dividerOuterHeight =
+      divider.offsetHeight +
+      parsePixel(dividerStyle.marginTop) +
+      parsePixel(dividerStyle.marginBottom)
+  }
+
+  // 维度和指标只分配字段区内容高度，不能把 padding 和分隔条重复计入滚动区域。
+  const sectionHeight = Math.max(
+    0,
+    fieldList.clientHeight - paddingTop - paddingBottom - dividerOuterHeight
+  )
+  const contentTop = fieldList.getBoundingClientRect().top + paddingTop
+  return { contentTop, sectionHeight }
+}
+
+const clampDimensionHeight = (height: number, sectionHeight: number) => {
+  const maxHeight = Math.max(
+    MIN_FIELD_SECTION_HEIGHT,
+    sectionHeight - MIN_FIELD_SECTION_HEIGHT
+  )
+  return Math.max(MIN_FIELD_SECTION_HEIGHT, Math.min(maxHeight, height))
+}
+
+const updateFieldScrollbars = () => {
+  nextTick(() => {
+    dimensionScrollbarRef.value?.update()
+    quotaScrollbarRef.value?.update()
+  })
+}
+
+const syncFieldListLayout = () => {
+  const layout = getFieldListLayout()
+  if (!layout || layout.sectionHeight <= 0) return
+
+  if (!fieldListInitialized) {
+    dimensionHeight.value = clampDimensionHeight(
+      Math.floor(layout.sectionHeight * DEFAULT_DIMENSION_RATIO),
+      layout.sectionHeight
+    )
+    fieldListInitialized = true
+  } else {
+    dimensionHeight.value = clampDimensionHeight(dimensionHeight.value, layout.sectionHeight)
+  }
+
+  // Element Plus 只监听内容尺寸，父级分区变化后需要主动同步滚动条轨道。
+  updateFieldScrollbars()
+}
 
 // 开始拖拽
 const startDrag = (e: MouseEvent) => {
@@ -71,13 +141,14 @@ const startDrag = (e: MouseEvent) => {
 
 // 处理拖拽
 const handleDrag = (e: MouseEvent) => {
-  if (!isDragging.value || !fieldListRef.value) return
-  
-  const rect = fieldListRef.value.getBoundingClientRect()
-  const newHeight = e.clientY - rect.top
-  const maxHeight = totalHeight.value - minHeight - 12
-  
-  dimensionHeight.value = Math.max(minHeight, Math.min(maxHeight, newHeight))
+  if (!isDragging.value) return
+
+  const layout = getFieldListLayout()
+  if (!layout) return
+
+  const newHeight = e.clientY - layout.contentTop
+  dimensionHeight.value = clampDimensionHeight(newHeight, layout.sectionHeight)
+  updateFieldScrollbars()
 }
 
 // 停止拖拽
@@ -89,19 +160,33 @@ const stopDrag = () => {
 onMounted(() => {
   document.addEventListener('mousemove', handleDrag)
   document.addEventListener('mouseup', stopDrag)
-  
-  // 获取总高度
+
+  fieldListResizeObserver = new ResizeObserver(syncFieldListLayout)
   if (fieldListRef.value) {
-    totalHeight.value = fieldListRef.value.clientHeight
-    // 默认维度占60%
-    dimensionHeight.value = Math.floor(totalHeight.value * 0.6)
+    fieldListResizeObserver.observe(fieldListRef.value)
   }
+  syncFieldListLayout()
 })
 
 onUnmounted(() => {
   document.removeEventListener('mousemove', handleDrag)
   document.removeEventListener('mouseup', stopDrag)
+  fieldListResizeObserver?.disconnect()
 })
+
+watch(
+  fieldListRef,
+  (fieldList, previousFieldList) => {
+    if (previousFieldList) {
+      fieldListResizeObserver?.unobserve(previousFieldList)
+    }
+    if (!fieldList) return
+
+    fieldListResizeObserver?.observe(fieldList)
+    nextTick(syncFieldListLayout)
+  },
+  { flush: 'post' }
+)
 
 // 维度和指标数据（从数据集加载）
 const dimensionFields = ref<FieldItemData[]>([])
@@ -569,7 +654,7 @@ const toggleCollapsed = () => {
       <div ref="fieldListRef" class="field-list" :class="{ 'is-dragging': isDragging }">
         <div class="dimension-section" :style="{ height: dimensionHeight + 'px' }">
           <div class="group-title">维度</div>
-          <el-scrollbar class="field-items-scrollbar">
+          <el-scrollbar ref="dimensionScrollbarRef" class="field-items-scrollbar">
             <div class="field-items">
               <div
                 v-for="(field, index) in filteredDimensionFields"
@@ -595,9 +680,9 @@ const toggleCollapsed = () => {
           <div class="divider-line"></div>
         </div>
 
-        <div class="quota-section" :style="{ height: quotaHeight + 'px' }">
+        <div class="quota-section">
           <div class="group-title">指标</div>
-          <el-scrollbar class="field-items-scrollbar">
+          <el-scrollbar ref="quotaScrollbarRef" class="field-items-scrollbar">
             <div class="field-items">
               <div
                 v-for="(field, index) in filteredQuotaFields"
@@ -781,6 +866,7 @@ const toggleCollapsed = () => {
     flex: 1;
     display: flex;
     flex-direction: column;
+    min-height: 0;
     overflow: hidden;
     padding: 12px 16px;
     
@@ -805,7 +891,9 @@ const toggleCollapsed = () => {
       }
       
       .field-items-scrollbar {
-        flex: 1;
+        flex: 1 1 0;
+        height: 0;
+        min-height: 0;
         overflow: hidden;
       }
       
@@ -817,11 +905,11 @@ const toggleCollapsed = () => {
     }
     
     .dimension-section {
-      flex-shrink: 0;
+      flex: 0 0 auto;
     }
     
     .quota-section {
-      flex-shrink: 0;
+      flex: 1 1 0;
     }
     
     .divider-drag {
