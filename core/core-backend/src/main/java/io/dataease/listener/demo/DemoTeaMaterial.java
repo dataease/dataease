@@ -11,22 +11,22 @@ import java.util.Date;
 @Setter
 @Comment("连锁茶饮销售看板demo数据")
 @Entity
-@Table(name = "demo_tea_material")
+@Table(name = "\"demo_tea_material\"")
 public class DemoTeaMaterial {
     @Id
-    @Column(name = "id", nullable = false)
+    @Column(name = "\"id\"", nullable = false)
     private Integer id;
 
-    @Column(name = "date")
+    @Column(name = "\"date\"")
     private Date date;
 
-    @Column(name = "shop", length = 16777216)
+    @Column(name = "\"shop\"", length = 16777216)
     private String shop;
 
-    @Column(name = "purpose", length = 16777216)
+    @Column(name = "\"purpose\"", length = 16777216)
     private String purpose;
 
-    @Column(name = "amount")
+    @Column(name = "\"amount\"")
     private Long amount;
 
     public DemoTeaMaterial(Integer id, Date date, String shop, String purpose, Long amount) {

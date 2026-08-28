@@ -11,37 +11,37 @@ import java.util.Date;
 @Setter
 @Comment("连锁茶饮销售看板demo数据")
 @Entity
-@Table(name = "demo_tea_order")
+@Table(name = "\"demo_tea_order\"")
 public class DemoTeaOrder {
     @Id
-    @Column(name = "id", nullable = false)
+    @Column(name = "\"id\"", nullable = false)
     private Integer id;
 
-    @Column(name = "shop", length = 16777216)
+    @Column(name = "\"shop\"", length = 16777216)
     private String shop;
 
-    @Column(name = "product_line", length = 16777216)
+    @Column(name = "\"product_line\"", length = 16777216)
     private String productLine;
 
-    @Column(name = "dish_name", length = 16777216)
+    @Column(name = "\"dish_name\"", length = 16777216)
     private String dishName;
 
-    @Column(name = "temperature", length = 16777216)
+    @Column(name = "\"temperature\"", length = 16777216)
     private String temperature;
 
-    @Column(name = "specification", length = 16777216)
+    @Column(name = "\"specification\"", length = 16777216)
     private String specification;
 
-    @Column(name = "sales_quantity")
+    @Column(name = "\"sales_quantity\"")
     private Long salesQuantity;
 
-    @Column(name = "unit_price")
+    @Column(name = "\"unit_price\"")
     private Long unitPrice;
 
-    @Column(name = "bill_number", length = 16777216)
+    @Column(name = "\"bill_number\"", length = 16777216)
     private String billNumber;
 
-    @Column(name = "sales_date")
+    @Column(name = "\"sales_date\"")
     private Date salesDate;
 
     public DemoTeaOrder(Integer id, String shop, String productLine, String dishName, String temperature,
