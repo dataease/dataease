@@ -126,12 +126,7 @@ public class ChartDataServer implements ChartDataApi {
                     }
                 });
             }
-            int exportLimit = getExcelExportLimit(request.getDownloadType());
-            if (ChartConstants.VIEW_RESULT_MODE.CUSTOM.equals(viewDTO.getResultMode()) && viewDTO.getResultCount() != null) {
-                viewDTO.setResultCount(Math.min(exportLimit, viewDTO.getResultCount()));
-            } else {
-                viewDTO.setResultCount(exportLimit);
-            }
+            viewDTO.setResultCount(getExcelExportLimit(request.getDownloadType()));
             if (CommonConstants.VIEW_DATA_FROM.TEMPLATE.equalsIgnoreCase(viewDTO.getDataFrom())) {
                 chartViewInfo = extendDataManage.getChartDataInfo(viewDTO.getId(), viewDTO);
             } else {
