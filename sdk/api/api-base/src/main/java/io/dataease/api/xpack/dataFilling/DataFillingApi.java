@@ -93,7 +93,7 @@ public interface DataFillingApi {
     @GetMapping("/form/{formId}/delete/{id}")
     void deleteRowData(@PathVariable("formId") Long formId, @PathVariable("id") String id) throws Exception;
 
-    @Operation(summary = "晴空数据填报表内数据")
+    @Operation(summary = "清空数据填报表内数据")
     @DePermit({"#p0+':manage'"})
     @GetMapping("/form/{formId}/truncate")
     void truncateRowData(@PathVariable("formId") Long formId) throws Exception;
@@ -219,7 +219,7 @@ public interface DataFillingApi {
 
     @Operation(summary = "下载数据填报表数据")
     @PostMapping("/innerExport/{isDataEaseBi}/{formId}")
-    void innerExport(@PathVariable("formId") Long formId, @PathVariable("isDataEaseBi") boolean isDataEaseBi, HttpServletResponse response) throws Exception;
+    void innerExport(@PathVariable("formId") Long formId, @PathVariable("isDataEaseBi") boolean isDataEaseBi, @RequestBody DataFillFormTableDataBaseRequest request, HttpServletResponse response) throws Exception;
 
     @PostMapping("getBuiltInTables")
     @Operation(summary = "获取内置数据源表")
