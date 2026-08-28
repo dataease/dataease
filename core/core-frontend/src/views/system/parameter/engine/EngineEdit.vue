@@ -189,6 +189,12 @@ const defaultInfo = {
   weight: 0
 }
 const nodeInfo = reactive(cloneDeep(defaultInfo))
+const handleTypeChange = () => {
+  nodeInfo.configuration = cloneDeep(defaultInfo.configuration)
+  schemas.value = []
+  showSchema.value = false
+  basicForm.value?.clearValidate()
+}
 const edit = () => {
   loadDsPlugin()
   getDeEngine()
@@ -344,7 +350,7 @@ defineExpose({
       label-position="top"
     >
       <el-form-item :label="t('datasource.type')">
-        <el-select v-model="nodeInfo.type" class="de-select">
+        <el-select v-model="nodeInfo.type" class="de-select" @change="handleTypeChange">
           <el-option
             v-for="item in engineTypes"
             :key="item.type"
