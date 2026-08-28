@@ -588,7 +588,7 @@ public class Utils {
                 }
                 exp.append(" AND ");
                 if (StringUtils.equalsIgnoreCase(datasourceType.getType(), "oracle")) {
-                    exp.append(fieldName).append(" >= ").append("TO_TIMESTAMP('").append(fieldGroupDTO.getEndTime()).append("', 'YYYY-MM-DD HH24:MI:SS')");
+                    exp.append(fieldName).append(" <= ").append("TO_TIMESTAMP('").append(fieldGroupDTO.getEndTime()).append("', 'YYYY-MM-DD HH24:MI:SS')");
                 } else {
                     exp.append(fieldName).append(" <= ").append("'").append(fieldGroupDTO.getEndTime()).append("'");
                 }
