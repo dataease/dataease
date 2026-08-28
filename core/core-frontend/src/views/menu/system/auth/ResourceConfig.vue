@@ -372,6 +372,19 @@ const setRootRoleStyle = () => {
     }
   }
 };
+// 计算并应用右侧表格行的隐藏状态（根角色/低等级角色对特定菜单不可见）
+const applyRowHiddenRules = (type: number) => {
+  setRootRoleStyle();
+  const isMenuAuth = activeAuth.value === "menu";
+  const restrictedMenuIds = ["13", "62", "63"];
+  if (isMenuAuth && restrictedMenuIds.includes(selectedMenuId.value)) {
+    hideRootRole(1);
+  } else if (isMenuAuth && xpackMenuIds.includes(selectedMenuId.value)) {
+    hideRootRole(9);
+  } else if (selectedResourceId.value === "0" && type) {
+    hideRootRole(7);
+  }
+};
 const getSubjectType = () => (activeName.value === "user" ? 0 : 1);
 
 const xpackMenuIds = [
@@ -389,6 +402,8 @@ const xpackMenuIds = [
 ];
 const loadPermission = (type: number) => {
   resetTableData(state.tableData);
+  // 请求前同步计算行隐藏状态，避免异步响应窗口期内根角色行闪现
+  applyRowHiddenRules(type);
   loading.value = true;
   const param: PermissionRequest = {
     id: selectedResourceId.value,
@@ -407,15 +422,6 @@ const loadPermission = (type: number) => {
   resourcePermissionApi(param).then((res) => {
     const vo = res.data;
     const permissionMap = groupPermission(vo);
-    setRootRoleStyle();
-    const restrictedMenuIds = ["13", "62", "63"];
-    if (isMenuAuth && restrictedMenuIds.includes(selectedMenuId.value)) {
-      hideRootRole(1);
-    } else if (isMenuAuth && xpackMenuIds.includes(selectedMenuId.value)) {
-      hideRootRole(9);
-    } else if (selectedResourceId.value === "0" && type) {
-      hideRootRole(7);
-    }
     fillTableData(state.tableData, permissionMap, null);
     loading.value = false;
   });

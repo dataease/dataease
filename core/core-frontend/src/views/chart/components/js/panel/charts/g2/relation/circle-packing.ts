@@ -411,10 +411,12 @@ export class CirclePacking extends G2ChartView {
     }
     const baseLegend = this.getLegend(chart, 2)
     const tmpLegend = {
-      // 统一使用标准分类图例尺寸和占位，避免自定义覆盖导致 marker 缩小
       legend: {
         color: {
-          ...baseLegend
+          ...baseLegend,
+          // pack 半径使用像素尺寸，图例覆盖 Plot 可避免占位压缩坐标后圆形重叠
+          dataeaseLegendOverlayPlot: true,
+          zIndex: 1
         }
       },
       style: {

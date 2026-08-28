@@ -3,7 +3,10 @@
     <el-tab-pane v-for="item in tabArray" :key="item.name" :label="item.label" :name="item.name" />
   </el-tabs>
   <div class="sys-setting-p">
-    <div class="container-sys-param" :class="{ 'setting-max-h': activeName === 'map' }">
+    <div
+      class="container-sys_param"
+      :class="{ 'setting-max-h': activeName === 'map', 'engine-bg': activeName === 'basic' }"
+    >
       <map-setting v-if="activeName === 'map'" />
       <basic-info v-if="activeName === 'basic'" />
       <engine-info v-if="activeName === 'engine'" />
@@ -56,12 +59,16 @@ const addTable = tab => {
   margin-top: 12px;
 }
 
-.container-sys-param {
+.container-sys_param {
   max-height: 100%;
   height: auto;
   overflow-y: auto;
-  background: var(--ContentBG, #ffffff);
   border-radius: 12px;
+  background: #ffffff;
+
+  &.engine-bg {
+    background: transparent;
+  }
 }
 .setting-max-h {
   height: 100% !important;

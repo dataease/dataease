@@ -1,0 +1,99 @@
+# Third-Party Notices
+
+This file contains notices and license attributions for third-party software
+distributed with or referenced by DataEase. DataEase itself remains licensed
+under the license described in the root `LICENSE` file; the presence of a
+third-party component here does not change that license.
+
+---
+
+## Univer
+
+- Project: https://github.com/dream-num/univer
+- Copyright: Copyright (c) 2021-present DreamNum Co., Ltd.
+- License: Apache License, Version 2.0
+- Usage: Integrated as a front-end spreadsheet/document/presentation SDK.
+
+This product includes the following software licensed under the
+Apache License, Version 2.0:
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+The full text of the Apache License, Version 2.0 is available at
+https://www.apache.org/licenses/LICENSE-2.0
+
+Additional Apache-2.0 terms that apply to Univer's included third-party
+dependencies (if any) are provided within Univer's own distribution and
+should be preserved when redistributing Univer.
+
+---
+
+## Apache Calcite
+
+- Upstream project: https://github.com/apache/calcite
+- Upstream Copyright: Copyright 2013 The Apache Software Foundation
+- License: Apache License, Version 2.0
+- Version integrated: calcite-core 1.35.34
+- Usage: SQL parsing, validation and optimization; consumed as a Maven
+  dependency (`org.apache.calcite:calcite-core`) from Fit2Cloud's private
+  repository. This is a **custom fork** of the upstream Apache Calcite with
+  modifications maintained in a private repository.
+
+This product includes the following software licensed under the
+Apache License, Version 2.0:
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+The full text of the Apache License, Version 2.0 is available at
+https://www.apache.org/licenses/LICENSE-2.0
+
+---
+
+## Apache SeaTunnel
+
+- Upstream project: https://github.com/apache/seatunnel
+- Upstream Copyright: Copyright 2021 The Apache Software Foundation
+- License: Apache License, Version 2.0
+- Version reference: SeaTunnel 2.3.12 (connector-v2)
+- Usage: Data synchronization engine, driven/coordinated by DataEase's
+  sync extension module (`extensions-sync`). This is a **custom fork** of the
+  upstream Apache SeaTunnel with modifications maintained in a private
+  repository.
+
+This product includes the following software licensed under the
+Apache License, Version 2.0:
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+The full text of the Apache License, Version 2.0 is available at
+https://www.apache.org/licenses/LICENSE-2.0

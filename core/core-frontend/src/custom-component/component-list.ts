@@ -202,14 +202,25 @@ export const COMMON_COMPONENT_BACKGROUND_BASE: CommonBackground = {
 
 export const COMMON_COMPONENT_BACKGROUND_LIGHT = {
   ...COMMON_COMPONENT_BACKGROUND_BASE,
-  backgroundColor: 'rgba(255,255,255,0.1)',
+  backgroundColor: 'rgba(255,255,255,1)',
   innerImageColor: 'rgba(16, 148, 229,1)'
 }
 
 export const COMMON_COMPONENT_BACKGROUND_DARK = {
   ...COMMON_COMPONENT_BACKGROUND_BASE,
-  backgroundColor: 'rgba(19,28,66,0.1)',
+  backgroundColor: 'rgba(19,28,66,1)',
   innerImageColor: '#1094E5'
+}
+
+// Tab 组件保留独立半透明背景，避免影响普通组件主题背景
+export const COMMON_TAB_COMPONENT_BACKGROUND_LIGHT = {
+  ...COMMON_COMPONENT_BACKGROUND_LIGHT,
+  backgroundColor: 'rgba(255,255,255,0.1)'
+}
+
+export const COMMON_TAB_COMPONENT_BACKGROUND_DARK = {
+  ...COMMON_COMPONENT_BACKGROUND_DARK,
+  backgroundColor: 'rgba(19,28,66,0.1)'
 }
 
 export const COMMON_COMPONENT_BACKGROUND_SCREEN_DARK = {
@@ -224,11 +235,16 @@ export const COMMON_COMPONENT_BACKGROUND_MAP = {
   dark: COMMON_COMPONENT_BACKGROUND_DARK
 }
 
+export const COMMON_TAB_COMPONENT_BACKGROUND_MAP = {
+  light: COMMON_TAB_COMPONENT_BACKGROUND_LIGHT,
+  dark: COMMON_TAB_COMPONENT_BACKGROUND_DARK
+}
+
 export const COMMON_TAB_TITLE_BACKGROUND = {
   enable: false, // 是否启用tab标题背景
   multiply: false, // 激活状态与非激活状态背景是否复用
-  active: COMMON_COMPONENT_BACKGROUND_LIGHT,
-  inActive: COMMON_COMPONENT_BACKGROUND_LIGHT
+  active: COMMON_TAB_COMPONENT_BACKGROUND_LIGHT,
+  inActive: COMMON_TAB_COMPONENT_BACKGROUND_LIGHT
 }
 
 export const commonAttr = {
@@ -699,9 +715,11 @@ export function findNewComponentFromList(
   list.forEach(comp => {
     if (comp.component === componentName) {
       newComponent = deepCopy(comp)
-      newComponent['commonBackground'] = deepCopy(
-        COMMON_COMPONENT_BACKGROUND_MAP[curOriginThemes.value]
-      )
+      const componentBackgroundMap =
+        comp.component === 'DeTabs'
+          ? COMMON_TAB_COMPONENT_BACKGROUND_MAP
+          : COMMON_COMPONENT_BACKGROUND_MAP
+      newComponent['commonBackground'] = deepCopy(componentBackgroundMap[curOriginThemes.value])
       newComponent.innerType = innerType
       if (['DeTabs', 'DeScreen'].includes(comp.component)) {
         newComponent.propValue[0].name = guid()

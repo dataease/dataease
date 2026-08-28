@@ -30,6 +30,14 @@ export default {
     other_levels:
       'Except for level 1, no query condition configuration is required for other levels',
     tree_structure: 'The drop-down tree structure cannot be empty',
+    timeout_tips: 'Request timed out. Please try again later.',
+    secret_changed_tips:
+      'The secret information has been changed. Please refresh the page and try again.',
+    file_size_exceed_tips:
+      'The file size exceeds the limit. Please modify the relevant configuration file.',
+    permission_denied_tips: 'You are not allowed to access. Please contact the administrator.',
+    system_upgrade_tips: 'The system has been upgraded. Please click to refresh the page.',
+    refresh: 'Refresh',
     component: {
       input: 'Input',
       textarea: 'Textarea',

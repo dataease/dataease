@@ -145,6 +145,39 @@ const getSideLegendComponents = (components: G2GuideComponentOptions[]) =>
   )
 
 /**
+ * 恢复覆盖式图例的正常间距，让本轮布局先按真实内容完成尺寸测量
+ */
+const resetOverlayLegendLayout = (components: G2GuideComponentOptions[]) => {
+  components.forEach(component => {
+    if (component.type === 'legendCategory' && component.dataeaseLegendOverlayPlot === true) {
+      component.crossPadding = 0
+    }
+  })
+}
+
+/**
+ * 用图例真实尺寸抵消组件占位，避免 Plot 缩放后像素尺寸图元保持原大小
+ */
+const applyOverlayLegendLayout = (components: G2GuideComponentOptions[]) => {
+  let changed = false
+  components.forEach(component => {
+    if (component.type !== 'legendCategory' || component.dataeaseLegendOverlayPlot !== true) {
+      return
+    }
+    const size = Number(component.size)
+    if (!Number.isFinite(size) || size <= 0) {
+      return
+    }
+    const crossPadding = -size
+    if (Number(component.crossPadding) !== crossPadding) {
+      component.crossPadding = crossPadding
+      changed = true
+    }
+  })
+  return changed
+}
+
+/**
  * 得到侧边图例本轮真正使用的样式
  *
  * 先使用主题默认值，再用当前图表自己的配置覆盖，后续宽度计算才能和 G2 实际显示一致
@@ -1313,6 +1346,8 @@ export function computeLayout(
           ...(needsLeftAxisTitleSafeMargin ? { marginLeft: LEFT_AXIS_TITLE_SAFE_MARGIN } : {})
         }
       : options
+  // resize 会复用图例组件，先清除上一轮用于抵消占位的负间距
+  resetOverlayLegendLayout(components)
   // 侧边图例第一轮先按未分页宽度处理，G2 布局后才能知道当前高度是否真的分页
   const sideLegends = prepareSideLegendLayout(components, layoutOptions, theme, library)
   // 中轴组件会被 resize 复用，第一轮前先删除旧画布留下的轴尺寸和标签偏移
@@ -1336,6 +1371,13 @@ export function computeLayout(
     const currentPageLegendLayout = computeG2Layout(components, layoutOptions, theme, library)
     if (currentPageLegendLayout) {
       layout = currentPageLegendLayout
+    }
+  }
+  // 最终尺寸已经包含省略和分页结果，此时抵消占位不会破坏公共图例测量
+  if (applyOverlayLegendLayout(components)) {
+    const overlayLegendLayout = computeG2Layout(components, layoutOptions, theme, library)
+    if (overlayLegendLayout) {
+      layout = overlayLegendLayout
     }
   }
   // 没有标准轴时无需执行轴标签处理，但上面的侧边图例处理仍然有效

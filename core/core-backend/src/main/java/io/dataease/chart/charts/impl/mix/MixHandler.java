@@ -4,12 +4,14 @@ import io.dataease.utils.LogUtil;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.chart.charts.impl.YoyChartHandler;
 import io.dataease.chart.utils.ChartDataBuild;
+import io.dataease.engine.trans.ExtWhere2Str;
 import io.dataease.engine.utils.Utils;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.datasource.model.SQLMeta;
 import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.view.dto.*;
+import io.dataease.extensions.view.util.FieldUtil;
 import lombok.Getter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -147,9 +149,16 @@ public class MixHandler extends YoyChartHandler {
 
 
         formatResult.getContext().put("subAxisMap", axisMap);
-
-        // 右轴重新检测同环比过滤
+        // 副轴先恢复过滤组件的原始条件避免继承主轴同环比扩展后的时间范围
+        var originFilter = filterResult.getContext().get("originFilter");
+        if (originFilter != null) {
+            filterResult.setFilterList((List<ChartExtFilterDTO>) originFilter);
+        }
+        // 再按副轴同环比扩展时间范围并重建 SQL 条件
+        // 执行顺序为过滤组件原始条件到副轴同环比条件再到副轴查询
         customFilter(view, filterResult.getFilterList(), rightFormatResult);
+        var allFields = (List<ChartViewFieldDTO>) filterResult.getContext().get("allFields");
+        ExtWhere2Str.extWhere2sqlOjb(sqlMeta, filterResult.getFilterList(), FieldUtil.transFields(allFields), crossDs, dsMap, Utils.getParams(FieldUtil.transFields(allFields)), view.getCalParams(), pluginManage);
         var rightResult = (T) super.calcChartResult(view, rightFormatResult, filterResult, sqlMap, sqlMeta, provider);
         try {
             //如果有同环比过滤,应该用原始sql

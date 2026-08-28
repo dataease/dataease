@@ -2,11 +2,11 @@
 import icon_down_outlined1 from '@/assets/svg/icon_down_outlined-1.svg'
 import icon_down_outlined from '@/assets/svg/icon_down_outlined.svg'
 import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
-import { ref, reactive, defineAsyncComponent } from 'vue'
+import { ref, reactive, defineAsyncComponent, computed } from 'vue'
 import { ElMessage, ElLoading } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import request from '@/config/axios'
-import { dsTypes, Node } from '@/views/visualized/data/datasource/form/option'
+import { Node } from '@/views/visualized/data/datasource/form/option'
 import { cloneDeep } from 'lodash-es'
 import { getDeEngine, getSchema } from '@/api/datasource'
 import { CustomPassword } from '@/components/custom-password'
@@ -21,6 +21,36 @@ const { t } = useI18n()
 const appStore = useAppStoreWithOut()
 const dialogVisible = ref(false)
 const loadingInstance = ref(null)
+
+const pluginDs = ref<Array<{ type: string; name: string }>>([])
+const engineTypes = computed(() => {
+  const types = [
+    { type: 'pg', name: 'PostgreSQL' },
+    { type: 'oracle', name: 'Oracle' },
+    { type: 'mysql', name: 'MySQL' },
+    { type: 'sqlServer', name: 'SQL Server' },
+    { type: 'kingbase', name: 'Kingbase' },
+    { type: 'h2', name: 'H2' }
+  ]
+  const dmPlugin = pluginDs.value.find(item => item.type === 'dm')
+  if (dmPlugin) {
+    types.push({ type: 'dm', name: dmPlugin.name || '达梦' })
+  }
+  return types
+})
+const engineTypeOptions = computed(() => {
+  if (nodeInfo.type === 'h2') {
+    return engineTypes.value
+  }
+  return engineTypes.value.filter(item => item.type !== 'h2')
+})
+const loadDsPlugin = () => {
+  if (!appStore.getXpackValid) return
+  request.get({ url: '/xpackComponent/dsPlugins' }).then(res => {
+    pluginDs.value = res?.data || []
+  })
+}
+loadDsPlugin()
 
 const defaultRule = {
   name: [
@@ -165,7 +195,14 @@ const defaultInfo = {
   weight: 0
 }
 const nodeInfo = reactive(cloneDeep(defaultInfo))
+const handleTypeChange = () => {
+  nodeInfo.configuration = cloneDeep(defaultInfo.configuration)
+  schemas.value = []
+  showSchema.value = false
+  basicForm.value?.clearValidate()
+}
 const edit = () => {
+  loadDsPlugin()
   getDeEngine()
     .then(res => {
       let {
@@ -319,9 +356,14 @@ defineExpose({
       label-position="top"
     >
       <el-form-item :label="t('datasource.type')">
-        <el-select v-model="nodeInfo.type" class="de-select" disabled>
+        <el-select
+          v-model="nodeInfo.type"
+          class="de-select"
+          :disabled="nodeInfo.type === 'h2'"
+          @change="handleTypeChange"
+        >
           <el-option
-            v-for="item in dsTypes"
+            v-for="item in engineTypeOptions"
             :key="item.type"
             :label="item.name"
             :value="item.type"

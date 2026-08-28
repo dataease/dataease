@@ -10,6 +10,10 @@ import {
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { defaultTo, merge } from 'lodash-es'
+import {
+  COMMON_TAB_COMPONENT_BACKGROUND_DARK,
+  COMMON_TAB_COMPONENT_BACKGROUND_LIGHT
+} from '@/custom-component/component-list'
 const dvMainStore = dvMainStoreWithOut()
 
 export const LIGHT_THEME_COLOR_MAIN = '#000000'
@@ -537,7 +541,14 @@ export function adaptTitleFontFamilyAll(fontFamily) {
 }
 
 export function adaptCurThemeCommonStyle(component) {
-  if (['DeTabs'].includes(component.component)) {
+  const currentBackgroundColor = component.commonBackground?.backgroundColor
+  const isDefaultTabBackground =
+    component.component === 'DeTabs' &&
+    [
+      COMMON_TAB_COMPONENT_BACKGROUND_LIGHT.backgroundColor,
+      COMMON_TAB_COMPONENT_BACKGROUND_DARK.backgroundColor
+    ].includes(currentBackgroundColor)
+  if (component.component === 'DeTabs') {
     component.commonBackground['innerPadding'] = 0
   }
   // 背景融合-Begin 如果是大屏['CanvasBoard', 'CanvasIcon', 'Picture']组件不需要设置背景
@@ -557,9 +568,17 @@ export function adaptCurThemeCommonStyle(component) {
     component.commonBackground['backgroundColorSelect'] = false
     component.commonBackground['innerPadding'] = 0
   } else {
+    const themeColor = dvMainStore.canvasStyleData.dashboard.themeColor
     const commonStyle = dvMainStore.canvasStyleData.component.chartCommonStyle
     for (const key in commonStyle) {
       component.commonBackground[key] = commonStyle[key]
+    }
+    if (isDefaultTabBackground) {
+      // 仅同步默认 Tab 背景色，保留原有公共样式适配逻辑
+      component.commonBackground.backgroundColor =
+        themeColor === 'light'
+          ? COMMON_TAB_COMPONENT_BACKGROUND_LIGHT.backgroundColor
+          : COMMON_TAB_COMPONENT_BACKGROUND_DARK.backgroundColor
     }
   }
   // 背景融合-End
