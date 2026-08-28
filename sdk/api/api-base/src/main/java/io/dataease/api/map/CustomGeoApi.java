@@ -20,10 +20,12 @@ import static io.dataease.constant.AuthResourceEnum.SYSTEM;
 public interface CustomGeoApi {
 
     @Operation(summary = "查询自定义地理区域")
+    @DePermit
     @GetMapping("/geoArea/list")
     List<CustomGeoArea> listCustomGeoArea();
 
     @Operation(summary = "查询自定义地理区域详情")
+    @DePermit
     @GetMapping("/geoArea/{id}")
     List<CustomGeoSubArea> getCustomGeoArea(@PathVariable("id") String id);
 
@@ -48,6 +50,7 @@ public interface CustomGeoApi {
     void saveCustomGeoSubArea(@RequestBody CustomGeoSubArea geoSubArea);
 
     @Operation(summary = "获取子区域下拉框可选列表")
+    @DePermit
     @GetMapping("/geoSubArea/options")
     List<AreaNode> getCustomGeoSubAreaOptions();
 }
