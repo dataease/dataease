@@ -13,6 +13,7 @@ import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
 import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.api.xpack.dataFilling.DataFillingApi;
 import io.dataease.api.xpack.dataFilling.dto.DataFillFormTableDataRequest;
+import io.dataease.api.xpack.dataFilling.dto.DataFillFormTableDataSearchParam;
 import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
 import io.dataease.chart.server.ChartDataServer;
@@ -68,7 +69,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
@@ -189,7 +192,17 @@ public class ExportCenterDownLoadManage {
             AuthUtils.setUser(tokenUserBO);
             try {
                 updateExportTask(exportTarget.taskId(), "IN_PROGRESS", null, null, null, null);
-                getDataFillingApi().writeExcel(exportTarget.filePath(), new DataFillFormTableDataRequest().setId(exportFrom).setWithoutLogs(true), userId, Long.parseLong(request.get("org").toString()));
+
+                List<DataFillFormTableDataSearchParam> searchParams = null;
+                if (request.get("searchParams") != null) {
+                    searchParams = JsonUtil.parseList(request.get("searchParams").toString(), new TypeReference<>() {
+                    });
+                }
+                getDataFillingApi().writeExcel(exportTarget.filePath(), new DataFillFormTableDataRequest()
+                                .setId(exportFrom)
+                                .setSearchParams(searchParams)
+                                .setWithoutLogs(true),
+                        userId, Long.parseLong(request.get("org").toString()));
                 updateExportTaskSuccess(exportTarget, "100");
             } catch (Exception e) {
                 LogUtil.error("Failed to export data", e);
