@@ -576,9 +576,17 @@ public class Utils {
                 Utils.validateSqlInjectionRisk(fieldGroupDTO.getEndTime());
 
                 exp.append(" WHEN ");
-                exp.append(fieldName).append(" >= ").append("'").append(fieldGroupDTO.getStartTime()).append("'");
+                if (StringUtils.equalsIgnoreCase(datasourceType.getType(), "oracle")) {
+                    exp.append(fieldName).append(" >= ").append("TO_TIMESTAMP('").append(fieldGroupDTO.getStartTime()).append("', 'YYYY-MM-DD HH24:MI:SS')");
+                } else {
+                    exp.append(fieldName).append(" >= ").append("'").append(fieldGroupDTO.getStartTime()).append("'");
+                }
                 exp.append(" AND ");
-                exp.append(fieldName).append(" <= ").append("'").append(fieldGroupDTO.getEndTime()).append("'");
+                if (StringUtils.equalsIgnoreCase(datasourceType.getType(), "oracle")) {
+                    exp.append(fieldName).append(" <= ").append("TO_TIMESTAMP('").append(fieldGroupDTO.getEndTime()).append("', 'YYYY-MM-DD HH24:MI:SS')");
+                } else {
+                    exp.append(fieldName).append(" <= ").append("'").append(fieldGroupDTO.getEndTime()).append("'");
+                }
                 exp.append(" THEN '").append(transValue(fieldGroupDTO.getName())).append("'");
             }
         } else if (originField.getDeType() == 2 || originField.getDeType() == 3 || originField.getDeType() == 4) {
