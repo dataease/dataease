@@ -189,7 +189,7 @@ public class DatasetDataManage {
             DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
             BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
             datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
-            Provider provider = ProviderFactory.getDefaultProvider();
+            Provider provider = ProviderFactory.getProvider(datasourceSchemaDTO.getType());
 
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
