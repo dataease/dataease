@@ -38,6 +38,12 @@ const engineTypes = computed(() => {
   }
   return types
 })
+const engineTypeOptions = computed(() => {
+  if (nodeInfo.type === 'h2') {
+    return engineTypes.value
+  }
+  return engineTypes.value.filter(item => item.type !== 'h2')
+})
 const loadDsPlugin = () => {
   if (!appStore.getXpackValid) return
   request.get({ url: '/xpackComponent/dsPlugins' }).then(res => {
@@ -350,9 +356,14 @@ defineExpose({
       label-position="top"
     >
       <el-form-item :label="t('datasource.type')">
-        <el-select v-model="nodeInfo.type" class="de-select" @change="handleTypeChange">
+        <el-select
+          v-model="nodeInfo.type"
+          class="de-select"
+          :disabled="nodeInfo.type === 'h2'"
+          @change="handleTypeChange"
+        >
           <el-option
-            v-for="item in engineTypes"
+            v-for="item in engineTypeOptions"
             :key="item.type"
             :label="item.name"
             :value="item.type"
