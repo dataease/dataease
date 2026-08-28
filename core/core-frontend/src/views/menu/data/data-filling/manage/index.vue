@@ -706,13 +706,7 @@ const dateFormatColumns = computed(() => {
   )
 })
 
-const search = (condition = []) => {
-  searchConditions.value = condition
-  if (!selectedItem.value?.id) {
-    return
-  }
-  dsLoading.value = true
-
+function getCondition() {
   const _condition: Array<any> = []
   for (let i = 0; i < searchConditions.value.length; i++) {
     const c = searchConditions.value[i]
@@ -744,6 +738,17 @@ const search = (condition = []) => {
       })
     }
   }
+  return _condition
+}
+
+const search = (condition = []) => {
+  searchConditions.value = condition
+  if (!selectedItem.value?.id) {
+    return
+  }
+  dsLoading.value = true
+
+  const _condition: Array<any> = getCondition();
 
   searchTable(selectedItem.value.id, {
     currentPage: state.paginationConfig.currentPage,
@@ -916,7 +921,8 @@ function closeUpload() {
 }
 
 function downloadData() {
-  innerExport(selectedItemId.value, isEmbedded.value)
+  const _condition: Array<any> = getCondition();
+  innerExport(selectedItemId.value, isEmbedded.value, {searchParams: _condition})
     .then(res => {
       if (isEmbedded.value && embeddedSyncExport.value) {
         const blobData = res.data

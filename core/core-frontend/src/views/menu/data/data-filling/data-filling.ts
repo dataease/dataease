@@ -320,11 +320,11 @@ export const confirmUpload = (formId, data) => {
     })
 }
 
-export const innerExport = async (formId, isDataEaseBi): Promise<IResponse> => {
+export const innerExport = async (formId, isDataEaseBi, data): Promise<IResponse> => {
     return request.post({
         url: `/data-filling/innerExport/${isDataEaseBi}/${formId}`,
         method: 'post',
-        data: {},
+        data: data,
         loading: true,
         responseType: 'blob'
     })

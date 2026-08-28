@@ -221,7 +221,7 @@ public interface DataFillingApi {
 
     @Operation(summary = "下载数据填报表数据")
     @PostMapping("/innerExport/{isDataEaseBi}/{formId}")
-    void innerExport(@PathVariable("formId") Long formId, @PathVariable("isDataEaseBi") boolean isDataEaseBi, HttpServletResponse response) throws Exception;
+    void innerExport(@PathVariable("formId") Long formId, @PathVariable("isDataEaseBi") boolean isDataEaseBi, @RequestBody DataFillFormTableDataBaseRequest request, HttpServletResponse response) throws Exception;
 
     @PostMapping("getBuiltInTables")
     @Operation(summary = "获取内置数据源表")
