@@ -16,6 +16,9 @@ spring:
       max-request-size: 500MB
   flyway:
       enabled: false
+  datasource:
+    hikari:
+      maximum-pool-size: 20
 dataease:
   apisix-api:
     domain: http://apisix:9180
