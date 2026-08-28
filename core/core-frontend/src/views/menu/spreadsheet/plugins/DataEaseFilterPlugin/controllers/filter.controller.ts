@@ -435,8 +435,12 @@ export class DataEaseFilterController extends Disposable {
     }
 
     return [
-      ...detailPlugins.map(plugin => this._buildAvailablePlugin(plugin, 'detail', datasetMap)),
-      ...pivotPlugins.map(plugin => this._buildAvailablePlugin(plugin, 'pivot', datasetMap))
+      ...detailPlugins.map(plugin =>
+        this._buildAvailablePlugin(unitId, plugin, 'detail', datasetMap)
+      ),
+      ...pivotPlugins.map(plugin =>
+        this._buildAvailablePlugin(unitId, plugin, 'pivot', datasetMap)
+      )
     ]
   }
 
@@ -457,6 +461,7 @@ export class DataEaseFilterController extends Disposable {
   }
 
   private _buildAvailablePlugin(
+    unitId: string,
     plugin: DetailTableConfig | PivotTableConfig,
     pluginType: 'detail' | 'pivot',
     datasetMap: Map<string, DatasetDetail>
@@ -483,8 +488,8 @@ export class DataEaseFilterController extends Disposable {
     return {
       pluginId: plugin.id,
       pluginName: pluginType === 'detail'
-        ? this._getDetailPluginName(plugin as DetailTableConfig)
-        : this._getPivotPluginName(plugin as PivotTableConfig),
+        ? this._getDetailPluginName(unitId, plugin as DetailTableConfig)
+        : this._getPivotPluginName(unitId, plugin as PivotTableConfig),
       pluginType,
       datasetId,
       datasetName: dataset?.name || this._getDatasetName(plugin as DetailTableConfig),
@@ -497,8 +502,8 @@ export class DataEaseFilterController extends Disposable {
     return data?.datasetName || data?.dataset?.name || (plugin.data?.datasetId ? `数据集 ${plugin.data.datasetId}` : '-')
   }
 
-  private _getDetailPluginName(plugin: DetailTableConfig): string {
-    const sheetName = plugin.placement?.sheetName || plugin.placement?.sheetId || 'Sheet'
+  private _getDetailPluginName(unitId: string, plugin: DetailTableConfig): string {
+    const sheetName = this._getCurrentSheetName(unitId, plugin)
     const startCell = plugin.placement?.startCell || 'A1'
     const defaultName = `${sheetName}!${startCell}`
     return plugin.style?.base?.customBlockName
@@ -506,13 +511,28 @@ export class DataEaseFilterController extends Disposable {
       : defaultName
   }
 
-  private _getPivotPluginName(plugin: PivotTableConfig): string {
-    const sheetName = plugin.placement?.sheetName || plugin.placement?.sheetId || 'Sheet'
+  private _getPivotPluginName(unitId: string, plugin: PivotTableConfig): string {
+    const sheetName = this._getCurrentSheetName(unitId, plugin)
     const startCell = plugin.placement?.startCell || 'A1'
     const defaultName = `${sheetName}!${startCell}`
     return plugin.style?.base?.customBlockName
       ? plugin.style.base.blockName || defaultName
       : defaultName
+  }
+
+  private _getCurrentSheetName(
+    unitId: string,
+    plugin: DetailTableConfig | PivotTableConfig
+  ): string {
+    const sheetId = plugin.placement?.sheetId
+    const workbook = this._univerInstanceService.getUnit(
+      unitId,
+      UniverInstanceType.UNIVER_SHEET
+    )
+    const worksheet = sheetId ? workbook?.getSheetBySheetId(sheetId) : undefined
+
+    // 默认区块名始终跟随当前 Sheet 名，避免使用实例创建时保存的旧名称。
+    return worksheet?.getName?.() || plugin.placement?.sheetName || sheetId || 'Sheet'
   }
 
   private _mergeIds(...idsList: string[][]): string[] {
