@@ -1,6 +1,6 @@
 services:
   api:
-    image: registry.cn-qingdao.aliyuncs.com/dataease/de-playwright-api:v1.58.2-noble-0818
+    image: registry.cn-qingdao.aliyuncs.com/dataease/de-playwright-api:v1.58.2-noble-0828
     container_name: de-playwright-api
     privileged: true
     environment:
