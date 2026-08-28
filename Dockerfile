@@ -8,6 +8,9 @@ ADD drivers/* /opt/dataease3.0/drivers/
 ADD staticResource/ /opt/dataease3.0/data/static-resource/
 COPY mapFiles /opt/dataease3.0/data/map-origin
 
+COPY LICENSE /opt/apps/LICENSE
+COPY THIRD-PARTY-NOTICES /opt/apps/THIRD-PARTY-NOTICES
+
 WORKDIR /opt/apps
 
 ADD core/core-backend/target/CoreApplication.jar /opt/apps/app.jar
