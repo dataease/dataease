@@ -5,7 +5,7 @@
   <div class="sys-setting-p">
     <div
       class="container-sys_param"
-      :class="{ 'setting-max-h': activeName === 'map', 'engine-bg': activeName === 'engine' }"
+      :class="{ 'setting-max-h': activeName === 'map', 'engine-bg': activeName === 'basic' }"
     >
       <map-setting v-if="activeName === 'map'" />
       <basic-info v-if="activeName === 'basic'" />
@@ -64,8 +64,10 @@ const addTable = tab => {
   height: auto;
   overflow-y: auto;
   border-radius: 12px;
+  background: #ffffff;
+
   &.engine-bg {
-    background: #ffffff;
+    background: transparent;
   }
 }
 .setting-max-h {
