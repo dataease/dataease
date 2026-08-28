@@ -91,25 +91,17 @@ onMounted(() => {
 <template>
   <el-form ref="pointForm" :model="state.pointForm" size="small" label-position="top">
     <div style="padding-bottom: 8px">
-      <el-space>
-        <el-form-item
-          class="form-item"
-          :class="'form-item-' + themes"
-          :label="t('chart.point_text')"
-        >
+      <el-form-item class="form-item" :class="'form-item-' + themes" :label="t('chart.point_text')">
+        <!-- 标签与控件行分离，避免长标签撑大颜色和字号间距 -->
+        <el-space :size="8">
           <el-color-picker
             :effect="themes"
-            size="default"
             v-model="state.pointForm.text.color"
             class="color-picker-style"
             :predefine="predefineColors"
             @change="changeStyle()"
             is-custom
           />
-        </el-form-item>
-
-        <el-form-item class="form-item" :class="'form-item-' + themes">
-          <template #label>&nbsp;</template>
           <el-tooltip :content="t('chart.font_size')" :effect="toolTip" placement="top">
             <el-select
               size="small"
@@ -127,8 +119,8 @@ onMounted(() => {
               />
             </el-select>
           </el-tooltip>
-        </el-form-item>
-      </el-space>
+        </el-space>
+      </el-form-item>
     </div>
     <el-space>
       <el-form-item
@@ -138,9 +130,9 @@ onMounted(() => {
       >
         <el-color-picker
           :effect="themes"
-          size="default"
           v-model="state.pointForm.point.color"
           class="color-picker-style"
+          :trigger-width="108"
           :predefine="predefineColors"
           @change="changeStyle()"
           is-custom
