@@ -15,6 +15,9 @@ import { useLinkStoreWithOut } from '@/store/modules/link'
 import { config } from './config'
 import { configHandler } from './refresh'
 import { isMobile, getLocale } from '@/utils/utils'
+import { useI18n } from '@/hooks/web/useI18n'
+// 注意：不得在模块顶层 const { t } = useI18n() —— 本模块求值早于 setupI18n，
+// 顶层捕获会永久得到降级透传 t（永远返回 key）。必须在函数体内实时调用 useI18n()。
 import { useRequestStoreWithOut } from '@/store/modules/request'
 import { clearCache } from '@/utils/cacheUtil'
 import { securityConfig } from './hmac'
@@ -61,12 +64,15 @@ const getTimeOut = () => {
           if (response.code === 0) {
             time = response.data
           } else {
+            // 模块求值期早于 setupI18n，i18n 未就绪，此处暂不国际化（保留中文）
             ElMessage.error('系统异常，请联系管理员')
           }
         } catch (e) {
+          // 模块求值期早于 setupI18n，i18n 未就绪，此处暂不国际化（保留中文）
           ElMessage.error('系统异常，请联系管理员')
         }
       } else {
+        // 模块求值期早于 setupI18n，i18n 未就绪，此处暂不国际化（保留中文）
         ElMessage.error('网络异常，请联系网管')
       }
     }
@@ -195,7 +201,7 @@ service.interceptors.response.use(
         let errMsg = response.data.msg
         if (errMsg?.includes('rsa info has been changed')) {
           wsCache.delete('DataEaseKey')
-          errMsg = '密钥信息已变更，请刷新页面重试'
+          errMsg = useI18n().t('common.secret_changed_tips')
         }
         ElMessage({
           type: 'error',
@@ -224,7 +230,7 @@ service.interceptors.response.use(
       requestStore.resetLoadingMap()
       ElMessage({
         type: 'error',
-        message: '请求超时，请稍后再试',
+        message: useI18n().t('common.timeout_tips'),
         showClose: true
       })
     }
@@ -236,7 +242,7 @@ service.interceptors.response.use(
     if (error?.response.status === 413) {
       ElMessage({
         type: 'error',
-        message: '文件大小超出限制, 请修改相关配置文件',
+        message: useI18n().t('common.file_size_exceed_tips'),
         showClose: true
       })
       return
@@ -274,7 +280,7 @@ service.interceptors.response.use(
       router.push(`/login?redirect=${queryRedirectPath}`)
     }
     if (header.has('DE-FORBIDDEN-FLAG')) {
-      showMsg('当前权限不允许访问，请联系管理员', '-changed-')
+      showMsg(useI18n().t('common.permission_denied_tips'), '-changed-')
     }
     if (error?.response.status === 400) {
       return Promise.reject(error)
@@ -291,8 +297,8 @@ const showMsg = (msg: string, id: string) => {
   window['cross-permission-' + id] = ElMessageBox.confirm(msg, {
     confirmButtonType: 'primary',
     type: 'warning',
-    confirmButtonText: '刷新',
-    cancelButtonText: '取消',
+    confirmButtonText: useI18n().t('common.refresh'),
+    cancelButtonText: useI18n().t('common.cancel'),
     autofocus: false,
     showClose: false
   })
@@ -315,7 +321,7 @@ const executeVersionHandler = (response: AxiosResponse) => {
   }
   if (executeVersion && executeVersion !== cacheVal) {
     wsCache.set(key, executeVersion)
-    showMsg('系统有升级，请点击刷新页面', '-sys-upgrade-')
+    showMsg(useI18n().t('common.system_upgrade_tips'), '-sys-upgrade-')
   }
 }
 
