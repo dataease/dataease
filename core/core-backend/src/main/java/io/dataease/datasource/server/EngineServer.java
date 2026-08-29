@@ -1,5 +1,5 @@
 package io.dataease.datasource.server;
-import io.dataease.utils.LogUtil;
+import io.dataease.utils.*;
 
 import io.dataease.api.ds.EngineApi;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
@@ -8,10 +8,6 @@ import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.type.*;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
-import io.dataease.utils.BeanUtils;
-import io.dataease.utils.IDUtils;
-import io.dataease.utils.JsonUtil;
-import io.dataease.utils.RsaUtils;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +28,8 @@ public class EngineServer implements EngineApi {
     private EngineManage engineManage;
     @Resource
     private CalciteProvider calciteProvider;
+    @Resource
+    private CommonThreadPool commonThreadPool;
 
     @Override
     public DatasourceDTO getEngine() {
@@ -77,11 +75,15 @@ public class EngineServer implements EngineApi {
         } else {
             coreDeEngineRepository.saveAndFlush(coreDeEngine);
         }
-        try {
-            calciteProvider.update(datasourceDTO);
-        } catch (Exception e) {
-            LogUtil.error(e);
-        }
+        commonThreadPool.addTask(() -> {
+            try {
+                calciteProvider.update(datasourceDTO);
+            } catch (Exception e) {
+                CoreDeEngine ds = coreDeEngineRepository.findById(coreDeEngine.getId()).orElse(null);
+                ds.setStatus("Error");
+                coreDeEngineRepository.saveAndFlush(ds);
+            }
+        });
     }
 
     @Override

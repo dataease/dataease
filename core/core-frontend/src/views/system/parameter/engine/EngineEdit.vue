@@ -182,6 +182,7 @@ const defaultInfo = {
     port: 8081,
     dataBase: '',
     schema: '',
+    connectionType: 'sid',
     username: '',
     password: '',
     extraParams: '',
@@ -240,6 +241,9 @@ const edit = () => {
         lastSyncTime,
         enableDataFill
       })
+      if (nodeInfo.type === 'oracle' && !nodeInfo.configuration?.connectionType) {
+        nodeInfo.configuration.connectionType = 'sid'
+      }
     })
     .finally(() => {
       dialogVisible.value = true
@@ -418,6 +422,18 @@ defineExpose({
           :placeholder="t('datasource.please_input_data_base')"
           autocomplete="off"
         />
+      </el-form-item>
+      <el-form-item
+        v-if="nodeInfo.type === 'oracle'"
+        :label="t('datasource.connection_mode')"
+        prop="configuration.connectionType"
+      >
+        <el-radio v-model="nodeInfo.configuration.connectionType" label="sid">
+          {{ t('datasource.oracle_sid') }}
+        </el-radio>
+        <el-radio v-model="nodeInfo.configuration.connectionType" label="serviceName">
+          {{ t('datasource.oracle_service_name') }}
+        </el-radio>
       </el-form-item>
 
       <el-form-item :label="t('datasource.user_name')">
