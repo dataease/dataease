@@ -97,7 +97,7 @@ public class OracleEngineProvider extends EngineProvider {
 
     @Override
     public String replaceTable(String name, CoreDeEngine engine) {
-        String replaceTableSql = "rename  \"FROM_TABLE\" to \"FROM_TABLE_tmp\";  rename \"TO_TABLE\" to \"FROM_TABLE\"; rename \"FROM_TABLE_tmp\" to \"TO_TABLE\"".replace("FROM_TABLE", name).replace("TO_TABLE", TableUtils.tmpName(name));
+        String replaceTableSql = "ALTER TABLE  \"FROM_TABLE\" RENAME TO \"FROM_TABLE_tmp\";  ALTER TABLE \"TO_TABLE\" RENAME TO \"FROM_TABLE\"; ALTER TABLE \"FROM_TABLE_tmp\" RENAME TO \"TO_TABLE\"".replace("FROM_TABLE", name).replace("TO_TABLE", TableUtils.tmpName(name));
         String dropTableSql = "DROP TABLE   \"TABLE_NAME\"".replace("TABLE_NAME", TableUtils.tmpName(name));
         return replaceTableSql + ";" + dropTableSql;
     }
