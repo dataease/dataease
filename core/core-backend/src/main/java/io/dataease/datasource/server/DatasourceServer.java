@@ -261,6 +261,7 @@ public class DatasourceServer implements DatasourceApi {
             datasource = new CoreDatasource();
             datasource.setId(dataSourceDTO.getId());
             datasource.setName(dataSourceDTO.getName());
+            datasource.setType("folder");
         }
         datasource.setName(dataSourceDTO.getName());
         dataSourceDTO.setPid(datasource.getPid());
