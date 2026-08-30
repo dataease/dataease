@@ -93,7 +93,7 @@
     "snowflake-id": "^1.1.0",
     "tinymce": "^6.8.6",
     "tinymce-i18n": "23.1.23",
-    "vant": "^4.8.3",
+    "vant": "4.10.0",
     "video.js": "^7.21.6",
     "vue": "3.5.35",
     "vue-clipboard3": "^2.0.0",
