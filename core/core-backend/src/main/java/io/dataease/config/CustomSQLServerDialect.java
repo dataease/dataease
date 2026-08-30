@@ -6,7 +6,19 @@ import org.hibernate.dialect.SQLServerDialect;
 import org.hibernate.tool.schema.internal.StandardTableExporter;
 import org.hibernate.tool.schema.spi.Exporter;
 
+import java.sql.Types;
+
 public class CustomSQLServerDialect extends SQLServerDialect {
+
+    @Override
+    protected String columnType(int sqlTypeCode) {
+        return switch (sqlTypeCode) {
+            case Types.VARCHAR -> "nvarchar($l)";
+            case Types.NVARCHAR -> "nvarchar($l)";
+            case Types.LONGVARCHAR, Types.LONGNVARCHAR, Types.CLOB, Types.NCLOB -> "nvarchar(max)";
+            default -> super.columnType(sqlTypeCode);
+        };
+    }
 
     @Override
     public Exporter<org.hibernate.mapping.Table> getTableExporter() {
