@@ -3,6 +3,7 @@ import logo from '@/assets/svg/logo.svg'
 import aboutBg from '@/assets/img/about-bg.png'
 import { ref, reactive, onMounted } from 'vue'
 import { useUserStoreWithOut } from '@/store/modules/user'
+import { useAppStoreWithOut } from '@/store/modules/app'
 import { F2CLicense } from './index'
 import { validateApi, buildVersionApi, updateInfoApi, revertApi } from '@/api/about'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
@@ -15,6 +16,7 @@ const dialogVisible = ref(false)
 const { wsCache } = useCache('localStorage')
 const { t } = useI18n()
 const userStore = useUserStoreWithOut()
+const appStore = useAppStoreWithOut()
 const license: F2CLicense = reactive({
   status: '',
   corporation: '',
@@ -144,6 +146,7 @@ const update = (licKey: string) => {
     loading.value = false
     if (response.data.status === 'valid') {
       ElMessage.success(t('about.update_success'))
+      appStore.refreshXpackValid()
       const info = getLicense(response.data)
       setLicense(info)
     } else {

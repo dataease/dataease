@@ -81,6 +81,10 @@ export const useAppStore = defineStore('app', {
       const res = await xpackModelApi()
       this.xpackValid = res.data || false
     },
+    async refreshXpackValid() {
+      this.xpackValidLoaded = false
+      await this.setXpackValid()
+    },
     setSize(size: boolean) {
       this.size = size
     },
