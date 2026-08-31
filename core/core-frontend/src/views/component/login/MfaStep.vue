@@ -82,9 +82,6 @@
             <div class="qr-img">
               <img :src="userQr" />
             </div>
-            <div class="qr-tips">
-              <span>Secret: {{ userKey }}</span>
-            </div>
           </div>
         </div>
 
@@ -176,7 +173,6 @@ const errorMsg = ref("");
 const errorCode = ref();
 const mfaForm = ref();
 const userQr = ref("");
-const userKey = ref("");
 const rule = reactive<any>({
   code: [
     {
@@ -233,7 +229,6 @@ const generateQr = () => {
   }
   const url = `/mfa/qr/${props.mfaData.uid}`;
   request.post({ url }).then((res) => {
-    userKey.value = res.data?.key;
     userQr.value = res.data?.img;
   });
 };
@@ -246,7 +241,6 @@ const mfaLogin = () => {
       const param = {
         id: props.mfaData.uid,
         code: state.form.code,
-        key: userKey.value,
       };
       request
         .post({ url, data: param })
