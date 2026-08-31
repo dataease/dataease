@@ -1132,6 +1132,7 @@ public class CalciteProvider extends Provider {
                 dataSource.setMinIdle(configuration.getMinPoolSize());
                 startSshSession(configuration, null, ds.getId());
                 dataSource.setUrl(configuration.getJdbc());
+                dataSource.setDriverClassName(configuration.getDriver());
                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getDataBase());
                 rootSchema.add(ds.getSchemaAlias(), schema);
                 break;
