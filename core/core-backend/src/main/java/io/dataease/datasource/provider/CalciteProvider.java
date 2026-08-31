@@ -1,6 +1,7 @@
 package io.dataease.datasource.provider;
+import io.dataease.utils.LogUtil;
 
-import com.jcraft.jsch.Session;
+import com.jcraft.jsch.*;
 import io.dataease.constant.SQLConstants;
 import io.dataease.dao.auto.entity.CoreDatasource;
 import io.dataease.dataset.utils.FieldUtils;
@@ -25,7 +26,6 @@ import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql.dialect.MysqlSqlDialect;
 import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -1132,8 +1132,7 @@ public class CalciteProvider extends Provider {
                 dataSource.setMinIdle(configuration.getMinPoolSize());
                 startSshSession(configuration, null, ds.getId());
                 dataSource.setUrl(configuration.getJdbc());
-                dataSource.setDriverClassName(configuration.getDriver());
-                schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, databaseMetaData -> MysqlSqlDialect.DEFAULT,null, configuration.getDataBase());
+                schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getDataBase());
                 rootSchema.add(ds.getSchemaAlias(), schema);
                 break;
             case impala:
