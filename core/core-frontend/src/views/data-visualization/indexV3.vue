@@ -564,6 +564,8 @@ eventBus.on('tabSort', tabSort)
   <div
     v-show="!fullscreenFlag"
     ref="dvLayout"
+    v-loading="pageLoading"
+    element-loading-background="rgba(0, 0, 0, 0)"
     class="dv-common-layout"
     :class="isDataEaseBi && !newWindowFromDiv && 'dataease-w-h'"
   >
@@ -571,8 +573,6 @@ eventBus.on('tabSort', tabSort)
     <div class="custom-dv-divider" />
     <el-container
       v-if="loadFinish"
-      v-loading="pageLoading"
-      element-loading-background="rgba(0, 0, 0, 0)"
       class="dv-layout-container"
       :class="{ 'preview-layout-container': previewStatus }"
     >

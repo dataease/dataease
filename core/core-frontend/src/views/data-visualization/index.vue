@@ -553,6 +553,8 @@ eventBus.on('tabSort', tabSort)
   <!-- 全屏期间移出编辑器布局树，只保留全屏预览画布 -->
   <div
     v-show="!fullscreenFlag"
+    v-if="loadFinish"
+    v-loading="requestStore.loadingMap && requestStore.loadingMap[permissionStore.currentPath]"
     ref="dvLayout"
     class="dv-common-layout"
     :class="isDataEaseBi && !newWindowFromDiv && 'dataease-w-h'"
@@ -560,8 +562,6 @@ eventBus.on('tabSort', tabSort)
     <DvToolbar @recover-to-published="doRecoverToPublished" />
     <div class="custom-dv-divider" />
     <el-container
-      v-if="loadFinish"
-      v-loading="requestStore.loadingMap && requestStore.loadingMap[permissionStore.currentPath]"
       element-loading-background="rgba(0, 0, 0, 0)"
       class="dv-layout-container"
       :class="{ 'preview-layout-container': previewStatus }"
