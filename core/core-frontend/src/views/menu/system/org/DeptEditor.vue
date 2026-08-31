@@ -161,6 +161,7 @@ defineExpose({
       ref="orgForm"
       class="org-editor-form"
       :model="form"
+      @submit.prevent
       :rules="rule"
     >
       <el-row>
