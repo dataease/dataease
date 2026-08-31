@@ -13,7 +13,4 @@ public class MfaQrVO implements Serializable {
 
     @Schema(description = "图片")
     private String img;
-
-    @Schema(description = "KEY")
-    private String key;
 }
