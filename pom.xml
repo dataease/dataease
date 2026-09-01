@@ -66,7 +66,7 @@
         <xmlsec.version>2.3.5</xmlsec.version>
         <woodstox-core.version>7.1.0</woodstox-core.version>
         <assertj.version>3.27.7</assertj.version>
-        <mariadb.version>3.5.3</mariadb.version>
+        <mariadb.version>3.5.9</mariadb.version>
     </properties>
 
     <dependencyManagement>
