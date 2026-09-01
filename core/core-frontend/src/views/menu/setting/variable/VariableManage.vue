@@ -1,14 +1,14 @@
 <script lang="ts" setup>
-import field_text from "@/assets/svg/field_text.svg";
-import field_time from "@/assets/svg/field_time.svg";
-import field_value from "@/assets/svg/field_value.svg";
-import icon_searchOutline_outlined from "@/assets/svg/icon_search-outline_outlined.svg";
-import icon_add_outlined from "@/assets/svg/icon_add_outlined.svg";
-import icon_edit_outlined from "@/assets/svg/icon_edit_outlined.svg";
-import icon_deleteTrash_outlined from "@/assets/svg/icon_delete-trash_outlined.svg";
-import { ref, reactive, onMounted, nextTick } from "vue";
-import { Icon } from "@/components/icon-custom";
-import GridTable from "@/components/grid-table/src/GridTable.vue";
+import field_text from '@/assets/svg/field_text.svg'
+import field_time from '@/assets/svg/field_time.svg'
+import field_value from '@/assets/svg/field_value.svg'
+import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
+import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
+import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
+import { ref, reactive, onMounted, nextTick } from 'vue'
+import { Icon } from '@/components/icon-custom'
+import GridTable from '@/components/grid-table/src/GridTable.vue'
 import {
   batchDelApi,
   searchVariableApi,
@@ -17,9 +17,9 @@ import {
   variableDeletelApi,
   variableValueCreateApi,
   variableValueDeletelApi,
-  variableValueEditApi,
-} from "@/api/variable";
-import VariableForm from "./VariableForm.vue";
+  variableValueEditApi
+} from '@/api/variable'
+import VariableForm from './VariableForm.vue'
 import {
   ElCol,
   ElDatePicker,
@@ -32,524 +32,516 @@ import {
   ElMessageBox,
   ElRow,
   type FormInstance,
-  type FormRules,
-} from "element-plus-secondary";
-import { useI18n } from "@/hooks/web/useI18n";
-import { setColorName } from "@/utils/utils";
-import { fieldEnums } from "../../../component/row-col-permission/dataset-row-permissions/options.js";
-import { fieldType } from "@/utils/attr";
+  type FormRules
+} from 'element-plus-secondary'
+import { useI18n } from '@/hooks/web/useI18n'
+import { setColorName } from '@/utils/utils'
+import { fieldEnums } from '../../../component/row-col-permission/dataset-row-permissions/options.js'
+import { fieldType } from '@/utils/attr'
 
 interface ValueForm {
-  id?: string | number;
-  sysVariableId: string | number;
-  value: string;
-  valueDesc: string;
-  begin: string;
-  end: string;
+  id?: string | number
+  sysVariableId: string | number
+  value: string
+  valueDesc: string
+  begin: string
+  end: string
 }
-const selectedRoleId = ref("");
-const selectedVariableType = ref("");
-const selectedRoleName = ref("");
-const selectedRoleRoot = ref(false);
-const dialogVisible = ref(false);
-const multipleTableRef = ref(null);
-const valueForm = ref<FormInstance>();
-const formType = ref("add");
-const roleKeyword = ref("");
-const keyword = ref("");
-const roleFormRef = ref(null);
-const { t } = useI18n();
-const loading = ref(false);
-const valueLoading = ref(false);
+const selectedRoleId = ref('')
+const selectedVariableType = ref('')
+const selectedRoleName = ref('')
+const selectedRoleRoot = ref(false)
+const dialogVisible = ref(false)
+const multipleTableRef = ref(null)
+const valueForm = ref<FormInstance>()
+const formType = ref('add')
+const roleKeyword = ref('')
+const keyword = ref('')
+const roleFormRef = ref(null)
+const { t } = useI18n()
+const loading = ref(false)
+const valueLoading = ref(false)
 interface Tree {
-  id: string;
-  name: string;
-  readonly: boolean;
-  children?: Tree[];
-  disabled: boolean;
-  root?: boolean;
+  id: string
+  name: string
+  readonly: boolean
+  children?: Tree[]
+  disabled: boolean
+  root?: boolean
 }
 
 const valueRule = reactive<FormRules>({
   value: [
     {
       required: true,
-      message: t("common.require"),
-      trigger: "blur",
+      message: t('common.require'),
+      trigger: 'blur'
     },
     {
       min: 1,
       max: 50,
-      message: t("commons.input_limit", [1, 50]),
-      trigger: "blur",
-    },
+      message: t('commons.input_limit', [1, 50]),
+      trigger: 'blur'
+    }
   ],
   valueDesc: [
     {
       required: false,
-      message: t("common.require"),
-      trigger: "blur",
+      message: t('common.require'),
+      trigger: 'blur'
     },
     {
       min: 1,
       max: 50,
-      message: t("commons.input_limit", [1, 50]),
-      trigger: "blur",
-    },
-  ],
-});
+      message: t('commons.input_limit', [1, 50]),
+      trigger: 'blur'
+    }
+  ]
+})
 
 const iconName = (data: Tree) => {
-  if (data.type === "text") {
-    return field_text;
+  if (data.type === 'text') {
+    return field_text
   }
-  if (data.type === "num") {
-    return field_value;
+  if (data.type === 'num') {
+    return field_value
   }
-  if (data.type === "time") {
-    return field_time;
+  if (data.type === 'time') {
+    return field_time
   }
-};
+}
 
 const iconClassName = (data: Tree) => {
-  if (data.type === "text") {
-    return "field-icon-text";
+  if (data.type === 'text') {
+    return 'field-icon-text'
   }
-  if (data.type === "num") {
-    return "field-icon-value";
+  if (data.type === 'num') {
+    return 'field-icon-value'
   }
-  if (data.type === "time") {
-    return "field-icon-time";
+  if (data.type === 'time') {
+    return 'field-icon-time'
   }
-};
+}
 
 const handleNodeClick = (data: Tree) => {
   if (data.disabled) {
-    return;
+    return
   }
   if (data.root) {
-    return;
+    return
   }
-  selectedRoleId.value = data.id;
-  selectedVariableType.value = data.type;
-  selectedRoleName.value = data.name;
-  selectedRoleRoot.value = data.root;
-  if (data.type === "text") {
-    state.paginationConfig.currentPage = 1;
-    state.paginationConfig.pageSize = 10;
-    selectedSearch(data.id);
+  selectedRoleId.value = data.id
+  selectedVariableType.value = data.type
+  selectedRoleName.value = data.name
+  selectedRoleRoot.value = data.root
+  if (data.type === 'text') {
+    state.paginationConfig.currentPage = 1
+    state.paginationConfig.pageSize = 10
+    selectedSearch(data.id)
   } else {
-    selectedVariableValue(data.id);
+    selectedVariableValue(data.id)
   }
-};
+}
 
 const triggerFilterRole = () => {
-  const value = roleKeyword.value;
-  state.roleData.forEach((roleGroup) => {
-    roleGroup.children?.forEach((data) => {
-      setColorName(data, value);
-      data["hidden"] = value && !data.name.includes(value);
-    });
-  });
-};
+  const value = roleKeyword.value
+  state.roleData.forEach(roleGroup => {
+    roleGroup.children?.forEach(data => {
+      setColorName(data, value)
+      data['hidden'] = value && !data.name.includes(value)
+    })
+  })
+}
 
 const initialValue = {
   id: null,
   sysVariableId: null,
-  value: "",
-  end: "",
-  begin: "",
-};
+  value: '',
+  end: '',
+  begin: ''
+}
 
 const state = reactive({
   form: reactive<ValueForm>(initialValue),
   paginationConfig: {
     currentPage: 1,
     pageSize: 10,
-    total: 0,
+    total: 0
   },
   optionUserList: [],
   addedUserList: [],
   roleData: [],
   checkList: [],
-  multipleSelection: [],
-});
-const order = ref(null);
+  multipleSelection: []
+})
+const order = ref(null)
 state.roleData = [
   {
-    id: "system",
-    name: t("system.system_built_in_variable"),
+    id: 'system',
+    name: t('system.system_built_in_variable'),
     children: null,
     disabled: true,
-    root: true,
+    root: true
   },
   {
-    id: "custom",
-    name: t("system.custom_variable"),
+    id: 'custom',
+    name: t('system.custom_variable'),
     children: null,
     disabled: true,
-    root: false,
-  },
-];
+    root: false
+  }
+]
 
 const selectedSearch = (sysVariableId?: string) => {
-  const param = { sysVariableId, value: keyword.value };
+  const param = { sysVariableId, value: keyword.value }
   if (sysVariableId) {
-    loading.value = true;
-    const page = state.paginationConfig.currentPage;
-    const limit = state.paginationConfig.pageSize;
+    loading.value = true
+    const page = state.paginationConfig.currentPage
+    const limit = state.paginationConfig.pageSize
     valueSelectedForVariableApi(page, limit, param)
-      .then((res) => {
+      .then(res => {
         if (res?.data?.total) {
-          const records = res.data.records;
-          records.forEach((item) => {
-            setColorName(item, keyword.value, "value", "colorValue");
-          });
-          state.addedUserList = records;
-          state.paginationConfig.total = res.data.total;
+          const records = res.data.records
+          records.forEach(item => {
+            setColorName(item, keyword.value, 'value', 'colorValue')
+          })
+          state.addedUserList = records
+          state.paginationConfig.total = res.data.total
         } else {
-          state.addedUserList = [];
-          state.paginationConfig.total = 0;
+          state.addedUserList = []
+          state.paginationConfig.total = 0
         }
       })
       .finally(() => {
-        loading.value = false;
-      });
+        loading.value = false
+      })
   }
-};
+}
 
 const selectedVariableValue = (sysVariableId?: string) => {
   if (sysVariableId) {
     valueForVariable(sysVariableId)
-      .then((res) => {
+      .then(res => {
         if (res.data.length > 0) {
-          Object.assign(state.form, res.data[0]);
+          Object.assign(state.form, res.data[0])
         } else {
-          state.form.id = null;
-          state.form.begin = "";
-          state.form.end = "";
-          state.form.sysVariableId = selectedRoleId.value;
+          state.form.id = null
+          state.form.begin = ''
+          state.form.end = ''
+          state.form.sysVariableId = selectedRoleId.value
         }
       })
-      .finally(() => {});
+      .finally(err => {
+        ElMessage.error(err)
+      })
   }
-};
+}
 const variableSearch = (resolve, reject, type, data) => {
-  loading.value = true;
+  loading.value = true
   state.roleData[0].children = [
     {
-      name: t("system.account"),
-      id: "userId",
-      root: true,
+      name: t('system.account'),
+      id: 'userId',
+      root: true
     },
     {
-      name: t("auth.sysParams_type.user_name"),
-      id: "userName",
-      root: true,
+      name: t('auth.sysParams_type.user_name'),
+      id: 'userName',
+      root: true
     },
     {
-      name: t("commons.email"),
-      id: "userEmail",
-      root: true,
+      name: t('commons.email'),
+      id: 'userEmail',
+      root: true
     },
     {
-      name: t("auth.sysParams_type.user_phone"),
-      id: "userPhone",
-      root: true,
-    },
-  ];
+      name: t('auth.sysParams_type.user_phone'),
+      id: 'userPhone',
+      root: true
+    }
+  ]
   searchVariableApi({})
-    .then((res) => {
-      const roles = res.data;
-      const map = groupBy(roles);
-      state.roleData[1].children = map.get(false);
-      loading.value = false;
+    .then(res => {
+      const roles = res.data
+      const map = groupBy(roles)
+      state.roleData[1].children = map.get(false)
+      loading.value = false
       if (selectedRoleId.value) {
-        selectedRoleName.value = getNode()?.name;
+        selectedRoleName.value = getNode()?.name
       }
       nextTick(() => {
         if (data !== undefined) {
           for (let i = 0; i < state.roleData[1].children.length; i++) {
             if (data.id === state.roleData[1].children[i].id) {
-              handleNodeClick(state.roleData[1].children[i]);
+              handleNodeClick(state.roleData[1].children[i])
             }
           }
         }
-      });
+      })
 
-      resolve && resolve(res);
+      resolve && resolve(res)
     })
-    .catch((e) => {
-      loading.value = false;
-      reject && reject(e);
-    });
-};
+    .catch(e => {
+      loading.value = false
+      reject && reject(e)
+    })
+}
 
 const groupBy = (list: Tree[]) => {
-  const map = new Map();
-  list.forEach((item) => {
-    const root = item.root;
-    let arr = map.get(root);
+  const map = new Map()
+  list.forEach(item => {
+    const root = item.root
+    let arr = map.get(root)
     if (!arr) {
-      arr = [];
+      arr = []
     }
-    item.disabled = false;
-    arr.push(item);
-    map.set(root, arr);
-  });
-  return map;
-};
+    item.disabled = false
+    arr.push(item)
+    map.set(root, arr)
+  })
+  return map
+}
 
 const roleAdd = () => {
-  roleFormRef.value.init();
-};
+  roleFormRef.value.init()
+}
 
-const roleEdit = (row) => {
+const roleEdit = row => {
   if (row.root) {
-    return;
+    return
   }
-  roleFormRef.value.edit(row.id);
-};
+  roleFormRef.value.edit(row.id)
+}
 
-const delHandler = (row) => {
+const delHandler = row => {
   if (row.root) {
-    return;
+    return
   }
-  ElMessageBox.confirm(t("role.confirm_delete"), {
-    confirmButtonType: "danger",
-    type: "warning",
+  ElMessageBox.confirm(t('role.confirm_delete'), {
+    confirmButtonType: 'danger',
+    type: 'warning',
     autofocus: false,
-    confirmButtonText: t("common.delete"),
-    cancelButtonText: t("dataset.cancel"),
+    confirmButtonText: t('common.delete'),
+    cancelButtonText: t('dataset.cancel'),
     dangerouslyUseHTMLString: true,
     message:
-      '<strong style="font-size: 16px;">' +
-      t("system.delete_this_variable") +
-      "</strong></br>",
-    showClose: false,
+      '<strong style="font-size: 16px;">' + t('system.delete_this_variable') + '</strong></br>',
+    showClose: false
   }).then(() => {
-    loading.value = true;
+    loading.value = true
     variableDeletelApi(row.id).then(() => {
-      ElMessage.success(t("common.delete_success"));
-      roleSaved("modify");
+      ElMessage.success(t('common.delete_success'))
+      roleSaved('modify')
       if (selectedRoleId.value === row.id) {
-        selectedRoleId.value = "";
-        selectedRoleName.value = "";
-        selectedRoleRoot.value = false;
+        selectedRoleId.value = ''
+        selectedRoleName.value = ''
+        selectedRoleRoot.value = false
       }
-    });
-  });
-};
-const emits = defineEmits(["refresh", "refresh-grid"]);
+    })
+  })
+}
+const emits = defineEmits(['refresh', 'refresh-grid'])
 const roleSaved = (type: string, data) => {
-  variableSearch(null, null, type, data);
-  emits("refresh");
-  if (type === "modify") {
-    emits("refresh-grid");
+  variableSearch(null, null, type, data)
+  emits('refresh')
+  if (type === 'modify') {
+    emits('refresh-grid')
   }
-};
+}
 
 const getNode = () => {
-  let result = null;
-  state.roleData.forEach((group) => {
-    const nodes = group["children"];
-    nodes?.forEach((node) => {
+  let result = null
+  state.roleData.forEach(group => {
+    const nodes = group['children']
+    nodes?.forEach(node => {
       if (node.id === selectedRoleId.value) {
-        result = node;
+        result = node
       }
-    });
-  });
-  return result;
-};
+    })
+  })
+  return result
+}
 
 const saveValue = () => {
-  const param = { ...state.form };
-  const method =
-    param.id === null ? variableValueCreateApi : variableValueEditApi;
-  valueLoading.value = true;
+  const param = { ...state.form }
+  const method = param.id === null ? variableValueCreateApi : variableValueEditApi
+  valueLoading.value = true
   method(param)
-    .then((res) => {
+    .then(res => {
       if (!res.msg) {
-        state.form.id = res.data.id;
-        ElMessage.success(t("common.save_success"));
+        state.form.id = res.data.id
+        ElMessage.success(t('common.save_success'))
       }
-      valueLoading.value = false;
+      valueLoading.value = false
     })
     .catch(() => {
-      valueLoading.value = false;
-    });
-};
+      valueLoading.value = false
+    })
+}
 
 const filterSelected = () => {
-  state.paginationConfig.currentPage = 1;
-  state.paginationConfig.pageSize = 10;
-  selectedSearch(selectedRoleId.value);
-};
+  state.paginationConfig.currentPage = 1
+  state.paginationConfig.pageSize = 10
+  selectedSearch(selectedRoleId.value)
+}
 const batchDelHandler = () => {
   ElMessageBox.confirm(
-    t("components.to_delete_variable", [
-      state.multipleSelection.map((ele) => ele.value).join(","),
-    ]),
+    t('components.to_delete_variable', [state.multipleSelection.map(ele => ele.value).join(',')]),
     {
-      confirmButtonType: "danger",
-      type: "warning",
-      confirmButtonText: t("common.delete"),
-      cancelButtonText: t("dataset.cancel"),
+      confirmButtonType: 'danger',
+      type: 'warning',
+      confirmButtonText: t('common.delete'),
+      cancelButtonText: t('dataset.cancel'),
       autofocus: false,
-      showClose: false,
-    },
+      showClose: false
+    }
   )
     .then(() => {
-      batchDel();
+      batchDel()
     })
     .catch(() => {
-      clearSelection();
-    });
-};
+      clearSelection()
+    })
+}
 
 const batchDel = () => {
-  const ids = state.multipleSelection.map((item) => item.id);
-  loading.value = true;
+  const ids = state.multipleSelection.map(item => item.id)
+  loading.value = true
   batchDelApi(ids).then(() => {
-    loading.value = false;
-    ElMessage.success(t("common.delete_success"));
-    selectedSearch(selectedRoleId.value);
-  });
-};
+    loading.value = false
+    ElMessage.success(t('common.delete_success'))
+    selectedSearch(selectedRoleId.value)
+  })
+}
 
 const clearSelection = () => {
-  multipleTableRef.value?.clearSelection();
-};
+  multipleTableRef.value?.clearSelection()
+}
 
-const pageChange = (index) => {
-  if (typeof index !== "number") {
-    return;
+const pageChange = index => {
+  if (typeof index !== 'number') {
+    return
   }
-  state.paginationConfig.currentPage = index;
-  selectedSearch(selectedRoleId.value);
-};
-const sizeChange = (size) => {
-  state.paginationConfig.pageSize = size;
-  state.paginationConfig.currentPage = 1;
-  selectedSearch(selectedRoleId.value);
-};
-const sortChange = (param) => {
-  order.value = null;
-  if (param.order && param.prop === "name") {
-    const type = param.order.substring(0, param.order.indexOf("ending"));
-    order.value = "name " + type;
+  state.paginationConfig.currentPage = index
+  selectedSearch(selectedRoleId.value)
+}
+const sizeChange = size => {
+  state.paginationConfig.pageSize = size
+  state.paginationConfig.currentPage = 1
+  selectedSearch(selectedRoleId.value)
+}
+const sortChange = param => {
+  order.value = null
+  if (param.order && param.prop === 'name') {
+    const type = param.order.substring(0, param.order.indexOf('ending'))
+    order.value = 'name ' + type
   } else {
-    order.value = null;
+    order.value = null
   }
-  selectedSearch(selectedRoleId.value);
-};
-const userAddPopper = ref(false);
+  selectedSearch(selectedRoleId.value)
+}
+const userAddPopper = ref(false)
 
 const handleVisibleChange = (val: boolean) => {
-  userAddPopper.value = val;
-};
+  userAddPopper.value = val
+}
 
 const addValue = () => {
-  dialogVisible.value = true;
-  formType.value = "add";
-  Object.assign(state.form, {});
-  state.form.sysVariableId = selectedRoleId.value;
-};
+  dialogVisible.value = true
+  formType.value = 'add'
+  Object.assign(state.form, {})
+  state.form.sysVariableId = selectedRoleId.value
+}
 const reset = () => {
-  resetForm(valueForm.value);
-};
+  resetForm(valueForm.value)
+}
 
-const valueEdit = async (item) => {
-  dialogVisible.value = true;
-  formType.value = "edit";
-  Object.assign(state.form, item);
-};
+const valueEdit = async item => {
+  dialogVisible.value = true
+  formType.value = 'edit'
+  Object.assign(state.form, item)
+}
 
-const valueDelete = (row) => {
-  ElMessageBox.confirm(t("role.confirm_delete"), {
-    confirmButtonType: "danger",
-    type: "warning",
+const valueDelete = row => {
+  ElMessageBox.confirm(t('role.confirm_delete'), {
+    confirmButtonType: 'danger',
+    type: 'warning',
     autofocus: false,
-    confirmButtonText: t("common.delete"),
-    cancelButtonText: t("dataset.cancel"),
+    confirmButtonText: t('common.delete'),
+    cancelButtonText: t('dataset.cancel'),
     dangerouslyUseHTMLString: true,
     message:
-      '<strong style="font-size: 16px;">' +
-      t("system.this_variable_value") +
-      "</strong></br>",
-    showClose: false,
+      '<strong style="font-size: 16px;">' + t('system.this_variable_value') + '</strong></br>',
+    showClose: false
   }).then(() => {
-    loading.value = true;
+    loading.value = true
     variableValueDeletelApi(row.id)
       .then(() => {
-        ElMessage.success(t("common.delete_success"));
-        loading.value = false;
-        state.paginationConfig.currentPage = 1;
-        state.paginationConfig.pageSize = 10;
-        selectedSearch(selectedRoleId.value);
+        ElMessage.success(t('common.delete_success'))
+        loading.value = false
+        state.paginationConfig.currentPage = 1
+        state.paginationConfig.pageSize = 10
+        selectedSearch(selectedRoleId.value)
       })
       .catch(() => {
-        loading.value = false;
-      });
-  });
-};
+        loading.value = false
+      })
+  })
+}
 
-const handleSelectionChange = (rows) => {
-  state.multipleSelection = rows;
-};
+const handleSelectionChange = rows => {
+  state.multipleSelection = rows
+}
 
-const rowCheckStatus = (row) => {
-  return row.id;
-};
+const rowCheckStatus = row => {
+  return row.id
+}
 
 const submitForm = async (formEl: FormInstance | undefined) => {
-  if (!formEl) return;
-  await formEl.validate((valid) => {
+  if (!formEl) return
+  await formEl.validate(valid => {
     if (valid) {
-      const param = { ...state.form };
-      const method =
-        formType.value === "add"
-          ? variableValueCreateApi
-          : variableValueEditApi;
-      valueLoading.value = true;
+      const param = { ...state.form }
+      const method = formType.value === 'add' ? variableValueCreateApi : variableValueEditApi
+      valueLoading.value = true
       method(param)
-        .then((res) => {
+        .then(res => {
           if (!res.msg) {
-            ElMessage.success(t("common.save_success"));
-            reset();
-            selectedSearch(selectedRoleId.value);
+            ElMessage.success(t('common.save_success'))
+            reset()
+            selectedSearch(selectedRoleId.value)
           }
-          valueLoading.value = false;
+          valueLoading.value = false
         })
         .catch(() => {
-          valueLoading.value = false;
-        });
+          valueLoading.value = false
+        })
     }
-  });
-};
+  })
+}
 
 const resetForm = (formEl: FormInstance | undefined) => {
-  if (!formEl) return;
-  formEl.resetFields();
-  state.form.id = null;
-  state.form.sysVariableId = null;
-  state.form.value = "";
-  state.form.valueDesc = "";
-  state.form.begin = "";
-  state.form.end = "";
-  dialogVisible.value = false;
-};
+  if (!formEl) return
+  formEl.resetFields()
+  state.form.id = null
+  state.form.sysVariableId = null
+  state.form.value = ''
+  state.form.valueDesc = ''
+  state.form.begin = ''
+  state.form.end = ''
+  dialogVisible.value = false
+}
 
 onMounted(() => {
   const p = new Promise((resolve, reject) => {
-    variableSearch(resolve, reject);
-  });
+    variableSearch(resolve, reject)
+  })
   p.then(() => {
-    loading.value = false;
+    loading.value = false
   }).catch(() => {
-    loading.value = false;
-  });
-});
+    loading.value = false
+  })
+})
 </script>
 
 <template>
@@ -557,7 +549,7 @@ onMounted(() => {
     <div class="role-list role-height">
       <div class="title">
         <div class="text w100 flex-align-center">
-          <span>{{ t("system.variable_list") }}</span>
+          <span>{{ t('system.variable_list') }}</span>
         </div>
         <el-input
           class="m16 w100"
@@ -568,9 +560,7 @@ onMounted(() => {
         >
           <template #prefix>
             <el-icon>
-              <Icon name="icon_search-outline_outlined"
-                ><icon_searchOutline_outlined
-              /></Icon>
+              <Icon name="icon_search-outline_outlined"><icon_searchOutline_outlined /></Icon>
             </el-icon>
           </template>
         </el-input>
@@ -591,9 +581,7 @@ onMounted(() => {
                   style="color: #3370ff !important; font-size: 20px !important"
                   class="hover-icon_primary"
                 >
-                  <Icon name="icon_add_outlined"
-                    ><icon_add_outlined class="svg-icon"
-                  /></Icon>
+                  <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
                 </el-icon>
               </el-tooltip>
               <el-icon
@@ -602,9 +590,7 @@ onMounted(() => {
                 style="color: #3370ff !important; font-size: 20px !important"
                 class="hover-icon_primary"
               >
-                <Icon name="icon_add_outlined"
-                  ><icon_add_outlined class="svg-icon"
-                /></Icon>
+                <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
               </el-icon>
             </span>
           </div>
@@ -612,17 +598,14 @@ onMounted(() => {
             class="list-item_primary"
             :class="{
               'de-role-hidden': role.hidden,
-              'de-is-active': selectedRoleId === role.id,
+              'de-is-active': selectedRoleId === role.id
             }"
             v-for="role in roleGroup.children"
             :key="role.id"
             @click.stop="handleNodeClick(role)"
           >
             <span class="flex-align-center label">
-              <el-icon
-                v-if="iconName(role)"
-                :style="{ marginRight: '4px', fontSize: '16px' }"
-              >
+              <el-icon v-if="iconName(role)" :style="{ marginRight: '4px', fontSize: '16px' }">
                 <Icon
                   ><component
                     class="svg-icon"
@@ -642,43 +625,29 @@ onMounted(() => {
                 placement="top"
                 v-if="role.root"
               >
-                <span class="mark flex-center">{{ t("role.system") }}</span>
+                <span class="mark flex-center">{{ t('role.system') }}</span>
               </el-tooltip>
             </span>
-            <span
-              v-if="!role.root"
-              class="btn-list"
-              :class="{ 'de-disabled-btn': role.root }"
-            >
+            <span v-if="!role.root" class="btn-list" :class="{ 'de-disabled-btn': role.root }">
               <el-tooltip
                 class="box-item"
                 effect="dark"
-                :content="
-                  role.root ? t('role.system_role_edit_tips') : t('common.edit')
-                "
+                :content="role.root ? t('role.system_role_edit_tips') : t('common.edit')"
                 placement="top"
               >
                 <el-icon @click.stop="roleEdit(role)" class="hover-icon">
-                  <Icon name="icon_edit_outlined"
-                    ><icon_edit_outlined class="svg-icon"
-                  /></Icon>
+                  <Icon name="icon_edit_outlined"><icon_edit_outlined class="svg-icon" /></Icon>
                 </el-icon>
               </el-tooltip>
 
               <el-tooltip
                 class="box-item"
                 effect="dark"
-                :content="
-                  role.root
-                    ? t('role.system_role_del_tips')
-                    : t('common.delete')
-                "
+                :content="role.root ? t('role.system_role_del_tips') : t('common.delete')"
                 placement="top"
               >
                 <el-icon @click.stop="delHandler(role)" class="hover-icon">
-                  <Icon name="icon_delete-trash_outlined"
-                    ><icon_deleteTrash_outlined
-                  /></Icon>
+                  <Icon name="icon_delete-trash_outlined"><icon_deleteTrash_outlined /></Icon>
                 </el-icon>
               </el-tooltip>
             </span>
@@ -693,12 +662,7 @@ onMounted(() => {
     >
       <div
         class="flex-align-center"
-        style="
-          font-size: 16px;
-          font-weight: 500;
-          line-height: 24px;
-          margin-bottom: 16px;
-        "
+        style="font-size: 16px; font-weight: 500; line-height: 24px; margin-bottom: 16px"
       >
         <el-icon
           v-if="iconName({ type: selectedVariableType })"
@@ -716,7 +680,7 @@ onMounted(() => {
       <el-row>
         <el-col :span="12">
           <el-button @click="addValue" type="primary">
-            {{ t("system.add_variable_value") }}
+            {{ t('system.add_variable_value') }}
           </el-button>
         </el-col>
         <el-col :span="12" style="margin-bottom: 16px; text-align: right">
@@ -729,18 +693,13 @@ onMounted(() => {
           >
             <template #prefix>
               <el-icon>
-                <Icon name="icon_search-outline_outlined"
-                  ><icon_searchOutline_outlined
-                /></Icon>
+                <Icon name="icon_search-outline_outlined"><icon_searchOutline_outlined /></Icon>
               </el-icon>
             </template>
           </el-input>
         </el-col>
       </el-row>
-      <div
-        class="user-table"
-        :class="!!state.multipleSelection.length && 'user-table_multiple'"
-      >
+      <div class="user-table" :class="!!state.multipleSelection.length && 'user-table_multiple'">
         <GridTable
           ref="multipleTableRef"
           :pagination="state.paginationConfig"
@@ -749,11 +708,7 @@ onMounted(() => {
           @size-change="sizeChange"
           @selection-change="handleSelectionChange"
         >
-          <el-table-column
-            type="selection"
-            width="30"
-            :selectable="rowCheckStatus"
-          />
+          <el-table-column type="selection" width="30" :selectable="rowCheckStatus" />
           <el-table-column
             key="value"
             show-overflow-tooltip
@@ -776,37 +731,20 @@ onMounted(() => {
             </template>
           </el-table-column>
 
-          <el-table-column
-            width="124"
-            key="_operation"
-            fixed="right"
-            :label="$t('common.operate')"
-          >
+          <el-table-column width="124" key="_operation" fixed="right" :label="$t('common.operate')">
             <template #default="scope">
               <div class="operate-icon-container">
-                <el-tooltip
-                  effect="dark"
-                  :content="t('common.edit')"
-                  placement="top"
-                >
+                <el-tooltip effect="dark" :content="t('common.edit')" placement="top">
                   <el-button text @click="valueEdit(scope.row)">
                     <template #icon>
-                      <Icon name="icon_edit_outlined"
-                        ><icon_edit_outlined
-                      /></Icon>
+                      <Icon name="icon_edit_outlined"><icon_edit_outlined /></Icon>
                     </template>
                   </el-button>
                 </el-tooltip>
-                <el-tooltip
-                  effect="dark"
-                  :content="t('common.delete')"
-                  placement="top"
-                >
+                <el-tooltip effect="dark" :content="t('common.delete')" placement="top">
                   <el-button text @click="valueDelete(scope.row)">
                     <template #icon>
-                      <Icon name="icon_delete-trash_outlined"
-                        ><icon_deleteTrash_outlined
-                      /></Icon>
+                      <Icon name="icon_delete-trash_outlined"><icon_deleteTrash_outlined /></Icon>
                     </template>
                   </el-button>
                 </el-tooltip>
@@ -814,23 +752,15 @@ onMounted(() => {
             </template>
           </el-table-column>
         </GridTable>
-        <div
-          v-if="state.multipleSelection.length"
-          class="bottom-bar flex-align-center"
-        >
-          <el-button
-            type="danger"
-            class="batch-delete-button"
-            plain
-            @click="batchDelHandler"
-          >
-            {{ t("user.batch_del") }}
+        <div v-if="state.multipleSelection.length" class="bottom-bar flex-align-center">
+          <el-button type="danger" class="batch-delete-button" plain @click="batchDelHandler">
+            {{ t('user.batch_del') }}
           </el-button>
           <span class="bottom-info">{{
-            t("user.selection_info", [state.multipleSelection.length])
+            t('user.selection_info', [state.multipleSelection.length])
           }}</span>
           <el-button text @click="clearSelection">
-            {{ t("user.clear_button") }}
+            {{ t('user.clear_button') }}
           </el-button>
         </div>
       </div>
@@ -842,12 +772,7 @@ onMounted(() => {
     >
       <div
         class="flex-align-center"
-        style="
-          font-size: 16px;
-          font-weight: 500;
-          line-height: 24px;
-          margin-bottom: 16px;
-        "
+        style="font-size: 16px; font-weight: 500; line-height: 24px; margin-bottom: 16px"
       >
         <el-icon
           v-if="iconName({ type: selectedVariableType })"
@@ -863,7 +788,7 @@ onMounted(() => {
       </div>
       <el-row>
         <el-col style="font-size: 14px; line-height: 22px" :span="12">
-          {{ t("system.set_variable_value") }}
+          {{ t('system.set_variable_value') }}
         </el-col>
       </el-row>
       <div class="user-table">
@@ -907,12 +832,7 @@ onMounted(() => {
     >
       <div
         class="flex-align-center"
-        style="
-          font-size: 16px;
-          font-weight: 500;
-          line-height: 24px;
-          margin-bottom: 16px;
-        "
+        style="font-size: 16px; font-weight: 500; line-height: 24px; margin-bottom: 16px"
       >
         <el-icon
           v-if="iconName({ type: selectedVariableType })"
@@ -929,7 +849,7 @@ onMounted(() => {
       </div>
       <el-row>
         <el-col style="font-size: 14px; line-height: 22px" :span="12">
-          {{ t("system.set_variable_value") }}
+          {{ t('system.set_variable_value') }}
         </el-col>
       </el-row>
       <div class="user-table">
@@ -986,11 +906,7 @@ onMounted(() => {
     :before-close="reset"
     v-model="dialogVisible"
     ref="valueForm"
-    :title="
-      formType === 'add'
-        ? t('system.add_variable_value')
-        : t('system.edit_variable_value')
-    "
+    :title="formType === 'add' ? t('system.add_variable_value') : t('system.edit_variable_value')"
     :close-on-click-modal="false"
     width="840px"
     :v-loading="valueLoading"
@@ -1006,10 +922,7 @@ onMounted(() => {
       @keydown.stop.prevent.enter
     >
       <el-form-item :label="t('system.variable_value')" prop="value">
-        <el-input
-          v-model="state.form.value"
-          :placeholder="t('data_set.enter_1_50_characters')"
-        />
+        <el-input v-model="state.form.value" :placeholder="t('data_set.enter_1_50_characters')" />
       </el-form-item>
       <el-form-item :label="t('system.variable_desc')" prop="valueDesc">
         <el-input
@@ -1020,11 +933,9 @@ onMounted(() => {
     </el-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="resetForm(valueForm)">{{
-          t("common.cancel")
-        }}</el-button>
+        <el-button @click="resetForm(valueForm)">{{ t('common.cancel') }}</el-button>
         <el-button type="primary" @click="submitForm(valueForm)">
-          {{ t("common.sure") }}
+          {{ t('common.sure') }}
         </el-button>
       </span>
     </template>
@@ -1113,7 +1024,7 @@ onMounted(() => {
       }
       .role-title {
         color: #8d9199;
-        font-family: var(--de-custom_font, "PingFang");
+        font-family: var(--de-custom_font, 'PingFang');
         font-size: 14px;
         font-style: normal;
         font-weight: 500;
@@ -1141,7 +1052,7 @@ onMounted(() => {
           margin-left: 8px;
           background-color: var(--ed-color-primary-light-7);
           color: var(--ed-menu-active-color);
-          font-family: var(--de-custom_font, "PingFang");
+          font-family: var(--de-custom_font, 'PingFang');
           font-size: 10px;
           font-weight: 500;
           line-height: 13px;
@@ -1153,7 +1064,7 @@ onMounted(() => {
           margin-left: 8px;
           background-color: rgb(232 233 233);
           color: #646a73;
-          font-family: var(--de-custom_font, "PingFang");
+          font-family: var(--de-custom_font, 'PingFang');
           font-size: 10px;
           font-weight: 500;
           line-height: 13px;
@@ -1192,7 +1103,7 @@ onMounted(() => {
   .title {
     display: flex;
     justify-content: space-between;
-    font-family: var(--de-custom_font, "PingFang");
+    font-family: var(--de-custom_font, 'PingFang');
     font-size: 20px;
     font-weight: 500;
     color: var(--TextPrimary, #1f2329);
@@ -1204,7 +1115,7 @@ onMounted(() => {
     z-index: 5;
     background: white;
     &::before {
-      content: "";
+      content: '';
       width: 100%;
       height: 24px;
       top: -24px;
@@ -1257,7 +1168,7 @@ onMounted(() => {
     .user-info {
       margin-bottom: 16px;
       font-style: normal;
-      font-family: var(--de-custom_font, "PingFang");
+      font-family: var(--de-custom_font, 'PingFang');
       font-size: 16px;
       .text {
         font-style: normal;
@@ -1275,7 +1186,7 @@ onMounted(() => {
         margin-left: 8px;
         background-color: var(--ed-color-primary-light-7);
         color: var(--ed-menu-active-color);
-        font-family: var(--de-custom_font, "PingFang");
+        font-family: var(--de-custom_font, 'PingFang');
         font-size: 10px;
         font-weight: 500;
         line-height: 13px;

@@ -1,7 +1,15 @@
 import { useI18n } from '@/hooks/web/useI18n'
 import { deepCopy } from '@/utils/utils'
-import { formatterItem, isEnLocal } from '@/views/chart/components/js/formatter'
 const { t } = useI18n()
+const isEnLocal = false
+export const formatterItem = {
+  type: 'auto', // auto,value,percent
+  unitLanguage: isEnLocal ? 'en' : 'ch',
+  unit: 1, // 换算单位
+  suffix: '', // 单位后缀
+  decimalCount: 2, // 小数位数
+  thousandSeparator: true // 千分符
+}
 
 export const DEFAULT_COLOR_CASE: DeepPartial<ChartAttr> = {
   basicStyle: {
@@ -533,8 +541,7 @@ export const DEFAULT_TABLE_CELL: ChartTableCellAttr = {
   tableFreeze: false,
   tableColumnFreezeHead: 0,
   tableRowFreezeHead: 0,
-  mergeCells: true,
-  alignConfig: []
+  mergeCells: true
 }
 export const DEFAULT_TITLE_STYLE: ChartTextStyle = {
   show: true,
