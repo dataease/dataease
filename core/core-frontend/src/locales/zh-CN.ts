@@ -4714,7 +4714,7 @@ export default {
   },
   free: {
     batch: '批量',
-    save_error: '禁止操作【迁移资源】目录',
+    save_error: '禁止操作【迁移资源】目录'
   },
   relation: {
     no_permission: '没有查看权限',
