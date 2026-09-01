@@ -9,6 +9,7 @@ import {
   getSideLegendMaxWidth,
   getSideLegendRowsPerPage,
   SIDE_LEGEND_DEFAULT_COL_PADDING,
+  SIDE_LEGEND_MIN_LABEL_WIDTH,
   SIDE_HORIZONTAL_LEGEND_MAX_COLS,
   SIDE_LEGEND_NAVIGATOR_WIDTH
 } from '@/views/chart/components/js/panel/types/impl/g2-legend'
@@ -27,6 +28,8 @@ interface MixSideLegendLayout {
   itemHeight: number
   rowPadding: number
   contentWidth: number
+  minItemWidth?: number
+  maxWidthRatio?: number
   // 组合图外层分栏无法读取 Navigator，保存逐项宽度和页码供翻页后重新分配 Plot
   itemWidths?: number[]
   currentPage?: number
@@ -83,8 +86,18 @@ const getMixSideLegendWidth = (
   const pageContentWidth = currentPageItemWidths.length
     ? Math.max(...currentPageItemWidths)
     : layout.contentWidth
-  const contentWidth = pageContentWidth * layout.columns + layout.crossPadding + navigatorExtra
-  return Math.max(1, Math.min(contentWidth, getSideLegendMaxWidth(containerWidth)))
+  // 水平侧栏的内层网格会为每列保留最少的文字宽度；外层也需按同一最小宽度
+  // 分栏，避免短名称反而令图例子 View 窄到只能降级为单列。
+  const itemWidth =
+    layout.columns > 1 ? Math.max(pageContentWidth, layout.minItemWidth ?? 0) : pageContentWidth
+  // 内层 maxWidthRatio=1 仍会为绘图区保留 1px，因此多列外层再预留 1px，
+  // 使分配后的子 View 宽度恰好满足内层 requiredWidth。
+  const contentWidth =
+    itemWidth * layout.columns + layout.crossPadding + navigatorExtra + (layout.columns > 1 ? 1 : 0)
+  return Math.max(
+    1,
+    Math.min(contentWidth, getSideLegendMaxWidth(containerWidth, layout.maxWidthRatio))
+  )
 }
 
 const getMixSideLegendRatio = (options, layout: MixSideLegendLayout) => {
@@ -327,6 +340,8 @@ export const configMixCustomLegend = (
   const legendColor = legend.color || '#333333'
   const legendChartGap = 8
   const legendRowPadding = 8
+  const legendItemSpacing = 8
+  const horizontalSideLegendMaxWidthRatio = 0.4
   const legendNavigatorWidth = SIDE_LEGEND_NAVIGATOR_WIDTH
   const legendItemHeight = Math.ceil(Math.max(legendFontSize * 1.3, legendMarkerSize))
   const legendNavigatorHeight = legendItemHeight + 12
@@ -337,7 +352,8 @@ export const configMixCustomLegend = (
     ([name]) => getTextWidth(name) + legendMarkerSize + 40
   )
   const sideLegendItemWidths = unionRelations.map(
-    ([name]) => getTextWidth(name) + legendMarkerSize + 8 + SIDE_LEGEND_DEFAULT_COL_PADDING
+    ([name]) =>
+      getTextWidth(name) + legendMarkerSize + legendItemSpacing + SIDE_LEGEND_DEFAULT_COL_PADDING
   )
   const getLegendChartGap = (
     direction: 'col' | 'row',
@@ -398,6 +414,15 @@ export const configMixCustomLegend = (
                   itemHeight: legendItemHeight,
                   rowPadding: legendRowPadding,
                   contentWidth: Math.max(...sideLegendItemWidths),
+                  minItemWidth:
+                    legendMarkerSize +
+                    legendItemSpacing +
+                    SIDE_LEGEND_MIN_LABEL_WIDTH +
+                    SIDE_LEGEND_DEFAULT_COL_PADDING,
+                  maxWidthRatio:
+                    legendOptions.supportOrient && !verticalLegend
+                      ? horizontalSideLegendMaxWidthRatio
+                      : undefined,
                   itemWidths: sideLegendItemWidths,
                   currentPage: 0,
                   crossPadding: crossGap
@@ -449,6 +474,7 @@ export const configMixCustomLegend = (
     if (horizontal) {
       legendMark.dataeaseLegendOrientLayout = 'horizontal'
     }
+    legendMark.dataeaseSideLegendMinColumns = horizontal ? columns : undefined
     ;(options as any).dataeaseSideLegendLayout = {
       legendFirst,
       itemCount: unionRelations.length,
@@ -456,6 +482,13 @@ export const configMixCustomLegend = (
       itemHeight: legendItemHeight,
       rowPadding: legendRowPadding,
       contentWidth: Math.max(...sideLegendItemWidths),
+      minItemWidth: horizontal
+        ? legendMarkerSize +
+          legendItemSpacing +
+          SIDE_LEGEND_MIN_LABEL_WIDTH +
+          SIDE_LEGEND_DEFAULT_COL_PADDING
+        : undefined,
+      maxWidthRatio: horizontal ? horizontalSideLegendMaxWidthRatio : undefined,
       itemWidths: sideLegendItemWidths,
       currentPage: 0,
       crossPadding: Number(legendMark.crossPadding) || 0

@@ -325,7 +325,8 @@ const prepareSideLegendLayout = (
         itemMarkerSize,
         itemSpacing,
         crossPadding,
-        maxWidthRatio: Number(component.dataeaseSideLegendMaxWidthRatio)
+        maxWidthRatio: Number(component.dataeaseSideLegendMaxWidthRatio),
+        minColumns: Number(component.dataeaseSideLegendMinColumns)
       })
       // 专用标记才会固定水平侧栏网格，普通左右图例仍交给 G2 单列推导
       component.maxCols = grid.columns
