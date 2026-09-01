@@ -28,9 +28,11 @@ const DashboardEditor = defineAsyncComponent(() => import('@/views/dashboard/ind
 
 const Dashboard = defineAsyncComponent(() => import('@/pages/panel/DashboardPreview.vue'))
 const ViewWrapper = defineAsyncComponent(() => import('@/pages/panel/ViewWrapper.vue'))
-const Dataset = defineAsyncComponent(() => import('@/views/visualized/data/dataset/index.vue'))
+const Dataset = defineAsyncComponent(
+  () => import('@/views/pages/visualized/data/dataset/index.vue')
+)
 const Datasource = defineAsyncComponent(
-  () => import('@/views/visualized/data/datasource/index.vue')
+  () => import('@/views/pages/visualized/data/datasource/index.vue')
 )
 
 const ExportExcel = defineAsyncComponent(
@@ -42,10 +44,10 @@ const DashboardPanel = defineAsyncComponent(
 )
 const TemplateManage = defineAsyncComponent(() => import('@/views/template/indexInject.vue'))
 const DataFillingManage = defineAsyncComponent(
-  () => import('@/views/menu/data/data-filling/manage/index.vue')
+  () => import('@/views/pages/menu/data/data-filling/manage/index.vue')
 )
 const DataFillingForm = defineAsyncComponent(
-  () => import('@/views/menu/data/data-filling/manage/form/index.vue')
+  () => import('@/views/pages/menu/data/data-filling/manage/form/index.vue')
 )
 const DataFillingTabPaneTable = defineAsyncComponent(
   () => import('@/views/menu/data/data-filling/fill/TabPaneTable.vue')

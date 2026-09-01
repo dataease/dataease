@@ -12,15 +12,17 @@ const DashboardEditor = defineAsyncComponent(() => import('@/views/dashboard/ind
 const Dashboard = defineAsyncComponent(() => import('./DashboardPreview.vue'))
 const ViewWrapper = defineAsyncComponent(() => import('./ViewWrapper.vue'))
 const Iframe = defineAsyncComponent(() => import('./Iframe.vue'))
-const Dataset = defineAsyncComponent(() => import('@/views/visualized/data/dataset/index.vue'))
+const Dataset = defineAsyncComponent(
+  () => import('@/views/pages/visualized/data/dataset/index.vue')
+)
 const ExportExcel = defineAsyncComponent(
   () => import('@/views/visualized/data/dataset/ExportExcel.vue')
 )
 const DatasetEditor = defineAsyncComponent(
-  () => import('@/views/visualized/data/dataset/form/index.vue')
+  () => import('@/views/pages/visualized/data/dataset/form/index.vue')
 )
 const Datasource = defineAsyncComponent(
-  () => import('@/views/visualized/data/datasource/index.vue')
+  () => import('@/views/pages/visualized/data/datasource/index.vue')
 )
 const ScreenPanel = defineAsyncComponent(() => import('@/views/data-visualization/PreviewShow.vue'))
 const DashboardPanel = defineAsyncComponent(
@@ -32,10 +34,10 @@ const TemplateManage = defineAsyncComponent(() => import('@/views/template/index
 const Preview = defineAsyncComponent(() => import('@/views/data-visualization/PreviewCanvas.vue'))
 const DashboardEmpty = defineAsyncComponent(() => import('@/views/mobile/panel/DashboardEmpty.vue'))
 const DataFillingManage = defineAsyncComponent(
-  () => import('@/views/menu/data/data-filling/manage/index.vue')
+  () => import('@/views/pages/menu/data/data-filling/manage/index.vue')
 )
 const DataFillingForm = defineAsyncComponent(
-  () => import('@/views/menu/data/data-filling/manage/form/index.vue')
+  () => import('@/views/pages/menu/data/data-filling/manage/form/index.vue')
 )
 const DataFillingTabPaneTable = defineAsyncComponent(
   () => import('@/views/menu/data/data-filling/fill/TabPaneTable.vue')

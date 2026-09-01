@@ -15,7 +15,7 @@ export const routes: AppRouteRecordRaw[] = [
         path: 'workbranch',
         name: 'workbranch',
         hidden: true,
-        component: () => import('@/views/workbranch/index.vue'),
+        component: () => import('@/views/pages/workbranch/index.vue'),
         meta: { hidden: true }
       }
     ]
@@ -88,14 +88,14 @@ export const routes: AppRouteRecordRaw[] = [
     name: 'dataset-embedded',
     hidden: true,
     meta: {},
-    component: () => import('@/views/visualized/data/dataset/index.vue')
+    component: () => import('@/views/pages/visualized/data/dataset/index.vue')
   },
   {
     path: '/dataset-embedded-form',
     name: 'dataset-embedded-form',
     hidden: true,
     meta: {},
-    component: () => import('@/views/visualized/data/dataset/form/index.vue')
+    component: () => import('@/views/pages/visualized/data/dataset/form/index.vue')
   },
   {
     path: '/preview',

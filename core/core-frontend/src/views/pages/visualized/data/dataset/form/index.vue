@@ -1,0 +1,3574 @@
+<script lang="tsx" setup>
+import dvFolder from '@/assets/svg/dv-folder.svg'
+import icon_left_outlined from '@/assets/svg/icon_left_outlined.svg'
+import icon_right_outlined from '@/assets/svg/icon_right_outlined.svg'
+import referenceTable from '@/assets/svg/reference-table.svg'
+import icon_organization_outlined from '@/assets/svg/icon_organization_outlined.svg'
+import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
+import icon_sql_outlined_1 from '@/assets/svg/icon_sql_outlined_1.svg'
+import icon_warning_colorful from '@/assets/svg/icon_warning_colorful.svg'
+import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
+import icon_refresh_outlined from '@/assets/svg/icon_refresh_outlined.svg'
+import icon_expandRight_filled from '@/assets/svg/icon_expand-right_filled.svg'
+import icon_switch_outlined from '@/assets/svg/icon_switch_outlined.svg'
+import icon_copy_outlined from '@/assets/svg/icon_copy_outlined.svg'
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
+import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
+import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
+import dayjs from 'dayjs'
+import {
+  iconFieldCalculatedMap,
+  iconFieldCalculatedQMap
+} from '@/components/icon-group/field-calculated-list'
+import { enumValueDs, singleVal } from '@/api/dataset'
+import {
+  ref,
+  toRaw,
+  unref,
+  nextTick,
+  reactive,
+  shallowRef,
+  computed,
+  watch,
+  provide,
+  h,
+  onMounted,
+  onBeforeUnmount,
+  defineAsyncComponent
+} from 'vue'
+import { useCache } from '@/hooks/web/useCache'
+import { useI18n } from '@/hooks/web/useI18n'
+import { useEmitt } from '@/hooks/web/useEmitt'
+import { ElIcon, ElMessageBox, ElMessage } from 'element-plus-secondary'
+import FixedSizeList from 'element-plus-secondary/es/components/virtual-list/src/components/fixed-size-list.mjs'
+import type { Action } from 'element-plus-secondary'
+import FieldMore from '@/views/visualized/data/dataset/form/FieldMore.vue'
+import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
+import { Icon } from '@/components/icon-custom'
+import { useWindowSize } from '@vueuse/core'
+import CalcFieldEdit from '@/views/visualized/data/dataset/form/CalcFieldEdit.vue'
+import { useRoute, useRouter } from 'vue-router_2'
+import UnionEdit from '@/views/visualized/data/dataset/form/UnionEdit.vue'
+import type { FormInstance } from 'element-plus-secondary'
+import type { BusiTreeNode } from '@/models/tree/TreeNode'
+import CreatDsGroup from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
+import {
+  guid,
+  getFieldName,
+  timeTypes,
+  num,
+  type DataSource
+} from '@/views/visualized/data/dataset/form/util'
+import { fieldType } from '@/utils/attr'
+import { cancelMap } from '@/config/axios/service'
+import { useEmbedded } from '@/store/modules/embedded'
+import { useAppStoreWithOut } from '@/store/modules/app'
+import {
+  getDatasourceList,
+  getTables,
+  getPreviewData,
+  getDatasetDetails,
+  saveDatasetTree,
+  barInfoApi
+} from '@/api/dataset'
+import type { Table } from '@/api/dataset'
+import DatasetUnion from '@/views/visualized/data/dataset/form/DatasetUnion.vue'
+import { cloneDeep, debounce } from 'lodash-es'
+import { iconFieldMap } from '@/components/icon-group/field-list'
+import { iconDatasourceMap } from '@/components/icon-group/datasource-list'
+const NewWindowHandler = defineAsyncComponent(
+  () => import('@/views/component/embedded-iframe/NewWindowHandler.vue')
+)
+const DsCategoryHandler = defineAsyncComponent(
+  () => import('@/views/component/plugins-handler/DsCategoryHandler.vue')
+)
+const Dataset = defineAsyncComponent(() => import('@/views/component/dataset/index.vue'))
+interface DragEvent extends MouseEvent {
+  dataTransfer: DataTransfer
+}
+
+interface Field {
+  fieldShortName: string
+  name: string
+  dataeaseName: string
+  originName: string
+  deType: number
+}
+const { wsCache } = useCache()
+const appStore = useAppStoreWithOut()
+const embeddedStore = useEmbedded()
+const { t } = useI18n()
+const route = useRoute()
+const { push } = useRouter() || {
+  push: val => {
+    if (embeddedStore.getToken) return
+    window.location.href = val as string
+  }
+}
+const quotaTableHeight = ref(238)
+const creatDsFolder = ref()
+const editCalcField = ref(false)
+const calcEdit = ref()
+const editUnion = ref(false)
+const datasetDrag = ref()
+const datasetName = ref(t('data_set.unnamed_dataset'))
+const tabActive = ref('preview')
+const activeName = ref('')
+const dataSource = ref('')
+const searchTable = ref('')
+const showInput = ref(false)
+const dsLoading = ref(false)
+const LeftWidth = ref(240)
+const offsetX = ref(0)
+const offsetY = ref(0)
+const showLeft = ref(true)
+const maskShow = ref(false)
+const loading = ref(true)
+const updateCustomTime = ref(false)
+const editorName = ref()
+const nameMap = ref({})
+const currentField = ref({
+  dateFormat: '',
+  id: '',
+  dateFormatType: '',
+  name: '',
+  idArr: []
+})
+const isCross = ref(false)
+let isUpdate = false
+const singleValData = ref(false)
+const currentDsId = computed(() => {
+  const [first] = datasetDrag.value.getNodeList()
+  return first?.datasourceId
+})
+provide('singleVal', singleValData)
+provide('currentDsId', currentDsId)
+const fieldTypes = index => {
+  return [
+    t('dataset.text'),
+    t('dataset.time'),
+    t('dataset.value'),
+    t('dataset.value') + '(' + t('dataset.float') + ')',
+    t('dataset.value'),
+    t('dataset.location')
+  ][index]
+}
+
+const changeUpdate = () => {
+  isUpdate = true
+}
+
+const fieldOptions = [
+  { label: t('dataset.text'), value: 0 },
+  {
+    label: t('dataset.time'),
+    value: 1,
+    children: [
+      {
+        value: 'yyyy-MM-dd',
+        label: 'yyyy-MM-dd'
+      },
+      {
+        value: 'yyyy/MM/dd',
+        label: 'yyyy/MM/dd'
+      },
+      {
+        value: 'yyyy-MM-dd HH:mm:ss',
+        label: 'yyyy-MM-dd HH:mm:ss'
+      },
+      {
+        value: 'yyyy/MM/dd HH:mm:ss',
+        label: 'yyyy/MM/dd HH:mm:ss'
+      },
+      {
+        value: 'custom',
+        label: t('visualization.custom')
+      }
+    ]
+  },
+  { label: t('dataset.location'), value: 5 },
+  { label: t('dataset.value'), value: 2 },
+  {
+    label: t('dataset.value') + '(' + t('dataset.float') + ')',
+    value: 3
+  },
+  { label: 'URL', value: 7 }
+]
+
+const fieldOptionsText = [
+  { label: t('dataset.text'), value: 0 },
+  {
+    label: t('dataset.time'),
+    value: 1
+  },
+  { label: t('dataset.location'), value: 5 },
+  { label: t('dataset.value'), value: 2 },
+  {
+    label: t('dataset.value') + '(' + t('dataset.float') + ')',
+    value: 3
+  },
+  { label: 'URL', value: 7 }
+]
+
+const ruleFormRef = ref<FormInstance>()
+const ruleFormFieldRef = ref<FormInstance>()
+
+const rules = {
+  name: [{ required: true, message: t('data_set.cannot_be_empty_time'), trigger: 'blur' }]
+}
+
+const fieldRules = {
+  name: [{ required: true, message: t('dataset.input_edit_name'), trigger: 'blur' }]
+}
+
+const sqlNode = reactive<Table>({
+  datasourceId: '',
+  name: '',
+  tableName: t('data_set.custom_sql'),
+  type: 'sql'
+})
+
+let nodeInfo = {
+  id: '',
+  pid: '',
+  name: ''
+}
+
+const defaultProps = {
+  children: 'children',
+  label: 'label'
+}
+const dragHeight = ref(260)
+
+let tableList = []
+
+const dfsName = (arr, id) => {
+  let name = ''
+  arr.some(ele => {
+    if (ele.id === id) {
+      name = ele.name
+      return true
+    }
+
+    if (!!ele.children?.length) {
+      name = dfsName(ele.children, id) || name
+    }
+    return false
+  })
+
+  return name
+}
+
+const { height } = useWindowSize()
+
+const dfsChild = arr => {
+  return arr.filter(ele => {
+    if (ele.leaf) {
+      return true
+    }
+    if (!!ele.children?.length) {
+      ele.children = dfsChild(ele.children || [])
+    }
+    return !!ele.children?.length
+  })
+}
+
+const getDsName = (id: string) => {
+  return dfsName(state.dataSourceList, id)
+}
+
+const pushDataset = () => {
+  wsCache.set(`dataset-info-id`, nodeInfo.id)
+  if (appStore.isDataEaseBi) {
+    embeddedStore.clearState()
+    useEmitt().emitter.emit('changeCurrentComponent', 'Dataset')
+    return
+  }
+  const routeName = embeddedStore.getToken && appStore.getIsIframe ? 'dataset-embedded' : 'dataset'
+  if (!!history.state.back && !appStore.getIsIframe) {
+    history.back()
+  } else {
+    push({
+      name: routeName,
+      params: {
+        id: nodeInfo.id
+      }
+    })
+  }
+}
+
+const backToMain = () => {
+  if (isUpdate) {
+    ElMessageBox.confirm(t('data_set.want_to_exit'), {
+      confirmButtonText: t('dataset.confirm'),
+      cancelButtonText: t('common.cancel'),
+      showCancelButton: true,
+      confirmButtonType: 'primary',
+      type: 'warning',
+      autofocus: false,
+      showClose: false
+    }).then(() => {
+      pushDataset()
+    })
+  } else {
+    pushDataset()
+  }
+}
+
+const closeCustomTime = () => {
+  if (!!currentField.value.idArr.length) {
+    const { idArr } = currentField.value
+    allfields.value.forEach(ele => {
+      if (idArr.includes(ele.id)) {
+        Object.assign(ele, { deTypeArr: [...oldArrValue] })
+      }
+    })
+    delete currentField.value.name
+    recoverSelection()
+  } else {
+    dimensions.value.concat(quota.value).some(ele => {
+      if (ele.id === currentField.value.id) {
+        delete currentField.value.name
+        Object.assign(ele, { deTypeArr: [...oldArrValue] })
+        return true
+      }
+      return false
+    })
+  }
+  currentField.value.idArr = []
+  currentField.value.id = ''
+  updateCustomTime.value = false
+}
+
+const confirmCustomTime = () => {
+  if (!!currentField.value.idArr.length) {
+    const { name, idArr } = currentField.value
+    allfields.value.forEach(ele => {
+      if (idArr.includes(ele.id)) {
+        Object.assign(ele, {
+          deType: 1,
+          dateFormatType: 'custom',
+          dateFormat: name,
+          deTypeArr: [1, 'custom']
+        })
+      }
+    })
+    delete currentField.value.name
+    recoverSelection()
+    updateCustomTime.value = false
+  } else {
+    ruleFormRef.value.validate(valid => {
+      if (valid) {
+        dimensions.value.concat(quota.value).some(ele => {
+          if (ele.id === currentField.value.id) {
+            ele.dateFormat = currentField.value.name
+            ele.deType = 1
+            ele.dateFormatType = 'custom'
+            return true
+          }
+          return false
+        })
+        updateCustomTime.value = false
+      }
+    })
+  }
+}
+
+watch(searchTable, val => {
+  datasourceTableData.value = tableList.filter(ele =>
+    ele.tableName.toLowerCase().includes(val.toLowerCase())
+  )
+})
+const editeSave = () => {
+  const union = []
+  loading.value = true
+  dfsNodeList(union, datasetDrag.value.getNodeList())
+  saveDatasetTree({
+    ...nodeInfo,
+    name: datasetName.value,
+    union,
+    isCross: isCross.value,
+    allFields: allfields.value,
+    nodeType: 'dataset'
+  })
+    .then(() => {
+      isUpdate = false
+      ElMessage.success(t('data_set.saved_successfully'))
+      if (willBack) {
+        pushDataset()
+      }
+    })
+    .finally(() => {
+      loading.value = false
+    })
+}
+
+const handleFieldMore = (ele, type) => {
+  changeUpdate()
+  if (tabActive.value === 'manage') {
+    dimensionsSelection.value = dimensionsTable.value.getSelectionRows().map(ele => ele.id)
+    quotaSelection.value = quotaTable.value.getSelectionRows().map(ele => ele.id)
+  }
+  const arr = ['text', 'time', 'value', 'float', 'value', 'location', 'binary', 'url']
+  if (arr.includes(type as string)) {
+    ele.deType = arr.indexOf(type)
+    ele.dateFormat = ''
+    return
+  }
+  if (timeTypes.includes(type as string)) {
+    currentField.value.dateFormat = ele.dateFormat
+    currentField.value.dateFormatType = ele.dateFormatType
+
+    ele.deType = 1
+    ele.dateFormatType = type
+    ele.dateFormat = type
+  }
+  switch (type) {
+    case 'copy':
+      if (ele.extField === 3) {
+        copyGroupField(ele)
+      } else {
+        copyField(ele)
+      }
+      break
+    case 'delete':
+      deleteField(ele)
+      break
+    case 'translate':
+      dqTrans(ele.id)
+      break
+    case 'editor':
+      if (ele.extField === 3) {
+        initGroupField(ele)
+      } else {
+        editField(ele)
+      }
+      break
+    case 'rename':
+      renameField(ele)
+      break
+    case 'custom':
+      currentField.value.id = ele.id
+      updateCustomTime.value = true
+      break
+    default:
+      break
+  }
+
+  if (tabActive.value === 'manage') {
+    recoverSelection()
+  }
+}
+
+const dqTrans = id => {
+  const obj = allfields.value.find(ele => ele.id === id)
+  obj.groupType = obj.groupType === 'd' ? 'q' : 'd'
+}
+
+const dqTransArr = groupType => {
+  const idArr = fieldSelection.value.map(ele => ele.id)
+  allfields.value.forEach(ele => {
+    if (idArr.includes(ele.id)) {
+      ele.groupType = groupType
+    }
+  })
+  recoverSelection()
+}
+
+const copyField = item => {
+  const param = cloneDeep(item)
+  param.id = guid()
+  param.extField = 2
+  param.originName = item.extField === 2 ? item.originName : '[' + item.id + ']'
+  param.name = getFieldName(dimensions.value.concat(quota.value), item.name)
+  param.dataeaseName = null
+  param.lastSyncTime = null
+  const index = allfields.value.findIndex(ele => ele.id === item.id)
+  allfields.value.splice(index + 1, 0, param)
+}
+
+const selectable = row => ![3].includes(row.extField)
+
+const copyGroupField = item => {
+  const param = cloneDeep(item)
+  param.id = guid()
+  param.name = getFieldName(dimensions.value.concat(quota.value), item.name)
+  const index = allfields.value.findIndex(ele => ele.id === item.id)
+  allfields.value.splice(index + 1, 0, param)
+}
+
+const delFieldById = arr => {
+  const delId = [...arr]
+  while (delId.length) {
+    const [targetId] = delId
+    delId.shift()
+    allfields.value = allfields.value.filter(ele => ele.id !== targetId)
+    const paramsId = allfields.value.reduce((pre, next) => {
+      if (next.extField === 2) {
+        pre = [...pre, ...(next.params || []).map(element => element.id)]
+      }
+      return pre
+    }, [])
+    const allfieldsId = allfields.value.map(ele => ele.id).concat(paramsId)
+    allfields.value = allfields.value.filter(ele => {
+      if (![2, 3].includes(ele.extField)) return true
+      const idMap = ele.originName.match(/\[(.+?)\]/g) || []
+      if (!idMap) return true
+      const result = idMap.every(itm => {
+        const id = itm.slice(1, -1)
+        return allfieldsId.includes(id)
+      })
+      if (result) return true
+      delId.push(ele.id)
+      return false
+    })
+  }
+
+  delGroupIds()
+}
+
+const delFieldByIdFake = (arr, fakeAllfields) => {
+  const delId = [...arr]
+  let idList = []
+  while (delId.length) {
+    const [targetId] = delId
+    delId.shift()
+    fakeAllfields = fakeAllfields.filter(ele => ele.id !== targetId)
+    const allfieldsId = fakeAllfields.map(ele => ele.id)
+    fakeAllfields = fakeAllfields.filter(ele => {
+      if (![2, 3].includes(ele.extField)) return true
+      const idMap = ele.originName.match(/\[(.+?)\]/g) || []
+      if (
+        !idMap ||
+        idMap.every(itx => ele.params?.map(element => element.id).includes(itx.slice(1, -1)))
+      )
+        return true
+      const result = idMap.every(itm => {
+        const id = itm.slice(1, -1)
+        return allfieldsId.includes(id)
+      })
+      if (result) return true
+      delId.push(ele.id)
+      idList.push(ele.id)
+      return false
+    })
+  }
+
+  return idList
+}
+
+const deleteField = item => {
+  let tip = ''
+  const idArr = allfields.value.reduce((pre, next) => {
+    if (![2, 3].includes(next.extField)) return pre
+    let idMap = next.originName.match(/\[(.+?)\]/g) || []
+    idMap = idMap.filter(itx => !next.params?.map(element => element.id).includes(itx.slice(1, -1)))
+    const result = idMap.map(itm => {
+      return itm.slice(1, -1)
+    })
+    pre = [...result, ...pre]
+    return pre
+  }, [])
+  tip = idArr.includes(item.id) ? t('data_set.deleted_confirm_deletion') : ''
+  ElMessageBox.confirm(t('data_set.delete_field_a', { a: item.name }), {
+    confirmButtonText: t('dataset.confirm'),
+    tip,
+    cancelButtonText: t('common.cancel'),
+    showCancelButton: true,
+    confirmButtonType: 'danger',
+    type: 'warning',
+    autofocus: false,
+    showClose: false,
+    callback: (action: Action) => {
+      if (action === 'confirm') {
+        delFieldById([item.id])
+        datasetDrag.value.dfsNodeFieldBackReal(item)
+        ElMessage({
+          message: t('chart.delete_success'),
+          type: 'success'
+        })
+      }
+    }
+  })
+}
+
+const addCalcField = groupType => {
+  editCalcField.value = true
+  calcTitle.value = t('dataset.add_calc_field')
+  nextTick(() => {
+    calcEdit.value.initEdit(
+      { groupType, id: guid() },
+      dimensions.value.filter(ele => ele.extField !== 3),
+      quota.value.filter(ele => ele.extField !== 3)
+    )
+  })
+}
+
+const editNormalField = ref(false)
+const currentNormalField = ref({
+  id: '',
+  name: ''
+})
+
+const renameField = item => {
+  const { id, name } = item
+  currentNormalField.value = {
+    id,
+    name
+  }
+  editNormalField.value = true
+}
+
+const calcTitle = ref('')
+
+const editField = item => {
+  editCalcField.value = true
+  nextTick(() => {
+    calcTitle.value = t('dataset.edit_calc_field')
+    calcEdit.value.initEdit(
+      item,
+      dimensions.value.filter(ele => ele.extField !== 3),
+      quota.value.filter(ele => ele.extField !== 3)
+    )
+  })
+}
+
+const closeNormalField = () => {
+  currentNormalField.value.id = ''
+  currentNormalField.value.name = ''
+  editNormalField.value = false
+}
+
+const confirmNormalField = () => {
+  ruleFormFieldRef.value.validate(val => {
+    if (val) {
+      allfields.value.some(ele => {
+        if (ele.id === currentNormalField.value.id) {
+          ele.name = currentNormalField.value.name
+          return true
+        }
+        return false
+      })
+      closeNormalField()
+    }
+  })
+}
+
+const closeEditCalc = () => {
+  editCalcField.value = false
+}
+
+const confirmEditCalc = () => {
+  calcEdit.value.formField.validate(val => {
+    if (val) {
+      calcEdit.value.setFieldForm()
+      if (!calcEdit.value.fieldForm.originName.trim()) {
+        ElMessage.error(t('data_set.cannot_be_empty_de_'))
+        return
+      }
+      const obj = cloneDeep(calcEdit.value.fieldForm)
+      const { deType, dateFormat, deExtractType } = obj
+      obj.dateFormat = deType === 1 ? dateFormat : ''
+      obj.dateFormatType = deType === 1 ? dateFormat : ''
+      obj.deTypeArr = deType === 1 && deExtractType === 0 ? [deType, dateFormat] : [deType]
+      const result = allfields.value.findIndex(ele => obj.id === ele.id)
+      if (result !== -1) {
+        allfields.value.splice(result, 1, obj)
+      } else {
+        allfields.value.push(obj)
+      }
+      editCalcField.value = false
+    }
+  })
+}
+
+const generateColumns = (arr: Field[]) =>
+  arr.map(ele => ({
+    key: ele.dataeaseName,
+    deType: ele.deType,
+    dataKey: ele.dataeaseName,
+    title: ele.name,
+    width: 150,
+    headerCellRenderer: ({ column }) => (
+      <div class="flex-align-center">
+        <ElIcon>
+          <Icon>
+            {h(iconFieldMap[fieldType[column.deType]], {
+              class: `svg-icon field-icon-${fieldType[column.deType]}`
+            })}
+          </Icon>
+        </ElIcon>
+        <span class="ellipsis" title={column.title} style={{ minWidth: '30px', marginLeft: '4px' }}>
+          {column.title}
+        </span>
+      </div>
+    )
+  }))
+
+const dsChange = (val: string) => {
+  dsLoading.value = true
+  sqlNode.datasourceId = dataSource.value
+  return getTables({ datasourceId: val })
+    .then(res => {
+      tableList = res || []
+      datasourceTableData.value = [...tableList]
+    })
+    .finally(() => {
+      dsLoading.value = false
+    })
+}
+
+const getTableName = async (datasourceId, tableName) => {
+  await dsChange(datasourceId)
+  if (!!tableName) {
+    searchTable.value = tableName
+  }
+}
+const isEdit = ref(false)
+const datasetCheckRef = ref()
+const initEdite = async () => {
+  let { id, datasourceId, tableName } = route.query
+  let { id: copyId } = route.params
+  if (appStore.getIsDataEaseBi) {
+    id = embeddedStore.datasetId
+    datasourceId = embeddedStore.datasourceId
+    tableName = embeddedStore.tableName
+    copyId = embeddedStore.datasetCopyId || copyId
+  }
+  isEdit.value = false
+  if (copyId || id) {
+    const barRes = await barInfoApi(copyId || id)
+    if (!barRes || !barRes['id']) {
+      return
+    }
+    isEdit.value = true
+  }
+  if (datasourceId) {
+    dataSource.value = datasourceId as string
+    getTableName(datasourceId as string, tableName)
+  }
+  if (!id && !copyId) {
+    loading.value = false
+    return
+  }
+
+  try {
+    const res = await getDatasetDetails(copyId || id)
+    let arr = []
+    const { pid, name } = res || {}
+    nodeInfo = {
+      id: res?.id || null,
+      pid,
+      name: copyId ? t('data_set.copy_a_dataset') : name
+    }
+    if (copyId) {
+      nodeInfo.id = ''
+    }
+    datasetName.value = nodeInfo.name
+    allfields.value = res.allFields || []
+    isCross.value = res.isCross || false
+    dfsUnion(arr, res.union || [])
+    const [fir] = res.union as { currentDs: { datasourceId: string } }[]
+    dataSource.value = fir?.currentDs?.datasourceId
+    dsChange(dataSource.value)
+    datasetDrag.value.initState(arr)
+    loading.value = false
+  } catch (error) {
+    console.error(error)
+    loading.value = false
+  }
+}
+
+const joinEditor = (arr: []) => {
+  state.editArr = cloneDeep(arr)
+  editUnion.value = true
+  nextTick(() => {
+    fieldUnion.value.initState()
+  })
+}
+
+const columns = shallowRef([])
+const tableData = shallowRef([])
+const quota = computed(() => {
+  return allfields.value.filter(ele => ele.groupType === 'q')
+})
+
+const dimensions = computed(() => {
+  return allfields.value.filter(ele => ele.groupType === 'd')
+})
+
+const dfsGetName = (list, name) => {
+  list.forEach(ele => {
+    name[ele.id] = ele.tableName
+    if (ele.children?.length) {
+      dfsGetName(ele.children, name)
+    }
+  })
+}
+
+const tabChange = val => {
+  if (val === 'preview') return
+  reGetName()
+  allfields.value.forEach(ele => {
+    if (!Array.isArray(ele.deTypeArr)) {
+      ele.deTypeArr =
+        ele.deType === 1 && ele.deExtractType === 0
+          ? [ele.deType, ele.dateFormatType]
+          : [ele.deType]
+    } else {
+      const [type] = ele.deTypeArr
+      if (ele.deTypeArr.length && type !== ele.deType) {
+        ele.deTypeArr.splice(0, 1, ele.deType)
+      }
+    }
+  })
+}
+
+const addComplete = () => {
+  state.nodeNameList = [...datasetDrag.value.nodeNameList]
+  changeUpdate()
+  if (!state.nodeNameList?.length) {
+    columns.value = []
+    tableData.value = []
+  }
+  cancelMap['/datasetData/previewData']?.()
+  datasetPreviewLoading.value = false
+  reGetName()
+}
+
+const reGetName = () => {
+  dfsGetName(datasetDrag.value.getNodeList(), nameMap.value)
+}
+
+const state = reactive({
+  nodeNameList: [],
+  editArr: [],
+  dataSourceList: [],
+  fieldCollapse: ['dimension', 'quota']
+})
+
+const datasourceTableData = shallowRef([])
+const getIconName = (type: number) => {
+  if (type === 1) {
+    return 'time'
+  }
+
+  if (type === 0) {
+    return 'text'
+  }
+
+  if ([2, 3, 4].includes(type)) {
+    return 'value'
+  }
+  if (type === 5) {
+    return 'location'
+  }
+  if (type === 7) {
+    return 'url'
+  }
+}
+
+const allfields = ref([])
+
+provide('allfields', allfields)
+provide('isCross', isCross)
+
+const expandedD = ref(true)
+const expandedQ = ref(true)
+const setGuid = (arr, id, datasourceId, oldArr) => {
+  arr.forEach(ele => {
+    if (!ele.id) {
+      ele.id = oldArr.find(itx => itx.originName === ele.originName)?.id || `${++num.value}`
+      ele.datasetTableId = id
+      ele.datasourceId = datasourceId
+    }
+  })
+}
+
+const dfsFields = (arr, list) => {
+  list.forEach(ele => {
+    if (ele.children?.length) {
+      dfsFields(arr, ele.children)
+    }
+    const { currentDsFields } = ele
+    arr.push(...cloneDeep(currentDsFields))
+  })
+}
+
+const getDelIdArr = (newArr, oldArr) => {
+  const idMapNew = newArr.map(ele => ele.id)
+  return [
+    ...oldArr
+      .filter(ele => ![2, 3].includes(ele.extField))
+      .filter(ele => !idMapNew.includes(ele.id)),
+    ...oldArr.filter(ele => [2, 3].includes(ele.extField))
+  ]
+}
+
+const diffArr = (newArr, oldArr) => {
+  const idMapNew = newArr.map(ele => ele.id)
+  const idMapOld = oldArr.map(ele => ele.id)
+  const arr = newArr.filter(ele => !idMapOld.includes(ele.id))
+  return cloneDeep([
+    ...oldArr.filter(ele => [2, 3].includes(ele.extField)),
+    ...arr,
+    ...oldArr.filter(ele => idMapNew.includes(ele.id))
+  ])
+}
+
+const closeEditUnion = () => {
+  notConfirmEditUnion()
+  fieldUnion.value.clearState()
+  editUnion.value = false
+}
+const fieldUnion = ref()
+
+const setFieldAll = () => {
+  const arr = []
+  dfsFields(arr, datasetDrag.value.getNodeList())
+  const delIdArr = getDelIdArr(arr, allfields.value)
+  allfields.value = diffArr(arr, allfields.value)
+  delFieldById(delIdArr)
+  tabChange('manage')
+  fieldUnion.value?.clearState()
+}
+
+const delGroupIds = () => {
+  const delIds = []
+  const fields = allfields.value.map(ele => ele.id)
+  const groupIds = allfields.value.filter(ele => ele.extField === 3)
+  groupIds.forEach(ele => {
+    if (!fields.includes(ele.originName)) {
+      delIds.push(ele.id)
+    }
+  })
+  allfields.value = allfields.value.filter(ele => !delIds.includes(ele.id))
+}
+
+const dfsNode = (arr, id) => {
+  return arr.reduce((pre, next) => {
+    if (next.id === id) {
+      pre = [...next.currentDsFields]
+    } else if (next.children?.length) {
+      pre = dfsNode(next.children, id)
+    }
+    return pre
+  }, [])
+}
+
+const dfsFieldsTips = (arr, list, idArr) => {
+  list.forEach(ele => {
+    if (ele.children?.length) {
+      dfsFieldsTips(arr, ele.children, idArr)
+    }
+    if (!idArr.includes(ele.id)) {
+      const { currentDsFields } = ele
+      arr.push(...cloneDeep(currentDsFields))
+    }
+  })
+}
+const confirmEditUnion = () => {
+  const { node, parent } = fieldUnion.value
+  const to = node.id
+  const from = parent.id
+  let unionFieldsLost = node.unionFields.some(ele => {
+    const { currentField, parentField } = ele
+    return !currentField || !parentField
+  })
+
+  if (unionFieldsLost) {
+    ElMessage.error(t('data_set.cannot_be_empty_de_field'))
+    return
+  }
+
+  const nodeOldCurrentDsFields = dfsNode(datasetDrag.value.getNodeList(), to)
+  const parentOldCurrentDsFields = dfsNode(datasetDrag.value.getNodeList(), from)
+
+  setGuid(node.currentDsFields, node.id, node.datasourceId, nodeOldCurrentDsFields)
+  setGuid(parent.currentDsFields, parent.id, parent.datasourceId, parentOldCurrentDsFields)
+  const top = cloneDeep(node)
+  const bottom = cloneDeep(parent)
+  let arr = []
+  dfsFieldsTips(arr, datasetDrag.value.getNodeList(), [node.id, parent.id])
+  arr = [...arr, ...node.currentDsFields, ...parent.currentDsFields]
+  const delIdArr = getDelIdArr(arr, allfields.value)
+  let fakeAllfields = diffArr(arr, allfields.value)
+  const idList = delFieldByIdFake(delIdArr, fakeAllfields)
+  if (!!idList.length) {
+    const idArr = allfields.value.reduce((pre, next) => {
+      if (idList.includes(next.id)) {
+        const idMap = next.originName.match(/\[(.+?)\]/g) || []
+        const result = idMap.map(itm => {
+          return itm.slice(1, -1)
+        })
+        pre = [...result, ...pre]
+      }
+      return pre
+    }, [])
+
+    ElMessageBox.confirm(t('data_set.field_selection'), {
+      confirmButtonText: t('dataset.confirm'),
+      cancelButtonText: t('common.cancel'),
+      showCancelButton: true,
+      tip: `${t('data_set.field')}: ${allfields.value
+        .filter(ele => [...new Set(idArr)].includes(ele.id) && ![2, 3].includes(ele.extField))
+        .map(ele => ele.name)
+        .join(',')}, ${t('data_set.confirm_the_deletion')}`,
+      confirmButtonType: 'danger',
+      type: 'warning',
+      autofocus: false,
+      showClose: false,
+      callback: (action: Action) => {
+        if (action === 'confirm') {
+          datasetDrag.value.setStateBack(top, bottom)
+          setFieldAll()
+          editUnion.value = false
+          addComplete()
+          datasetDrag.value.setChangeStatus(to, from)
+        }
+      }
+    })
+    return
+  }
+
+  datasetDrag.value.setStateBack(top, bottom)
+  setFieldAll()
+  editUnion.value = false
+  addComplete()
+  datasetDrag.value.setChangeStatus(to, from)
+}
+
+const updateAllfields = () => {
+  setFieldAll()
+}
+
+const equalMin = [
+  {
+    value: 'lt',
+    label: '<'
+  },
+  {
+    value: 'le',
+    label: '<='
+  }
+]
+
+const validatePass = (_: any, value: any, callback: any) => {
+  if (!value || !value.length) {
+    callback(new Error(t('chart.value_can_not_empty')))
+  } else {
+    callback()
+  }
+}
+const refsForm = ref([])
+
+const fieldGroupRules = {
+  name: [{ required: true, message: t('dataset.input_edit_name'), trigger: 'blur' }]
+}
+
+const defaultObj = {
+  name: '',
+  id: +new Date(),
+  datasourceId: '',
+  datasetTableId: '',
+  datasetGroupId: '',
+  originName: '',
+  otherGroup: '',
+  groupType: 'd',
+  deType: 0,
+  type: 'ANY',
+  deExtractType: 0,
+  extField: 3,
+  deTypeOrigin: null,
+  groupList: [
+    {
+      name: '',
+      text: [],
+      time: '',
+      minTerm: 'lt',
+      maxTerm: 'lt',
+      min: null,
+      max: null
+    }
+  ]
+}
+const currentGroupField = reactive(cloneDeep(defaultObj))
+const ruleGroupFieldRef = ref()
+const editGroupField = ref(false)
+const enumValueLoading = ref(false)
+const groupFields = shallowRef([])
+const enumValue = shallowRef([])
+const addGroupField = () => {
+  groupFields.value = allfields.value.filter(ele => ![2, 3].includes(ele.extField))
+  Object.assign(currentGroupField, cloneDeep(defaultObj))
+  currentGroupField.id = guid()
+  titleForGroup.value = t('dataset.create_grouping_field')
+  editGroupField.value = true
+}
+const handleFieldschange = val => {
+  const field = groupFields.value.find(ele => ele.id === val)
+  const { deType } = field
+  if (deType !== currentGroupField.deExtractType || deType === 0) {
+    refsForm.value = []
+    currentGroupField.groupList = [
+      {
+        name: '',
+        text: [],
+        time: '',
+        minTerm: 'lt',
+        maxTerm: 'lt',
+        min: null,
+        max: null
+      }
+    ]
+  }
+  currentGroupField.deTypeOrigin = deType
+  if (deType !== 0) return
+  enumValueLoading.value = true
+  const arr = []
+  const allfieldsCopy = cloneDeep(unref(allfields))
+  dfsNodeList(arr, datasetDrag.value.getNodeList())
+  enumValueDs({ dataset: { union: arr, allFields: allfieldsCopy, isCross: isCross.value }, field })
+    .then(res => {
+      enumValue.value = res || []
+    })
+    .finally(() => {
+      enumValueLoading.value = false
+    })
+}
+const closeGroupField = () => {
+  editGroupField.value = false
+}
+
+const disabledEnumArr = computed(() => {
+  return currentGroupField.groupList?.map(ele => ele.text).flat()
+})
+
+const disabledEnum = (item, arr) => {
+  return disabledEnumArr.value.includes(item) && !arr.includes(item)
+}
+
+const titleForGroup = ref(t('dataset.create_grouping_field'))
+
+const initGroupField = val => {
+  groupFields.value = allfields.value.filter(ele => ![2, 3].includes(ele.extField))
+  Object.assign(currentGroupField, val)
+  const groupList = []
+  val.groupList.forEach(ele => {
+    const { name, text = [], startTime, endTime, min, max, minTerm, maxTerm } = ele
+    const obj = {
+      name,
+      text,
+      min,
+      max,
+      minTerm,
+      maxTerm,
+      time: []
+    }
+    if (startTime && endTime) {
+      obj.time = [startTime, endTime]
+    }
+    groupList.push(obj)
+  })
+
+  handleFieldschange(currentGroupField.originName)
+
+  currentGroupField.groupList = groupList
+  titleForGroup.value = t('dataset.editing_grouping_field')
+  editGroupField.value = true
+}
+
+const confirmGroupField = () => {
+  ruleGroupFieldRef.value.validate(val => {
+    let count = 0
+    let flag = false
+    let time
+    refsForm.value.forEach(ele => {
+      ele?.validate(val => {
+        if (val) {
+          count++
+        }
+      })
+    })
+    time = setTimeout(() => {
+      clearTimeout(time)
+      flag = true
+      time = null
+      if (val && count === currentGroupField.groupList.length) {
+        const groupList = []
+        currentGroupField.groupList.forEach(ele => {
+          const { name, text = [], time, min, max, minTerm, maxTerm } = ele
+          const obj = {
+            name,
+            text,
+            min,
+            max,
+            minTerm,
+            maxTerm,
+            startTime: '',
+            endTime: ''
+          }
+          if (currentGroupField.deTypeOrigin === 1) {
+            const [startTime, endTime] = time
+            obj.startTime = dayjs(startTime).format('YYYY-MM-DD HH:mm:ss')
+            obj.endTime = dayjs(endTime).format('YYYY-MM-DD HH:mm:ss')
+          }
+          groupList.push(obj)
+        })
+        const index = allfields.value.findIndex(ele => ele.id === currentGroupField.id)
+        if (index !== -1) {
+          allfields.value.splice(index, 1, { ...currentGroupField, groupList })
+        } else {
+          allfields.value.push({ ...currentGroupField, groupList })
+        }
+        editGroupField.value = false
+      }
+    }, 1000)
+  })
+}
+
+const notConfirmEditUnion = () => {
+  datasetDrag.value.notConfirm()
+}
+
+const addGroupFields = () => {
+  currentGroupField.groupList.push({
+    name: '',
+    text: [],
+    time: '',
+    minTerm: 'lt',
+    maxTerm: 'lt',
+    min: null,
+    max: null
+  })
+}
+
+const removeGroupFields = index => {
+  currentGroupField.groupList.splice(index, 1)
+  refsForm.value.splice(index, 1)
+}
+
+const dragstart = (e: DragEvent, ele) => {
+  offsetX.value = e.offsetX
+  offsetY.value = e.offsetY
+  e.dataTransfer.setData('text/plain', JSON.stringify(ele))
+  maskShow.value = true
+}
+const setActiveName = (data: Table) => {
+  if (data.unableCheck) return
+  activeName.value = data.tableName
+}
+
+const verify = () => {
+  if (datasetPreviewLoading.value) return
+  calcEdit.value.formField.validate(val => {
+    if (val) {
+      calcEdit.value.setFieldForm()
+      if (!calcEdit.value.fieldForm.originName.trim()) {
+        ElMessage.error(t('data_set.cannot_be_empty_de_'))
+        return
+      }
+      const obj = cloneDeep(calcEdit.value.fieldForm)
+      const { deType, dateFormat, deExtractType } = obj
+      obj.dateFormat = deType === 1 ? dateFormat : ''
+      obj.dateFormatType = deType === 1 ? dateFormat : ''
+      obj.deTypeArr = deType === 1 && deExtractType === 0 ? [deType, dateFormat] : [deType]
+      const result = allfields.value.findIndex(ele => obj.id === ele.id)
+      const allfieldsCopy = cloneDeep(unref(allfields))
+      if (result !== -1) {
+        allfieldsCopy.splice(result, 1, obj)
+      } else {
+        allfieldsCopy.push(obj)
+      }
+      const arr = []
+      dfsNodeList(arr, datasetDrag.value.getNodeList())
+      datasetPreviewLoading.value = true
+      getPreviewData({ union: arr, allFields: allfieldsCopy, isCross: isCross.value })
+        .then(() => {
+          ElMessage.success(t('data_set.validation_succeeded'))
+        })
+        .finally(() => {
+          datasetPreviewLoading.value = false
+        })
+    }
+  })
+}
+
+const isDragging = ref(false)
+
+const mousedownDrag = () => {
+  isDragging.value = true
+  document.querySelector('body').style.userSelect = 'none'
+  document.querySelector('.dataset-db').addEventListener('mousemove', calculateWidth)
+}
+const mouseupDrag = () => {
+  isDragging.value = false
+  document.querySelector('body').style.userSelect = 'auto'
+  const dom = document.querySelector('.dataset-db')
+  dom.removeEventListener('mousemove', calculateWidth)
+  dom.removeEventListener('mousemove', calculateHeight)
+}
+
+const crossDatasources = computed(() => {
+  return datasetDrag.value?.crossDatasources
+})
+const calculateWidth = (e: MouseEvent) => {
+  if (e.pageX < 240) {
+    LeftWidth.value = 240
+    return
+  }
+  if (e.pageX > 500) {
+    LeftWidth.value = 500
+    return
+  }
+  LeftWidth.value = e.pageX
+}
+
+const mousedownDragH = () => {
+  document.querySelector('.dataset-db').addEventListener('mousemove', calculateHeight)
+}
+const calculateHeight = (e: MouseEvent) => {
+  const clientHeight = document.documentElement.clientHeight
+  if (e.pageY - 56 < 64) {
+    dragHeight.value = 64
+    sqlResultHeight.value = clientHeight - dragHeight.value - 56
+    return
+  }
+  if (e.pageY > clientHeight - 57) {
+    dragHeight.value = clientHeight - 113
+    sqlResultHeight.value = clientHeight - dragHeight.value - 56
+    return
+  }
+  dragHeight.value = e.pageY - 56
+  sqlResultHeight.value = clientHeight - dragHeight.value - 56
+  quotaTableHeight.value = sqlResultHeight.value - 242
+}
+
+const sqlResultHeight = ref(0)
+const handleResize = debounce(() => {
+  const clientHeight = document.documentElement.clientHeight
+  if (clientHeight - sqlResultHeight.value - 56 < 64) {
+    dragHeight.value = 64
+    sqlResultHeight.value = clientHeight - dragHeight.value - 56
+    return
+  }
+  dragHeight.value = clientHeight - sqlResultHeight.value - 56
+}, 60)
+let willBack = false
+const saveAndBack = () => {
+  if (!willBack) return
+  pushDataset()
+}
+
+let p = null
+const XpackLoaded = () => p(true)
+onMounted(async () => {
+  isEdit.value = false
+  if (appStore.getXpackValid) {
+    await new Promise(r => (p = r))
+  }
+  await initEdite()
+  getDatasource(2)
+  window.addEventListener('resize', handleResize)
+  getSingleVal()
+  getSqlResultHeight()
+  quotaTableHeight.value = sqlResultHeight.value - 242
+})
+
+const getSingleVal = () => {
+  singleVal().then(res => {
+    singleValData.value = res === 'true'
+  })
+}
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize)
+})
+const getSqlResultHeight = () => {
+  sqlResultHeight.value = (document.querySelector('.sql-result') as HTMLElement).offsetHeight
+}
+const getDatasource = (weight?: number) => {
+  getDatasourceList(weight).then(res => {
+    const _list = (res as unknown as DataSource[]) || []
+    if (_list && _list.length > 0 && _list[0].id === '0' && _list[0].children?.length) {
+      state.dataSourceList = dfsChild(_list[0].children)
+    } else {
+      state.dataSourceList = dfsChild(_list)
+    }
+    nextTick(() => {
+      datasetCheckRef.value?.execute(null)
+    })
+  })
+}
+
+const resetDfsFields = (arr, idMap) => {
+  for (let i in arr) {
+    const id = guid()
+    idMap[arr[i].currentDs.id] = id
+    arr[i].currentDs.id = id
+    if (!!arr[i].childrenDs?.length) {
+      resetDfsFields(arr[i].childrenDs, idMap)
+    }
+  }
+}
+
+const resetAllfieldsId = arr => {
+  const idMap = {}
+  for (let i in allfields.value) {
+    const id = guid()
+    idMap[allfields.value[i].id] = id
+    allfields.value[i].id = id
+    allfields.value[i].datasetGroupId = ''
+  }
+  resetDfsFields(arr, idMap)
+  return idMap
+}
+
+const resetAllfieldsUnionId = (arr, idMap) => {
+  let strUnion = JSON.stringify(arr) as string
+  let strNodeList = JSON.stringify(toRaw(datasetDrag.value.getNodeList())) as string
+  let strAllfields = JSON.stringify(unref(allfields.value)) as string
+  Object.entries(idMap).forEach(([key, value]) => {
+    strUnion = strUnion.replaceAll(key, value as string)
+    strAllfields = strAllfields.replaceAll(key, value as string)
+    strNodeList = strNodeList.replaceAll(key, value as string)
+  })
+  allfields.value = JSON.parse(strAllfields)
+  datasetDrag.value.initState(JSON.parse(strNodeList))
+  return JSON.parse(strUnion)
+}
+
+const datasetSave = () => {
+  if (nodeInfo.id) {
+    editeSave()
+    return
+  }
+  let union = []
+  dfsNodeList(union, datasetDrag.value.getNodeList())
+  const pid = appStore.getIsDataEaseBi ? embeddedStore.datasetPid : route.query.pid || nodeInfo.pid
+  if (!union.length) {
+    ElMessage.error(t('data_set.dataset_cannot_be'))
+    return
+  }
+  if (nodeInfo.pid && !nodeInfo.id) {
+    union = resetAllfieldsUnionId(union, resetAllfieldsId(union))
+  }
+
+  creatDsFolder.value.createInit(
+    'dataset',
+    { id: pid || '0', union, allfields: allfields.value, isCross: isCross.value },
+    '',
+    datasetName.value
+  )
+}
+const datasetSaveAndBack = () => {
+  willBack = true
+  datasetSave()
+}
+
+const datasetPreviewLoading = ref(false)
+
+const datasetPreview = () => {
+  if (datasetPreviewLoading.value) return
+  const arr = []
+  dfsNodeList(arr, datasetDrag.value.getNodeList())
+  datasetPreviewLoading.value = true
+  getPreviewData({ union: arr, allFields: allfields.value, isCross: isCross.value })
+    .then(res => {
+      columns.value = generateColumns((res.data.fields as Field[]) || [])
+      tableData.value = (res.data.data as Array<{}>) || []
+    })
+    .finally(() => {
+      datasetPreviewLoading.value = false
+    })
+}
+
+const dfsNodeList = (arr, list) => {
+  list.forEach(ele => {
+    const childrenDs = []
+    if (ele.children?.length) {
+      dfsNodeList(childrenDs, ele.children)
+    }
+    const {
+      tableName,
+      type,
+      datasourceId,
+      id,
+      info,
+      unionType,
+      unionFields,
+      currentDsFields,
+      sqlVariableDetails
+    } = ele
+    arr.push({
+      currentDs: {
+        sqlVariableDetails,
+        tableName,
+        type,
+        datasourceId,
+        id,
+        info
+      },
+      currentDsFields,
+      childrenDs,
+      unionToParent: {
+        unionType,
+        unionFields
+      }
+    })
+  })
+}
+
+const quotaTable = ref()
+const dimensionsTable = ref()
+
+const dimensionsSelection = ref([])
+const quotaSelection = ref([])
+
+const deTypeSelection = ref([])
+const fieldSelection = ref([])
+
+const showCascaderBatch = computed(() => {
+  return !!deTypeSelection.value.length && Array.from(new Set(deTypeSelection.value)).length === 1
+})
+
+const clearSelection = () => {
+  dimensionsTable.value.clearSelection()
+  quotaTable.value.clearSelection()
+}
+const deTypeArr = ref([])
+
+const setDeTypeSelection = () => {
+  fieldSelection.value = [
+    ...dimensionsTable.value.getSelectionRows(),
+    ...quotaTable.value.getSelectionRows()
+  ]
+
+  deTypeSelection.value = fieldSelection.value.map(ele => {
+    if (ele.extField === 2 && ele.deExtractType === undefined) {
+      return ele.deType
+    }
+    return ele.deExtractType
+  })
+  let deTypes = fieldSelection.value.map(ele => ele.deType)
+  const [obj] = fieldSelection.value
+  nextTick(() => {
+    dimensionsSelection.value = dimensionsTable.value.getSelectionRows().map(ele => ele.id)
+    quotaSelection.value = quotaTable.value.getSelectionRows().map(ele => ele.id)
+  })
+  if (Array.from(new Set(deTypes)).length !== 1) {
+    deTypeArr.value = []
+    return
+  }
+  deTypeArr.value =
+    obj.deType === 1 && obj.deExtractType === 0 ? [1, obj.dateFormatType] : [obj.deType]
+}
+
+const rowClick = (_, __, event) => {
+  const element = event.target.parentNode.parentNode
+  if ([...element.classList].includes('no-hide')) {
+    element.classList.remove('no-hide')
+    return
+  }
+  element.classList.add('no-hide')
+}
+
+let oldArrValue = []
+
+const cascaderChangeArr = val => {
+  const [deType, dateFormat] = val
+  dimensionsSelection.value = dimensionsTable.value.getSelectionRows().map(ele => ele.id)
+  quotaSelection.value = quotaTable.value.getSelectionRows().map(ele => ele.id)
+
+  const arr = [...quotaSelection.value, ...dimensionsSelection.value]
+  if (dateFormat === 'custom') {
+    const [obj] = allfields.value.filter(ele => arr.includes(ele.id))
+    oldArrValue = obj.deType === 1 ? [1, obj.dateFormatType] : [obj.deType]
+    currentField.value.id = ''
+    currentField.value.idArr = [...arr]
+    currentField.value.dateFormat = ''
+    currentField.value.dateFormatType = dateFormat
+    updateCustomTime.value = true
+    recoverSelection()
+    return
+  }
+  allfields.value.forEach(ele => {
+    if (arr.includes(ele.id)) {
+      ele.deType = deType
+      ele.dateFormat = deType === 1 ? dateFormat : ''
+      ele.dateFormatType = deType === 1 ? dateFormat : ''
+      ele.deTypeArr = deType === 1 && ele.deExtractType === 0 ? [deType, dateFormat] : [deType]
+    }
+  })
+  recoverSelection()
+}
+
+const filterNode = (value: string, data: BusiTreeNode) => {
+  if (!value) return true
+  return data.name?.toLowerCase().includes(value.toLowerCase())
+}
+const recoverSelection = () => {
+  nextTick(() => {
+    quota.value.forEach(ele => {
+      if (quotaSelection.value.includes(ele.id)) {
+        quotaTable.value.toggleRowSelection(ele, true)
+      }
+    })
+    dimensions.value.forEach(ele => {
+      if (dimensionsSelection.value.includes(ele.id)) {
+        dimensionsTable.value.toggleRowSelection(ele, true)
+      }
+    })
+  })
+}
+
+const dragEnd = () => {
+  maskShow.value = false
+}
+
+const cascaderChange = (row, val) => {
+  const [deType, dateFormat] = val
+  if (dateFormat === 'custom') {
+    oldArrValue = row.deType === 1 ? [1, row.dateFormatType] : [row.deType]
+    currentField.value.id = row.id
+    updateCustomTime.value = true
+    return
+  }
+  row.deType = deType
+  row.dateFormat = deType === 1 ? dateFormat : ''
+  row.dateFormatType = deType === 1 ? dateFormat : ''
+}
+
+const dfsUnion = (arr, list) => {
+  list.forEach(ele => {
+    const children = []
+    if (ele.childrenDs?.length) {
+      dfsUnion(children, ele.childrenDs)
+    }
+    const { unionToParent, currentDsFields, currentDs } = ele
+    const { tableName, type, datasourceId, id, info, sqlVariableDetails } = currentDs || {}
+    const { unionType, unionFields } = unionToParent || {}
+    arr.push({
+      sqlVariableDetails,
+      tableName,
+      type,
+      datasourceId,
+      id,
+      info,
+      currentDsFields,
+      children,
+      unionType,
+      unionFields
+    })
+  })
+}
+const handleClick = () => {
+  showInput.value = true
+  nextTick(() => {
+    editorName.value.focus()
+  })
+}
+
+const sourceChange = val => {
+  if (val) return
+  if (crossDatasources.value) {
+    isCross.value = !val
+    ElMessageBox.confirm(t('common.source_tips'), {
+      confirmButtonText: t('dataset.confirm'),
+      cancelButtonText: t('common.cancel'),
+      showCancelButton: true,
+      confirmButtonType: 'primary',
+      type: 'warning',
+      autofocus: false,
+      showClose: false
+    }).then(() => {
+      isCross.value = val
+    })
+  }
+}
+
+const finish = res => {
+  const { id, pid, name } = res
+  isUpdate = false
+  datasetName.value = name
+  nodeInfo = {
+    id,
+    pid,
+    name
+  }
+  allfields.value = res.allFields || []
+}
+
+const errorTips = ref('')
+
+const handleDatasetName = () => {
+  errorTips.value = ''
+  if (!datasetName.value.trim()) {
+    errorTips.value = t('commons.input_content')
+  }
+
+  if (datasetName.value.trim().length < 1) {
+    errorTips.value = t('datasource.input_limit_1_64', [1, 64])
+  }
+  showInput.value = !!errorTips.value
+}
+
+const treeProps = {
+  children: 'children',
+  label: 'name',
+  disabled: data => {
+    return (
+      (!data.children?.length && !data.leaf) ||
+      (data.extraFlag < 0 && data.type !== 'API') ||
+      (currentDsId.value && singleValData.value && data.id !== currentDsId.value)
+    )
+  }
+}
+
+const pluginDs = ref([])
+const loadDsPlugin = data => {
+  pluginDs.value = data
+}
+const getDsIcon = data => {
+  if (pluginDs?.value.length === 0) return null
+  if (!data.leaf) return null
+
+  const arr = pluginDs.value.filter(ele => {
+    return ele.type === data.type
+  })
+  return arr && arr.length > 0 ? arr[0].icon : null
+}
+
+const getDsIconName = data => {
+  if (!data.leaf) return dvFolder
+  return iconDatasourceMap[data.type]
+}
+
+const getIconNameCalc = (deType, extField, dimension = false) => {
+  if (extField === 2) {
+    const iconFieldCalculated = dimension ? iconFieldCalculatedMap : iconFieldCalculatedQMap
+    return iconFieldCalculated[deType]
+  }
+  return iconFieldMap[fieldType[deType]]
+}
+</script>
+
+<template>
+  <div class="de-dataset-form" v-loading="loading">
+    <div class="top">
+      <span class="name">
+        <el-icon @click="backToMain">
+          <Icon name="icon_left_outlined"><icon_left_outlined class="svg-icon" /></Icon>
+        </el-icon>
+        <template v-if="showInput">
+          <el-input
+            maxlength="64"
+            ref="editorName"
+            v-model="datasetName"
+            @blur="handleDatasetName"
+          />
+          <div class="ed-form-item__error" v-if="errorTips">{{ errorTips }}</div>
+        </template>
+        <template v-else>
+          <span @click="handleClick" class="dataset-name ellipsis" style="margin-left: 12px">{{
+            datasetName
+          }}</span>
+        </template>
+      </span>
+      <span class="operate">
+        <el-button :disabled="showInput" type="primary" @click="datasetSaveAndBack">{{
+          t('data_set.save_and_return')
+        }}</el-button>
+        <el-button :disabled="showInput" type="primary" @click="datasetSave">{{
+          t('data_set.save')
+        }}</el-button>
+      </span>
+    </div>
+    <div class="container dataset-db" @mouseup="mouseupDrag">
+      <p v-show="!showLeft" class="arrow-right" @click="showLeft = true">
+        <el-icon>
+          <Icon><icon_right_outlined class="svg-icon" /></Icon>
+        </el-icon>
+      </p>
+      <div
+        v-show="showLeft"
+        :style="{ left: LeftWidth + 'px' }"
+        class="drag-left"
+        :class="isDragging && 'is-dragging'"
+        @mousedown="mousedownDrag"
+      />
+      <div
+        v-loading="dsLoading"
+        v-show="showLeft"
+        class="table-list"
+        :style="{ width: LeftWidth + 'px' }"
+      >
+        <div class="table-list-top">
+          <el-switch
+            style="margin-bottom: 8px"
+            v-model="isCross"
+            v-if="!singleValData"
+            @change="sourceChange"
+            :active-text="$t('common.cross_source')"
+            :inactive-text="$t('common.single_source')"
+          />
+
+          <p class="select-ds">
+            {{ t('data_set.select_data_source') }}
+            <span class="left-outlined">
+              <el-icon style="color: #1f2329" @click="showLeft = false">
+                <Icon name="icon_left_outlined"><icon_left_outlined class="svg-icon" /></Icon>
+              </el-icon>
+            </span>
+          </p>
+          <el-tree-select
+            :check-strictly="false"
+            @change="dsChange"
+            :placeholder="t('dataset.pls_slc_data_source')"
+            class="ds-list"
+            :filter-node-method="filterNode"
+            filterable
+            popper-class="tree-select-ds_popper"
+            v-model="dataSource"
+            node-key="id"
+            :props="treeProps"
+            :data="state.dataSourceList"
+            :render-after-expand="false"
+          >
+            <template #default="{ data: { name, leaf, type, extraFlag } }">
+              <div class="flex-align-center icon">
+                <el-icon>
+                  <icon :static-content="getDsIcon({ leaf, type })"
+                    ><component class="svg-icon" :is="getDsIconName({ leaf, type })"></component
+                  ></icon>
+                </el-icon>
+                <span v-if="!leaf || extraFlag > -1">{{ name }}</span>
+                <el-tooltip
+                  effect="dark"
+                  v-else
+                  :content="`${t('data_set.invalid_data_source')}:${name}`"
+                  placement="top"
+                >
+                  <span>{{ name }}</span>
+                </el-tooltip>
+              </div>
+            </template>
+          </el-tree-select>
+          <p class="select-ds table-num">
+            {{ t('datasource.data_table') }}
+            <span class="num">
+              <el-icon class="icon-color">
+                <Icon name="reference-table"><referenceTable class="svg-icon" /></Icon>
+              </el-icon>
+              {{ datasourceTableData.length }}
+            </span>
+          </p>
+          <el-input
+            v-model="searchTable"
+            class="search"
+            :placeholder="t('deDataset.by_table_name')"
+            clearable
+          >
+            <template #prefix>
+              <el-icon>
+                <Icon name="icon_search-outline_outlined"
+                  ><icon_searchOutline_outlined class="svg-icon"
+                /></Icon>
+              </el-icon>
+            </template>
+          </el-input>
+        </div>
+        <div v-if="!datasourceTableData.length && searchTable !== ''" class="el-empty">
+          <div
+            class="el-empty__description"
+            style="margin-top: 80px; color: #5e6d82; text-align: center"
+          >
+            {{ t('data_set.relevant_content_found') }}
+          </div>
+        </div>
+        <div v-else class="table-checkbox-list">
+          <div
+            class="list-item_primary"
+            v-if="dataSource"
+            @dragstart="$event => dragstart($event, sqlNode)"
+            @dragend="dragEnd"
+            :draggable="true"
+            @click="setActiveName(sqlNode)"
+          >
+            <el-icon class="icon-color">
+              <Icon name="icon_sql_outlined_1"><icon_sql_outlined_1 class="svg-icon" /></Icon>
+            </el-icon>
+            <span class="label">{{ t('data_set.custom_sql') }}</span>
+          </div>
+          <FixedSizeList
+            :itemSize="40"
+            :data="datasourceTableData"
+            :total="datasourceTableData.length"
+            :width="LeftWidth - 17"
+            :height="height - 305"
+            :scrollbarAlwaysOn="false"
+            class-name="el-select-dropdown__list"
+            layout="vertical"
+          >
+            <template #default="{ index, style }">
+              <div
+                class="list-item_primary"
+                :style="style"
+                :title="datasourceTableData[index].tableName"
+                @dragstart="$event => dragstart($event, datasourceTableData[index])"
+                @dragend="maskShow = false"
+                :draggable="
+                  !singleValData ||
+                  !currentDsId ||
+                  (singleValData &&
+                    currentDsId &&
+                    datasourceTableData[index].datasourceId === currentDsId)
+                "
+                @click="setActiveName(datasourceTableData[index])"
+              >
+                <el-icon class="icon-color">
+                  <Icon name="reference-table"><referenceTable class="svg-icon" /></Icon>
+                </el-icon>
+                <span class="label">{{ datasourceTableData[index].tableName }}</span>
+              </div>
+            </template>
+          </FixedSizeList>
+        </div>
+      </div>
+      <div class="drag-right" :style="{ width: `calc(100vw - ${showLeft ? LeftWidth : 0}px)` }">
+        <div v-if="crossDatasources" class="different-datasource">
+          <el-icon>
+            <Icon name="icon_warning_colorful"><icon_warning_colorful class="svg-icon" /></Icon>
+          </el-icon>
+          {{ t('data_set.be_reported_incorrectly') }}
+        </div>
+        <dataset-union
+          @reGetName="reGetName"
+          @join-editor="joinEditor"
+          @changeUpdate="changeUpdate"
+          :maskShow="maskShow"
+          :dragHeight="dragHeight"
+          :getDsName="getDsName"
+          :offsetX="offsetX"
+          :offsetY="offsetY"
+          ref="datasetDrag"
+          @updateAllfields="updateAllfields"
+          @addComplete="addComplete"
+        ></dataset-union>
+        <div
+          class="sql-result"
+          :style="{
+            height: sqlResultHeight
+              ? `${crossDatasources ? sqlResultHeight - 40 : sqlResultHeight}px`
+              : `calc(100% - ${crossDatasources ? dragHeight + 40 : dragHeight}px)`
+          }"
+        >
+          <div class="sql-title">
+            <span class="drag" @mousedown="mousedownDragH" />
+            <div class="field-data">
+              <el-button :disabled="!allfields.length" @click="addCalcField('q')" secondary>
+                <template #icon>
+                  <el-icon>
+                    <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
+                  </el-icon>
+                </template>
+                {{ t('dataset.add_calc_field') }}
+              </el-button>
+              <el-button :disabled="!allfields.length" @click="addGroupField" secondary>
+                <template #icon>
+                  <el-icon>
+                    <Icon><icon_organization_outlined class="svg-icon" /></Icon>
+                  </el-icon>
+                </template>
+                {{ t('dataset.create_grouping_field') }}
+              </el-button>
+              <el-button
+                style="min-width: 70px"
+                :disabled="!allfields.length"
+                :loading="datasetPreviewLoading"
+                @click="datasetPreview"
+                secondary
+              >
+                <template #icon>
+                  <el-icon>
+                    <Icon name="icon_refresh_outlined"
+                      ><icon_refresh_outlined class="svg-icon"
+                    /></Icon>
+                  </el-icon>
+                </template>
+                {{ t('data_set.refresh_data') }}
+              </el-button>
+            </div>
+          </div>
+          <el-tabs class="padding-24" v-model="tabActive" @tab-change="tabChange">
+            <el-tab-pane :label="t('chart.data_preview')" name="preview" />
+            <el-tab-pane :label="t('dataset.batch_manage')" name="manage" />
+          </el-tabs>
+          <div v-show="tabActive === 'preview' && !!allfields.length" class="table-preview">
+            <div class="preview-field">
+              <div :class="['field-d', { open: expandedD }]">
+                <div :class="['title', { expanded: expandedD }]" @click="expandedD = !expandedD">
+                  <ElIcon class="expand">
+                    <Icon name="icon_expand-right_filled"
+                      ><icon_expandRight_filled class="svg-icon"
+                    /></Icon>
+                  </ElIcon>
+                  &nbsp;{{ t('chart.dimension') }}
+                </div>
+                <el-tree v-if="expandedD" :data="dimensions" :props="defaultProps">
+                  <template #default="{ data }">
+                    <span class="custom-tree-node father">
+                      <el-icon>
+                        <Icon
+                          ><component
+                            class="svg-icon"
+                            :class="`field-icon-${fieldType[[2, 3].includes(data.deType) ? 2 : 0]}`"
+                            :is="getIconNameCalc(data.deType, data.extField)"
+                          ></component
+                        ></Icon>
+                      </el-icon>
+                      <span :title="data.name" class="label-tooltip">{{ data.name }}</span>
+                      <div class="operate child">
+                        <field-more
+                          :extField="data.extField"
+                          :trans-type="t('data_set.convert_to_indicator')"
+                          :show-time="data.deExtractType === 0"
+                          @handle-command="type => handleFieldMore(data, type)"
+                        ></field-more>
+                      </div>
+                    </span>
+                  </template>
+                </el-tree>
+              </div>
+              <div :class="['field-q', { open: expandedQ }]">
+                <div :class="['title', { expanded: expandedQ }]" @click="expandedQ = !expandedQ">
+                  <ElIcon class="expand">
+                    <Icon name="icon_expand-right_filled"
+                      ><icon_expandRight_filled class="svg-icon"
+                    /></Icon>
+                  </ElIcon>
+                  &nbsp;{{ t('chart.quota') }}
+                </div>
+                <el-tree v-if="expandedQ" :data="quota" :props="defaultProps">
+                  <template #default="{ data }">
+                    <span class="custom-tree-node father">
+                      <el-icon>
+                        <Icon
+                          ><component
+                            class="svg-icon"
+                            :class="`field-icon-${fieldType[[2, 3].includes(data.deType) ? 2 : 0]}`"
+                            :is="getIconNameCalc(data.deType, data.extField, true)"
+                          ></component
+                        ></Icon>
+                      </el-icon>
+                      <span :title="data.name" class="label-tooltip">{{ data.name }}</span>
+                      <div class="operate child">
+                        <field-more
+                          :trans-type="t('data_set.convert_to_dimension')"
+                          typeColor="green-color"
+                          :show-time="data.deExtractType === 0"
+                          :extField="data.extField"
+                          @handle-command="type => handleFieldMore(data, type)"
+                        ></field-more>
+                      </div>
+                    </span>
+                  </template>
+                </el-tree>
+              </div>
+            </div>
+            <div class="preview-data">
+              <el-table
+                class="dataset-preview_table"
+                @row-click="rowClick"
+                v-loading="datasetPreviewLoading"
+                header-class="header-cell"
+                :data="tableData"
+                border
+                style="width: 100%; height: 100%"
+              >
+                <el-table-column
+                  :key="column.dataKey + column.deType"
+                  v-for="(column, index) in columns"
+                  :prop="column.dataKey"
+                  :label="column.title"
+                  :width="columns.length - 1 === index ? 150 : 'auto'"
+                  :fixed="columns.length - 1 === index ? 'right' : false"
+                >
+                  <template #header>
+                    <div class="flex-align-center">
+                      <ElIcon style="margin-right: 6px">
+                        <Icon
+                          ><component
+                            class="svg-icon"
+                            :class="`field-icon-${
+                              fieldType[[2, 3].includes(column.deType) ? 2 : 0]
+                            }`"
+                            :is="iconFieldMap[fieldType[column.deType]]"
+                          ></component
+                        ></Icon>
+                      </ElIcon>
+                      <span class="ellipsis" :title="column.title" style="min-width: 30px">
+                        {{ column.title }}
+                      </span>
+                    </div>
+                  </template>
+                </el-table-column>
+                <template #empty>
+                  <empty-background :description="t('data_set.no_data')" img-type="noneWhite" />
+                </template>
+              </el-table>
+            </div>
+          </div>
+          <div v-show="tabActive !== 'preview' && !!allfields.length" class="batch-area">
+            <div class="manage-container">
+              <el-collapse v-model="state.fieldCollapse" class="style-collapse">
+                <el-collapse-item
+                  name="dimension"
+                  :title="t('chart.dimension')"
+                  class="dimension-manage-header manage-header"
+                >
+                  <el-table
+                    @selection-change="setDeTypeSelection"
+                    ref="dimensionsTable"
+                    :data="dimensions"
+                    :height="quotaTableHeight"
+                    style="width: 100%"
+                  >
+                    <el-table-column :selectable="selectable" type="selection" width="40" />
+                    <el-table-column prop="name" :label="t('dataset.field_name')" width="264">
+                      <template #default="scope">
+                        <div class="column-style">
+                          <el-input
+                            v-model="scope.row.name"
+                            maxlength="100"
+                            :placeholder="t('commons.input_content')"
+                          />
+                        </div>
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column
+                      prop="originName"
+                      :label="t('dataset.origin_name')"
+                      width="240"
+                    >
+                      <template #default="scope">
+                        <div class="column-style">
+                          <span style="color: #8d9199" v-if="scope.row.extField === 2">{{
+                            t('dataset.calc_field')
+                          }}</span>
+                          <span style="color: #8d9199" v-else-if="scope.row.extField === 3">{{
+                            t('dataset.grouping_field')
+                          }}</span>
+                          <span v-else>{{ scope.row.originName }}</span>
+                        </div>
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column
+                      prop="description"
+                      :label="t('deDataset.description')"
+                      width="240"
+                    >
+                      <template #default="scope">
+                        <div class="column-style">
+                          <span v-if="scope.row.extField === 0">{{ scope.row.description }}</span>
+                          <span style="color: #8d9199" v-else>&nbsp;</span>
+                        </div>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      prop="datasetTableId"
+                      :label="t('data_set.table_name_de')"
+                      width="240"
+                    >
+                      <template #default="scope">
+                        {{ scope.row.extField === 0 ? nameMap[scope.row.datasetTableId] : '' }}
+                      </template>
+                    </el-table-column>
+                    <el-table-column prop="deType" :label="t('dataset.field_type')" width="200">
+                      <template #default="scope">
+                        <el-cascader
+                          :class="
+                            !!scope.row.deTypeArr && !!scope.row.deTypeArr.length && 'select-type'
+                          "
+                          v-if="scope.row.extField !== 3"
+                          popper-class="cascader-panel"
+                          v-model="scope.row.deTypeArr"
+                          @change="val => cascaderChange(scope.row, val)"
+                          :options="scope.row.deExtractType === 0 ? fieldOptions : fieldOptionsText"
+                        >
+                          <template v-slot="{ data }">
+                            <el-icon>
+                              <Icon
+                                ><component
+                                  class="svg-icon"
+                                  :class="`field-icon-${
+                                    fieldType[[2, 3].includes(data.value) ? 2 : 0]
+                                  }`"
+                                  :is="iconFieldMap[getIconName(data.value)]"
+                                ></component
+                              ></Icon>
+                            </el-icon>
+                            <span>{{ data.label }}</span>
+                          </template>
+                        </el-cascader>
+                        <div style="padding-left: 30px" v-else>{{ $t('data_set.text') }}</div>
+                        <span class="select-svg-icon">
+                          <el-icon>
+                            <Icon
+                              ><component
+                                class="svg-icon"
+                                :class="`field-icon-${
+                                  fieldType[[2, 3].includes(scope.row.deType) ? 2 : 0]
+                                }`"
+                                :is="iconFieldMap[getIconName(scope.row.deType)]"
+                              ></component
+                            ></Icon>
+                          </el-icon>
+                        </span>
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column
+                      prop="deExtraType"
+                      :label="t('dataset.origin_type')"
+                      width="168"
+                    >
+                      <template #default="scope">
+                        <div class="column-style">
+                          <span style="color: #8d9199" v-if="scope.row.extField === 2">{{
+                            t('dataset.calc_field')
+                          }}</span>
+                          <span style="color: #8d9199" v-else-if="scope.row.extField === 3">{{
+                            t('dataset.grouping_field')
+                          }}</span>
+                          <span class="flex-align-center icon" v-else-if="scope.row.extField === 0">
+                            <el-icon>
+                              <Icon className="primary-color"
+                                ><component
+                                  class="svg-icon primary-color"
+                                  :is="iconFieldMap[getIconName(scope.row.deExtractType)]"
+                                ></component
+                              ></Icon>
+                            </el-icon>
+                            {{ fieldTypes(scope.row.deExtractType) }}
+                          </span>
+                        </div>
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column :label="t('chart.total_sort_field')" align="center" width="90">
+                      <template #default="scope">
+                        <el-checkbox v-model="scope.row.orderChecked" />
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column fixed="right" :label="t('chart.dimension')">
+                      <template #default="scope">
+                        <el-tooltip
+                          effect="dark"
+                          :content="t('data_set.convert_to_indicator')"
+                          placement="top"
+                        >
+                          <template #default>
+                            <el-button
+                              v-if="![3].includes(scope.row.extField)"
+                              text
+                              @click="handleFieldMore(scope.row, 'translate')"
+                            >
+                              <template #icon>
+                                <Icon name="icon_switch_outlined"
+                                  ><icon_switch_outlined class="svg-icon"
+                                /></Icon>
+                              </template>
+                            </el-button>
+                          </template>
+                        </el-tooltip>
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column fixed="right" width="168" :label="t('dataset.operator')">
+                      <template #default="scope">
+                        <el-tooltip effect="dark" :content="t('dataset.copy')" placement="top">
+                          <template #default>
+                            <el-button text @click="handleFieldMore(scope.row, 'copy')">
+                              <template #icon>
+                                <Icon name="icon_copy_outlined"
+                                  ><icon_copy_outlined class="svg-icon"
+                                /></Icon>
+                              </template>
+                            </el-button>
+                          </template>
+                        </el-tooltip>
+
+                        <el-tooltip effect="dark" :content="t('dataset.delete')" placement="top">
+                          <template #default>
+                            <el-button text @click="handleFieldMore(scope.row, 'delete')">
+                              <template #icon>
+                                <Icon name="icon_delete-trash_outlined"
+                                  ><icon_deleteTrash_outlined class="svg-icon"
+                                /></Icon>
+                              </template>
+                            </el-button>
+                          </template>
+                        </el-tooltip>
+
+                        <el-tooltip effect="dark" :content="t('dataset.edit')" placement="top">
+                          <template #default>
+                            <el-button
+                              v-if="[2, 3].includes(scope.row.extField)"
+                              text
+                              @click="handleFieldMore(scope.row, 'editor')"
+                            >
+                              <template #icon>
+                                <Icon name="icon_edit_outlined"
+                                  ><icon_edit_outlined class="svg-icon"
+                                /></Icon>
+                              </template>
+                            </el-button>
+                          </template>
+                        </el-tooltip>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                </el-collapse-item>
+                <el-collapse-item
+                  name="quota"
+                  :title="t('chart.quota')"
+                  class="quota-manage-header manage-header"
+                >
+                  <el-table
+                    @selection-change="setDeTypeSelection"
+                    ref="quotaTable"
+                    :height="quotaTableHeight"
+                    :data="quota"
+                    style="width: 100%"
+                  >
+                    <el-table-column type="selection" width="40" />
+                    <el-table-column prop="name" :label="t('dataset.field_name')" width="264">
+                      <template #default="scope">
+                        <div class="column-style">
+                          <el-input
+                            v-model="scope.row.name"
+                            :placeholder="t('commons.input_content')"
+                          />
+                        </div>
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column
+                      prop="originName"
+                      :label="t('dataset.origin_name')"
+                      width="240"
+                    >
+                      <template #default="scope">
+                        <div class="column-style">
+                          <span v-if="scope.row.extField === 0">{{ scope.row.originName }}</span>
+                          <span v-else style="color: #8d9199">{{ t('dataset.calc_field') }}</span>
+                        </div>
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column
+                      prop="description"
+                      :label="t('deDataset.description')"
+                      width="240"
+                    >
+                      <template #default="scope">
+                        <div class="column-style">
+                          <span v-if="scope.row.extField === 0">{{ scope.row.description }}</span>
+                          <span style="color: #8d9199" v-else>&nbsp;</span>
+                        </div>
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column
+                      prop="datasetTableId"
+                      :label="t('data_set.table_name_de')"
+                      width="240"
+                    >
+                      <template #default="scope">
+                        {{ scope.row.extField === 0 ? nameMap[scope.row.datasetTableId] : '' }}
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column prop="deType" :label="t('dataset.field_type')" width="200">
+                      <template #default="scope">
+                        <el-cascader
+                          :class="
+                            !!scope.row.deTypeArr && !!scope.row.deTypeArr.length && 'select-type'
+                          "
+                          popper-class="cascader-panel"
+                          v-model="scope.row.deTypeArr"
+                          @change="val => cascaderChange(scope.row, val)"
+                          :options="scope.row.deExtractType === 0 ? fieldOptions : fieldOptionsText"
+                        >
+                          <template v-slot="{ data }">
+                            <el-icon>
+                              <Icon
+                                ><component
+                                  class="svg-icon"
+                                  :class="`field-icon-${
+                                    fieldType[[2, 3].includes(data.value) ? 2 : 0]
+                                  }`"
+                                  :is="iconFieldMap[getIconName(data.value)]"
+                                ></component
+                              ></Icon>
+                            </el-icon>
+                            <span>{{ data.label }}</span>
+                          </template>
+                        </el-cascader>
+                        <span class="select-svg-icon">
+                          <el-icon>
+                            <Icon
+                              ><component
+                                class="svg-icon"
+                                :class="`field-icon-${
+                                  fieldType[[2, 3].includes(scope.row.deType) ? 2 : 0]
+                                }`"
+                                :is="iconFieldMap[getIconName(scope.row.deType)]"
+                              ></component
+                            ></Icon>
+                          </el-icon>
+                        </span>
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column
+                      prop="deExtraType"
+                      :label="t('dataset.origin_type')"
+                      width="168"
+                    >
+                      <template #default="scope">
+                        <div class="column-style">
+                          <span style="color: #8d9199" v-if="scope.row.extField === 2">{{
+                            t('dataset.calc_field')
+                          }}</span>
+                          <span style="color: #8d9199" v-else-if="scope.row.extField === 3">{{
+                            t('dataset.grouping_field')
+                          }}</span>
+                          <span class="flex-align-center icon" v-else-if="scope.row.extField === 0">
+                            <el-icon>
+                              <Icon className="green-color"
+                                ><component
+                                  class="svg-icon green-color"
+                                  :is="iconFieldMap[getIconName(scope.row.deExtractType)]"
+                                ></component
+                              ></Icon>
+                            </el-icon>
+                            {{ fieldTypes(scope.row.deExtractType) }}
+                          </span>
+                        </div>
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column :label="t('chart.total_sort_field')" align="center" width="90">
+                      <template #default="scope">
+                        <el-checkbox v-model="scope.row.orderChecked" />
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column fixed="right" :label="t('chart.quota')">
+                      <template #default="scope">
+                        <el-tooltip
+                          effect="dark"
+                          :content="t('data_set.convert_to_dimension')"
+                          placement="top"
+                        >
+                          <template #default>
+                            <el-button text @click="handleFieldMore(scope.row, 'translate')">
+                              <template #icon>
+                                <Icon name="icon_switch_outlined"
+                                  ><icon_switch_outlined class="svg-icon"
+                                /></Icon>
+                              </template>
+                            </el-button>
+                          </template>
+                        </el-tooltip>
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column fixed="right" width="168" :label="t('dataset.operator')">
+                      <template #default="scope">
+                        <el-tooltip effect="dark" :content="t('dataset.copy')" placement="top">
+                          <template #default>
+                            <el-button text @click="handleFieldMore(scope.row, 'copy')">
+                              <template #icon>
+                                <Icon name="icon_copy_outlined"
+                                  ><icon_copy_outlined class="svg-icon"
+                                /></Icon>
+                              </template>
+                            </el-button>
+                          </template>
+                        </el-tooltip>
+
+                        <el-tooltip effect="dark" :content="t('dataset.delete')" placement="top">
+                          <template #default>
+                            <el-button text @click="handleFieldMore(scope.row, 'delete')">
+                              <template #icon>
+                                <Icon name="icon_delete-trash_outlined"
+                                  ><icon_deleteTrash_outlined class="svg-icon"
+                                /></Icon>
+                              </template>
+                            </el-button>
+                          </template>
+                        </el-tooltip>
+
+                        <el-tooltip effect="dark" :content="t('dataset.edit')" placement="top">
+                          <template #default>
+                            <el-button
+                              v-if="scope.row.extField === 2"
+                              text
+                              @click="handleFieldMore(scope.row, 'editor')"
+                            >
+                              <template #icon>
+                                <Icon name="icon_edit_outlined"
+                                  ><icon_edit_outlined class="svg-icon"
+                                /></Icon>
+                              </template>
+                            </el-button>
+                          </template>
+                        </el-tooltip>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                </el-collapse-item>
+              </el-collapse>
+            </div>
+            <div class="batch-operate flex-align-center" v-if="!!deTypeSelection.length">
+              <div class="flex-align-center">
+                {{ t('data_set.selected') }}
+                <span class="num">{{ deTypeSelection.length }}</span>
+                {{ t('data_set.bar') }}
+                <el-button @click="clearSelection" text style="margin-left: 16px">{{
+                  t('commons.clear')
+                }}</el-button>
+              </div>
+              <div class="cascader-batch">
+                <el-cascader
+                  :disabled="!showCascaderBatch"
+                  :class="!!deTypeArr.length && 'select-type'"
+                  v-model="deTypeArr"
+                  @change="cascaderChangeArr"
+                  popper-class="cascader-panel"
+                  :options="
+                    deTypeSelection.every(ele => ele === 0) ? fieldOptions : fieldOptionsText
+                  "
+                >
+                  <template v-slot="{ data }">
+                    <el-icon>
+                      <Icon
+                        ><component
+                          class="svg-icon"
+                          :class="`field-icon-${fieldType[[2, 3].includes(data.value) ? 2 : 0]}`"
+                          :is="iconFieldMap[getIconName(data.value)]"
+                        ></component
+                      ></Icon>
+                    </el-icon>
+                    <span>{{ data.label }}</span>
+                  </template>
+                </el-cascader>
+                <span class="select-svg-icon">
+                  <el-icon>
+                    <Icon :className="`field-icon-${getIconName(deTypeArr[0])}`"
+                      ><component
+                        class="svg-icon"
+                        :class="`field-icon-${getIconName(deTypeArr[0])}`"
+                        :is="iconFieldMap[getIconName(deTypeArr[0])]"
+                      ></component
+                    ></Icon>
+                  </el-icon>
+                </span>
+                <el-tooltip class="item" effect="dark" placement="top">
+                  <template #content>
+                    <div>{{ t('dataset.field_diff') }}</div>
+                  </template>
+                  <el-icon size="16px" style="margin-left: 6px" v-show="!showCascaderBatch">
+                    <Icon name="icon_info_outlined"
+                      ><icon_info_outlined class="svg-icon tip-icon"
+                    /></Icon>
+                  </el-icon>
+                </el-tooltip>
+              </div>
+              <el-button
+                @click="dqTransArr('q')"
+                v-if="fieldSelection.every(ele => ele.groupType === 'd')"
+                plain
+                style="margin-left: 200px"
+              >
+                {{ t('data_set.convert_to_indicator') }}
+              </el-button>
+              <el-button
+                @click="dqTransArr('d')"
+                v-else-if="fieldSelection.every(ele => ele.groupType === 'q')"
+                plain
+                style="margin-left: 200px"
+              >
+                {{ t('data_set.convert_to_dimension') }}
+              </el-button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <el-drawer
+      :title="t('dataset.edit_union_relation')"
+      v-model="editUnion"
+      modal-class="union-dataset-drawer"
+      size="840px"
+      :before-close="closeEditUnion"
+      direction="rtl"
+    >
+      <union-edit ref="fieldUnion" :editArr="state.editArr" />
+      <template #footer>
+        <el-button secondary @click="closeEditUnion">{{ t('dataset.cancel') }} </el-button>
+        <el-button type="primary" @click="confirmEditUnion">{{ t('dataset.confirm') }} </el-button>
+      </template>
+    </el-drawer>
+  </div>
+  <creat-ds-group
+    @finish="finish"
+    @onDatasetSave="saveAndBack"
+    ref="creatDsFolder"
+  ></creat-ds-group>
+  <el-dialog
+    modal-class="calc-field-edit-dialog"
+    v-model="editCalcField"
+    width="1000px"
+    :title="calcTitle"
+  >
+    <calc-field-edit ref="calcEdit" :crossDs="crossDatasources" />
+    <template #footer>
+      <el-button secondary @click="closeEditCalc()">{{ t('dataset.cancel') }} </el-button>
+      <el-button secondary @click="verify">{{ t('datasource.validate') }} </el-button>
+      <el-button type="primary" @click="confirmEditCalc()">{{ t('dataset.confirm') }} </el-button>
+    </template>
+  </el-dialog>
+  <el-dialog
+    class="create-dialog"
+    :title="t('data_set.format_edit')"
+    v-model="updateCustomTime"
+    width="1000px"
+  >
+    <el-form ref="ruleFormRef" :rules="rules" :model="currentField" label-width="120px">
+      <el-form-item prop="name" :label="t('data_set.custom_time_format')">
+        <el-input v-model="currentField.name" />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <el-button secondary @click="closeCustomTime()">{{ t('dataset.cancel') }} </el-button>
+      <el-button type="primary" @click="confirmCustomTime()">{{ t('dataset.confirm') }} </el-button>
+    </template>
+  </el-dialog>
+  <el-dialog
+    class="create-dialog"
+    :title="t('datasource.field_rename')"
+    v-model="editNormalField"
+    width="420px"
+  >
+    <el-form
+      ref="ruleFormFieldRef"
+      :rules="fieldRules"
+      :model="currentNormalField"
+      require-asterisk-position="right"
+      label-position="top"
+      label-width="120px"
+    >
+      <el-form-item prop="name" :label="t('dataset.field_name')">
+        <el-input maxlength="100" v-model="currentNormalField.name" />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <el-button secondary @click="closeNormalField()">{{ t('dataset.cancel') }} </el-button>
+      <el-button type="primary" @click="confirmNormalField()"
+        >{{ t('dataset.confirm') }}
+      </el-button>
+    </template>
+  </el-dialog>
+  <el-dialog
+    class="create-dialog group-fields_dialog"
+    :title="titleForGroup"
+    v-model="editGroupField"
+    width="1000px"
+  >
+    <el-form
+      ref="ruleGroupFieldRef"
+      :rules="fieldGroupRules"
+      :model="currentGroupField"
+      require-asterisk-position="right"
+      label-position="top"
+      label-width="120px"
+      v-loading="enumValueLoading"
+    >
+      <el-row :gutter="24">
+        <el-col :span="12">
+          <el-form-item prop="name" :label="t('dataset.field_name')">
+            <el-input
+              :placeholder="t('dataset.input_edit_name')"
+              v-model="currentGroupField.name"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item prop="originName" :label="t('dataset.grouping_field')">
+            <el-select
+              @change="handleFieldschange"
+              v-model="currentGroupField.originName"
+              style="width: 100%"
+            >
+              <el-option
+                v-for="item in groupFields"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+      </el-row>
+
+      <el-form-item style="margin-top: 16px">
+        <template v-slot:label>
+          <div class="grouping_settings_label">
+            {{ t('dataset.grouping_settings') }}
+          </div>
+        </template>
+        <div style="width: 100%">
+          <el-scrollbar max-height="393px"
+            ><div
+              class="group-fields_item"
+              v-for="(domain, index) in currentGroupField.groupList"
+              :key="index"
+            >
+              <el-form
+                :ref="el => (refsForm[index] = el)"
+                :model="domain"
+                inline
+                :key="index"
+                label-width="auto"
+                class="form-dynamic"
+              >
+                <el-form-item
+                  :key="index + 'name'"
+                  prop="name"
+                  :rules="{
+                    required: true,
+                    message: t('chart.value_can_not_empty'),
+                    trigger: 'blur'
+                  }"
+                  ><el-input
+                    style="width: 278px"
+                    v-model="domain.name"
+                    :placeholder="t('common.inputText')"
+                /></el-form-item>
+                <el-form-item
+                  :key="index + 'text'"
+                  v-if="[0, null].includes(currentGroupField.deTypeOrigin)"
+                  prop="text"
+                  style="width: 100%; margin-left: 24px"
+                  :rules="{
+                    validator: validatePass,
+                    required: true,
+                    trigger: 'change'
+                  }"
+                  ><el-select
+                    style="width: 100%"
+                    multiple
+                    collapse-tags
+                    filterable
+                    collapse-tags-tooltip
+                    :max-collapse-tags="2"
+                    v-model="domain.text"
+                  >
+                    <el-option
+                      v-for="item in enumValue"
+                      :key="item"
+                      :label="item"
+                      :disabled="disabledEnum(item, domain.text)"
+                      :value="item"
+                    /> </el-select
+                ></el-form-item>
+
+                <div
+                  class="group-fields_num"
+                  v-else-if="[2, 3, 4].includes(currentGroupField.deTypeOrigin)"
+                >
+                  <el-form-item
+                    :key="index + 'min'"
+                    prop="min"
+                    :rules="{
+                      required: true,
+                      message: t('chart.value_can_not_empty'),
+                      trigger: 'blur'
+                    }"
+                    ><el-input-number
+                      :placeholder="t('dataset.please_enter_number')"
+                      v-model="domain.min"
+                      controls-position="right"
+                  /></el-form-item>
+                  <el-form-item :key="index + 'minTerm'"
+                    ><el-select v-model="domain.minTerm">
+                      <el-option
+                        v-for="item in equalMin"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      /> </el-select
+                  ></el-form-item>
+                  <div class="name">
+                    {{ t('dataset.field_value') }}
+                  </div>
+                  <el-form-item :key="index + 'maxTerm'"
+                    ><el-select v-model="domain.maxTerm">
+                      <el-option
+                        v-for="item in equalMin"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      /> </el-select
+                  ></el-form-item>
+                  <el-form-item
+                    :key="index + 'max'"
+                    prop="max"
+                    :rules="{
+                      required: true,
+                      message: t('chart.value_can_not_empty'),
+                      trigger: 'blur'
+                    }"
+                    ><el-input-number
+                      :placeholder="t('dataset.please_enter_number')"
+                      v-model="domain.max"
+                      :validate-even="false"
+                      controls-position="right"
+                  /></el-form-item>
+                </div>
+                <el-form-item
+                  :key="index + 'time'"
+                  prop="time"
+                  class="group-fields_num"
+                  v-else-if="[1].includes(currentGroupField.deTypeOrigin)"
+                  :rules="{
+                    required: true,
+                    validator: validatePass,
+                    trigger: 'change'
+                  }"
+                  ><el-date-picker
+                    :end-placeholder="t('commons.date.end_date')"
+                    :start-placeholder="t('commons.date.start_date')"
+                    v-model="domain.time"
+                    type="daterange" /></el-form-item
+              ></el-form>
+
+              <el-button
+                class="variable_del"
+                text
+                v-if="currentGroupField.groupList.length !== 1"
+                @click="removeGroupFields(index)"
+              >
+                <template #icon>
+                  <Icon><icon_deleteTrash_outlined class="svg-icon" /></Icon>
+                </template>
+              </el-button></div
+          ></el-scrollbar>
+        </div>
+      </el-form-item>
+      <el-button style="margin-top: -20px" @click="addGroupFields" text>
+        <template #icon>
+          <icon><icon_add_outlined class="svg-icon" /></icon>
+        </template>
+        {{ t('auth.add_condition') }}
+      </el-button>
+      <div class="line"></div>
+      <div class="group-fields_item" style="align-items: center">
+        <el-input
+          :placeholder="t('common.inputText')"
+          style="width: 278px; margin-right: 24px"
+          v-model="currentGroupField.otherGroup"
+        />
+        {{ t('dataset.ungrouped_value') }}
+      </div>
+    </el-form>
+    <template #footer>
+      <el-button secondary @click="closeGroupField">{{ t('dataset.cancel') }} </el-button>
+      <el-button type="primary" @click="confirmGroupField">{{ t('dataset.confirm') }} </el-button>
+    </template>
+  </el-dialog>
+  <NewWindowHandler v-if="appStore.getXpackValid" @loaded="XpackLoaded" @load-fail="XpackLoaded" />
+  <DsCategoryHandler v-if="appStore.getXpackValid" @load-ds-plugin="loadDsPlugin" />
+  <Dataset
+    v-if="appStore.getXpackValid && state.dataSourceList"
+    ref="datasetCheckRef"
+    :is-edit="isEdit"
+    :ds-list="state.dataSourceList"
+    :ds-id="dataSource"
+    @back="pushDataset"
+  />
+</template>
+
+<style lang="less" scoped>
+@import '@/style/mixin.less';
+
+:deep(.dataset-preview_table) {
+  .ed-table__body {
+    .ed-table__row:not(.no-hide) {
+      .cell {
+        white-space: nowrap;
+      }
+    }
+  }
+}
+
+.ed-table {
+  --ed-table-header-bg-color: #f5f6f7;
+}
+
+.de-dataset-form {
+  color: #1f2329;
+
+  :deep(.ed-table__border-left-patch),
+  :deep(.ed-table--border .ed-table__inner-wrapper::after) {
+    display: none !important;
+  }
+
+  --ed-border-color-lighter: #1f232926 !important;
+  .top {
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    background: #050e21;
+    box-shadow: 0px 2px 4px 0px rgba(31, 35, 41, 0.12);
+
+    .name {
+      color: #fff;
+      font-family: var(--de-custom_font, 'PingFang');
+      font-size: 16px;
+      font-weight: 400;
+      display: flex;
+      align-items: center;
+      width: 50%;
+      position: relative;
+
+      .ed-form-item__error {
+        top: 19px !important;
+        left: 16px !important;
+      }
+      .dataset-name {
+        cursor: pointer;
+        width: 294px;
+      }
+
+      .ed-input {
+        width: 302px;
+        line-height: 24px;
+        height: 24px;
+        :deep(.ed-input__wrapper) {
+          background-color: #050e21;
+          box-shadow: 0 0 0 1px var(--ed-color-primary);
+          padding: 0 4px;
+        }
+        :deep(.ed-input__inner) {
+          color: #fff;
+          font-size: 16px;
+        }
+      }
+      i {
+        cursor: pointer;
+      }
+    }
+  }
+
+  .container {
+    width: 100%;
+    height: calc(100vh - 56px);
+    position: relative;
+    .drag-left {
+      position: absolute;
+      height: calc(100vh - 56px);
+      width: 4px;
+      top: 0;
+      z-index: 2;
+      cursor: col-resize;
+
+      &.is-dragging::after,
+      &:hover::after {
+        width: 1px;
+        height: 100%;
+        content: '';
+        position: absolute;
+        left: -1px;
+        top: 0;
+        background: var(--ed-color-primary);
+      }
+    }
+
+    .arrow-right {
+      position: absolute;
+      top: 15px;
+      z-index: 2;
+      cursor: pointer;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      left: 0;
+      height: 24px;
+      width: 20px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      border: 1px solid var(--deCardStrokeColor, #dee0e3);
+      display: flex;
+      align-items: center;
+      padding-left: 2px;
+      border-top-right-radius: 12px;
+      border-bottom-right-radius: 12px;
+      background: #fff;
+      font-size: 12px;
+
+      &:hover {
+        padding-left: 4px;
+        width: 24px;
+        .ed-icon {
+          color: var(--ed-color-primary, #3370ff);
+        }
+      }
+    }
+
+    .table-list {
+      .list-item_primary {
+        padding: 8px;
+      }
+      .table-list-top {
+        padding: 16px;
+        padding-bottom: 0;
+      }
+
+      height: 100%;
+      width: 240px;
+      padding-bottom: 16px;
+
+      font-family: var(--de-custom_font, 'PingFang');
+      border-right: 1px solid rgba(31, 35, 41, 0.15);
+
+      .select-ds {
+        font-size: 14px;
+        font-weight: 500;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: var(--deTextPrimary, #1f2329);
+        position: relative;
+
+        i {
+          cursor: pointer;
+          font-size: 12px;
+          color: var(--deTextPlaceholder, rgba(31, 35, 41, 0.15));
+        }
+
+        .left-outlined {
+          position: absolute;
+          font-size: 12px;
+          right: -30px;
+          top: -5px;
+          height: 24px;
+          border: 1px solid #dee0e3;
+          width: 24px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: #fff;
+          box-shadow: 0px 5px 10px 0px #1f23291a;
+          z-index: 10;
+          &:hover {
+            .ed-icon {
+              color: var(--ed-color-primary, #3370ff) !important;
+            }
+          }
+        }
+      }
+
+      .table-num {
+        .num {
+          display: flex;
+          align-items: center;
+          font-weight: 400;
+          font-size: 14px;
+          color: #646a73;
+          .ed-icon {
+            margin-right: 5.33px;
+          }
+        }
+
+        i {
+          cursor: auto;
+          font-size: 16px;
+          color: var(--deTextPlaceholder, #646a73);
+        }
+      }
+
+      .search {
+        margin: 12px 0;
+      }
+
+      .ds-list {
+        margin: 12px 0 24px 0;
+        width: 100%;
+      }
+
+      .table-checkbox-list {
+        height: calc(100% - 190px);
+        overflow-y: auto;
+        padding: 0 8px;
+
+        .not-allow {
+          cursor: not-allowed;
+          color: var(--deTextDisable, #bbbfc4);
+        }
+      }
+    }
+  }
+
+  .dataset-db {
+    display: flex;
+    .drag-right {
+      height: calc(100vh - 56px);
+      .different-datasource {
+        height: 40px;
+        width: 100%;
+        background: #ffe7cc;
+        color: #1f2329;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 22px;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+
+        .ed-icon {
+          font-size: 16px;
+          margin-right: 8px;
+        }
+      }
+      .sql-result {
+        font-family: var(--de-custom_font, 'PingFang');
+        font-size: 14px;
+        overflow-y: auto;
+        box-sizing: border-box;
+        :deep(.ed-tabs) {
+          position: relative;
+          z-index: 4;
+        }
+
+        .sql-title {
+          user-select: none;
+          height: 10px;
+          position: relative;
+          z-index: 5;
+          color: var(--deTextPrimary, #1f2329);
+
+          .field-data {
+            position: absolute;
+            right: 24px;
+            top: 13px;
+            width: 50%;
+            z-index: 2;
+            text-align: right;
+          }
+
+          .drag {
+            position: absolute;
+            top: 4px;
+            left: 0;
+            height: 7px;
+            width: 100%;
+            cursor: row-resize;
+            &::after {
+              content: '';
+              height: 7px;
+              width: 100px;
+              border-radius: 3.5px;
+              position: absolute;
+              left: 50%;
+              top: 0;
+              transform: translateX(-50%);
+              background: rgba(31, 35, 41, 0.1);
+            }
+          }
+        }
+
+        .padding-24 {
+          .border-bottom-tab(24px);
+          :deep(.ed-tabs__header::after) {
+            display: none;
+          }
+        }
+
+        .table-preview {
+          height: calc(100% - 56px);
+          box-sizing: border-box;
+
+          .preview-data {
+            float: right;
+            height: 100%;
+            width: calc(100% - 260px);
+
+            :deep(.ed-table--fit) {
+              margin-top: 1px;
+            }
+
+            :deep(.ed-table__header-wrapper) {
+              border-top: none;
+            }
+
+            :deep(.ed-table-v2__header-cell) {
+              background-color: #f5f6f7 !important;
+            }
+
+            :deep(.header-cell) {
+              border-top: none;
+            }
+          }
+
+          .preview-field {
+            float: left;
+            width: 260px;
+            height: 100%;
+            position: relative;
+
+            :deep(.ed-tree-node__content) {
+              border-radius: 6px;
+              &:hover {
+                background: rgba(31, 35, 41, 0.1);
+              }
+            }
+
+            :deep(.ed-tree-node.is-current > .ed-tree-node__content:not(.is-menu):after) {
+              display: none;
+            }
+
+            .custom-tree-node {
+              width: calc(100% - 32px);
+              display: flex;
+              align-items: center;
+              padding-right: 8px;
+              box-sizing: content-box;
+
+              .label-tooltip {
+                margin-left: 5.33px;
+                width: 70%;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+              }
+
+              .operate {
+                margin-left: auto;
+                position: relative;
+                z-index: 5;
+              }
+            }
+
+            .field-d,
+            .field-q {
+              padding: 0 8px;
+              position: relative;
+              height: 49px;
+
+              &.open {
+                height: 50%;
+              }
+              .title {
+                cursor: pointer;
+                position: sticky;
+                margin: 1px;
+                top: 1px;
+                height: 49px;
+                font-family: var(--de-custom_font, 'PingFang');
+                font-style: normal;
+                font-weight: 500;
+                font-size: 14px;
+                line-height: 22px;
+                color: #1f2329;
+                display: flex;
+                align-items: center;
+                z-index: 10;
+                background: #fff;
+
+                .add {
+                  margin-left: auto;
+                }
+                i {
+                  color: #646a73;
+                }
+
+                .expand {
+                  font-size: 10px;
+                }
+
+                &.expanded {
+                  .expand {
+                    transform: rotate(90deg);
+                  }
+                }
+              }
+              overflow-y: auto;
+            }
+
+            .field-d {
+              max-height: calc(100% - 50px);
+              border-bottom: 1px solid rgba(31, 35, 41, 0.15);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+.icon-color {
+  color: #646a73;
+}
+
+.ed-button.is-secondary.is-disabled {
+  color: #bbbfc4 !important;
+  border-color: #bbbfc4 !important;
+}
+
+.father .child {
+  visibility: hidden;
+}
+
+.father:hover .child {
+  visibility: visible;
+}
+
+.manage-container {
+  padding: 12px 24px 0;
+  flex: 1;
+  overflow: auto;
+}
+
+.style-collapse {
+  :deep(.ed-collapse-item__header),
+  :deep(.ed-collapse-item__wrap) {
+    border-bottom: none !important;
+  }
+  :deep(.ed-collapse-item__content) {
+    padding: 0 !important;
+  }
+
+  &.data-tab-collapse {
+    border-bottom: none;
+    border-top: 1px solid var(--ed-collapse-border-color);
+
+    :deep(.ed-collapse-item.ed-collapse--dark .ed-collapse-item__wrap) {
+      background-color: #1a1a1a;
+    }
+
+    :deep(.ed-collapse-item__wrap) {
+      border-top: none !important;
+    }
+    :deep(.ed-collapse-item__content) {
+      padding: 0 !important;
+      border-top: none !important;
+    }
+    :deep(.ed-collapse-item__header) {
+      background-color: transparent;
+      border-bottom: none !important;
+    }
+  }
+}
+
+.column-style {
+  display: flex;
+  align-items: center;
+}
+
+.select-svg-icon {
+  position: absolute;
+  left: 24px;
+  top: 50%;
+  height: 14px;
+  transform: translateY(-50%);
+  line-height: 14px;
+}
+
+.batch-operate {
+  width: 100%;
+  height: 64px;
+  padding: 0 24px;
+  z-index: 2;
+  box-shadow: 0px -2px 4px rgba(31, 35, 41, 0.08);
+
+  .select-svg-icon {
+    left: 11px;
+  }
+
+  .flex-align-center {
+    white-space: nowrap;
+    .num {
+      margin: 0 4px;
+    }
+    .is-text {
+      margin-left: 16px;
+    }
+  }
+
+  .cascader-batch {
+    position: relative;
+    margin-left: 30%;
+    width: 176px;
+    display: flex;
+    align-items: center;
+  }
+
+  .tip-icon {
+    color: #f54a45;
+  }
+}
+
+.batch-area {
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 55px);
+}
+
+.dimension-manage-header {
+  :deep(.ed-collapse-item__header) {
+    background: #ebf1ff;
+  }
+}
+.quota-manage-header {
+  :deep(.ed-collapse-item__header) {
+    background: #e6f7f5;
+  }
+}
+.manage-header {
+  :deep(.ed-collapse-item__header) {
+    height: 30px;
+  }
+  :deep(.ed-table th.ed-table__cell) {
+    background: #f5f6f7;
+  }
+}
+</style>
+
+<style lang="less">
+.cascader-panel {
+  .ed-scrollbar__wrap {
+    height: 210px !important;
+  }
+  .ed-cascader-node__label {
+    display: flex;
+    align-items: center;
+    .ed-icon {
+      margin-right: 5px;
+    }
+  }
+}
+.select-type {
+  .ed-input__wrapper {
+    padding-left: 32px;
+  }
+}
+.green-color {
+  color: #04b49c;
+}
+.ed-select-dropdown__item {
+  display: flex;
+  align-items: center;
+  .ed-icon {
+    font-size: 14px;
+    margin-right: 5.25px;
+  }
+}
+.tree-select-ds_popper {
+  .ed-tree-node.is-current > .ed-tree-node__content:not(.is-menu):after {
+    display: none !important;
+  }
+
+  .flex-align-center {
+    padding-right: 15px;
+  }
+}
+.calc-field-edit-dialog {
+  .ed-dialog__footer {
+    padding-top: 24px;
+    border: 1px solid rgba(31, 35, 41, 0.15);
+  }
+}
+.group-fields_dialog {
+  .group-fields_item {
+    padding: 16px;
+    background: #f5f6f7;
+    border-radius: 6px;
+    display: flex;
+
+    & + .group-fields_item {
+      margin-top: 8px;
+    }
+
+    .form-dynamic {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      .ed-form-item {
+        margin: 0;
+      }
+      &:has(.is-error) {
+        .ed-form-item {
+          margin-bottom: 24px;
+        }
+      }
+    }
+
+    .variable_del {
+      color: #646a73;
+      margin-left: 4px;
+      margin-right: -4px;
+
+      .ed-icon {
+        font-size: 16px;
+      }
+
+      &:hover {
+        background: rgba(31, 35, 41, 0.1) !important;
+      }
+      &:focus {
+        background: rgba(31, 35, 41, 0.1) !important;
+      }
+      &:active {
+        background: rgba(31, 35, 41, 0.2) !important;
+      }
+    }
+
+    .group-fields_num {
+      flex: 1;
+      display: flex;
+      gap: 8px;
+      margin-left: 24px;
+      .name {
+        white-space: nowrap;
+      }
+    }
+  }
+
+  .line {
+    background: #1f232926;
+    height: 1px;
+    width: 100%;
+    margin-bottom: 16px;
+    margin-top: 8px;
+  }
+
+  .grouping_settings_label:after {
+    content: '*';
+    color: var(--ed-color-danger);
+    margin-left: 2px;
+    font-family: var(--de-custom_font, 'PingFang');
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+  }
+}
+</style>
