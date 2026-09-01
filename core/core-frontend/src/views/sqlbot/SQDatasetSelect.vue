@@ -63,7 +63,7 @@ const refresh = () => {
 
 <template>
   <el-row class="de-sq-assistant">
-    <span class="de-sq-tips">{{ t('common.cur_sq_dataset') }}</span>
+    <span class="de-sq-tips">{{ t('visualization.cur_sq_dataset') }}</span>
     <el-select
       v-model="state.curDatasetId"
       class="de-sq-select"

@@ -1,7 +1,7 @@
 <template>
   <div class="dataease-v3-embedded-assistant-sqlbot-head">
     <div class="head-inner">
-      <span>{{ t('common.sqlbot_query_tips') }}</span>
+      <span>{{ t('visualization.sqlbot_query_tips') }}</span>
     </div>
   </div>
 </template>

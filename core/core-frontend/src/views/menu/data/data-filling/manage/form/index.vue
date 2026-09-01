@@ -370,7 +370,7 @@ const selectedComponentItemInputTypes = computed(() => {
 
 const checkDuplicateOptionValidator = (rule, value, callback) => {
   if (!value) {
-    return callback(new Error(t("common.component.required")));
+    return callback(new Error(t("common.component_required")));
   }
   const _list = filter(
     selectedComponentItem.value?.settings.options,

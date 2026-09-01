@@ -526,7 +526,7 @@ const saveLinkageSetting = () => {
     linkageInfo: targetLinkageInfo.value
   }
   saveLinkage(request).then(() => {
-    ElMessage.success(t('save_success.common'))
+    ElMessage.success(t('commons.save_success'))
     // 刷新联动信息
     getPanelAllLinkageInfo(dvInfo.value.id).then(rsp => {
       dvMainStore.setNowPanelTrackInfo(rsp.data)

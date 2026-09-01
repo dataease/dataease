@@ -222,7 +222,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
       height: containerDom.offsetHeight,
       seriesNumber: {
         enable: tableHeader.showIndex,
-        text: tableHeader.indexLabel ?? t('chart.index')
+        text: tableHeader.indexLabel ?? t('relation.index')
       },
       conditions: this.configConditions(
         chart,
