@@ -4692,7 +4692,7 @@ export default {
   },
   free: {
     batch: '批量',
-    save_error: '禁止操作【遷移資源】目錄',
+    save_error: '禁止操作【遷移資源】目錄'
   },
   relation: {
     no_permission: '沒有查看權限',

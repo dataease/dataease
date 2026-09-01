@@ -4858,7 +4858,7 @@ export default {
   },
   free: {
     batch: 'Batch',
-    save_error: "Prohibit operations on the 'Migration Resources' directory",
+    save_error: "Prohibit operations on the 'Migration Resources' directory"
   },
   relation: {
     no_permission: 'No view permission',
