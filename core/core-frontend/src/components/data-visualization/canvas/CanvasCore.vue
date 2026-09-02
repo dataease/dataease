@@ -27,7 +27,7 @@ import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
 import { storeToRefs } from 'pinia'
 import findComponent from '@/utils/components'
-import _ from 'lodash'
+import { findIndex, forEach, get, isEmpty, sortBy, values } from 'lodash-es'
 import {
   canvasSave,
   componentPreSort,
@@ -807,7 +807,7 @@ function reCalcCellWidth() {
 function resizePlayer(item, newSize) {
   removeItemFromPositionBox(item)
   let belowItems = findBelowItems(item)
-  _.forEach(belowItems, function (upItem) {
+  forEach(belowItems, function (upItem) {
     let canGoUpRows = canItemGoUp(upItem)
 
     if (canGoUpRows > 0) {
@@ -882,7 +882,7 @@ function checkItemPosition(item, position) {
 function movePlayer(item, position) {
   removeItemFromPositionBox(item)
   let belowItems = findBelowItems(item)
-  _.forEach(belowItems, function (upItem) {
+  forEach(belowItems, function (upItem) {
     let canGoUpRows = canItemGoUp(upItem)
     if (canGoUpRows > 0) {
       moveItemUp(upItem, canGoUpRows)
@@ -920,7 +920,7 @@ function removeItemComponent(item) {
     if (isDashboard()) {
       removeItemFromPositionBox(item)
       let belowItems = findBelowItems(item)
-      _.forEach(belowItems, function (upItem) {
+      forEach(belowItems, function (upItem) {
         let canGoUpRows = canItemGoUp(upItem)
         if (canGoUpRows > 0) {
           moveItemUp(upItem, canGoUpRows)
@@ -990,7 +990,7 @@ function changeItemCoordinate(item) {
     c2: top + height / 2,
     el: item
   }
-  let index = _.findIndex(coordinates.value, function (o) {
+  let index = findIndex(coordinates.value, function (o) {
     return o.el._dragId == item._dragId
   })
   if (index != -1) {
@@ -1004,7 +1004,7 @@ function changeItemCoordinate(item) {
  */
 function emptyTargetCell(item) {
   let belowItems = findBelowItems(item)
-  _.forEach(belowItems, function (downItem) {
+  forEach(belowItems, function (downItem) {
     if (downItem['_dragId'] == item['_dragId']) return
     let moveSize = item.y + item.sizeY - downItem['y']
     if (moveSize > 0) {
@@ -1035,7 +1035,7 @@ function canItemGoUp(item) {
 function moveItemDown(item, size) {
   removeItemFromPositionBox(item)
   let belowItems = findBelowItems(item)
-  _.forEach(belowItems, function (downItem) {
+  forEach(belowItems, function (downItem) {
     if (downItem['_dragId'] == item['_dragId']) return
     let moveSize = calcDiff(item, downItem, size)
     if (moveSize > 0) {
@@ -1089,7 +1089,7 @@ function moveItemUp(item, size) {
   })
   addItemToPositionBox(item)
   changeItemCoordinate(item)
-  _.forEach(belowItems, function (upItem) {
+  forEach(belowItems, function (upItem) {
     let moveSize = canItemGoUp(upItem)
     if (moveSize > 0) {
       moveItemUp(upItem, moveSize)
@@ -1107,7 +1107,7 @@ function findBelowItems(item) {
       }
     }
   }
-  return _.sortBy(_.values(belowItems), 'y')
+  return sortBy(values(belowItems), 'y')
 }
 
 const endItemMove = (_, item, index) => {
@@ -1122,7 +1122,7 @@ const handleMouseUp = (e, item, index) => {
 }
 
 const clearInfoBox = e => {
-  if (_.isEmpty(infoBox.value)) return
+  if (isEmpty(infoBox.value)) return
   if (infoBox.value.cloneItem) {
     infoBox.value.cloneItem.remove()
   }
@@ -1279,7 +1279,7 @@ const onStartMove = (e, item, index) => {
 const onDragging = (e, item) => {
   // item 中的 style 为当前实时的位置
   const infoBoxTemp = infoBox.value
-  let moveItem = _.get(infoBoxTemp, 'moveItem')
+  let moveItem = get(infoBoxTemp, 'moveItem')
   scrollScreen(e)
   if (!draggable.value) return
   dragging.value(e, moveItem, moveItem._dragId)
@@ -1315,7 +1315,7 @@ const onResizing = (e, item) => {
   const { width, height } = item.style
   // item 中的 style 为当前实时的位置
   const infoBoxTemp = infoBox.value
-  let resizeItem = _.get(infoBoxTemp, 'resizeItem')
+  let resizeItem = get(infoBoxTemp, 'resizeItem')
   //调整大小时
   resizing.value(e, resizeItem, resizeItem._dragId)
   resizeItem['isPlayer'] = true
@@ -1361,7 +1361,7 @@ const onResizing = (e, item) => {
 
 const onMouseUp = e => {
   // startMove 中组织冒泡会导致移动事件无法传播，在这里设置（鼠标抬起）效果一致
-  if (_.isEmpty(infoBox.value)) return
+  if (isEmpty(infoBox.value)) return
   if (infoBox.value.cloneItem) {
     infoBox.value.cloneItem.remove()
   }

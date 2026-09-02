@@ -1,5 +1,5 @@
 import { isExternal } from '@/utils/validate'
-import { cloneDeep } from 'lodash'
+import { cloneDeep } from 'lodash-es'
 // import { proxyMapping } from '@/views/proxy/mapping'
 const modules = import.meta.glob('../views/pages/**/*.vue')
 export const Layout = () => import('@/layout/index.vue')
