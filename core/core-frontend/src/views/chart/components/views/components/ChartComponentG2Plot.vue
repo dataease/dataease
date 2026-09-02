@@ -1132,7 +1132,7 @@ defineExpose({
 let intersectionObserver
 let resizeObserver
 const TOLERANCE = 0.01
-const RESIZE_MONITOR_CHARTS = ['map', 'bubble-map', 'flow-map', 'heat-map']
+const RESIZE_MONITOR_CHARTS = ['map', 'bubble-map', 'flow-map', 'heat-map', 'gauge']
 let g2ResizeTimer: number
 let chartComponentUnmounted = false
 onMounted(() => {
@@ -1146,7 +1146,7 @@ onMounted(() => {
     if (Math.abs(widthOffsetPercent) < TOLERANCE && Math.abs(heightOffsetPercent) < TOLERANCE) {
       return
     }
-    const isMapLikeChart = RESIZE_MONITOR_CHARTS.includes(view.value.type)
+    const requiresFullRender = RESIZE_MONITOR_CHARTS.includes(view.value.type)
     const isNowVisible = size.inlineSize > 1 && size.blockSize > 1
     // 隐藏态取消待执行的尺寸调整，避免图表按零尺寸自适应
     if (!isNowVisible) {
@@ -1154,7 +1154,7 @@ onMounted(() => {
     }
     const canResizeRender = isNowVisible
     if (myChart && canResizeRender) {
-      if (isMapLikeChart) {
+      if (requiresFullRender) {
         renderChart(curView)
       } else {
         g2ResizeTimer && clearTimeout(g2ResizeTimer)
