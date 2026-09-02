@@ -24,7 +24,7 @@ import { useEmbedded } from '@/store/modules/embedded'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { useShareStoreWithOut } from '@/store/modules/share'
 import { queryShareBaseApi } from '@/api/visualization/dataVisualization'
-import { cloneDeep } from 'lodash'
+import { cloneDeep } from 'lodash-es'
 
 const shareStore = useShareStoreWithOut()
 

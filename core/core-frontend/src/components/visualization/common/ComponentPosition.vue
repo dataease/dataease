@@ -101,7 +101,7 @@ import { computed, ref, watch } from 'vue'
 import { positionData } from '@/utils/attr'
 import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import _ from 'lodash'
+import { forEach } from 'lodash-es'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { groupSizeStyleAdaptor, groupStyleRevert } from '@/utils/style'
 import { isGroupCanvas, isTabCanvas } from '@/utils/canvasUtils'
@@ -137,7 +137,7 @@ const positionKeys = computed(() => {
 
 const positionKeysGroup = computed(() => {
   const _list = []
-  _.forEach(positionKeys.value, (x, i) => {
+  forEach(positionKeys.value, (x, i) => {
     const index = i % 2
     if (_list[index] === undefined) {
       _list[index] = []

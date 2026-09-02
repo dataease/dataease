@@ -1,5 +1,5 @@
 import { isExternal } from '@/utils/validate'
-import { cloneDeep } from 'lodash'
+import { cloneDeep } from 'lodash-es'
 import { XpackComponent } from '@/components/plugin'
 const modules = import.meta.glob('../views/**/*.vue')
 export const Layout = () => import('@/layout/index.vue')
