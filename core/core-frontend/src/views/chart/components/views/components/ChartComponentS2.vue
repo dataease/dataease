@@ -126,10 +126,15 @@ const state = reactive({
   imgSrc: ''
 })
 const PAGE_CHARTS = ['table-info', 'table-normal']
-// 图表数据不用全响应式
-let chartData = shallowRef<Partial<Chart['data']>>({
-  fields: []
+// 接口空结果可能返回 null，统一补齐 S2 表格依赖的数据结构
+const normalizeChartData = (data?: Partial<Chart['data']> | null): Partial<Chart['data']> => ({
+  ...data,
+  data: data?.data ?? [],
+  fields: data?.fields ?? [],
+  tableRow: data?.tableRow ?? []
 })
+// 图表数据不用全响应式
+let chartData = shallowRef<Partial<Chart['data']>>(normalizeChartData())
 
 const containerId = 'container-' + showPosition.value + '-' + view.value.id + '-' + suffixId.value
 const viewTrack = ref(null)
@@ -154,7 +159,7 @@ const calcData = (viewInfo: Chart, callback, resetPageInfo = true) => {
           isError.value = true
           errMsg.value = res.msg
         } else {
-          chartData.value = res?.data as Partial<Chart['data']>
+          chartData.value = normalizeChartData(res?.data as Partial<Chart['data']> | null)
           state.totalItems = res?.totalItems
           dvMainStore.setViewDataDetails(viewInfo.id, res)
           if (!res.drill) {
@@ -184,7 +189,7 @@ const resolveRenderChart = () => {
   resolvers.forEach(resolve => resolve())
 }
 const renderChartFromDialog = (viewInfo: Chart, chartDataInfo) => {
-  chartData.value = chartDataInfo
+  chartData.value = normalizeChartData(chartDataInfo)
   return renderChart(viewInfo, false)
 }
 // 处理存量图表的默认值
