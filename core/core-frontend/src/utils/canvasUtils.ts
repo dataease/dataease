@@ -1,4 +1,4 @@
-import { cloneDeep, forEach } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 import componentList, {
   ACTION_SELECTION,
   BASE_CAROUSEL,
@@ -35,6 +35,7 @@ import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 import { ShorthandMode } from '@/components/visualization/component-background/Types'
 import { formatterItem } from '@/views/chart/components/js/formatter'
+import { changeRefComponentsSizeWithScalePointCircle } from '@/utils/changeComponentsSizeWithScale'
 const dvMainStore = dvMainStoreWithOut()
 const {
   inMobile,
@@ -51,6 +52,84 @@ import { useCache } from '@/hooks/web/useCache'
 import { isDesktop } from '@/utils/ModelUtil'
 const { t } = useI18n()
 const { wsCache } = useCache()
+
+/**
+ * v2 将编辑缩放写入组件尺寸，v3 改为实际尺寸配合外层 transform
+ * 用于标记已经使用 v3 实际尺寸模型的数据，避免重复恢复组件尺寸
+ */
+const DATA_V_ACTUAL_SIZE_VERSION = 1
+
+const isValidScale = value => Number.isFinite(Number(value)) && Number(value) > 0
+
+// 已有 tScale 代表用户当前编辑缩放，仅在缺失或非法时从旧 scale 补齐
+const getTransformScale = (value, legacyScale) =>
+  isValidScale(value) ? Number(value) : Number(legacyScale) / 100
+
+/**
+ * TAB 子画布不属于通用尺寸恢复函数的递归范围，只在旧 dataV 适配中单独处理
+ * 这样可以覆盖 TAB 和 Group 嵌套场景，同时不改变 v3 正常缩放、预览和全屏链路
+ */
+const adaptLegacyDataVTabs = (componentDataRef, canvasStyleDataRef, legacyScale) => {
+  componentDataRef?.forEach(component => {
+    if (component.component === 'Group') {
+      adaptLegacyDataVTabs(component.propValue, canvasStyleDataRef, legacyScale)
+    } else if (component.component === 'DeTabs') {
+      component.propValue?.forEach(tabItem => {
+        if (!Array.isArray(tabItem.componentData)) return
+        changeRefComponentsSizeWithScalePointCircle(
+          tabItem.componentData,
+          canvasStyleDataRef,
+          100,
+          100,
+          legacyScale
+        )
+        adaptLegacyDataVTabs(tabItem.componentData, canvasStyleDataRef, legacyScale)
+      })
+    }
+  })
+}
+
+const adaptDataVActualSize = (canvasStyleDataRef, componentDataRef) => {
+  // 已适配或新建的 v3 大屏直接跳过，防止同一份内存数据被重复放大
+  if (Number(canvasStyleDataRef.dataVActualSizeVersion) >= DATA_V_ACTUAL_SIZE_VERSION) return
+
+  const legacyScale = Number(canvasStyleDataRef.scale)
+  // 非法比例无法可靠反推实际尺寸，保留原数据和未适配状态便于后续修复
+  if (!isValidScale(legacyScale)) return
+
+  if (legacyScale !== 100) {
+    const legacyScaleWidth = isValidScale(canvasStyleDataRef.scaleWidth)
+      ? Number(canvasStyleDataRef.scaleWidth)
+      : legacyScale
+    const legacyScaleHeight = isValidScale(canvasStyleDataRef.scaleHeight)
+      ? Number(canvasStyleDataRef.scaleHeight)
+      : legacyScale
+    const transformScale = getTransformScale(canvasStyleDataRef.tScale, legacyScale)
+    const transformScaleWidth = getTransformScale(canvasStyleDataRef.tScaleWidth, legacyScaleWidth)
+    const transformScaleHeight = getTransformScale(
+      canvasStyleDataRef.tScaleHeight,
+      legacyScaleHeight
+    )
+
+    // 旧大屏把编辑缩放写入组件尺寸，按需恢复实际尺寸并保留当前 transform 缩放
+    changeRefComponentsSizeWithScalePointCircle(
+      componentDataRef,
+      canvasStyleDataRef,
+      100,
+      100,
+      legacyScale
+    )
+    adaptLegacyDataVTabs(componentDataRef, canvasStyleDataRef, legacyScale)
+    canvasStyleDataRef.scale = 100
+    canvasStyleDataRef.scaleWidth = 100
+    canvasStyleDataRef.scaleHeight = 100
+    canvasStyleDataRef.tScale = transformScale
+    canvasStyleDataRef.tScaleWidth = transformScaleWidth
+    canvasStyleDataRef.tScaleHeight = transformScaleHeight
+  }
+
+  canvasStyleDataRef.dataVActualSizeVersion = DATA_V_ACTUAL_SIZE_VERSION
+}
 
 const getNewInnerPadding = (commonGap = 0) => {
   return {
@@ -307,6 +386,8 @@ export function historyAdaptor(
   }
   canvasStyleResult['dvType'] = attachInfo.dvType
   if (attachInfo.dvType === 'dataV') {
+    // 每次只适配当前加载的大屏，不在升级阶段批量遍历数据库
+    adaptDataVActualSize(canvasStyleResult, canvasDataResult)
     // 首次赋值
     canvasStyleResult['tScale'] = canvasStyleResult['tScale'] || canvasStyleResult.scale / 100
     canvasStyleResult['tScaleWidth'] =

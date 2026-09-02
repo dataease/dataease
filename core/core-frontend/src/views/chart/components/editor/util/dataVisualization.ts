@@ -145,6 +145,12 @@ export const DEFAULT_CANVAS_STYLE_DATA_DARK = {
 // 大屏基础暗色主题
 export const DEFAULT_CANVAS_STYLE_DATA_SCREEN_DARK = {
   ...DEFAULT_CANVAS_STYLE_DATA_DARK,
+  // v3 大屏组件按实际尺寸保存，编辑缩放只由外层 transform 负责
+  scale: 100,
+  scaleWidth: 100,
+  scaleHeight: 100,
+  // 新建数据直接标记为实际尺寸模型，避免进入旧数据懒适配
+  dataVActualSizeVersion: 1,
   component: PANEL_CHART_INFO_SCREEN_DARK
 }
 
