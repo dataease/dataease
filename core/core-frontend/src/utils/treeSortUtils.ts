@@ -1,15 +1,15 @@
 import { BusiTreeNode } from '@/models/tree/TreeNode'
-import _ from 'lodash'
+import { cloneDeep, forEach } from 'lodash-es'
 
 export default function treeSort(tree: BusiTreeNode[], sortType: string) {
-  const result = _.cloneDeep(tree)
+  const result = cloneDeep(tree)
   sortCircle(result, sortType)
   return result
 }
 
 export function sortCircle(tree: BusiTreeNode[], sortType: string) {
   sortPer(tree, sortType)
-  _.forEach(tree, node => {
+  forEach(tree, node => {
     if (node.children && node.children.length > 0) {
       sortCircle(node.children, sortType)
     }
