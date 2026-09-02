@@ -173,7 +173,6 @@ export class DetailTableSnapshotCleaner implements PluginSnapshotCleaner<DetailT
 
       resource.data = JSON.stringify(instances.filter(instance => instance.id !== pluginId))
     } catch (error) {
-      console.warn('[DetailTableSnapshotCleaner] Failed to remove empty detail table resource:', error)
     }
   }
 }

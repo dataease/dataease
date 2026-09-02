@@ -101,7 +101,6 @@ export class TableFillService {
     targetWorksheet: any,
     options: TableFillOptions = {}
   ): Promise<boolean> {
-    console.log('[TableFillService] Starting fillTable:', { startCell, config })
 
     const fWorkbook = univerApi.getActiveWorkbook()
     const fWorksheet = targetWorksheet
@@ -118,7 +117,6 @@ export class TableFillService {
       config.placement.startCell = startCell
     }
     let startPos = this.parseCell(startCell)
-    console.log('[TableFillService] Start position:', startPos)
     const previousState = this.displayStateService.get(config.id)
     const previousRange = previousState?.sheetId === sheetId &&
       previousState.rowCount > 0 && previousState.colCount > 0
@@ -157,7 +155,6 @@ export class TableFillService {
       try {
         await this.clearPreviousData(univerApi, config.id, startCell, fWorksheet)
       } catch (clearError) {
-        console.warn('[TableFillService] Failed to clear previous data on validation failure:', clearError)
       }
       if (unitId) {
         this.pluginRenderStatusService.set({
@@ -297,7 +294,8 @@ export class TableFillService {
             config,
             showIndex,
             columnCount,
-            resolvedFields
+            resolvedFields,
+            dataResult.data.customTotalResult
           )
         : undefined
       const values = [
@@ -307,10 +305,6 @@ export class TableFillService {
       ]
 
       if (values.length > 0 && columnCount > 0) {
-        console.log('[TableFillService] Filling data in batch...', {
-          rowCount: values.length,
-          colCount: columnCount
-        })
 
         await this.detailTableEditProtectionService.runWithoutProtection(() =>
           setWorksheetValuesSilently(univerApi, {
@@ -342,7 +336,6 @@ export class TableFillService {
         hideHeader,
         updatedAt: Date.now()
       })
-      console.log('[TableFillService] Fill state updated for plugin:', config.id)
 
       this.updateRenderStyleRange(univerApi, config)
       await this.applyStyleOnly(univerApi, config)
@@ -359,14 +352,11 @@ export class TableFillService {
         })
       }
 
-      console.log('[TableFillService] Complete')
       return true
     } catch (error) {
-      console.error('[TableFillService] Failed to fill detail table:', error)
       try {
         await this.clearPreviousData(univerApi, config.id, startCell, fWorksheet)
       } catch (clearError) {
-        console.warn('[TableFillService] Failed to clear previous data:', clearError)
       }
       if (unitId) {
         this.pluginRenderStatusService.set({
@@ -538,7 +528,8 @@ export class TableFillService {
     config: DetailTableConfig,
     showIndex: boolean,
     columnCount: number,
-    resolvedFields: Array<ReturnType<typeof findConfiguredField>>
+    resolvedFields: Array<ReturnType<typeof findConfiguredField>>,
+    customTotalResult: Record<string, number | string | null> = {}
   ): any[] {
     const totalRow = Array.from({ length: columnCount }, () => '')
     const columnOffset = showIndex ? 1 : 0
@@ -561,30 +552,31 @@ export class TableFillService {
         item.dataeaseName === field.dataeaseName || String(item.fieldId) === String(field.id)
       )
       const aggregation = fieldConfig?.aggregation || 'SUM'
+      let value: number | undefined
       if (aggregation === 'CUSTOM') {
-        return
+        value = this.getNumericCellValue(customTotalResult[field.dataeaseName])
+      } else {
+        const numericValues = dataValues
+          .map(row => this.getNumericCellValue(row[columnIndex]))
+          .filter((item): item is number => item !== undefined)
+        if (numericValues.length) {
+          switch (aggregation) {
+            case 'MAX':
+              value = numericValues.reduce((result, item) => Math.max(result, item))
+              break
+            case 'MIN':
+              value = numericValues.reduce((result, item) => Math.min(result, item))
+              break
+            case 'AVG':
+              value = numericValues.reduce((sum, item) => sum + item, 0) / numericValues.length
+              break
+            default:
+              value = numericValues.reduce((sum, item) => sum + item, 0)
+          }
+        }
       }
-
-      const numericValues = dataValues
-        .map(row => this.getNumericCellValue(row[columnIndex]))
-        .filter((value): value is number => value !== undefined)
-      if (!numericValues.length) {
+      if (value === undefined) {
         return
-      }
-
-      let value: number
-      switch (aggregation) {
-        case 'MAX':
-          value = numericValues.reduce((result, item) => Math.max(result, item))
-          break
-        case 'MIN':
-          value = numericValues.reduce((result, item) => Math.min(result, item))
-          break
-        case 'AVG':
-          value = numericValues.reduce((sum, item) => sum + item, 0) / numericValues.length
-          break
-        default:
-          value = numericValues.reduce((sum, item) => sum + item, 0)
       }
 
       const numberFormat = getFieldNumberFormat(resolvedFields[fieldIndex], value)
@@ -788,7 +780,6 @@ export class TableFillService {
       return
     }
 
-    console.log('[TableFillService] Clearing previous data for plugin:', pluginId, state)
     await this.clearTableValues(univerApi, state, previousWorksheet)
 
     const moved = targetSheetId !== state.sheetId || targetStartCell !== state.startCell

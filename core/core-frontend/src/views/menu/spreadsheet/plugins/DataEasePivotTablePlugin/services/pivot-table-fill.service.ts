@@ -115,7 +115,6 @@ export class PivotTableFillService {
       try {
         await this.clearPrevious(univerApi, config.id, worksheet, config.placement.startCell, true)
       } catch (clearError) {
-        console.warn('[PivotTableFillService] Failed to clear previous data on validation failure:', clearError)
       }
       if (unitId) {
         this.pluginRenderStatusService.set({
@@ -285,11 +284,9 @@ export class PivotTableFillService {
       }
       return true
     } catch (error) {
-      console.error('[PivotTableFillService] Failed to fill pivot table:', error)
       try {
         await this.clearPrevious(univerApi, config.id, worksheet, config.placement.startCell, true)
       } catch (clearError) {
-        console.warn('[PivotTableFillService] Failed to clear previous data:', clearError)
       }
       if (unitId) {
         this.pluginRenderStatusService.set({

@@ -55,7 +55,7 @@
                 :disabled="!totalStyle.enable"
                 text
                 title="自定义聚合设置"
-                @click="showCustomAggregationPlaceholder"
+                @click="showCustomAggregationEditor"
               >
                 <el-icon><Setting /></el-icon>
               </el-button>
@@ -176,12 +176,27 @@
       </el-form>
     </SwitchCollapseItem>
   </el-collapse>
+
+  <el-dialog
+    v-model="customAggregationVisible"
+    title="自定义聚合公式"
+    width="1000px"
+    append-to-body
+    destroy-on-close
+    :close-on-click-modal="false"
+  >
+    <CustomAggrEdit ref="customAggregationEditor" />
+    <template #footer>
+      <el-button @click="customAggregationVisible = false">取消</el-button>
+      <el-button type="primary" @click="confirmCustomAggregation">确定</el-button>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { nextTick, ref, watch } from 'vue'
 import { CircleCloseFilled, Setting } from '@element-plus/icons-vue'
-import { ElMessage } from 'element-plus-secondary'
+import CustomAggrEdit from '@/views/chart/components/editor/editor-style/components/table/CustomAggrEdit.vue'
 import SwitchCollapseItem from '../../../../components/SwitchCollapseItem.vue'
 import TableBorderControl from '../../../../components/table-border/TableBorderControl.vue'
 import {
@@ -225,6 +240,9 @@ const totalStyle = ref<DetailTableTotalStyle>({ ...defaultTotalStyle })
 const metricFields = ref<FieldItemData[]>([])
 const selectedMetric = ref('')
 const selectedAggregation = ref<DetailTotalAggregation>('SUM')
+const customAggregationVisible = ref(false)
+const customAggregationEditor = ref()
+const editingMetric = ref('')
 
 const aggregationOptions: Array<{ label: string; value: DetailTotalAggregation }> = [
   { label: '最大', value: 'MAX' },
@@ -297,8 +315,14 @@ const handleAggregationChange = (aggregation: DetailTotalAggregation) => {
   const field = metricFields.value.find(item => getFieldKey(item) === selectedMetric.value)
   if (!field) return
 
-  const nextConfig = totalStyle.value.fieldConfig.filter(item => item.dataeaseName !== selectedMetric.value)
+  const currentConfig = totalStyle.value.fieldConfig.find(
+    item => item.dataeaseName === selectedMetric.value
+  )
+  const nextConfig = totalStyle.value.fieldConfig.filter(
+    item => item.dataeaseName !== selectedMetric.value
+  )
   const fieldConfig: DetailTotalFieldConfig = {
+    ...currentConfig,
     fieldId: field.id,
     dataeaseName: selectedMetric.value,
     aggregation
@@ -307,8 +331,50 @@ const handleAggregationChange = (aggregation: DetailTotalAggregation) => {
   updateTotalStyle('fieldConfig', nextConfig)
 }
 
-const showCustomAggregationPlaceholder = () => {
-  ElMessage.info('自定义聚合配置暂未开放')
+const showCustomAggregationEditor = () => {
+  const field = metricFields.value.find(item => getFieldKey(item) === selectedMetric.value)
+  if (!field) return
+
+  const fieldConfig = totalStyle.value.fieldConfig.find(
+    item => item.dataeaseName === selectedMetric.value
+  )
+  editingMetric.value = selectedMetric.value
+  customAggregationVisible.value = true
+  nextTick(() => {
+    customAggregationEditor.value?.initEdit(
+      {
+        ...field,
+        dataeaseName: selectedMetric.value,
+        originName: fieldConfig?.customExpression || ''
+      },
+      metricFields.value.filter(item => String(item.id) !== '-1')
+    )
+  })
+}
+
+const confirmCustomAggregation = () => {
+  const editor = customAggregationEditor.value
+  if (!editor || !editingMetric.value) return
+
+  editor.setFieldForm()
+  const field = metricFields.value.find(item => getFieldKey(item) === editingMetric.value)
+  if (!field) return
+
+  const currentConfig = totalStyle.value.fieldConfig.find(
+    item => item.dataeaseName === editingMetric.value
+  )
+  const nextConfig = totalStyle.value.fieldConfig.filter(
+    item => item.dataeaseName !== editingMetric.value
+  )
+  nextConfig.push({
+    ...currentConfig,
+    fieldId: field.id,
+    dataeaseName: editingMetric.value,
+    aggregation: 'CUSTOM',
+    customExpression: editor.fieldForm.originName || ''
+  })
+  updateTotalStyle('fieldConfig', nextConfig)
+  customAggregationVisible.value = false
 }
 </script>
 

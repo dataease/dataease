@@ -76,7 +76,6 @@ const initUniver = async () => {
     isReady.value = true
     emit('ready')
   } catch (error) {
-    console.error('[UniverSheet] Failed to initialize Univer:', error)
   } finally {
     isInitializing.value = false
   }
@@ -98,7 +97,6 @@ const getSheetData = (): string => {
     const snapshot = workbook.save()
     return serializeSheetData(snapshot)
   } catch (e) {
-    console.error('[UniverSheet] Failed to get snapshot:', e)
   }
 
   return serializeSheetData(createDefaultWorkbookData())
@@ -146,7 +144,6 @@ const disposeInstance = () => {
     try {
       univerInstance.dispose()
     } catch (e) {
-      console.error('[UniverSheet] Error disposing instance:', e)
     }
     univerInstance = null
   }

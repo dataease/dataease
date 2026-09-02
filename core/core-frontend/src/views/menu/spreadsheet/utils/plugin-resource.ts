@@ -29,7 +29,6 @@ const parsePluginResource = (data?: string): PluginConfig[] => {
     const parsed = JSON.parse(data)
     return Array.isArray(parsed) ? parsed as PluginConfig[] : []
   } catch (error) {
-    console.warn('Failed to parse spreadsheet plugin resource data:', error)
     return []
   }
 }

@@ -71,7 +71,7 @@ const optInit = (name: string, pid: number | string = 0) => {
   resourceForm.name = name
   // IDs are serialized as strings in DataEase, so keep pid as string to match tree nodes
   resourceForm.pid = pid && String(pid) !== '0' ? String(pid) : '0'
-  
+
   loading.value = true
   getTree({
     busiFlag: 'spreadsheet',
@@ -93,7 +93,7 @@ const optInit = (name: string, pid: number | string = 0) => {
   }).finally(() => {
     loading.value = false
   })
-  
+
   resourceDialogShow.value = true
 }
 
@@ -102,7 +102,7 @@ const handleConfirm = async () => {
     ElMessage.warning(t('spreadsheet.name_required'))
     return
   }
-  
+
   loading.value = true
   try {
     const isNameRepeat = await nameCheck({
@@ -110,19 +110,18 @@ const handleConfirm = async () => {
       pid: resourceForm.pid,
       nodeType: 'sheet'
     })
-    
+
     if (isNameRepeat) {
       ElMessage.warning(t('visualization.name_repeat'))
       return
     }
-    
+
     resourceDialogShow.value = false
     emits('finish', {
       name: resourceForm.name,
       pid: resourceForm.pid
     })
   } catch (e) {
-    console.error(e)
   } finally {
     loading.value = false
   }
@@ -166,7 +165,7 @@ defineExpose({
           maxlength="50"
         />
       </el-form-item>
-      
+
       <el-form-item :label="t('visualization.belong_folder')" prop="pid">
         <el-tree-select
           style="width: 100%"

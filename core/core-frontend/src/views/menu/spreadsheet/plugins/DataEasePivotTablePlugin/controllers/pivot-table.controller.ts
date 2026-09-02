@@ -767,7 +767,6 @@ export class DataEasePivotTableController extends Disposable {
       try {
         await this.pivotTableFillService.fillByConfig(this.univerApi, queryConfig)
       } catch (error) {
-        console.error('[DataEasePivotTableController] Failed to refresh pivot table by filter:', error)
         this.markRestoreError(unitId, queryConfig, error)
       }
     }
@@ -806,7 +805,6 @@ export class DataEasePivotTableController extends Disposable {
             initialRestore: true
           })
         } catch (error) {
-          console.error('[DataEasePivotTableController] Failed to restore pivot table:', plugin.id, error)
           this.markRestoreError(unitId, plugin, error)
         }
       }

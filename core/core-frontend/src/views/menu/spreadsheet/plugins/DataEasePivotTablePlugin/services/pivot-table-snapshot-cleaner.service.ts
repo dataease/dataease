@@ -132,7 +132,6 @@ export class PivotTableSnapshotCleaner implements PluginSnapshotCleaner<PivotTab
 
       resource.data = JSON.stringify(instances.filter(instance => instance.id !== pluginId))
     } catch (error) {
-      console.warn('[PivotTableSnapshotCleaner] Failed to remove empty pivot table resource:', error)
     }
   }
 
