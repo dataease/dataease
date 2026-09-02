@@ -724,10 +724,7 @@ export class StackLineMix extends G2ChartView {
           title: xAxis.nameShow === false || isEmpty(xAxis.name) ? false : xAxis.name,
           titleFontSize: xAxis.fontSize,
           titleFill: xAxis.color,
-          line: xAxis.axisLine.show,
-          lineStroke: xAxis.axisLine.lineStyle.color,
-          lineStrokeOpacity: 1,
-          lineLineWidth: xAxis.axisLine.lineStyle.width,
+          ...this.getAxisLineStyle(chart, xAxis),
           lineLineDash,
           label: xAxis.axisLabel.show,
           labelOpacity: 1,
@@ -758,16 +755,14 @@ export class StackLineMix extends G2ChartView {
       return options
     }
     const overlapGridFilter = this.getOverlapGridFilter(xAxis)
-    // 左右纵轴刻度线统一跟随各自轴线显示，避免右轴隐藏后仍残留刻度线
+    // 双 Y 轴保留各自 showTick，禁止再用 axisLine.show 二次覆盖
     const yAxisOption = {
-      ...this.getAxis(yAxis),
-      ...overlapGridFilter,
-      tick: yAxis.axisLine.show
+      ...this.getAxis(chart, yAxis),
+      ...overlapGridFilter
     }
     const yAxisExtOption = {
-      ...this.getAxis(yAxisExt),
-      ...overlapGridFilter,
-      tick: yAxisExt.axisLine.show
+      ...this.getAxis(chart, yAxisExt),
+      ...overlapGridFilter
     }
     merge(intervalMark, {
       axis: {

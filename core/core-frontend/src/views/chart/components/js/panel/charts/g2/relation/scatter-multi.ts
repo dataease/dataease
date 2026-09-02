@@ -618,7 +618,7 @@ export class MultiScatter extends G2ChartView {
     return defaultsDeep(options, {
       axis: {
         x: {
-          ...this.getAxisStyle(xAxis),
+          ...this.getAxisStyle(chart, xAxis),
           labelFormatter: d => formatLabelValue(d, xAxis.axisLabelFormatter)
         }
       }
@@ -633,7 +633,7 @@ export class MultiScatter extends G2ChartView {
     const axisOption = {
       axis: {
         y: {
-          ...this.getAxisStyle(yAxis),
+          ...this.getAxisStyle(chart, yAxis),
           dataeaseAxisTitleSafeMargin: true,
           ...this.getOverlapGridFilter(xAxis),
           labelFormatter: d => valueFormatter(d, yAxis.axisLabelFormatter)
@@ -718,7 +718,7 @@ export class MultiScatter extends G2ChartView {
     return result
   }
 
-  private getAxisStyle(axisStyle) {
+  private getAxisStyle(chart: Chart, axisStyle) {
     let lineLineDash = undefined
     if (axisStyle.axisLine.lineStyle.style === 'dashed') {
       lineLineDash = [10, 8]
@@ -738,10 +738,7 @@ export class MultiScatter extends G2ChartView {
       title: axisStyle.nameShow === false ? false : axisStyle.name,
       titleFontSize: axisStyle.fontSize,
       titleFill: axisStyle.color,
-      line: axisStyle.axisLine.show,
-      lineStroke: axisStyle.axisLine.lineStyle.color,
-      lineStrokeOpacity: 1,
-      lineLineWidth: axisStyle.axisLine.lineStyle.width,
+      ...this.getAxisLineStyle(chart, axisStyle),
       lineLineDash,
       label: axisStyle.axisLabel.show,
       labelFill: axisStyle.axisLabel.color,

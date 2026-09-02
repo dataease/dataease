@@ -454,6 +454,8 @@ export class ProgressBar extends HorizontalStackBar {
       position: 'left',
       axisLine: {
         show: false,
+        // 切换为进度条时保留用户自定义或主题跟随状态
+        colorMode: chart.customStyle.yAxis.axisLine.colorMode,
         lineStyle: chart.customStyle.yAxis.axisLine.lineStyle
       },
       splitLine: {

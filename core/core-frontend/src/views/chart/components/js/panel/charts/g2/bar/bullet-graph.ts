@@ -371,20 +371,11 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
     const customStyle = parseJson(chart.customStyle)
     const axis = JSON.parse(JSON.stringify(customStyle[axisType]))
     if (customStyle[axisType] && axis.show) {
-      // 轴线
-      const line = {
-        line: axis.axisLine.show,
-        lineLineWidth: axis.axisLine.lineStyle.width,
-        lineStroke: axis.axisLine.lineStyle.color,
+      // 轴线与刻度线统一使用公共规则
+      const lineAndTick = {
+        ...this.getAxisLineStyle(chart, axis),
         lineLineDash: getLineDash(axis.axisLine.lineStyle.style),
         lineStrokeOpacity: 1
-      }
-      // 刻度
-      const tick = {
-        tick: axis.axisLine.show,
-        tickLineWidth: axis.axisLine.lineStyle.width,
-        tickStroke: axis.axisLine.lineStyle.color,
-        tickOpacity: 1
       }
       // 网格线
       const grid = {
@@ -417,10 +408,8 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
         ...(position === 'left' ? { dataeaseAxisTitleSafeMargin: true } : {}),
         titleFontSize: axis.fontSize,
         titleFill: axis.color,
-        // 轴线
-        ...line,
-        // 刻度线
-        ...tick,
+        // 轴线与刻度线
+        ...lineAndTick,
         // 网格线
         ...grid,
         // 刻度值

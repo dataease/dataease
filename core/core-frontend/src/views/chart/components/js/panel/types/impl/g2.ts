@@ -857,7 +857,43 @@ export abstract class G2ChartView<
     return legend
   }
 
-  protected getAxis(axis: DeepPartial<ChartAxisStyle>): AxisComponent {
+  /**
+   * 解析轴线最终颜色，主题模式使用现有反差色，自定义及历史配置使用保存值
+   */
+  protected getAxisLineColor(chart: Chart, axis: DeepPartial<ChartAxisStyle>): string {
+    if (axis.axisLine.colorMode === 'theme') {
+      const customAttr = parseJson(chart.customAttr)
+      return customAttr?.basicStyle?.themeContrastColor ?? customAttr?.label?.color ?? '#000000'
+    }
+    // 兼容历史图表：缺失颜色模式时继续使用已保存的轴线颜色
+    return axis.axisLine.lineStyle.color
+  }
+
+  /**
+   * 统一输出轴线和刻度样式，普通轴跟随轴线显隐，双轴可保留独立刻度开关
+   */
+  protected getAxisLineStyle(
+    chart: Chart,
+    axis: DeepPartial<ChartAxisStyle>,
+    independentTick = false
+  ): Partial<AxisComponent> {
+    const axisLineColor = this.getAxisLineColor(chart, axis)
+    return {
+      line: axis.axisLine.show,
+      lineStroke: axisLineColor,
+      lineStrokeOpacity: 1,
+      lineLineWidth: axis.axisLine.lineStyle.width,
+      tick: independentTick
+        ? axis.axisLabel.show && axis.axisLabel.showTick !== false
+        : axis.axisLine.show,
+      tickLineWidth: axis.axisLine.lineStyle.width,
+      tickStroke: axisLineColor,
+      tickOpacity: 1,
+      tickStrokeOpacity: 1
+    }
+  }
+
+  protected getAxis(chart: Chart, axis: DeepPartial<ChartAxisStyle>): AxisComponent {
     let lineLineDash = undefined
     if (axis.axisLine.lineStyle.style === 'dashed') {
       lineLineDash = [10, 8]
@@ -873,18 +909,11 @@ export abstract class G2ChartView<
       gridLineDash = [1, 2]
     }
     const axisOption = {
-      tick: axis.axisLabel.show && axis.axisLabel.showTick !== false,
-      tickLineWidth: axis.axisLine.lineStyle.width,
-      tickStroke: axis.axisLine.lineStyle.color,
-      tickOpacity: 1,
       position: axis.position,
       title: axis.nameShow === false ? false : isEmpty(axis.name) ? false : axis.name,
       titleFontSize: axis.fontSize,
       titleFill: axis.color,
-      line: axis.axisLine.show,
-      lineStroke: axis.axisLine.lineStyle.color,
-      lineStrokeOpacity: 1,
-      lineLineWidth: axis.axisLine.lineStyle.width,
+      ...this.getAxisLineStyle(chart, axis, true),
       lineLineDash,
       label: axis.axisLabel.show,
       labelOpacity: 1,

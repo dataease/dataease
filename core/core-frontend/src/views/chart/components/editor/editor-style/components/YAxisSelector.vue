@@ -78,6 +78,10 @@ const changeAxisStyle = prop => {
     ElMessage.error(t('chart.splitCount_less_100'))
     return
   }
+  if (prop === 'axisLine.lineStyle.color') {
+    // 用户选色后固定为自定义模式，后续主题切换不覆盖该颜色
+    state.axisForm.axisLine.colorMode = 'custom'
+  }
   emit('onChangeYAxisForm', state.axisForm, prop)
 }
 

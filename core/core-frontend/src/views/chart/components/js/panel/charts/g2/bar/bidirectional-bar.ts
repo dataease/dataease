@@ -185,8 +185,12 @@ export class BidirectionalHorizontalBar extends G2ChartView {
     return this.getChartOptions(options)?.children || []
   }
 
-  private getValueAxis(axis: DeepPartial<ChartAxisStyle>, hideInnerBaselineLabel = false) {
-    const axisOption = this.getAxis(axis)
+  private getValueAxis(
+    chart: Chart,
+    axis: DeepPartial<ChartAxisStyle>,
+    hideInnerBaselineLabel = false
+  ) {
+    const axisOption = this.getAxis(chart, axis)
     const originLabelFormatter = axisOption.labelFormatter
     const configuredBaseline = Number(axis.axisValue.min)
     const baseline =
@@ -620,19 +624,12 @@ export class BidirectionalHorizontalBar extends G2ChartView {
           dataeaseAxisLabelCenter: centerAxisLabel ? 'visible' : undefined,
           // 轴组件间距继续使用 G2 布局的统一处理，不在业务图表重复覆盖
           position: position,
-          line: xAxis.axisLine.show,
-          lineStroke: xAxis.axisLine.lineStyle.color,
-          lineStrokeOpacity: 1,
-          lineLineWidth: xAxis.axisLine.lineStyle.width,
+          ...this.getAxisLineStyle(chart, xAxis),
           lineLineDash,
           label: xAxis.axisLabel.show,
           labelFill: xAxis.axisLabel.color,
           labelFillOpacity: 1,
           labelFontSize: xAxis.axisLabel.fontSize,
-          tick: xAxis.axisLabel.show,
-          tickLineWidth: xAxis.axisLine.lineStyle.width,
-          tickStroke: xAxis.axisLine.lineStyle.color,
-          tickOpacity: 1,
           grid: xAxis.splitLine.show,
           gridStroke: xAxis.splitLine.lineStyle.color,
           gridStrokeOpacity: 1,
@@ -661,7 +658,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
     // 根因是维度轴标签实际挂在左侧子图上，右侧如果完全隐藏该轴，左右绘图区宽度会不一致
     const secondXAxis = {
       label: false,
-      tick: xAxis.axisLabel.show && ['right', 'bottom'].includes(position),
+      tick: xAxis.axisLine.show && ['right', 'bottom'].includes(position),
       position: POSITION_MAP[position],
       line: xAxis.axisLine.show && ['right', 'bottom'].includes(position)
     }
@@ -713,8 +710,8 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       return options
     }
     const hideInnerBaselineLabel = basicStyle.layout === 'horizontal'
-    const yAxisOption = this.getValueAxis(yAxis, hideInnerBaselineLabel)
-    const yAxisExtOption = this.getValueAxis(yAxisExt, hideInnerBaselineLabel)
+    const yAxisOption = this.getValueAxis(chart, yAxis, hideInnerBaselineLabel)
+    const yAxisExtOption = this.getValueAxis(chart, yAxisExt, hideInnerBaselineLabel)
     if (
       yAxisOption.label &&
       yAxisExtOption.label &&

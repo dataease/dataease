@@ -231,6 +231,10 @@ declare interface AxisLine {
    */
   show: boolean
   /**
+   * 轴线颜色来源，缺失时按历史自定义颜色处理
+   */
+  colorMode?: 'theme' | 'custom'
+  /**
    * 轴线样式设置
    */
   lineStyle: LineStyle

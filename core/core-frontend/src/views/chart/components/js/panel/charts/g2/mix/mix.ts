@@ -558,10 +558,7 @@ export class ColumnLineMix extends G2ChartView {
           title: xAxis.nameShow === false || isEmpty(xAxis.name) ? false : xAxis.name,
           titleFontSize: xAxis.fontSize,
           titleFill: xAxis.color,
-          line: xAxis.axisLine.show,
-          lineStroke: xAxis.axisLine.lineStyle.color,
-          lineStrokeOpacity: 1,
-          lineLineWidth: xAxis.axisLine.lineStyle.width,
+          ...this.getAxisLineStyle(chart, xAxis),
           lineLineDash,
           label: xAxis.axisLabel.show,
           labelOpacity: 1,
@@ -589,8 +586,8 @@ export class ColumnLineMix extends G2ChartView {
       return options
     }
     const overlapGridFilter = this.getOverlapGridFilter(xAxis)
-    const yAxisOption = { ...this.getAxis(yAxis), ...overlapGridFilter }
-    const yAxisExtOption = { ...this.getAxis(yAxisExt), ...overlapGridFilter }
+    const yAxisOption = { ...this.getAxis(chart, yAxis), ...overlapGridFilter }
+    const yAxisExtOption = { ...this.getAxis(chart, yAxisExt), ...overlapGridFilter }
     merge(intervalMark, {
       axis: {
         y: {

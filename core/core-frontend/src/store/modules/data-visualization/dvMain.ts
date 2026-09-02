@@ -16,6 +16,7 @@ import {
 } from '@/views/chart/components/editor/util/dataVisualization'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import chartViewManager from '@/views/chart/components/js/panel'
+import { ChartLibraryType } from '@/views/chart/components/js/panel/types'
 import {
   COMMON_COMPONENT_BACKGROUND_DARK,
   COMMON_COMPONENT_BACKGROUND_LIGHT,
@@ -574,6 +575,19 @@ export const dvMainStore = defineStore('dataVisualization', {
         const chartViewInstance = chartViewManager.getChartView(newView.render, newView.type)
         if (chartViewInstance) {
           newView = chartViewInstance.setupDefaultOptions(newView)
+          if (!component.isPlugin && chartViewInstance.library === ChartLibraryType.G2) {
+            // 原有图表默认项装配完成后，仅让新建 G2 图表的轴线颜色跟随主题
+            const axisStyles = [
+              newView.customStyle?.xAxis,
+              newView.customStyle?.yAxis,
+              newView.customStyle?.yAxisExt
+            ]
+            axisStyles.forEach(axisStyle => {
+              if (axisStyle?.axisLine) {
+                axisStyle.axisLine.colorMode = 'theme'
+              }
+            })
+          }
           newView['title'] = component.name
         }
         currentFont && (newView.customStyle.text.fontFamily = currentFont.name)
