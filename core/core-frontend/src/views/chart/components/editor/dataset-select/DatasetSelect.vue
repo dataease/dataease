@@ -7,7 +7,7 @@ import { computed, ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { Plus, Search } from '@element-plus/icons-vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useAppStoreWithOut } from '@/store/modules/app'
-import _ from 'lodash'
+import { cloneDeep, filter, find, forEach, union } from 'lodash-es'
 import { getDatasetTree, getDatasourceList } from '@/api/dataset'
 import { ElFormItem, FormInstance } from 'element-plus-secondary'
 import { useEmitt } from '@/hooks/web/useEmitt'
@@ -160,11 +160,11 @@ watch(searchStr, val => {
 onBeforeUnmount(() => clearTimeout(searchTimer))
 
 const flattedTree = computed(() => {
-  return _.filter(flatTree(computedTree.value), node => node.leaf)
+  return filter(flatTree(computedTree.value), node => node.leaf)
 })
 
 const selectedNode = computed(() => {
-  return _.find(flattedTree.value, node => node.id === _modelValue.value)
+  return find(flattedTree.value, node => node.id === _modelValue.value)
 })
 
 const exist = computed(() => {
@@ -201,10 +201,10 @@ const rules = ref([
 ])
 
 function flatTree(tree: Tree[]) {
-  let result = _.cloneDeep(tree)
-  _.forEach(tree, node => {
+  let result = cloneDeep(tree)
+  forEach(tree, node => {
     if (node.children && node.children.length > 0) {
-      result = _.union(result, flatTree(node.children))
+      result = union(result, flatTree(node.children))
     }
   })
   return result
