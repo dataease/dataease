@@ -484,7 +484,6 @@ export class DataEaseDetailTableController extends Disposable {
         'detail'
       )
       if (placeholder) {
-        console.log('[DE detail] placeholder hover', { row, col, unitId, sheetId, reason: placeholder.reason })
         this._showPlaceholderHover(worksheet, placeholder, unitId, sheetId, row, col)
       } else {
         this._clearHoverRange()
@@ -771,7 +770,6 @@ export class DataEaseDetailTableController extends Disposable {
       try {
         await this._tableFillService.fillTable(this._univerApi, queryConfig)
       } catch (error) {
-        console.error('[DataEaseDetailTableController] Failed to refresh detail table by filter:', error)
         this._markRestoreError(unitId, queryConfig, error)
       }
     }
@@ -958,7 +956,6 @@ export class DataEaseDetailTableController extends Disposable {
             initialRestore: true
           })
         } catch (error) {
-          console.error('[DataEaseDetailTableController] Failed to restore detail table:', plugin.id, error)
           this._markRestoreError(unitId, plugin, error)
         }
       }

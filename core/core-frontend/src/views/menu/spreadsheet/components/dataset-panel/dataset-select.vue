@@ -123,7 +123,6 @@ const loadDatasetTree = async () => {
     datasetTree.value = res?.[0]?.children || []
     emitDatasetNodeChange()
   } catch (error) {
-    console.error('Failed to load datasets:', error)
     datasetTree.value = []
     emitDatasetNodeChange()
   } finally {

@@ -20,8 +20,19 @@ export interface TableDataResult {
     }>,
     rowData: Record<string, any>[]
     total: number
+    customTotalResult?: Record<string, number | string | null>
   }
   sql: string
+}
+
+export interface DetailTableQueryTotalField {
+  dataeaseName: string
+  aggregation: 'CUSTOM'
+  originName: string
+}
+
+export interface DetailTableQueryConfig {
+  totalFields: DetailTableQueryTotalField[]
 }
 
 export interface CellPosition {

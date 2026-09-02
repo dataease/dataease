@@ -191,10 +191,6 @@ export class SpreadsheetDatasetReplacementService {
         try {
           this._adapterRegistry.get(snapshot.adapterType)?.restore(unitId, snapshot.value)
         } catch (restoreError) {
-          console.error(
-            `[SpreadsheetDatasetReplacement] Failed to restore ${snapshot.adapterType}`,
-            restoreError
-          )
         }
       }
       throw error

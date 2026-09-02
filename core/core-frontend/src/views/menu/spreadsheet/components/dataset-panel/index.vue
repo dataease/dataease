@@ -279,7 +279,7 @@ const handleShiftClick = (field: FieldItemData, index: number, type: 'dimension'
     selectedQuotaFields.value = []
     const fields = filteredDimensionFields.value
     const lastIndex = lastClickedDimensionIndex.value
-    
+
     if (lastIndex === -1 || lastIndex === index) {
       // 没有上次点击或点击同一位置，单选
       selectedDimensionFields.value = [field]
@@ -293,7 +293,7 @@ const handleShiftClick = (field: FieldItemData, index: number, type: 'dimension'
     selectedDimensionFields.value = []
     const fields = filteredQuotaFields.value
     const lastIndex = lastClickedQuotaIndex.value
-    
+
     if (lastIndex === -1 || lastIndex === index) {
       selectedQuotaFields.value = [field]
     } else {
@@ -320,11 +320,11 @@ const handleDragStart = (field: FieldItemData, index: number, event: DragEvent, 
   // 如果没有选中任何字段，或当前拖拽的字段不在选中列表中，则单选当前字段
   const selectedList = type === 'dimension' ? selectedDimensionFields.value : selectedQuotaFields.value
   const isSelected = selectedList.some(f => f.id === field.id)
-  
+
   if (!isSelected) {
     handleNormalClick(field, index, type)
   }
-  
+
   // 设置拖拽数据为所有选中的字段
   if (event.dataTransfer) {
     const finalSelectedList = type === 'dimension' ? selectedDimensionFields.value : selectedQuotaFields.value
@@ -353,7 +353,7 @@ const createDragImage = (fields: FieldItemData[], type: 'dimension' | 'quota') =
     max-width: 240px;
     z-index: 9999;
   `
-  
+
   fields.forEach(field => {
     const item = document.createElement('div')
     item.style.cssText = `
@@ -372,7 +372,7 @@ const createDragImage = (fields: FieldItemData[], type: 'dimension' | 'quota') =
     `
     div.appendChild(item)
   })
-  
+
   document.body.appendChild(div)
   return div
 }
@@ -380,19 +380,19 @@ const createDragImage = (fields: FieldItemData[], type: 'dimension' | 'quota') =
 // 拖拽开始
 const onDragStart = (type: 'dimension' | 'quota', event: DragEvent) => {
   isDrag.value = true
-  
+
   // 创建自定义拖拽图像
   const selectedFields = type === 'dimension' ? selectedDimensionFields.value : selectedQuotaFields.value
   if (selectedFields.length > 1) {
     const dragImage = createDragImage(selectedFields, type)
     event.dataTransfer?.setDragImage(dragImage, 10, 10)
-    
+
     // 拖拽结束后清理
     setTimeout(() => {
       document.body.removeChild(dragImage)
     }, 100)
   }
-  
+
   setTimeout(() => {
     isDraggingItem.value = true
   }, 0)
@@ -407,20 +407,19 @@ const onDragEnd = () => {
 // 过滤后的字段
 const filteredDimensionFields = computed(() => {
   if (!searchKeyword.value) return dimensionFields.value
-  return dimensionFields.value.filter(f => 
+  return dimensionFields.value.filter(f =>
     f.name.toLowerCase().includes(searchKeyword.value.toLowerCase())
   )
 })
 
 const filteredQuotaFields = computed(() => {
   if (!searchKeyword.value) return quotaFields.value
-  return quotaFields.value.filter(f => 
+  return quotaFields.value.filter(f =>
     f.name.toLowerCase().includes(searchKeyword.value.toLowerCase())
   )
 })
 
 const handleDatasetChange = (val: string | number) => {
-  console.log('选择数据集:', val)
   emit('updateConfig', 'data.datasetId', String(val))
   emit('updateConfig', 'data.customFilter', {})
   // 注意：现在由 dataset-select 组件控制是否重复点击
@@ -726,14 +725,14 @@ const toggleCollapsed = () => {
   &.is-collapsed {
     width: 48px;
   }
-  
+
   .panel-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 12px 16px;
     border-bottom: 1px solid #e5e7eb;
-    
+
     .title {
       font-size: 16px;
       font-weight: 500;
@@ -743,32 +742,32 @@ const toggleCollapsed = () => {
     .title-collapsed {
       flex: 1;
     }
-    
+
     .header-icon {
       font-size: 18px;
       color: #8f959e;
       cursor: pointer;
     }
   }
-  
+
   .dataset-select-section {
     padding: 12px 16px;
     display: flex;
     align-items: center;
     gap: 8px;
-    
+
     .dataset-select-wrapper {
       flex: 1;
-      
+
       :deep(.dataset-select-trigger) {
         border-color: #3370ff;
-        
+
         &:hover {
           border-color: #3370ff;
         }
       }
     }
-    
+
     .dataset-more-button {
       display: inline-flex;
       align-items: center;
@@ -812,42 +811,42 @@ const toggleCollapsed = () => {
     font-weight: 700;
     color: #1f2329;
   }
-  
+
   .field-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 8px 16px;
-    
+
     .field-title {
       font-size: 14px;
       font-weight: 500;
       color: #1f2329;
     }
-    
+
     .refresh-icon {
       font-size: 14px;
       color: #8f959e;
       cursor: pointer;
-      
+
       &:hover {
         color: #3370ff;
       }
     }
   }
-  
+
   .field-search {
     display: flex;
     align-items: center;
     padding: 8px 16px;
     border-bottom: 1px solid #e5e7eb;
-    
+
     .search-icon {
       font-size: 14px;
       color: #8f959e;
       margin-right: 8px;
     }
-    
+
     .search-input {
       flex: 1;
       border: none;
@@ -855,13 +854,13 @@ const toggleCollapsed = () => {
       background: transparent;
       font-size: 12px;
       color: #1f2329;
-      
+
       &::placeholder {
         color: #8f959e;
       }
     }
   }
-  
+
   .field-list {
     flex: 1;
     display: flex;
@@ -869,19 +868,19 @@ const toggleCollapsed = () => {
     min-height: 0;
     overflow: hidden;
     padding: 12px 16px;
-    
+
     &.is-dragging {
       user-select: none;
       cursor: row-resize;
     }
-    
+
     .dimension-section,
     .quota-section {
       display: flex;
       flex-direction: column;
       overflow: hidden;
       min-height: 60px;
-      
+
       .group-title {
         font-size: 12px;
         font-weight: 500;
@@ -889,29 +888,29 @@ const toggleCollapsed = () => {
         margin-bottom: 8px;
         flex-shrink: 0;
       }
-      
+
       .field-items-scrollbar {
         flex: 1 1 0;
         height: 0;
         min-height: 0;
         overflow: hidden;
       }
-      
+
       .field-items {
         display: flex;
         flex-direction: column;
         gap: 4px;
       }
     }
-    
+
     .dimension-section {
       flex: 0 0 auto;
     }
-    
+
     .quota-section {
       flex: 1 1 0;
     }
-    
+
     .divider-drag {
       height: 12px;
       display: flex;
@@ -920,13 +919,13 @@ const toggleCollapsed = () => {
       cursor: row-resize;
       flex-shrink: 0;
       margin: 4px 0;
-      
+
       &:hover {
         .divider-line {
           background: #3370ff;
         }
       }
-      
+
       .divider-line {
         width: 100%;
         height: 2px;

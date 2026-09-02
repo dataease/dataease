@@ -64,7 +64,6 @@ onUnmounted(() => {
 })
 
 const handleConfirm = () => {
-  console.log('Confirming range selection:', rangeText.value)
   if (props.params?.callback) {
     const workbook = getCurrentWorkbook()
     const worksheet = workbook?.getActiveSheet()
