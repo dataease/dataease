@@ -5,9 +5,11 @@ import io.dataease.utils.LogUtil;
 import jakarta.annotation.Resource;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Component
+@Order(0)
 public class RsaStarter implements ApplicationRunner {
 
     @Resource
