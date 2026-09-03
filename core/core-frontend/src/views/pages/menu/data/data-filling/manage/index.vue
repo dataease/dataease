@@ -1280,14 +1280,14 @@ function getMultipleValueList(data) {
             'df-table-container-no-bottom': state.multipleSelection.length
           }"
         >
-          <div style="display: flex; height: 100%; width: 100%; flex-direction: column">
+          <div style="display: flex; width: 100%; height: 100%; flex-direction: column">
             <div
               class="df-table"
               :class="{
                 'df-table-bottom': state.multipleSelection.length
               }"
             >
-              <div style="width: 100%; display: flex; flex-direction: row; margin-bottom: 16px">
+              <div style="display: flex; width: 100%; flex-direction: row; margin-bottom: 16px">
                 <div class="search-operate" v-if="selectedItem?.weight >= 7" style="flex: 1">
                   <el-button secondary @click="addRowData">
                     <template #icon>
@@ -1357,7 +1357,7 @@ function getMultipleValueList(data) {
                     <template #default="scope">
                       <span
                         v-if="c.date && scope.row.data[c.props]"
-                        style="white-space: nowrap; width: fit-content"
+                        style="width: fit-content; white-space: nowrap"
                         :title="formatDate(scope.row.data[c.props], c.dateType)"
                       >
                         {{ formatDate(scope.row.data[c.props], c.dateType) }}
@@ -1369,7 +1369,7 @@ function getMultipleValueList(data) {
                         "
                       >
                         <span
-                          style="white-space: nowrap; width: fit-content"
+                          style="width: fit-content; white-space: nowrap"
                           :title="getMultipleValueList(scope.row.data[c.props])"
                         >
                           {{ getMultipleValueList(scope.row.data[c.props]) }}
@@ -1377,7 +1377,7 @@ function getMultipleValueList(data) {
                       </template>
                       <span
                         v-else
-                        style="white-space: nowrap; width: fit-content"
+                        style="width: fit-content; white-space: nowrap"
                         :title="scope.row.data[c.props]"
                       >
                         {{ scope.row.data[c.props] }}
