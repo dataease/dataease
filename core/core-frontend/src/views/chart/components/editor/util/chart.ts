@@ -1487,6 +1487,13 @@ export const CHART_TYPE_CONFIGS = [
       {
         render: 'antv',
         category: 'distribute',
+        value: 'box-plot',
+        title: t('chart.chart_box_plot'),
+        icon: 'box-plot'
+      },
+      {
+        render: 'antv',
+        category: 'distribute',
         value: 'pie',
         title: t('chart.chart_pie'),
         icon: 'pie'
@@ -1727,6 +1734,10 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   lineType: 'solid',
   scatterSymbol: 'circle',
   scatterSymbolSize: 8,
+  showOutliers: true,
+  outlierColorMode: 'series',
+  outlierColor: '#5470C6',
+  outlierSize: 4,
   radarShape: 'polygon',
   mapStyle: 'normal',
   heatMapType: 'heatmap',

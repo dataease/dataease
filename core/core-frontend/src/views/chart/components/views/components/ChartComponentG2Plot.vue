@@ -105,7 +105,7 @@ const g2TypeStack = [
   'bar-stack-horizontal',
   'percentage-bar-stack-horizontal'
 ]
-const g2TypeGroup = ['bar-group']
+const g2TypeGroup = ['bar-group', 'box-plot']
 
 const { view, showPosition, scale, terminal, suffixId } = toRefs(props)
 

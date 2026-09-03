@@ -11,6 +11,7 @@ const iconChartMapEmpty = {
   icon_bar_light: 'bar',
   'icon_bubble-map_gray_light': 'bubble-map',
   'icon_bullet-chart_light': 'bullet-graph',
+  'icon_box-plot_light': 'box-plot',
   'icon_chart-quadrant_light': 'quadrant',
   'icon_chart-scatter_light': 'scatter',
   'icon_circle-packing_light': 'circle-packing',

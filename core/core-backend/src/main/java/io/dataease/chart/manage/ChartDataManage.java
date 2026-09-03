@@ -678,6 +678,8 @@ public class ChartDataManage {
                 || StringUtils.equalsIgnoreCase(view.getType(), "flow-map")
                 || StringUtils.equalsIgnoreCase(view.getType(), "t-heatmap")
                 || StringUtils.equalsIgnoreCase(view.getType(), "sankey")
+                // 箱线图的子类别位于 xAxisExt，自定义排序取值时必须按维度列参与查询
+                || StringUtils.equalsIgnoreCase(view.getType(), "box-plot")
         ) {
             xAxis.addAll(xAxisExt);
         }
