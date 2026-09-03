@@ -399,11 +399,19 @@ const queryList = computed(() => {
   return arr
 })
 
-const quotaData = computed(() => {
-  let result = JSON.parse(JSON.stringify(state.quota))
-  if (view.value?.type === 'table-info' || view.value?.type === 'multi-scatter') {
-    result = result?.filter(item => item.id !== '-1')
+// 箱线图基于原始数值样本计算分位数，排除非数值指标和 COUNT(*) 记录数
+const filterQuotaByChartType = quotaList => {
+  if (view.value?.type === 'box-plot') {
+    return quotaList?.filter(item => [2, 3].includes(item.deType) && item.originName !== '*')
   }
+  if (view.value?.type === 'table-info' || view.value?.type === 'multi-scatter') {
+    return quotaList?.filter(item => item.id !== '-1')
+  }
+  return quotaList
+}
+
+const quotaData = computed(() => {
+  let result = filterQuotaByChartType(JSON.parse(JSON.stringify(state.quota)))
   if (state.searchField) {
     result = result.filter(item =>
       item.name.toLowerCase().includes(state.searchField.toLowerCase())
@@ -421,11 +429,7 @@ const dimensionData = computed(() => {
   return result
 })
 const realQuota = computed(() => {
-  let result = JSON.parse(JSON.stringify(state.quota))
-  if (view.value?.type === 'table-info' || view.value?.type === 'multi-scatter') {
-    result = result?.filter(item => item.id !== '-1')
-  }
-  return result
+  return filterQuotaByChartType(JSON.parse(JSON.stringify(state.quota)))
 })
 provide('quotaData', realQuota)
 
@@ -758,6 +762,27 @@ const addAxis = (e, axis: AxisType) => {
         })
       }
       typeValid = valid
+    }
+  } else if (view.value.type === 'box-plot' && axis === 'yAxis') {
+    const list = view.value[axis]
+    typeValid = dragCheckType(list, type)
+    if (list?.length) {
+      let hasInvalidField = false
+      // 批量拖入时逐个剔除不支持的字段，避免无效指标残留在值轴
+      for (let index = list.length - 1; index >= 0; index--) {
+        const item = list[index]
+        if (![2, 3].includes(item.deType) || item.originName === '*') {
+          list.splice(index, 1)
+          hasInvalidField = true
+        }
+      }
+      if (hasInvalidField) {
+        ElMessage({
+          message: t('chart.error_not_number'),
+          type: 'warning'
+        })
+        typeValid = false
+      }
     }
   } else if (view.value.type === 'multi-scatter' && axis === 'xAxis') {
     // 多维散点图 xAxis 只接受指标或时间维度

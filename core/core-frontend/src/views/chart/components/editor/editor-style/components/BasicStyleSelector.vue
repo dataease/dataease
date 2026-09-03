@@ -534,6 +534,86 @@ onMounted(async () => {
     </div>
 
     <el-form-item
+      v-if="showProperty('showOutliers')"
+      class="form-item"
+      :class="'form-item-' + themes"
+    >
+      <el-checkbox
+        size="small"
+        :effect="themes"
+        v-model="state.basicStyleForm.showOutliers"
+        @change="changeBasicStyle('showOutliers')"
+      >
+        <!-- 异常值说明跟随复选框标签并保留统一间距，扩大可点击区域 -->
+        <span class="data-area-label">
+          <span style="margin-right: 4px">{{ t('chart.box_plot_show_outliers') }}</span>
+          <el-tooltip :effect="themes" placement="top">
+            <template #content>
+              <div class="box-plot-outlier-tip">{{ t('chart.box_plot_outlier_tip') }}</div>
+            </template>
+            <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
+              <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
+            </el-icon>
+          </el-tooltip>
+        </span>
+      </el-checkbox>
+    </el-form-item>
+
+    <el-form-item
+      v-if="showProperty('outlierColorMode')"
+      :label="t('chart.box_plot_outlier_color')"
+      class="form-item"
+      :class="'form-item-' + themes"
+    >
+      <el-select
+        v-model="state.basicStyleForm.outlierColorMode"
+        :effect="themes"
+        :disabled="!state.basicStyleForm.showOutliers"
+        @change="changeBasicStyle('outlierColorMode')"
+      >
+        <el-option :label="t('chart.box_plot_outlier_follow_series')" value="series"></el-option>
+        <el-option :label="t('chart.box_plot_outlier_custom_color')" value="custom"></el-option>
+      </el-select>
+    </el-form-item>
+
+    <el-form-item
+      v-if="showProperty('outlierColor') && state.basicStyleForm.outlierColorMode === 'custom'"
+      :label="t('chart.box_plot_outlier_custom_color')"
+      class="form-item"
+      :class="'form-item-' + themes"
+    >
+      <el-color-picker
+        :persistent="false"
+        v-model="state.basicStyleForm.outlierColor"
+        :effect="themes"
+        :disabled="!state.basicStyleForm.showOutliers"
+        is-custom
+        show-alpha
+        :trigger-width="108"
+        class="color-picker-style"
+        :predefine="predefineColors"
+        @change="changeBasicStyle('outlierColor')"
+      />
+    </el-form-item>
+
+    <el-form-item
+      v-if="showProperty('outlierSize')"
+      :label="t('chart.box_plot_outlier_size')"
+      class="form-item"
+      :class="'form-item-' + themes"
+    >
+      <el-input-number
+        v-model="state.basicStyleForm.outlierSize"
+        :effect="themes"
+        :disabled="!state.basicStyleForm.showOutliers"
+        controls-position="right"
+        :min="1"
+        :max="20"
+        @change="changeBasicStyle('outlierSize')"
+      />
+    </el-form-item>
+
+    <el-form-item
       class="form-item"
       v-if="showProperty('radiusColumnBar')"
       :label="t('chart.radiusColumnBar')"
@@ -1858,6 +1938,11 @@ onMounted(async () => {
   display: flex;
   flex-direction: row;
   align-items: center;
+}
+.box-plot-outlier-tip {
+  max-width: 360px;
+  line-height: 20px;
+  white-space: pre-line;
 }
 .radius-class {
   :deep(.ed-radio) {

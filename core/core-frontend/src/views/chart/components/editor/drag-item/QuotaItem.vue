@@ -314,7 +314,7 @@ const NOT_SUPPORT_SORT = [
 ]
 
 const showSort = computed(() => {
-  if (chart.value.type === 'multi-scatter') {
+  if (['multi-scatter', 'box-plot'].includes(chart.value.type)) {
     return false
   }
   return (
@@ -393,7 +393,7 @@ onMounted(() => {
           >
             <span class="item-name">{{ item.chartShowName ? item.chartShowName : item.name }}</span>
             <span
-              v-if="item.summary !== '' && chart.type !== 'multi-scatter'"
+              v-if="item.summary !== '' && !['multi-scatter', 'box-plot'].includes(chart.type)"
               class="item-right-summary"
             >
               ({{ t('chart.' + item.summary) }})
@@ -448,7 +448,10 @@ onMounted(() => {
         >
           <el-dropdown-item
             @click.prevent
-            v-if="!['table-info', 'multi-scatter'].includes(chart.type) && item.summary !== ''"
+            v-if="
+              !['table-info', 'multi-scatter', 'box-plot'].includes(chart.type) &&
+              item.summary !== ''
+            "
           >
             <el-dropdown
               :effect="themes"
@@ -614,11 +617,11 @@ onMounted(() => {
             </el-dropdown>
           </el-dropdown-item>
 
-          <!--同比/环比等快速计算-->
+          <!-- 箱线图直接使用原始样本计算分位数，不开放汇总后的快速计算 -->
           <el-dropdown-item
             @click.prevent
             v-if="
-              !['table-info', 'bullet-graph', 'multi-scatter'].includes(chart.type) &&
+              !['table-info', 'bullet-graph', 'multi-scatter', 'box-plot'].includes(chart.type) &&
               props.type !== 'extBubble'
             "
           >
