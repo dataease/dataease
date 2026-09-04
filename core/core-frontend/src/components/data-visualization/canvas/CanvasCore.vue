@@ -28,10 +28,12 @@ import {
   componentPreSort,
   findDragComponent,
   findNewComponent,
+  getTabMobileMinSize,
   isDashboard,
   isGroupOrTabCanvas,
   isMainCanvas,
-  isSameCanvas
+  isSameCanvas,
+  isTabCanvas
 } from '@/utils/canvasUtils'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -54,8 +56,16 @@ const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 
-const { curComponent, dvInfo, editMode, tabMoveOutComponentId, canvasState, mainScrollTop } =
-  storeToRefs(dvMainStore)
+const {
+  curComponent,
+  dvInfo,
+  editMode,
+  tabMoveOutComponentId,
+  canvasState,
+  mainScrollTop,
+  // 标识当前是否处于 PC 页面中的移动端编辑器，用于限制规则生效范围
+  mobileInPc
+} = storeToRefs(dvMainStore)
 const { editorMap, areaData, isCtrlOrCmdDown } = storeToRefs(composeStore)
 const props = defineProps({
   themes: {
@@ -1312,6 +1322,14 @@ const onResizing = (e, item) => {
     height % cellHeight.value > (cellHeight.value / 4) * 3
       ? Math.floor(height / cellHeight.value + 1)
       : Math.floor(height / cellHeight.value)
+
+  if (mobileInPc.value && isTabCanvas(canvasId.value)) {
+    // 移动端允许自由缩放后可能再次出现文字裁剪,现仅约束 Tab 子画布中的最小可读尺寸
+    // sizeX、sizeY 分别表示 Matrix 的最小列宽和最小行高
+    const minSize = getTabMobileMinSize(item)
+    nowSizeX = Math.max(nowSizeX, minSize.sizeX)
+    nowSizeY = Math.max(nowSizeY, minSize.sizeY)
+  }
 
   // 增加5px偏移量 防止resize时向下取整 组件向右偏移
   let newX = Math.floor((item.style.left + 5) / cellWidth.value + 1)

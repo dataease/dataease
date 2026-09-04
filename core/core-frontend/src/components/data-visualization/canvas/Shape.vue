@@ -15,7 +15,7 @@
   >
     <div
       :title="t('visualization.sync_pc_design')"
-      v-if="showCheck"
+      v-if="showSyncPcDesign"
       class="refresh-from-pc"
       @click="updateFromMobile($event, 'syncPcDesign')"
     >
@@ -352,6 +352,15 @@ const showCheck = computed(() => {
   return mobileInPc.value && element.value.canvasId === 'canvas-main'
 })
 
+/**
+ * 控制“同步 PC 设计”按钮是否显示
+ * 顶层组件沿用 showCheck，Tab 子组件通过 isTabCanvas 单独放开，Group 保持隐藏
+ */
+const showSyncPcDesign = computed(() => {
+  // 原因：移动 Tab 改用 Shape 后子组件不再经过 ComponentWrapper；作用：只恢复子组件同步按钮，不放开顶层专属的移出按钮
+  return mobileInPc.value && (showCheck.value || isTabCanvas(element.value.canvasId))
+})
+
 const updateFromMobile = (e, type) => {
   if (type === 'syncPcDesign') {
     e.preventDefault()
@@ -616,9 +625,11 @@ const handleMouseDownOnShape = e => {
       // 因为仪表板中组件向下移动可能只是为了挤占空间 不一定是为了移出 这里无法判断明确意图 暂时支不支持向下移出
       // 大屏和仪表板暂时做位置算法区分 仪表板暂时使用curX 因为缩放的影响 大屏使用 tab位置 + 组件位置（相对内部画布）+初始触发点
       // 如果组件在tab中且tab在Group中 不允许移入移出 pTabGroupFlag = true
+      // 移动端 Tab 使用独立嵌套画布编辑；禁止拖动时进入仅适用于 PC 的移出 Tab 流程
       if (
         !pTabGroupFlag &&
         pJoinTab &&
+        !mobileInPc.value &&
         !isMainCanvas(canvasId.value) &&
         !isGroupCanvas(canvasId.value) &&
         !isGroupArea.value &&

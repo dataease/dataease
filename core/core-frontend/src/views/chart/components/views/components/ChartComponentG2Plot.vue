@@ -24,7 +24,7 @@ import ChartError from '@/views/chart/components/views/components/ChartError.vue
 import { BASE_VIEW_CONFIG } from '../../editor/util/chart'
 import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/utils/canvasStyle'
 import { deepCopy, isMobile } from '@/utils/utils'
-import { isDashboard, trackBarStyleCheck } from '@/utils/canvasUtils'
+import { isDashboard, isTabCanvas, trackBarStyleCheck } from '@/utils/canvasUtils'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { L7ChartView } from '@/views/chart/components/js/panel/types/impl/l7'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -801,6 +801,8 @@ defineExpose({
 })
 let intersectionObserver
 let resizeObserver
+// 移动端 Tab 图表尺寸变化的防抖计时器，组件卸载时必须清理
+let resizeTimer: number
 const TOLERANCE = 0.01
 const RESIZE_MONITOR_CHARTS = ['map', 'bubble-map', 'flow-map', 'heat-map']
 onMounted(() => {
@@ -808,20 +810,46 @@ onMounted(() => {
   const { offsetWidth, offsetHeight } = containerDom
   const preSize = [offsetWidth, offsetHeight]
   resizeObserver = new ResizeObserver(([entry] = []) => {
-    if (!RESIZE_MONITOR_CHARTS.includes(view.value.type)) {
-      return
-    }
-    const [size] = entry.borderBoxSize || []
-    const widthOffsetPercent = (size.inlineSize - preSize[0]) / preSize[0]
-    const heightOffsetPercent = (size.blockSize - preSize[1]) / preSize[1]
+    // 标识必须通过 renderChart 重建图层的 L7 地图，继续沿用原即时重绘路径
+    const resizeMonitorChart = RESIZE_MONITOR_CHARTS.includes(view.value.type)
+    const [size] = entry?.borderBoxSize || []
+    // 优先读取 borderBoxSize，contentRect 用于兼容未提供 borderBoxSize 的浏览器
+    const width = size?.inlineSize ?? entry?.contentRect?.width ?? 0
+    const height = size?.blockSize ?? entry?.contentRect?.height ?? 0
+    const widthOffsetPercent = preSize[0] ? (width - preSize[0]) / preSize[0] : 1
+    const heightOffsetPercent = preSize[1] ? (height - preSize[1]) / preSize[1] : 1
     if (Math.abs(widthOffsetPercent) < TOLERANCE && Math.abs(heightOffsetPercent) < TOLERANCE) {
       return
     }
-    if (myChart && preSize[1] > 1) {
-      renderChart(curView)
+    if (resizeMonitorChart) {
+      // L7 地图依赖重新创建图层响应容器变化；保留原有即时重绘时序，避免影响 PC 地图
+      if (myChart && preSize[1] > 1) {
+        renderChart(curView)
+      }
+      preSize[0] = width
+      preSize[1] = height
+      return
     }
-    preSize[0] = size.inlineSize
-    preSize[1] = size.blockSize
+    // 普通 G2Plot 的 changeSize 只在移动端 Tab 子画布生效，避免改变 PC 和主画布行为
+    const mobileTabChart =
+      isDashboard() && (mobileInPc.value || inMobile.value) && isTabCanvas(props.element?.canvasId)
+    if (!mobileTabChart || width <= 1 || height <= 1) {
+      return
+    }
+    preSize[0] = width
+    preSize[1] = height
+    clearTimeout(resizeTimer)
+    resizeTimer = setTimeout(() => {
+      if (!myChart) {
+        return
+      }
+      if (typeof myChart.changeSize === 'function') {
+        // Tab 移动布局会改变内部图表容器尺寸；仅在移动 Tab 中复用实例更新宽高
+        myChart.changeSize(width, height)
+      } else {
+        renderChart(curView)
+      }
+    }, 100)
   })
   resizeObserver.observe(containerDom)
   intersectionObserver = new IntersectionObserver(([entry]) => {
@@ -852,6 +880,7 @@ onBeforeUnmount(() => {
   try {
     ChartCarouselTooltip.destroyByContainer(containerId)
     myChart?.destroy()
+    clearTimeout(resizeTimer)
     resizeObserver?.disconnect()
     intersectionObserver?.disconnect()
   } catch (e) {
