@@ -1,38 +1,29 @@
 <script lang="tsx" setup>
-import icon_left_outlined from "@/assets/svg/icon_left_outlined.svg";
-import icon_copy_outlined from "@/assets/svg/icon_copy_outlined.svg";
-import icon_deleteTrash_outlined from "@/assets/svg/icon_delete-trash_outlined.svg";
-import icon_single_line_outlined from "@/assets/svg/icon_single-line_outlined.svg";
-import icon_multi_line_outlined from "@/assets/svg/icon_multi-line_outlined.svg";
-import icon_down_outlined from "@/assets/svg/icon_down_outlined.svg";
-import icon_radio_outlined from "@/assets/svg/icon_radio_outlined.svg";
-import icon_todo_outlined from "@/assets/svg/icon_todo_outlined.svg";
-import icon_calendar_outlined from "@/assets/svg/icon_calendar_outlined.svg";
-import icon_edit_outlined from "@/assets/svg/icon_edit_outlined.svg";
-import RowAuth from "./data-fill-tree/auth-tree/RowAuth.vue";
+import icon_left_outlined from '@/assets/svg/icon_left_outlined.svg'
+import icon_copy_outlined from '@/assets/svg/icon_copy_outlined.svg'
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
+import icon_single_line_outlined from '@/assets/svg/icon_single-line_outlined.svg'
+import icon_multi_line_outlined from '@/assets/svg/icon_multi-line_outlined.svg'
+import icon_down_outlined from '@/assets/svg/icon_down_outlined.svg'
+import icon_radio_outlined from '@/assets/svg/icon_radio_outlined.svg'
+import icon_todo_outlined from '@/assets/svg/icon_todo_outlined.svg'
+import icon_calendar_outlined from '@/assets/svg/icon_calendar_outlined.svg'
+import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
+import RowAuth from './data-fill-tree/auth-tree/RowAuth.vue'
 
-import { computed, nextTick, onMounted, provide, ref, watch } from "vue";
-import { ElIcon, ElMessage, ElMessageBox } from "element-plus-secondary";
-import router from "@/router";
-import { useI18n } from "@/hooks/web/useI18n";
-import DataFillingFormSave from "./DataFillingFormSave.vue";
-import SelectDetailColumns from "./SelectDetailColumns.vue";
-import MoreDetailColumns from "./MoreDetailColumns.vue";
-import { useEmitt } from "@/hooks/web/useEmitt";
-import {
-  cloneDeep,
-  filter,
-  find,
-  forEach,
-  groupBy,
-  join,
-  keys,
-  map,
-} from "lodash-es";
-import { uuid } from "vue-uuid";
-import draggable from "vuedraggable";
-import { Icon } from "@/components/icon-custom";
-import { EMAIL_REGEX } from "@/utils/validate";
+import { computed, nextTick, onMounted, provide, ref, watch } from 'vue'
+import { ElIcon, ElMessage, ElMessageBox } from 'element-plus-secondary'
+import router from '@/router'
+import { useI18n } from '@/hooks/web/useI18n'
+import DataFillingFormSave from './DataFillingFormSave.vue'
+import SelectDetailColumns from './SelectDetailColumns.vue'
+import MoreDetailColumns from './MoreDetailColumns.vue'
+import { useEmitt } from '@/hooks/web/useEmitt'
+import { cloneDeep, filter, find, forEach, groupBy, join, keys, map } from 'lodash-es'
+import { uuid } from 'vue-uuid'
+import draggable from 'vuedraggable'
+import { Icon } from '@/components/icon-custom'
+import { EMAIL_REGEX } from '@/utils/validate'
 import {
   DfFormItem,
   DfFormSetting,
@@ -42,89 +33,87 @@ import {
   getTableColumnDataPreview,
   listAllDatasourceList,
   OptionItem,
-  SimpleDatasource,
-} from "../../data-filling";
-import { getTableField, listDatasourceTables } from "@/api/datasource";
-import { useEmbedded } from "@/store/modules/embedded";
-import { useAppStoreWithOut } from "@/store/modules/app";
+  SimpleDatasource
+} from '../../data-filling'
+import { getTableField, listDatasourceTables } from '@/api/datasource'
+import { useEmbedded } from '@/store/modules/embedded'
+import { useAppStoreWithOut } from '@/store/modules/app'
 
-const { t } = useI18n();
+const { t } = useI18n()
 
 const datasetTableFiled = computed(() => {
-  return columnList.value.map((c) => {
+  return columnList.value.map(c => {
     return {
       id: c.fieldName,
       name: c.fieldName,
       deType: c.deType,
-      fieldType: c.fieldType,
-    };
-  });
-});
+      fieldType: c.fieldType
+    }
+  })
+})
 
 const currentDsType = computed(() => {
-  let type = "";
-  datasourceList.value.forEach((c) => {
-    c.options.find((c) => {
+  let type = ''
+  datasourceList.value.forEach(c => {
+    c.options.find(c => {
       if (c.id === optionFormData.value.optionDatasource) {
-        type = c.type;
+        type = c.type
       }
-      return c.id === optionFormData.value.optionDatasource;
-    });
-  });
-  return type;
-});
+      return c.id === optionFormData.value.optionDatasource
+    })
+  })
+  return type
+})
 
 const optionFormDataComputed = computed(() => {
   return {
     optionDatasource: optionFormData.value.optionDatasource,
-    optionTable: optionFormData.value.optionTable,
-  };
-});
-provide("filedList", datasetTableFiled);
-provide("optionFormData", optionFormDataComputed);
+    optionTable: optionFormData.value.optionTable
+  }
+})
+provide('filedList', datasetTableFiled)
+provide('optionFormData', optionFormDataComputed)
 
-const embeddedStore = useEmbedded();
-const appStore = useAppStoreWithOut();
-const isEmbedded = computed(
-  () => appStore.getIsDataEaseBi || appStore.getIsIframe,
-);
+const embeddedStore = useEmbedded()
+const appStore = useAppStoreWithOut()
+const isEmbedded = computed(() => appStore.getIsDataEaseBi || appStore.getIsIframe)
 
-const loading = ref<boolean>(false);
-const showInput = ref<boolean>(false);
-const editorName = ref();
-const mTitleForm = ref();
-const mRightForm = ref();
-const asyncOptions = ref({});
+const loading = ref<boolean>(false)
+const showInput = ref<boolean>(false)
+const editorName = ref()
+const mTitleForm = ref()
+const mRightForm = ref()
+const asyncOptions = ref({})
 
-const isEdit = ref<boolean>(false);
-const disableCreateIndex = ref<boolean>(false);
+const isEdit = ref<boolean>(false)
+const disableCreateIndex = ref<boolean>(false)
 
 let nodeInfo = {
   id: undefined,
   pid: undefined,
-  name: "",
-};
+  name: ''
+}
 
-const selectedItemId = ref<string | undefined>(undefined);
+const selectedItemId = ref<string | undefined>(undefined)
 
 const selectedComponentItem = computed<DfFormItem | undefined>(() => {
   if (selectedItemId.value) {
-    return find(formSettings.value.forms, (f) => f.id === selectedItemId.value);
+    return find(formSettings.value.forms, f => f.id === selectedItemId.value)
   }
-  return undefined;
-});
+  return undefined
+})
 
 const formSettings = ref<DfFormSetting>({
   id: undefined,
-  name: t("data_fill.form.untitled"),
+  name: t('data_fill.form.untitled'),
   pid: undefined,
   datasource: undefined,
   tableName: undefined,
   forms: [],
   createIndex: false,
   useExistsTable: false,
-  tableIndexes: [],
-});
+  tableIndexes: []
+})
 
 const iconMap = ref({
   icon_single_line_outlined: icon_single_line_outlined,
@@ -132,402 +121,390 @@ const iconMap = ref({
   icon_down_outlined: icon_down_outlined,
   icon_radio_outlined: icon_radio_outlined,
   icon_todo_outlined: icon_todo_outlined,
-  icon_calendar_outlined: icon_calendar_outlined,
-});
+  icon_calendar_outlined: icon_calendar_outlined
+})
 
 const componentList = computed<Array<DfFormItem>>(() => [
   {
-    type: "input",
-    typeName: t("common.component.input"),
-    icon: "icon_single_line_outlined",
+    type: 'input',
+    typeName: t('common.component.input'),
+    icon: 'icon_single_line_outlined',
     order: 0,
     value: undefined,
     id: uuid.v4(),
     settings: {
-      name: t("common.component.input"),
-      placeholder: "",
+      name: t('common.component.input'),
+      placeholder: '',
       required: false,
       unique: false,
-      inputType: "text",
+      inputType: 'text',
       mapping: {
         columnName: undefined,
         type: undefined,
-        useExistsTable: false,
-      },
-    },
+        useExistsTable: false
+      }
+    }
   },
   {
-    type: "textarea",
-    typeName: t("common.component.textarea"),
-    icon: "icon_multi_line_outlined",
+    type: 'textarea',
+    typeName: t('common.component.textarea'),
+    icon: 'icon_multi_line_outlined',
     order: 1,
     value: undefined,
     id: uuid.v4(),
     settings: {
-      name: t("common.component.textarea"),
-      placeholder: "",
+      name: t('common.component.textarea'),
+      placeholder: '',
       required: false,
       mapping: {
         columnName: undefined,
         type: undefined,
-        useExistsTable: false,
-      },
-    },
+        useExistsTable: false
+      }
+    }
   },
   {
-    type: "select",
-    typeName: t("common.component.select"),
-    icon: "icon_down_outlined",
+    type: 'select',
+    typeName: t('common.component.select'),
+    icon: 'icon_down_outlined',
     order: 2,
-    value: "",
+    value: '',
     id: uuid.v4(),
     settings: {
-      name: t("common.component.select"),
+      name: t('common.component.select'),
       options: [
         {
-          name: t("data_fill.form.option") + " 1",
-          value: t("data_fill.form.option") + " 1",
+          name: t('data_fill.form.option') + ' 1',
+          value: t('data_fill.form.option') + ' 1'
         },
         {
-          name: t("data_fill.form.option") + " 2",
-          value: t("data_fill.form.option") + " 2",
-        },
+          name: t('data_fill.form.option') + ' 2',
+          value: t('data_fill.form.option') + ' 2'
+        }
       ],
       optionSourceType: 1,
       optionDatasource: undefined,
       optionTable: undefined,
       optionColumn: undefined,
-      optionOrder: "asc",
-      placeholder: "",
+      optionOrder: 'asc',
+      placeholder: '',
       multiple: false,
       required: false,
       mapping: {
         columnName: undefined,
         type: undefined,
-        useExistsTable: false,
-      },
-    },
+        useExistsTable: false
+      }
+    }
   },
   {
-    type: "radio",
-    typeName: t("common.component.radio"),
-    icon: "icon_radio_outlined",
+    type: 'radio',
+    typeName: t('common.component.radio'),
+    icon: 'icon_radio_outlined',
     order: 3,
     value: undefined,
     id: uuid.v4(),
     settings: {
-      name: t("common.component.radio"),
+      name: t('common.component.radio'),
       options: [
         {
-          name: t("data_fill.form.option") + " 1",
-          value: t("data_fill.form.option") + " 1",
+          name: t('data_fill.form.option') + ' 1',
+          value: t('data_fill.form.option') + ' 1'
         },
         {
-          name: t("data_fill.form.option") + " 2",
-          value: t("data_fill.form.option") + " 2",
-        },
+          name: t('data_fill.form.option') + ' 2',
+          value: t('data_fill.form.option') + ' 2'
+        }
       ],
       optionSourceType: 1,
       optionDatasource: undefined,
       optionTable: undefined,
       optionColumn: undefined,
-      optionOrder: "asc",
+      optionOrder: 'asc',
       required: false,
       mapping: {
         columnName: undefined,
         type: undefined,
-        useExistsTable: false,
-      },
-    },
+        useExistsTable: false
+      }
+    }
   },
   {
-    type: "checkbox",
-    typeName: t("common.component.checkbox"),
-    icon: "icon_todo_outlined",
+    type: 'checkbox',
+    typeName: t('common.component.checkbox'),
+    icon: 'icon_todo_outlined',
     order: 4,
     value: [],
     id: uuid.v4(),
     settings: {
-      name: t("common.component.checkbox"),
+      name: t('common.component.checkbox'),
       options: [
         {
-          name: t("data_fill.form.option") + " 1",
-          value: t("data_fill.form.option") + " 1",
+          name: t('data_fill.form.option') + ' 1',
+          value: t('data_fill.form.option') + ' 1'
         },
         {
-          name: t("data_fill.form.option") + " 2",
-          value: t("data_fill.form.option") + " 2",
-        },
+          name: t('data_fill.form.option') + ' 2',
+          value: t('data_fill.form.option') + ' 2'
+        }
       ],
       optionSourceType: 1,
       optionDatasource: undefined,
       optionTable: undefined,
       optionColumn: undefined,
-      optionOrder: "asc",
+      optionOrder: 'asc',
       required: false,
       mapping: {
         columnName: undefined,
         type: undefined,
-        useExistsTable: false,
-      },
-    },
+        useExistsTable: false
+      }
+    }
   },
   {
-    type: "date",
-    typeName: t("common.component.date"),
-    icon: "icon_calendar_outlined",
+    type: 'date',
+    typeName: t('common.component.date'),
+    icon: 'icon_calendar_outlined',
     order: 5,
     value: undefined,
     id: uuid.v4(),
     settings: {
-      name: t("common.component.date"),
-      dateType: "date",
-      placeholder: "",
+      name: t('common.component.date'),
+      dateType: 'date',
+      placeholder: '',
       required: false,
       mapping: {
         columnName: undefined,
         type: undefined,
-        useExistsTable: false,
+        useExistsTable: false
       },
       enableDefaultTime: false,
       enableCurrentTime: true,
-      defaultTime: undefined,
-    },
+      defaultTime: undefined
+    }
   },
   {
-    type: "dateRange",
-    typeName: t("common.component.dateRange"),
-    icon: "icon_calendar_outlined",
+    type: 'dateRange',
+    typeName: t('common.component.dateRange'),
+    icon: 'icon_calendar_outlined',
     order: 6,
     value: [],
     id: uuid.v4(),
     settings: {
-      name: t("common.component.dateRange"),
-      dateType: "daterange",
-      rangeSeparator: "-",
-      startPlaceholder: "",
-      endPlaceholder: "",
+      name: t('common.component.dateRange'),
+      dateType: 'daterange',
+      rangeSeparator: '-',
+      startPlaceholder: '',
+      endPlaceholder: '',
       required: false,
       mapping: {
         columnName1: undefined,
         columnName2: undefined,
         type: undefined,
-        useExistsTable: false,
-      },
-    },
-  },
-]);
-
-const componentList1 = computed(() => {
-  return filter(
-    componentList.value,
-    (c) => c.order !== undefined && c.order % 2 === 0,
-  );
-});
-const componentList2 = computed(() => {
-  return filter(
-    componentList.value,
-    (c) => c.order !== undefined && c.order % 2 === 1,
-  );
-});
-
-const inputTypes = [
-  { type: "text", name: t("data_fill.form.text"), rules: [] },
-  { type: "number", name: t("data_fill.form.number"), rules: [] },
-  {
-    type: "tel",
-    name: t("data_fill.form.tel"),
-    rules: [],
-  },
-  {
-    type: "email",
-    name: t("data_fill.form.email"),
-    rules: [
-      {
-        pattern: EMAIL_REGEX,
-        message: t("data_fill.form.email_format_is_incorrect"),
-        trigger: ["blur", "change"],
-      },
-    ],
-  },
-];
-
-const selectedComponentItemInputTypes = computed(() => {
-  if (
-    selectedComponentItem.value &&
-    selectedComponentItem.value.type === "input"
-  ) {
-    if (isEdit.value && selectedComponentItem.value.old) {
-      if (selectedComponentItem.value.settings.inputType === "number") {
-        return filter(inputTypes, (t) => t.type === "number");
-      } else {
-        return filter(inputTypes, (t) => t.type !== "number");
+        useExistsTable: false
       }
     }
   }
-  return inputTypes;
-});
+])
+
+const componentList1 = computed(() => {
+  return filter(componentList.value, c => c.order !== undefined && c.order % 2 === 0)
+})
+const componentList2 = computed(() => {
+  return filter(componentList.value, c => c.order !== undefined && c.order % 2 === 1)
+})
+
+const inputTypes = [
+  { type: 'text', name: t('data_fill.form.text'), rules: [] },
+  { type: 'number', name: t('data_fill.form.number'), rules: [] },
+  {
+    type: 'tel',
+    name: t('data_fill.form.tel'),
+    rules: []
+  },
+  {
+    type: 'email',
+    name: t('data_fill.form.email'),
+    rules: [
+      {
+        pattern: EMAIL_REGEX,
+        message: t('data_fill.form.email_format_is_incorrect'),
+        trigger: ['blur', 'change']
+      }
+    ]
+  }
+]
+
+const selectedComponentItemInputTypes = computed(() => {
+  if (selectedComponentItem.value && selectedComponentItem.value.type === 'input') {
+    if (isEdit.value && selectedComponentItem.value.old) {
+      if (selectedComponentItem.value.settings.inputType === 'number') {
+        return filter(inputTypes, t => t.type === 'number')
+      } else {
+        return filter(inputTypes, t => t.type !== 'number')
+      }
+    }
+  }
+  return inputTypes
+})
 
 const checkDuplicateOptionValidator = (rule, value, callback) => {
   if (!value) {
-    return callback(new Error(t("common.component_required")));
+    return callback(new Error(t('common.component_required')))
   }
-  const _list = filter(
-    selectedComponentItem.value?.settings.options,
-    (f) => f.value === value,
-  );
+  const _list = filter(selectedComponentItem.value?.settings.options, f => f.value === value)
   if (_list.length > 1) {
-    callback(new Error(t("data_fill.form.duplicate_error")));
+    callback(new Error(t('data_fill.form.duplicate_error')))
   }
-  callback();
-};
+  callback()
+}
 
 const checkValidDatasourceValidator = (rule, value, callback) => {
   if (!value) {
-    return callback(new Error(t("common.required")));
+    return callback(new Error(t('common.required')))
   }
-  const ds = find(allDatasourceList.value, (d) => d.id === value);
+  const ds = find(allDatasourceList.value, d => d.id === value)
   if (!ds) {
-    return callback(new Error(t("common.required")));
+    return callback(new Error(t('common.required')))
   }
-  if (ds.status === "Error") {
-    callback(new Error(t("data_set.invalid_data_source")));
+  if (ds.status === 'Error') {
+    callback(new Error(t('data_set.invalid_data_source')))
   }
-  callback();
-};
+  callback()
+}
 
 const requiredRule = {
   required: true,
-  message: t("common.required"),
-  trigger: ["blur", "change"],
-};
+  message: t('common.required'),
+  trigger: ['blur', 'change']
+}
 const duplicateOptionRule = {
   validator: checkDuplicateOptionValidator,
-  trigger: ["blur", "change"],
-};
+  trigger: ['blur', 'change']
+}
 const checkValidDatasourceRule = {
   validator: checkValidDatasourceValidator,
-  trigger: ["blur", "change"],
-};
+  trigger: ['blur', 'change']
+}
 const maxLengthRule = (max = 50) => {
   return {
     max: max,
-    message: t("data_fill.form.input_limit_max", [max]),
-    trigger: ["blur", "change"],
-  };
-};
+    message: t('data_fill.form.input_limit_max', [max]),
+    trigger: ['blur', 'change']
+  }
+}
 const minLengthRule = (min = 0) => {
   return {
     min: min,
-    message: t("data_fill.form.input_limit_min", [min]),
-    trigger: ["blur", "change"],
-  };
-};
+    message: t('data_fill.form.input_limit_min', [min]),
+    trigger: ['blur', 'change']
+  }
+}
 
 const dateTypes = [
-  { name: t("chart.y"), value: "year" },
-  { name: t("chart.y_M"), value: "month" },
-  { name: t("chart.y_M_d"), value: "date" },
-  { name: t("chart.y_M_d_H_m_s"), value: "datetime" },
-];
+  { name: t('chart.y'), value: 'year' },
+  { name: t('chart.y_M'), value: 'month' },
+  { name: t('chart.y_M_d'), value: 'date' },
+  { name: t('chart.y_M_d_H_m_s'), value: 'datetime' }
+]
 
 const dateRangeTypes = [
-  { name: t("chart.y_M"), value: "monthrange" },
-  { name: t("chart.y_M_d"), value: "daterange" },
-  { name: t("chart.y_M_d_H_m_s"), value: "datetimerange" },
-];
+  { name: t('chart.y_M'), value: 'monthrange' },
+  { name: t('chart.y_M_d'), value: 'daterange' },
+  { name: t('chart.y_M_d_H_m_s'), value: 'datetimerange' }
+]
 
 const group = {
   componentListGroup1: {
-    name: "mFormGroup",
-    pull: "clone", // B组拖拽时克隆到A组
-    put: false,
+    name: 'mFormGroup',
+    pull: 'clone', // B组拖拽时克隆到A组
+    put: false
   },
   componentListGroup2: {
-    name: "mFormGroup",
-    pull: "clone", // B组拖拽时克隆到A组
-    put: false,
+    name: 'mFormGroup',
+    pull: 'clone', // B组拖拽时克隆到A组
+    put: false
   },
   formGroup: {
-    name: "mFormGroup",
-    put: true,
-  },
-};
+    name: 'mFormGroup',
+    put: true
+  }
+}
 
 const onMoveInComponentList = (e, originalEvent) => {
-  if (e.to?.id === "form-drag-place") {
-    return true;
+  if (e.to?.id === 'form-drag-place') {
+    return true
   }
-  return false;
-};
+  return false
+}
 
 const addComponentItem = (item: DfFormItem) => {
-  const _item = cloneDeep(item);
-  delete _item.order;
-  _item.id = uuid.v4();
-  formSettings.value.forms.push(_item);
+  const _item = cloneDeep(item)
+  delete _item.order
+  _item.id = uuid.v4()
+  formSettings.value.forms.push(_item)
 
-  selectedItemId.value = _item.id;
+  selectedItemId.value = _item.id
   nextTick(() => {
-    mRightForm.value?.validate();
-  });
-};
+    mRightForm.value?.validate()
+  })
+}
 
 const cloneDraggable = (item: DfFormItem) => {
   const res = {
-    ...item,
-  };
-  delete res.order;
-  delete res.id;
-  res.id = undefined;
+    ...item
+  }
+  delete res.order
+  delete res.id
+  res.id = undefined
 
-  return res;
-};
+  return res
+}
 
-const addComponent = (e) => {
-  formSettings.value.forms = cloneDeep(formSettings.value.forms);
+const addComponent = e => {
+  formSettings.value.forms = cloneDeep(formSettings.value.forms)
 
-  formSettings.value.forms.forEach((f) => {
+  formSettings.value.forms.forEach(f => {
     if (f.order !== undefined) {
-      delete f.order;
+      delete f.order
     }
     if (f.id === undefined) {
-      f.id = uuid.v4();
-      selectedItemId.value = f.id;
+      f.id = uuid.v4()
+      selectedItemId.value = f.id
       nextTick(() => {
-        mRightForm.value?.validate();
-      });
+        mRightForm.value?.validate()
+      })
     }
-  });
-};
+  })
+}
 
 function selectItem(id: string, showError?: boolean) {
-  selectedItemId.value = id;
+  selectedItemId.value = id
   nextTick(() => {
     mRightForm.value?.validate((valid, invalidFields) => {
       if (showError && !valid) {
         ElMessage({
-          message: t("data_fill.form.component_setting_error"),
-          type: "error",
-          showClose: true,
-        });
+          message: t('data_fill.form.component_setting_error'),
+          type: 'error',
+          showClose: true
+        })
       }
-    });
-  });
+    })
+  })
 }
 
 function copyItem(item: DfFormItem, index: number) {
-  const copyItem = cloneDeep(item);
-  copyItem.id = uuid.v4();
-  delete copyItem.old;
-  delete copyItem.settings.mapping.columnName;
-  delete copyItem.settings.mapping.columnName1;
-  delete copyItem.settings.mapping.columnName2;
-  formSettings.value.forms.splice(index + 1, 0, copyItem);
+  const copyItem = cloneDeep(item)
+  copyItem.id = uuid.v4()
+  delete copyItem.old
+  delete copyItem.settings.mapping.columnName
+  delete copyItem.settings.mapping.columnName1
+  delete copyItem.settings.mapping.columnName2
+  formSettings.value.forms.splice(index + 1, 0, copyItem)
 
-  selectedItemId.value = copyItem.id;
+  selectedItemId.value = copyItem.id
   nextTick(() => {
-    mRightForm.value?.validate();
+    mRightForm.value?.validate()
 
     if (
       selectedComponentItem.value &&
@@ -539,58 +516,58 @@ function copyItem(item: DfFormItem, index: number) {
       selectedComponentItem.value.settings.optionColumn &&
       selectedComponentItem.value.settings.optionOrder
     ) {
-      const id = selectedComponentItem.value.id;
+      const id = selectedComponentItem.value.id
 
       getTableColumnDataPreview(
         selectedComponentItem.value.settings.optionDatasource,
         selectedComponentItem.value.settings.optionTable,
         selectedComponentItem.value.settings.optionColumn,
         selectedComponentItem.value.settings.optionOrder,
-        selectedComponentItem.value.settings.permissionsTree,
-      ).then((data) => {
-        asyncOptions.value[id] = data.data;
-      });
+        selectedComponentItem.value.settings.permissionsTree
+      ).then(data => {
+        asyncOptions.value[id] = data.data
+      })
     }
-  });
+  })
 }
 
 function removeItem(item: DfFormItem, index: number) {
-  formSettings.value.forms.splice(index, 1);
+  formSettings.value.forms.splice(index, 1)
 }
 
 const lostFocus = () => {
-  selectedItemId.value = undefined;
+  selectedItemId.value = undefined
   nextTick(() => {
-    mRightForm.value?.validate();
-  });
-};
+    mRightForm.value?.validate()
+  })
+}
 
 const handleClick = () => {
-  showInput.value = true;
+  showInput.value = true
   nextTick(() => {
-    editorName.value.focus();
-  });
-};
+    editorName.value.focus()
+  })
+}
 
 function onOptionValueChange(item, value) {
-  item.name = value;
+  item.name = value
 }
 
 function addOption(list) {
-  list.push({ name: "", value: "" });
+  list.push({ name: '', value: '' })
 }
 
 function removeOption(list, index: number) {
-  list.splice(index, 1);
+  list.splice(index, 1)
 }
 
 function changeSelectMultiple(item: DfFormItem, multiple?: boolean) {
   if (multiple) {
-    item.value = [];
+    item.value = []
   } else {
-    item.value = "";
+    item.value = ''
   }
-  item.settings.mapping.type = undefined;
+  item.settings.mapping.type = undefined
 }
 
 function onOptionSourceTypeChange(type?: 1 | 2, itemSettings) {
@@ -600,8 +577,8 @@ function onOptionSourceTypeChange(type?: 1 | 2, itemSettings) {
       optionDatasource: itemSettings.optionDatasource,
       optionTable: itemSettings.optionTable,
       optionColumn: itemSettings.optionColumn,
-      optionOrder: itemSettings.optionOrder,
-    });
+      optionOrder: itemSettings.optionOrder
+    })
   }
 }
 
@@ -615,34 +592,34 @@ function getAsyncOption(itemSettings, callback?: any) {
     itemSettings.optionColumn &&
     itemSettings.optionOrder
   ) {
-    const id = selectedComponentItem.value.id;
+    const id = selectedComponentItem.value.id
 
     getTableColumnDataPreview(
       itemSettings.optionDatasource,
       itemSettings.optionTable,
       itemSettings.optionColumn,
       itemSettings.optionOrder,
-      itemSettings.permissionsTree,
+      itemSettings.permissionsTree
     )
-      .then((data) => {
-        asyncOptions.value[id] = data.data;
+      .then(data => {
+        asyncOptions.value[id] = data.data
       })
       .finally(() => {
         if (callback) {
-          callback();
+          callback()
         }
-      });
+      })
   }
 }
 
-const tableList = ref([]);
-const columnList = ref([]);
-const optionFormData = ref<FormItemSetting>({});
-const showEditBindColumn = ref(false);
+const tableList = ref([])
+const columnList = ref([])
+const optionFormData = ref<FormItemSetting>({})
+const showEditBindColumn = ref(false)
 
-const allDatasourceList = ref<Array<SimpleDatasource>>([]);
+const allDatasourceList = ref<Array<SimpleDatasource>>([])
 
-const plugins = ref([]);
+const plugins = ref([])
 
 /*const enabledDsTypes = computed(() => {
   const base = ['mysql', 'mariadb']
@@ -654,278 +631,247 @@ const plugins = ref([]);
 
 const datasourceList = computed(() => {
   const dsMap = groupBy(
-    filter(allDatasourceList.value, (d) => d.id !== "-1"),
-    (d) => d.type,
-  );
-  const _types: Array<any> = [];
+    filter(allDatasourceList.value, d => d.id !== '-1'),
+    d => d.type
+  )
+  const _types: Array<any> = []
   if (dsMap) {
-    forEach(keys(dsMap), (type) => {
+    forEach(keys(dsMap), type => {
       //if (enabledDsTypes.value.includes(type)) {
       _types.push({
         name: dsMap[type][0]?.typeAlias,
         type: type,
-        options: dsMap[type],
-      });
+        options: dsMap[type]
+      })
       //}
-    });
+    })
   }
-  return _types;
-});
+  return _types
+})
 
 function openEditBindColumn(settings, enableExtraColumns) {
-  tableList.value = [];
-  columnList.value = [];
+  tableList.value = []
+  columnList.value = []
   optionFormData.value = cloneDeep({
     optionSourceType: 2,
     optionDatasource: settings.optionDatasource,
     optionTable: settings.optionTable,
     optionColumn: settings.optionColumn,
-    optionOrder: settings.optionOrder ?? "asc",
+    optionOrder: settings.optionOrder ?? 'asc',
     extraColumns: settings.extraColumns ?? [],
     enableExtraColumns: enableExtraColumns,
-    permissionsTree: settings.permissionsTree ?? {},
-  });
+    permissionsTree: settings.permissionsTree ?? {}
+  })
   const p1 = settings.optionDatasource
     ? listDatasourceTables({ datasourceId: settings.optionDatasource })
-    : undefined;
+    : undefined
   const p2 =
     settings.optionDatasource && settings.optionTable
       ? getTableField({
           datasourceId: settings.optionDatasource,
-          tableName: settings.optionTable,
+          tableName: settings.optionTable
         })
-      : undefined;
-  const promiseList = [];
+      : undefined
+  const promiseList = []
   if (p1) {
-    promiseList.push(p1);
+    promiseList.push(p1)
     if (p2) {
-      promiseList.push(p2);
+      promiseList.push(p2)
     }
   }
   if (promiseList.length > 1) {
-    loading.value = true;
+    loading.value = true
     Promise.all(promiseList)
-      .then((val) => {
-        tableList.value = map(val[0].data, (t) => {
-          return { value: t.tableName, label: t.tableName };
-        });
-        if (
-          find(
-            tableList.value,
-            (t) => t.value === optionFormData.value.optionTable,
-          )
-        ) {
+      .then(val => {
+        tableList.value = map(val[0].data, t => {
+          return { value: t.tableName, label: t.tableName }
+        })
+        if (find(tableList.value, t => t.value === optionFormData.value.optionTable)) {
           if (promiseList.length > 1) {
-            columnList.value = map(val[1].data, (c) => {
+            columnList.value = map(val[1].data, c => {
               return {
                 fieldName: c.originName,
                 displayName: c.name,
                 deType: c.deType,
-                fieldType: c.fieldType,
-              };
-            });
-            if (
-              !find(
-                columnList.value,
-                (t) => t.fieldName === optionFormData.value.optionColumn,
-              )
-            ) {
-              optionFormData.value.optionColumn = undefined;
+                fieldType: c.fieldType
+              }
+            })
+            if (!find(columnList.value, t => t.fieldName === optionFormData.value.optionColumn)) {
+              optionFormData.value.optionColumn = undefined
             }
           }
         } else {
-          optionFormData.value.optionTable = undefined;
-          optionFormData.value.optionColumn = undefined;
+          optionFormData.value.optionTable = undefined
+          optionFormData.value.optionColumn = undefined
         }
       })
       .finally(() => {
-        loading.value = false;
-      });
+        loading.value = false
+      })
   }
 
-  optionForm.value?.resetFields();
+  optionForm.value?.resetFields()
 
-  showEditBindColumn.value = true;
+  showEditBindColumn.value = true
   nextTick(() => {
-    rowAuth.value?.init(
-      selectedComponentItem.value?.settings?.permissionsTree ?? {},
-    );
-  });
+    rowAuth.value?.init(selectedComponentItem.value?.settings?.permissionsTree ?? {})
+  })
 }
 
 function onDataSourceChange(datasource) {
-  tableList.value = [];
-  columnList.value = [];
+  tableList.value = []
+  columnList.value = []
   if (datasource) {
-    loading.value = true;
+    loading.value = true
     listDatasourceTables({ datasourceId: datasource })
-      .then((res) => {
-        tableList.value = map(res.data, (t) => {
-          return { value: t.tableName, label: t.tableName };
-        });
+      .then(res => {
+        tableList.value = map(res.data, t => {
+          return { value: t.tableName, label: t.tableName }
+        })
 
         if (optionFormData.value.optionTable) {
-          if (
-            find(
-              tableList.value,
-              (t) => t.value === optionFormData.value.optionTable,
-            )
-          ) {
-            onTableChange(datasource, optionFormData.value.optionTable);
+          if (find(tableList.value, t => t.value === optionFormData.value.optionTable)) {
+            onTableChange(datasource, optionFormData.value.optionTable)
           } else {
-            optionFormData.value.optionTable = undefined;
-            optionFormData.value.optionColumn = undefined;
-            optionFormData.value.permissionsTree = {};
+            optionFormData.value.optionTable = undefined
+            optionFormData.value.optionColumn = undefined
+            optionFormData.value.permissionsTree = {}
             nextTick(() => {
-              rowAuth.value?.init(optionFormData.value.permissionsTree ?? {});
-            });
+              rowAuth.value?.init(optionFormData.value.permissionsTree ?? {})
+            })
           }
         } else {
           nextTick(() => {
-            rowAuth.value?.init(optionFormData.value.permissionsTree ?? {});
-          });
+            rowAuth.value?.init(optionFormData.value.permissionsTree ?? {})
+          })
         }
       })
       .finally(() => {
-        loading.value = false;
-      });
+        loading.value = false
+      })
   }
 }
 
 function onTableChange(datasource, table) {
-  columnList.value = [];
+  columnList.value = []
   if (datasource && table) {
-    loading.value = true;
+    loading.value = true
     getTableField({ datasourceId: datasource, tableName: table })
-      .then((res) => {
-        columnList.value = map(res.data, (c) => {
+      .then(res => {
+        columnList.value = map(res.data, c => {
           return {
             fieldName: c.originName,
             displayName: c.name,
             deType: c.deType,
-            fieldType: c.fieldType,
-          };
-        });
+            fieldType: c.fieldType
+          }
+        })
 
         if (optionFormData.value.optionColumn) {
-          if (
-            !find(
-              columnList.value,
-              (t) => t.fieldName === optionFormData.value.optionColumn,
-            )
-          ) {
-            optionFormData.value.optionColumn = undefined;
-            optionFormData.value.permissionsTree = {};
+          if (!find(columnList.value, t => t.fieldName === optionFormData.value.optionColumn)) {
+            optionFormData.value.optionColumn = undefined
+            optionFormData.value.permissionsTree = {}
           }
         }
         nextTick(() => {
-          rowAuth.value?.init(optionFormData.value.permissionsTree ?? {});
-        });
+          rowAuth.value?.init(optionFormData.value.permissionsTree ?? {})
+        })
       })
       .finally(() => {
-        loading.value = false;
-      });
+        loading.value = false
+      })
   }
 }
 
 function closeEditBindColumn() {
-  showEditBindColumn.value = false;
+  showEditBindColumn.value = false
 }
 
-const optionForm = ref();
+const optionForm = ref()
 
-const selectDetailColumnsRef = ref();
+const selectDetailColumnsRef = ref()
 
 function openSelectDetailColumns() {
-  selectDetailColumnsRef.value?.init(
-    columnList.value,
-    optionFormData.value.extraColumns,
-  );
+  selectDetailColumnsRef.value?.init(columnList.value, optionFormData.value.extraColumns)
 }
 
 function onSelectDetailColumnsClose(item: Array<OptionItem>) {
-  optionFormData.value.extraColumns = JSON.parse(JSON.stringify(item));
+  optionFormData.value.extraColumns = JSON.parse(JSON.stringify(item))
 }
 
-const showMoreDetails = ref(false);
-const moreDetails = ref([]);
+const showMoreDetails = ref(false)
+const moreDetails = ref([])
 
 const extraColumns = computed(() => {
-  const list: Array<OptionItem> = [];
+  const list: Array<OptionItem> = []
   optionFormData.value.extraColumns?.forEach((i: OptionItem) => {
-    if (find(columnList.value, (o) => o.fieldName === i.fieldName)) {
-      list.push(i);
+    if (find(columnList.value, o => o.fieldName === i.fieldName)) {
+      list.push(i)
     }
-  });
-  return list;
-});
+  })
+  return list
+})
 
 function deleteAllExtraColumns() {
-  optionFormData.value.extraColumns = [];
+  optionFormData.value.extraColumns = []
 }
 
 const extraColumnsStr = computed(() => {
-  const _list: Array<string> = [];
-  extraColumns.value.forEach((e) => {
+  const _list: Array<string> = []
+  extraColumns.value.forEach(e => {
     if (e.displayName && e.displayName.trim().length > 0) {
-      _list.push(e.displayName);
+      _list.push(e.displayName)
     } else {
-      _list.push(e.fieldName);
+      _list.push(e.fieldName)
     }
-  });
-  return join(_list, ", ");
-});
+  })
+  return join(_list, ', ')
+})
 
 function doEditBindColumn() {
   optionForm.value?.validate((valid, invalidFields) => {
     if (valid) {
-      loading.value = true;
+      loading.value = true
       getAsyncOption(optionFormData.value, () => {
         selectedComponentItem.value.settings.optionSourceType =
-          optionFormData.value.optionSourceType;
+          optionFormData.value.optionSourceType
         selectedComponentItem.value.settings.optionDatasource =
-          optionFormData.value.optionDatasource;
-        selectedComponentItem.value.settings.optionTable =
-          optionFormData.value.optionTable;
-        selectedComponentItem.value.settings.optionColumn =
-          optionFormData.value.optionColumn;
-        selectedComponentItem.value.settings.optionOrder =
-          optionFormData.value.optionOrder;
-        selectedComponentItem.value.settings.extraColumns =
-          optionFormData.value.extraColumns;
-        selectedComponentItem.value.settings.permissionsTree =
-          optionFormData.value.permissionsTree;
-        loading.value = false;
+          optionFormData.value.optionDatasource
+        selectedComponentItem.value.settings.optionTable = optionFormData.value.optionTable
+        selectedComponentItem.value.settings.optionColumn = optionFormData.value.optionColumn
+        selectedComponentItem.value.settings.optionOrder = optionFormData.value.optionOrder
+        selectedComponentItem.value.settings.extraColumns = optionFormData.value.extraColumns
+        selectedComponentItem.value.settings.permissionsTree = optionFormData.value.permissionsTree
+        loading.value = false
 
-        getExtraDetails(selectedComponentItem.value);
+        getExtraDetails(selectedComponentItem.value)
 
-        closeEditBindColumn();
-      });
+        closeEditBindColumn()
+      })
     }
-  });
+  })
 }
 
 function trimName(obj) {
-  obj.name = obj.name?.trim();
+  obj.name = obj.name?.trim()
 }
 
 const handleDfName = () => {
-  formSettings.value.name = formSettings.value.name?.trim();
-  mTitleForm.value?.validate((valid) => {
-    showInput.value = !valid;
-  });
-};
+  formSettings.value.name = formSettings.value.name?.trim()
+  mTitleForm.value?.validate(valid => {
+    showInput.value = !valid
+  })
+}
 
-const showAllDetails = (list) => {
-  showMoreDetails.value = true;
-  moreDetails.value = list;
-};
+const showAllDetails = list => {
+  showMoreDetails.value = true
+  moreDetails.value = list
+}
 
 const getExtraDetails = (element: DfFormItem) => {
-  element.extraDetails = [];
+  element.extraDetails = []
   if (
-    (element.type === "radio" ||
-      (element.type === "select" && !element.settings.multiple)) &&
+    (element.type === 'radio' || (element.type === 'select' && !element.settings.multiple)) &&
     element.value !== undefined &&
     element.settings?.optionSourceType === 2 &&
     element.settings?.extraColumns &&
@@ -942,111 +888,110 @@ const getExtraDetails = (element: DfFormItem) => {
       value: element.value,
       columnId: element.id,
       formId: formSettings.value.id,
-      permissionsTree: element.settings.permissionsTree,
-    }).then((res) => {
-      element.extraDetails = res.data;
-    });
+      permissionsTree: element.settings.permissionsTree
+    }).then(res => {
+      element.extraDetails = res.data
+    })
   }
-};
+}
 
 const backToMain = () => {
   if (isUpdate) {
-    ElMessageBox.confirm(t("data_fill.task.confirm_exit_without_save"), {
-      confirmButtonText: t("dataset.confirm"),
-      cancelButtonText: t("common.cancel"),
+    ElMessageBox.confirm(t('data_fill.task.confirm_exit_without_save'), {
+      confirmButtonText: t('dataset.confirm'),
+      cancelButtonText: t('common.cancel'),
       showCancelButton: true,
-      confirmButtonType: "primary",
-      type: "warning",
+      confirmButtonType: 'primary',
+      type: 'warning',
       autofocus: false,
-      showClose: false,
+      showClose: false
     }).then(() => {
-      gotoDf();
-    });
+      gotoDf()
+    })
   } else {
-    gotoDf();
+    gotoDf()
   }
-};
+}
 
-const enableBack = ref(false);
+const enableBack = ref(false)
 
 const dfSaveAndBack = () => {
-  enableBack.value = true;
-  dfSave();
-};
+  enableBack.value = true
+  dfSave()
+}
 
 const saveAndBack = (_willBack: boolean) => {
-  if (!_willBack) return;
-  gotoDf();
-};
+  if (!_willBack) return
+  gotoDf()
+}
 
-const showDrawer = ref(false);
+const showDrawer = ref(false)
 
 const dfSave = () => {
-  if (
-    formSettings.value.name === undefined ||
-    formSettings.value.name.trim() === ""
-  ) {
+  if (formSettings.value.name === undefined || formSettings.value.name.trim() === '') {
     ElMessage({
-      message: t("data_fill.form.form_name_cannot_none"),
-      type: "error",
-      showClose: true,
-    });
-    lostFocus();
-    showInput.value = true;
-    handleDfName();
-    return;
+      message: t('data_fill.form.form_name_cannot_none'),
+      type: 'error',
+      showClose: true
+    })
+    lostFocus()
+    showInput.value = true
+    handleDfName()
+    return
   }
   if (formSettings.value.forms.length === 0) {
     ElMessage({
-      message: t("data_fill.form.form_components_cannot_null"),
-      type: "warning",
-      showClose: true,
-    });
-    return;
+      message: t('data_fill.form.form_components_cannot_null'),
+      type: 'warning',
+      showClose: true
+    })
+    return
   }
   for (let i = 0; i < formSettings.value.forms.length; i++) {
-    const f = formSettings.value.forms[i];
-    if (f.settings.name === undefined || f.settings.name.trim() === "") {
-      selectItem(f.id, true);
-      return;
+    const f = formSettings.value.forms[i]
+    if (f.settings.name === undefined || f.settings.name.trim() === '') {
+      selectItem(f.id, true)
+      return
     }
-    if (f.type === "dateRange") {
+    if (f.type === 'dateRange') {
+      if (f.settings.rangeSeparator === undefined || f.settings.rangeSeparator.trim() === '') {
+        selectItem(f.id, true)
+        return
+      }
+    }
+    if (f.type === 'date') {
       if (
-        f.settings.rangeSeparator === undefined ||
-        f.settings.rangeSeparator.trim() === ""
+        (f.settings.enableDefaultTime &&
+          !f.settings.enableCurrentTime &&
+          f.settings.defaultTime === undefined) ||
+        f.settings.defaultTime === null
       ) {
-        selectItem(f.id, true);
-        return;
+        selectItem(f.id, true)
+        return
       }
     }
-    if (f.type === "date") {
-      if (f.settings.enableDefaultTime && !f.settings.enableCurrentTime && f.settings.defaultTime === undefined || f.settings.defaultTime === null) {
-        selectItem(f.id, true);
-        return;
-      }
-    }
-    if (f.type === "select" || f.type === "radio" || f.type === "checkbox") {
+    if (f.type === 'select' || f.type === 'radio' || f.type === 'checkbox') {
       if (f.settings.optionSourceType === 1) {
         if (f.settings.options.length === 0) {
-          selectItem(f.id);
+          selectItem(f.id)
           ElMessage({
-            message: t("data_fill.form.option_list_cannot_empty"),
-            type: "error",
-            showClose: true,
-          });
-          return;
+            message: t('data_fill.form.option_list_cannot_empty'),
+            type: 'error',
+            showClose: true
+          })
+          return
         } else {
           for (let j = 0; j < f.settings.options.length; j++) {
-            const o = f.settings.options[j];
-            const value = o.value;
-            if (value === undefined || value === "") {
-              selectItem(f.id, true);
-              return;
+            const o = f.settings.options[j]
+            const value = o.value
+            if (value === undefined || value === '') {
+              selectItem(f.id, true)
+              return
             }
-            const _list = filter(f.settings.options, (f) => f.value === value);
+            const _list = filter(f.settings.options, f => f.value === value)
             if (_list.length > 1) {
-              selectItem(f.id, true);
-              return;
+              selectItem(f.id, true)
+              return
             }
           }
         }
@@ -1056,148 +1001,148 @@ const dfSave = () => {
           f.settings.optionTable == undefined ||
           f.settings.optionColumn == undefined
         ) {
-          selectItem(f.id);
+          selectItem(f.id)
           ElMessage({
-            message: t("data_fill.form.option_list_datasource_cannot_empty"),
-            type: "error",
-            showClose: true,
-          });
-          return;
+            message: t('data_fill.form.option_list_datasource_cannot_empty'),
+            type: 'error',
+            showClose: true
+          })
+          return
         }
       }
     }
   }
 
-  showDrawer.value = true;
-};
+  showDrawer.value = true
+}
 
 function closeDrawer() {
-  showDrawer.value = false;
-  enableBack.value = false;
-  handleDfName();
+  showDrawer.value = false
+  enableBack.value = false
+  handleDfName()
 }
 
 const gotoDf = () => {
   if (isEmbedded.value) {
-    embeddedStore.clearState();
-    embeddedStore.setDfId(nodeInfo.id);
-    useEmitt().emitter.emit("changeCurrentComponent", "DataFilling");
-    return;
+    embeddedStore.clearState()
+    embeddedStore.setDfId(nodeInfo.id)
+    useEmitt().emitter.emit('changeCurrentComponent', 'DataFilling')
+    return
   }
-  const path = "/data/data-filling-manage";
+  const path = '/data/data-filling-manage'
   router.push({
     path: path,
     query: nodeInfo.id
       ? {
-          id: nodeInfo.id,
+          id: nodeInfo.id
         }
-      : {},
-  });
-};
+      : {}
+  })
+}
 
-const finish = (res) => {
-  const { id, pid, name, willBack } = res;
-  console.log(willBack);
+const finish = res => {
+  const { id, pid, name, willBack } = res
+  console.log(willBack)
   nodeInfo = {
     id,
     pid,
-    name,
-  };
-  copy.value = false;
+    name
+  }
+  copy.value = false
 
-  hasDataInit(res);
-  closeDrawer();
-  saveAndBack(willBack);
-};
+  hasDataInit(res)
+  closeDrawer()
+  saveAndBack(willBack)
+}
 
 function hasDataInit(res) {
-  startToRecordUpdate.value = false;
-  isUpdate = false;
+  startToRecordUpdate.value = false
+  isUpdate = false
 
-  isEdit.value = true;
-  loading.value = true;
-  mainLoading.value = true;
+  isEdit.value = true
+  loading.value = true
+  mainLoading.value = true
 
-  const tempData = cloneDeep(res);
+  const tempData = cloneDeep(res)
 
   if (copy.value) {
-    isEdit.value = false;
-    tempData.id = undefined;
-    tempData.name = tempData.name + "-copy";
-    tempData.tableName = undefined;
-    tempData.createIndex = false;
-    tempData.useExistsTable = false;
-    tempData.tableIndexes = "[]";
+    isEdit.value = false
+    tempData.id = undefined
+    tempData.name = tempData.name + '-copy'
+    tempData.tableName = undefined
+    tempData.createIndex = false
+    tempData.useExistsTable = false
+    tempData.tableIndexes = '[]'
   }
 
-  formSettings.value = tempData;
+  formSettings.value = tempData
   initData(res, () => {
     if (res.createIndex && !copy.value) {
-      forEach(formSettings.value.tableIndexes, (f) => {
-        f.old = true;
-      });
-      formSettings.value.oldTableIndexes = JSON.parse(res.tableIndexes);
+      forEach(formSettings.value.tableIndexes, f => {
+        f.old = true
+      })
+      formSettings.value.oldTableIndexes = JSON.parse(res.tableIndexes)
     } else {
-      formSettings.value.oldTableIndexes = [];
+      formSettings.value.oldTableIndexes = []
     }
 
     if (copy.value) {
-      forEach(formSettings.value.tableIndexes, (f) => {
-        f.old = false;
-      });
-      forEach(formSettings.value.forms, (f) => {
+      forEach(formSettings.value.tableIndexes, f => {
+        f.old = false
+      })
+      forEach(formSettings.value.forms, f => {
         f.settings.mapping.useExistsTable = false
-      });
+      })
     }
 
-    disableCreateIndex.value = copy.value ? false : res.createIndex;
-    loading.value = false;
+    disableCreateIndex.value = copy.value ? false : res.createIndex
+    loading.value = false
 
     nextTick(() => {
-      startToRecordUpdate.value = true;
-      mainLoading.value = false;
-    });
-  });
+      startToRecordUpdate.value = true
+      mainLoading.value = false
+    })
+  })
 }
 
 function initData(data, callback) {
-  const tempForms = filter(JSON.parse(data.forms), (f) => !f.removed);
-  forEach(tempForms, (f) => {
+  const tempForms = filter(JSON.parse(data.forms), f => !f.removed)
+  forEach(tempForms, f => {
     if (!copy.value) {
-      f.old = true;
+      f.old = true
     } else {
-      f.old = false;
+      f.old = false
     }
-    if (f.type === "checkbox" || (f.type === "select" && f.settings.multiple)) {
-      f.value = [];
+    if (f.type === 'checkbox' || (f.type === 'select' && f.settings.multiple)) {
+      f.value = []
     }
-  });
+  })
 
   initFormOptionsData(tempForms, () => {
-    formSettings.value.forms = tempForms;
-    formSettings.value.oldForms = JSON.parse(data.forms);
-    formSettings.value.tableIndexes = JSON.parse(data.tableIndexes);
+    formSettings.value.forms = tempForms
+    formSettings.value.oldForms = JSON.parse(data.forms)
+    formSettings.value.tableIndexes = JSON.parse(data.tableIndexes)
 
-    forEach(formSettings.value.forms, (f) => {
-      getExtraDetails(f);
-      f.settings.enableDefaultTime = !!f.settings.enableDefaultTime;
-      f.settings.enableCurrentTime = !!f.settings.enableCurrentTime;
+    forEach(formSettings.value.forms, f => {
+      getExtraDetails(f)
+      f.settings.enableDefaultTime = !!f.settings.enableDefaultTime
+      f.settings.enableCurrentTime = !!f.settings.enableCurrentTime
       if (f.settings.mapping) {
-        f.settings.mapping.useExistsTable = !!f.settings.mapping.useExistsTable;
+        f.settings.mapping.useExistsTable = !!f.settings.mapping.useExistsTable
       }
-    });
+    })
 
     if (callback) {
-      callback();
+      callback()
     }
-  });
+  })
 }
 
 function initFormOptionsData(forms, callback) {
-  const queries = [];
-  const queryIds = [];
-  forEach(forms, (f) => {
-    if (f.type === "checkbox" || f.type === "select" || f.type === "radio") {
+  const queries = []
+  const queryIds = []
+  forEach(forms, f => {
+    if (f.type === 'checkbox' || f.type === 'select' || f.type === 'radio') {
       if (
         f.settings &&
         f.settings.optionSourceType === 2 &&
@@ -1206,75 +1151,75 @@ function initFormOptionsData(forms, callback) {
         f.settings.optionColumn &&
         f.settings.optionOrder
       ) {
-        const id = f.id;
+        const id = f.id
 
         const p = getTableColumnDataPreview(
           f.settings.optionDatasource,
           f.settings.optionTable,
           f.settings.optionColumn,
           f.settings.optionOrder,
-          f.settings.permissionsTree,
-        );
-        queries.push(p);
-        queryIds.push(id);
+          f.settings.permissionsTree
+        )
+        queries.push(p)
+        queryIds.push(id)
       }
     }
-  });
+  })
 
   if (queries.length > 0) {
     Promise.all(queries)
-      .then((val) => {
+      .then(val => {
         for (let i = 0; i < queryIds.length; i++) {
-          const id = queryIds[i];
-          asyncOptions.value[id] = val[i].data;
+          const id = queryIds[i]
+          asyncOptions.value[id] = val[i].data
         }
       })
       .finally(() => {
         if (callback) {
-          callback();
+          callback()
         }
-      });
+      })
   } else {
     if (callback) {
-      callback();
+      callback()
     }
   }
 }
 
-let startToRecordUpdate = ref(false);
-let isUpdate = false;
+let startToRecordUpdate = ref(false)
+let isUpdate = false
 const changeUpdate = () => {
-  isUpdate = true;
-};
+  isUpdate = true
+}
 
 watch(
   () => formSettings.value,
   () => {
     if (startToRecordUpdate.value) {
-      changeUpdate();
+      changeUpdate()
     }
   },
-  { deep: true },
-);
+  { deep: true }
+)
 
-const mainLoading = ref(false);
+const mainLoading = ref(false)
 
-const copy = ref(false);
+const copy = ref(false)
 
-const dsLoading = ref(false);
+const dsLoading = ref(false)
 
 function getDatasourceList(finalFunc) {
-  dsLoading.value = true;
+  dsLoading.value = true
   listAllDatasourceList()
-    .then((res) => {
-      allDatasourceList.value = res;
+    .then(res => {
+      allDatasourceList.value = res
     })
     .finally(() => {
-      dsLoading.value = false;
-      if (finalFunc && typeof finalFunc === "function") {
-        finalFunc();
+      dsLoading.value = false
+      if (finalFunc && typeof finalFunc === 'function') {
+        finalFunc()
       }
-    });
+    })
 }
 
 onMounted(() => {
@@ -1285,45 +1230,43 @@ onMounted(() => {
   ) {
     if (
       router.currentRoute.value.query?.copyId ||
-      (embeddedStore.getDfId && embeddedStore.opt === "copy")
+      (embeddedStore.getDfId && embeddedStore.opt === 'copy')
     ) {
-      copy.value = true;
+      copy.value = true
     }
 
     const id =
       embeddedStore.getDfId ||
-      (copy.value
-        ? router.currentRoute.value.query?.copyId
-        : router.currentRoute.value.query.id);
+      (copy.value ? router.currentRoute.value.query?.copyId : router.currentRoute.value.query.id)
 
-    mainLoading.value = true;
+    mainLoading.value = true
 
-    getDataFilling(id).then((res) => {
+    getDataFilling(id).then(res => {
       nodeInfo = {
         id,
         pid: res.pid,
-        name: res.name,
-      };
+        name: res.name
+      }
       if (copy.value) {
-        nodeInfo.id = undefined;
-        nodeInfo.name = res.name + "-copy";
+        nodeInfo.id = undefined
+        nodeInfo.name = res.name + '-copy'
       }
 
-      hasDataInit(res);
-    });
+      hasDataInit(res)
+    })
   } else {
-    startToRecordUpdate.value = true;
+    startToRecordUpdate.value = true
 
-    const pid = embeddedStore.getPid || router.currentRoute.value.query?.pid;
+    const pid = embeddedStore.getPid || router.currentRoute.value.query?.pid
 
     if (pid) {
-      nodeInfo.pid = pid;
+      nodeInfo.pid = pid
 
-      formSettings.value.pid = pid;
+      formSettings.value.pid = pid
     }
   }
 
-  getDatasourceList(() => {});
+  getDatasourceList(() => {})
 
   /*listDfPlugins().then(res => {
     if (res && res.data) {
@@ -1334,63 +1277,63 @@ onMounted(() => {
   })*/
 
   useEmitt({
-    name: "onDfSave",
-    callback: saveAndBack,
-  });
-});
+    name: 'onDfSave',
+    callback: saveAndBack
+  })
+})
 
 function getOptionList(element, needLabel?) {
-  const tempId = element.id ?? "unset";
+  const tempId = element.id ?? 'unset'
   const list =
     element.settings.optionSourceType === 1
       ? element.settings.options
       : asyncOptions.value[tempId]
-        ? asyncOptions.value[tempId]
-        : [];
+      ? asyncOptions.value[tempId]
+      : []
   return needLabel
-    ? map(list, (i) => {
+    ? map(list, i => {
         return {
           label: i.name,
-          value: i.value,
-        };
+          value: i.value
+        }
       })
-    : list;
+    : list
 }
 
-const rowAuth = ref();
+const rowAuth = ref()
 
 const save = ({ logic, items, errorMessage }) => {
   if (errorMessage) {
     ElMessage({
       message: errorMessage,
-      type: "error",
-      showClose: true,
-    });
-    return;
+      type: 'error',
+      showClose: true
+    })
+    return
   }
-  optionFormData.value.permissionsTree = { logic, items };
-  doEditBindColumn();
-};
+  optionFormData.value.permissionsTree = { logic, items }
+  doEditBindColumn()
+}
 
 const confirmEditBindColumn = () => {
-  if (currentDsType.value === "es") {
-    doEditBindColumn();
-    return;
+  if (currentDsType.value === 'es') {
+    doEditBindColumn()
+    return
   }
-  if (!rowAuth.value){
-    doEditBindColumn();
-    return;
+  if (!rowAuth.value) {
+    doEditBindColumn()
+    return
   } else {
-    rowAuth.value.submit();
+    rowAuth.value.submit()
   }
-};
-const scrollbar = ref();
+}
+const scrollbar = ref()
 const scrollbarClick = () => {
   nextTick(() => {
-    scrollbar.value?.update();
-  });
-};
-provide("scrollbarClick", scrollbarClick);
+    scrollbar.value?.update()
+  })
+}
+provide('scrollbarClick', scrollbarClick)
 </script>
 
 <template>
@@ -1432,20 +1375,18 @@ provide("scrollbarClick", scrollbarClick);
       </span>
       <span class="operate">
         <el-button :disabled="showInput" type="primary" @click="dfSaveAndBack">
-          {{ t("data_set.save_and_return") }}
+          {{ t('data_set.save_and_return') }}
         </el-button>
         <el-button :disabled="showInput" type="primary" @click="dfSave">
-          {{ t("commons.save") }}
+          {{ t('commons.save') }}
         </el-button>
       </span>
     </div>
 
     <div class="container">
       <div class="tools-window-left">
-        <el-header class="sub-title-header"
-          >{{ t("data_fill.form.component") }}
-        </el-header>
-        <div style="width: 100%; display: flex">
+        <el-header class="sub-title-header">{{ t('data_fill.form.component') }} </el-header>
+        <div style="display: flex; width: 100%">
           <div style="flex: 1; padding: 8px 4px 8px 8px">
             <draggable
               :list="componentList1"
@@ -1458,11 +1399,8 @@ provide("scrollbarClick", scrollbarClick);
               :move="onMoveInComponentList"
             >
               <template #item="{ element }">
-                <div
-                  class="m-item base-component-item"
-                  @click="addComponentItem(element)"
-                >
-                  <el-icon style="font-size: 16px; margin-right: 8px">
+                <div class="m-item base-component-item" @click="addComponentItem(element)">
+                  <el-icon style="margin-right: 8px; font-size: 16px">
                     <Icon>
                       <component :is="iconMap[element.icon]"></component>
                     </Icon>
@@ -1484,11 +1422,8 @@ provide("scrollbarClick", scrollbarClick);
               :move="onMoveInComponentList"
             >
               <template #item="{ element }">
-                <div
-                  class="m-item base-component-item"
-                  @click="addComponentItem(element)"
-                >
-                  <el-icon style="font-size: 16px; margin-right: 8px">
+                <div class="m-item base-component-item" @click="addComponentItem(element)">
+                  <el-icon style="margin-right: 8px; font-size: 16px">
                     <Icon>
                       <component :is="iconMap[element.icon]"></component>
                     </Icon>
@@ -1509,12 +1444,12 @@ provide("scrollbarClick", scrollbarClick);
             background: white;
             display: flex;
             flex-direction: column;
-            overflow-x: hidden;
             position: relative;
+            overflow-x: hidden;
           "
           @click="lostFocus"
         >
-          <div style="min-height: 60px; width: 100%"></div>
+          <div style="width: 100%; min-height: 60px"></div>
           <el-form
             ref="mForm"
             label-position="top"
@@ -1522,11 +1457,8 @@ provide("scrollbarClick", scrollbarClick);
             class="form-drag-form"
             @submit.native.prevent
           >
-            <div
-              v-if="formSettings.forms.length === 0"
-              class="drag-placeholder"
-            >
-              {{ t("common.component.add_component_hint") }}
+            <div v-if="formSettings.forms.length === 0" class="drag-placeholder">
+              {{ t('common.component.add_component_hint') }}
             </div>
 
             <draggable
@@ -1549,38 +1481,18 @@ provide("scrollbarClick", scrollbarClick);
                   <div class="m-label-container">
                     <span style="width: unset">
                       {{ element.settings.name }}
-                      <span
-                        v-if="element.settings.required"
-                        class="df-input-require"
-                        >*</span
-                      >
+                      <span v-if="element.settings.required" class="df-input-require">*</span>
                     </span>
                     <span class="btn-container">
-                      <el-tooltip
-                        effect="dark"
-                        :content="t('common.copy')"
-                        placement="top"
-                      >
-                        <div
-                          class="btn-item"
-                          @click.prevent.stop="copyItem(element, index)"
-                        >
+                      <el-tooltip effect="dark" :content="t('common.copy')" placement="top">
+                        <div class="btn-item" @click.prevent.stop="copyItem(element, index)">
                           <el-icon style="font-size: 16px">
-                            <Icon name="icon_copy_outlined"
-                              ><icon_copy_outlined
-                            /></Icon>
+                            <Icon name="icon_copy_outlined"><icon_copy_outlined /></Icon>
                           </el-icon>
                         </div>
                       </el-tooltip>
-                      <el-tooltip
-                        effect="dark"
-                        :content="t('common.delete')"
-                        placement="top"
-                      >
-                        <div
-                          class="btn-item"
-                          @click.prevent.stop="removeItem(element, index)"
-                        >
+                      <el-tooltip effect="dark" :content="t('common.delete')" placement="top">
+                        <div class="btn-item" @click.prevent.stop="removeItem(element, index)">
                           <el-icon style="font-size: 16px">
                             <Icon name="icon_delete-trash_outlined"
                               ><icon_deleteTrash_outlined
@@ -1592,10 +1504,7 @@ provide("scrollbarClick", scrollbarClick);
                   </div>
                   <el-form-item prop="value" class="form-item no-margin-bottom">
                     <el-input
-                      v-if="
-                        element.type === 'input' &&
-                        element.settings.inputType !== 'number'
-                      "
+                      v-if="element.type === 'input' && element.settings.inputType !== 'number'"
                       :key="element.id + element.settings.inputType"
                       v-model="element.value"
                       :type="element.settings.inputType"
@@ -1603,10 +1512,7 @@ provide("scrollbarClick", scrollbarClick);
                       :placeholder="element.settings.placeholder"
                     />
                     <el-input-number
-                      v-if="
-                        element.type === 'input' &&
-                        element.settings.inputType === 'number'
-                      "
+                      v-if="element.type === 'input' && element.settings.inputType === 'number'"
                       :key="element.id + element.settings.inputType"
                       v-model="element.value"
                       :required="element.settings.required"
@@ -1629,9 +1535,7 @@ provide("scrollbarClick", scrollbarClick);
                       v-model="element.value"
                       :required="element.settings.required"
                       :placeholder="
-                        (element.settings.placeholder
-                          ? element.settings.placeholder
-                          : '') + ' '
+                        (element.settings.placeholder ? element.settings.placeholder : '') + ' '
                       "
                       style="width: 100%"
                       filterable
@@ -1692,17 +1596,11 @@ provide("scrollbarClick", scrollbarClick);
                     <template
                       v-if="
                         element.type === 'radio' ||
-                        (element.type === 'select' &&
-                          !element.settings.multiple)
+                        (element.type === 'select' && !element.settings.multiple)
                       "
                     >
                       <div
-                        style="
-                          width: 100%;
-                          display: flex;
-                          margin-top: 8px;
-                          padding: 8px;
-                        "
+                        style="width: 100%; display: flex; padding: 8px; margin-top: 8px"
                         v-if="element.extraDetails?.length > 0"
                       >
                         <div class="df-ex-detail">
@@ -1710,100 +1608,64 @@ provide("scrollbarClick", scrollbarClick);
                             <div
                               class="df-ex-col"
                               :title="
-                                element.extraDetails[0].name +
-                                ' : ' +
-                                element.extraDetails[0].value
+                                element.extraDetails[0].name + ' : ' + element.extraDetails[0].value
                               "
                               v-if="element.extraDetails[0]"
                             >
-                              <span class="label-no-warp">{{
-                                element.extraDetails[0].name
-                              }}</span>
-                              <span class="desc-column">{{
-                                element.extraDetails[0].value
-                              }}</span>
+                              <span class="label-no-warp">{{ element.extraDetails[0].name }}</span>
+                              <span class="desc-column">{{ element.extraDetails[0].value }}</span>
                             </div>
                             <div
                               class="df-ex-col"
                               :title="
-                                element.extraDetails[1].name +
-                                ' : ' +
-                                element.extraDetails[1].value
+                                element.extraDetails[1].name + ' : ' + element.extraDetails[1].value
                               "
                               v-if="element.extraDetails[1]"
                             >
-                              <span class="label-no-warp">{{
-                                element.extraDetails[1].name
-                              }}</span>
-                              <span class="desc-column">{{
-                                element.extraDetails[1].value
-                              }}</span>
+                              <span class="label-no-warp">{{ element.extraDetails[1].name }}</span>
+                              <span class="desc-column">{{ element.extraDetails[1].value }}</span>
                             </div>
                             <div
                               class="df-ex-col"
                               :title="
-                                element.extraDetails[2].name +
-                                ' : ' +
-                                element.extraDetails[2].value
+                                element.extraDetails[2].name + ' : ' + element.extraDetails[2].value
                               "
                               v-if="element.extraDetails[2]"
                             >
-                              <span class="label-no-warp">{{
-                                element.extraDetails[2].name
-                              }}</span>
-                              <span class="desc-column">{{
-                                element.extraDetails[2].value
-                              }}</span>
+                              <span class="label-no-warp">{{ element.extraDetails[2].name }}</span>
+                              <span class="desc-column">{{ element.extraDetails[2].value }}</span>
                             </div>
                           </div>
                           <div class="df-ex-row">
                             <div
                               class="df-ex-col"
                               :title="
-                                element.extraDetails[3].name +
-                                ' : ' +
-                                element.extraDetails[3].value
+                                element.extraDetails[3].name + ' : ' + element.extraDetails[3].value
                               "
                               v-if="element.extraDetails[3]"
                             >
-                              <span class="label-no-warp">{{
-                                element.extraDetails[3].name
-                              }}</span>
-                              <span class="desc-column">{{
-                                element.extraDetails[3].value
-                              }}</span>
+                              <span class="label-no-warp">{{ element.extraDetails[3].name }}</span>
+                              <span class="desc-column">{{ element.extraDetails[3].value }}</span>
                             </div>
                             <div
                               class="df-ex-col"
                               :title="
-                                element.extraDetails[4].name +
-                                ' : ' +
-                                element.extraDetails[4].value
+                                element.extraDetails[4].name + ' : ' + element.extraDetails[4].value
                               "
                               v-if="element.extraDetails[4]"
                             >
-                              <span class="label-no-warp">{{
-                                element.extraDetails[4].name
-                              }}</span>
-                              <span class="desc-column">{{
-                                element.extraDetails[4].value
-                              }}</span>
+                              <span class="label-no-warp">{{ element.extraDetails[4].name }}</span>
+                              <span class="desc-column">{{ element.extraDetails[4].value }}</span>
                             </div>
                             <div
                               class="df-ex-col"
                               :title="
-                                element.extraDetails[5].name +
-                                ' : ' +
-                                element.extraDetails[5].value
+                                element.extraDetails[5].name + ' : ' + element.extraDetails[5].value
                               "
                               v-if="element.extraDetails[5]"
                             >
-                              <span class="label-no-warp">{{
-                                element.extraDetails[5].name
-                              }}</span>
-                              <span class="desc-column">{{
-                                element.extraDetails[5].value
-                              }}</span>
+                              <span class="label-no-warp">{{ element.extraDetails[5].name }}</span>
+                              <span class="desc-column">{{ element.extraDetails[5].value }}</span>
                             </div>
                           </div>
                         </div>
@@ -1812,7 +1674,7 @@ provide("scrollbarClick", scrollbarClick);
                           type="primary"
                           @click="showAllDetails(element.extraDetails)"
                         >
-                          {{ t("data_fill.form.show_more_detail") }}
+                          {{ t('data_fill.form.show_more_detail') }}
                         </el-button>
                       </div>
                     </template>
@@ -1821,19 +1683,15 @@ provide("scrollbarClick", scrollbarClick);
               </template>
             </draggable>
           </el-form>
-          <div style="min-height: 60px; width: 100%"></div>
+          <div style="width: 100%; min-height: 60px"></div>
         </div>
       </el-main>
 
       <div
         class="tools-window-right"
-        v-if="
-          selectedItemId !== undefined && selectedComponentItem !== undefined
-        "
+        v-if="selectedItemId !== undefined && selectedComponentItem !== undefined"
       >
-        <el-header class="sub-title-header"
-          >{{ t("data_fill.form.component_setting") }}
-        </el-header>
+        <el-header class="sub-title-header">{{ t('data_fill.form.component_setting') }} </el-header>
         <el-main style="height: calc(100vh - 60px - 56px)">
           <el-form
             class="right-form"
@@ -1843,13 +1701,9 @@ provide("scrollbarClick", scrollbarClick);
             hide-required-asterisk
             @submit.native.prevent
           >
-            <el-form-item
-              prop="name"
-              class="form-item"
-              :rules="[requiredRule, maxLengthRule(50)]"
-            >
+            <el-form-item prop="name" class="form-item" :rules="[requiredRule, maxLengthRule(50)]">
               <template #label>
-                {{ t("data_fill.form.title") }}
+                {{ t('data_fill.form.title') }}
                 <span class="df-input-require">*</span>
               </template>
               <el-input
@@ -1869,7 +1723,7 @@ provide("scrollbarClick", scrollbarClick);
               :rules="[requiredRule]"
             >
               <template #label>
-                {{ t("data_fill.form.range_separator") }}
+                {{ t('data_fill.form.range_separator') }}
                 <span class="df-input-require">*</span>
               </template>
               <el-select
@@ -1940,9 +1794,7 @@ provide("scrollbarClick", scrollbarClick);
                 v-model="selectedComponentItem.settings.inputType"
                 style="width: 100%"
                 required
-                @change="
-                  selectedComponentItem.settings.mapping.type = undefined
-                "
+                @change="selectedComponentItem.settings.mapping.type = undefined"
               >
                 <el-option
                   v-for="x in selectedComponentItemInputTypes"
@@ -1955,8 +1807,7 @@ provide("scrollbarClick", scrollbarClick);
 
             <el-form-item
               v-if="
-                selectedComponentItem.type === 'date' ||
-                selectedComponentItem.type === 'dateRange'
+                selectedComponentItem.type === 'date' || selectedComponentItem.type === 'dateRange'
               "
               prop="dateType"
               class="form-item"
@@ -1969,9 +1820,7 @@ provide("scrollbarClick", scrollbarClick);
                 required
               >
                 <el-option
-                  v-for="x in selectedComponentItem.type === 'date'
-                    ? dateTypes
-                    : dateRangeTypes"
+                  v-for="x in selectedComponentItem.type === 'date' ? dateTypes : dateRangeTypes"
                   :key="x.value"
                   :label="x.name"
                   :value="x.value"
@@ -1982,12 +1831,12 @@ provide("scrollbarClick", scrollbarClick);
             <div class="right-check-div">
               <div class="m-label-container" style="margin-bottom: 0">
                 <span style="width: unset">
-                  {{ t("data_fill.form.check") }}
+                  {{ t('data_fill.form.check') }}
                 </span>
               </div>
               <el-form-item prop="required" class="form-item">
                 <el-checkbox v-model="selectedComponentItem.settings.required">
-                  {{ t("data_fill.form.set_required") }}
+                  {{ t('data_fill.form.set_required') }}
                 </el-checkbox>
               </el-form-item>
               <el-form-item
@@ -1996,7 +1845,7 @@ provide("scrollbarClick", scrollbarClick);
                 class="form-item"
               >
                 <el-checkbox v-model="selectedComponentItem.settings.unique">
-                  {{ t("data_fill.form.set_unique") }}
+                  {{ t('data_fill.form.set_unique') }}
                 </el-checkbox>
               </el-form-item>
               <el-form-item
@@ -2010,20 +1859,18 @@ provide("scrollbarClick", scrollbarClick);
                   @change="
                     changeSelectMultiple(
                       selectedComponentItem,
-                      selectedComponentItem.settings.multiple,
+                      selectedComponentItem.settings.multiple
                     )
                   "
                 >
-                  {{ t("data_fill.form.set_multiple") }}
+                  {{ t('data_fill.form.set_multiple') }}
                 </el-checkbox>
               </el-form-item>
 
               <template v-if="selectedComponentItem.type === 'date'">
                 <el-form-item prop="enableDefaultTime" class="form-item">
-                  <el-checkbox
-                    v-model="selectedComponentItem.settings.enableDefaultTime"
-                  >
-                    {{ t("data_fill.form.set_enableDefaultTime") }}
+                  <el-checkbox v-model="selectedComponentItem.settings.enableDefaultTime">
+                    {{ t('data_fill.form.set_enableDefaultTime') }}
                   </el-checkbox>
                 </el-form-item>
                 <div
@@ -2031,14 +1878,12 @@ provide("scrollbarClick", scrollbarClick);
                   style="padding-left: 24px"
                 >
                   <el-form-item prop="enableCurrentTime" class="form-item">
-                    <el-radio-group
-                      v-model="selectedComponentItem.settings.enableCurrentTime"
-                    >
+                    <el-radio-group v-model="selectedComponentItem.settings.enableCurrentTime">
                       <el-radio :label="true">
-                        {{ t("data_fill.form.currentTime") }}
+                        {{ t('data_fill.form.currentTime') }}
                       </el-radio>
                       <el-radio :label="false">
-                        {{ t("data_fill.form.defaultTime") }}
+                        {{ t('data_fill.form.defaultTime') }}
                       </el-radio>
                     </el-radio-group>
                   </el-form-item>
@@ -2079,26 +1924,22 @@ provide("scrollbarClick", scrollbarClick);
                   @change="
                     onOptionSourceTypeChange(
                       selectedComponentItem.settings.optionSourceType,
-                      selectedComponentItem.settings,
+                      selectedComponentItem.settings
                     )
                   "
                 >
                   <el-radio :label="1">
-                    {{ t("data_fill.form.custom") }}
+                    {{ t('data_fill.form.custom') }}
                   </el-radio>
                   <el-radio :label="2">
-                    {{ t("data_fill.form.use_datasource") }}
+                    {{ t('data_fill.form.use_datasource') }}
                   </el-radio>
                 </el-radio-group>
               </el-form-item>
 
-              <template
-                v-if="selectedComponentItem.settings.optionSourceType === 1"
-              >
-                <el-button
-                  type="text"
-                  @click="addOption(selectedComponentItem.settings.options)"
-                  >+ {{ t("data_fill.form.add_option") }}
+              <template v-if="selectedComponentItem.settings.optionSourceType === 1">
+                <el-button type="text" @click="addOption(selectedComponentItem.settings.options)"
+                  >+ {{ t('data_fill.form.add_option') }}
                 </el-button>
 
                 <div
@@ -2114,7 +1955,7 @@ provide("scrollbarClick", scrollbarClick);
                       requiredRule,
                       duplicateOptionRule,
                       maxLengthRule(50),
-                      minLengthRule(1),
+                      minLengthRule(1)
                     ]"
                   >
                     <el-input
@@ -2128,10 +1969,7 @@ provide("scrollbarClick", scrollbarClick);
                   <div
                     class="btn-item"
                     @click.prevent.stop="
-                      removeOption(
-                        selectedComponentItem.settings.options,
-                        $index,
-                      )
+                      removeOption(selectedComponentItem.settings.options, $index)
                     "
                   >
                     <el-icon style="font-size: 16px">
@@ -2151,19 +1989,14 @@ provide("scrollbarClick", scrollbarClick);
                       {},
                       selectedComponentItem.type === 'radio' ||
                         (selectedComponentItem.type === 'select' &&
-                          !selectedComponentItem.settings.multiple),
+                          !selectedComponentItem.settings.multiple)
                     )
                   "
-                  >+ {{ t("data_fill.form.bind_column") }}
+                  >+ {{ t('data_fill.form.bind_column') }}
                 </el-button>
                 <div
                   v-else
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    align-items: center;
-                    font-size: 14px;
-                  "
+                  style="display: flex; flex-direction: row; align-items: center; font-size: 14px"
                 >
                   <div style="width: 28px" />
                   <div
@@ -2180,7 +2013,7 @@ provide("scrollbarClick", scrollbarClick);
                     }})
                   </div>
                   <div style="flex: 1; color: #8f959e">
-                    {{ t("data_fill.form.bind_complete") }}
+                    {{ t('data_fill.form.bind_complete') }}
                   </div>
                   <el-button
                     text
@@ -2189,10 +2022,10 @@ provide("scrollbarClick", scrollbarClick);
                         selectedComponentItem.settings,
                         selectedComponentItem.type === 'radio' ||
                           (selectedComponentItem.type === 'select' &&
-                            !selectedComponentItem.settings.multiple),
+                            !selectedComponentItem.settings.multiple)
                       )
                     "
-                    >{{ t("common.edit") }}
+                    >{{ t('common.edit') }}
                   </el-button>
                 </div>
               </template>
@@ -2254,16 +2087,11 @@ provide("scrollbarClick", scrollbarClick);
             <template #label>
               <div class="label-row">
                 <div>
-                  {{ t("data_fill.form.datasource") }}
+                  {{ t('data_fill.form.datasource') }}
                   <span class="asterisk">*</span>
                 </div>
-                <el-button
-                  type="primary"
-                  text
-                  @click="getDatasourceList"
-                  :disabled="dsLoading"
-                >
-                  {{ t("commons.refresh") }}
+                <el-button type="primary" text @click="getDatasourceList" :disabled="dsLoading">
+                  {{ t('commons.refresh') }}
                 </el-button>
               </div>
             </template>
@@ -2275,11 +2103,7 @@ provide("scrollbarClick", scrollbarClick);
               @change="onDataSourceChange"
               :loading="dsLoading"
             >
-              <el-option-group
-                v-for="(x, $index) in datasourceList"
-                :key="$index"
-                :label="x.name"
-              >
+              <el-option-group v-for="(x, $index) in datasourceList" :key="$index" :label="x.name">
                 <el-option
                   v-for="d in x.options"
                   :key="d.id"
@@ -2289,11 +2113,7 @@ provide("scrollbarClick", scrollbarClick);
                 >
                   <div
                     :title="
-                      d.name +
-                      ' ' +
-                      (d.status === 'Error'
-                        ? t('data_set.invalid_data_source')
-                        : '')
+                      d.name + ' ' + (d.status === 'Error' ? t('data_set.invalid_data_source') : '')
                     "
                     style="display: flex; align-items: center"
                   >
@@ -2305,16 +2125,16 @@ provide("scrollbarClick", scrollbarClick);
                         white-space: nowrap;
                       "
                       :style="{
-                        maxWidth: d.status === 'Error' ? '400px' : '460px',
+                        maxWidth: d.status === 'Error' ? '400px' : '460px'
                       }"
                     >
                       {{ d.name }}
                     </span>
                     <span
-                      style="padding-left: 14px; color: red; font-size: 10px"
+                      style="padding-left: 14px; font-size: 10px; color: red"
                       v-if="d.status === 'Error'"
                     >
-                      {{ t("data_set.invalid_data_source") }}
+                      {{ t('data_set.invalid_data_source') }}
                     </span>
                   </div>
                 </el-option>
@@ -2333,12 +2153,7 @@ provide("scrollbarClick", scrollbarClick);
               filterable
               :placeholder="t('common.please_select')"
               style="width: 100%"
-              @change="
-                onTableChange(
-                  optionFormData.optionDatasource,
-                  optionFormData.optionTable,
-                )
-              "
+              @change="onTableChange(optionFormData.optionDatasource, optionFormData.optionTable)"
             />
           </el-form-item>
           <div
@@ -2380,17 +2195,9 @@ provide("scrollbarClick", scrollbarClick);
             :label="t('data_fill.form.order')"
             :rules="[requiredRule]"
           >
-            <el-radio-group
-              v-model="optionFormData.optionOrder"
-              required
-              style="width: 100%"
-            >
-              <el-radio label="asc">{{
-                t("data_fill.form.order_asc")
-              }}</el-radio>
-              <el-radio label="desc"
-                >{{ t("data_fill.form.order_desc") }}
-              </el-radio>
+            <el-radio-group v-model="optionFormData.optionOrder" required style="width: 100%">
+              <el-radio label="asc">{{ t('data_fill.form.order_asc') }}</el-radio>
+              <el-radio label="desc">{{ t('data_fill.form.order_desc') }} </el-radio>
             </el-radio-group>
           </el-form-item>
           <el-form-item
@@ -2406,7 +2213,7 @@ provide("scrollbarClick", scrollbarClick);
             >
               <el-col :span="19"> {{ extraColumnsStr }}</el-col>
               <el-col :span="3" style="color: var(--ed-color-info)">
-                {{ t("auth.added") }}
+                {{ t('auth.added') }}
               </el-col>
               <el-col :span="1">
                 <el-button
@@ -2434,32 +2241,27 @@ provide("scrollbarClick", scrollbarClick);
               </el-col>
             </el-row>
             <el-button v-else text @click="openSelectDetailColumns"
-              >+{{ t("data_fill.form.add_detail_columns") }}
+              >+{{ t('data_fill.form.add_detail_columns') }}
             </el-button>
           </el-form-item>
         </el-form>
       </el-scrollbar>
     </el-main>
     <el-footer class="de-footer">
-      <el-button @click="closeEditBindColumn"
-        >{{ t("common.cancel") }}
-      </el-button>
+      <el-button @click="closeEditBindColumn">{{ t('common.cancel') }} </el-button>
       <el-button type="primary" @click="confirmEditBindColumn">
-        {{ t("commons.confirm") }}
+        {{ t('commons.confirm') }}
       </el-button>
     </el-footer>
   </el-dialog>
 
-  <SelectDetailColumns
-    ref="selectDetailColumnsRef"
-    @close="onSelectDetailColumnsClose"
-  />
+  <SelectDetailColumns ref="selectDetailColumnsRef" @close="onSelectDetailColumnsClose" />
 
   <MoreDetailColumns v-model:show="showMoreDetails" :details="moreDetails" />
 </template>
 
 <style lang="less" scoped>
-@import "@/style/mixin.less";
+@import '@/style/mixin.less';
 
 .m-dialog {
   .ed-main {
@@ -2507,7 +2309,7 @@ provide("scrollbarClick", scrollbarClick);
   .asterisk {
     color: var(--ed-color-danger);
     margin-left: 2px;
-    font-family: var(--de-custom_font, "PingFang");
+    font-family: var(--de-custom_font, 'PingFang');
     font-size: 14px;
     font-style: normal;
     font-weight: 400;
@@ -2574,7 +2376,7 @@ provide("scrollbarClick", scrollbarClick);
 
     .name {
       color: #fff;
-      font-family: var(--de-custom_font, "PingFang");
+      font-family: var(--de-custom_font, 'PingFang');
       font-size: 16px;
       font-weight: 400;
       display: flex;
@@ -2764,10 +2566,7 @@ provide("scrollbarClick", scrollbarClick);
 
     .ghostClass {
       opacity: 1 !important;
-      background-color: var(
-        --ed-color-primary-1a,
-        rgba(51, 112, 255, 0.1)
-      ) !important;
+      background-color: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1)) !important;
       border: 1px dashed var(--ed-color-primary, rgba(51, 112, 255, 1)) !important;
     }
 
@@ -2916,7 +2715,7 @@ provide("scrollbarClick", scrollbarClick);
       &:hover::after {
         width: 1px;
         height: 100%;
-        content: "";
+        content: '';
         position: absolute;
         left: -1px;
         top: 0;
@@ -2961,7 +2760,7 @@ provide("scrollbarClick", scrollbarClick);
       width: 240px;
       padding-bottom: 16px;
 
-      font-family: var(--de-custom_font, "PingFang");
+      font-family: var(--de-custom_font, 'PingFang');
       border-right: 1px solid rgba(31, 35, 41, 0.15);
 
       .select-ds {
@@ -3064,7 +2863,7 @@ provide("scrollbarClick", scrollbarClick);
       }
 
       .sql-result {
-        font-family: var(--de-custom_font, "PingFang");
+        font-family: var(--de-custom_font, 'PingFang');
         font-size: 14px;
         overflow-y: auto;
         box-sizing: border-box;
@@ -3099,7 +2898,7 @@ provide("scrollbarClick", scrollbarClick);
             cursor: row-resize;
 
             &::after {
-              content: "";
+              content: '';
               height: 7px;
               width: 100px;
               border-radius: 3.5px;
@@ -3153,10 +2952,7 @@ provide("scrollbarClick", scrollbarClick);
               }
             }
 
-            :deep(
-              .ed-tree-node.is-current
-                > .ed-tree-node__content:not(.is-menu):after
-            ) {
+            :deep(.ed-tree-node.is-current > .ed-tree-node__content:not(.is-menu):after) {
               display: none;
             }
 
@@ -3198,7 +2994,7 @@ provide("scrollbarClick", scrollbarClick);
                 margin: 1px;
                 top: 1px;
                 height: 49px;
-                font-family: var(--de-custom_font, "PingFang");
+                font-family: var(--de-custom_font, 'PingFang');
                 font-style: normal;
                 font-weight: 500;
                 font-size: 14px;

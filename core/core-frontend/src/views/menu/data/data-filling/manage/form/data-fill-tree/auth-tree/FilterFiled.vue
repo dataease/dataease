@@ -1,353 +1,328 @@
 <script lang="ts" setup>
-import icon_searchOutline_outlined from "@/assets/svg/icon_search-outline_outlined.svg";
-import icon_close_outlined from "@/assets/svg/icon_close_outlined.svg";
-import icon_deleteTrash_outlined from "@/assets/svg/icon_delete-trash_outlined.svg";
-import field_text from "@/assets/svg/field_text.svg";
-import field_time from "@/assets/svg/field_time.svg";
-import field_value from "@/assets/svg/field_value.svg";
-import field_location from "@/assets/svg/field_location.svg";
-import { ref, inject, computed, watch, onBeforeMount, toRefs } from "vue";
-import { useI18n } from "@/hooks/web/useI18n";
-import { getTableColumnDataPreview } from "../../../../data-filling";
-import {
-  textOptions,
-  dateOptions,
-  valueOptions,
-  fieldEnums,
-} from "../options.js";
-import TimeSetDialog from "@/components/time-set-dialog/index.vue";
+import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
+import icon_close_outlined from '@/assets/svg/icon_close_outlined.svg'
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
+import field_text from '@/assets/svg/field_text.svg'
+import field_time from '@/assets/svg/field_time.svg'
+import field_value from '@/assets/svg/field_value.svg'
+import field_location from '@/assets/svg/field_location.svg'
+import { ref, inject, computed, watch, onBeforeMount, toRefs } from 'vue'
+import { useI18n } from '@/hooks/web/useI18n'
+import { getTableColumnDataPreview } from '../../../../data-filling'
+import { textOptions, dateOptions, valueOptions, fieldEnums } from '../options.js'
+import TimeSetDialog from '@/components/time-set-dialog/index.vue'
 
 export interface Item {
-  term: string;
-  fieldId: string;
-  filterType: string;
-  deType: number;
-  enumValue: string[];
-  name: string;
-  value: number | string | null;
-  timeType?: string;
+  term: string
+  fieldId: string
+  filterType: string
+  deType: number
+  enumValue: string[]
+  name: string
+  value: number | string | null
+  timeType?: string
 }
 
 type Props = {
-  index: number;
-  item: Item;
-};
+  index: number
+  item: Item
+}
 
 const props = withDefaults(defineProps<Props>(), {
   index: 0,
   item: () => ({
-    term: "",
-    fieldId: "",
-    filterType: "",
-    timeType: "year",
+    term: '',
+    fieldId: '',
+    filterType: '',
+    timeType: 'year',
     deType: 0,
     enumValue: [],
-    name: "",
-    value: null,
-  }),
-});
+    name: '',
+    value: null
+  })
+})
 
-const { t } = useI18n();
-const enumInput = ref();
-const deElDropdownMenuFixed = ref();
-const showDel = ref(false);
-const keywords = ref("");
-const activeName = ref("");
-const filterFiled = ref("");
-const enumList = ref([]);
-const showTextArea = ref();
-const keydownCanceled = ref(false);
-const checklist = ref<string[]>([]);
-const filterList = ref([]);
-const textareaValue = ref("");
+const { t } = useI18n()
+const enumInput = ref()
+const deElDropdownMenuFixed = ref()
+const showDel = ref(false)
+const keywords = ref('')
+const activeName = ref('')
+const filterFiled = ref('')
+const enumList = ref([])
+const showTextArea = ref()
+const keydownCanceled = ref(false)
+const checklist = ref<string[]>([])
+const filterList = ref([])
+const textareaValue = ref('')
 
-const { item } = toRefs(props);
+const { item } = toRefs(props)
 
-const filedList = inject("filedList");
-const optionFormData = inject("optionFormData");
+const filedList = inject('filedList')
+const optionFormData = inject('optionFormData')
 
 const checkListWithFilter = computed(() => {
-  if (!filterFiled.value) return enumList.value;
-  return enumList.value.filter((ele) => ele.includes(filterFiled.value));
-});
+  if (!filterFiled.value) return enumList.value
+  return enumList.value.filter(ele => ele.includes(filterFiled.value))
+})
 const computedWidth = computed(() => {
-  const { term, fieldId, filterType } = item.value;
-  const isNull =
-    ["null", "empty", "not_null", "not_empty"].includes(term) &&
-    filterType === "logic";
+  const { term, fieldId, filterType } = item.value
+  const isNull = ['null', 'empty', 'not_null', 'not_empty'].includes(term) && filterType === 'logic'
   return {
-    width: !fieldId ? "270px" : isNull ? "670px" : "750px",
-  };
-});
+    width: !fieldId ? '270px' : isNull ? '670px' : '750px'
+  }
+})
 
 const operators = computed(() => {
-  const { deType } = item.value;
+  const { deType } = item.value
   if ([0, 5].includes(deType)) {
-    return textOptions;
+    return textOptions
   } else if (deType === 1) {
-    return dateOptions;
+    return dateOptions
   } else {
-    return valueOptions;
+    return valueOptions
   }
-});
+})
 const dimensions = computed(() => {
-  if (!keywords.value) return computedFiledList.value;
-  return computedFiledList.value.filter((ele) =>
-    ele.name.includes(keywords.value),
-  );
-});
+  if (!keywords.value) return computedFiledList.value
+  return computedFiledList.value.filter(ele => ele.name.includes(keywords.value))
+})
 const computedFiledList = computed(() => {
-  return filedList.value || [];
-});
+  return filedList.value || []
+})
 
-const authTargetType = ref("");
+const authTargetType = ref('')
 
 onBeforeMount(() => {
-  initNameEnumName();
-  filterListInit(item.value.deType);
-});
+  initNameEnumName()
+  filterListInit(item.value.deType)
+})
 
 const confirm = () => {
-  cancelfixValue();
-  enumInput.value.$el.click();
-};
+  cancelfixValue()
+  enumInput.value.$el.click()
+}
 
 const cancelSelect = () => {
-  const { enumValue } = item.value;
-  checklist.value = [...enumValue];
-  checkboxlist.value = checkListWithFilter.value.filter((ele) =>
-    enumValue.includes(ele),
-  );
+  const { enumValue } = item.value
+  checklist.value = [...enumValue]
+  checkboxlist.value = checkListWithFilter.value.filter(ele => enumValue.includes(ele))
   if (checkboxlist.value.length) {
-    checkAll.value =
-      checkboxlist.value.length === checkListWithFilter.value.length;
-    isIndeterminate.value =
-      checkboxlist.value.length !== checkListWithFilter.value.length;
+    checkAll.value = checkboxlist.value.length === checkListWithFilter.value.length
+    isIndeterminate.value = checkboxlist.value.length !== checkListWithFilter.value.length
   }
 
   if (!checkboxlist.value.length) {
-    checkAll.value = false;
-    isIndeterminate.value = false;
+    checkAll.value = false
+    isIndeterminate.value = false
   }
-  enumInput.value.$el.click();
-};
+  enumInput.value.$el.click()
+}
 const initNameEnumName = () => {
-  const { name, enumValue, fieldId } = item.value;
+  const { name, enumValue, fieldId } = item.value
   if (!name && fieldId) {
-    checklist.value = [...enumValue];
+    checklist.value = [...enumValue]
   }
-  if (!name && !fieldId) return;
-  initEnumOptions();
-  activeName.value = item.value.name;
-  checklist.value = [...enumValue];
-};
+  if (!name && !fieldId) return
+  initEnumOptions()
+  activeName.value = item.value.name
+  checklist.value = [...enumValue]
+}
 const cancelKeyDow = () => {
   if (!showTextArea.value && !keydownCanceled.value) {
-    keydownCanceled.value = true;
+    keydownCanceled.value = true
   }
-  showTextArea.value = true;
-};
+  showTextArea.value = true
+}
 const filterTypeChange = () => {
-  item.value.term = "";
-  item.value.value = null;
-  initEnumOptions();
-};
+  item.value.term = ''
+  item.value.value = null
+  initEnumOptions()
+}
 
 const normalizeNumericValue = (value: string | number) => {
-  const source = String(value ?? "");
-  let normalized = source.replace(/[^\d.-]/g, "");
-  normalized = normalized.replace(/(?!^)-/g, "");
-  const firstDot = normalized.indexOf(".");
+  const source = String(value ?? '')
+  let normalized = source.replace(/[^\d.-]/g, '')
+  normalized = normalized.replace(/(?!^)-/g, '')
+  const firstDot = normalized.indexOf('.')
   if (firstDot !== -1) {
     normalized =
-      normalized.slice(0, firstDot + 1) +
-      normalized.slice(firstDot + 1).replace(/\./g, "");
+      normalized.slice(0, firstDot + 1) + normalized.slice(firstDot + 1).replace(/\./g, '')
   }
-  item.value.value = normalized;
-};
+  item.value.value = normalized
+}
 const initEnumOptions = () => {
-  const { deType, filterType, fieldId } = item.value;
+  const { deType, filterType, fieldId } = item.value
   // 查找枚举值
-  if (filterType === "enum" && [0, 5].includes(deType)) {
+  if (filterType === 'enum' && [0, 5].includes(deType)) {
     getTableColumnDataPreview(
       optionFormData.value.optionDatasource,
       optionFormData.value.optionTable,
       fieldId,
-      "asc",
-    ).then((res) => {
-      enumList.value = optionData(res.data?.map((ele) => ele.value));
-      checkboxlist.value = enumList.value.filter((ele) =>
-        checklist.value.includes(ele),
-      );
+      'asc'
+    ).then(res => {
+      enumList.value = optionData(res.data?.map(ele => ele.value))
+      checkboxlist.value = enumList.value.filter(ele => checklist.value.includes(ele))
       if (checkboxlist.value.length) {
-        checkAll.value = checkboxlist.value.length === enumList.value.length;
-        isIndeterminate.value =
-          checkboxlist.value.length !== enumList.value.length;
+        checkAll.value = checkboxlist.value.length === enumList.value.length
+        isIndeterminate.value = checkboxlist.value.length !== enumList.value.length
       }
 
       if (!checkboxlist.value.length) {
-        checkAll.value = false;
-        isIndeterminate.value = false;
+        checkAll.value = false
+        isIndeterminate.value = false
       }
-    });
+    })
   }
-};
+}
 
-const optionData = (data) => {
-  if (!data) return null;
-  return data.filter((item) => !!item);
-};
-const cancel = () => {
-  item.value.name = activeName.value || "";
-};
+const optionData = data => {
+  if (!data) return null
+  return data.filter(item => !!item)
+}
+
 const cancelfixValue = () => {
-  item.value.enumValue = [...checklist.value];
-};
+  item.value.enumValue = [...checklist.value]
+}
 const delChecks = (idx, i) => {
-  checklist.value.splice(idx, 1);
-  checkboxlist.value = checkboxlist.value.filter((ele) => ele !== i);
-  selectedChange();
-};
+  checklist.value.splice(idx, 1)
+  checkboxlist.value = checkboxlist.value.filter(ele => ele !== i)
+  selectedChange()
+}
 
-const scrollbarClick = inject<() => void>("scrollbarClick");
-
+const scrollbarClick = inject<() => void>('scrollbarClick')
+const handleSelectChange = value => {
+  const val = dimensions.value.find(ele => ele.id === value)
+  if (val) {
+    selectItem(val)
+  }
+}
 const selectItem = ({ name, id, deType, fieldType }) => {
-  activeName.value = name;
+  activeName.value = name
   Object.assign(item.value, {
     fieldId: id,
     name,
     deType,
     fieldType,
-    filterType: "logic",
+    filterType: 'logic',
     enumValue: [],
-    value: "",
-    term: "",
-  });
-  filterListInit(deType);
-  checklist.value = [];
-  scrollbarClick?.();
-};
+    value: '',
+    term: ''
+  })
+  filterListInit(deType)
+  checklist.value = []
+  scrollbarClick?.()
+}
 
 const iconMap = {
   text: field_text,
   value: field_value,
   location: field_location,
-  time: field_time,
-};
-const filterListInit = (deType) => {
+  time: field_time
+}
+const filterListInit = deType => {
   filterList.value = [
     {
-      value: "logic",
-      label: t("deDataset.logic_filter"),
+      value: 'logic',
+      label: t('deDataset.logic_filter')
     },
     {
-      value: "enum",
-      label: t("deDataset.enum_filter"),
-    },
-  ];
+      value: 'enum',
+      label: t('deDataset.enum_filter')
+    }
+  ]
   if ([1, 2, 3].includes(deType)) {
-    filterList.value = [filterList.value[0]];
+    filterList.value = [filterList.value[0]]
   }
-};
+}
 const clearAll = () => {
-  checklist.value = [];
-  checkboxlist.value = [];
-  checkAll.value = false;
-  isIndeterminate.value = false;
-};
+  checklist.value = []
+  checkboxlist.value = []
+  checkAll.value = false
+  isIndeterminate.value = false
+}
 
 const selectAll = () => {
-  checkListWithFilter.value.forEach((ele) => {
+  checkListWithFilter.value.forEach(ele => {
     if (!checklist.value.includes(ele)) {
-      checklist.value.push(ele);
+      checklist.value.push(ele)
     }
-  });
-  checkboxlist.value = [
-    ...new Set([...checkListWithFilter.value, ...checkboxlist.value]),
-  ];
-};
+  })
+  checkboxlist.value = [...new Set([...checkListWithFilter.value, ...checkboxlist.value])]
+}
 
-const isIndeterminate = ref(false);
-const checkAll = ref(false);
-const checkboxlist = ref([]);
-let oldList = [];
+const isIndeterminate = ref(false)
+const checkAll = ref(false)
+const checkboxlist = ref([])
+let oldList = []
 watch(
   () => checkListWithFilter.value,
-  (val) => {
+  val => {
     if (!oldList.length && val.length !== enumList.value.length) {
-      oldList = [...checkboxlist.value];
+      oldList = [...checkboxlist.value]
     }
 
     if (oldList.length && val.length === enumList.value.length) {
-      oldList = [];
+      oldList = []
     }
 
-    const result = val.every((ele) => checkboxlist.value.includes(ele));
-    isIndeterminate.value =
-      !!val.length && !!checkboxlist.value.length && !result;
-    checkAll.value = !!val.length && result;
-  },
-);
+    const result = val.every(ele => checkboxlist.value.includes(ele))
+    isIndeterminate.value = !!val.length && !!checkboxlist.value.length && !result
+    checkAll.value = !!val.length && result
+  }
+)
 const selectedChange = () => {
-  const notSelectList = checkListWithFilter.value.filter(
-    (ele) => !checkboxlist.value.includes(ele),
-  );
-  const newCheckboxlist = [...checkboxlist.value];
-  checklist.value = [
-    ...new Set(checklist.value.concat(checkboxlist.value)),
-  ].filter((ele) => !notSelectList.includes(ele));
+  const notSelectList = checkListWithFilter.value.filter(ele => !checkboxlist.value.includes(ele))
+  const newCheckboxlist = [...checkboxlist.value]
+  checklist.value = [...new Set(checklist.value.concat(checkboxlist.value))].filter(
+    ele => !notSelectList.includes(ele)
+  )
   checkboxlist.value = [...new Set(oldList.concat(checkboxlist.value))].filter(
-    (ele) => !notSelectList.includes(ele),
-  );
+    ele => !notSelectList.includes(ele)
+  )
   if (newCheckboxlist.length) {
-    checkAll.value =
-      newCheckboxlist.length === checkListWithFilter.value.length;
-    isIndeterminate.value =
-      newCheckboxlist.length !== checkListWithFilter.value.length;
+    checkAll.value = newCheckboxlist.length === checkListWithFilter.value.length
+    isIndeterminate.value = newCheckboxlist.length !== checkListWithFilter.value.length
   }
 
   if (!newCheckboxlist.length) {
-    checkAll.value = false;
-    isIndeterminate.value = false;
+    checkAll.value = false
+    isIndeterminate.value = false
   }
-};
-const checkAllChange = (val) => {
+}
+const checkAllChange = val => {
   if (val) {
-    selectAll();
+    selectAll()
   } else {
-    checkboxlist.value = checkboxlist.value.filter(
-      (ele) => !checkListWithFilter.value.includes(ele),
-    );
-    checklist.value = checklist.value.filter(
-      (ele) => !checkListWithFilter.value.includes(ele),
-    );
+    checkboxlist.value = checkboxlist.value.filter(ele => !checkListWithFilter.value.includes(ele))
+    checklist.value = checklist.value.filter(ele => !checkListWithFilter.value.includes(ele))
   }
-  isIndeterminate.value = false;
-};
+  isIndeterminate.value = false
+}
 const addFields = () => {
-  const list = textareaValue.value.split("\n").reduce((pre, next) => {
-    const str = next.trim();
-    if (!str) return pre;
-    pre.add(str);
-    return pre;
-  }, new Set([]));
+  const list = textareaValue.value.split('\n').reduce((pre, next) => {
+    const str = next.trim()
+    if (!str) return pre
+    pre.add(str)
+    return pre
+  }, new Set([]))
   if (list.size) {
-    checklist.value = [...new Set([...checklist.value, ...Array.from(list)])];
+    checklist.value = [...new Set([...checklist.value, ...Array.from(list)])]
   }
-  showTextArea.value = false;
-};
+  showTextArea.value = false
+}
 
-const timeDialog = ref();
+const timeDialog = ref()
 const showTimeDialog = (obj: any) => {
-  if (obj.deType !== 1) return;
-  timeDialog.value.init(obj.timeType, obj.value);
-};
+  if (obj.deType !== 1) return
+  timeDialog.value.init(obj.timeType, obj.value)
+}
 const saveTime = (type, value) => {
-  item.value.timeType = type;
-  item.value.value = value;
-};
+  item.value.timeType = type
+  item.value.value = value
+}
 
-const emits = defineEmits(["update:item", "del"]);
+const emits = defineEmits(['update:item', 'del'])
 </script>
 
 <template>
@@ -358,62 +333,94 @@ const emits = defineEmits(["update:item", "del"]);
       @mouseover="showDel = true"
       @mouseleave="showDel = false"
     >
-      <span class="filed-title">{{ t("auth.filter_fields") }}</span>
+      <span class="filed-title">{{ t('auth.filter_fields') }}</span>
 
-      <el-dropdown trigger="click" :hide-on-click="false">
-        <el-input
-          :placeholder="t('auth.select_filter_fields')"
-          v-model="item.name"
-          size="small"
-          @input="cancel"
-        >
-        </el-input>
-        <template #dropdown>
-          <el-dropdown-menu class="de-el-dropdown-menu">
-            <el-input
-              :placeholder="t('auth.enter_keywords')"
-              @keydown.stop
-              size="small"
-              v-model="keywords"
-            >
-              <template #prefix>
-                <el-icon>
-                  <Icon name="icon_search-outline_outlined"
-                    ><icon_searchOutline_outlined class="svg-icon"
-                  /></Icon>
-                </el-icon>
-              </template>
-            </el-input>
-            <ul class="dimension">
-              <li
-                @click="selectItem(ele)"
-                :style="{
-                  backgroundColor: activeName === ele.name ? '#f0f7ff' : '',
-                }"
-                :key="ele.id"
-                v-for="ele in dimensions"
-              >
-                <el-icon>
-                  <Icon :className="`field-icon-${fieldEnums[ele.deType]}`"
-                    ><component
-                      :is="iconMap[fieldEnums[ele.deType]]"
-                      :class="`field-icon-${fieldEnums[ele.deType]}`"
-                      class="svg-icon"
-                    ></component
-                  ></Icon>
-                </el-icon>
-                <span>{{ ele.name }}</span>
-              </li>
-            </ul>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
-      <div
-        class="white-nowrap flex-align-center"
-        style="position: relative"
-        v-if="item.fieldId"
+      <el-select
+        @change="handleSelectChange"
+        append-to=".select-content-dialog"
+        v-model="item.name"
+        popper-class="filed-title_select"
+        style="width: 170px"
       >
-        <span class="filed-title">{{ t("auth.screen_method") }}</span>
+        <template #header>
+          <el-input
+            :placeholder="t('auth.enter_keywords')"
+            @keydown.stop
+            size="small"
+            v-model="keywords"
+            ><template #prefix>
+              <el-icon>
+                <Icon name="icon_search-outline_outlined"
+                  ><icon_searchOutline_outlined class="svg-icon"
+                /></Icon>
+              </el-icon>
+            </template>
+          </el-input>
+        </template>
+        <el-option v-for="ele in dimensions" :key="ele.id" :value="ele.id"
+          ><el-icon>
+            <Icon :className="`field-icon-${fieldEnums[ele.deType]}`"
+              ><component
+                :is="iconMap[fieldEnums[ele.deType]]"
+                :class="`field-icon-${fieldEnums[ele.deType]}`"
+                class="svg-icon"
+              ></component
+            ></Icon>
+          </el-icon>
+          <span>{{ ele.name }}</span></el-option
+        >
+      </el-select>
+
+      <!-- <el-popover append-to=".select-content-dialog" trigger="click" :hide-on-click="false">
+        <template #reference>
+          <el-input
+            :placeholder="t('auth.select_filter_fields')"
+            v-model="item.name"
+            size="small"
+            @input="cancel"
+          >
+          </el-input>
+        </template>
+        <div class="de-el-dropdown-menu">
+          <el-input
+            :placeholder="t('auth.enter_keywords')"
+            @keydown.stop
+            size="small"
+            v-model="keywords"
+          >
+            <template #prefix>
+              <el-icon>
+                <Icon name="icon_search-outline_outlined"
+                  ><icon_searchOutline_outlined class="svg-icon"
+                /></Icon>
+              </el-icon>
+            </template>
+          </el-input>
+          <ul class="dimension">
+            <li
+              @click="selectItem(ele)"
+              :style="{
+                backgroundColor: activeName === ele.name ? '#f0f7ff' : ''
+              }"
+              :key="ele.id"
+              v-for="ele in dimensions"
+            >
+              <el-icon>
+                <Icon :className="`field-icon-${fieldEnums[ele.deType]}`"
+                  ><component
+                    :is="iconMap[fieldEnums[ele.deType]]"
+                    :class="`field-icon-${fieldEnums[ele.deType]}`"
+                    class="svg-icon"
+                  ></component
+                ></Icon>
+              </el-icon>
+              <span>{{ ele.name }}</span>
+            </li>
+          </ul>
+        </div>
+      </el-popover> -->
+      <div class="white-nowrap flex-align-center" style="position: relative" v-if="item.fieldId">
+        <span class="filed-title">{{ t('auth.screen_method') }}</span>
         <el-select
           size="small"
           @change="filterTypeChange"
@@ -430,7 +437,7 @@ const emits = defineEmits(["update:item", "del"]);
           >
           </el-option>
         </el-select>
-        <span class="filed-title">{{ t("auth.fixed_value") }}</span>
+        <span class="filed-title">{{ t('auth.fixed_value') }}</span>
         <template v-if="item.filterType === 'logic'">
           <el-select
             class="w100"
@@ -462,11 +469,7 @@ const emits = defineEmits(["update:item", "del"]);
             />
             <div class="bottom-line"></div>
           </template>
-          <template
-            v-else-if="
-              !['null', 'empty', 'not_null', 'not_empty'].includes(item.term)
-            "
-          >
+          <template v-else-if="!['null', 'empty', 'not_null', 'not_empty'].includes(item.term)">
             <el-input
               class="w70 mar5"
               size="small"
@@ -499,11 +502,7 @@ const emits = defineEmits(["update:item", "del"]);
           </template>
           <div class="de-panel clearfix">
             <div class="mod-left">
-              <el-input
-                :placeholder="t('auth.enter_keywords')"
-                v-model="filterFiled"
-              >
-              </el-input>
+              <el-input :placeholder="t('auth.enter_keywords')" v-model="filterFiled"> </el-input>
               <ul class="autochecker-list" style="height: 260px">
                 <div class="select-all">
                   <el-checkbox
@@ -513,10 +512,7 @@ const emits = defineEmits(["update:item", "del"]);
                     @change="checkAllChange"
                   />
                 </div>
-                <el-checkbox-group
-                  v-model="checkboxlist"
-                  @change="selectedChange"
-                >
+                <el-checkbox-group v-model="checkboxlist" @change="selectedChange">
                   <el-scrollbar height="230px">
                     <li :key="i" v-for="i in checkListWithFilter" :title="i">
                       <el-checkbox :label="i">
@@ -529,11 +525,11 @@ const emits = defineEmits(["update:item", "del"]);
             </div>
             <div class="mod-left right-de">
               <div class="right-top clearfix">
-                {{ t("common.list_selection") }}
+                {{ t('common.list_selection') }}
                 <div class="right-btn">
                   <span @click="cancelKeyDow">
                     <i class="el-icon-edit"></i>
-                    {{ t("auth.manual_input") }}
+                    {{ t('auth.manual_input') }}
                   </span>
                   <transition name="el-zoom-in-top">
                     <div v-if="showTextArea" class="de-el-dropdown-menu-manu">
@@ -544,19 +540,11 @@ const emits = defineEmits(["update:item", "del"]);
                           v-model="textareaValue"
                         ></textarea>
                         <div class="text-area-btn">
-                          <button
-                            type="button"
-                            @click="showTextArea = false"
-                            class="btn"
-                          >
-                            <span>{{ t("auth.close") }}</span>
+                          <button type="button" @click="showTextArea = false" class="btn">
+                            <span>{{ t('auth.close') }}</span>
                           </button>
-                          <button
-                            type="button"
-                            @click="addFields"
-                            class="btn right-add"
-                          >
-                            <span>{{ t("auth.add") }}</span>
+                          <button type="button" @click="addFields" class="btn right-add">
+                            <span>{{ t('auth.add') }}</span>
                           </button>
                         </div>
                       </div>
@@ -566,16 +554,13 @@ const emits = defineEmits(["update:item", "del"]);
               </div>
               <ul class="autochecker-list">
                 <div class="clear-checkbox__label">
-                  <span>{{ t("auth.added") + " " + checklist.length }}</span
-                  ><span @click="clearAll">{{ t("user.clear_button") }}</span>
+                  <span>{{ t('auth.added') + ' ' + checklist.length }}</span
+                  ><span @click="clearAll">{{ t('user.clear_button') }}</span>
                 </div>
                 <el-scrollbar height="230px">
                   <li :key="i" v-for="(i, idx) in checklist">
                     <div :title="i" class="right-checkbox__label">{{ i }}</div>
-                    <el-icon
-                      @click="delChecks(idx, i)"
-                      class="remove-hover-icon"
-                    >
+                    <el-icon @click="delChecks(idx, i)" class="remove-hover-icon">
                       <Icon><icon_close_outlined class="svg-icon" /></Icon>
                     </el-icon>
                   </li>
@@ -584,10 +569,10 @@ const emits = defineEmits(["update:item", "del"]);
             </div>
             <div class="right-menu-foot">
               <el-button secondary @click="cancelSelect">
-                {{ t("common.cancel") }}
+                {{ t('common.cancel') }}
               </el-button>
               <el-button type="primary" @click="confirm">
-                {{ t("auth.sure") }}
+                {{ t('auth.sure') }}
               </el-button>
             </div>
           </div>
@@ -699,9 +684,9 @@ const emits = defineEmits(["update:item", "del"]);
   }
 
   .bottom-line {
-    font-family: var(--de-custom_font, "PingFang");
+    font-family: var(--de-custom_font, 'PingFang');
     font-variant: tabular-nums;
-    font-feature-settings: "tnum";
+    font-feature-settings: 'tnum';
     word-wrap: break-word;
     text-align: left;
     line-height: 28px;
@@ -748,7 +733,7 @@ const emits = defineEmits(["update:item", "del"]);
     border-radius: 0;
     box-shadow: none !important;
     height: 26px;
-    font-family: var(--de-custom_font, "PingFang");
+    font-family: var(--de-custom_font, 'PingFang');
     word-wrap: break-word;
     text-align: left;
     color: rgba(0, 0, 0, 0.65);
@@ -790,7 +775,24 @@ const emits = defineEmits(["update:item", "del"]);
 </style>
 
 <style lang="less">
+.filed-title_select {
+  .ed-select-dropdown__header {
+    padding: 8px 0 0 0;
+    .ed-input__wrapper {
+      box-shadow: none;
+    }
+  }
+}
 .de-el-dropdown-menu {
+  background-color: var(--ed-bg-color-overlay);
+  border-radius: var(--ed-border-radius-base);
+  box-shadow: none;
+  list-style: none;
+  margin: 0;
+  position: relative;
+  padding: 4px;
+  border: none;
+  outline: none;
   .dimension {
     max-height: 200px;
     padding: 0;
@@ -802,8 +804,7 @@ const emits = defineEmits(["update:item", "del"]);
       align-items: center;
       white-space: nowrap;
       cursor: pointer;
-      transition:
-        color 0.3s cubic-bezier(0.645, 0.045, 0.355, 1),
+      transition: color 0.3s cubic-bezier(0.645, 0.045, 0.355, 1),
         border-color 0.3s cubic-bezier(0.645, 0.045, 0.355, 1),
         background 0.3s cubic-bezier(0.645, 0.045, 0.355, 1),
         padding 0.15s cubic-bezier(0.645, 0.045, 0.355, 1);
@@ -834,7 +835,7 @@ const emits = defineEmits(["update:item", "del"]);
     margin: 0;
     font-variant: tabular-nums;
     list-style: none;
-    font-feature-settings: "tnum";
+    font-feature-settings: 'tnum';
     display: inline-block;
     width: 100%;
     height: 28px;
@@ -867,7 +868,7 @@ const emits = defineEmits(["update:item", "del"]);
   }
 
   .ed-input {
-    font-family: var(--de-custom_font, "PingFang");
+    font-family: var(--de-custom_font, 'PingFang');
     box-sizing: border-box;
     margin: 0;
     color: rgba(0, 0, 0, 0.65);
@@ -875,7 +876,7 @@ const emits = defineEmits(["update:item", "del"]);
     font-variant: tabular-nums;
     line-height: 1.5;
     list-style: none;
-    font-feature-settings: "tnum";
+    font-feature-settings: 'tnum';
     position: relative;
     display: inline-block;
     width: 100%;
@@ -912,7 +913,7 @@ const emits = defineEmits(["update:item", "del"]);
       }
     }
     .mod-left {
-      font-family: var(--de-custom_font, "PingFang");
+      font-family: var(--de-custom_font, 'PingFang');
       color: rgba(0, 0, 0, 0.65);
       font-size: 14px;
       vertical-align: top;
@@ -1101,9 +1102,7 @@ const emits = defineEmits(["update:item", "del"]);
       min-height: 28px;
       line-height: 1.5;
       vertical-align: bottom;
-      transition:
-        all 0.3s,
-        height 0s;
+      transition: all 0.3s, height 0s;
       text-overflow: ellipsis;
       outline: 0;
       padding: 5px 5px 28px;
@@ -1155,7 +1154,7 @@ const emits = defineEmits(["update:item", "del"]);
 }
 
 .clearfix:after {
-  content: "020";
+  content: '020';
   display: block;
   height: 0;
   clear: both;
