@@ -602,6 +602,7 @@ const emits = defineEmits(['update:item', 'del'])
               v-else-if="item.deType === 1 && item.filterTypeTime === 'dynamicDate'"
               effect="light"
               :content="item.timeValue"
+              :disabled="!item.timeValue"
               placement="top"
               ><el-input
                 @click="handleClick"
@@ -615,7 +616,6 @@ const emits = defineEmits(['update:item', 'del'])
               v-else-if="item.deType === 1 && item.filterTypeTime !== 'dynamicDate'"
               effect="light"
               :content="item.value"
-              :disabled="!item.value"
               placement="top"
               ><el-input
                 readonly
