@@ -82,6 +82,33 @@ const componentDataNotInMobile = computed(() => {
 
 const newWindow = ref()
 
+/**
+ * 将指定组件及其 Tab 直属子组件的 PC viewInfo 同步到移动端配置缓存
+ * @param targetComponent 用户点击同步按钮对应的组件
+ * @returns 普通组件返回单个 viewInfo，DeTabs 返回其自身及直属子组件的 viewInfo 数组
+ */
+const syncPcViewInfoToMobile = targetComponent => {
+  const targetComponents = [targetComponent]
+  if (targetComponent.component === 'DeTabs') {
+    targetComponent.propValue?.forEach(tabItem => {
+      targetComponents.push(...(tabItem.componentData || []))
+    })
+  }
+  const targetViewInfos = targetComponents.reduce((result, component) => {
+    const sourceViewInfo = canvasViewInfo.value[component.id]
+    if (sourceViewInfo) {
+      const targetViewInfo = deepCopy(sourceViewInfo)
+      // 同步 PC 设计应重新采用 PC 图表配置；仅清空移动图表覆盖项并保留全部配置字段
+      targetViewInfo.customStyleMobile = null
+      targetViewInfo.customAttrMobile = null
+      canvasViewInfoMobile.value[component.id] = targetViewInfo
+      result.push(targetViewInfo)
+    }
+    return result
+  }, [])
+  return targetComponent.component === 'DeTabs' ? targetViewInfos : targetViewInfos[0]
+}
+
 const hanedleMessage = event => {
   if (
     event.data?.msgOrigin === 'de-fit2cloud' &&
@@ -125,14 +152,8 @@ const hanedleMessage = event => {
     const targetComponent = findComponentById(event.data.value)
     if (targetComponent) {
       changeTimes.value++
-      let targetViewInfo
-      const sourceViewInfo = canvasViewInfo.value[targetComponent.id]
-      if (sourceViewInfo) {
-        targetViewInfo = deepCopy(sourceViewInfo)
-        targetViewInfo.customStyleMobile = null
-        targetViewInfo.customAttrMobile = null
-        canvasViewInfoMobile.value[targetComponent.id] = targetViewInfo
-      }
+      // DeTabs 自身通常没有 viewInfo，实际图表配置属于子组件；同步整个 Tab 内的图表配置
+      const targetViewInfo = syncPcViewInfoToMobile(targetComponent)
       snapshotStore.recordSnapshotCacheToMobile('syncPcDesign', targetComponent, targetViewInfo)
     }
   }
@@ -162,12 +183,26 @@ const hanedleMessage = event => {
         if (ele.component === 'DeTabs') {
           ele.propValue.forEach(tabItem => {
             tabItem.componentData?.forEach(tabComponent => {
+              const tabMobileComponent = com.tab?.[tabComponent.id]
+              if (!tabMobileComponent) {
+                return
+              }
               const {
+                x: tx,
+                y: ty,
+                sizeX: tSizeX,
+                sizeY: tSizeY,
                 style: tStyle,
-                propValue: tPropValue,
                 events: tEvents,
                 commonBackground: tCommonBackground
-              } = com.tab[tabComponent.id]
+              } = tabMobileComponent
+              // mx、my 保存移动端 Matrix 坐标，避免覆盖 PC 使用的 x、y
+              tabComponent.mx = tx
+              tabComponent.my = ty
+              // mSizeX、mSizeY 保存移动端 Matrix 尺寸，避免覆盖 PC 使用的 sizeX、sizeY
+              tabComponent.mSizeX = tSizeX
+              tabComponent.mSizeY = tSizeY
+              // mStyle、mEvents、mCommonBackground 仅保存移动端的外观、事件和公共背景覆盖项
               tabComponent.mStyle = tStyle
               tabComponent.mEvents = tEvents
               tabComponent.mCommonBackground = tCommonBackground

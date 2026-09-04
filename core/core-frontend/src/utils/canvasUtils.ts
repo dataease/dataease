@@ -50,6 +50,148 @@ import { formatterItem } from '@/views/chart/components/js/formatter'
 const { t } = useI18n()
 const appearanceStore = useAppearanceStoreWithOut()
 const { wsCache } = useCache()
+
+// Tab 移动端 Matrix 的总列数，与仪表板移动画布保持一致
+const TAB_MOBILE_MATRIX_COLUMNS = 72
+// 指标首次进入移动端时每行排列的卡片数量
+const TAB_MOBILE_INDICATOR_COLUMNS = 2
+// 指标首次布局及缩放时使用的最小行高
+const TAB_MOBILE_INDICATOR_HEIGHT = 8
+// 普通图表和插件首次布局及缩放时使用的最小行高
+const TAB_MOBILE_CHART_HEIGHT = 14
+
+/**
+ * 判断单个移动端 geometry 字段是否可以安全交给 Matrix 使用
+ * @param value mx、my、mSizeX 或 mSizeY 的字段值
+ * @returns 是否为大于 0 的有限数字
+ */
+const isValidMobileGeometryValue = value => Number.isFinite(value) && value > 0
+
+/**
+ * 判断组件首次生成 Tab 移动布局时是否需要占满整行
+ * @param component Tab 内的组件配置
+ * @returns 图表或插件返回 true，其他设计组件返回 false
+ */
+const isTabMobileFullRowComponent = component =>
+  component?.component === 'UserView' || component?.isPlugin
+
+/**
+ * 判断组件是否已经保存了完整的移动端位置和尺寸
+ * mx、my 表示移动端列和行坐标，mSizeX、mSizeY 表示移动端宽度和高度
+ * @param component 待检查的组件配置
+ * @returns 四个移动端 geometry 字段均有效时返回 true
+ */
+export const hasMobileGeometry = component =>
+  ['mx', 'my', 'mSizeX', 'mSizeY'].every(key => isValidMobileGeometryValue(component?.[key]))
+
+/**
+ * 获取移动端 Tab 子组件允许缩放到的最小 Matrix 尺寸
+ * @param component 正在缩放的 Tab 子组件
+ * @returns sizeX 为最小列宽，sizeY 为最小行高
+ */
+export const getTabMobileMinSize = component => {
+  if (component?.innerType === 'indicator') {
+    return {
+      sizeX: TAB_MOBILE_MATRIX_COLUMNS / TAB_MOBILE_INDICATOR_COLUMNS,
+      sizeY: TAB_MOBILE_INDICATOR_HEIGHT
+    }
+  }
+  if (component?.component === 'UserView' || component?.isPlugin) {
+    return {
+      sizeX: TAB_MOBILE_MATRIX_COLUMNS / TAB_MOBILE_INDICATOR_COLUMNS,
+      sizeY: TAB_MOBILE_CHART_HEIGHT
+    }
+  }
+  return { sizeX: 1, sizeY: 1 }
+}
+
+/**
+ * 将已保存的移动端 geometry 投影为 Matrix 当前使用的运行时坐标
+ * @param component 已存在完整 mx、my、mSizeX、mSizeY 的组件
+ */
+const useMobileGeometry = component => {
+  component.x = component.mx
+  component.y = component.my
+  component.sizeX = component.mSizeX
+  component.sizeY = component.mSizeY
+}
+
+/**
+ * 为尚未配置移动端 geometry 的 Tab 子组件生成首次布局
+ * 这里只写运行时 x、y、sizeX、sizeY，用户保存移动设计时再统一回写到 m* 字段
+ * @param components 当前 Tab 页签中的子组件数组
+ */
+const generateInitialTabMobileGeometry = components => {
+  // 只处理没有完整 m* 字段的组件，排序用于保持与 PC 画布大致一致的阅读顺序
+  const componentsWithoutMobileGeometry = components
+    .filter(component => !hasMobileGeometry(component))
+    .sort((left, right) => left.y - right.y || left.x - right.x)
+
+  if (!componentsWithoutMobileGeometry.length) {
+    return
+  }
+
+  // nextY 表示下一个组件可以使用的 Matrix 行坐标，已保存布局保持不动
+  let nextY = components
+    .filter(hasMobileGeometry)
+    .reduce((maxY, component) => Math.max(maxY, component.my + component.mSizeY), 1)
+  // indicatorColumn 表示当前指标在两列布局中的列索引
+  let indicatorColumn = 0
+
+  componentsWithoutMobileGeometry.forEach(component => {
+    const indicator = component.innerType === 'indicator'
+    if (indicator) {
+      // 指标在手机窄屏中沿用 PC 宽度容易挤压文字；首次生成布局时固定为一行两列
+      const sizeX = TAB_MOBILE_MATRIX_COLUMNS / TAB_MOBILE_INDICATOR_COLUMNS
+      component.x = indicatorColumn * sizeX + 1
+      component.y = nextY
+      component.sizeX = sizeX
+      component.sizeY = TAB_MOBILE_INDICATOR_HEIGHT
+      indicatorColumn++
+      if (indicatorColumn === TAB_MOBILE_INDICATOR_COLUMNS) {
+        indicatorColumn = 0
+        nextY += TAB_MOBILE_INDICATOR_HEIGHT
+      }
+      return
+    }
+
+    if (indicatorColumn > 0) {
+      indicatorColumn = 0
+      nextY += TAB_MOBILE_INDICATOR_HEIGHT
+    }
+    component.x = 1
+    component.y = nextY
+    if (isTabMobileFullRowComponent(component)) {
+      // 图表需要完整可用宽度；只对图表和插件应用通栏兜底
+      component.sizeX = TAB_MOBILE_MATRIX_COLUMNS
+    } else {
+      // 图片、文本和按钮可能有刻意设计的宽高；保留原配置并仅限制在移动画布范围内
+      component.sizeX = Math.min(Math.max(component.sizeX || 1, 1), TAB_MOBILE_MATRIX_COLUMNS)
+    }
+    component.sizeY = Math.max(
+      component.sizeY || 1,
+      component.component === 'UserView' || component.isPlugin ? TAB_MOBILE_CHART_HEIGHT : 1
+    )
+    nextY += component.sizeY
+  })
+}
+
+/**
+ * 初始化 DeTabs 每个页签的移动端子组件布局
+ * 已保存的 m* 布局保持不变，仅为缺少移动端 geometry 的子组件生成兜底布局
+ * @param tabComponent DeTabs 组件配置，其他组件会直接忽略
+ */
+export const initTabMobileLayout = tabComponent => {
+  if (tabComponent?.component !== 'DeTabs') {
+    return
+  }
+  tabComponent.propValue?.forEach(tabItem => {
+    const components = tabItem.componentData || []
+    generateInitialTabMobileGeometry(components)
+    components.filter(hasMobileGeometry).forEach(useMobileGeometry)
+  })
+}
+
 export function chartTransStr2Object(targetIn, copy) {
   const target = copy === 'Y' ? cloneDeep(targetIn) : targetIn
   return target
@@ -584,6 +726,8 @@ export function initCanvasDataMobile(dvId, params, callBack) {
           })
         }
         if (ele.component === 'DeTabs') {
+          // Tab 子组件不属于顶层 componentData，需要在恢复移动样式前单独初始化 geometry
+          initTabMobileLayout(ele)
           ele.propValue?.forEach(tabItem => {
             tabItem.componentData?.forEach(tabComponent => {
               tabComponent.style = tabComponent.mStyle || tabComponent.style
