@@ -175,20 +175,34 @@ const props = defineProps({
     default: 'inherit'
   }
 })
-import Shape from './Shape.vue'
-import DragInfo from '@/components/visualization/common/DragInfo.vue'
-import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
-import PopArea from '@/custom-component/pop-area/Component.vue'
-import DeGrid from '@/components/data-visualization/DeGrid.vue'
-import DeGridScreen from '@/components/data-visualization/DeGridScreen.vue'
-import DragShadow from '@/components/data-visualization/canvas/DragShadow.vue'
-import GroupAreaShadow from '@/custom-component/group-area/ComponentShadow.vue'
-import PointShadow from '@/components/data-visualization/canvas/PointShadow.vue'
-import ContextMenu from './ContextMenu.vue'
-import MarkLine from './MarkLine.vue'
-import LinkJumpSet from '@/components/visualization/LinkJumpSet.vue'
-import LinkageSet from '@/components/visualization/LinkageSet.vue'
-import DatasetParamsComponent from '@/components/visualization/DatasetParamsComponent.vue'
+const Shape = defineAsyncComponent(() => import('./Shape.vue'))
+const DragInfo = defineAsyncComponent(
+  () => import('@/components/visualization/common/DragInfo.vue')
+)
+const CanvasOptBar = defineAsyncComponent(
+  () => import('@/components/visualization/CanvasOptBar.vue')
+)
+const PopArea = defineAsyncComponent(() => import('@/custom-component/pop-area/Component.vue'))
+const DeGrid = defineAsyncComponent(() => import('@/components/data-visualization/DeGrid.vue'))
+const DeGridScreen = defineAsyncComponent(
+  () => import('@/components/data-visualization/DeGridScreen.vue')
+)
+const DragShadow = defineAsyncComponent(
+  () => import('@/components/data-visualization/canvas/DragShadow.vue')
+)
+const GroupAreaShadow = defineAsyncComponent(
+  () => import('@/custom-component/group-area/ComponentShadow.vue')
+)
+const PointShadow = defineAsyncComponent(
+  () => import('@/components/data-visualization/canvas/PointShadow.vue')
+)
+const ContextMenu = defineAsyncComponent(() => import('./ContextMenu.vue'))
+const MarkLine = defineAsyncComponent(() => import('./MarkLine.vue'))
+const LinkJumpSet = defineAsyncComponent(() => import('@/components/visualization/LinkJumpSet.vue'))
+const LinkageSet = defineAsyncComponent(() => import('@/components/visualization/LinkageSet.vue'))
+const DatasetParamsComponent = defineAsyncComponent(
+  () => import('@/custom-component/group-area/ComponentShadow.vue')
+)
 
 const {
   baseWidth,
