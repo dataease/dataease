@@ -505,7 +505,7 @@ const dataPermissionChange = () => {
 const loadRTree = () => {
   const busiFlag = formState?.value?.rtid ? "dataV" : "dashboard";
   const request = { busiFlag, resourceTable: "core", weight: 7 };
-  queryTreeApi(request).then((rsp) => {
+  return queryTreeApi(request).then((rsp) => {
     if (rsp && rsp[0]?.id === "0") {
       state.panelList = rsp[0].children;
     } else {
@@ -576,6 +576,8 @@ const loadCanvasInfo = async (resourceId) => {
           (!info.enablePanelCustom || rsp.data.selfWatermarkStatus);
       }
       state.customFilter = defaultConditionTrans(canvasInfo.value);
+    }).catch(() => {
+      // 仪表板已失效（如被删除）：loadRTree 的 validateRid 已提示并清空 rid，此处静默兜底
     });
   }
 };
@@ -648,9 +650,10 @@ const removeViewTag = (val: string) => {
 defineExpose({
   getFormData,
 });
-onMounted(() => {
+onMounted(async () => {
   formatBase2Form();
-  loadRTree();
+  // 先加载树并校验 rid（失效 rid 会被清空），避免对已删除仪表板发起 findById
+  await loadRTree();
   loadCanvasInfo(formState.value.rid);
 });
 </script>
