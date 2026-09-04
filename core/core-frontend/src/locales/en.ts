@@ -36,6 +36,7 @@ export default {
     file_size_exceed_tips:
       'The file size exceeds the limit. Please modify the relevant configuration file.',
     permission_denied_tips: 'You are not allowed to access. Please contact the administrator.',
+    resource_not_exist_tips: 'Resource does not exist or has been deleted',
     system_upgrade_tips: 'The system has been upgraded. Please click to refresh the page.',
     refresh: 'Refresh',
     component: {

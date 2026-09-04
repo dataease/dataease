@@ -20,6 +20,7 @@ public class CacheConstant {
     public static class OrgCacheConstant {
         public static final String ORG_GLOBAL_RESOURCE_CACHE = "de_v2_org_global_resource";
         public static final String ALL_OID_FLAG_RESOURCE_CACHE = "de_v2_all_oid_flag_resource";
+        public static final String BUSI_RESOURCE_EXIST_CACHE = "de_v2_busi_resource_exist";
 
     }
 
