@@ -628,6 +628,7 @@ const emits = defineEmits(['update:item', 'del'])
               effect="light"
               :content="item.value"
               placement="top"
+              :disabled="!item.value"
               ><el-input
                 readonly
                 @click="showTimeDialog(item)"
