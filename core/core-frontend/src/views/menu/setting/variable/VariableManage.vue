@@ -74,7 +74,7 @@ const valueRule = reactive<FormRules>({
   value: [
     {
       required: true,
-      message: t('common.require'),
+      message: t('common.please_input') + t('common.empty') + t('system.variable_value'),
       trigger: 'blur'
     },
     {
@@ -87,7 +87,7 @@ const valueRule = reactive<FormRules>({
   valueDesc: [
     {
       required: false,
-      message: t('common.require'),
+      message: t('common.please_input') + t('common.empty') + t('system.variable_desc'),
       trigger: 'blur'
     },
     {

@@ -143,7 +143,7 @@ const rule = reactive<FormRules>({
   account: [
     {
       required: true,
-      message: t('common.require'),
+      message: t('common.please_input') + t('common.empty') + t('common.account'),
       trigger: 'blur'
     },
     {
@@ -157,7 +157,7 @@ const rule = reactive<FormRules>({
   name: [
     {
       required: true,
-      message: t('common.require'),
+      message: t('common.please_input') + t('common.empty') + t('user.name'),
       trigger: 'blur'
     },
     {
@@ -178,7 +178,7 @@ const rule = reactive<FormRules>({
   email: [
     {
       required: true,
-      message: t('common.require'),
+      message: t('common.please_input') + t('common.empty') + t('common.email'),
       trigger: 'blur'
     },
     {
@@ -558,7 +558,7 @@ onBeforeUnmount(() => {
           <el-form-item :label="t('common.account')" prop="account">
             <el-input
               v-model="state.form.account"
-              :placeholder="`${$t('common.please_input')} ${$t('common.account')}`"
+              :placeholder="$t('common.please_input') + t('common.empty') + $t('common.account')"
               :disabled="formType !== 'add'"
             />
           </el-form-item>
@@ -568,7 +568,7 @@ onBeforeUnmount(() => {
           <el-form-item :label="$t('user.name')" prop="name">
             <el-input
               v-model="state.form.name"
-              :placeholder="`${$t('common.please_input')} ${$t('user.name')}`"
+              :placeholder="$t('common.please_input') + t('common.empty') + $t('user.name')"
             />
           </el-form-item>
         </el-col>
@@ -578,7 +578,7 @@ onBeforeUnmount(() => {
           <el-form-item :label="$t('common.email')" prop="email">
             <el-input
               v-model="state.form.email"
-              :placeholder="$t('common.please_input') + ' ' + $t('common.email')"
+              :placeholder="$t('common.please_input') + t('common.empty') + $t('common.email')"
             />
           </el-form-item>
         </el-col>
@@ -586,7 +586,7 @@ onBeforeUnmount(() => {
           <el-form-item :label="$t('common.phone')" prop="phone">
             <el-input
               v-model="state.form.phone"
-              :placeholder="$t('common.please_input') + ' ' + $t('common.phone')"
+              :placeholder="$t('common.please_input') + t('common.empty') + $t('common.phone')"
               class="input-with-select"
             >
               <template #prepend> +86 </template>
@@ -687,7 +687,7 @@ onBeforeUnmount(() => {
           :highlight-current="true"
           multiple
           :render-after-expand="false"
-          :placeholder="$t('common.please_select') + $t('user.role')"
+          :placeholder="$t('common.please_select') + t('common.empty') + $t('user.role')"
           show-checkbox
           check-on-click-node
         />

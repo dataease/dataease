@@ -45,7 +45,7 @@ const rule = {
   pwd: [
     {
       required: true,
-      message: t('common.require'),
+      message: t('common.please_input') + t('common.empty') + t('system.original_password'),
       trigger: 'blur'
     },
     {
@@ -58,7 +58,7 @@ const rule = {
   newPwd: [
     {
       required: true,
-      message: t('common.require'),
+      message: t('common.please_input') + t('common.empty') + t('system.new_password'),
       trigger: 'blur'
     },
     { validator: validatePwd, trigger: 'blur' }
@@ -66,7 +66,7 @@ const rule = {
   confirm: [
     {
       required: true,
-      message: t('common.require'),
+      message: t('common.please_input') + t('common.empty') + t('system.confirm_password'),
       trigger: 'blur'
     },
     {

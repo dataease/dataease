@@ -21,7 +21,8 @@ const validatePwd = (_: any, value: any, callback: any) => {
   if (value === pwdForm.pwd) {
     callback(new Error(t('system.be_the_same')))
   }
-  const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[~!@#$%^&*()_+\-\={}|":<>?`[\];',.\/])[a-zA-Z0-9~!@#$%^&*()_+\-\={}|":<>?`[\];',.\/]{8,20}$/
+  const pattern =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[~!@#$%^&*()_+\-\={}|":<>?`[\];',.\/])[a-zA-Z0-9~!@#$%^&*()_+\-\={}|":<>?`[\];',.\/]{8,20}$/
   const regep = new RegExp(pattern)
   if (!regep.test(value)) {
     const msg = t('user.pwd_pattern_error')
@@ -43,7 +44,7 @@ const rule = {
   pwd: [
     {
       required: true,
-      message: t('common.require'),
+      message: t('common.please_input') + t('common.empty') + t('system.original_password'),
       trigger: 'blur'
     },
     {
@@ -54,10 +55,9 @@ const rule = {
     }
   ],
   newPwd: [
-
     {
       required: true,
-      message: t('common.require'),
+      message: t('common.please_input') + t('common.empty') + t('system.new_password'),
       trigger: 'blur'
     },
     { validator: validatePwd, trigger: 'blur' }
@@ -65,7 +65,7 @@ const rule = {
   confirm: [
     {
       required: true,
-      message: t('common.require'),
+      message: t('common.please_input') + t('common.empty') + t('system.confirm_password'),
       trigger: 'blur'
     },
     {
@@ -84,7 +84,7 @@ const save = () => {
     if (val) {
       const pwd = rsaEncryp(pwdForm.pwd)
       const newPwd = rsaEncryp(pwdForm.newPwd)
-      request.post({url: '/user/modifyPwd', data: {pwd, newPwd}}).then(() => {
+      request.post({ url: '/user/modifyPwd', data: { pwd, newPwd } }).then(() => {
         ElMessage.success(t('system.log_in_again'))
         logoutHandler()
       })
@@ -104,13 +104,28 @@ const save = () => {
     label-position="top"
   >
     <el-form-item :label="t('system.original_password')" prop="pwd">
-      <CustomPassword v-model="pwdForm.pwd" show-password type="password" :placeholder="t('system.the_original_password')" />
+      <CustomPassword
+        v-model="pwdForm.pwd"
+        show-password
+        type="password"
+        :placeholder="t('system.the_original_password')"
+      />
     </el-form-item>
     <el-form-item :label="t('system.new_password')" prop="newPwd">
-      <CustomPassword v-model="pwdForm.newPwd" show-password type="password" :placeholder="t('system.the_new_password')" />
+      <CustomPassword
+        v-model="pwdForm.newPwd"
+        show-password
+        type="password"
+        :placeholder="t('system.the_new_password')"
+      />
     </el-form-item>
     <el-form-item :label="t('system.confirm_password')" prop="confirm">
-      <CustomPassword v-model="pwdForm.confirm" show-password type="password" :placeholder="t('system.the_confirmation_password')" />
+      <CustomPassword
+        v-model="pwdForm.confirm"
+        show-password
+        type="password"
+        :placeholder="t('system.the_confirmation_password')"
+      />
     </el-form-item>
     <el-button @click="save" type="primary">
       {{ t('common.save') }}

@@ -50,7 +50,11 @@ const candidateAdmins = ref<any[]>([])
 
 const rule = reactive<FormRules>({
   name: [
-    { required: true, trigger: 'blur', message: t('common.required') },
+    {
+      required: true,
+      trigger: 'blur',
+      message: t('common.please_input') + t('common.empty') + t('org.name')
+    },
     {
       min: 1,
       max: 50,
@@ -169,7 +173,7 @@ defineExpose({
           <el-form-item :label="t('org.name')" prop="name">
             <el-input
               v-model="form.name"
-              :placeholder="`${t('common.please_input')} ${t('org.name')}`"
+              :placeholder="t('common.please_input') + t('common.empty') + t('org.name')"
             />
           </el-form-item>
         </el-col>
@@ -185,9 +189,12 @@ defineExpose({
               :data="state.treeData"
               check-strictly
               :render-after-expand="false"
-              :placeholder="`${t('common.please_select')}${t('org.parent')}${
-                isAdmin ? t('org.admin_parent_tips') : t('org.default_parent_tips')
-              }`"
+              :placeholder="
+                t('common.please_select') +
+                t('common.empty') +
+                t('org.parent') +
+                (isAdmin ? t('org.admin_parent_tips') : t('org.default_parent_tips'))
+              "
             />
           </el-form-item>
         </el-col>
@@ -199,7 +206,7 @@ defineExpose({
               v-model="adminIds"
               multiple
               filterable
-              :placeholder="`${t('common.please_select')}${t('role.org_admin')}`"
+              :placeholder="t('common.please_select') + t('common.empty') + t('role.org_admin')"
             >
               <el-option
                 v-for="user in candidateAdmins"
