@@ -114,7 +114,6 @@ onMounted(() => {
 
 .frame-mask {
   display: flex;
-  opacity: 0.5;
   position: absolute;
   top: 0px;
   z-index: 1;
@@ -124,7 +123,7 @@ onMounted(() => {
 
 .edit-mask {
   left: 0px;
-  background-color: #5c5e61;
+  background-color: rgba(92, 94, 97, 0.75);
   height: 100% !important;
   width: 100% !important;
 }
