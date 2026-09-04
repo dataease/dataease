@@ -12,4 +12,5 @@ public interface PerBusiResourceRepository extends JpaRepository<PerBusiResource
     void deleteByOrgId(Long orgId);
     void deleteAllByIdIn(Collection<Long> ids);
     Long countByOrgId(Long orgId);
+    boolean existsByIdAndRtId(Long id, Integer rtId);
 }

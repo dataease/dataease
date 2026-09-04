@@ -28,6 +28,7 @@ export default {
     secret_changed_tips: '金鑰資訊已變更，請重新整理頁面後重試',
     file_size_exceed_tips: '檔案大小超出限制，請修改相關組態檔',
     permission_denied_tips: '目前權限不允許存取，請聯繫管理員',
+    resource_not_exist_tips: '資源不存在或已經被刪除',
     system_upgrade_tips: '系統有升級，請點擊重新整理頁面',
     refresh: '刷新',
     associated_chart: '關聯圖表',
