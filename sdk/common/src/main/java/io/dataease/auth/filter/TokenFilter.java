@@ -51,6 +51,7 @@ public class TokenFilter implements Filter {
             return;
         }
         String requestURI = request.getRequestURI();
+        boolean staticResource = isStaticResourceRequest(requestURI);
 
         boolean match = false;
         try {
@@ -63,7 +64,7 @@ public class TokenFilter implements Filter {
             LogUtil.error(e.getMessage(), e);
             return;
         }
-        if (match) {
+        if (!staticResource && match) {
             filterChain.doFilter(servletRequest, servletResponse);
             return;
         }
@@ -77,7 +78,7 @@ public class TokenFilter implements Filter {
             if (StringUtils.isNotBlank(executeVersion = VersionUtil.getRandomVersion())) {
                 Objects.requireNonNull(ServletUtils.response()).addHeader(AuthConstant.DE_EXECUTE_VERSION, executeVersion);
             }
-            String linkToken = ServletUtils.getHead(AuthConstant.LINK_TOKEN_KEY);
+            String linkToken = getLinkToken(request, staticResource);
             if (StringUtils.isNotBlank(linkToken)) {
                 if (StringUtils.length(linkToken) < 100) {
                     DEException.throwException("token is invalid");
@@ -103,10 +104,17 @@ public class TokenFilter implements Filter {
                 verifier.verify(linkToken);
 
                 UserUtils.setUserInfo(new TokenUserBO(userId, oid));
+                if (StringUtils.isNotBlank(ServletUtils.getHead(AuthConstant.LINK_TOKEN_KEY))) {
+                    ServletUtils.setCookie((HttpServletResponse) servletResponse, AuthConstant.LINK_TOKEN_COOKIE_KEY, linkToken);
+                }
                 filterChain.doFilter(servletRequest, servletResponse);
                 return;
             }
-            String token = ServletUtils.getToken();
+            String headerToken = ServletUtils.getToken();
+            String token = getLoginToken(request, staticResource);
+            if (StringUtils.isNotBlank(headerToken)) {
+                ServletUtils.setCookie((HttpServletResponse) servletResponse, AuthConstant.TOKEN_COOKIE_KEY, headerToken);
+            }
             TokenUserBO userBO = TokenUtils.validate(token);
             UserUtils.setUserInfo(userBO);
             filterChain.doFilter(servletRequest, servletResponse);
@@ -126,6 +134,26 @@ public class TokenFilter implements Filter {
         } finally {
             UserUtils.removeUser();
         }
+    }
+
+    private boolean isStaticResourceRequest(String requestURI) {
+        return StringUtils.isNotBlank(requestURI) && requestURI.contains("/static-resource/");
+    }
+
+    private String getLinkToken(HttpServletRequest request, boolean staticResource) {
+        String linkToken = ServletUtils.getHead(AuthConstant.LINK_TOKEN_KEY);
+        if (StringUtils.isBlank(linkToken) && staticResource) {
+            linkToken = ServletUtils.getCookie(AuthConstant.LINK_TOKEN_COOKIE_KEY);
+        }
+        return linkToken;
+    }
+
+    private String getLoginToken(HttpServletRequest request, boolean staticResource) {
+        String token = ServletUtils.getToken();
+        if (StringUtils.isBlank(token) && staticResource) {
+            token = ServletUtils.getCookie(AuthConstant.TOKEN_COOKIE_KEY);
+        }
+        return token;
     }
 
     private void sendResponseEntity(HttpServletResponse httpResponse, ResponseEntity<ResultMessage> responseEntity) throws IOException {

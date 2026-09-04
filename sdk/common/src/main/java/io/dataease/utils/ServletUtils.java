@@ -1,6 +1,7 @@
 package io.dataease.utils;
 
 import io.dataease.constant.AuthConstant;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.ObjectUtils;
@@ -32,6 +33,22 @@ public class ServletUtils {
 
     public static String getToken() {
         return getHead(AuthConstant.TOKEN_KEY);
+    }
+
+    public static String getCookie(String name) {
+        HttpServletRequest request = request();
+        if (request == null || request.getCookies() == null) return null;
+        for (Cookie cookie : request.getCookies()) {
+            if (StringUtils.equals(name, cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+        return null;
+    }
+
+    public static void setCookie(HttpServletResponse response, String name, String value) {
+        if (response == null || StringUtils.isBlank(name) || StringUtils.isBlank(value)) return;
+        response.addHeader("Set-Cookie", String.format("%s=%s; Path=/; HttpOnly; SameSite=Lax", name, value));
     }
 
     public static String getXUserinfo() {
