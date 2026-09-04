@@ -74,7 +74,7 @@ export default {
     create_time: 'Creation time',
     edit: 'Edit',
     delete: 'Delete',
-    please_input: 'Please input ',
+    please_input: 'Please input',
     please_select: 'Please select ',
     cancel: 'Cancel',
     sure: 'Confirm',

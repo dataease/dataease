@@ -95,21 +95,21 @@ const rule = reactive<FormRules>({
   pid: [
     {
       required: true,
-      message: t('common.require'),
+      message: t('common.please_input') + t('common.empty') + t('system.superior_region'),
       trigger: 'change'
     }
   ],
   country: [
     {
       required: true,
-      message: t('common.require'),
+      message: t('common.please_input') + t('common.empty') + t('system.country'),
       trigger: 'change'
     }
   ],
   code: [
     {
       required: true,
-      message: t('common.require'),
+      message: t('common.please_input') + t('common.empty') + t('system.region_code'),
       trigger: 'blur'
     },
     { validator: validateCode, trigger: 'blur' }
@@ -117,14 +117,14 @@ const rule = reactive<FormRules>({
   name: [
     {
       required: true,
-      message: t('common.require'),
+      message: t('common.please_input') + t('common.empty') + t('system.region_name'),
       trigger: 'blur'
     }
   ],
   fileName: [
     {
       required: true,
-      message: t('common.require'),
+      message: t('common.please_input') + t('common.empty') + t('system.coordinate_file'),
       trigger: 'blur'
     }
   ]
@@ -265,7 +265,7 @@ defineExpose({
           :data="state.treeData"
           check-strictly
           :render-after-expand="false"
-          :placeholder="t('common.please_select')"
+          :placeholder="t('common.please_select') + t('common.empty') + t('system.superior_region')"
           @current-change="pidChange"
           @change="onPidChanged"
         />
@@ -275,7 +275,7 @@ defineExpose({
         <el-select
           v-model="state.form.country"
           filterable
-          :placeholder="t('common.please_select')"
+          :placeholder="t('common.please_select') + t('common.empty') + t('system.country')"
           :filter-method="handleFilterMethod"
           @change="countryChange"
         >
@@ -303,7 +303,12 @@ defineExpose({
           </span>
         </template>
 
-        <el-input v-if="state.form.pid" v-model="state.form.code" :disabled="isCountry || !isChina">
+        <el-input
+          :placeholder="t('common.please_input') + t('common.empty') + t('system.region_code')"
+          v-if="state.form.pid"
+          v-model="state.form.code"
+          :disabled="isCountry || !isChina"
+        >
           <template #prefix>
             {{ formatPid }}
           </template>
@@ -320,7 +325,11 @@ defineExpose({
       </el-form-item>
 
       <el-form-item :label="t('system.region_name')" prop="name">
-        <el-input v-model="state.form.name" :disabled="isCountry" />
+        <el-input
+          :placeholder="t('common.please_input') + t('common.empty') + t('system.region_name')"
+          v-model="state.form.name"
+          :disabled="isCountry"
+        />
       </el-form-item>
 
       <div class="geo-label-mask" />
