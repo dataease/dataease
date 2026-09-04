@@ -30,6 +30,7 @@ export default {
     secret_changed_tips: '密钥信息已变更，请刷新页面重试',
     file_size_exceed_tips: '文件大小超出限制, 请修改相关配置文件',
     permission_denied_tips: '当前权限不允许访问，请联系管理员',
+    resource_not_exist_tips: '资源不存在或已经被删除',
     system_upgrade_tips: '系统有升级，请点击刷新页面',
     refresh: '刷新',
     local_excel: '本地 Excel/CSV',

@@ -280,7 +280,16 @@ service.interceptors.response.use(
       router.push(`/login?redirect=${queryRedirectPath}`)
     }
     if (header.has('DE-FORBIDDEN-FLAG')) {
-      showMsg(useI18n().t('common.permission_denied_tips'), '-changed-')
+      if (header.get('DE-FORBIDDEN-FLAG') === 'Resource not exist') {
+        // 资源不存在（已删除）：直接错误提示，不弹权限框
+        ElMessage({
+          type: 'error',
+          message: useI18n().t('common.resource_not_exist_tips'),
+          showClose: true
+        })
+      } else {
+        showMsg(useI18n().t('common.permission_denied_tips'), '-changed-')
+      }
     }
     if (error?.response.status === 400) {
       return Promise.reject(error)
