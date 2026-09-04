@@ -9,8 +9,6 @@ export const LayoutTransition = () => import('@/layout/components/LayoutTransiti
 export const generateRoutesFn2 = (routes: AppCustomRouteRecordRaw[]): AppRouteRecordRaw[] => {
   const res: AppRouteRecordRaw[] = []
 
-  console.log('generateRoutesFn2', routes)
-
   for (const router of routes) {
     let route = { ...router }
 
