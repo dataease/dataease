@@ -370,55 +370,6 @@ const emits = defineEmits(['update:item', 'del'])
           <span>{{ ele.name }}</span></el-option
         >
       </el-select>
-
-      <!-- <el-popover append-to=".select-content-dialog" trigger="click" :hide-on-click="false">
-        <template #reference>
-          <el-input
-            :placeholder="t('auth.select_filter_fields')"
-            v-model="item.name"
-            size="small"
-            @input="cancel"
-          >
-          </el-input>
-        </template>
-        <div class="de-el-dropdown-menu">
-          <el-input
-            :placeholder="t('auth.enter_keywords')"
-            @keydown.stop
-            size="small"
-            v-model="keywords"
-          >
-            <template #prefix>
-              <el-icon>
-                <Icon name="icon_search-outline_outlined"
-                  ><icon_searchOutline_outlined class="svg-icon"
-                /></Icon>
-              </el-icon>
-            </template>
-          </el-input>
-          <ul class="dimension">
-            <li
-              @click="selectItem(ele)"
-              :style="{
-                backgroundColor: activeName === ele.name ? '#f0f7ff' : ''
-              }"
-              :key="ele.id"
-              v-for="ele in dimensions"
-            >
-              <el-icon>
-                <Icon :className="`field-icon-${fieldEnums[ele.deType]}`"
-                  ><component
-                    :is="iconMap[fieldEnums[ele.deType]]"
-                    :class="`field-icon-${fieldEnums[ele.deType]}`"
-                    class="svg-icon"
-                  ></component
-                ></Icon>
-              </el-icon>
-              <span>{{ ele.name }}</span>
-            </li>
-          </ul>
-        </div>
-      </el-popover> -->
       <div class="white-nowrap flex-align-center" style="position: relative" v-if="item.fieldId">
         <span class="filed-title">{{ t('auth.screen_method') }}</span>
         <el-select
