@@ -62,6 +62,12 @@ public class ShareTicketManage {
         if (StringUtils.isNotBlank(ticket)) {
             CoreShareTicket ticketEntity = getByTicket(ticket);
             if (ObjectUtils.isNotEmpty(ticketEntity)) {
+                QueryWrapper<XpackShare> ticketShareQuery = new QueryWrapper<>();
+                ticketShareQuery.eq("uuid", ticketEntity.getUuid());
+                ticketShareQuery.eq("creator", AuthUtils.getUser().getUserId());
+                if (ObjectUtils.isEmpty(xpackShareMapper.selectOne(ticketShareQuery))) {
+                    DEException.throwException("无权操作此Ticket");
+                }
                 if (creator.isGenerateNew()) {
                     ticketEntity.setAccessTime(null);
                     ticketEntity.setTicket(CodingUtil.shortUuid());
