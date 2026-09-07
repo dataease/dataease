@@ -666,9 +666,8 @@ export class GroupLineMix extends G2ChartView {
 
   protected configYAxis(chart: Chart, options: G2Spec): G2Spec {
     const { xAxis, yAxis, yAxisExt } = parseJson(chart.customStyle)
-    const [intervalMark, lineMark, pointMark] = options.children.find(
-      c => c.key === 'chart'
-    ).children
+    const view = options.children.find(c => c.key === 'chart')
+    const [intervalMark, lineMark, pointMark] = view.children
     if (!yAxis.show) {
       intervalMark.axis.y = false
       lineMark.axis.y = false
@@ -722,12 +721,12 @@ export class GroupLineMix extends G2ChartView {
       const scaleY = {
         key: 'right',
         nice: false,
-        clamp: true,
         independent: true,
         domain: [yAxisExt.axisValue.min, yAxisExt.axisValue.max]
       }
       lineMark.scale.y = scaleY
       pointMark.scale.y = scaleY
+      this.configManualYAxisLineRange(yAxisExt, view, lineMark, pointMark)
       merge(lineMark, {
         axis: {
           y: {

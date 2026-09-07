@@ -97,6 +97,20 @@ type G2FontSpec = LargeDataSpec & {
 const isRecord = (value: unknown): value is Record<string, any> =>
   typeof value === 'object' && value !== null && !Array.isArray(value)
 
+/**
+ * 判断 point 变换后的 Y 通道值是否位于手动坐标轴的闭区间内
+ *
+ * 空值和空字符串直接视为越界，避免 Number(null) 等隐式转换把空值误判为 0
+ * 等于最小值或最大值的点仍属于有效数据，应继续显示
+ */
+const isManualAxisValueInDomain = (value: unknown, domainMin: number, domainMax: number) => {
+  if (value === null || value === undefined || (typeof value === 'string' && value.trim() === '')) {
+    return false
+  }
+  const numberValue = Number(value)
+  return Number.isFinite(numberValue) && numberValue >= domainMin && numberValue <= domainMax
+}
+
 /** 补齐 G2 内置组件的字体主题，同时保留图表已有的主题属性 */
 const applyG2FontTheme = (theme: G2FontSpec['theme'], fontFamily: string): Record<string, any> => {
   const currentTheme = typeof theme === 'string' ? { type: theme } : isRecord(theme) ? theme : {}
@@ -744,6 +758,61 @@ export abstract class G2ChartView<
       LARGE_DATA_DISABLE_HIGHLIGHT_CHARTS.has(this.name)
     )
     chart.options(optimizedOptions)
+  }
+
+  /**
+   * 关闭 line 和 point 的 Y 比例尺 clamp，让越界数据保留真实的绘制坐标
+   *
+   * @param axis 当前折线对应的左轴或右轴配置
+   * @param view 包含目标折线和数据点的 G2 view，负责裁剪整个绘图区
+   * @param lineMark 需要按手动范围裁剪的折线 mark
+   * @param pointMark 需要隐藏越界圆点的 point mark
+   */
+  protected configManualYAxisLineRange(
+    axis: DeepPartial<ChartAxisStyle>,
+    view: G2Spec,
+    lineMark: G2Spec,
+    pointMark: G2Spec
+  ): void {
+    const axisValue = axis?.axisValue
+    if (axisValue?.auto !== false) {
+      return
+    }
+    const rawDomain: unknown[] = [axisValue.min, axisValue.max]
+    if (
+      rawDomain.some(
+        value =>
+          value === null ||
+          value === undefined ||
+          (typeof value === 'string' && value.trim() === '')
+      )
+    ) {
+      return
+    }
+    const [start, end] = rawDomain.map(Number)
+    if (!Number.isFinite(start) || !Number.isFinite(end)) {
+      return
+    }
+    const domainMin = Math.min(start, end)
+    const domainMax = Math.max(start, end)
+    const disableClamp = (mark: G2Spec) => {
+      const scale = isRecord(mark.scale) ? mark.scale : {}
+      const yScale = isRecord(scale.y) ? scale.y : {}
+      mark.scale = { ...scale, y: { ...yScale, clamp: false } }
+    }
+    disableClamp(lineMark)
+    disableClamp(pointMark)
+
+    // 当前 G2 仅在 view 层应用有效的绘图区裁剪，不能依赖子 mark 的 clip 配置
+    view.clip = true
+    const pointTransforms = Array.isArray(pointMark.transform) ? pointMark.transform : []
+    pointMark.transform = [
+      ...pointTransforms,
+      {
+        type: 'filter',
+        y: value => isManualAxisValueInDomain(value, domainMin, domainMax)
+      }
+    ]
   }
 
   /**

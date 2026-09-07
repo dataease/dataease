@@ -633,12 +633,12 @@ export class ColumnLineMix extends G2ChartView {
       const scaleY = {
         key: 'right',
         nice: false,
-        clamp: true,
         independent: true,
         domain: [yAxisExt.axisValue.min, yAxisExt.axisValue.max]
       }
       lineMark.scale.y = scaleY
       pointMark.scale.y = scaleY
+      this.configManualYAxisLineRange(yAxisExt, options, lineMark, pointMark)
       merge(lineMark, {
         axis: {
           y: {

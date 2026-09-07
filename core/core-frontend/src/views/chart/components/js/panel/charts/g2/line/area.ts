@@ -556,6 +556,8 @@ export class Area extends G2ChartView {
       if (result.scale?.y) {
         result.scale.y.nice = false
       }
+      const [, lineMark, pointMark] = result.children
+      this.configManualYAxisLineRange(yAxis, result, lineMark, pointMark)
       return result
     }
     return defaultsDeep(options, axisOption)
