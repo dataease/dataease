@@ -36,7 +36,7 @@ public class CoreOptRecent {
     private Long uid;
 
     @NotNull
-    @Comment("资源类型 1-可视化资源 2-仪表板 3-数据大屏 4-数据集 5-数据源 6-模板")
+    @Comment("资源类型 1-可视化资源 2-仪表板 3-数据大屏 4-数据集 5-数据源 6-模板 10-电子表格")
     @Column(name = "resource_type", nullable = false)
     private Integer resourceType;
 
