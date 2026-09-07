@@ -15,6 +15,8 @@ import icon_pc_fullscreen from '@/assets/svg/icon_pc_fullscreen.svg'
 import dvPreviewOuter from '@/assets/svg/dv-preview-outer.svg'
 import dvCancelPublish from '@/assets/svg/icon_undo_outlined.svg'
 import icon_shareLabel_outlined from '@/assets/svg/icon_share-label_outlined.svg'
+import icon_collection_outlined from '@/assets/svg/icon_collection_outlined.svg'
+import visualStar from '@/assets/svg/visual-star.svg'
 import dvInfoSvg from '@/assets/svg/dv-info.svg'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
@@ -43,6 +45,7 @@ import { HandleMore } from '@/components/handle-more'
 import { Icon } from '@/components/icon-custom'
 import { useMoveLine } from '@/hooks/web/useMoveLine'
 import router from '@/router'
+import { useRoute } from 'vue-router_2'
 import type { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
 import {
   deleteResource,
@@ -67,8 +70,10 @@ import {
 import { useLocaleStoreWithOut } from '@/store/modules/locale'
 import { IWorkbookData } from '@univerjs/core'
 import { treeWithAuth } from '@/views/menu/spreadsheet/api/auth'
+import { storeApi, storeStatusApi } from '@/api/visualization/dataVisualization'
 
 const { t } = useI18n()
+const route = useRoute()
 const interactiveStore = interactiveStoreWithOut()
 const { wsCache } = useCache()
 
@@ -93,6 +98,8 @@ const originResourceTree = shallowRef([])
 const previewWorkbookData = shallowRef<Partial<IWorkbookData>>(createDefaultWorkbookData())
 const previewDataKey = ref(0)
 const previewLoading = ref(false)
+const favorited = ref(false)
+const favoriteLoading = ref(false)
 const isPreviewFocus = ref(false)
 const isFullscreenPreview = ref(false)
 // 普通列表需扣除顶部导航，进入预览后直接使用完整视口高度。
@@ -123,6 +130,43 @@ const selectedNodeInfo = reactive({
   createBy: '',
   status: SpreadsheetPublishStatus.Unpublished
 })
+
+// 用请求版本隔离快速切换资源及收藏操作产生的过期异步响应。
+let previewRequestVersion = 0
+let favoriteRequestVersion = 0
+
+const isSameResource = (
+  left: string | number | null | undefined,
+  right: string | number | null | undefined
+) => left != null && right != null && String(left) === String(right)
+
+const loadFavoriteStatus = async (resourceId: string | number, currentPreviewVersion: number) => {
+  const currentFavoriteRequestVersion = ++favoriteRequestVersion
+  favoriteLoading.value = true
+  try {
+    const res = await storeStatusApi(String(resourceId))
+    const isCurrentResource = isSameResource(selectedNodeInfo.id, resourceId)
+    if (
+      currentPreviewVersion !== previewRequestVersion ||
+      currentFavoriteRequestVersion !== favoriteRequestVersion ||
+      !isCurrentResource
+    ) {
+      return
+    }
+    favorited.value = !!res.data
+  } catch (error) {
+    console.error('[Spreadsheet] Failed to load favorite status:', error)
+  } finally {
+    const isCurrentResource = isSameResource(selectedNodeInfo.id, resourceId)
+    if (
+      currentPreviewVersion === previewRequestVersion &&
+      currentFavoriteRequestVersion === favoriteRequestVersion &&
+      isCurrentResource
+    ) {
+      favoriteLoading.value = false
+    }
+  }
+}
 
 const dtLoading = ref(false)
 const { width, node } = useMoveLine('SPREADSHEET')
@@ -310,10 +354,13 @@ const handleNodeClick = (data: SpreadsheetTreeNode, node: { disabled?: boolean }
   loadSpreadsheetPreview(data.id as number, data.weight)
 }
 
-let requestId
+let requestId: ReturnType<typeof setTimeout> | undefined
 const spreadsheetRef = ref()
 const loadSpreadsheetPreview = async (id: number, weight?: number) => {
+  const currentPreviewRequestVersion = ++previewRequestVersion
+  ++favoriteRequestVersion
   previewLoading.value = true
+  favoriteLoading.value = true
 
   if (requestId) {
     clearTimeout(requestId)
@@ -321,9 +368,13 @@ const loadSpreadsheetPreview = async (id: number, weight?: number) => {
   requestId = setTimeout(async () => {
     try {
       const data = await findById(id)
+      if (currentPreviewRequestVersion !== previewRequestVersion) {
+        return
+      }
       const parsedWorkbookData = parseSheetData(data.sheetData) ?? createDefaultWorkbookData()
 
       previewWorkbookData.value = parsedWorkbookData
+      favorited.value = false
       selectedNodeInfo.id = data.id as number
       selectedNodeInfo.weight = weight ?? 0
       selectedNodeInfo.name = data.name || selectedNodeInfo.name
@@ -333,14 +384,25 @@ const loadSpreadsheetPreview = async (id: number, weight?: number) => {
       selectedNodeInfo.updater = data.updater || data.updateBy || ''
       selectedNodeInfo.updateTime = data.updateTime
       selectedNodeInfo.status = data.status ?? SpreadsheetPublishStatus.Unpublished
+      if (selectedNodeInfo.status === SpreadsheetPublishStatus.Unpublished) {
+        favoriteLoading.value = false
+      } else {
+        void loadFavoriteStatus(data.id, currentPreviewRequestVersion)
+      }
       if (spreadsheetRef.value) {
         spreadsheetRef.value.loadSheetData(previewWorkbookData.value)
       }
     } catch (e) {
+      if (currentPreviewRequestVersion !== previewRequestVersion) {
+        return
+      }
       console.error(e)
       ElMessage.error(t('spreadsheet.load_error'))
+      favoriteLoading.value = false
     } finally {
-      previewLoading.value = false
+      if (currentPreviewRequestVersion === previewRequestVersion) {
+        previewLoading.value = false
+      }
     }
   }, 300)
 }
@@ -410,8 +472,11 @@ const exitPreview = async () => {
 }
 
 const resetPreview = async () => {
+  ++previewRequestVersion
+  ++favoriteRequestVersion
   if (requestId) {
     clearTimeout(requestId)
+    requestId = undefined
   }
   await exitFullscreen()
   isPreviewFocus.value = false
@@ -426,6 +491,9 @@ const resetPreview = async () => {
   selectedNodeInfo.updateTime = undefined
   selectedNodeInfo.createBy = ''
   selectedNodeInfo.status = SpreadsheetPublishStatus.Unpublished
+  favorited.value = false
+  favoriteLoading.value = false
+  previewLoading.value = false
   previewWorkbookData.value = createDefaultWorkbookData()
   spreadsheetListTree.value?.setCurrentKey(null)
 }
@@ -444,6 +512,36 @@ const handleFullscreenChange = () => {
 
 const handleShare = () => {
   //
+}
+
+const toggleFavorite = async () => {
+  const resourceId = selectedNodeInfo.id
+  if (
+    resourceId == null ||
+    selectedNodeInfo.status === SpreadsheetPublishStatus.Unpublished ||
+    favoriteLoading.value
+  ) {
+    return
+  }
+
+  const currentPreviewRequestVersion = previewRequestVersion
+  ++favoriteRequestVersion
+  favoriteLoading.value = true
+  try {
+    await storeApi({ id: resourceId, type: 'spreadsheet' })
+    const isCurrentResource = isSameResource(selectedNodeInfo.id, resourceId)
+    if (currentPreviewRequestVersion !== previewRequestVersion || !isCurrentResource) {
+      return
+    }
+    await loadFavoriteStatus(resourceId, currentPreviewRequestVersion)
+  } catch (error) {
+    console.error('[Spreadsheet] Failed to toggle favorite:', error)
+  } finally {
+    const isCurrentResource = isSameResource(selectedNodeInfo.id, resourceId)
+    if (currentPreviewRequestVersion === previewRequestVersion && isCurrentResource) {
+      favoriteLoading.value = false
+    }
+  }
 }
 
 const operation = async (cmd: string, data: SpreadsheetTreeNode, nodeType: 'folder' | 'sheet') => {
@@ -573,9 +671,46 @@ const handleMoveNodeClick = (data: BusiTreeNode) => {
   }
 }
 
-onBeforeMount(() => {
+const findSpreadsheetNode = (
+  nodes: SpreadsheetTreeNode[],
+  resourceId: string | number
+): SpreadsheetTreeNode | undefined => {
+  for (const item of nodes) {
+    if (item.leaf && isSameResource(item.id, resourceId)) {
+      return item
+    }
+    if (item.children?.length) {
+      const target = findSpreadsheetNode(item.children as SpreadsheetTreeNode[], resourceId)
+      if (target) {
+        return target
+      }
+    }
+  }
+  return undefined
+}
+
+const openRouteSpreadsheet = async () => {
+  const queryId = route.query.id
+  const resourceId = Array.isArray(queryId) ? queryId[0] : queryId
+  if (resourceId == null || resourceId === '') {
+    return
+  }
+
+  const target = findSpreadsheetNode(state.spreadsheetTree, resourceId)
+  if (!target?.weight || isSpreadsheetUnpublished(target)) {
+    return
+  }
+
+  await nextTick()
+  // 工作台直达时复用资源树的权限和发布状态，并展开父节点定位当前资源。
+  spreadsheetListTree.value?.setCurrentKey(target.id, true)
+  loadSpreadsheetPreview(target.id as number, target.weight)
+}
+
+onBeforeMount(async () => {
   loadInit()
-  getSpreadsheetTree()
+  await getSpreadsheetTree()
+  await openRouteSpreadsheet()
 })
 
 onMounted(() => {
@@ -802,6 +937,26 @@ onBeforeUnmount(() => {
                 >
                   {{ t('visualization.publish_update_tips') }}
                 </span>
+                <el-tooltip
+                  v-if="selectedNodeInfo.status !== SpreadsheetPublishStatus.Unpublished"
+                  effect="dark"
+                  :content="favorited ? t('visualization.cancel_store') : t('visualization.store')"
+                  placement="top"
+                >
+                  <el-icon
+                    class="custom-icon hover-icon favorite-btn"
+                    :class="{ 'is-loading': favoriteLoading }"
+                    :style="{ color: favorited ? '#FFC60A' : '#646A73' }"
+                    @click="toggleFavorite"
+                  >
+                    <Icon :name="favorited ? 'visual-star' : 'icon_collection_outlined'">
+                      <component
+                        :is="favorited ? visualStar : icon_collection_outlined"
+                        class="svg-icon"
+                      />
+                    </Icon>
+                  </el-icon>
+                </el-tooltip>
               </div>
               <el-divider direction="vertical" class="info-divider" />
               <span class="creator-text">
@@ -1102,6 +1257,15 @@ onBeforeUnmount(() => {
             font-size: 12px;
             font-weight: 400;
             line-height: 20px;
+          }
+
+          .favorite-btn {
+            flex-shrink: 0;
+
+            &.is-loading {
+              cursor: wait;
+              opacity: 0.6;
+            }
           }
         }
 

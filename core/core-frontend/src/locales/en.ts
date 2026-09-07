@@ -986,6 +986,7 @@ export default {
     screen: 'Data screen',
     dataset: 'Dataset',
     datasource: 'Data source',
+    spreadsheet: 'Spreadsheet',
     all_types: 'All types',
     empty_desc: 'Please select user/role and resource type',
     row_column: 'Row and column permission settings',
@@ -3872,6 +3873,7 @@ export default {
     new_page_preview: 'New Page',
     cancel_favorites: 'Cancel Favorite',
     open_dataset: 'Open Dataset',
+    open_spreadsheet: 'Open Spreadsheet',
     administrator_for_authorization:
       'No business menu permissions, please contact the administrator for authorization',
     public_link_share: 'Public Link Sharing',
