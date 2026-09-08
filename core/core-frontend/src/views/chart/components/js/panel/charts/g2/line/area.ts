@@ -25,6 +25,8 @@ import {
   getLineConditionLineYMarks,
   getLineTooltipSameDimensionItems,
   bindLineLegendState,
+  configBreakLineStackMark,
+  filterBreakLinePointMark,
   LINE_AXIS_TYPE,
   LINE_CONDITION_VISIBLE_DOMAIN_KEY,
   LINE_EDITOR_PROPERTY,
@@ -778,7 +780,7 @@ export class Area extends G2ChartView {
   protected configEmptyDataStrategy(chart: Chart, options: G2Spec): G2Spec {
     const { functionCfg } = parseJson(chart.senior)
     const { emptyDataStrategy } = functionCfg
-    const [areaMark, lineMark] = options.children
+    const [areaMark, lineMark, pointMark] = options.children
     const data = options.data.value
     const multiDimension = chart.yAxis?.length > 1
     switch (emptyDataStrategy) {
@@ -788,6 +790,7 @@ export class Area extends G2ChartView {
         }
         merge(areaMark, { style: { connect: false } })
         merge(lineMark, { style: { connect: false } })
+        filterBreakLinePointMark(pointMark)
         break
       }
       case 'ignoreData': {
@@ -985,7 +988,8 @@ export class StackArea extends Area {
                   customAttr.basicStyle?.gradient ? setGradientColor(color, true, 270) : color
               )
             ).forEach(item => {
-              if (item.value === null || item.value === undefined) {
+              // 堆叠断线数据视图以 NaN 保留空坐标，tooltip 仍按空值隐藏
+              if (item.value === null || item.value === undefined || Number.isNaN(item.value)) {
                 return
               }
               const value = valueFormatter(item.value, tooltipAttr.tooltipFormatter)
@@ -1023,7 +1027,7 @@ export class StackArea extends Area {
   protected configEmptyDataStrategy(chart: Chart, options: G2Spec): G2Spec {
     const { functionCfg } = parseJson(chart.senior)
     const { emptyDataStrategy } = functionCfg
-    const [areaMark, lineMark] = options.children
+    const [areaMark, lineMark, pointMark] = options.children
     const data = options.data.value
     const multiDimension = chart.yAxis?.length > 1 || chart.extStack?.length > 0
     switch (emptyDataStrategy) {
@@ -1033,6 +1037,10 @@ export class StackArea extends Area {
         }
         merge(areaMark, { style: { connect: false } })
         merge(lineMark, { style: { connect: false } })
+        configBreakLineStackMark(areaMark, data)
+        configBreakLineStackMark(lineMark, data)
+        // stackY 将原始值保存在 y0，需据此识别被堆叠坐标转换的空值
+        filterBreakLinePointMark(pointMark, 'y0')
         break
       }
       case 'ignoreData': {

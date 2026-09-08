@@ -23,6 +23,7 @@ import {
   getLineConditionLineYMarks,
   getLineTooltipSameDimensionItems,
   bindLineLegendState,
+  filterBreakLinePointMark,
   LINE_AXIS_TYPE,
   LINE_CONDITION_VISIBLE_DOMAIN_KEY,
   LINE_EDITOR_PROPERTY,
@@ -821,7 +822,7 @@ export class Line extends G2ChartView {
   protected configEmptyDataStrategy(chart: Chart, options: G2Spec): G2Spec {
     const { functionCfg } = parseJson(chart.senior)
     const { emptyDataStrategy } = functionCfg
-    const [lineMark] = options.children
+    const [lineMark, pointMark] = options.children
     const data = options.data.value
     const multiDimension = chart.yAxis?.length > 1 || chart.xAxisExt?.length > 0
     switch (emptyDataStrategy) {
@@ -830,6 +831,7 @@ export class Line extends G2ChartView {
           handleBreakLineMultiDimension(data)
         }
         merge(lineMark, { style: { connect: false } })
+        filterBreakLinePointMark(pointMark)
         break
       }
       case 'ignoreData': {
