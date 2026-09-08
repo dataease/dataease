@@ -695,6 +695,7 @@ public class ChartDataManage {
                 || StringUtils.equalsIgnoreCase(view.getType(), "flow-map")
                 || StringUtils.equalsIgnoreCase(view.getType(), "t-heatmap")
                 || StringUtils.equalsIgnoreCase(view.getType(), "sankey")
+                || StringUtils.equalsIgnoreCase(view.getType(), "box-plot")
         ) {
             xAxis.addAll(xAxisExt);
         }

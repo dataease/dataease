@@ -65,6 +65,54 @@ public class CalciteProvider extends Provider {
     private String CUSTOM_PATH;
     private static String split = "DE";
 
+    /**
+     * 根据实际执行引擎和数据库版本判断是否可下推箱线图统计 SQL。
+     * 跨数据源查询由内置 Calcite 执行，可直接使用窗口函数；单数据源查询读取 JDBC 版本后按保守白名单判断。
+     * 无法识别能力时返回 false，由箱线图处理器切换到有样本上限的 Java 计算，不在这里吞掉后续查询异常。
+     */
+    @Override
+    public boolean supportsWindowFunctions(DatasourceRequest datasourceRequest) {
+        if (Boolean.TRUE.equals(datasourceRequest.getIsCross())) {
+            // 跨数据源 SQL 由内置 Calcite 引擎执行，不依赖外部数据库的窗口函数版本。
+            return true;
+        }
+        if (datasourceRequest.getDsList() == null || datasourceRequest.getDsList().size() != 1) {
+            return false;
+        }
+        DatasourceSchemaDTO datasource = datasourceRequest.getDsList().values().iterator().next();
+        try (Connection connection = getConnectionFromPool(datasource.getId())) {
+            DatabaseMetaData metadata = connection.getMetaData();
+            int major = metadata.getDatabaseMajorVersion();
+            int minor = metadata.getDatabaseMinorVersion();
+            datasource.setDsVersion(major);
+            datasourceRequest.setDsVersion(major);
+            return supportsWindowFunctions(datasource.getType(), major, minor);
+        } catch (Exception e) {
+            LogUtil.debug("无法识别数据源窗口函数能力，将由业务处理器执行兼容回退：" + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * 窗口函数版本白名单只包含已确认能覆盖当前统计 SQL 的数据库版本，未知类型保守回退。
+     */
+    static boolean supportsWindowFunctions(String datasourceType, int major, int minor) {
+        if (StringUtils.isBlank(datasourceType)) {
+            return false;
+        }
+        return switch (datasourceType.toLowerCase(Locale.ROOT)) {
+            case "mysql" -> major >= 8;
+            case "mariadb" -> major > 10 || major == 10 && minor >= 2;
+            case "oracle" -> major >= 9;
+            case "pg" -> major > 8 || major == 8 && minor >= 4;
+            case "kingbase" -> major >= 8;
+            case "sqlserver" -> major >= 9;
+            case "h2" -> major >= 2;
+            case "tidb" -> major >= 3;
+            default -> false;
+        };
+    }
+
     @Resource
     private CommonThreadPool commonThreadPool;
 

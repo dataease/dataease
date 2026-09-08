@@ -661,6 +661,28 @@ onMounted(() => {
       </el-checkbox>
     </el-form-item>
 
+    <el-form-item
+      v-if="showProperty('showBoxPlotDetails')"
+      class="form-item form-item-checkbox"
+      :class="'form-item-' + themes"
+    >
+      <el-checkbox
+        size="small"
+        :effect="themes"
+        v-model="state.tooltipForm.showBoxPlotDetails"
+        @change="changeTooltipAttr('showBoxPlotDetails')"
+      >
+        <span class="data-area-label">
+          <span style="margin-right: 4px">{{ t('chart.box_plot_show_details') }}</span>
+          <el-tooltip :content="t('chart.box_plot_details_tip')" :effect="themes" placement="top">
+            <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
+              <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
+            </el-icon>
+          </el-tooltip>
+        </span>
+      </el-checkbox>
+    </el-form-item>
+
     <div
       v-if="showProperty('tooltipFormatter') && !isBarRangeTime"
       :style="{ paddingLeft: showProperty('showQuota') ? '22px' : '0' }"

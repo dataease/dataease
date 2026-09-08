@@ -82,6 +82,17 @@ public abstract class Provider {
     public abstract Map<String, Object> fetchResultField(DatasourceRequest datasourceRequest) throws DEException;
 
     /**
+     * 判断当前数据源是否支持箱线图数据库统计所需的窗口函数。
+     * 默认返回 false，使未显式声明能力的已有插件数据源安全进入有界 Java 回退流程。
+     *
+     * @param datasourceRequest 包含当前数据源及跨数据源信息的查询请求
+     * @return 支持窗口函数时返回 true，否则返回 false
+     */
+    public boolean supportsWindowFunctions(DatasourceRequest datasourceRequest) {
+        return false;
+    }
+
+    /**
      * 获取表字段
      *
      * @param datasourceRequest
