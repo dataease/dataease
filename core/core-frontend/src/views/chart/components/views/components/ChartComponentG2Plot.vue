@@ -1321,6 +1321,29 @@ onBeforeUnmount(() => {
 </style>
 
 <style lang="less">
+div[id^='G2-TOOLTIP-WRAPPER-'] .g2-tooltip {
+  // 只收紧垂直留白，水平内边距保持 G2 原有值
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+}
+
+div[id^='G2-TOOLTIP-WRAPPER-'] .g2-tooltip:has(> .g2-tooltip-list:empty) {
+  // 根据最终 DOM 识别空列表，无指标时进一步减少上下留白
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+}
+
+div[id^='G2-TOOLTIP-WRAPPER-'] .g2-tooltip:has(> .g2-tooltip-list:not(:empty)) > .g2-tooltip-title {
+  // 仅在存在指标内容时拉开标题与列表的层次
+  margin-bottom: 8px;
+}
+
+div[id^='G2-TOOLTIP-WRAPPER-'] .g2-tooltip-list-item + .g2-tooltip-list-item,
+div[id^='G2-TOOLTIP-WRAPPER-'] .g2-tooltip-list-group-title + .g2-tooltip-list-item {
+  // 相邻指标及分组标题后的首条指标统一保留间距
+  margin-top: 6px;
+}
+
 div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover']
   .g2-tooltip:not([data-de-tooltip-position-ready='true']) {
   // 仅首次定位禁用位移过渡，稳定后恢复 AntV 的平滑跟随
@@ -1328,11 +1351,11 @@ div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover']
 }
 
 div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover'] {
-  // 悬浮 tooltip 随内容伸缩，长数值优先完整展示并保留移动端边界
+  // 悬浮 tooltip 按真实内容伸缩，长数值优先完整展示并保留移动端边界
   .g2-tooltip {
     box-sizing: border-box;
     width: max-content !important;
-    min-width: min(120px, calc(100vw - 24px)) !important;
+    min-width: 0 !important;
     max-width: min(33.333333vw, calc(100vw - 24px)) !important;
     max-height: min(480px, 60vh) !important;
     overflow-x: hidden !important;
@@ -1396,10 +1419,7 @@ div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover'] {
 
 @supports (width: 100dvw) {
   div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover'] .g2-tooltip {
-    min-width: min(
-      120px,
-      calc(100dvw - 24px - env(safe-area-inset-left) - env(safe-area-inset-right))
-    ) !important;
+    min-width: 0 !important;
     max-width: min(
       33.333333dvw,
       calc(100dvw - 24px - env(safe-area-inset-left) - env(safe-area-inset-right))
