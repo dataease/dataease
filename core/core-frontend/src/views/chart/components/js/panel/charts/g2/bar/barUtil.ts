@@ -9,6 +9,8 @@ import { isMobile } from '@/utils/utils'
 import { Chart as G2Chart } from '@antv/g2'
 import { defaultsDeep } from 'lodash-es'
 
+const G2_TOOLTIP_DEFAULT_FONT_SIZE = 12
+
 /**
  * 运行时形态与 G2Spec 完全一致 ，G2 以普通对象消费
  */
@@ -449,15 +451,19 @@ export function tooltipCss(tooltipAttr: DeepPartial<ChartTooltipAttr>) {
     },
     '.g2-tooltip-title': {
       color: tooltipAttr.color,
-      'font-size': `${tooltipAttr.fontSize}px`
+      'font-size': `${tooltipAttr.fontSize}px`,
+      // 仅使用字体自然行高撑开内容，不改变用户配置字号
+      'line-height': 'normal'
     },
     '.g2-tooltip-list-item-name-label': {
       color: tooltipAttr.color,
-      'font-size': `${tooltipAttr.fontSize}px`
+      'font-size': `${tooltipAttr.fontSize}px`,
+      'line-height': 'normal'
     },
     '.g2-tooltip-list-item-value': {
       color: tooltipAttr.color,
-      'font-size': `${tooltipAttr.fontSize}px`
+      'font-size': `${tooltipAttr.fontSize}px`,
+      'line-height': 'normal'
     }
   }
 }
@@ -804,10 +810,11 @@ function markHoverTooltipPositionReady(
 }
 
 function fitCarouselTooltipInChart(
-  container: string,
+  chart: Chart,
   tooltipWrapper: HTMLElement,
   tooltip: HTMLElement
 ) {
+  const { container } = chart
   const frameState = carouselTooltipFrameState.get(tooltip) || {}
   if (frameState.fitFrame !== undefined) {
     window.cancelAnimationFrame(frameState.fitFrame)
@@ -832,8 +839,16 @@ function fitCarouselTooltipInChart(
       return
     }
 
-    // 轮播维持原有图表内布局，宽度同时受默认上限和图表容器约束
-    const maxWidth = Math.min(G2_TOOLTIP_DEFAULT_MAX_WIDTH, wrapperWidth - CAROUSEL_TOOLTIP_GAP * 2)
+    const tooltipFontSize = Number(parseJson(chart.customAttr)?.tooltip?.fontSize)
+    const fontSizeScale =
+      Number.isFinite(tooltipFontSize) && tooltipFontSize > 0
+        ? Math.max(1, tooltipFontSize / G2_TOOLTIP_DEFAULT_FONT_SIZE)
+        : 1
+    // 轮播按实际字号放大宽度上限，短内容仍由 max-content 决定真实宽度
+    const maxWidth = Math.min(
+      G2_TOOLTIP_DEFAULT_MAX_WIDTH * fontSizeScale,
+      wrapperWidth - CAROUSEL_TOOLTIP_GAP * 2
+    )
     const maxHeight = wrapperHeight - CAROUSEL_TOOLTIP_GAP * 2
     const minWidth = Math.min(G2_TOOLTIP_DEFAULT_MIN_WIDTH, maxWidth)
     tooltipWrapper.style.setProperty('--de-carousel-tooltip-min-width', `${minWidth}px`)
@@ -867,7 +882,9 @@ function fitCarouselTooltipInChart(
 function syncHoverTooltipEllipsisTitles(tooltip: HTMLElement) {
   // 只管理公共模板的错误 title 和本方法生成的 title
   tooltip
-    .querySelectorAll<HTMLElement>('.g2-tooltip-list-item-name-label, .g2-tooltip-list-item-value')
+    .querySelectorAll<HTMLElement>(
+      '.g2-tooltip-list-item-name-label, .g2-tooltip-list-item-value, .box-plot-tooltip-name-label, .box-plot-tooltip-value'
+    )
     .forEach(element => {
       const managed = element.dataset.deEllipsisTitle === 'true'
       const canManage = !element.title || element.title === 'value' || managed
@@ -914,7 +931,7 @@ export function listenerTooltipShow(newChart: G2Chart, chart: Chart) {
         tooltip.style.removeProperty('max-height')
         tooltip.style.removeProperty('transform')
         tooltip.style.removeProperty('transform-origin')
-        fitCarouselTooltipInChart(chart.container, tooltipWrapper, tooltip)
+        fitCarouselTooltipInChart(chart, tooltipWrapper, tooltip)
         return
       }
 
@@ -927,10 +944,10 @@ export function listenerTooltipShow(newChart: G2Chart, chart: Chart) {
 
       // 悬浮提示挂载在 body，不会继承大屏 transform，需要补齐与轮播一致的视觉缩放
       const { visualScale, maxWidth } = getHoverTooltipLogicalMaxWidth(chart.container)
-      const minWidth = Math.min(G2_TOOLTIP_DEFAULT_MIN_WIDTH, maxWidth)
       // 子项使用同一逻辑上限，避免百分比宽度反向限制 max-content 扩容
       tooltipWrapper.style.setProperty('--de-hover-tooltip-max-width', `${maxWidth}px`)
-      tooltip.style.setProperty('min-width', `${minWidth}px`, 'important')
+      // 悬浮态不保留 G2 默认最小宽度，让短内容按真实宽度收缩
+      tooltip.style.removeProperty('min-width')
       tooltip.style.setProperty('max-width', `${maxWidth}px`, 'important')
       tooltip.style.setProperty('transform-origin', 'top left', 'important')
       tooltip.style.setProperty('transform', `scale(${visualScale})`, 'important')

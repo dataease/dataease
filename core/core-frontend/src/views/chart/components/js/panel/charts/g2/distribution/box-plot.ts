@@ -335,7 +335,6 @@ export class BoxPlot extends Bar {
     const showDetails = tooltipAttr.showBoxPlotDetails === true
     const tooltipFontSize = Number(tooltipAttr.fontSize) || 12
     // V2 tooltip 默认使用 20px 行高和 4px 行间距，字号变大时再同步扩展行高
-    const tooltipLineHeight = Math.max(20, tooltipFontSize)
     const tooltipSeriesIndex = new Map(
       (options.scale?.color?.domain ?? []).map((series, index) => [String(series), index])
     )
@@ -379,7 +378,6 @@ export class BoxPlot extends Bar {
         })
 
         // 按 V2 结构区分系列头和统计明细，并在共享提示中去除箱体与异常点产生的重复项
-        let headerIndex = 0
         const itemsHtml = summaries
           .flatMap(({ sourceItem, sourceData }) => {
             const marker = String(sourceItem.color ?? '#5470C6')
@@ -457,23 +455,25 @@ export class BoxPlot extends Bar {
             const markerSize = isHeader
               ? DETAIL_TOOLTIP_HEADER_MARKER_SIZE
               : DETAIL_TOOLTIP_ITEM_MARKER_SIZE
-            const itemMarginTop = isHeader && headerIndex++ > 0 ? 12 : 0
+            // 与公共 tooltip 对齐：使用自然行高，指标行间距 6px，后续分组标题前间距 4px
+            const itemPaddingTop = index === 0 ? 0 : isHeader ? 4 : 6
             const markerMarginLeft = isHeader ? 0 : 2
             const markerMarginRight = isHeader ? 5 : 9
             const nameFontWeight = isHeader ? 500 : 400
             const nameSuffix = isHeader ? '' : ':'
+            // 保留统计项的两列对齐，同时允许名称和值在公共 tooltip 上限内收缩省略
             return `<li class="box-plot-tooltip-row" data-index="${index}" style="display:contents">
-              <span class="box-plot-tooltip-name" style="display:flex;align-items:center;line-height:${tooltipLineHeight}px;padding-top:${itemMarginTop}px;color:${tooltipAttr.color};font-size:${tooltipFontSize}px;white-space:nowrap">
+              <span class="box-plot-tooltip-name" style="display:flex;align-items:center;min-width:0;max-width:216px;overflow:hidden;line-height:normal;padding-top:${itemPaddingTop}px;color:${tooltipAttr.color};font-size:${tooltipFontSize}px;white-space:nowrap">
                 <span class="box-plot-tooltip-marker" style="background:${item.marker};width:${markerSize}px;height:${markerSize}px;border-radius:50%;display:inline-block;flex:0 0 auto;margin-left:${markerMarginLeft}px;margin-right:${markerMarginRight}px"></span>
-                <span class="box-plot-tooltip-name-label" style="font-weight:${nameFontWeight};white-space:nowrap">${item.label}${nameSuffix}</span>
+                <span class="box-plot-tooltip-name-label" style="min-width:0;overflow:hidden;text-overflow:ellipsis;font-weight:${nameFontWeight};white-space:nowrap">${item.label}${nameSuffix}</span>
               </span>
-              <span class="box-plot-tooltip-value" style="line-height:${tooltipLineHeight}px;padding-top:${itemMarginTop}px;color:${tooltipAttr.color};font-size:${tooltipFontSize}px;text-align:right;white-space:nowrap">${item.value}</span>
+              <span class="box-plot-tooltip-value" style="min-width:0;overflow:hidden;text-overflow:ellipsis;line-height:normal;padding-top:${itemPaddingTop}px;color:${tooltipAttr.color};font-size:${tooltipFontSize}px;text-align:right;white-space:nowrap">${item.value}</span>
             </li>`
           })
           .join('')
         const firstSummary = summaries[0].sourceData
         const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', firstSummary.field ?? '')
-        return `${titleHtml}<ul class="g2-tooltip-list box-plot-tooltip-list" style="display:grid;grid-template-columns:max-content max-content;column-gap:30px;row-gap:4px;margin:0;list-style-type:none;padding:0;width:max-content">${itemsHtml}</ul>`
+        return `${titleHtml}<ul class="g2-tooltip-list box-plot-tooltip-list" style="display:grid;grid-template-columns:max-content minmax(0,1fr);column-gap:30px;row-gap:0;margin:0;list-style-type:none;padding:0;width:max-content">${itemsHtml}</ul>`
       }
     }
     return {
