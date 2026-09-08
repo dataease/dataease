@@ -187,11 +187,16 @@ const baseComponentData = computed(() =>
       ele.isShow
   )
 )
-const canvasStyleInner = computed(() => {
-  if (
+
+const dataVTransformFlag = computed(() => {
+  return (
     dvInfo.value.type === 'dataV' &&
     ['keep', 'widthFirst', 'heightFirst'].includes(canvasStyleData.value?.screenAdaptor)
-  ) {
+  )
+})
+
+const canvasStyleInner = computed(() => {
+  if (dataVTransformFlag.value) {
     const curScale = scaleMin.value / 100
     return {
       position: 'absolute',
@@ -567,7 +572,7 @@ const isFixedFlag = computed(
 )
 
 const componentScale = computed(() => {
-  return !isDashboard() || (mobileInPc.value && isDashboard()) ? 100 : scaleMin.value
+  return dataVTransformFlag.value || (mobileInPc.value && isDashboard()) ? 100 : scaleMin.value
 })
 defineExpose({
   restore
