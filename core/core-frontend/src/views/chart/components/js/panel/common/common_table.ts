@@ -1594,7 +1594,7 @@ export function mappingPivotColor(value, defaultColor, rules, type, filedValueMa
   return color
 }
 
-function getFieldValueMap(view) {
+export function getFieldValueMap(view) {
   const fieldValueMap = {}
   if (view.data && view.data.dynamicAssistLines && view.data.dynamicAssistLines.length > 0) {
     view.data.dynamicAssistLines.forEach(ele => {
@@ -1604,7 +1604,7 @@ function getFieldValueMap(view) {
   return fieldValueMap
 }
 
-function getValue(field, filedValueMap, rowData) {
+export function getValue(field, filedValueMap, rowData) {
   if (field.summary === 'value') {
     // 单元格数据
     let value =  rowData?.[field.field?.dataeaseName]

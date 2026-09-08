@@ -3,7 +3,7 @@ import {
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
 import type { Heatmap, HeatmapOptions } from '@antv/g2plot/esm/plots/heatmap'
-import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
+import { flow, hexColorToRGBA, isTransparent, parseJson } from '@/views/chart/components/js/util'
 import { useI18n } from '@/hooks/web/useI18n'
 import { deepCopy } from '@/utils/utils'
 import { cloneDeep } from 'lodash-es'
@@ -13,6 +13,10 @@ import {
   getXAxis,
   getYAxis
 } from '@/views/chart/components/js/panel/common/common_antv'
+import {
+  getFieldValueMap,
+  mappingColor
+} from '@/views/chart/components/js/panel/common/common_table'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 
 const { t } = useI18n()
@@ -30,6 +34,7 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
     'y-axis-selector',
     'title-selector',
     'tooltip-selector',
+    'threshold',
     'jump-set',
     'linkage',
     'border-style'
@@ -62,7 +67,8 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
     ],
     'legend-selector': ['orient', 'color', 'fontSize', 'hPosition', 'vPosition'],
     'tooltip-selector': ['show', 'color', 'fontSize', 'backgroundColor', 'tooltipFormatter'],
-    'border-style': ['all']
+    'border-style': ['all'],
+    threshold: ['tableThreshold']
   }
   axis: AxisType[] = ['xAxis', 'xAxisExt', 'extColor', 'filter']
   axisConfig: AxisConfig = {
@@ -125,7 +131,13 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
     // data
     const tmpData = cloneDeep(chart.data.tableRow)
     const data =
-      tmpData?.filter(cell => cell[xField] && cell[xFieldExt] && cell[extColorField]) || []
+      tmpData?.filter(
+        cell =>
+          cell[xField] &&
+          cell[xFieldExt] &&
+          cell[extColorField] !== undefined &&
+          cell[extColorField] !== null
+      ) || []
     data?.forEach(i => {
       Object.keys(i).forEach(key => {
         if (key === '*') {
@@ -135,11 +147,15 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
     })
 
     // options
+    const rawFields = (chart.data?.fields || []).map(f =>
+      f.dataeaseName === '*' ? '@' : f.dataeaseName
+    )
     const initOptions: HeatmapOptions = {
       data: data,
       xField: xField,
       yField: xFieldExt,
       colorField: extColorField === '*' ? '@' : extColorField,
+      rawFields,
       appendPadding: getPadding(chart),
       meta: {
         [xField]: {
@@ -256,6 +272,39 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
               tooltipFiledList.forEach(field => {
                 createItem(field[0], items, originalItems)
               })
+              // 条件样式背景色联动 tooltip 标记颜色
+              const { threshold } = parseJson(chart.senior)
+              if (threshold?.enable && threshold?.tableThreshold?.length) {
+                const conditions = threshold.tableThreshold ?? []
+                const rules: Array<{ rule: Threshold; sourceField: ChartViewField }> = []
+                for (let i = 0; i < conditions.length; i++) {
+                  const fieldItem = conditions[i]
+                  if (!fieldItem.conditions?.length) continue
+                  for (let j = 0; j < fieldItem.conditions.length; j++) {
+                    rules.push({
+                      rule: fieldItem.conditions[j],
+                      sourceField: fieldItem.field
+                    })
+                  }
+                }
+                if (rules.length && originalItems[0]?.data) {
+                  const rowData = originalItems[0].data
+                  const cellVal = rowData[extColor[0]?.dataeaseName] ?? rowData['@']
+                  const fill = mappingColor(
+                    cellVal,
+                    null,
+                    rules,
+                    'backgroundColor',
+                    getFieldValueMap(chart),
+                    rowData
+                  )
+                  if (fill && !isTransparent(fill)) {
+                    items.forEach(it => {
+                      it.color = fill
+                    })
+                  }
+                }
+              }
               return items
             }
           }
@@ -353,6 +402,119 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
     return tmpOptions
   }
 
+  /**
+   * 配置条件样式（单元格背景颜色与标签文字颜色）
+   */
+  protected configThreshold(chart: Chart, options: HeatmapOptions): HeatmapOptions {
+    const { threshold } = parseJson(chart.senior)
+    if (!threshold?.enable || !threshold?.tableThreshold?.length) {
+      return options
+    }
+
+    const conditions = threshold.tableThreshold ?? []
+    // 整理所有已配置条件的规则项
+    const rules: Array<{ rule: Threshold; sourceField: ChartViewField }> = []
+    for (let i = 0; i < conditions.length; i++) {
+      const fieldItem = conditions[i]
+      if (!fieldItem.conditions?.length) {
+        continue
+      }
+      for (let j = 0; j < fieldItem.conditions.length; j++) {
+        rules.push({
+          rule: fieldItem.conditions[j],
+          sourceField: fieldItem.field
+        })
+      }
+    }
+
+    if (!rules.length) {
+      return options
+    }
+
+    const filedValueMap = getFieldValueMap(chart)
+    const xField = options.xField
+    const yField = options.yField
+    const colorField = options.colorField
+    const dataList = options.data || []
+
+    // 建立 (x, y) 到原始数据项的快速映射字典，确保条件匹配时能完整获取所有维度与指标字段
+    const cellDataMap = new Map<string, any>()
+    dataList.forEach(item => {
+      const cellKey = `${item[xField]}_${item[yField]}`
+      cellDataMap.set(cellKey, item)
+    })
+
+    // 1. 配置热力图形背景颜色（heatmapStyle）
+    const existingHeatmapStyle = options.heatmapStyle
+    const heatmapStyle = (datum: any) => {
+      const cellKey = `${datum[xField]}_${datum[yField]}`
+      const rowData = cellDataMap.get(cellKey) || datum
+      const cellValue = rowData[colorField] ?? rowData['@'] ?? datum[colorField]
+      const bgFill = mappingColor(cellValue, null, rules, 'backgroundColor', filedValueMap, rowData)
+
+      let baseStyle = {}
+      if (typeof existingHeatmapStyle === 'function') {
+        baseStyle = existingHeatmapStyle(datum) || {}
+      } else if (existingHeatmapStyle && typeof existingHeatmapStyle === 'object') {
+        baseStyle = { ...existingHeatmapStyle }
+      }
+
+      if (bgFill && !isTransparent(bgFill)) {
+        // 同步边框描边颜色为背景色，避免 G2 默认使用色板梯度色作为 stroke 产生杂色边框
+        const strokeColor = baseStyle.stroke || bgFill
+        return {
+          ...baseStyle,
+          fill: bgFill,
+          stroke: strokeColor
+        }
+      }
+      return baseStyle
+    }
+
+    // 2. 配置标签字体颜色（label.callback）
+    let labelOption = options.label
+    if (labelOption) {
+      const { label: labelAttr } = parseJson(chart.customAttr)
+      const defaultTextColor = labelAttr?.color || '#000000'
+      let labelCursor = 0
+
+      const callback = (val: any) => {
+        const row = dataList[labelCursor]
+        labelCursor = (labelCursor + 1) % (dataList.length || 1)
+        const isMatchedRow = row && (row[colorField] === val || row['@'] === val)
+        const rowData = isMatchedRow
+          ? row
+          : dataList.find(d => d[colorField] === val || d['@'] === val) || { [colorField]: val }
+
+        const textColor = mappingColor(
+          val,
+          defaultTextColor,
+          rules,
+          'color',
+          filedValueMap,
+          rowData
+        )
+        const finalTextColor = isTransparent(textColor) ? defaultTextColor : textColor
+        return {
+          style: {
+            fill: finalTextColor
+          }
+        }
+      }
+
+      labelOption = {
+        ...labelOption,
+        callback
+      }
+    }
+
+    return {
+      ...options,
+      heatmapStyle,
+      label: labelOption
+    }
+  }
+
   protected setupOptions(chart: Chart, options: HeatmapOptions): HeatmapOptions {
     return flow(
       this.configTheme,
@@ -361,7 +523,8 @@ export class TableHeatmap extends G2PlotChartView<HeatmapOptions, Heatmap> {
       this.configBasicStyle,
       this.configLegend,
       this.configTooltip,
-      this.configLabel
+      this.configLabel,
+      this.configThreshold
     )(chart, options)
   }
 
