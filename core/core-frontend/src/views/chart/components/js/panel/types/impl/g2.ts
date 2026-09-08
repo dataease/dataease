@@ -831,7 +831,8 @@ export abstract class G2ChartView<
     const position = axis.position
     const rotate = Number(axis.axisLabel.rotate) || 0
     const rotateRadian = (rotate * Math.PI) / 180
-    const rotateRatio = Math.sin(Math.abs(rotateRadian))
+    const rotateSin = Math.abs(Math.sin(rotateRadian))
+    const rotateCos = Math.abs(Math.cos(rotateRadian))
     const fontSize = axis.axisLabel.fontSize || 12
     // 主题文本色按配置原值渲染，避免叠加 G2 默认透明度
     const opacityStyle = {
@@ -844,25 +845,26 @@ export abstract class G2ChartView<
         ...opacityStyle,
         labelSpacing: 4,
         labelTextAlign: 'center',
-        labelTextBaseline: position === 'top' ? 'bottom' : 'top',
+        labelTextBaseline: 'middle',
         labelTransform: value => {
-          const offset = (measureAxisLabelWidth(value, fontSize) * rotateRatio) / 2
+          // 文字始终围绕中心旋转，投影位移只负责将完整标签推到轴线外侧
+          const width = measureAxisLabelWidth(value, fontSize)
+          const offset = (width * rotateSin + fontSize * rotateCos) / 2
           return `translate(0, ${(direction * offset).toFixed(2)}px) rotate(${rotate})`
         }
       }
     }
     if (position === 'left' || position === 'right') {
-      const direction = position === 'left' ? 1 : -1
+      const direction = position === 'left' ? -1 : 1
       return {
         ...opacityStyle,
-        labelSpacing: 4 + (fontSize * rotateRatio) / 2,
-        labelTextAlign: position === 'left' ? 'right' : 'left',
+        labelSpacing: 4,
+        labelTextAlign: 'center',
         labelTextBaseline: 'middle',
         labelTransform: value => {
-          // 保留靠近轴线的端点锚点，并沿刻度方向补偿旋转后的半个文本投影
-          const offset =
-            (direction * measureAxisLabelWidth(value, fontSize) * Math.sin(rotateRadian)) / 2
-          return `translate(0, ${offset.toFixed(2)}px) rotate(${rotate})`
+          const width = measureAxisLabelWidth(value, fontSize)
+          const offset = (width * rotateCos + fontSize * rotateSin) / 2
+          return `translate(${(direction * offset).toFixed(2)}px, 0) rotate(${rotate})`
         }
       }
     }
