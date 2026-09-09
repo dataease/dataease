@@ -161,7 +161,15 @@ const init = () => {
   }
 }
 const showProperty = prop => props.propertyInner?.includes(prop)
-
+/**
+ * 处理整数输入
+ * @param e
+ */
+const handleIntegerInput = (e: InputEvent) => {
+  if (e.data && !/^\d+$/.test(e.data)) {
+    e.preventDefault()
+  }
+}
 onMounted(() => {
   init()
 })
@@ -560,6 +568,8 @@ onMounted(() => {
             :max="100"
             :step="1"
             :precision="0"
+            :value-on-clear="0"
+            @beforeinput="handleIntegerInput"
             @change="changeTableCell('tableColumnFreezeHead')"
           />
         </el-form-item>
@@ -583,6 +593,8 @@ onMounted(() => {
             :max="100"
             :step="1"
             :precision="0"
+            :value-on-clear="0"
+            @beforeinput="handleIntegerInput"
             @change="changeTableCell('tableRowFreezeHead')"
           />
         </el-form-item>
