@@ -229,7 +229,7 @@ const changeLegendCustomType = (prop?) => {
  */
 const changeLegendNumber = (prop?) => {
   if (!state.legendForm.miscForm.mapLegendNumber) {
-    return
+    state.legendForm.miscForm.mapLegendNumber = DEFAULT_MISC.mapLegendNumber
   }
   calcMapCustomRange()
   prop ? changeMisc(prop) : ''
