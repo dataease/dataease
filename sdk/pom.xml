@@ -15,7 +15,6 @@
     <modules>
         <module>common</module>
         <module>api</module>
-        <module>distributed</module>
         <module>extensions</module>
     </modules>
 
