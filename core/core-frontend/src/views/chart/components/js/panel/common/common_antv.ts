@@ -3620,6 +3620,8 @@ export function handleChartDashboardHidden(chart: Chart, options) {
     switch (type) {
       case 'stock-line':
         hideLegendAndAxis(options)
+        // 右侧缩略图与普通 G2 图表一致，不保留隐藏子图形的 Tooltip 命中
+        options.children?.forEach(hideChildrenLabels)
         options.children?.[1] && (options.children[1].slider = false)
         break
       case 'bullet-graph':

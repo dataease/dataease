@@ -382,11 +382,57 @@ export function getTooltipDisplayMode(container: string): TooltipDisplayMode {
     : 'hover'
 }
 
+type ActiveHoverTooltip = {
+  chart: G2Chart
+  wrapper: HTMLElement
+}
+
+let activeHoverTooltip: ActiveHoverTooltip | undefined
+
+function releaseActiveHoverTooltip(chart?: G2Chart, wrapper?: HTMLElement) {
+  if (
+    !activeHoverTooltip ||
+    (chart && activeHoverTooltip.chart !== chart) ||
+    (wrapper && activeHoverTooltip.wrapper !== wrapper)
+  ) {
+    return
+  }
+  activeHoverTooltip = undefined
+  document.removeEventListener('pointercancel', hideActiveHoverTooltip, true)
+}
+
+function hideActiveHoverTooltip() {
+  const current = activeHoverTooltip
+  if (!current) return
+
+  releaseActiveHoverTooltip(current.chart, current.wrapper)
+  if (current.wrapper.dataset.tooltipDisplayMode !== 'carousel') {
+    current.chart.emit('tooltip:hide')
+  }
+}
+
+function activateHoverTooltip(chart: G2Chart, wrapper: HTMLElement) {
+  if (
+    activeHoverTooltip &&
+    (activeHoverTooltip.chart !== chart || activeHoverTooltip.wrapper !== wrapper)
+  ) {
+    // 跨图表拖动可能丢失旧实例的 pointerleave，统一关闭上一悬浮 Tooltip
+    hideActiveHoverTooltip()
+  }
+  activeHoverTooltip = { chart, wrapper }
+  // G2 5.4.8 未监听 pointercancel，避免取消手势后保留 Tooltip
+  document.addEventListener('pointercancel', hideActiveHoverTooltip, true)
+}
+
 export function switchTooltipWrapperHost(chart: Chart, mode: TooltipDisplayMode) {
   const wrapper = getTooltipWrapper(chart.container)
   const chartContainer = document.getElementById(chart.container)
   const host = mode === 'hover' ? document.body : chartContainer
   if (!wrapper || !host) return
+
+  if (mode === 'carousel') {
+    releaseActiveHoverTooltip(undefined, wrapper)
+  }
 
   const shouldResetTooltip =
     wrapper.dataset.tooltipDisplayMode !== mode || wrapper.parentElement !== host
@@ -911,6 +957,9 @@ export function listenerTooltipShow(newChart: G2Chart, chart: Chart) {
     if (!tooltipWrapper) return
 
     const isCarousel = getTooltipDisplayMode(chart.container) === 'carousel'
+    if (isCarousel) {
+      releaseActiveHoverTooltip(newChart, tooltipWrapper)
+    }
     tooltipWrapper.style.zIndex = chart.container.indexOf('viewDialog') > -1 ? '9999' : '2000'
     const allTooltips = tooltipWrapper.querySelectorAll<HTMLElement>('.g2-tooltip')
     if (!allTooltips) return
@@ -973,9 +1022,12 @@ export function listenerTooltipShow(newChart: G2Chart, chart: Chart) {
         viewport.top + TOOLTIP_VIEWPORT_GAP,
         Math.min(top, maxTop)
       )}px`
+      activateHoverTooltip(newChart, tooltipWrapper)
       tooltip.style.visibility = 'visible'
       markHoverTooltipPositionReady(chart.container, tooltipWrapper, tooltip)
       syncHoverTooltipEllipsisTitles(tooltip)
     })
   })
+  newChart.on('tooltip:hide', () => releaseActiveHoverTooltip(newChart))
+  newChart.on('afterdestroy', () => releaseActiveHoverTooltip(newChart))
 }
