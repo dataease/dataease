@@ -58,7 +58,8 @@ const defaultForm = {
 
 const state = reactive({
   functionData: [],
-  quotaData: []
+  quotaData: [],
+  allQuotaNames: []
 })
 const formQuota = reactive({
   id: null,
@@ -97,9 +98,15 @@ const setNameIdTrans = (from, to, originName, name2Auto?: string[]) => {
 let quotaDataList = []
 const initEdit = (obj, quotaData) => {
   formQuota.id = null
+  // 每次打开弹窗重置字段和函数搜索关键字
+  searchField.value = ''
+  searchFunction.value = ''
   Object.assign(fieldForm, { ...defaultForm, ...obj })
-  state.quotaData = quotaData.concat(fieldForm.params || [])
-  quotaDataList = cloneDeep(quotaData.concat(fieldForm.params || []))
+  // 初始化全部指标数据（包含原始字段和计算字段）
+  const allFields = quotaData.concat(fieldForm.params || [])
+  state.quotaData = cloneDeep(allFields)
+  quotaDataList = cloneDeep(allFields)
+  state.allQuotaNames = allFields.map(ele => ele.name)
   if (!obj.originName) {
     mirror.value.dispatch({
       changes: {
@@ -153,16 +160,14 @@ watch(
   () => searchField.value,
   val => {
     if (val && val !== '') {
-      state.quotaData = JSON.parse(
-        JSON.stringify(
-          quotaDataList.filter(
-            ele =>
-              ele.name.toLocaleLowerCase().includes(val.toLocaleLowerCase()) && ele.extField === 0
-          )
-        )
+      const keyword = val.toLocaleLowerCase()
+      // 支持按名称搜索全部指标字段（包含计算字段和参数）
+      state.quotaData = cloneDeep(
+        quotaDataList.filter(ele => ele.name?.toLocaleLowerCase().includes(keyword))
       )
     } else {
-      state.quotaData = JSON.parse(JSON.stringify(quotaDataList)).filter(ele => ele.extField === 0)
+      // 清空搜索后恢复显示全部指标字段（保留计算字段）
+      state.quotaData = cloneDeep(quotaDataList)
     }
   }
 )
@@ -171,14 +176,15 @@ watch(
   () => searchFunction.value,
   val => {
     if (val && val !== '') {
-      state.functionData = JSON.parse(
-        JSON.stringify(
-          functions.filter(ele => {
-            return ele.func.toLocaleLowerCase().includes(val.toLocaleLowerCase())
-          })
-        )
+      const keyword = val.toLocaleLowerCase()
+      // 支持按名称搜索函数
+      state.functionData = cloneDeep(
+        functions.filter(ele => {
+          return ele.func?.toLocaleLowerCase().includes(keyword)
+        })
       )
     } else {
+      // 清空搜索后恢复显示全部函数
       state.functionData = cloneDeep(functions)
     }
   }
@@ -205,6 +211,8 @@ const delParamsToQuota = () => {
   const name2Auto = []
   fieldForm.originName = setNameIdTrans('name', 'id', str, name2Auto).replaceAll(`[${o.id}]`, '')
   state.quotaData = state.quotaData.filter(ele => ele.id !== o.id)
+  quotaDataList = quotaDataList.filter(ele => ele.id !== o.id)
+  state.allQuotaNames = quotaDataList.map(ele => ele.name)
   mirror.value.dispatch({
     changes: {
       from: 0,
@@ -236,7 +244,7 @@ initFunction()
             </el-tooltip>
           </div>
           <code-mirror
-            :quotaMap="state.quotaData.map(ele => ele.name)"
+            :quotaMap="state.allQuotaNames"
             :dimensionMap="[]"
             ref="myCm"
             height="500px"
