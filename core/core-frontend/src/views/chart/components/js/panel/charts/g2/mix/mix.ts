@@ -232,58 +232,62 @@ export class ColumnLineMix extends G2ChartView {
     return newChart
   }
 
-  protected configBasicStyle(chart: Chart, options: G2Spec): G2Spec {
+  protected configBasicStyle(chart: Chart, options: G2Spec, context: Record<string, any>): G2Spec {
     const { basicStyle } = parseJson(chart.customAttr)
+    const { yAxis, yAxisExt, extBubble } = chart
+    const [intervalMark, lineMark, pointMark] = options.children
+    const leftSeriesName = yAxis[0]?.chartShowName ?? yAxis[0]?.name
     let leftColor = hexColorToRGBA(basicStyle.colors?.[0], basicStyle.alpha)
-    const leftSeriesMap = basicStyle.seriesColor?.find(c => c.id === chart.yAxis[0]?.id)
+    const leftSeriesMap = basicStyle.seriesColor?.find(c => c.id === yAxis[0]?.id)
     if (leftSeriesMap) {
       leftColor = hexColorToRGBA(leftSeriesMap.color, basicStyle.alpha)
     }
+    // 右轴可能按指标或分类着色，先按实际数据顺序收集 color domain
+    const rightCategories = []
+    if (extBubble?.length) {
+      const { rightData = [] } = context
+      rightData.forEach(
+        d => d.category && !rightCategories.includes(d.category) && rightCategories.push(d.category)
+      )
+    } else if (yAxisExt?.length) {
+      rightCategories.push(yAxisExt[0]?.chartShowName ?? yAxisExt[0]?.name)
+    }
+    // 先用右轴配色方案初始化，避免左轴占用右轴调色板的第一个颜色
+    const rightColorMap = rightCategories.reduce((acc, cur, index) => {
+      acc[cur] = hexColorToRGBA(
+        basicStyle.subColors[index % basicStyle.subColors.length],
+        basicStyle.subAlpha
+      )
+      return acc
+    }, {})
+    // 自定义系列颜色覆盖默认配色，未自定义系列继续使用调色板颜色
+    if (basicStyle.subSeriesColor?.length) {
+      if (extBubble?.length) {
+        basicStyle.subSeriesColor.forEach(c => {
+          if (rightColorMap[c.id]) {
+            rightColorMap[c.id] = hexColorToRGBA(c.color, basicStyle.subAlpha)
+          }
+        })
+      } else if (yAxisExt?.length) {
+        const rightColor = basicStyle.subSeriesColor.find(c => c.id === yAxisExt[0]?.id)?.color
+        if (rightColor) {
+          rightColorMap[rightCategories[0]] = hexColorToRGBA(rightColor, basicStyle.subAlpha)
+        }
+      }
+    }
+    // 按相同顺序合并左右轴颜色，供图形、图例和 tooltip 共用
+    const relations = [[leftSeriesName, leftColor]]
+    rightCategories.forEach(category => relations.push([category, rightColorMap[category]]))
     merge(options, {
       scale: {
         color: {
           type: 'ordinal',
-          relations: [[chart.yAxis[0]?.chartShowName ?? chart.yAxis[0]?.name, leftColor]]
+          domain: [leftSeriesName, ...rightCategories],
+          range: relations.map(([, color]) => color),
+          relations
         }
       }
     })
-    if (basicStyle.subSeriesColor?.length) {
-      const { yAxisExt, extBubble } = chart
-      const relations = [options.scale?.color?.relations?.[0]]
-      if (extBubble?.length) {
-        basicStyle.subSeriesColor.reduce((acc, cur) => {
-          acc[cur.id] = cur.color
-          return acc
-        }, {})
-        basicStyle.subSeriesColor.forEach(c =>
-          relations.push([c.id, hexColorToRGBA(c.color, basicStyle.subAlpha)])
-        )
-      } else {
-        const rightColor = basicStyle.subSeriesColor.find(c => c.id === yAxisExt[0]?.id)?.color
-        if (rightColor) {
-          relations.push([
-            yAxisExt[0]?.chartShowName ?? yAxisExt[0]?.name,
-            hexColorToRGBA(rightColor, basicStyle.subAlpha)
-          ])
-        }
-      }
-      merge(options, {
-        scale: {
-          color: {
-            relations
-          }
-        }
-      })
-    }
-    const colors = basicStyle.subColors.map(c => hexColorToRGBA(c, basicStyle.subAlpha))
-    merge(options, {
-      scale: {
-        color: {
-          range: colors
-        }
-      }
-    })
-    const [intervalMark, lineMark, pointMark] = options.children
     if (basicStyle.gradient) {
       leftColor = setGradientColor(leftColor, true, 270)
     }
