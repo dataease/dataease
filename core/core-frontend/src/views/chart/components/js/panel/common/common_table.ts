@@ -1689,12 +1689,23 @@ export function copyContent(s2Instance: SpreadSheet, event, fieldMeta) {
 
 function getTooltipPosition(event) {
   const s2Instance = event.s2Instance
-  const {x, y} = event
-  const result = {x: x + 15, y}
   if (!s2Instance) {
-    return result
+    return {x: event.x + 15, y: event.y}
   }
-  const {height, width} = s2Instance.getCanvasElement().getBoundingClientRect()
+  const canvasElement = s2Instance.getCanvasElement()
+  const canvasRect = canvasElement.getBoundingClientRect()
+  const width = Number(s2Instance.options.width) || canvasElement.clientWidth || canvasRect.width
+  const height = Number(s2Instance.options.height) || canvasElement.clientHeight || canvasRect.height
+  const scaleX = canvasRect.width / width || 1
+  const scaleY = canvasRect.height / height || 1
+  // tooltip 使用缩放前的布局坐标，鼠标位置需从视口坐标换算回 Canvas 局部坐标
+  const x = Number.isFinite(event.clientX)
+    ? (event.clientX - canvasRect.left) / scaleX
+    : event.x
+  const y = Number.isFinite(event.clientY)
+    ? (event.clientY - canvasRect.top) / scaleY
+    : event.y
+  const result = {x: x + 15, y}
   const {offsetHeight, offsetWidth} = s2Instance.tooltip.getContainer()
   if (offsetWidth > width) {
     result.x = 0

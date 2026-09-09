@@ -351,6 +351,8 @@ const mouseMove = () => {
 }
 
 const mouseLeave = () => {
+  // S2 在 CSS 缩放下可能无法通过 canvas mouseout 隐藏 tooltip
+  myChart?.hideTooltip()
   initScroll()
 }
 
