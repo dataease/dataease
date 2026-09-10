@@ -176,7 +176,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
         }
         const nameMap =
           [...chart.xAxis, ...chart.yAxis].reduce((pre, cur) => {
-            pre[cur.dataeaseName] = cur.name
+            pre[cur.dataeaseName] = cur.chartShowName ?? cur.name
             return pre
           }, {}) || {}
         if (headerGroupConfig.meta?.length) {

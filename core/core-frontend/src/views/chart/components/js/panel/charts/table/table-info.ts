@@ -180,7 +180,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
         }
         const nameMap =
           chart.xAxis?.reduce((pre, cur) => {
-            pre[cur.dataeaseName] = cur.name
+            pre[cur.dataeaseName] = cur.chartShowName ?? cur.name
             return pre
           }, {}) || {}
         if (headerGroupConfig.meta?.length) {
