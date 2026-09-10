@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { MIN_REFRESH_TIME, MAX_REFRESH_TIME, normalizeRefreshTime } from '@/utils/refreshTime'
 import dvInfoSvg from '@/assets/svg/dv-info.svg'
 import icon_down_outlined1 from '@/assets/svg/icon_down_outlined-1.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
@@ -989,14 +990,7 @@ const onAxisChange = (e, axis: AxisType) => {
 }
 
 const calcData = (view, resetDrill = false, updateQuery = '') => {
-  if (
-    view.refreshTime === '' ||
-    parseFloat(view.refreshTime).toString() === 'NaN' ||
-    parseFloat(view.refreshTime) < 1
-  ) {
-    ElMessage.error(t('chart.only_input_number'))
-    return
-  }
+  view.refreshTime = normalizeRefreshTime(view.refreshTime)
   if (resetDrill) {
     useEmitt().emitter.emit('resetDrill-' + view.id, 0)
   } else {
@@ -1871,11 +1865,8 @@ const dragVerticalTop = computed(() => {
 })
 
 const onRefreshChange = val => {
+  view.value.refreshTime = normalizeRefreshTime(val)
   recordSnapshotInfo('render')
-  if (val === '' || parseFloat(val).toString() === 'NaN' || parseFloat(val) < 1) {
-    ElMessage.error(t('chart.only_input_number'))
-    return
-  }
 }
 
 const isCtrl = ref(false)
@@ -3434,8 +3425,10 @@ const chartStyleScroll = (val: any) => {
                               :effect="themes"
                               :class="[themes === 'dark' && 'dv-dark']"
                               size="small"
-                              :min="1"
-                              :max="3600"
+                              :min="MIN_REFRESH_TIME"
+                              :max="MAX_REFRESH_TIME"
+                              type="number"
+                              :step="1"
                               :disabled="!view.refreshViewEnable"
                               @change="onRefreshChange"
                             >
