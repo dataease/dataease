@@ -781,9 +781,15 @@ export function getConditions(chart: Chart) {
           if (!value && !rowData) {
             return null
           }
+          // 汇总行在未命中条件样式时，不能回退到普通单元格文字颜色，需返回 null 保持汇总行默认字体样式
+          const defaultColor = rowData?.SUMMARY ? null : defaultValueColor
+          const fill = mappingColor(value, defaultColor, rules, 'color', filedValueMap, rowData)
+          if (!fill || (rowData?.SUMMARY && fill === defaultColor)) {
+            return null
+          }
 
           return {
-            fill: mappingColor(value, defaultValueColor, rules, 'color', filedValueMap, rowData)
+            fill
           }
         }
       })
@@ -793,15 +799,17 @@ export function getConditions(chart: Chart) {
           if (!value && !rowData) {
             return null
           }
+          // 汇总行在未命中条件样式时，不能回退到普通单元格背景颜色，需返回 null 保持汇总行默认背景样式
+          const defaultColor = rowData?.SUMMARY ? null : defaultBgColor
           const fill = mappingColor(
             value,
-            defaultBgColor,
+            defaultColor,
             rules,
             'backgroundColor',
             filedValueMap,
             rowData
           )
-          if (isTransparent(fill)) {
+          if (!fill || isTransparent(fill) || (rowData?.SUMMARY && fill === defaultColor)) {
             return null
           }
           return { fill }
@@ -1022,9 +1030,9 @@ export function mappingColor(value, defaultColor, rules, type, filedValueMap?, r
 
     let checkValue = value;
     if (sourceField.dataeaseName) {
-      checkValue = rowData?.[sourceField.dataeaseName]
-      if (checkValue === undefined) {
-        checkValue = rowData?.query?.[sourceField.dataeaseName]
+      const rowVal = rowData?.[sourceField.dataeaseName] ?? rowData?.query?.[sourceField.dataeaseName]
+      if (rowVal !== undefined) {
+        checkValue = rowVal
       }
     }
 
@@ -3373,12 +3381,38 @@ export class SummaryCell extends CustomDataCell {
     if (textStyle.textAlign === 'custom') {
       textStyle.textAlign = 'left'
     }
-    return textStyle
+    // 汇总行支持条件样式文字颜色
+    const defaultFill = (this as any).getDefaultTextFill
+      ? (this as any).getDefaultTextFill(textStyle)
+      : textStyle.fill
+    const fill = this.getTextConditionFill({
+      ...textStyle,
+      fill: defaultFill
+    })
+    return {
+      ...textStyle,
+      fill
+    }
   }
 
   getBackgroundColor() {
-    const { backgroundColor, backgroundColorOpacity } = this.theme.colCell.cell
-    return { backgroundColor, backgroundColorOpacity }
+    let { backgroundColor, backgroundColorOpacity } = this.theme.colCell.cell
+    let intelligentReverseTextColor = false
+    // 汇总行支持条件样式背景颜色
+    const bgCondition = this.findFieldCondition(this.conditions?.background)
+    if (bgCondition && bgCondition.mapping) {
+      const attrs = this.mappingValue(bgCondition)
+      if (attrs) {
+        backgroundColor = attrs.fill
+        intelligentReverseTextColor = attrs.intelligentReverseTextColor
+        backgroundColorOpacity = 1
+      }
+    }
+    return {
+      backgroundColor,
+      backgroundColorOpacity,
+      intelligentReverseTextColor
+    }
   }
 }
 
