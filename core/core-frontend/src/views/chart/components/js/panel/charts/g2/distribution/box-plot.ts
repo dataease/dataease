@@ -4,6 +4,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import {
   flow,
+  getColorFormAlphaColor,
   hexColorToRGBA,
   parseJson,
   setUpGroupSeriesColor
@@ -180,9 +181,12 @@ export class BoxPlot extends Bar {
         y: 'outlier',
         color: BOX_SERIES_FIELD,
         series: hasGroup ? BOX_SERIES_FIELD : undefined,
-        // G2 point 默认使用空心形状，异常点固定为实心圆
-        shape: 'point',
         size: 4
+      },
+      // G2 point 默认使用空心形状，异常点固定为实心圆
+      style: {
+        shape: 'point',
+        fillOpacity: 1
       },
       transform: hasGroup ? [{ type: 'dodgeX' }] : [],
       // 异常点子集可能只包含部分分组，固定完整 series 域后才能与对应箱体精确对齐。
@@ -282,7 +286,8 @@ export class BoxPlot extends Bar {
       basicStyle.themeContrastColor ?? parseJson(chart.customAttr).label?.color ?? '#000000'
     const configuredPointColor =
       basicStyle.outlierColorMode === 'custom' && basicStyle.outlierColor
-        ? hexColorToRGBA(basicStyle.outlierColor, basicStyle.alpha)
+        ? // 颜色选择器会输出 rgba 或 8 位 hex，先规范化再叠加图表不透明度
+          hexColorToRGBA(getColorFormAlphaColor(basicStyle.outlierColor), basicStyle.alpha)
         : undefined
     const nextPointMark = {
       ...pointMark,
