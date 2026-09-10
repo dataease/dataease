@@ -778,9 +778,18 @@ export function getConditions(
 
     for (const targetName in targetRulesMap) {
       const rules = sortTableTargetRules(targetRulesMap[targetName])
+      const mergedCellRules = rules.filter(item => item.rule.target !== 'total_row')
+      const getCellRules = (cell: TableDataCell | MergedCell) => {
+        if (chart.type !== 'table-info' || !tableCell.mergeCells || !cell) {
+          return rules
+        }
+        // 同时过滤合并图层和底层数据单元格，避免整行样式污染合并区域。
+        const isMergedCell = isInMergedCell(cell.spreadsheet.options.mergedCellsInfo, cell.getMeta())
+        return isMergedCell ? mergedCellRules : rules
+      }
       res.text.push({
         field: targetName,
-        mapping(value, rowData) {
+        mapping(value, rowData, cell) {
           if (value === undefined && !rowData) {
             return null
           }
@@ -788,7 +797,7 @@ export function getConditions(
             fill: mappingRulesColor(
               value,
               valueColor,
-              rules,
+              getCellRules(cell),
               'color',
               filedValueMap,
               rowData,
@@ -799,14 +808,14 @@ export function getConditions(
       })
       res.background.push({
         field: targetName,
-        mapping(value, rowData) {
+        mapping(value, rowData, cell) {
           if (value === undefined && !rowData) {
             return null
           }
           const fill = mappingRulesColor(
             value,
             valueBgColor,
-            rules,
+            getCellRules(cell),
             'backgroundColor',
             filedValueMap,
             rowData,
@@ -2634,17 +2643,32 @@ export function getRowIndex(mergedCellsInfo: MergedCellInfo[][], meta: ViewMeta)
   return curRangeStartIndex - lostCells + 1
 }
 
+export function isInMergedCell(mergedCellsInfo: MergedCellInfo[][], meta: ViewMeta): boolean {
+  return (mergedCellsInfo ?? []).some(cells => {
+    if (cells.length < 2) return false
+    const first = cells[0]
+    const last = cells[cells.length - 1]
+    return (
+      first.colIndex === meta.colIndex &&
+      meta.rowIndex >= first.rowIndex &&
+      meta.rowIndex <= last.rowIndex
+    )
+  })
+}
+
 class CustomMergedCell extends MergedCell {
   protected drawBackgroundShape() {
     const allPoints = getPolygonPoints(this.cells)
-    // 处理条件样式，这里没有用透明度
-    // 因为合并的单元格是单独的图层，透明度降低的话会显示底下未合并的单元格，需要单独处理被覆盖的单元格
+    // S2 合并单元格未初始化条件背景色，绘制前补齐，复用整行规则过滤逻辑。
+    this.conditionFill = this.getBackgroundConditionFill()
+    // 底层内容和背景已清空，合并层按原背景透明度绘制，边框仍沿用现有逻辑。
     const {backgroundColor: fill, backgroundColorOpacity: fillOpacity} = this.getBackgroundColor()
     const cellTheme = this.theme.dataCell.cell
     this.backgroundShape = renderPolygon(this, {
       points: allPoints,
       stroke: cellTheme.horizontalBorderColor,
-      fill
+      fill,
+      fillOpacity
     })
   }
 
