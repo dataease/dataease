@@ -19,6 +19,7 @@ import {
 } from '@/views/chart/components/js/util'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { useI18n } from '@/hooks/web/useI18n'
+import { Action, registerAction, registerInteraction } from '@antv/g2'
 import { getItemsOfView } from '@antv/g2/lib/interaction/action/active-region'
 
 const { t } = useI18n()
@@ -28,6 +29,12 @@ const OUTLIER_VALUES_FIELD = 'boxPlotOutlierValues'
 const DETAIL_TOOLTIP_HEADER_MARKER_SIZE = 8
 const DETAIL_TOOLTIP_ITEM_MARKER_SIZE = 4
 const MAX_TOOLTIP_OUTLIER_VALUES = 10
+const BOX_ACTIVE_REGION = 'dataease-box-active-region'
+const ACTIVE_REGION_SHAPE_NAME = 'active-region'
+const ACTIVE_REGION_STYLE = {
+  fill: '#CCD6EC',
+  opacity: 0.3
+}
 // 使用 itemTpl 保留 DataEase 的唯一 tooltip 容器，避免 customContent 在连续悬浮时替换节点并留下残影
 const BOX_PLOT_TOOLTIP_ITEM_TPL =
   '<li class="g2-tooltip-list-item" data-index={index} ' +
@@ -42,6 +49,140 @@ const BOX_PLOT_TOOLTIP_ITEM_TPL =
   '{name}{nameSuffix}</span>' +
   '<span class="g2-tooltip-value" style="white-space:nowrap">{value}</span>' +
   '</li>'
+
+/** 将计算结果限制在绘图区边界内，避免背景因浮点误差发生越界 */
+const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)
+
+/** 根据主维度分类中心计算互不重叠的悬浮背景路径 */
+const getCategoryRegionPath = (view, categoryValue) => {
+  const coordinate = view.getCoordinate()
+  const coordinateBBox = view.coordinateBBox
+  const xScale = view.getXScale()
+  const categoryValues = xScale?.values ?? []
+  const categoryIndex = categoryValues.findIndex(value => value === categoryValue)
+  if (!coordinate?.isRect || !coordinateBBox || categoryIndex < 0) {
+    return undefined
+  }
+
+  /** 将分类值转换为当前坐标系中的画布中心位置 */
+  const getCategoryCenter = value => {
+    const point = coordinate.convert({ x: xScale.scale(value), y: 0 })
+    return coordinate.isTransposed ? point.y : point.x
+  }
+  const center = getCategoryCenter(categoryValue)
+  const firstCenter = getCategoryCenter(categoryValues[0])
+  const lastCenter = getCategoryCenter(categoryValues[categoryValues.length - 1])
+  const previousCenter =
+    categoryIndex > 0 ? getCategoryCenter(categoryValues[categoryIndex - 1]) : undefined
+  const nextCenter =
+    categoryIndex < categoryValues.length - 1
+      ? getCategoryCenter(categoryValues[categoryIndex + 1])
+      : undefined
+  if (
+    ![center, firstCenter, lastCenter, previousCenter, nextCenter]
+      .filter(value => value !== undefined)
+      .every(Number.isFinite)
+  ) {
+    return undefined
+  }
+
+  const axisMin = coordinate.isTransposed ? coordinateBBox.minY : coordinateBBox.minX
+  const axisMax = coordinate.isTransposed ? coordinateBBox.maxY : coordinateBBox.maxX
+  const isAscending = firstCenter <= lastCenter
+  const leadingEdge = isAscending ? axisMin : axisMax
+  const trailingEdge = isAscending ? axisMax : axisMin
+  // 相邻分类共享同一个中点边界，确保背景区间既不扩大也不交叉
+  const firstBoundary = categoryIndex === 0 ? leadingEdge : (previousCenter + center) / 2
+  const secondBoundary =
+    categoryIndex === categoryValues.length - 1 ? trailingEdge : (center + nextCenter) / 2
+  const regionMin = clamp(Math.min(firstBoundary, secondBoundary), axisMin, axisMax)
+  const regionMax = clamp(Math.max(firstBoundary, secondBoundary), axisMin, axisMax)
+  if (regionMax <= regionMin) {
+    return undefined
+  }
+
+  if (coordinate.isTransposed) {
+    return [
+      ['M', coordinateBBox.minX, regionMin],
+      ['L', coordinateBBox.maxX, regionMin],
+      ['L', coordinateBBox.maxX, regionMax],
+      ['L', coordinateBBox.minX, regionMax],
+      ['Z']
+    ]
+  }
+  return [
+    ['M', regionMin, coordinateBBox.minY],
+    ['L', regionMax, coordinateBBox.minY],
+    ['L', regionMax, coordinateBBox.maxY],
+    ['L', regionMin, coordinateBBox.maxY],
+    ['Z']
+  ]
+}
+
+/** 为箱线图绘制不依赖图形 CanvasBBox 的分类悬浮背景 */
+class BoxActiveRegion extends Action {
+  private regionPath: any
+
+  /** 根据当前 Tooltip 命中的分类创建或更新悬浮背景 */
+  public show() {
+    const view = this.context.view
+    const event = this.context.event
+    const tooltipController = view.getController('tooltip')
+    if (!tooltipController || view.getOptions().tooltip === false) {
+      this.hide()
+      return
+    }
+
+    const tooltipItems = getItemsOfView(
+      view,
+      { x: event.x, y: event.y },
+      tooltipController.getTooltipCfg()
+    )
+    const xField = view.getXScale()?.field
+    const tooltipItem = tooltipItems.find(item =>
+      Object.prototype.hasOwnProperty.call(item?.data ?? {}, xField)
+    )
+    const path = tooltipItem ? getCategoryRegionPath(view, tooltipItem.data[xField]) : undefined
+    if (!path) {
+      this.hide()
+      return
+    }
+
+    if (this.regionPath) {
+      this.regionPath.attr('path', path)
+      this.regionPath.show()
+      return
+    }
+    this.regionPath = view.backgroundGroup.addShape({
+      type: 'path',
+      name: ACTIVE_REGION_SHAPE_NAME,
+      capture: false,
+      attrs: {
+        ...ACTIVE_REGION_STYLE,
+        path
+      }
+    })
+  }
+
+  /** 隐藏已创建的悬浮背景 */
+  public hide() {
+    this.regionPath?.hide()
+  }
+
+  /** 销毁悬浮背景并释放交互持有的图形引用 */
+  public destroy() {
+    this.regionPath?.remove(true)
+    this.regionPath = undefined
+    super.destroy()
+  }
+}
+
+// 使用独立交互名称注册，避免覆盖其他图表使用的 G2 active-region
+registerAction(BOX_ACTIVE_REGION, BoxActiveRegion)
+registerInteraction(BOX_ACTIVE_REGION, {
+  start: [{ trigger: 'plot:mousemove', action: `${BOX_ACTIVE_REGION}:show` }],
+  end: [{ trigger: 'plot:mouseleave', action: `${BOX_ACTIVE_REGION}:hide` }]
+})
 
 type DataEaseBoxOptions = BoxOptions & {
   outlierColorMode?: ChartBasicStyle['outlierColorMode']
@@ -187,6 +328,7 @@ export class BoxPlot extends G2PlotChartView<BoxOptions, G2Box> {
       yField: ['low', 'q1', 'median', 'q3', 'high'],
       groupField: hasGroup ? 'category' : undefined,
       outliersField: 'outliers',
+      interactions: [{ type: BOX_ACTIVE_REGION }],
       meta: {
         field: { type: 'cat' },
         ...(hasGroup ? { category: { type: 'cat' } } : {})
@@ -221,7 +363,7 @@ export class BoxPlot extends G2PlotChartView<BoxOptions, G2Box> {
         }
         const view = event.view
         const activeRegion = view?.backgroundGroup?.cfg?.children?.find(
-          item => item.cfg.name === 'active-region'
+          item => item.cfg.name === ACTIVE_REGION_SHAPE_NAME
         )
         if (!activeRegion?.cfg.visible) {
           return
