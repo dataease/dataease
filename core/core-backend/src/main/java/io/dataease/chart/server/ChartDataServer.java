@@ -407,14 +407,27 @@ public class ChartDataServer implements ChartDataApi {
                     }
                 }
             }
-            if ("table-info".equalsIgnoreCase(viewInfo.getType()) && !"dataset".equalsIgnoreCase(viewInfo.getDownloadType())) {
-                Map<String, Object> tableCell = (Map<String, Object>) viewInfo.getCustomAttr().get("tableCell");
-                Boolean mergeCells = (Boolean) tableCell.get("mergeCells");
+            // 支持明细表与汇总表的单元格合并导出
+            if (StringUtils.equalsAnyIgnoreCase(viewInfo.getType(), "table-info", "table-normal") && !"dataset".equalsIgnoreCase(viewInfo.getDownloadType())) {
+                Map<String, Object> tableCell = viewInfo.getCustomAttr() != null ? (Map<String, Object>) viewInfo.getCustomAttr().get("tableCell") : null;
+                Boolean mergeCells = tableCell != null ? (Boolean) tableCell.get("mergeCells") : null;
                 if (mergeCells != null && mergeCells) {
-                    var tmpAxis = viewInfo.getXAxis().stream().filter(x -> !x.isHide()).toList();
-                    var mergeIndex = tmpAxis.size();
-                    for (int i = 0; i < tmpAxis.size(); i++) {
-                        if ("q".equalsIgnoreCase(tmpAxis.get(i).getGroupType())) {
+                    var mergeIndex = exportFields.size();
+                    for (int i = 0; i < exportFields.size(); i++) {
+                        ChartViewFieldDTO field = exportFields.get(i);
+                        boolean isQuota = "q".equalsIgnoreCase(field.getGroupType());
+                        // 汇总表优先依据 yAxis / xAxis 判断是否为指标列
+                        if ("table-normal".equalsIgnoreCase(viewInfo.getType())) {
+                            boolean inY = viewInfo.getYAxis() != null && viewInfo.getYAxis().stream()
+                                    .anyMatch(y -> StringUtils.equals(y.getDataeaseName(), field.getDataeaseName()));
+                            if (inY) {
+                                isQuota = true;
+                            } else if (viewInfo.getXAxis() != null && viewInfo.getXAxis().stream()
+                                    .anyMatch(x -> StringUtils.equals(x.getDataeaseName(), field.getDataeaseName()))) {
+                                isQuota = false;
+                            }
+                        }
+                        if (isQuota) {
                             mergeIndex = i;
                             break;
                         }
