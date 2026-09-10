@@ -2896,19 +2896,32 @@ export const getColumns = (fields, cols: Array<ColumnNode>): Array<ColumnNode> =
   return result
 }
 
+const imageCellStates = new WeakMap<object, { image: HTMLImageElement; shape?: GImage }>()
+
 export function drawImage() {
+  const previous = imageCellStates.get(this)
+  if (previous) {
+    previous.image.onload = null
+    if (previous.shape && !previous.shape.destroyed) {
+      previous.shape.destroy()
+    }
+  }
   const img = new Image()
+  const state: { image: HTMLImageElement; shape?: GImage } = { image: img }
+  imageCellStates.set(this, state)
   const {x, y, width, height, fieldValue} = this.meta
-  img.src = fieldValue as string
   img.setAttribute('crossOrigin', 'anonymous')
   img.onload = () => {
-    this.children?.length && this.removeChildren()
+    // 单元格可能被复用或销毁，忽略旧请求，避免旧图片覆盖新数据。
+    if (this.destroyed || imageCellStates.get(this) !== state) {
+      return
+    }
     const {width: imgWidth, height: imgHeight} = img
     const ratio = Math.max(imgWidth / width, imgHeight / height)
     // 不铺满，部分留白
     const imgShowWidth = (imgWidth / ratio) * 0.8
     const imgShowHeight = (imgHeight / ratio) * 0.8
-    this.appendChild(new GImage({
+    state.shape = new GImage({
       style: {
         x: x + (imgShowWidth < width ? (width - imgShowWidth) / 2 : 0),
         y: y + (imgShowHeight < height ? (height - imgShowHeight) / 2 : 0),
@@ -2916,8 +2929,11 @@ export function drawImage() {
         height: imgShowHeight,
         src: img
       }
-    }))
+    })
+    // 只替换图片，保留单元格的背景、边框和交互图形。
+    this.appendChild(state.shape)
   }
+  img.src = fieldValue as string
 }
 
 export function mappingColorCustom(value, defaultColor, field, type, filedValueMap?, rowData?) {
