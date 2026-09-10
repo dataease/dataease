@@ -774,13 +774,15 @@ function getTooltipViewport() {
   return { left, top, width, height, right: left + width, bottom: top + height }
 }
 
-function getHoverTooltipLogicalMaxWidth(container: string) {
+function getHoverTooltipLogicalMaxWidth(container: string, fontSize = 12) {
   const visualScale = getChartVisualScale(container)
   const { width } = getTooltipViewport()
   const viewportMaxWidth = Math.max(0, width - TOOLTIP_VIEWPORT_GAP * 2)
-  // PC 最大占可视屏幕三分之一，移动端可使用整屏并保留安全间距
+  // 大字号适当放宽，PC 最多占可视屏幕 75%，移动端保留安全间距
   const screenMaxWidth =
-    !!isMobile() || width <= 768 ? viewportMaxWidth : Math.min(width / 3, viewportMaxWidth)
+    !!isMobile() || width <= 768
+      ? viewportMaxWidth
+      : Math.min(width * Math.min(0.75, Math.max(1 / 3, fontSize / 72)), viewportMaxWidth)
   return {
     visualScale,
     maxWidth: screenMaxWidth / visualScale
@@ -992,12 +994,20 @@ export function listenerTooltipShow(newChart: G2Chart, chart: Chart) {
       const { x: clientX, y: clientY } = clientPosition
 
       // 悬浮提示挂载在 body，不会继承大屏 transform，需要补齐与轮播一致的视觉缩放
-      const { visualScale, maxWidth } = getHoverTooltipLogicalMaxWidth(chart.container)
+      const { visualScale, maxWidth } = getHoverTooltipLogicalMaxWidth(
+        chart.container,
+        Number(parseJson(chart.customAttr)?.tooltip?.fontSize) || 12
+      )
       // 子项使用同一逻辑上限，避免百分比宽度反向限制 max-content 扩容
       tooltipWrapper.style.setProperty('--de-hover-tooltip-max-width', `${maxWidth}px`)
       // 悬浮态不保留 G2 默认最小宽度，让短内容按真实宽度收缩
       tooltip.style.removeProperty('min-width')
       tooltip.style.setProperty('max-width', `${maxWidth}px`, 'important')
+      tooltip.style.setProperty(
+        'max-height',
+        `${Math.max(0, getTooltipViewport().height * 0.6) / visualScale}px`,
+        'important'
+      )
       tooltip.style.setProperty('transform-origin', 'top left', 'important')
       tooltip.style.setProperty('transform', `scale(${visualScale})`, 'important')
 
