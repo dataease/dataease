@@ -722,10 +722,11 @@ export function getConditions(chart: Chart) {
   if (conditions?.length > 0) {
     const { tableCell, basicStyle, tableHeader } = parseJson(chart.customAttr)
     // 合并单元格时斑马纹失效
-    const enableTableCrossBG =
-      chart.type === 'table-info'
-        ? tableCell.enableTableCrossBG && !tableCell.mergeCells
-        : tableCell.enableTableCrossBG
+    let enableTableCrossBG = tableCell.enableTableCrossBG
+    const isTableWithMerge = ['table-info', 'table-normal'].includes(chart.type)
+    if (isTableWithMerge && tableCell.mergeCells) {
+      enableTableCrossBG = false
+    }
     const valueColor = isAlphaColor(tableCell.tableFontColor)
       ? tableCell.tableFontColor
       : hexColorToRGBA(tableCell.tableFontColor, basicStyle.alpha)
@@ -2812,8 +2813,22 @@ export function configMergeCells(chart: Chart, options: S2Options, dataConfig: S
         p[n.dataeaseName] = n
         return p
       }, {}) || {}
-    const quotaIndex = dataConfig.meta.findIndex(m => fieldsMap[m.field]?.groupType === 'q')
-    const data = chart.data?.tableRow
+    // 判断是否为指标列：汇总表优先依据 yAxis/xAxis 划分，明细表依据 groupType === 'q' 划分
+    const isQuotaColumn = (fieldId: string) => {
+      if (chart.type === 'table-normal') {
+        const inYAxis = chart.yAxis?.some(y => y.dataeaseName === fieldId)
+        if (inYAxis) {
+          return true
+        }
+        const inXAxis = chart.xAxis?.some(x => x.dataeaseName === fieldId)
+        if (inXAxis) {
+          return false
+        }
+      }
+      return fieldsMap[fieldId]?.groupType === 'q'
+    }
+    const quotaIndex = dataConfig.meta.findIndex(m => isQuotaColumn(m.field))
+    const data = (dataConfig.data?.length ? dataConfig.data : chart.data?.tableRow) || []
     if (quotaIndex === 0 || !data?.length) {
       return
     }

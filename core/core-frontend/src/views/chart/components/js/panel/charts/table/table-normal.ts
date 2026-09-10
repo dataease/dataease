@@ -14,10 +14,11 @@ import {
   getStartPosition,
   isNumeric,
   CustomTableColCell,
-  reserveTableRightBorderWidth
+  reserveTableRightBorderWidth,
+  getRowIndex
 } from '@/views/chart/components/js/panel/common/common_table'
 import { S2ChartView, S2DrawOptions } from '@/views/chart/components/js/panel/types/impl/s2'
-import { parseJson } from '@/views/chart/components/js/util'
+import { hexColorToRGBA, isAlphaColor, parseJson } from '@/views/chart/components/js/util'
 import {
   type LayoutResult,
   S2DataConfig,
@@ -56,7 +57,8 @@ export class TableNormal extends S2ChartView<TableSheet> {
       ...TABLE_EDITOR_PROPERTY_INNER['table-cell-selector'],
       'tableFreeze',
       'tableColumnFreezeHead',
-      'tableRowFreezeHead'
+      'tableRowFreezeHead',
+      'mergeCells'
     ],
     'summary-selector': ['showSummary', 'summaryLabel']
   }
@@ -194,13 +196,15 @@ export class TableNormal extends S2ChartView<TableSheet> {
     }
     // 列宽设置
     s2Options.style = this.configStyle(chart, s2DataConfig)
-    // 行列冻结
-    if (tableCell.tableFreeze) {
+    // 行列冻结（开启单元格合并时冻结失效）
+    if (tableCell.tableFreeze && !tableCell.mergeCells) {
       s2Options.frozenColCount = tableCell.tableColumnFreezeHead ?? 0
       s2Options.frozenRowCount = tableCell.tableRowFreezeHead ?? 0
     }
     // tooltip
     this.configTooltip(chart, s2Options)
+    // 合并单元格
+    this.configMergeCells(chart, s2Options, s2DataConfig)
     // 隐藏表头，保留顶部的分割线, 禁用表头横向 resize
     if (tableHeader.showTableHeader === false) {
       s2Options.style.colCfg.height = 1
@@ -219,6 +223,9 @@ export class TableNormal extends S2ChartView<TableSheet> {
       chart.container = container
       this.configHeaderInteraction(chart, s2Options)
       s2Options.colCell = (node, sheet, config) => {
+        // 配置文本自动换行参数（开启单元格合并时禁用自动换行）
+        node.autoWrap = tableCell.mergeCells ? false : basicStyle.autoWrap
+        node.maxLines = basicStyle.maxLines
         return new CustomTableColCell(node, sheet, config)
       }
     }
@@ -326,11 +333,14 @@ export class TableNormal extends S2ChartView<TableSheet> {
       }
       action(param)
     })
+    // 合并的单元格直接复用数据单元格的事件
+    newChart.on(S2Event.MERGED_CELLS_CLICK, e => newChart.emit(S2Event.DATA_CELL_CLICK, e))
     // tooltip
     const { show } = tooltip
     if (show) {
       newChart.on(S2Event.COL_CELL_HOVER, event => this.showTooltip(newChart, event, meta))
       newChart.on(S2Event.DATA_CELL_HOVER, event => this.showTooltip(newChart, event, meta))
+      newChart.on(S2Event.MERGED_CELLS_HOVER, event => this.showTooltip(newChart, event, meta))
       // touch
       this.configTouchEvent(newChart, drawOption, meta)
     }
@@ -347,7 +357,65 @@ export class TableNormal extends S2ChartView<TableSheet> {
 
   protected configTheme(chart: Chart): S2Theme {
     const theme = super.configTheme(chart)
-    const { tableHeader, tableCell } = parseJson(chart.customAttr)
+    const { basicStyle, tableHeader, tableCell } = parseJson(chart.customAttr)
+    // 合并单元格主题配置
+    if (tableCell.mergeCells) {
+      const tableFontColor = hexColorToRGBA(tableCell.tableFontColor, basicStyle.alpha)
+      let tableItemBgColor = tableCell.tableItemBgColor
+      if (!isAlphaColor(tableItemBgColor)) {
+        tableItemBgColor = hexColorToRGBA(tableItemBgColor, basicStyle.alpha)
+      }
+      const { tableBorderColor } = basicStyle
+      const { tableItemAlign, tableItemFontSize } = tableCell
+      const fontStyle = tableCell.isItalic ? 'italic' : 'normal'
+      const fontWeight = tableCell.isBolder === false ? 'normal' : 'bold'
+      const mergeCellTheme: S2Theme = {
+        dataCell: {
+          cell: {
+            crossBackgroundColor: tableItemBgColor
+          }
+        },
+        mergedCell: {
+          cell: {
+            backgroundColor: tableItemBgColor,
+            crossBackgroundColor: tableItemBgColor,
+            horizontalBorderColor: tableBorderColor,
+            verticalBorderColor: tableBorderColor,
+            horizontalBorderWidth: tableCell.showHorizonBorder ? 1 : 0,
+            verticalBorderWidth: tableCell.showVerticalBorder ? 1 : 0
+          },
+          bolderText: {
+            fill: tableFontColor,
+            textAlign: tableItemAlign,
+            fontSize: tableItemFontSize,
+            fontStyle,
+            fontWeight
+          },
+          text: {
+            fill: tableFontColor,
+            textAlign: tableItemAlign,
+            fontSize: tableItemFontSize,
+            fontStyle,
+            fontWeight
+          },
+          measureText: {
+            fill: tableFontColor,
+            textAlign: tableItemAlign,
+            fontSize: tableItemFontSize,
+            fontStyle,
+            fontWeight
+          },
+          seriesText: {
+            fill: tableFontColor,
+            textAlign: tableItemAlign,
+            fontSize: tableItemFontSize,
+            fontStyle,
+            fontWeight
+          }
+        }
+      }
+      merge(theme, mergeCellTheme)
+    }
     if (tableCell.tableItemAlign === 'custom') {
       const { alignConfig } = tableCell
       const alignMap = alignConfig.reduce((p, n) => {
@@ -377,7 +445,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
     s2Options: S2Options,
     s2DataConfig: S2DataConfig
   ) {
-    const { tableHeader, basicStyle } = parseJson(chart.customAttr)
+    const { tableHeader, basicStyle, tableCell } = parseJson(chart.customAttr)
     // 开启序号之后，第一列就是序号列，修改 label 即可
     if (s2Options.showSeriesNumber) {
       let indexLabel = tableHeader.indexLabel
@@ -416,6 +484,17 @@ export class TableNormal extends S2ChartView<TableSheet> {
       }
       data.push(summaryObj)
     }
+    // 提取已合并单元格坐标映射，用于标记底层数据格
+    const { mergeCells } = tableCell
+    const mergedCellsInfoMap: Record<string, boolean> = {}
+    if (mergeCells) {
+      s2Options.mergedCellsInfo?.reduce((p, n) => {
+        n.forEach(cell => {
+          p[`${cell.rowIndex}-${cell.colIndex}`] = true
+        })
+        return p
+      }, mergedCellsInfoMap)
+    }
     s2Options.dataCell = viewMeta => {
       // 总计行处理
       if (showSummary && viewMeta.rowIndex === data.length - 1) {
@@ -428,7 +507,19 @@ export class TableNormal extends S2ChartView<TableSheet> {
         return new SummaryCell(viewMeta, viewMeta?.spreadsheet)
       }
       if (viewMeta.colIndex === 0 && s2Options.showSeriesNumber) {
-        viewMeta.fieldValue = pageInfo.pageSize * (pageInfo.currentPage - 1) + viewMeta.rowIndex + 1
+        if (tableCell.mergeCells) {
+          viewMeta.fieldValue = getRowIndex(s2Options.mergedCellsInfo, viewMeta)
+        } else {
+          viewMeta.fieldValue =
+            pageInfo.pageSize * (pageInfo.currentPage - 1) + viewMeta.rowIndex + 1
+        }
+      }
+      // 配置文本自动换行参数
+      viewMeta.autoWrap = tableCell.mergeCells ? false : basicStyle.autoWrap
+      viewMeta.maxLines = basicStyle.maxLines
+      // 合并单元格标记，被合并覆盖的底层普通单元格不重复绘制文本与背景
+      if (mergeCells && mergedCellsInfoMap[`${viewMeta.rowIndex}-${viewMeta.colIndex}`]) {
+        viewMeta.isMergedCell = true
       }
       return new CustomDataCell(viewMeta, viewMeta?.spreadsheet)
     }
