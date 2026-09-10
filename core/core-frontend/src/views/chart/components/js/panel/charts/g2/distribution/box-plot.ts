@@ -34,6 +34,8 @@ const DETAIL_TOOLTIP_ITEM_MARKER_SIZE = 4
 const BOX_SERIES_FIELD = '__boxPlotSeries'
 const BOX_SUMMARY_FIELD = '__boxPlotSummary'
 const BOX_TOOLTIP_HIT_MARK_KEY = '__boxPlotTooltipHitMark'
+const BOX_DIMENSION_HIT_MARK_KEY = '__boxPlotDimensionHitMark'
+const BOX_DIMENSION_HIT_FIELD = '__boxPlotDimensionHit'
 
 const normalizeCustomAttr = (customAttr: CustomAttr): ChartAttr => {
   const tooltip = cloneDeep(DEFAULT_TOOLTIP)
@@ -211,6 +213,34 @@ export class BoxPlot extends Bar {
       },
       animate: false
     }
+    const dimensionHitData = Array.from(
+      new Map(
+        boxData.map(datum => [
+          datum.field,
+          {
+            field: datum.field,
+            median: datum.median,
+            [BOX_DIMENSION_HIT_FIELD]: true
+          }
+        ])
+      ).values()
+    )
+    const dimensionHitMark: ChildSpec = {
+      key: BOX_DIMENSION_HIT_MARK_KEY,
+      type: 'point',
+      data: dimensionHitData,
+      encode: {
+        x: 'field',
+        y: 'median'
+      },
+      // 每个维度保留一个透明锚点，使 seriesTooltip 的最近 X 命中覆盖完整 Band
+      style: {
+        fillOpacity: 0,
+        strokeOpacity: 0,
+        pointerEvents: 'none'
+      },
+      animate: false
+    }
     const baseOptions: ViewSpec = {
       type: 'view',
       data: boxData,
@@ -220,7 +250,7 @@ export class BoxPlot extends Bar {
         color: { domain: seriesDomain }
       },
       // 透明 line 复用 seriesTooltip 的最近 X 命中，避免 tooltip 受 box 几何边界限制
-      children: [boxMark, pointMark, tooltipHitMark]
+      children: [boxMark, pointMark, tooltipHitMark, dimensionHitMark]
     }
     const options = this.setupOptions(chart, baseOptions)
     const newChart = new G2Chart({ container, autoFit: true, ...getG2Renderer() })
@@ -281,7 +311,7 @@ export class BoxPlot extends Bar {
 
   protected configBasicStyle(chart: Chart, options: ViewSpec): ViewSpec {
     const basicStyle = parseJson(chart.customAttr).basicStyle
-    const [boxMark, pointMark, tooltipHitMark] = options.children
+    const [boxMark, pointMark, ...interactionMarks] = options.children
     const stroke =
       basicStyle.themeContrastColor ?? parseJson(chart.customAttr).label?.color ?? '#000000'
     const configuredPointColor =
@@ -312,7 +342,7 @@ export class BoxPlot extends Bar {
         },
         // 隐藏异常点只改变展示，不改变后端计算得到的四分位数和真实异常值数量。
         ...(basicStyle.showOutliers === false ? [] : [nextPointMark]),
-        tooltipHitMark
+        ...interactionMarks
       ]
     }
   }
@@ -363,7 +393,8 @@ export class BoxPlot extends Bar {
         items?.forEach(sourceItem => {
           // G2 会把 tooltip 回调返回的 datum 平铺到 item，异常点再通过摘要字段回到所属箱体
           const sourceData = sourceItem?.[BOX_SUMMARY_FIELD] ?? sourceItem
-          if (!sourceData) {
+          // 维度锚点只开启 Band 最近命中，不参与 tooltip 内容
+          if (!sourceData || sourceData[BOX_DIMENSION_HIT_FIELD]) {
             return
           }
           const key = JSON.stringify([sourceData.field, sourceData.category ?? null])
@@ -483,18 +514,22 @@ export class BoxPlot extends Bar {
     }
     return {
       ...options,
-      children: options.children.map(child =>
-        child.key === BOX_TOOLTIP_HIT_MARK_KEY
-          ? {
-              ...child,
-              tooltip: data => data,
-              interaction: {
-                ...child.interaction,
-                tooltip: tooltipInteraction
-              }
+      children: options.children.map(child => {
+        if (child.key === BOX_TOOLTIP_HIT_MARK_KEY) {
+          return {
+            ...child,
+            tooltip: data => data,
+            interaction: {
+              ...child.interaction,
+              tooltip: tooltipInteraction
             }
-          : { ...child, tooltip: false }
-      )
+          }
+        }
+        if (child.key === BOX_DIMENSION_HIT_MARK_KEY) {
+          return { ...child, tooltip: data => data }
+        }
+        return { ...child, tooltip: false }
+      })
     }
   }
 
