@@ -6,7 +6,6 @@ import {
   S2Theme,
   ScrollbarPositionType,
   TableColCell,
-  TableDataCell,
   ViewMeta,
   TableSheet
 } from '@antv/s2'
@@ -20,6 +19,7 @@ import {
   copyContent,
   CustomDataCell,
   getRowIndex,
+  isInMergedCell,
   SortTooltip,
   summaryRowStyle,
   getLeafNodes,
@@ -36,7 +36,29 @@ import {
 
 const { t } = useI18n()
 
-class ImageCell extends TableDataCell {
+class DetailDataCell extends CustomDataCell {
+  drawTextOrCustomRenderer(): void {
+    if (isInMergedCell(this.spreadsheet.options.mergedCellsInfo, this.getMeta())) {
+      // 只清空底层显示内容，不修改元数据，合并层仍需使用原值绘制文字。
+      this.textShape?.attr('text', '')
+      this.linkFieldShape?.attr('strokeOpacity', 0)
+      this.afterDrawText()
+      return
+    }
+    super.drawTextOrCustomRenderer()
+  }
+
+  getBackgroundColor() {
+    const background = super.getBackgroundColor()
+    if (isInMergedCell(this.spreadsheet.options.mergedCellsInfo, this.getMeta())) {
+      // 直接控制背景图形的透明度，避免组 opacity 对子图形不生效。
+      background.backgroundColorOpacity = 0
+    }
+    return background
+  }
+}
+
+class ImageCell extends DetailDataCell {
   drawTextShape(): void {
     drawImage.apply(this)
   }
@@ -591,7 +613,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
             pageInfo.pageSize * (pageInfo.currentPage - 1) + viewMeta.rowIndex + 1
         }
       }
-      return new CustomDataCell(viewMeta, sheet)
+      return new DetailDataCell(viewMeta, sheet)
     }
   }
 
