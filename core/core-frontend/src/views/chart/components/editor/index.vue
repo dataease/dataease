@@ -1510,6 +1510,13 @@ const saveRename = ref => {
           break
       }
       axisType && emitter.emit('updateAxis', { axisType, axis: [axis], editType: 'update' })
+      if (
+        renameType === 'drillFields' &&
+        ['table-normal', 'table-info'].includes(view.value.type)
+      ) {
+        // 钻取列名来自本地配置，仅重绘支持该列头的 S2 表格
+        renderChart(view.value)
+      }
       closeRename()
     } else {
       return false

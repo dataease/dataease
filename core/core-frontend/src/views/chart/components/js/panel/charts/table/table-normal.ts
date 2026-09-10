@@ -116,6 +116,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
     const columns = []
     const meta = []
     const drillFieldMap: Record<string, string> = {}
+    const drillFieldTitleMap: Record<string, string> = {}
     if (chart.drill) {
       // 下钻过滤字段
       const filterFields = chart.drillFilters.map(i => i.fieldId)
@@ -123,7 +124,8 @@ export class TableNormal extends S2ChartView<TableSheet> {
       const drillFieldId = chart.drillFields[0].id
       const drillFieldIndex = chart.xAxis.findIndex(ele => ele.id === drillFieldId)
       // 当前下钻字段
-      const curDrillFieldId = chart.drillFields[filterFields.length].id
+      const currentDrillField = chart.drillFields[filterFields.length]
+      const curDrillFieldId = currentDrillField.id
       const curDrillField = fields.find(ele => ele.id === curDrillFieldId)
       filterFields.push(curDrillFieldId)
       // 移除下钻字段，把当前下钻字段插入到下钻入口位置
@@ -131,6 +133,9 @@ export class TableNormal extends S2ChartView<TableSheet> {
         return !filterFields.includes(ele.id)
       })
       drillFieldMap[curDrillField.dataeaseName] = chart.drillFields[0].dataeaseName
+      // 当前钻取列优先使用钻取配置中的显示名称
+      drillFieldTitleMap[curDrillFieldId] =
+        currentDrillField.chartShowName ?? currentDrillField.name
       fields.splice(drillFieldIndex, 0, curDrillField)
     }
     const axisMap = [...chart.xAxis, ...chart.yAxis].reduce((pre, cur) => {
@@ -143,7 +148,10 @@ export class TableNormal extends S2ChartView<TableSheet> {
       if (f?.hide === true) {
         return
       }
-      columns.push({ field: ele.dataeaseName, title: ele.chartShowName ?? ele.name })
+      columns.push({
+        field: ele.dataeaseName,
+        title: drillFieldTitleMap[ele.id] ?? ele.chartShowName ?? ele.name
+      })
       meta.push({
         field: ele.dataeaseName,
         formatter: function (value) {
