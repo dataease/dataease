@@ -25,6 +25,7 @@ import {
   S2Options,
   S2Theme,
   ScrollbarPositionType,
+  SERIES_NUMBER_FIELD,
   TableColCell,
   TableSheet,
   ViewMeta
@@ -406,6 +407,13 @@ export class TableNormal extends S2ChartView<TableSheet> {
         basicStyle.seriesSummary,
         chart.data.customSumResult
       ) as any
+      // 同步首列汇总标签到 summaryObj 中
+      const defaultTotalLabel = summaryLabel ?? t('chart.total_show')
+      if (tableHeader.showIndex) {
+        summaryObj[SERIES_NUMBER_FIELD] = defaultTotalLabel
+      } else if (xAxis?.length) {
+        summaryObj[xAxis[0].dataeaseName] = defaultTotalLabel
+      }
       data.push(summaryObj)
     }
     s2Options.dataCell = viewMeta => {
