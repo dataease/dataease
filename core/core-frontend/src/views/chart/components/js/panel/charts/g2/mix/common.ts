@@ -1,4 +1,6 @@
 import { Chart as G2Chart, extend, Runtime, stdlib, type G2Spec } from '@antv/g2'
+import { defaultsDeep } from 'lodash-es'
+import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { parseJson } from '@/views/chart/components/js/util'
 import {
   getCategoryLegendStyle,
@@ -230,6 +232,99 @@ export const getMixLabelTransform = (fullDisplay: boolean) => {
     transform.push({ type: 'overlapHide' })
   }
   return transform
+}
+
+// 组合图使用纵向标签位置，兼容从横向图或饼图切换时保留的位置值
+export const normalizeMixLabelPosition = (position?: string): 'top' | 'middle' | 'bottom' => {
+  switch (position) {
+    case 'bottom':
+    case 'left':
+      return 'bottom'
+    case 'middle':
+    case 'inner':
+    case 'outer':
+      return 'middle'
+    default:
+      return 'top'
+  }
+}
+
+// 四类组合图共用标签配置，图形节点由各图表按自身结构传入
+export const configMixLabel = (chart: Chart, leftMark: G2Spec, rightMark: G2Spec): void => {
+  const { label } = parseJson(chart.customAttr)
+  if (!label.show) {
+    return
+  }
+  // 按指标和轴区分标签，兼容未保存 seriesId 的旧图表
+  const seriesMap = (label.seriesLabelFormatter ?? []).reduce((acc, cur) => {
+    acc[cur.seriesId ?? cur.id] = cur
+    return acc
+  }, {} as Record<string, DeepPartial<SeriesFormatter>>)
+  const getLabelOpt = (axis: 'yAxis' | 'yAxisExt') => {
+    const getFormatter = d =>
+      seriesMap[`${d.quotaList[0].id}-${axis}`] ?? seriesMap[d.quotaList[0].id]
+    // 未迁移的旧图表仍使用全局位置，忽略历史指标默认写入的 top
+    const getPosition = d =>
+      normalizeMixLabelPosition(
+        (label.seriesLabelPositionEnabled ? getFormatter(d)?.position : undefined) ?? label.position
+      )
+    return {
+      labels: [
+        {
+          text: d => {
+            if (!label.seriesLabelFormatter?.length) {
+              return d.value
+            }
+            const labelCfg = getFormatter(d)
+            if (!labelCfg) {
+              return d.value
+            }
+            if (!labelCfg.show) {
+              return ''
+            }
+            return valueFormatter(d.value, labelCfg.formatterCfg)
+          },
+          style: {
+            fillOpacity: 1,
+            fontSize: d => {
+              if (!label.seriesLabelFormatter?.length) {
+                return 12
+              }
+              const labelCfg = getFormatter(d)
+              if (!labelCfg) {
+                return 12
+              }
+              if (!labelCfg.show) {
+                return 0
+              }
+              return labelCfg.fontSize
+            },
+            fill: d => {
+              if (!label.seriesLabelFormatter?.length) {
+                return 'black'
+              }
+              const labelCfg = getFormatter(d)
+              if (!labelCfg?.show) {
+                return 'black'
+              }
+              return labelCfg.color
+            },
+            position: d => (getPosition(d) === 'middle' ? 'inside' : getPosition(d))
+          },
+          textBaseline: d =>
+            ({
+              top: 'bottom',
+              middle: 'middle',
+              bottom: 'top'
+            }[getPosition(d)]),
+          transform: getMixLabelTransform(label.fullDisplay),
+          fontFamily: chart.fontFamily
+        }
+      ]
+    }
+  }
+  defaultsDeep(leftMark, getLabelOpt('yAxis'))
+  defaultsDeep(rightMark, getLabelOpt('yAxisExt'))
 }
 
 export const CHART_MIX_EDITOR_PROPERTY: EditorProperty[] = [

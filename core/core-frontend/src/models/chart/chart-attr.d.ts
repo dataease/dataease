@@ -1111,6 +1111,8 @@ declare interface ChartLabelAttr {
    * 多系列标签设置
    */
   seriesLabelFormatter: SeriesFormatter[]
+  /** 组合图已启用按指标配置标签位置 */
+  seriesLabelPositionEnabled?: boolean
 
   /**
    * 显示字段，通过字段名称显示对应的值

@@ -32,7 +32,7 @@ import {
   createResponsiveMixSpaceFlex,
   filterValidMixTooltipItems,
   getAssistLineAxisIndex,
-  getMixLabelTransform
+  configMixLabel
 } from './common'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 import {
@@ -141,7 +141,7 @@ export class StackLineMix extends G2ChartView {
   propertyInner: EditorPropertyInner = {
     ...CHART_MIX_EDITOR_PROPERTY_INNER,
     'legend-selector': ['icon', 'orient', 'fontSize', 'color', 'hPosition', 'vPosition'],
-    'label-selector': ['vPosition', 'seriesLabelFormatter'],
+    'label-selector': ['seriesLabelVPosition', 'seriesLabelFormatter'],
     'tooltip-selector': [
       'fontSize',
       'color',
@@ -505,83 +505,8 @@ export class StackLineMix extends G2ChartView {
   }
 
   protected configLabel(chart: Chart, options: G2Spec): G2Spec {
-    const { label } = parseJson(chart.customAttr)
-    if (!label.show) {
-      return options
-    }
-    const seriesMap = label.seriesLabelFormatter?.reduce((acc, cur) => {
-      acc[cur.id] = cur
-      return acc
-    }, {})
-    const labelOpt = {
-      labels: [
-        {
-          text: d => {
-            if (!label.seriesLabelFormatter?.length) {
-              return d.value
-            }
-            const labelCfg = seriesMap?.[d.quotaList[0].id] as SeriesFormatter
-            if (!labelCfg) {
-              return d.value
-            }
-            if (!labelCfg.show) {
-              return ''
-            }
-            return valueFormatter(d.value, labelCfg.formatterCfg)
-          },
-          style: {
-            fillOpacity: 1,
-            fontSize: d => {
-              if (!label.seriesLabelFormatter?.length) {
-                return 12
-              }
-              const labelCfg = seriesMap?.[d.quotaList[0].id] as SeriesFormatter
-              if (!labelCfg) {
-                return 12
-              }
-              if (!labelCfg.show) {
-                return 0
-              }
-              return labelCfg.fontSize
-            },
-            fill: d => {
-              if (!label.seriesLabelFormatter?.length) {
-                return 'black'
-              }
-              const labelCfg = seriesMap?.[d.quotaList[0].id] as SeriesFormatter
-              if (!labelCfg?.show) {
-                return 'black'
-              }
-              return labelCfg.color
-            },
-            position: label.position === 'middle' ? 'inside' : label.position
-          },
-          textBaseline: {
-            top: 'bottom',
-            middle: 'middle',
-            bottom: 'top'
-          }[label.position],
-          transform: getMixLabelTransform(label.fullDisplay),
-          fontFamily: chart.fontFamily
-        }
-      ]
-    }
     const [intervalMark, _, pointMark] = options.children.find(c => c.key === 'chart').children
-    if (!label.seriesLabelFormatter?.length) {
-      defaultsDeep(intervalMark, labelOpt)
-      defaultsDeep(pointMark, labelOpt)
-    } else {
-      const showLeft = label.seriesLabelFormatter.some(c => c.id === chart.yAxis[0]?.id && c.show)
-      const showRight = label.seriesLabelFormatter.some(
-        c => c.id === chart.yAxisExt[0]?.id && c.show
-      )
-      if (showLeft) {
-        defaultsDeep(intervalMark, labelOpt)
-      }
-      if (showRight) {
-        defaultsDeep(pointMark, labelOpt)
-      }
-    }
+    configMixLabel(chart, intervalMark, pointMark)
     return options
   }
 

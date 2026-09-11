@@ -18,6 +18,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import Icon from '../../../../../../components/icon-custom/src/Icon.vue'
 import { iconFieldMap } from '@/components/icon-group/field-list'
+import { normalizeMixLabelPosition } from '@/views/chart/components/js/panel/charts/g2/mix/common'
 
 const { t } = useI18n()
 
@@ -92,6 +93,12 @@ const isAxisSpecificSeries = computed(() => {
   return props.chart.type.includes('chart-mix') || props.chart.type === 'bidirectional-bar'
 })
 
+const isMixChart = computed(() =>
+  ['chart-mix', 'chart-mix-group', 'chart-mix-stack', 'chart-mix-dual-line'].includes(
+    props.chart.type
+  )
+)
+
 watch(
   [() => yAxisIds.value, () => props.chart.type],
   () => {
@@ -131,7 +138,8 @@ const initSeriesLabel = () => {
     curSeriesFormatter.value = {}
     return
   }
-  let initFlag = false
+  const migrateSeriesPosition = isMixChart.value && !state.labelForm.seriesLabelPositionEnabled
+  let initFlag = migrateSeriesPosition
   const themeColor = dvMainStore.canvasStyleData.dashboard.themeColor
   const axisMap = yAxis.value.reduce((pre, next) => {
     const axisName = props.chart.type.includes('chart-mix')
@@ -174,11 +182,21 @@ const initSeriesLabel = () => {
     } else {
       initFlag = true
     }
+    if (isMixChart.value) {
+      tmp.position = normalizeMixLabelPosition(
+        migrateSeriesPosition
+          ? state.labelForm.position
+          : seriesFormatter?.position ?? state.labelForm.position
+      )
+    }
     formatter.push(tmp)
     next.seriesId = next.seriesId ?? next.id
     pre[next[computedIdKey.value]] = tmp
     return pre
   }, {})
+  if (migrateSeriesPosition) {
+    state.labelForm.seriesLabelPositionEnabled = true
+  }
   // 初始化一下序列数组，用于主题适配
   if (initFlag) {
     changeLabelAttr('seriesLabelFormatter', false)
@@ -260,6 +278,14 @@ const state = reactive<{ labelForm: DeepPartial<ChartLabelAttr> }>({
 
 const emit = defineEmits(['onLabelChange'])
 const changeLabelAttr = (prop: string, render = true) => {
+  // 上层按属性保存，指标位置与迁移标记需要一同写回
+  if (
+    isMixChart.value &&
+    prop === 'seriesLabelFormatter' &&
+    state.labelForm.seriesLabelPositionEnabled
+  ) {
+    emit('onLabelChange', { data: state.labelForm, render: false }, 'seriesLabelPositionEnabled')
+  }
   emit('onLabelChange', { data: state.labelForm, render }, prop)
 }
 
