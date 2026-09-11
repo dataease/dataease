@@ -20,6 +20,7 @@ import {
   CustomDataCell,
   getRowIndex,
   isInMergedCell,
+  setupMergedCellHover,
   SortTooltip,
   summaryRowStyle,
   getLeafNodes,
@@ -348,6 +349,9 @@ export class TableInfo extends S2ChartView<TableSheet> {
     }
     // 开始渲染
     const newChart = new TableSheet(containerDom, s2DataConfig, s2Options)
+    if (tableCell.mergeCells && basicStyle.showHoverStyle !== false) {
+      setupMergedCellHover(newChart)
+    }
     // 总计紧贴在单元格后面
     summaryRowStyle(newChart, newData, tableCell, tableHeader, basicStyle.showSummary)
     // 自适应铺满
