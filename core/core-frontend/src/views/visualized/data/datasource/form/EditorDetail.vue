@@ -377,7 +377,11 @@ const setRules = () => {
     'configuration.sshPassword': [{ validator: validateSshPassword, trigger: 'blur' }],
     'configuration.sshKey': [{ validator: validateSshkey, trigger: 'blur' }]
   }
-  if (['oracle', 'sqlServer', 'pg', 'kingbase', 'gaussdb', 'redshift', 'db2'].includes(form.value.type)) {
+  if (
+    ['oracle', 'sqlServer', 'pg', 'kingbase', 'gaussdb', 'redshift', 'db2'].includes(
+      form.value.type
+    )
+  ) {
     configRules['configuration.schema'] = [
       {
         required: true,
@@ -1276,7 +1280,11 @@ defineExpose({
             </el-radio>
           </el-form-item>
           <el-form-item
-            v-if="['oracle', 'sqlServer', 'pg', 'kingbase', 'gaussdb', 'redshift', 'db2'].includes(form.type)"
+            v-if="
+              ['oracle', 'sqlServer', 'pg', 'kingbase', 'gaussdb', 'redshift', 'db2'].includes(
+                form.type
+              )
+            "
             class="schema-label"
             :prop="showSchema ? '' : 'configuration.schema'"
           >
