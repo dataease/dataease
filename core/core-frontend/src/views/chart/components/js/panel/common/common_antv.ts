@@ -1744,6 +1744,31 @@ export class CustomZoom extends Zoom {
 }
 
 class CustomTileZoom extends CustomZoom {
+  private attributionObserver?: ResizeObserver
+
+  onAdd() {
+    const container = super.onAdd()
+    const attributionCorner = this.mapsService
+      .getContainer()
+      ?.querySelector<HTMLElement>('.maplibregl-ctrl-bottom-right')
+    if (attributionCorner) {
+      // MapLibre 版权栏与 L7 控件独立布局，按实际高度避让，兼容换行和画布缩放。
+      const updateOffset = () => {
+        container.style.marginBottom = `${attributionCorner.offsetHeight + 8}px`
+      }
+      updateOffset()
+      this.attributionObserver = new ResizeObserver(updateOffset)
+      this.attributionObserver.observe(attributionCorner)
+    }
+    return container
+  }
+
+  onRemove() {
+    this.attributionObserver?.disconnect()
+    this.attributionObserver = undefined
+    super.onRemove()
+  }
+
   resetButtonGroup(container) {
     DOM.clearChildren(container)
     const zoomIn = () => this.mapsService.zoomIn({ duration: 0 })
