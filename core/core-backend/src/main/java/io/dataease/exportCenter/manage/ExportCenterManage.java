@@ -11,8 +11,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.dataease.api.chart.request.ChartExcelRequest;
 import io.dataease.api.dataset.dto.DataSetExportRequest;
 import io.dataease.api.export.BaseExportApi;
+import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
 import io.dataease.api.xpack.dataFilling.DataFillingApi;
 import io.dataease.auth.bo.TokenUserBO;
+import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.commons.utils.ExcelWatermarkUtils;
 import io.dataease.constant.LogOT;
 import io.dataease.constant.LogST;
@@ -23,15 +25,19 @@ import io.dataease.exportCenter.dao.auto.entity.CoreExportTask;
 import io.dataease.exportCenter.dao.auto.mapper.CoreExportDownloadTaskMapper;
 import io.dataease.exportCenter.dao.auto.mapper.CoreExportTaskMapper;
 import io.dataease.exportCenter.dao.ext.mapper.ExportTaskExtMapper;
+import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.log.DeLog;
 import io.dataease.model.ExportTaskDTO;
 import io.dataease.constant.XpackSettingConstants;
+import io.dataease.model.PerBusiResourceDTO;
 import io.dataease.system.manage.SysParameterManage;
 import io.dataease.utils.*;
 import io.dataease.visualization.dao.auto.entity.CoreStore;
+import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.visualization.dao.auto.entity.VisualizationWatermark;
+import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
 import io.dataease.visualization.dao.auto.mapper.VisualizationWatermarkMapper;
 import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
 import io.dataease.visualization.server.DataVisualizationServer;
@@ -41,6 +47,7 @@ import lombok.Data;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -60,6 +67,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 @Component
 @Transactional(rollbackFor = Exception.class)
@@ -67,11 +75,15 @@ public class ExportCenterManage implements BaseExportApi {
     @Resource
     private CoreExportTaskMapper exportTaskMapper;
     @Resource
+    private DataVisualizationInfoMapper visualizationInfoMapper;
+    @Resource
     private CoreExportDownloadTaskMapper coreExportDownloadTaskMapper;
     @Resource
     private ExportTaskExtMapper exportTaskExtMapper;
     @Resource
     private DatasetGroupManage datasetGroupManage;
+    @Resource
+    private ChartViewManege chartViewManege;
     @Resource
     DataVisualizationServer dataVisualizationServer;
     @Resource
@@ -223,9 +235,66 @@ public class ExportCenterManage implements BaseExportApi {
         return CommonBeanFactory.getBean(ExportCenterManage.class);
     }
 
-    private void setExportFromAbsName(ExportTaskDTO exportTaskDTO) {
+    public List<DataVisualizationInfo> getParents(Long id) {
+        List<DataVisualizationInfo> list = new ArrayList<>();
+        DataVisualizationInfo dataVisualizationInfo = visualizationInfoMapper.selectById(id);
+        list.add(dataVisualizationInfo);
+        if (dataVisualizationInfo.getPid().equals(dataVisualizationInfo.getId())) {
+            return list;
+        }
+        try {
+            InteractiveAuthApi  interactiveAuthApi = CommonBeanFactory.getBean(InteractiveAuthApi.class);
+            PerBusiResourceDTO perBusiResourceDTO = interactiveAuthApi.queryResourceById(id);
+            if (StringUtils.isNotEmpty(perBusiResourceDTO.getRootPath())){
+                List<String>  rootList = Arrays.stream(perBusiResourceDTO.getRootPath().split(",")).collect(Collectors.toList());
+                Collections.reverse(rootList);
+                for (int i = 0; i < rootList.size(); i++) {
+                    DataVisualizationInfo d = visualizationInfoMapper.selectById(dataVisualizationInfo.getPid());
+                    list.add(d);
+                }
+            }
+
+        } catch (NoSuchBeanDefinitionException e) {
+            getParent(list, dataVisualizationInfo);
+        }
+        Collections.reverse(list);
+        return list;
+    }
+
+    public void getParent(List<DataVisualizationInfo> list, DataVisualizationInfo dataVisualizationInfo) {
+        if (ObjectUtils.isNotEmpty(dataVisualizationInfo) && dataVisualizationInfo.getPid() != null && !dataVisualizationInfo.getPid().equals(dataVisualizationInfo.getId())) {
+            DataVisualizationInfo d = visualizationInfoMapper.selectById(dataVisualizationInfo.getPid());
+            list.add(d);
+            getParent(list, d);
+        }
+    }
+
+    public void setExportFromAbsName(ExportTaskDTO exportTaskDTO) {
         if (exportTaskDTO.getExportFromType().equalsIgnoreCase("chart")) {
-            exportTaskDTO.setExportFromName(dataVisualizationServer.getAbsPath(exportTaskDTO.getExportFrom()));
+            String exportFromName = null;
+
+            ChartViewDTO viewDTO = chartViewManege.findChartViewAround(String.valueOf(exportTaskDTO.getExportFrom()));
+            if (viewDTO == null) {
+                exportTaskDTO.setExportFromName(exportFromName);
+                return;
+            }
+            if (viewDTO.getPid() == null) {
+                exportFromName = viewDTO.getTitle();
+                exportTaskDTO.setExportFromName(exportFromName);
+                return;
+            }
+
+            List<DataVisualizationInfo> parents = getParents(viewDTO.getPid());
+            StringBuilder stringBuilder = new StringBuilder();
+            parents.forEach(ele -> {
+                if (ObjectUtils.isNotEmpty(ele)) {
+                    stringBuilder.append(ele.getName()).append("/");
+                }
+            });
+            stringBuilder.append(viewDTO.getTitle());
+            exportFromName = stringBuilder.toString();
+            exportTaskDTO.setExportFromName(exportFromName);
+            return;
         }
         if (exportTaskDTO.getExportFromType().equalsIgnoreCase("dataset")) {
             List<String> fullName = new ArrayList<>();
@@ -504,9 +573,9 @@ public class ExportCenterManage implements BaseExportApi {
             Long uid = jwt.getClaim("uid").asLong();
             Long ticketTime = jwt.getClaim("ts").asLong();
             if (!StringUtils.equals(id, taskId)
-                    || !Objects.equals(uid, exportTask.getUserId())
-                    || !Objects.equals(ticketTime, coreExportDownloadTask.getCreateTime())
-                    || System.currentTimeMillis() - coreExportDownloadTask.getCreateTime() > coreExportDownloadTask.getValidTime() * 60 * 1000) {
+                || !Objects.equals(uid, exportTask.getUserId())
+                || !Objects.equals(ticketTime, coreExportDownloadTask.getCreateTime())
+                || System.currentTimeMillis() - coreExportDownloadTask.getCreateTime() > coreExportDownloadTask.getValidTime() * 60 * 1000) {
                 DEException.throwException(Translator.get("i18n_download_link_invalid"));
             }
         } catch (Exception e) {
@@ -535,11 +604,11 @@ public class ExportCenterManage implements BaseExportApi {
     private String buildDownloadTicket(CoreExportTask exportTask, long createTime, Long validTime) {
         Algorithm algorithm = Algorithm.HMAC256(resolveTicketSecret(exportTask.getUserId()));
         return JWT.create()
-                .withClaim("taskId", exportTask.getId())
-                .withClaim("uid", exportTask.getUserId())
-                .withClaim("ts", createTime)
-                .withExpiresAt(new Date(createTime + validTime * 60 * 1000))
-                .sign(algorithm);
+            .withClaim("taskId", exportTask.getId())
+            .withClaim("uid", exportTask.getUserId())
+            .withClaim("ts", createTime)
+            .withExpiresAt(new Date(createTime + validTime * 60 * 1000))
+            .sign(algorithm);
     }
 
     private String resolveTicketSecret(Long userId) {
