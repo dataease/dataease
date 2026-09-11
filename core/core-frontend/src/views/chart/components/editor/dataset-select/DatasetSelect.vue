@@ -10,6 +10,7 @@ import { useAppStoreWithOut } from '@/store/modules/app'
 import { cloneDeep, filter, find, forEach, union } from 'lodash-es'
 import { getDatasetTree, getDatasourceList } from '@/api/dataset'
 import { ElFormItem, FormInstance } from 'element-plus-secondary'
+import type { InputInstance } from 'element-plus-secondary'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { useCache } from '@/hooks/web/useCache'
 import { useUserStoreWithOut } from '@/store/modules/user'
@@ -41,6 +42,7 @@ const props = withDefaults(
 )
 
 const datasetSelector = ref(null)
+const searchInput = ref<InputInstance>()
 
 const loadingDatasetTree = ref(false)
 
@@ -288,6 +290,9 @@ const dsClick = (data: Tree) => {
 const _popoverShow = ref(false)
 async function onPopoverShow() {
   _popoverShow.value = true
+  await nextTick()
+  if (!_popoverShow.value) return
+  searchInput.value?.focus()
   await scrollCurrentNodeIntoView()
 }
 function onPopoverHide() {
@@ -401,6 +406,7 @@ onMounted(() => {
               </el-button>
             </div>
             <el-input
+              ref="searchInput"
               :effect="themes"
               v-model="searchStr"
               :placeholder="t('dataset.search')"
