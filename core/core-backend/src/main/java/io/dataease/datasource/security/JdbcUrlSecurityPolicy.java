@@ -54,6 +54,7 @@ public final class JdbcUrlSecurityPolicy {
             "ftp:",
             "nis:",
             "corba:",
+            "corbaloc",
             "corbaname",
             "iiop",
             "iiopname",
