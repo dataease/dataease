@@ -22,6 +22,7 @@ import {
   getTooltipDefaultOptions,
   InteractionName,
   InteractionStateName,
+  InterceptType,
   MergedCell,
   MergedCellInfo,
   type Meta,
@@ -778,14 +779,25 @@ export function getConditions(
 
     for (const targetName in targetRulesMap) {
       const rules = sortTableTargetRules(targetRulesMap[targetName])
-      const mergedCellRules = rules.filter(item => item.rule.target !== 'total_row')
       const getCellRules = (cell: TableDataCell | MergedCell) => {
         if (chart.type !== 'table-info' || !tableCell.mergeCells || !cell) {
           return rules
         }
-        // 同时过滤合并图层和底层数据单元格，避免整行样式污染合并区域。
-        const isMergedCell = isInMergedCell(cell.spreadsheet.options.mergedCellsInfo, cell.getMeta())
-        return isMergedCell ? mergedCellRules : rules
+        const meta = cell.getMeta()
+        const mergedCellsInfo = cell.spreadsheet.options.mergedCellsInfo
+        const targetMerged = isInMergedCell(mergedCellsInfo, meta)
+        return rules.filter(item => {
+          if (item.rule.target !== 'total_row') return true
+          const sourceName = resolveDisplayFieldName(item.sourceField.dataeaseName, drillFieldMap)
+          // 自身的整行规则始终可作用于自身，合并格不接收其他列的整行规则。
+          if (sourceName === targetName) return true
+          if (targetMerged) return false
+          const sourceIndex = allColumnNames.indexOf(sourceName)
+          if (sourceIndex === -1) return true
+          const sourceColIndex = sourceIndex + (tableHeader.showIndex ? 1 : 0)
+          // 当前行的来源格已合并时，整行规则收敛到来源列，不再扩散到其他列。
+          return !isInMergedCell(mergedCellsInfo, { ...meta, colIndex: sourceColIndex })
+        })
       }
       res.text.push({
         field: targetName,
@@ -2656,7 +2668,82 @@ export function isInMergedCell(mergedCellsInfo: MergedCellInfo[][], meta: ViewMe
   })
 }
 
+export function setupMergedCellHover(sheet: SpreadSheet) {
+  const clearHover = () => {
+    sheet.facet.getMergedCells().forEach(cell => {
+      if (cell instanceof CustomMergedCell) cell.setRowHover(false)
+    })
+  }
+  sheet.on(S2Event.GLOBAL_HOVER, event => {
+    const { interaction } = sheet
+    if (!sheet.options.interaction.hoverHighlight || interaction.hasIntercepts([InterceptType.HOVER])) {
+      clearHover()
+      return
+    }
+    const target = sheet.getCell(event.target)
+    const isMerged = target instanceof CustomMergedCell
+    const isData = target instanceof TableDataCell
+    if (isMerged) {
+      // 合并格只高亮自身，清掉上一个普通格留下的行列高亮和延迟聚焦。
+      interaction.clearHoverTimer()
+      const hasHover = interaction.isHoverState() || interaction.isHoverFocusState()
+      if (hasHover && interaction.getCells().length) {
+        interaction.changeState({ cells: [], stateName: InteractionStateName.HOVER })
+      }
+    }
+    const targetMeta = target?.getMeta()
+    sheet.facet.getMergedCells().forEach(cell => {
+      if (!(cell instanceof CustomMergedCell)) return
+      let highlighted = cell === target
+      if (isData) {
+        // 普通格联动同行、同列的合并区域，合并格自身悬浮仍只高亮当前格。
+        const sameColumn = cell.getMeta().colIndex === targetMeta.colIndex
+        const coversRow = cell.cells.some(item => item.getMeta().rowIndex === targetMeta.rowIndex)
+        highlighted = sameColumn || coversRow
+      }
+      cell.setRowHover(highlighted)
+    })
+  })
+  sheet.on(S2Event.GLOBAL_SCROLL, clearHover)
+  sheet.on(S2Event.GLOBAL_RESET, clearHover)
+  sheet.on(S2Event.GLOBAL_MOUSE_UP, clearHover)
+  // 进入调节热区时保留原高亮，与普通格一致；实际开始拖动时再清除。
+  sheet.on(S2Event.LAYOUT_RESIZE_MOUSE_DOWN, clearHover)
+  sheet.on(S2Event.LAYOUT_AFTER_RENDER, clearHover)
+  const canvas = sheet.getCanvasElement()
+  const onMouseLeave = () => {
+    const { interaction } = sheet
+    // 先取消延迟聚焦，避免离开后定时回调重新设置行列高亮和 tooltip。
+    interaction.clearHoverTimer()
+    if (interaction.isHoverState() || interaction.isHoverFocusState()) {
+      interaction.clearState()
+    }
+    clearHover()
+    sheet.hideTooltip()
+  }
+  canvas.addEventListener('mouseleave', onMouseLeave)
+  sheet.on(S2Event.LAYOUT_DESTROY, () => canvas.removeEventListener('mouseleave', onMouseLeave))
+}
+
 class CustomMergedCell extends MergedCell {
+  private rowHoverShape: ReturnType<typeof renderPolygon>
+
+  setRowHover(visible: boolean) {
+    if (!this.rowHoverShape && visible) {
+      const hover = this.theme.dataCell.cell.interactionState.hover
+      // 独立覆盖层保留条件背景色，且不参与鼠标命中。
+      this.rowHoverShape = renderPolygon(this, {
+        points: getPolygonPoints(this.cells),
+        fill: hover.backgroundColor,
+        fillOpacity: hover.backgroundOpacity,
+        pointerEvents: 'none'
+      })
+      // 高亮只叠加背景，必须放在文字和边框之前，避免覆盖条件字体颜色。
+      this.insertBefore(this.rowHoverShape, this.backgroundShape.nextSibling)
+    }
+    this.rowHoverShape?.attr('visibility', visible ? 'visible' : 'hidden')
+  }
+
   protected drawBackgroundShape() {
     const allPoints = getPolygonPoints(this.cells)
     // S2 合并单元格未初始化条件背景色，绘制前补齐，复用整行规则过滤逻辑。
