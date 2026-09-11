@@ -129,17 +129,21 @@ export const copyStore = defineStore('copy', {
         }
         if (comp.component === 'VQuery' && comp.propValue) {
           const propValueStr = JSON.stringify(comp.propValue)
-          comp.propValue = JSON.parse(
-            propValueStr.replace(idReplaceReg, function (matched) {
-              return outerIdMap[matched] || matched
-            })
-          )
+          if (propValueStr) {
+            comp.propValue = JSON.parse(
+              propValueStr.replace(idReplaceReg, function (matched) {
+                return outerIdMap[matched] || matched
+              })
+            )
+          }
           const cascadeStr = JSON.stringify(comp.cascade)
-          comp.cascade = JSON.parse(
-            cascadeStr.replace(idReplaceReg, function (matched) {
-              return outerIdMap[matched] || matched
-            })
-          )
+          if (cascadeStr) {
+            comp.cascade = JSON.parse(
+              cascadeStr.replace(idReplaceReg, function (matched) {
+                return outerIdMap[matched] || matched
+              })
+            )
+          }
         }
         // Group 内层组件递归处理
         if (comp.component === 'Group' && Array.isArray(comp.propValue)) {
