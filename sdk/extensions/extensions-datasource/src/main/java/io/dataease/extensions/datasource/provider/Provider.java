@@ -267,6 +267,7 @@ public abstract class Provider {
                 break;
             case pg:
             case kingbase:
+            case gaussdb:
                 sqlDialect = PostgresqlSqlDialect.DEFAULT;
                 break;
             case redshift:

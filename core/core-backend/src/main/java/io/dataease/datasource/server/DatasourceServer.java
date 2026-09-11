@@ -192,6 +192,7 @@ public class DatasourceServer implements DatasourceApi {
                 case "oracle":
                 case "pg":
                 case "kingbase":
+                case "gaussdb":
                 case "redshift":
                     if (configuration.getHost().equalsIgnoreCase(compare.getHost()) && Objects.equals(configuration.getPort(), compare.getPort()) && configuration.getDataBase().equalsIgnoreCase(compare.getDataBase()) && configuration.getSchema().equalsIgnoreCase(compare.getSchema())) {
                         hasRepeat = true;

@@ -51,6 +51,7 @@ public class EngineServer implements EngineApi {
                 break;
             case "pg":
             case "kingbase":
+            case "gaussdb":
                 datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), Pg.class)).toString());
                 break;
             case "sqlServer":

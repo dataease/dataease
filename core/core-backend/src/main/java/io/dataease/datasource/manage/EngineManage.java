@@ -267,7 +267,7 @@ public class EngineManage {
 
 
     public static class PgJdbcUrlParser implements JdbcUrlParser {
-        private static final Pattern PATTERN = Pattern.compile("jdbc:(?:postgresql|kingbase8|kingbase)://(.*):(\\d+)/(.*?)(?:\\?(.*))?$");
+        private static final Pattern PATTERN = Pattern.compile("jdbc:(?:postgresql|kingbase8|kingbase|gaussdb)://(.*):(\\d+)/(.*?)(?:\\?(.*))?$");
         private static final Pattern SCHEMA_PATTERN = Pattern.compile("(^|&)currentSchema=([^&]+)");
 
         @Override
@@ -296,11 +296,13 @@ public class EngineManage {
             String driverClassName = env.getProperty("spring.datasource.driver-class-name");
             if (url.startsWith("jdbc:kingbase")) {
                 driverClassName = StringUtils.defaultIfBlank(driverClassName, "com.kingbase8.Driver");
+            } else if (url.startsWith("jdbc:gaussdb")) {
+                driverClassName = StringUtils.defaultIfBlank(driverClassName, "com.huawei.gaussdb.jdbc.Driver");
             }
             if (StringUtils.isNotEmpty(driverClassName)) {
                 config.put("driver", driverClassName);
             }
-            config.put("type", url.startsWith("jdbc:kingbase") ? "kingbase" : "pg");
+            config.put("type", url.startsWith("jdbc:kingbase") ? "kingbase" : (url.startsWith("jdbc:gaussdb") ? "gaussdb" : "pg"));
             config.put("username", env.getProperty("spring.datasource.username"));
             config.put("password", env.getProperty("spring.datasource.password"));
             return config;
@@ -474,6 +476,8 @@ public class EngineManage {
                             parserMap.put("jdbc:kingbase8://", new PgJdbcUrlParser());
                         } else if (jdbcUrl.startsWith("jdbc:kingbase://")) {
                             parserMap.put("jdbc:kingbase://", new PgJdbcUrlParser());
+                        } else if (jdbcUrl.startsWith("jdbc:gaussdb://")) {
+                            parserMap.put("jdbc:gaussdb://", new PgJdbcUrlParser());
                         } else if (jdbcUrl.startsWith("jdbc:sqlserver://")) {
                             parserMap.put("jdbc:sqlserver://", new SqlserverJdbcUrlParser());
                         } else if (jdbcUrl.startsWith("jdbc:dm://")) {
