@@ -879,13 +879,14 @@ const trackClick = trackAction => {
       fieldIds.push(curFiled.id)
     }
     if (curView.type.includes('chart-mix')) {
-      chartData.value?.left?.fields?.forEach(field => {
-        if (!fieldIds.includes(field.id)) {
-          fieldIds.push(field.id)
-        }
-      })
-      chartData.value?.right?.fields?.forEach(field => {
-        if (!fieldIds.includes(field.id)) {
+      const mixFields = [
+        ...(chartData.value?.left?.fields || []),
+        ...(chartData.value?.right?.fields || [])
+      ]
+      // 左右轴子类别不同，只匹配当前点击数据实际包含的维度，避免选中另一侧的跳转配置。
+      mixFields.forEach(field => {
+        const hasDimension = param.data.dimensionList.some(dimension => dimension.id === field.id)
+        if (hasDimension && !fieldIds.includes(field.id)) {
           fieldIds.push(field.id)
         }
       })

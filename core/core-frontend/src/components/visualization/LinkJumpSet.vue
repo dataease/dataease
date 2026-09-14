@@ -826,6 +826,13 @@ const init = viewItem => {
   } else {
     checkJumpStr = checkAllAxisStr
   }
+  if (chartDetails.type.includes('chart-mix')) {
+    // 混合图的堆叠和右侧子类别也可作为跳转源字段及引用参数。
+    const mixDimensionStr =
+      JSON.stringify(chartDetails.extStack || []) + JSON.stringify(chartDetails.extBubble || [])
+    checkAllAxisStr += mixDimensionStr
+    checkJumpStr += mixDimensionStr
+  }
   const request = { busiFlag: 'dashboard-dataV' } as BusiTreeRequest
   // 获取可关联的仪表板
   queryTreeApi(request).then(rsp => {
