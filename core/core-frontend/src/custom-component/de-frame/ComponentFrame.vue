@@ -12,7 +12,7 @@
       <iframe
         v-if="state.frameShow"
         :id="'iframe-' + element.id"
-        :src="element.frameLinks.src"
+        :src="frameSrcWithTimestamp"
         scrolling="auto"
         frameborder="0"
         class="main-frame main-de-iframe"
@@ -37,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, reactive, toRefs } from 'vue'
+import { computed, nextTick, onMounted, reactive, toRefs } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { useI18n } from '@/hooks/web/useI18n'
 import ComponentAppFrame from '@/custom-component/de-frame/ComponentAppFrame.vue'
@@ -73,6 +73,15 @@ const { element, isEdit, screenShot } = toRefs(props)
 const state = reactive({
   pOption: {},
   frameShow: true
+})
+
+const frameSrcWithTimestamp = computed(() => {
+  if (!element.value.frameLinks.src) return ''
+  const url = element.value.frameLinks.src
+  if (url.includes('#/preview') || url.includes('#/de-link')) {
+    return url.replace('#', `?${new Date().getTime()}#`)
+  }
+  return url
 })
 
 const frameLinksChange = () => {
