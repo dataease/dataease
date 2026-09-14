@@ -533,11 +533,11 @@ export class TableFillService {
   ): any[] {
     const totalRow = Array.from({ length: columnCount }, () => '')
     const columnOffset = showIndex ? 1 : 0
-    const firstDimensionIndex = fields.findIndex(field => field.groupType === 'd')
-    const labelColumnIndex = showIndex
-      ? 0
-      : Math.max(firstDimensionIndex, 0)
-    totalRow[labelColumnIndex] = config.style?.total?.label?.trim() || '总计'
+    const labelColumnIndex = showIndex || fields[0]?.groupType === 'd' ? 0 : -1
+    // 标签只显示在首列的序号或维度单元格中，不占用指标或后续字段。
+    if (labelColumnIndex >= 0) {
+      totalRow[labelColumnIndex] = config.style?.total?.label?.trim() || '总计'
+    }
 
     fields.forEach((field, fieldIndex) => {
       if (field.groupType !== 'q') {
