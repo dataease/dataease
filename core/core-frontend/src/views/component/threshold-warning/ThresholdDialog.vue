@@ -320,6 +320,20 @@ const loadChartInfo = (isScreen: boolean) => {
           return;
         }
         chart.value = res.data;
+        const currentChart = dvMainStore.canvasViewInfo[chartId.value];
+        if (currentChart) {
+          // 更新图表数据仅刷新画布，告警候选字段需使用当前配置，避免读取已保存的旧数据集字段。
+          chart.value.tableId = currentChart.tableId;
+          chart.value.chartType = currentChart.type;
+          chart.value.chartName = currentChart.title;
+          const axisKeys = [
+            'xAxis', 'xAxisExt', 'yAxis', 'yAxisExt', 'extStack', 'extBubble',
+            'extLabel', 'extTooltip', 'extColor', 'flowMapStartName', 'flowMapEndName'
+          ] as const;
+          axisKeys.forEach(key => {
+            chart.value[key] = currentChart[key] || [];
+          });
+        }
       })
       .catch(() => {
         ElMessage.error(t('threshold.no_view_tip') + (isScreen ? t('auth.screen') : t('auth.panel')) + '!');
