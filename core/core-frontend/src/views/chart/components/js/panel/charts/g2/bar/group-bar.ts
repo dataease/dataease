@@ -10,7 +10,7 @@ import {
   setUpGroupSeriesColor
 } from '@/views/chart/components/js/util'
 import { StackBar } from '@/views/chart/components/js/panel/charts/g2/bar/stack-bar'
-import { Chart as G2Column } from '@antv/g2'
+import { Chart as G2Column, stdlib } from '@antv/g2'
 import { ViewSpec } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 import { useI18n } from '@/hooks/web/useI18n'
 import { G2DrawOptions } from '@/views/chart/components/js/panel/types/impl/g2'
@@ -189,12 +189,82 @@ export class GroupBar extends StackBar {
     return options
   }
 
+  protected configGroupPosition(_chart: Chart, options: ViewSpec): ViewSpec {
+    const interval = options.children[0]
+    const data = interval.data || options.data
+    if (!Array.isArray(data) || !data.length) return options
+    const field = interval.encode.x as string
+    const categories = new Set(data.map(item => item[field]))
+    const singleBar = categories.size === data.length
+    const colorField = interval.encode.color as string
+    const series = [...new Set(data.map(item => item[colorField]))]
+    // 完整分组保留原有布局；稀疏分组按原系列顺序紧凑排列，避免缺失系列留空。
+    if (!singleBar && data.length === categories.size * series.length) return options
+    const centeredDodge = () => (indices, mark) => {
+      const x = mark.encode.x.value
+      const color = mark.encode.color?.value || indices.map(() => '')
+      const order = new Map([...new Set(indices.map(i => color[i]))].map((v, i) => [v, i]))
+      const groups = new Map<unknown, number[]>()
+      indices.forEach(i => {
+        const group = groups.get(x[i]) || []
+        group.push(i)
+        groups.set(x[i], group)
+      })
+      const count = Math.max(1, ...[...groups.values()].map(group => group.length))
+      const positions = []
+      groups.forEach(group => {
+        group.sort((a, b) => Number(order.get(color[a])) - Number(order.get(color[b])))
+        // 用半个槽位补齐左右余量，奇偶数量不同的分组也能对齐中心。
+        group.forEach((index, rank) => (positions[index] = rank + (count - group.length) / 2))
+      })
+      const centeredBand = (scaleOptions, context) => {
+        const scale = stdlib()['scale.band'](scaleOptions, context)
+        const map = scale.map.bind(scale)
+        scale.map = value => {
+          const slot = Math.floor(Number(value))
+          return Number(map(slot)) + (Number(value) - slot) * scale.getStep(slot)
+        }
+        return scale
+      }
+      return [
+        indices,
+        {
+          ...mark,
+          encode: { ...mark.encode, series: { type: 'column', value: positions } },
+          scale: {
+            ...mark.scale,
+            series: {
+              type: centeredBand,
+              name: 'series',
+              domain: Array.from({ length: count }, (_, i) => i),
+              paddingInner: 0.1,
+              paddingOuter: 0.1
+            }
+          }
+        }
+      ]
+    }
+    return {
+      ...options,
+      children: [
+        {
+          ...interval,
+          transform: interval.transform?.map(transform =>
+            transform.type === 'dodgeX' ? { type: centeredDodge } : transform
+          )
+        },
+        ...options.children.slice(1)
+      ]
+    }
+  }
+
   protected setupOptions(chart: Chart, options: ViewSpec): ViewSpec {
     return flow(
       this.configTheme,
       this.configEmptyDataStrategy,
       this.configColor,
       this.configBasicStyle,
+      this.configGroupPosition,
       this.configLabel,
       this.configTooltip,
       this.configLegend,
