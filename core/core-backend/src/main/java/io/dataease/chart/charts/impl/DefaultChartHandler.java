@@ -660,13 +660,17 @@ public class DefaultChartHandler extends AbstractChartPlugin {
                                 String[] groupStackAxisArr = Arrays.copyOfRange(curDataItem, xAxisBase.size(), finalSubEndIndex);
                                 String groupStackAxis = StringUtils.join(groupStackAxisArr, '-');
                                 BigDecimal preValue = preDataMap.get(groupStackAxis);
+                                var curValue = curDataItem[finalDataIndex];
+                                if (StringUtils.isBlank(curValue)) {
+                                    return;
+                                }
                                 if (preValue != null) {
-                                    curDataItem[finalDataIndex] = new BigDecimal(curDataItem[finalDataIndex])
+                                    curDataItem[finalDataIndex] = new BigDecimal(curValue)
                                             .add(preValue)
                                             .toString();
                                 } else {
                                     if (preDataMap.containsKey(groupStackAxis)) {
-                                        curDataItem[finalDataIndex] = new BigDecimal(curDataItem[finalDataIndex])
+                                        curDataItem[finalDataIndex] = new BigDecimal(curValue)
                                                 .add(preDataMap.get(groupStackAxis))
                                                 .toString();
                                     }
