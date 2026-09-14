@@ -13,7 +13,7 @@ import {
 } from '@/views/chart/components/editor/util/chart'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { storeToRefs } from 'pinia'
-import { isDashboard, trackBarStyleCheck } from '@/utils/canvasUtils'
+import { isDashboard, isTabCanvas, trackBarStyleCheck } from '@/utils/canvasUtils'
 import ViewTrackBar from '@/components/visualization/ViewTrackBar.vue'
 import { hasNextDrillLevel } from '@/views/chart/components/views/util/drill'
 import { ElMessage } from 'element-plus-secondary'
@@ -73,6 +73,11 @@ const dvMainStore = dvMainStoreWithOut()
 const dataVMobile = !isDashboard() && isMobile()
 const { embeddedCallBack, nowPanelTrackInfo, nowPanelJumpInfo, mobileInPc, inMobile } =
   storeToRefs(dvMainStore)
+// 防溢出样式仅作用于仪表板的移动 Tab，PC 和移动主画布沿用原显示规则
+const mobileResponsive = computed(
+  () =>
+    isDashboard() && (mobileInPc.value || inMobile.value) && isTabCanvas(props.element?.canvasId)
+)
 const viewTrack = ref(null)
 const indicatorRef = ref(null)
 const errMsg = ref('')
@@ -316,6 +321,12 @@ const renderChart = async view => {
           break
         default:
           contentStyle.value['justify-content'] = 'center'
+      }
+
+      // 居中/底部对齐仍按配置生效，溢出时从顶部开始，确保可以滚动查看全部内容
+      if (mobileResponsive.value) {
+        contentStyle.value['justify-content'] = `safe ${contentStyle.value['justify-content']}`
+        contentStyle.value['align-items'] = `safe ${contentStyle.value['align-items']}`
       }
 
       indicatorColor.value = indicator.color
@@ -594,7 +605,7 @@ defineExpose({
 <template>
   <div
     ref="indicatorRef"
-    :class="{ 'menu-point': showCursor }"
+    :class="{ 'menu-point': showCursor, 'mobile-indicator': mobileResponsive }"
     :style="contentStyle"
     @mouseup="onPointClick"
   >
@@ -607,17 +618,32 @@ defineExpose({
       @trackClick="trackClick"
       :is-data-v-mobile="dataVMobile"
     />
-    <div v-if="indicatorNameShow && !indicatorNamePositionBottom">
-      <span :style="indicatorNameClass">{{ resultName }}</span>
+    <div class="indicator-name-line" v-if="indicatorNameShow && !indicatorNamePositionBottom">
+      <span
+        class="indicator-name"
+        :style="indicatorNameClass"
+        :title="mobileResponsive ? resultName : undefined"
+        >{{ resultName }}</span
+      >
       <div :style="indicatorNameWrapperStyle"></div>
     </div>
-    <div>
-      <span :style="indicatorClass">{{ formattedResult }}</span>
-      <span :style="indicatorSuffixClass" v-if="showSuffix">{{ suffixContent }}</span>
+    <div
+      class="indicator-value-line"
+      :title="mobileResponsive ? `${formattedResult}${showSuffix ? suffixContent : ''}` : undefined"
+    >
+      <span class="indicator-value" :style="indicatorClass">{{ formattedResult }}</span>
+      <span class="indicator-suffix" :style="indicatorSuffixClass" v-if="showSuffix">{{
+        suffixContent
+      }}</span>
     </div>
-    <div v-if="indicatorNameShow && indicatorNamePositionBottom">
+    <div class="indicator-name-line" v-if="indicatorNameShow && indicatorNamePositionBottom">
       <div :style="indicatorNameWrapperStyle"></div>
-      <span :style="indicatorNameClass">{{ resultName }}</span>
+      <span
+        class="indicator-name"
+        :style="indicatorNameClass"
+        :title="mobileResponsive ? resultName : undefined"
+        >{{ resultName }}</span
+      >
     </div>
   </div>
 </template>
@@ -625,5 +651,43 @@ defineExpose({
 <style scoped lang="less">
 .menu-point {
   cursor: pointer;
+}
+
+.mobile-indicator {
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 0;
+  // 保留配置字号和名称间距，通过滚动查看完整内容，不强制缩小或截断
+  overflow: auto;
+  padding: 4px;
+
+  .indicator-value-line,
+  .indicator-name-line {
+    box-sizing: border-box;
+    max-width: 100%;
+    min-width: 0;
+    flex-shrink: 0;
+    line-height: 1.2;
+    text-align: inherit;
+  }
+
+  .indicator-value-line {
+    display: flex;
+    align-items: baseline;
+    overflow-x: auto;
+  }
+
+  .indicator-value {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .indicator-suffix {
+    flex: 0 0 auto;
+  }
+
+  .indicator-name {
+    overflow-wrap: anywhere;
+  }
 }
 </style>

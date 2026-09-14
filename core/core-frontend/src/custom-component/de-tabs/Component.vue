@@ -92,8 +92,9 @@
         :class="{ 'switch-hidden': element.editableTabsValue !== tabItem.name }"
       >
         <template v-if="!tabItem.hidden && isTabActivated(tabItem.name)">
+          <!-- 移动设计器也创建子画布，使 Tab 内组件可以选中、拖拽和缩放 -->
           <de-canvas
-            v-if="isEdit && !mobileInPc"
+            v-if="isEdit"
             :ref="'tabCanvas_' + index"
             :component-data="tabItem.componentData"
             :canvas-style-data="canvasStyleData"

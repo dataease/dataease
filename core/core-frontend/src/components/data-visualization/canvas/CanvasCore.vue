@@ -33,11 +33,13 @@ import {
   componentPreSort,
   findDragComponent,
   findNewComponent,
+  getTabMobileMinSize,
   getTransformParams,
   isDashboard,
   isGroupOrTabCanvas,
   isMainCanvas,
-  isSameCanvas
+  isSameCanvas,
+  isTabCanvas
 } from '@/utils/canvasUtils'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -49,8 +51,15 @@ const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 
-const { curComponent, dvInfo, editMode, tabMoveOutComponentId, canvasState, mainScrollTop } =
-  storeToRefs(dvMainStore)
+const {
+  curComponent,
+  dvInfo,
+  editMode,
+  tabMoveOutComponentId,
+  canvasState,
+  mainScrollTop,
+  mobileInPc
+} = storeToRefs(dvMainStore)
 const { editorMap, areaData, isCtrlOrCmdDown } = storeToRefs(composeStore)
 const emits = defineEmits(['scrollCanvasAdjust'])
 const props = defineProps({
@@ -336,7 +345,14 @@ const curComponentId = computed(() => {
 
 const { emitter } = useEmitt()
 
+// 移动 Tab 沿用预览的 1:1 内容比例，拖拽坐标仍由 getTransformParams 计算
+const mobileTabEdit = computed(
+  () => dashboardActive.value && mobileInPc.value && isTabCanvas(canvasId.value)
+)
+
 const curScale = computed(() => {
+  // Shape 的背景边距、圆角也使用原尺寸，避免与组件内容的比例不一致
+  if (mobileTabEdit.value) return 1
   if (dashboardActive.value) {
     return (canvasStyleData.value.scale * 1.2) / 100
   } else {
@@ -345,6 +361,8 @@ const curScale = computed(() => {
 })
 
 const curBaseScale = computed(() => {
+  // 图表字号、名称间距等继续按配置显示，不继承 PC 编辑缩放
+  if (mobileTabEdit.value) return 1
   if (dashboardActive.value) {
     return (dvMainStore.canvasStyleData.scale * 1.2) / 100
   } else {
@@ -818,7 +836,7 @@ function reCalcCellWidth() {
   maxCell.value = cells
   itemMaxX = maxCell.value
 }
-function resizePlayer(item, newSize) {
+function resizePlayer(item, newSize, newX = item.x) {
   removeItemFromPositionBox(item)
   let belowItems = findBelowItems(item)
   forEach(belowItems, function (upItem) {
@@ -829,6 +847,8 @@ function resizePlayer(item, newSize) {
     }
   })
 
+  // 先清除旧位置的占位，再应用移动 Tab 校正后的位置，避免右边界裁掉最小宽度
+  item.x = newX
   item.sizeX = newSize.sizeX
   item.sizeY = newSize.sizeY
 
@@ -972,7 +992,7 @@ function removeItem(index) {
   }
 }
 
-function addItem(item, index) {
+function addItem(item, index, preservePosition = false) {
   if (index < 0) {
     index = componentData.value.length
   }
@@ -983,9 +1003,12 @@ function addItem(item, index) {
   })
   emptyTargetCell(item)
   addItemToPositionBox(item)
-  let canGoUpRows = canItemGoUp(item)
-  if (canGoUpRows > 0) {
-    moveItemUp(item, canGoUpRows)
+  // 移动 Tab 重建占位时保留空行；普通添加、拖拽仍执行原来的向上补位
+  if (!preservePosition) {
+    let canGoUpRows = canItemGoUp(item)
+    if (canGoUpRows > 0) {
+      moveItemUp(item, canGoUpRows)
+    }
   }
 }
 
@@ -1200,7 +1223,8 @@ const canvasInit = () => {
       })
     } else {
       let item = componentData.value[i]
-      addItem(item, i)
+      // 移动 Tab 加载/同步只重建占位，不压缩用户布局；拖拽添加仍沿用原逻辑
+      addItem(item, i, mobileInPc.value && isTabCanvas(canvasId.value))
       i++
     }
   }, 1)
@@ -1342,21 +1366,34 @@ const onResizing = (e, item) => {
       ? Math.floor(height / cellHeight.value + 1)
       : Math.floor(height / cellHeight.value)
 
+  const mobileTab = mobileInPc.value && isTabCanvas(canvasId.value)
+  if (mobileTab) {
+    // 最小尺寸只约束本次缩放操作，并受当前画布列数限制
+    const minSize = getTabMobileMinSize(item)
+    nowSizeX = Math.min(Math.max(nowSizeX, minSize.sizeX), itemMaxX)
+    nowSizeY = Math.max(nowSizeY, minSize.sizeY)
+  }
+
   // 增加5px偏移量 防止resize时向下取整 组件向右偏移
   let newX = Math.floor((item.style.left + 5) / cellWidth.value + 1)
   let newY = Math.floor((item.style.top + 5) / cellHeight.value + 1)
   newX = newX > 0 ? newX : 1
   newY = newY > 0 ? newY : 1
+  if (mobileTab) {
+    // 宽度扩到最小值后同步左移，防止靠右组件再次被边界截窄
+    newX = Math.min(newX, itemMaxX - nowSizeX + 1)
+  }
 
   // 调整大小
   debounce(
     (function (newX, newY) {
       return function () {
         // 调整大小
-        resizePlayer(resizeItem, {
-          sizeX: nowSizeX,
-          sizeY: nowSizeY
-        })
+        resizePlayer(
+          resizeItem,
+          { sizeX: nowSizeX, sizeY: nowSizeY },
+          mobileTab ? newX : resizeItem.x
+        )
 
         infoBoxTemp.oldSizeX = nowSizeX
         infoBoxTemp.oldSizeY = nowSizeY

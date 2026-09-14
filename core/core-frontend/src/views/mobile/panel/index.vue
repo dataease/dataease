@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import { onBeforeMount, ref, onBeforeUnmount, defineAsyncComponent } from 'vue'
+import { onBeforeMount, ref, onBeforeUnmount, defineAsyncComponent, nextTick } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import eventBus from '@/utils/eventBus'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import DePreviewMobile from './MobileInPc.vue'
-import { findComponentById, mobileViewStyleSwitch } from '@/utils/canvasUtils'
+import { findComponentById, initTabMobileLayout, mobileViewStyleSwitch } from '@/utils/canvasUtils'
 import { deepCopy } from '@/utils/utils'
 const panelInit = ref(false)
 const dvMainStore = dvMainStoreWithOut()
@@ -37,6 +37,54 @@ const apdataQuery = ele => {
   }
 }
 
+const getTabChildren = component =>
+  component.propValue?.flatMap(tabItem => tabItem.componentData || []) || []
+
+const syncTabPcDesign = (mobileComponent, component, viewInfos) => {
+  // 使用当前运行时坐标，保留用户尚未保存的拖拽、缩放结果
+  const geometry = new Map(
+    getTabChildren(mobileComponent).map(child => [
+      child.id,
+      { mx: child.x, my: child.y, mSizeX: child.sizeX, mSizeY: child.sizeY }
+    ])
+  )
+  // 在挂载新子组件前注册完整的图表配置，避免只更新样式而丢失字段槽等配置
+  const syncedViews = Array.isArray(viewInfos) ? viewInfos : []
+  syncedViews.forEach(viewInfo => {
+    dvMainStore.addCanvasViewInfo(viewInfo.id, deepCopy(viewInfo))
+  })
+  mobileComponent.style = deepCopy(component.style)
+  mobileComponent.commonBackground = deepCopy(component.commonBackground)
+  mobileComponent.events = deepCopy(component.events)
+  // 内容跟随 PC 更新，再按稳定的组件 id 恢复移动布局；新增组件走初始排版
+  mobileComponent.propValue = deepCopy(component.propValue)
+  getTabChildren(mobileComponent).forEach(child => {
+    Object.assign(child, geometry.get(child.id) || {})
+  })
+  initTabMobileLayout(mobileComponent)
+  // 仅清理当前移动组件树中已不存在的图表，移到其他位置的组件仍保留缓存
+  geometry.forEach((_, id) => {
+    if (!findComponentById(id)) dvMainStore.removeCanvasViewInfo(id)
+  })
+  nextTick(() => {
+    // 替换组件数组后同步 Matrix 的占位信息，只重建当前 Tab 的子画布
+    mobileComponent.propValue?.forEach(tabItem => {
+      eventBus.emit('doCanvasInit-' + mobileComponent.id + '--' + tabItem.name)
+    })
+    syncedViews.forEach(viewInfo => {
+      // 新组件由挂载链路初始化；已有组件沿用原来的取数/重绘入口
+      if (!geometry.has(viewInfo.id)) return
+      const child = findComponentById(viewInfo.id)
+      if (child?.component === 'VQuery') {
+        useEmitt().emitter.emit('renderChart-' + child.id, dvMainStore.canvasViewInfo[child.id])
+      } else if (child?.component === 'UserView') {
+        // 不传入 PC 查询参数，让原取数入口重新计算当前过滤、联动和下钻条件
+        useEmitt().emitter.emit('calcData-' + child.id)
+      }
+    })
+  })
+}
+
 const hanedleMessage = event => {
   if (event.data.type === 'panelInit') {
     const { componentData, canvasStyleData, dvInfo, canvasViewInfo, isEmbedded } = event.data.value
@@ -52,6 +100,8 @@ const hanedleMessage = event => {
       apdataQuery(ele)
 
       if (ele.component === 'DeTabs') {
+        // 重新进入移动编辑时恢复 m*；旧数据缺失时才生成默认子布局
+        initTabMobileLayout(ele)
         ele.propValue?.forEach(tabItem => {
           tabItem.componentData?.forEach(tabComponent => {
             const {
@@ -97,6 +147,10 @@ const hanedleMessage = event => {
       mobileComponent[type] = component[type]
     } else if (['syncPcDesign'].includes(type)) {
       const mobileComponent = findComponentById(component.id)
+      if (mobileComponent.component === 'DeTabs') {
+        syncTabPcDesign(mobileComponent, component, otherComponent)
+        return
+      }
       mobileComponent['style'] = component['style']
       mobileComponent['commonBackground'] = component['commonBackground']
       mobileComponent['events'] = component['events']
@@ -113,6 +167,8 @@ const hanedleMessage = event => {
   if (event.data.type === 'addToMobile') {
     const component = event.data.value
     checkItemPosition(component)
+    // 首次加入移动布局的 Tab 也需初始化子布局，避免直接沿用 PC 坐标
+    initTabMobileLayout(component)
     dvMainStore.componentData.push(component)
     eventBus.emit('doCanvasInit-canvas-main')
   }

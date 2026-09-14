@@ -53,6 +53,86 @@ import { isDesktop } from '@/utils/ModelUtil'
 const { t } = useI18n()
 const { wsCache } = useCache()
 
+// 与仪表板 Matrix 的列数一致；下面的高度单位为网格行数，不是像素
+const TAB_MOBILE_COLUMNS = 72
+const TAB_MOBILE_INDICATOR_HEIGHT = 8
+const TAB_MOBILE_CHART_HEIGHT = 14
+
+// 四个字段必须完整且为有限正数，旧数据缺失或无效时才生成初始布局
+export const hasMobileGeometry = component =>
+  ['mx', 'my', 'mSizeX', 'mSizeY'].every(
+    key => Number.isFinite(component?.[key]) && component[key] > 0
+  )
+
+// 供移动 Tab 的交互缩放使用，不用这些下限改写已经保存的移动布局
+export const getTabMobileMinSize = component => {
+  if (component?.innerType === 'indicator') {
+    return { sizeX: TAB_MOBILE_COLUMNS / 2, sizeY: TAB_MOBILE_INDICATOR_HEIGHT }
+  }
+  if (component?.component === 'UserView' || component?.isPlugin) {
+    return { sizeX: TAB_MOBILE_COLUMNS / 2, sizeY: TAB_MOBILE_CHART_HEIGHT }
+  }
+  return { sizeX: 1, sizeY: 1 }
+}
+
+/**
+ * 在移动端副本上恢复 Tab 子组件布局：已有 m* 优先，缺失部分按 PC 的 y/x 排序
+ * 指标默认双列，普通图表通栏；只更新运行时坐标，m* 由移动保存链回写
+ */
+export const initTabMobileLayout = tabComponent => {
+  if (tabComponent?.component !== 'DeTabs') return
+  tabComponent.propValue?.forEach(tabItem => {
+    const components = tabItem.componentData || []
+    const unconfigured = components
+      .filter(component => !hasMobileGeometry(component))
+      .sort((left, right) => left.y - right.y || left.x - right.x)
+    // 新组件排在已保存布局之后，不重新排列用户调整过的组件
+    let nextY = components
+      .filter(hasMobileGeometry)
+      .reduce((maxY, component) => Math.max(maxY, component.my + component.mSizeY), 1)
+    let indicatorColumn = 0
+    let indicatorRowHeight = 0
+    unconfigured.forEach(component => {
+      if (component.innerType === 'indicator') {
+        const sizeX = TAB_MOBILE_COLUMNS / 2
+        component.x = indicatorColumn * sizeX + 1
+        component.y = nextY
+        component.sizeX = sizeX
+        // 保留原设计高度；同排指标按最高卡片换行，避免覆盖下一排
+        component.sizeY = Math.max(component.sizeY || 1, TAB_MOBILE_INDICATOR_HEIGHT)
+        indicatorRowHeight = Math.max(indicatorRowHeight, component.sizeY)
+        indicatorColumn++
+        if (indicatorColumn === 2) {
+          indicatorColumn = 0
+          nextY += indicatorRowHeight
+          indicatorRowHeight = 0
+        }
+        return
+      }
+      if (indicatorColumn) {
+        indicatorColumn = 0
+        nextY += indicatorRowHeight
+        indicatorRowHeight = 0
+      }
+      const fullRow = component.component === 'UserView' || component.isPlugin
+      component.x = 1
+      component.y = nextY
+      component.sizeX = fullRow
+        ? TAB_MOBILE_COLUMNS
+        : Math.min(Math.max(component.sizeX || 1, 1), TAB_MOBILE_COLUMNS)
+      component.sizeY = Math.max(component.sizeY || 1, fullRow ? TAB_MOBILE_CHART_HEIGHT : 1)
+      nextY += component.sizeY
+    })
+    // 已配置组件直接恢复自己的移动坐标，不参与上面的默认排版
+    components.filter(hasMobileGeometry).forEach(component => {
+      component.x = component.mx
+      component.y = component.my
+      component.sizeX = component.mSizeX
+      component.sizeY = component.mSizeY
+    })
+  })
+}
+
 /**
  * v2 将编辑缩放写入组件尺寸，v3 改为实际尺寸配合外层 transform
  * 用于标记已经使用 v3 实际尺寸模型的数据，避免重复恢复组件尺寸
@@ -693,6 +773,8 @@ export function initCanvasDataMobile(dvId, params, callBack) {
                 tabComponent.mCommonBackground || tabComponent.commonBackground
             })
           })
+          // 实际移动预览与移动设计器共用布局恢复规则
+          initTabMobileLayout(ele)
         }
       })
       if (!!canvasViewInfoPreview) {
