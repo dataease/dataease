@@ -7,6 +7,7 @@ import {
 } from '@/views/chart/components/editor/util/chart'
 import { cloneDeep, defaultsDeep, find, includes } from 'lodash-es'
 import CustomAggrEdit from './CustomAggrEdit.vue'
+import TableGrandTotalStyle from './TableGrandTotalStyle.vue'
 
 const { t } = useI18n()
 
@@ -349,6 +350,12 @@ onMounted(() => {
           @change="changeTableTotal('row.label')"
         />
       </el-form-item>
+      <table-grand-total-style
+        v-if="chart.type === 'table-pivot'"
+        v-model="state.tableTotalForm.row.grandTotalStyle"
+        :themes="themes"
+        @change="prop => changeTableTotal('row.grandTotalStyle.' + prop)"
+      />
       <el-form-item
         :label="t('chart.aggregation')"
         class="form-item"
@@ -656,6 +663,12 @@ onMounted(() => {
           @blur="changeTableTotal('col.label')"
         />
       </el-form-item>
+      <table-grand-total-style
+        v-if="chart.type === 'table-pivot'"
+        v-model="state.tableTotalForm.col.grandTotalStyle"
+        :themes="themes"
+        @change="prop => changeTableTotal('col.grandTotalStyle.' + prop)"
+      />
       <el-form-item
         :label="t('chart.aggregation')"
         class="form-item"

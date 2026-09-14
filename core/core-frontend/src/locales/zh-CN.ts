@@ -2181,6 +2181,8 @@ export default {
     quota_position_row: '行头展示',
     quota_col_label: '指标列名',
     table_grand_total_label: '总计别名',
+    total_custom_background: '自定义背景色',
+    total_custom_font: '自定义字体',
     table_field_total_label: '字段别名',
     table_row_header_freeze: '行头冻结',
     value_formatter_total_out_percent: '显示占比',
