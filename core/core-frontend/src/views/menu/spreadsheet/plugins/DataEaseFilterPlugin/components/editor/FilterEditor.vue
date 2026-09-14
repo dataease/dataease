@@ -4,10 +4,7 @@ import { Expand, Fold } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import FilterStyleEditor from './FilterStyleEditor.vue'
 import type { SpreadsheetFilterConfig } from '../../../../types/plugin'
-import {
-  dispatchSpreadsheetFilterConfigChange,
-  getSpreadsheetFilterConfig
-} from '../../utils/events'
+import { dispatchSpreadsheetFilterSaveConfig, getSpreadsheetFilterConfig } from '../../utils/events'
 
 const pluginConfig = inject<Ref<SpreadsheetFilterConfig>>('pluginConfig')
 if (!pluginConfig) {
@@ -32,7 +29,8 @@ const updatePluginConfig = (key: string, value: any) => {
     target = target[keys[i]]
   }
   target[keys[keys.length - 1]] = value
-  dispatchSpreadsheetFilterConfigChange(pluginConfig.value)
+  // 样式变更也会恢复过滤默认值，必须通过保存流程同步运行态并刷新关联组件。
+  dispatchSpreadsheetFilterSaveConfig({ config: pluginConfig.value })
 }
 
 const toggleCollapsed = () => {
