@@ -24,7 +24,7 @@ import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { deepCopy } from '@/utils/utils'
 import { configCarouselTooltip } from '@/views/chart/components/js/panel/charts/map/tooltip-carousel'
 import { getCustomGeoArea } from '@/api/map'
-import { TextLayer } from '@antv/l7plot/dist/esm'
+import { attachMapLabels, geometryPolygons } from './label-layout'
 import { centroid } from '@turf/centroid'
 import {
   drawPointFallbackChart,
@@ -215,6 +215,21 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     }
     const context: Record<string, any> = { drawOption, geoJson, customSubArea }
     options = this.setupOptions(chart, options, context)
+    const mapLabel = parseJson(chart.customAttr).label
+    const labelField = options.label && options.label.field
+    options.label = { visible: false }
+    const mapLabels =
+      context.mapLabels ??
+      geoJson.features.map(feature => {
+        const properties = feature.properties
+        const center = properties.centroid || properties.center || [NaN, NaN]
+        return {
+          name: properties[labelField || '_DE_LABEL_'] || '',
+          x: center[0],
+          y: center[1],
+          polygons: geometryPolygons(feature.geometry)
+        }
+      })
 
     const tooltip = deepCopy(options.tooltip)
     options = { ...options, tooltip: { ...tooltip, showComponent: false } }
@@ -228,11 +243,8 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     view.once('loaded', () => {
       // 修改地图鼠标样式为默认
       view.scene.map._canvasContainer.lastElementChild.style.cursor = 'default'
-      const { layers } = context
-      if (layers) {
-        layers.forEach(l => {
-          view.addLayer(l)
-        })
+      if (mapLabel.show) {
+        attachMapLabels(view.scene, mapLabels, { ...mapLabel, fontFamily: chart.fontFamily })
       }
       dotLayer.addToScene(view.scene)
       dotLayer.once('add', () => {
@@ -483,7 +495,7 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
           ;(areaMap[name] || areaMap[name] === 0) &&
             content.push(valueFormatter(areaMap[name], label.quotaLabelFormatter))
         }
-        item.properties['_DE_LABEL_'] = content.join('\n\n')
+        item.properties['_DE_LABEL_'] = content.join('\n')
       }
     })
     return options
@@ -543,35 +555,14 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
           }
           const center = centroid(areaJson)
           labelLocation.push({
-            name: content.join('\n\n'),
+            name: content.join('\n'),
             x: center.geometry.coordinates[0],
-            y: center.geometry.coordinates[1]
+            y: center.geometry.coordinates[1],
+            polygons: areaJsonArr.flatMap(feature => geometryPolygons(feature.geometry))
           })
         }
       })
-      const areaLabelLayer = new TextLayer({
-        name: 'areaLabelLayer',
-        source: {
-          data: labelLocation,
-          parser: {
-            type: 'json',
-            x: 'x',
-            y: 'y'
-          }
-        },
-        field: 'name',
-        zIndex: 0.06,
-        style: {
-          fill: label.color,
-          fontSize: label.fontSize,
-          opacity: 1,
-          fontWeight: 'bold',
-          textAnchor: 'center',
-          textAllowOverlap: label.fullDisplay,
-          padding: !label.fullDisplay ? [2, 2] : undefined
-        }
-      })
-      context.layers = [areaLabelLayer]
+      context.mapLabels = labelLocation
     }
     return options
   }
