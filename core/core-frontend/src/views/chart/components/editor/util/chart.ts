@@ -451,6 +451,15 @@ export const DEFAULT_TOOLTIP: ChartTooltipAttr = {
 }
 export const DEFAULT_TABLE_TOTAL: ChartTableTotalAttr = {
   row: {
+    grandTotalStyle: {
+      customBackground: false,
+      backgroundColor: '#FFFFFF',
+      customFont: false,
+      fontColor: '#1F2329',
+      fontSize: 12,
+      isBolder: false,
+      isItalic: false
+    },
     showGrandTotals: true,
     showSubTotals: true,
     reverseLayout: false,
@@ -471,6 +480,15 @@ export const DEFAULT_TABLE_TOTAL: ChartTableTotalAttr = {
     totalSortField: ''
   },
   col: {
+    grandTotalStyle: {
+      customBackground: false,
+      backgroundColor: '#FFFFFF',
+      customFont: false,
+      fontColor: '#1F2329',
+      fontSize: 12,
+      isBolder: false,
+      isItalic: false
+    },
     showGrandTotals: true,
     showSubTotals: true,
     reverseLayout: false,

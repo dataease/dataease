@@ -676,6 +676,8 @@ declare interface ChartTableTotalAttr {
  * 汇总设置
  */
 declare interface TotalConfig {
+  /** 总计专属样式，不作用于小计 */
+  grandTotalStyle: TableGrandTotalStyle
   /**
    * 总计显隐
    */
@@ -724,6 +726,15 @@ declare interface TotalConfig {
    * 小计排序
    */
   totalSortField: string
+}
+declare interface TableGrandTotalStyle {
+  customBackground: boolean
+  backgroundColor: string
+  customFont: boolean
+  fontColor: string
+  fontSize: number
+  isBolder: boolean
+  isItalic: boolean
 }
 /**
  * 汇总聚合方式

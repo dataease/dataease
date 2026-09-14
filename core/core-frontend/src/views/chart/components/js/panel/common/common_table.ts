@@ -10,10 +10,12 @@ import {
 import {
   DEFAULT_BASIC_STYLE,
   DEFAULT_TABLE_CELL,
-  DEFAULT_TABLE_HEADER
+  DEFAULT_TABLE_HEADER,
+  DEFAULT_TABLE_TOTAL
 } from '@/views/chart/components/editor/util/chart'
 import {
   BaseTooltip,
+  CellType,
   DataCellBrushSelection,
   FONT_FAMILY,
   getAutoAdjustPosition,
@@ -846,15 +848,21 @@ export function getConditions(
 
 export function getPivotConditions(chart: Chart, pivotData: Record<string, any>[] = []) {
   const {threshold} = parseJson(chart.senior)
-  if (!threshold.enable) {
+  const {tableCell, basicStyle, tableHeader, tableTotal} = parseJson(chart.customAttr)
+  const hasTotalStyle = ['row', 'col'].some(axis => {
+    const total = tableTotal?.[axis]
+    return total?.showGrandTotals &&
+      (total.grandTotalStyle?.customBackground || total.grandTotalStyle?.customFont)
+  })
+  if (!threshold.enable && !hasTotalStyle) {
     return
   }
   const res = {
     text: [],
     background: []
   }
-  const conditions = getEffectiveTableConditions(threshold.tableThreshold ?? [])
-  if (!conditions.length) {
+  const conditions = getEffectiveTableConditions(threshold.enable ? threshold.tableThreshold ?? [] : [])
+  if (!conditions.length && !hasTotalStyle) {
     return res
   }
 
@@ -866,7 +874,6 @@ export function getPivotConditions(chart: Chart, pivotData: Record<string, any>[
   const xFields = chart.xAxis.map(field => field.dataeaseName)
   const xExtFields = chart.xAxisExt.map(field => field.dataeaseName)
   const yFields = chart.yAxis.map(field => field.dataeaseName)
-  const {tableCell, basicStyle, tableHeader} = parseJson(chart.customAttr)
   const valueColor = getTableConditionColor(tableCell.tableFontColor, basicStyle.alpha)
   const valueBgColor = tableCell.enableTableCrossBG
     ? null
@@ -891,6 +898,27 @@ export function getPivotConditions(chart: Chart, pivotData: Record<string, any>[
   // 复用分组字段解析结果，避免文字和背景条件重复遍历透视数据
   const pivotValueResolver = createPivotFieldValueResolver(pivotData)
   const targetRulesMap = {}
+  // 总计样式独立于条件样式开关，指标表头也需要进入样式映射。
+  if (hasTotalStyle) {
+    [...xFields, ...xExtFields, ...yFields, EXTRA_FIELD].forEach(field => {
+      targetRulesMap[field] = []
+    })
+    // 无维度、多指标的总计占位格没有 valueField；省略 field 仅匹配这类无字段单元格。
+    res.text.push({
+      mapping(value, rowData, cell) {
+        if (cell?.cellType !== CellType.DATA_CELL) return null
+        return getPivotGrandTotalStyle(cell, tableTotal, basicStyle.alpha).text ?? null
+      }
+    })
+    res.background.push({
+      mapping(value, rowData, cell) {
+        if (cell?.cellType !== CellType.DATA_CELL) return null
+        const {backgroundColor} = getPivotGrandTotalStyle(cell, tableTotal, basicStyle.alpha)
+        if (!backgroundColor) return null
+        return {fill: backgroundColor}
+      }
+    })
+  }
 
   for (let i = 0; i < conditions.length; i++) {
     const fieldItem = conditions[i]
@@ -944,30 +972,39 @@ export function getPivotConditions(chart: Chart, pivotData: Record<string, any>[
 
     res.text.push({
       field: targetName,
-      mapping(value, rowData) {
+      mapping(value, rowData, cell) {
         if (rowData?.cornerType) return null
+        const totalStyle = getPivotGrandTotalStyle(cell, tableTotal, basicStyle.alpha)
+        let fallbackColor = rules.length ? defaultValueColor : null
+        if (totalStyle.text) fallbackColor = totalStyle.text.fill
+        const fill = mappingRulesColor(
+          value,
+          fallbackColor,
+          rules,
+          'color',
+          filedValueMap,
+          rowData,
+          targetName,
+          true,
+          pivotValueResolver
+        )
+        // 条件只覆盖自身配置的属性，未命中或未配置颜色时保留总计字体。
         return {
-          fill: mappingRulesColor(
-            value,
-            defaultValueColor,
-            rules,
-            'color',
-            filedValueMap,
-            rowData,
-            targetName,
-            true,
-            pivotValueResolver
-          )
+          ...totalStyle.text,
+          fill: fill ?? totalStyle.text?.fill
         }
       }
     })
     res.background.push({
       field: targetName,
-      mapping(value, rowData) {
+      mapping(value, rowData, cell) {
         if (rowData?.cornerType) return null
-        const fill = mappingRulesColor(
+        const totalStyle = getPivotGrandTotalStyle(cell, tableTotal, basicStyle.alpha)
+        let fallbackColor = rules.length ? defaultBgColor : null
+        if (totalStyle.backgroundColor) fallbackColor = totalStyle.backgroundColor
+        let fill = mappingRulesColor(
           value,
-          defaultBgColor,
+          fallbackColor,
           rules,
           'backgroundColor',
           filedValueMap,
@@ -976,12 +1013,61 @@ export function getPivotConditions(chart: Chart, pivotData: Record<string, any>[
           true,
           pivotValueResolver
         )
-        if (isTransparent(fill)) return null
+        fill = fill ?? totalStyle.backgroundColor
+        if (!fill || (isTransparent(fill) && !totalStyle.backgroundColor)) return null
         return {fill}
       }
     })
   }
   return res
+}
+
+function getPivotGrandTotalStyle(cell, tableTotal: ChartTableTotalAttr, alpha: number) {
+  const result: {
+    backgroundColor?: string
+    text?: { fill: string; fontSize: number; fontWeight: string; fontStyle: string }
+  } = {}
+  if (!cell || !tableTotal) return result
+  const meta = cell.getMeta()
+  let rowNode
+  let colNode
+  if (cell.cellType === CellType.DATA_CELL) {
+    rowNode = cell.spreadsheet.facet.getRowLeafNodeByIndex(meta.rowIndex)
+    colNode = cell.spreadsheet.facet.getColLeafNodeByIndex(meta.colIndex)
+  } else if (cell.cellType === CellType.ROW_CELL) {
+    rowNode = meta
+  } else if (cell.cellType === CellType.COL_CELL) {
+    colNode = meta
+  }
+  const isGrandTotal = (node: Node) => {
+    // 多指标表头可能是总计节点的子节点；只识别总计，不使用包含小计的 isTotals。
+    while (node) {
+      if (node.isGrandTotals) return true
+      node = node.parent
+    }
+    return false
+  }
+  // 先列后行，背景和字体独立覆盖，交叉格只有开启的属性组采用行配置。
+  const totals: TotalConfig[] = []
+  if (tableTotal.col?.showGrandTotals && isGrandTotal(colNode)) totals.push(tableTotal.col)
+  if (tableTotal.row?.showGrandTotals && isGrandTotal(rowNode)) totals.push(tableTotal.row)
+  totals.forEach(total => {
+    const defaults = DEFAULT_TABLE_TOTAL.row.grandTotalStyle
+    const style = { ...defaults, ...total.grandTotalStyle }
+    if (style.customBackground) {
+      const backgroundColor = style.backgroundColor || defaults.backgroundColor
+      result.backgroundColor = getTableConditionColor(backgroundColor, alpha)
+    }
+    if (style.customFont) {
+      result.text = {
+        fill: getTableConditionColor(style.fontColor || defaults.fontColor, alpha),
+        fontSize: style.fontSize || defaults.fontSize,
+        fontWeight: style.isBolder ? 'bold' : 'normal',
+        fontStyle: style.isItalic ? 'italic' : 'normal'
+      }
+    }
+  })
+  return result
 }
 
 function getTableConditionColor(color, alpha) {

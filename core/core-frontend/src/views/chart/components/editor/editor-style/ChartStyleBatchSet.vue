@@ -126,7 +126,7 @@ const onTableCellChange = (val, prop) => {
   batchOptChange('customAttr', 'tableCell', val, prop)
 }
 const onTableTotalChange = (val, prop) => {
-  batchOptChange('customAttr', 'tableTotal', val.data, prop)
+  batchOptChange('customAttr', 'tableTotal', val, prop)
 }
 const batchOptChange = (custom, property, value, subProp?) => {
   dvMainStore.setChangeProperties({
