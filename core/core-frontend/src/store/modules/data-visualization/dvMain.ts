@@ -1452,9 +1452,10 @@ export const dvMainStore = defineStore('dataVisualization', {
       customFilter?
     ) {
       const checkQDList = [...sourceData.dimensionList, ...sourceData.quotaList]
-      let currentFilters = element.linkageFilters || [] // 当前联动filter
+      let currentFilters = element.linkageFilters || []
+      // 针对明细表和汇总表，只清理当前源图表（viewId）的历史联动条件，保留其他图表的条件以支持多图表联动合并
       if (['table-info', 'table-normal'].includes(element.innerType)) {
-        currentFilters = []
+        currentFilters = currentFilters.filter(filter => filter.sourceViewId !== viewId)
       }
       if (currentFilters.length) {
         for (let i = currentFilters.length - 1; i >= 0; i--) {
