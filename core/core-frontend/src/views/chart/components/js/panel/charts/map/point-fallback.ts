@@ -2,7 +2,7 @@ import type { ChoroplethOptions } from '@antv/l7plot/dist/esm/plots/choropleth'
 import type { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
 import type { DotOptions } from '@antv/l7plot'
 import { Dot } from '@antv/l7plot'
-import { TextLayer } from '@antv/l7plot/dist/esm'
+import { attachMapLabels } from './label-layout'
 import { isEmpty } from 'lodash-es'
 import { hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
 import { mapRendered, mapRendering } from '@/views/chart/components/js/panel/common/common_antv'
@@ -134,7 +134,8 @@ export async function drawPointFallbackChart(
     labelData.push({
       x: pt.x,
       y: pt.y,
-      name: content.join('\n\n') || pt.name
+      name: content.join('\n') || pt.name,
+      point: true
     })
   })
 
@@ -301,34 +302,12 @@ export async function drawPointFallbackChart(
 
   const dotLayer = new Dot(dotOptions)
 
-  let textLayer: InstanceType<typeof TextLayer> | null = null
-  if (label.show && labelData.length) {
-    textLayer = new TextLayer({
-      name: 'pointLabelLayer',
-      source: {
-        data: labelData,
-        parser: { type: 'json', x: 'x', y: 'y' }
-      },
-      field: 'name',
-      style: {
-        fill: label.color,
-        fontSize: label.fontSize,
-        opacity: 1,
-        fontWeight: 'bold',
-        textAnchor: 'center',
-        textOffset: [0, -20],
-        textAllowOverlap: label.fullDisplay,
-        padding: label.fullDisplay ? undefined : [2, 2]
-      }
-    })
-  }
-
   mapRendering(container)
   view.once('loaded', () => {
     mapRendered(container)
     dotLayer.addToScene(view.scene)
-    if (textLayer) {
-      textLayer.addTo(view.scene)
+    if (label.show) {
+      attachMapLabels(view.scene, labelData, { ...label, fontFamily: chart.fontFamily })
     }
     const map = view.scene.map
     map['fitBounds']?.(
