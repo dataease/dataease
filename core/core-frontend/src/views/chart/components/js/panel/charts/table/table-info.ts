@@ -38,6 +38,16 @@ import {
 const { t } = useI18n()
 
 class DetailDataCell extends CustomDataCell {
+  protected getResizedTextMaxLines(): number | undefined {
+    const resizedMaxLines = super.getResizedTextMaxLines()
+    const maxLines = this.spreadsheet.options.style?.dataCell?.maxLines
+    if (!maxLines) {
+      return resizedMaxLines
+    }
+    // 自定义行高可以减少显示行数，但不能突破配置的最大行数。
+    return Math.min(resizedMaxLines ?? maxLines, maxLines)
+  }
+
   drawTextOrCustomRenderer(): void {
     if (isInMergedCell(this.spreadsheet.options.mergedCellsInfo, this.getMeta())) {
       // 只清空底层显示内容，不修改元数据，合并层仍需使用原值绘制文字。
@@ -71,6 +81,16 @@ type TableHeaderTheme = S2Theme & {
 }
 
 class CustomTableColCell extends TableColCell {
+  protected getResizedTextMaxLines(): number | undefined {
+    const resizedMaxLines = super.getResizedTextMaxLines()
+    const maxLines = this.spreadsheet.options.style?.colCell?.maxLines
+    if (!maxLines) {
+      return resizedMaxLines
+    }
+    // 表头同样受最大行数限制，避免按高度计算的行数覆盖配置。
+    return Math.min(resizedMaxLines ?? maxLines, maxLines)
+  }
+
   protected getTextStyle() {
     const textStyle = super.getTextStyle()
     const alignConfig = (this.theme as TableHeaderTheme).colCellAlignConfig
