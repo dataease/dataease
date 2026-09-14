@@ -883,8 +883,15 @@ onMounted(() => {
     title="自定义聚合公式"
     :close-on-click-modal="false"
   >
-    <custom-aggr-edit ref="calcEdit" />
+    <custom-aggr-edit v-if="editCalcField" ref="calcEdit" />
     <template #footer>
+      <el-button
+        secondary
+        :loading="calcEdit?.validating"
+        @click="calcEdit.verify(props.chart.tableId)"
+      >
+        {{ t('datasource.validate') }}
+      </el-button>
       <el-button secondary @click="closeEditCalc()">{{ t('dataset.cancel') }} </el-button>
       <el-button type="primary" @click="confirmEditCalc()">{{ t('dataset.confirm') }} </el-button>
     </template>
