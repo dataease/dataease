@@ -1196,26 +1196,5 @@ defineExpose({validate, closeLoading});
   .increment-info-body {
   }
 
-  .partition-body {
-    .number-input-range {
-      display: flex;
-      width: 100%;
-
-      .start {
-        width: calc(100% - 100px) !important;
-      }
-
-      .span {
-        line-height: 32px;
-        padding: 0 8px 0 8px;
-        margin-top: 28px;
-      }
-
-      .end {
-        width: calc(100% - 100px) !important;
-        margin-top: 28px;
-      }
-    }
-  }
 }
 </style>
