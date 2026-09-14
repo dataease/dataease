@@ -1,4 +1,4 @@
-import { HorizontalAlign } from '@univerjs/core'
+import { BooleanNumber, HorizontalAlign } from '@univerjs/core'
 import type { IStyleData } from '@univerjs/core'
 import { applyTableBorderStyle } from '../../../components/table-border/border-style'
 import type { DetailTableConfig } from '../types'
@@ -9,6 +9,12 @@ import { isDetailTableIndexVisible } from '../utils/table-style-state'
 
 const DEFAULT_RENDER_STYLE: Partial<IStyleData> = {
   ht: HorizontalAlign.LEFT
+}
+
+const DEFAULT_TOTAL_RENDER_STYLE: Partial<IStyleData> = {
+  ...DEFAULT_RENDER_STYLE,
+  bg: { rgb: '#f5f7fa' },
+  bl: BooleanNumber.TRUE
 }
 
 export interface DetailTableRenderStyleRange {
@@ -151,7 +157,7 @@ export class DetailTableRenderStyleService {
               columnCount: range.colCount
             }
           )
-        : DEFAULT_RENDER_STYLE
+        : DEFAULT_TOTAL_RENDER_STYLE
     }
 
     const cellStyle = range.config.style?.cell
