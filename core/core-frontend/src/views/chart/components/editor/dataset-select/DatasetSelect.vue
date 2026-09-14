@@ -145,7 +145,8 @@ function collectMatchedNodeIds(
 ) {
   tree.forEach(node => {
     const nodePath = [...ancestors, node.id]
-    if (node.name?.includes(keyword)) {
+    const name = props.sourceType === 'dataset' ? node.name?.toLowerCase() : node.name
+    if (name?.includes(keyword)) {
       nodePath.forEach(id => result.add(id))
     }
     if (node.children?.length) {
@@ -157,7 +158,7 @@ function collectMatchedNodeIds(
 
 // el-tree 超过 80 个同级节点时会分批异步过滤，父级可能早于子级完成可见计算
 const matchedNodeIds = computed(() => {
-  const keyword = searchStr.value
+  const keyword = props.sourceType === 'dataset' ? searchStr.value?.toLowerCase() : searchStr.value
   return keyword ? collectMatchedNodeIds(computedTree.value || [], keyword) : new Set<Tree['id']>()
 })
 
