@@ -1,3 +1,4 @@
+import { DataEaseHyperLinkController } from './controllers/hyper-link.controller'
 import type { Dependency } from '@univerjs/core'
 import { Inject, Injector, Plugin, touchDependencies, UniverInstanceType } from '@univerjs/core'
 import {
@@ -32,7 +33,8 @@ export class DataEaseRuntimePlugin extends Plugin {
       [PluginRenderLoadingService],
       [TableInsertionService],
       [TableRangeConflictService],
-      [TableUserStyleService]
+      [TableUserStyleService],
+      [DataEaseHyperLinkController]
     ]
     dependencies.forEach(dependency => this.injector.add(dependency))
   }
@@ -45,7 +47,8 @@ export class DataEaseRuntimePlugin extends Plugin {
       [PluginRenderLoadingService],
       [TableInsertionService],
       [TableRangeConflictService],
-      [TableUserStyleService]
+      [TableUserStyleService],
+      [DataEaseHyperLinkController]
     ])
   }
 }
