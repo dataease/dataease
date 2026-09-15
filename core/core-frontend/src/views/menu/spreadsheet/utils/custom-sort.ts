@@ -32,7 +32,3 @@ export const mergeCustomSortValues = (
 
   return mergedValues
 }
-
-export const formatCustomSortValue = (value: CustomSortValue) => {
-  return value === '' ? '空值' : String(value)
-}
