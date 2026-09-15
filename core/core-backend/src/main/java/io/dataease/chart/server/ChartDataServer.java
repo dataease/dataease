@@ -744,12 +744,17 @@ public class ChartDataServer implements ChartDataApi {
         var result = new ArrayList<String>();
         for (TableHeader.ColumnInfo column : columns) {
             if (CollectionUtils.isEmpty(column.getChildren())) {
-                result.add(column.getKey());
+                result.add(getHeaderColumnField(column));
             } else {
                 result.addAll(getHeaderLeafColumn(column.getChildren()));
             }
         }
         return result;
+    }
+
+    private static String getHeaderColumnField(TableHeader.ColumnInfo column) {
+        // 新版表头使用 field，历史配置仍使用 key，校验和导出统一按此规则读取。
+        return StringUtils.isNotBlank(column.getField()) ? column.getField() : column.getKey();
     }
 
     private static Integer getDepth(TableHeader.ColumnInfo column, Integer parentDepth) {
@@ -784,11 +789,11 @@ public class ChartDataServer implements ChartDataApi {
             if (depth.equals(toDepth)) {
                 Cell cell = rowMap.get("row" + depth).createCell(width);
                 cell.setCellStyle(cellStyle);
-                cell.setCellValue(getDeFieldName(xAxis, column.getKey()));
+                cell.setCellValue(getDeFieldName(xAxis, getHeaderColumnField(column)));
             } else {
                 for (int i = depth; i <= toDepth; i++) {
                     Cell cell1 = rowMap.get("row" + i).createCell(width);
-                    cell1.setCellValue(getDeFieldName(xAxis, column.getKey()));
+                    cell1.setCellValue(getDeFieldName(xAxis, getHeaderColumnField(column)));
                     cell1.setCellStyle(cellStyle);
                 }
                 CellRangeAddress region = new CellRangeAddress(depth, toDepth, width, width);
@@ -803,10 +808,10 @@ public class ChartDataServer implements ChartDataApi {
             }
         } else {
             Cell cell1 = rowMap.get("row" + depth).createCell(width);
-            cell1.setCellValue(getGroupName(tableHeader, column.getKey()));
+            cell1.setCellValue(getGroupName(tableHeader, column));
             cell1.setCellStyle(cellStyle);
             Cell cell2 = rowMap.get("row" + depth).createCell(width + column.getWidth() - 1);
-            cell2.setCellValue(getGroupName(tableHeader, column.getKey()));
+            cell2.setCellValue(getGroupName(tableHeader, column));
             cell2.setCellStyle(cellStyle);
             CellRangeAddress region = new CellRangeAddress(depth, depth, width, width + column.getWidth() - 1);
             sheet.addMergedRegion(region);
@@ -824,9 +829,18 @@ public class ChartDataServer implements ChartDataApi {
         }
     }
 
-    private static String getGroupName(TableHeader tableHeader, String key) {
-        for (TableHeader.MetaInfo metaInfo : tableHeader.getHeaderGroupConfig().getMeta()) {
-            if (metaInfo.getField().equals(key)) {
+    private static String getGroupName(TableHeader tableHeader, TableHeader.ColumnInfo column) {
+        // 新版分组名称直接保存在节点上，旧配置才从 meta 中查找。
+        if (column.getTitle() != null) {
+            return column.getTitle();
+        }
+        List<TableHeader.MetaInfo> meta = tableHeader.getHeaderGroupConfig().getMeta();
+        if (CollectionUtils.isEmpty(meta)) {
+            return "";
+        }
+        String field = getHeaderColumnField(column);
+        for (TableHeader.MetaInfo metaInfo : meta) {
+            if (StringUtils.equals(metaInfo.getField(), field)) {
                 return metaInfo.getName();
             }
         }
