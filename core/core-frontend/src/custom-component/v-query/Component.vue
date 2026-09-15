@@ -273,8 +273,8 @@ const setCustomStyle = val => {
   customStyle.fontStyleBtn = fontStyleBtn
   customStyle.queryConditionWidth = queryConditionWidth ?? 227
   customStyle.nameboxSpacing = nameboxSpacing ?? 8
-  customStyle.queryConditionSpacing = queryConditionSpacing ?? 16
-  customStyle.queryConditionHeight = queryConditionHeight ?? 32
+  customStyle.queryConditionSpacing = Math.min(600, Math.max(0, queryConditionSpacing ?? 16))
+  customStyle.queryConditionHeight = Math.min(100, Math.max(32, queryConditionHeight ?? 32))
   customStyle.labelColorBtn = labelColorBtn || '#ffffff'
   customStyle.labelShow = labelShow ?? true
   customStyle.btnColor = btnColor || '#3370ff'

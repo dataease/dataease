@@ -154,6 +154,7 @@ const updatePaddingMode = (mode: unknown) => {
           <el-input-number
             :model-value="baseStyle.gap"
             :min="0"
+            :max="600"
             class="filter-style-editor__full-number"
             controls-position="right"
             @change="value => update('style.base.gap', value)"
