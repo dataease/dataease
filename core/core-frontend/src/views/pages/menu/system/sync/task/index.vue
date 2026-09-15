@@ -20,14 +20,14 @@ const showTaskLog = tId => {
     <el-tab-pane :label="t('sync_task.task_list')" name="task"></el-tab-pane>
     <el-tab-pane :label="t('sync_task.log_list')" name="log"></el-tab-pane>
   </el-tabs>
-  <div v-if="activeName === 'task'">
+  <div style="margin-top: 12px" v-if="activeName === 'task'">
     <task
       :active-name="activeName"
       v-if="activeName === 'task'"
       @open-task-log="showTaskLog"
     ></task>
   </div>
-  <div v-if="activeName === 'log'">
+  <div style="margin-top: 12px" v-if="activeName === 'log'">
     <log :active-name="activeName" :job-id="taskId"></log>
   </div>
 </template>
