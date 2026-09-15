@@ -2824,6 +2824,11 @@ export function setupMergedCellHover(sheet: SpreadSheet) {
 class CustomMergedCell extends MergedCell {
   private rowHoverShape: ReturnType<typeof renderPolygon>
 
+  getCellTextWordWrapStyle() {
+    // 合并层复用普通数据格的省略配置，避免文字超出自定义列宽。
+    return super.getCellTextWordWrapStyle(CellType.DATA_CELL)
+  }
+
   setRowHover(visible: boolean) {
     if (!this.rowHoverShape && visible) {
       const hover = this.theme.dataCell.cell.interactionState.hover
