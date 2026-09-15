@@ -532,8 +532,7 @@ export class BoxPlot extends G2PlotChartView<BoxOptions, G2Box> {
                   `${formatMetricValue(datum.q1)} – ${formatMetricValue(datum.q3)}`,
                   false
                 ),
-                createItem(sourceItem, labelMap.outlierCount, outlierCount, false),
-                ...(outlierItem ? [outlierItem] : [])
+                createItem(sourceItem, labelMap.outlierCount, outlierCount, false)
               ]
             }
 
