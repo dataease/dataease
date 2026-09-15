@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref, inject, computed, onMounted, onUnmounted, watch, nextTick, type Ref } from 'vue'
-import { Search, Refresh, Expand, Fold } from '@element-plus/icons-vue'
+import { Search, Refresh, Expand, Fold, CircleClose } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus-secondary'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import router from '@/router'
@@ -50,6 +50,12 @@ const lastLoadedDatasetKey = ref('')
 
 // 搜索关键字
 const searchKeyword = ref('')
+const searchInputRef = ref<HTMLInputElement>()
+
+const clearSearch = () => {
+  searchKeyword.value = ''
+  searchInputRef.value?.focus()
+}
 
 // 拖拽分隔线相关
 type ScrollbarExpose = {
@@ -643,11 +649,22 @@ const toggleCollapsed = () => {
           <Search />
         </el-icon>
         <input
+          ref="searchInputRef"
           v-model="searchKeyword"
           type="text"
           class="search-input"
           placeholder="搜索 字段"
         />
+        <button
+          v-if="searchKeyword"
+          type="button"
+          class="clear-search"
+          :aria-label="t('commons.clear')"
+          :title="t('commons.clear')"
+          @click="clearSearch"
+        >
+          <el-icon><CircleClose /></el-icon>
+        </button>
       </div>
 
       <div ref="fieldListRef" class="field-list" :class="{ 'is-dragging': isDragging }">
@@ -847,8 +864,24 @@ const toggleCollapsed = () => {
       margin-right: 8px;
     }
 
+    .clear-search {
+      display: flex;
+      flex-shrink: 0;
+      padding: 2px;
+      margin-left: 8px;
+      border: none;
+      background: transparent;
+      color: #8f959e;
+      cursor: pointer;
+
+      &:hover {
+        color: #646a73;
+      }
+    }
+
     .search-input {
       flex: 1;
+      min-width: 0;
       border: none;
       outline: none;
       background: transparent;
