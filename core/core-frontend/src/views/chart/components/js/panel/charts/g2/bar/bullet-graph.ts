@@ -109,7 +109,10 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
     let newChart = null
     const { Chart: BulletClass } = await import('@antv/g2')
     handleChartDashboardHidden(chart, options)
-    newChart = new BulletClass(options)
+    // 构造参数只传运行时配置，children 必须通过 options 注册为图层。
+    // 否则 G2 每次读取并回写配置都会重复追加 children，导致图例推断溢出。
+    newChart = new BulletClass({ container, autoFit: true, ...getG2Renderer() })
+    newChart.options(options)
     newChart.on('element:click', ev => {
       const pointData = ev?.data?.data
       const dimensionList = options.data.find(item => item.title === pointData.title)?.dimensionList
