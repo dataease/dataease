@@ -1750,7 +1750,7 @@ const getMenuList = (val: boolean, data?: any) => {
                   <el-row :gutter="24">
                     <el-col :span="12">
                       <BaseInfoItem :label="t('datasource.max_pool_size')">{{
-                        nodeInfo.configuration.maxPoolSize || 5
+                        nodeInfo.configuration.maxPoolSize || 100
                       }}</BaseInfoItem>
                     </el-col>
                     <el-col :span="12">

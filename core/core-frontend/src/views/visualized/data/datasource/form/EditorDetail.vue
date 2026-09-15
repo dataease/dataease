@@ -167,8 +167,8 @@ const initForm = (type, pluginDsList, indexPlugin, isPluginDs) => {
       sslCA: '',
       sslCert: '',
       sslKey: '',
-      initialPoolSize: 50,
-      minPoolSize: 50,
+      initialPoolSize: 5,
+      minPoolSize: 5,
       maxPoolSize: 100,
       queryTimeout: 30
     }
