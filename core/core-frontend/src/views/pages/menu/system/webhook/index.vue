@@ -1,6 +1,6 @@
 <template>
   <p class="router-title">{{ t('webhook.title') }}</p>
-  <div class="org-table__content border-radius-12" v-loading="loading">
+  <div class="webhook-table__content border-radius-12" v-loading="loading">
     <el-row class="top-operate">
       <el-col :span="12">
         <el-button @click="addHandler" type="primary">
@@ -296,12 +296,12 @@ search()
   font-weight: 500;
   line-height: 28px;
 }
-.org-table__content {
+.webhook-table__content {
   padding: 24px 24px 0 24px;
   border-radius: 6px;
   width: 100%;
   background: var(--ContentBG, #ffffff);
-  height: calc(100vh - 140px) !important;
+  height: calc(100vh - 166px) !important;
   box-sizing: border-box;
   margin-top: 16px;
 }

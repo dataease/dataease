@@ -12,10 +12,10 @@ const activeName = ref('source')
     <el-tab-pane :label="t('sync_datasource.source_ds')" name="source"></el-tab-pane>
     <el-tab-pane :label="t('sync_datasource.target_ds')" name="target"></el-tab-pane>
   </el-tabs>
-  <div v-if="activeName === 'source'">
+  <div style="margin-top: 12px" v-if="activeName === 'source'">
     <source-table :active-name="activeName"></source-table>
   </div>
-  <div v-if="activeName === 'target'">
+  <div style="margin-top: 12px" v-if="activeName === 'target'">
     <target-table :active-name="activeName"></target-table>
   </div>
 </template>

@@ -280,7 +280,7 @@ const cancelRole = (row: any) => {
         </el-input>
       </div>
     </div>
-    <div class="user-table__content">
+    <div class="member-table__content">
       <GridTable
         :pagination="state.paginationConfig"
         :table-data="state.userList"
