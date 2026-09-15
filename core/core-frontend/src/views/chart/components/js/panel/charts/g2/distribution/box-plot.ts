@@ -472,7 +472,7 @@ export class BoxPlot extends Bar {
               value: String(sourceData.outlierCount ?? outliers.length),
               marker
             })
-            if (displayedOutliers.length || hiddenOutlierCount) {
+            if (showDetails && (displayedOutliers.length || hiddenOutlierCount)) {
               if (hiddenOutlierCount) {
                 displayedOutliers.push(
                   t('chart.box_plot_more_outliers', { count: hiddenOutlierCount })
