@@ -1193,6 +1193,13 @@ if (props.initialAction === 'add') {
               @clear="selectPluginField(row)"
               @visible-change="visible => handleFieldSelectVisible(row, visible)"
             >
+              <template #label="{ label }">
+                {{
+                  getSelectedDatasetField(row)?.fieldName ||
+                  getActiveLinkedFields().find(field => field.pluginId === row.pluginId)?.fieldName ||
+                  label
+                }}
+              </template>
               <template #prefix>
                 <el-icon
                   v-if="getSelectedDatasetField(row)"
