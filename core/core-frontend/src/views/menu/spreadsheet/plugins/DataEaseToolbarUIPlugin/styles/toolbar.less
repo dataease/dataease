@@ -208,3 +208,9 @@
 .univer-max-w-80:not(:has(.univerjs-icon-link-icon, #link-icon)) .univer-size-6:has(.univerjs-icon-copy-icon, [id*="copy-icon"]) {
   display: none !important;
 }
+
+// 隐藏旧分支但保留尺寸，供 Univer 定位和快速切回时复用。
+[data-u-context-menu-submenu].dataease-inactive-context-submenu {
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
