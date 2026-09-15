@@ -4,7 +4,7 @@ import { ref, watch } from 'vue'
 import draggable from 'vuedraggable'
 import { enumSpreadsheetFilterValueObj } from '../../../../api/filter-option'
 import type { SpreadsheetFilterCondition } from '../../../../types/plugin'
-import { formatCustomSortValue, type CustomSortValue } from '../../../../utils/custom-sort'
+import { type CustomSortValue } from '../../../../utils/custom-sort'
 
 interface SortValueItem {
   id: string
@@ -137,7 +137,7 @@ const confirm = () => {
       >
         <template #item="{ element }">
           <div class="spreadsheet-filter-custom-sort__item">
-            {{ formatCustomSortValue(element.value) }}
+            {{ element.value }}
           </div>
         </template>
       </draggable>

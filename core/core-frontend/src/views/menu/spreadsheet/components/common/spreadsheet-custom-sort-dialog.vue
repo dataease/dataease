@@ -2,7 +2,7 @@
 import { ref, watch } from 'vue'
 import draggable from 'vuedraggable'
 import { Loading } from '@element-plus/icons-vue'
-import { formatCustomSortValue, mergeCustomSortValues, type CustomSortValue } from '../../utils/custom-sort'
+import { mergeCustomSortValues, type CustomSortValue } from '../../utils/custom-sort'
 import type { FieldItemData, PluginDataConfig } from '../../types/plugin'
 import { useCustomSortValues } from './use-custom-sort-values'
 
@@ -126,7 +126,7 @@ const handleConfirm = () => {
       >
         <template #item="{ element }">
           <div class="sort-value-item">
-            {{ formatCustomSortValue(element.value) }}
+            {{ element.value }}
           </div>
         </template>
       </draggable>
