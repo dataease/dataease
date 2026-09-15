@@ -3,7 +3,8 @@ import { Delete, EditPen, Hide, InfoFilled, MoreFilled, Plus, View } from '@elem
 import { cloneDeep } from 'lodash-es'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import draggable from 'vuedraggable'
-import { ElMessage } from 'element-plus-secondary'
+import { ElMessage, ElMessageBox } from 'element-plus-secondary'
+import { useI18n } from '@/hooks/web/useI18n'
 import { getDatasetTree, getDsDetailsWithPerm } from '@/api/dataset'
 import detailTableIcon from '@/assets/svg/chart-light/icon_common-table_light.svg'
 import pivotTableIcon from '@/assets/svg/chart-light/icon_pivot-table_light.svg'
@@ -52,6 +53,7 @@ const props = defineProps<{
   onCancel: () => void
 }>()
 
+const { t } = useI18n()
 const shouldFilterUnavailableLinkedFields = props.availablePlugins !== undefined
 const availablePluginIds = new Set<string>()
 props.availablePlugins?.forEach(plugin => availablePluginIds.add(String(plugin.pluginId)))
@@ -550,12 +552,39 @@ const syncActiveConditionFieldOptions = () => {
   clearInvalidOptionDatasetFields()
 }
 
-const handleDisplayTypeChange = () => {
-  if (!activeCondition.value) {
+const handleDisplayTypeChange = async (displayType: SpreadsheetFilterCondition['displayType']) => {
+  const condition = activeCondition.value
+  if (!condition || condition.displayType === displayType) {
     return
   }
-  normalizeSpreadsheetFilterConditionByRules(activeCondition.value)
-  initializeTreeDatasetFromFirstLinkedField(activeCondition.value)
+  if (condition.displayType === 'treeSelect') {
+    try {
+      await ElMessageBox.confirm(t('commons.prompt'), {
+        tip: t('common.changing_the_display'),
+        confirmButtonText: t('commons.confirm'),
+        cancelButtonText: t('commons.cancel'),
+        confirmButtonType: 'primary',
+        type: 'warning',
+        autofocus: false,
+        showClose: false
+      })
+    } catch {
+      return
+    }
+    if (activeCondition.value !== condition) return
+    condition.treeDatasetId = undefined
+    condition.treeDatasetName = undefined
+    condition.treeFields = []
+    condition.treeLevelMappings = []
+    condition.defaultValueEnabled = false
+    condition.defaultValueFirstItem = false
+    condition.defaultValue = undefined
+    condition.selectValue = undefined
+    activeTreeLevelIndex.value = 0
+  }
+  condition.displayType = displayType
+  normalizeSpreadsheetFilterConditionByRules(condition)
+  initializeTreeDatasetFromFirstLinkedField(condition)
   clearInvalidOptionDatasetFields()
 }
 
@@ -1237,7 +1266,7 @@ if (props.initialAction === 'add') {
           <el-scrollbar class="spreadsheet-filter-config-dialog__config-scrollbar">
             <el-form class="spreadsheet-filter-config-dialog__config-form" label-width="88px" label-position="left">
             <el-form-item label="展示类型">
-              <el-select v-model="activeCondition.displayType" @change="handleDisplayTypeChange">
+              <el-select :model-value="activeCondition.displayType" @change="handleDisplayTypeChange">
                 <el-option
                   v-for="option in activeDisplayTypeOptions"
                   :key="option.value"
