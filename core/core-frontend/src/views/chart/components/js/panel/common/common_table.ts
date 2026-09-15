@@ -3028,7 +3028,11 @@ export function getStartPosition(node) {
 
 export class SummaryCell extends CustomDataCell {
   getTextStyle() {
-    const textStyle = cloneDeep(this.theme.colCell.bolderText)
+    // 总计沿用表头外观，但仍需按数据单元格的可用宽度处理文字溢出。
+    const textStyle = {
+      ...this.getCellTextWordWrapStyle(),
+      ...cloneDeep(this.theme.colCell.bolderText)
+    }
     const dataCellAlignConfig = (this.theme as any).dataCellAlignConfig
     if (dataCellAlignConfig) {
       const align = dataCellAlignConfig[this.meta.valueField]
