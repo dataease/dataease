@@ -547,7 +547,8 @@ const toggleFavorite = async () => {
 const operation = async (cmd: string, data: SpreadsheetTreeNode, nodeType: 'folder' | 'sheet') => {
   if (cmd === 'cancelPublish') {
     try {
-      await ElMessageBox.confirm(t('spreadsheet.cancel_publish_confirm'), {
+      await ElMessageBox.confirm(t('commons.prompt'), {
+        tip: t('spreadsheet.cancel_publish_confirm'),
         confirmButtonText: t('commons.confirm'),
         cancelButtonText: t('commons.cancel'),
         type: 'warning',
@@ -576,7 +577,7 @@ const operation = async (cmd: string, data: SpreadsheetTreeNode, nodeType: 'fold
     return
   } else if (cmd === 'delete') {
     let options = {
-      confirmButtonText: t('commons.confirm'),
+      confirmButtonText: t('commons.delete'),
       cancelButtonText: t('commons.cancel'),
       confirmButtonType: 'danger',
       type: 'warning',
@@ -594,7 +595,10 @@ const operation = async (cmd: string, data: SpreadsheetTreeNode, nodeType: 'fold
     }
 
     try {
-      await ElMessageBox.confirm(t('spreadsheet.delete_confirm'), options)
+      await ElMessageBox.confirm(t('commons.prompt'), {
+        ...options,
+        tip: [t('spreadsheet.delete_confirm'), options.tip].filter(Boolean).join('\n')
+      })
       await deleteResource({ id: data.id as number, rootOrgNode: !!data.orgRoot })
       if (selectedNodeInfo.id === data.id) {
         await resetPreview()

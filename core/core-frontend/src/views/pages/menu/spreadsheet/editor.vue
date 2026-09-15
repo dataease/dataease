@@ -313,16 +313,13 @@ const handlePluginEditorTransition = async (
   }
 
   try {
-    await ElMessageBox.confirm(
-      t('spreadsheet.draft_close_message'),
-      t('spreadsheet.draft_close_title'),
-      {
-        confirmButtonText: t('spreadsheet.draft_close_confirm'),
-        cancelButtonText: t('spreadsheet.draft_close_cancel'),
-        type: 'warning',
-        autofocus: false
-      }
-    )
+    await ElMessageBox.confirm(t('commons.prompt'), {
+      tip: t('spreadsheet.draft_close_message'),
+      confirmButtonText: t('spreadsheet.draft_close_confirm'),
+      cancelButtonText: t('spreadsheet.draft_close_cancel'),
+      type: 'warning',
+      autofocus: false
+    })
     await removeDraftInstance(config)
 
     // 确认期间可能收到多个选区事件，最终打开最新命中的实例。
@@ -537,7 +534,8 @@ const handleRecoverPublished = async () => {
   }
 
   try {
-    await ElMessageBox.confirm(t('spreadsheet.recover_publish_confirm'), {
+    await ElMessageBox.confirm(t('commons.prompt'), {
+      tip: t('spreadsheet.recover_publish_confirm'),
       confirmButtonText: t('commons.confirm'),
       cancelButtonText: t('commons.cancel'),
       type: 'warning',
@@ -601,18 +599,15 @@ const handleBack = async () => {
   const isCreateMode = routeMode.value !== 'edit' || !routeSheetId.value
   if (isCreateMode || hasChanges.value) {
     try {
-      await ElMessageBox.confirm(
-        t('spreadsheet.confirm_exit_without_save'),
-        t('spreadsheet.unsaved_changes'),
-        {
-          confirmButtonText: t('commons.confirm'),
-          cancelButtonText: t('commons.cancel'),
-          confirmButtonType: 'primary',
-          type: 'warning',
-          autofocus: false,
-          showClose: false
-        }
-      )
+      await ElMessageBox.confirm(t('commons.prompt'), {
+        tip: t('spreadsheet.confirm_exit_without_save'),
+        confirmButtonText: t('commons.confirm'),
+        cancelButtonText: t('commons.cancel'),
+        confirmButtonType: 'primary',
+        type: 'warning',
+        autofocus: false,
+        showClose: false
+      })
     } catch {
       return
     }
@@ -725,7 +720,8 @@ onBeforeMount(async () => {
             const cacheHasChanges =
               cachedSheetData !== serverSheetData || cachedDraft.name !== spreadsheetInfo.name
             if (cacheHasChanges) {
-              await ElMessageBox.confirm(t('spreadsheet.cache_use_tips'), {
+              await ElMessageBox.confirm(t('commons.prompt'), {
+                tip: t('spreadsheet.cache_use_tips'),
                 confirmButtonText: t('visualization.yes'),
                 cancelButtonText: t('visualization.no'),
                 confirmButtonType: 'primary',
