@@ -147,6 +147,7 @@ watch(
       :props="datasetTreeProps"
       node-key="id"
       check-strictly
+      filterable
       :render-after-expand="false"
       placeholder="请选择数据集"
       @change="handleDatasetChange"
