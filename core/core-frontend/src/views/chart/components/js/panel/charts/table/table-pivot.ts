@@ -69,7 +69,13 @@ class CustomPivotDataset extends PivotDataSet {
       if (calcFunc) {
         totalValue = calcFunc(query, data, this.spreadsheet, status)
       } else if (calcAction) {
-        totalValue = calcAction(data, VALUE_FIELD)!
+        // 全空指标保持为空，不能将缺失数据汇总成真实的 0。
+        const allEmpty = data.every(item =>
+          isEmptyTotalValue(CellData.getFieldValue(item, VALUE_FIELD))
+        )
+        if (!allEmpty || aggregation === Aggregation.COUNT) {
+          totalValue = calcAction(data, VALUE_FIELD)!
+        }
       }
 
       return CellData.getCellData(
@@ -990,6 +996,13 @@ function customCalcFunc(query, data, status, chart, totalCfgMap, axisMap, custom
     return '-'
   }
   const aggregation = totalCfgMap[query[EXTRA_FIELD]]?.aggregation || 'SUM'
+  if (
+    aggregation !== 'CUSTOM' &&
+    aggregation !== 'NONE' &&
+    data.every(item => isEmptyTotalValue(item.raw[query[EXTRA_FIELD]]))
+  ) {
+    return null
+  }
   switch (aggregation) {
     case 'SUM': {
       return data.reduce((p, n) => {
@@ -1019,6 +1032,7 @@ function customCalcFunc(query, data, status, chart, totalCfgMap, axisMap, custom
     }
     case 'CUSTOM': {
       const val = getCustomCalcResult(query, axisMap, chart, status, customCalc || {})
+      if (val === null) return null
       if (val === '' || val === undefined) {
         return '-'
       }
@@ -1031,6 +1045,8 @@ function customCalcFunc(query, data, status, chart, totalCfgMap, axisMap, custom
     }
   }
 }
+
+const isEmptyTotalValue = (value: unknown) => value === null || value === undefined || value === ''
 
 function getTreeCustomCalcResult(query, axisMap, status: TotalStatus, customCalc) {
   const quotaField = query[EXTRA_FIELD]
