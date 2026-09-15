@@ -1483,7 +1483,7 @@ export default {
     box_plot_outlier_count: '異常值數量',
     box_plot_show_details: '顯示統計詳情',
     box_plot_details_tip:
-      '關閉時顯示中位數、四分位區間和異常值資訊；開啟後顯示完整五數統計和異常值資訊',
+      '關閉時顯示中位數、四分位區間和異常值數量；開啟後顯示完整五數統計、異常值數量和異常值明細',
     box_plot_show_outliers: '顯示異常值',
     box_plot_outlier_tip:
       '異常值是小於 Q1 − 1.5×IQR 或大於 Q3 + 1.5×IQR 的原始明細值，其中 IQR = Q3 − Q1。\n例如：Q1 = 10、Q3 = 20，則 IQR = 10，正常範圍為 −5～35；小於 −5 或大於 35 的值會顯示為異常點。',
