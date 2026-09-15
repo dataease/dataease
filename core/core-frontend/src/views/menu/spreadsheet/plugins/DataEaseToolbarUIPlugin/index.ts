@@ -3,6 +3,7 @@ import { Inject, Injector, Plugin, touchDependencies, UniverInstanceType } from 
 import { DataEaseToolbarUIController } from './controllers/toolbar-ui.controller'
 import { SheetMenuLayoutController } from './controllers/sheet-menu-layout.controller'
 import { DecimalCommandController } from './controllers/decimal-command.controller'
+import { ContextMenuLayoutController } from './controllers/context-menu-layout.controller'
 import './styles/toolbar.less'
 
 export const DATAEASE_TOOLBAR_UI_PLUGIN = 'DATAEASE_TOOLBAR_UI_PLUGIN'
@@ -19,6 +20,7 @@ export class DataEaseToolbarUIPlugin extends Plugin {
     const dependencies: Dependency[] = [
       [DataEaseToolbarUIController],
       [SheetMenuLayoutController],
+      [ContextMenuLayoutController],
       [DecimalCommandController]
     ]
 
@@ -29,6 +31,7 @@ export class DataEaseToolbarUIPlugin extends Plugin {
     touchDependencies(this._injector, [
       [DataEaseToolbarUIController],
       [SheetMenuLayoutController],
+      [ContextMenuLayoutController],
       [DecimalCommandController]
     ])
   }
