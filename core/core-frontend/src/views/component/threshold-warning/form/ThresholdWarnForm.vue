@@ -570,24 +570,23 @@ const setDefaultContent = (thresholdRules?: string) => {
       return acc;
     }, {});
 
-  const stack = [...items];
   const matchFieldList = [];
   const quotoIdMap = {}
-  while (stack.length) {
-    const node = stack.pop();
-    if (node.type === "item") {
-      const fieldId = node.fieldId;
-      const field = fieldMap[fieldId];
-      if (!quotoIdMap[fieldId]) {
-        matchFieldList.push(field);
-        quotoIdMap[fieldId] = true
+  const walk = (nodes) => {
+    nodes.forEach((node) => {
+      if (node.type === "item") {
+        const fieldId = node.fieldId;
+        const field = fieldMap[fieldId];
+        if (!quotoIdMap[fieldId]) {
+          matchFieldList.push(field);
+          quotoIdMap[fieldId] = true
+        }
+      } else {
+        walk(node.subTree.items);
       }
-      
-    } else {
-      const subTree = node.subTree;
-      subTree.items.forEach((kid) => stack.push(kid));
-    }
-  }
+    });
+  };
+  walk(items);
 
   if (matchFieldList.length && !formState.value.msgType) {
     const quota = matchFieldList
