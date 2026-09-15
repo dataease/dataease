@@ -16,6 +16,7 @@ import { computed, ref, watch, type Component } from 'vue'
 import TableBorderLinePreview from './TableBorderLinePreview.vue'
 import {
   TABLE_BORDER_STYLE_OPTIONS,
+  TABLE_BORDER_POSITIONS,
   applyTableBorderPreset,
   clearTableBorders,
   normalizeTableBorderConfig,
@@ -85,6 +86,16 @@ const TABLE_BORDER_ICONS: Record<TableBorderIconName, Component> = {
 const BORDER_ICON_EXTEND = { colorChannel1: '#3370ff' }
 
 const normalizedValue = computed(() => normalizeTableBorderConfig(props.modelValue))
+// 用实际边框组合识别预设，保存后重开也能保持一致的选中状态。
+const activePreset = computed(
+  () =>
+    shortcuts.find(item => {
+      const preset = applyTableBorderPreset(normalizedValue.value, item.preset)
+      return TABLE_BORDER_POSITIONS.every(
+        position => preset[position] === normalizedValue.value[position]
+      )
+    })?.preset
+)
 const borderPopoverVisible = ref(false)
 const borderStylePopoverVisible = ref(false)
 
@@ -154,6 +165,8 @@ const handleStyleChange = (value: TableBorderConfig['style']) => {
           :key="item.preset"
           type="button"
           class="border-action border-shortcut"
+          :class="{ active: activePreset === item.preset }"
+          :aria-pressed="activePreset === item.preset"
           :disabled="disabled"
           :title="item.label"
           :aria-label="item.label"
@@ -168,11 +181,11 @@ const handleStyleChange = (value: TableBorderConfig['style']) => {
           :key="item.position"
           type="button"
           class="border-action border-position"
-          :class="{ active: normalizedValue[item.position] }"
+          :class="{ active: !activePreset && normalizedValue[item.position] }"
           :disabled="disabled"
           :title="item.label"
           :aria-label="item.label"
-          :aria-pressed="normalizedValue[item.position]"
+          :aria-pressed="!activePreset && normalizedValue[item.position]"
           :data-testid="`border-position-${item.position}`"
           @click="handlePosition(item.position)"
         >
@@ -200,6 +213,7 @@ const handleStyleChange = (value: TableBorderConfig['style']) => {
       <div class="border-detail-actions">
         <el-color-picker
           class="border-color-picker"
+          :teleported="false"
           :model-value="normalizedValue.color"
           :disabled="disabled"
           :is-custom="false"
