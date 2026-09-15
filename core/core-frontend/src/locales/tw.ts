@@ -771,7 +771,7 @@ export default {
     reset_success: '重置成功',
     modify_cur_pwd: '修改目前使用者密碼後需要重新登入',
     password_changed_relogin: '密碼變更，請重新登入',
-    unlock_user: '解鎖用戶',
+    unlock_user: '解鎖',
     confirm_unlock: '確定解鎖該用戶嗎？',
     unlock_user_success: '解鎖成功',
     switch_success: '切換成功',
