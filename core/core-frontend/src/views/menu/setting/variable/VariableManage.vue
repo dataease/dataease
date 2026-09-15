@@ -258,6 +258,11 @@ const variableSearch = (resolve, reject, type, data) => {
       name: t('auth.sysParams_type.user_phone'),
       id: 'userPhone',
       root: true
+    },
+    {
+      name: t('auth.sysParams_type.org_name'),
+      id: 'orgName',
+      root: true
     }
   ]
   searchVariableApi({})

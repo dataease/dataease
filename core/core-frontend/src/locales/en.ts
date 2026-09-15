@@ -975,6 +975,7 @@ export default {
       user_label: 'User label',
       user_email: 'Email',
       user_phone: 'Mobile phone',
+      org_name: 'Organization name',
       dept: 'Organization',
       role: 'Role'
     },

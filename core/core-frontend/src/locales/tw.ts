@@ -929,6 +929,7 @@ export default {
       user_label: '使用者標籤',
       user_email: '信箱',
       user_phone: '手機號',
+      org_name: '組織名稱',
       dept: '組織',
       role: '角色'
     },

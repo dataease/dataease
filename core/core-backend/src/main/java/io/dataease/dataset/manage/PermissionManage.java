@@ -270,6 +270,10 @@ public class PermissionManage {
             item.setValue(userEntity.getPhone());
             return true;
         }
+        if (StringUtils.isNotEmpty(userEntity.getOrgName()) && StringUtils.equalsIgnoreCase(itemValue, "${sysParams.orgName}")) {
+            item.setValue(userEntity.getOrgName());
+            return true;
+        }
         String value = handleSysVariable(userEntity, item);
         if (value == null) {
             return false;

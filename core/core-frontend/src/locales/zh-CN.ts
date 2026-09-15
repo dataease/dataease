@@ -943,6 +943,7 @@ export default {
       user_label: '用户标签',
       user_email: '邮箱',
       user_phone: '手机号',
+      org_name: '组织名',
       dept: '组织',
       role: '角色'
     },

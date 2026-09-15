@@ -21,6 +21,9 @@ public class UserFormVO implements Serializable {
     @JsonSerialize(using = ToStringSerializer.class)
     private Long defaultOid;
 
+    @Schema(description = "所属组织名称")
+    private String orgName;
+
     @Schema(description = "账号")
     private String account;
 

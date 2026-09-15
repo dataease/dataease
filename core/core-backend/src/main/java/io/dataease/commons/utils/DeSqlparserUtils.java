@@ -247,7 +247,7 @@ public class DeSqlparserUtils {
     }
 
     private static boolean isParams(String paramId) {
-        if (Arrays.asList("sysParams.userId", "sysParams.userEmail", "sysParams.userName", "sysParams.userPhone").contains(paramId)) {
+        if (Arrays.asList("sysParams.userId", "sysParams.userEmail", "sysParams.userName", "sysParams.userPhone", "sysParams.orgName").contains(paramId)) {
             return true;
         }
         boolean isLong = false;
@@ -646,6 +646,12 @@ public class DeSqlparserUtils {
             }
             if (sysVariableId.equalsIgnoreCase("sysParams.userPhone")) {
                 return buildSysVariableBinding(0, Collections.singletonList(userEntity.getPhone()));
+            }
+            if (sysVariableId.equalsIgnoreCase("sysParams.orgName")) {
+                if (StringUtils.isBlank(userEntity.getOrgName())) {
+                    return null;
+                }
+                return buildSysVariableBinding(0, Collections.singletonList(userEntity.getOrgName()));
             }
             for (SysVariableValueItem variable : userEntity.getVariables()) {
                 if (!variable.isValid()) {
