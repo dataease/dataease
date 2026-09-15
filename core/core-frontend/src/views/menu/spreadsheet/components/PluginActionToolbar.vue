@@ -130,7 +130,6 @@ const handleCut = () => {
   emitter.emit(SPREADSHEET_EVENTS.CUT_PLUGIN_TABLE, payload.value)
   hide()
 }
-
 </script>
 
 <template>
