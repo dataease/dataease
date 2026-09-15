@@ -272,7 +272,7 @@ const createCondition = (): SpreadsheetFilterCondition => {
     timeDefaultType: 'fixed',
     timeDynamicDefault: { offset: { value: 0, unit: 'day', direction: 'before', relativeToCurrent: 'custom' } },
     timeRangeDynamicDefault: {
-      start: { value: 7, unit: 'day', direction: 'before', relativeToCurrent: 'custom' },
+      start: { value: 0, unit: 'day', direction: 'before', relativeToCurrent: 'custom' },
       end: { value: 0, unit: 'day', direction: 'before', relativeToCurrent: 'custom' }
     },
     timeFilterRangeEnabled: false,
