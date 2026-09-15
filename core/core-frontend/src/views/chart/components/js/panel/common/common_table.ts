@@ -2709,6 +2709,16 @@ export function configMergeCells(chart: Chart, options: S2Options, dataConfig: S
     }
     options.mergedCellsInfo = mergedCellsInfo
     options.mergedCell = (sheet, cells, meta) => {
+      // showText 只指定内容来源行，不能用该行的中心代替整个合并区域的中心。
+      // 保留单行内容高度（尤其是图片尺寸），且不修改底层单元格共享的 meta。
+      let top = Infinity
+      let bottom = -Infinity
+      cells.forEach(cell => {
+        const { y, height } = cell.getMeta()
+        top = Math.min(top, y)
+        bottom = Math.max(bottom, y + height)
+      })
+      meta = { ...meta, y: (top + bottom - meta.height) / 2 }
       if (showIndex && meta.colIndex === 0) {
         meta.fieldValue = getRowIndex(mergedCellsInfo, meta)
       }
