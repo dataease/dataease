@@ -116,7 +116,13 @@ export interface ITarget {
   datasourceId: string
   targetProperty: string
   fieldMappingVersion?: number
-  dsList?: []
+  dsList?: {
+    id: string
+    name: string
+    unsupportedKeyFieldTypes?: string[]
+    fieldIndexType?: string
+    supportedIndexFieldTypes?: string[]
+  }[]
   multipleSelection?: ITableField[]
   property: ITargetProperty
   incrementSync: string
@@ -131,6 +137,8 @@ export interface ITarget {
 export type SinkKeyPolicy = 'OPTIONAL' | 'REQUIRED' | 'PROVIDER_GENERATED'
 
 export class ITaskInfoRes {
+  editable?: boolean
+
   id: string
 
   name: string

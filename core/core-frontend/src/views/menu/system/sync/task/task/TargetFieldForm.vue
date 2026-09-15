@@ -14,8 +14,10 @@ const fieldForm = ref<FormInstance>();
 const props = withDefaults(
   defineProps<{
     modelValue: ITaskInfoRes;
+    readOnly?: boolean;
   }>(),
   {
+    readOnly: false,
     modelValue: () => {
       return {} as ITaskInfoRes;
     }
@@ -114,6 +116,65 @@ const fieldMappingMessageType = computed(() =>
   state.form.fieldType?.trim().toUpperCase() === "UNKNOWN" ? "error" : "warning"
 );
 
+const normalizeFieldType = (fieldType?: string) =>
+  fieldType?.split("(")[0].trim().toUpperCase() || "";
+
+const indexDatasource = computed(() =>
+  form.value.target.dsList?.find(ds => ds.id === form.value.target.datasourceId)
+);
+const indexLabel = computed(() => indexDatasource.value?.fieldIndexType
+  ? `${indexDatasource.value.fieldIndexType} ${t("sync_task.field_index")}`
+  : t("sync_task.field_index"));
+const isIndexFieldDisabled = (field: ITableField) =>
+  !indexDatasource.value?.fieldIndexType ||
+  !indexDatasource.value.supportedIndexFieldTypes?.some(type =>
+    normalizeFieldType(type) === normalizeFieldType(field.fieldType)
+  );
+const indexDisabledReason = (field: ITableField) => {
+  if (!indexDatasource.value?.supportedIndexFieldTypes) return t("sync_task.index_capability_unavailable");
+  if (!indexDatasource.value.fieldIndexType) return t("sync_task.index_not_implemented");
+  return isIndexFieldDisabled(field) ? t("sync_task.index_type_unsupported") : "";
+};
+
+const unsupportedKeyFieldTypes = computed(() =>
+  form.value.target.dsList?.find(ds => ds.id === form.value.target.datasourceId)
+    ?.unsupportedKeyFieldTypes
+);
+const isKeyFieldDisabled = (field: ITableField) =>
+  !unsupportedKeyFieldTypes.value ||
+  unsupportedKeyFieldTypes.value.some(type =>
+    normalizeFieldType(type) === normalizeFieldType(field.fieldType)
+  );
+
+// 能力已加载时，允许主动取消历史不兼容勾选，但不允许重新选中。
+const isFieldOptionDisabled = (field: ITableField, option: "fieldPk" | "fieldIndex") => {
+  if (props.readOnly) return true;
+  const capability = option === "fieldPk"
+    ? unsupportedKeyFieldTypes.value
+    : indexDatasource.value?.supportedIndexFieldTypes;
+  const unsupported = option === "fieldPk" ? isKeyFieldDisabled(field) : isIndexFieldDisabled(field);
+  return !capability || (unsupported && !field[option]);
+};
+
+const fieldOptionHint = (field: ITableField, option: "fieldPk" | "fieldIndex") => {
+  const unsupported = option === "fieldPk" ? isKeyFieldDisabled(field) : isIndexFieldDisabled(field);
+  if (unsupported && field[option] && !isFieldOptionDisabled(field, option)) {
+    return t("sync_task.unsupported_option_uncheck");
+  }
+  if (option === "fieldIndex") return indexDisabledReason(field);
+  if (!unsupportedKeyFieldTypes.value) return t("sync_task.key_policy_load_failed");
+  return unsupported ? t("sync_task.key_type_unsupported") : "";
+};
+
+// 仅响应用户选择类型/源字段，打开历史字段或刷新能力信息时保留原始勾选。
+const clearUnsupportedFieldOptions = () => {
+  if (props.readOnly) return;
+  if (indexDatasource.value?.supportedIndexFieldTypes && isIndexFieldDisabled(state.form)) state.form.fieldIndex = false;
+  if (unsupportedKeyFieldTypes.value && isKeyFieldDisabled(state.form)) {
+    state.form.fieldPk = false;
+  }
+};
+
 /**
  * 数组类型使用 PostgreSQL 原生写法展示，保存值仍使用稳定的内部标识
  */
@@ -185,6 +246,7 @@ const changeFieldSource = (val: string) => {
       state.form.id = editId.value;
     }
     state.form.fieldSource = val;
+    clearUnsupportedFieldOptions();
   }
 };
 
@@ -301,31 +363,6 @@ const showFieldPrecision = (fieldType: String) => {
   return false;
 };
 
-/**
- * 支持索引的字段
- */
-const isSupport = () => {
-  return !includes(
-    [
-      "STRING",
-      "TINYINT",
-      "SMALLINT",
-      "INT",
-      "BIGINT",
-      "CHAR",
-      "VARCHAR",
-      "DATE",
-      "DATETIME",
-      "DATEV2",
-      "DATETIMEV2",
-      "LARGEINT",
-      "DECIMAL",
-      "DECIMALV3",
-      "BOOL"
-    ],
-    state.form.fieldType
-  );
-};
 const targetFieldFormLoading = ref(false);
 defineExpose({
   showDialog,
@@ -389,6 +426,7 @@ defineExpose({
             />
             <el-select
               v-model="state.form.fieldType"
+              @change="clearUnsupportedFieldOptions"
               :filterable="true"
               :placeholder="t('sync_task.please_choose')"
             >
@@ -438,13 +476,19 @@ defineExpose({
             />
           </el-form-item>
           <el-form-item prop="fieldPk">
-            <el-checkbox v-model="state.form.fieldPk" :label="t('sync_task.field_key')" />
+            <el-checkbox
+              v-model="state.form.fieldPk"
+              :disabled="isFieldOptionDisabled(state.form, 'fieldPk')"
+              :title="fieldOptionHint(state.form, 'fieldPk')"
+              :label="t('sync_task.field_key')"
+            />
           </el-form-item>
           <el-form-item prop="fieldIndex">
             <el-checkbox
               v-model="state.form.fieldIndex"
-              :label="t('sync_task.field_index')"
-              :disabled="isSupport()"
+              :label="indexLabel"
+              :disabled="isFieldOptionDisabled(state.form, 'fieldIndex')"
+              :title="fieldOptionHint(state.form, 'fieldIndex')"
             />
           </el-form-item>
         </el-form>

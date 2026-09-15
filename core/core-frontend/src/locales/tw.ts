@@ -4073,6 +4073,11 @@ export default {
     sync_status_distribution: '同步狀態分佈'
   },
   sync_task: {
+    index_capability_unavailable: '索引能力尚未載入，請重新選擇目標資料庫',
+    index_not_implemented: '目標插件尚未實作此索引功能',
+    index_type_unsupported: '目前欄位類型不支援此索引',
+    key_type_unsupported: '目前欄位類型不支援作為 Key',
+    unsupported_option_uncheck: '目前選項不受支援，可取消勾選；取消後不可重新勾選',
     title: '任務管理',
     task_list: '任務清單',
     log_list: '任務日誌',

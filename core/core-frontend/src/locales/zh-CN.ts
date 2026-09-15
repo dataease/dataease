@@ -4090,6 +4090,11 @@ export default {
     sync_status_distribution: '同步状态分布'
   },
   sync_task: {
+    index_capability_unavailable: '索引能力尚未加载，请重新选择目标数据库',
+    index_not_implemented: '目标插件尚未实现此索引功能',
+    index_type_unsupported: '当前字段类型不支持此索引',
+    key_type_unsupported: '当前字段类型不支持作为 Key',
+    unsupported_option_uncheck: '当前选项不受支持，可取消勾选；取消后不可重新勾选',
     title: '任务管理',
     task_list: '任务列表',
     log_list: '任务日志',

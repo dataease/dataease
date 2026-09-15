@@ -4212,6 +4212,13 @@ export default {
     sync_status_distribution: 'Sync status distribution'
   },
   sync_task: {
+    index_capability_unavailable:
+      'Index capability is unavailable; select the target database again',
+    index_not_implemented: 'The target plugin has not implemented this index feature',
+    index_type_unsupported: 'This field type does not support this index',
+    key_type_unsupported: 'This field type cannot be used as a Key',
+    unsupported_option_uncheck:
+      'This option is unsupported. You can uncheck it, but cannot select it again.',
     title: 'Task Management',
     task_list: 'Task list',
     log_list: 'Task log',
