@@ -642,6 +642,8 @@ export const DEFAULT_TITLE_STYLE_DARK = {
 }
 
 export const DEFAULT_LEGEND_STYLE_BASE: ChartLegendStyle = {
+  displayMode: 'pagination',
+  tileOverflow: 'scroll',
   show: true,
   hPosition: 'center',
   vPosition: 'bottom',
@@ -656,6 +658,8 @@ export const DEFAULT_LEGEND_STYLE_BASE: ChartLegendStyle = {
 }
 
 export const DEFAULT_LEGEND_STYLE: ChartLegendStyle = {
+  displayMode: 'pagination',
+  tileOverflow: 'scroll',
   show: true,
   hPosition: 'center',
   vPosition: 'bottom',

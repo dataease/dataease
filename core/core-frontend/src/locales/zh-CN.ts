@@ -1229,6 +1229,13 @@ export default {
     load_data: '加载数据'
   },
   chart: {
+    legend_display_mode: '显示模式',
+    legend_pagination: '分页',
+    legend_tile: '平铺',
+    legend_tile_overflow: '平铺布局',
+    legend_scroll: '滚动显示',
+    legend_adaptive: '自适应占位',
+
     self: '自己',
     total_row: '整行',
     custom: '自定义',

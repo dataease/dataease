@@ -94,6 +94,9 @@ declare interface ChartTextStyle {
  * 图例设置
  */
 declare interface ChartLegendStyle {
+  displayMode?: 'pagination' | 'tile'
+  tileOverflow?: 'scroll' | 'adaptive'
+
   /**
    * 显隐
    */

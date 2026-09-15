@@ -1264,6 +1264,13 @@ export default {
     load_data: 'Load Data'
   },
   chart: {
+    legend_display_mode: 'Display mode',
+    legend_pagination: 'Pagination',
+    legend_tile: 'Tile',
+    legend_tile_overflow: 'Tile layout',
+    legend_scroll: 'Scroll',
+    legend_adaptive: 'Fit content',
+
     self: 'Self',
     total_row: 'Entire Row',
     custom: 'Custom',

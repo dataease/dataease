@@ -1211,6 +1211,13 @@ export default {
     load_data: '載入資料'
   },
   chart: {
+    legend_display_mode: '顯示模式',
+    legend_pagination: '分頁',
+    legend_tile: '平鋪',
+    legend_tile_overflow: '平鋪佈局',
+    legend_scroll: '捲動顯示',
+    legend_adaptive: '自適應佔位',
+
     self: '自己',
     total_row: '整行',
     custom: '自定義',
