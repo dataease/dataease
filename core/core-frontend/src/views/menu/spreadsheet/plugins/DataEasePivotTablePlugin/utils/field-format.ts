@@ -4,6 +4,7 @@ import type {
   FieldFormatterConfig,
   FieldItemData
 } from '../../../types/plugin'
+import Decimal from 'decimal.js'
 import { getLocale } from '@/utils/utils'
 
 const EXCEL_EPOCH_UTC = Date.UTC(1899, 11, 30)
@@ -37,13 +38,10 @@ const getDecimalPattern = (
   unit = 1
 ) => {
   if (type === 'auto') {
-    const displayedValue = typeof value === 'number' ? value / unit : value
-    if (
-      typeof displayedValue === 'number' &&
-      Number.isFinite(displayedValue) &&
-      Number.isInteger(displayedValue)
-    ) {
-      return ''
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      // 避免多余的小数占位触发格式库浮点尾差，按实际精度生成自动格式。
+      const count = Math.min(10, new Decimal(value).dividedBy(unit).decimalPlaces())
+      return count > 0 ? `.${'#'.repeat(count)}` : ''
     }
     return '.##########'
   }
