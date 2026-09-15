@@ -1,5 +1,10 @@
 <script lang="ts" setup>
 import {
+  applyG2TiledLegend,
+  installG2TiledLegendStateAdapter,
+  replayG2TiledLegendSelection
+} from '@/views/chart/components/js/panel/types/impl/g2-legend-tile'
+import {
   computed,
   nextTick,
   onBeforeUnmount,
@@ -579,12 +584,15 @@ const renderChart = async (view, callback?) => {
 let myChart = null
 let g2Timer: number
 let g2SliderTouchCleanup: (() => void) | undefined
+let g2TiledLegendCleanup: (() => void) | undefined
 let g2LegendPaginationCleanup: (() => void) | undefined
 const clearG2SliderTouchAdapter = () => {
   g2SliderTouchCleanup?.()
   g2SliderTouchCleanup = undefined
 }
 const clearG2LegendPaginationAdapter = () => {
+  g2TiledLegendCleanup?.()
+  g2TiledLegendCleanup = undefined
   g2LegendPaginationCleanup?.()
   g2LegendPaginationCleanup = undefined
 }
@@ -676,6 +684,22 @@ const renderG2 = async (chart, chartView: G2ChartView<any, any>) => {
       // 在这里统一应用性能策略，可以避免大数据首次进入页面时创建海量标签并执行昂贵动画
       // 优化后的 options 会保留在当前实例中，刷新和容器调整触发 forceFit 时也会直接复用
       chartView.optimizeLargeData(chartInstance)
+      const legendContainer = document.getElementById(containerId)
+      chartInstance.options(
+        applyG2TiledLegend(
+          chartInstance.options(),
+          chart.customStyle?.legend,
+          legendContainer?.clientWidth || 1,
+          legendContainer?.clientHeight || 1,
+          (event, payload) => chartInstance.emit(event, payload),
+          !isDashboard() || dvMainStore.canvasStyleData?.dashboard?.themeColor === 'dark'
+            ? 'dark'
+            : 'light'
+        )
+      )
+      if (chart.customStyle?.legend?.displayMode === 'tile') {
+        g2TiledLegendCleanup = installG2TiledLegendStateAdapter(chartInstance)
+      }
       // 等待 G2 完成包含轴边界校正的最终布局
       await chartInstance?.render()
       installG2SvgCoordinateScaleAdapter(chartInstance)
@@ -1173,9 +1197,24 @@ onMounted(() => {
             }
 
             // forceFit 完成后恢复 G2 联动选中态
+            const legendContainer = document.getElementById(containerId)
+            chartInstance.options(
+              applyG2TiledLegend(
+                chartInstance.options(),
+                parseJson(view.value.customStyle)?.legend,
+                legendContainer?.clientWidth || 1,
+                legendContainer?.clientHeight || 1,
+                (event, payload) => chartInstance.emit(event, payload),
+                !isDashboard() || dvMainStore.canvasStyleData?.dashboard?.themeColor === 'dark'
+                  ? 'dark'
+                  : 'light'
+              )
+            )
             await chartInstance.forceFit()
-
             if (!chartComponentUnmounted && chartInstance === myChart) {
+              replayG2TiledLegendSelection(chartInstance.options(), (event, payload) =>
+                chartInstance.emit(event, payload)
+              )
               replayLinkageActive()
             }
           })
@@ -1322,6 +1361,24 @@ onBeforeUnmount(() => {
 </style>
 
 <style lang="less">
+// Fallback for browsers without the standard scrollbar-color/scrollbar-width properties.
+.dataease-tiled-legend {
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--legend-scroll-thumb);
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+  &::-webkit-scrollbar-corner {
+    background-color: transparent;
+  }
+}
+
 div[id^='G2-TOOLTIP-WRAPPER-'] .g2-tooltip {
   // 只收紧垂直留白，水平内边距保持 G2 原有值
   padding-top: 8px !important;
