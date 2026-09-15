@@ -94,7 +94,7 @@ const conditionsStyle = computed(() => {
     flexDirection: horizontal ? 'row' : 'column',
     justifyContent: horizontal ? align : 'flex-start',
     alignItems: horizontal ? 'flex-start' : align,
-    gap: `${base?.gap ?? 16}px`
+    gap: `${Math.min(600, Math.max(0, base?.gap ?? 16))}px`
   }
 })
 const conditionStyle = computed(() => ({
