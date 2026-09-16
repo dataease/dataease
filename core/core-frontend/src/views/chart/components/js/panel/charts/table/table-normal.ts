@@ -18,6 +18,7 @@ import {
 import { S2ChartView, S2DrawOptions } from '@/views/chart/components/js/panel/types/impl/s2'
 import { parseJson } from '@/views/chart/components/js/util'
 import {
+  Frame,
   type LayoutResult,
   S2DataConfig,
   S2Event,
@@ -329,19 +330,26 @@ export class TableNormal extends S2ChartView<TableSheet> {
           newChart.store.set('lastLayoutResult', undefined)
           return
         }
-        const containerWidth = containerDom.offsetWidth - 1
-        const scale = containerWidth / ev.colsHierarchy.width
-        if (scale <= 1) {
-          // 图库计算的布局宽度已经大于等于容器宽度，不需要再扩大，但是需要处理非整数宽度值，不然会出现透明细线
-          ev.colLeafNodes.reduce((p, n) => {
-            n.width = Math.round(n.width)
-            n.x = p
-            return p + n.width
-          }, 0)
-          return
-        }
+        // 与 S2 画布和左侧边框使用同一宽度口径，避免小数尺寸造成横向溢出
+        const borderWidth = Frame.getVerticalBorderWidth(newChart)
+        const availableWidth = Math.max(0, Math.floor(newChart.options.width - borderWidth))
+        const originalTotalWidth = ev.colLeafNodes.reduce((total, node) => total + node.width, 0)
+        const shouldExpand = originalTotalWidth > 0 && originalTotalWidth < availableWidth
+        let originalWidthSum = 0
+        let assignedWidth = 0
+        ev.colLeafNodes.forEach(node => {
+          if (shouldExpand) {
+            originalWidthSum += node.width
+            // 按累计边界取整，保证列宽为整数且总宽恰好填满可用区域
+            const nextWidth = Math.round((originalWidthSum / originalTotalWidth) * availableWidth)
+            node.width = nextWidth - assignedWidth
+            assignedWidth = nextWidth
+          } else {
+            node.width = Math.round(node.width)
+          }
+        })
+        // 叶子列宽定稿后统一同步坐标、分组宽度和布局总宽
         const totalWidth = ev.colLeafNodes.reduce((p, n) => {
-          n.width = Math.round(n.width * scale)
           n.x = p
           return p + n.width
         }, 0)
@@ -352,12 +360,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
             n.x = getStartPosition(n)
           }
         })
-        // 从最后一列减掉
-        const lastNode = ev.colLeafNodes[ev.colLeafNodes.length - 1]
-        if (totalWidth > containerWidth) {
-          lastNode.width = Math.floor(lastNode.width - (totalWidth - containerWidth))
-        }
-        if (lastNode) ev.colsHierarchy.width = lastNode?.x + lastNode.width
+        ev.colsHierarchy.width = totalWidth
       })
     }
     // click
