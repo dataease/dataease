@@ -1,4 +1,5 @@
 import {
+  Frame,
   type LayoutResult,
   S2DataConfig,
   S2Event,
@@ -405,46 +406,56 @@ export class TableInfo extends S2ChartView<TableSheet> {
           newChart.store.set('lastLayoutResult', undefined)
           return
         }
-        // 第一次渲染初始化，把图片字段固定为 120 进行计算
-        const urlFields = fields
-          .filter(field => field.deType === 7 && !axisMap[field.dataeaseName]?.hide)
-          .map(f => f.dataeaseName)
-        const totalWidthWithImg = ev.colLeafNodes.reduce((p, n) => {
-          return p + (urlFields.includes(n.field) ? 120 : n.width)
-        }, 0)
-        const containerWidth = containerDom.offsetWidth - 1
-        if (containerWidth <= totalWidthWithImg) {
-          // 图库计算的布局宽度已经大于等于容器宽度，不需要再扩大，但是需要处理非整数宽度值，不然会出现透明细线
-          ev.colLeafNodes.reduce((p, n) => {
-            n.width = Math.round(n.width)
-            n.x = p
-            return p + n.width
-          }, 0)
-          return
+        // 自动铺满时图片列固定为 120，按实际展示的叶子列统计剩余宽度。
+        const urlFields = new Set(
+          fields
+            .filter(field => field.deType === 7 && !axisMap[field.dataeaseName]?.hide)
+            .map(field => field.dataeaseName)
+        )
+        let fixedWidth = 0
+        let scalableWidth = 0
+        ev.colLeafNodes.forEach(node => {
+          if (urlFields.has(node.field)) {
+            fixedWidth += 120
+          } else {
+            scalableWidth += node.width
+          }
+        })
+        // 与 S2 画布及左边框占位保持一致，避免小数尺寸造成横向溢出。
+        const borderWidth = Frame.getVerticalBorderWidth(newChart)
+        const availableWidth = Math.max(0, Math.floor(newChart.options.width - borderWidth))
+        if (fixedWidth + scalableWidth < availableWidth && scalableWidth > 0) {
+          const restWidth = availableWidth - fixedWidth
+          let originalWidth = 0
+          let allocatedWidth = 0
+          ev.colLeafNodes.forEach(node => {
+            if (urlFields.has(node.field)) {
+              node.width = 120
+              return
+            }
+            // 对累计边界取整，避免误差集中到尾列，也不占用图片列的固定宽度。
+            originalWidth += node.width
+            const nextWidth = Math.round((originalWidth / scalableWidth) * restWidth)
+            node.width = nextWidth - allocatedWidth
+            allocatedWidth = nextWidth
+          })
+        } else {
+          ev.colLeafNodes.forEach(node => {
+            node.width = Math.round(node.width)
+          })
         }
-        // 图片字段固定 120, 剩余宽度按比例均摊到其他字段进行扩大
-        const totalWidthWithoutImg = ev.colLeafNodes.reduce((p, n) => {
-          return p + (urlFields.includes(n.field) ? 0 : n.width)
+        // 叶子列宽确定后再同步坐标、分组和总宽，确保边框与裁剪范围一致。
+        const totalWidth = ev.colLeafNodes.reduce((width, node) => {
+          node.x = width
+          return width + node.width
         }, 0)
-        const restWidth = containerWidth - urlFields.length * 120
-        const scale = restWidth / totalWidthWithoutImg
-        const totalWidth = ev.colLeafNodes.reduce((p, n) => {
-          n.width = urlFields.includes(n.field) ? 120 : Math.round(n.width * scale)
-          n.x = p
-          return p + n.width
-        }, 0)
-        // 处理分组的单元格，宽度为所有叶子节点之和
         ev.colNodes.forEach(n => {
           if (n.colIndex === -1) {
             n.width = calcTreeWidth(n)
             n.x = getStartPosition(n)
           }
         })
-        const lastNode = ev.colLeafNodes[ev.colLeafNodes.length - 1]
-        if (totalWidth > containerWidth) {
-          lastNode.width = Math.floor(lastNode.width - (totalWidth - containerWidth))
-        }
-        ev.colsHierarchy.width = lastNode?.x + lastNode?.width
+        ev.colsHierarchy.width = totalWidth
       })
     }
     // click
