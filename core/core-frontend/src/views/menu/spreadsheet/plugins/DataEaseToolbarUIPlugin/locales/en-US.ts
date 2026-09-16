@@ -15,7 +15,7 @@ const sheetsUIPermissionDialog = SheetsUIEnUS['sheets-ui'].permission.dialog
 const numberFormatInfo = SheetsNumfmtUIEnUS['sheets-numfmt-ui'].info
 const sheetsMergeConfirm = SheetsEnUS.sheets.merge.confirm
 
-export const DataEaseToolbarUIEnUS = createUniverLocaleCompatibilityPatch({
+const compatibilityPatch = createUniverLocaleCompatibilityPatch({
   officialLocales: [
     DataValidationEnUS,
     SheetsDataValidationEnUS,
@@ -38,8 +38,17 @@ export const DataEaseToolbarUIEnUS = createUniverLocaleCompatibilityPatch({
     },
     filterConfirm: {
       error: 'Cannot perform this operation',
-      notAllowedToInsertRange: 'This operation is not allowed because the range contains filtered rows.'
+      notAllowedToInsertRange:
+        'This operation is not allowed because the range contains filtered rows.'
     },
     ribbonMenu: 'Ribbon menu'
   }
 })
+
+export const DataEaseToolbarUIEnUS = {
+  ...compatibilityPatch,
+  'dataease-conditional-formatting': {
+    colorScaleTwoValues: 'Color scale values must satisfy: minimum < maximum',
+    colorScaleThreeValues: 'Color scale values must satisfy: minimum < midpoint < maximum'
+  }
+}
