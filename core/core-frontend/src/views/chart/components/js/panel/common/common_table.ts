@@ -755,14 +755,11 @@ export function getConditions(
             targets.push(SERIES_NUMBER_FIELD)
           }
         } else if (rule.target === 'custom' && rule.targetFieldId) {
-          const targetName = resolveDisplayFieldName(
-            fieldIdToName[rule.targetFieldId],
-            drillFieldMap
-          )
+          const targetName = fieldIdToName[rule.targetFieldId]
           if (targetName) targets = [targetName]
         } else {
-          // 兼容历史配置，缺少 target 时仍作用于当前字段
-          targets = [resolveDisplayFieldName(fieldItem.field.dataeaseName, drillFieldMap)]
+          // 兼容历史配置，缺少 target 时仍作用于规则所属字段
+          targets = [fieldItem.field.dataeaseName]
         }
 
         new Set(targets).forEach(targetName => {
