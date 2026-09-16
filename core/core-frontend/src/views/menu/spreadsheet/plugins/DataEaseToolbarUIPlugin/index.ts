@@ -8,6 +8,7 @@ import { FreezeCommandController } from './controllers/freeze-command.controller
 import { FormatPainterCursorController } from './controllers/format-painter-cursor.controller'
 import { IconSetValueController } from './controllers/icon-set-value.controller'
 import { DataValidationDraftController } from './controllers/data-validation-draft.controller'
+import { TableFilterConflictController } from './controllers/table-filter-conflict.controller'
 import './styles/toolbar.less'
 
 export const DATAEASE_TOOLBAR_UI_PLUGIN = 'DATAEASE_TOOLBAR_UI_PLUGIN'
@@ -29,7 +30,8 @@ export class DataEaseToolbarUIPlugin extends Plugin {
       [FreezeCommandController],
       [FormatPainterCursorController],
       [IconSetValueController],
-      [DataValidationDraftController]
+      [DataValidationDraftController],
+      [TableFilterConflictController]
     ]
 
     dependencies.forEach(dependency => this._injector.add(dependency))
@@ -44,7 +46,8 @@ export class DataEaseToolbarUIPlugin extends Plugin {
       [FreezeCommandController],
       [FormatPainterCursorController],
       [IconSetValueController],
-      [DataValidationDraftController]
+      [DataValidationDraftController],
+      [TableFilterConflictController]
     ])
   }
 }
