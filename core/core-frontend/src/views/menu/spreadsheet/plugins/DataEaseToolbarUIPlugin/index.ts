@@ -4,6 +4,7 @@ import { DataEaseToolbarUIController } from './controllers/toolbar-ui.controller
 import { SheetMenuLayoutController } from './controllers/sheet-menu-layout.controller'
 import { DecimalCommandController } from './controllers/decimal-command.controller'
 import { ContextMenuLayoutController } from './controllers/context-menu-layout.controller'
+import { FreezeCommandController } from './controllers/freeze-command.controller'
 import './styles/toolbar.less'
 
 export const DATAEASE_TOOLBAR_UI_PLUGIN = 'DATAEASE_TOOLBAR_UI_PLUGIN'
@@ -21,7 +22,8 @@ export class DataEaseToolbarUIPlugin extends Plugin {
       [DataEaseToolbarUIController],
       [SheetMenuLayoutController],
       [ContextMenuLayoutController],
-      [DecimalCommandController]
+      [DecimalCommandController],
+      [FreezeCommandController]
     ]
 
     dependencies.forEach(dependency => this._injector.add(dependency))
@@ -32,7 +34,8 @@ export class DataEaseToolbarUIPlugin extends Plugin {
       [DataEaseToolbarUIController],
       [SheetMenuLayoutController],
       [ContextMenuLayoutController],
-      [DecimalCommandController]
+      [DecimalCommandController],
+      [FreezeCommandController]
     ])
   }
 }
