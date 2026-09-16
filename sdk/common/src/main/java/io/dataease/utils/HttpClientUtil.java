@@ -24,6 +24,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -732,13 +733,62 @@ public class HttpClientUtil {
             }
             EntityBuilder entityBuilder = EntityBuilder.create();
             entityBuilder.setText(body);
-            entityBuilder.setContentType(ContentType.create(contentType, java.nio.charset.StandardCharsets.UTF_8));
+            entityBuilder.setContentType(ContentType.parse(contentType).withCharset(java.nio.charset.StandardCharsets.UTF_8));
             httpPost.setEntity(entityBuilder.build());
             HttpResponse response = httpClient.execute(httpPost);
             return getResponseStr(response, config);
         } catch (Exception e) {
             logger.error("HttpClient POST raw body failed", e);
             throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient POST raw body failed: " + e.getMessage());
+        } finally {
+            try {
+                if (httpClient != null) {
+                    httpClient.close();
+                }
+            } catch (Exception e) {
+                logger.error("HttpClient关闭连接失败", e);
+            }
+        }
+    }
+
+    private static CloseableHttpClient buildRedirectingHttpClient(boolean ssl) throws Exception {
+        HttpClientBuilder builder = HttpClientBuilder.create();
+        if (ssl) {
+            SSLContextBuilder sslContextBuilder = new SSLContextBuilder();
+            sslContextBuilder.loadTrustMaterial(null, (X509Certificate[] x509Certificates, String s) -> true);
+            SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(sslContextBuilder.build(),
+                    new String[]{"TLSv1.1", "TLSv1.2", "SSLv3"}, null, NoopHostnameVerifier.INSTANCE);
+            Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
+                    .register("http", new PlainConnectionSocketFactory())
+                    .register("https", socketFactory).build();
+            builder.setConnectionManager(new PoolingHttpClientConnectionManager(registry));
+        }
+        builder.setRedirectStrategy(new DefaultRedirectStrategy(new String[]{"GET", "HEAD", "POST", "PUT", "DELETE"}));
+        return builder.build();
+    }
+
+    public static String putRawBody(String url, String contentType, String body, boolean ssl, HttpClientConfig config) {
+        CloseableHttpClient httpClient = null;
+        try {
+            httpClient = buildRedirectingHttpClient(ssl);
+            HttpPut httpPut = new HttpPut(url);
+            if (ObjectUtils.isEmpty(config)) {
+                config = new HttpClientConfig();
+            }
+            httpPut.setConfig(config.buildRequestConfig());
+            Map<String, String> header = config.getHeader();
+            for (String key : header.keySet()) {
+                httpPut.addHeader(key, header.get(key));
+            }
+            EntityBuilder entityBuilder = EntityBuilder.create();
+            entityBuilder.setText(body);
+            entityBuilder.setContentType(ContentType.parse(contentType).withCharset(java.nio.charset.StandardCharsets.UTF_8));
+            httpPut.setEntity(entityBuilder.build());
+            HttpResponse response = httpClient.execute(httpPut);
+            return getResponseStr(response, config);
+        } catch (Exception e) {
+            logger.error("HttpClient PUT raw body failed", e);
+            throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient PUT raw body failed: " + e.getMessage());
         } finally {
             try {
                 if (httpClient != null) {

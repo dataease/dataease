@@ -43,6 +43,9 @@ public class EngineServer implements EngineApi {
             case "mysql":
                 datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), Mysql.class)).toString());
                 break;
+            case "StarRocks":
+                datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), StarRocks.class)).toString());
+                break;
             case "h2":
                 datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), H2.class)).toString());
                 break;
@@ -77,11 +80,14 @@ public class EngineServer implements EngineApi {
             coreDeEngineRepository.saveAndFlush(coreDeEngine);
         }
         commonThreadPool.addTask(() -> {
+            CoreDeEngine ds = coreDeEngineRepository.findById(coreDeEngine.getId()).orElse(null);
             try {
                 calciteProvider.update(datasourceDTO);
             } catch (Exception e) {
-                CoreDeEngine ds = coreDeEngineRepository.findById(coreDeEngine.getId()).orElse(null);
+                LogUtil.error("Failed to init engine: " + e.getMessage());
                 ds.setStatus("Error");
+            } finally {
+                ds.setStatus("success");
                 coreDeEngineRepository.saveAndFlush(ds);
             }
         });
@@ -92,12 +98,12 @@ public class EngineServer implements EngineApi {
         CoreDeEngine coreDeEngine = new CoreDeEngine();
         BeanUtils.copyBean(coreDeEngine, datasourceDTO);
         coreDeEngine.setConfiguration(new String(Base64.getDecoder().decode(coreDeEngine.getConfiguration())));
-        engineManage.validate(coreDeEngine);
+        engineManage.validate(coreDeEngine, false);
     }
 
     @Override
     public void validateById(Long id) throws Exception {
-        engineManage.validate(coreDeEngineRepository.findById(id).orElse(null));
+        engineManage.validate(coreDeEngineRepository.findById(id).orElse(null), true);
     }
 
     @Override

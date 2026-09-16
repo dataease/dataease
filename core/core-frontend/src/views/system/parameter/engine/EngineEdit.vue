@@ -28,6 +28,7 @@ const engineTypes = computed(() => {
     { type: 'pg', name: 'PostgreSQL' },
     { type: 'oracle', name: 'Oracle' },
     { type: 'mysql', name: 'MySQL' },
+    { type: 'StarRocks', name: 'StarRocks' },
     { type: 'sqlServer', name: 'SQL Server' },
     { type: 'kingbase', name: 'Kingbase' },
     { type: 'h2', name: 'H2' }
@@ -44,6 +45,7 @@ const engineTypeOptions = computed(() => {
   }
   return engineTypes.value.filter(item => item.type !== 'h2')
 })
+const feLabelPrefix = computed(() => (nodeInfo.type === 'StarRocks' ? 'FE ' : ''))
 const loadDsPlugin = () => {
   if (!appStore.getXpackValid) return
   request.get({ url: '/xpackComponent/dsPlugins' }).then(res => {
@@ -117,6 +119,13 @@ const configRules = {
       trigger: 'blur'
     }
   ],
+  'configuration.fePort': [
+    {
+      required: true,
+      message: t('common.inputText') + 'FE ' + t('datasource.http_port'),
+      trigger: 'blur'
+    }
+  ],
   'configuration.initialPoolSize': [
     {
       required: true,
@@ -180,6 +189,9 @@ const defaultInfo = {
     host: '',
     jdbc: '',
     port: 8081,
+    fePort: 8030,
+    beIp: '',
+    bePort: 8040,
     dataBase: '',
     schema: '',
     connectionType: 'sid',
@@ -198,6 +210,14 @@ const defaultInfo = {
 const nodeInfo = reactive(cloneDeep(defaultInfo))
 const handleTypeChange = () => {
   nodeInfo.configuration = cloneDeep(defaultInfo.configuration)
+  if (nodeInfo.type === 'StarRocks') {
+    nodeInfo.configuration.port = 9030
+    nodeInfo.configuration.fePort = 8030
+    nodeInfo.configuration.beIp = ''
+    nodeInfo.configuration.bePort = 8040
+    nodeInfo.configuration.extraParams =
+      'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
+  }
   schemas.value = []
   showSchema.value = false
   basicForm.value?.clearValidate()
@@ -386,18 +406,18 @@ defineExpose({
         />
       </el-form-item>
       <el-form-item
-        :label="t('datasource.host')"
+        :label="feLabelPrefix + t('datasource.host')"
         prop="configuration.host"
         v-if="nodeInfo.type !== 'h2'"
       >
         <el-input
           v-model="nodeInfo.configuration.host"
-          :placeholder="t('datasource._ip_address')"
+          :placeholder="feLabelPrefix + t('datasource._ip_address')"
           autocomplete="off"
         />
       </el-form-item>
       <el-form-item
-        :label="t('datasource.port')"
+        :label="feLabelPrefix + t('datasource.port')"
         prop="configuration.port"
         v-if="nodeInfo.type !== 'h2'"
       >
@@ -407,7 +427,44 @@ defineExpose({
           step-strictly
           class="text-left"
           :min="0"
-          :placeholder="t('common.inputText') + t('datasource.port')"
+          :placeholder="t('common.inputText') + feLabelPrefix + t('datasource.port')"
+          controls-position="right"
+          type="number"
+        />
+      </el-form-item>
+      <el-form-item
+        :label="'FE ' + t('datasource.http_port')"
+        prop="configuration.fePort"
+        v-if="nodeInfo.type === 'StarRocks'"
+      >
+        <el-input-number
+          v-model="nodeInfo.configuration.fePort"
+          autocomplete="off"
+          step-strictly
+          class="text-left"
+          :min="1"
+          :max="65535"
+          :placeholder="t('common.inputText') + 'FE ' + t('datasource.http_port') + '（8030）'"
+          controls-position="right"
+          type="number"
+        />
+      </el-form-item>
+      <el-form-item :label="'BE ' + t('datasource.host')" v-if="nodeInfo.type === 'StarRocks'">
+        <el-input
+          v-model="nodeInfo.configuration.beIp"
+          :placeholder="'BE ' + t('datasource.host') + ' ' + nodeInfo.configuration.host"
+          autocomplete="off"
+        />
+      </el-form-item>
+      <el-form-item :label="'BE ' + t('datasource.http_port')" v-if="nodeInfo.type === 'StarRocks'">
+        <el-input-number
+          v-model="nodeInfo.configuration.bePort"
+          autocomplete="off"
+          step-strictly
+          class="text-left"
+          :min="1"
+          :max="65535"
+          :placeholder="t('common.inputText') + 'BE ' + t('datasource.http_port') + '（8040）'"
           controls-position="right"
           type="number"
         />

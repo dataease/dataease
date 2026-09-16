@@ -271,6 +271,10 @@ public class DatasourceSyncManage {
         BeanUtils.copyBean(coreDatasource, engine);
         datasourceRequest.setDatasource(coreDatasource);
         EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());
+        if (engine.getType().equalsIgnoreCase("StarRocks")) {
+            ((StarRocksEngineProvider) engineProvider).streamLoadInsert(request.getTable(), extractType, dataList, tableFields, engine);
+            return;
+        }
         int pageNumber = 1000; //一次插入 1000条
         if (engine.getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.oracle.name())) {
             pageNumber = 1;
@@ -297,6 +301,10 @@ public class DatasourceSyncManage {
         BeanUtils.copyBean(coreDatasource, engine);
         datasourceRequest.setDatasource(coreDatasource);
         EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());
+        if (engine.getType().equalsIgnoreCase("StarRocks")) {
+            ((StarRocksEngineProvider) engineProvider).streamLoadInsert(request.getTable(), extractType, dataList, tableFields, engine);
+            return;
+        }
         int pageNumber = 1000;
         if (engine.getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.oracle.name())) {
             pageNumber = 1;
