@@ -13,6 +13,7 @@ import { TableTextToNumberController } from './controllers/table-text-to-number.
 import { FilterNotEmptyController } from './controllers/filter-not-empty.controller'
 import { MultiSelectionInsertController } from './controllers/multi-selection-insert.controller'
 import { PasteColumnWidthController } from './controllers/paste-column-width.controller'
+import { ColorScaleValueController } from './controllers/color-scale-value.controller'
 import './styles/toolbar.less'
 
 export const DATAEASE_TOOLBAR_UI_PLUGIN = 'DATAEASE_TOOLBAR_UI_PLUGIN'
@@ -34,6 +35,7 @@ export class DataEaseToolbarUIPlugin extends Plugin {
       [FreezeCommandController],
       [FormatPainterCursorController],
       [IconSetValueController],
+      [ColorScaleValueController],
       [DataValidationDraftController],
       [TableFilterConflictController],
       [TableTextToNumberController],
@@ -54,6 +56,7 @@ export class DataEaseToolbarUIPlugin extends Plugin {
       [FreezeCommandController],
       [FormatPainterCursorController],
       [IconSetValueController],
+      [ColorScaleValueController],
       [DataValidationDraftController],
       [TableFilterConflictController],
       [TableTextToNumberController],
