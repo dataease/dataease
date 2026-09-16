@@ -812,7 +812,8 @@ export function getConditions(
               'color',
               filedValueMap,
               rowData,
-              targetName
+              targetName,
+              getTableConditionRows(value, rowData, cell)
             )
           }
         }
@@ -830,7 +831,8 @@ export function getConditions(
             'backgroundColor',
             filedValueMap,
             rowData,
-            targetName
+            targetName,
+            getTableConditionRows(value, rowData, cell)
           )
           if (isTransparent(fill)) {
             return null
@@ -982,6 +984,7 @@ export function getPivotConditions(chart: Chart, pivotData: Record<string, any>[
           filedValueMap,
           rowData,
           targetName,
+          undefined,
           true,
           pivotValueResolver
         )
@@ -1007,6 +1010,7 @@ export function getPivotConditions(chart: Chart, pivotData: Record<string, any>[
           filedValueMap,
           rowData,
           targetName,
+          undefined,
           true,
           pivotValueResolver
         )
@@ -1103,38 +1107,61 @@ function mappingRulesColor(
   filedValueMap,
   rowData,
   targetName,
+  conditionRows?: Array<{value: any; rowData: any}>,
   pivot = false,
   pivotValueResolver?: PivotValueResolver
 ) {
+  const rows = conditionRows ?? [{value, rowData}]
   for (let i = 0; i < rules.length; i++) {
     const {rule, sourceField} = rules[i]
-    // S2 的 isTotals 也用于普通层级节点，仅排除明确的汇总节点
-    if (
-      pivot &&
-      (rowData?.isGrandTotals ||
-        rowData?.isSubTotals ||
-        rowData?.field === EXTRA_FIELD) &&
-      rule.target !== 'total_row'
-    ) {
-      continue
-    }
+    for (const current of rows) {
+      // S2 的 isTotals 也用于普通层级节点，仅排除明确的汇总节点
+      if (
+        pivot &&
+        (current.rowData?.isGrandTotals ||
+          current.rowData?.isSubTotals ||
+          current.rowData?.field === EXTRA_FIELD) &&
+        rule.target !== 'total_row'
+      ) {
+        continue
+      }
 
-    const sourceValue = getRuleSourceValue(value, rowData, sourceField.dataeaseName, targetName)
-    if (!sourceValue.found) continue
-    if (
-      matchTableCondition(
-        sourceValue.value,
-        rule,
-        sourceField,
-        filedValueMap,
-        rowData,
-        pivotValueResolver
+      const sourceValue = getRuleSourceValue(
+        current.value,
+        current.rowData,
+        sourceField.dataeaseName,
+        targetName
       )
-    ) {
-      return rule[type]
+      if (!sourceValue.found) continue
+      if (
+        matchTableCondition(
+          sourceValue.value,
+          rule,
+          sourceField,
+          filedValueMap,
+          current.rowData,
+          pivotValueResolver
+        )
+      ) {
+        return rule[type]
+      }
     }
   }
   return defaultColor
+}
+
+function getTableConditionRows(value, rowData, cell?: TableDataCell | MergedCell) {
+  if (!(cell instanceof MergedCell) || !cell.cells?.length) {
+    return [{value, rowData}]
+  }
+  // 合并格代表多条明细，任意明细命中时整个合并格生效
+  return cell.cells.map(dataCell => {
+    const meta = dataCell.getMeta()
+    return {
+      value: meta.fieldValue,
+      rowData: cell.spreadsheet.dataSet.getCellData({query: {rowIndex: meta.rowIndex}})
+    }
+  })
 }
 
 type PivotValueResult = { found: boolean; value?: any }
