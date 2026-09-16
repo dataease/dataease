@@ -12,6 +12,7 @@ import { TableFilterConflictController } from './controllers/table-filter-confli
 import { TableTextToNumberController } from './controllers/table-text-to-number.controller'
 import { FilterNotEmptyController } from './controllers/filter-not-empty.controller'
 import { MultiSelectionInsertController } from './controllers/multi-selection-insert.controller'
+import { PasteColumnWidthController } from './controllers/paste-column-width.controller'
 import './styles/toolbar.less'
 
 export const DATAEASE_TOOLBAR_UI_PLUGIN = 'DATAEASE_TOOLBAR_UI_PLUGIN'
@@ -37,7 +38,8 @@ export class DataEaseToolbarUIPlugin extends Plugin {
       [TableFilterConflictController],
       [TableTextToNumberController],
       [FilterNotEmptyController],
-      [MultiSelectionInsertController]
+      [MultiSelectionInsertController],
+      [PasteColumnWidthController]
     ]
 
     dependencies.forEach(dependency => this._injector.add(dependency))
@@ -56,7 +58,8 @@ export class DataEaseToolbarUIPlugin extends Plugin {
       [TableFilterConflictController],
       [TableTextToNumberController],
       [FilterNotEmptyController],
-      [MultiSelectionInsertController]
+      [MultiSelectionInsertController],
+      [PasteColumnWidthController]
     ])
   }
 }
