@@ -17,6 +17,7 @@ import io.dataease.dao.auto.entity.CoreExportTask;
 import io.dataease.dataset.manage.*;
 import io.dataease.exception.DEException;
 import io.dataease.exportCenter.dao.auto.entity.CoreExportDownloadTask;
+import io.dataease.exportCenter.util.ExportFileNameUtils;
 import io.dataease.exportCenter.dao.auto.mapper.CoreExportDownloadTaskRepository;
 import io.dataease.exportCenter.dao.auto.mapper.CoreExportTaskRepository;
 import io.dataease.i18n.Translator;
@@ -256,7 +257,7 @@ public class ExportCenterManage implements BaseExportApi {
         exportTask.setExportFrom(Long.valueOf(exportFrom));
         exportTask.setExportFromType(exportFromType);
         exportTask.setExportStatus("PENDING");
-        exportTask.setFileName(request.getViewName() + ".xlsx");
+        exportTask.setFileName(ExportFileNameUtils.excelFileName(request.getViewName()));
         exportTask.setExportProgress("0");
         exportTask.setExportTime(System.currentTimeMillis());
         exportTask.setParams(JsonUtil.toJSONString(request).toString());
@@ -277,7 +278,7 @@ public class ExportCenterManage implements BaseExportApi {
         exportTask.setExportFrom(exportFrom);
         exportTask.setExportFromType(exportFromType);
         exportTask.setExportStatus("PENDING");
-        exportTask.setFileName(request.getFilename() + ".xlsx");
+        exportTask.setFileName(ExportFileNameUtils.excelFileName(request.getFilename()));
         exportTask.setExportProgress("0");
         exportTask.setExportTime(System.currentTimeMillis());
         exportTask.setParams(JsonUtil.toJSONString(request).toString());
@@ -295,7 +296,7 @@ public class ExportCenterManage implements BaseExportApi {
         exportTask.setExportFrom(Long.valueOf(exportFromId));
         exportTask.setExportFromType(exportFromType);
         exportTask.setExportStatus("PENDING");
-        exportTask.setFileName(request.get("name") + ".xlsx");
+        exportTask.setFileName(ExportFileNameUtils.excelFileName(Objects.toString(request.get("name"), null)));
         exportTask.setExportProgress("0");
         exportTask.setExportTime(System.currentTimeMillis());
         exportTask.setParams(JsonUtil.toJSONString(request).toString());
