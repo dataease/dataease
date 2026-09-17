@@ -23,7 +23,7 @@ import { useAppStoreWithOut } from '@/store/modules/app'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import ViewTrackBar from '@/components/visualization/ViewTrackBar.vue'
 import { storeToRefs } from 'pinia'
-import { parseJson } from '@/views/chart/components/js/util'
+import { getColorFormAlphaColor, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
 import { defaultsDeep, cloneDeep, concat } from 'lodash-es'
 import ChartError from '@/views/chart/components/views/components/ChartError.vue'
 import { BASE_VIEW_CONFIG } from '../../editor/util/chart'
@@ -151,13 +151,16 @@ const viewTrack = ref(null)
 const chartStroke = computed(() => {
   const customAttr = parseJson(view.value.customAttr)
   // 联动选中态优先使用主题转换后的反色
-  return (
+  const stroke =
     customAttr?.basicStyle?.themeContrastColor ??
     customAttr?.label?.color ??
     (!isDashboard() || dvMainStore.canvasStyleData?.dashboard?.themeColor === 'dark'
       ? '#fff'
       : '#000')
-  )
+  // 箱线图联动回放也使用基础不透明度，避免选中后覆盖为不透明描边
+  return view.value.type === 'box-plot'
+    ? hexColorToRGBA(getColorFormAlphaColor(stroke), customAttr?.basicStyle?.alpha ?? 100)
+    : stroke
 })
 const LINKAGE_STYLE_CACHE = '__deLinkageStyleCache__'
 const LINKAGE_STYLE_KEYS = ['opacity', 'stroke', 'lineWidth']

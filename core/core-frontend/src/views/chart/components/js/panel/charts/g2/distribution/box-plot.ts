@@ -312,11 +312,12 @@ export class BoxPlot extends Bar {
   protected configBasicStyle(chart: Chart, options: ViewSpec): ViewSpec {
     const basicStyle = parseJson(chart.customAttr).basicStyle
     const [boxMark, pointMark, ...interactionMarks] = options.children
-    const stroke =
+    const strokeColor =
       basicStyle.themeContrastColor ?? parseJson(chart.customAttr).label?.color ?? '#000000'
+    const stroke = hexColorToRGBA(getColorFormAlphaColor(strokeColor), basicStyle.alpha)
     const configuredPointColor =
       basicStyle.outlierColorMode === 'custom' && basicStyle.outlierColor
-        ? // 颜色选择器会输出 rgba 或 8 位 hex，先规范化再叠加图表不透明度
+        ? // 兼容历史 rgba 或 8 位 hex，去除原有 alpha 后统一使用基础样式的不透明度
           hexColorToRGBA(getColorFormAlphaColor(basicStyle.outlierColor), basicStyle.alpha)
         : undefined
     const nextPointMark = {
@@ -334,6 +335,11 @@ export class BoxPlot extends Bar {
       children: [
         {
           ...boxMark,
+          state: {
+            ...boxMark.state,
+            active: { ...boxMark.state?.active, stroke },
+            selected: { ...boxMark.state?.selected, stroke }
+          },
           style: {
             ...boxMark.style,
             stroke,
