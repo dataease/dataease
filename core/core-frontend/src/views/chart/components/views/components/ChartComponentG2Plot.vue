@@ -405,6 +405,21 @@ const applyLinkageElementState = (flush = false) => {
   flush && flushG2Canvas()
 }
 const checkSelected = param => {
+  if (view.value.type === 'box-plot') {
+    // 箱线图按已映射维度的原始值匹配，空值和 0 不转换成展示占位符
+    const dimensions =
+      state.linkageActiveParam?.dimensionList?.filter(
+        item => nowPanelTrackInfo.value[`${view.value.id}#${String(item.id)}`]?.length
+      ) ?? []
+    return (
+      dimensions.length > 0 &&
+      dimensions.every(selected =>
+        param?.dimensionList?.some(
+          item => String(item.id) === String(selected.id) && item.value === selected.value
+        )
+      )
+    )
+  }
   // 获取当前视图的所有联动字段ID
   const mappingFieldIds = Array.from(
     new Set(
@@ -826,6 +841,9 @@ const action = param => {
   pointClickTrans()
   // 下钻 联动 跳转
   state.linkageActiveParam = {
+    ...(view.value.type === 'box-plot'
+      ? { dimensionList: cloneDeep(state.pointParam.data.dimensionList) }
+      : {}),
     category: state.pointParam.data.category ? state.pointParam.data.category : 'NO_DATA',
     name: state.pointParam.data.name ? state.pointParam.data.name : 'NO_DATA',
     group: state.pointParam.data.group ? state.pointParam.data.group : 'NO_DATA'

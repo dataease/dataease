@@ -127,6 +127,10 @@ const setupSeriesColor = () => {
     }, {}) || {}
 
   newSeriesColor?.forEach(item => {
+    // 箱线图分组已兼容旧类别键并解析新编码，不能再按未经区分的 id 覆盖颜色
+    if (props.chart.type === 'box-plot' && props.chart.xAxisExt?.length && !props.sub) {
+      return
+    }
     const oldColorItem = oldSeriesColor[item.id]
     if (oldColorItem) {
       item.color = oldColorItem.color
