@@ -1189,6 +1189,7 @@ function matchTableCondition(
   pivotValueResolver?: PivotValueResolver
 ) {
   const empty = value === null || value === undefined || value === ''
+  // 保留后来补充的为空、不为空操作，不让历史比较兼容影响这些显式规则
   if (rule.term === 'null') return empty
   if (rule.term === 'not_null') return !empty
   if (rule.term === 'default') return true
@@ -1215,38 +1216,54 @@ function matchTableCondition(
   }
 
   if ([2, 3, 4].includes(sourceField.deType)) {
-    const current = parseFloat(value)
+    // 仅对明确的 null 或空字符串应用双空例外，undefined 可能是取值失败，仍沿用历史比较
+    if (
+      rule.type === 'dynamic' &&
+      rule.term === 'not_eq' &&
+      rule.dynamicField?.summary === 'value' &&
+      (value === null || value === '') &&
+      (targetValue === null || targetValue === '')
+    ) {
+      return false
+    }
+    // 历史规则只转换比较值，保留当前值的类型和关系运算的隐式转换行为
+    const current = value
     const target = parseFloat(targetValue)
-    if (rule.term === 'between') return !empty && min <= current && current <= max
+    if (rule.term === 'between') return min <= current && current <= max
     if (rule.term === 'eq') return current === target
     if (rule.term === 'not_eq') return current !== target
     if (rule.term === 'lt') return current < target
     if (rule.term === 'gt') return current > target
-    if (rule.term === 'le') return !empty && current <= target
-    if (rule.term === 'ge') return !empty && current >= target
+    if (rule.term === 'le') return current <= target
+    if (rule.term === 'ge') return current >= target
     return false
   }
 
   if ([0, 5].includes(sourceField.deType)) {
     if (rule.term === 'eq') return value === targetValue
     if (rule.term === 'not_eq') return value !== targetValue
-    if (rule.term === 'like') return !empty && String(value).includes(String(targetValue))
-    if (rule.term === 'not like') return !empty && !String(value).includes(String(targetValue))
+    // 空字符串沿用原有包含判断，仅拦截无法调用 includes 的值以避免异常
+    if (rule.term === 'like') return typeof value?.includes === 'function' && value.includes(targetValue)
+    if (rule.term === 'not like') return typeof value?.includes === 'function' && !value.includes(targetValue)
     return false
   }
 
-  if (empty || targetValue === null || targetValue === undefined || targetValue === '') {
+  // 避免 null 等非字符串调用 replace 报错，空字符串仍沿用历史日期解析
+  if (typeof value !== 'string' || typeof targetValue !== 'string') {
     return false
   }
+  // 非空值保留已有时间格式支持，空字符串仍沿用历史日期解析
   const isSpecialTimeFormat =
-    sourceField.dateStyle === 'H_m_s' ||
-    (sourceField.dateStyle && sourceField.dateStyle.length > 5 && sourceField.dateStyle.length < 11)
+    value !== '' &&
+    targetValue !== '' &&
+    (sourceField.dateStyle === 'H_m_s' ||
+      (sourceField.dateStyle && sourceField.dateStyle.length > 5 && sourceField.dateStyle.length < 11))
   const current = isSpecialTimeFormat
-    ? String(value)
-    : new Date(String(value).replace(/-/g, '/') + ' GMT+8').getTime()
+    ? value
+    : new Date(value.replace(/-/g, '/') + ' GMT+8').getTime()
   const target = isSpecialTimeFormat
-    ? String(targetValue)
-    : new Date(String(targetValue).replace(/-/g, '/') + ' GMT+8').getTime()
+    ? targetValue
+    : new Date(targetValue.replace(/-/g, '/') + ' GMT+8').getTime()
   if (rule.term === 'eq') return current === target
   if (rule.term === 'not_eq') return current !== target
   if (rule.term === 'lt') return current < target
