@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import {
   computed,
+  reactive,
   ref,
   shallowRef,
   provide,
@@ -34,6 +35,10 @@ import PluginRenderIndicator from '@/views/menu/spreadsheet/components/PluginRen
 import DatasetReplacementDialog from '@/views/menu/spreadsheet/components/dataset-replacement/DatasetReplacementDialog.vue'
 import SpreadsheetPreviewOverlay from '@/views/menu/spreadsheet/components/SpreadsheetPreviewOverlay.vue'
 import { useLocaleStoreWithOut } from '@/store/modules/locale'
+import { useAppStoreWithOut } from '@/store/modules/app'
+import { useEmbedded } from '@/store/modules/embedded'
+import { useResizeObserver } from '@vueuse/core'
+import { onInitReady } from '@/utils/canvasUtils'
 import type { IWorkbookData } from '@univerjs/core'
 import { ISidebarService } from '@univerjs/ui'
 import {
@@ -60,15 +65,43 @@ import {
 
 const { t } = useI18n()
 const localeStore = useLocaleStoreWithOut()
+const appStore = useAppStoreWithOut()
+const embeddedStore = useEmbedded()
+const { emitter } = useEmitt()
+const isEmbedded = appStore.getIsDataEaseBi || appStore.getIsIframe
+
+// 固定本次编辑的资源上下文，容器切换清理共享状态时仍能正确保存草稿。
+const embeddedContext = reactive({
+  id: embeddedStore.opt === 'create' ? '' : embeddedStore.resourceId,
+  pid: embeddedStore.pid,
+  opt: 'create'
+})
+if (embeddedContext.id) {
+  embeddedContext.opt = 'edit'
+}
 
 const showEditor = ref(false)
 const currentPluginConfig = ref<PluginConfig | null>(null)
 
-const routeMode = computed(() => router.currentRoute.value.query.opt as string | undefined)
-const routeSheetId = computed(() => router.currentRoute.value.query.id as string | undefined)
-const routePid = computed(() => router.currentRoute.value.query.pid as string | undefined)
+const routeMode = computed(() => {
+  if (isEmbedded) return embeddedContext.opt
+  return router.currentRoute.value.query.opt as string | undefined
+})
+const routeSheetId = computed(() => {
+  if (isEmbedded) return embeddedContext.id
+  return router.currentRoute.value.query.id as string | undefined
+})
+const routePid = computed(() => {
+  if (isEmbedded) return embeddedContext.pid
+  return router.currentRoute.value.query.pid as string | undefined
+})
 const editorRootRef = ref<HTMLElement>()
 const univerSheetRef = ref<InstanceType<typeof UniverSheet>>()
+useResizeObserver(editorRootRef, () => {
+  if (isEmbedded) {
+    univerSheetRef.value?.resize()
+  }
+})
 const univerApiRef = shallowRef<any>()
 const univerInstanceRef = shallowRef<any>()
 const loading = ref(true)
@@ -441,7 +474,14 @@ const persistSpreadsheet = async (
       ElMessage.success(t('spreadsheet.save_success'))
     }
 
-    if (routeMode.value !== 'edit') {
+    if (isEmbedded) {
+      embeddedContext.id = String(result.id)
+      embeddedContext.pid = String(result.pid ?? 0)
+      embeddedContext.opt = 'edit'
+      embeddedStore.setResourceId(embeddedContext.id)
+      embeddedStore.setPid(embeddedContext.pid)
+      embeddedStore.setOpt('edit')
+    } else if (routeMode.value !== 'edit') {
       await router.replace({
         query: { id: String(result.id), opt: 'edit', pid: String(result.pid) }
       })
@@ -614,6 +654,13 @@ const handleBack = async () => {
   }
   discardAndLeave = true
   deleteSpreadsheetDraftCache(routeSheetId.value)
+  if (isEmbedded) {
+    embeddedStore.clearState()
+    embeddedStore.setResourceId(embeddedContext.id)
+    embeddedStore.setPid(embeddedContext.pid)
+    emitter.emit('changeCurrentComponent', 'SpreadsheetPanel')
+    return
+  }
   await router.push('/spreadsheet/index')
 }
 
@@ -686,6 +733,9 @@ const handleClosePreview = () => {
 const handleUniverReady = () => {
   univerApiRef.value = univerSheetRef.value?.getUniverApi()
   univerInstanceRef.value = univerSheetRef.value?.getUniverInstance()
+  if (isEmbedded) {
+    onInitReady({ resourceId: routeSheetId.value })
+  }
 }
 
 // 提供 Univer API 给子组件
@@ -696,6 +746,10 @@ onBeforeMount(async () => {
     try {
       const spreadsheetInfo = await findEditById(routeSheetId.value)
       if (spreadsheetInfo) {
+        if (isEmbedded) {
+          // 直接嵌入编辑页时可以只传资源 ID，保存仍沿用资源原目录。
+          embeddedContext.pid = String(spreadsheetInfo.pid ?? 0)
+        }
         const loadedWorkbookData =
           parseSheetData(spreadsheetInfo.sheetData) ?? createLocalizedDefaultWorkbookData()
         // 在 createUnit 加载资源前删除旧版 Univer 保护数据，
@@ -777,7 +831,12 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div ref="editorRootRef" class="spreadsheet-editor" v-loading="loading">
+  <div
+    ref="editorRootRef"
+    class="spreadsheet-editor"
+    :class="{ embedded: isEmbedded }"
+    v-loading="loading"
+  >
     <SpreadsheetToolbar
       :name="spreadsheetName"
       :saving="saving"
@@ -849,6 +908,20 @@ onBeforeUnmount(() => {
   flex-direction: column;
   background: var(--de-bg-color, #f5f7fa);
   overflow: hidden;
+
+  &.embedded {
+    position: relative;
+    width: 100%;
+    height: 100%;
+
+    .editor-main {
+      height: auto;
+    }
+
+    .spreadsheet-preview-overlay {
+      position: absolute;
+    }
+  }
 
   .editor-main {
     flex: 1;

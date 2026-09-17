@@ -115,6 +115,7 @@ export const userStore = defineStore('embedded', {
         dvId: this.dvId,
         chartId: this.chartId,
         pid: this.pid,
+        opt: this.opt,
         resourceId: this.resourceId,
         dfId: this.dfId
       }
@@ -195,6 +196,7 @@ export const userStore = defineStore('embedded', {
       this.pid = data['pid']
       this.resourceId = data['resourceId']
       this.dfId = data['dfId']
+      this.opt = data['opt'] || ''
     },
     async setTokenInfo(tokenInfo: Map<string, object>) {
       this.tokenInfo = tokenInfo
