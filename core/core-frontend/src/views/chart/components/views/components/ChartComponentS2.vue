@@ -264,7 +264,7 @@ const renderChart = (viewInfo: Chart, resetPageInfo: boolean) => {
 }
 
 const debounceRender = debounce(() => {
-  myChart?.facet?.timer?.stop()
+  stopAutoScroll()
   myChart?.facet?.cancelScrollFrame()
   myChart?.destroy()
   myChart?.getCanvasElement()?.remove()
@@ -309,19 +309,28 @@ const setupPage = (chart: ChartObj, resetPageInfo?: boolean) => {
   dvMainStore.setViewPageInfo(chart.id, state.pageInfo)
 }
 
-const mouseMove = () => {
+let scrollFrame: number | undefined
+const stopAutoScroll = () => {
+  clearTimeout(scrollTimer)
+  if (scrollFrame !== undefined) {
+    cancelAnimationFrame(scrollFrame)
+    scrollFrame = undefined
+  }
   myChart?.facet?.timer?.stop()
+}
+
+const mouseMove = () => {
+  stopAutoScroll()
 }
 
 const mouseLeave = () => {
   initScroll()
 }
 
-let scrollTimer
+let scrollTimer: ReturnType<typeof setTimeout>
 const initScroll = () => {
-  scrollTimer && clearTimeout(scrollTimer)
+  stopAutoScroll()
   scrollTimer = setTimeout(() => {
-    // 首先回到最顶部，然后计算行高*行数作为top，最后判断：如果top<数据量*行高，继续滚动，否则回到顶部
     const customAttr = actualChart?.customAttr
     const senior = actualChart?.senior
     if (
@@ -331,81 +340,50 @@ const initScroll = () => {
       PAGE_CHARTS.includes(props.view.type) &&
       !state.showPage
     ) {
-      // 防止多次渲染
-      myChart.facet.timer?.stop()
-      // 已滚动的距离
-      let scrolledOffset = myChart.store.get('scrollY') || 0
-      // 平滑滚动，兼容原有的滚动速率设置
-      // 假设原设定为 2 行间隔 2 秒，换算公式为: 滚动到底部的时间 = 未展示部分行数 / 2行 * 2秒
-      const offsetHeight = document.getElementById(containerId).offsetHeight
-      // 没显示就不滚了
-      if (!offsetHeight) {
+      const facet = myChart.facet
+      facet.timer?.stop()
+      if (!document.getElementById(containerId)?.offsetHeight) {
         return
       }
-      const rowHeight = customAttr.tableCell.tableItemHeight
-      const headerHeight =
-        customAttr.tableHeader.showTableHeader === false
-          ? 1
-          : customAttr.tableHeader.tableTitleHeight
-      const scrollBarSize = myChart.theme.scrollBar.size
-      const basicStyle = customAttr.basicStyle
 
-      // 开启自动换行时，使用 facet 的 viewCellHeights 或 scrollTargetMaxOffset 获取实际的最大滚动距离
-      let maxScrollY: number
-      if (basicStyle?.autoWrap) {
-        // 从滚动条获取实际的滚动范围
-        const vScrollBar = myChart.facet?.vScrollBar
-        if (vScrollBar) {
-          // 直接取滚动条配置的最大滚动距离
-          maxScrollY = vScrollBar.scrollTargetMaxOffset
-        } else {
-          // 如果无法获取滚动条信息，尝试使用 viewCellHeights
-          const viewCellHeights = myChart.facet?.viewCellHeights
-          if (viewCellHeights) {
-            const rowsHeight = viewCellHeights.getTotalHeight()
-            const viewHeight = offsetHeight - headerHeight
-            maxScrollY = Math.max(0, rowsHeight - viewHeight + scrollBarSize)
-          } else {
-            maxScrollY =
-              rowHeight * chartData.value.tableRow.length +
-              headerHeight -
-              offsetHeight +
-              scrollBarSize
-          }
-        }
-      } else {
-        maxScrollY =
-          rowHeight * chartData.value.tableRow.length + headerHeight - offsetHeight + scrollBarSize
-      }
-
-      // 显示内容没撑满
-      if (maxScrollY < scrollBarSize) {
+      // 使用 S2 实际的滚动范围，避免估算高度超出底部后无法重新开始。
+      const maxScrollY = facet.vScrollBar?.scrollTargetMaxOffset ?? 0
+      if (!Number.isFinite(maxScrollY) || maxScrollY <= 0) {
         return
       }
-      // 到底了重置一下，使用实际的最大滚动距离判断
+
+      const { scrollY } = facet.getScrollOffset()
+      let scrolledOffset = scrollY || 0
       if (scrolledOffset >= maxScrollY - 1) {
-        myChart.store.set('scrollY', 0)
-        myChart.render()
+        facet.setScrollOffset({ scrollY: 0 })
+        facet.startScroll()
         scrolledOffset = 0
       }
 
-      let scrollViewCount: number
-      if (basicStyle?.autoWrap && myChart.facet?.viewCellHeights) {
-        // 如果开启了自动换行，计算当前未展示的内容高度所对应的比例，再乘以总行数，以获得大致的未展示行数
-        const totalHeight = myChart.facet.viewCellHeights.getTotalHeight()
-        const unViewedRatio = totalHeight > 0 ? (maxScrollY - scrolledOffset) / totalHeight : 0
-        scrollViewCount = chartData.value.tableRow.length * unViewedRatio
-      } else {
-        const viewedHeight = offsetHeight - headerHeight - scrollBarSize + scrolledOffset
-        scrollViewCount = chartData.value.tableRow.length - viewedHeight / rowHeight
-      }
-
+      const rowHeight = customAttr.basicStyle?.autoWrap
+        ? facet.viewCellHeights.getTotalHeight() / chartData.value.tableRow.length
+        : customAttr.tableCell.tableItemHeight
+      const scrollViewCount = (maxScrollY - scrolledOffset) / rowHeight
       const duration = (scrollViewCount / senior.scrollCfg.row) * senior.scrollCfg.interval
-      myChart.facet.scrollWithAnimation(
-        { offsetY: { value: maxScrollY, animate: false } },
-        duration,
-        initScroll
-      )
+      if (!Number.isFinite(duration) || duration <= 0) {
+        return
+      }
+      // 只更新纵向坐标，避免 S2 对固定横向坐标插值后取整产生 1px 抖动。
+      const startTime = performance.now()
+      const scroll = (now: number) => {
+        scrollFrame = undefined
+        const progress = Math.min((now - startTime) / duration, 1)
+        facet.setScrollOffset({
+          scrollY: scrolledOffset + (maxScrollY - scrolledOffset) * progress
+        })
+        facet.startScroll()
+        if (progress < 1) {
+          scrollFrame = requestAnimationFrame(scroll)
+        } else {
+          initScroll()
+        }
+      }
+      scrollFrame = requestAnimationFrame(scroll)
     }
   }, 1500)
 }
@@ -694,8 +672,8 @@ const trackMenuCalc = itemId => {
 
 const resizeAction = resizeColumn => {
   // 从头开始滚动
-  if (myChart?.facet.timer) {
-    myChart?.facet.timer.stop()
+  if (myChart?.facet) {
+    stopAutoScroll()
     nextTick(initScroll)
   }
   if (showPosition.value !== 'canvas') {
@@ -732,7 +710,7 @@ const resize = (width, height) => {
     if (!myChart?.facet) {
       debounceRender(false)
     } else {
-      myChart?.facet?.timer?.stop()
+      stopAutoScroll()
       myChart?.changeSheetSize(width, height)
       myChart?.render()
     }
@@ -763,6 +741,9 @@ onMounted(() => {
   resizeObserver.observe(document.getElementById(containerId))
 })
 onBeforeUnmount(() => {
+  stopAutoScroll()
+  clearTimeout(timer)
+  debounceRender.cancel()
   try {
     myChart?.facet.timer?.stop()
     myChart?.destroy()
