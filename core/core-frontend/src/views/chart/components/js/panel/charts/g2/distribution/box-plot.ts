@@ -178,6 +178,10 @@ export class BoxPlot extends Bar {
       : [metricName]
     const categoryAxis =
       (chart.drill && chart.drillFields?.[chart.drillFilters?.length ?? 0]) || chart.xAxis?.[0]
+    // 下钻到子类别字段时，每个刻度只对应一个箱体，保留系列配色但不再按系列横向偏移
+    const dodgeBySeries =
+      hasGroup &&
+      (categoryAxis?.id == null || String(categoryAxis.id) !== String(chart.xAxisExt[0].id))
     const categoryDomain = dimensionDomain(
       sourceData.map(item => item.field),
       categoryAxis?.sort === 'custom_sort'
@@ -236,7 +240,7 @@ export class BoxPlot extends Bar {
         y3: 'q3',
         y4: 'high',
         color: BOX_SERIES_FIELD,
-        series: hasGroup ? BOX_SERIES_FIELD : undefined
+        series: dodgeBySeries ? BOX_SERIES_FIELD : undefined
       },
       scale: {
         x: { type: 'band' },
@@ -263,7 +267,7 @@ export class BoxPlot extends Bar {
         x: BOX_CATEGORY_FIELD,
         y: 'outlier',
         color: BOX_SERIES_FIELD,
-        series: hasGroup ? BOX_SERIES_FIELD : undefined,
+        series: dodgeBySeries ? BOX_SERIES_FIELD : undefined,
         size: 4
       },
       // G2 point 默认使用空心形状，异常点固定为实心圆
@@ -271,7 +275,7 @@ export class BoxPlot extends Bar {
         shape: 'point',
         fillOpacity: 1
       },
-      transform: [layoutTransform, ...(hasGroup ? [{ type: 'dodgeX' }] : [])],
+      transform: [layoutTransform, ...(dodgeBySeries ? [{ type: 'dodgeX' }] : [])],
       // 异常点与箱体使用相同可见系列域，不能从稀疏异常点独立推导分组位置
       scale: {
         series: { type: 'band', domain: seriesDomain }
