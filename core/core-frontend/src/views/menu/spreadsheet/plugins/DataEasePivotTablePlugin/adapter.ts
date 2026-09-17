@@ -13,6 +13,7 @@ import {
   normalizePivotFields,
   validatePivotZoneUpdate
 } from './utils/pivot-config-validator'
+import { guid } from '@/views/visualized/data/dataset/form/util'
 
 export class PivotTableAdapter extends TablePluginAdapter<PivotTableConfig> {
   constructor() {
@@ -71,7 +72,7 @@ export class PivotTableAdapter extends TablePluginAdapter<PivotTableConfig> {
 
   getDefaultConfig(): DeepPartial<PivotTableConfig> {
     return {
-      id: `plugin_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
+      id: guid(),
       type: 'pivot',
       data: {
         datasetId: '',

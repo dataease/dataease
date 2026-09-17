@@ -8,6 +8,7 @@ import TableTotalEditor from './components/editor/TableTotalEditor.vue'
 import DetailTableFieldItem from './components/editor/DetailTableFieldItem.vue'
 import { createDefaultTableBorderConfig } from '../../components/table-border/border-config'
 import { validateDetailZoneUpdate } from './utils/detail-config-validator'
+import { guid } from "@/views/visualized/data/dataset/form/util";
 
 export class DetailTableAdapter extends TablePluginAdapter<DetailTableConfig> {
     constructor() {
@@ -38,7 +39,7 @@ export class DetailTableAdapter extends TablePluginAdapter<DetailTableConfig> {
     getSeniorSchema() {
         throw new Error("Method not implemented.");
     }
-    
+
     getZonesSchema(): FieldZoneSchema[] {
         return [
             {
@@ -63,7 +64,7 @@ export class DetailTableAdapter extends TablePluginAdapter<DetailTableConfig> {
 
     getDefaultConfig() {
         return {
-            id: `plugin_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            id: guid(),
             type: 'detail',
             data: {
                 datasetId: '',

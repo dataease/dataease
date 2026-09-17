@@ -56,6 +56,10 @@ import {
 } from '@/views/menu/spreadsheet/api'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { useAppStoreWithOut } from '@/store/modules/app'
+import { useEmbedded } from '@/store/modules/embedded'
+import { useEmitt } from '@/hooks/web/useEmitt'
+import { useResizeObserver } from '@vueuse/core'
+import { onInitReady } from '@/utils/canvasUtils'
 import treeSort from '@/utils/treeSortUtils'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { useCache } from '@/hooks/web/useCache'
@@ -78,6 +82,8 @@ const interactiveStore = interactiveStoreWithOut()
 const { wsCache } = useCache()
 
 const appStore = useAppStoreWithOut()
+const embeddedStore = useEmbedded()
+const { emitter } = useEmitt()
 const localeStore = useLocaleStoreWithOut()
 const rootManage = ref(false)
 const disabledMove = ref(true)
@@ -90,8 +96,8 @@ const state = reactive({
 })
 
 const mounted = ref(false)
-const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
-const isIframe = computed(() => appStore.getIsIframe)
+const isEmbedded = computed(() => appStore.getIsDataEaseBi || appStore.getIsIframe)
+const manageRootRef = ref<HTMLElement>()
 const currentLang = computed(() => localeStore.getCurrentLocale.lang)
 
 const originResourceTree = shallowRef([])
@@ -356,6 +362,11 @@ const handleNodeClick = (data: SpreadsheetTreeNode, node: { disabled?: boolean }
 
 let requestId: ReturnType<typeof setTimeout> | undefined
 const spreadsheetRef = ref()
+useResizeObserver(manageRootRef, () => {
+  if (isEmbedded.value) {
+    spreadsheetRef.value?.resize()
+  }
+})
 const loadSpreadsheetPreview = async (id: number, weight?: number) => {
   const currentPreviewRequestVersion = ++previewRequestVersion
   ++favoriteRequestVersion
@@ -408,6 +419,14 @@ const loadSpreadsheetPreview = async (id: number, weight?: number) => {
 }
 
 const createNewSpreadsheet = (data?: BusiTreeNode) => {
+  // 嵌入模式在当前容器内切换页面，沿用仪表板的组件切换事件。
+  if (isEmbedded.value) {
+    embeddedStore.clearState()
+    embeddedStore.setOpt('create')
+    embeddedStore.setPid(String(data?.id || 0))
+    emitter.emit('changeCurrentComponent', 'SpreadsheetEditor')
+    return
+  }
   const openType = wsCache.get('open-backend') === '1' ? '_self' : '_blank'
   const routeObj = {
     path: '/spreadsheet-editor',
@@ -422,6 +441,13 @@ const createNewSpreadsheet = (data?: BusiTreeNode) => {
 }
 
 const handleEdit = (id: number) => {
+  if (isEmbedded.value) {
+    embeddedStore.clearState()
+    embeddedStore.setResourceId(String(id))
+    embeddedStore.setOpt('edit')
+    emitter.emit('changeCurrentComponent', 'SpreadsheetEditor')
+    return
+  }
   const openType = wsCache.get('open-backend') === '1' ? '_self' : '_blank'
   const routeObj = {
     path: '/spreadsheet-editor',
@@ -694,7 +720,7 @@ const findSpreadsheetNode = (
 }
 
 const openRouteSpreadsheet = async () => {
-  const queryId = route.query.id
+  const queryId = isEmbedded.value ? embeddedStore.resourceId : route.query.id
   const resourceId = Array.isArray(queryId) ? queryId[0] : queryId
   if (resourceId == null || resourceId === '') {
     return
@@ -714,6 +740,9 @@ const openRouteSpreadsheet = async () => {
 onBeforeMount(async () => {
   loadInit()
   await getSpreadsheetTree()
+  if (isEmbedded.value) {
+    onInitReady({ type: 'spreadsheet' }, 'resource_tree_init_ready')
+  }
   await openRouteSpreadsheet()
 })
 
@@ -723,13 +752,16 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   document.removeEventListener('fullscreenchange', handleFullscreenChange)
+  clearTimeout(requestId)
+  ++previewRequestVersion
 })
 </script>
 
 <template>
   <div
+    ref="manageRootRef"
     class="spreadsheet-manage"
-    :class="{ 'de-100vh': isIframe, 'preview-focus': isPreviewFocus }"
+    :class="{ embedded: isEmbedded, 'preview-focus': isPreviewFocus }"
     v-loading="dtLoading"
   >
     <ArrowSide
@@ -911,12 +943,7 @@ onBeforeUnmount(() => {
       </div>
     </el-aside>
 
-    <div
-      class="spreadsheet-content"
-      :class="{
-        auto: isIframe || isDataEaseBi
-      }"
-    >
+    <div class="spreadsheet-content">
       <template v-if="!state.spreadsheetTree.length && mounted">
         <empty-background :description="t('spreadsheet.no_data')" img-type="none">
           <el-button v-if="rootManage" @click="createNewSpreadsheet()" type="primary">
@@ -1131,10 +1158,16 @@ onBeforeUnmount(() => {
     }
   }
 
-  &.de-100vh {
-    height: 100vh;
+  &.embedded {
+    height: 100%;
     .custom-tree {
-      height: calc(100vh - 122px);
+      height: calc(100% - 122px);
+    }
+    .spreadsheet-content {
+      height: 100%;
+    }
+    .spreadsheet-content .spreadsheet-preview-area .preview-sheet-wrapper {
+      min-height: 0;
     }
   }
 
@@ -1212,10 +1245,6 @@ onBeforeUnmount(() => {
     overflow: auto;
     position: relative;
     background: #f5f6f7;
-
-    &.auto {
-      height: auto;
-    }
   }
 
   .spreadsheet-content {

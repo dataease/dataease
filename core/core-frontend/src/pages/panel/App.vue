@@ -28,6 +28,13 @@ const ScreenPanel = defineAsyncComponent(() => import('@/views/data-visualizatio
 const DashboardPanel = defineAsyncComponent(
   () => import('@/views/dashboard/DashboardPreviewShow.vue')
 )
+const Spreadsheet = defineAsyncComponent(() => import('./SpreadsheetPreview.vue'))
+const SpreadsheetPanel = defineAsyncComponent(
+  () => import('@/views/pages/menu/spreadsheet/index.vue')
+)
+const SpreadsheetEditor = defineAsyncComponent(
+  () => import('@/views/pages/menu/spreadsheet/editor.vue')
+)
 
 const TemplateManage = defineAsyncComponent(() => import('@/views/template/indexInject.vue'))
 
@@ -59,6 +66,9 @@ const componentMap = {
   Datasource,
   ScreenPanel,
   DashboardPanel,
+  Spreadsheet,
+  SpreadsheetPanel,
+  SpreadsheetEditor,
   DatasetEditor,
   DashboardEmpty,
   TemplateManage,
