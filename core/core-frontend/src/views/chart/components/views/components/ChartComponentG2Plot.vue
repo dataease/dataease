@@ -197,7 +197,7 @@ const checkSelected = param => {
         ? concat(chartData.value?.left?.fields, chartData.value?.right?.fields)
         : chartData.value?.fields
       )
-        .map(item => item?.id)
+        .map(item => String(item?.id))
         .filter(id =>
           Object.keys(nowPanelTrackInfo.value).some(
             key => key.startsWith(view.value.id) && key.split('#')[1] === id
@@ -205,9 +205,24 @@ const checkSelected = param => {
         )
     )
   )
+  if (view.value.type === 'box-plot') {
+    // 直接按联动维度 ID 和原始值匹配，兼容空子类别、下钻以及异常点子视图
+    const dimensions =
+      state.linkageActiveParam?.dimensionList?.filter(item =>
+        mappingFieldIds.includes(String(item.id))
+      ) ?? []
+    return (
+      dimensions.length > 0 &&
+      dimensions.every(selected =>
+        param.dimensionList?.some(
+          item => String(item.id) === String(selected.id) && item.value === selected.value
+        )
+      )
+    )
+  }
   // 维度字段匹配
   const [xAxis, xAxisExt, extStack] = ['xAxis', 'xAxisExt', 'extStack'].map(key =>
-    view.value[key].find(item => mappingFieldIds.includes(item.id))
+    view.value[key].find(item => mappingFieldIds.includes(String(item.id)))
   )
   // 选中字段数据
   const { group, name, category } = state.linkageActiveParam
@@ -473,8 +488,11 @@ const action = param => {
   state.pointParam = param.data
   // 点击
   pointClickTrans()
+  // 保留嵌入点击回调，仅阻止放大和复用视图的联动、跳转、下钻及最后一级提示
+  if (['multiplexing', 'viewDialog'].includes(showPosition.value)) return
   // 下钻 联动 跳转
   state.linkageActiveParam = {
+    dimensionList: cloneDeep(state.pointParam.data.dimensionList),
     category: state.pointParam.data.category ? state.pointParam.data.category : 'NO_DATA',
     name: state.pointParam.data.name ? state.pointParam.data.name : 'NO_DATA',
     group: state.pointParam.data.group ? state.pointParam.data.group : 'NO_DATA'
