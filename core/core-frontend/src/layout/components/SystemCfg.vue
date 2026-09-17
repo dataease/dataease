@@ -26,8 +26,7 @@ const redirectUser = () => {
     <div
       class="sys-setting"
       :class="{
-        'is-light-setting': navigateBg && navigateBg === 'light',
-        'in-iframe-setting': !showDoc
+        'is-light-setting': navigateBg && navigateBg === 'light'
       }"
     >
       <el-icon @click="redirectUser">
@@ -54,9 +53,6 @@ const redirectUser = () => {
   &:hover {
     background-color: #1e2738;
   }
-}
-.in-iframe-setting {
-  margin-left: 10px !important;
 }
 .is-light-setting {
   &:hover {
