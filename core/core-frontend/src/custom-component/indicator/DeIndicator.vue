@@ -518,7 +518,7 @@ const trackMenu = computed(() => {
     if (nowPanelTrackInfo.value[sourceInfo]) {
       linkageCount++
     }
-    if (nowPanelJumpInfo.value[sourceInfo]) {
+    if (nowPanelJumpInfo.value[sourceInfo] && nowPanelJumpInfo.value[sourceInfo]['checked']) {
       jumpCount++
     }
   })
@@ -528,7 +528,7 @@ const trackMenu = computed(() => {
     if (nowPanelTrackInfo.value[sourceInfo]) {
       linkageCount++
     }
-    if (nowPanelJumpInfo.value[sourceInfo]) {
+    if (nowPanelJumpInfo.value[sourceInfo] && nowPanelJumpInfo.value[sourceInfo]['checked']) {
       jumpCount++
     }
   }
