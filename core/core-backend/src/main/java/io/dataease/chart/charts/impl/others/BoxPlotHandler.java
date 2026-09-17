@@ -162,8 +162,8 @@ public class BoxPlotHandler extends DefaultChartHandler {
             ChartViewFieldDTO yAxis,
             List<BoxPlotStatistics.BoxPlotSummary> summaries
     ) {
-        boolean isDrill = filterResult.getFilterList().stream().anyMatch(filter -> filter.getFilterType() == 1);
-        int categoryIndex = isDrill ? xAxis.size() - 1 : 0;
+        var drillAxis = (List<ChartViewFieldDTO>) filterResult.getContext().get("drillAxis");
+        int categoryIndex = categoryIndex(xAxis, drillAxis);
         int groupIndex = xAxisExt.isEmpty() ? -1 : findFieldIndex(xAxis, xAxisExt.getFirst().getId());
         List<Map<String, Object>> data = new ArrayList<>();
 
@@ -194,7 +194,19 @@ public class BoxPlotHandler extends DefaultChartHandler {
         return result;
     }
 
-    private int findFieldIndex(List<ChartViewFieldDTO> fields, Long id) {
+    static int categoryIndex(List<ChartViewFieldDTO> fields, List<ChartViewFieldDTO> drillAxis) {
+        if (CollectionUtils.isEmpty(drillAxis)) {
+            return 0;
+        }
+        // 钻取字段可能已经是子类别，公共链路不会将已有字段移动到查询维度末尾
+        int index = findFieldIndex(fields, drillAxis.getLast().getId());
+        if (index < 0) {
+            DEException.throwException(Translator.get("i18n_box_plot_field_error"));
+        }
+        return index;
+    }
+
+    private static int findFieldIndex(List<ChartViewFieldDTO> fields, Long id) {
         for (int i = 0; i < fields.size(); i++) {
             if (Objects.equals(fields.get(i).getId(), id)) {
                 return i;

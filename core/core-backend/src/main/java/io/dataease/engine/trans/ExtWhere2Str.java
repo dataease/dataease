@@ -46,6 +46,7 @@ public class ExtWhere2Str {
         if (ObjectUtils.isNotEmpty(fields)) {
             for (ChartExtFilterDTO request : fields) {
                 List<String> value = request.getValue();
+                boolean nullCondition = "null".equals(request.getOperator());
 
                 List<String> whereNameList = new ArrayList<>();
                 List<DatasetTableFieldDTO> fieldList = new ArrayList<>();
@@ -56,7 +57,7 @@ public class ExtWhere2Str {
                 }
 
                 for (DatasetTableFieldDTO field : fieldList) {
-                    if (ObjectUtils.isEmpty(value) || ObjectUtils.isEmpty(field)) {
+                    if ((!nullCondition && ObjectUtils.isEmpty(value)) || ObjectUtils.isEmpty(field)) {
                         continue;
                     }
                     String whereName = "";
@@ -152,7 +153,10 @@ public class ExtWhere2Str {
                 String whereTerm = Utils.transFilterTerm(request.getOperator());
                 String whereValue = "";
 
-                if (StringUtils.containsIgnoreCase(request.getOperator(), "-")) {
+                if (nullCondition) {
+                    // IS NULL 是无操作数条件，不拼接空字符串，也不与空字符串分组合并
+                    whereValue = "";
+                } else if (StringUtils.containsIgnoreCase(request.getOperator(), "-")) {
                     String[] split = request.getOperator().split("-");
                     String term1 = split[0];
                     String logic = split[1];

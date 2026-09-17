@@ -1452,6 +1452,8 @@ export const dvMainStore = defineStore('dataVisualization', {
       customFilter?
     ) {
       const checkQDList = [...sourceData.dimensionList, ...sourceData.quotaList]
+      const boxPlotLinkage =
+        sourceData.option === 'linkage' && this.canvasViewInfo[viewId]?.type === 'box-plot'
       let currentFilters = element.linkageFilters || []
       // 针对明细表和汇总表，只清理当前源图表（viewId）的历史联动条件，保留其他图表的条件以支持多图表联动合并
       if (['table-info', 'table-normal'].includes(element.innerType)) {
@@ -1487,7 +1489,16 @@ export const dvMainStore = defineStore('dataVisualization', {
               // 如果目标图表 和 当前循环组件id相等 则进行条件增减
               const targetFieldId = targetInfoArray[1] // 目标图表列ID
               let condition
-              if (QDItem.timeValue && Array.isArray(QDItem.timeValue)) {
+              // 箱线图将 NULL 与空字符串作为独立分组，不能将选中空分组解释为清除联动
+              if (boxPlotLinkage && QDItem.value === null) {
+                condition = {
+                  fieldId: targetFieldId,
+                  operator: 'null',
+                  value: [],
+                  viewIds: [targetViewId],
+                  sourceViewId: viewId
+                }
+              } else if (QDItem.timeValue && Array.isArray(QDItem.timeValue)) {
                 // 如果dimension.timeValue存在值且是数组 目前判断为是时间组件
                 condition = {
                   fieldId: targetFieldId,
@@ -1496,7 +1507,10 @@ export const dvMainStore = defineStore('dataVisualization', {
                   viewIds: [targetViewId],
                   sourceViewId: viewId
                 }
-              } else if (QDItem.value !== null && QDItem.value !== '') {
+              } else if (
+                (QDItem.value !== null && QDItem.value !== '') ||
+                (boxPlotLinkage && QDItem.value === '')
+              ) {
                 condition = {
                   fieldId: targetFieldId,
                   operator: 'eq',
