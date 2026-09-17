@@ -182,6 +182,7 @@ onMounted(() => {
       />
       <ToolboxCfg v-if="showToolbox" />
       <TopDoc v-if="appearanceStore.getShowDoc" />
+      <i v-else style="width: 10px; height: 24px"></i>
       <el-tooltip
         v-if="showMsg"
         effect="dark"
