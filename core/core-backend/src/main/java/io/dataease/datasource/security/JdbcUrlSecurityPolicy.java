@@ -54,6 +54,7 @@ public final class JdbcUrlSecurityPolicy {
             "ftp:",
             "nis:",
             "corba:",
+            "corbaloc",
             "corbaname",
             "iiop",
             "iiopname",
@@ -86,7 +87,7 @@ public final class JdbcUrlSecurityPolicy {
             Map.entry("db2", Set.of()),
             Map.entry("pg", Set.of("socketfactory", "socketfactoryarg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationpluginclassname")),
             Map.entry("redshift", Set.of("socketfactory", "socketfactoryarg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationpluginclassname", "inifile")),
-            Map.entry("h2", Set.of("init=", "runscript")),
+            Map.entry("h2", Set.of("init=", "runscript", "create", "alias", "call", "script", "backup")),
             Map.entry("ck", Set.of())
     );
 
@@ -100,6 +101,9 @@ public final class JdbcUrlSecurityPolicy {
         String normalizedType = normalizeType(type);
         String normalizedUrl = canonicalize(jdbcUrl);
         String normalizedExtraParams = canonicalize(extraParams);
+        if ("h2".equals(normalizedType) && (StringUtils.contains(jdbcUrl, '\\') || StringUtils.contains(extraParams, '\\'))) {
+            DEException.throwException("Illegal parameter: \\");
+        }
         String expectedPrefix = JDBC_PREFIXES.get(normalizedType);
         if (!mysqlType.contains(normalizedType) && (StringUtils.isBlank(expectedPrefix) || !startsWithIgnoreCase(normalizedUrl, expectedPrefix))) {
             DEException.throwException("Illegal jdbcUrl: " + jdbcUrl);

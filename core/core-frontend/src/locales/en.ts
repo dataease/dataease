@@ -1524,7 +1524,7 @@ export default {
     box_plot_outlier_count: 'Outlier count',
     box_plot_show_details: 'Show statistical details',
     box_plot_details_tip:
-      'When off, show the median, quartile range, and outlier information; when on, show the full five-number summary and outlier information',
+      'When off, show the median, quartile range, and outlier count; when on, show the full five-number summary, outlier count, and outlier values',
     box_plot_show_outliers: 'Show outliers',
     box_plot_outlier_tip:
       'Outliers are raw values below Q1 - 1.5×IQR or above Q3 + 1.5×IQR, where IQR = Q3 - Q1.\nExample: if Q1 = 10 and Q3 = 20, IQR = 10 and the normal range is -5 to 35; values below -5 or above 35 are shown as outlier points.',

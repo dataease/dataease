@@ -588,7 +588,6 @@ onMounted(async () => {
         :effect="themes"
         :disabled="!state.basicStyleForm.showOutliers"
         is-custom
-        show-alpha
         :trigger-width="108"
         class="color-picker-style"
         :predefine="predefineColors"

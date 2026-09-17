@@ -137,7 +137,10 @@ const setupSeriesColor = () => {
     if (seriesColorState.curColorIndex > seriesColorState.seriesColor.length - 1) {
       seriesColorState.curColorIndex = 0
     }
-    seriesColorState.curSeriesColor = seriesColorState.seriesColor[seriesColorState.curColorIndex]
+    // 编辑副本，避免 v-model 提前改写列表导致 changeSeriesColor 检测不到变化
+    seriesColorState.curSeriesColor = cloneDeep(
+      seriesColorState.seriesColor[seriesColorState.curColorIndex]
+    )
     nextTick(() => {
       customColorPickerRef.value?.hide()
       // 防止 teleport 失效还有选框飘到左上角
@@ -181,7 +184,9 @@ watch(
     () => props.chart?.type,
     () => props.chart?.customAttr.basicStyle.calcTopN,
     () => props.chart?.customAttr.basicStyle.topN,
-    () => props.chart?.customAttr.basicStyle.topNLabel
+    () => props.chart?.customAttr.basicStyle.topNLabel,
+    () => JSON.stringify(props.chart?.customAttr.basicStyle[colorsName.value]),
+    () => JSON.stringify(props.chart?.customAttr.basicStyle[seriesColorName.value])
   ],
   setupSeriesColor,
   { deep: false }

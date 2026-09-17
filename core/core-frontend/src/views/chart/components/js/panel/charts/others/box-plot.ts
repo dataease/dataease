@@ -6,21 +6,25 @@ import {
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
 import {
   configPlotTooltipEvent,
+  configXAxisLengthLimit,
   getPadding,
   getTooltipContainer
 } from '@/views/chart/components/js/panel/common/common_antv'
 import { BAR_EDITOR_PROPERTY_INNER } from '@/views/chart/components/js/panel/charts/bar/common'
 import { cloneDeep } from 'lodash-es'
+import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
 import {
-  flow,
-  hexColorToRGBA,
-  parseJson,
-  setUpGroupSeriesColor
-} from '@/views/chart/components/js/util'
+  alignBoxPlotOutliers,
+  BOX_CATEGORY_FIELD,
+  BOX_GROUP_FIELD,
+  BOX_ID_FIELD,
+  boxPlotDomain,
+  boxPlotKey,
+  boxPlotOpaqueColor
+} from '@/views/chart/components/js/panel/common/box_plot'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Action, registerAction, registerInteraction } from '@antv/g2'
-import { getItemsOfView } from '@antv/g2/lib/interaction/action/active-region'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
@@ -34,6 +38,54 @@ const ACTIVE_REGION_SHAPE_NAME = 'active-region'
 const ACTIVE_REGION_STYLE = {
   fill: '#CCD6EC',
   opacity: 0.3
+}
+
+// 命中箱体不依赖 tooltip，退化成横线的箱体也能按当前可见分组进行交互
+const getBoxDatumAtPoint = (view, point) => {
+  const root = view.getRootView()
+  const bounds = root.coordinateBBox
+  if (
+    !bounds ||
+    point.x < bounds.minX ||
+    point.x > bounds.maxX ||
+    point.y < bounds.minY ||
+    point.y > bounds.maxY
+  ) {
+    return undefined
+  }
+  const coordinate = root.getCoordinate()
+  const xScale = root.getXScale()
+  if (!coordinate?.isRect || !xScale?.values?.length) return undefined
+  const axis = coordinate.isTransposed ? 'y' : 'x'
+  // 先按分类中心划定所属区域，隐藏后的空类别不能命中相邻类别的箱体
+  let category
+  let categoryDistance = Infinity
+  xScale.values.forEach(value => {
+    const center = coordinate.convert({ x: xScale.scale(value), y: 0 })[axis]
+    const distance = Math.abs(point[axis] - center)
+    if (distance < categoryDistance) {
+      categoryDistance = distance
+      category = value
+    }
+  })
+  const schema = root.geometries.find(geometry => geometry.type === 'schema')
+  let nearest
+  let distance = Infinity
+  schema?.elements.forEach(element => {
+    if (!element.visible) return
+    const datum = element.getData()
+    if (datum[xScale.field] !== category) return
+    const bbox = element.shape.getCanvasBBox()
+    const center = coordinate.isTransposed
+      ? (bbox.minY + bbox.maxY) / 2
+      : (bbox.minX + bbox.maxX) / 2
+    const currentDistance = Math.abs(point[axis] - center)
+    if (currentDistance < distance) {
+      distance = currentDistance
+      nearest = datum
+    }
+  })
+  return nearest
 }
 // 使用 itemTpl 保留 DataEase 的唯一 tooltip 容器，避免 customContent 在连续悬浮时替换节点并留下残影
 const BOX_PLOT_TOOLTIP_ITEM_TPL =
@@ -133,16 +185,9 @@ class BoxActiveRegion extends Action {
       return
     }
 
-    const tooltipItems = getItemsOfView(
-      view,
-      { x: event.x, y: event.y },
-      tooltipController.getTooltipCfg()
-    )
+    const datum = getBoxDatumAtPoint(view, event)
     const xField = view.getXScale()?.field
-    const tooltipItem = tooltipItems.find(item =>
-      Object.prototype.hasOwnProperty.call(item?.data ?? {}, xField)
-    )
-    const path = tooltipItem ? getCategoryRegionPath(view, tooltipItem.data[xField]) : undefined
+    const path = datum ? getCategoryRegionPath(view, datum[xField]) : undefined
     if (!path) {
       this.hide()
       return
@@ -191,12 +236,37 @@ type DataEaseBoxOptions = BoxOptions & {
 }
 
 class DataEaseBox extends G2Box {
+  // G2 4.x 在 beforepaint 前完成所有 Geometry 的分组计算，此时尚未生成图形及命中信息
+  // 升级 G2/G2Plot 后需重新验证实际渲染及图例更新的调用顺序
+  private alignOutliers = () => {
+    const schema = this.chart.geometries.find(geometry => geometry.type === 'schema')
+    const point = this.chart.views.find(view => view.id === OUTLIERS_VIEW_ID)?.geometries[0]
+    if (!schema || !point) return
+    // 将对 G2 内部调整结果的访问限制在适配层，避免绘制后移动 Shape 导致命中位置不一致
+    type AdjustedGeometry = { beforeMappingData: Record<string, any>[][] }
+    const boxes = schema as unknown as AdjustedGeometry
+    const points = point as unknown as AdjustedGeometry
+    points.beforeMappingData = alignBoxPlotOutliers(
+      boxes.beforeMappingData ?? [],
+      points.beforeMappingData ?? [],
+      this.options.xField
+    )
+  }
+
   protected execAdaptor(): void {
     super.execAdaptor()
+    this.chart.off('beforepaint', this.alignOutliers)
+    this.chart.on('beforepaint', this.alignOutliers)
     if (this.options.legend === false) {
       this.chart.legend(false)
     }
     const groupField = this.options.groupField
+    // Box 适配器没有将状态传给异常点子视图，两层都要使用同一套联动状态样式
+    this.chart.geometries.forEach(geometry => geometry.state(this.options.state))
+    const colors = this.options.color
+    if (!groupField && Array.isArray(colors)) {
+      this.chart.geometries.forEach(geometry => geometry.color(colors[0]))
+    }
     const outliersView = this.chart.views.find(view => view.id === OUTLIERS_VIEW_ID)
     const geometry = outliersView?.geometries?.[0]
     if (!outliersView || !geometry) {
@@ -206,7 +276,17 @@ class DataEaseBox extends G2Box {
     const dataEaseOptions = this.options as DataEaseBoxOptions
     const categoryValues = [...new Set(sourceData.map(datum => datum[this.options.xField]))]
     // 异常点子视图只包含有异常值的类别，必须复用主图完整类别域，否则单个类别会被画到绘图区中央
-    outliersView.scale(this.options.xField, { type: 'cat', values: categoryValues })
+    this.chart.scale(this.options.xField, {
+      ...this.options.meta?.[this.options.xField],
+      type: 'cat',
+      values: categoryValues
+    })
+    outliersView.scale(this.options.xField, {
+      ...this.options.meta?.[this.options.xField],
+      type: 'cat',
+      values: categoryValues
+    })
+    geometry.state(this.options.state)
     // 点大小属于 geometry 映射而不是 ShapeStyle，需要在 G2Plot 创建异常点子视图后设置
     geometry.size(dataEaseOptions.outlierSize ?? 4)
     if (dataEaseOptions.outlierColorMode === 'custom' && dataEaseOptions.outlierColor) {
@@ -222,17 +302,21 @@ class DataEaseBox extends G2Box {
       return
     }
     const groupValues = [...new Set(sourceData.map(datum => datum[groupField]))]
-    // 分组尺度也要与主箱体保持同一顺序，确保 dodge 后的异常点落在对应分组箱体中心
-    outliersView.scale(groupField, { type: 'cat', values: groupValues })
-    // G2Plot 2.4 的异常点子视图不会继承分组 dodge，需与箱体使用相同分组映射
+    // 分组尺度与主箱体保持同一顺序，确保颜色和图例过滤使用相同类别域
+    outliersView.scale(groupField, {
+      ...this.options.meta?.[groupField],
+      type: 'cat',
+      values: groupValues
+    })
+    // 自定义常量色也保留分组通道，避免丢失子类别对应的颜色尺度
     if (dataEaseOptions.outlierColorMode === 'custom' && dataEaseOptions.outlierColor) {
-      geometry.color(dataEaseOptions.outlierColor)
+      geometry.color(groupField, () => dataEaseOptions.outlierColor)
     } else if (this.options.color) {
       geometry.color(groupField, this.options.color)
     } else {
       geometry.color(groupField)
     }
-    geometry.adjust('dodge')
+    // 异常点仅保留分组与颜色映射，横坐标由 alignOutliers 取自箱体
     outliersView.legend(false)
   }
 }
@@ -309,29 +393,44 @@ export class BoxPlot extends G2PlotChartView<BoxOptions, G2Box> {
     }
     const data = cloneDeep(chart.data.data).map(datum => ({
       ...datum,
+      [BOX_CATEGORY_FIELD]: boxPlotKey(datum.field),
+      [BOX_GROUP_FIELD]: boxPlotKey(datum.category),
+      [BOX_ID_FIELD]: JSON.stringify([datum.field ?? null, datum.category ?? null]),
       // G2Plot 会在异常点子视图中把 outliers 数组替换成当前单值，单独保留完整列表供统一 tooltip 使用
       [OUTLIER_VALUES_FIELD]: Array.isArray(datum.outliers) ? [...datum.outliers] : []
     }))
-    // 子类别字段存在但全部为空时按无分组绘制，避免 G2Plot 为无内容图例保留布局空间
-    const hasGroup =
-      !!chart.xAxisExt?.length &&
-      data.some(
-        datum =>
-          datum.category !== null &&
-          datum.category !== undefined &&
-          String(datum.category).trim() !== ''
-      )
+    const hasGroup = !!chart.xAxisExt?.length
+    const categories = boxPlotDomain(
+      data.map(datum => datum.field),
+      t('chart.filter_empty')
+    )
+    const groups = boxPlotDomain(
+      data.map(datum => datum.category),
+      t('chart.filter_empty')
+    )
     const initOptions: BoxOptions = {
       appendPadding: getPadding(chart),
       data,
-      xField: 'field',
+      xField: BOX_CATEGORY_FIELD,
       yField: ['low', 'q1', 'median', 'q3', 'high'],
-      groupField: hasGroup ? 'category' : undefined,
+      groupField: hasGroup ? BOX_GROUP_FIELD : undefined,
       outliersField: 'outliers',
       interactions: [{ type: BOX_ACTIVE_REGION }],
       meta: {
-        field: { type: 'cat' },
-        ...(hasGroup ? { category: { type: 'cat' } } : {})
+        [BOX_CATEGORY_FIELD]: {
+          type: 'cat',
+          values: [...categories.keys()],
+          formatter: key => categories.get(key)?.label ?? key
+        },
+        ...(hasGroup
+          ? {
+              [BOX_GROUP_FIELD]: {
+                type: 'cat',
+                values: [...groups.keys()],
+                formatter: key => groups.get(key)?.label ?? key
+              }
+            }
+          : {})
       }
     }
     const options = this.setupOptions(chart, initOptions)
@@ -348,7 +447,7 @@ export class BoxPlot extends G2PlotChartView<BoxOptions, G2Box> {
         y: event.y,
         data: {
           data: {
-            ...datum,
+            ...cloneDeep(datum),
             value: Array.isArray(datum.outliers) ? datum.median : datum.outliers ?? datum.median
           }
         }
@@ -356,44 +455,54 @@ export class BoxPlot extends G2PlotChartView<BoxOptions, G2Box> {
     }
     plot.on('schema:click', normalizeAction)
     plot.on('point:click', normalizeAction)
-    if (options.tooltip) {
-      plot.on('plot:click', event => {
-        if (event.target?.cfg?.renderer !== 'canvas') {
-          return
-        }
-        const view = event.view
-        const activeRegion = view?.backgroundGroup?.cfg?.children?.find(
-          item => item.cfg.name === ACTIVE_REGION_SHAPE_NAME
-        )
-        if (!activeRegion?.cfg.visible) {
-          return
-        }
-        // 维度背景没有图形 datum，通过当前 active-region 对应的 tooltip 项恢复点击数据
-        const items = getItemsOfView(
-          view,
-          { x: event.x, y: event.y },
-          view.getController('tooltip').getTooltipCfg()
-        )
-        const datum = items?.[0]?.data
-        if (datum?.field) {
-          normalizeAction(event, datum)
-        }
-      })
-    }
+    plot.on('plot:click', event => {
+      if (event.target?.cfg?.renderer !== 'canvas') {
+        return
+      }
+      const datum = getBoxDatumAtPoint(plot.chart, event)
+      if (datum) {
+        normalizeAction(event, datum)
+      }
+    })
     configPlotTooltipEvent(chart, plot as any)
+    // 与柱状图共用轴标签提示，轴刻度的 name 已由 meta 转为完整展示文本
+    configXAxisLengthLimit(chart, plot)
     return plot
   }
 
   protected configColor(chart: Chart, options: BoxOptions): BoxOptions {
-    return options.groupField
-      ? this.configGroupColor(chart, options)
-      : super.configColor(chart, options)
+    const { basicStyle } = parseJson(chart.customAttr)
+    if (!options.groupField) {
+      const customColor = basicStyle.seriesColor?.find(item => item.id === chart.yAxis?.[0]?.id)
+      return {
+        ...options,
+        color: [hexColorToRGBA(customColor?.color ?? basicStyle.colors[0], basicStyle.alpha)]
+      }
+    }
+    const groups = boxPlotDomain(
+      options.data.map(datum => datum.category),
+      t('chart.filter_empty')
+    )
+    const color = [...groups].map(([key, group], index) => {
+      const customColor =
+        basicStyle.seriesColor?.find(item => item.id === `box-plot:${key}`) ??
+        basicStyle.seriesColor?.find(item => item.id === group.value)
+      return hexColorToRGBA(
+        customColor?.color ?? basicStyle.colors[index % basicStyle.colors.length],
+        basicStyle.alpha
+      )
+    })
+    return { ...options, color }
   }
 
   protected configBasicStyle(chart: Chart, options: BoxOptions): BoxOptions {
     const customAttr = parseJson(chart.customAttr)
     const basicStyle = customAttr.basicStyle
-    const stroke = basicStyle.themeContrastColor ?? customAttr.label?.color ?? '#000000'
+    // 统计线与箱体填充共用整体透明度，兼容历史描边颜色中自带的 alpha
+    const stroke = hexColorToRGBA(
+      boxPlotOpaqueColor(basicStyle.themeContrastColor ?? customAttr.label?.color ?? '#000000'),
+      basicStyle.alpha
+    )
     const configuredColors = Array.isArray(options.color)
       ? options.color
       : typeof options.color === 'string'
@@ -415,11 +524,25 @@ export class BoxPlot extends G2PlotChartView<BoxOptions, G2Box> {
     return {
       ...options,
       outlierColorMode: basicStyle.outlierColorMode,
-      outlierColor: basicStyle.outlierColor,
+      outlierColor: basicStyle.outlierColor
+        ? hexColorToRGBA(boxPlotOpaqueColor(basicStyle.outlierColor), basicStyle.alpha)
+        : undefined,
       outlierSize: basicStyle.outlierSize,
       // 隐藏异常点只影响展示，四分位数、须线和异常值数量的统计口径保持不变
       outliersField: basicStyle.showOutliers === false ? undefined : options.outliersField,
       boxStyle,
+      // 公共主题会为高亮和选中状态重设描边，箱线图在这些状态下也保留整体透明度
+      state: {
+        ...options.state,
+        active: {
+          ...options.state?.active,
+          style: { ...options.state?.active?.style, stroke }
+        },
+        selected: {
+          ...options.state?.selected,
+          style: { ...options.state?.selected?.style, stroke }
+        }
+      },
       outliersStyle: {
         lineWidth: 1
       }
@@ -510,10 +633,10 @@ export class BoxPlot extends G2PlotChartView<BoxOptions, G2Box> {
               : undefined
 
             // 分组场景用子类别值作为父项；无分组时用指标名作为父项
-            const headerName =
-              groupAxis && datum.category !== null && datum.category !== undefined
-                ? datum.category
-                : metricName
+            const headerName = groupAxis
+              ? options.meta?.[options.groupField]?.formatter?.(datum[options.groupField]) ??
+                datum.category
+              : metricName
             const sampleCount = t('chart.box_plot_samples', { count: datum.count })
             // 样本量提升到分组头，填补无分组标题空白并避免在统计明细中重复展示
             const headerValue = groupAxis ? `${metricName} · ${sampleCount}` : sampleCount
@@ -532,8 +655,7 @@ export class BoxPlot extends G2PlotChartView<BoxOptions, G2Box> {
                   `${formatMetricValue(datum.q1)} – ${formatMetricValue(datum.q3)}`,
                   false
                 ),
-                createItem(sourceItem, labelMap.outlierCount, outlierCount, false),
-                ...(outlierItem ? [outlierItem] : [])
+                createItem(sourceItem, labelMap.outlierCount, outlierCount, false)
               ]
             }
 
@@ -612,6 +734,41 @@ export class BoxPlot extends G2PlotChartView<BoxOptions, G2Box> {
     return result
   }
 
+  protected configLegend(chart: Chart, options: BoxOptions): BoxOptions {
+    const result = super.configLegend(chart, options)
+    if (result.legend) {
+      const marker = result.legend.marker
+      result.legend = {
+        ...result.legend,
+        // G2 的箱线图图例默认只有描边，复用该项系列色填充并保留用户设置的形状和大小
+        marker: (name, index, item) => {
+          const config = typeof marker === 'function' ? marker(name, index, item) : marker
+          return {
+            ...config,
+            style: {
+              ...config?.style,
+              fill: item.style?.stroke ?? item.style?.fill
+            }
+          }
+        }
+      }
+    }
+    return result
+  }
+
+  protected configXAxis(chart: Chart, options: BoxOptions): BoxOptions {
+    const result = super.configXAxis(chart, options)
+    if (result.xAxis && result.xAxis.label) {
+      const limit = parseJson(chart.customStyle).xAxis.axisLabel.lengthLimit
+      // 长度限制只作用于轴标签，完整类别键继续用于分组、tooltip 和联动
+      result.xAxis.label.formatter = value => {
+        const text = String(value)
+        return limit > 0 && text.length > limit ? `${text.slice(0, limit)}...` : text
+      }
+    }
+    return result
+  }
+
   protected setupOptions(chart: Chart, options: BoxOptions): BoxOptions {
     return flow(
       this.configTheme,
@@ -625,7 +782,20 @@ export class BoxPlot extends G2PlotChartView<BoxOptions, G2Box> {
   }
 
   public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
-    return setUpGroupSeriesColor(chart, data)
+    const { basicStyle } = chart.customAttr
+    if (!chart.xAxisExt?.length) return super.setupSeriesColor(chart, data)
+    return [
+      ...boxPlotDomain(
+        (data ?? []).map(datum => datum.category),
+        t('chart.filter_empty')
+      )
+    ].map(([key, group], index) => ({
+      id: `box-plot:${key}`,
+      name: group.label,
+      color:
+        basicStyle.seriesColor?.find(item => item.id === group.value)?.color ??
+        basicStyle.colors[index % basicStyle.colors.length]
+    }))
   }
 
   setupDefaultOptions(chart: ChartObj): ChartObj {
