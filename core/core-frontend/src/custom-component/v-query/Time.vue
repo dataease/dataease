@@ -146,6 +146,8 @@ watch(
 )
 
 const handleValueChange = () => {
+  console.log(selectValue.value, 1)
+
   if (selectValue.value === null) {
     selectValue.value = multiple.value ? [] : undefined
   }
@@ -161,6 +163,10 @@ const handleValueChange = () => {
     nextTick(() => {
       isConfirmSearch(config.value.id)
     })
+    return
+  }
+  if (!value) {
+    config.value.defaultValue = undefined
     return
   }
   config.value.defaultValue = Array.isArray(value)
@@ -503,6 +509,7 @@ const formatDate = computed(() => {
     "
     @change="handleValueChange"
     :editable="false"
+    @clear="handleClear"
     :range-separator="$t('cron.to')"
     :start-placeholder="placeholderText"
     :end-placeholder="placeholderText"
@@ -512,6 +519,7 @@ const formatDate = computed(() => {
     :key="config.timeGranularity + 1"
     v-model="selectValue"
     class="icon-fixed_16"
+    @clear="handleClear"
     @visible-change="visibleChange"
     :disabled-date="disabledDate"
     :type="config.timeGranularity"
