@@ -37,7 +37,11 @@
         </el-tooltip>
       </div>
       <div class="link-icon-active">
-        <el-tooltip :disabled="isMobile()" :content="t('visualization.export_pdf')">
+        <el-tooltip
+          v-if="shareAllows(4)"
+          :disabled="isMobile()"
+          :content="t('visualization.export_pdf')"
+        >
           <el-icon style="width: 16px; height: 16px" @click="exportPDF">
             <Icon name="icon_download_outlined">
               <icon_download_outlined class="svg-icon" />
@@ -67,6 +71,7 @@
 </template>
 
 <script lang="ts" setup>
+import { shareAllows } from '@/utils/utils'
 import { computed, reactive, toRefs } from 'vue'
 import router from '@/router'
 import { ElIcon } from 'element-plus-secondary'
@@ -133,6 +138,7 @@ const back2Last = () => {
   window.location.reload()
 }
 const exportPDF = () => {
+  if (!shareAllows(4)) return
   useEmitt().emitter.emit('canvasDownload', 'pdf')
 }
 </script>

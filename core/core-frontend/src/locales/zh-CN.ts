@@ -1,4 +1,14 @@
 export default {
+  share_visitor: {
+    no_permission: '你没有此项权限',
+    title: '访客权限',
+    hint: '新建链接默认仅查看，权限仅对当前公共链接生效。',
+    details: '允许查看明细',
+    data: '允许导出数据',
+    image: '允许导出图片 / PDF',
+    buttons_hint: '分享页遵循仪表板或大屏的按钮显示设置；允许权限不会重新显示已隐藏的按钮。',
+    save_copy: '保存并复制链接'
+  },
   common: {
     display_formats: '展示形式',
     dropdown_display: '下拉展示',

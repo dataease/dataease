@@ -31,4 +31,6 @@ public class XpackShareVO implements Serializable {
     private Boolean autoPwd = true;
     @Schema(description = "ticket必须")
     private Boolean ticketRequire = false;
+    private Integer visitorPermissions;
+    private Integer allowedVisitorPermissions;
 }
