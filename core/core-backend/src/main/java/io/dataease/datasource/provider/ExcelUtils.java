@@ -661,6 +661,7 @@ public class ExcelUtils {
                     DEException.throwException(readSheet.getSheetName() + "首行不能为空！");
                 }
                 for (String s : noModelDataListener.getHeader()) {
+                    EngineProvider.validateIdentifier(s);
                     TableField tableFiled = new TableField();
                     tableFiled.setFieldType(null);
                     tableFiled.setName(s);
@@ -711,6 +712,7 @@ public class ExcelUtils {
                     if (filedName.startsWith(UFEFF)) {
                         filedName = filedName.replace(UFEFF, "");
                     }
+                    EngineProvider.validateIdentifier(filedName);
                     TableField tableFiled = new TableField();
                     tableFiled.setName(filedName);
                     tableFiled.setOriginName(filedName);

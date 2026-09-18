@@ -18,12 +18,12 @@ import java.util.stream.Collectors;
 @Service("oracleEngine")
 public class OracleEngineProvider extends EngineProvider {
 
-    private static final String creatTableSql = "CREATE TABLE \"TABLE_NAME\" " + "Column_Fields";
+    private static final String creatTableSql = "CREATE TABLE TABLE_NAME " + "Column_Fields";
 
 
     @Override
     public String createView(String name, String viewSQL) {
-        return "CREATE or replace view " + name + " AS (" + viewSQL + ")";
+        return "CREATE or replace view " + quoteIdentifier(name, '"') + " AS (" + viewSQL + ")";
     }
 
     @Override
@@ -43,7 +43,7 @@ public class OracleEngineProvider extends EngineProvider {
                 break;
         }
 
-        String insertSql = "INSERT INTO \"TABLE_NAME\" VALUES ".replace("TABLE_NAME", engineTableName);
+        String insertSql = "INSERT INTO TABLE_NAME VALUES ".replace("TABLE_NAME", quoteIdentifier(engineTableName, '"'));
         StringBuffer values = new StringBuffer();
 
         Integer realSize = page * pageNumber < dataList.size() ? page * pageNumber : dataList.size();
@@ -75,7 +75,7 @@ public class OracleEngineProvider extends EngineProvider {
                 insetSql = insetSql + " ON DUPLICATE KEY UPDATE ";
                 List<String> updateColumes = new ArrayList<>();
                 for (TableField notKey : notKeys) {
-                    updateColumes.add("column = VALUES(column)".replace("column", notKey.getName()));
+                    updateColumes.add(quoteIdentifier(notKey.getName(), '"') + " = VALUES(" + quoteIdentifier(notKey.getName(), '"') + ")");
                 }
                 insetSql = insetSql + updateColumes.stream().collect(Collectors.joining(","));
             }
@@ -87,73 +87,68 @@ public class OracleEngineProvider extends EngineProvider {
 
     @Override
     public String dropTable(String name, CoreDeEngine engine) {
-        return "DROP TABLE  \"" + name + "\"";
+        return "DROP TABLE " + quoteIdentifier(name, '"');
     }
 
     @Override
     public String dropView(String name) {
-        return "DROP VIEW  \"" + name + "\"";
+        return "DROP VIEW " + quoteIdentifier(name, '"');
     }
 
     @Override
     public String replaceTable(String name, CoreDeEngine engine) {
-        String replaceTableSql = "ALTER TABLE  \"FROM_TABLE\" RENAME TO \"FROM_TABLE_tmp\";  ALTER TABLE \"TO_TABLE\" RENAME TO \"FROM_TABLE\"; ALTER TABLE \"FROM_TABLE_tmp\" RENAME TO \"TO_TABLE\"".replace("FROM_TABLE", name).replace("TO_TABLE", TableUtils.tmpName(name));
-        String dropTableSql = "DROP TABLE   \"TABLE_NAME\"".replace("TABLE_NAME", TableUtils.tmpName(name));
+        String table = quoteIdentifier(name, '"');
+        String tmpTable = quoteIdentifier(TableUtils.tmpName(name), '"');
+        String replaceTableSql = "ALTER TABLE " + table + " RENAME TO " + tmpTable + "; ALTER TABLE " + tmpTable
+                + " RENAME TO " + table + "; ALTER TABLE " + tmpTable + " RENAME TO " + table;
+        String dropTableSql = "DROP TABLE " + tmpTable;
         return replaceTableSql + ";" + dropTableSql;
     }
 
     @Override
     public String createTableSql(String tableName, List<TableField> tableFields, CoreDeEngine engine) {
-        String dorisTableColumnSql = createTableSql(tableFields);
-        return creatTableSql.replace("TABLE_NAME", tableName).replace("Column_Fields", dorisTableColumnSql);
+        String quotedTable = quoteIdentifier(tableName, '"');
+        String columnSql = createTableSql(tableFields);
+        return creatTableSql.replace("TABLE_NAME", quotedTable).replace("Column_Fields", columnSql);
     }
 
     private String createTableSql(final List<TableField> tableFields) {
-        StringBuilder columnFields = new StringBuilder("\"");
-        StringBuilder key = new StringBuilder();
+        List<String> columns = new ArrayList<>();
+        List<String> keys = new ArrayList<>();
         for (TableField tableField : tableFields) {
             if (!tableField.isChecked()) {
                 continue;
             }
             if (tableField.isPrimaryKey()) {
-                key.append("\"").append(tableField.getName()).append("\", ");
+                keys.add(quoteIdentifier(tableField.getName(), '"'));
             }
-            columnFields.append(tableField.getName()).append("\" ");
-            int size = tableField.getPrecision() * 4;
-            switch (tableField.getDeExtractType()) {
-                case 0:
-                    if (StringUtils.isNotEmpty(tableField.getLength())) {
-                        columnFields.append("VARCHAR2(length)".replace("length", tableField.getLength())).append(",\"");
-                    } else {
-                        columnFields.append("VARCHAR2(4000)").append(",\"");
-                    }
-                    break;
-                case 1:
-                    columnFields.append("TIMESTAMP").append(",\"");
-                    break;
-                case 2:
-                    columnFields.append("NUMBER(19)").append(",\"");
-                    break;
-                case 3:
-                    columnFields.append("NUMBER(27,8)").append(",\"");
-                    break;
-                case 4:
-                    columnFields.append("NUMBER(length)".replace("length", String.valueOf(tableField.getPrecision()))).append(",\"");
-                    break;
-                default:
-                    columnFields.append("CLOB").append(",\"");
-                    break;
-            }
+            columns.add(quoteIdentifier(tableField.getName(), '"') + " " + buildColumnType(tableField));
         }
-        if (StringUtils.isEmpty(key.toString())) {
-            columnFields = new StringBuilder(columnFields.substring(0, columnFields.length() - 2));
-        } else {
-            key = new StringBuilder(key.substring(0, key.length() - 2));
-            columnFields = new StringBuilder(columnFields.substring(0, columnFields.length() - 1));
-            columnFields.append("PRIMARY KEY (PRIMARYKEY)".replace("PRIMARYKEY", key.toString()));
+        StringBuilder sql = new StringBuilder("(").append(String.join(",", columns));
+        if (!keys.isEmpty()) {
+            sql.append(", PRIMARY KEY (").append(String.join(",", keys)).append(")");
         }
+        sql.append(")");
+        return sql.toString();
+    }
 
-        columnFields = new StringBuilder("(" + columnFields + ")");
-        return columnFields.toString();
+    private String buildColumnType(TableField tableField) {
+        switch (tableField.getDeExtractType()) {
+            case 0:
+                if (StringUtils.isNotEmpty(tableField.getLength())) {
+                    return "VARCHAR2(" + tableField.getLength() + ")";
+                }
+                return "VARCHAR2(4000)";
+            case 1:
+                return "TIMESTAMP";
+            case 2:
+                return "NUMBER(19)";
+            case 3:
+                return "NUMBER(27,8)";
+            case 4:
+                return "NUMBER(" + tableField.getPrecision() + ")";
+            default:
+                return "CLOB";
+        }
     }
 }

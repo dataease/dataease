@@ -8,6 +8,7 @@ import io.dataease.extensions.datasource.dto.TableField;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,13 +16,13 @@ import java.util.List;
 public class H2EngineProvider extends EngineProvider {
 
     private static final String creatTableSql =
-            "CREATE TABLE IF NOT EXISTS \"TABLE_NAME\"" +
+            "CREATE TABLE IF NOT EXISTS TABLE_NAME" +
                     "Column_Fields;";
 
 
     @Override
     public String createView(String name, String viewSQL) {
-        return "CREATE or replace view " + name + " AS (" + viewSQL + ")";
+        return "CREATE or replace view " + quoteIdentifier(name, '"') + " AS (" + viewSQL + ")";
     }
 
     @Override
@@ -35,7 +36,7 @@ public class H2EngineProvider extends EngineProvider {
                 engineTableName = TableUtils.tableName(tableName);
                 break;
         }
-        String insertSql = "INSERT INTO  \"TABLE_NAME\" VALUES ".replace("TABLE_NAME", engineTableName);
+        String insertSql = "INSERT INTO TABLE_NAME VALUES ".replace("TABLE_NAME", quoteIdentifier(engineTableName, '"'));
         StringBuffer values = new StringBuffer();
 
         Integer realSize = page * pageNumber < dataList.size() ? page * pageNumber : dataList.size();
@@ -62,7 +63,7 @@ public class H2EngineProvider extends EngineProvider {
 
     @Override
     public String dropTable(String name, CoreDeEngine engine) {
-        return "DROP TABLE IF EXISTS `" + name + "`";
+        return "DROP TABLE IF EXISTS " + quoteIdentifier(name, '"');
     }
 
     @Override
@@ -72,67 +73,62 @@ public class H2EngineProvider extends EngineProvider {
 
     @Override
     public String dropView(String name) {
-        return "DROP VIEW IF EXISTS `" + name + "`";
+        return "DROP VIEW IF EXISTS " + quoteIdentifier(name, '"');
     }
 
     @Override
     public String replaceTable(String name, CoreDeEngine engine) {
-        return "ALTER TABLE `FROM_TABLE` rename to `FROM_TABLE_tmp`; ALTER TABLE `TO_TABLE` rename to `FROM_TABLE`; DROP TABLE IF EXISTS `FROM_TABLE_tmp`;".replace("FROM_TABLE", name).replace("TO_TABLE", TableUtils.tmpName(name));
+        String table = quoteIdentifier(name, '"');
+        String tmpTable = quoteIdentifier(TableUtils.tmpName(name), '"');
+        return "ALTER TABLE " + table + " RENAME TO " + tmpTable + "; ALTER TABLE " + tmpTable
+                + " RENAME TO " + table + "; DROP TABLE IF EXISTS " + tmpTable + ";";
     }
 
 
     @Override
     public String createTableSql(String tableName, List<TableField> tableFields, CoreDeEngine engine) {
-        validateSqlInjectionRisk(tableName);
-        String dorisTableColumnSql = createTableSql(tableFields);
-        return creatTableSql.replace("TABLE_NAME", tableName).replace("Column_Fields", dorisTableColumnSql);
+        String quotedTable = quoteIdentifier(tableName, '"');
+        String columnSql = createTableSql(tableFields);
+        return creatTableSql.replace("TABLE_NAME", quotedTable).replace("Column_Fields", columnSql);
     }
 
     private String createTableSql(final List<TableField> tableFields) {
-        StringBuilder columnFields = new StringBuilder("\"");
-        StringBuilder key = new StringBuilder();
+        List<String> columns = new ArrayList<>();
+        List<String> keys = new ArrayList<>();
         for (TableField tableField : tableFields) {
             if (!tableField.isChecked()) {
                 continue;
             }
             if (tableField.isPrimaryKey()) {
-                key.append("\"").append(tableField.getName()).append("\", ");
+                keys.add(quoteIdentifier(tableField.getName(), '"'));
             }
-            columnFields.append(tableField.getName()).append("\" ");
-            int size = tableField.getPrecision() * 4;
-            switch (tableField.getDeExtractType()) {
-                case 0:
-                    if (StringUtils.isNotEmpty(tableField.getLength())) {
-                        columnFields.append("varchar(length)".replace("length", tableField.getLength())).append(",\"");
-                    } else {
-                        columnFields.append("longtext").append(",\"");
-                    }
-                    break;
-                case 1:
-                    columnFields.append("varchar(2048)").append(",\"");
-                    break;
-                case 2:
-                    columnFields.append("bigint(20)").append(",\"");
-                    break;
-                case 3:
-                    columnFields.append("decimal(27,8)").append(",\"");
-                    break;
-                case 4:
-                    columnFields.append("TINYINT(length)".replace("length", String.valueOf(tableField.getPrecision()))).append(",\"");
-                    break;
-                default:
-                    columnFields.append("longtext").append(",\"");
-                    break;
-            }
+            columns.add(quoteIdentifier(tableField.getName(), '"') + " " + buildColumnType(tableField));
         }
-        if (StringUtils.isEmpty(key.toString())) {
-            columnFields = new StringBuilder(columnFields.substring(0, columnFields.length() - 2));
-        } else {
-            key = new StringBuilder(key.substring(0, key.length() - 2));
-            columnFields = new StringBuilder(columnFields.substring(0, columnFields.length() - 1));
-            columnFields.append("PRIMARY KEY (PRIMARYKEY)".replace("PRIMARYKEY", key.toString()));
+        StringBuilder sql = new StringBuilder("(").append(String.join(",", columns));
+        if (!keys.isEmpty()) {
+            sql.append(", PRIMARY KEY (").append(String.join(",", keys)).append(")");
         }
-        columnFields = new StringBuilder("(" + columnFields + ")");
-        return columnFields.toString();
+        sql.append(")");
+        return sql.toString();
+    }
+
+    private String buildColumnType(TableField tableField) {
+        switch (tableField.getDeExtractType()) {
+            case 0:
+                if (StringUtils.isNotEmpty(tableField.getLength())) {
+                    return "varchar(" + tableField.getLength() + ")";
+                }
+                return "longtext";
+            case 1:
+                return "varchar(2048)";
+            case 2:
+                return "bigint(20)";
+            case 3:
+                return "decimal(27,8)";
+            case 4:
+                return "TINYINT(" + tableField.getPrecision() + ")";
+            default:
+                return "longtext";
+        }
     }
 }

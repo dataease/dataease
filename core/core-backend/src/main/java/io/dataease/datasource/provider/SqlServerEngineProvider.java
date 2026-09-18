@@ -25,13 +25,13 @@ import java.util.stream.Collectors;
 public class SqlServerEngineProvider extends EngineProvider {
 
     private static final String creatTableSql =
-            "CREATE TABLE [TABLE_NAME]" +
+            "CREATE TABLE TABLE_NAME" +
                     "Column_Fields;";
 
 
     @Override
     public String createView(String name, String viewSQL) {
-        return "CREATE or replace view " + name + " AS (" + viewSQL + ")";
+        return "CREATE or replace view " + bracketIdentifier(name) + " AS (" + viewSQL + ")";
     }
 
     @Override
@@ -47,7 +47,7 @@ public class SqlServerEngineProvider extends EngineProvider {
                 break;
         }
 
-        String insertSql = "INSERT INTO [TABLE_NAME] VALUES ".replace("TABLE_NAME", engineTableName);
+        String insertSql = "INSERT INTO TABLE_NAME VALUES ".replace("TABLE_NAME", bracketIdentifier(engineTableName));
         StringBuffer values = new StringBuffer();
 
         Integer realSize = page * pageNumber < dataList.size() ? page * pageNumber : dataList.size();
@@ -84,10 +84,11 @@ public class SqlServerEngineProvider extends EngineProvider {
             List<TableField> keys = tableFields.stream().filter(tableField -> tableField.isPrimaryKey() && tableField.isChecked()).toList();
             List<TableField> notKeys = tableFields.stream().filter(tableField -> tableField.isChecked() && !tableField.isPrimaryKey()).toList();
             if (CollectionUtils.isNotEmpty(keys) && extractType.equals(DatasourceServer.UpdateType.add_scope)) {
-                insetSql = insetSql + " ON CONFLICT (key) DO UPDATE SET ".replace("key", keys.stream().map(TableField::getName).collect(Collectors.joining(",")));
+                String keyColumns = keys.stream().map(f -> bracketIdentifier(f.getName())).collect(Collectors.joining(","));
+                insetSql = insetSql + " ON CONFLICT (" + keyColumns + ") DO UPDATE SET ";
                 List<String> updateColumes = new ArrayList<>();
                 for (TableField notKey : notKeys) {
-                    updateColumes.add("column = EXCLUDED.column".replace("column", notKey.getName()));
+                    updateColumes.add(bracketIdentifier(notKey.getName()) + " = EXCLUDED." + bracketIdentifier(notKey.getName()));
                 }
                 insetSql = insetSql + updateColumes.stream().collect(Collectors.joining(","));
             }
@@ -99,8 +100,7 @@ public class SqlServerEngineProvider extends EngineProvider {
 
     @Override
     public String dropTable(String name, CoreDeEngine engine) {
-        Sqlserver sqlserver = JsonUtil.parseObject(engine.getConfiguration(), Sqlserver.class);
-        return "DROP TABLE " + "[" + name + "]";
+        return "DROP TABLE " + bracketIdentifier(name);
     }
 
     @Override
@@ -110,72 +110,67 @@ public class SqlServerEngineProvider extends EngineProvider {
 
     @Override
     public String dropView(String name) {
-        return "DROP VIEW " + name + "";
+        return "DROP VIEW " + bracketIdentifier(name);
     }
 
     @Override
     public String replaceTable(String name, CoreDeEngine engine) {
-        Sqlserver sqlserver = JsonUtil.parseObject(engine.getConfiguration(), Sqlserver.class);
-        String replaceTableSql = " EXEC sp_rename [FROM_TABLE], [FROM_TABLE_tmp], 'OBJECT'; EXEC sp_rename [TO_TABLE], [FROM_TABLE], 'OBJECT'; EXEC sp_rename [FROM_TABLE_tmp], [TO_TABLE], 'OBJECT' "
-                .replace("FROM_TABLE", name).replace("TO_TABLE", TableUtils.tmpName(name));
-        String dropTableSql = "DROP TABLE [TABLE_NAME]".replace("TABLE_NAME", TableUtils.tmpName(name));
+        String table = bracketIdentifier(name);
+        String tmpTable = bracketIdentifier(TableUtils.tmpName(name));
+        String replaceTableSql = "EXEC sp_rename " + table + ", " + tmpTable + ", 'OBJECT'; EXEC sp_rename " + tmpTable
+                + ", " + table + ", 'OBJECT'; EXEC sp_rename " + tmpTable + ", " + table + ", 'OBJECT'";
+        String dropTableSql = "DROP TABLE " + tmpTable;
         return replaceTableSql + ";" + dropTableSql;
     }
 
     @Override
     public String createTableSql(String tableName, List<TableField> tableFields, CoreDeEngine engine) {
-        String dorisTableColumnSql = createTableSql(tableFields);
-        Sqlserver sqlserver = JsonUtil.parseObject(engine.getConfiguration(), Sqlserver.class);
-        System.out.println();
-        return creatTableSql.replace("TABLE_NAME", tableName).replace("Column_Fields", dorisTableColumnSql);
+        String columnSql = createTableSql(tableFields);
+        return creatTableSql.replace("TABLE_NAME", bracketIdentifier(tableName)).replace("Column_Fields", columnSql);
     }
 
     private String createTableSql(final List<TableField> tableFields) {
-        StringBuilder columnFields = new StringBuilder("\"");
-        StringBuilder key = new StringBuilder();
+        List<String> columns = new ArrayList<>();
+        List<String> keys = new ArrayList<>();
         for (TableField tableField : tableFields) {
             if (!tableField.isChecked()) {
                 continue;
             }
             if (tableField.isPrimaryKey()) {
-                key.append("\"").append(tableField.getName()).append("\", ");
+                keys.add(bracketIdentifier(tableField.getName()));
             }
-            columnFields.append(tableField.getName()).append("\" ");
-            int size = tableField.getPrecision() * 4;
-            switch (tableField.getDeExtractType()) {
-                case 0:
-                    if (StringUtils.isNotEmpty(tableField.getLength())) {
-                        columnFields.append("nvarchar(length)".replace("length", tableField.getLength())).append(",\"");
-                    } else {
-                        columnFields.append("nvarchar(max)").append(",\"");
-                    }
-                    break;
-                case 1:
-                    columnFields.append("DATETIME").append(",\"");
-                    break;
-                case 2:
-                    columnFields.append("bigint").append(",\"");
-                    break;
-                case 3:
-                    columnFields.append("DECIMAL(27,8)").append(",\"");
-                    break;
-                case 4:
-                    columnFields.append("TINYINT".replace("length", String.valueOf(tableField.getPrecision()))).append(",\"");
-                    break;
-                default:
-                    columnFields.append("nvarchar(max)").append(",\"");
-                    break;
-            }
+            columns.add(bracketIdentifier(tableField.getName()) + " " + buildColumnType(tableField));
         }
-        if (StringUtils.isEmpty(key.toString())) {
-            columnFields = new StringBuilder(columnFields.substring(0, columnFields.length() - 2));
-        } else {
-            key = new StringBuilder(key.substring(0, key.length() - 2));
-            columnFields = new StringBuilder(columnFields.substring(0, columnFields.length() - 1));
-            columnFields.append(" PRIMARY KEY (PRIMARYKEY)".replace("PRIMARYKEY", key.toString()));
+        StringBuilder sql = new StringBuilder("(").append(String.join(",", columns));
+        if (!keys.isEmpty()) {
+            sql.append(", PRIMARY KEY (").append(String.join(",", keys)).append(")");
         }
+        sql.append(")");
+        return sql.toString();
+    }
 
-        columnFields = new StringBuilder("(" + columnFields + ")");
-        return columnFields.toString();
+    private String buildColumnType(TableField tableField) {
+        switch (tableField.getDeExtractType()) {
+            case 0:
+                if (StringUtils.isNotEmpty(tableField.getLength())) {
+                    return "nvarchar(" + tableField.getLength() + ")";
+                }
+                return "nvarchar(max)";
+            case 1:
+                return "DATETIME";
+            case 2:
+                return "bigint";
+            case 3:
+                return "DECIMAL(27,8)";
+            case 4:
+                return "TINYINT";
+            default:
+                return "nvarchar(max)";
+        }
+    }
+
+    private String bracketIdentifier(String name) {
+        validateIdentifier(name);
+        return "[" + name + "]";
     }
 }

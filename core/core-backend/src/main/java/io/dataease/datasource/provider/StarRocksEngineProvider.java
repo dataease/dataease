@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class StarRocksEngineProvider extends MysqlEngineProvider {
 
     private static final String CREATE_TABLE_SQL =
-            "CREATE TABLE IF NOT EXISTS `TABLE_NAME` Column_FieldsKEY_CLAUSE DISTRIBUTED BY HASH(`DISTRIBUTION_COLUMN`) BUCKETS 10 PROPERTIES (\"replication_num\" = \"1\")";
+            "CREATE TABLE IF NOT EXISTS TABLE_NAME Column_FieldsKEY_CLAUSE DISTRIBUTED BY HASH(DISTRIBUTION_COLUMN) BUCKETS 10 PROPERTIES (\"replication_num\" = \"1\")";
 
     public void streamLoadInsert(String tableName, DatasourceServer.UpdateType extractType, List<String[]> dataList, List<TableField> tableFields, CoreDeEngine engine) {
         String engineTableName;
@@ -45,19 +45,19 @@ public class StarRocksEngineProvider extends MysqlEngineProvider {
                 .orElse(checkedFields.isEmpty() ? null : checkedFields.getFirst());
         String distributionColumn = distributionField == null ? "c" : distributionField.getName();
         String keyClause = primaryKeyFields.isEmpty() ? "" : " PRIMARY KEY (" + primaryKeyFields.stream()
-                .map(tableField -> "`" + tableField.getName() + "`")
+                .map(tableField -> quoteIdentifier(tableField.getName(), '`'))
                 .collect(Collectors.joining(", ")) + ")";
         return CREATE_TABLE_SQL
-                .replace("TABLE_NAME", tableName)
+                .replace("TABLE_NAME", quoteIdentifier(tableName, '`'))
                 .replace("Column_Fields", createTableFields(tableFields))
                 .replace("KEY_CLAUSE", keyClause)
-                .replace("DISTRIBUTION_COLUMN", distributionColumn);
+                .replace("DISTRIBUTION_COLUMN", quoteIdentifier(distributionColumn, '`'));
     }
 
     private String createTableFields(List<TableField> tableFields) {
         List<String> columnDefinitions = tableFields.stream()
                 .filter(TableField::isChecked)
-                .map(tableField -> "`" + tableField.getName() + "` " + buildColumnType(tableField))
+                .map(tableField -> quoteIdentifier(tableField.getName(), '`') + " " + buildColumnType(tableField))
                 .toList();
         return "(" + String.join(", ", columnDefinitions) + ")";
     }
@@ -84,14 +84,12 @@ public class StarRocksEngineProvider extends MysqlEngineProvider {
 
     @Override
     public String replaceTable(String name, CoreDeEngine engine) {
-        String tmpName = TableUtils.tmpName(name);
-        String replaceTableSql =
-                ("ALTER TABLE `FROM_TABLE` RENAME `FROM_TABLE_tmp`;"
-                        + "ALTER TABLE `TO_TABLE` RENAME `FROM_TABLE`;"
-                        + "ALTER TABLE `FROM_TABLE_tmp` RENAME `TO_TABLE`")
-                        .replace("FROM_TABLE", name)
-                        .replace("TO_TABLE", tmpName);
-        String dropTableSql = "DROP TABLE IF EXISTS `TABLE_NAME`".replace("TABLE_NAME", tmpName);
+        String table = quoteIdentifier(name, '`');
+        String tmpTable = quoteIdentifier(TableUtils.tmpName(name), '`');
+        String replaceTableSql = "ALTER TABLE " + table + " RENAME " + tmpTable + ";"
+                + "ALTER TABLE " + tmpTable + " RENAME " + table + ";"
+                + "ALTER TABLE " + tmpTable + " RENAME " + table;
+        String dropTableSql = "DROP TABLE IF EXISTS " + tmpTable;
         return replaceTableSql + ";" + dropTableSql;
     }
 }
