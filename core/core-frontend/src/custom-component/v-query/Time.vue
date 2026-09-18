@@ -163,6 +163,10 @@ const handleValueChange = () => {
     })
     return
   }
+  if (!value) {
+    config.value.defaultValue = undefined
+    return
+  }
   config.value.defaultValue = Array.isArray(value)
     ? value.map(ele => new Date(ele).toLocaleString())
     : new Date(value).toLocaleString()
@@ -503,6 +507,7 @@ const formatDate = computed(() => {
     "
     @change="handleValueChange"
     :editable="false"
+    @clear="handleClear"
     :range-separator="$t('cron.to')"
     :start-placeholder="placeholderText"
     :end-placeholder="placeholderText"
@@ -512,6 +517,7 @@ const formatDate = computed(() => {
     :key="config.timeGranularity + 1"
     v-model="selectValue"
     class="icon-fixed_16"
+    @clear="handleClear"
     @visible-change="visibleChange"
     :disabled-date="disabledDate"
     :type="config.timeGranularity"

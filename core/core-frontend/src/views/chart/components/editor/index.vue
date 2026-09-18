@@ -696,6 +696,10 @@ const disableUpdate = computed(() => {
     currentFieldDesensitized.set(String(field.id), field.desensitized === true)
   })
   for (const key in axisConfig) {
+    // 透视表允许脱敏指标参与后端计算，维度仍沿用原有限制。
+    if (view.value.type === 'table-pivot' && key === 'yAxis') {
+      continue
+    }
     if (Object.prototype.hasOwnProperty.call(axisConfig, key)) {
       const axis = view.value[key]
       if (axis instanceof Array) {

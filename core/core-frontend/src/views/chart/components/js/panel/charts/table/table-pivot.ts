@@ -14,7 +14,8 @@ import {
   Aggregation,
   S2DataConfig,
   MergedCell,
-  LayoutResult
+  LayoutResult,
+  SpreadSheet
 } from '@antv/s2'
 import { formatterItem, valueFormatter } from '../../../formatter'
 import { hexColorToRGBA, isAlphaColor, parseJson } from '../../../util'
@@ -25,6 +26,7 @@ import { keys, maxBy, merge, minBy, some, isEmpty, get } from 'lodash-es'
 import {
   copyContent,
   CustomDataCell,
+  getDesensitizedFields,
   getPivotConditions,
   isNumeric
 } from '../../common/common_table'
@@ -36,7 +38,12 @@ type DataItem = Record<string, any>
 const { t } = useI18n()
 
 class CustomPivotDataset extends PivotDataSet {
-  getTotalValue(query: Query, totalStatus?: TotalStatus) {
+  constructor(spreadsheet: SpreadSheet, private readonly desensitizedFields: Set<string>) {
+    super(spreadsheet)
+  }
+
+  // S2 的汇总类型只声明数值，实际单元格还需要承载脱敏文本和占位符。
+  getTotalValue(query: Query, totalStatus?: TotalStatus): { [VALUE_FIELD]: any } {
     const { options } = this.spreadsheet
     const effectiveStatus = some(totalStatus)
     const status = effectiveStatus ? totalStatus : this.getTotalStatus(query)
@@ -47,16 +54,17 @@ class CustomPivotDataset extends PivotDataSet {
     const defaultAggregation =
       isEmpty(options?.totals) && !this.spreadsheet.isHierarchyTreeType() ? Aggregation.SUM : ''
     const calcAction = calcActionByType[aggregation || defaultAggregation]
+    const desensitized = this.desensitizedFields.has(query[EXTRA_FIELD])
 
     // 前端计算汇总值
-    if (calcAction || calcFunc) {
+    if (calcAction || calcFunc || desensitized) {
       const data = this.getMultiData(query, {
         queryType: QueryDataType.DetailOnly
       })
-      let totalValue: number
+      let totalValue: number | string = '-'
       if (calcFunc) {
         totalValue = calcFunc(query, data, this.spreadsheet, status)
-      } else if (calcAction) {
+      } else if (calcAction && !desensitized) {
         totalValue = calcAction(data, VALUE_FIELD)
       }
 
@@ -141,6 +149,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
 
     // fields
     const { fields, customCalc } = chart.data
+    const desensitizedFields = getDesensitizedFields(chart)
     if (!fields || fields.length === 0) {
       if (chartObj) {
         chartObj.destroy()
@@ -166,7 +175,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
         field: ele.dataeaseName,
         name: ele.chartShowName ?? ele.name,
         formatter: value => {
-          if (!f) {
+          if (!f || desensitizedFields.has(ele.dataeaseName)) {
             return value
           }
           if (value === null || value === undefined) {
@@ -230,13 +239,22 @@ export class TablePivot extends S2ChartView<PivotSheet> {
           return p
         }, {})
         total.calcFunc = (query, data, _, status) => {
-          return customCalcFunc(query, data, status, chart, totalCfgMap, axisMap, customCalc)
+          return customCalcFunc(
+            query,
+            data,
+            status,
+            chart,
+            totalCfgMap,
+            axisMap,
+            customCalc,
+            desensitizedFields
+          )
         }
       }
     })
     // 空值处理
     const newData = this.configEmptyDataStrategy(chart)
-    const sortParams = this.configSortParams(chart, newData)
+    const sortParams = this.configSortParams(chart, newData, desensitizedFields)
     // data config
     const s2DataConfig: S2DataConfig = {
       fields: {
@@ -259,7 +277,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
         getContainer: () => containerDom
       },
       hierarchyType: basicStyle.tableLayoutMode ?? 'grid',
-      dataSet: spreadSheet => new CustomPivotDataset(spreadSheet),
+      dataSet: spreadSheet => new CustomPivotDataset(spreadSheet, desensitizedFields),
       interaction: {
         hoverHighlight: !(basicStyle.showHoverStyle === false),
         hoverFocus: false
@@ -356,6 +374,8 @@ export class TablePivot extends S2ChartView<PivotSheet> {
     this.configTooltip(chart, s2Options)
     // 开始渲染
     const s2 = new PivotSheet(containerDom, s2DataConfig, s2Options as unknown as S2Options)
+    // 导出入口使用保存的图表配置，实时脱敏标识需要随当前表格实例保留。
+    s2.store.set('desensitizedFields', desensitizedFields)
     // 自适应铺满
     if (basicStyle.tableColumnMode === 'adapt') {
       s2.on(S2Event.LAYOUT_RESIZE_COL_WIDTH, () => {
@@ -734,9 +754,11 @@ export class TablePivot extends S2ChartView<PivotSheet> {
     }
     return theme
   }
-  private configSortParams(chart: Chart, newData: []) {
+  private configSortParams(chart: Chart, newData: [], desensitizedFields: Set<string>) {
     // 行列分开处理，先行后列，样式设置中汇总总计排序的优先级最高，剩下的按照字段的排序优先级设置进行排序
-    const { xAxis: rowFields, xAxisExt: columnFields, yAxis: valueFields } = chart
+    const { xAxis: rowFields, xAxisExt: columnFields } = chart
+    // 脱敏结果不能用于前端数值排序，保留后端返回顺序及维度排序。
+    const valueFields = chart.yAxis.filter(field => !desensitizedFields.has(field.dataeaseName))
     const [r, c, v] = [rowFields, columnFields, valueFields].map(arr =>
       arr.map(i => i.dataeaseName)
     )
@@ -1054,11 +1076,25 @@ export class TablePivot extends S2ChartView<PivotSheet> {
     super('table-pivot', [])
   }
 }
-function customCalcFunc(query, data, status, chart, totalCfgMap, axisMap, customCalc) {
+function customCalcFunc(
+  query,
+  data,
+  status,
+  chart,
+  totalCfgMap,
+  axisMap,
+  customCalc,
+  desensitizedFields: Set<string>
+) {
   if (!data?.length || !query[EXTRA_FIELD]) {
     return '-'
   }
   const aggregation = totalCfgMap[query[EXTRA_FIELD]]?.aggregation || 'SUM'
+  const desensitized = desensitizedFields.has(query[EXTRA_FIELD])
+  // 前端汇总不再计算脱敏文本；自定义汇总保留后端已经脱敏的结果。
+  if (desensitized && aggregation !== 'CUSTOM') {
+    return '-'
+  }
   switch (aggregation) {
     case 'SUM': {
       return data.reduce((p, n) => {
@@ -1088,8 +1124,11 @@ function customCalcFunc(query, data, status, chart, totalCfgMap, axisMap, custom
     }
     case 'CUSTOM': {
       const val = getCustomCalcResult(query, axisMap, chart, status, customCalc || {})
-      if (val === '' || val === undefined) {
+      if (val === '' || val === undefined || val === null) {
         return '-'
+      }
+      if (desensitized) {
+        return val
       }
       return parseFloat(val)
     }
