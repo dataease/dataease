@@ -185,6 +185,8 @@ declare interface Axis extends ChartViewField {
   hide: boolean
 }
 declare interface ChartViewField {
+  /** 当前用户查询结果是否脱敏 */
+  desensitized?: boolean
   /**
    * 字段名称
    */

@@ -1275,6 +1275,12 @@ export function mappingColor(value, defaultColor, rules, type, filedValueMap?, r
   return color
 }
 
+export function getDesensitizedFields(chart: Pick<Chart, 'data'>): Set<string> {
+  // 以本次查询返回的权限标识为准，避免使用图表保存时的旧权限。
+  const fields = chart.data?.fields || []
+  return new Set(fields.filter(field => field.desensitized === true).map(field => field.dataeaseName))
+}
+
 export function getPivotConditions(chart: Chart) {
   const { threshold } = parseJson(chart.senior)
   if (!threshold.enable) {
@@ -1285,6 +1291,7 @@ export function getPivotConditions(chart: Chart) {
     background: []
   }
   const conditions = threshold.tableThreshold ?? []
+  const desensitizedFields = getDesensitizedFields(chart)
 
   const dimFields = [...chart.xAxis, ...chart.xAxisExt].map(i => i.dataeaseName)
   const allFields = [...chart.xAxis, ...chart.xAxisExt, ...chart.yAxis]
@@ -1331,9 +1338,22 @@ export function getPivotConditions(chart: Chart) {
     for (let i = 0; i < conditions.length; i++) {
       const fieldItem = conditions[i]
       if (!fieldItem.conditions) continue
+      if (desensitizedFields.has(fieldItem.field.dataeaseName)) continue
 
       for (let j = 0; j < fieldItem.conditions.length; j++) {
         const rule = fieldItem.conditions[j]
+        if (rule.type === 'dynamic') {
+          let dynamicFields = [rule.dynamicField]
+          if (rule.term === 'between') {
+            dynamicFields = [rule.dynamicMinField, rule.dynamicMaxField]
+          }
+          // 比较值也可能来自脱敏指标，不能截取其数字前缀参与条件判断。
+          const hasDesensitizedValue = dynamicFields.some(field => {
+            const fieldName = field?.field?.dataeaseName || fieldIdToName[field?.fieldId]
+            return desensitizedFields.has(fieldName)
+          })
+          if (hasDesensitizedValue) continue
+        }
         let targets = []
         if (rule.target === 'total_row') {
           if (xFields.includes(fieldItem.field.dataeaseName)) {
@@ -2055,6 +2075,20 @@ function getTooltipPosition(event) {
   return result
 }
 
+function getPivotExportFormatters(
+  instance: PivotSheet,
+  chart: Pick<Chart, 'yAxis'>
+): Record<string, BaseFormatter> {
+  const desensitizedFields = instance.store.get('desensitizedFields') as Set<string>
+  return chart.yAxis.reduce((formatters, field) => {
+    // 脱敏值在 Excel 中按文本保存，跳过百分比、单位等数字格式解析。
+    if (field.dataeaseName && !desensitizedFields?.has(field.dataeaseName)) {
+      formatters[field.dataeaseName] = field.formatterCfg
+    }
+    return formatters
+  }, {})
+}
+
 export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
   const { layoutResult } = instance.facet
   const { meta, fields } = instance.dataCfg
@@ -2209,12 +2243,7 @@ export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
       )
     }
   })
-  const formatterMap = chart.yAxis.reduce((p, n) => {
-    if (n.dataeaseName) {
-      p[n.dataeaseName] = n.formatterCfg
-    }
-    return p
-  }, {})
+  const formatterMap = getPivotExportFormatters(instance, chart)
   //  单元格数据
   for (let rowIndex = 0; rowIndex < rowLeafNodes.length; rowIndex++) {
     for (let colIndex = 0; colIndex < colLeafNodes.length; colIndex++) {
@@ -2399,12 +2428,7 @@ export async function exportRowQuotaGridPivot(instance: PivotSheet, chart: Chart
       worksheet.mergeCells(writeRowIndex, writeColIndex, writeRowIndex, writeColIndex + width - 1)
     }
   })
-  const formatterMap = chart.yAxis.reduce((p, n) => {
-    if (n.dataeaseName) {
-      p[n.dataeaseName] = n.formatterCfg
-    }
-    return p
-  }, {})
+  const formatterMap = getPivotExportFormatters(instance, chart)
   //  单元格数据
   for (let rowIndex = 0; rowIndex < rowLeafNodes.length; rowIndex++) {
     for (let colIndex = 0; colIndex < colLeafNodes.length; colIndex++) {
@@ -2540,12 +2564,7 @@ export async function exportTreePivot(instance: PivotSheet, chart: ChartObj) {
       )
     }
   })
-  const formatterMap = chart.yAxis.reduce((p, n) => {
-    if (n.dataeaseName) {
-      p[n.dataeaseName] = n.formatterCfg
-    }
-    return p
-  }, {})
+  const formatterMap = getPivotExportFormatters(instance, chart)
   //  单元格数据
   for (let rowIndex = 0; rowIndex < rowLeafNodes.length; rowIndex++) {
     for (let colIndex = 0; colIndex < colLeafNodes.length; colIndex++) {
@@ -2682,12 +2701,7 @@ export async function exportRowQuotaTreePivot(instance: PivotSheet, chart: Chart
       worksheet.mergeCells(writeRowIndex, writeColIndex, writeRowIndex, writeColIndex + width - 1)
     }
   })
-  const formatterMap = chart.yAxis.reduce((p, n) => {
-    if (n.dataeaseName) {
-      p[n.dataeaseName] = n.formatterCfg
-    }
-    return p
-  }, {})
+  const formatterMap = getPivotExportFormatters(instance, chart)
   //  单元格数据
   for (let rowIndex = 0; rowIndex < rowLeafNodes.length; rowIndex++) {
     for (let colIndex = 0; colIndex < colLeafNodes.length; colIndex++) {
