@@ -145,6 +145,7 @@ public class XpackShareManage {
         }
         XpackShare xpackShare = new XpackShare();
         xpackShare.setId(IDUtils.snowID());
+        xpackShare.setVisitorPermissions(0);
         xpackShare.setCreator(userId);
         xpackShare.setTime(System.currentTimeMillis());
         xpackShare.setResourceId(resourceId);

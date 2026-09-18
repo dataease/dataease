@@ -1,4 +1,14 @@
 export default {
+  share_visitor: {
+    no_permission: '你沒有此項權限',
+    title: '訪客權限',
+    hint: '新建連結預設僅檢視，權限僅對目前公共連結生效。',
+    details: '允許檢視明細',
+    data: '允許匯出資料',
+    image: '允許匯出圖片 / PDF',
+    buttons_hint: '分享頁遵循儀表板或大屏的按鈕顯示設定；允許權限不會重新顯示已隱藏的按鈕。',
+    save_copy: '儲存並複製連結'
+  },
   common: {
     display_formats: '展示形式',
     dropdown_display: '下拉展示',

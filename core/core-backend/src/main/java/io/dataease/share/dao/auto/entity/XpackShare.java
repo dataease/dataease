@@ -72,4 +72,8 @@ public class XpackShare {
     @Column(name = "ticket_require", nullable = false)
     private Boolean ticketRequire = false;
 
+    // null preserves the behavior of links created before visitor permissions existed.
+    @Column(name = "visitor_permissions")
+    private Integer visitorPermissions;
+
 }
