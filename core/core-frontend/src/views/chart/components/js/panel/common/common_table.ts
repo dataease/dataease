@@ -991,6 +991,12 @@ export function mappingColorCustom(value, defaultColor, field, type, filedValueM
       }
     } else {
       const fc = field.conditions[i]
+      // 默认图片无需日期值，必须在日期解析前完成匹配。
+      if (fc.term === 'default') {
+        color = fc[type]
+        hitCondition = fc
+        break
+      }
       if (fc.term === 'null') {
         if (value === null && value === undefined && value === '') {
           color = fc[type]
@@ -1010,8 +1016,15 @@ export function mappingColorCustom(value, defaultColor, field, type, filedValueM
       if (!tv || !value) {
         break
       }
-      tv = new Date(tv.replace(/-/g, '/') + ' GMT+8').getTime()
-      const v = new Date(value.replace(/-/g, '/') + ' GMT+8').getTime()
+      let v: number | string
+      if (['H_m_s', 'y_M_d_H', 'y_M_d_H_m'].includes(field.field.dateStyle)) {
+        // 图片和富文本支持纯时间、小时及分钟粒度，避免原生 Date 解析不完整日期失败。
+        tv = String(tv).replace(/-/g, '/')
+        v = String(value).replace(/-/g, '/')
+      } else {
+        tv = new Date(String(tv).replace(/-/g, '/') + ' GMT+8').getTime()
+        v = new Date(String(value).replace(/-/g, '/') + ' GMT+8').getTime()
+      }
       if (fc.term === 'eq') {
         if (v === tv) {
           color = fc[type]
@@ -1042,9 +1055,6 @@ export function mappingColorCustom(value, defaultColor, field, type, filedValueM
           color = fc[type]
           flag = true
         }
-      } else if (fc.term === 'default') {
-        color = fc[type]
-        flag = true
       }
       if (flag) {
         hitCondition = fc
