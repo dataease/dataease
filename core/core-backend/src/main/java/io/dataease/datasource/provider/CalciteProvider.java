@@ -65,6 +65,50 @@ public class CalciteProvider extends Provider {
     private String CUSTOM_PATH;
     private static String split = "DE";
 
+    private record QueryAndParams(String sql, List<String> params) {
+    }
+
+    private static final Pattern ILLEGAL_IDENTIFIER_CHAR = Pattern.compile("[\\u0000-\\u001f\"'`\\[\\];\\\\]");
+
+    private String quoteName(String value, char quoteChar) {
+        String name = StringUtils.defaultString(value);
+        if (StringUtils.isBlank(name) || name.length() > 64 || ILLEGAL_IDENTIFIER_CHAR.matcher(name).find()) {
+            DEException.throwException("Illegal identifier: " + value);
+        }
+        String quote = String.valueOf(quoteChar);
+        return quote + name + quote;
+    }
+
+    private String bindQuery(String template, List<String> bindParams, String... values) {
+        StringBuilder sql = new StringBuilder();
+        int valueIndex = 0;
+        for (int i = 0; i < template.length(); i++) {
+            char c = template.charAt(i);
+            if (c == '%' && i + 1 < template.length()) {
+                char next = template.charAt(i + 1);
+                if (next == 's') {
+                    if (valueIndex >= values.length) {
+                        DEException.throwException("SQL bind parameter mismatch");
+                    }
+                    sql.append('?');
+                    bindParams.add(values[valueIndex++]);
+                    i++;
+                    continue;
+                }
+                if (next == '%') {
+                    sql.append('%');
+                    i++;
+                    continue;
+                }
+            }
+            sql.append(c);
+        }
+        if (valueIndex != values.length) {
+            DEException.throwException("SQL bind parameter mismatch");
+        }
+        return sql.toString();
+    }
+
     /**
      * 根据实际执行引擎和数据库版本判断是否可下推箱线图统计 SQL。
      * 跨数据源查询由内置 Calcite 执行，可直接使用窗口函数；单数据源查询读取 JDBC 版本后按保守白名单判断。
@@ -144,12 +188,27 @@ public class CalciteProvider extends Provider {
     public List<String> getSchema(DatasourceRequest datasourceRequest) {
         List<String> schemas = new ArrayList<>();
         String queryStr = getSchemaSql(datasourceRequest.getDatasource());
-        try (ConnectionObj con = getConnection(datasourceRequest.getDatasource()); Statement statement = getStatement(con.getConnection(), 30); ResultSet resultSet = statement.executeQuery(queryStr)) {
-            while (resultSet.next()) {
-                schemas.add(resultSet.getString(1));
+        if (datasourceRequest.getDatasource().getType().equalsIgnoreCase("db2")) {
+            Db2 db2 = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Db2.class);
+            String username = resolveDb2Username(db2);
+            try (ConnectionObj con = getConnection(datasourceRequest.getDatasource()); PreparedStatement statement = con.getConnection().prepareStatement(queryStr)) {
+                statement.setString(1, username);
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    while (resultSet.next()) {
+                        schemas.add(resultSet.getString(1));
+                    }
+                }
+            } catch (Exception e) {
+                DEException.throwException(e.getMessage());
             }
-        } catch (Exception e) {
-            DEException.throwException(e.getMessage());
+        } else {
+            try (ConnectionObj con = getConnection(datasourceRequest.getDatasource()); Statement statement = getStatement(con.getConnection(), 30); ResultSet resultSet = statement.executeQuery(queryStr)) {
+                while (resultSet.next()) {
+                    schemas.add(resultSet.getString(1));
+                }
+            } catch (Exception e) {
+                DEException.throwException(e.getMessage());
+            }
         }
         if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.pg.name())
                 || datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.kingbase.name())
@@ -316,9 +375,10 @@ public class CalciteProvider extends Provider {
 
     private Map<String, Integer> getTableTypeMap(DatasourceRequest datasourceRequest, DatasourceConfiguration datasourceConfiguration, String tableName) throws DEException {
         Map<String, Integer> map = new HashMap<>();
-        validateSqlInjectionRisk(datasourceConfiguration.getSchema());
-        String schemaTable = (ObjectUtils.isNotEmpty(datasourceConfiguration.getSchema()) ? (datasourceConfiguration.getSchema() + "`.`") : "") + tableName;
-        String sql = "SELECT * FROM `$TABLE_NAME$` LIMIT 0 OFFSET 0".replace("$TABLE_NAME$", schemaTable);
+        String schemaTable = StringUtils.isNotBlank(datasourceConfiguration.getSchema())
+                ? quoteName(datasourceConfiguration.getSchema(), '`') + "." + quoteName(tableName, '`')
+                : quoteName(tableName, '`');
+        String sql = "SELECT * FROM " + schemaTable + " LIMIT 0 OFFSET 0";
         sql = transSqlDialect(sql, datasourceRequest.getDsList());
         ResultSet resultSet = null;
         try (Connection con = getConnectionFromPool(datasourceRequest.getDatasource().getId()); Statement statement = getStatement(con, 30)) {
@@ -404,19 +464,27 @@ public class CalciteProvider extends Provider {
             }
         } else {
             ResultSet resultSet = null;
-            if (!getTables(datasourceRequest).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList()).contains(table)) {
-                DEException.throwException(Translator.get("i18n_invalid_table_name"));
-            }
-            try (Connection con = getConnectionFromPool(datasourceRequest.getDatasource().getId()); Statement statement = getStatement(con, 30)) {
+            PreparedStatement preparedStatement = null;
+            validateTableAndSchema(datasourceRequest, datasourceConfiguration);
+            try (Connection con = getConnectionFromPool(datasourceRequest.getDatasource().getId())) {
                 datasourceRequest.setDsVersion(con.getMetaData().getDatabaseMajorVersion());
                 if (datasourceRequest.getDatasource().getType().equalsIgnoreCase("mongo")) {
-                    resultSet = statement.executeQuery("select * from " + String.format(" `%s`", table) + " limit 0 offset 0 ");
-                    return fetchResultField(resultSet);
+                    try (Statement statement = getStatement(con, 30)) {
+                        resultSet = statement.executeQuery("select * from " + quoteName(table, '`') + " limit 0 offset 0 ");
+                        return fetchResultField(resultSet);
+                    }
                 }
                 if (isDorisCatalog(datasourceRequest)) {
-                    resultSet = statement.executeQuery("desc " + String.format(" `%s`", table));
+                    try (Statement statement = getStatement(con, 30)) {
+                        resultSet = statement.executeQuery("desc " + quoteName(table, '`'));
+                    }
                 } else {
-                    resultSet = statement.executeQuery(getTableFiledSql(datasourceRequest));
+                    QueryAndParams queryAndParams = getTableFiledSql(datasourceRequest);
+                    preparedStatement = con.prepareStatement(queryAndParams.sql());
+                    for (int i = 0; i < queryAndParams.params().size(); i++) {
+                        preparedStatement.setString(i + 1, queryAndParams.params().get(i));
+                    }
+                    resultSet = preparedStatement.executeQuery();
                 }
 
                 Map<String, Integer> tableTypeMap = getTableTypeMap(datasourceRequest, datasourceConfiguration, table);
@@ -440,6 +508,13 @@ public class CalciteProvider extends Provider {
                 if (resultSet != null) {
                     try {
                         resultSet.close();
+                    } catch (SQLException e) {
+                        LogUtil.error(e);
+                    }
+                }
+                if (preparedStatement != null) {
+                    try {
+                        preparedStatement.close();
                     } catch (SQLException e) {
                         LogUtil.error(e);
                     }
@@ -733,7 +808,7 @@ public class CalciteProvider extends Provider {
         Statement statement;
         if (DatasourceConfiguration.DatasourceType.valueOf(value.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
             statement = getStatement(con, datasourceConfiguration.getQueryTimeout());
-            statement.executeUpdate("ALTER SESSION SET CURRENT_SCHEMA = " + datasourceConfiguration.getSchema());
+            statement.executeUpdate("ALTER SESSION SET CURRENT_SCHEMA = " + quoteName(datasourceConfiguration.getSchema(), '"'));
 
             //调整字符集
             if (StringUtils.isNotEmpty(datasourceConfiguration.getCharset()) && StringUtils.isNotEmpty(datasourceConfiguration.getTargetCharset())) {
@@ -1259,7 +1334,7 @@ public class CalciteProvider extends Provider {
                 dataSource.setMinIdle(configuration.getMinPoolSize());
                 dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
                 dataSource.setConnectionInitSqls(Collections.singletonList(
-                        "ALTER SESSION SET CURRENT_SCHEMA = " + configuration.getSchema()
+                        "ALTER SESSION SET CURRENT_SCHEMA = " + quoteName(configuration.getSchema(), '"')
                 ));
                 startSshSession(configuration, null, ds.getId());
                 dataSource.setUrl(configuration.getJdbc());
@@ -1477,8 +1552,41 @@ public class CalciteProvider extends Provider {
         return FieldUtils.transType2DeType(type, datasource == null ? null : datasource.getType());
     }
 
-    private String getTableFiledSql(DatasourceRequest datasourceRequest) {
+    private void validateTableAndSchema(DatasourceRequest datasourceRequest, DatasourceConfiguration configuration) {
+        String table = datasourceRequest.getTable();
+        if (StringUtils.isNotBlank(table)) {
+            List<String> realTables = getTables(datasourceRequest).stream()
+                    .map(DatasetTableDTO::getTableName)
+                    .toList();
+            boolean caseInsensitive = isCaseInsensitiveTableType(datasourceRequest.getDatasource().getType());
+            boolean tableExists = realTables.stream().anyMatch(t -> caseInsensitive
+                    ? StringUtils.equalsIgnoreCase(t, table)
+                    : StringUtils.equals(t, table));
+            if (!tableExists) {
+                DEException.throwException(Translator.get("i18n_invalid_table_name"));
+            }
+        }
+        String schema = configuration.getSchema();
+        if (StringUtils.isNotBlank(schema) && isSchemaValidatedType(datasourceRequest.getDatasource().getType())) {
+            List<String> schemas = getSchema(datasourceRequest);
+            boolean schemaExists = schemas.stream().anyMatch(s -> StringUtils.equals(s, schema));
+            if (!schemaExists) {
+                DEException.throwException("无效的 schema！");
+            }
+        }
+    }
+
+    private boolean isSchemaValidatedType(String type) {
+        return Arrays.asList("oracle", "db2", "sqlServer", "pg", "kingbase", "gaussdb", "redshift").contains(type);
+    }
+
+    private boolean isCaseInsensitiveTableType(String type) {
+        return Arrays.asList("mysql", "mariadb", "TiDB", "StarRocks", "doris", "mongo", "ck").contains(type);
+    }
+
+    private QueryAndParams getTableFiledSql(DatasourceRequest datasourceRequest) {
         String sql = "";
+        List<String> bindParams = new ArrayList<>();
         DatasourceConfiguration configuration = null;
         String database = "";
         DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(datasourceRequest.getDatasource().getType());
@@ -1499,9 +1607,9 @@ public class CalciteProvider extends Provider {
                     database = databasePrams[0];
                 }
                 if (database.contains(".")) {
-                    sql = "select * from " + datasourceRequest.getTable() + " limit 0 offset 0 ";
+                    sql = "select * from " + quoteName(datasourceRequest.getTable(), '`') + " limit 0 offset 0 ";
                 } else {
-                    sql = String.format("SELECT COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT,IF(COLUMN_KEY='PRI',1,0),IF(EXTRA LIKE '%%auto_increment%%',1,0) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s'", database, datasourceRequest.getTable());
+                    sql = bindQuery("SELECT COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT,IF(COLUMN_KEY='PRI',1,0),IF(EXTRA LIKE '%%auto_increment%%',1,0) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s'", bindParams, database, datasourceRequest.getTable());
                 }
                 break;
             case mysql:
@@ -1521,14 +1629,14 @@ public class CalciteProvider extends Provider {
                     String[] databasePrams = matcher.group(3).split("\\?");
                     database = databasePrams[0];
                 }
-                sql = String.format("SELECT COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT,IF(COLUMN_KEY='PRI',1,0),IF(EXTRA LIKE '%%auto_increment%%',1,0) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s'", database, datasourceRequest.getTable());
+                sql = bindQuery("SELECT COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT,IF(COLUMN_KEY='PRI',1,0),IF(EXTRA LIKE '%%auto_increment%%',1,0) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s'", bindParams, database, datasourceRequest.getTable());
                 break;
             case oracle:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Oracle.class);
                 if (StringUtils.isEmpty(configuration.getSchema())) {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
                 }
-                sql = String.format("""
+                sql = bindQuery("""
                         SELECT tc.COLUMN_NAME AS ColumnName,
                                tc.DATA_TYPE,
                                cc.COMMENTS,
@@ -1556,14 +1664,14 @@ public class CalciteProvider extends Provider {
                         WHERE tc.TABLE_NAME = '%s'
                           AND tc.OWNER = '%s'
                         ORDER BY tc.TABLE_NAME, tc.COLUMN_ID
-                        """, datasourceRequest.getTable(), datasourceRequest.getTable(), configuration.getSchema());
+                        """, bindParams, datasourceRequest.getTable(), datasourceRequest.getTable(), configuration.getSchema());
                 break;
             case db2:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Db2.class);
                 if (StringUtils.isEmpty(configuration.getSchema())) {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
                 }
-                sql = String.format("SELECT COLNAME, TYPENAME, REMARKS, 0, 0 FROM SYSCAT.COLUMNS WHERE TABSCHEMA = '%s' AND TABNAME = '%s' ", configuration.getSchema(), datasourceRequest.getTable());
+                sql = bindQuery("SELECT COLNAME, TYPENAME, REMARKS, 0, 0 FROM SYSCAT.COLUMNS WHERE TABSCHEMA = '%s' AND TABNAME = '%s' ", bindParams, configuration.getSchema(), datasourceRequest.getTable());
                 break;
             case sqlServer:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Sqlserver.class);
@@ -1571,7 +1679,7 @@ public class CalciteProvider extends Provider {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
                 }
 
-                sql = String.format("""
+                sql = bindQuery("""
                         SELECT
                             c.name,
                             t.name,
@@ -1600,14 +1708,14 @@ public class CalciteProvider extends Provider {
                         WHERE o.name = '%s'
                           AND s.name = '%s'
                         ORDER BY c.column_id
-                        """, datasourceRequest.getTable(), configuration.getSchema());
+                        """, bindParams, datasourceRequest.getTable(), configuration.getSchema());
                 break;
             case pg:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Pg.class);
                 if (StringUtils.isEmpty(configuration.getSchema())) {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
                 }
-                sql = String.format("""
+                sql = bindQuery("""
                         SELECT a.attname     AS ColumnName,
                                t.typname,
                                b.description AS ColumnDescription,
@@ -1634,14 +1742,14 @@ public class CalciteProvider extends Provider {
                           AND a.attnum > 0
                           AND NOT a.attisdropped
                         ORDER BY a.attnum;
-                        """, configuration.getSchema(), datasourceRequest.getTable());
+                        """, bindParams, configuration.getSchema(), datasourceRequest.getTable());
                 break;
             case gaussdb:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), GaussDB.class);
                 if (StringUtils.isEmpty(configuration.getSchema())) {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
                 }
-                sql = String.format("""
+                sql = bindQuery("""
                         SELECT a.attname     AS ColumnName,
                                t.typname,
                                b.description AS ColumnDescription,
@@ -1668,14 +1776,14 @@ public class CalciteProvider extends Provider {
                           AND a.attnum > 0
                           AND NOT a.attisdropped
                         ORDER BY a.attnum;
-                        """, configuration.getSchema(), datasourceRequest.getTable());
+                        """, bindParams, configuration.getSchema(), datasourceRequest.getTable());
                 break;
             case kingbase:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Kingbase.class);
                 if (StringUtils.isEmpty(configuration.getSchema())) {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
                 }
-                sql = String.format("""
+                sql = bindQuery("""
                         SELECT a.attname     AS ColumnName,
                                t.typname,
                                b.description AS ColumnDescription,
@@ -1702,11 +1810,11 @@ public class CalciteProvider extends Provider {
                           AND a.attnum > 0
                           AND NOT a.attisdropped
                         ORDER BY a.attnum;
-                        """, configuration.getSchema(), datasourceRequest.getTable());
+                        """, bindParams, configuration.getSchema(), datasourceRequest.getTable());
                 break;
             case redshift:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), CK.class);
-                sql = String.format("SELECT\n" + "    a.attname AS ColumnName,\n" + "    t.typname,\n" + "    b.description AS ColumnDescription,\n" + "    0, 0\n" + "FROM\n" + "    pg_class c\n" + "    JOIN pg_attribute a ON a.attrelid = c.oid\n" + "    LEFT JOIN pg_description b ON a.attrelid = b.objoid AND a.attnum = b.objsubid\n" + "    JOIN pg_type t ON a.atttypid = t.oid\n" + "WHERE\n" + "    c.relname = '%s'\n" + "    AND a.attnum > 0\n" + "    AND NOT a.attisdropped\n" + "ORDER BY\n" + "    a.attnum\n" + "   ", datasourceRequest.getTable());
+                sql = bindQuery("SELECT\n" + "    a.attname AS ColumnName,\n" + "    t.typname,\n" + "    b.description AS ColumnDescription,\n" + "    0, 0\n" + "FROM\n" + "    pg_class c\n" + "    JOIN pg_attribute a ON a.attrelid = c.oid\n" + "    LEFT JOIN pg_description b ON a.attrelid = b.objoid AND a.attnum = b.objsubid\n" + "    JOIN pg_type t ON a.atttypid = t.oid\n" + "WHERE\n" + "    c.relname = '%s'\n" + "    AND a.attnum > 0\n" + "    AND NOT a.attisdropped\n" + "ORDER BY\n" + "    a.attnum\n" + "   ", bindParams, datasourceRequest.getTable());
                 break;
             case ck:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), CK.class);
@@ -1720,19 +1828,19 @@ public class CalciteProvider extends Provider {
                     String[] databasePrams = matcher.group(3).split("\\?");
                     database = databasePrams[0];
                 }
-                sql = String.format(" SELECT\n" + "    name,\n" + "    type,\n" + "    comment,\n" + "    0, 0\n" + "FROM\n" + "    system.columns\n" + "WHERE\n" + "    database = '%s'  \n" + "    AND table = '%s' ", database, datasourceRequest.getTable());
+                sql = bindQuery(" SELECT\n" + "    name,\n" + "    type,\n" + "    comment,\n" + "    0, 0\n" + "FROM\n" + "    system.columns\n" + "WHERE\n" + "    database = '%s'  \n" + "    AND table = '%s' ", bindParams, database, datasourceRequest.getTable());
                 break;
             case impala:
-                sql = String.format("DESCRIBE `%s`", datasourceRequest.getTable());
+                sql = "DESCRIBE " + quoteName(datasourceRequest.getTable(), '`');
                 break;
             case h2:
-                sql = String.format("SELECT COLUMN_NAME, DATA_TYPE, REMARKS, 0, 0 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '%s'", datasourceRequest.getTable());
+                sql = bindQuery("SELECT COLUMN_NAME, DATA_TYPE, REMARKS, 0, 0 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '%s'", bindParams, datasourceRequest.getTable());
                 break;
             default:
                 break;
         }
 
-        return sql;
+        return new QueryAndParams(sql, bindParams);
     }
 
     private List<String> getTablesSql(DatasourceRequest datasourceRequest) throws DEException {
@@ -1864,6 +1972,22 @@ public class CalciteProvider extends Provider {
 
     }
 
+    private String resolveDb2Username(Db2 db2) {
+        String username = db2.getUsername();
+        if (StringUtils.isEmpty(username)
+                && StringUtils.isNotEmpty(db2.getUrlType())
+                && db2.getUrlType().equalsIgnoreCase("jdbcUrl")) {
+            String[] params = db2.getJdbcUrl().split(";");
+            for (String param : params) {
+                if (param.toLowerCase().startsWith("user=")) {
+                    username = param.substring(param.indexOf("=") + 1);
+                    break;
+                }
+            }
+        }
+        return StringUtils.upperCase(username);
+    }
+
     private String getSchemaSql(DatasourceDTO datasource) throws DEException {
         DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(datasource.getType());
         switch (datasourceType) {
@@ -1872,20 +1996,7 @@ public class CalciteProvider extends Provider {
             case sqlServer:
                 return "select name from sys.schemas;";
             case db2:
-                DatasourceConfiguration configuration = JsonUtil.parseObject(datasource.getConfiguration(), Db2.class);
-                String username = configuration.getUsername();
-                if (StringUtils.isEmpty(username)
-                        && StringUtils.isNotEmpty(configuration.getUrlType())
-                        && configuration.getUrlType().equalsIgnoreCase("jdbcUrl")) {
-                    String[] params = configuration.getJdbcUrl().split(";");
-                    for (String param : params) {
-                        if (param.toLowerCase().startsWith("user=")) {
-                            username = param.substring(param.indexOf("=") + 1);
-                            break;
-                        }
-                    }
-                }
-                return "select SCHEMANAME from syscat.SCHEMATA WHERE \"DEFINER\" ='USER'".replace("USER", username.toUpperCase());
+                return "select SCHEMANAME from syscat.SCHEMATA WHERE \"DEFINER\" = ?";
             case pg:
                 return "SELECT nspname FROM pg_namespace;";
             case kingbase:
