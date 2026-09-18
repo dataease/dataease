@@ -3,12 +3,14 @@ import { store } from '@/store/index'
 
 interface LinkState {
   linkToken: string
+  visitorPermissions: number
 }
 
 export const useLinkStore = defineStore('linkStore', {
   state: (): LinkState => {
     return {
-      linkToken: ''
+      linkToken: '',
+      visitorPermissions: 0
     }
   },
   getters: {
@@ -17,7 +19,11 @@ export const useLinkStore = defineStore('linkStore', {
     }
   },
   actions: {
+    setVisitorPermissions(data: number) {
+      this.visitorPermissions = data
+    },
     setLinkToken(data: string) {
+      if (data !== this.linkToken) this.visitorPermissions = 0
       this.linkToken = data
     }
   }

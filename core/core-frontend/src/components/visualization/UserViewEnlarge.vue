@@ -155,7 +155,7 @@
 import ComponentWrapper from '@/components/data-visualization/canvas/ComponentWrapper.vue'
 import { computed, h, nextTick, reactive, ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { deepCopy } from '@/utils/utils'
+import { deepCopy, shareAllows } from '@/utils/utils'
 import icon_download_outlined from '@/assets/svg/icon_download_outlined.svg'
 import ChartComponentS2 from '@/views/chart/components/views/components/ChartComponentS2.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -301,6 +301,7 @@ const pixelOptions = [
   }
 ]
 const dialogInit = (canvasStyle, view, item, opt, params = { scale: 0.5 }) => {
+  if (opt === 'details' && !shareAllows(1)) return
   state.scale = params.scale
   sourceViewType.value = view.type
   detailsError.value = false
@@ -360,10 +361,12 @@ const handleClick = tab => {
 }
 
 const downloadViewImage = () => {
+  if (!shareAllows(4)) return
   htmlToImage()
 }
 
 const downloadViewDetails = (downloadType = 'view') => {
+  if (!shareAllows(2)) return
   const viewDataInfo = dvMainStore.getViewDataDetails(viewInfo.value.id)
   const viewInfoSource = deepCopy(dvMainStore.getViewDetails(viewInfo.value.id))
   if (!viewDataInfo) {
@@ -387,6 +390,7 @@ const downloadViewDetails = (downloadType = 'view') => {
 }
 
 const exportAsFormattedExcel = () => {
+  if (!shareAllows(2)) return
   const s2Instance = dvMainStore.getViewInstanceInfo(viewInfo.value.id)
   if (!s2Instance) {
     return
