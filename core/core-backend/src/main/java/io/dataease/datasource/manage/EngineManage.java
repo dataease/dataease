@@ -90,6 +90,12 @@ public class EngineManage {
         if (StringUtils.isEmpty(engine.getType()) || StringUtils.isEmpty(engine.getConfiguration())) {
             throw new Exception("未完整设置数据引擎");
         }
+        if (StringUtils.equalsIgnoreCase(engine.getType(), "h2")) {
+            H2 h2 = JsonUtil.parseObject(engine.getConfiguration(), H2.class);
+            if (h2 != null && StringUtils.isNotBlank(h2.getJdbcUrl())) {
+                DEException.throwException("H2 engine does not support custom jdbcUrl");
+            }
+        }
         String status = "";
         try {
             if (StringUtils.equalsIgnoreCase(engine.getType(), "StarRocks")) {
