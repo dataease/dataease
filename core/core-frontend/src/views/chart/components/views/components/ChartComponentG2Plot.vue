@@ -839,6 +839,8 @@ const action = param => {
   state.pointParam = param.data
   // 点击
   pointClickTrans()
+  // 保留嵌入点击回调，放大和复用视图沿用禁用交互的规则，避免误报最后一级
+  if (['multiplexing', 'viewDialog'].includes(showPosition.value)) return
   // 下钻 联动 跳转
   state.linkageActiveParam = {
     ...(view.value.type === 'box-plot'
