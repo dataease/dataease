@@ -1456,7 +1456,7 @@ export const dvMainStore = defineStore('dataVisualization', {
         sourceData.option === 'linkage' && this.canvasViewInfo[viewId]?.type === 'box-plot'
       let currentFilters = element.linkageFilters || []
       // 针对明细表和汇总表，只清理当前源图表（viewId）的历史联动条件，保留其他图表的条件以支持多图表联动合并
-      if (['table-info', 'table-normal'].includes(element.innerType)) {
+      if (['table-info', 'table-normal', 'rich-text'].includes(element.innerType)) {
         currentFilters = currentFilters.filter(filter => filter.sourceViewId !== viewId)
       }
       if (currentFilters.length) {
