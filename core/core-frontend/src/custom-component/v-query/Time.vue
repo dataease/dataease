@@ -146,8 +146,6 @@ watch(
 )
 
 const handleValueChange = () => {
-  console.log(selectValue.value, 1)
-
   if (selectValue.value === null) {
     selectValue.value = multiple.value ? [] : undefined
   }
