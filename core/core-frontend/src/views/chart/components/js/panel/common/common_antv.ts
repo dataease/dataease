@@ -7,6 +7,7 @@ import {
   DEFAULT_YAXIS_STYLE
 } from '@/views/chart/components/editor/util/chart'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
+import { isDateThresholdField } from '@/views/chart/components/editor/util/DateFormatUtil'
 import { AreaOptions, LabelOptions } from '@antv/l7plot'
 import { TooltipOptions } from '@antv/l7plot/dist/lib/types/tooltip'
 import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
@@ -2476,13 +2477,20 @@ export function getConditions(chart: Chart) {
         }
       }
       if (t.term === 'between') {
-        annotation.start = ['start', parseFloat(t.min)]
-        annotation.end = ['end', parseFloat(t.max)]
-        annotationLine.start = ['start', parseFloat(t.min)]
-        annotationLine.end = ['end', parseFloat(t.min)]
+        // 日期范围保留完整日期值，避免 parseFloat 将其截断为年份。
+        let min = t.min
+        let max = t.max
+        if (!isDateThresholdField(field.field)) {
+          min = parseFloat(min)
+          max = parseFloat(max)
+        }
+        annotation.start = ['start', min]
+        annotation.end = ['end', max]
+        annotationLine.start = ['start', min]
+        annotationLine.end = ['end', min]
         annotations.push(JSON.parse(JSON.stringify(annotationLine)))
-        annotationLine.start = ['start', parseFloat(t.max)]
-        annotationLine.end = ['end', parseFloat(t.max)]
+        annotationLine.start = ['start', max]
+        annotationLine.end = ['end', max]
         annotations.push(annotationLine)
       } else if (['lt', 'le'].includes(t.term)) {
         annotation.start = ['start', t.value]

@@ -8,10 +8,7 @@ import { COLOR_PANEL } from '../../../util/chart'
 import { fieldType } from '@/utils/attr'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import { cloneDeep } from 'lodash-es'
-import {
-  transDateFormat,
-  transDatePickerType
-} from '@/views/chart/components/editor/util/DateFormatUtil'
+import ThresholdDatePicker from './ThresholdDatePicker.vue'
 import { TableThreshold } from '@/models/chart/chart-senior'
 
 const { t } = useI18n()
@@ -284,13 +281,19 @@ const initFields = () => {
     fields = [...xAxis, ...yAxis]
   }
   state.fields.splice(0, state.fields.length, ...fields)
-  // 字段不存在时
   let change = false
   state.thresholdArr.forEach(item => {
-    const fieldItemObj = state.fields.filter(ele => ele.id === item.fieldId)
-    if (fieldItemObj.length === 0) {
+    const fieldItemObj = state.fields.find(ele => ele.id === item.fieldId)
+    if (!fieldItemObj) {
       change = true
       item.fieldId = null
+      return
+    }
+    if (fieldItemObj.deType === 1) {
+      // 重新打开条件样式时同步日期字段配置，避免日期控件沿用旧的格式和粒度。
+      // 这里只更新字段副本，保留已配置的条件运算符、条件值和颜色。
+      item.field = cloneDeep(fieldItemObj)
+      change = true
     }
   })
   if (change) {
@@ -450,14 +453,6 @@ const getFieldOptions = () => {
   return fieldOptions
 }
 
-const datePickerFormat = (fieldItem: { dateStyle: any; datePattern: any }) => {
-  return transDateFormat(fieldItem.dateStyle, fieldItem.datePattern)
-}
-
-const datePickerType = (fieldItem: { dateStyle: string }) => {
-  return transDatePickerType(fieldItem.dateStyle)
-}
-
 // 判断当前图表是否为热力图
 const isHeatmap = computed(() => props.chart.type === 't-heatmap')
 
@@ -614,32 +609,13 @@ init()
                   clearable
                   @change="changeThreshold"
                 />
-                <el-date-picker
+                <ThresholdDatePicker
                   v-model="item.value"
-                  v-else-if="
-                    [1].includes(fieldItem.field.deType) && fieldItem.field.dateStyle !== 'H_m_s'
-                  "
-                  :type="datePickerType(fieldItem.field)"
+                  v-else-if="fieldItem.field.deType === 1"
+                  :field="fieldItem.field"
                   :placeholder="t('chart.drag_block_label_value')"
-                  :format="datePickerFormat(fieldItem.field)"
-                  :value-format="datePickerFormat(fieldItem.field)"
-                  size="default"
                   class="value-item"
                   @change="changeThreshold"
-                  style="width: 100%"
-                />
-                <el-time-picker
-                  v-model="item.value"
-                  v-else-if="
-                    [1].includes(fieldItem.field.deType) && fieldItem.field.dateStyle === 'H_m_s'
-                  "
-                  :placeholder="t('chart.drag_block_label_value')"
-                  :format="datePickerFormat(fieldItem.field)"
-                  :value-format="datePickerFormat(fieldItem.field)"
-                  size="default"
-                  class="value-item"
-                  @change="changeThreshold"
-                  style="width: 100%"
                 />
                 <el-input
                   v-model="item.value"

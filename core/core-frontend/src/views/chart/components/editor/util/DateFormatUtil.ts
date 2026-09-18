@@ -1,3 +1,8 @@
+// 日期字段按计数聚合后是数值，条件样式仍应使用数值输入。
+export function isDateThresholdField(field: { deType?: number; summary?: string }): boolean {
+  return field?.deType === 1 && !['count', 'count_distinct'].includes(field.summary)
+}
+
 export function transDateFormat(dateStyle: string, datePattern: string): string {
   const split = datePattern?.toLowerCase() === 'date_split' ? '/' : '-'
 
