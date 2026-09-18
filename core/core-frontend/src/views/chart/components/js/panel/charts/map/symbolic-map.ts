@@ -17,6 +17,7 @@ import { Scene } from '@antv/l7-scene'
 import { PointLayer } from '@antv/l7-layers'
 import { LayerPopup } from '@antv/l7'
 import {
+  bindMapHoverTooltipRefresh,
   getMapCenter,
   getMapScene,
   getMapStyle,
@@ -445,6 +446,14 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
    * @param pointLayer
    */
   buildTooltip = (chart, container, pointLayer, scene) => {
+    let layerPopup: LayerPopup
+    bindMapHoverTooltipRefresh(container, scene, () => {
+      if (layerPopup?.getIsShow()) {
+        // 同时清除 LayerPopup 的数据命中缓存，保证再次悬停同一点仍能显示
+        pointLayer.emit('mouseout', {})
+        layerPopup.hide()
+      }
+    })
     const customAttr = chart.customAttr ? parseJson(chart.customAttr) : null
     this.clearPopup(container)
     if (customAttr?.tooltip?.show) {
@@ -506,7 +515,7 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
         })
       }
       const mobile = isMobile()
-      const layerPopup = new LayerPopup({
+      layerPopup = new LayerPopup({
         ...(mobile ? {} : { anchor: 'top-left' }),
         className: 'l7-popup-' + container,
         items: [
