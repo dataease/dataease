@@ -871,9 +871,6 @@ defineExpose({
   border-bottom: 1px solid #ccc !important;
   z-index: 1000;
 }
-.tox-tbtn {
-  height: auto !important;
-}
 .tox-collection__item-label {
   p {
     color: #1a1a1a !important;
