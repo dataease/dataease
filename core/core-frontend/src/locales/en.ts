@@ -1,4 +1,15 @@
 export default {
+  share_visitor: {
+    no_permission: 'You do not have this permission',
+    title: 'Visitor permissions',
+    hint: 'New links are view-only by default. These permissions apply only to this public link.',
+    details: 'Allow viewing details',
+    data: 'Allow exporting data',
+    image: 'Allow exporting images / PDF',
+    buttons_hint:
+      'Shared pages respect dashboard and screen button visibility. Allowing an action does not reveal hidden buttons.',
+    save_copy: 'Save and copy link'
+  },
   common: {
     display_formats: 'Display Formats',
     dropdown_display: 'Drop-down Display',

@@ -1,3 +1,4 @@
+import { useLinkStoreWithOut } from '@/store/modules/link'
 import { BusiTreeNode } from '@/models/tree/TreeNode'
 import { useCache } from '@/hooks/web/useCache'
 import { loadScript } from '@/utils/RemoteJs'
@@ -264,7 +265,21 @@ export const isNull = arg => {
   return typeof arg === 'undefined' || arg === null || arg === 'null'
 }
 
+export const shareAllows = (permission: number) => {
+  const link = useLinkStoreWithOut()
+  return !link.getLinkToken || (link.visitorPermissions & permission) === permission
+}
+
 export const exportPermission = (weight, ext) => {
+  const result = originalExportPermission(weight, ext)
+  return [
+    shareAllows(4) ? result[0] : 0,
+    shareAllows(2) ? result[1] : 0,
+    shareAllows(2) ? result[2] : 0
+  ]
+}
+
+const originalExportPermission = (weight, ext) => {
   const result = [0, 0, 0]
   if (!weight || weight === 1) {
     return result

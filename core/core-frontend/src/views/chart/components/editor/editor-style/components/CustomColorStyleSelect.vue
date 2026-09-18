@@ -77,9 +77,31 @@ const needSetSubSeriesColor = computed(() => {
   return instance.value?.propertyInner?.['dual-basic-style-selector']?.includes('subSeriesColor')
 })
 
+// 分别记录面板列表和本次取色操作所属的图表，避免复用组件时跨图表串用状态
+let seriesColorChartId: ChartObj['id']
+let editingChartId: ChartObj['id']
+const clearSeriesColorState = () => {
+  // 只清理面板临时状态，保留各图表已保存的自定义配色
+  // 先使取色操作失效，再关闭取色器，防止关闭期间的回调提交旧颜色
+  editingChartId = undefined
+  seriesColorPickerRef.value?.hide()
+  seriesColorState.seriesColor.splice(0)
+  seriesColorState.curSeriesColor = { id: '', name: '', color: '' }
+  seriesColorState.curColorIndex = 0
+  // 旧列表节点可能被移除，先把隐藏的取色器移回始终存在的 body
+  seriesColorState.seriesColorPickerId = 'body'
+}
+
 const setupSeriesColor = () => {
+  const chartId = props.chart?.id
+  // ID 改变表示选中了另一张图；同一张图切换类型不走这段跨图表重置
+  if (seriesColorChartId !== chartId) {
+    clearSeriesColorState()
+    seriesColorChartId = chartId
+  }
+  // 下方各个无法生成当前系列列表的分支都要清理，不能直接返回而留下旧列表
   if (batchOptStatus.value || !props.chart) {
-    return
+    return clearSeriesColorState()
   }
 
   instance.value = chartViewManager.getChartView(
@@ -89,17 +111,18 @@ const setupSeriesColor = () => {
 
   if (!props.sub) {
     if (!needSetSeriesColor.value) {
-      return
+      return clearSeriesColorState()
     }
   } else {
     if (!needSetSubSeriesColor.value) {
-      return
+      return clearSeriesColorState()
     }
   }
 
   let viewData = dvMainStore.getViewOriginData(props.chart.id)
   if (!viewData) {
-    return
+    // 新建图表尚无数据缓存时，不能展示上一张图的子类别配色
+    return clearSeriesColorState()
   }
 
   if (props.chart.type.includes('chart-mix')) {
@@ -110,16 +133,21 @@ const setupSeriesColor = () => {
     }
   }
   if (!viewData) {
-    return
+    // 组合图整体可能已有数据，但当前主轴或副轴仍未配置
+    return clearSeriesColorState()
   }
 
   const sFunction = props.sub
     ? instance.value?.setupSubSeriesColor
     : instance.value.setupSeriesColor
   if (!sFunction) {
-    return
+    return clearSeriesColorState()
   }
-  const newSeriesColor = sFunction(props.chart, viewData.data)
+  // 将无返回值视为空列表；没有系列时也要清除当前编辑项和取色器状态
+  const newSeriesColor = sFunction(props.chart, viewData.data) ?? []
+  if (!newSeriesColor.length) {
+    return clearSeriesColorState()
+  }
   const oldSeriesColor =
     props.chart.customAttr.basicStyle[seriesColorName.value]?.reduce((p, n) => {
       p[n.id] = n
@@ -142,19 +170,35 @@ const setupSeriesColor = () => {
       seriesColorState.seriesColor[seriesColorState.curColorIndex]
     )
     nextTick(() => {
+      // 等待 DOM 更新期间可能已切换图表或清空列表，旧任务不再调整挂载位置
+      if (props.chart?.id !== chartId || !seriesColorState.seriesColor.length) {
+        return
+      }
       customColorPickerRef.value?.hide()
-      // 防止 teleport 失效还有选框飘到左上角
-      seriesColorState.seriesColorPickerId = `#seriesr-picker-slot-${props.sub ? 1 : 0}`
+      // 自定义区域收起时挂载点不存在，只在节点存在时移动取色器，避免定位异常
+      const slotId = `seriesr-picker-slot-${props.sub ? 1 : 0}`
+      if (document.getElementById(slotId)) {
+        seriesColorState.seriesColorPickerId = `#${slotId}`
+      }
     })
   }
 }
 const switchSeriesColor = (seriesColor, index) => {
   seriesColorPickerRef.value?.hide()
+  editingChartId = props.chart?.id
   seriesColorState.curSeriesColor = cloneDeep(seriesColor)
+  const currentSeriesColor = seriesColorState.curSeriesColor
   seriesColorState.curColorIndex = index
   const id = `series-color-picker-${props.sub ? 1 : 0}-${index}`
   seriesColorState.seriesColorPickerId = `#${id}`
   nextTick(() => {
+    // 只打开本次点击对应的取色器，图表切换或编辑副本被重建后放弃旧打开任务
+    if (
+      editingChartId !== props.chart?.id ||
+      currentSeriesColor !== seriesColorState.curSeriesColor
+    ) {
+      return
+    }
     const dom = document.getElementById(id)
     if (dom) {
       seriesColorPickerRef.value?.show()
@@ -163,6 +207,10 @@ const switchSeriesColor = (seriesColor, index) => {
 }
 
 const changeSeriesColor = () => {
+  // 取色操作必须属于当前图表，避免旧回调把上一张图的系列写入新图配置
+  if (!props.chart || editingChartId !== props.chart.id) {
+    return
+  }
   let changed = false
   seriesColorState.seriesColor.forEach(c => {
     if (
@@ -181,7 +229,13 @@ const changeSeriesColor = () => {
 watch(
   [
     () => props.chart,
+    // 显式监听 ID，兼容图表对象被原地更新的情况
+    () => props.chart?.id,
     () => props.chart?.type,
+    // 渲染器、主副系列或批量编辑状态改变后，重新判断当前面板能否展示系列配色
+    () => props.chart?.render,
+    () => props.sub,
+    () => batchOptStatus.value,
     () => props.chart?.customAttr.basicStyle.calcTopN,
     () => props.chart?.customAttr.basicStyle.topN,
     () => props.chart?.customAttr.basicStyle.topNLabel,
