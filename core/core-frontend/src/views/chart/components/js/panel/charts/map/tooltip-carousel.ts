@@ -209,6 +209,8 @@ export class CarouselManager {
    * @private
    */
   private init(scene, chart, view, data: any[], customSubArea, drawOption?) {
+    // 更新前保留旧弹窗引用以完成清理，避免在复用实例时遗留旧 Popup
+    this.clearPreviousInstance(this.chart?.container || chart.container)
     this.view = view
     this.chart = chart
     this.scene = scene
@@ -217,7 +219,6 @@ export class CarouselManager {
     this.currentIndex = 0
     this.customSubArea = customSubArea
     this.drawOption = drawOption
-    this.clearPreviousInstance(this.chart.container)
     if (
       this.chart.customAttr?.tooltip?.show &&
       this.chart.customAttr?.tooltip?.carousel?.enable &&
@@ -227,6 +228,7 @@ export class CarouselManager {
       const carousel = this.chart.customAttr?.tooltip?.carousel
       this.stayTime = carousel.stayTime * 1000
       this.intervalTime = carousel.intervalTime * 1000
+      this.syncPointerPause()
       this.startCarouselPopups()
       const divElement = document.getElementById(this.chart.container)
       divElement.addEventListener('mouseenter', this.pauseCarouselPopups)
@@ -252,6 +254,7 @@ export class CarouselManager {
     if (document.hidden) {
       this.clearPreviousInstance(this.chart.container)
     } else {
+      this.syncPointerPause()
       this.startCarouselPopups()
     }
   }
@@ -264,7 +267,7 @@ export class CarouselManager {
   private clearPreviousInstance(containerId: string): void {
     if (carouselManagerInstances[containerId]) {
       const instance = carouselManagerInstances[containerId]
-      this.clearExistingTimers()
+      instance.clearExistingTimers()
       instance.popup?.remove()
       instance.removeStyle()
     }
@@ -276,7 +279,44 @@ export class CarouselManager {
    */
   private startCarouselPopups(): void {
     this.clearExistingTimers()
-    this.carouselPopups()
+    if (this.canRunCarousel()) {
+      this.carouselPopups()
+    }
+  }
+
+  private isDesktopPointer(): boolean {
+    // 仅对无触摸能力的 PC 启用悬停保护，触屏电脑和平板也保留原有触摸逻辑
+    return (
+      navigator.maxTouchPoints === 0 &&
+      window.matchMedia('(hover: hover) and (pointer: fine)').matches
+    )
+  }
+
+  private syncPointerPause(): void {
+    // 重绘时鼠标仍在容器内不会再次触发 mouseenter，需恢复实际暂停状态
+    if (this.isDesktopPointer()) {
+      this.isPaused = !!document.getElementById(this.chart.container)?.matches(':hover')
+    }
+  }
+
+  private canRunCarousel(): boolean {
+    // 触摸设备不增加启动限制，保留重绘、重新开启和页面恢复时的原有行为
+    if (!this.isDesktopPointer()) {
+      return true
+    }
+    const container = document.getElementById(this.chart.container)
+    if (container?.matches(':hover')) {
+      this.isPaused = true
+    }
+    return !!(
+      container &&
+      this.popup &&
+      this.chart.customAttr?.tooltip?.show &&
+      this.chart.customAttr?.tooltip?.carousel?.enable &&
+      this.data?.length &&
+      !document.hidden &&
+      !this.isPaused
+    )
   }
 
   /**
@@ -311,6 +351,13 @@ export class CarouselManager {
    */
   private carouselPopups(): void {
     const showPopup = (index: number): void => {
+      // 定时回调同样检查暂停条件，悬停期间不能隐藏鼠标提示或展示轮播提示
+      if (!this.canRunCarousel()) {
+        this.clearExistingTimers()
+        this.popup?.remove()
+        this.removeStyle()
+        return
+      }
       this.removeStyle()
       const containerElement = document.getElementById(this.chart.container)
       if (containerElement) {
