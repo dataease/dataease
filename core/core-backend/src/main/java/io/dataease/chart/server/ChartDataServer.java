@@ -60,6 +60,9 @@ import java.util.stream.Collectors;
 @RequestMapping("/chartData")
 public class ChartDataServer implements ChartDataApi {
     @Resource
+    private io.dataease.share.manage.ShareVisitorPermissionManage shareVisitorPermissionManage;
+
+    @Resource
     private ChartDataManage chartDataManage;
     @Resource
     private ExportCenterManage exportCenterManage;
@@ -240,6 +243,7 @@ public class ChartDataServer implements ChartDataApi {
     @DeLinkPermit("#p0.dvId")
     @Override
     public void innerExportDetails(ChartExcelRequest request, HttpServletResponse response) throws Exception {
+        shareVisitorPermissionManage.require(io.dataease.share.manage.ShareVisitorPermissionManage.EXPORT_DATA);
         HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         String linkToken = httpServletRequest.getHeader(AuthConstant.LINK_TOKEN_KEY);
         LogUtil.info(request.getViewInfo().getId() + " " + StringUtils.isNotEmpty(linkToken) + " " + request.isDataEaseBi());

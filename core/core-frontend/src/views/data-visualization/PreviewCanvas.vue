@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import request from '@/config/axios'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useLinkStoreWithOut } from '@/store/modules/link'
 import { computed, nextTick, onMounted, reactive, ref, watch, defineAsyncComponent } from 'vue'
@@ -14,7 +15,7 @@ import { useEmbedded } from '@/store/modules/embedded'
 import { useI18n } from '@/hooks/web/useI18n'
 import { propTypes } from '@/utils/propTypes'
 import { downloadCanvas2 } from '@/utils/imgUtils'
-import { isLink, setTitle } from '@/utils/utils'
+import { isLink, setTitle, shareAllows } from '@/utils/utils'
 import EmptyBackground from '../../components/empty-background/src/EmptyBackground.vue'
 import { useRoute } from 'vue-router_2'
 import { filterEnumMapSync } from '@/utils/componentUtils'
@@ -182,6 +183,7 @@ const loadCanvasDataAsync = async (dvId, dvType, ignoreParams = false) => {
 }
 
 const downloadH2 = type => {
+  if (!shareAllows(4)) return
   downloadStatus.value = true
   nextTick(() => {
     const vueDom = previewCanvasContainer.value.querySelector('.canvas-container')
@@ -238,6 +240,10 @@ onMounted(async () => {
     dvMainStore.setCanvasAttachInfo({ taskId, showWatermark })
   }
   if (dvId) {
+    if (linkStore.getLinkToken) {
+      const permissions = await request.get({ url: `/share/visitorPermissions/${dvId}` })
+      linkStore.setVisitorPermissions(permissions.data)
+    }
     await loadCanvasDataAsync(dvId, dvType, ignoreParams)
     return
   }
