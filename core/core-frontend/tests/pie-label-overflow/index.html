@@ -1,0 +1,7 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>圆形图长标签回归</title>
+<style>body{font:14px system-ui;margin:24px;color:#222}header{display:flex;gap:20px;flex-wrap:wrap}main{display:flex;gap:24px;flex-wrap:wrap}.plot{width:390px;height:260px;max-width:100%}h2{font-size:16px}#names{overflow-wrap:anywhere}</style>
+<header><label><input id="full" type="checkbox" checked>完整显示</label><label>标签数 <input id="count" type="number" value="40" min="1" max="200"></label><label>字号 <input id="font" type="number" value="12" min="10" max="40"></label></header>
+<main><section><h2>原有处理</h2><div id="before" class="plot"></div></section><section><h2>优化后</h2><div id="after" class="plot"></div></section></main><div id="names"></div>
+<script type="module" src="./demo.ts"></script></html>

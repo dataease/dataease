@@ -12,6 +12,7 @@ import {
   PIE_EDITOR_PROPERTY_INNER
 } from '@/views/chart/components/js/panel/charts/g2plot/pie/common'
 import { configSingleSectorScale, createCircularLabelLayout } from './common'
+import { CircularLabelOverflow } from './text-overflow'
 import {
   getG2Renderer,
   getTooltipSeriesTotalMap,
@@ -178,7 +179,9 @@ export class Pie extends G2ChartView {
     const isInnerLabel = labelAttr.position === 'inner'
     const label = {
       // 普通外标签 spider 排布，全量显示时跳过自动隐藏
-      transform: labelAttr.fullDisplay && !isInnerLabel ? [] : [{ type: 'exceedAdjust' }],
+      transform: isInnerLabel
+        ? [{ type: 'exceedAdjust' }]
+        : [{ type: CircularLabelOverflow, fullDisplay: labelAttr.fullDisplay }],
       position: isInnerLabel ? 'inside' : labelAttr.fullDisplay ? 'outside' : 'spider',
       style: {
         fill: labelAttr.color,
