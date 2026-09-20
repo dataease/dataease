@@ -14,11 +14,14 @@ import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.view.dto.*;
 import io.dataease.extensions.view.util.ChartDataUtil;
 import io.dataease.extensions.view.util.FieldUtil;
+import io.dataease.utils.LogUtil;
 import lombok.Getter;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -76,8 +79,40 @@ public class TableHeatmapHandler extends DefaultChartHandler {
         calcResult.setContext(filterResult.getContext());
         calcResult.setQuerySql(querySql);
         calcResult.setOriginData(data);
+        try {
+            // 与 V2 一致，条件样式的动态阈值可引用颜色指标及横纵轴维度。
+            var dynamicAssistFields = getDynamicThresholdFields(view);
+            var assistFields = getAssistFields(dynamicAssistFields, yAxis, xAxis);
+            if (CollectionUtils.isNotEmpty(assistFields)) {
+                var req = new DatasourceRequest();
+                fillDatasourceRequest(req, crossDs, dsMap, sqlMap);
+
+                List<ChartSeniorAssistDTO> assists = dynamicAssistFields.stream().filter(ele -> !StringUtils.equalsIgnoreCase(ele.getSummary(), "last_item")).toList();
+                if (ObjectUtils.isNotEmpty(assists)) {
+                    var assistSql = assistSQL(querySql, assistFields, dsMap, crossDs);
+                    var tmpSql = provider.rebuildSQL(assistSql, sqlMeta, crossDs, dsMap);
+                    req.setQuery(tmpSql);
+                    logger.debug("calcite assistSql sql: " + tmpSql);
+                    var assistData = (List<String[]>) provider.fetchResultField(req).get("data");
+                    calcResult.setAssistData(assistData);
+                    calcResult.setDynamicAssistFields(assists);
+                }
+
+                List<ChartSeniorAssistDTO> assistsOriginList = dynamicAssistFields.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getSummary(), "last_item")).toList();
+                if (ObjectUtils.isNotEmpty(assistsOriginList)) {
+                    var assistSqlOriginList = assistSQLOriginList(querySql, assistFields, dsMap, crossDs);
+                    var tmpSql = provider.rebuildSQL(assistSqlOriginList, sqlMeta, crossDs, dsMap);
+                    req.setQuery(tmpSql);
+                    logger.debug("calcite assistSql sql origin list: " + tmpSql);
+                    var assistDataOriginList = (List<String[]>) provider.fetchResultField(req).get("data");
+                    calcResult.setAssistDataOriginList(assistDataOriginList);
+                    calcResult.setDynamicAssistFieldsOriginList(assistsOriginList);
+                }
+            }
+        } catch (Exception e) {
+            LogUtil.error(e);
+        }
         return calcResult;
     }
 
 }
-

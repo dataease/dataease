@@ -203,7 +203,12 @@ const valueOptions = [
 ]
 const predefineColors = COLOR_PANEL
 
+const isHeatmap = computed(() => props.chart.type === 't-heatmap')
+
 const targetOptions = computed(() => {
+  if (isHeatmap.value) {
+    return [{ label: t('chart.self'), value: 'self' }]
+  }
   // 富文本和透视表不提供普通表格的整行应用范围
   if (['rich-text', 'table-pivot'].includes(props.chart.type)) {
     return [
@@ -257,6 +262,13 @@ const initFields = () => {
     const xAxisExt = JSON.parse(JSON.stringify(props.chart.xAxisExt))
     const yAxis = JSON.parse(JSON.stringify(props.chart.yAxis))
     fields = [...xAxis, ...xAxisExt, ...yAxis]
+  } else if (isHeatmap.value) {
+    // 与 V2 一致，横轴、纵轴及颜色字段都可作为条件来源。
+    fields = cloneDeep([
+      ...(props.chart.xAxis || []),
+      ...(props.chart.xAxisExt || []),
+      ...(props.chart.extColor || [])
+    ])
   } else {
     const xAxis = JSON.parse(JSON.stringify(props.chart.xAxis))
     const yAxis = JSON.parse(JSON.stringify(props.chart.yAxis))
@@ -272,7 +284,14 @@ const initFields = () => {
       item.fieldId = null
     }
     item.conditions?.forEach(condition => {
-      if (!condition.target) {
+      // 热力图条件统一作用于当前单元格，不保留表格的整行或自定义范围。
+      if (isHeatmap.value) {
+        if (condition.target !== 'self' || condition.targetFieldId != null) {
+          change = true
+          condition.target = 'self'
+          condition.targetFieldId = null
+        }
+      } else if (!condition.target) {
         change = true
         condition.target = 'self'
       }
@@ -431,6 +450,11 @@ const isNotEmptyAndNull = item => {
   return !item.term.includes('null') && !item.term.includes('empty')
 }
 
+const getTermSpan = item => {
+  if (isNotEmptyAndNull(item)) return 3
+  return isHeatmap.value ? 16 : 11
+}
+
 const isBetween = item => {
   return item.term === 'between'
 }
@@ -528,7 +552,7 @@ init()
             class="line-item"
             :gutter="12"
           >
-            <el-col :span="!isNotEmptyAndNull(item) ? 11 : 3">
+            <el-col :span="getTermSpan(item)">
               <el-form-item class="form-item">
                 <el-select v-model="item.term" @change="changeThreshold">
                   <el-option-group
@@ -570,7 +594,7 @@ init()
             <!--不是between 不是动态值-->
             <el-col
               v-if="isNotEmptyAndNull(item) && !isBetween(item) && !isDynamic(item)"
-              :span="6"
+              :span="isHeatmap ? 11 : 6"
               style="text-align: center"
             >
               <el-form-item class="form-item">
@@ -608,7 +632,10 @@ init()
             </el-col>
             <!--不是between 是动态值-->
             <!--动态值 字段-->
-            <el-col v-if="isNotEmptyAndNull(item) && !isBetween(item) && isDynamic(item)" :span="3">
+            <el-col
+              v-if="isNotEmptyAndNull(item) && !isBetween(item) && isDynamic(item)"
+              :span="isHeatmap ? 6 : 3"
+            >
               <el-form-item class="form-item">
                 <el-select
                   v-model="item.dynamicField.fieldId"
@@ -646,7 +673,7 @@ init()
             <!--动态值聚合方式-->
             <el-col
               v-if="isNotEmptyAndNull(item) && !isBetween(item) && isDynamic(item)"
-              :span="3"
+              :span="isHeatmap ? 5 : 3"
               style="text-align: center"
             >
               <el-form-item class="form-item">
@@ -669,7 +696,7 @@ init()
             <!--between 开始值-->
             <el-col
               v-if="isNotEmptyAndNull(item) && isBetween(item) && !isDynamic(item)"
-              :span="2"
+              :span="isHeatmap ? 4 : 2"
               style="text-align: center"
             >
               <el-form-item class="form-item">
@@ -685,7 +712,7 @@ init()
             </el-col>
             <el-col
               v-if="isBetween(item) && !isDynamic(item)"
-              :span="2"
+              :span="isHeatmap ? 3 : 2"
               style="margin-top: 4px; text-align: center"
             >
               <span style="margin: 0 -5px">
@@ -695,7 +722,7 @@ init()
             <!--between 结束值-->
             <el-col
               v-if="isNotEmptyAndNull(item) && isBetween(item) && !isDynamic(item)"
-              :span="2"
+              :span="isHeatmap ? 4 : 2"
               style="text-align: center"
             >
               <el-form-item class="form-item">
@@ -715,7 +742,7 @@ init()
             <el-col
               v-if="isNotEmptyAndNull(item) && isBetween(item) && isDynamic(item)"
               class="minField"
-              :span="2"
+              :span="isHeatmap ? 3 : 2"
             >
               <el-form-item class="form-item">
                 <el-select v-model="item.dynamicMinField.fieldId" @change="addField(item)">
@@ -751,7 +778,7 @@ init()
             <el-col
               v-if="isNotEmptyAndNull(item) && isBetween(item) && isDynamic(item)"
               class="minValue"
-              :span="2"
+              :span="isHeatmap ? 3 : 2"
               style="padding-left: 0 !important"
             >
               <el-form-item class="form-item">
@@ -768,7 +795,7 @@ init()
             <el-col
               v-if="isBetween(item) && isDynamic(item)"
               class="term"
-              :span="1"
+              :span="isHeatmap ? 2 : 1"
               style="margin-top: 4px; text-align: center"
             >
               <span style="margin: 0 -5px">
@@ -779,7 +806,7 @@ init()
             <el-col
               v-if="isNotEmptyAndNull(item) && isBetween(item) && isDynamic(item)"
               class="maxField"
-              :span="2"
+              :span="isHeatmap ? 3 : 2"
             >
               <el-form-item class="form-item">
                 <el-select v-model="item.dynamicMaxField.fieldId" @change="addField(item)">
@@ -815,7 +842,7 @@ init()
             <el-col
               v-if="isNotEmptyAndNull(item) && isBetween(item) && isDynamic(item)"
               class="maxValue"
-              :span="2"
+              :span="isHeatmap ? 3 : 2"
               style="padding-left: 0 !important"
             >
               <el-form-item class="form-item">
@@ -829,7 +856,7 @@ init()
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :span="item.target === 'custom' ? 3 : 5">
+            <el-col v-if="!isHeatmap" :span="item.target === 'custom' ? 3 : 5">
               <el-form-item class="form-item">
                 <el-select
                   v-model="item.target"
@@ -846,7 +873,7 @@ init()
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col v-if="item.target === 'custom'" :span="2">
+            <el-col v-if="!isHeatmap && item.target === 'custom'" :span="2">
               <el-form-item class="form-item">
                 <el-select
                   v-model="item.targetFieldId"
