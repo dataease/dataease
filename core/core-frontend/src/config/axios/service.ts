@@ -15,7 +15,7 @@ import { useLinkStoreWithOut } from '@/store/modules/link'
 import { config } from './config'
 import { configHandler } from './refresh'
 import { isMobile, getLocale } from '@/utils/utils'
-import { useI18n } from '@/hooks/web/useI18n'
+import { useI18n, isI18nReady } from '@/hooks/web/useI18n'
 // 注意：不得在模块顶层 const { t } = useI18n() —— 本模块求值早于 setupI18n，
 // 顶层捕获会永久得到降级透传 t（永远返回 key）。必须在函数体内实时调用 useI18n()。
 import { useRequestStoreWithOut } from '@/store/modules/request'
@@ -320,6 +320,52 @@ const showMsg = (msg: string, id: string) => {
     })
 }
 
+// 等待 i18n 就绪后再执行的任务队列：按 key 去重（仅保留最新任务），配合轮询在就绪时补发。
+const deferredTasks = new Map<string, () => void>()
+let deferPollTimer: ReturnType<typeof setInterval> | null = null
+
+const flushDeferredTasks = () => {
+  if (deferPollTimer !== null) {
+    clearInterval(deferPollTimer)
+    deferPollTimer = null
+  }
+  const tasks = [...deferredTasks.values()]
+  deferredTasks.clear()
+  tasks.forEach(task => {
+    try {
+      task()
+    } catch (e) {
+      console.error(e)
+    }
+  })
+}
+
+const queueUntilI18nReady = (key: string, task: () => void) => {
+  // 已就绪直接执行，避免不必要的排队
+  if (isI18nReady()) {
+    task()
+    return
+  }
+  deferredTasks.set(key, task)
+  if (deferPollTimer !== null) return
+  let ticks = 0
+  // 每 100ms 轮询一次；正常在 setupI18n 完成后毫秒级即触发。
+  // 设置上限（约 30s）避免 i18n 始终未就绪时定时器常驻导致内存泄漏。
+  deferPollTimer = setInterval(() => {
+    if (isI18nReady()) {
+      flushDeferredTasks()
+      return
+    }
+    if (++ticks > 300) {
+      if (deferPollTimer !== null) {
+        clearInterval(deferPollTimer)
+        deferPollTimer = null
+      }
+      deferredTasks.clear()
+    }
+  }, 100)
+}
+
 const executeVersionHandler = (response: AxiosResponse) => {
   const key = 'x-de-execute-version'
   const executeVersion = response.headers[key]
@@ -329,8 +375,13 @@ const executeVersionHandler = (response: AxiosResponse) => {
     return
   }
   if (executeVersion && executeVersion !== cacheVal) {
-    wsCache.set(key, executeVersion)
-    showMsg(useI18n().t('common.system_upgrade_tips'), '-sys-upgrade-')
+    // i18n 初始化期间（如 setupI18n 触发的 /sysParameter/i18nOptions 请求）也会走到这里，
+    // 此时全局 i18n 尚未创建，useI18n().t() 会透传返回 key，导致弹窗展示原始文案。
+    // 未就绪时入队并轮询，待 i18n 就绪后补发正确文案（补发前不写缓存，保证仍能识别版本差异）。
+    queueUntilI18nReady('system-upgrade', () => {
+      wsCache.set(key, executeVersion)
+      showMsg(useI18n().t('common.system_upgrade_tips'), '-sys-upgrade-')
+    })
   }
 }
 
