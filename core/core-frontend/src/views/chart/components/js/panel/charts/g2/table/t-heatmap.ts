@@ -1,5 +1,5 @@
 import { G2ChartView, G2DrawOptions } from '../../../types/impl/g2'
-import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
+import { flow, hexColorToRGBA, isTransparent, parseJson } from '@/views/chart/components/js/util'
 import { getG2Renderer, TOOLTIP_ITEM_TPL, TOOLTIP_TITLE_TPL } from '../../../common/common_antv'
 import { useI18n } from '@/hooks/web/useI18n'
 import { defaultsDeep, toString } from 'lodash-es'
@@ -7,6 +7,7 @@ import { ChartEvent, Chart as G2Chart, extend, G2Spec, Runtime, stdlib } from '@
 import { Text } from '@antv/g'
 import { valueFormatter } from '../../../../formatter'
 import { createTooltipWrapper } from '../bar/barUtil'
+import { getFieldValueMap, matchTableCondition } from '../../../common/common_table'
 
 const { t } = useI18n()
 
@@ -274,7 +275,8 @@ export class TableG2Chart extends G2ChartView {
     'tooltip-selector',
     'jump-set',
     'linkage',
-    'border-style'
+    'border-style',
+    'threshold'
   ]
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],
@@ -304,7 +306,8 @@ export class TableG2Chart extends G2ChartView {
     ],
     'legend-selector': ['orient', 'color', 'fontSize', 'hPosition', 'vPosition'],
     'tooltip-selector': ['show', 'color', 'fontSize', 'backgroundColor', 'tooltipFormatter'],
-    'border-style': ['all']
+    'border-style': ['all'],
+    threshold: ['tableThreshold']
   }
   axis: AxisType[] = ['xAxis', 'xAxisExt', 'extColor', 'filter']
   axisConfig: AxisConfig = {
@@ -730,6 +733,54 @@ export class TableG2Chart extends G2ChartView {
     return defaultsDeep(options, tooltipOptions)
   }
 
+  protected configConditions(chart: Chart, options: G2Spec): G2Spec {
+    const { threshold } = parseJson(chart.senior)
+    if (!threshold?.enable || !threshold.tableThreshold?.length) {
+      return options
+    }
+    const fieldValueMap = getFieldValueMap(chart)
+    const rules = threshold.tableThreshold.flatMap(item =>
+      (item.conditions || []).map(rule => ({ rule, sourceField: item.field }))
+    )
+    const getConditionColor = (datum, type: 'color' | 'backgroundColor') => {
+      // 与 V2 一致，按配置顺序匹配整条数据的维度/指标，首个命中规则作用于当前单元格。
+      const matched = rules.find(({ rule, sourceField }) => {
+        if (
+          !sourceField ||
+          !Object.prototype.hasOwnProperty.call(datum, sourceField.dataeaseName)
+        ) {
+          return false
+        }
+        let value = datum[sourceField.dataeaseName]
+        // V2 数值比较兼容字符串数值；空值判断仍使用原值。
+        if ([2, 3, 4].includes(sourceField.deType) && !['null', 'not_null'].includes(rule.term)) {
+          value = parseFloat(value)
+        }
+        return matchTableCondition(value, rule, sourceField, fieldValueMap, datum)
+      })
+      const color = matched?.rule[type]
+      return isTransparent(color) ? undefined : color
+    }
+    const getFill = datum => getConditionColor(datum, 'backgroundColor')
+    // 不改颜色编码，未命中或透明色沿用原配色，图例筛选仍使用原始值。
+    options.style = { ...options.style, fill: getFill, stroke: getFill }
+    if (options.tooltip !== false) {
+      // tooltip 标记复用单元格背景色规则，避免继续显示比例尺的原始颜色。
+      options.tooltip = datum => ({ ...datum, color: getFill(datum) ?? datum.color })
+    }
+    const { label } = parseJson(chart.customAttr)
+    if (label.show && options.labels) {
+      options.labels = options.labels.map(item => ({
+        ...item,
+        style: {
+          ...item.style,
+          fill: datum => getConditionColor(datum, 'color') ?? label.color
+        }
+      }))
+    }
+    return options
+  }
+
   protected configXAxis(chart: Chart, options: G2Spec): G2Spec {
     const { xAxis } = parseJson(chart.customStyle)
     if (!xAxis.show) {
@@ -836,6 +887,7 @@ export class TableG2Chart extends G2ChartView {
       this.configLegend,
       this.configLabel,
       this.configTooltip,
+      this.configConditions,
       this.configXAxis,
       this.configYAxis
     )(chart, options, context, this)

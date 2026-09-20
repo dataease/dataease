@@ -1240,7 +1240,7 @@ function getRuleSourceValue(value, rowData, sourceName, targetName) {
   return {found: false, value: undefined}
 }
 
-function matchTableCondition(
+export function matchTableCondition(
   value,
   rule,
   sourceField,
@@ -1504,7 +1504,7 @@ export function mappingColor(value, defaultColor, field, type, filedValueMap?, r
 
 }
 
-function getFieldValueMap(view) {
+export function getFieldValueMap(view) {
   const fieldValueMap = {}
   if (view.data && view.data.dynamicAssistLines && view.data.dynamicAssistLines.length > 0) {
     view.data.dynamicAssistLines.forEach(ele => {
