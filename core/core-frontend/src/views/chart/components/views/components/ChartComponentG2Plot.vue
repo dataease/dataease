@@ -24,7 +24,12 @@ import ChartError from '@/views/chart/components/views/components/ChartError.vue
 import { BASE_VIEW_CONFIG } from '../../editor/util/chart'
 import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/utils/canvasStyle'
 import { deepCopy, isMobile } from '@/utils/utils'
-import { isDashboard, isTabCanvas, trackBarStyleCheck } from '@/utils/canvasUtils'
+import {
+  getDataVControlScale,
+  isDashboard,
+  isTabCanvas,
+  trackBarStyleCheck
+} from '@/utils/canvasUtils'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { L7ChartView } from '@/views/chart/components/js/panel/types/impl/l7'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -114,6 +119,7 @@ const errMsg = ref('')
 const linkageActiveHistory = ref(false)
 
 const dataVMobile = !isDashboard() && isMobile()
+const mapControlScale = computed(() => getDataVControlScale(scale.value))
 
 const state = reactive({
   trackBarStyle: {
@@ -949,6 +955,8 @@ watch(
       v-if="!isError"
       ref="chartContainer"
       class="canvas-content"
+      :class="{ 'map-control-scaled': mapControlScale !== 1 }"
+      :style="mapControlScale !== 1 ? { '--de-map-control-scale': mapControlScale } : undefined"
       :id="containerId"
     ></div>
     <chart-error v-else :err-msg="errMsg" />
@@ -966,6 +974,13 @@ watch(
     height: 100% !important;
     :deep(.g2-tooltip) {
       position: fixed !important;
+    }
+    // 移动大屏地图控件及边距跟随画布比例缩放
+    &.map-control-scaled :deep(.l7-control-zoom) {
+      transform: scale(var(--de-map-control-scale));
+      transform-origin: bottom right;
+      margin-right: calc(8px * var(--de-map-control-scale));
+      margin-bottom: calc(8px * var(--de-map-control-scale));
     }
   }
 }
