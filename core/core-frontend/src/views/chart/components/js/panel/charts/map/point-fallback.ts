@@ -5,7 +5,11 @@ import { Dot } from '@antv/l7plot'
 import { attachMapLabels } from './label-layout'
 import { isEmpty } from 'lodash-es'
 import { hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
-import { mapRendered, mapRendering } from '@/views/chart/components/js/panel/common/common_antv'
+import {
+  bindMapHoverTooltipRefresh,
+  mapRendered,
+  mapRendering
+} from '@/views/chart/components/js/panel/common/common_antv'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { configCarouselTooltip } from '@/views/chart/components/js/panel/charts/map/tooltip-carousel'
 import type { L7PlotDrawOptions } from '@/views/chart/components/js/panel/types/impl/l7plot'
@@ -301,6 +305,7 @@ export async function drawPointFallbackChart(
   }
 
   const dotLayer = new Dot(dotOptions)
+  bindMapHoverTooltipRefresh(container, view.scene, () => dotLayer.tooltip?.hideTooltip())
 
   mapRendering(container)
   view.once('loaded', () => {

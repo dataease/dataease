@@ -14,6 +14,7 @@ import {
   filterEmptyMinValue
 } from '@/views/chart/components/js/util'
 import {
+  bindMapHoverTooltipRefresh,
   handleGeoJson,
   mapRendered,
   mapRendering,
@@ -306,6 +307,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     const { Choropleth } = await import('@antv/l7plot/dist/esm/plots/choropleth')
     const view = new Choropleth(container, options)
     this.configZoomButton(chart, view)
+    bindMapHoverTooltipRefresh(container, view.scene, () => view.tooltip?.hideTooltip())
     mapRendering(container)
     view.once('loaded', () => {
       mapRendered(container)
