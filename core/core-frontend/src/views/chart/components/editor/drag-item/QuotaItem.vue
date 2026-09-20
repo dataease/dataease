@@ -358,9 +358,9 @@ onMounted(() => {
             <Icon name="icon_sort_outlined"><icon_sort_outlined class="svg-icon" /></Icon>
           </el-icon>
           <el-icon>
-            <Icon :className="`field-icon-${fieldType[[2, 3].includes(item.deType) ? 2 : 0]}`"
+            <Icon :className="`field-icon-${fieldType[[2, 3, 4].includes(item.deType) ? 2 : 0]}`"
               ><component
-                :class="`field-icon-${fieldType[[2, 3].includes(item.deType) ? 2 : 0]}`"
+                :class="`field-icon-${fieldType[[2, 3, 4].includes(item.deType) ? 2 : 0]}`"
                 class="svg-icon"
                 :is="iconFieldMap[fieldType[item.deType]]"
               ></component
