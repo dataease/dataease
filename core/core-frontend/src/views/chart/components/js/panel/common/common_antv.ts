@@ -1,4 +1,5 @@
 import { hexColorToRGBA, hexToRgba, measureText, parseJson } from '../../util'
+import { bindLegendFullName, getLegendTextOverflow } from './text-overflow'
 import {
   DEFAULT_BASIC_STYLE,
   DEFAULT_LEGEND_STYLE,
@@ -451,6 +452,7 @@ export function getLegend(chart: Chart) {
         )
 
         legend = {
+          ...(chart.type === 't-heatmap' ? {} : getLegendTextOverflow(position)),
           layout: orient,
           position: position,
           offsetX: offsetX,
@@ -2315,6 +2317,7 @@ export function configPlotTooltipEvent<O extends PickOptions, P extends Plot<O>>
   chart: Chart,
   plot: P
 ) {
+  bindLegendFullName(plot)
   const { tooltip } = parseJson(chart.customAttr)
   if (!tooltip.show) {
     ChartCarouselTooltip.destroyByContainer(chart.container)
