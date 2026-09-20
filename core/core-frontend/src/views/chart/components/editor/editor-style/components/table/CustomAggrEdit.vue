@@ -268,7 +268,7 @@ initFunction()
             </el-icon>
           </el-tooltip>
         </span>
-        <div class="padding-lr-content">
+        <div class="padding-lr-content field-content">
           <el-input v-model="searchField" :placeholder="t('dataset.edit_search')" clearable>
             <template #prefix>
               <el-icon>
@@ -502,8 +502,14 @@ initFunction()
   margin-top: 12px;
   color: #1f2329;
 }
+.field-content {
+  display: flex;
+  flex-direction: column;
+}
 .field-height {
-  height: calc(50% - 41px);
+  // 指标列表填满搜索框和标题下方的剩余空间
+  flex: 1;
+  min-height: 0;
   margin-top: 12px;
   overflow-y: auto;
   & > :nth-child(1) {
