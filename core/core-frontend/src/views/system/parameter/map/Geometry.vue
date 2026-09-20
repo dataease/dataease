@@ -455,7 +455,6 @@ const deleteCustomArea = data => {
   ElMessageBox.confirm(t('system.delete_custom_area_tip'), '', {
     type: 'warning',
     confirmButtonType: 'danger',
-    customClass: 'area-delete-dialog',
     autofocus: false,
     confirmButtonText: t('common.delete'),
     showClose: false
@@ -587,7 +586,6 @@ const deleteCustomSubArea = async data => {
   ElMessageBox.confirm(t('system.delete_custom_sub_area_tip'), '', {
     type: 'warning',
     confirmButtonType: 'danger',
-    customClass: 'area-delete-dialog',
     autofocus: false,
     confirmButtonText: t('common.delete'),
     showClose: false
@@ -973,18 +971,5 @@ const onPlaceNameMappingChange = (mappingForm: Record<string, string>) => {
 <style lang="less">
 .area-opt-popper {
   margin-right: -20px !important;
-}
-
-.area-delete-dialog {
-  padding: 24px;
-  .ed-message-box__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-    .ed-message-box__headerbtn {
-      position: static;
-    }
-  }
 }
 </style>
