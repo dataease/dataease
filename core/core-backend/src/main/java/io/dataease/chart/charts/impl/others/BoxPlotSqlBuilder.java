@@ -39,6 +39,7 @@ final class BoxPlotSqlBuilder {
         String groupLimit = groupLimit(view);
 
         // 使用 ROW_NUMBER 和 COUNT 精确定位 Type 7 插值需要的相邻样本，不依赖数据库专有分位数函数。
+        // 用 -FLOOR(-x) 等价实现向上取整，兼容不支持 CEIL 的 SQL Server
         String commonCte = """
                 WITH box_base AS (
                 %s
@@ -58,15 +59,15 @@ final class BoxPlotSqlBuilder {
                     SELECT %s, metric_value, sample_count,
                            MAX(CASE WHEN sample_rank = FLOOR((sample_count - 1) * 0.25) + 1 THEN metric_value END)
                                OVER (PARTITION BY %s) AS q1_lower,
-                           MAX(CASE WHEN sample_rank = CEIL((sample_count - 1) * 0.25) + 1 THEN metric_value END)
+                           MAX(CASE WHEN sample_rank = -FLOOR(-((sample_count - 1) * 0.25)) + 1 THEN metric_value END)
                                OVER (PARTITION BY %s) AS q1_upper,
                            MAX(CASE WHEN sample_rank = FLOOR((sample_count - 1) * 0.5) + 1 THEN metric_value END)
                                OVER (PARTITION BY %s) AS median_lower,
-                           MAX(CASE WHEN sample_rank = CEIL((sample_count - 1) * 0.5) + 1 THEN metric_value END)
+                           MAX(CASE WHEN sample_rank = -FLOOR(-((sample_count - 1) * 0.5)) + 1 THEN metric_value END)
                                OVER (PARTITION BY %s) AS median_upper,
                            MAX(CASE WHEN sample_rank = FLOOR((sample_count - 1) * 0.75) + 1 THEN metric_value END)
                                OVER (PARTITION BY %s) AS q3_lower,
-                           MAX(CASE WHEN sample_rank = CEIL((sample_count - 1) * 0.75) + 1 THEN metric_value END)
+                           MAX(CASE WHEN sample_rank = -FLOOR(-((sample_count - 1) * 0.75)) + 1 THEN metric_value END)
                                OVER (PARTITION BY %s) AS q3_upper
                     FROM box_ranked
                 ),
