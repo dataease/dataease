@@ -195,7 +195,9 @@ const onClick = (e, index) => {
   composeStore.setLaterIndex(index)
 }
 const setCurComponent = index => {
-  dvMainStore.setCurComponent({ component: componentData.value[index], index })
+  if (curComponent.value?.id !== componentData.value[index].id) {
+    dvMainStore.setCurComponent({ component: componentData.value[index], index })
+  }
 }
 
 const expandClick = component => {
@@ -603,7 +605,7 @@ const canvasChange = () => {
                     effect="dark"
                     :hide-timeout="0"
                   >
-                    <span :class="'dropdownMore-' + index" @click="onClick(transformIndex(index))">
+                    <span :class="'dropdownMore-' + index">
                       <el-icon class="component-base">
                         <Icon name="dv-more"><dvMore class="svg-icon opt-icon" /></Icon>
                       </el-icon>
