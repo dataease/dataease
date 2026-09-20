@@ -11,7 +11,7 @@ import {
   TableSheet
 } from '@antv/s2'
 import { formatterItem, valueFormatter } from '../../../formatter'
-import { hexColorToRGBA, isAlphaColor, parseJson } from '../../../util'
+import { parseJson } from '../../../util'
 import { S2ChartView, S2DrawOptions } from '../../types/impl/s2'
 import { TABLE_EDITOR_PROPERTY, TABLE_EDITOR_PROPERTY_INNER } from './common'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -20,7 +20,6 @@ import {
   copyContent,
   CustomDataCell,
   getRowIndex,
-  isInMergedCell,
   setupMergedCellHover,
   SortTooltip,
   summaryRowStyle,
@@ -47,26 +46,6 @@ class DetailDataCell extends CustomDataCell {
     }
     // 自定义行高可以减少显示行数，但不能突破配置的最大行数。
     return Math.min(resizedMaxLines ?? maxLines, maxLines)
-  }
-
-  drawTextOrCustomRenderer(): void {
-    if (isInMergedCell(this.spreadsheet.options.mergedCellsInfo, this.getMeta())) {
-      // 只清空底层显示内容，不修改元数据，合并层仍需使用原值绘制文字。
-      this.textShape?.attr('text', '')
-      this.linkFieldShape?.attr('strokeOpacity', 0)
-      this.afterDrawText()
-      return
-    }
-    super.drawTextOrCustomRenderer()
-  }
-
-  getBackgroundColor() {
-    const background = super.getBackgroundColor()
-    if (isInMergedCell(this.spreadsheet.options.mergedCellsInfo, this.getMeta())) {
-      // 直接控制背景图形的透明度，避免组 opacity 对子图形不生效。
-      background.backgroundColorOpacity = 0
-    }
-    return background
   }
 }
 
@@ -515,64 +494,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
 
   protected configTheme(chart: Chart): S2Theme {
     const theme = super.configTheme(chart)
-    const { basicStyle, tableCell, tableHeader } = parseJson(chart.customAttr)
-    if (tableCell.mergeCells) {
-      const tableFontColor = hexColorToRGBA(tableCell.tableFontColor, basicStyle.alpha)
-      let tableItemBgColor = tableCell.tableItemBgColor
-      if (!isAlphaColor(tableItemBgColor)) {
-        tableItemBgColor = hexColorToRGBA(tableItemBgColor, basicStyle.alpha)
-      }
-      const { tableBorderColor } = basicStyle
-      const { tableItemAlign, tableItemFontSize } = tableCell
-      const fontStyle = tableCell.isItalic ? 'italic' : 'normal'
-      const fontWeight = tableCell.isBolder === false ? 'normal' : 'bold'
-      const mergeCellTheme: S2Theme = {
-        dataCell: {
-          cell: {
-            crossBackgroundColor: tableItemBgColor
-          }
-        },
-        mergedCell: {
-          cell: {
-            backgroundColor: tableItemBgColor,
-            crossBackgroundColor: tableItemBgColor,
-            horizontalBorderColor: tableBorderColor,
-            verticalBorderColor: tableBorderColor,
-            horizontalBorderWidth: tableCell.showHorizonBorder ? 1 : 0,
-            verticalBorderWidth: tableCell.showVerticalBorder ? 1 : 0
-          },
-          bolderText: {
-            fill: tableFontColor,
-            textAlign: tableItemAlign,
-            fontSize: tableItemFontSize,
-            fontStyle,
-            fontWeight
-          },
-          text: {
-            fill: tableFontColor,
-            textAlign: tableItemAlign,
-            fontSize: tableItemFontSize,
-            fontStyle,
-            fontWeight
-          },
-          measureText: {
-            fill: tableFontColor,
-            textAlign: tableItemAlign,
-            fontSize: tableItemFontSize,
-            fontStyle,
-            fontWeight
-          },
-          seriesText: {
-            fill: tableFontColor,
-            textAlign: tableItemAlign,
-            fontSize: tableItemFontSize,
-            fontStyle,
-            fontWeight
-          }
-        }
-      }
-      merge(theme, mergeCellTheme)
-    }
+    const { tableCell, tableHeader } = parseJson(chart.customAttr)
     if (tableCell.tableItemAlign === 'custom') {
       const { alignConfig } = tableCell
       const alignMap = (alignConfig ?? []).reduce((p, n) => {

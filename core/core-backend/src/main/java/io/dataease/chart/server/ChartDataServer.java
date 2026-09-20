@@ -297,7 +297,8 @@ public class ChartDataServer implements ChartDataApi {
                         }
 
                         if ((details.size() + extractPageSize) > sheetLimit || i == chartViewDTO.getTotalPage()) {
-                            if (i == chartViewDTO.getTotalPage() && summaryEnabled && summaryAcc.totalCount > 0) {
+                            boolean hasSummaryRow = i == chartViewDTO.getTotalPage() && summaryEnabled && summaryAcc.totalCount > 0;
+                            if (hasSummaryRow) {
                                 Object[] totalRow = buildSummaryRow(allExportColumns, summaryConfig, summaryAcc, customSumResult);
                                 details.add(totalRow);
                             }
@@ -309,7 +310,7 @@ public class ChartDataServer implements ChartDataApi {
                             List<Integer> columnIndexs = getHiddenExportColumnIndexes(header, request.getViewInfo());
                             ExportCenterDownLoadManage.removeColumn(details, columnIndexs);
                             ViewDetailField[] detailFields = request.getDetailFields();
-                            ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), wb);
+                            ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, null, request.getViewInfo(), wb, hasSummaryRow);
                             sheetIndex++;
                             details.clear();
                         }
@@ -378,6 +379,10 @@ public class ChartDataServer implements ChartDataApi {
 
 
     public static void setExcelData(Sheet detailsSheet, CellStyle cellStyle, Object[] header, List<Object[]> details, ViewDetailField[] detailFields, Integer[] excelTypes, Comment comment, ChartViewDTO viewInfo, Workbook wb) {
+        setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, comment, viewInfo, wb, false);
+    }
+
+    public static void setExcelData(Sheet detailsSheet, CellStyle cellStyle, Object[] header, List<Object[]> details, ViewDetailField[] detailFields, Integer[] excelTypes, Comment comment, ChartViewDTO viewInfo, Workbook wb, boolean hasSummaryRow) {
         List<CellStyle> styles = new ArrayList<>();
         Map<String, CellStyle> autoFormatterStyles = new HashMap<>();
         List<ChartViewFieldDTO> exportFields = resolveExportFields(viewInfo, header);
@@ -413,11 +418,12 @@ public class ChartDataServer implements ChartDataApi {
                     }
                 }
             }
-            if ("table-info".equalsIgnoreCase(viewInfo.getType()) && !"dataset".equalsIgnoreCase(viewInfo.getDownloadType())) {
+            if (!"dataset".equalsIgnoreCase(viewInfo.getDownloadType())) {
                 Map<String, Object> tableCell = (Map<String, Object>) viewInfo.getCustomAttr().get("tableCell");
-                Boolean mergeCells = (Boolean) tableCell.get("mergeCells");
+                Boolean mergeCells = tableCell == null ? false : (Boolean) tableCell.get("mergeCells");
                 if (mergeCells != null && mergeCells) {
-                    var tmpAxis = viewInfo.getXAxis().stream().filter(x -> !x.isHide()).toList();
+                    // 使用实际导出列顺序，兼容隐藏字段和汇总表的指标列。
+                    var tmpAxis = exportFields;
                     var mergeIndex = tmpAxis.size();
                     for (int i = 0; i < tmpAxis.size(); i++) {
                         if ("q".equalsIgnoreCase(tmpAxis.get(i).getGroupType())) {
@@ -425,8 +431,10 @@ public class ChartDataServer implements ChartDataApi {
                             break;
                         }
                     }
-                    if (mergeIndex >= 1 && details.size() > 1) {
-                        mergeConfig = getMergeConfig(details.subList(1, details.size()), mergeIndex - 1, totalDepth == 0 ? 1 : totalDepth);
+                    // 仅最后一张工作表包含总计，不能仅凭开关扣除最后一行。
+                    int dataEnd = details.size() - (hasSummaryRow ? 1 : 0);
+                    if (mergeIndex >= 1 && dataEnd > 1) {
+                        mergeConfig = getMergeConfig(details.subList(1, dataEnd), mergeIndex - 1, totalDepth == 0 ? 1 : totalDepth);
                     }
                 }
             }
