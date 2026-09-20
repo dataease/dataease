@@ -84,6 +84,13 @@ const handleLogin = () => {
         wsCache.set(appStore.getDekey, res.data)
       }
       const param = { name: rsaEncryp(name), pwd: rsaEncryp(pwd) }
+      if (!param.name || !param.pwd) {
+        // 密钥对不上（跨版本残留/损坏缓存）：刷新 key 并提示，用户重试即可登录
+        const res = await queryDekey()
+        wsCache.set(appStore.getDekey, res.data)
+        ElMessage.error(t('common.secret_changed_tips'))
+        return
+      }
       const isLdap = activeName.value === 'ldap'
       if (isLdap) {
         param['origin'] = 1

@@ -130,6 +130,17 @@ const onSubmit = async () => {
     pwd: rsaEncryp(pwd),
     origin: isLdap ? 1 : 0
   }
+  if (!param.name || !param.pwd) {
+    // 密钥对不上（跨版本残留/损坏缓存）：刷新 key 并提示，用户重试即可登录
+    const res = await queryDekey()
+    wsCache.set(appStore.getDekey, res.data)
+    showToast({
+      duration: 2000,
+      message: t('common.secret_changed_tips'),
+      className: 'de-mobile-error'
+    })
+    return
+  }
   duringLogin.value = true
   loginApi(param)
     .then(res => {
