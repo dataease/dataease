@@ -36,7 +36,9 @@ public class Utils {
                     Pattern.compile("[\";`]"),
                     Pattern.compile("--\\s*"),
                     Pattern.compile(
-                            "\\b(or|and|union|select|insert|delete|update|drop|alter|exec|xp_cmdshell)\\b",
+                            "\\b(or|and|union|select|insert|delete|update|drop|alter|exec|xp_cmdshell|xor|sleep|benchmark|if|substr)\\b",
+                            Pattern.CASE_INSENSITIVE),
+                    Pattern.compile("'\\s*(xor|or|and|union|select|insert|delete|update|drop|alter|exec|sleep|benchmark|if|substr)\\b",
                             Pattern.CASE_INSENSITIVE),
                     Pattern.compile("\\b\\d+\\s*=\\s*\\d+\\b", Pattern.CASE_INSENSITIVE),
                     Pattern.compile("\\b1'\\s*=\\s*'1\\b", Pattern.CASE_INSENSITIVE));
