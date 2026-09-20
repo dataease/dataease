@@ -78,8 +78,10 @@ const state = reactive({
 const frameSrcWithTimestamp = computed(() => {
   if (!element.value.frameLinks.src) return ''
   const url = element.value.frameLinks.src
-  if (url.includes('#/preview') || url.includes('#/de-link')) {
+  if (url.includes('#/preview')) {
     return url.replace('#', `?${new Date().getTime()}#`)
+  } else if (url.includes('#/de-link')) {
+    return url.replace('#', `${new Date().getTime()}#`)
   }
   return url
 })
