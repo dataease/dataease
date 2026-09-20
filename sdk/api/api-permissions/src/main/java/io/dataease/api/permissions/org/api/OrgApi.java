@@ -38,19 +38,19 @@ public interface OrgApi {
     LazyTreeVO lazyPageTree(@RequestBody OrgLazyRequest request);
 
     @Operation(summary = "创建")
-    @DePermit({"m:read"})
+    @DePermit({"m:manage"})
     @PostMapping("/page/create")
     Long create(@RequestBody OrgCreator creator);
 
     @Operation(summary = "编辑")
-    @DePermit({"m:read", "#p0.id+':manage'"})
+    @DePermit({"m:manage", "#p0.id+':manage'"})
     @PostMapping("/page/edit")
     void edit(@RequestBody OrgEditor editor);
 
     @Operation(summary = "删除")
     @Parameter(name = "id", description = "ID", required = true, in = ParameterIn.PATH)
     @PostMapping("/page/delete/{id}")
-    @DePermit({"m:read", "#p0+':manage'"})
+    @DePermit({"m:manage", "#p0+':manage'"})
     void delete(@PathVariable("id") Long id);
 
     @Operation(summary = "查询权限内组织树")

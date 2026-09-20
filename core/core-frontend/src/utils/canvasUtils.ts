@@ -28,7 +28,7 @@ import {
   SENIOR_STYLE_SETTING_LIGHT
 } from '@/views/chart/components/editor/util/chart'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
-import { deepCopy, nameTrim } from '@/utils/utils'
+import { deepCopy, isMobile, isTablet, nameTrim } from '@/utils/utils'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 const dvMainStore = dvMainStoreWithOut()
@@ -1166,6 +1166,19 @@ export async function decompressionPre(params, callBack) {
 
 export function isDashboard() {
   return curDvInfo.value.type === 'dashboard'
+}
+
+export function isDataVTouchDevice(): boolean {
+  if (curDvInfo.value.type !== 'dataV') {
+    return false
+  }
+  // iPad 的桌面模式使用 Macintosh 标识，控件缩放需同时覆盖手机和平板
+  const isIPadDesktop = /Macintosh/i.test(navigator.userAgent) && navigator.maxTouchPoints > 1
+  return isMobile() || isTablet() || isIPadDesktop
+}
+
+export function getDataVControlScale(scale: number): number {
+  return Number.isFinite(scale) && scale > 0 && isDataVTouchDevice() ? scale : 1
 }
 
 export function trackBarStyleCheck(element, trackbarStyle, _scale, trackMenuNumber) {
