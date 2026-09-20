@@ -1,4 +1,5 @@
 import type { Chart as G2Chart, G2Spec } from '@antv/g2'
+import { toLinearGradient } from '../../common/common_antv'
 
 interface LegendItem {
   id: string | number
@@ -15,10 +16,15 @@ export const renderTiledLegend = (
   width: number,
   height: number
 ): HTMLElement => {
+  style = { ...style.dataeaseLegendTileTextStyle, ...style }
   const side = ['left', 'right'].includes(style.dataeaseLegendTilePosition || style.position)
   const scroll = style.dataeaseLegendTileOverflow !== 'adaptive'
   const vertical = style.dataeaseLegendTileOrient === 'vertical'
   const fontSize = Number(style.itemLabelFontSize) || 12
+  // Use the same fallback in DOM and canvas when the configured font is unavailable locally.
+  const fontFamily = style.itemLabelFontFamily
+    ? `${style.itemLabelFontFamily}, sans-serif`
+    : 'sans-serif'
   const markerSize = Number(style.itemMarkerSize) || 8
   const dark = style.dataeaseLegendTileTheme === 'dark'
   const root = document.createElement('div')
@@ -33,7 +39,9 @@ export const renderTiledLegend = (
     alignItems: 'flex-start',
     gap: '6px 16px',
     padding: '4px',
-    fontFamily: style.itemLabelFontFamily || 'sans-serif',
+    fontFamily,
+    fontWeight: style.itemLabelFontWeight ?? 'normal',
+    fontStyle: style.itemLabelFontStyle || 'normal',
     fontSize: `${fontSize}px`,
     lineHeight: '1.3',
     color: style.itemLabelFill || '#333',
@@ -51,7 +59,11 @@ export const renderTiledLegend = (
   })
   // Use shared column tracks so labels of different lengths remain aligned across rows.
   const context = document.createElement('canvas').getContext('2d')
-  if (context) context.font = `${fontSize}px ${style.itemLabelFontFamily || 'sans-serif'}`
+  if (context) {
+    context.font = `${style.itemLabelFontStyle || 'normal'} ${
+      style.itemLabelFontWeight ?? 'normal'
+    } ${fontSize}px ${fontFamily}`
+  }
   const areaWidth = Math.max(1, side ? (scroll ? width * 0.3 : width - 80) : width)
   const naturalWidth = items.reduce(
     (max, item) =>
@@ -136,7 +148,7 @@ export const renderTiledLegend = (
       flex: `0 0 ${markerSize}px`,
       width: `${markerSize}px`,
       height: `${markerSize}px`,
-      backgroundColor: item.color,
+      background: toLinearGradient(item.color),
       borderRadius: style.itemMarker === 'circle' ? '50%' : '0',
       ...(style.itemMarker === 'triangle' ? { clipPath: 'polygon(50% 0, 100% 100%, 0 100%)' } : {}),
       ...(style.itemMarker === 'diamond'
@@ -214,15 +226,26 @@ export const applyG2TiledLegend = (
     value.dataeaseLegendTileOverflow = legend.tileOverflow || 'scroll'
     value.dataeaseLegendTileOrient = legend.orient
   }
-  const visit = (node: any) => {
+  const visit = (node: any, inheritedTextStyle: LegendOptions = {}) => {
     if (!node || typeof node !== 'object') return
-    if (node.type === 'legends') mark(node)
+    const textStyle = { ...inheritedTextStyle }
+    const category = node.theme?.legendCategory
+    for (const key of ['itemLabelFontFamily', 'itemLabelFontWeight', 'itemLabelFontStyle']) {
+      if (category?.[key] !== undefined) textStyle[key] = category[key]
+    }
+    if (node.type === 'legends') {
+      node.dataeaseLegendTileTextStyle = textStyle
+      mark(node)
+    }
     if (node.legend && typeof node.legend === 'object') {
       Object.entries(node.legend).forEach(([channel, value]) => {
-        if (value && typeof value === 'object') mark(value, channel)
+        if (value && typeof value === 'object') {
+          ;(value as LegendOptions).dataeaseLegendTileTextStyle = textStyle
+          mark(value, channel)
+        }
       })
     }
-    node.children?.forEach(visit)
+    node.children?.forEach(child => visit(child, textStyle))
     const children = node.children || []
     const legendIndex = children.findIndex(child => child.type === 'legends')
     if (legendIndex < 0 || children.length !== 2) return
