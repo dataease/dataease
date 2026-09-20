@@ -1340,7 +1340,10 @@ onBeforeUnmount(() => {
     // 轮播 tooltip 高度由外层约束，同时禁用内部滚动并隐藏滚动条
     :deep([data-tooltip-display-mode='carousel'] .g2-tooltip-list) {
       box-sizing: border-box;
+      // 与轮播外框共用逻辑宽度上限，覆盖模板按缩放后图表宽度设置的限制
+      width: max-content;
       min-width: 0;
+      max-width: max(0px, calc(var(--de-carousel-tooltip-max-width) - 24px)) !important;
       max-height: none !important;
       overflow-y: hidden !important;
       scrollbar-width: none !important;
@@ -1354,6 +1357,9 @@ onBeforeUnmount(() => {
     }
     :deep([data-tooltip-display-mode='carousel'] .g2-tooltip-list-item) {
       box-sizing: border-box;
+      flex-wrap: nowrap;
+      // 每行填满列表，使不同长度的数值共享右边界
+      width: auto;
       min-width: 0;
     }
     :deep([data-tooltip-display-mode='carousel'] .g2-tooltip-list-item-name) {
@@ -1465,12 +1471,13 @@ div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover'] {
     overflow-wrap: anywhere;
   }
 
-  // 内容换行时保持配置字号，由可视区域限制容器并提供滚动。
+  // 指标名称和数值保持单行，超出可用宽度时省略
   .g2-tooltip-list-item {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: baseline !important;
     box-sizing: border-box;
-    width: max-content;
+    // 填满列表可用宽度，使各行数值共享右边界，列表仍按内容自适应
+    width: auto;
     min-width: 0;
     max-width: max(0px, calc(var(--de-hover-tooltip-max-width, 33.333333vw) - 24px));
   }
@@ -1478,8 +1485,9 @@ div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover'] {
   .g2-tooltip-list-item-name {
     // 名称容器以文字提供基线，避免首个色点参与行基线计算。
     align-items: baseline !important;
-    flex: 1 1 auto !important;
-    min-width: 0 !important;
+    // 名称优先收缩，同时保留色点和可识别的名称片段
+    flex: 1 9999 auto !important;
+    min-width: calc(12px + 2em) !important;
     max-width: none !important;
     overflow: hidden !important;
   }
@@ -1492,20 +1500,23 @@ div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover'] {
   .g2-tooltip-list-item-name-label {
     min-width: 0 !important;
     overflow: hidden !important;
-    white-space: normal !important;
-    overflow-wrap: anywhere;
-    text-overflow: clip !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+    text-align: left;
   }
 
   .g2-tooltip-list-item-value {
-    flex: 0 0 auto !important;
+    flex: 0 1 auto !important;
     min-width: 0 !important;
-    max-width: max(0px, calc(var(--de-hover-tooltip-max-width, 33.333333vw) - 48px)) !important;
+    max-width: max(
+      0px,
+      calc(var(--de-hover-tooltip-max-width, 33.333333vw) - 48px - 2em)
+    ) !important;
     margin-left: 12px !important;
     overflow: hidden !important;
-    white-space: normal !important;
-    overflow-wrap: anywhere;
-    text-overflow: clip !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+    text-align: right;
   }
 }
 
