@@ -12,6 +12,7 @@ import {
   PIE_EDITOR_PROPERTY_INNER
 } from '@/views/chart/components/js/panel/charts/g2plot/pie/common'
 import { configSingleSectorScale, createCircularLabelLayout } from './common'
+import { CircularLabelOverflow } from './text-overflow'
 import {
   getG2Renderer,
   getTooltipSeriesTotalMap,
@@ -193,7 +194,9 @@ export class Rose extends G2ChartView {
     const { total } = context
     const isInnerLabel = labelAttr.position === 'inner'
     const label = {
-      transform: labelAttr.fullDisplay && !isInnerLabel ? [] : [{ type: 'exceedAdjust' }],
+      transform: isInnerLabel
+        ? [{ type: 'exceedAdjust' }]
+        : [{ type: CircularLabelOverflow, fullDisplay: labelAttr.fullDisplay }],
       position: isInnerLabel ? 'inside' : 'outside',
       style: {
         fill: labelAttr.color,
