@@ -10,7 +10,6 @@ import {
   TOOLTIP_TPL
 } from '../../common/common_antv'
 import {
-  convertToAlphaColor,
   flow,
   getLineConditions,
   getLineLabelColorByCondition,
@@ -38,6 +37,31 @@ import { Group } from '@antv/g-canvas'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
+
+function sortSeriesItems<T extends { name: string }>(
+  items: T[],
+  sort?: Axis['sort'] | ChartLegendStyle['sort'],
+  customSort: string[] = []
+): T[] {
+  const result = [...items]
+  if (sort === 'asc' || sort === 'desc') {
+    result.sort((a, b) => {
+      return sort === 'desc' ? b.name.localeCompare(a.name) : a.name.localeCompare(b.name)
+    })
+  } else if (sort === 'custom' || sort === 'custom_sort') {
+    const sortedItems: T[] = []
+    for (const name of customSort ?? []) {
+      const index = result.findIndex(item => item.name === name)
+      if (index !== -1) {
+        sortedItems.push(result[index])
+        result.splice(index, 1)
+      }
+    }
+    // 未配置到自定义排序中的新类别保留在末尾。
+    result.unshift(...sortedItems)
+  }
+  return result
+}
 
 /**
  * 折线图
@@ -229,9 +253,47 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
 
   protected configCustomColors(chart: Chart, options: LineOptions): LineOptions {
     const basicStyle = parseJson(chart.customAttr).basicStyle
-    const color = basicStyle.colors.map(item => hexColorToRGBA(item, basicStyle.alpha))
+    const xAxisExt = chart.xAxisExt?.[0]
+    if (!xAxisExt) {
+      const groupOptions = super.configGroupColor(chart, options)
+      const color =
+        groupOptions.color ?? basicStyle.colors.map(item => hexColorToRGBA(item, basicStyle.alpha))
+      return { ...groupOptions, color }
+    }
+
+    const categories = new Set<string>()
+    options.data?.forEach(item => {
+      if (item.category !== null && item.category !== undefined) {
+        categories.add(item.category)
+      }
+    })
+    const series = sortSeriesItems(
+      [...categories].map(name => ({ name })),
+      xAxisExt.sort,
+      xAxisExt.customSort
+    )
+    const seriesColors = new Map(basicStyle.seriesColor?.map(item => [item.id, item.color]))
+    const categoryColors = new Map<string, string>()
+    // 子类别排序决定系列值域和默认配色；手动设置的类别颜色仍按类别匹配。
+    series.forEach((item, index) => {
+      const fill =
+        seriesColors.get(item.name) ?? basicStyle.colors[index % basicStyle.colors.length]
+      const color = isAlphaColor(fill) ? fill : hexColorToRGBA(fill, basicStyle.alpha)
+      categoryColors.set(item.name, color)
+    })
+    // 绘图按类别取色，图库生成的默认图例和 Tooltip 也会沿用这份颜色映射。
+    const defaultColor = categoryColors.values().next().value ?? 'rgba(0,0,0,0)'
+    const color = ({ category }: Datum) => categoryColors.get(category) ?? defaultColor
     return {
       ...options,
+      meta: {
+        ...options.meta,
+        category: {
+          ...options.meta?.category,
+          type: 'cat',
+          values: series.map(item => item.name)
+        }
+      },
       color
     }
   }
@@ -304,6 +366,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
             if (xAxisExt?.length > 0) {
               name = item.data.category
             }
+            // 保留图库映射后的 color，格式化名称和数值时不重新分配颜色。
             result.push({ ...item, name, value })
           })
         head.data.dynamicTooltipValue?.forEach(item => {
@@ -327,7 +390,15 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
   }
 
   public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
-    return setUpGroupSeriesColor(chart, data)
+    const items = setUpGroupSeriesColor(chart, data)
+    const xAxisExt = chart.xAxisExt?.[0]
+    if (!xAxisExt) {
+      return items
+    }
+    // 配色面板与折线使用相同的子类别顺序，不受图例排序影响。
+    const series = sortSeriesItems(items, xAxisExt.sort, xAxisExt.customSort)
+    const colors = chart.customAttr.basicStyle.colors
+    return series.map((item, index) => ({ ...item, color: colors[index % colors.length] }))
   }
 
   protected configLegend(chart: Chart, options: LineOptions): LineOptions {
@@ -335,42 +406,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
     if (!optionTmp.legend) {
       return optionTmp
     }
-    const xAxisExt = chart.xAxisExt[0]
-    if (xAxisExt?.customSort?.length > 0) {
-      // 图例自定义排序
-      const sort = xAxisExt.customSort ?? []
-      if (sort?.length) {
-        // 用值域限定排序，有可能出现新数据但是未出现在图表上，所以这边要遍历一下子维度，加到后面，让新数据显示出来
-        const data = optionTmp.data
-        const cats =
-          data?.reduce((p, n) => {
-            const cat = n['category']
-            if (cat && !p.includes(cat)) {
-              p.push(cat)
-            }
-            return p
-          }, []) || []
-        const values = sort.reduce((p, n) => {
-          if (cats.includes(n)) {
-            const index = cats.indexOf(n)
-            if (index !== -1) {
-              cats.splice(index, 1)
-            }
-            p.push(n)
-          }
-          return p
-        }, [])
-        cats.length > 0 && values.push(...cats)
-        optionTmp.meta = {
-          ...optionTmp.meta,
-          category: {
-            type: 'cat',
-            values
-          }
-        }
-      }
-    }
-
+    const xAxisExt = chart.xAxisExt?.[0]
     const customStyle = parseJson(chart.customStyle)
     let size
     if (customStyle && customStyle.legend) {
@@ -386,54 +422,22 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       }
     }
     const { sort, customSort, icon } = customStyle.legend
-    if (sort && sort !== 'none' && chart.xAxisExt.length) {
-      const customAttr = parseJson(chart.customAttr)
-      const { basicStyle } = customAttr
-      const seriesMap =
-        basicStyle.seriesColor?.reduce((p, n) => {
-          p[n.id] = n
-          return p
-        }, {}) || {}
-      const dupCheck = new Set()
-      const items = optionTmp.data?.reduce((arr, item) => {
-        if (!dupCheck.has(item.category)) {
-          const fill =
-            seriesMap[item.category]?.color ??
-            optionTmp.color[dupCheck.size % optionTmp.color.length]
-          dupCheck.add(item.category)
-          arr.push({
-            name: item.category,
-            value: item.category,
-            marker: {
-              symbol: icon,
-              style: {
-                r: size,
-                fill: isAlphaColor(fill) ? fill : convertToAlphaColor(fill, basicStyle.alpha)
-              }
-            }
-          })
-        }
-        return arr
-      }, [])
-      if (sort !== 'custom') {
-        items.sort((a, b) => {
-          return sort !== 'desc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
-        })
-      } else {
-        const tmp = []
-        ;(customSort || []).forEach(item => {
-          const index = items.findIndex(i => i.name === item)
-          if (index !== -1) {
-            tmp.push(items[index])
-            items.splice(index, 1)
+    const color = optionTmp.color
+    if (sort && sort !== 'none' && xAxisExt && typeof color === 'function') {
+      // 先沿用折线的类别与颜色映射，再单独调整图例顺序，不能改写系列值域。
+      const categories = optionTmp.meta.category.values
+      const items = categories.map(category => ({
+        name: category,
+        value: category,
+        marker: {
+          symbol: icon,
+          style: {
+            r: size,
+            fill: color({ category })
           }
-        })
-        items.unshift(...tmp)
-      }
-      optionTmp.legend.items = items
-      if (xAxisExt?.customSort?.length > 0) {
-        delete optionTmp.meta?.category.values
-      }
+        }
+      }))
+      optionTmp.legend.items = sortSeriesItems(items, sort, customSort)
     }
     return optionTmp
   }
@@ -442,7 +446,6 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
     return flow(
       this.configTheme,
       this.configEmptyDataStrategy,
-      this.configGroupColor,
       this.configLabel,
       this.configTooltip,
       this.configBasicStyle,
