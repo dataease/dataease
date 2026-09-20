@@ -501,6 +501,9 @@ onMounted(() => {
     max-height: 356px;
     &.dark {
       background: #292929;
+      .ed-scrollbar__thumb {
+        background-color: #646a73 !important;
+      }
     }
 
     .ed-header {
