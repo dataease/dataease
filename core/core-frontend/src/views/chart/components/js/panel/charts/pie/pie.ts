@@ -28,6 +28,7 @@ import { add } from 'mathjs'
 import isEmpty from 'lodash-es/isEmpty'
 import { cloneDeep } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
+import { getOuterPieLabelLayout } from '../../common/text-overflow'
 const { t } = useI18n()
 const DEFAULT_DATA = []
 export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
@@ -165,14 +166,11 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
         layout.push({ type: 'limit-in-plot' })
       }
     }
-    let labelType = labelAttr.position === 'outer' ? 'spider' : labelAttr.position
-    if (layout.length === 0) {
-      labelType = 'no'
-    }
     const label = {
-      type: labelType,
+      type: labelAttr.position,
       textAlign,
       layout,
+      ...(labelAttr.position === 'outer' ? getOuterPieLabelLayout(labelAttr.fullDisplay) : {}),
       autoRotate: false,
       style: {
         fill: labelAttr.color,
