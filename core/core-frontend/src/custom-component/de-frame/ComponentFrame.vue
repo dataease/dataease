@@ -75,13 +75,13 @@ const state = reactive({
   frameShow: true
 })
 
+// http://localhost:8080/?1789886867945#/de-link/JyTfzuZf
+// 解决?1789886867945 这样防止iframe无法加载添加的额外url片段
 const frameSrcWithTimestamp = computed(() => {
   if (!element.value.frameLinks.src) return ''
   const url = element.value.frameLinks.src
-  if (url.includes('#/preview')) {
+  if (url.includes('#/preview') || url.includes('#/de-link')) {
     return url.replace('#', `?${new Date().getTime()}#`)
-  } else if (url.includes('#/de-link')) {
-    return url.replace('#', `${new Date().getTime()}#`)
   }
   return url
 })
