@@ -1180,7 +1180,8 @@ defineExpose({
 let intersectionObserver
 let resizeObserver
 const TOLERANCE = 0.01
-const RESIZE_MONITOR_CHARTS = ['map', 'bubble-map', 'flow-map', 'heat-map', 'gauge']
+// 热力图的水平端点文字占位依赖容器宽度，resize 时重新生成图例配置
+const RESIZE_MONITOR_CHARTS = ['map', 'bubble-map', 'flow-map', 'heat-map', 't-heatmap', 'gauge']
 let g2ResizeTimer: number
 let chartComponentUnmounted = false
 onMounted(() => {

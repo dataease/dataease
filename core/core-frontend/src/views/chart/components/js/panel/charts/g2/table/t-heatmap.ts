@@ -11,6 +11,102 @@ import { createTooltipWrapper } from '../bar/barUtil'
 const { t } = useI18n()
 
 const DEFAULT_DATA = []
+const HORIZONTAL_LEGEND_GAP = 8
+const HORIZONTAL_LEGEND_PADDING = 8
+const HORIZONTAL_LEGEND_MIN_RIBBON_LENGTH = 80
+const VERTICAL_LEGEND_SAFE_PADDING = 12
+
+// 原生色带只为端点预留半个标签，水平两端文字需要将剩余宽度纳入组件占位
+const getHorizontalLegendSize = (chart: Chart, field: string, fontSize: number, width: number) => {
+  const values = (chart.data?.tableRow || [])
+    .filter(row =>
+      [...chart.xAxis, ...chart.xAxisExt, ...chart.extColor].every(
+        axis =>
+          row[axis.dataeaseName] !== null &&
+          row[axis.dataeaseName] !== undefined &&
+          row[axis.dataeaseName] !== ''
+      )
+    )
+    .map(row => Number(row[field]))
+    .filter(Number.isFinite)
+  const min = values.reduce((result, value) => Math.min(result, value), Infinity)
+  const max = values.reduce((result, value) => Math.max(result, value), -Infinity)
+  const context = document.createElement('canvas').getContext('2d')
+  if (context) context.font = `${fontSize}px sans-serif`
+  const labelWidth =
+    2 +
+    Math.ceil(
+      Math.max(
+        ...[min, max].map(value => {
+          const text = Number.isFinite(value) ? String(value) : ''
+          return context?.measureText(text).width ?? text.length * fontSize
+        })
+      )
+    )
+  const extra = labelWidth + 2 * (HORIZONTAL_LEGEND_GAP + HORIZONTAL_LEGEND_PADDING)
+  // 最小值约束可见色带本身，不把两端数字占用算进色带长度
+  const boxWidth = Math.max(width * 0.42, extra + labelWidth + HORIZONTAL_LEGEND_MIN_RIBBON_LENGTH)
+  return {
+    labelWidth,
+    width: boxWidth - extra,
+    boxWidth,
+    height: Math.max(24, Math.ceil(fontSize * 1.4)) + HORIZONTAL_LEGEND_PADDING * 2
+  }
+}
+
+// 在真实 render 生命周期中布局，首次挂载和组件 update 均会重新执行
+const installHorizontalLegendLayout = legend => {
+  const render = legend.render
+  const getBBox = legend.getBBox
+  legend.getBBox = function () {
+    const box = getBBox.call(this)
+    if (this.attributes.orientation === 'horizontal') {
+      box.width = this.attributes.dataeaseBoxWidth ?? box.width
+    } else if (this.attributes.dataeaseVerticalPadding) {
+      box.width += this.attributes.dataeaseVerticalPadding * 2
+    }
+    return box
+  }
+  legend.render = function (attributes, container, ...args) {
+    this.querySelector('.legend-label-group')?.setLocalPosition(0, 0)
+    const result = render.call(this, attributes, container, ...args)
+    // 垂直图例只平移原生内容整体，滑块超出色带的部分也纳入安全占位
+    if (attributes.orientation === 'vertical' && attributes.dataeaseVerticalPadding) {
+      this.querySelector('.legend-content-group')?.setLocalPosition(
+        attributes.dataeaseVerticalPadding,
+        0
+      )
+    }
+    // G2 更新时可能复用实例，方向切换后必须恢复原生垂直布局
+    if (attributes.orientation !== 'horizontal' || !attributes.dataeaseBoxWidth) return result
+    // 子组件在挂载时才绘制滑块和文字，等待本轮挂载完成后再测量最终边界
+    queueMicrotask(() => {
+      if (this.destroyed || this.attributes.orientation !== 'horizontal') return
+      const attributes = this.attributes
+      const labels = this.querySelector('.legend-label-group')
+      const ribbon = this.querySelector('.legend-ribbon-group')
+      const content = this.querySelector('.legend-content-group')
+      const handles = this.querySelector('.legend-handles-group')
+      if (!labels || !ribbon || !content || !handles) return
+      // 先清除上一轮位移，所有边界在同一父级坐标系内计算，兼容大屏缩放
+      labels.setLocalPosition(0, 0)
+      content.setLocalPosition(0, 0)
+      const labelBounds = labels.getLocalBounds()
+      const ribbonBounds = ribbon.getLocalBounds()
+      labels.setLocalPosition(0, ribbonBounds.center[1] - labelBounds.center[1])
+      const bounds = [labels, ribbon, handles].map(node => node.getLocalBounds())
+      const minX = Math.min(...bounds.map(box => box.getMin()[0]))
+      const maxX = Math.max(...bounds.map(box => box.getMax()[0]))
+      const minY = Math.min(...bounds.map(box => box.getMin()[1]))
+      const maxY = Math.max(...bounds.map(box => box.getMax()[1]))
+      content.setLocalPosition(
+        (attributes.dataeaseBoxWidth - maxX - minX) / 2,
+        (attributes.height - maxY - minY) / 2
+      )
+    })
+    return result
+  }
+}
 // 标记已修正的图例实例，避免 G2 重绘复用对象时重复覆盖内部换算方法
 const CONTINUOUS_LEGEND_RANGE_FIXED = Symbol('continuousLegendRangeFixed')
 
@@ -109,21 +205,25 @@ const withLegendOrientation = (component, fixContinuousRange = false) => {
   const customComponent = options => {
     // 私有方向配置不继续透传给原始 G2 图例组件
     const { dataeaseOrientation, ...rest } = options
+    const horizontalContinuous = fixContinuousRange && dataeaseOrientation === 'horizontal'
     const positionVertical = rest.position === 'left' || rest.position === 'right'
     const directionMismatch = positionVertical !== (dataeaseOrientation === 'vertical')
     // 方向与停靠边交叉时恢复原组件短边，避免图例挤入绘图区
     const legendOptions = directionMismatch
-      ? { ...rest, length: rest.length ?? component.props.defaultSize }
+      ? {
+          ...rest,
+          length: horizontalContinuous ? rest.height : rest.length ?? component.props.defaultSize
+        }
       : rest
     const renderComponent = component({
       ...legendOptions,
       style: {
         orientation: dataeaseOrientation,
         // 居中图例首帧先隐藏，避免布局完成前出现在错误位置
-        opacity: rest.layout?.justifyContent === 'center' ? 0 : 1
+        opacity: horizontalContinuous ? 1 : rest.layout?.justifyContent === 'center' ? 0 : 1
       }
     })
-    if (!fixContinuousRange || dataeaseOrientation !== 'vertical') {
+    if (!fixContinuousRange) {
       return renderComponent
     }
     // 在图例组件绑定交互前修正实例方法，不改变 G2 全局组件库
@@ -132,7 +232,10 @@ const withLegendOrientation = (component, fixContinuousRange = false) => {
       const continuousLegend = layout?.children?.find(
         child => typeof child?.getRealSelection === 'function'
       )
-      fixVerticalContinuousLegendRange(continuousLegend)
+      if (continuousLegend) {
+        installHorizontalLegendLayout(continuousLegend)
+        fixVerticalContinuousLegendRange(continuousLegend)
+      }
       return layout
     }
   }
@@ -443,7 +546,8 @@ export class TableG2Chart extends G2ChartView {
     const containerDom = document.getElementById(container)
     if (!containerDom) return
     const baseLegend = {
-      ...this.getLegend(chart, colorField.groupType === 'q' ? 1 : 2),
+      // 连续图例不继承分类图例的文本省略、分页和侧栏测量配置
+      ...(colorField.groupType === 'q' ? {} : this.getLegend(chart, 2)),
       position,
       dataeaseOrientation: legend.orient,
       // 显式写入两个方向，避免同一图表切换配置后复用旧的水平网格标记
@@ -490,8 +594,49 @@ export class TableG2Chart extends G2ChartView {
       }
       if (verticalLegend) {
         quotaLegendOption.legend.color.height = containerDom?.offsetHeight / 2
+        const fontSize = Number(legend.fontSize) || 12
+        const { labelWidth } = getHorizontalLegendSize(
+          chart,
+          colorField.dataeaseName,
+          fontSize,
+          containerDom.offsetWidth
+        )
+        // 原生标签、刻度和色带使用内部宽度，左右安全区独立参与 G2 外层布局
+        const nativeWidth = labelWidth + 32
+        Object.assign((options.legend as Record<string, any>).color, {
+          width: nativeWidth,
+          dataeaseVerticalPadding: VERTICAL_LEGEND_SAFE_PADDING,
+          ...(positionVertical ? { size: nativeWidth + VERTICAL_LEGEND_SAFE_PADDING * 2 } : {})
+        })
       } else {
-        quotaLegendOption.legend.color.width = containerDom?.offsetWidth / 2
+        const fontSize = Number(legend.fontSize) || 12
+        const dimensions = getHorizontalLegendSize(
+          chart,
+          colorField.dataeaseName,
+          fontSize,
+          containerDom.offsetWidth
+        )
+        // 上下停靠按文字/滑块实际高度加 2px 安全区占位，间距沿用 G2 组合图的 8px
+        const legendHeight = positionVertical
+          ? dimensions.height
+          : Math.max(24, Math.ceil(fontSize * 1.4)) + 4
+        // size 是停靠边占位，width/height 是色带组件尺寸，两者不能混用
+        Object.assign((options.legend as Record<string, any>).color, {
+          size: positionVertical ? dimensions.boxWidth : legendHeight,
+          width: dimensions.width,
+          height: legendHeight,
+          ...(positionVertical ? {} : { crossPadding: 8 }),
+          dataeaseBoxWidth: dimensions.boxWidth,
+          ribbonSize: 12,
+          // G2 默认刻度线会从滑块上方露出，并干扰端点文字的边界测量
+          tick: false,
+          tickLength: 0,
+          handleIconSize: 8,
+          labelFontFamily: 'sans-serif',
+          labelTextAlign: datum => (datum?.index === 0 ? 'end' : 'start'),
+          labelTextBaseline: 'middle',
+          labelDx: datum => (datum?.index === 0 ? -HORIZONTAL_LEGEND_GAP : HORIZONTAL_LEGEND_GAP)
+        })
       }
       defaultsDeep(options, quotaLegendOption)
     }
