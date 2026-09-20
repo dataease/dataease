@@ -1396,6 +1396,20 @@ export function computeLayout(
   if (!layout) {
     return layout
   }
+  // HTML legends start inside the view margins, not at the canvas origin.
+  const tiledLegends = components.filter(
+    component => component.type === 'legendCategory' && component.dataeaseLegendTileLayout
+  )
+  if (tiledLegends.length) {
+    tiledLegends.forEach(component => {
+      component.dataeaseLegendTileLayout(
+        component,
+        Math.max(1, layout.width - layout.marginLeft - layout.marginRight),
+        Number(layoutOptions.height) || 1
+      )
+    })
+    layout = computeG2Layout(components, layoutOptions, theme, library) || layout
+  }
   // 只有真正分页的侧边图例才补 55px 导航区，未分页图例保持紧凑
   if (applyPagedSideLegendLayout(sideLegends, layoutOptions, theme, library)) {
     const pagedLegendLayout = computeG2Layout(components, layoutOptions, theme, library)
