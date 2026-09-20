@@ -1,5 +1,5 @@
 import type { Column, ColumnOptions } from '@antv/g2plot/esm/plots/column'
-import { cloneDeep, defaults, each, groupBy, isEmpty, merge } from 'lodash-es'
+import { cloneDeep, defaults, each, groupBy } from 'lodash-es'
 import {
   G2PlotChartView,
   G2PlotDrawOptions
@@ -406,8 +406,8 @@ export class StackBar extends Bar {
     }
     const tooltip = {
       formatter: (param: Datum) => {
-        const name = isEmpty(param.category) ? param.field : param.category
-        const obj = { name, value: param.value }
+        // 子维度名称保留原值，null 和空字符串不能回退成主维度名称
+        const obj = { name: param.category, value: param.value }
         const res = valueFormatter(param.value, tooltipAttr.tooltipFormatter)
         obj.value = res ?? ''
         return obj
