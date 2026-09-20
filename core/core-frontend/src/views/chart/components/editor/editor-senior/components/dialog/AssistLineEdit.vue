@@ -231,6 +231,7 @@ onMounted(() => {
           <el-select
             v-model="item.fieldId"
             class="select-item"
+            fit-input-width
             :placeholder="t('chart.field')"
             @change="changeAssistLineField(item)"
           >
@@ -239,10 +240,11 @@ onMounted(() => {
                 ? quotaExtFields
                 : quotaFields"
               :key="quota.id"
+              class="field-option"
               :label="quota.name"
               :value="quota.id"
             >
-              <span style="float: left">
+              <span style="flex-shrink: 0">
                 <el-icon>
                   <Icon :className="`field-icon-${fieldType[item.deType]}`"
                     ><component
@@ -253,7 +255,7 @@ onMounted(() => {
                   ></Icon>
                 </el-icon>
               </span>
-              <span :style="{ float: 'left', color: '#8492a6', fontSize: '12px' }">
+              <span class="field-name ellipsis" :title="quota.name">
                 {{ quota.name }}
               </span>
             </el-option>
@@ -377,5 +379,19 @@ span {
 .ed-select-dropdown__item {
   padding: 0 20px;
   font-size: 14px;
+
+  &.field-option {
+    display: flex;
+    align-items: center;
+    // 为右侧选中图标预留空间，避免与字段名重叠。
+    padding-right: 36px;
+  }
+}
+
+.field-name {
+  flex: 1;
+  min-width: 0;
+  color: #8492a6;
+  font-size: 12px;
 }
 </style>
