@@ -49,4 +49,7 @@ export const useI18n = (
   }
 }
 
+// 判断全局 i18n 是否已完成初始化（setupI18n 之前/期间为 false）
+export const isI18nReady = (): boolean => !!i18n
+
 export const t = (key: string) => key
