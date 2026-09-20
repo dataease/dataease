@@ -30,22 +30,22 @@ public interface CustomGeoApi {
     List<CustomGeoSubArea> getCustomGeoArea(@PathVariable("id") String id);
 
     @Operation(summary = "删除自定义地理区域")
-    @DePermit("m:read")
+    @DePermit("m:manage")
     @DeleteMapping("/geoArea/{id}")
     void deleteCustomGeoArea(@PathVariable("id") String id);
 
     @Operation(summary = "保存自定义地理区域")
-    @DePermit("m:read")
+    @DePermit("m:manage")
     @PostMapping("/geoArea/save")
     void saveCustomGeoArea(@RequestBody CustomGeoArea geoArea);
 
     @Operation(summary = "删除自定义地理子区域")
-    @DePermit("m:read")
+    @DePermit("m:manage")
     @DeleteMapping("/geoSubArea/{id}")
     void deleteCustomGeoSubArea(@PathVariable("id") long id);
 
     @Operation(summary = "保存自定义地理子区域")
-    @DePermit("m:read")
+    @DePermit("m:manage")
     @PostMapping("/geoSubArea/save")
     void saveCustomGeoSubArea(@RequestBody CustomGeoSubArea geoSubArea);
 

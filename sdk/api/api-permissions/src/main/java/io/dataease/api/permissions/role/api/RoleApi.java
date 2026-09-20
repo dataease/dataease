@@ -28,36 +28,37 @@ import static io.dataease.constant.AuthResourceEnum.ROLE;
 public interface RoleApi {
 
     @Operation(summary = "查询")
-    @DePermit("m:read")
+    @DePermit("m:manage")
     @PostMapping("/query")
     List<RoleVO> query(@RequestBody KeywordRequest request);
 
     @Operation(summary = "创建")
-    @DePermit("m:read")
+    @DePermit("m:manage")
     @PostMapping("/create")
     Long create(@RequestBody RoleCreator creator);
 
     @Operation(summary = "编辑")
-    @DePermit({"m:read", "#p0.id + ':manage'"})
+    @DePermit({"m:manage", "#p0.id + ':manage'"})
     @PostMapping("/edit")
     void edit(@RequestBody RoleEditor editor);
 
     @Operation(summary = "绑定用户")
-    @DePermit({"m:read", "#p0.rid + ':manage'"})
+    @DePermit({"m:manage", "#p0.rid + ':manage'"})
     @PostMapping("/mountUser")
     void mountUser(@RequestBody MountUserRequest request);
 
     @Operation(summary = "绑定组织外用户")
-    @DePermit({"m:read", "#p0.rid + ':manage'"})
+    @DePermit({"m:manage", "#p0.rid + ':manage'"})
     @PostMapping("/mountExternalUser")
     void mountExternalUser(@RequestBody MountExternalUserRequest request);
 
     @Operation(summary = "查询组织外用户")
+    @DePermit("m:manage")
     @GetMapping("/searchExternalUser/{keyword}")
     ExternalUserVO searchExternalUser(@PathVariable("keyword") String keyword);
 
     @Operation(summary = "解绑用户")
-    @DePermit({"m:read", "#p0.rid + ':manage'"})
+    @DePermit({"m:manage", "#p0.rid + ':manage'"})
     @PostMapping("/unMountUser")
     void unMountUser(@RequestBody UnmountUserRequest request);
 
@@ -66,11 +67,13 @@ public interface RoleApi {
     List<RoleVO> optionForUser(@RequestBody RoleRequest request);
 
     @Operation(summary = "用户已选角色")
+    @DePermit("m:read")
     @PostMapping("/user/selected")
     List<RoleVO> selectedForUser(@RequestBody RoleRequest request);
 
     @Operation(summary = "角色详情")
     @Parameter(name = "rid", description = "角色ID", required = true, in = ParameterIn.PATH)
+    @DePermit("m:manage")
     @GetMapping("/detail/{rid}")
     RoleDetailVO detail(@PathVariable("rid") Long rid);
 
@@ -81,18 +84,22 @@ public interface RoleApi {
     void delete(@PathVariable("rid") Long rid);
 
     @Operation(summary = "解绑用户询问")
+    @DePermit("m:manage")
     @PostMapping("/beforeUnmountInfo")
     Integer beforeUnmountInfo(@RequestBody UnmountUserRequest request);
 
     @Operation(summary = "复制", hidden = true)
+    @DePermit("m:manage")
     @PostMapping("/copy")
     void copy(@RequestBody RoleCopyRequest request);
 
     @Operation(summary = "查询组织内角色")
+    @DePermit("m:read")
     @PostMapping("/byCurOrg")
     List<RoleVO> byCurOrg(@RequestBody KeywordRequest request);
 
     @Hidden
+    @DePermit("m:read")
     @GetMapping("/queryWithOid/{oid}")
     List<RoleVO> queryWithOid(@PathVariable("oid") Long oid);
 }
