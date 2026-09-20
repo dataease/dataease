@@ -103,8 +103,9 @@ public class MysqlEngineProvider extends EngineProvider {
     public String replaceTable(String name, CoreDeEngine engine) {
         String table = quoteIdentifier(name, '`');
         String tmpTable = quoteIdentifier(TableUtils.tmpName(name), '`');
-        String replaceTableSql = "RENAME TABLE " + table + " TO " + tmpTable + ", " + tmpTable
-                + " TO " + table + ", " + tmpTable + " TO " + table;
+        String oldTable = quoteIdentifier(name + "_tmp", '`');
+        String replaceTableSql = "RENAME TABLE " + table + " TO " + oldTable + ", " + tmpTable
+                + " TO " + table + ", " + oldTable + " TO " + tmpTable;
         String dropTableSql = "DROP TABLE IF EXISTS " + tmpTable;
         return replaceTableSql + ";" + dropTableSql;
     }

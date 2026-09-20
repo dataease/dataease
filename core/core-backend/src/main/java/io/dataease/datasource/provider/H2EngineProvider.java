@@ -80,8 +80,10 @@ public class H2EngineProvider extends EngineProvider {
     public String replaceTable(String name, CoreDeEngine engine) {
         String table = quoteIdentifier(name, '"');
         String tmpTable = quoteIdentifier(TableUtils.tmpName(name), '"');
-        return "ALTER TABLE " + table + " RENAME TO " + tmpTable + "; ALTER TABLE " + tmpTable
-                + " RENAME TO " + table + "; DROP TABLE IF EXISTS " + tmpTable + ";";
+        String oldTable = quoteIdentifier(name + "_tmp", '"');
+        String replaceTableSql = "ALTER TABLE " + table + " RENAME TO " + oldTable + "; ALTER TABLE " + tmpTable
+                + " RENAME TO " + table + "; ALTER TABLE " + oldTable + " RENAME TO " + tmpTable;
+        return replaceTableSql + "; DROP TABLE IF EXISTS " + tmpTable + ";";
     }
 
 

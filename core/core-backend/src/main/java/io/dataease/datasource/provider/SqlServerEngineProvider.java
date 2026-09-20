@@ -117,8 +117,9 @@ public class SqlServerEngineProvider extends EngineProvider {
     public String replaceTable(String name, CoreDeEngine engine) {
         String table = bracketIdentifier(name);
         String tmpTable = bracketIdentifier(TableUtils.tmpName(name));
-        String replaceTableSql = "EXEC sp_rename " + table + ", " + tmpTable + ", 'OBJECT'; EXEC sp_rename " + tmpTable
-                + ", " + table + ", 'OBJECT'; EXEC sp_rename " + tmpTable + ", " + table + ", 'OBJECT'";
+        String oldTable = bracketIdentifier(name + "_tmp");
+        String replaceTableSql = "EXEC sp_rename " + table + ", " + oldTable + ", 'OBJECT'; EXEC sp_rename " + tmpTable
+                + ", " + table + ", 'OBJECT'; EXEC sp_rename " + oldTable + ", " + tmpTable + ", 'OBJECT'";
         String dropTableSql = "DROP TABLE " + tmpTable;
         return replaceTableSql + ";" + dropTableSql;
     }

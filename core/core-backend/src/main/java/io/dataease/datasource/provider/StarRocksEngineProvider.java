@@ -86,9 +86,10 @@ public class StarRocksEngineProvider extends MysqlEngineProvider {
     public String replaceTable(String name, CoreDeEngine engine) {
         String table = quoteIdentifier(name, '`');
         String tmpTable = quoteIdentifier(TableUtils.tmpName(name), '`');
-        String replaceTableSql = "ALTER TABLE " + table + " RENAME " + tmpTable + ";"
+        String oldTable = quoteIdentifier(name + "_tmp", '`');
+        String replaceTableSql = "ALTER TABLE " + table + " RENAME " + oldTable + ";"
                 + "ALTER TABLE " + tmpTable + " RENAME " + table + ";"
-                + "ALTER TABLE " + tmpTable + " RENAME " + table;
+                + "ALTER TABLE " + oldTable + " RENAME " + tmpTable;
         String dropTableSql = "DROP TABLE IF EXISTS " + tmpTable;
         return replaceTableSql + ";" + dropTableSql;
     }

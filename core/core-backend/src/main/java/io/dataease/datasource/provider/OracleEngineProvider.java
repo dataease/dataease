@@ -99,8 +99,9 @@ public class OracleEngineProvider extends EngineProvider {
     public String replaceTable(String name, CoreDeEngine engine) {
         String table = quoteIdentifier(name, '"');
         String tmpTable = quoteIdentifier(TableUtils.tmpName(name), '"');
-        String replaceTableSql = "ALTER TABLE " + table + " RENAME TO " + tmpTable + "; ALTER TABLE " + tmpTable
-                + " RENAME TO " + table + "; ALTER TABLE " + tmpTable + " RENAME TO " + table;
+        String oldTable = quoteIdentifier(name + "_tmp", '"');
+        String replaceTableSql = "ALTER TABLE " + table + " RENAME TO " + oldTable + "; ALTER TABLE " + tmpTable
+                + " RENAME TO " + table + "; ALTER TABLE " + oldTable + " RENAME TO " + tmpTable;
         String dropTableSql = "DROP TABLE " + tmpTable;
         return replaceTableSql + ";" + dropTableSql;
     }
