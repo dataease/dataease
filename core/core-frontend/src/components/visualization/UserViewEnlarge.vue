@@ -10,7 +10,7 @@
     :style="dialogStyle"
     @close="handleClose"
   >
-    <template #header v-if="!isIframe">
+    <template #header v-if="!isIframe || publicLinkStatus">
       <div class="header-title">
         <div class="header-title-text" :title="viewInfo?.title">{{ viewInfo?.title }}</div>
         <div class="export-button">
@@ -186,7 +186,7 @@ const { t } = useI18n()
 const optType = ref(null)
 const chartComponentDetails = ref(null)
 const chartComponentDetails2 = ref(null)
-const { dvInfo, editMode, isIframe, canvasStyleData } = storeToRefs(dvMainStore)
+const { dvInfo, editMode, isIframe, canvasStyleData, publicLinkStatus } = storeToRefs(dvMainStore)
 const exportLoading = ref(false)
 const sourceViewType = ref()
 const activeName = ref('left')
