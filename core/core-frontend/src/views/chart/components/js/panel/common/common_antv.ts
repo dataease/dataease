@@ -50,6 +50,7 @@ import { Renderer as SVGRenderer } from '@antv/g-svg'
 import { Renderer as CanvasRenderer } from '@antv/g-canvas'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { bindMapTooltipPosition } from '../charts/map/tooltip-position'
+import { SvgGradientPlugin } from './svg-gradient-plugin'
 
 const { t: tI18n } = useI18n()
 
@@ -61,7 +62,10 @@ const { t: tI18n } = useI18n()
 export function getG2Renderer() {
   const dvMainStore = dvMainStoreWithOut()
   const enableSvgRenderer = dvMainStore?.canvasStyleData?.enableSvgRenderer
-  return enableSvgRenderer ? { renderer: new SVGRenderer() } : {}
+  if (!enableSvgRenderer) return {}
+  const renderer = new SVGRenderer()
+  renderer.registerPlugin(new SvgGradientPlugin())
+  return { renderer }
 }
 
 const G2_TOOLTIP_CAROUSEL_CHART_TYPES = {
