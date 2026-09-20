@@ -36,13 +36,13 @@ public interface UserApi {
             @Parameter(name = "pageSize", description = "每页容量", required = true, in = ParameterIn.PATH),
             @Parameter(name = "request", description = "过滤条件", required = true)
     })
-    @DePermit("m:read")
+    @DePermit("m:manage")
     @PostMapping("/pager/{goPage}/{pageSize}")
     IPage<UserGridVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody UserGridRequest request);
 
     @Operation(summary = "查询用户详情")
     @Parameter(name = "id", description = "ID", required = true, in = ParameterIn.PATH)
-    @DePermit({"m:read", "#p0 + ':read'"})
+    @DePermit({"m:manage", "#p0 + ':read'"})
     @GetMapping("/queryById/{id}")
     UserFormVO queryById(@PathVariable("id") Long id);
 
@@ -51,6 +51,7 @@ public interface UserApi {
     UserFormVO personInfo();
 
     @Operation(summary = "查询用户系统变量信息")
+    @DePermit("m:manage")
     @GetMapping("/personSysVariableInfo/{id}")
     UserGridVO personSysVariableInfo(@PathVariable("id") Long id);
 
@@ -59,17 +60,17 @@ public interface UserApi {
     CurIpVO ipInfo();
 
     @Operation(summary = "创建")
-    @DePermit("m:read")
+    @DePermit("m:manage")
     @PostMapping("/create")
     Long create(@RequestBody UserCreator creator);
 
     @Operation(summary = "创建第三方用户")
-    @DePermit("m:read")
+    @DePermit("m:manage")
     @PostMapping("/createPlatform")
     void createPlatform(@RequestBody PlatformUserCreator creator);
 
     @Operation(summary = "编辑")
-    @DePermit({"m:read", "#p0.id + ':manage'"})
+    @DePermit({"m:manage", "#p0.id + ':manage'"})
     @PostMapping("/edit")
     void edit(@RequestBody UserEditor editor);
 
@@ -79,12 +80,12 @@ public interface UserApi {
 
     @Operation(summary = "删除")
     @Parameter(name = "id", description = "ID", required = true, in = ParameterIn.PATH)
-    @DePermit({"m:read", "#p0 + ':manage'"})
+    @DePermit({"m:manage", "#p0 + ':manage'"})
     @PostMapping("/delete/{id}")
     void delete(@PathVariable("id") Long id);
 
     @Operation(summary = "批量删除")
-    @DePermit({"m:read", "#p0 + ':manage'"})
+    @DePermit({"m:manage", "#p0 + ':manage'"})
     @PostMapping("/batchDel")
     void batchDel(@RequestBody List<Long> ids);
 
@@ -128,36 +129,40 @@ public interface UserApi {
     void switchLanguage(@RequestBody LangSwitchRequest request);
 
     @Operation(summary = "下载批量导入模版")
+    @DePermit("m:manage")
     @PostMapping("/excelTemplate")
     void excelTemplate();
 
     @Operation(summary = "批量导入")
+    @DePermit("m:manage")
     @PostMapping("/batchImport")
     UserImportVO batchImport(@RequestPart(value = "file") MultipartFile file);
 
     @Operation(summary = "下载批量导入失败记录")
     @Parameter(name = "key", description = "导入结果key", required = true, in = ParameterIn.PATH)
+    @DePermit("m:manage")
     @GetMapping("/errorRecord/{key}")
     void errorRecord(@PathVariable("key") String key);
 
     @Operation(summary = "清理批量导入失败记录")
     @Parameter(name = "key", description = "导入结果key", required = true, in = ParameterIn.PATH)
+    @DePermit("m:manage")
     @GetMapping("/clearErrorRecord/{key}")
     void clearErrorRecord(@PathVariable("key") String key);
 
     @Operation(summary = "查询默认密码")
-    @DePermit({"m:read"})
+    @DePermit({"m:manage"})
     @GetMapping("/defaultPwd")
     String defaultPwd();
 
     @Operation(summary = "重置为默认密码")
     @Parameter(name = "id", description = "用户ID", required = true, in = ParameterIn.PATH)
-    @DePermit({"m:read", "#p0 + ':manage'"})
+    @DePermit({"m:manage", "#p0 + ':manage'"})
     @PostMapping("/resetPwd/{id}")
     void resetPwd(@PathVariable("id") Long id);
 
     @Operation(summary = "切换用户状态")
-    @DePermit({"m:read", "#p0.id + ':manage'"})
+    @DePermit({"m:manage", "#p0.id + ':manage'"})
     @PostMapping("/enable")
     void enable(@RequestBody EnableSwitchRequest request);
 
@@ -170,6 +175,7 @@ public interface UserApi {
     List<Long> firstEchelon(@PathVariable("limit") Long limit);
 
     @Operation(summary = "根据账号查询用户")
+    @DePermit("m:manage")
     @GetMapping("/queryByAccount/{account}")
     CurUserVO queryByAccount(@PathVariable("account") String account);
 
@@ -234,6 +240,7 @@ public interface UserApi {
     String mfaUnbind(@PathVariable("code") String code);
 
     @Operation(summary = "重置MFA绑定状态")
+    @DePermit({"m:manage", "#p0 + ':manage'"})
     @PostMapping("/mfaRest/{id}")
     void resetBind(@PathVariable("id") Long id);
 
@@ -243,7 +250,7 @@ public interface UserApi {
 
     @Operation(summary = "解锁用户")
     @Parameter(name = "id", description = "用户ID", required = true, in = ParameterIn.PATH)
-    @DePermit({"m:read", "#p0 + ':manage'"})
+    @DePermit({"m:manage", "#p0 + ':manage'"})
     @PostMapping("/unlock/{id}")
     void unlock(@PathVariable("id") Long id);
 
