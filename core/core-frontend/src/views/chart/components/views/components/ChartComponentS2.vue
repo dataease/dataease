@@ -12,7 +12,8 @@ import {
   shallowRef,
   ShallowRef,
   toRaw,
-  toRefs
+  toRefs,
+  watch
 } from 'vue'
 import { getData } from '@/api/chart'
 import chartViewManager from '@/views/chart/components/js/panel'
@@ -27,8 +28,13 @@ import { BASE_VIEW_CONFIG } from '../../editor/util/chart'
 import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/utils/canvasStyle'
 import { deepCopy, isISOMobile, isMobile } from '@/utils/utils'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import { isDashboard, trackBarStyleCheck } from '@/utils/canvasUtils'
-import { type SpreadSheet } from '@antv/s2'
+import {
+  getDataVControlScale,
+  isDashboard,
+  isDataVTouchDevice,
+  trackBarStyleCheck
+} from '@/utils/canvasUtils'
+import { S2Event, type SpreadSheet } from '@antv/s2'
 import { parseJson } from '../../js/util'
 import { useI18n } from '@/hooks/web/useI18n'
 import { hasNextDrillLevel, isCurrentDrillField } from '@/views/chart/components/views/util/drill'
@@ -98,6 +104,8 @@ const emit = defineEmits(['onPointClick', 'onChartClick', 'onDrillFilters', 'onJ
 const dataVMobile = !isDashboard() && isMobile()
 
 const { view, showPosition, scale, terminal, drillLength, suffixId } = toRefs(props)
+const controlScale = computed(() => getDataVControlScale(scale.value))
+const touchScrollEnabled = computed(isDataVTouchDevice)
 
 const isError = ref(false)
 const errMsg = ref('')
@@ -263,6 +271,60 @@ const renderChart = (viewInfo: Chart, resetPageInfo: boolean) => {
   nextTick(() => debounceRender(resetPageInfo))
 }
 
+// 滚动条随移动端大屏缩放，只合并尺寸以保留其他主题样式
+const setScrollBarScale = (value: number) => {
+  myChart?.setTheme({
+    scrollBar: {
+      size: 8 * value,
+      hoverSize: 12 * value,
+      // 最小滑块长度也需等比缩放，避免覆盖短轨道后被判定为已到滚动边界
+      thumbHorizontalMinSize: 32 * value,
+      thumbVerticalMinSize: 32 * value
+    }
+  })
+}
+
+const limitScrollBarThumbs = (instance: SpreadSheet) => {
+  if (controlScale.value === 1 || !instance.facet) {
+    return
+  }
+  const { facet } = instance
+  const { scrollX, scrollY, rowHeaderScrollX } = facet.getScrollOffset()
+  const scrollBars = [
+    { bar: facet.hScrollBar, offset: scrollX },
+    { bar: facet.vScrollBar, offset: scrollY },
+    { bar: facet.hRowScrollBar, offset: rowHeaderScrollX }
+  ]
+  scrollBars.forEach(({ bar, offset }) => {
+    if (
+      !bar ||
+      !Number.isFinite(bar.trackLen) ||
+      bar.trackLen <= 0 ||
+      !Number.isFinite(bar.scrollTargetMaxOffset) ||
+      bar.scrollTargetMaxOffset <= 0 ||
+      bar.thumbLen < bar.trackLen
+    ) {
+      return
+    }
+    // 使用布局后的实际轨道留出滑动距离，兼容非等比缩放和冻结区域
+    const thumbLen = bar.trackLen - Math.min(bar.theme.size, bar.trackLen / 2)
+    if (bar.theme.size >= thumbLen) {
+      bar.theme = {
+        ...bar.theme,
+        size: thumbLen / 2,
+        hoverSize: Math.min(bar.theme.hoverSize, thumbLen)
+      }
+      bar.trackShape.attr('lineWidth', bar.theme.size)
+      bar.thumbShape.attr('lineWidth', bar.theme.size)
+    }
+    const ratio = Math.max(0, Math.min(1, (offset || 0) / bar.scrollTargetMaxOffset))
+    // 只更新滑块图形，避免 updateThumbLen 发出滚动事件而改变内容位置
+    bar.thumbLen = thumbLen
+    bar.thumbOffset = 0
+    bar.onlyUpdateThumbOffset(ratio * (bar.trackLen - thumbLen))
+  })
+}
+
 const debounceRender = debounce(() => {
   stopAutoScroll()
   myChart?.facet?.cancelScrollFrame()
@@ -281,10 +343,31 @@ const debounceRender = debounce(() => {
     resizeAction,
     touchAction
   })
+  if (controlScale.value !== 1) {
+    setScrollBarScale(controlScale.value)
+  }
+  const instance = myChart
+  instance?.on(S2Event.LAYOUT_AFTER_RENDER, () => limitScrollBarThumbs(instance))
+  instance?.on(S2Event.GLOBAL_SCROLL, () => onTableScroll(instance))
   myChart?.render()
   dvMainStore.setViewInstanceInfo(actualChart.id, myChart)
   initScroll()
 }, 500)
+
+watch(
+  controlScale,
+  value => {
+    if (!myChart?.facet) {
+      return
+    }
+    stopAutoScroll()
+    myChart.facet.cancelScrollFrame()
+    setScrollBarScale(value)
+    myChart.render(false)
+    initScroll()
+  },
+  { flush: 'post' }
+)
 
 const setupPage = (chart: ChartObj, resetPageInfo?: boolean) => {
   const customAttr = chart.customAttr
@@ -310,6 +393,88 @@ const setupPage = (chart: ChartObj, resetPageInfo?: boolean) => {
 }
 
 let scrollFrame: number | undefined
+const activeTouches = new Map<number, { x: number; y: number }>()
+const touchTargets = new Set<HTMLElement>()
+let manualScrollPause = false
+let touchMoved = false
+let suppressClickUntil = 0
+
+const clearTouchListeners = () => {
+  touchTargets.forEach(target => {
+    target.removeEventListener('touchmove', onTableTouchMove, true)
+    target.removeEventListener('touchend', onTableTouchEnd, true)
+    target.removeEventListener('touchcancel', onTableTouchEnd, true)
+  })
+  touchTargets.clear()
+}
+
+const onTableTouchStart = (event: TouchEvent) => {
+  if (!touchScrollEnabled.value) {
+    return
+  }
+  if (!activeTouches.size) {
+    touchMoved = false
+    suppressClickUntil = 0
+  }
+  Array.from(event.changedTouches).forEach(touch => {
+    activeTouches.set(touch.identifier, { x: touch.clientX, y: touch.clientY })
+  })
+  touchMoved ||= event.touches.length > 1
+  manualScrollPause = true
+  stopAutoScroll()
+  // 保留原触摸目标的监听，重绘替换 canvas 后也能收到松手事件
+  const target = event.target as HTMLElement
+  if (!touchTargets.has(target)) {
+    const options = { capture: true, passive: true }
+    target.addEventListener('touchmove', onTableTouchMove, options)
+    target.addEventListener('touchend', onTableTouchEnd, options)
+    target.addEventListener('touchcancel', onTableTouchEnd, options)
+    touchTargets.add(target)
+  }
+}
+
+const onTableTouchMove = (event: TouchEvent) => {
+  Array.from(event.changedTouches).forEach(touch => {
+    const start = activeTouches.get(touch.identifier)
+    // 按屏幕距离区分点击与滑动，阈值不随图表比例缩小
+    if (start && Math.hypot(touch.clientX - start.x, touch.clientY - start.y) > 6) {
+      touchMoved = true
+    }
+  })
+}
+
+const onTableTouchEnd = (event: TouchEvent) => {
+  onTableTouchMove(event)
+  let ended = false
+  Array.from(event.changedTouches).forEach(touch => {
+    if (activeTouches.delete(touch.identifier)) {
+      ended = true
+    }
+  })
+  if (!ended) {
+    return
+  }
+  touchMoved ||= event.type === 'touchcancel'
+  if (touchMoved) {
+    suppressClickUntil = performance.now() + 500
+  }
+  if (!activeTouches.size) {
+    clearTouchListeners()
+    initScroll()
+  }
+}
+
+const suppressTouchClick = () =>
+  touchScrollEnabled.value &&
+  ((activeTouches.size > 0 && touchMoved) || performance.now() < suppressClickUntil)
+
+const onTableScroll = (instance: SpreadSheet) => {
+  // 自动滚动也会发出 GLOBAL_SCROLL，仅触摸后的惯性滚动延后恢复
+  if (instance === myChart && manualScrollPause && !activeTouches.size) {
+    initScroll()
+  }
+}
+
 const stopAutoScroll = () => {
   clearTimeout(scrollTimer)
   if (scrollFrame !== undefined) {
@@ -320,17 +485,29 @@ const stopAutoScroll = () => {
 }
 
 const mouseMove = () => {
-  stopAutoScroll()
+  // 触屏兼容鼠标事件不能取消松手后安排的自动滚动
+  if (!manualScrollPause) {
+    stopAutoScroll()
+  }
 }
 
 const mouseLeave = () => {
-  initScroll()
+  if (!manualScrollPause) {
+    initScroll()
+  }
 }
 
 let scrollTimer: ReturnType<typeof setTimeout>
 const initScroll = () => {
   stopAutoScroll()
+  if (activeTouches.size) {
+    return
+  }
   scrollTimer = setTimeout(() => {
+    if (activeTouches.size) {
+      return
+    }
+    manualScrollPause = false
     const customAttr = actualChart?.customAttr
     const senior = actualChart?.senior
     if (
@@ -425,6 +602,9 @@ const pointClickTrans = () => {
 }
 
 const touchAction = (callback, fieldId) => {
+  if (suppressTouchClick()) {
+    return
+  }
   if (fieldId) {
     state.curActionId = fieldId
   }
@@ -434,6 +614,9 @@ const touchAction = (callback, fieldId) => {
 }
 
 const action = param => {
+  if (suppressTouchClick()) {
+    return
+  }
   state.pointParam = param
   state.curActionId = param.data.name
   state.curTrackMenu = trackMenuCalc(state.curActionId)
@@ -742,6 +925,8 @@ onMounted(() => {
 })
 onBeforeUnmount(() => {
   stopAutoScroll()
+  clearTouchListeners()
+  activeTouches.clear()
   clearTimeout(timer)
   debounceRender.cancel()
   try {
@@ -800,6 +985,7 @@ const tablePageClass = computed(() => {
         style="position: relative; height: 100%"
         @mousemove="mouseMove"
         @mouseleave="mouseLeave"
+        @touchstart.capture.passive="onTableTouchStart"
       ></div>
     </div>
     <el-row :style="autoStyle" v-if="showPage && !isError">
