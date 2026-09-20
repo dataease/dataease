@@ -3,6 +3,8 @@ import { formatterItem, valueFormatter } from '@/views/chart/components/js/forma
 import {
   copyContent,
   CustomDataCell,
+  getRowIndex,
+  setupMergedCellHover,
   getSummaryRow,
   SortTooltip,
   SummaryCell,
@@ -80,7 +82,8 @@ export class TableNormal extends S2ChartView<TableSheet> {
       ...TABLE_EDITOR_PROPERTY_INNER['table-cell-selector'],
       'tableFreeze',
       'tableColumnFreezeHead',
-      'tableRowFreezeHead'
+      'tableRowFreezeHead',
+      'mergeCells'
     ],
     'summary-selector': ['showSummary', 'summaryLabel']
   }
@@ -264,7 +267,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
     // 列宽设置
     s2Options.style = this.configStyle(chart, s2DataConfig)
     // 行列冻结
-    if (tableCell.tableFreeze) {
+    if (tableCell.tableFreeze && !tableCell.mergeCells) {
       s2Options.frozen.colCount = tableCell.tableColumnFreezeHead ?? 0
       s2Options.frozen.rowCount = tableCell.tableRowFreezeHead ?? 0
     }
@@ -272,6 +275,8 @@ export class TableNormal extends S2ChartView<TableSheet> {
     this.configTooltip(chart, s2Options)
     // svg renderer
     this.configRenderer(s2Options)
+    // 总计行加入前计算合并范围，避免总计参与维度合并
+    this.configMergeCells(chart, s2Options, s2DataConfig)
     // 隐藏表头，保留顶部的分割线, 禁用表头横向 resize
     if (tableHeader.showTableHeader === false) {
       s2Options.style.colCell.height = 1
@@ -297,6 +302,9 @@ export class TableNormal extends S2ChartView<TableSheet> {
     this.configSummaryRowAndIndex(chart, pageInfo, s2Options, s2DataConfig)
     // 开始渲染
     const newChart = new TableSheet(containerDom, s2DataConfig, s2Options)
+    if (tableCell.mergeCells && basicStyle.showHoverStyle !== false) {
+      setupMergedCellHover(newChart)
+    }
     // 总计紧贴在单元格后面
     summaryRowStyle(newChart, newData, tableCell, tableHeader, basicStyle.showSummary)
     // 自适应铺满
@@ -445,7 +453,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
     s2Options: S2Options,
     s2DataConfig: S2DataConfig
   ) {
-    const { tableHeader, basicStyle } = parseJson(chart.customAttr)
+    const { tableHeader, basicStyle, tableCell } = parseJson(chart.customAttr)
     const { showSummary, summaryLabel } = basicStyle
     const data = s2DataConfig.data
     const { xAxis, yAxis } = chart
@@ -475,7 +483,12 @@ export class TableNormal extends S2ChartView<TableSheet> {
         return new SummaryCell(viewMeta, sheet)
       }
       if (viewMeta.colIndex === 0 && s2Options.seriesNumber?.enable) {
-        viewMeta.fieldValue = pageInfo.pageSize * (pageInfo.currentPage - 1) + viewMeta.rowIndex + 1
+        if (tableCell.mergeCells) {
+          viewMeta.fieldValue = getRowIndex(s2Options.mergedCellsInfo, viewMeta)
+        } else {
+          viewMeta.fieldValue =
+            pageInfo.pageSize * (pageInfo.currentPage - 1) + viewMeta.rowIndex + 1
+        }
       }
       return new CustomDataCell(viewMeta, sheet)
     }
