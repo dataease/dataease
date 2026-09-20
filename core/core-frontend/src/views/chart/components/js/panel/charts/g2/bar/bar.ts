@@ -46,6 +46,7 @@ import {
   isTooltipItemShown,
   renderGroupedTooltipItems,
   ChildSpec,
+  getColumnSeriesPaddingTransform,
   tooltipCss,
   tooltipMaxHeight,
   Transform,
@@ -57,7 +58,6 @@ import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 const { t } = useI18n()
 const DEFAULT_DATA: any[] = []
 const FULL_COLUMN_WIDTH_PADDING = 0.01
-const PERCENTAGE_FULL_COLUMN_WIDTH_PADDING = 0.002
 const isAssistLineRightAxis = item => item?.yAxisType === 'right'
 
 /**
@@ -406,6 +406,10 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
       scale.x.padding = columnPadding
       scale.x.paddingInner = columnPadding
       transform = this.configDodgePadding(transform, columnPadding)
+      // 统一按最终系列数量计算组内留白，避免单系列重复收窄及满宽跳变
+      if (children[0].encode?.series || transform?.some(item => item.type === 'dodgeX')) {
+        transform = [...(transform || []), getColumnSeriesPaddingTransform(columnPadding)]
+      }
       style = {
         ...style,
         columnWidthRatio: this.getStyleColumnWidthRatio(columnPadding)
@@ -442,9 +446,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
   }
 
   protected getFullColumnWidthPadding(): number {
-    if (this.name.startsWith('percentage-bar-stack')) {
-      return PERCENTAGE_FULL_COLUMN_WIDTH_PADDING
-    }
+    // 百分比柱与普通柱共用满宽间距
     return FULL_COLUMN_WIDTH_PADDING
   }
 
@@ -488,12 +490,9 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     if (!transforms?.length) {
       return transforms
     }
-    if (padding > this.getFullColumnWidthPadding()) {
-      return transforms
-    }
     // dodgeX 会生成 series band，单独控制多指标柱之间的组内间距
     return transforms.map(transform =>
-      transform.type === 'dodgeX' ? { ...transform, padding } : transform
+      transform.type === 'dodgeX' ? { ...transform, padding: Math.min(0.1, padding) } : transform
     )
   }
 

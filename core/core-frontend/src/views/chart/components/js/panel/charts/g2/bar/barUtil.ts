@@ -6,10 +6,37 @@ import {
   parseJson
 } from '@/views/chart/components/js/util'
 import { isMobile } from '@/utils/utils'
-import { Chart as G2Chart } from '@antv/g2'
+import { Chart as G2Chart, register } from '@antv/g2'
 import { defaultsDeep } from 'lodash-es'
 
 const G2_TOOLTIP_DEFAULT_FONT_SIZE = 12
+
+export const getColumnSeriesPadding = (count: number, columnPadding: number) =>
+  count > 1 ? Math.min(0.1, columnPadding) : 0
+
+// 图例筛选会对 transform.type 调用 startsWith，必须使用注册后的字符串名称
+register('transform.deColumnSeriesPadding', ({ columnPadding }) => (indices, mark) => {
+  // 在分组、堆叠变换后读取系列域，保留原生 band 的域推导和图例交互
+  const series = mark.encode.series?.value
+  if (!series) return [indices, mark]
+  const domain = mark.scale?.series?.domain ?? [...new Set(indices.map(i => series[i]))]
+  const padding = getColumnSeriesPadding(domain.length, columnPadding)
+  return [
+    indices,
+    {
+      ...mark,
+      scale: {
+        ...mark.scale,
+        series: { ...mark.scale?.series, padding, paddingInner: padding, paddingOuter: padding }
+      }
+    }
+  ]
+})
+
+export const getColumnSeriesPaddingTransform = (columnPadding: number) => ({
+  type: 'deColumnSeriesPadding',
+  columnPadding
+})
 
 /**
  * 运行时形态与 G2Spec 完全一致 ，G2 以普通对象消费

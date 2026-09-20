@@ -2,6 +2,8 @@ import { Chart as G2Chart, extend, Runtime, stdlib, type G2Spec } from '@antv/g2
 import { defaultsDeep } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { parseJson } from '@/views/chart/components/js/util'
+import { DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'
+import { getColumnSeriesPaddingTransform } from '../bar/barUtil'
 import {
   getCategoryLegendStyle,
   getHorizontalLegendLabelMaxWidth,
@@ -17,6 +19,26 @@ import {
 } from '@/views/chart/components/js/panel/types/impl/g2-legend'
 
 type MixLegendRelation = [string, string]
+
+export const getMixColumnWidthOptions = (
+  columnWidthRatio: number | null | undefined,
+  transforms = []
+) => {
+  // 缺失或非有限值使用默认柱宽，历史越界值限制到样式面板的 1-100% 范围
+  const value = Number(columnWidthRatio ?? DEFAULT_BASIC_STYLE.columnWidthRatio)
+  const ratio = Number.isFinite(value)
+    ? Math.min(100, Math.max(1, value))
+    : DEFAULT_BASIC_STYLE.columnWidthRatio
+  // 与基础柱状图保持一致，满宽时仍保留 1% 间距并同步分组子带宽
+  const padding = Math.max(1 - ratio / 100, 0.01)
+  return {
+    scale: {
+      x: { padding, paddingInner: padding }
+    },
+    transform: [...transforms, getColumnSeriesPaddingTransform(padding)],
+    style: { columnWidthRatio: 1 - padding }
+  }
+}
 
 interface MixLegendOptions {
   supportOrient?: boolean

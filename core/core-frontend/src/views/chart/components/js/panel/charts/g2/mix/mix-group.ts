@@ -31,6 +31,7 @@ import {
   filterValidMixTooltipItems,
   getAssistLineAxisIndex,
   configMixLabel,
+  getMixColumnWidthOptions,
   MixG2Chart
 } from './common'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
@@ -364,18 +365,10 @@ export class GroupLineMix extends G2ChartView {
     }
     merge(lineMark, rightColorScale)
     merge(pointMark, rightColorScale)
-    merge(intervalMark, {
-      scale: {
-        x: {
-          paddingInner: -0.21
-        }
-      }
-    })
-    merge(intervalMark, {
-      style: {
-        columnWidthRatio: basicStyle.columnWidthRatio / 100
-      }
-    })
+    merge(
+      intervalMark,
+      getMixColumnWidthOptions(basicStyle.columnWidthRatio, intervalMark.transform)
+    )
     if (basicStyle.radiusColumnBar === 'roundAngle') {
       merge(intervalMark, {
         style: {
