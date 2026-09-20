@@ -1390,11 +1390,16 @@ onBeforeUnmount(() => {
 </style>
 
 <style lang="less">
-// Fallback for browsers without the standard scrollbar-color/scrollbar-width properties.
+// Keep legend scrollbars visible even when the surrounding canvas hides its own scrollbars.
 .dataease-tiled-legend {
+  // Standard non-auto colors override WebKit scrollbar styling on Chromium (including overlay mode).
+  @supports selector(::-webkit-scrollbar) {
+    scrollbar-color: auto !important;
+  }
   &::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    display: block !important;
+    width: 8px !important;
+    height: 8px !important;
   }
   &::-webkit-scrollbar-thumb {
     background-color: var(--legend-scroll-thumb);

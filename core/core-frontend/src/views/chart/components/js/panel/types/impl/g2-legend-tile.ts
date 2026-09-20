@@ -43,7 +43,9 @@ export const renderTiledLegend = (
     overflow: 'auto',
     colorScheme: dark ? 'dark' : 'light',
     scrollbarColor: 'var(--legend-scroll-thumb) transparent',
-    scrollbarWidth: 'thin',
+    // A stable gutter keeps column wrapping independent of whether content overflows.
+    scrollbarGutter: 'stable',
+    scrollbarWidth: 'auto',
     // Centering overflowing tracks would hide their leading edge outside the scroll origin.
     justifyContent: 'safe ' + (style.layout?.justifyContent || 'start')
   })
@@ -61,13 +63,12 @@ export const renderTiledLegend = (
       ),
     markerSize + 6
   )
-  const columnWidth = Math.min(Math.max(1, areaWidth - 8), Math.ceil(naturalWidth))
-  // Do not allocate empty columns: a short legend must still honor center/right alignment.
-  const columns = Math.max(
-    1,
-    Math.min(items.length, Math.floor((areaWidth - 8 + 16) / (columnWidth + 16)))
-  )
-  root.style.gridTemplateColumns = `repeat(${vertical ? 1 : columns}, minmax(0, ${columnWidth}px))`
+  // DOM text shaping can be slightly wider than canvas measurement for fallback fonts.
+  const columnWidth = Math.min(Math.max(1, areaWidth - 8), Math.ceil(naturalWidth) + 2)
+  // Let CSS use the actual content width, including the scrollbar gutter. Empty tracks collapse.
+  root.style.gridTemplateColumns = vertical
+    ? `minmax(0, ${columnWidth}px)`
+    : `repeat(auto-fit, minmax(min(100%, ${columnWidth}px), ${columnWidth}px))`
   if (side && !scroll) {
     const rows = Math.max(
       1,
