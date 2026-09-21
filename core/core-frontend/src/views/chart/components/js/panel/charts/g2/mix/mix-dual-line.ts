@@ -467,7 +467,9 @@ export class GroupLineMix extends G2ChartView {
     const rightRelations = lineMark.scale.color.relations
     // 底部水平图例与柱线、堆叠柱线组合图保持相同的留白位置
     return configMixCustomLegend(chart, options, leftRelations, rightRelations, {
-      alignBottom: true
+      alignBottom: true,
+      // 仅增加左右居中分页图例的留白，占位仍由公共图例布局计算
+      sideLegendGap: 16
     })
   }
 

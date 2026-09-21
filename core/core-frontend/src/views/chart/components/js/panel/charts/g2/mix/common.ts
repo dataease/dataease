@@ -43,6 +43,7 @@ export const getMixColumnWidthOptions = (
 interface MixLegendOptions {
   supportOrient?: boolean
   alignBottom?: boolean
+  sideLegendGap?: number
 }
 
 interface MixSideLegendLayout {
@@ -556,6 +557,8 @@ export const configMixCustomLegend = (
       ? 0
       : direction === 'col' && !legendFirst
       ? 4
+      : direction === 'row' && legend.displayMode !== 'tile'
+      ? getNonNegativeNumber(legendOptions.sideLegendGap, legendChartGap)
       : legendChartGap
   const getLegendRatio = (
     direction: 'col' | 'row',
