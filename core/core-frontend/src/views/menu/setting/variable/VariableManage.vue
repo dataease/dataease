@@ -231,9 +231,6 @@ const selectedVariableValue = (sysVariableId?: string) => {
           state.form.sysVariableId = selectedRoleId.value
         }
       })
-      .finally(err => {
-        ElMessage.error(err)
-      })
   }
 }
 const variableSearch = (resolve, reject, type, data) => {

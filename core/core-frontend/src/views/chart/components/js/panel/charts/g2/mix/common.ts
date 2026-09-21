@@ -684,7 +684,7 @@ export const configMixCustomLegend = (
     } satisfies MixSideLegendLayout
   }
   const enableHorizontalLegendText = () =>
-    Object.assign(legendMark, getHorizontalLegendTextStyle(legendFontSize))
+    Object.assign(legendMark, getHorizontalLegendTextStyle(legendFontSize, legend.displayMode))
   unionRelations.forEach(([key, value]) => {
     legendMark.scale.color.domain.push(key)
     legendMark.scale.color.range.push(value)

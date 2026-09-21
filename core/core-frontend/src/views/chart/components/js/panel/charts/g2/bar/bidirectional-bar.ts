@@ -43,7 +43,11 @@ const createResponsiveBidirectionalSpaceFlex = baseSpaceFlex => {
     const layout = baseSpaceFlex(...args)
     return options => {
       const legendLayout = options.dataeaseBidirectionalLegendFlex as BidirectionalLegendFlexLayout
-      if (!legendLayout) {
+      // Tiled legends already measure their DOM and allocate the flex ratio, including on resize.
+      const tiledLegend = options.children?.some(
+        child => child.type === 'legends' && child.dataeaseLegendTile
+      )
+      if (!legendLayout || tiledLegend) {
         return layout(options)
       }
       const mainSize = Number(legendLayout.direction === 'col' ? options.height : options.width)
@@ -561,6 +565,16 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       secondMark.axis.x = false
       return options
     }
+    // 使用空值策略处理后的类别固定刻度，避免图例隐藏单侧或全部系列后标签、占位消失
+    ;[firstMark, secondMark].forEach(mark => {
+      defaultsDeep(mark, {
+        scale: {
+          x: {
+            domain: Array.from(new Set(mark.data.value.map(item => item.field)))
+          }
+        }
+      })
+    })
     let lineLineDash = undefined
     if (xAxis.axisLine.lineStyle.style === 'dashed') {
       lineLineDash = [10, 8]
@@ -1147,6 +1161,12 @@ export class BidirectionalHorizontalBar extends G2ChartView {
         color: hexColorToRGBA(basicStyle.colors[1], basicStyle.alpha)
       }
     ]
+    // 柱体与图例使用相同的内部键，确保隐藏后重新选中能匹配系列，同名指标也可独立筛选
+    this.getChartMarks(options).forEach((mark, index) => {
+      const legendKey = legendItems[index].key
+      mark.encode.color.value = legendKey
+      mark.scale.color.domain = [legendKey]
+    })
     const legendNameMap = legendItems.reduce((map, item) => {
       map[item.key] = item.name
       return map
@@ -1231,7 +1251,10 @@ export class BidirectionalHorizontalBar extends G2ChartView {
         })
       })
     }
-    const horizontalLegendTextStyle = getHorizontalLegendTextStyle(legendFontSize)
+    const horizontalLegendTextStyle = getHorizontalLegendTextStyle(
+      legendFontSize,
+      legend.displayMode
+    )
     const enableHorizontalLegendText = legendOption => {
       Object.assign(legendOption, horizontalLegendTextStyle)
       const labelFormatter = horizontalLegendTextStyle.labelFormatter
