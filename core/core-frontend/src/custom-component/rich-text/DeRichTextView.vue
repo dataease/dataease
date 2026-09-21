@@ -852,7 +852,7 @@ defineExpose({
 </style>
 
 <style lang="less">
-.tox {
+.tox-tinymce-inline {
   border-radius: 2px !important;
   border-bottom: 1px solid #ccc !important;
   z-index: 1000;
