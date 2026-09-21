@@ -29,6 +29,7 @@ import {
   CHART_MIX_EDITOR_PROPERTY_INNER,
   filterValidMixTooltipItems,
   getAssistLineAxisIndex,
+  getMixAssistLineOptions,
   configMixLabel,
   getMixColumnWidthOptions,
   MixG2Chart
@@ -513,11 +514,6 @@ export class ColumnLineMix extends G2ChartView {
   protected configYAxis(chart: Chart, options: G2Spec): G2Spec {
     const { xAxis, yAxis, yAxisExt } = parseJson(chart.customStyle)
     const [intervalMark, lineMark, pointMark] = options.children
-    if (!yAxis.show) {
-      intervalMark.axis.y = false
-      lineMark.axis.y = false
-      return options
-    }
     const overlapGridFilter = this.getOverlapGridFilter(xAxis)
     const yAxisOption = { ...this.getAxis(chart, yAxis), ...overlapGridFilter }
     const yAxisExtOption = { ...this.getAxis(chart, yAxisExt), ...overlapGridFilter }
@@ -588,6 +584,12 @@ export class ColumnLineMix extends G2ChartView {
         }
       })
     }
+    // 隐藏数据轴只影响显示，仍需执行轴域同步和手动范围配置
+    if (!yAxis.show) {
+      intervalMark.axis.y = false
+      lineMark.axis.y = false
+    }
+
     return options
   }
 
@@ -626,22 +628,31 @@ export class ColumnLineMix extends G2ChartView {
     const yAxisFormatterCfg = yAxis.axisLabelFormatter ?? DEFAULT_YAXIS_STYLE.axisLabelFormatter
     const yAxisExtFormatterCfg =
       yAxisExt.axisLabelFormatter ?? DEFAULT_YAXIS_STYLE.axisLabelFormatter
+    const [intervalMark, lineMark] = options.children
     splitLineData.forEach((lineData, index) => {
-      if (lineData.length) {
+      const { scaleY, visibleLineData, visibility } = getMixAssistLineOptions(
+        index === 0 ? intervalMark : lineMark,
+        lineData,
+        index
+      )
+      if (visibleLineData.length) {
         const assistLineMark: G2Spec = {
           type: 'lineY',
+          // 先更新辅助线可见性再布局标签，避免更新动画保留旧的隐藏状态
+          animate: { update: { type: null } },
           encode: { y: 'value' },
           // 组合图辅助线不参与图例过滤和分页
           legend: false,
           scale: {
             y: {
+              ...scaleY,
               key: index === 0 ? 'left' : 'right'
             }
           },
-          // 右轴辅助线使用独立比例尺，只关闭其自动生成的冗余轴
-          ...(index === 1 ? { axis: { y: false } } : {}),
-          data: lineData,
+          axis: { y: false },
+          data: visibleLineData,
           style: {
+            visibility,
             stroke: d => d.color,
             lineDash: d =>
               d.lineType === 'solid' ? [] : d.lineType === 'dashed' ? [10, 8] : [1, 2],
