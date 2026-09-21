@@ -44,9 +44,11 @@ interface MixLegendOptions {
   supportOrient?: boolean
   alignBottom?: boolean
   sideLegendGap?: number
+  compactPagedSideLegend?: boolean
 }
 
 interface MixSideLegendLayout {
+  compactPaged?: boolean
   legendFirst: boolean
   itemCount: number
   columns: number
@@ -150,8 +152,26 @@ export const createResponsiveMixSpaceFlex = baseSpaceFlex => {
       if (!sideLegendLayout) {
         return layout(options)
       }
+      // 只收紧目标组合图分页时的水平外边距，保留分页器占位和轴侧 crossPadding
+      // 上下仍沿用 G2 默认各 16px 外边距，按剩余高度估算分页；每次布局重新判断以支持还原。
+      const compactPaged =
+        sideLegendLayout.compactPaged &&
+        sideLegendLayout.itemCount >
+          getSideLegendRowsPerPage(
+            Math.max(1, Number(options.height) - 32),
+            sideLegendLayout.itemHeight,
+            sideLegendLayout.rowPadding
+          ) *
+            sideLegendLayout.columns
       return layout({
         ...options,
+        ...(compactPaged
+          ? {
+              children: options.children.map(child =>
+                child.key === 'legend' ? { ...child, marginLeft: 4, marginRight: 4 } : child
+              )
+            }
+          : {}),
         ratio: getMixSideLegendRatio(options, sideLegendLayout)
       })
     }
@@ -668,6 +688,9 @@ export const configMixCustomLegend = (
     }
     legendMark.dataeaseSideLegendMinColumns = horizontal ? columns : undefined
     ;(options as any).dataeaseSideLegendLayout = {
+      ...(legendOptions.compactPagedSideLegend && legend.displayMode !== 'tile'
+        ? { compactPaged: true }
+        : {}),
       legendFirst,
       itemCount: unionRelations.length,
       columns,

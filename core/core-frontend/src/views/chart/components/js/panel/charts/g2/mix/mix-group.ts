@@ -416,7 +416,8 @@ export class GroupLineMix extends G2ChartView {
     return configMixCustomLegend(chart, options, leftRelations, rightRelations, {
       alignBottom: true,
       // 与双线图保持一致，仅增加左右居中分页图例的留白
-      sideLegendGap: 16
+      sideLegendGap: 16,
+      compactPagedSideLegend: true
     })
   }
 
