@@ -11,6 +11,7 @@ import {
   onChangeFormatCfgUnitLanguage
 } from '@/views/chart/components/js/formatter'
 import { ElFormItem, ElMessage } from 'element-plus-secondary'
+import { resolveAxisLineColor } from '@/views/chart/components/js/util'
 
 const { t } = useI18n()
 
@@ -83,6 +84,13 @@ const isBarRangeTime = computed<boolean>(() => {
   }
   return false
 })
+
+// 仅用户确认选色时写回配置，主题同步只更新面板显示
+const axisLineColor = computed(() => resolveAxisLineColor(props.chart.customAttr, state.axisForm))
+const changeAxisLineColor = (color: string) => {
+  state.axisForm.axisLine.lineStyle.color = color
+  changeAxisStyle('axisLine.lineStyle.color')
+}
 
 const changeAxisStyle = prop => {
   if (
@@ -363,10 +371,10 @@ onMounted(() => {
         <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-right: 4px">
           <el-color-picker
             :disabled="!state.axisForm.axisLine.show"
-            v-model="state.axisForm.axisLine.lineStyle.color"
+            :model-value="axisLineColor"
             :predefine="predefineColors"
             :effect="themes"
-            @change="changeAxisStyle('axisLine.lineStyle.color')"
+            @change="changeAxisLineColor"
             is-custom
           />
         </el-form-item>
