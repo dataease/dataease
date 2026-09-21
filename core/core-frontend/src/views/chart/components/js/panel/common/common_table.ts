@@ -398,19 +398,17 @@ export function getCustomTheme(chart: Chart): S2Theme {
           colCell: {
             cell: {
               verticalBorderColor: tableHeaderBgColor,
-              verticalBorderWidth: 0
+              verticalBorderWidth: 0,
+              verticalBorderColorOpacity: 0
             }
           },
           cornerCell: {
             cell: {
               verticalBorderColor: tableHeaderBgColor,
-              verticalBorderWidth: 0
+              verticalBorderWidth: 0,
+              verticalBorderColorOpacity: 0
             }
           }
-        }
-        if (['table-info', 'table-normal'].includes(chart.type)) {
-          // S2 左边框分段取色，清空统一颜色后分别使用表头、表身颜色，避免表头背景色延伸到表身。
-          tmpTheme.splitLine.verticalBorderColor = ''
         }
         merge(theme, tmpTheme)
       }
@@ -524,12 +522,20 @@ export function getCustomTheme(chart: Chart): S2Theme {
           dataCell: {
             cell: {
               verticalBorderColor: tableItemBgColor,
-              verticalBorderWidth: 0
+              verticalBorderWidth: 0,
+              verticalBorderColorOpacity: 0
             }
           }
         }
         merge(theme, tmpTheme)
       }
+    }
+    if (
+      ['table-info', 'table-normal'].includes(chart.type) &&
+      theme.splitLine.verticalBorderColorOpacity === 0
+    ) {
+      // 任一区域关闭纵边框时，S2 左边框分别使用表头、表身的颜色和透明度，保证开关独立生效。
+      theme.splitLine.verticalBorderColor = ''
     }
     if (['table-info', 'table-normal'].includes(chart.type) && tableCell?.mergeCells) {
       const tableFontColor = hexColorToRGBA(tableCell.tableFontColor, basicStyle.alpha)
@@ -2970,12 +2976,10 @@ class CustomMergedCell extends MergedCell {
     const allPoints = getPolygonPoints(this.cells)
     // S2 合并单元格未初始化条件背景色，绘制前补齐，复用整行规则过滤逻辑。
     this.conditionFill = this.getBackgroundConditionFill()
-    // 底层内容和背景已清空，合并层按原背景透明度绘制，边框仍沿用现有逻辑。
+    // 合并层只绘制背景，边框交由 S2 按横纵边框配置分别绘制，避免额外描边绕过显隐控制。
     const {backgroundColor: fill, backgroundColorOpacity: fillOpacity} = this.getBackgroundColor()
-    const cellTheme = this.theme.dataCell.cell
     this.backgroundShape = renderPolygon(this, {
       points: allPoints,
-      stroke: cellTheme.horizontalBorderColor,
       fill,
       fillOpacity
     })
