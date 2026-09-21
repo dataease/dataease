@@ -2055,6 +2055,7 @@ public class CalciteProvider extends Provider {
     }
 
     public void exec(EngineRequest engineRequest) throws Exception {
+        EngineProvider.validateSingleStatement(engineRequest.getQuery());
         DatasourceConfiguration configuration = JsonUtil.parseObject(engineRequest.getEngine().getConfiguration(), DatasourceConfiguration.class);
         int queryTimeout = configuration.getQueryTimeout();
         DatasourceDTO datasource = new DatasourceDTO();

@@ -7,6 +7,7 @@ import io.dataease.extensions.datasource.dto.TableField;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,12 +15,12 @@ import java.util.List;
 public class H2EngineProvider extends EngineProvider {
 
     private static final String creatTableSql =
-            "CREATE TABLE IF NOT EXISTS \"TABLE_NAME\"" +
+            "CREATE TABLE IF NOT EXISTS TABLE_NAME" +
                     "Column_Fields;";
 
     @Override
     public String createView(String name, String viewSQL) {
-        return "CREATE or replace view " + name + " AS (" + viewSQL + ")";
+        return "CREATE or replace view " + quoteIdent(name, '"') + " AS (" + viewSQL + ")";
     }
 
     @Override
@@ -33,7 +34,7 @@ public class H2EngineProvider extends EngineProvider {
                 engineTableName = TableUtils.tableName(tableName);
                 break;
         }
-        String insertSql = "INSERT INTO  \"TABLE_NAME\" VALUES ".replace("TABLE_NAME", engineTableName);
+        String insertSql = "INSERT INTO TABLE_NAME VALUES ".replace("TABLE_NAME", quoteIdent(engineTableName, '"'));
         StringBuffer values = new StringBuffer();
 
         Integer realSize = page * pageNumber < dataList.size() ? page * pageNumber : dataList.size();
@@ -59,71 +60,72 @@ public class H2EngineProvider extends EngineProvider {
 
     @Override
     public String dropTable(String name) {
-        return "DROP TABLE IF EXISTS `" + name + "`";
+        return "DROP TABLE IF EXISTS " + quoteIdent(name, '`');
     }
 
     @Override
     public String dropView(String name) {
-        return "DROP VIEW IF EXISTS `" + name + "`";
+        return "DROP VIEW IF EXISTS " + quoteIdent(name, '`');
     }
 
     @Override
     public String replaceTable(String name) {
-        return "ALTER TABLE `FROM_TABLE` rename to `FROM_TABLE_tmp`; ALTER TABLE `TO_TABLE` rename to `FROM_TABLE`; DROP TABLE IF EXISTS `FROM_TABLE_tmp`;".replace("FROM_TABLE", name).replace("TO_TABLE", TableUtils.tmpName(name));
+        String from = quoteIdent(name, '`');
+        String fromTmp = quoteIdent(name + "_tmp", '`');
+        String to = quoteIdent(TableUtils.tmpName(name), '`');
+        return "ALTER TABLE " + from + " rename to " + fromTmp
+                + "; ALTER TABLE " + to + " rename to " + from
+                + "; DROP TABLE IF EXISTS " + fromTmp + ";";
     }
 
     @Override
     public String createTableSql(String tableName, List<TableField> tableFields, CoreDeEngine engine) {
-        validateSqlInjectionRisk(tableName);
+        String quotedTableName = quoteIdent(tableName, '"');
         String dorisTableColumnSql = createTableSql(tableFields);
-        return creatTableSql.replace("TABLE_NAME", tableName).replace("Column_Fields", dorisTableColumnSql);
+        return creatTableSql.replace("TABLE_NAME", quotedTableName).replace("Column_Fields", dorisTableColumnSql);
     }
 
     private String createTableSql(final List<TableField> tableFields) {
-        StringBuilder columnFields = new StringBuilder("\"");
-        StringBuilder key = new StringBuilder();
+        List<String> columnDefs = new ArrayList<>();
+        List<String> primaryKeys = new ArrayList<>();
         for (TableField tableField : tableFields) {
             if (!tableField.isChecked()) {
                 continue;
             }
+            String quotedName = quoteIdent(tableField.getName(), '"');
             if (tableField.isPrimaryKey()) {
-                key.append("\"").append(tableField.getName()).append("\", ");
+                primaryKeys.add(quotedName);
             }
-            columnFields.append(tableField.getName()).append("\" ");
-            int size = tableField.getPrecision() * 4;
+            String type;
             switch (tableField.getDeExtractType()) {
                 case 0:
                     if (StringUtils.isNotEmpty(tableField.getLength())) {
-                        columnFields.append("varchar(length)".replace("length", tableField.getLength())).append(",\"");
+                        type = "varchar(" + tableField.getLength() + ")";
                     } else {
-                        columnFields.append("longtext").append(",\"");
+                        type = "longtext";
                     }
                     break;
                 case 1:
-                    columnFields.append("varchar(2048)").append(",\"");
+                    type = "varchar(2048)";
                     break;
                 case 2:
-                    columnFields.append("bigint(20)").append(",\"");
+                    type = "bigint(20)";
                     break;
                 case 3:
-                    columnFields.append("decimal(27,8)").append(",\"");
+                    type = "decimal(27,8)";
                     break;
                 case 4:
-                    columnFields.append("TINYINT(length)".replace("length", String.valueOf(tableField.getPrecision()))).append(",\"");
+                    type = "TINYINT(" + tableField.getPrecision() + ")";
                     break;
                 default:
-                    columnFields.append("longtext").append(",\"");
+                    type = "longtext";
                     break;
             }
+            columnDefs.add(quotedName + " " + type);
         }
-        if (StringUtils.isEmpty(key.toString())) {
-            columnFields = new StringBuilder(columnFields.substring(0, columnFields.length() - 2));
-        } else {
-            key = new StringBuilder(key.substring(0, key.length() - 2));
-            columnFields = new StringBuilder(columnFields.substring(0, columnFields.length() - 1));
-            columnFields.append("PRIMARY KEY (PRIMARYKEY)".replace("PRIMARYKEY", key.toString()));
+        if (!primaryKeys.isEmpty()) {
+            columnDefs.add("PRIMARY KEY (" + String.join(", ", primaryKeys) + ")");
         }
-        columnFields = new StringBuilder("(" + columnFields + ")");
-        return columnFields.toString();
+        return "(" + String.join(",", columnDefs) + ")";
     }
 }
