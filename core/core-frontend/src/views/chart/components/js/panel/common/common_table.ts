@@ -377,6 +377,13 @@ export function getCustomTheme(chart: Chart): S2Theme {
               horizontalBorderColor: tableHeaderBgColor,
               horizontalBorderWidth: 0
             }
+          },
+          // 序号表头使用 cornerCell，需要同步隐藏其横向边框。
+          cornerCell: {
+            cell: {
+              horizontalBorderColor: tableHeaderBgColor,
+              horizontalBorderWidth: 0
+            }
           }
         }
         merge(theme, tmpTheme)
