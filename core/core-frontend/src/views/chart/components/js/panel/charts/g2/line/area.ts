@@ -38,6 +38,7 @@ import { addExtremumText, extremumEvt } from '@/views/chart/components/js/extrem
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
 import { DEFAULT_YAXIS_STYLE } from '@/views/chart/components/editor/util/chart'
 import {
+  ASSIST_LINE_STYLE,
   configDimensionSlider,
   getG2Renderer,
   getTooltipCrosshairsStyle,
@@ -629,7 +630,7 @@ export class Area extends G2ChartView {
         style: {
           stroke: d => d.color,
           lineDash: d => (d.lineType === 'solid' ? [] : d.lineType === 'dashed' ? [10, 8] : [1, 2]),
-          opacity: 1
+          ...ASSIST_LINE_STYLE
         },
         labels: [
           {
@@ -1106,7 +1107,7 @@ export class StackArea extends Area {
             stroke: line.color,
             lineDash:
               line.lineType === 'solid' ? [] : line.lineType === 'dashed' ? [10, 8] : [1, 2],
-            opacity: 1
+            ...ASSIST_LINE_STYLE
           },
           labels: [
             {

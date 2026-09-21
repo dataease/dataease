@@ -1384,6 +1384,13 @@ export function getAnalyseHorizontal(chart: Chart) {
   return assistLine
 }
 
+// 辅助线统一使用完全不透明的 2px 描边，覆盖 G2 默认样式
+export const ASSIST_LINE_STYLE = {
+  opacity: 1,
+  strokeOpacity: 1,
+  lineWidth: 2
+}
+
 export function getLineDash(type) {
   switch (type) {
     case 'solid':

@@ -15,6 +15,7 @@ import { flow, hexColorToRGBA, hexToRgba, parseJson } from '@/views/chart/compon
 import { cloneDeep, defaultsDeep, filter, find, isEmpty } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import {
+  ASSIST_LINE_STYLE,
   configAxisLengthLimit,
   configDimensionSlider,
   formatAxisLabelWithLengthLimit,
@@ -710,7 +711,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
           data: [value],
           style: {
             stroke: item.color,
-            strokeOpacity: 1,
+            ...ASSIST_LINE_STYLE,
             lineDash: getLineDash(item.lineType)
           },
           labels: [

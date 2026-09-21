@@ -16,6 +16,7 @@ import {
   DEFAULT_YAXIS_STYLE
 } from '@/views/chart/components/editor/util/chart'
 import {
+  ASSIST_LINE_STYLE,
   getG2Renderer,
   getTooltipCrosshairsStyle,
   handleChartDashboardHidden,
@@ -732,7 +733,7 @@ export class GroupLineMix extends G2ChartView {
             stroke: d => d.color,
             lineDash: d =>
               d.lineType === 'solid' ? [] : d.lineType === 'dashed' ? [10, 8] : [1, 2],
-            opacity: 1
+            ...ASSIST_LINE_STYLE
           },
           labels: [
             {

@@ -34,6 +34,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
 import { DEFAULT_YAXIS_STYLE } from '@/views/chart/components/editor/util/chart'
 import {
+  ASSIST_LINE_STYLE,
   configDimensionSlider,
   getG2Renderer,
   getTooltipCrosshairsStyle,
@@ -678,7 +679,7 @@ export class Line extends G2ChartView {
         style: {
           stroke: d => d.color,
           lineDash: d => (d.lineType === 'solid' ? [] : d.lineType === 'dashed' ? [10, 8] : [1, 2]),
-          opacity: 1
+          ...ASSIST_LINE_STYLE
         },
         labels: [
           {
