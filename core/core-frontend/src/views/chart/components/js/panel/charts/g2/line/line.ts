@@ -12,7 +12,7 @@ import {
   randomString,
   setUpGroupSeriesColor
 } from '@/views/chart/components/js/util'
-import { cloneDeep, defaultsDeep, isEmpty, merge } from 'lodash-es'
+import { cloneDeep, defaultsDeep, escape, merge } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import {
   configLineConditionDataColor,
@@ -46,8 +46,7 @@ import { extremumEvt, addExtremumText } from '@/views/chart/components/js/extrem
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 import {
   createTooltipWrapper,
-  getStackTooltipGroupName,
-  renderGroupedTooltipItems,
+  getFieldDisplayName,
   tooltipCss,
   tooltipMaxHeight
 } from '../bar/barUtil'
@@ -712,13 +711,19 @@ export class Line extends G2ChartView {
       defaultsDeep(lineMark, { tooltip: false })
       return options
     }
-    const formatterMap = tooltipAttr.seriesTooltipFormatter
-      ?.filter(i => i.show)
+    const formatterMap = (tooltipAttr.seriesTooltipFormatter || [])
+      .filter(i => i.show)
       .reduce((pre, next) => {
         pre[next.id] = next
         return pre
       }, {}) as Record<string, SeriesFormatter>
     const yAxis = chart.yAxis
+    const hasSubCategory = !!chart.xAxisExt?.length
+    const renderItem = (name: string, value: string, color: string) => {
+      return TOOLTIP_ITEM_TPL.replace('{marker}', () => color)
+        .replace('{label}', () => escape(name))
+        .replace('{value}', () => escape(value))
+    }
     const tooltipOptions: G2Spec = {
       tooltip: d => d,
       interaction: {
@@ -742,43 +747,59 @@ export class Line extends G2ChartView {
               originalItems,
               context.legendState?.visibleSeries
             )
-            let tooltipItems = fullItems
-            if (tooltipAttr.seriesTooltipFormatter?.length) {
-              tooltipItems = fullItems.filter(item => formatterMap[item.quotaList[0].id])
-            }
-            const result = []
-            const head = originalItems[0]
-            sortTooltipItemsByYAxis(chart, tooltipItems).forEach(item => {
-              if (item.value === null || item.value === undefined) {
-                return
+            const result: string[] = []
+            const dynamicItems: string[] = []
+            const dynamicFieldIds = new Set<string>()
+            sortTooltipItemsByYAxis(chart, fullItems).forEach(item => {
+              const metricItems: string[] = []
+              const fieldId = item.quotaList?.[0]?.id
+              const showMetric =
+                !tooltipAttr.seriesTooltipFormatter?.length || !!formatterMap[fieldId]
+              if (showMetric && item.value !== null && item.value !== undefined) {
+                const formatter =
+                  formatterMap[fieldId] ?? yAxis.find(axis => axis.id === fieldId) ?? yAxis[0]
+                const value = valueFormatter(item.value, formatter.formatterCfg)
+                const color = hasSubCategory ? 'transparent' : item.color
+                metricItems.push(renderItem(getFieldDisplayName(formatter), value, color))
               }
-              const formatter = formatterMap[item.quotaList[0].id] ?? yAxis[0]
-              const value = valueFormatter(item.value, formatter.formatterCfg)
-              result.push({ ...item, name: item.category, value })
+
+              // 动态指标属于当前子类别，不受主指标显示开关或空值影响。
+              item.dynamicTooltipValue?.forEach(dynamicItem => {
+                const formatter = formatterMap[dynamicItem.fieldId]
+                if (!formatter) {
+                  return
+                }
+                // 无子类别时，多指标数据重复携带同一份动态值，只在末尾展示一次。
+                if (!hasSubCategory && dynamicFieldIds.has(dynamicItem.fieldId)) {
+                  return
+                }
+                dynamicFieldIds.add(dynamicItem.fieldId)
+                let value = ''
+                if (dynamicItem.value !== null && dynamicItem.value !== undefined) {
+                  value = valueFormatter(parseFloat(dynamicItem.value), formatter.formatterCfg)
+                }
+                const color = hasSubCategory ? 'transparent' : 'grey'
+                const html = renderItem(getFieldDisplayName(formatter), value, color)
+                if (hasSubCategory) {
+                  metricItems.push(html)
+                } else {
+                  dynamicItems.push(html)
+                }
+              })
+
+              if (hasSubCategory && metricItems.length) {
+                // 子维度值作为带系列色的标题，下面缩进展示主指标及动态指标。
+                const groupTitle = renderItem(item.category, '', item.color)
+                result.push(`${groupTitle}<li style="list-style-type: none; padding-left: 12px;">
+                  <ul style="margin: 0; padding: 0; list-style-type: none;">${metricItems.join(
+                    ''
+                  )}</ul>
+                </li>`)
+              } else {
+                result.push(...metricItems)
+              }
             })
-            head.dynamicTooltipValue?.forEach(item => {
-              const formatter = formatterMap[item.fieldId]
-              if (formatter) {
-                const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
-                const name = isEmpty(formatter.chartShowName)
-                  ? formatter.name
-                  : formatter.chartShowName
-                result.push({ color: 'grey', name, value })
-              }
-            })
-            // tooltip 项按维度槽位分组，帮助区分多维度明细
-            const itemsHtml = renderGroupedTooltipItems(
-              result,
-              item => getStackTooltipGroupName(chart, item),
-              item => {
-                const marker = item.color
-                const label = item.name
-                const value = item.value
-                return TOOLTIP_ITEM_TPL.replace('{marker}', marker)
-                  .replace('{label}', label)
-                  .replace('{value}', value)
-              }
-            )
+            const itemsHtml = [...result, ...dynamicItems].join('')
             const listHtml = `<ul class="g2-tooltip-list" style="${tooltipMaxHeight(
               chart
             )}margin: 0px; list-style-type: none; padding: 0px;">${itemsHtml}</ul>`
