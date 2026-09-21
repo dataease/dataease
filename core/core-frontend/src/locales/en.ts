@@ -2330,6 +2330,7 @@ export default {
     text: 'Text',
     time: 'Time',
     value: 'Value',
+    url: 'URL',
     mode: 'Mode',
     direct_connect: 'Direct connection',
     sync_data: 'Scheduled synchronization',

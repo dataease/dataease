@@ -2275,6 +2275,7 @@ export default {
     text: '文本',
     time: '时间',
     value: '数值',
+    url: 'URL',
     mode: '模式',
     direct_connect: '直连',
     sync_data: '定时同步',
