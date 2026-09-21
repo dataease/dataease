@@ -1129,9 +1129,37 @@ const dimensionSliderFilter = ({
   }
 }
 
-// G2 将 touchstart 转为 pointerdown 时仍保留 TouchEvent，需在 Slider 读取坐标前转换为 Touch
-export const installG2SliderTouchAdapter = (chart: G2Chart) => {
+// 统一适配缩略轴触摸事件，并在鼠标移出画布时结束拖动
+export const installG2SliderAdapter = (chart: G2Chart) => {
   const boundTargets = new WeakSet<object>()
+  let activeSlider: { onDragEnd: () => void } | undefined
+  let dragCanvas: Element | undefined
+  const endMouseDrag = () => {
+    const slider = activeSlider
+    activeSlider = undefined
+    document.removeEventListener('pointermove', onMouseMove, true)
+    document.removeEventListener('pointerup', endMouseDrag, true)
+    document.removeEventListener('pointercancel', endMouseDrag, true)
+    dragCanvas?.removeEventListener('pointerleave', endMouseDrag)
+    dragCanvas = undefined
+    // 复用 AntV Slider 的松手处理，移除其移动监听，鼠标返回后须重新按下
+    slider?.onDragEnd()
+  }
+  const onMouseMove = (event: PointerEvent) => {
+    if (!dragCanvas || event.pointerType !== 'mouse') {
+      return
+    }
+    const { left, right, top, bottom } = dragCanvas.getBoundingClientRect()
+    // 捕获阶段先结束拖动，避免底层读取画布外的 offset 坐标后跳变；边界坐标为 0 时也停止
+    if (
+      event.clientX <= left ||
+      event.clientX >= right ||
+      event.clientY <= top ||
+      event.clientY >= bottom
+    ) {
+      endMouseDrag()
+    }
+  }
   const bindSliders = () => {
     const { canvas } = chart.getContext()
     const sliders = Array.from(canvas?.document?.getElementsByClassName?.('slider') || []) as any[]
@@ -1147,9 +1175,23 @@ export const installG2SliderTouchAdapter = (chart: G2Chart) => {
         target.addEventListener(
           'pointerdown',
           event => {
+            if (event.pointerType === 'mouse' && typeof slider.onDragEnd === 'function') {
+              endMouseDrag()
+              const canvasElement = chart.getContext().canvas?.getContextService()?.getDomElement()
+              if (canvasElement instanceof Element) {
+                activeSlider = slider
+                dragCanvas = canvasElement
+                document.addEventListener('pointermove', onMouseMove, true)
+                document.addEventListener('pointerup', endMouseDrag, true)
+                document.addEventListener('pointercancel', endMouseDrag, true)
+                // 不使用捕获，避免 SVG 子图元的离开事件提前结束拖动
+                dragCanvas.addEventListener('pointerleave', endMouseDrag)
+              }
+            }
             if (event.pointerType !== 'touch') {
               return
             }
+            // G2 转换后的 pointerdown 仍保留 TouchEvent，需在 Slider 读取坐标前转换为 Touch
             const touch = event.nativeEvent?.touches?.[0] || event.nativeEvent?.changedTouches?.[0]
             if (!touch) {
               return
@@ -1163,7 +1205,10 @@ export const installG2SliderTouchAdapter = (chart: G2Chart) => {
   }
   chart.on(ChartEvent.AFTER_RENDER, bindSliders)
   bindSliders()
-  return () => chart.off(ChartEvent.AFTER_RENDER, bindSliders)
+  return () => {
+    endMouseDrag()
+    chart.off(ChartEvent.AFTER_RENDER, bindSliders)
+  }
 }
 
 // 分类维度缩略轴统一入口：按离散维度域过滤，避免 G2 默认比例过滤导致标签和数据错位
