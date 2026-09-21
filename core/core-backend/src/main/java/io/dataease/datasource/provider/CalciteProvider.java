@@ -1609,7 +1609,7 @@ public class CalciteProvider extends Provider {
                 if (database.contains(".")) {
                     sql = "select * from " + quoteName(datasourceRequest.getTable(), '`') + " limit 0 offset 0 ";
                 } else {
-                    sql = bindQuery("SELECT COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT,IF(COLUMN_KEY='PRI',1,0),IF(EXTRA LIKE '%%auto_increment%%',1,0) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s'", bindParams, database, datasourceRequest.getTable());
+                    sql = bindQuery("SELECT COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT,IF(COLUMN_KEY='PRI',1,0),IF(EXTRA LIKE '%%auto_increment%%',1,0) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s", bindParams, database, datasourceRequest.getTable());
                 }
                 break;
             case mysql:
@@ -1629,7 +1629,7 @@ public class CalciteProvider extends Provider {
                     String[] databasePrams = matcher.group(3).split("\\?");
                     database = databasePrams[0];
                 }
-                sql = bindQuery("SELECT COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT,IF(COLUMN_KEY='PRI',1,0),IF(EXTRA LIKE '%%auto_increment%%',1,0) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s'", bindParams, database, datasourceRequest.getTable());
+                sql = bindQuery("SELECT COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT,IF(COLUMN_KEY='PRI',1,0),IF(EXTRA LIKE '%%auto_increment%%',1,0) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s", bindParams, database, datasourceRequest.getTable());
                 break;
             case oracle:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Oracle.class);
@@ -1654,15 +1654,15 @@ public class CalciteProvider extends Provider {
                                                  ALL_CONS_COLUMNS cols
                                                  ON cons.OWNER = cols.OWNER
                                                      AND cons.CONSTRAINT_NAME = cols.CONSTRAINT_NAME
-                                            WHERE cons.TABLE_NAME = '%s'
+                                            WHERE cons.TABLE_NAME = %s
                                               AND cons.CONSTRAINT_TYPE = 'P') ac
                                            ON tc.OWNER = ac.OWNER
                                                AND tc.TABLE_NAME = ac.TABLE_NAME
                                                AND tc.COLUMN_NAME = ac.COLUMN_NAME
                                  LEFT JOIN ALL_COL_COMMENTS cc
                                            ON tc.owner = cc.owner AND tc.table_name = cc.table_name AND tc.column_name = cc.column_name
-                        WHERE tc.TABLE_NAME = '%s'
-                          AND tc.OWNER = '%s'
+                        WHERE tc.TABLE_NAME = %s
+                          AND tc.OWNER = %s
                         ORDER BY tc.TABLE_NAME, tc.COLUMN_ID
                         """, bindParams, datasourceRequest.getTable(), datasourceRequest.getTable(), configuration.getSchema());
                 break;
@@ -1671,7 +1671,7 @@ public class CalciteProvider extends Provider {
                 if (StringUtils.isEmpty(configuration.getSchema())) {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
                 }
-                sql = bindQuery("SELECT COLNAME, TYPENAME, REMARKS, 0, 0 FROM SYSCAT.COLUMNS WHERE TABSCHEMA = '%s' AND TABNAME = '%s' ", bindParams, configuration.getSchema(), datasourceRequest.getTable());
+                sql = bindQuery("SELECT COLNAME, TYPENAME, REMARKS, 0, 0 FROM SYSCAT.COLUMNS WHERE TABSCHEMA = %s AND TABNAME = %s ", bindParams, configuration.getSchema(), datasourceRequest.getTable());
                 break;
             case sqlServer:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Sqlserver.class);
@@ -1705,8 +1705,8 @@ public class CalciteProvider extends Provider {
                                                     AND i.index_id = ic.index_id
                             WHERE i.is_primary_key = 1
                         ) pk ON c.object_id = pk.object_id AND c.column_id = pk.column_id
-                        WHERE o.name = '%s'
-                          AND s.name = '%s'
+                        WHERE o.name = %s
+                          AND s.name = %s
                         ORDER BY c.column_id
                         """, bindParams, datasourceRequest.getTable(), configuration.getSchema());
                 break;
@@ -1737,8 +1737,8 @@ public class CalciteProvider extends Provider {
                                  LEFT JOIN pg_description b ON a.attrelid = b.objoid AND a.attnum = b.objsubid
                                  JOIN pg_type t ON a.atttypid = t.oid
                                  LEFT JOIN pg_index d ON d.indrelid = a.attrelid AND d.indisprimary AND a.attnum = ANY (d.indkey)
-                        where c.relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = '%s')
-                          AND c.relname = '%s'
+                        where c.relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = %s)
+                          AND c.relname = %s
                           AND a.attnum > 0
                           AND NOT a.attisdropped
                         ORDER BY a.attnum;
@@ -1771,8 +1771,8 @@ public class CalciteProvider extends Provider {
                                  LEFT JOIN pg_description b ON a.attrelid = b.objoid AND a.attnum = b.objsubid
                                  JOIN pg_type t ON a.atttypid = t.oid
                                  LEFT JOIN pg_index d ON d.indrelid = a.attrelid AND d.indisprimary AND a.attnum = ANY (d.indkey)
-                        where c.relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = '%s')
-                          AND c.relname = '%s'
+                        where c.relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = %s)
+                          AND c.relname = %s
                           AND a.attnum > 0
                           AND NOT a.attisdropped
                         ORDER BY a.attnum;
@@ -1805,8 +1805,8 @@ public class CalciteProvider extends Provider {
                                  LEFT JOIN pg_description b ON a.attrelid = b.objoid AND a.attnum = b.objsubid
                                  JOIN pg_type t ON a.atttypid = t.oid
                                  LEFT JOIN pg_index d ON d.indrelid = a.attrelid AND d.indisprimary AND a.attnum = ANY (d.indkey)
-                        where c.relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = '%s')
-                          AND c.relname = '%s'
+                        where c.relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = %s)
+                          AND c.relname = %s
                           AND a.attnum > 0
                           AND NOT a.attisdropped
                         ORDER BY a.attnum;
@@ -1814,7 +1814,7 @@ public class CalciteProvider extends Provider {
                 break;
             case redshift:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), CK.class);
-                sql = bindQuery("SELECT\n" + "    a.attname AS ColumnName,\n" + "    t.typname,\n" + "    b.description AS ColumnDescription,\n" + "    0, 0\n" + "FROM\n" + "    pg_class c\n" + "    JOIN pg_attribute a ON a.attrelid = c.oid\n" + "    LEFT JOIN pg_description b ON a.attrelid = b.objoid AND a.attnum = b.objsubid\n" + "    JOIN pg_type t ON a.atttypid = t.oid\n" + "WHERE\n" + "    c.relname = '%s'\n" + "    AND a.attnum > 0\n" + "    AND NOT a.attisdropped\n" + "ORDER BY\n" + "    a.attnum\n" + "   ", bindParams, datasourceRequest.getTable());
+                sql = bindQuery("SELECT\n" + "    a.attname AS ColumnName,\n" + "    t.typname,\n" + "    b.description AS ColumnDescription,\n" + "    0, 0\n" + "FROM\n" + "    pg_class c\n" + "    JOIN pg_attribute a ON a.attrelid = c.oid\n" + "    LEFT JOIN pg_description b ON a.attrelid = b.objoid AND a.attnum = b.objsubid\n" + "    JOIN pg_type t ON a.atttypid = t.oid\n" + "WHERE\n" + "    c.relname = %s\n" + "    AND a.attnum > 0\n" + "    AND NOT a.attisdropped\n" + "ORDER BY\n" + "    a.attnum\n" + "   ", bindParams, datasourceRequest.getTable());
                 break;
             case ck:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), CK.class);
@@ -1828,13 +1828,13 @@ public class CalciteProvider extends Provider {
                     String[] databasePrams = matcher.group(3).split("\\?");
                     database = databasePrams[0];
                 }
-                sql = bindQuery(" SELECT\n" + "    name,\n" + "    type,\n" + "    comment,\n" + "    0, 0\n" + "FROM\n" + "    system.columns\n" + "WHERE\n" + "    database = '%s'  \n" + "    AND table = '%s' ", bindParams, database, datasourceRequest.getTable());
+                sql = bindQuery(" SELECT\n" + "    name,\n" + "    type,\n" + "    comment,\n" + "    0, 0\n" + "FROM\n" + "    system.columns\n" + "WHERE\n" + "    database = %s  \n" + "    AND table = %s ", bindParams, database, datasourceRequest.getTable());
                 break;
             case impala:
                 sql = "DESCRIBE " + quoteName(datasourceRequest.getTable(), '`');
                 break;
             case h2:
-                sql = bindQuery("SELECT COLUMN_NAME, DATA_TYPE, REMARKS, 0, 0 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '%s'", bindParams, datasourceRequest.getTable());
+                sql = bindQuery("SELECT COLUMN_NAME, DATA_TYPE, REMARKS, 0, 0 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = %s", bindParams, datasourceRequest.getTable());
                 break;
             default:
                 break;
