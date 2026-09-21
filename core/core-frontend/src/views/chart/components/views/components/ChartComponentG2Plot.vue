@@ -122,6 +122,8 @@ const { view, showPosition, scale, terminal, suffixId } = toRefs(props)
 const isError = ref(false)
 const errMsg = ref('')
 const linkageActiveHistory = ref(false)
+// 箱线图的生效联动独立于最近点击，下钻和打开菜单不能覆盖已提交的联动条件
+const boxPlotLinkageData = shallowRef(null)
 // G2 重绘后只用这些原始字段回放选中，避免旧 datum 的对象引用参与匹配
 const LINKAGE_REPLAY_FIELDS = ['field', 'name', 'category', 'group', 'value', 'x', 'y', 'path']
 
@@ -183,6 +185,7 @@ const LINKAGE_IGNORE_CLASS_REG = /crosshair|tooltip/
 
 const clearLinkage = () => {
   linkageActiveHistory.value = false
+  boxPlotLinkageData.value = null
   try {
     resetLinkageElementState()
     myChart?.emit('element:unselect', { nativeEvent: false })
@@ -210,7 +213,12 @@ const linkageActive = () => {
     if (!replayData) {
       return
     }
-    applyLinkageElementState()
+    if (view.value.type === 'box-plot') {
+      // 箱线图先恢复原样式，避免 G2 将联动淡化值缓存为取消选中后的原始值
+      resetLinkageElementState()
+    } else {
+      applyLinkageElementState()
+    }
     // elementSelect 单选会切换已选元素；回放前先清空，避免重复选中时被反向取消
     myChart?.emit('element:unselect', { nativeEvent: false })
     myChart?.emit('element:select', {
@@ -227,7 +235,7 @@ const linkageActive = () => {
 }
 // 只收集 primitive 字段，G2 selectElementByData 使用严格相等匹配
 const getLinkageReplayData = () => {
-  const data = state.pointParam?.data
+  const data = view.value.type === 'box-plot' ? boxPlotLinkageData.value : state.pointParam?.data
   if (!data) {
     return null
   }
@@ -319,6 +327,15 @@ const applyElementStyle = (element, style) => {
   })
 }
 const getLinkageElementStyle = (element, selected) => {
+  if (view.value.type === 'box-plot') {
+    // 箱体和异常点保留基础配色的 alpha，仅用额外透明度区分联动状态
+    if (!selected) {
+      return { opacity: 0.65 }
+    }
+    if (element?.markType === 'box') {
+      return { ...LINKAGE_SELECTED_STYLE.value, opacity: 1 }
+    }
+  }
   if (view.value.type === 'sankey') {
     // 联动触发后直接设置已渲染 polygon 的真实属性，不使用 Sankey spec 的 link 前缀
     return selected
@@ -373,7 +390,8 @@ const resetLinkageElementState = () => {
 const resetLinkageContentOpacity = () => {
   let changed = false
   getG2Elements().forEach(element => {
-    if (!isLinkageDataElement(element) || !isLinkageOpacityElement(element)) {
+    const isBoxPlotBox = view.value.type === 'box-plot' && element?.markType === 'box'
+    if (!isLinkageDataElement(element) || (!isLinkageOpacityElement(element) && !isBoxPlotBox)) {
       return
     }
     eachElementShape(element, shape => {
@@ -408,7 +426,7 @@ const checkSelected = param => {
   if (view.value.type === 'box-plot') {
     // 箱线图按已映射维度的原始值匹配，空值和 0 不转换成展示占位符
     const dimensions =
-      state.linkageActiveParam?.dimensionList?.filter(
+      boxPlotLinkageData.value?.dimensionList?.filter(
         item => nowPanelTrackInfo.value[`${view.value.id}#${String(item.id)}`]?.length
       ) ?? []
     return (
@@ -1000,11 +1018,18 @@ const trackClick = trackAction => {
     dimensionList: state.pointParam.data.dimensionList,
     quotaList: quotaList
   }
+  if (view.value.type === 'box-plot' && ['linkage', 'linkageAndDrill'].includes(trackAction)) {
+    // 与提交过滤条件使用同一份原始维度，后续点击和下钻参数的修改不影响回放
+    boxPlotLinkageData.value = cloneDeep(state.pointParam.data)
+  }
   switch (trackAction) {
     case 'pointClick':
       emit('onPointClick', clickParams)
       break
     case 'linkageAndDrill':
+      if (view.value.type === 'box-plot') {
+        linkageActivePre()
+      }
       dvMainStore.addViewTrackFilter(linkageParam)
       emit('onChartClick', param)
       break
