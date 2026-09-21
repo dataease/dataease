@@ -447,6 +447,9 @@ export function getCustomTheme(chart: Chart): S2Theme {
             fill: tableFontColor,
             textAlign: tableItemAlign,
             fontSize: tableItemFontSize,
+            // S2 序号列读取 rowCell.seriesText，需同步单元格的加粗和斜体配置。
+            fontStyle,
+            fontWeight,
             fontFamily: textFontFamily
           }
         },
