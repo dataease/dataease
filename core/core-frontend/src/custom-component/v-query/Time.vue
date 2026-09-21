@@ -163,6 +163,10 @@ const handleValueChange = () => {
     })
     return
   }
+  if (!value) {
+    config.value.defaultValue = undefined
+    return
+  }
   config.value.defaultValue = Array.isArray(value)
     ? value.map(ele => new Date(ele).toLocaleString())
     : new Date(value).toLocaleString()

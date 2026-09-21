@@ -336,6 +336,7 @@
                     style="flex: 1; width: auto"
                     :title="t('chart.text_fontsize')"
                     v-model="seniorForm.pagerSize"
+                    :effect="themes"
                     size="small"
                     @change="changePagerColorChange"
                   >

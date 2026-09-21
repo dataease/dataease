@@ -19,7 +19,7 @@
     </parent>
 
     <properties>
-        <dataease.version>3.0.0</dataease.version>
+        <dataease.version>3.1.0</dataease.version>
         <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-cloud-alibaba.version>2023.0.1.0</spring-cloud-alibaba.version>
@@ -66,7 +66,7 @@
         <xmlsec.version>2.3.5</xmlsec.version>
         <woodstox-core.version>7.1.0</woodstox-core.version>
         <assertj.version>3.27.7</assertj.version>
-        <mariadb.version>3.5.3</mariadb.version>
+        <mariadb.version>3.3.6</mariadb.version>
     </properties>
 
     <dependencyManagement>

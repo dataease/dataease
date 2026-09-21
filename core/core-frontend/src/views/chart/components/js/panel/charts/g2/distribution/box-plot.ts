@@ -1,5 +1,5 @@
 import { Chart as G2Chart } from '@antv/g2'
-import { cloneDeep, defaultsDeep } from 'lodash-es'
+import { cloneDeep, defaultsDeep, escape } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import {
@@ -32,10 +32,52 @@ const MAX_TOOLTIP_OUTLIER_VALUES = 10
 const DETAIL_TOOLTIP_HEADER_MARKER_SIZE = 8
 const DETAIL_TOOLTIP_ITEM_MARKER_SIZE = 4
 const BOX_SERIES_FIELD = '__boxPlotSeries'
+const BOX_CATEGORY_FIELD = '__boxPlotCategory'
 const BOX_SUMMARY_FIELD = '__boxPlotSummary'
 const BOX_TOOLTIP_HIT_MARK_KEY = '__boxPlotTooltipHitMark'
 const BOX_DIMENSION_HIT_MARK_KEY = '__boxPlotDimensionHitMark'
 const BOX_DIMENSION_HIT_FIELD = '__boxPlotDimensionHit'
+type BoxPlotSeriesColor = ChartBasicStyle['seriesColor'][number] & { boxPlotSeries?: true }
+
+// 编码仅供 G2 分类域使用，原始维度仍用于联动，避免 null、空字符串和文字 NULL 混为一组
+const dimensionKey = (value: unknown): string => JSON.stringify([value ?? null])
+const dimensionLabel = (value: unknown): string =>
+  value === null || value === undefined
+    ? 'NULL'
+    : value === ''
+    ? t('chart.filter_empty')
+    : value === 'NULL'
+    ? '"NULL"'
+    : String(value)
+const keyLabel = (key: string): string => dimensionLabel(JSON.parse(key)[0])
+const dimensionDomain = (values: unknown[], customSort = false): string[] => {
+  const domain = Array.from(new Set(values.map(dimensionKey)))
+  // 自定义排序已在查询层执行，不能再将用户指定位置的空类别移走
+  if (customSort) {
+    return domain
+  }
+  const isEmpty = (key: string) => {
+    const value = JSON.parse(key)[0]
+    return value === null || value === ''
+  }
+  // 只将空分类移到末尾，非空分类沿用查询结果的相对顺序
+  return [...domain.filter(key => !isEmpty(key)), ...domain.filter(isEmpty)]
+}
+
+export const restoreBoxPlotSeriesColors = (
+  seriesColors: ChartBasicStyle['seriesColor']
+): ChartBasicStyle['seriesColor'] =>
+  seriesColors.flatMap((item: BoxPlotSeriesColor) => {
+    if (!item.boxPlotSeries) {
+      return [item]
+    }
+    const value = JSON.parse(item.id)[0]
+    // 公共配色列表不支持 NULL 项，不能把它转成文本键而覆盖真实类别的颜色
+    if (value === null) {
+      return []
+    }
+    return [{ id: value, name: String(value), color: item.color }]
+  })
 
 const normalizeCustomAttr = (customAttr: CustomAttr): ChartAttr => {
   const tooltip = cloneDeep(DEFAULT_TOOLTIP)
@@ -122,19 +164,61 @@ export class BoxPlot extends Bar {
 
     const metricName = chart.yAxis?.[0]?.chartShowName || chart.yAxis?.[0]?.name || t('chart.quota')
     const sourceData = cloneDeep(chart.data.data)
-    const hasGroup =
-      !!chart.xAxisExt?.length &&
-      sourceData.some(
-        datum =>
-          datum.category !== null &&
-          datum.category !== undefined &&
-          String(datum.category).trim() !== ''
-      )
+    const hasGroup = !!chart.xAxisExt?.length
     const boxData = sourceData.map(datum => ({
       ...datum,
-      [BOX_SERIES_FIELD]: hasGroup ? datum.category ?? '' : metricName
+      [BOX_CATEGORY_FIELD]: dimensionKey(datum.field),
+      [BOX_SERIES_FIELD]: hasGroup ? dimensionKey(datum.category) : metricName
     }))
-    const seriesDomain = Array.from(new Set(boxData.map(item => item[BOX_SERIES_FIELD])))
+    const seriesDomain = hasGroup
+      ? dimensionDomain(
+          sourceData.map(item => item.category),
+          chart.xAxisExt[0].sort === 'custom_sort'
+        )
+      : [metricName]
+    const categoryAxis =
+      (chart.drill && chart.drillFields?.[chart.drillFilters?.length ?? 0]) || chart.xAxis?.[0]
+    // 下钻到子类别字段时，每个刻度只对应一个箱体，保留系列配色但不再按系列横向偏移
+    const dodgeBySeries =
+      hasGroup &&
+      (categoryAxis?.id == null || String(categoryAxis.id) !== String(chart.xAxisExt[0].id))
+    const categoryDomain = dimensionDomain(
+      sourceData.map(item => item.field),
+      categoryAxis?.sort === 'custom_sort'
+    )
+    const categoryOrder = new Map(categoryDomain.map((key, index) => [key, index]))
+    // 追踪线的首尾坐标必须与显示顺序一致，空分类置后时也不能保留旧数据顺序
+    boxData.sort(
+      (left, right) =>
+        categoryOrder.get(left[BOX_CATEGORY_FIELD]) - categoryOrder.get(right[BOX_CATEGORY_FIELD])
+    )
+    let visibleBoxData = boxData
+    const layoutTransform = { type: 'dataeaseBoxPlotLayout' }
+    const boxPlotLayout =
+      () =>
+      (index: number[], mark): [number[], any] => {
+        // G2 图例会先插入 filter；每次重绘按其可见系列重算位置，颜色域保持完整
+        const colorFilter = mark.transform?.find(
+          item => item.type === 'filter' && item.color
+        )?.color
+        const selected = colorFilter?.value
+        const visibleDomain = Array.isArray(selected)
+          ? seriesDomain.filter(value => selected.includes(value))
+          : seriesDomain
+        if (mark.type === 'box') {
+          visibleBoxData = index.map(i => mark.data[i])
+        }
+        return [
+          index,
+          {
+            ...mark,
+            scale: {
+              ...mark.scale,
+              series: { ...mark.scale?.series, domain: visibleDomain }
+            }
+          }
+        ]
+      }
     const outlierData = boxData.flatMap(datum =>
       (Array.isArray(datum.outliers) ? datum.outliers : []).map(outlier => ({
         ...datum,
@@ -149,20 +233,21 @@ export class BoxPlot extends Bar {
       type: 'box',
       data: boxData,
       encode: {
-        x: 'field',
+        x: BOX_CATEGORY_FIELD,
         y: 'low',
         y1: 'q1',
         y2: 'median',
         y3: 'q3',
         y4: 'high',
         color: BOX_SERIES_FIELD,
-        series: hasGroup ? BOX_SERIES_FIELD : undefined
+        series: dodgeBySeries ? BOX_SERIES_FIELD : undefined
       },
       scale: {
         x: { type: 'band' },
         series: { type: 'band', domain: seriesDomain },
         y: { nice: true }
       },
+      transform: [layoutTransform],
       state: {
         active: { backgroundPointerEvents: 'none' },
         unselected: { opacity: 0.5 }
@@ -179,10 +264,10 @@ export class BoxPlot extends Bar {
       type: 'point',
       data: outlierData,
       encode: {
-        x: 'field',
+        x: BOX_CATEGORY_FIELD,
         y: 'outlier',
         color: BOX_SERIES_FIELD,
-        series: hasGroup ? BOX_SERIES_FIELD : undefined,
+        series: dodgeBySeries ? BOX_SERIES_FIELD : undefined,
         size: 4
       },
       // G2 point 默认使用空心形状，异常点固定为实心圆
@@ -190,8 +275,8 @@ export class BoxPlot extends Bar {
         shape: 'point',
         fillOpacity: 1
       },
-      transform: hasGroup ? [{ type: 'dodgeX' }] : [],
-      // 异常点子集可能只包含部分分组，固定完整 series 域后才能与对应箱体精确对齐。
+      transform: [layoutTransform, ...(dodgeBySeries ? [{ type: 'dodgeX' }] : [])],
+      // 异常点与箱体使用相同可见系列域，不能从稀疏异常点独立推导分组位置
       scale: {
         series: { type: 'band', domain: seriesDomain }
       }
@@ -201,7 +286,7 @@ export class BoxPlot extends Bar {
       type: 'line',
       data: boxData,
       encode: {
-        x: 'field',
+        x: BOX_CATEGORY_FIELD,
         y: 'median',
         series: BOX_SERIES_FIELD,
         // 追踪线虽然不可见，仍需沿用分组色标，tooltip marker 才能与箱体颜色一致。
@@ -211,29 +296,27 @@ export class BoxPlot extends Bar {
         strokeOpacity: 0,
         pointerEvents: 'none'
       },
+      transform: [layoutTransform],
       animate: false
     }
-    const dimensionHitData = Array.from(
-      new Map(
-        boxData.map(datum => [
-          datum.field,
-          {
-            field: datum.field,
-            median: datum.median,
-            [BOX_DIMENSION_HIT_FIELD]: true
-          }
-        ])
-      ).values()
-    )
+    // 每个系列保留维度锚点，随图例筛选同步移除，避免无 color 字段的锚点被全部过滤
+    const dimensionHitData = boxData.map(datum => ({
+      field: datum.field,
+      [BOX_CATEGORY_FIELD]: datum[BOX_CATEGORY_FIELD],
+      [BOX_SERIES_FIELD]: datum[BOX_SERIES_FIELD],
+      median: datum.median,
+      [BOX_DIMENSION_HIT_FIELD]: true
+    }))
     const dimensionHitMark: ChildSpec = {
       key: BOX_DIMENSION_HIT_MARK_KEY,
       type: 'point',
       data: dimensionHitData,
       encode: {
-        x: 'field',
-        y: 'median'
+        x: BOX_CATEGORY_FIELD,
+        y: 'median',
+        color: BOX_SERIES_FIELD
       },
-      // 每个维度保留一个透明锚点，使 seriesTooltip 的最近 X 命中覆盖完整 Band
+      // 锚点保持在维度中心，使 seriesTooltip 的最近 X 命中覆盖完整 Band
       style: {
         fillOpacity: 0,
         strokeOpacity: 0,
@@ -246,14 +329,20 @@ export class BoxPlot extends Bar {
       data: boxData,
       autoFit: true,
       scale: {
-        x: { type: 'band', domain: Array.from(new Set(boxData.map(item => item.field))) },
+        x: { type: 'band', domain: categoryDomain },
         color: { domain: seriesDomain }
       },
       // 透明 line 复用 seriesTooltip 的最近 X 命中，避免 tooltip 受 box 几何边界限制
       children: [boxMark, pointMark, tooltipHitMark, dimensionHitMark]
     }
     const options = this.setupOptions(chart, baseOptions)
-    const newChart = new G2Chart({ container, autoFit: true, ...getG2Renderer() })
+    const newChart = new G2Chart({
+      container,
+      autoFit: true,
+      ...getG2Renderer()
+    })
+    // G2 Chart 构造器会覆盖传入的 lib，布局转换必须注册到当前实例的实际运行上下文
+    newChart.getContext().library['transform.dataeaseBoxPlotLayout'] = boxPlotLayout
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
 
@@ -270,7 +359,8 @@ export class BoxPlot extends Bar {
         y: event.y,
         data: {
           data: {
-            ...summary,
+            // 联动会补充日期范围和指标值，独立载荷避免修改箱体与异常点共享的数据
+            ...cloneDeep(summary),
             value: datum.outlier ?? summary.median
           }
         }
@@ -287,8 +377,8 @@ export class BoxPlot extends Bar {
         datum?.[BOX_SUMMARY_FIELD] ??
         (datum?.field !== undefined
           ? datum
-          : boxData.find(item => String(item.field) === String(datum?.x)))
-      const field = summary?.field === undefined ? undefined : String(summary.field)
+          : visibleBoxData.find(item => item[BOX_CATEGORY_FIELD] === datum?.x))
+      const field = summary?.[BOX_CATEGORY_FIELD]
       if (field !== undefined && field !== highlightedField) {
         highlightedField = field
         // seriesTooltip 事件只返回 X 值，映射回箱体 datum 后再精确驱动维度背景
@@ -305,6 +395,12 @@ export class BoxPlot extends Bar {
       highlightedField = undefined
       newChart.emit('element:unhighlight', { nativeEvent: false })
     })
+    newChart.on('beforepaint', () => {
+      // 图例筛选和缩放都会重新布局，清除旧命中位置对应的提示与维度背景
+      newChart.emit('tooltip:hide', { nativeEvent: false })
+      highlightedField = undefined
+      newChart.emit('element:unhighlight', { nativeEvent: false })
+    })
     this.configLengthLimitTooltip(chart, newChart)
     return newChart
   }
@@ -312,11 +408,12 @@ export class BoxPlot extends Bar {
   protected configBasicStyle(chart: Chart, options: ViewSpec): ViewSpec {
     const basicStyle = parseJson(chart.customAttr).basicStyle
     const [boxMark, pointMark, ...interactionMarks] = options.children
-    const stroke =
+    const strokeColor =
       basicStyle.themeContrastColor ?? parseJson(chart.customAttr).label?.color ?? '#000000'
+    const stroke = hexColorToRGBA(getColorFormAlphaColor(strokeColor), basicStyle.alpha)
     const configuredPointColor =
       basicStyle.outlierColorMode === 'custom' && basicStyle.outlierColor
-        ? // 颜色选择器会输出 rgba 或 8 位 hex，先规范化再叠加图表不透明度
+        ? // 兼容历史 rgba 或 8 位 hex，去除原有 alpha 后统一使用基础样式的不透明度
           hexColorToRGBA(getColorFormAlphaColor(basicStyle.outlierColor), basicStyle.alpha)
         : undefined
     const nextPointMark = {
@@ -334,6 +431,11 @@ export class BoxPlot extends Bar {
       children: [
         {
           ...boxMark,
+          state: {
+            ...boxMark.state,
+            active: { ...boxMark.state?.active, stroke },
+            selected: { ...boxMark.state?.selected, stroke }
+          },
           style: {
             ...boxMark.style,
             stroke,
@@ -357,15 +459,7 @@ export class BoxPlot extends Bar {
     }
     const valueAxis = chart.yAxis?.[0]
     const metricName = valueAxis?.chartShowName || valueAxis?.name || t('chart.quota')
-    const tooltipData = options.children?.[0]?.data ?? options.data ?? []
-    const hasGroup =
-      !!chart.xAxisExt?.length &&
-      tooltipData.some(
-        datum =>
-          datum.category !== null &&
-          datum.category !== undefined &&
-          String(datum.category).trim() !== ''
-      )
+    const hasGroup = !!chart.xAxisExt?.length
     const groupAxis = hasGroup ? chart.xAxisExt[0] : undefined
     const showDetails = tooltipAttr.showBoxPlotDetails === true
     const tooltipFontSize = Number(tooltipAttr.fontSize) || 12
@@ -418,10 +512,7 @@ export class BoxPlot extends Bar {
           .flatMap(({ sourceItem, sourceData }) => {
             const marker = String(sourceItem.color ?? '#5470C6')
             const sampleCount = t('chart.box_plot_samples', { count: sourceData.count })
-            const headerLabel =
-              groupAxis && sourceData.category !== null && sourceData.category !== undefined
-                ? sourceData.category
-                : metricName
+            const headerLabel = groupAxis ? dimensionLabel(sourceData.category) : metricName
             const rows: Array<{
               label: string
               value: string
@@ -429,7 +520,7 @@ export class BoxPlot extends Bar {
               marker: string
             }> = [
               {
-                label: String(headerLabel),
+                label: escape(String(headerLabel)),
                 value: groupAxis ? `${metricName} · ${sampleCount}` : sampleCount,
                 header: true,
                 marker
@@ -508,7 +599,9 @@ export class BoxPlot extends Bar {
           })
           .join('')
         const firstSummary = summaries[0].sourceData
-        const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', firstSummary.field ?? '')
+        const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', () =>
+          escape(dimensionLabel(firstSummary.field))
+        )
         return `${titleHtml}<ul class="g2-tooltip-list box-plot-tooltip-list" style="display:grid;grid-template-columns:max-content minmax(0,1fr);column-gap:30px;row-gap:0;margin:0;list-style-type:none;padding:0;width:max-content">${itemsHtml}</ul>`
       }
     }
@@ -535,11 +628,50 @@ export class BoxPlot extends Bar {
 
   protected configLegend(chart: Chart, options: ViewSpec): ViewSpec {
     const legend = this.getLegend(chart)
+    if (legend && chart.xAxisExt?.length) {
+      const colorLegend = (legend as any).color ?? {}
+      const formatter = colorLegend.labelFormatter
+      ;(legend as any).color = {
+        ...colorLegend,
+        labelFormatter: key => (formatter ? formatter(keyLabel(key)) : keyLabel(key))
+      }
+    }
     return {
       ...options,
       // 多个 mark 共用 color scale，必须同步 guide；任一子 mark 写入 false 都会关闭整张图的分组图例。
       children: options.children.map(child => (child.encode?.color ? { ...child, legend } : child))
     }
+  }
+
+  protected configColor(chart: Chart, options: ViewSpec): ViewSpec {
+    if (!chart.xAxisExt?.length) {
+      return super.configColor(chart, options)
+    }
+    const customAttr = parseJson(chart.customAttr)
+    // 与面板使用同一份原始查询顺序，横轴布局重排不能改变默认系列颜色
+    return super.configColor(
+      {
+        ...chart,
+        customAttr: {
+          ...customAttr,
+          basicStyle: {
+            ...customAttr.basicStyle,
+            seriesColor: this.setupSeriesColor(chart as ChartObj, chart.data.data)
+          }
+        }
+      },
+      options
+    )
+  }
+
+  protected configXAxis(chart: Chart, options: ViewSpec): ViewSpec {
+    const result = super.configXAxis(chart, options)
+    const axis = result.children[0].axis.x as any
+    if (axis) {
+      const formatter = axis.labelFormatter
+      axis.labelFormatter = key => (formatter ? formatter(keyLabel(key)) : keyLabel(key))
+    }
+    return result
   }
 
   protected configYAxis(chart: Chart, options: ViewSpec): ViewSpec {
@@ -582,7 +714,31 @@ export class BoxPlot extends Bar {
   }
 
   public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
-    return setUpGroupSeriesColor(chart, data)
+    if (!chart.xAxisExt?.length) {
+      return setUpGroupSeriesColor(chart, data)
+    }
+    const { basicStyle } = parseJson(chart.customAttr)
+    const savedColors = new Map<string, string>()
+    const oldSeries: BoxPlotSeriesColor[] = basicStyle.seriesColor ?? []
+    oldSeries.forEach(item => {
+      // 格式标记区分历史原始类别和新编码，真实类别恰好是 "[null]" 时也不会串色
+      savedColors.set(item.boxPlotSeries ? item.id : dimensionKey(item.id), item.color)
+    })
+    const colors = basicStyle.colors
+    const domain = dimensionDomain(
+      (data ?? []).map(item => item.category),
+      chart.xAxisExt[0].sort === 'custom_sort'
+    )
+    return domain.map((id, index): BoxPlotSeriesColor => {
+      // 所有类别按系列顺序循环取色，已保存的自定义颜色优先
+      const colorIndex = index % colors.length
+      return {
+        id,
+        name: keyLabel(id),
+        color: savedColors.get(id) ?? colors[colorIndex],
+        boxPlotSeries: true
+      }
+    })
   }
 
   setupDefaultOptions(chart: ChartObj): ChartObj {

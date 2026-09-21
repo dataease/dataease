@@ -49,6 +49,8 @@ import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 import { Renderer as SVGRenderer } from '@antv/g-svg'
 import { Renderer as CanvasRenderer } from '@antv/g-canvas'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { bindMapTooltipPosition } from '../charts/map/tooltip-position'
+import { SvgGradientPlugin } from './svg-gradient-plugin'
 
 const { t: tI18n } = useI18n()
 
@@ -60,7 +62,10 @@ const { t: tI18n } = useI18n()
 export function getG2Renderer() {
   const dvMainStore = dvMainStoreWithOut()
   const enableSvgRenderer = dvMainStore?.canvasStyleData?.enableSvgRenderer
-  return enableSvgRenderer ? { renderer: new SVGRenderer() } : {}
+  if (!enableSvgRenderer) return {}
+  const renderer = new SVGRenderer()
+  renderer.registerPlugin(new SvgGradientPlugin())
+  return { renderer }
 }
 
 const G2_TOOLTIP_CAROUSEL_CHART_TYPES = {
@@ -1470,27 +1475,7 @@ export function configL7Tooltip(chart: Chart): TooltipOptions {
     }, {}) as Record<string, SeriesFormatter>
   const container = document.getElementById(chart.container)
   if (container) {
-    container.addEventListener('mousemove', event => {
-      const rect = container.getBoundingClientRect()
-      const mouseX = event.clientX - rect.left
-      const mouseY = event.clientY - rect.top
-      const tooltipElement = container.getElementsByClassName('l7plot-tooltip-container')
-      for (let i = 0; i < tooltipElement?.length; i++) {
-        const element = tooltipElement[i] as HTMLElement
-        const isNearRightEdge = container.clientWidth - mouseX <= element.clientWidth
-        const isNearBottomEdge = container.clientHeight - mouseY <= element.clientHeight
-        let transform = ''
-        if (isNearRightEdge) {
-          transform += 'translateX(-120%) '
-        }
-        if (isNearBottomEdge) {
-          transform += 'translateY(-100%) '
-        }
-        if (transform) {
-          element.style.transform = transform.trim()
-        }
-      }
-    })
+    bindMapTooltipPosition(container, '.l7plot-tooltip-container')
   }
   return {
     customTitle(data) {
@@ -1541,6 +1526,265 @@ export function configL7Tooltip(chart: Chart): TooltipOptions {
       }
     }
   }
+}
+
+type MapHoverPick = { completed: boolean; isCurrent: () => boolean; onStale: () => void }
+type MapHoverPickingGuard = {
+  pending: number
+  track: (event: MouseEvent, isCurrent: () => boolean, onStale: () => void) => MapHoverPick
+}
+const mapHoverPickingGuards = new WeakMap<Scene, MapHoverPickingGuard>()
+const mapHoverTooltipBindings = new WeakMap<HTMLElement, () => void>()
+
+function getMapHoverPickingGuard(scene: Scene): MapHoverPickingGuard {
+  const existing = mapHoverPickingGuards.get(scene)
+  if (existing) {
+    return existing
+  }
+  const states = new WeakMap<MouseEvent, MapHoverPick>()
+  const guard: MapHoverPickingGuard = {
+    pending: 0,
+    track(event, isCurrent, onStale) {
+      const state = { completed: false, isCurrent, onStale }
+      states.set(event, state)
+      return state
+    }
+  }
+  const picking = scene.getServiceContainer().pickingService
+  const originalPick = picking.pickFromPickingFBO
+  const originalTrigger = picking.triggerHoverOnLayer
+  let destroyed = false
+  // 只适配当前 Scene 的公开拾取入口，等待像素读取完成，并拦截过期事件
+  const pick: typeof originalPick = async (layer, target) => {
+    guard.pending++
+    const previousPickId = layer.getCurrentPickId()
+    try {
+      return await originalPick.call(picking, layer, target)
+    } finally {
+      guard.pending--
+      const state = states.get(target.target as MouseEvent)
+      if (state) {
+        state.completed = true
+        if (!state.isCurrent()) {
+          // 过期读取也会修改 L7 命中缓存，还原后下次才能正确发出 enter/out
+          layer.setCurrentPickId(previousPickId)
+          state.onStale()
+        }
+      }
+      if (destroyed && !guard.pending) {
+        restore()
+      }
+    }
+  }
+  const trigger: typeof originalTrigger = (layer, target) => {
+    const event = (target as typeof target & { target?: MouseEvent }).target
+    const state = event && states.get(event)
+    if (!destroyed && (!state || state.isCurrent())) {
+      originalTrigger.call(picking, layer, target)
+    }
+  }
+  picking.pickFromPickingFBO = pick
+  picking.triggerHoverOnLayer = trigger
+  mapHoverPickingGuards.set(scene, guard)
+  // 重绘复用同一 Scene 的适配器，避免重复包装；销毁时还原原方法
+  const restore = () => {
+    if (picking.pickFromPickingFBO === pick) {
+      picking.pickFromPickingFBO = originalPick
+    }
+    if (picking.triggerHoverOnLayer === trigger) {
+      picking.triggerHoverOnLayer = originalTrigger
+    }
+    mapHoverPickingGuards.delete(scene)
+  }
+  scene.once('destroy', () => {
+    destroyed = true
+    if (!guard.pending) {
+      restore()
+    }
+  })
+  return guard
+}
+
+export function bindMapHoverTooltipRefresh(
+  containerId: string,
+  scene: Scene,
+  hideTooltip: () => void
+) {
+  const container = document.getElementById(containerId)
+  if (!container) {
+    return
+  }
+  mapHoverTooltipBindings.get(container)?.()
+  let disposed = false
+  let listening = false
+  let replaying = false
+  let frame = 0
+  let revision = 0
+  let remainingPicks = 0
+  let guard: MapHoverPickingGuard
+  let request: { event: MouseEvent; state: MapHoverPick }
+  let pointer: { clientX: number; clientY: number }
+  const events = ['camerachange', 'viewchange', 'zoomchange', 'moveend', 'zoomend', 'dragend']
+  const controlSelector =
+    '.l7-control, .tdt-control, .amap-toolbar, .mapboxgl-control-container, .maplibregl-control-container'
+  const track = (event: MouseEvent) => {
+    const currentRevision = revision
+    return guard.track(
+      event,
+      () => !disposed && !!pointer && revision === currentRevision,
+      () => {
+        // 原生鼠标检测也可能在读取像素前忙碌，过期后补查最后一次鼠标位置
+        if (!disposed && pointer) {
+          schedule()
+        }
+      }
+    )
+  }
+  const clearPointer = () => {
+    revision++
+    pointer = undefined
+    request = undefined
+    remainingPicks = 0
+    cancelAnimationFrame(frame)
+    frame = 0
+  }
+  const dismiss = () => {
+    clearPointer()
+    if (!disposed) {
+      hideTooltip()
+    }
+  }
+  const refresh = () => {
+    frame = 0
+    if (disposed || !pointer || !guard || !container.isConnected) {
+      return
+    }
+    const mapContainer = scene.getMapContainer()
+    const target = document.elementFromPoint(pointer.clientX, pointer.clientY)
+    const bounds = mapContainer?.getBoundingClientRect()
+    if (
+      !mapContainer ||
+      !target ||
+      !container.contains(target) ||
+      target.closest(controlSelector) ||
+      pointer.clientX < bounds.left ||
+      pointer.clientX >= bounds.right ||
+      pointer.clientY < bounds.top ||
+      pointer.clientY >= bounds.bottom
+    ) {
+      dismiss()
+      return
+    }
+    const { interactionService, layerService } = scene.getServiceContainer()
+    // 等待实际拾取及绘制完成，不能把被 L7 跳过的事件计为一次成功检测
+    if (guard.pending || interactionService.indragging || layerService.alreadyInRendering) {
+      frame = requestAnimationFrame(refresh)
+      return
+    }
+    if (!layerService.needPick('mousemove') || !layerService.getShaderPickStat()) {
+      remainingPicks = 0
+      request = undefined
+      return
+    }
+    if (request?.state.completed) {
+      remainingPicks--
+      request = undefined
+    }
+    if (remainingPicks <= 0) {
+      return
+    }
+    if (!request) {
+      const event = new MouseEvent('mousemove', {
+        bubbles: true,
+        clientX: pointer.clientX,
+        clientY: pointer.clientY
+      })
+      request = { event, state: track(event) }
+    }
+    replaying = true
+    try {
+      // 未完成的请求保留原标识，忙碌时被忽略也不会消耗检测次数
+      mapContainer.dispatchEvent(request.event)
+    } finally {
+      replaying = false
+    }
+    if (!disposed && pointer && !frame) {
+      frame = requestAnimationFrame(refresh)
+    }
+  }
+  const schedule = () => {
+    revision++
+    request = undefined
+    if (!disposed && pointer) {
+      // L7 跨边界先发 enter/out，再发 tooltip 使用的 move/unmove，需完成两次拾取
+      remainingPicks = 2
+      if (!frame) {
+        frame = requestAnimationFrame(refresh)
+      }
+    }
+  }
+  const recordPointer = (event: MouseEvent) => {
+    if (replaying || disposed) {
+      return
+    }
+    const target = event.target
+    if (target instanceof Element && target.closest('.l7plot-tooltip-container, .l7-popup')) {
+      // 保留移入提示内容查看完整文本的行为，暂停地图重拾取但不隐藏弹窗
+      clearPointer()
+      return
+    }
+    if (target instanceof Element && target.closest(controlSelector)) {
+      dismiss()
+      return
+    }
+    const changed = pointer?.clientX !== event.clientX || pointer?.clientY !== event.clientY
+    pointer = { clientX: event.clientX, clientY: event.clientY }
+    if (changed) {
+      revision++
+      request = undefined
+      // 移动期间旧检测尚未返回时，结果失效后仍需补查最新位置
+      if (guard?.pending || remainingPicks > 0) {
+        schedule()
+      }
+    }
+    if (guard && event.type === 'mousemove') {
+      track(event)
+    }
+  }
+  const bind = () => {
+    if (!disposed && !listening) {
+      guard = getMapHoverPickingGuard(scene)
+      events.forEach(event => scene.on(event, schedule))
+      listening = true
+    }
+  }
+  const dispose = () => {
+    disposed = true
+    revision++
+    cancelAnimationFrame(frame)
+    container.removeEventListener('mouseleave', dismiss)
+    container.removeEventListener('mousemove', recordPointer, true)
+    container.removeEventListener('wheel', recordPointer, true)
+    scene.off('loaded', bind)
+    scene.off('destroy', dispose)
+    if (listening) {
+      events.forEach(event => scene.off(event, schedule))
+    }
+    if (mapHoverTooltipBindings.get(container) === dispose) {
+      mapHoverTooltipBindings.delete(container)
+    }
+  }
+  container.addEventListener('mouseleave', dismiss)
+  container.addEventListener('mousemove', recordPointer, true)
+  container.addEventListener('wheel', recordPointer, { capture: true, passive: true })
+  mapHoverTooltipBindings.set(container, dispose)
+  scene.once('destroy', dispose)
+  if (scene.loaded) {
+    bind()
+  } else {
+    scene.once('loaded', bind)
+  }
+  return dispose
 }
 
 export function handleGeoJson(
@@ -1903,7 +2147,8 @@ function configOnlineMapInteraction(scene: Scene, mapType: string | undefined, e
 }
 
 const L7_SCALED_INTERACTION_FLAG = '__deScaledInteractionPatched'
-const L7_SCALED_INTERACTION_CHARTS = ['map', 'bubble-map']
+// 符号地图也使用 L7 picking，画布缩放后必须还原鼠标命中坐标
+const L7_SCALED_INTERACTION_CHARTS = ['map', 'bubble-map', 'symbolic-map']
 
 function getScaledL7ContainerPoint(
   container: HTMLElement,

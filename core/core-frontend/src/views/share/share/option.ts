@@ -1,6 +1,8 @@
 import { useI18n } from '@/hooks/web/useI18n'
 
 export interface ShareInfo {
+  visitorPermissions?: number
+  allowedVisitorPermissions?: number
   id: string
   exp?: number
   uuid: string

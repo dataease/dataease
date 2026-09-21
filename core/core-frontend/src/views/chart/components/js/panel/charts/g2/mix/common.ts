@@ -1,7 +1,9 @@
-import { Chart as G2Chart, extend, Runtime, stdlib, type G2Spec } from '@antv/g2'
+import { Chart as G2Chart, extend, Runtime, stdlib, type G2Spec, type LinearScale } from '@antv/g2'
 import { defaultsDeep } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { parseJson } from '@/views/chart/components/js/util'
+import { DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'
+import { getColumnSeriesPaddingTransform } from '../bar/barUtil'
 import {
   getCategoryLegendStyle,
   getHorizontalLegendLabelMaxWidth,
@@ -17,6 +19,26 @@ import {
 } from '@/views/chart/components/js/panel/types/impl/g2-legend'
 
 type MixLegendRelation = [string, string]
+
+export const getMixColumnWidthOptions = (
+  columnWidthRatio: number | null | undefined,
+  transforms = []
+) => {
+  // 缺失或非有限值使用默认柱宽，历史越界值限制到样式面板的 1-100% 范围
+  const value = Number(columnWidthRatio ?? DEFAULT_BASIC_STYLE.columnWidthRatio)
+  const ratio = Number.isFinite(value)
+    ? Math.min(100, Math.max(1, value))
+    : DEFAULT_BASIC_STYLE.columnWidthRatio
+  // 与基础柱状图保持一致，满宽时仍保留 1% 间距并同步分组子带宽
+  const padding = Math.max(1 - ratio / 100, 0.01)
+  return {
+    scale: {
+      x: { padding, paddingInner: padding }
+    },
+    transform: [...transforms, getColumnSeriesPaddingTransform(padding)],
+    style: { columnWidthRatio: 1 - padding }
+  }
+}
 
 interface MixLegendOptions {
   supportOrient?: boolean
@@ -224,6 +246,78 @@ export const filterValidMixTooltipItems = <T extends { value?: any }>(items: T[]
 export const getAssistLineAxisIndex = (yAxisType?: string): number => {
   // 历史动态辅助线可能缺少 yAxisType，默认跟随左侧主数值轴
   return yAxisType === 'right' ? 1 : 0
+}
+
+type MixAssistScaleOptions = LinearScale & {
+  dataeaseAssistAxis?: number
+  dataeaseAssistSource?: boolean
+  dataeaseAssistSetDomain?: (domain: number[]) => void
+}
+
+type MixAssistNumericScale = {
+  update: (options: Partial<LinearScale>) => void
+}
+
+// 在每次 G2 比例尺推断之后同步，覆盖图例筛选、堆叠变换和自动 nice 后的实际轴域
+const syncMixAssistScales: NonNullable<LinearScale['groupTransform']> = scales => {
+  scales.forEach(scale => {
+    const options = scale.getOptions() as MixAssistScaleOptions
+    if (!options.dataeaseAssistSetDomain) {
+      return
+    }
+    const source = scales.find(candidate => {
+      const sourceOptions = candidate.getOptions() as MixAssistScaleOptions
+      return (
+        sourceOptions.dataeaseAssistSource &&
+        sourceOptions.dataeaseAssistAxis === options.dataeaseAssistAxis
+      )
+    })
+    const sourceOptions = source?.getOptions() as MixAssistScaleOptions
+    const domain = sourceOptions?.domain || []
+    options.dataeaseAssistSetDomain(domain)
+    if (domain.length === 2 && domain.every(Number.isFinite)) {
+      const numericScale = scale as MixAssistNumericScale
+      numericScale.update({ domain, range: sourceOptions.range, nice: false })
+    }
+  })
+}
+
+export const getMixAssistLineOptions = <T extends { value: number }>(
+  axisMark: G2Spec,
+  lineData: T[],
+  axisIndex: number
+) => {
+  axisMark.scale.y = {
+    ...axisMark.scale.y,
+    dataeaseAssistAxis: axisIndex,
+    dataeaseAssistSource: true,
+    groupTransform: syncMixAssistScales
+  }
+  let visibleDomain: number[] = []
+  const scaleY: MixAssistScaleOptions = {
+    ...axisMark.scale.y,
+    // 辅助线保持独立，不能把自身数值合并到主图轴域中
+    independent: true,
+    dataeaseAssistSource: false,
+    dataeaseAssistSetDomain: domain => {
+      visibleDomain = domain
+    },
+    groupTransform: syncMixAssistScales
+  }
+  const visibility = (item: T): 'visible' | 'hidden' => {
+    return visibleDomain.length === 2 &&
+      visibleDomain.every(Number.isFinite) &&
+      item.value >= Math.min(...visibleDomain) &&
+      item.value <= Math.max(...visibleDomain)
+      ? 'visible'
+      : 'hidden'
+  }
+  // 保留越界值以便后续轴域变化时恢复显示；G2 会跳过隐藏元素的标签
+  return {
+    scaleY,
+    visibleLineData: lineData.filter(item => Number.isFinite(item.value)),
+    visibility
+  }
 }
 
 export const getMixLabelTransform = (fullDisplay: boolean) => {

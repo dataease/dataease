@@ -11,6 +11,7 @@ import {
 } from '@/views/chart/components/js/util'
 import {
   getHorizontalBarAxisSafeLabelStyle,
+  getColumnSeriesPaddingTransform,
   handleBarBreakLineNullData,
   handleEmptyDataStrategy,
   ViewSpec
@@ -117,6 +118,16 @@ export class HorizontalBar extends Bar {
       paddingInner: columnPadding
     }
     children[0].transform = this.configDodgePadding(children[0].transform, columnPadding)
+    // 横向单系列也取消额外留白，多系列与纵向使用相同的连续间距
+    if (
+      children[0].encode?.series ||
+      children[0].transform?.some(transform => transform.type === 'dodgeX')
+    ) {
+      children[0].transform = [
+        ...(children[0].transform || []),
+        getColumnSeriesPaddingTransform(columnPadding)
+      ]
+    }
     children[0].scale.color.range = colors
     children[0].scale.y.nice = true
     children[0].style = { ...children[0].style, ...style }

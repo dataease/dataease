@@ -569,6 +569,7 @@ public class DatasourceServer implements DatasourceApi {
         DatasourceDTO dataSourceDTO = new DatasourceDTO();
         BeanUtils.copyBean(dataSourceDTO, busiDsRequest);
         dataSourceDTO.setConfiguration(new String(Base64.getDecoder().decode(dataSourceDTO.getConfiguration())));
+        preCheckDs(dataSourceDTO);
         CoreDatasource coreDatasource = new CoreDatasource();
         BeanUtils.copyBean(coreDatasource, dataSourceDTO);
         checkDatasourceStatus(dataSourceDTO);
@@ -583,6 +584,7 @@ public class DatasourceServer implements DatasourceApi {
         DatasourceDTO dataSourceDTO = new DatasourceDTO();
         BeanUtils.copyBean(dataSourceDTO, busiDsRequest);
         dataSourceDTO.setConfiguration(new String(Base64.getDecoder().decode(dataSourceDTO.getConfiguration())));
+        preCheckDs(dataSourceDTO);
         CoreDatasource coreDatasource = new CoreDatasource();
         BeanUtils.copyBean(coreDatasource, dataSourceDTO);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
@@ -1060,7 +1062,10 @@ public class DatasourceServer implements DatasourceApi {
             List<ExcelSheetData> excelSheetDataList = new ArrayList<>();
             for (ExcelSheetData sheet : excelFileData.getSheets()) {
                 for (DatasetTableDTO datasetTableDTO : datasetTableDTOS) {
-                    if (excelDataTableName(datasetTableDTO.getTableName()).equals(sheet.getTableName())) {
+                    // CSV has no sheet name; match a unique target by fields rather than filename.
+                    boolean singleCsvTable = excelFileData.getSheets().size() == 1
+                            && datasetTableDTOS.size() == 1 && isCsv(sheet.getFileName());
+                    if (singleCsvTable || excelDataTableName(datasetTableDTO.getTableName()).equals(sheet.getTableName())) {
                         List<TableField> newTableFields = sheet.getFields();
                         datasourceRequest.setTable(datasetTableDTO.getTableName());
                         List<TableField> oldTableFields = ExcelUtils.getTableFields(datasourceRequest);
@@ -1134,8 +1139,7 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     private boolean isCsv(String fileName) {
-        String suffix = fileName.substring(fileName.lastIndexOf(".") + 1);
-        return suffix.equalsIgnoreCase("csv");
+        return "csv".equalsIgnoreCase(StringUtils.substringAfterLast(fileName, "."));
     }
 
     public ApiDefinition checkApiDatasource(Map<String, String> request) throws DEException {

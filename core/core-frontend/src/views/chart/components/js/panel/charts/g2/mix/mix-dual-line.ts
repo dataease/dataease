@@ -28,6 +28,7 @@ import {
   configMixCustomLegend,
   filterValidMixTooltipItems,
   getAssistLineAxisIndex,
+  getMixAssistLineOptions,
   configMixLabel,
   MixG2Chart
 } from './common'
@@ -640,11 +641,6 @@ export class GroupLineMix extends G2ChartView {
     const { xAxis, yAxis, yAxisExt } = parseJson(chart.customStyle)
     const view = options.children.find(c => c.key === 'chart')
     const [leftLineMark, leftPointMark, lineMark, pointMark] = view.children
-    if (!yAxis.show) {
-      leftLineMark.axis.y = false
-      lineMark.axis.y = false
-      return options
-    }
     const overlapGridFilter = this.getOverlapGridFilter(xAxis)
     const yAxisOption = { ...this.getAxis(chart, yAxis), ...overlapGridFilter }
     const yAxisExtOption = { ...this.getAxis(chart, yAxisExt), ...overlapGridFilter }
@@ -737,6 +733,12 @@ export class GroupLineMix extends G2ChartView {
     }
     this.configManualYAxisLineRange(yAxis, view, leftLineMark, leftPointMark)
     this.configManualYAxisLineRange(yAxisExt, view, lineMark, pointMark)
+    // 隐藏数据轴只影响显示，仍需执行轴域同步和手动范围配置
+    if (!yAxis.show) {
+      leftLineMark.axis.y = false
+      lineMark.axis.y = false
+    }
+
     return options
   }
 
@@ -778,29 +780,20 @@ export class GroupLineMix extends G2ChartView {
     const view = options.children.find(c => c.key === 'chart')
     const [leftLineMark, , rightLineMark] = view.children
     splitLineData.forEach((lineData, index) => {
-      const assistLineScaleY = index === 0 ? leftLineMark.scale?.y : rightLineMark.scale?.y
-      // 辅助线只在对应轴当前可见轴域内显示，超出轴域时连同标签一起隐藏
-      const [domainStart, domainEnd] = assistLineScaleY?.domain || []
-      const domainMin = Number(domainStart)
-      const domainMax = Number(domainEnd)
-      const hasDomain = Number.isFinite(domainMin) && Number.isFinite(domainMax)
-      const visibleLineData = lineData.filter(item => {
-        const value = Number(item.value)
-        if (!Number.isFinite(value)) {
-          return false
-        }
-        if (!hasDomain) {
-          return true
-        }
-        return value >= Math.min(domainMin, domainMax) && value <= Math.max(domainMin, domainMax)
-      })
+      const { scaleY, visibleLineData, visibility } = getMixAssistLineOptions(
+        index === 0 ? leftLineMark : rightLineMark,
+        lineData,
+        index
+      )
       if (visibleLineData.length) {
         const assistLineMark: G2Spec = {
           type: 'lineY',
+          // 先更新辅助线可见性再布局标签，避免更新动画保留旧的隐藏状态
+          animate: { update: { type: null } },
           encode: { y: 'value' },
           scale: {
             y: {
-              ...assistLineScaleY,
+              ...scaleY,
               key: index === 0 ? 'left' : 'right'
             }
           },
@@ -809,6 +802,7 @@ export class GroupLineMix extends G2ChartView {
           },
           data: visibleLineData,
           style: {
+            visibility,
             stroke: d => d.color,
             lineDash: d =>
               d.lineType === 'solid' ? [] : d.lineType === 'dashed' ? [10, 8] : [1, 2],

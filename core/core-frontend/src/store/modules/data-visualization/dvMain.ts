@@ -1127,6 +1127,11 @@ export const dvMainStore = defineStore('dataVisualization', {
       }
       const preActiveComponentIds = []
       const checkQDList = [...data.dimensionList, ...data.quotaList]
+      // 仅箱线图联动维度支持精确空值条件，跳转和指标沿用原有规则
+      const boxPlotDimensions =
+        data.option === 'linkage' && this.canvasViewInfo[viewId]?.type === 'box-plot'
+          ? data.dimensionList
+          : []
       const customFilterInfo = data.customFilter
       for (let indexOuter = 0; indexOuter < this.componentData.length; indexOuter++) {
         const element = this.componentData[indexOuter]
@@ -1138,7 +1143,8 @@ export const dvMainStore = defineStore('dataVisualization', {
               trackInfo,
               preActiveComponentIds,
               viewId,
-              customFilterInfo
+              customFilterInfo,
+              boxPlotDimensions
             )
             this.componentData[indexOuter] = element
           } else if (element.component === 'Group') {
@@ -1150,7 +1156,8 @@ export const dvMainStore = defineStore('dataVisualization', {
                   trackInfo,
                   preActiveComponentIds,
                   viewId,
-                  customFilterInfo
+                  customFilterInfo,
+                  boxPlotDimensions
                 )
                 element.propValue[index] = groupItem
               }
@@ -1165,7 +1172,8 @@ export const dvMainStore = defineStore('dataVisualization', {
                     trackInfo,
                     preActiveComponentIds,
                     viewId,
-                    customFilterInfo
+                    customFilterInfo,
+                    boxPlotDimensions
                   )
                   tabItem.componentData[index] = tabComponent
                 }
@@ -1537,7 +1545,8 @@ export const dvMainStore = defineStore('dataVisualization', {
       trackInfo,
       preActiveComponentIds,
       viewId,
-      customFilter?
+      customFilter?,
+      boxPlotDimensions = []
     ) {
       let currentFilters = element.linkageFilters || [] // 当前联动filter
       if (['table-info', 'table-normal'].includes(element.innerType)) {
@@ -1590,7 +1599,17 @@ export const dvMainStore = defineStore('dataVisualization', {
               // 如果目标图表 和 当前循环组件id相等 则进行条件增减
               const targetFieldId = targetInfoArray[1] // 目标图表列ID
               let condition
-              if (QDItem.timeValue && Array.isArray(QDItem.timeValue)) {
+              // 原始 NULL 优先于日期转换结果，不将空分组解释为清除过滤
+              const boxPlotDimension = boxPlotDimensions.includes(QDItem)
+              if (boxPlotDimension && QDItem.value === null) {
+                condition = {
+                  fieldId: targetFieldId,
+                  operator: 'null',
+                  value: [],
+                  viewIds: [targetViewId],
+                  sourceViewId: viewId
+                }
+              } else if (QDItem.timeValue && Array.isArray(QDItem.timeValue)) {
                 // 如果dimension.timeValue存在值且是数组 目前判断为是时间组件
                 condition = {
                   fieldId: targetFieldId,
@@ -1599,7 +1618,10 @@ export const dvMainStore = defineStore('dataVisualization', {
                   viewIds: [targetViewId],
                   sourceViewId: viewId
                 }
-              } else if (QDItem.value !== null && QDItem.value !== '') {
+              } else if (
+                (QDItem.value !== null && QDItem.value !== '') ||
+                (boxPlotDimension && QDItem.value === '')
+              ) {
                 condition = {
                   fieldId: targetFieldId,
                   operator: 'eq',

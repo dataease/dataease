@@ -56,6 +56,7 @@ import { cloneDeep, forEach, get, debounce, set, concat, keys, merge } from 'lod
 import { deleteField, saveField } from '@/api/dataset'
 import { getWorldTree, listCustomGeoArea } from '@/api/map'
 import chartViewManager from '@/views/chart/components/js/panel'
+import { restoreBoxPlotSeriesColors } from '@/views/chart/components/js/panel/charts/g2/distribution/box-plot'
 import DatasetSelect from '@/views/chart/components/editor/dataset-select/DatasetSelect.vue'
 import { useDraggable } from '@vueuse/core'
 import { PluginComponent } from '@/components/plugin'
@@ -1061,6 +1062,13 @@ const onAreaChange = val => {
 }
 
 const onTypeChange = (render, type) => {
+  if (view.value.type === 'box-plot' && type !== 'box-plot') {
+    const basicStyle = view.value.customAttr.basicStyle
+    if (basicStyle.seriesColor) {
+      // 仅处理离开箱线图的配置，其他图表仍使用原有类别键和配色流程
+      basicStyle.seriesColor = restoreBoxPlotSeriesColors(basicStyle.seriesColor)
+    }
+  }
   const viewConf = getViewConfig(type)
   if (viewConf.isPlugin) {
     view.value.plugin = {

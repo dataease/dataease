@@ -603,7 +603,8 @@ public class ExportCenterDownLoadManage {
                         }
 
                         if (((details.size() + extractPageSize) > sheetLimit) || i == chartViewDTO.getTotalPage()) {
-                            if (i == chartViewDTO.getTotalPage() && summaryEnabled && summaryAcc.totalCount > 0) {
+                            boolean hasSummaryRow = i == chartViewDTO.getTotalPage() && summaryEnabled && summaryAcc.totalCount > 0;
+                            if (hasSummaryRow) {
                                 Object[] totalRow = ChartDataServer.buildSummaryRow(allExportColumns, summaryConfig, summaryAcc, customSumResult);
                                 details.add(totalRow);
                             }
@@ -615,7 +616,7 @@ public class ExportCenterDownLoadManage {
                             details.add(0, header);
                             List<Integer> columnIndexs = ChartDataServer.getHiddenExportColumnIndexes(header, request.getViewInfo());
                             removeColumn(details, columnIndexs);
-                            ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), wb);
+                            ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, null, request.getViewInfo(), wb, hasSummaryRow);
                             sheetIndex++;
                             details.clear();
                         }

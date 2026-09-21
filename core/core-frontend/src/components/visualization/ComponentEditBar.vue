@@ -261,7 +261,7 @@ import { RefreshLeft } from '@element-plus/icons-vue'
 import { ElMessage, ElTooltip, ElButton } from 'element-plus-secondary'
 import CustomTabsSort from '@/custom-component/de-tabs/CustomTabsSort.vue'
 import { exportPivotExcel } from '@/views/chart/components/js/panel/common/common_table'
-import { exportPermission, isMobile } from '@/utils/utils'
+import { exportPermission, isMobile, shareAllows } from '@/utils/utils'
 import { layerStoreWithOut } from '@/store/modules/data-visualization/layer'
 import { isMainCanvas } from '@/utils/canvasUtils'
 import { useAppStoreWithOut } from '@/store/modules/app'
@@ -333,6 +333,7 @@ const componentTypeBarShow = {
 }
 
 const barShowCheck = barName => {
+  if (barName === 'details' && !shareAllows(1)) return false
   return (
     positionBarShow[showPosition.value] &&
     positionBarShow[showPosition.value].includes(barName) &&
@@ -382,6 +383,7 @@ const {
   mobileInPc,
   dvInfo,
   isPopWindow,
+  publicLinkStatus,
   hiddenListStatus
 } = storeToRefs(dvMainStore)
 
@@ -495,6 +497,7 @@ const callbackExport = () => {
   useEmitt().emitter.emit('data-export-center', { activeName: 'IN_PROGRESS' })
 }
 const exportAsFormattedExcel = () => {
+  if (!shareAllows(2)) return
   const s2Instance = dvMainStore.getViewInstanceInfo(element.value.id)
   if (!s2Instance) {
     return
@@ -504,6 +507,7 @@ const exportAsFormattedExcel = () => {
 }
 
 const exportAsExcel = () => {
+  if (!shareAllows(2)) return
   const viewDataInfo = dvMainStore.getViewDataDetails(element.value.id)
   const chartExtRequest = dvMainStore.getLastViewRequestInfo(element.value.id)
   const viewInfo = dvMainStore.getViewDetails(element.value.id)
@@ -513,6 +517,7 @@ const exportAsExcel = () => {
   })
 }
 const exportAsImage = () => {
+  if (!shareAllows(4)) return
   emits('componentImageDownload')
 }
 const deleteComponent = () => {
@@ -662,7 +667,9 @@ const initCurFields = () => {
 }
 
 const showDownload = computed(
-  () => canvasViewInfo.value[element.value.id]?.dataFrom !== 'template' && !isPopWindow.value
+  () =>
+    canvasViewInfo.value[element.value.id]?.dataFrom !== 'template' &&
+    (!isPopWindow.value || publicLinkStatus.value)
 )
 // 富文本-End
 

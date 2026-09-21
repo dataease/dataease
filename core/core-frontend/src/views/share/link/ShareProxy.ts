@@ -1,4 +1,5 @@
 import request from '@/config/axios'
+import { useLinkStoreWithOut } from '@/store/modules/link'
 import { useCache } from '@/hooks/web/useCache'
 import { isInIframe } from '@/utils/utils'
 const { wsCache } = useCache()
@@ -78,6 +79,17 @@ class ShareProxy {
     }
     const res = await request.post({ url, data: param })
     const proxyInfo: ProxyInfo = res.data as ProxyInfo
+    if (
+      proxyInfo?.pwdValid &&
+      !proxyInfo.exp &&
+      proxyInfo.ticketValidVO?.ticketValid &&
+      !proxyInfo.ticketValidVO?.ticketExp
+    ) {
+      const permissions = await request.get({
+        url: `/share/visitorPermissions/${proxyInfo.resourceId}`
+      })
+      useLinkStoreWithOut().setVisitorPermissions(permissions.data)
+    }
     if (proxyInfo) {
       proxyInfo.uuid = uuid
       if (this.pwd) {

@@ -23,7 +23,7 @@ import { useAppStoreWithOut } from '@/store/modules/app'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import ViewTrackBar from '@/components/visualization/ViewTrackBar.vue'
 import { storeToRefs } from 'pinia'
-import { parseJson } from '@/views/chart/components/js/util'
+import { getColorFormAlphaColor, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
 import { defaultsDeep, cloneDeep, concat } from 'lodash-es'
 import ChartError from '@/views/chart/components/views/components/ChartError.vue'
 import { BASE_VIEW_CONFIG } from '../../editor/util/chart'
@@ -151,13 +151,16 @@ const viewTrack = ref(null)
 const chartStroke = computed(() => {
   const customAttr = parseJson(view.value.customAttr)
   // 联动选中态优先使用主题转换后的反色
-  return (
+  const stroke =
     customAttr?.basicStyle?.themeContrastColor ??
     customAttr?.label?.color ??
     (!isDashboard() || dvMainStore.canvasStyleData?.dashboard?.themeColor === 'dark'
       ? '#fff'
       : '#000')
-  )
+  // 箱线图联动回放也使用基础不透明度，避免选中后覆盖为不透明描边
+  return view.value.type === 'box-plot'
+    ? hexColorToRGBA(getColorFormAlphaColor(stroke), customAttr?.basicStyle?.alpha ?? 100)
+    : stroke
 })
 const LINKAGE_STYLE_CACHE = '__deLinkageStyleCache__'
 const LINKAGE_STYLE_KEYS = ['opacity', 'stroke', 'lineWidth']
@@ -402,6 +405,21 @@ const applyLinkageElementState = (flush = false) => {
   flush && flushG2Canvas()
 }
 const checkSelected = param => {
+  if (view.value.type === 'box-plot') {
+    // 箱线图按已映射维度的原始值匹配，空值和 0 不转换成展示占位符
+    const dimensions =
+      state.linkageActiveParam?.dimensionList?.filter(
+        item => nowPanelTrackInfo.value[`${view.value.id}#${String(item.id)}`]?.length
+      ) ?? []
+    return (
+      dimensions.length > 0 &&
+      dimensions.every(selected =>
+        param?.dimensionList?.some(
+          item => String(item.id) === String(selected.id) && item.value === selected.value
+        )
+      )
+    )
+  }
   // 获取当前视图的所有联动字段ID
   const mappingFieldIds = Array.from(
     new Set(
@@ -821,8 +839,13 @@ const action = param => {
   state.pointParam = param.data
   // 点击
   pointClickTrans()
+  // 保留嵌入点击回调，放大和复用视图沿用禁用交互的规则，避免误报最后一级
+  if (['multiplexing', 'viewDialog'].includes(showPosition.value)) return
   // 下钻 联动 跳转
   state.linkageActiveParam = {
+    ...(view.value.type === 'box-plot'
+      ? { dimensionList: cloneDeep(state.pointParam.data.dimensionList) }
+      : {}),
     category: state.pointParam.data.category ? state.pointParam.data.category : 'NO_DATA',
     name: state.pointParam.data.name ? state.pointParam.data.name : 'NO_DATA',
     group: state.pointParam.data.group ? state.pointParam.data.group : 'NO_DATA'
@@ -1157,7 +1180,8 @@ defineExpose({
 let intersectionObserver
 let resizeObserver
 const TOLERANCE = 0.01
-const RESIZE_MONITOR_CHARTS = ['map', 'bubble-map', 'flow-map', 'heat-map', 'gauge']
+// 热力图的水平端点文字占位依赖容器宽度，resize 时重新生成图例配置
+const RESIZE_MONITOR_CHARTS = ['map', 'bubble-map', 'flow-map', 'heat-map', 't-heatmap', 'gauge']
 let g2ResizeTimer: number
 let chartComponentUnmounted = false
 onMounted(() => {
@@ -1317,7 +1341,10 @@ onBeforeUnmount(() => {
     // 轮播 tooltip 高度由外层约束，同时禁用内部滚动并隐藏滚动条
     :deep([data-tooltip-display-mode='carousel'] .g2-tooltip-list) {
       box-sizing: border-box;
+      // 与轮播外框共用逻辑宽度上限，覆盖模板按缩放后图表宽度设置的限制
+      width: max-content;
       min-width: 0;
+      max-width: max(0px, calc(var(--de-carousel-tooltip-max-width) - 24px)) !important;
       max-height: none !important;
       overflow-y: hidden !important;
       scrollbar-width: none !important;
@@ -1331,6 +1358,9 @@ onBeforeUnmount(() => {
     }
     :deep([data-tooltip-display-mode='carousel'] .g2-tooltip-list-item) {
       box-sizing: border-box;
+      flex-wrap: nowrap;
+      // 每行填满列表，使不同长度的数值共享右边界
+      width: auto;
       min-width: 0;
     }
     :deep([data-tooltip-display-mode='carousel'] .g2-tooltip-list-item-name) {
@@ -1361,11 +1391,16 @@ onBeforeUnmount(() => {
 </style>
 
 <style lang="less">
-// Fallback for browsers without the standard scrollbar-color/scrollbar-width properties.
+// Keep legend scrollbars visible even when the surrounding canvas hides its own scrollbars.
 .dataease-tiled-legend {
+  // Standard non-auto colors override WebKit scrollbar styling on Chromium (including overlay mode).
+  @supports selector(::-webkit-scrollbar) {
+    scrollbar-color: auto !important;
+  }
   &::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    display: block !important;
+    width: 8px !important;
+    height: 8px !important;
   }
   &::-webkit-scrollbar-thumb {
     background-color: var(--legend-scroll-thumb);
@@ -1442,12 +1477,13 @@ div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover'] {
     overflow-wrap: anywhere;
   }
 
-  // 内容换行时保持配置字号，由可视区域限制容器并提供滚动。
+  // 指标名称和数值保持单行，超出可用宽度时省略
   .g2-tooltip-list-item {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: baseline !important;
     box-sizing: border-box;
-    width: max-content;
+    // 填满列表可用宽度，使各行数值共享右边界，列表仍按内容自适应
+    width: auto;
     min-width: 0;
     max-width: max(0px, calc(var(--de-hover-tooltip-max-width, 33.333333vw) - 24px));
   }
@@ -1455,8 +1491,9 @@ div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover'] {
   .g2-tooltip-list-item-name {
     // 名称容器以文字提供基线，避免首个色点参与行基线计算。
     align-items: baseline !important;
-    flex: 1 1 auto !important;
-    min-width: 0 !important;
+    // 名称优先收缩，同时保留色点和可识别的名称片段
+    flex: 1 9999 auto !important;
+    min-width: calc(12px + 2em) !important;
     max-width: none !important;
     overflow: hidden !important;
   }
@@ -1469,20 +1506,23 @@ div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover'] {
   .g2-tooltip-list-item-name-label {
     min-width: 0 !important;
     overflow: hidden !important;
-    white-space: normal !important;
-    overflow-wrap: anywhere;
-    text-overflow: clip !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+    text-align: left;
   }
 
   .g2-tooltip-list-item-value {
-    flex: 0 0 auto !important;
+    flex: 0 1 auto !important;
     min-width: 0 !important;
-    max-width: max(0px, calc(var(--de-hover-tooltip-max-width, 33.333333vw) - 48px)) !important;
+    max-width: max(
+      0px,
+      calc(var(--de-hover-tooltip-max-width, 33.333333vw) - 48px - 2em)
+    ) !important;
     margin-left: 12px !important;
     overflow: hidden !important;
-    white-space: normal !important;
-    overflow-wrap: anywhere;
-    text-overflow: clip !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+    text-align: right;
   }
 }
 

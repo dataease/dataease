@@ -585,7 +585,7 @@ onMounted(() => {
         :effect="themes"
         :disabled="!state.basicStyleForm.showOutliers"
         is-custom
-        show-alpha
+        :show-alpha="false"
         :trigger-width="108"
         class="color-picker-style"
         :predefine="predefineColors"

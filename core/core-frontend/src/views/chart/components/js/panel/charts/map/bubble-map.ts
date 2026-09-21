@@ -4,7 +4,7 @@ import {
   L7PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/l7plot'
 import { Choropleth, ChoroplethOptions } from '@antv/l7plot/dist/esm/plots/choropleth'
-import { Dot, DotOptions, IPlotLayer } from '@antv/l7plot'
+import { Dot, DotOptions } from '@antv/l7plot'
 import {
   MAP_AXIS_TYPE,
   MAP_EDITOR_PROPERTY,
@@ -15,6 +15,7 @@ import { flow, getGeoJsonFile, hexColorToRGBA, parseJson } from '@/views/chart/c
 import { cloneDeep, isEmpty } from 'lodash-es'
 import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
 import {
+  bindMapHoverTooltipRefresh,
   configEmptyDataStyle,
   handleGeoJson,
   mapRendered,
@@ -239,6 +240,7 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       dotLayer.options = { ...dotLayer.options, tooltip }
     }
     this.configZoomButton(chart, view)
+    bindMapHoverTooltipRefresh(container, view.scene, () => dotLayer.tooltip?.hideTooltip())
     mapRendering(container)
     view.once('loaded', () => {
       // 修改地图鼠标样式为默认
@@ -294,7 +296,7 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     geoJson: FeatureCollection,
     drawOption: L7PlotDrawOptions<Choropleth>,
     customSubArea: CustomGeoSubArea[]
-  ): IPlotLayer {
+  ): Dot {
     const { areaId } = drawOption
     const { basicStyle, tooltip } = parseJson(chart.customAttr)
     const { bubbleCfg } = parseJson(chart.senior)

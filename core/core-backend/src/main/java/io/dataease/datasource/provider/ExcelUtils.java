@@ -32,6 +32,10 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -189,7 +193,7 @@ public class ExcelUtils {
                     String suffix = fileNames.get("fileName").substring(fileNames.get("fileName").lastIndexOf(".") + 1);
                     InputStream inputStream = new FileInputStream(path + fileNames.get("tranName"));
                     if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+                        BufferedReader reader = csvReader(inputStream);
                         reader.readLine();//去掉表头
                         dataList = csvData(reader, false, tableFields.size());
                     } else {
@@ -209,7 +213,7 @@ public class ExcelUtils {
                         String suffix = rootNode.get(i).get("path").asText().substring(rootNode.get(i).get("path").asText().lastIndexOf(".") + 1);
                         InputStream inputStream = new FileInputStream(rootNode.get(i).get("path").asText());
                         if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
-                            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+                            BufferedReader reader = csvReader(inputStream);
                             reader.readLine();//去掉表头
                             dataList = csvData(reader, false, tableFields.size());
                         } else {
@@ -479,6 +483,33 @@ public class ExcelUtils {
         return isEmpty;
     }
 
+    private static BufferedReader csvReader(InputStream inputStream) throws IOException {
+        BufferedInputStream stream = new BufferedInputStream(inputStream);
+        // Probe a bounded prefix; endOfInput=false allows a UTF-8 character split at the boundary.
+        int sampleSize = 64 * 1024;
+        stream.mark(sampleSize + 1);
+        byte[] sample = stream.readNBytes(sampleSize);
+        stream.reset();
+        Charset charset = StandardCharsets.UTF_8;
+        int bomLength = 0;
+        if (sample.length >= 3 && sample[0] == (byte) 0xEF
+                && sample[1] == (byte) 0xBB && sample[2] == (byte) 0xBF) {
+            bomLength = 3;
+        } else if (sample.length >= 2 && sample[0] == (byte) 0xFF && sample[1] == (byte) 0xFE) {
+            charset = StandardCharsets.UTF_16LE;
+            bomLength = 2;
+        } else if (sample.length >= 2 && sample[0] == (byte) 0xFE && sample[1] == (byte) 0xFF) {
+            charset = StandardCharsets.UTF_16BE;
+            bomLength = 2;
+        } else if (StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT)
+                .decode(ByteBuffer.wrap(sample), CharBuffer.allocate(sample.length), sample.length < sampleSize).isError()) {
+            // Windows Excel's Chinese CSV uses GBK; GB18030 also decodes GBK/GB2312 files.
+            charset = Charset.forName("GB18030");
+        }
+        stream.skipNBytes(bomLength);
+        return new BufferedReader(new InputStreamReader(stream, charset));
+    }
+
     public static List<String[]> csvData(BufferedReader reader, boolean isPreview, int size) throws DEException {
         List<String[]> data = new ArrayList<>();
         try {
@@ -630,6 +661,7 @@ public class ExcelUtils {
                     DEException.throwException(readSheet.getSheetName() + "首行不能为空！");
                 }
                 for (String s : noModelDataListener.getHeader()) {
+                    EngineProvider.validateIdentifier(s);
                     TableField tableFiled = new TableField();
                     tableFiled.setFieldType(null);
                     tableFiled.setName(s);
@@ -668,7 +700,7 @@ public class ExcelUtils {
 
         if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
             List<TableField> fields = new ArrayList<>();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+            BufferedReader reader = csvReader(inputStream);
             String s = reader.readLine();// first line
             if (StringUtils.isNotEmpty(s)) {
                 String[] split = s.split(",");
@@ -680,6 +712,7 @@ public class ExcelUtils {
                     if (filedName.startsWith(UFEFF)) {
                         filedName = filedName.replace(UFEFF, "");
                     }
+                    EngineProvider.validateIdentifier(filedName);
                     TableField tableFiled = new TableField();
                     tableFiled.setName(filedName);
                     tableFiled.setOriginName(filedName);

@@ -511,6 +511,63 @@ export function getCustomTheme(chart: Chart): S2Theme {
         merge(theme, tmpTheme)
       }
     }
+    if (['table-info', 'table-normal'].includes(chart.type) && tableCell?.mergeCells) {
+      const tableFontColor = hexColorToRGBA(tableCell.tableFontColor, basicStyle.alpha)
+      let tableItemBgColor = tableCell.tableItemBgColor
+      if (!isAlphaColor(tableItemBgColor)) {
+        tableItemBgColor = hexColorToRGBA(tableItemBgColor, basicStyle.alpha)
+      }
+      const { tableBorderColor } = basicStyle
+      const { tableItemAlign, tableItemFontSize } = tableCell
+      const fontStyle = tableCell.isItalic ? 'italic' : 'normal'
+      const fontWeight = tableCell.isBolder === false ? 'normal' : 'bold'
+      const mergeCellTheme: S2Theme = {
+        dataCell: {
+          cell: {
+            crossBackgroundColor: tableItemBgColor
+          }
+        },
+        mergedCell: {
+          cell: {
+            backgroundColor: tableItemBgColor,
+            crossBackgroundColor: tableItemBgColor,
+            horizontalBorderColor: tableBorderColor,
+            verticalBorderColor: tableBorderColor,
+            horizontalBorderWidth: tableCell.showHorizonBorder ? 1 : 0,
+            verticalBorderWidth: tableCell.showVerticalBorder ? 1 : 0
+          },
+          bolderText: {
+            fill: tableFontColor,
+            textAlign: tableItemAlign,
+            fontSize: tableItemFontSize,
+            fontStyle,
+            fontWeight
+          },
+          text: {
+            fill: tableFontColor,
+            textAlign: tableItemAlign,
+            fontSize: tableItemFontSize,
+            fontStyle,
+            fontWeight
+          },
+          measureText: {
+            fill: tableFontColor,
+            textAlign: tableItemAlign,
+            fontSize: tableItemFontSize,
+            fontStyle,
+            fontWeight
+          },
+          seriesText: {
+            fill: tableFontColor,
+            textAlign: tableItemAlign,
+            fontSize: tableItemFontSize,
+            fontStyle,
+            fontWeight
+          }
+        }
+      }
+      merge(theme, mergeCellTheme)
+    }
   }
 
   return theme
@@ -730,7 +787,10 @@ export function getConditions(
   if (conditions?.length > 0) {
     const {tableCell, basicStyle, tableHeader} = parseJson(chart.customAttr)
     // 合并单元格时斑马纹失效
-    const enableTableCrossBG = chart.type === 'table-info' ? tableCell.enableTableCrossBG && !tableCell.mergeCells : tableCell.enableTableCrossBG
+    let enableTableCrossBG = tableCell.enableTableCrossBG
+    if (['table-info', 'table-normal'].includes(chart.type) && tableCell.mergeCells) {
+      enableTableCrossBG = false
+    }
     const valueColor = isAlphaColor(tableCell.tableFontColor)
       ? tableCell.tableFontColor
       : hexColorToRGBA(tableCell.tableFontColor, basicStyle.alpha)
@@ -779,7 +839,7 @@ export function getConditions(
     for (const targetName in targetRulesMap) {
       const rules = sortTableTargetRules(targetRulesMap[targetName])
       const getCellRules = (cell: TableDataCell | MergedCell) => {
-        if (chart.type !== 'table-info' || !tableCell.mergeCells || !cell) {
+        if (!['table-info', 'table-normal'].includes(chart.type) || !tableCell.mergeCells || !cell) {
           return rules
         }
         const meta = cell.getMeta()
@@ -1180,7 +1240,7 @@ function getRuleSourceValue(value, rowData, sourceName, targetName) {
   return {found: false, value: undefined}
 }
 
-function matchTableCondition(
+export function matchTableCondition(
   value,
   rule,
   sourceField,
@@ -1444,7 +1504,7 @@ export function mappingColor(value, defaultColor, field, type, filedValueMap?, r
 
 }
 
-function getFieldValueMap(view) {
+export function getFieldValueMap(view) {
   const fieldValueMap = {}
   if (view.data && view.data.dynamicAssistLines && view.data.dynamicAssistLines.length > 0) {
     view.data.dynamicAssistLines.forEach(ele => {
@@ -2926,6 +2986,26 @@ class CustomMergedCell extends MergedCell {
 }
 
 export class CustomDataCell extends TableDataCell {
+  drawTextOrCustomRenderer(): void {
+    if (isInMergedCell(this.spreadsheet.options.mergedCellsInfo, this.getMeta())) {
+      // 只清空底层显示内容，不修改元数据，合并层仍需使用原值绘制文字。
+      this.textShape?.attr('text', '')
+      this.linkFieldShape?.attr('strokeOpacity', 0)
+      this.afterDrawText()
+      return
+    }
+    super.drawTextOrCustomRenderer()
+  }
+
+  getBackgroundColor() {
+    const background = super.getBackgroundColor()
+    if (isInMergedCell(this.spreadsheet.options.mergedCellsInfo, this.getMeta())) {
+      // 直接控制背景图形的透明度，避免组 opacity 对子图形不生效。
+      background.backgroundColorOpacity = 0
+    }
+    return background
+  }
+
   protected getTextStyle() {
     const textStyle = super.getTextStyle()
     const dataCellAlignConfig = (this.theme as any).dataCellAlignConfig

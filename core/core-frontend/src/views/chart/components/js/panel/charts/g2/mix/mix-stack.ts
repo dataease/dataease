@@ -32,7 +32,9 @@ import {
   createResponsiveMixSpaceFlex,
   filterValidMixTooltipItems,
   getAssistLineAxisIndex,
-  configMixLabel
+  getMixAssistLineOptions,
+  configMixLabel,
+  getMixColumnWidthOptions
 } from './common'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 import {
@@ -452,11 +454,10 @@ export class StackLineMix extends G2ChartView {
     }
     merge(lineMark, rightColorScale)
     merge(pointMark, rightColorScale)
-    merge(intervalMark, {
-      style: {
-        columnWidthRatio: basicStyle.columnWidthRatio / 100
-      }
-    })
+    merge(
+      intervalMark,
+      getMixColumnWidthOptions(basicStyle.columnWidthRatio, intervalMark.transform)
+    )
     if (basicStyle.radiusColumnBar === 'roundAngle') {
       merge(intervalMark, {
         style: {
@@ -673,11 +674,6 @@ export class StackLineMix extends G2ChartView {
     const { xAxis, yAxis, yAxisExt } = parseJson(chart.customStyle)
     const view = options.children.find(c => c.key === 'chart')
     const [intervalMark, lineMark, pointMark] = view.children
-    if (!yAxis.show) {
-      intervalMark.axis.y = false
-      lineMark.axis.y = false
-      return options
-    }
     const overlapGridFilter = this.getOverlapGridFilter(xAxis)
     // 双 Y 轴保留各自 showTick，禁止再用 axisLine.show 二次覆盖
     const yAxisOption = {
@@ -756,6 +752,12 @@ export class StackLineMix extends G2ChartView {
         }
       })
     }
+    // 隐藏数据轴只影响显示，仍需执行轴域同步和手动范围配置
+    if (!yAxis.show) {
+      intervalMark.axis.y = false
+      lineMark.axis.y = false
+    }
+
     return options
   }
 
@@ -795,20 +797,29 @@ export class StackLineMix extends G2ChartView {
     const yAxisExtFormatterCfg =
       yAxisExt.axisLabelFormatter ?? DEFAULT_YAXIS_STYLE.axisLabelFormatter
     const view = options.children.find(c => c.key === 'chart')
+    const [intervalMark, lineMark] = view.children
     splitLineData.forEach((lineData, index) => {
-      if (lineData.length) {
+      const { scaleY, visibleLineData, visibility } = getMixAssistLineOptions(
+        index === 0 ? intervalMark : lineMark,
+        lineData,
+        index
+      )
+      if (visibleLineData.length) {
         const assistLineMark: G2Spec = {
           type: 'lineY',
+          // 先更新辅助线可见性再布局标签，避免更新动画保留旧的隐藏状态
+          animate: { update: { type: null } },
           encode: { y: 'value' },
           scale: {
             y: {
+              ...scaleY,
               key: index === 0 ? 'left' : 'right'
             }
           },
-          // 右轴辅助线使用独立比例尺，只关闭其自动生成的冗余轴
-          ...(index === 1 ? { axis: { y: false } } : {}),
-          data: lineData,
+          axis: { y: false },
+          data: visibleLineData,
           style: {
+            visibility,
             stroke: d => d.color,
             lineDash: d =>
               d.lineType === 'solid' ? [] : d.lineType === 'dashed' ? [10, 8] : [1, 2],
