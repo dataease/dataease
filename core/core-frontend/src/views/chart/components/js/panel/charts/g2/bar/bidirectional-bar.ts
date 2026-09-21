@@ -43,7 +43,11 @@ const createResponsiveBidirectionalSpaceFlex = baseSpaceFlex => {
     const layout = baseSpaceFlex(...args)
     return options => {
       const legendLayout = options.dataeaseBidirectionalLegendFlex as BidirectionalLegendFlexLayout
-      if (!legendLayout) {
+      // Tiled legends already measure their DOM and allocate the flex ratio, including on resize.
+      const tiledLegend = options.children?.some(
+        child => child.type === 'legends' && child.dataeaseLegendTile
+      )
+      if (!legendLayout || tiledLegend) {
         return layout(options)
       }
       const mainSize = Number(legendLayout.direction === 'col' ? options.height : options.width)
@@ -1247,7 +1251,10 @@ export class BidirectionalHorizontalBar extends G2ChartView {
         })
       })
     }
-    const horizontalLegendTextStyle = getHorizontalLegendTextStyle(legendFontSize)
+    const horizontalLegendTextStyle = getHorizontalLegendTextStyle(
+      legendFontSize,
+      legend.displayMode
+    )
     const enableHorizontalLegendText = legendOption => {
       Object.assign(legendOption, horizontalLegendTextStyle)
       const labelFormatter = horizontalLegendTextStyle.labelFormatter

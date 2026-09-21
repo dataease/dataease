@@ -556,7 +556,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
                     maxCols: 1
                   }
                 : {
-                    ...getHorizontalLegendTextStyle(legendFontSize),
+                    ...getHorizontalLegendTextStyle(legendFontSize, l.displayMode),
                     maxRows: 1
                   })
             }

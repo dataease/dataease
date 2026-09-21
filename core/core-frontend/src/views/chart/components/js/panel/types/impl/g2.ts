@@ -669,10 +669,14 @@ const truncateHorizontalLegendLabel = (value: unknown, fontSize: number, maxWidt
 }
 
 /**
- * 上下图例必须在 G2 首次测量前限制单项文本宽度
+ * 上下分页图例必须在 G2 首次测量前限制单项文本宽度
  * 否则任意分页中的超长项都会把所有页面和分页器之间的距离一起撑大
+ * 平铺图例保留完整文本，由 DOM 布局负责换行和滚动
  */
-export const getHorizontalLegendTextStyle = (fontSize: number) => {
+export const getHorizontalLegendTextStyle = (
+  fontSize: number,
+  displayMode?: ChartLegendStyle['displayMode']
+) => {
   prepareLegendPoptip()
   const safeFontSize = Number.isFinite(fontSize) && fontSize > 0 ? fontSize : 12
   const maxWidth = getHorizontalLegendLabelMaxWidth(safeFontSize)
@@ -689,7 +693,10 @@ export const getHorizontalLegendTextStyle = (fontSize: number) => {
     }
   }
   return {
-    labelFormatter: value => truncateHorizontalLegendLabel(value, safeFontSize, maxWidth),
+    labelFormatter: value =>
+      displayMode === 'tile'
+        ? `${value ?? ''}`
+        : truncateHorizontalLegendLabel(value, safeFontSize, maxWidth),
     itemLabelWordWrap: true,
     itemLabelWordWrapWidth: maxWidth,
     itemLabelMaxLines: 1,
@@ -916,7 +923,7 @@ export abstract class G2ChartView<
                   maxCols: 1
                 }
               : {
-                  ...getHorizontalLegendTextStyle(legendFontSize),
+                  ...getHorizontalLegendTextStyle(legendFontSize, l.displayMode),
                   maxRows: 1
                 })
           }
