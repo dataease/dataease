@@ -1060,76 +1060,7 @@ defineExpose({
   .datasource-close {
     cursor: pointer;
   }
-  .editor-step {
-    position: relative;
-    .ed-steps {
-      width: 500px;
-    }
-    .ed-step.is-center .ed-step__line {
-      width: 80px;
-      right: 40px;
-      z-index: 5;
-      left: calc(100% - 40px);
-    }
 
-    .ed-step__icon.is-icon {
-      width: auto;
-      position: relative;
-      z-index: 0;
-    }
-
-    .ed-step__head.is-finish::after {
-      right: calc(100% - 66px);
-      top: 44%;
-    }
-
-    .ed-step__head.is-process .ed-step__icon {
-      background-color: transparent;
-      .step-icon {
-        .icon {
-          background: var(--ed-color-primary);
-        }
-      }
-    }
-
-    .ed-step__head.is-finish .ed-step__icon {
-      background-color: transparent;
-      .step-icon {
-        .icon {
-          border: 1px solid var(--ed-color-primary);
-        }
-      }
-    }
-
-    .ed-step__head.is-wait .ed-step__icon {
-      background-color: transparent;
-      .step-icon {
-        .icon {
-          color: #8f959e;
-          border: 1px solid #8f959e;
-        }
-      }
-    }
-
-    .step-icon {
-      display: flex;
-      padding: 0 48px;
-      align-items: center;
-      .icon {
-        width: 28px;
-        height: 28px;
-        line-height: 27px;
-        border-radius: 50%;
-      }
-      .title {
-        margin-left: 8px;
-        color: #1f2329;
-        font-size: 14px;
-        font-weight: 400;
-        line-height: 22px;
-      }
-    }
-  }
   .datasource {
     width: 100%;
     height: 100%;
