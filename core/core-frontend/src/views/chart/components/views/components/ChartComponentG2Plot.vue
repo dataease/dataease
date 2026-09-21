@@ -37,7 +37,7 @@ import { ExportImage } from '@antv/l7'
 import {
   configAxisTitleOverflowTooltip,
   configEmptyDataStyle,
-  installG2SliderTouchAdapter
+  installG2SliderAdapter
 } from '@/views/chart/components/js/panel/common/common_antv'
 import { installG2SideLegendPaginationAdapter } from '@/views/chart/components/js/panel/types/impl/g2-legend-pagination'
 import { ElMessage } from 'element-plus-secondary'
@@ -619,12 +619,12 @@ const renderChart = async (view, callback?) => {
 }
 let myChart = null
 let g2Timer: number
-let g2SliderTouchCleanup: (() => void) | undefined
+let g2SliderCleanup: (() => void) | undefined
 let g2TiledLegendCleanup: (() => void) | undefined
 let g2LegendPaginationCleanup: (() => void) | undefined
-const clearG2SliderTouchAdapter = () => {
-  g2SliderTouchCleanup?.()
-  g2SliderTouchCleanup = undefined
+const clearG2SliderAdapter = () => {
+  g2SliderCleanup?.()
+  g2SliderCleanup = undefined
 }
 const clearG2LegendPaginationAdapter = () => {
   g2TiledLegendCleanup?.()
@@ -676,7 +676,7 @@ const renderG2 = async (chart, chartView: G2ChartView<any, any>) => {
       configEmptyDataStyle([1], containerId)
       // G2 重绘前先停掉 tooltip 轮播，避免旧实例残留高亮背景
       G2TooltipCarousel.destroyByContainer(containerId)
-      clearG2SliderTouchAdapter()
+      clearG2SliderAdapter()
       clearG2LegendPaginationAdapter()
       myChart?.destroy()
       // 仅在移动端配置右侧缩略区域隐藏图表文本
@@ -743,7 +743,7 @@ const renderG2 = async (chart, chartView: G2ChartView<any, any>) => {
       await chartView.afterRender?.(chartInstance)
       // 异步等待期间若图表已被新实例替换，本轮旧实例不再回放联动状态，避免污染当前画布
       if (chartInstance && chartInstance === myChart) {
-        g2SliderTouchCleanup = installG2SliderTouchAdapter(chartInstance)
+        g2SliderCleanup = installG2SliderAdapter(chartInstance)
         // 侧边图例翻页后重新计算整体占宽，并在 Plot 重排完成后恢复联动选中态
         g2LegendPaginationCleanup = installG2SideLegendPaginationAdapter(chartInstance, {
           afterPageLayout: replayLinkageActive
@@ -779,7 +779,7 @@ const renderL7Plot = async (chart: ChartObj, chartView: L7PlotChartView<any, any
   mapTimer && clearTimeout(mapTimer)
   mapTimer = setTimeout(async () => {
     try {
-      clearG2SliderTouchAdapter()
+      clearG2SliderAdapter()
       clearG2LegendPaginationAdapter()
       myChart?.destroy()
       if (chartContainer.value) {
@@ -1302,7 +1302,7 @@ onBeforeUnmount(() => {
     g2ResizeTimer && clearTimeout(g2ResizeTimer)
     G2TooltipCarousel.dequeueResize(containerId)
     G2TooltipCarousel.destroyByContainer(containerId)
-    clearG2SliderTouchAdapter()
+    clearG2SliderAdapter()
     clearG2LegendPaginationAdapter()
     myChart?.destroy()
     resizeObserver?.disconnect()
