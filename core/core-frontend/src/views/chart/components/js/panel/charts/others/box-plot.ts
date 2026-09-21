@@ -24,7 +24,8 @@ import {
 } from '@/views/chart/components/js/panel/common/box_plot'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { useI18n } from '@/hooks/web/useI18n'
-import { Action, registerAction, registerInteraction } from '@antv/g2'
+import { Action, registerAction, registerInteraction, View } from '@antv/g2'
+import { getTooltipItems } from '@antv/g2/esm/util/tooltip'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
@@ -38,6 +39,47 @@ const ACTIVE_REGION_SHAPE_NAME = 'active-region'
 const ACTIVE_REGION_STYLE = {
   fill: '#CCD6EC',
   opacity: 0.3
+}
+
+const configSingleCategoryTooltip = (view: View) => {
+  const controller = view.getController('tooltip')
+  const originalGetTooltipItems = controller.getTooltipItems.bind(controller)
+  controller.getTooltipItems = point => {
+    const xScale = view.getXScale()
+    if (xScale?.values?.length !== 1 || !view.getCoordinate()?.isRect) {
+      return originalGetTooltipItems(point)
+    }
+    const bounds = view.coordinateBBox
+    if (
+      view.getOptions().tooltip === false ||
+      !bounds ||
+      point.x < bounds.minX ||
+      point.x > bounds.maxX ||
+      point.y < bounds.minY ||
+      point.y > bounds.maxY
+    ) {
+      return []
+    }
+    const schema = view.geometries.find(geometry => geometry.type === 'schema')
+    if (!schema?.visible || schema.tooltipOption === false) return []
+    const { title, showNil, reversed } = controller.getTooltipCfg()
+    // 单主维度的整个绘图区共享当前可见箱体摘要，避开分类反查边界并排除异常点的单独命中
+    const items = schema.elements.flatMap(element => {
+      if (!element.visible || element.getData()[xScale.field] !== xScale.values[0]) return []
+      const mappingData = element.getModel().mappingData
+      if (!mappingData || Array.isArray(mappingData)) return []
+      const item = getTooltipItems(mappingData, schema, title, showNil)[0]
+      if (!item) return []
+      return [
+        {
+          ...item,
+          x: Array.isArray(mappingData.x) ? mappingData.x[mappingData.x.length - 1] : mappingData.x,
+          y: Array.isArray(mappingData.y) ? mappingData.y[mappingData.y.length - 1] : mappingData.y
+        }
+      ]
+    })
+    return reversed ? items.reverse() : items
+  }
 }
 
 // 命中箱体不依赖 tooltip，退化成横线的箱体也能按当前可见分组进行交互
@@ -435,6 +477,7 @@ export class BoxPlot extends G2PlotChartView<BoxOptions, G2Box> {
     }
     const options = this.setupOptions(chart, initOptions)
     const plot = new DataEaseBox(container, options)
+    configSingleCategoryTooltip(plot.chart)
 
     const normalizeAction = (event, datum = event?.data?.data) => {
       if (!datum) {
