@@ -6,30 +6,25 @@
           ><icon_left_outlined class="svg-icon toolbar-icon"
         /></Icon>
       </span>
-      <span>{{ t("setting_mfa.bind_title") }}</span>
+      <span>{{ t('setting_mfa.bind_title') }}</span>
     </div>
     <div class="mfa-step flex-center">
       <el-steps
         v-show="!mobileEnv"
         v-if="step === 1 || step === 2"
-        space="150px"
+        custom
+        style="max-width: 500px; flex: 1"
         :active="step - 1"
         align-center
       >
         <el-step>
-          <template #icon>
-            <div class="step-icon">
-              <span class="icon">{{ step === 1 ? 1 : "" }}</span>
-              <span class="title">{{ t("setting_mfa.step_1") }}</span>
-            </div>
+          <template #title>
+            {{ t('setting_mfa.step_1') }}
           </template>
         </el-step>
         <el-step>
-          <template #icon>
-            <div class="step-icon">
-              <span class="icon">2</span>
-              <span class="title">{{ t("setting_mfa.step_2") }}</span>
-            </div>
+          <template #title>
+            {{ t('setting_mfa.step_2') }}
           </template>
         </el-step>
       </el-steps>
@@ -37,11 +32,11 @@
     <div v-if="step === 1" class="content step-1">
       <div class="step-1-container">
         <div class="head-title">
-          <span>{{ t("setting_mfa.install_app") }}</span>
+          <span>{{ t('setting_mfa.install_app') }}</span>
         </div>
         <div class="import-info" :class="{ 'is-mobile': mobileEnv }">
-          <span>{{ t("setting_mfa.install_1") }}</span>
-          <span>{{ t("setting_mfa.install_2") }}</span>
+          <span>{{ t('setting_mfa.install_1') }}</span>
+          <span>{{ t('setting_mfa.install_2') }}</span>
         </div>
         <div class="qr-area">
           <div class="qr-container" v-if="!mobileEnv || !isIphone">
@@ -49,7 +44,7 @@
               <img src="/src/assets/authenticator_android.png" />
             </div>
             <div class="qr-tips">
-              <span>{{ `Android ${t("setting_mfa.phone_download")}` }}</span>
+              <span>{{ `Android ${t('setting_mfa.phone_download')}` }}</span>
             </div>
           </div>
           <div class="qr-container" v-if="!mobileEnv || isIphone">
@@ -57,25 +52,23 @@
               <img src="/src/assets/authenticator_iphone.png" />
             </div>
             <div class="qr-tips">
-              <span>{{ `iphone ${t("setting_mfa.phone_download")}` }}</span>
+              <span>{{ `iphone ${t('setting_mfa.phone_download')}` }}</span>
             </div>
           </div>
         </div>
 
         <div class="next-btn">
-          <el-button type="primary" @click="next">{{
-            t("common.next")
-          }}</el-button>
+          <el-button type="primary" @click="next">{{ t('common.next') }}</el-button>
         </div>
       </div>
     </div>
     <div v-else-if="step === 2" class="content step-2">
       <div class="step-1-container" :class="{ 'is-mobile-step': mobileEnv }">
         <div class="head-title">
-          <span>{{ t("setting_mfa.step_2") }}</span>
+          <span>{{ t('setting_mfa.step_2') }}</span>
         </div>
         <div class="import-info import-info-2">
-          <span>{{ t("setting_mfa.scan_qr_tips") }}</span>
+          <span>{{ t('setting_mfa.scan_qr_tips') }}</span>
         </div>
         <div class="qr-area">
           <div class="qr-container">
@@ -95,21 +88,15 @@
           </el-form-item>
         </el-form>
         <div class="next-btn">
-          <el-button @click="back">{{ t("common.prev") }}</el-button>
-          <el-button type="primary" @click="next">{{
-            t("common.sure")
-          }}</el-button>
+          <el-button @click="back">{{ t('common.prev') }}</el-button>
+          <el-button type="primary" @click="next">{{ t('common.sure') }}</el-button>
         </div>
       </div>
     </div>
-    <div
-      v-else
-      class="content step-3"
-      :class="{ 'is-mobile-step3': mobileEnv }"
-    >
+    <div v-else class="content step-3" :class="{ 'is-mobile-step3': mobileEnv }">
       <div class="code-form-area" :class="{ 'is-mobile-step': mobileEnv }">
         <div class="form-head">
-          <span class="title">{{ t("setting_mfa.user_enable") }}</span>
+          <span class="title">{{ t('setting_mfa.user_enable') }}</span>
         </div>
         <el-form ref="mfaForm" :model="state.form" :rules="rule">
           <el-form-item label="" prop="code">
@@ -120,11 +107,9 @@
             />
           </el-form-item>
         </el-form>
-        <el-button type="primary" @click="next">{{
-          t("common.sure")
-        }}</el-button>
+        <el-button type="primary" @click="next">{{ t('common.sure') }}</el-button>
         <div class="tips">
-          <span>{{ t("setting_mfa.code_miss_tips") }}</span>
+          <span>{{ t('setting_mfa.code_miss_tips') }}</span>
         </div>
       </div>
     </div>
@@ -132,190 +117,187 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, reactive, computed, onBeforeUnmount } from "vue";
-import request from "@/config/axios";
-import { useI18n } from "@/hooks/web/useI18n";
-import { useUserStoreWithOut } from "@/store/modules/user";
-import router from "@/router";
-import { logoutHandler } from "@/utils/logout";
-import icon_left_outlined from "@/assets/svg/icon_left_outlined.svg";
-import { isMobile } from "@/utils/utils";
-const userStore = useUserStoreWithOut();
-const { t } = useI18n();
+import { onMounted, ref, reactive, computed, onBeforeUnmount } from 'vue'
+import request from '@/config/axios'
+import { useI18n } from '@/hooks/web/useI18n'
+import { useUserStoreWithOut } from '@/store/modules/user'
+import router from '@/router'
+import { logoutHandler } from '@/utils/logout'
+import icon_left_outlined from '@/assets/svg/icon_left_outlined.svg'
+import { isMobile } from '@/utils/utils'
+const userStore = useUserStoreWithOut()
+const { t } = useI18n()
 
 interface MfaData {
-  enabled: boolean;
-  ready: boolean;
-  uid: string;
-  origin: number;
+  enabled: boolean
+  ready: boolean
+  uid: string
+  origin: number
 }
-const props = withDefaults(
-  defineProps<{ mfaData: MfaData; isLogin: boolean }>(),
-  {
-    mfaData: { enabled: false, ready: false, uid: "", origin: 0 },
-    isLogin: true,
-  }
-);
+const props = withDefaults(defineProps<{ mfaData: MfaData; isLogin: boolean }>(), {
+  mfaData: { enabled: false, ready: false, uid: '', origin: 0 },
+  isLogin: true
+})
 interface MfaForm {
-  code: string;
+  code: string
 }
 
-const mobileEnv = computed(() => isMobile());
+const mobileEnv = computed(() => isMobile())
 const isIphone = computed(() => {
-  const ua = navigator.userAgent;
+  const ua = navigator.userAgent
   if (!ua) {
-    return false;
+    return false
   }
-  return ua.match(/(iPhone|iPad|iPod|iOS)/i);
-});
-const step = ref(1);
-const errorMsg = ref("");
-const errorCode = ref();
-const mfaForm = ref();
-const userQr = ref("");
+  return ua.match(/(iPhone|iPad|iPod|iOS)/i)
+})
+const step = ref(1)
+const errorMsg = ref('')
+const errorCode = ref()
+const mfaForm = ref()
+const userQr = ref('')
 const rule = reactive<any>({
   code: [
     {
       required: true,
-      message: t("setting_mfa.code_input_msg", [6]),
-      trigger: "blur",
+      message: t('setting_mfa.code_input_msg', [6]),
+      trigger: 'blur'
     },
     {
       pattern: /^\d{6}$/,
-      message: t("setting_mfa.code_input_msg", [6]),
-      trigger: "blur",
-    },
-  ],
-});
+      message: t('setting_mfa.code_input_msg', [6]),
+      trigger: 'blur'
+    }
+  ]
+})
 
 const state = reactive({
   form: reactive<MfaForm>({
-    code: "",
-  }),
-});
+    code: ''
+  })
+})
 // method area
-const enterHandler = (e) => {
-  e.preventDefault();
-  next();
-};
+const enterHandler = e => {
+  e.preventDefault()
+  next()
+}
 const next = () => {
   if (step.value !== 1) {
-    mfaLogin();
-    return;
+    mfaLogin()
+    return
   }
-  step.value = (step.value + 1) % 3;
-};
+  step.value = (step.value + 1) % 3
+}
 const back = () => {
-  step.value = step.value - 1;
-};
+  step.value = step.value - 1
+}
 const getCurLocation = () => {
-  let queryRedirectPath = "/workbranch/index";
+  let queryRedirectPath = '/workbranch/index'
   if (router.currentRoute.value.query.redirect) {
-    queryRedirectPath = router.currentRoute.value.query.redirect as string;
+    queryRedirectPath = router.currentRoute.value.query.redirect as string
   }
-  return queryRedirectPath;
-};
+  return queryRedirectPath
+}
 const back2Login = () => {
   if (!props.mfaData?.origin) {
-    emits("close");
-    return;
+    emits('close')
+    return
   }
-  logoutHandler(true);
-};
+  logoutHandler(true)
+}
 
 const generateQr = () => {
   if (!props.mfaData?.uid) {
-    return;
+    return
   }
-  const url = `/mfa/qr/${props.mfaData.uid}`;
-  request.post({ url }).then((res) => {
-    userQr.value = res.data?.img;
-  });
-};
+  const url = `/mfa/qr/${props.mfaData.uid}`
+  request.post({ url }).then(res => {
+    userQr.value = res.data?.img
+  })
+}
 const mfaLogin = () => {
-  const formEl = mfaForm.value;
-  if (!formEl) return;
-  formEl.validate((valid) => {
+  const formEl = mfaForm.value
+  if (!formEl) return
+  formEl.validate(valid => {
     if (valid) {
-      const url = props.isLogin ? `/mfa/login` : "/user/mfaBind";
+      const url = props.isLogin ? `/mfa/login` : '/user/mfaBind'
       const param = {
         id: props.mfaData.uid,
-        code: state.form.code,
-      };
+        code: state.form.code
+      }
       request
         .post({ url, data: param })
-        .then((res) => {
-          errorMsg.value = "";
-          errorCode.value = null;
+        .then(res => {
+          errorMsg.value = ''
+          errorCode.value = null
           if (!props.isLogin) {
-            emits("refreshBind", true);
-            return;
+            emits('refreshBind', true)
+            return
           }
           if (res.data?.token) {
-            userStore.setToken(res.data.token);
-            userStore.setExp(res.data.exp);
-            userStore.setTime(Date.now());
+            userStore.setToken(res.data.token)
+            userStore.setExp(res.data.exp)
+            userStore.setTime(Date.now())
             if (mobileEnv.value) {
-              emits("success");
-              return;
+              emits('success')
+              return
             }
-            const queryRedirectPath = getCurLocation();
-            router.push({ path: queryRedirectPath });
+            const queryRedirectPath = getCurLocation()
+            router.push({ path: queryRedirectPath })
           }
         })
-        .catch((msg) => {
-          errorMsg.value = msg;
-          errorCode.value = param.code;
-          setCodeError();
-        });
+        .catch(msg => {
+          errorMsg.value = msg
+          errorCode.value = param.code
+          setCodeError()
+        })
     }
-  });
-};
+  })
+}
 const setCodeError = () => {
-  const ruleArray: any[] = rule.code as any[];
-  const len = ruleArray.length;
+  const ruleArray: any[] = rule.code as any[]
+  const len = ruleArray.length
   if (!errorMsg.value && len > 2) {
-    ruleArray.splice(2, 1);
+    ruleArray.splice(2, 1)
   } else if (errorMsg.value && len > 2) {
-    ruleArray[2]["message"] = errorMsg.value;
+    ruleArray[2]['message'] = errorMsg.value
   } else if (errorMsg.value && len === 2) {
     ruleArray.push({
       message: errorMsg.value,
       validator: (rule, value, callback) => {
         if (value === errorCode.value) {
-          callback(new Error(rule.message));
+          callback(new Error(rule.message))
         }
-        callback();
+        callback()
       },
-      trigger: "blur",
-    });
+      trigger: 'blur'
+    })
   }
-  mfaForm.value?.validate();
-};
+  mfaForm.value?.validate()
+}
 
-const emits = defineEmits(["close", "refreshBind", "success"]);
+const emits = defineEmits(['close', 'refreshBind', 'success'])
 const keyFunction = (e: any) => {
   if (e?.keyCode === 13) {
-    next();
-    e.stopPropagation();
+    next()
+    e.stopPropagation()
   }
-};
+}
 const removeKeyDown = () => {
-  window.removeEventListener("keydown", keyFunction);
-};
+  window.removeEventListener('keydown', keyFunction)
+}
 const addKeyDown = () => {
-  window.addEventListener("keydown", keyFunction);
-};
+  window.addEventListener('keydown', keyFunction)
+}
 onBeforeUnmount(() => {
-  removeKeyDown();
-});
+  removeKeyDown()
+})
 onMounted(() => {
-  step.value = props.mfaData.ready ? 3 : 1;
+  step.value = props.mfaData.ready ? 3 : 1
   if (!props.mfaData?.ready) {
-    generateQr();
+    generateQr()
   }
-  addKeyDown();
-});
+  addKeyDown()
+})
 </script>
 
 <style lang="less">
@@ -326,94 +308,12 @@ onMounted(() => {
   .is-error {
     margin-bottom: 48px !important;
   }
+
   .mfa-step {
     height: 56px;
     background-color: #fff;
     border-bottom: 1px solid #1f232926;
     position: relative;
-
-    .ed-step.is-center .ed-step__line {
-      width: 80px;
-      right: 40px;
-      z-index: 5;
-      left: calc(100% - 40px);
-    }
-
-    .ed-step__icon.is-icon {
-      width: auto;
-      position: relative;
-      z-index: 0;
-      height: 25px;
-    }
-
-    .ed-step__head {
-      line-height: 0;
-    }
-
-    .ed-step__head.is-finish::after {
-      right: calc(100% - 64px);
-      top: 44%;
-    }
-
-    .ed-step__head.is-process .ed-step__icon {
-      background-color: transparent;
-
-      .step-icon {
-        .icon {
-          background: var(--ed-color-primary);
-        }
-        .title {
-          color: #1f2329;
-          font-weight: 500 !important;
-        }
-      }
-    }
-
-    .ed-step__head.is-finish .ed-step__icon {
-      background-color: transparent;
-
-      .step-icon {
-        .icon {
-          border: 1px solid var(--ed-color-primary);
-        }
-      }
-    }
-
-    .ed-step__head.is-wait .ed-step__icon {
-      background-color: transparent;
-      .step-icon {
-        .icon {
-          color: #8f959e;
-          border: 1px solid #8f959e;
-        }
-        .title {
-          color: #8f959e;
-        }
-      }
-    }
-
-    .step-icon {
-      display: flex;
-      padding: 0 48px;
-      align-items: center;
-
-      .icon {
-        width: 25px;
-        height: 25px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-      }
-
-      .title {
-        margin-left: 8px;
-        color: #1f2329;
-        font-size: 14px;
-        font-weight: 400;
-        line-height: 22px;
-      }
-    }
   }
 }
 </style>
