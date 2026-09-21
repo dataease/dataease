@@ -891,6 +891,7 @@ const init = viewItem => {
 }
 
 const save = () => {
+  outerContentEditor.value?.syncContent?.()
   // 字段检查
   let subCheckCountAll = 0
   state.linkJump.linkJumpInfoArray.forEach(linkJumpInfo => {
@@ -943,6 +944,7 @@ const nodeClick = data => {
   if (!data) {
     return
   }
+  outerContentEditor.value?.syncContent?.()
   state.linkJumpInfo = state.mapJumpInfoArray[data.sourceFieldId]
   if (!state.linkJumpInfo.windowSize) {
     state.linkJumpInfo.windowSize = 'middle'
@@ -1076,7 +1078,7 @@ const cancel = () => {
 }
 
 const insertFieldToCodeMirror = (value: string) => {
-  outerContentEditor.value.insertFieldToCodeMirror(value)
+  outerContentEditor.value?.insertFieldToCodeMirror(value)
 }
 
 const outerContentShow = computed(() => {
