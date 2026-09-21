@@ -24,11 +24,24 @@ const state = reactive({
 })
 const timer = ref(null)
 
+const syncContent = () => {
+  if (!linkJumpInfo.value || !mirror.value) {
+    return
+  }
+  const content = mirror.value.state.doc.toString()
+  const contentTrans = setNameIdTrans('sourceFieldName', 'sourceFieldId', content, state.name2Auto)
+  linkJumpInfo.value.content = contentTrans
+}
+
 const insertFieldToCodeMirror = (value: string) => {
+  if (!mirror.value) {
+    return
+  }
   mirror.value.dispatch({
     changes: { from: mirror.value.viewState.state.selection.ranges[0].from, insert: value },
     selection: { anchor: mirror.value.viewState.state.selection.ranges[0].from }
   })
+  syncContent()
 }
 
 const setNameIdTrans = (from, to, originName, name2Auto?: string[]) => {
@@ -66,25 +79,17 @@ const editorInit = content => {
       insert: state.content
     }
   })
-  clearTimeout(timer.value)
-  timer.value = setInterval(() => {
-    const content = mirror.value ? mirror.value.state.doc.toString() : ''
-    const contentTrans = setNameIdTrans(
-      'sourceFieldName',
-      'sourceFieldId',
-      content,
-      state.name2Auto
-    )
-    linkJumpInfo.value.content = contentTrans
-  }, 1500)
+  clearInterval(timer.value)
+  timer.value = setInterval(syncContent, 1500)
 }
 defineExpose({
   editorInit,
-  insertFieldToCodeMirror
+  insertFieldToCodeMirror,
+  syncContent
 })
 
 onBeforeUnmount(() => {
-  clearTimeout(timer.value)
+  clearInterval(timer.value)
   mirror.value && mirror.value.destroy?.()
 })
 </script>
