@@ -297,6 +297,12 @@ export function getCustomTheme(chart: Chart): S2Theme {
       const {tableHeaderAlign, tableTitleFontSize} = tableHeader
       // 自定义模式由具体表头单元格按字段覆盖，主题先使用左对齐兜底
       const resolvedTableHeaderAlign = tableHeaderAlign === 'custom' ? 'left' : tableHeaderAlign
+      let indexHeaderAlign = resolvedTableHeaderAlign
+      if (['table-info', 'table-normal'].includes(chart.type) && tableHeaderAlign === 'custom') {
+        // 序号表头使用 cornerCell，不经过普通表头的字段级对齐逻辑。
+        const indexAlignConfig = tableHeader.alignConfig?.find(item => item.id === SERIES_NUMBER_FIELD)
+        indexHeaderAlign = indexAlignConfig?.align ?? resolvedTableHeaderAlign
+      }
       const tmpTheme: S2Theme = {
         cornerCell: {
           cell: {
@@ -305,7 +311,7 @@ export function getCustomTheme(chart: Chart): S2Theme {
           bolderText: {
             fill: tableHeaderFontColor,
             fontSize: tableTitleFontSize,
-            textAlign: resolvedTableHeaderAlign,
+            textAlign: indexHeaderAlign,
             fontStyle,
             fontWeight,
             fontFamily: textFontFamily
@@ -313,7 +319,7 @@ export function getCustomTheme(chart: Chart): S2Theme {
           text: {
             fill: tableHeaderFontColor,
             fontSize: tableTitleFontSize,
-            textAlign: resolvedTableHeaderAlign,
+            textAlign: indexHeaderAlign,
             fontStyle,
             fontWeight,
             fontFamily: textFontFamily
@@ -321,7 +327,7 @@ export function getCustomTheme(chart: Chart): S2Theme {
           measureText: {
             fill: tableHeaderFontColor,
             fontSize: tableTitleFontSize,
-            textAlign: resolvedTableHeaderAlign,
+            textAlign: indexHeaderAlign,
             fontStyle,
             fontWeight,
             fontFamily: textFontFamily
