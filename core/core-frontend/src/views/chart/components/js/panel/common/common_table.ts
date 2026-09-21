@@ -408,6 +408,10 @@ export function getCustomTheme(chart: Chart): S2Theme {
             }
           }
         }
+        if (['table-info', 'table-normal'].includes(chart.type)) {
+          // S2 左边框分段取色，清空统一颜色后分别使用表头、表身颜色，避免表头背景色延伸到表身。
+          tmpTheme.splitLine.verticalBorderColor = ''
+        }
         merge(theme, tmpTheme)
       }
     }
