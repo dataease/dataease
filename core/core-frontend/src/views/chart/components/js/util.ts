@@ -388,6 +388,18 @@ export function parseJson<T>(str: T | JSONString<T>): T {
   return JSON.parse(str) as T
 }
 
+// 面板与渲染共用生效颜色，读取主题色时不覆盖保存的自定义颜色
+export function resolveAxisLineColor(
+  customAttr: Chart['customAttr'],
+  axis: DeepPartial<ChartAxisStyle>
+): string {
+  if (axis.axisLine.colorMode === 'theme') {
+    const attr = parseJson(customAttr)
+    return attr?.basicStyle?.themeContrastColor ?? attr?.label?.color ?? '#000000'
+  }
+  return axis.axisLine.lineStyle.color
+}
+
 type FlowFunction<P, R> = (param: P, result: R, context?: Record<string, any>, thisArg?: any) => R
 
 export function flow<P, R>(...flows: FlowFunction<P, R>[]): FlowFunction<P, R> {

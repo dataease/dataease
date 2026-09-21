@@ -5,7 +5,7 @@ import {
   ChartLibraryType
 } from '@/views/chart/components/js/panel/types'
 import { configEmptyDataStyle } from '@/views/chart/components/js/panel/common/common_antv'
-import { parseJson, setupSeriesColor } from '../../../util'
+import { parseJson, resolveAxisLineColor, setupSeriesColor } from '../../../util'
 import { isEmpty } from 'lodash-es'
 import { valueFormatter } from '../../../formatter'
 import {
@@ -939,12 +939,7 @@ export abstract class G2ChartView<
    * 解析轴线最终颜色，主题模式使用现有反差色，自定义及历史配置使用保存值
    */
   protected getAxisLineColor(chart: Chart, axis: DeepPartial<ChartAxisStyle>): string {
-    if (axis.axisLine.colorMode === 'theme') {
-      const customAttr = parseJson(chart.customAttr)
-      return customAttr?.basicStyle?.themeContrastColor ?? customAttr?.label?.color ?? '#000000'
-    }
-    // 兼容历史图表：缺失颜色模式时继续使用已保存的轴线颜色
-    return axis.axisLine.lineStyle.color
+    return resolveAxisLineColor(chart.customAttr, axis)
   }
 
   /**

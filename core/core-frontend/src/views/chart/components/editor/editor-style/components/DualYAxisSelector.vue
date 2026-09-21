@@ -98,6 +98,7 @@ onMounted(() => {
         :themes="themes"
         type="left"
         :chart-type="chart.type"
+        :custom-attr="chart.customAttr"
         :layout="chart.customAttr.basicStyle.layout"
         @on-change-y-axis-form="changeAxisStyle"
       />
@@ -118,6 +119,7 @@ onMounted(() => {
         :themes="themes"
         type="right"
         :chart-type="chart.type"
+        :custom-attr="chart.customAttr"
         :layout="chart.customAttr.basicStyle.layout"
         @on-change-y-axis-form="changeSubAxisStyle"
       />
