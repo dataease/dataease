@@ -20,6 +20,14 @@ import {
 
 type MixLegendRelation = [string, string]
 
+export const setupMixAxisDefaults = (chart: ChartObj): void => {
+  for (const axis of [chart.customStyle.yAxis, chart.customStyle.yAxisExt]) {
+    if (!axis.axisLine.show) {
+      axis.axisLabel.showTick = false
+    }
+  }
+}
+
 export const getMixColumnWidthOptions = (
   columnWidthRatio: number | null | undefined,
   transforms = []

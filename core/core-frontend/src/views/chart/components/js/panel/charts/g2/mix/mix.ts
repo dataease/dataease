@@ -26,6 +26,7 @@ import {
 } from '../../../common/common_antv'
 import {
   CHART_MIX_EDITOR_PROPERTY,
+  setupMixAxisDefaults,
   CHART_MIX_EDITOR_PROPERTY_INNER,
   filterValidMixTooltipItems,
   getAssistLineAxisIndex,
@@ -686,6 +687,7 @@ export class ColumnLineMix extends G2ChartView {
   }
 
   public setupDefaultOptions(chart: ChartObj): ChartObj {
+    setupMixAxisDefaults(chart)
     const { senior } = chart
     if (
       senior.functionCfg.emptyDataStrategy == undefined ||

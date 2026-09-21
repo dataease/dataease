@@ -24,6 +24,7 @@ import {
 } from '../../../common/common_antv'
 import {
   CHART_MIX_EDITOR_PROPERTY,
+  setupMixAxisDefaults,
   CHART_MIX_EDITOR_PROPERTY_INNER,
   configMixCustomLegend,
   filterValidMixTooltipItems,
@@ -842,6 +843,7 @@ export class GroupLineMix extends G2ChartView {
   }
 
   public setupDefaultOptions(chart: ChartObj): ChartObj {
+    setupMixAxisDefaults(chart)
     const { customAttr, senior } = chart
     if (
       senior.functionCfg.emptyDataStrategy == undefined ||
