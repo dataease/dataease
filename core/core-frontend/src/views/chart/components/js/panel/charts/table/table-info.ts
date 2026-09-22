@@ -346,6 +346,10 @@ export class TableInfo extends S2ChartView<TableSheet> {
         ...s2Options.style.colCell,
         ...autoWrapStyle
       }
+      // 自动换行时由 S2 计算表头高度，保留隐藏表头的高度设置。
+      if (tableHeader.showTableHeader !== false) {
+        delete s2Options.style.colCell.height
+      }
     }
     // 开始渲染
     const newChart = new TableSheet(containerDom, s2DataConfig, s2Options)
