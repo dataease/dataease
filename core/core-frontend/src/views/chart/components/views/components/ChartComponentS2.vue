@@ -825,6 +825,10 @@ const tabStyle = computed(() => [
 ])
 
 const tablePageClass = computed(() => {
+  // 大屏分页器始终保持透明背景，不能由字体颜色决定。
+  if (!isDashboard()) {
+    return 'table-page-info_dark'
+  }
   return (
     ['#ffffff', '#ffffffff', '#a6a6a6ff'].includes(
       canvasStyleData.value.component.seniorStyleSetting?.pagerColor.toLowerCase()
