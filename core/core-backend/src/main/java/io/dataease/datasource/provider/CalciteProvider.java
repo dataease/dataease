@@ -1338,6 +1338,7 @@ public class CalciteProvider extends Provider {
                 ));
                 startSshSession(configuration, null, ds.getId());
                 dataSource.setUrl(configuration.getJdbc());
+                LogUtil.info(ds.getName() + ": " + dataSource.getUrl());
                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
                 rootSchema.add(ds.getSchemaAlias(), schema);
                 break;

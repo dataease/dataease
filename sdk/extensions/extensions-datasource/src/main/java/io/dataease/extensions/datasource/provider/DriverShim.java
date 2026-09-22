@@ -41,6 +41,9 @@ public class DriverShim implements Driver {
     }
 
     public Connection connect(String u, Properties p) throws SQLException {
+        if (!this.driver.acceptsURL(u)) {
+            return null;
+        }
         return this.driver.connect(u, p);
     }
 }
