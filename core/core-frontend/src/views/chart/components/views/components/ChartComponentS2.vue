@@ -351,6 +351,12 @@ const mouseMove = () => {
 }
 
 const mouseLeave = () => {
+  const interaction = myChart?.interaction
+  // 定位高亮独立于 tooltip，离开时取消延迟聚焦并仅清除悬浮态，保留点击选中态
+  interaction?.clearHoverTimer()
+  if (interaction?.isHoverState() || interaction?.isHoverFocusState()) {
+    interaction.clearState()
+  }
   // S2 在 CSS 缩放下可能无法通过 canvas mouseout 隐藏 tooltip
   myChart?.hideTooltip()
   initScroll()
