@@ -18,6 +18,7 @@ import {
   configHeaderInteraction,
   configMergeCells,
   configTooltip,
+  SortTooltip,
   getConditions,
   getCustomTheme,
   getStyle,
@@ -78,6 +79,10 @@ export abstract class S2ChartView<P extends SpreadSheet> extends AntVAbstractCha
   }
 
   protected showTooltip(s2Instance: P, event, metaConfig: Meta[]) {
+    // 排序菜单打开时，悬浮单元格不能覆盖菜单内容或重置容器样式
+    if (s2Instance.tooltip instanceof SortTooltip && s2Instance.tooltip.isSortMenuVisible()) {
+      return
+    }
     const cell = s2Instance.getCell(event.target)
     const meta = cell.getMeta()
     let content = ''

@@ -350,7 +350,14 @@ const mouseMove = () => {
   myChart?.facet?.timer?.stop()
 }
 
-const mouseLeave = () => {
+const mouseLeave = (event: MouseEvent) => {
+  // 移入表格浮层时继续保留菜单，并保持自动滚动暂停
+  if (
+    event.relatedTarget instanceof Node &&
+    myChart?.tooltip?.container?.contains(event.relatedTarget)
+  ) {
+    return
+  }
   const interaction = myChart?.interaction
   // 定位高亮独立于 tooltip，离开时取消延迟聚焦并仅清除悬浮态，保留点击选中态
   interaction?.clearHoverTimer()

@@ -1645,6 +1645,10 @@ export function handleTableEmptyStrategy(chart: Chart) {
 }
 
 export class SortTooltip extends BaseTooltip {
+  isSortMenuVisible() {
+    return this.visible && !!this.options && 'iconName' in this.options && !!this.options.iconName
+  }
+
   show(showOptions) {
     const {iconName} = showOptions
     if (iconName) {
@@ -1660,6 +1664,10 @@ export class SortTooltip extends BaseTooltip {
     this.visible = true
     this.options = showOptions
     const container = this['getContainer']()
+    // 排序菜单复用内容提示容器，在测量位置前恢复菜单布局
+    Object.assign(container.style, {
+      width: 'auto', minWidth: '80px', textAlign: 'left'
+    })
     // 用 vue 手动 patch
     const vNode = createVNode(TableTooltip, {
       table: this.spreadsheet,
@@ -1803,6 +1811,10 @@ export function configTooltip(chart: Chart, option: S2Options) {
       boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 8px 0px',
       borderRadius: '3px',
       padding: '4px 12px',
+      // 先按内容确定宽度再校正位置，避免靠近右边界时被剩余空间挤压换行
+      width: 'max-content',
+      minWidth: '0',
+      textAlign: 'center',
       opacity: 0.95,
       position: 'absolute'
     },
@@ -2934,7 +2946,11 @@ export function setupMergedCellHover(sheet: SpreadSheet) {
   sheet.on(S2Event.LAYOUT_RESIZE_MOUSE_DOWN, clearHover)
   sheet.on(S2Event.LAYOUT_AFTER_RENDER, clearHover)
   const canvas = sheet.getCanvasElement()
-  const onMouseLeave = () => {
+  const onMouseLeave = (event: MouseEvent) => {
+    // 移入浮层仍属于表格交互，不能关闭正在操作的排序菜单
+    if (event.relatedTarget instanceof globalThis.Node && sheet.tooltip?.container?.contains(event.relatedTarget)) {
+      return
+    }
     const { interaction } = sheet
     // 先取消延迟聚焦，避免离开后定时回调重新设置行列高亮和 tooltip。
     interaction.clearHoverTimer()
