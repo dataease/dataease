@@ -1208,6 +1208,19 @@ public class CalciteProvider extends Provider {
         }
     }
 
+    private void setDataSourceDriver(BasicDataSource dataSource, String driverClass) {
+        if (StringUtils.isBlank(driverClass)) {
+            return;
+        }
+        try {
+            Driver driver = (Driver) extendedJdbcClassLoader.loadClass(driverClass).newInstance();
+            dataSource.setDriver(driver);
+        } catch (Exception e) {
+            LogUtil.error("Failed to load JDBC driver: " + driverClass, e);
+            DEException.throwException(e.getMessage());
+        }
+    }
+
     private Connection getCalciteConnection() {
         registerDriver();
         Properties info = new Properties();
@@ -1338,6 +1351,7 @@ public class CalciteProvider extends Provider {
                 ));
                 startSshSession(configuration, null, ds.getId());
                 dataSource.setUrl(configuration.getJdbc());
+                setDataSourceDriver(dataSource, configuration.getDriver());
                 LogUtil.info(ds.getName() + ": " + dataSource.getUrl());
                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
                 rootSchema.add(ds.getSchemaAlias(), schema);
