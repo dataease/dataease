@@ -2763,7 +2763,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                       controls-position="right"
                   /></el-form-item>
                   <el-form-item :key="index + 'minTerm'"
-                    ><el-select v-model="domain.minTerm">
+                    ><el-select style="width: 100px" v-model="domain.minTerm">
                       <el-option
                         v-for="item in equalMin"
                         :key="item.value"
@@ -2775,7 +2775,7 @@ const getIconNameCalc = (deType, extField, dimension = false) => {
                     {{ t('dataset.field_value') }}
                   </div>
                   <el-form-item :key="index + 'maxTerm'"
-                    ><el-select v-model="domain.maxTerm">
+                    ><el-select style="width: 100px" v-model="domain.maxTerm">
                       <el-option
                         v-for="item in equalMin"
                         :key="item.value"
