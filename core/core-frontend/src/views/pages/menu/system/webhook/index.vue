@@ -202,7 +202,7 @@ const batchDelHandler = () => {
         })
       }
     })
-    .finally(err => {
+    .catch(err => {
       ElMessage.error(err)
     })
 }

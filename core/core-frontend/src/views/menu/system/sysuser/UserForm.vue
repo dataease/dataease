@@ -494,7 +494,7 @@ const variableChange = obj => {
           }
         }
       })
-      .finally(err => {
+      .catch(err => {
         ElMessage.error(err)
       })
   }
