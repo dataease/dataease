@@ -34,6 +34,38 @@ import { formatterItem } from '@/views/chart/components/js/formatter'
 import { checkFilterRemove } from '@/custom-component/v-query/QueryUtils'
 const { t } = useI18n()
 
+const collectComponentIds = (component, ids = new Set<string>()) => {
+  if (!component) {
+    return ids
+  }
+  if (component.id) {
+    ids.add(component.id)
+  }
+  if (component.component === 'Group' && Array.isArray(component.propValue)) {
+    component.propValue.forEach(child => collectComponentIds(child, ids))
+  }
+  if (component.component === 'DeTabs' && Array.isArray(component.propValue)) {
+    component.propValue.forEach(tabItem => {
+      tabItem.componentData?.forEach(child => collectComponentIds(child, ids))
+    })
+  }
+  return ids
+}
+
+const filterCopyCanvasViewIdMap = (component, idMap) => {
+  if (!idMap) {
+    return idMap
+  }
+  const componentIds = collectComponentIds(component)
+  return Object.keys(idMap).reduce((result, oldComponentId) => {
+    const newComponentId = idMap[oldComponentId]
+    if (componentIds.has(newComponentId)) {
+      result[oldComponentId] = newComponentId
+    }
+    return result
+  }, {})
+}
+
 export const dvMainStore = defineStore('dataVisualization', {
   state: () => {
     return {
@@ -438,8 +470,8 @@ export const dvMainStore = defineStore('dataVisualization', {
           }
         })
       }
-      //组件组内部可能还有多个图表
-      this.updateCopyCanvasView(idMap, canvasViewInfoPre)
+      // 只初始化本次实际加入组件的视图信息，避免多选复用时覆盖其他组件已适配的新主题样式
+      this.updateCopyCanvasView(filterCopyCanvasViewIdMap(component, idMap), canvasViewInfoPre)
     },
     updateCopyCanvasView(idMap, canvasViewInfoPre = this.canvasViewInfo) {
       // eslint-disable-next-line @typescript-eslint/no-this-alias
