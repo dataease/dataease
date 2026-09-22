@@ -22,7 +22,7 @@ import dvFolder from '@/assets/svg/dv-folder.svg'
 import dvDashboardSpine from '@/assets/svg/dv-dashboard-spine.svg'
 import dvScreenSpine from '@/assets/svg/dv-screen-spine.svg'
 import icon_dataset from '@/assets/svg/icon_dataset.svg'
-import { ref, reactive, onMounted, nextTick } from 'vue'
+import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
 import request from '@/config/axios'
 import { Icon } from '@/components/icon-custom'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
@@ -156,6 +156,7 @@ const activeNameChange = async tabName => {
 }
 
 const activaNameChangeHandler = async tabName => {
+  cancelTargetFilter()
   targetkey.value = ''
   const type = tabName === 'user' ? 0 : 1
   const cacheKey = `subject_${type}`
@@ -170,6 +171,7 @@ const activaNameChangeHandler = async tabName => {
 }
 
 const activeAuthChange = async tabName => {
+  cancelTargetFilter()
   resourcekey.value = ''
   menukey.value = ''
   if (tabName === 'menu') {
@@ -892,7 +894,15 @@ const matchFilter = (row, val): boolean => {
   return match
 }
 const vxeTableKey = ref(+new Date())
+let targetFilterTimer: ReturnType<typeof setTimeout> | undefined
+const cancelTargetFilter = () => {
+  if (targetFilterTimer !== undefined) {
+    clearTimeout(targetFilterTimer)
+    targetFilterTimer = undefined
+  }
+}
 const filterTarget = val => {
+  cancelTargetFilter()
   state.tableData.forEach(item => {
     matchFilter(item, val)
   })
@@ -900,6 +910,15 @@ const filterTarget = val => {
     vxeTableKey.value = +new Date()
   })
 }
+const onTargetSearchInput = (val: string) => {
+  cancelTargetFilter()
+  if (!val) {
+    filterTarget('')
+    return
+  }
+  targetFilterTimer = setTimeout(() => filterTarget(val), 1500)
+}
+onUnmounted(cancelTargetFilter)
 const iconMap = {
   mysql: mysqlDs,
   oracle: oracleDs,
@@ -1187,7 +1206,7 @@ defineExpose({
             class="search-table-input"
             v-model="targetkey"
             clearable
-            @change="filterTarget"
+            @input="onTargetSearchInput"
           >
             <template #prefix>
               <el-icon>
