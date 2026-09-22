@@ -60,7 +60,7 @@ const domId = ref('de-canvas-' + canvasId.value)
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
-const { pcMatrixCount, curOriginThemes, mobileInPc } = storeToRefs(dvMainStore)
+const { pcMatrixCount, curOriginThemes, mobileInPc, batchOptStatus } = storeToRefs(dvMainStore)
 const canvasOut = ref(null)
 const canvasInner = ref(null)
 const canvasInitStatus = ref(false)
@@ -139,7 +139,7 @@ const handleDragOver = e => {
 }
 
 const handleMouseDown = e => {
-  if (isMainCanvas(canvasId.value)) {
+  if (isMainCanvas(canvasId.value) && !batchOptStatus.value) {
     e.stopPropagation()
     dvMainStore.setClickComponentStatus(false)
     dvMainStore.setInEditorStatus(true)
