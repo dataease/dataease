@@ -438,13 +438,15 @@ const loadShareInfo = (cb, resetPermissions = false) => {
       const sameShare = state.detailInfo.id === res.data?.id
       state.detailInfo = { ...res.data }
       if (resetPermissions || !sameShare) {
-        visitorChoices.value = [1, 2, 4].filter(
-          bit =>
-            ((res.data?.visitorPermissions ?? 7) &
-              (res.data?.allowedVisitorPermissions ?? 7) &
-              bit) !==
-            0
-        )
+        visitorChoices.value = res.data
+          ? [1, 2, 4].filter(
+              bit =>
+                ((res.data.visitorPermissions ?? 7) &
+                  (res.data.allowedVisitorPermissions ?? 7) &
+                  bit) !==
+                0
+            )
+          : []
       }
       if (res.data?.uuid) {
         originUuid.value = res.data.uuid
