@@ -57,3 +57,6 @@ core/core-frontend/src/assets/fsSvg.html
 .workbuddy/
 docs/
 
+.codex/**/.env.local
+.codex/**/browser-profile/
+.codex/**/output/

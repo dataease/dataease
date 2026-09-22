@@ -1,0 +1,13 @@
+[[sources]]
+id = "dataease"
+dsn = "${DSN}"
+
+[[tools]]
+name = "execute_sql"
+source = "dataease"
+readonly = true
+max_rows = 1000
+
+[[tools]]
+name = "search_objects"
+source = "dataease"
