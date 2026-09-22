@@ -69,9 +69,6 @@ public class EngineServer implements EngineApi {
 
     @Override
     public void save(DatasourceDTO datasourceDTO) {
-        if (!V3UserUtil.getUser().getAccount().equals("admin")) {
-            DEException.throwException("非管理员，无权访问！");
-        }
         if (StringUtils.isNotEmpty(datasourceDTO.getConfiguration())) {
             datasourceDTO.setConfiguration(new String(Base64.getDecoder().decode(datasourceDTO.getConfiguration())));
         }
