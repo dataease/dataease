@@ -1004,11 +1004,8 @@ const onAxisChange = (e, axis: AxisType) => {
 }
 
 const calcData = (view, resetDrill = false, updateQuery = '') => {
-  if (
-    view.refreshTime === '' ||
-    parseFloat(view.refreshTime).toString() === 'NaN' ||
-    parseFloat(view.refreshTime) < 1
-  ) {
+  const refreshTime = Number(view.refreshTime)
+  if (!Number.isInteger(refreshTime) || refreshTime < 1 || refreshTime > 3600) {
     ElMessage.error(t('chart.only_input_number'))
     return
   }
@@ -1896,12 +1893,15 @@ const dragVerticalTop = computed(() => {
   return h > previewHeight.value - 53 ? previewHeight.value - 53 : h
 })
 
-const onRefreshChange = val => {
-  recordSnapshotInfo('render')
-  if (val === '' || parseFloat(val).toString() === 'NaN' || parseFloat(val) < 1) {
-    ElMessage.error(t('chart.only_input_number'))
-    return
+const onRefreshChange = (val: string | number) => {
+  const refreshTime = Number(val)
+  // 先将刷新时间修正为 1–3600 的整数，再记录快照，避免保存无效配置。
+  if (!Number.isFinite(refreshTime)) {
+    view.value.refreshTime = 1
+  } else {
+    view.value.refreshTime = Math.min(3600, Math.max(1, Math.trunc(refreshTime)))
   }
+  recordSnapshotInfo('render')
 }
 
 const isCtrl = ref(false)
@@ -3425,6 +3425,7 @@ const chartStyleScroll = (val: any) => {
                               :effect="themes"
                               :class="[themes === 'dark' && 'dv-dark']"
                               size="small"
+                              inputmode="numeric"
                               :min="1"
                               :max="3600"
                               :disabled="!view.refreshViewEnable"
