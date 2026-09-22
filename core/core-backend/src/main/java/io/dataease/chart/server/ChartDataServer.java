@@ -786,7 +786,7 @@ public class ChartDataServer implements ChartDataApi {
     private static CellStyle getNumericCellStyle(Workbook workbook) {
         return NUMERIC_STYLE_CACHE.computeIfAbsent(workbook, wb -> {
             CellStyle style = wb.createCellStyle();
-            style.setDataFormat(wb.createDataFormat().getFormat("#.##########"));
+            style.setDataFormat(wb.createDataFormat().getFormat("General"));
             return style;
         });
     }
