@@ -72,6 +72,21 @@ export function filterParamsOptions(params, paramsOption) {
   }
   // 数字与字符串按值相等（1 与 "1" 视为相等），统一转成字符串处理
   const toStr = value => (typeof value === 'number' ? String(value) : value)
+  const zeroDecimalReg = /^[+-]?\d+\.0+$/
+  const filterValueEqual = (left, right) => {
+    const leftStr = toStr(left)
+    const rightStr = toStr(right)
+    if (leftStr === rightStr) {
+      return true
+    }
+    if (
+      (typeof leftStr === 'string' && zeroDecimalReg.test(leftStr)) ||
+      (typeof rightStr === 'string' && zeroDecimalReg.test(rightStr))
+    ) {
+      return Number(leftStr) === Number(rightStr)
+    }
+    return false
+  }
   // 创建 paramsOption 集合和前缀集合用于快速查找
   const optionSet = new Set(paramsOption.map(toStr))
   const prefixSet = new Set()
@@ -92,7 +107,10 @@ export function filterParamsOptions(params, paramsOption) {
     // 统一转成字符串，使数字能与字符串选项匹配
     const value = toStr(rawValue)
     // 直接存在
-    if (optionSet.has(value)) {
+    if (
+      optionSet.has(value) ||
+      Array.from(optionSet).some(option => filterValueEqual(option, value))
+    ) {
       return true
     }
     // 如果是层级结构，检查所有父级前缀
