@@ -18,7 +18,7 @@ import {
 import { useI18n } from '@/hooks/web/useI18n'
 import { G2DrawOptions } from '@/views/chart/components/js/panel/types/impl/g2'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
-import { addExtremumText } from '@/views/chart/components/js/extremumUitl'
+import { getBarExtremumTransform } from '@/views/chart/components/js/extremumUitl'
 import { setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
 import { defaultsDeep } from 'lodash-es'
 
@@ -122,8 +122,7 @@ export class GroupBar extends StackBar {
 
     const { children } = options
     if (labelAttr.showExtremum) {
-      const { x: xField, color: colorField } = children[0].encode
-      addExtremumText(options.children, [], xField, 'value', colorField, false)
+      children[0].transform = [...(children[0].transform || []), getBarExtremumTransform([], false)]
     }
 
     if (!labelAttr.childrenShow) {

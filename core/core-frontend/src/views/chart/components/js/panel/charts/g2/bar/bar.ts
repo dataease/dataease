@@ -53,7 +53,7 @@ import {
   Transform,
   ViewSpec
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
-import { addExtremumText, extremumEvt } from '@/views/chart/components/js/extremumUitl'
+import { getBarExtremumTransform, extremumEvt } from '@/views/chart/components/js/extremumUitl'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 
 const { t } = useI18n()
@@ -186,8 +186,10 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     }, {})
     const showExtremumIds = Object.keys(formatterMap).filter(id => formatterMap[id].showExtremum)
     if (showExtremumIds?.length > 0) {
-      const { x: xField, color: colorField } = children[0].encode
-      addExtremumText(children, showExtremumIds, xField, 'value', colorField)
+      children[0].transform = [
+        ...(children[0].transform || []),
+        getBarExtremumTransform(showExtremumIds)
+      ]
     }
     const position = {
       position: l.position === 'middle' ? 'inside' : l.position,

@@ -8,6 +8,7 @@ import { configEmptyDataStyle } from '@/views/chart/components/js/panel/common/c
 import { parseJson, resolveAxisLineColor, setupSeriesColor } from '../../../util'
 import { isEmpty } from 'lodash-es'
 import { valueFormatter } from '../../../formatter'
+import { getExtremumLabelData } from '../../../extremumUitl'
 import {
   LEGEND_POPTIP_FOLLOW_DOM_STYLE,
   measureLegendTextWidth,
@@ -350,12 +351,38 @@ const getFieldDomain = (data: unknown[], field: unknown): unknown[] => {
  *
  * @param data 当前数据 mark 使用的数据
  * @param dimensionField 分类维度对应的字段名
- * @param limit 标签载体允许保留的最大数据行数
- * @returns 用于承载有限标签的数据子集
+ * @param limit 标签载体的数据行预算，最值所在维度优先占用
+ * @param extremumData 必须保留的最值记录
+ * @returns 保留最值维度并对普通标签采样的数据子集
  */
-const sampleLabelData = (data: unknown[], dimensionField: unknown, limit: number): unknown[] => {
+const sampleLabelData = (
+  data: unknown[],
+  dimensionField: unknown,
+  limit: number,
+  extremumData = new Set<unknown>()
+): unknown[] => {
+  if (limit <= 0) return []
   if (data.length <= limit) {
     return data
+  }
+  if (extremumData.size) {
+    // 保留最值所在维度的整组数据，避免分组柱和堆叠标签因缺少同组数据而错位
+    const dimensions = new Set(
+      [...extremumData].map(datum => (datum as Record<string, unknown>)?.[dimensionField as string])
+    )
+    const required = data.filter(
+      datum =>
+        extremumData.has(datum) ||
+        (typeof dimensionField === 'string' &&
+          dimensions.has((datum as Record<string, unknown>)?.[dimensionField]))
+    )
+    const selected = new Set(required)
+    sampleLabelData(
+      data.filter(datum => !selected.has(datum)),
+      dimensionField,
+      Math.max(0, limit - required.length)
+    ).forEach(datum => selected.add(datum))
+    return data.filter(datum => selected.has(datum))
   }
   if (typeof dimensionField !== 'string') {
     return sampleEvenly(data, limit)
@@ -419,11 +446,20 @@ const createSampledLabelMarks = (
   ) {
     return
   }
-  const visibleLabelData = data.filter(datum => hasVisibleLabelText(labels, datum))
+  const extremumData = getExtremumLabelData(labels, data)
+  // 最值使用 HTML 气泡，普通文本为空时仍必须保留其标签载体
+  const visibleLabelData = data.filter(
+    datum => extremumData.has(datum) || hasVisibleLabelText(labels, datum)
+  )
   if (!visibleLabelData.length) {
     return [{ ...mark, labels: [] }]
   }
-  const sampledData = sampleLabelData(visibleLabelData, encode.x, getLabelDataRenderLimit(labels))
+  const sampledData = sampleLabelData(
+    visibleLabelData,
+    encode.x,
+    getLabelDataRenderLimit(labels),
+    extremumData
+  )
   const seriesField = encode.series ?? encode.color
   const seriesDomain = mark.type === 'interval' ? getFieldDomain(data, seriesField) : []
   const labelMark = {
