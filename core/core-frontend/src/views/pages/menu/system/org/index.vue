@@ -541,8 +541,12 @@ onMounted(async () => {
 .sys-org-container {
   display: flex;
   height: calc(100% - 8px);
+  /* 用视口高度做硬上限：父级高度被内容撑开时，百分比高度会失效并导致整体超出屏幕 */
+  max-height: calc(100vh - 106px);
   margin-top: 8px;
   padding: 0;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .org-tree-panel {
@@ -551,6 +555,8 @@ onMounted(async () => {
   background: var(--ContentBG, #ffffff);
   display: flex;
   flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
   padding: 16px;
   border-top-left-radius: 12px;
   border-bottom-left-radius: 12px;
@@ -577,6 +583,7 @@ onMounted(async () => {
 
   .org-tree-body {
     flex: 1;
+    min-height: 0;
     overflow-y: auto;
 
     :deep(.ed-tree-node__content) {
