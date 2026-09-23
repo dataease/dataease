@@ -29,7 +29,7 @@ import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/utils/ca
 import { deepCopy, isISOMobile, isMobile } from '@/utils/utils'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { isDashboard, trackBarStyleCheck } from '@/utils/canvasUtils'
-import { type SpreadSheet } from '@antv/s2'
+import { S2Event, type S2CellType, type SpreadSheet } from '@antv/s2'
 import { parseJson } from '../../js/util'
 
 const dvMainStore = dvMainStoreWithOut()
@@ -42,6 +42,9 @@ const {
   inMobile
 } = storeToRefs(dvMainStore)
 const { emitter } = useEmitt()
+const useSvgCrispBackground = computed(
+  () => dvMainStore.dvInfo.type === 'dataV' && canvasStyleData.value.enableSvgRenderer
+)
 
 const props = defineProps({
   element: {
@@ -290,6 +293,16 @@ const renderChart = (viewInfo: Chart, resetPageInfo?: boolean) => {
   })
 }
 
+const markSvgCellBackground = (cell: S2CellType) => {
+  const background = cell.getBackgroundShape()
+  const backgroundClass = 'de-s2-cell-background'
+  if (!background || background.classList.includes(backgroundClass)) {
+    return
+  }
+  // 仅标记背景，缩放时对齐其边缘，不影响文字、图标和实际边框。
+  background.className = [...background.classList, backgroundClass].join(' ')
+}
+
 const debounceRender = debounce(() => {
   try {
     if (chartComponentUnmounted) {
@@ -312,6 +325,26 @@ const debounceRender = debounce(() => {
       resizeAction,
       touchAction
     })
+    if (useSvgCrispBackground.value && myChart) {
+      const sheet = myChart
+      const createMergedCell = sheet.options.mergedCell
+      if (createMergedCell) {
+        // S2 批量创建合并格不触发单元格渲染事件，需在创建时标记背景。
+        sheet.setOptions({
+          mergedCell: (spreadsheet, cells, meta) => {
+            const cell = createMergedCell(spreadsheet, cells, meta)
+            markSvgCellBackground(cell)
+            return cell
+          }
+        })
+      }
+      // 普通数据格使用独立的批量渲染事件，滚动后新生成的背景也需要标记。
+      const markDataCellBackgrounds = () => {
+        sheet.facet.getDataCells().forEach(markSvgCellBackground)
+      }
+      sheet.on(S2Event.LAYOUT_CELL_RENDER, markSvgCellBackground)
+      sheet.on(S2Event.LAYOUT_AFTER_REAL_DATA_CELL_RENDER, markDataCellBackgrounds)
+    }
     myChart?.render()
     dvMainStore.setViewInstanceInfo(actualChart.id, myChart)
     initScroll()
@@ -849,7 +882,11 @@ const tablePageClass = computed(() => {
       :is-data-v-mobile="dataVMobile"
       @mousemove="mouseMove"
     />
-    <div v-if="!isError" class="canvas-content">
+    <div
+      v-if="!isError"
+      class="canvas-content"
+      :class="{ 's2-svg-crisp-background': useSvgCrispBackground }"
+    >
       <div
         :id="containerId"
         style="position: relative; height: 100%"
@@ -911,6 +948,13 @@ const tablePageClass = computed(() => {
     flex: 1;
     width: 100%;
     overflow: hidden;
+  }
+}
+
+.canvas-content.s2-svg-crisp-background {
+  // 仅调整单元格背景的抗锯齿方式，避免 SVG 在大屏缩放时出现拼接细缝。
+  :deep(.de-s2-cell-background) {
+    shape-rendering: crispEdges;
   }
 }
 
