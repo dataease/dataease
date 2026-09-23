@@ -29,12 +29,14 @@ public class VisualizationStoreServer implements VisualizationStoreApi {
 
     @Override
     public List<VisualizationStoreVO> query(VisualizationWorkbranchQueryRequest request) {
+        // 标记收藏查询，供企业版权限交互层补充电子表格资源。
+        request.setQueryFrom("store");
         PageResult<VisualizationStoreVO> result = visualizationStoreManage.query(1, 20, request);
         List<VisualizationStoreVO> vos = result.getRecords();
         if (CollectionUtils.isNotEmpty(vos)) {
             vos.forEach(item -> {
                 item.setCreator(StringUtils.equals(item.getCreator(), "1") ? Translator.get("i18n_sys_admin") : item.getCreator());
-                item.setLastEditor(StringUtils.equals(item.getLastEditor(), "1") ? Translator.get("i18n_sys_admin") : item.getCreator());
+                item.setLastEditor(StringUtils.equals(item.getLastEditor(), "1") ? Translator.get("i18n_sys_admin") : item.getLastEditor());
             });
         }
         return vos;
