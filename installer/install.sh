@@ -32,42 +32,42 @@ function db_defaults() {
       mysql)
          DB_DEFAULT_PORT=3306
          DB_DEFAULT_PARAMS="autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true"
-         DB_DRIVER_JAR="mariadb-java-client-3.3.6.jar"
+         DB_DRIVER_PATTERN="mariadb-java-client-*.jar"
          ;;
       pg)
          DB_DEFAULT_PORT=5432
          DB_DEFAULT_PARAMS="connectTimeout=10"
-         DB_DRIVER_JAR="postgresql-42.7.11.jar"
+         DB_DRIVER_PATTERN="postgresql-*.jar"
          ;;
       oracle)
          DB_DEFAULT_PORT=1521
          DB_DEFAULT_PARAMS="useUnicode=true&characterEncoding=UTF-8"
-         DB_DRIVER_JAR="ojdbc10-19.19.0.0.jar"
+         DB_DRIVER_PATTERN="ojdbc[0-9]*.jar"
          ;;
       dm)
          DB_DEFAULT_PORT=5236
          DB_DEFAULT_PARAMS="charset=UTF-8&loginTimeout=10&connectTimeout=10000"
-         DB_DRIVER_JAR="DmJdbcDriver18.jar"
+         DB_DRIVER_PATTERN="DmJdbcDriver*.jar"
          ;;
       kingbase)
          DB_DEFAULT_PORT=54321
          DB_DEFAULT_PARAMS="connectTimeout=10"
-         DB_DRIVER_JAR="kingbase8-9.0.1.jar"
+         DB_DRIVER_PATTERN="kingbase[0-9]*.jar"
          ;;
       sqlserver)
          DB_DEFAULT_PORT=1433
          DB_DEFAULT_PARAMS="encrypt=false"
-         DB_DRIVER_JAR="mssql-jdbc-13.4.0.jre11.jar"
+         DB_DRIVER_PATTERN="mssql-jdbc-*.jar"
          ;;
       greatsql)
          DB_DEFAULT_PORT=3306
          DB_DEFAULT_PARAMS="autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true"
-         DB_DRIVER_JAR="mariadb-java-client-3.3.6.jar"
+         DB_DRIVER_PATTERN="mariadb-java-client-*.jar"
          ;;
       *)
          DB_DEFAULT_PORT=3306
          DB_DEFAULT_PARAMS=""
-         DB_DRIVER_JAR=""
+         DB_DRIVER_PATTERN=""
          ;;
    esac
 }
@@ -138,23 +138,47 @@ function prompt_database_config() {
    log_content "数据库类型: ${DE_DB_TYPE}, 使用外置数据库: ${DE_EXTERNAL_DB}"
 }
 
-# 复制数据库驱动到 data/driver
+# 同类 JPA 驱动只保留安装包版本，避免新旧 jar 同时被加载。
 function copy_db_driver() {
    db_defaults "$DE_DB_TYPE"
-   if [[ -z "$DB_DRIVER_JAR" ]]; then
-      log_content "[警告] ${DE_DB_TYPE} 未配置驱动 jar，请确认 drivers 目录包含对应驱动"
-      return
+   if [[ -z "$DB_DRIVER_PATTERN" ]]; then
+      log_content "[错误] ${DE_DB_TYPE} 未配置驱动类型"
+      return 1
    fi
    local drivers_folder="${CURRENT_DIR}/drivers"
    [[ -d "$drivers_folder" ]] || drivers_folder="${CURRENT_DIR}/../drivers"
-   local driver_source="${drivers_folder}/${DB_DRIVER_JAR}"
-   if [[ -f "$driver_source" ]]; then
-      mkdir -p ${DE_RUN_BASE}/data/driver
-      cp "$driver_source" ${DE_RUN_BASE}/data/driver/
-      log_content "已复制数据库驱动: ${DB_DRIVER_JAR}"
-   else
-      log_content "[警告] 未找到驱动 ${driver_source}，请检查安装包是否包含该驱动"
+   local driver_source driver_file
+   local driver_sources=()
+   # 模式刻意不加引号，以匹配版本变化；目录仍保留引号以支持空格。
+   for driver_file in "$drivers_folder"/$DB_DRIVER_PATTERN; do
+      [[ -f "$driver_file" ]] && driver_sources+=("$driver_file")
+   done
+   if [[ ${#driver_sources[@]} -ne 1 ]]; then
+      log_content "[错误] 安装包必须包含唯一的 ${DE_DB_TYPE} 驱动（${DB_DRIVER_PATTERN}），实际找到 ${#driver_sources[@]} 个"
+      return 1
    fi
+   driver_source="${driver_sources[0]}"
+   local driver_name="${driver_source##*/}"
+   local driver_target="${DE_RUN_BASE}/data/driver"
+   local staged_driver
+   mkdir -p "$driver_target" || return 1
+   staged_driver=$(mktemp "$driver_target/.jpa-driver.XXXXXX") || return 1
+   # 完整复制后再替换，复制失败时保留原有驱动。
+   if ! cp "$driver_source" "$staged_driver" || ! chmod 644 "$staged_driver" ||
+      ! mv -f "$staged_driver" "$driver_target/$driver_name"; then
+      rm -f "$staged_driver"
+      log_content "[错误] 复制数据库驱动失败: ${driver_name}"
+      return 1
+   fi
+   for driver_file in "$driver_target"/$DB_DRIVER_PATTERN; do
+      [[ -e "$driver_file" || -L "$driver_file" ]] || continue
+      [[ "$driver_file" == "$driver_target/$driver_name" ]] && continue
+      if ! rm -f "$driver_file"; then
+         log_content "[错误] 清理旧数据库驱动失败: ${driver_file}"
+         return 1
+      fi
+   done
+   log_content "已更新数据库驱动: ${driver_name}"
 }
 
 function check_and_prepare_env_params() {
@@ -277,7 +301,7 @@ function prepare_de_run_base() {
    fi
 
    # 复制数据库驱动到 data/driver
-   copy_db_driver
+   copy_db_driver || exit 1
 
    # 内置地图由镜像 map-origin 提供，持久化 map 仅保存用户覆盖文件
 }
