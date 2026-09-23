@@ -250,7 +250,7 @@ onMounted(() => {
       <el-button
         secondary
         :loading="calcEdit?.validating"
-        @click="calcEdit.verify(props.chart.tableId)"
+        @click="calcEdit.verify(props.chart.tableId, props.chart.id)"
       >
         {{ t('datasource.validate') }}
       </el-button>

@@ -1,6 +1,8 @@
 import request from '@/config/axios'
 import { originNameHandleWithArr, originNameHandleBackWithArr } from '@/utils/CalculateFields'
 import { cloneDeep } from 'lodash-es'
+import { Base64 } from 'js-base64'
+import { ElMessage } from 'element-plus-secondary'
 export interface Field {
   id: number | string
   datasourceId: number | string
@@ -25,6 +27,27 @@ export interface ComponentInfo {
   deType: number
   type: string
   datasetId: string
+}
+
+export interface ChartCalcFieldValidationRequest {
+  datasetId: string
+  chartId: string
+  originName: string
+  params?: Array<{ id: string; name: string; value: number | string }>
+}
+
+export const validateCalcField = async (data: ChartCalcFieldValidationRequest): Promise<void> => {
+  const copyData = cloneDeep(data)
+  copyData.originName = Base64.encode(copyData.originName)
+  const res = await request.post<Promise<IResponse<void>>>({
+    url: '/chartData/validateCalcField',
+    data: copyData
+  })
+  // 拦截器会放行图表错误码，公式校验仅将正常响应判定为成功。
+  if (res.code !== 0) {
+    ElMessage.error(res.msg)
+    throw new Error(res.msg)
+  }
 }
 
 export const getFieldByDQ = async (id, chartId, data): Promise<IResponse> => {

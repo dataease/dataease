@@ -3,6 +3,7 @@ package io.dataease.chart.server;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.chart.ChartDataApi;
 import io.dataease.api.chart.dto.ViewDetailField;
+import io.dataease.api.chart.request.ChartCalcFieldValidateRequest;
 import io.dataease.api.chart.request.ChartExcelRequest;
 import io.dataease.api.chart.request.ChartExcelRequestInner;
 import io.dataease.auth.DeLinkPermit;
@@ -100,6 +101,19 @@ public class ChartDataServer implements ChartDataApi {
             DEException.throwException(ResultCode.DATA_IS_WRONG.code(), e.getMessage() + "\n\n" + ExceptionUtils.getStackTrace(e));
         }
         return null;
+    }
+
+    @Override
+    public void validateCalcField(ChartCalcFieldValidateRequest request) throws Exception {
+        try {
+            if (StringUtils.isNotBlank(request.getOriginName())) {
+                request.setOriginName(DatasetUtils.getDecode(request.getOriginName()));
+            }
+            chartDataManage.validateCalcField(request);
+        } catch (Exception e) {
+            // 校验失败使用普通业务异常，避免图表取数错误码被前端当作成功响应。
+            DEException.throwException(e.getMessage());
+        }
     }
 
     public ChartViewDTO findExcelData(ChartExcelRequest request) {
