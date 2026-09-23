@@ -13,5 +13,4 @@ public class MenuPermissionRequest implements Serializable {
     private static final long serialVersionUID = -7609671259840867561L;
     @Schema(description = "ID")
     private Long id;
-
 }

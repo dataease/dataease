@@ -108,7 +108,6 @@ export function download2AppTemplate(downloadType, canvasDom, name, attachParams
 }
 
 export function downloadCanvas(type, canvasDom, name, callBack?) {
-  // const canvasDom = document.getElementById(canvasId)
   if (canvasDom) {
     html2canvas(canvasDom)
       .then(canvas => {

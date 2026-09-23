@@ -84,7 +84,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-
 @RestController
 @RequestMapping("/dataVisualization")
 public class DataVisualizationServer implements DataVisualizationApi {
@@ -178,8 +177,6 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Resource
     private SnapshotVisualizationLinkJumpTargetViewInfoMapper snapshotVisualizationLinkJumpTargetViewInfoMapper;
 
-
-
     @Override
     public DataVisualizationVO findCopyResource(Long dvId, String busiFlag) {
         DataVisualizationVO result = Objects.requireNonNull(CommonBeanFactory.proxy(this.getClass())).findById(new DataVisualizationBaseRequest(dvId, busiFlag, CommonConstants.RESOURCE_TABLE.SNAPSHOT, DataVisualizationConstants.QUERY_SOURCE.MAIN_EDIT));
@@ -268,7 +265,6 @@ public class DataVisualizationServer implements DataVisualizationApi {
         Map<Long, List<AppCoreDatasetTableFieldVO>> sourceDatasetTableFieldMapGroup =
                 DeCollectionUtils.groupBy(sourceDatasetTableFieldList, AppCoreDatasetTableFieldVO::getDatasetGroupId);
 
-
         sourceDatasetGroupList.forEach(sourceDatasetGroup -> {
             Long systemDatasetGroupId = sourceDatasetGroup.getSystemDatasetId();
             Long sourceDatasetGroupId = sourceDatasetGroup.getId();
@@ -331,7 +327,6 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
             }
         });
-
 
     }
 
@@ -651,7 +646,6 @@ public class DataVisualizationServer implements DataVisualizationApi {
                     visualizationLinkJumpInfo.setLinkJumpId(linkJumpIdMap.get(visualizationLinkJumpInfo.getLinkJumpId()));
                     visualizationLinkJumpInfo.setSourceFieldId(dsTableFieldsIdMap.get(visualizationLinkJumpInfo.getSourceFieldId()));
                     linkJumpInfoIdMap.put(oldId, newId);
-
 
                     dsTableFieldsIdMap.forEach((key, value) -> {
                         if(StringUtils.isNotEmpty(visualizationLinkJumpInfo.getContent())){
@@ -1077,7 +1071,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             staticResourceServer.saveFilesToServe(staticResource);
             return new DataVisualizationVO(newDvId, name, dvType, version, templateStyle, templateData, appDataStr, canvasViewInfo, null,viewIdsMap);
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
             DEException.throwException("解析错误");
             return null;
         }
@@ -1158,7 +1152,6 @@ public class DataVisualizationServer implements DataVisualizationApi {
     public void exportLogImg(DataVisualizationBaseRequest request) {
 
     }
-
 
     @Override
     public void nameCheck(DataVisualizationBaseRequest request) {

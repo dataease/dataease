@@ -8,7 +8,6 @@ import java.io.Serializable;
 @Data
 public class DriveDTO implements Serializable {
 
-
     @Serial
     private static final long serialVersionUID = 1175287571828910222L;
 

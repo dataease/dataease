@@ -106,7 +106,6 @@ public interface DatasourceApi {
     @Operation(summary = "数据源详情")
     DatasourceDTO getSimpleDs(@PathVariable("datasourceId") Long datasourceId) throws DEException;
 
-
     @DePermit({"#p0.datasourceId+':read'"})
     @PostMapping("/getTableField")
     @Operation(summary = "获取表字段")
@@ -123,7 +122,6 @@ public interface DatasourceApi {
     @PostMapping("tree")
     @Operation(summary = "数据源列表")
     List<BusiNodeVO> tree(@RequestBody BusiNodeRequest request) throws DEException;
-
 
     @DePermit({"#p0.datasourceId+':read'"})
     @PostMapping("getTables")

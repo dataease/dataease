@@ -1,6 +1,5 @@
 package io.dataease.config;
 
-
 import io.dataease.commons.utils.MybatisInterceptorConfig;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;

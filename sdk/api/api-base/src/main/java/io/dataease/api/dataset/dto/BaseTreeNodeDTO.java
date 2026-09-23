@@ -1,6 +1,5 @@
 package io.dataease.api.dataset.dto;
 
-
 import lombok.Data;
 
 import java.util.List;
@@ -24,5 +23,4 @@ public class BaseTreeNodeDTO {
         this.text = text;
         this.nodeType = nodeType;
     }
-
 }

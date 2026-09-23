@@ -13,5 +13,4 @@ public class MessageFile implements Serializable {
     private String fileName;
 
     private byte[] body;
-
 }

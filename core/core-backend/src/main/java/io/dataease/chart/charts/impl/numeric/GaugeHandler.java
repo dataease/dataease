@@ -41,5 +41,4 @@ public class GaugeHandler extends NumericalChartHandler {
         var result = new AxisFormatResult(axisMap, context);
         return result;
     }
-
 }

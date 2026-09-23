@@ -46,7 +46,6 @@ export function watermark(settings, domId) {
   // 获取页面最大高度
   let page_height = watermarkDom.scrollHeight - 56
   page_height = page_height < 220 ? 220 : page_height
-  // page_height = Math.max(page_height, window.innerHeight - 30)
   // 如果将水印列数设置为0，或水印列数设置过大，超过页面最大宽度，则重新计算水印列数和水印x轴间隔
   if (
     defaultSettings.watermark_cols === 0 ||
@@ -211,19 +210,17 @@ export function activeWatermark(
     watermark_txt = watermark_txt.replaceAll('${username}', userLoginInfo.account)
     watermark_txt = watermark_txt.replaceAll('${nickName}', userLoginInfo.name)
     watermark_txt = watermark_txt.replaceAll('${time}', getNow())
-    watermark_width = watermark_txt.length * watermarkForm.watermark_fontsize * 0.75
-    watermark_width = watermark_width > 350 ? 350 : watermark_width
   } else if (watermarkForm.type === 'nickName') {
     watermark_txt = userLoginInfo.name
   } else if (watermarkForm.type === 'ip') {
     watermark_txt = userLoginInfo.ip
-    watermark_width = 150
   } else if (watermarkForm.type === 'time') {
     watermark_txt = getNow()
-    watermark_width = 200
   } else {
     watermark_txt = userLoginInfo.account
   }
+  watermark_width = watermark_txt.length * watermarkForm.watermark_fontsize * 0.75
+  watermark_width = watermark_width > 350 ? 350 : watermark_width
   const settings = {
     watermark_txt: watermark_txt,
     watermark_width: watermark_width * scale,

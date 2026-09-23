@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { MIN_REFRESH_TIME, MAX_REFRESH_TIME, normalizeRefreshTime } from '@/utils/refreshTime'
 import { nextTick, onMounted, PropType, toRefs } from 'vue'
 import { BASE_VIEW_CONFIG } from '@/views/chart/components/editor/util/chart'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -6,7 +7,6 @@ import Threshold from '@/views/chart/components/editor/editor-senior/components/
 import { CollapseSwitchItem } from '@/components/collapse-switch-item'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import { ElMessage } from 'element-plus-secondary'
 const snapshotStore = snapshotStoreWithOut()
 const { t } = useI18n()
 
@@ -52,11 +52,8 @@ const onStyleChange = () => {
 }
 
 const onRefreshChange = val => {
+  view.value.refreshTime = normalizeRefreshTime(val)
   onStyleChange()
-  if (val === '' || parseFloat(val).toString() === 'NaN' || parseFloat(val) < 1) {
-    ElMessage.error(t('chart.only_input_number'))
-    return
-  }
 }
 
 const closeThreshold = () => {
@@ -111,8 +108,10 @@ onMounted(() => {
             :effect="themes"
             :class="[themes === 'dark' && 'dv-dark']"
             size="small"
-            :min="1"
-            :max="3600"
+            :min="MIN_REFRESH_TIME"
+            :max="MAX_REFRESH_TIME"
+            type="number"
+            :step="1"
             :disabled="!view.refreshViewEnable"
             @change="onRefreshChange"
           >

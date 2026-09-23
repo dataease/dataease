@@ -12,7 +12,7 @@
       <iframe
         v-if="state.frameShow"
         :id="'iframe-' + element.id"
-        :src="element.frameLinks.src"
+        :src="frameSrcWithTimestamp"
         scrolling="auto"
         frameborder="0"
         class="main-frame main-de-iframe"
@@ -37,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, reactive, toRefs } from 'vue'
+import { computed, nextTick, onMounted, reactive, toRefs } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { useI18n } from '@/hooks/web/useI18n'
 import ComponentAppFrame from '@/custom-component/de-frame/ComponentAppFrame.vue'
@@ -73,6 +73,17 @@ const { element, isEdit, screenShot } = toRefs(props)
 const state = reactive({
   pOption: {},
   frameShow: true
+})
+
+// http://localhost:8080/?1789886867945#/de-link/JyTfzuZf
+// 解决?1789886867945 这样防止iframe无法加载添加的额外url片段
+const frameSrcWithTimestamp = computed(() => {
+  if (!element.value.frameLinks.src) return ''
+  const url = element.value.frameLinks.src
+  if (url.includes('#/preview') || url.includes('#/de-link')) {
+    return url.replace('#', `?${new Date().getTime()}#`)
+  }
+  return url
 })
 
 const frameLinksChange = () => {
@@ -112,7 +123,6 @@ onMounted(() => {
 
 .frame-mask {
   display: flex;
-  opacity: 0.5;
   position: absolute;
   top: 0px;
   z-index: 1;
@@ -123,7 +133,7 @@ onMounted(() => {
 
 .edit-mask {
   left: 0px;
-  background-color: #5c5e61;
+  background-color: rgba(92, 94, 97, 0.75);
   height: 100% !important;
   width: 100% !important;
 }

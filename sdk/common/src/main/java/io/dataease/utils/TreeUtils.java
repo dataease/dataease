@@ -119,14 +119,12 @@ public class TreeUtils {
         return result;
     }
 
-
     /**
      * Description: rootPid 是根节点PID 档期那默认是0
      */
     public static <T extends ITreeBase> List<T> mergeTree(List<T> tree) {
         return mergeTree(tree, 0L);
     }
-
 
     public static <T extends ITreeBase> List<T> mergeDuplicateTree(List<T> tree, Long... rootPid) {
         Assert.notNull(rootPid, "Root Pid cannot be null");

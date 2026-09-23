@@ -39,5 +39,4 @@ public class VisualizationLinkageFieldVO implements Serializable {
     private Long copyFrom;
     @JsonSerialize(using = ToStringSerializer.class)
     private Long copyId;
-
 }

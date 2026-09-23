@@ -1,10 +1,8 @@
 package io.dataease.datasource.provider;
 
-
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.server.DatasourceServer;
-import io.dataease.engine.utils.Utils;
 import io.dataease.extensions.datasource.dto.TableField;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import org.apache.commons.collections4.CollectionUtils;
@@ -24,14 +22,12 @@ import java.util.stream.Collectors;
 public class MysqlEngineProvider extends EngineProvider {
 
     private static final String creatTableSql =
-            "CREATE TABLE IF NOT EXISTS `TABLE_NAME`" +
+            "CREATE TABLE IF NOT EXISTS TABLE_NAME" +
                     "Column_Fields;";
-
 
     @Override
     public String createView(String name, String viewSQL) {
-        validateSqlInjectionRisk(name);
-        return "CREATE or replace view " + name + " AS (" + viewSQL + ")";
+        return "CREATE or replace view " + quoteIdent(name, '`') + " AS (" + viewSQL + ")";
     }
 
     @Override
@@ -46,7 +42,7 @@ public class MysqlEngineProvider extends EngineProvider {
                 break;
         }
 
-        String insertSql = "INSERT INTO `TABLE_NAME` VALUES ".replace("TABLE_NAME", engineTableName);
+        String insertSql = "INSERT INTO TABLE_NAME VALUES ".replace("TABLE_NAME", quoteIdent(engineTableName, '`'));
         StringBuffer values = new StringBuffer();
 
         Integer realSize = page * pageNumber < dataList.size() ? page * pageNumber : dataList.size();
@@ -75,7 +71,8 @@ public class MysqlEngineProvider extends EngineProvider {
                 insetSql = insetSql + " ON DUPLICATE KEY UPDATE ";
                 List<String> updateColumes = new ArrayList<>();
                 for (TableField notKey : notKeys) {
-                    updateColumes.add("column = VALUES(column)".replace("column", notKey.getName()));
+                    String quotedColumn = quoteIdent(notKey.getName(), '`');
+                    updateColumes.add(quotedColumn + " = VALUES(" + quotedColumn + ")");
                 }
                 insetSql = insetSql + updateColumes.stream().collect(Collectors.joining(","));
             }
@@ -84,78 +81,76 @@ public class MysqlEngineProvider extends EngineProvider {
         return insetSql;
     }
 
-
     @Override
     public String dropTable(String name) {
-        return "DROP TABLE IF EXISTS `" + name + "`";
+        return "DROP TABLE IF EXISTS " + quoteIdent(name, '`');
     }
 
     @Override
     public String dropView(String name) {
-        return "DROP VIEW IF EXISTS `" + name + "`";
+        return "DROP VIEW IF EXISTS " + quoteIdent(name, '`');
     }
 
     @Override
     public String replaceTable(String name) {
-        String replaceTableSql = "rename table `FROM_TABLE` to `FROM_TABLE_tmp`, `TO_TABLE` to `FROM_TABLE`, `FROM_TABLE_tmp` to `TO_TABLE`"
-                .replace("FROM_TABLE", name).replace("TO_TABLE", TableUtils.tmpName(name));
-        String dropTableSql = "DROP TABLE IF EXISTS `TABLE_NAME`".replace("TABLE_NAME", TableUtils.tmpName(name));
+        String from = quoteIdent(name, '`');
+        String fromTmp = quoteIdent(name + "_tmp", '`');
+        String to = quoteIdent(TableUtils.tmpName(name), '`');
+        String replaceTableSql = "rename table " + from + " to " + fromTmp
+                + ", " + to + " to " + from
+                + ", " + fromTmp + " to " + to;
+        String dropTableSql = "DROP TABLE IF EXISTS " + to;
         return replaceTableSql + ";" + dropTableSql;
     }
 
     @Override
     public String createTableSql(String tableName, List<TableField> tableFields, CoreDeEngine engine) {
-        validateSqlInjectionRisk(tableName);
+        String quotedTableName = quoteIdent(tableName, '`');
         String dorisTableColumnSql = createTableSql(tableFields);
-        return creatTableSql.replace("TABLE_NAME", tableName).replace("Column_Fields", dorisTableColumnSql);
+        return creatTableSql.replace("TABLE_NAME", quotedTableName).replace("Column_Fields", dorisTableColumnSql);
     }
 
     private String createTableSql(final List<TableField> tableFields) {
-        StringBuilder columnFields = new StringBuilder("`");
-        StringBuilder key = new StringBuilder();
+        List<String> columnDefs = new ArrayList<>();
+        List<String> primaryKeys = new ArrayList<>();
         for (TableField tableField : tableFields) {
             if (!tableField.isChecked()) {
                 continue;
             }
+            String quotedName = quoteIdent(tableField.getName(), '`');
             if (tableField.isPrimaryKey()) {
-                key.append("`").append(tableField.getName()).append("`, ");
+                primaryKeys.add(quotedName);
             }
-            columnFields.append(tableField.getName()).append("` ");
-            int size = tableField.getPrecision() * 4;
+            String type;
             switch (tableField.getDeExtractType()) {
                 case 0:
                     if (StringUtils.isNotEmpty(tableField.getLength())) {
-                        columnFields.append("varchar(length)".replace("length", tableField.getLength())).append(",`");
+                        type = "varchar(" + tableField.getLength() + ")";
                     } else {
-                        columnFields.append("longtext").append(",`");
+                        type = "longtext";
                     }
                     break;
                 case 1:
-                    columnFields.append("datetime").append(",`");
+                    type = "datetime";
                     break;
                 case 2:
-                    columnFields.append("bigint(20)").append(",`");
+                    type = "bigint(20)";
                     break;
                 case 3:
-                    columnFields.append("decimal(27,8)").append(",`");
+                    type = "decimal(27,8)";
                     break;
                 case 4:
-                    columnFields.append("TINYINT(length)".replace("length", String.valueOf(tableField.getPrecision()))).append(",`");
+                    type = "TINYINT(" + tableField.getPrecision() + ")";
                     break;
                 default:
-                    columnFields.append("longtext").append(",`");
+                    type = "longtext";
                     break;
             }
+            columnDefs.add(quotedName + " " + type);
         }
-        if (StringUtils.isEmpty(key.toString())) {
-            columnFields = new StringBuilder(columnFields.substring(0, columnFields.length() - 2));
-        } else {
-            key = new StringBuilder(key.substring(0, key.length() - 2));
-            columnFields = new StringBuilder(columnFields.substring(0, columnFields.length() - 1));
-            columnFields.append("PRIMARY KEY (PRIMARYKEY)".replace("PRIMARYKEY", key.toString()));
+        if (!primaryKeys.isEmpty()) {
+            columnDefs.add("PRIMARY KEY (" + String.join(", ", primaryKeys) + ")");
         }
-
-        columnFields = new StringBuilder("(" + columnFields + ")");
-        return columnFields.toString();
+        return "(" + String.join(",", columnDefs) + ")";
     }
 }

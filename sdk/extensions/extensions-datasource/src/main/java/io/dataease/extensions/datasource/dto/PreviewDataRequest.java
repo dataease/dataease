@@ -10,7 +10,6 @@ import lombok.experimental.Accessors;
 import java.io.Serial;
 import java.io.Serializable;
 
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,5 +23,4 @@ public class PreviewDataRequest implements Serializable {
     private String id;
 
     private String table;
-
 }

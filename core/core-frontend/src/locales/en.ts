@@ -1,4 +1,15 @@
 export default {
+  share_visitor: {
+    no_permission: 'You do not have this permission',
+    title: 'Visitor permissions',
+    hint: 'New links are view-only by default. These permissions apply only to this public link.',
+    details: 'Allow viewing details',
+    data: 'Allow exporting data',
+    image: 'Allow exporting images / PDF',
+    buttons_hint:
+      'Shared pages respect dashboard and screen button visibility. Allowing an action does not reveal hidden buttons.',
+    save_copy: 'Save and copy link'
+  },
   common: {
     display_formats: 'Display Formats',
     dropdown_display: 'Drop-down Display',
@@ -30,6 +41,15 @@ export default {
     other_levels:
       'Except for level 1, no query condition configuration is required for other levels',
     tree_structure: 'The drop-down tree structure cannot be empty',
+    timeout_tips: 'Request timed out. Please try again later.',
+    secret_changed_tips:
+      'The secret information has been changed. Please refresh the page and try again.',
+    file_size_exceed_tips:
+      'The file size exceeds the limit. Please modify the relevant configuration file.',
+    permission_denied_tips: 'You are not allowed to access. Please contact the administrator.',
+    resource_not_exist_tips: 'Resource does not exist or has been deleted',
+    system_upgrade_tips: 'The system has been upgraded. Please click to refresh the page.',
+    refresh: 'Refresh',
     component: {
       input: 'Input',
       textarea: 'Textarea',
@@ -1498,6 +1518,35 @@ export default {
     chart_bar_stack_horizontal: 'Stacked bar chart',
     chart_percentage_bar_stack_horizontal: 'Percentage bar chart',
     chart_bar_range: 'Interval bar chart',
+    chart_box_plot: 'Box plot',
+    box_plot_low: 'Lower whisker (lowest non-outlier)',
+    box_plot_q1: 'First quartile (Q1)',
+    box_plot_median: 'Median',
+    box_plot_quartile_range: 'Quartile range (Q1–Q3)',
+    box_plot_q3: 'Third quartile (Q3)',
+    box_plot_high: 'Upper whisker (highest non-outlier)',
+    box_plot_metric: 'Metric',
+    box_plot_metric_statistic: '{metric} ({statistic})',
+    box_plot_group_statistic: '{groupName}: {groupValue} · {statistic}',
+    box_plot_outlier: 'Outlier',
+    box_plot_count: 'Valid sample count',
+    box_plot_samples: '{count} sample | {count} samples',
+    box_plot_more_outliers: 'and {count} more',
+    box_plot_outlier_count: 'Outlier count',
+    box_plot_show_details: 'Show statistical details',
+    box_plot_details_tip:
+      'When off, show the median, quartile range, and outlier count; when on, show the full five-number summary, outlier count, and outlier values',
+    box_plot_show_outliers: 'Show outliers',
+    box_plot_outlier_tip:
+      'Outliers are raw values below Q1 - 1.5×IQR or above Q3 + 1.5×IQR, where IQR = Q3 - Q1.\nExample: if Q1 = 10 and Q3 = 20, IQR = 10 and the normal range is -5 to 35; values below -5 or above 35 are shown as outlier points.',
+    box_plot_outlier_color: 'Outlier color',
+    box_plot_outlier_follow_series: 'Follow series',
+    box_plot_outlier_custom_color: 'Custom color',
+    box_plot_outlier_size: 'Outlier size',
+    box_plot_category_tip: 'Create one box for each category to compare distributions',
+    box_plot_group_tip: 'Optional; split each category into multiple boxes for comparison',
+    box_plot_value_tip:
+      'Calculate quartiles from valid detail values without sum or average aggregation',
     chart_bidirectional_bar: 'Symmetric bar chart',
     chart_progress_bar: 'Progress bar',
     chart_line: 'Basic line chart',
@@ -3978,6 +4027,7 @@ export default {
     port: 'SMTP port',
     account: 'SMTP account',
     pwd: 'SMTP password',
+    from: 'Sender address',
     reci: 'Test recipient',
     ssl: 'SSL',
     tsl: 'TSL'
@@ -4406,7 +4456,8 @@ export default {
       retrying_rate: 'Retry Interval (minutes)',
       please_input_positive_int: 'Please input a positive integer for {0}',
       rate: 'Sending frequency',
-      ext_wait_time: 'additional waiting time(s)'
+      ext_wait_time: 'timeout(s)',
+      render_time: 'render time(s)'
     },
     filter: {
       title: 'Set Query Component Default Values',

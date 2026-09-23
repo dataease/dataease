@@ -47,7 +47,6 @@ public class FileUtils {
         }
     }
 
-
     /**
      * Java文件操作 获取不带扩展名的文件名
      */
@@ -151,7 +150,6 @@ public class FileUtils {
         }
     }
 
-
     public static String copy(File source, String targetDir) throws IOException {
         String name = source.getName();
         String destPath = null;
@@ -196,7 +194,7 @@ public class FileUtils {
             str = sb.toString();
             return str;
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
             return null;
         }
     }
@@ -286,7 +284,7 @@ public class FileUtils {
 
             fis.close();
         } catch (Exception var11) {
-            var11.printStackTrace();
+            LogUtil.error(var11);
         }
 
         return bytes;

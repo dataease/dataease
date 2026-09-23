@@ -22,5 +22,4 @@ public class VisualizationTemplateExtendDataVO {
     private String copyFrom;
 
     private String copyId;
-
 }

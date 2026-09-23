@@ -22,7 +22,6 @@ public class Pager<T> {
         this.pageCount = pageCount;
     }
 
-
     public long getItemCount() {
         return itemCount;
     }

@@ -1,6 +1,5 @@
 package io.dataease.extensions.view.dto;
 
-
 import lombok.Data;
 
 import java.util.List;
@@ -30,12 +29,9 @@ public class ChartExtRequest {
 
     private Long user = null;
 
-    // private PermissionProxy proxy;
-
     private Long goPage;
 
     private Long pageSize;
 
     private Boolean excelExportFlag = false;
-
 }

@@ -12,7 +12,6 @@ import java.io.Serial;
 @Data
 public class RoleRequest extends KeywordRequest {
 
-
     @Serial
     private static final long serialVersionUID = 7354856549096378406L;
     @Schema(description = "用户ID")

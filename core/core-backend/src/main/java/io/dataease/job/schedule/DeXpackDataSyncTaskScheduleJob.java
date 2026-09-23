@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class DeXpackDataSyncTaskScheduleJob implements Job {
 
-
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         JobDataMap jobDataMap = jobExecutionContext.getJobDetail().getJobDataMap();

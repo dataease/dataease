@@ -148,8 +148,8 @@ const defaultInfo = {
     username: '',
     password: '',
     extraParams: '',
-    initialPoolSize: 50,
-    minPoolSize: 50,
+    initialPoolSize: 5,
+    minPoolSize: 5,
     maxPoolSize: 100,
     queryTimeout: 30
   },

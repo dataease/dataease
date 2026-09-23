@@ -20,7 +20,7 @@ public class CacheConstant {
     public static class OrgCacheConstant {
         public static final String ORG_GLOBAL_RESOURCE_CACHE = "de_v2_org_global_resource";
         public static final String ALL_OID_FLAG_RESOURCE_CACHE = "de_v2_all_oid_flag_resource";
-
+        public static final String BUSI_RESOURCE_EXIST_CACHE = "de_v2_busi_resource_exist";
 
     }
 
@@ -31,6 +31,7 @@ public class CacheConstant {
         public static final String PER_MENU_ID_CACHE = "de_v2_per_menu_id";
         public static final String GLOBAL_MFA_CACHE = "de_v2_global_mfa";
         public static final String GLOBAL_HMAC_CACHE = "de_v2_global_hmac";
+        public static final String MFA_BIND_KEY_CACHE = "de_v2_mfa_bind_key";
     }
 
     public static class LicenseCacheConstant {

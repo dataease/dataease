@@ -21,6 +21,4 @@ public interface SummaryApi {
 
     @PostMapping("/logChartData")
     Map<String, Object> logChartData(@RequestBody String executeTaskLogDate);
-
-
 }

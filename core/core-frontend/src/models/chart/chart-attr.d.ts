@@ -226,6 +226,22 @@ declare interface ChartBasicStyle {
    */
   scatterSymbolSize: number
   /**
+   * 箱线图是否显示异常值点
+   */
+  showOutliers: boolean
+  /**
+   * 箱线图异常点颜色模式，默认跟随所属箱体或分组系列
+   */
+  outlierColorMode: 'series' | 'custom'
+  /**
+   * 箱线图异常点自定义颜色，仅在自定义颜色模式下生效
+   */
+  outlierColor: string
+  /**
+   * 箱线图异常点半径大小
+   */
+  outlierSize: number
+  /**
    * 雷达图外形形状
    */
   radarShape: 'circle' | 'polygon'
@@ -1147,6 +1163,11 @@ declare interface ChartTooltipAttr {
    * 是否显示指标值
    */
   showQuota?: boolean
+  /**
+   * 箱线图是否展开五数统计、样本数和异常值数量
+   * 关闭时仅显示分组字段以及指标中位数
+   */
+  showBoxPlotDetails?: boolean
   /**
    * 背景颜色
    */

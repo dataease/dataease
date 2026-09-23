@@ -56,7 +56,6 @@ public class VisualizationOuterParamsVO implements Serializable {
      */
     private String defaultValue;
 
-
     public String getParamsId() {
         return paramsId;
     }

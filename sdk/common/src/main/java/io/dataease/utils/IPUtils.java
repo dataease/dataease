@@ -16,6 +16,18 @@ public class IPUtils {
     private static final String LOCAL_IP_KEY = "0:0:0:0:0:0:0:1";
     private static final String LOCAL_IP_VAL = "127.0.0.1";
 
+    // 请求上下文(RequestContextHolder)基于ThreadLocal, 在异步/线程池的子线程中无法获取当前请求.
+    // 对于这类场景, 在提交任务前于请求线程上取好IP并通过set()带入子线程, get()在拿不到请求时回退读取此处.
+    private static final ThreadLocal<String> IP_HOLDER = new ThreadLocal<>();
+
+    public static void set(String ip) {
+        IP_HOLDER.set(ip);
+    }
+
+    public static void remove() {
+        IP_HOLDER.remove();
+    }
+
     public static String get() {
 
         String ipStr = null;
@@ -28,7 +40,7 @@ public class IPUtils {
             LogUtil.error(e.getMessage(), e);
             return null;
         }
-        if (ObjectUtils.isEmpty(request)) return null;
+        if (ObjectUtils.isEmpty(request)) return IP_HOLDER.get();
         String[] keyArr = HEAD_KEYS.split(",");
         for (String key : keyArr) {
             String header = request.getHeader(key.trim());

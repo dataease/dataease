@@ -3,11 +3,11 @@ import dvFolder from '@/assets/svg/dv-folder.svg'
 import icon_dataset from '@/assets/svg/icon_dataset.svg'
 import icon_done_outlined from '@/assets/svg/icon_done_outlined.svg'
 import { Tree } from '../../../../visualized/data/dataset/form/CreatDsGroup.vue'
-import { computed, ref, watch, onMounted } from 'vue'
+import { computed, ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { Plus, Search } from '@element-plus/icons-vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useAppStoreWithOut } from '@/store/modules/app'
-import _ from 'lodash'
+import { cloneDeep, filter, find, forEach, union } from 'lodash-es'
 import { getDatasetTree, getDatasourceList } from '@/api/dataset'
 import { ElFormItem, FormInstance } from 'element-plus-secondary'
 import { useEmitt } from '@/hooks/web/useEmitt'
@@ -105,10 +105,6 @@ const dsSelectProps = {
 const formRef = ref<FormInstance>()
 const searchStr = ref<string>()
 
-watch(searchStr, val => {
-  datasetSelector.value.filter(val)
-})
-
 const showTree = computed(() => {
   return (
     datasetTree.value && datasetTree.value.length > 0 && !loadingDatasetTree.value && orgCheck.value
@@ -132,12 +128,43 @@ const computedTree = computed(() => {
   return datasetTree.value
 })
 
+// 预计算可见节点 ID 集合，避免树组件异步过滤时丢失匹配节点的父级路径
+const visibleNodeIds = new Set<string | number>()
+
+const buildVisibleIds = (nodes: Tree[], keyword: string): boolean => {
+  let anyMatch = false
+  for (const node of nodes) {
+    const selfMatch = !!node.name?.toLowerCase().includes(keyword)
+    const childMatch = node.children?.length ? buildVisibleIds(node.children, keyword) : false
+    if (selfMatch || childMatch) {
+      visibleNodeIds.add(node.id)
+      anyMatch = true
+    }
+  }
+  return anyMatch
+}
+
+let searchTimer: ReturnType<typeof setTimeout>
+watch(searchStr, val => {
+  clearTimeout(searchTimer)
+  searchTimer = setTimeout(() => {
+    const keyword = val?.trim().toLowerCase()
+    visibleNodeIds.clear()
+    if (keyword) {
+      buildVisibleIds(computedTree.value || [], keyword)
+    }
+    datasetSelector.value.filter(val?.trim())
+  }, 300)
+})
+
+onBeforeUnmount(() => clearTimeout(searchTimer))
+
 const flattedTree = computed(() => {
-  return _.filter(flatTree(computedTree.value), node => node.leaf)
+  return filter(flatTree(computedTree.value), node => node.leaf)
 })
 
 const selectedNode = computed(() => {
-  return _.find(flattedTree.value, node => node.id === _modelValue.value)
+  return find(flattedTree.value, node => node.id === _modelValue.value)
 })
 
 const exist = computed(() => {
@@ -174,10 +201,10 @@ const rules = ref([
 ])
 
 function flatTree(tree: Tree[]) {
-  let result = _.cloneDeep(tree)
-  _.forEach(tree, node => {
+  let result = cloneDeep(tree)
+  forEach(tree, node => {
     if (node.children && node.children.length > 0) {
-      result = _.union(result, flatTree(node.children))
+      result = union(result, flatTree(node.children))
     }
   })
   return result
@@ -186,8 +213,8 @@ const onDatasetChange = val => {
   emits('onDatasetChange', val)
 }
 const filterNode = (value: string, data: Tree) => {
-  if (!value) return true
-  return data.name?.includes(value)
+  if (!value?.trim()) return true
+  return visibleNodeIds.has(data.id)
 }
 
 const refresh = () => {
@@ -198,6 +225,37 @@ const addDataset = () => {
 }
 
 const datasetSelectorPopover = ref()
+
+const expandNodePath = (node: any) => {
+  let currentNode = node?.parent
+  while (currentNode && currentNode.level > 0) {
+    currentNode.expanded = true
+    currentNode = currentNode.parent
+  }
+}
+
+const scrollCurrentNodeIntoView = async () => {
+  if (!selectedNode.value) {
+    return
+  }
+
+  const treeInstance = datasetSelector.value as any
+  if (!treeInstance) {
+    return
+  }
+
+  const currentTreeNode = treeInstance.getNode?.(selectedNode.value.id)
+  if (!currentTreeNode) {
+    return
+  }
+
+  expandNodePath(currentTreeNode)
+  await nextTick()
+  treeInstance.setCurrentKey?.(selectedNode.value.id)
+  treeInstance.$el
+    .querySelector('.ed-tree-node.is-current')
+    ?.scrollIntoView?.({ block: 'center', behavior: 'smooth' })
+}
 
 const dsClick = (data: Tree) => {
   if (data.leaf) {
@@ -211,8 +269,9 @@ const dsClick = (data: Tree) => {
   }
 }
 const _popoverShow = ref(false)
-function onPopoverShow() {
+async function onPopoverShow() {
   _popoverShow.value = true
+  await scrollCurrentNodeIntoView()
 }
 function onPopoverHide() {
   _popoverShow.value = false
@@ -279,32 +338,39 @@ onMounted(() => {
       <template #reference>
         <el-form ref="formRef" :model="form">
           <el-form-item prop="name" :rules="rules">
-            <el-input
-              :effect="themes"
-              v-model="selectedNodeName"
-              class="data-set-dark"
-              @focus="handleFocus"
-              :disabled="disabled"
-              :placeholder="selectSource"
+            <el-tooltip
+              :effect="themes === 'dark' ? 'light' : 'dark'"
+              :content="selectedNodeName"
+              :disabled="!selectedNodeName"
+              placement="top"
             >
-              <template #suffix>
-                <el-icon
-                  v-show="!disabled"
-                  class="input-arrow-icon"
-                  :class="{ reverse: _popoverShow }"
-                >
-                  <ArrowDown />
-                </el-icon>
-                <el-icon
-                  v-show="!disabled"
-                  v-if="clearShow"
-                  class="input-custom-clear-icon"
-                  @click="handleClear"
-                >
-                  <CircleClose />
-                </el-icon>
-              </template>
-            </el-input>
+              <el-input
+                :effect="themes"
+                v-model="selectedNodeName"
+                class="data-set-dark"
+                @focus="handleFocus"
+                :disabled="disabled"
+                :placeholder="selectSource"
+              >
+                <template #suffix>
+                  <el-icon
+                    v-show="!disabled"
+                    class="input-arrow-icon"
+                    :class="{ reverse: _popoverShow }"
+                  >
+                    <ArrowDown />
+                  </el-icon>
+                  <el-icon
+                    v-show="!disabled"
+                    v-if="clearShow"
+                    class="input-custom-clear-icon"
+                    @click="handleClear"
+                  >
+                    <CircleClose />
+                  </el-icon>
+                </template>
+              </el-input>
+            </el-tooltip>
           </el-form-item>
         </el-form>
       </template>
@@ -335,6 +401,7 @@ onMounted(() => {
                 v-if="showTree"
                 ref="datasetSelector"
                 node-key="id"
+                :current-node-key="_modelValue"
                 :data="computedTree"
                 :teleported="false"
                 :props="dsSelectProps"
@@ -434,6 +501,9 @@ onMounted(() => {
     max-height: 356px;
     &.dark {
       background: #292929;
+      .ed-scrollbar__thumb {
+        background-color: #646a73 !important;
+      }
     }
 
     .ed-header {

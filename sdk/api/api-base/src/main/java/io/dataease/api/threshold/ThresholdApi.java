@@ -74,5 +74,4 @@ public interface ThresholdApi {
 
     @PostMapping("/thresholdSnapshotRestore")
     void thresholdSnapshotRestore( @RequestBody ThresholdGridRequest request);
-
 }

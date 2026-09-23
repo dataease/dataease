@@ -18,6 +18,47 @@ import { merge } from 'lodash-es'
 const { t } = useI18n()
 
 const DEFAULT_DATA = []
+// 刻度值向表盘内侧偏移，给刻度线和外圈预留空间
+const GAUGE_LABEL_OFFSET = -20
+// 指标值与占比文本之间保留的视觉间距
+const GAUGE_STATISTIC_GAP = 4
+
+/** 根据渲染后的极坐标半径计算中心统计文本需要下移的距离 */
+const getGaugeStatisticOffset = (gauge: G2Gauge, options: GaugeOptions) => {
+  const coordinate = gauge.chart.views.find(view => view.id === 'indicator-view')?.getCoordinate()
+  const statistic = options.statistic?.title || options.statistic?.content
+  if (!coordinate || !statistic) {
+    return 0
+  }
+
+  // 只有仪表盘弧线跨越正上方时，顶部刻度值才可能挤占中心统计文本空间
+  let topAngle = -Math.PI / 2
+  while (topAngle < coordinate.startAngle) {
+    topAngle += Math.PI * 2
+  }
+  if (topAngle > coordinate.endAngle) {
+    return 0
+  }
+
+  const statisticFontSize = parseFloat(`${(statistic.style as any)?.fontSize}`) || 0
+  const axisFontSize =
+    parseFloat(`${options.axis && (options.axis.label?.style as any)?.fontSize}`) || 12
+  // 通过弧线最高点与两端较低边界之间的可用高度估算统计文本安全区
+  const endpointY = Math.max(Math.sin(coordinate.startAngle), Math.sin(coordinate.endAngle))
+  // 保留刻度标签与刻度线的间距，小半径时仅下移中心统计值
+  return Math.max(
+    0,
+    Math.ceil(
+      -(1 + endpointY) * coordinate.getRadius() -
+        GAUGE_LABEL_OFFSET +
+        statisticFontSize +
+        axisFontSize / 2 +
+        4 -
+        (statistic.offsetY || 0)
+    )
+  )
+}
+
 export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
   properties: EditorProperty[] = [
     'background-overall-component',
@@ -78,6 +119,9 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
       axis: {
         tickInterval: 0.2,
         label: {
+          // G2Plot 2.x CircleAxis 仅在存在 verticalLimitLength 时执行该隐藏策略
+          autoHide: true,
+          offset: GAUGE_LABEL_OFFSET,
           style: {
             fontSize: getScaleValue(12, scale) // 刻度值字体大小
           }
@@ -100,7 +144,22 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
     const options = this.setupOptions(chart, initOptions, { scale })
     const { Gauge: G2Gauge } = await import('@antv/g2plot/esm/plots/gauge')
     const newChart = new G2Gauge(container, options)
+    let statisticOffset = 0
     newChart.on('afterrender', () => {
+      // 极坐标半径在首次渲染及容器 resize 后才可靠，此处按实际尺寸重新计算
+      const nextOffset = getGaugeStatisticOffset(newChart, options)
+      if (nextOffset !== statisticOffset) {
+        statisticOffset = nextOffset
+        const { title, content } = options.statistic || {}
+        // 只在偏移变化时更新，避免 update 再次触发 afterrender 后形成循环
+        newChart.update({
+          statistic: {
+            title: title && { offsetY: (title.offsetY || 0) + nextOffset },
+            content: content && { offsetY: (content.offsetY || 0) + nextOffset }
+          }
+        })
+        return
+      }
       action({
         from: 'gauge',
         data: {
@@ -271,7 +330,9 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
     if (label.show && label.proportionSeriesFormatter.show) {
       const proportionFormatter = label.proportionSeriesFormatter
       labelContent = {
-        offsetY: proportionFormatter.fontSize + label.fontSize,
+        // G2Plot 已根据占比字号定位文本，此处只追加缩放后的视觉行间距
+        offsetY:
+          proportionFormatter.fontSize + getScaleValue(GAUGE_STATISTIC_GAP, context?.scale ?? 1),
         style: {
           fontSize: `${proportionFormatter.fontSize}px`,
           color: proportionFormatter.color

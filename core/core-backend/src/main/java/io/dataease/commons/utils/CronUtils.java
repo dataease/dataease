@@ -16,7 +16,6 @@ import java.util.List;
 
 public class CronUtils {
 
-
     public static CronTrigger getCronTrigger(String cron) {
         if (!CronExpression.isValidExpression(cron)) {
             throw new RuntimeException("cron :" + cron + "表达式解析错误");
@@ -74,7 +73,7 @@ public class CronUtils {
         try {
             date = sdf.parse(rateVal);
         } catch (ParseException e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         }
         Calendar instance = Calendar.getInstance();
         assert date != null;
@@ -101,7 +100,6 @@ public class CronUtils {
         return null;
     }
 
-
     private static String getDayOfWeek(Calendar instance) {
         int index = instance.get(Calendar.DAY_OF_WEEK);
         index = (index % 7) + 1;
@@ -115,6 +113,4 @@ public class CronUtils {
         long now = System.currentTimeMillis();
         return now > endTime;
     }
-
-
 }

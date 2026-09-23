@@ -229,7 +229,6 @@ const handleDragOver = e => {
 }
 
 const handleMouseDown = e => {
-  // e.stopPropagation()
   if (isSpaceDown.value) {
     return
   }

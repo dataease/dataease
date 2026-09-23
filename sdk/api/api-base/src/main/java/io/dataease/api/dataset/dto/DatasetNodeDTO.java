@@ -94,5 +94,4 @@ public class DatasetNodeDTO implements Serializable {
      * 关联sql,由tree
      */
     private String unionSql;
-
 }

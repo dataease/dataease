@@ -21,5 +21,4 @@ public class H2 extends DatasourceConfiguration {
         }
         return JdbcUrlSecurityPolicy.validate("h2", getDriver(), jdbcUrl, getExtraParams());
     }
-
 }

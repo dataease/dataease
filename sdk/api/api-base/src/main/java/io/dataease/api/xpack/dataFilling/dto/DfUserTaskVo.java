@@ -46,5 +46,4 @@ public class DfUserTaskVo implements Serializable {
     private boolean expired;
 
     private Integer fillType;
-
 }

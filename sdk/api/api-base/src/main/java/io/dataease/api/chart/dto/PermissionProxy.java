@@ -8,5 +8,4 @@ import java.io.Serializable;
 public class PermissionProxy implements Serializable {
 
     private Long userId;
-
 }

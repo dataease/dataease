@@ -39,6 +39,4 @@ public class LogResultVO {
         this.logContent = logContent;
         this.isEnd = isEnd;
     }
-
-
 }

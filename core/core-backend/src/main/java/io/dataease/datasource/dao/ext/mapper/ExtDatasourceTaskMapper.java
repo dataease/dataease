@@ -13,7 +13,6 @@ import java.util.List;
 @Mapper
 public interface ExtDatasourceTaskMapper {
 
-
     @Select(
             """     
                     SELECT QRTZ_TRIGGERS.* 
@@ -31,6 +30,4 @@ public interface ExtDatasourceTaskMapper {
             }
     )
     List<CoreDatasourceTaskDTO> taskWithTriggers(@Param("ew") QueryWrapper queryWrapper);
-
-
 }

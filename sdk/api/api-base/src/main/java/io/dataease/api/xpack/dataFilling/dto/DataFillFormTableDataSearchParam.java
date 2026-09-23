@@ -7,7 +7,6 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
-
 @Data
 @Accessors(chain = true)
 public class DataFillFormTableDataSearchParam implements Serializable {
@@ -24,5 +23,4 @@ public class DataFillFormTableDataSearchParam implements Serializable {
     private List<Object> values;
 
     private boolean multiple;
-
 }

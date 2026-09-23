@@ -1,6 +1,5 @@
 package io.dataease.api.permissions.login.api;
 
-
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.permissions.login.dto.MfaLoginDTO;

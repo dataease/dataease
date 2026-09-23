@@ -42,7 +42,6 @@ public class TemplateMarketDTO implements Comparable<TemplateMarketDTO> {
     private String mainCategory;
     private MarketMetasVO metas;
 
-
     public TemplateMarketDTO(TemplateManageDTO manageDTO) {
         this.id = manageDTO.getId();
         this.title = manageDTO.getName();

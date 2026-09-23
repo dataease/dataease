@@ -32,7 +32,6 @@ public class DeLinkAop {
 
     private final ExpressionParser parser = new SpelExpressionParser();
 
-
     @Around(value = "@annotation(io.dataease.auth.DeLinkPermit)")
     public Object logAround(ProceedingJoinPoint point) throws Throwable {
         Object[] params = point.getArgs();

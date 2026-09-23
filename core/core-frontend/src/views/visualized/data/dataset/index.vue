@@ -963,7 +963,7 @@ const proxyAllowDrop = throttle((arg1, arg2) => {
                 >
                   <span :title="node.label" class="label-tooltip ellipsis">{{ node.label }}</span>
                 </el-tooltip>
-                <div class="icon-more" v-if="data.weight >= 7">
+                <div class="icon-more" style="position: relative" v-if="data.weight >= 7">
                   <handle-more
                     icon-size="24px"
                     @handle-command="cmd => handleDatasetTree(cmd, data)"
@@ -1457,15 +1457,20 @@ const proxyAllowDrop = throttle((arg1, arg2) => {
   align-items: center;
   box-sizing: content-box;
   padding-right: 4px;
+  position: relative;
 
   .label-tooltip {
-    width: 100%;
+    width: calc(100% - 40px);
     margin-left: 8.75px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 18px;
   }
 
   .icon-more {
     margin-left: auto;
-    display: none;
+    opacity: 0;
   }
 
   &:hover {
@@ -1474,7 +1479,7 @@ const proxyAllowDrop = throttle((arg1, arg2) => {
     }
 
     .icon-more {
-      display: inline-flex;
+      opacity: 1;
     }
   }
 }

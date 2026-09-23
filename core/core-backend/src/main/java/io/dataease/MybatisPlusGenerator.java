@@ -34,7 +34,6 @@ public class MybatisPlusGenerator {
 
     private static final String AUTO_DAO = ".dao.auto";
 
-
     public static void main(String[] args) throws Exception{
 
         String path = System.getProperty("java.class.path");

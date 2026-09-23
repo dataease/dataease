@@ -15,5 +15,4 @@ public class ReportEditor extends ReportCreator{
     private static final long serialVersionUID = 4580864230335912932L;
     @JsonSerialize(using= ToStringSerializer.class)
     private Long taskId;
-
 }

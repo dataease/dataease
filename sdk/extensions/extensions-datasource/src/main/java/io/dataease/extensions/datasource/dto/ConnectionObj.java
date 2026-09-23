@@ -10,7 +10,6 @@ import java.sql.Connection;
 @Data
 public class ConnectionObj implements AutoCloseable {
 
-
     private Connection connection;
     private Session session;
     private Integer lPort;

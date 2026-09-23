@@ -34,5 +34,4 @@ public interface TemplateMarketApi {
     @GetMapping("/categoriesObject")
     @Operation(summary = "分类明细")
     List<MarketMetaDataVO> categoriesObject() ;
-
 }

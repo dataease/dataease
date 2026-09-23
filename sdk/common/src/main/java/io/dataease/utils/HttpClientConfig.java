@@ -68,5 +68,4 @@ public class HttpClientConfig {
     public void setSocketTimeout(int cocketTimeout) {
         this.socketTimeout = cocketTimeout;
     }
-
 }

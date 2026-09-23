@@ -8,7 +8,6 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-
 @Mapper
 public interface ExtVisualizationTemplateMapper{
 
@@ -53,5 +52,4 @@ public interface ExtVisualizationTemplateMapper{
     List<VisualizationLinkJumpInfoVO> findAppLinkJumpInfoInfo(@Param("dvId") Long dvId);
 
     List<VisualizationLinkJumpTargetViewInfoVO> findAppLinkJumpTargetViewInfoInfo(@Param("dvId") Long dvId);
-
 }

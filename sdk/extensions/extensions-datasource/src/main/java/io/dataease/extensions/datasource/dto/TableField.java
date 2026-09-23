@@ -5,7 +5,6 @@ import lombok.Data;
 import java.io.Serializable;
 import java.util.List;
 
-
 @Data
 public class TableField implements Serializable {
     private String name;
@@ -29,5 +28,4 @@ public class TableField implements Serializable {
     private int inCount;
     private String term = "eq";
     private Integer typeNumber;
-
 }

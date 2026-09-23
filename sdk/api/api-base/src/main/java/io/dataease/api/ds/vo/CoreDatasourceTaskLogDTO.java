@@ -68,5 +68,4 @@ public class CoreDatasourceTaskLogDTO implements Serializable {
     private Long createTime;
 
     private String triggerType;
-
 }

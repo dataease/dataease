@@ -1,4 +1,5 @@
 package io.dataease.commons.utils;
+import io.dataease.utils.LogUtil;
 
 import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.i18n.Translator;
@@ -27,7 +28,6 @@ public class ExcelWatermarkUtils {
     private static final Pattern IP_PATTERN = Pattern.compile(
             "^([0-9]{1,3}\\.){3}[0-9]{1,3}$|^([0-9a-fA-F]{0,4}:){2,7}[0-9a-fA-F]{0,4}$");
 
-
     public static String transContent(WatermarkContentDTO watermarkContent, UserFormVO userInfo) {
         String content = "";
         switch (watermarkContent.getType()) {
@@ -48,7 +48,6 @@ public class ExcelWatermarkUtils {
         content = content.replaceAll("\\$\\{time}", sdf.format(new Date()));
         return content;
     }
-
 
     /**
      * 添加水印图片到工作簿并返回图片 ID
@@ -141,7 +140,7 @@ public class ExcelWatermarkUtils {
         try {
             ImageIO.write(image, "png", baos);
         } catch (IOException e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         }
         return baos.toByteArray();
     }

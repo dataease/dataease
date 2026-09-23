@@ -14,7 +14,6 @@ public class WhitelistUtils {
 
     private static String contextPath;
 
-
     public static String getContextPath() {
         if (StringUtils.isBlank(contextPath)) {
             contextPath = Objects.requireNonNull(CommonBeanFactory.getBean(Environment.class)).getProperty("server.servlet.context-path", String.class);
@@ -77,7 +76,6 @@ public class WhitelistUtils {
                 || StringUtils.startsWithAny(requestURI, "/xpackComponent/content")
                 || StringUtils.startsWithAny(requestURI, "/xpackComponent/pluginStaticInfo")
                 || StringUtils.startsWithAny(requestURI, "/geo/")
-                || StringUtils.startsWithAny(requestURI, "/customGeo/")
                 || StringUtils.startsWithAny(requestURI, "/websocket")
                 || StringUtils.startsWithAny(requestURI, "/map/")
                 || StringUtils.startsWithAny(requestURI, "/oauth2/")

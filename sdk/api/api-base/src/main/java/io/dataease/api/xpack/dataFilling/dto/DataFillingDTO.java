@@ -7,7 +7,6 @@ import lombok.Data;
 import java.io.Serial;
 import java.io.Serializable;
 
-
 @Data
 public class DataFillingDTO implements Serializable {
 

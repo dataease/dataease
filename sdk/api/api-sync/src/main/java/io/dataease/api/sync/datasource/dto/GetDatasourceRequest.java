@@ -19,5 +19,4 @@ public class GetDatasourceRequest extends SyncDatasourceDTO {
     private boolean tableExtract;
 
     private String targetDbId;
-
 }

@@ -34,6 +34,38 @@ import { formatterItem } from '@/views/chart/components/js/formatter'
 import { checkFilterRemove } from '@/custom-component/v-query/QueryUtils'
 const { t } = useI18n()
 
+const collectComponentIds = (component, ids = new Set<string>()) => {
+  if (!component) {
+    return ids
+  }
+  if (component.id) {
+    ids.add(component.id)
+  }
+  if (component.component === 'Group' && Array.isArray(component.propValue)) {
+    component.propValue.forEach(child => collectComponentIds(child, ids))
+  }
+  if (component.component === 'DeTabs' && Array.isArray(component.propValue)) {
+    component.propValue.forEach(tabItem => {
+      tabItem.componentData?.forEach(child => collectComponentIds(child, ids))
+    })
+  }
+  return ids
+}
+
+const filterCopyCanvasViewIdMap = (component, idMap) => {
+  if (!idMap) {
+    return idMap
+  }
+  const componentIds = collectComponentIds(component)
+  return Object.keys(idMap).reduce((result, oldComponentId) => {
+    const newComponentId = idMap[oldComponentId]
+    if (componentIds.has(newComponentId)) {
+      result[oldComponentId] = newComponentId
+    }
+    return result
+  }, {})
+}
+
 export const dvMainStore = defineStore('dataVisualization', {
   state: () => {
     return {
@@ -94,6 +126,8 @@ export const dvMainStore = defineStore('dataVisualization', {
       },
       // 图表信息
       canvasViewInfo: {},
+      // 图表信息
+      canvasViewInfoMultiply: {},
       // 图表展示数据信息
       canvasViewDataInfo: {},
       // 图表实例信息
@@ -413,8 +447,9 @@ export const dvMainStore = defineStore('dataVisualization', {
       this.componentData = componentData
     },
 
-    setComponentDataMultiply(componentDataMultiply = []) {
+    setCanvasMultiply(componentDataMultiply = [], canvasViewInfoMultiply = {}) {
       this.componentDataMultiply = componentDataMultiply
+      this.canvasViewInfoMultiply = canvasViewInfoMultiply
     },
 
     addCopyComponent(component, idMap, canvasViewInfoPre = this.canvasViewInfo) {
@@ -435,8 +470,8 @@ export const dvMainStore = defineStore('dataVisualization', {
           }
         })
       }
-      //组件组内部可能还有多个图表
-      this.updateCopyCanvasView(idMap, canvasViewInfoPre)
+      // 只初始化本次实际加入组件的视图信息，避免多选复用时覆盖其他组件已适配的新主题样式
+      this.updateCopyCanvasView(filterCopyCanvasViewIdMap(component, idMap), canvasViewInfoPre)
     },
     updateCopyCanvasView(idMap, canvasViewInfoPre = this.canvasViewInfo) {
       // eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -1298,7 +1333,6 @@ export const dvMainStore = defineStore('dataVisualization', {
                 }
               }
               // 不存在该条件 且 条件有效 直接保存该条件
-              // !filterExist && vValid && currentFilters.push(condition)
 
               currentFilters.push(condition)
             }
@@ -1450,9 +1484,12 @@ export const dvMainStore = defineStore('dataVisualization', {
       customFilter?
     ) {
       const checkQDList = [...sourceData.dimensionList, ...sourceData.quotaList]
-      let currentFilters = element.linkageFilters || [] // 当前联动filter
-      if (['table-info', 'table-normal'].includes(element.innerType)) {
-        currentFilters = []
+      const boxPlotLinkage =
+        sourceData.option === 'linkage' && this.canvasViewInfo[viewId]?.type === 'box-plot'
+      let currentFilters = element.linkageFilters || []
+      // 针对明细表和汇总表，只清理当前源图表（viewId）的历史联动条件，保留其他图表的条件以支持多图表联动合并
+      if (['table-info', 'table-normal', 'rich-text'].includes(element.innerType)) {
+        currentFilters = currentFilters.filter(filter => filter.sourceViewId !== viewId)
       }
       if (currentFilters.length) {
         for (let i = currentFilters.length - 1; i >= 0; i--) {
@@ -1462,7 +1499,6 @@ export const dvMainStore = defineStore('dataVisualization', {
         }
       }
       // 联动的图表情况历史条件
-      // const currentFilters = []
       checkQDList.forEach(QDItem => {
         let sourceInfo = viewId + '#' + QDItem.id
         if (sourceData.option === 'jump') {
@@ -1485,7 +1521,16 @@ export const dvMainStore = defineStore('dataVisualization', {
               // 如果目标图表 和 当前循环组件id相等 则进行条件增减
               const targetFieldId = targetInfoArray[1] // 目标图表列ID
               let condition
-              if (QDItem.timeValue && Array.isArray(QDItem.timeValue)) {
+              // 箱线图将 NULL 与空字符串作为独立分组，不能将选中空分组解释为清除联动
+              if (boxPlotLinkage && QDItem.value === null) {
+                condition = {
+                  fieldId: targetFieldId,
+                  operator: 'null',
+                  value: [],
+                  viewIds: [targetViewId],
+                  sourceViewId: viewId
+                }
+              } else if (QDItem.timeValue && Array.isArray(QDItem.timeValue)) {
                 // 如果dimension.timeValue存在值且是数组 目前判断为是时间组件
                 condition = {
                   fieldId: targetFieldId,
@@ -1494,7 +1539,10 @@ export const dvMainStore = defineStore('dataVisualization', {
                   viewIds: [targetViewId],
                   sourceViewId: viewId
                 }
-              } else if (QDItem.value !== null && QDItem.value !== '') {
+              } else if (
+                (QDItem.value !== null && QDItem.value !== '') ||
+                (boxPlotLinkage && QDItem.value === '')
+              ) {
                 condition = {
                   fieldId: targetFieldId,
                   operator: 'eq',
@@ -1513,7 +1561,6 @@ export const dvMainStore = defineStore('dataVisualization', {
                   }
                 }
                 // 不存在该条件 且 条件有效 直接保存该条件
-                // !filterExist && vValid && currentFilters.push(condition)
                 currentFilters.push(condition)
               }
             }
@@ -1594,9 +1641,6 @@ export const dvMainStore = defineStore('dataVisualization', {
         } else if (item.component === 'DeTabs') {
           item.propValue.forEach(tabItem => {
             tabItem.componentData?.forEach(tabComponent => {
-              console.log(
-                '==test1==' + tabComponent.id + JSON.stringify(tabComponent.linkageFilters)
-              )
               if (tabComponent.linkageFilters && tabComponent.linkageFilters.length > 0) {
                 tabComponent.linkageFilters.splice(0, tabComponent.linkageFilters.length)
                 useEmitt().emitter.emit('query-data-' + tabComponent.id)
@@ -1756,6 +1800,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       this.canvasViewInfo = {}
       this.componentData = []
       this.componentDataMultiply = []
+      this.canvasViewInfoMultiply = {}
       this.dvInfo = {
         dataState: null,
         optType: null,

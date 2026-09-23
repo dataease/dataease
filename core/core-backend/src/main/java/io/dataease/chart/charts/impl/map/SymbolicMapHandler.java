@@ -43,7 +43,6 @@ public class SymbolicMapHandler extends GroupChartHandler {
         return result;
     }
 
-
     private Map<String, Object> customBuildResult(ChartViewDTO view, AxisFormatResult formatResult, CustomFilterResult filterResult, List<String[]> data, List<ChartViewFieldDTO> detailFields, List<String[]> detailData) {
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
         var extBubble = formatResult.getAxisMap().get(ChartAxis.extBubble);

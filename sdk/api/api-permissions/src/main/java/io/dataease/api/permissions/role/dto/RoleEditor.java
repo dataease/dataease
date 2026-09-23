@@ -17,5 +17,4 @@ public class RoleEditor implements Serializable {
     private String name;
     @Schema(description = "名称", hidden = true)
     private String desc;
-
 }

@@ -8,6 +8,7 @@ const iconChartMapEmpty = {
   icon_bar_light: 'bar-dark',
   'icon_bubble-map_gray_light': 'bubble-map-dark',
   'icon_bullet-chart_light': 'bullet-graph-dark',
+  'icon_box-plot_light': 'box-plot-dark',
   'icon_chart-quadrant_light': 'quadrant-dark',
   'icon_chart-scatter_light': 'scatter-dark',
   'icon_circle-packing_light': 'circle-packing-dark',

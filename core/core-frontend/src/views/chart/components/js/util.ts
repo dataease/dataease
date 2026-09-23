@@ -356,12 +356,16 @@ function handleBreakLineMultiDimension(data) {
   const quotaMap = new Map<string, { id: string }[]>()
   for (let i = 0; i < data.length; i++) {
     const item = data[i]
-    const dimensionInfo = dimensionInfoMap.get(item.field)
-    if (dimensionInfo) {
-      dimensionInfo.set.add(item.category)
-    } else {
-      dimensionInfoMap.set(item.field, { set: new Set([item.category]), index: i })
+    let dimensionInfo = dimensionInfoMap.get(item.field)
+    if (!dimensionInfo) {
+      dimensionInfo = { set: new Set(), index: i }
+      dimensionInfoMap.set(item.field, dimensionInfo)
     }
+    // null 和空字符串保留原始记录，但不参与子类别补全及数量统计
+    if (item.category === null || item.category === '') {
+      continue
+    }
+    dimensionInfo.set.add(item.category)
     subDimensionSet.add(item.category)
     quotaMap.set(item.category, item.quotaList)
   }
@@ -398,12 +402,16 @@ function handleSetZeroMultiDimension(data: Record<string, any>[], isExt = false)
         item.valueExt = 0
       }
     }
-    const dimensionInfo = dimensionInfoMap.get(item.field)
-    if (dimensionInfo) {
-      dimensionInfo.set.add(item.category)
-    } else {
-      dimensionInfoMap.set(item.field, { set: new Set([item.category]), index: i })
+    let dimensionInfo = dimensionInfoMap.get(item.field)
+    if (!dimensionInfo) {
+      dimensionInfo = { set: new Set(), index: i }
+      dimensionInfoMap.set(item.field, dimensionInfo)
     }
+    // null 和空字符串保留原始记录，但不参与子类别补全及数量统计
+    if (item.category === null || item.category === '') {
+      continue
+    }
+    dimensionInfo.set.add(item.category)
     subDimensionSet.add(item.category)
     quotaMap.set(item.category, item.quotaList)
   }

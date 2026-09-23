@@ -10,7 +10,6 @@ import lombok.experimental.Accessors;
 import java.io.Serial;
 import java.io.Serializable;
 
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,5 +23,4 @@ public class DatasetTableFieldRequest implements Serializable {
     private Long datasourceId;
 
     private String tableName;
-
 }

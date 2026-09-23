@@ -1,6 +1,5 @@
 package io.dataease.datasource.type;
 
-
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
@@ -11,5 +10,4 @@ public class Es {
     private String password;
     private String version;
     private String uri;
-
 }

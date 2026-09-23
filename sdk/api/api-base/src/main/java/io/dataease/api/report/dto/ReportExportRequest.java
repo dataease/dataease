@@ -16,8 +16,10 @@ public class ReportExportRequest implements Serializable {
     private String busiType;
     @Schema(description = "分辨率")
     private String pixel;
-    @Schema(description = "额外等待时间")
+    @Schema(description = "超时时间")
     private Integer extWaitTime = 0;
+    @Schema(description = "渲染时间")
+    private Integer renderTime = 2;
     @Schema(description = "导出格式")
     private Integer resultFormat = 0;
 }

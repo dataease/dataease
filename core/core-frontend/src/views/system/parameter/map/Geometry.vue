@@ -410,6 +410,8 @@ const curCustomGeoArea: CustomGeoArea = reactive({
 const customAreaTreeRef = ref()
 const areaFormRef = ref()
 const saveGeoArea = async () => {
+  // 保存前统一清理首尾空格，避免空白名称或无效空格入库
+  editedCustomArea.name = editedCustomArea.name.trim()
   areaFormRef.value?.validate(async valid => {
     if (valid) {
       const res = await saveCustomGeoArea(editedCustomArea)
@@ -454,7 +456,6 @@ const deleteCustomArea = data => {
   ElMessageBox.confirm(t('system.delete_custom_area_tip'), '', {
     type: 'warning',
     confirmButtonType: 'danger',
-    customClass: 'area-delete-dialog',
     autofocus: false,
     confirmButtonText: t('common.delete'),
     showClose: false
@@ -529,9 +530,17 @@ const customSubArea = reactive({
 const subAreaOptions = ref([])
 const subAreaList = ref([])
 const subAreaFormRef = ref()
+const validateAreaName = (_rule, value: string, callback) => {
+  if (!value?.trim()) {
+    callback(new Error(t('common.input_name')))
+    return
+  }
+  callback()
+}
 const areaRules = reactive<FormRules>({
   name: [
     { type: 'string', required: true, message: t('common.input_name'), trigger: 'change' },
+    { validator: validateAreaName, trigger: 'change' },
     { min: 1, max: 50, message: t('common.input_limit', [1, 50]), trigger: 'blur' }
   ],
   scopeArr: [
@@ -559,6 +568,7 @@ const editCustomSubArea = (subArea?) => {
   customSubAreaDialog.value = true
 }
 const saveGeoSubArea = async () => {
+  customSubArea.name = customSubArea.name.trim()
   subAreaFormRef.value?.validate(async valid => {
     if (!valid) {
       return
@@ -577,7 +587,6 @@ const deleteCustomSubArea = async data => {
   ElMessageBox.confirm(t('system.delete_custom_sub_area_tip'), '', {
     type: 'warning',
     confirmButtonType: 'danger',
-    customClass: 'area-delete-dialog',
     autofocus: false,
     confirmButtonText: t('common.delete'),
     showClose: false
@@ -963,18 +972,5 @@ const onPlaceNameMappingChange = (mappingForm: any) => {
 <style lang="less">
 .area-opt-popper {
   margin-right: -20px !important;
-}
-
-.area-delete-dialog {
-  padding: 24px;
-  .ed-message-box__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-    .ed-message-box__headerbtn {
-      position: static;
-    }
-  }
 }
 </style>

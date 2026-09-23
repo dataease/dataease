@@ -14,5 +14,4 @@ public class ExtraDetailsBaseRequest {
 
     @JsonSerialize(using = ToStringSerializer.class)
     private Long formId;
-
 }

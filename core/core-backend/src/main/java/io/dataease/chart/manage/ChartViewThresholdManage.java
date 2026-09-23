@@ -31,10 +31,8 @@ import java.util.stream.Collectors;
 @Component("chartViewThresholdManage")
 public class ChartViewThresholdManage {
 
-
     @Resource
     private ChartViewManege chartViewManege;
-
 
     public String convertThresholdRules(Long chartId, String thresholdRules, String resourceTable) {
         ChartViewDTO details = chartViewManege.getDetails(chartId, resourceTable);
@@ -320,7 +318,7 @@ public class ChartViewThresholdManage {
             String result = sb.toString();
 
             if (withThresholdData) {
-                Set<Long> thresholdFieldIdSet = new HashSet<>();
+                Set<Long> thresholdFieldIdSet = new LinkedHashSet<>();
                 getThresholdFieldIdList(filterTreeObj, thresholdFieldIdSet);
                 List<List<String>> thresholdTableList = rows.stream().map(row -> thresholdFieldIdSet.stream().map(fieldId -> {
                     DatasetTableFieldDTO fieldDTO = fieldMap.get(fieldId);
@@ -516,7 +514,6 @@ public class ChartViewThresholdManage {
         }
     }
 
-
     private String formatValue(List<Map<String, Object>> rows, FilterTreeItem item) {
         DatasetTableFieldDTO field = item.getField();
         String dataeaseName = field.getDataeaseName();
@@ -624,9 +621,10 @@ public class ChartViewThresholdManage {
                 } else if (StringUtils.equals(term, "not_in")) {
                     return !Arrays.stream(item.getValue().split(",")).toList().contains(valueObj.toString());
                 } else if (StringUtils.equals(term, "like")) {
-                    return StringUtils.contains(item.getValue(), valueObj.toString());
+                    // 与 SQL 侧 field LIKE '%value%' 语义保持一致：行字段值包含配置的过滤值
+                    return StringUtils.contains(valueObj.toString(), item.getValue());
                 } else if (StringUtils.equals(term, "not_like")) {
-                    return !StringUtils.contains(item.getValue(), valueObj.toString());
+                    return !StringUtils.contains(valueObj.toString(), item.getValue());
                 } else if (StringUtils.equals(term, "null")) {
                     return false;
                 } else if (StringUtils.equals(term, "not_null")) {
@@ -694,5 +692,4 @@ public class ChartViewThresholdManage {
             return valueLong == targetLong;
         }
     }
-
 }

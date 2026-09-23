@@ -57,7 +57,6 @@ public interface ReportApi {
     @PostMapping("/delete")
     void delete(@RequestBody List<Long> taskIdList);
 
-
     @Operation(summary = "查询详情")
     @GetMapping("/info/{taskId}")
     ReportInfoVO info(@PathVariable("taskId") Long taskId);

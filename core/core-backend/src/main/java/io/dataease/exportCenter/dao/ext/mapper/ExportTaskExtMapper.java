@@ -7,7 +7,6 @@ import io.dataease.exportCenter.dao.auto.entity.CoreExportTask;
 import io.dataease.model.ExportTaskDTO;
 import org.apache.ibatis.annotations.*;
 
-
 @Mapper
 public interface ExportTaskExtMapper extends BaseMapper<CoreExportTask> {
 
@@ -38,6 +37,4 @@ public interface ExportTaskExtMapper extends BaseMapper<CoreExportTask> {
             }
     )
     IPage<ExportTaskDTO> pager(IPage<ExportTaskDTO> page, @Param("ew") QueryWrapper queryWrapper);
-
-
 }

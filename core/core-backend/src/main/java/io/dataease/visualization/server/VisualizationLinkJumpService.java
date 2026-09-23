@@ -69,7 +69,6 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
     @Resource
     private SnapshotCoreChartViewMapper snapshotCoreChartViewMapper;
 
-
     @Resource
     private DataVisualizationInfoMapper dataVisualizationInfoMapper;
 
@@ -199,5 +198,4 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
         extVisualizationLinkJumpMapper.deleteJumpInfoSnapshot(jumpDTO.getSourceDvId(), jumpDTO.getSourceViewId());
         extVisualizationLinkJumpMapper.deleteJumpSnapshot(jumpDTO.getSourceDvId(), jumpDTO.getSourceViewId());
     }
-
 }

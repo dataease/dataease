@@ -11,7 +11,6 @@ import java.util.Objects;
 @Component
 public class DeXpackDataFillingScheduleJob implements Job {
 
-
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         Trigger trigger = jobExecutionContext.getTrigger();

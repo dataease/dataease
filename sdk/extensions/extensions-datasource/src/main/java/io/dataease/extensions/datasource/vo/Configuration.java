@@ -35,8 +35,8 @@ public class Configuration {
     private String charset;
     private String targetCharset;
     private String driver;
-    private int initialPoolSize = 50;
-    private int minPoolSize = 50;
+    private int initialPoolSize = 5;
+    private int minPoolSize = 5;
     private int maxPoolSize = 100;
     private int queryTimeout = 30;
     private boolean useSSH = false;
@@ -49,7 +49,6 @@ public class Configuration {
     private String sshKey;
     private String sshKeyPassword;
     private String url;
-
 
     public String getLHost(){
         if(useSSH){
@@ -127,5 +126,4 @@ public class Configuration {
             convertDatabase(jdbcUrl);
         }
     }
-
 }

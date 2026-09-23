@@ -27,7 +27,6 @@ public class CommonExcelUtils {
         writeExcel(response, objects, clazz, errMsgList, fileName, sheetName);
     }
 
-
     public static void writeExcel(HttpServletResponse response, List objects, Class clazz, List<Map<Integer, String>> errMsgList, String fileName, String sheetName) throws IOException {
         response.addHeader("responseType", "blob");
         response.setContentType("application/vnd.ms-excel");
@@ -69,5 +68,4 @@ public class CommonExcelUtils {
     public static void importExcel(InputStream inputStream, Class clazsz, AnalysisEventListener analysisEventListener) throws Exception {
         EasyExcel.read(inputStream, clazsz, analysisEventListener).sheet().headRowNumber(0).doRead();
     }
-
 }

@@ -9,7 +9,6 @@ public class DatasourceConfiguration extends Configuration {
     private List<String> illegalParameters;
     private List<String> showTableSqls;
 
-
     static public enum DatasourceType {
         folder("folder", "folder", "folder", null, null, 25),
         API("API", "API", "API", "`", "`", 15),

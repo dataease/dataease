@@ -9,7 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 
 public class TokenUtils {
 
-
     public static TokenUserBO userBOByToken(String token) {
         DecodedJWT jwt = JWT.decode(token);
         Long userId = jwt.getClaim("uid").asLong();
@@ -30,7 +29,6 @@ public class TokenUtils {
         }
         return userBOByToken(token);
     }
-
 
     public static TokenUserBO validateLinkToken(String linkToken) {
         if (StringUtils.isBlank(linkToken)) {

@@ -3,8 +3,80 @@ import { Plot } from '@antv/l7plot/dist/lib/core/plot'
 import isEmpty from 'lodash-es/isEmpty'
 import { parseJson } from '@/views/chart/components/js/util'
 import { Scene } from '@antv/l7-scene'
-import { deepCopy } from '@/utils/utils'
+import { deepCopy, sanitizeTooltipHtml } from '@/utils/utils'
 import { formatL7TooltipValue } from '@/views/chart/components/js/panel/common/common_antv'
+
+const MAP_TOOLTIP_BACKGROUND_COLOR_VAR = '--de-map-tooltip-background-color'
+const MAP_TOOLTIP_FONT_SIZE_VAR = '--de-map-tooltip-font-size'
+const DEFAULT_TOOLTIP_BACKGROUND_COLOR = '#FFFFFF'
+const DEFAULT_TOOLTIP_COLOR = '#000000'
+const DEFAULT_TOOLTIP_FONT_SIZE = 10
+const INVALID_CSS_VALUE_PATTERN = /[;{}<>]/
+
+const normalizeTooltipColor = (value: unknown, fallback: string): string => {
+  if (typeof value !== 'string') {
+    return fallback
+  }
+  const color = value.trim()
+  if (!color || INVALID_CSS_VALUE_PATTERN.test(color)) {
+    return fallback
+  }
+  const style = document.createElement('span').style
+  style.color = color
+  return style.color ? color : fallback
+}
+
+const normalizeTooltipFontSize = (value: unknown): number => {
+  const fontSize = typeof value === 'number' ? value : Number.parseFloat(`${value ?? ''}`)
+  if (!Number.isFinite(fontSize)) {
+    return DEFAULT_TOOLTIP_FONT_SIZE
+  }
+  return Math.min(200, Math.max(8, fontSize))
+}
+
+export const escapeTooltipHtml = (value: unknown): string => {
+  return `${value ?? ''}`.replace(
+    /[&<>'"]/g,
+    char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char])
+  )
+}
+
+export const setupMapTooltipStyle = (
+  container: string,
+  backgroundColor: unknown,
+  fontSize?: unknown
+): string => {
+  const containerElement = document.getElementById(container)
+  if (containerElement) {
+    // 动态样式值仅通过 CSSOM 写入，避免进入样式文本
+    containerElement.style.setProperty(
+      MAP_TOOLTIP_BACKGROUND_COLOR_VAR,
+      normalizeTooltipColor(backgroundColor, DEFAULT_TOOLTIP_BACKGROUND_COLOR)
+    )
+    if (fontSize !== undefined) {
+      containerElement.style.setProperty(
+        MAP_TOOLTIP_FONT_SIZE_VAR,
+        `${normalizeTooltipFontSize(fontSize)}px`
+      )
+    }
+  }
+  return `#${CSS.escape(container)}`
+}
+
+export const createSymbolicTooltipElement = (
+  content: string,
+  tooltip: Record<string, unknown>,
+  fontFamily?: unknown
+): HTMLElement => {
+  const element = document.createElement('div')
+  element.style.fontSize = `${normalizeTooltipFontSize(tooltip.fontSize)}px`
+  element.style.color = normalizeTooltipColor(tooltip.color, DEFAULT_TOOLTIP_COLOR)
+  if (typeof fontFamily === 'string') {
+    element.style.fontFamily = fontFamily
+  }
+  element.innerHTML = sanitizeTooltipHtml(content)
+  return element
+}
 
 export const configCarouselTooltip = (chart, view, data, scene, customSubArea?, drawOption?) => {
   if (['bubble-map', 'map'].includes(chart.type)) {
@@ -137,6 +209,8 @@ export class CarouselManager {
    * @private
    */
   private init(scene, chart, view, data: any[], customSubArea, drawOption?) {
+    // 更新前保留旧弹窗引用以完成清理，避免在复用实例时遗留旧 Popup
+    this.clearPreviousInstance(this.chart?.container || chart.container)
     this.view = view
     this.chart = chart
     this.scene = scene
@@ -145,7 +219,6 @@ export class CarouselManager {
     this.currentIndex = 0
     this.customSubArea = customSubArea
     this.drawOption = drawOption
-    this.clearPreviousInstance(this.chart.container)
     if (
       this.chart.customAttr?.tooltip?.show &&
       this.chart.customAttr?.tooltip?.carousel?.enable &&
@@ -155,6 +228,7 @@ export class CarouselManager {
       const carousel = this.chart.customAttr?.tooltip?.carousel
       this.stayTime = carousel.stayTime * 1000
       this.intervalTime = carousel.intervalTime * 1000
+      this.syncPointerPause()
       this.startCarouselPopups()
       const divElement = document.getElementById(this.chart.container)
       divElement.addEventListener('mouseenter', this.pauseCarouselPopups)
@@ -180,6 +254,7 @@ export class CarouselManager {
     if (document.hidden) {
       this.clearPreviousInstance(this.chart.container)
     } else {
+      this.syncPointerPause()
       this.startCarouselPopups()
     }
   }
@@ -192,7 +267,7 @@ export class CarouselManager {
   private clearPreviousInstance(containerId: string): void {
     if (carouselManagerInstances[containerId]) {
       const instance = carouselManagerInstances[containerId]
-      this.clearExistingTimers()
+      instance.clearExistingTimers()
       instance.popup?.remove()
       instance.removeStyle()
     }
@@ -204,7 +279,44 @@ export class CarouselManager {
    */
   private startCarouselPopups(): void {
     this.clearExistingTimers()
-    this.carouselPopups()
+    if (this.canRunCarousel()) {
+      this.carouselPopups()
+    }
+  }
+
+  private isDesktopPointer(): boolean {
+    // 仅对无触摸能力的 PC 启用悬停保护，触屏电脑和平板也保留原有触摸逻辑
+    return (
+      navigator.maxTouchPoints === 0 &&
+      window.matchMedia('(hover: hover) and (pointer: fine)').matches
+    )
+  }
+
+  private syncPointerPause(): void {
+    // 重绘时鼠标仍在容器内不会再次触发 mouseenter，需恢复实际暂停状态
+    if (this.isDesktopPointer()) {
+      this.isPaused = !!document.getElementById(this.chart.container)?.matches(':hover')
+    }
+  }
+
+  private canRunCarousel(): boolean {
+    // 触摸设备不增加启动限制，保留重绘、重新开启和页面恢复时的原有行为
+    if (!this.isDesktopPointer()) {
+      return true
+    }
+    const container = document.getElementById(this.chart.container)
+    if (container?.matches(':hover')) {
+      this.isPaused = true
+    }
+    return !!(
+      container &&
+      this.popup &&
+      this.chart.customAttr?.tooltip?.show &&
+      this.chart.customAttr?.tooltip?.carousel?.enable &&
+      this.data?.length &&
+      !document.hidden &&
+      !this.isPaused
+    )
   }
 
   /**
@@ -239,6 +351,13 @@ export class CarouselManager {
    */
   private carouselPopups(): void {
     const showPopup = (index: number): void => {
+      // 定时回调同样检查暂停条件，悬停期间不能隐藏鼠标提示或展示轮播提示
+      if (!this.canRunCarousel()) {
+        this.clearExistingTimers()
+        this.popup?.remove()
+        this.removeStyle()
+        return
+      }
       this.removeStyle()
       const containerElement = document.getElementById(this.chart.container)
       if (containerElement) {
@@ -322,49 +441,28 @@ export class CarouselManager {
     const tooltipFontSize = tooltipStyle['l7plot-tooltip']['font-size']
     const style = document.createElement('style')
     style.id = 'style-' + this.chart.container
-    style.innerHTML = `
-            #${this.chart.container} .l7-popup-content {
-                background-color: ${tooltipBackgroundColor} !important;
-                font-size: ${tooltipFontSize};
+    const tooltipSelector = setupMapTooltipStyle(
+      this.chart.container,
+      tooltipBackgroundColor,
+      tooltipFontSize
+    )
+    style.textContent = `
+            ${tooltipSelector} .l7-popup-content {
+                background-color: var(${MAP_TOOLTIP_BACKGROUND_COLOR_VAR}, ${DEFAULT_TOOLTIP_BACKGROUND_COLOR}) !important;
+                font-size: var(${MAP_TOOLTIP_FONT_SIZE_VAR}, ${DEFAULT_TOOLTIP_FONT_SIZE}px);
                 padding: 10px 10px 6px;
                 line-height: 1.6;
             }
-            #${this.chart.container} .l7-popup-tip {
-                border-top-color: ${tooltipBackgroundColor} !important;
+            ${tooltipSelector} .l7-popup-tip {
+                border-top-color: var(${MAP_TOOLTIP_BACKGROUND_COLOR_VAR}, ${DEFAULT_TOOLTIP_BACKGROUND_COLOR}) !important;
             }
         `
     document.head.appendChild(style)
 
     const popupData = this.getPopupData(index)
     if (popupData.data) {
-      let tooltipItem = ''
-      this.getTooltipItems(popupData.data).forEach(fieldData => {
-        tooltipItem += `
-                    <li style="list-style-type: none; margin-bottom: 4px; white-space: nowrap; display: flex; justify-content: space-between;">
-                        <span style="${this.objectToSemicolonSeparated(
-                          tooltipStyle['l7plot-tooltip__name']
-                        )}">${fieldData.name}</span>
-                        <span style="${this.objectToSemicolonSeparated(
-                          tooltipStyle['l7plot-tooltip__value']
-                        )}">${fieldData.value}</span>
-                    </li>`
-      })
-
-      const html = `
-                <div>
-                <div style="${this.objectToSemicolonSeparated(
-                  tooltipStyle['l7plot-tooltip__title']
-                )}">${popupData.data.name}</div>
-                    <ul style="${this.objectToSemicolonSeparated(
-                      tooltipStyle['l7plot-tooltip__list']
-                    )}">
-                        ${tooltipItem}
-                    </ul>
-                </div>
-            `
-
       this.popup.setLngLat({ lng: popupData.centroid[0], lat: popupData.centroid[1] })
-      this.popup.setHTML(html)
+      this.popup.setHTML(this.createPopupContent(popupData.data, tooltipStyle))
       this.popup.closeButton = false
       this.view.addLayer(this.popup)
       // 地图层高亮
@@ -440,19 +538,42 @@ export class CarouselManager {
     }
   }
 
-  /**
-   * 将对象转换为 CSS 属性
-   * @param obj
-   * @private
-   */
-  private objectToSemicolonSeparated(obj: any): string {
-    let result = ''
-    for (const key in obj) {
-      if (obj.hasOwnProperty(key)) {
-        result += `${this.convertToSnakeCase(key)}:${obj[key]};`
+  private createPopupContent(data, tooltipStyle): HTMLElement {
+    const content = document.createElement('div')
+    const title = document.createElement('div')
+    this.applyElementStyles(title, tooltipStyle['l7plot-tooltip__title'])
+    title.textContent = `${data.name ?? ''}`
+    content.appendChild(title)
+
+    const list = document.createElement('ul')
+    this.applyElementStyles(list, tooltipStyle['l7plot-tooltip__list'])
+    this.getTooltipItems(data).forEach(fieldData => {
+      const item = document.createElement('li')
+      item.style.listStyleType = 'none'
+      item.style.marginBottom = '4px'
+      item.style.whiteSpace = 'nowrap'
+      item.style.display = 'flex'
+      item.style.justifyContent = 'space-between'
+
+      const name = document.createElement('span')
+      this.applyElementStyles(name, tooltipStyle['l7plot-tooltip__name'])
+      name.textContent = `${fieldData.name ?? ''}`
+      const value = document.createElement('span')
+      this.applyElementStyles(value, tooltipStyle['l7plot-tooltip__value'])
+      value.textContent = `${fieldData.value ?? ''}`
+      item.append(name, value)
+      list.appendChild(item)
+    })
+    content.appendChild(list)
+    return content
+  }
+
+  private applyElementStyles(element: HTMLElement, styles: Record<string, unknown>): void {
+    Object.entries(styles || {}).forEach(([key, value]) => {
+      if (value !== null && value !== undefined) {
+        element.style.setProperty(this.convertToSnakeCase(key), `${value}`)
       }
-    }
-    return result
+    })
   }
 
   private cancelHighlightLayer(index?: number): void {
@@ -565,21 +686,20 @@ export class CarouselManager {
         }
         const style = document.createElement('style')
         style.id = 'style-' + this.chart.container
-        style.innerHTML = `
-          #${this.chart.container} .l7-popup-content {
-            background-color: ${tooltip.backgroundColor} !important;
+        const tooltipSelector = setupMapTooltipStyle(this.chart.container, tooltip.backgroundColor)
+        style.textContent = `
+          ${tooltipSelector} .l7-popup-content {
+            background-color: var(${MAP_TOOLTIP_BACKGROUND_COLOR_VAR}, ${DEFAULT_TOOLTIP_BACKGROUND_COLOR}) !important;
             padding: 6px 10px 6px;
             line-height: 1.6;
           }
-          #${this.chart.container} .l7-popup-tip {
-           border-top-color: ${tooltip.backgroundColor} !important;
+          ${tooltipSelector} .l7-popup-tip {
+           border-top-color: var(${MAP_TOOLTIP_BACKGROUND_COLOR_VAR}, ${DEFAULT_TOOLTIP_BACKGROUND_COLOR}) !important;
           }
         `
         document.head.appendChild(style)
         const lngField = this.chart.xAxis[0].dataeaseName
         const latField = this.chart.xAxis[1].dataeaseName
-        const htmlPrefix = `<div style='font-size:${tooltip.fontSize}px;color:${tooltip.color};'>`
-        const htmlSuffix = '</div>'
         const data = this.view.sourceOption.data[index]
         if (data && data.details?.length) {
           const fieldData = {
@@ -587,12 +707,11 @@ export class CarouselManager {
             ...Object.fromEntries(mergeDetailsToMap(data.details))
           }
           const content = buildTooltipContent(tooltip, fieldData, showFields)
-          const html = `${htmlPrefix}${content}${htmlSuffix}`
           this.popup.setLngLat({
             lng: data[lngField],
             lat: data[latField]
           })
-          this.popup.setHTML(html)
+          this.popup.setHTML(createSymbolicTooltipElement(content, tooltip))
           this.popup.closeButton = false
           this.scene.addPopup(this.popup)
           this.popup.addTo(this.scene)
@@ -625,13 +744,16 @@ export class CarouselManager {
       if (tooltip.customContent) {
         content = tooltip.customContent
         showFields.forEach(field => {
-          content = content.replace(`\${${field.split('@')[1]}}`, fieldData[field.split('@')[0]])
+          content = content.replace(
+            `\${${field.split('@')[1]}}`,
+            escapeTooltipHtml(fieldData[field.split('@')[0]])
+          )
         })
       } else {
         showFields.forEach(field => {
-          content += `<span style="margin-bottom: 4px">${field.split('@')[1]}: ${
+          content += `<span>${escapeTooltipHtml(field.split('@')[1])}: ${escapeTooltipHtml(
             fieldData[field.split('@')[0]]
-          }</span><br>`
+          )}</span><br>`
         })
       }
       return content.replace(/\n/g, '<br>')

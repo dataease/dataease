@@ -81,7 +81,7 @@ function _prepare_apisix() {
 }
 function _healthcheck() {
    echo
-   container_name=$(grep "container_name" $DE_RUNNING_BASE/docker-compose.yml | awk -F': ' '{print $2}')
+   container_name=$(grep "container_name" "$DE_RUNNING_BASE/docker-compose.yml" | awk -F': ' '{print $2}' | tr -d '\r')
    sleep 1
    if [ -z $(docker ps --filter "name=$container_name" -q) ];then
       echo "未找到容器 $container_name。"

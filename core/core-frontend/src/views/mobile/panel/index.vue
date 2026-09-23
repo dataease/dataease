@@ -5,7 +5,7 @@ import eventBus from '@/utils/eventBus'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { XpackComponent } from '@/components/plugin'
 import DePreviewMobile from './MobileInPc.vue'
-import { findComponentById, mobileViewStyleSwitch } from '@/utils/canvasUtils'
+import { findComponentById, initTabMobileLayout, mobileViewStyleSwitch } from '@/utils/canvasUtils'
 import { deepCopy } from '@/utils/utils'
 const panelInit = ref(false)
 const dvMainStore = dvMainStoreWithOut()
@@ -31,6 +31,20 @@ const apdataQuery = ele => {
   }
 }
 
+/**
+ * 将主窗口传入的 PC 图表配置应用到移动端画布并触发原有刷新入口
+ * @param component 与 viewInfo 对应的移动端组件，决定使用重绘还是重新取数
+ * @param viewInfo 已清除移动端覆盖项的 PC 图表配置
+ */
+const applySyncedViewInfo = (component, viewInfo) => {
+  mobileViewStyleSwitch(viewInfo)
+  if (component?.component === 'VQuery') {
+    useEmitt().emitter.emit('renderChart-' + component.id, viewInfo)
+  } else if (component?.component === 'UserView') {
+    useEmitt().emitter.emit('calcData-' + component.id, viewInfo)
+  }
+}
+
 const hanedleMessage = event => {
   if (event.data.type === 'panelInit') {
     const { componentData, canvasStyleData, dvInfo, canvasViewInfo, isEmbedded } = event.data.value
@@ -46,6 +60,8 @@ const hanedleMessage = event => {
       apdataQuery(ele)
 
       if (ele.component === 'DeTabs') {
+        // 初始化 Tab 子组件运行时 geometry，已保存的 m* 布局会优先恢复
+        initTabMobileLayout(ele)
         ele.propValue?.forEach(tabItem => {
           tabItem.componentData?.forEach(tabComponent => {
             const {
@@ -91,15 +107,42 @@ const hanedleMessage = event => {
       mobileComponent[type] = component[type]
     } else if (['syncPcDesign'].includes(type)) {
       const mobileComponent = findComponentById(component.id)
+      // key 为 Tab 子组件 ID，value 为同步前尚未保存的移动端位置和尺寸
+      const tabMobileGeometry = new Map()
+      if (mobileComponent.component === 'DeTabs') {
+        mobileComponent.propValue?.forEach(tabItem => {
+          tabItem.componentData?.forEach(tabComponent => {
+            tabMobileGeometry.set(tabComponent.id, {
+              // mx、my 对应移动端 Matrix 的列坐标和行坐标
+              mx: tabComponent.x,
+              my: tabComponent.y,
+              // mSizeX、mSizeY 对应移动端 Matrix 的列宽和行高
+              mSizeX: tabComponent.sizeX,
+              mSizeY: tabComponent.sizeY
+            })
+          })
+        })
+      }
       mobileComponent['style'] = component['style']
       mobileComponent['commonBackground'] = component['commonBackground']
       mobileComponent['events'] = component['events']
-      mobileComponent['propValue'] = component['propValue']
-      mobileViewStyleSwitch(otherComponent)
-      if (mobileComponent.component === 'VQuery') {
-        useEmitt().emitter.emit('renderChart-' + component.id, otherComponent)
-      } else if (mobileComponent.component === 'UserView') {
-        useEmitt().emitter.emit('calcData-' + component.id, otherComponent)
+      mobileComponent['propValue'] = deepCopy(component['propValue'])
+      if (mobileComponent.component === 'DeTabs') {
+        // 同步 PC 内容时保留用户尚未保存的 Tab 子组件移动布局
+        mobileComponent.propValue?.forEach(tabItem => {
+          tabItem.componentData?.forEach(tabComponent => {
+            Object.assign(tabComponent, tabMobileGeometry.get(tabComponent.id) || {})
+          })
+        })
+        initTabMobileLayout(mobileComponent)
+      }
+      if (mobileComponent.component === 'DeTabs' && Array.isArray(otherComponent)) {
+        // Tab 内图表拥有各自的 viewInfo；逐个恢复 PC 配置并触发原有重算或重绘入口
+        otherComponent.forEach(viewInfo => {
+          applySyncedViewInfo(findComponentById(viewInfo.id), viewInfo)
+        })
+      } else {
+        applySyncedViewInfo(mobileComponent, otherComponent)
       }
     }
   }

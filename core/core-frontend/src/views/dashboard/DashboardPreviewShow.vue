@@ -127,7 +127,7 @@ const loadCanvasData = (dvId, weight?) => {
       state.dvInfo = dvInfo
       state.curPreviewGap = curPreviewGap
       if (showPosition.value === 'multiplexing') {
-        dvMainStore.setComponentDataMultiply(state.canvasDataPreview)
+        dvMainStore.setCanvasMultiply(state.canvasDataPreview, state.canvasViewInfoPreview)
       }
       dataInitState.value = true
       nextTick(() => {
@@ -398,7 +398,6 @@ defineExpose({
     overflow-x: hidden;
     overflow-y: auto;
     position: relative;
-    //transition: 0.5s;
 
     &.no-data {
       background-color: rgba(245, 246, 247, 1);

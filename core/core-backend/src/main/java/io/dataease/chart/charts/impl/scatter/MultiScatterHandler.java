@@ -143,4 +143,3 @@ public class MultiScatterHandler extends DefaultChartHandler {
                 .collect(Collectors.toList());
     }
 }
-

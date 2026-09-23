@@ -36,5 +36,4 @@ public enum FileType {
     public String getValue() {
         return value;
     }
-
 }

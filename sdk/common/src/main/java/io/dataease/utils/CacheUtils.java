@@ -1,6 +1,5 @@
 package io.dataease.utils;
 
-
 import io.dataease.cache.DECacheService;
 import org.apache.commons.lang3.ObjectUtils;
 
@@ -8,7 +7,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-
 
 public class CacheUtils {
 

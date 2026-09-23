@@ -6,14 +6,13 @@ import io.dataease.api.system.request.SQLBotConfigCreator;
 import io.dataease.api.system.vo.SettingItemVO;
 import io.dataease.api.system.vo.ShareBaseVO;
 import io.dataease.datasource.server.DatasourceServer;
+import io.dataease.exception.DEException;
+import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.system.dao.auto.entity.CoreSysSetting;
 import io.dataease.system.dao.auto.mapper.CoreSysSettingMapper;
 import io.dataease.system.dao.ext.mapper.ExtCoreSysSettingMapper;
-import io.dataease.utils.BeanUtils;
-import io.dataease.utils.CommonBeanFactory;
-import io.dataease.utils.IDUtils;
-import io.dataease.utils.SystemSettingUtils;
+import io.dataease.utils.*;
 import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -123,7 +122,6 @@ public class SysParameterManage {
         });
     }
 
-
     public Map<String, String> groupVal(String groupKey) {
         QueryWrapper<CoreSysSetting> queryWrapper = new QueryWrapper<>();
         queryWrapper.likeRight("pkey", groupKey);
@@ -167,7 +165,6 @@ public class SysParameterManage {
         item.put("pval", pval);
         return item;
     }
-
 
     @Transactional
     public void saveGroup(List<SettingItemVO> vos, String groupKey) {
@@ -223,7 +220,6 @@ public class SysParameterManage {
         validVo.setId(IDUtils.snowID());
         configList.add(validVo);
 
-
         QueryWrapper<CoreSysSetting> queryWrapper = new QueryWrapper<>();
         queryWrapper.likeRight("pkey", key);
         coreSysSettingMapper.delete(queryWrapper);
@@ -234,6 +230,9 @@ public class SysParameterManage {
     @XpackInteract(value = "perSetting", before = false)
     @Transactional
     public void saveBasic(List<SettingItemVO> vos) {
+        if (!AuthUtils.isSysAdmin()) {
+            DEException.throwException(Translator.get("i18n_no_permission"));
+        }
         String key = "basic.";
         proxy().saveGroup(vos, key);
     }
@@ -258,5 +257,4 @@ public class SysParameterManage {
     public void insert(CoreSysSetting coreSysSetting) {
         coreSysSettingMapper.insert(coreSysSetting);
     }
-
 }

@@ -48,7 +48,6 @@ public class SwaggerConfig {
                         .version(version));
     }
 
-
     @Bean
     public GroupedOpenApi visualizationApi() {
         return GroupedOpenApi.builder().group("1-visualization").displayName("可视化管理").packagesToScan("io.dataease.visualization", "io.dataease.share").build();
@@ -97,6 +96,4 @@ public class SwaggerConfig {
     public Knife4jJakartaOperationCustomizer knife4jJakartaOperationCustomizer() {
         return new Knife4jJakartaOperationCustomizer();
     }
-
-
 }

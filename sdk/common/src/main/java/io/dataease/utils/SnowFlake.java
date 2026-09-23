@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class SnowFlake {
 
-
     @Value("${dataease.machine-id:1}")
     public void setMachineId(long machineId) {
         this.machineId = machineId;

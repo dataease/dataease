@@ -17,5 +17,4 @@ public class DeI18nStarter implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         DynamicI18nUtils.addOrUpdate(i18nPath);
     }
-
 }

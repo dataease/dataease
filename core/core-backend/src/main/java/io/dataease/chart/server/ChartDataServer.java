@@ -61,6 +61,9 @@ import java.util.stream.Collectors;
 @RequestMapping("/chartData")
 public class ChartDataServer implements ChartDataApi {
     @Resource
+    private io.dataease.share.manage.ShareVisitorPermissionManage shareVisitorPermissionManage;
+
+    @Resource
     private ChartDataManage chartDataManage;
     @Resource
     private ExportCenterManage exportCenterManage;
@@ -78,7 +81,6 @@ public class ChartDataServer implements ChartDataApi {
     @Value("${dataease.export.page.size:50000}")
     private Integer extractPageSize;
     private final Long sheetLimit = 1000000L;
-
 
     @DeLinkPermit("#p0.sceneId")
     @Override
@@ -158,7 +160,6 @@ public class ChartDataServer implements ChartDataApi {
         return Math.toIntExact(viewLimit);
     }
 
-
     public static String valueFormatter(BigDecimal value, FormatterCfgDTO formatter) {
         if (value == null) {
             return null;
@@ -226,7 +227,6 @@ public class ChartDataServer implements ChartDataApi {
         return sb.toString();
     }
 
-
     private static String addThousandSeparator(String numStr, Pattern pattern) {
         Matcher matcher = pattern.matcher(numStr);
         StringBuffer sb = new StringBuffer();
@@ -237,10 +237,10 @@ public class ChartDataServer implements ChartDataApi {
         return sb.toString();
     }
 
-
     @DeLinkPermit("#p0.dvId")
     @Override
     public void innerExportDetails(ChartExcelRequest request, HttpServletResponse response) throws Exception {
+        shareVisitorPermissionManage.require(io.dataease.share.manage.ShareVisitorPermissionManage.EXPORT_DATA);
         HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         String linkToken = httpServletRequest.getHeader(AuthConstant.LINK_TOKEN_KEY);
         LogUtil.info(request.getViewInfo().getId() + " " + StringUtils.isNotEmpty(linkToken) + " " + request.isDataEaseBi());
@@ -373,7 +373,6 @@ public class ChartDataServer implements ChartDataApi {
         setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, null, viewInfo, wb);
     }
 
-
     public static void setExcelData(Sheet detailsSheet, CellStyle cellStyle, Object[] header, List<Object[]> details, ViewDetailField[] detailFields, Integer[] excelTypes, Comment comment, ChartViewDTO viewInfo, Workbook wb) {
         List<CellStyle> styles = new ArrayList<>();
         Map<String, CellStyle> autoFormatterStyles = new HashMap<>();
@@ -412,14 +411,27 @@ public class ChartDataServer implements ChartDataApi {
                     }
                 }
             }
-            if ("table-info".equalsIgnoreCase(viewInfo.getType()) && !"dataset".equalsIgnoreCase(viewInfo.getDownloadType())) {
-                Map<String, Object> tableCell = (Map<String, Object>) viewInfo.getCustomAttr().get("tableCell");
-                Boolean mergeCells = (Boolean) tableCell.get("mergeCells");
+            // 支持明细表与汇总表的单元格合并导出
+            if (StringUtils.equalsAnyIgnoreCase(viewInfo.getType(), "table-info", "table-normal") && !"dataset".equalsIgnoreCase(viewInfo.getDownloadType())) {
+                Map<String, Object> tableCell = viewInfo.getCustomAttr() != null ? (Map<String, Object>) viewInfo.getCustomAttr().get("tableCell") : null;
+                Boolean mergeCells = tableCell != null ? (Boolean) tableCell.get("mergeCells") : null;
                 if (mergeCells != null && mergeCells) {
-                    var tmpAxis = viewInfo.getXAxis().stream().filter(x -> !x.isHide()).toList();
-                    var mergeIndex = tmpAxis.size();
-                    for (int i = 0; i < tmpAxis.size(); i++) {
-                        if ("q".equalsIgnoreCase(tmpAxis.get(i).getGroupType())) {
+                    var mergeIndex = exportFields.size();
+                    for (int i = 0; i < exportFields.size(); i++) {
+                        ChartViewFieldDTO field = exportFields.get(i);
+                        boolean isQuota = "q".equalsIgnoreCase(field.getGroupType());
+                        // 汇总表优先依据 yAxis / xAxis 判断是否为指标列
+                        if ("table-normal".equalsIgnoreCase(viewInfo.getType())) {
+                            boolean inY = viewInfo.getYAxis() != null && viewInfo.getYAxis().stream()
+                                    .anyMatch(y -> StringUtils.equals(y.getDataeaseName(), field.getDataeaseName()));
+                            if (inY) {
+                                isQuota = true;
+                            } else if (viewInfo.getXAxis() != null && viewInfo.getXAxis().stream()
+                                    .anyMatch(x -> StringUtils.equals(x.getDataeaseName(), field.getDataeaseName()))) {
+                                isQuota = false;
+                            }
+                        }
+                        if (isQuota) {
                             mergeIndex = i;
                             break;
                         }
@@ -1208,5 +1220,4 @@ public class ChartDataServer implements ChartDataApi {
         public Map<String, Long> countMap = new HashMap<>();
         public Map<String, BigDecimal> sumOfSquaresMap = new HashMap<>();
     }
-
 }

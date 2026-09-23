@@ -1,11 +1,9 @@
 package io.dataease.api.template.dto;
 
-
 import io.dataease.api.template.vo.VisualizationTemplateVO;
 import lombok.Data;
 
 import java.util.List;
-
 
 @Data
 public class TemplateManageDTO extends VisualizationTemplateVO {
@@ -25,6 +23,4 @@ public class TemplateManageDTO extends VisualizationTemplateVO {
     private List<String> categories;
 
     private List<String> categoryNames;
-
-
 }

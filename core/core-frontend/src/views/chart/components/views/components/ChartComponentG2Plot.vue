@@ -24,7 +24,12 @@ import ChartError from '@/views/chart/components/views/components/ChartError.vue
 import { BASE_VIEW_CONFIG } from '../../editor/util/chart'
 import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/utils/canvasStyle'
 import { deepCopy, isMobile } from '@/utils/utils'
-import { isDashboard, trackBarStyleCheck } from '@/utils/canvasUtils'
+import {
+  getDataVControlScale,
+  isDashboard,
+  isTabCanvas,
+  trackBarStyleCheck
+} from '@/utils/canvasUtils'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { L7ChartView } from '@/views/chart/components/js/panel/types/impl/l7'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -105,7 +110,7 @@ const g2TypeStack = [
   'bar-stack-horizontal',
   'percentage-bar-stack-horizontal'
 ]
-const g2TypeGroup = ['bar-group']
+const g2TypeGroup = ['bar-group', 'box-plot']
 
 const { view, showPosition, scale, terminal, suffixId } = toRefs(props)
 
@@ -114,6 +119,7 @@ const errMsg = ref('')
 const linkageActiveHistory = ref(false)
 
 const dataVMobile = !isDashboard() && isMobile()
+const mapControlScale = computed(() => getDataVControlScale(scale.value))
 
 const state = reactive({
   trackBarStyle: {
@@ -197,7 +203,7 @@ const checkSelected = param => {
         ? concat(chartData.value?.left?.fields, chartData.value?.right?.fields)
         : chartData.value?.fields
       )
-        .map(item => item?.id)
+        .map(item => String(item?.id))
         .filter(id =>
           Object.keys(nowPanelTrackInfo.value).some(
             key => key.startsWith(view.value.id) && key.split('#')[1] === id
@@ -205,9 +211,24 @@ const checkSelected = param => {
         )
     )
   )
+  if (view.value.type === 'box-plot') {
+    // 直接按联动维度 ID 和原始值匹配，兼容空子类别、下钻以及异常点子视图
+    const dimensions =
+      state.linkageActiveParam?.dimensionList?.filter(item =>
+        mappingFieldIds.includes(String(item.id))
+      ) ?? []
+    return (
+      dimensions.length > 0 &&
+      dimensions.every(selected =>
+        param.dimensionList?.some(
+          item => String(item.id) === String(selected.id) && item.value === selected.value
+        )
+      )
+    )
+  }
   // 维度字段匹配
   const [xAxis, xAxisExt, extStack] = ['xAxis', 'xAxisExt', 'extStack'].map(key =>
-    view.value[key].find(item => mappingFieldIds.includes(item.id))
+    view.value[key].find(item => mappingFieldIds.includes(String(item.id)))
   )
   // 选中字段数据
   const { group, name, category } = state.linkageActiveParam
@@ -473,8 +494,11 @@ const action = param => {
   state.pointParam = param.data
   // 点击
   pointClickTrans()
+  // 保留嵌入点击回调，仅阻止放大和复用视图的联动、跳转、下钻及最后一级提示
+  if (['multiplexing', 'viewDialog'].includes(showPosition.value)) return
   // 下钻 联动 跳转
   state.linkageActiveParam = {
+    dimensionList: cloneDeep(state.pointParam.data.dimensionList),
     category: state.pointParam.data.category ? state.pointParam.data.category : 'NO_DATA',
     name: state.pointParam.data.name ? state.pointParam.data.name : 'NO_DATA',
     group: state.pointParam.data.group ? state.pointParam.data.group : 'NO_DATA'
@@ -801,6 +825,8 @@ defineExpose({
 })
 let intersectionObserver
 let resizeObserver
+// 移动端 Tab 图表尺寸变化的防抖计时器，组件卸载时必须清理
+let resizeTimer: number
 const TOLERANCE = 0.01
 const RESIZE_MONITOR_CHARTS = ['map', 'bubble-map', 'flow-map', 'heat-map']
 onMounted(() => {
@@ -808,20 +834,46 @@ onMounted(() => {
   const { offsetWidth, offsetHeight } = containerDom
   const preSize = [offsetWidth, offsetHeight]
   resizeObserver = new ResizeObserver(([entry] = []) => {
-    if (!RESIZE_MONITOR_CHARTS.includes(view.value.type)) {
-      return
-    }
-    const [size] = entry.borderBoxSize || []
-    const widthOffsetPercent = (size.inlineSize - preSize[0]) / preSize[0]
-    const heightOffsetPercent = (size.blockSize - preSize[1]) / preSize[1]
+    // 标识必须通过 renderChart 重建图层的 L7 地图，继续沿用原即时重绘路径
+    const resizeMonitorChart = RESIZE_MONITOR_CHARTS.includes(view.value.type)
+    const [size] = entry?.borderBoxSize || []
+    // 优先读取 borderBoxSize，contentRect 用于兼容未提供 borderBoxSize 的浏览器
+    const width = size?.inlineSize ?? entry?.contentRect?.width ?? 0
+    const height = size?.blockSize ?? entry?.contentRect?.height ?? 0
+    const widthOffsetPercent = preSize[0] ? (width - preSize[0]) / preSize[0] : 1
+    const heightOffsetPercent = preSize[1] ? (height - preSize[1]) / preSize[1] : 1
     if (Math.abs(widthOffsetPercent) < TOLERANCE && Math.abs(heightOffsetPercent) < TOLERANCE) {
       return
     }
-    if (myChart && preSize[1] > 1) {
-      renderChart(curView)
+    if (resizeMonitorChart) {
+      // L7 地图依赖重新创建图层响应容器变化；保留原有即时重绘时序，避免影响 PC 地图
+      if (myChart && preSize[1] > 1) {
+        renderChart(curView)
+      }
+      preSize[0] = width
+      preSize[1] = height
+      return
     }
-    preSize[0] = size.inlineSize
-    preSize[1] = size.blockSize
+    // 普通 G2Plot 的 changeSize 只在移动端 Tab 子画布生效，避免改变 PC 和主画布行为
+    const mobileTabChart =
+      isDashboard() && (mobileInPc.value || inMobile.value) && isTabCanvas(props.element?.canvasId)
+    if (!mobileTabChart || width <= 1 || height <= 1) {
+      return
+    }
+    preSize[0] = width
+    preSize[1] = height
+    clearTimeout(resizeTimer)
+    resizeTimer = setTimeout(() => {
+      if (!myChart) {
+        return
+      }
+      if (typeof myChart.changeSize === 'function') {
+        // Tab 移动布局会改变内部图表容器尺寸；仅在移动 Tab 中复用实例更新宽高
+        myChart.changeSize(width, height)
+      } else {
+        renderChart(curView)
+      }
+    }, 100)
   })
   resizeObserver.observe(containerDom)
   intersectionObserver = new IntersectionObserver(([entry]) => {
@@ -852,6 +904,7 @@ onBeforeUnmount(() => {
   try {
     ChartCarouselTooltip.destroyByContainer(containerId)
     myChart?.destroy()
+    clearTimeout(resizeTimer)
     resizeObserver?.disconnect()
     intersectionObserver?.disconnect()
   } catch (e) {
@@ -902,6 +955,8 @@ watch(
       v-if="!isError"
       ref="chartContainer"
       class="canvas-content"
+      :class="{ 'map-control-scaled': mapControlScale !== 1 }"
+      :style="mapControlScale !== 1 ? { '--de-map-control-scale': mapControlScale } : undefined"
       :id="containerId"
     ></div>
     <chart-error v-else :err-msg="errMsg" />
@@ -919,6 +974,13 @@ watch(
     height: 100% !important;
     :deep(.g2-tooltip) {
       position: fixed !important;
+    }
+    // 移动大屏地图控件及边距跟随画布比例缩放
+    &.map-control-scaled :deep(.l7-control-zoom) {
+      transform: scale(var(--de-map-control-scale));
+      transform-origin: bottom right;
+      margin-right: calc(8px * var(--de-map-control-scale));
+      margin-bottom: calc(8px * var(--de-map-control-scale));
     }
   }
 }

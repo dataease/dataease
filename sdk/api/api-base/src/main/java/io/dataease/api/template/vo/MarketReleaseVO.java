@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class MarketReleaseVO {
 
-   private MarketReleaseMetaDataVO metadata;
+    private MarketReleaseMetaDataVO metadata;
 }

@@ -9,6 +9,7 @@ import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.constant.SQLConstants;
 import io.dataease.dataset.manage.DatasetTableFieldManage;
+import io.dataease.engine.func.FunctionConstant;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.Dimension2SQLObj;
 import io.dataease.engine.trans.Quota2SQLObj;
@@ -370,6 +371,7 @@ public class DefaultChartHandler extends AbstractChartPlugin {
         if (ObjectUtils.isEmpty(fieldId) || StringUtils.isEmpty(summary)) {
             return false;
         }
+        FunctionConstant.resolveAssistAggregation(summary);
 
         DatasetTableFieldDTO datasetTableFieldDTO = datasetTableFieldManage.selectById(fieldId);
         if (ObjectUtils.isEmpty(datasetTableFieldDTO)) {
@@ -436,10 +438,11 @@ public class DefaultChartHandler extends AbstractChartPlugin {
             if (StringUtils.equalsIgnoreCase(dto.getSummary(), "last_item")) {
                 continue;
             }
+            String summary = FunctionConstant.resolveAssistAggregation(dto.getSummary());
             if (crossDs) {
-                fieldList.add(dto.getSummary() + "(" + dto.getOriginName() + ")");
+                fieldList.add(summary + "(" + dto.getOriginName() + ")");
             } else {
-                fieldList.add(dto.getSummary() + "(" + prefix + dto.getOriginName() + suffix + ")");
+                fieldList.add(summary + "(" + prefix + dto.getOriginName() + suffix + ")");
             }
         }
         return "SELECT " + Strings.join(",", fieldList) + " FROM (" + sql + ") tmp";
@@ -657,13 +660,17 @@ public class DefaultChartHandler extends AbstractChartPlugin {
                                 String[] groupStackAxisArr = Arrays.copyOfRange(curDataItem, xAxisBase.size(), finalSubEndIndex);
                                 String groupStackAxis = StringUtils.join(groupStackAxisArr, '-');
                                 BigDecimal preValue = preDataMap.get(groupStackAxis);
+                                var curValue = curDataItem[finalDataIndex];
+                                if (StringUtils.isBlank(curValue)) {
+                                    return;
+                                }
                                 if (preValue != null) {
-                                    curDataItem[finalDataIndex] = new BigDecimal(curDataItem[finalDataIndex])
+                                    curDataItem[finalDataIndex] = new BigDecimal(curValue)
                                             .add(preValue)
                                             .toString();
                                 } else {
                                     if (preDataMap.containsKey(groupStackAxis)) {
-                                        curDataItem[finalDataIndex] = new BigDecimal(curDataItem[finalDataIndex])
+                                        curDataItem[finalDataIndex] = new BigDecimal(curValue)
                                                 .add(preDataMap.get(groupStackAxis))
                                                 .toString();
                                     }

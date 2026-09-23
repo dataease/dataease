@@ -19,5 +19,4 @@ public class XpackPluginsDfVO implements Serializable {
     private String type;
 
     private Integer flag;
-
 }

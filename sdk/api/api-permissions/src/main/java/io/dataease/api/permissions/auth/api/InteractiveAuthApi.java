@@ -1,6 +1,5 @@
 package io.dataease.api.permissions.auth.api;
 
-
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.permissions.auth.dto.*;
@@ -9,6 +8,7 @@ import io.dataease.api.permissions.auth.vo.ResourceNodeVO;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.model.ExportTaskDTO;
+import io.dataease.model.PerBusiResourceDTO;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,7 +28,6 @@ public interface InteractiveAuthApi {
     @ApiOperationSupport(order = 1)
     @GetMapping("/menuIds")
     List<Long> menuIds();
-
 
     @Operation(summary = "查询资源树")
     @ApiOperationSupport(order = 2)
@@ -93,4 +92,6 @@ public interface InteractiveAuthApi {
     @Hidden
     @PostMapping("/revert")
     void revert();
+
+    PerBusiResourceDTO queryResourceById(Long id);
 }

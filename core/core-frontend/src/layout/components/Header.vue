@@ -86,12 +86,6 @@ const navigateBg = computed(() => appearanceStore.getNavigateBg)
 const navigate = computed(() => appearanceStore.getNavigate)
 
 const initAiBase = async () => {
-  // const aiTipsCheck = wsCache.get('DE-AI-TIPS-CHECK')
-  // if (aiTipsCheck === 'CHECKED') {
-  //   showOverlay.value = false
-  // } else {
-  //   showOverlay.value = true
-  // }
   await findBaseParams().then(rsp => {
     const params = rsp.data
     if (params && params['ai.baseUrl']) {
@@ -188,6 +182,7 @@ onMounted(() => {
       />
       <ToolboxCfg v-if="showToolbox" />
       <TopDoc v-if="appearanceStore.getShowDoc" />
+      <i v-else style="width: 10px; height: 24px"></i>
       <el-tooltip
         v-if="showMsg"
         effect="dark"

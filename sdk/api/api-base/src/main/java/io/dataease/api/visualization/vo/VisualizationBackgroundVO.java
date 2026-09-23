@@ -30,5 +30,4 @@ public class VisualizationBackgroundVO implements Serializable {
     private String baseUrl;
 
     private String url;
-
 }

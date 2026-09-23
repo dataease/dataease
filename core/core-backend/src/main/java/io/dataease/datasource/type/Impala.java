@@ -40,7 +40,6 @@ public class Impala extends DatasourceConfiguration {
         return DB_NAME_PATTERN;
     }
 
-
     @Override
     protected void parseParameters(String jdbcUrl) {
         if (jdbcUrl.contains(";")) {

@@ -72,5 +72,4 @@ public class ChartBaseVO implements Serializable {
     private List<ChartViewFieldDTO> extLabel;
 
     private List<ChartViewFieldDTO> extTooltip;
-
 }

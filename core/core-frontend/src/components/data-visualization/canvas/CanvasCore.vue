@@ -9,7 +9,7 @@ import {
   syncShapeItemStyle
 } from '@/utils/style'
 import $ from 'jquery'
-import { _$, isPreventDrop } from '@/utils/utils'
+import { _$ } from '@/utils/utils'
 import ContextMenu from './ContextMenu.vue'
 import MarkLine from './MarkLine.vue'
 import Area from './Area.vue'
@@ -21,17 +21,19 @@ import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
 import { storeToRefs } from 'pinia'
 import findComponent from '@/utils/components'
-import _ from 'lodash'
+import { findIndex, forEach, get, isEmpty, sortBy, values } from 'lodash-es'
 import DragShadow from '@/components/data-visualization/canvas/DragShadow.vue'
 import {
   canvasSave,
   componentPreSort,
   findDragComponent,
   findNewComponent,
+  getTabMobileMinSize,
   isDashboard,
   isGroupOrTabCanvas,
   isMainCanvas,
-  isSameCanvas
+  isSameCanvas,
+  isTabCanvas
 } from '@/utils/canvasUtils'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -54,8 +56,16 @@ const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 
-const { curComponent, dvInfo, editMode, tabMoveOutComponentId, canvasState, mainScrollTop } =
-  storeToRefs(dvMainStore)
+const {
+  curComponent,
+  dvInfo,
+  editMode,
+  tabMoveOutComponentId,
+  canvasState,
+  mainScrollTop,
+  // 标识当前是否处于 PC 页面中的移动端编辑器，用于限制规则生效范围
+  mobileInPc
+} = storeToRefs(dvMainStore)
 const { editorMap, areaData, isCtrlOrCmdDown } = storeToRefs(composeStore)
 const props = defineProps({
   themes: {
@@ -383,10 +393,6 @@ const handleMouseDown = e => {
   // 右键返回
   if (e.buttons === 2) {
     return
-  }
-  // 如果没有选中组件 在画布上点击时需要调用 e.preventDefault() 防止触发 drop 事件
-  if (!curComponent.value || isPreventDrop(curComponent.value.component)) {
-    // e.preventDefault()
   }
   hideArea()
   const rectInfo = editorMap.value[canvasId.value].getBoundingClientRect()
@@ -796,7 +802,7 @@ function reCalcCellWidth() {
 function resizePlayer(item, newSize) {
   removeItemFromPositionBox(item)
   let belowItems = findBelowItems(item)
-  _.forEach(belowItems, function (upItem) {
+  forEach(belowItems, function (upItem) {
     let canGoUpRows = canItemGoUp(upItem)
 
     if (canGoUpRows > 0) {
@@ -871,7 +877,7 @@ function checkItemPosition(item, position) {
 function movePlayer(item, position) {
   removeItemFromPositionBox(item)
   let belowItems = findBelowItems(item)
-  _.forEach(belowItems, function (upItem) {
+  forEach(belowItems, function (upItem) {
     let canGoUpRows = canItemGoUp(upItem)
     if (canGoUpRows > 0) {
       moveItemUp(upItem, canGoUpRows)
@@ -909,7 +915,7 @@ function removeItemComponent(item) {
     if (isDashboard()) {
       removeItemFromPositionBox(item)
       let belowItems = findBelowItems(item)
-      _.forEach(belowItems, function (upItem) {
+      forEach(belowItems, function (upItem) {
         let canGoUpRows = canItemGoUp(upItem)
         if (canGoUpRows > 0) {
           moveItemUp(upItem, canGoUpRows)
@@ -979,7 +985,7 @@ function changeItemCoordinate(item) {
     c2: top + height / 2,
     el: item
   }
-  let index = _.findIndex(coordinates.value, function (o) {
+  let index = findIndex(coordinates.value, function (o) {
     return o.el._dragId == item._dragId
   })
   if (index != -1) {
@@ -993,7 +999,7 @@ function changeItemCoordinate(item) {
  */
 function emptyTargetCell(item) {
   let belowItems = findBelowItems(item)
-  _.forEach(belowItems, function (downItem) {
+  forEach(belowItems, function (downItem) {
     if (downItem['_dragId'] == item['_dragId']) return
     let moveSize = item.y + item.sizeY - downItem['y']
     if (moveSize > 0) {
@@ -1024,7 +1030,7 @@ function canItemGoUp(item) {
 function moveItemDown(item, size) {
   removeItemFromPositionBox(item)
   let belowItems = findBelowItems(item)
-  _.forEach(belowItems, function (downItem) {
+  forEach(belowItems, function (downItem) {
     if (downItem['_dragId'] == item['_dragId']) return
     let moveSize = calcDiff(item, downItem, size)
     if (moveSize > 0) {
@@ -1073,13 +1079,12 @@ function calcDiff(parent, son, size) {
 function moveItemUp(item, size) {
   removeItemFromPositionBox(item)
   let belowItems = findBelowItems(item)
-  // item.y -= size;
   setPlayerPosition(item, {
     y: item.y - size
   })
   addItemToPositionBox(item)
   changeItemCoordinate(item)
-  _.forEach(belowItems, function (upItem) {
+  forEach(belowItems, function (upItem) {
     let moveSize = canItemGoUp(upItem)
     if (moveSize > 0) {
       moveItemUp(upItem, moveSize)
@@ -1097,7 +1102,7 @@ function findBelowItems(item) {
       }
     }
   }
-  return _.sortBy(_.values(belowItems), 'y')
+  return sortBy(values(belowItems), 'y')
 }
 
 const endItemMove = (_, item, index) => {
@@ -1112,7 +1117,7 @@ const handleMouseUp = (e, item, index) => {
 }
 
 const clearInfoBox = e => {
-  if (_.isEmpty(infoBox.value)) return
+  if (isEmpty(infoBox.value)) return
   if (infoBox.value.cloneItem) {
     infoBox.value.cloneItem.remove()
   }
@@ -1269,7 +1274,7 @@ const onStartMove = (e, item, index) => {
 const onDragging = (e, item) => {
   // item 中的 style 为当前实时的位置
   const infoBoxTemp = infoBox.value
-  let moveItem = _.get(infoBoxTemp, 'moveItem')
+  let moveItem = get(infoBoxTemp, 'moveItem')
   scrollScreen(e)
   if (!draggable.value) return
   dragging.value(e, moveItem, moveItem._dragId)
@@ -1305,7 +1310,7 @@ const onResizing = (e, item) => {
   const { width, height } = item.style
   // item 中的 style 为当前实时的位置
   const infoBoxTemp = infoBox.value
-  let resizeItem = _.get(infoBoxTemp, 'resizeItem')
+  let resizeItem = get(infoBoxTemp, 'resizeItem')
   //调整大小时
   resizing.value(e, resizeItem, resizeItem._dragId)
   resizeItem['isPlayer'] = true
@@ -1317,6 +1322,14 @@ const onResizing = (e, item) => {
     height % cellHeight.value > (cellHeight.value / 4) * 3
       ? Math.floor(height / cellHeight.value + 1)
       : Math.floor(height / cellHeight.value)
+
+  if (mobileInPc.value && isTabCanvas(canvasId.value)) {
+    // 移动端允许自由缩放后可能再次出现文字裁剪,现仅约束 Tab 子画布中的最小可读尺寸
+    // sizeX、sizeY 分别表示 Matrix 的最小列宽和最小行高
+    const minSize = getTabMobileMinSize(item)
+    nowSizeX = Math.max(nowSizeX, minSize.sizeX)
+    nowSizeY = Math.max(nowSizeY, minSize.sizeY)
+  }
 
   // 增加5px偏移量 防止resize时向下取整 组件向右偏移
   let newX = Math.floor((item.style.left + 5) / cellWidth.value + 1)
@@ -1351,7 +1364,7 @@ const onResizing = (e, item) => {
 
 const onMouseUp = e => {
   // startMove 中组织冒泡会导致移动事件无法传播，在这里设置（鼠标抬起）效果一致
-  if (_.isEmpty(infoBox.value)) return
+  if (isEmpty(infoBox.value)) return
   if (infoBox.value.cloneItem) {
     infoBox.value.cloneItem.remove()
   }

@@ -41,5 +41,4 @@ public class DataSQLBotAssistantVO implements Serializable {
 
     @JsonIgnore
     private Map<String, Object> rowData;
-
 }

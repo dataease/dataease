@@ -97,7 +97,6 @@ const keepProportionCheck = outerContentRect => {
 onMounted(() => {
   const observer = new ResizeObserver(entries => {
     for (let entry of entries) {
-      console.log('元素新尺寸:', entry.contentRect)
       // entry.contentRect 包含 width, height, top, left 等属性
       keepProportionCheck(entry.contentRect)
     }

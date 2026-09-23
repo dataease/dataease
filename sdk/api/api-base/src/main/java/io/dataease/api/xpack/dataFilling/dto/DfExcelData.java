@@ -23,5 +23,4 @@ public class DfExcelData implements Serializable {
     private String excelName;
     private String path;
     private String suffix;
-
 }

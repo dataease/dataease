@@ -15,6 +15,5 @@ public class DataSourceConstant {
      */
     public static final String DATA_SOURCE_OFFICIAL = "official-ds";
 
-
     public static final String DS_NAME_PREFIX = "tenant_%s_%s";
 }

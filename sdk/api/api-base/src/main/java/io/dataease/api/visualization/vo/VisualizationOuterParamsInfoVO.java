@@ -38,7 +38,6 @@ public class VisualizationOuterParamsInfoVO implements Serializable {
      */
     private Boolean checked;
 
-
     /**
      * 是否必填
      */

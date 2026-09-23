@@ -1,6 +1,5 @@
 package io.dataease.extensions.view.dto;
 
-
 import lombok.Data;
 
 import java.io.Serializable;

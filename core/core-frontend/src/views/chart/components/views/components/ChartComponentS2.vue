@@ -12,7 +12,8 @@ import {
   shallowRef,
   ShallowRef,
   toRaw,
-  toRefs
+  toRefs,
+  watch
 } from 'vue'
 import { getData } from '@/api/chart'
 import chartViewManager from '@/views/chart/components/js/panel'
@@ -27,8 +28,13 @@ import { BASE_VIEW_CONFIG } from '../../editor/util/chart'
 import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/utils/canvasStyle'
 import { deepCopy, isISOMobile, isMobile } from '@/utils/utils'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import { isDashboard, trackBarStyleCheck } from '@/utils/canvasUtils'
-import { type SpreadSheet } from '@antv/s2'
+import {
+  getDataVControlScale,
+  isDashboard,
+  isDataVTouchDevice,
+  trackBarStyleCheck
+} from '@/utils/canvasUtils'
+import { S2Event, type SpreadSheet } from '@antv/s2'
 import { parseJson } from '../../js/util'
 import { useI18n } from '@/hooks/web/useI18n'
 import { hasNextDrillLevel, isCurrentDrillField } from '@/views/chart/components/views/util/drill'
@@ -98,6 +104,8 @@ const emit = defineEmits(['onPointClick', 'onChartClick', 'onDrillFilters', 'onJ
 const dataVMobile = !isDashboard() && isMobile()
 
 const { view, showPosition, scale, terminal, drillLength, suffixId } = toRefs(props)
+const controlScale = computed(() => getDataVControlScale(scale.value))
+const touchScrollEnabled = computed(isDataVTouchDevice)
 
 const isError = ref(false)
 const errMsg = ref('')
@@ -263,8 +271,62 @@ const renderChart = (viewInfo: Chart, resetPageInfo: boolean) => {
   nextTick(() => debounceRender(resetPageInfo))
 }
 
+// 滚动条随移动端大屏缩放，只合并尺寸以保留其他主题样式
+const setScrollBarScale = (value: number) => {
+  myChart?.setTheme({
+    scrollBar: {
+      size: 8 * value,
+      hoverSize: 12 * value,
+      // 最小滑块长度也需等比缩放，避免覆盖短轨道后被判定为已到滚动边界
+      thumbHorizontalMinSize: 32 * value,
+      thumbVerticalMinSize: 32 * value
+    }
+  })
+}
+
+const limitScrollBarThumbs = (instance: SpreadSheet) => {
+  if (controlScale.value === 1 || !instance.facet) {
+    return
+  }
+  const { facet } = instance
+  const { scrollX, scrollY, rowHeaderScrollX } = facet.getScrollOffset()
+  const scrollBars = [
+    { bar: facet.hScrollBar, offset: scrollX },
+    { bar: facet.vScrollBar, offset: scrollY },
+    { bar: facet.hRowScrollBar, offset: rowHeaderScrollX }
+  ]
+  scrollBars.forEach(({ bar, offset }) => {
+    if (
+      !bar ||
+      !Number.isFinite(bar.trackLen) ||
+      bar.trackLen <= 0 ||
+      !Number.isFinite(bar.scrollTargetMaxOffset) ||
+      bar.scrollTargetMaxOffset <= 0 ||
+      bar.thumbLen < bar.trackLen
+    ) {
+      return
+    }
+    // 使用布局后的实际轨道留出滑动距离，兼容非等比缩放和冻结区域
+    const thumbLen = bar.trackLen - Math.min(bar.theme.size, bar.trackLen / 2)
+    if (bar.theme.size >= thumbLen) {
+      bar.theme = {
+        ...bar.theme,
+        size: thumbLen / 2,
+        hoverSize: Math.min(bar.theme.hoverSize, thumbLen)
+      }
+      bar.trackShape.attr('lineWidth', bar.theme.size)
+      bar.thumbShape.attr('lineWidth', bar.theme.size)
+    }
+    const ratio = Math.max(0, Math.min(1, (offset || 0) / bar.scrollTargetMaxOffset))
+    // 只更新滑块图形，避免 updateThumbLen 发出滚动事件而改变内容位置
+    bar.thumbLen = thumbLen
+    bar.thumbOffset = 0
+    bar.onlyUpdateThumbOffset(ratio * (bar.trackLen - thumbLen))
+  })
+}
+
 const debounceRender = debounce(() => {
-  myChart?.facet?.timer?.stop()
+  stopAutoScroll()
   myChart?.facet?.cancelScrollFrame()
   myChart?.destroy()
   myChart?.getCanvasElement()?.remove()
@@ -281,10 +343,31 @@ const debounceRender = debounce(() => {
     resizeAction,
     touchAction
   })
+  if (controlScale.value !== 1) {
+    setScrollBarScale(controlScale.value)
+  }
+  const instance = myChart
+  instance?.on(S2Event.LAYOUT_AFTER_RENDER, () => limitScrollBarThumbs(instance))
+  instance?.on(S2Event.GLOBAL_SCROLL, () => onTableScroll(instance))
   myChart?.render()
   dvMainStore.setViewInstanceInfo(actualChart.id, myChart)
   initScroll()
 }, 500)
+
+watch(
+  controlScale,
+  value => {
+    if (!myChart?.facet) {
+      return
+    }
+    stopAutoScroll()
+    myChart.facet.cancelScrollFrame()
+    setScrollBarScale(value)
+    myChart.render(false)
+    initScroll()
+  },
+  { flush: 'post' }
+)
 
 const setupPage = (chart: ChartObj, resetPageInfo?: boolean) => {
   const customAttr = chart.customAttr
@@ -309,19 +392,122 @@ const setupPage = (chart: ChartObj, resetPageInfo?: boolean) => {
   dvMainStore.setViewPageInfo(chart.id, state.pageInfo)
 }
 
-const mouseMove = () => {
+let scrollFrame: number | undefined
+const activeTouches = new Map<number, { x: number; y: number }>()
+const touchTargets = new Set<HTMLElement>()
+let manualScrollPause = false
+let touchMoved = false
+let suppressClickUntil = 0
+
+const clearTouchListeners = () => {
+  touchTargets.forEach(target => {
+    target.removeEventListener('touchmove', onTableTouchMove, true)
+    target.removeEventListener('touchend', onTableTouchEnd, true)
+    target.removeEventListener('touchcancel', onTableTouchEnd, true)
+  })
+  touchTargets.clear()
+}
+
+const onTableTouchStart = (event: TouchEvent) => {
+  if (!touchScrollEnabled.value) {
+    return
+  }
+  if (!activeTouches.size) {
+    touchMoved = false
+    suppressClickUntil = 0
+  }
+  Array.from(event.changedTouches).forEach(touch => {
+    activeTouches.set(touch.identifier, { x: touch.clientX, y: touch.clientY })
+  })
+  touchMoved ||= event.touches.length > 1
+  manualScrollPause = true
+  stopAutoScroll()
+  // 保留原触摸目标的监听，重绘替换 canvas 后也能收到松手事件
+  const target = event.target as HTMLElement
+  if (!touchTargets.has(target)) {
+    const options = { capture: true, passive: true }
+    target.addEventListener('touchmove', onTableTouchMove, options)
+    target.addEventListener('touchend', onTableTouchEnd, options)
+    target.addEventListener('touchcancel', onTableTouchEnd, options)
+    touchTargets.add(target)
+  }
+}
+
+const onTableTouchMove = (event: TouchEvent) => {
+  Array.from(event.changedTouches).forEach(touch => {
+    const start = activeTouches.get(touch.identifier)
+    // 按屏幕距离区分点击与滑动，阈值不随图表比例缩小
+    if (start && Math.hypot(touch.clientX - start.x, touch.clientY - start.y) > 6) {
+      touchMoved = true
+    }
+  })
+}
+
+const onTableTouchEnd = (event: TouchEvent) => {
+  onTableTouchMove(event)
+  let ended = false
+  Array.from(event.changedTouches).forEach(touch => {
+    if (activeTouches.delete(touch.identifier)) {
+      ended = true
+    }
+  })
+  if (!ended) {
+    return
+  }
+  touchMoved ||= event.type === 'touchcancel'
+  if (touchMoved) {
+    suppressClickUntil = performance.now() + 500
+  }
+  if (!activeTouches.size) {
+    clearTouchListeners()
+    initScroll()
+  }
+}
+
+const suppressTouchClick = () =>
+  touchScrollEnabled.value &&
+  ((activeTouches.size > 0 && touchMoved) || performance.now() < suppressClickUntil)
+
+const onTableScroll = (instance: SpreadSheet) => {
+  // 自动滚动也会发出 GLOBAL_SCROLL，仅触摸后的惯性滚动延后恢复
+  if (instance === myChart && manualScrollPause && !activeTouches.size) {
+    initScroll()
+  }
+}
+
+const stopAutoScroll = () => {
+  clearTimeout(scrollTimer)
+  if (scrollFrame !== undefined) {
+    cancelAnimationFrame(scrollFrame)
+    scrollFrame = undefined
+  }
   myChart?.facet?.timer?.stop()
 }
 
-const mouseLeave = () => {
-  initScroll()
+const mouseMove = () => {
+  // 触屏兼容鼠标事件不能取消松手后安排的自动滚动
+  if (!manualScrollPause) {
+    stopAutoScroll()
+  }
 }
 
-let scrollTimer
+const mouseLeave = () => {
+  if (!manualScrollPause) {
+    initScroll()
+  }
+}
+
+let scrollTimer: ReturnType<typeof setTimeout>
 const initScroll = () => {
-  scrollTimer && clearTimeout(scrollTimer)
+  stopAutoScroll()
+  if (activeTouches.size) {
+    return
+  }
   scrollTimer = setTimeout(() => {
-    // 首先回到最顶部，然后计算行高*行数作为top，最后判断：如果top<数据量*行高，继续滚动，否则回到顶部
+    if (activeTouches.size) {
+      return
+    }
+    manualScrollPause = false
     const customAttr = actualChart?.customAttr
     const senior = actualChart?.senior
     if (
@@ -331,81 +517,50 @@ const initScroll = () => {
       PAGE_CHARTS.includes(props.view.type) &&
       !state.showPage
     ) {
-      // 防止多次渲染
-      myChart.facet.timer?.stop()
-      // 已滚动的距离
-      let scrolledOffset = myChart.store.get('scrollY') || 0
-      // 平滑滚动，兼容原有的滚动速率设置
-      // 假设原设定为 2 行间隔 2 秒，换算公式为: 滚动到底部的时间 = 未展示部分行数 / 2行 * 2秒
-      const offsetHeight = document.getElementById(containerId).offsetHeight
-      // 没显示就不滚了
-      if (!offsetHeight) {
+      const facet = myChart.facet
+      facet.timer?.stop()
+      if (!document.getElementById(containerId)?.offsetHeight) {
         return
       }
-      const rowHeight = customAttr.tableCell.tableItemHeight
-      const headerHeight =
-        customAttr.tableHeader.showTableHeader === false
-          ? 1
-          : customAttr.tableHeader.tableTitleHeight
-      const scrollBarSize = myChart.theme.scrollBar.size
-      const basicStyle = customAttr.basicStyle
 
-      // 开启自动换行时，使用 facet 的 viewCellHeights 或 scrollTargetMaxOffset 获取实际的最大滚动距离
-      let maxScrollY: number
-      if (basicStyle?.autoWrap) {
-        // 从滚动条获取实际的滚动范围
-        const vScrollBar = myChart.facet?.vScrollBar
-        if (vScrollBar) {
-          // 直接取滚动条配置的最大滚动距离
-          maxScrollY = vScrollBar.scrollTargetMaxOffset
-        } else {
-          // 如果无法获取滚动条信息，尝试使用 viewCellHeights
-          const viewCellHeights = myChart.facet?.viewCellHeights
-          if (viewCellHeights) {
-            const rowsHeight = viewCellHeights.getTotalHeight()
-            const viewHeight = offsetHeight - headerHeight
-            maxScrollY = Math.max(0, rowsHeight - viewHeight + scrollBarSize)
-          } else {
-            maxScrollY =
-              rowHeight * chartData.value.tableRow.length +
-              headerHeight -
-              offsetHeight +
-              scrollBarSize
-          }
-        }
-      } else {
-        maxScrollY =
-          rowHeight * chartData.value.tableRow.length + headerHeight - offsetHeight + scrollBarSize
-      }
-
-      // 显示内容没撑满
-      if (maxScrollY < scrollBarSize) {
+      // 使用 S2 实际的滚动范围，避免估算高度超出底部后无法重新开始。
+      const maxScrollY = facet.vScrollBar?.scrollTargetMaxOffset ?? 0
+      if (!Number.isFinite(maxScrollY) || maxScrollY <= 0) {
         return
       }
-      // 到底了重置一下，使用实际的最大滚动距离判断
+
+      const { scrollY } = facet.getScrollOffset()
+      let scrolledOffset = scrollY || 0
       if (scrolledOffset >= maxScrollY - 1) {
-        myChart.store.set('scrollY', 0)
-        myChart.render()
+        facet.setScrollOffset({ scrollY: 0 })
+        facet.startScroll()
         scrolledOffset = 0
       }
 
-      let scrollViewCount: number
-      if (basicStyle?.autoWrap && myChart.facet?.viewCellHeights) {
-        // 如果开启了自动换行，计算当前未展示的内容高度所对应的比例，再乘以总行数，以获得大致的未展示行数
-        const totalHeight = myChart.facet.viewCellHeights.getTotalHeight()
-        const unViewedRatio = totalHeight > 0 ? (maxScrollY - scrolledOffset) / totalHeight : 0
-        scrollViewCount = chartData.value.tableRow.length * unViewedRatio
-      } else {
-        const viewedHeight = offsetHeight - headerHeight - scrollBarSize + scrolledOffset
-        scrollViewCount = chartData.value.tableRow.length - viewedHeight / rowHeight
-      }
-
+      const rowHeight = customAttr.basicStyle?.autoWrap
+        ? facet.viewCellHeights.getTotalHeight() / chartData.value.tableRow.length
+        : customAttr.tableCell.tableItemHeight
+      const scrollViewCount = (maxScrollY - scrolledOffset) / rowHeight
       const duration = (scrollViewCount / senior.scrollCfg.row) * senior.scrollCfg.interval
-      myChart.facet.scrollWithAnimation(
-        { offsetY: { value: maxScrollY, animate: false } },
-        duration,
-        initScroll
-      )
+      if (!Number.isFinite(duration) || duration <= 0) {
+        return
+      }
+      // 只更新纵向坐标，避免 S2 对固定横向坐标插值后取整产生 1px 抖动。
+      const startTime = performance.now()
+      const scroll = (now: number) => {
+        scrollFrame = undefined
+        const progress = Math.min((now - startTime) / duration, 1)
+        facet.setScrollOffset({
+          scrollY: scrolledOffset + (maxScrollY - scrolledOffset) * progress
+        })
+        facet.startScroll()
+        if (progress < 1) {
+          scrollFrame = requestAnimationFrame(scroll)
+        } else {
+          initScroll()
+        }
+      }
+      scrollFrame = requestAnimationFrame(scroll)
     }
   }, 1500)
 }
@@ -447,6 +602,9 @@ const pointClickTrans = () => {
 }
 
 const touchAction = (callback, fieldId) => {
+  if (suppressTouchClick()) {
+    return
+  }
   if (fieldId) {
     state.curActionId = fieldId
   }
@@ -456,6 +614,9 @@ const touchAction = (callback, fieldId) => {
 }
 
 const action = param => {
+  if (suppressTouchClick()) {
+    return
+  }
   state.pointParam = param
   state.curActionId = param.data.name
   state.curTrackMenu = trackMenuCalc(state.curActionId)
@@ -694,8 +855,8 @@ const trackMenuCalc = itemId => {
 
 const resizeAction = resizeColumn => {
   // 从头开始滚动
-  if (myChart?.facet.timer) {
-    myChart?.facet.timer.stop()
+  if (myChart?.facet) {
+    stopAutoScroll()
     nextTick(initScroll)
   }
   if (showPosition.value !== 'canvas') {
@@ -732,7 +893,7 @@ const resize = (width, height) => {
     if (!myChart?.facet) {
       debounceRender(false)
     } else {
-      myChart?.facet?.timer?.stop()
+      stopAutoScroll()
       myChart?.changeSheetSize(width, height)
       myChart?.render()
     }
@@ -763,6 +924,11 @@ onMounted(() => {
   resizeObserver.observe(document.getElementById(containerId))
 })
 onBeforeUnmount(() => {
+  stopAutoScroll()
+  clearTouchListeners()
+  activeTouches.clear()
+  clearTimeout(timer)
+  debounceRender.cancel()
   try {
     myChart?.facet.timer?.stop()
     myChart?.destroy()
@@ -819,6 +985,7 @@ const tablePageClass = computed(() => {
         style="position: relative; height: 100%"
         @mousemove="mouseMove"
         @mouseleave="mouseLeave"
+        @touchstart.capture.passive="onTableTouchStart"
       ></div>
     </div>
     <el-row :style="autoStyle" v-if="showPage && !isError">

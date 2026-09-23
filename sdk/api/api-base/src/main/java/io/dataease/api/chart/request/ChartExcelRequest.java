@@ -32,5 +32,4 @@ public class ChartExcelRequest extends ChartExcelRequestInner {
     private String downloadType;
 
     private Map<String, Object> data;
-
 }

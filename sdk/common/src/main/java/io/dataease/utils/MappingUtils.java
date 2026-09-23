@@ -74,5 +74,4 @@ public class MappingUtils {
 
         return current;
     }
-
 }

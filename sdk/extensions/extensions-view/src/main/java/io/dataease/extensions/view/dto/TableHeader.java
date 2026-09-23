@@ -11,7 +11,6 @@ public class TableHeader {
     private HeaderGroupConfig headerGroupConfig;
     private boolean headerGroup;
 
-
     @Data
     static
     public class HeaderGroupConfig {

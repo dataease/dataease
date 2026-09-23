@@ -49,7 +49,6 @@ public class DataVisualizationConstants {
         public static final String LEAF = "leaf";
     }
 
-
     //操作
     public static final class RESOURCE_OPT_TYPE {
         //新建资源节点
@@ -74,5 +73,4 @@ public class DataVisualizationConstants {
         //公共
         public static final String PUBLIC = "public";
     }
-
 }

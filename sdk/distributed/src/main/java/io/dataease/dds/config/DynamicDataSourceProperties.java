@@ -1,6 +1,5 @@
 package io.dataease.dds.config;
 
-
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -19,5 +18,4 @@ public class DynamicDataSourceProperties {
     public void setDatasource(Map<String, DataSourceProperties> datasource) {
         this.datasource = datasource;
     }
-
 }

@@ -1,4 +1,7 @@
 # Compiled class file
+
+.workbuddy/
+docs/
 *.class
 
 # Log file

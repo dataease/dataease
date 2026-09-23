@@ -1,6 +1,5 @@
 package io.dataease.exception;
 
-
 import io.dataease.i18n.Translator;
 import io.dataease.result.ResultCode;
 import io.dataease.result.ResultMessage;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResultMessage MethodArgumentNotValidExceptionHandler(MethodArgumentNotValidException e) {
@@ -39,5 +37,4 @@ public class GlobalExceptionHandler {
         }
         return new ResultMessage(ResultCode.PARAM_IS_BLANK.code(), message);
     }
-
 }

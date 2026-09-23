@@ -143,6 +143,7 @@ const getExportTasks = () => {
 
 const init = params => {
   drawer.value = true
+  clearInterval(timer) // 先清除旧定时器，防止多次调用导致泄漏
   if (params && params.activeName !== undefined) {
     activeName.value = params.activeName
   }

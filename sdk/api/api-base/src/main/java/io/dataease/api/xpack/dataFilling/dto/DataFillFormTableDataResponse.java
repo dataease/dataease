@@ -24,5 +24,4 @@ public class DataFillFormTableDataResponse implements Serializable {
     private long pageSize;
 
     private String key;
-
 }

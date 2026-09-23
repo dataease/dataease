@@ -7,6 +7,8 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL } from '../../../util/chart'
 import { fieldType } from '@/utils/attr'
 import { iconFieldMap } from '@/components/icon-group/field-list'
+import { isDateThresholdField } from '@/views/chart/components/editor/util/DateFormatUtil'
+import ThresholdDatePicker from './ThresholdDatePicker.vue'
 
 const { t } = useI18n()
 
@@ -180,10 +182,16 @@ const initFields = () => {
   let change = false
   state.thresholdArr.forEach(item => {
     item.options = JSON.parse(JSON.stringify(valueOptions.value))
-    const fieldItemObj = state.fields.filter(ele => ele.id === item.fieldId)
-    if (fieldItemObj.length === 0) {
+    const fieldItemObj = state.fields.find(ele => ele.id === item.fieldId)
+    if (!fieldItemObj) {
       change = true
       item.fieldId = null
+      return
+    }
+    if (fieldItemObj.deType === 1) {
+      // 同步字段最新的日期格式，不重置已有条件和颜色。
+      item.field = JSON.parse(JSON.stringify(fieldItemObj))
+      change = true
     }
   })
   if (change) {
@@ -205,6 +213,12 @@ const changeThreshold = () => {
 
 const addConditions = item => {
   const newCondition = JSON.parse(JSON.stringify(thresholdCondition))
+  if (isDateThresholdField(item.field)) {
+    // 日期条件从空值开始，避免将数值默认值误解析为日期。
+    newCondition.value = ''
+    newCondition.min = ''
+    newCondition.max = ''
+  }
   item.conditions.push(newCondition)
   changeThreshold()
 }
@@ -365,6 +379,14 @@ init()
                   clearable
                   @change="changeThreshold"
                 />
+                <ThresholdDatePicker
+                  v-model="item.value"
+                  v-else-if="isDateThresholdField(fieldItem.field)"
+                  :field="fieldItem.field"
+                  :placeholder="t('chart.drag_block_label_value')"
+                  class="value-item"
+                  @change="changeThreshold"
+                />
                 <el-input
                   v-model="item.value"
                   v-else
@@ -382,7 +404,16 @@ init()
               style="text-align: center"
             >
               <el-form-item class="form-item">
+                <ThresholdDatePicker
+                  v-if="isDateThresholdField(fieldItem.field)"
+                  v-model="item.min"
+                  :field="fieldItem.field"
+                  :placeholder="t('chart.axis_value_min')"
+                  class="between-item"
+                  @change="changeThreshold"
+                />
                 <el-input-number
+                  v-else
                   v-model="item.min"
                   controls-position="right"
                   class="between-item"
@@ -408,7 +439,16 @@ init()
               style="text-align: center"
             >
               <el-form-item class="form-item">
+                <ThresholdDatePicker
+                  v-if="isDateThresholdField(fieldItem.field)"
+                  v-model="item.max"
+                  :field="fieldItem.field"
+                  :placeholder="t('chart.axis_value_max')"
+                  class="between-item"
+                  @change="changeThreshold"
+                />
                 <el-input-number
+                  v-else
                   v-model="item.max"
                   controls-position="right"
                   class="between-item"

@@ -46,6 +46,7 @@ public class ExtWhere2Str {
         if (ObjectUtils.isNotEmpty(fields)) {
             for (ChartExtFilterDTO request : fields) {
                 List<String> value = request.getValue();
+                boolean nullCondition = "null".equals(request.getOperator());
 
                 List<String> whereNameList = new ArrayList<>();
                 List<DatasetTableFieldDTO> fieldList = new ArrayList<>();
@@ -56,7 +57,7 @@ public class ExtWhere2Str {
                 }
 
                 for (DatasetTableFieldDTO field : fieldList) {
-                    if (ObjectUtils.isEmpty(value) || ObjectUtils.isEmpty(field)) {
+                    if ((!nullCondition && ObjectUtils.isEmpty(value)) || ObjectUtils.isEmpty(field)) {
                         continue;
                     }
                     String whereName = "";
@@ -96,7 +97,7 @@ public class ExtWhere2Str {
                     if (field.getDeType() == 1) {
                         if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
                             // 此处获取标准格式的日期
-                            whereName = String.format(SQLConstants.DE_STR_TO_DATE_T, originName, StringUtils.isEmpty(field.getDateFormat()) ? SQLConstants.DEFAULT_DATE_FORMAT : field.getDateFormat());
+                            whereName = String.format(SQLConstants.DE_STR_TO_DATE_T, originName, StringUtils.isEmpty(field.getDateFormat()) ? SQLConstants.DEFAULT_DATE_FORMAT : (Utils.isValidDateFormat(field.getDateFormat()) ? Utils.transValue(field.getDateFormat()) : SQLConstants.DEFAULT_DATE_FORMAT));
                         }
                         if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                             String cast = String.format(SQLConstants.CAST, originName, SQLConstants.DEFAULT_INT_FORMAT);
@@ -152,7 +153,10 @@ public class ExtWhere2Str {
                 String whereTerm = Utils.transFilterTerm(request.getOperator());
                 String whereValue = "";
 
-                if (StringUtils.containsIgnoreCase(request.getOperator(), "-")) {
+                if (nullCondition) {
+                    // IS NULL 是无操作数条件，不拼接空字符串，也不与空字符串分组合并
+                    whereValue = "";
+                } else if (StringUtils.containsIgnoreCase(request.getOperator(), "-")) {
                     String[] split = request.getOperator().split("-");
                     String term1 = split[0];
                     String logic = split[1];
@@ -411,5 +415,4 @@ public class ExtWhere2Str {
         }
         return normalized;
     }
-
 }

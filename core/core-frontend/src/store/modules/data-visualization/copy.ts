@@ -49,11 +49,41 @@ export const copyStore = defineStore('copy', {
       const componentIds = Object.keys(outerMultiplexingComponents)
       // 预生成 旧-新ID 全局映射，保证 VQuery.propValue 中引用的其他组件ID能被同步替换为新ID
       const outerIdMap = {}
-      componentIds.forEach(function (componentId) {
-        const comp = outerMultiplexingComponents[componentId]
-        if (comp && comp.id) {
+      // 递归收集组件及其嵌套子组件的旧ID，DeTabs/Group 内层组件也需一并预生成映射
+      const collectOuterIds = function (comp) {
+        if (!comp) {
+          return
+        }
+        if (comp.id) {
           outerIdMap[comp.id] = generateID()
         }
+        // VQuery 的 propValue 中每个查询条件项都有独立ID，一并预生成映射，避免复用后条件项ID冲突
+        if (comp.component === 'VQuery' && Array.isArray(comp.propValue)) {
+          comp.propValue.forEach(function (item) {
+            if (item && item.id) {
+              outerIdMap[item.id] = generateID()
+            }
+          })
+        }
+        // Group 的 propValue 为嵌套子组件数组，逐个递归收集
+        if (comp.component === 'Group' && Array.isArray(comp.propValue)) {
+          comp.propValue.forEach(function (child) {
+            collectOuterIds(child)
+          })
+        }
+        // DeTabs 的 propValue 为多个 Tab，每个 Tab 的 componentData 为该页内的组件数组，逐个递归收集
+        if (comp.component === 'DeTabs' && Array.isArray(comp.propValue)) {
+          comp.propValue.forEach(function (tabItem) {
+            if (tabItem && Array.isArray(tabItem.componentData)) {
+              tabItem.componentData.forEach(function (child) {
+                collectOuterIds(child)
+              })
+            }
+          })
+        }
+      }
+      componentIds.forEach(function (componentId) {
+        collectOuterIds(outerMultiplexingComponents[componentId])
       })
       // 按原始顺序完成布局计算，收集待粘贴组件
       const pendingComponents = componentIds.map(function (componentId, index) {
@@ -85,23 +115,55 @@ export const copyStore = defineStore('copy', {
       })
       // VQuery(过滤组件) 先加入仪表板
       pendingComponents.sort(function (a, b) {
-        const aIsQuery = a.component === 'VQuery' ? 0 : 1
-        const bIsQuery = b.component === 'VQuery' ? 0 : 1
+        const aIsQuery = a.component !== 'VQuery' ? 0 : 1
+        const bIsQuery = b.component !== 'VQuery' ? 0 : 1
         return aIsQuery - bIsQuery
       })
       const oldIds = Object.keys(outerIdMap)
       // 匹配任意旧组件ID，单次替换，避免链式替换污染
       const idReplaceReg = oldIds.length ? new RegExp(oldIds.join('|'), 'g') : null
-      pendingComponents.forEach(function (newComponent, index) {
-        // VQuery.propValue 内引用了其他组件的旧ID，转字符串批量替换为新ID后还原
-        if (newComponent.component === 'VQuery' && newComponent.propValue && idReplaceReg) {
-          const propValueStr = JSON.stringify(newComponent.propValue)
-          newComponent.propValue = JSON.parse(
-            propValueStr.replace(idReplaceReg, function (matched) {
-              return outerIdMap[matched] || matched
-            })
-          )
+      // VQuery.propValue/cascade 内引用了其他组件的旧ID，转字符串批量替换为新ID后还原
+      const replaceQueryRefs = function (comp) {
+        if (!comp || !idReplaceReg) {
+          return
         }
+        if (comp.component === 'VQuery' && comp.propValue) {
+          const propValueStr = JSON.stringify(comp.propValue)
+          if (propValueStr) {
+            comp.propValue = JSON.parse(
+              propValueStr.replace(idReplaceReg, function (matched) {
+                return outerIdMap[matched] || matched
+              })
+            )
+          }
+          const cascadeStr = JSON.stringify(comp.cascade)
+          if (cascadeStr) {
+            comp.cascade = JSON.parse(
+              cascadeStr.replace(idReplaceReg, function (matched) {
+                return outerIdMap[matched] || matched
+              })
+            )
+          }
+        }
+        // Group 内层组件递归处理
+        if (comp.component === 'Group' && Array.isArray(comp.propValue)) {
+          comp.propValue.forEach(function (child) {
+            replaceQueryRefs(child)
+          })
+        }
+        // DeTabs 每个 Tab 的 componentData 内层组件递归处理
+        if (comp.component === 'DeTabs' && Array.isArray(comp.propValue)) {
+          comp.propValue.forEach(function (tabItem) {
+            if (tabItem && Array.isArray(tabItem.componentData)) {
+              tabItem.componentData.forEach(function (child) {
+                replaceQueryRefs(child)
+              })
+            }
+          })
+        }
+      }
+      pendingComponents.forEach(function (newComponent, index) {
+        replaceQueryRefs(newComponent)
         _this.copyData = {
           data: [newComponent],
           copyCanvasViewInfo: canvasViewInfoPreview,
@@ -147,12 +209,7 @@ export const copyStore = defineStore('copy', {
             data.y = data.y + data.sizeY
           }
           // 旧-新ID映射关系
-          const idMap = {}
-          // 预置当前组件的新ID，保证其最终ID与 VQuery.propValue 中引用的新ID一致
-          const presetId = copyDataTemp.outerIdMap?.[data.id]
-          if (presetId) {
-            idMap[data.id] = presetId
-          }
+          const idMap = deepCopy(copyDataTemp.outerIdMap || {})
           const newComponent = deepCopyHelper(data, idMap)
           newComponent['category'] = 'base'
           if (newComponent.canvasId.includes('Group')) {
@@ -253,8 +310,16 @@ function deepCopyHelper(data, idMap) {
   delete result.mEvents
   delete result.mCommonBackground
   if (result.component === 'VQuery') {
+    const idMapValues = new Set(Object.values(idMap))
     result.propValue?.forEach(queryItem => {
-      queryItem.id = generateID()
+      if (idMap[queryItem.id]) {
+        // 命中映射，替换为预生成的新ID
+        queryItem.id = idMap[queryItem.id]
+      } else if (!idMapValues.has(queryItem.id)) {
+        // 既不是旧ID也不是已生成的新ID，才需要生成
+        queryItem.id = generateID()
+      }
+      // 否则 queryItem.id 已是新ID，保持不变
     })
   }
   if (result.component === 'Group') {

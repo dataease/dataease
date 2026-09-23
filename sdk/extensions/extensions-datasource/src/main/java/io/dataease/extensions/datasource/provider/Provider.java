@@ -6,6 +6,7 @@ import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.constant.SqlPlaceholderConstants;
 import io.dataease.extensions.datasource.dto.*;
 import io.dataease.extensions.datasource.model.SQLMeta;
+import io.dataease.extensions.datasource.utils.SqlUtil;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import lombok.Getter;
 import org.apache.calcite.config.Lex;
@@ -101,7 +102,6 @@ public abstract class Provider {
     public ExecuteResult executeUpdate(DatasourceRequest datasourceRequest, String autoIncrementPkName) {
         return new ExecuteResult();
     }
-
 
     @Getter
     private static final Map<Long, Integer> lPorts = new HashMap<>();
@@ -219,8 +219,7 @@ public abstract class Provider {
     }
 
     public String replaceComment(String s) {
-        String regex = "/\\*[\\s\\S]*?\\*/|--.*";
-        return s.replaceAll(regex, " ");
+        return SqlUtil.removeSqlComments(s);
     }
 
     public SqlDialect getDialect(DatasourceSchemaDTO coreDatasource) {

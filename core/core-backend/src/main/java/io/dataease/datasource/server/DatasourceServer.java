@@ -73,7 +73,6 @@ import java.util.stream.Collectors;
 import static io.dataease.datasource.server.DatasourceTaskServer.ScheduleType.MANUAL;
 import static io.dataease.datasource.server.DatasourceTaskServer.ScheduleType.RIGHTNOW;
 
-
 @RestController
 @RequestMapping("/datasource")
 public class DatasourceServer implements DatasourceApi {
@@ -125,7 +124,6 @@ public class DatasourceServer implements DatasourceApi {
     private CommonThreadPool commonThreadPool;
     private boolean isUpdatingStatus = false;
     private static List<Long> syncDsIds = new ArrayList<>();
-
 
     @Override
     public List<DatasourceDTO> query(String keyWord) {
@@ -415,7 +413,6 @@ public class DatasourceServer implements DatasourceApi {
             List<DatasetTableDTO> datasetTableDTOS = dataSourceDTO.getType().contains(DatasourceConfiguration.DatasourceType.API.name()) ? (List<DatasetTableDTO>) invokeMethod(sourceData.getType(), "getApiTables", DatasourceRequest.class, datasourceRequest) : ExcelUtils.getTables(datasourceRequest);
             List<String> tables = datasetTableDTOS.stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList());
 
-
             checkName(datasetTableDTOS.stream().map(DatasetTableDTO::getName).collect(Collectors.toList()));
             toCreateTables = tables.stream().filter(table -> !sourceTables.contains(table)).collect(Collectors.toList());
             toDeleteTables = sourceTables.stream().filter(table -> !tables.contains(table)).collect(Collectors.toList());
@@ -511,7 +508,6 @@ public class DatasourceServer implements DatasourceApi {
         return dataSourceDTO;
     }
 
-
     @Override
     public List<DatasourceConfiguration.DatasourceType> datasourceTypes() {
         return Arrays.asList(DatasourceConfiguration.DatasourceType.values());
@@ -522,6 +518,7 @@ public class DatasourceServer implements DatasourceApi {
         DatasourceDTO dataSourceDTO = new DatasourceDTO();
         BeanUtils.copyBean(dataSourceDTO, busiDsRequest);
         dataSourceDTO.setConfiguration(new String(Base64.getDecoder().decode(dataSourceDTO.getConfiguration())));
+        preCheckDs(dataSourceDTO);
         CoreDatasource coreDatasource = new CoreDatasource();
         BeanUtils.copyBean(coreDatasource, dataSourceDTO);
         checkDatasourceStatus(dataSourceDTO);
@@ -536,6 +533,7 @@ public class DatasourceServer implements DatasourceApi {
         DatasourceDTO dataSourceDTO = new DatasourceDTO();
         BeanUtils.copyBean(dataSourceDTO, busiDsRequest);
         dataSourceDTO.setConfiguration(new String(Base64.getDecoder().decode(dataSourceDTO.getConfiguration())));
+        preCheckDs(dataSourceDTO);
         CoreDatasource coreDatasource = new CoreDatasource();
         BeanUtils.copyBean(coreDatasource, dataSourceDTO);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
@@ -727,7 +725,6 @@ public class DatasourceServer implements DatasourceApi {
         }
     }
 
-
     @Override
     public DatasourceDTO validate(Long datasourceId) throws DEException {
         CoreDatasource coreDatasource = new CoreDatasource();
@@ -913,7 +910,7 @@ public class DatasourceServer implements DatasourceApi {
 
             return newList;
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
             return null;
         }
     }
@@ -985,7 +982,10 @@ public class DatasourceServer implements DatasourceApi {
             List<ExcelSheetData> excelSheetDataList = new ArrayList<>();
             for (ExcelSheetData sheet : excelFileData.getSheets()) {
                 for (DatasetTableDTO datasetTableDTO : datasetTableDTOS) {
-                    if (excelDataTableName(datasetTableDTO.getTableName()).equals(sheet.getTableName())) {
+                    // CSV has no sheet name; match a unique target by fields rather than filename.
+                    boolean singleCsvTable = excelFileData.getSheets().size() == 1
+                            && datasetTableDTOS.size() == 1 && isCsv(sheet.getFileName());
+                    if (singleCsvTable || excelDataTableName(datasetTableDTO.getTableName()).equals(sheet.getTableName())) {
                         List<TableField> newTableFields = sheet.getFields();
                         datasourceRequest.setTable(datasetTableDTO.getTableName());
                         List<TableField> oldTableFields = ExcelUtils.getTableFields(datasourceRequest);
@@ -1009,7 +1009,6 @@ public class DatasourceServer implements DatasourceApi {
             }
         }
     }
-
 
     private boolean isEqual(List<TableField> newTableFields, List<TableField> oldTableFields) {
         if (CollectionUtils.isEmpty(newTableFields) || CollectionUtils.isEmpty(oldTableFields)) {
@@ -1059,8 +1058,7 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     private boolean isCsv(String fileName) {
-        String suffix = fileName.substring(fileName.lastIndexOf(".") + 1);
-        return suffix.equalsIgnoreCase("csv");
+        return "csv".equalsIgnoreCase(StringUtils.substringAfterLast(fileName, "."));
     }
 
     public ApiDefinition checkApiDatasource(Map<String, String> request) throws DEException {
@@ -1116,6 +1114,7 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     public void checkDatasourceStatus(DatasourceDTO coreDatasource) {
+        preCheckDs(coreDatasource);
         if (coreDatasource.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name()) || coreDatasource.getType().equals(DatasourceConfiguration.DatasourceType.folder.name())) {
             return;
         }
@@ -1136,7 +1135,6 @@ public class DatasourceServer implements DatasourceApi {
             DEException.throwException(e);
         }
     }
-
 
     public void updateDemoDs() {
     }
@@ -1206,7 +1204,6 @@ public class DatasourceServer implements DatasourceApi {
         return pager;
     }
 
-
     public void updateDatasourceStatus() {
         QueryWrapper<CoreDatasource> wrapper = new QueryWrapper<>();
         wrapper.notIn("type", Arrays.asList("Excel", "folder"));
@@ -1238,7 +1235,7 @@ public class DatasourceServer implements DatasourceApi {
         try {
             doUpdate();
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
         } finally {
             this.isUpdatingStatus = false;
         }
@@ -1279,7 +1276,6 @@ public class DatasourceServer implements DatasourceApi {
         return coreDsFinishPageMapper.selectById(AuthUtils.getUser().getUserId()) == null;
     }
 
-
     public void setShowFinishPage() throws DEException {
         CoreDsFinishPage coreDsFinishPage = new CoreDsFinishPage();
         coreDsFinishPage.setId(AuthUtils.getUser().getUserId());
@@ -1291,7 +1287,6 @@ public class DatasourceServer implements DatasourceApi {
         BeanUtils.copyBean(datasourceDTO, record);
         return datasourceDTO;
     }
-
 
     private void filterDs(List<BusiNodeVO> busiNodeVOS, List<Long> ids, String type, Long id) {
         for (BusiNodeVO busiNodeVO : busiNodeVOS) {
@@ -1392,7 +1387,6 @@ public class DatasourceServer implements DatasourceApi {
                 if (log != null) {
                     apiDefinition.setUpdateTime(log.getStartTime());
                 }
-
 
                 if (StringUtils.isEmpty(apiDefinition.getType()) || apiDefinition.getType().equalsIgnoreCase("table")) {
                     apiDefinitionListWithStatus.add(apiDefinition);

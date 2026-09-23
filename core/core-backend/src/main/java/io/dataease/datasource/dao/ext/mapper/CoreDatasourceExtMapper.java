@@ -18,7 +18,6 @@ public interface CoreDatasourceExtMapper {
             """)
     List<DatasourceNodePO> query(@Param("ew") QueryWrapper queryWrapper);
 
-
     @Select("select id, pid from core_datasource where id = #{id}")
     DsItem queryItem(@Param("id") Long id);
 }

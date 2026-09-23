@@ -71,7 +71,6 @@ public class TemplateLocalParseManage {
         staticResourceServer.saveFilesToServe(template.getStaticResource());
     }
 
-
     public org.springframework.core.io.Resource[] getAllFilesInResourceDirectory(String directoryName) throws Exception {
         // 创建一个 PathMatchingResourcePatternResolver 对象
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(resourceLoader);
@@ -94,5 +93,4 @@ public class TemplateLocalParseManage {
         }
         return content.toString();
     }
-
 }

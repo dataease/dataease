@@ -8,5 +8,4 @@ public interface MsgCenterApi {
 
     @PostMapping("/count")
     long count();
-
 }

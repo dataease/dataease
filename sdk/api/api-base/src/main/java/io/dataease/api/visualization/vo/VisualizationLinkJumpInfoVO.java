@@ -34,7 +34,6 @@ public class VisualizationLinkJumpInfoVO {
      */
     private String windowSize;
 
-
     /**
      * 关联仪表板ID
      */

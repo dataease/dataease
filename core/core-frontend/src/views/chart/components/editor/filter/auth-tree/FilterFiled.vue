@@ -451,6 +451,7 @@ const emits = defineEmits(['update:item', 'del'])
               v-if="item.deType === 1"
               effect="light"
               :content="item.timeValue"
+              :disabled="!item.timeValue"
               placement="top"
               ><el-input
                 readonly

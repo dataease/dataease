@@ -4,7 +4,9 @@ import io.dataease.result.ResultMessage;
 import io.dataease.utils.JsonUtil;
 import jakarta.servlet.*;
 import jakarta.servlet.FilterConfig;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpHeaders;
@@ -17,6 +19,15 @@ public class HtmlResourceFilter implements Filter, Ordered {
 
     @Value("${dataease.http.cache:false}")
     private Boolean httpCache;
+
+    @Value("${dataease.http.frame-options:SAMEORIGIN}")
+    private String frameOptions;
+
+    @Value("${dataease.http.frame-ancestors:'self'}")
+    private String frameAncestors;
+
+    @Value("${dataease.http.hsts:}")
+    private String hsts;
 
     @Override
     public int getOrder() {
@@ -37,9 +48,18 @@ public class HtmlResourceFilter implements Filter, Ordered {
             httpResponse.setHeader(HttpHeaders.PRAGMA, "no-cache");
             httpResponse.setHeader(HttpHeaders.EXPIRES, "0");
         }
-        httpResponse.setHeader("Content-Security-Policy", "default-src * data: blob: 'unsafe-inline' 'unsafe-eval'; frame-ancestors *");
+        if (frameOptions != null && !frameOptions.isBlank()) {
+            httpResponse.setHeader("X-Frame-Options", frameOptions);
+        }
+        String frameAncestorsValue = frameAncestors == null || frameAncestors.isBlank() ? "'self'" : frameAncestors;
+        httpResponse.setHeader("Content-Security-Policy", "default-src * data: blob: 'unsafe-inline' 'unsafe-eval'; frame-ancestors " + frameAncestorsValue);
         httpResponse.setHeader("X-Content-Type-Options", "nosniff");
         httpResponse.setHeader("X-XSS-Protection", "1; mode=block");
+        httpResponse.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+        // HSTS：配置 dataease.http.hsts 后才下发，且仅在 HTTPS 请求上生效，避免影响纯 HTTP 部署
+        if (StringUtils.isNotBlank(hsts) && servletRequest instanceof HttpServletRequest httpRequest && httpRequest.isSecure()) {
+            httpResponse.setHeader("Strict-Transport-Security", hsts);
+        }
         // 继续执行过滤器链
         try {
             filterChain.doFilter(servletRequest, httpResponse);

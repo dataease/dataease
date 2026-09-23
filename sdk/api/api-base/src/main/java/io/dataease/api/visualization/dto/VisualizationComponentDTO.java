@@ -22,5 +22,4 @@ public class VisualizationComponentDTO {
     List<VisualizationViewTableVO> visualizationViewTables;
 
     List<VisualizationOutParamsJumpVO> outParamsJumpInfo;
-
 }

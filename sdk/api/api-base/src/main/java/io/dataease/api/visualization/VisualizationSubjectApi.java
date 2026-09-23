@@ -30,5 +30,4 @@ public interface VisualizationSubjectApi {
     @PostMapping("/delete/{id}")
     @Operation(summary = "删除")
     void delete(@PathVariable("id") String id);
-
 }

@@ -10,11 +10,9 @@ import java.util.Optional;
 
 public class DeWebSocketHandlerDecorator extends WebSocketHandlerDecorator {
 
-
     public DeWebSocketHandlerDecorator(WebSocketHandler delegate) {
         super(delegate);
     }
-
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -40,5 +38,4 @@ public class DeWebSocketHandlerDecorator extends WebSocketHandlerDecorator {
 
         super.afterConnectionClosed(session, closeStatus);
     }
-
 }

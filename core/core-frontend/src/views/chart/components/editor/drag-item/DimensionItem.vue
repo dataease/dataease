@@ -167,7 +167,6 @@ const beforeDatePattern = type => {
 const showRename = () => {
   item.value.index = props.index
   item.value.renameType = props.type
-  // item.value.dsFieldName = getOriginFieldName(props.dimensionData, props.quotaData, item.value)
   emit('onNameEdit', item.value)
 }
 
@@ -188,6 +187,9 @@ const valueFormatter = () => {
 }
 const showCustomSort = item => {
   if (props.chart.type === 'symbolic-map' || props.chart.type === 'flow-map') {
+    return false
+  }
+  if (item.groupType === 'q') {
     return false
   }
   return !item.chartId && (item.deType === 0 || item.deType === 5)

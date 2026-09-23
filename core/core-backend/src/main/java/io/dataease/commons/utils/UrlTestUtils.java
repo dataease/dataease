@@ -1,4 +1,5 @@
 package io.dataease.commons.utils;
+import io.dataease.utils.LogUtil;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -15,7 +16,7 @@ public class UrlTestUtils {
             co.connect();
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
             return false;
         }
     }

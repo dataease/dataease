@@ -21,7 +21,6 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
-
 @Configuration
 @EnableConfigurationProperties(DynamicDataSourceProperties.class)
 public class DynamicDsConfig implements WebMvcConfigurer {
@@ -40,7 +39,6 @@ public class DynamicDsConfig implements WebMvcConfigurer {
     public DataSourceProperties dataSourceProperties() {
         return new DataSourceProperties();
     }
-
 
     @Bean
     public DynamicDataSource dynamicDataSource(DataSourceProperties dataSourceProperties) {
@@ -86,7 +84,6 @@ public class DynamicDsConfig implements WebMvcConfigurer {
         });
         return targetDataSources;
     }
-
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {

@@ -208,6 +208,8 @@ const titleAlign = computed<string>(() => {
 })
 
 // 标题宽度交给 flex 计算，图标显示时优先占位
+// 阴影使用固定 CSS 像素，预留空间也保持同一单位以兼容缩小后的图表
+const titleShadowPadding = computed(() => (state.title_class.textShadow === 'none' ? 0 : 6))
 const titleTextStyle = computed<CSSProperties>(() => ({
   ...state.title_class,
   flex: '1 1 auto',
@@ -215,20 +217,23 @@ const titleTextStyle = computed<CSSProperties>(() => ({
   width: 'auto',
   maxWidth: '100%',
   wordBreak: 'normal',
-  whiteSpace: 'nowrap'
+  whiteSpace: 'nowrap',
+  // 在省略号裁剪框内给阴影留出空间，避免字体或阴影被固定标题行截断
+  padding: `${titleShadowPadding.value}px`,
+  boxSizing: 'border-box'
 }))
 
 // 固定标题行高度，避免图标显示时触发图表区域 resize
 const titleContentHeight = computed<string>(() => {
   const iconFontSize = Number.parseFloat(iconSize.value) || 0
   const titleFontSize = Number.parseFloat(`${state.title_class.fontSize}`) || iconFontSize
-  return Math.max(iconFontSize, titleFontSize * 1.2) + 'px'
+  return Math.max(iconFontSize, titleFontSize * 1.2) + titleShadowPadding.value * 2 + 'px'
 })
 
 const titleContentStyle = computed<CSSProperties>(() => ({
   height: titleContentHeight.value,
   minHeight: titleContentHeight.value,
-  lineHeight: titleContentHeight.value
+  lineHeight: `calc(${titleContentHeight.value} - ${titleShadowPadding.value * 2}px)`
 }))
 
 const safeTitleRemark = computed(() => sanitizeHtml(state.title_remark.remark || ''))

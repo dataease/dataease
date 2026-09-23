@@ -56,5 +56,4 @@ public class SQLMeta {
     private String whereTrees;
 
     private Map<String, String> whereTreesDialect;
-
 }

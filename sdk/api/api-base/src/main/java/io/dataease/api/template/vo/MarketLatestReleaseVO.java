@@ -10,5 +10,4 @@ public class MarketLatestReleaseVO {
     private MarketReleaseVO release;
 
     private List<MarketReleaseAssetVO> assets;
-
 }

@@ -6,6 +6,7 @@ import { TextLayer } from '@antv/l7plot/dist/esm'
 import { isEmpty } from 'lodash-es'
 import { hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
 import {
+  bindMapHoverTooltipRefresh,
   formatL7TooltipValue,
   mapRendered,
   mapRendering
@@ -303,6 +304,7 @@ export async function drawPointFallbackChart(
   }
 
   const dotLayer = new Dot(dotOptions)
+  bindMapHoverTooltipRefresh(container, view.scene, () => dotLayer.tooltip?.hideTooltip())
 
   let textLayer: InstanceType<typeof TextLayer> | null = null
   if (label.show && labelData.length) {

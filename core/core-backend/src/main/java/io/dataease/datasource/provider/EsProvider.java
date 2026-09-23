@@ -1,4 +1,5 @@
 package io.dataease.datasource.provider;
+import io.dataease.utils.LogUtil;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
@@ -83,7 +84,7 @@ public class EsProvider extends Provider {
             result.put("data", fetchResultData(response));
             result.put("fields", fetchResultField4Sql(response));
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(e);
             DEException.throwException(e);
         }
         return result;
@@ -110,11 +111,9 @@ public class EsProvider extends Provider {
         return tableFields;
     }
 
-
     @Override
     public void hidePW(DatasourceDTO datasourceDTO) {
     }
-
 
     private List<String[]> fetchResultData(String response) throws Exception {
         EsResponse esResponse = new Gson().fromJson(response, EsResponse.class);
@@ -177,7 +176,6 @@ public class EsProvider extends Provider {
         return tables;
     }
 
-
     private String execQuery(DatasourceRequest datasourceRequest, String sql, String uri) {
         Es es = null;
         if (datasourceRequest.getDatasource() == null) {
@@ -212,6 +210,4 @@ public class EsProvider extends Provider {
         }
         return HttpClientUtil.get(es.getUrl(), httpClientConfig);
     }
-
-
 }

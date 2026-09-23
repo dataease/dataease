@@ -111,9 +111,6 @@ export class RangeBar extends G2PlotChartView<BarOptions, Bar> {
       case 'y_M_d':
         dateFormat = 'YYYY' + dateSplit + 'MM' + dateSplit + 'DD'
         break
-      // case 'H_m_s':
-      //   dateFormat = 'HH:mm:ss'
-      //   break
       case 'y_M_d_H':
         dateFormat = 'YYYY' + dateSplit + 'MM' + dateSplit + 'DD' + ' HH'
         break

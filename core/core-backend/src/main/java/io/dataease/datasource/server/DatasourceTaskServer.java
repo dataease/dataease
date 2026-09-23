@@ -35,7 +35,6 @@ public class DatasourceTaskServer {
     @Resource
     private DatasourceSyncManage datasourceSyncManage;
 
-
     public CoreDatasourceTask selectById(Long taskId) {
         return datasourceTaskMapper.selectById(taskId);
     }
@@ -200,7 +199,6 @@ public class DatasourceTaskServer {
         queryWrapper.lt("start_time", threshold);
         coreDatasourceTaskLogMapper.delete(queryWrapper);
     }
-
 
     public enum ScheduleType {
         CRON, RIGHTNOW, SIMPLE_CRON, MANUAL

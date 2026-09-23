@@ -12,5 +12,4 @@ import java.util.List;
 public class MarketTemplateV2BaseResponse {
 
     private List<MarketTemplateV2ItemResult> items;
-
 }

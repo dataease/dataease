@@ -98,6 +98,13 @@ public class LogUtil {
         }
     }
 
+    public static void debug(Object msg, Object o1, Object o2, Object o3) {
+        Logger logger = LogUtil.getLogger();
+        if (logger != null && logger.isDebugEnabled()) {
+            logger.debug(LogUtil.getMsg(msg), o1, o2, o3);
+        }
+    }
+
     public static void debug(Object msg, Object[] obj) {
         Logger logger = LogUtil.getLogger();
         if (logger != null && logger.isDebugEnabled()) {

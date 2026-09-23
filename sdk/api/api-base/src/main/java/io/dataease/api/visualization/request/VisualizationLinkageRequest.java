@@ -34,5 +34,4 @@ public class VisualizationLinkageRequest extends VisualizationLinkageVO {
     private String resourceTable = CommonConstants.RESOURCE_TABLE.CORE;
 
     private List<VisualizationLinkageDTO> linkageInfo = new ArrayList<>();
-
 }

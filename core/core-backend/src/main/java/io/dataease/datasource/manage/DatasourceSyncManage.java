@@ -51,7 +51,6 @@ public class DatasourceSyncManage {
     @Resource
     private DatasourceServer datasourceServer;
 
-
     public void extractExcelData(CoreDatasource coreDatasource, String type) {
         if (coreDatasource == null) {
             LogUtil.error("Can not find CoreDatasource: " + coreDatasource.getName());
@@ -97,7 +96,6 @@ public class DatasourceSyncManage {
             }
         }
     }
-
 
     public void extractData(Long datasourceId, Long taskId, JobExecutionContext context) {
         LicenseUtil.validate();
@@ -212,7 +210,7 @@ public class DatasourceSyncManage {
                 datasetTableTaskLog.setTaskStatus(TaskStatus.Error.toString());
                 datasetTableTaskLog.setEndTime(System.currentTimeMillis());
 
-                e.printStackTrace();
+                LogUtil.error(e);
             } finally {
                 datasourceTaskServer.saveLog(datasetTableTaskLog);
             }

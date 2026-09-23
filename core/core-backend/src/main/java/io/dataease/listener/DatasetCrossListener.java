@@ -14,7 +14,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-
 /**
  * @Author Junjun
  */

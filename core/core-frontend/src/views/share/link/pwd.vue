@@ -229,7 +229,6 @@ onMounted(() => {
   height: 35px;
   position: relative;
   margin-top: 30px;
-  // border: 1px solid #e8eaed;
   display: block;
 }
 .abs-input {

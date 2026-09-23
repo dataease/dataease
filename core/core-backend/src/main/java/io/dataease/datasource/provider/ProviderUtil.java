@@ -5,7 +5,6 @@ import io.micrometer.common.util.StringUtils;
 
 public class ProviderUtil {
 
-
     public static EngineProvider getEngineProvider(String datasourceType) {
         if (StringUtils.isNotEmpty(datasourceType)) {
             return (EngineProvider) CommonBeanFactory.getBean(datasourceType + "Engine");
@@ -13,5 +12,4 @@ public class ProviderUtil {
             return CommonBeanFactory.getBean(MysqlEngineProvider.class);
         }
     }
-
 }

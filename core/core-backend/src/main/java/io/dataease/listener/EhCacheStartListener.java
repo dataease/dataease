@@ -1,6 +1,5 @@
 package io.dataease.listener;
 
-
 import io.dataease.utils.ConfigUtils;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;

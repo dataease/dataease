@@ -15,5 +15,4 @@ public class DeTypeConstants {
     public final static Integer DE_LOCATION = 5;
 
     public final static Integer DE_BINARY = 6;
-
 }

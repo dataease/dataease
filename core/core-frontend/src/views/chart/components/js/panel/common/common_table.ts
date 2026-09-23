@@ -570,10 +570,11 @@ export function getStyle(chart: Chart, dataConfig: S2DataConfig): Style {
         style.layoutWidthType = 'colAdaptive'
         const parentNodeWidthMap = {}
         const nodeMaxWidthMap = {}
-        const quotaLabelMap = chart.yAxis?.reduce((p, n) => {
-          p[n.dataeaseName] = n.chartShowName || n.name
-          return p
-        }, {}) || {}
+        const quotaLabelMap =
+          chart.yAxis?.reduce((p, n) => {
+            p[n.dataeaseName] = n.chartShowName || n.name
+            return p
+          }, {}) || {}
         let calcCount = 50
         //只计算最后两层表头的宽度，采样 50 个数据
         style.colCfg.width = node => {
@@ -594,7 +595,8 @@ export function getStyle(chart: Chart, dataConfig: S2DataConfig): Style {
           const parentWidth = parentNodeWidthMap[node.parent.id]
           if (!parentWidth || (parentWidth && calcCount < 50)) {
             const parentLabel = node.parent.label
-            const parentTextWidth = spreadsheet.measureTextWidth(parentLabel, colHeaderTheme) + paddingWidth
+            const parentTextWidth =
+              spreadsheet.measureTextWidth(parentLabel, colHeaderTheme) + paddingWidth
             parentNodeWidthMap[node.parent.id] = parentTextWidth
             const siblings = node.parent.children
             const siblingsTextWidthMap = {}
@@ -614,7 +616,8 @@ export function getStyle(chart: Chart, dataConfig: S2DataConfig): Style {
               const offsetWidth = parentTextWidth - siblingsWidth
               const expandOffsetWidth = offsetWidth / Object.keys(siblingsTextWidthMap).length
               for (const key in siblingsTextWidthMap) {
-                const tmpWidth = siblingsTextWidthMap[key] + Math.ceil(expandOffsetWidth) + paddingWidth
+                const tmpWidth =
+                  siblingsTextWidthMap[key] + Math.ceil(expandOffsetWidth) + paddingWidth
                 const maxWidth = nodeMaxWidthMap[key]
                 if (!maxWidth || (maxWidth && tmpWidth > maxWidth)) {
                   nodeMaxWidthMap[key] = tmpWidth
@@ -635,7 +638,8 @@ export function getStyle(chart: Chart, dataConfig: S2DataConfig): Style {
             if (fieldWidth) {
               return fieldWidth
             }
-            const textWidth = spreadsheet.measureTextWidth(node.label, colHeaderTheme) + paddingWidth
+            const textWidth =
+              spreadsheet.measureTextWidth(node.label, colHeaderTheme) + paddingWidth
             return textWidth
           }
         }
@@ -722,10 +726,11 @@ export function getConditions(chart: Chart) {
   if (conditions?.length > 0) {
     const { tableCell, basicStyle, tableHeader } = parseJson(chart.customAttr)
     // 合并单元格时斑马纹失效
-    const enableTableCrossBG =
-      chart.type === 'table-info'
-        ? tableCell.enableTableCrossBG && !tableCell.mergeCells
-        : tableCell.enableTableCrossBG
+    let enableTableCrossBG = tableCell.enableTableCrossBG
+    const isTableWithMerge = ['table-info', 'table-normal'].includes(chart.type)
+    if (isTableWithMerge && tableCell.mergeCells) {
+      enableTableCrossBG = false
+    }
     const valueColor = isAlphaColor(tableCell.tableFontColor)
       ? tableCell.tableFontColor
       : hexColorToRGBA(tableCell.tableFontColor, basicStyle.alpha)
@@ -740,7 +745,7 @@ export function getConditions(chart: Chart) {
 
     for (let i = 0; i < conditions.length; i++) {
       const fieldItem = conditions[i]
-      if (!fieldItem.conditions) continue;
+      if (!fieldItem.conditions) continue
 
       for (let j = 0; j < fieldItem.conditions.length; j++) {
         const rule = fieldItem.conditions[j]
@@ -777,31 +782,48 @@ export function getConditions(chart: Chart) {
 
       res.text.push({
         field: targetName,
-        mapping(value, rowData) {
+        mapping(value, rowData, cell) {
           if (!value && !rowData) {
+            return null
+          }
+          // 汇总行在未命中条件样式时，不能回退到普通单元格文字颜色，需返回 null 保持汇总行默认字体样式
+          const defaultColor = rowData?.SUMMARY ? null : defaultValueColor
+          const fill = mappingTableColor(
+            value,
+            defaultColor,
+            rules,
+            'color',
+            filedValueMap,
+            rowData,
+            cell
+          )
+          if (!fill || (rowData?.SUMMARY && fill === defaultColor)) {
             return null
           }
 
           return {
-            fill: mappingColor(value, defaultValueColor, rules, 'color', filedValueMap, rowData)
+            fill
           }
         }
       })
       res.background.push({
         field: targetName,
-        mapping(value, rowData) {
+        mapping(value, rowData, cell) {
           if (!value && !rowData) {
             return null
           }
-          const fill = mappingColor(
+          // 汇总行在未命中条件样式时，不能回退到普通单元格背景颜色，需返回 null 保持汇总行默认背景样式
+          const defaultColor = rowData?.SUMMARY ? null : defaultBgColor
+          const fill = mappingTableColor(
             value,
-            defaultBgColor,
+            defaultColor,
             rules,
             'backgroundColor',
             filedValueMap,
-            rowData
+            rowData,
+            cell
           )
-          if (isTransparent(fill)) {
+          if (!fill || isTransparent(fill) || (rowData?.SUMMARY && fill === defaultColor)) {
             return null
           }
           return { fill }
@@ -812,9 +834,44 @@ export function getConditions(chart: Chart) {
   return res
 }
 
+function mappingTableColor(value, defaultColor, rules, type, filedValueMap, rowData, cell) {
+  if (!(cell instanceof MergedCell) || !cell.cells?.length) {
+    return mappingColor(value, defaultColor, rules, type, filedValueMap, rowData)
+  }
+  // 自身/自定义目标的合并格中，任意明细命中时整格生效
+  const notMatched = Symbol('table-condition-not-matched')
+  for (const rule of rules) {
+    // 整行样式保持原有逻辑
+    const rows =
+      rule.rule.target === 'total_row'
+        ? [{ value, rowData }]
+        : cell.cells.map(dataCell => {
+            const meta = dataCell.getMeta()
+            return {
+              value: meta.fieldValue,
+              rowData: cell.spreadsheet.dataSet.getCellData({ query: { rowIndex: meta.rowIndex } })
+            }
+          })
+    for (const current of rows) {
+      const fill = mappingColor(
+        current.value,
+        notMatched,
+        [rule],
+        type,
+        filedValueMap,
+        current.rowData
+      )
+      if (fill !== notMatched) {
+        return fill
+      }
+    }
+  }
+  return defaultColor
+}
+
 export function mappingColorCustom(value, defaultColor, field, type, filedValueMap?, rowData?) {
   let color = null
-  let hitCondition = null;
+  let hitCondition = null
   for (let i = 0; i < field.conditions.length; i++) {
     let flag = false
     const t = field.conditions[i]
@@ -934,6 +991,12 @@ export function mappingColorCustom(value, defaultColor, field, type, filedValueM
       }
     } else {
       const fc = field.conditions[i]
+      // 默认图片无需日期值，必须在日期解析前完成匹配。
+      if (fc.term === 'default') {
+        color = fc[type]
+        hitCondition = fc
+        break
+      }
       if (fc.term === 'null') {
         if (value === null && value === undefined && value === '') {
           color = fc[type]
@@ -953,8 +1016,15 @@ export function mappingColorCustom(value, defaultColor, field, type, filedValueM
       if (!tv || !value) {
         break
       }
-      tv = new Date(tv.replace(/-/g, '/') + ' GMT+8').getTime()
-      const v = new Date(value.replace(/-/g, '/') + ' GMT+8').getTime()
+      let v: number | string
+      if (['H_m_s', 'y_M_d_H', 'y_M_d_H_m'].includes(field.field.dateStyle)) {
+        // 图片和富文本支持纯时间、小时及分钟粒度，避免原生 Date 解析不完整日期失败。
+        tv = String(tv).replace(/-/g, '/')
+        v = String(value).replace(/-/g, '/')
+      } else {
+        tv = new Date(String(tv).replace(/-/g, '/') + ' GMT+8').getTime()
+        v = new Date(String(value).replace(/-/g, '/') + ' GMT+8').getTime()
+      }
       if (fc.term === 'eq') {
         if (v === tv) {
           color = fc[type]
@@ -985,9 +1055,6 @@ export function mappingColorCustom(value, defaultColor, field, type, filedValueM
           color = fc[type]
           flag = true
         }
-      } else if (fc.term === 'default') {
-        color = fc[type]
-        flag = true
       }
       if (flag) {
         hitCondition = fc
@@ -997,18 +1064,17 @@ export function mappingColorCustom(value, defaultColor, field, type, filedValueM
       }
     }
   }
-  if(hitCondition && hitCondition.target === 'custom'){
+  if (hitCondition && hitCondition.target === 'custom') {
     return {
       targetFieldId: hitCondition.targetFieldId,
       color
     }
-  }else{
+  } else {
     return {
       targetFieldId: field.fieldId,
       color
     }
   }
-
 }
 
 export function mappingColor(value, defaultColor, rules, type, filedValueMap?, rowData?) {
@@ -1020,11 +1086,12 @@ export function mappingColor(value, defaultColor, rules, type, filedValueMap?, r
     const t = rule
     let targetValue, max, min
 
-    let checkValue = value;
+    let checkValue = value
     if (sourceField.dataeaseName) {
-      checkValue = rowData?.[sourceField.dataeaseName]
-      if (checkValue === undefined) {
-        checkValue = rowData?.query?.[sourceField.dataeaseName]
+      const rowVal =
+        rowData?.[sourceField.dataeaseName] ?? rowData?.query?.[sourceField.dataeaseName]
+      if (rowVal !== undefined) {
+        checkValue = rowVal
       }
     }
 
@@ -1044,7 +1111,7 @@ export function mappingColor(value, defaultColor, rules, type, filedValueMap?, r
       }
     }
 
-    const val = checkValue;
+    const val = checkValue
 
     if (sourceField.deType === 2 || sourceField.deType === 3 || sourceField.deType === 4) {
       targetValue = parseFloat(targetValue)
@@ -1159,52 +1226,52 @@ export function mappingColor(value, defaultColor, rules, type, filedValueMap?, r
       if (!targetValue || !val) {
         break
       } else {
-          // 特殊时间格式不转换, 包含时或者包含时、分时(不包含秒), 直接比较字符串，因为new Date转换会有误差
-          const isSpecialTimeFormat = (dateStyle?: string) =>
-            dateStyle === 'H_m_s' || (dateStyle && dateStyle.length > 5 && dateStyle.length < 11)
+        // 特殊时间格式不转换, 包含时或者包含时、分时(不包含秒), 直接比较字符串，因为new Date转换会有误差
+        const isSpecialTimeFormat = (dateStyle?: string) =>
+          dateStyle === 'H_m_s' || (dateStyle && dateStyle.length > 5 && dateStyle.length < 11)
 
-          let v: number | string
-          let compareTv = targetValue;
-          if (isSpecialTimeFormat(sourceField?.dateStyle)) {
-            v = val
-          } else {
-            v = new Date(val.replace(/-/g, '/') + ' GMT+8').getTime()
-            compareTv = new Date(targetValue.toString().replace(/-/g, '/') + ' GMT+8').getTime()
-          }
-          if (fc.term === 'eq') {
-            if (v === compareTv) {
-              color = fc[type]
-              flag = true
-            }
-          } else if (fc.term === 'not_eq') {
-            if (v !== compareTv) {
-              color = fc[type]
-              flag = true
-            }
-          } else if (fc.term === 'lt') {
-            if (v < compareTv) {
-              color = fc[type]
-              flag = true
-            }
-          } else if (fc.term === 'gt') {
-            if (v > compareTv) {
-              color = fc[type]
-              flag = true
-            }
-          } else if (fc.term === 'le') {
-            if (v <= compareTv) {
-              color = fc[type]
-              flag = true
-            }
-          } else if (fc.term === 'ge') {
-            if (v >= compareTv) {
-              color = fc[type]
-              flag = true
-            }
-          } else if (fc.term === 'default') {
+        let v: number | string
+        let compareTv = targetValue
+        if (isSpecialTimeFormat(sourceField?.dateStyle)) {
+          v = val
+        } else {
+          v = new Date(val.replace(/-/g, '/') + ' GMT+8').getTime()
+          compareTv = new Date(targetValue.toString().replace(/-/g, '/') + ' GMT+8').getTime()
+        }
+        if (fc.term === 'eq') {
+          if (v === compareTv) {
             color = fc[type]
             flag = true
           }
+        } else if (fc.term === 'not_eq') {
+          if (v !== compareTv) {
+            color = fc[type]
+            flag = true
+          }
+        } else if (fc.term === 'lt') {
+          if (v < compareTv) {
+            color = fc[type]
+            flag = true
+          }
+        } else if (fc.term === 'gt') {
+          if (v > compareTv) {
+            color = fc[type]
+            flag = true
+          }
+        } else if (fc.term === 'le') {
+          if (v <= compareTv) {
+            color = fc[type]
+            flag = true
+          }
+        } else if (fc.term === 'ge') {
+          if (v >= compareTv) {
+            color = fc[type]
+            flag = true
+          }
+        } else if (fc.term === 'default') {
+          color = fc[type]
+          flag = true
+        }
       }
       if (flag) {
         break
@@ -1213,9 +1280,15 @@ export function mappingColor(value, defaultColor, rules, type, filedValueMap?, r
   }
 
   if (!color) {
-      color = defaultColor;
+    color = defaultColor
   }
   return color
+}
+
+export function getDesensitizedFields(chart: Pick<Chart, 'data'>): Set<string> {
+  // 以本次查询返回的权限标识为准，避免使用图表保存时的旧权限。
+  const fields = chart.data?.fields || []
+  return new Set(fields.filter(field => field.desensitized === true).map(field => field.dataeaseName))
 }
 
 export function getPivotConditions(chart: Chart) {
@@ -1228,6 +1301,7 @@ export function getPivotConditions(chart: Chart) {
     background: []
   }
   const conditions = threshold.tableThreshold ?? []
+  const desensitizedFields = getDesensitizedFields(chart)
 
   const dimFields = [...chart.xAxis, ...chart.xAxisExt].map(i => i.dataeaseName)
   const allFields = [...chart.xAxis, ...chart.xAxisExt, ...chart.yAxis]
@@ -1259,15 +1333,13 @@ export function getPivotConditions(chart: Chart) {
       : hexColorToRGBA(tableHeader.tableHeaderBgColor, basicStyle.alpha)
     // 行头字体颜色
     const rowHeaderValueColor = isAlphaColor(tableHeader.tableHeaderColFontColor)
-    ? tableHeader.tableHeaderColFontColor
-    : hexColorToRGBA(tableHeader.tableHeaderColFontColor, basicStyle.alpha)
+      ? tableHeader.tableHeaderColFontColor
+      : hexColorToRGBA(tableHeader.tableHeaderColFontColor, basicStyle.alpha)
     // 行头背景颜色
     const rowHeaderBgColor = isAlphaColor(tableHeader.tableHeaderColBgColor)
       ? tableHeader.tableHeaderColBgColor
       : hexColorToRGBA(tableHeader.tableHeaderColBgColor, basicStyle.alpha)
     const filedValueMap = getFieldValueMap(chart)
-
-
 
     const targetRulesMap = {} // columnName -> Array<{ rule, sourceField }>
     const xFields = chart.xAxis.map(f => f.dataeaseName)
@@ -1275,10 +1347,23 @@ export function getPivotConditions(chart: Chart) {
     const yFields = chart.yAxis.map(f => f.dataeaseName)
     for (let i = 0; i < conditions.length; i++) {
       const fieldItem = conditions[i]
-      if (!fieldItem.conditions) continue;
+      if (!fieldItem.conditions) continue
+      if (desensitizedFields.has(fieldItem.field.dataeaseName)) continue
 
       for (let j = 0; j < fieldItem.conditions.length; j++) {
         const rule = fieldItem.conditions[j]
+        if (rule.type === 'dynamic') {
+          let dynamicFields = [rule.dynamicField]
+          if (rule.term === 'between') {
+            dynamicFields = [rule.dynamicMinField, rule.dynamicMaxField]
+          }
+          // 比较值也可能来自脱敏指标，不能截取其数字前缀参与条件判断。
+          const hasDesensitizedValue = dynamicFields.some(field => {
+            const fieldName = field?.field?.dataeaseName || fieldIdToName[field?.fieldId]
+            return desensitizedFields.has(fieldName)
+          })
+          if (hasDesensitizedValue) continue
+        }
         let targets = []
         if (rule.target === 'total_row') {
           if (xFields.includes(fieldItem.field.dataeaseName)) {
@@ -1338,7 +1423,14 @@ export function getPivotConditions(chart: Chart) {
           }
 
           return {
-            fill: mappingPivotColor(value, defaultValueColor, rules.toReversed(), 'color', filedValueMap, rowData)
+            fill: mappingPivotColor(
+              value,
+              defaultValueColor,
+              rules.toReversed(),
+              'color',
+              filedValueMap,
+              rowData
+            )
           }
         }
       })
@@ -1381,7 +1473,7 @@ export function mappingPivotColor(value, defaultColor, rules, type, filedValueMa
     const t = rule
     let targetValue, max, min
 
-    let checkValue = value;
+    let checkValue = value
     if (sourceField.dataeaseName) {
       checkValue = rowData?.[sourceField.dataeaseName]
       if (checkValue === undefined) {
@@ -1422,7 +1514,7 @@ export function mappingPivotColor(value, defaultColor, rules, type, filedValueMa
       }
     }
 
-    const val = checkValue;
+    const val = checkValue
 
     if (sourceField.deType === 2 || sourceField.deType === 3 || sourceField.deType === 4) {
       targetValue = parseFloat(targetValue)
@@ -1537,52 +1629,52 @@ export function mappingPivotColor(value, defaultColor, rules, type, filedValueMa
       if (!targetValue || !val) {
         break
       } else {
-          // 特殊时间格式不转换, 包含时或者包含时、分时(不包含秒), 直接比较字符串，因为new Date转换会有误差
-          const isSpecialTimeFormat = (dateStyle?: string) =>
-            dateStyle === 'H_m_s' || (dateStyle && dateStyle.length > 5 && dateStyle.length < 11)
+        // 特殊时间格式不转换, 包含时或者包含时、分时(不包含秒), 直接比较字符串，因为new Date转换会有误差
+        const isSpecialTimeFormat = (dateStyle?: string) =>
+          dateStyle === 'H_m_s' || (dateStyle && dateStyle.length > 5 && dateStyle.length < 11)
 
-          let v: number | string
-          let compareTv = targetValue;
-          if (isSpecialTimeFormat(sourceField?.dateStyle)) {
-            v = val
-          } else {
-            v = new Date(val.replace(/-/g, '/') + ' GMT+8').getTime()
-            compareTv = new Date(targetValue.toString().replace(/-/g, '/') + ' GMT+8').getTime()
-          }
-          if (fc.term === 'eq') {
-            if (v === compareTv) {
-              color = fc[type]
-              flag = true
-            }
-          } else if (fc.term === 'not_eq') {
-            if (v !== compareTv) {
-              color = fc[type]
-              flag = true
-            }
-          } else if (fc.term === 'lt') {
-            if (v < compareTv) {
-              color = fc[type]
-              flag = true
-            }
-          } else if (fc.term === 'gt') {
-            if (v > compareTv) {
-              color = fc[type]
-              flag = true
-            }
-          } else if (fc.term === 'le') {
-            if (v <= compareTv) {
-              color = fc[type]
-              flag = true
-            }
-          } else if (fc.term === 'ge') {
-            if (v >= compareTv) {
-              color = fc[type]
-              flag = true
-            }
-          } else if (fc.term === 'default') {
+        let v: number | string
+        let compareTv = targetValue
+        if (isSpecialTimeFormat(sourceField?.dateStyle)) {
+          v = val
+        } else {
+          v = new Date(val.replace(/-/g, '/') + ' GMT+8').getTime()
+          compareTv = new Date(targetValue.toString().replace(/-/g, '/') + ' GMT+8').getTime()
+        }
+        if (fc.term === 'eq') {
+          if (v === compareTv) {
             color = fc[type]
             flag = true
           }
+        } else if (fc.term === 'not_eq') {
+          if (v !== compareTv) {
+            color = fc[type]
+            flag = true
+          }
+        } else if (fc.term === 'lt') {
+          if (v < compareTv) {
+            color = fc[type]
+            flag = true
+          }
+        } else if (fc.term === 'gt') {
+          if (v > compareTv) {
+            color = fc[type]
+            flag = true
+          }
+        } else if (fc.term === 'le') {
+          if (v <= compareTv) {
+            color = fc[type]
+            flag = true
+          }
+        } else if (fc.term === 'ge') {
+          if (v >= compareTv) {
+            color = fc[type]
+            flag = true
+          }
+        } else if (fc.term === 'default') {
+          color = fc[type]
+          flag = true
+        }
       }
       if (flag) {
         break
@@ -1591,12 +1683,12 @@ export function mappingPivotColor(value, defaultColor, rules, type, filedValueMa
   }
 
   if (!color) {
-      color = defaultColor;
+    color = defaultColor
   }
   return color
 }
 
-function getFieldValueMap(view) {
+export function getFieldValueMap(view) {
   const fieldValueMap = {}
   if (view.data && view.data.dynamicAssistLines && view.data.dynamicAssistLines.length > 0) {
     view.data.dynamicAssistLines.forEach(ele => {
@@ -1606,10 +1698,10 @@ function getFieldValueMap(view) {
   return fieldValueMap
 }
 
-function getValue(field, filedValueMap, rowData) {
+export function getValue(field, filedValueMap, rowData) {
   if (field.summary === 'value') {
     // 单元格数据
-    let value =  rowData?.[field.field?.dataeaseName]
+    let value = rowData?.[field.field?.dataeaseName]
     // 表头数据
     if (value === undefined) {
       value = rowData.query?.[field.field?.dataeaseName]
@@ -1654,6 +1746,10 @@ export function handleTableEmptyStrategy(chart: Chart) {
 }
 
 export class SortTooltip extends BaseTooltip {
+  isSortMenuVisible() {
+    return this.visible && !!this.options && 'iconName' in this.options && !!this.options.iconName
+  }
+
   show(showOptions) {
     const { iconName } = showOptions
     if (iconName) {
@@ -1670,6 +1766,10 @@ export class SortTooltip extends BaseTooltip {
     this.visible = true
     this.options = showOptions
     const container = this['getContainer']()
+    // 排序菜单复用内容提示容器，在测量位置前恢复菜单布局
+    Object.assign(container.style, {
+      width: 'auto', minWidth: '80px', textAlign: 'left'
+    })
     // 用 vue 手动 patch
     const vNode = createVNode(TableTooltip, {
       table: this.spreadsheet,
@@ -1812,6 +1912,10 @@ export function configTooltip(chart: Chart, option: S2Options) {
       boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 8px 0px',
       borderRadius: '3px',
       padding: '4px 12px',
+      // 先按内容确定宽度再校正位置，避免靠近右边界时被剩余空间挤压换行
+      width: 'max-content',
+      minWidth: '0',
+      textAlign: 'center',
       opacity: 0.95,
       position: 'absolute'
     },
@@ -1902,7 +2006,7 @@ export function copyContent(s2Instance: SpreadSheet, event, fieldMeta) {
             fieldVal = metaObj.formatter(value)
           }
           if (cellMeta.isSummaryLabel) {
-              fieldVal = cellMeta.fieldValue?.toString() ?? fieldVal
+            fieldVal = cellMeta.fieldValue?.toString() ?? fieldVal
           }
           if (fieldVal === undefined || fieldVal === null) {
             const fieldMap = fieldMeta?.reduce((p, n) => {
@@ -1991,6 +2095,20 @@ function getTooltipPosition(event) {
     }
   }
   return result
+}
+
+function getPivotExportFormatters(
+  instance: PivotSheet,
+  chart: Pick<Chart, 'yAxis'>
+): Record<string, BaseFormatter> {
+  const desensitizedFields = instance.store.get('desensitizedFields') as Set<string>
+  return chart.yAxis.reduce((formatters, field) => {
+    // 脱敏值在 Excel 中按文本保存，跳过百分比、单位等数字格式解析。
+    if (field.dataeaseName && !desensitizedFields?.has(field.dataeaseName)) {
+      formatters[field.dataeaseName] = field.formatterCfg
+    }
+    return formatters
+  }, {})
 }
 
 export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
@@ -2147,12 +2265,7 @@ export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
       )
     }
   })
-  const formatterMap = chart.yAxis.reduce((p, n) => {
-    if (n.dataeaseName) {
-      p[n.dataeaseName] = n.formatterCfg
-    }
-    return p
-  }, {})
+  const formatterMap = getPivotExportFormatters(instance, chart)
   //  单元格数据
   for (let rowIndex = 0; rowIndex < rowLeafNodes.length; rowIndex++) {
     for (let colIndex = 0; colIndex < colLeafNodes.length; colIndex++) {
@@ -2160,7 +2273,7 @@ export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
       const { fieldValue } = dataCellMeta
       const cell = worksheet.getCell(rowIndex + maxColHeight + 1, rowLength + colIndex + 1)
       cell.alignment = { vertical: 'middle', horizontal: 'center' }
-      if (fieldValue === "-" || fieldValue === null || fieldValue === undefined) {
+      if (fieldValue === '-' || fieldValue === null || fieldValue === undefined) {
         cell.value = '-'
         continue
       }
@@ -2337,12 +2450,7 @@ export async function exportRowQuotaGridPivot(instance: PivotSheet, chart: Chart
       worksheet.mergeCells(writeRowIndex, writeColIndex, writeRowIndex, writeColIndex + width - 1)
     }
   })
-  const formatterMap = chart.yAxis.reduce((p, n) => {
-    if (n.dataeaseName) {
-      p[n.dataeaseName] = n.formatterCfg
-    }
-    return p
-  }, {})
+  const formatterMap = getPivotExportFormatters(instance, chart)
   //  单元格数据
   for (let rowIndex = 0; rowIndex < rowLeafNodes.length; rowIndex++) {
     for (let colIndex = 0; colIndex < colLeafNodes.length; colIndex++) {
@@ -2350,7 +2458,7 @@ export async function exportRowQuotaGridPivot(instance: PivotSheet, chart: Chart
       const { fieldValue } = dataCellMeta
       const cell = worksheet.getCell(rowIndex + maxColHeight + 1, rowLength + colIndex + 2)
       cell.alignment = { vertical: 'middle', horizontal: 'center' }
-      if (fieldValue === "-" || fieldValue === null || fieldValue === undefined) {
+      if (fieldValue === '-' || fieldValue === null || fieldValue === undefined) {
         cell.value = '-'
         continue
       }
@@ -2478,12 +2586,7 @@ export async function exportTreePivot(instance: PivotSheet, chart: ChartObj) {
       )
     }
   })
-  const formatterMap = chart.yAxis.reduce((p, n) => {
-    if (n.dataeaseName) {
-      p[n.dataeaseName] = n.formatterCfg
-    }
-    return p
-  }, {})
+  const formatterMap = getPivotExportFormatters(instance, chart)
   //  单元格数据
   for (let rowIndex = 0; rowIndex < rowLeafNodes.length; rowIndex++) {
     for (let colIndex = 0; colIndex < colLeafNodes.length; colIndex++) {
@@ -2491,7 +2594,7 @@ export async function exportTreePivot(instance: PivotSheet, chart: ChartObj) {
       const { fieldValue } = dataCellMeta
       const cell = worksheet.getCell(rowIndex + maxColHeight + 1, colIndex + 1 + 1)
       cell.alignment = { vertical: 'middle', horizontal: 'center' }
-      if (fieldValue === "-" || fieldValue === null || fieldValue === undefined) {
+      if (fieldValue === '-' || fieldValue === null || fieldValue === undefined) {
         cell.value = '-'
         continue
       }
@@ -2620,12 +2723,7 @@ export async function exportRowQuotaTreePivot(instance: PivotSheet, chart: Chart
       worksheet.mergeCells(writeRowIndex, writeColIndex, writeRowIndex, writeColIndex + width - 1)
     }
   })
-  const formatterMap = chart.yAxis.reduce((p, n) => {
-    if (n.dataeaseName) {
-      p[n.dataeaseName] = n.formatterCfg
-    }
-    return p
-  }, {})
+  const formatterMap = getPivotExportFormatters(instance, chart)
   //  单元格数据
   for (let rowIndex = 0; rowIndex < rowLeafNodes.length; rowIndex++) {
     for (let colIndex = 0; colIndex < colLeafNodes.length; colIndex++) {
@@ -2633,7 +2731,7 @@ export async function exportRowQuotaTreePivot(instance: PivotSheet, chart: Chart
       const { fieldValue } = dataCellMeta
       const cell = worksheet.getCell(rowIndex + maxColHeight + 1, colIndex + 2)
       cell.alignment = { vertical: 'middle', horizontal: 'center' }
-      if (fieldValue === "-" || fieldValue === null || fieldValue === undefined) {
+      if (fieldValue === '-' || fieldValue === null || fieldValue === undefined) {
         cell.value = '-'
         continue
       }
@@ -2806,8 +2904,22 @@ export function configMergeCells(chart: Chart, options: S2Options, dataConfig: S
         p[n.dataeaseName] = n
         return p
       }, {}) || {}
-    const quotaIndex = dataConfig.meta.findIndex(m => fieldsMap[m.field]?.groupType === 'q')
-    const data = chart.data?.tableRow
+    // 判断是否为指标列：汇总表优先依据 yAxis/xAxis 划分，明细表依据 groupType === 'q' 划分
+    const isQuotaColumn = (fieldId: string) => {
+      if (chart.type === 'table-normal') {
+        const inYAxis = chart.yAxis?.some(y => y.dataeaseName === fieldId)
+        if (inYAxis) {
+          return true
+        }
+        const inXAxis = chart.xAxis?.some(x => x.dataeaseName === fieldId)
+        if (inXAxis) {
+          return false
+        }
+      }
+      return fieldsMap[fieldId]?.groupType === 'q'
+    }
+    const quotaIndex = dataConfig.meta.findIndex(m => isQuotaColumn(m.field))
+    const data = (dataConfig.data?.length ? dataConfig.data : chart.data?.tableRow) || []
     if (quotaIndex === 0 || !data?.length) {
       return
     }
@@ -2906,6 +3018,15 @@ export function getRowIndex(mergedCellsInfo: MergedCellInfo[][], meta: ViewMeta)
 }
 
 class CustomMergedCell extends MergedCell {
+  mappingValue(condition) {
+    const value = this.meta.fieldValue
+    const rowDataInfo = this.spreadsheet.isTableMode()
+      ? this.spreadsheet.dataSet.getCellData({ query: { rowIndex: this.meta.rowIndex } })
+      : this.meta.data
+    // V2 S2 默认不传递当前单元格，合并格在此补齐以便遍历所覆盖的明细行
+    return condition?.mapping(value, rowDataInfo, this)
+  }
+
   protected drawBackgroundShape() {
     const allPoints = getPolygonPoints(this.cells)
     // 处理条件样式，这里没有用透明度
@@ -2919,7 +3040,6 @@ class CustomMergedCell extends MergedCell {
       lineHeight: cellTheme.horizontalBorderWidth
     })
   }
-
 
   protected getTextStyle() {
     const textStyle = super.getTextStyle()
@@ -2991,7 +3111,7 @@ export class CustomDataCell extends TableDataCell {
    * @protected
    */
   protected drawTextShape() {
-    if(this.meta.isMergedCell) {
+    if (this.meta.isMergedCell) {
       return
     }
     if (this.meta.autoWrap) {
@@ -3003,7 +3123,6 @@ export class CustomDataCell extends TableDataCell {
 }
 
 export class CustomTableColCell extends TableColCell {
-
   protected drawBorders() {
     super.drawBorders()
     const { options, isTableMode } = this.spreadsheet
@@ -3376,12 +3495,38 @@ export class SummaryCell extends CustomDataCell {
     if (textStyle.textAlign === 'custom') {
       textStyle.textAlign = 'left'
     }
-    return textStyle
+    // 汇总行支持条件样式文字颜色
+    const defaultFill = (this as any).getDefaultTextFill
+      ? (this as any).getDefaultTextFill(textStyle)
+      : textStyle.fill
+    const fill = this.getTextConditionFill({
+      ...textStyle,
+      fill: defaultFill
+    })
+    return {
+      ...textStyle,
+      fill
+    }
   }
 
   getBackgroundColor() {
-    const { backgroundColor, backgroundColorOpacity } = this.theme.colCell.cell
-    return { backgroundColor, backgroundColorOpacity }
+    let { backgroundColor, backgroundColorOpacity } = this.theme.colCell.cell
+    let intelligentReverseTextColor = false
+    // 汇总行支持条件样式背景颜色
+    const bgCondition = this.findFieldCondition(this.conditions?.background)
+    if (bgCondition && bgCondition.mapping) {
+      const attrs = this.mappingValue(bgCondition)
+      if (attrs) {
+        backgroundColor = attrs.fill
+        intelligentReverseTextColor = attrs.intelligentReverseTextColor
+        backgroundColorOpacity = 1
+      }
+    }
+    return {
+      backgroundColor,
+      backgroundColorOpacity,
+      intelligentReverseTextColor
+    }
   }
 }
 
@@ -3415,7 +3560,9 @@ export const configEmptyDataStyle = (newChart, basicStyle, newData, container) =
         'style',
         `position: absolute;
         color: ${basicStyle.tableEmptyFontColor ?? 'inherit'};
-        font-size: ${basicStyle.tableEmptyFontSize ? basicStyle.tableEmptyFontSize + 'px' : 'inherit'};
+        font-size: ${
+          basicStyle.tableEmptyFontSize ? basicStyle.tableEmptyFontSize + 'px' : 'inherit'
+        };
         left: ${left}px;
         top: 50%;`
       )

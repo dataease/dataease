@@ -39,5 +39,4 @@ public class Sqlserver extends DatasourceConfiguration {
     protected Pattern getDatabasePattern() {
         return DB_NAME_PATTERN;
     }
-
 }

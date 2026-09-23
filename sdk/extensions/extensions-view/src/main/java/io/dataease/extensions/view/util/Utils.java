@@ -20,5 +20,4 @@ public class Utils {
     public static boolean isCrossDs(Map<Long, DatasourceSchemaDTO> dsMap) {
         return dsMap.size() != 1;
     }
-
 }

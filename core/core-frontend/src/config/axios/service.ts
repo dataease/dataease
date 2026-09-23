@@ -15,6 +15,9 @@ import { useLinkStoreWithOut } from '@/store/modules/link'
 import { config } from './config'
 import { configHandler } from './refresh'
 import { isMobile, getLocale } from '@/utils/utils'
+import { useI18n, isI18nReady } from '@/hooks/web/useI18n'
+// 注意：不得在模块顶层 const { t } = useI18n() —— 本模块求值早于 setupI18n，
+// 顶层捕获会永久得到降级透传 t（永远返回 key）。必须在函数体内实时调用 useI18n()。
 import { useRequestStoreWithOut } from '@/store/modules/request'
 import { clearCache } from '@/utils/cacheUtil'
 import { securityConfig } from './hmac'
@@ -61,12 +64,15 @@ const getTimeOut = () => {
           if (response.code === 0) {
             time = response.data
           } else {
+            // 模块求值期早于 setupI18n，i18n 未就绪，此处暂不国际化（保留中文）
             ElMessage.error('系统异常，请联系管理员')
           }
         } catch (e) {
+          // 模块求值期早于 setupI18n，i18n 未就绪，此处暂不国际化（保留中文）
           ElMessage.error('系统异常，请联系管理员')
         }
       } else {
+        // 模块求值期早于 setupI18n，i18n 未就绪，此处暂不国际化（保留中文）
         ElMessage.error('网络异常，请联系网管')
       }
     }
@@ -167,10 +173,6 @@ service.interceptors.response.use(
     response: AxiosResponse<any> & { config: InternalAxiosRequestConfig & { loading?: boolean } }
   ) => {
     executeVersionHandler(response)
-    /* if (response.headers['x-de-refresh-token']) {
-      wsCache.set('user.token', response.headers['x-de-refresh-token'])
-      wsCache.set('user.exp', new Date().getTime() + 90000)
-    } */
     if (response.headers['x-de-link-token']) {
       linkStore.setLinkToken(response.headers['x-de-link-token'])
     }
@@ -199,7 +201,7 @@ service.interceptors.response.use(
         let errMsg = response.data.msg
         if (errMsg?.includes('rsa info has been changed')) {
           wsCache.delete('DataEaseKey')
-          errMsg = '密钥信息已变更，请刷新页面重试'
+          errMsg = useI18n().t('common.secret_changed_tips')
         }
         ElMessage({
           type: 'error',
@@ -228,7 +230,7 @@ service.interceptors.response.use(
       requestStore.resetLoadingMap()
       ElMessage({
         type: 'error',
-        message: '请求超时，请稍后再试',
+        message: useI18n().t('common.timeout_tips'),
         showClose: true
       })
     }
@@ -240,7 +242,7 @@ service.interceptors.response.use(
     if (error?.response.status === 413) {
       ElMessage({
         type: 'error',
-        message: '文件大小超出限制, 请修改相关配置文件',
+        message: useI18n().t('common.file_size_exceed_tips'),
         showClose: true
       })
       return
@@ -278,11 +280,17 @@ service.interceptors.response.use(
       router.push(`/login?redirect=${queryRedirectPath}`)
     }
     if (header.has('DE-FORBIDDEN-FLAG')) {
-      showMsg('当前权限不允许访问，请联系管理员', '-changed-')
+      if (header.get('DE-FORBIDDEN-FLAG') === 'Resource not exist') {
+        // 资源不存在（已删除）：直接错误提示，不弹权限框
+        ElMessage({
+          type: 'error',
+          message: useI18n().t('common.resource_not_exist_tips'),
+          showClose: true
+        })
+      } else {
+        showMsg(useI18n().t('common.permission_denied_tips'), '-changed-')
+      }
     }
-    /* if ([400, 401].includes(error?.response.status)) {
-      return Promise.reject(error)
-    } */
     if (error?.response.status === 400) {
       return Promise.reject(error)
     }
@@ -298,8 +306,8 @@ const showMsg = (msg: string, id: string) => {
   window['cross-permission-' + id] = ElMessageBox.confirm(msg, {
     confirmButtonType: 'primary',
     type: 'warning',
-    confirmButtonText: '刷新',
-    cancelButtonText: '取消',
+    confirmButtonText: useI18n().t('common.refresh'),
+    cancelButtonText: useI18n().t('common.cancel'),
     autofocus: false,
     showClose: false
   })
@@ -312,6 +320,52 @@ const showMsg = (msg: string, id: string) => {
     })
 }
 
+// 等待 i18n 就绪后再执行的任务队列：按 key 去重（仅保留最新任务），配合轮询在就绪时补发。
+const deferredTasks = new Map<string, () => void>()
+let deferPollTimer: ReturnType<typeof setInterval> | null = null
+
+const flushDeferredTasks = () => {
+  if (deferPollTimer !== null) {
+    clearInterval(deferPollTimer)
+    deferPollTimer = null
+  }
+  const tasks = [...deferredTasks.values()]
+  deferredTasks.clear()
+  tasks.forEach(task => {
+    try {
+      task()
+    } catch (e) {
+      console.error(e)
+    }
+  })
+}
+
+const queueUntilI18nReady = (key: string, task: () => void) => {
+  // 已就绪直接执行，避免不必要的排队
+  if (isI18nReady()) {
+    task()
+    return
+  }
+  deferredTasks.set(key, task)
+  if (deferPollTimer !== null) return
+  let ticks = 0
+  // 每 100ms 轮询一次；正常在 setupI18n 完成后毫秒级即触发。
+  // 设置上限（约 30s）避免 i18n 始终未就绪时定时器常驻导致内存泄漏。
+  deferPollTimer = setInterval(() => {
+    if (isI18nReady()) {
+      flushDeferredTasks()
+      return
+    }
+    if (++ticks > 300) {
+      if (deferPollTimer !== null) {
+        clearInterval(deferPollTimer)
+        deferPollTimer = null
+      }
+      deferredTasks.clear()
+    }
+  }, 100)
+}
+
 const executeVersionHandler = (response: AxiosResponse) => {
   const key = 'x-de-execute-version'
   const executeVersion = response.headers[key]
@@ -321,8 +375,13 @@ const executeVersionHandler = (response: AxiosResponse) => {
     return
   }
   if (executeVersion && executeVersion !== cacheVal) {
-    wsCache.set(key, executeVersion)
-    showMsg('系统有升级，请点击刷新页面', '-sys-upgrade-')
+    // i18n 初始化期间（如 setupI18n 触发的 /sysParameter/i18nOptions 请求）也会走到这里，
+    // 此时全局 i18n 尚未创建，useI18n().t() 会透传返回 key，导致弹窗展示原始文案。
+    // 未就绪时入队并轮询，待 i18n 就绪后补发正确文案（补发前不写缓存，保证仍能识别版本差异）。
+    queueUntilI18nReady('system-upgrade', () => {
+      wsCache.set(key, executeVersion)
+      showMsg(useI18n().t('common.system_upgrade_tips'), '-sys-upgrade-')
+    })
   }
 }
 
@@ -344,4 +403,12 @@ const cancelRequestBatch = cancelKey => {
     }
   }
 }
-export { service, cancelMap, cancelRequestBatch }
+
+const cancelAllRequest = () => {
+  Object.keys(cancelMap).forEach(key => {
+    cancelMap[key]?.(() => {
+      console.warn('Operation canceled by the user,url:' + key)
+    })
+  })
+}
+export { service, cancelMap, cancelRequestBatch, cancelAllRequest }

@@ -17,5 +17,4 @@ public class MenuMeta implements Serializable {
     private String title;
 
     private String icon;
-
 }

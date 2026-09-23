@@ -20,7 +20,6 @@ public class CodingUtil {
 
     private static final char[] HEX_DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
-
     public static String[] chars = new String[] { "a", "b", "c", "d", "e", "f",
             "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s",
             "t", "u", "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5",
@@ -161,7 +160,6 @@ public class CodingUtil {
         }
     }
 
-
     public static String secretKey() {
         try {
             KeyGenerator keyGen = KeyGenerator.getInstance("AES");
@@ -182,8 +180,6 @@ public class CodingUtil {
         }
         return true;
     }
-
-
 
     public static String shortUuid() {
         StringBuffer shortBuffer = new StringBuffer();

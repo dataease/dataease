@@ -5,9 +5,9 @@
     class="link-bar-main bar-light"
     :class="[{ ['link-bar-main-active']: state.barActive }, functionClass]"
     :style="{
-      '--fullWidth': state.fullWidth + 'px',
-      '--fullContent': 28 - state.fullWidth + 'px',
-      '--firstHoveMove': 32 - state.fullWidth + 'px'
+      '--fullWidth': fullWidth + 'px',
+      '--fullContent': 28 - fullWidth + 'px',
+      '--firstHoveMove': 32 - fullWidth + 'px'
     }"
   >
     <div class="bar-first">
@@ -36,7 +36,7 @@
           </el-icon>
         </el-tooltip>
       </div>
-      <div class="link-icon-active">
+      <div v-if="canExport" class="link-icon-active">
         <el-tooltip :disabled="isMobile()" :content="t('visualization.export_pdf')">
           <el-icon style="width: 16px; height: 16px" @click="exportPDF">
             <Icon name="icon_download_outlined">
@@ -67,6 +67,7 @@
 </template>
 
 <script lang="ts" setup>
+import { shareAllows } from '@/utils/utils'
 import { computed, reactive, toRefs } from 'vue'
 import router from '@/router'
 import { ElIcon } from 'element-plus-secondary'
@@ -96,8 +97,7 @@ const { t } = useI18n()
 
 const state = reactive({
   fullscreenElement: null,
-  barActive: false,
-  fullWidth: router.currentRoute.value.query?.fromLink === 'true' ? 126 : 94
+  barActive: false
 })
 
 const functionClass = computed(() => {
@@ -111,6 +111,8 @@ const functionClass = computed(() => {
 const fromLink = computed(() => {
   return router.currentRoute.value.query?.fromLink === 'true'
 })
+const canExport = computed(() => shareAllows(4))
+const fullWidth = computed(() => 62 + (fromLink.value ? 32 : 0) + (canExport.value ? 32 : 0))
 
 const firstBarClick = () => {
   state.barActive = !state.barActive
@@ -133,6 +135,7 @@ const back2Last = () => {
   window.location.reload()
 }
 const exportPDF = () => {
+  if (!shareAllows(4)) return
   useEmitt().emitter.emit('canvasDownload', 'pdf')
 }
 </script>

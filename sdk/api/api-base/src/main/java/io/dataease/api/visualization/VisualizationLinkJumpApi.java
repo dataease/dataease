@@ -23,7 +23,6 @@ import java.util.List;
 @ApiSupport(order = 995)
 public interface VisualizationLinkJumpApi {
 
-
     @GetMapping("/getTableFieldWithViewId/{viewId}")
     @Operation(summary = "查询可跳转字段信息")
     List<DatasetTableFieldDTO> getTableFieldWithViewId(@PathVariable Long viewId);
@@ -55,5 +54,4 @@ public interface VisualizationLinkJumpApi {
     @PostMapping("/removeJumpSet")
     @Operation(summary = "删除跳转信息")
     void removeJumpSet(@RequestBody VisualizationLinkJumpDTO jumpDTO);
-
 }

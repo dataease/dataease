@@ -626,6 +626,29 @@ onMounted(() => {
       </el-form-item>
     </div>
 
+    <el-form-item
+      v-if="showProperty('showBoxPlotDetails')"
+      class="form-item form-item-checkbox"
+      :class="'form-item-' + themes"
+    >
+      <el-checkbox
+        size="small"
+        :effect="themes"
+        v-model="state.tooltipForm.showBoxPlotDetails"
+        @change="changeTooltipAttr('showBoxPlotDetails')"
+      >
+        <!-- 说明图标跟随复选框标签并复用其他配置项的 4px 间距 -->
+        <span class="data-area-label">
+          <span style="margin-right: 4px">{{ t('chart.box_plot_show_details') }}</span>
+          <el-tooltip :content="t('chart.box_plot_details_tip')" :effect="themes" placement="top">
+            <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
+              <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
+            </el-icon>
+          </el-tooltip>
+        </span>
+      </el-checkbox>
+    </el-form-item>
+
     <template
       v-if="(showProperty('tooltipFormatter') || showProperty('showQuota')) && !isBarRangeTime"
     >

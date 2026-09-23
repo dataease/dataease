@@ -138,7 +138,6 @@ public class MybatisInterceptor implements Interceptor {
         return newObject;
     }
 
-
     private Object undo(Object obj) throws Throwable {
         Map<String, Map<String, MybatisInterceptorConfig>> localDecryptConfigMap = getConfig(obj);
         Object result;
@@ -202,5 +201,4 @@ public class MybatisInterceptor implements Interceptor {
     private boolean isEmpty(Map<?, ?> map) {
         return map == null || map.isEmpty();
     }
-
 }

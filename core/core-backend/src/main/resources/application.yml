@@ -56,6 +56,10 @@ dataease:
   login_timeout: 2880
   xpack-front-distributed: true
   origin-list: http://localhost:8080
+  # HTTP 安全响应头：frame-options 设为空则不输出 X-Frame-Options；frame-ancestors 用于 CSP（需要第三方 iframe 嵌入时改为 *）
+  http:
+    frame-options: SAMEORIGIN
+    frame-ancestors: "'self'"
   apisix-api:
     domain: http://127.0.0.1:9180
     key: edd1c9f034335f136f87ad84b625c8f1

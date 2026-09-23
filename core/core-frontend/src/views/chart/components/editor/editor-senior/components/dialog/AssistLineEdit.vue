@@ -231,6 +231,7 @@ onMounted(() => {
           <el-select
             v-model="item.fieldId"
             class="select-item"
+            :fit-input-width="false"
             :placeholder="t('chart.field')"
             @change="changeAssistLineField(item)"
           >
@@ -239,21 +240,20 @@ onMounted(() => {
                 ? quotaExtFields
                 : quotaFields"
               :key="quota.id"
+              class="field-option"
               :label="quota.name"
               :value="quota.id"
             >
-              <span style="float: left">
-                <el-icon>
-                  <Icon :className="`field-icon-${fieldType[item.deType]}`"
-                    ><component
-                      class="svg-icon"
-                      :class="`field-icon-${fieldType[item.deType]}`"
-                      :is="iconFieldMap[fieldType[item.deType]]"
-                    ></component
-                  ></Icon>
-                </el-icon>
-              </span>
-              <span :style="{ float: 'left', color: '#8492a6', fontSize: '12px' }">
+              <el-icon style="flex-shrink: 0">
+                <Icon :className="`field-icon-${fieldType[quota.deType]}`"
+                  ><component
+                    class="svg-icon"
+                    :class="`field-icon-${fieldType[quota.deType]}`"
+                    :is="iconFieldMap[fieldType[quota.deType]]"
+                  ></component
+                ></Icon>
+              </el-icon>
+              <span class="field-name ellipsis" :title="quota.name">
                 {{ quota.name }}
               </span>
             </el-option>
@@ -290,7 +290,13 @@ onMounted(() => {
           </el-tooltip>
         </el-col>
         <el-col :span="useQuotaExt ? 2 : 4">
-          <el-select v-model="item.lineType" class="select-item" @change="changeAssistLine">
+          <!-- 下拉菜单按内容扩展，不限制为选择框宽度 -->
+          <el-select
+            v-model="item.lineType"
+            class="select-item"
+            :fit-input-width="false"
+            @change="changeAssistLine"
+          >
             <el-option
               v-for="opt in state.lineOptions"
               :key="opt.value"
@@ -375,7 +381,20 @@ span {
 }
 
 .ed-select-dropdown__item {
-  padding: 0 20px;
+  padding: 0 36px 0 12px;
   font-size: 14px;
+
+  &.field-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+.field-name {
+  flex: 1;
+  min-width: 0;
+  color: inherit;
+  font-size: inherit;
 }
 </style>

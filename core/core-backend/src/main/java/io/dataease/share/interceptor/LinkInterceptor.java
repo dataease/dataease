@@ -15,7 +15,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import java.util.Arrays;
 import java.util.List;
 
-
 @Component
 public class LinkInterceptor implements HandlerInterceptor {
 
@@ -26,6 +25,24 @@ public class LinkInterceptor implements HandlerInterceptor {
     private boolean isWhiteStart(String url) {
         List<String> whiteStartList = Arrays.stream(StringUtils.split(whiteStartListText, ",")).map(String::trim).toList();
         return whiteStartList.stream().anyMatch(item -> StringUtils.startsWith(url, item));
+    }
+
+    /**
+     * 放行自定义区域查询，写请求继续走原有权限校验
+     */
+    private boolean isCustomGeoReadonly(HttpServletRequest request, String requestURI) {
+        if (!StringUtils.equalsIgnoreCase(request.getMethod(), "GET")) {
+            return false;
+        }
+        if (StringUtils.equals(requestURI, "/customGeo/geoArea/list")) {
+            return true;
+        }
+        String detailPrefix = "/customGeo/geoArea/";
+        if (!StringUtils.startsWith(requestURI, detailPrefix)) {
+            return false;
+        }
+        String areaId = StringUtils.substringAfter(requestURI, detailPrefix);
+        return StringUtils.isNotBlank(areaId) && !StringUtils.contains(areaId, "/");
     }
 
     @Override
@@ -47,7 +64,8 @@ public class LinkInterceptor implements HandlerInterceptor {
                 if (StringUtils.startsWith(requestURI, AuthConstant.DE_API_PREFIX)) {
                     requestURI = requestURI.replaceFirst(AuthConstant.DE_API_PREFIX, "");
                 }
-                boolean valid = whiteList.contains(requestURI) || isWhiteStart(requestURI) || WhitelistUtils.match(requestURI);
+                boolean valid = whiteList.contains(requestURI) || isWhiteStart(requestURI)
+                        || isCustomGeoReadonly(request, requestURI) || WhitelistUtils.match(requestURI);
                 if (!valid) {
                     DEException.throwException("分享链接Token不支持访问当前url[" + requestURI + "]");
                 }
@@ -56,6 +74,4 @@ public class LinkInterceptor implements HandlerInterceptor {
         }
         return true;
     }
-
-
 }

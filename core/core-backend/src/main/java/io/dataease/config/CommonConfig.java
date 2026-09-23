@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-
 @Configuration
 @AutoConfigureBefore(QuartzAutoConfiguration.class)
 public class CommonConfig {

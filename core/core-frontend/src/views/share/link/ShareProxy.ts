@@ -1,7 +1,16 @@
 import request from '@/config/axios'
+import { useLinkStoreWithOut } from '@/store/modules/link'
 import { useCache } from '@/hooks/web/useCache'
 import { isInIframe } from '@/utils/utils'
 const { wsCache } = useCache()
+
+const getParamIndex = (curLocation: string) => {
+  let pmIndex = curLocation.lastIndexOf('?')
+  while (pmIndex > 0 && curLocation[pmIndex - 1] === '/') {
+    pmIndex = curLocation.lastIndexOf('?', pmIndex - 1)
+  }
+  return pmIndex
+}
 
 export interface TicketValidVO {
   ticketValid: boolean
@@ -29,7 +38,7 @@ class ShareProxy {
   }
   getTicket() {
     const curLocation = window.location.href
-    const pmIndex = curLocation.lastIndexOf('?')
+    const pmIndex = getParamIndex(curLocation)
     if (pmIndex == -1) {
       return null
     }
@@ -46,7 +55,7 @@ class ShareProxy {
   }
   setUuid() {
     const curLocation = window.location.href
-    const pmIndex = curLocation.lastIndexOf('?')
+    const pmIndex = getParamIndex(curLocation)
     const uuidObj = curLocation.substring(
       curLocation.lastIndexOf('de-link/') + 8,
       pmIndex > 0 ? pmIndex : curLocation.length
@@ -78,6 +87,17 @@ class ShareProxy {
     }
     const res = await request.post({ url, data: param })
     const proxyInfo: ProxyInfo = res.data as ProxyInfo
+    if (
+      proxyInfo?.pwdValid &&
+      !proxyInfo.exp &&
+      proxyInfo.ticketValidVO?.ticketValid &&
+      !proxyInfo.ticketValidVO?.ticketExp
+    ) {
+      const permissions = await request.get({
+        url: `/share/visitorPermissions/${proxyInfo.resourceId}`
+      })
+      useLinkStoreWithOut().setVisitorPermissions(permissions.data)
+    }
     if (proxyInfo) {
       proxyInfo.uuid = uuid
       if (this.pwd) {

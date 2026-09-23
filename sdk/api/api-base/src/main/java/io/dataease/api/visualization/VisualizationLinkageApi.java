@@ -22,7 +22,6 @@ import java.util.Map;
 @ApiSupport(order = 996)
 public interface VisualizationLinkageApi {
 
-
     @PostMapping("/getViewLinkageGather")
     @Operation(summary = "查询联动信息")
     Map getViewLinkageGather(@RequestBody VisualizationLinkageRequest request);
@@ -43,10 +42,7 @@ public interface VisualizationLinkageApi {
     @Operation(summary = "修改联动信息可用状态")
     Map updateLinkageActive(@RequestBody VisualizationLinkageRequest request);
 
-
     @PostMapping("/removeLinkage")
     @Operation(summary = "删除图表联动信息")
     void removeLinkage(@RequestBody VisualizationLinkageRequest request);
-
-
 }

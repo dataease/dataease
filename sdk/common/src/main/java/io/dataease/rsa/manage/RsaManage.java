@@ -19,7 +19,6 @@ public class RsaManage {
     @Resource
     private CoreRsaMapper coreRsaMapper;
 
-
     public void check() {
         RsaManage proxy = proxy();
         if (ObjectUtils.isEmpty(proxy.query())) {

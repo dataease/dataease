@@ -1,6 +1,5 @@
 package io.dataease.api.permissions.dataset.dto;
 
-
 import lombok.Data;
 
 @Data

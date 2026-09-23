@@ -20,5 +20,4 @@ public interface XpackOauth2Api {
 
     @PostMapping("/token")
     XpackOauthTokenVO oauth2Token(@RequestBody XpackOauth2TokenRequest request);
-
 }

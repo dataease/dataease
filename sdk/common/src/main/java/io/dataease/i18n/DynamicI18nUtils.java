@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class DynamicI18nUtils {
 
-
     private static ReloadableResourceBundleMessageSource messageSource;
 
     @Resource

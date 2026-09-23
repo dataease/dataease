@@ -7,7 +7,6 @@ import lombok.EqualsAndHashCode;
 
 import java.io.Serial;
 
-
 @Schema(description = "用户过滤器")
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -19,5 +18,4 @@ public class UserRequest extends KeywordRequest  {
     private Long rid;
     @Schema(description = "排序规则")
     private String order;
-
 }

@@ -39,7 +39,6 @@ public class ProviderFactory {
         return SpringContextUtil.getApplicationContext().getBean("calciteProvider", Provider.class);
     }
 
-
     private static final Map<String, DataEaseDatasourcePlugin> templateMap = new ConcurrentHashMap<>();
 
     public static Provider getInstance(String type) {

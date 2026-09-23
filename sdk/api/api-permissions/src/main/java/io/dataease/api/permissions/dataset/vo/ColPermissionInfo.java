@@ -14,5 +14,4 @@ public class ColPermissionInfo implements Serializable {
     private String opt;
 
     private Object desensitizationRule;
-
 }

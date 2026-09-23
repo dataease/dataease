@@ -1,3 +1,4 @@
+import { useLinkStoreWithOut } from '@/store/modules/link'
 import { BusiTreeNode } from '@/models/tree/TreeNode'
 import { useCache } from '@/hooks/web/useCache'
 import { loadScript } from '@/utils/RemoteJs'
@@ -59,6 +60,42 @@ export function checkAddHttp(url) {
 
 export const sanitizeHtml = (html: string): string => {
   return DOMPurify.sanitize(html)
+}
+
+const TOOLTIP_ALLOWED_TAGS = [
+  'div',
+  'span',
+  'br',
+  'p',
+  'b',
+  'strong',
+  'i',
+  'em',
+  'u',
+  's',
+  'small',
+  'sub',
+  'sup',
+  'ul',
+  'ol',
+  'li',
+  'table',
+  'thead',
+  'tbody',
+  'tr',
+  'th',
+  'td',
+  'code',
+  'pre'
+]
+
+export const sanitizeTooltipHtml = (html: string): string => {
+  // 提示框仅保留格式标签，避免自定义内容携带事件、外链或动态样式
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: TOOLTIP_ALLOWED_TAGS,
+    ALLOWED_ATTR: [],
+    ALLOW_DATA_ATTR: false
+  })
 }
 
 export const setColorName = (obj, keyword: string, key?: string, colorKey?: string) => {
@@ -228,7 +265,21 @@ export const isNull = arg => {
   return typeof arg === 'undefined' || arg === null || arg === 'null'
 }
 
+export const shareAllows = (permission: number) => {
+  const link = useLinkStoreWithOut()
+  return !link.getLinkToken || (link.visitorPermissions & permission) === permission
+}
+
 export const exportPermission = (weight, ext) => {
+  const result = originalExportPermission(weight, ext)
+  return [
+    shareAllows(4) ? result[0] : 0,
+    shareAllows(2) ? result[1] : 0,
+    shareAllows(2) ? result[2] : 0
+  ]
+}
+
+const originalExportPermission = (weight, ext) => {
   const result = [0, 0, 0]
   if (!weight || weight === 1) {
     return result

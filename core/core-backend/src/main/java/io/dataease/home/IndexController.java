@@ -20,6 +20,4 @@ public class IndexController {
     public String panel() {
         return PANEL_PAGE;
     }
-
-
 }

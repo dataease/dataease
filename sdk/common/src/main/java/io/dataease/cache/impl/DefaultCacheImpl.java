@@ -20,12 +20,10 @@ import java.util.concurrent.TimeUnit;
 @Component("dECacheService")
 public class DefaultCacheImpl implements DECacheService {
 
-
     private CacheManager cacheManager;
 
     @Resource
     private org.springframework.cache.CacheManager jcacheManager;
-
 
     @Override
     public void put(String cacheName, String key, Object value, Long expTime, TimeUnit unit) {
@@ -102,5 +100,4 @@ public class DefaultCacheImpl implements DECacheService {
     public void init() {
         cacheManager = ((JCacheCacheManager) jcacheManager).getCacheManager();
     }
-
 }

@@ -7,7 +7,6 @@ import lombok.Data;
 
 import java.util.List;
 
-
 /**
  * @author : WangJiaHao
  * @date : 2023/7/19
@@ -42,7 +41,5 @@ public class VisualizationViewTableVO {
      */
     private String render;
 
-
     private List<DatasetTableFieldDTO> tableFields;
-
 }

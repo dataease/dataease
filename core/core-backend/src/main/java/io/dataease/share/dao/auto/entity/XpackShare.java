@@ -71,6 +71,17 @@ public class XpackShare implements Serializable {
      */
     private Boolean ticketRequire;
 
+    // Null preserves the permissions of existing links.
+    private Integer visitorPermissions;
+
+    public Integer getVisitorPermissions() {
+        return visitorPermissions;
+    }
+
+    public void setVisitorPermissions(Integer visitorPermissions) {
+        this.visitorPermissions = visitorPermissions;
+    }
+
     public Long getId() {
         return id;
     }
