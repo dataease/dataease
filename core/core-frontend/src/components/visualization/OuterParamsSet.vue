@@ -758,7 +758,7 @@ const save = () => {
       showClose: true
     })
     snapshotStore.recordSnapshotCache('renderChart')
-    cancel()
+    cancelDialog()
   })
 }
 
