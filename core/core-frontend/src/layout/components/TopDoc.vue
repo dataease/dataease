@@ -17,7 +17,7 @@ const { t } = useI18n()
 const cardInfoList = [
   {
     name: t('api_pagination.help_documentation'),
-    url: help.value || 'https://dataease.io/docs/v2/',
+    url: help.value || 'https://docs.fit2cloud.com/dataease/v2/',
     icon: topHelpDoc
   },
   {
