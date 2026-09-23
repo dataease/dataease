@@ -7,11 +7,11 @@ import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.s
 import { ref, reactive, onMounted, onBeforeUnmount, watch, unref, computed, nextTick } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import CodeMirror from '@/views/visualized/data/dataset/form/CodeMirror.vue'
-import { getDatasetDetails, getFunction, getPreviewData } from '@/api/dataset'
+import { getFunction } from '@/api/dataset'
+import { validateCalcField } from '@/api/chart'
 import { ElMessage } from 'element-plus-secondary'
 import { fieldType } from '@/utils/attr'
 import { cloneDeep } from 'lodash-es'
-import { guid } from '@/views/visualized/data/dataset/form/util'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 
 export interface CalcFieldType {
@@ -73,8 +73,8 @@ const fieldForm = reactive<CalcFieldType>({ ...(defaultForm as CalcFieldType) })
 const validating = ref(false)
 let validationVersion = 0
 
-const verify = async (datasetId: string) => {
-  if (validating.value || !datasetId) return
+const verify = async (datasetId: string, chartId: string) => {
+  if (validating.value || !datasetId || !chartId) return
   setFieldForm()
   if (!fieldForm.originName.trim()) {
     ElMessage.error(t('data_set.cannot_be_empty_de_'))
@@ -82,32 +82,15 @@ const verify = async (datasetId: string) => {
   }
   const expression = mirror.value.state.doc.toString()
   const version = ++validationVersion
-  const field = cloneDeep(fieldForm)
-  // 使用临时字段复用数据集预览校验，不覆盖原指标或保存公式。
-  field.id = guid()
-  field.name = '自定义总计'
-  field.dataeaseName = `f_${field.id}`
-  field.extField = 2
-  field.groupType = 'q'
-  field.deType = 3
-  field.deExtractType = 3
-  field.type = 'DECIMAL'
   validating.value = true
   try {
-    const dataset = await getDatasetDetails(datasetId)
-    if (version !== validationVersion) return
-    const allFields = (dataset.allFields || []) as CalcFieldType[]
-    // 图表计算字段也可能被公式引用，补齐数据集之外的字段定义。
-    const fieldIds = new Set(allFields.map(item => item.id))
-    quotaDataList.forEach(item => {
-      if (item.groupType && !fieldIds.has(item.id)) {
-        allFields.push(cloneDeep(item))
-        fieldIds.add(item.id)
-      }
+    // 单独执行当前公式的查询，引用字段由后端按数据集和图表加载。
+    await validateCalcField({
+      datasetId,
+      chartId,
+      originName: fieldForm.originName,
+      params: fieldForm.params
     })
-    allFields.push(field)
-    // 与数据集校验保持一致，不额外验证透视表的分组和交叉汇总场景。
-    await getPreviewData({ ...dataset, allFields })
     if (version === validationVersion && expression === mirror.value.state.doc.toString()) {
       ElMessage.success(t('data_set.validation_succeeded'))
     }
