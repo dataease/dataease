@@ -25,6 +25,7 @@ public class DatasourceConfiguration extends Configuration {
         oracle("oracle", "ORACLE", "OLTP", "\"", "\"", 1),
         pg("pg", "PostgreSQL", "OLTP", "\"", "\"", 9),
         kingbase("kingbase", "Kingbase", "OLTP", "\"", "\"", 31),
+        gaussdb("gaussdb", "GaussDB", "OLTP", "\"", "\"", 32),
         redshift("redshift", "AWS Redshift", "OLTP", "\"", "\"", 13),
         db2("db2", "Db2", "OLTP", "", "", 12),
         ck("ck", "Clickhouse", "OLAP", "`", "`", 11),

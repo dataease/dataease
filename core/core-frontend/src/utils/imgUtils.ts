@@ -65,7 +65,7 @@ export function download2AppTemplate(downloadType, canvasDom, name, attachParams
         Object.keys(canvasViewDataTemplate).forEach(viewId => {
           canvasViewDataTemplate[viewId].data = canvasViewDataInfo.value[viewId]
         })
-        const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.1是图片质量
+        const snapshot = canvas.toDataURL('image/jpeg', 1) // 0.1是图片质量
         const templateName = attachParams?.appName ? attachParams.appName : name
         if (snapshot !== '') {
           prePareTemplateBaseData(

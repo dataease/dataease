@@ -1,0 +1,14 @@
+<svg width="80" height="56" viewBox="0 0 80 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M7 2.00391V51.0016L76 51.0016L76 54.0016H4V2.00391H7Z" class="svg-primary-color"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M7 2.00391V51.0016L76 51.0016L76 54.0016H4V2.00391H7Z" fill="black" fill-opacity="0.6"/>
+<g class="svg-primary-color" stroke="currentColor" stroke-width="2" opacity="0.65">
+<path d="M24 7V17M19 7H29M19 39H29M24 31V39" fill="none"/>
+<rect x="15" y="17" width="18" height="14" rx="1" fill="currentColor" fill-opacity="0.75"/>
+<path d="M15 24H33" fill="none"/>
+<circle cx="24" cy="46" r="2" fill="currentColor"/>
+<path d="M56 11V20M51 11H61M51 42H61M56 34V42" fill="none"/>
+<rect x="47" y="20" width="18" height="14" rx="1" fill="currentColor"/>
+<path d="M47 27H65" fill="none"/>
+<circle cx="56" cy="6" r="2" fill="currentColor"/>
+</g>
+</svg>

@@ -1,163 +1,159 @@
 <script lang="ts" setup>
-import { onMounted, reactive, ref } from "vue";
-import { clearLog, commitLogPager } from "./task_api";
-import GridTable from "@/components/grid-table/src/GridTable.vue";
-import { useI18n } from "@/hooks/web/useI18n";
-import dayjs from "dayjs";
-import { useCache } from "@/hooks/web/useCache";
-import RowDataForm from "./form/RowDataForm.vue";
-import { find } from "lodash-es";
-import ClearJobLogForm from "../../../system/sync/task/log/ClearJobLogForm.vue";
-import { ElMessage, ElMessageBox } from "element-plus-secondary";
+import { onMounted, reactive, ref } from 'vue'
+import { clearLog, commitLogPager } from './task_api'
+import GridTable from '@/components/grid-table/src/GridTable.vue'
+import { useI18n } from '@/hooks/web/useI18n'
+import dayjs from 'dayjs'
+import { useCache } from '@/hooks/web/useCache'
+import RowDataForm from './form/RowDataForm.vue'
+import { find } from 'lodash-es'
+import ClearJobLogForm from '../../../system/sync/task/log/ClearJobLogForm.vue'
+import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 
 const props = withDefaults(
   defineProps<{
-    formId?: string;
-    hasManagePermission?: boolean;
+    formId?: string
+    hasManagePermission?: boolean
   }>(),
   {
-    hasManagePermission: false,
-  },
-);
+    hasManagePermission: false
+  }
+)
 
-const { t } = useI18n();
-const { wsCache } = useCache();
-const taskId = ref<string>("");
-const keyword = ref(null);
-const multipleTableRef = ref();
-const tableLoading = ref<boolean>(false);
-const imgType = ref();
-const emptyDesc = ref("");
+const { t } = useI18n()
+const { wsCache } = useCache()
+const taskId = ref<string>('')
+const keyword = ref(null)
+const multipleTableRef = ref()
+const tableLoading = ref<boolean>(false)
+const imgType = ref()
+const emptyDesc = ref('')
 const state = reactive({
   taskList: [],
   filterTexts: [],
   paginationConfig: {
     currentPage: 1,
     pageSize: 10,
-    total: 0,
+    total: 0
   },
   conditions: [],
   orders: [] as FieldSort[],
-  multipleSelection: [],
-});
-state.filterTexts = [];
+  multipleSelection: []
+})
+state.filterTexts = []
 
-const timestampFormatDate = (value) => {
+const timestampFormatDate = value => {
   if (!value) {
-    return "-";
+    return '-'
   }
-  return dayjs(new Date(value)).format("YYYY-MM-DD HH:mm:ss");
-};
+  return dayjs(new Date(value)).format('YYYY-MM-DD HH:mm:ss')
+}
 
-const activeCommand = ref(-1);
+const activeCommand = ref(-1)
 
 const search = () => {
   const param = {
-    formId: props.formId,
-  };
-  if (activeCommand.value > -1) {
-    param.operate = activeCommand.value;
+    formId: props.formId
   }
-  commitLogPager(
-    param,
-    state.paginationConfig.currentPage,
-    state.paginationConfig.pageSize,
-  ).then((res) => {
-    state.taskList = res.data.records;
-    if (state.paginationConfig.currentPage > 1 && state.taskList.length === 0) {
-      state.paginationConfig.currentPage--;
-      search();
+  if (activeCommand.value > -1) {
+    param.operate = activeCommand.value
+  }
+  commitLogPager(param, state.paginationConfig.currentPage, state.paginationConfig.pageSize).then(
+    res => {
+      state.taskList = res.data.records
+      if (state.paginationConfig.currentPage > 1 && state.taskList.length === 0) {
+        state.paginationConfig.currentPage--
+        search()
+      }
+      state.paginationConfig.total = res.data.total
     }
-    state.paginationConfig.total = res.data.total;
-  });
-};
+  )
+}
 
 const curTypeList = [
-  { key: -1, name: t("commons.all") },
-  { key: 1, name: t("data_fill.data.insert_data") },
-  { key: 2, name: t("data_fill.data.update_data") },
-  { key: 0, name: t("data_fill.data.delete_data") },
-  { key: 3, name: t("data_fill.data.batch_insert_data") },
-];
+  { key: -1, name: t('commons.all') },
+  { key: 1, name: t('data_fill.data.insert_data') },
+  { key: 2, name: t('data_fill.data.update_data') },
+  { key: 0, name: t('data_fill.data.delete_data') },
+  { key: 3, name: t('data_fill.data.batch_insert_data') }
+]
 
 function getType(type, count) {
   if (type === 3) {
     if (count) {
-      return t("data_fill.data.batch_insert_data_with_count", [count]);
+      return t('data_fill.data.batch_insert_data_with_count', [count])
     }
   }
-  const obj = find(curTypeList, (c) => c.key === type);
+  const obj = find(curTypeList, c => c.key === type)
   if (obj) {
-    return obj.name;
+    return obj.name
   }
-  return "-";
+  return '-'
 }
 
 onMounted(async () => {
-  search();
-});
+  search()
+})
 
-const rowDataFormRef = ref();
+const rowDataFormRef = ref()
 
 function showForm(data) {
-  rowDataFormRef.value?.init(data.formId, true, false, [
-    { rowDataId: data.dataId },
-  ]);
+  rowDataFormRef.value?.init(data.formId, true, false, [{ rowDataId: data.dataId }])
 }
 
 const pageChange = (index: any) => {
-  if (typeof index !== "number") {
-    return;
+  if (typeof index !== 'number') {
+    return
   }
-  state.paginationConfig.currentPage = index;
-  search();
-};
-const sizeChange = (size) => {
-  state.paginationConfig.pageSize = size;
-  state.paginationConfig.currentPage = 1;
-  search();
-};
+  state.paginationConfig.currentPage = index
+  search()
+}
+const sizeChange = size => {
+  state.paginationConfig.pageSize = size
+  state.paginationConfig.currentPage = 1
+  search()
+}
 
-const clearJobLogDialogRef = ref();
+const clearJobLogDialogRef = ref()
 const closeClearDialog = () => {
-  clearJobLogDialogRef.value.clearJobLogDialogFormVisible = false;
-};
+  clearJobLogDialogRef.value.clearJobLogDialogFormVisible = false
+}
 const showClearJobLogDialogFormVisible = () => {
-  clearJobLogDialogRef.value.clearJobLogDialogFormVisible = true;
-};
+  clearJobLogDialogRef.value.clearJobLogDialogFormVisible = true
+}
 
 const clearLogForm = reactive({
   formId: props.formId,
-  clearType: "1",
-});
+  clearType: '1'
+})
 
 const clearJobLog = (clearTypeLabel: string) => {
-  ElMessageBox.confirm(t("sync_task.confirm_clear_msg", [clearTypeLabel]), {
-    confirmButtonText: t("sync_task.clear"),
-    cancelButtonText: t("sync_datasource.cancel"),
+  ElMessageBox.confirm(t('sync_task.confirm_clear_msg', [clearTypeLabel]), {
+    confirmButtonText: t('sync_task.clear'),
+    cancelButtonText: t('sync_datasource.cancel'),
     showCancelButton: true,
-    confirmButtonType: "danger",
-    type: "warning",
+    confirmButtonType: 'danger',
+    type: 'warning',
     autofocus: false,
-    showClose: false,
+    showClose: false
   }).then(() => {
     clearLog(clearLogForm).then(() => {
-      clearJobLogDialogRef.value.clearJobLogDialogFormVisible = false;
+      clearJobLogDialogRef.value.clearJobLogDialogFormVisible = false
       ElMessage({
-        message: t("sync_task.op_success_refresh"),
-        type: "success",
-      });
-      search();
-    });
-  });
-};
+        message: t('sync_task.op_success_refresh'),
+        type: 'success'
+      })
+      search()
+    })
+  })
+}
 </script>
 <template>
   <div class="df-base-container">
     <div
       class="df-table-container report-table"
       :class="{
-        'df-table-container-no-bottom': state.multipleSelection.length,
+        'df-table-container-no-bottom': state.multipleSelection.length
       }"
     >
       <div class="search-operate">
@@ -166,7 +162,7 @@ const clearJobLog = (clearTypeLabel: string) => {
           type="primary"
           v-if="hasManagePermission"
         >
-          {{ t("sync_task.clear_log") }}
+          {{ t('sync_task.clear_log') }}
         </el-button>
         <div style="width: 185px">
           <el-select
@@ -176,10 +172,8 @@ const clearJobLog = (clearTypeLabel: string) => {
             @change="search"
           >
             <template #prefix>
-              <span
-                style="font-size: 14px; color: #646a73; font-weight: normal"
-              >
-                {{ t("data_fill.task.commit_operate_type") }}:
+              <span style="font-size: 14px; color: #646a73; font-weight: normal">
+                {{ t('data_fill.task.commit_operate_type') }}:
               </span>
             </template>
             <el-option
@@ -192,9 +186,7 @@ const clearJobLog = (clearTypeLabel: string) => {
         </div>
       </div>
       <div
-        :class="[
-          state.filterTexts.length ? 'is-in-filter' : 'report-table__content',
-        ]"
+        :class="[state.filterTexts.length ? 'is-in-filter' : 'report-table__content']"
         class="info-table"
       >
         <GridTable
@@ -246,12 +238,8 @@ const clearJobLog = (clearTypeLabel: string) => {
             width="120"
           >
             <template #default="scope">
-              <el-button
-                text
-                @click="showForm(scope.row)"
-                v-if="scope.row.operate !== 3"
-              >
-                {{ t("data_fill.task.show_data") }}
+              <el-button text @click="showForm(scope.row)" v-if="scope.row.operate !== 3">
+                {{ t('data_fill.task.show_data') }}
               </el-button>
             </template>
           </el-table-column>
@@ -270,10 +258,6 @@ const clearJobLog = (clearTypeLabel: string) => {
   </div>
 </template>
 <style lang="less">
-.menu-panel-select_popper_fill {
-  min-width: 235px;
-}
-
 .popper-max-width {
   .ed-popper.is-dark {
     white-space: pre-wrap;
@@ -370,7 +354,7 @@ const clearJobLog = (clearTypeLabel: string) => {
     color: var(--ed-color-primary) !important;
     border: 0 solid transparent;
     background-color: transparent;
-    font-family: var(--de-custom_font, "PingFang");
+    font-family: var(--de-custom_font, 'PingFang');
     font-size: 14px;
     font-weight: 400;
     line-height: 26px;

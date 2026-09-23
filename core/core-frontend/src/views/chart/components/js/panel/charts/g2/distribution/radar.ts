@@ -461,6 +461,7 @@ export class Radar extends G2ChartView {
         tooltip: {
           crosshairsLineDash: [4, 4],
           mount: createTooltipWrapper(chart),
+          enterable: true,
           css: {
             '.g2-tooltip': {
               background: tooltipAttr.backgroundColor

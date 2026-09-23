@@ -1,20 +1,20 @@
 <script lang="ts" setup>
-import { ref, reactive } from "vue";
-import { ElMessage, ElLoading } from "element-plus-secondary";
-import { useI18n } from "@/hooks/web/useI18n";
-import type { FormInstance, FormRules } from "element-plus-secondary";
-import request from "@/config/axios";
-const { t } = useI18n();
-const dialogVisible = ref(false);
-const loadingInstance = ref(null);
-const mfaForm = ref<FormInstance>();
+import { ref, reactive } from 'vue'
+import { ElMessage, ElLoading } from 'element-plus-secondary'
+import { useI18n } from '@/hooks/web/useI18n'
+import type { FormInstance, FormRules } from 'element-plus-secondary'
+import request from '@/config/axios'
+const { t } = useI18n()
+const dialogVisible = ref(false)
+const loadingInstance = ref(null)
+const mfaForm = ref<FormInstance>()
 
 const state = reactive({
   form: reactive({
-    status: "",
-    platformEnable: "",
-    otpName: "",
-    rate: ""
+    status: '',
+    platformEnable: '',
+    otpName: '',
+    rate: ''
   }),
   settingList: [],
   statusOptions: [
@@ -22,100 +22,100 @@ const state = reactive({
     { value: '1', label: t('setting_mfa.status_1') },
     { value: '2', label: t('setting_mfa.status_2') }
   ]
-});
+})
 
 const rule = reactive<FormRules>({
   rate: [
     {
       required: true,
-      message: t("common.require"),
-      trigger: "blur",
+      message: t('common.require'),
+      trigger: 'blur'
     }
   ]
-});
+})
 
 const buildSettingList = () => {
-  return state.settingList.map((item) => {
-    const pkey = item.pkey.startsWith("mfa.") ? item.pkey : `mfa.${item.pkey}`;
-    const sort = item.sort;
-    const type = item.type;
-    let pval = state.form[item.pkey];
+  return state.settingList.map(item => {
+    const pkey = item.pkey.startsWith('mfa.') ? item.pkey : `mfa.${item.pkey}`
+    const sort = item.sort
+    const type = item.type
+    let pval = state.form[item.pkey]
     if (Array.isArray(pval)) {
-      pval = pval.join(",");
+      pval = pval.join(',')
     }
-    return { pkey, pval, type, sort };
-  });
-};
-const emits = defineEmits(["saved"]);
+    return { pkey, pval, type, sort }
+  })
+}
+const emits = defineEmits(['saved'])
 const submitForm = async (formEl: FormInstance | undefined) => {
-  if (!formEl) return;
-  await formEl.validate((valid) => {
+  if (!formEl) return
+  await formEl.validate(valid => {
     if (valid) {
-      const param = buildSettingList();
+      const param = buildSettingList()
       if (param.length < 2) {
-        return;
+        return
       }
-      showLoading();
+      showLoading()
       request
-        .post({ url: "/perSetting/mfa/save", data: param })
-        .then((res) => {
+        .post({ url: '/perSetting/mfa/save', data: param })
+        .then(res => {
           if (!res.msg) {
-            ElMessage.success(t("common.save_success"));
-            emits("saved");
-            reset();
+            ElMessage.success(t('common.save_success'))
+            emits('saved')
+            reset()
           }
-          closeLoading();
+          closeLoading()
         })
         .catch(() => {
-          closeLoading();
-        });
+          closeLoading()
+        })
     }
-  });
-};
+  })
+}
 
 const resetForm = (formEl: FormInstance | undefined) => {
-  state.settingList = [];
-  if (!formEl) return;
-  formEl.resetFields();
-  dialogVisible.value = false;
-};
+  state.settingList = []
+  if (!formEl) return
+  formEl.resetFields()
+  dialogVisible.value = false
+}
 
 const reset = () => {
-  resetForm(mfaForm.value);
-};
+  resetForm(mfaForm.value)
+}
 
 const showLoading = () => {
-  loadingInstance.value = ElLoading.service({ target: ".mfa-param-drawer" });
-};
+  loadingInstance.value = ElLoading.service({ target: '.mfa-param-drawer' })
+}
 const closeLoading = () => {
-  loadingInstance.value?.close();
-};
+  loadingInstance.value?.close()
+}
 
-const edit = (list) => {
-  resetFormData();
-  state.settingList = list.map((item) => {
-    const pkey = item.pkey;
-    item["label"] = `setting_${pkey}`;
-    item["pkey"] = pkey.split(".")[1];
-    let pval = item.pval;
-    state.form[item["pkey"]] = pval || state.form[item["pkey"]];
-    return item;
-  });
-  dialogVisible.value = true;
-};
+const edit = list => {
+  resetFormData()
+  state.settingList = list.map(item => {
+    const pkey = item.pkey
+    item['label'] = `setting_${pkey}`
+    item['pkey'] = pkey.split('.')[1]
+    let pval = item.pval
+    state.form[item['pkey']] = pval || state.form[item['pkey']]
+    return item
+  })
+  dialogVisible.value = true
+}
 
 const resetFormData = () => {
   state.form = {
-    status: "",
-    platformEnable: "",
-    otpName: "",
-    rate: ""
-  };
-};
+    status: '',
+    platformEnable: '',
+    otpName: '',
+    rate: ''
+  }
+}
 
 defineExpose({
-  edit,
-});
+  edit
+})
 </script>
 
 <template>
@@ -167,17 +167,15 @@ defineExpose({
         <el-input
           v-else
           v-model="state.form[item.pkey]"
-          :placeholder="t('common.please_input')"
+          :placeholder="t('common.please_input') + t('common.empty') + t(item.label)"
         />
       </el-form-item>
     </el-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button secondary @click="resetForm(mfaForm)">{{
-          t("common.cancel")
-        }}</el-button>
+        <el-button secondary @click="resetForm(mfaForm)">{{ t('common.cancel') }}</el-button>
         <el-button type="primary" @click="submitForm(mfaForm)">
-          {{ t("commons.save") }}
+          {{ t('commons.save') }}
         </el-button>
       </span>
     </template>

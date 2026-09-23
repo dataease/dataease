@@ -15,6 +15,7 @@ import { flow, hexColorToRGBA, hexToRgba, parseJson } from '@/views/chart/compon
 import { cloneDeep, defaultsDeep, filter, find, isEmpty } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import {
+  ASSIST_LINE_STYLE,
   configAxisLengthLimit,
   configDimensionSlider,
   formatAxisLabelWithLengthLimit,
@@ -46,18 +47,18 @@ import {
   isTooltipItemShown,
   renderGroupedTooltipItems,
   ChildSpec,
+  getColumnSeriesPaddingTransform,
   tooltipCss,
   tooltipMaxHeight,
   Transform,
   ViewSpec
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
-import { addExtremumText, extremumEvt } from '@/views/chart/components/js/extremumUitl'
+import { getBarExtremumTransform, extremumEvt } from '@/views/chart/components/js/extremumUitl'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 
 const { t } = useI18n()
 const DEFAULT_DATA: any[] = []
 const FULL_COLUMN_WIDTH_PADDING = 0.01
-const PERCENTAGE_FULL_COLUMN_WIDTH_PADDING = 0.002
 const isAssistLineRightAxis = item => item?.yAxisType === 'right'
 
 /**
@@ -185,8 +186,10 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     }, {})
     const showExtremumIds = Object.keys(formatterMap).filter(id => formatterMap[id].showExtremum)
     if (showExtremumIds?.length > 0) {
-      const { x: xField, color: colorField } = children[0].encode
-      addExtremumText(children, showExtremumIds, xField, 'value', colorField)
+      children[0].transform = [
+        ...(children[0].transform || []),
+        getBarExtremumTransform(showExtremumIds)
+      ]
     }
     const position = {
       position: l.position === 'middle' ? 'inside' : l.position,
@@ -406,6 +409,10 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
       scale.x.padding = columnPadding
       scale.x.paddingInner = columnPadding
       transform = this.configDodgePadding(transform, columnPadding)
+      // 统一按最终系列数量计算组内留白，避免单系列重复收窄及满宽跳变
+      if (children[0].encode?.series || transform?.some(item => item.type === 'dodgeX')) {
+        transform = [...(transform || []), getColumnSeriesPaddingTransform(columnPadding)]
+      }
       style = {
         ...style,
         columnWidthRatio: this.getStyleColumnWidthRatio(columnPadding)
@@ -442,9 +449,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
   }
 
   protected getFullColumnWidthPadding(): number {
-    if (this.name.startsWith('percentage-bar-stack')) {
-      return PERCENTAGE_FULL_COLUMN_WIDTH_PADDING
-    }
+    // 百分比柱与普通柱共用满宽间距
     return FULL_COLUMN_WIDTH_PADDING
   }
 
@@ -488,12 +493,9 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     if (!transforms?.length) {
       return transforms
     }
-    if (padding > this.getFullColumnWidthPadding()) {
-      return transforms
-    }
     // dodgeX 会生成 series band，单独控制多指标柱之间的组内间距
     return transforms.map(transform =>
-      transform.type === 'dodgeX' ? { ...transform, padding } : transform
+      transform.type === 'dodgeX' ? { ...transform, padding: Math.min(0.1, padding) } : transform
     )
   }
 
@@ -557,7 +559,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
                     maxCols: 1
                   }
                 : {
-                    ...getHorizontalLegendTextStyle(legendFontSize),
+                    ...getHorizontalLegendTextStyle(legendFontSize, l.displayMode),
                     maxRows: 1
                   })
             }
@@ -711,7 +713,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
           data: [value],
           style: {
             stroke: item.color,
-            strokeOpacity: 1,
+            ...ASSIST_LINE_STYLE,
             lineDash: getLineDash(item.lineType)
           },
           labels: [
@@ -737,21 +739,10 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     const customStyle = parseJson(chart.customStyle)
     const axis = JSON.parse(JSON.stringify(customStyle[axisType]))
     if (customStyle[axisType] && axis.show) {
-      // 轴线
-      const line = {
-        line: axis.axisLine.show,
-        lineStrokeOpacity: 1,
-        lineLineWidth: axis.axisLine.lineStyle.width,
-        lineStroke: axis.axisLine.lineStyle.color,
+      // 轴线与刻度线统一使用公共规则
+      const lineAndTick = {
+        ...this.getAxisLineStyle(chart, axis),
         lineLineDash: getLineDash(axis.axisLine.lineStyle.style)
-      }
-      // 刻度
-      const tick = {
-        tick: axis.axisLine.show,
-        tickLineWidth: axis.axisLine.lineStyle.width,
-        tickStroke: axis.axisLine.lineStyle.color,
-        tickOpacity: 1,
-        tickStrokeOpacity: 1
       }
       const xAxis = customStyle.xAxis
       const gridFilter = axisType === 'yAxis' ? this.getOverlapGridFilter(xAxis) : {}
@@ -786,10 +777,8 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
         title: axis.nameShow && axis.name ? axis.name : false,
         titleFontSize: axis.fontSize,
         titleFill: axis.color,
-        // 轴线
-        ...line,
-        // 刻度线
-        ...tick,
+        // 轴线与刻度线
+        ...lineAndTick,
         // 网格线
         ...grid,
         // 刻度值

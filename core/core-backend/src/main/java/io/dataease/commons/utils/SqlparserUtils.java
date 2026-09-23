@@ -183,7 +183,7 @@ public class SqlparserUtils {
     }
 
     private static boolean isParams(String paramId) {
-        if (Arrays.asList("sysParams.userId", "sysParams.userEmail", "sysParams.userName", "sysParams.userPhone").contains(paramId)) {
+        if (Arrays.asList("sysParams.userId", "sysParams.userEmail", "sysParams.userName", "sysParams.userPhone", "sysParams.orgName").contains(paramId)) {
             return true;
         }
         boolean isLong = false;
@@ -1194,6 +1194,12 @@ public class SqlparserUtils {
         }
         if (sysVariableId.equalsIgnoreCase("sysParams.userPhone")) {
             return buildSysVariableBinding(0, Collections.singletonList(Translator.get(userEntity.getPhone())));
+        }
+        if (sysVariableId.equalsIgnoreCase("sysParams.orgName")) {
+            if (StringUtils.isBlank(userEntity.getOrgName())) {
+                return null;
+            }
+            return buildSysVariableBinding(0, Collections.singletonList(Translator.get(userEntity.getOrgName())));
         }
         if (CollectionUtils.isEmpty(userEntity.getVariables())) {
             return null;

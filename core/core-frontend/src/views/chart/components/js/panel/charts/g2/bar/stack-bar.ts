@@ -10,7 +10,7 @@ import {
 } from '@/views/chart/components/js/util'
 import { Bar } from '@/views/chart/components/js/panel/charts/g2/bar/bar'
 import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
-import { groupBy } from 'lodash'
+import { groupBy } from 'lodash-es'
 import {
   configStackSeriesOrder,
   createTooltipWrapper,

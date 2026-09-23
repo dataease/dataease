@@ -1,7 +1,15 @@
 import { useI18n } from '@/hooks/web/useI18n'
 import { deepCopy } from '@/utils/utils'
-import { formatterItem, isEnLocal } from '@/views/chart/components/js/formatter'
 const { t } = useI18n()
+const isEnLocal = false
+export const formatterItem = {
+  type: 'auto', // auto,value,percent
+  unitLanguage: isEnLocal ? 'en' : 'ch',
+  unit: 1, // 换算单位
+  suffix: '', // 单位后缀
+  decimalCount: 2, // 小数位数
+  thousandSeparator: true // 千分符
+}
 
 export const DEFAULT_COLOR_CASE: DeepPartial<ChartAttr> = {
   basicStyle: {
@@ -443,6 +451,15 @@ export const DEFAULT_TOOLTIP: ChartTooltipAttr = {
 }
 export const DEFAULT_TABLE_TOTAL: ChartTableTotalAttr = {
   row: {
+    grandTotalStyle: {
+      customBackground: false,
+      backgroundColor: '#FFFFFF',
+      customFont: false,
+      fontColor: '#1F2329',
+      fontSize: 12,
+      isBolder: false,
+      isItalic: false
+    },
     showGrandTotals: true,
     showSubTotals: true,
     reverseLayout: false,
@@ -463,6 +480,15 @@ export const DEFAULT_TABLE_TOTAL: ChartTableTotalAttr = {
     totalSortField: ''
   },
   col: {
+    grandTotalStyle: {
+      customBackground: false,
+      backgroundColor: '#FFFFFF',
+      customFont: false,
+      fontColor: '#1F2329',
+      fontSize: 12,
+      isBolder: false,
+      isItalic: false
+    },
     showGrandTotals: true,
     showSubTotals: true,
     reverseLayout: false,
@@ -533,8 +559,7 @@ export const DEFAULT_TABLE_CELL: ChartTableCellAttr = {
   tableFreeze: false,
   tableColumnFreezeHead: 0,
   tableRowFreezeHead: 0,
-  mergeCells: true,
-  alignConfig: []
+  mergeCells: true
 }
 export const DEFAULT_TITLE_STYLE: ChartTextStyle = {
   show: true,
@@ -617,6 +642,8 @@ export const DEFAULT_TITLE_STYLE_DARK = {
 }
 
 export const DEFAULT_LEGEND_STYLE_BASE: ChartLegendStyle = {
+  displayMode: 'pagination',
+  tileOverflow: 'scroll',
   show: true,
   hPosition: 'center',
   vPosition: 'bottom',
@@ -631,6 +658,8 @@ export const DEFAULT_LEGEND_STYLE_BASE: ChartLegendStyle = {
 }
 
 export const DEFAULT_LEGEND_STYLE: ChartLegendStyle = {
+  displayMode: 'pagination',
+  tileOverflow: 'scroll',
   show: true,
   hPosition: 'center',
   vPosition: 'bottom',
@@ -1491,6 +1520,13 @@ export const CHART_TYPE_CONFIGS = [
       {
         render: 'antv',
         category: 'distribute',
+        value: 'box-plot',
+        title: t('chart.chart_box_plot'),
+        icon: 'box-plot'
+      },
+      {
+        render: 'antv',
+        category: 'distribute',
         value: 'pie',
         title: t('chart.chart_pie'),
         icon: 'pie'
@@ -1726,6 +1762,10 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   lineType: 'solid',
   scatterSymbol: 'circle',
   scatterSymbolSize: 8,
+  showOutliers: true,
+  outlierColorMode: 'series',
+  outlierColor: '#5470C6',
+  outlierSize: 4,
   radarShape: 'polygon',
   mapStyle: 'normal',
   heatMapType: 'heatmap',

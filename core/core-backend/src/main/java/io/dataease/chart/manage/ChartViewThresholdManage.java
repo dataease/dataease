@@ -319,7 +319,7 @@ public class ChartViewThresholdManage {
             String result = sb.toString();
 
             if (withThresholdData) {
-                Set<Long> thresholdFieldIdSet = new HashSet<>();
+                Set<Long> thresholdFieldIdSet = new LinkedHashSet<>();
                 getThresholdFieldIdList(filterTreeObj, thresholdFieldIdSet);
                 List<List<String>> thresholdTableList = rows.stream().map(row -> thresholdFieldIdSet.stream().map(fieldId -> {
                     DatasetTableFieldDTO fieldDTO = fieldMap.get(fieldId);

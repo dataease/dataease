@@ -7,6 +7,7 @@ import {
 } from '@/views/chart/components/editor/util/chart'
 import { cloneDeep, defaultsDeep, find, includes } from 'lodash-es'
 import CustomAggrEdit from './CustomAggrEdit.vue'
+import TableGrandTotalStyle from './TableGrandTotalStyle.vue'
 
 const { t } = useI18n()
 
@@ -349,6 +350,12 @@ onMounted(() => {
           @change="changeTableTotal('row.label')"
         />
       </el-form-item>
+      <table-grand-total-style
+        v-if="chart.type === 'table-pivot'"
+        v-model="state.tableTotalForm.row.grandTotalStyle"
+        :themes="themes"
+        @change="prop => changeTableTotal('row.grandTotalStyle.' + prop)"
+      />
       <el-form-item
         :label="t('chart.aggregation')"
         class="form-item"
@@ -656,6 +663,12 @@ onMounted(() => {
           @blur="changeTableTotal('col.label')"
         />
       </el-form-item>
+      <table-grand-total-style
+        v-if="chart.type === 'table-pivot'"
+        v-model="state.tableTotalForm.col.grandTotalStyle"
+        :themes="themes"
+        @change="prop => changeTableTotal('col.grandTotalStyle.' + prop)"
+      />
       <el-form-item
         :label="t('chart.aggregation')"
         class="form-item"
@@ -883,8 +896,15 @@ onMounted(() => {
     title="自定义聚合公式"
     :close-on-click-modal="false"
   >
-    <custom-aggr-edit ref="calcEdit" />
+    <custom-aggr-edit v-if="editCalcField" ref="calcEdit" />
     <template #footer>
+      <el-button
+        secondary
+        :loading="calcEdit?.validating"
+        @click="calcEdit.verify(props.chart.tableId, props.chart.id)"
+      >
+        {{ t('datasource.validate') }}
+      </el-button>
       <el-button secondary @click="closeEditCalc()">{{ t('dataset.cancel') }} </el-button>
       <el-button type="primary" @click="confirmEditCalc()">{{ t('dataset.confirm') }} </el-button>
     </template>

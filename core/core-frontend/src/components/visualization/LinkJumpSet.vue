@@ -826,6 +826,13 @@ const init = viewItem => {
   } else {
     checkJumpStr = checkAllAxisStr
   }
+  if (chartDetails.type.includes('chart-mix')) {
+    // 混合图的堆叠和右侧子类别也可作为跳转源字段及引用参数。
+    const mixDimensionStr =
+      JSON.stringify(chartDetails.extStack || []) + JSON.stringify(chartDetails.extBubble || [])
+    checkAllAxisStr += mixDimensionStr
+    checkJumpStr += mixDimensionStr
+  }
   const request = { busiFlag: 'dashboard-dataV' } as BusiTreeRequest
   // 获取可关联的仪表板
   queryTreeApi(request).then(rsp => {
@@ -884,6 +891,7 @@ const init = viewItem => {
 }
 
 const save = () => {
+  outerContentEditor.value?.syncContent?.()
   // 字段检查
   let subCheckCountAll = 0
   state.linkJump.linkJumpInfoArray.forEach(linkJumpInfo => {
@@ -936,6 +944,7 @@ const nodeClick = data => {
   if (!data) {
     return
   }
+  outerContentEditor.value?.syncContent?.()
   state.linkJumpInfo = state.mapJumpInfoArray[data.sourceFieldId]
   if (!state.linkJumpInfo.windowSize) {
     state.linkJumpInfo.windowSize = 'middle'
@@ -1069,7 +1078,7 @@ const cancel = () => {
 }
 
 const insertFieldToCodeMirror = (value: string) => {
-  outerContentEditor.value.insertFieldToCodeMirror(value)
+  outerContentEditor.value?.insertFieldToCodeMirror(value)
 }
 
 const outerContentShow = computed(() => {

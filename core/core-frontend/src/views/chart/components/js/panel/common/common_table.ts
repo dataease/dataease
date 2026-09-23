@@ -10,10 +10,12 @@ import {
 import {
   DEFAULT_BASIC_STYLE,
   DEFAULT_TABLE_CELL,
-  DEFAULT_TABLE_HEADER
+  DEFAULT_TABLE_HEADER,
+  DEFAULT_TABLE_TOTAL
 } from '@/views/chart/components/editor/util/chart'
 import {
   BaseTooltip,
+  CellType,
   DataCellBrushSelection,
   FONT_FAMILY,
   getAutoAdjustPosition,
@@ -22,6 +24,7 @@ import {
   getTooltipDefaultOptions,
   InteractionName,
   InteractionStateName,
+  InterceptType,
   MergedCell,
   MergedCellInfo,
   type Meta,
@@ -294,6 +297,12 @@ export function getCustomTheme(chart: Chart): S2Theme {
       const {tableHeaderAlign, tableTitleFontSize} = tableHeader
       // 自定义模式由具体表头单元格按字段覆盖，主题先使用左对齐兜底
       const resolvedTableHeaderAlign = tableHeaderAlign === 'custom' ? 'left' : tableHeaderAlign
+      let indexHeaderAlign = resolvedTableHeaderAlign
+      if (['table-info', 'table-normal'].includes(chart.type) && tableHeaderAlign === 'custom') {
+        // 序号表头使用 cornerCell，不经过普通表头的字段级对齐逻辑。
+        const indexAlignConfig = tableHeader.alignConfig?.find(item => item.id === SERIES_NUMBER_FIELD)
+        indexHeaderAlign = indexAlignConfig?.align ?? resolvedTableHeaderAlign
+      }
       const tmpTheme: S2Theme = {
         cornerCell: {
           cell: {
@@ -302,7 +311,7 @@ export function getCustomTheme(chart: Chart): S2Theme {
           bolderText: {
             fill: tableHeaderFontColor,
             fontSize: tableTitleFontSize,
-            textAlign: resolvedTableHeaderAlign,
+            textAlign: indexHeaderAlign,
             fontStyle,
             fontWeight,
             fontFamily: textFontFamily
@@ -310,7 +319,7 @@ export function getCustomTheme(chart: Chart): S2Theme {
           text: {
             fill: tableHeaderFontColor,
             fontSize: tableTitleFontSize,
-            textAlign: resolvedTableHeaderAlign,
+            textAlign: indexHeaderAlign,
             fontStyle,
             fontWeight,
             fontFamily: textFontFamily
@@ -318,7 +327,7 @@ export function getCustomTheme(chart: Chart): S2Theme {
           measureText: {
             fill: tableHeaderFontColor,
             fontSize: tableTitleFontSize,
-            textAlign: resolvedTableHeaderAlign,
+            textAlign: indexHeaderAlign,
             fontStyle,
             fontWeight,
             fontFamily: textFontFamily
@@ -368,6 +377,13 @@ export function getCustomTheme(chart: Chart): S2Theme {
               horizontalBorderColor: tableHeaderBgColor,
               horizontalBorderWidth: 0
             }
+          },
+          // 序号表头使用 cornerCell，需要同步隐藏其横向边框。
+          cornerCell: {
+            cell: {
+              horizontalBorderColor: tableHeaderBgColor,
+              horizontalBorderWidth: 0
+            }
           }
         }
         merge(theme, tmpTheme)
@@ -382,13 +398,15 @@ export function getCustomTheme(chart: Chart): S2Theme {
           colCell: {
             cell: {
               verticalBorderColor: tableHeaderBgColor,
-              verticalBorderWidth: 0
+              verticalBorderWidth: 0,
+              verticalBorderColorOpacity: 0
             }
           },
           cornerCell: {
             cell: {
               verticalBorderColor: tableHeaderBgColor,
-              verticalBorderWidth: 0
+              verticalBorderWidth: 0,
+              verticalBorderColorOpacity: 0
             }
           }
         }
@@ -438,6 +456,9 @@ export function getCustomTheme(chart: Chart): S2Theme {
             fill: tableFontColor,
             textAlign: tableItemAlign,
             fontSize: tableItemFontSize,
+            // S2 序号列读取 rowCell.seriesText，需同步单元格的加粗和斜体配置。
+            fontStyle,
+            fontWeight,
             fontFamily: textFontFamily
           }
         },
@@ -501,12 +522,77 @@ export function getCustomTheme(chart: Chart): S2Theme {
           dataCell: {
             cell: {
               verticalBorderColor: tableItemBgColor,
-              verticalBorderWidth: 0
+              verticalBorderWidth: 0,
+              verticalBorderColorOpacity: 0
             }
           }
         }
         merge(theme, tmpTheme)
       }
+    }
+    if (
+      ['table-info', 'table-normal'].includes(chart.type) &&
+      theme.splitLine.verticalBorderColorOpacity === 0
+    ) {
+      // 任一区域关闭纵边框时，S2 左边框分别使用表头、表身的颜色和透明度，保证开关独立生效。
+      theme.splitLine.verticalBorderColor = ''
+    }
+    if (['table-info', 'table-normal'].includes(chart.type) && tableCell?.mergeCells) {
+      const tableFontColor = hexColorToRGBA(tableCell.tableFontColor, basicStyle.alpha)
+      let tableItemBgColor = tableCell.tableItemBgColor
+      if (!isAlphaColor(tableItemBgColor)) {
+        tableItemBgColor = hexColorToRGBA(tableItemBgColor, basicStyle.alpha)
+      }
+      const { tableBorderColor } = basicStyle
+      const { tableItemAlign, tableItemFontSize } = tableCell
+      const fontStyle = tableCell.isItalic ? 'italic' : 'normal'
+      const fontWeight = tableCell.isBolder === false ? 'normal' : 'bold'
+      const mergeCellTheme: S2Theme = {
+        dataCell: {
+          cell: {
+            crossBackgroundColor: tableItemBgColor
+          }
+        },
+        mergedCell: {
+          cell: {
+            backgroundColor: tableItemBgColor,
+            crossBackgroundColor: tableItemBgColor,
+            horizontalBorderColor: tableBorderColor,
+            verticalBorderColor: tableBorderColor,
+            horizontalBorderWidth: tableCell.showHorizonBorder ? 1 : 0,
+            verticalBorderWidth: tableCell.showVerticalBorder ? 1 : 0
+          },
+          bolderText: {
+            fill: tableFontColor,
+            textAlign: tableItemAlign,
+            fontSize: tableItemFontSize,
+            fontStyle,
+            fontWeight
+          },
+          text: {
+            fill: tableFontColor,
+            textAlign: tableItemAlign,
+            fontSize: tableItemFontSize,
+            fontStyle,
+            fontWeight
+          },
+          measureText: {
+            fill: tableFontColor,
+            textAlign: tableItemAlign,
+            fontSize: tableItemFontSize,
+            fontStyle,
+            fontWeight
+          },
+          seriesText: {
+            fill: tableFontColor,
+            textAlign: tableItemAlign,
+            fontSize: tableItemFontSize,
+            fontStyle,
+            fontWeight
+          }
+        }
+      }
+      merge(theme, mergeCellTheme)
     }
   }
 
@@ -727,7 +813,10 @@ export function getConditions(
   if (conditions?.length > 0) {
     const {tableCell, basicStyle, tableHeader} = parseJson(chart.customAttr)
     // 合并单元格时斑马纹失效
-    const enableTableCrossBG = chart.type === 'table-info' ? tableCell.enableTableCrossBG && !tableCell.mergeCells : tableCell.enableTableCrossBG
+    let enableTableCrossBG = tableCell.enableTableCrossBG
+    if (['table-info', 'table-normal'].includes(chart.type) && tableCell.mergeCells) {
+      enableTableCrossBG = false
+    }
     const valueColor = isAlphaColor(tableCell.tableFontColor)
       ? tableCell.tableFontColor
       : hexColorToRGBA(tableCell.tableFontColor, basicStyle.alpha)
@@ -752,14 +841,11 @@ export function getConditions(
             targets.push(SERIES_NUMBER_FIELD)
           }
         } else if (rule.target === 'custom' && rule.targetFieldId) {
-          const targetName = resolveDisplayFieldName(
-            fieldIdToName[rule.targetFieldId],
-            drillFieldMap
-          )
+          const targetName = fieldIdToName[rule.targetFieldId]
           if (targetName) targets = [targetName]
         } else {
-          // 兼容历史配置，缺少 target 时仍作用于当前字段
-          targets = [resolveDisplayFieldName(fieldItem.field.dataeaseName, drillFieldMap)]
+          // 兼容历史配置，缺少 target 时仍作用于规则所属字段
+          targets = [fieldItem.field.dataeaseName]
         }
 
         new Set(targets).forEach(targetName => {
@@ -778,9 +864,29 @@ export function getConditions(
 
     for (const targetName in targetRulesMap) {
       const rules = sortTableTargetRules(targetRulesMap[targetName])
+      const getCellRules = (cell: TableDataCell | MergedCell) => {
+        if (!['table-info', 'table-normal'].includes(chart.type) || !tableCell.mergeCells || !cell) {
+          return rules
+        }
+        const meta = cell.getMeta()
+        const mergedCellsInfo = cell.spreadsheet.options.mergedCellsInfo
+        const targetMerged = isInMergedCell(mergedCellsInfo, meta)
+        return rules.filter(item => {
+          if (item.rule.target !== 'total_row') return true
+          const sourceName = resolveDisplayFieldName(item.sourceField.dataeaseName, drillFieldMap)
+          // 自身的整行规则始终可作用于自身，合并格不接收其他列的整行规则。
+          if (sourceName === targetName) return true
+          if (targetMerged) return false
+          const sourceIndex = allColumnNames.indexOf(sourceName)
+          if (sourceIndex === -1) return true
+          const sourceColIndex = sourceIndex + (tableHeader.showIndex ? 1 : 0)
+          // 当前行的来源格已合并时，整行规则收敛到来源列，不再扩散到其他列。
+          return !isInMergedCell(mergedCellsInfo, { ...meta, colIndex: sourceColIndex })
+        })
+      }
       res.text.push({
         field: targetName,
-        mapping(value, rowData) {
+        mapping(value, rowData, cell) {
           if (value === undefined && !rowData) {
             return null
           }
@@ -788,29 +894,31 @@ export function getConditions(
             fill: mappingRulesColor(
               value,
               valueColor,
-              rules,
+              getCellRules(cell),
               'color',
               filedValueMap,
               rowData,
-              targetName
+              targetName,
+              getTableConditionRows(value, rowData, cell)
             )
           }
         }
       })
       res.background.push({
         field: targetName,
-        mapping(value, rowData) {
+        mapping(value, rowData, cell) {
           if (value === undefined && !rowData) {
             return null
           }
           const fill = mappingRulesColor(
             value,
             valueBgColor,
-            rules,
+            getCellRules(cell),
             'backgroundColor',
             filedValueMap,
             rowData,
-            targetName
+            targetName,
+            getTableConditionRows(value, rowData, cell)
           )
           if (isTransparent(fill)) {
             return null
@@ -825,15 +933,21 @@ export function getConditions(
 
 export function getPivotConditions(chart: Chart, pivotData: Record<string, any>[] = []) {
   const {threshold} = parseJson(chart.senior)
-  if (!threshold.enable) {
+  const {tableCell, basicStyle, tableHeader, tableTotal} = parseJson(chart.customAttr)
+  const hasTotalStyle = ['row', 'col'].some(axis => {
+    const total = tableTotal?.[axis]
+    return total?.showGrandTotals &&
+      (total.grandTotalStyle?.customBackground || total.grandTotalStyle?.customFont)
+  })
+  if (!threshold.enable && !hasTotalStyle) {
     return
   }
   const res = {
     text: [],
     background: []
   }
-  const conditions = getEffectiveTableConditions(threshold.tableThreshold ?? [])
-  if (!conditions.length) {
+  const conditions = getEffectiveTableConditions(threshold.enable ? threshold.tableThreshold ?? [] : [])
+  if (!conditions.length && !hasTotalStyle) {
     return res
   }
 
@@ -845,7 +959,6 @@ export function getPivotConditions(chart: Chart, pivotData: Record<string, any>[
   const xFields = chart.xAxis.map(field => field.dataeaseName)
   const xExtFields = chart.xAxisExt.map(field => field.dataeaseName)
   const yFields = chart.yAxis.map(field => field.dataeaseName)
-  const {tableCell, basicStyle, tableHeader} = parseJson(chart.customAttr)
   const valueColor = getTableConditionColor(tableCell.tableFontColor, basicStyle.alpha)
   const valueBgColor = tableCell.enableTableCrossBG
     ? null
@@ -870,6 +983,27 @@ export function getPivotConditions(chart: Chart, pivotData: Record<string, any>[
   // 复用分组字段解析结果，避免文字和背景条件重复遍历透视数据
   const pivotValueResolver = createPivotFieldValueResolver(pivotData)
   const targetRulesMap = {}
+  // 总计样式独立于条件样式开关，指标表头也需要进入样式映射。
+  if (hasTotalStyle) {
+    [...xFields, ...xExtFields, ...yFields, EXTRA_FIELD].forEach(field => {
+      targetRulesMap[field] = []
+    })
+    // 无维度、多指标的总计占位格没有 valueField；省略 field 仅匹配这类无字段单元格。
+    res.text.push({
+      mapping(value, rowData, cell) {
+        if (cell?.cellType !== CellType.DATA_CELL) return null
+        return getPivotGrandTotalStyle(cell, tableTotal, basicStyle.alpha).text ?? null
+      }
+    })
+    res.background.push({
+      mapping(value, rowData, cell) {
+        if (cell?.cellType !== CellType.DATA_CELL) return null
+        const {backgroundColor} = getPivotGrandTotalStyle(cell, tableTotal, basicStyle.alpha)
+        if (!backgroundColor) return null
+        return {fill: backgroundColor}
+      }
+    })
+  }
 
   for (let i = 0; i < conditions.length; i++) {
     const fieldItem = conditions[i]
@@ -923,44 +1057,104 @@ export function getPivotConditions(chart: Chart, pivotData: Record<string, any>[
 
     res.text.push({
       field: targetName,
-      mapping(value, rowData) {
+      mapping(value, rowData, cell) {
         if (rowData?.cornerType) return null
+        const totalStyle = getPivotGrandTotalStyle(cell, tableTotal, basicStyle.alpha)
+        let fallbackColor = rules.length ? defaultValueColor : null
+        if (totalStyle.text) fallbackColor = totalStyle.text.fill
+        const fill = mappingRulesColor(
+          value,
+          fallbackColor,
+          rules,
+          'color',
+          filedValueMap,
+          rowData,
+          targetName,
+          undefined,
+          true,
+          pivotValueResolver
+        )
+        // 条件只覆盖自身配置的属性，未命中或未配置颜色时保留总计字体。
         return {
-          fill: mappingRulesColor(
-            value,
-            defaultValueColor,
-            rules,
-            'color',
-            filedValueMap,
-            rowData,
-            targetName,
-            true,
-            pivotValueResolver
-          )
+          ...totalStyle.text,
+          fill: fill ?? totalStyle.text?.fill
         }
       }
     })
     res.background.push({
       field: targetName,
-      mapping(value, rowData) {
+      mapping(value, rowData, cell) {
         if (rowData?.cornerType) return null
-        const fill = mappingRulesColor(
+        const totalStyle = getPivotGrandTotalStyle(cell, tableTotal, basicStyle.alpha)
+        let fallbackColor = rules.length ? defaultBgColor : null
+        if (totalStyle.backgroundColor) fallbackColor = totalStyle.backgroundColor
+        let fill = mappingRulesColor(
           value,
-          defaultBgColor,
+          fallbackColor,
           rules,
           'backgroundColor',
           filedValueMap,
           rowData,
           targetName,
+          undefined,
           true,
           pivotValueResolver
         )
-        if (isTransparent(fill)) return null
+        fill = fill ?? totalStyle.backgroundColor
+        if (!fill || (isTransparent(fill) && !totalStyle.backgroundColor)) return null
         return {fill}
       }
     })
   }
   return res
+}
+
+function getPivotGrandTotalStyle(cell, tableTotal: ChartTableTotalAttr, alpha: number) {
+  const result: {
+    backgroundColor?: string
+    text?: { fill: string; fontSize: number; fontWeight: string; fontStyle: string }
+  } = {}
+  if (!cell || !tableTotal) return result
+  const meta = cell.getMeta()
+  let rowNode
+  let colNode
+  if (cell.cellType === CellType.DATA_CELL) {
+    rowNode = cell.spreadsheet.facet.getRowLeafNodeByIndex(meta.rowIndex)
+    colNode = cell.spreadsheet.facet.getColLeafNodeByIndex(meta.colIndex)
+  } else if (cell.cellType === CellType.ROW_CELL) {
+    rowNode = meta
+  } else if (cell.cellType === CellType.COL_CELL) {
+    colNode = meta
+  }
+  const isGrandTotal = (node: Node) => {
+    // 多指标表头可能是总计节点的子节点；只识别总计，不使用包含小计的 isTotals。
+    while (node) {
+      if (node.isGrandTotals) return true
+      node = node.parent
+    }
+    return false
+  }
+  // 先列后行，背景和字体独立覆盖，交叉格只有开启的属性组采用行配置。
+  const totals: TotalConfig[] = []
+  if (tableTotal.col?.showGrandTotals && isGrandTotal(colNode)) totals.push(tableTotal.col)
+  if (tableTotal.row?.showGrandTotals && isGrandTotal(rowNode)) totals.push(tableTotal.row)
+  totals.forEach(total => {
+    const defaults = DEFAULT_TABLE_TOTAL.row.grandTotalStyle
+    const style = { ...defaults, ...total.grandTotalStyle }
+    if (style.customBackground) {
+      const backgroundColor = style.backgroundColor || defaults.backgroundColor
+      result.backgroundColor = getTableConditionColor(backgroundColor, alpha)
+    }
+    if (style.customFont) {
+      result.text = {
+        fill: getTableConditionColor(style.fontColor || defaults.fontColor, alpha),
+        fontSize: style.fontSize || defaults.fontSize,
+        fontWeight: style.isBolder ? 'bold' : 'normal',
+        fontStyle: style.isItalic ? 'italic' : 'normal'
+      }
+    }
+  })
+  return result
 }
 
 function getTableConditionColor(color, alpha) {
@@ -999,38 +1193,61 @@ function mappingRulesColor(
   filedValueMap,
   rowData,
   targetName,
+  conditionRows?: Array<{value: any; rowData: any}>,
   pivot = false,
   pivotValueResolver?: PivotValueResolver
 ) {
+  const rows = conditionRows ?? [{value, rowData}]
   for (let i = 0; i < rules.length; i++) {
     const {rule, sourceField} = rules[i]
-    // S2 的 isTotals 也用于普通层级节点，仅排除明确的汇总节点
-    if (
-      pivot &&
-      (rowData?.isGrandTotals ||
-        rowData?.isSubTotals ||
-        rowData?.field === EXTRA_FIELD) &&
-      rule.target !== 'total_row'
-    ) {
-      continue
-    }
+    for (const current of rows) {
+      // S2 的 isTotals 也用于普通层级节点，仅排除明确的汇总节点
+      if (
+        pivot &&
+        (current.rowData?.isGrandTotals ||
+          current.rowData?.isSubTotals ||
+          current.rowData?.field === EXTRA_FIELD) &&
+        rule.target !== 'total_row'
+      ) {
+        continue
+      }
 
-    const sourceValue = getRuleSourceValue(value, rowData, sourceField.dataeaseName, targetName)
-    if (!sourceValue.found) continue
-    if (
-      matchTableCondition(
-        sourceValue.value,
-        rule,
-        sourceField,
-        filedValueMap,
-        rowData,
-        pivotValueResolver
+      const sourceValue = getRuleSourceValue(
+        current.value,
+        current.rowData,
+        sourceField.dataeaseName,
+        targetName
       )
-    ) {
-      return rule[type]
+      if (!sourceValue.found) continue
+      if (
+        matchTableCondition(
+          sourceValue.value,
+          rule,
+          sourceField,
+          filedValueMap,
+          current.rowData,
+          pivotValueResolver
+        )
+      ) {
+        return rule[type]
+      }
     }
   }
   return defaultColor
+}
+
+function getTableConditionRows(value, rowData, cell?: TableDataCell | MergedCell) {
+  if (!(cell instanceof MergedCell) || !cell.cells?.length) {
+    return [{value, rowData}]
+  }
+  // 合并格代表多条明细，任意明细命中时整个合并格生效
+  return cell.cells.map(dataCell => {
+    const meta = dataCell.getMeta()
+    return {
+      value: meta.fieldValue,
+      rowData: cell.spreadsheet.dataSet.getCellData({query: {rowIndex: meta.rowIndex}})
+    }
+  })
 }
 
 type PivotValueResult = { found: boolean; value?: any }
@@ -1049,7 +1266,7 @@ function getRuleSourceValue(value, rowData, sourceName, targetName) {
   return {found: false, value: undefined}
 }
 
-function matchTableCondition(
+export function matchTableCondition(
   value,
   rule,
   sourceField,
@@ -1058,6 +1275,7 @@ function matchTableCondition(
   pivotValueResolver?: PivotValueResolver
 ) {
   const empty = value === null || value === undefined || value === ''
+  // 保留后来补充的为空、不为空操作，不让历史比较兼容影响这些显式规则
   if (rule.term === 'null') return empty
   if (rule.term === 'not_null') return !empty
   if (rule.term === 'default') return true
@@ -1084,38 +1302,54 @@ function matchTableCondition(
   }
 
   if ([2, 3, 4].includes(sourceField.deType)) {
-    const current = parseFloat(value)
+    // 动态字段值均为 null 或空字符串时视为相等，undefined 可能是取值失败，仍沿用历史比较
+    if (
+      rule.type === 'dynamic' &&
+      (rule.term === 'eq' || rule.term === 'not_eq') &&
+      rule.dynamicField?.summary === 'value' &&
+      (value === null || value === '') &&
+      (targetValue === null || targetValue === '')
+    ) {
+      return rule.term === 'eq'
+    }
+    // 历史规则只转换比较值，保留当前值的类型和关系运算的隐式转换行为
+    const current = value
     const target = parseFloat(targetValue)
-    if (rule.term === 'between') return !empty && min <= current && current <= max
+    if (rule.term === 'between') return min <= current && current <= max
     if (rule.term === 'eq') return current === target
     if (rule.term === 'not_eq') return current !== target
     if (rule.term === 'lt') return current < target
     if (rule.term === 'gt') return current > target
-    if (rule.term === 'le') return !empty && current <= target
-    if (rule.term === 'ge') return !empty && current >= target
+    if (rule.term === 'le') return current <= target
+    if (rule.term === 'ge') return current >= target
     return false
   }
 
   if ([0, 5].includes(sourceField.deType)) {
     if (rule.term === 'eq') return value === targetValue
     if (rule.term === 'not_eq') return value !== targetValue
-    if (rule.term === 'like') return !empty && String(value).includes(String(targetValue))
-    if (rule.term === 'not like') return !empty && !String(value).includes(String(targetValue))
+    // 空字符串沿用原有包含判断，仅拦截无法调用 includes 的值以避免异常
+    if (rule.term === 'like') return typeof value?.includes === 'function' && value.includes(targetValue)
+    if (rule.term === 'not like') return typeof value?.includes === 'function' && !value.includes(targetValue)
     return false
   }
 
-  if (empty || targetValue === null || targetValue === undefined || targetValue === '') {
+  // 避免 null 等非字符串调用 replace 报错，空字符串仍沿用历史日期解析
+  if (typeof value !== 'string' || typeof targetValue !== 'string') {
     return false
   }
+  // 非空值保留已有时间格式支持，空字符串仍沿用历史日期解析
   const isSpecialTimeFormat =
-    sourceField.dateStyle === 'H_m_s' ||
-    (sourceField.dateStyle && sourceField.dateStyle.length > 5 && sourceField.dateStyle.length < 11)
+    value !== '' &&
+    targetValue !== '' &&
+    (sourceField.dateStyle === 'H_m_s' ||
+      (sourceField.dateStyle && sourceField.dateStyle.length > 5 && sourceField.dateStyle.length < 11))
   const current = isSpecialTimeFormat
-    ? String(value)
-    : new Date(String(value).replace(/-/g, '/') + ' GMT+8').getTime()
+    ? value
+    : new Date(value.replace(/-/g, '/') + ' GMT+8').getTime()
   const target = isSpecialTimeFormat
-    ? String(targetValue)
-    : new Date(String(targetValue).replace(/-/g, '/') + ' GMT+8').getTime()
+    ? targetValue
+    : new Date(targetValue.replace(/-/g, '/') + ' GMT+8').getTime()
   if (rule.term === 'eq') return current === target
   if (rule.term === 'not_eq') return current !== target
   if (rule.term === 'lt') return current < target
@@ -1296,7 +1530,7 @@ export function mappingColor(value, defaultColor, field, type, filedValueMap?, r
 
 }
 
-function getFieldValueMap(view) {
+export function getFieldValueMap(view) {
   const fieldValueMap = {}
   if (view.data && view.data.dynamicAssistLines && view.data.dynamicAssistLines.length > 0) {
     view.data.dynamicAssistLines.forEach(ele => {
@@ -1411,6 +1645,10 @@ export function handleTableEmptyStrategy(chart: Chart) {
 }
 
 export class SortTooltip extends BaseTooltip {
+  isSortMenuVisible() {
+    return this.visible && !!this.options && 'iconName' in this.options && !!this.options.iconName
+  }
+
   show(showOptions) {
     const {iconName} = showOptions
     if (iconName) {
@@ -1426,6 +1664,10 @@ export class SortTooltip extends BaseTooltip {
     this.visible = true
     this.options = showOptions
     const container = this['getContainer']()
+    // 排序菜单复用内容提示容器，在测量位置前恢复菜单布局
+    Object.assign(container.style, {
+      width: 'auto', minWidth: '80px', textAlign: 'left'
+    })
     // 用 vue 手动 patch
     const vNode = createVNode(TableTooltip, {
       table: this.spreadsheet,
@@ -1569,6 +1811,10 @@ export function configTooltip(chart: Chart, option: S2Options) {
       boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 8px 0px',
       borderRadius: '3px',
       padding: '4px 12px',
+      // 先按内容确定宽度再校正位置，避免靠近右边界时被剩余空间挤压换行
+      width: 'max-content',
+      minWidth: '0',
+      textAlign: 'center',
       opacity: 0.95,
       position: 'absolute'
     },
@@ -1689,12 +1935,23 @@ export function copyContent(s2Instance: SpreadSheet, event, fieldMeta) {
 
 function getTooltipPosition(event) {
   const s2Instance = event.s2Instance
-  const {x, y} = event
-  const result = {x: x + 15, y}
   if (!s2Instance) {
-    return result
+    return {x: event.x + 15, y: event.y}
   }
-  const {height, width} = s2Instance.getCanvasElement().getBoundingClientRect()
+  const canvasElement = s2Instance.getCanvasElement()
+  const canvasRect = canvasElement.getBoundingClientRect()
+  const width = Number(s2Instance.options.width) || canvasElement.clientWidth || canvasRect.width
+  const height = Number(s2Instance.options.height) || canvasElement.clientHeight || canvasRect.height
+  const scaleX = canvasRect.width / width || 1
+  const scaleY = canvasRect.height / height || 1
+  // tooltip 使用缩放前的布局坐标，鼠标位置需从视口坐标换算回 Canvas 局部坐标
+  const x = Number.isFinite(event.clientX)
+    ? (event.clientX - canvasRect.left) / scaleX
+    : event.x
+  const y = Number.isFinite(event.clientY)
+    ? (event.clientY - canvasRect.top) / scaleY
+    : event.y
+  const result = {x: x + 15, y}
   const {offsetHeight, offsetWidth} = s2Instance.tooltip.getContainer()
   if (offsetWidth > width) {
     result.x = 0
@@ -2591,6 +2848,16 @@ export function configMergeCells(chart: Chart, options: S2Options, dataConfig: S
     }
     options.mergedCellsInfo = mergedCellsInfo
     options.mergedCell = (sheet, cells, meta) => {
+      // showText 只指定内容来源行，不能用该行的中心代替整个合并区域的中心。
+      // 保留单行内容高度（尤其是图片尺寸），且不修改底层单元格共享的 meta。
+      let top = Infinity
+      let bottom = -Infinity
+      cells.forEach(cell => {
+        const { y, height } = cell.getMeta()
+        top = Math.min(top, y)
+        bottom = Math.max(bottom, y + height)
+      })
+      meta = { ...meta, y: (top + bottom - meta.height) / 2 }
       if (showIndex && meta.colIndex === 0) {
         meta.fieldValue = getRowIndex(mergedCellsInfo, meta)
       }
@@ -2623,17 +2890,114 @@ export function getRowIndex(mergedCellsInfo: MergedCellInfo[][], meta: ViewMeta)
   return curRangeStartIndex - lostCells + 1
 }
 
+export function isInMergedCell(mergedCellsInfo: MergedCellInfo[][], meta: ViewMeta): boolean {
+  return (mergedCellsInfo ?? []).some(cells => {
+    if (cells.length < 2) return false
+    const first = cells[0]
+    const last = cells[cells.length - 1]
+    return (
+      first.colIndex === meta.colIndex &&
+      meta.rowIndex >= first.rowIndex &&
+      meta.rowIndex <= last.rowIndex
+    )
+  })
+}
+
+export function setupMergedCellHover(sheet: SpreadSheet) {
+  const clearHover = () => {
+    sheet.facet.getMergedCells().forEach(cell => {
+      if (cell instanceof CustomMergedCell) cell.setRowHover(false)
+    })
+  }
+  sheet.on(S2Event.GLOBAL_HOVER, event => {
+    const { interaction } = sheet
+    if (!sheet.options.interaction.hoverHighlight || interaction.hasIntercepts([InterceptType.HOVER])) {
+      clearHover()
+      return
+    }
+    const target = sheet.getCell(event.target)
+    const isMerged = target instanceof CustomMergedCell
+    const isData = target instanceof TableDataCell
+    if (isMerged) {
+      // 合并格只高亮自身，清掉上一个普通格留下的行列高亮和延迟聚焦。
+      interaction.clearHoverTimer()
+      const hasHover = interaction.isHoverState() || interaction.isHoverFocusState()
+      if (hasHover && interaction.getCells().length) {
+        interaction.changeState({ cells: [], stateName: InteractionStateName.HOVER })
+      }
+    }
+    const targetMeta = target?.getMeta()
+    sheet.facet.getMergedCells().forEach(cell => {
+      if (!(cell instanceof CustomMergedCell)) return
+      let highlighted = cell === target
+      if (isData) {
+        // 普通格联动同行、同列的合并区域，合并格自身悬浮仍只高亮当前格。
+        const sameColumn = cell.getMeta().colIndex === targetMeta.colIndex
+        const coversRow = cell.cells.some(item => item.getMeta().rowIndex === targetMeta.rowIndex)
+        highlighted = sameColumn || coversRow
+      }
+      cell.setRowHover(highlighted)
+    })
+  })
+  sheet.on(S2Event.GLOBAL_SCROLL, clearHover)
+  sheet.on(S2Event.GLOBAL_RESET, clearHover)
+  sheet.on(S2Event.GLOBAL_MOUSE_UP, clearHover)
+  // 进入调节热区时保留原高亮，与普通格一致；实际开始拖动时再清除。
+  sheet.on(S2Event.LAYOUT_RESIZE_MOUSE_DOWN, clearHover)
+  sheet.on(S2Event.LAYOUT_AFTER_RENDER, clearHover)
+  const canvas = sheet.getCanvasElement()
+  const onMouseLeave = (event: MouseEvent) => {
+    // 移入浮层仍属于表格交互，不能关闭正在操作的排序菜单
+    if (event.relatedTarget instanceof globalThis.Node && sheet.tooltip?.container?.contains(event.relatedTarget)) {
+      return
+    }
+    const { interaction } = sheet
+    // 先取消延迟聚焦，避免离开后定时回调重新设置行列高亮和 tooltip。
+    interaction.clearHoverTimer()
+    if (interaction.isHoverState() || interaction.isHoverFocusState()) {
+      interaction.clearState()
+    }
+    clearHover()
+    sheet.hideTooltip()
+  }
+  canvas.addEventListener('mouseleave', onMouseLeave)
+  sheet.on(S2Event.LAYOUT_DESTROY, () => canvas.removeEventListener('mouseleave', onMouseLeave))
+}
+
 class CustomMergedCell extends MergedCell {
+  private rowHoverShape: ReturnType<typeof renderPolygon>
+
+  getCellTextWordWrapStyle() {
+    // 合并层复用普通数据格的省略配置，避免文字超出自定义列宽。
+    return super.getCellTextWordWrapStyle(CellType.DATA_CELL)
+  }
+
+  setRowHover(visible: boolean) {
+    if (!this.rowHoverShape && visible) {
+      const hover = this.theme.dataCell.cell.interactionState.hover
+      // 独立覆盖层保留条件背景色，且不参与鼠标命中。
+      this.rowHoverShape = renderPolygon(this, {
+        points: getPolygonPoints(this.cells),
+        fill: hover.backgroundColor,
+        fillOpacity: hover.backgroundOpacity,
+        pointerEvents: 'none'
+      })
+      // 高亮只叠加背景，必须放在文字和边框之前，避免覆盖条件字体颜色。
+      this.insertBefore(this.rowHoverShape, this.backgroundShape.nextSibling)
+    }
+    this.rowHoverShape?.attr('visibility', visible ? 'visible' : 'hidden')
+  }
+
   protected drawBackgroundShape() {
     const allPoints = getPolygonPoints(this.cells)
-    // 处理条件样式，这里没有用透明度
-    // 因为合并的单元格是单独的图层，透明度降低的话会显示底下未合并的单元格，需要单独处理被覆盖的单元格
+    // S2 合并单元格未初始化条件背景色，绘制前补齐，复用整行规则过滤逻辑。
+    this.conditionFill = this.getBackgroundConditionFill()
+    // 合并层只绘制背景，边框交由 S2 按横纵边框配置分别绘制，避免额外描边绕过显隐控制。
     const {backgroundColor: fill, backgroundColorOpacity: fillOpacity} = this.getBackgroundColor()
-    const cellTheme = this.theme.dataCell.cell
     this.backgroundShape = renderPolygon(this, {
       points: allPoints,
-      stroke: cellTheme.horizontalBorderColor,
-      fill
+      fill,
+      fillOpacity
     })
   }
 
@@ -2662,6 +3026,26 @@ class CustomMergedCell extends MergedCell {
 }
 
 export class CustomDataCell extends TableDataCell {
+  drawTextOrCustomRenderer(): void {
+    if (isInMergedCell(this.spreadsheet.options.mergedCellsInfo, this.getMeta())) {
+      // 只清空底层显示内容，不修改元数据，合并层仍需使用原值绘制文字。
+      this.textShape?.attr('text', '')
+      this.linkFieldShape?.attr('strokeOpacity', 0)
+      this.afterDrawText()
+      return
+    }
+    super.drawTextOrCustomRenderer()
+  }
+
+  getBackgroundColor() {
+    const background = super.getBackgroundColor()
+    if (isInMergedCell(this.spreadsheet.options.mergedCellsInfo, this.getMeta())) {
+      // 直接控制背景图形的透明度，避免组 opacity 对子图形不生效。
+      background.backgroundColorOpacity = 0
+    }
+    return background
+  }
+
   protected getTextStyle() {
     const textStyle = super.getTextStyle()
     const dataCellAlignConfig = (this.theme as any).dataCellAlignConfig
@@ -2810,7 +3194,11 @@ export function getStartPosition(node) {
 
 export class SummaryCell extends CustomDataCell {
   getTextStyle() {
-    const textStyle = cloneDeep(this.theme.colCell.bolderText)
+    // 总计沿用表头外观，但仍需按数据单元格的可用宽度处理文字溢出。
+    const textStyle = {
+      ...this.getCellTextWordWrapStyle(),
+      ...cloneDeep(this.theme.colCell.bolderText)
+    }
     const dataCellAlignConfig = (this.theme as any).dataCellAlignConfig
     if (dataCellAlignConfig) {
       const align = dataCellAlignConfig[this.meta.valueField]
@@ -2885,19 +3273,32 @@ export const getColumns = (fields, cols: Array<ColumnNode>): Array<ColumnNode> =
   return result
 }
 
+const imageCellStates = new WeakMap<object, { image: HTMLImageElement; shape?: GImage }>()
+
 export function drawImage() {
+  const previous = imageCellStates.get(this)
+  if (previous) {
+    previous.image.onload = null
+    if (previous.shape && !previous.shape.destroyed) {
+      previous.shape.destroy()
+    }
+  }
   const img = new Image()
+  const state: { image: HTMLImageElement; shape?: GImage } = { image: img }
+  imageCellStates.set(this, state)
   const {x, y, width, height, fieldValue} = this.meta
-  img.src = fieldValue as string
   img.setAttribute('crossOrigin', 'anonymous')
   img.onload = () => {
-    this.children?.length && this.removeChildren()
+    // 单元格可能被复用或销毁，忽略旧请求，避免旧图片覆盖新数据。
+    if (this.destroyed || imageCellStates.get(this) !== state) {
+      return
+    }
     const {width: imgWidth, height: imgHeight} = img
     const ratio = Math.max(imgWidth / width, imgHeight / height)
     // 不铺满，部分留白
     const imgShowWidth = (imgWidth / ratio) * 0.8
     const imgShowHeight = (imgHeight / ratio) * 0.8
-    this.appendChild(new GImage({
+    state.shape = new GImage({
       style: {
         x: x + (imgShowWidth < width ? (width - imgShowWidth) / 2 : 0),
         y: y + (imgShowHeight < height ? (height - imgShowHeight) / 2 : 0),
@@ -2905,8 +3306,11 @@ export function drawImage() {
         height: imgShowHeight,
         src: img
       }
-    }))
+    })
+    // 只替换图片，保留单元格的背景、边框和交互图形。
+    this.appendChild(state.shape)
   }
+  img.src = fieldValue as string
 }
 
 export function mappingColorCustom(value, defaultColor, field, type, filedValueMap?, rowData?) {

@@ -30,7 +30,7 @@ class ShortcutOption {
     this.busiRecordMap = {
       recent: {
         url: '/dataVisualization/findRecent',
-        busiList: ['panel', 'screen', 'dataset', 'datasource'],
+        busiList: ['panel', 'screen', 'dataset', 'datasource', 'spreadsheet'],
         dataCache: [],
         columnList: [
           { field: 'type', label: t('datasource.type') },
@@ -41,7 +41,7 @@ class ShortcutOption {
       },
       store: {
         url: '/store/query',
-        busiList: ['panel', 'screen'],
+        busiList: ['panel', 'screen', 'spreadsheet'],
         dataCache: [],
         columnList: [
           { field: 'type', label: t('datasource.type') },

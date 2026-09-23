@@ -57,7 +57,7 @@ public class FieldUtils {
             return 0;// 文本
         }
         // PostgreSQL/Kingbase 数组类型（_ 前缀，如 _int4、_text）按文本处理
-        if (("pg".equalsIgnoreCase(dsType) || "kingbase".equalsIgnoreCase(dsType)) && type.startsWith("_")) {
+        if (("pg".equalsIgnoreCase(dsType) || "kingbase".equalsIgnoreCase(dsType) || "gaussdb".equalsIgnoreCase(dsType)) && type.startsWith("_")) {
             return 0;// 文本
         }
         // Doris/StarRocks 的 TINYINT 是真正的 1 字节整型，而非 MySQL 的布尔 TINYINT(1)

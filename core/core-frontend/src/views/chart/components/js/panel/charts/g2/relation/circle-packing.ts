@@ -2,7 +2,7 @@ import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/uti
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { useI18n } from '@/hooks/web/useI18n'
 import { cloneDeep, defaultsDeep } from 'lodash-es'
-import { Chart as G2Chart, G2Spec } from '@antv/g2'
+import { Chart as G2Chart, G2Spec, MarkComponent, SingleMark } from '@antv/g2'
 import { G2ChartView, G2DrawOptions } from '../../../types/impl/g2'
 import {
   getG2Renderer,
@@ -78,6 +78,7 @@ export class CirclePacking extends G2ChartView {
       const initOptions: G2Spec = {
         type: 'pack',
         autoFit: true,
+        margin: 0,
         data: {
           value: {
             field: t('commons.all'),
@@ -101,6 +102,7 @@ export class CirclePacking extends G2ChartView {
       }
       const options = this.setupOptions(chart, initOptions)
       const newChart = new G2Chart({ container, ...getG2Renderer() })
+      this.configPackLayout(newChart, options)
       handleChartDashboardHidden(chart, options)
       newChart.options(options)
       const handlePointClick = param => {
@@ -124,6 +126,55 @@ export class CirclePacking extends G2ChartView {
       )
       return newChart
     }
+  }
+
+  private configPackLayout(instance: G2Chart, options: G2Spec) {
+    const { library } = instance.getContext()
+    const point = library['mark.point'] as MarkComponent
+    const pack = library['mark.pack']
+    const packPoint: MarkComponent = pointOptions => {
+      const drawPoint = point(pointOptions) as SingleMark
+      return (index, scale, value, coordinate) => {
+        const [width, height] = coordinate.getSize()
+        // 避免根圆描边被 plot 裁切
+        const lineWidth = Math.max(0, Number(pointOptions.style?.lineWidth) || 0)
+        const strokeInset = lineWidth / 2
+        const packWidth = width - lineWidth
+        const packHeight = height - lineWidth
+        if (packWidth <= 0 || packHeight <= 0 || !pointOptions.data.length) {
+          return [[], []]
+        }
+        // 图例占位后才有最终 plot 尺寸，重新 pack
+        let root = pointOptions.data[0]
+        while (root.parent) root = root.parent
+        const packed = pack(
+          {
+            data: root.data,
+            encode: { value: 'value' },
+            layout: 'layout' in options ? options.layout : undefined
+          },
+          { width: packWidth, height: packHeight }
+        )
+        const nodes = new Map(packed.data.map(node => [node.data, node]))
+        const sourceWidth = scale.x.getOptions().domain[1]
+        const sourceHeight = scale.y.getOptions().domain[1]
+        for (const i of index) {
+          const datum = pointOptions.data[i]
+          const node = nodes.get(datum.data) as typeof datum
+          const x = node.x + strokeInset
+          const y = node.y + strokeInset
+          value.x[i] = scale.x.map((x / width) * sourceWidth)
+          value.y[i] = scale.y.map((y / height) * sourceHeight)
+          value.size[i] = node.r
+          // 标签的容纳判断也使用重排后的半径
+          Object.assign(datum, { x, y, r: node.r })
+        }
+        return drawPoint(index, scale, value, coordinate)
+      }
+    }
+    packPoint.props = point.props
+    // 仅替换当前圆形填充图的 point 几何计算
+    library['mark.point'] = packPoint
   }
 
   protected configTheme(chart: Chart, options: G2Spec): G2Spec {
@@ -156,6 +207,8 @@ export class CirclePacking extends G2ChartView {
     const { basicStyle } = parseJson(chart.customAttr)
     const styleOpt = {
       style: {
+        // 根圆填充颜色淡化，避免与子圆同色导致子圆无法辨认
+        fillOpacity: d => (d.depth === 0 ? 0.35 : 1),
         stroke: basicStyle.circleBorderColor,
         lineWidth: basicStyle.circleBorderWidth ?? 0
       },
@@ -414,8 +467,6 @@ export class CirclePacking extends G2ChartView {
       legend: {
         color: {
           ...baseLegend,
-          // pack 半径使用像素尺寸，图例覆盖 Plot 可避免占位压缩坐标后圆形重叠
-          dataeaseLegendOverlayPlot: true,
           zIndex: 1
         }
       },

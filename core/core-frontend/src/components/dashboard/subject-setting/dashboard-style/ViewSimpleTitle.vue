@@ -159,6 +159,7 @@ const fontSizeList = computed(() => {
 })
 
 const changeTitleStyle = modifyName => {
+  dvMainStore.canvasStyleData.component.chartTitle[modifyName] = titleForm.value[modifyName]
   titleForm.value['modifyName'] = modifyName
   emits('onTextChange', titleForm.value)
 }

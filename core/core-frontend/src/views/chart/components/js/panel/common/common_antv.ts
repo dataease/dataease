@@ -12,7 +12,6 @@ import { TooltipOptions } from '@antv/l7plot/dist/lib/types/tooltip'
 import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
 import { add } from 'mathjs'
 import isEmpty from 'lodash-es/isEmpty'
-import _ from 'lodash'
 import type { LegendOptions } from '@antv/l7plot/dist/esm/types/legend'
 import { CategoryLegendListItem } from '@antv/l7plot-component/dist/lib/types/legend'
 import createDom from '@antv/dom-util/esm/create-dom'
@@ -28,7 +27,7 @@ import { Scene } from '@antv/l7-scene'
 import { type IZoomControlOption } from '@antv/l7-component'
 import { InteractionEvent, PositionType } from '@antv/l7-core'
 import { centroid } from '@turf/centroid'
-import { defaults, find, groupBy, map, uniq } from 'lodash-es'
+import { assign, defaults, filter, find, groupBy, map, uniq } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 import { isMobile } from '@/utils/utils'
 import { ChartEvent } from '@antv/g2'
@@ -50,6 +49,8 @@ import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 import { Renderer as SVGRenderer } from '@antv/g-svg'
 import { Renderer as CanvasRenderer } from '@antv/g-canvas'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { bindMapTooltipPosition } from '../charts/map/tooltip-position'
+import { SvgGradientPlugin } from './svg-gradient-plugin'
 
 const { t: tI18n } = useI18n()
 
@@ -61,7 +62,10 @@ const { t: tI18n } = useI18n()
 export function getG2Renderer() {
   const dvMainStore = dvMainStoreWithOut()
   const enableSvgRenderer = dvMainStore?.canvasStyleData?.enableSvgRenderer
-  return enableSvgRenderer ? { renderer: new SVGRenderer() } : {}
+  if (!enableSvgRenderer) return {}
+  const renderer = new SVGRenderer()
+  renderer.registerPlugin(new SvgGradientPlugin())
+  return { renderer }
 }
 
 const G2_TOOLTIP_CAROUSEL_CHART_TYPES = {
@@ -1125,9 +1129,37 @@ const dimensionSliderFilter = ({
   }
 }
 
-// G2 将 touchstart 转为 pointerdown 时仍保留 TouchEvent，需在 Slider 读取坐标前转换为 Touch
-export const installG2SliderTouchAdapter = (chart: G2Chart) => {
+// 统一适配缩略轴触摸事件，并在鼠标移出画布时结束拖动
+export const installG2SliderAdapter = (chart: G2Chart) => {
   const boundTargets = new WeakSet<object>()
+  let activeSlider: { onDragEnd: () => void } | undefined
+  let dragCanvas: Element | undefined
+  const endMouseDrag = () => {
+    const slider = activeSlider
+    activeSlider = undefined
+    document.removeEventListener('pointermove', onMouseMove, true)
+    document.removeEventListener('pointerup', endMouseDrag, true)
+    document.removeEventListener('pointercancel', endMouseDrag, true)
+    dragCanvas?.removeEventListener('pointerleave', endMouseDrag)
+    dragCanvas = undefined
+    // 复用 AntV Slider 的松手处理，移除其移动监听，鼠标返回后须重新按下
+    slider?.onDragEnd()
+  }
+  const onMouseMove = (event: PointerEvent) => {
+    if (!dragCanvas || event.pointerType !== 'mouse') {
+      return
+    }
+    const { left, right, top, bottom } = dragCanvas.getBoundingClientRect()
+    // 捕获阶段先结束拖动，避免底层读取画布外的 offset 坐标后跳变；边界坐标为 0 时也停止
+    if (
+      event.clientX <= left ||
+      event.clientX >= right ||
+      event.clientY <= top ||
+      event.clientY >= bottom
+    ) {
+      endMouseDrag()
+    }
+  }
   const bindSliders = () => {
     const { canvas } = chart.getContext()
     const sliders = Array.from(canvas?.document?.getElementsByClassName?.('slider') || []) as any[]
@@ -1143,9 +1175,23 @@ export const installG2SliderTouchAdapter = (chart: G2Chart) => {
         target.addEventListener(
           'pointerdown',
           event => {
+            if (event.pointerType === 'mouse' && typeof slider.onDragEnd === 'function') {
+              endMouseDrag()
+              const canvasElement = chart.getContext().canvas?.getContextService()?.getDomElement()
+              if (canvasElement instanceof Element) {
+                activeSlider = slider
+                dragCanvas = canvasElement
+                document.addEventListener('pointermove', onMouseMove, true)
+                document.addEventListener('pointerup', endMouseDrag, true)
+                document.addEventListener('pointercancel', endMouseDrag, true)
+                // 不使用捕获，避免 SVG 子图元的离开事件提前结束拖动
+                dragCanvas.addEventListener('pointerleave', endMouseDrag)
+              }
+            }
             if (event.pointerType !== 'touch') {
               return
             }
+            // G2 转换后的 pointerdown 仍保留 TouchEvent，需在 Slider 读取坐标前转换为 Touch
             const touch = event.nativeEvent?.touches?.[0] || event.nativeEvent?.changedTouches?.[0]
             if (!touch) {
               return
@@ -1159,7 +1205,10 @@ export const installG2SliderTouchAdapter = (chart: G2Chart) => {
   }
   chart.on(ChartEvent.AFTER_RENDER, bindSliders)
   bindSliders()
-  return () => chart.off(ChartEvent.AFTER_RENDER, bindSliders)
+  return () => {
+    endMouseDrag()
+    chart.off(ChartEvent.AFTER_RENDER, bindSliders)
+  }
 }
 
 // 分类维度缩略轴统一入口：按离散维度域过滤，避免 G2 默认比例过滤导致标签和数据错位
@@ -1269,14 +1318,13 @@ export function getAnalyse(chart: Chart) {
     const dynamicLineFields = assistLineArr
       .filter(ele => ele.field === '1')
       .map(item => item.fieldId)
-    const quotaFields = _.filter(chart.yAxis, ele => ele.summary !== '' && ele.id !== '-1')
-    const quotaExtFields = _.filter(chart.yAxisExt, ele => ele.summary !== '' && ele.id !== '-1')
+    const quotaFields = filter(chart.yAxis, ele => ele.summary !== '' && ele.id !== '-1')
+    const quotaExtFields = filter(chart.yAxisExt, ele => ele.summary !== '' && ele.id !== '-1')
     const dynamicLines = chart.data.dynamicAssistLines?.filter(item => {
       return (
         dynamicLineFields?.includes(item.fieldId) &&
-        (!!_.find(quotaFields, d => d.id === item.fieldId) ||
-          (!!_.find(quotaExtFields, d => d.id === item.fieldId) &&
-            chart.type.includes('chart-mix')))
+        (!!find(quotaFields, d => d.id === item.fieldId) ||
+          (!!find(quotaExtFields, d => d.id === item.fieldId) && chart.type.includes('chart-mix')))
       )
     })
     const lines = fixedLines.concat(dynamicLines || [])
@@ -1344,11 +1392,10 @@ export function getAnalyseHorizontal(chart: Chart) {
     const dynamicLineFields = assistLineArr
       .filter(ele => ele.field === '1')
       .map(item => item.fieldId)
-    const quotaFields = _.filter(chart.yAxis, ele => ele.summary !== '' && ele.id !== '-1')
+    const quotaFields = filter(chart.yAxis, ele => ele.summary !== '' && ele.id !== '-1')
     const dynamicLines = chart.data.dynamicAssistLines?.filter(
       item =>
-        dynamicLineFields?.includes(item.fieldId) &&
-        !!_.find(quotaFields, d => d.id === item.fieldId)
+        dynamicLineFields?.includes(item.fieldId) && !!find(quotaFields, d => d.id === item.fieldId)
     )
     const lines = fixedLines.concat(dynamicLines || [])
 
@@ -1380,6 +1427,13 @@ export function getAnalyseHorizontal(chart: Chart) {
     })
   }
   return assistLine
+}
+
+// 辅助线统一使用完全不透明的 2px 描边，覆盖 G2 默认样式
+export const ASSIST_LINE_STYLE = {
+  opacity: 1,
+  strokeOpacity: 1,
+  lineWidth: 2
 }
 
 export function getLineDash(type) {
@@ -1473,27 +1527,7 @@ export function configL7Tooltip(chart: Chart): TooltipOptions {
     }, {}) as Record<string, SeriesFormatter>
   const container = document.getElementById(chart.container)
   if (container) {
-    container.addEventListener('mousemove', event => {
-      const rect = container.getBoundingClientRect()
-      const mouseX = event.clientX - rect.left
-      const mouseY = event.clientY - rect.top
-      const tooltipElement = container.getElementsByClassName('l7plot-tooltip-container')
-      for (let i = 0; i < tooltipElement?.length; i++) {
-        const element = tooltipElement[i] as HTMLElement
-        const isNearRightEdge = container.clientWidth - mouseX <= element.clientWidth
-        const isNearBottomEdge = container.clientHeight - mouseY <= element.clientHeight
-        let transform = ''
-        if (isNearRightEdge) {
-          transform += 'translateX(-120%) '
-        }
-        if (isNearBottomEdge) {
-          transform += 'translateY(-100%) '
-        }
-        if (transform) {
-          element.style.transform = transform.trim()
-        }
-      }
-    })
+    bindMapTooltipPosition(container, '.l7plot-tooltip-container')
   }
   return {
     customTitle(data) {
@@ -1544,6 +1578,265 @@ export function configL7Tooltip(chart: Chart): TooltipOptions {
       }
     }
   }
+}
+
+type MapHoverPick = { completed: boolean; isCurrent: () => boolean; onStale: () => void }
+type MapHoverPickingGuard = {
+  pending: number
+  track: (event: MouseEvent, isCurrent: () => boolean, onStale: () => void) => MapHoverPick
+}
+const mapHoverPickingGuards = new WeakMap<Scene, MapHoverPickingGuard>()
+const mapHoverTooltipBindings = new WeakMap<HTMLElement, () => void>()
+
+function getMapHoverPickingGuard(scene: Scene): MapHoverPickingGuard {
+  const existing = mapHoverPickingGuards.get(scene)
+  if (existing) {
+    return existing
+  }
+  const states = new WeakMap<MouseEvent, MapHoverPick>()
+  const guard: MapHoverPickingGuard = {
+    pending: 0,
+    track(event, isCurrent, onStale) {
+      const state = { completed: false, isCurrent, onStale }
+      states.set(event, state)
+      return state
+    }
+  }
+  const picking = scene.getServiceContainer().pickingService
+  const originalPick = picking.pickFromPickingFBO
+  const originalTrigger = picking.triggerHoverOnLayer
+  let destroyed = false
+  // 只适配当前 Scene 的公开拾取入口，等待像素读取完成，并拦截过期事件
+  const pick: typeof originalPick = async (layer, target) => {
+    guard.pending++
+    const previousPickId = layer.getCurrentPickId()
+    try {
+      return await originalPick.call(picking, layer, target)
+    } finally {
+      guard.pending--
+      const state = states.get(target.target as MouseEvent)
+      if (state) {
+        state.completed = true
+        if (!state.isCurrent()) {
+          // 过期读取也会修改 L7 命中缓存，还原后下次才能正确发出 enter/out
+          layer.setCurrentPickId(previousPickId)
+          state.onStale()
+        }
+      }
+      if (destroyed && !guard.pending) {
+        restore()
+      }
+    }
+  }
+  const trigger: typeof originalTrigger = (layer, target) => {
+    const event = (target as typeof target & { target?: MouseEvent }).target
+    const state = event && states.get(event)
+    if (!destroyed && (!state || state.isCurrent())) {
+      originalTrigger.call(picking, layer, target)
+    }
+  }
+  picking.pickFromPickingFBO = pick
+  picking.triggerHoverOnLayer = trigger
+  mapHoverPickingGuards.set(scene, guard)
+  // 重绘复用同一 Scene 的适配器，避免重复包装；销毁时还原原方法
+  const restore = () => {
+    if (picking.pickFromPickingFBO === pick) {
+      picking.pickFromPickingFBO = originalPick
+    }
+    if (picking.triggerHoverOnLayer === trigger) {
+      picking.triggerHoverOnLayer = originalTrigger
+    }
+    mapHoverPickingGuards.delete(scene)
+  }
+  scene.once('destroy', () => {
+    destroyed = true
+    if (!guard.pending) {
+      restore()
+    }
+  })
+  return guard
+}
+
+export function bindMapHoverTooltipRefresh(
+  containerId: string,
+  scene: Scene,
+  hideTooltip: () => void
+) {
+  const container = document.getElementById(containerId)
+  if (!container) {
+    return
+  }
+  mapHoverTooltipBindings.get(container)?.()
+  let disposed = false
+  let listening = false
+  let replaying = false
+  let frame = 0
+  let revision = 0
+  let remainingPicks = 0
+  let guard: MapHoverPickingGuard
+  let request: { event: MouseEvent; state: MapHoverPick }
+  let pointer: { clientX: number; clientY: number }
+  const events = ['camerachange', 'viewchange', 'zoomchange', 'moveend', 'zoomend', 'dragend']
+  const controlSelector =
+    '.l7-control, .tdt-control, .amap-toolbar, .mapboxgl-control-container, .maplibregl-control-container'
+  const track = (event: MouseEvent) => {
+    const currentRevision = revision
+    return guard.track(
+      event,
+      () => !disposed && !!pointer && revision === currentRevision,
+      () => {
+        // 原生鼠标检测也可能在读取像素前忙碌，过期后补查最后一次鼠标位置
+        if (!disposed && pointer) {
+          schedule()
+        }
+      }
+    )
+  }
+  const clearPointer = () => {
+    revision++
+    pointer = undefined
+    request = undefined
+    remainingPicks = 0
+    cancelAnimationFrame(frame)
+    frame = 0
+  }
+  const dismiss = () => {
+    clearPointer()
+    if (!disposed) {
+      hideTooltip()
+    }
+  }
+  const refresh = () => {
+    frame = 0
+    if (disposed || !pointer || !guard || !container.isConnected) {
+      return
+    }
+    const mapContainer = scene.getMapContainer()
+    const target = document.elementFromPoint(pointer.clientX, pointer.clientY)
+    const bounds = mapContainer?.getBoundingClientRect()
+    if (
+      !mapContainer ||
+      !target ||
+      !container.contains(target) ||
+      target.closest(controlSelector) ||
+      pointer.clientX < bounds.left ||
+      pointer.clientX >= bounds.right ||
+      pointer.clientY < bounds.top ||
+      pointer.clientY >= bounds.bottom
+    ) {
+      dismiss()
+      return
+    }
+    const { interactionService, layerService } = scene.getServiceContainer()
+    // 等待实际拾取及绘制完成，不能把被 L7 跳过的事件计为一次成功检测
+    if (guard.pending || interactionService.indragging || layerService.alreadyInRendering) {
+      frame = requestAnimationFrame(refresh)
+      return
+    }
+    if (!layerService.needPick('mousemove') || !layerService.getShaderPickStat()) {
+      remainingPicks = 0
+      request = undefined
+      return
+    }
+    if (request?.state.completed) {
+      remainingPicks--
+      request = undefined
+    }
+    if (remainingPicks <= 0) {
+      return
+    }
+    if (!request) {
+      const event = new MouseEvent('mousemove', {
+        bubbles: true,
+        clientX: pointer.clientX,
+        clientY: pointer.clientY
+      })
+      request = { event, state: track(event) }
+    }
+    replaying = true
+    try {
+      // 未完成的请求保留原标识，忙碌时被忽略也不会消耗检测次数
+      mapContainer.dispatchEvent(request.event)
+    } finally {
+      replaying = false
+    }
+    if (!disposed && pointer && !frame) {
+      frame = requestAnimationFrame(refresh)
+    }
+  }
+  const schedule = () => {
+    revision++
+    request = undefined
+    if (!disposed && pointer) {
+      // L7 跨边界先发 enter/out，再发 tooltip 使用的 move/unmove，需完成两次拾取
+      remainingPicks = 2
+      if (!frame) {
+        frame = requestAnimationFrame(refresh)
+      }
+    }
+  }
+  const recordPointer = (event: MouseEvent) => {
+    if (replaying || disposed) {
+      return
+    }
+    const target = event.target
+    if (target instanceof Element && target.closest('.l7plot-tooltip-container, .l7-popup')) {
+      // 保留移入提示内容查看完整文本的行为，暂停地图重拾取但不隐藏弹窗
+      clearPointer()
+      return
+    }
+    if (target instanceof Element && target.closest(controlSelector)) {
+      dismiss()
+      return
+    }
+    const changed = pointer?.clientX !== event.clientX || pointer?.clientY !== event.clientY
+    pointer = { clientX: event.clientX, clientY: event.clientY }
+    if (changed) {
+      revision++
+      request = undefined
+      // 移动期间旧检测尚未返回时，结果失效后仍需补查最新位置
+      if (guard?.pending || remainingPicks > 0) {
+        schedule()
+      }
+    }
+    if (guard && event.type === 'mousemove') {
+      track(event)
+    }
+  }
+  const bind = () => {
+    if (!disposed && !listening) {
+      guard = getMapHoverPickingGuard(scene)
+      events.forEach(event => scene.on(event, schedule))
+      listening = true
+    }
+  }
+  const dispose = () => {
+    disposed = true
+    revision++
+    cancelAnimationFrame(frame)
+    container.removeEventListener('mouseleave', dismiss)
+    container.removeEventListener('mousemove', recordPointer, true)
+    container.removeEventListener('wheel', recordPointer, true)
+    scene.off('loaded', bind)
+    scene.off('destroy', dispose)
+    if (listening) {
+      events.forEach(event => scene.off(event, schedule))
+    }
+    if (mapHoverTooltipBindings.get(container) === dispose) {
+      mapHoverTooltipBindings.delete(container)
+    }
+  }
+  container.addEventListener('mouseleave', dismiss)
+  container.addEventListener('mousemove', recordPointer, true)
+  container.addEventListener('wheel', recordPointer, { capture: true, passive: true })
+  mapHoverTooltipBindings.set(container, dispose)
+  scene.once('destroy', dispose)
+  if (scene.loaded) {
+    bind()
+  } else {
+    scene.once('loaded', bind)
+  }
+  return dispose
 }
 
 export function handleGeoJson(
@@ -1747,6 +2040,31 @@ export class CustomZoom extends Zoom {
 }
 
 class CustomTileZoom extends CustomZoom {
+  private attributionObserver?: ResizeObserver
+
+  onAdd() {
+    const container = super.onAdd()
+    const attributionCorner = this.mapsService
+      .getContainer()
+      ?.querySelector<HTMLElement>('.maplibregl-ctrl-bottom-right')
+    if (attributionCorner) {
+      // MapLibre 版权栏与 L7 控件独立布局，按实际高度避让，兼容换行和画布缩放。
+      const updateOffset = () => {
+        container.style.marginBottom = `${attributionCorner.offsetHeight + 8}px`
+      }
+      updateOffset()
+      this.attributionObserver = new ResizeObserver(updateOffset)
+      this.attributionObserver.observe(attributionCorner)
+    }
+    return container
+  }
+
+  onRemove() {
+    this.attributionObserver?.disconnect()
+    this.attributionObserver = undefined
+    super.onRemove()
+  }
+
   resetButtonGroup(container) {
     DOM.clearChildren(container)
     const zoomIn = () => this.mapsService.zoomIn({ duration: 0 })
@@ -1881,7 +2199,8 @@ function configOnlineMapInteraction(scene: Scene, mapType: string | undefined, e
 }
 
 const L7_SCALED_INTERACTION_FLAG = '__deScaledInteractionPatched'
-const L7_SCALED_INTERACTION_CHARTS = ['map', 'bubble-map']
+// 符号地图也使用 L7 picking，画布缩放后必须还原鼠标命中坐标
+const L7_SCALED_INTERACTION_CHARTS = ['map', 'bubble-map', 'symbolic-map']
 
 function getScaledL7ContainerPoint(
   container: HTMLElement,
@@ -2828,7 +3147,7 @@ export function configAxisLabelLengthLimit(chart, plot, triggerObjName) {
       AXIS_LABEL_TOOLTIP_STYLE.backgroundColor = tooltip.backgroundColor
       AXIS_LABEL_TOOLTIP_STYLE.boxShadow = `${tooltip.backgroundColor} 0px 0px 5px`
       AXIS_LABEL_TOOLTIP_STYLE.maxWidth = '200px'
-      _.assign(labelTooltipDom.style, AXIS_LABEL_TOOLTIP_STYLE)
+      assign(labelTooltipDom.style, AXIS_LABEL_TOOLTIP_STYLE)
 
       // 将 tooltip 添加到父节点
       parentNode.appendChild(labelTooltipDom)
@@ -3623,6 +3942,8 @@ export function handleChartDashboardHidden(chart: Chart, options) {
     switch (type) {
       case 'stock-line':
         hideLegendAndAxis(options)
+        // 右侧缩略图与普通 G2 图表一致，不保留隐藏子图形的 Tooltip 命中
+        options.children?.forEach(hideChildrenLabels)
         options.children?.[1] && (options.children[1].slider = false)
         break
       case 'bullet-graph':

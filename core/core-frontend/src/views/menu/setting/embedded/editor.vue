@@ -36,7 +36,7 @@ const rule = reactive<FormRules>({
   name: [
     {
       required: true,
-      message: t('common.require'),
+      message: t('common.please_input') + t('common.empty') + t('system.application_name'),
       trigger: 'blur'
     },
     {
@@ -49,7 +49,7 @@ const rule = reactive<FormRules>({
   domain: [
     {
       required: true,
-      message: t('common.require'),
+      message: t('common.please_input') + t('common.empty') + t('system.cross_domain_settings'),
       trigger: 'blur'
     },
     {
@@ -63,7 +63,7 @@ const rule = reactive<FormRules>({
   secretLength: [
     {
       required: true,
-      message: t('common.require'),
+      message: t('common.please_input') + t('common.empty') + t('system.secret_length'),
       trigger: 'blur'
     }
   ]
@@ -184,11 +184,21 @@ defineExpose({
       label-position="top"
     >
       <el-form-item :label="t('system.application_name')" prop="name">
-        <el-input v-model="state.form.name" :placeholder="t('common.please_input')" />
+        <el-input
+          v-model="state.form.name"
+          :placeholder="
+            t('common.please_input') + $t('common.empty') + $t('system.application_name')
+          "
+        />
       </el-form-item>
 
       <el-form-item :label="t('system.cross_domain_settings')" prop="domain">
-        <el-input v-model="state.form.domain" :placeholder="t('common.please_input')" />
+        <el-input
+          v-model="state.form.domain"
+          :placeholder="
+            t('common.please_input') + t('common.empty') + t('system.cross_domain_settings')
+          "
+        />
       </el-form-item>
 
       <el-form-item :label="t('system.secret_length')" prop="secretLength">
@@ -199,7 +209,7 @@ defineExpose({
           class="text-left edit-all-line"
           :min="4"
           :max="32"
-          :placeholder="t('common.inputText')"
+          :placeholder="t('common.please_input') + t('common.empty') + t('system.secret_length')"
           controls-position="right"
           type="number"
         />

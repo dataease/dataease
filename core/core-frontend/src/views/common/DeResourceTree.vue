@@ -7,7 +7,7 @@ import dvDelete from '@/assets/svg/dv-delete.svg'
 import dvMove from '@/assets/svg/dv-move.svg'
 import dvCancelPublish from '@/assets/svg/icon_undo_outlined.svg'
 import { treeDraggbleChart } from '@/utils/treeDraggbleChart'
-import { throttle } from 'lodash-es'
+import { cloneDeep, filter, forEach, throttle, union } from 'lodash-es'
 import dvRename from '@/assets/svg/dv-rename.svg'
 import dvDashboardSpine from '@/assets/svg/dv-dashboard-spine.svg'
 import dvDashboardSpineDisabled from '@/assets/svg/dv-dashboard-spine-disabled.svg'
@@ -54,7 +54,6 @@ import { useShareStoreWithOut } from '@/store/modules/share'
 const shareStore = useShareStoreWithOut()
 const interactiveStore = interactiveStoreWithOut()
 import { useI18n } from '@/hooks/web/useI18n'
-import _ from 'lodash'
 import DeResourceCreateOptV2 from '@/views/common/DeResourceCreateOptV2.vue'
 import { useCache } from '@/hooks/web/useCache'
 import { findParentIdByChildIdRecursive, onInitReady } from '@/utils/canvasUtils'
@@ -337,16 +336,16 @@ const getTree = async (notOpen = false) => {
 }
 
 const flattedTree = computed<BusiTreeNode[]>(() => {
-  return _.filter(flatTree(state.resourceTree), node => node.leaf)
+  return filter(flatTree(state.resourceTree), node => node.leaf)
 })
 
 const hasData = computed<boolean>(() => flattedTree.value.length > 0)
 
 function flatTree(tree: BusiTreeNode[]) {
-  let result = _.cloneDeep(tree)
-  _.forEach(tree, node => {
+  let result = cloneDeep(tree)
+  forEach(tree, node => {
     if (node.children && node.children.length > 0) {
-      result = _.union(result, flatTree(node.children))
+      result = union(result, flatTree(node.children))
     }
   })
   return result

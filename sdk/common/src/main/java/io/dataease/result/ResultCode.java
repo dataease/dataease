@@ -41,6 +41,7 @@ public enum ResultCode {
 
     /* 权限错误：70001-79999 */
     PERMISSION_NO_ACCESS(70001, "无访问权限"),
+    RESOURCE_NOT_EXIST(70002, "资源不存在或已经被删除"),
 
     USER_NO_QUOTA(80001, "没有用户配额");
 

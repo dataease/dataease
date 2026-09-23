@@ -135,12 +135,14 @@ export const copyStore = defineStore('copy', {
               return outerIdMap[matched] || matched
             })
           )
-          const cascadeStr = JSON.stringify(comp.cascade)
-          comp.cascade = JSON.parse(
-            cascadeStr.replace(idReplaceReg, function (matched) {
-              return outerIdMap[matched] || matched
-            })
-          )
+          if (comp.cascade) {
+            const cascadeStr = JSON.stringify(comp.cascade)
+            comp.cascade = JSON.parse(
+              cascadeStr.replace(idReplaceReg, function (matched) {
+                return outerIdMap[matched] || matched
+              })
+            )
+          }
         }
         // Group 内层组件递归处理
         if (comp.component === 'Group' && Array.isArray(comp.propValue)) {

@@ -8,9 +8,10 @@ import { ref, reactive, onMounted, onBeforeUnmount, watch, unref, computed, next
 import { useI18n } from '@/hooks/web/useI18n'
 import CodeMirror from '@/views/visualized/data/dataset/form/CodeMirror.vue'
 import { getFunction } from '@/api/dataset'
+import { validateCalcField } from '@/api/chart'
+import { ElMessage } from 'element-plus-secondary'
 import { fieldType } from '@/utils/attr'
 import { cloneDeep } from 'lodash-es'
-import { guid } from '@/views/visualized/data/dataset/form/util'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 
 export interface CalcFieldType {
@@ -69,6 +70,34 @@ const formQuota = reactive({
 const dialogFormVisible = ref(false)
 
 const fieldForm = reactive<CalcFieldType>({ ...(defaultForm as CalcFieldType) })
+const validating = ref(false)
+let validationVersion = 0
+
+const verify = async (datasetId: string, chartId: string) => {
+  if (validating.value || !datasetId || !chartId) return
+  setFieldForm()
+  if (!fieldForm.originName.trim()) {
+    ElMessage.error(t('data_set.cannot_be_empty_de_'))
+    return
+  }
+  const expression = mirror.value.state.doc.toString()
+  const version = ++validationVersion
+  validating.value = true
+  try {
+    // 单独执行当前公式的查询，引用字段由后端按数据集和图表加载。
+    await validateCalcField({
+      datasetId,
+      chartId,
+      originName: fieldForm.originName,
+      params: fieldForm.params
+    })
+    if (version === validationVersion && expression === mirror.value.state.doc.toString()) {
+      ElMessage.success(t('data_set.validation_succeeded'))
+    }
+  } finally {
+    if (version === validationVersion) validating.value = false
+  }
+}
 
 const setFieldForm = () => {
   const str = mirror.value.state.doc.toString()
@@ -97,6 +126,8 @@ const setNameIdTrans = (from, to, originName, name2Auto?: string[]) => {
 
 let quotaDataList = []
 const initEdit = (obj, quotaData) => {
+  validationVersion++
+  validating.value = false
   formQuota.id = null
   Object.assign(fieldForm, { ...defaultForm, ...obj })
   state.quotaData = quotaData.concat(fieldForm.params || [])
@@ -134,6 +165,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  validationVersion++
   mirror.value.destroy?.()
 })
 
@@ -186,6 +218,8 @@ watch(
 )
 
 defineExpose({
+  verify,
+  validating,
   initEdit,
   setFieldForm,
   fieldForm

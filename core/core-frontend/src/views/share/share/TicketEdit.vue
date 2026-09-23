@@ -44,7 +44,7 @@ const rule = reactive<FormRules>({
   exp: [
     {
       required: true,
-      message: t('common.require'),
+      message: t('common.please_input') + t('common.empty') + t('visualization.over_time'),
       trigger: 'blur'
     }
   ]

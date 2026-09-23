@@ -94,6 +94,9 @@ declare interface ChartTextStyle {
  * 图例设置
  */
 declare interface ChartLegendStyle {
+  displayMode?: 'pagination' | 'tile'
+  tileOverflow?: 'scroll' | 'adaptive'
+
   /**
    * 显隐
    */
@@ -230,6 +233,10 @@ declare interface AxisLine {
    * 轴线显示
    */
   show: boolean
+  /**
+   * 轴线颜色来源，缺失时按历史自定义颜色处理
+   */
+  colorMode?: 'theme' | 'custom'
   /**
    * 轴线样式设置
    */

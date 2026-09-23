@@ -168,7 +168,6 @@ export class TableClipboardService extends Disposable {
       ElMessage.success(clipboard.mode === 'copy' ? '表格复制成功' : '表格移动成功')
       return true
     } catch (error) {
-      console.error('[TableClipboardService] Failed to paste table:', error)
       ElMessage.error(`粘贴表格失败：${error instanceof Error ? error.message : '未知错误'}`)
       return false
     } finally {

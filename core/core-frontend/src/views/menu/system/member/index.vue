@@ -178,7 +178,7 @@ const confirmRole = async (row: any) => {
     await search();
     ElMessage.success(t("common.save_success"));
   } catch (e) {
-    ElMessage.error(t("common.save_failed"));
+    ElMessage.error(t("commons.save_failed"));
   }
 };
 const debounceConfirmRole = debounce(confirmRole, 300);

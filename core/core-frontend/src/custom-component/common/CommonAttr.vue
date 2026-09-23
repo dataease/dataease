@@ -169,6 +169,7 @@ onMounted(() => {
           :themes="themes"
           :common-background-pop="element.commonBackground"
           component-position="component"
+          :component-name="element.component"
           @onBackgroundChange="onBackgroundChange"
           :background-color-picker-width="backgroundColorPickerWidth"
           :background-border-select-width="backgroundBorderSelectWidth"

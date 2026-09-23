@@ -87,15 +87,15 @@ const handleDelete = async () => {
   }
 
   try {
-    await ElMessageBox.confirm(
-      '确定删除该组件吗？删除后不可恢复。',
-      '删除组件',
-      {
-        confirmButtonText: t('commons.confirm'),
-        cancelButtonText: t('commons.cancel'),
-        type: 'warning'
-      }
-    )
+    await ElMessageBox.confirm(t('commons.prompt'), {
+      tip: '确定删除该组件吗？删除后不可恢复。',
+      confirmButtonText: t('commons.delete'),
+      cancelButtonText: t('commons.cancel'),
+      confirmButtonType: 'danger',
+      type: 'warning',
+      autofocus: false,
+      showClose: false
+    })
   } catch {
     return
   }
@@ -130,7 +130,6 @@ const handleCut = () => {
   emitter.emit(SPREADSHEET_EVENTS.CUT_PLUGIN_TABLE, payload.value)
   hide()
 }
-
 </script>
 
 <template>

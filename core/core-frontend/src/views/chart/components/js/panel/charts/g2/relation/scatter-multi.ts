@@ -13,7 +13,7 @@ import { valueFormatter } from '../../../../formatter'
 import { createTooltipWrapper } from '../bar/barUtil'
 
 const { t } = useI18n()
-const DEFAULT_LIGHTNESS_RANGE = [0.25, 1]
+const DEFAULT_LIGHTNESS_RANGE = [0.2, 1]
 const DEFAULT_BUBBLE_SIZE_RANGE = [5, 30]
 const LABEL_TEXT_FIELD = '__multiScatterLabelText'
 
@@ -256,6 +256,7 @@ export class MultiScatter extends G2ChartView {
     const newChart = new G2Chart({ container, ...getG2Renderer() })
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
+    newChart.attr('clip', true)
     newChart.on('point:click', action)
     if ((options as any).labels) {
       newChart.on('label:click', e => {
@@ -334,10 +335,11 @@ export class MultiScatter extends G2ChartView {
       }
     }
     defaultsDeep(options, {
+      // 使用 1px 不透明白色描边
       style: {
-        stroke: 'transparent',
-        strokeOpacity: 0,
-        lineWidth: 0
+        stroke: '#FFFFFF',
+        strokeOpacity: 1,
+        lineWidth: 1
       }
     })
     if (chart.extBubble?.length || hasBubbleMetric) {
@@ -375,6 +377,12 @@ export class MultiScatter extends G2ChartView {
           },
           strokeOpacity: 0,
           shadowBlur: 10
+        }
+      })
+    } else {
+      defaultsDeep(options, {
+        style: {
+          fillOpacity: 0.95
         }
       })
     }
@@ -618,7 +626,7 @@ export class MultiScatter extends G2ChartView {
     return defaultsDeep(options, {
       axis: {
         x: {
-          ...this.getAxisStyle(xAxis),
+          ...this.getAxisStyle(chart, xAxis),
           labelFormatter: d => formatLabelValue(d, xAxis.axisLabelFormatter)
         }
       }
@@ -633,7 +641,7 @@ export class MultiScatter extends G2ChartView {
     const axisOption = {
       axis: {
         y: {
-          ...this.getAxisStyle(yAxis),
+          ...this.getAxisStyle(chart, yAxis),
           dataeaseAxisTitleSafeMargin: true,
           ...this.getOverlapGridFilter(xAxis),
           labelFormatter: d => valueFormatter(d, yAxis.axisLabelFormatter)
@@ -718,7 +726,7 @@ export class MultiScatter extends G2ChartView {
     return result
   }
 
-  private getAxisStyle(axisStyle) {
+  private getAxisStyle(chart: Chart, axisStyle) {
     let lineLineDash = undefined
     if (axisStyle.axisLine.lineStyle.style === 'dashed') {
       lineLineDash = [10, 8]
@@ -738,10 +746,7 @@ export class MultiScatter extends G2ChartView {
       title: axisStyle.nameShow === false ? false : axisStyle.name,
       titleFontSize: axisStyle.fontSize,
       titleFill: axisStyle.color,
-      line: axisStyle.axisLine.show,
-      lineStroke: axisStyle.axisLine.lineStyle.color,
-      lineStrokeOpacity: 1,
-      lineLineWidth: axisStyle.axisLine.lineStyle.width,
+      ...this.getAxisLineStyle(chart, axisStyle),
       lineLineDash,
       label: axisStyle.axisLabel.show,
       labelFill: axisStyle.axisLabel.color,

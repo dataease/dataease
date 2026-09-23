@@ -363,7 +363,7 @@
         </el-row>
       </el-row>
       <el-row class="root-class">
-        <el-button @click="cancel()">{{ t('commons.cancel') }} </el-button>
+        <el-button @click="cancelDialog">{{ t('commons.cancel') }} </el-button>
         <el-button type="primary" @click="save()">{{ t('commons.confirm') }} </el-button>
       </el-row>
     </el-row>
@@ -684,10 +684,6 @@ const paramsCheckedAdaptor = (outerParamsInfo, newBaseFilterInfo, newBaseDataset
   outerParamsInfo['datasetInfo'] = newBaseDatasetInfo
 }
 
-const cancel = () => {
-  state.outerParamsSetVisible = false
-}
-
 const jsonArrayCheck = params => {
   try {
     const result = JSON.parse(params)
@@ -762,7 +758,7 @@ const save = () => {
       showClose: true
     })
     snapshotStore.recordSnapshotCache('renderChart')
-    cancel()
+    cancelDialog()
   })
 }
 

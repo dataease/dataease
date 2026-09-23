@@ -3,6 +3,8 @@ import { formatterItem, valueFormatter } from '@/views/chart/components/js/forma
 import {
   copyContent,
   CustomDataCell,
+  getRowIndex,
+  setupMergedCellHover,
   getSummaryRow,
   SortTooltip,
   SummaryCell,
@@ -18,6 +20,7 @@ import {
 import { S2ChartView, S2DrawOptions } from '@/views/chart/components/js/panel/types/impl/s2'
 import { parseJson } from '@/views/chart/components/js/util'
 import {
+  Frame,
   type LayoutResult,
   S2DataConfig,
   S2Event,
@@ -79,7 +82,8 @@ export class TableNormal extends S2ChartView<TableSheet> {
       ...TABLE_EDITOR_PROPERTY_INNER['table-cell-selector'],
       'tableFreeze',
       'tableColumnFreezeHead',
-      'tableRowFreezeHead'
+      'tableRowFreezeHead',
+      'mergeCells'
     ],
     'summary-selector': ['showSummary', 'summaryLabel']
   }
@@ -116,6 +120,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
     const columns = []
     const meta = []
     const drillFieldMap: Record<string, string> = {}
+    const drillFieldTitleMap: Record<string, string> = {}
     if (chart.drill) {
       // 下钻过滤字段
       const filterFields = chart.drillFilters.map(i => i.fieldId)
@@ -123,7 +128,8 @@ export class TableNormal extends S2ChartView<TableSheet> {
       const drillFieldId = chart.drillFields[0].id
       const drillFieldIndex = chart.xAxis.findIndex(ele => ele.id === drillFieldId)
       // 当前下钻字段
-      const curDrillFieldId = chart.drillFields[filterFields.length].id
+      const currentDrillField = chart.drillFields[filterFields.length]
+      const curDrillFieldId = currentDrillField.id
       const curDrillField = fields.find(ele => ele.id === curDrillFieldId)
       filterFields.push(curDrillFieldId)
       // 移除下钻字段，把当前下钻字段插入到下钻入口位置
@@ -131,6 +137,9 @@ export class TableNormal extends S2ChartView<TableSheet> {
         return !filterFields.includes(ele.id)
       })
       drillFieldMap[curDrillField.dataeaseName] = chart.drillFields[0].dataeaseName
+      // 当前钻取列优先使用钻取配置中的显示名称
+      drillFieldTitleMap[curDrillFieldId] =
+        currentDrillField.chartShowName ?? currentDrillField.name
       fields.splice(drillFieldIndex, 0, curDrillField)
     }
     const axisMap = [...chart.xAxis, ...chart.yAxis].reduce((pre, cur) => {
@@ -143,7 +152,10 @@ export class TableNormal extends S2ChartView<TableSheet> {
       if (f?.hide === true) {
         return
       }
-      columns.push({ field: ele.dataeaseName, title: ele.chartShowName ?? ele.name })
+      columns.push({
+        field: ele.dataeaseName,
+        title: drillFieldTitleMap[ele.id] ?? ele.chartShowName ?? ele.name
+      })
       meta.push({
         field: ele.dataeaseName,
         formatter: function (value) {
@@ -176,7 +188,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
         }
         const nameMap =
           [...chart.xAxis, ...chart.yAxis].reduce((pre, cur) => {
-            pre[cur.dataeaseName] = cur.name
+            pre[cur.dataeaseName] = cur.chartShowName ?? cur.name
             return pre
           }, {}) || {}
         if (headerGroupConfig.meta?.length) {
@@ -222,7 +234,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
       height: containerDom.offsetHeight,
       seriesNumber: {
         enable: tableHeader.showIndex,
-        text: tableHeader.indexLabel ?? t('chart.index')
+        text: tableHeader.indexLabel ?? t('relation.index')
       },
       conditions: this.configConditions(
         chart,
@@ -255,7 +267,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
     // 列宽设置
     s2Options.style = this.configStyle(chart, s2DataConfig)
     // 行列冻结
-    if (tableCell.tableFreeze) {
+    if (tableCell.tableFreeze && !tableCell.mergeCells) {
       s2Options.frozen.colCount = tableCell.tableColumnFreezeHead ?? 0
       s2Options.frozen.rowCount = tableCell.tableRowFreezeHead ?? 0
     }
@@ -263,6 +275,8 @@ export class TableNormal extends S2ChartView<TableSheet> {
     this.configTooltip(chart, s2Options)
     // svg renderer
     this.configRenderer(s2Options)
+    // 总计行加入前计算合并范围，避免总计参与维度合并
+    this.configMergeCells(chart, s2Options, s2DataConfig)
     // 隐藏表头，保留顶部的分割线, 禁用表头横向 resize
     if (tableHeader.showTableHeader === false) {
       s2Options.style.colCell.height = 1
@@ -288,6 +302,9 @@ export class TableNormal extends S2ChartView<TableSheet> {
     this.configSummaryRowAndIndex(chart, pageInfo, s2Options, s2DataConfig)
     // 开始渲染
     const newChart = new TableSheet(containerDom, s2DataConfig, s2Options)
+    if (tableCell.mergeCells && basicStyle.showHoverStyle !== false) {
+      setupMergedCellHover(newChart)
+    }
     // 总计紧贴在单元格后面
     summaryRowStyle(newChart, newData, tableCell, tableHeader, basicStyle.showSummary)
     // 自适应铺满
@@ -321,19 +338,26 @@ export class TableNormal extends S2ChartView<TableSheet> {
           newChart.store.set('lastLayoutResult', undefined)
           return
         }
-        const containerWidth = containerDom.offsetWidth - 1
-        const scale = containerWidth / ev.colsHierarchy.width
-        if (scale <= 1) {
-          // 图库计算的布局宽度已经大于等于容器宽度，不需要再扩大，但是需要处理非整数宽度值，不然会出现透明细线
-          ev.colLeafNodes.reduce((p, n) => {
-            n.width = Math.round(n.width)
-            n.x = p
-            return p + n.width
-          }, 0)
-          return
-        }
+        // 与 S2 画布和左侧边框使用同一宽度口径，避免小数尺寸造成横向溢出
+        const borderWidth = Frame.getVerticalBorderWidth(newChart)
+        const availableWidth = Math.max(0, Math.floor(newChart.options.width - borderWidth))
+        const originalTotalWidth = ev.colLeafNodes.reduce((total, node) => total + node.width, 0)
+        const shouldExpand = originalTotalWidth > 0 && originalTotalWidth < availableWidth
+        let originalWidthSum = 0
+        let assignedWidth = 0
+        ev.colLeafNodes.forEach(node => {
+          if (shouldExpand) {
+            originalWidthSum += node.width
+            // 按累计边界取整，保证列宽为整数且总宽恰好填满可用区域
+            const nextWidth = Math.round((originalWidthSum / originalTotalWidth) * availableWidth)
+            node.width = nextWidth - assignedWidth
+            assignedWidth = nextWidth
+          } else {
+            node.width = Math.round(node.width)
+          }
+        })
+        // 叶子列宽定稿后统一同步坐标、分组宽度和布局总宽
         const totalWidth = ev.colLeafNodes.reduce((p, n) => {
-          n.width = Math.round(n.width * scale)
           n.x = p
           return p + n.width
         }, 0)
@@ -344,12 +368,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
             n.x = getStartPosition(n)
           }
         })
-        // 从最后一列减掉
-        const lastNode = ev.colLeafNodes[ev.colLeafNodes.length - 1]
-        if (totalWidth > containerWidth) {
-          lastNode.width = Math.floor(lastNode.width - (totalWidth - containerWidth))
-        }
-        if (lastNode) ev.colsHierarchy.width = lastNode?.x + lastNode.width
+        ev.colsHierarchy.width = totalWidth
       })
     }
     // click
@@ -434,7 +453,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
     s2Options: S2Options,
     s2DataConfig: S2DataConfig
   ) {
-    const { tableHeader, basicStyle } = parseJson(chart.customAttr)
+    const { tableHeader, basicStyle, tableCell } = parseJson(chart.customAttr)
     const { showSummary, summaryLabel } = basicStyle
     const data = s2DataConfig.data
     const { xAxis, yAxis } = chart
@@ -464,7 +483,12 @@ export class TableNormal extends S2ChartView<TableSheet> {
         return new SummaryCell(viewMeta, sheet)
       }
       if (viewMeta.colIndex === 0 && s2Options.seriesNumber?.enable) {
-        viewMeta.fieldValue = pageInfo.pageSize * (pageInfo.currentPage - 1) + viewMeta.rowIndex + 1
+        if (tableCell.mergeCells) {
+          viewMeta.fieldValue = getRowIndex(s2Options.mergedCellsInfo, viewMeta)
+        } else {
+          viewMeta.fieldValue =
+            pageInfo.pageSize * (pageInfo.currentPage - 1) + viewMeta.rowIndex + 1
+        }
       }
       return new CustomDataCell(viewMeta, sheet)
     }

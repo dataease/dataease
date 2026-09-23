@@ -20,10 +20,143 @@ import { RuntimeOptions } from '@antv/g2/lib/api/runtime'
 const { t } = useI18n()
 
 const DEFAULT_DATA = []
-const toG2GaugeAngle = (angle: number, fallback: number) => {
-  const degree = Number.isFinite(Number(angle)) ? Number(angle) : fallback
-  // DataEase 面板角度按顺时针理解，传给 G2 radial 前先转成其正向角度
-  return (-degree * Math.PI) / 180
+const GAUGE_PADDING = { top: 0, right: 10, bottom: 15, left: 10 }
+const G2_GAUGE_OUTER_RADIUS = 1.15
+const V2_GAUGE_RADIUS = 0.95
+const GAUGE_ANGLE_EPSILON = 1e-10
+const GAUGE_TEXT_PIN_GAP = 12
+const GAUGE_TEXT_LABEL_GAP = 4
+
+type GaugeLayout = {
+  insetLeft: number
+  insetRight: number
+  insetTop: number
+  insetBottom: number
+  centerY: number
+  polarRadius: number
+  arcCenterY: number
+}
+
+const normalizeGaugeAngles = (
+  startDegree: number,
+  endDegree: number,
+  startFallback: number,
+  endFallback: number
+) => {
+  const start = Number.isFinite(Number(startDegree)) ? Number(startDegree) : startFallback
+  let end = Number.isFinite(Number(endDegree)) ? Number(endDegree) : endFallback
+  // 结束角不大于起始角时沿顺时针补足一圈，等角度按整圆处理
+  while (end <= start) {
+    end += 360
+  }
+  return {
+    startAngle: (start * Math.PI) / 180,
+    endAngle: (end * Math.PI) / 180
+  }
+}
+
+const getGaugeUnitBox = (startAngle: number, endAngle: number) => {
+  if (Math.abs(endAngle - startAngle) >= Math.PI * 2 - GAUGE_ANGLE_EPSILON) {
+    return { minX: -1, maxX: 1, minY: -1, maxY: 1 }
+  }
+  const xs = [0, Math.cos(startAngle), Math.cos(endAngle)]
+  const ys = [0, Math.sin(startAngle), Math.sin(endAngle)]
+  for (
+    let angle = Math.min(startAngle, endAngle);
+    angle < Math.max(startAngle, endAngle);
+    angle += Math.PI / 18
+  ) {
+    xs.push(Math.cos(angle))
+    ys.push(Math.sin(angle))
+  }
+  return {
+    minX: Math.min(...xs),
+    maxX: Math.max(...xs),
+    minY: Math.min(...ys),
+    maxY: Math.max(...ys)
+  }
+}
+
+const getGaugeLayout = (
+  containerWidth: number,
+  containerHeight: number,
+  startAngle: number,
+  endAngle: number
+): GaugeLayout | undefined => {
+  if (!Number.isFinite(containerWidth) || !Number.isFinite(containerHeight)) {
+    return
+  }
+  const width = containerWidth - GAUGE_PADDING.left - GAUGE_PADDING.right
+  const height = containerHeight - GAUGE_PADDING.top - GAUGE_PADDING.bottom
+  if (width <= 0 || height <= 0) {
+    return
+  }
+  const box = getGaugeUnitBox(startAngle, endAngle)
+  const boxWidth = box.maxX - box.minX
+  const boxHeight = box.maxY - box.minY
+  if (boxWidth <= 0 || boxHeight <= 0) {
+    return
+  }
+  const left = Math.abs(box.minX) / boxWidth
+  const top = Math.abs(box.minY) / boxHeight
+  const viewCenterX = width / 2
+  const viewCenterY = height / 2
+  let maxRadius: number
+  let centerX: number
+  let centerY: number
+  if (height / boxHeight > width / boxWidth) {
+    maxRadius = width / boxWidth
+    centerX = viewCenterX - (0.5 - left) * width
+    centerY = viewCenterY - (0.5 - top) * maxRadius * boxHeight
+  } else {
+    maxRadius = height / boxHeight
+    centerX = viewCenterX - (0.5 - left) * maxRadius * boxWidth
+    centerY = viewCenterY - (0.5 - top) * height
+  }
+  const polarRadius = maxRadius * V2_GAUGE_RADIUS
+  const coordinateRadius = polarRadius / G2_GAUGE_OUTER_RADIUS
+  return {
+    insetLeft: centerX - coordinateRadius,
+    insetRight: width - centerX - coordinateRadius,
+    insetTop: centerY - coordinateRadius,
+    insetBottom: height - centerY - coordinateRadius,
+    centerY,
+    polarRadius,
+    arcCenterY: (box.minY + box.maxY) / 2
+  }
+}
+const getGaugeTextLayout = (
+  gaugeLayout: GaugeLayout | undefined,
+  containerHeight: number,
+  primaryFontSize: number,
+  proportionFontSize: number
+) => {
+  const hasPrimary = primaryFontSize > 0
+  const hasProportion = proportionFontSize > 0
+  const labelGap = hasPrimary && hasProportion ? GAUGE_TEXT_LABEL_GAP : 0
+  // 两行文本按各自半字号计算基线间距，避免大字号占比覆盖指标
+  const proportionOffsetY =
+    hasPrimary && hasProportion ? primaryFontSize / 2 + labelGap + proportionFontSize / 2 : 0
+  const topExtent = hasPrimary ? primaryFontSize / 2 : proportionFontSize / 2
+  const bottomExtent = hasProportion
+    ? proportionOffsetY + proportionFontSize / 2
+    : primaryFontSize / 2
+  const blockHeight = Math.max(topExtent + bottomExtent, 16)
+  if (!gaugeLayout || !Number.isFinite(containerHeight) || containerHeight <= 0) {
+    return { textY: '60%', proportionOffsetY }
+  }
+  const centerY = GAUGE_PADDING.top + gaugeLayout.centerY
+  const minGroupCenterY = GAUGE_PADDING.top + blockHeight / 2
+  const maxGroupCenterY = containerHeight - GAUGE_PADDING.bottom - blockHeight / 2
+  // 文本块固定在圆心与圆弧之间，缩放时只做连续位移和边界约束
+  const direction = gaugeLayout.arcCenterY <= 0 ? -1 : 1
+  const preferredGroupCenterY = centerY + direction * (GAUGE_TEXT_PIN_GAP + blockHeight / 2)
+  const groupCenterY =
+    minGroupCenterY <= maxGroupCenterY
+      ? Math.max(minGroupCenterY, Math.min(preferredGroupCenterY, maxGroupCenterY))
+      : containerHeight / 2
+  const textY = groupCenterY - (bottomExtent - topExtent) / 2
+  return { textY: `${(textY / containerHeight) * 100}%`, proportionOffsetY }
 }
 const clampGaugePercent = (percent: number) => {
   // 对齐 G2Plot 仪表盘行为，避免超出 0-1 后角度变化被成倍放大
@@ -99,7 +232,12 @@ export class Gauge extends G2ChartView {
         outerRadius: 1.15
       }
     }
-    const options = this.setupOptions(chart, initOptions, { scale })
+    const containerDom = document.getElementById(container)
+    const options = this.setupOptions(chart, initOptions, {
+      scale,
+      containerWidth: containerDom?.offsetWidth,
+      containerHeight: containerDom?.offsetHeight
+    })
     const newChart = new G2Chart({ container, ...getG2Renderer() })
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
@@ -141,11 +279,25 @@ export class Gauge extends G2ChartView {
           ? misc.gaugeMax
           : chart.data?.series[chart.data?.series.length - 1]?.data[0]
       }
-      startAngle = toG2GaugeAngle(misc.gaugeStartAngle, DEFAULT_MISC.gaugeStartAngle)
-      endAngle = toG2GaugeAngle(misc.gaugeEndAngle, DEFAULT_MISC.gaugeEndAngle)
+      const gaugeAngles = normalizeGaugeAngles(
+        misc.gaugeStartAngle,
+        misc.gaugeEndAngle,
+        DEFAULT_MISC.gaugeStartAngle,
+        DEFAULT_MISC.gaugeEndAngle
+      )
+      startAngle = gaugeAngles.startAngle
+      endAngle = gaugeAngles.endAngle
       context.min = min
       context.max = max
     }
+    const gaugeLayout = getGaugeLayout(
+      context.containerWidth,
+      context.containerHeight,
+      startAngle,
+      endAngle
+    )
+    context.gaugeLayout = gaugeLayout
+    context.gaugeAngleSpan = endAngle - startAngle
     const percent = clampGaugePercent(
       (parseFloat(data) - parseFloat(min)) / (parseFloat(max) - parseFloat(min))
     )
@@ -158,7 +310,18 @@ export class Gauge extends G2ChartView {
       coordinate: {
         startAngle,
         endAngle
-      }
+      },
+      ...(gaugeLayout && {
+        margin: 0,
+        paddingTop: GAUGE_PADDING.top,
+        paddingRight: GAUGE_PADDING.right,
+        paddingBottom: GAUGE_PADDING.bottom,
+        paddingLeft: GAUGE_PADDING.left,
+        insetLeft: gaugeLayout.insetLeft,
+        insetRight: gaugeLayout.insetRight,
+        insetTop: gaugeLayout.insetTop,
+        insetBottom: gaugeLayout.insetBottom
+      })
     }
     defaultsDeep(options, tmp)
     return options
@@ -273,12 +436,23 @@ export class Gauge extends G2ChartView {
       return options
     }
     const labelFormatter = label.labelFormatter ?? DEFAULT_LABEL.labelFormatter
-    let proportionOffsetY = 0
+    const proportionFormatter = label.proportionSeriesFormatter
+    const primaryFontSize = label.childrenShow ? Number(label.fontSize) || 0 : 0
+    const proportionFontSize = proportionFormatter.show
+      ? Number(proportionFormatter.fontSize) || 0
+      : 0
+    const { textY, proportionOffsetY } = getGaugeTextLayout(
+      context?.gaugeLayout,
+      Number(context?.containerHeight),
+      primaryFontSize,
+      proportionFontSize
+    )
     if (label.childrenShow) {
       const labelTitleOption = {
         style: {
           textFontSize: label.fontSize,
           textFill: label.color,
+          textY,
           textContent: () => {
             let value
             if (labelFormatter.type === 'percent') {
@@ -290,7 +464,6 @@ export class Gauge extends G2ChartView {
           }
         }
       }
-      proportionOffsetY = label.fontSize
       defaultsDeep(options, labelTitleOption)
     } else {
       defaultsDeep(options, {
@@ -299,9 +472,20 @@ export class Gauge extends G2ChartView {
         }
       })
     }
-    if (label.proportionSeriesFormatter.show) {
+    if (proportionFormatter.show) {
       const { min, max } = context
-      const proportionFormatter = label.proportionSeriesFormatter
+      // 组合视图必须继承仪表盘布局，否则 G2 会按坐标轴重新留白并缩小圆弧
+      const gaugeViewLayout = {
+        margin: options.margin,
+        paddingTop: options.paddingTop,
+        paddingRight: options.paddingRight,
+        paddingBottom: options.paddingBottom,
+        paddingLeft: options.paddingLeft,
+        insetTop: options.insetTop,
+        insetRight: options.insetRight,
+        insetBottom: options.insetBottom,
+        insetLeft: options.insetLeft
+      }
       const labelProportionOption = {
         type: 'text',
         style: {
@@ -315,17 +499,19 @@ export class Gauge extends G2ChartView {
             )
           },
           x: '50%',
-          y: '60%',
+          y: textY,
           dy: proportionOffsetY,
           fontSize: proportionFormatter.fontSize,
           fill: proportionFormatter.color,
-          textAlign: 'center'
+          textAlign: 'center',
+          textBaseline: 'middle'
         },
         tooltip: false
       }
       options = {
         type: 'view',
         autoFit: true,
+        ...gaugeViewLayout,
         children: [options, labelProportionOption]
       }
     }
@@ -342,6 +528,7 @@ export class Gauge extends G2ChartView {
     const customStyle = parseJson(chart.customStyle)
     const axisLabelColor = customStyle.yAxis?.axisLabel?.color ?? customAttr.label.color
     const { min, max } = context
+    const isFullCircle = context.gaugeAngleSpan >= Math.PI * 2 - GAUGE_ANGLE_EPSILON
     const labelFormatter = customAttr.label.labelFormatter ?? DEFAULT_LABEL.labelFormatter
     const axisOption = {
       axis: {
@@ -370,12 +557,16 @@ export class Gauge extends G2ChartView {
           },
           labelDirection: 'positive',
           tickDirection: 'positive',
-          labelFormatter: (v, id) => {
+          // 弧形轴不会自动注入避让策略，只保留主刻度后再进行碰撞隐藏
+          labelFilter: (_v, id, ticks) => {
+            return (
+              gaugeAxisLine !== false && id % 5 === 0 && !(isFullCircle && id === ticks.length - 1)
+            )
+          },
+          labelOverlap: [{ type: 'hide', keepHeader: true, keepTail: true, margin: [2, 4, 2, 4] }],
+          labelFormatter: v => {
             if (gaugeAxisLine === false) {
               return ' '
-            }
-            if (id % 5 !== 0) {
-              return ''
             }
             if (gaugePercentLabel === false) {
               const resultV = v === '0' ? min : v === '1' ? max : min + (max - min) * v

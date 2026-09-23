@@ -1,7 +1,13 @@
 <template>
   <div class="template border-radius-12">
     <div class="photo">
-      <img :src="imgUrlTrans(thumbnailUrl)" alt="" sizes="" style="width: 100%" />
+      <img
+        :src="imgUrlTrans(thumbnailUrl)"
+        alt=""
+        sizes=""
+        fetchpriority="high"
+        style="width: 100%"
+      />
     </div>
     <div class="apply" :class="{ 'fix-height': !createAuth[template.templateType] }">
       <span :title="template.title" class="name ellipsis">

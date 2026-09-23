@@ -84,7 +84,8 @@ const setupAll = async (
   pid: string,
   chartId: string,
   resourceId: string,
-  dfId: string
+  dfId: string,
+  opt: string
 ): Promise<App<Element>> => {
   const app = createApp(AppElement, { componentName: type })
   app.provide('embeddedParams', {
@@ -109,6 +110,7 @@ const setupAll = async (
   embeddedStore.setPid(pid)
   embeddedStore.setResourceId(resourceId)
   embeddedStore.setDfId(dfId)
+  embeddedStore.setOpt(opt || '')
   const i18 = await import('@/plugins/vue-i18n')
   await i18.setupI18n(app)
   setupRouter(app)
@@ -164,14 +166,18 @@ class DataEaseBi {
     | 'ScreenPanel'
     | 'DashboardPanel'
     | 'DataFilling'
+    | 'Spreadsheet'
+    | 'SpreadsheetPanel'
+    | 'SpreadsheetEditor'
   dvId: string
-  busiFlag: 'dashboard' | 'dataV'
+  busiFlag: 'dashboard' | 'dataV' | 'spreadsheet'
   outerParams: string
   suffixId: string
   resourceId: string
   dfId: string
   pid: string
   chartId: string
+  opt: string
   deOptions: Options
   vm: App<Element>
 
@@ -187,6 +193,7 @@ class DataEaseBi {
     this.chartId = options.chartId
     this.resourceId = options.resourceId
     this.dfId = options.dfId
+    this.opt = options.opt
   }
 
   async initialize(options: Options) {
@@ -203,7 +210,8 @@ class DataEaseBi {
       this.pid,
       this.chartId,
       this.resourceId,
-      this.dfId
+      this.dfId,
+      this.opt
     )
   }
 
@@ -227,6 +235,7 @@ class DataEaseBi {
     this.chartId = null
     this.resourceId = null
     this.dfId = null
+    this.opt = null
     this.vm = null
   }
 }

@@ -1,7 +1,7 @@
 import { isExternal } from '@/utils/validate'
-import { cloneDeep } from 'lodash'
+import { cloneDeep } from 'lodash-es'
 // import { proxyMapping } from '@/views/proxy/mapping'
-const modules = import.meta.glob('../views/**/*.vue')
+const modules = import.meta.glob('../views/pages/**/*.vue')
 export const Layout = () => import('@/layout/index.vue')
 //const xpackComName = 'components/plugin'
 export const LayoutTransition = () => import('@/layout/components/LayoutTransition.vue')
@@ -37,9 +37,9 @@ export const generateRoutesFn2 = (routes: AppCustomRouteRecordRaw[]): AppRouteRe
     if (route.component) {
       let comModule = null as any
       if (route.plugin) {
-        comModule = modules[`../views${route.component}.vue`]
+        comModule = modules[`../views/pages${route.component}.vue`]
       } else if (!route.component.startsWith('Layout')) {
-        comModule = modules[`../views/${route.component}/index.vue`]
+        comModule = modules[`../views/pages/${route.component}/index.vue`]
       }
 
       if (route.component === 'Layout') {

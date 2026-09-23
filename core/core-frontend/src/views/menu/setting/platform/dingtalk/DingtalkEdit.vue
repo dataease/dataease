@@ -58,7 +58,7 @@ const rule = reactive<FormRules>({
   corpId: [
     {
       required: true,
-      message: t('common.require'),
+      message: t('common.please_input') + t('common.empty') + 'CorpId',
       trigger: 'blur'
     },
     {
@@ -71,7 +71,7 @@ const rule = reactive<FormRules>({
   agentId: [
     {
       required: true,
-      message: t('common.require'),
+      message: t('common.please_input') + t('common.empty') + 'AgentId',
       trigger: 'blur'
     },
     {
@@ -84,7 +84,7 @@ const rule = reactive<FormRules>({
   appKey: [
     {
       required: true,
-      message: t('common.require'),
+      message: t('common.please_input') + t('common.empty') + 'APP Key',
       trigger: 'blur'
     },
     {
@@ -97,7 +97,7 @@ const rule = reactive<FormRules>({
   appSecret: [
     {
       required: true,
-      message: t('common.require'),
+      message: t('common.please_input') + t('common.empty') + 'APP Secret',
       trigger: 'blur'
     },
     {
@@ -110,7 +110,7 @@ const rule = reactive<FormRules>({
   callBack: [
     {
       required: true,
-      message: t('common.require'),
+      message: t('common.please_input') + t('common.empty') + t('system.callback_domain_name'),
       trigger: 'blur'
     },
     {
@@ -353,13 +353,22 @@ defineExpose({
       label-position="top"
     >
       <el-form-item label="CorpId" prop="corpId">
-        <el-input v-model="state.form.corpId" :placeholder="t('common.please_input')" />
+        <el-input
+          v-model="state.form.corpId"
+          :placeholder="t('common.please_input') + t('common.empty') + 'CorpId'"
+        />
       </el-form-item>
       <el-form-item label="AgentId" prop="agentId">
-        <el-input v-model="state.form.agentId" :placeholder="t('common.please_input')" />
+        <el-input
+          v-model="state.form.agentId"
+          :placeholder="t('common.please_input') + t('common.empty') + 'AgentId'"
+        />
       </el-form-item>
       <el-form-item label="APP Key" prop="appKey">
-        <el-input v-model="state.form.appKey" :placeholder="t('common.please_input')" />
+        <el-input
+          v-model="state.form.appKey"
+          :placeholder="t('common.please_input') + t('common.empty') + 'APP Key'"
+        />
       </el-form-item>
 
       <el-form-item label="APP Secret" prop="appSecret">
@@ -367,11 +376,16 @@ defineExpose({
           v-model="state.form.appSecret"
           type="password"
           show-password
-          :placeholder="t('common.please_input')"
+          :placeholder="t('common.please_input') + t('common.empty') + 'APP Secret'"
         />
       </el-form-item>
       <el-form-item :label="t('system.callback_domain_name')" prop="callBack">
-        <el-input v-model="state.form.callBack" :placeholder="t('common.please_input')" />
+        <el-input
+          v-model="state.form.callBack"
+          :placeholder="
+            t('common.please_input') + t('common.empty') + t('system.callback_domain_name')
+          "
+        />
       </el-form-item>
 
       <el-form-item label="Robot Code" prop="robotCode">

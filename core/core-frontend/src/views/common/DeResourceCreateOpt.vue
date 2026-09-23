@@ -170,7 +170,7 @@ const save = () => {
   }
 
   if (state.dvCreateInfo.name.length > 50) {
-    ElMessage.warning(t('common.char_can_not_more_50'))
+    ElMessage.warning(t('commons.char_can_not_more_50'))
     return false
   }
 

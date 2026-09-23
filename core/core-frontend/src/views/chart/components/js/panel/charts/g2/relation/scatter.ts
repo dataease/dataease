@@ -124,6 +124,7 @@ export class Scatter extends G2ChartView {
     const newChart = new G2Chart({ container, ...getG2Renderer() })
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
+    newChart.attr('clip', true)
     newChart.on('point:click', action)
     if (options.labels) {
       newChart.on('label:click', e => {
@@ -205,6 +206,13 @@ export class Scatter extends G2ChartView {
           type: 'constant',
           value: basicStyle.scatterSymbol
         }
+      },
+      // 使用 1px 不透明白色描边
+      style: {
+        fillOpacity: 0.95,
+        stroke: '#FFFFFF',
+        strokeOpacity: 1,
+        lineWidth: 1
       }
     }
     if (chart.extBubble?.length) {
@@ -394,10 +402,7 @@ export class Scatter extends G2ChartView {
           title: xAxis.nameShow === false ? false : xAxis.name,
           titleFontSize: xAxis.fontSize,
           titleFill: xAxis.color,
-          line: xAxis.axisLine.show,
-          lineStroke: xAxis.axisLine.lineStyle.color,
-          lineStrokeOpacity: 1,
-          lineLineWidth: xAxis.axisLine.lineStyle.width,
+          ...this.getAxisLineStyle(chart, xAxis),
           lineLineDash,
           label: xAxis.axisLabel.show,
           labelFill: xAxis.axisLabel.color,
@@ -447,10 +452,7 @@ export class Scatter extends G2ChartView {
           dataeaseAxisTitleSafeMargin: true,
           titleFontSize: yAxis.fontSize,
           titleFill: yAxis.color,
-          line: yAxis.axisLine.show,
-          lineStroke: yAxis.axisLine.lineStyle.color,
-          lineStrokeOpacity: 1,
-          lineLineWidth: yAxis.axisLine.lineStyle.width,
+          ...this.getAxisLineStyle(chart, yAxis),
           lineLineDash,
           label: yAxis.axisLabel.show,
           labelFill: yAxis.axisLabel.color,

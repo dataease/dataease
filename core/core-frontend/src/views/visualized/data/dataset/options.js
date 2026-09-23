@@ -20,7 +20,7 @@ const valueOptions = valueEnum.map(formatEnum)
 const sysParams = ['eq', 'not_eq', 'like', 'not like', 'in', 'not in']
 const textOptionsForSysParams = sysParams.map(formatEnum)
 
-const sysParamsEnum = ['userId', 'userName', 'userEmail', 'userPhone']
+const sysParamsEnum = ['userId', 'userName', 'userEmail', 'userPhone', 'orgName']
 
 const sysParamsIlns = sysParamsEnum.map(_ => {
   return {

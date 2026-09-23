@@ -181,7 +181,6 @@ const loadOptions = async () => {
       return
     }
     options.value = []
-    console.error('[SpreadsheetFilterTextSelect] Failed to load filter options:', error)
   } finally {
     if (sequence === loadSequence && requestKey === optionRequestKey.value) {
       loading.value = false

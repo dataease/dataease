@@ -66,6 +66,7 @@ public interface DatasourceApi {
     @Operation(summary = "数据源类型")
     List<DatasourceConfiguration.DatasourceType> datasourceTypes() throws DEException;
 
+    @DePermit
     @PostMapping("/validate")
     @Operation(summary = "校验")
     DatasourceDTO validate(@RequestBody BusiDsRequest dataSourceDTO) throws DEException;

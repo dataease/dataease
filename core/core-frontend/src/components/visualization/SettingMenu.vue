@@ -38,16 +38,16 @@
               <template #dropdown>
                 <el-dropdown-menu>
                   <el-dropdown-item icon="el-icon-upload2" @click="topComponent"
-                    >{{ t('visualization.topComponent') }}
+                    >{{ t('visualization.to_top') }}
                   </el-dropdown-item>
                   <el-dropdown-item icon="el-icon-download" @click="bottomComponent"
-                    >{{ t('visualization.bottomComponent') }}
+                    >{{ t('visualization.to_bottom') }}
                   </el-dropdown-item>
                   <el-dropdown-item icon="el-icon-arrow-up" @click="upComponent"
-                    >{{ t('visualization.upComponent') }}
+                    >{{ t('visualization.up_component') }}
                   </el-dropdown-item>
                   <el-dropdown-item icon="el-icon-arrow-down" @click="downComponent"
-                    >{{ t('visualization.downComponent') }}
+                    >{{ t('visualization.down_component') }}
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </template>

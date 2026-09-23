@@ -188,11 +188,21 @@
         </div>
       </div>
 
+      <ShareVisitorPermissions
+        v-if="shareEnable"
+        v-model="visitorChoices"
+        :allowed="state.detailInfo.allowedVisitorPermissions ?? 7"
+      />
       <el-divider v-if="shareEnable" class="share-divider" />
       <div v-if="shareEnable" class="share-foot share-padding">
         <el-button secondary @click="openTicket">{{ t('work_branch.ticket_setting') }}</el-button>
-        <el-button :disabled="!shareEnable || expError" type="primary" @click="copyInfo">
-          {{ passwdEnable ? t('visualization.copy_link_passwd') : t('visualization.copy_link') }}
+        <el-button
+          :disabled="!shareEnable || expError"
+          :loading="savingPermissions"
+          type="primary"
+          @click="copyInfo"
+        >
+          {{ t('share_visitor.save_copy') }}
         </el-button>
       </div>
     </div>
@@ -218,6 +228,7 @@
 </template>
 
 <script lang="ts" setup>
+import ShareVisitorPermissions from './ShareVisitorPermissions.vue'
 import icon_shareLabel_outlined from '@/assets/svg/icon_share-label_outlined.svg'
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import icon_close_outlined from '@/assets/svg/icon_close_outlined.svg'
@@ -334,7 +345,10 @@ const shareTips = computed(
 const shareDisable = computed(() => shareStore.getShareDisable)
 const sharePeRequire = computed(() => shareStore.getSharePeRequire)
 
+const visitorChoices = ref<number[]>([])
+const savingPermissions = ref(false)
 const copyInfo = async () => {
+  if (savingPermissions.value) return
   if (shareEnable.value) {
     try {
       if (existErrorMsg('link-uuid-error-msg')) {
@@ -351,15 +365,31 @@ const copyInfo = async () => {
           return
         }
       }
+      savingPermissions.value = true
+      await request.post({
+        url: '/share/visitorPermissions',
+        data: {
+          resourceId: props.resourceId,
+          visitorPermissions: visitorChoices.value.reduce((a, b) => a | b, 0)
+        }
+      })
       formatLinkAddr()
       let info = linkAddr.value
       if (passwdEnable.value) {
         info += `,${state.detailInfo.pwd}`
       }
-      await toClipboard(info)
-      ElMessage.success(t('common.copy_success'))
-    } catch (e) {
-      ElMessage.warning(t('common.copy_unsupported'))
+      try {
+        await toClipboard(info)
+        ElMessage.success(t('common.copy_success'))
+      } catch {
+        ElMessage.warning(t('common.copy_unsupported'))
+        return
+      }
+    } catch {
+      // The request interceptor displays the server error. Keep the draft open on failure.
+      return
+    } finally {
+      savingPermissions.value = false
     }
   } else {
     ElMessage.warning(t('common.copy_unsupported'))
@@ -382,17 +412,29 @@ const closeLoading = () => {
 }
 
 const share = () => {
-  nextTick(() => loadShareInfo(validatePeRequire))
+  nextTick(() => loadShareInfo(validatePeRequire, true))
 }
 
-const loadShareInfo = cb => {
+const loadShareInfo = (cb, resetPermissions = false) => {
   showLoading()
   const resourceId = props.resourceId
   const url = `/share/detail/${resourceId}`
   request
     .get({ url })
     .then(res => {
+      const sameShare = state.detailInfo.id === res.data?.id
       state.detailInfo = { ...res.data }
+      if (resetPermissions || !sameShare) {
+        visitorChoices.value = res.data
+          ? [1, 2, 4].filter(
+              bit =>
+                ((res.data.visitorPermissions ?? 7) &
+                  (res.data.allowedVisitorPermissions ?? 7) &
+                  bit) !==
+                0
+            )
+          : []
+      }
       if (res.data?.uuid) {
         originUuid.value = res.data.uuid
       }

@@ -1,4 +1,5 @@
 package io.dataease.datasource.provider;
+
 import io.dataease.utils.LogUtil;
 
 
@@ -30,8 +31,8 @@ import java.util.stream.Collectors;
 
 public class ApiUtils {
     private static Configuration jsonPathConf = Configuration.builder()
-            .options(Option.DEFAULT_PATH_LEAF_TO_NULL, Option.ALWAYS_RETURN_LIST)
-            .build();
+        .options(Option.DEFAULT_PATH_LEAF_TO_NULL, Option.ALWAYS_RETURN_LIST)
+        .build();
     private static String path = "['%s']";
     public static ObjectMapper objectMapper = CommonBeanFactory.getBean(ObjectMapper.class);
 
@@ -69,7 +70,7 @@ public class ApiUtils {
             return true;
         }
         boolean matchedByName = Optional.ofNullable(fields).orElseGet(ArrayList::new).stream()
-                .anyMatch(item -> StringUtils.equalsIgnoreCase(item.getName(), param));
+            .anyMatch(item -> StringUtils.equalsIgnoreCase(item.getName(), param));
         return !matchedByName && StringUtils.equalsIgnoreCase(field.getOriginName(), param);
     }
 
@@ -130,7 +131,9 @@ public class ApiUtils {
                 for (int i = beginPage; i <= pageCount; i++) {
                     apiDefinition.getRequest().getPage().getRequestData().get(0).setParameterDefaultValue(String.valueOf(i));
                     response = execHttpRequest(false, apiDefinition, apiDefinition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), params(datasourceRequest));
-                    dataList.addAll(fetchResult(response, apiDefinition));
+                    if (StringUtils.isNotEmpty(response)) {
+                        dataList.addAll(fetchResult(response, apiDefinition));
+                    }
                 }
             }
             if (apiDefinition.getRequest().getPage().getPageType().equalsIgnoreCase("cursor")) {
@@ -143,7 +146,9 @@ public class ApiUtils {
                 while (StringUtils.isNotEmpty(cursor)) {
                     apiDefinition.getRequest().getPage().getRequestData().get(0).setParameterDefaultValue(cursor);
                     response = execHttpRequest(false, apiDefinition, apiDefinition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), params(datasourceRequest));
-                    dataList.addAll(fetchResult(response, apiDefinition));
+                    if (StringUtils.isNotEmpty(response)) {
+                        dataList.addAll(fetchResult(response, apiDefinition));
+                    }
                     try {
                         if (cursor.equalsIgnoreCase(JsonPath.read(response, apiDefinition.getRequest().getPage().getResponseData().get(0).getResolutionPath()).toString())) {
                             cursor = null;
@@ -312,11 +317,11 @@ public class ApiUtils {
             }
         }
         if (apiDefinitionRequest.getAuthManager() != null
-                && StringUtils.isNotBlank(apiDefinitionRequest.getAuthManager().getUsername())
-                && StringUtils.isNotBlank(apiDefinitionRequest.getAuthManager().getPassword())
-                && apiDefinitionRequest.getAuthManager().getVerification().equals("Basic Auth")) {
+            && StringUtils.isNotBlank(apiDefinitionRequest.getAuthManager().getUsername())
+            && StringUtils.isNotBlank(apiDefinitionRequest.getAuthManager().getPassword())
+            && apiDefinitionRequest.getAuthManager().getVerification().equals("Basic Auth")) {
             String authValue = "Basic " + Base64.getUrlEncoder().encodeToString((apiDefinitionRequest.getAuthManager().getUsername()
-                    + ":" + apiDefinitionRequest.getAuthManager().getPassword()).getBytes());
+                + ":" + apiDefinitionRequest.getAuthManager().getPassword()).getBytes());
             httpClientConfig.addHeader("Authorization", authValue);
         }
 
@@ -374,7 +379,6 @@ public class ApiUtils {
         if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(params)) {
             apiDefinition.setUrl(apiDefinition.getUrl() + "?" + StringUtils.join(params, "&"));
         }
-
         switch (apiDefinition.getMethod()) {
             case "GET":
                 response = HttpClientUtil.get(apiDefinition.getUrl().trim(), httpClientConfig);
@@ -494,13 +498,13 @@ public class ApiUtils {
                                             }
                                         }
                                         body.put(jsonNode.get("name").asText(), result);
-                                     } else if (jsonNode.get("nameType") != null && jsonNode.get("nameType").asText().equalsIgnoreCase("timeFun")) {
-                                         String timeValue = formatTimeFunctionValue(jsonNode.get("value").asText());
-                                         if (StringUtils.isNotEmpty(timeValue)) {
-                                             body.put(jsonNode.get("name").asText(), timeValue);
-                                         }
-                                     } else {
-                                         body.put(jsonNode.get("name").asText(), jsonNode.get("value").asText());
+                                    } else if (jsonNode.get("nameType") != null && jsonNode.get("nameType").asText().equalsIgnoreCase("timeFun")) {
+                                        String timeValue = formatTimeFunctionValue(jsonNode.get("value").asText());
+                                        if (StringUtils.isNotEmpty(timeValue)) {
+                                            body.put(jsonNode.get("name").asText(), timeValue);
+                                        }
+                                    } else {
+                                        body.put(jsonNode.get("name").asText(), jsonNode.get("value").asText());
                                     }
                                 }
                             }

@@ -148,7 +148,6 @@ const queryData = async () => {
       }
     })
   } catch (error) {
-    console.error('Query data failed:', error)
     ElMessage.error(t('spreadsheet.query_data_error'))
   } finally {
     loading.value = false

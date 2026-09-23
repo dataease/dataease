@@ -5,9 +5,10 @@ import {
   ChartLibraryType
 } from '@/views/chart/components/js/panel/types'
 import { configEmptyDataStyle } from '@/views/chart/components/js/panel/common/common_antv'
-import { parseJson, setupSeriesColor } from '../../../util'
+import { parseJson, resolveAxisLineColor, setupSeriesColor } from '../../../util'
 import { isEmpty } from 'lodash-es'
 import { valueFormatter } from '../../../formatter'
+import { getExtremumLabelData } from '../../../extremumUitl'
 import {
   LEGEND_POPTIP_FOLLOW_DOM_STYLE,
   measureLegendTextWidth,
@@ -96,6 +97,20 @@ type G2FontSpec = LargeDataSpec & {
 /** 主题字段可能是字符串或数组，只合并普通对象以避免破坏原配置 */
 const isRecord = (value: unknown): value is Record<string, any> =>
   typeof value === 'object' && value !== null && !Array.isArray(value)
+
+/**
+ * 判断 point 变换后的 Y 通道值是否位于手动坐标轴的闭区间内
+ *
+ * 空值和空字符串直接视为越界，避免 Number(null) 等隐式转换把空值误判为 0
+ * 等于最小值或最大值的点仍属于有效数据，应继续显示
+ */
+const isManualAxisValueInDomain = (value: unknown, domainMin: number, domainMax: number) => {
+  if (value === null || value === undefined || (typeof value === 'string' && value.trim() === '')) {
+    return false
+  }
+  const numberValue = Number(value)
+  return Number.isFinite(numberValue) && numberValue >= domainMin && numberValue <= domainMax
+}
 
 /** 补齐 G2 内置组件的字体主题，同时保留图表已有的主题属性 */
 const applyG2FontTheme = (theme: G2FontSpec['theme'], fontFamily: string): Record<string, any> => {
@@ -336,12 +351,38 @@ const getFieldDomain = (data: unknown[], field: unknown): unknown[] => {
  *
  * @param data 当前数据 mark 使用的数据
  * @param dimensionField 分类维度对应的字段名
- * @param limit 标签载体允许保留的最大数据行数
- * @returns 用于承载有限标签的数据子集
+ * @param limit 标签载体的数据行预算，最值所在维度优先占用
+ * @param extremumData 必须保留的最值记录
+ * @returns 保留最值维度并对普通标签采样的数据子集
  */
-const sampleLabelData = (data: unknown[], dimensionField: unknown, limit: number): unknown[] => {
+const sampleLabelData = (
+  data: unknown[],
+  dimensionField: unknown,
+  limit: number,
+  extremumData = new Set<unknown>()
+): unknown[] => {
+  if (limit <= 0) return []
   if (data.length <= limit) {
     return data
+  }
+  if (extremumData.size) {
+    // 保留最值所在维度的整组数据，避免分组柱和堆叠标签因缺少同组数据而错位
+    const dimensions = new Set(
+      [...extremumData].map(datum => (datum as Record<string, unknown>)?.[dimensionField as string])
+    )
+    const required = data.filter(
+      datum =>
+        extremumData.has(datum) ||
+        (typeof dimensionField === 'string' &&
+          dimensions.has((datum as Record<string, unknown>)?.[dimensionField]))
+    )
+    const selected = new Set(required)
+    sampleLabelData(
+      data.filter(datum => !selected.has(datum)),
+      dimensionField,
+      Math.max(0, limit - required.length)
+    ).forEach(datum => selected.add(datum))
+    return data.filter(datum => selected.has(datum))
   }
   if (typeof dimensionField !== 'string') {
     return sampleEvenly(data, limit)
@@ -405,11 +446,20 @@ const createSampledLabelMarks = (
   ) {
     return
   }
-  const visibleLabelData = data.filter(datum => hasVisibleLabelText(labels, datum))
+  const extremumData = getExtremumLabelData(labels, data)
+  // 最值使用 HTML 气泡，普通文本为空时仍必须保留其标签载体
+  const visibleLabelData = data.filter(
+    datum => extremumData.has(datum) || hasVisibleLabelText(labels, datum)
+  )
   if (!visibleLabelData.length) {
     return [{ ...mark, labels: [] }]
   }
-  const sampledData = sampleLabelData(visibleLabelData, encode.x, getLabelDataRenderLimit(labels))
+  const sampledData = sampleLabelData(
+    visibleLabelData,
+    encode.x,
+    getLabelDataRenderLimit(labels),
+    extremumData
+  )
   const seriesField = encode.series ?? encode.color
   const seriesDomain = mark.type === 'interval' ? getFieldDomain(data, seriesField) : []
   const labelMark = {
@@ -655,10 +705,14 @@ const truncateHorizontalLegendLabel = (value: unknown, fontSize: number, maxWidt
 }
 
 /**
- * 上下图例必须在 G2 首次测量前限制单项文本宽度
+ * 上下分页图例必须在 G2 首次测量前限制单项文本宽度
  * 否则任意分页中的超长项都会把所有页面和分页器之间的距离一起撑大
+ * 平铺图例保留完整文本，由 DOM 布局负责换行和滚动
  */
-export const getHorizontalLegendTextStyle = (fontSize: number) => {
+export const getHorizontalLegendTextStyle = (
+  fontSize: number,
+  displayMode?: ChartLegendStyle['displayMode']
+) => {
   prepareLegendPoptip()
   const safeFontSize = Number.isFinite(fontSize) && fontSize > 0 ? fontSize : 12
   const maxWidth = getHorizontalLegendLabelMaxWidth(safeFontSize)
@@ -675,7 +729,10 @@ export const getHorizontalLegendTextStyle = (fontSize: number) => {
     }
   }
   return {
-    labelFormatter: value => truncateHorizontalLegendLabel(value, safeFontSize, maxWidth),
+    labelFormatter: value =>
+      displayMode === 'tile'
+        ? `${value ?? ''}`
+        : truncateHorizontalLegendLabel(value, safeFontSize, maxWidth),
     itemLabelWordWrap: true,
     itemLabelWordWrapWidth: maxWidth,
     itemLabelMaxLines: 1,
@@ -747,6 +804,61 @@ export abstract class G2ChartView<
   }
 
   /**
+   * 关闭 line 和 point 的 Y 比例尺 clamp，让越界数据保留真实的绘制坐标
+   *
+   * @param axis 当前折线对应的左轴或右轴配置
+   * @param view 包含目标折线和数据点的 G2 view，负责裁剪整个绘图区
+   * @param lineMark 需要按手动范围裁剪的折线 mark
+   * @param pointMark 需要隐藏越界圆点的 point mark
+   */
+  protected configManualYAxisLineRange(
+    axis: DeepPartial<ChartAxisStyle>,
+    view: G2Spec,
+    lineMark: G2Spec,
+    pointMark: G2Spec
+  ): void {
+    const axisValue = axis?.axisValue
+    if (axisValue?.auto !== false) {
+      return
+    }
+    const rawDomain: unknown[] = [axisValue.min, axisValue.max]
+    if (
+      rawDomain.some(
+        value =>
+          value === null ||
+          value === undefined ||
+          (typeof value === 'string' && value.trim() === '')
+      )
+    ) {
+      return
+    }
+    const [start, end] = rawDomain.map(Number)
+    if (!Number.isFinite(start) || !Number.isFinite(end)) {
+      return
+    }
+    const domainMin = Math.min(start, end)
+    const domainMax = Math.max(start, end)
+    const disableClamp = (mark: G2Spec) => {
+      const scale = isRecord(mark.scale) ? mark.scale : {}
+      const yScale = isRecord(scale.y) ? scale.y : {}
+      mark.scale = { ...scale, y: { ...yScale, clamp: false } }
+    }
+    disableClamp(lineMark)
+    disableClamp(pointMark)
+
+    // 当前 G2 仅在 view 层应用有效的绘图区裁剪，不能依赖子 mark 的 clip 配置
+    view.clip = true
+    const pointTransforms = Array.isArray(pointMark.transform) ? pointMark.transform : []
+    pointMark.transform = [
+      ...pointTransforms,
+      {
+        type: 'filter',
+        y: value => isManualAxisValueInDomain(value, domainMin, domainMax)
+      }
+    ]
+  }
+
+  /**
    * 图表首次 render 完成后的可选异步处理钩子
    *
    * 某些图表必须读取首次渲染生成的布局信息，修正配置后再执行一次 render
@@ -762,7 +874,8 @@ export abstract class G2ChartView<
     const position = axis.position
     const rotate = Number(axis.axisLabel.rotate) || 0
     const rotateRadian = (rotate * Math.PI) / 180
-    const rotateRatio = Math.sin(Math.abs(rotateRadian))
+    const rotateSin = Math.abs(Math.sin(rotateRadian))
+    const rotateCos = Math.abs(Math.cos(rotateRadian))
     const fontSize = axis.axisLabel.fontSize || 12
     // 主题文本色按配置原值渲染，避免叠加 G2 默认透明度
     const opacityStyle = {
@@ -775,25 +888,26 @@ export abstract class G2ChartView<
         ...opacityStyle,
         labelSpacing: 4,
         labelTextAlign: 'center',
-        labelTextBaseline: position === 'top' ? 'bottom' : 'top',
+        labelTextBaseline: 'middle',
         labelTransform: value => {
-          const offset = (measureAxisLabelWidth(value, fontSize) * rotateRatio) / 2
+          // 文字始终围绕中心旋转，投影位移只负责将完整标签推到轴线外侧
+          const width = measureAxisLabelWidth(value, fontSize)
+          const offset = (width * rotateSin + fontSize * rotateCos) / 2
           return `translate(0, ${(direction * offset).toFixed(2)}px) rotate(${rotate})`
         }
       }
     }
     if (position === 'left' || position === 'right') {
-      const direction = position === 'left' ? 1 : -1
+      const direction = position === 'left' ? -1 : 1
       return {
         ...opacityStyle,
-        labelSpacing: 4 + (fontSize * rotateRatio) / 2,
-        labelTextAlign: position === 'left' ? 'right' : 'left',
+        labelSpacing: 4,
+        labelTextAlign: 'center',
         labelTextBaseline: 'middle',
         labelTransform: value => {
-          // 保留靠近轴线的端点锚点，并沿刻度方向补偿旋转后的半个文本投影
-          const offset =
-            (direction * measureAxisLabelWidth(value, fontSize) * Math.sin(rotateRadian)) / 2
-          return `translate(0, ${offset.toFixed(2)}px) rotate(${rotate})`
+          const width = measureAxisLabelWidth(value, fontSize)
+          const offset = (width * rotateCos + fontSize * rotateSin) / 2
+          return `translate(${(direction * offset).toFixed(2)}px, 0) rotate(${rotate})`
         }
       }
     }
@@ -845,7 +959,7 @@ export abstract class G2ChartView<
                   maxCols: 1
                 }
               : {
-                  ...getHorizontalLegendTextStyle(legendFontSize),
+                  ...getHorizontalLegendTextStyle(legendFontSize, l.displayMode),
                   maxRows: 1
                 })
           }
@@ -857,7 +971,38 @@ export abstract class G2ChartView<
     return legend
   }
 
-  protected getAxis(axis: DeepPartial<ChartAxisStyle>): AxisComponent {
+  /**
+   * 解析轴线最终颜色，主题模式使用现有反差色，自定义及历史配置使用保存值
+   */
+  protected getAxisLineColor(chart: Chart, axis: DeepPartial<ChartAxisStyle>): string {
+    return resolveAxisLineColor(chart.customAttr, axis)
+  }
+
+  /**
+   * 统一输出轴线和刻度样式，普通轴跟随轴线显隐，双轴可保留独立刻度开关
+   */
+  protected getAxisLineStyle(
+    chart: Chart,
+    axis: DeepPartial<ChartAxisStyle>,
+    independentTick = false
+  ): Partial<AxisComponent> {
+    const axisLineColor = this.getAxisLineColor(chart, axis)
+    return {
+      line: axis.axisLine.show,
+      lineStroke: axisLineColor,
+      lineStrokeOpacity: 1,
+      lineLineWidth: axis.axisLine.lineStyle.width,
+      tick: independentTick
+        ? axis.axisLabel.show && axis.axisLabel.showTick !== false
+        : axis.axisLine.show,
+      tickLineWidth: axis.axisLine.lineStyle.width,
+      tickStroke: axisLineColor,
+      tickOpacity: 1,
+      tickStrokeOpacity: 1
+    }
+  }
+
+  protected getAxis(chart: Chart, axis: DeepPartial<ChartAxisStyle>): AxisComponent {
     let lineLineDash = undefined
     if (axis.axisLine.lineStyle.style === 'dashed') {
       lineLineDash = [10, 8]
@@ -873,18 +1018,11 @@ export abstract class G2ChartView<
       gridLineDash = [1, 2]
     }
     const axisOption = {
-      tick: axis.axisLabel.show && axis.axisLabel.showTick !== false,
-      tickLineWidth: axis.axisLine.lineStyle.width,
-      tickStroke: axis.axisLine.lineStyle.color,
-      tickOpacity: 1,
       position: axis.position,
       title: axis.nameShow === false ? false : isEmpty(axis.name) ? false : axis.name,
       titleFontSize: axis.fontSize,
       titleFill: axis.color,
-      line: axis.axisLine.show,
-      lineStroke: axis.axisLine.lineStyle.color,
-      lineStrokeOpacity: 1,
-      lineLineWidth: axis.axisLine.lineStyle.width,
+      ...this.getAxisLineStyle(chart, axis, true),
       lineLineDash,
       label: axis.axisLabel.show,
       labelOpacity: 1,

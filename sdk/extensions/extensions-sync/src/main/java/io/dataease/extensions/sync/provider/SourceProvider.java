@@ -4,6 +4,7 @@ import io.dataease.exception.DEException;
 import io.dataease.extensions.sync.datatype.StandardDataType;
 import io.dataease.extensions.sync.model.TableDTO;
 import io.dataease.extensions.sync.model.TableFieldDTO;
+import io.dataease.extensions.sync.model.SourceFieldMappingPolicy;
 import io.dataease.extensions.sync.model.datasource.DatasourceRequest;
 import io.dataease.extensions.sync.model.task.TaskInfoVO;
 
@@ -101,5 +102,16 @@ public interface SourceProvider {
      * @return 标准数据类型
      */
     StandardDataType dataTypeToStandardDataType(String sourceType);
+
+    /**
+     * 返回源字段的默认目标映射策略
+     * 连接器仅在无法可靠验证 SeaTunnel 类型转换时覆写为 REQUIRE_MANUAL_MAPPING
+     *
+     * @param field 源字段
+     * @return 默认映射策略
+     */
+    default SourceFieldMappingPolicy fieldMappingPolicy(TableFieldDTO field) {
+        return SourceFieldMappingPolicy.AUTO;
+    }
 
 }

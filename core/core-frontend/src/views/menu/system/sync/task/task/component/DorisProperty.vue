@@ -742,4 +742,27 @@ defineExpose({
 .partition-info-body {
   padding-bottom: 20px;
 }
+
+.number-input-range {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+
+  .start,
+  .end {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .span {
+    flex: none;
+    line-height: 32px;
+    margin-top: 28px;
+    padding: 0 8px;
+  }
+
+  .end {
+    margin-top: 28px;
+  }
+}
 </style>

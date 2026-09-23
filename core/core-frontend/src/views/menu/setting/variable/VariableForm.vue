@@ -42,7 +42,7 @@ const rule = reactive<FormRules>({
   name: [
     {
       required: true,
-      message: t('common.require'),
+      message: t('common.please_input') + t('common.empty') + t('system.variable_name'),
       trigger: 'blur'
     },
     {

@@ -16,6 +16,7 @@ import {
   DEFAULT_YAXIS_STYLE
 } from '@/views/chart/components/editor/util/chart'
 import {
+  ASSIST_LINE_STYLE,
   getG2Renderer,
   getTooltipCrosshairsStyle,
   handleChartDashboardHidden,
@@ -26,11 +27,14 @@ import {
 } from '../../../common/common_antv'
 import {
   CHART_MIX_EDITOR_PROPERTY,
+  setupMixAxisDefaults,
   CHART_MIX_EDITOR_PROPERTY_INNER,
   configMixCustomLegend,
   filterValidMixTooltipItems,
   getAssistLineAxisIndex,
-  getMixLabelTransform,
+  getMixAssistLineOptions,
+  configMixLabel,
+  getMixColumnWidthOptions,
   MixG2Chart
 } from './common'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
@@ -56,7 +60,7 @@ export class GroupLineMix extends G2ChartView {
   propertyInner: EditorPropertyInner = {
     ...CHART_MIX_EDITOR_PROPERTY_INNER,
     'legend-selector': ['icon', 'fontSize', 'color', 'hPosition', 'vPosition'],
-    'label-selector': ['vPosition', 'seriesLabelFormatter'],
+    'label-selector': ['seriesLabelVPosition', 'seriesLabelFormatter'],
     'tooltip-selector': [
       'fontSize',
       'color',
@@ -364,18 +368,10 @@ export class GroupLineMix extends G2ChartView {
     }
     merge(lineMark, rightColorScale)
     merge(pointMark, rightColorScale)
-    merge(intervalMark, {
-      scale: {
-        x: {
-          paddingInner: -0.21
-        }
-      }
-    })
-    merge(intervalMark, {
-      style: {
-        columnWidthRatio: basicStyle.columnWidthRatio / 100
-      }
-    })
+    merge(
+      intervalMark,
+      getMixColumnWidthOptions(basicStyle.columnWidthRatio, intervalMark.transform)
+    )
     if (basicStyle.radiusColumnBar === 'roundAngle') {
       merge(intervalMark, {
         style: {
@@ -420,88 +416,16 @@ export class GroupLineMix extends G2ChartView {
     const rightRelations = lineMark.scale.color.relations
     // 底部水平图例与柱线、堆叠柱线组合图保持相同的留白位置
     return configMixCustomLegend(chart, options, leftRelations, rightRelations, {
-      alignBottom: true
+      alignBottom: true,
+      // 与双线图保持一致，仅增加左右居中分页图例的留白
+      sideLegendGap: 16,
+      compactPagedSideLegend: true
     })
   }
 
   protected configLabel(chart: Chart, options: G2Spec): G2Spec {
-    const { label } = parseJson(chart.customAttr)
-    if (!label.show) {
-      return options
-    }
-    const seriesMap = label.seriesLabelFormatter?.reduce((acc, cur) => {
-      acc[cur.id] = cur
-      return acc
-    }, {})
-    const labelOpt = {
-      labels: [
-        {
-          text: d => {
-            if (!label.seriesLabelFormatter?.length) {
-              return d.value
-            }
-            const labelCfg = seriesMap?.[d.quotaList[0].id] as SeriesFormatter
-            if (!labelCfg) {
-              return d.value
-            }
-            if (!labelCfg.show) {
-              return ''
-            }
-            return valueFormatter(d.value, labelCfg.formatterCfg)
-          },
-          style: {
-            fillOpacity: 1,
-            fontSize: d => {
-              if (!label.seriesLabelFormatter?.length) {
-                return 12
-              }
-              const labelCfg = seriesMap?.[d.quotaList[0].id] as SeriesFormatter
-              if (!labelCfg) {
-                return 12
-              }
-              if (!labelCfg.show) {
-                return 0
-              }
-              return labelCfg.fontSize
-            },
-            fill: d => {
-              if (!label.seriesLabelFormatter?.length) {
-                return 'black'
-              }
-              const labelCfg = seriesMap?.[d.quotaList[0].id] as SeriesFormatter
-              if (!labelCfg?.show) {
-                return 'black'
-              }
-              return labelCfg.color
-            },
-            position: label.position === 'middle' ? 'inside' : label.position
-          },
-          textBaseline: {
-            top: 'bottom',
-            middle: 'middle',
-            bottom: 'top'
-          }[label.position],
-          transform: getMixLabelTransform(label.fullDisplay),
-          fontFamily: chart.fontFamily
-        }
-      ]
-    }
     const [intervalMark, _, pointMark] = options.children.find(c => c.key === 'chart').children
-    if (!label.seriesLabelFormatter?.length) {
-      defaultsDeep(intervalMark, labelOpt)
-      defaultsDeep(pointMark, labelOpt)
-    } else {
-      const showLeft = label.seriesLabelFormatter.some(c => c.id === chart.yAxis[0]?.id && c.show)
-      const showRight = label.seriesLabelFormatter.some(
-        c => c.id === chart.yAxisExt[0]?.id && c.show
-      )
-      if (showLeft) {
-        defaultsDeep(intervalMark, labelOpt)
-      }
-      if (showRight) {
-        defaultsDeep(pointMark, labelOpt)
-      }
-    }
+    configMixLabel(chart, intervalMark, pointMark)
     return options
   }
 
@@ -644,10 +568,7 @@ export class GroupLineMix extends G2ChartView {
           title: xAxis.nameShow === false || isEmpty(xAxis.name) ? false : xAxis.name,
           titleFontSize: xAxis.fontSize,
           titleFill: xAxis.color,
-          line: xAxis.axisLine.show,
-          lineStroke: xAxis.axisLine.lineStyle.color,
-          lineStrokeOpacity: 1,
-          lineLineWidth: xAxis.axisLine.lineStyle.width,
+          ...this.getAxisLineStyle(chart, xAxis),
           lineLineDash,
           label: xAxis.axisLabel.show,
           labelOpacity: 1,
@@ -669,17 +590,11 @@ export class GroupLineMix extends G2ChartView {
 
   protected configYAxis(chart: Chart, options: G2Spec): G2Spec {
     const { xAxis, yAxis, yAxisExt } = parseJson(chart.customStyle)
-    const [intervalMark, lineMark, pointMark] = options.children.find(
-      c => c.key === 'chart'
-    ).children
-    if (!yAxis.show) {
-      intervalMark.axis.y = false
-      lineMark.axis.y = false
-      return options
-    }
+    const view = options.children.find(c => c.key === 'chart')
+    const [intervalMark, lineMark, pointMark] = view.children
     const overlapGridFilter = this.getOverlapGridFilter(xAxis)
-    const yAxisOption = { ...this.getAxis(yAxis), ...overlapGridFilter }
-    const yAxisExtOption = { ...this.getAxis(yAxisExt), ...overlapGridFilter }
+    const yAxisOption = { ...this.getAxis(chart, yAxis), ...overlapGridFilter }
+    const yAxisExtOption = { ...this.getAxis(chart, yAxisExt), ...overlapGridFilter }
     merge(intervalMark, {
       axis: {
         y: {
@@ -725,12 +640,12 @@ export class GroupLineMix extends G2ChartView {
       const scaleY = {
         key: 'right',
         nice: false,
-        clamp: true,
         independent: true,
         domain: [yAxisExt.axisValue.min, yAxisExt.axisValue.max]
       }
       lineMark.scale.y = scaleY
       pointMark.scale.y = scaleY
+      this.configManualYAxisLineRange(yAxisExt, view, lineMark, pointMark)
       merge(lineMark, {
         axis: {
           y: {
@@ -747,6 +662,12 @@ export class GroupLineMix extends G2ChartView {
         }
       })
     }
+    // 隐藏数据轴只影响显示，仍需执行轴域同步和手动范围配置
+    if (!yAxis.show) {
+      intervalMark.axis.y = false
+      lineMark.axis.y = false
+    }
+
     return options
   }
 
@@ -786,24 +707,33 @@ export class GroupLineMix extends G2ChartView {
     const yAxisExtFormatterCfg =
       yAxisExt.axisLabelFormatter ?? DEFAULT_YAXIS_STYLE.axisLabelFormatter
     const view = options.children.find(c => c.key === 'chart')
+    const [intervalMark, lineMark] = view.children
     splitLineData.forEach((lineData, index) => {
-      if (lineData.length) {
+      const { scaleY, visibleLineData, visibility } = getMixAssistLineOptions(
+        index === 0 ? intervalMark : lineMark,
+        lineData,
+        index
+      )
+      if (visibleLineData.length) {
         const assistLineMark: G2Spec = {
           type: 'lineY',
+          // 先更新辅助线可见性再布局标签，避免更新动画保留旧的隐藏状态
+          animate: { update: { type: null } },
           encode: { y: 'value' },
           scale: {
             y: {
+              ...scaleY,
               key: index === 0 ? 'left' : 'right'
             }
           },
-          // 右轴辅助线使用独立比例尺，只关闭其自动生成的冗余轴
-          ...(index === 1 ? { axis: { y: false } } : {}),
-          data: lineData,
+          axis: { y: false },
+          data: visibleLineData,
           style: {
+            visibility,
             stroke: d => d.color,
             lineDash: d =>
               d.lineType === 'solid' ? [] : d.lineType === 'dashed' ? [10, 8] : [1, 2],
-            opacity: 1
+            ...ASSIST_LINE_STYLE
           },
           labels: [
             {
@@ -836,6 +766,7 @@ export class GroupLineMix extends G2ChartView {
   }
 
   public setupDefaultOptions(chart: ChartObj): ChartObj {
+    setupMixAxisDefaults(chart)
     const { senior } = chart
     if (
       senior.functionCfg.emptyDataStrategy == undefined ||

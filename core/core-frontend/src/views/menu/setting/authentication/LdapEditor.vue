@@ -1,186 +1,179 @@
 <script lang="ts" setup>
-import { ref, reactive } from "vue";
-import { ElMessage, ElLoading } from "element-plus-secondary";
-import { useI18n } from "@/hooks/web/useI18n";
-import type { FormInstance, FormRules } from "element-plus-secondary";
-import request from "@/config/axios";
-const { t } = useI18n();
-const dialogVisible = ref(false);
-const loadingInstance = ref(null);
-const mappingTips = ref(t("system.for_example"));
-const ldapForm = ref<FormInstance>();
+import { ref, reactive } from 'vue'
+import { ElMessage, ElLoading } from 'element-plus-secondary'
+import { useI18n } from '@/hooks/web/useI18n'
+import type { FormInstance, FormRules } from 'element-plus-secondary'
+import request from '@/config/axios'
+const { t } = useI18n()
+const dialogVisible = ref(false)
+const loadingInstance = ref(null)
+const mappingTips = ref(t('system.for_example'))
+const ldapForm = ref<FormInstance>()
 interface LdapForm {
-  addr?: string;
-  dn?: string;
-  pwd?: string;
-  ou?: string;
-  filter?: string;
-  mapping?: string;
+  addr?: string
+  dn?: string
+  pwd?: string
+  ou?: string
+  filter?: string
+  mapping?: string
 }
 const state = reactive({
   form: reactive<LdapForm>({
-    addr: "",
-    dn: "",
-    pwd: "",
-    ou: "",
-    filter: "",
-    mapping: "",
-  }),
-});
+    addr: '',
+    dn: '',
+    pwd: '',
+    ou: '',
+    filter: '',
+    mapping: ''
+  })
+})
 const validateMapping = (rule, value, callback) => {
   if (!value) {
-    callback();
+    callback()
   }
   try {
-    JSON.parse(value);
+    JSON.parse(value)
   } catch (e) {
-    callback(new Error(t("system.in_json_format")));
+    callback(new Error(t('system.in_json_format')))
   }
-  callback();
-};
+  callback()
+}
 const rule = reactive<FormRules>({
   addr: [
     {
       required: true,
-      message: t("common.require"),
-      trigger: "blur",
+      message: t('common.please_input') + t('common.empty') + t('system.ldap_address'),
+      trigger: 'blur'
     },
     {
       min: 10,
       max: 255,
-      message: t("commons.input_limit", [10, 255]),
-      trigger: "blur",
-    },
+      message: t('commons.input_limit', [10, 255]),
+      trigger: 'blur'
+    }
   ],
   dn: [
     {
       required: true,
-      message: t("common.require"),
-      trigger: ["blur", "change"],
-    },
+      message: t('common.please_input') + t('common.empty') + t('system.bind_dn'),
+      trigger: ['blur', 'change']
+    }
   ],
   pwd: [
     {
       required: true,
-      message: t("common.require"),
-      trigger: ["blur", "change"],
-    },
+      message: t('common.please_input') + t('common.empty') + t('common.pwd'),
+      trigger: ['blur', 'change']
+    }
   ],
   ou: [
     {
       required: true,
-      message: t("common.require"),
-      trigger: ["blur", "change"],
-    },
+      message: t('common.please_input') + t('common.empty') + t('system.user_ou'),
+      trigger: ['blur', 'change']
+    }
   ],
   filter: [
     {
       required: true,
-      message: t("common.require"),
-      trigger: ["blur", "change"],
-    },
+      message: t('common.please_input') + t('common.empty') + t('system.user_filter'),
+      trigger: ['blur', 'change']
+    }
   ],
   mapping: [
     {
       required: true,
-      message: t("common.require"),
-      trigger: ["blur", "change"],
+      message: t('common.please_input') + t('common.empty') + t('system.ldap_attribute_mapping'),
+      trigger: ['blur', 'change']
     },
-    { required: true, validator: validateMapping, trigger: "blur" },
-  ],
-});
+    { required: true, validator: validateMapping, trigger: 'blur' }
+  ]
+})
 
 const edit = () => {
-  showLoading();
+  showLoading()
   request
-    .get({ url: "/setting/authentication/info/ldap" })
-    .then((res) => {
-      const resData = res.data;
+    .get({ url: '/setting/authentication/info/ldap' })
+    .then(res => {
+      const resData = res.data
       for (const key in resData) {
-        state.form[key] = resData[key];
+        state.form[key] = resData[key]
       }
     })
     .finally(() => {
-      closeLoading();
-    });
-  dialogVisible.value = true;
-};
+      closeLoading()
+    })
+  dialogVisible.value = true
+}
 
-const emits = defineEmits(["saved"]);
+const emits = defineEmits(['saved'])
 const submitForm = async (formEl: FormInstance | undefined) => {
-  if (!formEl) return;
-  await formEl.validate((valid) => {
+  if (!formEl) return
+  await formEl.validate(valid => {
     if (valid) {
-      const param = { ...state.form };
+      const param = { ...state.form }
       const method = request.post({
-        url: "/setting/authentication/save/ldap",
-        data: param,
-      });
-      showLoading();
+        url: '/setting/authentication/save/ldap',
+        data: param
+      })
+      showLoading()
       method
-        .then((res) => {
+        .then(res => {
           if (!res.msg) {
-            ElMessage.success(t("common.save_success"));
-            emits("saved");
-            reset();
+            ElMessage.success(t('common.save_success'))
+            emits('saved')
+            reset()
           }
-          closeLoading();
+          closeLoading()
         })
         .catch(() => {
-          closeLoading();
-        });
+          closeLoading()
+        })
     }
-  });
-};
+  })
+}
 
 const resetForm = (formEl: FormInstance | undefined) => {
-  if (!formEl) return;
-  formEl.resetFields();
-  dialogVisible.value = false;
-};
+  if (!formEl) return
+  formEl.resetFields()
+  dialogVisible.value = false
+}
 
 const reset = () => {
-  resetForm(ldapForm.value);
-};
+  resetForm(ldapForm.value)
+}
 
 const showLoading = () => {
   loadingInstance.value = ElLoading.service({
-    target: ".platform-info-drawer",
-  });
-};
+    target: '.platform-info-drawer'
+  })
+}
 const closeLoading = () => {
-  loadingInstance.value?.close();
-};
+  loadingInstance.value?.close()
+}
 
 const validate = () => {
-  const url = "/setting/authentication/validate/ldap";
-  const data = state.form;
-  showLoading();
+  const url = '/setting/authentication/validate/ldap'
+  const data = state.form
+  showLoading()
   request
     .post({ url, data })
-    .then((res) => {
-      if (res?.data === "true") {
-        ElMessage.success(
-          t("commons.test_connect") + t("report.last_status_success")
-        );
+    .then(res => {
+      if (res?.data === 'true') {
+        ElMessage.success(t('commons.test_connect') + t('report.last_status_success'))
       } else {
-        ElMessage.error(
-          t("commons.test_connect") +
-            t("report.last_status_fail") +
-            ": " +
-            res.data
-        );
+        ElMessage.error(t('commons.test_connect') + t('report.last_status_fail') + ': ' + res.data)
       }
     })
     .finally(() => {
-      closeLoading();
-      emits("saved");
-    });
-};
+      closeLoading()
+      emits('saved')
+    })
+}
 
 defineExpose({
-  edit,
-});
+  edit
+})
 </script>
 
 <template>
@@ -202,14 +195,14 @@ defineExpose({
       <el-form-item :label="t('system.ldap_address')" prop="addr">
         <el-input
           v-model="state.form.addr"
-          :placeholder="t('common.please_input') + t('system.such_as_ldap')"
+          :placeholder="t('common.please_input') + t('common.empty') + t('system.such_as_ldap')"
         />
       </el-form-item>
 
       <el-form-item :label="t('system.bind_dn')" prop="dn">
         <el-input
           v-model="state.form.dn"
-          :placeholder="t('common.please_input') + 'DN'"
+          :placeholder="t('common.please_input') + t('common.empty') + 'DN'"
         />
       </el-form-item>
 
@@ -218,21 +211,21 @@ defineExpose({
           v-model="state.form.pwd"
           type="password"
           show-password
-          :placeholder="t('common.please_input') + t('common.pwd')"
+          :placeholder="t('common.please_input') + t('common.empty') + t('common.pwd')"
         />
       </el-form-item>
 
       <el-form-item :label="t('system.user_ou')" prop="ou">
         <el-input
           v-model="state.form.ou"
-          :placeholder="t('common.please_input') + t('system.separate_each_ou')"
+          :placeholder="t('common.please_input') + t('common.empty') + t('system.separate_each_ou')"
         />
       </el-form-item>
 
       <el-form-item :label="t('system.user_filter')" prop="filter">
         <el-input
           v-model="state.form.filter"
-          :placeholder="t('common.please_input') + t('system.such_as_uid')"
+          :placeholder="t('common.please_input') + t('common.empty') + t('system.such_as_uid')"
         />
       </el-form-item>
 
@@ -242,14 +235,12 @@ defineExpose({
     </el-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button secondary @click="resetForm(ldapForm)">{{
-          t("common.cancel")
-        }}</el-button>
+        <el-button secondary @click="resetForm(ldapForm)">{{ t('common.cancel') }}</el-button>
         <el-button secondary :disabled="!state.form.addr" @click="validate">
-          {{ t("commons.test_connect") }}
+          {{ t('commons.test_connect') }}
         </el-button>
         <el-button type="primary" @click="submitForm(ldapForm)">
-          {{ t("commons.save") }}
+          {{ t('commons.save') }}
         </el-button>
       </span>
     </template>
@@ -287,7 +278,7 @@ defineExpose({
       padding: 0 20px;
       color: #1f2329;
       text-align: center;
-      font-family: var(--de-custom_font, "PingFang");
+      font-family: var(--de-custom_font, 'PingFang');
       font-size: 14px;
       font-style: normal;
       font-weight: 400;

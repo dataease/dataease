@@ -1,23 +1,23 @@
 <script lang="ts" setup>
-import { ref, reactive } from "vue";
-import { ElMessage, ElLoading, ElMessageBox } from "element-plus-secondary";
-import { useI18n } from "@/hooks/web/useI18n";
-import type { FormInstance, FormRules } from "element-plus-secondary";
-import request from "@/config/axios";
+import { ref, reactive } from 'vue'
+import { ElMessage, ElLoading, ElMessageBox } from 'element-plus-secondary'
+import { useI18n } from '@/hooks/web/useI18n'
+import type { FormInstance, FormRules } from 'element-plus-secondary'
+import request from '@/config/axios'
 import CodeEdit from '@/components/CodeEdit/CodeEdit.vue'
 import dvInfo from '@/assets/svg/dv-info.svg'
-const { t } = useI18n();
-const dialogVisible = ref(false);
-const loadingInstance = ref(null);
-const webhookForm = ref<FormInstance>();
+const { t } = useI18n()
+const dialogVisible = ref(false)
+const loadingInstance = ref(null)
+const webhookForm = ref<FormInstance>()
 interface WebhookForm {
-  id?: string;
-  name?: string;
-  url?: string;
-  contentType?: string;
-  secret?: string;
-  ssl: boolean;
-  msgTemplate?: string;
+  id?: string
+  name?: string
+  url?: string
+  contentType?: string
+  secret?: string
+  ssl: boolean
+  msgTemplate?: string
 }
 const state = reactive({
   form: reactive<WebhookForm>({
@@ -28,72 +28,72 @@ const state = reactive({
     contentType: '',
     secret: '',
     msgTemplate: ''
-  }),
-});
-const formType = ref("add");
+  })
+})
+const formType = ref('add')
 const options = [
   { value: 'application/json', label: 'application/json' },
-  { value: 'application/x-www-form-urlencoded', label: 'application/x-www-form-urlencoded' },
+  { value: 'application/x-www-form-urlencoded', label: 'application/x-www-form-urlencoded' }
 ]
 const validateUrl = (rule, value, callback) => {
-  const reg = new RegExp(/(http|https):\/\/([\w.]+\/?)\S*/);
+  const reg = new RegExp(/(http|https):\/\/([\w.]+\/?)\S*/)
   if (!reg.test(value)) {
-    callback(new Error(t("system.wrong_please_re_enter")));
+    callback(new Error(t('system.wrong_please_re_enter')))
   } else {
-    callback();
+    callback()
   }
-};
+}
 const rule = reactive<FormRules>({
   name: [
     {
       required: true,
-      message: `${t("common.please_input")} webhook`,
-      trigger: "blur",
+      message: `${t('common.please_input')} webhook`,
+      trigger: 'blur'
     },
     {
       min: 1,
       max: 50,
-      message: t("commons.input_limit", [1, 50]),
-      trigger: "blur",
-    },
+      message: t('commons.input_limit', [1, 50]),
+      trigger: 'blur'
+    }
   ],
   url: [
     {
       required: true,
-      message: `${t("common.please_input")} url`,
-      trigger: "blur",
+      message: `${t('common.please_input')} url`,
+      trigger: 'blur'
     },
     {
       min: 10,
       max: 255,
-      message: t("commons.input_limit", [10, 255]),
-      trigger: "blur",
+      message: t('commons.input_limit', [10, 255]),
+      trigger: 'blur'
     },
-    { required: true, validator: validateUrl, trigger: "blur" },
+    { required: true, validator: validateUrl, trigger: 'blur' }
   ],
   contentType: [
     {
       required: true,
-      message: `${t("common.please_select")} ${t('webhook.content_type')}`,
-      trigger: "change",
+      message: `${t('common.please_select')} ${t('webhook.content_type')}`,
+      trigger: 'change'
     }
   ],
   ssl: [
     {
       required: true,
-      message: t("common.require"),
-      trigger: "change",
+      message: t('common.please_input') + t('common.empty') + 'SSL',
+      trigger: 'change'
     }
   ]
-});
+})
 
-const edit = (id) => {
+const edit = id => {
   if (!id) {
-    add();
-    return;
+    add()
+    return
   }
-  request.get({ url: `/webhook/get/${id}` }).then((res) => {
-    const data = res.data;
+  request.get({ url: `/webhook/get/${id}` }).then(res => {
+    const data = res.data
     state.form = {
       id: data.id,
       name: data.name,
@@ -102,72 +102,71 @@ const edit = (id) => {
       contentType: data.contentType,
       secret: data.secret,
       msgTemplate: data.msgTemplate
-    };
-    formType.value = "edit";
-    dialogVisible.value = true;
-  });
-};
+    }
+    formType.value = 'edit'
+    dialogVisible.value = true
+  })
+}
 const add = () => {
   state.form = {
     ssl: true,
     msgTemplate: ''
-  };
-  formType.value = "add";
-  dialogVisible.value = true;
-};
+  }
+  formType.value = 'add'
+  dialogVisible.value = true
+}
 
-const emits = defineEmits(["saved"]);
+const emits = defineEmits(['saved'])
 const submitForm = async (formEl: FormInstance | undefined) => {
-
-  if (!formEl) return;
-  await formEl.validate((valid) => {
+  if (!formEl) return
+  await formEl.validate(valid => {
     if (valid) {
       saveHandler()
     }
-  });
-};
+  })
+}
 
 const saveHandler = () => {
-  const param = { ...state.form };
+  const param = { ...state.form }
   const method = request.post({
     url: '/webhook/save',
-    data: param,
-  });
-  showLoading();
+    data: param
+  })
+  showLoading()
   method
-    .then((res) => {
+    .then(res => {
       if (!res.msg) {
-        ElMessage.success(t("common.save_success"));
-        emits("saved");
-        reset();
+        ElMessage.success(t('common.save_success'))
+        emits('saved')
+        reset()
       }
     })
     .finally(() => {
-      closeLoading();
-    });
+      closeLoading()
+    })
 }
 
 const resetForm = (formEl: FormInstance | undefined) => {
-  if (!formEl) return;
-  formEl.resetFields();
-  dialogVisible.value = false;
-};
+  if (!formEl) return
+  formEl.resetFields()
+  dialogVisible.value = false
+}
 
 const reset = () => {
-  resetForm(webhookForm.value);
-};
+  resetForm(webhookForm.value)
+}
 
 const showLoading = () => {
   loadingInstance.value = ElLoading.service({
-    target: ".webhook-info-drawer",
-  });
-};
+    target: '.webhook-info-drawer'
+  })
+}
 const closeLoading = () => {
-  loadingInstance.value?.close();
-};
+  loadingInstance.value?.close()
+}
 defineExpose({
-  edit,
-});
+  edit
+})
 </script>
 
 <template>
@@ -190,36 +189,33 @@ defineExpose({
       <el-form-item :label="t('common.name')" prop="name">
         <el-input
           v-model="state.form.name"
-          :placeholder="t('common.please_input') + t('common.name')"
+          :placeholder="t('common.please_input') + t('common.empty') + t('common.name')"
         />
       </el-form-item>
 
       <el-form-item label="URL" prop="url">
-        <el-input
-          v-model="state.form.url"
-          :placeholder="`${t('common.please_input')}URL`"
-        />
+        <el-input v-model="state.form.url" :placeholder="`${t('common.please_input')}URL`" />
       </el-form-item>
 
       <el-form-item :label="t('webhook.content_type')" prop="contentType">
         <el-select
           v-model="state.form.contentType"
-          :placeholder="t('common.please_select') + t('webhook.content_type')"
+          :placeholder="t('common.please_select') + t('common.empty') + t('webhook.content_type')"
           style="width: 100%"
         >
-        <el-option
-          v-for="item in options"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-        />
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
         </el-select>
       </el-form-item>
 
       <el-form-item label="Secret" prop="secret">
         <el-input
           v-model="state.form.secret"
-          :placeholder="t('common.please_input') + 'Secret'"
+          :placeholder="t('common.please_input') + t('common.empty') + 'Secret'"
         />
       </el-form-item>
 
@@ -233,7 +229,13 @@ defineExpose({
             <span class="custom-form-item__label">{{ t('webhook.msg_template') }}</span>
             <el-tooltip
               effect="dark"
-              :content="t('webhook.msg_template_tips', { t0: '${title}', t1: '${content}', t2: '${messageId}' })"
+              :content="
+                t('webhook.msg_template_tips', {
+                  t0: '${title}',
+                  t1: '${content}',
+                  t2: '${messageId}'
+                })
+              "
               placement="top"
             >
               <el-icon
@@ -242,7 +244,7 @@ defineExpose({
             </el-tooltip>
           </div>
         </template>
-        <div style="width: 100%; border: 1px solid #dcdfe6; border-radius: 4px;">
+        <div style="width: 100%; border: 1px solid #dcdfe6; border-radius: 4px">
           <CodeEdit
             v-model="state.form.msgTemplate"
             :data="state.form.msgTemplate"
@@ -255,16 +257,14 @@ defineExpose({
       </el-form-item>
 
       <el-form-item label="SSL" prop="ssl">
-        <el-switch v-model="state.form.ssl"/>
+        <el-switch v-model="state.form.ssl" />
       </el-form-item>
     </el-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button secondary @click="resetForm(webhookForm)">{{
-          t("common.cancel")
-        }}</el-button>
+        <el-button secondary @click="resetForm(webhookForm)">{{ t('common.cancel') }}</el-button>
         <el-button type="primary" @click="submitForm(webhookForm)">
-          {{ t("commons.save") }}
+          {{ t('commons.save') }}
         </el-button>
       </span>
     </template>
@@ -308,7 +308,7 @@ defineExpose({
       padding: 0 20px;
       color: #1f2329;
       text-align: center;
-      font-family: var(--de-custom_font, "PingFang");
+      font-family: var(--de-custom_font, 'PingFang');
       font-size: 14px;
       font-style: normal;
       font-weight: 400;

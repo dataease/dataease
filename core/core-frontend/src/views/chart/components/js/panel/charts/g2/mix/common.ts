@@ -1,5 +1,9 @@
-import { Chart as G2Chart, extend, Runtime, stdlib, type G2Spec } from '@antv/g2'
+import { Chart as G2Chart, extend, Runtime, stdlib, type G2Spec, type LinearScale } from '@antv/g2'
+import { defaultsDeep } from 'lodash-es'
+import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { parseJson } from '@/views/chart/components/js/util'
+import { DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'
+import { getColumnSeriesPaddingTransform } from '../bar/barUtil'
 import {
   getCategoryLegendStyle,
   getHorizontalLegendLabelMaxWidth,
@@ -9,28 +13,76 @@ import {
   getSideLegendMaxWidth,
   getSideLegendRowsPerPage,
   SIDE_LEGEND_DEFAULT_COL_PADDING,
+  SIDE_LEGEND_MIN_LABEL_WIDTH,
   SIDE_HORIZONTAL_LEGEND_MAX_COLS,
   SIDE_LEGEND_NAVIGATOR_WIDTH
 } from '@/views/chart/components/js/panel/types/impl/g2-legend'
 
 type MixLegendRelation = [string, string]
 
+export const setupMixAxisDefaults = (chart: ChartObj): void => {
+  for (const axis of [chart.customStyle.yAxis, chart.customStyle.yAxisExt]) {
+    if (!axis.axisLine.show) {
+      axis.axisLabel.showTick = false
+    }
+  }
+}
+
+export const getMixColumnWidthOptions = (
+  columnWidthRatio: number | null | undefined,
+  transforms = []
+) => {
+  // 缺失或非有限值使用默认柱宽，历史越界值限制到样式面板的 1-100% 范围
+  const value = Number(columnWidthRatio ?? DEFAULT_BASIC_STYLE.columnWidthRatio)
+  const ratio = Number.isFinite(value)
+    ? Math.min(100, Math.max(1, value))
+    : DEFAULT_BASIC_STYLE.columnWidthRatio
+  // 与基础柱状图保持一致，满宽时仍保留 1% 间距并同步分组子带宽
+  const padding = Math.max(1 - ratio / 100, 0.01)
+  return {
+    scale: {
+      x: { padding, paddingInner: padding }
+    },
+    transform: [...transforms, getColumnSeriesPaddingTransform(padding)],
+    style: { columnWidthRatio: 1 - padding }
+  }
+}
+
 interface MixLegendOptions {
   supportOrient?: boolean
   alignBottom?: boolean
+  sideLegendGap?: number
+  compactPagedSideLegend?: boolean
 }
 
 interface MixSideLegendLayout {
+  compactPaged?: boolean
   legendFirst: boolean
   itemCount: number
   columns: number
   itemHeight: number
   rowPadding: number
   contentWidth: number
+  minItemWidth?: number
+  maxWidthRatio?: number
   // 组合图外层分栏无法读取 Navigator，保存逐项宽度和页码供翻页后重新分配 Plot
   itemWidths?: number[]
   currentPage?: number
   crossPadding: number
+}
+
+interface MixVerticalLegendLayout {
+  itemCount: number
+  itemHeight: number
+  rowPadding: number
+  contentWidth: number
+}
+
+interface MixTopBottomLegendLayout {
+  legendFirst: boolean
+  legendSize: number
+  crossPadding: number
+  vertical?: MixVerticalLegendLayout
 }
 
 const MIX_LEGEND_LAYOUT_SAFETY = 4
@@ -83,8 +135,18 @@ const getMixSideLegendWidth = (
   const pageContentWidth = currentPageItemWidths.length
     ? Math.max(...currentPageItemWidths)
     : layout.contentWidth
-  const contentWidth = pageContentWidth * layout.columns + layout.crossPadding + navigatorExtra
-  return Math.max(1, Math.min(contentWidth, getSideLegendMaxWidth(containerWidth)))
+  // 水平侧栏的内层网格会为每列保留最少的文字宽度；外层也需按同一最小宽度
+  // 分栏，避免短名称反而令图例子 View 窄到只能降级为单列。
+  const itemWidth =
+    layout.columns > 1 ? Math.max(pageContentWidth, layout.minItemWidth ?? 0) : pageContentWidth
+  // 内层 maxWidthRatio=1 仍会为绘图区保留 1px，因此多列外层再预留 1px，
+  // 使分配后的子 View 宽度恰好满足内层 requiredWidth。
+  const contentWidth =
+    itemWidth * layout.columns + layout.crossPadding + navigatorExtra + (layout.columns > 1 ? 1 : 0)
+  return Math.max(
+    1,
+    Math.min(contentWidth, getSideLegendMaxWidth(containerWidth, layout.maxWidthRatio))
+  )
 }
 
 const getMixSideLegendRatio = (options, layout: MixSideLegendLayout) => {
@@ -104,16 +166,96 @@ const getMixSideLegendRatio = (options, layout: MixSideLegendLayout) => {
   return layout.legendFirst ? [legendWidth, chartWidth] : [chartWidth, legendWidth]
 }
 
+const getMixVerticalLegendStyle = (size: number, layout: MixVerticalLegendLayout) => {
+  const { itemCount, itemHeight, rowPadding, contentWidth } = layout
+  const rowsWithoutNavigator = Math.max(
+    1,
+    Math.floor((size + rowPadding) / (itemHeight + rowPadding))
+  )
+  const showNavigator = rowsWithoutNavigator < itemCount
+  const itemsSize = Math.max(1, size - (showNavigator ? itemHeight + 12 : 0))
+  return {
+    size,
+    cols: 1,
+    gridRow: Math.max(
+      1,
+      Math.min(itemCount, Math.floor((itemsSize + rowPadding) / (itemHeight + rowPadding)))
+    ),
+    rowPadding,
+    dataeaseNavBelow: showNavigator,
+    length: contentWidth + (showNavigator ? SIDE_LEGEND_NAVIGATOR_WIDTH : 0)
+  }
+}
+
+const applyMixTopBottomLegendLayout = (options, layout: MixTopBottomLegendLayout) => {
+  const height = Number(options.height)
+  if (!Number.isFinite(height) || height <= 0) {
+    return options
+  }
+  const gap = getNonNegativeNumber(options.padding, 0) * Math.max(0, options.children.length - 1)
+  const availableHeight = Math.max(1, height - gap)
+  const legendSize = Math.max(
+    1,
+    Math.min(layout.legendSize, availableHeight - 1, layout.vertical ? height / 2 - gap : Infinity)
+  )
+  const chartSize = Math.max(1, availableHeight - legendSize)
+  return {
+    ...options,
+    ratio: layout.legendFirst ? [legendSize, chartSize] : [chartSize, legendSize],
+    children: layout.vertical
+      ? options.children.map(child =>
+          child.key === 'legend'
+            ? {
+                ...child,
+                ...getMixVerticalLegendStyle(
+                  Math.max(1, legendSize - layout.crossPadding),
+                  layout.vertical
+                )
+              }
+            : child
+        )
+      : options.children
+  }
+}
+
 export const createResponsiveMixSpaceFlex = baseSpaceFlex => {
   const responsiveSpaceFlex = (...args) => {
     const layout = baseSpaceFlex(...args)
     return options => {
+      // 平铺图例使用独立的内容测量结果，禁止分页布局覆盖其占位和换行规则
+      if (options.children?.some(child => child.dataeaseLegendTile)) {
+        return layout(options)
+      }
+      const topBottomLegendLayout =
+        options.dataeaseTopBottomLegendLayout as MixTopBottomLegendLayout
+      if (topBottomLegendLayout) {
+        // 每轮使用 G2 的逻辑高度分配图例空间，不受外层画布缩放或旧 ratio 影响
+        return layout(applyMixTopBottomLegendLayout(options, topBottomLegendLayout))
+      }
       const sideLegendLayout = options.dataeaseSideLegendLayout as MixSideLegendLayout
       if (!sideLegendLayout) {
         return layout(options)
       }
+      // 只收紧目标组合图分页时的水平外边距，保留分页器占位和轴侧 crossPadding
+      // 上下仍沿用 G2 默认各 16px 外边距，按剩余高度估算分页；每次布局重新判断以支持还原。
+      const compactPaged =
+        sideLegendLayout.compactPaged &&
+        sideLegendLayout.itemCount >
+          getSideLegendRowsPerPage(
+            Math.max(1, Number(options.height) - 32),
+            sideLegendLayout.itemHeight,
+            sideLegendLayout.rowPadding
+          ) *
+            sideLegendLayout.columns
       return layout({
         ...options,
+        ...(compactPaged
+          ? {
+              children: options.children.map(child =>
+                child.key === 'legend' ? { ...child, marginLeft: 4, marginRight: 4 } : child
+              )
+            }
+          : {}),
         ratio: getMixSideLegendRatio(options, sideLegendLayout)
       })
     }
@@ -211,12 +353,177 @@ export const getAssistLineAxisIndex = (yAxisType?: string): number => {
   return yAxisType === 'right' ? 1 : 0
 }
 
+type MixAssistScaleOptions = LinearScale & {
+  dataeaseAssistAxis?: number
+  dataeaseAssistSource?: boolean
+  dataeaseAssistSetDomain?: (domain: number[]) => void
+}
+
+type MixAssistNumericScale = {
+  update: (options: Partial<LinearScale>) => void
+}
+
+// 在每次 G2 比例尺推断之后同步，覆盖图例筛选、堆叠变换和自动 nice 后的实际轴域
+const syncMixAssistScales: NonNullable<LinearScale['groupTransform']> = scales => {
+  scales.forEach(scale => {
+    const options = scale.getOptions() as MixAssistScaleOptions
+    if (!options.dataeaseAssistSetDomain) {
+      return
+    }
+    const source = scales.find(candidate => {
+      const sourceOptions = candidate.getOptions() as MixAssistScaleOptions
+      return (
+        sourceOptions.dataeaseAssistSource &&
+        sourceOptions.dataeaseAssistAxis === options.dataeaseAssistAxis
+      )
+    })
+    const sourceOptions = source?.getOptions() as MixAssistScaleOptions
+    const domain = sourceOptions?.domain || []
+    options.dataeaseAssistSetDomain(domain)
+    if (domain.length === 2 && domain.every(Number.isFinite)) {
+      const numericScale = scale as MixAssistNumericScale
+      numericScale.update({ domain, range: sourceOptions.range, nice: false })
+    }
+  })
+}
+
+export const getMixAssistLineOptions = <T extends { value: number }>(
+  axisMark: G2Spec,
+  lineData: T[],
+  axisIndex: number
+) => {
+  axisMark.scale.y = {
+    ...axisMark.scale.y,
+    dataeaseAssistAxis: axisIndex,
+    dataeaseAssistSource: true,
+    groupTransform: syncMixAssistScales
+  }
+  let visibleDomain: number[] = []
+  const scaleY: MixAssistScaleOptions = {
+    ...axisMark.scale.y,
+    // 辅助线保持独立，不能把自身数值合并到主图轴域中
+    independent: true,
+    dataeaseAssistSource: false,
+    dataeaseAssistSetDomain: domain => {
+      visibleDomain = domain
+    },
+    groupTransform: syncMixAssistScales
+  }
+  const visibility = (item: T): 'visible' | 'hidden' => {
+    return visibleDomain.length === 2 &&
+      visibleDomain.every(Number.isFinite) &&
+      item.value >= Math.min(...visibleDomain) &&
+      item.value <= Math.max(...visibleDomain)
+      ? 'visible'
+      : 'hidden'
+  }
+  // 保留越界值以便后续轴域变化时恢复显示；G2 会跳过隐藏元素的标签
+  return {
+    scaleY,
+    visibleLineData: lineData.filter(item => Number.isFinite(item.value)),
+    visibility
+  }
+}
+
 export const getMixLabelTransform = (fullDisplay: boolean) => {
   const transform = [{ type: 'exceedAdjust', bounds: 'main' }]
   if (!fullDisplay) {
     transform.push({ type: 'overlapHide' })
   }
   return transform
+}
+
+// 组合图使用纵向标签位置，兼容从横向图或饼图切换时保留的位置值
+export const normalizeMixLabelPosition = (position?: string): 'top' | 'middle' | 'bottom' => {
+  switch (position) {
+    case 'bottom':
+    case 'left':
+      return 'bottom'
+    case 'middle':
+    case 'inner':
+    case 'outer':
+      return 'middle'
+    default:
+      return 'top'
+  }
+}
+
+// 四类组合图共用标签配置，图形节点由各图表按自身结构传入
+export const configMixLabel = (chart: Chart, leftMark: G2Spec, rightMark: G2Spec): void => {
+  const { label } = parseJson(chart.customAttr)
+  if (!label.show) {
+    return
+  }
+  // 按指标和轴区分标签，兼容未保存 seriesId 的旧图表
+  const seriesMap = (label.seriesLabelFormatter ?? []).reduce((acc, cur) => {
+    acc[cur.seriesId ?? cur.id] = cur
+    return acc
+  }, {} as Record<string, DeepPartial<SeriesFormatter>>)
+  const getLabelOpt = (axis: 'yAxis' | 'yAxisExt') => {
+    const getFormatter = d =>
+      seriesMap[`${d.quotaList[0].id}-${axis}`] ?? seriesMap[d.quotaList[0].id]
+    // 未迁移的旧图表仍使用全局位置，忽略历史指标默认写入的 top
+    const getPosition = d =>
+      normalizeMixLabelPosition(
+        (label.seriesLabelPositionEnabled ? getFormatter(d)?.position : undefined) ?? label.position
+      )
+    return {
+      labels: [
+        {
+          text: d => {
+            if (!label.seriesLabelFormatter?.length) {
+              return d.value
+            }
+            const labelCfg = getFormatter(d)
+            if (!labelCfg) {
+              return d.value
+            }
+            if (!labelCfg.show) {
+              return ''
+            }
+            return valueFormatter(d.value, labelCfg.formatterCfg)
+          },
+          style: {
+            fillOpacity: 1,
+            fontSize: d => {
+              if (!label.seriesLabelFormatter?.length) {
+                return 12
+              }
+              const labelCfg = getFormatter(d)
+              if (!labelCfg) {
+                return 12
+              }
+              if (!labelCfg.show) {
+                return 0
+              }
+              return labelCfg.fontSize
+            },
+            fill: d => {
+              if (!label.seriesLabelFormatter?.length) {
+                return 'black'
+              }
+              const labelCfg = getFormatter(d)
+              if (!labelCfg?.show) {
+                return 'black'
+              }
+              return labelCfg.color
+            },
+            position: d => (getPosition(d) === 'middle' ? 'inside' : getPosition(d))
+          },
+          textBaseline: d =>
+            ({
+              top: 'bottom',
+              middle: 'middle',
+              bottom: 'top'
+            }[getPosition(d)]),
+          transform: getMixLabelTransform(label.fullDisplay),
+          fontFamily: chart.fontFamily
+        }
+      ]
+    }
+  }
+  defaultsDeep(leftMark, getLabelOpt('yAxis'))
+  defaultsDeep(rightMark, getLabelOpt('yAxisExt'))
 }
 
 export const CHART_MIX_EDITOR_PROPERTY: EditorProperty[] = [
@@ -327,9 +634,9 @@ export const configMixCustomLegend = (
   const legendColor = legend.color || '#333333'
   const legendChartGap = 8
   const legendRowPadding = 8
-  const legendNavigatorWidth = SIDE_LEGEND_NAVIGATOR_WIDTH
+  const legendItemSpacing = 8
+  const horizontalSideLegendMaxWidthRatio = 0.4
   const legendItemHeight = Math.ceil(Math.max(legendFontSize * 1.3, legendMarkerSize))
-  const legendNavigatorHeight = legendItemHeight + 12
   const getTextWidth = text => {
     return getLegendTextWidth(text, legendFontSize)
   }
@@ -337,8 +644,18 @@ export const configMixCustomLegend = (
     ([name]) => getTextWidth(name) + legendMarkerSize + 40
   )
   const sideLegendItemWidths = unionRelations.map(
-    ([name]) => getTextWidth(name) + legendMarkerSize + 8 + SIDE_LEGEND_DEFAULT_COL_PADDING
+    ([name]) =>
+      getTextWidth(name) + legendMarkerSize + legendItemSpacing + SIDE_LEGEND_DEFAULT_COL_PADDING
   )
+  const verticalLegendLayout: MixVerticalLegendLayout = {
+    itemCount: unionRelations.length,
+    itemHeight: legendItemHeight,
+    rowPadding: legendRowPadding,
+    contentWidth: Math.min(
+      Math.max(...legendItemWidths),
+      getHorizontalLegendLabelMaxWidth(legendFontSize) + legendMarkerSize + 40
+    )
+  }
   const getLegendChartGap = (
     direction: 'col' | 'row',
     legendFirst = false,
@@ -351,6 +668,8 @@ export const configMixCustomLegend = (
       ? 0
       : direction === 'col' && !legendFirst
       ? 4
+      : direction === 'row' && legend.displayMode !== 'tile'
+      ? getNonNegativeNumber(legendOptions.sideLegendGap, legendChartGap)
       : legendChartGap
   const getLegendRatio = (
     direction: 'col' | 'row',
@@ -367,9 +686,9 @@ export const configMixCustomLegend = (
         : typeof (chartContainer as HTMLElement).getBoundingClientRect === 'function'
         ? (chartContainer as HTMLElement)
         : undefined
-    const containerRect = containerDom?.getBoundingClientRect()
-    const mainSize = direction === 'col' ? containerRect?.height : containerRect?.width
-    const crossSize = direction === 'col' ? containerRect?.width : containerRect?.height
+    // 初始化也使用未缩放的逻辑尺寸，实际渲染时再以 G2 的内容区尺寸校准
+    const mainSize = direction === 'col' ? containerDom?.clientHeight : containerDom?.clientWidth
+    const crossSize = direction === 'col' ? containerDom?.clientWidth : containerDom?.clientHeight
     const crossGap = getLegendChartGap(direction, legendFirst, verticalLegend)
     // spaceFlex 按比例切分子层，这里把图例字号/图标尺寸换算成近似像素层高，避免图例放大后覆盖绘图区
     const legendLineSize = legendItemHeight + (verticalLegend ? legendRowPadding : crossGap)
@@ -398,12 +717,29 @@ export const configMixCustomLegend = (
                   itemHeight: legendItemHeight,
                   rowPadding: legendRowPadding,
                   contentWidth: Math.max(...sideLegendItemWidths),
+                  minItemWidth:
+                    legendMarkerSize +
+                    legendItemSpacing +
+                    SIDE_LEGEND_MIN_LABEL_WIDTH +
+                    SIDE_LEGEND_DEFAULT_COL_PADDING,
+                  maxWidthRatio:
+                    legendOptions.supportOrient && !verticalLegend
+                      ? horizontalSideLegendMaxWidthRatio
+                      : undefined,
                   itemWidths: sideLegendItemWidths,
                   currentPage: 0,
                   crossPadding: crossGap
                 })
               : Math.max(...sideLegendItemWidths) + crossGap
           )
+    if (direction === 'col' && legend.displayMode !== 'tile') {
+      ;(options as any).dataeaseTopBottomLegendLayout = {
+        legendFirst,
+        legendSize: legendMainSize,
+        crossPadding: crossGap,
+        vertical: legendOptions.supportOrient && verticalLegend ? verticalLegendLayout : undefined
+      } satisfies MixTopBottomLegendLayout
+    }
     if (!mainSize || mainSize <= 0) {
       const fallbackLegendRatio = Math.max(2, Math.ceil(legendMainSize / 16))
       return legendFirst ? [fallbackLegendRatio, 20] : [20, fallbackLegendRatio]
@@ -449,20 +785,31 @@ export const configMixCustomLegend = (
     if (horizontal) {
       legendMark.dataeaseLegendOrientLayout = 'horizontal'
     }
+    legendMark.dataeaseSideLegendMinColumns = horizontal ? columns : undefined
     ;(options as any).dataeaseSideLegendLayout = {
+      ...(legendOptions.compactPagedSideLegend && legend.displayMode !== 'tile'
+        ? { compactPaged: true }
+        : {}),
       legendFirst,
       itemCount: unionRelations.length,
       columns,
       itemHeight: legendItemHeight,
       rowPadding: legendRowPadding,
       contentWidth: Math.max(...sideLegendItemWidths),
+      minItemWidth: horizontal
+        ? legendMarkerSize +
+          legendItemSpacing +
+          SIDE_LEGEND_MIN_LABEL_WIDTH +
+          SIDE_LEGEND_DEFAULT_COL_PADDING
+        : undefined,
+      maxWidthRatio: horizontal ? horizontalSideLegendMaxWidthRatio : undefined,
       itemWidths: sideLegendItemWidths,
       currentPage: 0,
       crossPadding: Number(legendMark.crossPadding) || 0
     } satisfies MixSideLegendLayout
   }
   const enableHorizontalLegendText = () =>
-    Object.assign(legendMark, getHorizontalLegendTextStyle(legendFontSize))
+    Object.assign(legendMark, getHorizontalLegendTextStyle(legendFontSize, legend.displayMode))
   unionRelations.forEach(([key, value]) => {
     legendMark.scale.color.domain.push(key)
     legendMark.scale.color.range.push(value)
@@ -539,31 +886,7 @@ export const configMixCustomLegend = (
       legendMark.size = Math.max(1, legendLayerSize - legendMark.crossPadding)
       if (verticalLegend) {
         // 方向与停靠边交叉时按真实可用高度计算单列行数，仅在确实放不下时启用分页
-        const rowsWithoutNavigator = Math.max(
-          1,
-          Math.floor((legendMark.size + legendRowPadding) / (legendItemHeight + legendRowPadding))
-        )
-        const showNavigator = rowsWithoutNavigator < unionRelations.length
-        const legendItemsSize = Math.max(
-          1,
-          legendMark.size - (showNavigator ? legendNavigatorHeight : 0)
-        )
-        const visibleRows = Math.max(
-          1,
-          Math.min(
-            unionRelations.length,
-            Math.floor((legendItemsSize + legendRowPadding) / (legendItemHeight + legendRowPadding))
-          )
-        )
-        legendMark.cols = 1
-        legendMark.gridRow = visibleRows
-        legendMark.rowPadding = legendRowPadding
-        legendMark.dataeaseNavBelow = showNavigator
-        const maxItemWidth =
-          getHorizontalLegendLabelMaxWidth(legendFontSize) + legendMarkerSize + 40
-        legendMark.length =
-          Math.min(Math.max(...legendItemWidths), maxItemWidth) +
-          (showNavigator ? legendNavigatorWidth : 0)
+        Object.assign(legendMark, getMixVerticalLegendStyle(legendMark.size, verticalLegendLayout))
       }
     }
     if (legendFirst) {

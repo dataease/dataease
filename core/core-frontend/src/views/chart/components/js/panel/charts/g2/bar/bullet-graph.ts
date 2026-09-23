@@ -109,7 +109,10 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
     let newChart = null
     const { Chart: BulletClass } = await import('@antv/g2')
     handleChartDashboardHidden(chart, options)
-    newChart = new BulletClass(options)
+    // 构造参数只传运行时配置，children 必须通过 options 注册为图层。
+    // 否则 G2 每次读取并回写配置都会重复追加 children，导致图例推断溢出。
+    newChart = new BulletClass({ container, autoFit: true, ...getG2Renderer() })
+    newChart.options(options)
     newChart.on('element:click', ev => {
       const pointData = ev?.data?.data
       const dimensionList = options.data.find(item => item.title === pointData.title)?.dimensionList
@@ -371,20 +374,11 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
     const customStyle = parseJson(chart.customStyle)
     const axis = JSON.parse(JSON.stringify(customStyle[axisType]))
     if (customStyle[axisType] && axis.show) {
-      // 轴线
-      const line = {
-        line: axis.axisLine.show,
-        lineLineWidth: axis.axisLine.lineStyle.width,
-        lineStroke: axis.axisLine.lineStyle.color,
+      // 轴线与刻度线统一使用公共规则
+      const lineAndTick = {
+        ...this.getAxisLineStyle(chart, axis),
         lineLineDash: getLineDash(axis.axisLine.lineStyle.style),
         lineStrokeOpacity: 1
-      }
-      // 刻度
-      const tick = {
-        tick: axis.axisLine.show,
-        tickLineWidth: axis.axisLine.lineStyle.width,
-        tickStroke: axis.axisLine.lineStyle.color,
-        tickOpacity: 1
       }
       // 网格线
       const grid = {
@@ -417,10 +411,8 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
         ...(position === 'left' ? { dataeaseAxisTitleSafeMargin: true } : {}),
         titleFontSize: axis.fontSize,
         titleFill: axis.color,
-        // 轴线
-        ...line,
-        // 刻度线
-        ...tick,
+        // 轴线与刻度线
+        ...lineAndTick,
         // 网格线
         ...grid,
         // 刻度值
@@ -473,7 +465,8 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
           }
           return ranges.symbol
         },
-        itemLabelText: d => {
+        // 在 G2 生成图例数据时映射名称，分页与平铺共用同一份 label。
+        labelFormatter: d => {
           const key = getLegendKey(d)
           return (
             rangeLegendLabelMap[key] ||

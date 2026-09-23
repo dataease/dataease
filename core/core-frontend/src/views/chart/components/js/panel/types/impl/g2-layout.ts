@@ -31,7 +31,7 @@
 import {
   computeLayout as computeG2Layout,
   computeRoughPlotSize,
-  placeComponents,
+  placeComponents as placeG2Components,
   processAxisZ
 } from '@antv/g2/esm/runtime/layout'
 import {
@@ -60,9 +60,24 @@ import {
 
 /**
  * 这个文件替换了 G2 整个 layout 模块，所以必须继续提供 G2 原本依赖的三个导出
- * 它们保持 G2 原始实现，本文件没有改变无轴复合图布局、组件放置和三维轴处理算法
+ * 独立平铺图例按外层 flex 已分配的区域定位，其余组件放置和三维轴处理沿用 G2 实现
  */
-export { computeRoughPlotSize, placeComponents, processAxisZ }
+export { computeRoughPlotSize, processAxisZ }
+
+export const placeComponents: typeof placeG2Components = (components, coordinate, layout) => {
+  const standalone = components.filter(
+    component => component.type === 'legendCategory' && component.dataeaseLegendTileBox
+  )
+  placeG2Components(
+    components.filter(component => !standalone.includes(component)),
+    coordinate,
+    layout
+  )
+  standalone.forEach(component => {
+    // 独立图例已由外层 flex 分配区域，直接在本区域内居中，避免再次向 padding 外偏移。
+    component.bbox = { x: layout.width / 2, y: layout.height / 2, width: 0, height: 0 }
+  })
+}
 
 // 这里只处理最常见的上、右、下、左四种直角坐标轴
 const AXIS_POSITIONS = ['top', 'right', 'bottom', 'left'] as const
@@ -325,7 +340,8 @@ const prepareSideLegendLayout = (
         itemMarkerSize,
         itemSpacing,
         crossPadding,
-        maxWidthRatio: Number(component.dataeaseSideLegendMaxWidthRatio)
+        maxWidthRatio: Number(component.dataeaseSideLegendMaxWidthRatio),
+        minColumns: Number(component.dataeaseSideLegendMinColumns)
       })
       // 专用标记才会固定水平侧栏网格，普通左右图例仍交给 G2 单列推导
       component.maxCols = grid.columns
@@ -1345,8 +1361,29 @@ export function computeLayout(
           // 左轴标题默认向外偏移，目标图表额外保留 12px 安全空间
           ...(needsLeftAxisTitleSafeMargin ? { marginLeft: LEFT_AXIS_TITLE_SAFE_MARGIN } : {})
         }
-      : options
+      : { ...options }
+  // 平铺自适应允许图例占用超过 75% 的空间；仅关闭 G2 布局内部的最小绘图区比例限制。
+  // 实际渲染仍使用原始 marks，分类图例内容受整个画布的物理边界约束。
+  if (
+    components.some(
+      component =>
+        component.type === 'legendCategory' &&
+        component.dataeaseLegendTile &&
+        component.dataeaseLegendTileOverflow === 'adaptive'
+    )
+  ) {
+    layoutOptions.marks = []
+  }
   // resize 会复用图例组件，先清除上一轮用于抵消占位的负间距
+  components.forEach(component => {
+    if (component.type === 'legendCategory' && component.dataeaseLegendTileLayout) {
+      component.dataeaseLegendTileLayout(
+        component,
+        Number(layoutOptions.width) || 1,
+        Number(layoutOptions.height) || 1
+      )
+    }
+  })
   resetOverlayLegendLayout(components)
   // 侧边图例第一轮先按未分页宽度处理，G2 布局后才能知道当前高度是否真的分页
   const sideLegends = prepareSideLegendLayout(components, layoutOptions, theme, library)
@@ -1358,6 +1395,20 @@ export function computeLayout(
   let layout = computeG2Layout(components, layoutOptions, theme, library)
   if (!layout) {
     return layout
+  }
+  // HTML legends start inside the view margins, not at the canvas origin.
+  const tiledLegends = components.filter(
+    component => component.type === 'legendCategory' && component.dataeaseLegendTileLayout
+  )
+  if (tiledLegends.length) {
+    tiledLegends.forEach(component => {
+      component.dataeaseLegendTileLayout(
+        component,
+        Math.max(1, layout.width - layout.marginLeft - layout.marginRight),
+        Number(layoutOptions.height) || 1
+      )
+    })
+    layout = computeG2Layout(components, layoutOptions, theme, library) || layout
   }
   // 只有真正分页的侧边图例才补 55px 导航区，未分页图例保持紧凑
   if (applyPagedSideLegendLayout(sideLegends, layoutOptions, theme, library)) {

@@ -1,235 +1,229 @@
 <script lang="ts" setup>
-import { ref, reactive } from "vue";
-import { ElMessage, ElLoading } from "element-plus-secondary";
-import { useI18n } from "@/hooks/web/useI18n";
-import type { FormInstance, FormRules } from "element-plus-secondary";
-import request from "@/config/axios";
-const { t } = useI18n();
-const dialogVisible = ref(false);
-const loadingInstance = ref(null);
-const oidcForm = ref<FormInstance>();
+import { ref, reactive } from 'vue'
+import { ElMessage, ElLoading } from 'element-plus-secondary'
+import { useI18n } from '@/hooks/web/useI18n'
+import type { FormInstance, FormRules } from 'element-plus-secondary'
+import request from '@/config/axios'
+const { t } = useI18n()
+const dialogVisible = ref(false)
+const loadingInstance = ref(null)
+const oidcForm = ref<FormInstance>()
 interface OidcForm {
-  clientId?: string;
-  clientSecret?: string;
-  discovery?: string;
-  redirectUri?: string;
-  realm?: string;
-  scope?: string;
-  usePkce?: boolean;
-  mapping?: string;
+  clientId?: string
+  clientSecret?: string
+  discovery?: string
+  redirectUri?: string
+  realm?: string
+  scope?: string
+  usePkce?: boolean
+  mapping?: string
 }
 const state = reactive({
   form: reactive<OidcForm>({
-    clientId: "",
-    clientSecret: "",
-    discovery: "",
-    redirectUri: "",
-    realm: "",
-    scope: "",
+    clientId: '',
+    clientSecret: '',
+    discovery: '',
+    redirectUri: '',
+    realm: '',
+    scope: '',
     usePkce: false,
-    mapping: ""
-  }),
-});
+    mapping: ''
+  })
+})
 const validateUrl = (rule, value, callback) => {
-  const reg = new RegExp(/(http|https):\/\/([\w.]+\/?)\S*/);
+  const reg = new RegExp(/(http|https):\/\/([\w.]+\/?)\S*/)
   if (!reg.test(value)) {
-    callback(new Error(t("system.incorrect_please_re_enter")));
+    callback(new Error(t('system.incorrect_please_re_enter')))
   } else {
-    callback();
+    callback()
   }
-};
+}
 const validateMapping = (rule, value, callback) => {
   if (!value) {
-    callback();
+    callback()
   }
   try {
-    JSON.parse(value);
+    JSON.parse(value)
   } catch (e) {
-    callback(new Error(t("system.in_json_format")));
+    callback(new Error(t('system.in_json_format')))
   }
-  callback();
+  callback()
 }
 const rule = reactive<FormRules>({
   clientId: [
     {
       required: true,
-      message: t("common.require"),
-      trigger: "blur",
+      message: t('common.please_input') + t('common.empty') + 'Client ID',
+      trigger: 'blur'
     },
     {
       min: 2,
       max: 50,
-      message: t("commons.input_limit", [2, 50]),
-      trigger: "blur",
-    },
+      message: t('commons.input_limit', [2, 50]),
+      trigger: 'blur'
+    }
   ],
   clientSecret: [
     {
       required: true,
-      message: t("common.require"),
-      trigger: "blur",
+      message: t('common.please_input') + t('common.empty') + 'Client Secret',
+      trigger: 'blur'
     },
     {
       min: 5,
       max: 50,
-      message: t("commons.input_limit", [5, 50]),
-      trigger: "blur",
-    },
+      message: t('commons.input_limit', [5, 50]),
+      trigger: 'blur'
+    }
   ],
   redirectUri: [
     {
       required: true,
-      message: t("common.require"),
-      trigger: "blur",
+      message: t('common.please_input') + t('common.empty') + 'Redirect Uri',
+      trigger: 'blur'
     },
     {
       min: 10,
       max: 255,
-      message: t("commons.input_limit", [10, 255]),
-      trigger: "blur",
+      message: t('commons.input_limit', [10, 255]),
+      trigger: 'blur'
     },
-    { required: true, validator: validateUrl, trigger: "blur" },
+    { required: true, validator: validateUrl, trigger: 'blur' }
   ],
   discovery: [
     {
       required: true,
-      message: t("common.require"),
-      trigger: "blur",
+      message: t('common.please_input') + t('common.empty') + 'Discovery',
+      trigger: 'blur'
     },
     {
       min: 10,
       max: 255,
-      message: t("commons.input_limit", [10, 255]),
-      trigger: "blur",
+      message: t('commons.input_limit', [10, 255]),
+      trigger: 'blur'
     },
-    { required: true, validator: validateUrl, trigger: "blur" },
+    { required: true, validator: validateUrl, trigger: 'blur' }
   ],
   realm: [
     {
       required: false,
-      message: t("common.require"),
-      trigger: "blur",
+      message: t('common.please_input') + t('common.empty') + 'Realm',
+      trigger: 'blur'
     },
     {
       min: 2,
       max: 50,
-      message: t("commons.input_limit", [2, 50]),
-      trigger: "blur",
-    },
+      message: t('commons.input_limit', [2, 50]),
+      trigger: 'blur'
+    }
   ],
   scope: [
     {
       required: true,
-      message: t("common.require"),
-      trigger: "blur",
+      message: t('common.please_input') + t('common.empty') + 'Scope',
+      trigger: 'blur'
     },
     {
       min: 2,
       max: 255,
-      message: t("commons.input_limit", [2, 255]),
-      trigger: "blur",
-    },
+      message: t('commons.input_limit', [2, 255]),
+      trigger: 'blur'
+    }
   ],
   usePkce: [
     {
       required: true,
-      message: t("common.require"),
-      trigger: "change",
-    },
+      message: t('common.please_input') + t('common.empty') + 'Use Pkce',
+      trigger: 'change'
+    }
   ],
-  mapping: [
-    { required: false, validator: validateMapping, trigger: "blur" },
-  ]
-});
+  mapping: [{ required: false, validator: validateMapping, trigger: 'blur' }]
+})
 
 const edit = () => {
-  showLoading();
+  showLoading()
   request
-    .get({ url: "/setting/authentication/info/oidc" })
-    .then((res) => {
-      const resData = res.data;
+    .get({ url: '/setting/authentication/info/oidc' })
+    .then(res => {
+      const resData = res.data
       for (const key in resData) {
-        state.form[key] = resData[key];
+        state.form[key] = resData[key]
       }
     })
     .finally(() => {
-      closeLoading();
-    });
-  dialogVisible.value = true;
-};
+      closeLoading()
+    })
+  dialogVisible.value = true
+}
 
-const emits = defineEmits(["saved"]);
+const emits = defineEmits(['saved'])
 const submitForm = async (formEl: FormInstance | undefined) => {
-  if (!formEl) return;
-  await formEl.validate((valid) => {
+  if (!formEl) return
+  await formEl.validate(valid => {
     if (valid) {
-      const param = { ...state.form };
+      const param = { ...state.form }
       const method = request.post({
-        url: "/setting/authentication/save/oidc",
-        data: param,
-      });
-      showLoading();
+        url: '/setting/authentication/save/oidc',
+        data: param
+      })
+      showLoading()
       method
-        .then((res) => {
+        .then(res => {
           if (!res.msg) {
-            ElMessage.success(t("common.save_success"));
-            emits("saved");
-            reset();
+            ElMessage.success(t('common.save_success'))
+            emits('saved')
+            reset()
           }
-          closeLoading();
+          closeLoading()
         })
         .catch(() => {
-          closeLoading();
-        });
+          closeLoading()
+        })
     }
-  });
-};
+  })
+}
 
 const resetForm = (formEl: FormInstance | undefined) => {
-  if (!formEl) return;
-  formEl.resetFields();
-  dialogVisible.value = false;
-};
+  if (!formEl) return
+  formEl.resetFields()
+  dialogVisible.value = false
+}
 
 const reset = () => {
-  resetForm(oidcForm.value);
-};
+  resetForm(oidcForm.value)
+}
 
 const showLoading = () => {
   loadingInstance.value = ElLoading.service({
-    target: ".platform-info-drawer",
-  });
-};
+    target: '.platform-info-drawer'
+  })
+}
 const closeLoading = () => {
-  loadingInstance.value?.close();
-};
+  loadingInstance.value?.close()
+}
 
 const validate = () => {
-  const url = "/setting/authentication/validate/oidc";
-  const data = state.form;
-  showLoading();
+  const url = '/setting/authentication/validate/oidc'
+  const data = state.form
+  showLoading()
   request
     .post({ url, data })
-    .then((res) => {
-      if (res?.data === "true") {
-        ElMessage.success(
-          t("commons.test_connect") + t("report.last_status_success")
-        );
+    .then(res => {
+      if (res?.data === 'true') {
+        ElMessage.success(t('commons.test_connect') + t('report.last_status_success'))
       } else {
-        ElMessage.error(
-          t("commons.test_connect") + t("report.last_status_fail")
-        );
+        ElMessage.error(t('commons.test_connect') + t('report.last_status_fail'))
       }
     })
     .finally(() => {
-      closeLoading();
-      emits("saved");
-    });
-};
+      closeLoading()
+      emits('saved')
+    })
+}
 
 defineExpose({
-  edit,
-});
+  edit
+})
 </script>
 
 <template>
@@ -251,7 +245,7 @@ defineExpose({
       <el-form-item label="Client ID" prop="clientId">
         <el-input
           v-model="state.form.clientId"
-          :placeholder="t('common.please_input')"
+          :placeholder="t('common.please_input') + t('common.empty') + 'Client ID'"
         />
       </el-form-item>
 
@@ -260,25 +254,25 @@ defineExpose({
           v-model="state.form.clientSecret"
           type="password"
           show-password
-          :placeholder="t('common.please_input')"
+          :placeholder="t('common.please_input') + t('common.empty') + 'Client Secret'"
         />
       </el-form-item>
       <el-form-item label="Discovery" prop="discovery">
         <el-input
           v-model="state.form.discovery"
-          :placeholder="t('common.please_input')"
+          :placeholder="t('common.please_input') + t('common.empty') + 'Discovery'"
         />
       </el-form-item>
       <el-form-item label="Realm" prop="realm">
         <el-input
           v-model="state.form.realm"
-          :placeholder="t('common.please_input')"
+          :placeholder="t('common.please_input') + t('common.empty') + 'Realm'"
         />
       </el-form-item>
       <el-form-item label="Scope" prop="scope">
         <el-input
           v-model="state.form.scope"
-          :placeholder="t('common.please_input')"
+          :placeholder="t('common.please_input') + t('common.empty') + 'Scope'"
         />
       </el-form-item>
       <el-form-item label="Use Pkce" prop="usePkce">
@@ -287,26 +281,21 @@ defineExpose({
       <el-form-item label="Redirect Uri" prop="redirectUri">
         <el-input
           v-model="state.form.redirectUri"
-          :placeholder="t('common.please_input')"
+          :placeholder="t('common.please_input') + t('common.empty') + 'Redirect Uri'"
         />
       </el-form-item>
       <el-form-item :label="t('system.field_mapping')" prop="mapping">
-        <el-input
-          v-model="state.form.mapping"
-          :placeholder="t('system.oauth2name')"
-        />
+        <el-input v-model="state.form.mapping" :placeholder="t('system.oauth2name')" />
       </el-form-item>
     </el-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button secondary @click="resetForm(oidcForm)">{{
-          t("common.cancel")
-        }}</el-button>
+        <el-button secondary @click="resetForm(oidcForm)">{{ t('common.cancel') }}</el-button>
         <el-button secondary :disabled="!state.form.clientId" @click="validate">
-          {{ t("commons.test_connect") }}
+          {{ t('commons.test_connect') }}
         </el-button>
         <el-button type="primary" @click="submitForm(oidcForm)">
-          {{ t("commons.save") }}
+          {{ t('commons.save') }}
         </el-button>
       </span>
     </template>
@@ -344,7 +333,7 @@ defineExpose({
       padding: 0 20px;
       color: #1f2329;
       text-align: center;
-      font-family: var(--de-custom_font, "PingFang");
+      font-family: var(--de-custom_font, 'PingFang');
       font-size: 14px;
       font-style: normal;
       font-weight: 400;

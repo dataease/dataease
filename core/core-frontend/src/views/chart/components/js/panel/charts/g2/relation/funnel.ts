@@ -89,6 +89,25 @@ export class Funnel extends G2ChartView {
     const newChart = new G2Chart({ container, ...getG2Renderer() })
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
+    let labelFrame: number | undefined
+    newChart.on('afterrender', () => {
+      if (labelFrame !== undefined) cancelAnimationFrame(labelFrame)
+      labelFrame = requestAnimationFrame(() => {
+        labelFrame = undefined
+        const canvas = newChart.getContext().canvas
+        if (!canvas) return
+        const { width, height } = canvas.getConfig()
+        hideFunnelLabelOverlaps(
+          canvas.document.querySelectorAll('.label'),
+          Number(width),
+          Number(height),
+          parseJson(chart.customAttr).label.fullDisplay === true
+        )
+      })
+    })
+    newChart.on('afterdestroy', () => {
+      if (labelFrame !== undefined) cancelAnimationFrame(labelFrame)
+    })
     newChart.on('interval:click', action)
     return newChart
   }
@@ -156,20 +175,11 @@ export class Funnel extends G2ChartView {
         position: label.position === 'middle' ? 'inside' : label.position,
         fontSize: label.fontSize,
         fill: label.color,
-        fillOpacity: 1,
-        transform: label.fullDisplay === true ? [] : [{ type: 'overlapHide' }]
+        fillOpacity: 1
       })
     }
     if (label.conversionTag?.show) {
       const conversionTagArr = [
-        {
-          text: '',
-          render: (_, __, i) =>
-            i !== 0
-              ? `<div style="height:1px;width:30px;background:#aaa;margin-right:20px;"></div>`
-              : '',
-          position: 'top-right'
-        },
         {
           text: (_, i, data) => {
             if (i === 0) {
@@ -184,6 +194,8 @@ export class Funnel extends G2ChartView {
           textAlign: 'left',
           textBaseline: 'middle',
           dx: 60,
+          connector: true,
+          connectorStroke: '#aaa',
           fontSize: label.fontSize,
           fill: label.color,
           fillOpacity: 1
@@ -192,6 +204,9 @@ export class Funnel extends G2ChartView {
       options.labels.push(...conversionTagArr)
       options.paddingRight = 120
     }
+    // 所有标签统一避让，转换率文字和原生引导线作为一个图形共同调整、隐藏。
+    options.labelTransform =
+      label.fullDisplay === true ? [] : [{ type: 'exceedAdjust' }, { type: 'overlapHide' }]
     return options
   }
 
@@ -335,4 +350,62 @@ export class Funnel extends G2ChartView {
   constructor() {
     super('funnel', [])
   }
+}
+
+// 在真实文字完成布局后检查，避免初始化阶段的空边界让避让失效。
+export function hideFunnelLabelOverlaps(
+  labels: any[],
+  width: number,
+  height: number,
+  fullDisplay = false
+) {
+  const occupied: number[][] = []
+  labels.forEach(label => {
+    const text = label.querySelector('text')
+    const bounds = text?.getBounds()
+    // 首层转换率为空，仍可能生成引导线；空文字必须连同整个标签组隐藏。
+    if (
+      !String(text?.style.text ?? '').trim() ||
+      !bounds ||
+      bounds.max[0] <= bounds.min[0] ||
+      bounds.max[1] <= bounds.min[1]
+    ) {
+      setFunnelLabelVisibility(label, 'hidden')
+      return
+    }
+    const box = [bounds.min[0], bounds.min[1], bounds.max[0], bounds.max[1]]
+    if (fullDisplay) {
+      // 全量模式不隐藏标签，只将越界文字移回画布。同步补偿引导线锚点。
+      const dx = box[0] < 2 ? 2 - box[0] : Math.min(0, width - 2 - box[2])
+      const dy = box[1] < 2 ? 2 - box[1] : Math.min(0, height - 2 - box[3])
+      if (dx || dy) {
+        if (label.style.connector && label.style.connectorPoints?.length) {
+          const points = label.style.connectorPoints.map(point => [...point])
+          points[0][0] -= dx
+          points[0][1] -= dy
+          label.style.connectorPoints = points
+        }
+        label.style.x = Number(label.style.x || 0) + dx
+        label.style.y = Number(label.style.y || 0) + dy
+      }
+      setFunnelLabelVisibility(label, 'visible')
+      return
+    }
+    const outside = box[0] < 0 || box[1] < 0 || box[2] > width || box[3] > height
+    const overlap = occupied.some(
+      other =>
+        box[0] < other[2] + 2 &&
+        box[2] + 2 > other[0] &&
+        box[1] < other[3] + 2 &&
+        box[3] + 2 > other[1]
+    )
+    setFunnelLabelVisibility(label, outside || overlap ? 'hidden' : 'visible')
+    if (!outside && !overlap) occupied.push(box)
+  })
+}
+
+// G 的子图形可以显式设置 visibility，必须递归同步，不能仅隐藏父组。
+function setFunnelLabelVisibility(label: any, visibility: 'visible' | 'hidden') {
+  label.style.visibility = visibility
+  label.children?.forEach(child => setFunnelLabelVisibility(child, visibility))
 }

@@ -17,6 +17,23 @@ import static io.dataease.engine.utils.Utils.SQL_INJECTION_PATTERNS;
  * @Date 2021/5/17 4:19 下午
  */
 public abstract class EngineProvider {
+    private static final Pattern ILLEGAL_IDENTIFIER_CHAR = Pattern.compile("[\\u0000-\\u001f\"'`\\[\\];\\\\]");
+    private static final int MAX_IDENTIFIER_LENGTH = 64;
+
+    protected static void validateIdentifier(String raw) {
+        String value = StringUtils.defaultString(raw);
+        if (StringUtils.isBlank(value) || value.length() > MAX_IDENTIFIER_LENGTH
+                || ILLEGAL_IDENTIFIER_CHAR.matcher(value).find()) {
+            DEException.throwException("Illegal identifier: " + raw);
+        }
+    }
+
+    protected static String quoteIdentifier(String raw, char quoteChar) {
+        validateIdentifier(raw);
+        String quote = String.valueOf(quoteChar);
+        return quote + StringUtils.defaultString(raw) + quote;
+    }
+
     public abstract String createView(String name, String viewSQL);
 
     public abstract String dropTable(String name, CoreDeEngine engine);

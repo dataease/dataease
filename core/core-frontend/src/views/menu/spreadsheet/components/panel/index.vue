@@ -66,7 +66,6 @@ const queryData = async (config: PluginConfig) => {
     await runtime.refreshData({ univerApi: api, config })
 
   } catch (error) {
-    console.error('Refresh data failed:', error)
     ElMessage.error('Refresh data failed')
   }
 }
@@ -93,7 +92,6 @@ const updateConfig = async (key: string, value: any) => {
       await runtime?.applyStyle?.({ univerApi: api, config })
     }
   } catch (error) {
-    console.error('Apply style failed:', error)
     ElMessage.error('Apply style failed')
   }
 }

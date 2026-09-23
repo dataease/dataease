@@ -43,7 +43,11 @@ const createResponsiveBidirectionalSpaceFlex = baseSpaceFlex => {
     const layout = baseSpaceFlex(...args)
     return options => {
       const legendLayout = options.dataeaseBidirectionalLegendFlex as BidirectionalLegendFlexLayout
-      if (!legendLayout) {
+      // Tiled legends already measure their DOM and allocate the flex ratio, including on resize.
+      const tiledLegend = options.children?.some(
+        child => child.type === 'legends' && child.dataeaseLegendTile
+      )
+      if (!legendLayout || tiledLegend) {
         return layout(options)
       }
       const mainSize = Number(legendLayout.direction === 'col' ? options.height : options.width)
@@ -185,8 +189,12 @@ export class BidirectionalHorizontalBar extends G2ChartView {
     return this.getChartOptions(options)?.children || []
   }
 
-  private getValueAxis(axis: DeepPartial<ChartAxisStyle>, hideInnerBaselineLabel = false) {
-    const axisOption = this.getAxis(axis)
+  private getValueAxis(
+    chart: Chart,
+    axis: DeepPartial<ChartAxisStyle>,
+    hideInnerBaselineLabel = false
+  ) {
+    const axisOption = this.getAxis(chart, axis)
     const originLabelFormatter = axisOption.labelFormatter
     const configuredBaseline = Number(axis.axisValue.min)
     const baseline =
@@ -557,6 +565,16 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       secondMark.axis.x = false
       return options
     }
+    // 使用空值策略处理后的类别固定刻度，避免图例隐藏单侧或全部系列后标签、占位消失
+    ;[firstMark, secondMark].forEach(mark => {
+      defaultsDeep(mark, {
+        scale: {
+          x: {
+            domain: Array.from(new Set(mark.data.value.map(item => item.field)))
+          }
+        }
+      })
+    })
     let lineLineDash = undefined
     if (xAxis.axisLine.lineStyle.style === 'dashed') {
       lineLineDash = [10, 8]
@@ -620,19 +638,12 @@ export class BidirectionalHorizontalBar extends G2ChartView {
           dataeaseAxisLabelCenter: centerAxisLabel ? 'visible' : undefined,
           // 轴组件间距继续使用 G2 布局的统一处理，不在业务图表重复覆盖
           position: position,
-          line: xAxis.axisLine.show,
-          lineStroke: xAxis.axisLine.lineStyle.color,
-          lineStrokeOpacity: 1,
-          lineLineWidth: xAxis.axisLine.lineStyle.width,
+          ...this.getAxisLineStyle(chart, xAxis),
           lineLineDash,
           label: xAxis.axisLabel.show,
           labelFill: xAxis.axisLabel.color,
           labelFillOpacity: 1,
           labelFontSize: xAxis.axisLabel.fontSize,
-          tick: xAxis.axisLabel.show,
-          tickLineWidth: xAxis.axisLine.lineStyle.width,
-          tickStroke: xAxis.axisLine.lineStyle.color,
-          tickOpacity: 1,
           grid: xAxis.splitLine.show,
           gridStroke: xAxis.splitLine.lineStyle.color,
           gridStrokeOpacity: 1,
@@ -661,7 +672,7 @@ export class BidirectionalHorizontalBar extends G2ChartView {
     // 根因是维度轴标签实际挂在左侧子图上，右侧如果完全隐藏该轴，左右绘图区宽度会不一致
     const secondXAxis = {
       label: false,
-      tick: xAxis.axisLabel.show && ['right', 'bottom'].includes(position),
+      tick: xAxis.axisLine.show && ['right', 'bottom'].includes(position),
       position: POSITION_MAP[position],
       line: xAxis.axisLine.show && ['right', 'bottom'].includes(position)
     }
@@ -713,8 +724,8 @@ export class BidirectionalHorizontalBar extends G2ChartView {
       return options
     }
     const hideInnerBaselineLabel = basicStyle.layout === 'horizontal'
-    const yAxisOption = this.getValueAxis(yAxis, hideInnerBaselineLabel)
-    const yAxisExtOption = this.getValueAxis(yAxisExt, hideInnerBaselineLabel)
+    const yAxisOption = this.getValueAxis(chart, yAxis, hideInnerBaselineLabel)
+    const yAxisExtOption = this.getValueAxis(chart, yAxisExt, hideInnerBaselineLabel)
     if (
       yAxisOption.label &&
       yAxisExtOption.label &&
@@ -1150,6 +1161,12 @@ export class BidirectionalHorizontalBar extends G2ChartView {
         color: hexColorToRGBA(basicStyle.colors[1], basicStyle.alpha)
       }
     ]
+    // 柱体与图例使用相同的内部键，确保隐藏后重新选中能匹配系列，同名指标也可独立筛选
+    this.getChartMarks(options).forEach((mark, index) => {
+      const legendKey = legendItems[index].key
+      mark.encode.color.value = legendKey
+      mark.scale.color.domain = [legendKey]
+    })
     const legendNameMap = legendItems.reduce((map, item) => {
       map[item.key] = item.name
       return map
@@ -1234,7 +1251,10 @@ export class BidirectionalHorizontalBar extends G2ChartView {
         })
       })
     }
-    const horizontalLegendTextStyle = getHorizontalLegendTextStyle(legendFontSize)
+    const horizontalLegendTextStyle = getHorizontalLegendTextStyle(
+      legendFontSize,
+      legend.displayMode
+    )
     const enableHorizontalLegendText = legendOption => {
       Object.assign(legendOption, horizontalLegendTextStyle)
       const labelFormatter = horizontalLegendTextStyle.labelFormatter

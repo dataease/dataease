@@ -29,7 +29,7 @@ import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/utils/ca
 import { deepCopy, isISOMobile, isMobile } from '@/utils/utils'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { isDashboard, trackBarStyleCheck } from '@/utils/canvasUtils'
-import { type SpreadSheet } from '@antv/s2'
+import { S2Event, type S2CellType, type SpreadSheet } from '@antv/s2'
 import { parseJson } from '../../js/util'
 
 const dvMainStore = dvMainStoreWithOut()
@@ -42,6 +42,9 @@ const {
   inMobile
 } = storeToRefs(dvMainStore)
 const { emitter } = useEmitt()
+const useSvgCrispBackground = computed(
+  () => dvMainStore.dvInfo.type === 'dataV' && canvasStyleData.value.enableSvgRenderer
+)
 
 const props = defineProps({
   element: {
@@ -126,10 +129,15 @@ const state = reactive({
   imgSrc: ''
 })
 const PAGE_CHARTS = ['table-info', 'table-normal']
-// 图表数据不用全响应式
-let chartData = shallowRef<Partial<Chart['data']>>({
-  fields: []
+// 接口空结果可能返回 null，统一补齐 S2 表格依赖的数据结构
+const normalizeChartData = (data?: Partial<Chart['data']> | null): Partial<Chart['data']> => ({
+  ...data,
+  data: data?.data ?? [],
+  fields: data?.fields ?? [],
+  tableRow: data?.tableRow ?? []
 })
+// 图表数据不用全响应式
+let chartData = shallowRef<Partial<Chart['data']>>(normalizeChartData())
 
 const containerId = 'container-' + showPosition.value + '-' + view.value.id + '-' + suffixId.value
 const viewTrack = ref(null)
@@ -154,7 +162,7 @@ const calcData = (viewInfo: Chart, callback, resetPageInfo = true) => {
           isError.value = true
           errMsg.value = res.msg
         } else {
-          chartData.value = res?.data as Partial<Chart['data']>
+          chartData.value = normalizeChartData(res?.data as Partial<Chart['data']> | null)
           state.totalItems = res?.totalItems
           dvMainStore.setViewDataDetails(viewInfo.id, res)
           if (!res.drill) {
@@ -184,7 +192,7 @@ const resolveRenderChart = () => {
   resolvers.forEach(resolve => resolve())
 }
 const renderChartFromDialog = (viewInfo: Chart, chartDataInfo) => {
-  chartData.value = chartDataInfo
+  chartData.value = normalizeChartData(chartDataInfo)
   return renderChart(viewInfo, false)
 }
 // 处理存量图表的默认值
@@ -285,6 +293,16 @@ const renderChart = (viewInfo: Chart, resetPageInfo?: boolean) => {
   })
 }
 
+const markSvgCellBackground = (cell: S2CellType) => {
+  const background = cell.getBackgroundShape()
+  const backgroundClass = 'de-s2-cell-background'
+  if (!background || background.classList.includes(backgroundClass)) {
+    return
+  }
+  // 仅标记背景，缩放时对齐其边缘，不影响文字、图标和实际边框。
+  background.className = [...background.classList, backgroundClass].join(' ')
+}
+
 const debounceRender = debounce(() => {
   try {
     if (chartComponentUnmounted) {
@@ -307,6 +325,26 @@ const debounceRender = debounce(() => {
       resizeAction,
       touchAction
     })
+    if (useSvgCrispBackground.value && myChart) {
+      const sheet = myChart
+      const createMergedCell = sheet.options.mergedCell
+      if (createMergedCell) {
+        // S2 批量创建合并格不触发单元格渲染事件，需在创建时标记背景。
+        sheet.setOptions({
+          mergedCell: (spreadsheet, cells, meta) => {
+            const cell = createMergedCell(spreadsheet, cells, meta)
+            markSvgCellBackground(cell)
+            return cell
+          }
+        })
+      }
+      // 普通数据格使用独立的批量渲染事件，滚动后新生成的背景也需要标记。
+      const markDataCellBackgrounds = () => {
+        sheet.facet.getDataCells().forEach(markSvgCellBackground)
+      }
+      sheet.on(S2Event.LAYOUT_CELL_RENDER, markSvgCellBackground)
+      sheet.on(S2Event.LAYOUT_AFTER_REAL_DATA_CELL_RENDER, markDataCellBackgrounds)
+    }
     myChart?.render()
     dvMainStore.setViewInstanceInfo(actualChart.id, myChart)
     initScroll()
@@ -345,7 +383,22 @@ const mouseMove = () => {
   myChart?.facet?.timer?.stop()
 }
 
-const mouseLeave = () => {
+const mouseLeave = (event: MouseEvent) => {
+  // 移入表格浮层时继续保留菜单，并保持自动滚动暂停
+  if (
+    event.relatedTarget instanceof Node &&
+    myChart?.tooltip?.container?.contains(event.relatedTarget)
+  ) {
+    return
+  }
+  const interaction = myChart?.interaction
+  // 定位高亮独立于 tooltip，离开时取消延迟聚焦并仅清除悬浮态，保留点击选中态
+  interaction?.clearHoverTimer()
+  if (interaction?.isHoverState() || interaction?.isHoverFocusState()) {
+    interaction.clearState()
+  }
+  // S2 在 CSS 缩放下可能无法通过 canvas mouseout 隐藏 tooltip
+  myChart?.hideTooltip()
   initScroll()
 }
 
@@ -805,6 +858,10 @@ const tabStyle = computed(() => [
 ])
 
 const tablePageClass = computed(() => {
+  // 大屏分页器始终保持透明背景，不能由字体颜色决定。
+  if (!isDashboard()) {
+    return 'table-page-info_dark'
+  }
   return (
     ['#ffffff', '#ffffffff', '#a6a6a6ff'].includes(
       canvasStyleData.value.component.seniorStyleSetting?.pagerColor.toLowerCase()
@@ -825,7 +882,11 @@ const tablePageClass = computed(() => {
       :is-data-v-mobile="dataVMobile"
       @mousemove="mouseMove"
     />
-    <div v-if="!isError" class="canvas-content">
+    <div
+      v-if="!isError"
+      class="canvas-content"
+      :class="{ 's2-svg-crisp-background': useSvgCrispBackground }"
+    >
       <div
         :id="containerId"
         style="position: relative; height: 100%"
@@ -887,6 +948,13 @@ const tablePageClass = computed(() => {
     flex: 1;
     width: 100%;
     overflow: hidden;
+  }
+}
+
+.canvas-content.s2-svg-crisp-background {
+  // 仅调整单元格背景的抗锯齿方式，避免 SVG 在大屏缩放时出现拼接细缝。
+  :deep(.de-s2-cell-background) {
+    shape-rendering: crispEdges;
   }
 }
 

@@ -6,6 +6,7 @@ import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.datasource.dao.auto.repository.CoreDeEngineRepository;
 import io.dataease.datasource.server.DatasourceServer;
 import io.dataease.datasource.type.H2;
+import io.dataease.datasource.type.StarRocks;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
@@ -85,19 +86,46 @@ public class EngineManage {
         return coreDatasource;
     }
 
-    public void validate(CoreDeEngine engine) throws Exception {
+    public void validate(CoreDeEngine engine, boolean updateStatus) throws Exception {
         if (StringUtils.isEmpty(engine.getType()) || StringUtils.isEmpty(engine.getConfiguration())) {
             throw new Exception("未完整设置数据引擎");
         }
+        if (StringUtils.equalsIgnoreCase(engine.getType(), "h2")) {
+            H2 h2 = JsonUtil.parseObject(engine.getConfiguration(), H2.class);
+            if (h2 != null && StringUtils.isNotBlank(h2.getJdbcUrl())) {
+                DEException.throwException("H2 engine does not support custom jdbcUrl");
+            }
+        }
+        String status = "";
         try {
-
+            if (StringUtils.equalsIgnoreCase(engine.getType(), "StarRocks")) {
+                StarRocks starRocks = JsonUtil.parseObject(engine.getConfiguration(), StarRocks.class);
+                if (starRocks != null) {
+                    if (starRocks.getFePort() == null || starRocks.getFePort() < 1 || starRocks.getFePort() > 65535) {
+                        DEException.throwException("FE HTTP端口范围为1-65535");
+                    }
+                    if (starRocks.getBePort() == null || starRocks.getBePort() < 1 || starRocks.getBePort() > 65535) {
+                        DEException.throwException("BE HTTP端口范围为1-65535");
+                    }
+                }
+            }
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             DatasourceDTO datasource = new DatasourceDTO();
             BeanUtils.copyBean(datasource, engine);
             datasourceRequest.setDatasource(datasource);
             ProviderFactory.getProvider(engine.getType()).checkStatus(datasourceRequest);
+            status = "success";
         } catch (Exception e) {
+            status = "Error";
             DEException.throwException("校验失败：" + e.getMessage());
+        } finally {
+            if (updateStatus) {
+                engine = coreDeEngineRepository.findById(engine.getId()).orElse(null);
+                if (engine != null) {
+                    engine.setStatus(status);
+                    coreDeEngineRepository.saveAndFlush(engine);
+                }
+            }
         }
     }
 
@@ -267,7 +295,7 @@ public class EngineManage {
 
 
     public static class PgJdbcUrlParser implements JdbcUrlParser {
-        private static final Pattern PATTERN = Pattern.compile("jdbc:(?:postgresql|kingbase8|kingbase)://(.*):(\\d+)/(.*?)(?:\\?(.*))?$");
+        private static final Pattern PATTERN = Pattern.compile("jdbc:(?:postgresql|kingbase8|kingbase|gaussdb)://(.*):(\\d+)/(.*?)(?:\\?(.*))?$");
         private static final Pattern SCHEMA_PATTERN = Pattern.compile("(^|&)currentSchema=([^&]+)");
 
         @Override
@@ -296,11 +324,13 @@ public class EngineManage {
             String driverClassName = env.getProperty("spring.datasource.driver-class-name");
             if (url.startsWith("jdbc:kingbase")) {
                 driverClassName = StringUtils.defaultIfBlank(driverClassName, "com.kingbase8.Driver");
+            } else if (url.startsWith("jdbc:gaussdb")) {
+                driverClassName = StringUtils.defaultIfBlank(driverClassName, "com.huawei.gaussdb.jdbc.Driver");
             }
             if (StringUtils.isNotEmpty(driverClassName)) {
                 config.put("driver", driverClassName);
             }
-            config.put("type", url.startsWith("jdbc:kingbase") ? "kingbase" : "pg");
+            config.put("type", url.startsWith("jdbc:kingbase") ? "kingbase" : (url.startsWith("jdbc:gaussdb") ? "gaussdb" : "pg"));
             config.put("username", env.getProperty("spring.datasource.username"));
             config.put("password", env.getProperty("spring.datasource.password"));
             return config;
@@ -464,9 +494,10 @@ public class EngineManage {
                     if (jdbcUrl != null) {
                         if (jdbcUrl.startsWith("jdbc:mysql://")) {
                             parserMap.put("jdbc:mysql://", new MysqlJdbcUrlParser());
-                        } if (jdbcUrl.startsWith("jdbc:mariadb://")) {
+                        }
+                        if (jdbcUrl.startsWith("jdbc:mariadb://")) {
                             parserMap.put("jdbc:mariadb://", new MariadbJdbcUrlParser());
-                        }else if (jdbcUrl.startsWith("jdbc:oracle:thin:@")) {
+                        } else if (jdbcUrl.startsWith("jdbc:oracle:thin:@")) {
                             parserMap.put("jdbc:oracle:thin:@", new OracleJdbcUrlParser());
                         } else if (jdbcUrl.startsWith("jdbc:postgresql://")) {
                             parserMap.put("jdbc:postgresql://", new PgJdbcUrlParser());
@@ -474,6 +505,8 @@ public class EngineManage {
                             parserMap.put("jdbc:kingbase8://", new PgJdbcUrlParser());
                         } else if (jdbcUrl.startsWith("jdbc:kingbase://")) {
                             parserMap.put("jdbc:kingbase://", new PgJdbcUrlParser());
+                        } else if (jdbcUrl.startsWith("jdbc:gaussdb://")) {
+                            parserMap.put("jdbc:gaussdb://", new PgJdbcUrlParser());
                         } else if (jdbcUrl.startsWith("jdbc:sqlserver://")) {
                             parserMap.put("jdbc:sqlserver://", new SqlserverJdbcUrlParser());
                         } else if (jdbcUrl.startsWith("jdbc:dm://")) {

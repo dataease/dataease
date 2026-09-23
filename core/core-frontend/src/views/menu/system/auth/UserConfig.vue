@@ -258,6 +258,7 @@ const resourceTypeClick = async (id: string) => {
       state.tableData = sortData;
       state.treeMap[id] = sortData;
     }
+    resourceFilter("");
     getColumn(id);
     // 如果有selectedTarget 再查权限
     if (selectedTarget.value) {
@@ -1247,7 +1248,7 @@ defineExpose({
           v-model="resourceKeyword"
           clearable
           :placeholder="t('auth.search_name')"
-          @change="resourceFilter"
+          @input="resourceFilter"
         >
           <template #prefix>
             <el-icon>

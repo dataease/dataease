@@ -11,6 +11,7 @@ import {
   onChangeFormatCfgUnitLanguage
 } from '@/views/chart/components/js/formatter'
 import { ElFormItem, ElMessage } from 'element-plus-secondary'
+import { resolveAxisLineColor } from '@/views/chart/components/js/util'
 
 const { t } = useI18n()
 
@@ -18,6 +19,7 @@ const props = withDefaults(
   defineProps<{
     themes?: EditorTheme
     form: any
+    customAttr: Chart['customAttr']
     propertyInner?: Array<string>
     type?: 'left' | 'right'
     chartType?: string
@@ -71,6 +73,13 @@ const fontSizeList = computed(() => {
   return arr
 })
 
+// 仅用户确认选色时写回配置，主题同步只更新面板显示
+const axisLineColor = computed(() => resolveAxisLineColor(props.customAttr, state.axisForm))
+const changeAxisLineColor = (color: string) => {
+  state.axisForm.axisLine.lineStyle.color = color
+  changeAxisStyle('axisLine.lineStyle.color')
+}
+
 const changeAxisStyle = prop => {
   if (
     state.axisForm.axisValue.splitCount &&
@@ -78,6 +87,10 @@ const changeAxisStyle = prop => {
   ) {
     ElMessage.error(t('chart.splitCount_less_100'))
     return
+  }
+  if (prop === 'axisLine.lineStyle.color') {
+    // 双轴用户选色后同样固定为自定义模式，避免主题切换覆盖
+    state.axisForm.axisLine.colorMode = 'custom'
   }
   emit('onChangeYAxisForm', state.axisForm, prop)
 }
@@ -318,10 +331,10 @@ onMounted(() => {
         <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-right: 4px">
           <el-color-picker
             :disabled="!state.axisForm.axisLine.show"
-            v-model="state.axisForm.axisLine.lineStyle.color"
+            :model-value="axisLineColor"
             :predefine="predefineColors"
             :effect="themes"
-            @change="changeAxisStyle('axisLine.lineStyle.color')"
+            @change="changeAxisLineColor"
             is-custom
           />
         </el-form-item>

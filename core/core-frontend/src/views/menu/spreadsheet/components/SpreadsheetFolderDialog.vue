@@ -111,7 +111,6 @@ const loadFolderTree = async () => {
     }
     folderTree.value = getFolderTree(nodeData)
   } catch (error) {
-    console.error(error)
   } finally {
     loading.value = false
   }
@@ -196,7 +195,6 @@ const submit = async () => {
     resetForm()
     emits('success')
   } catch (error) {
-    console.error(error)
   } finally {
     submitting.value = false
   }

@@ -7,9 +7,10 @@ import { computed, ref, watch, onMounted, nextTick } from 'vue'
 import { Plus, Search } from '@element-plus/icons-vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useAppStoreWithOut } from '@/store/modules/app'
-import _ from 'lodash'
+import { cloneDeep, filter, find, forEach, union } from 'lodash-es'
 import { getDatasetTree, getDatasourceList } from '@/api/dataset'
 import { ElFormItem, FormInstance } from 'element-plus-secondary'
+import type { InputInstance } from 'element-plus-secondary'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { useCache } from '@/hooks/web/useCache'
 import { useUserStoreWithOut } from '@/store/modules/user'
@@ -41,6 +42,7 @@ const props = withDefaults(
 )
 
 const datasetSelector = ref(null)
+const searchInput = ref<InputInstance>()
 
 const loadingDatasetTree = ref(false)
 
@@ -143,7 +145,8 @@ function collectMatchedNodeIds(
 ) {
   tree.forEach(node => {
     const nodePath = [...ancestors, node.id]
-    if (node.name?.includes(keyword)) {
+    const name = props.sourceType === 'dataset' ? node.name?.toLowerCase() : node.name
+    if (name?.includes(keyword)) {
       nodePath.forEach(id => result.add(id))
     }
     if (node.children?.length) {
@@ -155,7 +158,7 @@ function collectMatchedNodeIds(
 
 // el-tree 超过 80 个同级节点时会分批异步过滤，父级可能早于子级完成可见计算
 const matchedNodeIds = computed(() => {
-  const keyword = searchStr.value
+  const keyword = props.sourceType === 'dataset' ? searchStr.value?.toLowerCase() : searchStr.value
   return keyword ? collectMatchedNodeIds(computedTree.value || [], keyword) : new Set<Tree['id']>()
 })
 
@@ -174,11 +177,11 @@ watch(
 )
 
 const flattedTree = computed(() => {
-  return _.filter(flatTree(computedTree.value), node => node.leaf)
+  return filter(flatTree(computedTree.value), node => node.leaf)
 })
 
 const selectedNode = computed<DatasetTreeNode | undefined>(() => {
-  return _.find(flattedTree.value, node => node.id === _modelValue.value)
+  return find(flattedTree.value, node => node.id === _modelValue.value)
 })
 
 watch(
@@ -224,10 +227,10 @@ const rules = ref([
 ])
 
 function flatTree(tree: Tree[]) {
-  let result = _.cloneDeep(tree)
-  _.forEach(tree, node => {
+  let result = cloneDeep(tree)
+  forEach(tree, node => {
     if (node.children && node.children.length > 0) {
-      result = _.union(result, flatTree(node.children))
+      result = union(result, flatTree(node.children))
     }
   })
   return result
@@ -288,6 +291,9 @@ const dsClick = (data: Tree) => {
 const _popoverShow = ref(false)
 async function onPopoverShow() {
   _popoverShow.value = true
+  await nextTick()
+  if (!_popoverShow.value) return
+  searchInput.value?.focus()
   await scrollCurrentNodeIntoView()
 }
 function onPopoverHide() {
@@ -401,6 +407,7 @@ onMounted(() => {
               </el-button>
             </div>
             <el-input
+              ref="searchInput"
               :effect="themes"
               v-model="searchStr"
               :placeholder="t('dataset.search')"
@@ -511,6 +518,9 @@ onMounted(() => {
     max-height: 356px;
     &.dark {
       background: #292929;
+      .ed-scrollbar__thumb {
+        background-color: #646a73 !important;
+      }
     }
 
     .ed-header {

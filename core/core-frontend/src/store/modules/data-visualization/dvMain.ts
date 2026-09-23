@@ -16,6 +16,7 @@ import {
 } from '@/views/chart/components/editor/util/dataVisualization'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import chartViewManager from '@/views/chart/components/js/panel'
+import { ChartLibraryType } from '@/views/chart/components/js/panel/types'
 import {
   COMMON_COMPONENT_BACKGROUND_DARK,
   COMMON_COMPONENT_BACKGROUND_LIGHT,
@@ -54,6 +55,38 @@ const filterBatchMiscProps = (
     // 批量配置不下发仪表盘最大最小值、水波图目标值设置
     'misc-selector': propertyInner['misc-selector'].filter(prop => !excludeProps.includes(prop))
   }
+}
+
+const collectComponentIds = (component, ids = new Set<string>()) => {
+  if (!component) {
+    return ids
+  }
+  if (component.id) {
+    ids.add(component.id)
+  }
+  if (component.component === 'Group' && Array.isArray(component.propValue)) {
+    component.propValue.forEach(child => collectComponentIds(child, ids))
+  }
+  if (component.component === 'DeTabs' && Array.isArray(component.propValue)) {
+    component.propValue.forEach(tabItem => {
+      tabItem.componentData?.forEach(child => collectComponentIds(child, ids))
+    })
+  }
+  return ids
+}
+
+const filterCopyCanvasViewIdMap = (component, idMap) => {
+  if (!idMap) {
+    return idMap
+  }
+  const componentIds = collectComponentIds(component)
+  return Object.keys(idMap).reduce((result, oldComponentId) => {
+    const newComponentId = idMap[oldComponentId]
+    if (componentIds.has(newComponentId)) {
+      result[oldComponentId] = newComponentId
+    }
+    return result
+  }, {})
 }
 
 export const dvMainStore = defineStore('dataVisualization', {
@@ -512,8 +545,8 @@ export const dvMainStore = defineStore('dataVisualization', {
           }
         })
       }
-      //组件组内部可能还有多个图表
-      this.updateCopyCanvasView(idMap, canvasViewInfoPre)
+      // 只初始化本次实际加入组件的视图信息，避免多选复用时覆盖其他组件已适配的新主题样式
+      this.updateCopyCanvasView(filterCopyCanvasViewIdMap(component, idMap), canvasViewInfoPre)
     },
     updateCopyCanvasView(idMap, canvasViewInfoPre = this.canvasViewInfo) {
       // eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -574,6 +607,19 @@ export const dvMainStore = defineStore('dataVisualization', {
         const chartViewInstance = chartViewManager.getChartView(newView.render, newView.type)
         if (chartViewInstance) {
           newView = chartViewInstance.setupDefaultOptions(newView)
+          if (!component.isPlugin && chartViewInstance.library === ChartLibraryType.G2) {
+            // 原有图表默认项装配完成后，仅让新建 G2 图表的轴线颜色跟随主题
+            const axisStyles = [
+              newView.customStyle?.xAxis,
+              newView.customStyle?.yAxis,
+              newView.customStyle?.yAxisExt
+            ]
+            axisStyles.forEach(axisStyle => {
+              if (axisStyle?.axisLine) {
+                axisStyle.axisLine.colorMode = 'theme'
+              }
+            })
+          }
           newView['title'] = component.name
         }
         currentFont && (newView.customStyle.text.fontFamily = currentFont.name)
@@ -1113,6 +1159,11 @@ export const dvMainStore = defineStore('dataVisualization', {
       }
       const preActiveComponentIds = []
       const checkQDList = [...data.dimensionList, ...data.quotaList]
+      // 仅箱线图联动维度支持精确空值条件，跳转和指标沿用原有规则
+      const boxPlotDimensions =
+        data.option === 'linkage' && this.canvasViewInfo[viewId]?.type === 'box-plot'
+          ? data.dimensionList
+          : []
       const customFilterInfo = data.customFilter
       for (let indexOuter = 0; indexOuter < this.componentData.length; indexOuter++) {
         const element = this.componentData[indexOuter]
@@ -1124,7 +1175,8 @@ export const dvMainStore = defineStore('dataVisualization', {
               trackInfo,
               preActiveComponentIds,
               viewId,
-              customFilterInfo
+              customFilterInfo,
+              boxPlotDimensions
             )
             this.componentData[indexOuter] = element
           } else if (element.component === 'Group') {
@@ -1136,7 +1188,8 @@ export const dvMainStore = defineStore('dataVisualization', {
                   trackInfo,
                   preActiveComponentIds,
                   viewId,
-                  customFilterInfo
+                  customFilterInfo,
+                  boxPlotDimensions
                 )
                 element.propValue[index] = groupItem
               }
@@ -1151,7 +1204,8 @@ export const dvMainStore = defineStore('dataVisualization', {
                     trackInfo,
                     preActiveComponentIds,
                     viewId,
-                    customFilterInfo
+                    customFilterInfo,
+                    boxPlotDimensions
                   )
                   tabItem.componentData[index] = tabComponent
                 }
@@ -1523,7 +1577,8 @@ export const dvMainStore = defineStore('dataVisualization', {
       trackInfo,
       preActiveComponentIds,
       viewId,
-      customFilter?
+      customFilter?,
+      boxPlotDimensions = []
     ) {
       let currentFilters = element.linkageFilters || [] // 当前联动filter
       if (['table-info', 'table-normal'].includes(element.innerType)) {
@@ -1576,7 +1631,17 @@ export const dvMainStore = defineStore('dataVisualization', {
               // 如果目标图表 和 当前循环组件id相等 则进行条件增减
               const targetFieldId = targetInfoArray[1] // 目标图表列ID
               let condition
-              if (QDItem.timeValue && Array.isArray(QDItem.timeValue)) {
+              // 原始 NULL 优先于日期转换结果，不将空分组解释为清除过滤
+              const boxPlotDimension = boxPlotDimensions.includes(QDItem)
+              if (boxPlotDimension && QDItem.value === null) {
+                condition = {
+                  fieldId: targetFieldId,
+                  operator: 'null',
+                  value: [],
+                  viewIds: [targetViewId],
+                  sourceViewId: viewId
+                }
+              } else if (QDItem.timeValue && Array.isArray(QDItem.timeValue)) {
                 // 如果dimension.timeValue存在值且是数组 目前判断为是时间组件
                 condition = {
                   fieldId: targetFieldId,
@@ -1585,7 +1650,10 @@ export const dvMainStore = defineStore('dataVisualization', {
                   viewIds: [targetViewId],
                   sourceViewId: viewId
                 }
-              } else if (QDItem.value !== null && QDItem.value !== '') {
+              } else if (
+                (QDItem.value !== null && QDItem.value !== '') ||
+                (boxPlotDimension && QDItem.value === '')
+              ) {
                 condition = {
                   fieldId: targetFieldId,
                   operator: 'eq',

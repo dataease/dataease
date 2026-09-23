@@ -1,13 +1,11 @@
 package io.dataease.datasource.type;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.dataease.exception.DEException;
+import io.dataease.datasource.security.JdbcUrlSecurityPolicy;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.List;
 
@@ -16,39 +14,30 @@ import java.util.List;
 public class Sqlserver extends DatasourceConfiguration {
     private String driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
     private String extraParams = "";
-    @JsonIgnore
-    private List<String> illegalParameters = Arrays.asList("autoDeserialize", "queryInterceptors", "statementInterceptors", "detectCustomCollations", "jndi:", "rmi:", "ldap:", "ldaps:", "java.naming.factory.initial");
     private List<String> showTableSqls = Arrays.asList("show tables");
 
     public String getJdbc() {
-        if(StringUtils.isNoneEmpty(getUrlType()) && !getUrlType().equalsIgnoreCase("hostName")){
-            if (!getJdbcUrl().startsWith("jdbc:sqlserver")) {
-                DEException.throwException("Illegal jdbcUrl: " + getJdbcUrl());
-            }
-            return getJdbcUrl();
-        }
-        String jdbcUrl = "";
-        if (StringUtils.isEmpty(extraParams.trim())) {
-            jdbcUrl =  "jdbc:sqlserver://HOSTNAME:PORT;DatabaseName=DATABASE"
-                    .replace("HOSTNAME", getLHost().trim())
-                    .replace("PORT", getLPort().toString().trim())
-                    .replace("DATABASE", getDataBase().trim());
+        String jdbcUrl;
+        if (StringUtils.isNoneEmpty(getUrlType()) && !getUrlType().equalsIgnoreCase("hostName")) {
+            jdbcUrl = getJdbcUrl();
         } else {
-            jdbcUrl =  "jdbc:sqlserver://HOSTNAME:PORT;DatabaseName=DATABASE;EXTRA_PARAMS"
-                    .replace("HOSTNAME", getLHost().trim())
-                    .replace("PORT", getLPort().toString().trim())
-                    .replace("DATABASE", getDataBase().trim())
-                    .replace("EXTRA_PARAMS", getExtraParams().trim());
-        }
-        if (StringUtils.isNotEmpty(getSchema()) && !getExtraParams().contains("currentSchema")) {
-            jdbcUrl += ";currentSchema=\"" + getSchema().trim() + "\"";
-        }
-        for (String illegalParameter : illegalParameters) {
-            if (URLDecoder.decode(jdbcUrl).toLowerCase().contains(illegalParameter.toLowerCase()) || URLDecoder.decode(jdbcUrl).contains(illegalParameter.toLowerCase())) {
-                DEException.throwException("Illegal parameter: " + illegalParameter);
+            jdbcUrl = "";
+            if (StringUtils.isEmpty(extraParams.trim())) {
+                jdbcUrl = "jdbc:sqlserver://HOSTNAME:PORT;DatabaseName=DATABASE"
+                        .replace("HOSTNAME", getLHost().trim())
+                        .replace("PORT", getLPort().toString().trim())
+                        .replace("DATABASE", getDataBase().trim());
+            } else {
+                jdbcUrl = "jdbc:sqlserver://HOSTNAME:PORT;DatabaseName=DATABASE;EXTRA_PARAMS"
+                        .replace("HOSTNAME", getLHost().trim())
+                        .replace("PORT", getLPort().toString().trim())
+                        .replace("DATABASE", getDataBase().trim())
+                        .replace("EXTRA_PARAMS", getExtraParams().trim());
+            }
+            if (StringUtils.isNotEmpty(getSchema()) && !getExtraParams().contains("currentSchema")) {
+                jdbcUrl += ";currentSchema=\"" + getSchema().trim() + "\"";
             }
         }
-        System.out.println(jdbcUrl);
-        return jdbcUrl;
+        return JdbcUrlSecurityPolicy.validate("sqlserver", getDriver(), jdbcUrl, getExtraParams());
     }
 }

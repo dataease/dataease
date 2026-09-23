@@ -25,6 +25,8 @@ import {
   getLineConditionLineYMarks,
   getLineTooltipSameDimensionItems,
   bindLineLegendState,
+  configBreakLineStackMark,
+  filterBreakLinePointMark,
   LINE_AXIS_TYPE,
   LINE_CONDITION_VISIBLE_DOMAIN_KEY,
   LINE_EDITOR_PROPERTY,
@@ -36,6 +38,7 @@ import { addExtremumText, extremumEvt } from '@/views/chart/components/js/extrem
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
 import { DEFAULT_YAXIS_STYLE } from '@/views/chart/components/editor/util/chart'
 import {
+  ASSIST_LINE_STYLE,
   configDimensionSlider,
   getG2Renderer,
   getTooltipCrosshairsStyle,
@@ -461,18 +464,13 @@ export class Area extends G2ChartView {
           title: xAxis.nameShow === false ? false : xAxis.name,
           titleFontSize: xAxis.fontSize,
           titleFill: xAxis.color,
-          line: xAxis.axisLine.show,
-          lineStroke: xAxis.axisLine.lineStyle.color,
-          lineStrokeOpacity: 1,
-          lineLineWidth: xAxis.axisLine.lineStyle.width,
+          ...this.getAxisLineStyle(chart, xAxis),
           lineLineDash,
           label: xAxis.axisLabel.show,
           labelFill: xAxis.axisLabel.color,
           labelOpacity: 1,
           labelFillOpacity: 1,
           labelFontSize: xAxis.axisLabel.fontSize,
-          tick: xAxis.axisLabel.show,
-          tickOpacity: 1,
           grid: xAxis.splitLine.show,
           gridStroke: xAxis.splitLine.lineStyle.color,
           gridStrokeOpacity: 1,
@@ -516,17 +514,13 @@ export class Area extends G2ChartView {
           title: yAxis.nameShow === false ? false : yAxis.name,
           titleFontSize: yAxis.fontSize,
           titleFill: yAxis.color,
-          line: yAxis.axisLine.show,
-          lineStroke: yAxis.axisLine.lineStyle.color,
-          lineStrokeOpacity: 1,
-          lineLineWidth: yAxis.axisLine.lineStyle.width,
+          ...this.getAxisLineStyle(chart, yAxis),
           lineLineDash,
           label: yAxis.axisLabel.show,
           labelFill: yAxis.axisLabel.color,
           labelOpacity: 1,
           labelFillOpacity: 1,
           labelFontSize: yAxis.axisLabel.fontSize,
-          tick: false,
           grid: yAxis.splitLine.show,
           gridStroke: yAxis.splitLine.lineStyle.color,
           gridStrokeOpacity: 1,
@@ -565,6 +559,8 @@ export class Area extends G2ChartView {
       if (result.scale?.y) {
         result.scale.y.nice = false
       }
+      const [, lineMark, pointMark] = result.children
+      this.configManualYAxisLineRange(yAxis, result, lineMark, pointMark)
       return result
     }
     return defaultsDeep(options, axisOption)
@@ -634,7 +630,7 @@ export class Area extends G2ChartView {
         style: {
           stroke: d => d.color,
           lineDash: d => (d.lineType === 'solid' ? [] : d.lineType === 'dashed' ? [10, 8] : [1, 2]),
-          opacity: 1
+          ...ASSIST_LINE_STYLE
         },
         labels: [
           {
@@ -785,7 +781,7 @@ export class Area extends G2ChartView {
   protected configEmptyDataStrategy(chart: Chart, options: G2Spec): G2Spec {
     const { functionCfg } = parseJson(chart.senior)
     const { emptyDataStrategy } = functionCfg
-    const [areaMark, lineMark] = options.children
+    const [areaMark, lineMark, pointMark] = options.children
     const data = options.data.value
     const multiDimension = chart.yAxis?.length > 1
     switch (emptyDataStrategy) {
@@ -795,6 +791,7 @@ export class Area extends G2ChartView {
         }
         merge(areaMark, { style: { connect: false } })
         merge(lineMark, { style: { connect: false } })
+        filterBreakLinePointMark(pointMark)
         break
       }
       case 'ignoreData': {
@@ -992,7 +989,8 @@ export class StackArea extends Area {
                   customAttr.basicStyle?.gradient ? setGradientColor(color, true, 270) : color
               )
             ).forEach(item => {
-              if (item.value === null || item.value === undefined) {
+              // 堆叠断线数据视图以 NaN 保留空坐标，tooltip 仍按空值隐藏
+              if (item.value === null || item.value === undefined || Number.isNaN(item.value)) {
                 return
               }
               const value = valueFormatter(item.value, tooltipAttr.tooltipFormatter)
@@ -1030,7 +1028,7 @@ export class StackArea extends Area {
   protected configEmptyDataStrategy(chart: Chart, options: G2Spec): G2Spec {
     const { functionCfg } = parseJson(chart.senior)
     const { emptyDataStrategy } = functionCfg
-    const [areaMark, lineMark] = options.children
+    const [areaMark, lineMark, pointMark] = options.children
     const data = options.data.value
     const multiDimension = chart.yAxis?.length > 1 || chart.extStack?.length > 0
     switch (emptyDataStrategy) {
@@ -1040,6 +1038,10 @@ export class StackArea extends Area {
         }
         merge(areaMark, { style: { connect: false } })
         merge(lineMark, { style: { connect: false } })
+        configBreakLineStackMark(areaMark, data)
+        configBreakLineStackMark(lineMark, data)
+        // stackY 将原始值保存在 y0，需据此识别被堆叠坐标转换的空值
+        filterBreakLinePointMark(pointMark, 'y0')
         break
       }
       case 'ignoreData': {
@@ -1105,7 +1107,7 @@ export class StackArea extends Area {
             stroke: line.color,
             lineDash:
               line.lineType === 'solid' ? [] : line.lineType === 'dashed' ? [10, 8] : [1, 2],
-            opacity: 1
+            ...ASSIST_LINE_STYLE
           },
           labels: [
             {

@@ -1,351 +1,350 @@
 <script setup lang="ts">
-import icon_succeed_filled from "@/assets/svg/icon_succeed_filled.svg";
-import icon_close_filled from "@/assets/svg/icon_close_filled.svg";
-import icon_replace_outlined from "@/assets/svg/icon_replace_outlined.svg";
-import icon_searchOutline_outlined from "@/assets/svg/icon_search-outline_outlined.svg";
-import iconFilter from "@/assets/svg/icon-filter.svg";
-import icon_sync_logs_outlined from "@/assets/svg/icon_sync_logs_outlined.svg";
-import icon_deleteTrash_outlined from "@/assets/svg/icon_delete-trash_outlined.svg";
-import GridTable from "@/components/grid-table/src/GridTable.vue";
-import { ElIcon, ElMessage, ElMessageBox } from "element-plus-secondary";
-import { Icon } from "@/components/icon-custom";
-import { onMounted, onUnmounted, reactive, ref } from "vue";
-import { clear, getTaskLogListApi, removeApi } from "@/api/sync/syncTaskLog";
-import { some, find } from "lodash-es";
-import dayjs from "dayjs";
-import LogDetails from "./LogDetails.vue";
-import ClearJobLogForm from "./ClearJobLogForm.vue";
-import { useI18n } from "@/hooks/web/useI18n";
-import { propTypes } from "@/utils/propTypes";
-import { convertFilterText, FilterText } from "@/components/filter-text";
+import icon_succeed_filled from '@/assets/svg/icon_succeed_filled.svg'
+import icon_close_filled from '@/assets/svg/icon_close_filled.svg'
+import icon_replace_outlined from '@/assets/svg/icon_replace_outlined.svg'
+import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
+import iconFilter from '@/assets/svg/icon-filter.svg'
+import icon_sync_logs_outlined from '@/assets/svg/icon_sync_logs_outlined.svg'
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
+import GridTable from '@/components/grid-table/src/GridTable.vue'
+import { ElIcon, ElMessage, ElMessageBox } from 'element-plus-secondary'
+import { Icon } from '@/components/icon-custom'
+import { onMounted, onUnmounted, reactive, ref } from 'vue'
+import { clear, getTaskLogListApi, removeApi } from '@/api/sync/syncTaskLog'
+import { some, find } from 'lodash-es'
+import dayjs from 'dayjs'
+import LogDetails from './LogDetails.vue'
+import ClearJobLogForm from './ClearJobLogForm.vue'
+import { useI18n } from '@/hooks/web/useI18n'
+import { propTypes } from '@/utils/propTypes'
+import { convertFilterText, FilterText } from '@/components/filter-text'
 
-const { t } = useI18n();
-const keyword = ref(null);
-const imgType = ref();
-const emptyDesc = ref("");
-const tableLoading = ref(false);
+const { t } = useI18n()
+const keyword = ref(null)
+const imgType = ref()
+const emptyDesc = ref('')
+const tableLoading = ref(false)
 const getEmptyImg = (): string => {
   if (keyword.value) {
-    return "tree";
+    return 'tree'
   }
-  return "noneWhite";
-};
+  return 'noneWhite'
+}
 
 const getEmptyDesc = (): string => {
   if (keyword.value) {
-    return t("work_branch.relevant_content_found");
+    return t('work_branch.relevant_content_found')
   }
 
-  return "";
-};
-const drawerMainRef = ref();
+  return ''
+}
+const drawerMainRef = ref()
 const props = defineProps({
-  jobId: propTypes.string.def(""),
-});
+  jobId: propTypes.string.def('')
+})
 const state = reactive({
   taskLogList: [],
   filterTexts: [],
   paginationConfig: {
     currentPage: 1,
     pageSize: 10,
-    total: 0,
+    total: 0
   },
   conditions: [],
   orders: [],
-  multipleSelection: [],
-});
+  multipleSelection: []
+})
 const timeInterval = reactive({
-  timeId: null,
-});
+  timeId: null
+})
 const startInterval = () => {
   if (!timeInterval.timeId) {
     timeInterval.timeId = window.setInterval(() => {
-      partDataUpdate();
-    }, 3000);
+      partDataUpdate()
+    }, 3000)
   }
-};
+}
 const stopInterval = () => {
-  timeInterval.timeId !== null && window.clearInterval(timeInterval.timeId);
-  timeInterval.timeId = null;
-};
+  timeInterval.timeId !== null && window.clearInterval(timeInterval.timeId)
+  timeInterval.timeId = null
+}
 const buildParam = () => {
-  const param = {};
+  const param = {}
   if (state.conditions?.length) {
-    state.conditions.forEach((condition) => {
-      if (condition["value"]) {
-        param[condition["field"]] = condition["value"];
+    state.conditions.forEach(condition => {
+      if (condition['value']) {
+        param[condition['field']] = condition['value']
       }
-    });
+    })
   }
   if (keyword.value) {
-    param["keyword"] = keyword.value;
+    param['keyword'] = keyword.value
   }
-  if (props.jobId !== "") {
-    param['taskId'] = props.jobId;
+  if (props.jobId !== '') {
+    param['taskId'] = props.jobId
   }
-  return param;
-};
+  return param
+}
 const search = () => {
-  tableLoading.value = true;
+  tableLoading.value = true
   getTaskLogListApi(
     state.paginationConfig.currentPage,
     state.paginationConfig.pageSize,
     buildParam()
-  ).then((res) => {
-    tableLoading.value = false;
-    state.taskLogList = res.data.records;
-    if (some(state.taskLogList, ["status", "RUNNING"])) {
-      startInterval();
-    }
-    if (
-      state.paginationConfig.currentPage > 1 &&
-      state.taskLogList.length === 0
-    ) {
-      state.paginationConfig.currentPage--;
-      search();
-    }
-    state.paginationConfig.total = res.data.total;
-    imgType.value = getEmptyImg();
-    emptyDesc.value = getEmptyDesc();
-  }).catch(() => {
-    tableLoading.value = false;
-  });;
-};
+  )
+    .then(res => {
+      tableLoading.value = false
+      state.taskLogList = res.data.records
+      if (some(state.taskLogList, ['status', 'RUNNING'])) {
+        startInterval()
+      }
+      if (state.paginationConfig.currentPage > 1 && state.taskLogList.length === 0) {
+        state.paginationConfig.currentPage--
+        search()
+      }
+      state.paginationConfig.total = res.data.total
+      imgType.value = getEmptyImg()
+      emptyDesc.value = getEmptyDesc()
+    })
+    .catch(() => {
+      tableLoading.value = false
+    })
+}
 const partDataUpdate = () => {
-  const param = buildParam();
+  const param = buildParam()
   getTaskLogListApi(
     state.paginationConfig.currentPage,
     state.paginationConfig.pageSize,
     param
-  ).then((res) => {
-    let isRunning = false;
+  ).then(res => {
+    let isRunning = false
     const resDataMap = res.data.records.reduce((acc, cur) => {
-      acc[cur.id] = cur;
-      return acc;
-    }, {});
+      acc[cur.id] = cur
+      return acc
+    }, {})
     state.taskLogList.forEach(item => {
-      const resItem = resDataMap[item.id];
+      const resItem = resDataMap[item.id]
       if (resItem) {
-        item.status = resItem.status;
-        if (resItem.status === "RUNNING") {
-          isRunning = true;
+        item.status = resItem.status
+        if (resItem.status === 'RUNNING') {
+          isRunning = true
         }
       }
-    });
+    })
     if (isRunning) {
-      startInterval();
+      startInterval()
     } else {
-      stopInterval();
+      stopInterval()
     }
-  });
+  })
 }
 onMounted(() => {
-  search();
-});
+  search()
+})
 onUnmounted(() => {
-  stopInterval();
-});
+  stopInterval()
+})
 const pageChange = (index: any) => {
-  if (typeof index !== "number") {
-    return;
+  if (typeof index !== 'number') {
+    return
   }
-  state.paginationConfig.currentPage = index;
-  search();
-};
-const sizeChange = (size) => {
-  state.paginationConfig.pageSize = size;
-  search();
-};
-const timestampFormatDate = (value) => {
+  state.paginationConfig.currentPage = index
+  search()
+}
+const sizeChange = size => {
+  state.paginationConfig.pageSize = size
+  search()
+}
+const timestampFormatDate = value => {
   if (!value) {
-    return "-";
+    return '-'
   }
-  return dayjs(new Date(value)).format("YYYY-MM-DD HH:mm");
-};
+  return dayjs(new Date(value)).format('YYYY-MM-DD HH:mm')
+}
 
-const getLogStatusIcon = (value) => {
+const getLogStatusIcon = value => {
   const iconObj = {
-    icon: "-",
-    color: "",
-  };
-  if (value === "Success".toUpperCase()) {
-    iconObj.icon = icon_succeed_filled;
-    iconObj.color = "#34C724";
+    icon: '-',
+    color: ''
+  }
+  if (value === 'Success'.toUpperCase()) {
+    iconObj.icon = icon_succeed_filled
+    iconObj.color = '#34C724'
   }
   if (
-      value === "Fail_retry".toUpperCase() ||
-      value === "No_process".toUpperCase() ||
-    value === "Fail".toUpperCase() ||
-    value === "Termination".toUpperCase() ||
-    value === "connection_lost".toUpperCase()
+    value === 'Fail_retry'.toUpperCase() ||
+    value === 'No_process'.toUpperCase() ||
+    value === 'Fail'.toUpperCase() ||
+    value === 'Termination'.toUpperCase() ||
+    value === 'connection_lost'.toUpperCase()
   ) {
-    iconObj.icon = icon_close_filled;
-    iconObj.color = "#F54A45";
+    iconObj.icon = icon_close_filled
+    iconObj.color = '#F54A45'
   }
-  if (value === "Running".toUpperCase()) {
-    iconObj.icon = icon_replace_outlined;
-    iconObj.color = "#2c5fd9";
+  if (value === 'Running'.toUpperCase()) {
+    iconObj.icon = icon_replace_outlined
+    iconObj.color = '#2c5fd9'
   }
-  return iconObj;
-};
+  return iconObj
+}
 const taskLogStatus = [
-  { label: t("sync_task.status_failed"), value: "fail_retry" },
-  { label: t("sync_task.status_failed"), value: "no_process" },
-  { label: t("sync_task.status_failed"), value: "fail" },
-  { label: t("sync_task.status_running"), value: "running" },
-  { label: t("sync_task.status_success"), value: "success" },
-  { label: t("sync_task.status_connection_lost"), value: "connection_lost" },
-  { label: t("sync_task.status_terminated"), value: "termination" },
-];
-const getStatusLabel = (value) => {
+  { label: t('sync_task.status_failed'), value: 'fail_retry' },
+  { label: t('sync_task.status_failed'), value: 'no_process' },
+  { label: t('sync_task.status_failed'), value: 'fail' },
+  { label: t('sync_task.status_running'), value: 'running' },
+  { label: t('sync_task.status_success'), value: 'success' },
+  { label: t('sync_task.status_connection_lost'), value: 'connection_lost' },
+  { label: t('sync_task.status_terminated'), value: 'termination' }
+]
+const getStatusLabel = value => {
   if (value) {
-    const status = find(taskLogStatus, ["value", value.toLowerCase()]);
+    const status = find(taskLogStatus, ['value', value.toLowerCase()])
     if (status) {
-      return status.label;
+      return status.label
     }
   }
-  return "-";
-};
-const delHandler = (row) => {
-  ElMessageBox.confirm(t("sync_task.confirm_delete_msg"), {
-    confirmButtonText: t("sync_task.delete"),
-    cancelButtonText: t("sync_datasource.cancel"),
+  return '-'
+}
+const delHandler = row => {
+  ElMessageBox.confirm(t('sync_task.confirm_delete_msg'), {
+    confirmButtonText: t('sync_task.delete'),
+    cancelButtonText: t('sync_datasource.cancel'),
     showCancelButton: true,
-    confirmButtonType: "danger",
-    type: "warning",
+    confirmButtonType: 'danger',
+    type: 'warning',
     autofocus: false,
-    showClose: false,
+    showClose: false
   }).then(() => {
     removeApi(row.id).then(() => {
-      ElMessage.success(t("sync_task.op_success"));
-      search();
-    });
-  });
-};
+      ElMessage.success(t('sync_task.op_success'))
+      search()
+    })
+  })
+}
 
-const logStatus = ref();
-const jobLogDetailRef = ref();
-const showLogDetail = (row) => {
-  logStatus.value = row.status;
-  jobLogDetailRef.value.logId = row.id;
-  jobLogDetailRef.value.jobLogDetailVisible = true;
-  jobLogDetailRef.value?.startInterval(row.id, row.status);
-};
+const logStatus = ref()
+const jobLogDetailRef = ref()
+const showLogDetail = row => {
+  logStatus.value = row.status
+  jobLogDetailRef.value.logId = row.id
+  jobLogDetailRef.value.jobLogDetailVisible = true
+  jobLogDetailRef.value?.startInterval(row.id, row.status)
+}
 
 const jobLogDetailVisibleClose = () => {
-  jobLogDetailRef.value.jobLogDetailVisible = false;
-};
+  jobLogDetailRef.value.jobLogDetailVisible = false
+}
 
-const clearJobLogDialogRef = ref();
+const clearJobLogDialogRef = ref()
 const closeClearDialog = () => {
-  clearJobLogDialogRef.value.clearJobLogDialogFormVisible = false;
-};
+  clearJobLogDialogRef.value.clearJobLogDialogFormVisible = false
+}
 const showClearJobLogDialogFormVisible = () => {
-  clearJobLogDialogRef.value.clearJobLogDialogFormVisible = true;
-};
+  clearJobLogDialogRef.value.clearJobLogDialogFormVisible = true
+}
 
 const clearLogForm = reactive({
-  jobId: "",
-  clearType: "1",
-});
+  jobId: '',
+  clearType: '1'
+})
 const clearJobLog = (clearTypeLabel: string) => {
-  ElMessageBox.confirm(t("sync_task.confirm_clear_msg", [clearTypeLabel]), {
-    confirmButtonText: t("sync_task.clear"),
-    cancelButtonText: t("sync_datasource.cancel"),
+  ElMessageBox.confirm(t('sync_task.confirm_clear_msg', [clearTypeLabel]), {
+    confirmButtonText: t('sync_task.clear'),
+    cancelButtonText: t('sync_datasource.cancel'),
     showCancelButton: true,
-    confirmButtonType: "danger",
-    type: "warning",
+    confirmButtonType: 'danger',
+    type: 'warning',
     autofocus: false,
-    showClose: false,
+    showClose: false
   }).then(() => {
     clear(clearLogForm).then(() => {
-      clearJobLogDialogRef.value.clearJobLogDialogFormVisible = false;
+      clearJobLogDialogRef.value.clearJobLogDialogFormVisible = false
       ElMessage({
-        message: t("sync_task.op_success_refresh"),
-        type: "success",
-      });
-      search();
-    });
-  });
-};
+        message: t('sync_task.op_success_refresh'),
+        type: 'success'
+      })
+      search()
+    })
+  })
+}
 const filterOption = [
   {
-    type: "enum",
+    type: 'enum',
     option: [
       {
-        id: "SUCCESS",
-        name: t("sync_task.status_success"),
+        id: 'SUCCESS',
+        name: t('sync_task.status_success')
       },
       {
-        id: "FAIL",
-        name: t("sync_task.status_failed"),
+        id: 'FAIL',
+        name: t('sync_task.status_failed')
       },
       {
-        id: "RUNNING",
-        name: t("sync_task.status_running"),
+        id: 'RUNNING',
+        name: t('sync_task.status_running')
       },
       {
-        id: "CONNECTION_LOST",
-        name: t("sync_task.status_connection_lost"),
+        id: 'CONNECTION_LOST',
+        name: t('sync_task.status_connection_lost')
       },
       {
-        id: "TERMINATION",
-        name: t("sync_task.status_terminated"),
-      },
+        id: 'TERMINATION',
+        name: t('sync_task.status_terminated')
+      }
     ],
-    field: "status",
-    title: t("sync_task.execute_result"),
-    operate: "in",
+    field: 'status',
+    title: t('sync_task.execute_result'),
+    operate: 'in'
   },
   {
-    type: "time",
+    type: 'time',
     option: [],
     property: {
-      showType: "datetimerange",
-      format: "YYYY-MM-DD HH:mm:ss",
-      valueFormat: "YYYY-MM-DD HH:mm:ss",
-      rangeSeparator: "-",
-      startPlaceholder: t("sync_datasource.start_time"),
-      endPlaceholder: t("sync_datasource.end_time"),
+      showType: 'datetimerange',
+      format: 'YYYY-MM-DD HH:mm:ss',
+      valueFormat: 'YYYY-MM-DD HH:mm:ss',
+      rangeSeparator: '-',
+      startPlaceholder: t('sync_datasource.start_time'),
+      endPlaceholder: t('sync_datasource.end_time')
     },
-    field: "lastExecuteTime",
-    title: t("sync_task.execute_time"),
-    operate: "between",
-  },
-];
-const searchCondition = (conditions) => {
-  state.conditions = conditions;
-  search();
-  fillFilterText();
-  drawerMainClose();
-};
+    field: 'lastExecuteTime',
+    title: t('sync_task.execute_time'),
+    operate: 'between'
+  }
+]
+const searchCondition = conditions => {
+  state.conditions = conditions
+  search()
+  fillFilterText()
+  drawerMainClose()
+}
 const fillFilterText = () => {
   const textArray = state.conditions?.length
     ? convertFilterText(state.conditions, filterOption)
-    : [];
-  state.filterTexts = [...textArray];
-  Object.assign(state.filterTexts, textArray);
-};
+    : []
+  state.filterTexts = [...textArray]
+  Object.assign(state.filterTexts, textArray)
+}
 const clearFilter = (params?: number) => {
-  let index = params ? params : 0;
+  let index = params ? params : 0
   if (isNaN(index)) {
-    state.filterTexts = [];
+    state.filterTexts = []
   } else {
-    state.filterTexts.splice(index, 1);
+    state.filterTexts.splice(index, 1)
   }
-  drawerMainRef.value.clearFilter(index);
-};
+  drawerMainRef.value.clearFilter(index)
+}
 
 const drawerMainOpen = async () => {
-  drawerMainRef.value.init();
-};
+  drawerMainRef.value.init()
+}
 const drawerMainClose = () => {
-  drawerMainRef.value.close();
-};
+  drawerMainRef.value.close()
+}
 </script>
 
 <template>
-  <div class="source-ds-table de-search-table">
+  <div class="source-ds-table_log de-search-table">
     <div
       :class="!!state.multipleSelection.length && 'source-ds-table-selection'"
       class="source-ds de-search-table"
@@ -353,7 +352,7 @@ const drawerMainClose = () => {
       <el-row class="ds-table__filter top-operate">
         <el-col :span="12">
           <el-button @click="showClearJobLogDialogFormVisible" type="primary">{{
-            t("sync_task.clear_log")
+            t('sync_task.clear_log')
           }}</el-button>
         </el-col>
         <el-col :span="12" class="right-filter">
@@ -374,18 +373,13 @@ const drawerMainClose = () => {
           <el-button
             @click="drawerMainOpen"
             :plain="!!state.conditions.length"
-            :class="
-              state.conditions.length
-                ? 'filter-condition-button'
-                : 'filter-button'
-            "
+            :class="state.conditions.length ? 'filter-condition-button' : 'filter-button'"
           >
             <template #icon>
               <Icon name="icon-filter"><iconFilter class="svg-icon" /></Icon>
             </template>
             {{
-              t("common.filter") +
-              (state.conditions.length ? `(${state.conditions?.length})` : "")
+              t('common.filter') + (state.conditions.length ? `(${state.conditions?.length})` : '')
             }}
           </el-button>
         </el-col>
@@ -395,13 +389,7 @@ const drawerMainClose = () => {
         :total="state.paginationConfig.total"
         :filter-texts="state.filterTexts"
       ></filter-text>
-      <div
-        :class="[
-          state.filterTexts.length
-            ? 'is-in-filter'
-            : 'source-ds-table__content',
-        ]"
-      >
+      <div :class="[state.filterTexts.length ? 'is-in-filter' : 'source-ds-table__content']">
         <GridTable
           ref="multipleTableRef"
           :pagination="state.paginationConfig"
@@ -414,12 +402,7 @@ const drawerMainClose = () => {
           :data-loading="tableLoading"
           :show-empty-img="!tableLoading"
         >
-          <el-table-column
-            key="id"
-            show-overflow-tooltip
-            prop="id"
-            :label="t('sync_task.log_id')"
-          >
+          <el-table-column key="id" show-overflow-tooltip prop="id" :label="t('sync_task.log_id')">
             <template #default="scope">
               <span>{{ scope.row.id }}</span>
             </template>
@@ -441,9 +424,7 @@ const drawerMainClose = () => {
             min-width="170"
           >
             <template #default="scope">
-              <span>{{
-                timestampFormatDate(scope.row.executorStartTime)
-              }}</span>
+              <span>{{ timestampFormatDate(scope.row.executorStartTime) }}</span>
             </template>
           </el-table-column>
           <el-table-column
@@ -460,29 +441,19 @@ const drawerMainClose = () => {
                   v-if="scope.row.status"
                   :class="scope.row.status === 'RUNNING' ? 'is-loading' : ''"
                 >
-                  <Icon
-                    :style="'color:' + getLogStatusIcon(scope.row.status).color"
+                  <Icon :style="'color:' + getLogStatusIcon(scope.row.status).color"
                     ><component
                       :is="getLogStatusIcon(scope.row.status).icon"
-                      :style="
-                        'color:' + getLogStatusIcon(scope.row.status).color
-                      "
+                      :style="'color:' + getLogStatusIcon(scope.row.status).color"
                       class="svg-icon"
                     ></component
                   ></Icon>
                 </el-icon>
-                <span style="padding: 0 8px 0 8px">{{
-                  getStatusLabel(scope.row.status)
-                }}</span>
+                <span style="padding: 0 8px 0 8px">{{ getStatusLabel(scope.row.status) }}</span>
               </div>
             </template>
           </el-table-column>
-          <el-table-column
-            fixed="right"
-            key="_operation"
-            :label="t('sync_task.op')"
-            width="100"
-          >
+          <el-table-column fixed="right" key="_operation" :label="t('sync_task.op')" width="100">
             <template #default="scope">
               <div class="operate-icon-container">
                 <el-tooltip
@@ -491,11 +462,7 @@ const drawerMainClose = () => {
                   placement="top"
                 >
                   <template #default>
-                    <el-button
-                      text
-                      @click="showLogDetail(scope.row)"
-                      class="detail-button"
-                    >
+                    <el-button text @click="showLogDetail(scope.row)" class="detail-button">
                       <template #icon>
                         <Icon name="icon_sync_logs_outlined"
                           ><icon_sync_logs_outlined class="svg-icon"
@@ -504,11 +471,7 @@ const drawerMainClose = () => {
                     </el-button>
                   </template>
                 </el-tooltip>
-                <el-tooltip
-                  effect="dark"
-                  :content="t('common.delete')"
-                  placement="top"
-                >
+                <el-tooltip effect="dark" :content="t('common.delete')" placement="top">
                   <el-button text @click="delHandler(scope.row)">
                     <template #icon>
                       <Icon name="icon_delete-trash_outlined"
@@ -543,13 +506,21 @@ const drawerMainClose = () => {
   ></drawer-main>
 </template>
 
-<style scoped lang="less">
-.operate-icon-container {
-  .detail-button {
-    margin: 0 4px 0 0;
+<style lang="less">
+.source-ds-table_log {
+  line-height: 1.15;
+  border-radius: 12px !important;
+  height: calc(100% - 60px);
+  box-sizing: border-box;
+  background: #fff;
+  padding: 24px;
+  .source-ds-table__content {
+    height: calc(100vh - 276px);
   }
-}
-.source-ds-table {
-  border-radius: 4px;
+  .operate-icon-container {
+    .detail-button {
+      margin: 0 4px 0 0;
+    }
+  }
 }
 </style>

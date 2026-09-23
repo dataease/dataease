@@ -154,6 +154,27 @@ public interface SinkProvider {
     }
 
     /**
+     * 目标类型的 Key 限制；旧插件默认不声明额外限制
+     **/
+    default List<String> unsupportedKeyFieldTypes(DatasourceRequest datasourceRequest) {
+        return List.of();
+    }
+
+    /**
+     * fieldIndex 实际创建的索引种类；空值表示插件未实现此功能
+     **/
+    default String fieldIndexType(DatasourceRequest datasourceRequest) {
+        return null;
+    }
+
+    /**
+     * 当前索引功能允许的目标类型，默认不开放
+     **/
+    default List<String> supportedIndexFieldTypes(DatasourceRequest datasourceRequest) {
+        return List.of();
+    }
+
+    /**
      * 生成Sink
      * 更多属性配置参考 SeaTunnel 官网：<a href="https://seatunnel.apache.org/zh-CN/docs/2.3.12/connector-v2/sink">...</a>
      *

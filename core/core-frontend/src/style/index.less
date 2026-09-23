@@ -1182,12 +1182,29 @@ body:has(.proxy-warn-bar) {
     margin-top: 24px;
   }
 
+  .sys-org-container {
+    /* 与下方 .layout-sidebar 的 banner 约定一致：出现 banner 时内容区高度为 100vh - 130px */
+    height: calc(100vh - 130px) !important;
+    /* 视口硬上限，避免父级百分比高度失效时被内容撑开而超出屏幕 */
+    max-height: calc(100vh - 130px) !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
   .common-layout .layout-container .layout-sidebar {
     height: calc(100vh - 130px);
   }
 
   .user-table .user-table__content {
     height: calc(100vh - 210px) !important;
+  }
+
+  .role-manage .role-height {
+    height: calc(100vh - 179px) !important;
+  }
+
+  .user-table .member-table__content {
+    height: calc(100vh - 275px) !important;
   }
 
   .auth-table__content {

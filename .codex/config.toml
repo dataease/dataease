@@ -1,0 +1,21 @@
+[mcp_servers.tapd]
+command = "python3"
+args = [".codex/tapd_mcp/launch.py"]
+enabled = true
+startup_timeout_sec = 20
+tool_timeout_sec = 60
+enabled_tools = ["tapd_get_current_user", "tapd_parse_url", "tapd_get_story", "tapd_list_stories", "tapd_get_task", "tapd_list_tasks", "tapd_get_bug", "tapd_list_bugs", "tapd_get_iteration", "tapd_list_iterations", "tapd_list_comments", "tapd_get_story_related_bugs", "tapd_get_story_changes", "tapd_list_workspace_users"]
+
+[mcp_servers.playwright]
+command = "python3"
+args = [".codex/playwright_mcp/launch.py"]
+enabled = true
+startup_timeout_sec = 30
+tool_timeout_sec = 120
+
+[mcp_servers.dbhub]
+command = "python3"
+args = [".codex/dbhub_mcp/launch.py"]
+enabled = false
+startup_timeout_sec = 30
+tool_timeout_sec = 120

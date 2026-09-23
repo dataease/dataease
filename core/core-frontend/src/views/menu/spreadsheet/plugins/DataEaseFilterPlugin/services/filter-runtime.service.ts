@@ -31,7 +31,6 @@ export class SpreadsheetFilterRuntimeService {
     this._valuesReadyByUnitId.set(unitId, ready.then(
       () => undefined,
       error => {
-        console.error('[SpreadsheetFilterRuntimeService] Failed to initialize filter values:', error)
       }
     ))
   }

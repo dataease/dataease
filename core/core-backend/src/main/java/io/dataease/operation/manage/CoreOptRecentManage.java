@@ -1,7 +1,9 @@
 package io.dataease.operation.manage;
 
 
+import io.dataease.api.operation.RecentResourceApi;
 import io.dataease.commons.constants.OptConstants;
+import io.dataease.constant.BusiResourceEnum;
 import io.dataease.operation.dao.auto.entity.CoreOptRecent;
 import io.dataease.operation.dao.auto.mapper.CoreOptRecentRepository;
 import io.dataease.permission.util.V3UserUtil;
@@ -20,10 +22,16 @@ import java.util.stream.Collectors;
 
 
 @Component
-public class CoreOptRecentManage {
+public class CoreOptRecentManage implements RecentResourceApi {
 
     @Autowired
     private CoreOptRecentRepository coreOptRecentRepository;
+
+    @Override
+    public void recordSpreadsheet(Long resourceId) {
+        // 最近列表只依赖资源关系和更新时间，电子表格统一按更新操作记录。
+        saveOpt(resourceId, BusiResourceEnum.SPREADSHEET.getFlag(), OptConstants.OPT_TYPE.UPDATE);
+    }
 
     public void saveOpt(Long resourceId, int resourceType, int optType) {
         saveOpt(resourceId, null, resourceType, optType);

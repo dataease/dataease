@@ -1,131 +1,128 @@
 <script lang="ts" setup>
-import icon_close_outlined from "@/assets/svg/icon_close_outlined.svg";
-import { computed, defineEmits, nextTick, ref } from "vue";
-import { ElIcon } from "element-plus-secondary";
-import { Icon } from "@/components/icon-custom";
-import BaseForm from "./BaseForm.vue";
-import RecipientForm from "./RecipientForm.vue";
-import FrequencyForm from "./FrequencyForm.vue";
-import { reportInfoApi, reportCreateApi, reportUpdateApi } from "../api";
-import { ElMessage } from "element-plus-secondary";
-import { useI18n } from "@/hooks/web/useI18n";
+import icon_close_outlined from '@/assets/svg/icon_close_outlined.svg'
+import { computed, defineEmits, nextTick, ref } from 'vue'
+import { ElIcon } from 'element-plus-secondary'
+import { Icon } from '@/components/icon-custom'
+import BaseForm from './BaseForm.vue'
+import RecipientForm from './RecipientForm.vue'
+import FrequencyForm from './FrequencyForm.vue'
+import { reportInfoApi, reportCreateApi, reportUpdateApi } from '../api'
+import { ElMessage } from 'element-plus-secondary'
+import { useI18n } from '@/hooks/web/useI18n'
 
-const { t } = useI18n();
+const { t } = useI18n()
 const props = defineProps({
   taskId: {
     type: String,
-    default: "",
-  },
-});
+    default: ''
+  }
+})
 
-const reportInfo = ref({});
-const formLoading = ref(false);
-const activeStep = ref(0);
-const reportFormVisible = ref<boolean>(false);
+const reportInfo = ref({})
+const formLoading = ref(false)
+const activeStep = ref(0)
+const reportFormVisible = ref<boolean>(false)
 
-const baseForm = ref(null);
-const baseFormData = ref({});
+const baseForm = ref(null)
+const baseFormData = ref({})
 
-const recipientForm = ref(null);
-const recipientFormData = ref({});
+const recipientForm = ref(null)
+const recipientFormData = ref({})
 
-const frequencyForm = ref(null);
-const frequencyFormData = ref({});
+const frequencyForm = ref(null)
+const frequencyFormData = ref({})
 
 const isEdit = computed<boolean>(() => {
-  if (props.taskId && props.taskId !== "") {
-    return true;
+  if (props.taskId && props.taskId !== '') {
+    return true
   }
-  return false;
-});
+  return false
+})
 
-const currentResourceId = computed(
-  () => baseFormData.value?.rid || reportInfo.value?.["rid"] || "",
-);
+const currentResourceId = computed(() => baseFormData.value?.rid || reportInfo.value?.['rid'] || '')
 const currentResourceFlag = computed(() => {
-  const rtid = baseFormData.value?.rtid ?? reportInfo.value?.["rtid"];
-  return rtid === 1 ? 2 : 1; // 0=dashboard→1(PANEL), 1=dataV→2(SCREEN)
-});
+  const rtid = baseFormData.value?.rtid ?? reportInfo.value?.['rtid']
+  return rtid === 1 ? 2 : 1 // 0=dashboard→1(PANEL), 1=dataV→2(SCREEN)
+})
 
-const emit = defineEmits(["taskAddVisibleClose", "refreshList"]);
+const emit = defineEmits(['taskAddVisibleClose', 'refreshList'])
 
 const prev = () => {
-  activeStep.value = activeStep.value - 1;
-};
+  activeStep.value = activeStep.value - 1
+}
 
 const next = async () => {
-  formLoading.value = true;
+  formLoading.value = true
   if (activeStep.value === 0) {
-    const baseData = await baseForm?.value?.getFormData();
+    const baseData = await baseForm?.value?.getFormData()
     if (baseData) {
-      baseFormData.value = Object.assign(baseFormData.value, baseData);
-      activeStep.value = activeStep.value + 1;
+      baseFormData.value = Object.assign(baseFormData.value, baseData)
+      activeStep.value = activeStep.value + 1
       nextTick(() => {
-        recipientForm?.value?.setOwnSelectHeight();
-        recipientForm?.value?.setDataPermission(baseData?.dataPermission);
-      });
+        recipientForm?.value?.setOwnSelectHeight()
+        recipientForm?.value?.setDataPermission(baseData?.dataPermission)
+      })
     }
+    formLoading.value = false
   } else if (activeStep.value === 1) {
-    const recipientData = await recipientForm?.value?.getFormData();
+    const recipientData = await recipientForm?.value?.getFormData()
     if (recipientData) {
-      recipientFormData.value = Object.assign(
-        recipientFormData.value,
-        recipientData,
-      );
-      activeStep.value = activeStep.value + 1;
+      recipientFormData.value = Object.assign(recipientFormData.value, recipientData)
+      activeStep.value = activeStep.value + 1
     }
+    formLoading.value = false
   } else if (activeStep.value === 2) {
-    const frequencyData = await frequencyForm?.value?.getFormData();
+    const frequencyData = await frequencyForm?.value?.getFormData()
     if (frequencyData) {
-      frequencyFormData.value = Object.assign(
-        frequencyFormData.value,
-        frequencyData,
-      );
-      saveHandler();
+      frequencyFormData.value = Object.assign(frequencyFormData.value, frequencyData)
+      saveHandler()
     }
   }
-  formLoading.value = false;
-};
+}
 
 const saveHandler = () => {
   const param = {
     ...baseFormData.value,
     ...recipientFormData.value,
-    ...frequencyFormData.value,
-  };
-  if (isEdit.value) {
-    param["taskId"] = reportInfo.value["taskId"];
+    ...frequencyFormData.value
   }
-  const method = isEdit.value ? reportUpdateApi : reportCreateApi;
-  method(param).then((res) => {
-    if (!res?.code) {
-      ElMessage.success(t("common.save_success"));
-      emit("refreshList");
-      cancelClick();
-    }
-  });
-};
+  if (isEdit.value) {
+    param['taskId'] = reportInfo.value['taskId']
+  }
+  const method = isEdit.value ? reportUpdateApi : reportCreateApi
+  method(param)
+    .then(res => {
+      if (!res?.code) {
+        ElMessage.success(t('common.save_success'))
+        emit('refreshList')
+        cancelClick()
+      }
+    })
+    .finally(() => {
+      formLoading.value = false
+    })
+}
 
 const cancelClick = () => {
-  activeStep.value = 0;
-  formLoading.value = false;
-  baseFormData.value = {};
-  recipientFormData.value = {};
-  frequencyFormData.value = {};
-  reportInfo.value = {};
-  emit("taskAddVisibleClose");
-};
+  activeStep.value = 0
+  formLoading.value = false
+  baseFormData.value = {}
+  recipientFormData.value = {}
+  frequencyFormData.value = {}
+  reportInfo.value = {}
+  emit('taskAddVisibleClose')
+}
 
 const edit = (taskId: string) => {
   if (isEdit.value || taskId) {
-    reportInfoApi(props.taskId || taskId).then((res) => {
-      reportInfo.value = res.data;
-      reportFormVisible.value = true;
-    });
+    reportInfoApi(props.taskId || taskId).then(res => {
+      reportInfo.value = res.data
+      reportFormVisible.value = true
+    })
   }
-};
+}
 
-defineExpose({ reportFormVisible, edit });
+defineExpose({ reportFormVisible, edit })
 </script>
 <template>
   <el-drawer
@@ -139,44 +136,33 @@ defineExpose({ reportFormVisible, edit });
   >
     <template #header>
       <span class="head-title">{{
-        isEdit ? t("dataset.task_edit_title") : t("dataset.task_add_title")
+        isEdit ? t('dataset.task_edit_title') : t('dataset.task_add_title')
       }}</span>
       <div class="flex-center" style="width: 100%">
-        <el-steps
-          custom
-          style="max-width: 550px; flex: 1"
-          :active="activeStep"
-          align-center
-        >
+        <el-steps custom style="max-width: 550px; flex: 1" :active="activeStep" align-center>
           <el-step>
             <template #title>
-              {{ t("datasource.base_info") }}
+              {{ t('datasource.base_info') }}
             </template>
           </el-step>
           <el-step>
             <template #title>
-              {{ t("threshold.recipient") }}
+              {{ t('threshold.recipient') }}
             </template>
           </el-step>
           <el-step>
             <template #title>
-              {{ t("report.send_setting") }}
+              {{ t('report.send_setting') }}
             </template>
           </el-step>
         </el-steps>
       </div>
       <el-icon @click="cancelClick" class="report-close">
-        <Icon name="icon_close_outlined"
-          ><icon_close_outlined class="svg-icon"
-        /></Icon>
+        <Icon name="icon_close_outlined"><icon_close_outlined class="svg-icon" /></Icon>
       </el-icon>
     </template>
     <div class="task-form-container">
-      <div
-        class="task-form-class"
-        v-loading="formLoading"
-        v-if="reportFormVisible"
-      >
+      <div class="task-form-class" v-loading="formLoading" v-if="reportFormVisible">
         <base-form
           ref="baseForm"
           :is-edit="isEdit"
@@ -201,38 +187,27 @@ defineExpose({ reportFormVisible, edit });
     </div>
     <div class="task-form-footer">
       <div class="editor-footer" style="flex: auto">
-        <el-button @click="cancelClick">{{ t("common.cancel") }}</el-button>
-        <el-button
-          :disabled="formLoading"
-          v-show="activeStep > 0"
-          secondary
-          @click="prev"
-        >
-          {{ t("common.prev") }}
+        <el-button @click="cancelClick">{{ t('common.cancel') }}</el-button>
+        <el-button :loading="formLoading" v-show="activeStep > 0" secondary @click="prev">
+          {{ t('common.prev') }}
         </el-button>
         <el-button
-          :disabled="formLoading"
-          element-loading-spinner=""
+          :loading="formLoading"
           v-show="activeStep === 0 || activeStep < 2"
           type="primary"
           @click="next()"
         >
-          {{ t("common.next") }}
+          {{ t('common.next') }}
         </el-button>
-        <el-button
-          :disabled="formLoading"
-          v-show="activeStep >= 2"
-          type="primary"
-          @click="next()"
-        >
-          {{ t("chart.confirm") }}
+        <el-button :loading="formLoading" v-show="activeStep >= 2" type="primary" @click="next()">
+          {{ t('chart.confirm') }}
         </el-button>
       </div>
     </div>
   </el-drawer>
 </template>
 <style lang="less">
-body:has(.report-form-drawer-fullscreen:not([style*="display: none"])) {
+body:has(.report-form-drawer-fullscreen:not([style*='display: none'])) {
   height: 100vh !important;
 }
 

@@ -7,7 +7,7 @@ const pixelValidator = (rule, value, callback) => {
   if (!value || value.length === 0) {
     callback(new Error(t("commons.cannot_be_null")));
   } else if (!validPixel(value)) {
-    callback(new Error(t("xpacktask.pixel_error")));
+    callback(new Error(t("report.form.pixel_error")));
   } else {
     callback();
   }

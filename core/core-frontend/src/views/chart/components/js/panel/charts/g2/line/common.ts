@@ -85,6 +85,30 @@ export type LineLegendState = {
   visibleSeries?: ReadonlySet<string>
 }
 
+const isEmptyLineValue = (value: unknown) => value === null || value === undefined
+
+export const filterBreakLinePointMark = (pointMark: G2Spec, valueChannel: 'y' | 'y0' = 'y') => {
+  // point 独立过滤空值，保留父级数据的断线语义和真实 0
+  const filter =
+    valueChannel === 'y0'
+      ? { type: 'filter' as const, y0: (value: unknown) => !isEmptyLineValue(value) }
+      : { type: 'filter' as const, y: (value: unknown) => !isEmptyLineValue(value) }
+  pointMark.transform = [...(pointMark.transform ?? []), filter]
+}
+
+export const configBreakLineStackMark = (mark: G2Spec, data: Record<string, any>[]) => {
+  // 仅在 mark 数据视图中保留空坐标，避免 stackY 将空值数值化为 0
+  mark.data = {
+    value: data,
+    transform: [
+      {
+        type: 'map',
+        callback: item => (isEmptyLineValue(item.value) ? { ...item, value: Number.NaN } : item)
+      }
+    ]
+  }
+}
+
 export const bindLineLegendState = (chartObj: G2Chart): LineLegendState => {
   const state: LineLegendState = {}
   chartObj.on('legend:filter', event => {

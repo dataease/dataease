@@ -6,6 +6,8 @@ import org.hibernate.dialect.DmDialect;
 import org.hibernate.query.sqm.CastType;
 
 import org.hibernate.mapping.Table;
+import org.hibernate.tool.schema.extract.internal.SequenceInformationExtractorNoOpImpl;
+import org.hibernate.tool.schema.extract.spi.SequenceInformationExtractor;
 import org.hibernate.tool.schema.extract.spi.TableInformation;
 import org.hibernate.tool.schema.internal.StandardTableExporter;
 import org.hibernate.tool.schema.internal.StandardTableMigrator;
@@ -14,6 +16,25 @@ import org.hibernate.tool.schema.spi.Exporter;
 
 
 public class CustomDMDialect extends DmDialect {
+
+    /**
+     * 禁用序列元数据提取。
+     * DataEase 实体主键均由应用层雪花算法（SnowflakeUtil）生成，不依赖数据库 Sequence。
+     * 达梦官方方言包未重写 getSequenceInformationExtractor，默认 LegacyImpl 调用 getLong("maximum_value")，
+     * 在达梦序列 MAXVALUE 超出 Long.MAX_VALUE 时会抛出 Digital overflow (-6102)。
+     */
+    @Override
+    public SequenceInformationExtractor getSequenceInformationExtractor() {
+        return SequenceInformationExtractorNoOpImpl.INSTANCE;
+    }
+
+    /**
+     * 禁用序列查询，避免启动阶段对 ALL_SEQUENCES 的全库扫描。
+     */
+    @Override
+    public String getQuerySequencesString() {
+        return null;
+    }
 
     @Override
     public Exporter<org.hibernate.mapping.Table> getTableExporter() {

@@ -45,6 +45,7 @@ const emit = defineEmits<{
 }>()
 
 const loading = ref(false)
+const canCreateDataset = ref(false)
 const datasetTree = ref<Tree[]>([])
 const datasetSelectorPopover = ref()
 const datasetSelector = ref()
@@ -120,10 +121,12 @@ const loadDatasetTree = async () => {
   loading.value = true
   try {
     const res = await getDatasetTree({})
+    // 与数据集管理页一致，使用根节点权限判断是否允许创建数据集。
+    canCreateDataset.value = (res?.[0]?.weight ?? 0) >= 7
     datasetTree.value = res?.[0]?.children || []
     emitDatasetNodeChange()
   } catch (error) {
-    console.error('Failed to load datasets:', error)
+    canCreateDataset.value = false
     datasetTree.value = []
     emitDatasetNodeChange()
   } finally {
@@ -354,7 +357,7 @@ defineExpose({
             </el-scrollbar>
           </el-main>
           <el-footer
-            v-if="!isDataEaseBi && props.showCreateDataset"
+            v-if="!isDataEaseBi && props.showCreateDataset && canCreateDataset"
             class="dataset-select-footer"
           >
             <div class="footer-container">

@@ -24,7 +24,6 @@ export const ApplyDetailTableOperation: ICommand = {
 
       return result !== false
     } catch (error) {
-      console.error('[DataPlugin] Failed to apply detail table:', error)
       ElMessage.error(`Update failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
       return false
     }
@@ -53,7 +52,6 @@ export const ClearDetailTableOperation: ICommand = {
       await fillService.clearTableData(univerApi, startCell, rowCount, colCount, worksheet)
       return true
     } catch (error) {
-      console.error('[DataPlugin] Failed to clear detail table:', error)
       return false
     }
   }
@@ -75,7 +73,6 @@ export const ApplyDetailTableStyleOperation: ICommand = {
       await fillService.applyStyleOnly(univerApi, config)
       return true
     } catch (error) {
-      console.error('[DataPlugin] Failed to apply detail table style:', error)
       ElMessage.error(`Update style failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
       return false
     }

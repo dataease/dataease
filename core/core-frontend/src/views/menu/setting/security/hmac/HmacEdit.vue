@@ -1,138 +1,140 @@
 <script lang="ts" setup>
-import { ref, reactive } from "vue";
-import { ElMessage, ElLoading } from "element-plus-secondary";
-import { useI18n } from "@/hooks/web/useI18n";
-import type { FormInstance, FormRules } from "element-plus-secondary";
-import request from "@/config/axios";
-import icon_refresh_outlined from "@/assets/svg/icon_refresh_outlined.svg";
+import { ref, reactive } from 'vue'
+import { ElMessage, ElLoading } from 'element-plus-secondary'
+import { useI18n } from '@/hooks/web/useI18n'
+import type { FormInstance, FormRules } from 'element-plus-secondary'
+import request from '@/config/axios'
+import icon_refresh_outlined from '@/assets/svg/icon_refresh_outlined.svg'
 import dvInfo from '@/assets/svg/dv-info.svg'
-const { t } = useI18n();
-const dialogVisible = ref(false);
-const loadingInstance = ref(null);
-const hmacForm = ref<FormInstance>();
+const { t } = useI18n()
+const dialogVisible = ref(false)
+const loadingInstance = ref(null)
+const hmacForm = ref<FormInstance>()
 
 const state = reactive({
   form: reactive({
-    enable: "",
-    secretKey: "",
-    clockSkew: "300"
+    enable: '',
+    secretKey: '',
+    clockSkew: '300'
   }),
-  settingList: [] as any[],
-});
-const tooltipItem = ref({"secretKey": t('commons.refresh'), "clockSkew": t('setting_hmac.clock_skew_tips')})
+  settingList: [] as any[]
+})
+const tooltipItem = ref({
+  secretKey: t('commons.refresh'),
+  clockSkew: t('setting_hmac.clock_skew_tips')
+})
 const rule = reactive<FormRules>({
-  
   secretKey: [
     {
       required: true,
-      message: t("common.require"),
-      trigger: "blur",
+      message: t('common.require'),
+      trigger: 'blur'
     }
   ],
   clockSkew: [
     {
       required: true,
-      message: t("common.require"),
-      trigger: "blur",
+      message: t('common.require'),
+      trigger: 'blur'
     },
     {
       validator: (_rule, value, callback) => {
-        const num = Number(value);
+        const num = Number(value)
         if (isNaN(num) || num < 1 || num > 600) {
-          callback(new Error(t('setting_hmac.clock_skew_range', [600])));
+          callback(new Error(t('setting_hmac.clock_skew_range', [600])))
         } else {
-          callback();
+          callback()
         }
       },
-      trigger: "blur",
+      trigger: 'blur'
     }
   ]
-});
+})
 
 const buildSettingList = () => {
   return state.settingList.map((item: any) => {
-    const pkey = item.pkey.startsWith("hmac.") ? item.pkey : `hmac.${item.pkey}`;
-    const sort = item.sort;
-    const type = item.type;
-    let pval = state.form[item.pkey];
+    const pkey = item.pkey.startsWith('hmac.') ? item.pkey : `hmac.${item.pkey}`
+    const sort = item.sort
+    const type = item.type
+    let pval = state.form[item.pkey]
     if (Array.isArray(pval)) {
-      pval = pval.join(",");
+      pval = pval.join(',')
     }
-    return { pkey, pval, type, sort };
-  });
-};
-const emits = defineEmits(["saved"]);
+    return { pkey, pval, type, sort }
+  })
+}
+const emits = defineEmits(['saved'])
 const submitForm = async (formEl: FormInstance | undefined) => {
-  if (!formEl) return;
-  await formEl.validate((valid) => {
+  if (!formEl) return
+  await formEl.validate(valid => {
     if (valid) {
-      const param = buildSettingList();
+      const param = buildSettingList()
       if (param.length < 2) {
-        return;
+        return
       }
-      showLoading();
+      showLoading()
       request
-        .post({ url: "/perSetting/hmac/save", data: param })
-        .then((res) => {
+        .post({ url: '/perSetting/hmac/save', data: param })
+        .then(res => {
           if (!res.msg) {
-            ElMessage.success(t("common.save_success"));
+            ElMessage.success(t('common.save_success'))
             window['de_secret_key'] = null
-            emits("saved");
-            reset();
+            emits('saved')
+            reset()
           }
-          closeLoading();
+          closeLoading()
         })
         .catch(() => {
-          closeLoading();
-        });
+          closeLoading()
+        })
     }
-  });
-};
+  })
+}
 
 const resetForm = (formEl: FormInstance | undefined) => {
-  state.settingList = [];
-  if (!formEl) return;
-  formEl.resetFields();
-  dialogVisible.value = false;
-};
+  state.settingList = []
+  if (!formEl) return
+  formEl.resetFields()
+  dialogVisible.value = false
+}
 
 const reset = () => {
-  resetForm(hmacForm.value);
-};
+  resetForm(hmacForm.value)
+}
 
 const showLoading = () => {
-  loadingInstance.value = ElLoading.service({ target: ".hmac-param-drawer" });
-};
+  loadingInstance.value = ElLoading.service({ target: '.hmac-param-drawer' })
+}
 const closeLoading = () => {
-  loadingInstance.value?.close();
-};
+  loadingInstance.value?.close()
+}
 
-const edit = (list) => {
-  resetFormData();
-  state.settingList = list.map((item) => {
-    const pkey = item.pkey;
-    if (pkey.includes("enable")) {
-      item["label"] = `setting_${pkey}`;
-    } else if (pkey.includes("clockSkew")) {
-      item["label"] = 'setting_hmac.clock_skew';
-    } else if (pkey.includes("secretKey")) {
-      item["label"] = 'Secret Key';
+const edit = list => {
+  resetFormData()
+  state.settingList = list.map(item => {
+    const pkey = item.pkey
+    if (pkey.includes('enable')) {
+      item['label'] = `setting_${pkey}`
+    } else if (pkey.includes('clockSkew')) {
+      item['label'] = 'setting_hmac.clock_skew'
+    } else if (pkey.includes('secretKey')) {
+      item['label'] = 'Secret Key'
     }
-    item["pkey"] = pkey.split(".")[1];
-    let pval = item.pval;
-    state.form[item["pkey"]] = pval || state.form[item["pkey"]];
-    return item;
-  });
-  dialogVisible.value = true;
-};
+    item['pkey'] = pkey.split('.')[1]
+    let pval = item.pval
+    state.form[item['pkey']] = pval || state.form[item['pkey']]
+    return item
+  })
+  dialogVisible.value = true
+}
 
 const resetFormData = () => {
   state.form = {
-    enable: "",
-    secretKey: "",
-    clockSkew: "300"
-  };
-};
+    enable: '',
+    secretKey: '',
+    clockSkew: '300'
+  }
+}
 
 const enableChange = (val: string) => {
   if (val === 'true' && !state.form.secretKey) {
@@ -140,18 +142,18 @@ const enableChange = (val: string) => {
   }
 }
 const refreshSecret = (showMsg: boolean) => {
-  request.post({ url: "/perSetting/hmac/refresh" }).then((res) => {
+  request.post({ url: '/perSetting/hmac/refresh' }).then(res => {
     if (!res.msg) {
-      state.form.secretKey = res.data;
+      state.form.secretKey = res.data
       if (showMsg) {
-        ElMessage.success(t("common.refresh_success"))
+        ElMessage.success(t('common.refresh_success'))
       }
     }
   })
 }
 defineExpose({
-  edit,
-});
+  edit
+})
 </script>
 
 <template>
@@ -188,10 +190,12 @@ defineExpose({
               <el-icon v-if="item.pkey === 'clockSkew'">
                 <Icon name="dv-info"><dvInfo class="svg-icon" /></Icon>
               </el-icon>
-                
+
               <el-button v-else text @click="refreshSecret(true)">
                 <template #icon>
-                  <Icon name="icon_refresh_outlined"><icon_refresh_outlined class="svg-icon" /></Icon>
+                  <Icon name="icon_refresh_outlined"
+                    ><icon_refresh_outlined class="svg-icon"
+                  /></Icon>
                 </template>
               </el-button>
             </el-tooltip>
@@ -205,13 +209,13 @@ defineExpose({
           v-model="state.form[item.pkey]"
           @change="enableChange"
         />
-        
+
         <el-input
           v-else-if="item.pkey === 'secretKey'"
           v-model="state.form[item.pkey]"
           type="password"
           show-password
-          :placeholder="t('common.please_input')"
+          :placeholder="t('common.please_input') + t('common.empty') + t(item.label)"
         />
 
         <el-input-number
@@ -230,11 +234,9 @@ defineExpose({
     </el-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button secondary @click="resetForm(hmacForm)">{{
-          t("common.cancel")
-        }}</el-button>
+        <el-button secondary @click="resetForm(hmacForm)">{{ t('common.cancel') }}</el-button>
         <el-button type="primary" @click="submitForm(hmacForm)">
-          {{ t("commons.save") }}
+          {{ t('commons.save') }}
         </el-button>
       </span>
     </template>

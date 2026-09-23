@@ -1,6 +1,7 @@
 package io.dataease.api.chart;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import io.dataease.api.chart.request.ChartCalcFieldValidateRequest;
 import io.dataease.api.chart.request.ChartExcelRequest;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
@@ -26,6 +27,10 @@ public interface ChartDataApi {
     @Operation(summary = "获取图表数据")
     @PostMapping("getData")
     ChartViewDTO getData(@RequestBody ChartViewDTO chartViewDTO) throws Exception;
+
+    @Operation(summary = "校验图表计算字段")
+    @PostMapping("validateCalcField")
+    void validateCalcField(@RequestBody ChartCalcFieldValidateRequest request) throws Exception;
 
     @Operation(summary = "导出数据")
     @PostMapping("/innerExportDetails")

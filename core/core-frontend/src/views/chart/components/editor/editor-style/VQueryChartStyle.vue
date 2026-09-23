@@ -426,6 +426,7 @@ const onPlaceholderChange = () => {
                 <el-input-number
                   v-model="chart.customStyle.component.queryConditionSpacing"
                   :min="0"
+                  :max="600"
                   :effect="themes"
                   controls-position="right"
                 />
@@ -439,6 +440,7 @@ const onPlaceholderChange = () => {
                 <el-input-number
                   v-model="chart.customStyle.component.queryConditionHeight"
                   :min="32"
+                  :max="100"
                   :effect="themes"
                   controls-position="right"
                 />

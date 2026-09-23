@@ -12,7 +12,7 @@ import {
   randomString,
   setUpGroupSeriesColor
 } from '@/views/chart/components/js/util'
-import { cloneDeep, defaultsDeep, isEmpty, merge } from 'lodash-es'
+import { cloneDeep, defaultsDeep, escape, merge } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import {
   configLineConditionDataColor,
@@ -23,6 +23,7 @@ import {
   getLineConditionLineYMarks,
   getLineTooltipSameDimensionItems,
   bindLineLegendState,
+  filterBreakLinePointMark,
   LINE_AXIS_TYPE,
   LINE_CONDITION_VISIBLE_DOMAIN_KEY,
   LINE_EDITOR_PROPERTY,
@@ -33,6 +34,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
 import { DEFAULT_YAXIS_STYLE } from '@/views/chart/components/editor/util/chart'
 import {
+  ASSIST_LINE_STYLE,
   configDimensionSlider,
   getG2Renderer,
   getTooltipCrosshairsStyle,
@@ -44,8 +46,7 @@ import { extremumEvt, addExtremumText } from '@/views/chart/components/js/extrem
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 import {
   createTooltipWrapper,
-  getStackTooltipGroupName,
-  renderGroupedTooltipItems,
+  getFieldDisplayName,
   tooltipCss,
   tooltipMaxHeight
 } from '../bar/barUtil'
@@ -427,10 +428,7 @@ export class Line extends G2ChartView {
           title: xAxis.nameShow === false ? false : xAxis.name,
           titleFontSize: xAxis.fontSize,
           titleFill: xAxis.color,
-          line: xAxis.axisLine.show,
-          lineStroke: xAxis.axisLine.lineStyle.color,
-          lineStrokeOpacity: 1,
-          lineLineWidth: xAxis.axisLine.lineStyle.width,
+          ...this.getAxisLineStyle(chart, xAxis),
           lineLineDash,
           label: xAxis.axisLabel.show,
           labelFill: xAxis.axisLabel.color,
@@ -481,10 +479,7 @@ export class Line extends G2ChartView {
           dataeaseAxisTitleSafeMargin: true,
           titleFontSize: yAxis.fontSize,
           titleFill: yAxis.color,
-          line: yAxis.axisLine.show,
-          lineStroke: yAxis.axisLine.lineStyle.color,
-          lineStrokeOpacity: 1,
-          lineLineWidth: yAxis.axisLine.lineStyle.width,
+          ...this.getAxisLineStyle(chart, yAxis),
           lineLineDash,
           label: yAxis.axisLabel.show,
           labelFill: yAxis.axisLabel.color,
@@ -530,6 +525,8 @@ export class Line extends G2ChartView {
       if (result.scale?.y) {
         result.scale.y.nice = false
       }
+      const [lineMark, pointMark] = result.children
+      this.configManualYAxisLineRange(yAxis, result, lineMark, pointMark)
       return result
     }
     return defaultsDeep(options, axisOption)
@@ -681,7 +678,7 @@ export class Line extends G2ChartView {
         style: {
           stroke: d => d.color,
           lineDash: d => (d.lineType === 'solid' ? [] : d.lineType === 'dashed' ? [10, 8] : [1, 2]),
-          opacity: 1
+          ...ASSIST_LINE_STYLE
         },
         labels: [
           {
@@ -714,13 +711,19 @@ export class Line extends G2ChartView {
       defaultsDeep(lineMark, { tooltip: false })
       return options
     }
-    const formatterMap = tooltipAttr.seriesTooltipFormatter
-      ?.filter(i => i.show)
+    const formatterMap = (tooltipAttr.seriesTooltipFormatter || [])
+      .filter(i => i.show)
       .reduce((pre, next) => {
         pre[next.id] = next
         return pre
       }, {}) as Record<string, SeriesFormatter>
     const yAxis = chart.yAxis
+    const hasSubCategory = !!chart.xAxisExt?.length
+    const renderItem = (name: string, value: string, color: string) => {
+      return TOOLTIP_ITEM_TPL.replace('{marker}', () => color)
+        .replace('{label}', () => escape(name))
+        .replace('{value}', () => escape(value))
+    }
     const tooltipOptions: G2Spec = {
       tooltip: d => d,
       interaction: {
@@ -744,43 +747,59 @@ export class Line extends G2ChartView {
               originalItems,
               context.legendState?.visibleSeries
             )
-            let tooltipItems = fullItems
-            if (tooltipAttr.seriesTooltipFormatter?.length) {
-              tooltipItems = fullItems.filter(item => formatterMap[item.quotaList[0].id])
-            }
-            const result = []
-            const head = originalItems[0]
-            sortTooltipItemsByYAxis(chart, tooltipItems).forEach(item => {
-              if (item.value === null || item.value === undefined) {
-                return
+            const result: string[] = []
+            const dynamicItems: string[] = []
+            const dynamicFieldIds = new Set<string>()
+            sortTooltipItemsByYAxis(chart, fullItems).forEach(item => {
+              const metricItems: string[] = []
+              const fieldId = item.quotaList?.[0]?.id
+              const showMetric =
+                !tooltipAttr.seriesTooltipFormatter?.length || !!formatterMap[fieldId]
+              if (showMetric && item.value !== null && item.value !== undefined) {
+                const formatter =
+                  formatterMap[fieldId] ?? yAxis.find(axis => axis.id === fieldId) ?? yAxis[0]
+                const value = valueFormatter(item.value, formatter.formatterCfg)
+                const color = hasSubCategory ? 'transparent' : item.color
+                metricItems.push(renderItem(getFieldDisplayName(formatter), value, color))
               }
-              const formatter = formatterMap[item.quotaList[0].id] ?? yAxis[0]
-              const value = valueFormatter(item.value, formatter.formatterCfg)
-              result.push({ ...item, name: item.category, value })
+
+              // 动态指标属于当前子类别，不受主指标显示开关或空值影响。
+              item.dynamicTooltipValue?.forEach(dynamicItem => {
+                const formatter = formatterMap[dynamicItem.fieldId]
+                if (!formatter) {
+                  return
+                }
+                // 无子类别时，多指标数据重复携带同一份动态值，只在末尾展示一次。
+                if (!hasSubCategory && dynamicFieldIds.has(dynamicItem.fieldId)) {
+                  return
+                }
+                dynamicFieldIds.add(dynamicItem.fieldId)
+                let value = ''
+                if (dynamicItem.value !== null && dynamicItem.value !== undefined) {
+                  value = valueFormatter(parseFloat(dynamicItem.value), formatter.formatterCfg)
+                }
+                const color = hasSubCategory ? 'transparent' : 'grey'
+                const html = renderItem(getFieldDisplayName(formatter), value, color)
+                if (hasSubCategory) {
+                  metricItems.push(html)
+                } else {
+                  dynamicItems.push(html)
+                }
+              })
+
+              if (hasSubCategory && metricItems.length) {
+                // 子维度值作为带系列色的标题，下面缩进展示主指标及动态指标。
+                const groupTitle = renderItem(item.category, '', item.color)
+                result.push(`${groupTitle}<li style="list-style-type: none; padding-left: 12px;">
+                  <ul style="margin: 0; padding: 0; list-style-type: none;">${metricItems.join(
+                    ''
+                  )}</ul>
+                </li>`)
+              } else {
+                result.push(...metricItems)
+              }
             })
-            head.dynamicTooltipValue?.forEach(item => {
-              const formatter = formatterMap[item.fieldId]
-              if (formatter) {
-                const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
-                const name = isEmpty(formatter.chartShowName)
-                  ? formatter.name
-                  : formatter.chartShowName
-                result.push({ color: 'grey', name, value })
-              }
-            })
-            // tooltip 项按维度槽位分组，帮助区分多维度明细
-            const itemsHtml = renderGroupedTooltipItems(
-              result,
-              item => getStackTooltipGroupName(chart, item),
-              item => {
-                const marker = item.color
-                const label = item.name
-                const value = item.value
-                return TOOLTIP_ITEM_TPL.replace('{marker}', marker)
-                  .replace('{label}', label)
-                  .replace('{value}', value)
-              }
-            )
+            const itemsHtml = [...result, ...dynamicItems].join('')
             const listHtml = `<ul class="g2-tooltip-list" style="${tooltipMaxHeight(
               chart
             )}margin: 0px; list-style-type: none; padding: 0px;">${itemsHtml}</ul>`
@@ -825,7 +844,7 @@ export class Line extends G2ChartView {
   protected configEmptyDataStrategy(chart: Chart, options: G2Spec): G2Spec {
     const { functionCfg } = parseJson(chart.senior)
     const { emptyDataStrategy } = functionCfg
-    const [lineMark] = options.children
+    const [lineMark, pointMark] = options.children
     const data = options.data.value
     const multiDimension = chart.yAxis?.length > 1 || chart.xAxisExt?.length > 0
     switch (emptyDataStrategy) {
@@ -834,6 +853,7 @@ export class Line extends G2ChartView {
           handleBreakLineMultiDimension(data)
         }
         merge(lineMark, { style: { connect: false } })
+        filterBreakLinePointMark(pointMark)
         break
       }
       case 'ignoreData': {

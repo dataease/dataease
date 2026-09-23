@@ -507,7 +507,7 @@ const fontSizeList = computed(() => {
 const styleOptionKeyArrayPre = [
   {
     value: 'fontFamily',
-    label: t('visualization.font_family'),
+    label: t('chart.font_family'),
     customOption: fontFamilyList,
     width: '188px',
     icon: dvStyleFontFamily

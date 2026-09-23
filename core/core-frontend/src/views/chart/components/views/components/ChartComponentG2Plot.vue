@@ -1,5 +1,10 @@
 <script lang="ts" setup>
 import {
+  applyG2TiledLegend,
+  installG2TiledLegendStateAdapter,
+  replayG2TiledLegendSelection
+} from '@/views/chart/components/js/panel/types/impl/g2-legend-tile'
+import {
   computed,
   nextTick,
   onBeforeUnmount,
@@ -18,7 +23,7 @@ import { useAppStoreWithOut } from '@/store/modules/app'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import ViewTrackBar from '@/components/visualization/ViewTrackBar.vue'
 import { storeToRefs } from 'pinia'
-import { parseJson } from '@/views/chart/components/js/util'
+import { getColorFormAlphaColor, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
 import { defaultsDeep, cloneDeep, concat } from 'lodash-es'
 import ChartError from '@/views/chart/components/views/components/ChartError.vue'
 import { BASE_VIEW_CONFIG } from '../../editor/util/chart'
@@ -32,7 +37,7 @@ import { ExportImage } from '@antv/l7'
 import {
   configAxisTitleOverflowTooltip,
   configEmptyDataStyle,
-  installG2SliderTouchAdapter
+  installG2SliderAdapter
 } from '@/views/chart/components/js/panel/common/common_antv'
 import { installG2SideLegendPaginationAdapter } from '@/views/chart/components/js/panel/types/impl/g2-legend-pagination'
 import { ElMessage } from 'element-plus-secondary'
@@ -110,13 +115,15 @@ const g2TypeStack = [
   'bar-stack-horizontal',
   'percentage-bar-stack-horizontal'
 ]
-const g2TypeGroup = ['bar-group']
+const g2TypeGroup = ['bar-group', 'box-plot']
 
 const { view, showPosition, scale, terminal, suffixId } = toRefs(props)
 
 const isError = ref(false)
 const errMsg = ref('')
 const linkageActiveHistory = ref(false)
+// 箱线图的生效联动独立于最近点击，下钻和打开菜单不能覆盖已提交的联动条件
+const boxPlotLinkageData = shallowRef(null)
 // G2 重绘后只用这些原始字段回放选中，避免旧 datum 的对象引用参与匹配
 const LINKAGE_REPLAY_FIELDS = ['field', 'name', 'category', 'group', 'value', 'x', 'y', 'path']
 
@@ -146,13 +153,16 @@ const viewTrack = ref(null)
 const chartStroke = computed(() => {
   const customAttr = parseJson(view.value.customAttr)
   // 联动选中态优先使用主题转换后的反色
-  return (
+  const stroke =
     customAttr?.basicStyle?.themeContrastColor ??
     customAttr?.label?.color ??
     (!isDashboard() || dvMainStore.canvasStyleData?.dashboard?.themeColor === 'dark'
       ? '#fff'
       : '#000')
-  )
+  // 箱线图联动回放也使用基础不透明度，避免选中后覆盖为不透明描边
+  return view.value.type === 'box-plot'
+    ? hexColorToRGBA(getColorFormAlphaColor(stroke), customAttr?.basicStyle?.alpha ?? 100)
+    : stroke
 })
 const LINKAGE_STYLE_CACHE = '__deLinkageStyleCache__'
 const LINKAGE_STYLE_KEYS = ['opacity', 'stroke', 'lineWidth']
@@ -175,6 +185,7 @@ const LINKAGE_IGNORE_CLASS_REG = /crosshair|tooltip/
 
 const clearLinkage = () => {
   linkageActiveHistory.value = false
+  boxPlotLinkageData.value = null
   try {
     resetLinkageElementState()
     myChart?.emit('element:unselect', { nativeEvent: false })
@@ -202,7 +213,12 @@ const linkageActive = () => {
     if (!replayData) {
       return
     }
-    applyLinkageElementState()
+    if (view.value.type === 'box-plot') {
+      // 箱线图先恢复原样式，避免 G2 将联动淡化值缓存为取消选中后的原始值
+      resetLinkageElementState()
+    } else {
+      applyLinkageElementState()
+    }
     // elementSelect 单选会切换已选元素；回放前先清空，避免重复选中时被反向取消
     myChart?.emit('element:unselect', { nativeEvent: false })
     myChart?.emit('element:select', {
@@ -219,7 +235,7 @@ const linkageActive = () => {
 }
 // 只收集 primitive 字段，G2 selectElementByData 使用严格相等匹配
 const getLinkageReplayData = () => {
-  const data = state.pointParam?.data
+  const data = view.value.type === 'box-plot' ? boxPlotLinkageData.value : state.pointParam?.data
   if (!data) {
     return null
   }
@@ -311,6 +327,15 @@ const applyElementStyle = (element, style) => {
   })
 }
 const getLinkageElementStyle = (element, selected) => {
+  if (view.value.type === 'box-plot') {
+    // 箱体和异常点保留基础配色的 alpha，仅用额外透明度区分联动状态
+    if (!selected) {
+      return { opacity: 0.65 }
+    }
+    if (element?.markType === 'box') {
+      return { ...LINKAGE_SELECTED_STYLE.value, opacity: 1 }
+    }
+  }
   if (view.value.type === 'sankey') {
     // 联动触发后直接设置已渲染 polygon 的真实属性，不使用 Sankey spec 的 link 前缀
     return selected
@@ -365,7 +390,8 @@ const resetLinkageElementState = () => {
 const resetLinkageContentOpacity = () => {
   let changed = false
   getG2Elements().forEach(element => {
-    if (!isLinkageDataElement(element) || !isLinkageOpacityElement(element)) {
+    const isBoxPlotBox = view.value.type === 'box-plot' && element?.markType === 'box'
+    if (!isLinkageDataElement(element) || (!isLinkageOpacityElement(element) && !isBoxPlotBox)) {
       return
     }
     eachElementShape(element, shape => {
@@ -397,6 +423,21 @@ const applyLinkageElementState = (flush = false) => {
   flush && flushG2Canvas()
 }
 const checkSelected = param => {
+  if (view.value.type === 'box-plot') {
+    // 箱线图按已映射维度的原始值匹配，空值和 0 不转换成展示占位符
+    const dimensions =
+      boxPlotLinkageData.value?.dimensionList?.filter(
+        item => nowPanelTrackInfo.value[`${view.value.id}#${String(item.id)}`]?.length
+      ) ?? []
+    return (
+      dimensions.length > 0 &&
+      dimensions.every(selected =>
+        param?.dimensionList?.some(
+          item => String(item.id) === String(selected.id) && item.value === selected.value
+        )
+      )
+    )
+  }
   // 获取当前视图的所有联动字段ID
   const mappingFieldIds = Array.from(
     new Set(
@@ -578,13 +619,16 @@ const renderChart = async (view, callback?) => {
 }
 let myChart = null
 let g2Timer: number
-let g2SliderTouchCleanup: (() => void) | undefined
+let g2SliderCleanup: (() => void) | undefined
+let g2TiledLegendCleanup: (() => void) | undefined
 let g2LegendPaginationCleanup: (() => void) | undefined
-const clearG2SliderTouchAdapter = () => {
-  g2SliderTouchCleanup?.()
-  g2SliderTouchCleanup = undefined
+const clearG2SliderAdapter = () => {
+  g2SliderCleanup?.()
+  g2SliderCleanup = undefined
 }
 const clearG2LegendPaginationAdapter = () => {
+  g2TiledLegendCleanup?.()
+  g2TiledLegendCleanup = undefined
   g2LegendPaginationCleanup?.()
   g2LegendPaginationCleanup = undefined
 }
@@ -632,7 +676,7 @@ const renderG2 = async (chart, chartView: G2ChartView<any, any>) => {
       configEmptyDataStyle([1], containerId)
       // G2 重绘前先停掉 tooltip 轮播，避免旧实例残留高亮背景
       G2TooltipCarousel.destroyByContainer(containerId)
-      clearG2SliderTouchAdapter()
+      clearG2SliderAdapter()
       clearG2LegendPaginationAdapter()
       myChart?.destroy()
       // 仅在移动端配置右侧缩略区域隐藏图表文本
@@ -676,6 +720,22 @@ const renderG2 = async (chart, chartView: G2ChartView<any, any>) => {
       // 在这里统一应用性能策略，可以避免大数据首次进入页面时创建海量标签并执行昂贵动画
       // 优化后的 options 会保留在当前实例中，刷新和容器调整触发 forceFit 时也会直接复用
       chartView.optimizeLargeData(chartInstance)
+      const legendContainer = document.getElementById(containerId)
+      chartInstance.options(
+        applyG2TiledLegend(
+          chartInstance.options(),
+          chart.customStyle?.legend,
+          legendContainer?.clientWidth || 1,
+          legendContainer?.clientHeight || 1,
+          (event, payload) => chartInstance.emit(event, payload),
+          !isDashboard() || dvMainStore.canvasStyleData?.dashboard?.themeColor === 'dark'
+            ? 'dark'
+            : 'light'
+        )
+      )
+      if (chart.customStyle?.legend?.displayMode === 'tile') {
+        g2TiledLegendCleanup = installG2TiledLegendStateAdapter(chartInstance)
+      }
       // 等待 G2 完成包含轴边界校正的最终布局
       await chartInstance?.render()
       installG2SvgCoordinateScaleAdapter(chartInstance)
@@ -683,7 +743,7 @@ const renderG2 = async (chart, chartView: G2ChartView<any, any>) => {
       await chartView.afterRender?.(chartInstance)
       // 异步等待期间若图表已被新实例替换，本轮旧实例不再回放联动状态，避免污染当前画布
       if (chartInstance && chartInstance === myChart) {
-        g2SliderTouchCleanup = installG2SliderTouchAdapter(chartInstance)
+        g2SliderCleanup = installG2SliderAdapter(chartInstance)
         // 侧边图例翻页后重新计算整体占宽，并在 Plot 重排完成后恢复联动选中态
         g2LegendPaginationCleanup = installG2SideLegendPaginationAdapter(chartInstance, {
           afterPageLayout: replayLinkageActive
@@ -719,7 +779,7 @@ const renderL7Plot = async (chart: ChartObj, chartView: L7PlotChartView<any, any
   mapTimer && clearTimeout(mapTimer)
   mapTimer = setTimeout(async () => {
     try {
-      clearG2SliderTouchAdapter()
+      clearG2SliderAdapter()
       clearG2LegendPaginationAdapter()
       myChart?.destroy()
       if (chartContainer.value) {
@@ -797,8 +857,13 @@ const action = param => {
   state.pointParam = param.data
   // 点击
   pointClickTrans()
+  // 保留嵌入点击回调，放大和复用视图沿用禁用交互的规则，避免误报最后一级
+  if (['multiplexing', 'viewDialog'].includes(showPosition.value)) return
   // 下钻 联动 跳转
   state.linkageActiveParam = {
+    ...(view.value.type === 'box-plot'
+      ? { dimensionList: cloneDeep(state.pointParam.data.dimensionList) }
+      : {}),
     category: state.pointParam.data.category ? state.pointParam.data.category : 'NO_DATA',
     name: state.pointParam.data.name ? state.pointParam.data.name : 'NO_DATA',
     group: state.pointParam.data.group ? state.pointParam.data.group : 'NO_DATA'
@@ -879,13 +944,14 @@ const trackClick = trackAction => {
       fieldIds.push(curFiled.id)
     }
     if (curView.type.includes('chart-mix')) {
-      chartData.value?.left?.fields?.forEach(field => {
-        if (!fieldIds.includes(field.id)) {
-          fieldIds.push(field.id)
-        }
-      })
-      chartData.value?.right?.fields?.forEach(field => {
-        if (!fieldIds.includes(field.id)) {
+      const mixFields = [
+        ...(chartData.value?.left?.fields || []),
+        ...(chartData.value?.right?.fields || [])
+      ]
+      // 左右轴子类别不同，只匹配当前点击数据实际包含的维度，避免选中另一侧的跳转配置。
+      mixFields.forEach(field => {
+        const hasDimension = param.data.dimensionList.some(dimension => dimension.id === field.id)
+        if (hasDimension && !fieldIds.includes(field.id)) {
           fieldIds.push(field.id)
         }
       })
@@ -952,11 +1018,18 @@ const trackClick = trackAction => {
     dimensionList: state.pointParam.data.dimensionList,
     quotaList: quotaList
   }
+  if (view.value.type === 'box-plot' && ['linkage', 'linkageAndDrill'].includes(trackAction)) {
+    // 与提交过滤条件使用同一份原始维度，后续点击和下钻参数的修改不影响回放
+    boxPlotLinkageData.value = cloneDeep(state.pointParam.data)
+  }
   switch (trackAction) {
     case 'pointClick':
       emit('onPointClick', clickParams)
       break
     case 'linkageAndDrill':
+      if (view.value.type === 'box-plot') {
+        linkageActivePre()
+      }
       dvMainStore.addViewTrackFilter(linkageParam)
       emit('onChartClick', param)
       break
@@ -1132,7 +1205,8 @@ defineExpose({
 let intersectionObserver
 let resizeObserver
 const TOLERANCE = 0.01
-const RESIZE_MONITOR_CHARTS = ['map', 'bubble-map', 'flow-map', 'heat-map']
+// 热力图的水平端点文字占位依赖容器宽度，resize 时重新生成图例配置
+const RESIZE_MONITOR_CHARTS = ['map', 'bubble-map', 'flow-map', 'heat-map', 't-heatmap', 'gauge']
 let g2ResizeTimer: number
 let chartComponentUnmounted = false
 onMounted(() => {
@@ -1146,7 +1220,7 @@ onMounted(() => {
     if (Math.abs(widthOffsetPercent) < TOLERANCE && Math.abs(heightOffsetPercent) < TOLERANCE) {
       return
     }
-    const isMapLikeChart = RESIZE_MONITOR_CHARTS.includes(view.value.type)
+    const requiresFullRender = RESIZE_MONITOR_CHARTS.includes(view.value.type)
     const isNowVisible = size.inlineSize > 1 && size.blockSize > 1
     // 隐藏态取消待执行的尺寸调整，避免图表按零尺寸自适应
     if (!isNowVisible) {
@@ -1154,7 +1228,7 @@ onMounted(() => {
     }
     const canResizeRender = isNowVisible
     if (myChart && canResizeRender) {
-      if (isMapLikeChart) {
+      if (requiresFullRender) {
         renderChart(curView)
       } else {
         g2ResizeTimer && clearTimeout(g2ResizeTimer)
@@ -1172,9 +1246,24 @@ onMounted(() => {
             }
 
             // forceFit 完成后恢复 G2 联动选中态
+            const legendContainer = document.getElementById(containerId)
+            chartInstance.options(
+              applyG2TiledLegend(
+                chartInstance.options(),
+                parseJson(view.value.customStyle)?.legend,
+                legendContainer?.clientWidth || 1,
+                legendContainer?.clientHeight || 1,
+                (event, payload) => chartInstance.emit(event, payload),
+                !isDashboard() || dvMainStore.canvasStyleData?.dashboard?.themeColor === 'dark'
+                  ? 'dark'
+                  : 'light'
+              )
+            )
             await chartInstance.forceFit()
-
             if (!chartComponentUnmounted && chartInstance === myChart) {
+              replayG2TiledLegendSelection(chartInstance.options(), (event, payload) =>
+                chartInstance.emit(event, payload)
+              )
               replayLinkageActive()
             }
           })
@@ -1213,7 +1302,7 @@ onBeforeUnmount(() => {
     g2ResizeTimer && clearTimeout(g2ResizeTimer)
     G2TooltipCarousel.dequeueResize(containerId)
     G2TooltipCarousel.destroyByContainer(containerId)
-    clearG2SliderTouchAdapter()
+    clearG2SliderAdapter()
     clearG2LegendPaginationAdapter()
     myChart?.destroy()
     resizeObserver?.disconnect()
@@ -1277,7 +1366,10 @@ onBeforeUnmount(() => {
     // 轮播 tooltip 高度由外层约束，同时禁用内部滚动并隐藏滚动条
     :deep([data-tooltip-display-mode='carousel'] .g2-tooltip-list) {
       box-sizing: border-box;
+      // 与轮播外框共用逻辑宽度上限，覆盖模板按缩放后图表宽度设置的限制
+      width: max-content;
       min-width: 0;
+      max-width: max(0px, calc(var(--de-carousel-tooltip-max-width) - 24px)) !important;
       max-height: none !important;
       overflow-y: hidden !important;
       scrollbar-width: none !important;
@@ -1291,6 +1383,9 @@ onBeforeUnmount(() => {
     }
     :deep([data-tooltip-display-mode='carousel'] .g2-tooltip-list-item) {
       box-sizing: border-box;
+      flex-wrap: nowrap;
+      // 每行填满列表，使不同长度的数值共享右边界
+      width: auto;
       min-width: 0;
     }
     :deep([data-tooltip-display-mode='carousel'] .g2-tooltip-list-item-name) {
@@ -1321,6 +1416,59 @@ onBeforeUnmount(() => {
 </style>
 
 <style lang="less">
+// Keep legend scrollbars visible even when the surrounding canvas hides its own scrollbars.
+.dataease-tiled-legend {
+  // Standard non-auto colors override WebKit scrollbar styling on Chromium (including overlay mode).
+  @supports selector(::-webkit-scrollbar) {
+    scrollbar-color: auto !important;
+  }
+  &::-webkit-scrollbar {
+    display: block !important;
+    width: 8px !important;
+    height: 8px !important;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--legend-scroll-thumb);
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+  &::-webkit-scrollbar-corner {
+    background-color: transparent;
+  }
+}
+
+div[id^='G2-TOOLTIP-WRAPPER-'] .g2-tooltip {
+  // 只收紧垂直留白，水平内边距保持 G2 原有值
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+}
+
+// 独立图表可能只设置字号，避免继承固定行高而裁切文字。
+div[id^='G2-TOOLTIP-WRAPPER-'] .g2-tooltip-title,
+div[id^='G2-TOOLTIP-WRAPPER-'] .g2-tooltip-list-item-name-label,
+div[id^='G2-TOOLTIP-WRAPPER-'] .g2-tooltip-list-item-value {
+  line-height: normal !important;
+}
+
+div[id^='G2-TOOLTIP-WRAPPER-'] .g2-tooltip:has(> .g2-tooltip-list:empty) {
+  // 根据最终 DOM 识别空列表，无指标时进一步减少上下留白
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+}
+
+div[id^='G2-TOOLTIP-WRAPPER-'] .g2-tooltip:has(> .g2-tooltip-list:not(:empty)) > .g2-tooltip-title {
+  // 仅在存在指标内容时拉开标题与列表的层次
+  margin-bottom: 8px;
+}
+
+div[id^='G2-TOOLTIP-WRAPPER-'] .g2-tooltip-list-item + .g2-tooltip-list-item,
+div[id^='G2-TOOLTIP-WRAPPER-'] .g2-tooltip-list-group-title + .g2-tooltip-list-item {
+  // 相邻指标及分组标题后的首条指标统一保留间距
+  margin-top: 6px;
+}
+
 div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover']
   .g2-tooltip:not([data-de-tooltip-position-ready='true']) {
   // 仅首次定位禁用位移过渡，稳定后恢复 AntV 的平滑跟随
@@ -1328,11 +1476,11 @@ div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover']
 }
 
 div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover'] {
-  // 悬浮 tooltip 随内容伸缩，长数值优先完整展示并保留移动端边界
+  // 悬浮 tooltip 按真实内容伸缩，长数值优先完整展示并保留移动端边界
   .g2-tooltip {
     box-sizing: border-box;
     width: max-content !important;
-    min-width: min(120px, calc(100vw - 24px)) !important;
+    min-width: 0 !important;
     max-width: min(33.333333vw, calc(100vw - 24px)) !important;
     max-height: min(480px, 60vh) !important;
     overflow-x: hidden !important;
@@ -1345,20 +1493,30 @@ div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover'] {
     // 子列表按真实内容参与 tooltip 的 max-content 计算，不回落到图表内的可用宽度
     width: max-content;
     min-width: 0;
-    max-width: max(0px, calc(var(--de-hover-tooltip-max-width) - 24px)) !important;
+    max-width: max(0px, calc(var(--de-hover-tooltip-max-width, 33.333333vw) - 24px)) !important;
     max-height: none !important;
   }
 
-  // 悬浮 tooltip 优先保证数值完整显示
+  .g2-tooltip-title {
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+  }
+
+  // 指标名称和数值保持单行，超出可用宽度时省略
   .g2-tooltip-list-item {
+    flex-wrap: nowrap;
+    align-items: baseline !important;
     box-sizing: border-box;
-    width: max-content;
+    // 填满列表可用宽度，使各行数值共享右边界，列表仍按内容自适应
+    width: auto;
     min-width: 0;
-    max-width: max(0px, calc(var(--de-hover-tooltip-max-width) - 24px));
+    max-width: max(0px, calc(var(--de-hover-tooltip-max-width, 33.333333vw) - 24px));
   }
 
   .g2-tooltip-list-item-name {
-    // 名称先省略，数值自身超过剩余空间后再省略
+    // 名称容器以文字提供基线，避免首个色点参与行基线计算。
+    align-items: baseline !important;
+    // 名称优先收缩，同时保留色点和可识别的名称片段
     flex: 1 9999 auto !important;
     min-width: calc(12px + 2em) !important;
     max-width: none !important;
@@ -1367,6 +1525,7 @@ div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover'] {
 
   .g2-tooltip-list-item-marker {
     flex: 0 0 auto;
+    align-self: center;
   }
 
   .g2-tooltip-list-item-name-label {
@@ -1374,16 +1533,21 @@ div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover'] {
     overflow: hidden !important;
     white-space: nowrap !important;
     text-overflow: ellipsis !important;
+    text-align: left;
   }
 
   .g2-tooltip-list-item-value {
     flex: 0 1 auto !important;
     min-width: 0 !important;
-    max-width: max(0px, calc(var(--de-hover-tooltip-max-width) - 48px - 2em)) !important;
+    max-width: max(
+      0px,
+      calc(var(--de-hover-tooltip-max-width, 33.333333vw) - 48px - 2em)
+    ) !important;
     margin-left: 12px !important;
     overflow: hidden !important;
     white-space: nowrap !important;
     text-overflow: ellipsis !important;
+    text-align: right;
   }
 }
 
@@ -1396,10 +1560,7 @@ div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover'] {
 
 @supports (width: 100dvw) {
   div[id^='G2-TOOLTIP-WRAPPER-'][data-tooltip-display-mode='hover'] .g2-tooltip {
-    min-width: min(
-      120px,
-      calc(100dvw - 24px - env(safe-area-inset-left) - env(safe-area-inset-right))
-    ) !important;
+    min-width: 0 !important;
     max-width: min(
       33.333333dvw,
       calc(100dvw - 24px - env(safe-area-inset-left) - env(safe-area-inset-right))

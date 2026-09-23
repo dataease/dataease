@@ -196,7 +196,6 @@ export function createUniverInstance(
   initialData?: Partial<IWorkbookData>,
   options: SpreadsheetRuntimeOptions = {}
 ): UniverInstance {
-  console.log('[Univer] Creating instance...', { locale, hasData: !!initialData })
   const mode = options.mode ?? 'edit'
 
   // Map locale string to Univer LocaleType
@@ -282,7 +281,6 @@ export function createUniverInstance(
 
   // Create unit with initial data or default
   const unitData = initialData || createDefaultWorkbookData()
-  console.log('[Univer] Creating unit with data:', unitData)
   univer.createUnit(UniverInstanceType.UNIVER_SHEET, unitData)
   const univerApi = FUniver.newAPI(univer)
   let disposed = false
@@ -349,7 +347,6 @@ export function parseSheetData(data: string | undefined): IWorkbookData | undefi
   try {
     return JSON.parse(data) as IWorkbookData
   } catch (e) {
-    console.error('Failed to parse sheet data:', e)
     return undefined
   }
 }

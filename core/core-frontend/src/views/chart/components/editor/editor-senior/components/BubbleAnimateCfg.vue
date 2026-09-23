@@ -116,6 +116,7 @@ init()
                 :effect="themes"
                 :min="0.1"
                 :max="5"
+                :step="0.1"
                 v-model="state.bubbleAnimateForm.speed"
                 @change="onBubbleAnimateChange()"
               />
@@ -149,6 +150,7 @@ init()
                 :effect="themes"
                 :min="0.1"
                 :max="5"
+                :step="0.1"
                 v-model="state.bubbleAnimateForm.rings"
                 @change="onBubbleAnimateChange()"
               />

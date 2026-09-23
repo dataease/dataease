@@ -75,6 +75,14 @@ const supportLegendOrient = computed(() => {
     ?.orient
 })
 
+const supportsTileLegend = computed(() => {
+  const view = chartViewManager.getChartView(props.chart.render, props.chart.type)
+  if (view?.library !== 'g2' || view.legendCapabilities?.type === 'continuous') return false
+  if (view.legendCapabilities?.type === 'dynamic')
+    return props.chart.extColor?.[0]?.groupType === 'd'
+  return true
+})
+
 const fontSizeList = computed(() => {
   const arr = []
   for (let i = 10; i <= 40; i = i + 2) {
@@ -131,7 +139,7 @@ const init = () => {
     }
     const miscStyle = cloneDeep(props.chart.customAttr.misc)
     if (customStyle.legend) {
-      state.legendForm = customStyle.legend
+      state.legendForm = { ...DEFAULT_LEGEND_STYLE, ...customStyle.legend }
       state.legendForm.miscForm = miscStyle
       if (chartType.value === 'map') {
         // 解决存量地图，没有设置mapAutoLegend的情况，设置默认值
@@ -229,7 +237,7 @@ const changeLegendCustomType = (prop?) => {
  */
 const changeLegendNumber = (prop?) => {
   if (!state.legendForm.miscForm.mapLegendNumber) {
-    return
+    state.legendForm.miscForm.mapLegendNumber = DEFAULT_MISC.mapLegendNumber
   }
   calcMapCustomRange()
   prop ? changeMisc(prop) : ''
@@ -583,6 +591,35 @@ onMounted(() => {
       >
         <el-radio :effect="themes" value="horizontal">{{ t('chart.horizontal') }}</el-radio>
         <el-radio :effect="themes" value="vertical">{{ t('chart.vertical') }}</el-radio>
+      </el-radio-group>
+    </el-form-item>
+
+    <el-form-item
+      v-if="supportsTileLegend"
+      :label="t('chart.legend_display_mode')"
+      class="form-item"
+      :class="'form-item-' + themes"
+    >
+      <el-radio-group
+        v-model="state.legendForm.displayMode"
+        @change="changeLegendStyle('displayMode')"
+      >
+        <el-radio :effect="themes" value="pagination">{{ t('chart.legend_pagination') }}</el-radio>
+        <el-radio :effect="themes" value="tile">{{ t('chart.legend_tile') }}</el-radio>
+      </el-radio-group>
+    </el-form-item>
+    <el-form-item
+      v-if="supportsTileLegend && state.legendForm.displayMode === 'tile'"
+      :label="t('chart.legend_tile_overflow')"
+      class="form-item"
+      :class="'form-item-' + themes"
+    >
+      <el-radio-group
+        v-model="state.legendForm.tileOverflow"
+        @change="changeLegendStyle('tileOverflow')"
+      >
+        <el-radio :effect="themes" value="scroll">{{ t('chart.legend_scroll') }}</el-radio>
+        <el-radio :effect="themes" value="adaptive">{{ t('chart.legend_adaptive') }}</el-radio>
       </el-radio-group>
     </el-form-item>
 

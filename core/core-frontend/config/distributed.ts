@@ -5,7 +5,6 @@ export default {
   plugins: [
     viteCompression({
       // gzip静态资源压缩配置
-      verbose: true, // 是否在控制台输出压缩结果
       disable: false, // 是否禁用压缩
       threshold: 10240, // 启用压缩的文件大小限制
       algorithm: 'gzip', // 采用的压缩算法
@@ -24,9 +23,9 @@ export default {
         manualChunks: {
           echarts: ['echarts'],
           vue: ['vue', 'vue-router', 'pinia', 'vue-i18n', 'mitt'],
-          lodash: ['lodash-es', 'lodash'],
           library: ['jspdf', '@tinymce/tinymce-vue', 'screenfull'],
           antv: ['@antv/g2', '@antv/l7', '@antv/l7plot', '@antv/s2'],
+          lodash: ['lodash-es'],
           tinymce: ['tinymce'],
           axios: ['axios'],
           'vuedraggable-es': ['vuedraggable']

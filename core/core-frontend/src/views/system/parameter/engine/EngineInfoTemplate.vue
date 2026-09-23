@@ -120,7 +120,7 @@ const getEngine = () => {
         sort: 0
       },
       {
-        pkey: 'datasource.host',
+        pkey: type === 'StarRocks' ? 'FE ' + t('datasource.host') : 'datasource.host',
         pval: configuration?.host,
         type: '',
         sort: 0
@@ -131,6 +131,28 @@ const getEngine = () => {
         type: '',
         sort: 0
       },
+      ...(type === 'StarRocks'
+        ? [
+            {
+              pkey: 'datasource.http_port',
+              pval: configuration?.fePort,
+              type: '',
+              sort: 0
+            },
+            {
+              pkey: 'BE ' + t('datasource.host'),
+              pval: configuration?.beIp,
+              type: '',
+              sort: 0
+            },
+            {
+              pkey: 'datasource.http_port',
+              pval: configuration?.bePort,
+              type: '',
+              sort: 0
+            }
+          ]
+        : []),
       {
         pkey: 'datasource.data_base',
         pval: configuration?.dataBase,

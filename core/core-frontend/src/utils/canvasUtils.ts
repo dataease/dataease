@@ -1,4 +1,4 @@
-import { cloneDeep, forEach } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 import componentList, {
   ACTION_SELECTION,
   BASE_CAROUSEL,
@@ -35,6 +35,7 @@ import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 import { ShorthandMode } from '@/components/visualization/component-background/Types'
 import { formatterItem } from '@/views/chart/components/js/formatter'
+import { changeRefComponentsSizeWithScalePointCircle } from '@/utils/changeComponentsSizeWithScale'
 const dvMainStore = dvMainStoreWithOut()
 const {
   inMobile,
@@ -51,6 +52,164 @@ import { useCache } from '@/hooks/web/useCache'
 import { isDesktop } from '@/utils/ModelUtil'
 const { t } = useI18n()
 const { wsCache } = useCache()
+
+// 与仪表板 Matrix 的列数一致；下面的高度单位为网格行数，不是像素
+const TAB_MOBILE_COLUMNS = 72
+const TAB_MOBILE_INDICATOR_HEIGHT = 8
+const TAB_MOBILE_CHART_HEIGHT = 14
+
+// 四个字段必须完整且为有限正数，旧数据缺失或无效时才生成初始布局
+export const hasMobileGeometry = component =>
+  ['mx', 'my', 'mSizeX', 'mSizeY'].every(
+    key => Number.isFinite(component?.[key]) && component[key] > 0
+  )
+
+// 供移动 Tab 的交互缩放使用，不用这些下限改写已经保存的移动布局
+export const getTabMobileMinSize = component => {
+  if (component?.innerType === 'indicator') {
+    return { sizeX: TAB_MOBILE_COLUMNS / 2, sizeY: TAB_MOBILE_INDICATOR_HEIGHT }
+  }
+  if (component?.component === 'UserView' || component?.isPlugin) {
+    return { sizeX: TAB_MOBILE_COLUMNS / 2, sizeY: TAB_MOBILE_CHART_HEIGHT }
+  }
+  return { sizeX: 1, sizeY: 1 }
+}
+
+/**
+ * 在移动端副本上恢复 Tab 子组件布局：已有 m* 优先，缺失部分按 PC 的 y/x 排序
+ * 指标默认双列，普通图表通栏；只更新运行时坐标，m* 由移动保存链回写
+ */
+export const initTabMobileLayout = tabComponent => {
+  if (tabComponent?.component !== 'DeTabs') return
+  tabComponent.propValue?.forEach(tabItem => {
+    const components = tabItem.componentData || []
+    const unconfigured = components
+      .filter(component => !hasMobileGeometry(component))
+      .sort((left, right) => left.y - right.y || left.x - right.x)
+    // 新组件排在已保存布局之后，不重新排列用户调整过的组件
+    let nextY = components
+      .filter(hasMobileGeometry)
+      .reduce((maxY, component) => Math.max(maxY, component.my + component.mSizeY), 1)
+    let indicatorColumn = 0
+    let indicatorRowHeight = 0
+    unconfigured.forEach(component => {
+      if (component.innerType === 'indicator') {
+        const sizeX = TAB_MOBILE_COLUMNS / 2
+        component.x = indicatorColumn * sizeX + 1
+        component.y = nextY
+        component.sizeX = sizeX
+        // 保留原设计高度；同排指标按最高卡片换行，避免覆盖下一排
+        component.sizeY = Math.max(component.sizeY || 1, TAB_MOBILE_INDICATOR_HEIGHT)
+        indicatorRowHeight = Math.max(indicatorRowHeight, component.sizeY)
+        indicatorColumn++
+        if (indicatorColumn === 2) {
+          indicatorColumn = 0
+          nextY += indicatorRowHeight
+          indicatorRowHeight = 0
+        }
+        return
+      }
+      if (indicatorColumn) {
+        indicatorColumn = 0
+        nextY += indicatorRowHeight
+        indicatorRowHeight = 0
+      }
+      const fullRow = component.component === 'UserView' || component.isPlugin
+      component.x = 1
+      component.y = nextY
+      component.sizeX = fullRow
+        ? TAB_MOBILE_COLUMNS
+        : Math.min(Math.max(component.sizeX || 1, 1), TAB_MOBILE_COLUMNS)
+      component.sizeY = Math.max(component.sizeY || 1, fullRow ? TAB_MOBILE_CHART_HEIGHT : 1)
+      nextY += component.sizeY
+    })
+    // 已配置组件直接恢复自己的移动坐标，不参与上面的默认排版
+    components.filter(hasMobileGeometry).forEach(component => {
+      component.x = component.mx
+      component.y = component.my
+      component.sizeX = component.mSizeX
+      component.sizeY = component.mSizeY
+    })
+  })
+}
+
+/**
+ * v2 将编辑缩放写入组件尺寸，v3 改为实际尺寸配合外层 transform
+ * 用于标记已经使用 v3 实际尺寸模型的数据，避免重复恢复组件尺寸
+ */
+const DATA_V_ACTUAL_SIZE_VERSION = 1
+
+const isValidScale = value => Number.isFinite(Number(value)) && Number(value) > 0
+
+// 已有 tScale 代表用户当前编辑缩放，仅在缺失或非法时从旧 scale 补齐
+const getTransformScale = (value, legacyScale) =>
+  isValidScale(value) ? Number(value) : Number(legacyScale) / 100
+
+/**
+ * TAB 子画布不属于通用尺寸恢复函数的递归范围，只在旧 dataV 适配中单独处理
+ * 这样可以覆盖 TAB 和 Group 嵌套场景，同时不改变 v3 正常缩放、预览和全屏链路
+ */
+const adaptLegacyDataVTabs = (componentDataRef, canvasStyleDataRef, legacyScale) => {
+  componentDataRef?.forEach(component => {
+    if (component.component === 'Group') {
+      adaptLegacyDataVTabs(component.propValue, canvasStyleDataRef, legacyScale)
+    } else if (component.component === 'DeTabs') {
+      component.propValue?.forEach(tabItem => {
+        if (!Array.isArray(tabItem.componentData)) return
+        changeRefComponentsSizeWithScalePointCircle(
+          tabItem.componentData,
+          canvasStyleDataRef,
+          100,
+          100,
+          legacyScale
+        )
+        adaptLegacyDataVTabs(tabItem.componentData, canvasStyleDataRef, legacyScale)
+      })
+    }
+  })
+}
+
+const adaptDataVActualSize = (canvasStyleDataRef, componentDataRef) => {
+  // 已适配或新建的 v3 大屏直接跳过，防止同一份内存数据被重复放大
+  if (Number(canvasStyleDataRef.dataVActualSizeVersion) >= DATA_V_ACTUAL_SIZE_VERSION) return
+
+  const legacyScale = Number(canvasStyleDataRef.scale)
+  // 非法比例无法可靠反推实际尺寸，保留原数据和未适配状态便于后续修复
+  if (!isValidScale(legacyScale)) return
+
+  if (legacyScale !== 100) {
+    const legacyScaleWidth = isValidScale(canvasStyleDataRef.scaleWidth)
+      ? Number(canvasStyleDataRef.scaleWidth)
+      : legacyScale
+    const legacyScaleHeight = isValidScale(canvasStyleDataRef.scaleHeight)
+      ? Number(canvasStyleDataRef.scaleHeight)
+      : legacyScale
+    const transformScale = getTransformScale(canvasStyleDataRef.tScale, legacyScale)
+    const transformScaleWidth = getTransformScale(canvasStyleDataRef.tScaleWidth, legacyScaleWidth)
+    const transformScaleHeight = getTransformScale(
+      canvasStyleDataRef.tScaleHeight,
+      legacyScaleHeight
+    )
+
+    // 旧大屏把编辑缩放写入组件尺寸，按需恢复实际尺寸并保留当前 transform 缩放
+    changeRefComponentsSizeWithScalePointCircle(
+      componentDataRef,
+      canvasStyleDataRef,
+      100,
+      100,
+      legacyScale
+    )
+    adaptLegacyDataVTabs(componentDataRef, canvasStyleDataRef, legacyScale)
+    canvasStyleDataRef.scale = 100
+    canvasStyleDataRef.scaleWidth = 100
+    canvasStyleDataRef.scaleHeight = 100
+    canvasStyleDataRef.tScale = transformScale
+    canvasStyleDataRef.tScaleWidth = transformScaleWidth
+    canvasStyleDataRef.tScaleHeight = transformScaleHeight
+  }
+
+  canvasStyleDataRef.dataVActualSizeVersion = DATA_V_ACTUAL_SIZE_VERSION
+}
 
 const getNewInnerPadding = (commonGap = 0) => {
   return {
@@ -307,6 +466,8 @@ export function historyAdaptor(
   }
   canvasStyleResult['dvType'] = attachInfo.dvType
   if (attachInfo.dvType === 'dataV') {
+    // 每次只适配当前加载的大屏，不在升级阶段批量遍历数据库
+    adaptDataVActualSize(canvasStyleResult, canvasDataResult)
     // 首次赋值
     canvasStyleResult['tScale'] = canvasStyleResult['tScale'] || canvasStyleResult.scale / 100
     canvasStyleResult['tScaleWidth'] =
@@ -612,6 +773,8 @@ export function initCanvasDataMobile(dvId, params, callBack) {
                 tabComponent.mCommonBackground || tabComponent.commonBackground
             })
           })
+          // 实际移动预览与移动设计器共用布局恢复规则
+          initTabMobileLayout(ele)
         }
       })
       if (!!canvasViewInfoPreview) {

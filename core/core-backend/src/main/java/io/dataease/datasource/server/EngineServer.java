@@ -1,8 +1,10 @@
 package io.dataease.datasource.server;
+import io.dataease.permission.util.V3UserUtil;
 import io.dataease.utils.*;
 
 import io.dataease.api.ds.EngineApi;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
+import io.dataease.exception.DEException;
 import io.dataease.datasource.dao.auto.repository.CoreDeEngineRepository;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.provider.CalciteProvider;
@@ -43,6 +45,9 @@ public class EngineServer implements EngineApi {
             case "mysql":
                 datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), Mysql.class)).toString());
                 break;
+            case "StarRocks":
+                datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), StarRocks.class)).toString());
+                break;
             case "h2":
                 datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), H2.class)).toString());
                 break;
@@ -51,6 +56,7 @@ public class EngineServer implements EngineApi {
                 break;
             case "pg":
             case "kingbase":
+            case "gaussdb":
                 datasourceDTO.setConfiguration(JsonUtil.toJSONString(JsonUtil.parseObject(datasourceDTO.getConfiguration(), Pg.class)).toString());
                 break;
             case "sqlServer":
@@ -66,6 +72,13 @@ public class EngineServer implements EngineApi {
         if (StringUtils.isNotEmpty(datasourceDTO.getConfiguration())) {
             datasourceDTO.setConfiguration(new String(Base64.getDecoder().decode(datasourceDTO.getConfiguration())));
         }
+        if (StringUtils.equalsIgnoreCase(datasourceDTO.getType(), "h2")
+                && StringUtils.isNotBlank(datasourceDTO.getConfiguration())) {
+            H2 h2 = JsonUtil.parseObject(datasourceDTO.getConfiguration(), H2.class);
+            if (h2 != null && StringUtils.isNotBlank(h2.getJdbcUrl())) {
+                DEException.throwException("H2 engine does not support custom jdbcUrl");
+            }
+        }
         CoreDeEngine coreDeEngine = new CoreDeEngine();
         BeanUtils.copyBean(coreDeEngine, datasourceDTO);
         if (coreDeEngine.getId() == null) {
@@ -76,11 +89,14 @@ public class EngineServer implements EngineApi {
             coreDeEngineRepository.saveAndFlush(coreDeEngine);
         }
         commonThreadPool.addTask(() -> {
+            CoreDeEngine ds = coreDeEngineRepository.findById(coreDeEngine.getId()).orElse(null);
             try {
                 calciteProvider.update(datasourceDTO);
             } catch (Exception e) {
-                CoreDeEngine ds = coreDeEngineRepository.findById(coreDeEngine.getId()).orElse(null);
+                LogUtil.error("Failed to init engine: " + e.getMessage());
                 ds.setStatus("Error");
+            } finally {
+                ds.setStatus("success");
                 coreDeEngineRepository.saveAndFlush(ds);
             }
         });
@@ -91,12 +107,12 @@ public class EngineServer implements EngineApi {
         CoreDeEngine coreDeEngine = new CoreDeEngine();
         BeanUtils.copyBean(coreDeEngine, datasourceDTO);
         coreDeEngine.setConfiguration(new String(Base64.getDecoder().decode(coreDeEngine.getConfiguration())));
-        engineManage.validate(coreDeEngine);
+        engineManage.validate(coreDeEngine, false);
     }
 
     @Override
     public void validateById(Long id) throws Exception {
-        engineManage.validate(coreDeEngineRepository.findById(id).orElse(null));
+        engineManage.validate(coreDeEngineRepository.findById(id).orElse(null), true);
     }
 
     @Override

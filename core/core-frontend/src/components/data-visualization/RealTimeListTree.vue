@@ -21,6 +21,7 @@ import barGroupStackOrigin from '@/assets/svg/bar-group-stack-origin.svg'
 import barHorizontalOrigin from '@/assets/svg/bar-horizontal-origin.svg'
 import barOrigin from '@/assets/svg/bar-origin.svg'
 import barRangeOrigin from '@/assets/svg/bar-range-origin.svg'
+import boxPlotOrigin from '@/assets/svg/box-plot-origin.svg'
 import barStackHorizontalOrigin from '@/assets/svg/bar-stack-horizontal-origin.svg'
 import barStackOrigin from '@/assets/svg/bar-stack-origin.svg'
 import bidirectionalBarOrigin from '@/assets/svg/bidirectional-bar-origin.svg'
@@ -306,6 +307,7 @@ const iconMap = {
   'bar-horizontal-origin': barHorizontalOrigin,
   'bar-origin': barOrigin,
   'bar-range-origin': barRangeOrigin,
+  'box-plot-origin': boxPlotOrigin,
   'bar-stack-horizontal-origin': barStackHorizontalOrigin,
   'bar-stack-origin': barStackOrigin,
   'bidirectional-bar-origin': bidirectionalBarOrigin,

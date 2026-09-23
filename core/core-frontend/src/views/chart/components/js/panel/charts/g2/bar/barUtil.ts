@@ -6,8 +6,37 @@ import {
   parseJson
 } from '@/views/chart/components/js/util'
 import { isMobile } from '@/utils/utils'
-import { Chart as G2Chart } from '@antv/g2'
+import { Chart as G2Chart, register } from '@antv/g2'
 import { defaultsDeep } from 'lodash-es'
+
+const G2_TOOLTIP_DEFAULT_FONT_SIZE = 12
+
+export const getColumnSeriesPadding = (count: number, columnPadding: number) =>
+  count > 1 ? Math.min(0.1, columnPadding) : 0
+
+// 图例筛选会对 transform.type 调用 startsWith，必须使用注册后的字符串名称
+register('transform.deColumnSeriesPadding', ({ columnPadding }) => (indices, mark) => {
+  // 在分组、堆叠变换后读取系列域，保留原生 band 的域推导和图例交互
+  const series = mark.encode.series?.value
+  if (!series) return [indices, mark]
+  const domain = mark.scale?.series?.domain ?? [...new Set(indices.map(i => series[i]))]
+  const padding = getColumnSeriesPadding(domain.length, columnPadding)
+  return [
+    indices,
+    {
+      ...mark,
+      scale: {
+        ...mark.scale,
+        series: { ...mark.scale?.series, padding, paddingInner: padding, paddingOuter: padding }
+      }
+    }
+  ]
+})
+
+export const getColumnSeriesPaddingTransform = (columnPadding: number) => ({
+  type: 'deColumnSeriesPadding',
+  columnPadding
+})
 
 /**
  * 运行时形态与 G2Spec 完全一致 ，G2 以普通对象消费
@@ -380,11 +409,57 @@ export function getTooltipDisplayMode(container: string): TooltipDisplayMode {
     : 'hover'
 }
 
+type ActiveHoverTooltip = {
+  chart: G2Chart
+  wrapper: HTMLElement
+}
+
+let activeHoverTooltip: ActiveHoverTooltip | undefined
+
+function releaseActiveHoverTooltip(chart?: G2Chart, wrapper?: HTMLElement) {
+  if (
+    !activeHoverTooltip ||
+    (chart && activeHoverTooltip.chart !== chart) ||
+    (wrapper && activeHoverTooltip.wrapper !== wrapper)
+  ) {
+    return
+  }
+  activeHoverTooltip = undefined
+  document.removeEventListener('pointercancel', hideActiveHoverTooltip, true)
+}
+
+function hideActiveHoverTooltip() {
+  const current = activeHoverTooltip
+  if (!current) return
+
+  releaseActiveHoverTooltip(current.chart, current.wrapper)
+  if (current.wrapper.dataset.tooltipDisplayMode !== 'carousel') {
+    current.chart.emit('tooltip:hide')
+  }
+}
+
+function activateHoverTooltip(chart: G2Chart, wrapper: HTMLElement) {
+  if (
+    activeHoverTooltip &&
+    (activeHoverTooltip.chart !== chart || activeHoverTooltip.wrapper !== wrapper)
+  ) {
+    // 跨图表拖动可能丢失旧实例的 pointerleave，统一关闭上一悬浮 Tooltip
+    hideActiveHoverTooltip()
+  }
+  activeHoverTooltip = { chart, wrapper }
+  // G2 5.4.8 未监听 pointercancel，避免取消手势后保留 Tooltip
+  document.addEventListener('pointercancel', hideActiveHoverTooltip, true)
+}
+
 export function switchTooltipWrapperHost(chart: Chart, mode: TooltipDisplayMode) {
   const wrapper = getTooltipWrapper(chart.container)
   const chartContainer = document.getElementById(chart.container)
   const host = mode === 'hover' ? document.body : chartContainer
   if (!wrapper || !host) return
+
+  if (mode === 'carousel') {
+    releaseActiveHoverTooltip(undefined, wrapper)
+  }
 
   const shouldResetTooltip =
     wrapper.dataset.tooltipDisplayMode !== mode || wrapper.parentElement !== host
@@ -449,15 +524,19 @@ export function tooltipCss(tooltipAttr: DeepPartial<ChartTooltipAttr>) {
     },
     '.g2-tooltip-title': {
       color: tooltipAttr.color,
-      'font-size': `${tooltipAttr.fontSize}px`
+      'font-size': `${tooltipAttr.fontSize}px`,
+      // 仅使用字体自然行高撑开内容，不改变用户配置字号
+      'line-height': 'normal'
     },
     '.g2-tooltip-list-item-name-label': {
       color: tooltipAttr.color,
-      'font-size': `${tooltipAttr.fontSize}px`
+      'font-size': `${tooltipAttr.fontSize}px`,
+      'line-height': 'normal'
     },
     '.g2-tooltip-list-item-value': {
       color: tooltipAttr.color,
-      'font-size': `${tooltipAttr.fontSize}px`
+      'font-size': `${tooltipAttr.fontSize}px`,
+      'line-height': 'normal'
     }
   }
 }
@@ -722,13 +801,15 @@ function getTooltipViewport() {
   return { left, top, width, height, right: left + width, bottom: top + height }
 }
 
-function getHoverTooltipLogicalMaxWidth(container: string) {
+function getHoverTooltipLogicalMaxWidth(container: string, fontSize = 12) {
   const visualScale = getChartVisualScale(container)
   const { width } = getTooltipViewport()
   const viewportMaxWidth = Math.max(0, width - TOOLTIP_VIEWPORT_GAP * 2)
-  // PC 最大占可视屏幕三分之一，移动端可使用整屏并保留安全间距
+  // 大字号适当放宽，PC 最多占可视屏幕 75%，移动端保留安全间距
   const screenMaxWidth =
-    !!isMobile() || width <= 768 ? viewportMaxWidth : Math.min(width / 3, viewportMaxWidth)
+    !!isMobile() || width <= 768
+      ? viewportMaxWidth
+      : Math.min(width * Math.min(0.75, Math.max(1 / 3, fontSize / 72)), viewportMaxWidth)
   return {
     visualScale,
     maxWidth: screenMaxWidth / visualScale
@@ -804,10 +885,11 @@ function markHoverTooltipPositionReady(
 }
 
 function fitCarouselTooltipInChart(
-  container: string,
+  chart: Chart,
   tooltipWrapper: HTMLElement,
   tooltip: HTMLElement
 ) {
+  const { container } = chart
   const frameState = carouselTooltipFrameState.get(tooltip) || {}
   if (frameState.fitFrame !== undefined) {
     window.cancelAnimationFrame(frameState.fitFrame)
@@ -832,8 +914,16 @@ function fitCarouselTooltipInChart(
       return
     }
 
-    // 轮播维持原有图表内布局，宽度同时受默认上限和图表容器约束
-    const maxWidth = Math.min(G2_TOOLTIP_DEFAULT_MAX_WIDTH, wrapperWidth - CAROUSEL_TOOLTIP_GAP * 2)
+    const tooltipFontSize = Number(parseJson(chart.customAttr)?.tooltip?.fontSize)
+    const fontSizeScale =
+      Number.isFinite(tooltipFontSize) && tooltipFontSize > 0
+        ? Math.max(1, tooltipFontSize / G2_TOOLTIP_DEFAULT_FONT_SIZE)
+        : 1
+    // 轮播按实际字号放大宽度上限，短内容仍由 max-content 决定真实宽度
+    const maxWidth = Math.min(
+      G2_TOOLTIP_DEFAULT_MAX_WIDTH * fontSizeScale,
+      wrapperWidth - CAROUSEL_TOOLTIP_GAP * 2
+    )
     const maxHeight = wrapperHeight - CAROUSEL_TOOLTIP_GAP * 2
     const minWidth = Math.min(G2_TOOLTIP_DEFAULT_MIN_WIDTH, maxWidth)
     tooltipWrapper.style.setProperty('--de-carousel-tooltip-min-width', `${minWidth}px`)
@@ -867,7 +957,9 @@ function fitCarouselTooltipInChart(
 function syncHoverTooltipEllipsisTitles(tooltip: HTMLElement) {
   // 只管理公共模板的错误 title 和本方法生成的 title
   tooltip
-    .querySelectorAll<HTMLElement>('.g2-tooltip-list-item-name-label, .g2-tooltip-list-item-value')
+    .querySelectorAll<HTMLElement>(
+      '.g2-tooltip-list-item-name-label, .g2-tooltip-list-item-value, .box-plot-tooltip-name-label, .box-plot-tooltip-value'
+    )
     .forEach(element => {
       const managed = element.dataset.deEllipsisTitle === 'true'
       const canManage = !element.title || element.title === 'value' || managed
@@ -894,6 +986,9 @@ export function listenerTooltipShow(newChart: G2Chart, chart: Chart) {
     if (!tooltipWrapper) return
 
     const isCarousel = getTooltipDisplayMode(chart.container) === 'carousel'
+    if (isCarousel) {
+      releaseActiveHoverTooltip(newChart, tooltipWrapper)
+    }
     tooltipWrapper.style.zIndex = chart.container.indexOf('viewDialog') > -1 ? '9999' : '2000'
     const allTooltips = tooltipWrapper.querySelectorAll<HTMLElement>('.g2-tooltip')
     if (!allTooltips) return
@@ -914,7 +1009,7 @@ export function listenerTooltipShow(newChart: G2Chart, chart: Chart) {
         tooltip.style.removeProperty('max-height')
         tooltip.style.removeProperty('transform')
         tooltip.style.removeProperty('transform-origin')
-        fitCarouselTooltipInChart(chart.container, tooltipWrapper, tooltip)
+        fitCarouselTooltipInChart(chart, tooltipWrapper, tooltip)
         return
       }
 
@@ -926,12 +1021,20 @@ export function listenerTooltipShow(newChart: G2Chart, chart: Chart) {
       const { x: clientX, y: clientY } = clientPosition
 
       // 悬浮提示挂载在 body，不会继承大屏 transform，需要补齐与轮播一致的视觉缩放
-      const { visualScale, maxWidth } = getHoverTooltipLogicalMaxWidth(chart.container)
-      const minWidth = Math.min(G2_TOOLTIP_DEFAULT_MIN_WIDTH, maxWidth)
+      const { visualScale, maxWidth } = getHoverTooltipLogicalMaxWidth(
+        chart.container,
+        Number(parseJson(chart.customAttr)?.tooltip?.fontSize) || 12
+      )
       // 子项使用同一逻辑上限，避免百分比宽度反向限制 max-content 扩容
       tooltipWrapper.style.setProperty('--de-hover-tooltip-max-width', `${maxWidth}px`)
-      tooltip.style.setProperty('min-width', `${minWidth}px`, 'important')
+      // 悬浮态不保留 G2 默认最小宽度，让短内容按真实宽度收缩
+      tooltip.style.removeProperty('min-width')
       tooltip.style.setProperty('max-width', `${maxWidth}px`, 'important')
+      tooltip.style.setProperty(
+        'max-height',
+        `${Math.max(0, getTooltipViewport().height * 0.6) / visualScale}px`,
+        'important'
+      )
       tooltip.style.setProperty('transform-origin', 'top left', 'important')
       tooltip.style.setProperty('transform', `scale(${visualScale})`, 'important')
 
@@ -956,9 +1059,12 @@ export function listenerTooltipShow(newChart: G2Chart, chart: Chart) {
         viewport.top + TOOLTIP_VIEWPORT_GAP,
         Math.min(top, maxTop)
       )}px`
+      activateHoverTooltip(newChart, tooltipWrapper)
       tooltip.style.visibility = 'visible'
       markHoverTooltipPositionReady(chart.container, tooltipWrapper, tooltip)
       syncHoverTooltipEllipsisTitles(tooltip)
     })
   })
+  newChart.on('tooltip:hide', () => releaseActiveHoverTooltip(newChart))
+  newChart.on('afterdestroy', () => releaseActiveHoverTooltip(newChart))
 }

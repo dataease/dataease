@@ -62,6 +62,9 @@ public final class JdbcUrlSecurityPolicy {
             "java.naming.factory.state",
             "autodeserialize",
             "queryinterceptors",
+            "socketfactoryclass",
+            "socketfactoryconstructorarg",
+            "accesstokencallbackclass",
             "statementinterceptors",
             "detectcustomcollations",
             "connectionproperties",
@@ -80,13 +83,34 @@ public final class JdbcUrlSecurityPolicy {
             Map.entry("doris", Set.of("maxallowedpacket", "allowloadlocalinfile", "allowurlinlocalinfile", "allowloadlocalinfileinpath", "allowmultiqueries")),
             Map.entry("tidb", Set.of("maxallowedpacket", "allowloadlocalinfile", "allowurlinlocalinfile", "allowloadlocalinfileinpath", "allowmultiqueries")),
             Map.entry("impala", Set.of("krbjaasfile", "krb5.conf")),
-            Map.entry("sqlserver", Set.of()),
+            Map.entry("sqlserver", Set.of("socketfactoryclass", "socketfactoryconstructorarg", "accesstokencallbackclass")),
             Map.entry("oracle", Set.of()),
             Map.entry("db2", Set.of()),
             Map.entry("pg", Set.of("socketfactory", "socketfactoryarg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationpluginclassname")),
             Map.entry("redshift", Set.of("socketfactory", "socketfactoryarg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationpluginclassname", "inifile")),
             Map.entry("h2", Set.of("init=", "runscript")),
             Map.entry("ck", Set.of())
+    );
+
+    private static final Set<String> H2_ALLOWED_SETTINGS = Set.of(
+            "AUTO_SERVER",
+            "AUTO_RECONNECT",
+            "MODE",
+            "CASE_INSENSITIVE_IDENTIFIERS",
+            "DATABASE_TO_UPPER"
+    );
+
+    private static final Set<String> H2_ALLOWED_MODES = Set.of(
+            "MySQL",
+            "REGULAR",
+            "PostgreSQL",
+            "MSSQLServer",
+            "MariaDB",
+            "Oracle",
+            "DB2",
+            "Derby",
+            "HSQLDB",
+            "Ignite"
     );
 
     private JdbcUrlSecurityPolicy() {
@@ -108,6 +132,13 @@ public final class JdbcUrlSecurityPolicy {
                 DEException.throwException("Illegal jdbcUrl: " + jdbcUrl);
             }
 
+        }
+        if (StringUtils.equals(normalizedType, "h2")) {
+            if (StringUtils.contains(jdbcUrl, '\\') || StringUtils.contains(extraParams, '\\')
+                    || containsIgnoreCase(jdbcUrl, "%5c") || containsIgnoreCase(extraParams, "%5c")) {
+                DEException.throwException("Illegal jdbcUrl: " + jdbcUrl);
+            }
+            validateH2Settings(jdbcUrl, extraParams);
         }
         Set<String> dangerousFragments = new LinkedHashSet<>(COMMON_DANGEROUS_FRAGMENTS);
         dangerousFragments.addAll(TYPE_DANGEROUS_FRAGMENTS.getOrDefault(normalizedType, Set.of()));
@@ -172,5 +203,44 @@ public final class JdbcUrlSecurityPolicy {
             }
         }
         return false;
+    }
+
+    private static void validateH2Settings(String jdbcUrl, String extraParams) {
+        String urlSettings = StringUtils.substringAfter(jdbcUrl, "jdbc:h2:");
+        List<String> parts = new ArrayList<>();
+        if (StringUtils.isNotBlank(urlSettings)) {
+            parts.addAll(Arrays.asList(urlSettings.split(";", -1)));
+        }
+        if (StringUtils.isNotBlank(extraParams)) {
+            parts.addAll(Arrays.asList(extraParams.split(";", -1)));
+        }
+        boolean firstPart = true;
+        for (String part : parts) {
+            String setting = part.trim();
+            if (StringUtils.isBlank(setting)) {
+                continue;
+            }
+            int equalIndex = setting.indexOf('=');
+            if (equalIndex < 0) {
+                if (firstPart) {
+                    firstPart = false;
+                    continue;
+                }
+                DEException.throwException("Illegal jdbcUrl: " + jdbcUrl);
+            }
+            firstPart = false;
+            String key = setting.substring(0, equalIndex).trim().toUpperCase(Locale.ROOT);
+            String value = setting.substring(equalIndex + 1).trim();
+            if (!H2_ALLOWED_SETTINGS.contains(key)) {
+                DEException.throwException("Illegal jdbcUrl: " + jdbcUrl);
+            }
+            if (StringUtils.equals(key, "MODE")) {
+                if (!H2_ALLOWED_MODES.contains(value)) {
+                    DEException.throwException("Illegal jdbcUrl: " + jdbcUrl);
+                }
+            } else if (!StringUtils.equalsIgnoreCase(value, "TRUE") && !StringUtils.equalsIgnoreCase(value, "FALSE")) {
+                DEException.throwException("Illegal jdbcUrl: " + jdbcUrl);
+            }
+        }
     }
 }

@@ -3,6 +3,7 @@ package io.dataease.chart.server;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.chart.ChartDataApi;
 import io.dataease.api.chart.dto.ViewDetailField;
+import io.dataease.api.chart.request.ChartCalcFieldValidateRequest;
 import io.dataease.api.chart.request.ChartExcelRequest;
 import io.dataease.api.chart.request.ChartExcelRequestInner;
 import io.dataease.auth.DeLinkPermit;
@@ -60,6 +61,9 @@ import java.util.stream.Collectors;
 @RequestMapping("/chartData")
 public class ChartDataServer implements ChartDataApi {
     @Resource
+    private io.dataease.share.manage.ShareVisitorPermissionManage shareVisitorPermissionManage;
+
+    @Resource
     private ChartDataManage chartDataManage;
     @Resource
     private ExportCenterManage exportCenterManage;
@@ -97,6 +101,19 @@ public class ChartDataServer implements ChartDataApi {
             DEException.throwException(ResultCode.DATA_IS_WRONG.code(), e.getMessage() + "\n\n" + ExceptionUtils.getStackTrace(e));
         }
         return null;
+    }
+
+    @Override
+    public void validateCalcField(ChartCalcFieldValidateRequest request) throws Exception {
+        try {
+            if (StringUtils.isNotBlank(request.getOriginName())) {
+                request.setOriginName(DatasetUtils.getDecode(request.getOriginName()));
+            }
+            chartDataManage.validateCalcField(request);
+        } catch (Exception e) {
+            // 校验失败使用普通业务异常，避免图表取数错误码被前端当作成功响应。
+            DEException.throwException(e.getMessage());
+        }
     }
 
     public ChartViewDTO findExcelData(ChartExcelRequest request) {
@@ -240,6 +257,7 @@ public class ChartDataServer implements ChartDataApi {
     @DeLinkPermit("#p0.dvId")
     @Override
     public void innerExportDetails(ChartExcelRequest request, HttpServletResponse response) throws Exception {
+        shareVisitorPermissionManage.require(io.dataease.share.manage.ShareVisitorPermissionManage.EXPORT_DATA);
         HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         String linkToken = httpServletRequest.getHeader(AuthConstant.LINK_TOKEN_KEY);
         LogUtil.info(request.getViewInfo().getId() + " " + StringUtils.isNotEmpty(linkToken) + " " + request.isDataEaseBi());
@@ -293,7 +311,8 @@ public class ChartDataServer implements ChartDataApi {
                         }
 
                         if ((details.size() + extractPageSize) > sheetLimit || i == chartViewDTO.getTotalPage()) {
-                            if (i == chartViewDTO.getTotalPage() && summaryEnabled && summaryAcc.totalCount > 0) {
+                            boolean hasSummaryRow = i == chartViewDTO.getTotalPage() && summaryEnabled && summaryAcc.totalCount > 0;
+                            if (hasSummaryRow) {
                                 Object[] totalRow = buildSummaryRow(allExportColumns, summaryConfig, summaryAcc, customSumResult);
                                 details.add(totalRow);
                             }
@@ -305,7 +324,7 @@ public class ChartDataServer implements ChartDataApi {
                             List<Integer> columnIndexs = getHiddenExportColumnIndexes(header, request.getViewInfo());
                             ExportCenterDownLoadManage.removeColumn(details, columnIndexs);
                             ViewDetailField[] detailFields = request.getDetailFields();
-                            ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, request.getViewInfo(), wb);
+                            ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, null, request.getViewInfo(), wb, hasSummaryRow);
                             sheetIndex++;
                             details.clear();
                         }
@@ -374,6 +393,10 @@ public class ChartDataServer implements ChartDataApi {
 
 
     public static void setExcelData(Sheet detailsSheet, CellStyle cellStyle, Object[] header, List<Object[]> details, ViewDetailField[] detailFields, Integer[] excelTypes, Comment comment, ChartViewDTO viewInfo, Workbook wb) {
+        setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes, comment, viewInfo, wb, false);
+    }
+
+    public static void setExcelData(Sheet detailsSheet, CellStyle cellStyle, Object[] header, List<Object[]> details, ViewDetailField[] detailFields, Integer[] excelTypes, Comment comment, ChartViewDTO viewInfo, Workbook wb, boolean hasSummaryRow) {
         List<CellStyle> styles = new ArrayList<>();
         Map<String, CellStyle> autoFormatterStyles = new HashMap<>();
         List<ChartViewFieldDTO> exportFields = resolveExportFields(viewInfo, header);
@@ -409,11 +432,12 @@ public class ChartDataServer implements ChartDataApi {
                     }
                 }
             }
-            if ("table-info".equalsIgnoreCase(viewInfo.getType()) && !"dataset".equalsIgnoreCase(viewInfo.getDownloadType())) {
+            if (!"dataset".equalsIgnoreCase(viewInfo.getDownloadType())) {
                 Map<String, Object> tableCell = (Map<String, Object>) viewInfo.getCustomAttr().get("tableCell");
-                Boolean mergeCells = (Boolean) tableCell.get("mergeCells");
+                Boolean mergeCells = tableCell == null ? false : (Boolean) tableCell.get("mergeCells");
                 if (mergeCells != null && mergeCells) {
-                    var tmpAxis = viewInfo.getXAxis().stream().filter(x -> !x.isHide()).toList();
+                    // 使用实际导出列顺序，兼容隐藏字段和汇总表的指标列。
+                    var tmpAxis = exportFields;
                     var mergeIndex = tmpAxis.size();
                     for (int i = 0; i < tmpAxis.size(); i++) {
                         if ("q".equalsIgnoreCase(tmpAxis.get(i).getGroupType())) {
@@ -421,8 +445,10 @@ public class ChartDataServer implements ChartDataApi {
                             break;
                         }
                     }
-                    if (mergeIndex >= 1 && details.size() > 1) {
-                        mergeConfig = getMergeConfig(details.subList(1, details.size()), mergeIndex - 1, totalDepth == 0 ? 1 : totalDepth);
+                    // 仅最后一张工作表包含总计，不能仅凭开关扣除最后一行。
+                    int dataEnd = details.size() - (hasSummaryRow ? 1 : 0);
+                    if (mergeIndex >= 1 && dataEnd > 1) {
+                        mergeConfig = getMergeConfig(details.subList(1, dataEnd), mergeIndex - 1, totalDepth == 0 ? 1 : totalDepth);
                     }
                 }
             }
@@ -744,12 +770,17 @@ public class ChartDataServer implements ChartDataApi {
         var result = new ArrayList<String>();
         for (TableHeader.ColumnInfo column : columns) {
             if (CollectionUtils.isEmpty(column.getChildren())) {
-                result.add(column.getKey());
+                result.add(getHeaderColumnField(column));
             } else {
                 result.addAll(getHeaderLeafColumn(column.getChildren()));
             }
         }
         return result;
+    }
+
+    private static String getHeaderColumnField(TableHeader.ColumnInfo column) {
+        // 新版表头使用 field，历史配置仍使用 key，校验和导出统一按此规则读取。
+        return StringUtils.isNotBlank(column.getField()) ? column.getField() : column.getKey();
     }
 
     private static Integer getDepth(TableHeader.ColumnInfo column, Integer parentDepth) {
@@ -769,7 +800,7 @@ public class ChartDataServer implements ChartDataApi {
     private static CellStyle getNumericCellStyle(Workbook workbook) {
         return NUMERIC_STYLE_CACHE.computeIfAbsent(workbook, wb -> {
             CellStyle style = wb.createCellStyle();
-            style.setDataFormat(wb.createDataFormat().getFormat("#.##########"));
+            style.setDataFormat(wb.createDataFormat().getFormat("General"));
             return style;
         });
     }
@@ -784,11 +815,11 @@ public class ChartDataServer implements ChartDataApi {
             if (depth.equals(toDepth)) {
                 Cell cell = rowMap.get("row" + depth).createCell(width);
                 cell.setCellStyle(cellStyle);
-                cell.setCellValue(getDeFieldName(xAxis, column.getKey()));
+                cell.setCellValue(getDeFieldName(xAxis, getHeaderColumnField(column)));
             } else {
                 for (int i = depth; i <= toDepth; i++) {
                     Cell cell1 = rowMap.get("row" + i).createCell(width);
-                    cell1.setCellValue(getDeFieldName(xAxis, column.getKey()));
+                    cell1.setCellValue(getDeFieldName(xAxis, getHeaderColumnField(column)));
                     cell1.setCellStyle(cellStyle);
                 }
                 CellRangeAddress region = new CellRangeAddress(depth, toDepth, width, width);
@@ -803,10 +834,10 @@ public class ChartDataServer implements ChartDataApi {
             }
         } else {
             Cell cell1 = rowMap.get("row" + depth).createCell(width);
-            cell1.setCellValue(getGroupName(tableHeader, column.getKey()));
+            cell1.setCellValue(getGroupName(tableHeader, column));
             cell1.setCellStyle(cellStyle);
             Cell cell2 = rowMap.get("row" + depth).createCell(width + column.getWidth() - 1);
-            cell2.setCellValue(getGroupName(tableHeader, column.getKey()));
+            cell2.setCellValue(getGroupName(tableHeader, column));
             cell2.setCellStyle(cellStyle);
             CellRangeAddress region = new CellRangeAddress(depth, depth, width, width + column.getWidth() - 1);
             sheet.addMergedRegion(region);
@@ -824,9 +855,18 @@ public class ChartDataServer implements ChartDataApi {
         }
     }
 
-    private static String getGroupName(TableHeader tableHeader, String key) {
-        for (TableHeader.MetaInfo metaInfo : tableHeader.getHeaderGroupConfig().getMeta()) {
-            if (metaInfo.getField().equals(key)) {
+    private static String getGroupName(TableHeader tableHeader, TableHeader.ColumnInfo column) {
+        // 新版分组名称直接保存在节点上，旧配置才从 meta 中查找。
+        if (column.getTitle() != null) {
+            return column.getTitle();
+        }
+        List<TableHeader.MetaInfo> meta = tableHeader.getHeaderGroupConfig().getMeta();
+        if (CollectionUtils.isEmpty(meta)) {
+            return "";
+        }
+        String field = getHeaderColumnField(column);
+        for (TableHeader.MetaInfo metaInfo : meta) {
+            if (StringUtils.equals(metaInfo.getField(), field)) {
                 return metaInfo.getName();
             }
         }

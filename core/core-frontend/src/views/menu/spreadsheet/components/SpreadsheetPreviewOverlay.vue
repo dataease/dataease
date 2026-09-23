@@ -28,7 +28,6 @@ const enterFullscreen = async () => {
   try {
     await shellRef.value?.requestFullscreen()
   } catch (error) {
-    console.error('[SpreadsheetPreviewOverlay] Failed to enter fullscreen:', error)
   }
 }
 

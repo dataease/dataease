@@ -14,6 +14,7 @@ import {
   filterEmptyMinValue
 } from '@/views/chart/components/js/util'
 import {
+  bindMapHoverTooltipRefresh,
   handleGeoJson,
   mapRendered,
   mapRendering,
@@ -39,7 +40,7 @@ import {
 import { configCarouselTooltip } from '@/views/chart/components/js/panel/charts/map/tooltip-carousel'
 import { getCustomGeoArea } from '@/api/map'
 import { centroid } from '@turf/centroid'
-import { TextLayer } from '@antv/l7plot/dist/esm'
+import { attachMapLabels, geometryPolygons } from './label-layout'
 import {
   drawPointFallbackChart,
   isPointOnlyGeoJson
@@ -288,17 +289,30 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     }
     const context: Record<string, any> = { drawOption, geoJson, customSubArea }
     options = this.setupOptions(chart, options, context)
+    const mapLabel = parseJson(chart.customAttr).label
+    const labelField = options.label && options.label.field
+    options.label = { visible: false }
+    const mapLabels =
+      context.mapLabels ??
+      geoJson.features.map(feature => {
+        const properties = feature.properties
+        const center = properties.centroid || properties.center || [NaN, NaN]
+        return {
+          name: properties[labelField || '_DE_LABEL_'] || '',
+          x: center[0],
+          y: center[1],
+          polygons: geometryPolygons(feature.geometry)
+        }
+      })
     const { Choropleth } = await import('@antv/l7plot/dist/esm/plots/choropleth')
     const view = new Choropleth(container, options)
     this.configZoomButton(chart, view)
+    bindMapHoverTooltipRefresh(container, view.scene, () => view.tooltip?.hideTooltip())
     mapRendering(container)
     view.once('loaded', () => {
       mapRendered(container)
-      const { layers } = context
-      if (layers) {
-        layers.forEach(l => {
-          view.addLayer(l)
-        })
+      if (mapLabel.show) {
+        attachMapLabels(view.scene, mapLabels, { ...mapLabel, fontFamily: chart.fontFamily })
       }
       view.scene.map['keyboard'].disable()
       view.on('fillAreaLayer:click', (ev: MapMouseEvent) => {
@@ -400,7 +414,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
           ;(areaMap[name] || areaMap[name] === 0) &&
             content.push(valueFormatter(areaMap[name], label.quotaLabelFormatter))
         }
-        item.properties['_DE_LABEL_'] = content.join('\n\n')
+        item.properties['_DE_LABEL_'] = content.join('\n')
       }
     })
     if (colorScale.length) {
@@ -689,34 +703,16 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
               content.push(valueFormatter(areaMap[area.name].value, label.quotaLabelFormatter))
           }
           labelLocation.push({
-            name: content.join('\n\n'),
+            name: content.join('\n'),
             x: area.centroid[0],
-            y: area.centroid[1]
+            y: area.centroid[1],
+            polygons: (area.scopeArr || []).flatMap(adcode =>
+              geometryPolygons(geoJsonMap[adcode]?.geometry)
+            )
           })
         }
       })
-      const areaLabelLayer = new TextLayer({
-        name: 'areaLabelLayer',
-        source: {
-          data: labelLocation,
-          parser: {
-            type: 'json',
-            x: 'x',
-            y: 'y'
-          }
-        },
-        field: 'name',
-        style: {
-          fill: label.color,
-          fontSize: label.fontSize,
-          opacity: 1,
-          fontWeight: 'bold',
-          textAnchor: 'center',
-          textAllowOverlap: label.fullDisplay,
-          padding: !label.fullDisplay ? [2, 2] : undefined
-        }
-      })
-      context.layers = [areaLabelLayer]
+      context.mapLabels = labelLocation
     }
     // 处理tooltip
     const subAreaMap = customSubArea.reduce((p, n) => {

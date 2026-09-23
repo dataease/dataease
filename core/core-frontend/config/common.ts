@@ -54,7 +54,7 @@ export default {
       include: [resolve(__dirname, 'src/locales/**')]
     }),
     eslintPlugin({
-      cache: false,
+      cache: true,
       include: [
         'src/**/*.ts',
         'src/**/*.tsx',
@@ -65,7 +65,9 @@ export default {
         'src/*.vue'
       ]
     }),
-    viteStylelint()
+    viteStylelint({
+      cache: true
+    })
   ],
   css: {
     preprocessorOptions: {

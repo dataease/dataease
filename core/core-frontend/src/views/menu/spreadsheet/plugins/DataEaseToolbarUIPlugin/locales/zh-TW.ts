@@ -15,7 +15,7 @@ const sheetsUIPermissionDialog = SheetsUIZhTW['sheets-ui'].permission.dialog
 const numberFormatInfo = SheetsNumfmtUIZhTW['sheets-numfmt-ui'].info
 const sheetsMergeConfirm = SheetsZhTW.sheets.merge.confirm
 
-export const DataEaseToolbarUIZhTW = createUniverLocaleCompatibilityPatch({
+const compatibilityPatch = createUniverLocaleCompatibilityPatch({
   officialLocales: [
     DataValidationZhTW,
     SheetsDataValidationZhTW,
@@ -43,3 +43,11 @@ export const DataEaseToolbarUIZhTW = createUniverLocaleCompatibilityPatch({
     ribbonMenu: '功能區選單'
   }
 })
+
+export const DataEaseToolbarUIZhTW = {
+  ...compatibilityPatch,
+  'dataease-conditional-formatting': {
+    colorScaleTwoValues: '色階數值應符合：最小值 < 最大值',
+    colorScaleThreeValues: '色階數值應符合：最小值 < 中間值 < 最大值'
+  }
+}

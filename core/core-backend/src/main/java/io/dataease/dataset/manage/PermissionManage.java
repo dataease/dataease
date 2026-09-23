@@ -12,7 +12,12 @@ import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.api.permissions.variable.dto.SysVariableValueDto;
 import io.dataease.api.permissions.variable.dto.SysVariableValueItem;
 import io.dataease.constant.ColumnPermissionConstants;
+import io.dataease.engine.trans.WhereTree2Str;
+import io.dataease.engine.utils.Utils;
+import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
+import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
+import io.dataease.extensions.datasource.model.SQLMeta;
 import io.dataease.extensions.view.dto.ColumnPermissionItem;
 import io.dataease.extensions.view.dto.ColumnPermissions;
 import io.dataease.extensions.view.dto.DatasetRowPermissionsTreeItem;
@@ -146,6 +151,12 @@ public class PermissionManage {
         return records;
     }
 
+    public void applyRowPermissions(SQLMeta sqlMeta, Long datasetId, List<DatasetTableFieldDTO> fields, boolean crossDs, Map<Long, DatasourceSchemaDTO> dsMap, PluginManageApi pluginManage) {
+        // 扩展查询复用当前用户的行权限，全量字段用于解析权限中的计算字段。
+        List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = getRowPermissionsTree(datasetId, null);
+        WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, fields, crossDs, dsMap, Utils.getParams(fields), null, pluginManage);
+    }
+
     public List<DataSetRowPermissionsTreeDTO> getRowPermissionsTreeByRoles(Long datasetId, List<Long> roleIds) {
         // 按角色获取行权限（代理管理员场景：仅代理组织的内置管理员角色，用户个人不参与匹配，不查 sysParams 级）
         List<DataSetRowPermissionsTreeDTO> records = new ArrayList<>();
@@ -268,6 +279,10 @@ public class PermissionManage {
         }
         if (StringUtils.isNotEmpty(userEntity.getPhone()) && StringUtils.equalsIgnoreCase(itemValue, "${sysParams.userPhone}")) {
             item.setValue(userEntity.getPhone());
+            return true;
+        }
+        if (StringUtils.isNotEmpty(userEntity.getOrgName()) && StringUtils.equalsIgnoreCase(itemValue, "${sysParams.orgName}")) {
+            item.setValue(userEntity.getOrgName());
             return true;
         }
         String value = handleSysVariable(userEntity, item);

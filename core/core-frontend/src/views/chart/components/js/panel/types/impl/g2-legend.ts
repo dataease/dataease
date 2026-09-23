@@ -75,6 +75,7 @@ export interface SideHorizontalLegendGridOptions {
   itemSpacing: number
   crossPadding: number
   maxWidthRatio?: number
+  minColumns?: number
 }
 
 export interface SideHorizontalLegendGrid {
@@ -150,13 +151,18 @@ export const getSideHorizontalLegendGrid = (
     itemMarkerSize,
     itemSpacing,
     crossPadding,
-    maxWidthRatio
+    maxWidthRatio,
+    minColumns
   } = options
   const safeItemCount = Math.max(1, itemCount)
+  const safeMinColumns = Math.min(
+    Math.min(SIDE_HORIZONTAL_LEGEND_MAX_COLS, safeItemCount),
+    Math.max(1, Number(minColumns) || 1)
+  )
   const rowsPerPage = getSideLegendRowsPerPage(containerHeight, itemHeight, rowPadding)
   const maxLegendWidth = getSideLegendMaxWidth(containerWidth, maxWidthRatio)
   let columns = Math.min(SIDE_HORIZONTAL_LEGEND_MAX_COLS, safeItemCount)
-  while (columns > 1) {
+  while (columns > safeMinColumns) {
     const paged = safeItemCount > rowsPerPage * columns
     const requiredWidth =
       crossPadding +

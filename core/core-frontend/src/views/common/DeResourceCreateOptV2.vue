@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import TemplateMarket from '@/views/template-market/index.vue'
+import TemplateMarket from '@/views/pages/template-market/index.vue'
 import { nextTick, reactive, ref } from 'vue'
 const templateMarketCreateRef = ref(null)
 

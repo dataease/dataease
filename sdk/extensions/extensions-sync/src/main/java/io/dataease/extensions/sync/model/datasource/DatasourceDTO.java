@@ -17,4 +17,7 @@ public class DatasourceDTO {
     private String status;
     private String statusRemark;
     private Integer datasourceRole;
+    private java.util.List<String> unsupportedKeyFieldTypes;
+    private String fieldIndexType;
+    private java.util.List<String> supportedIndexFieldTypes;
 }

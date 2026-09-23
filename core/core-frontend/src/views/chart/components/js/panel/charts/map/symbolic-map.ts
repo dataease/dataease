@@ -17,6 +17,7 @@ import { Scene } from '@antv/l7-scene'
 import { PointLayer } from '@antv/l7-layers'
 import { LayerPopup, Popup } from '@antv/l7'
 import {
+  bindMapHoverTooltipRefresh,
   getMapCenter,
   getMapScene,
   getMapStyle,
@@ -30,6 +31,7 @@ import {
   setupMapTooltipStyle
 } from '@/views/chart/components/js/panel/charts/map/tooltip-carousel'
 import { filter } from 'lodash-es'
+import { bindMapTooltipPosition } from './tooltip-position'
 const { t } = useI18n()
 
 /**
@@ -459,6 +461,14 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
    * @param pointLayer
    */
   buildTooltip = (chart, container, pointLayer, scene) => {
+    let layerPopup: LayerPopup
+    bindMapHoverTooltipRefresh(container, scene, () => {
+      if (layerPopup?.getIsShow()) {
+        // 清除命中缓存，使重新悬停同一符号时也能显示提示框
+        pointLayer.emit('mouseout', {})
+        layerPopup.hide()
+      }
+    })
     const customAttr = chart.customAttr ? parseJson(chart.customAttr) : null
     this.clearPopup(container)
     if (customAttr?.tooltip?.show) {
@@ -494,30 +504,8 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
       document.head.appendChild(style)
       const containerElement = document.getElementById(container)
       if (containerElement) {
-        containerElement.addEventListener('mousemove', event => {
-          const rect = containerElement.getBoundingClientRect()
-          const mouseX = event.clientX - rect.left
-          const mouseY = event.clientY - rect.top
-          const tooltipElement = containerElement.getElementsByClassName('l7-popup')
-          for (let i = 0; i < tooltipElement?.length; i++) {
-            const element = tooltipElement[i] as HTMLElement
-            element.firstElementChild.style.display = 'none'
-            element.style.transform = 'translate(15px, 12px)'
-            const isNearRightEdge =
-              containerElement.clientWidth - mouseX <= element.clientWidth + 10
-            const isNearBottomEdge = containerElement.clientHeight - mouseY <= element.clientHeight
-            let transform = ''
-            if (isNearRightEdge) {
-              transform += 'translateX(-120%) translateY(15%) '
-            }
-            if (isNearBottomEdge) {
-              transform += 'translateX(15%) translateY(-80%) '
-            }
-            if (transform) {
-              element.style.transform = transform.trim()
-            }
-          }
-        })
+        // 仅调整鼠标悬浮弹窗，轮播和触摸弹窗继续使用地理坐标锚点
+        bindMapTooltipPosition(containerElement, `.l7-popup-${CSS.escape(container)}`)
       }
       pointLayer.on('touchend', e => {
         if (e.lngLat) {
@@ -536,7 +524,7 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
           scene.addPopup(popup)
         }
       })
-      return new LayerPopup({
+      layerPopup = new LayerPopup({
         anchor: 'top-left',
         className: 'l7-popup-' + container,
         items: [
@@ -554,6 +542,7 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
         ],
         trigger: 'hover'
       })
+      return layerPopup
     }
     return undefined
   }

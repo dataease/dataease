@@ -56,6 +56,7 @@ import { cloneDeep, forEach, get, debounce, set, concat, keys, merge } from 'lod
 import { deleteField, saveField } from '@/api/dataset'
 import { getWorldTree, listCustomGeoArea } from '@/api/map'
 import chartViewManager from '@/views/chart/components/js/panel'
+import { restoreBoxPlotSeriesColors } from '@/views/chart/components/js/panel/charts/g2/distribution/box-plot'
 import DatasetSelect from '@/views/chart/components/editor/dataset-select/DatasetSelect.vue'
 import { useDraggable } from '@vueuse/core'
 import { PluginComponent } from '@/components/plugin'
@@ -410,11 +411,19 @@ const queryList = computed(() => {
   return arr
 })
 
-const quotaData = computed(() => {
-  let result = JSON.parse(JSON.stringify(state.quota))
-  if (['table-info', 'multi-scatter'].includes(view.value?.type)) {
-    result = result?.filter(item => item.id !== '-1')
+// 箱线图基于原始数值样本计算分位数，排除非数值指标和 COUNT(*) 记录数
+const filterQuotaByChartType = quotaList => {
+  if (view.value?.type === 'box-plot') {
+    return quotaList?.filter(item => [2, 3].includes(item.deType) && item.originName !== '*')
   }
+  if (['table-info', 'multi-scatter'].includes(view.value?.type)) {
+    return quotaList?.filter(item => item.id !== '-1')
+  }
+  return quotaList
+}
+
+const quotaData = computed(() => {
+  let result = filterQuotaByChartType(JSON.parse(JSON.stringify(state.quota)))
   if (state.searchField) {
     result = result.filter(item =>
       item.name.toLowerCase().includes(state.searchField.toLowerCase())
@@ -432,11 +441,7 @@ const dimensionData = computed(() => {
   return result
 })
 const realQuota = computed(() => {
-  let result = JSON.parse(JSON.stringify(state.quota))
-  if (['table-info', 'multi-scatter'].includes(view.value?.type)) {
-    result = result?.filter(item => item.id !== '-1')
-  }
-  return result
+  return filterQuotaByChartType(JSON.parse(JSON.stringify(state.quota)))
 })
 provide('quotaData', realQuota)
 
@@ -767,6 +772,27 @@ const addAxis = (e, axis: AxisType) => {
       }
       typeValid = valid
     }
+  } else if (view.value.type === 'box-plot' && axis === 'yAxis') {
+    const list = view.value[axis]
+    typeValid = dragCheckType(list, type)
+    if (list?.length) {
+      let hasInvalidField = false
+      // 批量拖入时逐个剔除不支持的字段，避免无效指标残留在值轴
+      for (let index = list.length - 1; index >= 0; index--) {
+        const item = list[index]
+        if (![2, 3].includes(item.deType) || item.originName === '*') {
+          list.splice(index, 1)
+          hasInvalidField = true
+        }
+      }
+      if (hasInvalidField) {
+        ElMessage({
+          message: t('chart.error_not_number'),
+          type: 'warning'
+        })
+        typeValid = false
+      }
+    }
   } else if (view.value.type === 'multi-scatter' && axis === 'xAxis') {
     // 多维散点图 xAxis 只接受指标或时间维度
     const list = view.value[axis]
@@ -978,11 +1004,8 @@ const onAxisChange = (e, axis: AxisType) => {
 }
 
 const calcData = (view, resetDrill = false, updateQuery = '') => {
-  if (
-    view.refreshTime === '' ||
-    parseFloat(view.refreshTime).toString() === 'NaN' ||
-    parseFloat(view.refreshTime) < 1
-  ) {
+  const refreshTime = Number(view.refreshTime)
+  if (!Number.isInteger(refreshTime) || refreshTime < 1 || refreshTime > 3600) {
     ElMessage.error(t('chart.only_input_number'))
     return
   }
@@ -1036,6 +1059,13 @@ const onAreaChange = val => {
 }
 
 const onTypeChange = (render, type) => {
+  if (view.value.type === 'box-plot' && type !== 'box-plot') {
+    const basicStyle = view.value.customAttr.basicStyle
+    if (basicStyle.seriesColor) {
+      // 仅处理离开箱线图的配置，其他图表仍使用原有类别键和配色流程
+      basicStyle.seriesColor = restoreBoxPlotSeriesColors(basicStyle.seriesColor)
+    }
+  }
   const viewConf = getViewConfig(type)
   if (viewConf.isPlugin) {
     view.value.plugin = {
@@ -1485,6 +1515,13 @@ const saveRename = ref => {
           break
       }
       axisType && emitter.emit('updateAxis', { axisType, axis: [axis], editType: 'update' })
+      if (
+        renameType === 'drillFields' &&
+        ['table-normal', 'table-info'].includes(view.value.type)
+      ) {
+        // 钻取列名来自本地配置，仅重绘支持该列头的 S2 表格
+        renderChart(view.value)
+      }
       closeRename()
     } else {
       return false
@@ -1856,12 +1893,15 @@ const dragVerticalTop = computed(() => {
   return h > previewHeight.value - 53 ? previewHeight.value - 53 : h
 })
 
-const onRefreshChange = val => {
-  recordSnapshotInfo('render')
-  if (val === '' || parseFloat(val).toString() === 'NaN' || parseFloat(val) < 1) {
-    ElMessage.error(t('chart.only_input_number'))
-    return
+const onRefreshChange = (val: string | number) => {
+  const refreshTime = Number(val)
+  // 先将刷新时间修正为 1–3600 的整数，再记录快照，避免保存无效配置。
+  if (!Number.isFinite(refreshTime)) {
+    view.value.refreshTime = 1
+  } else {
+    view.value.refreshTime = Math.min(3600, Math.max(1, Math.trunc(refreshTime)))
   }
+  recordSnapshotInfo('render')
 }
 
 const isCtrl = ref(false)
@@ -3385,6 +3425,7 @@ const chartStyleScroll = (val: any) => {
                               :effect="themes"
                               :class="[themes === 'dark' && 'dv-dark']"
                               size="small"
+                              inputmode="numeric"
                               :min="1"
                               :max="3600"
                               :disabled="!view.refreshViewEnable"

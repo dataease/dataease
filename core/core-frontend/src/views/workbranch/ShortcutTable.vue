@@ -6,6 +6,7 @@ import icon_app_outlined from '@/assets/svg/icon_app_outlined.svg'
 import icon_dashboard_outlined from '@/assets/svg/icon_dashboard_outlined.svg'
 import icon_database_outlined from '@/assets/svg/icon_database_outlined.svg'
 import icon_operationAnalysis_outlined from '@/assets/svg/icon_operation-analysis_outlined.svg'
+import icon_spreadsheet from '@/assets/svg/icon_spreadsheet.svg'
 import dvDashboardSpineMobile from '@/assets/svg/dv-dashboard-spine-mobile.svg'
 import icon_pc_outlined from '@/assets/svg/icon_pc_outlined.svg'
 import dvDashboardSpineMobileDisabled from '@/assets/svg/dv-dashboard-spine-mobile-disabled.svg'
@@ -24,6 +25,7 @@ import ShareGrid from '@/views/share/share/ShareGrid.vue'
 import ShareHandler from '@/views/share/share/ShareHandler.vue'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { useEmbedded } from '@/store/modules/embedded'
+import { pathValid } from '@/store/modules/permission'
 const userStore = useUserStoreWithOut()
 const { resolve } = useRouter()
 const { t } = useI18n()
@@ -74,7 +76,7 @@ const iconMap = {
 }
 
 const jumpActiveCheck = row => {
-  return row && ['dashboard', 'panel', 'dataV', 'screen'].includes(row.type)
+  return row && ['dashboard', 'panel', 'dataV', 'screen', 'spreadsheet'].includes(row.type)
 }
 
 const handleClick = (ele: TabsPaneContext) => {
@@ -84,6 +86,9 @@ const handleClick = (ele: TabsPaneContext) => {
     state.curTypeList = shortcutOption
       .getBusiList()
       .filter(busi => busi === 'all_types' || busiAuthList.includes(busi))
+    if (!state.curTypeList.includes(activeCommand.value)) {
+      activeCommand.value = 'all_types'
+    }
     state.tableColumn = shortcutOption.getColumnList()
     loadTableData()
   }
@@ -96,9 +101,11 @@ const getBusiListWithPermission = () => {
       busiFlagList.push(baseFlagList[parseInt(key)])
     }
   }
+  if (appStore.getXpackValid && pathValid('/spreadsheet/index')) {
+    busiFlagList.push('spreadsheet')
+  }
   baseTablePaneList.value[0].disabled = !busiFlagList?.length
-  baseTablePaneList.value[1].disabled =
-    !busiFlagList.includes('panel') && !busiFlagList.includes('screen')
+  baseTablePaneList.value[1].disabled = !busiFlagList?.length
   return busiFlagList
 }
 const triggerFilterPanel = () => {
@@ -122,6 +129,13 @@ const openDataset = id => {
   })
   window.open(routeUrl.href, openType)
 }
+const openSpreadsheet = (id, disabled = false) => {
+  if (disabled) return
+  push({
+    path: '/spreadsheet/index',
+    query: { id }
+  })
+}
 const formatterTime = (_, _column, cellValue) => {
   return dayjs(new Date(cellValue)).format('YYYY-MM-DD HH:mm:ss')
 }
@@ -132,13 +146,14 @@ const typeMap = {
   dashboard: t('work_branch.dashboard'),
   panel: t('work_branch.dashboard'),
   dataset: t('work_branch.data_set'),
-  datasource: t('work_branch.data_source')
+  datasource: t('work_branch.data_source'),
+  spreadsheet: t('spreadsheet.title')
 }
 
 const loadTableData = () => {
   loading.value = true
   const queryType = activeCommand.value === 'all_types' ? '' : activeCommand.value
-  shortcutOption
+  return shortcutOption
     .loadData({ type: queryType, keyword: panelKeyword.value, asc: !orderDesc.value })
     .then(res => {
       state.tableData = res.data
@@ -228,6 +243,8 @@ const handleCellClick = row => {
           id: sourceId
         }
       })
+    } else if (row.type === 'spreadsheet') {
+      openSpreadsheet(sourceId)
     }
   }
 }
@@ -237,29 +254,50 @@ const setLoading = (val: boolean) => {
 }
 
 const executeStore = rowInfo => {
+  // 收藏接口是切换语义，串行处理可避免快速双击后状态反转。
+  if (checkDisabled(rowInfo) || loading.value) {
+    return
+  }
+  loading.value = true
   const param = {
     id: rowInfo.id,
-    type: rowInfo.type
+    type: resolveStoreType(rowInfo.type)
   }
-  storeApi(param).then(() => {
-    rowInfo.favorite = !rowInfo.favorite
-  })
+  storeApi(param)
+    .then(() => {
+      rowInfo.favorite = !rowInfo.favorite
+    })
+    .finally(() => {
+      loading.value = false
+    })
 }
 
 const checkDisabled = row => {
   return !row.extFlag1
 }
 
+// 收藏接口使用业务资源类型，兼容可视化历史类型并保留电子表格类型。
+const resolveStoreType = type => {
+  if (type === 'dataV') return 'screen'
+  if (type === 'dashboard') return 'panel'
+  return type
+}
+
 const executeCancelStore = rowInfo => {
-  if (!checkDisabled(rowInfo)) {
-    const param = {
-      id: rowInfo.resourceId,
-      type: rowInfo.type === 'dataV' ? 'screen' : 'panel'
-    }
-    storeApi(param).then(() => {
-      loadTableData()
-    })
+  // 收藏接口是切换语义，串行处理可避免快速双击取消后又重新收藏。
+  if (checkDisabled(rowInfo) || loading.value) {
+    return
   }
+  loading.value = true
+  const param = {
+    id: rowInfo.resourceId,
+    type: resolveStoreType(rowInfo.type)
+  }
+  storeApi(param)
+    .then(() => loadTableData())
+    .finally(() => {
+      loading.value = false
+    })
 }
 
 const imgType = ref()
@@ -362,7 +400,14 @@ const getEmptyDesc = (): string => {
           <el-table-column key="name" width="280" prop="name" :label="t('common.name')">
             <template v-slot:default="scope">
               <div class="name-content" :class="{ 'jump-active': jumpActiveCheck(scope.row) }">
-                <el-icon v-if="scope.row.extFlag" style="margin-right: 12px; font-size: 18px">
+                <el-icon
+                  v-if="scope.row.type === 'spreadsheet'"
+                  class="spreadsheet-resource-icon"
+                  :class="{ 'spreadsheet-resource-icon-disabled': checkDisabled(scope.row) }"
+                >
+                  <Icon name="icon_spreadsheet"><icon_spreadsheet class="svg-icon" /></Icon>
+                </el-icon>
+                <el-icon v-else-if="scope.row.extFlag" style="margin-right: 12px; font-size: 18px">
                   <Icon
                     ><component
                       class="svg-icon"
@@ -394,7 +439,11 @@ const getEmptyDesc = (): string => {
                   >
                 </el-tooltip>
                 <el-icon
-                  v-if="activeName === 'recent' && ['screen', 'panel'].includes(scope.row.type)"
+                  v-if="
+                    activeName === 'recent' &&
+                    !checkDisabled(scope.row) &&
+                    ['screen', 'panel', 'spreadsheet'].includes(scope.row.type)
+                  "
                   class="custom-icon"
                   @click.stop="executeStore(scope.row)"
                   :style="{ color: scope.row.favorite ? '#FFC60A' : '#646A73' }"
@@ -497,6 +546,40 @@ const getEmptyDesc = (): string => {
                     </el-icon>
                   </el-tooltip>
                 </template>
+                <template v-if="scope.row.type === 'spreadsheet'">
+                  <el-tooltip
+                    effect="dark"
+                    :disabled="checkDisabled(scope.row)"
+                    :content="t('work_branch.open_spreadsheet')"
+                    placement="top"
+                  >
+                    <el-icon
+                      class="hover-icon hover-icon-in-table"
+                      @click.stop="
+                        openSpreadsheet(
+                          activeName === 'recent' ? scope.row.id : scope.row.resourceId,
+                          checkDisabled(scope.row)
+                        )
+                      "
+                    >
+                      <Icon name="icon_pc_outlined"><icon_pc_outlined class="svg-icon" /></Icon>
+                    </el-icon>
+                  </el-tooltip>
+                  <el-tooltip
+                    v-if="activeName === 'store'"
+                    effect="dark"
+                    :disabled="checkDisabled(scope.row)"
+                    :content="t('work_branch.cancel_favorites')"
+                    placement="top"
+                  >
+                    <el-icon
+                      class="hover-icon hover-icon-in-table"
+                      @click.stop="executeCancelStore(scope.row)"
+                    >
+                      <Icon name="icon_cancel_store"><visualStar class="svg-icon" /></Icon>
+                    </el-icon>
+                  </el-tooltip>
+                </template>
               </div>
             </template>
           </el-table-column>
@@ -581,6 +664,14 @@ const getEmptyDesc = (): string => {
       margin-right: 12px;
       border-radius: 4px;
       color: #fff;
+    }
+    .spreadsheet-resource-icon {
+      font-size: 18px;
+      margin-right: 12px;
+
+      &.spreadsheet-resource-icon-disabled {
+        opacity: 0.4;
+      }
     }
     .name-star {
       font-size: 15px;

@@ -208,3 +208,14 @@
 .univer-max-w-80:not(:has(.univerjs-icon-link-icon, #link-icon)) .univer-size-6:has(.univerjs-icon-copy-icon, [id*="copy-icon"]) {
   display: none !important;
 }
+
+// 隐藏旧分支但保留尺寸，供 Univer 定位和快速切回时复用。
+[data-u-context-menu-submenu].dataease-inactive-context-submenu {
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+// 仅覆盖格式刷启用时的表格画布；退出后恢复渲染引擎维护的光标。
+canvas.dataease-format-painter-cursor {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M3 2h18v9H3zM12 11v5h6v5' fill='white' stroke='%2321262e' stroke-width='2' stroke-linejoin='round'/%3E%3Crect x='15' y='20' width='6' height='10' rx='2' fill='%233370ff' stroke='white' stroke-width='3'/%3E%3Crect x='15' y='20' width='6' height='10' rx='2' fill='%233370ff' stroke='%2321262e' stroke-width='1.5'/%3E%3C/svg%3E") 3 2, crosshair !important;
+}

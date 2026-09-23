@@ -233,10 +233,6 @@ export const resolveSpreadsheetFilterValues = async (
       try {
         return [condition.id, await resolveConditionDefaultValue(condition)] as const
       } catch (error) {
-        console.error(
-          `[DataEaseFilterPlugin] Failed to resolve default value for condition ${condition.id}:`,
-          error
-        )
         return [condition.id, getSpreadsheetFilterDefaultValue(condition)] as const
       }
     }

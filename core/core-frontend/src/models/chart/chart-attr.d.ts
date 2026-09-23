@@ -222,6 +222,22 @@ declare interface ChartBasicStyle {
    */
   scatterSymbolSize: number
   /**
+   * 箱线图是否显示异常值点
+   */
+  showOutliers: boolean
+  /**
+   * 箱线图异常点颜色模式，默认跟随所属箱体或分组系列
+   */
+  outlierColorMode: 'series' | 'custom'
+  /**
+   * 箱线图异常点自定义颜色，仅在自定义颜色模式下生效
+   */
+  outlierColor: string
+  /**
+   * 箱线图异常点半径大小
+   */
+  outlierSize: number
+  /**
    * 雷达图外形形状
    */
   radarShape: 'circle' | 'polygon'
@@ -660,6 +676,8 @@ declare interface ChartTableTotalAttr {
  * 汇总设置
  */
 declare interface TotalConfig {
+  /** 总计专属样式，不作用于小计 */
+  grandTotalStyle: TableGrandTotalStyle
   /**
    * 总计显隐
    */
@@ -708,6 +726,15 @@ declare interface TotalConfig {
    * 小计排序
    */
   totalSortField: string
+}
+declare interface TableGrandTotalStyle {
+  customBackground: boolean
+  backgroundColor: string
+  customFont: boolean
+  fontColor: string
+  fontSize: number
+  isBolder: boolean
+  isItalic: boolean
 }
 /**
  * 汇总聚合方式
@@ -1095,6 +1122,8 @@ declare interface ChartLabelAttr {
    * 多系列标签设置
    */
   seriesLabelFormatter: SeriesFormatter[]
+  /** 组合图已启用按指标配置标签位置 */
+  seriesLabelPositionEnabled?: boolean
 
   /**
    * 显示字段，通过字段名称显示对应的值
@@ -1174,6 +1203,10 @@ declare interface ChartTooltipAttr {
    * 是否显示指标值
    */
   showQuota?: boolean
+  /**
+   * 箱线图是否展开五数统计、样本数和异常值数量
+   */
+  showBoxPlotDetails?: boolean
   /**
    * 背景颜色
    */

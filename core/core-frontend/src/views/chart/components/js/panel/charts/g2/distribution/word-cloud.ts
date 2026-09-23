@@ -176,6 +176,7 @@ export class WordCloud extends G2ChartView {
       interaction: {
         tooltip: {
           mount: createTooltipWrapper(chart),
+          enterable: true,
           css: {
             '.g2-tooltip': {
               background: tooltipAttr.backgroundColor

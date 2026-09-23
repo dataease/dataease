@@ -127,6 +127,17 @@ const allowHideField = computed(() => {
 const disableHideField = computed(() => !props.field.hidden && visibleFieldCount.value <= 1)
 const currentDateStyle = computed(() => props.field.dateStyle ?? DEFAULT_DATE_STYLE)
 const currentDatePattern = computed(() => props.field.datePattern ?? DEFAULT_DATE_PATTERN)
+const customSortField = computed(() => {
+  if (!isDateField.value) {
+    return props.field
+  }
+  // 候选值查询与表格查询使用相同的日期格式，确保保存的排序值能匹配数据。
+  return {
+    ...props.field,
+    dateStyle: currentDateStyle.value,
+    datePattern: currentDatePattern.value
+  }
+})
 const currentDateStyleLabel = computed(
   () => dateStyleOptions.find(option => option.value === currentDateStyle.value)?.label
 )
@@ -489,7 +500,7 @@ const getFieldColor = (groupType: string) => {
     v-model="customSortDialogVisible"
     :plugin-type="pluginType"
     :data-config="dataConfig"
-    :field="field"
+    :field="customSortField"
     @confirm="handleCustomSortConfirm"
   />
   <ValueFormatterDialog

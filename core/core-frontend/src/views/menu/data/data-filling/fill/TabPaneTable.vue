@@ -718,10 +718,6 @@ onMounted(() => {
 </template>
 
 <style lang="less">
-.menu-panel-select_popper_fill {
-  min-width: 235px;
-}
-
 .de-mobile-checker-error {
   z-index: 4003 !important;
 }

@@ -11,6 +11,7 @@ import {
 } from '@/views/chart/components/js/util'
 import {
   getHorizontalBarAxisSafeLabelStyle,
+  getColumnSeriesPaddingTransform,
   handleBarBreakLineNullData,
   handleEmptyDataStrategy,
   ViewSpec
@@ -117,6 +118,16 @@ export class HorizontalBar extends Bar {
       paddingInner: columnPadding
     }
     children[0].transform = this.configDodgePadding(children[0].transform, columnPadding)
+    // 横向单系列也取消额外留白，多系列与纵向使用相同的连续间距
+    if (
+      children[0].encode?.series ||
+      children[0].transform?.some(transform => transform.type === 'dodgeX')
+    ) {
+      children[0].transform = [
+        ...(children[0].transform || []),
+        getColumnSeriesPaddingTransform(columnPadding)
+      ]
+    }
     children[0].scale.color.range = colors
     children[0].scale.y.nice = true
     children[0].style = { ...children[0].style, ...style }
@@ -218,21 +229,10 @@ export class HorizontalBar extends Bar {
     const customStyle = parseJson(chart.customStyle)
     const axis = JSON.parse(JSON.stringify(customStyle[axisType]))
     if (customStyle[axisType] && axis.show) {
-      // 轴线
-      const line = {
-        line: axis.axisLine.show,
-        lineStrokeOpacity: 1,
-        lineLineWidth: axis.axisLine.lineStyle.width,
-        lineStroke: axis.axisLine.lineStyle.color,
+      // 轴线与刻度线统一使用公共规则
+      const lineAndTick = {
+        ...this.getAxisLineStyle(chart, axis),
         lineLineDash: getLineDash(axis.axisLine.lineStyle.style)
-      }
-      // 刻度
-      const tick = {
-        tick: axis.axisLine.show,
-        tickLineWidth: axis.axisLine.lineStyle.width,
-        tickStroke: axis.axisLine.lineStyle.color,
-        tickOpacity: 1,
-        tickStrokeOpacity: 1
       }
       // 网格线
       const grid = {
@@ -266,10 +266,8 @@ export class HorizontalBar extends Bar {
         title: axis.nameShow && axis.name ? axis.name : false,
         titleFontSize: axis.fontSize,
         titleFill: axis.color,
-        // 轴线
-        ...line,
-        // 刻度线
-        ...tick,
+        // 轴线与刻度线
+        ...lineAndTick,
         // 网格线
         ...grid,
         // 刻度值

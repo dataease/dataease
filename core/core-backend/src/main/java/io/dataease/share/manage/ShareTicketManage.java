@@ -51,10 +51,20 @@ public class ShareTicketManage {
 
     @Transactional
     public String saveTicket(TicketCreator creator) {
+        String uuid = creator.getUuid();
+        if (StringUtils.isBlank(uuid)) {
+            DEException.throwException("uuid为必填参数");
+        }
+        if (!isShareOwner(uuid)) {
+            DEException.throwException("无权操作此分享的Ticket");
+        }
         String ticket = creator.getTicket();
         if (StringUtils.isNotBlank(ticket)) {
             CoreShareTicket ticketEntity = getByTicket(ticket);
             if (ObjectUtils.isNotEmpty(ticketEntity)) {
+                if (!isShareOwner(ticketEntity.getUuid())) {
+                    DEException.throwException("无权操作此Ticket");
+                }
                 if (creator.isGenerateNew()) {
                     coreShareTicketRepository.deleteById(ticketEntity.getId());
                     String newTicket = CodingUtil.shortUuid();
@@ -96,7 +106,24 @@ public class ShareTicketManage {
         if (StringUtils.isBlank(ticket)) {
             DEException.throwException("ticket为必填参数");
         }
+        CoreShareTicket existingTicket = getByTicket(ticket);
+        if (ObjectUtils.isEmpty(existingTicket)) {
+            DEException.throwException("Ticket不存在");
+        }
+        if (!isShareOwner(existingTicket.getUuid())) {
+            DEException.throwException("无权删除此Ticket");
+        }
         coreShareTicketRepository.deleteByTicket(ticket);
+    }
+
+    private boolean isShareOwner(String uuid) {
+        Specification<XpackShare> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("uuid"), uuid));
+            predicates.add(cb.equal(root.get("creator"), V3UserUtil.getUid()));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+        return xpackShareRepository.findAll(spec).stream().findFirst().isPresent();
     }
 
     public void switchRequire(TicketSwitchRequest request) {
@@ -161,6 +188,10 @@ public class ShareTicketManage {
         }
         CoreShareTicket linkTicket = getByTicket(ticket);
         if (ObjectUtils.isEmpty(linkTicket)) {
+            vo.setTicketValid(false);
+            return vo;
+        }
+        if (!StringUtils.equals(linkTicket.getUuid(), share.getUuid())) {
             vo.setTicketValid(false);
             return vo;
         }

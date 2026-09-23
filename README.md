@@ -47,16 +47,14 @@ DataEase 是开源的 BI 工具，帮助用户快速分析数据并洞察业务�
 
 ## 快速开始
 
-**桌面版：**
-
-你可以在 PC 上安装 DataEasae 桌面版，下载地址为：https://dataease.cn/
-
 **服务器版：**
-
+准备一台 2 核 4G 以上的 Linux 服务器，并在[社区网站](https://community.fit2cloud.com/#/products/dataease/downloads)上下载离线安装包
 ```
-# 准备一台 2 核 4G 以上的 Linux 服务器，并以 root 用户运行以下一键安装脚本：
-
-curl -sSL https://dataease.oss-cn-hangzhou.aliyuncs.com/quick_start_v2.sh | bash
+# 解压离线安装包
+tar zxvf dataease-offline-installer-v3.0.0.tar.gz
+# 安装
+cd dataease-offline-installer-v3.0.0
+bash install.sh
 
 # 用户名: admin
 # 密码: DataEase@123456
@@ -90,6 +88,7 @@ curl -sSL https://dataease.oss-cn-hangzhou.aliyuncs.com/quick_start_v2.sh | bash
 -   前端：[Vue.js](https://vuejs.org/)、[Element](https://element.eleme.cn/)
 -   图库：[AntV](https://antv.vision/zh)
 -   后端：[Spring Boot](https://spring.io/projects/spring-boot)
+-   电子表格：[Univer](https://github.com/dream-num/univer)
 -   数据库：[MySQL](https://www.mysql.com/)
 -   数据处理：[Apache Calcite](https://github.com/apache/calcite/)、[Apache SeaTunnel](https://github.com/apache/seatunnel)
 -   基础设施：[Docker](https://www.docker.com/)

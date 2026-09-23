@@ -8,7 +8,8 @@ import {
   RedoCommand,
   UndoCommand,
   UniverInstanceType,
-  type ICommandInfo
+  type ICommandInfo,
+  type IExecutionOptions
 } from '@univerjs/core'
 import {
   OtherFormulaMarkDirty,
@@ -20,6 +21,7 @@ import {
   SetOtherFormulaMutation
 } from '@univerjs/engine-formula'
 import {
+  SetRangeValuesMutation,
   SetWorksheetColWidthMutation,
   SetWorksheetActiveOperation,
   SetWorksheetShowCommand,
@@ -91,11 +93,16 @@ export class PreviewCommandGuardController extends Disposable {
   ) {
     super()
     this.disposeWithMe(
-      this.commandService.beforeCommandExecuted(command => this.assertCommandAllowed(command))
+      this.commandService.beforeCommandExecuted((command, options) =>
+        this.assertCommandAllowed(command, options)
+      )
     )
   }
 
-  private assertCommandAllowed(command: Readonly<ICommandInfo>): void {
+  private assertCommandAllowed(
+    command: Readonly<ICommandInfo>,
+    options?: IExecutionOptions
+  ): void {
     if (!this.modeService.isPreview() || this.modeService.isSystemWrite()) {
       return
     }
@@ -106,6 +113,16 @@ export class PreviewCommandGuardController extends Disposable {
 
     if (command.id === SetWorksheetActiveOperation.id) {
       this.assertTargetWorksheetVisible(command)
+    }
+
+    // 公式结果通知后还会单独回写单元格，仅放行引擎明确标记的本地计算结果。
+    if (
+      command.id === SetRangeValuesMutation.id &&
+      options?.onlyLocal === true &&
+      options.fromFormula === true &&
+      options.applyFormulaCalculationResult === true
+    ) {
+      return
     }
 
     if (

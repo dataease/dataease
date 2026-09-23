@@ -27,17 +27,19 @@ import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
 import { storeToRefs } from 'pinia'
 import findComponent from '@/utils/components'
-import _ from 'lodash'
+import { findIndex, forEach, get, isEmpty, sortBy, values } from 'lodash-es'
 import {
   canvasSave,
   componentPreSort,
   findDragComponent,
   findNewComponent,
+  getTabMobileMinSize,
   getTransformParams,
   isDashboard,
   isGroupOrTabCanvas,
   isMainCanvas,
-  isSameCanvas
+  isSameCanvas,
+  isTabCanvas
 } from '@/utils/canvasUtils'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -49,8 +51,15 @@ const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 
-const { curComponent, dvInfo, editMode, tabMoveOutComponentId, canvasState, mainScrollTop } =
-  storeToRefs(dvMainStore)
+const {
+  curComponent,
+  dvInfo,
+  editMode,
+  tabMoveOutComponentId,
+  canvasState,
+  mainScrollTop,
+  mobileInPc
+} = storeToRefs(dvMainStore)
 const { editorMap, areaData, isCtrlOrCmdDown } = storeToRefs(composeStore)
 const emits = defineEmits(['scrollCanvasAdjust'])
 const props = defineProps({
@@ -175,20 +184,34 @@ const props = defineProps({
     default: 'inherit'
   }
 })
-import Shape from './Shape.vue'
-import DragInfo from '@/components/visualization/common/DragInfo.vue'
-import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
-import PopArea from '@/custom-component/pop-area/Component.vue'
-import DeGrid from '@/components/data-visualization/DeGrid.vue'
-import DeGridScreen from '@/components/data-visualization/DeGridScreen.vue'
-import DragShadow from '@/components/data-visualization/canvas/DragShadow.vue'
-import GroupAreaShadow from '@/custom-component/group-area/ComponentShadow.vue'
-import PointShadow from '@/components/data-visualization/canvas/PointShadow.vue'
-import ContextMenu from './ContextMenu.vue'
-import MarkLine from './MarkLine.vue'
-import LinkJumpSet from '@/components/visualization/LinkJumpSet.vue'
-import LinkageSet from '@/components/visualization/LinkageSet.vue'
-import DatasetParamsComponent from '@/components/visualization/DatasetParamsComponent.vue'
+const Shape = defineAsyncComponent(() => import('./Shape.vue'))
+const DragInfo = defineAsyncComponent(
+  () => import('@/components/visualization/common/DragInfo.vue')
+)
+const CanvasOptBar = defineAsyncComponent(
+  () => import('@/components/visualization/CanvasOptBar.vue')
+)
+const PopArea = defineAsyncComponent(() => import('@/custom-component/pop-area/Component.vue'))
+const DeGrid = defineAsyncComponent(() => import('@/components/data-visualization/DeGrid.vue'))
+const DeGridScreen = defineAsyncComponent(
+  () => import('@/components/data-visualization/DeGridScreen.vue')
+)
+const DragShadow = defineAsyncComponent(
+  () => import('@/components/data-visualization/canvas/DragShadow.vue')
+)
+const GroupAreaShadow = defineAsyncComponent(
+  () => import('@/custom-component/group-area/ComponentShadow.vue')
+)
+const PointShadow = defineAsyncComponent(
+  () => import('@/components/data-visualization/canvas/PointShadow.vue')
+)
+const ContextMenu = defineAsyncComponent(() => import('./ContextMenu.vue'))
+const MarkLine = defineAsyncComponent(() => import('./MarkLine.vue'))
+const LinkJumpSet = defineAsyncComponent(() => import('@/components/visualization/LinkJumpSet.vue'))
+const LinkageSet = defineAsyncComponent(() => import('@/components/visualization/LinkageSet.vue'))
+const DatasetParamsComponent = defineAsyncComponent(
+  () => import('@/custom-component/group-area/ComponentShadow.vue')
+)
 
 const {
   baseWidth,
@@ -322,7 +345,14 @@ const curComponentId = computed(() => {
 
 const { emitter } = useEmitt()
 
+// 移动 Tab 沿用预览的 1:1 内容比例，拖拽坐标仍由 getTransformParams 计算
+const mobileTabEdit = computed(
+  () => dashboardActive.value && mobileInPc.value && isTabCanvas(canvasId.value)
+)
+
 const curScale = computed(() => {
+  // Shape 的背景边距、圆角也使用原尺寸，避免与组件内容的比例不一致
+  if (mobileTabEdit.value) return 1
   if (dashboardActive.value) {
     return (canvasStyleData.value.scale * 1.2) / 100
   } else {
@@ -331,6 +361,8 @@ const curScale = computed(() => {
 })
 
 const curBaseScale = computed(() => {
+  // 图表字号、名称间距等继续按配置显示，不继承 PC 编辑缩放
+  if (mobileTabEdit.value) return 1
   if (dashboardActive.value) {
     return (dvMainStore.canvasStyleData.scale * 1.2) / 100
   } else {
@@ -804,10 +836,10 @@ function reCalcCellWidth() {
   maxCell.value = cells
   itemMaxX = maxCell.value
 }
-function resizePlayer(item, newSize) {
+function resizePlayer(item, newSize, newX = item.x) {
   removeItemFromPositionBox(item)
   let belowItems = findBelowItems(item)
-  _.forEach(belowItems, function (upItem) {
+  forEach(belowItems, function (upItem) {
     let canGoUpRows = canItemGoUp(upItem)
 
     if (canGoUpRows > 0) {
@@ -815,6 +847,8 @@ function resizePlayer(item, newSize) {
     }
   })
 
+  // 先清除旧位置的占位，再应用移动 Tab 校正后的位置，避免右边界裁掉最小宽度
+  item.x = newX
   item.sizeX = newSize.sizeX
   item.sizeY = newSize.sizeY
 
@@ -882,7 +916,7 @@ function checkItemPosition(item, position) {
 function movePlayer(item, position) {
   removeItemFromPositionBox(item)
   let belowItems = findBelowItems(item)
-  _.forEach(belowItems, function (upItem) {
+  forEach(belowItems, function (upItem) {
     let canGoUpRows = canItemGoUp(upItem)
     if (canGoUpRows > 0) {
       moveItemUp(upItem, canGoUpRows)
@@ -920,7 +954,7 @@ function removeItemComponent(item) {
     if (isDashboard()) {
       removeItemFromPositionBox(item)
       let belowItems = findBelowItems(item)
-      _.forEach(belowItems, function (upItem) {
+      forEach(belowItems, function (upItem) {
         let canGoUpRows = canItemGoUp(upItem)
         if (canGoUpRows > 0) {
           moveItemUp(upItem, canGoUpRows)
@@ -958,7 +992,7 @@ function removeItem(index) {
   }
 }
 
-function addItem(item, index) {
+function addItem(item, index, preservePosition = false) {
   if (index < 0) {
     index = componentData.value.length
   }
@@ -969,9 +1003,12 @@ function addItem(item, index) {
   })
   emptyTargetCell(item)
   addItemToPositionBox(item)
-  let canGoUpRows = canItemGoUp(item)
-  if (canGoUpRows > 0) {
-    moveItemUp(item, canGoUpRows)
+  // 移动 Tab 重建占位时保留空行；普通添加、拖拽仍执行原来的向上补位
+  if (!preservePosition) {
+    let canGoUpRows = canItemGoUp(item)
+    if (canGoUpRows > 0) {
+      moveItemUp(item, canGoUpRows)
+    }
   }
 }
 
@@ -990,7 +1027,7 @@ function changeItemCoordinate(item) {
     c2: top + height / 2,
     el: item
   }
-  let index = _.findIndex(coordinates.value, function (o) {
+  let index = findIndex(coordinates.value, function (o) {
     return o.el._dragId == item._dragId
   })
   if (index != -1) {
@@ -1004,7 +1041,7 @@ function changeItemCoordinate(item) {
  */
 function emptyTargetCell(item) {
   let belowItems = findBelowItems(item)
-  _.forEach(belowItems, function (downItem) {
+  forEach(belowItems, function (downItem) {
     if (downItem['_dragId'] == item['_dragId']) return
     let moveSize = item.y + item.sizeY - downItem['y']
     if (moveSize > 0) {
@@ -1035,7 +1072,7 @@ function canItemGoUp(item) {
 function moveItemDown(item, size) {
   removeItemFromPositionBox(item)
   let belowItems = findBelowItems(item)
-  _.forEach(belowItems, function (downItem) {
+  forEach(belowItems, function (downItem) {
     if (downItem['_dragId'] == item['_dragId']) return
     let moveSize = calcDiff(item, downItem, size)
     if (moveSize > 0) {
@@ -1089,7 +1126,7 @@ function moveItemUp(item, size) {
   })
   addItemToPositionBox(item)
   changeItemCoordinate(item)
-  _.forEach(belowItems, function (upItem) {
+  forEach(belowItems, function (upItem) {
     let moveSize = canItemGoUp(upItem)
     if (moveSize > 0) {
       moveItemUp(upItem, moveSize)
@@ -1107,7 +1144,7 @@ function findBelowItems(item) {
       }
     }
   }
-  return _.sortBy(_.values(belowItems), 'y')
+  return sortBy(values(belowItems), 'y')
 }
 
 const endItemMove = (_, item, index) => {
@@ -1122,7 +1159,7 @@ const handleMouseUp = (e, item, index) => {
 }
 
 const clearInfoBox = e => {
-  if (_.isEmpty(infoBox.value)) return
+  if (isEmpty(infoBox.value)) return
   if (infoBox.value.cloneItem) {
     infoBox.value.cloneItem.remove()
   }
@@ -1186,7 +1223,8 @@ const canvasInit = () => {
       })
     } else {
       let item = componentData.value[i]
-      addItem(item, i)
+      // 移动 Tab 加载/同步只重建占位，不压缩用户布局；拖拽添加仍沿用原逻辑
+      addItem(item, i, mobileInPc.value && isTabCanvas(canvasId.value))
       i++
     }
   }, 1)
@@ -1279,7 +1317,7 @@ const onStartMove = (e, item, index) => {
 const onDragging = (e, item) => {
   // item 中的 style 为当前实时的位置
   const infoBoxTemp = infoBox.value
-  let moveItem = _.get(infoBoxTemp, 'moveItem')
+  let moveItem = get(infoBoxTemp, 'moveItem')
   scrollScreen(e)
   if (!draggable.value) return
   dragging.value(e, moveItem, moveItem._dragId)
@@ -1315,7 +1353,7 @@ const onResizing = (e, item) => {
   const { width, height } = item.style
   // item 中的 style 为当前实时的位置
   const infoBoxTemp = infoBox.value
-  let resizeItem = _.get(infoBoxTemp, 'resizeItem')
+  let resizeItem = get(infoBoxTemp, 'resizeItem')
   //调整大小时
   resizing.value(e, resizeItem, resizeItem._dragId)
   resizeItem['isPlayer'] = true
@@ -1328,21 +1366,34 @@ const onResizing = (e, item) => {
       ? Math.floor(height / cellHeight.value + 1)
       : Math.floor(height / cellHeight.value)
 
+  const mobileTab = mobileInPc.value && isTabCanvas(canvasId.value)
+  if (mobileTab) {
+    // 最小尺寸只约束本次缩放操作，并受当前画布列数限制
+    const minSize = getTabMobileMinSize(item)
+    nowSizeX = Math.min(Math.max(nowSizeX, minSize.sizeX), itemMaxX)
+    nowSizeY = Math.max(nowSizeY, minSize.sizeY)
+  }
+
   // 增加5px偏移量 防止resize时向下取整 组件向右偏移
   let newX = Math.floor((item.style.left + 5) / cellWidth.value + 1)
   let newY = Math.floor((item.style.top + 5) / cellHeight.value + 1)
   newX = newX > 0 ? newX : 1
   newY = newY > 0 ? newY : 1
+  if (mobileTab) {
+    // 宽度扩到最小值后同步左移，防止靠右组件再次被边界截窄
+    newX = Math.min(newX, itemMaxX - nowSizeX + 1)
+  }
 
   // 调整大小
   debounce(
     (function (newX, newY) {
       return function () {
         // 调整大小
-        resizePlayer(resizeItem, {
-          sizeX: nowSizeX,
-          sizeY: nowSizeY
-        })
+        resizePlayer(
+          resizeItem,
+          { sizeX: nowSizeX, sizeY: nowSizeY },
+          mobileTab ? newX : resizeItem.x
+        )
 
         infoBoxTemp.oldSizeX = nowSizeX
         infoBoxTemp.oldSizeY = nowSizeY
@@ -1361,7 +1412,7 @@ const onResizing = (e, item) => {
 
 const onMouseUp = e => {
   // startMove 中组织冒泡会导致移动事件无法传播，在这里设置（鼠标抬起）效果一致
-  if (_.isEmpty(infoBox.value)) return
+  if (isEmpty(infoBox.value)) return
   if (infoBox.value.cloneItem) {
     infoBox.value.cloneItem.remove()
   }

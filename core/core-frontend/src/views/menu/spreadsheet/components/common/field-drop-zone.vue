@@ -144,7 +144,6 @@ const handleDrop = (e: DragEvent) => {
       addedFields.forEach(field => emit('fieldAdd', field))
     }
   } catch (error) {
-    console.error('Drag and drop failed:', error)
   }
 }
 

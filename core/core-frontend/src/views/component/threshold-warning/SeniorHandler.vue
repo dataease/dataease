@@ -14,17 +14,19 @@
             role="button"
             tabindex="0"
         >
-          <i
-              class="ed-icon ed-collapse-item__arrow"
+          <!-- 与折叠组件默认箭头保持相同尺寸 -->
+          <el-icon
+              size="10"
+              class="ed-collapse-item__arrow"
               :class="{ 'is-active': active }"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+            <svg width="10" height="10" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">
               <path
                   fill="currentColor"
-                  d="M384 192v640l384-320.064z"
+                  d="M7.79266 5.24033L3.24995 8.88408C3.1262 8.98346 2.92537 8.98346 2.80142 8.88408C2.74183 8.83638 2.7085 8.77158 2.7085 8.7043V1.29615C2.70828 1.15595 2.85037 1.04199 3.02558 1.04199C3.10975 1.04199 3.19016 1.06887 3.24975 1.11657L7.79266 4.76032C7.95787 4.89282 7.95787 5.10782 7.79266 5.24032V5.24033Z"
               ></path>
             </svg>
-          </i
+          </el-icon
           >{{ t("threshold.module_name") }}
         </div>
       </div>

@@ -1,4 +1,15 @@
 export default {
+  share_visitor: {
+    no_permission: 'You do not have this permission',
+    title: 'Visitor permissions',
+    hint: 'New links are view-only by default. These permissions apply only to this public link.',
+    details: 'Allow viewing details',
+    data: 'Allow exporting data',
+    image: 'Allow exporting images / PDF',
+    buttons_hint:
+      'Shared pages respect dashboard and screen button visibility. Allowing an action does not reveal hidden buttons.',
+    save_copy: 'Save and copy link'
+  },
   common: {
     display_formats: 'Display Formats',
     dropdown_display: 'Drop-down Display',
@@ -36,6 +47,7 @@ export default {
     file_size_exceed_tips:
       'The file size exceeds the limit. Please modify the relevant configuration file.',
     permission_denied_tips: 'You are not allowed to access. Please contact the administrator.',
+    resource_not_exist_tips: 'Resource does not exist or has been deleted',
     system_upgrade_tips: 'The system has been upgraded. Please click to refresh the page.',
     refresh: 'Refresh',
     component: {
@@ -57,6 +69,8 @@ export default {
     inputText: 'Please enter',
     selectText: 'Please select',
     add: 'Add',
+    add_success: 'Add successfully',
+    component_required: 'Component option cannot be empty',
     account: 'Account',
     email: 'Email',
     phone: 'Phone',
@@ -71,7 +85,7 @@ export default {
     create_time: 'Creation time',
     edit: 'Edit',
     delete: 'Delete',
-    please_input: 'Please input ',
+    please_input: 'Please input',
     please_select: 'Please select ',
     cancel: 'Cancel',
     sure: 'Confirm',
@@ -972,6 +986,7 @@ export default {
       user_label: 'User label',
       user_email: 'Email',
       user_phone: 'Mobile phone',
+      org_name: 'Organization name',
       dept: 'Organization',
       role: 'Role'
     },
@@ -983,6 +998,7 @@ export default {
     screen: 'Data screen',
     dataset: 'Dataset',
     datasource: 'Data source',
+    spreadsheet: 'Spreadsheet',
     all_types: 'All types',
     empty_desc: 'Please select user/role and resource type',
     row_column: 'Row and column permission settings',
@@ -1260,6 +1276,13 @@ export default {
     load_data: 'Load Data'
   },
   chart: {
+    legend_display_mode: 'Display mode',
+    legend_pagination: 'Pagination',
+    legend_tile: 'Tile',
+    legend_tile_overflow: 'Tile layout',
+    legend_scroll: 'Scroll',
+    legend_adaptive: 'Fit content',
+
     self: 'Self',
     total_row: 'Entire Row',
     custom: 'Custom',
@@ -1538,6 +1561,31 @@ export default {
     chart_bar_stack_horizontal: 'Stacked bar chart',
     chart_percentage_bar_stack_horizontal: 'Percentage bar chart',
     chart_bar_range: 'Interval bar chart',
+    chart_box_plot: 'Box plot',
+    box_plot_low: 'Lower whisker (lowest non-outlier)',
+    box_plot_q1: 'First quartile (Q1)',
+    box_plot_median: 'Median',
+    box_plot_quartile_range: 'Quartile range (Q1–Q3)',
+    box_plot_q3: 'Third quartile (Q3)',
+    box_plot_high: 'Upper whisker (highest non-outlier)',
+    box_plot_outlier: 'Outlier',
+    box_plot_samples: '{count} sample | {count} samples',
+    box_plot_more_outliers: 'and {count} more',
+    box_plot_outlier_count: 'Outlier count',
+    box_plot_show_details: 'Show statistical details',
+    box_plot_details_tip:
+      'When off, show the median, quartile range, and outlier count; when on, show the full five-number summary, outlier count, and outlier values',
+    box_plot_show_outliers: 'Show outliers',
+    box_plot_outlier_tip:
+      'Outliers are raw values below Q1 - 1.5×IQR or above Q3 + 1.5×IQR, where IQR = Q3 - Q1.\nExample: if Q1 = 10 and Q3 = 20, IQR = 10 and the normal range is -5 to 35; values below -5 or above 35 are shown as outlier points.',
+    box_plot_outlier_color: 'Outlier color',
+    box_plot_outlier_follow_series: 'Follow series',
+    box_plot_outlier_custom_color: 'Custom color',
+    box_plot_outlier_size: 'Outlier size',
+    box_plot_category_tip: 'Create one box for each category to compare distributions',
+    box_plot_group_tip: 'Optional; split each category into multiple boxes for comparison',
+    box_plot_value_tip:
+      'Calculate quartiles from valid detail values without sum or average aggregation',
     chart_bidirectional_bar: 'Symmetric bar chart',
     chart_progress_bar: 'Progress bar',
     chart_line: 'Basic line chart',
@@ -2206,6 +2254,8 @@ export default {
     quota_position_row: 'Row',
     quota_col_label: 'Quota Column Label',
     table_grand_total_label: 'Total Alias',
+    total_custom_background: 'Custom Background Color',
+    total_custom_font: 'Custom Font',
     table_field_total_label: 'Field Alias',
     table_row_header_freeze: 'Row Header Freeze',
     value_formatter_total_out_percent: 'Show percentage',
@@ -2280,6 +2330,7 @@ export default {
     text: 'Text',
     time: 'Time',
     value: 'Value',
+    url: 'URL',
     mode: 'Mode',
     direct_connect: 'Direct connection',
     sync_data: 'Scheduled synchronization',
@@ -3063,6 +3114,7 @@ export default {
     query_position: 'Query Component Position',
     default: 'Default',
     to_top: 'Pin to Top',
+    to_bottom: 'Move to bottom',
     publish_recover: 'Revert Publish',
     publish_tips1: 'Visible after publication',
     publish_tips2: 'Available after publication {0}',
@@ -3868,6 +3920,7 @@ export default {
     new_page_preview: 'New Page',
     cancel_favorites: 'Cancel Favorite',
     open_dataset: 'Open Dataset',
+    open_spreadsheet: 'Open Spreadsheet',
     administrator_for_authorization:
       'No business menu permissions, please contact the administrator for authorization',
     public_link_share: 'Public Link Sharing',
@@ -4172,6 +4225,13 @@ export default {
     sync_status_distribution: 'Sync status distribution'
   },
   sync_task: {
+    index_capability_unavailable:
+      'Index capability is unavailable; select the target database again',
+    index_not_implemented: 'The target plugin has not implemented this index feature',
+    index_type_unsupported: 'This field type does not support this index',
+    key_type_unsupported: 'This field type cannot be used as a Key',
+    unsupported_option_uncheck:
+      'This option is unsupported. You can uncheck it, but cannot select it again.',
     title: 'Task Management',
     task_list: 'Task list',
     log_list: 'Task log',
@@ -4434,6 +4494,10 @@ export default {
     lark_groups: 'Lark group',
     dingtalk_groups: ' Dingtalk group',
     larksuite_groups: 'Larksuite group',
+    dingtalk_groups_tips: 'Create an application robot first and add it to the group',
+    robot_code_place: 'Defaults to the same as APP Key',
+    click_add_chat: 'Please click the button below to add a group chat',
+    add_chat_tips: 'Only supports admin-associated accounts using the client',
     send_setting: 'Send settings',
     retrying_settings: 'Send failed retry settings',
     start_time: 'Start time',
@@ -4472,6 +4536,7 @@ export default {
       view_data: 'Chart Data',
       all_data: 'All Data',
       pixel: 'Dashboard Resolution',
+      pixel_error: 'Please enter a valid pixel value',
       reci_setting: 'Receiving Settings',
       retrying: 'Retry on Failure',
       retrying_rate: 'Retry Interval (minutes)',
@@ -4848,6 +4913,10 @@ export default {
     ago: 'Ago',
     later: 'Later'
   },
+  free: {
+    batch: 'Batch',
+    save_error: "Prohibit operations on the 'Migration Resources' directory"
+  },
   relation: {
     no_permission: 'No view permission',
     datasource: 'Datasource',
@@ -4998,6 +5067,7 @@ export default {
   spreadsheet: {
     title: 'Spreadsheet',
     new_folder: 'New Folder',
+    root_folder: 'Root folder',
     new_sheet: 'New Spreadsheet',
     new_spreadsheet: 'New Spreadsheet',
     spreadsheet_name: 'Spreadsheet name',
