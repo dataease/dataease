@@ -27,6 +27,7 @@ import { isMobile } from '@/utils/utils'
 import { mixColor } from '@/utils/color'
 import { isCascadeParentCleared } from './cascade-utils'
 import { ElMessage } from 'element-plus-secondary'
+import { filterValueEquals } from '@/utils/componentUtils'
 
 interface SelectConfig {
   selectValue: any
@@ -292,7 +293,7 @@ const handleFieldIdDefaultChange = (val: string[]) => {
             ele !== null &&
             ((config.value.optionFilter &&
               config.value.optionFilter.length > 0 &&
-              config.value.optionFilter.some(item => String(item) === String(ele))) ||
+              config.value.optionFilter.some(item => filterValueEquals(item, ele))) ||
               !config.value.optionFilter ||
               config.value.optionFilter.length === 0)
           )
@@ -360,7 +361,7 @@ const handleFieldIdChange = (val: EnumValue) => {
           return (
             (config.value.optionFilter &&
               config.value.optionFilter.length > 0 &&
-              config.value.optionFilter.some(item => String(item) === String(ele))) ||
+              config.value.optionFilter.some(item => filterValueEquals(item, ele))) ||
             !config.value.optionFilter ||
             config.value.optionFilter.length === 0
           )
@@ -719,7 +720,7 @@ const setOptions = (num: number) => {
               ele !== null &&
               ((config.value.optionFilter &&
                 config.value.optionFilter.length > 0 &&
-                config.value.optionFilter.some(item => String(item) === String(ele))) ||
+                config.value.optionFilter.some(item => filterValueEquals(item, ele))) ||
                 !config.value.optionFilter ||
                 config.value.optionFilter.length === 0)
             )
