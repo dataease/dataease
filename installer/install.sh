@@ -32,7 +32,7 @@ function db_defaults() {
       mysql)
          DB_DEFAULT_PORT=3306
          DB_DEFAULT_PARAMS="autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true"
-         DB_DRIVER_JAR="mariadb-java-client-3.5.3.jar"
+         DB_DRIVER_JAR="mariadb-java-client-3.3.6.jar"
          ;;
       pg)
          DB_DEFAULT_PORT=5432
@@ -62,7 +62,7 @@ function db_defaults() {
       greatsql)
          DB_DEFAULT_PORT=3306
          DB_DEFAULT_PARAMS="autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true"
-         DB_DRIVER_JAR="mariadb-java-client-3.5.3.jar"
+         DB_DRIVER_JAR="mariadb-java-client-3.3.6.jar"
          ;;
       *)
          DB_DEFAULT_PORT=3306
