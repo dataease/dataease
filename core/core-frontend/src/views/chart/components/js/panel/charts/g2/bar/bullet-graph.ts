@@ -465,7 +465,8 @@ export class BulletGraph extends G2ChartView<RuntimeOptions, G2Bullet> {
           }
           return ranges.symbol
         },
-        itemLabelText: d => {
+        // 在 G2 生成图例数据时映射名称，分页与平铺共用同一份 label。
+        labelFormatter: d => {
           const key = getLegendKey(d)
           return (
             rangeLegendLabelMap[key] ||
