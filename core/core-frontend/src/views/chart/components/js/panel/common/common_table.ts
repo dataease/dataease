@@ -1302,15 +1302,15 @@ export function matchTableCondition(
   }
 
   if ([2, 3, 4].includes(sourceField.deType)) {
-    // 仅对明确的 null 或空字符串应用双空例外，undefined 可能是取值失败，仍沿用历史比较
+    // 动态字段值均为 null 或空字符串时视为相等，undefined 可能是取值失败，仍沿用历史比较
     if (
       rule.type === 'dynamic' &&
-      rule.term === 'not_eq' &&
+      (rule.term === 'eq' || rule.term === 'not_eq') &&
       rule.dynamicField?.summary === 'value' &&
       (value === null || value === '') &&
       (targetValue === null || targetValue === '')
     ) {
-      return false
+      return rule.term === 'eq'
     }
     // 历史规则只转换比较值，保留当前值的类型和关系运算的隐式转换行为
     const current = value
