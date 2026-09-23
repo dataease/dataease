@@ -40,6 +40,9 @@ public class XpackShareServer implements XpackShareApi {
 
     @PostMapping("/visitorPermissions")
     public void saveVisitorPermissions(@RequestBody VisitorPermissionsRequest request) {
+        if (!io.dataease.license.utils.LicenseUtil.licenseValid()) {
+            DEException.throwException(io.dataease.i18n.Translator.get("i18n_share_operation_denied"));
+        }
         if (request.resourceId() == null || request.visitorPermissions() == null
                 || request.visitorPermissions() < 0 || request.visitorPermissions() > 7) {
             DEException.throwException(io.dataease.i18n.Translator.get("i18n_share_operation_denied"));
