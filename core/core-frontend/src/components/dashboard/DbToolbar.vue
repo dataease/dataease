@@ -657,7 +657,7 @@ const userGroupShow = ref(false)
             themes="light"
             show-split-line
             is-label
-            :base-width="215"
+            :base-width="115"
             :icon-name="dvMoreCom"
             :title="t('visualization.more')"
           >
