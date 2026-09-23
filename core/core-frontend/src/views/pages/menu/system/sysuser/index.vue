@@ -51,6 +51,10 @@ const addUser = () => {
   userFormDialog.value.init()
 }
 
+// -1 requests users without an organization; an omitted oid means all organizations.
+const EMPTY_ORG_ID = '-1'
+const hasSelectedOrg = (oid?: string | number) =>
+  oid != null && oid !== '' && String(oid) !== EMPTY_ORG_ID
 const orgLoad = ref(false)
 const transformOrgTree = (nodes: any[]): any[] =>
   nodes.map(n => ({
@@ -63,7 +67,14 @@ const drawerMainOpen = async () => {
   // Load org tree (once)
   if (!orgLoad.value) {
     const orgRes = await orgSearchApi({})
-    filterOption[2].option = transformOrgTree(orgRes.data || [])
+    filterOption[2].option = [
+      ...transformOrgTree(orgRes.data || []),
+      {
+        value: EMPTY_ORG_ID,
+        label: t('commons.adv_search.operators.is_empty'),
+        children: []
+      }
+    ]
     orgLoad.value = true
   }
   // Get current org selection
@@ -71,12 +82,12 @@ const drawerMainOpen = async () => {
   const currentOid = oidCond?.value
   const currentOidVal = Array.isArray(currentOid) ? currentOid?.[0] : currentOid
   // Set role filter disabled state
-  filterOption[3].disabled = !currentOidVal
-  filterOption[3].property.placeholder = currentOidVal
+  filterOption[3].disabled = !hasSelectedOrg(currentOidVal)
+  filterOption[3].property.placeholder = hasSelectedOrg(currentOidVal)
     ? t('commons.role')
     : t('org.select_org_first')
   // Load roles (org-scoped if org selected, empty otherwise)
-  await loadRolesForOrg(currentOidVal ? [currentOidVal] : undefined)
+  await loadRolesForOrg(hasSelectedOrg(currentOidVal) ? [currentOidVal] : undefined)
   drawerMainRef.value.init()
 }
 const drawerMainClose = () => {
@@ -277,16 +288,16 @@ const treeFilterChangeHandler = ({
   operator: string
 }) => {
   if (field === 'oid') {
-    const newOid = value?.[0]
-    const oldOid = state.conditions?.find(c => c.field === 'oid')?.value
-    const oldOidVal = Array.isArray(oldOid) ? oldOid?.[0] : oldOid
-    if (newOid !== oldOidVal || (newOid == null && oldOidVal == null)) {
-      drawerMainRef.value?.cleanrInnerValue(3)
-      filterOption[3].disabled = !newOid
-      filterOption[3].property.placeholder = newOid ? t('commons.role') : t('org.select_org_first')
-      filterOption[3].property.customPlaceholder = newOid ? '' : t('org.select_org_first_top')
-      loadRolesForOrg(newOid ? [newOid] : undefined)
-    }
+    const newOid = Array.isArray(value) ? value[0] : value
+    drawerMainRef.value?.cleanrInnerValue(3)
+    filterOption[3].disabled = !hasSelectedOrg(newOid)
+    filterOption[3].property.placeholder = hasSelectedOrg(newOid)
+      ? t('commons.role')
+      : t('org.select_org_first')
+    filterOption[3].property.customPlaceholder = hasSelectedOrg(newOid)
+      ? ''
+      : t('org.select_org_first_top')
+    loadRolesForOrg(hasSelectedOrg(newOid) ? [newOid] : undefined)
   }
 }
 const searchCondition = conditions => {
@@ -299,12 +310,14 @@ const searchCondition = conditions => {
   const oldOidVal = Array.isArray(oldOid) ? oldOid?.[0] : oldOid
   if (newOidVal !== oldOidVal) {
     // Toggle role filter disabled state
-    filterOption[3].disabled = !newOidVal
-    filterOption[3].property.placeholder = newOidVal ? t('commons.role') : t('org.select_org_first')
+    filterOption[3].disabled = !hasSelectedOrg(newOidVal)
+    filterOption[3].property.placeholder = hasSelectedOrg(newOidVal)
+      ? t('commons.role')
+      : t('org.select_org_first')
     // Clear role condition
     conditions = conditions.filter(c => c.field !== 'roleIdList')
     // Reload roles for new org
-    loadRolesForOrg(newOidVal ? [newOidVal] : undefined)
+    loadRolesForOrg(hasSelectedOrg(newOidVal) ? [newOidVal] : undefined)
   }
   state.conditions = conditions
   search()
@@ -312,7 +325,7 @@ const searchCondition = conditions => {
   drawerMainClose()
 }
 const loadRolesForOrg = (oidList?: number[] | string[]) => {
-  if (!oidList || oidList.length === 0) {
+  if (!oidList || oidList.length === 0 || !hasSelectedOrg(oidList[0])) {
     filterOption[3].option = []
     return Promise.resolve()
   }
