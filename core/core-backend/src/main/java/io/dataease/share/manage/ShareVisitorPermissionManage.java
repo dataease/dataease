@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import io.dataease.constant.AuthConstant;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
+import io.dataease.license.utils.LicenseUtil;
 import io.dataease.share.dao.auto.entity.XpackShare;
 import io.dataease.share.dao.auto.mapper.XpackShareRepository;
 import io.dataease.utils.ServletUtils;
@@ -25,8 +26,9 @@ public class ShareVisitorPermissionManage {
     }
 
     public int creatorPermissions(Long resourceId) {
+        if (!LicenseUtil.licenseValid()) return 7;
         var auth = io.dataease.utils.CommonBeanFactory.getBean(io.dataease.api.permissions.auth.api.InteractiveAuthApi.class);
-        if (auth == null) return 7;
+        if (auth == null) return 0;
         var permission = auth.queryAuth(resourceId);
         if (permission == null || permission.getWeight() <= 1) return 0;
         if (permission.getWeight() == 9) return 7;
@@ -48,6 +50,8 @@ public class ShareVisitorPermissionManage {
         var shares = repository.findAll((root, query, cb) -> cb.and(
                 cb.equal(root.get("creator"), uid), cb.equal(root.get("resourceId"), resourceId)));
         if (shares.isEmpty()) DEException.throwException(Translator.get("i18n_share_operation_denied"));
+        // Community sharing retains its original operations, but still requires an existing link.
+        if (!LicenseUtil.licenseValid()) return 7;
         // Be conservative if legacy duplicate shares exist.
         return shares.stream().mapToInt(ShareVisitorPermissionManage::permissions).reduce(7, (a, b) -> a & b)
                 & creatorPermissions(resourceId);
