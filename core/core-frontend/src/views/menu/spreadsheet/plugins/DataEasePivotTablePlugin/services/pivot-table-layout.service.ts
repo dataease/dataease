@@ -57,9 +57,20 @@ export class PivotTableLayoutService {
     config: PivotTableConfig,
     result: PivotTableQueryResult
   ): PivotTableLayout {
-    const rowConfigured = config.data.zones.rows || []
-    const columnConfigured = config.data.zones.columns || []
     const quotaFields = result.data.quotaFields || []
+    const rowFieldIds = new Set(
+      [...(result.data.rowFields || []), ...quotaFields].map(field => String(field.id))
+    )
+    const columnFieldIds = new Set(
+      [...(result.data.columnFields || []), ...quotaFields].map(field => String(field.id))
+    )
+    // 后端已按列权限剔除字段，表头和角头也只使用实际返回的字段。
+    const rowConfigured = (config.data.zones.rows || []).filter(field =>
+      rowFieldIds.has(String(field.id))
+    )
+    const columnConfigured = (config.data.zones.columns || []).filter(field =>
+      columnFieldIds.has(String(field.id))
+    )
     const records = result.data.rowData || []
     const quotaInRows = rowConfigured.some(field => field.groupType === 'q')
     const quotaInColumns = columnConfigured.some(field => field.groupType === 'q')
