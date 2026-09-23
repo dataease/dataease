@@ -4,6 +4,9 @@
     v-model="drawerVisible"
     modal-class="threshold-info-drawer"
     size="896px"
+    :show-close="!saving"
+    :close-on-click-modal="!saving"
+    :close-on-press-escape="!saving"
     @close="beforeClose"
     direction="rtl"
   >
@@ -50,7 +53,7 @@
 
     <template #footer>
       <span class="threshold-footer">
-        <el-button secondary @click="cancelClick">{{
+        <el-button secondary :disabled="saving" @click="cancelClick">{{
           t("common.cancel")
         }}</el-button>
         <el-button
@@ -64,10 +67,11 @@
           element-loading-spinner=""
           v-if="activeStep === 1"
           secondary
+          :disabled="saving"
           @click="prev"
           >{{ t("common.prev") }}</el-button
         >
-        <el-button type="primary" v-if="activeStep === 1" @click="save">
+        <el-button type="primary" v-if="activeStep === 1" :loading="saving" @click="save">
           {{ t("commons.save") }}</el-button
         >
       </span>
@@ -98,6 +102,7 @@ const props = defineProps({
 });
 
 const drawerVisible = ref(false);
+const saving = ref(false)
 const thresholdId = ref("");
 const baseForm = ref();
 const baseFormData = ref({});
@@ -153,10 +158,16 @@ const next = async () => {
   }
 };
 const save = async () => {
-  const warnData = await warnForm?.value?.getFormData();
-  if (warnData) {
-    warnFormData.value = Object.assign(warnFormData.value, warnData);
-    saveHandler();
+  if (saving.value) return
+  saving.value = true
+  try {
+    const warnData = await warnForm?.value?.getFormData()
+    if (warnData) {
+      warnFormData.value = Object.assign(warnFormData.value, warnData)
+      await saveHandler()
+    }
+  } finally {
+    saving.value = false
   }
 };
 const saveHandler = () => {
@@ -169,7 +180,7 @@ const saveHandler = () => {
     param["id"] = thresholdId.value;
   }
   const method = isEdit.value ? thresholdEditApi : thresholdSaveApi;
-  method(param).then((res) => {
+  return method(param).then((res) => {
     if (!res?.code) {
       ElMessage.success(t("common.save_success"));
       emit("refreshList");
