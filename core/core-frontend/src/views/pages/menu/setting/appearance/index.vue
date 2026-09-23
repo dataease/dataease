@@ -487,7 +487,7 @@ const topForm = reactive<{
   showDoc: string
   showAbout: string
 }>({
-  help: 'https://dataease.io/docs/',
+  help: 'https://docs.fit2cloud.com/dataease/',
   showAi: '0',
   showDoc: '0',
   showAbout: '0'
@@ -499,7 +499,7 @@ const defaultTopForm = reactive<{
   showDoc: string
   showAbout: string
 }>({
-  help: 'https://dataease.io/docs/',
+  help: 'https://docs.fit2cloud.com/dataease/',
   showAi: '0',
   showDoc: '0',
   showAbout: '0'
