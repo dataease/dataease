@@ -60,13 +60,13 @@ const handleDragEnd = e => {
       drag-info="DeFrame&DeFrame"
       v-on:click="newComponent('DeFrame')"
     ></drag-component>
-    <drag-component
-      :themes="themes"
-      :icon="dvTabScreen"
-      :label="$t('visualization.screen_page')"
-      drag-info="DeScreen&DeScreen"
-      v-on:click="newComponent('DeScreen', 'DeScreen')"
-    ></drag-component>
+    <!--    <drag-component-->
+    <!--      :themes="themes"-->
+    <!--      :icon="dvTabScreen"-->
+    <!--      :label="$t('visualization.screen_page')"-->
+    <!--      drag-info="DeScreen&DeScreen"-->
+    <!--      v-on:click="newComponent('DeScreen', 'DeScreen')"-->
+    <!--    ></drag-component>-->
   </div>
 </template>
 
