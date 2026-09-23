@@ -653,7 +653,8 @@ public class DefaultChartHandler extends AbstractChartPlugin {
                                 String groupStackAxis = StringUtils.join(groupStackAxisArr, '-');
                                 String preVal = preDataItem[finalDataIndex];
                                 if (StringUtils.isBlank(preVal)) {
-                                    preVal = "0";
+                                    // 空值保留显示，不覆盖该系列之前的累计值
+                                    return;
                                 }
                                 preDataMap.put(groupStackAxis, new BigDecimal(preVal));
                             });
