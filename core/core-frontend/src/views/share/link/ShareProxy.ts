@@ -4,6 +4,14 @@ import { useCache } from '@/hooks/web/useCache'
 import { isInIframe } from '@/utils/utils'
 const { wsCache } = useCache()
 
+const getParamIndex = (curLocation: string) => {
+  let pmIndex = curLocation.lastIndexOf('?')
+  while (pmIndex > 0 && curLocation[pmIndex - 1] === '/') {
+    pmIndex = curLocation.lastIndexOf('?', pmIndex - 1)
+  }
+  return pmIndex
+}
+
 export interface TicketValidVO {
   ticketValid: boolean
   ticketExp: boolean
@@ -30,7 +38,7 @@ class ShareProxy {
   }
   getTicket() {
     const curLocation = window.location.href
-    const pmIndex = curLocation.lastIndexOf('?')
+    const pmIndex = getParamIndex(curLocation)
     if (pmIndex == -1) {
       return null
     }
@@ -47,7 +55,7 @@ class ShareProxy {
   }
   setUuid() {
     const curLocation = window.location.href
-    const pmIndex = curLocation.lastIndexOf('?')
+    const pmIndex = getParamIndex(curLocation)
     const uuidObj = curLocation.substring(
       curLocation.lastIndexOf('de-link/') + 8,
       pmIndex > 0 ? pmIndex : curLocation.length
