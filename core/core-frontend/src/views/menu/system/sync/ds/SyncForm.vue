@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import dvFolder from '@/assets/svg/dv-folder.svg'
-import {onMounted, reactive, ref} from 'vue'
+import {reactive, ref, watch} from 'vue'
+import type { FormInstance } from 'element-plus-secondary'
 import {BusiTreeRequest} from "@/models/tree/TreeNode";
 import {checkRepeat, getDsTree, save} from "@/api/datasource";
 import {ElMessage, ElMessageBox, ElMessageBoxOptions} from "element-plus-secondary";
@@ -26,10 +27,12 @@ export interface Tree {
 }
 const activeAll = ref(false)
 const formLoading = ref<boolean>(false)
+const loadingDirectories = ref(false)
+const syncForm = ref<FormInstance>()
 const syncTargetToDatasourceFormVisible = ref<boolean>(false)
 let request = ref<any>()
 const form = reactive({
-  pid: '0',
+  pid: '' as string | number,
   name: ''
 })
 const init = (dsObj:any) => {
@@ -56,24 +59,50 @@ const nodeClick = (data: Tree) => {
   activeAll.value = false
   form.pid = data.id as string
 }
-const getDsDirList = () => {
+let directoryRequest = 0
+const getDsDirList = async () => {
+  const currentRequest = ++directoryRequest
+  form.pid = ''
+  state.tData = []
+  syncForm.value?.clearValidate()
+  loadingDirectories.value = true
   const params = { leaf: false, id: 0, weight: 7 } as BusiTreeRequest
-  getDsTree(params).then(res => {
-    dfs(res as unknown as Tree[])
+  try {
+    const res = await getDsTree(params)
+    if (currentRequest !== directoryRequest) return
     state.tData = (res as unknown as Tree[]) || []
-    if (state.tData.length && state.tData[0].name === 'root' && state.tData[0].id === '0') {
-      state.tData[0].name = t('sync_datasource.datasource')
-    }
-  })
+    state.tData.forEach(node => {
+      if (String(node.id) === '0' && node.name === 'root') {
+        node.name = t('sync_datasource.datasource')
+      }
+    })
+    dfs(state.tData)
+    form.pid = state.tData[0]?.id ?? ''
+  } catch {
+    // 请求失败时不使用上一次打开弹窗的目录。
+  } finally {
+    if (currentRequest === directoryRequest) loadingDirectories.value = false
+  }
 }
-onMounted(() => {
-  getDsDirList()
+watch(syncTargetToDatasourceFormVisible, visible => {
+  if (visible) {
+    request.value = undefined
+    getDsDirList()
+  } else {
+    directoryRequest++
+  }
 })
 const closeDialog = ()=> {
   syncTargetToDatasourceFormVisible.value = false
 }
-const  onSync = ()=> {
-  if (request.value !== null && form.name != "") {
+const onSync = async () => {
+  if (loadingDirectories.value || formLoading.value || !request.value) return
+  const containsSelection = (nodes: Tree[]): boolean => nodes.some(node =>
+    String(node.id) === String(form.pid) || containsSelection(node.children || [])
+  )
+  if (!containsSelection(state.tData)) form.pid = ''
+  if (!(await syncForm.value?.validate().catch(() => false))) return
+  if (request.value && form.name != "") {
     let options = {
       confirmButtonType: 'danger',
       type: 'warning',
@@ -154,11 +183,11 @@ defineExpose({
    </template>
     <template #default>
       <div class="dialog-content">
-        <el-form :model="form" label-position="top" v-loading="formLoading" :rules="rules">
+        <el-form ref="syncForm" :model="form" label-position="top" v-loading="formLoading || loadingDirectories" :rules="rules">
           <el-form-item :label="t('sync_datasource.datasource') + t('sync_datasource.name')" prop="name" style="margin-bottom: 24px">
             <el-input v-model="form.name" :placeholder="t('sync_datasource.input_ds_name')"></el-input>
           </el-form-item>
-          <el-form-item :label="t('sync_datasource.folder')" style="margin-bottom: 0">
+          <el-form-item :label="t('sync_datasource.folder')" prop="pid" style="margin-bottom: 0">
             <el-tree-select
                 v-model="form.pid"
                 :data="state.tData"
@@ -166,6 +195,8 @@ defineExpose({
                 style="width: 100%"
                 :render-after-expand="false"
                 :props="props"
+                :placeholder="t('sync_datasource.select_folder')"
+                check-strictly
                 @node-click="nodeClick"
                 :filter-method="filterMethod"
                 filterable
@@ -184,7 +215,7 @@ defineExpose({
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="closeDialog">{{ t('common.cancel') }}</el-button>
-        <el-button type="primary" @click="onSync">{{ t('common.sure') }}</el-button>
+        <el-button type="primary" :disabled="loadingDirectories || !state.tData.length || !request" :loading="formLoading" @click="onSync">{{ t('common.sure') }}</el-button>
       </span>
     </template>
   </el-dialog>
