@@ -12,9 +12,6 @@ import java.util.List;
 
 public interface XpackComponentApi {
 
-    @GetMapping("/content/{name}")
-    String content(@PathVariable("name") String name);
-
     @GetMapping("/contentPlugin/{name}")
     String pluginContent(@PathVariable("name") String name);
 

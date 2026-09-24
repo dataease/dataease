@@ -14,7 +14,7 @@ export default {
   build: {
     cssCodeSplit: false,
     rollupOptions: {
-      external: id => /de-xpack/.test(id) || /extensions/.test(id),
+      external: id => /extensions/.test(id),
       output: {
         // 用于命名代码拆分时创建的共享块的输出命名
         chunkFileNames: `assets/chunk/[name]-${pkg.version}-${pkg.name}.js`,
