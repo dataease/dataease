@@ -80,7 +80,6 @@ const aesDecryptWithIv = (encryptedBase64: string, secretKey: string): string =>
 
 const hmac_white_list = [
   /* '/xpackModel',
-  '/DEXPackTs.umd.js',
   '/sysParameter/requestTimeOut',
   '/appearance/image/',
   '/sysParameter/i18nOptions',
