@@ -399,7 +399,7 @@ const onSubmit = () => {
   if (requestData.target.datasourceId) {
     validateByIdApi(requestData.target.datasourceId)
         .then((data) => {
-          if (!data.data) {
+          if (data.data?.status !== 'Success') {
             ElMessage.error(t("sync_task.target_database_status_is_abnormal"));
             return;
           }
