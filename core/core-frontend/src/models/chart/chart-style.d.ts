@@ -41,6 +41,10 @@ declare interface ChartTextStyle {
    */
   show: boolean
   /**
+   * 富文本标题是否已显式启用；历史富文本无此字段时默认不显示标题
+   */
+  richTextTitleEnabled?: boolean
+  /**
    * 字体大小
    */
   fontSize: number

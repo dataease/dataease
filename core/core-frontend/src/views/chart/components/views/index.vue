@@ -166,9 +166,16 @@ const props = defineProps({
 })
 const dynamicAreaId = ref('')
 const { view, showPosition, element, active, searchCount, scale, suffixId } = toRefs(props)
+const richTextTitleEnabled = computed(() => {
+  if (element.value.innerType !== 'rich-text' && view.value.type !== 'rich-text') {
+    return true
+  }
+  return view.value.customStyle?.text?.richTextTitleEnabled === true
+})
 const titleShow = computed(() => {
   return (
-    !['rich-text', 'picture-group'].includes(element.value.innerType) &&
+    element.value.innerType !== 'picture-group' &&
+    richTextTitleEnabled.value &&
     state.title_show &&
     (element.value.dashboardHidden ? true : showPosition.value !== 'viewDialog')
   )

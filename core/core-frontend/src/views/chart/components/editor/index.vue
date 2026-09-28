@@ -203,6 +203,24 @@ const templateStatusShow = computed(() => {
 
 const { view } = toRefs(props)
 
+const normalizeRichTextTitle = () => {
+  if (view.value?.type !== 'rich-text') {
+    return
+  }
+  const textStyle = view.value.customStyle?.text
+  if (textStyle && textStyle.richTextTitleEnabled !== true) {
+    textStyle.show = false
+  }
+}
+
+watch(
+  () => [view.value?.id, view.value?.type, view.value?.customStyle?.text?.richTextTitleEnabled],
+  () => {
+    normalizeRichTextTitle()
+  },
+  { immediate: true }
+)
+
 let cacheId = ''
 
 const clearRemove = items => {
@@ -1255,6 +1273,9 @@ const onChangeMiscStyleForm = val => {
 }
 
 const onTextChange = val => {
+  if (view.value.type === 'rich-text') {
+    val.richTextTitleEnabled = true
+  }
   view.value.customStyle.text = val
   if (curComponent.value) {
     curComponent.value.name = view.value.title
