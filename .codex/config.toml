@@ -4,7 +4,7 @@ args = [".codex/tapd_mcp/launch.py"]
 enabled = true
 startup_timeout_sec = 20
 tool_timeout_sec = 60
-enabled_tools = ["tapd_get_current_user", "tapd_parse_url", "tapd_get_story", "tapd_list_stories", "tapd_get_task", "tapd_list_tasks", "tapd_get_bug", "tapd_list_bugs", "tapd_get_iteration", "tapd_list_iterations", "tapd_list_comments", "tapd_get_story_related_bugs", "tapd_get_story_changes", "tapd_list_workspace_users"]
+enabled_tools = ["tapd_get_current_user", "tapd_parse_url", "tapd_get_story", "tapd_list_stories", "tapd_get_task", "tapd_list_tasks", "tapd_get_bug", "tapd_list_bugs", "tapd_get_iteration", "tapd_list_iterations", "tapd_list_comments", "tapd_get_story_related_bugs", "tapd_get_story_changes", "tapd_list_workspace_users", "get_stories_or_tasks", "get_story_or_task_count", "get_bug", "get_bug_count", "get_comments", "get_iterations", "get_related_bugs", "get_workspace_users", "get_entity_custom_fields", "get_entity_attachments", "get_image", "get_workflows_status_map", "get_workitem_types"]
 
 [mcp_servers.playwright]
 command = "python3"
