@@ -491,6 +491,7 @@ public class DatasetDataManage {
         s = provider.replaceComment(s);
         SqlVariableHandleResult sqlResult = new SqlparserUtils().handleVariableDefaultValueWithPreparedParams(datasetSQLManage.subPrefixSuffixChar(s), dto.getSqlVariableDetails(), true, true, null, dto.getIsCross(), dsMap, pluginManage, getUserEntity());
         String originSql = sqlResult.getSql();
+        SQLUtils.validateSingleReadOnlySelect(originSql);
         datasourceRequest.setTableFieldWithValues(sqlResult.getTableFieldWithValues());
 
         // sql 作为临时表，外层加上limit
