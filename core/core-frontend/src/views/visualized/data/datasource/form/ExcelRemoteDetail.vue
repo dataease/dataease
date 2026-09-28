@@ -958,6 +958,7 @@ defineExpose({
         </div>
       </template>
       <el-form
+        @submit.prevent
         ref="dsApiForm"
         :model="form"
         style="margin-top: 24px"

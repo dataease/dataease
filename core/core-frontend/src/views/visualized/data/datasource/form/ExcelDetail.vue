@@ -553,6 +553,7 @@ defineExpose({
   <div class="excel-detail">
     <div class="detail-inner">
       <el-form
+        @submit.prevent
         ref="excelForm"
         require-asterisk-position="right"
         :model="param"

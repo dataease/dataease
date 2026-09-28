@@ -705,6 +705,7 @@ defineExpose({
 
     <el-row v-show="active === 0 && dsType === 'API'">
       <el-form
+        @submit.prevent
         ref="apiItemBasicInfo"
         :model="apiItem"
         label-position="top"
@@ -820,6 +821,7 @@ defineExpose({
     </el-row>
     <el-row v-show="active === 1">
       <el-form
+        @submit.prevent
         style="width: 100%"
         ref="apiItemForm"
         :model="apiItem"
