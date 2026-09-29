@@ -15,3 +15,24 @@ export const refreshApi = (time?: any) => request.get({ url: '/login/refresh', p
 export const uiLoadApi = () => request.get({ url: '/sysParameter/ui' })
 
 export const loginCategoryApi = () => request.get({ url: '/sysParameter/defaultLogin' })
+
+export interface MfaData {
+  enabled: boolean
+  ready: boolean
+  uid: string
+  origin?: number
+  challenge?: string
+}
+
+export const mfaQrApi = (mfa: MfaData) =>
+  request.post({
+    url: `/mfa/qr/${mfa.uid}`,
+    headers: { 'X-DE-MFA-Challenge': mfa.challenge }
+  })
+
+export const mfaLoginApi = (mfa: MfaData, code: string) =>
+  request.post({ url: '/mfa/login', data: { id: mfa.uid, code, challenge: mfa.challenge } })
+
+export const mfaBindQrApi = () => request.get({ url: '/user/mfaQr' })
+
+export const mfaBindApi = (code: string) => request.post({ url: '/user/mfaBind', data: { code } })

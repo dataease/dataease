@@ -41,6 +41,7 @@ import request from '@/config/axios'
 import { useCache } from '@/hooks/web/useCache'
 import router from '@/router'
 import { platformLoginApi, loginCategoryApi } from '@/api/login'
+import type { MfaData } from '@/api/login'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { getQueryString, isLarkPlatform, isPlatformClient, checkPlatform } from '@/utils/utils'
 import { loadClient, LoginCategory } from './PlatformClient'
@@ -66,8 +67,9 @@ const saml2Handler = ref()
 const state = reactive({
   mfaData: {
     enabled: false,
-    ready: false
-  }
+    ready: false,
+    uid: ''
+  } as MfaData
 })
 const emits = defineEmits(['switchTab', 'autoCallback'])
 const init = (cb) => {
@@ -105,7 +107,7 @@ const qrStatusChange = (activeComponent: string) => {
   }
 }
 const showMfa = ref(false)
-const toMfa = mfa => {
+const toMfa = (mfa: MfaData) => {
   state.mfaData = mfa
   showMfa.value = true
   if (document.getElementsByClassName('preheat-container')?.length) {
