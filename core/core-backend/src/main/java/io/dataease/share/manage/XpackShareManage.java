@@ -397,9 +397,7 @@ public class XpackShareManage {
     }
 
     private void generateLinkToken(XpackShare xpackShare) {
-        String defaultPwd = shareSecretManage.getDefaultPwd();
-        String secret = StringUtils.isBlank(xpackShare.getPwd()) ? defaultPwd : xpackShare.getPwd();
-        String linkToken = LinkTokenUtil.generate(xpackShare.getCreator(), xpackShare.getResourceId(), xpackShare.getExp(), secret, xpackShare.getOid());
+        String linkToken = LinkTokenUtil.generate(xpackShare, shareSecretManage.getDefaultPwd());
         HttpServletResponse response = ServletUtils.response();
         assert response != null;
         response.addHeader(AuthConstant.LINK_TOKEN_KEY, linkToken);
