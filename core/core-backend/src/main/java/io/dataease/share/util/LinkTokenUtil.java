@@ -14,6 +14,8 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class LinkTokenUtil {
+    // Revoke v2 tokens, which could be issued by the password-only endpoint.
+    private static final int TOKEN_VERSION = 3;
     private static final long TOKEN_LIFETIME = 8 * 60 * 60 * 1000L;
 
     public static String generate(XpackShare share, String serverSecret) {
@@ -22,7 +24,7 @@ public class LinkTokenUtil {
         if (share.getExp() != null && share.getExp() > 0) expires = Math.min(expires, share.getExp());
         if (expires <= now) throw new IllegalArgumentException("Share expired");
         return JWT.create().withIssuer("dataease").withAudience("share")
-                .withClaim("purpose", "link").withClaim("version", 2)
+                .withClaim("purpose", "link").withClaim("version", TOKEN_VERSION)
                 .withClaim("shareId", share.getId()).withClaim("uid", share.getCreator())
                 .withClaim("resourceId", share.getResourceId()).withClaim("oid", share.getOid())
                 .withJWTId(UUID.randomUUID().toString()).withIssuedAt(new Date(now))
@@ -31,7 +33,7 @@ public class LinkTokenUtil {
 
     public static DecodedJWT verify(String token, XpackShare share, String serverSecret) {
         DecodedJWT jwt = JWT.require(algorithm(share, serverSecret)).withIssuer("dataease")
-                .withAudience("share").withClaim("purpose", "link").withClaim("version", 2)
+                .withAudience("share").withClaim("purpose", "link").withClaim("version", TOKEN_VERSION)
                 .withClaim("shareId", share.getId()).withClaim("uid", share.getCreator())
                 .withClaim("resourceId", share.getResourceId()).build().verify(token);
         if (jwt.getExpiresAt() == null || jwt.getIssuedAt() == null || jwt.getId() == null

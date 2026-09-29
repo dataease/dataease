@@ -401,11 +401,9 @@ public class XpackShareManage {
         XpackShare xpackShare = xpackShareRepository.findOne(xpackShareSpec).orElse(null);
         if (xpackShare == null) return false;
         shareAuthorizationManage.requireValidShare(xpackShare);
-        boolean valid = StringUtils.equals(xpackShare.getUuid(), uuid) && StringUtils.equals(xpackShare.getPwd(), pwd);
-        if (valid) {
-            generateLinkToken(xpackShare);
-        }
-        return valid;
+        // Password verification is not share authorization. After reloading, the client
+        // obtains its token from proxyInfo only after every share policy has passed.
+        return StringUtils.equals(xpackShare.getUuid(), uuid) && StringUtils.equals(xpackShare.getPwd(), pwd);
     }
 
     private void generateLinkToken(XpackShare xpackShare) {
