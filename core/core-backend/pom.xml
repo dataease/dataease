@@ -131,46 +131,6 @@
 
             <dependencies>
                 <dependency>
-                    <groupId>com.dameng</groupId>
-                    <artifactId>DmJdbcDriver18</artifactId>
-                    <version>8.1.3.140</version>
-                </dependency>
-                <dependency>
-                    <groupId>com.microsoft.sqlserver</groupId>
-                    <artifactId>mssql-jdbc</artifactId>
-                    <!-- JDK8 用 jre8，JDK11+ 用 jre11 -->
-                    <version>12.8.0.jre8</version>
-                </dependency>
-                <dependency>
-                    <groupId>com.oracle.database.jdbc</groupId>
-                    <artifactId>ojdbc10</artifactId>
-                    <version>19.19.0.0</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.postgresql</groupId>
-                    <artifactId>postgresql</artifactId>
-                </dependency>
-                <dependency>
-                    <groupId>cn.com.kingbase</groupId>
-                    <artifactId>kingbase8</artifactId>
-                    <version>8.6.0</version>
-                </dependency>
-                <dependency>
-                    <groupId>io.dataease</groupId>
-                    <artifactId>xpack-base</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>io.dataease</groupId>
-                    <artifactId>xpack-permissions</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>io.dataease</groupId>
-                    <artifactId>xpack-sync</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-                <dependency>
                     <groupId>com.h2database</groupId>
                     <artifactId>h2</artifactId>
                 </dependency>
