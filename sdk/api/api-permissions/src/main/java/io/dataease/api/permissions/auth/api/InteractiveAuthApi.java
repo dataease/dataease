@@ -71,6 +71,15 @@ public interface InteractiveAuthApi {
     @PostMapping("/checkAuth")
     void checkAuth(@RequestBody BusiPerCheckDTO checkDTO);
 
+    /**
+     * Internal share-owner authorization. The subject is supplied by trusted share storage,
+     * never installed as the request identity. Older implementations must fail closed.
+     */
+    @PostMapping("/checkShareAuth/{uid}")
+    default void checkShareAuth(@PathVariable("uid") Long uid, @RequestBody BusiPerCheckDTO checkDTO) {
+        throw new UnsupportedOperationException("Share authorization unavailable");
+    }
+
     @Operation(summary = "权限查询")
     @ApiOperationSupport(order = 9)
     @PostMapping("/queryAuth/{id}")
