@@ -1,80 +1,25 @@
 package io.dataease.share.interceptor;
 
-import io.dataease.auth.DeLinkPermit;
-import io.dataease.constant.AuthConstant;
-import io.dataease.exception.DEException;
-import io.dataease.utils.ServletUtils;
-import io.dataease.utils.WhitelistUtils;
+import io.dataease.permission.util.TokenUtils;
+import io.dataease.permission.util.V3UserUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
-
-import java.util.Arrays;
-import java.util.List;
-
 
 @Component
 public class LinkInterceptor implements HandlerInterceptor {
-
-    private final static String whiteListText = "/user/ipInfo, /apisix/check, /datasetData/enumValue, /datasetData/enumValueObj, /datasetData/getFieldTree, /dekey, /symmetricKey, /share/validate, /sysParameter/queryOnlineMap, /xpackComponent/viewPlugins";
-
-    private final static String whiteStartListText = "/dataVisualization/findDvType/";
-
-    private boolean isWhiteStart(String url) {
-        List<String> whiteStartList = Arrays.stream(StringUtils.split(whiteStartListText, ",")).map(String::trim).toList();
-        return whiteStartList.stream().anyMatch(item -> StringUtils.startsWith(url, item));
-    }
-
-    /**
-     * 放行自定义区域查询，写请求继续走原有权限校验
-     */
-    private boolean isCustomGeoReadonly(HttpServletRequest request, String requestURI) {
-        if (!StringUtils.equalsIgnoreCase(request.getMethod(), "GET")) {
-            return false;
-        }
-        if (StringUtils.equals(requestURI, "/customGeo/geoArea/list")) {
-            return true;
-        }
-        String detailPrefix = "/customGeo/geoArea/";
-        if (!StringUtils.startsWith(requestURI, detailPrefix)) {
-            return false;
-        }
-        String areaId = StringUtils.substringAfter(requestURI, detailPrefix);
-        return StringUtils.isNotBlank(areaId) && !StringUtils.contains(areaId, "/");
-    }
-
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String linkToken = ServletUtils.getHead(AuthConstant.LINK_TOKEN_KEY);
-        if (linkToken == null) {
-            return true;
-        }
-        if (handler instanceof HandlerMethod handlerMethod) {
-            DeLinkPermit deLinkPermit = handlerMethod.getMethodAnnotation(DeLinkPermit.class);
-            if (deLinkPermit == null) {
-
-                List<String> whiteList = Arrays.stream(StringUtils.split(whiteListText, ",")).map(String::trim).toList();
-
-                String requestURI = ServletUtils.request().getRequestURI();
-                if (StringUtils.startsWith(requestURI, WhitelistUtils.getContextPath())) {
-                    requestURI = StringUtils.replaceOnce(requestURI, WhitelistUtils.getContextPath(), "");
-                }
-                if (StringUtils.startsWith(requestURI, AuthConstant.DE_API_PREFIX)) {
-                    requestURI = requestURI.replaceFirst(AuthConstant.DE_API_PREFIX, "");
-                }
-                boolean valid = whiteList.contains(requestURI) || isWhiteStart(requestURI)
-                        || isCustomGeoReadonly(request, requestURI) || WhitelistUtils.match(requestURI);
-                if (!valid) {
-                    DEException.throwException("分享链接Token不支持访问当前url[" + requestURI + "]");
-                }
-                return true;
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        if (V3UserUtil.getLink() != null) {
+            try {
+                TokenUtils.linkVerifier().checkRequestPath(request.getRequestURI(), request.getMethod());
+            } catch (IllegalArgumentException e) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                response.setHeader("DE-FORBIDDEN-FLAG", "No access permission");
+                return false;
             }
         }
         return true;
     }
-
-
 }

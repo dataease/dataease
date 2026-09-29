@@ -1,6 +1,5 @@
 package io.dataease.share.manage;
 
-import com.auth0.jwt.JWT;
 import io.dataease.constant.AuthConstant;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
@@ -38,22 +37,19 @@ public class ShareVisitorPermissionManage {
     }
 
     public int currentPermissions() {
-        String token = ServletUtils.getHead(AuthConstant.LINK_TOKEN_KEY);
-        if (StringUtils.isBlank(token)) return 7;
-        // Authentication validates the token; read current settings so revocation affects old tokens too.
-        var jwt = JWT.decode(token);
-        Long uid = jwt.getClaim("uid").asLong();
-        Long resourceId = jwt.getClaim("resourceId").asLong();
-        if (uid == null || resourceId == null) {
-            DEException.throwException(Translator.get("i18n_share_operation_denied"));
+        var identity = io.dataease.permission.util.V3UserUtil.getLink();
+        if (identity == null) {
+            if (StringUtils.isNotBlank(ServletUtils.getHead(AuthConstant.LINK_TOKEN_KEY))) {
+                throw new IllegalArgumentException("Unverified link token");
+            }
+            return 7;
         }
-        var shares = repository.findAll((root, query, cb) -> cb.and(
-                cb.equal(root.get("creator"), uid), cb.equal(root.get("resourceId"), resourceId)));
-        if (shares.isEmpty()) DEException.throwException(Translator.get("i18n_share_operation_denied"));
+        Long resourceId = identity.resourceId();
+        var share = repository.findById(identity.shareId())
+                .orElseThrow(() -> new IllegalArgumentException("Share unavailable"));
         // Community sharing retains its original operations, but still requires an existing link.
         if (!LicenseUtil.licenseValid()) return 7;
-        // Be conservative if legacy duplicate shares exist.
-        return shares.stream().mapToInt(ShareVisitorPermissionManage::permissions).reduce(7, (a, b) -> a & b)
+        return permissions(share)
                 & creatorPermissions(resourceId);
     }
 
