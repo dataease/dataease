@@ -37,6 +37,10 @@ public class CacheUtils {
         return deCacheService.get(cacheName, key);
     }
 
+    public static Object take(String cacheName, String key) {
+        return deCacheService.take(cacheName, key);
+    }
+
     public static Boolean keyExist(String cacheName, String key) {
         return deCacheService.keyExist(cacheName, key);
     }

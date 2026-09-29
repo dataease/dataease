@@ -15,6 +15,8 @@ public class MfaLoginDTO implements Serializable {
     private Long id;
     @Schema(description = "CODE")
     private String code;
+    @Schema(description = "First-factor MFA challenge")
+    private String challenge;
     @Schema(description = "KEY")
     private String key;
 }

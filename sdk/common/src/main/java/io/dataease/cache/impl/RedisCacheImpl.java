@@ -10,8 +10,10 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 @ConditionalOnExpression("'${spring.cache.type}'.equals('redis')")
@@ -56,6 +58,14 @@ public class RedisCacheImpl implements DECacheService {
     public Object get(String cacheName, String key) {
         ValueOperations ops = ops();
         return ops.get(cacheName + SEPARATOR + key);
+    }
+
+    @Override
+    public Object take(String cacheName, String key) {
+        // Lua also supports Redis versions before GETDEL was introduced.
+        DefaultRedisScript<Object> script = new DefaultRedisScript<>(
+                "local v = redis.call('GET', KEYS[1]); redis.call('DEL', KEYS[1]); return v", Object.class);
+        return redisTemplate.execute(script, Collections.singletonList(cacheName + SEPARATOR + key));
     }
 
     @Override

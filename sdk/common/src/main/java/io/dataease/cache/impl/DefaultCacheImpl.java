@@ -55,6 +55,12 @@ public class DefaultCacheImpl implements DECacheService {
     }
 
     @Override
+    public Object take(String cacheName, String key) {
+        Cache<Object, Object> cache = cacheManager.getCache(cacheName);
+        return cache == null ? null : cache.getAndRemove(key);
+    }
+
+    @Override
     public boolean cacheExist(String cacheName) {
         return ObjectUtils.isNotEmpty(cacheManager.getCache(cacheName));
     }

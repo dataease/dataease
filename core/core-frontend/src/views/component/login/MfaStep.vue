@@ -118,7 +118,8 @@
 
 <script setup lang="ts">
 import { onMounted, ref, reactive, computed, onBeforeUnmount } from 'vue'
-import request from '@/config/axios'
+import { mfaQrApi, mfaLoginApi, mfaBindQrApi, mfaBindApi } from '@/api/login'
+import type { MfaData } from '@/api/login'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import router from '@/router'
@@ -128,12 +129,6 @@ import { isMobile } from '@/utils/utils'
 const userStore = useUserStoreWithOut()
 const { t } = useI18n()
 
-interface MfaData {
-  enabled: boolean
-  ready: boolean
-  uid: string
-  origin: number
-}
 const props = withDefaults(defineProps<{ mfaData: MfaData; isLogin: boolean }>(), {
   mfaData: { enabled: false, ready: false, uid: '', origin: 0 },
   isLogin: true
@@ -209,8 +204,8 @@ const generateQr = () => {
   if (!props.mfaData?.uid) {
     return
   }
-  const url = `/mfa/qr/${props.mfaData.uid}`
-  request.post({ url }).then(res => {
+  const request = props.isLogin ? mfaQrApi(props.mfaData) : mfaBindQrApi()
+  request.then(res => {
     userQr.value = res.data?.img
   })
 }
@@ -219,13 +214,9 @@ const mfaLogin = () => {
   if (!formEl) return
   formEl.validate(valid => {
     if (valid) {
-      const url = props.isLogin ? `/mfa/login` : '/user/mfaBind'
-      const param = {
-        id: props.mfaData.uid,
-        code: state.form.code
-      }
+      const code = state.form.code
+      const request = props.isLogin ? mfaLoginApi(props.mfaData, code) : mfaBindApi(code)
       request
-        .post({ url, data: param })
         .then(res => {
           errorMsg.value = ''
           errorCode.value = null
@@ -247,7 +238,7 @@ const mfaLogin = () => {
         })
         .catch(msg => {
           errorMsg.value = msg
-          errorCode.value = param.code
+          errorCode.value = code
           setCodeError()
         })
     }

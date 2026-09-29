@@ -9,6 +9,11 @@ public interface DECacheService<T> {
 
     T get(String cacheName, String key);
 
+    /** Atomically retrieve and remove a value. Missing or expired entries return null. */
+    default T take(String cacheName, String key) {
+        throw new UnsupportedOperationException("Atomic cache consumption is not supported");
+    }
+
     boolean cacheExist(String cacheName);
 
     boolean keyExist(String cacheName, String key);

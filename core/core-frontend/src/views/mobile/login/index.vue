@@ -23,6 +23,7 @@ import 'vant/es/toast/style'
 import 'vant/es/field/style'
 import 'vant/es/form/style'
 import 'vant/es/cell-group/style'
+import type { MfaData } from '@/api/login'
 const MobileHandler = defineAsyncComponent(
   () => import('@/views/component/login/MobileHandler.vue')
 )
@@ -44,7 +45,7 @@ const xpackLoadFail = ref(false)
 const xpackInvalidPwd = ref()
 const mfaRef = ref()
 const showMfa = ref(false)
-const mfaData = ref({ enabled: false, ready: false, uid: '', origin: 0 })
+const mfaData = ref<MfaData>({ enabled: false, ready: false, uid: '', origin: 0 })
 const loginType = ref('default')
 const showPlatLoginMask = ref(true)
 const checkUsername = value => {
@@ -206,7 +207,7 @@ const switchType = type => {
 const toMain = () => {
   router.push({ path: '/index' })
 }
-const toMfa = (mfa: any) => {
+const toMfa = (mfa: MfaData) => {
   const isLdap = loginType.value === 'ldap'
   if (!isLdap && mfa?.enabled) {
     for (const key in mfa) {
