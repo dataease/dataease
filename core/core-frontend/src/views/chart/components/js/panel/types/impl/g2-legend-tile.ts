@@ -314,6 +314,71 @@ export const replayG2TiledLegendSelection = (
 
 /** Keep programmatic filtering, focus and reset consistent with the HTML legend and resize replay. */
 export const installG2TiledLegendStateAdapter = (chart: G2Chart) => {
+  // Canvas places HTML in an auto-sized div. SVG uses foreignObject, whose viewport
+  // needs explicit dimensions even when its HTML child already has a CSS size.
+  const svgLegends = new Map<HTMLElement, boolean>()
+  const legendPlots = new Map<SVGElement, string>()
+  const restoreLegendPlots = () => {
+    legendPlots.forEach((pointerEvents, plot) => {
+      plot.style.pointerEvents = pointerEvents
+    })
+    legendPlots.clear()
+  }
+  const sizeSvgLegend = (root: HTMLElement, centered: boolean) => {
+    const viewport = root.closest('foreignObject')
+    if (!viewport) return
+    const style = getComputedStyle(root)
+    const width = Math.ceil(parseFloat(style.width) || root.offsetWidth)
+    const height = Math.ceil(parseFloat(style.height) || root.offsetHeight)
+    // Center the viewport itself: translating only the HTML clips its leading half.
+    root.style.transform = 'none'
+    const attributes = {
+      width,
+      height,
+      x: centered ? -width / 2 : 0,
+      y: centered ? -height / 2 : 0
+    }
+    Object.entries(attributes).forEach(([name, value]) => {
+      if (viewport.getAttribute(name) !== String(value)) viewport.setAttribute(name, String(value))
+    })
+  }
+  const resizeObserver = new ResizeObserver(entries => {
+    entries.forEach(({ target }) => {
+      const root = target as HTMLElement
+      if (svgLegends.has(root)) sizeSvgLegend(root, svgLegends.get(root))
+    })
+  })
+  const syncSvgLayout = () => {
+    const container = chart.getContainer()
+    restoreLegendPlots()
+    svgLegends.forEach((_, root) => {
+      if (!container.contains(root)) {
+        resizeObserver.unobserve(root)
+        svgLegends.delete(root)
+      }
+    })
+    container.querySelectorAll<HTMLElement>('.dataease-tiled-legend').forEach(root => {
+      if (!root.closest('foreignObject')) return
+      if (!svgLegends.has(root)) {
+        svgLegends.set(root, root.style.transform === 'translate(-50%, -50%)')
+        resizeObserver.observe(root)
+      }
+      sizeSvgLegend(root, svgLegends.get(root))
+      // Independent legend views have no marks, but G2 still adds a transparent
+      // plot after the legend. In SVG that surface would intercept HTML clicks.
+      if (svgLegends.get(root)) {
+        root
+          .closest('.view')
+          ?.querySelectorAll<SVGElement>('.plot')
+          .forEach(plot => {
+            legendPlots.set(plot, plot.style.pointerEvents)
+            plot.style.pointerEvents = 'none'
+          })
+      }
+    })
+  }
+  chart.on('afterrender', syncSvgLayout)
+  syncSvgLayout()
   const sync = (channel: string | undefined, values: Array<string | number> | undefined) => {
     const update = (value: LegendOptions) => {
       if (
@@ -350,6 +415,10 @@ export const installG2TiledLegendStateAdapter = (chart: G2Chart) => {
   chart.on('legend:focus', focus)
   chart.on('legend:reset', reset)
   return () => {
+    chart.off('afterrender', syncSvgLayout)
+    resizeObserver.disconnect()
+    svgLegends.clear()
+    restoreLegendPlots()
     chart.off('legend:filter', filter)
     chart.off('legend:focus', focus)
     chart.off('legend:reset', reset)
