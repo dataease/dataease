@@ -10,4 +10,5 @@ public class ExcelConfiguration {
     private List<ExcelSheetData> sheets;
     private String userName;
     private String passwd;
+    private String domain;
 }

@@ -438,6 +438,8 @@ public class ExcelUtils {
                 httpClientConfig.addHeader("Authorization", authValue);
             }
             fileNames = HttpClientUtil.downloadFile(remoteExcelRequest.getUrl(), httpClientConfig, path);
+        } else if (remoteExcelRequest.getUrl().trim().regionMatches(true, 0, "smb://", 0, 6)) {
+            fileNames = SmbFileDownloader.download(remoteExcelRequest, java.nio.file.Path.of(path));
         } else if (remoteExcelRequest.getUrl().trim().startsWith("ftp")) {
             fileNames = downLoadFromFtp(remoteExcelRequest);
         } else {
