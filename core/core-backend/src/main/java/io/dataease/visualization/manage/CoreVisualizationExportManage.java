@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,7 +78,14 @@ public class CoreVisualizationExportManage {
         List<Long> idList = components.stream().filter(c -> ObjectUtils.isNotEmpty(c.get("id"))).map(component -> Long.parseLong(component.get("id").toString())).toList();
 
         if (CollectionUtils.isNotEmpty(viewIdList)) {
-            chartViewDTOS = chartViewDTOS.stream().filter(item -> idList.contains(item.getId()) && viewIdList.contains(item.getId())).collect(Collectors.toList());
+            Map<Long, Integer> selectionOrder = new HashMap<>();
+            for (int i = 0; i < viewIdList.size(); i++) {
+                selectionOrder.putIfAbsent(viewIdList.get(i), i);
+            }
+            chartViewDTOS = chartViewDTOS.stream()
+                    .filter(item -> idList.contains(item.getId()) && selectionOrder.containsKey(item.getId()))
+                    .sorted(Comparator.comparingInt(item -> selectionOrder.get(item.getId())))
+                    .collect(Collectors.toList());
         }
         if (CollectionUtils.isEmpty(chartViewDTOS)) return null;
         Map<Long, ChartExtRequest> chartExtRequestMap = buildViewRequest(filterJson);
