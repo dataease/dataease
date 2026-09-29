@@ -7,6 +7,7 @@ import io.dataease.api.xpack.share.vo.XpackShareProxyVO;
 import io.dataease.api.xpack.share.vo.XpackShareSubVO;
 import io.dataease.api.xpack.share.vo.XpackShareVO;
 import io.dataease.auth.DeApiPath;
+import io.dataease.auth.DeLinkPermit;
 import io.dataease.auth.DePermit;
 import io.dataease.constant.AuthResourceEnum;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,6 +25,16 @@ import java.util.Map;
 @Tag(name = "可视化管理:分享")
 @DeApiPath(value = "/share", rt = AuthResourceEnum.PANEL)
 public interface XpackShareApi {
+
+    @Operation(summary = "保存分享访客权限")
+    @PostMapping("/visitorPermissions")
+    @DePermit(value = "#p0.resourceId() + ':manage'", busiFlag = "PANEL|SCREEN")
+    void saveVisitorPermissions(@RequestBody VisitorPermissionsRequest request);
+
+    @Operation(summary = "查询分享访客权限")
+    @GetMapping("/visitorPermissions/{resourceId}")
+    @DeLinkPermit(value = "#p0", subResource = true)
+    int visitorPermissions(@PathVariable("resourceId") Long resourceId);
 
     @Operation(summary = "查询资源分享状态")
     @Parameter(name = "resourceId", description = "资源ID", required = true, in = ParameterIn.PATH)

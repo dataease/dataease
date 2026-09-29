@@ -47,7 +47,7 @@ import request from '@/config/axios'
 import { useCache } from '@/hooks/web/useCache'
 import { getQueryString } from '@/utils/utils'
 import { useUserStoreWithOut } from '@/store/modules/user'
-import { platformLoginApi } from '@/api/login'
+import { platformLoginApi, platformTokenApi } from '@/api/login'
 import { showConfirmDialog } from 'vant'
 
 const userStore = useUserStoreWithOut()
@@ -165,7 +165,7 @@ const oauth2Token = (cb) => {
   if (!code || !state) {
     return null
   }
-  request.post({url: '/oauth2/token', data: {code, state}}).then(res => {
+  platformTokenApi(9, { code, state }).then(res => {
     userStore.setToken(res.data.token)
     cb && cb()
   }).catch(() => {
@@ -177,7 +177,7 @@ const oauth2Token = (cb) => {
 }
 
 const platformLogin = origin => {  
-  platformLoginApi(origin).then(res => {
+  platformLoginApi(origin, userStore.getToken).then(res => {
     const mfa = res.data?.mfa
     if (mfa?.enabled) {
       mfa['origin'] = origin
