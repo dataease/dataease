@@ -1,30 +1,22 @@
 """Launch Playwright MCP with project-local browser storage."""
-import json
 import os
-import shutil
 import sys
 from pathlib import Path
 
+sys.dont_write_bytecode = True
 base = Path(__file__).resolve().parent
-try:
-    local = {}
-    for raw in (base / '.env.local').read_text().splitlines():
-        line = raw.strip()
-        if not line or line.startswith('#'):
-            continue
-        key, sep, value = line.partition('=')
-        if not sep or key.strip() not in {'PLAYWRIGHT_MCP_ENTRY', 'TEST_BASE_URL', 'TEST_USERNAME', 'TEST_PASSWORD', 'NODE_BIN'}:
-            raise ValueError()
-        local[key.strip()] = json.loads(value.strip())
-    entry = Path(local['PLAYWRIGHT_MCP_ENTRY']).expanduser()
-    node = local.get('NODE_BIN') or shutil.which('node')
-    if not entry.is_file() or not node:
-        raise ValueError()
-except (OSError, ValueError, KeyError, TypeError):
-    sys.exit('Playwright MCP 配置无效；请检查 .codex/playwright_mcp/.env.local')
+sys.path.insert(0, str(base.parent))
+from mcp_runtime import execute, load_config, resolve_command
 
-profile = base / 'browser-profile'
-output = base / 'output'
-profile.mkdir(exist_ok=True, mode=0o700)
-output.mkdir(exist_ok=True, mode=0o700)
-os.execvpe(node, [node, str(entry), '--browser', 'chrome', '--user-data-dir', str(profile), '--output-dir', str(output)], os.environ.copy())
+try:
+    local = load_config(base, {'PLAYWRIGHT_MCP_ENTRY', 'TEST_BASE_URL', 'TEST_USERNAME', 'TEST_PASSWORD'},
+                        {'PLAYWRIGHT_MCP_ENTRY'})
+    _, command = resolve_command(local, 'PLAYWRIGHT_MCP_ENTRY')
+    profile = base / 'browser-profile'
+    output = base / 'output'
+    profile.mkdir(exist_ok=True, mode=0o700)
+    output.mkdir(exist_ok=True, mode=0o700)
+    command.extend(['--browser', 'chrome', '--user-data-dir', str(profile), '--output-dir', str(output)])
+    execute(command, os.environ.copy())
+except (OSError, ValueError, KeyError, TypeError):
+    sys.exit('Playwright MCP 启动失败；请检查 .codex/playwright_mcp/.env.local 的字段、入口及解释器')

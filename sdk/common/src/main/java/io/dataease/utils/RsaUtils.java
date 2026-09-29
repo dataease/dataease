@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.Cipher;
+import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -173,6 +174,25 @@ public class RsaUtils {
     public static String privateKey() {
         CoreRsa coreRsa = rsaManage.query();
         return coreRsa.getPrivateKey();
+    }
+
+    /** Derives a task-signing key from the persisted deployment secret, never from public data alone. */
+    public static String taskTokenSecret(Long time) {
+        if (time == null) {
+            throw new IllegalArgumentException("Task token time is required");
+        }
+        String deploymentSecret = privateKey();
+        if (StringUtils.isBlank(deploymentSecret)) {
+            throw new IllegalStateException("Deployment signing key is unavailable");
+        }
+        try {
+            Mac mac = Mac.getInstance("HmacSHA256");
+            mac.init(new SecretKeySpec(deploymentSecret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
+            byte[] context = ("dataease:report-task:v1:" + time).getBytes(StandardCharsets.UTF_8);
+            return Base64.getEncoder().encodeToString(mac.doFinal(context));
+        } catch (GeneralSecurityException e) {
+            throw new IllegalStateException("Cannot derive task signing key", e);
+        }
     }
 
     public static String publicKey() {
