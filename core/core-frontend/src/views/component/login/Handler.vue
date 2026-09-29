@@ -40,7 +40,7 @@ import QrTab from './QrTab.vue'
 import request from '@/config/axios'
 import { useCache } from '@/hooks/web/useCache'
 import router from '@/router'
-import { platformLoginApi, loginCategoryApi } from '@/api/login'
+import { platformLoginApi, platformTokenApi, loginCategoryApi } from '@/api/login'
 import type { MfaData } from '@/api/login'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { getQueryString, isLarkPlatform, isPlatformClient, checkPlatform } from '@/utils/utils'
@@ -172,7 +172,7 @@ const getCurLocation = () => {
 }
 
 const platformLogin = origin => {  
-  platformLoginApi(origin).then(res => {
+  platformLoginApi(origin, userStore.getToken).then(res => {
     const mfa = res.data?.mfa
     if (mfa?.enabled) {
       mfa['origin'] = origin
@@ -222,7 +222,7 @@ const wecomToken = async () => {
   if (!code || !state) {
     return null
   }
-  const res = await request.post({url: '/wecom/token', data: {code, state}})
+  const res = await platformTokenApi(6, { code, state })
   userStore.setToken(res.data)
   return res.data
 }
@@ -233,7 +233,7 @@ const larkToken = async () => {
   if (!code || !state) {
     return null
   }
-  const res = await request.post({url: '/lark/token', data: {code, state}})
+  const res = await platformTokenApi(4, { code, state })
   userStore.setToken(res.data)
   return res.data
 }
@@ -255,7 +255,7 @@ const oauth2Token = (cb) => {
     throw Error('no code or state')
     return null
   }
-  request.post({url: '/oauth2/token', data: {code, state}}).then(res => {
+  platformTokenApi(9, { code, state }).then(res => {
     userStore.setToken(res.data.token)
     cb && cb()
   }).catch(() => {
@@ -272,7 +272,7 @@ const larksuiteToken = async () => {
   if (!code || !state) {
     return null
   }
-  const res = await request.post({url: '/larksuite/token', data: {code, state}})
+  const res = await platformTokenApi(7, { code, state })
   userStore.setToken(res.data)
   return res.data
 }
@@ -283,7 +283,7 @@ const dingtalkToken = async () => {
   if (!code || !state) {
     return null
   }
-  const res = await request.post({url: '/dingtalk/token', data: {code, state}})
+  const res = await platformTokenApi(5, { code, state })
   userStore.setToken(res.data)
   return res.data
 }

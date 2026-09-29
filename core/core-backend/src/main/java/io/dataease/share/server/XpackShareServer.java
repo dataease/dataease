@@ -46,8 +46,7 @@ public class XpackShareServer implements XpackShareApi {
     @Resource
     private ShareAuthorizationManage shareAuthorizationManage;
 
-    public record VisitorPermissionsRequest(Long resourceId, Integer visitorPermissions) {}
-
+    @Override
     @PostMapping("/visitorPermissions")
     @DePermit(value = "#p0.resourceId() + ':manage'", busiFlag = "PANEL|SCREEN")
     public void saveVisitorPermissions(@RequestBody VisitorPermissionsRequest request) {
@@ -70,6 +69,7 @@ public class XpackShareServer implements XpackShareApi {
         shareRepository.saveAndFlush(share);
     }
 
+    @Override
     @GetMapping("/visitorPermissions/{resourceId}")
     @DeLinkPermit(value = "#p0", subResource = true)
     public int visitorPermissions(@PathVariable("resourceId") Long resourceId) {
