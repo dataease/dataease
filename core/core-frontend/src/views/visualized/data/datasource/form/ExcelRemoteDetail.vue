@@ -142,7 +142,8 @@ const initForm = type => {
   form.value.configuration = {
     url: '',
     userName: '',
-    passwd: ''
+    passwd: '',
+    domain: ''
   }
   form.value.syncSetting = {
     updateType: 'all_scope',
@@ -788,6 +789,17 @@ defineExpose({
             show-password
             type="password"
             v-model="form.configuration.passwd"
+          />
+        </el-form-item>
+        <el-form-item
+          v-if="/^smb:\/\//i.test(form.configuration.url?.trim() || '')"
+          v-show="activeStep !== 2"
+          :label="t('datasource.smb_domain')"
+        >
+          <el-input
+            v-model="form.configuration.domain"
+            autocomplete="off"
+            :placeholder="t('datasource.smb_domain_placeholder')"
           />
         </el-form-item>
         <el-form-item v-show="activeStep !== 2">

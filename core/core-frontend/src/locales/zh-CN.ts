@@ -1235,7 +1235,9 @@ export default {
     input_view_id: '请选择视图',
     remote_excel_url: '远程 Excel/CSV 地址',
     remote_excel_url_placeholder:
-      '请输入远程 Excel/CSV 地址，例如 ftp://192.168.1.101/files/data.xlsx',
+      '请输入 HTTP(S)、FTP 或 SMB 文件地址，例如 smb://server/share/data.xlsx',
+    smb_domain: '域（Domain）',
+    smb_domain_placeholder: '选填：AD 域名；本地账号留空',
     remote_excel_url_empty: '请输入远程 Excel/CSV 地址',
     load_data: '加载数据'
   },

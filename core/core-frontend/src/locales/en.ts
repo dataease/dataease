@@ -1271,7 +1271,9 @@ export default {
     input_view_id: 'Please select a view',
     remote_excel_url: 'Remote Excel/CSV Address',
     remote_excel_url_placeholder:
-      'Please enter the remote Excel/CSV address, for example, ftp://192.168.1.101/files/data.xlsx',
+      'Enter an HTTP(S), FTP or SMB file URL, e.g. smb://server/share/data.xlsx',
+    smb_domain: 'Domain',
+    smb_domain_placeholder: 'Optional: AD domain; leave empty for a local account',
     remote_excel_url_empty: 'Please enter the remote Excel/CSV address',
     load_data: 'Load Data'
   },
