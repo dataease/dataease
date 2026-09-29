@@ -42,6 +42,9 @@ public class ShareTicketManage {
     @Resource
     private XpackShareRepository xpackShareRepository;
 
+    @Resource
+    private ShareAuthorizationManage shareAuthorizationManage;
+
 
     public CoreShareTicket getByTicket(String ticket) {
         Specification<CoreShareTicket> spec = (root, query, criteriaBuilder) ->
@@ -123,11 +126,15 @@ public class ShareTicketManage {
             predicates.add(cb.equal(root.get("creator"), V3UserUtil.getUid()));
             return cb.and(predicates.toArray(new Predicate[0]));
         };
-        return xpackShareRepository.findAll(spec).stream().findFirst().isPresent();
+        XpackShare share = xpackShareRepository.findAll(spec).stream().findFirst().orElse(null);
+        if (share == null) return false;
+        shareAuthorizationManage.requireManage(share.getResourceId());
+        return true;
     }
 
     public void switchRequire(TicketSwitchRequest request) {
         String resourceId = request.getResourceId();
+        shareAuthorizationManage.requireManage(Long.valueOf(resourceId));
         Boolean require = request.getRequire();
 
         Specification<XpackShare> xpackShareSpec = (root, query, cb) -> {
@@ -148,6 +155,7 @@ public class ShareTicketManage {
     };
 
     public PageResult<TicketVO> query(Long resourceId, int goPage, int pageSize) {
+        shareAuthorizationManage.requireManage(resourceId);
         Specification<XpackShare> xpackShareSpec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(cb.equal(root.get("resourceId"), resourceId));

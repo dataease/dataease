@@ -76,6 +76,9 @@ public class XpackShareManage {
     @Resource
     private SysParameterManage sysParameterManage;
 
+    @Resource
+    private ShareAuthorizationManage shareAuthorizationManage;
+
     public XpackShare queryByResource(Long resourceId) {
         Long userId = V3UserUtil.getUid();
         QXpackShare qXpackShare = QXpackShare.xpackShare;
@@ -119,6 +122,7 @@ public class XpackShareManage {
      * 锁必须在事务外，保证前一请求事务提交后才放行下一请求（否则 REPEATABLE READ 快照看不到未提交的插入）。
      */
     public void switcher(Long resourceId) {
+        shareAuthorizationManage.requireManage(resourceId);
         Long userId = V3UserUtil.getUid();
         String key = userId + ":" + resourceId;
         Object lock = switcherLocks.computeIfAbsent(key, k -> new Object());
@@ -129,6 +133,7 @@ public class XpackShareManage {
 
     @Transactional
     public void doSwitcher(Long resourceId) {
+        Long oid = shareAuthorizationManage.requireManage(resourceId);
         Long userId = V3UserUtil.getUid();
         QXpackShare qXpackShare = QXpackShare.xpackShare;
         List<XpackShare> exists = queryFactory.selectFrom(qXpackShare)
@@ -149,6 +154,7 @@ public class XpackShareManage {
         xpackShare.setCreator(userId);
         xpackShare.setTime(System.currentTimeMillis());
         xpackShare.setResourceId(resourceId);
+        xpackShare.setOid(oid);
         xpackShare.setUuid(RandomStringUtils.randomAlphanumeric(8));
 
 
@@ -165,6 +171,7 @@ public class XpackShareManage {
     @Transactional
     public String editUuid(XpackShareUuidEditor editor) {
         Long resourceId = editor.getResourceId();
+        shareAuthorizationManage.requireManage(resourceId);
         String uuid = editor.getUuid();
         XpackShare originData = queryByResource(resourceId);
         if (ObjectUtils.isEmpty(originData)) {
@@ -199,6 +206,7 @@ public class XpackShareManage {
     }
 
     public void editExp(Long resourceId, Long exp) {
+        shareAuthorizationManage.requireManage(resourceId);
         XpackShare originData = queryByResource(resourceId);
         if (ObjectUtils.isEmpty(originData)) {
             DEException.throwException("share instance not exist");
@@ -211,6 +219,7 @@ public class XpackShareManage {
     }
 
     public void editPwd(Long resourceId, String pwd, Boolean autoPwd) {
+        shareAuthorizationManage.requireManage(resourceId);
         XpackShare originData = queryByResource(resourceId);
         if (ObjectUtils.isEmpty(originData)) {
             DEException.throwException("share instance not exist");
@@ -331,6 +340,7 @@ public class XpackShareManage {
         XpackShare xpackShare = xpackShareRepository.findOne(xpackShareSpec).orElse(null);
         if (ObjectUtils.isEmpty(xpackShare))
             return null;
+        shareAuthorizationManage.requireValidShare(xpackShare);
         if (!peRequireValid(sharedBase, xpackShare)) {
             XpackShareProxyVO vo = new XpackShareProxyVO();
             vo.setPeRequireValid(false);
@@ -389,6 +399,8 @@ public class XpackShareManage {
         };
 
         XpackShare xpackShare = xpackShareRepository.findOne(xpackShareSpec).orElse(null);
+        if (xpackShare == null) return false;
+        shareAuthorizationManage.requireValidShare(xpackShare);
         boolean valid = StringUtils.equals(xpackShare.getUuid(), uuid) && StringUtils.equals(xpackShare.getPwd(), pwd);
         if (valid) {
             generateLinkToken(xpackShare);

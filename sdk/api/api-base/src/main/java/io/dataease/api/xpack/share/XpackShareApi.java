@@ -6,6 +6,9 @@ import io.dataease.api.xpack.share.vo.XpackShareGridVO;
 import io.dataease.api.xpack.share.vo.XpackShareProxyVO;
 import io.dataease.api.xpack.share.vo.XpackShareSubVO;
 import io.dataease.api.xpack.share.vo.XpackShareVO;
+import io.dataease.auth.DeApiPath;
+import io.dataease.auth.DePermit;
+import io.dataease.constant.AuthResourceEnum;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -19,28 +22,34 @@ import java.util.List;
 import java.util.Map;
 
 @Tag(name = "可视化管理:分享")
+@DeApiPath(value = "/share", rt = AuthResourceEnum.PANEL)
 public interface XpackShareApi {
 
     @Operation(summary = "查询资源分享状态")
     @Parameter(name = "resourceId", description = "资源ID", required = true, in = ParameterIn.PATH)
     @GetMapping("/status/{resourceId}")
+    @DePermit(value = "#p0 + ':manage'", busiFlag = "PANEL|SCREEN")
     boolean status(@PathVariable("resourceId") Long resourceId);
 
     @Operation(summary = "切换资源分享状态")
     @Parameter(name = "resourceId", description = "资源ID", required = true, in = ParameterIn.PATH)
     @PostMapping("/switcher/{resourceId}")
+    @DePermit(value = "#p0 + ':manage'", busiFlag = "PANEL|SCREEN")
     void switcher(@PathVariable("resourceId") Long resourceId);
 
     @Operation(summary = "设置分享有效期")
     @PostMapping("/editExp")
+    @DePermit(value = "#p0.resourceId + ':manage'", busiFlag = "PANEL|SCREEN")
     void editExp(@RequestBody XpackShareExpRequest request);
 
     @Operation(summary = "编辑分享密码")
     @PostMapping("/editPwd")
+    @DePermit(value = "#p0.resourceId + ':manage'", busiFlag = "PANEL|SCREEN")
     void editPwd(@RequestBody XpackSharePwdRequest request);
 
     @Operation(summary = "查询分享详情")
     @GetMapping("/detail/{resourceId}")
+    @DePermit(value = "#p0 + ':manage'", busiFlag = "PANEL|SCREEN")
     @Parameter(name = "resourceId", description = "资源ID", required = true, in = ParameterIn.PATH)
     XpackShareVO detail(@PathVariable("resourceId") Long resourceId);
 
@@ -62,6 +71,7 @@ public interface XpackShareApi {
 
     @Operation(summary = "编辑分享uuid")
     @PostMapping("/editUuid")
+    @DePermit(value = "#p0.resourceId + ':manage'", busiFlag = "PANEL|SCREEN")
     String editUuid(@RequestBody XpackShareUuidEditor editor);
 
     @Operation(summary = "公共链接场景查询子资源分享信息")

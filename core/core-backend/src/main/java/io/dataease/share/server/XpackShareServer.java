@@ -11,6 +11,10 @@ import io.dataease.auth.DeLinkPermit;
 import io.dataease.utils.BeanUtils;
 import io.dataease.share.dao.auto.entity.XpackShare;
 import io.dataease.share.manage.XpackShareManage;
+import io.dataease.share.manage.ShareAuthorizationManage;
+import io.dataease.auth.DePermit;
+import io.dataease.auth.DeApiPath;
+import io.dataease.constant.AuthResourceEnum;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 @RequestMapping("/share")
+@DeApiPath(value = "/share", rt = AuthResourceEnum.PANEL)
 @RestController
 public class XpackShareServer implements XpackShareApi {
 
@@ -38,10 +43,15 @@ public class XpackShareServer implements XpackShareApi {
     @Resource
     private XpackShareRepository shareRepository;
 
+    @Resource
+    private ShareAuthorizationManage shareAuthorizationManage;
+
     public record VisitorPermissionsRequest(Long resourceId, Integer visitorPermissions) {}
 
     @PostMapping("/visitorPermissions")
+    @DePermit(value = "#p0.resourceId() + ':manage'", busiFlag = "PANEL|SCREEN")
     public void saveVisitorPermissions(@RequestBody VisitorPermissionsRequest request) {
+        shareAuthorizationManage.requireManage(request.resourceId());
         if (!io.dataease.license.utils.LicenseUtil.licenseValid()) {
             DEException.throwException(io.dataease.i18n.Translator.get("i18n_share_operation_denied"));
         }
@@ -68,6 +78,7 @@ public class XpackShareServer implements XpackShareApi {
 
     @Override
     public boolean status(Long resourceId) {
+        shareAuthorizationManage.requireManage(resourceId);
         return ObjectUtils.isNotEmpty(xpackShareManage.queryByResource(resourceId));
     }
 
@@ -88,6 +99,7 @@ public class XpackShareServer implements XpackShareApi {
 
     @Override
     public XpackShareVO detail(Long resourceId) {
+        shareAuthorizationManage.requireManage(resourceId);
         XpackShare xpackShare = xpackShareManage.queryByResource(resourceId);
         if (ObjectUtils.isEmpty(xpackShare)) return null;
         XpackShareVO vo = BeanUtils.copyBean(new XpackShareVO(), xpackShare);

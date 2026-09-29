@@ -32,6 +32,9 @@ public class LinkTokenValidationManage implements LinkTokenVerifier {
     @Resource
     private SysParameterManage parameters;
 
+    @Resource
+    private ShareAuthorizationManage shareAuthorizationManage;
+
     @Override
     public LinkIdentity verify(String token) {
         // Unverified shareId is only a lookup key; no identity is established before verification.
@@ -44,12 +47,8 @@ public class LinkTokenValidationManage implements LinkTokenVerifier {
                 && (share.getPwd() == null || share.getPwd().isBlank() || share.getExp() == null || share.getExp() <= 0)))) {
             throw new IllegalArgumentException("Share unavailable");
         }
-        var resource = visualizations.findById(share.getResourceId())
-                .orElseThrow(() -> new IllegalArgumentException("Share resource unavailable"));
-        if (Boolean.TRUE.equals(resource.getDeleteFlag())) throw new IllegalArgumentException("Share resource unavailable");
-        var user = V3UserUtil.getUser(share.getCreator());
-        if (user == null || !Boolean.TRUE.equals(user.getEnable())) throw new IllegalArgumentException("Share owner unavailable");
-        return new LinkIdentity(share.getId(), share.getCreator(), share.getResourceId(), share.getOid());
+        Long oid = shareAuthorizationManage.requireValidShare(share);
+        return new LinkIdentity(share.getId(), share.getCreator(), share.getResourceId(), oid);
     }
 
     @Lazy
