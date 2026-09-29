@@ -6,6 +6,7 @@
 import { loadScript } from '@/utils/RemoteJs'
 import request from '@/config/axios'
 import { propTypes } from '@/utils/propTypes'
+import { onUnmounted } from 'vue'
 interface DingtalkQrInfo {
   client_id?: string
   state?: string
@@ -14,13 +15,23 @@ interface DingtalkQrInfo {
   
 const props = defineProps({
   isBind: propTypes.bool.def(false),
+  bindState: propTypes.string.def(''),
+  bindRedirectUri: propTypes.string.def('')
 })
 const emit = defineEmits(['finish'])
 const remoteJsUrl = 'https://g.alicdn.com/dingding/dinglogin/0.0.5/ddLogin.js'
 const jsId = 'de-dingtalk-qr-id'
+let disposed = false
+let removeMessageListener: (() => void) | undefined
+onUnmounted(() => {
+  disposed = true
+  removeMessageListener?.()
+})
 const init = () => {
+  if (props.isBind && (!props.bindState || !props.bindRedirectUri)) return
   loadScript(remoteJsUrl, jsId).then(() => {
     getQrInfo().then(res => {
+      if (disposed) return
       const data = formatQrResult(res.data)
       loadQr(data.client_id, data.state, data.redirect_uri)
     })
@@ -38,13 +49,8 @@ const formatQrResult = (data): DingtalkQrInfo => {
   result.state = 'fit2cloud-dingtalk-qr'
   result.redirect_uri = data.callBack
   if (props.isBind) {
-    result.state += '_de_bind'
-    const pathname = window.location.pathname
-    if (pathname.includes('oidcbi/')) {
-      result.state += '_path_oidcbi'
-    } else if (pathname.includes('casbi/')) {
-      result.state += '_path_casbi'
-    }
+    result.state = props.bindState
+    result.redirect_uri = props.bindRedirectUri
   }
   return result
 }
@@ -67,11 +73,8 @@ const loadQr = (APPID, STATE, REDIRECT_URI) => {
       window.location.href = url
     }
   }
-  if (typeof window.addEventListener != 'undefined') {
-    window.addEventListener('message', handleMessage, false)
-  } else if (typeof window.attachEvent != 'undefined') {
-    window.attachEvent('onmessage', handleMessage)
-  }
+  window.addEventListener('message', handleMessage, false)
+  removeMessageListener = () => window.removeEventListener('message', handleMessage, false)
 }
 init()
 </script>

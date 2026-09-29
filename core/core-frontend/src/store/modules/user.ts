@@ -1,3 +1,4 @@
+import { clearBindings } from '@/utils/platformBinding'
 import { defineStore } from 'pinia'
 import { store } from '../index'
 import { useCache } from '@/hooks/web/useCache'
@@ -132,6 +133,7 @@ export const userStore = defineStore('user', {
       changeLocale(language as any)
     },
     clear() {
+      clearBindings()
       const keys: string[] = ['token', 'uid', 'name', 'oid', 'language', 'exp', 'time', 'proxyInfo']
       keys.forEach(key => wsCache.delete('user.' + key))
     }

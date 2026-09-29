@@ -4969,6 +4969,12 @@ export default {
     download: 'Download'
   },
   userCenter: {
+    bind_confirm:
+      'Confirm linking a {0} account to your current account. Verify your identity before scanning.',
+    bind_password: 'Enter your current password',
+    bind_mfa: 'Enter the six-digit code from your bound MFA authenticator',
+    bind_reauth_unavailable:
+      'Password reauthentication is unavailable for this sign-in method. Configure verified MFA before linking an account.',
     enable: 'Enable',
     invalid: 'Invalid',
     binding_settings: 'Binding settings',

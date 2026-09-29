@@ -30,6 +30,12 @@
 </template>
 
 <script lang="ts" setup>
+import {
+  isBindingCallback,
+  pendingBinding,
+  bindingReturnPath,
+  bindingCallbackPath
+} from '@/utils/platformBinding'
 import { ref, onMounted, reactive, nextTick } from 'vue'
 import QrcodeLdap from './QrcodeLdap.vue'
 import Oidc from './Oidc.vue'
@@ -331,16 +337,12 @@ onMounted(() => {
   wsCache.delete('de-platform-client')
   init(async () => {
     const state = callBackType()
-    if (state?.includes('_de_bind')) {
-      const sep = '_path_'
-      const sepIdx = state.indexOf(sep)
-      if (sepIdx > -1) {
-        const prefix = state.substring(sepIdx + sep.length)
-        const cleanState = state.substring(0, sepIdx)
-        const params = new URLSearchParams(window.location.search)
-        params.set('state', cleanState)
-        window.location.href = window.location.origin + '/' + prefix + '/?' + params.toString() + window.location.hash
-        return
+    if (isBindingCallback(state)) {
+      const pending = pendingBinding(state)
+      if (pending && pending.returnPath !== bindingReturnPath()) {
+        window.location.replace(
+          bindingCallbackPath(pending) + window.location.search + window.location.hash
+        )
       }
       return
     } else if (window.location.pathname.includes('/casbi/')) {
