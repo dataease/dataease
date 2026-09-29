@@ -9,9 +9,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 public interface DataAssistantApi {
-    @GetMapping("/datasource")
+    // V3 暂时禁用 SQLBot，保留实现但不注册 HTTP 路由。
+    // @GetMapping("/datasource")
     List<DataSQLBotAssistantVO> getDatasourceList(@RequestParam(required = false) Long dsId, @RequestParam(required = false) Long tableId);
 
-    @GetMapping("/dataset/{dvInfo}")
+    // @GetMapping("/dataset/{dvInfo}")
     List<DataSQLBotDatasetVO> getDatasetList(@PathVariable String dvInfo);
 }

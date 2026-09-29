@@ -72,11 +72,12 @@ public interface SysParameterApi {
     @Operation(summary = "查询自定义国际化选项")
     Map<String, String> i18nOptions();
 
-    @GetMapping("/sqlbot")
+    // V3 暂时禁用 SQLBot，保留实现但不注册 HTTP 路由。
+    // @GetMapping("/sqlbot")
     @Operation(summary = "查询sqlbot嵌入配置")
     SQLBotConfigVO sqlBotConfig();
 
-    @PostMapping("/sqlbot")
+    // @PostMapping("/sqlbot")
     @Operation(summary = "查询sqlbot嵌入配置")
     void saveSqlBotConfig(@RequestBody SQLBotConfigCreator configVO);
 
