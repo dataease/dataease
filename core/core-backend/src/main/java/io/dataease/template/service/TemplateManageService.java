@@ -39,6 +39,8 @@ import static io.dataease.constant.StaticResourceConstants.UPLOAD_URL_PREFIX;
 @RequestMapping("/templateManage")
 public class TemplateManageService implements TemplateManageApi {
 
+    private static final String IMAGE_DATA_URL_PREFIX = "data:image/";
+
     @Resource
     private VisualizationTemplateRepository visualizationTemplateRepository;
     @Resource
@@ -85,8 +87,10 @@ public class TemplateManageService implements TemplateManageApi {
             if ("template".equals(request.getNodeType()) || "app".equals(request.getNodeType())) {
                 //Store static resource into the server
                 staticResourceServer.saveFilesToServe(request.getStaticResource());
-                String snapshotName = request.getNodeType() + "-" + request.getId() + ".jpeg";
-                staticResourceServer.saveSingleFileToServe(snapshotName, request.getSnapshot().replace("data:image/jpeg;base64,", ""));
+                SnapshotContent snapshotContent = parseSnapshotContent(request.getSnapshot());
+                String snapshotName = request.getNodeType() + "-" + request.getId() + "."
+                        + snapshotContent.suffix();
+                staticResourceServer.saveSingleFileToServe(snapshotName, snapshotContent.content());
                 request.setSnapshot("/" + UPLOAD_URL_PREFIX + '/' + snapshotName);
             }
             //如果level 是0（第一级）指的是分类目录 设置父级为对应的templateType
@@ -164,6 +168,36 @@ public class TemplateManageService implements TemplateManageApi {
         BeanUtils.copyBean(templateManageDTO, request);
         templateManageDTO.setLabel(request.getName());
         return templateManageDTO;
+    }
+
+    private SnapshotContent parseSnapshotContent(String snapshot) {
+        if (StringUtils.isBlank(snapshot)) {
+            return new SnapshotContent("jpeg", "");
+        }
+        String lowerSnapshot = snapshot.toLowerCase(Locale.ROOT);
+        if (!lowerSnapshot.startsWith(IMAGE_DATA_URL_PREFIX)) {
+            return new SnapshotContent("jpeg", snapshot);
+        }
+        int commaIndex = lowerSnapshot.indexOf(',');
+        if (commaIndex < 0) {
+            DEException.throwException("模板缩略图格式错误");
+        }
+        String imageType = StringUtils.substringBefore(
+                lowerSnapshot.substring(IMAGE_DATA_URL_PREFIX.length(), commaIndex),
+                ";"
+        );
+        String suffix = switch (imageType) {
+            case "jpeg", "jpg" -> "jpeg";
+            case "png" -> "png";
+            default -> {
+                DEException.throwException("不支持的模板缩略图格式: " + imageType);
+                yield "jpeg";
+            }
+        };
+        return new SnapshotContent(suffix, snapshot.substring(commaIndex + 1));
+    }
+
+    private record SnapshotContent(String suffix, String content) {
     }
 
     //模板名称检查
@@ -383,5 +417,3 @@ public class TemplateManageService implements TemplateManageApi {
         });
     }
 }
-
-

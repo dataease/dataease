@@ -60,21 +60,25 @@ function prePareTemplateBaseData(dvId, callback) {
 export function download2AppTemplate(downloadType, canvasDom, name, attachParams, callBack?) {
   try {
     findStaticSource(function (staticResource) {
-      html2canvas(canvasDom).then(canvas => {
+      domToPng(canvasDom, {
+        width: canvasDom.offsetWidth,
+        height: canvasDom.offsetHeight,
+        // 按 2 倍(或更高)分辨率渲染,解决导出图片模糊问题
+        scale: Math.max(1, window.devicePixelRatio || 1)
+      }).then(dataUrl => {
         const canvasViewDataTemplate = deepCopy(canvasViewInfo.value)
         Object.keys(canvasViewDataTemplate).forEach(viewId => {
           canvasViewDataTemplate[viewId].data = canvasViewDataInfo.value[viewId]
         })
-        const snapshot = canvas.toDataURL('image/jpeg', 1) // 0.1是图片质量
         const templateName = attachParams?.appName ? attachParams.appName : name
-        if (snapshot !== '') {
+        if (dataUrl !== '') {
           prePareTemplateBaseData(
             dvInfo.value.id,
             function ({ canvasDataResult, canvasStyleResult }) {
               const templateInfo = {
                 name: templateName,
                 templateType: 'self',
-                snapshot: snapshot,
+                snapshot: dataUrl,
                 dvType: dvInfo.value.type,
                 nodeType: downloadType,
                 version: 3,
