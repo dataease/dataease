@@ -3,7 +3,7 @@ import logo_wechatWork from '@/assets/svg/logo_wechat-work.svg'
 import logo_dingtalk from '@/assets/svg/logo_dingtalk.svg'
 import logo_lark from '@/assets/svg/logo_lark.svg'
 import icon_replace_outlined from '@/assets/svg/icon_replace_outlined.svg'
-import { ref, reactive, watch, nextTick, computed } from 'vue'
+import { ref, reactive, watch, computed } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElMessageBox, ElMessage } from 'element-plus-secondary'
 import UserForm from '@/views/menu/user-center/UserForm.vue'
@@ -16,9 +16,16 @@ import DingtalkQr from '@/views/component/login/DingtalkQr.vue'
 import LarkQr from '@/views/component/login/LarkQr.vue'
 import LarksuiteQr from '@/views/component/login/LarksuiteQr.vue'
 import { useUserStoreWithOut } from '@/store/modules/user'
-import { unBindApi, bindStatusApi, queryCategoryStatus } from '@/views/component/login/bind'
+import {
+  unBindApi,
+  bindStatusApi,
+  queryCategoryStatus,
+  prepareBindApi
+} from '@/views/component/login/bind'
 import { useCache } from '@/hooks/web/useCache'
 import request from '@/config/axios'
+import { rsaEncryp } from '@/utils/encryption'
+import { clearBinding, type PreparedBinding } from '@/utils/platformBinding'
 const userStore = useUserStoreWithOut()
 
 const isAdmin = computed(() => userStore.getUid === '1')
@@ -128,13 +135,43 @@ const queryForm = () => {
   })
 }
 const optIndex = ref(0)
-const bindHandler = index => {
-  optIndex.value = index
-  const item = bindList.value[index]
-  loginTip.value = t('userCenter.pls_use') + `${item.name}` + t('userCenter.bind_use_qr')
-  bindDialogTitle.value = t('commons.bind') + `${item.name}`
-  bindDialogVisible.value = true
-  return
+const preparedBinding = ref<PreparedBinding | null>(null)
+const preparingBinding = ref(false)
+const bindHandler = async (index: number) => {
+  if (preparingBinding.value) return
+  if (!userMfaBound.value && staticForm.value.origin !== 0) {
+    ElMessage.warning(t('userCenter.bind_reauth_unavailable'))
+    return
+  }
+  preparingBinding.value = true
+  try {
+    const item = bindList.value[index]
+    const useMfa = userMfaBound.value
+    const { value } = await ElMessageBox.prompt(
+      t('userCenter.bind_confirm', [item.name]),
+      t(useMfa ? 'userCenter.bind_mfa' : 'userCenter.bind_password'),
+      {
+        inputType: useMfa ? 'text' : 'password',
+        inputPattern: useMfa ? /^[0-9]{6}$/ : /\S+/,
+        inputErrorMessage: t(useMfa ? 'userCenter.bind_mfa' : 'userCenter.bind_password'),
+        confirmButtonText: t('commons.bind'),
+        cancelButtonText: t('dataset.cancel'),
+        closeOnClickModal: false
+      }
+    )
+    preparedBinding.value = await prepareBindApi(
+      [6, 5, 4, 7][index],
+      useMfa ? { mfaCode: value } : { pwd: rsaEncryp(value) }
+    )
+    optIndex.value = index
+    loginTip.value = t('userCenter.pls_use') + `${item.name}` + t('userCenter.bind_use_qr')
+    bindDialogTitle.value = t('commons.bind') + `${item.name}`
+    bindDialogVisible.value = true
+  } catch {
+    // Cancellation needs no notification; API failures use the shared error handler.
+  } finally {
+    preparingBinding.value = false
+  }
 }
 const unbindHandler = index => {
   const mapping = [6, 5, 4, 7]
@@ -163,12 +200,14 @@ const unbindHandler = index => {
     }
   })
 }
-const refreshQr = () => {
-  const temp = optIndex.value
-  optIndex.value = -1
-  nextTick(() => {
-    optIndex.value = temp
-  })
+const clearPreparedBinding = () => {
+  if (preparedBinding.value) clearBinding(preparedBinding.value.state)
+  preparedBinding.value = null
+}
+const refreshQr = async () => {
+  bindDialogVisible.value = false
+  clearPreparedBinding()
+  await bindHandler(optIndex.value)
 }
 const bindDialogTitle = ref(t('commons.bind') + t('userCenter.dingtalk'))
 const bindDialogVisible = ref(false)
@@ -431,13 +470,34 @@ watch(
     v-model="bindDialogVisible"
     width="420px"
     class="qr-code-dialog"
+    @close="clearPreparedBinding"
   >
     <div class="qr-code-img">
       <div class="bind-qr-container" :class="`bind-qr-${optIndex}`">
-        <wecom-qr v-if="bindDialogVisible && optIndex === 0" :is-bind="true" />
-        <dingtalk-qr v-if="bindDialogVisible && optIndex === 1" :is-bind="true" />
-        <lark-qr v-if="bindDialogVisible && optIndex === 2" :is-bind="true" />
-        <larksuite-qr v-if="bindDialogVisible && optIndex === 3" :is-bind="true" />
+        <wecom-qr
+          v-if="bindDialogVisible && preparedBinding && optIndex === 0"
+          :is-bind="true"
+          :bind-state="preparedBinding.state"
+          :bind-redirect-uri="preparedBinding.redirectUri"
+        />
+        <dingtalk-qr
+          v-if="bindDialogVisible && preparedBinding && optIndex === 1"
+          :is-bind="true"
+          :bind-state="preparedBinding.state"
+          :bind-redirect-uri="preparedBinding.redirectUri"
+        />
+        <lark-qr
+          v-if="bindDialogVisible && preparedBinding && optIndex === 2"
+          :is-bind="true"
+          :bind-state="preparedBinding.state"
+          :bind-redirect-uri="preparedBinding.redirectUri"
+        />
+        <larksuite-qr
+          v-if="bindDialogVisible && preparedBinding && optIndex === 3"
+          :is-bind="true"
+          :bind-state="preparedBinding.state"
+          :bind-redirect-uri="preparedBinding.redirectUri"
+        />
       </div>
     </div>
     <div class="refresh-login flex-align-center">

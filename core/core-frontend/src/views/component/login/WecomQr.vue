@@ -18,14 +18,19 @@ interface WecomInfo {
 
 const props = defineProps({
   isBind: propTypes.bool.def(false),
+  bindState: propTypes.string.def(''),
+  bindRedirectUri: propTypes.string.def('')
 })
 const emit = defineEmits(['finish'])
 let wwLogin = null
+let disposed = false
 const remoteJsUrl = 'https://wwcdn.weixin.qq.com/node/open/js/wecom-jssdk-2.3.3.js'
 const jsId = 'de-wecom-qr-id'
 const init = () => {
+  if (props.isBind && (!props.bindState || !props.bindRedirectUri)) return
   loadScript(remoteJsUrl, jsId).then(() => {
     getQrInfo().then(res => {
+      if (disposed) return
       const data = formatQrResult(res.data)
       loadQr(data.corp_id, data.agent_id, data.state, data.redirect_uri)
     })
@@ -44,13 +49,8 @@ const formatQrResult = (data): WecomInfo => {
   result.state = 'fit2cloud-wecom-qr'
   result.redirect_uri = data.callBack
   if (props.isBind) {
-    result.state += '_de_bind'
-    const pathname = window.location.pathname
-    if (pathname.includes('oidcbi/')) {
-      result.state += '_path_oidcbi'
-    } else if (pathname.includes('casbi/')) {
-      result.state += '_path_casbi'
-    }
+    result.state = props.bindState
+    result.redirect_uri = props.bindRedirectUri
   }
   return result
 }
@@ -80,6 +80,7 @@ const loadQr = (CORP_ID, AGENT_ID, STATE, REDIRECT_URI) => {
 }
 
 onUnmounted(() => {
+  disposed = true
   if (wwLogin) {
     wwLogin.unmount()
   }

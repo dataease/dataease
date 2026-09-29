@@ -4798,6 +4798,10 @@ export default {
     download: '下載'
   },
   userCenter: {
+    bind_confirm: '確認將 {0} 帳號綁定至目前帳戶。請驗證身分後繼續掃碼。',
+    bind_password: '輸入目前密碼',
+    bind_mfa: '輸入已綁定的 MFA 六位驗證碼',
+    bind_reauth_unavailable: '目前登入方式不支援密碼再認證，請先配置已驗證的 MFA 後綁定。',
     enable: '啟用',
     invalid: '失效',
     binding_settings: '綁定設定',
