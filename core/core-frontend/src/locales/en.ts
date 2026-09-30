@@ -1302,6 +1302,17 @@ export default {
     load_data: 'Load Data'
   },
   chart: {
+    heatmap_range: 'Color scale range',
+    heatmap_range_auto: 'Automatic range',
+    heatmap_range_custom: 'Custom range',
+    heatmap_range_invalid: 'Enter finite numbers with minimum less than maximum',
+    heatmap_min: 'Minimum',
+    heatmap_max: 'Maximum',
+    heatmap_format: 'Legend number format',
+    heatmap_format_inherit: 'Follow measure',
+    heatmap_format_custom: 'Custom format',
+    heatmap_prefix: 'Prefix',
+
     legend_display_mode: 'Display mode',
     legend_pagination: 'Pagination',
     legend_tile: 'Tile',

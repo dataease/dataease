@@ -13,6 +13,15 @@ import {
 const { t } = useI18n()
 
 const props = defineProps({
+  // Existing callers keep their light popovers unless a theme is explicitly supplied.
+  themes: {
+    type: String,
+    default: 'light'
+  },
+  examplePrefix: {
+    type: String,
+    default: ''
+  },
   formatterItem: {
     type: Object,
     required: true
@@ -56,13 +65,18 @@ getExampleValue()
       ref="form"
       :model="formatterItem.formatterCfg"
       class="formatter-form"
+      :class="{ 'formatter-form--dark': themes === 'dark' }"
       label-position="top"
     >
       <el-form-item :label="t('chart.value_formatter_type')">
         <el-radio-group v-model="formatterItem.formatterCfg.type" @change="getExampleValue">
-          <el-radio v-for="radio in state.typeList" :key="radio.value" :value="radio.value">{{
-            t('chart.' + radio.name)
-          }}</el-radio>
+          <el-radio
+            :effect="themes"
+            v-for="radio in state.typeList"
+            :key="radio.value"
+            :value="radio.value"
+            >{{ t('chart.' + radio.name) }}</el-radio
+          >
         </el-radio-group>
       </el-form-item>
 
@@ -71,6 +85,7 @@ getExampleValue()
         :label="t('chart.value_formatter_decimal_count')"
       >
         <el-input-number
+          :effect="themes"
           controls-position="right"
           v-model="formatterItem.formatterCfg.decimalCount"
           :min="0"
@@ -84,6 +99,7 @@ getExampleValue()
           <el-col :span="12" v-if="!isEnLocal">
             <el-form-item :label="t('chart.value_formatter_unit_language')">
               <el-select
+                :effect="themes"
                 v-model="formatterItem.formatterCfg.unitLanguage"
                 :placeholder="t('chart.pls_select_field')"
                 @change="v => changeUnitLanguage(formatterItem.formatterCfg, v)"
@@ -96,6 +112,7 @@ getExampleValue()
           <el-col :span="isEnLocal ? 24 : 12">
             <el-form-item :label="t('chart.value_formatter_unit')">
               <el-select
+                :effect="themes"
                 v-model="formatterItem.formatterCfg.unit"
                 :placeholder="t('chart.pls_select_field')"
                 @change="getExampleValue"
@@ -115,6 +132,7 @@ getExampleValue()
 
       <el-form-item :label="t('chart.value_formatter_suffix')">
         <el-input
+          :effect="themes"
           v-model="formatterItem.formatterCfg.suffix"
           clearable
           maxlength="30"
@@ -125,6 +143,7 @@ getExampleValue()
 
       <el-form-item>
         <el-checkbox
+          :effect="themes"
           v-model="formatterItem.formatterCfg.thousandSeparator"
           @change="getExampleValue"
           :label="t('chart.value_formatter_thousand_separator')"
@@ -132,8 +151,8 @@ getExampleValue()
       </el-form-item>
 
       <div style="line-height: 22px">
-        <span style="color: #646a73">{{ t('chart.value_formatter_example') }}</span>
-        <span style="margin-left: 12px">{{ state.exampleResult }}</span>
+        <span class="formatter-example-label">{{ t('chart.value_formatter_example') }}</span>
+        <span style="margin-left: 12px">{{ examplePrefix }}{{ state.exampleResult }}</span>
       </div>
     </el-form>
   </div>
@@ -144,19 +163,32 @@ getExampleValue()
   margin-bottom: 10px !important;
 }
 .formatter-form {
+  --formatter-text: #1f2329;
+  --formatter-secondary-text: #646a73;
+  color: var(--formatter-text);
+
+  &--dark {
+    --formatter-text: #ebebeb;
+    --formatter-secondary-text: #a6a6a6;
+  }
+
+  .formatter-example-label {
+    color: var(--formatter-secondary-text);
+  }
+
   :deep(.ed-form-item) {
     margin-bottom: 16px;
   }
 
   :deep(.ed-form-item__label) {
-    color: #1f2329;
+    color: var(--formatter-text);
     margin-bottom: 8px !important;
     font-size: 14px !important;
     font-weight: 400 !important;
   }
 
   :deep(.ed-checkbox) {
-    color: #1f2329;
+    color: var(--formatter-text);
   }
   :deep(.ed-checkbox__label) {
     font-size: 14px !important;

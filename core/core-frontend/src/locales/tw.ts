@@ -1247,6 +1247,17 @@ export default {
     load_data: '載入資料'
   },
   chart: {
+    heatmap_range: '色階範圍',
+    heatmap_range_auto: '自動極值',
+    heatmap_range_custom: '自訂範圍',
+    heatmap_range_invalid: '最小值必須小於最大值，且均為有效數值',
+    heatmap_min: '最小值',
+    heatmap_max: '最大值',
+    heatmap_format: '圖例數值格式',
+    heatmap_format_inherit: '跟隨指標',
+    heatmap_format_custom: '自訂格式',
+    heatmap_prefix: '前綴',
+
     legend_display_mode: '顯示模式',
     legend_pagination: '分頁',
     legend_tile: '平鋪',

@@ -8,6 +8,7 @@ import { Text } from '@antv/g'
 import { valueFormatter } from '../../../../formatter'
 import { createTooltipWrapper } from '../bar/barUtil'
 import { getFieldValueMap, matchTableCondition } from '../../../common/common_table'
+import { heatmapLegendDomain, heatmapLegendFormatter, heatmapValueSelected } from './heatmapLegend'
 
 const { t } = useI18n()
 
@@ -18,20 +19,9 @@ const HORIZONTAL_LEGEND_MIN_RIBBON_LENGTH = 80
 const VERTICAL_LEGEND_SAFE_PADDING = 12
 
 // 原生色带只为端点预留半个标签，水平两端文字需要将剩余宽度纳入组件占位
-const getHorizontalLegendSize = (chart: Chart, field: string, fontSize: number, width: number) => {
-  const values = (chart.data?.tableRow || [])
-    .filter(row =>
-      [...chart.xAxis, ...chart.xAxisExt, ...chart.extColor].every(
-        axis =>
-          row[axis.dataeaseName] !== null &&
-          row[axis.dataeaseName] !== undefined &&
-          row[axis.dataeaseName] !== ''
-      )
-    )
-    .map(row => Number(row[field]))
-    .filter(Number.isFinite)
-  const min = values.reduce((result, value) => Math.min(result, value), Infinity)
-  const max = values.reduce((result, value) => Math.max(result, value), -Infinity)
+const getHorizontalLegendSize = (chart: Chart, fontSize: number, width: number) => {
+  const [min, max] = heatmapLegendDomain(chart) || [0, 0]
+  const formatter = heatmapLegendFormatter(chart)
   const context = document.createElement('canvas').getContext('2d')
   if (context) context.font = `${fontSize}px sans-serif`
   const labelWidth =
@@ -39,7 +29,7 @@ const getHorizontalLegendSize = (chart: Chart, field: string, fontSize: number, 
     Math.ceil(
       Math.max(
         ...[min, max].map(value => {
-          const text = Number.isFinite(value) ? String(value) : ''
+          const text = Number.isFinite(value) ? formatter(value) : ''
           return context?.measureText(text).width ?? text.length * fontSize
         })
       )
@@ -195,6 +185,50 @@ const fixVerticalContinuousLegendRange = legend => {
     const [min, max] = domain
     // indicator 使用相同偏移规则，避免筛选正确但悬浮值仍少一个 min
     return snapLegendValue(realValue + min, min, max)
+  }
+  // Scope the adapter to heatmaps. Native hover and drag share the same formatting.
+  const showIndicator = legend.showIndicator
+  legend.showIndicator = function (value) {
+    const realValue = this.getRealValue(value)
+    // G2 places the component group behind marks by default (zIndex -1).
+    let layer = this.parentNode
+    while (layer && layer.className !== 'component') layer = layer.parentNode
+    if (layer) layer.style.zIndex = 10
+    showIndicator.call(
+      this,
+      value,
+      this.attributes.dataeaseFormatter?.(realValue) ?? String(realValue)
+    )
+    this.indicator?.update({ position: this.attributes.dataeaseIndicatorPosition || 'left' })
+  }
+  let dragging = false
+  const hideIndicator = legend.hideIndicator
+  legend.hideIndicator = function () {
+    // SVG may emit pointerleave when the bubble appears under the pointer.
+    if (!dragging) hideIndicator.call(this)
+  }
+  const onDragging = legend.onDragging
+  legend.onDragging = event => {
+    dragging = true
+    onDragging.call(legend, event)
+    const index = legend.target === 'start' ? 0 : 1
+    legend.showIndicator(legend.selection[index])
+  }
+  const onDragEnd = legend.onDragEnd
+  legend.onDragEnd = () => {
+    dragging = false
+    onDragEnd.call(legend)
+    document.removeEventListener('mouseleave', legend.onDragEnd)
+    legend.hideIndicator()
+  }
+  legend.addEventListener('valuechange', event => {
+    legend.attributes.dataeaseOnRangeChange?.(event.detail.value, legend.attributes.domain)
+  })
+  const destroy = legend.destroy
+  legend.destroy = function (...args) {
+    this.onDragEnd()
+    document.removeEventListener('mouseleave', this.onDragEnd)
+    return destroy.apply(this, args)
   }
   legend[CONTINUOUS_LEGEND_RANGE_FIXED] = true
 }
@@ -382,8 +416,19 @@ export class TableG2Chart extends G2ChartView {
       [chart.extColor[0].dataeaseName]: chart.extColor[0].chartShowName ?? chart.extColor[0].name
     }
     chart.container = container
-    const options = this.setupOptions(chart, initOptions, { axisMap, container })
     const newChart = new HeatmapG2Chart({ container, ...getG2Renderer() })
+    const onLegendRangeChange = (selection: number[], domain: number[]) => {
+      const elements = newChart.getContext().canvas?.document.querySelectorAll('.element') || []
+      elements.forEach(element => {
+        const value = Number(element.__data__?.data?.[extColorField])
+        element.style.opacity = heatmapValueSelected(value, selection, domain) ? 1 : 0.15
+      })
+    }
+    const options = this.setupOptions(chart, initOptions, {
+      axisMap,
+      container,
+      onLegendRangeChange
+    })
     newChart.options(options)
     newChart.on('plot:click', param => {
       if (!param?.target?.__data__?.data) {
@@ -508,6 +553,8 @@ export class TableG2Chart extends G2ChartView {
     const { legend } = parseJson(chart.customStyle)
     const colorField = chart.extColor[0]
     const colors = options.theme.category10
+    const domain = colorField.groupType === 'q' ? heatmapLegendDomain(chart) : undefined
+    const formatValue = heatmapLegendFormatter(chart)
     if (colorField.groupType === 'q') {
       const colorQuotaScale = {
         scale: {
@@ -515,7 +562,9 @@ export class TableG2Chart extends G2ChartView {
             type: 'linear',
             // 不扩展数据范围，图例刻度直接使用实际最大最小值
             nice: false,
-            tickMethod: (min, max) => [min, max],
+            domain: domain,
+            clamp: true,
+            tickMethod: (min, max) => (min === max ? [min] : [min, max]),
             interpolate() {
               return c => {
                 if (isNaN(c)) return colors[0]
@@ -527,6 +576,8 @@ export class TableG2Chart extends G2ChartView {
         }
       }
       defaultsDeep(options, colorQuotaScale)
+      // Preserve the matrix and the color domain while dragging; only dim excluded cells.
+      defaultsDeep(options, { interaction: { legendFilter: false } })
     }
     if (!legend.show) {
       return { ...options, legend: false }
@@ -591,19 +642,32 @@ export class TableG2Chart extends G2ChartView {
             label: true,
             labelFill: legend.color,
             labelFillOpacity: 1,
-            labelFontSize: legend.fontSize
+            labelFontSize: legend.fontSize,
+            labelFormatter: datum => formatValue(Number(datum.label ?? datum.value)),
+            handleFormatter: formatValue,
+            showIndicator: true,
+            dataeaseFormatter: formatValue,
+            dataeaseOnRangeChange: context.onLegendRangeChange,
+            dataeaseIndicatorPosition: verticalLegend
+              ? position === 'left'
+                ? 'right'
+                : 'left'
+              : position === 'top'
+              ? 'bottom'
+              : 'top',
+            defaultValue: domain,
+            slidable: domain?.[0] !== domain?.[1],
+            step: (() => {
+              const [min, max] = domain || [0, 1]
+              return Math.max((max - min) / 1000, Number.EPSILON)
+            })()
           }
         }
       }
       if (verticalLegend) {
         quotaLegendOption.legend.color.height = containerDom?.offsetHeight / 2
         const fontSize = Number(legend.fontSize) || 12
-        const { labelWidth } = getHorizontalLegendSize(
-          chart,
-          colorField.dataeaseName,
-          fontSize,
-          containerDom.offsetWidth
-        )
+        const { labelWidth } = getHorizontalLegendSize(chart, fontSize, containerDom.offsetWidth)
         // 原生标签、刻度和色带使用内部宽度，左右安全区独立参与 G2 外层布局
         const nativeWidth = labelWidth + 32
         Object.assign((options.legend as Record<string, any>).color, {
@@ -613,12 +677,7 @@ export class TableG2Chart extends G2ChartView {
         })
       } else {
         const fontSize = Number(legend.fontSize) || 12
-        const dimensions = getHorizontalLegendSize(
-          chart,
-          colorField.dataeaseName,
-          fontSize,
-          containerDom.offsetWidth
-        )
+        const dimensions = getHorizontalLegendSize(chart, fontSize, containerDom.offsetWidth)
         // 上下停靠按文字/滑块实际高度加 2px 安全区占位，间距沿用 G2 组合图的 8px
         const legendHeight = positionVertical
           ? dimensions.height

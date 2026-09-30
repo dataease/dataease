@@ -20,6 +20,7 @@ import CustomSortEdit from '@/views/chart/components/editor/drag-item/components
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import chartViewManager from '@/views/chart/components/js/panel'
+import HeatmapLegendEditor from './HeatmapLegendEditor.vue'
 const dvMainStore = dvMainStoreWithOut()
 const { batchOptStatus } = storeToRefs(dvMainStore)
 const { t } = useI18n()
@@ -113,6 +114,11 @@ const sizeList = computed(() => {
 
 const changeLegendStyle = prop => {
   emit('onLegendChange', state.legendForm, prop)
+}
+
+const changeHeatmapLegend = (value: HeatmapLegendOptions) => {
+  state.legendForm.heatmap = value
+  changeLegendStyle('heatmap')
 }
 
 const changeMisc = prop => {
@@ -293,6 +299,17 @@ onMounted(() => {
     label-position="top"
     size="small"
   >
+    <HeatmapLegendEditor
+      v-if="
+        chartType === 't-heatmap' &&
+        chart.extColor?.[0]?.groupType === 'q' &&
+        chartViewManager.getChartView(chart.render, chart.type)?.library === 'g2'
+      "
+      :model-value="state.legendForm.heatmap"
+      :chart="chart"
+      :themes="themes"
+      @update:model-value="changeHeatmapLegend"
+    />
     <el-row :gutter="8">
       <el-col :span="12">
         <el-form-item
