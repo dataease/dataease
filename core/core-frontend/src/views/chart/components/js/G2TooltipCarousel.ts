@@ -1,4 +1,5 @@
 import { parseJson } from '@/views/chart/components/js/util'
+import { scheduleTooltipCarousel } from './tooltip-carousel-scroll'
 import {
   getTooltipDisplayMode,
   getTooltipWrapper,
@@ -60,10 +61,10 @@ class G2TooltipCarousel {
   private chartElement: HTMLElement
   private timers = {
     interval: null,
-    carousel: null,
     nextItem: null,
     hoverLeave: null
   }
+  private cancelTooltipScroll?: () => void
   private isExecuting: boolean
   private isViewEnlarged: boolean
   private instanceId: number
@@ -553,32 +554,37 @@ class G2TooltipCarousel {
       // 显示当前tooltip
       this.showTooltipAtData(tooltipData, currentItem)
       // 定时切换到下一个tooltip
-      this.timers.carousel = setTimeout(() => {
-        if (!this.data || this.data.length === 0) {
-          this.clearTimer()
-          this.isExecuting = false
-          return
-        }
-        const isLastItem = this.index === this.data.length - 1
-        if (isLastItem) {
-          this.hideTooltipAtData()
-          // 最后一个后等待额外时间再轮播
-          this.timers.interval = setTimeout(() => {
-            this.index = 0
+      this.cancelTooltipScroll = scheduleTooltipCarousel(
+        () => this.getTooltipElement(),
+        this.normalInterval,
+        () => {
+          this.cancelTooltipScroll = undefined
+          if (!this.data || this.data.length === 0) {
+            this.clearTimer()
             this.isExecuting = false
-            this.next()
-          }, this.finalExtraWait)
-        } else {
-          this.isExecuting = false
-          this.timers.nextItem = setTimeout(() => {
-            this.index += 1
-            this.next()
-          }, 0)
+            return
+          }
+          const isLastItem = this.index === this.data.length - 1
+          if (isLastItem) {
+            this.hideTooltipAtData()
+            // 最后一个后等待额外时间再轮播
+            this.timers.interval = setTimeout(() => {
+              this.index = 0
+              this.isExecuting = false
+              this.next()
+            }, this.finalExtraWait)
+          } else {
+            this.isExecuting = false
+            this.timers.nextItem = setTimeout(() => {
+              this.index += 1
+              this.next()
+            }, 0)
+          }
         }
-      }, this.normalInterval)
+      )
     } finally {
       // 没有定时器活动时释放执行锁
-      if (!this.timers.carousel && !this.timers.interval && !this.timers.nextItem) {
+      if (!this.cancelTooltipScroll && !this.timers.interval && !this.timers.nextItem) {
         this.isExecuting = false
       }
     }
@@ -1289,10 +1295,8 @@ class G2TooltipCarousel {
    */
   private clearTimer() {
     G2TooltipCarousel.dequeueStart(this)
-    if (this.timers.carousel) {
-      clearTimeout(this.timers.carousel)
-      this.timers.carousel = null
-    }
+    this.cancelTooltipScroll?.()
+    this.cancelTooltipScroll = undefined
     if (this.timers.interval) {
       clearTimeout(this.timers.interval)
       this.timers.interval = null
