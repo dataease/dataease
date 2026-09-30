@@ -3716,6 +3716,8 @@ export default {
     web_url: '網頁地址',
     app_embed: '嵌入模式',
     app_embed_code: '嵌入代碼',
+    app_embed_sandbox_tips:
+      '嵌入代碼在隔離環境中執行，無法存取宿主頁面或其瀏覽器儲存空間，不支援彈出視窗、表單提交和頂層頁面跳轉。依賴這些能力的應用需要調整，外部介面需支援跨來源存取。',
     video_add_tips: '請配置視頻信息...',
     link_add_tips_pre: '請配置網頁信息..',
     web_add_tips_suf: '添加網頁信息...',
