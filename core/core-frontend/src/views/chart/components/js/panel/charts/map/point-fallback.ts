@@ -1,3 +1,4 @@
+import { mapTooltipValue } from './mapLegend'
 import type { ChoroplethOptions } from '@antv/l7plot/dist/esm/plots/choropleth'
 import type { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
 import type { DotOptions } from '@antv/l7plot'
@@ -11,7 +12,10 @@ import {
   mapRendering
 } from '@/views/chart/components/js/panel/common/common_antv'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
-import { configCarouselTooltip } from '@/views/chart/components/js/panel/charts/map/tooltip-carousel'
+import {
+  configCarouselTooltip,
+  escapeTooltipHtml
+} from '@/views/chart/components/js/panel/charts/map/tooltip-carousel'
 import type { L7PlotDrawOptions } from '@/views/chart/components/js/panel/types/impl/l7plot'
 import type { Choropleth } from '@antv/l7plot/dist/esm/plots/choropleth'
 import type { MapMouseEvent } from '@/views/chart/components/js/panel/charts/map/common'
@@ -278,7 +282,7 @@ export async function drawPointFallbackChart(
       const formatter = formatterMap[head.quotaList?.[0]?.id]
       if (!isEmpty(formatter)) {
         const originValue = parseFloat(head.value as string)
-        const value = valueFormatter(originValue, formatter.formatterCfg)
+        const value = escapeTooltipHtml(mapTooltipValue(chart, originValue, formatter.formatterCfg))
         const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
         result.push({ ...head, name, value: `${value ?? ''}` })
       }

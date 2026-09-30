@@ -106,7 +106,16 @@ declare interface HeatmapLegendOptions {
   prefix?: string
 }
 
+declare interface MapLegendOptions {
+  formatMode?: 'legacy' | 'inherit' | 'custom'
+  formatterCfg?: BaseFormatter
+  prefix?: string
+  syncTooltip?: boolean
+  rangeLabels?: Record<string, string>
+}
+
 declare interface ChartLegendStyle {
+  map?: MapLegendOptions
   heatmap?: HeatmapLegendOptions
   displayMode?: 'pagination' | 'tile'
   tileOverflow?: 'scroll' | 'adaptive'
