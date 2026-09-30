@@ -3724,6 +3724,8 @@ export default {
     web_url: '网页地址',
     app_embed: '嵌入模式',
     app_embed_code: '嵌入代码',
+    app_embed_sandbox_tips:
+      '嵌入代码在隔离环境中运行，无法访问宿主页面或其浏览器存储，不支持弹窗、表单提交和顶层页面跳转。依赖这些能力的应用需要适配，外部接口需支持跨域访问。',
     video_add_tips: '请配置视频信息...',
     link_add_tips_pre: '请配置网页信息..',
     web_add_tips_suf: '添加网页信息...',

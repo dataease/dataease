@@ -21,6 +21,7 @@
           v-model="state.linkInfoTemp.src"
           @blur="onAppBlur"
         />
+        <div class="app-embed-tips">{{ t('visualization.app_embed_sandbox_tips') }}</div>
       </el-form-item>
       <el-form-item v-else>
         <template #label>
@@ -123,6 +124,14 @@ watch(
 </script>
 
 <style lang="less" scoped>
+.app-embed-tips {
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  color: var(--el-text-color-secondary);
+}
+
 .slot-class {
   color: white;
 }
