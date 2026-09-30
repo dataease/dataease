@@ -3,6 +3,7 @@ import { formatterItem, valueFormatter } from '@/views/chart/components/js/forma
 import {
   copyContent,
   CustomDataCell,
+  drawImage,
   getRowIndex,
   setupMergedCellHover,
   getSummaryRow,
@@ -34,6 +35,12 @@ import {
 import { isEqual, isNumber, merge } from 'lodash-es'
 import { TABLE_EDITOR_PROPERTY, TABLE_EDITOR_PROPERTY_INNER } from './common'
 const { t } = useI18n()
+
+class ImageCell extends CustomDataCell {
+  drawTextShape(): void {
+    drawImage.apply(this)
+  }
+}
 
 type TableHeaderAlign = Exclude<ChartTableHeaderAttr['tableHeaderAlign'], 'custom'>
 type TableHeaderTheme = S2Theme & {
@@ -266,6 +273,14 @@ export class TableNormal extends S2ChartView<TableSheet> {
     }
     // 列宽设置
     s2Options.style = this.configStyle(chart, s2DataConfig)
+    if (basicStyle.tableColumnMode === 'adapt') {
+      s2Options.style.colCell.widthByField = {
+        ...s2Options.style.colCell.widthByField,
+        ...Object.fromEntries(
+          chart.xAxis.filter(field => field.deType === 7).map(field => [field.dataeaseName, 120])
+        )
+      }
+    }
     // 行列冻结
     if (tableCell.tableFreeze && !tableCell.mergeCells) {
       s2Options.frozen.colCount = tableCell.tableColumnFreezeHead ?? 0
@@ -341,15 +356,30 @@ export class TableNormal extends S2ChartView<TableSheet> {
         // 与 S2 画布和左侧边框使用同一宽度口径，避免小数尺寸造成横向溢出
         const borderWidth = Frame.getVerticalBorderWidth(newChart)
         const availableWidth = Math.max(0, Math.floor(newChart.options.width - borderWidth))
-        const originalTotalWidth = ev.colLeafNodes.reduce((total, node) => total + node.width, 0)
-        const shouldExpand = originalTotalWidth > 0 && originalTotalWidth < availableWidth
+        const imageFields = new Set(
+          chart.xAxis.filter(field => field.deType === 7).map(field => field.dataeaseName)
+        )
+        let fixedWidth = 0
+        ev.colLeafNodes.forEach(node => {
+          if (imageFields.has(node.field)) {
+            node.width = 120
+            fixedWidth += 120
+          }
+        })
+        const originalTotalWidth = ev.colLeafNodes.reduce(
+          (total, node) => total + (imageFields.has(node.field) ? 0 : node.width),
+          0
+        )
+        const scalableWidth = Math.max(0, availableWidth - fixedWidth)
+        const shouldExpand = originalTotalWidth > 0 && originalTotalWidth < scalableWidth
         let originalWidthSum = 0
         let assignedWidth = 0
         ev.colLeafNodes.forEach(node => {
+          if (imageFields.has(node.field)) return
           if (shouldExpand) {
             originalWidthSum += node.width
             // 按累计边界取整，保证列宽为整数且总宽恰好填满可用区域
-            const nextWidth = Math.round((originalWidthSum / originalTotalWidth) * availableWidth)
+            const nextWidth = Math.round((originalWidthSum / originalTotalWidth) * scalableWidth)
             node.width = nextWidth - assignedWidth
             assignedWidth = nextWidth
           } else {
@@ -489,6 +519,10 @@ export class TableNormal extends S2ChartView<TableSheet> {
           viewMeta.fieldValue =
             pageInfo.pageSize * (pageInfo.currentPage - 1) + viewMeta.rowIndex + 1
         }
+      }
+      const field = xAxis.find(field => field.dataeaseName === viewMeta.valueField)
+      if (field?.deType === 7 && chart.showPosition !== 'dialog') {
+        return new ImageCell(viewMeta, sheet)
       }
       return new CustomDataCell(viewMeta, sheet)
     }

@@ -15,6 +15,10 @@ import {
   toRefs
 } from 'vue'
 import { getData } from '@/api/chart'
+import {
+  tableImageUrl,
+  TABLE_IMAGE_PLACEHOLDER
+} from '@/views/chart/components/js/panel/common/tableImage'
 import chartViewManager from '@/views/chart/components/js/panel'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -632,10 +636,10 @@ const trackClick = trackAction => {
       emit('onJumpClick', jumpParam)
       break
     case 'enlarge':
-      if (view.value.type === 'table-info') {
+      if (PAGE_CHARTS.includes(view.value.type)) {
         param.data.dimensionList?.forEach(d => {
           if (d.id === state.curActionId) {
-            state.imgSrc = d.value
+            state.imgSrc = tableImageUrl(d.value) || TABLE_IMAGE_PLACEHOLDER
             state.imgEnlarge = true
           }
         })
@@ -724,8 +728,8 @@ const trackMenuCalc = itemId => {
   ) {
     trackMenuInfo = ['linkageAndDrill']
   }
-  // 明细表 URL 字段图片放大
-  if (view.value.type === 'table-info') {
+  // 明细表与汇总表 URL 维度图片放大
+  if (PAGE_CHARTS.includes(view.value.type)) {
     view.value.xAxis?.forEach(axis => {
       if (axis.id === itemId && axis.deType === 7) {
         trackMenuInfo.push('enlarge')
@@ -930,7 +934,13 @@ const tablePageClass = computed(() => {
   </div>
   <el-dialog v-model="state.imgEnlarge" append-to-body class="image-dialog">
     <div class="enlarge-image">
-      <img :src="state.imgSrc" style="width: 100%; height: 100%; object-fit: contain" />
+      <img
+        :src="state.imgSrc"
+        referrerpolicy="no-referrer"
+        crossorigin="anonymous"
+        style="width: 100%; height: 100%; object-fit: contain"
+        @error="state.imgSrc = TABLE_IMAGE_PLACEHOLDER"
+      />
     </div>
   </el-dialog>
 </template>
