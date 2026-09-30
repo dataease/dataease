@@ -485,6 +485,14 @@ export default {
     allSelect: '全选'
   },
   system: {
+    font_limits_title: '字体设置',
+    font_file_limit: '单字体文件大小上限',
+    font_storage_limit: '字体存储总配额',
+    font_storage_used: '当前已使用 {size} MB',
+    font_quota_warning: '配额低于已用空间，已有字体保留，新的上传将被拒绝。',
+    font_limits_hint:
+      '保存后对新上传立即生效，无需重启。两项均为正整数，单文件上限不能超过总配额；总配额最大为 1,048,576 MB。',
+
     user: '用户',
     role: '角色',
     addUser: '@:common.add@:system.user',

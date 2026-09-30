@@ -6,6 +6,8 @@ import io.dataease.api.system.vo.SettingItemVO;
 import io.dataease.api.system.vo.ShareBaseVO;
 import io.dataease.datasource.server.DatasourceServer;
 import io.dataease.exception.DEException;
+import io.dataease.i18n.Translator;
+import io.dataease.font.manage.FontSettingsManage;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.system.dao.auto.entity.CoreSysSetting;
 import io.dataease.system.dao.auto.mapper.CoreSysSettingRepository;
@@ -325,6 +327,10 @@ public class SysParameterManage {
 
     @Transactional
     public void saveGroup(List<SettingItemVO> vos, String groupKey) {
+        // 字体限制只能通过专用接口修改，防止绕过权限和范围校验。
+        if (vos.stream().anyMatch(vo -> FontSettingsManage.KEY.equals(vo.getPkey()))) {
+            DEException.throwException(403, Translator.get("i18n_font_settings_forbidden"));
+        }
         List<CoreSysSetting> sysSettings = vos.stream().filter(vo -> !SystemSettingUtils.xpackSetting(vo.getPkey())).map(item -> {
             CoreSysSetting sysSetting = BeanUtils.copyBean(new CoreSysSetting(), item);
             sysSetting.setId(IDUtils.snowID());
