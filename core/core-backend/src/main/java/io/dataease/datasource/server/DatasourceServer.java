@@ -32,6 +32,11 @@ import io.dataease.datasource.manage.DatasourceSyncManage;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.provider.ExcelUtils;
+import io.dataease.datasource.provider.ExcelFileGuard;
+import io.dataease.api.permissions.auth.dto.BusiPerCheckDTO;
+import io.dataease.constant.AuthEnum;
+import io.dataease.constant.BusiResourceEnum;
+import io.dataease.system.manage.CorePermissionManage;
 import io.dataease.datasource.type.H2;
 import io.dataease.datasource.type.Mysql;
 import io.dataease.datasource.type.Oracle;
@@ -299,6 +304,7 @@ public class DatasourceServer implements DatasourceApi {
         if (StringUtils.isNotEmpty(dataSourceDTO.getConfiguration())) {
             dataSourceDTO.setConfiguration(new String(Base64.getDecoder().decode(dataSourceDTO.getConfiguration())));
         }
+        validateExcelFiles(dataSourceDTO, null);
         preCheckDs(dataSourceDTO);
         dataSourceDTO.setId(IDUtils.snowID());
         dataSourceDTO.setCreateTime(System.currentTimeMillis());
@@ -428,6 +434,7 @@ public class DatasourceServer implements DatasourceApi {
         DatasourceDTO sourceData = dataSourceManage.getDs(pk);
         dataSourceDTO.setConfiguration(new String(Base64.getDecoder().decode(dataSourceDTO.getConfiguration())));
         dataSourceDTO.setPid(sourceData.getPid());
+        validateExcelFiles(dataSourceDTO, sourceData);
         preCheckDs(dataSourceDTO);
 
         dataSourceDTO.setUpdateTime(System.currentTimeMillis());
@@ -1179,6 +1186,28 @@ public class DatasourceServer implements DatasourceApi {
         param.put("app_id", appId);
         param.put("app_secret", appSecret);
         return Objects.requireNonNull(JsonUtil.toJSONString(param)).toString();
+    }
+
+    @Resource
+    private CorePermissionManage corePermissionManage;
+
+    private void validateExcelFiles(DatasourceDTO requested, DatasourceDTO stored) {
+        if (!"Excel".equalsIgnoreCase(requested.getType())) return;
+        if (V3UserUtil.getUid() == null || V3UserUtil.getLink() != null) {
+            DEException.throwException(Translator.get("i18n_excel_file_forbidden"));
+        }
+        if (stored != null && !corePermissionManage.checkAuth(
+                new BusiPerCheckDTO(stored.getId(), BusiResourceEnum.DATASOURCE, AuthEnum.MANAGE))) {
+            DEException.throwException(Translator.get("i18n_excel_file_forbidden"));
+        }
+        try {
+            ExcelFileGuard.validateConfiguration(java.nio.file.Path.of(ExcelUtils.getExcelPath()),
+                    requested.getConfiguration(), stored != null && "Excel".equalsIgnoreCase(stored.getType())
+                            ? stored.getConfiguration() : null,
+                    V3UserUtil.getUid().toString());
+        } catch (IOException e) {
+            DEException.throwException(Translator.get("i18n_excel_file_forbidden"));
+        }
     }
 
     private void preCheckDs(DatasourceDTO datasource) throws DEException {
