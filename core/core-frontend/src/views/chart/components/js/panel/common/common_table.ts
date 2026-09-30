@@ -1,3 +1,4 @@
+import { tableImageUrl, TABLE_IMAGE_PLACEHOLDER } from './tableImage'
 /* eslint-disable prettier/prettier */
 import {
   copyString,
@@ -3273,22 +3274,34 @@ export const getColumns = (fields, cols: Array<ColumnNode>): Array<ColumnNode> =
   return result
 }
 
-const imageCellStates = new WeakMap<object, { image: HTMLImageElement; shape?: GImage }>()
+const imageCellStates = new WeakMap<object, { image: HTMLImageElement; shape?: GImage; timer?: ReturnType<typeof setTimeout> }>()
 
 export function drawImage() {
   const previous = imageCellStates.get(this)
   if (previous) {
     previous.image.onload = null
+    previous.image.onerror = null
+    clearTimeout(previous.timer)
     if (previous.shape && !previous.shape.destroyed) {
       previous.shape.destroy()
     }
   }
   const img = new Image()
-  const state: { image: HTMLImageElement; shape?: GImage } = { image: img }
+  const state: { image: HTMLImageElement; shape?: GImage; timer?: ReturnType<typeof setTimeout> } = { image: img }
   imageCellStates.set(this, state)
   const {x, y, width, height, fieldValue} = this.meta
+  if (fieldValue === null || fieldValue === undefined || fieldValue === '') return
+  img.referrerPolicy = 'no-referrer'
   img.setAttribute('crossOrigin', 'anonymous')
+  const fallback = () => {
+    clearTimeout(state.timer)
+    img.onerror = null
+    if (!this.destroyed && imageCellStates.get(this) === state) img.src = TABLE_IMAGE_PLACEHOLDER
+  }
+  img.onerror = fallback
+  state.timer = setTimeout(fallback, 10000)
   img.onload = () => {
+    clearTimeout(state.timer)
     // 单元格可能被复用或销毁，忽略旧请求，避免旧图片覆盖新数据。
     if (this.destroyed || imageCellStates.get(this) !== state) {
       return
@@ -3310,7 +3323,7 @@ export function drawImage() {
     // 只替换图片，保留单元格的背景、边框和交互图形。
     this.appendChild(state.shape)
   }
-  img.src = fieldValue as string
+  img.src = tableImageUrl(fieldValue) || TABLE_IMAGE_PLACEHOLDER
 }
 
 export function mappingColorCustom(value, defaultColor, field, type, filedValueMap?, rowData?) {
