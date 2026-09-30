@@ -113,7 +113,7 @@ public class HttpClientUtil {
             for (String key : header.keySet()) {
                 httpGet.addHeader(key, header.get(key));
             }
-            HttpResponse response = httpClient.execute(httpGet);
+            HttpResponse response = executeBounded(httpClient, httpGet, config.getMaxResponseBytes(), config.getResponseTimeout());
             if (response.getStatusLine().getStatusCode() >= 400) {
                 String msg = EntityUtils.toString(response.getEntity(), config.getCharset());
                 if (StringUtils.isEmpty(msg)) {
@@ -121,6 +121,8 @@ public class HttpClientUtil {
                 }
                 throw new Exception(msg);
             }
+            httpGet.abort();
+            if (response.getEntity() != null) response.getEntity().getContent().close();
             return true;
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
@@ -158,7 +160,7 @@ public class HttpClientUtil {
             for (String key : header.keySet()) {
                 httpGet.addHeader(key, header.get(key));
             }
-            HttpResponse response = httpClient.execute(httpGet);
+            HttpResponse response = executeBounded(httpClient, httpGet, config.getMaxResponseBytes(), config.getResponseTimeout());
             return getResponseStr(response, config);
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
@@ -189,7 +191,7 @@ public class HttpClientUtil {
             entityBuilder.setContentType(ContentType.APPLICATION_JSON);
             HttpEntity requestEntity = entityBuilder.build();
             httpPatch.setEntity(requestEntity);
-            HttpResponse response = httpClient.execute(httpPatch);
+            HttpResponse response = executeBounded(httpClient, httpPatch, config.getMaxResponseBytes(), config.getResponseTimeout());
             return getResponseStr(response, config);
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
@@ -230,7 +232,7 @@ public class HttpClientUtil {
             HttpEntity requestEntity = entityBuilder.build();
             httpPost.setEntity(requestEntity);
 
-            HttpResponse response = httpClient.execute(httpPost);
+            HttpResponse response = executeBounded(httpClient, httpPost, config.getMaxResponseBytes(), config.getResponseTimeout());
             return getResponseStr(response, config);
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
@@ -265,7 +267,7 @@ public class HttpClientUtil {
             HttpEntity requestEntity = entityBuilder.build();
             httpPost.setEntity(requestEntity);
 
-            HttpResponse response = httpClient.execute(httpPost);
+            HttpResponse response = executeBounded(httpClient, httpPost, config.getMaxResponseBytes(), config.getResponseTimeout());
             return response;
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
@@ -300,7 +302,7 @@ public class HttpClientUtil {
             HttpEntity requestEntity = entityBuilder.build();
             httpPut.setEntity(requestEntity);
 
-            HttpResponse response = httpClient.execute(httpPut);
+            HttpResponse response = executeBounded(httpClient, httpPut, config.getMaxResponseBytes(), config.getResponseTimeout());
             return getResponseStr(response, config);
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
@@ -359,11 +361,40 @@ public class HttpClientUtil {
                 }
             }
 
-            HttpResponse response = httpClient.execute(httpPost);
+            HttpResponse response = executeBounded(httpClient, httpPost, config.getMaxResponseBytes(), config.getResponseTimeout());
             return getResponseStr(response, config);
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
             throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient查询失败: " + e.getMessage());
+        }
+    }
+
+    private static CloseableHttpResponse executeBounded(CloseableHttpClient client, HttpRequestBase request,
+                                                        long maxBytes, long timeoutMs) throws IOException {
+        RemoteTransfer transfer = new RemoteTransfer(maxBytes, timeoutMs, request::abort);
+        try {
+            CloseableHttpResponse response = client.execute(request);
+            HttpEntity entity = response.getEntity();
+            if (entity == null) {
+                transfer.close();
+            } else {
+                transfer.checkLength(entity.getContentLength());
+                response.setEntity(new org.apache.http.entity.HttpEntityWrapper(entity) {
+                    private InputStream stream;
+                    @Override public InputStream getContent() throws IOException {
+                        if (stream == null) stream = transfer.wrap(super.getContent());
+                        return stream;
+                    }
+                    @Override public void writeTo(OutputStream output) throws IOException {
+                        try (InputStream input = getContent()) { input.transferTo(output); }
+                    }
+                });
+            }
+            return response;
+        } catch (IOException | RuntimeException e) {
+            request.abort();
+            transfer.close();
+            throw e;
         }
     }
 
@@ -381,6 +412,8 @@ public class HttpClientUtil {
     public static Map<String, String> downloadFile(String url, HttpClientConfig config, String path) {
         String encodeUIl = url;
         Map<String, String> name = new HashMap<>();
+        Path localFile = null;
+        boolean completed = false;
         if (!url.contains("%")) {
             String[] http = url.split("://");
             String[] server = http[1].split("/");
@@ -392,7 +425,7 @@ public class HttpClientUtil {
             httpGet.setConfig(config.buildRequestConfig());
             // 设置请求头
             config.getHeader().forEach(httpGet::addHeader);
-            HttpResponse response = httpClient.execute(httpGet);
+            HttpResponse response = executeBounded(httpClient, httpGet, config.getMaxFileBytes(), config.getResponseTimeout());
             if (response.getStatusLine().getStatusCode() >= 400) {
                 String msg = EntityUtils.toString(response.getEntity(), config.getCharset());
                 if (StringUtils.isEmpty(msg)) {
@@ -405,7 +438,7 @@ public class HttpClientUtil {
             String tranName = UUID.randomUUID().toString() + "." + suffix;
             name.put("fileName", fileName);
             name.put("tranName", tranName);
-            Path localFile = resolveDownloadPath(path, tranName);
+            localFile = resolveDownloadPath(path, tranName);
             try (InputStream is = response.getEntity().getContent();
                  OutputStream outputStream = Files.newOutputStream(localFile)) {
                 byte[] buffer = new byte[4096];
@@ -414,9 +447,15 @@ public class HttpClientUtil {
                     outputStream.write(buffer, 0, bytesRead);
                 }
             }
+            completed = true;
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
             throw new RuntimeException("HttpClient查询失败: " + e.getMessage(), e);
+        } finally {
+            if (!completed && localFile != null) {
+                try { Files.deleteIfExists(localFile); }
+                catch (IOException cleanup) { logger.warn("Cannot remove incomplete remote file", cleanup); }
+            }
         }
         return name;
     }
@@ -500,7 +539,7 @@ public class HttpClientUtil {
 
             // 设置请求头
             config.getHeader().forEach(httpGet::addHeader);
-            HttpResponse response = httpClient.execute(httpGet);
+            HttpResponse response = executeBounded(httpClient, httpGet, config.getMaxResponseBytes(), config.getResponseTimeout());
             try (InputStream inputStream = response.getEntity().getContent();
                  ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 
@@ -550,7 +589,7 @@ public class HttpClientUtil {
         }
         try {
             postRequest.setEntity((HttpEntity) builder.build());
-            return getResponseStr(httpClient.execute(postRequest), config);
+            return getResponseStr(executeBounded(httpClient, postRequest, config.getMaxResponseBytes(), config.getResponseTimeout()), config);
         } catch (Exception var11) {
             logger.error("HttpClient查询失败", var11);
             throw new RuntimeException("HttpClient查询失败: " + var11.getMessage());
@@ -600,7 +639,7 @@ public class HttpClientUtil {
         }
         try {
             postRequest.setEntity(builder.build());
-            return getResponseStr(httpClient.execute(postRequest), config);
+            return getResponseStr(executeBounded(httpClient, postRequest, config.getMaxResponseBytes(), config.getResponseTimeout()), config);
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
             throw new RuntimeException("HttpClient查询失败: " + e.getMessage());
@@ -629,7 +668,7 @@ public class HttpClientUtil {
             for (String key : header.keySet()) {
                 httpDelete.addHeader(key, header.get(key));
             }
-            HttpResponse response = httpClient.execute(httpDelete);
+            HttpResponse response = executeBounded(httpClient, httpDelete, config.getMaxResponseBytes(), config.getResponseTimeout());
             return getResponseStr(response, config);
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
@@ -702,7 +741,7 @@ public class HttpClientUtil {
                     throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient转换编码错误: " + e.getMessage());
                 }
             }
-            HttpResponse response = httpClient.execute(httpPost);
+            HttpResponse response = executeBounded(httpClient, httpPost, config.getMaxResponseBytes(), config.getResponseTimeout());
             return getResponseStr(response, config);
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
@@ -735,7 +774,7 @@ public class HttpClientUtil {
             entityBuilder.setText(body);
             entityBuilder.setContentType(ContentType.parse(contentType).withCharset(java.nio.charset.StandardCharsets.UTF_8));
             httpPost.setEntity(entityBuilder.build());
-            HttpResponse response = httpClient.execute(httpPost);
+            HttpResponse response = executeBounded(httpClient, httpPost, config.getMaxResponseBytes(), config.getResponseTimeout());
             return getResponseStr(response, config);
         } catch (Exception e) {
             logger.error("HttpClient POST raw body failed", e);
@@ -784,7 +823,7 @@ public class HttpClientUtil {
             entityBuilder.setText(body);
             entityBuilder.setContentType(ContentType.parse(contentType).withCharset(java.nio.charset.StandardCharsets.UTF_8));
             httpPut.setEntity(entityBuilder.build());
-            HttpResponse response = httpClient.execute(httpPut);
+            HttpResponse response = executeBounded(httpClient, httpPut, config.getMaxResponseBytes(), config.getResponseTimeout());
             return getResponseStr(response, config);
         } catch (Exception e) {
             logger.error("HttpClient PUT raw body failed", e);
@@ -822,7 +861,7 @@ public class HttpClientUtil {
             httpPost.setEntity(requestEntity);
 
 
-            try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
+            try (CloseableHttpResponse response = executeBounded(httpClient, httpPost, config.getMaxResponseBytes(), config.getResponseTimeout())) {
                 if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
                     throw new DEException(response.getStatusLine().getStatusCode(), response.toString());
                 }

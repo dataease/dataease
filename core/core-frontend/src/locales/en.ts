@@ -1,4 +1,15 @@
 export default {
+  remote_transfer: {
+    advanced: 'Advanced settings',
+    response_size: 'Maximum response size',
+    file_size: 'Maximum file size',
+    timeout: 'Total transfer timeout',
+    range: 'Enter an integer from 1 to {0}',
+    file_help:
+      'Exceeding a limit aborts the download and removes incomplete files. Existing connection and read timeouts and safe Excel parsing limits still apply.',
+    help: 'Limits apply to actual received bytes, including decompressed responses. Exceeding a limit aborts the request. Each API page is limited separately. Existing connection and read timeouts still apply.'
+  },
+
   share_visitor: {
     no_permission: 'You do not have this permission',
     title: 'Visitor permissions',

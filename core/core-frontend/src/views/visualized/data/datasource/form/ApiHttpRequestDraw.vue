@@ -6,6 +6,7 @@ import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
 import type { ApiRequest } from './ApiHttpRequestForm.vue'
 import ApiHttpRequestForm from './ApiHttpRequestForm.vue'
+import RemoteTransferSettings from './RemoteTransferSettings.vue'
 import { Icon } from '@/components/icon-custom'
 import { Base64 } from 'js-base64'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
@@ -41,6 +42,8 @@ export interface ApiItem {
   fields: Field[]
   jsonFields: JsonField[]
   useJsonPath: boolean
+  maxResponseSizeMb?: number
+  transferTimeoutSeconds?: number
   apiQueryTimeout: number
   showApiStructure: boolean
   jsonPath: string
@@ -221,7 +224,7 @@ const initApiItem = (
       valueList.value = valueList.value.concat(paramsList[i].fields)
     }
   }
-  Object.assign(apiItem, val)
+  Object.assign(apiItem, { maxResponseSizeMb: 16, transferTimeoutSeconds: 120 }, val)
   edit_api_item.value = true
   active.value = 0
   nextTick(() => {
@@ -758,6 +761,7 @@ defineExpose({
             />
           </el-form-item>
         </div>
+        <remote-transfer-settings :model="apiItem" @update:model="Object.assign(apiItem, $event)" />
         <el-form-item :label="$t('datasource.query_timeout')" prop="apiQueryTimeout">
           <el-input v-model="apiItem.apiQueryTimeout" autocomplete="off" type="number" :min="0">
             <template v-slot:append>{{ $t('chart.second') }}</template>

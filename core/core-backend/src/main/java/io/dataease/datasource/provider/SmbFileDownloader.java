@@ -15,6 +15,7 @@ import com.hierynomus.smbj.share.DiskShare;
 import io.dataease.api.ds.vo.ExcelConfiguration;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
+import io.dataease.utils.RemoteTransfer;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -63,15 +64,19 @@ public final class SmbFileDownloader {
             DEException.throwException(Translator.get("i18n_smb_username_required"));
         }
         char[] password = configuration.getPasswd() == null ? new char[0] : configuration.getPasswd().toCharArray();
+        long timeout = RemoteTransfer.timeoutMillis(configuration.getTransferTimeoutSeconds());
+        long maxBytes = RemoteTransfer.sizeBytes(configuration.getMaxFileSizeMb(), 100, 1024);
         SmbConfig config = SmbConfig.builder()
-                .withSocketFactory(new ProxySocketFactory(10000))
-                .withTimeout(60, TimeUnit.SECONDS)
-                .withSoTimeout(60, TimeUnit.SECONDS)
+                .withSocketFactory(new ProxySocketFactory((int) Math.min(10000, timeout)))
+                .withTimeout(Math.min(60000, timeout), TimeUnit.MILLISECONDS)
+                .withSoTimeout((int) Math.min(60000, timeout), TimeUnit.MILLISECONDS)
                 .withSigningRequired(true)
                 .withDfsEnabled(false)
                 .build();
         Path localFile = null;
         try (SMBClient client = new SMBClient(config);
+             RemoteTransfer transfer = new RemoteTransfer(
+                     maxBytes, timeout, client::close);
              Connection connection = client.connect(uri.getHost(), uri.getPort() < 0 ? 445 : uri.getPort());
              Session session = connection.authenticate(new AuthenticationContext(username, password,
                      configuration.getDomain() == null ? "" : configuration.getDomain().trim()));
@@ -83,7 +88,7 @@ public final class SmbFileDownloader {
                      EnumSet.of(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE))) {
             Files.createDirectories(directory);
             localFile = Files.createTempFile(directory, "smb-", "." + suffix);
-            try (InputStream input = remoteFile.getInputStream(); OutputStream output = Files.newOutputStream(localFile)) {
+            try (InputStream input = transfer.wrap(remoteFile.getInputStream()); OutputStream output = Files.newOutputStream(localFile)) {
                 input.transferTo(output);
             }
         } catch (Exception e) {

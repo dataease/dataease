@@ -1,4 +1,5 @@
 <script lang="tsx" setup>
+import RemoteTransferSettings from './RemoteTransferSettings.vue'
 import icon_calendar_outlined from '@/assets/svg/icon_calendar_outlined.svg'
 import {
   ref,
@@ -143,7 +144,9 @@ const initForm = type => {
     url: '',
     userName: '',
     passwd: '',
-    domain: ''
+    domain: '',
+    maxFileSizeMb: 100,
+    transferTimeoutSeconds: 120
   }
   form.value.syncSetting = {
     updateType: 'all_scope',
@@ -802,6 +805,12 @@ defineExpose({
             :placeholder="t('datasource.smb_domain_placeholder')"
           />
         </el-form-item>
+        <remote-transfer-settings
+          v-show="activeStep !== 2"
+          v-model:model="form.configuration"
+          file
+          prefix="configuration."
+        />
         <el-form-item v-show="activeStep !== 2">
           <el-button type="primary" @click="loadData()">
             {{ t('datasource.load_data') }}

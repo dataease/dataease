@@ -1,4 +1,15 @@
 export default {
+  remote_transfer: {
+    advanced: '高级设置',
+    response_size: '单次响应大小上限',
+    file_size: '单个文件大小上限',
+    timeout: '单次传输总时限',
+    range: '请输入 1 至 {0} 的整数',
+    file_help:
+      '超限或超时将中止下载并清理未完成文件。原有连接和读取超时、Excel 安全解析限制仍然生效。',
+    help: '按实际接收的数据量计数，包含解压后的响应；超限或超时将中止本次请求。API 分页按每次请求分别限制，原有连接和读取超时仍然生效。'
+  },
+
   share_visitor: {
     no_permission: '你没有此项权限',
     title: '访客权限',

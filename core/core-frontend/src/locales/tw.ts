@@ -1,4 +1,15 @@
 export default {
+  remote_transfer: {
+    advanced: '進階設定',
+    response_size: '單次回應大小上限',
+    file_size: '單個檔案大小上限',
+    timeout: '單次傳輸總時限',
+    range: '請輸入 1 至 {0} 的整數',
+    file_help:
+      '超限或逾時將中止下載並清理未完成檔案。原有連線和讀取逾時、Excel 安全解析限制仍然生效。',
+    help: '按實際接收的資料量計數，包含解壓後的回應；超限或逾時將中止本次請求。API 分頁按每次請求分別限制，原有連線和讀取逾時仍然生效。'
+  },
+
   share_visitor: {
     no_permission: '你沒有此項權限',
     title: '訪客權限',
