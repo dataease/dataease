@@ -28,7 +28,7 @@ public class FontSettingsRegression {
     static boolean fontMenuGranted;
     @Configuration
     @EnableTransactionManagement
-    @EnableJpaRepositories(basePackageClasses = CoreSysSettingRepository.class)
+    @EnableJpaRepositories(basePackageClasses = {CoreSysSettingRepository.class, io.dataease.font.dao.auto.mapper.CoreFontRepository.class})
     static class Config {
         @Bean io.dataease.api.menu.MenuApi menuApi() {
             return () -> {
@@ -44,7 +44,7 @@ public class FontSettingsRegression {
         @Bean LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource ds) {
             var bean = new LocalContainerEntityManagerFactoryBean();
             bean.setDataSource(ds);
-            bean.setPackagesToScan("io.dataease.system.dao.auto.entity");
+            bean.setPackagesToScan("io.dataease.system.dao.auto.entity", "io.dataease.font.dao.auto.entity");
             bean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
             bean.setJpaPropertyMap(Map.of("hibernate.hbm2ddl.auto", "update"));
             return bean;
@@ -52,6 +52,7 @@ public class FontSettingsRegression {
         @Bean JpaTransactionManager transactionManager(EntityManagerFactory emf) {
             return new JpaTransactionManager(emf);
         }
+        @Bean FontManage fonts() { return new FontManage(); }
         @Bean FontSettingsManage settings() throws Exception {
             var result = new FontSettingsManage();
             field(result, "path", directory.toString());
@@ -80,13 +81,52 @@ public class FontSettingsRegression {
                 deny(settings::query, 403);
                 deny(() -> settings.save(new FontUploadSettings(1L, 2L)), 403);
                 check(repository.count() == 0);
+                var fonts = context.getBean(FontManage.class);
+                var fontRepository = context.getBean(io.dataease.font.dao.auto.mapper.CoreFontRepository.class);
+                field(fonts, "path", directory + File.separator);
+                var original = new io.dataease.font.dao.auto.entity.CoreFont();
+                original.setId(20L); original.setName("existing"); original.setIsDefault(true);
+                original.setFileTransName("protected.ttf"); original.setUpdateTime(1L);
+                fontRepository.saveAndFlush(original);
+                Path protectedFile = directory.resolve("protected.ttf");
+                Files.writeString(protectedFile, "unchanged");
+                var input = new io.dataease.api.font.dto.FontDto();
+                input.setId(20L); input.setName("unauthorized"); input.setIsDefault(false);
+                for (int identity = 0; identity < 4; identity++) {
+                    V3UserUtil.clear();
+                    if (identity > 0) V3UserUtil.setUid(99L);
+                    if (identity == 2) V3UserUtil.setProxy(10L);
+                    if (identity == 3) {
+                        fontMenuGranted = true;
+                        V3UserUtil.setLink(new io.dataease.permission.model.LinkIdentity(1L, 99L, 1L, 1L));
+                    }
+                    deny(() -> fonts.create(input), 403);
+                    deny(() -> fonts.edit(input), 403);
+                    deny(() -> fonts.delete(20L), 403);
+                    deny(() -> fonts.changeDefault(input), 403);
+                    deny(() -> fonts.upload(null), 403);
+                    var unchanged = fontRepository.findById(20L).orElseThrow();
+                    check(fontRepository.count() == 1 && unchanged.getName().equals("existing") && unchanged.getIsDefault());
+                    check(Files.readString(protectedFile).equals("unchanged"));
+                }
+                V3UserUtil.clear(); V3UserUtil.setUid(99L); fontMenuGranted = true;
+                input.setId(null); input.setName("allowed");
+                fonts.create(input);
+                check(fontRepository.count() == 2);
+                input.setName("edited"); fonts.edit(input);
+                check(fontRepository.findById(input.getId()).orElseThrow().getName().equals("edited"));
+                input.setIsDefault(true); fonts.changeDefault(input);
+                check(fontRepository.findById(input.getId()).orElseThrow().getIsDefault());
+                fonts.delete(input.getId()); check(fontRepository.count() == 1);
+                fonts.delete(20L); check(fontRepository.count() == 0 && !Files.exists(protectedFile));
+
                 fontMenuGranted = true;
                 check(settings.query().maxUploadMb() == 20 && settings.query().maxStorageMb() == 512);
                 settings.save(new FontUploadSettings(1L, 10L));
                 check(repository.count() == 1);
                 var second = new FontSettingsManage(); field(second, "repository", repository);
                 check(second.limits().uploadBytes() == 1048576L);
-                FontManage upload = new FontManage(); field(upload, "path", directory.toString()); field(upload, "fontSettingsManage", second);
+                FontManage upload = new FontManage(); field(upload, "path", directory.toString()); field(upload, "fontSettingsManage", settings);
                 MultipartFile file = new MultipartFile() {
                     public String getName() { return "file"; }
                     public String getOriginalFilename() { return "test.ttf"; }

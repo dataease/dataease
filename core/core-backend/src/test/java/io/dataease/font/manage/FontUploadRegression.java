@@ -30,14 +30,17 @@ public class FontUploadRegression {
             settings.setAccessible(true);
             object = settings.get(object);
         }
-        Field field = object.getClass().getDeclaredField(key);
+        Field field = (object instanceof FontSettingsManage ? FontSettingsManage.class : object.getClass()).getDeclaredField(key);
         field.setAccessible(true);
         field.set(object, value);
     }
     private static FontManage manage(Path path) throws Exception {
         FontManage manage = new FontManage();
         set(manage, "path", path.toString());
-        FontSettingsManage settings = new FontSettingsManage();
+        // 此测试隔离上传资源控制；真实授权由 FontSettingsRegression 覆盖。
+        FontSettingsManage settings = new FontSettingsManage() {
+            @Override public void checkMenuPermission() { }
+        };
         var repository = java.lang.reflect.Proxy.newProxyInstance(FontUploadRegression.class.getClassLoader(),
                 new Class[]{io.dataease.system.dao.auto.mapper.CoreSysSettingRepository.class},
                 (proxy, method, args) -> Optional.empty());

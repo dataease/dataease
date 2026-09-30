@@ -99,7 +99,8 @@ public class FontSettingsManage {
         return Math.max(0, Math.min(MAX_STORAGE_MB, Math.min(file, Math.max(0, request - 65536)) / MB));
     }
 
-    private void checkMenuPermission() {
+    // 字体设置和字体写操作共用菜单权限，必须在任何数据库或文件写入前调用。
+    public void checkMenuPermission() {
         if (V3UserUtil.getUid() == null || V3UserUtil.getLink() != null
                 || !hasFontMenu(menuApi.query(), "")) {
             DEException.throwException(403, Translator.get("i18n_font_settings_forbidden"));
