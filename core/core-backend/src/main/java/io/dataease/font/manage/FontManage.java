@@ -60,6 +60,7 @@ public class FontManage {
     }
 
     public FontDto create(FontDto fontDto) {
+        fontSettingsManage.checkMenuPermission();
         if (CollectionUtils.isNotEmpty(coreFontRepository.findByName(fontDto.getName()))) {
             DEException.throwException("存在重名字库");
         }
@@ -73,6 +74,7 @@ public class FontManage {
 
 
     public FontDto edit(FontDto fontDto) {
+        fontSettingsManage.checkMenuPermission();
         if (ObjectUtils.isEmpty(fontDto.getId())) {
             return create(fontDto);
         }
@@ -87,6 +89,7 @@ public class FontManage {
     }
 
     public void delete(Long id) {
+        fontSettingsManage.checkMenuPermission();
         CoreFont coreFont = coreFontRepository.findById(id).orElse(null);
         if (coreFont != null) {
             coreFontRepository.deleteById(id);
@@ -105,10 +108,12 @@ public class FontManage {
     }
 
     public void changeDefault(FontDto fontDto) {
+        fontSettingsManage.checkMenuPermission();
         coreFontRepository.updateIsDefaultById(fontDto.getId(), fontDto.getIsDefault());
     }
 
     public FontDto upload(MultipartFile file) {
+        fontSettingsManage.checkMenuPermission();
         String fileUuid = UUID.randomUUID().toString();
         return saveFile(file, fileUuid);
     }
