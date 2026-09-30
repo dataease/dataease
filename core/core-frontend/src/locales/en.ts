@@ -3819,6 +3819,8 @@ export default {
     web_url: 'Web URL',
     app_embed: 'Embed Mode',
     app_embed_code: 'Embed Code',
+    app_embed_sandbox_tips:
+      'Embedded code runs in an isolated environment without access to the host page or its browser storage. Popups, form submissions and top-level navigation are blocked. Apps relying on these capabilities need adaptation, and external APIs must support cross-origin requests.',
     video_add_tips: 'Please configure video information...',
     link_add_tips_pre: 'Please configure web information..',
     web_add_tips_suf: 'Add web information...',

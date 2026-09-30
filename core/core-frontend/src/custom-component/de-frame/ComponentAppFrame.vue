@@ -5,6 +5,7 @@
         v-if="state.frameShow"
         :id="'app-iframe-' + element.id"
         :srcdoc="srcDoc"
+        sandbox="allow-scripts"
         scrolling="auto"
         frameborder="0"
         class="main-frame main-de-iframe"
@@ -69,7 +70,7 @@ const buildBody = (src: string) => {
   return `<script>${src}<\/script>`
 }
 
-// 每个嵌入应用渲染在独立的 srcdoc iframe 中：相互隔离，删除组件即彻底销毁
+// sandbox 仅允许脚本在不透明源中运行，不可添加 allow-same-origin，否则可访问宿主页面和存储
 const srcDoc = computed(() => {
   const src = element.value?.frameLinks?.src || ''
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>html,body{margin:0;padding:0;height:100%;width:100%;overflow:auto;}.copilot{height:100%;width:100%;}</style></head><body><div class="copilot"></div>${buildBody(
