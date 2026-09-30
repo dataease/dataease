@@ -215,13 +215,14 @@ public class ExcelUtils {
                     if (rootNode.get(i).get("deTableName").asText().equalsIgnoreCase(datasourceRequest.getTable())) {
                         List<TableField> tableFields = JsonUtil.parseList(rootNode.get(i).get("fields").toString(), TableFieldListTypeReference);
                         String suffix = rootNode.get(i).get("path").asText().substring(rootNode.get(i).get("path").asText().lastIndexOf(".") + 1);
-                        InputStream inputStream = new FileInputStream(rootNode.get(i).get("path").asText());
-                        if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
-                            BufferedReader reader = csvReader(inputStream);
-                            readCsvLine(reader);//去掉表头
-                            dataList = csvData(reader, false, tableFields.size());
-                        } else {
-                            dataList = fetchExcelDataList(rootNode.get(i).get("tableName").asText(), inputStream);
+                        try (InputStream inputStream = ExcelFileGuard.open(java.nio.file.Path.of(path), rootNode.get(i).get("path").asText())) {
+                            if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
+                                BufferedReader reader = csvReader(inputStream);
+                                readCsvLine(reader);//去掉表头
+                                dataList = csvData(reader, false, tableFields.size());
+                            } else {
+                                dataList = fetchExcelDataList(rootNode.get(i).get("tableName").asText(), inputStream);
+                            }
                         }
                     }
                 }
@@ -292,7 +293,7 @@ public class ExcelUtils {
         returnSheetDataList = returnSheetDataList.stream().filter(excelSheetData -> !CollectionUtils.isEmpty(excelSheetData.getFields())).collect(Collectors.toList());
         // save file
         String excelId = UUID.randomUUID().toString();
-        String filePath = saveFile(file, excelId);
+        String filePath = saveFile(file, excelId, createBy);
 
         for (ExcelSheetData excelSheetData : returnSheetDataList) {
             excelSheetData.setLastUpdateTime(System.currentTimeMillis());
@@ -495,22 +496,27 @@ public class ExcelUtils {
         }
     }
 
-    private static String saveFile(MultipartFile file, String fileNameUUID) throws DEException {
+    private static String saveFile(MultipartFile file, String fileNameUUID, String owner) throws DEException {
         String filePath = null;
         try {
             String filename = file.getOriginalFilename();
             FileUtils.validateUploadFilename(filename);
             String suffix = filename.substring(filename.lastIndexOf(".") + 1);
-            File p = new File(path);
-            if (!p.exists()) {
-                p.mkdirs();
+            java.nio.file.Path directory = ExcelFileGuard.uploadDirectory(java.nio.file.Path.of(path), owner);
+            java.nio.file.Path target = directory.resolve(fileNameUUID + "." + suffix);
+            filePath = target.toString();
+            boolean created = false;
+            try (InputStream input = file.getInputStream();
+                 OutputStream output = java.nio.file.Files.newOutputStream(target,
+                         java.nio.file.StandardOpenOption.CREATE_NEW, java.nio.file.StandardOpenOption.WRITE)) {
+                created = true;
+                input.transferTo(output);
+            } catch (Exception e) {
+                if (created) {
+                    java.nio.file.Files.deleteIfExists(target);
+                }
+                throw e;
             }
-            filePath = path + fileNameUUID + "." + suffix;
-            File f = new File(filePath);
-            FileOutputStream fileOutputStream = new FileOutputStream(f);
-            fileOutputStream.write(file.getBytes());
-            fileOutputStream.flush();
-            fileOutputStream.close();
         } catch (Exception e) {
             DEException.throwException(e);
         }
