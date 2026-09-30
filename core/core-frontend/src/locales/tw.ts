@@ -1247,6 +1247,10 @@ export default {
     load_data: '載入資料'
   },
   chart: {
+    assist_value_type: '參考類型',
+    assist_axis: '所屬軸',
+    assist_line_style: '線條樣式',
+    assist_color: '顏色',
     assist_bind_field: '綁定指標（可選）',
     assist_follow_field: '跟隨欄位顯示',
     heatmap_range: '色階範圍',

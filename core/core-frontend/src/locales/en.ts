@@ -1302,6 +1302,10 @@ export default {
     load_data: 'Load Data'
   },
   chart: {
+    assist_value_type: 'Value type',
+    assist_axis: 'Axis',
+    assist_line_style: 'Line style',
+    assist_color: 'Color',
     assist_bind_field: 'Bind measure (optional)',
     assist_follow_field: 'Follow field visibility',
     heatmap_range: 'Color scale range',
