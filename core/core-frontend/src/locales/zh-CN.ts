@@ -1265,6 +1265,8 @@ export default {
     load_data: '加载数据'
   },
   chart: {
+    assist_bind_field: '绑定指标（可选）',
+    assist_follow_field: '跟随字段显示',
     heatmap_range: '色阶范围',
     heatmap_range_auto: '自动极值',
     heatmap_range_custom: '自定义范围',

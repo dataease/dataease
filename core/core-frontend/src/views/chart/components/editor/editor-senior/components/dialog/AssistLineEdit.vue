@@ -44,6 +44,8 @@ const state = reactive({
     name: t('chart.assist_line'),
     field: '0', // 固定值
     fieldId: '',
+    boundFieldId: '',
+    followField: true,
     summary: 'avg',
     axis: 'y', // 主轴
     yAxisType: 'left',
@@ -121,6 +123,7 @@ const removeLine = index => {
 }
 
 const changeYAxisType = item => {
+  item.boundFieldId = ''
   if (props.useQuotaExt && item.yAxisType === 'right') {
     item.fieldId = props.quotaExtFields ? props.quotaExtFields[0]?.id : null
     item.curField = getQuotaExtField(item.fieldId)
@@ -328,6 +331,31 @@ onMounted(() => {
             </el-icon>
           </div>
         </el-col>
+        <el-col :span="24" class="binding-row">
+          <el-select
+            v-if="item.field === '0'"
+            v-model="item.boundFieldId"
+            clearable
+            :placeholder="t('chart.assist_bind_field')"
+            @change="changeAssistLine"
+          >
+            <el-option
+              v-for="quota in useQuotaExt && item.yAxisType === 'right'
+                ? quotaExtFields
+                : quotaFields"
+              :key="quota.id"
+              :label="quota.name"
+              :value="quota.id"
+            />
+          </el-select>
+          <el-checkbox
+            v-model="item.followField"
+            :disabled="item.field === '0' && !item.boundFieldId"
+            @change="changeAssistLine"
+          >
+            {{ t('chart.assist_follow_field') }}
+          </el-checkbox>
+        </el-col>
       </el-row>
     </div>
     <el-button class="circle-button" text style="margin-left: 5px" @click="addLine">
@@ -340,6 +368,16 @@ onMounted(() => {
 </template>
 
 <style lang="less" scoped>
+.binding-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+  .ed-select {
+    width: 220px;
+  }
+}
+
 .line-item {
   width: 100%;
   border-radius: 6px;

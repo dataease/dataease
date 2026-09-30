@@ -1247,6 +1247,8 @@ export default {
     load_data: '載入資料'
   },
   chart: {
+    assist_bind_field: '綁定指標（可選）',
+    assist_follow_field: '跟隨欄位顯示',
     heatmap_range: '色階範圍',
     heatmap_range_auto: '自動極值',
     heatmap_range_custom: '自訂範圍',
