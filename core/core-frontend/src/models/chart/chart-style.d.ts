@@ -97,7 +97,17 @@ declare interface ChartTextStyle {
 /**
  * 图例设置
  */
+declare interface HeatmapLegendOptions {
+  rangeMode?: 'auto' | 'custom'
+  min?: number
+  max?: number
+  formatMode?: 'inherit' | 'custom'
+  formatterCfg?: BaseFormatter
+  prefix?: string
+}
+
 declare interface ChartLegendStyle {
+  heatmap?: HeatmapLegendOptions
   displayMode?: 'pagination' | 'tile'
   tileOverflow?: 'scroll' | 'adaptive'
 
