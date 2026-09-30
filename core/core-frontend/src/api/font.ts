@@ -50,3 +50,19 @@ export const uploadFontFile = async (data): Promise<IResponse> => {
       return res
     })
 }
+
+export interface FontUploadSettings {
+  maxUploadMb: number
+  maxStorageMb: number
+}
+
+export interface FontUploadSettingsInfo extends FontUploadSettings {
+  usedBytes: number
+  maxUploadAllowedMb: number
+}
+
+export const getFontSettings = () =>
+  request.get({ url: '/typeface/settings' }).then(res => res.data as FontUploadSettingsInfo)
+
+export const saveFontSettings = (data: FontUploadSettings) =>
+  request.post({ url: '/typeface/settings', data })

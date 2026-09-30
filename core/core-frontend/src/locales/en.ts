@@ -503,6 +503,15 @@ export default {
     allSelect: 'Select all'
   },
   system: {
+    font_limits_title: 'Font settings',
+    font_file_limit: 'Maximum font file size',
+    font_storage_limit: 'Total font storage quota',
+    font_storage_used: 'Currently using {size} MB',
+    font_quota_warning:
+      'The quota is below current usage. Existing fonts are retained; new uploads will be rejected.',
+    font_limits_hint:
+      'Changes apply immediately to new uploads without a restart. Both values must be positive integers; the file limit cannot exceed the quota. Maximum quota: 1,048,576 MB.',
+
     user: 'User',
     role: 'Role',
     addUser: '@:common.add @:system.user',

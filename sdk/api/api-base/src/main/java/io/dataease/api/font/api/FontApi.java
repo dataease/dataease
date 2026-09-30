@@ -2,7 +2,8 @@ package io.dataease.api.font.api;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 
-import io.dataease.api.ds.vo.ExcelFileData;
+import io.dataease.api.font.dto.FontUploadSettings;
+import io.dataease.api.font.dto.FontUploadSettingsVO;
 import io.dataease.api.font.dto.FontDto;
 import io.dataease.exception.DEException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -46,6 +47,12 @@ public interface FontApi {
 
     @GetMapping("/download/{file}")
     void download(@PathVariable("file") String file, HttpServletResponse response) throws DEException;
+
+    @GetMapping("/settings")
+    FontUploadSettingsVO settings();
+
+    @PostMapping("/settings")
+    void saveSettings(@RequestBody FontUploadSettings settings);
 
     @GetMapping("/defaultFont")
     List<FontDto> defaultFont() throws DEException;

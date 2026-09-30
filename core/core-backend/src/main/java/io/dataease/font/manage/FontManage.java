@@ -2,11 +2,13 @@ package io.dataease.font.manage;
 
 import io.dataease.api.font.dto.FontDto;
 import io.dataease.exception.DEException;
+import io.dataease.i18n.Translator;
 import io.dataease.font.dao.auto.entity.CoreFont;
 import io.dataease.font.dao.auto.mapper.CoreFontRepository;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.FileUtils;
 import io.dataease.utils.IDUtils;
+import io.dataease.utils.LogUtil;
 import jakarta.annotation.Resource;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,12 +24,25 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.Locale;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+import java.util.concurrent.Semaphore;
 
 @Component
 public class FontManage {
 
     @Value("${dataease.path.font:/opt/dataease3.0/data/font/}")
     private String path;
+
+    @Resource
+    private FontSettingsManage fontSettingsManage;
+
+    private final Semaphore uploadPermit = new Semaphore(1);
 
     @Resource
     private CoreFontRepository coreFontRepository;
@@ -143,47 +158,99 @@ public class FontManage {
     }
 
     private FontDto saveFile(MultipartFile file, String fileNameUUID) throws DEException {
-        FontDto fontDto = new FontDto();
-        try {
-            String filename = file.getOriginalFilename();
-            if (StringUtils.isEmpty(filename) || !filename.toLowerCase().endsWith(".ttf")) {
-                DEException.throwException("非法格式的文件！");
-            }
-            FileUtils.validateUploadFilename(filename);
-            String suffix = filename.substring(filename.lastIndexOf(".") + 1);
-            if (suffix.contains("..") || suffix.contains("/") || suffix.contains("\\")) {
-                DEException.throwException("非法的文件名");
-            }
-            String filePath = path + fileNameUUID + "." + suffix;
-            File f = new File(filePath);
-            FileOutputStream fileOutputStream = new FileOutputStream(f);
-            fileOutputStream.write(file.getBytes());
-            fileOutputStream.flush();
-            fileOutputStream.close();
-            fontDto.setFileTransName(fileNameUUID + "." + suffix);
-
-            long length = file.getSize();
-            String unit = "MB";
-            Double size = 0.0;
-            if ((double) length / 1024 / 1024 > 1) {
-                if ((double) length / 1024 / 1024 / 1024 > 1) {
-                    unit = "GB";
-                    size = Double.valueOf(String.format("%.2f", (double) length / 1024 / 1024 / 1024));
-                } else {
-                    size = Double.valueOf(String.format("%.2f", (double) length / 1024 / 1024));
-                }
-            } else {
-                unit = "KB";
-                size = Double.valueOf(String.format("%.2f", (double) length / 1024));
-            }
-            Font font = Font.createFont(Font.TRUETYPE_FONT, new File(filePath));
-            fontDto.setSize(size);
-            fontDto.setSizeType(unit);
-            fontDto.setName(font.getFontName());
-        } catch (Exception e) {
-            DEException.throwException(e);
+        FontSettingsManage.Limits limits = fontSettingsManage.limits();
+        long fileLimit = limits.uploadBytes();
+        long storageLimit = limits.storageBytes();
+        if (fileLimit <= 0 || storageLimit <= 0) {
+            DEException.throwException(Translator.get("i18n_font_upload_limits_invalid"));
         }
-        return fontDto;
+        if (file == null || file.getSize() <= 0 || file.getSize() > fileLimit) {
+            DEException.throwException(Translator.get("i18n_font_upload_size_limit"));
+        }
+        String filename = file.getOriginalFilename();
+        if (StringUtils.isBlank(filename) || !filename.toLowerCase(Locale.ROOT).endsWith(".ttf")) {
+            DEException.throwException(Translator.get("i18n_font_upload_invalid"));
+        }
+        FileUtils.validateUploadFilename(filename);
+        if (!uploadPermit.tryAcquire()) {
+            DEException.throwException(Translator.get("i18n_font_upload_busy"));
+        }
+        try {
+            Path directory = Path.of(path);
+            Files.createDirectories(directory);
+            // 同一字体目录可能被多个实例共享，配额检查和写入必须持有同一把锁。
+            try (FileChannel channel = FileChannel.open(directory.resolve(".upload.lock"),
+                    StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+                 FileLock lock = channel.tryLock()) {
+                if (lock == null) {
+                    DEException.throwException(Translator.get("i18n_font_upload_busy"));
+                }
+                long remaining = storageLimit;
+                try (var files = Files.newDirectoryStream(directory)) {
+                    for (Path existing : files) {
+                        if (Files.isRegularFile(existing)) {
+                            remaining -= Files.size(existing);
+                            if (remaining < file.getSize()) {
+                                DEException.throwException(Translator.get("i18n_font_storage_limit"));
+                            }
+                        }
+                    }
+                }
+                return storeValidatedFont(file, directory, fileNameUUID, fileLimit, remaining);
+            }
+        } catch (DEException e) {
+            throw e;
+        } catch (java.nio.channels.OverlappingFileLockException e) {
+            DEException.throwException(Translator.get("i18n_font_upload_busy"));
+        } catch (IOException e) {
+            LogUtil.error("Font upload failed", e);
+            DEException.throwException(Translator.get("i18n_font_upload_failed"));
+        } finally {
+            uploadPermit.release();
+        }
+        return null;
+    }
+
+    private FontDto storeValidatedFont(MultipartFile file, Path directory, String uuid,
+                                      long fileLimit, long remaining) throws IOException {
+        Path temporary = Files.createTempFile(directory, ".font-upload-", ".tmp");
+        try {
+            long length = 0;
+            try (InputStream input = file.getInputStream();
+                 OutputStream output = Files.newOutputStream(temporary)) {
+                byte[] buffer = new byte[8192];
+                int count;
+                while ((count = input.read(buffer)) != -1) {
+                    length += count;
+                    if (length > fileLimit) {
+                        DEException.throwException(Translator.get("i18n_font_upload_size_limit"));
+                    }
+                    if (length > remaining) {
+                        DEException.throwException(Translator.get("i18n_font_storage_limit"));
+                    }
+                    output.write(buffer, 0, count);
+                }
+            }
+            Font font;
+            try {
+                font = Font.createFont(Font.TRUETYPE_FONT, temporary.toFile());
+            } catch (FontFormatException e) {
+                DEException.throwException(Translator.get("i18n_font_upload_invalid"));
+                return null;
+            }
+            FontDto dto = new FontDto();
+            dto.setFileTransName(uuid + ".ttf");
+            dto.setName(font.getFontName());
+            boolean megabytes = length > 1024 * 1024;
+            double size = (double) length / (megabytes ? 1024 * 1024 : 1024);
+            dto.setSize(Math.round(size * 100.0) / 100.0);
+            dto.setSizeType(megabytes ? "MB" : "KB");
+            Files.move(temporary, directory.resolve(dto.getFileTransName()), StandardCopyOption.ATOMIC_MOVE);
+            return dto;
+        } finally {
+            // 包括读取/写盘/解析/移动失败，均不遗留本次上传的随机文件。
+            Files.deleteIfExists(temporary);
+        }
     }
 
 }

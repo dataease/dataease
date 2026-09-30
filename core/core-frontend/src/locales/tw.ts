@@ -485,6 +485,14 @@ export default {
     allSelect: '全選'
   },
   system: {
+    font_limits_title: '字型設定',
+    font_file_limit: '單字型檔案大小上限',
+    font_storage_limit: '字型儲存總配額',
+    font_storage_used: '目前已使用 {size} MB',
+    font_quota_warning: '配額低於已用空間，保留現有字型，新的上傳將被拒絕。',
+    font_limits_hint:
+      '儲存後對新的上傳立即生效，無需重新啟動。兩項均為正整數，單檔案上限不能超過總配額；總配額最大為 1,048,576 MB。',
+
     user: '使用者',
     role: '角色',
     addUser: '@:common.add@:system.user',
