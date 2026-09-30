@@ -1302,6 +1302,8 @@ export default {
     load_data: 'Load Data'
   },
   chart: {
+    assist_bind_field: 'Bind measure (optional)',
+    assist_follow_field: 'Follow field visibility',
     heatmap_range: 'Color scale range',
     heatmap_range_auto: 'Automatic range',
     heatmap_range_custom: 'Custom range',

@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { installG2AssistLineVisibility } from '@/views/chart/components/js/panel/types/impl/g2-assist-line'
 import {
   applyG2TiledLegend,
   installG2TiledLegendStateAdapter,
@@ -620,6 +621,7 @@ const renderChart = async (view, callback?) => {
 let myChart = null
 let g2Timer: number
 let g2SliderCleanup: (() => void) | undefined
+let assistLineCleanup: (() => void) | undefined
 let g2TiledLegendCleanup: (() => void) | undefined
 let g2LegendPaginationCleanup: (() => void) | undefined
 const clearG2SliderAdapter = () => {
@@ -627,6 +629,8 @@ const clearG2SliderAdapter = () => {
   g2SliderCleanup = undefined
 }
 const clearG2LegendPaginationAdapter = () => {
+  assistLineCleanup?.()
+  assistLineCleanup = undefined
   g2TiledLegendCleanup?.()
   g2TiledLegendCleanup = undefined
   g2LegendPaginationCleanup?.()
@@ -736,6 +740,7 @@ const renderG2 = async (chart, chartView: G2ChartView<any, any>) => {
       if (chart.customStyle?.legend?.displayMode === 'tile') {
         g2TiledLegendCleanup = installG2TiledLegendStateAdapter(chartInstance)
       }
+      assistLineCleanup = installG2AssistLineVisibility(chartInstance, chart)
       // 等待 G2 完成包含轴边界校正的最终布局
       await chartInstance?.render()
       installG2SvgCoordinateScaleAdapter(chartInstance)

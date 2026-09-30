@@ -710,7 +710,8 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
           type: 'lineY',
           // 辅助线统一退出分类图例，避免后续新增视觉编码时影响图例布局
           legend: false,
-          data: [value],
+          data: [{ ...item, value }],
+          encode: { y: 'value' },
           style: {
             stroke: item.color,
             ...ASSIST_LINE_STYLE,
