@@ -1265,6 +1265,10 @@ export default {
     load_data: '加载数据'
   },
   chart: {
+    assist_value_type: '参考类型',
+    assist_axis: '所属轴',
+    assist_line_style: '线条样式',
+    assist_color: '颜色',
     assist_bind_field: '绑定指标（可选）',
     assist_follow_field: '跟随字段显示',
     heatmap_range: '色阶范围',
