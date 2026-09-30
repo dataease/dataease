@@ -169,6 +169,10 @@ export default {
     enter_first_page: 'Please enter the page number of the first page'
   },
   operate_log: {
+    view_detail: 'View details',
+    content: 'Operation content',
+    copy_content: 'Copy operation content',
+    copy_failed: 'Copy failed. Select the text and copy it manually.',
     name: 'Operation log',
     search_by_operate_info: 'Search by operation target',
     detail: 'Operation details',
