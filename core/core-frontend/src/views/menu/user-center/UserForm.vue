@@ -34,12 +34,6 @@ const props = defineProps({
   userMfaBound: propTypes.bool.def(false)
 })
 
-const mfaSwitchDisable = computed(() => {
-  return (
-    state.form.mfaEnable &&
-    (props.globalMfaStatus === 1 || (props.globalMfaStatus === 2 && userStore.getUid === '1'))
-  )
-})
 const mfaSwitchTips = computed(() => {
   if (!state.form.mfaEnable || props.globalMfaStatus !== 1) return ''
   return t('setting_mfa.enable_switch_tips')
@@ -234,7 +228,9 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate(valid => {
     if (valid) {
-      const param = { ...state.form }
+      const { id, name, email, phone, phonePrefix } = state.form
+      const param =
+        formType.value === 'modify' ? { id, name, email, phone, phonePrefix } : { ...state.form }
       const method = formType.value === 'modify' ? personEditApi : userCreateApi
       showLoading()
       method(param)
@@ -497,13 +493,9 @@ onMounted(() => {
           </div>
         </template>
 
-        <el-switch
-          v-if="!mfaSwitchTips"
-          :disabled="mfaSwitchDisable"
-          v-model="state.form.mfaEnable"
-        />
+        <el-switch v-if="!mfaSwitchTips" disabled v-model="state.form.mfaEnable" />
         <el-tooltip v-else class="box-item" effect="dark" :content="mfaSwitchTips" placement="top">
-          <el-switch :disabled="mfaSwitchDisable" v-model="state.form.mfaEnable" />
+          <el-switch disabled v-model="state.form.mfaEnable" />
         </el-tooltip>
       </el-form-item>
     </el-form>
