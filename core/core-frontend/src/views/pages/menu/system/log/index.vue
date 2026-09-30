@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import docs from '@/assets/svg/docs.svg'
+import useClipboard from 'vue-clipboard3'
 import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
 import iconFilter from '@/assets/svg/icon-filter.svg'
 import { ref, reactive, onMounted, computed, onBeforeUnmount, h } from 'vue'
@@ -31,6 +32,27 @@ const optionLoad = ref(false)
 const msgVisible = ref(false)
 const msgContent = ref('')
 const isOrgAdmin = ref(false)
+const detailVisible = ref(false)
+const selectedLog = ref<{
+  opDetail?: string
+  opText?: string
+  name?: string
+  success?: boolean
+  time?: number
+} | null>(null)
+const { toClipboard } = useClipboard()
+const showDetail = row => {
+  selectedLog.value = { ...row }
+  detailVisible.value = true
+}
+const copyDetail = async () => {
+  try {
+    await toClipboard(selectedLog.value?.opDetail || '')
+    ElMessage.success(t('commons.copy_success'))
+  } catch {
+    ElMessage.error(t('operate_log.copy_failed'))
+  }
+}
 
 const buildParam = () => {
   const param = {}
@@ -391,9 +413,28 @@ onBeforeUnmount(() => {
           prop="opDetail"
           key="opDetail"
           :label="t('operate_log.detail')"
-          min-width="200"
-          show-overflow-tooltip
-        />
+          min-width="260"
+        >
+          <template #default="{ row }">
+            <div class="log-detail-cell">
+              <el-tooltip
+                :disabled="!row.opDetail"
+                placement="top"
+                popper-class="log-detail-tooltip"
+                :show-after="300"
+                enterable
+              >
+                <template #content
+                  ><div class="log-detail-hover">{{ row.opDetail }}</div></template
+                >
+                <span class="log-detail-summary">{{ row.opDetail || '-' }}</span>
+              </el-tooltip>
+              <el-button v-if="row.opDetail" link type="primary" @click="showDetail(row)">{{
+                t('operate_log.view_detail')
+              }}</el-button>
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="success"
           key="success"
@@ -448,6 +489,40 @@ onBeforeUnmount(() => {
   />
 
   <el-dialog
+    v-model="detailVisible"
+    :title="t('operate_log.detail')"
+    class="log-detail-dialog"
+    width="720px"
+    align-center
+    destroy-on-close
+    @closed="selectedLog = null"
+  >
+    <div v-if="selectedLog" class="log-detail-meta">
+      <div>
+        <span>{{ t('operate_log.type') }}</span
+        >{{ selectedLog.opText || '-' }}
+      </div>
+      <div>
+        <span>{{ t('operate_log.status') }}</span
+        >{{ selectedLog.success ? t('operate_log.success') : t('operate_log.failed') }}
+      </div>
+      <div>
+        <span>{{ t('operate_log.user') }}</span
+        >{{ selectedLog.name || '-' }}
+      </div>
+      <div>
+        <span>{{ t('operate_log.time') }}</span
+        >{{ timestampFormatDate(selectedLog.time) }}
+      </div>
+    </div>
+    <div class="log-detail-label">{{ t('operate_log.content') }}</div>
+    <div class="log-detail-content" tabindex="0">{{ selectedLog?.opDetail }}</div>
+    <template #footer>
+      <el-button @click="detailVisible = false">{{ t('commons.close') }}</el-button>
+      <el-button type="primary" @click="copyDetail">{{ t('operate_log.copy_content') }}</el-button>
+    </template>
+  </el-dialog>
+  <el-dialog
     v-model="msgVisible"
     :label="t('operate_log.error_msg')"
     :show-close="false"
@@ -466,6 +541,21 @@ onBeforeUnmount(() => {
   </el-dialog>
 </template>
 <style lang="less" scoped>
+.log-detail-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  .log-detail-summary {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .ed-button {
+    flex-shrink: 0;
+  }
+}
 .de-status {
   position: relative;
   margin-left: 15px;
@@ -540,6 +630,68 @@ onBeforeUnmount(() => {
           outline: 0;
         }
       }
+    }
+  }
+}
+</style>
+
+<style lang="less">
+.log-detail-tooltip {
+  max-width: min(480px, calc(100vw - 32px)) !important;
+  .log-detail-hover {
+    max-height: min(320px, 40vh);
+    overflow: auto;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+}
+.log-detail-dialog {
+  max-width: calc(100vw - 32px);
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  .ed-dialog__header,
+  .ed-dialog__footer {
+    flex-shrink: 0;
+  }
+  .ed-dialog__body {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .log-detail-meta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 24px;
+    flex-shrink: 0;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--ed-border-color);
+    > div {
+      overflow-wrap: anywhere;
+      span {
+        color: var(--ed-text-color-secondary);
+        margin-right: 12px;
+      }
+    }
+  }
+  .log-detail-label {
+    flex-shrink: 0;
+    margin: 20px 0 12px;
+    font-weight: 500;
+  }
+  .log-detail-content {
+    overflow: auto;
+    min-height: 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    line-height: 1.6;
+    user-select: text;
+  }
+  @media (max-width: 600px) {
+    .log-detail-meta {
+      grid-template-columns: 1fr;
+      gap: 8px;
     }
   }
 }

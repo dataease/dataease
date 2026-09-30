@@ -162,6 +162,10 @@ export default {
     enter_first_page: '請輸入第一頁的頁碼'
   },
   operate_log: {
+    view_detail: '查看詳情',
+    content: '操作內容',
+    copy_content: '複製操作內容',
+    copy_failed: '複製失敗，請選取文字手動複製',
     name: '操作日誌',
     search_by_operate_info: '透過操作對象搜尋',
     detail: '操作詳情',

@@ -162,6 +162,10 @@ export default {
     enter_first_page: '请输入第一页的页码'
   },
   operate_log: {
+    view_detail: '查看详情',
+    content: '操作内容',
+    copy_content: '复制操作内容',
+    copy_failed: '复制失败，请选中文字手动复制',
     name: '操作日志',
     search_by_operate_info: '通过操作对象搜索',
     detail: '操作详情',
