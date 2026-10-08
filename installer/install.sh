@@ -322,6 +322,12 @@ function prepare_de_run_base() {
    cd $DE_RUN_BASE
    env | grep DE_ >.env
 
+   # 企业版只通过网关访问；容器网络内的 8100 仍供 APISIX 转发使用。
+   # 每次安装/升级均从安装包复制模板后处理，避免保留旧的宿主机端口映射。
+   if [[ $DE_INSTALL_MODE != "community" ]]; then
+      sed -i '/^    ports:$/,+1d' docker-compose.yml
+   fi
+
    mkdir -p ${DE_RUN_BASE}/{cache,logs,conf}
    mkdir -p ${DE_RUN_BASE}/data/{mysql,static-resource,map,etcd_data,geo,appearance,exportData,plugin,font,i18n,report,driver}
    mkdir -p ${DE_RUN_BASE}/apisix/logs
@@ -383,8 +389,12 @@ function prepare_system_settings() {
 
    if which firewall-cmd >/dev/null 2>&1; then
       if systemctl is-active firewalld &>/dev/null ;then
-         log_content "开启防火墙端口 ${DE_PORT}"
-         firewall-cmd --zone=public --add-port=${DE_PORT}/tcp --permanent
+         local access_port=$DE_PORT
+         if [[ $DE_INSTALL_MODE != "community" ]]; then
+            access_port=$DE_APISIX_PORT
+         fi
+         log_content "开启防火墙端口 ${access_port}"
+         firewall-cmd --zone=public --add-port=${access_port}/tcp --permanent
          firewall-cmd --reload
       else
          log_content "防火墙未开启，忽略端口开放"
