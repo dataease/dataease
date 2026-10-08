@@ -368,14 +368,27 @@ const createDragImage = (fields: FieldItemData[], type: 'dimension' | 'quota') =
       gap: 8px;
       padding: 4px 0;
     `
-    item.innerHTML = `
-      <span style="font-size: 14px; font-weight: 500; width: 16px; text-align: center; color: ${type === 'dimension' ? '#3370ff' : '#34c724'};">
-        ${type === 'dimension' ? 'T' : '#'}
-      </span>
-      <span style="font-size: 13px; color: #1f2329; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-        ${field.name}
-      </span>
+    const icon = document.createElement('span')
+    icon.style.cssText = `
+      font-size: 14px;
+      font-weight: 500;
+      width: 16px;
+      text-align: center;
+      color: ${type === 'dimension' ? '#3370ff' : '#34c724'};
     `
+    icon.textContent = type === 'dimension' ? 'T' : '#'
+
+    const name = document.createElement('span')
+    name.style.cssText = `
+      font-size: 13px;
+      color: #1f2329;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    `
+    // 字段名可能来自导入文件或历史数据，必须按纯文本渲染，避免解析 HTML。
+    name.textContent = field.name
+    item.append(icon, name)
     div.appendChild(item)
   })
 
