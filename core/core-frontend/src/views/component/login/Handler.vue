@@ -36,6 +36,7 @@ import {
   bindingReturnPath,
   bindingCallbackPath
 } from '@/utils/platformBinding'
+import { exchangeOauth2Token, oauth2CodeKey } from '@/utils/oauth2Login'
 import { ref, onMounted, reactive, nextTick } from 'vue'
 import QrcodeLdap from './QrcodeLdap.vue'
 import Oidc from './Oidc.vue'
@@ -254,14 +255,9 @@ const saml2Token = (cb) => {
 }
 
 const oauth2Token = (cb) => {
-  const localCodeKey = localStorage.getItem('DE_OAUTH2_CODE_KEY') || 'code'
-  const code = getQueryString(localCodeKey)
-  const state = getQueryString('state')
-  if (!code || !state) {
-    throw Error('no code or state')
-    return null
-  }
-  platformTokenApi(9, { code, state }).then(res => {
+  const state = getQueryString('state') || ''
+  const code = getQueryString(oauth2CodeKey(state))
+  exchangeOauth2Token(code, state).then(res => {
     userStore.setToken(res.data.token)
     cb && cb()
   }).catch(() => {

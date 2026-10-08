@@ -29,4 +29,6 @@ public class XpackOauth2VO implements Serializable {
     private String redirectUri;
 
     private String authMethod = "0";
+
+    private Boolean usePkce = false;
 }
