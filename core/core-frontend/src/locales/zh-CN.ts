@@ -500,6 +500,17 @@ export default {
     allSelect: '全选'
   },
   system: {
+    driver_exists: '驱动文件冲突',
+    driver_de: '同步插件',
+    driver_executor: '任务执行器',
+    driver_uploaded_file: '驱动文件',
+    driver_current: '当前版本',
+    driver_uploaded: '上传版本',
+    driver_replace_question: '已有驱动与上传驱动内容不同，是否覆盖？',
+    driver_impact: '覆盖将影响使用该驱动的同步源插件和目标插件，完成后需重启相关服务',
+    driver_keep: '保留原文件',
+    driver_replace: '覆盖',
+    driver_restart: '插件安装完成，请重启相关服务后使用',
     font_limits_title: '字体设置',
     font_file_limit: '单字体文件大小上限',
     font_storage_limit: '字体存储总配额',
