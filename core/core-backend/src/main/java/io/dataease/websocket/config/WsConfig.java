@@ -2,10 +2,13 @@ package io.dataease.websocket.config;
 
 import io.dataease.auth.interceptor.CorsConfig;
 import io.dataease.websocket.WebSocketAuthService;
+import io.dataease.websocket.auth.CommunityWebSocketAuthService;
 import io.dataease.websocket.factory.DeWsHandlerFactory;
 import io.dataease.websocket.handler.DeHandshakeInterceptor;
 import io.dataease.websocket.handler.PrincipalHandshakeHandler;
 import jakarta.annotation.Resource;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -24,6 +27,12 @@ public class WsConfig implements WebSocketMessageBrokerConfigurer {
 
     @Resource
     private CorsConfig corsConfig;
+
+    @Bean
+    @ConditionalOnMissingBean(WebSocketAuthService.class)
+    public WebSocketAuthService webSocketAuthService() {
+        return new CommunityWebSocketAuthService();
+    }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
