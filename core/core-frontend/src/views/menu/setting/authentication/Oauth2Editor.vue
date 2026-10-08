@@ -18,6 +18,7 @@ interface Oauth2Form {
   redirectUri?: string
   mapping?: string
   authMethod?: string
+  usePkce?: boolean
 }
 const state = reactive({
   form: reactive<Oauth2Form>({
@@ -28,7 +29,8 @@ const state = reactive({
     clientSecret: '',
     redirectUri: '',
     mapping: '',
-    authMethod: '0'
+    authMethod: '0',
+    usePkce: false
   })
 })
 const validateUrl = (rule, value, callback) => {
@@ -155,6 +157,7 @@ const edit = () => {
   request
     .get({ url: '/setting/authentication/info/oauth2' })
     .then(res => {
+      state.form.usePkce = false
       const resData = res.data
       for (const key in resData) {
         state.form[key] = resData[key]
@@ -309,6 +312,11 @@ defineExpose({
 
       <el-form-item :label="t('system.field_mapping')" prop="mapping">
         <el-input v-model="state.form.mapping" :placeholder="t('system.oauth2name')" />
+      </el-form-item>
+
+      <el-form-item :label="t('system.oauth2_pkce')" prop="usePkce">
+        <el-switch v-model="state.form.usePkce" />
+        <span>{{ t('system.oauth2_pkce_hint') }}</span>
       </el-form-item>
 
       <el-form-item :label="t('datasource.auth_method')" prop="authMethod">

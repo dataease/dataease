@@ -650,6 +650,8 @@ export default {
     such_as_uid: "过滤器 [可能的选项是cn或uid或sAMAccountName={'{'}0{'}'}, 如：(uid={'{'}0{'}'})]",
     ldap_attribute_mapping: 'LDAP属性映射',
     incorrect_please_re_enter_de: 'url格式错误，请重新输入',
+    oauth2_pkce: 'PKCE S256',
+    oauth2_pkce_hint: '仅在服务商支持 PKCE S256 时启用',
     oauth2_settings: 'OAuth2设置',
     authorization_end_address: '授权端地址',
     token_end_address: 'Token 端地址',

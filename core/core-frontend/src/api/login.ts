@@ -22,8 +22,11 @@ const platformPaths: Record<number, string> = {
   9: 'oauth2'
 }
 
-export const platformTokenApi = (origin: number, data: { code: string; state: string }) => {
-  const headers = beginPlatformLogin(origin)
+export const platformTokenApi = (
+  origin: number,
+  data: { code: string; state: string },
+  headers: Record<string, string> = beginPlatformLogin(origin)
+) => {
   return request.post({ url: `/${platformPaths[origin]}/token`, data, headers }).catch(error => {
     clearPlatformLogin(headers)
     throw error
