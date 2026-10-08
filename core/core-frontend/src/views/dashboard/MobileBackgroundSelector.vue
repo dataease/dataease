@@ -119,7 +119,7 @@
 <script setup lang="ts">
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
 import { onMounted, reactive, ref, watch, unref } from 'vue'
-import { imgUrlTrans } from '@/utils/imgUtils'
+import { imageUploadItem } from '@/utils/resourceImages'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -170,14 +170,14 @@ const reUpload = e => {
   }
   uploadFileResult(file, fileUrl => {
     canvasStyleData.value.mobileSetting.background = fileUrl
-    state.fileList = [{ url: imgUrlTrans(canvasStyleData.value.mobileSetting.background) }]
+    state.fileList = [imageUploadItem(canvasStyleData.value.mobileSetting.background)]
     onBackgroundChange()
   })
 }
 
 const init = () => {
   if (canvasStyleData.value.mobileSetting.background) {
-    state.fileList.push({ url: imgUrlTrans(canvasStyleData.value.mobileSetting.background) })
+    state.fileList.push(imageUploadItem(canvasStyleData.value.mobileSetting.background))
   } else {
     state.fileList = []
   }
@@ -190,7 +190,7 @@ const handleRemove = () => {
   onBackgroundChange()
 }
 const handlePictureCardPreview = file => {
-  state.dialogImageUrl = file.url
+  state.dialogImageUrl = file.sourceUrl || file.url
   state.dialogVisible = true
 }
 const upload = file => {

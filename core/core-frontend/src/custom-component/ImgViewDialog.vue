@@ -10,6 +10,7 @@ import {
 } from 'vue'
 import { throttle } from 'lodash-es'
 import { useEventListener } from '@vueuse/core'
+import { authenticatedImageUrl } from '@/utils/resourceImages'
 const props = defineProps({
   modelValue: Boolean,
   imageUrl: String
@@ -90,7 +91,7 @@ const HandleBeforeClose = () => {
     v-model="modelValue"
   >
     <div class="img-content 13">
-      <img :style="imgStyle" :src="imageUrl" alt="Preview Image" />
+      <img :style="imgStyle" :src="authenticatedImageUrl(imageUrl)" alt="Preview Image" />
     </div>
   </el-dialog>
 </template>

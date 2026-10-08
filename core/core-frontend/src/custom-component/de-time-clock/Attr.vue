@@ -3,7 +3,7 @@ import CommonAttr from '@/custom-component/common/CommonAttr.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
-import { imgUrlTrans } from '@/utils/imgUtils'
+import { imageUploadItem } from '@/utils/resourceImages'
 import eventBus from '@/utils/eventBus'
 import TimeClockFormat from '@/custom-component/de-time-clock/TimeClockFormat.vue'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -31,7 +31,7 @@ const goFile = () => {
 
 const init = () => {
   if (curComponent.value.propValue.url) {
-    fileList.value = [{ url: imgUrlTrans(curComponent.value.propValue.url) }]
+    fileList.value = [imageUploadItem(curComponent.value.propValue.url)]
   } else {
     fileList.value = []
   }

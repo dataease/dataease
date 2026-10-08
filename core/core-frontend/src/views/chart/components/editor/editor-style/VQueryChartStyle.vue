@@ -7,7 +7,7 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 import { useI18n } from '@/hooks/web/useI18n'
 import { PropType, toRefs, computed, reactive, watch, ref, onMounted } from 'vue'
-import { imgUrlTrans } from '@/utils/imgUtils'
+import { imageUploadItem } from '@/utils/resourceImages'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
 import CollapseSwitchItem from '@/components/collapse-switch-item/src/CollapseSwitchItem.vue'
 import { cloneDeep } from 'lodash-es'
@@ -179,7 +179,7 @@ const handleCurrentPlaceholder = val => {
 const init = () => {
   state.commonBackground = cloneDeep(props.commonBackgroundPop)
   if (state.commonBackground['outerImage']) {
-    state.fileList.push({ url: imgUrlTrans(state.commonBackground['outerImage']) })
+    state.fileList.push(imageUploadItem(state.commonBackground['outerImage']))
   } else {
     state.fileList = []
   }
@@ -205,7 +205,7 @@ const reUpload = e => {
   }
   uploadFileResult(file, fileUrl => {
     state.commonBackground['outerImage'] = fileUrl
-    state.fileList = [{ url: imgUrlTrans(state.commonBackground['outerImage']) }]
+    state.fileList = [imageUploadItem(state.commonBackground['outerImage'])]
     onBackgroundChange()
   })
 }

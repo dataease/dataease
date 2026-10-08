@@ -1,3 +1,4 @@
+import { clearResourceImages } from '@/utils/resourceImageCache'
 import { useCache } from '@/hooks/web/useCache'
 const { wsCache } = useCache()
 export const clearCache = () => {
@@ -17,6 +18,7 @@ export const clearCache = () => {
     'user.token',
     'user.uid'
   ]
+  clearResourceImages()
   keys.forEach(key => {
     wsCache.delete(key)
   })

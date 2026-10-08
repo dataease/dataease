@@ -6,7 +6,7 @@ import { storeToRefs } from 'pinia'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
 import { ref, onMounted, onBeforeUnmount, watch, PropType, computed, nextTick } from 'vue'
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
-import { imgUrlTrans } from '@/utils/imgUtils'
+import { imageUploadItem } from '@/utils/resourceImages'
 import eventBus from '@/utils/eventBus'
 import ImgViewDialog from '@/custom-component/ImgViewDialog.vue'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -52,16 +52,13 @@ const files = ref(null)
 const maxImageSize = 15000000
 
 const handlePictureCardPreview = file => {
-  dialogImageUrl.value = file.url
+  dialogImageUrl.value = file.sourceUrl || file.url
   dialogVisible.value = true
 }
 
 const handleRemove = (file, fileListArray) => {
   uploadDisabled.value = false
-  let file_static_part = file.url.split('static-resource/')[1]
-  let index = element.value.propValue['urlList'].findIndex(
-    item => item.url.split('static-resource/')[1] === file_static_part
-  )
+  const index = element.value.propValue['urlList'].findIndex(item => item.url === file.sourceUrl)
   if (index !== -1) {
     element.value.propValue['urlList'].splice(index, 1)
     useEmitt().emitter.emit('calcData-' + element.value.id)
@@ -113,7 +110,7 @@ const fileListInit = () => {
   fileList.value = []
   if (element.value.propValue.urlList && element.value.propValue.urlList.length > 0) {
     element.value.propValue.urlList.forEach(urlInfo => {
-      fileList.value.push({ name: urlInfo.name, url: imgUrlTrans(urlInfo.url) })
+      fileList.value.push(imageUploadItem(urlInfo.url, urlInfo.name))
     })
   }
 }
