@@ -500,6 +500,17 @@ export default {
     allSelect: '全選'
   },
   system: {
+    driver_exists: '驅動檔案衝突',
+    driver_de: '同步插件',
+    driver_executor: '任務執行器',
+    driver_uploaded_file: '驅動檔案',
+    driver_current: '目前版本',
+    driver_uploaded: '上傳版本',
+    driver_replace_question: '現有驅動與上傳驅動內容不同，是否覆寫？',
+    driver_impact: '覆寫將影響使用此驅動的同步來源插件和目標插件，完成後需重新啟動相關服務',
+    driver_keep: '保留原檔案',
+    driver_replace: '覆寫',
+    driver_restart: '插件安裝完成，請重新啟動相關服務後使用',
     font_limits_title: '字型設定',
     font_file_limit: '單字型檔案大小上限',
     font_storage_limit: '字型儲存總配額',

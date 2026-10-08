@@ -25,6 +25,18 @@ public interface PluginApi {
     @PostMapping(value = "/install", consumes = {"multipart/form-data"})
     void install(@RequestPart(value = "file") MultipartFile file);
 
+    @PostMapping(value = "/prepare", consumes = {"multipart/form-data"})
+    io.dataease.api.xpack.plugin.vo.PluginInstallCheck prepare(
+            @RequestPart(value = "request", required = false) PluginEditor request,
+            @RequestPart("file") MultipartFile file);
+
+    @PostMapping("/confirm")
+    void confirm(@org.springframework.web.bind.annotation.RequestBody
+                 io.dataease.api.xpack.plugin.dto.PluginInstallConfirm request);
+
+    @PostMapping("/cancel/{operation}")
+    void cancel(@PathVariable String operation);
+
     @Operation(summary = "卸载")
     @PostMapping("/uninstall/{id}")
     void uninstall(@PathVariable("id") String id);

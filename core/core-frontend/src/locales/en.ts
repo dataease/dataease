@@ -518,6 +518,18 @@ export default {
     allSelect: 'Select all'
   },
   system: {
+    driver_exists: 'Driver file conflict',
+    driver_de: 'Sync plug-ins',
+    driver_executor: 'Task executor',
+    driver_uploaded_file: 'Driver file',
+    driver_current: 'Current version',
+    driver_uploaded: 'Uploaded version',
+    driver_replace_question: 'The existing and uploaded driver files differ. Overwrite?',
+    driver_impact:
+      'Overwriting affects all sync source and target plug-ins that use this driver. Restart the related services afterward.',
+    driver_keep: 'Keep existing file',
+    driver_replace: 'Overwrite',
+    driver_restart: 'Plug-in installation completed. Restart the related services before use.',
     font_limits_title: 'Font settings',
     font_file_limit: 'Maximum font file size',
     font_storage_limit: 'Total font storage quota',
