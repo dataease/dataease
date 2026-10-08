@@ -18,11 +18,11 @@ export interface TicketValidVO {
   args: string
 }
 export interface ProxyInfo {
-  resourceId: string
-  uid: string
+  resourceId: string | null
+  uid: string | null
   exp?: boolean
   pwdValid?: boolean
-  type: string
+  type: string | null
   inIframeError: boolean
   shareDisable: boolean
   peRequireValid: boolean
@@ -88,7 +88,8 @@ class ShareProxy {
     const res = await request.post({ url, data: param })
     const proxyInfo: ProxyInfo = res.data as ProxyInfo
     if (
-      proxyInfo?.pwdValid &&
+      proxyInfo?.resourceId &&
+      proxyInfo.pwdValid &&
       !proxyInfo.exp &&
       proxyInfo.ticketValidVO?.ticketValid &&
       !proxyInfo.ticketValidVO?.ticketExp
