@@ -115,13 +115,13 @@ const sizeChange = (size: number) => {
 const sortChange = (param: any) => {
   state.orders = []
   if (param.order && param.prop === 'createTime') {
-    const type = param.order.substring(0, param.order.indexOf('ending'))
     state.orders.push({
       field: 'timeDesc',
-      type: type !== 'asc'
+      type: param.order === 'descending'
     })
-    search()
   }
+  state.paginationConfig.currentPage = 1
+  search()
 }
 
 const imgType = ref()
