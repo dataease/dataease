@@ -4957,6 +4957,10 @@ export default {
     warn_status: '告警状态'
   },
   webhook: {
+    secret_configured: '已配置',
+    secret_unconfigured: '未配置',
+    secret_keep: '留空保留已有密钥',
+    clear_secret: '清空已有密钥',
     title: 'Webhook 管理',
     add: '添加 Webhook',
     search_placeholder: '通过名称搜索',

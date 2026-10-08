@@ -5117,6 +5117,10 @@ export default {
     warn_status: 'Alert Status'
   },
   webhook: {
+    secret_configured: 'Configured',
+    secret_unconfigured: 'Not configured',
+    secret_keep: 'Leave blank to keep the existing secret',
+    clear_secret: 'Clear the existing secret',
     title: 'Webhook Management',
     add: 'Add Webhook',
     search_placeholder: 'Search by name',

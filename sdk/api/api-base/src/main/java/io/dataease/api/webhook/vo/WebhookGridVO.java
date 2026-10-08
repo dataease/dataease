@@ -1,5 +1,6 @@
 package io.dataease.api.webhook.vo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
@@ -19,7 +20,10 @@ public class WebhookGridVO implements Serializable {
 
     private String url;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String secret;
+
+    private Boolean hasSecret;
 
     private String contentType;
 

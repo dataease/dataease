@@ -4935,6 +4935,10 @@ export default {
     warn_status: '告警狀態'
   },
   webhook: {
+    secret_configured: '已配置',
+    secret_unconfigured: '未配置',
+    secret_keep: '留空保留已有密鑰',
+    clear_secret: '清空已有密鑰',
     title: 'Webhook 管理',
     add: '添加 Webhook',
     search_placeholder: '通過名稱搜索',
