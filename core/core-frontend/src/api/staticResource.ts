@@ -1,4 +1,5 @@
 import request from '@/config/axios'
+import type { AxiosResponse } from 'axios'
 import { guid } from '@/views/visualized/data/dataset/form/util.js'
 import { ElMessage } from 'element-plus-secondary'
 
@@ -47,4 +48,14 @@ export function findResourceAsBase64(params) {
     url: '/staticResource/findResourceAsBase64',
     data: params
   })
+}
+
+export const fetchResourceImage = async (path: string, signal: AbortSignal): Promise<Blob> => {
+  const response = await request.get<Promise<AxiosResponse<Blob>>>({
+    url: path,
+    responseType: 'blob',
+    signal,
+    handleErrorLocally: true
+  })
+  return response.data
 }

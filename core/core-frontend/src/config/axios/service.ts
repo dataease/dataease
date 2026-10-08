@@ -25,6 +25,7 @@ import { securityConfig } from './hmac'
 type AxiosErrorWidthLoading<T> = T & {
   config: {
     loading?: boolean
+    handleErrorLocally?: boolean
   }
 }
 
@@ -48,7 +49,7 @@ export const PATH_URL = embeddedStore.baseUrl ? embeddedStore?.baseUrl + embedde
 
 export interface AxiosInstanceWithLoading extends AxiosInstance {
   <T = any, R = AxiosResponse<T>, D = any>(
-    config: AxiosRequestConfig<D> & { loading?: boolean }
+    config: AxiosRequestConfig<D> & { loading?: boolean; handleErrorLocally?: boolean }
   ): Promise<R>
 }
 
@@ -165,7 +166,7 @@ service.interceptors.request.use(
     config.loading && tryShowLoading(permissionStore.getCurrentPath)
     return config
   },
-  (error: AxiosErrorWidthLoading<AxiosError>) => {
+  (error: AxiosErrorWidthLoading<AxiosError<{ msg?: string }>>) => {
     error.config.loading && tryHideLoading(permissionStore.getCurrentPath)
     Promise.reject(error)
   }
@@ -226,7 +227,12 @@ service.interceptors.response.use(
       return Promise.reject(response.data.msg)
     }
   },
-  (error: AxiosErrorWidthLoading<AxiosError>) => {
+  (error: AxiosErrorWidthLoading<AxiosError<{ msg?: string }>>) => {
+    // Image failures belong to the image loader, as with native <img> requests. Preserve
+    // the rejection so denied/missing images cannot become successful exports or trigger a login loop.
+    if (error.config?.handleErrorLocally) {
+      return Promise.reject(error)
+    }
     if (error.message?.includes('timeout of')) {
       requestStore.resetLoadingMap()
       ElMessage({

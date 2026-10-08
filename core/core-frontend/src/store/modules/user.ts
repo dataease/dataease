@@ -1,3 +1,4 @@
+import { clearResourceImages } from '@/utils/resourceImageCache'
 import { clearBindings } from '@/utils/platformBinding'
 import { defineStore } from 'pinia'
 import { store } from '../index'
@@ -134,6 +135,7 @@ export const userStore = defineStore('user', {
     },
     clear() {
       clearBindings()
+      clearResourceImages()
       const keys: string[] = ['token', 'uid', 'name', 'oid', 'language', 'exp', 'time', 'proxyInfo']
       keys.forEach(key => wsCache.delete('user.' + key))
     }

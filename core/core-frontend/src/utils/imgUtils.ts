@@ -1,40 +1,25 @@
 import html2canvas from 'html2canvas'
 import JsPDF from 'jspdf'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { useEmbedded } from '@/store/modules/embedded'
 import { storeToRefs } from 'pinia'
+import { authenticatedImageUrl } from './resourceImages'
+import { waitForResourceImages } from './resourceImageCache'
 import { findResourceAsBase64 } from '@/api/staticResource'
 import FileSaver from 'file-saver'
 import { deepCopy } from '@/utils/utils'
 import { toPng } from 'html-to-image'
 import { domToPng } from 'modern-screenshot'
 import { initCanvasDataPrepare } from '@/utils/canvasUtils'
-const embeddedStore = useEmbedded()
 const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData, componentData, canvasViewInfo, canvasViewDataInfo, dvInfo } =
   storeToRefs(dvMainStore)
-const basePath = import.meta.env.VITE_API_BASEPATH
 
 export function formatterUrl(url: string) {
   return url.replace('//de2api', '/de2api')
 }
-export function imgUrlTrans(url) {
-  if (url) {
-    if (typeof url === 'string' && url.indexOf('static-resource') > -1) {
-      const rawUrl = url
-        ? (basePath.endsWith('/') ? basePath.substring(0, basePath.length - 1) : basePath) + url
-        : null
-      return formatterUrl(
-        embeddedStore.baseUrl
-          ? `${embeddedStore.baseUrl}${
-              rawUrl.startsWith('/api') ? rawUrl.slice(5) : rawUrl
-            }`.replace('com//', 'com/')
-          : rawUrl
-      )
-    } else {
-      return formatterUrl(url.replace('com//', 'com/'))
-    }
-  }
+export function imgUrlTrans(url: string) {
+  if (!url) return url
+  return authenticatedImageUrl(formatterUrl(url.replace('com//', 'com/')))
 }
 
 function prePareTemplateBaseData(dvId, callback) {
@@ -60,49 +45,57 @@ function prePareTemplateBaseData(dvId, callback) {
 export function download2AppTemplate(downloadType, canvasDom, name, attachParams, callBack?) {
   try {
     findStaticSource(function (staticResource) {
-      domToPng(canvasDom, {
-        width: canvasDom.offsetWidth,
-        height: canvasDom.offsetHeight,
-        // 按 2 倍(或更高)分辨率渲染,解决导出图片模糊问题
-        scale: Math.max(1, window.devicePixelRatio || 1)
-      }).then(dataUrl => {
-        const canvasViewDataTemplate = deepCopy(canvasViewInfo.value)
-        Object.keys(canvasViewDataTemplate).forEach(viewId => {
-          canvasViewDataTemplate[viewId].data = canvasViewDataInfo.value[viewId]
+      waitForResourceImages(canvasDom)
+        .then(() =>
+          domToPng(canvasDom, {
+            width: canvasDom.offsetWidth,
+            height: canvasDom.offsetHeight,
+            // 按 2 倍(或更高)分辨率渲染,解决导出图片模糊问题
+            scale: Math.max(1, window.devicePixelRatio || 1)
+          })
+        )
+        .then(dataUrl => {
+          const canvasViewDataTemplate = deepCopy(canvasViewInfo.value)
+          Object.keys(canvasViewDataTemplate).forEach(viewId => {
+            canvasViewDataTemplate[viewId].data = canvasViewDataInfo.value[viewId]
+          })
+          const templateName = attachParams?.appName ? attachParams.appName : name
+          if (dataUrl !== '') {
+            prePareTemplateBaseData(
+              dvInfo.value.id,
+              function ({ canvasDataResult, canvasStyleResult }) {
+                const templateInfo = {
+                  name: templateName,
+                  templateType: 'self',
+                  snapshot: dataUrl,
+                  dvType: dvInfo.value.type,
+                  nodeType: downloadType,
+                  version: 3,
+                  canvasStyleData: canvasStyleResult,
+                  componentData: canvasDataResult,
+                  dynamicData: JSON.stringify(canvasViewDataTemplate),
+                  staticResource: JSON.stringify(staticResource || {}),
+                  appData: attachParams ? JSON.stringify(attachParams) : null
+                }
+                const blob = new Blob([JSON.stringify(templateInfo)], { type: '' })
+                if (downloadType === 'template') {
+                  FileSaver.saveAs(blob, name + '-TEMPLATE.DET2')
+                } else if (downloadType === 'app') {
+                  FileSaver.saveAs(blob, templateName + '-APP.DET2APP')
+                }
+                if (callBack) {
+                  callBack()
+                }
+              }
+            )
+          } else if (callBack) {
+            callBack()
+          }
         })
-        const templateName = attachParams?.appName ? attachParams.appName : name
-        if (dataUrl !== '') {
-          prePareTemplateBaseData(
-            dvInfo.value.id,
-            function ({ canvasDataResult, canvasStyleResult }) {
-              const templateInfo = {
-                name: templateName,
-                templateType: 'self',
-                snapshot: dataUrl,
-                dvType: dvInfo.value.type,
-                nodeType: downloadType,
-                version: 3,
-                canvasStyleData: canvasStyleResult,
-                componentData: canvasDataResult,
-                dynamicData: JSON.stringify(canvasViewDataTemplate),
-                staticResource: JSON.stringify(staticResource || {}),
-                appData: attachParams ? JSON.stringify(attachParams) : null
-              }
-              const blob = new Blob([JSON.stringify(templateInfo)], { type: '' })
-              if (downloadType === 'template') {
-                FileSaver.saveAs(blob, name + '-TEMPLATE.DET2')
-              } else if (downloadType === 'app') {
-                FileSaver.saveAs(blob, templateName + '-APP.DET2APP')
-              }
-              if (callBack) {
-                callBack()
-              }
-            }
-          )
-        } else if (callBack) {
-          callBack()
-        }
-      })
+        .catch(error => {
+          callBack?.()
+          console.error('Image export failed', error)
+        })
     })
   } catch (e) {
     if (callBack) {
@@ -114,7 +107,8 @@ export function download2AppTemplate(downloadType, canvasDom, name, attachParams
 
 export function downloadCanvas(type, canvasDom, name, callBack?) {
   if (canvasDom) {
-    html2canvas(canvasDom)
+    waitForResourceImages(canvasDom)
+      .then(() => html2canvas(canvasDom))
       .then(canvas => {
         const dom = document.body.appendChild(canvas)
         dom.style.display = 'none'
@@ -149,12 +143,15 @@ export function downloadCanvas(type, canvasDom, name, callBack?) {
 }
 
 export function downloadCanvas2(type, canvasDom, name, callBack?) {
-  domToPng(canvasDom, {
-    width: canvasDom.offsetWidth,
-    height: canvasDom.offsetHeight,
-    // 按 2 倍(或更高)分辨率渲染,解决导出图片模糊问题
-    scale: Math.max(3, window.devicePixelRatio || 1)
-  })
+  waitForResourceImages(canvasDom)
+    .then(() =>
+      domToPng(canvasDom, {
+        width: canvasDom.offsetWidth,
+        height: canvasDom.offsetHeight,
+        // 按 2 倍(或更高)分辨率渲染,解决导出图片模糊问题
+        scale: Math.max(3, window.devicePixelRatio || 1)
+      })
+    )
     .then(dataUrl => {
       if (type === 'img') {
         const a = document.createElement('a')
