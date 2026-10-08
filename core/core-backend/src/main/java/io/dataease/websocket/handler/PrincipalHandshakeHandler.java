@@ -1,10 +1,7 @@
 package io.dataease.websocket.handler;
 
 import io.dataease.websocket.entity.DePrincipal;
-import jakarta.servlet.http.HttpServletRequest;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.server.ServerHttpRequest;
-import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 
@@ -15,14 +12,9 @@ public class PrincipalHandshakeHandler extends DefaultHandshakeHandler {
 
     @Override
     protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
-        if (request instanceof ServletServerHttpRequest) {
-            ServletServerHttpRequest servletServerHttpRequest = (ServletServerHttpRequest) request;
-            HttpServletRequest httpRequest = servletServerHttpRequest.getServletRequest();
-            final String userId = httpRequest.getParameter("userId");
-            if (StringUtils.isEmpty(userId)) {
-                return null;
-            }
-            return new DePrincipal(userId);
+        Object userId = attributes.get(DeHandshakeInterceptor.AUTH_USER_ID_ATTRIBUTE);
+        if (userId instanceof Long authenticatedUserId) {
+            return new DePrincipal(authenticatedUserId.toString());
         }
         return null;
     }

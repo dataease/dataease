@@ -1,7 +1,11 @@
 package io.dataease.websocket.config;
 
+import io.dataease.auth.interceptor.CorsConfig;
+import io.dataease.websocket.WebSocketAuthService;
 import io.dataease.websocket.factory.DeWsHandlerFactory;
+import io.dataease.websocket.handler.DeHandshakeInterceptor;
 import io.dataease.websocket.handler.PrincipalHandshakeHandler;
+import jakarta.annotation.Resource;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -9,16 +13,27 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
 
+import java.util.List;
+
 @Configuration
 @EnableWebSocketMessageBroker
 public class WsConfig implements WebSocketMessageBrokerConfigurer {
 
+    @Resource
+    private WebSocketAuthService webSocketAuthService;
+
+    @Resource
+    private CorsConfig corsConfig;
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
+        List<String> allowedOriginPatterns = corsConfig.isCorsStrict()
+                ? corsConfig.getAllOrigins()
+                : List.of("*");
         registry.addEndpoint("/websocket")
-                .setAllowedOriginPatterns("*")
+                .setAllowedOriginPatterns(allowedOriginPatterns.toArray(new String[0]))
                 .setHandshakeHandler(new PrincipalHandshakeHandler())
+                .addInterceptors(new DeHandshakeInterceptor(webSocketAuthService, allowedOriginPatterns))
                 .withSockJS();
     }
 

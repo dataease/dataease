@@ -47,7 +47,10 @@ export default {
         prefix += '/'
       }
       const userId = wsCache.get('app.desktop') ? 1 : wsCache.get('user.uid')
-      const socket = new SockJS(prefix + 'websocket?userId=' + userId)
+      const query = wsCache.get('app.desktop')
+        ? `userId=${userId}`
+        : `token=${encodeURIComponent(wsCache.get('user.token') || '')}`
+      const socket = new SockJS(prefix + 'websocket?' + query)
       stompClient = Stomp.over(socket)
       const heads = {
         userId: userId
