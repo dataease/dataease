@@ -53,6 +53,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -354,8 +355,15 @@ public class XpackShareManage {
         boolean linkExp = linkExp(xpackShare);
         boolean pwdValid = pwdValid(xpackShare, request.getCiphertext());
 
-        if (!linkExp && pwdValid && validVO.isTicketValid() && !validVO.isTicketExp()) {
+        boolean authorized = !linkExp && pwdValid && validVO.isTicketValid() && !validVO.isTicketExp();
+        if (authorized) {
             generateLinkToken(xpackShare);
+        } else {
+            // Challenge responses must not disclose resource/owner identifiers or Ticket arguments.
+            TicketValidVO challenge = new TicketValidVO();
+            challenge.setTicketValid(validVO.isTicketValid());
+            challenge.setTicketExp(validVO.isTicketExp());
+            return new XpackShareProxyVO(null, null, linkExp, pwdValid, null, inIframeError, false, true, challenge);
         }
         return new XpackShareProxyVO(xpackShare.getResourceId(), xpackShare.getCreator(), linkExp, pwdValid, typeText, inIframeError, false, true, validVO);
     }
@@ -431,17 +439,31 @@ public class XpackShareManage {
     }
 
     public Map<String, String> queryRelationByUserId(Long uid) {
+        Long currentUid = V3UserUtil.getUid();
+        if (V3UserUtil.getLink() != null || currentUid == null || !Objects.equals(uid, currentUid)) {
+            DEException.throwException(io.dataease.result.ResultCode.PERMISSION_NO_ACCESS.code(),
+                    Translator.get("i18n_share_operation_denied"));
+        }
+        Long currentOid = V3UserUtil.getUser().getOid();
         Specification<XpackShare> xpackShareSpec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("creator"), uid));
+            predicates.add(cb.equal(root.get("creator"), currentUid));
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 
         List<XpackShare> result = xpackShareRepository.findAll(xpackShareSpec);
-        if (CollectionUtils.isNotEmpty(result)) {
-            return result.stream()
-                    .collect(Collectors.toMap(xpackShare -> String.valueOf(xpackShare.getResourceId()), XpackShare::getUuid, (a, b) -> a));
+        Map<String, String> relations = new HashMap<>();
+        for (XpackShare share : result) {
+            // Validate legacy links through their resource rather than trusting a nullable stored oid.
+            try {
+                Long resourceOid = shareAuthorizationManage.requireManage(share.getResourceId());
+                if (Objects.equals(currentOid, resourceOid)) {
+                    relations.putIfAbsent(String.valueOf(share.getResourceId()), share.getUuid());
+                }
+            } catch (DEException e) {
+                // A resource the caller can no longer manage is excluded from the relation list.
+            }
         }
-        return new HashMap<>();
+        return relations;
     }
 }

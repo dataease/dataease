@@ -60,7 +60,7 @@ onMounted(async () => {
   await appearanceStore.setFontList()
   close()
   const proxyInfo = (await shareProxy.loadProxy()) as ProxyInfo
-  curType.value = proxyInfo.type || 'dashboard'
+  curType.value = proxyInfo?.type || 'dashboard'
   dvMainStore.setInMobile(true)
   dvMainStore.setMobileInPc(curType.value === 'dashboard')
   if (proxyInfo?.shareDisable) {
@@ -81,7 +81,7 @@ onMounted(async () => {
     return
   }
   peRequireError.value = false
-  if (!proxyInfo?.resourceId) {
+  if (!proxyInfo) {
     loading.value = false
     return
   }
@@ -97,6 +97,15 @@ onMounted(async () => {
     return
   }
   state.ticketValidVO = proxyInfo.ticketValidVO
+  if (!state.ticketValidVO?.ticketValid || state.ticketValidVO.ticketExp) {
+    loading.value = false
+    return
+  }
+  if (!proxyInfo.resourceId) {
+    linkExist.value = false
+    loading.value = false
+    return
+  }
   nextTick(() => {
     const method = pcanvas?.value?.loadCanvasDataAsync
     if (method) {
