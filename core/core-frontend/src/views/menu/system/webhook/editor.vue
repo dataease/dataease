@@ -16,6 +16,8 @@ interface WebhookForm {
   url?: string
   contentType?: string
   secret?: string
+  hasSecret?: boolean
+  clearSecret?: boolean
   ssl: boolean
   msgTemplate?: string
 }
@@ -100,7 +102,9 @@ const edit = id => {
       url: data.url,
       ssl: data.ssl,
       contentType: data.contentType,
-      secret: data.secret,
+      secret: undefined,
+      hasSecret: data.hasSecret,
+      clearSecret: false,
       msgTemplate: data.msgTemplate
     }
     formType.value = 'edit'
@@ -128,6 +132,10 @@ const submitForm = async (formEl: FormInstance | undefined) => {
 
 const saveHandler = () => {
   const param = { ...state.form }
+  delete param.hasSecret
+  if (formType.value === 'edit' && !param.clearSecret && !param.secret?.trim()) {
+    delete param.secret
+  }
   const method = request.post({
     url: '/webhook/save',
     data: param
@@ -215,8 +223,21 @@ defineExpose({
       <el-form-item label="Secret" prop="secret">
         <el-input
           v-model="state.form.secret"
-          :placeholder="t('common.please_input') + t('common.empty') + 'Secret'"
+          type="password"
+          show-password
+          :disabled="state.form.clearSecret"
+          :placeholder="
+            state.form.hasSecret
+              ? t('webhook.secret_keep')
+              : t('common.please_input') + t('common.empty') + 'Secret'
+          "
         />
+        <el-checkbox
+          v-if="formType === 'edit' && state.form.hasSecret"
+          v-model="state.form.clearSecret"
+        >
+          {{ t('webhook.clear_secret') }}
+        </el-checkbox>
       </el-form-item>
 
       <el-form-item
