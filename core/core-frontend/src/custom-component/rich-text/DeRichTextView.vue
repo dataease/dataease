@@ -602,7 +602,8 @@ const checkCompareCalc = view => {
 }
 
 const calcData = (view: Chart, callback) => {
-  if (!canEdit.value) {
+  // 仅首次加载显示占位，后续刷新保留当前内容，待新结果返回后统一替换。
+  if (!canEdit.value && !initReady.value) {
     initReady.value = false
     dataRowFiledName.value = []
     dataRowSelect.value = {}
