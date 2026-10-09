@@ -12,7 +12,6 @@ export default {
     })
   ],
   build: {
-    cssCodeSplit: false,
     rollupOptions: {
       external: id => /extensions/.test(id),
       output: {
