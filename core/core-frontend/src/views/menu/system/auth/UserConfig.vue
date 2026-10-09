@@ -26,7 +26,7 @@ import EmptyBackground from "@/components/empty-background/src/EmptyBackground.v
 import { Icon } from "@/components/icon-custom";
 import { useI18n } from "@/hooks/web/useI18n";
 import { ElMessage, ElMessageBox } from "element-plus-secondary";
-import { computed, nextTick, onMounted, reactive, ref } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from "vue";
 import request from "@/config/axios";
 
 import { VxeColgroup, VxeColumn, VxeTable } from "vxe-table";
@@ -39,6 +39,13 @@ import {
 } from "@/api/auth";
 import "vxe-table/lib/style.css";
 import DynamicColumn from "./DynamicColumn.vue";
+import {
+  flattenPermissionRows,
+  permissionAncestorIds,
+  permissionTreeConfig,
+  resetPermissionRows
+} from './permissionTable'
+
 import {
   checkedStandalone,
   ColumnOption,
@@ -128,6 +135,7 @@ const authActiveChange = async (tabName) => {
       state.tableData = state.treeMap[id];
     } else {
       const res = await resourceTreeApi("menu", isSystem);
+      if (activeAuth.value !== tabName) return
       getColumn("menu");
       state.tableData = res.data;
       state.treeMap["menu"] = res.data;
@@ -142,6 +150,7 @@ const authActiveChange = async (tabName) => {
     const id = selectedResourceType.value;
     getColumn(id);
     state.tableData = state.treeMap[id];
+    selectedTarget.value && loadPermission(getSubjectType());
   }
   resourceFilter("");
 };
@@ -168,6 +177,34 @@ const state = reactive({
   sourceData: {},
   expandedKeys: [] as any[],
 });
+const permissionFailed = ref(false)
+const tableRows = computed((previous: typeof state.tableData) => {
+  const rows = permissionFailed.value ? [] : flattenPermissionRows(state.tableData)
+  return previous && rows.length === previous.length && rows.every((row, i) => row === previous[i])
+    ? previous
+    : rows
+})
+let permissionRequestId = 0
+let disposed = false
+watch(
+  () => [
+    selectedTarget.value,
+    selectedSubjectOid.value,
+    activeName.value,
+    activeAuth.value,
+    selectedResourceType.value
+  ],
+  () => {
+    permissionRequestId++
+  },
+  { flush: 'sync' }
+)
+onUnmounted(() => {
+  disposed = true
+  permissionRequestId++
+  subjectTreeRequestId++
+})
+
 state.globalColumn = [
   {
     type: "dataset, menu, data_filling, spreadsheet",
@@ -254,6 +291,7 @@ const resourceTypeClick = async (id: string) => {
       state.tableData = state.treeMap[id];
     } else {
       const res = await resourceTreeApi(id, isSystem);
+      if (selectedResourceType.value !== id || activeAuth.value !== 'resource') return
       const sortData = customSort(res.data, id);
       state.tableData = sortData;
       state.treeMap[id] = sortData;
@@ -299,13 +337,16 @@ const loadResourceTree = (resolve, reject) => {
     });
 };
 
-const loadTree = async (type: number) => {
+let subjectTreeRequestId = 0
+const loadTree = async (type: number, selectFirst = true) => {
+  const requestId = ++subjectTreeRequestId
   leftLoading.value = true;
   const res = await subjectTreeApi({
     system: isSystem,
     type,
     lazy: false,
   });
+  if (requestId !== subjectTreeRequestId) return
   const nodes = (res.data || []).map((n: any) => ({
     ...n,
     disabled: n.type === 2,
@@ -313,7 +354,7 @@ const loadTree = async (type: number) => {
   }));
   state.treeData = nodes;
   leftLoading.value = false;
-  nextTick(() => selectFirstSubject());
+  if (selectFirst) nextTick(() => selectFirstSubject());
 };
 const hideSysMenu = () => {
   const hiddenMenuIds = ["7"];
@@ -337,54 +378,61 @@ const hideSysMenu = () => {
 };
 const getSubjectType = () => (activeName.value === "user" ? 0 : 1);
 
-const loadPermission = (type: number) => {
-  whileLoop(state.tableColumn, true, (col) => {
-    if (col["checkAll"]) {
-      col["checkAll"] = false;
-    }
-  });
-  loading.value = true;
-  resetTableData(state.tableData);
-  state.expandedKeys = [];
-  const isMenuAuth = activeAuth.value === "menu";
+const loadPermission = async (type: number) => {
+  if (disposed) return
+  const requestId = ++permissionRequestId
+  loading.value = true
+  const isMenuAuth = activeAuth.value === 'menu'
   const param: PermissionRequest = {
     id: selectedTarget.value,
-    flag: isMenuAuth ? "menu" : selectedResourceType.value.toUpperCase(),
+    flag: isMenuAuth ? 'menu' : selectedResourceType.value.toUpperCase(),
     system: !!isSystem,
     type,
-    oid: selectedSubjectOid.value,
-  };
-
-  subjectPermissionApi(param).then((res) => {
-    const vo = formatVo(res.data);
-    loading.value = false;
-    emptyDescription.value = "";
-    if (stopExecuteRoot(vo, type)) {
-      return;
+    oid: selectedSubjectOid.value
+  }
+  try {
+    const res = await subjectPermissionApi(param)
+    if (requestId !== permissionRequestId) return
+    const vo = formatVo(res.data)
+    permissionFailed.value = false
+    tableRef.value?.clearTreeExpandReserve()
+    whileLoop(state.tableColumn, true, col => {
+      col.checkAll = false
+    })
+    resetTableData(state.tableData)
+    state.expandedKeys = []
+    emptyDescription.value = ''
+    if (stopExecuteRoot(vo, type)) return
+    const permissionMap = groupPermission(vo)
+    if (isMenuAuth && (!selectedRoleTypeCode.value || selectedRoleTypeCode.value < 9)) {
+      hideSysMenu()
     }
-    const permissionMap = groupPermission(vo);
-    if (
-      isMenuAuth &&
-      (!selectedRoleTypeCode.value || selectedRoleTypeCode.value < 9)
-    ) {
-      hideSysMenu();
+    fillTableData(state.tableData, permissionMap)
+    await nextTick()
+    if (requestId !== permissionRequestId) return
+    const table = tableRef.value
+    if (table) {
+      const ids = new Set(state.expandedKeys)
+      const collapsed = table.getTreeExpandRecords().filter(row => !ids.has(row.id))
+      if (collapsed.length) await table.setTreeExpand(collapsed, false)
+      if (requestId !== permissionRequestId) return
+      const expanded: typeof state.tableData = []
+      whileLoop(state.tableData, false, row => {
+        if (ids.has(row.id)) expanded.push(row)
+      })
+      if (expanded.length) await table.setTreeExpand(expanded, true)
     }
-    fillTableData(state.tableData, permissionMap);
-    nextTick(() => {
-      const table = tableRef.value;
-      if (table && state.expandedKeys.length) {
-        const expandRows: any[] = [];
-        const idSet = new Set(state.expandedKeys);
-        findRowsByIds(state.tableData, idSet, expandRows);
-        table.clearTreeExpand().then(() => {
-          if (expandRows.length) {
-            table.setTreeExpand(expandRows, true);
-          }
-        });
-      }
-    });
-  });
-};
+  } catch (error) {
+    console.error('Failed to load permission matrix', error)
+    if (requestId === permissionRequestId) {
+      // The request interceptor reports the error; do not display the previous subject's permissions.
+      permissionFailed.value = true
+      state.uncommitted = []
+    }
+  } finally {
+    if (requestId === permissionRequestId) loading.value = false
+  }
+}
 
 const formatVo = (vo: any) => {
   const origins = vo.permissionOrigins || [];
@@ -576,39 +624,8 @@ const groupPermission = (vo) => {
 };
 
 const expandNodes = (ids: string[]) => {
-  const datalist = state.tableData;
-  let result: string[] = [];
-  const match = (list, targetids, parentlist) => {
-    if (!targetids?.length) return;
-    for (let i = 0; i < list.length; i++) {
-      const item = list[i];
-      if (targetids.includes(item.id)) {
-        targetids = targetids.filter((id) => id !== item.id);
-        result = [...result, ...parentlist];
-      }
-
-      if (item.children?.length) {
-        parentlist.push(item.id);
-        match(item.children, targetids, parentlist);
-        const len = parentlist.length;
-        len && parentlist.splice(len - 1, 1);
-      }
-    }
-  };
-  match(datalist, ids, []);
-  state.expandedKeys = Array.from(new Set([...result]));
-};
-
-const findRowsByIds = (nodes: any[], ids: Set<string>, result: any[]) => {
-  nodes.forEach((node) => {
-    if (ids.has(node.id)) {
-      result.push(node);
-    }
-    if (node.children?.length) {
-      findRowsByIds(node.children, ids, result);
-    }
-  });
-};
+  state.expandedKeys = permissionAncestorIds(state.tableData, new Set(ids))
+}
 
 const fillTableData = (rows, maps) => {
   rows?.forEach((row) => {
@@ -887,33 +904,8 @@ const beforeActiveAuthChange = (newName, oldName) => {
   return true;
 };
 
-const resetTableData = (rows) => {
-  const keys: string[] = [
-    "id",
-    "name",
-    "children",
-    "leaf",
-    "extraFlag",
-    "oid",
-    "disabled",
-    "type",
-    "attrs",
-  ];
-  rows?.length &&
-    rows.forEach((item) => {
-      for (const key in item) {
-        if (
-          Object.prototype.hasOwnProperty.call(item, key) &&
-          !keys.includes(key)
-        ) {
-          delete item[key];
-        }
-      }
-      if (item.children?.length) {
-        resetTableData(item.children);
-      }
-    });
-};
+const resetTableData = resetPermissionRows
+
 const filterTarget = (val) => {
   subjectTreeRef.value?.filter(val);
 };
@@ -1059,13 +1051,14 @@ const getDsTypeIcon = (extraFlag: number) => {
 }; */
 onMounted(() => {
   leftLoading.value = true;
-  loadTree(0);
+  const subjects = loadTree(0, false);
   const p1 = new Promise((resolve, reject) => {
     loadResourceTree(resolve, reject);
   });
-  Promise.all([p1])
+  Promise.all([p1, subjects])
     .then(() => {
       loading.value = false;
+      nextTick(() => selectFirstSubject());
     })
     .catch(() => {
       loading.value = false;
@@ -1266,17 +1259,12 @@ defineExpose({
           :height="tableHeight"
           show-overflow="title"
           :column-config="{ resizable: true }"
-          :row-config="{ keyField: 'id' }"
+          :row-config="{ keyField: 'authRowKey' }"
           :virtual-y-config="{ enabled: true, gt: 0 }"
-          :tree-config="{
-            children: 'children',
-            indent: 20,
-            expandRowKeys: state.expandedKeys,
-            /* toggleMethod: expandChange */
-          }"
+          :tree-config="permissionTreeConfig"
           class="table-container ed-table--border"
           v-if="!emptyDescription"
-          :data="state.tableData"
+          :data="tableRows"
           style="width: 100%"
           :row-class-name="dynamicResourceClass"
           header-cell-class-name="header-cell"

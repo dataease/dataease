@@ -22,7 +22,7 @@ import dvFolder from '@/assets/svg/dv-folder.svg'
 import dvDashboardSpine from '@/assets/svg/dv-dashboard-spine.svg'
 import dvScreenSpine from '@/assets/svg/dv-screen-spine.svg'
 import icon_dataset from '@/assets/svg/icon_dataset.svg'
-import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, reactive, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import request from '@/config/axios'
 import { Icon } from '@/components/icon-custom'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
@@ -44,6 +44,7 @@ import {
   isRoleCheckboxHidden
 } from './options'
 import DynamicResourceColumn from './DynamicResourceColumn.vue'
+import { flattenPermissionRows, permissionTreeConfig, resetPermissionRows } from './permissionTable'
 import {
   resourceTreeApi,
   resourcePermissionApi,
@@ -107,6 +108,37 @@ const state = reactive({
   resourceTreeData: [] as any[],
   resourceBaseMap: {}
 })
+const tableRef = ref()
+const permissionFailed = ref(false)
+const tableRows = computed((previous: typeof state.tableData) => {
+  const rows = permissionFailed.value ? [] : flattenPermissionRows(state.tableData)
+  return previous && rows.length === previous.length && rows.every((row, i) => row === previous[i])
+    ? previous
+    : rows
+})
+const expandSubjectRows = () => tableRef.value?.setAllTreeExpand(true)
+let permissionRequestId = 0
+let disposed = false
+watch(
+  () => [
+    selectedResourceId.value,
+    selectedResourceOid.value,
+    selectedMenuId.value,
+    activeName.value,
+    activeAuth.value,
+    selectedResourceType.value
+  ],
+  () => {
+    permissionRequestId++
+  },
+  { flush: 'sync' }
+)
+onUnmounted(() => {
+  disposed = true
+  permissionRequestId++
+  subjectTreeRequestId++
+})
+
 state.globalColumn = [
   {
     type: 'dataset, menu, data_filling, spreadsheet',
@@ -135,6 +167,7 @@ state.globalColumn = [
 ]
 
 const tableHeight = ref('100%')
+let tableResizeObserver: ResizeObserver | undefined
 
 const updateTableHeight = () => {
   nextTick(() => {
@@ -146,7 +179,8 @@ const updateTableHeight = () => {
 }
 
 const activeNameChange = async tabName => {
-  await activaNameChangeHandler(tabName)
+  if (!(await activaNameChangeHandler(tabName))) return
+  if (tabName !== activeName.value) return
   if (
     (selectedMenuId.value && activeAuth.value === 'menu') ||
     (selectedResourceId.value && activeAuth.value === 'resource')
@@ -155,7 +189,9 @@ const activeNameChange = async tabName => {
   }
 }
 
+let subjectTreeRequestId = 0
 const activaNameChangeHandler = async tabName => {
+  const requestId = ++subjectTreeRequestId
   cancelTargetFilter()
   targetkey.value = ''
   const type = tabName === 'user' ? 0 : 1
@@ -166,8 +202,10 @@ const activaNameChangeHandler = async tabName => {
     const treeData = res.data || []
     state.treeMap[cacheKey] = treeData
   }
+  if (requestId !== subjectTreeRequestId) return
   state.tableData = state.treeMap[cacheKey]
   filterTarget('')
+  return true
 }
 
 const activeAuthChange = async tabName => {
@@ -181,6 +219,7 @@ const activeAuthChange = async tabName => {
       state.resourceTreeData = state.resourceBaseMap[id]
     } else {
       const res = await resourceTreeApi('menu', isSystem)
+      if (activeAuth.value !== tabName) return
       getColumn(id)
       state.resourceTreeData = res.data
       state.resourceBaseMap[id] = res.data
@@ -194,7 +233,8 @@ const activeAuthChange = async tabName => {
     state.resourceTreeData = state.resourceBaseMap[id]
     activeName.value = 'user'
   }
-  await activaNameChangeHandler(activeName.value)
+  if (!(await activaNameChangeHandler(activeName.value))) return
+  if (activeAuth.value !== tabName) return
   selectFirstItem()
 }
 
@@ -316,6 +356,7 @@ const resourceTypeClick = async (id: string) => {
       state.resourceTreeData = state.resourceBaseMap[id]
     } else {
       const res = await resourceTreeApi(id, isSystem)
+      if (selectedResourceType.value !== id || activeAuth.value !== 'resource') return
       const sortData = customSort(res.data, id)
       state.resourceTreeData = sortData
       state.resourceBaseMap[id] = sortData
@@ -390,32 +431,39 @@ const applyRowHiddenRules = (type: number) => {
 const getSubjectType = () => (activeName.value === 'user' ? 0 : 1)
 
 const xpackMenuIds = ['7', '8', '10', '13', '62', '63', '65', '21', '22', '23', '24']
-const loadPermission = (type: number) => {
-  resetTableData(state.tableData)
-  // 请求前同步计算行隐藏状态，避免异步响应窗口期内根角色行闪现
-  applyRowHiddenRules(type)
+const loadPermission = async (type: number) => {
+  if (disposed) return
+  const requestId = ++permissionRequestId
   loading.value = true
-  const param: PermissionRequest = {
-    id: selectedResourceId.value,
-    flag: selectedResourceType.value.toUpperCase(),
-    type,
-    system: !!isSystem,
-    oid: activeAuth.value !== 'menu' ? selectedResourceOid.value : undefined
-  }
   const isMenuAuth = activeAuth.value === 'menu'
-  if (isMenuAuth) {
-    param['id'] = selectedMenuId.value
-    param['flag'] = 'MENU'
-    param['type'] = isSystem ? type : 1
+  const param: PermissionRequest = {
+    id: isMenuAuth ? selectedMenuId.value : selectedResourceId.value,
+    flag: isMenuAuth ? 'MENU' : selectedResourceType.value.toUpperCase(),
+    type: isMenuAuth && !isSystem ? 1 : type,
+    system: !!isSystem,
+    oid: isMenuAuth ? undefined : selectedResourceOid.value
   }
-
-  resourcePermissionApi(param).then(res => {
-    const vo = res.data
-    const permissionMap = groupPermission(vo)
+  try {
+    const res = await resourcePermissionApi(param)
+    if (requestId !== permissionRequestId) return
+    permissionFailed.value = false
+    resetTableData(state.tableData)
+    applyRowHiddenRules(type)
+    const permissionMap = groupPermission(res.data)
     fillTableData(state.tableData, permissionMap, null)
-    loading.value = false
-  })
+    await nextTick()
+  } catch (error) {
+    console.error('Failed to load permission matrix', error)
+    if (requestId === permissionRequestId) {
+      // The request interceptor reports the error; do not display the previous resource's permissions.
+      permissionFailed.value = true
+      state.uncommitted = []
+    }
+  } finally {
+    if (requestId === permissionRequestId) loading.value = false
+  }
 }
+
 const groupPermission = vo => {
   const map = new Map()
   const origins = vo.permissionOrigins
@@ -504,33 +552,7 @@ const fillTableData = (rows, maps, pmap) => {
     }
   })
 }
-const resetTableData = rows => {
-  const keys: string[] = [
-    'id',
-    'name',
-    'children',
-    'readonly',
-    'typeCode',
-    'root',
-    'account',
-    'attrs',
-    'type',
-    'disabled',
-    'hidden',
-    'pid'
-  ]
-  rows?.length &&
-    rows.forEach(item => {
-      for (const key in item) {
-        if (Object.prototype.hasOwnProperty.call(item, key) && !keys.includes(key)) {
-          delete item[key]
-        }
-      }
-      if (item.children?.length) {
-        resetTableData(item.children)
-      }
-    })
-}
+const resetTableData = resetPermissionRows
 
 const save = callback => {
   const param = {
@@ -893,7 +915,6 @@ const matchFilter = (row, val): boolean => {
   row.hidden = !match
   return match
 }
-const vxeTableKey = ref(+new Date())
 let targetFilterTimer: ReturnType<typeof setTimeout> | undefined
 const cancelTargetFilter = () => {
   if (targetFilterTimer !== undefined) {
@@ -906,9 +927,6 @@ const filterTarget = val => {
   state.tableData.forEach(item => {
     matchFilter(item, val)
   })
-  nextTick(() => {
-    vxeTableKey.value = +new Date()
-  })
 }
 const onTargetSearchInput = (val: string) => {
   cancelTargetFilter()
@@ -918,7 +936,10 @@ const onTargetSearchInput = (val: string) => {
   }
   targetFilterTimer = setTimeout(() => filterTarget(val), 1500)
 }
-onUnmounted(cancelTargetFilter)
+onUnmounted(() => {
+  cancelTargetFilter()
+  tableResizeObserver?.disconnect()
+})
 const iconMap = {
   mysql: mysqlDs,
   oracle: oracleDs,
@@ -1011,10 +1032,10 @@ onMounted(() => {
   // Observe tree-table resize to keep vxe-table height in sync
   const treeTableEl = document.querySelector('.resource-panel .tree-table')
   if (treeTableEl) {
-    const observer = new ResizeObserver(() => {
+    tableResizeObserver = new ResizeObserver(() => {
       updateTableHeight()
     })
-    observer.observe(treeTableEl)
+    tableResizeObserver.observe(treeTableEl)
   }
 })
 
@@ -1223,13 +1244,13 @@ defineExpose({
             :height="tableHeight"
             show-overflow="title"
             :column-config="{ resizable: true }"
-            :row-config="{ keyField: 'id' }"
+            :row-config="{ keyField: 'authRowKey' }"
             :virtual-y-config="{ enabled: true, gt: 0 }"
-            :tree-config="{ children: 'children', indent: 20, expandAll: true }"
+            :tree-config="{ ...permissionTreeConfig, expandAll: true }"
             class="table-container ed-table--border"
-            :data="state.tableData"
+            :data="tableRows"
             style="width: 100%"
-            :key="vxeTableKey"
+            @data-change="expandSubjectRows"
             :row-class-name="dynamicResourceClass"
             header-cell-class-name="header-cell"
           >
