@@ -1316,6 +1316,7 @@ export default {
     load_data: 'Load Data'
   },
   chart: {
+    desensitized: 'Desensitized',
     assist_value_type: 'Value type',
     assist_axis: 'Axis',
     assist_line_style: 'Line style',

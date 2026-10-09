@@ -1260,6 +1260,7 @@ export default {
     load_data: '載入資料'
   },
   chart: {
+    desensitized: '已脫敏',
     assist_value_type: '參考類型',
     assist_axis: '所屬軸',
     assist_line_style: '線條樣式',
