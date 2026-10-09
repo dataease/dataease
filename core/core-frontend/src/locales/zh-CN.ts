@@ -1278,6 +1278,7 @@ export default {
     load_data: '加载数据'
   },
   chart: {
+    desensitized: '已脱敏',
     assist_value_type: '参考类型',
     assist_axis: '所属轴',
     assist_line_style: '线条样式',

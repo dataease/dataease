@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, inject, type Ref } from 'vue'
 import draggable from 'vuedraggable'
 import { ElMessage } from 'element-plus-secondary'
 import DefaultDropZoneFieldItem from './default-drop-zone-field-item.vue'
@@ -38,6 +38,23 @@ const emit = defineEmits<{
 const fieldItemComponent = computed(() =>
   props.zoneSchema?.fieldItemComponent || DefaultDropZoneFieldItem
 )
+
+const datasetFields = inject<Ref<{ dimensions: FieldItemData[]; quotas: FieldItemData[] }>>(
+  'datasetFields'
+)
+const datasetFieldMap = computed(() => {
+  const fields = datasetFields?.value
+  if (!fields) return new Map<string, FieldItemData>()
+  const fieldList = [...fields.dimensions, ...fields.quotas]
+  return new Map(fieldList.map(field => [String(field.id), field]))
+})
+
+// 脱敏状态以当前权限下加载的字段为准，避免沿用已保存配置中的旧状态。
+const getDisplayField = (field: FieldItemData): FieldItemData => {
+  const datasetField = datasetFieldMap.value.get(String(field.id))
+  if (!datasetField) return field
+  return { ...field, desensitized: datasetField.desensitized }
+}
 
 const localFields = ref<FieldItemData[]>([...props.modelValue])
 const chartShowNameDialogVisible = ref(false)
@@ -218,7 +235,7 @@ const isEmpty = computed(() => localFields.value.length === 0)
         <div class="field-wrapper" :data-id="element.id">
           <component
             :is="fieldItemComponent"
-            :field="element"
+            :field="getDisplayField(element)"
             :index="index"
             :zone-schema="zoneSchema"
             :plugin-type="pluginType"

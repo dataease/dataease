@@ -45,6 +45,7 @@ export interface FieldItemData {
     resultData?: 'percent' | 'sub'
   }
   hidden?: boolean
+  desensitized?: boolean
 }
 
 export interface FilterItem {
