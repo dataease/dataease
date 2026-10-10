@@ -849,6 +849,7 @@ export default {
     reset_success: 'Reset successful',
     modify_cur_pwd: 'You need to log in again after modifying the current user password',
     password_changed_relogin: 'Password changed, please login again',
+    login_invalid_relogin: 'Your session is no longer valid. Please log in again',
     unlock_user: 'Unlock',
     confirm_unlock: 'Are you sure to unlock this user?',
     unlock_user_success: 'Unlocked successfully',

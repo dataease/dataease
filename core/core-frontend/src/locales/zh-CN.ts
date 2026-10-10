@@ -819,6 +819,7 @@ export default {
     reset_success: '重置成功',
     modify_cur_pwd: '修改当前用户密码后需要重新登录',
     password_changed_relogin: '密码变更，请重新登录',
+    login_invalid_relogin: '登录信息已失效，请重新登录',
     unlock_user: '解锁',
     confirm_unlock: '确定解锁该用户吗？',
     unlock_user_success: '解锁成功',
