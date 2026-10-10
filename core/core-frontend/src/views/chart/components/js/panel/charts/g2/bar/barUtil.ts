@@ -656,7 +656,8 @@ function getDimensionGroupName(fields: Partial<ChartViewField>[], item?: any) {
     const itemFields = fields.filter(field => itemFieldIds[`${field.id}`])
     return getFieldDisplayNames(itemFields)
   }
-  return getFieldDisplayNames(fields)
+  // 没有实际维度归属的提示项不使用残留配置生成标题
+  return ''
 }
 
 // 堆叠图使用堆叠字段和扩展维度作为 tooltip 分组
