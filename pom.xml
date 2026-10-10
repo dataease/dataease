@@ -27,7 +27,7 @@
         <spring-boot.version>3.5.15</spring-boot.version>
         <tomcat.version>10.1.55</tomcat.version>
         <logback.version>1.5.34</logback.version>
-        <netty.version>4.1.135.Final</netty.version>
+        <netty.version>4.1.136.Final</netty.version>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <mybatis-plus.version>3.5.7</mybatis-plus.version>
