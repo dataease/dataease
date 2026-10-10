@@ -244,6 +244,14 @@ declare interface ChartBasicStyle {
    */
   scatterSymbolSize: number
   /**
+   * 象限图区间面积映射，缺失时保留旧尺寸算法
+   */
+  quadrantBubble?: {
+    mode: 'auto' | 'custom'
+    min: number
+    max: number
+  }
+  /**
    * 箱线图是否显示异常值点
    */
   showOutliers: boolean
