@@ -1208,6 +1208,15 @@ const onLabelChange = (chartForm: ChartEditorForm<ChartLabelAttr>, prop: string)
   }
 }
 
+const onCenterContentChange = (val: ChartCenterContentAttr, prop: string) => {
+  if (prop) {
+    set(view.value.customAttr.centerContent, prop, get(val, prop))
+  } else {
+    view.value.customAttr.centerContent = val
+  }
+  renderChart(view.value)
+}
+
 const onIndicatorChange = (val, prop) => {
   if (prop === 'color' || prop === 'suffixColor') {
     view.value.customAttr.basicStyle.alpha = undefined
@@ -2182,6 +2191,7 @@ const chartStyleScroll = (val: any) => {
               @onColorChange="onColorChange"
               @onMiscChange="onMiscChange"
               @onLabelChange="onLabelChange"
+              @onCenterContentChange="onCenterContentChange"
               @onTooltipChange="onTooltipChange"
               @onChangeXAxisForm="onChangeXAxisForm"
               @onChangeYAxisForm="onChangeYAxisForm"
@@ -3571,6 +3581,7 @@ const chartStyleScroll = (val: any) => {
                           @onColorChange="onColorChange"
                           @onMiscChange="onMiscChange"
                           @onLabelChange="onLabelChange"
+                          @onCenterContentChange="onCenterContentChange"
                           @onTooltipChange="onTooltipChange"
                           @onChangeXAxisForm="onChangeXAxisForm"
                           @onChangeYAxisForm="onChangeYAxisForm"

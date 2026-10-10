@@ -2,7 +2,7 @@ import { ref, onBeforeUnmount, onMounted } from 'vue'
 import { useCache } from '@/hooks/web/useCache'
 import { useEmitt } from '@/hooks/web/useEmitt'
 
-type Sidebar = 'DATASET' | 'DASHBOARD' | 'DATASOURCE' | 'DATA-FILLING'
+type Sidebar = 'DATASET' | 'DASHBOARD' | 'DATASOURCE' | 'DATA-FILLING' | 'SPREADSHEET'
 
 export const useMoveLine = (type: Sidebar) => {
   const { wsCache } = useCache('localStorage')

@@ -41,6 +41,7 @@ public interface SpreadsheetApi {
     SpreadsheetVO update(@RequestBody SpreadsheetEditor editor);
 
     @Operation(summary = "根据ID查询电子表格")
+    @DePermit({"#p0+':read'"})
     @GetMapping("/get/{id}")
     SpreadsheetVO get(@PathVariable("id") Long id);
 

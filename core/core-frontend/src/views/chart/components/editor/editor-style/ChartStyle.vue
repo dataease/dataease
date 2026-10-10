@@ -3,6 +3,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { PropType, toRefs, nextTick, watch, ref, computed } from 'vue'
 import MiscSelector from '@/views/chart/components/editor/editor-style/components/MiscSelector.vue'
 import LabelSelector from '@/views/chart/components/editor/editor-style/components/LabelSelector.vue'
+import CenterContentSelector from '@/views/chart/components/editor/editor-style/components/CenterContentSelector.vue'
 import TooltipSelector from '@/views/chart/components/editor/editor-style/components/TooltipSelector.vue'
 import XAxisSelector from '@/views/chart/components/editor/editor-style/components/XAxisSelector.vue'
 import YAxisSelector from '@/views/chart/components/editor/editor-style/components/YAxisSelector.vue'
@@ -33,6 +34,8 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import BulletTargetSelector from '@/views/chart/components/editor/editor-style/components/bullet/BulletTargetSelector.vue'
 import BulletMeasureSelector from '@/views/chart/components/editor/editor-style/components/bullet/BulletMeasureSelector.vue'
 import BulletRangeSelector from '@/views/chart/components/editor/editor-style/components/bullet/BulletRangeSelector.vue'
+import { DEFAULT_CENTER_CONTENT } from '@/views/chart/components/editor/util/chart'
+import { cloneDeep, defaultsDeep } from 'lodash-es'
 
 const snapshotStore = snapshotStoreWithOut()
 
@@ -111,6 +114,7 @@ const emit = defineEmits([
   'onColorChange',
   'onMiscChange',
   'onLabelChange',
+  'onCenterContentChange',
   'onTooltipChange',
   'onChangeXAxisForm',
   'onChangeYAxisForm',
@@ -150,6 +154,10 @@ const onMiscChange = (val, prop) => {
 
 const onLabelChange = (val, prop) => {
   state.initReady && emit('onLabelChange', val, prop)
+}
+
+const onCenterContentChange = (val, prop) => {
+  state.initReady && emit('onCenterContentChange', val, prop)
 }
 
 const onTooltipChange = (val, prop) => {
@@ -495,6 +503,22 @@ watch(
                 :chart="chart"
                 :all-fields="props.allFields"
                 @onLabelChange="onLabelChange"
+              />
+            </collapse-switch-item>
+            <collapse-switch-item
+              v-if="showProperties('center-content-selector')"
+              v-model="chart.customAttr.centerContent.show"
+              :themes="themes"
+              :change-model="chart.customAttr.centerContent"
+              :title="t('chart.center_content')"
+              name="centerContent"
+              @modelChange="val => onCenterContentChange(val, 'show')"
+            >
+              <center-content-selector
+                class="attr-selector"
+                :themes="themes"
+                :chart="chart"
+                @onCenterContentChange="onCenterContentChange"
               />
             </collapse-switch-item>
             <collapse-switch-item
