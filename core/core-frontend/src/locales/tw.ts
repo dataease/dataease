@@ -3328,6 +3328,7 @@ export default {
     filter_no_select: '過濾組件無需選擇',
     forbidden_copy: '當前組件不允許複製',
     url_check_error: '跳轉錯誤，URL不合法',
+    url_protocol_not_supported: '外部連結僅支援 HTTP/HTTPS/file 協議，當前協議 {0} 不支援',
     view_style: '圖表樣式',
     view_color_setting: '圖表配色',
     border_color_setting: '邊框配色',

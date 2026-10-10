@@ -3332,6 +3332,7 @@ export default {
     filter_no_select: '过滤组件无需选择',
     forbidden_copy: '当前组件不允许复制',
     url_check_error: '跳转错误，URL不合法',
+    url_protocol_not_supported: '外部链接仅支持 HTTP/HTTPS/file 协议，当前协议 {0} 不支持',
     view_style: '图表样式',
     view_color_setting: '图表配色',
     border_color_setting: '边框配色',

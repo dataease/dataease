@@ -3425,6 +3425,8 @@ export default {
     filter_no_select: 'Filter components do not need to be selected',
     forbidden_copy: 'Copying of the current component is not allowed',
     url_check_error: 'Redirect error, invalid URL',
+    url_protocol_not_supported:
+      'External links only support HTTP/HTTPS/file. The current protocol {0} is not supported.',
     view_style: 'Chart Style',
     view_color_setting: 'Chart Color Setting',
     border_color_setting: 'Border Color Setting',
