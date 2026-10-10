@@ -399,6 +399,7 @@ public class ChartDataServer implements ChartDataApi {
     public static void setExcelData(Sheet detailsSheet, CellStyle cellStyle, Object[] header, List<Object[]> details, ViewDetailField[] detailFields, Integer[] excelTypes, Comment comment, ChartViewDTO viewInfo, Workbook wb, boolean hasSummaryRow) {
         List<CellStyle> styles = new ArrayList<>();
         Map<String, CellStyle> autoFormatterStyles = new HashMap<>();
+        Map<String, CellStyle> numericStyles = new HashMap<>();
         List<ChartViewFieldDTO> exportFields = resolveExportFields(viewInfo, header);
         Workbook styleWorkbook = wb != null ? wb : detailsSheet.getWorkbook();
         TableHeader tableHeader = null;
@@ -567,6 +568,7 @@ public class ChartDataServer implements ChartDataApi {
                                     try {
                                         FormatterCfgDTO formatterCfgDTO = exportFields.get(j).getFormatterCfg() == null ? new FormatterCfgDTO().setUnitLanguage(Lang.isChinese() ? "ch" : "en") : exportFields.get(j).getFormatterCfg();
                                         String exportNumericValue = cellValue(formatterCfgDTO, new BigDecimal(cellValObj.toString()));
+                                        BigDecimal numericValue = new BigDecimal(exportNumericValue);
                                         CellStyle currentStyle = styles.get(j);
                                         if (formatterCfgDTO != null && "auto".equalsIgnoreCase(formatterCfgDTO.getType())) {
                                             currentStyle = autoFormatterStyles.computeIfAbsent(
@@ -577,17 +579,18 @@ public class ChartDataServer implements ChartDataApi {
                                         if (currentStyle != null) {
                                             row.getCell(j).setCellStyle(currentStyle);
                                         } else {
-                                            row.getCell(j).setCellStyle(getNumericCellStyle(styleWorkbook));
+                                            row.getCell(j).setCellStyle(getNumericCellStyle(styleWorkbook, numericValue, numericStyles));
                                         }
-                                        setNumericCellValue(row.getCell(j), new BigDecimal(exportNumericValue));
+                                        setNumericCellValue(row.getCell(j), numericValue);
                                     } catch (Exception e) {
                                         cell.setCellValue(cellValObj.toString());
                                     }
                                 } else {
                                     Integer excelType = getExcelType(j, excelTypes, exportFields, viewInfo);
                                     if ((Objects.equals(excelType, DeTypeConstants.DE_INT) || Objects.equals(excelType, DeTypeConstants.DE_FLOAT)) && StringUtils.isNotEmpty(cellValObj.toString())) {
-                                        cell.setCellStyle(getNumericCellStyle(styleWorkbook));
-                                        setNumericCellValue(cell, new BigDecimal(cellValObj.toString()));
+                                        BigDecimal numericValue = new BigDecimal(cellValObj.toString());
+                                        cell.setCellStyle(getNumericCellStyle(styleWorkbook, numericValue, numericStyles));
+                                        setNumericCellValue(cell, numericValue);
                                     } else if (cellValObj != null) {
                                         cell.setCellValue(cellValObj.toString());
                                     }
@@ -795,12 +798,12 @@ public class ChartDataServer implements ChartDataApi {
         }
     }
 
-    private static final Map<Workbook, CellStyle> NUMERIC_STYLE_CACHE = new HashMap<>();
-
-    private static CellStyle getNumericCellStyle(Workbook workbook) {
-        return NUMERIC_STYLE_CACHE.computeIfAbsent(workbook, wb -> {
-            CellStyle style = wb.createCellStyle();
-            style.setDataFormat(wb.createDataFormat().getFormat("General"));
+    private static CellStyle getNumericCellStyle(Workbook workbook, BigDecimal value, Map<String, CellStyle> numericStyles) {
+        // 默认数值格式按实际小数位生成，避免大数显示为科学计数法；同一导出内复用样式。
+        String numberFormat = buildAutoNumberFormat(value.stripTrailingZeros().toPlainString());
+        return numericStyles.computeIfAbsent(numberFormat, key -> {
+            CellStyle style = workbook.createCellStyle();
+            style.setDataFormat(workbook.createDataFormat().getFormat(key));
             return style;
         });
     }
