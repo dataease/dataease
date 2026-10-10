@@ -10,6 +10,8 @@ import { deepCopy } from '@/utils/utils'
 import { toPng } from 'html-to-image'
 import { domToPng } from 'modern-screenshot'
 import { initCanvasDataPrepare } from '@/utils/canvasUtils'
+import { ElMessage } from 'element-plus-secondary'
+import { useI18n } from '@/hooks/web/useI18n'
 const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData, componentData, canvasViewInfo, canvasViewDataInfo, dvInfo } =
   storeToRefs(dvMainStore)
@@ -43,6 +45,28 @@ function prePareTemplateBaseData(dvId, callback) {
 }
 
 export function download2AppTemplate(downloadType, canvasDom, name, attachParams, callBack?) {
+  const canvasViewDataTemplate = deepCopy(canvasViewInfo.value)
+  Object.keys(canvasViewDataTemplate).forEach(viewId => {
+    canvasViewDataTemplate[viewId].data = deepCopy(canvasViewDataInfo.value[viewId])
+  })
+  const missingDataId = Object.keys(canvasViewDataTemplate).find(viewId => {
+    const view = canvasViewDataTemplate[viewId]
+    const needsData =
+      view.type !== 'VQuery' &&
+      (view.tableId ||
+        (view['dataFrom'] === 'template' && !['rich-text', 'picture-group'].includes(view.type)))
+    return needsData && view.data == null
+  })
+  if (missingDataId) {
+    const { t } = useI18n()
+    ElMessage.warning(
+      t('visualization.template_data_not_ready', [
+        canvasViewDataTemplate[missingDataId].title || missingDataId
+      ])
+    )
+    callBack?.()
+    return
+  }
   try {
     findStaticSource(function (staticResource) {
       waitForResourceImages(canvasDom)
@@ -55,10 +79,6 @@ export function download2AppTemplate(downloadType, canvasDom, name, attachParams
           })
         )
         .then(dataUrl => {
-          const canvasViewDataTemplate = deepCopy(canvasViewInfo.value)
-          Object.keys(canvasViewDataTemplate).forEach(viewId => {
-            canvasViewDataTemplate[viewId].data = canvasViewDataInfo.value[viewId]
-          })
           const templateName = attachParams?.appName ? attachParams.appName : name
           if (dataUrl !== '') {
             prePareTemplateBaseData(

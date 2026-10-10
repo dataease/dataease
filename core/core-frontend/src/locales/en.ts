@@ -3535,6 +3535,8 @@ export default {
     hidden: 'Hidden',
     cancel_hidden: 'Cancel Hidden',
     template_view_tips: 'This is currently a template chart. Please replace the dataset...',
+    template_data_not_ready:
+      'Data for chart "{0}" is not ready. Wait for loading to finish before exporting. If loading failed, refresh and retry.',
     download: 'Download',
     refresh: 'Refresh',
     head_font_color: 'Header Font Color',
