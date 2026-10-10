@@ -3317,6 +3317,8 @@ export default {
     hidden: '隱藏',
     cancel_hidden: '取消隱藏',
     template_view_tips: '當前為模板圖表，請更換數據集...',
+    template_data_not_ready:
+      '圖表「{0}」的數據尚未就緒，無法匯出。請等待載入完成；若載入失敗，請重新整理後重試。',
     download: '下載',
     refresh: '刷新',
     head_font_color: '頭部字體顏色',

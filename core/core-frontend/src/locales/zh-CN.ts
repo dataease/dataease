@@ -3322,6 +3322,8 @@ export default {
     hidden: '隐藏',
     cancel_hidden: '取消隐藏',
     template_view_tips: '当前为模板图表，请更换数据集...',
+    template_data_not_ready:
+      '图表「{0}」的数据尚未就绪，无法导出。请等待加载完成；若加载失败，请刷新后重试。',
     download: '下载',
     refresh: '刷新',
     head_font_color: '头部字体颜色',
