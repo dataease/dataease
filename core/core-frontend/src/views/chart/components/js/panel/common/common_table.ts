@@ -1,4 +1,5 @@
 import { tableImageUrl, TABLE_IMAGE_PLACEHOLDER } from './tableImage'
+import { appliesToTableScope, getTableConditionScope } from './tableConditionScope'
 /* eslint-disable prettier/prettier */
 import {
   copyString,
@@ -1061,12 +1062,15 @@ export function getPivotConditions(chart: Chart, pivotData: Record<string, any>[
       mapping(value, rowData, cell) {
         if (rowData?.cornerType) return null
         const totalStyle = getPivotGrandTotalStyle(cell, tableTotal, basicStyle.alpha)
-        let fallbackColor = rules.length ? defaultValueColor : null
+        const scope = getTableConditionScope(cell, cell?.spreadsheet?.facet)
+        const cellRules = rules.filter(item => appliesToTableScope(item.rule, scope))
+        if (!cellRules.length) return totalStyle.text ?? null
+        let fallbackColor = defaultValueColor
         if (totalStyle.text) fallbackColor = totalStyle.text.fill
         const fill = mappingRulesColor(
           value,
           fallbackColor,
-          rules,
+          cellRules,
           'color',
           filedValueMap,
           rowData,
@@ -1087,12 +1091,17 @@ export function getPivotConditions(chart: Chart, pivotData: Record<string, any>[
       mapping(value, rowData, cell) {
         if (rowData?.cornerType) return null
         const totalStyle = getPivotGrandTotalStyle(cell, tableTotal, basicStyle.alpha)
-        let fallbackColor = rules.length ? defaultBgColor : null
+        const scope = getTableConditionScope(cell, cell?.spreadsheet?.facet)
+        const cellRules = rules.filter(item => appliesToTableScope(item.rule, scope))
+        if (!cellRules.length) {
+          return totalStyle.backgroundColor ? { fill: totalStyle.backgroundColor } : null
+        }
+        let fallbackColor = defaultBgColor
         if (totalStyle.backgroundColor) fallbackColor = totalStyle.backgroundColor
         let fill = mappingRulesColor(
           value,
           fallbackColor,
-          rules,
+          cellRules,
           'backgroundColor',
           filedValueMap,
           rowData,
