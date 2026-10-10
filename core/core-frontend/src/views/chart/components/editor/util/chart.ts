@@ -556,6 +556,7 @@ export const DEFAULT_TABLE_HEADER: ChartTableHeaderAttr = {
     columns: []
   },
   rowHeaderFreeze: true,
+  showSingleQuotaName: true,
   alignConfig: []
 }
 export const DEFAULT_TABLE_CELL: ChartTableCellAttr = {

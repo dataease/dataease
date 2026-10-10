@@ -2286,6 +2286,7 @@ export default {
     total_custom_font: '自定义字体',
     table_field_total_label: '字段别名',
     table_row_header_freeze: '行头冻结',
+    table_show_single_quota_name: '显示单指标名称',
     value_formatter_total_out_percent: '显示占比',
     enable_slider_tip: '开启缩略轴后，轮播提示将会失效',
     liquid_show_border: '显示边框',
