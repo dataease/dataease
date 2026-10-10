@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import QuadrantBubbleSize from './QuadrantBubbleSize.vue'
 import { computed, onMounted, PropType, reactive, watch, ref } from 'vue'
 import {
   COLOR_PANEL,
@@ -77,6 +78,13 @@ const state = reactive({
   treeRowWidth: DEFAULT_BASIC_STYLE.tableRowHeaderWidth
 })
 const emit = defineEmits(['onBasicStyleChange', 'onMiscChange'])
+const quadrantBubbleBound = computed(
+  () => props.chart.type === 'quadrant' && !!props.chart.extBubble?.length
+)
+const changeQuadrantBubble = (config: ChartBasicStyle['quadrantBubble']) => {
+  state.basicStyleForm.quadrantBubble = config
+  changeBasicStyle('quadrantBubble')
+}
 const changeBasicStyle = (prop?: string, requestData = false, render = true) => {
   emit('onBasicStyleChange', { data: state.basicStyleForm, requestData, render }, prop)
 }
@@ -1487,17 +1495,23 @@ onMounted(() => {
       :label="t('chart.bubble_size')"
       class="form-item form-item-slider"
       :class="'form-item-' + themes"
-      v-if="showProperty('scatterSymbolSize')"
+      v-if="showProperty('scatterSymbolSize') && !quadrantBubbleBound"
     >
       <el-input-number
         :effect="themes"
         v-model="state.basicStyleForm.scatterSymbolSize"
         controls-position="right"
         :min="1"
-        :max="40"
+        :max="chart.type === 'quadrant' ? 100 : 40"
         @change="changeBasicStyle('scatterSymbolSize')"
       />
     </el-form-item>
+    <QuadrantBubbleSize
+      v-if="quadrantBubbleBound && showProperty('scatterSymbolSize')"
+      :config="state.basicStyleForm.quadrantBubble"
+      :themes="themes"
+      @change="changeQuadrantBubble"
+    />
     <!--scatter end-->
 
     <!--symbol map start-->
