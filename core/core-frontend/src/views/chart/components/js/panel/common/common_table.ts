@@ -1984,7 +1984,8 @@ export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
   const layoutResult = instance.facet.getLayoutResult()
   const {meta, fields} = instance.dataCfg
   const rowLength = fields?.rows?.length || 0
-  const colLength = fields?.columns?.length || 0
+  // 隐藏单指标后，导出偏移以实际表头层级为准；无列头时仍保留行维度标题。
+  const colLength = Math.max(layoutResult.colsHierarchy.maxLevel, 0)
   const colNums = layoutResult.colLeafNodes.length + rowLength
   if (colNums > 16384) {
     ElMessage.warning(i18nt('chart.pivot_export_invalid_col_exceed'))
@@ -2000,6 +2001,9 @@ export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
   }, {})
   // 角头
   fields.columns?.forEach((column, index) => {
+    if (index >= colLength) {
+      return
+    }
     const cell = worksheet.getCell(index + 1, 1)
     cell.value = metaMap[column]?.name ?? column
     cell.alignment = {vertical: 'middle', horizontal: 'center'}
@@ -2077,8 +2081,8 @@ export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
   })
 
   // 列头
-  const {colLeafNodes, colNodes, colsHierarchy} = layoutResult
-  const maxColHeight = colsHierarchy.maxLevel + 1
+  const {colLeafNodes, colNodes} = layoutResult
+  const maxColHeight = colLength + 1
   const notLeafNodeWidthMap: Record<string, number> = {}
   colLeafNodes.forEach(node => {
     // 列头的宽度由子节点相加决定，也就是列头子节点中包含的叶子节点数量
@@ -2367,7 +2371,7 @@ export async function exportTreePivot(instance: PivotSheet, chart: ChartObj) {
     return
   }
   const {meta, fields} = instance.dataCfg
-  const colLength = fields?.columns?.length || 0
+  const colLength = Math.max(layoutResult.colsHierarchy.maxLevel, 0)
   const workbook = new Exceljs.Workbook()
   const worksheet = workbook.addWorksheet(i18nt('chart.chart_data'))
   const metaMap: Record<string, Meta> = meta?.reduce((p, n) => {
@@ -2379,6 +2383,9 @@ export async function exportTreePivot(instance: PivotSheet, chart: ChartObj) {
 
   // 角头
   fields.columns?.forEach((column, index) => {
+    if (index >= colLength) {
+      return
+    }
     const cell = worksheet.getCell(index + 1, 1)
     cell.value = metaMap[column]?.name ?? column
     cell.alignment = {vertical: 'middle', horizontal: 'center'}
@@ -2386,7 +2393,7 @@ export async function exportTreePivot(instance: PivotSheet, chart: ChartObj) {
       right: {style: 'thick', color: {argb: '00000000'}}
     }
   })
-  const maxColHeight = layoutResult.colsHierarchy.maxLevel + 1
+  const maxColHeight = colLength + 1
   const rowName = fields?.rows?.map(row => metaMap[row]?.name ?? row).join('/')
   const cell = worksheet.getCell(colLength + 1, 1)
   cell.value = rowName
@@ -2761,14 +2768,17 @@ export async function exportPivotExcel(instance: PivotSheet, chart: ChartObj) {
     return
   }
   const { quotaPosition } = chart.customAttr.basicStyle
+  const hideSingleQuotaName =
+    valueLength === 1 && chart.customAttr.tableHeader.showSingleQuotaName === false
+  // 单指标行头隐藏后不再有指标名称列/子行，复用按可见维度导出的布局。
   if (chart.customAttr.basicStyle.tableLayoutMode !== 'tree') {
-    if (quotaPosition === 'row') {
+    if (quotaPosition === 'row' && !hideSingleQuotaName) {
       exportRowQuotaGridPivot(instance, chart)
     } else {
       exportGridPivot(instance, chart)
     }
   } else {
-    if (quotaPosition === 'row') {
+    if (quotaPosition === 'row' && !hideSingleQuotaName) {
       exportRowQuotaTreePivot(instance, chart)
     } else {
       exportTreePivot(instance, chart)

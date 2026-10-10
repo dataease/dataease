@@ -950,6 +950,20 @@ onMounted(() => {
       </el-checkbox>
     </el-form-item>
     <el-form-item
+      class="form-item"
+      :class="'form-item-' + themes"
+      v-if="showProperty('showSingleQuotaName')"
+    >
+      <el-checkbox
+        size="small"
+        :effect="themes"
+        v-model="state.tableHeaderForm.showSingleQuotaName"
+        @change="changeTableHeader('showSingleQuotaName')"
+      >
+        {{ t('chart.table_show_single_quota_name') }}
+      </el-checkbox>
+    </el-form-item>
+    <el-form-item
       v-if="!batchOptStatus && showProperty('headerGroup')"
       class="form-item"
       :class="'form-item-' + themes"

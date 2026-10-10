@@ -604,6 +604,10 @@ declare interface ChartTableHeaderAttr {
    */
   rowHeaderFreeze: boolean
   /**
+   * 透视表显示单指标名称
+   */
+  showSingleQuotaName: boolean
+  /**
    * 字段级表头对齐设置
    */
   alignConfig: {
