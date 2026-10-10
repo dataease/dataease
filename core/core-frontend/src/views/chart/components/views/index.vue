@@ -43,7 +43,7 @@ import ChartComponentS2 from '@/views/chart/components/views/components/ChartCom
 import { ChartLibraryType } from '@/views/chart/components/js/panel/types'
 import chartViewManager from '@/views/chart/components/js/panel'
 import { storeToRefs } from 'pinia'
-import { checkAddHttp, setIdValueTrans } from '@/utils/canvasUtils'
+import { normalizeExternalLinkUrl, setIdValueTrans } from '@/utils/canvasUtils'
 import { sanitizeHtml } from '@/utils/utils'
 import { Base64 } from 'js-base64'
 import DeRichTextView from '@/custom-component/rich-text/DeRichTextView.vue'
@@ -624,7 +624,18 @@ const jumpClick = param => {
     } else {
       const colList = [...param.dimensionList, ...param.quotaList]
       let url = setIdValueTrans('id', 'value', jumpInfo.content, colList)
-      url = checkAddHttp(url)
+      const urlCheckResult = normalizeExternalLinkUrl(url)
+      if (!urlCheckResult.valid) {
+        if (urlCheckResult.status === 'unsupportedProtocol') {
+          ElMessage.warning(
+            t('visualization.url_protocol_not_supported', [`${urlCheckResult.protocol}:`])
+          )
+        } else {
+          ElMessage.warning(t('visualization.url_check_error'))
+        }
+        return
+      }
+      url = urlCheckResult.url
 
       if (isIframe.value || isDataEaseBi.value) {
         embeddedStore.clearState()

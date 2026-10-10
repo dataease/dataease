@@ -908,14 +908,95 @@ export async function canvasSaveWithParams(params, callBack) {
   })
 }
 
-export function checkAddHttp(url) {
-  if (!url) {
-    return url
-  } else if (/^(http(s)?:\/\/)/.test(url.toLowerCase())) {
-    return url
-  } else {
-    return 'http://' + url
+const httpUrlReg = /^https?:\/\//i
+const fileUrlReg = /^file:\/\//i
+const urlProtocolReg = /^([a-z][a-z0-9+.-]*):/i
+const hostPortWithoutProtocolReg = /^(?:\[[^\]]+\]|[^/?#\s:]+):\d+(?:[/?#]|$)/
+
+export type ExternalLinkUrlStatus = 'valid' | 'empty' | 'unsupportedProtocol' | 'invalid'
+
+export interface ExternalLinkUrlResult {
+  valid: boolean
+  url: string
+  status: ExternalLinkUrlStatus
+  protocol?: string
+}
+
+const isValidHttpUrl = url => {
+  try {
+    const parsedUrl = new URL(url)
+    return /^https?:$/.test(parsedUrl.protocol) && !!parsedUrl.hostname
+  } catch {
+    return false
   }
+}
+
+const isValidFileUrl = url => {
+  try {
+    const parsedUrl = new URL(url)
+    return parsedUrl.protocol === 'file:'
+  } catch {
+    return false
+  }
+}
+
+const getUrlProtocol = url => {
+  if (hostPortWithoutProtocolReg.test(url)) {
+    return ''
+  }
+  return url.match(urlProtocolReg)?.[1]?.toLowerCase() || ''
+}
+
+export function normalizeExternalLinkUrl(url): ExternalLinkUrlResult {
+  const rawUrl = `${url ?? ''}`.trim()
+  if (!rawUrl) {
+    return {
+      valid: false,
+      url: rawUrl,
+      status: 'empty'
+    }
+  }
+
+  if (httpUrlReg.test(rawUrl)) {
+    const valid = isValidHttpUrl(rawUrl)
+    return {
+      valid,
+      url: rawUrl,
+      status: valid ? 'valid' : 'invalid'
+    }
+  }
+
+  if (fileUrlReg.test(rawUrl)) {
+    const valid = isValidFileUrl(rawUrl)
+    return {
+      valid,
+      url: rawUrl,
+      status: valid ? 'valid' : 'invalid'
+    }
+  }
+
+  const protocol = getUrlProtocol(rawUrl)
+  if (protocol) {
+    return {
+      valid: false,
+      url: rawUrl,
+      status: ['http', 'https', 'file'].includes(protocol) ? 'invalid' : 'unsupportedProtocol',
+      protocol
+    }
+  }
+
+  const normalizedUrl = rawUrl.startsWith('//') ? `http:${rawUrl}` : `http://${rawUrl}`
+  const valid = isValidHttpUrl(normalizedUrl)
+  return {
+    valid,
+    url: valid ? normalizedUrl : rawUrl,
+    status: valid ? 'valid' : 'invalid'
+  }
+}
+
+export function checkAddHttp(url) {
+  const result = normalizeExternalLinkUrl(url)
+  return result.valid ? result.url : url
 }
 
 export function setIdValueTrans(from, to, content, colList) {
