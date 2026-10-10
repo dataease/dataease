@@ -142,6 +142,10 @@ const showLoginErrorMsg = () => {
   if (!loginErrorMsg.value) {
     return
   }
+  if (loginErrorMsg.value.toLowerCase() === 'invalid token') {
+    ElMessage.error(t('user.login_invalid_relogin'))
+    return
+  }
   if (loginErrorMsg.value.includes('pwd has been changed')) {
     ElMessage.error(t('user.password_changed_relogin'))
     return
