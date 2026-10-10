@@ -5,6 +5,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
 import { DEFAULT_THRESHOLD } from '@/views/chart/components/editor/util/chart'
 import TableThresholdEdit from '@/views/chart/components/editor/editor-senior/components/dialog/TableThresholdEdit.vue'
+import { getTableConditionScopes } from '@/views/chart/components/js/panel/common/tableConditionScope'
 import TextLabelThresholdEdit from '@/views/chart/components/editor/editor-senior/components/dialog/TextLabelThresholdEdit.vue'
 import TextThresholdEdit from '@/views/chart/components/editor/editor-senior/components/dialog/TextThresholdEdit.vue'
 import LineThresholdEdit from '@/views/chart/components/editor/editor-senior/components/dialog/LineThresholdEdit.vue'
@@ -192,6 +193,15 @@ const changeTableThreshold = () => {
     }
     for (let j = 0; j < field.conditions.length; j++) {
       const ele = field.conditions[j]
+      const scopes = getTableConditionScopes(props.chart.type)
+      if (
+        scopes.length &&
+        ele.applyTo != null &&
+        !scopes.some(scope => ele.applyTo.includes(scope))
+      ) {
+        ElMessage.error(t('chart.condition_scope_required'))
+        return
+      }
       if (props.chart.type === 'picture-group' && !ele.url) {
         ElMessage.error(t('visualization.img_can_not_null'))
         return

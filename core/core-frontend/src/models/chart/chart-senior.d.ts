@@ -176,10 +176,14 @@ declare interface TableThreshold {
    */
   conditions: Threshold[]
 }
+declare type TableConditionScope = 'detail' | 'subtotal' | 'total'
+
 /**
  * 阈值
  */
 declare interface Threshold {
+  /** 表格条件样式应用范围；缺省保持历史行为。 */
+  applyTo?: TableConditionScope[]
   /**
    * 最小值
    */
