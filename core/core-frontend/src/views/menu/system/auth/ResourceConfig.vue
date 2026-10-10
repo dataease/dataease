@@ -44,7 +44,12 @@ import {
   isRoleCheckboxHidden
 } from './options'
 import DynamicResourceColumn from './DynamicResourceColumn.vue'
-import { flattenPermissionRows, permissionTreeConfig, resetPermissionRows } from './permissionTable'
+import {
+  flattenPermissionRows,
+  permissionTreeConfig,
+  permissionVirtualYConfig,
+  resetPermissionRows
+} from './permissionTable'
 import {
   resourceTreeApi,
   resourcePermissionApi,
@@ -1245,7 +1250,7 @@ defineExpose({
             show-overflow="title"
             :column-config="{ resizable: true }"
             :row-config="{ keyField: 'authRowKey' }"
-            :virtual-y-config="{ enabled: true, gt: 0 }"
+            :virtual-y-config="permissionVirtualYConfig"
             :tree-config="{ ...permissionTreeConfig, expandAll: true }"
             class="table-container ed-table--border"
             :data="tableRows"

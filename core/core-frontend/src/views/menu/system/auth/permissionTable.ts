@@ -7,6 +7,15 @@ export interface PermissionTreeRow {
   authParentKey?: string | null
 }
 
+// Update the visible range immediately, with a small buffer for continuous scrolling.
+export const permissionVirtualYConfig = {
+  enabled: true,
+  gt: 0,
+  immediate: true,
+  preSize: 1,
+  oSize: 2
+}
+
 // VXE builds its own tree without modifying the children used by permission cascading.
 export const permissionTreeConfig = {
   transform: true,

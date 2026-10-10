@@ -30,6 +30,8 @@
       title=""
       :width="200"
       trigger="hover"
+      :persistent="popoverOpened"
+      @before-enter="popoverOpened = true"
     >
       <template #reference>
         <el-checkbox
@@ -103,6 +105,8 @@ defineProps({
 })
 const { t } = useI18n();
 const roleChecked = ref(true);
+// Create the content on first hover, then retain it across subsequent opens.
+const popoverOpened = ref(false)
 
 const emits = defineEmits(['independentAuth', 'rowWeightChanged'])
 const independentAuth = (row, level) => {

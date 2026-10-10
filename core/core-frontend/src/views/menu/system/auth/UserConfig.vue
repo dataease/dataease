@@ -43,6 +43,7 @@ import {
   flattenPermissionRows,
   permissionAncestorIds,
   permissionTreeConfig,
+  permissionVirtualYConfig,
   resetPermissionRows
 } from './permissionTable'
 
@@ -1260,7 +1261,7 @@ defineExpose({
           show-overflow="title"
           :column-config="{ resizable: true }"
           :row-config="{ keyField: 'authRowKey' }"
-          :virtual-y-config="{ enabled: true, gt: 0 }"
+          :virtual-y-config="permissionVirtualYConfig"
           :tree-config="permissionTreeConfig"
           class="table-container ed-table--border"
           v-if="!emptyDescription"
