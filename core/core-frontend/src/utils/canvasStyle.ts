@@ -155,7 +155,12 @@ export const customAttrTrans = {
     seriesTooltipFormatter: ['fontSize']
   },
   indicator: ['fontSize', 'suffixFontSize'],
-  indicatorName: ['fontSize', 'nameValueSpacing']
+  indicatorName: ['fontSize', 'nameValueSpacing'],
+  centerContent: {
+    titleStyle: ['fontSize', 'letterSpace'],
+    contentStyle: ['fontSize', 'letterSpace'],
+    suffixStyle: ['fontSize', 'letterSpace']
+  }
 }
 export const customStyleTrans = {
   text: ['fontSize'],
@@ -296,6 +301,11 @@ export const THEME_STYLE_TRANS_SLAVE1 = {
 }
 
 export const THEME_ATTR_TRANS_MAIN = {
+  centerContent: {
+    titleStyle: ['color'],
+    contentStyle: ['color'],
+    suffixStyle: ['color']
+  },
   basicStyle: {
     themeContrastColor: 'color'
   },
@@ -507,6 +517,14 @@ export function adaptTitleFontFamily(fontFamily, viewInfo) {
       viewInfo.customAttr['indicator']['fontFamily'] = fontFamily
       viewInfo.customAttr['indicator']['suffixFontFamily'] = fontFamily
       viewInfo.customAttr['indicatorName']['fontFamily'] = fontFamily
+    }
+    if (viewInfo.type === 'pie-donut' && viewInfo.customAttr.centerContent) {
+      const { titleStyle, contentStyle, suffixStyle } = viewInfo.customAttr.centerContent
+      for (const textStyle of [titleStyle, contentStyle, suffixStyle]) {
+        if (textStyle) {
+          textStyle.fontFamily = fontFamily
+        }
+      }
     }
   }
 }

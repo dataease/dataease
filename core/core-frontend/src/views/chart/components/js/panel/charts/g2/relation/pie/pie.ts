@@ -24,6 +24,11 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { cloneDeep, defaultsDeep, isEmpty } from 'lodash-es'
 import { Chart as G2Chart, G2Spec } from '@antv/g2'
+import { Circle, Group, Text, type TextStyleProps } from '@antv/g'
+import {
+  CHART_FONT_FAMILY_MAP,
+  DEFAULT_CENTER_CONTENT
+} from '@/views/chart/components/editor/util/chart'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 import { createTooltipWrapper, getThemeSelectedState, tooltipCss } from '../../bar/barUtil'
 
@@ -364,11 +369,236 @@ export class Pie extends G2ChartView {
 }
 
 export class PieDonut extends Pie {
+  properties: EditorProperty[] = [...PIE_EDITOR_PROPERTY, 'center-content-selector']
   propertyInner: EditorPropertyInner = {
     ...PIE_EDITOR_PROPERTY_INNER,
     'basic-style-selector': ['colors', 'alpha', 'radius', 'innerRadius', 'topN', 'seriesColor'],
-    'tooltip-selector': [...PIE_EDITOR_PROPERTY_INNER['tooltip-selector'], 'carousel']
+    'tooltip-selector': [...PIE_EDITOR_PROPERTY_INNER['tooltip-selector'], 'carousel'],
+    'center-content-selector': ['all']
   }
+
+  async drawChart(drawOptions: G2DrawOptions<G2Chart>): Promise<G2Chart> {
+    const { chart } = drawOptions
+    const { centerContent, basicStyle } = parseJson(chart.customAttr)
+    const config = defaultsDeep(cloneDeep(centerContent || {}), cloneDeep(DEFAULT_CENTER_CONTENT))
+    // 父类会原地合并 TopN，中心统计必须先读取完整的分类指标值。
+    const content = this.getCenterContent(chart, config)
+    const instance = await super.drawChart(drawOptions)
+    if (!instance || !config.show || basicStyle.innerRadius <= 0) {
+      return instance
+    }
+    const customStyle = parseJson(chart.customStyle)
+    let fontFamily = chart.fontFamily || customStyle.text?.fontFamily || 'sans-serif'
+    fontFamily = CHART_FONT_FAMILY_MAP[fontFamily] || fontFamily
+    let centerGroup: Group | undefined
+    const clearCenterContent = () => {
+      if (centerGroup) {
+        centerGroup.style.clipPath?.destroy()
+        centerGroup.destroy()
+        centerGroup = undefined
+      }
+    }
+    instance.on('afterrender', () => {
+      // 重绘和自适应尺寸都重新定位，旧图元随组销毁，避免中心文本叠加。
+      clearCenterContent()
+      const { canvas, views } = instance.getContext()
+      const view = views?.[0]
+      const plot = canvas?.document.querySelector('.plot')
+      if (!view || !plot) {
+        return
+      }
+      const [x, y] = view.coordinate.getCenter()
+      const [width, height] = view.coordinate.getSize()
+      const radius = (Math.min(width, height) / 2) * (basicStyle.innerRadius / 100)
+      if (radius <= 0) {
+        return
+      }
+      const clip = new Circle({ style: { cx: 0, cy: 0, r: radius } })
+      centerGroup = new Group({
+        style: {
+          transform: `translate(${x}, ${y})`,
+          pointerEvents: 'none',
+          zIndex: 1,
+          clipPath: clip
+        }
+      })
+      plot.appendChild(centerGroup)
+      // G 的独立裁剪图元使用世界坐标，必须同步环心以及绘图区的平移。
+      clip.setLocalTransform(centerGroup.getWorldTransform())
+      this.drawCenterContent(centerGroup, config, content, fontFamily, radius)
+    })
+    instance.on('beforedestroy', clearCenterContent)
+    return instance
+  }
+
+  private getCenterContent(chart: Chart, config: ChartCenterContentAttr): string {
+    if (!config.show) {
+      return ''
+    }
+    const data = chart.data?.data || []
+    if (config.contentType === 'count') {
+      // 分类数始终是原始分类条数，不参与指标单位换算和小数格式化。
+      return String(data.length)
+    }
+    if (config.contentType === 'custom') {
+      return config.content.slice(0, 50)
+    }
+    let total = 0
+    let count = 0
+    let max = -Infinity
+    let min = Infinity
+    data.forEach(item => {
+      if (item.value === null || item.value === undefined) {
+        return
+      }
+      const value = Number(item.value)
+      if (!Number.isFinite(value)) {
+        return
+      }
+      total += value
+      count++
+      max = Math.max(max, value)
+      min = Math.min(min, value)
+    })
+    if (!count) {
+      return ''
+    }
+    let value = total
+    if (config.contentType === 'avg') {
+      value = total / count
+    } else if (config.contentType === 'max') {
+      value = max
+    } else if (config.contentType === 'min') {
+      value = min
+    }
+    let formatter = config.formatter
+    if (config.formatterMode === 'quota') {
+      formatter = defaultsDeep(cloneDeep(chart.yAxis?.[0]?.formatterCfg || {}), config.formatter)
+    }
+    return String(valueFormatter(value, cloneDeep(formatter)))
+  }
+
+  private drawCenterContent(
+    group: Group,
+    config: ChartCenterContentAttr,
+    content: string,
+    fontFamily: string,
+    radius: number
+  ): void {
+    const title = config.title.trim().slice(0, 50)
+    const suffix = config.suffixEnable ? config.suffix : ''
+    const hasContent = Boolean(content || suffix)
+    const titleHeight = title ? config.titleStyle.fontSize * 1.2 : 0
+    let contentHeight = 0
+    if (content) {
+      contentHeight = config.contentStyle.fontSize * 1.2
+    }
+    if (suffix) {
+      contentHeight = Math.max(contentHeight, config.suffixStyle.fontSize * 1.2)
+    }
+    const gap = title && hasContent ? 4 : 0
+    const totalHeight = titleHeight + contentHeight + gap
+    let titleY = -totalHeight / 2 + titleHeight / 2
+    let contentY = totalHeight / 2 - contentHeight / 2
+    if (config.titlePosition === 'bottom') {
+      titleY = totalHeight / 2 - titleHeight / 2
+      contentY = -totalHeight / 2 + contentHeight / 2
+    }
+    // 按每行在内孔中的弦长限宽，长文本省略，圆形裁剪避免大字号覆盖环形扇区。
+    const getLineWidth = (lineY: number, lineHeight: number) => {
+      const edgeY = Math.abs(lineY) + lineHeight / 2
+      return Math.max(1, 2 * Math.sqrt(Math.max(0, radius * radius - edgeY * edgeY)) - 8)
+    }
+    const textStyle = (style: ChartCenterContentTextStyle): Omit<TextStyleProps, 'text'> => ({
+      fontFamily: CHART_FONT_FAMILY_MAP[style.fontFamily] || style.fontFamily || fontFamily,
+      letterSpacing: style.letterSpace,
+      fontSize: style.fontSize,
+      fill: style.color,
+      fontWeight: style.isBolder ? 'bold' : 'normal',
+      fontStyle: style.isItalic ? 'italic' : 'normal',
+      textAlign: 'left',
+      textBaseline: 'middle',
+      wordWrap: true,
+      maxLines: 1,
+      textOverflow: 'ellipsis',
+      pointerEvents: 'none',
+      shadowColor: style.fontShadow ? style.color : 'transparent',
+      shadowBlur: style.fontShadow ? 4 : 0,
+      shadowOffsetX: style.fontShadow ? 2 : 0,
+      shadowOffsetY: style.fontShadow ? 2 : 0
+    })
+    if (title) {
+      group.appendChild(
+        new Text({
+          style: {
+            ...textStyle(config.titleStyle),
+            text: title,
+            x: 0,
+            y: titleY,
+            textAlign: 'center',
+            wordWrapWidth: getLineWidth(titleY, titleHeight)
+          }
+        })
+      )
+    }
+    const lineWidth = getLineWidth(contentY, contentHeight)
+    // 内容与后缀共用底边，绘制后再补偿各自字形与字体基线之间的留白。
+    const contentBottom = contentY + contentHeight / 2
+    let suffixText: Text | undefined
+    let suffixWidth = 0
+    if (suffix) {
+      suffixText = new Text({
+        style: {
+          ...textStyle(config.suffixStyle),
+          text: suffix,
+          y: contentBottom,
+          textBaseline: 'ideographic',
+          wordWrapWidth: lineWidth
+        }
+      })
+      group.appendChild(suffixText)
+      suffixWidth = suffixText.getBBox().width
+    }
+    let contentText: Text | undefined
+    let contentWidth = 0
+    if (content) {
+      contentText = new Text({
+        style: {
+          ...textStyle(config.contentStyle),
+          text: content,
+          y: contentBottom,
+          textBaseline: 'ideographic',
+          wordWrapWidth: Math.max(1, lineWidth - suffixWidth)
+        }
+      })
+      group.appendChild(contentText)
+      contentWidth = contentText.getBBox().width
+    }
+    const lineStart = -(contentWidth + suffixWidth) / 2
+    if (contentText) {
+      contentText.style.x = lineStart
+    }
+    if (suffixText) {
+      suffixText.style.x = lineStart + contentWidth
+    }
+    const measureContext = document.createElement('canvas').getContext('2d')
+    if (measureContext) {
+      // 使用原生表意基线避开 G 对 bottom 的模拟，并按实际字形底边对齐数字和中文。
+      measureContext.textBaseline = 'ideographic'
+      for (const text of [contentText, suffixText]) {
+        const metrics = text?.parsedStyle.metrics
+        if (!text || !metrics) {
+          continue
+        }
+        measureContext.font = metrics.font
+        const descent = measureContext.measureText(metrics.lines[0] || '').actualBoundingBoxDescent
+        if (Number.isFinite(descent)) {
+          text.style.y = contentBottom - descent
+        }
+      }
+    }
+  }
+
   protected configBasicStyle(chart: Chart, options: G2Spec): G2Spec {
     const tmp = super.configBasicStyle(chart, options)
     const { basicStyle } = parseJson(chart.customAttr)

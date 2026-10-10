@@ -26,6 +26,8 @@ declare interface ChartAttr {
    * 标签设置
    */
   label: ChartLabelAttr
+  /** 环形图中心内容，与标签和提示独立配置 */
+  centerContent: ChartCenterContentAttr
   /**
    * 提示设置
    */
@@ -46,6 +48,26 @@ declare interface ChartAttr {
    * 指标名称
    */
   indicatorName: ChartIndicatorNameStyle
+}
+
+declare type ChartCenterContentTextStyle = Pick<
+  ChartIndicatorStyle,
+  'fontSize' | 'color' | 'isItalic' | 'isBolder' | 'fontShadow' | 'fontFamily' | 'letterSpace'
+>
+
+declare interface ChartCenterContentAttr {
+  show: boolean
+  title: string
+  titlePosition: 'top' | 'bottom'
+  titleStyle: ChartCenterContentTextStyle
+  contentType: 'sum' | 'avg' | 'max' | 'min' | 'count' | 'custom'
+  content: string
+  contentStyle: ChartCenterContentTextStyle
+  formatterMode: 'quota' | 'custom'
+  formatter: BaseFormatter
+  suffixEnable: boolean
+  suffix: string
+  suffixStyle: ChartCenterContentTextStyle
 }
 /**
  * 基础样式设置

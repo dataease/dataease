@@ -65,6 +65,11 @@ export const DEFAULT_COLOR_CASE: DeepPartial<ChartAttr> = {
     color: '#000000',
     fontSize: 12
   },
+  centerContent: {
+    titleStyle: { color: '#000000' },
+    contentStyle: { color: '#000000' },
+    suffixStyle: { color: '#000000' }
+  },
   tooltip: {
     color: '#000000',
     fontSize: 12,
@@ -127,6 +132,11 @@ export const DEFAULT_COLOR_CASE_LIGHT: DeepPartial<ChartAttr> = {
     color: '#000000',
     fontSize: 12
   },
+  centerContent: {
+    titleStyle: { color: '#000000' },
+    contentStyle: { color: '#000000' },
+    suffixStyle: { color: '#000000' }
+  },
   tooltip: {
     color: '#000000',
     fontSize: 12,
@@ -187,6 +197,11 @@ export const DEFAULT_COLOR_CASE_DARK: DeepPartial<ChartAttr> = {
   label: {
     color: '#FFFFFF',
     fontSize: 12
+  },
+  centerContent: {
+    titleStyle: { color: '#FFFFFF' },
+    contentStyle: { color: '#FFFFFF' },
+    suffixStyle: { color: '#FFFFFF' }
   },
   tooltip: {
     color: '#FFFFFF',
@@ -611,6 +626,45 @@ export const DEFAULT_INDICATOR_NAME_STYLE: ChartIndicatorNameStyle = {
   fontShadow: false,
   nameValueSpacing: 0,
   namePosition: 'bottom'
+}
+
+export const DEFAULT_CENTER_CONTENT: ChartCenterContentAttr = {
+  show: false,
+  title: '',
+  titlePosition: 'top',
+  titleStyle: {
+    fontSize: 14,
+    color: '#ffffff',
+    isItalic: false,
+    isBolder: false,
+    fontShadow: false,
+    fontFamily: DEFAULT_INDICATOR_STYLE.fontFamily,
+    letterSpace: DEFAULT_INDICATOR_STYLE.letterSpace
+  },
+  contentType: 'sum',
+  content: '',
+  contentStyle: {
+    fontSize: 20,
+    color: '#ffffff',
+    isItalic: false,
+    isBolder: true,
+    fontShadow: false,
+    fontFamily: DEFAULT_INDICATOR_STYLE.fontFamily,
+    letterSpace: DEFAULT_INDICATOR_STYLE.letterSpace
+  },
+  formatterMode: 'quota',
+  formatter: { ...formatterItem, unitLanguage: 'ch' },
+  suffixEnable: DEFAULT_INDICATOR_STYLE.suffixEnable,
+  suffix: DEFAULT_INDICATOR_STYLE.suffix,
+  suffixStyle: {
+    fontSize: DEFAULT_INDICATOR_STYLE.suffixFontSize,
+    color: '#ffffff',
+    isItalic: DEFAULT_INDICATOR_STYLE.suffixIsItalic,
+    isBolder: DEFAULT_INDICATOR_STYLE.suffixIsBolder,
+    fontShadow: DEFAULT_INDICATOR_STYLE.suffixFontShadow,
+    fontFamily: DEFAULT_INDICATOR_STYLE.suffixFontFamily,
+    letterSpace: DEFAULT_INDICATOR_STYLE.suffixLetterSpace
+  }
 }
 
 export const DEFAULT_TITLE_STYLE_BASE: ChartTextStyle = {
@@ -1866,6 +1920,7 @@ export const BASE_VIEW_CONFIG = {
     basicStyle: DEFAULT_BASIC_STYLE,
     misc: DEFAULT_MISC,
     label: DEFAULT_LABEL,
+    centerContent: DEFAULT_CENTER_CONTENT,
     tooltip: DEFAULT_TOOLTIP,
     tableTotal: DEFAULT_TABLE_TOTAL,
     tableHeader: DEFAULT_TABLE_HEADER,
