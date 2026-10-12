@@ -591,6 +591,14 @@ public class ChartDataBuild {
     }
 
     public static Map<String, Object> transMixChartDataAntV(List<ChartViewFieldDTO> xAxisBase, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> xAxisExt, List<ChartViewFieldDTO> yAxis, ChartViewDTO view, List<String[]> data, boolean isDrill, boolean isLine) {
+        return transMixChartDataAntV(xAxisBase, xAxis, xAxisExt, yAxis, view, data, isDrill, isLine, true);
+    }
+
+    /**
+     * hasDynamicFields 表示查询是否在指标尾部追加了动态标签和提示字段
+     * 组合图未追加这些字段，不能按存量配置扣减绘图指标；进度条等原调用保留动态字段处理
+     */
+    public static Map<String, Object> transMixChartDataAntV(List<ChartViewFieldDTO> xAxisBase, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> xAxisExt, List<ChartViewFieldDTO> yAxis, ChartViewDTO view, List<String[]> data, boolean isDrill, boolean isLine, boolean hasDynamicFields) {
 
         Map<String, Object> map = new HashMap<>();
 
@@ -607,9 +615,9 @@ public class ChartDataBuild {
         for (int i1 = 0; i1 < data.size(); i1++) {
             String[] d = data.get(i1);
 
-            // yAxis最后的数据对应extLabel和extTooltip，将他们从yAxis中去掉，同时转换成动态值
+            // 仅在查询追加了动态字段时扣除尾部列，组合图查询只包含绘图指标
             int size = xAxis.size() + yAxis.size();
-            int extSize = view.getExtLabel().size() + view.getExtTooltip().size();
+            int extSize = hasDynamicFields ? view.getExtLabel().size() + view.getExtTooltip().size() : 0;
 
             for (int i = xAxis.size(); i < size - extSize; i++) {
                 AxisChartDataAntVDTO axisChartDataDTO = new AxisChartDataAntVDTO();
@@ -672,7 +680,12 @@ public class ChartDataBuild {
                 axisChartDataDTO.setCategory(category);
                 categories.add(category);
 
-                buildDynamicValue(view, axisChartDataDTO, d, size, extSize);
+                if (hasDynamicFields) {
+                    buildDynamicValue(view, axisChartDataDTO, d, size, extSize);
+                } else {
+                    axisChartDataDTO.setDynamicLabelValue(new ArrayList<>());
+                    axisChartDataDTO.setDynamicTooltipValue(new ArrayList<>());
+                }
                 series.get(j).getData().add(axisChartDataDTO);
             }
         }
@@ -687,7 +700,7 @@ public class ChartDataBuild {
     public static Map<String, Object> transMixChartStackDataAntV(List<ChartViewFieldDTO> xAxisBase, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> extStack, List<ChartViewFieldDTO> yAxis, ChartViewDTO view, List<String[]> data, boolean isDrill) {
 
         if (CollectionUtils.isEmpty(extStack)) {
-            return transMixChartDataAntV(xAxisBase, xAxis, new ArrayList<>(), yAxis, view, data, isDrill);
+            return transMixChartDataAntV(xAxisBase, xAxis, new ArrayList<>(), yAxis, view, data, isDrill, false, false);
         }
 
         Map<String, Object> map = new HashMap<>();
