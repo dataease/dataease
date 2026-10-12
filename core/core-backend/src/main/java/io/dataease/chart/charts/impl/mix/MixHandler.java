@@ -66,14 +66,14 @@ public class MixHandler extends YoyChartHandler {
             var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
             // 钻取字段追加在子类别之后，主维度必须沿用原始轴，避免将钻取值作为右轴图例。
             var xAxisBase = (List<ChartViewFieldDTO>) formatResult.getContext().get("xAxisBase");
-            return ChartDataBuild.transMixChartDataAntV(xAxisBase, xAxis, xAxisExt, yAxis, view, data, isDrill, true);
+            return ChartDataBuild.transMixChartDataAntV(xAxisBase, xAxis, xAxisExt, yAxis, view, data, isDrill, true, false);
         }
 
         var xAxisBase = (List<ChartViewFieldDTO>) formatResult.getContext().get("xAxisBase");
         var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
         var xAxisExt = formatResult.getAxisMap().get(ChartAxis.xAxisExt);
-        var result = ChartDataBuild.transMixChartDataAntV(xAxisBase, xAxis, xAxisExt, yAxis, view, data, isDrill, false);
+        var result = ChartDataBuild.transMixChartDataAntV(xAxisBase, xAxis, xAxisExt, yAxis, view, data, isDrill, false, false);
         return result;
     }
 
