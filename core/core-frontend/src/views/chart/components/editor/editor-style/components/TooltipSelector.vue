@@ -184,6 +184,7 @@ const getFormatterOptionName = item => {
 }
 
 const extTooltip = computed(() => {
+  // 保留既有额外提示字段的生成规则，避免校正选中项时顺带清空存量配置
   const quotaIds = quotaAxis.value?.map(i => i.id)
   return state.tooltipForm.seriesTooltipFormatter.filter(
     i =>
@@ -266,6 +267,21 @@ const state = reactive({
     tooltipFormatter: DEFAULT_TOOLTIP.tooltipFormatter,
     carousel: DEFAULT_TOOLTIP.carousel
   } as DeepPartial<ChartTooltipAttr>
+})
+
+const selectableFormatters = computed(() =>
+  (state.tooltipForm.seriesTooltipFormatter || []).filter(showOption)
+)
+
+watch([selectableFormatters, () => props.chart.id], ([formatters]) => {
+  // 组合图隐藏非绘图指标后，旧选中项可能失效；其他图表保留原有初始化和选择行为
+  if (!props.chart.type.includes('chart-mix')) {
+    return
+  }
+  curSeriesFormatter.value =
+    formatters.find(item => item.seriesId === curSeriesFormatter.value?.seriesId) ||
+    formatters[0] ||
+    {}
 })
 
 const fontSizeList = computed(() => {
@@ -843,12 +859,11 @@ onMounted(() => {
               ></Icon>
             </el-icon>
           </template>
-          <template v-for="item in state.tooltipForm.seriesTooltipFormatter" :key="item.seriesId">
+          <template v-for="item in selectableFormatters" :key="item.seriesId">
             <el-option
               class="series-select-option"
               :value="item"
               :label="getFormatterOptionName(item)"
-              v-if="showOption(item)"
             >
               <el-icon style="margin-right: 8px">
                 <Icon :className="`field-icon-${fieldType[item.deType]}`"
