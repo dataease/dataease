@@ -1,5 +1,9 @@
+import { isInstanceDataRefreshEnabled } from './g2-data-refresh'
 import type { Chart as G2Chart } from '@antv/g2'
 import { parseJson } from '../../../util'
+
+const assistLineLegendSelections = new WeakMap<G2Chart, unknown[]>()
+const assistLineVisibilitySources = new WeakMap<object, unknown>()
 
 /** 指标通过 ID 绑定，图例通过实际数据的 category 映射，兼容别名和子维度。 */
 export const createAssistLineVisibility = (chart: Chart) => {
@@ -57,45 +61,66 @@ export const createAssistLineVisibility = (chart: Chart) => {
   }
 }
 
-/** 在首次 render 前接入，与原有轴域裁剪共同决定辅助线及其标签的可见性。 */
+/**
+ * 在 render 前接入辅助线显隐，仅局部更新实例跨渲染保留图例选择
+ */
 export const installG2AssistLineVisibility = (instance: G2Chart, chart: Chart) => {
   const lines: AssistLine[] = parseJson(chart.senior)?.assistLineCfg?.assistLine ?? []
-  if (!lines.some(line => line.followField)) return () => undefined
+  const followsLegend = lines.some(line => line.followField)
+  const incremental = isInstanceDataRefreshEnabled(instance)
+  if (!followsLegend && !incremental) return () => undefined
   const state = createAssistLineVisibility(chart)
+  if (incremental) state.select(assistLineLegendSelections.get(instance))
   const visit = spec => {
     if (spec.type === 'lineY' && Array.isArray(spec.data) && spec.data[0]?.name !== undefined) {
-      const previous = spec.style?.visibility
+      const visibility = spec.style?.visibility
+      const previous =
+        incremental &&
+        typeof visibility === 'function' &&
+        assistLineVisibilitySources.has(visibility)
+          ? assistLineVisibilitySources.get(visibility)
+          : visibility
+      /**
+       * 将本轮图例显隐与原有可见性规则合并，避免重复安装时沿用旧状态
+       */
+      const nextVisibility = (datum, ...args) =>
+        state.visible(datum)
+          ? typeof previous === 'function'
+            ? previous(datum, ...args)
+            : previous ?? 'visible'
+          : 'hidden'
+      if (incremental) assistLineVisibilitySources.set(nextVisibility, previous)
       spec.style = {
         ...spec.style,
-        visibility: (datum, ...args) =>
-          state.visible(datum)
-            ? typeof previous === 'function'
-              ? previous(datum, ...args)
-              : previous ?? 'visible'
-            : 'hidden'
+        visibility: nextVisibility
       }
       spec.animate = { ...spec.animate, update: { type: null } }
     }
     if (Array.isArray(spec.children)) spec.children.forEach(visit)
   }
   const options = instance.options()
-  visit(options)
-  instance.options(options)
+  if (followsLegend) {
+    visit(options)
+    instance.options(options)
+  }
   const filter = event => {
     if (event?.data?.channel !== 'color' || !Array.isArray(event.data.values)) return
     state.select(event.data.values)
+    if (incremental) assistLineLegendSelections.set(instance, event.data.values.slice())
     // G2 原生图例在完成筛选后才发布事件；重放一次筛选使辅助线使用最新状态。
     // 平铺图例的程序化事件发生在筛选前，无需重放。
-    if (event.nativeEvent) instance.emit('legend:filter', { data: event.data })
+    if (event.nativeEvent && followsLegend) instance.emit('legend:filter', { data: event.data })
   }
   const focus = event => {
     if (event?.data?.channel !== 'color') return
     state.select([event.data.value])
-    if (event.nativeEvent) instance.emit('legend:focus', { data: event.data })
+    if (incremental) assistLineLegendSelections.set(instance, [event.data.value])
+    if (event.nativeEvent && followsLegend) instance.emit('legend:focus', { data: event.data })
   }
   const reset = event => {
     state.select()
-    if (event?.nativeEvent) instance.emit('legend:reset', {})
+    if (incremental) assistLineLegendSelections.delete(instance)
+    if (event?.nativeEvent && followsLegend) instance.emit('legend:reset', {})
   }
   instance.on('legend:filter', filter)
   instance.on('legend:focus', focus)

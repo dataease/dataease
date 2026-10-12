@@ -5,6 +5,7 @@ import icon_viewinchat_outlined from '@/assets/svg/icon_viewinchat_outlined.svg'
 import { cancelRequestBatch } from '@/config/axios/service'
 import icon_drilling_outlined from '@/assets/svg/icon_drilling_outlined.svg'
 import { useI18n } from '@/hooks/web/useI18n'
+import { isChartRefreshPreview, useChartRefreshTimer } from '@/hooks/web/useChartRefreshTimer'
 import ChartComponentG2Plot from './components/ChartComponentG2Plot.vue'
 import DeIndicator from '@/custom-component/indicator/DeIndicator.vue'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
@@ -17,6 +18,7 @@ import {
   defineAsyncComponent,
   nextTick,
   onBeforeMount,
+  onBeforeUnmount,
   onMounted,
   PropType,
   provide,
@@ -77,7 +79,6 @@ const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const { emitter } = useEmitt()
 const dePreviewPopDialogRef = ref(null)
-let innerRefreshTimer = null
 let innerSearchCount = 0
 const appStore = useAppStoreWithOut()
 const appearanceStore = useAppearanceStoreWithOut()
@@ -291,6 +292,7 @@ const hasDrillIcon = computed(() => {
 })
 
 const loading = ref(false)
+const isAutoRefreshing = ref(false)
 
 const resultMode = computed(() => {
   return canvasStyleData.value.dashboard?.resultMode || null
@@ -301,22 +303,20 @@ const resultCount = computed(() => {
 })
 
 const embeddedStore = useEmbedded()
-// 编辑状态下 不启动刷新
-const buildInnerRefreshTimer = (
-  refreshViewEnable = false,
-  refreshUnit = 'minute',
-  refreshTime = 5
-) => {
-  if (showPosition.value === 'preview' && !innerRefreshTimer && refreshViewEnable) {
-    innerRefreshTimer && clearInterval(innerRefreshTimer)
-    const timerRefreshTime = refreshUnit === 'second' ? refreshTime * 1000 : refreshTime * 60000
-    innerRefreshTimer = setInterval(() => {
-      clearViewLinkage()
-      queryData(false, true)
-      innerSearchCount++
-    }, timerRefreshTime)
+const innerRefreshRunning = useChartRefreshTimer(
+  () => ({
+    enabled:
+      isChartRefreshPreview(showPosition.value, editMode.value, dvInfo.value.type) &&
+      !!view.value.refreshViewEnable,
+    interval: view.value.refreshTime ?? 5,
+    unit: view.value.refreshUnit ?? 'minute'
+  }),
+  () => {
+    clearViewLinkage()
+    queryData(false, true)
+    innerSearchCount++
   }
-}
+)
 
 // 清除相同sourceViewId 的 联动条件
 const clearViewLinkage = () => {
@@ -330,7 +330,7 @@ watch([() => scale.value], () => {
 
 watch([() => searchCount.value], () => {
   // 内部计时器启动 忽略外部计时器
-  if (!innerRefreshTimer) {
+  if (!innerRefreshRunning.value) {
     queryData(false, true)
   }
 })
@@ -658,8 +658,17 @@ const queryDataFromSelect = (firstLoad = false) => {
   queryData(firstLoad)
 }
 
+/**
+ * 合并连续查询触发，阻止重复请求及非预览编辑画布的定时查询
+ * 定时刷新复用上一次筛选参数，并将刷新来源传入取数与绘制链路
+ */
 const queryData = debounce((firstLoad = false, autoRefresh = false) => {
-  if (loading.value) {
+  if (
+    loading.value ||
+    (autoRefresh &&
+      ['canvas', 'edit', 'canvasDataV'].includes(showPosition.value) &&
+      !isChartRefreshPreview(showPosition.value, editMode.value, dvInfo.value.type))
+  ) {
     return
   }
   const searched = dvMainStore.firstLoadMap.includes(element.value.id)
@@ -670,12 +679,17 @@ const queryData = debounce((firstLoad = false, autoRefresh = false) => {
   let params = cloneDeep(view.value)
   params['chartExtRequest'] = queryFilter
   chartExtRequest.value = queryFilter
-  calcData(params)
+  calcData(params, autoRefresh)
 }, 300)
 
-const calcData = params => {
+/**
+ * 记录本轮请求并调用图表组件，定时刷新仅隐藏加载动画而不取消请求锁
+ * 插件沿用原调用参数，原生图表额外接收刷新来源
+ */
+const calcData = (params, autoRefresh = false) => {
   dvMainStore.setLastViewRequestInfo(params.id, params.chartExtRequest)
   if (chartComponent?.value) {
+    isAutoRefreshing.value = autoRefresh
     loading.value = true
     if (view.value.isPlugin) {
       chartComponent?.value?.invokeMethod({
@@ -688,9 +702,13 @@ const calcData = params => {
         ]
       })
     } else {
-      chartComponent?.value?.calcData?.(params, res => {
-        loading.value = false
-      })
+      chartComponent?.value?.calcData?.(
+        params,
+        () => {
+          loading.value = false
+        },
+        autoRefresh
+      )
     }
   }
 }
@@ -806,6 +824,8 @@ const changeChartType = () => {
 const changeDataset = () => {
   checkFieldIsAllowEmpty()
 }
+
+onBeforeUnmount(() => queryData.cancel())
 
 const loadPlugin = ref(false)
 
@@ -989,15 +1009,13 @@ onMounted(() => {
     }
   })
 
-  const { refreshViewEnable, refreshUnit, refreshTime } = view.value
-  buildInnerRefreshTimer(refreshViewEnable, refreshUnit, refreshTime)
-
   initTitle()
 })
 
-// 1.开启仪表板刷新 2.首次加载（searchCount =0 ）3.正在请求数据 则显示加载状态
+// 定时刷新只隐藏加载动画，loading 仍用于阻止重复请求，其他查询保留原有显示规则
 const loadingFlag = computed(() => {
   return (
+    !isAutoRefreshing.value &&
     (canvasStyleData.value.refreshViewLoading ||
       (searchCount.value === 0 && innerSearchCount === 0)) &&
     loading.value

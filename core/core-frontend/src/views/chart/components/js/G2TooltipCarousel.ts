@@ -1,3 +1,5 @@
+import { isInstanceDataRefreshEnabled } from './panel/types/impl/g2-data-refresh'
+import type { DisplayObject } from '@antv/g'
 import { parseJson } from '@/views/chart/components/js/util'
 import { scheduleTooltipCarousel } from './tooltip-carousel-scroll'
 import {
@@ -79,6 +81,9 @@ class G2TooltipCarousel {
   private renderWaitCount: number
   private columnSelectionFrameIds: number[]
   private isFirstColumnFrameReady: boolean
+  private carouselBackground?: DisplayObject
+  private isUpdatingData = false
+  private pendingDataUpdateAction?: () => void
 
   /**
    * 构造函数，初始化轮播实例
@@ -91,18 +96,7 @@ class G2TooltipCarousel {
     G2TooltipCarousel.destroyByContainer(chart.container)
     this.newChart = newChart
     this.chart = chart
-    this.data = data || []
-    const { isLine, lineEncodedX, isMix, mixEncodedX } = this.specialChartTypes()
-    if (isLine && lineEncodedX) {
-      this.data = this.groupByField(this.data, { x: lineEncodedX })
-    } else if (isMix && mixEncodedX) {
-      this.data = this.groupByField(this.data, { x: mixEncodedX })
-    } else {
-      const encode = this.newChart?.children?.[0]?.value?.encode
-      if (encode) {
-        this.data = this.groupByField(this.data, encode)
-      }
-    }
+    this.setCarouselData(data)
     this.index = 0
     this.isPaused = false
     this.isViewEnlarged = false
@@ -140,6 +134,76 @@ class G2TooltipCarousel {
     this.init()
     G2TooltipCarousel.instanceCache.set(chart.container, this)
     G2TooltipCarousel.ensurePageScrollListener()
+  }
+
+  /**
+   * 更新轮播数据时复用首次创建的分组规则
+   */
+  private setCarouselData(data: any[]) {
+    this.data = data || []
+    const { isLine, lineEncodedX, isMix, mixEncodedX } = this.specialChartTypes()
+    if (isLine && lineEncodedX) {
+      this.data = this.groupByField(this.data, { x: lineEncodedX })
+    } else if (isMix && mixEncodedX) {
+      this.data = this.groupByField(this.data, { x: mixEncodedX })
+    } else {
+      const encode = this.newChart?.children?.[0]?.value?.encode
+      if (encode) {
+        this.data = this.groupByField(this.data, encode)
+      }
+    }
+  }
+
+  /**
+   * 只暂停图表更新期间的切换，不重置轮播计时、索引或用户暂停状态
+   */
+  beginDataUpdate() {
+    if (this.isDestroyed) return
+    this.isUpdatingData = true
+    this.cancelColumnSelectionFrames()
+  }
+
+  /**
+   * 同步最新数据并恢复当前维度，更新期间到期的切换仅执行一次
+   */
+  finishDataUpdate(data: any[]) {
+    if (this.isDestroyed) return
+    const hadData = this.data.length > 0
+    const current = this.data[this.index]
+    this.setCarouselData(data)
+    const index = this.data.findIndex(item => this.isSameRenderedDatum(item, current, false))
+    this.index = index >= 0 ? index : Math.min(this.index, Math.max(0, this.data.length - 1))
+    this.isUpdatingData = false
+    const pending = this.pendingDataUpdateAction
+    this.pendingDataUpdateAction = undefined
+    if (!this.data.length) {
+      this.clearTimer()
+      this.isExecuting = false
+      this.hideTooltipAtData()
+      return
+    }
+    if (this.shouldPauseCarousel()) return
+    if (pending) {
+      pending()
+    } else if (!hadData) {
+      this.isExecuting = false
+      this.next()
+    } else if (this.cancelTooltipScroll) {
+      const item = this.getCurrentCarouselItem()
+      if (item) this.showTooltipAtData(this.buildTooltipData(item), item, true)
+    }
+  }
+
+  /**
+   * 保留到期动作，避免渲染过程中操作旧图元
+   */
+  private afterDataUpdate(action: () => void) {
+    if (this.isDestroyed) return
+    if (this.isUpdatingData) {
+      this.pendingDataUpdateAction = action
+    } else {
+      action()
+    }
   }
 
   /**
@@ -524,6 +588,13 @@ class G2TooltipCarousel {
    * 轮播下一个tooltip
    */
   private next() {
+    if (this.isUpdatingData) {
+      this.afterDataUpdate(() => {
+        this.isExecuting = false
+        this.next()
+      })
+      return
+    }
     // 防止并发执行
     if (this.isExecuting || this.isDestroyed) {
       return
@@ -559,27 +630,7 @@ class G2TooltipCarousel {
         this.normalInterval,
         () => {
           this.cancelTooltipScroll = undefined
-          if (!this.data || this.data.length === 0) {
-            this.clearTimer()
-            this.isExecuting = false
-            return
-          }
-          const isLastItem = this.index === this.data.length - 1
-          if (isLastItem) {
-            this.hideTooltipAtData()
-            // 最后一个后等待额外时间再轮播
-            this.timers.interval = setTimeout(() => {
-              this.index = 0
-              this.isExecuting = false
-              this.next()
-            }, this.finalExtraWait)
-          } else {
-            this.isExecuting = false
-            this.timers.nextItem = setTimeout(() => {
-              this.index += 1
-              this.next()
-            }, 0)
-          }
+          this.afterDataUpdate(() => this.advanceCarousel())
         }
       )
     } finally {
@@ -587,6 +638,37 @@ class G2TooltipCarousel {
       if (!this.cancelTooltipScroll && !this.timers.interval && !this.timers.nextItem) {
         this.isExecuting = false
       }
+    }
+  }
+
+  /**
+   * 当前项停留结束后切换，末项额外等待保持原有行为
+   */
+  private advanceCarousel() {
+    if (this.shouldPauseCarousel()) {
+      this.clearTimer()
+      this.isExecuting = false
+      return
+    }
+    if (this.index === this.data.length - 1) {
+      this.hideTooltipAtData()
+      this.timers.interval = setTimeout(() => {
+        this.timers.interval = null
+        this.afterDataUpdate(() => {
+          this.index = 0
+          this.isExecuting = false
+          this.next()
+        })
+      }, this.finalExtraWait)
+    } else {
+      this.isExecuting = false
+      this.timers.nextItem = setTimeout(() => {
+        this.timers.nextItem = null
+        this.afterDataUpdate(() => {
+          this.index += 1
+          this.next()
+        })
+      }, 0)
     }
   }
 
@@ -697,11 +779,50 @@ class G2TooltipCarousel {
   }
 
   /**
-   * 显示指定数据项的 tooltip
-   * @param tooltipData
-   * @param originalData
+   * 接管 G2 按最新坐标计算的背景，保留原节点以避开交互重建时的背景销毁
+   * 仅用于已适配基础柱状图，普通悬浮及其他图表仍由 G2 管理
    */
-  showTooltipAtData(tooltipData, originalData?: any) {
+  private retainCarouselBackground() {
+    if (!isInstanceDataRefreshEnabled(this.newChart) || !this.isColumnChart()) return
+    const nativeBackground = this.newChart
+      ?.getContext?.()
+      ?.canvas?.document?.getElementsByClassName?.('element-background')?.[0] as DisplayObject
+    if (!nativeBackground?.parentNode) return
+    const parent = nativeBackground.parentNode
+    const background = this.carouselBackground
+    if (background && !background.destroyed) {
+      Object.entries(nativeBackground.attributes).forEach(([key, value]) => {
+        this.setDisplayObjectAttribute(background, key, value)
+      })
+      this.setDisplayObjectAttribute(background, 'pointerEvents', 'none')
+      if (background.parentNode !== parent) parent.appendChild(background)
+      nativeBackground.remove()
+    } else {
+      this.carouselBackground = nativeBackground
+      this.setDisplayObjectAttribute(nativeBackground, 'pointerEvents', 'none')
+    }
+    this.carouselBackground.className = 'de-carousel-background'
+    // 解除原生交互的节点所有权，防止下一轮 render 的清理回调移除保留背景
+    this.getRenderedElements().forEach(element => {
+      if (element.background === nativeBackground) element.background = null
+    })
+  }
+
+  /**
+   * 轮播结束或转入鼠标交互时释放背景，避免与原生悬浮背景叠加
+   */
+  private clearCarouselBackground() {
+    this.carouselBackground?.remove()
+    this.carouselBackground = undefined
+  }
+
+  /**
+   * 显示指定数据项的 tooltip
+   * @param tooltipData 用于触发 G2 提示框的事件数据
+   * @param originalData 本轮轮播维度，用于匹配当前渲染图元
+   * @param preserveSelection 刷新后恢复同一轮播项时保留选择状态和背景节点
+   */
+  showTooltipAtData(tooltipData, originalData?: any, preserveSelection = false) {
     if (typeof this.newChart?.emit !== 'function') {
       return
     }
@@ -719,7 +840,7 @@ class G2TooltipCarousel {
     const finalTooltipData = renderedData
       ? { ...tooltipData, data: { ...tooltipData.data, data: renderedData } }
       : tooltipData
-    this.clearElementState()
+    if (!preserveSelection) this.clearElementState()
     const highlightSource = isLineOrMix && originalData ? originalData : finalTooltipData.data.data
     const highlightData = this.getElementMatchData(highlightSource)
     if (isColumn && !highlightData) {
@@ -728,13 +849,16 @@ class G2TooltipCarousel {
     if (isColumn) {
       const selectionData = this.getColumnSelectionMatchData(highlightData)
       // 分组和堆叠柱按当前维度选中全部子柱，其它维度不进入淡化态
-      this.newChart.emit('element:select', {
-        data: { data: [selectionData] }
-      })
-      // 所有柱形图复用已有背景高亮能力，轮播时同时展示当前分类背景
+      if (!preserveSelection) {
+        this.newChart.emit('element:select', {
+          data: { data: [selectionData] }
+        })
+      }
+      // 原生交互计算最新几何，再同步到轮播持有的节点，整个过程不等待下一帧
       this.newChart.emit('element:highlight', {
         data: { data: finalTooltipData.data.data }
       })
+      this.retainCarouselBackground()
       this.applyColumnSelectionState(selectionData)
       this.scheduleColumnSelectionState(selectionData)
     } else if (isColumnMix && highlightData) {
@@ -935,6 +1059,7 @@ class G2TooltipCarousel {
         ?.getContext?.()
         ?.canvas?.document?.getElementsByClassName?.('element-background') || []
     ) as any[]
+    if (this.carouselBackground) backgrounds.push(this.carouselBackground)
     backgrounds.forEach(background => {
       const backgroundBounds = background.getRenderBounds?.()
       const backgroundCenterX = (backgroundBounds?.min?.[0] + backgroundBounds?.max?.[0]) / 2
@@ -1079,6 +1204,7 @@ class G2TooltipCarousel {
   }
 
   private clearInteractionBackgrounds() {
+    this.clearCarouselBackground()
     try {
       const ctx = this.newChart?.getContext?.()
       const backgrounds = Array.from(
@@ -1229,6 +1355,7 @@ class G2TooltipCarousel {
    * 鼠标进入图表时只暂停轮播，不清理联动或选中状态
    */
   private mouseEnter() {
+    this.clearCarouselBackground()
     this.pause(true)
     switchTooltipWrapperHost(this.chart, 'hover')
   }
@@ -1294,6 +1421,7 @@ class G2TooltipCarousel {
    * 清除所有定时器
    */
   private clearTimer() {
+    this.pendingDataUpdateAction = undefined
     G2TooltipCarousel.dequeueStart(this)
     this.cancelTooltipScroll?.()
     this.cancelTooltipScroll = undefined
