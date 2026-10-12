@@ -350,9 +350,10 @@ const isEditMode = computed(() => editMode.value === 'edit' && isEdit.value && !
 const curThemes = isDashboard() ? 'light' : 'dark'
 const calcTabLength = () => {
   setTimeout(() => {
-    if (element.value.propValue.length > 1) {
+    const visibleTabs = element.value.propValue.filter(tabItem => !tabItem.hidden)
+    if (visibleTabs.length > 1) {
       const containerDom = document.getElementById(
-        'tab-' + element.value.propValue[element.value.propValue.length - 1].name
+        'tab-' + visibleTabs[visibleTabs.length - 1].name
       )
       if (containerDom) {
         tabsAreaScroll.value =
