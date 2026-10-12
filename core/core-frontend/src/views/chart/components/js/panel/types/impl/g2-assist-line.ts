@@ -1,6 +1,11 @@
 import { isInstanceDataRefreshEnabled } from './g2-data-refresh'
 import type { Chart as G2Chart } from '@antv/g2'
 import { parseJson } from '../../../util'
+import {
+  getMixSeriesCategory,
+  getMixSeriesKey,
+  usesMixSeriesKey
+} from '../../charts/g2/mix/mix-series'
 
 const assistLineLegendSelections = new WeakMap<G2Chart, unknown[]>()
 const assistLineVisibilitySources = new WeakMap<object, unknown>()
@@ -17,7 +22,13 @@ export const createAssistLineVisibility = (chart: Chart) => {
       quotas?.forEach(field => {
         const id = `${axis}:${field.id}`
         if (!series.has(id)) series.set(id, new Set())
-        series.get(id).add(String(row.category))
+        series
+          .get(id)
+          .add(
+            usesMixSeriesKey(chart.type)
+              ? getMixSeriesKey(axis, getMixSeriesCategory(chart, axis, row))
+              : String(row.category)
+          )
       })
     })
   }

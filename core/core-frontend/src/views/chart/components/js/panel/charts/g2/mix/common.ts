@@ -324,7 +324,31 @@ export const createResponsiveMixLegendCategory = baseLegendCategory => {
   return responsiveLegendCategory
 }
 
+/**
+ * 组合图按完整类别高亮，避免折线的 series 比例尺被用于柱形区域的分组偏移
+ */
+export const createMixElementHighlight = baseElementHighlight => {
+  const mixElementHighlight = options => {
+    const highlight = baseElementHighlight(options)
+    return (context, ...args) => {
+      if (!options.region) {
+        return highlight(context, ...args)
+      }
+      const { view } = context
+      return highlight(
+        { ...context, view: { ...view, scale: { ...view.scale, series: undefined } } },
+        ...args
+      )
+    }
+  }
+  mixElementHighlight.props = baseElementHighlight.props
+  return mixElementHighlight
+}
+
 const mixLegendLibrary = stdlib() as Record<string, any>
+mixLegendLibrary['interaction.elementHighlight'] = createMixElementHighlight(
+  mixLegendLibrary['interaction.elementHighlight']
+)
 mixLegendLibrary['component.legendCategory'] = createResponsiveMixLegendCategory(
   mixLegendLibrary['component.legendCategory']
 )
