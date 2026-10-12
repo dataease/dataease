@@ -4,6 +4,7 @@ import { DataEaseToolbarUIController } from './controllers/toolbar-ui.controller
 import { SheetMenuLayoutController } from './controllers/sheet-menu-layout.controller'
 import { DecimalCommandController } from './controllers/decimal-command.controller'
 import { ContextMenuLayoutController } from './controllers/context-menu-layout.controller'
+import { FindReplaceLayoutController } from './controllers/find-replace-layout.controller'
 import { FreezeCommandController } from './controllers/freeze-command.controller'
 import { FormatPainterCursorController } from './controllers/format-painter-cursor.controller'
 import { IconSetValueController } from './controllers/icon-set-value.controller'
@@ -31,6 +32,7 @@ export class DataEaseToolbarUIPlugin extends Plugin {
       [DataEaseToolbarUIController],
       [SheetMenuLayoutController],
       [ContextMenuLayoutController],
+      [FindReplaceLayoutController],
       [DecimalCommandController],
       [FreezeCommandController],
       [FormatPainterCursorController],
@@ -52,6 +54,7 @@ export class DataEaseToolbarUIPlugin extends Plugin {
       [DataEaseToolbarUIController],
       [SheetMenuLayoutController],
       [ContextMenuLayoutController],
+      [FindReplaceLayoutController],
       [DecimalCommandController],
       [FreezeCommandController],
       [FormatPainterCursorController],
