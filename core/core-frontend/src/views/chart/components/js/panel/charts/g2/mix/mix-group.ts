@@ -472,6 +472,12 @@ export class GroupLineMix extends G2ChartView {
           enterable: true,
           marker: false,
           render: (_, { title, items }) => {
+            // 柱线命中不同类别时，以当前柱的类别为准，排除邻近折线项
+            const columnField = items?.find(item => item.left)?.field
+            if (columnField !== undefined && items.some(item => item.field !== columnField)) {
+              title = columnField
+              items = items.filter(item => item.field === columnField)
+            }
             const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)
             items = completeTooltipItems(title, items)
             if (tooltip.seriesTooltipFormatter?.length) {

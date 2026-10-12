@@ -580,14 +580,30 @@ export class GroupLineMix extends G2ChartView {
     const { xAxis } = parseJson(chart.customStyle)
     const view = options.children.find(c => c.key === 'chart')
     // 固定 x 轴顺序
-    const { leftData: xAxisData } = context
+    const { leftData: xAxisData, rightData } = context
     const xAxisSort = xAxisData.map(d => d.field)
+    const fields = [...new Set([...xAxisData, ...rightData].map(d => d.field))].sort(
+      (a, b) => xAxisSort.indexOf(a) - xAxisSort.indexOf(b)
+    )
+    const fieldOrder = new Map(fields.map((field, index) => [field, index]))
+    const [leftLineMark, , rightLineMark] = view.children
+    // 保留系列首次出现顺序，仅按实际 X 轴顺序整理各折线，避免悬浮范围误判
+    const sortLineData = data => {
+      const series = [...new Set(data.map(d => d.category))]
+      return [...data].sort(
+        (a, b) =>
+          series.indexOf(a.category) - series.indexOf(b.category) ||
+          fieldOrder.get(a.field) - fieldOrder.get(b.field)
+      )
+    }
+    leftLineMark.data.value = sortLineData(leftLineMark.data.value)
+    rightLineMark.data = sortLineData(rightLineMark.data)
     defaultsDeep(view, {
       scale: {
         x: {
           range: [0, 1],
           compare: (a, b) => {
-            return xAxisSort.indexOf(a) - xAxisSort.indexOf(b)
+            return fieldOrder.get(a) - fieldOrder.get(b)
           }
         }
       }
