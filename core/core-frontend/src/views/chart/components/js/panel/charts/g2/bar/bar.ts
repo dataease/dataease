@@ -53,6 +53,11 @@ import {
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
 import { getBarExtremumTransform, extremumEvt } from '@/views/chart/components/js/extremumUitl'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
+import {
+  registerChartRefreshAdapter,
+  hasConfiguredThreshold,
+  tagRefreshComponentMarks
+} from '../../../types/impl/g2-data-refresh'
 
 const { t } = useI18n()
 const DEFAULT_DATA: any[] = []
@@ -150,6 +155,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     const options: ViewSpec = this.setupOptions(chart, initOptions)
     const newChart = new G2Column({ container, autoFit: true, ...getG2Renderer() })
     handleChartDashboardHidden(chart, options)
+    this.configureDataRefresh(newChart, chart, options)
     newChart.options(options)
     newChart.on('interval:click', action)
     bindPlotBackgroundClick(newChart, { axis: this.name.includes('horizontal') ? 'y' : 'x' })
@@ -252,12 +258,25 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
     }
   }
 
+  /**
+   * 配置提示框，基础柱状图关闭提示时同步隐藏悬浮背景，保留其他交互
+   */
   protected configTooltip(chart: Chart, options: ViewSpec): ViewSpec {
     const { children } = options
     const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
     const tooltipAttr = customAttr.tooltip
     const yAxis = chart.yAxis
     if (!tooltipAttr.show) {
+      if (this.name === 'bar') {
+        const interaction = children[0].interaction
+        const highlight = interaction?.elementHighlight
+        if (highlight && typeof highlight === 'object') {
+          children[0].interaction = {
+            ...interaction,
+            elementHighlight: { ...highlight, background: false }
+          }
+        }
+      }
       return options
     }
     const formatterMap = getSeriesTooltipFormatterMap(tooltipAttr)
@@ -728,7 +747,7 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
         })
       })
     }
-    return assistLine
+    return this.name === 'bar' ? tagRefreshComponentMarks('assist-line', assistLine) : assistLine
   }
 
   protected getAxisConfig(chart: Chart, axisType: string): any {
@@ -818,6 +837,8 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
   protected configBarConditions(chart: Chart, options: ViewSpec): ViewSpec {
     const { threshold } = parseJson(chart.senior)
     if (!threshold.enable) return options
+    // 基础柱的空条件不注入数据转换，保留直接更新主数据的能力
+    if (this.name === 'bar' && !hasConfiguredThreshold(threshold)) return options
     const overThreshold = data => {
       data.forEach(item => {
         item['conditionColor'] = []
@@ -996,5 +1017,13 @@ export class Bar extends G2ChartView<ViewSpec, G2Column> {
 
   constructor(name = 'bar', defaultData = DEFAULT_DATA) {
     super(name, defaultData)
+    if (name === 'bar') {
+      registerChartRefreshAdapter(name, {
+        valueChannel: 'y',
+        marks: [{ type: 'interval', key: 'item' }],
+        assistLines: (chart, options) => this.getAssistLineStyle(chart, options),
+        conditions: (chart, options) => this.configBarConditions(chart, options)
+      })
+    }
   }
 }

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { isChartRefreshPreview, useChartRefreshTimer } from '@/hooks/web/useChartRefreshTimer'
 import { getCanvasStyle, getShapeItemStyle } from '@/utils/style'
 import ComponentWrapper from './ComponentWrapper.vue'
 import { changeStyleWithScale } from '@/utils/translate'
@@ -141,7 +142,6 @@ const cellWidth = ref(10)
 const cellHeight = ref(10)
 const userViewEnlargeRef = ref(null)
 const searchCount = ref(0)
-const refreshTimer = ref(null)
 const renderReady = ref(false)
 let resizeDetector: ReturnType<typeof elementResizeDetectorMaker> | null = null
 let resizeDetectorTarget: HTMLElement | null = null
@@ -403,25 +403,24 @@ const curGap = computed(() => {
     : 0
 })
 
-const initRefreshTimer = () => {
-  // 数据刷新计时器 (仪表开启刷新并且是预览状态才启动刷新)
-  if (canvasStyleData.value.refreshViewEnable && showPosition.value === 'preview') {
-    searchCount.value = 0
-    refreshTimer.value && clearInterval(refreshTimer.value)
-    let refreshTime = 300000
-    if (canvasStyleData.value.refreshTime && canvasStyleData.value.refreshTime > 0) {
-      if (canvasStyleData.value.refreshUnit === 'second') {
-        refreshTime = canvasStyleData.value.refreshTime * 1000
-      } else {
-        refreshTime = canvasStyleData.value.refreshTime * 60000
-      }
-    }
-    refreshTimer.value = setInterval(() => {
-      refreshDataV()
-    }, refreshTime)
-  }
-}
+/**
+ * 将原 initRefreshTimer 的启动、单位换算和卸载清理交给公共 hook，避免维护两套计时器
+ * 保留原刷新回调及无有效频率时默认 5 分钟的行为，并补齐 edit-preview 入口
+ * 频率或预览状态改变时同步启停；searchCount 沿用初始值 0，重建计时器时不回退计数
+ */
+useChartRefreshTimer(
+  () => ({
+    enabled: !!canvasStyleData.value.refreshViewEnable && isChartRefreshPreview(showPosition.value),
+    interval: canvasStyleData.value.refreshTime > 0 ? canvasStyleData.value.refreshTime : 5,
+    unit: canvasStyleData.value.refreshTime > 0 ? canvasStyleData.value.refreshUnit : 'minute'
+  }),
+  () => refreshDataV()
+)
 
+/**
+ * 沿用原刷新分发方式，以计数变化通知图表，仅主画布通知其他组件
+ * 此处不决定图表完整绘制还是局部更新，由图表渲染层按支持能力处理
+ */
 const refreshDataV = () => {
   searchCount.value++
   if (isMainCanvas(canvasId.value)) {
@@ -461,7 +460,6 @@ const winMsgOuterParamsHandle = msgInfo => {
 }
 
 onMounted(() => {
-  initRefreshTimer()
   resetLayout()
   window.addEventListener('resize', restore)
   resizeDetectorTarget = document.getElementById(domId)
@@ -478,7 +476,6 @@ onMounted(() => {
 onBeforeUnmount(() => {
   //初始化隐藏弹框区
   dvMainStore.canvasStateChange({ key: 'curPointArea', value: 'base' })
-  clearInterval(refreshTimer.value)
   window.removeEventListener('resize', restore)
   window.removeEventListener('message', winMsgHandle)
   // 全屏预览副本卸载时同步移除探测节点和监听，避免反复进入全屏后累积

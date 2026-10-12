@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { isChartRefreshPreview, useChartRefreshTimer } from '@/hooks/web/useChartRefreshTimer'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import {
   getStyle,
@@ -39,7 +40,8 @@ import {
   isGroupOrTabCanvas,
   isMainCanvas,
   isSameCanvas,
-  isTabCanvas
+  isTabCanvas,
+  refreshOtherComponent
 } from '@/utils/canvasUtils'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -233,6 +235,30 @@ const {
   canvasViewInfo,
   themes
 } = toRefs(props)
+
+// 通过既有 searchCount 通知图表、组合及 Tab 内组件刷新，不直接修改图表数据
+const previewSearchCount = ref(0)
+/**
+ * 仪表板编辑页的全屏预览复用 CanvasCore，需在此补齐全局频率刷新入口
+ * 仅仪表板预览模式且开启全局刷新时启动，普通编辑及大屏底层编辑画布不启动
+ * 公共 hook 负责频率变更时重建计时器，以及退出预览和卸载时清理
+ */
+useChartRefreshTimer(
+  () => ({
+    enabled:
+      isChartRefreshPreview('canvas', editMode.value, dvInfo.value.type) &&
+      !!canvasStyleData.value.refreshViewEnable,
+    interval: canvasStyleData.value.refreshTime > 0 ? canvasStyleData.value.refreshTime : 5,
+    unit: canvasStyleData.value.refreshTime > 0 ? canvasStyleData.value.refreshUnit : 'minute'
+  }),
+  () => {
+    previewSearchCount.value++
+    // 非图表组件的刷新通知只由主画布发送，避免组合或 Tab 子画布重复通知
+    if (isMainCanvas(canvasId.value)) {
+      refreshOtherComponent(dvInfo.value.id, dvInfo.value.type)
+    }
+  }
+)
 
 const mainCanvasFlag = isMainCanvas(canvasId.value)
 const editorX = ref(0)
@@ -1758,6 +1784,7 @@ defineExpose({
           :dv-info="dvInfo"
           :canvas-active="canvasActive"
           :show-position="'canvas'"
+          :search-count="previewSearchCount"
           :font-family="fontFamily"
         />
         <component
@@ -1777,6 +1804,7 @@ defineExpose({
           :active="item.id === curComponentId"
           :canvas-active="canvasActive"
           :show-position="'edit'"
+          :search-count="previewSearchCount"
           :font-family="fontFamily"
         />
         <component
@@ -1797,6 +1825,7 @@ defineExpose({
           :active="item.id === curComponentId"
           :canvas-active="canvasActive"
           :show-position="'edit'"
+          :search-count="previewSearchCount"
           :font-family="fontFamily"
         />
       </Shape>

@@ -1,3 +1,4 @@
+import G2TooltipCarousel from '../../../G2TooltipCarousel'
 import { AxisComponent, G2Spec, type Chart as G2Chart } from '@antv/g2'
 import {
   AntVAbstractChartView,
@@ -6,7 +7,17 @@ import {
 } from '@/views/chart/components/js/panel/types'
 import { configEmptyDataStyle } from '@/views/chart/components/js/panel/common/common_antv'
 import { parseJson, resolveAxisLineColor, setupSeriesColor } from '../../../util'
-import { isEmpty } from 'lodash-es'
+import { cloneDeep, isEmpty, isEqual } from 'lodash-es'
+import {
+  enableInstanceDataRefresh,
+  getChartRefreshAdapter,
+  getRefreshUnsupportedReason,
+  createRefreshData,
+  configureRefreshKeys,
+  createRefreshOptions,
+  matchesRefreshMarks,
+  type RefreshDataState
+} from './g2-data-refresh'
 import { valueFormatter } from '../../../formatter'
 import { getExtremumLabelData } from '../../../extremumUitl'
 import {
@@ -762,6 +773,66 @@ export abstract class G2ChartView<
   P extends G2Chart = G2Chart
 > extends AntVAbstractChartView {
   public abstract drawChart(drawOptions: G2DrawOptions<P>): P | Promise<P>
+
+  private readonly refreshCharts = new WeakMap<P, { chart: ChartObj; data: RefreshDataState }>()
+
+  /**
+   * 首次渲染前校验图表及样式能力，登记图元身份和实例快照
+   * 不支持的组合直接返回，不改变原有图表配置
+   */
+  protected configureDataRefresh(instance: P, chart: ChartObj, options: G2Spec): void {
+    const adapter = getChartRefreshAdapter(this.name)
+    if (
+      chart.type !== this.name ||
+      getRefreshUnsupportedReason(chart, adapter) ||
+      !matchesRefreshMarks(options, adapter)
+    )
+      return
+    const { data, state } = createRefreshData(chart.data.data)
+    configureRefreshKeys(options, adapter, data)
+    enableInstanceDataRefresh(instance)
+    this.refreshCharts.set(instance, { chart: cloneDeep(chart), data: state })
+  }
+
+  /**
+   * 仅定时刷新调用，未适配组合返回 false，由调用方执行完整绘制
+   * 数据未变化时直接返回 true，变化时复用实例并同步样式和轮播状态
+   * prepareOptions 在提交新配置后、绘制前重装依赖本轮数据的交互
+   */
+  public async updateData(
+    { chartObj, chart }: G2DrawOptions<P>,
+    prepareOptions?: () => void
+  ): Promise<boolean> {
+    const adapter = getChartRefreshAdapter(this.name)
+    const previous = this.refreshCharts.get(chartObj)
+    if (
+      !previous ||
+      getRefreshUnsupportedReason(chart, adapter) ||
+      previous.chart.id !== chart.id ||
+      previous.chart.type !== chart.type
+    )
+      return false
+    if (isEqual(previous.chart.data, chart.data)) return true
+    const options = chartObj.options()
+    if (!matchesRefreshMarks(options, adapter)) return false
+    const { data, state } = createRefreshData(chart.data.data, previous.data)
+    const nextOptions = createRefreshOptions(options, chart, adapter, data)
+    if (getLargeDataRenderCount(nextOptions) > LARGE_DATA_RENDER_COUNT) return false
+    const carousel = G2TooltipCarousel.getInstanceByContainerId(chart.container)
+    carousel?.beginDataUpdate()
+    let refreshed = false
+    try {
+      chartObj.options(nextOptions as G2Spec)
+      prepareOptions?.()
+      await chartObj.render()
+      configEmptyDataStyle(chart.data.data, chart.container)
+      this.refreshCharts.set(chartObj, { chart: cloneDeep(chart), data: state })
+      refreshed = true
+    } finally {
+      carousel?.finishDataUpdate(refreshed ? chart.data.data : previous.chart.data.data)
+    }
+    return true
+  }
 
   /** 在首次渲染前统一应用视图主题字体 */
   public applyThemeFont(chart?: P, fontFamily?: string): void {
