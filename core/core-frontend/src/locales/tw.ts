@@ -4000,6 +4000,8 @@ export default {
     pvp: '密碼有效期限',
     defaultLogin: '預設登入方式',
     shareDisable: '停用分享',
+    ignoreSslVerify: '忽略 HTTPS SSL 憑證驗證',
+    ignoreSslVerifyTips: '開啟時跳過 HTTPS 憑證鏈與主機名稱驗證；關閉時嚴格驗證',
     sharePeRequire: '分享有效期限密碼必填',
     defaultSort: '資源預設排序方式',
     defaultOpen: '頁面開啟方式',

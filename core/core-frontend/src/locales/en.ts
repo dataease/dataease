@@ -4141,6 +4141,9 @@ export default {
     pvp: 'Password validity period',
     defaultLogin: 'Default login method',
     shareDisable: 'Disable sharing',
+    ignoreSslVerify: 'Ignore HTTPS SSL certificate verification',
+    ignoreSslVerifyTips:
+      'Skips certificate and hostname verification when enabled; verifies strictly when disabled',
     sharePeRequire: 'Sharing validity period password required',
     defaultSort: 'Default resource sorting method',
     defaultOpen: 'Page opening method',

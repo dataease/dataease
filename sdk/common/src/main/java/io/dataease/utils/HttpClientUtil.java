@@ -18,6 +18,7 @@ import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.DefaultHostnameVerifier;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.ContentType;
@@ -34,6 +35,7 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.SSLContext;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -56,6 +58,16 @@ public class HttpClientUtil {
     private static Logger logger = LoggerFactory.getLogger(HttpClientUtil.class);
 
     private static final String HTTPS = "https";
+
+    /**
+     * 系统参数 basic.ignoreSslVerify 的运行时开关：
+     * true（默认）保持历史宽松策略；false 时启用严格 TLS 证书与主机名校验。
+     */
+    private static volatile boolean ignoreSslVerify = true;
+
+    public static void setIgnoreSslVerify(boolean ignoreSslVerify) {
+        HttpClientUtil.ignoreSslVerify = ignoreSslVerify;
+    }
 
     /**
      * 根据url构建HttpClient（区分http和https）
@@ -82,14 +94,7 @@ public class HttpClientUtil {
     private static CloseableHttpClient buildHttpClient(boolean ssl) {
         try {
             if (ssl) {
-                SSLContextBuilder builder = new SSLContextBuilder();
-                builder.loadTrustMaterial(null, (X509Certificate[] x509Certificates, String s) -> true);
-                SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(builder.build(), new String[]{"TLSv1.1", "TLSv1.2", "SSLv3"}, null, NoopHostnameVerifier.INSTANCE);
-                Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
-                        .register("http", new PlainConnectionSocketFactory())
-                        .register("https", socketFactory).build();
-                HttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager(registry);
-                return HttpClients.custom().setConnectionManager(connManager).build();
+                return buildSslHttpClient();
             } else {
                 // http
                 return HttpClientBuilder.create().build();
@@ -97,6 +102,23 @@ public class HttpClientUtil {
         } catch (Exception e) {
             throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient查询失败: " + e.getMessage());
         }
+    }
+
+    private static CloseableHttpClient buildSslHttpClient() throws Exception {
+        Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
+                .register("http", new PlainConnectionSocketFactory())
+                .register("https", buildSslSocketFactory()).build();
+        HttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager(registry);
+        return HttpClients.custom().setConnectionManager(connManager).build();
+    }
+
+    private static SSLConnectionSocketFactory buildSslSocketFactory() throws Exception {
+        if (!ignoreSslVerify) {
+            return new SSLConnectionSocketFactory(SSLContext.getDefault(), new String[]{"TLSv1.2", "TLSv1.3"}, null, new DefaultHostnameVerifier());
+        }
+        SSLContextBuilder builder = new SSLContextBuilder();
+        builder.loadTrustMaterial(null, (X509Certificate[] x509Certificates, String s) -> true);
+        return new SSLConnectionSocketFactory(builder.build(), new String[]{"TLSv1.1", "TLSv1.2", "SSLv3"}, null, NoopHostnameVerifier.INSTANCE);
     }
 
     public static boolean validateUrl(String url, HttpClientConfig config) {
@@ -793,13 +815,9 @@ public class HttpClientUtil {
     private static CloseableHttpClient buildRedirectingHttpClient(boolean ssl) throws Exception {
         HttpClientBuilder builder = HttpClientBuilder.create();
         if (ssl) {
-            SSLContextBuilder sslContextBuilder = new SSLContextBuilder();
-            sslContextBuilder.loadTrustMaterial(null, (X509Certificate[] x509Certificates, String s) -> true);
-            SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(sslContextBuilder.build(),
-                    new String[]{"TLSv1.1", "TLSv1.2", "SSLv3"}, null, NoopHostnameVerifier.INSTANCE);
             Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
                     .register("http", new PlainConnectionSocketFactory())
-                    .register("https", socketFactory).build();
+                    .register("https", buildSslSocketFactory()).build();
             builder.setConnectionManager(new PoolingHttpClientConnectionManager(registry));
         }
         builder.setRedirectStrategy(new DefaultRedirectStrategy(new String[]{"GET", "HEAD", "POST", "PUT", "DELETE"}));

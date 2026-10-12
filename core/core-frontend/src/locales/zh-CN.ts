@@ -4020,6 +4020,8 @@ export default {
     pvp: '密码有效期',
     defaultLogin: '默认登录方式',
     shareDisable: '禁用分享',
+    ignoreSslVerify: '忽略 HTTPS SSL 证书校验',
+    ignoreSslVerifyTips: '开启时跳过 HTTPS 证书链与主机名校验；关闭时严格校验',
     sharePeRequire: '分享有效期密码必填',
     defaultSort: '资源默认排序方式',
     defaultOpen: '页面打开方式',

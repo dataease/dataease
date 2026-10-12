@@ -13,6 +13,7 @@ import io.dataease.system.dao.auto.entity.CoreSysSetting;
 import io.dataease.system.dao.auto.mapper.CoreSysSettingRepository;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.CommonBeanFactory;
+import io.dataease.utils.HttpClientUtil;
 import io.dataease.utils.IDUtils;
 import io.dataease.utils.JsonUtil;
 import io.dataease.utils.SystemSettingUtils;
@@ -396,10 +397,15 @@ public class SysParameterManage {
     public void saveBasic(List<SettingItemVO> vos) {
         String key = "basic.";
         proxy().saveGroup(vos, key);
+        HttpClientUtil.setIgnoreSslVerify(ignoreSslVerify());
     }
 
     private SysParameterManage proxy() {
         return CommonBeanFactory.getBean(SysParameterManage.class);
+    }
+
+    public boolean ignoreSslVerify() {
+        return Boolean.parseBoolean(StringUtils.defaultIfBlank(singleVal("basic.ignoreSslVerify"), "true"));
     }
 
     public ShareBaseVO shareBase() {
