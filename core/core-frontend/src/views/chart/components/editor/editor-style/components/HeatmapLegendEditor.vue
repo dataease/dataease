@@ -64,7 +64,7 @@ watch(() => draft.formatterCfg, save, { deep: true })
     v-if="draft.rangeMode === 'custom'"
     :error="invalidRange ? t('chart.heatmap_range_invalid') : ''"
     class="form-item"
-    :class="'form-item-' + themes"
+    :class="['form-item-' + themes, { 'heatmap-range-invalid': invalidRange }]"
   >
     <el-row :gutter="8">
       <el-col :span="12">
@@ -93,7 +93,11 @@ watch(() => draft.formatterCfg, save, { deep: true })
       </el-col>
     </el-row>
   </el-form-item>
-  <el-form-item :label="t('chart.heatmap_format')" class="form-item" :class="'form-item-' + themes">
+  <el-form-item
+    :label="t('chart.heatmap_format')"
+    class="form-item"
+    :class="['form-item-' + themes, { 'heatmap-format-range-invalid': invalidRange }]"
+  >
     <el-select v-model="draft.formatMode" :effect="themes" @change="save">
       <el-option value="inherit" :label="t('chart.heatmap_format_inherit')" />
       <el-option value="custom" :label="t('chart.heatmap_format_custom')" />
@@ -139,6 +143,12 @@ watch(() => draft.formatterCfg, save, { deep: true })
 </template>
 
 <style lang="less" scoped>
+.heatmap-range-invalid :deep(.ed-form-item__error) {
+  font-size: 12px;
+}
+.heatmap-format-range-invalid {
+  margin-top: 18px;
+}
 .prefix-form--dark :deep(.ed-form-item__label) {
   color: #ebebeb;
 }
