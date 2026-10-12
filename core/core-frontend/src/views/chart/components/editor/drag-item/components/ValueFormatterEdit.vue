@@ -18,6 +18,10 @@ const props = defineProps({
     type: String,
     default: 'light'
   },
+  formatTypeSelect: {
+    type: Boolean,
+    default: false
+  },
   examplePrefix: {
     type: String,
     default: ''
@@ -63,13 +67,31 @@ getExampleValue()
   <div>
     <el-form
       ref="form"
+      size="default"
       :model="formatterItem.formatterCfg"
       class="formatter-form"
-      :class="{ 'formatter-form--dark': themes === 'dark' }"
+      :class="{
+        'formatter-form--dark': themes === 'dark',
+        'formatter-form--select': formatTypeSelect
+      }"
       label-position="top"
     >
+      <slot />
       <el-form-item :label="t('chart.value_formatter_type')">
-        <el-radio-group v-model="formatterItem.formatterCfg.type" @change="getExampleValue">
+        <el-select
+          v-if="formatTypeSelect"
+          :effect="themes"
+          v-model="formatterItem.formatterCfg.type"
+          @change="getExampleValue"
+        >
+          <el-option
+            v-for="type in state.typeList"
+            :key="type.value"
+            :value="type.value"
+            :label="t('chart.' + type.name)"
+          />
+        </el-select>
+        <el-radio-group v-else v-model="formatterItem.formatterCfg.type" @change="getExampleValue">
           <el-radio
             :effect="themes"
             v-for="radio in state.typeList"
@@ -195,7 +217,70 @@ getExampleValue()
     font-weight: 400 !important;
   }
 
+  // Keep the same control geometry when the dialog is teleported outside the editor.
+  :deep(.ed-radio) {
+    height: 20px;
+  }
+
+  :deep(.ed-radio.ed-radio--small .ed-radio__inner) {
+    width: 14px;
+    height: 14px;
+  }
+
+  :deep(.ed-input) {
+    --ed-input-height: 28px;
+
+    .ed-input__suffix {
+      height: 26px;
+    }
+  }
+
+  :deep(.ed-input__inner) {
+    font-size: 12px;
+    font-weight: 400;
+  }
+
+  :deep(.ed-input-number) {
+    width: 100%;
+
+    .ed-input-number__decrease,
+    .ed-input-number__increase {
+      --ed-input-number-controls-height: 13px;
+    }
+
+    .ed-input__inner {
+      text-align: start;
+    }
+  }
+
+  &--select :deep(.ed-input-number) {
+    // Paint the outline above the step controls so zoom rounding cannot cover its right edge.
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 1px solid var(--ed-border-color);
+      border-radius: var(--ed-border-radius-base);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    &:hover::after {
+      border-color: var(--ed-border-color-hover);
+    }
+
+    &:focus-within::after {
+      border-color: var(--ed-color-primary);
+    }
+  }
+
+  :deep(.ed-select) {
+    width: 100%;
+  }
+
   :deep(.ed-radio__label) {
+    line-height: 20px;
+    font-style: normal;
     font-size: 14px !important;
     font-weight: 400 !important;
   }
