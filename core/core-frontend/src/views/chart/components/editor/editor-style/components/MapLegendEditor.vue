@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, reactive, watch } from 'vue'
 import { cloneDeep } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 import { formatterItem } from '@/views/chart/components/js/formatter'
@@ -21,25 +21,16 @@ const normalize = (value?: MapLegendOptions) => ({
 const draft = reactive(normalize(props.modelValue))
 watch(
   () => props.modelValue,
-  value => Object.assign(draft, normalize(value)),
+  value => {
+    const next = normalize(value)
+    if (JSON.stringify(draft) !== JSON.stringify(next)) Object.assign(draft, next)
+  },
   { deep: true }
 )
 const save = () => {
   if (JSON.stringify(draft) !== JSON.stringify(normalize(props.modelValue))) {
     emit('update:modelValue', cloneDeep(draft))
   }
-}
-const showFormatter = ref(false)
-const formatterDraft = ref(normalize(props.modelValue))
-const openFormatter = () => {
-  formatterDraft.value = normalize(draft)
-  showFormatter.value = true
-}
-const confirmFormatter = () => {
-  draft.prefix = formatterDraft.value.prefix
-  draft.formatterCfg = cloneDeep(formatterDraft.value.formatterCfg)
-  save()
-  showFormatter.value = false
 }
 const ranges = computed(() => {
   const misc = parseJson(props.chart.customAttr)?.misc
@@ -57,47 +48,24 @@ const ranges = computed(() => {
       <el-option value="custom" :label="t('chart.heatmap_format_custom')" />
     </el-select>
   </el-form-item>
-  <el-form-item
+  <ValueFormatterEdit
     v-if="draft.formatMode === 'custom'"
-    class="form-item"
-    :class="'form-item-' + themes"
+    inline
+    format-type-select
+    :themes="themes"
+    :formatter-item="draft"
+    :chart="chart"
+    :example-prefix="draft.prefix"
+    @change="save"
   >
-    <el-button
-      class="format-button"
-      :class="{ 'format-button--dark': themes === 'dark' }"
-      :secondary="themes !== 'dark'"
-      @click="openFormatter"
-      >{{ t('chart.heatmap_format_custom') }}</el-button
+    <el-form-item
+      :label="t('chart.heatmap_prefix')"
+      class="form-item"
+      :class="'form-item-' + themes"
     >
-  </el-form-item>
-  <el-dialog
-    v-if="showFormatter"
-    v-model="showFormatter"
-    :title="t('chart.heatmap_format_custom')"
-    :close-on-click-modal="false"
-    append-to-body
-    width="420px"
-    class="dialog-css"
-  >
-    <ValueFormatterEdit
-      format-type-select
-      :formatter-item="formatterDraft"
-      :chart="chart"
-      :example-prefix="formatterDraft.prefix"
-    >
-      <el-form-item :label="t('chart.heatmap_prefix')">
-        <el-input v-model="formatterDraft.prefix" maxlength="30" clearable />
-      </el-form-item>
-    </ValueFormatterEdit>
-    <template #footer>
-      <div class="dialog-footer">
-        <el-button size="default" @click="showFormatter = false">{{ t('chart.cancel') }}</el-button>
-        <el-button size="default" type="primary" @click="confirmFormatter">
-          {{ t('chart.confirm') }}
-        </el-button>
-      </div>
-    </template>
-  </el-dialog>
+      <el-input v-model="draft.prefix" :effect="themes" maxlength="30" clearable @change="save" />
+    </el-form-item>
+  </ValueFormatterEdit>
   <el-form-item class="form-item" :class="'form-item-' + themes">
     <el-checkbox v-model="draft.syncTooltip" :effect="themes" @change="save">
       {{ t('chart.map_format_sync_tooltip') }}
@@ -120,17 +88,3 @@ const ranges = computed(() => {
     />
   </el-form-item>
 </template>
-
-<style lang="less" scoped>
-.format-button--dark {
-  --ed-button-text-color: #ebebeb;
-  --ed-button-bg-color: transparent;
-  --ed-button-border-color: #505050;
-  --ed-button-hover-text-color: #ebebeb;
-  --ed-button-hover-bg-color: #414141;
-  --ed-button-hover-border-color: #666666;
-  --ed-button-active-text-color: #ebebeb;
-  --ed-button-active-bg-color: #505050;
-  --ed-button-active-border-color: #666666;
-}
-</style>

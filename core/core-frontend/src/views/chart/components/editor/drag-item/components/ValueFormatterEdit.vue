@@ -1,6 +1,7 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { reactive, toRefs } from 'vue'
+import { nextTick, reactive, toRefs, watch } from 'vue'
+import { ElForm } from 'element-plus-secondary'
 import {
   isEnLocal,
   formatterType,
@@ -11,6 +12,7 @@ import {
 } from '@/views/chart/components/js/formatter'
 
 const { t } = useI18n()
+const emit = defineEmits(['change'])
 
 const props = defineProps({
   // Existing callers keep their light popovers unless a theme is explicitly supplied.
@@ -19,6 +21,10 @@ const props = defineProps({
     default: 'light'
   },
   formatTypeSelect: {
+    type: Boolean,
+    default: false
+  },
+  inline: {
     type: Boolean,
     default: false
   },
@@ -45,7 +51,7 @@ const state = reactive({
 
 function changeUnitLanguage(cfg: BaseFormatter, lang) {
   onChangeFormatCfgUnitLanguage(cfg, lang)
-  getExampleValue()
+  changeFormatter()
 }
 
 const init = () => {
@@ -58,21 +64,29 @@ const init = () => {
 const getExampleValue = () => {
   state.exampleResult = valueFormatter(20000000, formatterItem.value.formatterCfg)
 }
+const changeFormatter = async () => {
+  await nextTick()
+  getExampleValue()
+  emit('change')
+}
 
 init()
 getExampleValue()
+watch(() => formatterItem.value.formatterCfg, getExampleValue, { deep: true })
 </script>
 
 <template>
   <div>
-    <el-form
+    <component
+      :is="inline ? 'div' : ElForm"
       ref="form"
       size="default"
       :model="formatterItem.formatterCfg"
       class="formatter-form"
       :class="{
         'formatter-form--dark': themes === 'dark',
-        'formatter-form--select': formatTypeSelect
+        'formatter-form--select': formatTypeSelect,
+        'formatter-form--inline': inline
       }"
       label-position="top"
     >
@@ -82,7 +96,7 @@ getExampleValue()
           v-if="formatTypeSelect"
           :effect="themes"
           v-model="formatterItem.formatterCfg.type"
-          @change="getExampleValue"
+          @change="changeFormatter"
         >
           <el-option
             v-for="type in state.typeList"
@@ -91,7 +105,7 @@ getExampleValue()
             :label="t('chart.' + type.name)"
           />
         </el-select>
-        <el-radio-group v-else v-model="formatterItem.formatterCfg.type" @change="getExampleValue">
+        <el-radio-group v-else v-model="formatterItem.formatterCfg.type" @change="changeFormatter">
           <el-radio
             :effect="themes"
             v-for="radio in state.typeList"
@@ -112,7 +126,7 @@ getExampleValue()
           v-model="formatterItem.formatterCfg.decimalCount"
           :min="0"
           :max="10"
-          @change="getExampleValue"
+          @change="changeFormatter"
         />
       </el-form-item>
 
@@ -137,7 +151,7 @@ getExampleValue()
                 :effect="themes"
                 v-model="formatterItem.formatterCfg.unit"
                 :placeholder="t('chart.pls_select_field')"
-                @change="getExampleValue"
+                @change="changeFormatter"
                 style="width: 100%"
               >
                 <el-option
@@ -159,7 +173,7 @@ getExampleValue()
           clearable
           maxlength="30"
           :placeholder="t('commons.input_content')"
-          @change="getExampleValue"
+          @change="changeFormatter"
         />
       </el-form-item>
 
@@ -167,7 +181,7 @@ getExampleValue()
         <el-checkbox
           :effect="themes"
           v-model="formatterItem.formatterCfg.thousandSeparator"
-          @change="getExampleValue"
+          @change="changeFormatter"
           :label="t('chart.value_formatter_thousand_separator')"
         />
       </el-form-item>
@@ -176,7 +190,7 @@ getExampleValue()
         <span class="formatter-example-label">{{ t('chart.value_formatter_example') }}</span>
         <span style="margin-left: 12px">{{ examplePrefix }}{{ state.exampleResult }}</span>
       </div>
-    </el-form>
+    </component>
   </div>
 </template>
 
@@ -187,6 +201,8 @@ getExampleValue()
 .formatter-form {
   --formatter-text: #1f2329;
   --formatter-secondary-text: #646a73;
+  --formatter-font-size: 14px;
+  --formatter-item-gap: 16px;
   color: var(--formatter-text);
 
   &--dark {
@@ -194,18 +210,25 @@ getExampleValue()
     --formatter-secondary-text: #a6a6a6;
   }
 
+  &--inline {
+    --formatter-font-size: 12px;
+    --formatter-item-gap: 8px;
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+
   .formatter-example-label {
     color: var(--formatter-secondary-text);
   }
 
   :deep(.ed-form-item) {
-    margin-bottom: 16px;
+    margin-bottom: var(--formatter-item-gap);
   }
 
   :deep(.ed-form-item__label) {
     color: var(--formatter-text);
     margin-bottom: 8px !important;
-    font-size: 14px !important;
+    font-size: var(--formatter-font-size) !important;
     font-weight: 400 !important;
   }
 
@@ -213,7 +236,7 @@ getExampleValue()
     color: var(--formatter-text);
   }
   :deep(.ed-checkbox__label) {
-    font-size: 14px !important;
+    font-size: var(--formatter-font-size) !important;
     font-weight: 400 !important;
   }
 
@@ -281,7 +304,7 @@ getExampleValue()
   :deep(.ed-radio__label) {
     line-height: 20px;
     font-style: normal;
-    font-size: 14px !important;
+    font-size: var(--formatter-font-size) !important;
     font-weight: 400 !important;
   }
 }
