@@ -620,8 +620,8 @@ export const dvMainStore = defineStore('dataVisualization', {
               }
             })
           }
-          newView['title'] = component.name
         }
+        newView['title'] = component.name
         currentFont && (newView.customStyle.text.fontFamily = currentFont.name)
         this.canvasViewInfo[component.id] = newView
       }
