@@ -405,7 +405,7 @@ public class SysParameterManage {
     }
 
     public boolean ignoreSslVerify() {
-        return Boolean.parseBoolean(StringUtils.defaultIfBlank(singleVal("basic.ignoreSslVerify"), "true"));
+        return Boolean.parseBoolean(StringUtils.defaultIfBlank(singleVal("basic.ignoreSslVerify"), "false"));
     }
 
     public ShareBaseVO shareBase() {
