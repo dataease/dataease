@@ -117,6 +117,6 @@ defineExpose({
 }
 
 .data-mobile {
-  zoom: 0.3;
+  zoom: 1;
 }
 </style>
