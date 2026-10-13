@@ -6,6 +6,7 @@ import icon_centerAlignment_outlined from '@/assets/svg/icon_center-alignment_ou
 import icon_rightAlignment_outlined from '@/assets/svg/icon_right-alignment_outlined.svg'
 import icon_customAlignment_outlined from '@/assets/svg/icon_custom-alignment_outlined.svg'
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
+import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
 import { computed, onMounted, PropType, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_TABLE_HEADER } from '@/views/chart/components/editor/util/chart'
@@ -957,11 +958,25 @@ onMounted(() => {
       <el-checkbox
         size="small"
         :effect="themes"
+        :disabled="chart?.yAxis?.length > 1"
         v-model="state.tableHeaderForm.showSingleQuotaName"
         @change="changeTableHeader('showSingleQuotaName')"
       >
         {{ t('chart.table_show_single_quota_name') }}
       </el-checkbox>
+      <el-tooltip
+        :effect="themes"
+        placement="top"
+        :content="t('chart.table_show_single_quota_name_tip')"
+      >
+        <el-icon
+          class="hint-icon"
+          :class="{ 'hint-icon--dark': themes === 'dark' }"
+          style="margin-left: 4px"
+        >
+          <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
+        </el-icon>
+      </el-tooltip>
     </el-form-item>
     <el-form-item
       v-if="!batchOptStatus && showProperty('headerGroup')"

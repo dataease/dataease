@@ -388,7 +388,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
     // S2 在每次布局和滚动时重新设置裁剪，仅对明细表的 SVG 裁剪上沿进行对齐。
     const dvMainStore = dvMainStoreWithOut()
     const enableSvgRenderer = dvMainStore?.canvasStyleData?.enableSvgRenderer
-    if (enableSvgRenderer) {
+    if (enableSvgRenderer && tableHeader.showHorizonBorder === false) {
       newChart.on(S2Event.LAYOUT_AFTER_RENDER, () => alignSvgBodyClip(newChart))
       newChart.on(S2Event.GLOBAL_SCROLL, () => alignSvgBodyClip(newChart))
     }
