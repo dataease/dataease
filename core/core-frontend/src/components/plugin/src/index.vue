@@ -2,7 +2,7 @@
 import noLic from './nolic.vue'
 import { ref, useAttrs, onMounted } from 'vue'
 import { execute, randomKey, formatArray } from './convert'
-import { load, loadDistributed, xpackModelApi } from '@/api/plugin'
+import { load, loadDistributed, getXpackModel } from '@/api/plugin'
 import configGlobal from '@/components/config-global/src/ConfigGlobal.vue'
 import { useCache } from '@/hooks/web/useCache'
 import { i18n } from '@/plugins/vue-i18n'
@@ -108,16 +108,7 @@ defineExpose({
   invokeMethod
 })
 onMounted(async () => {
-  const key = 'xpack-model-distributed'
-  let distributed = false
-  if (wsCache.get(key) === null) {
-    const res = await xpackModelApi()
-    const resData = isNull(res.data) ? 'null' : res.data
-    wsCache.set('xpack-model-distributed', resData)
-    distributed = res.data
-  } else {
-    distributed = wsCache.get(key)
-  }
+  const distributed = await getXpackModel()
   if (isNull(distributed)) {
     setTimeout(() => {
       emits('loadFail')
