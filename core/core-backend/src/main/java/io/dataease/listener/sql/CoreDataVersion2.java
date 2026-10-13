@@ -6,8 +6,6 @@ import io.dataease.system.dao.auto.mapper.CoreSysSettingRepository;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
-
 @Component
 public class CoreDataVersion2 implements CoreSqlBlock {
 
@@ -21,14 +19,9 @@ public class CoreDataVersion2 implements CoreSqlBlock {
 
     @Override
     public void execute() {
-        Optional<CoreSysSetting> legacy = coreSysSettingRepository.findByPkey("basic.ignoreSslVerify");
         if (coreSysSettingRepository.findByPkey("basic.ignoreSslVerify").isEmpty()) {
-            String pval = legacy
-                    .map(item -> "true".equalsIgnoreCase(item.getPval()) ? "false" : "true")
-                    .orElse("true");
             coreSysSettingRepository.saveAndFlush(new CoreSysSetting(
-                    1048232869488627722L, "basic.ignoreSslVerify", pval, "text", 16));
+                    1048232869488627722L, "basic.ignoreSslVerify", "false", "text", 16));
         }
-        legacy.ifPresent(coreSysSettingRepository::delete);
     }
 }

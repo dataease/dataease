@@ -61,9 +61,9 @@ public class HttpClientUtil {
 
     /**
      * 系统参数 basic.ignoreSslVerify 的运行时开关：
-     * true（默认）保持历史宽松策略；false 时启用严格 TLS 证书与主机名校验。
+     * false（默认）启用严格 TLS 证书与主机名校验；true 为显式选择的兼容策略。
      */
-    private static volatile boolean ignoreSslVerify = true;
+    private static volatile boolean ignoreSslVerify = false;
 
     public static void setIgnoreSslVerify(boolean ignoreSslVerify) {
         HttpClientUtil.ignoreSslVerify = ignoreSslVerify;
