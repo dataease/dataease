@@ -325,11 +325,11 @@ const resetLayout = () => {
       //div容器获取tableBox.value.clientWidth
       let canvasWidth = previewCanvas.value.clientWidth
       let canvasHeight = previewCanvas.value.clientHeight
-      scaleWidthPoint.value = (canvasWidth * 100) / canvasStyleData.value.width
+      scaleWidthPoint.value = (canvasWidth * 100) / canvasStyleData.value?.width
       if (dashboardScaleWithWidth.value) {
         scaleHeightPoint.value = scaleWidthPoint.value * 0.7
       } else {
-        scaleHeightPoint.value = (canvasHeight * 100) / canvasStyleData.value.height
+        scaleHeightPoint.value = (canvasHeight * 100) / canvasStyleData.value?.height
       }
       scaleMin.value =
         isDashboard() && !dashboardScaleWithWidth.value
@@ -409,11 +409,16 @@ const curGap = computed(() => {
  * 频率或预览状态改变时同步启停；searchCount 沿用初始值 0，重建计时器时不回退计数
  */
 useChartRefreshTimer(
-  () => ({
-    enabled: !!canvasStyleData.value.refreshViewEnable && isChartRefreshPreview(showPosition.value),
-    interval: canvasStyleData.value.refreshTime > 0 ? canvasStyleData.value.refreshTime : 5,
-    unit: canvasStyleData.value.refreshTime > 0 ? canvasStyleData.value.refreshUnit : 'minute'
-  }),
+  () => {
+    const refreshTime = canvasStyleData.value?.refreshTime
+    return {
+      enabled:
+        !!canvasStyleData.value?.refreshViewEnable && isChartRefreshPreview(showPosition.value),
+      interval: refreshTime && refreshTime > 0 ? refreshTime : 5,
+      unit:
+        refreshTime && refreshTime > 0 ? canvasStyleData.value?.refreshUnit || 'minute' : 'minute'
+    }
+  },
   () => refreshDataV()
 )
 
@@ -535,7 +540,7 @@ const filterBtnShow = computed(
     popComponentData.value &&
     popComponentData.value.length > 0 &&
     !inMobile.value &&
-    canvasStyleData.value.popupButtonAvailable
+    canvasStyleData.value?.popupButtonAvailable
 )
 const datasetParamsInit = item => {
   customDatasetParamsRef.value?.optInit(item)
@@ -546,7 +551,7 @@ const dataVPreview = computed(
 
 const linkOptBarShow = computed(() => {
   return Boolean(
-    canvasStyleData.value.suspensionButtonAvailable &&
+    canvasStyleData.value?.suspensionButtonAvailable &&
       !inMobile.value &&
       !mobileInPc.value &&
       showPopBar.value &&
