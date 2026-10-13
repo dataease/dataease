@@ -434,11 +434,6 @@ public class DatasetDataManage {
             LogUtil.error(e);
             sqlLogDTO.setStatus("Error");
             DEException.throwException(e.getMessage());
-        } finally {
-            if (ObjectUtils.isNotEmpty(dto.getTableId())) {
-                sqlLogDTO.setTableId(dto.getTableId());
-                datasetTableSqlLogManage.save(sqlLogDTO);
-            }
         }
         return map;
     }
