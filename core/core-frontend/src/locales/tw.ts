@@ -2271,6 +2271,7 @@ export default {
     table_field_total_label: '字段別名',
     table_row_header_freeze: '行頭凍結',
     table_show_single_quota_name: '顯示單指標名稱',
+    table_show_single_quota_name_tip: '多個指標需保留名稱以區分資料',
     value_formatter_total_out_percent: '顯示佔比',
     enable_slider_tip: '開啟縮略軸後，輪播提示將會失效',
     liquid_show_border: '顯示邊框',
