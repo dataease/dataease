@@ -55,3 +55,9 @@ core/core-frontend/src/assets/fsSvg.html
 .vite/
 /core/backend/
 /classpath:substitule.json
+
+# Local MCP credentials and runtime data
+.codex/**/.env.local
+.codex/**/browser-profile/
+.codex/**/output/
+.codex/**/__pycache__/
