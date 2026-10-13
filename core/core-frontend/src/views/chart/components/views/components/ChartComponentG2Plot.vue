@@ -306,6 +306,10 @@ const getElementClassInfo = element => {
   return info.filter(Boolean).join(' ').toLowerCase()
 }
 const isLinkageDataElement = element => {
+  // 象限背景是区域不参与数据联动的选中和淡化
+  if (view.value.type === 'quadrant' && element?.markType === 'range') {
+    return false
+  }
   // 采样标签载体只负责定位文本，不参与联动选中和透明度回放
   if (isLargeDataLabelMark(element?.__data__?.markKey)) {
     return false

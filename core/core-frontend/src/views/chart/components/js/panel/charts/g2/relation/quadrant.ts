@@ -17,6 +17,7 @@ import { ChartEvent, Chart as G2Chart, G2Spec } from '@antv/g2'
 import { valueFormatter } from '../../../../formatter'
 import { createTooltipWrapper } from '../bar/barUtil'
 import { bubbleValue, createBubbleRadius } from './quadrant-bubble'
+import { QuadrantChart } from './quadrant-range'
 
 const { t } = useI18n()
 const BUBBLE_SIZE_RANGE = [5, 30]
@@ -34,8 +35,6 @@ const isTextInCircle = (text: string, fontSize: number, radius: number) => {
  * 象限图
  */
 export class Quadrant extends G2ChartView {
-  private readonly afterRenderHandlers = new WeakMap<G2Chart, () => Promise<void>>()
-
   properties: EditorProperty[] = [
     'background-overall-component',
     'border-style',
@@ -164,10 +163,14 @@ export class Quadrant extends G2ChartView {
     }))
     // x轴基准线 默认值
     const xValues = data.map(item => item.value)
-    const xBaseline = (Math.max(...xValues) + Math.min(...xValues)) / 2
+    const xMin = Math.min(...xValues)
+    const xMax = Math.max(...xValues)
+    const xBaseline = (xMax + xMin) / 2
     // y轴基准线 默认值
     const yValues = data.map(item => item.extValue)
-    const yBaseline = (Math.max(...yValues) + Math.min(...yValues)) / 2
+    const yMin = Math.min(...yValues)
+    const yMax = Math.max(...yValues)
+    const yBaseline = (yMax + yMin) / 2
     const defaultBaselineQuadrant = {
       ...chart.customAttr['quadrant']
     }
@@ -188,6 +191,7 @@ export class Quadrant extends G2ChartView {
         { type: 'lineY', data: [yBaseline] },
         {
           type: 'point',
+          animate: false,
           encode: { x: 'value', y: 'extValue', color: 'field' },
           // 自动范围使用规整刻度
           scale: {
@@ -196,40 +200,30 @@ export class Quadrant extends G2ChartView {
           },
           legend: { size: false }
         },
-        { type: 'range', data: [], encode: { x: 'x', y: 'y' }, zIndex: -1 }
+        {
+          type: 'range',
+          animate: false,
+          // 保留完整数据边界，图例筛选时维持原有自动轴范围
+          data: [0, 1, 2, 3].map(region => ({
+            x: [xBaseline, region === 1 || region === 2 ? xMin : xMax],
+            y: [yBaseline, region < 2 ? yMax : yMin],
+            region
+          })),
+          encode: { x: 'x', y: 'y' },
+          zIndex: -1
+        }
       ]
     }
     chart.container = container
     const options: G2Spec = this.setupOptions(chart, baseOptions, {})
-    const newChart = new G2Chart({ container, ...getG2Renderer() })
+    const newChart = new QuadrantChart({ container, ...getG2Renderer() })
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
     newChart.on(`point:${ChartEvent.CLICK}`, action)
     newChart.on(`plot:${ChartEvent.CLICK}`, () => quadrantDefaultBaseline(defaultBaselineQuadrant))
     newChart.once(ChartEvent.AFTER_RENDER, () => quadrantDefaultBaseline(defaultBaselineQuadrant))
-    // 等待象限区域二次渲染完成后再由外层恢复联动选中态
-    this.afterRenderHandlers.set(newChart, async () => {
-      const rangeMark = newChart.getNodeByType('range')
-      const xScale = newChart.getScaleByChannel('x')
-      const [xMin, xMax] = xScale.getOptions().domain
-      const yScale = newChart.getScaleByChannel('y')
-      const [yMin, yMax] = yScale.getOptions().domain
-      rangeMark.data([
-        { x: [xBaseline, xMax], y: [yBaseline, yMax], region: 0 },
-        { x: [xMin, xBaseline], y: [yBaseline, yMax], region: 1 },
-        { x: [xMin, xBaseline], y: [yMin, yBaseline], region: 2 },
-        { x: [xBaseline, xMax], y: [yMin, yBaseline], region: 3 }
-      ])
-      await newChart.render()
-    })
 
     return newChart
-  }
-
-  public async afterRender(chart: G2Chart): Promise<void> {
-    const handler = this.afterRenderHandlers.get(chart)
-    this.afterRenderHandlers.delete(chart)
-    await handler?.()
   }
 
   protected configTheme(chart: Chart, options: G2Spec): G2Spec {
@@ -283,6 +277,13 @@ export class Quadrant extends G2ChartView {
     const customAttr = parseJson(chart.customAttr)
     const basicStyle = customAttr.basicStyle
     const sizeOptions = {
+      style: {
+        // 禁用动画后显式保留原始透明度，供取消联动时恢复
+        opacity: 1,
+        fillOpacity: 0.8,
+        stroke: hexColorToRGBA('#bbb', basicStyle.alpha),
+        lineWidth: 1
+      },
       scale: {
         color: {
           range: options.theme.category10
