@@ -7,17 +7,11 @@ const props = defineProps({
   className: propTypes.string,
   staticContent: propTypes.string
 })
-const svgClass = computed(() => {
-  if (props.className) {
-    return `svg-icon ${props.className}`
-  }
-  return 'svg-icon'
-})
 </script>
 
 <template>
   <div
-    class="svg-container"
+    class="svg-container svg-icon"
     v-if="staticContent"
     v-html="staticContent"
     :class="svgClass"
