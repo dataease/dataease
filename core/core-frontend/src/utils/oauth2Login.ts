@@ -55,7 +55,8 @@ export const prepareOauth2Login = async (): Promise<string> => {
     if (!['https:', 'http:'].includes(url.protocol)) throw new Error('Invalid OAuth2 endpoint')
     url.searchParams.set('response_type', 'code')
     url.searchParams.set('client_id', data.clientId)
-    url.searchParams.set('scope', data.scope)
+    // Accept legacy encoded separators without double-encoding them in URLSearchParams.
+    url.searchParams.set('scope', data.scope.replace(/%20/g, ' '))
     url.searchParams.set('state', data.state)
     url.searchParams.set('redirect_uri', data.redirectUri)
     if (data.codeChallenge) {
