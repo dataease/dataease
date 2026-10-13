@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { getHighlightSegments } from '@/utils/utils'
 import APIDs from "@/assets/svg/API-ds.svg";
 import ExcelDs from "@/assets/svg/Excel-ds.svg";
 import StarRocksDs from "@/assets/svg/StarRocks-ds.svg";
@@ -1141,14 +1142,14 @@ defineExpose({
               class="entity-item"
               :title="data.name + ' (' + (data.attrs?.account || '') + ')'"
             >
-              <span v-html="data.name" />
+              <span>{{ data.name }}</span>
               <span class="user-account"> ({{ data.attrs?.account }})</span>
             </span>
             <span
               v-else-if="data.type === 1"
               class="flex-align-center label role-item"
             >
-              <span v-html="data.name" />
+              <span>{{ data.name }}</span>
               <!-- <el-tooltip
                 class="box-item"
                 effect="dark"
@@ -1170,7 +1171,7 @@ defineExpose({
               }}</span>
             </span>
             <span v-else class="label-tooltip" :title="data.name">
-              <span v-html="data.name" />
+              <span>{{ data.name }}</span>
             </span>
           </span>
         </template>
@@ -1343,11 +1344,15 @@ defineExpose({
                     ></component
                   ></Icon>
                 </el-icon>
-                <span
-                  v-html="
-                    scope.row.colorName ? scope.row.colorName : scope.row.name
-                  "
-                />
+                <span>
+                  <template
+                    v-for="(segment, index) in getHighlightSegments(scope.row.name, resourceKeyword)"
+                    :key="index"
+                  >
+                    <span v-if="segment.highlight" class="search-key-span">{{ segment.text }}</span>
+                    <template v-else>{{ segment.text }}</template>
+                  </template>
+                </span>
               </span>
             </template>
           </vxe-column>

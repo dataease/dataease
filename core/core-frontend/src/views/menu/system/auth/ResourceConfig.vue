@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { getHighlightSegments } from '@/utils/utils'
 import mysqlDs from '@/assets/svg/mysql-ds.svg'
 import oracleDs from '@/assets/svg/oracle-ds.svg'
 import sqlServerDs from '@/assets/svg/sqlServer-ds.svg'
@@ -1097,11 +1098,15 @@ defineExpose({
             <el-icon v-if="!data.leaf">
               <Icon name="dv-folder"><dvFolder class="svg-icon" /></Icon>
             </el-icon>
-            <span
-              class="label-tooltip"
-              :title="data.name"
-              v-html="data.colorName && menukey ? data.colorName : node.label"
-            />
+            <span class="label-tooltip" :title="data.name">
+              <template
+                v-for="(segment, index) in getHighlightSegments(node.label, menukey)"
+                :key="index"
+              >
+                <span v-if="segment.highlight" class="search-key-span">{{ segment.text }}</span>
+                <template v-else>{{ segment.text }}</template>
+              </template>
+            </span>
           </span>
         </template>
       </el-tree>
@@ -1178,11 +1183,15 @@ defineExpose({
                 ></component
               ></Icon>
             </el-icon>
-            <span
-              class="label-tooltip"
-              :title="data.name"
-              v-html="data.colorName && resourcekey ? data.colorName : node.label"
-            />
+            <span class="label-tooltip" :title="data.name">
+              <template
+                v-for="(segment, index) in getHighlightSegments(node.label, resourcekey)"
+                :key="index"
+              >
+                <span v-if="segment.highlight" class="search-key-span">{{ segment.text }}</span>
+                <template v-else>{{ segment.text }}</template>
+              </template>
+            </span>
           </span>
         </template>
       </el-tree>
@@ -1272,17 +1281,31 @@ defineExpose({
             >
               <template #default="scope">
                 <div v-if="scope.row.type === 2" class="de-row-disabled">
-                  <span
-                    v-html="scope.row.colorName && targetkey ? scope.row.colorName : scope.row.name"
-                  />
+                  <span>
+                    <template
+                      v-for="(segment, index) in getHighlightSegments(scope.row.name, targetkey)"
+                      :key="index"
+                    >
+                      <span v-if="segment.highlight" class="search-key-span">{{
+                        segment.text
+                      }}</span>
+                      <template v-else>{{ segment.text }}</template>
+                    </template>
+                  </span>
                 </div>
                 <div v-else-if="activeName === 'role'" class="list-item_primary-row">
                   <span class="flex-align-center label">
-                    <span
-                      v-html="
-                        scope.row.colorName && targetkey ? scope.row.colorName : scope.row.name
-                      "
-                    />
+                    <span>
+                      <template
+                        v-for="(segment, index) in getHighlightSegments(scope.row.name, targetkey)"
+                        :key="index"
+                      >
+                        <span v-if="segment.highlight" class="search-key-span">{{
+                          segment.text
+                        }}</span>
+                        <template v-else>{{ segment.text }}</template>
+                      </template>
+                    </span>
                     <span v-if="scope.row.attrs?.root" class="mark flex-center">{{
                       t('role.system')
                     }}</span>
@@ -1300,9 +1323,17 @@ defineExpose({
                   class="entity-item"
                   :title="`${scope.row.name} (${scope.row.attrs?.account || ''})`"
                 >
-                  <span
-                    v-html="scope.row.colorName && targetkey ? scope.row.colorName : scope.row.name"
-                  />
+                  <span>
+                    <template
+                      v-for="(segment, index) in getHighlightSegments(scope.row.name, targetkey)"
+                      :key="index"
+                    >
+                      <span v-if="segment.highlight" class="search-key-span">{{
+                        segment.text
+                      }}</span>
+                      <template v-else>{{ segment.text }}</template>
+                    </template>
+                  </span>
                   <span class="user-account">{{ ` (${scope.row.attrs?.account || ''})` }}</span>
                 </span>
               </template>
