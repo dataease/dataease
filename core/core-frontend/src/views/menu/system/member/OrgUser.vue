@@ -4,7 +4,7 @@ import icon_close_outlined from "@/assets/svg/icon_close_outlined.svg";
 import { ref, computed, reactive, onBeforeUnmount } from "vue";
 import { useI18n } from "@/hooks/web/useI18n";
 import { userOptionForRoleApi, mountUserApi } from "@/api/user";
-import { setColorName } from "@/utils/utils";
+import { getHighlightSegments } from '@/utils/utils'
 import { ElMessage, type CheckboxValueType } from "element-plus-secondary";
 const { t } = useI18n();
 const dialogVisible = ref(false);
@@ -17,7 +17,6 @@ interface User {
   check: boolean;
   hidden: boolean;
   account: string;
-  colorName: string;
 }
 const props = defineProps({
   rid: {
@@ -34,7 +33,6 @@ const checkedUsers = computed<User[]>(() => {
 });
 const triggerFilterUser = (val: string) => {
   state.selectUserList.forEach((item) => {
-    setColorName(item, val);
     item["hidden"] =
       !!val && !item.name.toLocaleLowerCase().includes(val.toLocaleLowerCase());
   });
@@ -211,7 +209,15 @@ defineExpose({
               class="user-label"
               :title="user.name + '(' + user.account + ')'"
             >
-              <span v-html="user.colorName || user.name"></span>
+              <span>
+                <template
+                  v-for="(segment, index) in getHighlightSegments(user.name, userKeyword)"
+                  :key="index"
+                >
+                  <span v-if="segment.highlight" class="search-key-span">{{ segment.text }}</span>
+                  <template v-else>{{ segment.text }}</template>
+                </template>
+              </span>
               <span>{{ "(" + user.account + ")" }}</span>
             </div>
           </el-checkbox>
