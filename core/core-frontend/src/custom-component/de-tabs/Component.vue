@@ -111,7 +111,7 @@
             :dv-info="dvInfo"
             :cur-gap="curPreviewGap"
             :component-data="tabItem.componentData"
-            :canvas-style-data="{}"
+            :canvas-style-data="{ dashboardAdaptor: canvasStyleData.dashboardAdaptor }"
             :canvas-view-info="canvasViewInfo"
             :canvas-id="element.id + '--' + tabItem.name"
             :preview-active="element.editableTabsValue === tabItem.name"

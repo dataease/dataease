@@ -303,11 +303,11 @@ const resetLayout = () => {
       //div容器获取tableBox.value.clientWidth
       let canvasWidth = previewCanvas.value.clientWidth
       let canvasHeight = previewCanvas.value.clientHeight
-      scaleWidthPoint.value = (canvasWidth * 100) / canvasStyleData.value.width
+      scaleWidthPoint.value = (canvasWidth * 100) / canvasStyleData.value?.width
       if (dashboardScaleWithWidth.value) {
         scaleHeightPoint.value = scaleWidthPoint.value * 0.7
       } else {
-        scaleHeightPoint.value = (canvasHeight * 100) / canvasStyleData.value.height
+        scaleHeightPoint.value = (canvasHeight * 100) / canvasStyleData.value?.height
       }
       scaleMin.value =
         isDashboard() && !dashboardScaleWithWidth.value
@@ -370,7 +370,7 @@ const curGap = computed(() => {
 
 const initRefreshTimer = () => {
   // 数据刷新计时器 (仪表开启刷新并且是预览状态才启动刷新)
-  if (canvasStyleData.value.refreshViewEnable && showPosition.value === 'preview') {
+  if (canvasStyleData.value?.refreshViewEnable && showPosition.value === 'preview') {
     searchCount.value = 0
     refreshTimer.value && clearInterval(refreshTimer.value)
     let refreshTime = 300000
@@ -499,7 +499,7 @@ const filterBtnShow = computed(
     popComponentData.value &&
     popComponentData.value.length > 0 &&
     !inMobile.value &&
-    canvasStyleData.value.popupButtonAvailable
+    canvasStyleData.value?.popupButtonAvailable
 )
 const datasetParamsInit = item => {
   customDatasetParamsRef.value?.optInit(item)
@@ -510,7 +510,7 @@ const dataVPreview = computed(
 
 const linkOptBarShow = computed(() => {
   return Boolean(
-    canvasStyleData.value.suspensionButtonAvailable &&
+    canvasStyleData.value?.suspensionButtonAvailable &&
       ((!inMobile.value && !mobileInPc.value) || !isDashboard()) &&
       showPopBar.value &&
       !isDesktopFlag
