@@ -2347,7 +2347,8 @@ export default {
     table_field_total_label: 'Field Alias',
     table_row_header_freeze: 'Row Header Freeze',
     table_show_single_quota_name: 'Show Single Measure Name',
-    table_show_single_quota_name_tip: 'Names must be retained to distinguish data for multiple measures',
+    table_show_single_quota_name_tip:
+      'Names must be retained to distinguish data for multiple measures',
     value_formatter_total_out_percent: 'Show percentage',
     enable_slider_tip: 'After enabling the slider, the carousel prompt will be disabled.',
     liquid_show_border: 'Show Border',
