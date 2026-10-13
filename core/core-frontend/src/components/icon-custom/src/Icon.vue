@@ -34,6 +34,7 @@ const svgClass = computed(() => {
 .svg-container {
   width: 100%;
   height: 100%;
+  color: var(--ed-color-primary);
   svg {
     overflow: hidden;
     vertical-align: -0.1em;
