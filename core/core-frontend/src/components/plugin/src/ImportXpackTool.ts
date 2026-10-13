@@ -1,8 +1,6 @@
-import { xpackModelApi } from '@/api/plugin'
-import { useCache } from '@/hooks/web/useCache'
+import { getXpackModel } from '@/api/plugin'
 import { isNull } from '@/utils/utils'
 import { useEmbedded } from '@/store/modules/embedded'
-const { wsCache } = useCache()
 const embeddedStore = useEmbedded()
 const basePath = import.meta.env.VITE_API_BASEPATH
 const embeddedBasePath =
@@ -35,16 +33,7 @@ const loadXpackTs = (url: string) => {
 
 export const importXpackTool = async (methodName: string) => {
   const jsname = 'L3Rvb2xzL0htYWNUb29s'
-  const key = 'xpack-model-distributed'
-  let distributed = false
-  if (wsCache.get(key) === null) {
-    const res = await xpackModelApi()
-    const resData = isNull(res.data) ? 'null' : res.data
-    wsCache.set('xpack-model-distributed', resData)
-    distributed = res.data
-  } else {
-    distributed = wsCache.get(key)
-  }
+  const distributed = await getXpackModel()
   if (isNull(distributed) || !distributed) {
     return null
   }
