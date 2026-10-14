@@ -162,7 +162,7 @@ onMounted(() => {
           <template #label>&nbsp;</template>
           <el-tooltip :content="t('chart.not_alpha')" :effect="toolTip" placement="top">
             <el-select
-              style="width: 53px"
+              style="width: 56px"
               :effect="props.themes"
               v-model="state.quadrantForm.lineStyle.opacity"
               :placeholder="t('chart.not_alpha')"
@@ -262,7 +262,7 @@ onMounted(() => {
                 <template #label>&nbsp;</template>
                 <el-tooltip :content="t('chart.not_alpha')" :effect="toolTip" placement="top">
                   <el-select
-                    style="width: 53px"
+                    style="width: 56px"
                     :effect="props.themes"
                     v-model="state.quadrantForm.regionStyle[index].fillOpacity"
                     :placeholder="t('chart.not_alpha')"
@@ -312,7 +312,7 @@ onMounted(() => {
                 <template #label>&nbsp;</template>
                 <el-tooltip :content="t('chart.not_alpha')" :effect="toolTip" placement="top">
                   <el-select
-                    style="width: 53px"
+                    style="width: 56px"
                     :effect="props.themes"
                     v-model="l.style.fillOpacity"
                     :placeholder="t('chart.not_alpha')"
