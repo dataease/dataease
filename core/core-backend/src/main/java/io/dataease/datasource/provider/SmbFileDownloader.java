@@ -33,11 +33,16 @@ public final class SmbFileDownloader {
     private SmbFileDownloader() {
     }
 
+    static URI parseUri(String address) {
+        // Preserve existing percent escapes; getPath() decodes the remote path once.
+        return URI.create(address.trim().replace(" ", "%20"));
+    }
+
     public static Map<String, String> download(ExcelConfiguration configuration, Path directory) {
         URI uri;
         String[] segments;
         try {
-            uri = URI.create(configuration.getUrl().trim());
+            uri = parseUri(configuration.getUrl());
             String remotePath = uri.getPath();
             if (!"smb".equalsIgnoreCase(uri.getScheme()) || uri.getHost() == null
                     || uri.getUserInfo() != null || uri.getQuery() != null || uri.getFragment() != null
