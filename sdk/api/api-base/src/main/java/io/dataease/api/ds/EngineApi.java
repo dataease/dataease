@@ -21,17 +21,17 @@ public interface EngineApi {
     DatasourceDTO getEngine();
 
     @Operation(summary = "保存")
-    @DePermit("m:read")
+    @DePermit("m:manage")
     @PostMapping("/save")
     void save(@RequestBody DatasourceDTO datasourceDTO);
 
     @Operation(summary = "校验")
-    @DePermit("m:read")
+    @DePermit("m:manage")
     @PostMapping("/validate")
     void validate(@RequestBody DatasourceDTO datasourceDTO) throws Exception;
 
     @Operation(summary = "根据ID校验")
-    @DePermit("m:read")
+    @DePermit("m:manage")
     @PostMapping("/validate/{id}")
     void validateById(@PathVariable Long id) throws Exception;
 

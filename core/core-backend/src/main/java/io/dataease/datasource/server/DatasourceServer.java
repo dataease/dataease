@@ -1256,6 +1256,18 @@ public class DatasourceServer implements DatasourceApi {
         if (ObjectUtils.isEmpty(tableName) || ObjectUtils.isEmpty(id)) {
             return null;
         }
+        if (id <= 0) {
+            DEException.throwException(Translator.get("i18n_dataset_table_not_exist"));
+        }
+        CoreDatasource authorizedDs = dataSourceManage.getCoreDatasource(id);
+        if (authorizedDs == null) {
+            DEException.throwException(Translator.get("i18n_dataset_ds_error") + ",ID:" + id);
+        }
+        boolean sharedEngineDs = authorizedDs.getType().contains(DatasourceConfiguration.DatasourceType.API.name())
+                || authorizedDs.getType().contains(DatasourceConfiguration.DatasourceType.Excel.name());
+        if (sharedEngineDs) {
+            datasetCacheManage.validateTable(id, tableName);
+        }
         DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
         BeanUtils.copyBean(datasourceSchemaDTO, engineManage.getDeEngine());
 
@@ -1265,7 +1277,8 @@ public class DatasourceServer implements DatasourceApi {
         datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
         dsMap.put(datasourceSchemaDTO.getId(), datasourceSchemaDTO);
         DsTypeDTO datasourceType = datasetSQLManage.getDatasourceType(dsMap, datasourceSchemaDTO.getId());
-        String sql = "SELECT * FROM " + schema + datasourceType.getPrefix() + tableName + datasourceType.getSuffix();
+        String quotedTable = quoteIdentifier(tableName, datasourceType.getPrefix(), datasourceType.getSuffix());
+        String sql = "SELECT * FROM " + schema + quotedTable;
         Provider provider = ProviderFactory.getProvider(datasourceSchemaDTO.getType());
         sql = new String(Base64.getEncoder().encode(sql.getBytes()));
         PreviewSqlDTO previewSqlDTO = new PreviewSqlDTO();
@@ -1273,6 +1286,20 @@ public class DatasourceServer implements DatasourceApi {
         previewSqlDTO.setDatasourceId(id);
         previewSqlDTO.setIsCross(false);
         return datasetDataManage.previewSql(previewSqlDTO);
+    }
+
+    private String quoteIdentifier(String identifier, String prefix, String suffix) {
+        if (StringUtils.isBlank(identifier)) {
+            DEException.throwException(Translator.get("i18n_dataset_table_not_exist"));
+        }
+        String escaped = identifier;
+        if (StringUtils.isNotBlank(prefix) && StringUtils.isNotBlank(suffix)
+                && !StringUtils.equals(prefix, suffix) && "[".equals(prefix) && "]".equals(suffix)) {
+            escaped = escaped.replace("]", "]]");
+        } else if (StringUtils.isNotBlank(prefix)) {
+            escaped = escaped.replace(prefix, prefix + prefix);
+        }
+        return prefix + escaped + suffix;
     }
 
     @Override

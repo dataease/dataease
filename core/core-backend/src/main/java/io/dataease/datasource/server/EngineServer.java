@@ -4,7 +4,6 @@ import io.dataease.utils.*;
 
 import io.dataease.api.ds.EngineApi;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
-import io.dataease.exception.DEException;
 import io.dataease.datasource.dao.auto.repository.CoreDeEngineRepository;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.provider.CalciteProvider;
@@ -72,15 +71,9 @@ public class EngineServer implements EngineApi {
         if (StringUtils.isNotEmpty(datasourceDTO.getConfiguration())) {
             datasourceDTO.setConfiguration(new String(Base64.getDecoder().decode(datasourceDTO.getConfiguration())));
         }
-        if (StringUtils.equalsIgnoreCase(datasourceDTO.getType(), "h2")
-                && StringUtils.isNotBlank(datasourceDTO.getConfiguration())) {
-            H2 h2 = JsonUtil.parseObject(datasourceDTO.getConfiguration(), H2.class);
-            if (h2 != null && StringUtils.isNotBlank(h2.getJdbcUrl())) {
-                DEException.throwException("H2 engine does not support custom jdbcUrl");
-            }
-        }
         CoreDeEngine coreDeEngine = new CoreDeEngine();
         BeanUtils.copyBean(coreDeEngine, datasourceDTO);
+        engineManage.validateH2JdbcConfig(coreDeEngine);
         if (coreDeEngine.getId() == null) {
             coreDeEngine.setId(IDUtils.snowID());
             datasourceDTO.setId(coreDeEngine.getId());

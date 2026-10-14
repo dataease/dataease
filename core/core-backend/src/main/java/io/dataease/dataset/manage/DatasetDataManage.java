@@ -458,6 +458,9 @@ public class DatasetDataManage {
     }
 
     public Map<String, Object> previewSql(PreviewSqlDTO dto) throws DEException {
+        if (dto == null || dto.getDatasourceId() == null || dto.getDatasourceId() <= 0) {
+            DEException.throwException(Translator.get("i18n_dataset_table_not_exist"));
+        }
         CoreDatasource coreDatasource = dataSourceManage.getCoreDatasource(dto.getDatasourceId());
         DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
         if (coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name()) || coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.Excel.name())) {
