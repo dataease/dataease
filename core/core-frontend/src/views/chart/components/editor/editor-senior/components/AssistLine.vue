@@ -81,10 +81,10 @@ const closeEditLine = () => {
 }
 
 const changeLine = () => {
-  // check line config
+  // 保存前统一校验辅助线配置，名称不能只包含空白字符
   for (let i = 0; i < state.lineArr.length; i++) {
     const ele = state.lineArr[i]
-    if (!ele.name || ele.name === '') {
+    if (!ele.name?.trim()) {
       ElMessage.error(t('chart.name_can_not_empty'))
       return
     }

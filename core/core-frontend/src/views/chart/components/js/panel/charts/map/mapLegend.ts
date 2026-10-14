@@ -42,7 +42,11 @@ export const mapLegendLabel = (chart: Chart, value: unknown): string => {
   return `${format(min)} - ${format(max)}`
 }
 
-export const mapTooltipValue = (chart: Chart, value: number, formatter: BaseFormatter) =>
-  chart.type === 'map' && parseJson(chart.customStyle)?.legend?.map?.syncTooltip
-    ? mapLegendFormatter(chart)(value)
-    : valueFormatter(value, formatter)
+export const mapTooltipValue = (chart: Chart, value: number, formatter: BaseFormatter) => {
+  const legend = parseJson(chart.customStyle)?.legend
+  // 图例关闭后，提示指标恢复使用各字段自身的数值格式。
+  if (chart.type === 'map' && legend?.show && legend.map?.syncTooltip) {
+    return mapLegendFormatter(chart)(value)
+  }
+  return valueFormatter(value, formatter)
+}

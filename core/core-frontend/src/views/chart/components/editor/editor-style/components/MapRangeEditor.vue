@@ -10,7 +10,9 @@ import {
 } from './mapRange'
 
 const props = defineProps<{ modelValue: number[]; themes: EditorTheme }>()
-const emit = defineEmits<{ (event: 'update:modelValue', value: number[]): void }>()
+const emit = defineEmits<{
+  (event: 'update:modelValue', value: number[], boundaryIndex?: number): void
+}>()
 const { t } = useI18n()
 const draft = ref<(number | undefined)[]>([...props.modelValue])
 const host = ref<HTMLElement>()
@@ -25,13 +27,13 @@ watch(
   },
   { deep: true }
 )
-const save = () => {
+const save = (boundaryIndex?: number) => {
   if (!validMapBoundaries(draft.value)) {
     error.value = t('chart.map_boundary_invalid')
     return
   }
   error.value = ''
-  emit('update:modelValue', [...draft.value])
+  emit('update:modelValue', [...draft.value], boundaryIndex)
 }
 const insert = async (index: number) => {
   const next = insertMapBoundary(draft.value as number[], index)
@@ -40,7 +42,7 @@ const insert = async (index: number) => {
     return
   }
   draft.value = next
-  save()
+  save(index + 1)
   await nextTick()
   const input = host.value?.querySelectorAll<HTMLInputElement>('.map-boundary-row input')[index + 1]
   input?.focus()
@@ -50,7 +52,7 @@ const remove = (index: number) => {
   const next = removeMapBoundary(draft.value as number[], index)
   if (!next) return
   draft.value = next
-  save()
+  save(index)
 }
 </script>
 
@@ -77,7 +79,7 @@ const remove = (index: number) => {
           :step="0.01"
           :effect="themes"
           controls-position="right"
-          @change="save"
+          @change="save()"
         />
         <el-button
           v-if="index > 0 && index < draft.length - 1"

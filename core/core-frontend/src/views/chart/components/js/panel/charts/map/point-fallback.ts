@@ -289,7 +289,9 @@ export async function drawPointFallbackChart(
       head.dynamicTooltipValue?.forEach(item => {
         const formatter = formatterMap[item.fieldId]
         if (formatter) {
-          const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
+          const value = escapeTooltipHtml(
+            mapTooltipValue(chart, parseFloat(item.value), formatter.formatterCfg)
+          )
           const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
           result.push({ color: 'grey', name, value: `${value ?? ''}` })
         }
