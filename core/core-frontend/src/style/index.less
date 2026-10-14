@@ -988,6 +988,14 @@ strong {
   }
 }
 
+// 开关轨道颜色不受 :has(.ed-overlay) 守卫影响，
+// 避免含弹窗的配置项（如标题）开关轨道色与其他配置项不一致
+.ed-collapse-item--dark {
+  .ed-switch {
+    --ed-switch-off-color: #5f5f5f;
+  }
+}
+
 .ed-collapse-item--dark:not(:has(.ed-overlay)) {
   --ed-border-color: #5f5f5f !important;
 
