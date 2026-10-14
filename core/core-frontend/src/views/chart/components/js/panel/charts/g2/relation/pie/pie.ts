@@ -572,6 +572,13 @@ export class PieDonut extends Pie {
         }
       })
       group.appendChild(contentText)
+      // 主体内容优先：预留后缀后发生截断时，隐藏后缀并恢复主体的整行显示空间。
+      if (suffixText && contentText.isOverflowing()) {
+        suffixText.destroy()
+        suffixText = undefined
+        suffixWidth = 0
+        contentText.style.wordWrapWidth = lineWidth
+      }
       contentWidth = contentText.getBBox().width
     }
     const lineStart = -(contentWidth + suffixWidth) / 2
