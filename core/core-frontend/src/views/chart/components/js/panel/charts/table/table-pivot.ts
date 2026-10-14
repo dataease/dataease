@@ -791,12 +791,21 @@ export class TablePivot extends S2ChartView<PivotSheet> {
           })
         }
         if (basicStyle.tableLayoutMode !== 'tree') {
+          // 分列取整后，以实际列宽之和定位数据区，避免统一取整多出的像素形成透明缝隙。
+          totalRowWidth = ev.rowsHierarchy.sampleNodesForAllLevels.reduce((width, node) => {
+            return width + node.width
+          }, 0)
+          const maxRowLevel = ev.rowsHierarchy.maxLevel
           ev.rowNodes.forEach(n => {
             n.x = 0
             let tmp = n
             while (tmp.parent.id !== 'root') {
               n.x += tmp.parent.width
               tmp = tmp.parent
+            }
+            // 跨列汇总单元格也使用取整后的实际宽度，保持右边界一致。
+            if (n.isTotalRoot || (n.isSubTotals && n.level < maxRowLevel)) {
+              n.width = totalRowWidth - n.x
             }
           })
         }
