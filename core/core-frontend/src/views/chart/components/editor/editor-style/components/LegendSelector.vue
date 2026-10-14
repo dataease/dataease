@@ -207,15 +207,22 @@ const changeLegendNumber = (prop?) => {
   prop ? changeMisc(prop) : ''
 }
 const changeMapBoundaries = (values: number[]) => {
+  const prevValues = state.legendForm.miscForm.mapLegendCustomRange || []
   state.legendForm.miscForm.mapLegendCustomRange = values
   state.legendForm.miscForm.mapLegendNumber = values.length - 1
   const labels = state.legendForm.map?.rangeLabels
   if (labels) {
-    const keys = new Set(
-      values.slice(0, -1).map((value, index) => mapRangeKey([value, values[index + 1]]))
-    )
-    const rangeLabels = Object.fromEntries(Object.entries(labels).filter(([key]) => keys.has(key)))
-    if (Object.keys(rangeLabels).length !== Object.keys(labels).length) {
+    // 分界点变化后按位置继承区间名称：仅被删除（合并）的区间名称被清除，
+    // 修改数值、插入分界点产生的其余区间保留原名称
+    const prevRanges = prevValues.slice(0, -1).map((value, index) => [value, prevValues[index + 1]])
+    const rangeLabels: Record<string, string> = {}
+    values.slice(0, -1).forEach((value, index) => {
+      const carried = labels[mapRangeKey(prevRanges[index])]
+      if (carried?.trim()) {
+        rangeLabels[mapRangeKey([value, values[index + 1]])] = carried
+      }
+    })
+    if (JSON.stringify(rangeLabels) !== JSON.stringify(labels)) {
       state.legendForm.map = { ...state.legendForm.map, rangeLabels }
       changeLegendStyle('map')
     }
