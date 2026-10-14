@@ -187,7 +187,7 @@ public abstract class Provider {
         Matcher matcher = compile.matcher(s);
         while (matcher.find()) {
             String v = matcher.group();
-            s = s.replaceAll(Pattern.quote(v), "N" + v.replace("-DENS-", ""));
+            s = s.replace(v, "N" + v.replace("-DENS-", ""));
         }
         return s;
     }

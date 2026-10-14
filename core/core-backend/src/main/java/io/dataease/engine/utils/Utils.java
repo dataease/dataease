@@ -558,6 +558,11 @@ public class Utils {
             fieldName = datasourceType.getPrefix() + originField.getDataeaseName() + datasourceType.getSuffix();
         }
 
+        String nPrefix = "";
+        if (!isCross && StringUtils.equalsIgnoreCase(datasourceType.getType(), "sqlServer")) {
+            nPrefix = SQLConstants.MSSQL_N_PREFIX;
+        }
+
         StringBuilder exp = new StringBuilder();
         exp.append(" (CASE ");
         if (originField.getDeType() == 0) {
@@ -565,12 +570,12 @@ public class Utils {
                 exp.append(" WHEN ");
                 for (int i = 0; i < fieldGroupDTO.getText().size(); i++) {
                     String value = fieldGroupDTO.getText().get(i);
-                    exp.append(fieldName).append(" = ").append("'").append(transValue(value)).append("'");
+                    exp.append(fieldName).append(" = '").append(nPrefix).append(transValue(value)).append("'");
                     if (i < fieldGroupDTO.getText().size() - 1) {
                         exp.append(" OR ");
                     }
                 }
-                exp.append(" THEN '").append(transValue(fieldGroupDTO.getName())).append("'");
+                exp.append(" THEN '").append(nPrefix).append(transValue(fieldGroupDTO.getName())).append("'");
             }
         } else if (originField.getDeType() == 1) {
             for (FieldGroupDTO fieldGroupDTO : dto.getGroupList()) {
@@ -589,7 +594,7 @@ public class Utils {
                 } else {
                     exp.append(fieldName).append(" <= ").append("'").append(fieldGroupDTO.getEndTime()).append("'");
                 }
-                exp.append(" THEN '").append(transValue(fieldGroupDTO.getName())).append("'");
+                exp.append(" THEN '").append(nPrefix).append(transValue(fieldGroupDTO.getName())).append("'");
             }
         } else if (originField.getDeType() == 2 || originField.getDeType() == 3 || originField.getDeType() == 4) {
             for (FieldGroupDTO fieldGroupDTO : dto.getGroupList()) {
@@ -600,10 +605,10 @@ public class Utils {
                 exp.append(fieldName).append(StringUtils.equalsIgnoreCase(fieldGroupDTO.getMinTerm(), "le") ? " >= " : " > ").append(fieldGroupDTO.getMin());
                 exp.append(" AND ");
                 exp.append(fieldName).append(StringUtils.equalsIgnoreCase(fieldGroupDTO.getMaxTerm(), "le") ? " <= " : " < ").append(fieldGroupDTO.getMax());
-                exp.append(" THEN '").append(transValue(fieldGroupDTO.getName())).append("'");
+                exp.append(" THEN '").append(nPrefix).append(transValue(fieldGroupDTO.getName())).append("'");
             }
         }
-        exp.append(" ELSE ").append("'").append(transValue(dto.getOtherGroup())).append("'").append(" END) ");
+        exp.append(" ELSE ").append("'").append(nPrefix).append(transValue(dto.getOtherGroup())).append("'").append(" END) ");
         return exp.toString();
     }
 
