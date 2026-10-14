@@ -465,8 +465,8 @@ public class ChartDataBuild {
                 }
             }
 
-            // yAxis最后的数据对应extLabel和extTooltip，将他们从yAxis中去掉，同时转换成动态值
-            int size = xAxis.size() + yAxis.size() + extBubble.size();
+            // yAxis 已包含气泡大小和提示字段，不能重复计入气泡列，否则动态提示索引会越界
+            int size = xAxis.size() + yAxis.size();
             int extSize = view.getExtLabel().size() + view.getExtTooltip().size();
 
             AxisChartDataAntVDTO axisChartDataDTO = new AxisChartDataAntVDTO();
