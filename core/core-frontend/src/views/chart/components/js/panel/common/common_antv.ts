@@ -50,6 +50,8 @@ import { Renderer as SVGRenderer } from '@antv/g-svg'
 import { Renderer as CanvasRenderer } from '@antv/g-canvas'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { bindMapTooltipPosition } from '../charts/map/tooltip-position'
+import { mapLegendFormatter } from '../charts/map/mapLegend'
+import { escapeTooltipHtml } from '../charts/map/tooltip-carousel'
 import { SvgGradientPlugin } from './svg-gradient-plugin'
 
 const { t: tI18n } = useI18n()
@@ -1519,6 +1521,13 @@ export function configL7Style(chart: Chart): AreaOptions['style'] {
 export function configL7Tooltip(chart: Chart): TooltipOptions {
   const customAttr = parseJson(chart.customAttr)
   const tooltip = customAttr.tooltip
+  const legend = parseJson(chart.customStyle)?.legend
+  let formatTooltipValue = valueFormatter
+  if (chart.type === 'map' && legend?.show && legend.map?.syncTooltip) {
+    // 主指标和额外提示指标统一使用图例格式，自定义前后缀按纯文本展示。
+    const format = mapLegendFormatter(chart)
+    formatTooltipValue = value => escapeTooltipHtml(format(value))
+  }
   const formatterMap = tooltip.seriesTooltipFormatter
     ?.filter(i => i.show)
     .reduce((pre, next) => {
@@ -1545,14 +1554,14 @@ export function configL7Tooltip(chart: Chart): TooltipOptions {
       const formatter = formatterMap[head.quotaList?.[0]?.id]
       if (!isEmpty(formatter)) {
         const originValue = parseFloat(head.value as string)
-        const value = valueFormatter(originValue, formatter.formatterCfg)
+        const value = formatTooltipValue(originValue, formatter.formatterCfg)
         const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
         result.push({ ...head, name, value: `${value ?? ''}` })
       }
       head.dynamicTooltipValue?.forEach(item => {
         const formatter = formatterMap[item.fieldId]
         if (formatter) {
-          const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
+          const value = formatTooltipValue(parseFloat(item.value), formatter.formatterCfg)
           const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
           result.push({ color: 'grey', name, value: `${value ?? ''}` })
         }

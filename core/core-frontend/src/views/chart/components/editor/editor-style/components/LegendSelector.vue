@@ -13,7 +13,7 @@ import {
   DEFAULT_MISC
 } from '@/views/chart/components/editor/util/chart'
 import { ElCol, ElFormItem, ElRow, ElSpace } from 'element-plus-secondary'
-import { cloneDeep, get, set } from 'lodash-es'
+import { cloneDeep, get, isEqual, set } from 'lodash-es'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { getDynamicColorScale } from '@/views/chart/components/js/util'
 import CustomSortEdit from '@/views/chart/components/editor/drag-item/components/CustomSortEdit.vue'
@@ -206,16 +206,32 @@ const changeLegendNumber = (prop?) => {
   }
   prop ? changeMisc(prop) : ''
 }
-const changeMapBoundaries = (values: number[]) => {
+const changeMapBoundaries = (values: number[], boundaryIndex?: number) => {
+  const previousValues = state.legendForm.miscForm.mapLegendCustomRange
   state.legendForm.miscForm.mapLegendCustomRange = values
   state.legendForm.miscForm.mapLegendNumber = values.length - 1
   const labels = state.legendForm.map?.rangeLabels
   if (labels) {
-    const keys = new Set(
-      values.slice(0, -1).map((value, index) => mapRangeKey([value, values[index + 1]]))
-    )
-    const rangeLabels = Object.fromEntries(Object.entries(labels).filter(([key]) => keys.has(key)))
-    if (Object.keys(rangeLabels).length !== Object.keys(labels).length) {
+    // 名称跟随原区间，修改边界值时仅迁移存储键，不清空名称。
+    const names: (string | undefined)[] = previousValues.slice(0, -1).map((value, index) => {
+      return labels[mapRangeKey([value, previousValues[index + 1]])]
+    })
+    if (boundaryIndex !== undefined) {
+      // 增删分界点均保留左段名称：新增右段留空，合并时删除右段名称。
+      if (values.length > previousValues.length) {
+        names.splice(boundaryIndex, 0, undefined)
+      } else if (values.length < previousValues.length) {
+        names.splice(boundaryIndex, 1)
+      }
+    }
+    const rangeLabels: Record<string, string> = {}
+    values.slice(0, -1).forEach((value, index) => {
+      const name = names[index]
+      if (name !== undefined) {
+        rangeLabels[mapRangeKey([value, values[index + 1]])] = name
+      }
+    })
+    if (!isEqual(rangeLabels, labels)) {
       state.legendForm.map = { ...state.legendForm.map, rangeLabels }
       changeLegendStyle('map')
     }

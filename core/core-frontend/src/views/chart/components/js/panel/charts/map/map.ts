@@ -44,7 +44,7 @@ import {
 } from '@/views/chart/components/js/panel/charts/map/tooltip-carousel'
 import { getCustomGeoArea } from '@/api/map'
 import { centroid } from '@turf/centroid'
-import { mapLegendFormatter, mapLegendLabel, mapTooltipValue } from './mapLegend'
+import { mapLegendLabel, mapTooltipValue } from './mapLegend'
 import { attachMapLabels, geometryPolygons } from './label-layout'
 import {
   drawPointFallbackChart,
@@ -497,21 +497,6 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     return listDom
   }
 
-  protected configTooltip(chart: Chart, options: ChoroplethOptions): ChoroplethOptions {
-    const result = super.configTooltip(chart, options)
-    if (!parseJson(chart.customStyle)?.legend?.map?.syncTooltip || !result.tooltip) return result
-    const customItems = result.tooltip.customItems
-    if (!customItems) return result
-    const format = mapLegendFormatter(chart)
-    result.tooltip.customItems = originalItem =>
-      customItems(originalItem).map(item =>
-        item.quotaList?.[0]?.id === originalItem.properties?.quotaList?.[0]?.id && item.quotaList
-          ? { ...item, value: escapeTooltipHtml(format(originalItem.properties.value)) }
-          : item
-      )
-    return result
-  }
-
   private customConfigLegend(chart: Chart, options: ChoroplethOptions): ChoroplethOptions {
     const { basicStyle, misc } = parseJson(chart.customAttr)
     const colors = basicStyle.colors.map(item => hexColorToRGBA(item, basicStyle.alpha))
@@ -770,7 +755,9 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
         valItem.dynamicTooltipValue?.forEach(item => {
           const formatter = formatterMap[item.fieldId]
           if (formatter) {
-            const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
+            const value = escapeTooltipHtml(
+              mapTooltipValue(chart, parseFloat(item.value), formatter.formatterCfg)
+            )
             const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
             result.push({ color: 'grey', name, value: `${value ?? ''}` })
           }

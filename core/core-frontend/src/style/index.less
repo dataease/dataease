@@ -7,6 +7,8 @@
   -webkit-text-size-adjust: 100%;
   --ed-border-radius-base: 6px !important;
   --ed-border-color: #d9dcdf !important;
+  // 在根节点解析开关关闭色，避免受局部深色边框变量影响。
+  --ed-switch-off-color: var(--ed-border-color);
   --ed-color-primary-light-7: #d2f1e9 !important;
   --ed-border-color: #d9dcdf !important;
   --ed-disabled-border-color: #d9dcdf !important;
@@ -706,6 +708,7 @@ strong {
 }
 
 .ed-switch {
+  --ed-switch-off-color: inherit !important;
   height: 22px !important;
 }
 
