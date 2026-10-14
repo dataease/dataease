@@ -618,8 +618,11 @@ export class Quadrant extends G2ChartView {
   protected configTooltip(chart: Chart, options: G2Spec): G2Spec {
     const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
     const tooltipAttr = customAttr.tooltip
+    const pointMark = options.children[2]
     if (!tooltipAttr.show) {
-      return { ...options, tooltip: false }
+      // view 的 tooltip 不会传递给子图层，需要直接关闭气泡提示
+      defaultsDeep(pointMark, { tooltip: false })
+      return options
     }
     const formatterMap = tooltipAttr.seriesTooltipFormatter
       ?.filter(i => i.show)
@@ -727,7 +730,6 @@ export class Quadrant extends G2ChartView {
         }
       }
     }
-    const pointMark = options.children[2]
     defaultsDeep(pointMark, tooltipOptions)
     return options
   }
