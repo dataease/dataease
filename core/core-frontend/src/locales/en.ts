@@ -4535,6 +4535,7 @@ export default {
     last_1_years_log: 'Log from 1 year ago',
     execute_log: 'Execution log',
     done: 'Done',
+    log_read_finished: 'Log reading finished',
     connection_lost: 'Disconnected',
     task_name: 'Task name',
     es_params_label: 'Query Parameters',
