@@ -253,7 +253,8 @@ export const normalizeSpreadsheetFilterConditionByRules = (
   ) {
     condition.optionSource = 'auto'
   }
-  if (!shouldShowSpreadsheetFilterDatasetFields(condition)) {
+  // 下拉组件切换选项来源时保留数据集配置，切回后仍可继续使用。
+  if (!supportsSpreadsheetFilterDatasetOptionSource(condition)) {
     condition.optionDatasetId = undefined
     condition.optionDatasetName = undefined
     condition.queryFieldId = undefined
