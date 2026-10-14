@@ -73,6 +73,8 @@ const remove = (index: number) => {
         <el-input-number
           :id="`map-boundary-${index}`"
           v-model="draft[index]"
+          :precision="6"
+          :step="0.01"
           :effect="themes"
           controls-position="right"
           @change="save"
