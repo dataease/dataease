@@ -84,7 +84,7 @@ const changeLine = () => {
   // check line config
   for (let i = 0; i < state.lineArr.length; i++) {
     const ele = state.lineArr[i]
-    if (!ele.name || ele.name === '') {
+    if (!ele.name || ele.name.trim() === '') {
       ElMessage.error(t('chart.name_can_not_empty'))
       return
     }
