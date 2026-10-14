@@ -1,5 +1,8 @@
+import { useDismissableLayerSurface } from '@radix-ui/react-dismissable-layer'
+import { IUniverInstanceService, UniverInstanceType } from '@univerjs/core'
+import { IRenderManagerService } from '@univerjs/engine-render'
 import type { IMenuItem } from '@univerjs/ui'
-import { ToolbarItem } from '@univerjs/ui'
+import { ToolbarItem, useDependency } from '@univerjs/ui'
 import type { ComponentManager, IMenuManagerService } from '@univerjs/ui'
 import {
   DATAEASE_BUSINESS_MENU_IDS,
@@ -69,7 +72,7 @@ export const createDataEaseRibbonComponent = (
   componentManager: ComponentManager,
   menuManagerService: IMenuManagerService
 ) => {
-  const { createElement } = componentManager.reactUtils
+  const { createElement, useEffect } = componentManager.reactUtils
 
   const renderItem = ({ key, item }: DataEaseRibbonItem) =>
     createElement(
@@ -110,6 +113,41 @@ export const createDataEaseRibbonComponent = (
   }
 
   return function DataEaseRibbon() {
+    const instanceService = useDependency(IUniverInstanceService)
+    const renderManager = useDependency(IRenderManagerService)
+    const registerDismissableSurface = useDismissableLayerSurface()
+
+    useEffect(() => {
+      let registeredUnitId: string | undefined
+      const updateSurface = () => {
+        const workbook = instanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET)
+        const render = workbook ? renderManager.getRenderById(workbook.getUnitId()) : undefined
+        const canvas = render?.engine.getCanvasElement() ?? null
+        registeredUnitId = render?.unitId
+        // Radix 类型限定 div，实际仅使用 contains；只登记画布，避免把浮层也纳入关闭区域。
+        registerDismissableSurface(canvas as unknown as HTMLDivElement | null)
+      }
+
+      // 允许画布拦截 mousedown 后仍正常关闭 Popover，并跟随工作簿和渲染器更新。
+      const subscriptions = [
+        renderManager.created$.subscribe(render => {
+          if (render.type === UniverInstanceType.UNIVER_SHEET) updateSurface()
+        }),
+        renderManager.disposed$.subscribe(unitId => {
+          if (unitId !== registeredUnitId) return
+          registeredUnitId = undefined
+          registerDismissableSurface(null)
+        }),
+        instanceService
+          .getCurrentTypeOfUnit$(UniverInstanceType.UNIVER_SHEET)
+          .subscribe(updateSurface)
+      ]
+
+      return () => {
+        subscriptions.forEach(subscription => subscription.unsubscribe())
+      }
+    }, [instanceService, renderManager, registerDismissableSurface])
+
     let removeRibbonWheelListener: (() => void) | undefined
 
     const setRibbonRef = (ribbon: HTMLDivElement | null): void => {

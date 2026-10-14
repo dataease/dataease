@@ -72,14 +72,14 @@ export default {
   css: {
     preprocessorOptions: {
       less: {
-        modifyVars: {
-          hack: `true; @import (reference) "${path.resolve('src/style/variable.less')}";`
-        },
-        javascriptEnabled: true
+        javascriptEnabled: true,
+        additionalData: `@import "${path.resolve(__dirname, '../src/style/variable.less')}";`
       }
     }
   },
   resolve: {
+    // 画布关闭区域与 Univer 弹窗必须共用同一份 Radix Context。
+    dedupe: ['@radix-ui/react-dismissable-layer'],
     extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.less', '.css'],
     alias: [
       {
