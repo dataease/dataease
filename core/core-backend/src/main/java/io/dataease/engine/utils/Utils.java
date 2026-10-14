@@ -559,7 +559,7 @@ public class Utils {
         }
 
         String nPrefix = "";
-        if (StringUtils.equalsIgnoreCase(datasourceType.getType(), "sqlServer")) {
+        if (!isCross && StringUtils.equalsIgnoreCase(datasourceType.getType(), "sqlServer")) {
             nPrefix = SQLConstants.MSSQL_N_PREFIX;
         }
 
@@ -570,7 +570,7 @@ public class Utils {
                 exp.append(" WHEN ");
                 for (int i = 0; i < fieldGroupDTO.getText().size(); i++) {
                     String value = fieldGroupDTO.getText().get(i);
-                    exp.append(fieldName).append(" = ").append("'").append(transValue(value)).append("'");
+                    exp.append(fieldName).append(" = '").append(nPrefix).append(transValue(value)).append("'");
                     if (i < fieldGroupDTO.getText().size() - 1) {
                         exp.append(" OR ");
                     }
