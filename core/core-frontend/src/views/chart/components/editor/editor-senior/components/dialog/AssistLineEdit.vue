@@ -39,6 +39,7 @@ const yAxisTypes = [
 const state = reactive({
   lineArr: [],
   collapsed: new Set<object>(),
+  legacyBindings: new Set<object>(),
   lineObj: {
     name: t('chart.assist_line'),
     field: '0', // 固定值
@@ -47,7 +48,7 @@ const state = reactive({
     followField: true,
     summary: 'avg',
     axis: 'y', // 主轴
-    yAxisType: 'left',
+    yAxisType: 'left' as const,
     value: '0',
     lineType: 'solid',
     color: '#ff0000',
@@ -67,6 +68,45 @@ const state = reactive({
   fontSize: []
 })
 
+const singleMetricGroup = computed(
+  () => !props.useQuotaExt && props.chart.type === 'bar-group' && props.quotaFields.length <= 1
+)
+
+type BindingLine = Pick<AssistLine, 'field' | 'followField' | 'boundFieldId' | 'yAxisType'>
+
+const getAxisFields = (item: BindingLine) =>
+  props.useQuotaExt && item.yAxisType === 'right' ? props.quotaExtFields : props.quotaFields
+
+// 只对当前轴唯一且未失效的绑定精简选择器，不把旧阈值自动转绑到替换后的指标。
+const canAutoBind = (item: BindingLine) => {
+  const fields = getAxisFields(item)
+  return (
+    props.useQuotaExt &&
+    fields.length === 1 &&
+    (!item.boundFieldId || item.boundFieldId === fields[0].id)
+  )
+}
+
+const autoBind = (item: BindingLine) => {
+  if (item.field === '0' && item.followField && canAutoBind(item)) {
+    item.boundFieldId = getAxisFields(item)[0].id
+  }
+}
+
+const showBindingControls = (item: AssistLine) =>
+  !singleMetricGroup.value || state.legacyBindings.has(item)
+
+const changeFollowField = (item: AssistLine, follow: boolean) => {
+  item.followField = follow
+  autoBind(item)
+  changeAssistLine()
+}
+
+const changeLineType = (item: AssistLine) => {
+  autoBind(item)
+  changeAssistLine()
+}
+
 const fontSizeList = computed(() => {
   const arr = []
   for (let i = 10; i <= 60; i = i + 2) {
@@ -83,6 +123,10 @@ const emit = defineEmits(['onAssistLineChange'])
 const init = () => {
   state.lineArr = JSON.parse(JSON.stringify(props.line))
   state.collapsed = new Set(state.lineArr.slice(1))
+  // 历史配置继续保留编辑入口；打开或保存弹窗不清空其绑定及显隐语义。
+  state.legacyBindings = new Set(
+    state.lineArr.filter(line => line.boundFieldId || (line.field === '1' && line.followField))
+  )
 
   state.lineArr.forEach(line => {
     if (props.useQuotaExt) {
@@ -111,14 +155,17 @@ const init = () => {
 const addLine = () => {
   const obj = {
     ...state.lineObj,
+    followField: !singleMetricGroup.value,
     curField: props.quotaFields ? props.quotaFields[0] : null,
     fieldId: props.quotaFields ? props.quotaFields[0]?.id : null
   }
+  autoBind(obj)
   state.lineArr.push(JSON.parse(JSON.stringify(obj)))
   changeAssistLine()
 }
 const removeLine = index => {
   state.collapsed.delete(state.lineArr[index])
+  state.legacyBindings.delete(state.lineArr[index])
   state.lineArr.splice(index, 1)
   changeAssistLine()
 }
@@ -132,6 +179,7 @@ const changeYAxisType = item => {
     item.fieldId = props.quotaFields ? props.quotaFields[0]?.id : null
     item.curField = getQuotaField(item.fieldId)
   }
+  autoBind(item)
   changeAssistLine()
 }
 
@@ -239,7 +287,7 @@ onMounted(() => {
           <div class="field-grid" :class="{ 'dual-dynamic': useQuotaExt && item.field === '1' }">
             <div class="config-field">
               <label>{{ t('chart.assist_value_type') }}</label>
-              <el-select v-model="item.field" @change="changeAssistLine">
+              <el-select v-model="item.field" @change="changeLineType(item)">
                 <el-option
                   v-for="opt in getFieldOptions"
                   :key="opt.value"
@@ -332,8 +380,8 @@ onMounted(() => {
               </el-select>
             </div>
           </div>
-          <div class="binding-row">
-            <template v-if="item.field === '0'">
+          <div v-if="showBindingControls(item)" class="binding-row">
+            <template v-if="item.field === '0' && !canAutoBind(item)">
               <label>{{ t('chart.assist_bind_field') }}</label>
               <el-select
                 v-model="item.boundFieldId"
@@ -352,11 +400,17 @@ onMounted(() => {
               </el-select>
             </template>
             <el-checkbox
-              v-model="item.followField"
-              :disabled="item.field === '0' && !item.boundFieldId"
-              @change="changeAssistLine"
+              :model-value="!!item.followField && (item.field === '1' || !!item.boundFieldId)"
+              :disabled="item.field === '0' && !item.boundFieldId && !canAutoBind(item)"
+              @change="value => changeFollowField(item, value)"
             >
-              {{ t('chart.assist_follow_field') }}
+              {{
+                t(
+                  item.field === '0' && canAutoBind(item)
+                    ? 'chart.assist_follow_axis'
+                    : 'chart.assist_follow_field'
+                )
+              }}
             </el-checkbox>
           </div>
         </div>
