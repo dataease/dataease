@@ -732,7 +732,11 @@ const trackMenuCalc = itemId => {
   if (PAGE_CHARTS.includes(view.value.type)) {
     const fields = [...(view.value.xAxis ?? []), ...(view.value.drillFields ?? [])]
     const isImageField = fields.some(field => field.id === itemId && field.deType === 7)
-    if (isImageField) {
+    // 按当前点击单元格的值判断，空 URL 不提供放大入口。
+    const imageValue = state.pointParam?.data?.dimensionList?.find(
+      item => item.id === itemId
+    )?.value
+    if (isImageField && typeof imageValue === 'string' && imageValue.trim()) {
       trackMenuInfo.push('enlarge')
     }
   }
