@@ -519,13 +519,16 @@ init()
               v-model="fieldItem.fieldId"
               @change="addField(fieldItem)"
             >
+              <!-- 明细表和汇总表的 URL 字段不支持作为条件字段 -->
               <el-option
                 class="series-select-option"
                 v-for="fieldOption in state.fields"
                 :key="fieldOption.id"
                 :label="fieldOption.name"
                 :value="fieldOption.id"
-                :disabled="chart.type === 'table-info' && fieldOption.deType === 7"
+                :disabled="
+                  ['table-info', 'table-normal'].includes(chart.type) && fieldOption.deType === 7
+                "
               >
                 <el-icon style="margin-right: 8px">
                   <Icon
@@ -665,7 +668,10 @@ init()
                     :key="itemFieldOption.id"
                     :label="itemFieldOption.name"
                     :value="itemFieldOption.id"
-                    :disabled="chart.type === 'table-info' && itemFieldOption.deType === 7"
+                    :disabled="
+                      ['table-info', 'table-normal'].includes(chart.type) &&
+                      itemFieldOption.deType === 7
+                    "
                   >
                     <el-icon style="margin-right: 8px">
                       <Icon
@@ -769,7 +775,10 @@ init()
                     :key="itemFieldOption.id"
                     :label="itemFieldOption.name"
                     :value="itemFieldOption.id"
-                    :disabled="chart.type === 'table-info' && itemFieldOption.deType === 7"
+                    :disabled="
+                      ['table-info', 'table-normal'].includes(chart.type) &&
+                      itemFieldOption.deType === 7
+                    "
                   >
                     <el-icon style="margin-right: 8px">
                       <Icon
@@ -833,7 +842,10 @@ init()
                     :key="itemFieldOption.id"
                     :label="itemFieldOption.name"
                     :value="itemFieldOption.id"
-                    :disabled="chart.type === 'table-info' && itemFieldOption.deType === 7"
+                    :disabled="
+                      ['table-info', 'table-normal'].includes(chart.type) &&
+                      itemFieldOption.deType === 7
+                    "
                   >
                     <el-icon style="margin-right: 8px">
                       <Icon
@@ -900,6 +912,7 @@ init()
                     class="series-select-option"
                     :label="targetField.name"
                     :value="targetField.id"
+                    :disabled="chart.type === 'table-normal' && targetField.deType === 7"
                   >
                     <el-icon style="margin-right: 8px">
                       <Icon
