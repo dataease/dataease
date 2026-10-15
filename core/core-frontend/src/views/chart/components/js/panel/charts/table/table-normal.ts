@@ -430,6 +430,8 @@ export class TableNormal extends S2ChartView<TableSheet> {
       }
       action(param)
     })
+    // 合并单元格复用普通单元格的点击链路，保留下钻、联动和图片放大入口。
+    newChart.on(S2Event.MERGED_CELLS_CLICK, e => newChart.emit(S2Event.DATA_CELL_CLICK, e))
     // tooltip
     const { show } = tooltip
     if (show) {
