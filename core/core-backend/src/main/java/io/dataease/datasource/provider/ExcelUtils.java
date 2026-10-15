@@ -45,6 +45,9 @@ import java.util.stream.Collectors;
 
 public class ExcelUtils {
     public static final String UFEFF = "\uFEFF";
+    // Worksheet XML can be much larger than the compressed XLSX, even at ordinary compression ratios.
+    private static final long REMOTE_WORKBOOK_ENTRY_BYTES = 256L * 1024 * 1024;
+    private static final long REMOTE_WORKBOOK_TOTAL_BYTES = 512L * 1024 * 1024;
     private static String path = getExcelPath();
     private static ObjectMapper objectMapper = new ObjectMapper();
 
@@ -483,16 +486,20 @@ public class ExcelUtils {
                     int n;
                     while ((n = input.read(buffer)) != -1) {
                         entryBytes += n; total += n;
-                        if (entryBytes > 32L * 1024 * 1024 || total > 128L * 1024 * 1024
-                                || (entryBytes > 1024 * 1024 && entryBytes > 100 * Math.max(1, entry.getCompressedSize()))) {
-                            throw new IOException(Translator.get("i18n_remote_zip_size"));
-                        }
+                        validateRemoteWorkbookSize(entryBytes, total, entry.getCompressedSize());
                         if (System.nanoTime() >= deadline || Thread.currentThread().isInterrupted()) {
                             throw new IOException(Translator.get("i18n_remote_transfer_timeout"));
                         }
                     }
                 }
             }
+        }
+    }
+
+    static void validateRemoteWorkbookSize(long entryBytes, long totalBytes, long compressedBytes) throws IOException {
+        if (entryBytes > REMOTE_WORKBOOK_ENTRY_BYTES || totalBytes > REMOTE_WORKBOOK_TOTAL_BYTES
+                || (entryBytes > 1024 * 1024 && entryBytes > 100 * Math.max(1, compressedBytes))) {
+            throw new IOException(Translator.get("i18n_remote_zip_size"));
         }
     }
 
