@@ -402,7 +402,7 @@ onMounted(() => {
             <el-checkbox
               :model-value="!!item.followField && (item.field === '1' || !!item.boundFieldId)"
               :disabled="item.field === '0' && !item.boundFieldId && !canAutoBind(item)"
-              @change="value => changeFollowField(item, value)"
+              @change="value => changeFollowField(item, value === true)"
             >
               {{
                 t(
