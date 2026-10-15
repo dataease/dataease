@@ -8,6 +8,7 @@ import { ref, toRefs, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { formatDataEaseBi, getResourceBaseUrl } from '@/utils/url'
 import tinymce from 'tinymce/tinymce' // tinymce默认hidden，不引入不显示
+import 'tinymce/models/dom'
 import Editor from '@tinymce/tinymce-vue' // 编辑器引入
 import 'tinymce/themes/silver/theme' // 编辑器主题
 import 'tinymce/icons/default' // 引入编辑器图标icon，不引入则不显示对应图标
