@@ -728,13 +728,13 @@ const trackMenuCalc = itemId => {
   ) {
     trackMenuInfo = ['linkageAndDrill']
   }
-  // 明细表与汇总表 URL 维度图片放大
+  // URL 下钻字段也提供放大选项，与已有动作共同触发浮窗选择。
   if (PAGE_CHARTS.includes(view.value.type)) {
-    view.value.xAxis?.forEach(axis => {
-      if (axis.id === itemId && axis.deType === 7) {
-        trackMenuInfo.push('enlarge')
-      }
-    })
+    const fields = [...(view.value.xAxis ?? []), ...(view.value.drillFields ?? [])]
+    const isImageField = fields.some(field => field.id === itemId && field.deType === 7)
+    if (isImageField) {
+      trackMenuInfo.push('enlarge')
+    }
   }
   return trackMenuInfo
 }

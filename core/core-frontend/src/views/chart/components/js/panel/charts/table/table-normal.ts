@@ -123,6 +123,12 @@ export class TableNormal extends S2ChartView<TableSheet> {
 
     // fields
     let fields = chart.data.fields
+    // 图片识别包含下钻维度，但排除 URL 字段的计数指标。
+    const imageFields = new Set(
+      [...chart.xAxis, ...(chart.drillFields ?? [])]
+        .filter(field => field.deType === 7)
+        .map(field => field.dataeaseName)
+    )
 
     const columns = []
     const meta = []
@@ -276,9 +282,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
     if (basicStyle.tableColumnMode === 'adapt') {
       s2Options.style.colCell.widthByField = {
         ...s2Options.style.colCell.widthByField,
-        ...Object.fromEntries(
-          chart.xAxis.filter(field => field.deType === 7).map(field => [field.dataeaseName, 120])
-        )
+        ...Object.fromEntries([...imageFields].map(field => [field, 120]))
       }
     }
     // 行列冻结
@@ -314,7 +318,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
       }
     }
     // 配置总计和序号列
-    this.configSummaryRowAndIndex(chart, pageInfo, s2Options, s2DataConfig)
+    this.configSummaryRowAndIndex(chart, pageInfo, s2Options, s2DataConfig, imageFields)
     // 开始渲染
     const newChart = new TableSheet(containerDom, s2DataConfig, s2Options)
     if (tableCell.mergeCells && basicStyle.showHoverStyle !== false) {
@@ -356,9 +360,6 @@ export class TableNormal extends S2ChartView<TableSheet> {
         // 与 S2 画布和左侧边框使用同一宽度口径，避免小数尺寸造成横向溢出
         const borderWidth = Frame.getVerticalBorderWidth(newChart)
         const availableWidth = Math.max(0, Math.floor(newChart.options.width - borderWidth))
-        const imageFields = new Set(
-          chart.xAxis.filter(field => field.deType === 7).map(field => field.dataeaseName)
-        )
         let fixedWidth = 0
         ev.colLeafNodes.forEach(node => {
           if (imageFields.has(node.field)) {
@@ -481,7 +482,8 @@ export class TableNormal extends S2ChartView<TableSheet> {
     chart: Chart,
     pageInfo: PageInfo,
     s2Options: S2Options,
-    s2DataConfig: S2DataConfig
+    s2DataConfig: S2DataConfig,
+    imageFields: Set<string>
   ) {
     const { tableHeader, basicStyle, tableCell } = parseJson(chart.customAttr)
     const { showSummary, summaryLabel } = basicStyle
@@ -520,8 +522,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
             pageInfo.pageSize * (pageInfo.currentPage - 1) + viewMeta.rowIndex + 1
         }
       }
-      const field = xAxis.find(field => field.dataeaseName === viewMeta.valueField)
-      if (field?.deType === 7 && chart.showPosition !== 'dialog') {
+      if (imageFields.has(viewMeta.valueField) && chart.showPosition !== 'dialog') {
         return new ImageCell(viewMeta, sheet)
       }
       return new CustomDataCell(viewMeta, sheet)
