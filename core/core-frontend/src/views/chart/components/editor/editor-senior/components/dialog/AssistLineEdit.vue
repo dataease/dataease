@@ -103,6 +103,9 @@ const changeFollowField = (item: AssistLine, follow: boolean) => {
 }
 
 const changeLineType = (item: AssistLine) => {
+  if (singleMetricGroup.value && item.field === '1' && item.followField) {
+    state.legacyBindings.add(item)
+  }
   autoBind(item)
   changeAssistLine()
 }

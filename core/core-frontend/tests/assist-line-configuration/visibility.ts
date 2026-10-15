@@ -36,6 +36,23 @@ export const checkVisibility = () => {
   expect(state.visible(line as AssistLine), false, '历史绑定在全部分组隐藏后隐藏')
   expect(state.visible({ ...line, boundFieldId: 'removed' } as AssistLine), false, '失效绑定不转移')
 
+  const legacyFixed = { ...line, boundFieldId: '' } as AssistLine
+  expect(state.visible(legacyFixed), true, '历史固定线未绑定时不随全部分组隐藏')
+  const dynamic = { ...legacyFixed, field: '1' }
+  const dynamicState = (followField: boolean) =>
+    createAssistLineVisibility({
+      ...group,
+      senior: { assistLineCfg: { assistLine: [{ ...dynamic, followField }] } }
+    } as Chart)
+  const following = dynamicState(true)
+  following.select(['公司 A'])
+  expect(following.visible(dynamic), true, '历史固定线转动态后部分分组隐藏仍显示')
+  following.select([])
+  expect(following.visible(dynamic), false, '历史固定线转动态后按计算字段跟随显隐')
+  const notFollowing = dynamicState(false)
+  notFollowing.select([])
+  expect(notFollowing.visible(dynamic), true, '关闭历史动态线跟随后全部分组隐藏仍显示')
+
   for (const type of ['chart-mix', 'chart-mix-group', 'chart-mix-stack', 'chart-mix-dual-line']) {
     // 同一字段、同名指标同时放在左右轴，仍须按轴隔离。
     const left = { ...line } as AssistLine
