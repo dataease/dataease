@@ -33,6 +33,7 @@ const app = createApp({
       dual: '双轴图',
       multi: '多指标双轴图',
       legacy: '历史分组图',
+      legacyUnbound: '历史未绑定分组图',
       stale: '失效绑定双轴图',
       unbound: '历史未绑定双轴图'
     }
@@ -43,7 +44,7 @@ const app = createApp({
           ? [structuredClone(fixed)]
           : kind === 'stale'
           ? [{ ...structuredClone(fixed), boundFieldId: 'removed' }]
-          : kind === 'unbound'
+          : ['unbound', 'legacyUnbound'].includes(kind)
           ? [{ ...structuredClone(fixed), boundFieldId: '' }]
           : []
       key.value++
@@ -61,11 +62,15 @@ const app = createApp({
         h('h2', cases[mode.value]),
         h(AssistLineEdit, {
           key: key.value,
-          chart: { type: ['group', 'legacy'].includes(mode.value) ? 'bar-group' : 'chart-mix' },
+          chart: {
+            type: ['group', 'legacy', 'legacyUnbound'].includes(mode.value)
+              ? 'bar-group'
+              : 'chart-mix'
+          },
           line: lines.value,
           quotaFields: mode.value === 'multi' ? [left, { ...right, id: 'bonus' }] : [left],
           quotaExtFields: [right],
-          useQuotaExt: !['group', 'legacy'].includes(mode.value),
+          useQuotaExt: !['group', 'legacy', 'legacyUnbound'].includes(mode.value),
           onOnAssistLineChange: value => {
             draft.value = JSON.parse(JSON.stringify(value))
           }

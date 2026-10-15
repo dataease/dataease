@@ -74,6 +74,47 @@ async page => {
     '历史配置不静默重置'
   )
 
+  await mode('历史未绑定分组图')
+  expect((await page.locator('.binding-row').count()) === 0, '历史未绑定固定线初始无冗余配置')
+  expect(
+    (await draft())[0].field === '0' &&
+      (await draft())[0].followField === true &&
+      (await draft())[0].boundFieldId === '',
+    '打开历史未绑定固定线不改写默认跟随值'
+  )
+  await select('参考类型', 1)
+  await page.locator('.binding-row .ed-checkbox').waitFor({ timeout: 5000 })
+  expect(
+    await page.locator('.binding-row .ed-checkbox').isVisible(),
+    '历史未绑定固定线切换动态线后立即出现跟随开关'
+  )
+  expect(await page.getByRole('checkbox').isChecked(), '切换动态线保留已有跟随状态')
+  expect(await page.getByRole('checkbox').isEnabled(), '切换动态线后可立即关闭跟随')
+  expect(
+    (await draft())[0].fieldId === 'salary' && (await draft())[0].boundFieldId === '',
+    '动态线沿用计算字段且不补写固定线绑定'
+  )
+  await page.locator('.binding-row .ed-checkbox').click()
+  expect((await draft())[0].followField === false, '无需重开即可关闭历史动态线跟随')
+  await select('参考类型', 0)
+  await select('参考类型', 1)
+  expect(
+    (await draft())[0].followField === false &&
+      (await page.locator('.binding-row .ed-checkbox').isVisible()),
+    '重复切换类型不重置跟随值且本次编辑入口保留'
+  )
+  await page.locator('.binding-row .ed-checkbox').click()
+  await mode('保存并重开')
+  expect(await page.getByRole('checkbox').isChecked(), '保存重开后动态跟随配置和入口保留')
+  await page.locator('.binding-row .ed-checkbox').click()
+  await mode('保存并重开')
+  expect(
+    (await draft())[0].field === '1' &&
+      (await draft())[0].followField === false &&
+      (await draft())[0].boundFieldId === '',
+    '保存重开后关闭跟随的动态配置保留'
+  )
+
   await mode('失效绑定双轴图')
   expect(
     await page.locator('.binding-row > label:not(.ed-checkbox)').isVisible(),
