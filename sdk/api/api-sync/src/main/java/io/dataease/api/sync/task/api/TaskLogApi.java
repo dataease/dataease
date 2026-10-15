@@ -4,6 +4,7 @@ import io.dataease.result.PageResult;
 import io.dataease.api.sync.task.dto.TaskLogGridRequest;
 import io.dataease.api.sync.task.vo.LogResultVO;
 import io.dataease.api.sync.task.vo.TaskLogVO;
+import io.dataease.api.sync.task.vo.TaskLogClearResultVO;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import io.swagger.v3.oas.annotations.Hidden;
@@ -49,7 +50,11 @@ public interface TaskLogApi {
 
     @PostMapping("/clear")
     @DePermit("m:manage")
-    void clearJobLog(@RequestBody TaskLogVO taskLogVO);
+    TaskLogClearResultVO clearJobLog(@RequestBody TaskLogVO taskLogVO);
+
+    @GetMapping("/clear/result")
+    @DePermit("m:manage")
+    TaskLogClearResultVO clearResult();
 
     @PostMapping("terminationTask/{logId}")
     @DePermit("m:manage")

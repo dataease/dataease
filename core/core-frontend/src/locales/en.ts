@@ -4326,6 +4326,25 @@ export default {
     sync_status_distribution: 'Sync status distribution'
   },
   sync_task: {
+    cleanup_result: 'Cleanup result',
+    cleanup_submitted:
+      'Background cleanup submitted. You can close this window and continue working.',
+    cleanup_empty: 'No logs need to be cleaned up',
+    cleanup_retention:
+      'Only the latest cleanup result for the current user and organization is shown. It is retained for 24 hours and may be unavailable after a service restart.',
+    cleanup_read_failed: 'Unable to load the cleanup result. Click Refresh to retry.',
+    cleanup_status: 'Cleanup status',
+    cleanup_total: 'Number of logs in this cleanup: {0}',
+    cleanup_failed_help:
+      'Cleanup failed. Log records have been retained. Resolve the issue shown below and retry.',
+    cleanup_no_result: 'No cleanup result yet',
+    cleanup_refresh: 'Refresh',
+    cleanup_close: 'Close',
+    cleanup_queued: 'Queued',
+    cleanup_running: 'Running',
+    cleanup_succeeded: 'Succeeded',
+    cleanup_failed: 'Failed',
+    cleanup_unknown: 'Unknown',
     index_capability_unavailable:
       'Index capability is unavailable; select the target database again',
     index_not_implemented: 'The target plugin has not implemented this index feature',

@@ -4198,6 +4198,23 @@ export default {
     sync_status_distribution: '同步状态分布'
   },
   sync_task: {
+    cleanup_result: '清理结果',
+    cleanup_submitted: '已提交后台清理，可以关闭窗口继续操作',
+    cleanup_empty: '没有需要清理的日志',
+    cleanup_retention:
+      '仅显示当前用户、当前组织最近一次清理结果，保留 24 小时；服务重启后可能不可用',
+    cleanup_read_failed: '清理结果读取失败，请点击刷新重试',
+    cleanup_status: '清理状态',
+    cleanup_total: '本次清理日志数量：{0}',
+    cleanup_failed_help: '清理失败，日志记录已保留。请根据下方原因处理后重试',
+    cleanup_no_result: '暂无清理结果',
+    cleanup_refresh: '刷新',
+    cleanup_close: '关闭',
+    cleanup_queued: '等待清理',
+    cleanup_running: '清理中',
+    cleanup_succeeded: '清理成功',
+    cleanup_failed: '清理失败',
+    cleanup_unknown: '状态未知',
     index_capability_unavailable: '索引能力尚未加载，请重新选择目标数据库',
     index_not_implemented: '目标插件尚未实现此索引功能',
     index_type_unsupported: '当前字段类型不支持此索引',

@@ -4181,6 +4181,23 @@ export default {
     sync_status_distribution: '同步狀態分佈'
   },
   sync_task: {
+    cleanup_result: '清理結果',
+    cleanup_submitted: '已提交背景清理，可以關閉視窗繼續操作',
+    cleanup_empty: '沒有需要清理的日誌',
+    cleanup_retention:
+      '僅顯示目前使用者、目前組織最近一次清理結果，保留 24 小時；服務重新啟動後可能無法取得',
+    cleanup_read_failed: '無法讀取清理結果，請點擊重新整理後重試',
+    cleanup_status: '清理狀態',
+    cleanup_total: '本次清理日誌數量：{0}',
+    cleanup_failed_help: '清理失敗，日誌記錄已保留。請根據下方原因處理後重試',
+    cleanup_no_result: '暫無清理結果',
+    cleanup_refresh: '重新整理',
+    cleanup_close: '關閉',
+    cleanup_queued: '等待清理',
+    cleanup_running: '清理中',
+    cleanup_succeeded: '清理成功',
+    cleanup_failed: '清理失敗',
+    cleanup_unknown: '狀態未知',
     index_capability_unavailable: '索引能力尚未載入，請重新選擇目標資料庫',
     index_not_implemented: '目標插件尚未實作此索引功能',
     index_type_unsupported: '目前欄位類型不支援此索引',
