@@ -78,6 +78,14 @@ public interface ReportApi {
     @PostMapping("/logMsg")
     String logMsg(@RequestBody ReportInstanceMsgRequest request);
 
+    @Operation(summary = "接收人发送明细")
+    @PostMapping("/delivery")
+    io.dataease.api.report.vo.ReportDeliveryVO delivery(@RequestBody ReportInstanceMsgRequest request);
+
+    @Operation(summary = "补发原报告")
+    @PostMapping("/resend")
+    void resend(@RequestBody ReportResendRequest request);
+
     @Operation(summary = "导出")
     @PostMapping("/export")
     ResponseEntity<ByteArrayResource> export(@RequestBody ReportExportRequest request);
