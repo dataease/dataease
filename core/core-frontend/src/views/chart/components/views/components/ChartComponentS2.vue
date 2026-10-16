@@ -101,6 +101,10 @@ const props = defineProps({
 
 const emit = defineEmits(['onPointClick', 'onChartClick', 'onDrillFilters', 'onJumpClick'])
 const dataVMobile = !isDashboard() && isMobile()
+// PC 内的手机预览使用独立 iframe，需要同时识别移动预览状态。
+const mobileImagePreview = computed(
+  () => isDashboard() && (inMobile.value || mobileInPc.value || !!isMobile())
+)
 
 const { view, showPosition, scale, terminal, drillLength, suffixId } = toRefs(props)
 
@@ -936,8 +940,19 @@ const tablePageClass = computed(() => {
     </el-row>
     <chart-error v-if="isError" :err-msg="errMsg" />
   </div>
-  <el-dialog v-model="state.imgEnlarge" append-to-body class="image-dialog">
-    <div class="enlarge-image">
+  <!-- 移动端仅通过关闭按钮退出，避免 touchend 打开后补发的 click 误关弹层。 -->
+  <el-dialog
+    v-model="state.imgEnlarge"
+    append-to-body
+    class="image-dialog"
+    :class="{ 'image-dialog--mobile': mobileImagePreview }"
+    :fullscreen="mobileImagePreview"
+  >
+    <div
+      class="enlarge-image"
+      @touchstart="mobileImagePreview && $event.stopPropagation()"
+      @touchend="mobileImagePreview && $event.stopPropagation()"
+    >
       <img
         :src="state.imgSrc"
         referrerpolicy="no-referrer"
@@ -1019,6 +1034,45 @@ const tablePageClass = computed(() => {
   overflow: hidden;
   flex-direction: row;
   justify-content: center;
+}
+.image-dialog.image-dialog--mobile {
+  height: 100%;
+  height: 100dvh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #141414;
+
+  .ed-dialog__header {
+    padding: 0;
+  }
+
+  .ed-dialog__headerbtn {
+    // 覆盖全局弹窗按钮的固定偏移和圆角，避免刘海屏遮挡关闭入口。
+    top: calc(8px + env(safe-area-inset-top, 0px)) !important;
+    right: calc(8px + env(safe-area-inset-right, 0px));
+    z-index: 1;
+    width: 44px;
+    height: 44px;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.12);
+
+    .ed-dialog__close {
+      color: #fff;
+    }
+  }
+
+  .ed-dialog__body {
+    height: 100%;
+    padding: 0;
+  }
+
+  .enlarge-image {
+    // 对称预留关闭按钮和安全区空间，横图、长竖图均保持完整居中。
+    box-sizing: border-box;
+    padding: calc(60px + env(safe-area-inset-top, 0px)) calc(16px + env(safe-area-inset-right, 0px))
+      calc(60px + env(safe-area-inset-bottom, 0px)) calc(16px + env(safe-area-inset-left, 0px));
+  }
 }
 .antv-s2-tooltip-container {
   max-width: 400px;
