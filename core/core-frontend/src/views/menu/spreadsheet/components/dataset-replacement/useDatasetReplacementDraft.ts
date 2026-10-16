@@ -1,6 +1,6 @@
 import { computed, ref, shallowRef } from 'vue'
 import { getDsDetailsWithPerm } from '@/api/dataset'
-import type { Field } from '@/api/chart'
+import { getFieldByDQ, type Field } from '@/api/chart'
 import type {
   DatasetIdentity,
   DatasetMapping,
@@ -22,7 +22,7 @@ const normalizeField = (field: Field): ReplacementField => ({
   type: (field as any).type
 })
 
-const loadDataset = async (datasetId: string): Promise<{
+const loadDataset = async (datasetId: string, fieldOwnerIds: string[] = []): Promise<{
   dataset: DatasetIdentity
   fields: ReplacementField[]
 }> => {
@@ -31,16 +31,26 @@ const loadDataset = async (datasetId: string): Promise<{
   if (!detail) {
     throw new Error(`Dataset ${datasetId} is unavailable`)
   }
-  const fields = detail.fields || {}
+  // 无副本时也用图表字段接口补全聚合计算字段；有副本时按归属补全元数据。
+  const queryOwnerIds = fieldOwnerIds.length ? fieldOwnerIds : ['0']
+  const fieldLists = await Promise.all(queryOwnerIds.map(async ownerId => {
+    const result = await getFieldByDQ(datasetId, ownerId, {})
+    return result as unknown as {
+      dimensionList: Field[]
+      quotaList: Field[]
+    }
+  }))
+  const allFields = fieldLists.flatMap(items => [
+    ...(items.dimensionList || []),
+    ...(items.quotaList || [])
+  ])
   return {
     dataset: {
       id: datasetId,
       name: detail.name || detail.tableName || datasetId
     },
-    fields: [
-      ...(fields.dimensionList || []),
-      ...(fields.quotaList || [])
-    ].map(normalizeField)
+    fields: Array.from(new Map(allFields.map(field => [String(field.id), field])).values())
+      .map(normalizeField)
   }
 }
 
@@ -76,7 +86,7 @@ export const useDatasetReplacementDraft = () => {
       service.value = injector.get(SpreadsheetDatasetReplacementService)
       const usages = service.value.collectUsage(unitId.value, componentId)
       const hydratedUsages = await Promise.all(usages.map(async usage => {
-        const detail = await loadDataset(usage.dataset.id)
+        const detail = await loadDataset(usage.dataset.id, usage.fieldOwnerIds)
         return service.value!.hydrateUsage(usage, detail.dataset, detail.fields)
       }))
       draft.value = service.value.createDraft(scope, hydratedUsages, componentId)

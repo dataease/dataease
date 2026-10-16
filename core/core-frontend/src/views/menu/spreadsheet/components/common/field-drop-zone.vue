@@ -10,6 +10,7 @@ interface Props {
   modelValue: FieldItemData[]
   zoneSchema?: FieldZoneSchema
   pluginType?: string
+  fieldOwnerId?: string
   dataConfig?: PluginDataConfig
   title?: string
   placeholder?: string
@@ -239,6 +240,7 @@ const isEmpty = computed(() => localFields.value.length === 0)
             :index="index"
             :zone-schema="zoneSchema"
             :plugin-type="pluginType"
+            :field-owner-id="fieldOwnerId"
             :data-config="dataConfig"
             @remove="handleRemove"
             @update-field="handleUpdateField"

@@ -8,6 +8,7 @@ export const toUsageField = (
   occurrences = 1
 ): FieldUsageFragment => ({
   fieldId: String(field.id),
+  chartId: field.chartId,
   name: field.name || field.dataeaseName || String(field.id),
   dataeaseName: field.dataeaseName,
   groupType: asGroup(field.groupType),

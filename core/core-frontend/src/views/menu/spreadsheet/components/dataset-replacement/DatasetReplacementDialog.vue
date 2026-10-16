@@ -73,6 +73,7 @@ const handleSelectDataset = (
   dataset: DatasetIdentity,
   fields: ReplacementField[]
 ) => {
+  if (submitting.value) return
   selectTargetDataset(mapping, dataset, fields)
 }
 
@@ -81,14 +82,17 @@ const handleSelectField = (
   fieldKey: string,
   target: ReplacementField
 ) => {
+  if (submitting.value) return
   selectTargetField(mapping, fieldKey, target)
 }
 
 const handleClearDataset = (mapping: DatasetMapping) => {
+  if (submitting.value) return
   clearTargetDataset(mapping)
 }
 
 const handleSubmit = async () => {
+  if (submitting.value) return
   if (!complete.value) {
     ElMessage.warning(t('spreadsheet.dataset_replacement.incomplete_warning'))
     return
@@ -121,6 +125,8 @@ const handleSubmit = async () => {
     top="8vh"
     destroy-on-close
     :close-on-click-modal="false"
+    :close-on-press-escape="!submitting"
+    :show-close="!submitting"
     :title="dialogTitle"
     :class="[
       'dataset-replacement-dialog',
@@ -130,7 +136,7 @@ const handleSubmit = async () => {
       }
     ]"
   >
-    <div v-loading="loading" class="dialog-content">
+    <div v-loading="loading || submitting" class="dialog-content">
       <el-alert
         v-if="error"
         type="error"
@@ -159,7 +165,7 @@ const handleSubmit = async () => {
       </template>
     </div>
     <template #footer>
-      <el-button @click="visible = false">
+      <el-button :disabled="submitting" @click="visible = false">
         {{ t('common.cancel') }}
       </el-button>
       <el-button

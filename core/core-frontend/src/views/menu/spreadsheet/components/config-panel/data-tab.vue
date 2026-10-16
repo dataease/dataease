@@ -184,6 +184,7 @@ const queryData = async () => {
           :model-value="currentConfig?.data.zones[schema.id] || []"
           :zone-schema="schema"
           :plugin-type="currentConfig.type"
+          :field-owner-id="currentConfig.fieldOwnerId"
           :data-config="currentConfig.data"
           :placeholder="schema.placeholder"
           :accept-types="schema.acceptTypes"

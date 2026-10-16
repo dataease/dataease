@@ -43,6 +43,10 @@ const props = defineProps({
   crossDs: {
     type: Boolean,
     default: () => false
+  },
+  includeCopiedFields: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -185,18 +189,14 @@ const initFunction = () => {
 watch(
   () => searchField.value,
   val => {
-    if (val && val !== '') {
-      state.quotaData = JSON.parse(
-        JSON.stringify(
-          quotaDataList.filter(
-            ele =>
-              ele.name.toLocaleLowerCase().includes(val.toLocaleLowerCase()) && ele.extField === 0
-          )
-        )
-      )
-    } else {
-      state.quotaData = JSON.parse(JSON.stringify(quotaDataList)).filter(ele => ele.extField === 0)
-    }
+    const keyword = val.toLocaleLowerCase()
+    state.quotaData = cloneDeep(
+      quotaDataList.filter(field => {
+        // 电子表格总计允许引用实例副本，搜索后仍需保留这些候选字段。
+        const allowed = field.extField === 0 || (props.includeCopiedFields && field.chartId)
+        return allowed && field.name.toLocaleLowerCase().includes(keyword)
+      })
+    )
   }
 )
 
