@@ -179,6 +179,21 @@ export class GroupBar extends StackBar {
     }
   }
 
+  protected configLegend(chart: Chart, options: ViewSpec): ViewSpec {
+    const result = super.configLegend(chart, options)
+    const legend = result.children[0].legend
+    if (chart.xAxisExt?.length || !legend || typeof legend !== 'object') {
+      return result
+    }
+    const quota = chart.yAxis?.[0]
+    const quotaName = quota?.chartShowName?.trim() ? quota.chartShowName : quota?.name
+    if (quotaName && legend.color && typeof legend.color === 'object') {
+      // 仅替换显示名称，保留系列标识用于配色和图例筛选
+      legend.color.labelFormatter = () => quotaName
+    }
+    return result
+  }
+
   protected getTooltipItemName(chart: Chart, item: any): string {
     const quota = chart.yAxis?.[0]
     const quotaName = quota?.chartShowName || quota?.name
