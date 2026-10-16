@@ -70,15 +70,15 @@ export function download2AppTemplate(downloadType, canvasDom, name, attachParams
   }
   try {
     findStaticSource(function (staticResource) {
-      waitForResourceImages(canvasDom)
-        .then(() =>
-          domToPng(canvasDom, {
-            width: canvasDom.offsetWidth,
-            height: canvasDom.offsetHeight,
-            // 按 2 倍(或更高)分辨率渲染,解决导出图片模糊问题
-            scale: Math.max(1, window.devicePixelRatio || 1)
-          })
-        )
+      withMapPictures(canvasDom, async () => {
+        await waitForResourceImages(canvasDom)
+        return domToPng(canvasDom, {
+          width: canvasDom.offsetWidth,
+          height: canvasDom.offsetHeight,
+          // 保持模板快照的原有分辨率
+          scale: Math.max(1, window.devicePixelRatio || 1)
+        })
+      })
         .then(dataUrl => {
           const templateName = attachParams?.appName ? attachParams.appName : name
           if (dataUrl !== '') {
