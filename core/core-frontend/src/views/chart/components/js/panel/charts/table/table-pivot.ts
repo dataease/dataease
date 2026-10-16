@@ -102,6 +102,7 @@ class CustomPivotFacet extends PivotFacet {
   protected buildAllHeaderHierarchy() {
     const layout = super.buildAllHeaderHierarchy()
     const { rows, values } = this.spreadsheet.dataSet.fields
+    const valueInCols = this.spreadsheet.isValueInCols()
     if (!layout.colLeafNodes.length && !this.spreadsheet.dataCfg.fields.columns.length) {
       // 没有列维度时仍需一个数据定位节点，空白表头保留行维度角头的必要高度。
       const { colsHierarchy } = layout
@@ -113,7 +114,8 @@ class CustomPivotFacet extends PivotFacet {
         parent: colsHierarchy.rootNode,
         hierarchy: colsHierarchy,
         spreadsheet: this.spreadsheet,
-        query: { [EXTRA_FIELD]: values[0] },
+        // 指标在行头时由行节点提供，空列不能将其覆盖为第一个指标。
+        query: valueInCols ? { [EXTRA_FIELD]: values[0] } : {},
         isLeaf: true
       })
       colsHierarchy.rootNode.children = [column]
@@ -124,7 +126,8 @@ class CustomPivotFacet extends PivotFacet {
       colsHierarchy.maxLevel = 0
       layout.colLeafNodes = [column]
     }
-    if (this.spreadsheet.isValueInCols()) {
+    // 父类构造时就会生成布局，隐藏标记必须从已就绪的 options 读取。
+    if (valueInCols || !this.spreadsheet.options.style.colCell.hideValue) {
       return layout
     }
     const { rowsHierarchy } = layout
@@ -572,10 +575,19 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       colCell: {}
     })
     const hideSingleQuotaName = v.length === 1 && tableHeader.showSingleQuotaName === false
-    s2Options.style.colCell.hideValue = hideSingleQuotaName && basicStyle.quotaPosition !== 'row'
-    if (hideSingleQuotaName && (basicStyle.quotaPosition === 'row' || !c.length)) {
+    s2Options.style.colCell.hideValue = hideSingleQuotaName
+    // 行头指标没有列维度时也要补数据列，与是否隐藏单指标名称无关。
+    const needsEmptyDataColumn = basicStyle.quotaPosition === 'row' && !c.length && v.length > 0
+    if (
+      needsEmptyDataColumn ||
+      (hideSingleQuotaName && (basicStyle.quotaPosition === 'row' || !c.length))
+    ) {
       s2Options.facet = spreadsheet => new CustomPivotFacet(spreadsheet)
-      if (basicStyle.tableLayoutMode === 'tree' && basicStyle.quotaPosition === 'row') {
+      if (
+        hideSingleQuotaName &&
+        basicStyle.tableLayoutMode === 'tree' &&
+        basicStyle.quotaPosition === 'row'
+      ) {
         // 树形角头默认包含“数值”字段，隐藏指标层级时仅保留行维度名称。
         s2Options.cornerText = r
           .map(field => meta.find(item => item.field === field)?.name ?? field)
