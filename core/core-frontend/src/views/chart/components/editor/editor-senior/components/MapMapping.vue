@@ -52,7 +52,7 @@ const init = async () => {
   const chartObj = JSON.parse(JSON.stringify(chart.value))
   if (chartObj?.senior) {
     let senior = parseJson(chartObj.senior)
-    const useGlobalAreaMapping = senior.useGlobalAreaMapping
+    const useGlobalAreaMapping = supportGlobalAreaMapping.value && !!senior.useGlobalAreaMapping
     state.useGlobalAreaMapping = useGlobalAreaMapping
     let curAreaMapping = null
     if (useGlobalAreaMapping) {
