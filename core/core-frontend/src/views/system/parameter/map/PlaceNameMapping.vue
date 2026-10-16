@@ -47,15 +47,16 @@ const init = () => {
   pageInfo.currentPage = 1
   dialogVisible.value = true
   const chartObj = JSON.parse(selectedData.value.geoJson)
-  let curAreaMapping = chartObj.deMapping
-  if (!curAreaMapping || !Object.keys(curAreaMapping).length) {
-    curAreaMapping = getAreaMapping()
-  }
+  const curAreaMapping = getAreaMapping()
   const tmp = []
+  // 以有效图形名称为准，保留已有映射并排除历史数据中的无效条目
   forEach(curAreaMapping, (val, key) => {
+    const mappedName = Object.prototype.hasOwnProperty.call(chartObj.deMapping ?? {}, key)
+      ? chartObj.deMapping[key]
+      : undefined
     tmp.push({
       originName: key,
-      mappedName: val
+      mappedName: typeof mappedName === 'string' && mappedName.trim() ? mappedName : val
     })
   })
   state.currentData = tmp
@@ -67,16 +68,19 @@ const init = () => {
 
 const getAreaMapping = () => {
   const geoJson = JSON.parse(selectedData.value.geoJson)
-  const names = Object.keys(geoJson?.features[0]?.properties).filter(key => key.startsWith('NAME_'))
+  const names = Object.keys(geoJson?.features?.[0]?.properties ?? {}).filter(key =>
+    key.startsWith('NAME_')
+  )
   const nameKey = names[names.length - 1]
-  return geoJson.features.reduce((p, n) => {
-    if (n.properties.name) {
-      p[n.properties.name] = n.properties.name
-    } else {
-      p[n.properties[nameKey]] = n.properties[nameKey]
+  return (geoJson.features ?? []).reduce((p, n) => {
+    const name = [n.properties?.name, n.properties?.[nameKey]].find(
+      value => typeof value === 'string' && value.trim()
+    )
+    if (name !== undefined) {
+      p[name] = name
     }
     return p
-  }, {})
+  }, Object.create(null) as Record<string, string>)
 }
 
 const triggerEdit = scope => {
