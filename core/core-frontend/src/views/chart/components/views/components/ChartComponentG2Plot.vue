@@ -35,6 +35,7 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { L7ChartView } from '@/views/chart/components/js/panel/types/impl/l7'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ExportImage } from '@antv/l7'
+import { registerMapExport } from '@/utils/mapExport'
 import {
   configAxisTitleOverflowTooltip,
   configEmptyDataStyle,
@@ -1191,44 +1192,43 @@ const canvas2Picture = (pictureData, online) => {
   imgDom.src = pictureData
   mapDom?.appendChild(imgDom)
 }
-const preparePicture = id => {
-  if (id !== curView?.id) {
+let unregisterMapExport: (() => void) | undefined
+const exportMapPicture = async (signal: AbortSignal): Promise<string | undefined> => {
+  const currentView = curView || view.value
+  const chartView = chartViewManager.getChartView(currentView.render, currentView.type)
+  if (chartView.library !== ChartLibraryType.L7_PLOT && chartView.library !== ChartLibraryType.L7) {
     return
   }
-  const chartView = chartViewManager.getChartView(curView.render, curView.type)
+  const scene = myChart?.getScene()
+  if (!scene) throw new Error('Map scene is not ready')
   if (chartView.library === ChartLibraryType.L7_PLOT) {
-    myChart
-      .getScene()
-      .exportMap('png')
-      .then(res => canvas2Picture(res, false))
-  } else if (chartView.library === ChartLibraryType.L7) {
-    const scene = myChart.getScene()
-    const zoom = new ExportImage({
-      onExport: (base64: string) => {
-        canvas2Picture(base64, true)
-      }
-    })
-    let getTmapImage
-    if (scene) {
-      scene.addControl(zoom)
-      zoom.hide()
-      // 天地图
-      getTmapImage = async () => {
-        const res = await scene.exportPng('png')
-        canvas2Picture(res, true)
-      }
-    }
-    zoom
-      .getImage()
-      .then(res => {
-        canvas2Picture(res, true)
-      })
-      .catch(() => {
-        if (scene && getTmapImage) {
-          getTmapImage()
-        }
-      })
+    const data = await scene.exportMap('png')
+    if (!data) throw new Error('Map export returned an empty image')
+    return data
   }
+  const control = new ExportImage()
+  const removeControl = () => scene.removeControl(control)
+  scene.addControl(control)
+  control.hide()
+  signal.addEventListener('abort', removeControl, { once: true })
+  try {
+    return await control.getImage()
+  } catch (error) {
+    if (signal.aborted) throw error
+    return await scene.exportPng('png')
+  } finally {
+    signal.removeEventListener('abort', removeControl)
+    if (!signal.aborted) removeControl()
+  }
+}
+const preparePicture = id => {
+  if (id !== curView?.id) return
+  const controller = new AbortController()
+  exportMapPicture(controller.signal)
+    .then(data => {
+      if (data && !chartComponentUnmounted) canvas2Picture(data, true)
+    })
+    .catch(error => console.warn(error))
 }
 const unPreparePicture = id => {
   if (id !== curView?.id) {
@@ -1340,6 +1340,7 @@ onMounted(() => {
     }
   })
   intersectionObserver.observe(containerDom)
+  unregisterMapExport = registerMapExport(containerDom, exportMapPicture)
   useEmitt({ name: 'l7-prepare-picture', callback: preparePicture })
   useEmitt({ name: 'l7-unprepare-picture', callback: unPreparePicture })
 })
@@ -1354,6 +1355,7 @@ const onWheel = (e: WheelEvent) => {
 }
 onBeforeUnmount(() => {
   try {
+    unregisterMapExport?.()
     chartComponentUnmounted = true
     g2RenderVersion++
     clearTimeout(g2Timer)
