@@ -17,6 +17,7 @@ import {
   TOOLTIP_TITLE_TPL
 } from '../../../common/common_antv'
 import { createTooltipWrapper } from '../bar/barUtil'
+import { TreemapLabelFit, type TreemapLabelDatum } from './treemap-label'
 
 const { t } = useI18n()
 
@@ -248,6 +249,24 @@ export class Treemap extends G2ChartView {
       return defaultsDeep(options, hideLanbelOpt)
     }
     const { total } = context
+    const getContentItems = (param: TreemapLabelDatum): string[] => {
+      const contentItems: string[] = []
+      if (labelAttr.showDimension) {
+        const field = String(param.data.field ?? '')
+        const dimensions = param.data.dimensionList?.map(item => String(item.value))
+        // 下钻时 field 只包含当前维度，不能把历史维度重新加入标签
+        contentItems.push(...(dimensions?.join('\n') === field ? dimensions : [field]))
+      }
+      if (labelAttr.showQuota) {
+        contentItems.push(String(valueFormatter(param.value, labelAttr.quotaLabelFormatter) ?? ''))
+      }
+      if (labelAttr.showProportion) {
+        contentItems.push(
+          `${(((param.value / total) * 10000) / 100).toFixed(labelAttr.reserveDecimalCount)}%`
+        )
+      }
+      return contentItems
+    }
     const label: G2Spec = {
       style: {
         labelFill: labelAttr.color,
@@ -255,29 +274,13 @@ export class Treemap extends G2ChartView {
         labelFontSize: labelAttr.fontSize,
         // 标签不参与命中测试，让鼠标事件落到矩形节点
         labelPointerEvents: 'none',
-        labelMaxLines:
-          Number(!!labelAttr.showDimension) +
-          Number(!!labelAttr.showQuota) +
-          Number(!!labelAttr.showProportion),
-        labelText: param => {
-          let res = param.value
-          const contentItems = []
-          if (labelAttr.showDimension) {
-            contentItems.push(param.data.field)
-          }
-          if (labelAttr.showQuota) {
-            contentItems.push(valueFormatter(param.value, labelAttr.quotaLabelFormatter))
-          }
-          if (labelAttr.showProportion) {
-            const percentage = `${(((param.value / total) * 10000) / 100).toFixed(
-              labelAttr.reserveDecimalCount
-            )}%`
-            contentItems.push(percentage)
-          }
-          res = contentItems.join('\n')
-          return res
-        },
-        labelTransform: labelAttr.fullDisplay === true ? [] : [{ type: 'overflowHide' }]
+        // 覆盖 G2 默认的一行限制，避免多维度和自动换行截断后续内容
+        labelMaxLines: Infinity,
+        labelText: param => getContentItems(param).join('\n'),
+        labelTransform:
+          labelAttr.fullDisplay === true
+            ? []
+            : [{ type: TreemapLabelFit, getContentItems }, { type: 'overflowHide' }]
       }
     }
     return defaultsDeep(options, label)
