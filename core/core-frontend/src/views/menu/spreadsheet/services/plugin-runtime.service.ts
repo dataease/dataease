@@ -1,16 +1,18 @@
+import type { FUniver } from '@univerjs/core/facade'
 import type { PluginConfig } from '../types/plugin'
 
 export interface SpreadsheetPluginRuntime<T extends PluginConfig = PluginConfig> {
   type: T['type']
-  refreshData?(ctx: { univerApi: any; config: T }): Promise<boolean | void>
-  applyStyle?(ctx: { univerApi: any; config: T }): Promise<boolean | void>
+  ensureFieldOwnerId?(ctx: { univerApi: FUniver; config: T }): string | undefined
+  refreshData?(ctx: { univerApi: FUniver; config: T }): Promise<boolean | void>
+  applyStyle?(ctx: { univerApi: FUniver; config: T }): Promise<boolean | void>
   validateConfigUpdate?(ctx: {
-    univerApi: any
+    univerApi: FUniver
     config: T
     key: string
     value: any
   }): string | undefined | Promise<string | undefined>
-  removeDraft?(ctx: { univerApi: any; config: T }): Promise<void>
+  removeDraft?(ctx: { univerApi: FUniver; config: T }): Promise<void>
 }
 
 export class SpreadsheetPluginRuntimeRegistry {

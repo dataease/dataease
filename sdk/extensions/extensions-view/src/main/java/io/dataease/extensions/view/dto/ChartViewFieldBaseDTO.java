@@ -1,5 +1,7 @@
 package io.dataease.extensions.view.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import lombok.Data;
 
@@ -40,6 +42,8 @@ public class ChartViewFieldBaseDTO extends DatasetTableFieldDTO implements Seria
 
     private String filterType;
 
+    // 子类重新声明归属 ID 时也需保留字符串序列化，避免前端比较雪花 ID 丢失精度。
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long chartId;
 
     private Integer index;

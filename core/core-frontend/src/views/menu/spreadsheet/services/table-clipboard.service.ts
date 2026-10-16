@@ -3,6 +3,7 @@ import { FUniver } from '@univerjs/core/facade'
 import { ElMessage } from 'element-plus-secondary'
 import { cloneDeep } from 'lodash-es'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { guid } from '@/views/visualized/data/dataset/form/util'
 import type { PluginActionToolbarPayload } from '../types/editor'
 import { getCurrentRangeSelection } from '../utils/current-range-selection'
 import { SPREADSHEET_EVENTS } from '../utils/events'
@@ -143,7 +144,8 @@ export class TableClipboardService extends Disposable {
 
     const targetConfig = cloneDeep(clipboard.config)
     if (clipboard.mode === 'copy') {
-      targetConfig.id = this.createPluginId()
+      // 复制实例与新建实例共用 Snowflake ID 生成方式。
+      targetConfig.id = guid()
     }
     targetConfig.placement = {
       ...targetConfig.placement,
@@ -313,9 +315,5 @@ export class TableClipboardService extends Disposable {
       current = Math.floor(current / 26) - 1
     } while (current >= 0)
     return `${columnName}${row + 1}`
-  }
-
-  private createPluginId(): string {
-    return `plugin_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`
   }
 }

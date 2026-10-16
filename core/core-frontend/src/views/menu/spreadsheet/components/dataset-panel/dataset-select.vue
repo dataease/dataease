@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { getDatasetTree, getDsDetailsWithPerm } from '@/api/dataset'
-import type { Field } from '@/api/chart'
+import { getDatasetTree } from '@/api/dataset'
+import { getFieldByDQ, type Field } from '@/api/chart'
 import type { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
 import { Search, ArrowDown, ArrowUp, Close } from '@element-plus/icons-vue'
 import { ElFormItem, FormInstance } from 'element-plus-secondary'
@@ -18,6 +18,8 @@ const isDataEaseBi = computed(() => appStore.getIsDataEaseBi || appStore.getIsIf
 
 interface Props {
   modelValue?: string | number
+  fieldOwnerId?: string
+  componentId?: string
   disabled?: boolean
   popoverWidth?: number
   clearable?: boolean
@@ -156,22 +158,38 @@ const emitDatasetNodeChange = (datasetId: string | number = selectedValue.value)
   emit('datasetNodeChange', node)
 }
 
-// 加载数据集字段
+let fieldRequestVersion = 0
+watch(
+  [() => props.componentId, () => props.fieldOwnerId],
+  () => { fieldRequestVersion += 1 },
+  { flush: 'sync' }
+)
+onBeforeUnmount(() => { fieldRequestVersion += 1 })
+
+// 实例切换或连续选择数据集后，旧请求不能覆盖当前字段列表。
 const loadDatasetFields = async (datasetId: string | number) => {
+  const version = ++fieldRequestVersion
+  const isCurrentRequest = () => {
+    if (version !== fieldRequestVersion) return false
+    return !props.componentId || normalizeDatasetId(props.modelValue) === normalizeDatasetId(datasetId)
+  }
   try {
-    const res = await getDsDetailsWithPerm([datasetId])
-    if (res && res.length > 0) {
-      const fields = res[0].fields || {}
-      emit('fieldsLoaded', {
-        dimensions: fields.dimensionList || [],
-        quotas: fields.quotaList || []
-      })
-    } else {
-      emit('fieldsLoaded', { dimensions: [], quotas: [] })
+    // 首次加载也保留聚合计算字段；归属为 0 时不读取实例副本。
+    const fields = await getFieldByDQ(datasetId, props.fieldOwnerId || '0', {}) as unknown as {
+      dimensionList?: Field[]
+      quotaList?: Field[]
     }
+    if (!isCurrentRequest()) return
+    emit('fieldsLoaded', {
+      dimensions: fields?.dimensionList || [],
+      quotas: fields?.quotaList || []
+    })
+    return true
   } catch (error) {
     // 获取失败，清空字段
+    if (!isCurrentRequest()) return
     emit('fieldsLoaded', { dimensions: [], quotas: [] })
+    return false
   }
 }
 

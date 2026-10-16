@@ -1,5 +1,8 @@
 import { Inject } from '@univerjs/core'
+import type { FUniver } from '@univerjs/core/facade'
+import { guid } from '@/views/visualized/data/dataset/form/util'
 import type { SpreadsheetPluginRuntime } from '../../../services/plugin-runtime.service'
+import { dispatchSpreadsheetContentChanged } from '../../../utils/events'
 import type { DetailTableConfig } from '../types'
 import {
   ApplyDetailTableOperation,
@@ -29,6 +32,22 @@ export class DetailTableRuntimeService implements SpreadsheetPluginRuntime<Detai
     @Inject(PluginRenderStatusService)
     private readonly pluginRenderStatusService: PluginRenderStatusService
   ) {}
+
+  ensureFieldOwnerId({ univerApi, config }: {
+    univerApi: FUniver
+    config: DetailTableConfig
+  }): string | undefined {
+    const unitId = univerApi.getActiveWorkbook()?.getId()
+    if (!unitId) return
+
+    const storedConfig = this.detailTableInstanceService.get(unitId).find(item => item.id === config.id)
+    const fieldOwnerId = config.fieldOwnerId || storedConfig?.fieldOwnerId || guid()
+    // 编辑配置与保存快照可能不是同一对象，只同步归属 ID，避免覆盖其他配置。
+    config.fieldOwnerId = fieldOwnerId
+    if (storedConfig) storedConfig.fieldOwnerId = fieldOwnerId
+    dispatchSpreadsheetContentChanged()
+    return fieldOwnerId
+  }
 
   async refreshData({ univerApi, config }: { univerApi: any; config: DetailTableConfig }): Promise<boolean | void> {
     this.syncInstance(univerApi, config)

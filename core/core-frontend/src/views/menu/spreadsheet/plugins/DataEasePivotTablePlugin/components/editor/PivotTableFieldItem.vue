@@ -36,6 +36,7 @@ const props = defineProps<{
   field: FieldItemData
   index: number
   pluginType?: string
+  fieldOwnerId?: string
   dataConfig?: PluginDataConfig
   zoneSchema?: FieldZoneSchema
 }>()
@@ -507,6 +508,7 @@ const getFieldColor = (groupType: string) => {
   <SpreadsheetCustomSortDialog
     v-model="customSortDialogVisible"
     :plugin-type="pluginType"
+    :field-owner-id="fieldOwnerId"
     :data-config="dataConfig"
     :field="customSortField"
     @confirm="handleCustomSortConfirm"
