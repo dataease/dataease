@@ -57,6 +57,15 @@ export const renderTiledLegend = (
     // Centering overflowing tracks would hide their leading edge outside the scroll origin.
     justifyContent: 'safe ' + (style.layout?.justifyContent || 'start')
   })
+  if (side && !style.dataeaseLegendTileBox && style.bbox?.height > 0) {
+    // HTML 图例绕过 G2 的布局容器，需按最终侧边区域高度自行对齐
+    // 溢出时回到起始位置，保证首项仍能通过滚动访问
+    Object.assign(root.style, {
+      height: `${style.bbox.height}px`,
+      maxHeight: `${style.bbox.height}px`,
+      alignContent: 'safe ' + (style.layout?.justifyContent || 'start')
+    })
+  }
   // Use shared column tracks so labels of different lengths remain aligned across rows.
   const context = document.createElement('canvas').getContext('2d')
   if (context) {
