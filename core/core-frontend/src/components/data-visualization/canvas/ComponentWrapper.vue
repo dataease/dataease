@@ -180,7 +180,6 @@ const suspensionViewButtonAvailable = computed(
 )
 const viewDemoInnerId = computed(() => 'enlarge-inner-content-' + config.value.id)
 const htmlToImage = () => {
-  useEmitt().emitter.emit('l7-prepare-picture', config.value.id)
   downLoading.value = true
   setTimeout(() => {
     const vueDom = document.getElementById(viewDemoInnerId.value)
@@ -189,7 +188,6 @@ const htmlToImage = () => {
       // do callback
       removeActiveWatermark(viewDemoInnerId.value)
       downLoading.value = false
-      useEmitt().emitter.emit('l7-unprepare-picture', config.value.id)
     })
   }, 1000)
 }
