@@ -129,7 +129,7 @@ const invalidPwdCb = cbParam => {
     router.push({ path: queryRedirectPath })
   }
 }
-const xpackLoadFail = ref(false)
+const xpackLoadFail = ref(!appStore.getXpackValid)
 const loadingText = ref('加载中...')
 const loginContainer = ref()
 const loginContainerWidth = ref(0)
@@ -137,7 +137,7 @@ const showLoginImage = computed<boolean>(() => {
   return !(loginContainerWidth.value < 889)
 })
 
-const preheat = ref(true)
+const preheat = ref(appStore.getXpackValid)
 const showLoginErrorMsg = () => {
   if (!loginErrorMsg.value) {
     return
@@ -346,12 +346,14 @@ onMounted(async () => {
               </div>
 
               <Handler
+                v-if="appStore.getXpackValid"
                 ref="xpackLoginHandler"
                 @switch-tab="switchTab"
                 @auto-callback="autoCallback"
                 @load-fail="handlerFail"
               />
               <InvalidPwd
+                v-if="appStore.getXpackValid"
                 ref="xpackInvalidPwd"
                 @load-fail="() => (xpackLoadFail = true)"
                 @call-back="invalidPwdCb"
