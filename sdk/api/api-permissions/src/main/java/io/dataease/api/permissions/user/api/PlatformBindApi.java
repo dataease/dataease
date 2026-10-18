@@ -1,9 +1,17 @@
 package io.dataease.api.permissions.user.api;
 
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 public interface PlatformBindApi {
+    @GetMapping("/verificationMethod")
+    default VerificationMethod verificationMethod() {
+        return VerificationMethod.UNAVAILABLE;
+    }
+
+    enum VerificationMethod { MFA, PASSWORD, UNAVAILABLE }
+
     @PostMapping("/prepare")
     Prepared prepare(@RequestBody Request request);
 

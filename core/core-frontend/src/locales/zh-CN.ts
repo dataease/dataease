@@ -4935,7 +4935,8 @@ export default {
     bind_confirm: '确认将 {0} 账号绑定到当前账户。请验证身份后继续扫码。',
     bind_password: '输入当前密码',
     bind_mfa: '输入已绑定的 MFA 六位验证码',
-    bind_reauth_unavailable: '当前登录方式不支持密码再认证，请先配置已验证的 MFA 后绑定。',
+    bind_reauth_unavailable:
+      '当前账户没有符合安全策略的身份验证方式，请先完成 MFA 配置或联系管理员。',
     enable: '启用',
     invalid: '失效',
     binding_settings: '绑定设置',

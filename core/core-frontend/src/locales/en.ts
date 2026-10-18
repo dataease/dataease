@@ -5093,7 +5093,7 @@ export default {
     bind_password: 'Enter your current password',
     bind_mfa: 'Enter the six-digit code from your bound MFA authenticator',
     bind_reauth_unavailable:
-      'Password reauthentication is unavailable for this sign-in method. Configure verified MFA before linking an account.',
+      'No identity verification method meets the security policy for this account. Complete MFA setup or contact your administrator.',
     enable: 'Enable',
     invalid: 'Invalid',
     binding_settings: 'Binding settings',
