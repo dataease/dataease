@@ -20,6 +20,7 @@ import {
   unBindApi,
   bindStatusApi,
   queryCategoryStatus,
+  bindingVerificationMethodApi,
   prepareBindApi
 } from '@/views/component/login/bind'
 import { useCache } from '@/hooks/web/useCache'
@@ -139,14 +140,15 @@ const preparedBinding = ref<PreparedBinding | null>(null)
 const preparingBinding = ref(false)
 const bindHandler = async (index: number) => {
   if (preparingBinding.value) return
-  if (!userMfaBound.value && staticForm.value.origin !== 0) {
-    ElMessage.warning(t('userCenter.bind_reauth_unavailable'))
-    return
-  }
   preparingBinding.value = true
   try {
+    const { data: method } = await bindingVerificationMethodApi()
+    if (method !== 'MFA' && method !== 'PASSWORD') {
+      ElMessage.warning(t('userCenter.bind_reauth_unavailable'))
+      return
+    }
     const item = bindList.value[index]
-    const useMfa = userMfaBound.value
+    const useMfa = method === 'MFA'
     const { value } = await ElMessageBox.prompt(
       t('userCenter.bind_confirm', [item.name]),
       t(useMfa ? 'userCenter.bind_mfa' : 'userCenter.bind_password'),

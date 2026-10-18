@@ -8,6 +8,12 @@ import {
   type PreparedBinding
 } from '@/utils/platformBinding'
 
+export const bindingVerificationMethodApi = () => {
+  return request.get<Promise<{ data: 'MFA' | 'PASSWORD' | 'UNAVAILABLE' }>>({
+    url: '/platform/bind/verificationMethod'
+  })
+}
+
 export const prepareBindApi = async (
   origin: number,
   credentials: { pwd?: string; mfaCode?: string }
