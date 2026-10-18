@@ -32,10 +32,11 @@ public class VisualizationExcelUtils {
     }
 
     public static File exportExcel(List<ExcelSheetModel> sheets, String fileName, String folderId) throws Exception {
-        Pattern pattern = Pattern.compile("[\\s\\\\/:\\*\\?\\\"<>\\|]");
+        Pattern pattern = Pattern.compile("[\\s\\\\/:\\*\\?\\\"<>.\\|]");
+        Pattern sheetNamePattern = Pattern.compile("[\\s\\\\/:\\*\\?\\\"<>\\|]");
         AtomicReference<String> realFileName = new AtomicReference<>(fileName);
         if (StringUtils.isNotBlank(fileName)) {
-            realFileName.set(pattern.matcher(fileName).replaceAll("-"));
+            realFileName.set(pattern.matcher(StringUtils.removeEnd(fileName, suffix)).replaceAll("-"));
         }
         SXSSFWorkbook wb = new SXSSFWorkbook();
 
@@ -44,10 +45,10 @@ public class VisualizationExcelUtils {
             List<List<String>> details = sheet.getData();
             List<Integer> fieldTypes = sheet.getFiledTypes();
             details.add(0, sheet.getHeads());
-            String sheetName = pattern.matcher(sheet.getSheetName()).replaceAll("-");
+            String sheetName = sheetNamePattern.matcher(sheet.getSheetName()).replaceAll("-");
             Sheet curSheet = wb.createSheet(sheetName);
             if (StringUtils.isBlank(fileName)) {
-                String cName = sheetName + suffix;
+                String cName = pattern.matcher(sheetName).replaceAll("-");
                 realFileName.set(cName);
             }
 
@@ -82,9 +83,7 @@ public class VisualizationExcelUtils {
                 }
             }
         });
-        if (!StringUtils.endsWith(fileName, suffix)) {
-            realFileName.set(realFileName.get() + suffix);
-        }
+        realFileName.set(realFileName.get() + suffix);
         String folderPath = BASE_ROOT;
         if (StringUtils.isNotBlank(folderId)) {
             folderPath = BASE_ROOT + folderId + "/";
