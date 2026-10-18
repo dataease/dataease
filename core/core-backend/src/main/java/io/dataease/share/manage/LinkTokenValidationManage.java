@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.auth.DeLinkPermit;
+import io.dataease.chart.dao.auto.mapper.CoreChartViewRepository;
 import io.dataease.utils.WhitelistUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.server.PathContainer;
@@ -11,6 +12,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import org.springframework.web.util.pattern.PathPatternParser;
 
 import java.util.Set;
+import java.util.HashSet;
 import io.dataease.permission.model.LinkIdentity;
 import io.dataease.permission.template.LinkTokenVerifier;
 import io.dataease.permission.util.V3UserUtil;
@@ -29,6 +31,8 @@ public class LinkTokenValidationManage implements LinkTokenVerifier {
     private ShareSecretManage secrets;
     @Resource
     private DataVisualizationInfoRepository visualizations;
+    @Resource
+    private CoreChartViewRepository charts;
     @Resource
     private SysParameterManage parameters;
 
@@ -71,8 +75,13 @@ public class LinkTokenValidationManage implements LinkTokenVerifier {
             checkStaticResource(V3UserUtil.getLink(), path);
             return;
         }
-        if (method.equalsIgnoreCase("GET") && (path.equals("/customGeo/geoArea/list")
-                || path.matches("/customGeo/geoArea/[0-9]+"))) return;
+        if (path.startsWith("/customGeo/")) {
+            if (!method.equalsIgnoreCase("GET") || !path.matches("/customGeo/geoArea/custom_[0-9]+")) {
+                throw new IllegalArgumentException("Endpoint outside share scope");
+            }
+            checkCustomGeoArea(V3UserUtil.getLink(), path.substring("/customGeo/geoArea/".length()));
+            return;
+        }
         String typePrefix = "/dataVisualization/findDvType/";
         if (method.equalsIgnoreCase("GET") && path.startsWith(typePrefix)) {
             if (V3UserUtil.getLink() != null && path.substring(typePrefix.length())
@@ -89,6 +98,45 @@ public class LinkTokenValidationManage implements LinkTokenVerifier {
                     .parse(pattern.startsWith("/de2api/") ? pattern.substring(7) : pattern).matches(requestPath))) return;
         }
         throw new IllegalArgumentException("Endpoint outside share scope");
+    }
+
+    private void checkCustomGeoArea(LinkIdentity identity, String areaId) {
+        if (identity == null) throw new IllegalArgumentException("Share identity required");
+        var resource = visualizations.findById(identity.resourceId())
+                .orElseThrow(() -> new IllegalArgumentException("Share resource unavailable"));
+        var mapper = new ObjectMapper();
+        Set<String> chartIds = new HashSet<>();
+        try {
+            collectChartIds(mapper.readTree(resource.getComponentData()), chartIds);
+            // Only published charts actually present in this canvas can authorize a region.
+            // Do not use editor snapshots, client chart attributes or an unscoped region list.
+            for (var chart : charts.findBySceneId(identity.resourceId())) {
+                if (!chartIds.contains(String.valueOf(chart.getId()))
+                        || !("map".equals(chart.getType()) || "bubble-map".equals(chart.getType()))) continue;
+                if (areaId.equals(mapper.readTree(chart.getCustomAttr()).path("map").path("id").asText())) return;
+            }
+        } catch (com.fasterxml.jackson.core.JsonProcessingException | IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid shared map configuration", e);
+        }
+        throw new IllegalArgumentException("Region outside share scope");
+    }
+
+    private void collectChartIds(JsonNode components, Set<String> chartIds) {
+        if (components == null || !components.isArray()) {
+            throw new IllegalArgumentException("Invalid shared canvas configuration");
+        }
+        for (var component : components) {
+            switch (component.path("component").asText()) {
+                case "UserView" -> chartIds.add(component.path("id").asText());
+                case "Group" -> collectChartIds(component.path("propValue"), chartIds);
+                case "DeTabs" -> {
+                    for (var tab : component.path("propValue")) {
+                        collectChartIds(tab.path("componentData"), chartIds);
+                    }
+                }
+                default -> { }
+            }
+        }
     }
 
     @Override
