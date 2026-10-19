@@ -2738,6 +2738,7 @@ export default {
     count_of: 'account'
   },
   cron: {
+    invalid_weekday_w: 'W is not allowed in day-of-week. Set the nearest weekday in day-of-month.',
     second: 'Seconds',
     minute: 'Minutes',
     hour: 'Hours',

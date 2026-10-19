@@ -2669,6 +2669,7 @@ export default {
     count_of: '个账号'
   },
   cron: {
+    invalid_weekday_w: '星期字段不支持 W，请在日期字段中设置最近的工作日',
     second: '秒',
     minute: '分',
     hour: '时',
