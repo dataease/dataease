@@ -643,7 +643,8 @@ export class ColumnLineMix extends G2ChartView {
       const { scaleY, visibleLineData, visibility } = getMixAssistLineOptions(
         index === 0 ? intervalMark : lineMark,
         lineData,
-        index
+        index,
+        assistLineCfg.assistLine
       )
       if (visibleLineData.length) {
         const assistLineMark: G2Spec = {
