@@ -816,7 +816,8 @@ export class GroupLineMix extends G2ChartView {
       const { scaleY, visibleLineData, visibility } = getMixAssistLineOptions(
         index === 0 ? leftLineMark : rightLineMark,
         lineData,
-        index
+        index,
+        assistLineCfg.assistLine
       )
       if (visibleLineData.length) {
         const assistLineMark: G2Spec = {

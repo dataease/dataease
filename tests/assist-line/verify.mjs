@@ -1,7 +1,34 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import ts from '../../core/core-frontend/node_modules/typescript/lib/typescript.js'
-const source = readFileSync(new URL('../../core/core-frontend/src/views/chart/components/js/panel/types/impl/g2-assist-line.ts', import.meta.url), 'utf8').replace("import { parseJson } from '../../../util'", 'const parseJson = value => typeof value === "string" ? JSON.parse(value) : value')
+const visibilitySource = readFileSync(
+  new URL(
+    '../../core/core-frontend/src/views/chart/components/js/panel/types/impl/g2-assist-line.ts',
+    import.meta.url
+  ),
+  'utf8'
+)
+const parsed = ts.createSourceFile('g2-assist-line.ts', visibilitySource, ts.ScriptTarget.Latest, true)
+const visibility = parsed.statements.find(
+  statement =>
+    ts.isVariableStatement(statement) &&
+    statement.declarationList.declarations.some(
+      declaration => declaration.name.getText(parsed) === 'createAssistLineVisibility'
+    )
+)
+assert.ok(visibility, 'production visibility function must exist')
+const series = readFileSync(
+  new URL(
+    '../../core/core-frontend/src/views/chart/components/js/panel/charts/g2/mix/mix-series.ts',
+    import.meta.url
+  ),
+  'utf8'
+)
+const source = `
+const parseJson = value => typeof value === 'string' ? JSON.parse(value) : value
+${series}
+${visibility.getText(parsed)}
+`
 const compiled = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText
 const { createAssistLineVisibility } = await import(`data:text/javascript;base64,${Buffer.from(compiled).toString('base64')}`)
 const fixed = {name:'limit', field:'0', boundFieldId:'1', followField:true}
