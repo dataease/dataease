@@ -95,6 +95,7 @@
     "vant": "4.10.0",
     "video.js": "^7.21.6",
     "vue": "3.5.35",
+    "vue-dompurify-html": "^5.3.0",
     "vue-clipboard3": "^2.0.0",
     "vue-codemirror": "^6.1.1",
     "vue-draggable-next": "^2.2.1",

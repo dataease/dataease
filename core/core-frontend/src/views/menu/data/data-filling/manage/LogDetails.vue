@@ -100,7 +100,7 @@ defineExpose({jobLogDetailVisible, startInterval})
       </template>
 
       <div v-scroll-bottom class="job-log-detail-class">
-        <span v-html="logContent"/>
+        <span v-dompurify-html="logContent"/>
         <span v-if="loading">
         <el-icon class="is-loading">
           <Loading/>
