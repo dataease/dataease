@@ -13,7 +13,7 @@ const props = defineProps({
   <div
     class="svg-container svg-icon"
     v-if="staticContent"
-    v-html="staticContent"
+    v-dompurify-html="staticContent"
     :class="svgClass"
     aria-hidden="true"
   ></div>

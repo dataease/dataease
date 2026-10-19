@@ -386,7 +386,7 @@ onMounted(() => {
             @click.stop="handleNodeClick(role)"
           >
             <span class="flex-align-center label">
-              <span v-if="role.colorName" v-html="role.colorName" />
+              <span v-if="role.colorName" v-dompurify-html="role.colorName" />
               <span
                 :title="role.name"
                 style="
@@ -469,7 +469,7 @@ onMounted(() => {
       </div>
       <el-row>
         <el-col :span="12">
-          
+
           <el-button type="primary" @click="handleAddMember">
             {{ t("org.add_member") }}
           </el-button>
@@ -511,7 +511,7 @@ onMounted(() => {
             width="150"
           >
             <template v-slot:default="scope">
-              <span v-if="scope.row.colorName" v-html="scope.row.colorName" />
+              <span v-if="scope.row.colorName" v-dompurify-html="scope.row.colorName" />
               <span v-else>{{ scope.row.name }}</span>
             </template>
           </el-table-column>
@@ -526,7 +526,7 @@ onMounted(() => {
             <template v-slot:default="scope">
               <span
                 v-if="scope.row.colorAccount"
-                v-html="scope.row.colorAccount"
+                v-dompurify-html="scope.row.colorAccount"
               />
               <span v-else>{{ scope.row.account }}</span>
             </template>

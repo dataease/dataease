@@ -616,7 +616,7 @@ onMounted(() => {
                   ></component
                 ></Icon>
               </el-icon>
-              <span v-if="role.colorName" v-html="role.colorName"> </span>
+              <span v-if="role.colorName" v-dompurify-html="role.colorName"> </span>
               <span v-else>
                 {{ role.name }}
               </span>
@@ -718,7 +718,7 @@ onMounted(() => {
             :label="t('system.variable_value')"
           >
             <template v-slot:default="scope">
-              <span v-if="scope.row.colorValue" v-html="scope.row.colorValue" />
+              <span v-if="scope.row.colorValue" v-dompurify-html="scope.row.colorValue" />
               <span v-else>{{ scope.row.value }}</span>
             </template>
           </el-table-column>

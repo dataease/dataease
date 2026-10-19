@@ -1292,7 +1292,7 @@ const clearG2Tooltip = () => {
                     wordWrap: 'break-word',
                     whiteSpace: 'pre-wrap'
                   }"
-                  v-html="safeTitleRemark"
+                  v-dompurify-html="safeTitleRemark"
                 ></div>
               </template>
               <el-icon :size="iconSize" class="inner-icon">

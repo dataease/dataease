@@ -402,7 +402,7 @@ init()
           <el-tooltip effect="dark" placement="bottom">
             <el-icon style="margin-left: 10px"><InfoFilled /></el-icon>
             <template #content>
-              <span v-html="t('chart.gauge_condition_style_tips')"></span>
+              <span v-dompurify-html="t('chart.gauge_condition_style_tips')"></span>
             </template>
           </el-tooltip>
         </el-form-item>
@@ -435,7 +435,7 @@ init()
           <el-tooltip effect="dark" placement="bottom">
             <el-icon style="margin-left: 10px"><InfoFilled /></el-icon>
             <template #content>
-              <span v-html="t('chart.liquid_condition_style_tips')"></span>
+              <span v-dompurify-html="t('chart.liquid_condition_style_tips')"></span>
             </template>
           </el-tooltip>
         </el-form-item>

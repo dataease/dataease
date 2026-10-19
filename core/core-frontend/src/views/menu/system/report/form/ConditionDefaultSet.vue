@@ -39,7 +39,7 @@
             width="320"
           >
             <template v-slot:default="scope">
-              <div v-html="getValueHtml(scope.row)"></div>
+              <div v-dompurify-html="getValueHtml(scope.row)"></div>
             </template>
           </el-table-column>
 

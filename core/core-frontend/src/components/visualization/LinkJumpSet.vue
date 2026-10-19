@@ -554,7 +554,7 @@
                           {{ t('visualization.select_world') }}
                           <el-tooltip class="item" effect="dark" placement="bottom">
                             <template #content>
-                              <span v-html="$t('chart.reference_field_tip')"></span>
+                              <span v-dompurify-html="$t('chart.reference_field_tip')"></span>
                             </template>
                             <el-icon size="16px" class="hint-icon">
                               <Icon name="icon_info_outlined"

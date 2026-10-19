@@ -39,7 +39,7 @@
                 <span
                   class="geo-name-span"
                   :title="data.name"
-                  v-html="data.colorName && keyword ? data.colorName : data.name"
+                  v-dompurify-html="data.colorName && keyword ? data.colorName : data.name"
                 />
                 <span v-if="data.id === '000'" class="add-icon-span" @click.stop="add()">
                   <el-icon>

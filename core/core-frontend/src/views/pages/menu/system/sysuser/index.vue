@@ -559,7 +559,7 @@ const unlockHandler = row => {
           width="150"
         >
           <template v-slot:default="scope">
-            <span v-if="scope.row.colorName" v-html="scope.row.colorName" />
+            <span v-if="scope.row.colorName" v-dompurify-html="scope.row.colorName" />
             <span v-else>{{ scope.row.name }}</span>
           </template>
         </el-table-column>
@@ -570,7 +570,7 @@ const unlockHandler = row => {
           show-overflow-tooltip
         >
           <template v-slot:default="scope">
-            <span v-html="scope.row.colorAccount || scope.row.account" />
+            <span v-dompurify-html="scope.row.colorAccount || scope.row.account" />
           </template>
         </el-table-column>
 
@@ -624,7 +624,7 @@ const unlockHandler = row => {
           width="200"
         >
           <template v-slot:default="scope">
-            <span v-html="scope.row.colorEmail || scope.row.email" />
+            <span v-dompurify-html="scope.row.colorEmail || scope.row.email" />
           </template>
         </el-table-column>
 
