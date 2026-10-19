@@ -4,7 +4,9 @@
 
 每位开发者按需复制各 MCP 目录的 `.env.example` 为同目录 `.env.local`，填写自己的 TAPD 项目 ID、用户名、个人令牌，以及本机 MCP 入口。值使用 JSON 字符串语法（双引号，特殊字符需要转义）。`NODE_BIN` 可填写 Node 可执行文件绝对路径。Playwright 的测试 URL 和登录账号密码仅保存在本地；启动器不会自动登录，浏览器操作需在具体任务中明确指定。
 
-浏览器资料和截图分别保存在 `.codex/playwright_mcp/browser-profile/` 与 `output/`。本地凭据、浏览器资料和输出目录均被 Git 忽略。建议用 `chmod 600` 限制凭据文件权限。
+浏览器测试按 `tests/browser/README.md` 使用 Playwright CLI 复现、Playwright Test 回归，不使用 Playwright MCP。项目配置已将 `[mcp_servers.playwright]` 设为 `enabled = false`；保留启动器作为历史配置，不自动启用或回退。修改配置后重启 Codex 任务，使工具列表重新加载。
+
+CLI 快照、截图和 Test 报告位于 `tests/browser/output/`，登录状态按需保存到 `tests/browser/.auth/`，均被 Git 忽略。旧 Playwright MCP 的浏览器资料和输出仍留在 `.codex/playwright_mcp/` 下的本地忽略目录中。建议用 `chmod 600` 限制凭据文件权限。
 
 TAPD 仅开放配置中的读取工具。查询“我的待办”时，默认查询整个项目的需求 `owner` 和缺陷 `current_owner`，不限定迭代。成员接口若返回 403，需相应接口权限。
 
