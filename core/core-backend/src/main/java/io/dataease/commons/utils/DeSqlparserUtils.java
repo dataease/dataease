@@ -42,6 +42,7 @@ public class DeSqlparserUtils {
     private static final String SubstitutedSql = " 'DE-BI' = 'DE-BI' ";
     private final List<Map<String, String>> sysParams = new ArrayList<>();
     private final Map<String, TableFieldWithValue> preparedBindings = new LinkedHashMap<>();
+    private final SqlVariableFilterExpander filterExpander = new SqlVariableFilterExpander();
     private int preparedBindingIndex;
     TypeReference<List<SqlVariableDetails>> listTypeReference = new TypeReference<List<SqlVariableDetails>>() {
     };
@@ -60,6 +61,7 @@ public class DeSqlparserUtils {
         this.userEntity = userEntity;
         this.preparedBindings.clear();
         this.preparedBindingIndex = 0;
+        this.filterExpander.reset(parameters);
         sql = sql.trim();
         if (sql.endsWith(";")) {
             sql = sql.substring(0, sql.length() - 1);
@@ -275,6 +277,11 @@ public class DeSqlparserUtils {
     }
 
     private PreparedSqlFragment resolvePreparedSqlFragment(String variableName, List<SqlVariableDetails> parameters, boolean isEdit, boolean isFromDataSet) {
+        String filterBinding = filterExpander.register(Collections.singletonList(variableName), selection ->
+                buildPreparedSqlFragment(selection.get(SqlVariableFilterExpander.normalize(variableName))).replacement());
+        if (filterBinding != null) {
+            return new PreparedSqlFragment(filterBinding, Collections.emptyList());
+        }
         SqlVariableDetails filterParameter = findSqlVariableDetail(parameters, variableName);
         if (filterParameter != null) {
             return buildPreparedSqlFragment(filterParameter);
@@ -327,6 +334,20 @@ public class DeSqlparserUtils {
         if (literalSegments.size() == 1 && literalSegments.get(0).variable()) {
             return resolvePreparedSqlFragment(literalSegments.get(0).content(), parameters, isEdit, isFromDataSet);
         }
+        PreparedSqlFragment fragment = buildPreparedSqlFragmentForLiteralSegments(literalSegments, parameters, isEdit, isFromDataSet);
+        if (fragment == null) {
+            return null;
+        }
+        List<String> variableNames = literalSegments.stream().filter(LiteralSegment::variable).map(LiteralSegment::content).toList();
+        String filterBinding = filterExpander.register(variableNames, selection ->
+                buildPreparedSqlFragmentForLiteralSegments(literalSegments, filterExpander.parametersFor(selection), isEdit, isFromDataSet).replacement());
+        if (filterBinding != null) {
+            return new PreparedSqlFragment(filterBinding, Collections.emptyList());
+        }
+        return fragment;
+    }
+
+    private PreparedSqlFragment buildPreparedSqlFragmentForLiteralSegments(List<LiteralSegment> literalSegments, List<SqlVariableDetails> parameters, boolean isEdit, boolean isFromDataSet) {
         StringBuilder preparedValueBuilder = new StringBuilder();
         boolean hasVariable = false;
         for (LiteralSegment literalSegment : literalSegments) {
@@ -573,6 +594,7 @@ public class DeSqlparserUtils {
     }
 
     private SqlVariableHandleResult finalizePreparedSql(String sql) {
+        sql = filterExpander.expand(sql);
         Pattern tokenPattern = Pattern.compile("'(" + PREPARED_BINDING_TOKEN_PREFIX + "\\d+)'");
         Matcher matcher = tokenPattern.matcher(sql);
         StringBuilder sqlBuilder = new StringBuilder();
