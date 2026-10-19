@@ -1,0 +1,17 @@
+{
+  "name": "dataease-browser-tests",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "cli": "playwright-cli",
+    "test": "playwright test",
+    "test:smoke": "playwright test specs/tooling.spec.mjs",
+    "test:app": "playwright test specs/app.smoke.spec.mjs",
+    "report": "playwright show-report output/report",
+    "demo": "node fixtures/server.mjs"
+  },
+  "devDependencies": {
+    "@playwright/cli": "0.1.22",
+    "@playwright/test": "1.64.1"
+  }
+}

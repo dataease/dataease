@@ -131,6 +131,7 @@
 - `npm run lint` 和 `npm run lint:stylelint` 带自动修复，不能作为只读检查命令；避免造成无关文件改动。
 - `build:base` / `build:distributed` 会继续执行 `build:flush`，其中包含子目录依赖安装和文件生成。执行前确认副作用与任务范围一致。
 - 前端没有统一 `test` 脚本。饼图标签相关改动可按 `tests/pie-label-overflow/README.md` 使用现有 Vite 页面和 Playwright 验证；它不等于完整产品回归。
+- 浏览器问题优先按 `tests/browser/README.md` 使用独立 Playwright CLI 复现、Playwright Test 定向回归；按缺陷使用独立浏览器会话，CLI 快照写文件并按需读取，测试仅返回简短摘要，失败时再查看截图和 trace。工具自检不等于产品回归，复杂探索确有需要时再使用 Playwright MCP。
 - 不自动升级依赖或重建全部锁文件；新增依赖需说明必要性，并检查许可证、体积和实际跟踪的锁文件。
 
 ### 后端与整包
