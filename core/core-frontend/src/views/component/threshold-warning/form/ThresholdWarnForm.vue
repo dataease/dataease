@@ -255,7 +255,7 @@
               <div
                 ref="previewRef"
                 class="content"
-                v-html="sanitizeHtml(previewHml || formState.msgContent)"
+                v-dompurify-html="sanitizeHtml(previewHml || formState.msgContent)"
               />
             </div>
           </div>

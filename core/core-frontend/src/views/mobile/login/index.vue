@@ -287,7 +287,7 @@ const loadFail = () => {
         </van-cell-group>
         <van-button block type="primary" native-type="submit"> 登录 </van-button>
       </van-form>
-      <div v-if="showFoot" class="dynamic-login-foot" v-html="footContent" />
+      <div v-if="showFoot" class="dynamic-login-foot" v-dompurify-html="footContent" />
     </div>
 
     <MobileHandler

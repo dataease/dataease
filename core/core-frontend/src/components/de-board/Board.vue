@@ -44,7 +44,7 @@ defineProps({
 </script>
 
 <template>
-  <div class="svg-container" v-html="borderMap[name]"></div>
+  <div class="svg-container" v-dompurify-html="borderMap[name]"></div>
 </template>
 <style lang="less" scoped>
 .svg-container {

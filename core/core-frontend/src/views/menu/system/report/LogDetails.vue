@@ -97,9 +97,9 @@ defineExpose({jobLogDetailVisible, startInterval})
           <div class="title">{{ t('sync_task.execute_log') }}</div>
         </div>
       </template>
-      
+
       <div v-scroll-bottom class="job-log-detail-class">
-        <span v-html="logContent"/>
+        <span v-dompurify-html="logContent"/>
         <span v-if="loading">
         <el-icon class="is-loading">
           <Loading/>

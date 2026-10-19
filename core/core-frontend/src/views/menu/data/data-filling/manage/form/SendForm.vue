@@ -69,7 +69,7 @@
             </el-icon>
             <div class="notification-detail">
               <div class="title">{{ formState.msgTitle }}</div>
-              <div class="content" v-html="sanitizeHtml(previewHml || formState.msgContent)" />
+              <div class="content" v-dompurify-html="sanitizeHtml(previewHml || formState.msgContent)" />
             </div>
           </div>
         </div>

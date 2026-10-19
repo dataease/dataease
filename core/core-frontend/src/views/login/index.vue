@@ -365,7 +365,7 @@ onMounted(async () => {
             </div>
           </el-form>
         </div>
-        <div v-if="showFoot" class="dynamic-login-foot" v-html="footContent" />
+        <div v-if="showFoot" class="dynamic-login-foot" v-dompurify-html="footContent" />
       </div>
     </div>
   </div>
