@@ -435,10 +435,19 @@ const loadData = () => {
           activeTab.value = ''
           tabList.value = []
           Object.assign(sheetObj, cloneDeep(defaultSheetObj))
-          if (error.code === 'ECONNABORTED') {
+          // The shared interceptor already reports standard Axios timeouts and HTTP errors.
+          // Report transport failures without a response; intentional cancellation stays silent.
+          if (
+            !error?.response &&
+            !error?.message?.includes('timeout of') &&
+            ['ERR_NETWORK', 'ECONNABORTED', 'ETIMEDOUT'].includes(error?.code)
+          ) {
             ElMessage({
               type: 'error',
-              message: error.message,
+              message:
+                error.code === 'ETIMEDOUT'
+                  ? t('common.timeout_tips')
+                  : t('datasource.remote_file_load_interrupted'),
               showClose: true
             })
           }
