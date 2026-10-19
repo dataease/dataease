@@ -101,7 +101,7 @@
 import { ref, onMounted, provide, toRefs } from "vue";
 import { useI18n } from "@/hooks/web/useI18n";
 import RulerTree from "../ruler-tree/index.vue";
-import '@/utils/DateUtil'
+import { formatDate } from '@/utils/DateUtil'
 import {
   rateTypeOptions,
   weekTypeOptions,
@@ -138,7 +138,7 @@ const { chartInfo, fieldList } = toRefs(props);
 provide("filedList", fieldList);
 const weekTypeValue = ref(1);
 const monthTypeValue = ref(1);
-const timePicker = ref(new Date(new Date().format("yyyy-MM-dd") + " 09:00:00"));
+const timePicker = ref(new Date(formatDate(new Date(), "yyyy-MM-dd") + " 09:00:00"));
 const timeSelected = ref(30);
 const rulesError = ref(false);
 const fillThresholdRules = (args) => {
@@ -242,7 +242,7 @@ const formatRate2Data = () => {
         : monthTypeValue.value.toString();
   }
   const hms = timePicker.value
-    ? new Date(timePicker.value).format("hh:mm:ss")
+    ? formatDate(new Date(timePicker.value), "hh:mm:ss")
     : "00:00:01";
   const tmText = `2021-08-${dayTime} ${hms}`;
   tempResult['rateValue'] = tmText
