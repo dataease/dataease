@@ -188,6 +188,44 @@ os.execv('/usr/bin/envsubst', ['/usr/bin/envsubst'])
         self.assertEqual(target.read_text(), 'previous\n')
         self.assertEqual(list(self.runtime.glob('.de-config.*')), [])
 
+    def test_prepare_render_failure_preserves_old_generated_configs(self):
+        conf = self.runtime / 'conf'
+        conf.mkdir()
+        originals = {
+            'application.yml': 'server: old-fixture-config\n',
+            'mysql.env': 'MYSQL_ROOT_PASSWORD=old-fixture-secret\n',
+            'application-mysql.yml': 'password: old-fixture-secret\n'
+        }
+        self.mock('envsubst', '''
+count_path = os.path.join(os.environ['TEST_ROOT'], 'render-count')
+count = int(open(count_path).read()) + 1 if os.path.exists(count_path) else 1
+with open(count_path, 'w') as counter:
+    counter.write(str(count))
+if count == int(os.environ['TEST_FAIL_RENDER']):
+    print('partial fixture output')
+    sys.exit(9)
+os.execv('/usr/bin/envsubst', ['/usr/bin/envsubst'])
+''')
+        for failure, failed_file in [(1, 'application.yml'), (2, 'mysql.env')]:
+            with self.subTest(failed_file=failed_file):
+                (self.root / 'render-count').unlink(missing_ok=True)
+                for name, contents in originals.items():
+                    (conf / name).write_text(contents)
+                    (conf / name).chmod(0o644)
+                result = self.installer(env={'TEST_FAIL_RENDER': str(failure)})
+                self.assertNotEqual(result.returncode, 0)
+                self.assertEqual((conf / failed_file).read_text(), originals[failed_file])
+                self.assertEqual((conf / 'application-mysql.yml').read_text(),
+                                 originals['application-mysql.yml'])
+                if failure == 1:
+                    for name, contents in originals.items():
+                        self.assertEqual((conf / name).read_text(), contents)
+                for name in originals:
+                    self.assert_private(conf / name)
+                self.assertEqual(list(conf.glob('.de-config.*')), [])
+                self.assertEqual((conf / 'my.cnf').read_bytes(),
+                                 (ROOT / 'dataease/templates/my.cnf').read_bytes())
+
     def test_symlink_config_is_rejected_without_touching_target(self):
         target = self.root / 'outside'
         target.write_text('sentinel')
