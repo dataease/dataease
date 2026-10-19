@@ -205,6 +205,9 @@ watch(
 
 let p = null
 let p1 = null
+// 子组件可能在父组件 onMounted 之前同步触发事件，Promise 需在 setup 阶段创建
+const xpackReadyPromise = new Promise(r => (p = r))
+const iframeReadyPromise = new Promise(r => (p1 = r))
 const XpackLoaded = () => p(true)
 const initIframe = () => p1(true)
 onMounted(async () => {
@@ -216,7 +219,7 @@ onMounted(async () => {
   })
   console.info('Preview Canvas init')
   if (!props.outerId && appStore.getXpackValid) {
-    await Promise.all([new Promise(r => (p = r)), new Promise(r => (p1 = r))])
+    await Promise.all([xpackReadyPromise, iframeReadyPromise])
   }
   console.info('Preview Canvas Promise End')
   // 公共链接 iframe 场景：父页面将 linkToken 注入 URL，在第一个 API 请求发出前初始化
