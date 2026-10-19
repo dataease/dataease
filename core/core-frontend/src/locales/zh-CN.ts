@@ -978,6 +978,7 @@ export default {
     no_selected_member: '暂无已选成员'
   },
   auth: {
+    permission_load_failed: '权限配置加载失败，请关闭后重试',
     permission_configuration: '权限配置',
     was_not_obtained: '未获取到资源节点',
     search_name: '搜索名称',
