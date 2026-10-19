@@ -357,7 +357,7 @@ public class XpackShareManage {
 
         boolean authorized = !linkExp && pwdValid && validVO.isTicketValid() && !validVO.isTicketExp();
         if (authorized) {
-            generateLinkToken(xpackShare);
+            generateLinkToken(xpackShare, request.getTicket());
         } else {
             // Challenge responses must not disclose resource/owner identifiers or Ticket arguments.
             TicketValidVO challenge = new TicketValidVO();
@@ -414,8 +414,10 @@ public class XpackShareManage {
         return StringUtils.equals(xpackShare.getUuid(), uuid) && StringUtils.equals(xpackShare.getPwd(), pwd);
     }
 
-    private void generateLinkToken(XpackShare xpackShare) {
-        String linkToken = LinkTokenUtil.generate(xpackShare, shareSecretManage.getDefaultPwd());
+    private void generateLinkToken(XpackShare xpackShare, String ticket) {
+        var grant = shareTicketManage.tokenTicket(ticket, xpackShare);
+        String linkToken = LinkTokenUtil.generate(xpackShare, shareSecretManage.getDefaultPwd(),
+                grant.id(), grant.expiresAt());
         HttpServletResponse response = ServletUtils.response();
         assert response != null;
         response.addHeader(AuthConstant.LINK_TOKEN_KEY, linkToken);

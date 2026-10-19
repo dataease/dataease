@@ -14,7 +14,7 @@ import { useEmbedded } from '@/store/modules/embedded'
 import { useLinkStoreWithOut } from '@/store/modules/link'
 import { config } from './config'
 import { configHandler } from './refresh'
-import { isMobile, getLocale } from '@/utils/utils'
+import { isMobile, getLocale, isLink } from '@/utils/utils'
 import { useI18n } from '@/hooks/web/useI18n'
 // 注意：不得在模块顶层 const { t } = useI18n() —— 本模块求值早于 setupI18n，
 // 顶层捕获会永久得到降级透传 t（永远返回 key）。必须在函数体内实时调用 useI18n()。
@@ -100,6 +100,20 @@ const permissionStore = usePermissionStoreWithOut()
 const linkStore = useLinkStoreWithOut()
 const CancelToken = axios.CancelToken
 const cancelMap = {}
+let reloadingLink = false
+
+const revalidateLink = (requestConfig: InternalAxiosRequestConfig) => {
+  if (!isLink() || !requestConfig.headers?.['X-DE-LINK-TOKEN']) {
+    return false
+  }
+  // 分享鉴权失效后重新走 proxyInfo，由分享页显示过期、删除或密码变更等状态。
+  // 保留当前 URL 和用户登录缓存，并合并并发图表请求触发的刷新。
+  if (!reloadingLink) {
+    reloadingLink = true
+    window.location.reload()
+  }
+  return true
+}
 
 // request拦截器
 service.interceptors.request.use(
@@ -196,6 +210,9 @@ service.interceptors.response.use(
     } else if (response.config.url.startsWith('/xpackComponent/pluginStaticInfo/extensions-')) {
       return response
     } else {
+      if (response.data.code === 80001 && revalidateLink(response.config)) {
+        return Promise.reject(response.data.msg)
+      }
       if (
         !response?.config?.url.startsWith('/xpackComponent/contentPlugin/') &&
         response?.data?.code !== 60003
@@ -273,6 +290,9 @@ service.interceptors.response.use(
 
     error.config.loading && tryHideLoading(permissionStore.getCurrentPath)
     if (header.has('DE-GATEWAY-FLAG')) {
+      if (revalidateLink(error.config)) {
+        return Promise.reject(error)
+      }
       const userToken = wsCache.get('user.token')
       const inPlatformClient = !!wsCache.get('de-platform-client')
       clearCache()

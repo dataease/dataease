@@ -209,20 +209,48 @@ public class ShareTicketManage {
         long now = System.currentTimeMillis();
         if (ObjectUtils.isEmpty(accessTime)) {
             accessTime = now;
-            vo.setTicketExp(false);
             linkTicket.setAccessTime(accessTime);
             coreShareTicketRepository.saveAndFlush(linkTicket);
-            return vo;
         }
-        Long exp = linkTicket.getExp();
-        if (ObjectUtils.isEmpty(exp) || exp.equals(0L)) {
-            vo.setTicketExp(false);
-            return vo;
-        }
-        long expTime = exp * 60L * 1000L;
-        long time = now - accessTime;
-        vo.setTicketExp(time > expTime);
+        Long expiresAt = ticketExpiresAt(linkTicket);
+        vo.setTicketExp(expiresAt != null && now >= expiresAt);
         return vo;
+    }
+
+    public record TicketGrant(Long id, Long expiresAt) { }
+
+    public TicketGrant tokenTicket(String ticket, XpackShare share) {
+        if (StringUtils.isBlank(ticket)) return verifyTokenTicket(null, share);
+        return requireTokenTicket(getByTicket(ticket), share);
+    }
+
+    // Read-only validation on every authenticated share request; never reset first access time.
+    public TicketGrant verifyTokenTicket(Long ticketId, XpackShare share) {
+        if (ticketId == null) {
+            if (Boolean.TRUE.equals(share.getTicketRequire())) {
+                throw new IllegalArgumentException("Share Ticket required");
+            }
+            return new TicketGrant(null, null);
+        }
+        return requireTokenTicket(coreShareTicketRepository.findById(ticketId).orElse(null), share);
+    }
+
+    private TicketGrant requireTokenTicket(CoreShareTicket ticket, XpackShare share) {
+        if (ticket == null || !Objects.equals(ticket.getUuid(), share.getUuid())
+                || ticket.getAccessTime() == null) {
+            throw new IllegalArgumentException("Invalid share Ticket");
+        }
+        Long expiresAt = ticketExpiresAt(ticket);
+        if (expiresAt != null && expiresAt <= System.currentTimeMillis()) {
+            throw new IllegalArgumentException("Share Ticket expired");
+        }
+        return new TicketGrant(ticket.getId(), expiresAt);
+    }
+
+    private Long ticketExpiresAt(CoreShareTicket ticket) {
+        Long exp = ticket.getExp();
+        if (exp == null || exp == 0L) return null;
+        return Math.addExact(ticket.getAccessTime(), Math.multiplyExact(exp, 60_000L));
     }
 
     public Integer getLimit() {

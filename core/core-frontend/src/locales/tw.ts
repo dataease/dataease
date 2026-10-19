@@ -3915,6 +3915,7 @@ export default {
     all_source: '全部來源'
   },
   link_ticket: {
+    load_error: '分享載入失敗，請重新整理重試或聯絡分享者',
     require: '必選',
     back: '返回公共連結設定頁',
     refresh: '刷新',

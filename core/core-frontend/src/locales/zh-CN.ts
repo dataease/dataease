@@ -3934,6 +3934,7 @@ export default {
     all_source: '全部来源'
   },
   link_ticket: {
+    load_error: '分享加载失败，请刷新重试或联系分享者',
     require: '必选',
     back: '返回公共链接设置页面',
     refresh: '刷新',

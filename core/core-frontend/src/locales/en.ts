@@ -4042,6 +4042,7 @@ export default {
     all_source: 'All Sources'
   },
   link_ticket: {
+    load_error: 'Unable to load this share. Refresh to retry or contact the owner.',
     require: 'Required',
     back: 'Return to the public link settings page',
     refresh: 'Refresh',
