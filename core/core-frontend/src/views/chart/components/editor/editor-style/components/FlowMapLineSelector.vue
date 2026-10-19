@@ -7,7 +7,7 @@ import {
   DEFAULT_MISC
 } from '@/views/chart/components/editor/util/chart'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { cloneDeep, defaultsDeep } from 'lodash-es'
+import { cloneDeep, defaultsDeep, isPlainObject } from 'lodash-es'
 
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
@@ -32,28 +32,54 @@ const flowLineTypeOptions = [
 ]
 const state = reactive({
   lineForm: {} as DeepPartial<ChartMiscAttr['flowMapConfig']['lineConfig']>,
-  basicStyleForm: {}
+  basicStyleForm: {} as ChartBasicStyle
 })
 const toolTip = computed(() => {
   return props.themes || 'dark'
 })
 const emit = defineEmits(['onChangeFlowMapLineForm', 'onBasicStyleChange'])
+const customAttr = computed(() => {
+  const attr = props.chart?.customAttr
+  return typeof attr === 'string' && attr ? JSON.parse(attr) : attr
+})
+const canEdit = computed(() => {
+  const attr = props.chart?.customAttr
+  return (
+    isPlainObject(attr) &&
+    isPlainObject(attr.basicStyle) &&
+    isPlainObject(attr.misc?.flowMapConfig?.lineConfig)
+  )
+})
 
 watch(
-  () => props.chart.customAttr.misc.flowMapConfig.lineConfig,
+  [
+    () => {
+      const flowMapConfig = customAttr.value?.misc?.flowMapConfig
+      // 缺少线条配置时监听父级，恢复后仍只深度监听线条配置
+      return flowMapConfig?.lineConfig ?? flowMapConfig
+    },
+    // 原始配置补齐或从字符串转为对象后，需要重新同步表单
+    canEdit
+  ],
   () => {
     init()
   },
   { deep: true }
 )
 
-const changeStyle = prop => {
+const changeStyle = (prop: keyof ChartMiscAttr['flowMapConfig']['lineConfig']) => {
+  if (!canEdit.value || !state.basicStyleForm.colors) {
+    return
+  }
   state.basicStyleForm.colors[0] = state.lineForm.mapLineSourceColor
   state.basicStyleForm.colors[1] = state.lineForm.mapLineTargetColor
   emit('onBasicStyleChange', { data: state.basicStyleForm, requestData: false }, 'colors')
   emit('onChangeFlowMapLineForm', state.lineForm, prop)
 }
 const onAlphaChange = v => {
+  if (!canEdit.value) {
+    return
+  }
   const _v = parseInt(v)
   if (_v >= 0 && _v <= 100) {
     state.lineForm.alpha = _v
@@ -62,40 +88,30 @@ const onAlphaChange = v => {
   } else if (_v > 100) {
     state.lineForm.alpha = 100
   } else {
-    const lineConfig = cloneDeep(props.chart.customAttr.misc.flowMapConfig.lineConfig)
-    const oldForm = defaultsDeep(
-      lineConfig,
-      cloneDeep(DEFAULT_MISC.flowMapConfig)
-    ) as ChartBasicStyle
+    const lineConfig = cloneDeep(customAttr.value.misc.flowMapConfig.lineConfig)
+    const oldForm = defaultsDeep(lineConfig, cloneDeep(DEFAULT_MISC.flowMapConfig.lineConfig))
     state.lineForm.alpha = oldForm.alpha
   }
   changeStyle('alpha')
 }
 const init = () => {
-  const chart = JSON.parse(JSON.stringify(props.chart))
-  if (chart.customAttr) {
-    let customAttr = null
-    if (Object.prototype.toString.call(chart.customAttr) === '[object Object]') {
-      customAttr = JSON.parse(JSON.stringify(chart.customAttr))
-    } else {
-      customAttr = JSON.parse(chart.customAttr)
-    }
-    const basicStyle = customAttr.basicStyle
+  if (customAttr.value?.misc?.flowMapConfig) {
+    const attr = cloneDeep(customAttr.value)
+    const basicStyle = attr.basicStyle
     state.basicStyleForm = defaultsDeep(
       basicStyle,
       cloneDeep(DEFAULT_BASIC_STYLE)
     ) as ChartBasicStyle
-    configCompat(basicStyle)
-    if (customAttr.misc.flowMapConfig.lineConfig) {
-      state.lineForm = customAttr.misc.flowMapConfig.lineConfig
+    configCompat(state.basicStyleForm)
+    if (attr.misc.flowMapConfig.lineConfig) {
+      state.lineForm = attr.misc.flowMapConfig.lineConfig
       state.lineForm.mapLineSourceColor = state.basicStyleForm.colors[0]
       state.lineForm.mapLineTargetColor = state.basicStyleForm.colors[1]
     } else {
-      // 新增图表
+      // 配置未补齐时仅展示默认值，不回写或触发重绘
       state.lineForm = {
         ...JSON.parse(JSON.stringify(DEFAULT_MISC.flowMapConfig.lineConfig))
       }
-      changeStyle()
     }
   }
 }
