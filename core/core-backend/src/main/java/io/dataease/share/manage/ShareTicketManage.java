@@ -69,14 +69,17 @@ public class ShareTicketManage {
                     DEException.throwException("无权操作此Ticket");
                 }
                 if (creator.isGenerateNew()) {
+                    if (!StringUtils.equals(uuid, ticketEntity.getUuid())) {
+                        DEException.throwException("Ticket不属于此分享");
+                    }
                     coreShareTicketRepository.deleteById(ticketEntity.getId());
                     String newTicket = CodingUtil.shortUuid();
                     CoreShareTicket newTicketEntity = new CoreShareTicket();
                     newTicketEntity.setId(IDUtils.snowID());
                     newTicketEntity.setTicket(newTicket);
-                    newTicketEntity.setArgs(creator.getArgs());
-                    newTicketEntity.setExp(creator.getExp());
-                    newTicketEntity.setUuid(creator.getUuid());
+                    newTicketEntity.setArgs(ticketEntity.getArgs());
+                    newTicketEntity.setExp(ticketEntity.getExp());
+                    newTicketEntity.setUuid(ticketEntity.getUuid());
                     coreShareTicketRepository.saveAndFlush(newTicketEntity);
                     return newTicket;
                 }
@@ -86,6 +89,9 @@ public class ShareTicketManage {
                 coreShareTicketRepository.saveAndFlush(ticketEntity);
                 return ticketEntity.getTicket();
             }
+        }
+        if (creator.isGenerateNew()) {
+            DEException.throwException("Ticket不存在");
         }
         if (StringUtils.isBlank(ticket)) {
             ticket = CodingUtil.shortUuid();
