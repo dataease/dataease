@@ -98,9 +98,9 @@ const HandleBeforeClose = () => {
 
 <style lang="less" scoped>
 .img-content {
-  width: 100vw;
+  width: 100%;
   height: calc(100vh - 70px);
-  overflow-y: hidden;
+  overflow: hidden;
   padding: 60px 120px;
   img {
     width: 100%;
