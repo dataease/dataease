@@ -1,15 +1,15 @@
 <script lang="ts" setup>
 import { ref, reactive, onMounted, computed, toRefs, h } from 'vue'
-import { ElMessage, ElLoading } from 'element-plus-secondary'
-import { useI18n } from '@/hooks/web/useI18n'
-import type {
-  FormInstance,
-  FormRules,
+import {
+  ElMessage,
+  ElLoading,
   ElMessageBox,
   ElForm,
   ElFormItem,
   ElInput
 } from 'element-plus-secondary'
+import { useI18n } from '@/hooks/web/useI18n'
+import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { groupBy } from './options'
 import { EMAIL_REGEX } from '@/utils/validate'
 import { useUserStoreWithOut } from '@/store/modules/user'
