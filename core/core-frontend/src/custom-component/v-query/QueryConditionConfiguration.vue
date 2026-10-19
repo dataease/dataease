@@ -26,7 +26,7 @@ import {
 import { storeToRefs } from 'pinia'
 import { enumValueObj } from '@/api/dataset'
 import CustomSortFilter from './CustomSortFilter.vue'
-import { addQueryCriteriaConfig, attributes } from './options'
+import { addQueryCriteriaConfig, attributes, splitConditionValues } from './options'
 import { getCustomTime } from './time-format'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import {
@@ -191,6 +191,15 @@ const activeCondition = ref('')
 const isIndeterminate = ref(false)
 const datasetTree = shallowRef([])
 const fields = ref<DatasetDetail[]>()
+
+const conditionSeparatorOptions = computed(() => [
+  { label: t('v_query.separator_comma'), value: 'comma' },
+  { label: t('v_query.separator_chinese_comma'), value: 'chineseComma' },
+  { label: t('v_query.separator_semicolon'), value: 'semicolon' },
+  { label: t('v_query.separator_space'), value: 'space' },
+  { label: t('v_query.separator_newline'), value: 'newline' },
+  { label: t('v_query.separator_custom'), value: 'custom' }
+])
 
 const { queryElement } = toRefs(props)
 const getDetype = (id, arr) => {
@@ -1235,8 +1244,17 @@ const indexNumCascade = [
 const validateConditionType = ({
   defaultConditionValueF,
   defaultConditionValueS,
-  conditionType
+  conditionType,
+  conditionSeparatorType,
+  conditionSeparatorCustom
 }) => {
+  if (conditionType === 3) {
+    return !splitConditionValues(
+      defaultConditionValueF,
+      conditionSeparatorType,
+      conditionSeparatorCustom
+    ).length
+  }
   if (conditionType === 0) {
     return defaultConditionValueF === ''
   } else {
@@ -1259,6 +1277,15 @@ const setParams = ele => {
 
 const validate = () => {
   return conditions.value.some(ele => {
+    if (
+      ele.displayType === '8' &&
+      ele.conditionType === 3 &&
+      ele.conditionSeparatorType === 'custom' &&
+      !ele.conditionSeparatorCustom
+    ) {
+      ElMessage.error(t('v_query.custom_separator_required'))
+      return true
+    }
     if (ele.auto) return false
     if (!ele.checkedFields?.length || ele.checkedFields.some(itx => !ele.checkedFieldsMap[itx])) {
       ElMessage.error(t('v_query.be_linked_first'))
@@ -3511,7 +3538,10 @@ defineExpose({
               </div>
               <div class="value">
                 <div class="value">
-                  <el-radio-group class="larger-radio" v-model="curComponent.conditionType">
+                  <el-radio-group
+                    class="larger-radio condition-type-radio"
+                    v-model="curComponent.conditionType"
+                  >
                     <el-radio :label="0">{{ t('v_query.single_condition') }}</el-radio>
                     <el-radio :label="1" :disabled="!!curComponent.parameters.length">{{
                       t('v_query.with_condition')
@@ -3519,11 +3549,47 @@ defineExpose({
                     <el-radio :label="2" :disabled="!!curComponent.parameters.length">{{
                       t('v_query.or_condition')
                     }}</el-radio>
+                    <el-radio :label="3" :disabled="!!curComponent.parameters.length">{{
+                      t('v_query.multi_condition')
+                    }}</el-radio>
                   </el-radio-group>
                 </div>
               </div>
             </div>
-            <div style="margin-bottom: 10.5px" v-if="curComponent.displayType === '8'">
+            <div
+              class="list-item top-item"
+              v-if="curComponent.displayType === '8' && curComponent.conditionType === 3"
+            >
+              <div class="label ellipsis">{{ t('v_query.separator') }}</div>
+              <div class="value">
+                <el-select v-model="curComponent.conditionSeparatorType" style="width: 100%">
+                  <el-option
+                    v-for="option in conditionSeparatorOptions"
+                    :key="option.value"
+                    :label="option.label"
+                    :value="option.value"
+                  />
+                </el-select>
+                <el-input
+                  v-if="curComponent.conditionSeparatorType === 'custom'"
+                  v-model="curComponent.conditionSeparatorCustom"
+                  :placeholder="t('v_query.custom_separator_placeholder')"
+                  style="margin-top: 8px"
+                />
+                <div class="separator-hint">
+                  {{
+                    curComponent.conditionSeparatorType === 'custom' &&
+                    !curComponent.conditionSeparatorCustom
+                      ? t('v_query.custom_separator_required')
+                      : t('v_query.separator_config_hint')
+                  }}
+                </div>
+              </div>
+            </div>
+            <div
+              style="margin-bottom: 10.5px"
+              v-if="curComponent.displayType === '8' && curComponent.conditionType !== 3"
+            >
               <el-checkbox
                 v-model="curComponent.hideConditionSwitching"
                 :label="t('v_query.hide_condition_switch')"
@@ -3921,6 +3987,13 @@ defineExpose({
       }
 
       .configuration-list {
+        .separator-hint {
+          margin-top: 4px;
+          color: #8f959e;
+          font-size: 12px;
+          line-height: 18px;
+        }
+
         .list-item {
           display: flex;
           align-items: center;
@@ -4268,6 +4341,9 @@ defineExpose({
   }
 }
 .larger-radio {
+  &.condition-type-radio .ed-radio:not(:last-child) {
+    margin-right: 18px;
+  }
   &.icon-info {
     .ed-radio__label {
       display: flex;
