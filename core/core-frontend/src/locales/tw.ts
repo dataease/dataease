@@ -2650,6 +2650,7 @@ export default {
     count_of: '個賬號'
   },
   cron: {
+    invalid_weekday_w: '星期欄位不支援 W，請在日期欄位中設定最近的工作日',
     second: '秒',
     minute: '分',
     hour: '時',
