@@ -611,7 +611,7 @@ export function initCanvasDataPrepare(dvId, params, callBack) {
     }
   }
   attachInfo['resourceTable'] = params.resourceTable ? params.resourceTable : 'core'
-  method(dvId, busiFlagCustom, attachInfo).then(res => {
+  return method(dvId, busiFlagCustom, attachInfo).then(res => {
     const canvasInfo = res.data
     const watermarkInfo = {
       ...canvasInfo.watermarkInfo,
@@ -654,12 +654,18 @@ export function initCanvasDataPrepare(dvId, params, callBack) {
       '--de-canvas_custom_font',
       `${canvasStyleResult.fontFamily}`
     )
-    callBack({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview, curPreviewGap })
+    return callBack({
+      canvasDataResult,
+      canvasStyleResult,
+      dvInfo,
+      canvasViewInfoPreview,
+      curPreviewGap
+    })
   })
 }
 
 export async function initCanvasData(dvId, params, callBack) {
-  initCanvasDataPrepare(
+  const loading = initCanvasDataPrepare(
     dvId,
     params,
     function ({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview }) {
@@ -677,9 +683,11 @@ export async function initCanvasData(dvId, params, callBack) {
           dvMainStore.setNowPanelJumpInfo(rsp.data)
         })
       }
-      callBack({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview })
+      return callBack({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview })
     }
   )
+  // Share pages await initialization to render a persistent error; other callers keep their timing.
+  if (params.awaitLoad) return loading
 }
 
 export async function backCanvasData(dvId, mobileViewInfo, busiFlag, callBack) {
@@ -731,7 +739,7 @@ export async function backCanvasData(dvId, mobileViewInfo, busiFlag, callBack) {
 }
 
 export function initCanvasDataMobile(dvId, params, callBack) {
-  initCanvasDataPrepare(
+  const loading = initCanvasDataPrepare(
     dvId,
     params,
     function ({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview }) {
@@ -797,7 +805,7 @@ export function initCanvasDataMobile(dvId, params, callBack) {
       queryVisualizationJumpInfo(dvInfo.id).then(rsp => {
         dvMainStore.setNowPanelJumpInfo(rsp.data)
       })
-      callBack({
+      return callBack({
         canvasDataResult: componentData,
         canvasStyleResult,
         dvInfo,
@@ -805,6 +813,8 @@ export function initCanvasDataMobile(dvId, params, callBack) {
       })
     }
   )
+  // Share pages await initialization to render a persistent error; other callers keep their timing.
+  if (params.awaitLoad) return loading
 }
 
 export function checkCanvasChangePre(callBack) {

@@ -86,6 +86,7 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
     })
   } catch (error) {
     close()
+    if (props.publicLinkStatus) throw error
     router.push('/login')
     return
   }
@@ -108,9 +109,9 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
   }
 
   const req = dvType === 'dashboard' ? initCanvasDataMobile : initCanvasData
-  req(
+  await req(
     dvId,
-    { busiFlag: dvType },
+    { busiFlag: dvType, awaitLoad: props.publicLinkStatus },
     async function ({
       canvasDataResult,
       canvasStyleResult,

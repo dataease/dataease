@@ -136,7 +136,8 @@ const loadCanvasDataAsync = async (dvId, dvType, ignoreParams = false) => {
     {
       busiFlag: dvType,
       resourceTable: state.editPreview ? 'snapshot' : 'core',
-      onlyPreview: !!props.outerId
+      onlyPreview: !!props.outerId,
+      awaitLoad: props.publicLinkStatus
     },
     async function ({
       canvasDataResult,

@@ -1,6 +1,7 @@
 <template>
   <div class="mobile-link-container" v-loading="loading">
-    <ErrorTemplate v-if="!loading && disableError" :msg="t('link_ticket.disable_error')" />
+    <ErrorTemplate v-if="loadError" :msg="t('link_ticket.load_error')" />
+    <ErrorTemplate v-else-if="!loading && disableError" :msg="t('link_ticket.disable_error')" />
     <ErrorTemplate v-else-if="!loading && iframeError" :msg="t('link_ticket.iframe_error')" />
     <ErrorTemplate
       v-else-if="!loading && peRequireError"
@@ -19,7 +20,7 @@
     />
     <PreviewCanvas
       v-else
-      :class="{ 'hidden-link': loading }"
+      :class="{ 'hidden-link': loading && !previewReady }"
       ref="pcanvas"
       public-link-status
       :ticket-args="state.ticketValidVO.args"
@@ -41,6 +42,8 @@ const disableError = ref(true)
 const peRequireError = ref(true)
 const linkExist = ref(false)
 const loading = ref(true)
+const loadError = ref(false)
+const previewReady = ref(false)
 const linkExp = ref(false)
 const iframeError = ref(true)
 const pwdValid = ref(false)
@@ -57,62 +60,57 @@ const state = reactive({
   }
 })
 onMounted(async () => {
-  await appearanceStore.setFontList()
-  close()
-  const proxyInfo = (await shareProxy.loadProxy()) as ProxyInfo
-  curType.value = proxyInfo?.type || 'dashboard'
-  dvMainStore.setInMobile(true)
-  dvMainStore.setMobileInPc(curType.value === 'dashboard')
-  if (proxyInfo?.shareDisable) {
-    loading.value = false
-    disableError.value = true
-    return
-  }
-  disableError.value = false
-  if (proxyInfo?.inIframeError) {
-    loading.value = false
-    iframeError.value = true
-    return
-  }
-  iframeError.value = false
-  if (proxyInfo && !proxyInfo.peRequireValid) {
-    loading.value = false
-    peRequireError.value = true
-    return
-  }
-  peRequireError.value = false
-  if (!proxyInfo) {
-    loading.value = false
-    return
-  }
-  linkExist.value = true
-  linkExp.value = !!proxyInfo.exp
-  if (!!proxyInfo.exp) {
-    loading.value = false
-    return
-  }
-  pwdValid.value = !!proxyInfo.pwdValid
-  if (!proxyInfo.pwdValid) {
-    loading.value = false
-    return
-  }
-  state.ticketValidVO = proxyInfo.ticketValidVO
-  if (!state.ticketValidVO?.ticketValid || state.ticketValidVO.ticketExp) {
-    loading.value = false
-    return
-  }
-  if (!proxyInfo.resourceId) {
-    linkExist.value = false
-    loading.value = false
-    return
-  }
-  nextTick(() => {
-    const method = pcanvas?.value?.loadCanvasDataAsync
-    if (method) {
-      method(proxyInfo.resourceId, curType.value, null)
+  try {
+    await appearanceStore.setFontList()
+    close()
+    const proxyInfo = (await shareProxy.loadProxy()) as ProxyInfo
+    curType.value = proxyInfo?.type || 'dashboard'
+    dvMainStore.setInMobile(true)
+    dvMainStore.setMobileInPc(curType.value === 'dashboard')
+    if (proxyInfo?.shareDisable) {
+      disableError.value = true
+      return
     }
+    disableError.value = false
+    if (proxyInfo?.inIframeError) {
+      iframeError.value = true
+      return
+    }
+    iframeError.value = false
+    if (proxyInfo && !proxyInfo.peRequireValid) {
+      peRequireError.value = true
+      return
+    }
+    peRequireError.value = false
+    if (!proxyInfo) {
+      return
+    }
+    linkExist.value = true
+    linkExp.value = !!proxyInfo.exp
+    if (!!proxyInfo.exp) {
+      return
+    }
+    pwdValid.value = !!proxyInfo.pwdValid
+    if (!proxyInfo.pwdValid) {
+      return
+    }
+    state.ticketValidVO = proxyInfo.ticketValidVO ?? state.ticketValidVO
+    if (!state.ticketValidVO?.ticketValid || state.ticketValidVO.ticketExp) {
+      return
+    }
+    if (!proxyInfo.resourceId) {
+      linkExist.value = false
+      return
+    }
+    previewReady.value = true
+    await nextTick()
+    await pcanvas.value?.loadCanvasDataAsync(proxyInfo.resourceId, curType.value, null)
+  } catch {
+    loadError.value = true
+  } finally {
     loading.value = false
-  })
+    close()
+  }
 })
 </script>
 <style lang="less" scoped>

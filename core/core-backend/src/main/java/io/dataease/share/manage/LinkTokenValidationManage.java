@@ -39,13 +39,17 @@ public class LinkTokenValidationManage implements LinkTokenVerifier {
     @Resource
     private ShareAuthorizationManage shareAuthorizationManage;
 
+    @Resource
+    private ShareTicketManage shareTicketManage;
+
     @Override
     public LinkIdentity verify(String token) {
         // Unverified shareId is only a lookup key; no identity is established before verification.
         Long id = JWT.decode(token).getClaim("shareId").asLong();
         if (id == null) throw new IllegalArgumentException("Invalid link token");
         var share = shares.findById(id).orElseThrow(() -> new IllegalArgumentException("Share unavailable"));
-        LinkTokenUtil.verify(token, share, secrets.getDefaultPwd());
+        var jwt = LinkTokenUtil.verify(token, share, secrets.getDefaultPwd());
+        shareTicketManage.verifyTokenTicket(jwt.getClaim("ticketId").asLong(), share);
         var settings = parameters.shareBase();
         if (settings != null && (settings.isDisable() || (settings.isPeRequire()
                 && (share.getPwd() == null || share.getPwd().isBlank() || share.getExp() == null || share.getExp() <= 0)))) {

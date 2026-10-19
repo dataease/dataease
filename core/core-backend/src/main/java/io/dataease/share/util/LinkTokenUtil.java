@@ -14,17 +14,22 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class LinkTokenUtil {
-    // Revoke v2 tokens, which could be issued by the password-only endpoint.
-    private static final int TOKEN_VERSION = 3;
+    // Older tokens do not bind Ticket identity and must be reissued via proxyInfo.
+    private static final int TOKEN_VERSION = 4;
     private static final long TOKEN_LIFETIME = 8 * 60 * 60 * 1000L;
 
-    public static String generate(XpackShare share, String serverSecret) {
+    public static String generate(XpackShare share, String serverSecret, Long ticketId, Long ticketExpiresAt) {
         long now = System.currentTimeMillis();
         long expires = now + TOKEN_LIFETIME;
         if (share.getExp() != null && share.getExp() > 0) expires = Math.min(expires, share.getExp());
+        if (ticketExpiresAt != null) expires = Math.min(expires, ticketExpiresAt);
+        if (Boolean.TRUE.equals(share.getTicketRequire()) && ticketId == null) {
+            throw new IllegalArgumentException("Share Ticket required");
+        }
         if (expires <= now) throw new IllegalArgumentException("Share expired");
         return JWT.create().withIssuer("dataease").withAudience("share")
                 .withClaim("purpose", "link").withClaim("version", TOKEN_VERSION)
+                .withClaim("ticketId", ticketId)
                 .withClaim("shareId", share.getId()).withClaim("uid", share.getCreator())
                 .withClaim("resourceId", share.getResourceId()).withClaim("oid", share.getOid())
                 .withJWTId(UUID.randomUUID().toString()).withIssuedAt(new Date(now))
