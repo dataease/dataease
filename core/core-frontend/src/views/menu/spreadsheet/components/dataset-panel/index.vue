@@ -500,8 +500,13 @@ const filteredDimensionFields = computed(() => {
 })
 
 const filteredQuotaFields = computed(() => {
-  if (!searchKeyword.value) return quotaFields.value
-  return quotaFields.value.filter(f =>
+  let fields = quotaFields.value
+  // 明细表不提供系统记录数，兼容历史标识和接口返回的数字、字符串 ID。
+  if (pluginConfig?.value?.type === 'detail') {
+    fields = fields.filter(field => field.id !== 'count' && String(field.id) !== '-1')
+  }
+  if (!searchKeyword.value) return fields
+  return fields.filter(f =>
     f.name.toLowerCase().includes(searchKeyword.value.toLowerCase())
   )
 })
