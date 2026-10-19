@@ -387,7 +387,13 @@ function prepare_de_run_base() {
       [[ -f "$config_file" && ! -L "$config_file" ]] || return 1
       chmod 600 "$config_file" || return 1
    done
-   cp -r "$TEMPLATES_FOLDER"/* "$CONF_FOLDER" || return 1
+   # 需要渲染的文件只通过私有写入替换，不能先用模板覆盖旧配置。
+   for config_file in "$TEMPLATES_FOLDER"/*; do
+      case "${config_file##*/}" in
+         application.yml|mysql.env) continue ;;
+      esac
+      cp -r -- "$config_file" "$CONF_FOLDER" || return 1
+   done
 
    cd ${TEMPLATES_FOLDER}
    templates_files=( application.yml mysql.env )
