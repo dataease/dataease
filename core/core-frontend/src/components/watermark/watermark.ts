@@ -63,7 +63,7 @@ export function watermark(settings, domId) {
       (page_width -
         defaultSettings.watermark_x -
         defaultSettings.watermark_width * defaultSettings.watermark_cols) /
-        (defaultSettings.watermark_cols - 1)
+        Math.max(1, defaultSettings.watermark_cols - 1)
     )
   }
   // 始终根据页面实际高度重新计算水印行数和y轴间隔。
@@ -78,7 +78,7 @@ export function watermark(settings, domId) {
       (page_height -
         defaultSettings.watermark_y -
         defaultSettings.watermark_height * defaultSettings.watermark_rows) /
-        (defaultSettings.watermark_rows - 1)
+        Math.max(1, defaultSettings.watermark_rows - 1)
     )
   }
   defaultSettings.watermark_rows =
