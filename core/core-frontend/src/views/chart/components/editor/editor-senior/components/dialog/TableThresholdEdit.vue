@@ -210,6 +210,10 @@ const valueOptions = [
 ]
 const predefineColors = COLOR_PANEL
 
+const isTable = computed(() =>
+  ['table-info', 'table-normal', 'table-pivot'].includes(props.chart.type)
+)
+
 const isHeatmap = computed(() => props.chart.type === 't-heatmap')
 
 const targetOptions = computed(() => {
@@ -731,10 +735,11 @@ init()
             </el-col>
             <el-col
               v-if="isBetween(item) && !isDynamic(item)"
+              :class="{ 'table-between-operator': isTable }"
               :span="isHeatmap ? 3 : 2"
               style="margin-top: 4px; text-align: center"
             >
-              <span style="margin: 0 -5px">
+              <span :style="{ margin: isTable ? '0' : '0 -5px' }">
                 ≤&nbsp;{{ t('chart.drag_block_label_value') }}&nbsp;≤
               </span>
             </el-col>
@@ -817,10 +822,11 @@ init()
             <el-col
               v-if="isBetween(item) && isDynamic(item)"
               class="term"
+              :class="{ 'table-between-operator': isTable }"
               :span="isHeatmap ? 2 : 1"
               style="margin-top: 4px; text-align: center"
             >
-              <span style="margin: 0 -5px">
+              <span :style="{ margin: isTable ? '0' : '0 -5px' }">
                 ≤&nbsp;{{ t('chart.drag_block_label_value') }}&nbsp;≤
               </span>
             </el-col>
@@ -1015,6 +1021,14 @@ init()
 </template>
 
 <style lang="less" scoped>
+// 区间连接文字按内容占宽，避免被固定栅格压成两行
+.table-between-operator {
+  flex: 0 0 auto;
+  width: max-content;
+  max-width: none;
+  white-space: nowrap;
+}
+
 .condition-scope {
   :deep(.ed-form-item__content) {
     min-width: 0;
