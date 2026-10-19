@@ -964,6 +964,7 @@ export default {
     no_selected_member: '暫無已選成員'
   },
   auth: {
+    permission_load_failed: '權限設定載入失敗，請關閉後重試',
     permission_configuration: '權限配置',
     was_not_obtained: '未取得到資源節點',
     search_name: '搜尋名稱',

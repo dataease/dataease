@@ -1013,6 +1013,7 @@ export default {
     no_selected_member: 'No members selected'
   },
   auth: {
+    permission_load_failed: 'Failed to load permission settings. Close and try again.',
     permission_configuration: 'Permission Configuration',
     was_not_obtained: 'Resource node not obtained',
     search_name: 'Search name',
