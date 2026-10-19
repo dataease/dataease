@@ -1258,6 +1258,7 @@ export default {
       '請輸入 HTTP(S)、FTP 或 SMB 檔案位址，例如 smb://server/share/data.xlsx',
     smb_domain: '網域（Domain）',
     smb_domain_placeholder: '選填：AD 網域名稱；本機帳號留空',
+    remote_file_load_interrupted: '遠端檔案載入中斷，請檢查網路連線或遠端伺服器後重試',
     remote_excel_url_empty: '請輸入遠端 Excel/CSV 地址',
     load_data: '載入資料'
   },

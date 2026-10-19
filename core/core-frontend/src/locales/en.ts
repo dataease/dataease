@@ -1314,6 +1314,8 @@ export default {
       'Enter an HTTP(S), FTP or SMB file URL, e.g. smb://server/share/data.xlsx',
     smb_domain: 'Domain',
     smb_domain_placeholder: 'Optional: AD domain; leave empty for a local account',
+    remote_file_load_interrupted:
+      'Remote file loading was interrupted. Check your network connection or the remote server and try again.',
     remote_excel_url_empty: 'Please enter the remote Excel/CSV address',
     load_data: 'Load Data'
   },
