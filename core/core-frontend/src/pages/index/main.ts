@@ -10,7 +10,6 @@ import { setupElementPlus, setupElementPlusIcons } from '@/plugins/element-plus'
 // 注册数据大屏组件
 import { setupCustomComponent } from '@/custom-component'
 import { installDirective } from '@/directive'
-import '@/utils/DateUtil'
 import '@/permission'
 import WebSocketPlugin from '../../websocket'
 const setupAll = async () => {

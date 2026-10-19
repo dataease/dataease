@@ -8,6 +8,7 @@
 </template>
 
 <script setup lang="ts">
+import { formatDate as formatLocalDate } from '@/utils/DateUtil'
 import { onMounted, onUnmounted, reactive, toRefs } from 'vue'
 
 const props = defineProps({
@@ -38,7 +39,7 @@ const formatDate = () => {
 
   const date = new Date()
 
-  state.nowDate = date.format(timeFormat)
+  state.nowDate = formatLocalDate(date, timeFormat)
 
   if (showWeek) {
     state.nowWeek = weekArr[date.getDay()]
