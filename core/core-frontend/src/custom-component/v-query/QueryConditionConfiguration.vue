@@ -1623,6 +1623,11 @@ const confirmClick = () => {
   dialogVisible.value = false
   conditions.value.forEach(ele => {
     curComponent.value = ele
+    if (!ele.defaultValueCheck) {
+      ele.defaultValue = ele.multiple || ele.displayType === '7' ? [] : undefined
+      ele.mapValue = []
+      ele.defaultMapValue = []
+    }
     multipleChange(
       ['1', '7'].includes(curComponent.value.displayType)
         ? curComponent.value.displayType === '7'
@@ -1635,8 +1640,8 @@ const confirmClick = () => {
     conditions.value.forEach(itx => {
       cascadeArr.forEach(ele => {
         ele.forEach(item => {
-          if (item.datasetId.split('--')[1] === itx.id && itx.defaultValueCheck) {
-            const val = itx.mapValue
+          if (item.datasetId.split('--')[1] === itx.id) {
+            const val = itx.defaultValueCheck ? itx.mapValue : []
             item.selectValue = Array.isArray(val) ? [...val] : val
             item.currentSelectValue = Array.isArray(val) ? [...val] : val
           }
