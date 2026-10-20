@@ -33,6 +33,7 @@ import useClipboard from 'vue-clipboard3'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { logoutHandler } from '@/utils/logout'
 import { filterOption, groupBy } from '@/views/menu/system/sysuser/options'
+import { formatDate } from '@/utils/DateUtil'
 
 const userStore = useUserStoreWithOut()
 const curUid = computed(() => userStore.getUid)
@@ -240,7 +241,7 @@ const timestampFormatDate = value => {
   if (!value) {
     return '-'
   }
-  return new Date(value)['format']()
+  return formatDate(new Date(value))
 }
 const edit = row => {
   userFormDialog.value.edit(row.id)

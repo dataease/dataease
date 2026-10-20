@@ -9,6 +9,7 @@ import { ElMessageBox, ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import useClipboard from 'vue-clipboard3'
 import request from '@/config/axios'
+import { formatDate } from '@/utils/DateUtil'
 const { t } = useI18n()
 const { toClipboard } = useClipboard()
 
@@ -29,7 +30,7 @@ const timestampFormatDate = (_, __, cellValue) => {
   if (!cellValue) {
     return '-'
   }
-  return new Date(cellValue)['format']()
+  return formatDate(new Date(cellValue))
 }
 
 const handleDelete = row => {
