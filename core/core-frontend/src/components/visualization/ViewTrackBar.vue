@@ -8,7 +8,8 @@
       popper-class="track_bar_custom"
       @visible-change="visibleChange"
     >
-      <input id="input" style="opacity: 0" ref="trackButton" type="button" />
+      <!-- 透明按钮仅供程序触发，避免覆盖指标值后被误点而打开空菜单 -->
+      <input id="input" style="pointer-events: none; opacity: 0" ref="trackButton" type="button" />
       <template #dropdown>
         <div :class="{ 'data-mobile': isDataVMobile }">
           <el-dropdown-menu
