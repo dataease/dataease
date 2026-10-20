@@ -23,6 +23,7 @@ import {
   queryAdminOrgApi
 } from '@/views/menu/system/log/logApi'
 import { ElMessage, ElMessageBox, ElButton, Action } from 'element-plus-secondary'
+import { formatDate } from '@/utils/DateUtil'
 const userStore = useUserStoreWithOut()
 const { t } = useI18n()
 
@@ -329,7 +330,7 @@ const timestampFormatDate = value => {
   if (!value) {
     return '-'
   }
-  return new Date(value)['format']()
+  return formatDate(new Date(value))
 }
 const showErrorMsg = row => {
   msgVisible.value = true
