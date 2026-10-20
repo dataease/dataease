@@ -85,14 +85,20 @@ public class FileUtils {
      * 将文件名解析成文件的上传路径
      */
     public static File upload(MultipartFile file, String filePath) {
-        String name = getFileNameNoEx(file.getOriginalFilename());
-        String suffix = getExtensionName(file.getOriginalFilename());
+        String originalFilename = file.getOriginalFilename();
+        validateUploadFilename(originalFilename);
+        String name = getFileNameNoEx(originalFilename);
+        String suffix = getExtensionName(originalFilename);
         try {
             validateExist(filePath);
             String fileName = name + "." + suffix;
-            String path = filePath + fileName;
+            File baseDir = new File(filePath).getCanonicalFile();
             // getCanonicalFile 可解析正确各种路径
-            File dest = new File(path).getCanonicalFile();
+            File dest = new File(baseDir, fileName).getCanonicalFile();
+
+            if (!dest.toPath().startsWith(baseDir.toPath())) {
+                DEException.throwException(Translator.get("i18n_invalid_file_name"));
+            }
 
             // 文件写入
             FileOutputStream fileOutputStream = new FileOutputStream(dest);
@@ -100,6 +106,8 @@ public class FileUtils {
             fileOutputStream.flush();
             fileOutputStream.close();
             return dest;
+        } catch (DEException e) {
+            throw e;
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
         }
