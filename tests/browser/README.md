@@ -90,3 +90,13 @@ PLAYWRIGHT_BASE_URL=http://127.0.0.1:7070 PLAYWRIGHT_STORAGE_STATE=.auth/local.j
 - [Playwright CLI](https://playwright.dev/docs/getting-started-cli)
 - [Playwright Test 配置](https://playwright.dev/docs/test-configuration)
 - [命令行运行测试](https://playwright.dev/docs/test-cli)
+
+## MFA 重复提交回归
+
+```sh
+npm --prefix tests/browser test -- --config=playwright.mfa.config.mjs
+```
+
+独立配置启动 `127.0.0.1:4190` 的 Vite 组件夹具，加载主工程真实 `MfaStep.vue`、Vue 和 Element Plus，复用主前端已安装依赖，不运行主应用构建插件。测试替换 API、路由、Store 和国际化边界，使用合成挑战与 Token，通过 Playwright 拦截响应并控制返回时机，不连接业务后端。
+
+覆盖一次回车、长按回车、同步连续点击、回车后点击、校验失败后重试、过期挑战拒绝、成功后页面卸载前的防重、移动端成功事件、个人资料绑定及卸载清理。修复前“一次回车”用例实测收到两条请求，修复后应为一条。全局和个人 MFA 策略由后端判定，进入本组件后使用相同提交路径；这里不验证真实全局配置、TOTP、缓存或实际 Token 鉴权。
