@@ -85,15 +85,17 @@ export const interactiveStore = defineStore('interactive', {
         await this.loadBusiInteractive()
         return
       }
+      const tasks: Promise<unknown>[] = []
       let index = 4
       while (index--) {
         if (!this.data[index] || refresh) {
           const param: BusiTreeRequest = {
             busiFlag: busiFlagMap[index]
           }
-          await this.setInteractive(param)
+          tasks.push(this.setInteractive(param))
         }
       }
+      await Promise.all(tasks)
     },
     async loadBusiInteractive() {
       const param = {}
