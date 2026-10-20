@@ -37,6 +37,7 @@
 </template>
 
 <script setup lang="ts">
+import { Delete, EditPen, MoreFilled } from '@element-plus/icons-vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import { computed, toRefs } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'

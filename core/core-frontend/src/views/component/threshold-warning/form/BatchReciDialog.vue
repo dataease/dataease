@@ -195,7 +195,7 @@
             multiple
             collapse-tags
             collapse-tags-tooltip
-            clear-icon="CircleCloseFilled"
+            :clear-icon="CircleCloseFilled"
             :placeholder="t('commons.please_select') + 'Webhook'"
             style="width: 100%"
           >
@@ -218,6 +218,7 @@
 </template>
 
 <script lang="ts" setup>
+import { CircleCloseFilled } from '@element-plus/icons-vue'
 import peoples from "@/assets/svg/peoples.svg";
 import { ref, reactive, nextTick } from "vue";
 import { useI18n } from "@/hooks/web/useI18n";

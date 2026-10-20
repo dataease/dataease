@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ArrowRight } from '@element-plus/icons-vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
 import { copyStoreWithOut } from '@/store/modules/data-visualization/copy'

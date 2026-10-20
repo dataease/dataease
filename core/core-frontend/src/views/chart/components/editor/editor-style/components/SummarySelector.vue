@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Setting } from '@element-plus/icons-vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useI18n } from '@/hooks/web/useI18n'
 import { computed, inject, nextTick, onMounted, PropType, reactive, ref, watch } from 'vue'

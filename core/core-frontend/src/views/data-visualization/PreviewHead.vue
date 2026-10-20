@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ArrowRight } from '@element-plus/icons-vue'
 import icon_collection_outlined from '@/assets/svg/icon_collection_outlined.svg'
 import visualStar from '@/assets/svg/visual-star.svg'
 import dvInfoSvg from '@/assets/svg/dv-info.svg'

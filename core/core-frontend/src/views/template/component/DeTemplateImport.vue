@@ -15,7 +15,7 @@
             :placeholder="t('template_manage.enter_template_name_hint')"
             clearable
           />
-          <el-button style="margin-left: 10px" icon="Upload" secondary @click="goFile">
+          <el-button style="margin-left: 10px" :icon="Upload" secondary @click="goFile">
             {{ t('template_manage.import_template') }}
           </el-button>
           <input
@@ -77,6 +77,7 @@
 </template>
 
 <script lang="ts" setup>
+import { Plus, Upload } from '@element-plus/icons-vue'
 import { save, nameCheck, findOne, categoryTemplateNameCheck } from '@/api/template'
 import { computed, reactive, ref } from 'vue'
 import { imgUrlTrans } from '@/utils/imgUtils'

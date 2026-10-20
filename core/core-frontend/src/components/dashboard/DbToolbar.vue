@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { CopyDocument, Delete, EditPen } from '@element-plus/icons-vue'
 import dvBatch from '@/assets/svg/dv-batch.svg'
 import dvDashboard from '@/assets/svg/dv-dashboard.svg'
 import dvHidden from '@/assets/svg/dv-hidden.svg'
@@ -740,7 +741,7 @@ const userGroupShow = ref(false)
         <el-button
           class="custom-normal-button"
           v-if="editMode === 'preview'"
-          icon="EditPen"
+          :icon="EditPen"
           @click="edit()"
           type="primary"
         >
@@ -798,7 +799,7 @@ const userGroupShow = ref(false)
       <div class="right-area full-area" v-if="batchOptStatus">
         <el-button
           text
-          icon="CopyDocument"
+          :icon="CopyDocument"
           class="custom-normal-button"
           @click="batchCopy"
           :disabled="curBatchOptComponents.length === 0"
@@ -809,7 +810,7 @@ const userGroupShow = ref(false)
 
         <el-button
           text
-          icon="Delete"
+          :icon="Delete"
           class="custom-normal-button"
           @click="batchDelete"
           :disabled="curBatchOptComponents.length === 0"

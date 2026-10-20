@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { Clock } from '@element-plus/icons-vue'
 import icon_dashboard_outlined from '@/assets/svg/icon_dashboard_outlined.svg'
 import icon_operationAnalysis_outlined from '@/assets/svg/icon_operation-analysis_outlined.svg'
 import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'

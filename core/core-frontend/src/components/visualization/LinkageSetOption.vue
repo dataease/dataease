@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Setting } from '@element-plus/icons-vue'
 import { ref, toRefs } from 'vue'
 import { propTypes } from '@/utils/propTypes'
 import { useI18n } from '@/hooks/web/useI18n'

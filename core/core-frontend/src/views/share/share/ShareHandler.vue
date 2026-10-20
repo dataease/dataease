@@ -10,7 +10,7 @@
       <Icon><icon_shareLabel_outlined class="svg-icon" /></Icon>
     </el-icon>
   </el-tooltip>
-  <el-button v-if="props.weight >= 7 && props.isButton" @click.stop="share" icon="Share">{{
+  <el-button v-if="props.weight >= 7 && props.isButton" @click.stop="share" :icon="Share">{{
     t('visualization.share')
   }}</el-button>
 
@@ -232,6 +232,7 @@
 </template>
 
 <script lang="ts" setup>
+import { Share } from '@element-plus/icons-vue'
 import ShareVisitorPermissions from './ShareVisitorPermissions.vue'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import dvShare from '@/assets/svg/dv-share.svg'

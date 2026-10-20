@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { Setting } from '@element-plus/icons-vue'
 import { onMounted, PropType, reactive, watch, ref, inject, nextTick, computed } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import {

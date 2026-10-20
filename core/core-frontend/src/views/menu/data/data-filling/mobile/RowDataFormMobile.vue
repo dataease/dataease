@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ArrowLeftBold } from '@element-plus/icons-vue'
 import {cloneDeep, concat, filter, find, floor, forEach, includes, map} from 'lodash-es'
 import {useI18n} from "@/hooks/web/useI18n";
 import {computed, nextTick, ref} from "vue";
@@ -690,7 +691,7 @@ defineExpose({init, closeDialog, preview})
       modal-class="df-data-form"
   >
     <template #header>
-      <el-button class="back-btn" icon="ArrowLeftBold" link @click="closeDialog"/>
+      <el-button class="back-btn" :icon="ArrowLeftBold" link @click="closeDialog"/>
       <div class="title">{{ title }}</div>
     </template>
     <el-main class="row-de-main" v-loading="loading">
