@@ -545,23 +545,9 @@ export class PieDonut extends Pie {
     const lineWidth = getLineWidth(contentY, contentHeight)
     // 内容与后缀共用底边，绘制后再补偿各自字形与字体基线之间的留白。
     const contentBottom = contentY + contentHeight / 2
-    let suffixText: Text | undefined
-    let suffixWidth = 0
-    if (suffix) {
-      suffixText = new Text({
-        style: {
-          ...textStyle(config.suffixStyle),
-          text: suffix,
-          y: contentBottom,
-          textBaseline: 'ideographic',
-          wordWrapWidth: lineWidth
-        }
-      })
-      group.appendChild(suffixText)
-      suffixWidth = suffixText.getBBox().width
-    }
     let contentText: Text | undefined
     let contentWidth = 0
+    // 主体包含数值格式化后的单位，优先使用整行空间，后缀只使用剩余宽度。
     if (content) {
       contentText = new Text({
         style: {
@@ -569,18 +555,36 @@ export class PieDonut extends Pie {
           text: content,
           y: contentBottom,
           textBaseline: 'ideographic',
-          wordWrapWidth: Math.max(1, lineWidth - suffixWidth)
+          wordWrapWidth: lineWidth
         }
       })
       group.appendChild(contentText)
-      // 主体内容优先：预留后缀后发生截断时，隐藏后缀并恢复主体的整行显示空间。
-      if (suffixText && contentText.isOverflowing()) {
+      contentWidth = contentText.getBBox().width
+    }
+    let suffixText: Text | undefined
+    let suffixWidth = 0
+    const suffixAvailableWidth = lineWidth - contentWidth
+    if (suffix && !contentText?.isOverflowing() && suffixAvailableWidth > 0) {
+      suffixText = new Text({
+        style: {
+          ...textStyle(config.suffixStyle),
+          text: suffix,
+          y: contentBottom,
+          textBaseline: 'ideographic',
+          wordWrapWidth: suffixAvailableWidth
+        }
+      })
+      group.appendChild(suffixText)
+      suffixWidth = suffixText.getBBox().width
+      const suffixLine = suffixText.parsedStyle.metrics?.lines[0] || ''
+      const hasEllipsisContent = suffixLine.length > 3 && suffixLine.endsWith('...')
+      const isSuffixIncomplete = suffixText.isOverflowing() && !hasEllipsisContent
+      // G 在省略号放不下时会直接裁字，无法显示文字与省略号时隐藏后缀。
+      if (suffixWidth > suffixAvailableWidth || isSuffixIncomplete) {
         suffixText.destroy()
         suffixText = undefined
         suffixWidth = 0
-        contentText.style.wordWrapWidth = lineWidth
       }
-      contentWidth = contentText.getBBox().width
     }
     const lineStart = -(contentWidth + suffixWidth) / 2
     if (contentText) {
