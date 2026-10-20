@@ -94,10 +94,12 @@ public class FontManage {
         if (coreFont != null) {
             coreFontRepository.deleteById(id);
             if (StringUtils.isNotEmpty(coreFont.getFileTransName())) {
-                String targetPath = path + coreFont.getFileTransName();
                 try {
-                    File targetFile = new File(targetPath).getCanonicalFile();
-                    if (targetFile.getAbsolutePath().startsWith(new File(path).getCanonicalPath())) {
+                    File baseDir = new File(path).getCanonicalFile();
+                    File targetFile = new File(baseDir, coreFont.getFileTransName()).getCanonicalFile();
+                    String basePath = baseDir.getCanonicalPath();
+                    String targetPath = targetFile.getCanonicalPath();
+                    if (targetPath.equals(basePath) || targetPath.startsWith(basePath + File.separator)) {
                         FileUtils.deleteFile(targetFile.getAbsolutePath());
                     }
                 } catch (IOException e) {
@@ -119,7 +121,7 @@ public class FontManage {
     }
 
     public void download(String file, HttpServletResponse response) {
-        if (StringUtils.isBlank(file) || file.contains("..") || file.contains("/") || file.contains("\\")) {
+        if (StringUtils.isBlank(file) || !file.matches("[A-Za-z0-9._-]+")) {
             DEException.throwException("非法的文件路径");
         }
 
@@ -128,15 +130,22 @@ public class FontManage {
             DEException.throwException("不存在的字库文件");
         }
 
+        String fileTransName = coreFonts.get(0).getFileTransName();
+        if (StringUtils.isBlank(fileTransName) || !fileTransName.matches("[A-Za-z0-9._-]+")) {
+            DEException.throwException("非法的文件路径");
+        }
+
         try {
-            String targetPath = path + coreFonts.get(0).getFileTransName();
-            File targetFile = new File(targetPath).getCanonicalFile();
-            if (!targetFile.getAbsolutePath().startsWith(new File(path).getCanonicalPath())) {
+            File baseDir = new File(path).getCanonicalFile();
+            File targetFile = new File(baseDir, fileTransName).getCanonicalFile();
+            String basePath = baseDir.getCanonicalPath();
+            String targetPath = targetFile.getCanonicalPath();
+            if (!targetPath.equals(basePath) && !targetPath.startsWith(basePath + File.separator)) {
                 DEException.throwException("非法的文件路径");
             }
 
             response.setContentType("application/x-download");
-            response.setHeader("Content-Disposition", "attachment;filename=" + coreFonts.get(0).getFileTransName());
+            response.setHeader("Content-Disposition", "attachment;filename=" + fileTransName);
             try (ServletOutputStream out = response.getOutputStream();
                  InputStream stream = new FileInputStream(targetFile)) {
                 byte buff[] = new byte[1024];
