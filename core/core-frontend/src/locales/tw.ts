@@ -3064,7 +3064,7 @@ export default {
     separator_space: '空格',
     separator_newline: '換行',
     separator_custom: '自訂',
-    custom_separator_placeholder: '請輸入分隔符，例如：| 或 @@',
+    custom_separator_placeholder: "請輸入分隔符，例如：{'|'} 或 {'@@'}",
     custom_separator_required: '請輸入自訂分隔符',
     separator_hint: '多個值請使用{separator}分隔',
     separator_config_hint: '按所選分隔符拆分輸入內容,匹配其中任一值',
