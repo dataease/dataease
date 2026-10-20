@@ -3083,7 +3083,7 @@ export default {
     separator_space: '空格',
     separator_newline: '换行',
     separator_custom: '自定义',
-    custom_separator_placeholder: '请输入分隔符，例如：| 或 @@',
+    custom_separator_placeholder: "请输入分隔符，例如：{'|'} 或 {'@@'}",
     custom_separator_required: '请输入自定义分隔符',
     separator_hint: '多个值请使用{separator}分隔',
     separator_config_hint: '按所选分隔符拆分输入内容,匹配其中任一值',

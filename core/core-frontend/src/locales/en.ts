@@ -3163,7 +3163,7 @@ export default {
     separator_space: 'Space',
     separator_newline: 'New line',
     separator_custom: 'Custom',
-    custom_separator_placeholder: 'Enter a separator, e.g. | or @@',
+    custom_separator_placeholder: "Enter a separator, e.g. {'|'} or {'@@'}",
     custom_separator_required: 'Enter a custom separator',
     separator_hint: 'Separate multiple values with {separator}',
     separator_config_hint: 'Split the input by the selected separator and match any of the values',
