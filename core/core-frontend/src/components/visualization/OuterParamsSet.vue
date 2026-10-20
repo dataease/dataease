@@ -16,7 +16,8 @@
             <el-row class="tree-head">
               <span class="head-text">{{ t('visualization.params_list') }}</span>
               <span class="head-filter">
-                <el-button type="primary" :icon="Plus" text @click="addOuterParamsInfo"> </el-button>
+                <el-button type="primary" :icon="Plus" text @click="addOuterParamsInfo">
+                </el-button>
               </span>
             </el-row>
             <el-row class="tree-content">
