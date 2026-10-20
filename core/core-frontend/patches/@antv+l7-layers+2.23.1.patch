@@ -1,0 +1,24 @@
+diff --git a/node_modules/@antv/l7-layers/es/core/BaseLayer.js b/node_modules/@antv/l7-layers/es/core/BaseLayer.js
+index 5f09d0d..9a8f83b 100644
+--- a/node_modules/@antv/l7-layers/es/core/BaseLayer.js
++++ b/node_modules/@antv/l7-layers/es/core/BaseLayer.js
+@@ -891,6 +891,7 @@
+     });
+     this.removeAllListeners();
+     this.isDestroyed = true;
++    this.configService.removeLayerConfig(this.id);
+   }
+   clear() {
+     this.styleAttributeService.clearAllAttributes();
+diff --git a/node_modules/@antv/l7-layers/lib/core/BaseLayer.js b/node_modules/@antv/l7-layers/lib/core/BaseLayer.js
+index f2f317b..b01e598 100644
+--- a/node_modules/@antv/l7-layers/lib/core/BaseLayer.js
++++ b/node_modules/@antv/l7-layers/lib/core/BaseLayer.js
+@@ -897,6 +897,7 @@
+     });
+     this.removeAllListeners();
+     this.isDestroyed = true;
++    this.configService.removeLayerConfig(this.id);
+   }
+   clear() {
+     this.styleAttributeService.clearAllAttributes();

@@ -1,0 +1,310 @@
+diff --git a/node_modules/@antv/l7-core/es/services/config/ConfigService.js b/node_modules/@antv/l7-core/es/services/config/ConfigService.js
+index 0f93f76..9c0253a 100644
+--- a/node_modules/@antv/l7-core/es/services/config/ConfigService.js
++++ b/node_modules/@antv/l7-core/es/services/config/ConfigService.js
+@@ -133,6 +133,16 @@
+     // TODO
+     this.layerAttributeConfigCache[layerId] = _objectSpread(_objectSpread({}, this.layerAttributeConfigCache[layerId]), attr);
+   }
++  /**
++   * 仅释放当前场景，避免影响同屏其他地图
++   */
++  removeSceneConfig(sceneId) {
++    delete this.sceneConfigCache[sceneId];
++  }
++  removeLayerConfig(layerId) {
++    delete this.layerConfigCache[layerId];
++    delete this.layerAttributeConfigCache[layerId];
++  }
+   clean() {
+     this.sceneConfigCache = {};
+     this.layerConfigCache = {};
+diff --git a/node_modules/@antv/l7-core/es/services/config/ConfigService.d.ts b/node_modules/@antv/l7-core/es/services/config/ConfigService.d.ts
+index a02b44f..05dea8c 100644
+--- a/node_modules/@antv/l7-core/es/services/config/ConfigService.d.ts
++++ b/node_modules/@antv/l7-core/es/services/config/ConfigService.d.ts
+@@ -29,5 +29,7 @@
+     setLayerConfig(sceneId: string, layerId: string, config: Partial<ILayerConfig>): void;
+     getAttributeConfig(layerId: string): Partial<ILayerAttributesOption>;
+     setAttributeConfig(layerId: string, attr: Partial<ILayerAttributesOption>): void;
++    removeSceneConfig(sceneId: string): void;
++    removeLayerConfig(layerId: string): void;
+     clean(): void;
+ }
+diff --git a/node_modules/@antv/l7-core/es/services/config/IConfigService.d.ts b/node_modules/@antv/l7-core/es/services/config/IConfigService.d.ts
+index ebde6fa..910bd32 100644
+--- a/node_modules/@antv/l7-core/es/services/config/IConfigService.d.ts
++++ b/node_modules/@antv/l7-core/es/services/config/IConfigService.d.ts
+@@ -61,6 +61,8 @@
+      * @param attr
+      */
+     setAttributeConfig(layerId: string, attr: Partial<ILayerAttributesOption>): void;
++    removeSceneConfig(sceneId: string): void;
++    removeLayerConfig(layerId: string): void;
+     /**
+      * 清除场景和图层配置项 Cache，但是需要保留校验器
+      */
+diff --git a/node_modules/@antv/l7-core/es/services/scene/SceneService.js b/node_modules/@antv/l7-core/es/services/scene/SceneService.js
+index 44f3418..ddc9a60 100644
+--- a/node_modules/@antv/l7-core/es/services/scene/SceneService.js
++++ b/node_modules/@antv/l7-core/es/services/scene/SceneService.js
+@@ -180,8 +180,9 @@
+         });
+         _this.resizeDetector.listenTo(_this.$container, _this.handleWindowResized);
+         if (window.matchMedia) {
+-          var _window$matchMedia;
+-          (_window$matchMedia = window.matchMedia('screen and (-webkit-min-device-pixel-ratio: 1.5)')) === null || _window$matchMedia === void 0 || _window$matchMedia.addListener(_this.handleWindowResized.bind('screen'));
++          _this.pixelRatioQuery = window.matchMedia('screen and (-webkit-min-device-pixel-ratio: 1.5)');
++          _this.pixelRatioListener = _this.handleWindowResized.bind('screen');
++          _this.pixelRatioQuery.addListener(_this.pixelRatioListener);
+         }
+       } else {
+         console.error('容器 id 不存在');
+@@ -217,10 +218,20 @@
+ 
+         yield _this2.hooks.init.promise(); // 初始化地图和渲染
+         if (_this2.destroyed) {
++          _this2.inited = true;
+           _this2.destroy();
++          _this2.rendering = false;
++          return;
+         }
+         // FIXME: 初始化 marker 容器，可以放到 map 初始化方法中？
+         yield _this2.layerService.initLayers();
++        // 初始化期间收到销毁请求时，先回收资源，不再发出 loaded
++        if (_this2.destroyed) {
++          _this2.inited = true;
++          _this2.destroy();
++          _this2.rendering = false;
++          return;
++        }
+         _this2.layerService.renderLayers();
+         _this2.controlService.addControls();
+         _this2.loaded = true;
+@@ -278,11 +289,16 @@
+   }
+   destroy() {
+     var _this$$container2;
+-    if (!this.inited) {
+-      this.destroyed = true;
+-      return;
+-    }
+-    this.resizeDetector.removeListener(this.$container, this.handleWindowResized);
++    if (this.disposed) return;
++    this.destroyed = true;
++    if (!this.inited) return;
++    this.disposed = true;
++    if (this.pixelRatioQuery && this.pixelRatioListener) {
++      this.pixelRatioQuery.removeListener(this.pixelRatioListener);
++    }
++    this.pixelRatioQuery = undefined;
++    this.pixelRatioListener = undefined;
++    this.resizeDetector.uninstall(this.$container);
+     this.pickingService.destroy();
+     this.layerService.destroy();
+ 
+@@ -293,7 +309,6 @@
+     this.markerService.destroy();
+     this.fontService.destroy();
+     this.iconService.destroy();
+-    this.removeAllListeners();
+     this.inited = false;
+     this.map.destroy();
+     setTimeout(() => {
+@@ -307,7 +322,12 @@
+     });
+     // 销毁 container 容器
+     (_this$$container2 = this.$container) === null || _this$$container2 === void 0 || (_this$$container2 = _this$$container2.parentNode) === null || _this$$container2 === void 0 || _this$$container2.removeChild(this.$container);
+-    this.emit('destroy');
++    this.configService.removeSceneConfig(this.id);
++    try {
++      this.emit('destroy');
++    } finally {
++      this.removeAllListeners();
++    }
+   }
+   initContainer() {
+     var _this$$container3, _this$$container4;
+diff --git a/node_modules/@antv/l7-core/es/services/scene/SceneService.d.ts b/node_modules/@antv/l7-core/es/services/scene/SceneService.d.ts
+index 1772512..17bc567 100644
+--- a/node_modules/@antv/l7-core/es/services/scene/SceneService.d.ts
++++ b/node_modules/@antv/l7-core/es/services/scene/SceneService.d.ts
+@@ -41,6 +41,9 @@
+     private canvas;
+     private markerContainer;
+     private resizeDetector;
++    private pixelRatioQuery;
++    private pixelRatioListener;
++    private disposed;
+     private hooks;
+     constructor(container: L7Container);
+     init(sceneConfig: ISceneConfig): void;
+diff --git a/node_modules/@antv/l7-core/es/services/interaction/InteractionService.js b/node_modules/@antv/l7-core/es/services/interaction/InteractionService.js
+index 277c076..5bd6143 100644
+--- a/node_modules/@antv/l7-core/es/services/interaction/InteractionService.js
++++ b/node_modules/@antv/l7-core/es/services/interaction/InteractionService.js
+@@ -183,7 +183,8 @@
+       this.hammertime.off('panstart panmove panend pancancel', this.onDrag);
+       $containter.removeEventListener('touchstart', this.onTouch);
+       $containter.removeEventListener('touchend', this.onTouchEnd);
+-      $containter.removeEventListener('mousedown', this.onHover);
++      $containter.removeEventListener('mousedown', this.onHover, true);
++      $containter.removeEventListener('touchmove', this.onTouchMove);
+       $containter.removeEventListener('mouseup', this.onHover);
+       // $containter.removeEventListener('dblclick', this.onHover);
+       $containter.removeEventListener('contextmenu', this.onHover);
+diff --git a/node_modules/@antv/l7-core/lib/services/config/ConfigService.js b/node_modules/@antv/l7-core/lib/services/config/ConfigService.js
+index 9691a63..e460482 100644
+--- a/node_modules/@antv/l7-core/lib/services/config/ConfigService.js
++++ b/node_modules/@antv/l7-core/lib/services/config/ConfigService.js
+@@ -140,6 +140,16 @@
+     // TODO
+     this.layerAttributeConfigCache[layerId] = (0, _objectSpread2.default)((0, _objectSpread2.default)({}, this.layerAttributeConfigCache[layerId]), attr);
+   }
++  /**
++   * 仅释放当前场景，避免影响同屏其他地图
++   */
++  removeSceneConfig(sceneId) {
++    delete this.sceneConfigCache[sceneId];
++  }
++  removeLayerConfig(layerId) {
++    delete this.layerConfigCache[layerId];
++    delete this.layerAttributeConfigCache[layerId];
++  }
+   clean() {
+     this.sceneConfigCache = {};
+     this.layerConfigCache = {};
+diff --git a/node_modules/@antv/l7-core/lib/services/config/ConfigService.d.ts b/node_modules/@antv/l7-core/lib/services/config/ConfigService.d.ts
+index a02b44f..05dea8c 100644
+--- a/node_modules/@antv/l7-core/lib/services/config/ConfigService.d.ts
++++ b/node_modules/@antv/l7-core/lib/services/config/ConfigService.d.ts
+@@ -29,5 +29,7 @@
+     setLayerConfig(sceneId: string, layerId: string, config: Partial<ILayerConfig>): void;
+     getAttributeConfig(layerId: string): Partial<ILayerAttributesOption>;
+     setAttributeConfig(layerId: string, attr: Partial<ILayerAttributesOption>): void;
++    removeSceneConfig(sceneId: string): void;
++    removeLayerConfig(layerId: string): void;
+     clean(): void;
+ }
+diff --git a/node_modules/@antv/l7-core/lib/services/config/IConfigService.d.ts b/node_modules/@antv/l7-core/lib/services/config/IConfigService.d.ts
+index ebde6fa..910bd32 100644
+--- a/node_modules/@antv/l7-core/lib/services/config/IConfigService.d.ts
++++ b/node_modules/@antv/l7-core/lib/services/config/IConfigService.d.ts
+@@ -61,6 +61,8 @@
+      * @param attr
+      */
+     setAttributeConfig(layerId: string, attr: Partial<ILayerAttributesOption>): void;
++    removeSceneConfig(sceneId: string): void;
++    removeLayerConfig(layerId: string): void;
+     /**
+      * 清除场景和图层配置项 Cache，但是需要保留校验器
+      */
+diff --git a/node_modules/@antv/l7-core/lib/services/scene/SceneService.js b/node_modules/@antv/l7-core/lib/services/scene/SceneService.js
+index 6c03d3f..99bf2ed 100644
+--- a/node_modules/@antv/l7-core/lib/services/scene/SceneService.js
++++ b/node_modules/@antv/l7-core/lib/services/scene/SceneService.js
+@@ -188,8 +188,9 @@
+         });
+         _this.resizeDetector.listenTo(_this.$container, _this.handleWindowResized);
+         if (window.matchMedia) {
+-          var _window$matchMedia;
+-          (_window$matchMedia = window.matchMedia('screen and (-webkit-min-device-pixel-ratio: 1.5)')) === null || _window$matchMedia === void 0 || _window$matchMedia.addListener(_this.handleWindowResized.bind('screen'));
++          _this.pixelRatioQuery = window.matchMedia('screen and (-webkit-min-device-pixel-ratio: 1.5)');
++          _this.pixelRatioListener = _this.handleWindowResized.bind('screen');
++          _this.pixelRatioQuery.addListener(_this.pixelRatioListener);
+         }
+       } else {
+         console.error('容器 id 不存在');
+@@ -225,10 +226,20 @@
+ 
+         yield _this2.hooks.init.promise(); // 初始化地图和渲染
+         if (_this2.destroyed) {
++          _this2.inited = true;
+           _this2.destroy();
++          _this2.rendering = false;
++          return;
+         }
+         // FIXME: 初始化 marker 容器，可以放到 map 初始化方法中？
+         yield _this2.layerService.initLayers();
++        // 初始化期间收到销毁请求时，先回收资源，不再发出 loaded
++        if (_this2.destroyed) {
++          _this2.inited = true;
++          _this2.destroy();
++          _this2.rendering = false;
++          return;
++        }
+         _this2.layerService.renderLayers();
+         _this2.controlService.addControls();
+         _this2.loaded = true;
+@@ -286,11 +297,16 @@
+   }
+   destroy() {
+     var _this$$container2;
+-    if (!this.inited) {
+-      this.destroyed = true;
+-      return;
+-    }
+-    this.resizeDetector.removeListener(this.$container, this.handleWindowResized);
++    if (this.disposed) return;
++    this.destroyed = true;
++    if (!this.inited) return;
++    this.disposed = true;
++    if (this.pixelRatioQuery && this.pixelRatioListener) {
++      this.pixelRatioQuery.removeListener(this.pixelRatioListener);
++    }
++    this.pixelRatioQuery = undefined;
++    this.pixelRatioListener = undefined;
++    this.resizeDetector.uninstall(this.$container);
+     this.pickingService.destroy();
+     this.layerService.destroy();
+ 
+@@ -301,7 +317,6 @@
+     this.markerService.destroy();
+     this.fontService.destroy();
+     this.iconService.destroy();
+-    this.removeAllListeners();
+     this.inited = false;
+     this.map.destroy();
+     setTimeout(() => {
+@@ -315,7 +330,12 @@
+     });
+     // 销毁 container 容器
+     (_this$$container2 = this.$container) === null || _this$$container2 === void 0 || (_this$$container2 = _this$$container2.parentNode) === null || _this$$container2 === void 0 || _this$$container2.removeChild(this.$container);
+-    this.emit('destroy');
++    this.configService.removeSceneConfig(this.id);
++    try {
++      this.emit('destroy');
++    } finally {
++      this.removeAllListeners();
++    }
+   }
+   initContainer() {
+     var _this$$container3, _this$$container4;
+diff --git a/node_modules/@antv/l7-core/lib/services/scene/SceneService.d.ts b/node_modules/@antv/l7-core/lib/services/scene/SceneService.d.ts
+index 1772512..17bc567 100644
+--- a/node_modules/@antv/l7-core/lib/services/scene/SceneService.d.ts
++++ b/node_modules/@antv/l7-core/lib/services/scene/SceneService.d.ts
+@@ -41,6 +41,9 @@
+     private canvas;
+     private markerContainer;
+     private resizeDetector;
++    private pixelRatioQuery;
++    private pixelRatioListener;
++    private disposed;
+     private hooks;
+     constructor(container: L7Container);
+     init(sceneConfig: ISceneConfig): void;
+diff --git a/node_modules/@antv/l7-core/lib/services/interaction/InteractionService.js b/node_modules/@antv/l7-core/lib/services/interaction/InteractionService.js
+index 34e8730..f8a2220 100644
+--- a/node_modules/@antv/l7-core/lib/services/interaction/InteractionService.js
++++ b/node_modules/@antv/l7-core/lib/services/interaction/InteractionService.js
+@@ -190,7 +190,8 @@
+       this.hammertime.off('panstart panmove panend pancancel', this.onDrag);
+       $containter.removeEventListener('touchstart', this.onTouch);
+       $containter.removeEventListener('touchend', this.onTouchEnd);
+-      $containter.removeEventListener('mousedown', this.onHover);
++      $containter.removeEventListener('mousedown', this.onHover, true);
++      $containter.removeEventListener('touchmove', this.onTouchMove);
+       $containter.removeEventListener('mouseup', this.onHover);
+       // $containter.removeEventListener('dblclick', this.onHover);
+       $containter.removeEventListener('contextmenu', this.onHover);
