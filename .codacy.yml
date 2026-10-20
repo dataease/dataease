@@ -1,0 +1,11 @@
+---
+exclude_paths:
+  - ".codex/**"
+  - "mapFiles/**"
+  - "core/core-frontend/public/tinymce-dataease-private/**"
+  - "**/*.min.css"
+  - "core/core-frontend/src/views/system/parameter/third-party/**"
+
+engines:
+  duplication:
+    exclude_paths: []
