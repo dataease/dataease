@@ -418,13 +418,14 @@ export class PieDonut extends Pie {
         style: {
           transform: `translate(${x}, ${y})`,
           pointerEvents: 'none',
-          zIndex: 1,
-          clipPath: clip
+          zIndex: 1
         }
       })
       plot.appendChild(centerGroup)
       // G 的独立裁剪图元使用世界坐标，必须同步环心以及绘图区的平移。
       clip.setLocalTransform(centerGroup.getWorldTransform())
+      // SVG 在设置裁剪路径时生成引用，必须先完成定位，避免引用原点处的裁剪圆。
+      centerGroup.style.clipPath = clip
       this.drawCenterContent(centerGroup, config, content, fontFamily, radius)
     })
     instance.on('beforedestroy', clearCenterContent)

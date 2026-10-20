@@ -136,10 +136,9 @@ const loadDatasetTree = async () => {
   }
 }
 
-// 搜索过滤
 const filterNode = (value: string, data: Tree) => {
   if (!value) return true
-  return data.name?.includes(value)
+  return data.name?.toLowerCase().includes(value.toLowerCase())
 }
 
 watch(searchStr, (val) => {
