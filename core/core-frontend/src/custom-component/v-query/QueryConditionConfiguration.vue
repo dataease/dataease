@@ -2457,6 +2457,7 @@ defineExpose({
   <el-dialog
     class="query-condition-configuration"
     v-model="dialogVisible"
+    destroy-on-close
     width="1200px"
     :title="t('v_query.query_condition_setting')"
     @click.stop
