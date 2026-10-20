@@ -117,6 +117,7 @@
 </template>
 
 <script setup lang="ts">
+import { Plus } from '@element-plus/icons-vue'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
 import { onMounted, reactive, ref, watch, unref } from 'vue'
 import { imageUploadItem } from '@/utils/resourceImages'

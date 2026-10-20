@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue'
 import { propTypes } from '@/utils/propTypes'
 
 const props = defineProps({

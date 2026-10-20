@@ -15,7 +15,7 @@
             <el-input
               v-model="state.searchText"
               size="small"
-              prefix-icon="Search"
+              :prefix-icon="Search"
               class="title-name-search"
               :placeholder="t('visualization.enter_template_name_tips')"
               clearable
@@ -93,6 +93,7 @@
 </template>
 
 <script setup lang="ts">
+import { Close, DArrowLeft, DArrowRight, Filter, Search } from '@element-plus/icons-vue'
 import no_result from '@/assets/svg/no_result.svg'
 import { searchMarket, getCategories } from '@/api/templateMarket'
 import { onMounted, reactive, watch } from 'vue'

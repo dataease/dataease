@@ -36,7 +36,7 @@
           <el-row class="margin-top16 search-area">
             <el-input
               v-model="state.searchText"
-              prefix-icon="Search"
+              :prefix-icon="Search"
               class="title-name-search"
               :placeholder="t('visualization.enter_template_name_tips')"
               clearable
@@ -143,6 +143,7 @@
 </template>
 
 <script setup lang="ts">
+import { ArrowRight, Search } from '@element-plus/icons-vue'
 import marketExpand from '@/assets/svg/market-expand.svg'
 import icon_left_outlined from '@/assets/svg/icon_left_outlined.svg'
 import iconFilter from '@/assets/svg/icon-filter.svg'

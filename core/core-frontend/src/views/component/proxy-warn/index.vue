@@ -9,6 +9,7 @@
 </template>
 
 <script lang="ts" setup>
+import { WarningFilled } from '@element-plus/icons-vue'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { useI18n } from '@/hooks/web/useI18n'
 import request from '@/config/axios'

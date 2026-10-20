@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { Loading } from '@element-plus/icons-vue'
 import { computed, defineEmits, onUnmounted, ref } from 'vue'
 import { logMsgApi } from './api'
 import { useI18n } from "@/hooks/web/useI18n";

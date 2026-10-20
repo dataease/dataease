@@ -400,6 +400,7 @@
 </template>
 
 <script setup lang="ts">
+import { Plus } from '@element-plus/icons-vue'
 import { queryVisualizationBackground } from '@/api/visualization/visualizationBackground'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'

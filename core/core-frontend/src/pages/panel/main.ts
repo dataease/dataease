@@ -68,7 +68,7 @@ import '@antv/s2/dist/s2.min.css'
 import AppElement from './App.vue'
 import { setupStore } from '@/store'
 import { useEmbedded } from '@/store/modules/embedded'
-import { setupElementPlus, setupElementPlusIcons } from '@/plugins/element-plus'
+import { setupElementPlus } from '@/plugins/element-plus'
 import { setupRouter } from '@/router/embedded'
 import { useCache } from '@/hooks/web/useCache'
 
@@ -115,7 +115,6 @@ const setupAll = async (
   await i18.setupI18n(app)
   setupRouter(app)
   setupElementPlus(app)
-  setupElementPlusIcons(app)
   const directive = await import('@/directive')
   directive.installDirective(app)
   const res = await import('@/store/modules/user')

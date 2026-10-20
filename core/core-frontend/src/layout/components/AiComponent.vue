@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { Close } from '@element-plus/icons-vue'
 import dvAiWindowMax from '@/assets/svg/dv-ai-window-max.svg'
 import dvAiWindowMin from '@/assets/svg/dv-ai-window-min.svg'
 import { onMounted, ref } from 'vue'

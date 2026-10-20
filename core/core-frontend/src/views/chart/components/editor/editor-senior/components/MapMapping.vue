@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { Edit } from '@element-plus/icons-vue'
 import { computed, nextTick, onMounted, PropType, reactive, ref, watch } from 'vue'
 import { getGeoJsonFile, parseJson } from '../../../js/util'
 import { forEach, debounce } from 'lodash-es'

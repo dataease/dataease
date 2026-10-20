@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { InfoFilled } from '@element-plus/icons-vue'
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import { PropType, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
