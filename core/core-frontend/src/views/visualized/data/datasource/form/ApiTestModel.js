@@ -73,7 +73,7 @@ export class Body extends BaseConfig {
     this.kvs = []
     this.binary = []
     this.set(options)
-    this.sets({ kvs: KeyValue }, { binary: KeyValue }, options)
+    this.sets({ kvs: KeyValue, binary: KeyValue }, options)
   }
 
   isValid() {
