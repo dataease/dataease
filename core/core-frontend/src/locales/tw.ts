@@ -4219,6 +4219,7 @@ export default {
     last_1_years_log: '1 年前的日誌',
     execute_log: '執行日誌',
     done: '完成',
+    log_read_failed: '日誌讀取失敗，請重新開啟日誌重試',
     connection_lost: '連線斷開',
     task_name: '任務名稱',
     es_params_label: '查詢參數',

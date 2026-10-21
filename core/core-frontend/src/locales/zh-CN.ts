@@ -4222,6 +4222,7 @@ export default {
     last_1_years_log: '1 年前的日志',
     execute_log: '执行日志',
     done: '完成',
+    log_read_failed: '日志读取失败，请重新打开日志重试',
     connection_lost: '连接断开',
     task_name: '任务名称',
     es_params_label: '查询参数',

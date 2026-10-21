@@ -6,6 +6,7 @@ import io.dataease.api.sync.task.dto.TaskGridRequest;
 import io.dataease.api.sync.task.dto.TaskInfoDTO;
 import io.dataease.api.sync.task.vo.TaskInfoVO;
 import io.dataease.auth.DeApiPath;
+import io.dataease.auth.DePermit;
 import io.dataease.exception.DEException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,45 +30,56 @@ public interface TaskApi {
 
     @Operation(hidden = true)
     @PostMapping("/pager/{goPage}/{pageSize}")
+    @DePermit("m:read")
     IPage<TaskInfoVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody TaskGridRequest request);
 
     @Operation(hidden = true)
     @PostMapping("/add")
+    @DePermit("m:manage")
     void add(@RequestBody TaskInfoDTO jobInfo) throws DEException;
 
     @Operation(hidden = true)
     @PostMapping("/update")
+    @DePermit("m:manage")
     void update(@RequestBody TaskInfoDTO jobInfo) throws DEException;
 
     @Operation(hidden = true)
     @PostMapping("/remove/{id}")
+    @DePermit("m:manage")
     void remove(@PathVariable(value = "id") String id) throws DEException;
 
     @Operation(hidden = true)
     @GetMapping("start/{id}")
+    @DePermit("m:manage")
     void startJob(@PathVariable(value = "id") String id) throws DEException;
 
     @Operation(hidden = true)
     @GetMapping("stop/{id}")
+    @DePermit("m:manage")
     void stopJob(@PathVariable(value = "id") String id) throws DEException;
 
     @Operation(hidden = true)
     @GetMapping("/get/{id}")
+    @DePermit("m:read")
     TaskInfoVO getOneById(@PathVariable(value = "id") String id) throws DEException;
 
     @Operation(summary = "执行一次任务")
     @GetMapping("/execute/{id}")
+    @DePermit("m:manage")
     void execute(@PathVariable(value = "id") String id) throws DEException;
 
     @Operation(hidden = true)
     @PostMapping("/batch/del")
+    @DePermit("m:manage")
     void batchDelete(@RequestBody List<String> ids) throws DEException;
 
     @Operation(hidden = true)
     @GetMapping("/count")
+    @DePermit("m:read")
     Long count() throws DEException;
 
     @GetMapping("/query2Root/{id}")
+    @DePermit("m:read")
     String query2Root(@PathVariable("id") Long id);
 
     default String query2Root(Long id, String resourceUuid) {
@@ -75,5 +87,6 @@ public interface TaskApi {
     }
 
     @GetMapping("/getLogResourceId/{id}")
+    @DePermit("m:read")
     Long getLogResourceId(@PathVariable("id") String id);
 }

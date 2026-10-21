@@ -4354,6 +4354,7 @@ export default {
     last_1_years_log: 'Log from 1 year ago',
     execute_log: 'Execution log',
     done: 'Done',
+    log_read_failed: 'Failed to read logs. Reopen the log to retry',
     connection_lost: 'Disconnected',
     task_name: 'Task name',
     es_params_label: 'Query Parameters',
