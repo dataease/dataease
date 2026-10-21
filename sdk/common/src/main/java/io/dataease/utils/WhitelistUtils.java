@@ -57,11 +57,17 @@ public class WhitelistUtils {
     private static final String[] FRONTEND_STATIC_SUFFIXES = {
             ".js", ".css", ".svg", ".png", ".jpg", ".ico", ".js.map", ".otf", ".ttf", ".woff2"};
 
+    // Knife4j loads these resources through script/link tags without authentication headers.
+    private static final String[] WEBJARS_STATIC_SUFFIXES = {
+            ".js", ".css", ".svg", ".png", ".jpg", ".gif", ".ico", ".otf", ".ttf", ".woff", ".woff2", ".eot"};
+
     private static boolean matchFrontendStaticResource(String requestURI) {
         String path = StringUtils.substringBefore(requestURI, "?");
         path = StringUtils.substringBefore(path, ";");
-        return StringUtils.startsWithAny(path, FRONTEND_STATIC_PREFIXES)
-                && StringUtils.endsWithAny(path, FRONTEND_STATIC_SUFFIXES);
+        return (StringUtils.startsWithAny(path, FRONTEND_STATIC_PREFIXES)
+                && StringUtils.endsWithAny(path, FRONTEND_STATIC_SUFFIXES))
+                || (StringUtils.startsWith(path, "/webjars/")
+                && StringUtils.endsWithAny(path, WEBJARS_STATIC_SUFFIXES));
     }
 
     public static boolean match(String requestURI) {
