@@ -411,32 +411,6 @@ onBeforeUnmount(() => {
           width="150"
         />
         <el-table-column
-          prop="opDetail"
-          key="opDetail"
-          :label="t('operate_log.detail')"
-          min-width="260"
-        >
-          <template #default="{ row }">
-            <div class="log-detail-cell">
-              <el-tooltip
-                :disabled="!row.opDetail"
-                placement="top"
-                popper-class="log-detail-tooltip"
-                :show-after="300"
-                enterable
-              >
-                <template #content
-                  ><div class="log-detail-hover">{{ row.opDetail }}</div></template
-                >
-                <span class="log-detail-summary">{{ row.opDetail || '-' }}</span>
-              </el-tooltip>
-              <el-button v-if="row.opDetail" link type="primary" @click="showDetail(row)">{{
-                t('operate_log.view_detail')
-              }}</el-button>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column
           prop="success"
           key="success"
           :label="t('operate_log.status')"
@@ -477,6 +451,32 @@ onBeforeUnmount(() => {
         <el-table-column prop="time" :label="t('operate_log.time')" sortable="custom" width="175">
           <template v-slot:default="scope">
             <span>{{ timestampFormatDate(scope.row.time) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="opDetail"
+          key="opDetail"
+          :label="t('operate_log.detail')"
+          min-width="260"
+        >
+          <template #default="{ row }">
+            <div class="log-detail-cell">
+              <el-tooltip
+                :disabled="!row.opDetail"
+                placement="top"
+                popper-class="log-detail-tooltip"
+                :show-after="300"
+                enterable
+              >
+                <template #content
+                  ><div class="log-detail-hover">{{ row.opDetail }}</div></template
+                >
+                <span class="log-detail-summary">{{ row.opDetail || '-' }}</span>
+              </el-tooltip>
+              <el-button v-if="row.opDetail" link type="primary" @click="showDetail(row)">{{
+                t('operate_log.view_detail')
+              }}</el-button>
+            </div>
           </template>
         </el-table-column>
       </GridTable>
