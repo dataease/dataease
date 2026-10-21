@@ -197,7 +197,6 @@ const conditionSeparatorOptions = computed(() => [
   { label: t('v_query.separator_chinese_comma'), value: 'chineseComma' },
   { label: t('v_query.separator_semicolon'), value: 'semicolon' },
   { label: t('v_query.separator_space'), value: 'space' },
-  { label: t('v_query.separator_newline'), value: 'newline' },
   { label: t('v_query.separator_custom'), value: 'custom' }
 ])
 
