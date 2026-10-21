@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component("mysql")
 public class Mysql extends DatasourceConfiguration {
     private String driver = "org.mariadb.jdbc.Driver";
-    private String extraParams = "characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull";
+    private String extraParams = "characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull&allowLoadLocalInfile=false";
 
     public String getJdbc() {
         String jdbcUrl = "";

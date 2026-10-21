@@ -54,19 +54,18 @@ public final class JdbcUrlSecurityPolicy {
             "detectcustomcollations",
             "connectionproperties",
             "initsql",
-            "allowloadlocalinfile",
             "allowurlinlocalinfile",
             "allowloadlocalinfileinpath",
             "allowmultiqueries"
     );
 
     private static final Map<String, Set<String>> TYPE_DANGEROUS_FRAGMENTS = Map.ofEntries(
-            Map.entry("mysql", Set.of("maxallowedpacket", "allowloadlocalinfile", "allowurlinlocalinfile", "allowloadlocalinfileinpath", "allowmultiqueries")),
-            Map.entry("mongo", Set.of("maxallowedpacket", "allowloadlocalinfile", "allowurlinlocalinfile", "allowloadlocalinfileinpath", "allowmultiqueries")),
-            Map.entry("mariadb", Set.of("maxallowedpacket", "allowloadlocalinfile", "allowurlinlocalinfile", "allowloadlocalinfileinpath", "allowmultiqueries")),
-            Map.entry("starrocks", Set.of("maxallowedpacket", "allowloadlocalinfile", "allowurlinlocalinfile", "allowloadlocalinfileinpath", "allowmultiqueries")),
-            Map.entry("doris", Set.of("maxallowedpacket", "allowloadlocalinfile", "allowurlinlocalinfile", "allowloadlocalinfileinpath", "allowmultiqueries")),
-            Map.entry("tidb", Set.of("maxallowedpacket", "allowloadlocalinfile", "allowurlinlocalinfile", "allowloadlocalinfileinpath", "allowmultiqueries")),
+            Map.entry("mysql", Set.of("maxallowedpacket", "allowurlinlocalinfile", "allowloadlocalinfileinpath", "allowmultiqueries")),
+            Map.entry("mongo", Set.of("maxallowedpacket", "allowurlinlocalinfile", "allowloadlocalinfileinpath", "allowmultiqueries")),
+            Map.entry("mariadb", Set.of("maxallowedpacket", "allowurlinlocalinfile", "allowloadlocalinfileinpath", "allowmultiqueries")),
+            Map.entry("starrocks", Set.of("maxallowedpacket", "allowurlinlocalinfile", "allowloadlocalinfileinpath", "allowmultiqueries")),
+            Map.entry("doris", Set.of("maxallowedpacket", "allowurlinlocalinfile", "allowloadlocalinfileinpath", "allowmultiqueries")),
+            Map.entry("tidb", Set.of("maxallowedpacket", "allowurlinlocalinfile", "allowloadlocalinfileinpath", "allowmultiqueries")),
             Map.entry("impala", Set.of("krbjaasfile", "krb5.conf", "socketfactory", "dnsresolver")),
             Map.entry("sqlserver", Set.of("socketfactoryclass", "socketfactoryconstructorarg", "accesstokencallbackclass")),
             Map.entry("oracle", Set.of()),
@@ -133,6 +132,9 @@ public final class JdbcUrlSecurityPolicy {
                 DEException.throwException("Illegal parameter: " + fragment);
             }
         }
+        // allowLoadLocalInfile 允许显式关闭，但禁止开启或赋其他值
+        validateAllowLoadLocalInfile(normalizedUrl);
+        validateAllowLoadLocalInfile(normalizedExtraParams);
         return jdbcUrl;
     }
 
@@ -189,6 +191,59 @@ public final class JdbcUrlSecurityPolicy {
             }
         }
         return false;
+    }
+
+    private static void validateAllowLoadLocalInfile(String value) {
+        if (StringUtils.isEmpty(value)) {
+            return;
+        }
+        String key = "allowloadlocalinfile";
+        int idx = 0;
+        while (true) {
+            int start = indexOfIgnoreCase(value, key, idx);
+            if (start < 0) {
+                return;
+            }
+            if (start > 0) {
+                char prev = value.charAt(start - 1);
+                if (prev != '?' && prev != '&' && prev != ';') {
+                    idx = start + key.length();
+                    continue;
+                }
+            }
+            int pos = start + key.length();
+            while (pos < value.length() && Character.isWhitespace(value.charAt(pos))) {
+                pos++;
+            }
+            if (pos >= value.length() || value.charAt(pos) != '=') {
+                DEException.throwException("Illegal parameter: " + key);
+            }
+            pos++;
+            while (pos < value.length() && Character.isWhitespace(value.charAt(pos))) {
+                pos++;
+            }
+            int end = pos;
+            while (end < value.length() && value.charAt(end) != '&' && value.charAt(end) != ';') {
+                end++;
+            }
+            String paramValue = value.substring(pos, end).trim();
+            if (!"false".equalsIgnoreCase(paramValue)) {
+                DEException.throwException("Illegal parameter: " + key);
+            }
+            idx = Math.max(end, start + key.length());
+        }
+    }
+
+    private static int indexOfIgnoreCase(String value, String fragment, int fromIndex) {
+        if (StringUtils.isEmpty(value) || StringUtils.isEmpty(fragment) || fromIndex < 0) {
+            return -1;
+        }
+        for (int i = fromIndex; i <= value.length() - fragment.length(); i++) {
+            if (value.regionMatches(true, i, fragment, 0, fragment.length())) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private static void validateH2Settings(String jdbcUrl, String extraParams) {
