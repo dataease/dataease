@@ -34,6 +34,8 @@ dataease:
   playwright-server: ${DE_PLAYWRIGHT_SERVER}
 task:
   executor:
+    auth:
+      secret: ${DE_SYNC_AUTH_SECRET:}
     address: http://sync-task-actuator:9001
     log:
       path: /opt/dataease2.0/logs/sync-task/task-handler-log

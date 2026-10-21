@@ -26,6 +26,10 @@ function prop {
 }
 
 function check_and_prepare_env_params() {
+   source "${CURRENT_DIR}/dataease/bin/sync-auth.sh" || {
+      echo "同步执行器鉴权组件加载失败，请重新解压完整安装包并检查 dataease/bin/sync-auth.sh 的读取权限后重试" >&2
+      exit 1
+   }
    log "当前时间 : $(date)"
    log_title "检查安装环境并初始化环境变量"
    DE_APISIX_PORT=9080
@@ -61,6 +65,9 @@ function check_and_prepare_env_params() {
    fi
    if [[ -d $DE_BASE ]] && [[ -f $DE_BASE/dataease2.0/.env ]]; then
       source $DE_BASE/dataease2.0/.env
+      # 保存升级前是否部署同步，供首次启用鉴权时判断
+      sync_auth_was_enabled=false
+      sync_auth_enabled && sync_auth_was_enabled=true
       INSTALL_TYPE='upgrade'
 
       conf_install_mode=$(prop $CURRENT_DIR/install.conf DE_INSTALL_MODE)
@@ -96,6 +103,28 @@ function set_run_base_path() {
    TEMPLATES_FOLDER=${DE_RUN_BASE}/templates
    log_content "运行目录 $DE_RUN_BASE"
    log_content "配置文件目录 $CONF_FOLDER"
+}
+
+# 复用已初始化的运行目录，仅补充同步执行器鉴权配置
+function prepare_sync_auth() {
+   local installed_auth=false
+   [[ -f "${DE_RUN_BASE}/bin/sync-auth.sh" ]] && installed_auth=true
+   if [[ "${DE_SYNC_AUTH_VERSION:-}" != "1" && "${sync_auth_was_enabled:-true}" == "false" ]]; then
+      installed_auth=false
+   fi
+   sync_auth_prepare "$DE_RUN_BASE" "$installed_auth" || {
+      echo "同步执行器鉴权配置未完成，安装或升级已中止；升级时旧服务可能已按原流程停止，请按上述提示修复后重新执行安装或升级" >&2
+      exit 1
+   }
+   if sync_auth_enabled; then
+      DE_SYNC_AUTH_SECRET=$(sed -n 's/^DE_SYNC_AUTH_SECRET=//p' "${DE_RUN_BASE}/.env") || {
+         sync_auth_error RELOAD_FAILED "无法读取已保存的同步执行器鉴权密钥" "检查运行目录 .env 的读取权限后重新执行安装或升级"
+         exit 1
+      }
+      sync_auth_validate || exit 1
+      export DE_SYNC_AUTH_SECRET
+      export DE_SYNC_AUTH_VERSION=1
+   fi
 }
 
 function prepare_de_run_base() {
@@ -342,6 +371,7 @@ function start_de_service() {
 function main() {
    check_and_prepare_env_params
    set_run_base_path
+   prepare_sync_auth
    prepare_de_run_base
    update_dectl
    prepare_system_settings

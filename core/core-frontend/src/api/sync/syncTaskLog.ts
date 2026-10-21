@@ -11,6 +11,10 @@ export const removeApi = (logId: string) => {
   return request.post({ url: `/sync/task/log/delete/${logId}` })
 }
 
+export const precheckTaskLogApi = (logId: string) => {
+  return request.get({ url: `/sync/task/log/precheck/${logId}` })
+}
+
 export const getTaskLogDetailApi = (logId: string, fromLineNum: number) => {
   return request.get({ url: `/sync/task/log/detail/${logId}/${fromLineNum}` })
 }

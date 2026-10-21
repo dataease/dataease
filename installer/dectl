@@ -219,6 +219,13 @@ function status() {
 }
 function start() {
    echo
+   source "${DE_RUNNING_BASE}/bin/sync-auth.sh" || {
+      echo "同步执行器鉴权组件加载失败，请从匹配版本安装包恢复 bin/sync-auth.sh 并检查读取权限，再执行 dectl start" >&2
+      return 1
+   }
+   if sync_auth_enabled; then
+      sync_auth_validate || return 1
+   fi
    _check_apisix_init
    _generate_compose_file_args
    cd ${DE_RUNNING_BASE}
