@@ -185,7 +185,7 @@
     destroy-on-close
     :close-on-click-modal="false"
   >
-    <CustomAggrEdit ref="customAggregationEditor" />
+    <CustomAggrEdit ref="customAggregationEditor" include-copied-fields />
     <template #footer>
       <el-button @click="customAggregationVisible = false">取消</el-button>
       <el-button type="primary" @click="confirmCustomAggregation">确定</el-button>

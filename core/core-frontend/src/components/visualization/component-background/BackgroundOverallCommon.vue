@@ -400,10 +400,11 @@
 </template>
 
 <script setup lang="ts">
+import { Plus } from '@element-plus/icons-vue'
 import { queryVisualizationBackground } from '@/api/visualization/visualizationBackground'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
-import { imgUrlTrans } from '@/utils/imgUtils'
+import { imageUploadItem } from '@/utils/resourceImages'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -483,7 +484,7 @@ const reUpload = e => {
   }
   uploadFileResult(file, fileUrl => {
     state.commonBackground['outerImage'] = fileUrl
-    state.fileList = [{ url: imgUrlTrans(state.commonBackground['outerImage']) }]
+    state.fileList = [imageUploadItem(state.commonBackground['outerImage'])]
     onBackgroundChange()
   })
 }
@@ -520,7 +521,7 @@ const init = () => {
   updateInnerPadding()
   updateBorderRadius()
   if (state.commonBackground['outerImage']) {
-    state.fileList = [{ url: imgUrlTrans(state.commonBackground['outerImage']) }]
+    state.fileList = [imageUploadItem(state.commonBackground['outerImage'])]
   } else {
     state.fileList = []
   }
@@ -538,7 +539,7 @@ const handleRemove = () => {
   commitStyle()
 }
 const handlePictureCardPreview = file => {
-  state.dialogImageUrl = file.url
+  state.dialogImageUrl = file.sourceUrl || file.url
   state.dialogVisible = true
 }
 const upload = file => {

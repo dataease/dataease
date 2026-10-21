@@ -10,12 +10,25 @@ export class RichTextChartView extends AbstractChartView {
   properties: EditorProperty[] = [
     'background-overall-component',
     'border-style',
+    'title-selector',
     'threshold',
     'function-cfg'
   ]
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],
     'border-style': ['all'],
+    'title-selector': [
+      'title',
+      'fontSize',
+      'color',
+      'hPosition',
+      'isItalic',
+      'isBolder',
+      'remarkShow',
+      'fontFamily',
+      'letterSpace',
+      'fontShadow'
+    ],
     threshold: ['tableThreshold'],
     'function-cfg': ['emptyDataStrategy']
   }
@@ -32,6 +45,13 @@ export class RichTextChartView extends AbstractChartView {
       allowEmpty: true
     }
   }
+  setupDefaultOptions(chart: ChartObj): ChartObj {
+    if (chart.customStyle?.text) {
+      chart.customStyle.text.show = false
+    }
+    return chart
+  }
+
   constructor() {
     super(ChartRenderType.CUSTOM, ChartLibraryType.RICH_TEXT, 'rich-text')
   }

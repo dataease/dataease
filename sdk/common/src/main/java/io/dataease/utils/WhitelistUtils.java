@@ -52,6 +52,18 @@ public class WhitelistUtils {
             "/perSetting/hmac/info",
             "/");
 
+    private static final String[] FRONTEND_STATIC_PREFIXES = {"/js/", "/assets/"};
+
+    private static final String[] FRONTEND_STATIC_SUFFIXES = {
+            ".js", ".css", ".svg", ".png", ".jpg", ".ico", ".js.map", ".otf", ".ttf", ".woff2"};
+
+    private static boolean matchFrontendStaticResource(String requestURI) {
+        String path = StringUtils.substringBefore(requestURI, "?");
+        path = StringUtils.substringBefore(path, ";");
+        return StringUtils.startsWithAny(path, FRONTEND_STATIC_PREFIXES)
+                && StringUtils.endsWithAny(path, FRONTEND_STATIC_SUFFIXES);
+    }
+
     public static boolean match(String requestURI) {
         invalidUrl(requestURI);
         if (StringUtils.startsWith(requestURI, getContextPath())) {
@@ -67,21 +79,21 @@ public class WhitelistUtils {
             requestURI = requestURI.replaceFirst(AuthConstant.DE_OIDCAPI_PREFIX, "");
         }
         return WHITE_PATH.contains(requestURI)
-                || StringUtils.endsWithAny(requestURI, ".ico", "js", ".css", "svg", "png", "jpg", "js.map", ".otf", ".ttf", ".woff2")
+                || matchFrontendStaticResource(requestURI)
                 || StringUtils.startsWithAny(requestURI, "data:image")
                 || StringUtils.startsWithAny(requestURI, "/login/platformLogin/")
                 || StringUtils.startsWithAny(requestURI, "/static-resource/")
                 || StringUtils.startsWithAny(requestURI, "/appearance/image/")
                 || StringUtils.startsWithAny(requestURI, "/share/proxyInfo")
                 || StringUtils.startsWithAny(requestURI, "/share/validate")
-                || StringUtils.startsWithAny(requestURI, "/xpackComponent/content")
+                || StringUtils.startsWithAny(requestURI, "/xpackComponent/contentPlugin/")
                 || StringUtils.startsWithAny(requestURI, "/xpackComponent/pluginStaticInfo")
                 || StringUtils.startsWithAny(requestURI, "/geo/")
                 || StringUtils.startsWithAny(requestURI, "/websocket")
                 || StringUtils.startsWithAny(requestURI, "/map/")
                 || StringUtils.startsWithAny(requestURI, "/oauth2/")
                 || StringUtils.startsWithAny(requestURI, "/mfa/qr/")
-                || StringUtils.startsWithAny(requestURI, "/mfa/login")
+                || StringUtils.equals(requestURI, "/mfa/login")
                 || StringUtils.startsWithAny(requestURI, "/typeface/download")
                 || StringUtils.startsWithAny(requestURI, "/typeface/defaultFont")
                 || StringUtils.startsWithAny(requestURI, "/typeface/listFont")

@@ -35,8 +35,9 @@
 </template>
 
 <script setup lang="ts">
+import { Plus } from '@element-plus/icons-vue'
 import { onMounted, reactive, ref, toRefs, watch } from 'vue'
-import { imgUrlTrans } from '@/utils/imgUtils'
+import { imageUploadItem } from '@/utils/resourceImages'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
 import { ElMessage } from 'element-plus-secondary'
@@ -72,7 +73,7 @@ const state = reactive({
 const init = () => {
   imgUrlInner.value = imgUrl.value
   if (imgUrlInner.value) {
-    state.fileList.push({ url: imgUrlTrans(imgUrlInner.value) })
+    state.fileList.push(imageUploadItem(imgUrlInner.value))
   } else {
     state.fileList = []
   }
@@ -85,7 +86,7 @@ const handleRemove = () => {
   emits('onImgChange')
 }
 const handlePictureCardPreview = file => {
-  state.dialogImageUrl = file.url
+  state.dialogImageUrl = file.sourceUrl || file.url
   state.dialogVisible = true
 }
 const upload = file => {

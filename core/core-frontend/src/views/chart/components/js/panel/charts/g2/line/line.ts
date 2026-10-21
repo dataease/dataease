@@ -1,4 +1,10 @@
+import type { ViewSpec } from '../bar/barUtil'
 import { G2ChartView, G2DrawOptions } from '../../../types/impl/g2'
+import {
+  isInstanceDataRefreshEnabled,
+  registerChartRefreshAdapter,
+  tagRefreshComponentMarks
+} from '../../../types/impl/g2-data-refresh'
 import {
   flow,
   getLineConditions,
@@ -42,7 +48,11 @@ import {
   TOOLTIP_ITEM_TPL,
   TOOLTIP_TITLE_TPL
 } from '../../../common/common_antv'
-import { extremumEvt, addExtremumText } from '@/views/chart/components/js/extremumUitl'
+import {
+  extremumEvt,
+  addExtremumText,
+  getBarExtremumTransform
+} from '@/views/chart/components/js/extremumUitl'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 import {
   createTooltipWrapper,
@@ -127,9 +137,13 @@ export class Line extends G2ChartView {
     }
     const newChart = new G2Chart({ container, ...getG2Renderer() })
     const legendState = bindLineLegendState(newChart)
-    const options = this.setupOptions(chart, initOptions, { legendState })
+    const options = this.setupOptions(chart, initOptions, {
+      legendState,
+      getData: () => (isInstanceDataRefreshEnabled(newChart) ? newChart.options().data : undefined)
+    })
     // 开始渲染
     handleChartDashboardHidden(chart, options)
+    this.configureDataRefresh(newChart, chart, options)
     newChart.options(options)
     newChart.on('point:click', action)
     new G2TooltipCarousel(newChart, chart, data).start()
@@ -221,7 +235,21 @@ export class Line extends G2ChartView {
     const showExtremumIds = Object.keys(formatterMap).filter(id => formatterMap[id].showExtremum)
     if (showExtremumIds?.length > 0) {
       const { x: xField, y: yField, color: colorField } = options.encode
-      addExtremumText(options.children, showExtremumIds, xField, yField, colorField)
+      if (
+        this.name === 'line' &&
+        chart.yAxis?.length === 1 &&
+        !chart.xAxisExt?.length &&
+        !chart.extStack?.length
+      ) {
+        // 基础折线直接在点图元上重新计算最值，避免额外文本图元改变刷新结构
+        const pointMark = options.children[1]
+        pointMark.transform = [
+          ...(pointMark.transform || []),
+          getBarExtremumTransform(showExtremumIds)
+        ]
+      } else {
+        addExtremumText(options.children, showExtremumIds, xField, yField, colorField)
+      }
     }
     const pointMark: G2Spec = options.children[1]
     const labelOpt = {
@@ -698,7 +726,11 @@ export class Line extends G2ChartView {
           }
         ]
       }
-      options.children.push(assistLineMark)
+      options.children.push(
+        ...(this.name === 'line'
+          ? tagRefreshComponentMarks('assist-line', [assistLineMark])
+          : [assistLineMark])
+      )
     }
     return options
   }
@@ -724,6 +756,7 @@ export class Line extends G2ChartView {
         .replace('{label}', () => escape(name))
         .replace('{value}', () => escape(value))
     }
+    const tooltipDataOptions: G2Spec = { ...options }
     const tooltipOptions: G2Spec = {
       tooltip: d => d,
       interaction: {
@@ -740,8 +773,15 @@ export class Line extends G2ChartView {
           render: (e, { title, items: originalItems }) => {
             const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)
             // G2 折线默认只返回当前命中的线段，按维度补齐同一 x 下的系列项
+            // 保持索引容器稳定，仅替换数据引用，让提示框缓存按最新数据失效
+            const currentData = context.getData?.()
+            if (currentData) {
+              tooltipDataOptions.data = Array.isArray(currentData)
+                ? { value: currentData }
+                : currentData
+            }
             const fullItems = getLineTooltipSameDimensionItems(
-              options,
+              tooltipDataOptions,
               customAttr,
               title,
               originalItems,
@@ -893,5 +933,17 @@ export class Line extends G2ChartView {
 
   constructor(name = 'line') {
     super(name, DEFAULT_DATA)
+    if (name === 'line') {
+      registerChartRefreshAdapter(name, {
+        valueChannel: 'y',
+        marks: [
+          { type: 'line', key: 'series' },
+          { type: 'point', key: 'item' }
+        ],
+        assistLines: (chart, options) =>
+          (this.configAssistLine(chart, { ...options, children: [] } as G2Spec) as ViewSpec)
+            .children
+      })
+    }
   }
 }

@@ -151,6 +151,10 @@
                     <artifactId>commons-io</artifactId>
                     <groupId>commons-io</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>ehcache</artifactId>
+                    <groupId>org.ehcache</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
 

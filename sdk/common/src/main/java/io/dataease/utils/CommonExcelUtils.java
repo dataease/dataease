@@ -67,7 +67,20 @@ public class CommonExcelUtils {
     }
 
     public static void importExcel(InputStream inputStream, Class clazsz, AnalysisEventListener analysisEventListener) throws Exception {
-        EasyExcel.read(inputStream, clazsz, analysisEventListener).sheet().headRowNumber(0).doRead();
+        try {
+            EasyExcel.read(inputStream, clazsz, analysisEventListener).sheet().headRowNumber(0).doRead();
+        } finally {
+            clearThreadLocalCache();
+        }
+    }
+
+    /**
+     * 清理 EasyExcel 缓存在当前线程内的日期/数字格式判断结果。
+     * Excel 自定义格式 ID 由每个文件独立分配，线程复用时残留的缓存会导致日期被误判为普通数值。
+     */
+    public static void clearThreadLocalCache() {
+        com.alibaba.excel.util.DateUtils.removeThreadLocalCache();
+        com.alibaba.excel.util.NumberDataFormatterUtils.removeThreadLocalCache();
     }
 
 }

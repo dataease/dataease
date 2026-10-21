@@ -20,6 +20,8 @@ public class ApiDefinition {
     private String status;
     private List<Map<String, Object>> data = new ArrayList<>();
     private Integer apiQueryTimeout = 10;
+    private Integer maxResponseSizeMb;
+    private Integer transferTimeoutSeconds;
     private int previewNum = 100;
     private int serialNumber;
     private boolean useJsonPath;

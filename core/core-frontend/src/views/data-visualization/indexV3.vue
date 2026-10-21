@@ -759,6 +759,10 @@ eventBus.on('tabSort', tabSort)
         width: 100%;
         overflow: auto;
         margin: auto;
+        // 画布横向滚动条视觉上冗余且影响美观，隐藏后仍可通过空格拖拽、滚轮等方式平移画布
+        :deep(.ed-scrollbar__bar.is-horizontal) {
+          display: none;
+        }
       }
     }
     .right-sidebar {

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 /**
  * 登录其实就是获得token的过程，最后把token返回到前端
@@ -53,7 +54,8 @@ public interface LoginApi {
     @Operation(summary = "MFA二维码信息")
     @ApiOperationSupport(order = 5)
     @PostMapping("/mfa/qr/{id}")
-    MfaQrVO mfaQr(@PathVariable("id") Long id);
+    MfaQrVO mfaQr(@PathVariable("id") Long id,
+                  @RequestHeader(value = "X-DE-MFA-Challenge", required = false) String challenge);
 
     @Operation(summary = "MFA登录")
     @ApiOperationSupport(order = 6)

@@ -96,6 +96,10 @@ const tooltips = [
     val: t('setting_basic.share_disable_tips')
   },
   {
+    key: 'setting_basic.ignoreSslVerify',
+    val: t('setting_basic.ignoreSslVerifyTips')
+  },
+  {
     key: 'setting_basic.disableCrossDs',
     val: t('setting_basic.disable_cross_ds_tips')
   }
@@ -179,6 +183,7 @@ const search = cb => {
         item.pkey === 'basic.pwdStrategy' ||
         item.pkey === 'basic.shareDisable' ||
         item.pkey === 'basic.sharePeRequire' ||
+        item.pkey === 'basic.ignoreSslVerify' ||
         item.pkey === 'basic.loginLimit' ||
         item.pkey === 'basic.disableCrossDs'
       ) {

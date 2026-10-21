@@ -47,8 +47,8 @@ DataEase 是开源的 BI 工具，帮助用户快速分析数据并洞察业务�
 
 ## 快速开始
 
-**服务器版：**
-准备一台 2 核 4G 以上的 Linux 服务器，并在[社区网站](https://community.fit2cloud.com/#/products/dataease/downloads)上下载离线安装包
+准备一台 2 核 4G 以上的 Linux 服务器，并在 [飞致云开源社区](https://community.fit2cloud.com/#/products/dataease/downloads) 上下载离线安装包。
+
 ```
 # 解压离线安装包
 tar zxvf dataease-offline-installer-v3.0.0.tar.gz
@@ -60,14 +60,13 @@ bash install.sh
 # 密码: DataEase@123456
 ```
 
-你也可以通过 [1Panel 应用商店](https://dataease.io/docs/v2/installation/1panel_installation/) 快速部署 DataEase。如果是用于生产环境，推荐使用 [离线安装包方式](https://dataease.io/docs/v2/installation/offline_INSTL_and_UPG/) 进行安装部署。
+你也可以通过 [1Panel 应用商店](https://dataease.io/docs/v2/installation/1panel_installation/) 快速部署 DataEase。
 
 如你有更多问题，可以查看在线文档，或者通过论坛与我们交流。
 
 -   [视频介绍](https://www.bilibili.com/video/BV1Y8dAYLErb/)
--   [在线文档](https://dataease.io/docs/)
+-   [在线文档](https://docs.fit2cloud.com/dataease/)
 -   [社区论坛](https://bbs.fit2cloud.com/c/de/6)
--   [案例研究](/docs/use-cases.md)
 
 ## UI 展示
 
@@ -95,11 +94,13 @@ bash install.sh
 
 ## 飞致云的其他明星项目
 
-- [1Panel](https://github.com/1panel-dev/1panel/) - 现代化、开源的 Linux 服务器运维管理面板
-- [MaxKB](https://github.com/1panel-dev/MaxKB/) - 基于 LLM 大语言模型的开源知识库问答系统
 - [JumpServer](https://github.com/jumpserver/jumpserver/) - 广受欢迎的开源堡垒机
-- [Halo](https://github.com/halo-dev/halo/) - 强大易用的开源建站工具
+- [1Panel](https://github.com/1panel-dev/1panel/) - 现代化、开源的 Linux 服务器运维管理面板
+- [MaxKB](https://github.com/1panel-dev/MaxKB/) - 强大易用的企业级智能体平台
+- [DataEase](https://github.com/dataease/dataease/) - 人人可用的开源 BI 工具
+- [SQLBot](https://github.com/dataease/SQLBot/) - 基于大模型和 RAG 的智能问数系统
 - [MeterSphere](https://github.com/metersphere/metersphere/) - 新一代的开源持续测试工具
+- [Halo](https://github.com/halo-dev/halo/) - 强大易用的开源建站工具
 
 ## License
 

@@ -6,6 +6,7 @@ export type CustomSortValuesStatus = 'idle' | 'loading' | 'ready' | 'empty' | 'e
 
 interface CustomSortValuesSource {
   type: () => string | undefined
+  fieldOwnerId: () => string | undefined
   data: () => PluginDataConfig | undefined
   field: () => FieldItemData | null | undefined
 }
@@ -25,6 +26,7 @@ export const useCustomSortValues = (source: CustomSortValuesSource) => {
 
   const load = async () => {
     const type = source.type()
+    const fieldOwnerId = source.fieldOwnerId()
     const data = source.data()
     const field = source.field()
     const version = ++requestVersion
@@ -40,7 +42,7 @@ export const useCustomSortValues = (source: CustomSortValuesSource) => {
     error.value = undefined
 
     try {
-      const result = await queryFieldValues({ type, data, field })
+      const result = await queryFieldValues({ type, fieldOwnerId, data, field })
       if (version !== requestVersion) {
         return
       }

@@ -579,9 +579,7 @@ const changeStylePre = key => {
 }
 
 const sizeChange = key => {
-  element.value.style[key] = Math.round(
-    (styleMounted.value[key] * canvasStyleData.value.scale) / 100
-  )
+  element.value.style[key] = (styleMounted.value[key] * canvasStyleData.value.scale) / 100
   changeStyle({ key: key, value: element.value.style[key] })
 }
 

@@ -4,7 +4,7 @@ import field_text from "@/assets/svg/field_text.svg";
 import field_time from "@/assets/svg/field_time.svg";
 import field_value from "@/assets/svg/field_value.svg";
 import field_location from "@/assets/svg/field_location.svg";
-import { ref, reactive, computed, nextTick, provide } from "vue";
+import { ref, reactive, computed, nextTick, provide, onBeforeUnmount } from 'vue'
 import { useI18n } from "@/hooks/web/useI18n";
 import { ElMessage } from "element-plus-secondary";
 import { fieldEnums } from "../dataset-column-permissions/options.js";
@@ -65,11 +65,19 @@ const dataSetColumnPermissionInfo = (data = {}) =>
     url: "/dataset/columnPermissions/info",
     data,
   });
-const fetchFiledList = (datasetId) => {
-  listFieldByDatasetGroup(datasetId).then((res) => {
+const fetchFiledList = (datasetId, requestId) => {
+  return listFieldByDatasetGroup(datasetId).then((res) => {
+    if (requestId !== permissionRequestId) return
     datasetTableFiled.value = res.data;
   });
 };
+
+let permissionRequestId = 0
+const permissionsReady = ref(false)
+const loadingPermissions = ref(false)
+onBeforeUnmount(() => {
+  permissionRequestId++
+})
 
 const showDrawer = ref(false);
 const show_row_column_permission = ref(false);
@@ -158,8 +166,9 @@ const activeText = computed(() => {
     : t("auth.enable_column");
 });
 
-const getRowPermission = () => {
-  dataSetRowPermissionInfo(authDetail).then((res) => {
+const getRowPermission = (detail, requestId) => {
+  return dataSetRowPermissionInfo(detail).then((res) => {
+    if (requestId !== permissionRequestId) return
     const {
       whiteListUser = "[]",
       enable = false,
@@ -172,14 +181,16 @@ const getRowPermission = () => {
     defaultForm.whiteListUser = JSON.parse(whiteListUser);
     defaultForm.id = id;
     defaultForm.enable = enable;
-    nextTick(() => {
+    return nextTick(() => {
+      if (requestId !== permissionRequestId) return
       rowAuth.value.init(tree || {});
     });
   });
 };
 
-const getColumnPermission = () => {
-  dataSetColumnPermissionInfo(authDetail).then((res) => {
+const getColumnPermission = (detail, requestId) => {
+  return dataSetColumnPermissionInfo(detail).then((res) => {
+    if (requestId !== permissionRequestId) return
     if (!res.data) {
       columnPermissionForm.authTargetType = authDetail.authTargetType;
       columnPermissionForm.authTargetId = authDetail.authTargetId;
@@ -220,13 +231,20 @@ const getColumnPermission = () => {
       }
       columnPermissionForm.permissions.columns.push(item);
     }
-    initSelect();
+    return initSelect(requestId)
   });
 };
 
 provide("filedList", datasetTableFiled);
 
 const init = (detail) => {
+  const requestId = ++permissionRequestId
+  permissionsReady.value = false
+  loadingPermissions.value = true
+  datasetTableFiled.value = []
+  columnPermissionForm.permissions = { enable: true, columns: [] }
+  columnPermissionForm.whiteListUser = []
+  mapId.value = []
   datasetPermissionsTabActive.value = "RowPermissions";
   authDetail.authTargetType = detail.authTargetType;
   authDetail.authTargetId = detail.authTargetId;
@@ -235,10 +253,26 @@ const init = (detail) => {
   show_row_column_permission.value = true;
 
   dialogTitle.value = detail.name;
-  fetchFiledList(detail.datasetId);
-
-  provide("filedList", datasetTableFiled);
-  getRowPermission();
+  const permissionDetail = { ...authDetail }
+  Promise.all([
+    getRowPermission(permissionDetail, requestId),
+    fetchFiledList(detail.datasetId, requestId).then(() => {
+      if (requestId !== permissionRequestId) return
+      return getColumnPermission(permissionDetail, requestId)
+    })
+  ])
+    .then(() => {
+      if (requestId !== permissionRequestId) return
+      permissionsReady.value = true
+    })
+    .catch(() => {
+      if (requestId !== permissionRequestId) return
+      ElMessage.error(t('auth.permission_load_failed'))
+    })
+    .finally(() => {
+      if (requestId !== permissionRequestId) return
+      loadingPermissions.value = false
+    })
 
   if (authDetail.authTargetType === "role") {
     let param = {};
@@ -250,12 +284,16 @@ const init = (detail) => {
     };
     whiteListUsers.value = [];
     whiteListUsersForPermissions(param).then((res) => {
+      if (requestId !== permissionRequestId) return
       whiteListUsers.value = res.data || [];
     });
   }
 };
 
 const clearData = () => {
+  permissionRequestId++
+  permissionsReady.value = false
+  loadingPermissions.value = false
   rowAuth.value.relationList = [];
   rowAuth.value.logic = "or";
   datasetPermissionsTabActive.value = "RowPermissions";
@@ -265,13 +303,12 @@ const clearData = () => {
 
 const handleClickTabs = (tab) => {
   datasetPermissionsTabActive.value = tab.paneName;
-  if (datasetPermissionsTabActive.value === "RowPermissions") return;
-  getColumnPermission();
 };
 
 const emits = defineEmits(["savePermissions"]);
 
 const save = ({ logic, items, errorMessage }) => {
+  if (!permissionsReady.value) return
   if (errorMessage) {
     ElMessage({
       message: errorMessage,
@@ -294,11 +331,12 @@ const save = ({ logic, items, errorMessage }) => {
 };
 
 const confirm = () => {
+  if (!permissionsReady.value) return
   rowAuth.value.submit();
 };
 
 const handleSelectionChange = (val) => {
-  if (isUpdateTableData.value) return;
+  if (!permissionsReady.value || isUpdateTableData.value) return
   mapId.value = val.map((ele) => ele.id) as string[];
   columnPermissionForm.permissions.columns.forEach((filed) => {
     const selected = mapId.value.includes(filed.id as string);
@@ -309,10 +347,11 @@ const handleSelectionChange = (val) => {
   });
 };
 
-const initSelect = () => {
+const initSelect = (requestId) => {
   isUpdateTableData.value = true;
   mapId.value = [];
-  nextTick(() => {
+  return nextTick(() => {
+    if (requestId !== permissionRequestId) return
     columnPermissionForm.permissions.columns.forEach((ele) => {
       if (ele.selected) {
         mapId.value.push(ele.id);
@@ -420,6 +459,7 @@ defineExpose({
       }}</span>
       <el-switch
         v-if="datasetPermissionsTabActive === 'RowPermissions'"
+        :disabled="!permissionsReady"
         v-model="defaultForm.enable"
         :active-text="activeText"
         inactive-color="#BBBFC4"
@@ -427,6 +467,7 @@ defineExpose({
       </el-switch>
       <el-switch
         v-else
+        :disabled="!permissionsReady"
         v-model="columnPermissionForm.permissions.enable"
         :active-text="activeText"
         inactive-color="#BBBFC4"
@@ -438,6 +479,7 @@ defineExpose({
         datasetPermissionsTabActive === 'RowPermissions' &&
         show_row_column_permission
       "
+      v-loading="loadingPermissions"
       class="relation-tree-container"
     >
       <row-auth ref="rowAuth" @save="save"></row-auth>
@@ -447,6 +489,7 @@ defineExpose({
         datasetPermissionsTabActive === 'ColumnPermissions' &&
         show_row_column_permission
       "
+      v-loading="loadingPermissions"
       class="mrbt40"
     >
       <el-table
@@ -563,6 +606,7 @@ defineExpose({
           multiple
           clearable
           class="white-list"
+          :disabled="!permissionsReady"
           v-model="columnPermissionForm.whiteListUser"
           :placeholder="$t('user.select_users')"
         >
@@ -581,7 +625,7 @@ defineExpose({
       <el-button secondary @click="clearData"
         >{{ $t("common.cancel") }}
       </el-button>
-      <el-button type="primary" @click="confirm"
+      <el-button type="primary" :disabled="!permissionsReady" @click="confirm"
         >{{ $t("common.sure") }}
       </el-button>
     </template>

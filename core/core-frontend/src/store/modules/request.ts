@@ -1,11 +1,16 @@
 import { defineStore } from 'pinia'
 import { store } from '../index'
 
+export interface CachedRequest {
+  resolve: (token: string) => void
+  reject: (reason: unknown) => void
+}
+
 interface RequestState {
   loadingMap: {
     [key: string]: number
   }
-  cachedRequestList: []
+  cachedRequestList: CachedRequest[]
 }
 
 export const useRequestStore = defineStore('request', {
@@ -16,7 +21,7 @@ export const useRequestStore = defineStore('request', {
     }
   },
   getters: {
-    getRequestList(): string {
+    getRequestList(): CachedRequest[] {
       return this.cachedRequestList
     }
   },
@@ -47,7 +52,7 @@ export const useRequestStore = defineStore('request', {
         this.loadingMap = map
       }
     },
-    addCacheRequest(fun) {
+    addCacheRequest(fun: CachedRequest) {
       this.cachedRequestList.push(fun)
     },
     cleanCacheRequest() {

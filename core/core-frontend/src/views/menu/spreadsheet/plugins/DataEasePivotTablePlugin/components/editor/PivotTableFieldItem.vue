@@ -12,6 +12,8 @@ import {
   View
 } from '@element-plus/icons-vue'
 import { fieldType } from '@/utils/attr'
+import icon_security from '@/assets/svg/icon_security.svg'
+import { useI18n } from '@/hooks/web/useI18n'
 import type {
   FieldDatePattern,
   FieldDateStyle,
@@ -34,6 +36,7 @@ const props = defineProps<{
   field: FieldItemData
   index: number
   pluginType?: string
+  fieldOwnerId?: string
   dataConfig?: PluginDataConfig
   zoneSchema?: FieldZoneSchema
 }>()
@@ -44,6 +47,7 @@ const emit = defineEmits<{
   updateField: [index: number, field: FieldItemData]
 }>()
 
+const { t } = useI18n()
 const customSortDialogVisible = ref(false)
 const valueFormatterDialogVisible = ref(false)
 
@@ -279,6 +283,11 @@ const getFieldColor = (groupType: string) => {
         <el-icon v-if="field.hidden" class="hidden-icon">
           <Hide />
         </el-icon>
+        <el-tooltip v-if="field.desensitized" :content="t('chart.desensitized')" placement="top">
+          <el-icon class="hidden-icon">
+            <Icon><icon_security class="svg-icon" /></Icon>
+          </el-icon>
+        </el-tooltip>
       </div>
       <div class="field-actions child">
         <span class="action-btn delete-btn" @click.stop="emit('remove', index)">
@@ -499,6 +508,7 @@ const getFieldColor = (groupType: string) => {
   <SpreadsheetCustomSortDialog
     v-model="customSortDialogVisible"
     :plugin-type="pluginType"
+    :field-owner-id="fieldOwnerId"
     :data-config="dataConfig"
     :field="customSortField"
     @confirm="handleCustomSortConfirm"
@@ -556,7 +566,7 @@ const getFieldColor = (groupType: string) => {
 
     .hidden-icon {
       flex-shrink: 0;
-      color: #8f959e;
+      color: var(--ed-color-primary);
       font-size: 14px;
     }
   }

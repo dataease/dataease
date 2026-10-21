@@ -5,6 +5,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
+import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
+import io.dataease.api.permissions.auth.dto.BusiPerCheckDTO;
+import io.dataease.constant.AuthEnum;
+import io.dataease.constant.BusiResourceEnum;
+import io.dataease.result.ResultCode;
 import io.dataease.api.report.bo.DatasetPermissionTemplate;
 import io.dataease.api.template.dto.TemplateManageFileDTO;
 import io.dataease.api.template.dto.VisualizationTemplateExtendDataDTO;
@@ -236,6 +241,40 @@ public class DataVisualizationServer implements DataVisualizationApi {
             DEException.throwException(Translator.get("i18n_resource_not_exists"));
         }
         return null;
+    }
+
+    @Override
+    public VisualizationNameVO findResourceName(DataVisualizationBaseRequest request) {
+        DataVisualizationInfo resource = requireVisualizationPermission(request.getId(), AuthEnum.READ);
+        // Always use the published resource identity, never the caller-selected snapshot.
+        return new VisualizationNameVO(resource.getId(), resource.getName());
+    }
+
+    private DataVisualizationInfo requireVisualizationPermission(Long id, AuthEnum permission) {
+        if (id == null || id <= 0 || V3UserUtil.getUid() == null || V3UserUtil.getLink() != null) {
+            denyVisualizationRead();
+        }
+        DataVisualizationInfo resource = dataVisualizationInfoRepository.findById(id).orElse(null);
+        if (resource == null || Boolean.TRUE.equals(resource.getDeleteFlag())
+                || !("dashboard".equals(resource.getType()) || "dataV".equals(resource.getType()))) {
+            denyVisualizationRead();
+        }
+        // Resolve the permission category from stored metadata, not request.busiFlag.
+        InteractiveAuthApi auth = CommonBeanFactory.getBean(InteractiveAuthApi.class);
+        if (auth != null) {
+            auth.checkAuth(new BusiPerCheckDTO(id, "dashboard".equals(resource.getType())
+                    ? BusiResourceEnum.PANEL : BusiResourceEnum.SCREEN, permission));
+        } else if (!Objects.equals(V3UserUtil.getUid(), 1L)
+                || CommonBeanFactory.getBean("substituleLoginServer") == null
+                || CommonBeanFactory.getBean("loginServer") != null) {
+            // Only the actual single-user community implementation may omit this service.
+            denyVisualizationRead();
+        }
+        return resource;
+    }
+
+    private void denyVisualizationRead() {
+        DEException.throwException(ResultCode.PERMISSION_NO_ACCESS.code(), ResultCode.PERMISSION_NO_ACCESS.message());
     }
 
     @Override
@@ -975,6 +1014,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Override
     public List<VisualizationViewTableDTO> detailList(Long dvId) {
+        // This editor-only endpoint exposes draft charts and dataset field metadata.
+        requireVisualizationPermission(dvId, AuthEnum.MANAGE);
         QSnapshotCoreChartView snapshotCoreChartView = QSnapshotCoreChartView.snapshotCoreChartView;
         QCoreDatasetTableField coreDatasetTableField = QCoreDatasetTableField.coreDatasetTableField;
 

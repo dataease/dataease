@@ -7,19 +7,13 @@ const props = defineProps({
   className: propTypes.string,
   staticContent: propTypes.string
 })
-const svgClass = computed(() => {
-  if (props.className) {
-    return `svg-icon ${props.className}`
-  }
-  return 'svg-icon'
-})
 </script>
 
 <template>
   <div
-    class="svg-container"
+    class="svg-container svg-icon"
     v-if="staticContent"
-    v-html="staticContent"
+    v-dompurify-html="staticContent"
     :class="svgClass"
     aria-hidden="true"
   ></div>
@@ -34,6 +28,7 @@ const svgClass = computed(() => {
 .svg-container {
   width: 100%;
   height: 100%;
+  color: var(--ed-color-primary);
   svg {
     overflow: hidden;
     vertical-align: -0.1em;

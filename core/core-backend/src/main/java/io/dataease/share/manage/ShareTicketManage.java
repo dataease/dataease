@@ -42,6 +42,9 @@ public class ShareTicketManage {
     @Resource
     private XpackShareRepository xpackShareRepository;
 
+    @Resource
+    private ShareAuthorizationManage shareAuthorizationManage;
+
 
     public CoreShareTicket getByTicket(String ticket) {
         Specification<CoreShareTicket> spec = (root, query, criteriaBuilder) ->
@@ -66,14 +69,17 @@ public class ShareTicketManage {
                     DEException.throwException("无权操作此Ticket");
                 }
                 if (creator.isGenerateNew()) {
+                    if (!StringUtils.equals(uuid, ticketEntity.getUuid())) {
+                        DEException.throwException("Ticket不属于此分享");
+                    }
                     coreShareTicketRepository.deleteById(ticketEntity.getId());
                     String newTicket = CodingUtil.shortUuid();
                     CoreShareTicket newTicketEntity = new CoreShareTicket();
                     newTicketEntity.setId(IDUtils.snowID());
                     newTicketEntity.setTicket(newTicket);
-                    newTicketEntity.setArgs(creator.getArgs());
-                    newTicketEntity.setExp(creator.getExp());
-                    newTicketEntity.setUuid(creator.getUuid());
+                    newTicketEntity.setArgs(ticketEntity.getArgs());
+                    newTicketEntity.setExp(ticketEntity.getExp());
+                    newTicketEntity.setUuid(ticketEntity.getUuid());
                     coreShareTicketRepository.saveAndFlush(newTicketEntity);
                     return newTicket;
                 }
@@ -83,6 +89,9 @@ public class ShareTicketManage {
                 coreShareTicketRepository.saveAndFlush(ticketEntity);
                 return ticketEntity.getTicket();
             }
+        }
+        if (creator.isGenerateNew()) {
+            DEException.throwException("Ticket不存在");
         }
         if (StringUtils.isBlank(ticket)) {
             ticket = CodingUtil.shortUuid();
@@ -123,11 +132,15 @@ public class ShareTicketManage {
             predicates.add(cb.equal(root.get("creator"), V3UserUtil.getUid()));
             return cb.and(predicates.toArray(new Predicate[0]));
         };
-        return xpackShareRepository.findAll(spec).stream().findFirst().isPresent();
+        XpackShare share = xpackShareRepository.findAll(spec).stream().findFirst().orElse(null);
+        if (share == null) return false;
+        shareAuthorizationManage.requireManage(share.getResourceId());
+        return true;
     }
 
     public void switchRequire(TicketSwitchRequest request) {
         String resourceId = request.getResourceId();
+        shareAuthorizationManage.requireManage(Long.valueOf(resourceId));
         Boolean require = request.getRequire();
 
         Specification<XpackShare> xpackShareSpec = (root, query, cb) -> {
@@ -148,6 +161,7 @@ public class ShareTicketManage {
     };
 
     public PageResult<TicketVO> query(Long resourceId, int goPage, int pageSize) {
+        shareAuthorizationManage.requireManage(resourceId);
         Specification<XpackShare> xpackShareSpec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(cb.equal(root.get("resourceId"), resourceId));
@@ -201,20 +215,48 @@ public class ShareTicketManage {
         long now = System.currentTimeMillis();
         if (ObjectUtils.isEmpty(accessTime)) {
             accessTime = now;
-            vo.setTicketExp(false);
             linkTicket.setAccessTime(accessTime);
             coreShareTicketRepository.saveAndFlush(linkTicket);
-            return vo;
         }
-        Long exp = linkTicket.getExp();
-        if (ObjectUtils.isEmpty(exp) || exp.equals(0L)) {
-            vo.setTicketExp(false);
-            return vo;
-        }
-        long expTime = exp * 60L * 1000L;
-        long time = now - accessTime;
-        vo.setTicketExp(time > expTime);
+        Long expiresAt = ticketExpiresAt(linkTicket);
+        vo.setTicketExp(expiresAt != null && now >= expiresAt);
         return vo;
+    }
+
+    public record TicketGrant(Long id, Long expiresAt) { }
+
+    public TicketGrant tokenTicket(String ticket, XpackShare share) {
+        if (StringUtils.isBlank(ticket)) return verifyTokenTicket(null, share);
+        return requireTokenTicket(getByTicket(ticket), share);
+    }
+
+    // Read-only validation on every authenticated share request; never reset first access time.
+    public TicketGrant verifyTokenTicket(Long ticketId, XpackShare share) {
+        if (ticketId == null) {
+            if (Boolean.TRUE.equals(share.getTicketRequire())) {
+                throw new IllegalArgumentException("Share Ticket required");
+            }
+            return new TicketGrant(null, null);
+        }
+        return requireTokenTicket(coreShareTicketRepository.findById(ticketId).orElse(null), share);
+    }
+
+    private TicketGrant requireTokenTicket(CoreShareTicket ticket, XpackShare share) {
+        if (ticket == null || !Objects.equals(ticket.getUuid(), share.getUuid())
+                || ticket.getAccessTime() == null) {
+            throw new IllegalArgumentException("Invalid share Ticket");
+        }
+        Long expiresAt = ticketExpiresAt(ticket);
+        if (expiresAt != null && expiresAt <= System.currentTimeMillis()) {
+            throw new IllegalArgumentException("Share Ticket expired");
+        }
+        return new TicketGrant(ticket.getId(), expiresAt);
+    }
+
+    private Long ticketExpiresAt(CoreShareTicket ticket) {
+        Long exp = ticket.getExp();
+        if (exp == null || exp == 0L) return null;
+        return Math.addExact(ticket.getAccessTime(), Math.multiplyExact(exp, 60_000L));
     }
 
     public Integer getLimit() {

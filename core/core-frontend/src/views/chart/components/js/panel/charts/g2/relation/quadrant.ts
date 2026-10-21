@@ -12,10 +12,12 @@ import {
   TOOLTIP_TITLE_TPL
 } from '../../../common/common_antv'
 import { useI18n } from '@/hooks/web/useI18n'
-import { defaultsDeep, isEmpty } from 'lodash-es'
+import { defaultsDeep, escape, isEmpty } from 'lodash-es'
 import { ChartEvent, Chart as G2Chart, G2Spec } from '@antv/g2'
 import { valueFormatter } from '../../../../formatter'
 import { createTooltipWrapper } from '../bar/barUtil'
+import { bubbleValue, createBubbleRadius } from './quadrant-bubble'
+import { QuadrantChart } from './quadrant-range'
 
 const { t } = useI18n()
 const BUBBLE_SIZE_RANGE = [5, 30]
@@ -33,8 +35,6 @@ const isTextInCircle = (text: string, fontSize: number, radius: number) => {
  * 象限图
  */
 export class Quadrant extends G2ChartView {
-  private readonly afterRenderHandlers = new WeakMap<G2Chart, () => Promise<void>>()
-
   properties: EditorProperty[] = [
     'background-overall-component',
     'border-style',
@@ -137,14 +137,40 @@ export class Quadrant extends G2ChartView {
     if (!chart.data?.data) {
       return
     }
+    const basicStyle = parseJson(chart.customAttr).basicStyle
+    const areaMapping = ['auto', 'custom'].includes(basicStyle.quadrantBubble?.mode)
+    const scale =
+      Number.isFinite(drawOptions.scale) && drawOptions.scale > 0 ? drawOptions.scale : 1
+    const radius = createBubbleRadius(
+      chart.data.data.map(item => item.popSize),
+      basicStyle.quadrantBubble,
+      scale
+    )
+    const fixedRadius = Number(basicStyle.scatterSymbolSize)
     // 象限图仅有一个维度，补齐公共联动匹配使用的 name/category
-    const data = chart.data.data.map(item => ({ ...item, name: item.field, category: 'NO_DATA' }))
+    const data = chart.data.data.map(item => ({
+      ...item,
+      name: item.field,
+      category: 'NO_DATA',
+      ...(areaMapping
+        ? {
+            __quadrantRadius: chart.extBubble?.length
+              ? radius(item.popSize)
+              : (Number.isFinite(fixedRadius) ? Math.max(1, Math.min(100, fixedRadius)) : 10) *
+                scale
+          }
+        : {})
+    }))
     // x轴基准线 默认值
     const xValues = data.map(item => item.value)
-    const xBaseline = (Math.max(...xValues) + Math.min(...xValues)) / 2
+    const xMin = Math.min(...xValues)
+    const xMax = Math.max(...xValues)
+    const xBaseline = (xMax + xMin) / 2
     // y轴基准线 默认值
     const yValues = data.map(item => item.extValue)
-    const yBaseline = (Math.max(...yValues) + Math.min(...yValues)) / 2
+    const yMin = Math.min(...yValues)
+    const yMax = Math.max(...yValues)
+    const yBaseline = (yMax + yMin) / 2
     const defaultBaselineQuadrant = {
       ...chart.customAttr['quadrant']
     }
@@ -165,6 +191,7 @@ export class Quadrant extends G2ChartView {
         { type: 'lineY', data: [yBaseline] },
         {
           type: 'point',
+          animate: false,
           encode: { x: 'value', y: 'extValue', color: 'field' },
           // 自动范围使用规整刻度
           scale: {
@@ -173,40 +200,30 @@ export class Quadrant extends G2ChartView {
           },
           legend: { size: false }
         },
-        { type: 'range', data: [], encode: { x: 'x', y: 'y' }, zIndex: -1 }
+        {
+          type: 'range',
+          animate: false,
+          // 保留完整数据边界，图例筛选时维持原有自动轴范围
+          data: [0, 1, 2, 3].map(region => ({
+            x: [xBaseline, region === 1 || region === 2 ? xMin : xMax],
+            y: [yBaseline, region < 2 ? yMax : yMin],
+            region
+          })),
+          encode: { x: 'x', y: 'y' },
+          zIndex: -1
+        }
       ]
     }
     chart.container = container
     const options: G2Spec = this.setupOptions(chart, baseOptions, {})
-    const newChart = new G2Chart({ container, ...getG2Renderer() })
+    const newChart = new QuadrantChart({ container, ...getG2Renderer() })
     handleChartDashboardHidden(chart, options)
     newChart.options(options)
     newChart.on(`point:${ChartEvent.CLICK}`, action)
     newChart.on(`plot:${ChartEvent.CLICK}`, () => quadrantDefaultBaseline(defaultBaselineQuadrant))
     newChart.once(ChartEvent.AFTER_RENDER, () => quadrantDefaultBaseline(defaultBaselineQuadrant))
-    // 等待象限区域二次渲染完成后再由外层恢复联动选中态
-    this.afterRenderHandlers.set(newChart, async () => {
-      const rangeMark = newChart.getNodeByType('range')
-      const xScale = newChart.getScaleByChannel('x')
-      const [xMin, xMax] = xScale.getOptions().domain
-      const yScale = newChart.getScaleByChannel('y')
-      const [yMin, yMax] = yScale.getOptions().domain
-      rangeMark.data([
-        { x: [xBaseline, xMax], y: [yBaseline, yMax], region: 0 },
-        { x: [xMin, xBaseline], y: [yBaseline, yMax], region: 1 },
-        { x: [xMin, xBaseline], y: [yMin, yBaseline], region: 2 },
-        { x: [xBaseline, xMax], y: [yMin, yBaseline], region: 3 }
-      ])
-      await newChart.render()
-    })
 
     return newChart
-  }
-
-  public async afterRender(chart: G2Chart): Promise<void> {
-    const handler = this.afterRenderHandlers.get(chart)
-    this.afterRenderHandlers.delete(chart)
-    await handler?.()
   }
 
   protected configTheme(chart: Chart, options: G2Spec): G2Spec {
@@ -260,6 +277,13 @@ export class Quadrant extends G2ChartView {
     const customAttr = parseJson(chart.customAttr)
     const basicStyle = customAttr.basicStyle
     const sizeOptions = {
+      style: {
+        // 禁用动画后显式保留原始透明度，供取消联动时恢复
+        opacity: 1,
+        fillOpacity: 0.8,
+        stroke: hexColorToRGBA('#bbb', basicStyle.alpha),
+        lineWidth: 1
+      },
       scale: {
         color: {
           range: options.theme.category10
@@ -273,6 +297,13 @@ export class Quadrant extends G2ChartView {
       }
     }
     const pointMark = options.children[2]
+    if (['auto', 'custom'].includes(basicStyle.quadrantBubble?.mode)) {
+      defaultsDeep(pointMark, sizeOptions, {
+        encode: { size: '__quadrantRadius' },
+        scale: { size: { type: 'identity' } }
+      })
+      return options
+    }
     if (chart.extBubble?.length) {
       const tmpOptions = {
         encode: {
@@ -534,12 +565,16 @@ export class Quadrant extends G2ChartView {
       return options
     }
     const labelFontSize = Number(label.fontSize) || 12
-    const popSizes = (chart.data?.data || [])
+    const areaMapping = ['auto', 'custom'].includes(basicStyle.quadrantBubble?.mode)
+    const popSizes = (areaMapping ? [] : chart.data?.data || [])
       .map(item => Number(item.popSize))
       .filter(value => Number.isFinite(value))
     const minPopSize = popSizes.length ? Math.min(...popSizes) : 0
     const maxPopSize = popSizes.length ? Math.max(...popSizes) : 0
     const getBubbleRadius = datum => {
+      if (areaMapping) {
+        return datum.__quadrantRadius
+      }
       if (!chart.extBubble?.length) {
         return Number(basicStyle.scatterSymbolSize) || 0
       }
@@ -583,8 +618,11 @@ export class Quadrant extends G2ChartView {
   protected configTooltip(chart: Chart, options: G2Spec): G2Spec {
     const customAttr: DeepPartial<ChartAttr> = parseJson(chart.customAttr)
     const tooltipAttr = customAttr.tooltip
+    const pointMark = options.children[2]
     if (!tooltipAttr.show) {
-      return { ...options, tooltip: false }
+      // view 的 tooltip 不会传递给子图层，需要直接关闭气泡提示
+      defaultsDeep(pointMark, { tooltip: false })
+      return options
     }
     const formatterMap = tooltipAttr.seriesTooltipFormatter
       ?.filter(i => i.show)
@@ -654,7 +692,13 @@ export class Quadrant extends G2ChartView {
                 seriesId = `${head.quotaList[2].id}-extBubble`
               }
               const formatter = formatterMap[seriesId] ?? yAxis[0]
-              const value = valueFormatter(head[field], formatter.formatterCfg)
+              const invalidBubble =
+                field === 'popSize' &&
+                ['auto', 'custom'].includes(customAttr.basicStyle?.quadrantBubble?.mode) &&
+                bubbleValue(head[field]) === undefined
+              const value = invalidBubble
+                ? `${escape(String(head[field]))} (${t('chart.quadrant_bubble_invalid_value')})`
+                : valueFormatter(head[field], formatter.formatterCfg)
               const name = isEmpty(formatter.chartShowName)
                 ? formatter.name
                 : formatter.chartShowName
@@ -686,12 +730,15 @@ export class Quadrant extends G2ChartView {
         }
       }
     }
-    const pointMark = options.children[2]
     defaultsDeep(pointMark, tooltipOptions)
     return options
   }
 
   setupDefaultOptions(chart: ChartObj): ChartObj {
+    if (!chart.customAttr.basicStyle.quadrantBubble) {
+      chart.customAttr.basicStyle.quadrantBubble = { mode: 'auto', min: 5, max: 30 }
+      chart.customAttr.basicStyle.scatterSymbolSize = 10
+    }
     chart.customStyle.yAxis.splitLine = {
       ...chart.customStyle.yAxis.splitLine,
       show: false

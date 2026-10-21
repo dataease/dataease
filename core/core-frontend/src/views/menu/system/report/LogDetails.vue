@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import {  defineEmits, onUnmounted, ref } from 'vue'
+import { Loading } from '@element-plus/icons-vue'
+import { computed, defineEmits, onUnmounted, ref } from 'vue'
 import { logMsgApi } from './api'
 import { useI18n } from "@/hooks/web/useI18n";
 const { t } = useI18n();
@@ -19,7 +20,7 @@ const jobLogDetailVisible = ref<boolean>(false)
 const emit = defineEmits(['jobLogDetailVisibleClose'])
 const logId = ref()
 const taskId = ref()
-const logContent = ref<string>()
+const logContent = ref('')
 const loading = ref<boolean>(false)
 
 let fromLineNum = 1
@@ -31,15 +32,12 @@ const pullLog = (done: boolean) => {
   }
   logMsgApi(param)
       .then(data => {
-        let res = data.data
         if (done) {
           loading.value = false
         }
         // 添加内容
         fromLineNum = 5
-        res = highlightMsgKeywords(res)
-        logContent.value += res
-        logContent.value = logContent.value?.replaceAll('\n', '<br>')
+        logContent.value += data.data ?? ''
         logRunStop('')
       })
       .catch(err => {
@@ -53,15 +51,12 @@ const pullLog = (done: boolean) => {
  */
 const errorMsgKeywords = ['ErrorCode', 'IllegalArgumentException', 'SQLSyntaxErrorException']
 
-const highlightMsgKeywords = (logContent: string) => {
-  for (let i = 0; i < errorMsgKeywords.length; i++) {
-    logContent = logContent.replace(
-        new RegExp(errorMsgKeywords[i], 'g'),
-        `<b style="color: red;">${errorMsgKeywords[i]}</b>`
-    )
-  }
-  return logContent
-}
+const logSegments = computed(() =>
+  logContent.value.split(/(ErrorCode|IllegalArgumentException|SQLSyntaxErrorException)/g).map(text => ({
+    text,
+    highlighted: errorMsgKeywords.includes(text)
+  }))
+)
 
 const logRunStop = (content: string) => {
   loading.value = false
@@ -97,9 +92,14 @@ defineExpose({jobLogDetailVisible, startInterval})
           <div class="title">{{ t('sync_task.execute_log') }}</div>
         </div>
       </template>
-      
+
       <div v-scroll-bottom class="job-log-detail-class">
-        <span v-html="logContent"/>
+        <div class="log-content">
+          <template v-for="(segment, index) in logSegments" :key="index">
+            <b v-if="segment.highlighted" class="log-keyword">{{ segment.text }}</b>
+            <template v-else>{{ segment.text }}</template>
+          </template>
+        </div>
         <span v-if="loading">
         <el-icon class="is-loading">
           <Loading/>
@@ -122,8 +122,13 @@ defineExpose({jobLogDetailVisible, startInterval})
   flex-direction: column;
   height: 90%;
   overflow-y: auto;
-  span{
-    white-space: nowrap;
-  }
+}
+
+.log-content {
+  white-space: pre;
+}
+
+.log-keyword {
+  color: red;
 }
 </style>

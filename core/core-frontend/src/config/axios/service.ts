@@ -14,7 +14,7 @@ import { useEmbedded } from '@/store/modules/embedded'
 import { useLinkStoreWithOut } from '@/store/modules/link'
 import { config } from './config'
 import { configHandler } from './refresh'
-import { isMobile, getLocale } from '@/utils/utils'
+import { isMobile, getLocale, isLink } from '@/utils/utils'
 import { useI18n } from '@/hooks/web/useI18n'
 // 注意：不得在模块顶层 const { t } = useI18n() —— 本模块求值早于 setupI18n，
 // 顶层捕获会永久得到降级透传 t（永远返回 key）。必须在函数体内实时调用 useI18n()。
@@ -25,6 +25,7 @@ import { securityConfig } from './hmac'
 type AxiosErrorWidthLoading<T> = T & {
   config: {
     loading?: boolean
+    handleErrorLocally?: boolean
   }
 }
 
@@ -48,7 +49,7 @@ export const PATH_URL = embeddedStore.baseUrl ? embeddedStore?.baseUrl + embedde
 
 export interface AxiosInstanceWithLoading extends AxiosInstance {
   <T = any, R = AxiosResponse<T>, D = any>(
-    config: AxiosRequestConfig<D> & { loading?: boolean }
+    config: AxiosRequestConfig<D> & { loading?: boolean; handleErrorLocally?: boolean }
   ): Promise<R>
 }
 
@@ -99,6 +100,20 @@ const permissionStore = usePermissionStoreWithOut()
 const linkStore = useLinkStoreWithOut()
 const CancelToken = axios.CancelToken
 const cancelMap = {}
+let reloadingLink = false
+
+const revalidateLink = (requestConfig: InternalAxiosRequestConfig) => {
+  if (!isLink() || !requestConfig.headers?.['X-DE-LINK-TOKEN']) {
+    return false
+  }
+  // 分享鉴权失效后重新走 proxyInfo，由分享页显示过期、删除或密码变更等状态。
+  // 保留当前 URL 和用户登录缓存，并合并并发图表请求触发的刷新。
+  if (!reloadingLink) {
+    reloadingLink = true
+    window.location.reload()
+  }
+  return true
+}
 
 // request拦截器
 service.interceptors.request.use(
@@ -165,7 +180,7 @@ service.interceptors.request.use(
     config.loading && tryShowLoading(permissionStore.getCurrentPath)
     return config
   },
-  (error: AxiosErrorWidthLoading<AxiosError>) => {
+  (error: AxiosErrorWidthLoading<AxiosError<{ msg?: string }>>) => {
     error.config.loading && tryHideLoading(permissionStore.getCurrentPath)
     Promise.reject(error)
   }
@@ -190,16 +205,16 @@ service.interceptors.response.use(
     } else if (response.config.url.match(/^\/map|geo\/\d{3}\/\d+\.json$/)) {
       //   TODO 处理静态文件
       return response
-    } else if (
-      response.config.url.includes('DEXPack.umd.js') ||
-      response.config.url.includes('/i18n/custom_')
-    ) {
+    } else if (response.config.url.includes('/i18n/custom_')) {
       return response
     } else if (response.config.url.startsWith('/xpackComponent/pluginStaticInfo/extensions-')) {
       return response
     } else {
+      if (response.data.code === 80001 && revalidateLink(response.config)) {
+        return Promise.reject(response.data.msg)
+      }
       if (
-        !response?.config?.url.startsWith('/xpackComponent/content') &&
+        !response?.config?.url.startsWith('/xpackComponent/contentPlugin/') &&
         response?.data?.code !== 60003
       ) {
         let errMsg = response.data.msg
@@ -220,16 +235,21 @@ service.interceptors.response.use(
           }
           router.push(`/login?redirect=${queryRedirectPath}`)
         }
-      } else if (response?.config?.url.startsWith('/xpackComponent/content')) {
+      } else if (response?.config?.url.startsWith('/xpackComponent/contentPlugin/')) {
         console.error(
-          "never mind this error about '/xpackComponent/content', just a reminder to support the official license"
+          "never mind this error about '/xpackComponent/contentPlugin/', just a reminder to support the official license"
         )
       }
 
       return Promise.reject(response.data.msg)
     }
   },
-  (error: AxiosErrorWidthLoading<AxiosError>) => {
+  (error: AxiosErrorWidthLoading<AxiosError<{ msg?: string }>>) => {
+    // Image failures belong to the image loader, as with native <img> requests. Preserve
+    // the rejection so denied/missing images cannot become successful exports or trigger a login loop.
+    if (error.config?.handleErrorLocally) {
+      return Promise.reject(error)
+    }
     if (error.message?.includes('timeout of')) {
       requestStore.resetLoadingMap()
       ElMessage({
@@ -253,7 +273,7 @@ service.interceptors.response.use(
     }
     const header = error.response?.headers as AxiosHeaders
     if (
-      !error.config.url.startsWith('/xpackComponent/content') &&
+      !error.config.url.startsWith('/xpackComponent/contentPlugin/') &&
       !header.has('DE-FORBIDDEN-FLAG') &&
       !header.has('DE-GATEWAY-FLAG')
     ) {
@@ -262,14 +282,17 @@ service.interceptors.response.use(
         message: error.response?.data?.msg ? error.response?.data?.msg : error.message,
         showClose: true
       })
-    } else if (error?.config?.url.startsWith('/xpackComponent/content')) {
+    } else if (error?.config?.url.startsWith('/xpackComponent/contentPlugin/')) {
       console.error(
-        "never mind this error about '/xpackComponent/content', just a reminder to support the official license"
+        "never mind this error about '/xpackComponent/contentPlugin/', just a reminder to support the official license"
       )
     }
 
     error.config.loading && tryHideLoading(permissionStore.getCurrentPath)
     if (header.has('DE-GATEWAY-FLAG')) {
+      if (revalidateLink(error.config)) {
+        return Promise.reject(error)
+      }
       const userToken = wsCache.get('user.token')
       const inPlatformClient = !!wsCache.get('de-platform-client')
       clearCache()

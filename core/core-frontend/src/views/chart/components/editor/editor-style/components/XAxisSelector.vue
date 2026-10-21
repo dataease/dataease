@@ -279,7 +279,7 @@ onMounted(() => {
         <label class="custom-form-item-label" :class="'custom-form-item-label--' + themes">
           {{ t('chart.axis_value') }}
           <el-tooltip class="item" :effect="toolTip" placement="top">
-            <template #content><span v-html="t('chart.axis_tip')"></span></template>
+            <template #content><span v-dompurify-html="t('chart.axis_tip')"></span></template>
             <span style="vertical-align: middle">
               <el-icon style="cursor: pointer">
                 <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>

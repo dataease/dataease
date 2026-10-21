@@ -375,7 +375,7 @@
                               style="margin-top: 8px"
                               :disabled="!state.linkJumpInfo.targetDvId"
                               type="primary"
-                              icon="Plus"
+                              :icon="Plus"
                               text
                               @click="addLinkJumpField('view')"
                             >
@@ -505,7 +505,7 @@
                                 style="margin-top: 8px"
                                 :disabled="!state.linkJumpInfo.targetDvId"
                                 type="primary"
-                                icon="Plus"
+                                :icon="Plus"
                                 text
                                 @click="addLinkJumpField('outerParams')"
                               >
@@ -554,7 +554,7 @@
                           {{ t('visualization.select_world') }}
                           <el-tooltip class="item" effect="dark" placement="bottom">
                             <template #content>
-                              <span v-html="$t('chart.reference_field_tip')"></span>
+                              <span v-dompurify-html="$t('chart.reference_field_tip')"></span>
                             </template>
                             <el-icon size="16px" class="hint-icon">
                               <Icon name="icon_info_outlined"
@@ -647,7 +647,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { getDatasetDetails, listFieldByDatasetGroup } from '@/api/dataset'
 import { BusiTreeRequest } from '@/models/tree/TreeNode'
 import JumpSetOuterContentEditor from '@/components/visualization/JumpSetOuterContentEditor.vue'
-import { Search } from '@element-plus/icons-vue'
+import { Search, Plus } from '@element-plus/icons-vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { filterEmptyFolderTree } from '@/utils/canvasUtils'

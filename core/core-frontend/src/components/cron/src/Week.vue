@@ -3,6 +3,7 @@ import { ref, reactive, computed, watch, onBeforeMount } from 'vue'
 import { propTypes } from '@/utils/propTypes'
 import { useI18n } from '@/hooks/web/useI18n'
 import type { Corn } from './Hour.vue'
+import { hasInvalidWeekdayW } from './validation'
 const props = defineProps({
   modelValue: propTypes.string.def('?')
 })
@@ -10,7 +11,6 @@ const props = defineProps({
 const { t } = useI18n()
 
 const type = ref('1')
-const work = ref<string | number>(0)
 const last = ref<string | number>(0)
 const state = reactive<Corn>({
   cycle: {
@@ -52,6 +52,9 @@ const resultValue = computed(() => {
     case '7': // 指定周
       result.push(`${state.week.start}#${state.week.end}`)
       break
+    case '8': // 保留非法输入，由表单校验阻止保存
+      result.push(props.modelValue)
+      break
     default: // 不指定
       result.push('?')
       break
@@ -81,7 +84,9 @@ const updateVal = () => {
   if (!props.modelValue) {
     return
   }
-  if (props.modelValue === '?') {
+  if (hasInvalidWeekdayW(props.modelValue)) {
+    type.value = '8'
+  } else if (props.modelValue === '?') {
     type.value = '5'
   } else if (props.modelValue.indexOf('-') !== -1) {
     // 2周期
@@ -111,10 +116,6 @@ const updateVal = () => {
       state.week.start = props.modelValue.split('#')[0]
       state.week.end = props.modelValue.split('#')[1]
     }
-  } else if (props.modelValue.indexOf('W') !== -1) {
-    // 8工作日
-    type.value = '8'
-    work.value = props.modelValue.replace('W', '')
   } else {
     // *
     type.value = '4'
@@ -127,6 +128,13 @@ const emits = defineEmits(['update:modelValue'])
 
 <template>
   <div>
+    <el-alert
+      v-if="type === '8'"
+      :title="t('cron.invalid_weekday_w')"
+      type="error"
+      :closable="false"
+      show-icon
+    />
     <div>
       <el-radio v-model="type" label="1" size="small" border>{{ t('cron.every_week') }}</el-radio>
     </div>

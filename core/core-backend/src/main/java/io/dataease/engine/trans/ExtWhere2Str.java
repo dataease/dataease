@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
  * @Author Junjun
  */
 public class ExtWhere2Str {
+    private static final Pattern COMPOUND_OPERATOR_PATTERN = Pattern.compile("(eq|like)-(?i:and|or)-(eq|like)");
     private static final Pattern NUMBER_PATTERN = Pattern.compile("^[-+]?\\d+(\\.\\d+)?([eE][-+]?\\d+)?$");
 
     public static void extWhere2sqlOjb(SQLMeta meta, List<ChartExtFilterDTO> fields, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, List<CalParam> fieldParam, List<CalParam> chartParam, PluginManageApi pluginManage) {
@@ -46,6 +47,19 @@ public class ExtWhere2Str {
         if (ObjectUtils.isNotEmpty(fields)) {
             for (ChartExtFilterDTO request : fields) {
                 List<String> value = request.getValue();
+                String operator = request.getOperator();
+                boolean compoundCondition = StringUtils.contains(operator, "-");
+                // 复合条件仅支持两个文本匹配项，必须在 SQL 拼接前校验完整格式及值数量。
+                if (compoundCondition) {
+                    if (!COMPOUND_OPERATOR_PATTERN.matcher(operator).matches()) {
+                        DEException.throwException("Illegal filter operator");
+                    }
+                    if (value == null || value.size() != 2) {
+                        DEException.throwException("Illegal compound filter value");
+                    }
+                } else if (StringUtils.isEmpty(operator) || StringUtils.isEmpty(Utils.transFilterTerm(operator))) {
+                    DEException.throwException("Illegal filter operator");
+                }
                 boolean nullCondition = "null".equals(request.getOperator());
 
                 List<String> whereNameList = new ArrayList<>();
@@ -155,12 +169,16 @@ public class ExtWhere2Str {
 
                 if (nullCondition) {
                     whereValue = "";
-                } else if (StringUtils.containsIgnoreCase(request.getOperator(), "-")) {
-                    String[] split = request.getOperator().split("-");
+                } else if (compoundCondition) {
+                    String[] split = operator.split("-", -1);
                     String term1 = split[0];
-                    String logic = split[1];
+                    // 逻辑连接符使用固定 SQL 关键字，禁止直接拼接请求中的原始内容。
+                    String logic = " AND ";
+                    if ("or".equalsIgnoreCase(split[1])) {
+                        logic = " OR ";
+                    }
                     String term2 = split[2];
-                    whereValue = Utils.transFilterTerm(term1) + getValue(term1, value.get(0)) + " " + logic + " " + whereName + Utils.transFilterTerm(term2) + getValue(term2, value.get(1));
+                    whereValue = Utils.transFilterTerm(term1) + getValue(term1, value.get(0)) + logic + whereName + Utils.transFilterTerm(term2) + getValue(term2, value.get(1));
                 } else if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
                     // 过滤空数据
                     if (value.contains(SQLConstants.EMPTY_SIGN)) {

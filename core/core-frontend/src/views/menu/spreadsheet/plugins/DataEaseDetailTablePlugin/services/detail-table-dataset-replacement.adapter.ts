@@ -7,6 +7,7 @@ import type {
 } from '../../DataEaseDatasetReplacementPlugin/types'
 import { DatasetReplacementAdapterRegistry } from '../../DataEaseDatasetReplacementPlugin/services/dataset-replacement-adapter-registry.service'
 import { migrateFieldReference } from '../../DataEaseDatasetReplacementPlugin/utils/field-migration'
+import { replaceCopiedFields } from '../../DataEaseDatasetReplacementPlugin/utils/copied-field-replacement'
 import {
   cloneReplacementValue,
   getTargetDataset,
@@ -84,6 +85,7 @@ export class DetailTableDatasetReplacementAdapter implements DatasetReplacementA
             name: String(config.data.datasetId)
           },
           componentId: config.id,
+          fieldOwnerId: config.fieldOwnerId,
           componentName: this._getComponentName(config),
           componentType: 'plugin' as const,
           fields: collectFieldReferences(referencedIds, zoneFields, 'q')
@@ -95,14 +97,17 @@ export class DetailTableDatasetReplacementAdapter implements DatasetReplacementA
     return cloneReplacementValue(this._instanceService.get(unitId))
   }
 
-  replace(unitId: string, mappings: DatasetMapping[], componentIds: string[]): void {
+  async replace(unitId: string, mappings: DatasetMapping[], componentIds: string[]): Promise<void> {
     const componentIdSet = new Set(componentIds)
-    this._instanceService.set(
-      unitId,
-      this._instanceService.get(unitId).map(config =>
-        componentIdSet.has(config.id) ? this._replaceConfig(config, mappings) : config
-      )
-    )
+    const configs: DetailTableConfig[] = []
+    for (const config of this._instanceService.get(unitId)) {
+      if (componentIdSet.has(config.id)) {
+        configs.push(await this._replaceConfig(config, mappings))
+      } else {
+        configs.push(config)
+      }
+    }
+    this._instanceService.set(unitId, configs)
   }
 
   restore(unitId: string, snapshot: unknown): void {
@@ -138,34 +143,41 @@ export class DetailTableDatasetReplacementAdapter implements DatasetReplacementA
       : defaultName
   }
 
-  private _replaceConfig(config: DetailTableConfig, mappings: DatasetMapping[]): DetailTableConfig {
+  private async _replaceConfig(
+    config: DetailTableConfig,
+    mappings: DatasetMapping[]
+  ): Promise<DetailTableConfig> {
     const next = cloneReplacementValue(config)
     const sourceDatasetId = config.data.datasetId
     const targetDataset = getTargetDataset(mappings, sourceDatasetId)
     if (!targetDataset) return next
 
+    const copiedFields = await replaceCopiedFields(config, mappings)
+    next.fieldOwnerId = copiedFields.fieldOwnerId
+    const resolveField = (fieldId: string | number) =>
+      copiedFields.fields.get(String(fieldId)) || getTargetField(mappings, sourceDatasetId, fieldId)
     next.data.datasetId = targetDataset.id
     next.data.zones = Object.fromEntries(
       Object.entries(next.data.zones || {}).map(([zoneId, fields]) => [
         zoneId,
         fields.map(field => {
-          const target = getTargetField(mappings, sourceDatasetId, field.id)
+          const target = resolveField(field.id)
           return target ? migrateFieldReference(field, target) : field
         })
       ])
     )
     next.data.customFilter = replaceFilterTreeFieldIds(next.data.customFilter, fieldId =>
-      getTargetField(mappings, sourceDatasetId, fieldId)?.id || fieldId
+      resolveField(fieldId)?.id || fieldId
     ) || {}
 
     if (next.style.total?.fieldConfig) {
       next.style.total.fieldConfig = next.style.total.fieldConfig.map(field => {
-        const target = getTargetField(mappings, sourceDatasetId, field.fieldId)
+        const target = resolveField(field.fieldId)
         const migratedField = target ? migrateFieldReference(field, target) : field
         // 自定义公式保存的是 [字段ID]，需要与总计字段配置一起迁移。
         migratedField.customExpression = replaceCustomExpressionFieldIds(
           field.customExpression,
-          fieldId => getTargetField(mappings, sourceDatasetId, fieldId)?.id ?? fieldId
+          fieldId => resolveField(fieldId)?.id ?? fieldId
         )
         return migratedField
       })

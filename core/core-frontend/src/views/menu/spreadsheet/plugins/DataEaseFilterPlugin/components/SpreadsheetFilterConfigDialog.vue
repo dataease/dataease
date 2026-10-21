@@ -82,7 +82,8 @@ const editingConditionName = ref('')
 const conditionNameInputRef = ref()
 const datasetTree = ref<any[]>([])
 const optionDatasetFields = ref<SpreadsheetFilterAvailableField[]>([])
-const datasetFieldCache = new Map<string, SpreadsheetFilterAvailableField[]>()
+let optionDatasetLoadSequence = 0
+let loadedOptionDatasetId: string | undefined
 const manualPopoverRef = ref()
 const manualOptionDraft = ref<Array<string | number>>([])
 const customSortDialogVisible = ref(false)
@@ -538,7 +539,7 @@ const syncActiveConditionFieldOptions = () => {
   if (!activeCondition.value) {
     return
   }
-  if (!shouldShowSpreadsheetFilterDatasetFields(activeCondition.value)) {
+  if (!supportsSpreadsheetFilterDatasetOptionSource(activeCondition.value)) {
     activeCondition.value.queryFieldId = undefined
     activeCondition.value.queryFieldName = undefined
     activeCondition.value.displayFieldId = undefined
@@ -595,10 +596,6 @@ const handleOptionSourceChange = () => {
   normalizeSpreadsheetFilterConditionByRules(activeCondition.value)
   if (activeCondition.value.optionSource === 'dataset') {
     void initializeOptionDatasetFromFirstLinkedField()
-  } else {
-    syncActiveConditionFieldOptions()
-    activeCondition.value.sortType = undefined
-    activeCondition.value.sortList = undefined
   }
   activeCondition.value.defaultValue = activeCondition.value.multiple ? [] : ''
   activeCondition.value.defaultValueFirstItem = false
@@ -668,7 +665,12 @@ const confirmCustomSort = (values: Array<string | number>) => {
 
 const clearInvalidOptionDatasetFields = () => {
   const condition = activeCondition.value
-  if (!condition || condition.optionSource !== 'dataset') return
+  // 只用当前数据集成功加载的字段校验，加载中或失败时不能误清原配置。
+  if (
+    !condition ||
+    condition.optionSource !== 'dataset' ||
+    loadedOptionDatasetId !== String(condition.optionDatasetId)
+  ) return
   let changed = false
   const clearRole = (role: 'query' | 'display' | 'sort') => {
     const idKey = `${role}FieldId` as 'queryFieldId' | 'displayFieldId' | 'sortFieldId'
@@ -712,20 +714,34 @@ const resetOptionDatasetConfig = () => {
   activeCondition.value.defaultValueFirstItem = false
 }
 
-const loadOptionDatasetFields = async (datasetId?: string | number) => {
-  if (datasetId === undefined || datasetId === null || datasetId === '') {
-    optionDatasetFields.value = []
-    return
-  }
+const loadOptionDatasetFields = async (
+  datasetId?: string | number
+): Promise<boolean | undefined> => {
+  const condition = activeCondition.value
+  const sequence = ++optionDatasetLoadSequence
+  loadedOptionDatasetId = undefined
+  optionDatasetFields.value = []
+  if (!condition || condition.optionSource !== 'dataset' || !hasDatasetId(datasetId)) return
   const key = String(datasetId)
-  if (datasetFieldCache.has(key)) {
-    optionDatasetFields.value = datasetFieldCache.get(key) || []
-    clearInvalidOptionDatasetFields()
-    return
-  }
   try {
+    // 切回时重新读取字段，避免缓存掩盖数据集或字段已删除的情况。
     const details = await getDsDetailsWithPerm([datasetId])
-    const fields = details?.[0]?.fields
+    if (
+      sequence !== optionDatasetLoadSequence ||
+      activeCondition.value !== condition ||
+      String(condition.optionDatasetId) !== key ||
+      condition.optionSource !== 'dataset'
+    ) return
+    if (!Array.isArray(details)) return
+    const detail = details[0]
+    if (!detail) {
+      // 只有成功返回空详情才表示数据集不存在，请求失败不能触发回退。
+      condition.optionDatasetId = undefined
+      condition.optionDatasetName = undefined
+      resetOptionDatasetConfig()
+      return false
+    }
+    const fields = detail.fields
     const nextFields: SpreadsheetFilterAvailableField[] = [
       ...(fields?.dimensionList || []).map((field: any) => ({
         fieldId: field.id,
@@ -742,11 +758,13 @@ const loadOptionDatasetFields = async (datasetId?: string | number) => {
         desensitized: field.desensitized
       }))
     ]
-    datasetFieldCache.set(key, nextFields)
+    loadedOptionDatasetId = key
     optionDatasetFields.value = nextFields
     clearInvalidOptionDatasetFields()
+    return true
   } catch {
-    optionDatasetFields.value = []
+    // 请求失败时保留原配置，等待下一次成功加载后再校验。
+    return undefined
   }
 }
 
@@ -767,7 +785,17 @@ const handleOptionDatasetChange = async (datasetId: string | number) => {
 
 const initializeOptionDatasetFromFirstLinkedField = async () => {
   const condition = activeCondition.value
-  if (!condition) return
+  if (!condition || condition.optionSource !== 'dataset') return
+  if (hasDatasetId(condition.optionDatasetId)) {
+    const datasetExists = await loadOptionDatasetFields(condition.optionDatasetId)
+    // 已配置的数据集优先保留，部分字段失效时只清理对应字段。
+    if (
+      datasetExists !== false ||
+      activeCondition.value !== condition ||
+      condition.optionSource !== 'dataset' ||
+      hasDatasetId(condition.optionDatasetId)
+    ) return
+  }
   const firstLinkedField = condition.linkedFields[0]
   const hasDataset = firstLinkedField?.datasetId !== undefined &&
     firstLinkedField.datasetId !== null &&
@@ -783,22 +811,15 @@ const initializeOptionDatasetFromFirstLinkedField = async () => {
   condition.optionDatasetId = firstLinkedField.datasetId
   condition.optionDatasetName = firstLinkedField.datasetName
   resetOptionDatasetConfig()
-  await loadOptionDatasetFields(firstLinkedField.datasetId)
-  if (activeCondition.value !== condition || condition.optionSource !== 'dataset') return
-
-  const linkedField = optionDatasetFields.value.find(
-    field => String(field.fieldId) === String(firstLinkedField.fieldId)
-  )
-  if (!linkedField || linkedField.desensitized) return
-
-  // 数据集来源初始配置与第一个关联图表保持一致，避免用户重复选择同一字段。
-  condition.queryFieldId = linkedField.fieldId
-  condition.queryFieldName = linkedField.fieldName
-  condition.displayFieldId = linkedField.fieldId
-  condition.displayFieldName = linkedField.fieldName
-  condition.sortFieldId = linkedField.fieldId
-  condition.sortFieldName = linkedField.fieldName
+  // 默认配置一次写全再校验，避免快速切换后只留下数据集而丢失默认字段。
+  condition.queryFieldId = firstLinkedField.fieldId
+  condition.queryFieldName = firstLinkedField.fieldName
+  condition.displayFieldId = firstLinkedField.fieldId
+  condition.displayFieldName = firstLinkedField.fieldName
+  condition.sortFieldId = firstLinkedField.fieldId
+  condition.sortFieldName = firstLinkedField.fieldName
   condition.sortType = 'asc'
+  await loadOptionDatasetFields(firstLinkedField.datasetId)
 }
 
 const openManualOptions = () => {
@@ -989,13 +1010,13 @@ const save = () => {
 }
 
 onMounted(async () => {
+  void loadOptionDatasetFields(activeCondition.value?.optionDatasetId)
   try {
     const tree = await getDatasetTree({})
     datasetTree.value = tree?.[0]?.children || []
   } catch {
     datasetTree.value = []
   }
-  await loadOptionDatasetFields(activeCondition.value?.optionDatasetId)
 })
 
 watch(activeConditionId, () => {

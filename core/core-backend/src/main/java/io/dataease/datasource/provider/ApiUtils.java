@@ -248,6 +248,8 @@ public class ApiUtils {
         String response = "";
         HttpClientConfig httpClientConfig = new HttpClientConfig();
         httpClientConfig.setSocketTimeout(socketTimeout * 1000);
+        httpClientConfig.setMaxResponseSizeMb(apiDefinition.getMaxResponseSizeMb());
+        httpClientConfig.setResponseTimeout(RemoteTransfer.timeoutMillis(apiDefinition.getTransferTimeoutSeconds()));
         ApiDefinitionRequest apiDefinitionRequest = apiDefinition.getRequest();
         for (Map header : apiDefinitionRequest.getHeaders()) {
             if (header.get("name") != null && StringUtils.isNotEmpty(header.get("name").toString()) && header.get("value") != null && StringUtils.isNotEmpty(header.get("value").toString())) {

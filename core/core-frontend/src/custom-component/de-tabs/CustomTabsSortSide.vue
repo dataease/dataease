@@ -55,6 +55,7 @@
 </template>
 
 <script setup lang="ts">
+import { CopyDocument, Delete } from '@element-plus/icons-vue'
 import drag from '@/assets/svg/drag.svg'
 import draggable from 'vuedraggable'
 import { nextTick, toRefs, ref } from 'vue'

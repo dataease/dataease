@@ -14,6 +14,7 @@ interface SortValueItem {
 const props = defineProps<{
   modelValue: boolean
   pluginType?: string
+  fieldOwnerId?: string
   dataConfig?: PluginDataConfig
   field: FieldItemData | null
 }>()
@@ -26,6 +27,7 @@ const emit = defineEmits<{
 const sortValues = ref<SortValueItem[]>([])
 const { status, values, load, invalidate } = useCustomSortValues({
   type: () => props.pluginType,
+  fieldOwnerId: () => props.fieldOwnerId,
   data: () => props.dataConfig,
   field: () => props.field
 })
@@ -56,7 +58,7 @@ const reload = async () => {
 }
 
 watch(
-  () => [props.modelValue, props.field?.id] as const,
+  () => [props.modelValue, props.field?.id, props.fieldOwnerId] as const,
   ([visible]) => {
     if (visible) {
       void reload()

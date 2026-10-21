@@ -1,12 +1,12 @@
 package io.dataease.share.interceptor;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.interfaces.DecodedJWT;
+import io.dataease.permission.util.V3UserUtil;
+import io.dataease.api.chart.request.ChartExcelRequest;
+import io.dataease.chart.dao.auto.mapper.CoreChartViewRepository;
+import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.auth.DeLinkPermit;
-import io.dataease.constant.AuthConstant;
 import io.dataease.exception.DEException;
 import io.dataease.utils.LogUtil;
-import io.dataease.utils.ServletUtils;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoRepository;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
@@ -42,12 +42,35 @@ public class DeLinkAop {
     @Resource
     private DataVisualizationInfoRepository dataVisualizationInfoRepository;
 
+    @Resource
+    private CoreChartViewRepository charts;
+
 
     @Around(value = "@annotation(io.dataease.auth.DeLinkPermit)")
     public Object logAround(ProceedingJoinPoint point) throws Throwable {
         Object[] params = point.getArgs();
-        String linkToken = ServletUtils.getHead(AuthConstant.LINK_TOKEN_KEY);
-        if (StringUtils.isNotBlank(linkToken)) {
+        var identity = V3UserUtil.getLink();
+        if (identity != null) {
+            // Sharing never grants access to editor snapshots or operations that recover them.
+            for (Object parameter : params) {
+                if (parameter == null) continue;
+                if (parameter instanceof ChartViewDTO chart) checkChart(chart, identity.resourceId());
+                if (parameter instanceof ChartExcelRequest export) {
+                    checkChart(export.getViewInfo(), identity.resourceId());
+                    if (StringUtils.isNotBlank(export.getViewId())
+                            && !export.getViewId().equals(export.getViewInfo().getId().toString())) {
+                        DEException.throwException(io.dataease.result.ResultCode.PERMISSION_NO_ACCESS.code(), "Chart outside share scope");
+                    }
+                }
+                var bean = org.springframework.beans.PropertyAccessorFactory.forBeanPropertyAccess(parameter);
+                if ((bean.isReadableProperty("resourceTable")
+                        && !Objects.equals("core", bean.getPropertyValue("resourceTable")))
+                        || (bean.isReadableProperty("source")
+                        && Objects.equals("main-edit", bean.getPropertyValue("source")))) {
+                    DEException.throwException(io.dataease.result.ResultCode.PERMISSION_NO_ACCESS.code(),
+                            "Share access is limited to published resources");
+                }
+            }
             MethodSignature ms = (MethodSignature) point.getSignature();
             Method method = ms.getMethod();
             DeLinkPermit deLinkPermit = method.getAnnotation(DeLinkPermit.class);
@@ -56,13 +79,12 @@ public class DeLinkAop {
                 value = SPRING_EL_FLAG + PARAM_VARIABLE_PREFIX + "0";
             }
             Long id = getExpression(params, value);
-            DecodedJWT jwt = JWT.decode(linkToken);
-            Long resourceId = jwt.getClaim("resourceId").asLong();
+            Long resourceId = identity.resourceId();
             if (!Objects.equals(id, resourceId)) {
                 // 子资源模式：token 绑定的是父画布，参数 id 是内嵌子画布。
                 // 校验子画布确实内嵌于父画布中，否则视为越权（防止枚举任意资源）。
                 if (!(deLinkPermit.subResource() && isSubResourceOf(resourceId, id))) {
-                    DEException.throwException("link token invalid");
+                    DEException.throwException(io.dataease.result.ResultCode.PERMISSION_NO_ACCESS.code(), "link token invalid");
                     return false;
                 }
             }
@@ -72,6 +94,18 @@ public class DeLinkAop {
         } catch (Exception e) {
             LogUtil.error(e.getMessage());
             throw e;
+        }
+    }
+
+    private void checkChart(ChartViewDTO view, Long resourceId) {
+        if (view == null || view.getId() == null) {
+            DEException.throwException(io.dataease.result.ResultCode.PERMISSION_NO_ACCESS.code(), "Chart outside share scope");
+        }
+        var chart = charts.findById(view.getId()).orElse(null);
+        if (chart == null || !Objects.equals(chart.getSceneId(), resourceId)
+                || !Objects.equals(view.getSceneId(), resourceId)
+                || !Objects.equals(chart.getTableId(), view.getTableId())) {
+            DEException.throwException(io.dataease.result.ResultCode.PERMISSION_NO_ACCESS.code(), "Chart outside share scope");
         }
     }
 

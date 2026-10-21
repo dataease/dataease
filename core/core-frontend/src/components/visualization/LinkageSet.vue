@@ -272,7 +272,7 @@
                   </div>
                 </div>
                 <el-row style="width: 100%; padding-left: 16px">
-                  <el-button type="primary" icon="Plus" text @click="addLinkageField('', '')">
+                  <el-button type="primary" :icon="Plus" text @click="addLinkageField('', '')">
                     {{ t('visualization.add_linkage_dependency_fields') }}
                   </el-button>
                 </el-row>
@@ -300,6 +300,7 @@
 </template>
 
 <script lang="ts" setup>
+import { CaretBottom, CaretRight, Plus } from '@element-plus/icons-vue'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import { iconChartMap } from '@/components/icon-group/chart-list'
 import datasetOutline from '@/assets/svg/dataset-outline.svg'

@@ -45,7 +45,7 @@ public interface ExportCenterApi {
 
     @Operation(summary = "下载")
     @GetMapping("/download/{id}")
-    public void download(@PathVariable String id, @RequestParam(required = false) String ticket, HttpServletResponse response) throws Exception;
+    public void download(@PathVariable String id, @RequestParam(required = true) String ticket, HttpServletResponse response) throws Exception;
 
     @Operation(summary = "生成下载Url")
     @GetMapping("/generateDownloadUri/{id}")

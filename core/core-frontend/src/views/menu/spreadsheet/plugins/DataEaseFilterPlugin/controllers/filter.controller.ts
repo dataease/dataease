@@ -54,6 +54,7 @@ import { SPREADSHEET_EVENTS } from '../../../utils/events'
 import { h, render } from 'vue'
 import { SpreadsheetModeService } from '../../../services/spreadsheet-mode.service'
 import { getDsDetailsWithPerm, type DatasetDetail } from '@/api/dataset'
+import { getFieldByDQ, type Field } from '@/api/chart'
 import { cloneDeep } from 'lodash-es'
 import {
   getSpreadsheetFilterInitialValues,
@@ -434,14 +435,14 @@ export class DataEaseFilterController extends Disposable {
       }
     }
 
-    return [
+    return Promise.all([
       ...detailPlugins.map(plugin =>
         this._buildAvailablePlugin(unitId, plugin, 'detail', datasetMap)
       ),
       ...pivotPlugins.map(plugin =>
         this._buildAvailablePlugin(unitId, plugin, 'pivot', datasetMap)
       )
-    ]
+    ])
   }
 
   private _getDetailTableInstanceService(): DetailTableInstanceService | undefined {
@@ -460,23 +461,38 @@ export class DataEaseFilterController extends Disposable {
     }
   }
 
-  private _buildAvailablePlugin(
+  private async _buildAvailablePlugin(
     unitId: string,
     plugin: DetailTableConfig | PivotTableConfig,
     pluginType: 'detail' | 'pivot',
     datasetMap: Map<string, DatasetDetail>
-  ): SpreadsheetFilterAvailablePlugin {
+  ): Promise<SpreadsheetFilterAvailablePlugin> {
     const datasetId = plugin.data?.datasetId
     const dataset = datasetId === undefined ? undefined : datasetMap.get(String(datasetId))
+    let datasetFields: {
+      dimensionList?: Array<Field & { agg?: boolean }>
+      quotaList?: Array<Field & { agg?: boolean }>
+    } | undefined = dataset?.fields
+    if (dataset && plugin.fieldOwnerId) {
+      try {
+        // 联动字段按实例读取副本，原字段及副本继续由后端过滤列权限。
+        datasetFields = await getFieldByDQ(datasetId, plugin.fieldOwnerId, {}) as unknown as typeof datasetFields
+      } catch {
+        // 副本加载失败时保留已取得的公共字段，不影响其他实例配置。
+      }
+    }
+    // 沿用筛选配置的约束，不能把新增的计数、聚合字段带入联动选项。
+    const isSelectableField = (field: Field & { agg?: boolean }) =>
+      String(field.id) !== '-1' && !field.agg
     const fields: SpreadsheetFilterAvailableField[] = [
-      ...(dataset?.fields?.dimensionList || []).map(field => ({
+      ...(datasetFields?.dimensionList || []).filter(isSelectableField).map(field => ({
         fieldId: field.id,
         fieldName: field.name || field.dataeaseName,
         groupType: 'd' as const,
         deType: field.deType,
         desensitized: field.desensitized
       })),
-      ...(dataset?.fields?.quotaList || []).map(field => ({
+      ...(datasetFields?.quotaList || []).filter(isSelectableField).map(field => ({
         fieldId: field.id,
         fieldName: field.name || field.dataeaseName,
         groupType: 'q' as const,

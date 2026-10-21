@@ -1,3 +1,19 @@
+.dataease-find-replace-dialog {
+  // 固定在视口内，避免原生绝对定位面板撑出页面滚动区域；保留原生输入和查找状态。
+  position: fixed !important;
+  left: 0 !important;
+  top: 0 !important;
+  max-width: 100% !important;
+  max-height: 100%;
+  overflow: auto;
+  // 接管拖动后不再触发原生 isDragging，取消面板的 200ms 过渡以保证位置跟随鼠标。
+  transition: none !important;
+  transform: translate(
+    var(--dataease-find-replace-x, 0px),
+    var(--dataease-find-replace-y, 0px)
+  ) !important;
+}
+
 .univer-sheet-container {
   [data-u-comp='ribbon-header-menu'] {
     display: none !important;

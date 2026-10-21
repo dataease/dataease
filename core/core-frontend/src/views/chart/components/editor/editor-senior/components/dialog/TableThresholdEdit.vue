@@ -8,6 +8,7 @@ import { COLOR_PANEL } from '../../../util/chart'
 import { fieldType } from '@/utils/attr'
 import { iconFieldMap } from '@/components/icon-group/field-list'
 import { cloneDeep } from 'lodash-es'
+import { getTableConditionScopes } from '@/views/chart/components/js/panel/common/tableConditionScope'
 import {
   transDateFormat,
   transDatePickerType
@@ -27,6 +28,12 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['onTableThresholdChange'])
+const scopeOptions = computed(() => getTableConditionScopes(props.chart.type))
+const scopeLabels = {
+  detail: 'chart.condition_scope_detail',
+  subtotal: 'chart.sub_total_show',
+  total: 'chart.total_show'
+}
 
 const thresholdCondition = {
   term: '',
@@ -203,6 +210,10 @@ const valueOptions = [
 ]
 const predefineColors = COLOR_PANEL
 
+const isTable = computed(() =>
+  ['table-info', 'table-normal', 'table-pivot'].includes(props.chart.type)
+)
+
 const isHeatmap = computed(() => props.chart.type === 't-heatmap')
 
 const targetOptions = computed(() => {
@@ -284,6 +295,10 @@ const initFields = () => {
       item.fieldId = null
     }
     item.conditions?.forEach(condition => {
+      if (scopeOptions.value.length && condition.applyTo == null) {
+        condition.applyTo = [...scopeOptions.value]
+        change = true
+      }
       // 热力图条件统一作用于当前单元格，不保留表格的整行或自定义范围。
       if (isHeatmap.value) {
         if (condition.target !== 'self' || condition.targetFieldId != null) {
@@ -331,6 +346,7 @@ const changeTarget = item => {
 
 const addConditions = item => {
   const newCondition = JSON.parse(JSON.stringify(thresholdCondition))
+  if (scopeOptions.value.length) newCondition.applyTo = [...scopeOptions.value]
   // 获取单元格默认背景颜色
   const tableCell = props.chart?.customAttr?.tableCell
   if (tableCell) {
@@ -507,13 +523,16 @@ init()
               v-model="fieldItem.fieldId"
               @change="addField(fieldItem)"
             >
+              <!-- 明细表和汇总表的 URL 字段不支持作为条件字段 -->
               <el-option
                 class="series-select-option"
                 v-for="fieldOption in state.fields"
                 :key="fieldOption.id"
                 :label="fieldOption.name"
                 :value="fieldOption.id"
-                :disabled="chart.type === 'table-info' && fieldOption.deType === 7"
+                :disabled="
+                  ['table-info', 'table-normal'].includes(chart.type) && fieldOption.deType === 7
+                "
               >
                 <el-icon style="margin-right: 8px">
                   <Icon
@@ -573,6 +592,7 @@ init()
             <el-col
               :span="2"
               v-if="isNotEmptyAndNull(item) && chart.type !== 'rich-text'"
+              class="condition-value-type"
               style="padding-left: 0 !important"
             >
               <el-form-item class="form-item">
@@ -652,7 +672,10 @@ init()
                     :key="itemFieldOption.id"
                     :label="itemFieldOption.name"
                     :value="itemFieldOption.id"
-                    :disabled="chart.type === 'table-info' && itemFieldOption.deType === 7"
+                    :disabled="
+                      ['table-info', 'table-normal'].includes(chart.type) &&
+                      itemFieldOption.deType === 7
+                    "
                   >
                     <el-icon style="margin-right: 8px">
                       <Icon
@@ -712,10 +735,11 @@ init()
             </el-col>
             <el-col
               v-if="isBetween(item) && !isDynamic(item)"
+              :class="{ 'table-between-operator': isTable }"
               :span="isHeatmap ? 3 : 2"
               style="margin-top: 4px; text-align: center"
             >
-              <span style="margin: 0 -5px">
+              <span :style="{ margin: isTable ? '0' : '0 -5px' }">
                 ≤&nbsp;{{ t('chart.drag_block_label_value') }}&nbsp;≤
               </span>
             </el-col>
@@ -756,7 +780,10 @@ init()
                     :key="itemFieldOption.id"
                     :label="itemFieldOption.name"
                     :value="itemFieldOption.id"
-                    :disabled="chart.type === 'table-info' && itemFieldOption.deType === 7"
+                    :disabled="
+                      ['table-info', 'table-normal'].includes(chart.type) &&
+                      itemFieldOption.deType === 7
+                    "
                   >
                     <el-icon style="margin-right: 8px">
                       <Icon
@@ -795,10 +822,11 @@ init()
             <el-col
               v-if="isBetween(item) && isDynamic(item)"
               class="term"
+              :class="{ 'table-between-operator': isTable }"
               :span="isHeatmap ? 2 : 1"
               style="margin-top: 4px; text-align: center"
             >
-              <span style="margin: 0 -5px">
+              <span :style="{ margin: isTable ? '0' : '0 -5px' }">
                 ≤&nbsp;{{ t('chart.drag_block_label_value') }}&nbsp;≤
               </span>
             </el-col>
@@ -820,7 +848,10 @@ init()
                     :key="itemFieldOption.id"
                     :label="itemFieldOption.name"
                     :value="itemFieldOption.id"
-                    :disabled="chart.type === 'table-info' && itemFieldOption.deType === 7"
+                    :disabled="
+                      ['table-info', 'table-normal'].includes(chart.type) &&
+                      itemFieldOption.deType === 7
+                    "
                   >
                     <el-icon style="margin-right: 8px">
                       <Icon
@@ -887,6 +918,7 @@ init()
                     class="series-select-option"
                     :label="targetField.name"
                     :value="targetField.id"
+                    :disabled="chart.type === 'table-normal' && targetField.deType === 7"
                   >
                     <el-icon style="margin-right: 8px">
                       <Icon
@@ -904,7 +936,7 @@ init()
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :span="2">
+            <el-col :span="8" class="condition-presentation">
               <el-form-item class="form-item" :label="t('chart.textColor')">
                 <el-color-picker
                   is-custom
@@ -916,8 +948,6 @@ init()
                   @change="changeThreshold"
                 />
               </el-form-item>
-            </el-col>
-            <el-col :span="2">
               <el-form-item class="form-item" :label="t('chart.backgroundColor')">
                 <el-color-picker
                   is-custom
@@ -930,8 +960,6 @@ init()
                   @change="changeThreshold"
                 />
               </el-form-item>
-            </el-col>
-            <el-col :span="1">
               <div style="display: flex; align-items: center; justify-content: center">
                 <el-button
                   class="circle-button m-icon-btn"
@@ -945,6 +973,19 @@ init()
                   </el-icon>
                 </el-button>
               </div>
+            </el-col>
+            <el-col v-if="scopeOptions.length" :span="24" class="condition-scope">
+              <el-form-item :label="t('chart.condition_apply_to')">
+                <el-checkbox-group
+                  v-model="item.applyTo"
+                  :aria-label="t('chart.condition_apply_to')"
+                  @change="changeThreshold"
+                >
+                  <el-checkbox v-for="scope in scopeOptions" :key="scope" :label="scope">
+                    {{ t(scopeLabels[scope]) }}
+                  </el-checkbox>
+                </el-checkbox-group>
+              </el-form-item>
             </el-col>
           </el-row>
         </el-row>
@@ -980,6 +1021,58 @@ init()
 </template>
 
 <style lang="less" scoped>
+// 区间连接文字按内容占宽，避免被固定栅格压成两行
+.table-between-operator {
+  flex: 0 0 auto;
+  width: max-content;
+  max-width: none;
+  white-space: nowrap;
+}
+
+.condition-scope {
+  :deep(.ed-form-item__content) {
+    min-width: 0;
+  }
+
+  :deep(.ed-checkbox-group) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 16px;
+  }
+
+  :deep(.ed-checkbox) {
+    --ed-checkbox-font-size: 14px;
+    --ed-checkbox-font-weight: 400;
+    height: 28px;
+    margin-right: 0;
+  }
+}
+
+.condition-value-type {
+  min-width: 96px;
+}
+
+.condition-presentation {
+  display: flex;
+  flex: 0 1 auto;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  min-width: 256px;
+  max-width: 100%;
+}
+
+.condition-scope,
+.form-item {
+  :deep(.ed-form-item__label) {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 28px;
+    height: 28px;
+    padding-right: 8px;
+  }
+}
+
 .field-item {
   width: 100%;
   border-radius: 6px;
@@ -993,18 +1086,16 @@ init()
   display: flex;
   justify-content: left;
   align-items: center;
+  row-gap: 12px;
   margin-top: 16px;
 }
 
 .form-item {
   height: 28px !important;
-  :deep(.el-form-item__label) {
-    font-size: 12px;
-  }
 }
 
 span {
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .value-item {
@@ -1027,7 +1118,7 @@ span {
 
 .el-select-dropdown__item {
   padding: 0 20px;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 :deep(.color-picker-style) {
@@ -1052,6 +1143,10 @@ span {
   padding: 10px 20px;
   display: flex;
   align-items: center;
+
+  span {
+    font-size: inherit;
+  }
 }
 
 :deep(.ed-form-item) {

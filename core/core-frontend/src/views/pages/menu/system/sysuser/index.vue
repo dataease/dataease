@@ -33,6 +33,7 @@ import useClipboard from 'vue-clipboard3'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { logoutHandler } from '@/utils/logout'
 import { filterOption, groupBy } from '@/views/menu/system/sysuser/options'
+import { formatDate } from '@/utils/DateUtil'
 
 const userStore = useUserStoreWithOut()
 const curUid = computed(() => userStore.getUid)
@@ -240,7 +241,7 @@ const timestampFormatDate = value => {
   if (!value) {
     return '-'
   }
-  return new Date(value)['format']()
+  return formatDate(new Date(value))
 }
 const edit = row => {
   userFormDialog.value.edit(row.id)
@@ -358,13 +359,13 @@ const sizeChange = size => {
 const sortChange = param => {
   state.orders = []
   if (param.order && param.prop === 'createTime') {
-    const type = param.order.substring(0, param.order.indexOf('ending'))
     state.orders.push({
       field: 'timeDesc',
-      type: type !== 'asc'
+      type: param.order === 'descending'
     })
-    search()
   }
+  state.paginationConfig.currentPage = 1
+  search()
 }
 
 const handleSelectionChange = rows => {
@@ -559,7 +560,7 @@ const unlockHandler = row => {
           width="150"
         >
           <template v-slot:default="scope">
-            <span v-if="scope.row.colorName" v-html="scope.row.colorName" />
+            <span v-if="scope.row.colorName" v-dompurify-html="scope.row.colorName" />
             <span v-else>{{ scope.row.name }}</span>
           </template>
         </el-table-column>
@@ -570,7 +571,7 @@ const unlockHandler = row => {
           show-overflow-tooltip
         >
           <template v-slot:default="scope">
-            <span v-html="scope.row.colorAccount || scope.row.account" />
+            <span v-dompurify-html="scope.row.colorAccount || scope.row.account" />
           </template>
         </el-table-column>
 
@@ -624,7 +625,7 @@ const unlockHandler = row => {
           width="200"
         >
           <template v-slot:default="scope">
-            <span v-html="scope.row.colorEmail || scope.row.email" />
+            <span v-dompurify-html="scope.row.colorEmail || scope.row.email" />
           </template>
         </el-table-column>
 

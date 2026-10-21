@@ -31,7 +31,9 @@ const props = defineProps({
 const { fields, element } = toRefs(props)
 
 const fieldSelect = field => {
-  useEmitt().emitter.emit('fieldSelect-' + element.value.id, field)
+  const id = element.value?.id
+  if (id === null || id === undefined) return
+  useEmitt().emitter.emit('fieldSelect-' + id, field)
 }
 
 const fieldsAreaDown = e => {

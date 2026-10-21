@@ -25,12 +25,19 @@ const isExpired = () => {
   return Date.now() - time > expTimeConstants
 }
 
-const delayExecute = (token: string) => {
-  const cachedRequestList = requestStore.getRequestList
-  cachedRequestList.forEach(cb => {
-    cb(token)
-  })
+const takeCachedRequests = () => {
+  const requests = [...requestStore.getRequestList]
   requestStore.cleanCacheRequest()
+  setRefreshStatus(false)
+  return requests
+}
+
+const delayExecute = (token: string) => {
+  takeCachedRequests().forEach(request => request.resolve(token))
+}
+
+const rejectCachedRequests = (error: unknown) => {
+  takeCachedRequests().forEach(request => request.reject(error))
 }
 
 const getRefreshStatus = () => {
@@ -38,10 +45,6 @@ const getRefreshStatus = () => {
 }
 const setRefreshStatus = (status: boolean) => {
   wsCache.set('de-global-refresh', status, { exp: 5 })
-}
-
-const cacheRequest = cb => {
-  requestStore.addCacheRequest(cb)
 }
 
 export const configHandler = config => {
@@ -56,6 +59,15 @@ export const configHandler = config => {
     config.headers['X-DE-TOKEN'] = wsCache.get('user.token')
     const expired = isExpired()
     if (expired && !config.url.includes(refreshUrl)) {
+      const retry = new Promise<typeof config>((resolve, reject) => {
+        requestStore.addCacheRequest({
+          resolve: token => {
+            config.headers['X-DE-TOKEN'] = token
+            resolve(config)
+          },
+          reject
+        })
+      })
       if (!getRefreshStatus()) {
         setRefreshStatus(true)
         refreshApi(Date.now())
@@ -67,22 +79,13 @@ export const configHandler = config => {
               config.headers['X-DE-TOKEN'] = res.data.token
               delayExecute(res.data.token)
             } else {
-              delayExecute(null)
+              rejectCachedRequests(new Error('Refresh response is missing a token'))
             }
           })
-          .catch(e => {
-            console.error(e)
-          })
-          .finally(() => {
-            setRefreshStatus(false)
+          .catch(error => {
+            rejectCachedRequests(error)
           })
       }
-      const retry = new Promise(resolve => {
-        cacheRequest(token => {
-          config.headers['X-DE-TOKEN'] = token
-          resolve(config)
-        })
-      })
       return retry
     } else {
       return config

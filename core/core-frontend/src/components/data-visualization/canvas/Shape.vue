@@ -1180,7 +1180,6 @@ const dragCollision = computed(() => {
 
 const htmlToImage = () => {
   downLoading.value = true
-  useEmitt().emitter.emit('l7-prepare-picture', element.value.id)
   setTimeout(() => {
     activeWatermarkCheckUser(viewDemoInnerId.value, 'canvas-main', scale.value)
     const dom = document.getElementById(viewDemoInnerId.value)
@@ -1188,7 +1187,6 @@ const htmlToImage = () => {
       // do callback
       removeActiveWatermark(viewDemoInnerId.value)
       downLoading.value = false
-      useEmitt().emitter.emit('l7-unprepare-picture', element.value.id)
     })
   }, 200)
 }

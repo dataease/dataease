@@ -1,3 +1,5 @@
+import { configureMixSeries, formatMixSeriesLegend, createMixSeriesTooltip } from './mix-series'
+import { resolveMixTooltipCategory, updateMixTooltipCrosshair } from './tooltip-category'
 import { G2ChartView, G2DrawOptions } from '../../../types/impl/g2'
 import {
   flow,
@@ -41,11 +43,9 @@ import {
   bindPlotBackgroundClick,
   createTooltipWrapper,
   getBackgroundInteractionState,
-  getSeriesIndexMapByRelations,
   getMixTooltipGroupIndex,
   getMixTooltipGroupName,
   renderGroupedTooltipItems,
-  sortMixTooltipItems,
   tooltipCss,
   tooltipMaxHeight
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
@@ -279,19 +279,21 @@ export class ColumnLineMix extends G2ChartView {
         }
       }
     }
-    // 按相同顺序合并左右轴颜色，供图形、图例和 tooltip 共用
-    const relations = [[leftSeriesName, leftColor]]
-    rightCategories.forEach(category => relations.push([category, rightColorMap[category]]))
-    merge(options, {
-      scale: {
-        color: {
-          type: 'ordinal',
-          domain: [leftSeriesName, ...rightCategories],
-          range: relations.map(([, color]) => color),
-          relations
-        }
+    const series = configureMixSeries([
+      {
+        axis: 'left',
+        marks: [intervalMark],
+        relations: [[leftSeriesName, leftColor]],
+        category: () => leftSeriesName
+      },
+      {
+        axis: 'right',
+        marks: [lineMark, pointMark],
+        relations: rightCategories.map(category => [category, rightColorMap[category]])
       }
-    })
+    ])
+    context.mixSeries = series
+    options.scale = { ...options.scale, color: { ...series.scale } }
     if (basicStyle.gradient) {
       leftColor = setGradientColor(leftColor, true, 270)
     }
@@ -342,12 +344,13 @@ export class ColumnLineMix extends G2ChartView {
     return options
   }
 
-  protected configLegend(chart: Chart, options: G2Spec): G2Spec {
+  protected configLegend(chart: Chart, options: G2Spec, context: Record<string, any>): G2Spec {
     const { legend } = parseJson(chart.customStyle)
     if (!legend.show) {
       return { ...options, legend: false }
     }
     const baseLegend = this.getLegend(chart, 2)
+    formatMixSeriesLegend(baseLegend, context.mixSeries.names)
     const horizontalLegend = ['top', 'bottom'].includes(baseLegend['position'])
     const legendFontSize = Number(legend.fontSize) > 0 ? Number(legend.fontSize) : 12
     const legendMarkerSize = Number(legend.size) > 0 ? Number(legend.size) * 2 : 8
@@ -390,16 +393,12 @@ export class ColumnLineMix extends G2ChartView {
       ...(context.rightData || [])
     ]
     const quotaIdOf = item => item?.quotaList?.[0]?.id
-    const completeTooltipItems = (title, items = []) => {
-      if (filterValidMixTooltipItems(items).length) {
-        return items
-      }
-      // 柱线 shared tooltip 未返回有效指标时，仅按当前维度读取左右轴源数据
-      return sourceTooltipItems.filter(item => item.field === title)
-    }
     const yAxis = chart.yAxis
-    // 读取 color relations，保持 tooltip 系列顺序与图例一致
-    const seriesIndexMap = getSeriesIndexMapByRelations(options.scale?.color?.relations)
+    const seriesTooltip = createMixSeriesTooltip(
+      chart,
+      chartObj,
+      intervalMark.scale.color.relations
+    )
     const tooltipOptions: G2Spec = {
       tooltip: d => d,
       interaction: {
@@ -411,33 +410,42 @@ export class ColumnLineMix extends G2ChartView {
           css: tooltipCss(tooltip),
           enterable: true,
           marker: false,
-          render: (_, { title, items }) => {
-            const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', title)
-            items = completeTooltipItems(title, items)
+          render: (event, { title, items }) => {
+            const [view] = chartObj.getContext().views
+            const resolved = resolveMixTooltipCategory(
+              event,
+              view,
+              title,
+              items,
+              sourceTooltipItems
+            )
+            const titleHtml = TOOLTIP_TITLE_TPL.replace('{title}', resolved.title)
+            items = resolved.items
             if (tooltip.seriesTooltipFormatter?.length) {
               items = items.filter(item => formatterMap[quotaIdOf(item)]?.show !== false)
             }
-            items = filterValidMixTooltipItems(items)
+            items = filterValidMixTooltipItems(items).filter(seriesTooltip.visible)
+            updateMixTooltipCrosshair(chartObj, view, items)
             const result = []
-            const [view] = chartObj.getContext().views
             items.forEach(item => {
               const formatterCfg =
                 formatterMap[quotaIdOf(item)]?.formatterCfg ?? yAxis[0].formatterCfg
               const value = valueFormatter(item.value, formatterCfg)
               const name = item.category
-              const colorScale = item.left ? view?.scale?.color : view?.scale?.color1
-              const color = colorScale?.map?.(name) ?? item.color
+              const seriesKey = seriesTooltip.keyOf(item)
+              const color = seriesTooltip.color(item)
               // 记录 tooltip 项所属维度分组，供后续分组标题和排序使用
               result.push({
                 value,
                 color,
                 name,
+                seriesKey,
                 groupName: getMixTooltipGroupName(chart, item),
                 groupIndex: getMixTooltipGroupIndex(chart, item)
               })
             })
             // 混合图 tooltip 先按维度分组，再按图例系列顺序排列
-            sortMixTooltipItems(result, seriesIndexMap)
+            result.sort(seriesTooltip.compare)
             const itemsHtml = renderGroupedTooltipItems(
               result,
               item => item.groupName,
@@ -635,7 +643,8 @@ export class ColumnLineMix extends G2ChartView {
       const { scaleY, visibleLineData, visibility } = getMixAssistLineOptions(
         index === 0 ? intervalMark : lineMark,
         lineData,
-        index
+        index,
+        assistLineCfg.assistLine
       )
       if (visibleLineData.length) {
         const assistLineMark: G2Spec = {

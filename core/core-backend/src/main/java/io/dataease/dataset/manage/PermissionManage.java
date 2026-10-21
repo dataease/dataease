@@ -12,6 +12,7 @@ import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.api.permissions.variable.dto.SysVariableValueDto;
 import io.dataease.api.permissions.variable.dto.SysVariableValueItem;
 import io.dataease.constant.ColumnPermissionConstants;
+import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.trans.WhereTree2Str;
 import io.dataease.engine.utils.Utils;
 import io.dataease.extensions.datasource.api.PluginManageApi;
@@ -32,10 +33,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
 public class PermissionManage {
+
+    private static final Pattern COPIED_FIELD_REFERENCE = Pattern.compile("^\\[(-?\\d+)]$");
 
     @Autowired(required = false)
     private RowPermissionsApi rowPermissionsApi;
@@ -94,7 +99,44 @@ public class PermissionManage {
             }
             result.add(field);
         });
+        Map<String, DatasetTableFieldDTO> readableFields = new HashMap<>();
+        result.forEach(field -> readableFields.put(String.valueOf(field.getId()), field));
+        // 单字段引用副本沿来源继承权限，防止新字段 ID 绕过禁用或脱敏。
+        result.removeIf(field -> !inheritCopiedFieldPermissions(field, readableFields,
+                desensitizationList, new HashSet<>()));
         return result;
+    }
+
+    private boolean inheritCopiedFieldPermissions(DatasetTableFieldDTO field,
+                                                  Map<String, DatasetTableFieldDTO> readableFields,
+                                                  Map<String, ColumnPermissionItem> desensitizationList,
+                                                  Set<Long> visiting) {
+        // 普通计算字段保持既有语义；复制接口创建的字段保留数据集归属。
+        if (field.getChartId() == null || field.getDatasetGroupId() == null
+                || !Objects.equals(field.getExtField(), ExtFieldConstant.EXT_CALC)) {
+            return true;
+        }
+        Matcher matcher = COPIED_FIELD_REFERENCE.matcher(StringUtils.defaultString(field.getOriginName()));
+        if (!matcher.matches()) {
+            return true;
+        }
+        if (visiting.size() >= 100 || !visiting.add(field.getId())) {
+            return false;
+        }
+        DatasetTableFieldDTO source = readableFields.get(matcher.group(1));
+        boolean readable = source != null
+                && Objects.equals(source.getDatasetGroupId(), field.getDatasetGroupId())
+                && (source.getChartId() == null || Objects.equals(source.getChartId(), field.getChartId()))
+                && inheritCopiedFieldPermissions(source, readableFields, desensitizationList, visiting);
+        visiting.remove(field.getId());
+        if (!readable) {
+            return false;
+        }
+        ColumnPermissionItem permission = desensitizationList.get(source.getDataeaseName());
+        if (permission != null) {
+            desensitizationList.put(field.getDataeaseName(), permission);
+        }
+        return true;
     }
 
     private List<DataSetColumnPermissionsDTO> columnPermissions(Long datasetId, Long userId) {

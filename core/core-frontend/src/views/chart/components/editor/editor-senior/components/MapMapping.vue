@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { Edit } from '@element-plus/icons-vue'
 import { computed, nextTick, onMounted, PropType, reactive, ref, watch } from 'vue'
 import { getGeoJsonFile, parseJson } from '../../../js/util'
 import { forEach, debounce } from 'lodash-es'
@@ -52,7 +53,7 @@ const init = async () => {
   const chartObj = JSON.parse(JSON.stringify(chart.value))
   if (chartObj?.senior) {
     let senior = parseJson(chartObj.senior)
-    const useGlobalAreaMapping = senior.useGlobalAreaMapping
+    const useGlobalAreaMapping = supportGlobalAreaMapping.value && !!senior.useGlobalAreaMapping
     state.useGlobalAreaMapping = useGlobalAreaMapping
     let curAreaMapping = null
     if (useGlobalAreaMapping) {

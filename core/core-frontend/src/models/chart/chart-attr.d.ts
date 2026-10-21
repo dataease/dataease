@@ -26,6 +26,8 @@ declare interface ChartAttr {
    * 标签设置
    */
   label: ChartLabelAttr
+  /** 环形图中心内容，与标签和提示独立配置 */
+  centerContent: ChartCenterContentAttr
   /**
    * 提示设置
    */
@@ -46,6 +48,26 @@ declare interface ChartAttr {
    * 指标名称
    */
   indicatorName: ChartIndicatorNameStyle
+}
+
+declare type ChartCenterContentTextStyle = Pick<
+  ChartIndicatorStyle,
+  'fontSize' | 'color' | 'isItalic' | 'isBolder' | 'fontShadow' | 'fontFamily' | 'letterSpace'
+>
+
+declare interface ChartCenterContentAttr {
+  show: boolean
+  title: string
+  titlePosition: 'top' | 'bottom'
+  titleStyle: ChartCenterContentTextStyle
+  contentType: 'sum' | 'avg' | 'max' | 'min' | 'count' | 'custom'
+  content: string
+  contentStyle: ChartCenterContentTextStyle
+  formatterMode: 'quota' | 'custom'
+  formatter: BaseFormatter
+  suffixEnable: boolean
+  suffix: string
+  suffixStyle: ChartCenterContentTextStyle
 }
 /**
  * 基础样式设置
@@ -221,6 +243,14 @@ declare interface ChartBasicStyle {
    * 散点气泡大小
    */
   scatterSymbolSize: number
+  /**
+   * 象限图区间面积映射，缺失时保留旧尺寸算法
+   */
+  quadrantBubble?: {
+    mode: 'auto' | 'custom'
+    min: number
+    max: number
+  }
   /**
    * 箱线图是否显示异常值点
    */
@@ -573,6 +603,10 @@ declare interface ChartTableHeaderAttr {
    * 透视表行头冻结
    */
   rowHeaderFreeze: boolean
+  /**
+   * 透视表显示单指标名称
+   */
+  showSingleQuotaName: boolean
   /**
    * 字段级表头对齐设置
    */

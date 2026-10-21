@@ -21,6 +21,31 @@ public class HttpClientConfig {
     // 请求获取数据的超时时间，单位毫秒。 如果访问一个接口，多少时间内无法返回数据，就直接放弃此次调用
     private int socketTimeout = 60000;
 
+    private long responseTimeout = RemoteTransfer.TIMEOUT_MS;
+
+    private long maxResponseBytes = RemoteTransfer.RESPONSE_BYTES;
+    private long maxFileBytes = RemoteTransfer.FILE_BYTES;
+
+    public long getMaxResponseBytes() { return maxResponseBytes; }
+    public long getMaxFileBytes() { return maxFileBytes; }
+
+    public void setMaxResponseSizeMb(Integer value) {
+        maxResponseBytes = RemoteTransfer.sizeBytes(value, 16, 64);
+    }
+
+    public void setMaxFileSizeMb(Integer value) {
+        maxFileBytes = RemoteTransfer.sizeBytes(value, 100, 1024);
+    }
+
+    public long getResponseTimeout() { return responseTimeout; }
+
+    public void setResponseTimeout(long timeout) {
+        if (timeout <= 0 || timeout > 1_800_000) {
+            throw new IllegalArgumentException("Invalid response deadline");
+        }
+        responseTimeout = timeout;
+    }
+
     public RequestConfig buildRequestConfig() {
         Builder builder = RequestConfig.custom();
         builder.setConnectTimeout(connectTimeout);

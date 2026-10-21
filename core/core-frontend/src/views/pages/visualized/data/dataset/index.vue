@@ -65,7 +65,7 @@ import EmptyBackground from '@/components/empty-background/src/EmptyBackground.v
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
 import DatasetDetail from '@/views/visualized/data/dataset/DatasetDetail.vue'
 import { guid } from '@/views/visualized/data/dataset/form/util'
-import { save } from '@/api/visualization/dataVisualization'
+import { save as saveVisualizationApi } from '@/api/visualization/dataVisualization'
 import { cloneDeep } from 'lodash-es'
 import { fieldType } from '@/utils/attr'
 import { useAppStoreWithOut } from '@/store/modules/app'
@@ -201,7 +201,7 @@ const resourceCreate = (pid, name) => {
     canvasViewInfo: {},
     ...bashResourceInfo
   }
-  save(canvasInfo).then(() => {
+  saveVisualizationApi(canvasInfo).then(() => {
     const baseUrl = curCanvasType.value === 'dataV' ? '#/dvCanvas?dvId=' : '#/dashboard?resourceId='
     window.open(baseUrl + newResourceId, openType)
   })

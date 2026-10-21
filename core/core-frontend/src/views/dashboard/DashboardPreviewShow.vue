@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue'
 import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
 import DeResourceTree from '@/views/common/DeResourceTree.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -129,20 +130,12 @@ const loadCanvasData = (dvId, weight?, ext?) => {
     }
   )
 }
-// 地图类图表，需要预先准备图片
-const mapChartTypes = ['bubble-map', 'flow-map', 'heat-map', 'map', 'symbolic-map']
 const downloadH2 = type => {
   downloadStatus.value = true
-  const mapElementIds =
-    state.canvasDataPreview
-      ?.filter(ele => mapChartTypes.includes(ele.innerType))
-      .map(ele => ele.id) || []
-  mapElementIds.forEach(id => useEmitt().emitter.emit('l7-prepare-picture', id))
   nextTick(() => {
     const vueDom = previewCanvasContainer.value.querySelector('.canvas-container')
     downloadCanvas2(type, vueDom, state.dvInfo.name, () => {
       downloadStatus.value = false
-      mapElementIds.forEach(id => useEmitt().emitter.emit('l7-unprepare-picture', id))
     })
   })
 }

@@ -32,6 +32,11 @@ import io.dataease.datasource.manage.DatasourceSyncManage;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.provider.ExcelUtils;
+import io.dataease.datasource.provider.ExcelFileGuard;
+import io.dataease.api.permissions.auth.dto.BusiPerCheckDTO;
+import io.dataease.constant.AuthEnum;
+import io.dataease.constant.BusiResourceEnum;
+import io.dataease.system.manage.CorePermissionManage;
 import io.dataease.datasource.type.H2;
 import io.dataease.datasource.type.Mysql;
 import io.dataease.datasource.type.Oracle;
@@ -299,6 +304,7 @@ public class DatasourceServer implements DatasourceApi {
         if (StringUtils.isNotEmpty(dataSourceDTO.getConfiguration())) {
             dataSourceDTO.setConfiguration(new String(Base64.getDecoder().decode(dataSourceDTO.getConfiguration())));
         }
+        validateExcelFiles(dataSourceDTO, null);
         preCheckDs(dataSourceDTO);
         dataSourceDTO.setId(IDUtils.snowID());
         dataSourceDTO.setCreateTime(System.currentTimeMillis());
@@ -428,6 +434,7 @@ public class DatasourceServer implements DatasourceApi {
         DatasourceDTO sourceData = dataSourceManage.getDs(pk);
         dataSourceDTO.setConfiguration(new String(Base64.getDecoder().decode(dataSourceDTO.getConfiguration())));
         dataSourceDTO.setPid(sourceData.getPid());
+        validateExcelFiles(dataSourceDTO, sourceData);
         preCheckDs(dataSourceDTO);
 
         dataSourceDTO.setUpdateTime(System.currentTimeMillis());
@@ -1181,6 +1188,28 @@ public class DatasourceServer implements DatasourceApi {
         return Objects.requireNonNull(JsonUtil.toJSONString(param)).toString();
     }
 
+    @Resource
+    private CorePermissionManage corePermissionManage;
+
+    private void validateExcelFiles(DatasourceDTO requested, DatasourceDTO stored) {
+        if (!"Excel".equalsIgnoreCase(requested.getType())) return;
+        if (V3UserUtil.getUid() == null || V3UserUtil.getLink() != null) {
+            DEException.throwException(Translator.get("i18n_excel_file_forbidden"));
+        }
+        if (stored != null && !corePermissionManage.checkAuth(
+                new BusiPerCheckDTO(stored.getId(), BusiResourceEnum.DATASOURCE, AuthEnum.MANAGE))) {
+            DEException.throwException(Translator.get("i18n_excel_file_forbidden"));
+        }
+        try {
+            ExcelFileGuard.validateConfiguration(java.nio.file.Path.of(ExcelUtils.getExcelPath()),
+                    requested.getConfiguration(), stored != null && "Excel".equalsIgnoreCase(stored.getType())
+                            ? stored.getConfiguration() : null,
+                    V3UserUtil.getUid().toString());
+        } catch (IOException e) {
+            DEException.throwException(Translator.get("i18n_excel_file_forbidden"));
+        }
+    }
+
     private void preCheckDs(DatasourceDTO datasource) throws DEException {
         List<String> list = datasourceTypes().stream().map(DatasourceConfiguration.DatasourceType::getType).collect(Collectors.toList());
         list.remove(DatasourceConfiguration.DatasourceType.h2.getType());
@@ -1227,6 +1256,18 @@ public class DatasourceServer implements DatasourceApi {
         if (ObjectUtils.isEmpty(tableName) || ObjectUtils.isEmpty(id)) {
             return null;
         }
+        if (id <= 0) {
+            DEException.throwException(Translator.get("i18n_dataset_table_not_exist"));
+        }
+        CoreDatasource authorizedDs = dataSourceManage.getCoreDatasource(id);
+        if (authorizedDs == null) {
+            DEException.throwException(Translator.get("i18n_dataset_ds_error") + ",ID:" + id);
+        }
+        boolean sharedEngineDs = authorizedDs.getType().contains(DatasourceConfiguration.DatasourceType.API.name())
+                || authorizedDs.getType().contains(DatasourceConfiguration.DatasourceType.Excel.name());
+        if (sharedEngineDs) {
+            datasetCacheManage.validateTable(id, tableName);
+        }
         DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
         BeanUtils.copyBean(datasourceSchemaDTO, engineManage.getDeEngine());
 
@@ -1236,7 +1277,8 @@ public class DatasourceServer implements DatasourceApi {
         datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
         dsMap.put(datasourceSchemaDTO.getId(), datasourceSchemaDTO);
         DsTypeDTO datasourceType = datasetSQLManage.getDatasourceType(dsMap, datasourceSchemaDTO.getId());
-        String sql = "SELECT * FROM " + schema + datasourceType.getPrefix() + tableName + datasourceType.getSuffix();
+        String quotedTable = quoteIdentifier(tableName, datasourceType.getPrefix(), datasourceType.getSuffix());
+        String sql = "SELECT * FROM " + schema + quotedTable;
         Provider provider = ProviderFactory.getProvider(datasourceSchemaDTO.getType());
         sql = new String(Base64.getEncoder().encode(sql.getBytes()));
         PreviewSqlDTO previewSqlDTO = new PreviewSqlDTO();
@@ -1244,6 +1286,20 @@ public class DatasourceServer implements DatasourceApi {
         previewSqlDTO.setDatasourceId(id);
         previewSqlDTO.setIsCross(false);
         return datasetDataManage.previewSql(previewSqlDTO);
+    }
+
+    private String quoteIdentifier(String identifier, String prefix, String suffix) {
+        if (StringUtils.isBlank(identifier)) {
+            DEException.throwException(Translator.get("i18n_dataset_table_not_exist"));
+        }
+        String escaped = identifier;
+        if (StringUtils.isNotBlank(prefix) && StringUtils.isNotBlank(suffix)
+                && !StringUtils.equals(prefix, suffix) && "[".equals(prefix) && "]".equals(suffix)) {
+            escaped = escaped.replace("]", "]]");
+        } else if (StringUtils.isNotBlank(prefix)) {
+            escaped = escaped.replace(prefix, prefix + prefix);
+        }
+        return prefix + escaped + suffix;
     }
 
     @Override

@@ -3,6 +3,7 @@ package io.dataease.extensions.sync.provider;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.sync.exception.SyncSqlException;
 import io.dataease.extensions.sync.model.datasource.ConnectionObj;
 import io.dataease.extensions.sync.model.datasource.DatasourceRequest;
 import io.dataease.extensions.sync.utils.ProviderUtil;
@@ -122,20 +123,19 @@ public abstract class SyncProvider {
             long executeTime = System.currentTimeMillis() - startTime;
             String errorMsg = String.format("%s operation timed out, execution time: %dms, timeout setting: %ds",
                     operationType, executeTime, queryTimeout);
-            DEException.throwException(errorMsg);
+            throw new SyncSqlException(errorMsg, e, configuration);
         } catch (SQLException e) {
             long executeTime = System.currentTimeMillis() - startTime;
             String errorCode = e.getSQLState();
             String errorMsg = String.format("%s operation failed, execution time: %dms, error code: %s, error message: %s",
                     operationType, executeTime, errorCode, e.getMessage());
-            DEException.throwException(errorMsg);
+            throw new SyncSqlException(errorMsg, e, configuration);
         } catch (Exception e) {
             long executeTime = System.currentTimeMillis() - startTime;
             String errorMsg = String.format("%s operation exception, execution time: %dms, exception message: %s",
                     operationType, executeTime, e.getMessage());
-            DEException.throwException(errorMsg);
+            throw new SyncSqlException(errorMsg, e, configuration);
         }
-        return false;
     }
 
     /**

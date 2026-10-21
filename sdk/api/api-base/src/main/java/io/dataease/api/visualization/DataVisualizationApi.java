@@ -11,6 +11,7 @@ import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest
 import io.dataease.api.visualization.vo.DataVisualizationVO;
 import io.dataease.api.visualization.vo.VisualizationExport2AppVO;
 import io.dataease.api.visualization.vo.VisualizationResourceVO;
+import io.dataease.api.visualization.vo.VisualizationNameVO;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import io.dataease.model.BusiNodeRequest;
@@ -42,8 +43,13 @@ public interface DataVisualizationApi {
     DataVisualizationVO findById(@RequestBody DataVisualizationBaseRequest request);
 
     @PostMapping("/findNameById")
+    @DePermit(value = {"#p0.id+':read'"}, busiFlag = "dashboard|dataV")
     @Operation(summary = "查询可视化资源名称", hidden = true)
-    DataVisualizationVO findNameById(@RequestBody DataVisualizationBaseRequest request);
+    VisualizationNameVO findResourceName(@RequestBody DataVisualizationBaseRequest request);
+
+    /** Internal name resolution for audit logs; not an HTTP endpoint. */
+    @Hidden
+    DataVisualizationVO findNameById(DataVisualizationBaseRequest request);
 
 
     @GetMapping("/findCopyResource/{dvId}/{busiFlag}")
@@ -149,6 +155,7 @@ public interface DataVisualizationApi {
 
 
     @GetMapping("/viewDetailList/{dvId}")
+    @DePermit(value = {"#p0+':manage'"}, busiFlag = "dashboard|dataV")
     @Operation(summary = "仪表板视图明细数据")
     List<VisualizationViewTableDTO> detailList(@PathVariable("dvId") Long dvId);
 

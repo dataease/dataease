@@ -4,6 +4,7 @@ import { storeToRefs } from 'pinia'
 import dayjs from 'dayjs'
 import { getDynamicRange, getCustomTime } from '@/custom-component/v-query/time-format'
 import { getCustomRange } from '@/custom-component/v-query/time-format-dayjs'
+import { splitConditionValues } from '@/custom-component/v-query/condition-utils'
 const dvMainStore = dvMainStoreWithOut()
 const { componentData, canvasStyleData, componentDataMultiply } = storeToRefs(dvMainStore)
 
@@ -232,10 +233,15 @@ const getResult = (
   defaultConditionValueS,
   conditionValueF,
   conditionValueS,
-  firstLoad
+  firstLoad,
+  conditionSeparatorType,
+  conditionSeparatorCustom
 ) => {
   const valueF = firstLoad ? defaultConditionValueF : conditionValueF
   const valueS = firstLoad ? defaultConditionValueS : conditionValueS
+  if (conditionType === 3) {
+    return splitConditionValues(valueF, conditionSeparatorType, conditionSeparatorCustom)
+  }
   if (conditionType === 0) {
     return valueF === '' ? [] : valueF
   }
@@ -285,6 +291,9 @@ const getOperator = (
   const operatorF = firstLoad ? defaultConditionValueOperatorF : conditionValueOperatorF
   const operatorS = firstLoad ? defaultConditionValueOperatorS : conditionValueOperatorS
   if (displayType === '8') {
+    if (conditionType === 3) {
+      return 'in'
+    }
     if (conditionType === 0) {
       return operatorF
     }
@@ -346,6 +355,8 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
             numValueStart,
             defaultNumValueStart,
             conditionType = 0,
+            conditionSeparatorType = 'comma',
+            conditionSeparatorCustom = '',
             treeFieldList = [],
             defaultConditionValueOperatorF = 'eq',
             defaultConditionValueF = '',
@@ -453,7 +464,9 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               defaultConditionValueS,
               conditionValueF,
               conditionValueS,
-              firstLoad
+              firstLoad,
+              conditionSeparatorType,
+              conditionSeparatorCustom
             )
           } else if (displayType === '22') {
             selectValue = getResultNum(

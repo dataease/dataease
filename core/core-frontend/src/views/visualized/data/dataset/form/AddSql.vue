@@ -1094,7 +1094,7 @@ const mousedownDrag = () => {
             v-if="getIconName(scope.row.type[0]) === 'text'"
             v-model="scope.row.defaultValue"
             type="text"
-            :placeholder="t('common.please_input')"
+            :placeholder="t('dataset.sql_variable_multiple_values')"
           >
             <template #prepend>
               <el-select v-model="scope.row.defaultValueScope" style="width: calc(100% + 22px)">

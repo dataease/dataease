@@ -1,4 +1,15 @@
 export default {
+  remote_transfer: {
+    advanced: 'Advanced settings',
+    response_size: 'Maximum response size',
+    file_size: 'Maximum file size',
+    timeout: 'Total transfer timeout',
+    range: 'Enter an integer from 1 to {0}',
+    file_help:
+      'Exceeding a limit aborts the download and removes incomplete files. Existing connection and read timeouts and safe Excel parsing limits still apply.',
+    help: 'Limits apply to actual received bytes, including decompressed responses. Exceeding a limit aborts the request. Each API page is limited separately. Existing connection and read timeouts still apply.'
+  },
+
   share_visitor: {
     no_permission: 'You do not have this permission',
     title: 'Visitor permissions',
@@ -158,6 +169,10 @@ export default {
     enter_first_page: 'Please enter the page number of the first page'
   },
   operate_log: {
+    view_detail: 'View details',
+    content: 'Operation content',
+    copy_content: 'Copy operation content',
+    copy_failed: 'Copy failed. Select the text and copy it manually.',
     name: 'Operation log',
     search_by_operate_info: 'Search by operation target',
     detail: 'Operation details',
@@ -503,6 +518,27 @@ export default {
     allSelect: 'Select all'
   },
   system: {
+    driver_exists: 'Driver file conflict',
+    driver_de: 'Sync plug-ins',
+    driver_executor: 'Task executor',
+    driver_uploaded_file: 'Driver file',
+    driver_current: 'Current version',
+    driver_uploaded: 'Uploaded version',
+    driver_replace_question: 'The existing and uploaded driver files differ. Overwrite?',
+    driver_impact:
+      'Overwriting affects all sync source and target plug-ins that use this driver. Restart the related services afterward.',
+    driver_keep: 'Keep existing file',
+    driver_replace: 'Overwrite',
+    driver_restart: 'Plug-in installation completed. Restart the related services before use.',
+    font_limits_title: 'Font settings',
+    font_file_limit: 'Maximum font file size',
+    font_storage_limit: 'Total font storage quota',
+    font_storage_used: 'Currently using {size} MB',
+    font_quota_warning:
+      'The quota is below current usage. Existing fonts are retained; new uploads will be rejected.',
+    font_limits_hint:
+      'Changes apply immediately to new uploads without a restart. Both values must be positive integers; the file limit cannot exceed the quota. Maximum quota: 1,048,576 MB.',
+
     user: 'User',
     role: 'Role',
     addUser: '@:common.add @:system.user',
@@ -650,6 +686,8 @@ export default {
       "Filter [Possible options are cn or uid or sAMAccountName={'{'}0{'}'}, such as: (uid={'{'}0{'}'})]",
     ldap_attribute_mapping: 'LDAP attribute mapping',
     incorrect_please_re_enter_de: 'URL format error, please re-enter',
+    oauth2_pkce: 'PKCE S256',
+    oauth2_pkce_hint: 'Enable only when the provider supports PKCE S256',
     oauth2_settings: 'OAuth2 settings',
     authorization_end_address: 'Authorization end address',
     token_end_address: 'Token end address',
@@ -811,6 +849,7 @@ export default {
     reset_success: 'Reset successful',
     modify_cur_pwd: 'You need to log in again after modifying the current user password',
     password_changed_relogin: 'Password changed, please login again',
+    login_invalid_relogin: 'Your session is no longer valid. Please log in again',
     unlock_user: 'Unlock',
     confirm_unlock: 'Are you sure to unlock this user?',
     unlock_user_success: 'Unlocked successfully',
@@ -974,6 +1013,7 @@ export default {
     no_selected_member: 'No members selected'
   },
   auth: {
+    permission_load_failed: 'Failed to load permission settings. Close and try again.',
     permission_configuration: 'Permission Configuration',
     was_not_obtained: 'Resource node not obtained',
     search_name: 'Search name',
@@ -1271,11 +1311,45 @@ export default {
     input_view_id: 'Please select a view',
     remote_excel_url: 'Remote Excel/CSV Address',
     remote_excel_url_placeholder:
-      'Please enter the remote Excel/CSV address, for example, ftp://192.168.1.101/files/data.xlsx',
+      'Enter an HTTP(S), FTP or SMB file URL, e.g. smb://server/share/data.xlsx',
+    smb_domain: 'Domain',
+    smb_domain_placeholder: 'Optional: AD domain; leave empty for a local account',
+    remote_file_load_interrupted:
+      'Remote file loading was interrupted. Check your network connection or the remote server and try again.',
     remote_excel_url_empty: 'Please enter the remote Excel/CSV address',
     load_data: 'Load Data'
   },
   chart: {
+    desensitized: 'Desensitized',
+    assist_value_type: 'Value type',
+    assist_axis: 'Axis',
+    assist_line_style: 'Line style',
+    assist_color: 'Color',
+    assist_bind_field: 'Bind measure (optional)',
+    assist_follow_field: 'Follow bound measure visibility',
+    assist_follow_axis: 'Follow this axis measure visibility',
+    heatmap_range: 'Color scale range',
+    heatmap_range_auto: 'Automatic range',
+    heatmap_range_custom: 'Custom range',
+    heatmap_range_invalid: 'Enter finite numbers with minimum less than maximum',
+    heatmap_min: 'Minimum',
+    heatmap_max: 'Maximum',
+    map_boundary: 'Boundary',
+    map_boundary_add: 'Add boundary',
+    map_boundary_delete: 'Delete boundary',
+    map_range_count_auto: 'Automatic',
+    map_boundary_invalid: 'Boundaries must be finite numbers in strictly increasing order.',
+    map_boundary_cannot_insert: 'Cannot insert. Check the boundaries or increase the gap.',
+    map_boundary_hint: 'Up to 9 ranges. The minimum and maximum cannot be deleted.',
+    map_format_legacy: 'Original format (integer)',
+    map_format_sync_tooltip: 'Use legend format for tooltip metric',
+    map_range_label: 'Range label',
+    map_range_label_auto: 'Leave blank to show numeric range',
+    heatmap_format: 'Legend number format',
+    heatmap_format_inherit: 'Follow measure',
+    heatmap_format_custom: 'Custom format',
+    heatmap_prefix: 'Prefix',
+
     legend_display_mode: 'Display mode',
     legend_pagination: 'Pagination',
     legend_tile: 'Tile',
@@ -1287,6 +1361,9 @@ export default {
     total_row: 'Entire Row',
     custom: 'Custom',
     apply_to: 'Apply To',
+    condition_apply_to: 'Apply to cell types',
+    condition_scope_detail: 'Data cells',
+    condition_scope_required: 'Select at least one cell type',
     align: 'Alignment',
     reset: 'Reset',
     chart_refresh_tips: 'Chart refresh settings take precedence over dashboard refresh settings',
@@ -1709,6 +1786,13 @@ export default {
     chart_scatter_bubble: 'Bubble chart',
     chart_scatter: 'Scatter chart',
     chart_multi_scatter: 'Multi-dimensional scatter',
+    quadrant_bubble_mode: 'Bubble sizing',
+    quadrant_bubble_legacy: 'Legacy',
+    quadrant_bubble_auto: 'Automatic',
+    quadrant_bubble_custom: 'Custom range',
+    quadrant_bubble_min: 'Minimum radius (px)',
+    quadrant_bubble_max: 'Maximum radius (px)',
+    quadrant_bubble_invalid_value: 'Size cannot be mapped',
     bubble_size: 'Bubble size',
     chart_treemap: 'Rectangular treemap',
     drill: 'Drill',
@@ -1897,6 +1981,14 @@ export default {
     page_mode_pull: 'Pull down',
     exp_can_not_empty: 'Condition cannot be empty',
     value_formatter: 'Number format',
+    center_content: 'Center content',
+    center_content_top: 'Above',
+    center_content_bottom: 'Below',
+    center_content_type: 'Content type',
+    center_content_average: 'Average',
+    center_content_count: 'Category count',
+    center_content_custom_text: 'Custom text',
+    center_content_follow_quota: 'Follow measure',
     value_formatter_type: 'Format type',
     value_formatter_auto: 'Automatic',
     value_formatter_value: 'Number',
@@ -2258,6 +2350,9 @@ export default {
     total_custom_font: 'Custom Font',
     table_field_total_label: 'Field Alias',
     table_row_header_freeze: 'Row Header Freeze',
+    table_show_single_quota_name: 'Show Single Measure Name',
+    table_show_single_quota_name_tip:
+      'Names must be retained to distinguish data for multiple measures',
     value_formatter_total_out_percent: 'Show percentage',
     enable_slider_tip: 'After enabling the slider, the carousel prompt will be disabled.',
     liquid_show_border: 'Show Border',
@@ -2279,6 +2374,8 @@ export default {
     sql_variable_limit_1: '1. SQL variables can only be used in WHERE conditions',
     sql_variable_limit_2:
       "2. select * from table where $DE_PARAM{'{'} name = substring('$[PARAM1]',1,5){'}'} and $DE_PARAM{'{'} name in ($[PARAM2]) {'}'}",
+    sql_variable_multiple_values:
+      "Separate multiple values with commas, e.g. DT0001,DT0002 or 'DT0001','DT0002'",
     select_month: 'Select month',
     select_date: 'Select date',
     select_time: 'Select time',
@@ -2646,6 +2743,7 @@ export default {
     count_of: 'account'
   },
   cron: {
+    invalid_weekday_w: 'W is not allowed in day-of-week. Set the nearest weekday in day-of-month.',
     second: 'Seconds',
     minute: 'Minutes',
     hour: 'Hours',
@@ -3059,6 +3157,21 @@ export default {
     single_condition: 'Single',
     with_condition: 'And',
     or_condition: 'Or',
+    multi_condition: 'Multiple values',
+    separator: 'Separator',
+    separator_comma: 'English comma (,)',
+    separator_chinese_comma: 'Chinese comma (，)',
+    separator_semicolon: 'Semicolon (;)',
+    separator_space: 'Space',
+    separator_newline: 'New line',
+    separator_custom: 'Custom',
+    custom_separator_placeholder: "Enter a separator, e.g. {'|'} or {'@@'}",
+    custom_separator_required: 'Enter a custom separator',
+    separator_hint: 'Separate multiple values with {separator}',
+    separator_config_hint: 'Split the input by the selected separator and match any of the values',
+    default_separator_hint: 'Separate multiple values with {separator}; empty items are ignored',
+    multi_condition_paste_hint:
+      'Batch paste and line breaks are supported; empty values are ignored',
     hide_condition_switch: 'Hide condition switch',
     cannot_be_displayed:
       'The chart uses a different Dataset, Unable to display configuration items',
@@ -3458,6 +3571,8 @@ export default {
     hidden: 'Hidden',
     cancel_hidden: 'Cancel Hidden',
     template_view_tips: 'This is currently a template chart. Please replace the dataset...',
+    template_data_not_ready:
+      'Data for chart "{0}" is not ready. Wait for loading to finish before exporting. If loading failed, refresh and retry.',
     download: 'Download',
     refresh: 'Refresh',
     head_font_color: 'Header Font Color',
@@ -3469,6 +3584,8 @@ export default {
     filter_no_select: 'Filter components do not need to be selected',
     forbidden_copy: 'Copying of the current component is not allowed',
     url_check_error: 'Redirect error, invalid URL',
+    url_protocol_not_supported:
+      'External links only support HTTP/HTTPS/file. The current protocol {0} is not supported.',
     view_style: 'Chart Style',
     view_color_setting: 'Chart Color Setting',
     border_color_setting: 'Border Color Setting',
@@ -3944,6 +4061,7 @@ export default {
     all_source: 'All Sources'
   },
   link_ticket: {
+    load_error: 'Unable to load this share. Refresh to retry or contact the owner.',
     require: 'Required',
     back: 'Return to the public link settings page',
     refresh: 'Refresh',
@@ -4046,6 +4164,9 @@ export default {
     pvp: 'Password validity period',
     defaultLogin: 'Default login method',
     shareDisable: 'Disable sharing',
+    ignoreSslVerify: 'Ignore HTTPS SSL certificate verification',
+    ignoreSslVerifyTips:
+      'Skips certificate and hostname verification when enabled; verifies strictly when disabled',
     sharePeRequire: 'Sharing validity period password required',
     defaultSort: 'Default resource sorting method',
     defaultOpen: 'Page opening method',
@@ -4225,6 +4346,25 @@ export default {
     sync_status_distribution: 'Sync status distribution'
   },
   sync_task: {
+    cleanup_result: 'Cleanup result',
+    cleanup_submitted:
+      'Background cleanup submitted. You can close this window and continue working.',
+    cleanup_empty: 'No logs need to be cleaned up',
+    cleanup_retention:
+      'Only the latest cleanup result for the current user and organization is shown. It is retained for 24 hours and may be unavailable after a service restart.',
+    cleanup_read_failed: 'Unable to load the cleanup result. Click Refresh to retry.',
+    cleanup_status: 'Cleanup status',
+    cleanup_total: 'Number of logs in this cleanup: {0}',
+    cleanup_failed_help:
+      'Cleanup failed. Log records have been retained. Resolve the issue shown below and retry.',
+    cleanup_no_result: 'No cleanup result yet',
+    cleanup_refresh: 'Refresh',
+    cleanup_close: 'Close',
+    cleanup_queued: 'Queued',
+    cleanup_running: 'Running',
+    cleanup_succeeded: 'Succeeded',
+    cleanup_failed: 'Failed',
+    cleanup_unknown: 'Unknown',
     index_capability_unavailable:
       'Index capability is unavailable; select the target database again',
     index_not_implemented: 'The target plugin has not implemented this index feature',
@@ -4435,6 +4575,7 @@ export default {
     last_1_years_log: 'Log from 1 year ago',
     execute_log: 'Execution log',
     done: 'Done',
+    log_read_finished: 'Log reading finished',
     connection_lost: 'Disconnected',
     task_name: 'Task name',
     es_params_label: 'Query Parameters',
@@ -4967,6 +5108,12 @@ export default {
     download: 'Download'
   },
   userCenter: {
+    bind_confirm:
+      'Confirm linking a {0} account to your current account. Verify your identity before scanning.',
+    bind_password: 'Enter your current password',
+    bind_mfa: 'Enter the six-digit code from your bound MFA authenticator',
+    bind_reauth_unavailable:
+      'No identity verification method meets the security policy for this account. Complete MFA setup or contact your administrator.',
     enable: 'Enable',
     invalid: 'Invalid',
     binding_settings: 'Binding settings',
@@ -5055,6 +5202,10 @@ export default {
     warn_status: 'Alert Status'
   },
   webhook: {
+    secret_configured: 'Configured',
+    secret_unconfigured: 'Not configured',
+    secret_keep: 'Leave blank to keep the existing secret',
+    clear_secret: 'Clear the existing secret',
     title: 'Webhook Management',
     add: 'Add Webhook',
     search_placeholder: 'Search by name',

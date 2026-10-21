@@ -313,6 +313,7 @@ defineExpose({
             item.pkey === 'dip' ||
             item.pkey === 'shareDisable' ||
             item.pkey === 'sharePeRequire' ||
+            item.pkey === 'ignoreSslVerify' ||
             item.pkey === 'loginLimit' ||
             item.pkey === 'disableCrossDs'
           "

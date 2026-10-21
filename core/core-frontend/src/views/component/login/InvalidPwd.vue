@@ -78,6 +78,7 @@ const mobileEnv = computed(() => isMobile())
 const validatePwd = (_: any, value: any, callback: any) => {
   if (value === pwdForm.pwd) {
     callback(new Error(t('system.be_the_same')))
+    return
   }
   const pattern =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[~!@#$%^&*()_+\-\={}|":<>?`[\];',.\/])[a-zA-Z0-9~!@#$%^&*()_+\-\={}|":<>?`[\];',.\/]{8,20}$/

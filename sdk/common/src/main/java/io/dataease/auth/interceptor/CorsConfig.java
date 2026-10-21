@@ -69,4 +69,8 @@ public class CorsConfig implements WebMvcConfigurer {
                 .distinct()
                 .toList();
     }
+
+    public boolean isCorsStrict() {
+        return corsStrict;
+    }
 }

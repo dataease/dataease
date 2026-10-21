@@ -7,7 +7,10 @@ import java.util.List;
 @Data
 public class ExcelConfiguration {
     private String url;
+    private Integer maxFileSizeMb;
+    private Integer transferTimeoutSeconds;
     private List<ExcelSheetData> sheets;
     private String userName;
     private String passwd;
+    private String domain;
 }

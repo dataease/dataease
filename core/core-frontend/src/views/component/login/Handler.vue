@@ -30,6 +30,13 @@
 </template>
 
 <script lang="ts" setup>
+import {
+  isBindingCallback,
+  pendingBinding,
+  bindingReturnPath,
+  bindingCallbackPath
+} from '@/utils/platformBinding'
+import { exchangeOauth2Token, oauth2CodeKey } from '@/utils/oauth2Login'
 import { ref, onMounted, reactive, nextTick } from 'vue'
 import QrcodeLdap from './QrcodeLdap.vue'
 import Oidc from './Oidc.vue'
@@ -40,7 +47,8 @@ import QrTab from './QrTab.vue'
 import request from '@/config/axios'
 import { useCache } from '@/hooks/web/useCache'
 import router from '@/router'
-import { platformLoginApi, loginCategoryApi } from '@/api/login'
+import { platformLoginApi, platformTokenApi, loginCategoryApi } from '@/api/login'
+import type { MfaData } from '@/api/login'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { getQueryString, isLarkPlatform, isPlatformClient, checkPlatform } from '@/utils/utils'
 import { loadClient, LoginCategory } from './PlatformClient'
@@ -66,8 +74,9 @@ const saml2Handler = ref()
 const state = reactive({
   mfaData: {
     enabled: false,
-    ready: false
-  }
+    ready: false,
+    uid: ''
+  } as MfaData
 })
 const emits = defineEmits(['switchTab', 'autoCallback'])
 const init = (cb) => {
@@ -105,7 +114,7 @@ const qrStatusChange = (activeComponent: string) => {
   }
 }
 const showMfa = ref(false)
-const toMfa = mfa => {
+const toMfa = (mfa: MfaData) => {
   state.mfaData = mfa
   showMfa.value = true
   if (document.getElementsByClassName('preheat-container')?.length) {
@@ -170,7 +179,7 @@ const getCurLocation = () => {
 }
 
 const platformLogin = origin => {  
-  platformLoginApi(origin).then(res => {
+  platformLoginApi(origin, userStore.getToken).then(res => {
     const mfa = res.data?.mfa
     if (mfa?.enabled) {
       mfa['origin'] = origin
@@ -220,7 +229,7 @@ const wecomToken = async () => {
   if (!code || !state) {
     return null
   }
-  const res = await request.post({url: '/wecom/token', data: {code, state}})
+  const res = await platformTokenApi(6, { code, state })
   userStore.setToken(res.data)
   return res.data
 }
@@ -231,7 +240,7 @@ const larkToken = async () => {
   if (!code || !state) {
     return null
   }
-  const res = await request.post({url: '/lark/token', data: {code, state}})
+  const res = await platformTokenApi(4, { code, state })
   userStore.setToken(res.data)
   return res.data
 }
@@ -246,14 +255,9 @@ const saml2Token = (cb) => {
 }
 
 const oauth2Token = (cb) => {
-  const localCodeKey = localStorage.getItem('DE_OAUTH2_CODE_KEY') || 'code'
-  const code = getQueryString(localCodeKey)
-  const state = getQueryString('state')
-  if (!code || !state) {
-    throw Error('no code or state')
-    return null
-  }
-  request.post({url: '/oauth2/token', data: {code, state}}).then(res => {
+  const state = getQueryString('state') || ''
+  const code = getQueryString(oauth2CodeKey(state))
+  exchangeOauth2Token(code, state).then(res => {
     userStore.setToken(res.data.token)
     cb && cb()
   }).catch(() => {
@@ -270,7 +274,7 @@ const larksuiteToken = async () => {
   if (!code || !state) {
     return null
   }
-  const res = await request.post({url: '/larksuite/token', data: {code, state}})
+  const res = await platformTokenApi(7, { code, state })
   userStore.setToken(res.data)
   return res.data
 }
@@ -281,7 +285,7 @@ const dingtalkToken = async () => {
   if (!code || !state) {
     return null
   }
-  const res = await request.post({url: '/dingtalk/token', data: {code, state}})
+  const res = await platformTokenApi(5, { code, state })
   userStore.setToken(res.data)
   return res.data
 }
@@ -329,16 +333,12 @@ onMounted(() => {
   wsCache.delete('de-platform-client')
   init(async () => {
     const state = callBackType()
-    if (state?.includes('_de_bind')) {
-      const sep = '_path_'
-      const sepIdx = state.indexOf(sep)
-      if (sepIdx > -1) {
-        const prefix = state.substring(sepIdx + sep.length)
-        const cleanState = state.substring(0, sepIdx)
-        const params = new URLSearchParams(window.location.search)
-        params.set('state', cleanState)
-        window.location.href = window.location.origin + '/' + prefix + '/?' + params.toString() + window.location.hash
-        return
+    if (isBindingCallback(state)) {
+      const pending = pendingBinding(state)
+      if (pending && pending.returnPath !== bindingReturnPath()) {
+        window.location.replace(
+          bindingCallbackPath(pending) + window.location.search + window.location.hash
+        )
       }
       return
     } else if (window.location.pathname.includes('/casbi/')) {

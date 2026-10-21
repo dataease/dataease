@@ -14,7 +14,7 @@ const resetForm = () => {
   exportDialogShow.value = false
 }
 const showExportCenterWindow = () => {
-  exportDialogShow.value = false
+  exportDialogShow.value = true
   exportCenterWindow.value = true
   nextTick(() => {
     ExportExcelRef.value.init()

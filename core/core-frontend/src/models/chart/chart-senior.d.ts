@@ -87,6 +87,10 @@ declare interface ChartAssistLineCfg {
  * 辅助线
  */
 declare interface AssistLine {
+  /** 跟随绑定指标的图例显隐；历史配置缺省为不跟随 */
+  followField?: boolean
+  /** 固定值辅助线的可选绑定指标，不参与数值计算 */
+  boundFieldId?: string
   /**
    * 辅助线名称
    */
@@ -172,10 +176,14 @@ declare interface TableThreshold {
    */
   conditions: Threshold[]
 }
+declare type TableConditionScope = 'detail' | 'subtotal' | 'total'
+
 /**
  * 阈值
  */
 declare interface Threshold {
+  /** 表格条件样式应用范围；缺省保持历史行为。 */
+  applyTo?: TableConditionScope[]
   /**
    * 最小值
    */

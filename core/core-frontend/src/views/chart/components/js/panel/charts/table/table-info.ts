@@ -1,5 +1,6 @@
 import {
   Frame,
+  FrozenFacet,
   type LayoutResult,
   S2DataConfig,
   S2Event,
@@ -31,11 +32,42 @@ import {
   mapKeyToField,
   setupColumnTitle,
   calcTreeWidth,
-  getStartPosition,
-  getS2Renderer
+  getStartPosition
 } from '@/views/chart/components/js/panel/common/common_table'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 
 const { t } = useI18n()
+
+const alignSvgBodyClip = (sheet: TableSheet) => {
+  if (!(sheet.getCanvasElement() instanceof SVGSVGElement)) {
+    return
+  }
+  const facet = sheet.facet
+  if (!(facet instanceof FrozenFacet)) {
+    return
+  }
+  const { panelBBox, frozenGroupAreas, frozenGroups } = facet
+  // 从原始布局取边界，避免重复滚动或 DPR 变化时沿用已经取整的裁剪值。
+  const y = panelBBox.y + frozenGroupAreas.frozenRow.height
+  const bottom = panelBBox.y + panelBBox.viewportHeight - frozenGroupAreas.frozenTrailingRow.height
+  if (bottom <= y) {
+    return
+  }
+  const pixelRatio = window.devicePixelRatio
+  // 裁剪与背景 crispEdges 使用 SVG 自身的像素网格，半像素边界向下取整，避免滚动时透底。
+  const top = Math.ceil(y * pixelRatio - 0.5) / pixelRatio
+  const groups = [
+    facet.panelScrollGroup,
+    frozenGroups.frozenColGroup,
+    frozenGroups.frozenTrailingColGroup
+  ]
+  groups.forEach(group => {
+    const clip = group.style.clipPath
+    if (clip?.nodeName === 'rect') {
+      clip.setAttributes({ y: top, height: bottom - top })
+    }
+  })
+}
 
 class DetailDataCell extends CustomDataCell {
   protected getResizedTextMaxLines(): number | undefined {
@@ -353,6 +385,13 @@ export class TableInfo extends S2ChartView<TableSheet> {
     }
     // 开始渲染
     const newChart = new TableSheet(containerDom, s2DataConfig, s2Options)
+    // S2 在每次布局和滚动时重新设置裁剪，仅对明细表的 SVG 裁剪上沿进行对齐。
+    const dvMainStore = dvMainStoreWithOut()
+    const enableSvgRenderer = dvMainStore?.canvasStyleData?.enableSvgRenderer
+    if (enableSvgRenderer && tableHeader.showHorizonBorder === false) {
+      newChart.on(S2Event.LAYOUT_AFTER_RENDER, () => alignSvgBodyClip(newChart))
+      newChart.on(S2Event.GLOBAL_SCROLL, () => alignSvgBodyClip(newChart))
+    }
     if (tableCell.mergeCells && basicStyle.showHoverStyle !== false) {
       setupMergedCellHover(newChart)
     }

@@ -22,6 +22,7 @@
 </template>
 
 <script lang="ts" setup>
+import { Filter } from '@element-plus/icons-vue'
 import { computed, ref } from 'vue'
 import { ElTooltip } from 'element-plus-secondary'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'

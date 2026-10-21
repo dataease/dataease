@@ -187,11 +187,11 @@ onMounted(() => {
       @mousedown="handleMousedown"
       @blur="handleBlur"
       @input="handleInput"
-      v-html="sanitizedPropValue"
+      v-dompurify-html="sanitizedPropValue"
     ></div>
   </div>
   <div v-else class="v-text preview" ref="textOut" :style="varStyle">
-    <div class="marquee-txt" ref="text" v-html="sanitizedPropValue"></div>
+    <div class="marquee-txt" ref="text" v-dompurify-html="sanitizedPropValue"></div>
   </div>
 </template>
 

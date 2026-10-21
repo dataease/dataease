@@ -180,7 +180,7 @@ const timestampFormatDate = value => {
         >
           <template #default="scope">
             <div class="threshold-content-col">
-              <div v-html="sanitizeHtml(scope.row.content)"></div>
+              <div v-dompurify-html="sanitizeHtml(scope.row.content)"></div>
             </div>
           </template>
         </el-table-column>

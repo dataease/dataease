@@ -3,6 +3,7 @@ import { formatterItem, valueFormatter } from '@/views/chart/components/js/forma
 import {
   copyContent,
   CustomDataCell,
+  drawImage,
   getRowIndex,
   setupMergedCellHover,
   getSummaryRow,
@@ -34,6 +35,12 @@ import {
 import { isEqual, isNumber, merge } from 'lodash-es'
 import { TABLE_EDITOR_PROPERTY, TABLE_EDITOR_PROPERTY_INNER } from './common'
 const { t } = useI18n()
+
+class ImageCell extends CustomDataCell {
+  drawTextShape(): void {
+    drawImage.apply(this)
+  }
+}
 
 type TableHeaderAlign = Exclude<ChartTableHeaderAttr['tableHeaderAlign'], 'custom'>
 type TableHeaderTheme = S2Theme & {
@@ -116,6 +123,12 @@ export class TableNormal extends S2ChartView<TableSheet> {
 
     // fields
     let fields = chart.data.fields
+    // 图片识别包含下钻维度，但排除 URL 字段的计数指标。
+    const imageFields = new Set(
+      [...chart.xAxis, ...(chart.drillFields ?? [])]
+        .filter(field => field.deType === 7)
+        .map(field => field.dataeaseName)
+    )
 
     const columns = []
     const meta = []
@@ -266,6 +279,12 @@ export class TableNormal extends S2ChartView<TableSheet> {
     }
     // 列宽设置
     s2Options.style = this.configStyle(chart, s2DataConfig)
+    if (basicStyle.tableColumnMode === 'adapt') {
+      s2Options.style.colCell.widthByField = {
+        ...s2Options.style.colCell.widthByField,
+        ...Object.fromEntries([...imageFields].map(field => [field, 120]))
+      }
+    }
     // 行列冻结
     if (tableCell.tableFreeze && !tableCell.mergeCells) {
       s2Options.frozen.colCount = tableCell.tableColumnFreezeHead ?? 0
@@ -299,7 +318,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
       }
     }
     // 配置总计和序号列
-    this.configSummaryRowAndIndex(chart, pageInfo, s2Options, s2DataConfig)
+    this.configSummaryRowAndIndex(chart, pageInfo, s2Options, s2DataConfig, imageFields)
     // 开始渲染
     const newChart = new TableSheet(containerDom, s2DataConfig, s2Options)
     if (tableCell.mergeCells && basicStyle.showHoverStyle !== false) {
@@ -341,15 +360,27 @@ export class TableNormal extends S2ChartView<TableSheet> {
         // 与 S2 画布和左侧边框使用同一宽度口径，避免小数尺寸造成横向溢出
         const borderWidth = Frame.getVerticalBorderWidth(newChart)
         const availableWidth = Math.max(0, Math.floor(newChart.options.width - borderWidth))
-        const originalTotalWidth = ev.colLeafNodes.reduce((total, node) => total + node.width, 0)
-        const shouldExpand = originalTotalWidth > 0 && originalTotalWidth < availableWidth
+        let fixedWidth = 0
+        ev.colLeafNodes.forEach(node => {
+          if (imageFields.has(node.field)) {
+            node.width = 120
+            fixedWidth += 120
+          }
+        })
+        const originalTotalWidth = ev.colLeafNodes.reduce(
+          (total, node) => total + (imageFields.has(node.field) ? 0 : node.width),
+          0
+        )
+        const scalableWidth = Math.max(0, availableWidth - fixedWidth)
+        const shouldExpand = originalTotalWidth > 0 && originalTotalWidth < scalableWidth
         let originalWidthSum = 0
         let assignedWidth = 0
         ev.colLeafNodes.forEach(node => {
+          if (imageFields.has(node.field)) return
           if (shouldExpand) {
             originalWidthSum += node.width
             // 按累计边界取整，保证列宽为整数且总宽恰好填满可用区域
-            const nextWidth = Math.round((originalWidthSum / originalTotalWidth) * availableWidth)
+            const nextWidth = Math.round((originalWidthSum / originalTotalWidth) * scalableWidth)
             node.width = nextWidth - assignedWidth
             assignedWidth = nextWidth
           } else {
@@ -399,6 +430,8 @@ export class TableNormal extends S2ChartView<TableSheet> {
       }
       action(param)
     })
+    // 合并单元格复用普通单元格的点击链路，保留下钻、联动和图片放大入口。
+    newChart.on(S2Event.MERGED_CELLS_CLICK, e => newChart.emit(S2Event.DATA_CELL_CLICK, e))
     // tooltip
     const { show } = tooltip
     if (show) {
@@ -451,7 +484,8 @@ export class TableNormal extends S2ChartView<TableSheet> {
     chart: Chart,
     pageInfo: PageInfo,
     s2Options: S2Options,
-    s2DataConfig: S2DataConfig
+    s2DataConfig: S2DataConfig,
+    imageFields: Set<string>
   ) {
     const { tableHeader, basicStyle, tableCell } = parseJson(chart.customAttr)
     const { showSummary, summaryLabel } = basicStyle
@@ -489,6 +523,9 @@ export class TableNormal extends S2ChartView<TableSheet> {
           viewMeta.fieldValue =
             pageInfo.pageSize * (pageInfo.currentPage - 1) + viewMeta.rowIndex + 1
         }
+      }
+      if (imageFields.has(viewMeta.valueField) && chart.showPosition !== 'dialog') {
+        return new ImageCell(viewMeta, sheet)
       }
       return new CustomDataCell(viewMeta, sheet)
     }

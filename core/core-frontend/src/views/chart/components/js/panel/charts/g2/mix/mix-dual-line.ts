@@ -1,3 +1,4 @@
+import { configureMixSeries, formatMixSeriesLegend, createMixSeriesTooltip } from './mix-series'
 import { G2ChartView, G2DrawOptions } from '../../../types/impl/g2'
 import {
   flow,
@@ -38,11 +39,9 @@ import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 import {
   bindPlotBackgroundClick,
   createTooltipWrapper,
-  getSeriesIndexMapByRelations,
   getMixTooltipGroupIndex,
   getMixTooltipGroupName,
   renderGroupedTooltipItems,
-  sortMixTooltipItems,
   tooltipCss,
   tooltipMaxHeight
 } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
@@ -468,12 +467,25 @@ export class GroupLineMix extends G2ChartView {
     const leftRelations = leftLineMark.scale.color.relations
     const rightRelations = lineMark.scale.color.relations
     // 底部水平图例与柱线、堆叠柱线组合图保持相同的留白位置
-    return configMixCustomLegend(chart, options, leftRelations, rightRelations, {
+    const result = configMixCustomLegend(chart, options, leftRelations, rightRelations, {
       alignBottom: true,
       // 仅增加左右居中分页图例的留白，占位仍由公共图例布局计算
       sideLegendGap: 16,
       compactPagedSideLegend: true
     })
+    const [leftLine, leftPoint, rightLine, rightPoint] = result.children.find(
+      child => child.key === 'chart'
+    ).children
+    const series = configureMixSeries([
+      { axis: 'left', marks: [leftLine, leftPoint], relations: leftRelations },
+      { axis: 'right', marks: [rightLine, rightPoint], relations: rightRelations }
+    ])
+    const legendMark = result.children.find(child => child.key === 'legend')
+    if (legendMark) {
+      legendMark.scale.color = { ...series.scale }
+      formatMixSeriesLegend(legendMark, series.names)
+    }
+    return result
   }
 
   protected configLabel(chart: Chart, options: G2Spec): G2Spec {
@@ -508,11 +520,11 @@ export class GroupLineMix extends G2ChartView {
       return sourceTooltipItems.filter(item => item.field === title)
     }
     const yAxis = chart.yAxis
-    // 读取左右轴 color relations，保持 tooltip 系列顺序与图例一致
-    const seriesIndexMap = getSeriesIndexMapByRelations([
-      ...(leftLineMark.scale?.color?.relations || []),
-      ...(lineMark.scale?.color?.relations || [])
-    ])
+    const seriesTooltip = createMixSeriesTooltip(
+      chart,
+      chartObj,
+      leftLineMark.scale.color.relations
+    )
     const tooltipOptions: G2Spec = {
       tooltip: d => d,
       interaction: {
@@ -530,27 +542,27 @@ export class GroupLineMix extends G2ChartView {
             if (tooltip.seriesTooltipFormatter?.length) {
               items = items.filter(item => formatterMap[quotaIdOf(item)]?.show !== false)
             }
-            items = filterValidMixTooltipItems(items)
+            items = filterValidMixTooltipItems(items).filter(seriesTooltip.visible)
             const result = []
-            const view = chartObj.getContext().views.find(v => v.key === 'chart')
             items.forEach(item => {
               const formatterCfg =
                 formatterMap[quotaIdOf(item)]?.formatterCfg ?? yAxis[0].formatterCfg
               const value = valueFormatter(item.value, formatterCfg)
               const name = item.category
-              const colorScale = item.left ? view?.scale?.color : view?.scale?.color2
-              const color = colorScale?.map?.(name) ?? item.color
+              const seriesKey = seriesTooltip.keyOf(item)
+              const color = seriesTooltip.color(item)
               // 记录 tooltip 项所属维度分组，供后续分组标题和排序使用
               result.push({
                 value,
                 color,
                 name,
+                seriesKey,
                 groupName: getMixTooltipGroupName(chart, item),
                 groupIndex: getMixTooltipGroupIndex(chart, item)
               })
             })
             // 混合图 tooltip 先按维度分组，再按图例系列顺序排列
-            sortMixTooltipItems(result, seriesIndexMap)
+            result.sort(seriesTooltip.compare)
             const itemsHtml = renderGroupedTooltipItems(
               result,
               item => item.groupName,
@@ -580,14 +592,30 @@ export class GroupLineMix extends G2ChartView {
     const { xAxis } = parseJson(chart.customStyle)
     const view = options.children.find(c => c.key === 'chart')
     // 固定 x 轴顺序
-    const { leftData: xAxisData } = context
+    const { leftData: xAxisData, rightData } = context
     const xAxisSort = xAxisData.map(d => d.field)
+    const fields = [...new Set([...xAxisData, ...rightData].map(d => d.field))].sort(
+      (a, b) => xAxisSort.indexOf(a) - xAxisSort.indexOf(b)
+    )
+    const fieldOrder = new Map(fields.map((field, index) => [field, index]))
+    const [leftLineMark, , rightLineMark] = view.children
+    // 保留系列首次出现顺序，仅按实际 X 轴顺序整理各折线，避免悬浮范围误判
+    const sortLineData = data => {
+      const series = [...new Set(data.map(d => d.category))]
+      return [...data].sort(
+        (a, b) =>
+          series.indexOf(a.category) - series.indexOf(b.category) ||
+          fieldOrder.get(a.field) - fieldOrder.get(b.field)
+      )
+    }
+    leftLineMark.data.value = sortLineData(leftLineMark.data.value)
+    rightLineMark.data = sortLineData(rightLineMark.data)
     defaultsDeep(view, {
       scale: {
         x: {
           range: [0, 1],
           compare: (a, b) => {
-            return xAxisSort.indexOf(a) - xAxisSort.indexOf(b)
+            return fieldOrder.get(a) - fieldOrder.get(b)
           }
         }
       }
@@ -788,7 +816,8 @@ export class GroupLineMix extends G2ChartView {
       const { scaleY, visibleLineData, visibility } = getMixAssistLineOptions(
         index === 0 ? leftLineMark : rightLineMark,
         lineData,
-        index
+        index,
+        assistLineCfg.assistLine
       )
       if (visibleLineData.length) {
         const assistLineMark: G2Spec = {

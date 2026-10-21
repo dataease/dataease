@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { fieldType } from '@/utils/attr'
+import { useI18n } from '@/hooks/web/useI18n'
+import Icon from '@/components/icon-custom/src/Icon.vue'
+import icon_copy_outlined from '@/assets/svg/icon_copy_outlined.svg'
+import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import type { FieldItemData } from '../../types/plugin'
 import { getSpreadsheetFieldIcon } from '../../utils/field-icon'
 
@@ -11,6 +15,9 @@ interface Props {
   showConfig?: boolean
   dragged?: boolean
   selected?: boolean
+  showCopy?: boolean
+  showDelete?: boolean
+  actionDisabled?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -18,10 +25,17 @@ const props = withDefaults(defineProps<Props>(), {
   showRemove: true,
   showConfig: true,
   dragged: false,
-  selected: false
+  selected: false,
+  showCopy: false,
+  showDelete: false,
+  actionDisabled: false
 })
 
+const { t } = useI18n()
+
 const emit = defineEmits<{
+  copy: [field: FieldItemData]
+  delete: [field: FieldItemData]
   remove: [index: number]
   config: [field: FieldItemData, index: number]
   click: [field: FieldItemData, index: number, event: MouseEvent]
@@ -81,6 +95,7 @@ const handleClick = (e: MouseEvent) => {
       selected: props.selected
     }"
     :data-id="field.id"
+    :tabindex="showCopy || showDelete ? 0 : undefined"
     draggable="true"
     @dragstart="handleDragStart"
     @dragend="emit('dragend')"
@@ -98,6 +113,32 @@ const handleClick = (e: MouseEvent) => {
     <span class="field-name" :title="chartShowName">
       {{ chartShowName }}
     </span>
+    <button
+      v-if="showCopy"
+      type="button"
+      class="field-action"
+      :disabled="actionDisabled"
+      :title="t('commons.copy')"
+      :aria-label="t('commons.copy')"
+      @mousedown.stop
+      @dragstart.stop.prevent
+      @click.stop="emit('copy', field)"
+    >
+      <Icon><icon_copy_outlined /></Icon>
+    </button>
+    <button
+      v-if="showDelete"
+      type="button"
+      class="field-action"
+      :disabled="actionDisabled"
+      :title="t('commons.delete')"
+      :aria-label="t('commons.delete')"
+      @mousedown.stop
+      @dragstart.stop.prevent
+      @click.stop="emit('delete', field)"
+    >
+      <Icon><icon_deleteTrash_outlined /></Icon>
+    </button>
   </div>
 </template>
 
@@ -113,6 +154,12 @@ const handleClick = (e: MouseEvent) => {
 
   &:hover {
     background: #f5f7fa;
+  }
+
+  // 隐藏时保留占位，避免字段名跳动；键盘聚焦时也能操作。
+  &:hover .field-action,
+  &:focus-within .field-action {
+    visibility: visible;
   }
 
   &.dragged {
@@ -139,6 +186,32 @@ const handleClick = (e: MouseEvent) => {
     text-overflow: ellipsis;
     white-space: nowrap;
     flex: 1;
+  }
+
+  .field-action {
+    visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: #646a73;
+    cursor: pointer;
+
+    // SVG 原始尺寸为 24px，随按钮缩放以避免向下溢出。
+    :deep(svg) {
+      width: 100%;
+      height: 100%;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
   }
 }
 </style>

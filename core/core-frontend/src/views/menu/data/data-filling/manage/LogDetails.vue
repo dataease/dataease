@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { Loading } from '@element-plus/icons-vue'
 import {defineEmits, onUnmounted, ref} from 'vue'
 import {logMsgApi} from './task_api'
 import {useI18n} from "@/hooks/web/useI18n";
@@ -100,7 +101,7 @@ defineExpose({jobLogDetailVisible, startInterval})
       </template>
 
       <div v-scroll-bottom class="job-log-detail-class">
-        <span v-html="logContent"/>
+        <span v-dompurify-html="logContent"/>
         <span v-if="loading">
         <el-icon class="is-loading">
           <Loading/>

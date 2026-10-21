@@ -44,7 +44,6 @@ const uploadAgain = ref();
 const excelName = ref(undefined);
 const dataList = ref<Array<any>>([]);
 const excelId = ref(undefined);
-const excelPath = ref(undefined);
 
 const status = ref(false);
 
@@ -136,7 +135,6 @@ const handleExcelDel = () => {
   dataList.value = [];
   excelName.value = undefined;
   excelId.value = undefined;
-  excelPath.value = undefined;
 };
 
 const componentList = ref({
@@ -291,7 +289,6 @@ function uploadSuccess(res) {
 
   excelName.value = res.data.excelName;
   excelId.value = res.data.id;
-  excelPath.value = res.data.path;
 
   const _list: Array<any> = map(res.data.dataList, (d) => d.data);
 
@@ -308,8 +305,6 @@ function save() {
   loading.value = true;
   const param = {
     excelId: excelId.value,
-    excelName: excelName.value,
-    excelPath: excelPath.value,
   };
 
   if (props.taskInstanceId) {

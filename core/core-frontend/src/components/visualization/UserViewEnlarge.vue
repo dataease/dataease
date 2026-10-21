@@ -152,6 +152,7 @@
 </template>
 
 <script setup lang="ts">
+import { waitForResourceImages } from '@/utils/resourceImageCache'
 import ComponentWrapper from '@/components/data-visualization/canvas/ComponentWrapper.vue'
 import { computed, h, nextTick, reactive, ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -435,7 +436,8 @@ const htmlToImage = () => {
   const renderTime = 2000
   setTimeout(() => {
     initWatermark()
-    toPng(viewContainer.value)
+    waitForResourceImages(viewContainer.value)
+      .then(() => toPng(viewContainer.value))
       .then(dataUrl => {
         downLoading.value = false
         const a = document.createElement('a')

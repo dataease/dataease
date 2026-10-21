@@ -30,6 +30,8 @@ public interface CoreDatasetTableFieldRepository extends JpaRepository<CoreDatas
         Specification<CoreDatasetTableField> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(cb.equal(root.get("datasetTableId"), datasetTableId));
+            // 数据集更新只清理原字段，保留图表和电子表格实例的字段副本。
+            predicates.add(cb.isNull(root.get("chartId")));
             if (fieldIds != null && !fieldIds.isEmpty()) {
                 predicates.add(cb.not(root.get("id").in(fieldIds)));
             }
@@ -43,6 +45,7 @@ public interface CoreDatasetTableFieldRepository extends JpaRepository<CoreDatas
         Specification<CoreDatasetTableField> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(cb.equal(root.get("datasetGroupId"), datasetGroupId));
+            predicates.add(cb.isNull(root.get("chartId")));
             if (fieldIds != null && !fieldIds.isEmpty()) {
                 predicates.add(cb.not(root.get("id").in(fieldIds)));
             }

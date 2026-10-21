@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ArrowLeftBold, Plus } from '@element-plus/icons-vue'
 import {filter, find, findIndex, forEach, map} from 'lodash-es'
 import {useI18n} from "@/hooks/web/useI18n";
 import {computed, onMounted, onUnmounted, ref} from "vue";
@@ -332,10 +333,10 @@ onUnmounted(() => {
     >
       <template #header>
         <div style="flex: 1; display: flex; flex-direction: row; align-items: center">
-          <el-button class="back-btn" icon="ArrowLeftBold" link @click="closeDialog"/>
+          <el-button class="back-btn" :icon="ArrowLeftBold" link @click="closeDialog"/>
           <div class="title">{{ title }}</div>
         </div>
-        <el-button v-if="edit && append" class="add-btn" type="primary" icon="Plus" link @click="addRowData"/>
+        <el-button v-if="edit && append" class="add-btn" type="primary" :icon="Plus" link @click="addRowData"/>
       </template>
       <el-main class="df-main" v-loading="loading">
 
@@ -346,7 +347,7 @@ onUnmounted(() => {
             {{ getEmptyDesc() }}
           </template>
           <template v-else>
-            <el-button v-if="edit && append" type="primary" icon="Plus" link @click="addRowData">
+            <el-button v-if="edit && append" type="primary" :icon="Plus" link @click="addRowData">
               {{ t("data_fill.data.add_data") }}
             </el-button>
           </template>

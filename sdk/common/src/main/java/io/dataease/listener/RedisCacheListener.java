@@ -6,12 +6,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.annotation.Order;
+import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Component;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +19,8 @@ import java.util.List;
 @Component
 @Order(100)
 public class RedisCacheListener implements ApplicationListener<ApplicationReadyEvent> {
+
+    private static final int DELETE_BATCH_SIZE = 1000;
 
     @Resource
     private RedisTemplate redisTemplate;
@@ -36,21 +38,20 @@ public class RedisCacheListener implements ApplicationListener<ApplicationReadyE
     public void deleteKeysContainingString(RedisTemplate<String, String> redisTemplate, String searchString) {
         // 扫描所有的key
         ScanOptions scanOptions = ScanOptions.scanOptions().match("*" + searchString + "*").count(1000).build();
-        Cursor<byte[]> cursor = redisTemplate.getConnectionFactory()
-                .getConnection()
-                .scan(scanOptions);
-
-        List<byte[]> keysToDelete = new ArrayList<>();
-        while (cursor.hasNext()) {
-            keysToDelete.add(cursor.next());
-        }
-
-        if (!keysToDelete.isEmpty()) {
-            List<String> keys = new ArrayList<>(keysToDelete.size());
-            for (byte[] key : keysToDelete) {
-                keys.add(new String(key, StandardCharsets.UTF_8));
+        try (RedisConnection connection = redisTemplate.getConnectionFactory().getConnection();
+             Cursor<byte[]> cursor = connection.scan(scanOptions)) {
+            List<byte[]> keysToDelete = new ArrayList<>(DELETE_BATCH_SIZE);
+            while (cursor.hasNext()) {
+                // SCAN 返回原始键，避免经 RedisTemplate 再次序列化。
+                keysToDelete.add(cursor.next());
+                if (keysToDelete.size() == DELETE_BATCH_SIZE) {
+                    connection.keyCommands().del(keysToDelete.toArray(new byte[0][]));
+                    keysToDelete.clear();
+                }
             }
-            redisTemplate.delete(keys);
+            if (!keysToDelete.isEmpty()) {
+                connection.keyCommands().del(keysToDelete.toArray(new byte[0][]));
+            }
         }
     }
 }

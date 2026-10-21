@@ -134,6 +134,7 @@
 </template>
 
 <script lang="ts" setup>
+import { formatDate } from '@/utils/DateUtil'
 import { reactive, ref, onMounted} from 'vue'
 import { startPickerOptions, timeType, weekType, monthType } from './formUtil'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -154,7 +155,7 @@ const props = defineProps({
 const timeTypeValue = ref(1)
 const weekTypeValue = ref(1)
 const monthTypeValue = ref(1)
-const timePicker = ref(new Date(new Date().format('yyyy-MM-dd') + ' 09:00:00'))
+const timePicker = ref(new Date(formatDate(new Date(), 'yyyy-MM-dd') + ' 09:00:00'))
 
 const validateMin = (rule, value, callback) => {
   if (props.rateFormData?.startTime === value)
@@ -338,7 +339,7 @@ const formatRate2Data = () => {
   if (timeTypeValue.value === 3) {
     dayTime = monthTypeValue.value < 10 ? `0${monthTypeValue.value}` : monthTypeValue.value.toString()
   }
-  const hms = timePicker.value ? new Date(timePicker.value).format("hh:mm:ss") : "00:00:01"
+  const hms = timePicker.value ? formatDate(new Date(timePicker.value), "hh:mm:ss") : "00:00:01"
   const tmText = `2021-08-${dayTime} ${hms}`
   return { rateType: timeTypeValue.value, rateVal: tmText, startTime, endTime, retryEnable, retryLimit, retryInterval }
 }

@@ -11,7 +11,7 @@ import { cloneDeep } from 'lodash-es'
 import { getDeEngine, getSchema } from '@/api/datasource'
 import { CustomPassword } from '@/components/custom-password'
 import { Base64 } from 'js-base64'
-import { symmetricDecrypt } from '@/utils/encryption'
+import { symmetricDecryptJson } from '@/utils/encryption'
 import { Icon } from '@/components/icon-custom'
 import { useAppStoreWithOut } from '@/store/modules/app'
 const DatasourceEnableDataFilling = defineAsyncComponent(
@@ -225,7 +225,7 @@ const handleTypeChange = () => {
 const edit = () => {
   loadDsPlugin()
   getDeEngine()
-    .then(res => {
+    .then(async res => {
       let {
         name,
         createBy,
@@ -243,7 +243,7 @@ const edit = () => {
         enableDataFill
       } = res.data
       if (configuration) {
-        configuration = JSON.parse(symmetricDecrypt(configuration))
+        configuration = await symmetricDecryptJson(configuration)
       }
       Object.assign(nodeInfo, {
         name,
@@ -380,12 +380,7 @@ defineExpose({
       label-position="top"
     >
       <el-form-item :label="t('datasource.type')">
-        <el-select
-          v-model="nodeInfo.type"
-          class="de-select"
-          :disabled="nodeInfo.type === 'h2'"
-          @change="handleTypeChange"
-        >
+        <el-select v-model="nodeInfo.type" class="de-select" @change="handleTypeChange">
           <el-option
             v-for="item in engineTypeOptions"
             :key="item.type"

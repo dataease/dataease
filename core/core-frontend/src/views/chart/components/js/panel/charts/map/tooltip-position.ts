@@ -2,8 +2,15 @@ const TOOLTIP_CURSOR_GAP = 12
 const TOOLTIP_EDGE_GAP = 8
 const tooltipPositionBindings = new WeakMap<HTMLElement, () => void>()
 
+/**
+ * 容器复用或图表卸载时释放定位监听和待执行的动画帧
+ */
+export function unbindMapTooltipPosition(container: HTMLElement | null | undefined) {
+  if (container) tooltipPositionBindings.get(container)?.()
+}
+
 export function bindMapTooltipPosition(container: HTMLElement, selector: string) {
-  tooltipPositionBindings.get(container)?.()
+  unbindMapTooltipPosition(container)
   let frame: number | undefined
   let clientX = 0
   let clientY = 0
@@ -62,9 +69,13 @@ export function bindMapTooltipPosition(container: HTMLElement, selector: string)
   container.addEventListener('mousemove', onMouseMove)
   container.addEventListener('mouseleave', cancelFrame)
   // 图表重新配置时替换旧监听，避免同一容器反复叠加定位操作
-  tooltipPositionBindings.set(container, () => {
+  const cleanup = () => {
     cancelFrame()
     container.removeEventListener('mousemove', onMouseMove)
     container.removeEventListener('mouseleave', cancelFrame)
-  })
+    if (tooltipPositionBindings.get(container) === cleanup) {
+      tooltipPositionBindings.delete(container)
+    }
+  }
+  tooltipPositionBindings.set(container, cleanup)
 }

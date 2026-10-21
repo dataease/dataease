@@ -1,4 +1,5 @@
 <script lang="tsx" setup>
+import RemoteTransferSettings from './RemoteTransferSettings.vue'
 import icon_calendar_outlined from '@/assets/svg/icon_calendar_outlined.svg'
 import {
   ref,
@@ -19,6 +20,7 @@ import { iconFieldMap } from '@/components/icon-group/field-list'
 import { Icon } from '@/components/icon-custom'
 import { ElForm, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import Cron from '@/components/cron/src/Cron.vue'
+import { hasInvalidCronWeekdayW } from '@/components/cron/src/validation'
 import { boolean } from 'mathjs'
 import SheetTabs from '@/views/visualized/data/datasource/SheetTabs.vue'
 import { loadRemoteFile, save, update } from '@/api/datasource'
@@ -142,7 +144,10 @@ const initForm = type => {
   form.value.configuration = {
     url: '',
     userName: '',
-    passwd: ''
+    passwd: '',
+    domain: '',
+    maxFileSizeMb: 100,
+    transferTimeoutSeconds: 120
   }
   form.value.syncSetting = {
     updateType: 'all_scope',
@@ -342,6 +347,12 @@ const apiRule = {
   ],
   'syncSetting.cron': [
     {
+      validator: (_rule, value, callback) => {
+        callback(hasInvalidCronWeekdayW(value) ? new Error(t('cron.invalid_weekday_w')) : undefined)
+      },
+      trigger: ['change', 'blur']
+    },
+    {
       required: true,
       message: t('common.cron_exp'),
       trigger: 'change'
@@ -424,10 +435,19 @@ const loadData = () => {
           activeTab.value = ''
           tabList.value = []
           Object.assign(sheetObj, cloneDeep(defaultSheetObj))
-          if (error.code === 'ECONNABORTED') {
+          // The shared interceptor already reports standard Axios timeouts and HTTP errors.
+          // Report transport failures without a response; intentional cancellation stays silent.
+          if (
+            !error?.response &&
+            !error?.message?.includes('timeout of') &&
+            ['ERR_NETWORK', 'ECONNABORTED', 'ETIMEDOUT'].includes(error?.code)
+          ) {
             ElMessage({
               type: 'error',
-              message: error.message,
+              message:
+                error.code === 'ETIMEDOUT'
+                  ? t('common.timeout_tips')
+                  : t('datasource.remote_file_load_interrupted'),
               showClose: true
             })
           }
@@ -790,6 +810,23 @@ defineExpose({
             v-model="form.configuration.passwd"
           />
         </el-form-item>
+        <el-form-item
+          v-if="/^smb:\/\//i.test(form.configuration.url?.trim() || '')"
+          v-show="activeStep !== 2"
+          :label="t('datasource.smb_domain')"
+        >
+          <el-input
+            v-model="form.configuration.domain"
+            autocomplete="off"
+            :placeholder="t('datasource.smb_domain_placeholder')"
+          />
+        </el-form-item>
+        <remote-transfer-settings
+          v-show="activeStep !== 2"
+          v-model:model="form.configuration"
+          file
+          prefix="configuration."
+        />
         <el-form-item v-show="activeStep !== 2">
           <el-button type="primary" @click="loadData()">
             {{ t('datasource.load_data') }}
@@ -958,6 +995,7 @@ defineExpose({
         </div>
       </template>
       <el-form
+        @submit.prevent
         ref="dsApiForm"
         :model="form"
         style="margin-top: 24px"

@@ -77,15 +77,14 @@ public class DatasetCacheManage {
     }
 
     /**
-     * 校验表是否存在：检查该数据源的缓存表列表中是否包含此表
-     * 如果缓存中没有该数据源的表列表，则放行（由调用方确保缓存已填充）
+     * 校验表是否存在：必须在该数据源的已加载表清单中精确匹配。
+     * 表名缺失或表目录为空时 fail-closed 拒绝，不再放行。
      */
     public void validateTable(Long datasourceId, String tableName) {
-        if (StringUtils.isBlank(tableName)) return;
-        List<String> cachedTables = getCachedTablesByDatasource(datasourceId);
-        if (cachedTables.isEmpty()) {
-            return;
+        if (datasourceId == null || StringUtils.isBlank(tableName)) {
+            DEException.throwException(Translator.get("i18n_dataset_table_not_exist"));
         }
+        List<String> cachedTables = getCachedTablesByDatasource(datasourceId);
         boolean exists = cachedTables.stream()
                 .anyMatch(t -> StringUtils.equalsIgnoreCase(t, tableName));
         if (!exists) {

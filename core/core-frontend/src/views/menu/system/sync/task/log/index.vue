@@ -9,8 +9,9 @@ import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.s
 import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { ElIcon, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
-import { onMounted, onUnmounted, reactive, ref } from 'vue'
-import { clear, getTaskLogListApi, removeApi } from '@/api/sync/syncTaskLog'
+import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
+import { clear, getClearResult, getTaskLogListApi, removeApi } from '@/api/sync/syncTaskLog'
+import type { TaskLogClearResult } from '@/api/sync/syncTaskLog'
 import { some, find } from 'lodash-es'
 import dayjs from 'dayjs'
 import LogDetails from './LogDetails.vue'
@@ -140,8 +141,11 @@ const partDataUpdate = () => {
 }
 onMounted(() => {
   search()
+  loadCleanupResult()
 })
 onUnmounted(() => {
+  cleanupDisposed = true
+  stopCleanupPolling()
   stopInterval()
 })
 const pageChange = (index: any) => {
@@ -247,6 +251,40 @@ const clearLogForm = reactive({
   jobId: '',
   clearType: '1'
 })
+const cleanupResult = ref<TaskLogClearResult | null>(null)
+const cleanupVisible = ref(false)
+const cleanupSubmitting = ref(false)
+const cleanupReadFailed = ref(false)
+const cleanupActive = computed(() =>
+  ['QUEUED', 'RUNNING'].includes(cleanupResult.value?.status ?? '')
+)
+let cleanupTimer: ReturnType<typeof setTimeout> | undefined
+let cleanupDisposed = false
+let cleanupGeneration = 0
+const stopCleanupPolling = () => {
+  if (cleanupTimer !== undefined) clearTimeout(cleanupTimer)
+  cleanupTimer = undefined
+}
+const loadCleanupResult = async () => {
+  const generation = ++cleanupGeneration
+  stopCleanupPolling()
+  try {
+    const { data } = await getClearResult()
+    if (cleanupDisposed || generation !== cleanupGeneration) return
+    const wasActive = cleanupActive.value
+    cleanupResult.value = data
+    cleanupReadFailed.value = false
+    if (wasActive && !cleanupActive.value) search()
+    if (cleanupActive.value) cleanupTimer = setTimeout(loadCleanupResult, 3000)
+  } catch {
+    if (cleanupDisposed || generation !== cleanupGeneration) return
+    cleanupReadFailed.value = true
+  }
+}
+const showCleanupResult = () => {
+  cleanupVisible.value = true
+  loadCleanupResult()
+}
 const clearJobLog = (clearTypeLabel: string) => {
   ElMessageBox.confirm(t('sync_task.confirm_clear_msg', [clearTypeLabel]), {
     confirmButtonText: t('sync_task.clear'),
@@ -257,14 +295,28 @@ const clearJobLog = (clearTypeLabel: string) => {
     autofocus: false,
     showClose: false
   }).then(() => {
-    clear(clearLogForm).then(() => {
-      clearJobLogDialogRef.value.clearJobLogDialogFormVisible = false
-      ElMessage({
-        message: t('sync_task.op_success_refresh'),
-        type: 'success'
+    if (cleanupSubmitting.value) return
+    cleanupSubmitting.value = true
+    clear(clearLogForm)
+      .then(({ data }) => {
+        if (cleanupDisposed) return
+        cleanupGeneration++
+        stopCleanupPolling()
+        cleanupResult.value = data
+        cleanupReadFailed.value = false
+        clearJobLogDialogRef.value.clearJobLogDialogFormVisible = false
+        ElMessage.success(
+          t(data.status === 'SUCCEEDED' ? 'sync_task.cleanup_empty' : 'sync_task.cleanup_submitted')
+        )
+        cleanupVisible.value = true
+        if (cleanupActive.value) cleanupTimer = setTimeout(loadCleanupResult, 1000)
       })
-      search()
-    })
+      .catch(() => {
+        // 参数错误由统一拦截器展示，保留清理弹窗便于处理
+      })
+      .finally(() => {
+        cleanupSubmitting.value = false
+      })
   })
 }
 const filterOption = [
@@ -351,9 +403,14 @@ const drawerMainClose = () => {
     >
       <el-row class="ds-table__filter top-operate">
         <el-col :span="12">
-          <el-button @click="showClearJobLogDialogFormVisible" type="primary">{{
-            t('sync_task.clear_log')
-          }}</el-button>
+          <el-button
+            @click="showClearJobLogDialogFormVisible"
+            :loading="cleanupSubmitting"
+            :disabled="cleanupActive"
+            type="primary"
+            >{{ t('sync_task.clear_log') }}</el-button
+          >
+          <el-button @click="showCleanupResult">{{ t('sync_task.cleanup_result') }}</el-button>
         </el-col>
         <el-col :span="12" class="right-filter">
           <el-input
@@ -487,6 +544,28 @@ const drawerMainClose = () => {
       </div>
     </div>
   </div>
+  <el-dialog v-model="cleanupVisible" :title="t('sync_task.cleanup_result')" width="620px">
+    <p>{{ t('sync_task.cleanup_retention') }}</p>
+    <p v-if="cleanupReadFailed">{{ t('sync_task.cleanup_read_failed') }}</p>
+    <template v-if="cleanupResult">
+      <p>
+        {{ t('sync_task.cleanup_status') }}：{{
+          t(`sync_task.cleanup_${cleanupResult.status.toLowerCase()}`)
+        }}
+      </p>
+      <p>{{ t('sync_task.cleanup_total', [cleanupResult.total]) }}</p>
+      <p>{{ dayjs(cleanupResult.createdTime).format('YYYY-MM-DD HH:mm:ss') }}</p>
+      <p v-if="cleanupResult.status === 'FAILED'">{{ t('sync_task.cleanup_failed_help') }}</p>
+      <pre v-if="cleanupResult.message" class="cleanup-error-message">{{
+        cleanupResult.message
+      }}</pre>
+    </template>
+    <p v-else-if="!cleanupReadFailed">{{ t('sync_task.cleanup_no_result') }}</p>
+    <template #footer>
+      <el-button @click="loadCleanupResult">{{ t('sync_task.cleanup_refresh') }}</el-button>
+      <el-button @click="cleanupVisible = false">{{ t('sync_task.cleanup_close') }}</el-button>
+    </template>
+  </el-dialog>
   <log-details
     ref="jobLogDetailRef"
     :job-log-status="logStatus"
@@ -507,6 +586,13 @@ const drawerMainClose = () => {
 </template>
 
 <style lang="less">
+.cleanup-error-message {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 280px;
+  overflow: auto;
+}
+
 .source-ds-table_log {
   line-height: 1.15;
   border-radius: 12px !important;

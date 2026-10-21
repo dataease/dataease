@@ -15,6 +15,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import eventBus from '@/utils/eventBus'
 import { storeToRefs } from 'pinia'
 import { useI18n } from '@/hooks/web/useI18n'
+import { QuestionFilled } from '@element-plus/icons-vue'
 interface SelectConfig {
   id: string
   conditionValueOperatorF: string
@@ -29,6 +30,8 @@ interface SelectConfig {
   defaultConditionValueOperatorS: string
   defaultConditionValueS: string
   conditionType: number
+  conditionSeparatorType?: string
+  conditionSeparatorCustom?: string
 }
 const placeholder: Ref = inject('placeholder')
 const { t } = useI18n()
@@ -50,6 +53,23 @@ const operators = [
     value: 'like'
   }
 ]
+const conditionSeparatorOptions = computed(() => [
+  { label: t('v_query.separator_comma'), value: 'comma' },
+  { label: t('v_query.separator_chinese_comma'), value: 'chineseComma' },
+  { label: t('v_query.separator_semicolon'), value: 'semicolon' },
+  { label: t('v_query.separator_space'), value: 'space' },
+  { label: t('v_query.separator_newline'), value: 'newline' },
+  { label: t('v_query.separator_custom'), value: 'custom' }
+])
+const conditionSeparatorHint = computed(() => {
+  const separatorType = config.value.conditionSeparatorType || 'comma'
+  const separator =
+    separatorType === 'custom'
+      ? config.value.conditionSeparatorCustom
+      : conditionSeparatorOptions.value.find(ele => ele.value === separatorType)?.label ||
+        conditionSeparatorOptions.value[0].label
+  return t('v_query.separator_hint', { separator })
+})
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
 const props = defineProps({
@@ -151,12 +171,13 @@ onBeforeUnmount(() => {
   <div
     @mousedown="handleInnerMouseDown"
     class="text-search-select"
+    :class="{ 'multi-condition': config.conditionType === 3 }"
     :style="{ background: customStyle.background }"
   >
     <div class="condition-type">
       <el-select
         class="condition-value-select"
-        v-if="!config.hideConditionSwitching"
+        v-if="!config.hideConditionSwitching && config.conditionType !== 3"
         @change="handleValueChange"
         :effect="dvInfo.type === 'dataV' ? 'dark' : ''"
         popper-class="condition-value-select-popper"
@@ -166,6 +187,25 @@ onBeforeUnmount(() => {
         </el-option>
       </el-select>
       <el-input
+        v-if="config.conditionType === 3"
+        :style="selectStyle"
+        :placeholder="placeholderText"
+        @blur="handleValueChange"
+        ref="pre"
+        class="condition-value-input"
+        :rows="2"
+        v-model="config.conditionValueF"
+      >
+        <template #suffix>
+          <el-icon
+            :title="`${conditionSeparatorHint}，${t('v_query.multi_condition_paste_hint')}`"
+            class="multi-condition-tip"
+            ><QuestionFilled
+          /></el-icon>
+        </template>
+      </el-input>
+      <el-input
+        v-else
         :style="selectStyle"
         :placeholder="placeholderText"
         @blur="handleValueChange"
@@ -209,6 +249,16 @@ onBeforeUnmount(() => {
 .text-search-select {
   display: flex;
   align-items: center;
+
+  &.multi-condition {
+    align-items: flex-start;
+  }
+
+  .multi-condition-tip {
+    color: #8f959e;
+    cursor: pointer;
+  }
+
   .condition-type {
     display: flex;
     position: relative;

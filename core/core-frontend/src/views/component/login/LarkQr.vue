@@ -6,6 +6,7 @@
 import { loadScript } from '@/utils/RemoteJs'
 import request from '@/config/axios'
 import { propTypes } from '@/utils/propTypes'
+import { onUnmounted } from 'vue'
 interface LarkQrInfo {
   client_id?: string
   state?: string
@@ -14,14 +15,24 @@ interface LarkQrInfo {
 
 const props = defineProps({
   isBind: propTypes.bool.def(false),
+  bindState: propTypes.string.def(''),
+  bindRedirectUri: propTypes.string.def('')
 })
 const emit = defineEmits(['finish'])
 const remoteJsUrl =
   'https://lf-package-cn.feishucdn.com/obj/feishu-static/lark/passport/qrcode/LarkSSOSDKWebQRCode-1.0.3.js'
 const jsId = 'de-lark-qr-id'
+let disposed = false
+let removeMessageListener: (() => void) | undefined
+onUnmounted(() => {
+  disposed = true
+  removeMessageListener?.()
+})
 const init = () => {
+  if (props.isBind && (!props.bindState || !props.bindRedirectUri)) return
   loadScript(remoteJsUrl, jsId).then(() => {
     getQrInfo().then(res => {
+      if (disposed) return
       const data = formatQrResult(res.data)
       loadQr(data.client_id, data.state, data.redirect_uri)
     })
@@ -39,13 +50,8 @@ const formatQrResult = (data): LarkQrInfo => {
   result.state = 'fit2cloud-lark-qr'
   result.redirect_uri = data.callBack
   if (props.isBind) {
-    result.state += '_de_bind'
-    const pathname = window.location.pathname
-    if (pathname.includes('oidcbi/')) {
-      result.state += '_path_oidcbi'
-    } else if (pathname.includes('casbi/')) {
-      result.state += '_path_casbi'
-    }
+    result.state = props.bindState
+    result.redirect_uri = props.bindRedirectUri
   }
   return result
 }
@@ -65,11 +71,8 @@ const loadQr = (CLIENT_ID, STATE, REDIRECT_URI) => {
       window.location.href = url
     }
   }
-  if (typeof window.addEventListener != 'undefined') {
-    window.addEventListener('message', handleMessage, false)
-  } else if (typeof window['attachEvent'] != 'undefined') {
-    window['attachEvent']('onmessage', handleMessage)
-  }
+  window.addEventListener('message', handleMessage, false)
+  removeMessageListener = () => window.removeEventListener('message', handleMessage, false)
 }
 init()
 </script>

@@ -18,6 +18,7 @@ import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.DefaultHostnameVerifier;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.ContentType;
@@ -34,6 +35,7 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.SSLContext;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -56,6 +58,16 @@ public class HttpClientUtil {
     private static Logger logger = LoggerFactory.getLogger(HttpClientUtil.class);
 
     private static final String HTTPS = "https";
+
+    /**
+     * 系统参数 basic.ignoreSslVerify 的运行时开关：
+     * false（默认）启用严格 TLS 证书与主机名校验；true 为显式选择的兼容策略。
+     */
+    private static volatile boolean ignoreSslVerify = false;
+
+    public static void setIgnoreSslVerify(boolean ignoreSslVerify) {
+        HttpClientUtil.ignoreSslVerify = ignoreSslVerify;
+    }
 
     /**
      * 根据url构建HttpClient（区分http和https）
@@ -82,14 +94,7 @@ public class HttpClientUtil {
     private static CloseableHttpClient buildHttpClient(boolean ssl) {
         try {
             if (ssl) {
-                SSLContextBuilder builder = new SSLContextBuilder();
-                builder.loadTrustMaterial(null, (X509Certificate[] x509Certificates, String s) -> true);
-                SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(builder.build(), new String[]{"TLSv1.1", "TLSv1.2", "SSLv3"}, null, NoopHostnameVerifier.INSTANCE);
-                Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
-                        .register("http", new PlainConnectionSocketFactory())
-                        .register("https", socketFactory).build();
-                HttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager(registry);
-                return HttpClients.custom().setConnectionManager(connManager).build();
+                return buildSslHttpClient();
             } else {
                 // http
                 return HttpClientBuilder.create().build();
@@ -97,6 +102,23 @@ public class HttpClientUtil {
         } catch (Exception e) {
             throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient查询失败: " + e.getMessage());
         }
+    }
+
+    private static CloseableHttpClient buildSslHttpClient() throws Exception {
+        Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
+                .register("http", new PlainConnectionSocketFactory())
+                .register("https", buildSslSocketFactory()).build();
+        HttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager(registry);
+        return HttpClients.custom().setConnectionManager(connManager).build();
+    }
+
+    private static SSLConnectionSocketFactory buildSslSocketFactory() throws Exception {
+        if (!ignoreSslVerify) {
+            return new SSLConnectionSocketFactory(SSLContext.getDefault(), new String[]{"TLSv1.2", "TLSv1.3"}, null, new DefaultHostnameVerifier());
+        }
+        SSLContextBuilder builder = new SSLContextBuilder();
+        builder.loadTrustMaterial(null, (X509Certificate[] x509Certificates, String s) -> true);
+        return new SSLConnectionSocketFactory(builder.build(), new String[]{"TLSv1.1", "TLSv1.2", "SSLv3"}, null, NoopHostnameVerifier.INSTANCE);
     }
 
     public static boolean validateUrl(String url, HttpClientConfig config) {
@@ -113,7 +135,7 @@ public class HttpClientUtil {
             for (String key : header.keySet()) {
                 httpGet.addHeader(key, header.get(key));
             }
-            HttpResponse response = httpClient.execute(httpGet);
+            HttpResponse response = executeBounded(httpClient, httpGet, config.getMaxResponseBytes(), config.getResponseTimeout());
             if (response.getStatusLine().getStatusCode() >= 400) {
                 String msg = EntityUtils.toString(response.getEntity(), config.getCharset());
                 if (StringUtils.isEmpty(msg)) {
@@ -121,6 +143,8 @@ public class HttpClientUtil {
                 }
                 throw new Exception(msg);
             }
+            httpGet.abort();
+            if (response.getEntity() != null) response.getEntity().getContent().close();
             return true;
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
@@ -158,7 +182,7 @@ public class HttpClientUtil {
             for (String key : header.keySet()) {
                 httpGet.addHeader(key, header.get(key));
             }
-            HttpResponse response = httpClient.execute(httpGet);
+            HttpResponse response = executeBounded(httpClient, httpGet, config.getMaxResponseBytes(), config.getResponseTimeout());
             return getResponseStr(response, config);
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
@@ -189,7 +213,7 @@ public class HttpClientUtil {
             entityBuilder.setContentType(ContentType.APPLICATION_JSON);
             HttpEntity requestEntity = entityBuilder.build();
             httpPatch.setEntity(requestEntity);
-            HttpResponse response = httpClient.execute(httpPatch);
+            HttpResponse response = executeBounded(httpClient, httpPatch, config.getMaxResponseBytes(), config.getResponseTimeout());
             return getResponseStr(response, config);
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
@@ -230,7 +254,7 @@ public class HttpClientUtil {
             HttpEntity requestEntity = entityBuilder.build();
             httpPost.setEntity(requestEntity);
 
-            HttpResponse response = httpClient.execute(httpPost);
+            HttpResponse response = executeBounded(httpClient, httpPost, config.getMaxResponseBytes(), config.getResponseTimeout());
             return getResponseStr(response, config);
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
@@ -265,7 +289,7 @@ public class HttpClientUtil {
             HttpEntity requestEntity = entityBuilder.build();
             httpPost.setEntity(requestEntity);
 
-            HttpResponse response = httpClient.execute(httpPost);
+            HttpResponse response = executeBounded(httpClient, httpPost, config.getMaxResponseBytes(), config.getResponseTimeout());
             return response;
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
@@ -300,7 +324,7 @@ public class HttpClientUtil {
             HttpEntity requestEntity = entityBuilder.build();
             httpPut.setEntity(requestEntity);
 
-            HttpResponse response = httpClient.execute(httpPut);
+            HttpResponse response = executeBounded(httpClient, httpPut, config.getMaxResponseBytes(), config.getResponseTimeout());
             return getResponseStr(response, config);
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
@@ -359,11 +383,40 @@ public class HttpClientUtil {
                 }
             }
 
-            HttpResponse response = httpClient.execute(httpPost);
+            HttpResponse response = executeBounded(httpClient, httpPost, config.getMaxResponseBytes(), config.getResponseTimeout());
             return getResponseStr(response, config);
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
             throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient查询失败: " + e.getMessage());
+        }
+    }
+
+    private static CloseableHttpResponse executeBounded(CloseableHttpClient client, HttpRequestBase request,
+                                                        long maxBytes, long timeoutMs) throws IOException {
+        RemoteTransfer transfer = new RemoteTransfer(maxBytes, timeoutMs, request::abort);
+        try {
+            CloseableHttpResponse response = client.execute(request);
+            HttpEntity entity = response.getEntity();
+            if (entity == null) {
+                transfer.close();
+            } else {
+                transfer.checkLength(entity.getContentLength());
+                response.setEntity(new org.apache.http.entity.HttpEntityWrapper(entity) {
+                    private InputStream stream;
+                    @Override public InputStream getContent() throws IOException {
+                        if (stream == null) stream = transfer.wrap(super.getContent());
+                        return stream;
+                    }
+                    @Override public void writeTo(OutputStream output) throws IOException {
+                        try (InputStream input = getContent()) { input.transferTo(output); }
+                    }
+                });
+            }
+            return response;
+        } catch (IOException | RuntimeException e) {
+            request.abort();
+            transfer.close();
+            throw e;
         }
     }
 
@@ -381,6 +434,8 @@ public class HttpClientUtil {
     public static Map<String, String> downloadFile(String url, HttpClientConfig config, String path) {
         String encodeUIl = url;
         Map<String, String> name = new HashMap<>();
+        Path localFile = null;
+        boolean completed = false;
         if (!url.contains("%")) {
             String[] http = url.split("://");
             String[] server = http[1].split("/");
@@ -392,7 +447,7 @@ public class HttpClientUtil {
             httpGet.setConfig(config.buildRequestConfig());
             // 设置请求头
             config.getHeader().forEach(httpGet::addHeader);
-            HttpResponse response = httpClient.execute(httpGet);
+            HttpResponse response = executeBounded(httpClient, httpGet, config.getMaxFileBytes(), config.getResponseTimeout());
             if (response.getStatusLine().getStatusCode() >= 400) {
                 String msg = EntityUtils.toString(response.getEntity(), config.getCharset());
                 if (StringUtils.isEmpty(msg)) {
@@ -405,7 +460,7 @@ public class HttpClientUtil {
             String tranName = UUID.randomUUID().toString() + "." + suffix;
             name.put("fileName", fileName);
             name.put("tranName", tranName);
-            Path localFile = resolveDownloadPath(path, tranName);
+            localFile = resolveDownloadPath(path, tranName);
             try (InputStream is = response.getEntity().getContent();
                  OutputStream outputStream = Files.newOutputStream(localFile)) {
                 byte[] buffer = new byte[4096];
@@ -414,9 +469,15 @@ public class HttpClientUtil {
                     outputStream.write(buffer, 0, bytesRead);
                 }
             }
+            completed = true;
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
             throw new RuntimeException("HttpClient查询失败: " + e.getMessage(), e);
+        } finally {
+            if (!completed && localFile != null) {
+                try { Files.deleteIfExists(localFile); }
+                catch (IOException cleanup) { logger.warn("Cannot remove incomplete remote file", cleanup); }
+            }
         }
         return name;
     }
@@ -500,7 +561,7 @@ public class HttpClientUtil {
 
             // 设置请求头
             config.getHeader().forEach(httpGet::addHeader);
-            HttpResponse response = httpClient.execute(httpGet);
+            HttpResponse response = executeBounded(httpClient, httpGet, config.getMaxResponseBytes(), config.getResponseTimeout());
             try (InputStream inputStream = response.getEntity().getContent();
                  ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 
@@ -550,7 +611,7 @@ public class HttpClientUtil {
         }
         try {
             postRequest.setEntity((HttpEntity) builder.build());
-            return getResponseStr(httpClient.execute(postRequest), config);
+            return getResponseStr(executeBounded(httpClient, postRequest, config.getMaxResponseBytes(), config.getResponseTimeout()), config);
         } catch (Exception var11) {
             logger.error("HttpClient查询失败", var11);
             throw new RuntimeException("HttpClient查询失败: " + var11.getMessage());
@@ -600,7 +661,7 @@ public class HttpClientUtil {
         }
         try {
             postRequest.setEntity(builder.build());
-            return getResponseStr(httpClient.execute(postRequest), config);
+            return getResponseStr(executeBounded(httpClient, postRequest, config.getMaxResponseBytes(), config.getResponseTimeout()), config);
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
             throw new RuntimeException("HttpClient查询失败: " + e.getMessage());
@@ -629,7 +690,7 @@ public class HttpClientUtil {
             for (String key : header.keySet()) {
                 httpDelete.addHeader(key, header.get(key));
             }
-            HttpResponse response = httpClient.execute(httpDelete);
+            HttpResponse response = executeBounded(httpClient, httpDelete, config.getMaxResponseBytes(), config.getResponseTimeout());
             return getResponseStr(response, config);
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
@@ -702,7 +763,7 @@ public class HttpClientUtil {
                     throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient转换编码错误: " + e.getMessage());
                 }
             }
-            HttpResponse response = httpClient.execute(httpPost);
+            HttpResponse response = executeBounded(httpClient, httpPost, config.getMaxResponseBytes(), config.getResponseTimeout());
             return getResponseStr(response, config);
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
@@ -735,7 +796,7 @@ public class HttpClientUtil {
             entityBuilder.setText(body);
             entityBuilder.setContentType(ContentType.parse(contentType).withCharset(java.nio.charset.StandardCharsets.UTF_8));
             httpPost.setEntity(entityBuilder.build());
-            HttpResponse response = httpClient.execute(httpPost);
+            HttpResponse response = executeBounded(httpClient, httpPost, config.getMaxResponseBytes(), config.getResponseTimeout());
             return getResponseStr(response, config);
         } catch (Exception e) {
             logger.error("HttpClient POST raw body failed", e);
@@ -754,13 +815,9 @@ public class HttpClientUtil {
     private static CloseableHttpClient buildRedirectingHttpClient(boolean ssl) throws Exception {
         HttpClientBuilder builder = HttpClientBuilder.create();
         if (ssl) {
-            SSLContextBuilder sslContextBuilder = new SSLContextBuilder();
-            sslContextBuilder.loadTrustMaterial(null, (X509Certificate[] x509Certificates, String s) -> true);
-            SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(sslContextBuilder.build(),
-                    new String[]{"TLSv1.1", "TLSv1.2", "SSLv3"}, null, NoopHostnameVerifier.INSTANCE);
             Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
                     .register("http", new PlainConnectionSocketFactory())
-                    .register("https", socketFactory).build();
+                    .register("https", buildSslSocketFactory()).build();
             builder.setConnectionManager(new PoolingHttpClientConnectionManager(registry));
         }
         builder.setRedirectStrategy(new DefaultRedirectStrategy(new String[]{"GET", "HEAD", "POST", "PUT", "DELETE"}));
@@ -784,7 +841,7 @@ public class HttpClientUtil {
             entityBuilder.setText(body);
             entityBuilder.setContentType(ContentType.parse(contentType).withCharset(java.nio.charset.StandardCharsets.UTF_8));
             httpPut.setEntity(entityBuilder.build());
-            HttpResponse response = httpClient.execute(httpPut);
+            HttpResponse response = executeBounded(httpClient, httpPut, config.getMaxResponseBytes(), config.getResponseTimeout());
             return getResponseStr(response, config);
         } catch (Exception e) {
             logger.error("HttpClient PUT raw body failed", e);
@@ -822,7 +879,7 @@ public class HttpClientUtil {
             httpPost.setEntity(requestEntity);
 
 
-            try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
+            try (CloseableHttpResponse response = executeBounded(httpClient, httpPost, config.getMaxResponseBytes(), config.getResponseTimeout())) {
                 if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
                     throw new DEException(response.getStatusLine().getStatusCode(), response.toString());
                 }

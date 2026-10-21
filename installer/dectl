@@ -71,10 +71,22 @@ function _prepare_apisix() {
       need_init_apisix=true
       DE_APISIX_KEY=$(head -c 32 /dev/urandom | base64 | sed 's#/#+#g')
       export DE_APISIX_KEY=$DE_APISIX_KEY
-      cd $DE_RUNNING_BASE
-      env | grep DE_ >.env
-      sed -i -e "s/DE_APISIX_KEY/${DE_APISIX_KEY}/g" $DE_RUNNING_BASE/apisix/apisix_conf/config.yaml
-      sed -i -e "s/DE_APISIX_KEY/${DE_APISIX_KEY}/g" $DE_RUNNING_BASE/conf/application.yml
+      cd "$DE_RUNNING_BASE" || return 1
+      local staged_env config_file
+      [[ ! -L "$DE_RUNNING_BASE/.env" ]] || return 1
+      for config_file in "$DE_RUNNING_BASE"/conf/application*.yml "$DE_RUNNING_BASE/conf/mysql.env"; do
+         [[ -e "$config_file" || -L "$config_file" ]] || continue
+         [[ -f "$config_file" && ! -L "$config_file" ]] || return 1
+         chmod 600 "$config_file" || return 1
+      done
+      staged_env=$(mktemp "$DE_RUNNING_BASE/.de-env.XXXXXX") || return 1
+      if ! (set -o pipefail; env | grep '^DE_' > "$staged_env") ||
+         ! chmod 600 "$staged_env" || ! mv -f -- "$staged_env" "$DE_RUNNING_BASE/.env"; then
+         rm -f -- "$staged_env"
+          return 1
+      fi
+      sed -i -e "s/DE_APISIX_KEY/${DE_APISIX_KEY}/g" "$DE_RUNNING_BASE/apisix/apisix_conf/config.yaml" || return 1
+      sed -i -e "s/DE_APISIX_KEY/${DE_APISIX_KEY}/g" "$DE_RUNNING_BASE/conf/application.yml" || return 1
    fi
 }
 function _healthcheck() {
@@ -119,7 +131,7 @@ function _get_available_server() {
 
    for git_url in ${git_urls[*]}; do      
       echo -ne "检测 ${git_url} ... "
-      curl -m 5 -kIs https://${git_url} >/dev/null
+      curl --fail -m 5 -Is "https://${git_url}" >/dev/null
       if [ $? != 0 ]; then
          echo "failed"
       else
@@ -130,62 +142,54 @@ function _get_available_server() {
    done
 }
 function _get_latest_version() {
-   rm -f /tmp/de_latest_release
-
    _get_available_server
-   if [[ "x${server_url}" == "x" ]];then
-      echo "无法连接版本服务器，请稍候重试"
-      exit 1
+   if [[ -z "$server_url" ]]; then
+      echo "无法连接版本服务器，请稍候重试" >&2
+      return 1
    fi
 
    if [[ -x "$(command -v python)" ]]; then
       py_cmd='python'
    elif [[ -x "$(command -v python3)" ]]; then
       py_cmd='python3'
+   else
+      echo "未找到 Python，请先安装 Python 后重试。" >&2
+      return 1
    fi
 
-   $py_cmd - <<EOF
+   if ! latest_version=$("$py_cmd" - <<'EOF'
 # -*- coding: UTF-8 -*-
-import os
 import json
 import re
+import subprocess
+import sys
 
-latest_release=""
-release_pattern="v3\.\d+\.\d+$"
-
-def get_releases(page):
-   try:
-      releases=os.popen("curl -s https://api.github.com/repos/dataease/dataease/releases?page=%d" % (page)).read()
-      releases=[ x["name"] for x in json.loads(releases) if x["prerelease"] == False ]
-   except Exception as e:
-      print(str(e))
-      print("Failed to obtain Release information, please check the network.")
-      exit(1)
-   else:
-      for release in releases:
-         if re.search(release_pattern,release) != None:
-            return release
-
-page = 1
-while (page <= 3):
-   latest_release = get_releases(page)
-   if (latest_release != "" and latest_release != None):
-      break
-   page += 1
-
-if latest_release == None or latest_release == "":
-   print("Failed to obtain latest version, please try again.")
-   exit(1)
-
-# 记录最新版本号
-os.popen("echo "+latest_release+" > /tmp/de_latest_release")
+# 只接受完整的 ASCII v3 版本号，不能把远端元数据拼入 Shell。
+release_pattern = r"\Av3\.[0-9]+\.[0-9]+\Z"
+try:
+    for page in range(1, 4):
+        response = subprocess.check_output([
+            "curl", "--fail", "--silent", "--show-error", "--connect-timeout", "10",
+            "--max-time", "30",
+            "https://api.github.com/repos/dataease/dataease/releases?page=%d" % page
+        ])
+        for release in json.loads(response):
+            if release.get("prerelease") or release.get("draft"):
+                continue
+            version = release.get("tag_name", "")
+            if isinstance(version, (type(""), type(u""))) and re.match(release_pattern, version):
+                sys.stdout.write(version)
+                sys.exit(0)
+except Exception:
+    sys.stderr.write("Failed to obtain Release information, please check the network.\n")
+    sys.exit(1)
+sys.stderr.write("Failed to obtain latest version, please try again.\n")
+sys.exit(1)
 EOF
-
-   if [ ! -f /tmp/de_latest_release ]; then
-      echo "获取最新版本失败，请检查网络连接是否正常"
-      exit 1
+   ); then
+      echo "获取最新版本失败，请检查网络连接是否正常" >&2
+      return 1
    fi
-   latest_version=$(cat /tmp/de_latest_release)
 }
 function status() {
    echo
@@ -217,7 +221,7 @@ function status() {
 }
 function start() {
    echo
-   _check_apisix_init
+   _check_apisix_init || return 1
    _generate_compose_file_args
    cd ${DE_RUNNING_BASE}
    ${compose_cmd} ${compose_files} up -d
@@ -240,11 +244,11 @@ function version() {
    echo
    _get_current_version
    echo "current version is $current_version"
-   _get_latest_version
+   _get_latest_version || return 1
    echo "latest version is $latest_version"
 }
 function upgrade() {
-   version
+   version || return 1
 
    if [ "${latest_version}" = "" ]; then
       echo "未获取到最新版本"
@@ -268,7 +272,7 @@ function upgrade() {
 
    installer_file="dataease-online-installer-${latest_version}-ce.tar.gz"
    download_url="https://${server_url}/dataease/dataease/releases/download/${latest_version}/$installer_file"
-   curl -LOk -m 60 -o $installer_file $download_url
+   curl --fail -L -m 60 -o "$installer_file" "$download_url"
    if [ $? -ne 0 ]; then
       echo -e "\e[31m升级失败:连接下载服务器超时！\n可手动下载升级包，然后执行\e[1;33m /bin/bash install.sh \e[0;31m离线升级，也可以重新执行一次 dectl upgrade 命令。\e[0m"
       exit 1

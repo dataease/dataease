@@ -6,11 +6,10 @@ import App from './App.vue'
 import { setupI18n } from '@/plugins/vue-i18n'
 import { setupStore } from '@/store'
 import { setupRouter } from '@/router/mobile'
-import { setupElementPlus, setupElementPlusIcons } from '@/plugins/element-plus'
+import { setupElementPlus } from '@/plugins/element-plus'
 // 注册数据大屏组件
 import { setupCustomComponent } from '@/custom-component'
 import { installDirective } from '@/directive'
-import '@/utils/DateUtil'
 import '@/permissionMobile'
 const setupAll = async () => {
   const app = createApp(App)
@@ -20,7 +19,6 @@ const setupAll = async () => {
   setupRouter(app)
   setupElementPlus(app)
   setupCustomComponent(app)
-  setupElementPlusIcons(app)
   app.mount('#app')
 }
 

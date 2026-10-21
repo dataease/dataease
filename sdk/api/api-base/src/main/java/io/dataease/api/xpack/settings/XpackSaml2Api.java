@@ -18,4 +18,7 @@ public interface XpackSaml2Api {
 
     @GetMapping("/login")
     void login();
+
+    @PostMapping("/login")
+    String loginUrl();
 }
