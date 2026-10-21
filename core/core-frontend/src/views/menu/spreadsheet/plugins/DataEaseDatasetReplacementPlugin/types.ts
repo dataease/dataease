@@ -9,6 +9,7 @@ export interface DatasetIdentity {
 
 export interface ReplacementField {
   id: string
+  chartId?: string | number
   name: string
   dataeaseName?: string
   groupType: ReplacementFieldGroup
@@ -20,6 +21,7 @@ export interface ReplacementField {
 
 export interface FieldUsageFragment {
   fieldId: string
+  chartId?: string | number
   name: string
   dataeaseName?: string
   groupType: ReplacementFieldGroup
@@ -32,6 +34,7 @@ export interface FieldUsageFragment {
 
 export interface DatasetUsageFragment {
   dataset: DatasetIdentity
+  fieldOwnerId?: string
   componentId: string
   componentName?: string
   componentType?: 'plugin' | 'filter'
@@ -53,6 +56,7 @@ export interface FieldUsage extends FieldUsageFragment {
 
 export interface DatasetUsage {
   dataset: DatasetIdentity
+  fieldOwnerIds?: string[]
   componentIds: string[]
   componentCount: number
   components: DatasetUsageComponent[]
@@ -87,7 +91,7 @@ export interface DatasetReplacementAdapter {
   readonly type: string
   collect(unitId: string, componentId?: string): DatasetUsageFragment[]
   snapshot(unitId: string, componentIds: string[]): unknown
-  replace(unitId: string, mappings: DatasetMapping[], componentIds: string[]): void
+  replace(unitId: string, mappings: DatasetMapping[], componentIds: string[]): void | Promise<void>
   restore(unitId: string, snapshot: unknown): void
   refresh(
     unitId: string,

@@ -46,6 +46,7 @@
 </template>
 
 <script setup lang="ts">
+import { Delete, EditPen } from '@element-plus/icons-vue'
 import dvNoImg from '@/assets/svg/dv-no-img.svg'
 import { computed, onMounted, reactive, toRefs } from 'vue'
 import { imgUrlTrans } from '@/utils/imgUtils'

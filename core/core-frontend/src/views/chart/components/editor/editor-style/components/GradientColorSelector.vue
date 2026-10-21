@@ -1,4 +1,5 @@
 <script lang="tsx" setup>
+import { ArrowDown } from '@element-plus/icons-vue'
 import { computed, nextTick, onMounted, reactive, ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, COLOR_CASES } from '@/views/chart/components/editor/util/chart'

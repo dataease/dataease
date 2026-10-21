@@ -1,8 +1,8 @@
-const domSymbol = Symbol('watermark-dom')
+let watermarkId = 0
 
 export function useWatermark(appendEl: HTMLElement | null = document.body) {
   let func: Fn = () => ({})
-  const id = domSymbol.toString()
+  const id = `watermark-dom-${++watermarkId}`
   const clear = () => {
     const domId = document.getElementById(id)
     if (domId) {

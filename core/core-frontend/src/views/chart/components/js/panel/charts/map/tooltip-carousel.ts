@@ -1,7 +1,7 @@
+import { mapTooltipValue } from './mapLegend'
 import { Popup } from '@antv/l7'
 import { Plot } from '@antv/l7plot/dist/lib/core/plot'
 import isEmpty from 'lodash-es/isEmpty'
-import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { parseJson } from '@/views/chart/components/js/util'
 import { Scene } from '@antv/l7-scene'
 import { deepCopy, sanitizeTooltipHtml } from '@/utils/utils'
@@ -674,14 +674,14 @@ export class CarouselManager {
     const formatter = formatterMap[head.quotaList?.[0]?.id]
     if (!isEmpty(formatter)) {
       const originValue = parseFloat(head.value as string)
-      const value = valueFormatter(originValue, formatter.formatterCfg)
+      const value = mapTooltipValue(this.chart, originValue, formatter.formatterCfg)
       const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
       result.push({ ...head, name, value: `${value ?? ''}` })
     }
     head.dynamicTooltipValue?.forEach(item => {
       const formatter = formatterMap[item.fieldId]
       if (formatter) {
-        const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
+        const value = mapTooltipValue(this.chart, parseFloat(item.value), formatter.formatterCfg)
         const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
         result.push({ color: 'grey', name, value: `${value ?? ''}` })
       }

@@ -14,7 +14,7 @@
 
 <script lang="ts" setup>
 import { Icon } from '@/components/icon-custom'
-import request from '@/config/axios'
+import { prepareOauth2Login } from '@/utils/oauth2Login'
 import logo_oauth from "@/assets/svg/logo_oauth.svg";
 
 const emits = defineEmits(['switch-category'])
@@ -23,19 +23,7 @@ const execute = () => {
 }
 
 const toLoginPage = () => {
-  const url = '/oauth2/auth'
-  request.get({ url }).then(res => {
-    const data = res.data
-    if (data?.authEndpoint) {
-      localStorage.removeItem('DE_OAUTH2_CODE_KEY')
-      if (data.codeKey && data.codeKey !== 'null' && typeof data.codeKey !== 'undefined' && data.codeKey !== 'code') {
-        localStorage.setItem('DE_OAUTH2_CODE_KEY', data.codeKey)
-      }
-      const redirectUri = encodeURIComponent(data.redirectUri)
-      const result = `${data.authEndpoint}?response_type=code&client_id=${data.clientId}&scope=${data.scope}&state=${data.state}&redirect_uri=${redirectUri}`
-      window.open(result, '_self')
-    }
-  })
+  prepareOauth2Login().then(url => window.open(url, '_self'))
 }
 defineExpose({
   toLoginPage

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Plus } from '@element-plus/icons-vue'
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'
 import { ElMessage, UploadProps } from 'element-plus-secondary'

@@ -1,9 +1,13 @@
 <template>
   <div
     class="link-container"
-    v-loading="loading || requestStore.loadingMap[permissionStore.currentPath]"
+    v-loading="
+      !loadError &&
+      (loading || (previewReady && requestStore.loadingMap[permissionStore.currentPath]))
+    "
   >
-    <ErrorTemplate v-if="!loading && disableError" :msg="t('link_ticket.disable_error')" />
+    <ErrorTemplate v-if="loadError" :msg="t('link_ticket.load_error')" />
+    <ErrorTemplate v-else-if="!loading && disableError" :msg="t('link_ticket.disable_error')" />
     <ErrorTemplate v-else-if="!loading && iframeError" :msg="t('link_ticket.iframe_error')" />
     <ErrorTemplate
       v-else-if="!loading && peRequireError"
@@ -22,7 +26,7 @@
     />
     <PreviewCanvas
       v-else
-      :class="{ 'hidden-link': loading }"
+      :class="{ 'hidden-link': loading && !previewReady }"
       ref="pcanvas"
       public-link-status
       :ticket-args="state.ticketValidVO.args"
@@ -51,6 +55,8 @@ const disableError = ref(true)
 const peRequireError = ref(true)
 const linkExist = ref(false)
 const loading = ref(true)
+const loadError = ref(false)
+const previewReady = ref(false)
 const linkExp = ref(false)
 const pwdValid = ref(false)
 const { close } = useLoading()
@@ -63,50 +69,54 @@ const state = reactive({
   }
 })
 onMounted(async () => {
-  close()
-  const proxyInfo = (await shareProxy.loadProxy()) as ProxyInfo
-  if (proxyInfo?.shareDisable) {
-    loading.value = false
-    disableError.value = true
-    return
-  }
-  disableError.value = false
-  if (proxyInfo?.inIframeError) {
-    loading.value = false
-    iframeError.value = true
-    return
-  }
-  iframeError.value = false
-  if (proxyInfo && !proxyInfo.peRequireValid) {
-    loading.value = false
-    peRequireError.value = true
-    return
-  }
-  peRequireError.value = false
-  if (!proxyInfo?.resourceId) {
-    loading.value = false
-    return
-  }
-  linkExist.value = true
-  linkExp.value = !!proxyInfo.exp
-  if (!!proxyInfo.exp) {
-    loading.value = false
-    return
-  }
-  pwdValid.value = !!proxyInfo.pwdValid
-  if (!pwdValid.value) {
-    loading.value = false
-    return
-  }
-  state.ticketValidVO = proxyInfo.ticketValidVO
-  nextTick(() => {
-    const method = pcanvas?.value?.loadCanvasDataAsync
-    if (method) {
-      method(proxyInfo.resourceId, proxyInfo.type, null)
+  try {
+    close()
+    const proxyInfo = (await shareProxy.loadProxy()) as ProxyInfo
+    if (proxyInfo?.shareDisable) {
+      disableError.value = true
+      return
     }
+    disableError.value = false
+    if (proxyInfo?.inIframeError) {
+      iframeError.value = true
+      return
+    }
+    iframeError.value = false
+    if (proxyInfo && !proxyInfo.peRequireValid) {
+      peRequireError.value = true
+      return
+    }
+    peRequireError.value = false
+    if (!proxyInfo) {
+      return
+    }
+    linkExist.value = true
+    linkExp.value = !!proxyInfo.exp
+    if (!!proxyInfo.exp) {
+      return
+    }
+    pwdValid.value = !!proxyInfo.pwdValid
+    if (!pwdValid.value) {
+      return
+    }
+    state.ticketValidVO = proxyInfo.ticketValidVO ?? state.ticketValidVO
+    if (!state.ticketValidVO?.ticketValid || state.ticketValidVO.ticketExp) {
+      return
+    }
+    if (!proxyInfo.resourceId) {
+      linkExist.value = false
+      return
+    }
+    previewReady.value = true
+    await nextTick()
+    await pcanvas.value?.loadCanvasDataAsync(proxyInfo.resourceId, proxyInfo.type, null)
+    dvMainStore.setPublicLinkStatus(true)
+  } catch {
+    loadError.value = true
+  } finally {
     loading.value = false
-  })
-  dvMainStore.setPublicLinkStatus(true)
+    close()
+  }
 })
 onBeforeUnmount(() => {
   linkStore.$reset()

@@ -1,5 +1,18 @@
 package io.dataease.engine.utils;
 
+import io.dataease.exception.DEException;
+import io.dataease.i18n.Translator;
+import org.apache.calcite.sql.SqlBasicCall;
+import org.apache.calcite.sql.SqlKind;
+import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlOrderBy;
+import org.apache.calcite.sql.SqlSelect;
+import org.apache.calcite.sql.SqlWith;
+import org.apache.calcite.config.Lex;
+import org.apache.calcite.sql.parser.SqlParseException;
+import org.apache.calcite.sql.parser.SqlParser;
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Optional;
 
 /**

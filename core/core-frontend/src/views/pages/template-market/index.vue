@@ -56,7 +56,7 @@
           <el-input
             class="title-search"
             v-model="state.searchText"
-            prefix-icon="Search"
+            :prefix-icon="Search"
             :placeholder="t('visualization.enter_template_name_tips')"
             :clearable="true"
           />
@@ -189,6 +189,7 @@
 </template>
 
 <script setup lang="ts">
+import { ArrowLeft, Close, Search } from '@element-plus/icons-vue'
 import no_result from '@/assets/svg/no_result.svg'
 import { searchMarket } from '@/api/templateMarket'
 import { useEmbedded } from '@/store/modules/embedded'

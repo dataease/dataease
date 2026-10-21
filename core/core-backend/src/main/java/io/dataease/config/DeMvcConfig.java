@@ -48,6 +48,8 @@ public class DeMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        String uploadPattern = ensureBoth(URL_SEPARATOR + UPLOAD_URL_PREFIX, AuthConstant.DE_API_PREFIX, URL_SEPARATOR) + "**";
+        registry.addInterceptor(new StaticResourceSecurityInterceptor()).addPathPatterns(uploadPattern);
         registry.addInterceptor(linkInterceptor).addPathPatterns("/**");
     }
 }

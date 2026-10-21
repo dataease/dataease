@@ -3,11 +3,16 @@ import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlin
 import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
 import { onMounted, ref, computed } from 'vue'
 import UploadDetail from '@/views/system/font/UploadDetail.vue'
+import FontSettings from '@/views/system/font/FontSettings.vue'
+import { pathValid } from '@/store/modules/permission'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { useI18n } from '@/hooks/web/useI18n'
 import { deleteById, edit, defaultFont } from '@/api/font'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { cloneDeep } from 'lodash-es'
+
+const fontSettings = ref<InstanceType<typeof FontSettings>>()
+const canConfigure = computed(() => pathValid('/sys-setting/font'))
 
 const appearanceStore = useAppearanceStoreWithOut()
 const { t } = useI18n()
@@ -133,6 +138,9 @@ onMounted(() => {
           </template>
         </el-input>
 
+        <el-button v-if="canConfigure" @click="fontSettings?.open()">{{
+          t('system.font_limits_title')
+        }}</el-button>
         <el-button type="primary" @click="uploadFont(t('system.a_new_font'), 'create', {})">
           <template #icon>
             <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
@@ -185,6 +193,7 @@ onMounted(() => {
       </div>
     </div>
   </div>
+  <FontSettings v-if="canConfigure" ref="fontSettings" />
   <UploadDetail @finish="uploadFilish" ref="uploadDetail"></UploadDetail>
 </template>
 

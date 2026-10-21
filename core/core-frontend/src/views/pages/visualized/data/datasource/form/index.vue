@@ -293,22 +293,12 @@ const next = () => {
 }
 
 const complete = (params, successCb, finallyCb) => {
-  excel?.value?.saveExcelDs(
-    params,
-    () => {
-      pid.value = params.pid
-      successCb()
-    },
-    finallyCb
-  )
-  excelRemote?.value?.saveExcelDs(
-    params,
-    () => {
-      pid.value = params.pid
-      successCb()
-    },
-    finallyCb
-  )
+  const onSuccess = () => {
+    pid.value = params?.pid
+    successCb?.()
+  }
+  excel?.value?.saveExcelDs(params, onSuccess, finallyCb)
+  excelRemote?.value?.saveExcelDs(params, onSuccess, finallyCb)
   return
 }
 
@@ -527,7 +517,7 @@ const saveDS = () => {
     validate(val => {
       if (val) {
         if (editDs.value) {
-          complete(null, null, null)
+          complete({ pid: pid.value, name: form2.name })
         } else {
           creatDsFolder.value.createInit('datasource', { id: pid.value }, '', form2.name)
         }
@@ -544,7 +534,7 @@ const saveDS = () => {
         validateApi(v => {
           if (v) {
             if (editDs.value && form2.id) {
-              complete(null, null, null)
+              complete({ pid: pid.value, name: form2.name })
             } else {
               creatDsFolder.value.createInit('datasource', { id: pid.value }, '', form2.name)
             }

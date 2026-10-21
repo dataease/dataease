@@ -63,7 +63,7 @@
         <el-table-column prop="appId" key="appId" label="APP ID" show-overflow-tooltip width="200">
           <template v-slot:default="scope">
             <div class="embedded-line-item">
-              <span v-html="scope.row.appId" />
+              <span v-dompurify-html="scope.row.appId" />
               <el-tooltip effect="dark" :content="t('common.copy')" placement="top">
                 <el-button text @click="copyAppId(scope.row)">
                   <template #icon>
@@ -94,7 +94,7 @@
                   scope.row.appSecret
                 }}</span>
               </el-tooltip>
-              <span v-else v-html="scope.row.show ? scope.row.appSecret : '**********'" />
+              <span v-else v-dompurify-html="scope.row.show ? scope.row.appSecret : '**********'" />
               <el-tooltip effect="dark" :content="t('common.copy')" placement="top">
                 <el-button text @click="copyAppSecret(scope.row)">
                   <template #icon>

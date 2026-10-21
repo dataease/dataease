@@ -1,3 +1,4 @@
+import { formatDate } from '@/utils/DateUtil'
 import {
   BAR_EDITOR_PROPERTY_INNER,
   BAR_RANGE_EDITOR_PROPERTY
@@ -33,7 +34,6 @@ type RangeDateChart = {
   aggregate?: boolean
   yAxis?: Array<{ datePattern?: string; dateStyle?: string }>
 }
-type DateWithFormatter = Date & { format: (format: string) => string }
 type RangeDateTickUnit = 'year' | 'month' | 'day' | 'hour' | 'minute' | 'second'
 
 const RANGE_DATE_TICK_UNIT: Record<string, RangeDateTickUnit> = {
@@ -48,8 +48,7 @@ const RANGE_DATE_TICK_UNIT: Record<string, RangeDateTickUnit> = {
 }
 
 const asRangeDateChart = <T>(chart: T) => chart as T & RangeDateChart
-const formatRangeDate = (date: Date, dateFormat: string) =>
-  (date as DateWithFormatter).format(dateFormat)
+const formatRangeDate = (date: Date, dateFormat: string) => formatDate(date, dateFormat)
 const createRangeDateTickMethod =
   (dateStyle?: string) =>
   (min: Date, max: Date, count = 7) => {

@@ -2,6 +2,9 @@ package io.dataease.font.server;
 
 import io.dataease.api.font.api.FontApi;
 import io.dataease.api.font.dto.FontDto;
+import io.dataease.api.font.dto.FontUploadSettings;
+import io.dataease.api.font.dto.FontUploadSettingsVO;
+import io.dataease.font.manage.FontSettingsManage;
 import io.dataease.exception.DEException;
 import jakarta.annotation.Resource;
 import io.dataease.font.manage.FontManage;
@@ -18,6 +21,19 @@ public class FontServer implements FontApi {
 
     @Resource
     private FontManage fontManage;
+
+    @Resource
+    private FontSettingsManage fontSettingsManage;
+
+    @Override
+    public FontUploadSettingsVO settings() {
+        return fontSettingsManage.query();
+    }
+
+    @Override
+    public void saveSettings(FontUploadSettings settings) {
+        fontSettingsManage.save(settings);
+    }
 
     @Override
     public List<FontDto> list(FontDto fontDto) {

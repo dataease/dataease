@@ -67,6 +67,8 @@ public class DatasetSQLManage {
     @Resource
     private DataSourceManage dataSourceManage;
     @Resource
+    private DatasetCacheManage datasetCacheManage;
+    @Resource
     private DatasetGroupManage datasetGroupManage;
     @Resource
     private CoreDatasetGroupRepository coreDatasetGroupRepository;
@@ -147,6 +149,14 @@ public class DatasetSQLManage {
             UnionDTO unionDTO = union.get(i);
             DatasetTableDTO datasetTable = unionDTO.getCurrentDs();
             DatasetTableInfoDTO tableInfo = JsonUtil.parseObject(datasetTable.getInfo(), DatasetTableInfoDTO.class);
+            // 共享引擎场景：无论客户端 type 如何声明，凡底层数据源为 Excel/API 的表预览都必须校验表归属
+            if (tableInfo != null && !StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetTableType.SQL)) {
+                CoreDatasource dsRecord = dataSourceManage.getCoreDatasource(datasetTable.getDatasourceId());
+                if (dsRecord != null && (StringUtils.contains(dsRecord.getType(), DatasourceConfiguration.DatasourceType.API.name())
+                        || StringUtils.contains(dsRecord.getType(), DatasourceConfiguration.DatasourceType.Excel.name()))) {
+                    datasetCacheManage.validateTable(datasetTable.getDatasourceId(), tableInfo.getTable());
+                }
+            }
 
             String schema;
             if (dsMap.containsKey(datasetTable.getDatasourceId())) {
@@ -519,7 +529,8 @@ public class DatasetSQLManage {
             }
             tableObj = SQLObj.builder().tableSchema("").tableName("(" + sql + ")").tableAlias(tableAlias).build();
         } else {
-            // excel,api
+            // excel,api：实际物理表必须属于当前已授权数据源
+            datasetCacheManage.validateTable(currentDs.getDatasourceId(), infoDTO.getTable());
             tableObj = SQLObj.builder().tableSchema(tableSchema).tableName(infoDTO.getTable()).tableAlias(tableAlias).build();
         }
         return tableObj;

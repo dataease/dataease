@@ -29,8 +29,7 @@ public class JsonUtil {
     public static <T> T parse(String json, Class<T> classOfT) {
         T t = null;
         try {
-            t = objectMapper.readValue(json, new TypeReference<T>() {
-            });
+            t = objectMapper.readValue(json, classOfT);
         } catch (JsonProcessingException e) {
             LogUtil.error(e.getMessage(), e);
         }

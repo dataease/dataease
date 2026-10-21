@@ -1,6 +1,7 @@
 import type { ComponentInfo } from '@/api/chart'
 import { guid } from '@/views/visualized/data/dataset/form/util.js'
 import { useI18n } from '@/hooks/web/useI18n'
+export { getConditionSeparator, splitConditionValues } from './condition-utils'
 const { t } = useI18n()
 
 const infoFormat = (obj: ComponentInfo) => {
@@ -23,6 +24,8 @@ const infoFormat = (obj: ComponentInfo) => {
     defaultMapValue: [],
     mapValue: [],
     conditionType: 0,
+    conditionSeparatorType: 'comma',
+    conditionSeparatorCustom: '',
     conditionValueOperatorF: 'eq',
     conditionValueF: '',
     conditionValueOperatorS: 'like',
@@ -85,6 +88,8 @@ const attributes = {
   mapValue: [],
   parametersStart: null,
   conditionType: 0,
+  conditionSeparatorType: 'comma',
+  conditionSeparatorCustom: '',
   conditionValueOperatorF: 'eq',
   conditionValueF: '',
   conditionValueOperatorS: 'like',

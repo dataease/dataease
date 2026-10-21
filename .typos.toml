@@ -10,5 +10,17 @@ yoy = "yoy"
 Ein = "Ein"
 cpy = "cpy"
 Datas = "Datas"
+
+# L7 补丁需保留上游变量名，确保差异能够匹配依赖源码
+# 来源：@antv/l7-core@2.23.1 的 removeEventListenerOnMap 方法
+# ESM：core/core-frontend/node_modules/@antv/l7-core/es/services/interaction/InteractionService.js:179
+# CommonJS：core/core-frontend/node_modules/@antv/l7-core/lib/services/interaction/InteractionService.js:186
+# 上述位置为容器变量声明，升级依赖后需重新核对，例外仅适用于下方指定补丁
+[type.l7-core-patch]
+extend-glob = ["@antv+l7-core+2.23.1.patch"]
+
+[type.l7-core-patch.extend-words]
+containter = "containter"
+
 [files]
 extend-exclude = ["mapFiles/**", "docs"]

@@ -4,9 +4,7 @@ import icon_add_outlined from '@/assets/svg/icon_add_outlined.svg'
 import { computed, onMounted, PropType, reactive } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
-import { fieldType } from '@/utils/attr'
 import { find } from 'lodash-es'
-import { iconFieldMap } from '@/components/icon-group/field-list'
 
 const { t } = useI18n()
 
@@ -40,13 +38,17 @@ const yAxisTypes = [
 
 const state = reactive({
   lineArr: [],
+  collapsed: new Set<object>(),
+  legacyBindings: new Set<object>(),
   lineObj: {
     name: t('chart.assist_line'),
     field: '0', // 固定值
     fieldId: '',
+    boundFieldId: '',
+    followField: true,
     summary: 'avg',
     axis: 'y', // 主轴
-    yAxisType: 'left',
+    yAxisType: 'left' as const,
     value: '0',
     lineType: 'solid',
     color: '#ff0000',
@@ -66,6 +68,48 @@ const state = reactive({
   fontSize: []
 })
 
+const singleMetricGroup = computed(
+  () => !props.useQuotaExt && props.chart.type === 'bar-group' && props.quotaFields.length <= 1
+)
+
+type BindingLine = Pick<AssistLine, 'field' | 'followField' | 'boundFieldId' | 'yAxisType'>
+
+const getAxisFields = (item: BindingLine) =>
+  props.useQuotaExt && item.yAxisType === 'right' ? props.quotaExtFields : props.quotaFields
+
+// 只对当前轴唯一且未失效的绑定精简选择器，不把旧阈值自动转绑到替换后的指标。
+const canAutoBind = (item: BindingLine) => {
+  const fields = getAxisFields(item)
+  return (
+    props.useQuotaExt &&
+    fields.length === 1 &&
+    (!item.boundFieldId || item.boundFieldId === fields[0].id)
+  )
+}
+
+const autoBind = (item: BindingLine) => {
+  if (item.field === '0' && item.followField && canAutoBind(item)) {
+    item.boundFieldId = getAxisFields(item)[0].id
+  }
+}
+
+const showBindingControls = (item: AssistLine) =>
+  !singleMetricGroup.value || state.legacyBindings.has(item)
+
+const changeFollowField = (item: AssistLine, follow: boolean) => {
+  item.followField = follow
+  autoBind(item)
+  changeAssistLine()
+}
+
+const changeLineType = (item: AssistLine) => {
+  if (singleMetricGroup.value && item.field === '1' && item.followField) {
+    state.legacyBindings.add(item)
+  }
+  autoBind(item)
+  changeAssistLine()
+}
+
 const fontSizeList = computed(() => {
   const arr = []
   for (let i = 10; i <= 60; i = i + 2) {
@@ -81,6 +125,11 @@ const emit = defineEmits(['onAssistLineChange'])
 
 const init = () => {
   state.lineArr = JSON.parse(JSON.stringify(props.line))
+  state.collapsed = new Set(state.lineArr.slice(1))
+  // 历史配置继续保留编辑入口；打开或保存弹窗不清空其绑定及显隐语义。
+  state.legacyBindings = new Set(
+    state.lineArr.filter(line => line.boundFieldId || (line.field === '1' && line.followField))
+  )
 
   state.lineArr.forEach(line => {
     if (props.useQuotaExt) {
@@ -109,18 +158,23 @@ const init = () => {
 const addLine = () => {
   const obj = {
     ...state.lineObj,
+    followField: !singleMetricGroup.value,
     curField: props.quotaFields ? props.quotaFields[0] : null,
     fieldId: props.quotaFields ? props.quotaFields[0]?.id : null
   }
+  autoBind(obj)
   state.lineArr.push(JSON.parse(JSON.stringify(obj)))
   changeAssistLine()
 }
 const removeLine = index => {
+  state.collapsed.delete(state.lineArr[index])
+  state.legacyBindings.delete(state.lineArr[index])
   state.lineArr.splice(index, 1)
   changeAssistLine()
 }
 
 const changeYAxisType = item => {
+  item.boundFieldId = ''
   if (props.useQuotaExt && item.yAxisType === 'right') {
     item.fieldId = props.quotaExtFields ? props.quotaExtFields[0]?.id : null
     item.curField = getQuotaExtField(item.fieldId)
@@ -128,7 +182,13 @@ const changeYAxisType = item => {
     item.fieldId = props.quotaFields ? props.quotaFields[0]?.id : null
     item.curField = getQuotaField(item.fieldId)
   }
+  autoBind(item)
   changeAssistLine()
+}
+
+const toggleLine = item => {
+  if (state.collapsed.has(item)) state.collapsed.delete(item)
+  else state.collapsed.add(item)
 }
 
 const changeAssistLine = () => {
@@ -184,217 +244,304 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
-    <div @keydown.stop @keyup.stop style="max-height: 50vh; margin-top: -4px; overflow-y: auto">
-      <el-row v-for="(item, index) in state.lineArr" :key="index" class="line-item" :gutter="8">
-        <el-col :span="4">
+  <div class="assist-editor">
+    <div class="assist-list" @keydown.stop @keyup.stop>
+      <section v-for="(item, index) in state.lineArr" :key="index" class="assist-card">
+        <div class="assist-card-header">
+          <button
+            type="button"
+            class="collapse-button"
+            :aria-expanded="!state.collapsed.has(item)"
+            :aria-label="item.name || t('chart.assist_line')"
+            @click="toggleLine(item)"
+          >
+            <span class="chevron" :class="{ collapsed: state.collapsed.has(item) }" />
+          </button>
+          <span
+            class="line-preview"
+            :style="{ borderColor: item.color, borderTopStyle: item.lineType }"
+          />
           <el-input
             v-model="item.name"
-            class="value-item"
-            style="width: 100% !important"
+            class="line-name"
+            :aria-label="t('chart.name')"
             :placeholder="t('chart.name')"
             clearable
             @change="changeAssistLine"
           />
-        </el-col>
-        <el-col v-if="useQuotaExt" :span="3">
-          <el-select v-model="item.yAxisType" class="select-item" @change="changeYAxisType(item)">
-            <el-option
-              v-for="opt in yAxisTypes"
-              :key="opt.type"
-              :label="opt.name"
-              :value="opt.type"
-            />
-          </el-select>
-        </el-col>
-        <el-col :span="3">
-          <el-select v-model="item.field" class="select-item" @change="changeAssistLine">
-            <el-option
-              v-for="opt in getFieldOptions"
-              :key="opt.value"
-              :label="opt.label"
-              :value="opt.value"
-            />
-          </el-select>
-        </el-col>
-        <el-col v-if="item.field === '0'" :span="7">
-          <el-input-number
-            v-model="item.value"
-            controls-position="right"
-            class="value-item"
-            :placeholder="t('chart.drag_block_label_value')"
-            clearable
-            @change="changeAssistLine"
-          />
-        </el-col>
-        <el-col v-if="item.field === '1'" :span="4">
-          <el-select
-            v-model="item.fieldId"
-            class="select-item"
-            :fit-input-width="false"
-            :placeholder="t('chart.field')"
-            @change="changeAssistLineField(item)"
+          <span class="type-status" :class="{ dynamic: item.field === '1' }">
+            {{ t(item.field === '0' ? 'chart.field_fixed' : 'chart.field_dynamic') }}
+          </span>
+          <span v-if="state.collapsed.has(item)" class="line-summary">
+            {{ item.field === '0' ? item.value : item.curField?.name }}
+          </span>
+          <el-button
+            text
+            class="delete-button"
+            :aria-label="t('commons.delete')"
+            @click="removeLine(index)"
           >
-            <el-option
-              v-for="quota in useQuotaExt && item.yAxisType === 'right'
-                ? quotaExtFields
-                : quotaFields"
-              :key="quota.id"
-              class="field-option"
-              :label="quota.name"
-              :value="quota.id"
-            >
-              <el-icon style="flex-shrink: 0">
-                <Icon :className="`field-icon-${fieldType[quota.deType]}`"
-                  ><component
-                    class="svg-icon"
-                    :class="`field-icon-${fieldType[quota.deType]}`"
-                    :is="iconFieldMap[fieldType[quota.deType]]"
-                  ></component
-                ></Icon>
-              </el-icon>
-              <span class="field-name ellipsis" :title="quota.name">
-                {{ quota.name }}
-              </span>
-            </el-option>
-          </el-select>
-        </el-col>
-        <el-col v-if="item.field === '1'" :span="3">
-          <el-select
-            v-model="item.summary"
-            class="select-item"
-            :placeholder="t('chart.aggregation')"
-            @change="changeAssistLine"
-          >
-            <el-option key="avg" value="avg" label="平均值" />
-            <el-option key="max" value="max" :label="t('chart.max')" />
-            <el-option key="min" value="min" :label="t('chart.min')" />
-            <el-option key="last_item" value="last_item" :label="t('chart.last_item')" />
-          </el-select>
-        </el-col>
-        <el-col :span="useQuotaExt ? 2 : 3">
-          <el-tooltip effect="dark" :content="t('chart.font_size')" placement="top">
-            <el-select
-              v-model="item.fontSize"
-              class="select-item"
-              :placeholder="t('chart.text_fontsize')"
-              @change="changeAssistLine"
-            >
-              <el-option
-                v-for="option in fontSizeList"
-                :key="option.value"
-                :label="option.name"
-                :value="option.value"
-              />
-            </el-select>
-          </el-tooltip>
-        </el-col>
-        <el-col :span="useQuotaExt ? 2 : 4">
-          <!-- 下拉菜单按内容扩展，不限制为选择框宽度 -->
-          <el-select
-            v-model="item.lineType"
-            class="select-item"
-            :fit-input-width="false"
-            @change="changeAssistLine"
-          >
-            <el-option
-              v-for="opt in state.lineOptions"
-              :key="opt.value"
-              :label="opt.label"
-              :value="opt.value"
-            />
-          </el-select>
-        </el-col>
-        <el-col :span="2">
-          <el-color-picker
-            is-custom
-            :trigger-width="60"
-            v-model="item.color"
-            class="color-picker-style"
-            :predefine="state.predefineColors"
-            @change="changeAssistLine"
-          />
-        </el-col>
-        <el-col :span="1">
-          <div class="flex-align-center" style="margin-left: -4px">
             <el-icon
-              style="width: 28px !important; height: 28px !important; font-size: 20px !important"
-              class="hover-icon"
-              @click="removeLine(index)"
-            >
-              <Icon name="icon_delete-trash_outlined"
-                ><icon_deleteTrash_outlined class="svg-icon"
-              /></Icon>
-            </el-icon>
+              ><Icon><icon_deleteTrash_outlined class="svg-icon" /></Icon
+            ></el-icon>
+          </el-button>
+        </div>
+        <div v-show="!state.collapsed.has(item)" class="assist-card-body">
+          <div class="field-grid" :class="{ 'dual-dynamic': useQuotaExt && item.field === '1' }">
+            <div class="config-field">
+              <label>{{ t('chart.assist_value_type') }}</label>
+              <el-select v-model="item.field" @change="changeLineType(item)">
+                <el-option
+                  v-for="opt in getFieldOptions"
+                  :key="opt.value"
+                  :label="opt.label"
+                  :value="opt.value"
+                />
+              </el-select>
+            </div>
+            <div v-if="item.field === '0'" class="config-field">
+              <label>{{ t('chart.drag_block_label_value') }}</label>
+              <el-input-number
+                v-model="item.value"
+                controls-position="right"
+                @change="changeAssistLine"
+              />
+            </div>
+            <template v-else>
+              <div class="config-field">
+                <label>{{ t('chart.field') }}</label>
+                <el-select
+                  v-model="item.fieldId"
+                  :placeholder="t('chart.field')"
+                  @change="changeAssistLineField(item)"
+                >
+                  <el-option
+                    v-for="quota in useQuotaExt && item.yAxisType === 'right'
+                      ? quotaExtFields
+                      : quotaFields"
+                    :key="quota.id"
+                    :label="quota.name"
+                    :value="quota.id"
+                  />
+                </el-select>
+              </div>
+              <div class="config-field">
+                <label>{{ t('chart.aggregation') }}</label>
+                <el-select v-model="item.summary" @change="changeAssistLine">
+                  <el-option
+                    v-for="summary in ['avg', 'max', 'min', 'last_item']"
+                    :key="summary"
+                    :value="summary"
+                    :label="t('chart.' + summary)"
+                  />
+                </el-select>
+              </div>
+            </template>
+            <div v-if="useQuotaExt" class="config-field">
+              <label>{{ t('chart.assist_axis') }}</label>
+              <el-select v-model="item.yAxisType" @change="changeYAxisType(item)">
+                <el-option
+                  v-for="opt in yAxisTypes"
+                  :key="opt.type"
+                  :label="opt.name"
+                  :value="opt.type"
+                />
+              </el-select>
+            </div>
           </div>
-        </el-col>
-      </el-row>
+          <div class="field-grid style-grid">
+            <div class="config-field">
+              <label>{{ t('chart.assist_line_style') }}</label>
+              <el-select v-model="item.lineType" @change="changeAssistLine">
+                <el-option
+                  v-for="opt in state.lineOptions"
+                  :key="opt.value"
+                  :label="opt.label"
+                  :value="opt.value"
+                />
+              </el-select>
+            </div>
+            <div class="config-field">
+              <label>{{ t('chart.assist_color') }}</label>
+              <el-color-picker
+                is-custom
+                :trigger-width="80"
+                v-model="item.color"
+                :predefine="state.predefineColors"
+                @change="changeAssistLine"
+              />
+            </div>
+            <div class="config-field">
+              <label>{{ t('chart.font_size') }}</label>
+              <el-select v-model="item.fontSize" @change="changeAssistLine">
+                <el-option
+                  v-for="option in fontSizeList"
+                  :key="option.value"
+                  :label="option.name"
+                  :value="option.value"
+                />
+              </el-select>
+            </div>
+          </div>
+          <div v-if="showBindingControls(item)" class="binding-row">
+            <template v-if="item.field === '0' && !canAutoBind(item)">
+              <label>{{ t('chart.assist_bind_field') }}</label>
+              <el-select
+                v-model="item.boundFieldId"
+                clearable
+                :placeholder="t('chart.assist_bind_field')"
+                @change="changeAssistLine"
+              >
+                <el-option
+                  v-for="quota in useQuotaExt && item.yAxisType === 'right'
+                    ? quotaExtFields
+                    : quotaFields"
+                  :key="quota.id"
+                  :label="quota.name"
+                  :value="quota.id"
+                />
+              </el-select>
+            </template>
+            <el-checkbox
+              :model-value="!!item.followField && (item.field === '1' || !!item.boundFieldId)"
+              :disabled="item.field === '0' && !item.boundFieldId && !canAutoBind(item)"
+              @change="value => changeFollowField(item, value === true)"
+            >
+              {{
+                t(
+                  item.field === '0' && canAutoBind(item)
+                    ? 'chart.assist_follow_axis'
+                    : 'chart.assist_follow_field'
+                )
+              }}
+            </el-checkbox>
+          </div>
+        </div>
+      </section>
     </div>
-    <el-button class="circle-button" text style="margin-left: 5px" @click="addLine">
-      <template #icon>
-        <Icon name="icon_add_outlined"><icon_add_outlined class="svg-icon" /></Icon>
-      </template>
+    <el-button text class="add-line" @click="addLine">
+      <template #icon
+        ><Icon><icon_add_outlined class="svg-icon" /></Icon
+      ></template>
       {{ t('chart.add_assist_line') }}
     </el-button>
   </div>
 </template>
 
 <style lang="less" scoped>
-.line-item {
-  width: 100%;
-  border-radius: 6px;
-  padding: 4px;
-  display: flex;
-  justify-content: left;
-  align-items: center;
+.assist-list {
+  max-height: min(60vh, 620px);
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.assist-card {
+  border: 1px solid var(--ed-border-color, #dcdfe6);
+  border-radius: 4px;
+  margin-bottom: 12px;
   &:last-child {
-    margin-bottom: 4px;
-  }
-
-  :deep(input) {
-    font-size: 14px !important;
-    line-height: 22px;
+    margin-bottom: 0;
   }
 }
-
-.form-item :deep(.ed-form-item__label) {
-  font-size: 12px;
+.assist-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: transparent;
 }
-
-span {
-  font-size: 12px;
+.collapse-button {
+  border: 0;
+  background: transparent;
+  color: var(--ed-text-color-primary);
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
 }
-
-.value-item {
-  position: relative;
-  display: inline-block;
-  width: 100% !important;
-  :deep(.ed-input-number__increase) {
-    top: 1.4px;
+.chevron {
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  &.collapsed {
+    transform: rotate(-45deg);
   }
 }
-
-.select-item {
-  position: relative;
-  display: inline-block;
-  width: 100% !important;
+.line-preview {
+  width: 32px;
+  border-top-width: 2px;
+  flex-shrink: 0;
 }
-
-.ed-select-dropdown__item {
-  padding: 0 36px 0 12px;
+.line-name {
+  width: 220px;
+}
+.type-status {
+  padding: 1px 6px;
+  border-radius: 2px;
+  line-height: 22px;
   font-size: 14px;
-
-  &.field-option {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  white-space: nowrap;
+  background: var(--ed-fill-color);
+  color: var(--ed-text-color-regular);
+  &.dynamic {
+    background: var(--ed-color-primary-light-9);
+    color: var(--ed-color-primary);
   }
 }
-
-.field-name {
-  flex: 1;
+.line-summary {
+  color: var(--ed-text-color-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.delete-button {
+  color: var(--ed-text-color-secondary);
+  margin-left: auto;
+  padding: 6px;
+}
+.assist-card-body {
+  border-top: 1px solid var(--ed-border-color);
+  padding: 16px;
+}
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  &.dual-dynamic {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.style-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.config-field {
   min-width: 0;
-  color: inherit;
-  font-size: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  :deep(.ed-select),
+  :deep(.ed-input-number) {
+    width: 100%;
+  }
+}
+label {
+  font-size: 14px;
+  color: var(--ed-text-color-primary);
+}
+.binding-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  border-top: 1px solid var(--ed-border-color);
+  padding-top: 12px;
+  .ed-select {
+    width: 220px;
+  }
+}
+.add-line {
+  margin-top: 12px;
+  color: var(--ed-color-primary);
 }
 </style>

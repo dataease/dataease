@@ -41,6 +41,10 @@ declare interface ChartTextStyle {
    */
   show: boolean
   /**
+   * 富文本标题是否已显式启用；历史富文本无此字段时默认不显示标题
+   */
+  richTextTitleEnabled?: boolean
+  /**
    * 字体大小
    */
   fontSize: number
@@ -93,7 +97,26 @@ declare interface ChartTextStyle {
 /**
  * 图例设置
  */
+declare interface HeatmapLegendOptions {
+  rangeMode?: 'auto' | 'custom'
+  min?: number
+  max?: number
+  formatMode?: 'inherit' | 'custom'
+  formatterCfg?: BaseFormatter
+  prefix?: string
+}
+
+declare interface MapLegendOptions {
+  formatMode?: 'legacy' | 'inherit' | 'custom'
+  formatterCfg?: BaseFormatter
+  prefix?: string
+  syncTooltip?: boolean
+  rangeLabels?: Record<string, string>
+}
+
 declare interface ChartLegendStyle {
+  map?: MapLegendOptions
+  heatmap?: HeatmapLegendOptions
   displayMode?: 'pagination' | 'tile'
   tileOverflow?: 'scroll' | 'adaptive'
 

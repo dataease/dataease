@@ -90,7 +90,7 @@
         <div
           v-if="showFoot"
           class="dynamic-login-foot"
-          v-html="pageFootContent"
+          v-dompurify-html="pageFootContent"
         />
       </div>
     </div>

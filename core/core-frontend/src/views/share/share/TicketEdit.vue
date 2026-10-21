@@ -30,6 +30,7 @@ interface TicketArg {
   val: string
 }
 const isEdit = ref(false)
+const refreshing = ref(false)
 const linkUrl = ref('')
 const state = reactive({
   form: reactive<TicketItem>({
@@ -226,18 +227,24 @@ const copyTicket = async ticket => {
     ElMessage.warning(t('common.copy_unsupported'), e)
   }
 }
-const refreshTicket = () => {
+const refreshTicket = async () => {
+  if (refreshing.value) return
   if (!isEdit.value) {
     generateTicket()
     return
   }
   const url = '/ticket/saveTicket'
-  const param = { ticket: state.form.ticket }
-  param['generateNew'] = true
-  request.post({ url, data: param }).then(res => {
+  const param = { uuid: props.uuid, ticket: state.form.ticket, generateNew: true }
+  refreshing.value = true
+  try {
+    const res = await request.post({ url, data: param })
     state.form.ticket = res.data
     emits('saved')
-  })
+  } catch {
+    // The request interceptor displays the error; keep the ticket and draft unchanged.
+  } finally {
+    refreshing.value = false
+  }
 }
 const resetFormData = () => {
   state.form = {
@@ -287,7 +294,7 @@ defineExpose({
           :content="`${t('link_ticket.refresh')} ticket`"
           placement="top"
         >
-          <el-button text @click.stop="refreshTicket">
+          <el-button text :loading="refreshing" @click.stop="refreshTicket">
             <template #icon>
               <Icon name="icon_refresh_outlined">
                 <icon_refresh_outlined class="svg-icon" />
@@ -363,7 +370,7 @@ defineExpose({
     <template #footer>
       <span class="dialog-footer">
         <el-button secondary @click="resetForm(ticketForm)">{{ t('common.cancel') }}</el-button>
-        <el-button type="primary" @click="submitForm(ticketForm)">
+        <el-button type="primary" :disabled="refreshing" @click="submitForm(ticketForm)">
           {{ t('commons.save') }}
         </el-button>
       </span>

@@ -51,7 +51,7 @@ public final class JdbcDriverLoader {
         if (dirPath.isEmpty()) {
             throw new IllegalArgumentException("driver path is empty");
         }
-        String resolvedDirPath = resolveDriverDirectory(dirPath);
+        String resolvedDirPath = resolveSelectedDirectory(dirPath, driverClassName);
         String key = (driverClassName == null || driverClassName.isEmpty())
                 ? resolvedDirPath : resolvedDirPath + SEP + driverClassName;
         return CACHE.computeIfAbsent(key, k -> {
@@ -80,17 +80,52 @@ public final class JdbcDriverLoader {
         if (dirPath == null || driverClassName == null) {
             return;
         }
-        CACHE.remove(resolveDriverDirectory(dirPath) + SEP + driverClassName);
+        CACHE.remove(resolveSelectedDirectory(dirPath, driverClassName) + SEP + driverClassName);
     }
 
     /**
-     * 将历史插件内硬编码的 /opt/dataease3.0/drivers 路径映射到当前应用的 dataease.path.driver。
-     *
-     * <p>PostgreSQL V3 插件仍会以旧绝对路径调用本加载器，而插件驱动已经由
-     * DataEaseSyncDatasourcePlugin 解压到当前应用目录。这里使用同一映射规则，保证解压目录和加载目录一致；
-     * 非旧根目录下的显式路径保持原值。</p>
+     * 兼容旧插件调用签名，驱动选择在加载器创建前解析，已有加载器不热切换
+     */
+    static String resolveSelectedDirectory(String path, String driverClass) {
+        Path requested = Path.of(resolveDriverDirectory(path));
+        if (driverClass == null || driverClass.isBlank()) return requested.toString();
+        try {
+            Path root = requested.getFileName().toString().equals("lib")
+                    ? requested.getParent().getParent() : requested;
+            java.util.List<Path> directories = new java.util.ArrayList<>();
+            directories.add(root);
+            if (java.nio.file.Files.isDirectory(root)) try (var children = java.nio.file.Files.list(root)) {
+                children.filter(java.nio.file.Files::isDirectory).map(p -> p.resolve("lib"))
+                        .filter(java.nio.file.Files::isDirectory).sorted().forEach(directories::add);
+            }
+            Path selected = null;
+            String checksum = null;
+            for (Path directory : directories) try (var files = java.nio.file.Files.list(directory)) {
+                for (Path file : files.filter(p -> p.toString().endsWith(".jar")).toList()) {
+                    var artifact = SyncDependencyDirectory.inspect(file, file.getFileName().toString(), "lib");
+                    if (!artifact.identities().contains("jdbc:" + driverClass)) continue;
+                    if (checksum != null && !checksum.equals(artifact.checksum())) {
+                        throw new IOException("同一驱动存在多个版本，请更新同步插件并选择覆盖: " + driverClass);
+                    }
+                    selected = directory;
+                    checksum = artifact.checksum();
+                }
+            }
+            return selected == null ? requested.toString() : selected.toString();
+        } catch (IOException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 同步旧路径映射到持久化目录，其他历史路径仍遵循 dataease.path.driver
      */
     static String resolveDriverDirectory(String dirPath) {
+        Path input = Paths.get(dirPath).toAbsolutePath().normalize();
+        if (input.startsWith(LEGACY_DRIVER_PATH.resolve("plugin/sync"))
+                || input.startsWith(Path.of("/opt/dataease3.0/data/driver/plugin/sync"))) {
+            return io.dataease.extensions.sync.plugin.DataEaseSyncDatasourcePlugin.resolveDriverDirectory(dirPath).toString();
+        }
         String applicationDriverPath = DEFAULT_DRIVER_PATH;
         if (SpringContextUtil.getApplicationContext() != null) {
             applicationDriverPath = SpringContextUtil.getApplicationContext().getEnvironment()
@@ -118,8 +153,9 @@ public final class JdbcDriverLoader {
                 if (f.getName().endsWith(".jar")) {
                     try {
                         loader.addFile(f);
-                    } catch (IOException ignored) {
-
+                    } catch (IOException e) {
+                        loader.close();
+                        throw e;
                     }
                 }
             }

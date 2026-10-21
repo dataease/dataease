@@ -15,7 +15,9 @@ import {
   S2DataConfig,
   MergedCell,
   LayoutResult,
-  RowCell
+  RowCell,
+  PivotFacet,
+  Node
 } from '@antv/s2'
 import { formatterItem, valueFormatter } from '../../../formatter'
 import { hexColorToRGBA, isAlphaColor, parseJson } from '../../../util'
@@ -95,6 +97,77 @@ class CustomPivotRowCell extends RowCell {
     return super.showTreeIcon()
   }
 }
+
+class CustomPivotFacet extends PivotFacet {
+  protected buildAllHeaderHierarchy() {
+    const layout = super.buildAllHeaderHierarchy()
+    const { rows, values } = this.spreadsheet.dataSet.fields
+    const valueInCols = this.spreadsheet.isValueInCols()
+    if (!layout.colLeafNodes.length && !this.spreadsheet.dataCfg.fields.columns.length) {
+      // 没有列维度时仍需一个数据定位节点，空白表头保留行维度角头的必要高度。
+      const { colsHierarchy } = layout
+      const column = new Node({
+        id: `${colsHierarchy.rootNode.id}[&]${values[0]}`,
+        field: EXTRA_FIELD,
+        value: ' ',
+        level: 0,
+        parent: colsHierarchy.rootNode,
+        hierarchy: colsHierarchy,
+        spreadsheet: this.spreadsheet,
+        // 指标在行头时由行节点提供，空列不能将其覆盖为第一个指标。
+        query: valueInCols ? { [EXTRA_FIELD]: values[0] } : {},
+        isLeaf: true
+      })
+      colsHierarchy.rootNode.children = [column]
+      colsHierarchy.allNodesWithoutRoot = [column]
+      colsHierarchy.indexNode = [column]
+      colsHierarchy.sampleNodesForAllLevels = [column]
+      colsHierarchy.sampleNodeForLastLevel = column
+      colsHierarchy.maxLevel = 0
+      layout.colLeafNodes = [column]
+    }
+    // 父类构造时就会生成布局，隐藏标记必须从已就绪的 options 读取。
+    if (valueInCols || !this.spreadsheet.options.style.colCell.hideValue) {
+      return layout
+    }
+    const { rowsHierarchy } = layout
+    const isTree = this.spreadsheet.isHierarchyTreeType()
+    const lastRowField = rows[rows.length - 2]
+    const rowNodes = rowsHierarchy.getNodes().filter(node => node.field !== EXTRA_FIELD)
+
+    // 只移除指标的展示层级，保留查询中的指标字段，保证明细和汇总仍能正确取值。
+    rowNodes.forEach(node => {
+      node.query = { ...node.query, [EXTRA_FIELD]: values[0] }
+      node.children = node.children.filter(child => child.field !== EXTRA_FIELD)
+      if (node.field === lastRowField && !node.isGrandTotals && !node.isSubTotals) {
+        node.isLeaf = true
+        node.isCollapsed = false
+        if (isTree) {
+          // 末级维度原本因包含指标子节点被标记为汇总，隐藏后恢复为明细行。
+          node.isTotals = false
+        }
+      }
+    })
+    rowsHierarchy.rootNode.children = rowsHierarchy.rootNode.children.filter(
+      node => node.field !== EXTRA_FIELD
+    )
+    rowsHierarchy.allNodesWithoutRoot = rowNodes
+    rowsHierarchy.sampleNodesForAllLevels = rowsHierarchy.sampleNodesForAllLevels.filter(
+      node => node.field !== EXTRA_FIELD
+    )
+    rowsHierarchy.maxLevel = rowNodes.reduce((level, node) => Math.max(level, node.level), -1)
+    rowsHierarchy.sampleNodeForLastLevel =
+      rowsHierarchy.sampleNodesForAllLevels[rowsHierarchy.maxLevel] ?? null
+
+    // 树形的每个可见节点都占一行；平铺仅叶子节点占一行，移除指标后重新编号。
+    layout.rowLeafNodes = isTree ? rowNodes : rowsHierarchy.getLeaves()
+    rowsHierarchy.indexNode = layout.rowLeafNodes
+    layout.rowLeafNodes.forEach((node, index) => {
+      node.rowIndex = index
+    })
+    return layout
+  }
+}
 /**
  * 透视表
  */
@@ -125,7 +198,8 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       'showRowTooltip',
       'showHorizonBorder',
       'showVerticalBorder',
-      'rowHeaderFreeze'
+      'rowHeaderFreeze',
+      'showSingleQuotaName'
     ],
     'table-total-selector': ['row', 'col'],
     'basic-style-selector': [
@@ -496,7 +570,30 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       }
     }
     // options
-    s2Options.style = defaultsDeep(this.configStyle(chart, s2DataConfig), { rowCell: {} })
+    s2Options.style = defaultsDeep(this.configStyle(chart, s2DataConfig), {
+      rowCell: {},
+      colCell: {}
+    })
+    const hideSingleQuotaName = v.length === 1 && tableHeader.showSingleQuotaName === false
+    s2Options.style.colCell.hideValue = hideSingleQuotaName
+    // 行头指标没有列维度时也要补数据列，与是否隐藏单指标名称无关。
+    const needsEmptyDataColumn = basicStyle.quotaPosition === 'row' && !c.length && v.length > 0
+    if (
+      needsEmptyDataColumn ||
+      (hideSingleQuotaName && (basicStyle.quotaPosition === 'row' || !c.length))
+    ) {
+      s2Options.facet = spreadsheet => new CustomPivotFacet(spreadsheet)
+      if (
+        hideSingleQuotaName &&
+        basicStyle.tableLayoutMode === 'tree' &&
+        basicStyle.quotaPosition === 'row'
+      ) {
+        // 树形角头默认包含“数值”字段，隐藏指标层级时仅保留行维度名称。
+        s2Options.cornerText = r
+          .map(field => meta.find(item => item.field === field)?.name ?? field)
+          .join('/')
+      }
+    }
     if (basicStyle.tableLayoutMode === 'tree') {
       const {
         defaultExpandLevel,
@@ -706,12 +803,21 @@ export class TablePivot extends S2ChartView<PivotSheet> {
           })
         }
         if (basicStyle.tableLayoutMode !== 'tree') {
+          // 分列取整后，以实际列宽之和定位数据区，避免统一取整多出的像素形成透明缝隙。
+          totalRowWidth = ev.rowsHierarchy.sampleNodesForAllLevels.reduce((width, node) => {
+            return width + node.width
+          }, 0)
+          const maxRowLevel = ev.rowsHierarchy.maxLevel
           ev.rowNodes.forEach(n => {
             n.x = 0
             let tmp = n
             while (tmp.parent.id !== 'root') {
               n.x += tmp.parent.width
               tmp = tmp.parent
+            }
+            // 跨列汇总单元格也使用取整后的实际宽度，保持右边界一致。
+            if (n.isTotalRoot || (n.isSubTotals && n.level < maxRowLevel)) {
+              n.width = totalRowWidth - n.x
             }
           })
         }

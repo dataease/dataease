@@ -12,6 +12,7 @@ import type {
   ReplacementResult
 } from '../types'
 import { findAutoMatchedField, isFieldCompatible } from '../utils/field-compatibility'
+import { cloneReplacementValue } from '../utils/replacement-lookup'
 import { DatasetReplacementAdapterRegistry } from './dataset-replacement-adapter-registry.service'
 
 interface AdapterSnapshot {
@@ -72,6 +73,7 @@ export class SpreadsheetDatasetReplacementService {
         return {
           ...field,
           name: metadata.name,
+          chartId: metadata.chartId,
           dataeaseName: metadata.dataeaseName,
           groupType: metadata.groupType,
           deType: metadata.deType,
@@ -147,10 +149,12 @@ export class SpreadsheetDatasetReplacementService {
   }
 
   async replace(unitId: string, draft: ReplacementDraft): Promise<ReplacementResult> {
-    const mappings = draft.scope === 'workbook'
-      ? draft.mappings.filter(mapping => this._isMappingComplete(mapping))
-      : draft.mappings
-    const errors = this.validate({ ...draft, mappings })
+    // 副本创建需要异步请求，执行期间使用固定映射，避免混入后续界面编辑。
+    const executionDraft = cloneReplacementValue(draft)
+    const mappings = executionDraft.scope === 'workbook'
+      ? executionDraft.mappings.filter(mapping => this._isMappingComplete(mapping))
+      : executionDraft.mappings
+    const errors = this.validate({ ...executionDraft, mappings })
     if (errors.length) {
       throw new Error(errors.join('; '))
     }
@@ -166,7 +170,7 @@ export class SpreadsheetDatasetReplacementService {
     try {
       for (const adapter of this._adapterRegistry.getAll()) {
         const adapterComponentIds = unique(
-          adapter.collect(unitId, draft.componentId)
+          adapter.collect(unitId, executionDraft.componentId)
             .filter(fragment =>
               componentIdsByDatasetId
                 .get(fragment.dataset.id)
@@ -181,7 +185,7 @@ export class SpreadsheetDatasetReplacementService {
           componentIds: adapterComponentIds,
           value: adapter.snapshot(unitId, adapterComponentIds)
         })
-        adapter.replace(unitId, mappings, adapterComponentIds)
+        await adapter.replace(unitId, mappings, adapterComponentIds)
       }
       if (!snapshots.length) {
         throw new Error('No matching spreadsheet components were found')
@@ -261,6 +265,9 @@ export class SpreadsheetDatasetReplacementService {
       }
 
       usage.componentIds = unique([...usage.componentIds, fragment.componentId])
+      if (fragment.fieldOwnerId) {
+        usage.fieldOwnerIds = unique([...(usage.fieldOwnerIds || []), fragment.fieldOwnerId])
+      }
       const componentType = fragment.componentType || 'plugin'
       const componentKey = componentType === 'filter'
         ? 'filter'
@@ -285,6 +292,7 @@ export class SpreadsheetDatasetReplacementService {
           existing.occurrences += field.occurrences ?? 1
           if (!existing.metadataComplete && field.metadataComplete) {
             existing.name = field.name
+            existing.chartId = field.chartId
             existing.dataeaseName = field.dataeaseName
             existing.groupType = field.groupType
             existing.deType = field.deType

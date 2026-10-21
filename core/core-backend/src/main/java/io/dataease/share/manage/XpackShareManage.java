@@ -53,6 +53,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -75,6 +76,9 @@ public class XpackShareManage {
 
     @Resource
     private SysParameterManage sysParameterManage;
+
+    @Resource
+    private ShareAuthorizationManage shareAuthorizationManage;
 
     public XpackShare queryByResource(Long resourceId) {
         Long userId = V3UserUtil.getUid();
@@ -119,6 +123,7 @@ public class XpackShareManage {
      * 锁必须在事务外，保证前一请求事务提交后才放行下一请求（否则 REPEATABLE READ 快照看不到未提交的插入）。
      */
     public void switcher(Long resourceId) {
+        shareAuthorizationManage.requireManage(resourceId);
         Long userId = V3UserUtil.getUid();
         String key = userId + ":" + resourceId;
         Object lock = switcherLocks.computeIfAbsent(key, k -> new Object());
@@ -129,6 +134,7 @@ public class XpackShareManage {
 
     @Transactional
     public void doSwitcher(Long resourceId) {
+        Long oid = shareAuthorizationManage.requireManage(resourceId);
         Long userId = V3UserUtil.getUid();
         QXpackShare qXpackShare = QXpackShare.xpackShare;
         List<XpackShare> exists = queryFactory.selectFrom(qXpackShare)
@@ -149,6 +155,7 @@ public class XpackShareManage {
         xpackShare.setCreator(userId);
         xpackShare.setTime(System.currentTimeMillis());
         xpackShare.setResourceId(resourceId);
+        xpackShare.setOid(oid);
         xpackShare.setUuid(RandomStringUtils.randomAlphanumeric(8));
 
 
@@ -165,6 +172,7 @@ public class XpackShareManage {
     @Transactional
     public String editUuid(XpackShareUuidEditor editor) {
         Long resourceId = editor.getResourceId();
+        shareAuthorizationManage.requireManage(resourceId);
         String uuid = editor.getUuid();
         XpackShare originData = queryByResource(resourceId);
         if (ObjectUtils.isEmpty(originData)) {
@@ -199,6 +207,7 @@ public class XpackShareManage {
     }
 
     public void editExp(Long resourceId, Long exp) {
+        shareAuthorizationManage.requireManage(resourceId);
         XpackShare originData = queryByResource(resourceId);
         if (ObjectUtils.isEmpty(originData)) {
             DEException.throwException("share instance not exist");
@@ -211,6 +220,7 @@ public class XpackShareManage {
     }
 
     public void editPwd(Long resourceId, String pwd, Boolean autoPwd) {
+        shareAuthorizationManage.requireManage(resourceId);
         XpackShare originData = queryByResource(resourceId);
         if (ObjectUtils.isEmpty(originData)) {
             DEException.throwException("share instance not exist");
@@ -331,6 +341,7 @@ public class XpackShareManage {
         XpackShare xpackShare = xpackShareRepository.findOne(xpackShareSpec).orElse(null);
         if (ObjectUtils.isEmpty(xpackShare))
             return null;
+        shareAuthorizationManage.requireValidShare(xpackShare);
         if (!peRequireValid(sharedBase, xpackShare)) {
             XpackShareProxyVO vo = new XpackShareProxyVO();
             vo.setPeRequireValid(false);
@@ -344,8 +355,15 @@ public class XpackShareManage {
         boolean linkExp = linkExp(xpackShare);
         boolean pwdValid = pwdValid(xpackShare, request.getCiphertext());
 
-        if (!linkExp && pwdValid && validVO.isTicketValid() && !validVO.isTicketExp()) {
-            generateLinkToken(xpackShare);
+        boolean authorized = !linkExp && pwdValid && validVO.isTicketValid() && !validVO.isTicketExp();
+        if (authorized) {
+            generateLinkToken(xpackShare, request.getTicket());
+        } else {
+            // Challenge responses must not disclose resource/owner identifiers or Ticket arguments.
+            TicketValidVO challenge = new TicketValidVO();
+            challenge.setTicketValid(validVO.isTicketValid());
+            challenge.setTicketExp(validVO.isTicketExp());
+            return new XpackShareProxyVO(null, null, linkExp, pwdValid, null, inIframeError, false, true, challenge);
         }
         return new XpackShareProxyVO(xpackShare.getResourceId(), xpackShare.getCreator(), linkExp, pwdValid, typeText, inIframeError, false, true, validVO);
     }
@@ -389,17 +407,17 @@ public class XpackShareManage {
         };
 
         XpackShare xpackShare = xpackShareRepository.findOne(xpackShareSpec).orElse(null);
-        boolean valid = StringUtils.equals(xpackShare.getUuid(), uuid) && StringUtils.equals(xpackShare.getPwd(), pwd);
-        if (valid) {
-            generateLinkToken(xpackShare);
-        }
-        return valid;
+        if (xpackShare == null) return false;
+        shareAuthorizationManage.requireValidShare(xpackShare);
+        // Password verification is not share authorization. After reloading, the client
+        // obtains its token from proxyInfo only after every share policy has passed.
+        return StringUtils.equals(xpackShare.getUuid(), uuid) && StringUtils.equals(xpackShare.getPwd(), pwd);
     }
 
-    private void generateLinkToken(XpackShare xpackShare) {
-        String defaultPwd = shareSecretManage.getDefaultPwd();
-        String secret = StringUtils.isBlank(xpackShare.getPwd()) ? defaultPwd : xpackShare.getPwd();
-        String linkToken = LinkTokenUtil.generate(xpackShare.getCreator(), xpackShare.getResourceId(), xpackShare.getExp(), secret, xpackShare.getOid());
+    private void generateLinkToken(XpackShare xpackShare, String ticket) {
+        var grant = shareTicketManage.tokenTicket(ticket, xpackShare);
+        String linkToken = LinkTokenUtil.generate(xpackShare, shareSecretManage.getDefaultPwd(),
+                grant.id(), grant.expiresAt());
         HttpServletResponse response = ServletUtils.response();
         assert response != null;
         response.addHeader(AuthConstant.LINK_TOKEN_KEY, linkToken);
@@ -423,17 +441,31 @@ public class XpackShareManage {
     }
 
     public Map<String, String> queryRelationByUserId(Long uid) {
+        Long currentUid = V3UserUtil.getUid();
+        if (V3UserUtil.getLink() != null || currentUid == null || !Objects.equals(uid, currentUid)) {
+            DEException.throwException(io.dataease.result.ResultCode.PERMISSION_NO_ACCESS.code(),
+                    Translator.get("i18n_share_operation_denied"));
+        }
+        Long currentOid = V3UserUtil.getUser().getOid();
         Specification<XpackShare> xpackShareSpec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("creator"), uid));
+            predicates.add(cb.equal(root.get("creator"), currentUid));
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 
         List<XpackShare> result = xpackShareRepository.findAll(xpackShareSpec);
-        if (CollectionUtils.isNotEmpty(result)) {
-            return result.stream()
-                    .collect(Collectors.toMap(xpackShare -> String.valueOf(xpackShare.getResourceId()), XpackShare::getUuid, (a, b) -> a));
+        Map<String, String> relations = new HashMap<>();
+        for (XpackShare share : result) {
+            // Validate legacy links through their resource rather than trusting a nullable stored oid.
+            try {
+                Long resourceOid = shareAuthorizationManage.requireManage(share.getResourceId());
+                if (Objects.equals(currentOid, resourceOid)) {
+                    relations.putIfAbsent(String.valueOf(share.getResourceId()), share.getUuid());
+                }
+            } catch (DEException e) {
+                // A resource the caller can no longer manage is excluded from the relation list.
+            }
         }
-        return new HashMap<>();
+        return relations;
     }
 }

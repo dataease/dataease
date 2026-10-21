@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Plus } from '@element-plus/icons-vue'
 import CommonAttr from '@/custom-component/common/CommonAttr.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -7,7 +8,7 @@ import { storeToRefs } from 'pinia'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
 import { ref, onMounted, onBeforeUnmount, watch, PropType, reactive, toRefs, computed } from 'vue'
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
-import { imgUrlTrans } from '@/utils/imgUtils'
+import { imageUploadItem } from '@/utils/resourceImages'
 import eventBus from '@/utils/eventBus'
 import ImgViewDialog from '@/custom-component/ImgViewDialog.vue'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -34,7 +35,7 @@ const maxImageSize = 15000000
 const state = reactive({})
 
 const handlePictureCardPreview = file => {
-  dialogImageUrl.value = file.url
+  dialogImageUrl.value = file.sourceUrl || file.url
   dialogVisible.value = true
 }
 
@@ -68,7 +69,7 @@ const reUpload = e => {
   uploadFileResult(file, fileUrl => {
     snapshotStore.recordSnapshotCache('uploadFileResult')
     curComponent.value.propValue.url = fileUrl
-    fileList.value = [{ url: imgUrlTrans(curComponent.value.propValue.url) }]
+    fileList.value = [imageUploadItem(curComponent.value.propValue.url)]
   })
 }
 
@@ -77,7 +78,7 @@ const sizeMessage = () => {
 }
 const init = () => {
   if (curComponent.value.propValue.url) {
-    fileList.value = [{ url: imgUrlTrans(curComponent.value.propValue.url) }]
+    fileList.value = [imageUploadItem(curComponent.value.propValue.url)]
   } else {
     fileList.value = []
   }

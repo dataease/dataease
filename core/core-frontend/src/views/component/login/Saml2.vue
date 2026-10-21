@@ -15,14 +15,16 @@
 <script lang="ts" setup>
 import { Icon } from '@/components/icon-custom'
 import logo_saml from "@/assets/svg/logo_saml.svg";
+import { samlLoginApi } from '@/api/login'
 
 const emits = defineEmits(['switch-category'])
 const execute = () => {
   emits('switch-category', {category: 'saml2', proxy: '/#'})
 }
 
-const toLoginPage = () => {
-  window.open('./saml/login', '_self')
+const toLoginPage = async () => {
+  const res = await samlLoginApi()
+  window.location.assign(res.data)
 }
 defineExpose({
   toLoginPage

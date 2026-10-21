@@ -10,6 +10,9 @@ const FIELD_METADATA_KEYS = [
   'extField',
   'type',
   'originName',
+  'chartId',
+  'desensitized',
+  'agg',
   'dateFormat',
   'params'
 ] as const

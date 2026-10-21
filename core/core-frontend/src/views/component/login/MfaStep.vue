@@ -83,13 +83,20 @@
             <el-input
               v-model="state.form.code"
               :placeholder="t('setting_mfa.code_input_msg', [6])"
-              @keydown.enter="enterHandler"
+              @keydown.enter.prevent.stop="enterHandler"
             />
           </el-form-item>
         </el-form>
         <div class="next-btn">
           <el-button @click="back">{{ t('common.prev') }}</el-button>
-          <el-button type="primary" @click="next">{{ t('common.sure') }}</el-button>
+          <el-button
+            type="primary"
+            :loading="submitting"
+            :disabled="submitting || completed"
+            @click="next"
+          >
+            {{ t('common.sure') }}
+          </el-button>
         </div>
       </div>
     </div>
@@ -103,11 +110,18 @@
             <el-input
               v-model="state.form.code"
               :placeholder="t('setting_mfa.code_input_msg', [6])"
-              @keydown.enter="enterHandler"
+              @keydown.enter.prevent.stop="enterHandler"
             />
           </el-form-item>
         </el-form>
-        <el-button type="primary" @click="next">{{ t('common.sure') }}</el-button>
+        <el-button
+          type="primary"
+          :loading="submitting"
+          :disabled="submitting || completed"
+          @click="next"
+        >
+          {{ t('common.sure') }}
+        </el-button>
         <div class="tips">
           <span>{{ t('setting_mfa.code_miss_tips') }}</span>
         </div>
@@ -118,7 +132,8 @@
 
 <script setup lang="ts">
 import { onMounted, ref, reactive, computed, onBeforeUnmount } from 'vue'
-import request from '@/config/axios'
+import { mfaQrApi, mfaLoginApi, mfaBindQrApi, mfaBindApi } from '@/api/login'
+import type { MfaData } from '@/api/login'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import router from '@/router'
@@ -128,12 +143,6 @@ import { isMobile } from '@/utils/utils'
 const userStore = useUserStoreWithOut()
 const { t } = useI18n()
 
-interface MfaData {
-  enabled: boolean
-  ready: boolean
-  uid: string
-  origin: number
-}
 const props = withDefaults(defineProps<{ mfaData: MfaData; isLogin: boolean }>(), {
   mfaData: { enabled: false, ready: false, uid: '', origin: 0 },
   isLogin: true
@@ -155,6 +164,8 @@ const errorMsg = ref('')
 const errorCode = ref()
 const mfaForm = ref()
 const userQr = ref('')
+const submitting = ref(false)
+const completed = ref(false)
 const rule = reactive<any>({
   code: [
     {
@@ -176,8 +187,8 @@ const state = reactive({
   })
 })
 // method area
-const enterHandler = e => {
-  e.preventDefault()
+const enterHandler = (e: KeyboardEvent) => {
+  if (e.repeat) return
   next()
 }
 const next = () => {
@@ -209,50 +220,52 @@ const generateQr = () => {
   if (!props.mfaData?.uid) {
     return
   }
-  const url = `/mfa/qr/${props.mfaData.uid}`
-  request.post({ url }).then(res => {
+  const request = props.isLogin ? mfaQrApi(props.mfaData) : mfaBindQrApi()
+  request.then(res => {
     userQr.value = res.data?.img
   })
 }
-const mfaLogin = () => {
+const mfaLogin = async () => {
   const formEl = mfaForm.value
-  if (!formEl) return
-  formEl.validate(valid => {
-    if (valid) {
-      const url = props.isLogin ? `/mfa/login` : '/user/mfaBind'
-      const param = {
-        id: props.mfaData.uid,
-        code: state.form.code
+  if (!formEl || submitting.value || completed.value) return
+
+  submitting.value = true
+  try {
+    const valid = await formEl.validate().catch(() => false)
+    if (!valid) return
+
+    const code = state.form.code
+    try {
+      const res = await (props.isLogin ? mfaLoginApi(props.mfaData, code) : mfaBindApi(code))
+      errorMsg.value = ''
+      errorCode.value = null
+      if (!props.isLogin) {
+        completed.value = true
+        emits('refreshBind', true)
+        return
       }
-      request
-        .post({ url, data: param })
-        .then(res => {
-          errorMsg.value = ''
-          errorCode.value = null
-          if (!props.isLogin) {
-            emits('refreshBind', true)
-            return
-          }
-          if (res.data?.token) {
-            userStore.setToken(res.data.token)
-            userStore.setExp(res.data.exp)
-            userStore.setTime(Date.now())
-            if (mobileEnv.value) {
-              emits('success')
-              return
-            }
-            const queryRedirectPath = getCurLocation()
-            router.push({ path: queryRedirectPath })
-          }
-        })
-        .catch(msg => {
-          errorMsg.value = msg
-          errorCode.value = param.code
-          setCodeError()
-        })
+      if (res.data?.token) {
+        completed.value = true
+        userStore.setToken(res.data.token)
+        userStore.setExp(res.data.exp)
+        userStore.setTime(Date.now())
+        if (mobileEnv.value) {
+          emits('success')
+          return
+        }
+        const queryRedirectPath = getCurLocation()
+        router.push({ path: queryRedirectPath })
+      }
+    } catch (msg) {
+      errorMsg.value = msg
+      errorCode.value = code
+      setCodeError()
     }
-  })
+  } finally {
+    submitting.value = false
+  }
 }
+
 const setCodeError = () => {
   const ruleArray: any[] = rule.code as any[]
   const len = ruleArray.length
@@ -266,18 +279,20 @@ const setCodeError = () => {
       validator: (rule, value, callback) => {
         if (value === errorCode.value) {
           callback(new Error(rule.message))
+          return
         }
         callback()
       },
       trigger: 'blur'
     })
   }
-  mfaForm.value?.validate()
+  mfaForm.value?.validate().catch(() => false)
 }
 
 const emits = defineEmits(['close', 'refreshBind', 'success'])
-const keyFunction = (e: any) => {
-  if (e?.keyCode === 13) {
+const keyFunction = (e: KeyboardEvent) => {
+  if (e.key === 'Enter' && !e.repeat) {
+    e.preventDefault()
     next()
     e.stopPropagation()
   }

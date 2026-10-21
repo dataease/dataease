@@ -96,7 +96,7 @@ watch(
 const getDataSourceTableList = () => {
   emits("changeLoading", true);
   validateByIdApi(form.value.source.datasourceId).then((res) => {
-    if (res.data) {
+    if (res.data?.status === 'Success') {
       form.value.source.dsTableList = [];
       getDatasourceTableListApi(form.value.source.datasourceId)
           .then((res) => {

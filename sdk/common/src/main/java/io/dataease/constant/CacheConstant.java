@@ -2,8 +2,6 @@ package io.dataease.constant;
 
 public class CacheConstant {
     public static class UserCacheConstant {
-        public static final String USER_COUNT_CACHE = "de_v3_user_count";
-        public static final String USER_ECHELON_CACHE = "de_v3_user_echelon";
         public static final String BASE_USER_CACHE = "de_v3_base_user_cache";
         public static final String USER_ROLES_CACHE = "de_v3_user_roles";
         public static final String USER_BUSI_PERS_CACHE = "de_v3_user_busi_pers";

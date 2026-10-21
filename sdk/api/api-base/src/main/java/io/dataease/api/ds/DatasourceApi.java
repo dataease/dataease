@@ -42,6 +42,7 @@ public interface DatasourceApi {
     @Operation(summary = "保存")
     DatasourceDTO save(@RequestBody BusiDsRequest dataSourceDTO) throws DEException;
 
+    @DePermit({"#p0.id+':manage'"})
     @PostMapping("/update")
     @Operation(summary = "更新")
     DatasourceDTO update(@RequestBody BusiDsRequest dataSourceDTO) throws DEException;

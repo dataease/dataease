@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { defineEmits } from 'vue'
 defineProps({
   show: {
     type: Boolean,

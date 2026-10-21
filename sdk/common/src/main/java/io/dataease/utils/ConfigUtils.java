@@ -6,6 +6,7 @@ import org.springframework.core.io.Resource;
 
 import java.io.File;
 import java.util.Objects;
+import java.util.Properties;
 
 /**
  * @Author Junjun
@@ -21,11 +22,13 @@ public class ConfigUtils {
             Resource resource = new FileSystemResource(filePath + File.separator + configPath);
             YamlPropertiesFactoryBean factory = new YamlPropertiesFactoryBean();
             factory.setResources(resource);
+            factory.afterPropertiesSet();
+            Properties properties = Objects.requireNonNull(factory.getObject());
 
-            String basePath = Objects.requireNonNull(factory.getObject()).getProperty("base-path", "");
+            String basePath = properties.getProperty("base-path", "");
             basePath = basePath.replaceAll("\\$\\{user.home}", System.getProperty("user.home").replaceAll("\\\\", "/"));
 
-            String property = Objects.requireNonNull(factory.getObject()).getProperty(key, defaultValue);
+            String property = properties.getProperty(key, defaultValue);
             return property.replaceAll("\\$\\{base-path}", basePath);
         } catch (Exception e) {
         }

@@ -327,6 +327,22 @@ const operators = [
   }
 ]
 
+const separatorLabelMap = computed(() => ({
+  comma: t('v_query.separator_comma'),
+  chineseComma: t('v_query.separator_chinese_comma'),
+  semicolon: t('v_query.separator_semicolon'),
+  space: t('v_query.separator_space'),
+  newline: t('v_query.separator_newline')
+}))
+const multiConditionHint = computed(() => {
+  const { conditionSeparatorType = 'comma', conditionSeparatorCustom } = curComponent.value
+  const separator =
+    conditionSeparatorType === 'custom'
+      ? conditionSeparatorCustom
+      : separatorLabelMap.value[conditionSeparatorType]
+  return t('v_query.default_separator_hint', { separator })
+})
+
 const multiple = ref(false)
 
 const multipleChange = (val: boolean, isMultipleChange = false) => {
@@ -385,7 +401,7 @@ defineExpose({
       <div class="condition-type">
         <el-select
           class="condition-value-select"
-          v-if="!curComponent.hideConditionSwitching"
+          v-if="!curComponent.hideConditionSwitching && curComponent.conditionType !== 3"
           popper-class="condition-value-select-popper"
           v-model="curComponent.defaultConditionValueOperatorF"
         >
@@ -397,8 +413,22 @@ defineExpose({
           >
           </el-option>
         </el-select>
-        <el-input class="condition-value-input" v-model="curComponent.defaultConditionValueF" />
-        <div class="bottom-line"></div>
+        <el-input
+          v-if="curComponent.conditionType === 3"
+          class="condition-value-input"
+          type="textarea"
+          :rows="2"
+          v-model="curComponent.defaultConditionValueF"
+        />
+        <el-input
+          v-else
+          class="condition-value-input"
+          v-model="curComponent.defaultConditionValueF"
+        />
+        <div v-if="curComponent.conditionType !== 3" class="bottom-line"></div>
+      </div>
+      <div v-if="curComponent.conditionType === 3" class="multi-condition-hint">
+        {{ multiConditionHint }}
       </div>
       <div class="condition-type" v-if="[1, 2].includes(curComponent.conditionType)">
         <span class="condition-type-tip">{{
@@ -826,6 +856,13 @@ defineExpose({
       &:first-child {
         margin-top: -0.5px;
       }
+    }
+
+    .multi-condition-hint {
+      margin-top: 4px;
+      color: #8f959e;
+      font-size: 12px;
+      line-height: 18px;
     }
 
     &.hide-condition_switching {

@@ -652,7 +652,7 @@ const list = [
       fontSize: 14,
       fontWeight: 400,
       letterSpacing: 0,
-      color: '',
+      color: '#ffffff',
       padding: 4,
       verticalAlign: 'middle',
       scrollSpeed: 0

@@ -13,13 +13,17 @@ import {
   DEFAULT_MISC
 } from '@/views/chart/components/editor/util/chart'
 import { ElCol, ElFormItem, ElRow, ElSpace } from 'element-plus-secondary'
-import { cloneDeep, get, set } from 'lodash-es'
+import { cloneDeep, get, isEqual, set } from 'lodash-es'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { getDynamicColorScale } from '@/views/chart/components/js/util'
 import CustomSortEdit from '@/views/chart/components/editor/drag-item/components/CustomSortEdit.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import chartViewManager from '@/views/chart/components/js/panel'
+import { mapRangeKey } from '@/views/chart/components/js/panel/charts/map/mapLegend'
+import MapRangeEditor from './MapRangeEditor.vue'
+import MapLegendEditor from './MapLegendEditor.vue'
+import HeatmapLegendEditor from './HeatmapLegendEditor.vue'
 const dvMainStore = dvMainStoreWithOut()
 const { batchOptStatus } = storeToRefs(dvMainStore)
 const { t } = useI18n()
@@ -115,6 +119,16 @@ const changeLegendStyle = prop => {
   emit('onLegendChange', state.legendForm, prop)
 }
 
+const changeHeatmapLegend = (value: HeatmapLegendOptions) => {
+  state.legendForm.heatmap = value
+  changeLegendStyle('heatmap')
+}
+
+const changeMapLegend = (value: MapLegendOptions) => {
+  state.legendForm.map = value
+  changeLegendStyle('map')
+}
+
 const changeMisc = prop => {
   // 仅对子弹图区间图例字段做合并保护，避免覆盖 fixedRange/showType。
   if (typeof prop === 'string' && prop.startsWith('bullet.')) {
@@ -157,103 +171,76 @@ const init = () => {
     }
   }
 }
-// 存储地图默认的最大最小值
-const mapLegendDefaultRange = {
-  max: 0,
-  min: 0
-}
-// 缓存原始的区间数据
-let mapLegendCustomRangeCacheList = []
 const showProperty = prop => props.propertyInner?.includes(prop)
 const mapDefaultRange = args => {
-  if (args.from === 'map') {
-    const rangeCustom = state.legendForm.miscForm.mapLegendRangeType === 'custom'
-    if (!rangeCustom) {
-      state.legendForm.miscForm.mapLegendMax = cloneDeep(args.data.max)
-      state.legendForm.miscForm.mapLegendMin = cloneDeep(args.data.min)
-    }
-    state.legendForm.miscForm.mapLegendNumber = cloneDeep(args.data.legendNumber)
-    mapLegendCustomRangeCacheList = []
-    mapLegendDefaultRange.max = cloneDeep(args.data.max)
-    mapLegendDefaultRange.min = cloneDeep(args.data.min)
-    const customRange = getDynamicColorScale(
-      mapLegendDefaultRange.min,
-      mapLegendDefaultRange.max,
-      args.data.legendNumber
-    )
-    customRange.forEach((item, index) => {
-      if (index === 0) {
-        mapLegendCustomRangeCacheList.push(...item.value)
-      } else {
-        mapLegendCustomRangeCacheList.push(item.value[1])
-      }
-    })
+  if (args.from !== 'map' || String(args.chartId) !== String(props.chart.id)) return
+  if (state.legendForm.miscForm.mapLegendRangeType !== 'custom') {
+    state.legendForm.miscForm.mapLegendMax = args.data.max
+    state.legendForm.miscForm.mapLegendMin = args.data.min
   }
 }
 const initMapCustomRange = () => {
-  const legendCustom = state.legendForm.miscForm.mapAutoLegend
-  const rangeCustom = state.legendForm.miscForm.mapLegendRangeType === 'custom'
-  const rangeCustomValue = state.legendForm.miscForm.mapLegendCustomRange
-  // 是自定义，并且自定义类型是自定义区间以及rangeCustomValue长度为0时，根据默认最大最小值计算区间值
-  if (legendCustom && rangeCustom && rangeCustomValue.length === 0) {
-    calcMapCustomRange()
+  const misc = state.legendForm.miscForm
+  if (!misc.mapAutoLegend && misc.mapLegendRangeType === 'custom') {
+    if (misc.mapLegendCustomRange.length < 2) calcMapCustomRange()
+    misc.mapLegendNumber = misc.mapLegendCustomRange.length - 1
   }
 }
-/**
- * 计算自定义区间
- * 最大最小值取等分区间的最大最小值
- */
 const calcMapCustomRange = () => {
-  const customRange = getDynamicColorScale(
-    state.legendForm.miscForm.mapLegendMin,
-    state.legendForm.miscForm.mapLegendMax,
-    state.legendForm.miscForm.mapLegendNumber
-  )
-  state.legendForm.miscForm.mapLegendCustomRange = []
-  customRange.forEach((item, index) => {
-    if (index === 0) {
-      state.legendForm.miscForm.mapLegendCustomRange.push(...item.value)
-    } else {
-      state.legendForm.miscForm.mapLegendCustomRange.push(item.value[1])
-    }
-  })
+  const misc = state.legendForm.miscForm
+  const min = Number.isFinite(misc.mapLegendMin) ? misc.mapLegendMin : 0
+  const max =
+    Number.isFinite(misc.mapLegendMax) && misc.mapLegendMax > min ? misc.mapLegendMax : min + 1
+  const count = Math.min(9, Math.max(1, misc.mapLegendNumber || DEFAULT_MISC.mapLegendNumber))
+  const ranges = getDynamicColorScale(min, max, count)
+  misc.mapLegendCustomRange = [ranges[0].value[0], ...ranges.map(item => item.value[1])]
 }
-/**
- * 改变自定义区间类型
- * @param prop
- */
 const changeLegendCustomType = (prop?) => {
-  const type = state.legendForm.miscForm.mapLegendRangeType
-  if (type === 'custom') {
-    calcMapCustomRange()
-  } else {
-    state.legendForm.miscForm.mapLegendCustomRange = []
-  }
+  // Retain the manual boundaries while another mode is active.
+  initMapCustomRange()
   prop ? changeMisc(prop) : ''
 }
-/**
- * 改变自定义区间个数
- * @param prop
- */
 const changeLegendNumber = (prop?) => {
   if (!state.legendForm.miscForm.mapLegendNumber) {
     state.legendForm.miscForm.mapLegendNumber = DEFAULT_MISC.mapLegendNumber
   }
-  calcMapCustomRange()
   prop ? changeMisc(prop) : ''
 }
-const changeRangeItem = (prop, index) => {
-  if (state.legendForm.miscForm.mapLegendCustomRange[index] === null) {
-    state.legendForm.miscForm.mapLegendCustomRange[index] = cloneDeep(
-      mapLegendCustomRangeCacheList[index]
-    )
+const changeMapBoundaries = (values: number[], boundaryIndex?: number) => {
+  const previousValues = state.legendForm.miscForm.mapLegendCustomRange
+  state.legendForm.miscForm.mapLegendCustomRange = values
+  state.legendForm.miscForm.mapLegendNumber = values.length - 1
+  const labels = state.legendForm.map?.rangeLabels
+  if (labels) {
+    // 名称跟随原区间，修改边界值时仅迁移存储键，不清空名称。
+    const names: (string | undefined)[] = previousValues.slice(0, -1).map((value, index) => {
+      return labels[mapRangeKey([value, previousValues[index + 1]])]
+    })
+    if (boundaryIndex !== undefined) {
+      // 增删分界点均保留左段名称：新增右段留空，合并时删除右段名称。
+      if (values.length > previousValues.length) {
+        names.splice(boundaryIndex, 0, undefined)
+      } else if (values.length < previousValues.length) {
+        names.splice(boundaryIndex, 1)
+      }
+    }
+    const rangeLabels: Record<string, string> = {}
+    values.slice(0, -1).forEach((value, index) => {
+      const name = names[index]
+      if (name !== undefined) {
+        rangeLabels[mapRangeKey([value, values[index + 1]])] = name
+      }
+    })
+    if (!isEqual(rangeLabels, labels)) {
+      state.legendForm.map = { ...state.legendForm.map, rangeLabels }
+      changeLegendStyle('map')
+    }
   }
-  changeMisc(prop)
-}
-const getMapCustomRange = index => {
-  if (index === 0) return t('chart.min')
-  if (index === state.legendForm.miscForm.mapLegendNumber) return t('chart.max')
-  return ''
+  emit(
+    'onMiscChange',
+    { data: state.legendForm.miscForm, requestData: false },
+    'mapLegendCustomRange'
+  )
 }
 const customSort = []
 const changeLegendSort = sort => {
@@ -293,6 +280,17 @@ onMounted(() => {
     label-position="top"
     size="small"
   >
+    <HeatmapLegendEditor
+      v-if="
+        chartType === 't-heatmap' &&
+        chart.extColor?.[0]?.groupType === 'q' &&
+        chartViewManager.getChartView(chart.render, chart.type)?.library === 'g2'
+      "
+      :model-value="state.legendForm.heatmap"
+      :chart="chart"
+      :themes="themes"
+      @update:model-value="changeHeatmapLegend"
+    />
     <el-row :gutter="8">
       <el-col :span="12">
         <el-form-item
@@ -446,7 +444,7 @@ onMounted(() => {
                 :effect="themes"
                 v-model="state.legendForm.miscForm.mapAutoLegend"
                 :value="true"
-                @change="changeMisc('mapAutoLegend')"
+                @change="changeLegendCustomType('mapAutoLegend')"
                 style="width: 80px"
               >
                 {{ t('chart.margin_model_auto') }}
@@ -456,7 +454,7 @@ onMounted(() => {
                 :effect="themes"
                 v-model="state.legendForm.miscForm.mapAutoLegend"
                 :value="false"
-                @change="changeMisc('mapAutoLegend')"
+                @change="changeLegendCustomType('mapAutoLegend')"
               >
                 {{ t('chart.custom_case') }}
               </el-radio>
@@ -494,7 +492,7 @@ onMounted(() => {
               </el-form-item>
             </el-col>
           </el-row>
-          <el-row>
+          <el-row v-if="state.legendForm.miscForm.mapLegendRangeType === 'quantize'">
             <el-col>
               <el-form-item
                 class="form-item"
@@ -515,33 +513,12 @@ onMounted(() => {
               </el-form-item>
             </el-col>
           </el-row>
-          <div v-if="state.legendForm.miscForm.mapLegendRangeType === 'custom'">
-            <el-row
-              :gutter="8"
-              :key="index"
-              v-for="(_value, index) in state.legendForm.miscForm.mapLegendCustomRange"
-            >
-              <el-col :span="8">
-                <label class="ed-form-item__label text_ellipsis" :title="getMapCustomRange(index)">
-                  {{ getMapCustomRange(index) }}
-                </label>
-              </el-col>
-              <el-col :span="16">
-                <el-form-item class="form-item" :class="'form-item-' + themes">
-                  <el-input-number
-                    :effect="themes"
-                    v-model="state.legendForm.miscForm.mapLegendCustomRange[index]"
-                    clearable
-                    :value-on-clear="mapLegendCustomRangeCacheList[index]"
-                    controls-position="right"
-                    @change="changeRangeItem('mapLegendCustomRange', index)"
-                    style="margin-bottom: 4px"
-                    :step="1"
-                  />
-                </el-form-item>
-              </el-col>
-            </el-row>
-          </div>
+          <MapRangeEditor
+            v-if="state.legendForm.miscForm.mapLegendRangeType === 'custom'"
+            :model-value="state.legendForm.miscForm.mapLegendCustomRange"
+            :themes="themes"
+            @update:model-value="changeMapBoundaries"
+          />
           <el-row :gutter="8" v-if="state.legendForm.miscForm.mapLegendRangeType === 'quantize'">
             <el-col :span="12">
               <el-form-item
@@ -577,6 +554,13 @@ onMounted(() => {
         </div>
       </div>
     </el-space>
+    <MapLegendEditor
+      v-if="chartType === 'map'"
+      :model-value="state.legendForm.map"
+      :chart="chart"
+      :themes="themes"
+      @update:model-value="changeMapLegend"
+    />
 
     <el-form-item
       :label="t('chart.orient')"

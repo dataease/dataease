@@ -434,11 +434,6 @@ public class DatasetDataManage {
             LogUtil.error(e);
             sqlLogDTO.setStatus("Error");
             DEException.throwException(e.getMessage());
-        } finally {
-            if (ObjectUtils.isNotEmpty(dto.getTableId())) {
-                sqlLogDTO.setTableId(dto.getTableId());
-                datasetTableSqlLogManage.save(sqlLogDTO);
-            }
         }
         return map;
     }
@@ -463,6 +458,9 @@ public class DatasetDataManage {
     }
 
     public Map<String, Object> previewSql(PreviewSqlDTO dto) throws DEException {
+        if (dto == null || dto.getDatasourceId() == null || dto.getDatasourceId() <= 0) {
+            DEException.throwException(Translator.get("i18n_dataset_table_not_exist"));
+        }
         CoreDatasource coreDatasource = dataSourceManage.getCoreDatasource(dto.getDatasourceId());
         DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
         if (coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.API.name()) || coreDatasource.getType().contains(DatasourceConfiguration.DatasourceType.Excel.name())) {
@@ -759,7 +757,10 @@ public class DatasetDataManage {
             List<DatasetTableFieldDTO> fields = Collections.singletonList(field);
             Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
             if (withPermissions) {
-                fields = permissionManage.filterColumnPermissions(fields, desensitizationList, datasetGroupInfoDTO.getId(), null);
+                // 完整字段用于判断副本来源权限，查询仍只投影请求选中的字段。
+                Set<Long> readableFieldIds = permissionManage.filterColumnPermissions(allFields, desensitizationList, datasetGroupInfoDTO.getId(), null)
+                        .stream().map(DatasetTableFieldDTO::getId).collect(Collectors.toSet());
+                fields = fields.stream().filter(item -> readableFieldIds.contains(item.getId())).collect(Collectors.toList());
                 if (ObjectUtils.isEmpty(fields)) {
                     DEException.throwException(Translator.get("i18n_no_column_permission"));
                 }
@@ -926,7 +927,9 @@ public class DatasetDataManage {
 
         // 获取allFields
         Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
-        fields = permissionManage.filterColumnPermissions(fields, desensitizationList, datasetGroupInfoDTO.getId(), null);
+        Set<Long> readableFieldIds = permissionManage.filterColumnPermissions(allFields, desensitizationList, datasetGroupInfoDTO.getId(), null)
+                .stream().map(DatasetTableFieldDTO::getId).collect(Collectors.toSet());
+        fields = fields.stream().filter(item -> readableFieldIds.contains(item.getId())).collect(Collectors.toList());
         if (ObjectUtils.isEmpty(fields)) {
             DEException.throwException(Translator.get("i18n_no_column_permission"));
         }
@@ -1135,9 +1138,6 @@ public class DatasetDataManage {
         List<DatasetTableFieldDTO> allFields = new ArrayList<>();
         DatasetTableFieldDTO field = datasetTableFieldManage.selectById(ids.getFirst());
         Long datasetGroupId = field.getDatasetGroupId();
-        if (field.getChartId() != null) {
-            allFields.addAll(datasetTableFieldManage.getChartCalcFields(field.getChartId()));
-        }
         DatasetGroupInfoDTO datasetGroupInfoDTO = datasetGroupManage.getDatasetGroupInfoDTO(datasetGroupId, null);
 
         Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, new ChartExtRequest());
@@ -1155,17 +1155,27 @@ public class DatasetDataManage {
         SQLMeta sqlMeta = new SQLMeta();
         Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
 
+        Set<Long> fieldOwnerIds = new HashSet<>();
         for (Long id : ids) {
             DatasetTableFieldDTO f = datasetTableFieldManage.selectById(id);
             if (f == null) {
                 DEException.throwException(Translator.get("i18n_no_field"));
+            }
+            // 树层级可引用同一数据集的多个实例副本，按归属去重补齐来源上下文。
+            if (Objects.equals(f.getDatasetGroupId(), datasetGroupId)
+                    && f.getChartId() != null && fieldOwnerIds.add(f.getChartId())) {
+                datasetTableFieldManage.getChartCalcFields(f.getChartId()).stream()
+                        .filter(item -> Objects.equals(item.getDatasetGroupId(), datasetGroupId))
+                        .forEach(allFields::add);
             }
             // 获取allFields
             fields.add(f);
         }
 
         Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
-        fields = permissionManage.filterColumnPermissions(fields, desensitizationList, datasetGroupInfoDTO.getId(), null);
+        Set<Long> readableFieldIds = permissionManage.filterColumnPermissions(allFields, desensitizationList, datasetGroupInfoDTO.getId(), null)
+                .stream().map(DatasetTableFieldDTO::getId).collect(Collectors.toSet());
+        fields = fields.stream().filter(item -> readableFieldIds.contains(item.getId())).collect(Collectors.toList());
         if (ObjectUtils.isEmpty(fields)) {
             DEException.throwException(Translator.get("i18n_no_column_permission"));
         }

@@ -1,3 +1,5 @@
+import { tableImageUrl, TABLE_IMAGE_PLACEHOLDER } from './tableImage'
+import { appliesToTableScope, getTableConditionScope } from './tableConditionScope'
 /* eslint-disable prettier/prettier */
 import {
   copyString,
@@ -1060,12 +1062,15 @@ export function getPivotConditions(chart: Chart, pivotData: Record<string, any>[
       mapping(value, rowData, cell) {
         if (rowData?.cornerType) return null
         const totalStyle = getPivotGrandTotalStyle(cell, tableTotal, basicStyle.alpha)
-        let fallbackColor = rules.length ? defaultValueColor : null
+        const scope = getTableConditionScope(cell, cell?.spreadsheet?.facet)
+        const cellRules = rules.filter(item => appliesToTableScope(item.rule, scope))
+        if (!cellRules.length) return totalStyle.text ?? null
+        let fallbackColor = defaultValueColor
         if (totalStyle.text) fallbackColor = totalStyle.text.fill
         const fill = mappingRulesColor(
           value,
           fallbackColor,
-          rules,
+          cellRules,
           'color',
           filedValueMap,
           rowData,
@@ -1086,12 +1091,17 @@ export function getPivotConditions(chart: Chart, pivotData: Record<string, any>[
       mapping(value, rowData, cell) {
         if (rowData?.cornerType) return null
         const totalStyle = getPivotGrandTotalStyle(cell, tableTotal, basicStyle.alpha)
-        let fallbackColor = rules.length ? defaultBgColor : null
+        const scope = getTableConditionScope(cell, cell?.spreadsheet?.facet)
+        const cellRules = rules.filter(item => appliesToTableScope(item.rule, scope))
+        if (!cellRules.length) {
+          return totalStyle.backgroundColor ? { fill: totalStyle.backgroundColor } : null
+        }
+        let fallbackColor = defaultBgColor
         if (totalStyle.backgroundColor) fallbackColor = totalStyle.backgroundColor
         let fill = mappingRulesColor(
           value,
           fallbackColor,
-          rules,
+          cellRules,
           'backgroundColor',
           filedValueMap,
           rowData,
@@ -1983,7 +1993,8 @@ export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
   const layoutResult = instance.facet.getLayoutResult()
   const {meta, fields} = instance.dataCfg
   const rowLength = fields?.rows?.length || 0
-  const colLength = fields?.columns?.length || 0
+  // 隐藏单指标后，导出偏移以实际表头层级为准；无列头时仍保留行维度标题。
+  const colLength = Math.max(layoutResult.colsHierarchy.maxLevel, 0)
   const colNums = layoutResult.colLeafNodes.length + rowLength
   if (colNums > 16384) {
     ElMessage.warning(i18nt('chart.pivot_export_invalid_col_exceed'))
@@ -1999,6 +2010,9 @@ export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
   }, {})
   // 角头
   fields.columns?.forEach((column, index) => {
+    if (index >= colLength) {
+      return
+    }
     const cell = worksheet.getCell(index + 1, 1)
     cell.value = metaMap[column]?.name ?? column
     cell.alignment = {vertical: 'middle', horizontal: 'center'}
@@ -2076,8 +2090,8 @@ export async function exportGridPivot(instance: PivotSheet, chart: ChartObj) {
   })
 
   // 列头
-  const {colLeafNodes, colNodes, colsHierarchy} = layoutResult
-  const maxColHeight = colsHierarchy.maxLevel + 1
+  const {colLeafNodes, colNodes} = layoutResult
+  const maxColHeight = colLength + 1
   const notLeafNodeWidthMap: Record<string, number> = {}
   colLeafNodes.forEach(node => {
     // 列头的宽度由子节点相加决定，也就是列头子节点中包含的叶子节点数量
@@ -2366,7 +2380,7 @@ export async function exportTreePivot(instance: PivotSheet, chart: ChartObj) {
     return
   }
   const {meta, fields} = instance.dataCfg
-  const colLength = fields?.columns?.length || 0
+  const colLength = Math.max(layoutResult.colsHierarchy.maxLevel, 0)
   const workbook = new Exceljs.Workbook()
   const worksheet = workbook.addWorksheet(i18nt('chart.chart_data'))
   const metaMap: Record<string, Meta> = meta?.reduce((p, n) => {
@@ -2378,6 +2392,9 @@ export async function exportTreePivot(instance: PivotSheet, chart: ChartObj) {
 
   // 角头
   fields.columns?.forEach((column, index) => {
+    if (index >= colLength) {
+      return
+    }
     const cell = worksheet.getCell(index + 1, 1)
     cell.value = metaMap[column]?.name ?? column
     cell.alignment = {vertical: 'middle', horizontal: 'center'}
@@ -2385,7 +2402,7 @@ export async function exportTreePivot(instance: PivotSheet, chart: ChartObj) {
       right: {style: 'thick', color: {argb: '00000000'}}
     }
   })
-  const maxColHeight = layoutResult.colsHierarchy.maxLevel + 1
+  const maxColHeight = colLength + 1
   const rowName = fields?.rows?.map(row => metaMap[row]?.name ?? row).join('/')
   const cell = worksheet.getCell(colLength + 1, 1)
   cell.value = rowName
@@ -2760,14 +2777,17 @@ export async function exportPivotExcel(instance: PivotSheet, chart: ChartObj) {
     return
   }
   const { quotaPosition } = chart.customAttr.basicStyle
+  const hideSingleQuotaName =
+    valueLength === 1 && chart.customAttr.tableHeader.showSingleQuotaName === false
+  // 单指标行头隐藏后不再有指标名称列/子行，复用按可见维度导出的布局。
   if (chart.customAttr.basicStyle.tableLayoutMode !== 'tree') {
-    if (quotaPosition === 'row') {
+    if (quotaPosition === 'row' && !hideSingleQuotaName) {
       exportRowQuotaGridPivot(instance, chart)
     } else {
       exportGridPivot(instance, chart)
     }
   } else {
-    if (quotaPosition === 'row') {
+    if (quotaPosition === 'row' && !hideSingleQuotaName) {
       exportRowQuotaTreePivot(instance, chart)
     } else {
       exportTreePivot(instance, chart)
@@ -3273,22 +3293,34 @@ export const getColumns = (fields, cols: Array<ColumnNode>): Array<ColumnNode> =
   return result
 }
 
-const imageCellStates = new WeakMap<object, { image: HTMLImageElement; shape?: GImage }>()
+const imageCellStates = new WeakMap<object, { image: HTMLImageElement; shape?: GImage; timer?: ReturnType<typeof setTimeout> }>()
 
 export function drawImage() {
   const previous = imageCellStates.get(this)
   if (previous) {
     previous.image.onload = null
+    previous.image.onerror = null
+    clearTimeout(previous.timer)
     if (previous.shape && !previous.shape.destroyed) {
       previous.shape.destroy()
     }
   }
   const img = new Image()
-  const state: { image: HTMLImageElement; shape?: GImage } = { image: img }
+  const state: { image: HTMLImageElement; shape?: GImage; timer?: ReturnType<typeof setTimeout> } = { image: img }
   imageCellStates.set(this, state)
   const {x, y, width, height, fieldValue} = this.meta
+  if (fieldValue === null || fieldValue === undefined || fieldValue === '') return
+  img.referrerPolicy = 'no-referrer'
   img.setAttribute('crossOrigin', 'anonymous')
+  const fallback = () => {
+    clearTimeout(state.timer)
+    img.onerror = null
+    if (!this.destroyed && imageCellStates.get(this) === state) img.src = TABLE_IMAGE_PLACEHOLDER
+  }
+  img.onerror = fallback
+  state.timer = setTimeout(fallback, 10000)
   img.onload = () => {
+    clearTimeout(state.timer)
     // 单元格可能被复用或销毁，忽略旧请求，避免旧图片覆盖新数据。
     if (this.destroyed || imageCellStates.get(this) !== state) {
       return
@@ -3310,7 +3342,7 @@ export function drawImage() {
     // 只替换图片，保留单元格的背景、边框和交互图形。
     this.appendChild(state.shape)
   }
-  img.src = fieldValue as string
+  img.src = tableImageUrl(fieldValue) || TABLE_IMAGE_PLACEHOLDER
 }
 
 export function mappingColorCustom(value, defaultColor, field, type, filedValueMap?, rowData?) {

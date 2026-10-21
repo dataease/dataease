@@ -125,11 +125,6 @@ public interface UserApi {
     @GetMapping("/byCurOrg")
     List<UserOptionVO> byCurOrg();
 
-    @Operation(summary = "用户数量", hidden = true)
-    @Hidden
-    @GetMapping("/userCount")
-    int userCount();
-
     @Operation(summary = "切换语言")
     @PostMapping("/switchLanguage")
     void switchLanguage(@RequestBody LangSwitchRequest request);
@@ -178,10 +173,6 @@ public interface UserApi {
     @Operation(summary = "修改个人密码")
     @PostMapping("/modifyPwd")
     void modifyPwd(@RequestBody ModifyPwdRequest request);
-
-    @Hidden
-    @GetMapping("/firstEchelon/{limit}")
-    List<Long> firstEchelon(@PathVariable("limit") Long limit);
 
     @Operation(summary = "根据账号查询用户")
     @GetMapping("/queryByAccount/{account}")

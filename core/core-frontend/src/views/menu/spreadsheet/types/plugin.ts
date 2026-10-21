@@ -26,6 +26,8 @@ export interface FieldFormatterConfig {
 
 export interface FieldItemData {
   id: string | number
+  chartId?: string | number
+  originName?: string
   name: string
   dataeaseName?: string
   chartShowName?: string
@@ -45,6 +47,8 @@ export interface FieldItemData {
     resultData?: 'percent' | 'sub'
   }
   hidden?: boolean
+  desensitized?: boolean
+  agg?: boolean
 }
 
 export interface FilterItem {
@@ -301,12 +305,15 @@ export interface PluginDataConfig {
 
 export interface PluginFieldValuesRequest {
   type: string
+  fieldOwnerId?: string
   data: PluginDataConfig
   field: FieldItemData
 }
 
 
 export interface TablePluginConfig extends PluginConfig {
+  // 历史实例 ID 可能不是数字，字段副本使用独立的归属 ID。
+  fieldOwnerId?: string
   data: PluginDataConfig
   placement: {
     sheetId: string

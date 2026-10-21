@@ -72,16 +72,72 @@ function db_defaults() {
    esac
 }
 
-# 询问外部数据库连接信息
+# 读取失败时立即停止，不能把 EOF 当成接受默认值后继续安装。
+function read_db_input() {
+   if ! IFS= read -r "$@"; then
+      printf '\n[错误] 数据库配置输入已中断，安装停止。\n' >&2
+      exit 1
+   fi
+}
+
+# 询问外部数据库连接信息，确认后才更新安装配置。
 function prompt_db_connection() {
-   local answer
-   read -r -p "请输入数据库地址 [localhost]: " answer; DE_DB_HOST="${answer:-localhost}"
-   read -r -p "请输入数据库端口 [${DB_DEFAULT_PORT}]: " answer; DE_DB_PORT="${answer:-$DB_DEFAULT_PORT}"
-   read -r -p "请输入数据库用户名 [root]: " answer; DE_DB_USER="${answer:-root}"
-   read -r -s -p "请输入数据库密码: " answer; echo; DE_DB_PASSWORD="$answer"
-   read -r -p "请输入数据库名 [dataease]: " answer; DE_DB_DATABASE="${answer:-dataease}"
-   read -r -p "请输入数据库 schema（MySQL/GreatSQL 可留空）: " answer; DE_DB_SCHEMA="$answer"
-   read -r -p "请输入 JDBC 连接参数 [${DB_DEFAULT_PARAMS}]: " answer; DE_DB_PARAMS="${answer:-$DB_DEFAULT_PARAMS}"
+   local answer host port username password database schema params
+   while true; do
+      printf '请逐项输入，每次回车确认一项，避免一次粘贴多行连接信息。\n'
+      read_db_input -p "请输入数据库地址 [localhost]: " answer
+      host="${answer:-localhost}"
+      while true; do
+         read_db_input -p "请输入数据库端口 [${DB_DEFAULT_PORT}]: " answer
+         port="${answer:-$DB_DEFAULT_PORT}"
+         if [[ "$port" =~ ^[0-9]{1,5}$ ]] && (( 10#$port >= 1 && 10#$port <= 65535 )); then
+            port=$((10#$port))
+            break
+         fi
+         printf '端口必须是 1-65535 范围内的整数，请重新输入。\n'
+      done
+      read_db_input -p "请输入数据库用户名 [root]: " answer
+      username="${answer:-root}"
+      read_db_input -s -p "请输入数据库密码: " password
+      printf '\n'
+      read_db_input -p "请输入数据库名 [dataease]: " answer
+      database="${answer:-dataease}"
+      read_db_input -p "请输入数据库 schema（MySQL/GreatSQL 可留空）: " schema
+      read_db_input -p "请输入 JDBC 连接参数 [${DB_DEFAULT_PARAMS}]: " answer
+      params="${answer:-$DB_DEFAULT_PARAMS}"
+
+      printf '\n请核对外部数据库配置：\n'
+      printf '  类型：%s\n  地址：%s\n  端口：%s\n  用户名：%s\n  数据库名：%s\n  schema：%s\n' \
+         "$DE_DB_TYPE" "$host" "$port" "$username" "$database" "${schema:-（空）}"
+      if [[ -n "$password" ]]; then
+         printf '  密码：已设置\n'
+      else
+         printf '  密码：未设置（空密码）\n'
+      fi
+      # 自定义 JDBC 参数可能包含凭据，不在确认信息或日志中回显。
+      if [[ "$params" == "$DB_DEFAULT_PARAMS" ]]; then
+         printf '  JDBC 参数：使用默认值\n'
+      else
+         printf '  JDBC 参数：已设置自定义值\n'
+      fi
+      while true; do
+         read_db_input -p "确认使用以上配置？[y/N]（回车重新输入）: " answer
+         case "$answer" in
+            [yY]|[yY][eE][sS])
+               DE_DB_HOST="$host"
+               DE_DB_PORT="$port"
+               DE_DB_USER="$username"
+               DE_DB_PASSWORD="$password"
+               DE_DB_DATABASE="$database"
+               DE_DB_SCHEMA="$schema"
+               DE_DB_PARAMS="$params"
+               return
+               ;;
+            ''|[nN]|[nN][oO]) break ;;
+            *) printf '请输入 y 确认，或输入 n 重新填写。\n' ;;
+         esac
+      done
+   done
 }
 
 # 询问运行数据库类型（仅全新安装）
@@ -101,7 +157,7 @@ function prompt_database_config() {
    echo -e "  6) SQLServer"
    echo -e "  7) GreatSQL"
    local answer
-   read -r -p "请输入序号 [1-7]，默认 1 (MySQL): " answer
+   read_db_input -p "请输入序号 [1-7]，默认 1 (MySQL): " answer
    case "${answer:-1}" in
       2) DE_DB_TYPE=pg ;;
       3) DE_DB_TYPE=oracle ;;
@@ -113,7 +169,7 @@ function prompt_database_config() {
    esac
 
    if [[ "$DE_DB_TYPE" == "mysql" ]]; then
-      read -r -p "是否使用 DataEase 内置 MySQL？[Y/n]（默认内置）: " answer
+      read_db_input -p "是否使用 DataEase 内置 MySQL？[Y/n]（默认内置）: " answer
       case "${answer:-Y}" in
          [nN]|[nN][oO]) DE_EXTERNAL_DB=true ;;
          *) DE_EXTERNAL_DB=false ;;
@@ -181,6 +237,34 @@ function copy_db_driver() {
    log_content "已更新数据库驱动: ${driver_name}"
 }
 
+# 仅内置 MySQL 要求非空密码；外部数据库沿用用户确认的连接配置。
+function validate_database_password() {
+   if [[ "${DE_EXTERNAL_DB:-false}" == "false" && -z "${DE_DB_PASSWORD:-}" ]]; then
+      log_content "[错误] 使用内置 MySQL 时必须设置 DE_DB_PASSWORD，安装停止。"
+      return 1
+   fi
+}
+
+# 先在同目录创建私有文件，完整生成后再替换，避免密码以默认权限短暂落盘。
+function write_private_config() {
+   local destination="$1" staged
+   shift
+   if [[ -L "$destination" || -L "${destination%/*}" || ( -e "$destination" && ! -f "$destination" ) ]]; then
+      log_content "[错误] 配置路径不能是符号链接: $destination"
+      return 1
+   fi
+   staged=$(mktemp "${destination%/*}/.de-config.XXXXXX") || return 1
+   if ! "$@" > "$staged" || ! chmod 600 "$staged" || ! mv -f -- "$staged" "$destination"; then
+      rm -f -- "$staged"
+      log_content "[错误] 写入配置失败: $destination"
+      return 1
+   fi
+}
+
+function write_de_environment() {
+   env | grep '^DE_'
+}
+
 function check_and_prepare_env_params() {
    log "当前时间 : $(date)"
    log_title "检查安装环境并初始化环境变量"
@@ -198,13 +282,6 @@ function check_and_prepare_env_params() {
       DE_BASE_OLD=$DE_BASE
       sed -i -e "s#DE_BASE=.*#DE_BASE=${DE_BASE}#g" dectl
       \cp dectl /usr/local/bin && chmod +x /usr/local/bin/dectl
-
-      log_content "停止 DataEase 服务"
-      if [[ -f /etc/systemd/system/dataease.service ]];then
-         systemctl stop dataease
-      else
-         dectl stop
-      fi
 
       INSTALL_TYPE='upgrade'
    fi
@@ -233,6 +310,16 @@ function check_and_prepare_env_params() {
    set +a
 
    prompt_database_config
+   validate_database_password || exit 1
+
+   if [[ -n "$DE_BASE_OLD" ]]; then
+      log_content "停止 DataEase 服务"
+      if [[ -f /etc/systemd/system/dataease.service ]]; then
+         systemctl stop dataease
+      else
+         dectl stop
+      fi
+   fi
 
    read available_disk <<< $(df -H --output=avail "${DE_BASE}" | tail -1)
    disk_num=${available_disk%[KMGTP]}
@@ -257,6 +344,7 @@ function set_run_base_path() {
 }
 
 function prepare_de_run_base() {
+   validate_database_password || return 1
    log_title "初始化运行目录"
    cd ${CURRENT_DIR}
    mkdir -p ${DE_RUN_BASE}
@@ -264,7 +352,13 @@ function prepare_de_run_base() {
    cp -r ./dataease/* ${DE_RUN_BASE}/
 
    cd $DE_RUN_BASE
-   env | grep DE_ >.env
+   write_private_config "$DE_RUN_BASE/.env" write_de_environment || return 1
+
+   # 企业版只通过网关访问；容器网络内的 8100 仍供 APISIX 转发使用。
+   # 每次安装/升级均从安装包复制模板后处理，避免保留旧的宿主机端口映射。
+   if [[ $DE_INSTALL_MODE != "community" ]]; then
+      sed -i '/^    ports:$/,+1d' docker-compose.yml
+   fi
 
    mkdir -p ${DE_RUN_BASE}/{cache,logs,conf}
    mkdir -p ${DE_RUN_BASE}/data/{mysql,static-resource,map,etcd_data,geo,appearance,exportData,plugin,font,i18n,report,driver}
@@ -282,19 +376,36 @@ function prepare_de_run_base() {
 
    log_content "调整配置文件参数"
    cd $DE_RUN_BASE
-   cp -r $TEMPLATES_FOLDER/* $CONF_FOLDER
+   if [[ -L "$CONF_FOLDER" ]]; then
+      log_content "[错误] 配置目录不能是符号链接: $CONF_FOLDER"
+      return 1
+   fi
+   # 升级时也收紧历史 profile，避免未启用的旧配置仍暴露数据库密码。
+   local config_file
+   for config_file in "$CONF_FOLDER"/application*.yml "$CONF_FOLDER/mysql.env"; do
+      [[ -e "$config_file" || -L "$config_file" ]] || continue
+      [[ -f "$config_file" && ! -L "$config_file" ]] || return 1
+      chmod 600 "$config_file" || return 1
+   done
+   # 需要渲染的文件只通过私有写入替换，不能先用模板覆盖旧配置。
+   for config_file in "$TEMPLATES_FOLDER"/*; do
+      case "${config_file##*/}" in
+         application.yml|mysql.env) continue ;;
+      esac
+      cp -r -- "$config_file" "$CONF_FOLDER" || return 1
+   done
 
    cd ${TEMPLATES_FOLDER}
    templates_files=( application.yml mysql.env )
-   for i in ${templates_files[@]}; do
+   for i in "${templates_files[@]}"; do
       if [ -f $i ]; then
-         envsubst < $i > $CONF_FOLDER/$i
+         write_private_config "$CONF_FOLDER/$i" envsubst < "$i" || return 1
       fi
    done
 
    # 生成数据库 jpa 配置（application-<profile>.yml）
    if [[ -n "$DE_SPRING_PROFILE" && -f "jpa/application-${DE_SPRING_PROFILE}.yml" ]]; then
-      envsubst < "jpa/application-${DE_SPRING_PROFILE}.yml" > "$CONF_FOLDER/application-${DE_SPRING_PROFILE}.yml"
+      write_private_config "$CONF_FOLDER/application-${DE_SPRING_PROFILE}.yml" envsubst < "jpa/application-${DE_SPRING_PROFILE}.yml" || return 1
       log_content "已启用数据库配置 profile: ${DE_SPRING_PROFILE}"
    else
       log_content "[警告] 未找到数据库 jpa 模板 jpa/application-${DE_SPRING_PROFILE}.yml"
@@ -327,8 +438,12 @@ function prepare_system_settings() {
 
    if which firewall-cmd >/dev/null 2>&1; then
       if systemctl is-active firewalld &>/dev/null ;then
-         log_content "开启防火墙端口 ${DE_PORT}"
-         firewall-cmd --zone=public --add-port=${DE_PORT}/tcp --permanent
+         local access_port=$DE_PORT
+         if [[ $DE_INSTALL_MODE != "community" ]]; then
+            access_port=$DE_APISIX_PORT
+         fi
+         log_content "开启防火墙端口 ${access_port}"
+         firewall-cmd --zone=public --add-port=${access_port}/tcp --permanent
          firewall-cmd --reload
       else
          log_content "防火墙未开启，忽略端口开放"
@@ -516,7 +631,7 @@ function start_de_service() {
 function main() {
    check_and_prepare_env_params
    set_run_base_path
-   prepare_de_run_base
+   prepare_de_run_base || exit 1
    update_dectl
    prepare_system_settings
    install_docker

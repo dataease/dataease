@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { installG2AssistLineVisibility } from '@/views/chart/components/js/panel/types/impl/g2-assist-line'
 import {
   applyG2TiledLegend,
   installG2TiledLegendStateAdapter,
@@ -34,6 +35,8 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { L7ChartView } from '@/views/chart/components/js/panel/types/impl/l7'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ExportImage } from '@antv/l7'
+import { registerMapExport } from '@/utils/mapExport'
+import { unbindMapTooltipPosition } from '@/views/chart/components/js/panel/charts/map/tooltip-position'
 import {
   configAxisTitleOverflowTooltip,
   configEmptyDataStyle,
@@ -43,6 +46,8 @@ import { installG2SideLegendPaginationAdapter } from '@/views/chart/components/j
 import { ElMessage } from 'element-plus-secondary'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
 import { listenerTooltipShow } from '@/views/chart/components/js/panel/charts/g2/bar/barUtil'
+import { createChartRefreshMock } from './chart-refresh-mock'
+const mockRefreshResponse = import.meta.env.DEV ? createChartRefreshMock() : undefined
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const { nowPanelTrackInfo, nowPanelJumpInfo, mobileInPc, embeddedCallBack, inMobile } =
@@ -303,6 +308,10 @@ const getElementClassInfo = element => {
   return info.filter(Boolean).join(' ').toLowerCase()
 }
 const isLinkageDataElement = element => {
+  // 象限背景是区域不参与数据联动的选中和淡化
+  if (view.value.type === 'quadrant' && element?.markType === 'range') {
+    return false
+  }
   // 采样标签载体只负责定位文本，不参与联动选中和透明度回放
   if (isLargeDataLabelMark(element?.__data__?.markKey)) {
     return false
@@ -525,7 +534,11 @@ const checkSelected = param => {
   }
 }
 
-const calcData = async (view, callback) => {
+/**
+ * 查询图表数据并传递刷新来源，开发模拟仅在显式开启时修改响应副本
+ * autoRefresh 只标记定时刷新，手动查询仍使用完整绘制流程
+ */
+const calcData = async (view, callback, autoRefresh = false) => {
   if (view.tableId || view['dataFrom'] === 'template') {
     isError.value = false
     const v = JSON.parse(JSON.stringify(view))
@@ -536,6 +549,9 @@ const calcData = async (view, callback) => {
           errMsg.value = res.msg
           callback?.()
         } else {
+          if (mockRefreshResponse) {
+            res = mockRefreshResponse(res, view, autoRefresh)
+          }
           chartData.value = res?.data as Partial<Chart['data']>
           emit('onDrillFilters', res?.drillFilters)
           if (!res?.drillFilters?.length) {
@@ -573,7 +589,7 @@ const calcData = async (view, callback) => {
             dvMainStore.setViewOriginData(view.id, chartData.value)
             emitter.emit('chart-data-change')
           }
-          await renderChart(res, callback)
+          await renderChart(res, callback, autoRefresh)
         }
       })
       .catch(() => {
@@ -587,7 +603,10 @@ const calcData = async (view, callback) => {
   }
 }
 let curView
-const renderChart = async (view, callback?) => {
+/**
+ * 按图表渲染库分发查询结果，仅向 G2 传递局部更新所需的定时刷新标记
+ */
+const renderChart = async (view, callback?, autoRefresh = false) => {
   if (!view) {
     return
   }
@@ -604,22 +623,37 @@ const renderChart = async (view, callback?) => {
   recursionTransObj(customStyleTrans, chart.customStyle, scale.value, terminal.value)
   switch (chartView.library) {
     case ChartLibraryType.L7_PLOT:
+      clearTimeout(g2Timer)
+      finishG2Schedule?.()
       await renderL7Plot(chart, chartView as L7PlotChartView<any, any>, callback)
       break
     case ChartLibraryType.L7:
+      clearTimeout(g2Timer)
+      finishG2Schedule?.()
       await renderL7(chart, chartView as L7ChartView<any, any>, callback)
       break
-    case ChartLibraryType.G2:
-      await renderG2(chart, chartView as G2ChartView<any, any>)
-      callback?.()
+    case ChartLibraryType.G2: {
+      clearTimeout(mapTimer)
+      clearTimeout(mapL7Timer)
+      const renderTask = renderG2(chart, chartView as G2ChartView<any, any>, autoRefresh)
+      const version = chartRenderVersion
+      await renderTask
+      if (!chartComponentUnmounted && version === chartRenderVersion) callback?.()
       break
+    }
     default:
       break
   }
 }
 let myChart = null
 let g2Timer: number
+let finishG2Schedule: (() => void) | undefined
+// 地图与 G2 共用容器，串行交接实例并统一使过期任务失效
+let chartRenderQueue = Promise.resolve()
+let chartRenderVersion = 0
+let instanceLibrary: ChartLibraryType
 let g2SliderCleanup: (() => void) | undefined
+let assistLineCleanup: (() => void) | undefined
 let g2TiledLegendCleanup: (() => void) | undefined
 let g2LegendPaginationCleanup: (() => void) | undefined
 const clearG2SliderAdapter = () => {
@@ -627,10 +661,25 @@ const clearG2SliderAdapter = () => {
   g2SliderCleanup = undefined
 }
 const clearG2LegendPaginationAdapter = () => {
+  assistLineCleanup?.()
+  assistLineCleanup = undefined
   g2TiledLegendCleanup?.()
   g2TiledLegendCleanup = undefined
   g2LegendPaginationCleanup?.()
   g2LegendPaginationCleanup = undefined
+}
+/**
+ * 渲染库切换时释放旧实例，避免将地图传给 G2 或将 G2 传给地图复用
+ */
+const prepareChartInstance = (library: ChartLibraryType) => {
+  if (!myChart || instanceLibrary === library) return
+  unbindMapTooltipPosition(chartContainer.value)
+  G2TooltipCarousel.destroyByContainer(containerId)
+  clearG2SliderAdapter()
+  clearG2LegendPaginationAdapter()
+  const previousChart = myChart
+  myChart = null
+  previousChart.destroy()
 }
 const installG2SvgCoordinateScaleAdapter = chartInstance => {
   const canvas = chartInstance?.getContext?.()?.canvas
@@ -660,7 +709,12 @@ const installG2SvgCoordinateScaleAdapter = chartInstance => {
     })
   })
 }
-const renderG2 = async (chart, chartView: G2ChartView<any, any>) => {
+/**
+ * 串行执行 G2 绘制，丢弃过期调度并在卸载后停止操作实例
+ * 定时刷新优先尝试已注册的局部更新，不支持时回退完整绘制
+ * 返回的 Promise 在本轮绘制结束或调度取消后完成，供调用方释放加载状态
+ */
+const renderG2 = async (chart, chartView: G2ChartView<any, any>, autoRefresh = false) => {
   if (
     !chart.customAttr?.tooltip?.carousel?.enable &&
     G2TooltipCarousel.getInstanceByContainerId(containerId)
@@ -669,91 +723,130 @@ const renderG2 = async (chart, chartView: G2ChartView<any, any>) => {
     G2TooltipCarousel.destroyByContainer(containerId, true)
     replayLinkageActive()
   }
+  const version = ++chartRenderVersion
   g2Timer && clearTimeout(g2Timer)
-  g2Timer = setTimeout(async () => {
-    try {
-      // 在这里清理掉之前图表的空dom
-      configEmptyDataStyle([1], containerId)
-      // G2 重绘前先停掉 tooltip 轮播，避免旧实例残留高亮背景
-      G2TooltipCarousel.destroyByContainer(containerId)
-      clearG2SliderAdapter()
-      clearG2LegendPaginationAdapter()
-      myChart?.destroy()
-      // 仅在移动端配置右侧缩略区域隐藏图表文本
-      let dashboardHidden = props.element.dashboardHidden
-      if (dvMainStore.mobileInPc) {
-        dashboardHidden = !!document
-          .getElementById(containerId)
-          ?.closest('.mobile-wrapper-inner-adaptor')
-      }
-      const tScale = dvMainStore.canvasStyleData?.tScale
-      const isDataV = !isDashboard()
-      myChart = await chartView.drawChart({
-        chartObj: myChart,
-        container: containerId,
-        chart: {
-          ...chart,
-          container: containerId,
-          dashboardHidden,
-          tScale,
-          isDataV,
-          themes: isDataV ? 'dark' : dvMainStore.canvasStyleData?.dashboard?.themeColor
-        },
-        scale: scale.value,
-        action,
-        quadrantDefaultBaseline
-      })
-      // 固定本轮创建的实例，避免等待异步渲染期间新一轮 renderG2 替换全局 myChart 后误操作新实例
-      const chartInstance = myChart
-      // 数据 tooltip 的缩放补偿统一在公共入口接入，幂等保护避免轮播图重复绑定
-      listenerTooltipShow(chartInstance, { ...chart, container: containerId })
-      configAxisTitleOverflowTooltip(
-        {
-          ...chart,
-          container: containerId
-        },
-        chartInstance
-      )
-      // 此时 drawChart 已经完成最终 Spec 装配，但 G2 尚未开始首次绘制
-      // 主题字体在公共入口注入，让坐标轴、图例、标签和特殊文本使用同一字体
-      chartView.applyThemeFont(chartInstance, chart.fontFamily)
-      // 在这里统一应用性能策略，可以避免大数据首次进入页面时创建海量标签并执行昂贵动画
-      // 优化后的 options 会保留在当前实例中，刷新和容器调整触发 forceFit 时也会直接复用
-      chartView.optimizeLargeData(chartInstance)
-      const legendContainer = document.getElementById(containerId)
-      chartInstance.options(
-        applyG2TiledLegend(
-          chartInstance.options(),
-          chart.customStyle?.legend,
-          legendContainer?.clientWidth || 1,
-          legendContainer?.clientHeight || 1,
-          (event, payload) => chartInstance.emit(event, payload),
-          !isDashboard() || dvMainStore.canvasStyleData?.dashboard?.themeColor === 'dark'
-            ? 'dark'
-            : 'light'
-        )
-      )
-      if (chart.customStyle?.legend?.displayMode === 'tile') {
-        g2TiledLegendCleanup = installG2TiledLegendStateAdapter(chartInstance)
-      }
-      // 等待 G2 完成包含轴边界校正的最终布局
-      await chartInstance?.render()
-      installG2SvgCoordinateScaleAdapter(chartInstance)
-      // 双向条形图、象限图仍依赖首次布局，必须等待其专属处理后再恢复联动状态
-      await chartView.afterRender?.(chartInstance)
-      // 异步等待期间若图表已被新实例替换，本轮旧实例不再回放联动状态，避免污染当前画布
-      if (chartInstance && chartInstance === myChart) {
-        g2SliderCleanup = installG2SliderAdapter(chartInstance)
-        // 侧边图例翻页后重新计算整体占宽，并在 Plot 重排完成后恢复联动选中态
-        g2LegendPaginationCleanup = installG2SideLegendPaginationAdapter(chartInstance, {
-          afterPageLayout: replayLinkageActive
+  finishG2Schedule?.()
+  return new Promise<void>(resolve => {
+    finishG2Schedule = resolve
+    g2Timer = setTimeout(() => {
+      finishG2Schedule = undefined
+      chartRenderQueue = chartRenderQueue
+        .then(async () => {
+          if (chartComponentUnmounted || version !== chartRenderVersion) return
+          try {
+            prepareChartInstance(ChartLibraryType.G2)
+            // 仅在移动端配置右侧缩略区域隐藏图表文本
+            let dashboardHidden = props.element.dashboardHidden
+            if (dvMainStore.mobileInPc) {
+              dashboardHidden = !!document
+                .getElementById(containerId)
+                ?.closest('.mobile-wrapper-inner-adaptor')
+            }
+            const tScale = dvMainStore.canvasStyleData?.tScale
+            const isDataV = !isDashboard()
+            const drawOptions = {
+              chartObj: myChart,
+              container: containerId,
+              chart: {
+                ...chart,
+                container: containerId,
+                dashboardHidden,
+                tScale,
+                isDataV,
+                themes: isDataV ? 'dark' : dvMainStore.canvasStyleData?.dashboard?.themeColor
+              },
+              scale: scale.value,
+              action,
+              quadrantDefaultBaseline
+            }
+            if (
+              autoRefresh &&
+              myChart &&
+              (await chartView.updateData(drawOptions, () => {
+                assistLineCleanup?.()
+                assistLineCleanup = installG2AssistLineVisibility(myChart, chart)
+              }))
+            ) {
+              if (!chartComponentUnmounted && version === chartRenderVersion) replayLinkageActive()
+              return
+            }
+            if (chartComponentUnmounted || version !== chartRenderVersion) return
+            // 在这里清理掉之前图表的空dom
+            configEmptyDataStyle([1], containerId)
+            // G2 重绘前先停掉 tooltip 轮播，避免旧实例残留高亮背景
+            G2TooltipCarousel.destroyByContainer(containerId)
+            clearG2SliderAdapter()
+            clearG2LegendPaginationAdapter()
+            unbindMapTooltipPosition(chartContainer.value)
+            myChart?.destroy()
+            myChart = null
+            const chartInstance = await chartView.drawChart(drawOptions)
+            if (!chartInstance) return
+            if (chartComponentUnmounted || version !== chartRenderVersion) {
+              chartInstance.destroy()
+              return
+            }
+            myChart = chartInstance
+            instanceLibrary = ChartLibraryType.G2
+            // 数据 tooltip 的缩放补偿统一在公共入口接入，幂等保护避免轮播图重复绑定
+            listenerTooltipShow(chartInstance, { ...chart, container: containerId })
+            configAxisTitleOverflowTooltip(
+              {
+                ...chart,
+                container: containerId
+              },
+              chartInstance
+            )
+            // 此时 drawChart 已经完成最终 Spec 装配，但 G2 尚未开始首次绘制
+            // 主题字体在公共入口注入，让坐标轴、图例、标签和特殊文本使用同一字体
+            chartView.applyThemeFont(chartInstance, chart.fontFamily)
+            // 在这里统一应用性能策略，可以避免大数据首次进入页面时创建海量标签并执行昂贵动画
+            // 优化后的 options 会保留在当前实例中，刷新和容器调整触发 forceFit 时也会直接复用
+            chartView.optimizeLargeData(chartInstance)
+            const legendContainer = document.getElementById(containerId)
+            chartInstance.options(
+              applyG2TiledLegend(
+                chartInstance.options(),
+                chart.customStyle?.legend,
+                legendContainer?.clientWidth || 1,
+                legendContainer?.clientHeight || 1,
+                (event, payload) => chartInstance.emit(event, payload),
+                !isDashboard() || dvMainStore.canvasStyleData?.dashboard?.themeColor === 'dark'
+                  ? 'dark'
+                  : 'light'
+              )
+            )
+            if (chart.customStyle?.legend?.displayMode === 'tile') {
+              g2TiledLegendCleanup = installG2TiledLegendStateAdapter(chartInstance)
+            }
+            assistLineCleanup = installG2AssistLineVisibility(chartInstance, chart)
+            // 等待 G2 完成包含轴边界校正的最终布局
+            await chartInstance?.render()
+            if (chartComponentUnmounted || version !== chartRenderVersion) return
+            installG2SvgCoordinateScaleAdapter(chartInstance)
+            // 双向条形图、象限图仍依赖首次布局，必须等待其专属处理后再恢复联动状态
+            await chartView.afterRender?.(chartInstance)
+            // 异步等待期间若图表已被新实例替换，本轮旧实例不再回放联动状态，避免污染当前画布
+            if (
+              !chartComponentUnmounted &&
+              version === chartRenderVersion &&
+              chartInstance &&
+              chartInstance === myChart
+            ) {
+              g2SliderCleanup = installG2SliderAdapter(chartInstance)
+              // 侧边图例翻页后重新计算整体占宽，并在 Plot 重排完成后恢复联动选中态
+              g2LegendPaginationCleanup = installG2SideLegendPaginationAdapter(chartInstance, {
+                afterPageLayout: replayLinkageActive
+              })
+              replayLinkageActive()
+            }
+          } catch (e) {
+            console.error('renderG2Plot error', e)
+          }
         })
-        replayLinkageActive()
-      }
-    } catch (e) {
-      console.error('renderG2Plot error', e)
-    }
-  }, 300)
+        .finally(resolve)
+    }, 300)
+  })
 }
 
 const dynamicAreaId = ref('')
@@ -776,53 +869,99 @@ const renderL7Plot = async (chart: ChartObj, chartView: L7PlotChartView<any, any
       areaId = dynamicAreaId.value
     }
   }
+  const renderVersion = ++chartRenderVersion
   mapTimer && clearTimeout(mapTimer)
-  mapTimer = setTimeout(async () => {
-    try {
-      clearG2SliderAdapter()
-      clearG2LegendPaginationAdapter()
-      myChart?.destroy()
-      if (chartContainer.value) {
-        chartContainer.value.textContent = ''
-      }
-      myChart = await chartView.drawChart({
-        chartObj: myChart,
-        container: containerId,
-        chart,
-        areaId,
-        action,
-        scope,
-        gadmName
+  mapTimer = setTimeout(() => {
+    chartRenderQueue = chartRenderQueue
+      .then(async () => {
+        if (chartComponentUnmounted || renderVersion !== chartRenderVersion) return
+        const containerElement = chartContainer.value
+        try {
+          prepareChartInstance(ChartLibraryType.L7_PLOT)
+          clearG2SliderAdapter()
+          clearG2LegendPaginationAdapter()
+          unbindMapTooltipPosition(chartContainer.value)
+          myChart?.destroy()
+          // 重建时不把已销毁实例传入新图表，避免配置闭包串联历史地图
+          myChart = null
+          if (chartContainer.value) {
+            chartContainer.value.textContent = ''
+          }
+          const chartInstance = await chartView.drawChart({
+            chartObj: myChart,
+            container: containerId,
+            chart,
+            areaId,
+            action,
+            scope,
+            gadmName
+          })
+          if (chartComponentUnmounted || renderVersion !== chartRenderVersion) {
+            chartInstance?.destroy()
+            return
+          }
+          myChart = chartInstance
+          instanceLibrary = ChartLibraryType.L7_PLOT
+          if (renderVersion === chartRenderVersion) callback?.()
+        } catch (e) {
+          console.error('renderL7Plot error', e)
+          if (renderVersion === chartRenderVersion) callback?.()
+        } finally {
+          if (chartComponentUnmounted || renderVersion !== chartRenderVersion) {
+            unbindMapTooltipPosition(containerElement)
+          }
+          if (renderVersion === chartRenderVersion) emit('resetLoading')
+        }
       })
-      callback?.()
-    } catch (e) {
-      console.error('renderL7Plot error', e)
-      callback?.()
-    } finally {
-      emit('resetLoading')
-    }
+      .catch(e => {
+        console.error('renderMap task error', e)
+      })
   }, 500)
 }
 
 let mapL7Timer: number
 const renderL7 = async (chart: ChartObj, chartView: L7ChartView<any, any>, callback) => {
+  const renderVersion = ++chartRenderVersion
   mapL7Timer && clearTimeout(mapL7Timer)
-  mapL7Timer = setTimeout(async () => {
-    try {
-      myChart = await chartView.drawChart({
-        chartObj: myChart,
-        container: containerId,
-        chart: chart,
-        action
+  mapL7Timer = setTimeout(() => {
+    chartRenderQueue = chartRenderQueue
+      .then(async () => {
+        if (chartComponentUnmounted || renderVersion !== chartRenderVersion) return
+        const containerElement = chartContainer.value
+        try {
+          prepareChartInstance(ChartLibraryType.L7)
+          unbindMapTooltipPosition(containerElement)
+          const previousChart = myChart
+          const chartInstance = await chartView.drawChart({
+            chartObj: myChart,
+            container: containerId,
+            chart: chart,
+            action
+          })
+          if (chartComponentUnmounted || renderVersion !== chartRenderVersion) {
+            // 卸载钩子已销毁复用实例，新建实例仍需在异步返回后回收
+            if (!chartComponentUnmounted || chartInstance !== previousChart)
+              chartInstance?.destroy()
+            myChart = null
+            return
+          }
+          myChart = chartInstance
+          instanceLibrary = ChartLibraryType.L7
+          myChart?.render()
+          if (renderVersion === chartRenderVersion) callback?.()
+        } catch (e) {
+          console.error('renderL7 error', e)
+          if (renderVersion === chartRenderVersion) callback?.()
+        } finally {
+          if (chartComponentUnmounted || renderVersion !== chartRenderVersion) {
+            unbindMapTooltipPosition(containerElement)
+          }
+          if (renderVersion === chartRenderVersion) emit('resetLoading')
+        }
       })
-      myChart?.render()
-      callback?.()
-    } catch (e) {
-      console.error('renderL7 error', e)
-      callback?.()
-    } finally {
-      emit('resetLoading')
-    }
+      .catch(e => {
+        console.error('renderMap task error', e)
+      })
   }, 500)
 }
 
@@ -1134,44 +1273,43 @@ const canvas2Picture = (pictureData, online) => {
   imgDom.src = pictureData
   mapDom?.appendChild(imgDom)
 }
-const preparePicture = id => {
-  if (id !== curView?.id) {
+let unregisterMapExport: (() => void) | undefined
+const exportMapPicture = async (signal: AbortSignal): Promise<string | undefined> => {
+  const currentView = curView || view.value
+  const chartView = chartViewManager.getChartView(currentView.render, currentView.type)
+  if (chartView.library !== ChartLibraryType.L7_PLOT && chartView.library !== ChartLibraryType.L7) {
     return
   }
-  const chartView = chartViewManager.getChartView(curView.render, curView.type)
+  const scene = myChart?.getScene()
+  if (!scene) throw new Error('Map scene is not ready')
   if (chartView.library === ChartLibraryType.L7_PLOT) {
-    myChart
-      .getScene()
-      .exportMap('png')
-      .then(res => canvas2Picture(res, false))
-  } else if (chartView.library === ChartLibraryType.L7) {
-    const scene = myChart.getScene()
-    const zoom = new ExportImage({
-      onExport: (base64: string) => {
-        canvas2Picture(base64, true)
-      }
-    })
-    let getTmapImage
-    if (scene) {
-      scene.addControl(zoom)
-      zoom.hide()
-      // 天地图
-      getTmapImage = async () => {
-        const res = await scene.exportPng('png')
-        canvas2Picture(res, true)
-      }
-    }
-    zoom
-      .getImage()
-      .then(res => {
-        canvas2Picture(res, true)
-      })
-      .catch(() => {
-        if (scene && getTmapImage) {
-          getTmapImage()
-        }
-      })
+    const data = await scene.exportMap('png')
+    if (!data) throw new Error('Map export returned an empty image')
+    return data
   }
+  const control = new ExportImage()
+  const removeControl = () => scene.removeControl(control)
+  scene.addControl(control)
+  control.hide()
+  signal.addEventListener('abort', removeControl, { once: true })
+  try {
+    return await control.getImage()
+  } catch (error) {
+    if (signal.aborted) throw error
+    return await scene.exportPng('png')
+  } finally {
+    signal.removeEventListener('abort', removeControl)
+    if (!signal.aborted) removeControl()
+  }
+}
+const preparePicture = id => {
+  if (id !== curView?.id) return
+  const controller = new AbortController()
+  exportMapPicture(controller.signal)
+    .then(data => {
+      if (data && !chartComponentUnmounted) canvas2Picture(data, true)
+    })
+    .catch(error => console.warn(error))
 }
 const unPreparePicture = id => {
   if (id !== curView?.id) {
@@ -1236,7 +1374,6 @@ onMounted(() => {
           G2TooltipCarousel.enqueueResize(containerId, async () => {
             const chartView = chartViewManager.getChartView(curView.render, curView.type)
             const chartInstance = myChart
-
             if (
               chartComponentUnmounted ||
               chartView.library !== ChartLibraryType.G2 ||
@@ -1284,6 +1421,7 @@ onMounted(() => {
     }
   })
   intersectionObserver.observe(containerDom)
+  unregisterMapExport = registerMapExport(containerDom, exportMapPicture)
   useEmitt({ name: 'l7-prepare-picture', callback: preparePicture })
   useEmitt({ name: 'l7-unprepare-picture', callback: unPreparePicture })
 })
@@ -1299,12 +1437,20 @@ const onWheel = (e: WheelEvent) => {
 onBeforeUnmount(() => {
   try {
     chartComponentUnmounted = true
+    chartRenderVersion++
+    clearTimeout(mapTimer)
+    clearTimeout(mapL7Timer)
+    unbindMapTooltipPosition(chartContainer.value)
+    unregisterMapExport?.()
+    clearTimeout(g2Timer)
+    finishG2Schedule?.()
     g2ResizeTimer && clearTimeout(g2ResizeTimer)
     G2TooltipCarousel.dequeueResize(containerId)
     G2TooltipCarousel.destroyByContainer(containerId)
     clearG2SliderAdapter()
     clearG2LegendPaginationAdapter()
     myChart?.destroy()
+    myChart = null
     resizeObserver?.disconnect()
     intersectionObserver?.disconnect()
   } catch (e) {

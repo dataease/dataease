@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { ArrowDownBold } from '@element-plus/icons-vue'
 import icon_searchOutline_outlined from '@/assets/svg/icon_search-outline_outlined.svg'
 /* import icon_deleteTrash_outlined from "@/assets/svg/icon_delete-trash_outlined.svg"; */
 import icon_succeed_filled from '@/assets/svg/icon_succeed_filled.svg'
@@ -115,13 +116,13 @@ const sizeChange = (size: number) => {
 const sortChange = (param: any) => {
   state.orders = []
   if (param.order && param.prop === 'createTime') {
-    const type = param.order.substring(0, param.order.indexOf('ending'))
     state.orders.push({
       field: 'timeDesc',
-      type: type !== 'asc'
+      type: param.order === 'descending'
     })
-    search()
   }
+  state.paginationConfig.currentPage = 1
+  search()
 }
 
 const imgType = ref()

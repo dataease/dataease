@@ -11,7 +11,7 @@ import type { ComponentInfo } from '@/api/chart'
 import { mixColor } from '@/utils/color'
 import { getDynamicRange, getCustomTime } from '@/custom-component/v-query/time-format'
 import { getCustomRange } from '@/custom-component/v-query/time-format-dayjs'
-import { infoFormat } from './options'
+import { infoFormat, splitConditionValues } from './options'
 import {
   onBeforeUnmount,
   reactive,
@@ -346,10 +346,22 @@ const fillRequireVal = arr => {
   element.value.propValue?.forEach(next => {
     if (arr.some(itx => next.checkedFields.includes(itx)) && next.required) {
       if (next.displayType === '8') {
-        const { conditionValueF, conditionValueS, conditionType } = next
-        if (conditionType === 0 && conditionValueF === '') {
+        const {
+          conditionValueF,
+          conditionValueS,
+          conditionType,
+          conditionSeparatorType,
+          conditionSeparatorCustom
+        } = next
+        if (
+          conditionType === 3 &&
+          !splitConditionValues(conditionValueF, conditionSeparatorType, conditionSeparatorCustom)
+            .length
+        ) {
           next.conditionValueF = next.defaultConditionValueF
-        } else {
+        } else if (conditionType === 0 && conditionValueF === '') {
+          next.conditionValueF = next.defaultConditionValueF
+        } else if (conditionType !== 3) {
           if (conditionValueF === '') {
             next.conditionValueF = next.defaultConditionValueF
           }
@@ -395,8 +407,22 @@ const queryDataForId = id => {
         }
 
         if (next.displayType === '8') {
-          const { conditionValueF, conditionValueS, conditionType } = next
-          if (conditionType === 0) {
+          const {
+            conditionValueF,
+            conditionValueS,
+            conditionType,
+            conditionSeparatorType,
+            conditionSeparatorCustom
+          } = next
+          if (conditionType === 3) {
+            requiredName = splitConditionValues(
+              conditionValueF,
+              conditionSeparatorType,
+              conditionSeparatorCustom
+            ).length
+              ? ''
+              : next.name
+          } else if (conditionType === 0) {
             requiredName = conditionValueF === '' ? next.name : ''
           } else {
             requiredName =
@@ -821,8 +847,22 @@ const queryData = () => {
       }
 
       if (next.displayType === '8') {
-        const { conditionValueF, conditionValueS, conditionType } = next
-        if (conditionType === 0) {
+        const {
+          conditionValueF,
+          conditionValueS,
+          conditionType,
+          conditionSeparatorType,
+          conditionSeparatorCustom
+        } = next
+        if (conditionType === 3) {
+          requiredName = splitConditionValues(
+            conditionValueF,
+            conditionSeparatorType,
+            conditionSeparatorCustom
+          ).length
+            ? ''
+            : next.name
+        } else if (conditionType === 0) {
           requiredName = conditionValueF === '' ? next.name : ''
         } else {
           requiredName =

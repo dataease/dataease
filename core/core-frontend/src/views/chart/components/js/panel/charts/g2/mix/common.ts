@@ -324,7 +324,31 @@ export const createResponsiveMixLegendCategory = baseLegendCategory => {
   return responsiveLegendCategory
 }
 
+/**
+ * 组合图按完整类别高亮，避免折线的 series 比例尺被用于柱形区域的分组偏移
+ */
+export const createMixElementHighlight = baseElementHighlight => {
+  const mixElementHighlight = options => {
+    const highlight = baseElementHighlight(options)
+    return (context, ...args) => {
+      if (!options.region) {
+        return highlight(context, ...args)
+      }
+      const { view } = context
+      return highlight(
+        { ...context, view: { ...view, scale: { ...view.scale, series: undefined } } },
+        ...args
+      )
+    }
+  }
+  mixElementHighlight.props = baseElementHighlight.props
+  return mixElementHighlight
+}
+
 const mixLegendLibrary = stdlib() as Record<string, any>
+mixLegendLibrary['interaction.elementHighlight'] = createMixElementHighlight(
+  mixLegendLibrary['interaction.elementHighlight']
+)
 mixLegendLibrary['component.legendCategory'] = createResponsiveMixLegendCategory(
   mixLegendLibrary['component.legendCategory']
 )
@@ -356,7 +380,7 @@ export const getAssistLineAxisIndex = (yAxisType?: string): number => {
 type MixAssistScaleOptions = LinearScale & {
   dataeaseAssistAxis?: number
   dataeaseAssistSource?: boolean
-  dataeaseAssistSetDomain?: (domain: number[]) => void
+  dataeaseAssistSetDomain?: (domain: number[]) => number[]
 }
 
 type MixAssistNumericScale = {
@@ -378,11 +402,20 @@ const syncMixAssistScales: NonNullable<LinearScale['groupTransform']> = scales =
       )
     })
     const sourceOptions = source?.getOptions() as MixAssistScaleOptions
-    const domain = sourceOptions?.domain || []
-    options.dataeaseAssistSetDomain(domain)
+    const sourceDomain = sourceOptions?.domain || []
+    const domain = options.dataeaseAssistSetDomain(sourceDomain)
     if (domain.length === 2 && domain.every(Number.isFinite)) {
+      // 不跟随的辅助线保留初次轴域，主图及同轴散点也必须使用相同范围。
+      if (domain !== sourceDomain && sourceOptions) {
+        scales.forEach(candidate => {
+          if (candidate.getOptions().key === sourceOptions.key) {
+            const numericScale = candidate as MixAssistNumericScale
+            numericScale.update({ domain, nice: false })
+          }
+        })
+      }
       const numericScale = scale as MixAssistNumericScale
-      numericScale.update({ domain, range: sourceOptions.range, nice: false })
+      numericScale.update({ domain, range: sourceOptions?.range, nice: false })
     }
   })
 }
@@ -390,7 +423,8 @@ const syncMixAssistScales: NonNullable<LinearScale['groupTransform']> = scales =
 export const getMixAssistLineOptions = <T extends { value: number }>(
   axisMark: G2Spec,
   lineData: T[],
-  axisIndex: number
+  axisIndex: number,
+  assistLines: AssistLine[]
 ) => {
   axisMark.scale.y = {
     ...axisMark.scale.y,
@@ -399,13 +433,23 @@ export const getMixAssistLineOptions = <T extends { value: number }>(
     groupTransform: syncMixAssistScales
   }
   let visibleDomain: number[] = []
+  let initialDomain: number[] | undefined
+  const preserveDomain = assistLines.some(
+    line =>
+      getAssistLineAxisIndex(line.yAxisType) === axisIndex &&
+      (!line.followField || !(line.field === '1' ? line.fieldId : line.boundFieldId))
+  )
   const scaleY: MixAssistScaleOptions = {
     ...axisMark.scale.y,
     // 辅助线保持独立，不能把自身数值合并到主图轴域中
     independent: true,
     dataeaseAssistSource: false,
     dataeaseAssistSetDomain: domain => {
-      visibleDomain = domain
+      if (preserveDomain && domain.length === 2 && domain.every(Number.isFinite)) {
+        initialDomain ??= [...domain]
+      }
+      visibleDomain = initialDomain ?? domain
+      return visibleDomain
     },
     groupTransform: syncMixAssistScales
   }

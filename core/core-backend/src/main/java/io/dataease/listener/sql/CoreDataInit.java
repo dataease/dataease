@@ -25,6 +25,7 @@ import io.dataease.startup.dao.auto.entity.CoreSysStartupJob;
 import io.dataease.startup.dao.auto.mapper.CoreSysStartupJobRepository;
 import io.dataease.system.dao.auto.entity.CoreSysSetting;
 import io.dataease.system.dao.auto.mapper.CoreSysSettingRepository;
+import io.dataease.utils.LocalModelUtils;
 import io.dataease.utils.LogUtil;
 import io.dataease.visualization.dao.auto.entity.VisualizationBackground;
 import io.dataease.visualization.dao.auto.entity.VisualizationSubject;
@@ -176,6 +177,10 @@ public class CoreDataInit implements CoreSqlBlock {
     }
 
     private void initCoreSysSetting() {
+        String defaultOpen = "false";
+        if (LocalModelUtils.isDesktop()) {
+            defaultOpen = "true";
+        }
         List<CoreSysSetting> settings = Arrays.asList(
                 new CoreSysSetting(1L, "basic.dsIntervalTime", "6", "text", 11),
                 new CoreSysSetting(2L, "basic.dsExecuteTime", "minute", "text", 3),
@@ -187,7 +192,7 @@ public class CoreDataInit implements CoreSqlBlock {
                 new CoreSysSetting(1048232869488627717L, "basic.shareDisable", "false", "text", 11),
                 new CoreSysSetting(1048232869488627718L, "basic.sharePeRequire", "false", "text", 12),
                 new CoreSysSetting(1048232869488627719L, "basic.defaultSort", "1", "text", 13),
-                new CoreSysSetting(1048232869488627720L, "basic.defaultOpen", "false", "text", 14),
+                new CoreSysSetting(1048232869488627720L, "basic.defaultOpen", defaultOpen, "text", 14),
                 new CoreSysSetting(1048232869488627721L, "basic.disableCrossDs", "true", "text", 15)
         );
         coreSysSettingRepository.saveAllAndFlush(settings);

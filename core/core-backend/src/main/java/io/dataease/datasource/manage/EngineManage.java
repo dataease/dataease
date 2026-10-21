@@ -4,6 +4,7 @@ import io.dataease.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.datasource.dao.auto.repository.CoreDeEngineRepository;
+import io.dataease.datasource.security.JdbcUrlSecurityPolicy;
 import io.dataease.datasource.server.DatasourceServer;
 import io.dataease.datasource.type.H2;
 import io.dataease.datasource.type.StarRocks;
@@ -90,12 +91,7 @@ public class EngineManage {
         if (StringUtils.isEmpty(engine.getType()) || StringUtils.isEmpty(engine.getConfiguration())) {
             throw new Exception("未完整设置数据引擎");
         }
-        if (StringUtils.equalsIgnoreCase(engine.getType(), "h2")) {
-            H2 h2 = JsonUtil.parseObject(engine.getConfiguration(), H2.class);
-            if (h2 != null && StringUtils.isNotBlank(h2.getJdbcUrl())) {
-                DEException.throwException("H2 engine does not support custom jdbcUrl");
-            }
-        }
+        validateH2JdbcConfig(engine);
         String status = "";
         try {
             if (StringUtils.equalsIgnoreCase(engine.getType(), "StarRocks")) {
@@ -127,6 +123,46 @@ public class EngineManage {
                 }
             }
         }
+    }
+
+    /**
+     * H2 引擎只允许使用服务端生成的内置连接串，客户端不得通过 jdbc 或 jdbcUrl 自定义连接串。
+     * 保存与校验共用此规则；冲突字段、单独提交、同时提交均 fail-closed 处理。
+     */
+    public void validateH2JdbcConfig(CoreDeEngine engine) {
+        if (!StringUtils.equalsIgnoreCase(engine.getType(), "h2") || StringUtils.isBlank(engine.getConfiguration())) {
+            return;
+        }
+        H2 h2 = JsonUtil.parseObject(engine.getConfiguration(), H2.class);
+        if (h2 == null) {
+            DEException.throwException("H2 engine does not support custom jdbcUrl");
+        }
+        String jdbc = StringUtils.trimToNull(h2.getJdbc());
+        String jdbcUrl = StringUtils.trimToNull(h2.getJdbcUrl());
+        if (StringUtils.isNotBlank(jdbc) && StringUtils.isNotBlank(jdbcUrl) && !StringUtils.equals(jdbc, jdbcUrl)) {
+            DEException.throwException("H2 engine does not support custom jdbcUrl");
+        }
+        String effectiveJdbc = StringUtils.defaultIfBlank(jdbc, jdbcUrl);
+        if (StringUtils.isBlank(effectiveJdbc)) {
+            return;
+        }
+        // 保留既有危险连接参数校验，不绕过 JdbcUrlSecurityPolicy
+        JdbcUrlSecurityPolicy.validate("h2", h2.getDriver(), effectiveJdbc, h2.getExtraParams());
+
+        if (StringUtils.equals(effectiveJdbc, engineUrl)) {
+            return;
+        }
+        if (engine.getId() != null) {
+            CoreDeEngine stored = coreDeEngineRepository.findById(engine.getId()).orElse(null);
+            if (stored != null && StringUtils.isNotBlank(stored.getConfiguration())) {
+                H2 storedH2 = JsonUtil.parseObject(stored.getConfiguration(), H2.class);
+                String storedEffective = storedH2 == null ? null : StringUtils.defaultIfBlank(storedH2.getJdbc(), storedH2.getJdbcUrl());
+                if (StringUtils.equals(effectiveJdbc, storedEffective)) {
+                    return;
+                }
+            }
+        }
+        DEException.throwException("H2 engine does not support custom jdbcUrl");
     }
 
     public ResultMessage save(CoreDeEngine engine) throws Exception {

@@ -25,6 +25,7 @@ import { dsTypes, filterOption } from './form/option'
 import DrawerMain from '@/components/drawer-main/src/DrawerMain.vue'
 import SyncForm from './SyncForm.vue'
 import { symmetricDecryptJson } from '@/utils/encryption'
+import { formatDate } from '@/utils/DateUtil'
 
 const props = defineProps({
   activeName: {
@@ -304,7 +305,7 @@ const timestampFormatDate = value => {
   if (!value) {
     return '-'
   }
-  return new Date(value)['format']()
+  return formatDate(new Date(value))
 }
 const syncFormDialogRef = ref()
 const showSyncFormDialog = async row => {

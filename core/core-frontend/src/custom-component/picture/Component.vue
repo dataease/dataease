@@ -12,7 +12,7 @@
           @click="uploadImg"
           text
           style="font-family: inherit; color: #646a73"
-          icon="Plus"
+          :icon="Plus"
           >{{ t('visualization.pic_upload_tips') }}</el-button
         ></span
       >
@@ -21,6 +21,7 @@
 </template>
 
 <script setup lang="ts">
+import { Plus } from '@element-plus/icons-vue'
 import { CSSProperties, computed, nextTick, toRefs } from 'vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import eventBus from '@/utils/eventBus'

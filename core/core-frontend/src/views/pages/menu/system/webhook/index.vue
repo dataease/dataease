@@ -63,13 +63,15 @@
           width="257"
         />
 
-        <el-table-column
-          prop="secret"
-          show-overflow-tooltip
-          key="secret"
-          label="Secret"
-          width="120"
-        />
+        <el-table-column prop="hasSecret" key="hasSecret" label="Secret" width="120">
+          <template #default="scope">
+            {{
+              scope.row.hasSecret
+                ? t('webhook.secret_configured')
+                : t('webhook.secret_unconfigured')
+            }}
+          </template>
+        </el-table-column>
 
         <el-table-column
           prop="ssl"

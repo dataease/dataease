@@ -1,3 +1,3 @@
-import Corn from './src/Corn.vue'
+import Cron from './src/Cron.vue'
 
-export { Corn }
+export { Cron }

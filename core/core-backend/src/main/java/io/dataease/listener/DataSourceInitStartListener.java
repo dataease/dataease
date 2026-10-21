@@ -1,4 +1,5 @@
 package io.dataease.listener;
+import io.dataease.utils.HttpClientUtil;
 import io.dataease.utils.LogUtil;
 
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
@@ -64,6 +65,12 @@ public class DataSourceInitStartListener implements ApplicationListener<Applicat
             } catch (Exception e) {
                 LogUtil.error(e);
             }
+        }
+
+        try {
+            HttpClientUtil.setIgnoreSslVerify(sysParameterManage.ignoreSslVerify());
+        } catch (Exception e) {
+            LogUtil.error(e);
         }
 
         try {

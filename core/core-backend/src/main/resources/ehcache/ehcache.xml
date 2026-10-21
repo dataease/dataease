@@ -58,16 +58,6 @@
         <value-type>java.util.List</value-type>
     </cache>
 
-    <cache alias="de_v3_user_count" uses-template="common-cache">
-        <key-type>java.lang.String</key-type>
-        <value-type>java.lang.Integer</value-type>
-    </cache>
-
-    <cache alias="de_v3_user_echelon" uses-template="common-cache">
-        <key-type>java.lang.String</key-type>
-        <value-type>java.util.List</value-type>
-    </cache>
-
     <cache alias="de_v3_role_busi_pers_interactive" uses-template="common-cache">
         <key-type>java.lang.String</key-type>
         <value-type>java.util.List</value-type>

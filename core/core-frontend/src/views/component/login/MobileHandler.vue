@@ -34,6 +34,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import { prepareOauth2Login, exchangeOauth2Token, oauth2CodeKey } from '@/utils/oauth2Login'
 import { ref, onMounted } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import logo_ldap from "@/assets/svg/logo_ldap.svg"
@@ -117,15 +118,7 @@ const redirect2Auth = (url, type) => {
   }, 1000)
 }
 const toOauth2LoginPage = () => {
-  const url = '/oauth2/auth'
-  request.get({ url }).then(res => {
-    const data = res.data
-    if (data?.authEndpoint) {
-      const redirectUri = encodeURIComponent(data.redirectUri)
-      const result = `${data.authEndpoint}?response_type=code&client_id=${data.clientId}&scope=${data.scope}&state=${data.state}&redirect_uri=${redirectUri}`
-      redirect2Auth(result, 'oauth2')
-    }
-  })
+  prepareOauth2Login().then(url => redirect2Auth(url, 'oauth2'))
 }
 const queryCategoryStatus = () => {
   const url = `/setting/authentication/status`
@@ -160,12 +153,9 @@ const callBackType = () => {
   return getQueryString('state')
 }
 const oauth2Token = (cb) => {
-  const code = getQueryString('code')
-  const state = getQueryString('state')
-  if (!code || !state) {
-    return null
-  }
-  request.post({url: '/oauth2/token', data: {code, state}}).then(res => {
+  const state = getQueryString('state') || ''
+  const code = getQueryString(oauth2CodeKey(state))
+  exchangeOauth2Token(code, state).then(res => {
     userStore.setToken(res.data.token)
     cb && cb()
   }).catch(() => {
@@ -177,7 +167,7 @@ const oauth2Token = (cb) => {
 }
 
 const platformLogin = origin => {  
-  platformLoginApi(origin).then(res => {
+  platformLoginApi(origin, userStore.getToken).then(res => {
     const mfa = res.data?.mfa
     if (mfa?.enabled) {
       mfa['origin'] = origin

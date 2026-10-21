@@ -124,8 +124,7 @@ const validateHandler = (param, success) => {
 }
 const getLicense = result => {
   if (result.status === 'valid') {
-    tipsSuffix.value =
-      result?.license?.edition === 'Enterprise' ? t('about.count_of') : t('about.set_of')
+    tipsSuffix.value = t('about.set_of')
   }
   return {
     status: result.status,

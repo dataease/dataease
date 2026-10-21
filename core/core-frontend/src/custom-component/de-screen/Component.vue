@@ -108,7 +108,7 @@
               @click="selectDashboard(tabItem.screenId)"
               text
               style="font-family: inherit; color: #646a73"
-              icon="Plus"
+              :icon="Plus"
               >{{
                 dvInfo.type === 'dataV'
                   ? t('visualization.select_target_screen_tips')
@@ -148,6 +148,7 @@
 </template>
 
 <script setup lang="ts">
+import { ArrowDown, Plus } from '@element-plus/icons-vue'
 import {
   computed,
   getCurrentInstance,

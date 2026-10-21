@@ -1,3 +1,4 @@
+import { isInstanceDataRefreshEnabled } from './panel/types/impl/g2-data-refresh'
 import { hexToRgba, parseJson } from '@/views/chart/components/js/util'
 import { isEmpty } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
@@ -288,6 +289,19 @@ export const extremumEvt = (
   let layoutFrame: number | undefined
   let layoutCanvas: Canvas
   const scheduleExtremumPosition = (labels: DisplayObject[], { canvas }: { canvas: Canvas }) => {
+    // 最值变为普通标签时，G2 会保留旧 HTML 子节点，需要单独清理而不重建图元
+    labels.forEach(label => {
+      if (!isInstanceDataRefreshEnabled(newChart) || isExtremumLabel(label)) return
+      const children = [...label.children]
+      children.forEach(child => {
+        if (
+          child.nodeName === 'html' &&
+          String(child.attributes.innerHTML || '').includes(`class="extremum-${chart.container}"`)
+        ) {
+          child.destroy()
+        }
+      })
+    })
     if (layoutFrame !== undefined) layoutCanvas.cancelAnimationFrame(layoutFrame)
     layoutCanvas = canvas
     // 图例和滑块只重绘局部视图，标签转换后等待 DOM 落地再恢复 HTML 尺寸与位置

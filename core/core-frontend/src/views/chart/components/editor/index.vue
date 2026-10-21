@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { Expand, Fold, Setting } from '@element-plus/icons-vue'
 import dvInfoSvg from '@/assets/svg/dv-info.svg'
 import icon_deleteTrash_outlined from '@/assets/svg/icon_delete-trash_outlined.svg'
 import icon_info_outlined from '@/assets/svg/icon_info_outlined.svg'
@@ -202,6 +203,24 @@ const templateStatusShow = computed(() => {
 })
 
 const { view } = toRefs(props)
+
+const normalizeRichTextTitle = () => {
+  if (view.value?.type !== 'rich-text') {
+    return
+  }
+  const textStyle = view.value.customStyle?.text
+  if (textStyle && textStyle.richTextTitleEnabled !== true) {
+    textStyle.show = false
+  }
+}
+
+watch(
+  () => [view.value?.id, view.value?.type, view.value?.customStyle?.text?.richTextTitleEnabled],
+  () => {
+    normalizeRichTextTitle()
+  },
+  { immediate: true }
+)
 
 let cacheId = ''
 
@@ -1190,6 +1209,15 @@ const onLabelChange = (chartForm: ChartEditorForm<ChartLabelAttr>, prop: string)
   }
 }
 
+const onCenterContentChange = (val: ChartCenterContentAttr, prop: string) => {
+  if (prop) {
+    set(view.value.customAttr.centerContent, prop, get(val, prop))
+  } else {
+    view.value.customAttr.centerContent = val
+  }
+  renderChart(view.value)
+}
+
 const onIndicatorChange = (val, prop) => {
   if (prop === 'color' || prop === 'suffixColor') {
     view.value.customAttr.basicStyle.alpha = undefined
@@ -1255,6 +1283,9 @@ const onChangeMiscStyleForm = val => {
 }
 
 const onTextChange = val => {
+  if (view.value.type === 'rich-text') {
+    val.richTextTitleEnabled = true
+  }
   view.value.customStyle.text = val
   if (curComponent.value) {
     curComponent.value.name = view.value.title
@@ -2161,6 +2192,7 @@ const chartStyleScroll = (val: any) => {
               @onColorChange="onColorChange"
               @onMiscChange="onMiscChange"
               @onLabelChange="onLabelChange"
+              @onCenterContentChange="onCenterContentChange"
               @onTooltipChange="onTooltipChange"
               @onChangeXAxisForm="onChangeXAxisForm"
               @onChangeYAxisForm="onChangeYAxisForm"
@@ -3550,6 +3582,7 @@ const chartStyleScroll = (val: any) => {
                           @onColorChange="onColorChange"
                           @onMiscChange="onMiscChange"
                           @onLabelChange="onLabelChange"
+                          @onCenterContentChange="onCenterContentChange"
                           @onTooltipChange="onTooltipChange"
                           @onChangeXAxisForm="onChangeXAxisForm"
                           @onChangeYAxisForm="onChangeYAxisForm"

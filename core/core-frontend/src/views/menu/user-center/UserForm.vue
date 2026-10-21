@@ -1,15 +1,15 @@
 <script lang="ts" setup>
 import { ref, reactive, onMounted, computed, toRefs, h } from 'vue'
-import { ElMessage, ElLoading } from 'element-plus-secondary'
-import { useI18n } from '@/hooks/web/useI18n'
-import type {
-  FormInstance,
-  FormRules,
+import {
+  ElMessage,
+  ElLoading,
   ElMessageBox,
   ElForm,
   ElFormItem,
   ElInput
 } from 'element-plus-secondary'
+import { useI18n } from '@/hooks/web/useI18n'
+import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { groupBy } from './options'
 import { EMAIL_REGEX } from '@/utils/validate'
 import { useUserStoreWithOut } from '@/store/modules/user'
@@ -37,7 +37,7 @@ const props = defineProps({
 const mfaSwitchDisable = computed(() => {
   return (
     state.form.mfaEnable &&
-    (props.globalMfaStatus === 1 || (props.globalMfaStatus === 2 && userStore.getUid === '1'))
+    (props.globalMfaStatus === 1 || (props.globalMfaStatus === 2 && curUid.value === '1'))
   )
 })
 const mfaSwitchTips = computed(() => {
@@ -234,7 +234,11 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate(valid => {
     if (valid) {
-      const param = { ...state.form }
+      const { id, name, email, phone, phonePrefix, mfaEnable } = state.form
+      const param =
+        formType.value === 'modify'
+          ? { id, name, email, phone, phonePrefix, mfaEnable }
+          : { ...state.form }
       const method = formType.value === 'modify' ? personEditApi : userCreateApi
       showLoading()
       method(param)

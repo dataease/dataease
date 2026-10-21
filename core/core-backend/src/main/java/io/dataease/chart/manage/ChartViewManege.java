@@ -15,6 +15,7 @@ import io.dataease.chart.dao.ext.entity.ChartBasePO;
 import io.dataease.constant.AuthConstant;
 import io.dataease.constant.CommonConstants;
 import io.dataease.dao.auto.repo.CoreDatasetTableFieldRepository;
+import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupRepository;
 import io.dataease.dataset.manage.DatasetTableFieldManage;
 import io.dataease.dataset.manage.PermissionManage;
 import io.dataease.dataset.utils.TableUtils;
@@ -76,6 +77,8 @@ public class ChartViewManege {
     private ChartDataManage chartDataManage;
     @Resource
     private CoreDatasetTableFieldRepository coreDatasetTableFieldRepository;
+    @Resource
+    private CoreDatasetGroupRepository coreDatasetGroupRepository;
     @Resource
     private PermissionManage permissionManage;
 
@@ -280,6 +283,10 @@ public class ChartViewManege {
     }
 
     public Map<String, List<ChartViewFieldDTO>> listByDQ(Long id, Long chartId, ChartViewDTO chartViewDTO) {
+        // 历史实例引用的数据集已删除时，不生成孤立的系统记录数字段。
+        if (!coreDatasetGroupRepository.existsById(id)) {
+            return Map.of("dimensionList", List.of(), "quotaList", List.of());
+        }
         TypeReference<List<CalParam>> typeToken = new TypeReference<>() {
         };
         TypeReference<List<FieldGroupDTO>> groupTokenType = new TypeReference<>() {
@@ -299,21 +306,26 @@ public class ChartViewManege {
             dto.setGroupList(JsonUtil.parseList(ele.getGroupList(), groupTokenType));
             return dto;
         }).collect(Collectors.toList());
-        // filter column disable field
+        // 获取图表计算字段
+        List<CoreDatasetTableField> chartFields = new ArrayList<>();
+        if (chartId != null && chartId > 0) {
+            chartFields = coreDatasetTableFieldRepository.findByChartId(chartId);
+        }
+        chartFields.stream().filter(ele -> ele.getDatasetGroupId() == null
+                || Objects.equals(ele.getDatasetGroupId(), id)).forEach(ele -> {
+            DatasetTableFieldDTO dto = new DatasetTableFieldDTO();
+            BeanUtils.copyBean(dto, ele);
+            dto.setParams(JsonUtil.parseList(ele.getParams(), typeToken));
+            dto.setGroupList(JsonUtil.parseList(ele.getGroupList(), groupTokenType));
+            collect.add(dto);
+        });
+        // 原字段和当前数据集副本一起过滤，副本才能继承来源字段的权限与脱敏。
         Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
         List<DatasetTableFieldDTO> datasetTableFieldDTOS = permissionManage.filterColumnPermissions(collect, desensitizationList, id, null);
         datasetTableFieldDTOS.forEach(ele -> ele.setDesensitized(desensitizationList.containsKey(ele.getDataeaseName())));
-        datasetTableFieldDTOS.add(createCountField(id));
+        int countFieldIndex = (int) datasetTableFieldDTOS.stream().filter(ele -> ele.getChartId() == null).count();
+        datasetTableFieldDTOS.add(countFieldIndex, createCountField(id));
         List<ChartViewFieldDTO> list = transFieldDTO(datasetTableFieldDTOS);
-
-        // 获取图表计算字段
-        List<DatasetTableFieldDTO> chartFields = coreDatasetTableFieldRepository.findByChartId(chartId).stream().map(ele -> {
-            DatasetTableFieldDTO dto = new DatasetTableFieldDTO();
-            BeanUtils.copyBean(dto, ele);
-            dto.setGroupList(JsonUtil.parseList(ele.getGroupList(), groupTokenType));
-            return dto;
-        }).collect(Collectors.toList());
-        list.addAll(transFieldDTO(chartFields));
 
         // 获取list中的聚合函数，将字段的summary设置成空
         SQLObj tableObj = new SQLObj();
@@ -353,7 +365,16 @@ public class ChartViewManege {
         }
         CoreDatasetTableField coreDatasetTableField = new CoreDatasetTableField();
         BeanUtils.copyBean(coreDatasetTableField, old);
-        List<CoreDatasetTableField> coreDatasetTableFields = coreDatasetTableFieldRepository.findByDatasetGroupId(coreDatasetTableField.getDatasetGroupId());
+        // 仅检查数据集原字段及当前归属字段，避免其他实例的副本累加后缀。
+        Specification<CoreDatasetTableField> spec = (root, query, cb) -> {
+            Predicate sameDataset = cb.equal(root.get("datasetGroupId"), old.getDatasetGroupId());
+            Predicate datasetFields = cb.and(sameDataset, cb.isNull(root.get("chartId")));
+            Predicate ownerFields = cb.and(
+                    cb.equal(root.get("chartId"), chartId),
+                    cb.or(sameDataset, cb.isNull(root.get("datasetGroupId"))));
+            return cb.or(datasetFields, ownerFields);
+        };
+        List<CoreDatasetTableField> coreDatasetTableFields = coreDatasetTableFieldRepository.findAll(spec);
 
         HashMap<String, String> map = new HashMap<>();
         for (CoreDatasetTableField ele : coreDatasetTableFields) {

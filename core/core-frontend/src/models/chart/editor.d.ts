@@ -5,6 +5,7 @@ declare type EditorProperty =
   | 'symbolic-style-selector'
   | 'dual-basic-style-selector'
   | 'label-selector'
+  | 'center-content-selector'
   | 'tooltip-selector'
   | 'x-axis-selector'
   | 'y-axis-selector'

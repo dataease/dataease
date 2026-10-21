@@ -58,14 +58,14 @@ public class ShareSecretManage {
             jsonFile = new File(secretFilePath).getCanonicalFile();
         } catch (IOException e) {
             LogUtil.error("Invalid share-secret file path: " + secretFilePath);
-            return generateSecret();
+            throw new IllegalStateException("Invalid share secret location", e);
         }
         Map<String, Object> config = new HashMap<>();
         if (jsonFile.exists()) {
             try {
                 config = objectMapper.readValue(jsonFile, Map.class);
             } catch (IOException e) {
-                LogUtil.warn("Failed to read share-secret file, will regenerate: " + e.getMessage());
+                throw new IllegalStateException("Cannot read share secret", e);
             }
         }
         Object secretValue = config.get(SECRET_KEY);
@@ -87,7 +87,7 @@ public class ShareSecretManage {
             jsonFile.setExecutable(false, false);
             LogUtil.info("Generated share link secret saved to " + jsonFile.getAbsolutePath() + ". Please keep this file secure.");
         } catch (IOException e) {
-            LogUtil.error("Failed to persist share-secret file: " + e.getMessage());
+            throw new IllegalStateException("Cannot persist share secret", e);
         }
         return generated;
     }

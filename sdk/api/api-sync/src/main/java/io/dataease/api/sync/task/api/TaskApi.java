@@ -3,6 +3,7 @@ package io.dataease.api.sync.task.api;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.sync.task.dto.TaskGridRequest;
 import io.dataease.auth.DeApiPath;
+import io.dataease.auth.DePermit;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.sync.model.task.Target;
 import io.dataease.extensions.sync.model.task.TaskInfoVO;
@@ -30,52 +31,65 @@ public interface TaskApi {
 
     @Operation(hidden = true)
     @PostMapping("/pager/{goPage}/{pageSize}")
+    @DePermit("m:read")
     PageResult<TaskInfoVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody TaskGridRequest request);
 
     @Operation(hidden = true)
     @PostMapping("/add")
+    @DePermit("m:manage")
     void add(@RequestBody TaskInfoVO jobInfo) throws DEException;
 
     @Operation(hidden = true)
     @PostMapping("/update")
+    @DePermit("m:manage")
     void update(@RequestBody TaskInfoVO jobInfo) throws DEException;
 
     @Operation(hidden = true)
     @PostMapping("/remove/{id}")
+    @DePermit("m:manage")
     void remove(@PathVariable(value = "id") String id) throws DEException;
 
     @Operation(hidden = true)
     @GetMapping("start/{id}")
+    @DePermit("m:manage")
     void startJob(@PathVariable(value = "id") String id) throws DEException;
 
     @Operation(hidden = true)
     @GetMapping("stop/{id}")
+    @DePermit("m:manage")
     void stopJob(@PathVariable(value = "id") String id) throws DEException;
 
     @Operation(hidden = true)
     @GetMapping("/get/{id}")
+    @DePermit("m:read")
     TaskInfoVO getOneById(@PathVariable(value = "id") String id) throws DEException;
 
     @Operation(hidden = true)
     @PostMapping("/target/keyPolicy")
+    @DePermit("m:manage")
     SinkKeyPolicy targetKeyPolicy(@RequestBody Target target) throws DEException;
 
     @Operation(summary = "执行一次任务")
     @GetMapping("/execute/{id}")
+    @DePermit("m:manage")
     void execute(@PathVariable(value = "id") String id) throws DEException;
 
     @Operation(hidden = true)
     @PostMapping("/batch/del")
+    @DePermit("m:manage")
     void batchDelete(@RequestBody List<String> ids) throws DEException;
 
     @Operation(hidden = true)
     @GetMapping("/count")
+    @DePermit("m:read")
     Long count() throws DEException;
 
     @GetMapping("/query2Root/{id}")
+    @DePermit("m:read")
     String query2Root(@PathVariable("id") Long id);
 
     @GetMapping("/getLogResourceId/{id}")
+    @DePermit("m:read")
     Long getLogResourceId(@PathVariable("id") String id);
 
 }

@@ -9,6 +9,7 @@ import icon_done_outlined from '@/assets/svg/icon_done_outlined.svg'
 import icon_functions_outlined from '@/assets/svg/icon_functions_outlined.svg'
 import icon_visible_outlined from '@/assets/svg/icon_visible_outlined.svg'
 import icon_invisible_outlined from '@/assets/svg/icon_invisible_outlined.svg'
+import icon_security from '@/assets/svg/icon_security.svg'
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import iconFilter from '@/assets/svg/icon-filter.svg'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -399,6 +400,7 @@ onMounted(() => {
             class="item-span-style"
             :class="{
               'hidden-status': showHideIcon,
+              'desensitized-status': item.desensitized,
               'sort-status': showSort && item.sort !== 'none'
             }"
           >
@@ -436,6 +438,16 @@ onMounted(() => {
             />
           </Icon>
         </el-icon>
+        <el-tooltip
+          v-if="item.desensitized"
+          :effect="toolTip"
+          :content="t('chart.desensitized')"
+          placement="top"
+        >
+          <el-icon style="margin-left: 4px; flex-shrink: 0">
+            <Icon><icon_security class="svg-icon inner-class" /></Icon>
+          </el-icon>
+        </el-tooltip>
         <el-tooltip :effect="toolTip" placement="top">
           <template #content>
             <span>{{ t('chart.delete') }}</span>
@@ -972,8 +984,13 @@ span {
 }
 
 .item-span-style {
+  // 脱敏图标单独预留宽度，兼容隐藏和排序标识同时显示。
+  --desensitized-icon-width: 0px;
+  &.desensitized-status {
+    --desensitized-icon-width: 20px;
+  }
   display: flex;
-  max-width: 170px;
+  max-width: calc(170px - var(--desensitized-icon-width));
   color: #1f2329;
   margin-left: 4px;
 
@@ -990,10 +1007,10 @@ span {
   }
   &.hidden-status,
   &.sort-status {
-    max-width: 150px;
+    max-width: calc(150px - var(--desensitized-icon-width));
   }
   &.hidden-status[class*='sort-status'] {
-    max-width: 135px !important;
+    max-width: calc(135px - var(--desensitized-icon-width)) !important;
   }
 }
 
@@ -1079,13 +1096,13 @@ span {
 }
 
 .father:hover .item-span-style {
-  max-width: 130px;
+  max-width: calc(130px - var(--desensitized-icon-width));
   &.hidden-status,
   &.sort-status {
-    max-width: 120px;
+    max-width: calc(120px - var(--desensitized-icon-width));
   }
   &.hidden-status[class*='sort-status'] {
-    max-width: 100px !important;
+    max-width: calc(100px - var(--desensitized-icon-width)) !important;
   }
 }
 </style>

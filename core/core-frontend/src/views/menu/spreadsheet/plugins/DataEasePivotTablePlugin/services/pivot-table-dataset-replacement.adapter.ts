@@ -7,6 +7,7 @@ import type {
 } from '../../DataEaseDatasetReplacementPlugin/types'
 import { DatasetReplacementAdapterRegistry } from '../../DataEaseDatasetReplacementPlugin/services/dataset-replacement-adapter-registry.service'
 import { migrateFieldReference } from '../../DataEaseDatasetReplacementPlugin/utils/field-migration'
+import { replaceCopiedFields } from '../../DataEaseDatasetReplacementPlugin/utils/copied-field-replacement'
 import {
   cloneReplacementValue,
   getTargetDataset,
@@ -54,6 +55,7 @@ export class PivotTableDatasetReplacementAdapter implements DatasetReplacementAd
             name: String(config.data.datasetId)
           },
           componentId: config.id,
+          fieldOwnerId: config.fieldOwnerId,
           componentName: this._getComponentName(config),
           componentType: 'plugin' as const,
           fields: collectFieldReferences([
@@ -68,14 +70,17 @@ export class PivotTableDatasetReplacementAdapter implements DatasetReplacementAd
     return cloneReplacementValue(this._instanceService.get(unitId))
   }
 
-  replace(unitId: string, mappings: DatasetMapping[], componentIds: string[]): void {
+  async replace(unitId: string, mappings: DatasetMapping[], componentIds: string[]): Promise<void> {
     const componentIdSet = new Set(componentIds)
-    this._instanceService.set(
-      unitId,
-      this._instanceService.get(unitId).map(config =>
-        componentIdSet.has(config.id) ? this._replaceConfig(config, mappings) : config
-      )
-    )
+    const configs: PivotTableConfig[] = []
+    for (const config of this._instanceService.get(unitId)) {
+      if (componentIdSet.has(config.id)) {
+        configs.push(await this._replaceConfig(config, mappings))
+      } else {
+        configs.push(config)
+      }
+    }
+    this._instanceService.set(unitId, configs)
   }
 
   restore(unitId: string, snapshot: unknown): void {
@@ -111,24 +116,31 @@ export class PivotTableDatasetReplacementAdapter implements DatasetReplacementAd
       : defaultName
   }
 
-  private _replaceConfig(config: PivotTableConfig, mappings: DatasetMapping[]): PivotTableConfig {
+  private async _replaceConfig(
+    config: PivotTableConfig,
+    mappings: DatasetMapping[]
+  ): Promise<PivotTableConfig> {
     const next = cloneReplacementValue(config)
     const sourceDatasetId = config.data.datasetId
     const targetDataset = getTargetDataset(mappings, sourceDatasetId)
     if (!targetDataset) return next
 
+    const copiedFields = await replaceCopiedFields(config, mappings)
+    next.fieldOwnerId = copiedFields.fieldOwnerId
+    const resolveField = (fieldId: string | number) =>
+      copiedFields.fields.get(String(fieldId)) || getTargetField(mappings, sourceDatasetId, fieldId)
     next.data.datasetId = targetDataset.id
     next.data.zones = Object.fromEntries(
       Object.entries(next.data.zones || {}).map(([zoneId, fields]) => [
         zoneId,
         fields.map(field => {
-          const target = getTargetField(mappings, sourceDatasetId, field.id)
+          const target = resolveField(field.id)
           return target ? migrateFieldReference(field, target) : field
         })
       ])
     ) as PivotTableConfig['data']['zones']
     next.data.customFilter = replaceFilterTreeFieldIds(next.data.customFilter, fieldId =>
-      getTargetField(mappings, sourceDatasetId, fieldId)?.id || fieldId
+      resolveField(fieldId)?.id || fieldId
     ) || {}
     return next
   }

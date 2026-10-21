@@ -14,6 +14,7 @@
       :quota-data="state.quotaData"
       @onMiscChange="onMiscChange"
       @onLabelChange="onLabelChange"
+      @onCenterContentChange="onCenterContentChange"
       @onTooltipChange="onTooltipChange"
       @onChangeXAxisForm="onChangeXAxisForm"
       @onChangeYAxisForm="onChangeYAxisForm"
@@ -77,6 +78,9 @@ const onMiscChange = (val, prop) => {
 
 const onLabelChange = (val, prop) => {
   batchOptChange('customAttr', 'label', val.data, prop)
+}
+const onCenterContentChange = (val, prop) => {
+  batchOptChange('customAttr', 'centerContent', val, prop)
 }
 const onTooltipChange = (val, prop) => {
   batchOptChange('customAttr', 'tooltip', val.data, prop)

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref, inject, computed, onMounted, onUnmounted, watch, nextTick, type Ref } from 'vue'
+import type { FUniver } from '@univerjs/core/facade'
 import { Search, Refresh, Expand, Fold, CircleClose } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus-secondary'
 import Icon from '@/components/icon-custom/src/Icon.vue'
@@ -9,14 +10,16 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { useEmbedded } from '@/store/modules/embedded'
+import { copyChartField, deleteChartField } from '@/api/chart'
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import icon_more_vertical_outlined from '@/assets/svg/icon_more-vertical_outlined.svg'
 import icon_sheet_datareference_outlined from '@/assets/svg/icon_sheet-datareference_outlined.svg'
 import OpenHandler from '../../../../component/embedded-iframe/OpenHandler.vue'
 import DatasetSelect from './dataset-select.vue'
 import FieldItem from '../common/field-item.vue'
-import type { FieldItemData } from '../../types/plugin'
+import type { FieldItemData, TablePluginConfig } from '../../types/plugin'
 import { SPREADSHEET_EVENTS } from '../../utils/events'
+import { pluginRuntimeRegistry } from '../../services/plugin-runtime.service'
 
 const { t } = useI18n()
 const { wsCache } = useCache()
@@ -31,7 +34,8 @@ const emit = defineEmits<{
 }>()
 
 // 注入插件配置
-const pluginConfig = inject('pluginConfig') as any
+const pluginConfig = inject<Ref<TablePluginConfig | null>>('pluginConfig')
+const univerApi = inject<Ref<FUniver | undefined>>('univerApi')
 const datasetFields = inject<Ref<{ dimensions: FieldItemData[]; quotas: FieldItemData[] }>>('datasetFields')
 const beforeCreateDataset = inject<() => boolean | Promise<boolean>>(
   'beforeCreateSpreadsheetDataset'
@@ -47,6 +51,7 @@ const hasDataset = computed(() =>
 // 选中的数据集（本地状态，用于组件内部）
 const selectedDataset = ref('')
 const lastLoadedDatasetKey = ref('')
+const fieldActionLoading = ref(false)
 
 // 搜索关键字
 const searchKeyword = ref('')
@@ -220,6 +225,69 @@ const handleFieldsLoaded = (fields: { dimensions: FieldItemData[]; quotas: Field
   lastClickedQuotaIndex.value = -1
 }
 
+const canCopyField = (field: FieldItemData): boolean => {
+  return !field.chartId && field.id !== 'count' && String(field.id) !== '-1'
+}
+
+const canDeleteField = (field: FieldItemData): boolean => {
+  // 列表已按当前归属加载，和仪表板一样用 chartId 识别副本，兼容旧接口的数字 ID。
+  return Boolean(field.chartId) && field.id !== 'count' && String(field.id) !== '-1'
+}
+
+const copyField = async (field: FieldItemData) => {
+  const config = pluginConfig?.value
+  if (fieldActionLoading.value || !config?.data.datasetId || !canCopyField(field)) return
+
+  const datasetId = config.data.datasetId
+  const datasetKey = `${config.id}:${datasetId}:${config.fieldOwnerId || ''}`
+  if (lastLoadedDatasetKey.value !== datasetKey) return
+  const api = univerApi?.value
+  const runtime = pluginRuntimeRegistry.get(config.type)
+  if (!api || !runtime?.ensureFieldOwnerId) return
+  const fieldOwnerId = runtime.ensureFieldOwnerId({ univerApi: api, config })
+  if (!fieldOwnerId) return
+
+  fieldActionLoading.value = true
+  try {
+    await copyChartField(field.id, fieldOwnerId)
+    const current = pluginConfig?.value
+    if (
+      current?.id === config.id &&
+      current.fieldOwnerId === fieldOwnerId &&
+      String(current.data.datasetId) === String(datasetId)
+    ) {
+      lastLoadedDatasetKey.value = ''
+      await syncDatasetFieldsFromPluginConfig()
+    }
+  } catch {
+    // 请求失败由统一拦截器提示，保留已分配的归属标识供重试使用。
+  } finally {
+    fieldActionLoading.value = false
+  }
+}
+
+const deleteField = async (field: FieldItemData) => {
+  const config = pluginConfig?.value
+  if (fieldActionLoading.value || !config?.data.datasetId || !canDeleteField(field)) return
+
+  const datasetKey = `${config.id}:${config.data.datasetId}:${config.fieldOwnerId}`
+  if (lastLoadedDatasetKey.value !== datasetKey) return
+  fieldActionLoading.value = true
+  try {
+    await deleteChartField(field.id)
+    const current = pluginConfig?.value
+    const currentKey = `${current?.id}:${current?.data.datasetId}:${current?.fieldOwnerId}`
+    if (currentKey === datasetKey) {
+      lastLoadedDatasetKey.value = ''
+      await syncDatasetFieldsFromPluginConfig()
+    }
+  } catch {
+    // 删除失败由统一拦截器提示，字段列表保持原样以便重试。
+  } finally {
+    fieldActionLoading.value = false
+  }
+}
+
 // 判断是否选中
 const isDimensionSelected = (field: FieldItemData) => {
   return selectedDimensionFields.value.some(f => f.id === field.id)
@@ -368,14 +436,27 @@ const createDragImage = (fields: FieldItemData[], type: 'dimension' | 'quota') =
       gap: 8px;
       padding: 4px 0;
     `
-    item.innerHTML = `
-      <span style="font-size: 14px; font-weight: 500; width: 16px; text-align: center; color: ${type === 'dimension' ? '#3370ff' : '#34c724'};">
-        ${type === 'dimension' ? 'T' : '#'}
-      </span>
-      <span style="font-size: 13px; color: #1f2329; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-        ${field.name}
-      </span>
+    const icon = document.createElement('span')
+    icon.style.cssText = `
+      font-size: 14px;
+      font-weight: 500;
+      width: 16px;
+      text-align: center;
+      color: ${type === 'dimension' ? '#3370ff' : '#34c724'};
     `
+    icon.textContent = type === 'dimension' ? 'T' : '#'
+
+    const name = document.createElement('span')
+    name.style.cssText = `
+      font-size: 13px;
+      color: #1f2329;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    `
+    // 字段名可能来自导入文件或历史数据，必须按纯文本渲染，避免解析 HTML。
+    name.textContent = field.name
+    item.append(icon, name)
     div.appendChild(item)
   })
 
@@ -419,8 +500,13 @@ const filteredDimensionFields = computed(() => {
 })
 
 const filteredQuotaFields = computed(() => {
-  if (!searchKeyword.value) return quotaFields.value
-  return quotaFields.value.filter(f =>
+  let fields = quotaFields.value
+  // 明细表不提供系统记录数，兼容历史标识和接口返回的数字、字符串 ID。
+  if (pluginConfig?.value?.type === 'detail') {
+    fields = fields.filter(field => field.id !== 'count' && String(field.id) !== '-1')
+  }
+  if (!searchKeyword.value) return fields
+  return fields.filter(f =>
     f.name.toLowerCase().includes(searchKeyword.value.toLowerCase())
   )
 })
@@ -451,6 +537,7 @@ const syncDatasetFieldsFromPluginConfig = async () => {
 
   const pluginId = pluginConfig?.value?.id || ''
   const datasetId = pluginConfig?.value?.data?.datasetId
+  const fieldOwnerId = pluginConfig?.value?.fieldOwnerId || ''
   if (!datasetId) {
     lastLoadedDatasetKey.value = ''
     selectedDataset.value = ''
@@ -458,7 +545,7 @@ const syncDatasetFieldsFromPluginConfig = async () => {
     return
   }
 
-  const datasetKey = `${pluginId}:${datasetId}`
+  const datasetKey = `${pluginId}:${datasetId}:${fieldOwnerId}`
   if (datasetKey === lastLoadedDatasetKey.value) {
     return
   }
@@ -469,13 +556,18 @@ const syncDatasetFieldsFromPluginConfig = async () => {
   }
 
   lastLoadedDatasetKey.value = datasetKey
-  await datasetSelectRef.value.loadDatasetFields(datasetId)
+  handleFieldsLoaded({ dimensions: [], quotas: [] })
+  const loaded = await datasetSelectRef.value.loadDatasetFields(datasetId)
+  if (loaded === false && lastLoadedDatasetKey.value === datasetKey) {
+    lastLoadedDatasetKey.value = ''
+  }
 }
 
 watch(
   [
     () => pluginConfig?.value?.id,
     () => pluginConfig?.value?.data?.datasetId,
+    () => pluginConfig?.value?.fieldOwnerId,
     () => datasetSelectRef.value
   ],
   syncDatasetFieldsFromPluginConfig,
@@ -565,9 +657,8 @@ const handleDatasetAction = (command: 'edit' | 'replace') => {
 
 const handleRefresh = () => {
   datasetSelectRef.value?.refresh()
-  if (selectedDataset.value) {
-    datasetSelectRef.value?.loadDatasetFields(selectedDataset.value)
-  }
+  lastLoadedDatasetKey.value = ''
+  void syncDatasetFieldsFromPluginConfig()
 }
 
 const toggleCollapsed = () => {
@@ -592,6 +683,8 @@ const toggleCollapsed = () => {
           <DatasetSelect
             ref="datasetSelectRef"
             v-model="selectedDataset"
+            :component-id="pluginConfig?.id"
+            :field-owner-id="pluginConfig?.fieldOwnerId"
             @dataset-change="handleDatasetChange"
             @fields-loaded="handleFieldsLoaded"
             @add-dataset="handleAddDataset"
@@ -682,7 +775,12 @@ const toggleCollapsed = () => {
                   :index="index"
                   :show-remove="false"
                   :show-config="false"
+                  :show-copy="canCopyField(field)"
+                  :show-delete="canDeleteField(field)"
+                  :action-disabled="fieldActionLoading"
                   :selected="isDimensionSelected(field)"
+                  @copy="copyField"
+                  @delete="deleteField"
                   @click="(f, i, e) => handleFieldClick(f, i, e, 'dimension')"
                   @dragstart="(f, i, e) => { handleDragStart(f, i, e, 'dimension'); onDragStart('dimension', e); }"
                   @dragend="onDragEnd"
@@ -710,7 +808,12 @@ const toggleCollapsed = () => {
                   :index="index"
                   :show-remove="false"
                   :show-config="false"
+                  :show-copy="canCopyField(field)"
+                  :show-delete="canDeleteField(field)"
+                  :action-disabled="fieldActionLoading"
                   :selected="isQuotaSelected(field)"
+                  @copy="copyField"
+                  @delete="deleteField"
                   @click="(f, i, e) => handleFieldClick(f, i, e, 'quota')"
                   @dragstart="(f, i, e) => { handleDragStart(f, i, e, 'quota'); onDragStart('quota', e); }"
                   @dragend="onDragEnd"

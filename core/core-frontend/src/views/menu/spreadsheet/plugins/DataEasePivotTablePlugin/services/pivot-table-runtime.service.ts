@@ -1,4 +1,7 @@
+import type { FUniver } from '@univerjs/core/facade'
+import { guid } from '@/views/visualized/data/dataset/form/util'
 import type { SpreadsheetPluginRuntime } from '../../../services/plugin-runtime.service'
+import { dispatchSpreadsheetContentChanged } from '../../../utils/events'
 import type { FieldItemData } from '../../../types/plugin'
 import type { PivotTableConfig } from '../types'
 import {
@@ -29,6 +32,22 @@ export class PivotTableRuntimeService implements SpreadsheetPluginRuntime<PivotT
     private readonly pluginRenderStatusService: PluginRenderStatusService
   ) {}
 
+  ensureFieldOwnerId({ univerApi, config }: {
+    univerApi: FUniver
+    config: PivotTableConfig
+  }): string | undefined {
+    const unitId = univerApi.getActiveWorkbook()?.getId()
+    if (!unitId) return
+
+    const storedConfig = this.pivotTableInstanceService.get(unitId).find(item => item.id === config.id)
+    const fieldOwnerId = config.fieldOwnerId || storedConfig?.fieldOwnerId || guid()
+    // 编辑配置与查询快照可能不是同一对象，只同步归属 ID，避免覆盖已渲染配置。
+    config.fieldOwnerId = fieldOwnerId
+    if (storedConfig) storedConfig.fieldOwnerId = fieldOwnerId
+    dispatchSpreadsheetContentChanged()
+    return fieldOwnerId
+  }
+
   async refreshData({
     univerApi,
     config
@@ -49,6 +68,9 @@ export class PivotTableRuntimeService implements SpreadsheetPluginRuntime<PivotT
     const filled = await this.pivotTableFillService.fillByConfig(univerApi, queryConfig)
     if (!filled) {
       return false
+    }
+    if (String(config.data.datasetId) === String(queryConfig.data.datasetId)) {
+      queryConfig.fieldOwnerId = config.fieldOwnerId
     }
     this.syncInstance(univerApi, queryConfig)
     return true
@@ -108,6 +130,11 @@ export class PivotTableRuntimeService implements SpreadsheetPluginRuntime<PivotT
     const workbook = univerApi.getActiveWorkbook?.()
     const unitId = workbook?.getId?.() || workbook?.getUnitId?.()
     if (unitId) {
+      const current = this.pivotTableInstanceService.get(unitId).find(item => item.id === config.id)
+      // 查询等待期间首次复制字段可能已分配归属 ID，避免旧快照覆盖；切换数据集时不沿用。
+      if (current && String(current.data.datasetId) === String(config.data.datasetId)) {
+        config.fieldOwnerId = current.fieldOwnerId || config.fieldOwnerId
+      }
       this.pivotTableInstanceService.addOrUpdate(unitId, config)
     }
   }

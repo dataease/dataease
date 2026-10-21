@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { EditPen } from '@element-plus/icons-vue'
 import dvFilter from '@/assets/svg/dv-filter.svg'
 import dvMaterial from '@/assets/svg/dv-material.svg'
 import dvMedia from '@/assets/svg/dv-media.svg'
@@ -493,7 +494,7 @@ const fullScreenPreview = () => {
         <div v-show="editMode === 'edit'" class="divider"></div>
         <el-button
           v-if="editMode === 'preview'"
-          icon="EditPen"
+          :icon="EditPen"
           @click="edit()"
           class="preview-button"
           type="primary"

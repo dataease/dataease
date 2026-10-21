@@ -133,6 +133,7 @@ import nothingNone from '@/assets/img/nothing-none-gray.png'
 import nothingSearch from '@/assets/img/nothing-tree.png'
 import PluginUpload from '@/views/menu/setting/plugin/PluginUpload.vue'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
+import { formatDate } from '@/utils/DateUtil'
 const { t } = useI18n()
 const keyword = ref('')
 
@@ -177,7 +178,7 @@ const timestampFormatDate = value => {
   if (!value) {
     return '-'
   }
-  return new Date(value)['format']()
+  return formatDate(new Date(value))
 }
 const updateHandler = item => {
   ElMessageBox.confirm(t('role.confirm_delete'), {

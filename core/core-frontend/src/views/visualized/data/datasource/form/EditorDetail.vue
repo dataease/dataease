@@ -23,6 +23,7 @@ import { Base64 } from 'js-base64'
 import { CustomPassword } from '@/components/custom-password'
 import { ElForm, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import Cron from '@/components/cron/src/Cron.vue'
+import { hasInvalidCronWeekdayW } from '@/components/cron/src/validation'
 import { ComponentPublicInstance } from 'vue'
 import { PluginComponent } from '@/components/plugin'
 import { iconFieldMap } from '@/components/icon-group/field-list'
@@ -731,6 +732,12 @@ const apiRule = {
     }
   ],
   'syncSetting.cron': [
+    {
+      validator: (_rule, value, callback) => {
+        callback(hasInvalidCronWeekdayW(value) ? new Error(t('cron.invalid_weekday_w')) : undefined)
+      },
+      trigger: ['change', 'blur']
+    },
     {
       required: true,
       message: t('common.cron_exp'),
@@ -1580,6 +1587,7 @@ defineExpose({
         </template>
       </el-form>
       <el-form
+        @submit.prevent
         ref="dsApiForm"
         :model="form"
         style="margin-top: 24px"

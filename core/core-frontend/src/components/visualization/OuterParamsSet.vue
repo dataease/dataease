@@ -16,7 +16,8 @@
             <el-row class="tree-head">
               <span class="head-text">{{ t('visualization.params_list') }}</span>
               <span class="head-filter">
-                <el-button type="primary" icon="Plus" text @click="addOuterParamsInfo"> </el-button>
+                <el-button type="primary" :icon="Plus" text @click="addOuterParamsInfo">
+                </el-button>
               </span>
             </el-row>
             <el-row class="tree-content">
@@ -371,6 +372,7 @@
 </template>
 
 <script setup lang="ts">
+import { CaretBottom, CaretRight, Plus } from '@element-plus/icons-vue'
 import _delete from '@/assets/svg/icon_delete-trash_outlined.svg'
 import edit from '@/assets/svg/icon_rename_outlined.svg'
 import icon_more_vertical_outlined from '@/assets/svg/icon_more-vertical_outlined.svg'

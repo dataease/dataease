@@ -16,7 +16,7 @@
             clearable
             :placeholder="t('commons.search')"
             @input="loadCandidates"
-            prefix-icon="Search"
+            :prefix-icon="Search"
           />
         </div>
         <div class="candidate-toolbar">
@@ -131,7 +131,7 @@
 <script lang="ts" setup>
 import { ref, computed } from "vue";
 import { useI18n } from "@/hooks/web/useI18n";
-import { User, Close } from "@element-plus/icons-vue";
+import { User, Close, Search } from '@element-plus/icons-vue'
 import { sysOrgMemberCandidatesApi, sysOrgMemberAddApi } from "./api";
 import { roleOptionForUserApi } from "@/api/user";
 import { ElMessage } from "element-plus-secondary";

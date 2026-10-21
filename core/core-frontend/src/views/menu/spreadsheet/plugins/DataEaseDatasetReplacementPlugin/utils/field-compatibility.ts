@@ -29,9 +29,15 @@ export const isCompatibleFieldType = (
 ): boolean => getTypeFamily(source) === getTypeFamily(target)
 
 export const isFieldCompatible = (
-  source: ComparableField,
-  target: ComparableField
-): boolean => isSameFieldGroup(source, target) && isCompatibleFieldType(source, target)
+  source: FieldUsage,
+  target: ReplacementField
+): boolean => {
+  // 记录数是系统字段，只能承接原记录数，不能作为普通字段或副本的替换来源。
+  if (target.id === 'count' || target.id === '-1') {
+    return source.fieldId === 'count' || source.fieldId === '-1'
+  }
+  return isSameFieldGroup(source, target) && isCompatibleFieldType(source, target)
+}
 
 export const filterCompatibleFields = (
   source: FieldUsage,
