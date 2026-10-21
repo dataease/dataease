@@ -5,7 +5,7 @@ export { getConditionSeparator, splitConditionValues } from './condition-utils'
 const { t } = useI18n()
 
 const infoFormat = (obj: ComponentInfo) => {
-  const { id, name, deType, type, datasetId } = obj
+  const { id, name, deType, type, datasetId, chartId } = obj
   return {
     id: guid(),
     name,
@@ -16,7 +16,8 @@ const infoFormat = (obj: ComponentInfo) => {
       id,
       type,
       name,
-      deType
+      deType,
+      chartId
     },
     displayId: id,
     sortId: '',

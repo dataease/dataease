@@ -19,6 +19,9 @@ export interface Field {
   checked: boolean
   fieldShortName: string
   desensitized: boolean
+  chartId?: number | string
+  agg?: boolean
+  params?: unknown[]
 }
 
 export interface ComponentInfo {
@@ -27,6 +30,7 @@ export interface ComponentInfo {
   deType: number
   type: string
   datasetId: string
+  chartId?: number | string
 }
 
 export interface ChartCalcFieldValidationRequest {
@@ -50,7 +54,11 @@ export const validateCalcField = async (data: ChartCalcFieldValidationRequest): 
   }
 }
 
-export const getFieldByDQ = async (id, chartId, data): Promise<IResponse> => {
+export const getFieldByDQ = async (
+  id,
+  chartId,
+  data
+): Promise<{ dimensionList: Field[]; quotaList: Field[] }> => {
   return request.post({ url: `/chart/listByDQ/${id}/${chartId}`, data: data }).then(res => {
     originNameHandleBackWithArr(res?.data, ['dimensionList', 'quotaList'])
     return res?.data
