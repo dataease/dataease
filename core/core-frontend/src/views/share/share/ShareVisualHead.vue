@@ -194,7 +194,7 @@
       </div>
 
       <ShareVisitorPermissions
-        v-if="shareEnable && !appearanceStore.getCommunity"
+        v-if="shareEnable && appStore.getXpackValid"
         v-model="visitorChoices"
         :allowed="state.detailInfo.allowedVisitorPermissions ?? 7"
       />
@@ -234,7 +234,7 @@
 
 <script lang="ts" setup>
 import ShareVisitorPermissions from './ShareVisitorPermissions.vue'
-import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
+import { useAppStoreWithOut } from '@/store/modules/app'
 import icon_shareLabel_outlined from '@/assets/svg/icon_share-label_outlined.svg'
 import icon_edit_outlined from '@/assets/svg/icon_edit_outlined.svg'
 import icon_close_outlined from '@/assets/svg/icon_close_outlined.svg'
@@ -351,7 +351,7 @@ const shareTips = computed(
 const shareDisable = computed(() => shareStore.getShareDisable)
 const sharePeRequire = computed(() => shareStore.getSharePeRequire)
 
-const appearanceStore = useAppearanceStoreWithOut()
+const appStore = useAppStoreWithOut()
 const shareInfoReady = ref(false)
 const visitorChoices = ref<number[]>([])
 const savingPermissions = ref(false)
@@ -374,7 +374,7 @@ const copyInfo = async () => {
         }
       }
       savingPermissions.value = true
-      if (!appearanceStore.getCommunity) {
+      if (appStore.getXpackValid) {
         await request.post({
           url: '/share/visitorPermissions',
           data: {
