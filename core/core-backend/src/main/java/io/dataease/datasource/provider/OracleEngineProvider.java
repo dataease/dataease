@@ -137,7 +137,7 @@ public class OracleEngineProvider extends EngineProvider {
         switch (tableField.getDeExtractType()) {
             case 0:
                 if (StringUtils.isNotEmpty(tableField.getLength())) {
-                    return "VARCHAR2(" + tableField.getLength() + ")";
+                    return "VARCHAR2(" + validateLength(tableField.getLength()) + ")";
                 }
                 return "VARCHAR2(4000)";
             case 1:

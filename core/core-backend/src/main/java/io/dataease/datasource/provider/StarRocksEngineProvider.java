@@ -66,7 +66,7 @@ public class StarRocksEngineProvider extends MysqlEngineProvider {
         switch (tableField.getDeExtractType()) {
             case 0:
                 if (StringUtils.isNotEmpty(tableField.getLength())) {
-                    return "varchar(" + tableField.getLength() + ")";
+                    return "varchar(" + validateLength(tableField.getLength()) + ")";
                 }
                 return "string";
             case 1:

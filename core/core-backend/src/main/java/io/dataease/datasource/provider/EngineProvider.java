@@ -19,6 +19,8 @@ import static io.dataease.engine.utils.Utils.SQL_INJECTION_PATTERNS;
 public abstract class EngineProvider {
     private static final Pattern ILLEGAL_IDENTIFIER_CHAR = Pattern.compile("[\\u0000-\\u001f\"'`\\[\\];\\\\]");
     private static final int MAX_IDENTIFIER_LENGTH = 64;
+    private static final Pattern NUMERIC_LENGTH_PATTERN = Pattern.compile("\\d+");
+    private static final int MAX_FIELD_LENGTH = 65535;
 
     protected static void validateIdentifier(String raw) {
         String value = StringUtils.defaultString(raw);
@@ -26,6 +28,24 @@ public abstract class EngineProvider {
                 || ILLEGAL_IDENTIFIER_CHAR.matcher(value).find()) {
             DEException.throwException("Illegal identifier: " + raw);
         }
+    }
+
+    protected static String validateLength(String raw) {
+        String value = StringUtils.defaultString(raw);
+        if (StringUtils.isBlank(value) || !NUMERIC_LENGTH_PATTERN.matcher(value).matches()) {
+            DEException.throwException("Illegal field length: " + raw);
+        }
+        int length;
+        try {
+            length = Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            DEException.throwException("Illegal field length: " + raw);
+            return null;
+        }
+        if (length < 1 || length > MAX_FIELD_LENGTH) {
+            DEException.throwException("Illegal field length: " + raw);
+        }
+        return value;
     }
 
     protected static String quoteIdentifier(String raw, char quoteChar) {

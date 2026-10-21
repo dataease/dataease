@@ -145,7 +145,7 @@ public class PgEngineProvider extends EngineProvider {
         switch (tableField.getDeExtractType()) {
             case 0:
                 if (StringUtils.isNotEmpty(tableField.getLength())) {
-                    return "varchar(" + tableField.getLength() + ")";
+                    return "varchar(" + validateLength(tableField.getLength()) + ")";
                 }
                 return "text";
             case 1:

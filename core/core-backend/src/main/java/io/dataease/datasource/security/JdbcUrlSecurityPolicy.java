@@ -1,6 +1,7 @@
 package io.dataease.datasource.security;
 
 import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.provider.JdbcDriverPolicy;
 import org.apache.commons.lang3.StringUtils;
 
 import java.net.URLDecoder;
@@ -17,6 +18,7 @@ public final class JdbcUrlSecurityPolicy {
             Map.entry("sqlserver", "jdbc:sqlserver"),
             Map.entry("oracle", "jdbc:oracle"),
             Map.entry("db2", "jdbc:db2"),
+            Map.entry("gaussdb", "jdbc:gaussdb"),
             Map.entry("pg", "jdbc:postgresql"),
             Map.entry("redshift", "jdbc:redshift"),
             Map.entry("h2", "jdbc:h2"),
@@ -24,24 +26,6 @@ public final class JdbcUrlSecurityPolicy {
             Map.entry("sqlite", "jdbc:sqlite:")
     );
     private static final List<String> mysqlType = Arrays.asList("mysql", "mongo", "mariadb", "starrocks", "doris", "tidb");
-
-    private static final Map<String, String> DEFAULT_DRIVERS = Map.ofEntries(
-            Map.entry("mysql", "org.mariadb.jdbc.Driver"),
-            Map.entry("mongo", "org.mariadb.jdbc.Driver"),
-            Map.entry("mariadb", "org.mariadb.jdbc.Driver"),
-            Map.entry("starrocks", "org.mariadb.jdbc.Driver"),
-            Map.entry("doris", "org.mariadb.jdbc.Driver"),
-            Map.entry("tidb", "org.mariadb.jdbc.Driver"),
-            Map.entry("impala", "com.cloudera.impala.jdbc.Driver"),
-            Map.entry("sqlserver", "com.microsoft.sqlserver.jdbc.SQLServerDriver"),
-            Map.entry("oracle", "oracle.jdbc.driver.OracleDriver"),
-            Map.entry("db2", "com.ibm.db2.jcc.DB2Driver"),
-            Map.entry("pg", "org.postgresql.Driver"),
-            Map.entry("redshift", "com.amazon.redshift.jdbc42.Driver"),
-            Map.entry("h2", "org.h2.Driver"),
-            Map.entry("ck", "com.clickhouse.jdbc.ClickHouseDriver"),
-            Map.entry("sqlite", "org.sqlite.JDBC")
-    );
 
     private static final Set<String> COMMON_DANGEROUS_FRAGMENTS = Set.of(
             "jndi:",
@@ -70,23 +54,23 @@ public final class JdbcUrlSecurityPolicy {
             "detectcustomcollations",
             "connectionproperties",
             "initsql",
-            "allowloadlocalinfile",
             "allowurlinlocalinfile",
             "allowloadlocalinfileinpath",
             "allowmultiqueries"
     );
 
     private static final Map<String, Set<String>> TYPE_DANGEROUS_FRAGMENTS = Map.ofEntries(
-            Map.entry("mysql", Set.of("maxallowedpacket", "allowloadlocalinfile", "allowurlinlocalinfile", "allowloadlocalinfileinpath", "allowmultiqueries")),
-            Map.entry("mongo", Set.of("maxallowedpacket", "allowloadlocalinfile", "allowurlinlocalinfile", "allowloadlocalinfileinpath", "allowmultiqueries")),
-            Map.entry("mariadb", Set.of("maxallowedpacket", "allowloadlocalinfile", "allowurlinlocalinfile", "allowloadlocalinfileinpath", "allowmultiqueries")),
-            Map.entry("starrocks", Set.of("maxallowedpacket", "allowloadlocalinfile", "allowurlinlocalinfile", "allowloadlocalinfileinpath", "allowmultiqueries")),
-            Map.entry("doris", Set.of("maxallowedpacket", "allowloadlocalinfile", "allowurlinlocalinfile", "allowloadlocalinfileinpath", "allowmultiqueries")),
-            Map.entry("tidb", Set.of("maxallowedpacket", "allowloadlocalinfile", "allowurlinlocalinfile", "allowloadlocalinfileinpath", "allowmultiqueries")),
-            Map.entry("impala", Set.of("krbjaasfile", "krb5.conf")),
+            Map.entry("mysql", Set.of("maxallowedpacket", "allowurlinlocalinfile", "allowloadlocalinfileinpath", "allowmultiqueries")),
+            Map.entry("mongo", Set.of("maxallowedpacket", "allowurlinlocalinfile", "allowloadlocalinfileinpath", "allowmultiqueries")),
+            Map.entry("mariadb", Set.of("maxallowedpacket", "allowurlinlocalinfile", "allowloadlocalinfileinpath", "allowmultiqueries")),
+            Map.entry("starrocks", Set.of("maxallowedpacket", "allowurlinlocalinfile", "allowloadlocalinfileinpath", "allowmultiqueries")),
+            Map.entry("doris", Set.of("maxallowedpacket", "allowurlinlocalinfile", "allowloadlocalinfileinpath", "allowmultiqueries")),
+            Map.entry("tidb", Set.of("maxallowedpacket", "allowurlinlocalinfile", "allowloadlocalinfileinpath", "allowmultiqueries")),
+            Map.entry("impala", Set.of("krbjaasfile", "krb5.conf", "socketfactory", "dnsresolver")),
             Map.entry("sqlserver", Set.of("socketfactoryclass", "socketfactoryconstructorarg", "accesstokencallbackclass")),
             Map.entry("oracle", Set.of()),
             Map.entry("db2", Set.of()),
+            Map.entry("gaussdb", Set.of("socketfactory", "socketfactoryarg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationpluginclassname", "logger")),
             Map.entry("pg", Set.of("socketfactory", "socketfactoryarg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationpluginclassname")),
             Map.entry("redshift", Set.of("socketfactory", "socketfactoryarg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationpluginclassname", "inifile")),
             Map.entry("h2", Set.of("init=", "runscript")),
@@ -148,15 +132,18 @@ public final class JdbcUrlSecurityPolicy {
                 DEException.throwException("Illegal parameter: " + fragment);
             }
         }
+        // allowLoadLocalInfile 允许显式关闭，但禁止开启或赋其他值
+        validateAllowLoadLocalInfile(normalizedUrl);
+        validateAllowLoadLocalInfile(normalizedExtraParams);
         return jdbcUrl;
     }
 
     public static String trustedDriverClass(String type) {
-        String driverClass = DEFAULT_DRIVERS.get(normalizeType(type));
-        if (StringUtils.isBlank(driverClass)) {
-            DEException.throwException("invalid driver");
-        }
-        return driverClass;
+        return JdbcDriverPolicy.trustedDriverClass(type);
+    }
+
+    public static String resolveDriverClass(String type, String requestedDriver) {
+        return JdbcDriverPolicy.resolveDriverClass(type, requestedDriver);
     }
 
     public static boolean isDefaultCustomDriver(String customDriver) {
@@ -204,6 +191,59 @@ public final class JdbcUrlSecurityPolicy {
             }
         }
         return false;
+    }
+
+    private static void validateAllowLoadLocalInfile(String value) {
+        if (StringUtils.isEmpty(value)) {
+            return;
+        }
+        String key = "allowloadlocalinfile";
+        int idx = 0;
+        while (true) {
+            int start = indexOfIgnoreCase(value, key, idx);
+            if (start < 0) {
+                return;
+            }
+            if (start > 0) {
+                char prev = value.charAt(start - 1);
+                if (prev != '?' && prev != '&' && prev != ';') {
+                    idx = start + key.length();
+                    continue;
+                }
+            }
+            int pos = start + key.length();
+            while (pos < value.length() && Character.isWhitespace(value.charAt(pos))) {
+                pos++;
+            }
+            if (pos >= value.length() || value.charAt(pos) != '=') {
+                DEException.throwException("Illegal parameter: " + key);
+            }
+            pos++;
+            while (pos < value.length() && Character.isWhitespace(value.charAt(pos))) {
+                pos++;
+            }
+            int end = pos;
+            while (end < value.length() && value.charAt(end) != '&' && value.charAt(end) != ';') {
+                end++;
+            }
+            String paramValue = value.substring(pos, end).trim();
+            if (!"false".equalsIgnoreCase(paramValue)) {
+                DEException.throwException("Illegal parameter: " + key);
+            }
+            idx = Math.max(end, start + key.length());
+        }
+    }
+
+    private static int indexOfIgnoreCase(String value, String fragment, int fromIndex) {
+        if (StringUtils.isEmpty(value) || StringUtils.isEmpty(fragment) || fromIndex < 0) {
+            return -1;
+        }
+        for (int i = fromIndex; i <= value.length() - fragment.length(); i++) {
+            if (value.regionMatches(true, i, fragment, 0, fragment.length())) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private static void validateH2Settings(String jdbcUrl, String extraParams) {

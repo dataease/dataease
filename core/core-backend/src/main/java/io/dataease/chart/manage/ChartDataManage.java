@@ -18,7 +18,6 @@ import io.dataease.datasource.utils.DatasourceUtils;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.*;
-import io.dataease.engine.utils.SQLUtils;
 import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.api.PluginManageApi;
@@ -428,10 +427,10 @@ public class ChartDataManage {
 
         formatResult.getContext().put("drillAxis", drillAxis);
 
-        //转义特殊字符
+        // 保留原始过滤值，SQL 字面量统一由条件构造器转义
         extFilterList = extFilterList.stream().peek(ele -> {
             if (ObjectUtils.isNotEmpty(ele.getValue())) {
-                List<String> collect = ele.getValue().stream().map(SQLUtils::transKeyword).collect(Collectors.toList());
+                List<String> collect = new ArrayList<>(ele.getValue());
                 if (CollectionUtils.isEmpty(ele.getOriginValue())) {
                     ele.setOriginValue(ele.getValue());
                 }
