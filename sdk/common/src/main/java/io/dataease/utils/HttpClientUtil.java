@@ -15,7 +15,6 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.*;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
-import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.DefaultHostnameVerifier;
@@ -65,6 +64,10 @@ public class HttpClientUtil {
      */
     private static volatile boolean ignoreSslVerify = false;
 
+    private static volatile PoolingHttpClientConnectionManager plainConnectionManager;
+    private static volatile PoolingHttpClientConnectionManager strictSslConnectionManager;
+    private static volatile PoolingHttpClientConnectionManager ignoreSslConnectionManager;
+
     public static void setIgnoreSslVerify(boolean ignoreSslVerify) {
         HttpClientUtil.ignoreSslVerify = ignoreSslVerify;
     }
@@ -83,8 +86,7 @@ public class HttpClientUtil {
             if (url.startsWith(HTTPS)) {
                 return buildHttpClient(true);
             } else {
-                // http
-                return HttpClientBuilder.create().build();
+                return buildPlainHttpClient();
             }
         } catch (Exception e) {
             throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient查询失败: " + e.getMessage());
@@ -96,24 +98,72 @@ public class HttpClientUtil {
             if (ssl) {
                 return buildSslHttpClient();
             } else {
-                // http
-                return HttpClientBuilder.create().build();
+                return buildPlainHttpClient();
             }
         } catch (Exception e) {
             throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient查询失败: " + e.getMessage());
         }
     }
 
-    private static CloseableHttpClient buildSslHttpClient() throws Exception {
-        Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
-                .register("http", new PlainConnectionSocketFactory())
-                .register("https", buildSslSocketFactory()).build();
-        HttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager(registry);
-        return HttpClients.custom().setConnectionManager(connManager).build();
+    private static CloseableHttpClient buildPlainHttpClient() {
+        return HttpClients.custom()
+                .setConnectionManager(getPlainConnectionManager())
+                .setConnectionManagerShared(true)
+                .build();
     }
 
-    private static SSLConnectionSocketFactory buildSslSocketFactory() throws Exception {
-        if (!ignoreSslVerify) {
+    private static CloseableHttpClient buildSslHttpClient() throws Exception {
+        return HttpClients.custom()
+                .setConnectionManager(getSslConnectionManager(ignoreSslVerify))
+                .setConnectionManagerShared(true)
+                .build();
+    }
+
+    private static PoolingHttpClientConnectionManager getPlainConnectionManager() {
+        PoolingHttpClientConnectionManager manager = plainConnectionManager;
+        if (manager == null) {
+            synchronized (HttpClientUtil.class) {
+                manager = plainConnectionManager;
+                if (manager == null) {
+                    Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
+                            .register("http", new PlainConnectionSocketFactory())
+                            .build();
+                    manager = new PoolingHttpClientConnectionManager(registry);
+                    manager.setMaxTotal(200);
+                    manager.setDefaultMaxPerRoute(100);
+                    plainConnectionManager = manager;
+                }
+            }
+        }
+        return manager;
+    }
+
+    private static PoolingHttpClientConnectionManager getSslConnectionManager(boolean ignore) throws Exception {
+        PoolingHttpClientConnectionManager manager = ignore ? ignoreSslConnectionManager : strictSslConnectionManager;
+        if (manager == null) {
+            synchronized (HttpClientUtil.class) {
+                manager = ignore ? ignoreSslConnectionManager : strictSslConnectionManager;
+                if (manager == null) {
+                    Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
+                            .register("http", new PlainConnectionSocketFactory())
+                            .register("https", buildSslSocketFactory(ignore))
+                            .build();
+                    manager = new PoolingHttpClientConnectionManager(registry);
+                    manager.setMaxTotal(200);
+                    manager.setDefaultMaxPerRoute(100);
+                    if (ignore) {
+                        ignoreSslConnectionManager = manager;
+                    } else {
+                        strictSslConnectionManager = manager;
+                    }
+                }
+            }
+        }
+        return manager;
+    }
+
+    private static SSLConnectionSocketFactory buildSslSocketFactory(boolean ignore) throws Exception {
+        if (!ignore) {
             return new SSLConnectionSocketFactory(SSLContext.getDefault(), new String[]{"TLSv1.2", "TLSv1.3"}, null, new DefaultHostnameVerifier());
         }
         SSLContextBuilder builder = new SSLContextBuilder();
@@ -815,11 +865,11 @@ public class HttpClientUtil {
     private static CloseableHttpClient buildRedirectingHttpClient(boolean ssl) throws Exception {
         HttpClientBuilder builder = HttpClientBuilder.create();
         if (ssl) {
-            Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
-                    .register("http", new PlainConnectionSocketFactory())
-                    .register("https", buildSslSocketFactory()).build();
-            builder.setConnectionManager(new PoolingHttpClientConnectionManager(registry));
+            builder.setConnectionManager(getSslConnectionManager(ignoreSslVerify));
+        } else {
+            builder.setConnectionManager(getPlainConnectionManager());
         }
+        builder.setConnectionManagerShared(true);
         builder.setRedirectStrategy(new DefaultRedirectStrategy(new String[]{"GET", "HEAD", "POST", "PUT", "DELETE"}));
         return builder.build();
     }
