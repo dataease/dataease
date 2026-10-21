@@ -28,6 +28,13 @@ public interface TaskLogApi {
     @DePermit("m:read")
     IPage<TaskLogVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody TaskLogGridRequest request);
 
+    /**
+     * 打开日志前检查访问权限及对应执行器的鉴权协议
+     */
+    @GetMapping("/precheck/{logId}")
+    @DePermit("m:read")
+    boolean precheck(@PathVariable("logId") String logId);
+
     @GetMapping("/detail/{logId}/{fromLineNum}")
     @DePermit("m:read")
     LogResultVO logDetail(@PathVariable("logId") String logId, @PathVariable("fromLineNum") int fromLineNum);
