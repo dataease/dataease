@@ -37,6 +37,7 @@ import io.dataease.extensions.datasource.dto.*;
 import io.dataease.extensions.datasource.factory.ProviderFactory;
 import io.dataease.extensions.datasource.model.SQLMeta;
 import io.dataease.extensions.datasource.provider.Provider;
+import io.dataease.extensions.datasource.utils.SqlUtil;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.extensions.view.dto.ChartExtFilterDTO;
 import io.dataease.extensions.view.dto.ChartExtRequest;
@@ -489,6 +490,12 @@ public class DatasetDataManage {
         s = provider.replaceComment(s);
         SqlVariableHandleResult sqlResult = new SqlparserUtils().handleVariableDefaultValueWithPreparedParams(datasetSQLManage.subPrefixSuffixChar(s), dto.getSqlVariableDetails(), true, true, null, dto.getIsCross(), dsMap, pluginManage, getUserEntity());
         String originSql = sqlResult.getSql();
+        try {
+            SqlUtil.checkSql(originSql);
+        } catch (Exception e) {
+            LogUtil.error(e);
+            DEException.throwException(Translator.get("i18n_sql_invalid"));
+        }
         datasourceRequest.setTableFieldWithValues(sqlResult.getTableFieldWithValues());
 
         // sql 作为临时表，外层加上limit
