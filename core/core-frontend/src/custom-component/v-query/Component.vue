@@ -585,12 +585,16 @@ const updateQueryCriteria = () => {
       if (ele.auto) {
         const componentInfo = {
           datasetId: ele.dataset.id,
-          id: ele.field.id
+          id: ele.field.id,
+          chartId: ele.field.chartId
         }
         const checkedFields = []
         const checkedFieldsMap = {}
         datasetFieldList.value.forEach(ele => {
-          if (ele.tableId === componentInfo.datasetId) {
+          if (
+            ele.tableId === componentInfo.datasetId &&
+            (!componentInfo.chartId || String(ele.id) === String(componentInfo.chartId))
+          ) {
             checkedFields.push(ele.id)
             checkedFieldsMap[ele.id] = componentInfo.id
           }
@@ -637,7 +641,10 @@ const drop = e => {
     const checkedFields = []
     const checkedFieldsMap = {}
     datasetFieldList.value.forEach(ele => {
-      if (ele.tableId === componentInfo.datasetId) {
+      if (
+        ele.tableId === componentInfo.datasetId &&
+        (!componentInfo.chartId || String(ele.id) === String(componentInfo.chartId))
+      ) {
         checkedFields.push(ele.id)
         checkedFieldsMap[ele.id] = componentInfo.id
       }
