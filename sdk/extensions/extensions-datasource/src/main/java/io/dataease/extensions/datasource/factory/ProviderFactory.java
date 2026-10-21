@@ -24,8 +24,7 @@ public class ProviderFactory {
         if (type.equalsIgnoreCase("es")) {
             return SpringContextUtil.getApplicationContext().getBean("esProvider", Provider.class);
         }
-        List<String> list = Arrays.stream(DatasourceConfiguration.DatasourceType.values()).map(DatasourceConfiguration.DatasourceType::getType).toList();
-        if (list.contains(type)) {
+        if (isCalciteDatasource(type)) {
             return SpringContextUtil.getApplicationContext().getBean("calciteProvider", Provider.class);
         }
         Provider instance = getInstance(type);
@@ -33,6 +32,14 @@ public class ProviderFactory {
             DEException.throwException("插件异常，请检查插件");
         }
         return instance;
+    }
+
+    /**
+     * 判断数据源是否由内置 Calcite Provider 处理，不依赖请求或插件许可上下文。
+     */
+    public static boolean isCalciteDatasource(String type) {
+        return !"es".equalsIgnoreCase(type) && Arrays.stream(DatasourceConfiguration.DatasourceType.values())
+                .anyMatch(datasourceType -> datasourceType.getType().equals(type));
     }
 
     public static Provider getDefaultProvider() {
