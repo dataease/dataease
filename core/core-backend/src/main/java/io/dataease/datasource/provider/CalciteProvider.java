@@ -8,6 +8,7 @@ import io.dataease.dataset.utils.FieldUtils;
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.security.JdbcUrlSecurityPolicy;
+import io.dataease.datasource.utils.JdbcParameterUtils;
 import io.dataease.datasource.type.*;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.*;
@@ -546,7 +547,9 @@ public class CalciteProvider extends Provider {
                     Reader reader = new StringReader(stringValue);
                     preparedStatement.setCharacterStream(i + 1, reader, stringValue.length());
                 } else if (tableFieldWithValue.getType() != null) {
-                    preparedStatement.setObject(i + 1, valueObject, tableFieldWithValue.getType());
+                    preparedStatement.setObject(i + 1, valueObject, JdbcParameterUtils.resolveType(
+                            datasourceType == null ? null : datasourceType.name(),
+                            tableFieldWithValue.getDeExtractType(), tableFieldWithValue.getType()));
                 } else {
                     preparedStatement.setObject(i + 1, valueObject);
                 }
@@ -699,7 +702,10 @@ public class CalciteProvider extends Provider {
                 LogUtil.info("execWithPreparedStatement sql: " + datasourceRequest.getQuery());
                 for (int i = 0; i < datasourceRequest.getTableFieldWithValues().size(); i++) {
                     try {
-                        Object valueObject = datasourceRequest.getTableFieldWithValues().get(i).getValue();
+                        TableFieldWithValue parameter = datasourceRequest.getTableFieldWithValues().get(i);
+                        Object valueObject = parameter.getValue();
+                        Integer jdbcType = JdbcParameterUtils.resolveType(value.getType(),
+                                parameter.getDeExtractType(), parameter.getType());
 
                         if (valueObject instanceof String && DatasourceConfiguration.DatasourceType.valueOf(value.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
                             if (StringUtils.isNotEmpty(datasourceConfiguration.getCharset()) && StringUtils.isNotEmpty(datasourceConfiguration.getTargetCharset())) {
@@ -710,10 +716,10 @@ public class CalciteProvider extends Provider {
                                 Reader reader = new StringReader((String) valueObject);
                                 ((PreparedStatement) statement).setCharacterStream(i + 1, reader, ((String) valueObject).length());
                             } else {
-                                ((PreparedStatement) statement).setObject(i + 1, valueObject, datasourceRequest.getTableFieldWithValues().get(i).getType());
+                                ((PreparedStatement) statement).setObject(i + 1, valueObject, jdbcType);
                             }
                         } else {
-                            ((PreparedStatement) statement).setObject(i + 1, valueObject, datasourceRequest.getTableFieldWithValues().get(i).getType());
+                            ((PreparedStatement) statement).setObject(i + 1, valueObject, jdbcType);
                         }
                         LogUtil.info("execWithPreparedStatement param[" + (i + 1) + "](" + datasourceRequest.getTableFieldWithValues().get(i).getColumnTypeName() + "): " + datasourceRequest.getTableFieldWithValues().get(i).getValue());
                     } catch (SQLException e) {
@@ -762,7 +768,10 @@ public class CalciteProvider extends Provider {
                 LogUtil.info("execWithPreparedStatement sql: " + datasourceRequest.getQuery());
                 for (int i = 0; i < datasourceRequest.getTableFieldWithValues().size(); i++) {
                     try {
-                        Object valueObject = datasourceRequest.getTableFieldWithValues().get(i).getValue();
+                        TableFieldWithValue parameter = datasourceRequest.getTableFieldWithValues().get(i);
+                        Object valueObject = parameter.getValue();
+                        Integer jdbcType = JdbcParameterUtils.resolveType(value.getType(),
+                                parameter.getDeExtractType(), parameter.getType());
                         if (valueObject instanceof String && DatasourceConfiguration.DatasourceType.valueOf(value.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
                             if (StringUtils.isNotEmpty(datasourceConfiguration.getCharset()) && StringUtils.isNotEmpty(datasourceConfiguration.getTargetCharset())) {
                                 //转换为数据库的字符集
@@ -772,10 +781,10 @@ public class CalciteProvider extends Provider {
                                 Reader reader = new StringReader((String) valueObject);
                                 ((PreparedStatement) statement).setCharacterStream(i + 1, reader, ((String) valueObject).length());
                             } else {
-                                ((PreparedStatement) statement).setObject(i + 1, valueObject, datasourceRequest.getTableFieldWithValues().get(i).getType());
+                                ((PreparedStatement) statement).setObject(i + 1, valueObject, jdbcType);
                             }
                         } else {
-                            ((PreparedStatement) statement).setObject(i + 1, valueObject, datasourceRequest.getTableFieldWithValues().get(i).getType());
+                            ((PreparedStatement) statement).setObject(i + 1, valueObject, jdbcType);
                         }
                         LogUtil.info("execWithPreparedStatement param[" + (i + 1) + "](" + datasourceRequest.getTableFieldWithValues().get(i).getColumnTypeName() + "): " + datasourceRequest.getTableFieldWithValues().get(i).getValue());
                     } catch (SQLException e) {
@@ -836,7 +845,10 @@ public class CalciteProvider extends Provider {
                 LogUtil.info("execWithPreparedStatement sql: " + datasourceRequest.getQuery());
                 for (int i = 0; i < datasourceRequest.getTableFieldWithValues().size(); i++) {
                     try {
-                        Object valueObject = datasourceRequest.getTableFieldWithValues().get(i).getValue();
+                        TableFieldWithValue parameter = datasourceRequest.getTableFieldWithValues().get(i);
+                        Object valueObject = parameter.getValue();
+                        Integer jdbcType = JdbcParameterUtils.resolveType(value.getType(),
+                                parameter.getDeExtractType(), parameter.getType());
 
                         if (valueObject instanceof String && DatasourceConfiguration.DatasourceType.valueOf(value.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
                             if (StringUtils.isNotEmpty(datasourceConfiguration.getCharset()) && StringUtils.isNotEmpty(datasourceConfiguration.getTargetCharset())) {
@@ -847,10 +859,10 @@ public class CalciteProvider extends Provider {
                                 Reader reader = new StringReader((String) valueObject);
                                 ((PreparedStatement) statement).setCharacterStream(i + 1, reader, ((String) valueObject).length());
                             } else {
-                                ((PreparedStatement) statement).setObject(i + 1, valueObject, datasourceRequest.getTableFieldWithValues().get(i).getType());
+                                ((PreparedStatement) statement).setObject(i + 1, valueObject, jdbcType);
                             }
                         } else {
-                            ((PreparedStatement) statement).setObject(i + 1, valueObject, datasourceRequest.getTableFieldWithValues().get(i).getType());
+                            ((PreparedStatement) statement).setObject(i + 1, valueObject, jdbcType);
                         }
                         LogUtil.info("execWithPreparedStatement param[" + (i + 1) + "](" + datasourceRequest.getTableFieldWithValues().get(i).getColumnTypeName() + "): " + datasourceRequest.getTableFieldWithValues().get(i).getValue());
                     } catch (SQLException e) {
