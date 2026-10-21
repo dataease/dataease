@@ -12,6 +12,7 @@ import io.dataease.datasource.utils.JdbcParameterUtils;
 import io.dataease.datasource.type.*;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.*;
+import io.dataease.extensions.datasource.factory.ProviderFactory;
 import io.dataease.extensions.datasource.provider.DriverShim;
 import io.dataease.extensions.datasource.provider.ExtendedJdbcClassLoader;
 import io.dataease.extensions.datasource.provider.Provider;
@@ -2084,6 +2085,8 @@ public class CalciteProvider extends Provider {
 
     public void initConnectionPool() {
         LogUtil.info("Begin to init datasource pool...");
+        // 即使当前只有插件数据源，也要建立 Calcite 上下文，供后续新增内置数据源使用。
+        take();
         List<CoreDatasource> coreDatasources = coreDatasourceRepository.findAll().stream().filter(coreDatasource -> !Arrays.asList("folder", "API", "Excel", "ExcelRemote").contains(coreDatasource.getType())).collect(Collectors.toList());
         CoreDatasource engine = engineManage.deEngine();
         if (engine != null) {
@@ -2091,6 +2094,10 @@ public class CalciteProvider extends Provider {
         }
 
         for (CoreDatasource coreDatasource : coreDatasources) {
+            // 插件 Provider 依赖请求许可上下文，启动线程只初始化内置 Calcite 数据源。
+            if (!ProviderFactory.isCalciteDatasource(coreDatasource.getType())) {
+                continue;
+            }
             coreDatasource.setConfiguration((String) EncryptUtils.aesDecrypt(coreDatasource.getConfiguration()));
             Map<Long, DatasourceSchemaDTO> dsMap = new HashMap<>();
             DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
