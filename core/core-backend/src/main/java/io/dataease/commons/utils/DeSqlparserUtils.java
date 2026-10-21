@@ -106,7 +106,8 @@ public class DeSqlparserUtils {
                         replaceParamItem = true;
                     }
                 } else {
-                    preparedSqlFragment = resolvePreparedSqlFragment(variableName, parameters, isEdit, isFromDataSet);
+                    boolean inOperator = isInExpression(sqlItem, m.start());
+                    preparedSqlFragment = resolvePreparedSqlFragment(variableName, parameters, isEdit, isFromDataSet, inOperator);
                     if (preparedSqlFragment != null) {
                         sqlItemBuilder.append(preparedSqlFragment.replacement());
                         sqlItemLastIndex = m.end();
@@ -276,14 +277,14 @@ public class DeSqlparserUtils {
         return null;
     }
 
-    private PreparedSqlFragment resolvePreparedSqlFragment(String variableName, List<SqlVariableDetails> parameters, boolean isEdit, boolean isFromDataSet) {
+    private PreparedSqlFragment resolvePreparedSqlFragment(String variableName, List<SqlVariableDetails> parameters, boolean isEdit, boolean isFromDataSet, boolean inOperator) {
         SqlVariableDetails filterParameter = findSqlVariableDetail(parameters, variableName);
         if (filterParameter != null) {
             return buildPreparedSqlFragment(filterParameter);
         }
         SqlVariableDetails defaultsSqlVariableDetail = findSqlVariableDetail(defaultsSqlVariableDetails, variableName);
         if (shouldUseDefaultValue(defaultsSqlVariableDetail, isEdit, isFromDataSet)) {
-            return buildPreparedSqlFragmentForDefaultValue(defaultsSqlVariableDetail);
+            return buildPreparedSqlFragmentForDefaultValue(defaultsSqlVariableDetail, inOperator);
         }
         return null;
     }
@@ -293,6 +294,58 @@ public class DeSqlparserUtils {
             return false;
         }
         return isEdit || isFromDataSet && sqlVariableDetails.getDefaultValueScope() == SqlVariableDetails.DefaultValueScope.ALLSCOPE;
+    }
+
+    /**
+     * 判断参数是否位于 IN (...) 右侧列表中，用于把默认值拆分为多值绑定。
+     * 只检查当前变量最近的外层括号，避免同一变量在标量条件中被误判。
+     */
+    private boolean isInExpression(String sqlItem, int tokenStart) {
+        int parenStart = findEnclosingParenStart(sqlItem, tokenStart);
+        if (parenStart < 0) {
+            return false;
+        }
+        int beforeParen = parenStart - 1;
+        while (beforeParen >= 0 && Character.isWhitespace(sqlItem.charAt(beforeParen))) {
+            beforeParen--;
+        }
+        if (!endsWithWord(sqlItem, beforeParen, "in")) {
+            return false;
+        }
+        String listPrefix = sqlItem.substring(parenStart + 1, tokenStart).trim();
+        // IN 右侧是子查询时，参数不是列表项，不拆分默认值
+        return !startsWithWord(listPrefix, "select") && !startsWithWord(listPrefix, "with");
+    }
+
+    private int findEnclosingParenStart(String sql, int tokenStart) {
+        int depth = 0;
+        for (int i = tokenStart - 1; i >= 0; i--) {
+            char c = sql.charAt(i);
+            if (c == ')') {
+                depth++;
+            } else if (c == '(') {
+                if (depth == 0) {
+                    return i;
+                }
+                depth--;
+            }
+        }
+        return -1;
+    }
+
+    private boolean endsWithWord(String s, int end, String word) {
+        int start = end - word.length() + 1;
+        if (start < 0 || !s.regionMatches(true, start, word, 0, word.length())) {
+            return false;
+        }
+        return start == 0 || (!Character.isLetterOrDigit(s.charAt(start - 1)) && s.charAt(start - 1) != '_');
+    }
+
+    private boolean startsWithWord(String s, String word) {
+        if (StringUtils.isBlank(s) || !s.regionMatches(true, 0, word, 0, word.length())) {
+            return false;
+        }
+        return s.length() == word.length() || !Character.isLetterOrDigit(s.charAt(word.length()));
     }
 
     private boolean isQuotedVariable(String sqlItem, int start, int end) {
@@ -327,7 +380,7 @@ public class DeSqlparserUtils {
     private PreparedSqlFragment buildPreparedSqlFragmentForQuotedLiteral(QuotedLiteralContext quotedLiteralContext, List<SqlVariableDetails> parameters, boolean isEdit, boolean isFromDataSet) {
         List<LiteralSegment> literalSegments = parseLiteralSegments(quotedLiteralContext.content());
         if (literalSegments.size() == 1 && literalSegments.get(0).variable()) {
-            return resolvePreparedSqlFragment(literalSegments.get(0).content(), parameters, isEdit, isFromDataSet);
+            return resolvePreparedSqlFragment(literalSegments.get(0).content(), parameters, isEdit, isFromDataSet, false);
         }
         StringBuilder preparedValueBuilder = new StringBuilder();
         boolean hasVariable = false;
@@ -487,15 +540,37 @@ public class DeSqlparserUtils {
         return buildPreparedSqlFragment(values);
     }
 
-    private PreparedSqlFragment buildPreparedSqlFragmentForDefaultValue(SqlVariableDetails sqlVariableDetails) {
+    private PreparedSqlFragment buildPreparedSqlFragmentForDefaultValue(SqlVariableDetails sqlVariableDetails, boolean inOperator) {
         SqlVariableDetails defaultValueDetail = new SqlVariableDetails();
         defaultValueDetail.setVariableName(sqlVariableDetails.getVariableName());
         defaultValueDetail.setType(sqlVariableDetails.getType());
         defaultValueDetail.setDeType(sqlVariableDetails.getDeType());
         defaultValueDetail.setId(sqlVariableDetails.getId());
-        defaultValueDetail.setOperator(sqlVariableDetails.getOperator());
-        defaultValueDetail.setValue(Collections.singletonList(sqlVariableDetails.getDefaultValue()));
+        defaultValueDetail.setOperator(inOperator ? "in" : sqlVariableDetails.getOperator());
+        defaultValueDetail.setValue(splitDefaultValue(sqlVariableDetails.getDefaultValue(), inOperator));
         return buildPreparedSqlFragment(defaultValueDetail);
+    }
+
+    private List<String> splitDefaultValue(String defaultValue, boolean inOperator) {
+        if (!inOperator || StringUtils.isBlank(defaultValue)) {
+            return Collections.singletonList(defaultValue);
+        }
+        return Arrays.stream(defaultValue.split(","))
+                .map(String::trim)
+                .map(this::stripQuotes)
+                .filter(StringUtils::isNotBlank)
+                .toList();
+    }
+
+    private String stripQuotes(String value) {
+        if (value.length() >= 2) {
+            char first = value.charAt(0);
+            char last = value.charAt(value.length() - 1);
+            if ((first == '\'' && last == '\'') || (first == '"' && last == '"')) {
+                return value.substring(1, value.length() - 1);
+            }
+        }
+        return value;
     }
 
     private List<String> resolvePreparedValues(SqlVariableDetails sqlVariableDetails) {

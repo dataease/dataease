@@ -2296,6 +2296,8 @@ export default {
     sql_variable_limit_1: '1、SQL 變數只能在WHERE 條件中使用',
     sql_variable_limit_2:
       "2、範例: select * from table where $DE_PARAM{'{'} name = substring('$[PARAM1]',1,5){'}'} and $DE_PARAM{'{'} name in ($[PARAM2]) {'}'}",
+    sql_variable_multiple_values:
+      "多個值請用英文逗號分隔，例如：DT0001,DT0002 或 'DT0001','DT0002'",
     select_month: '選擇月',
     select_date: '選擇日期',
     select_time: '選擇時間',
