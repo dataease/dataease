@@ -25,6 +25,7 @@ import {
 } from 'vue'
 import { storeToRefs } from 'pinia'
 import { enumValueObj } from '@/api/dataset'
+import { getFieldByDQ, type Field } from '@/api/chart'
 import CustomSortFilter from './CustomSortFilter.vue'
 import { addQueryCriteriaConfig, attributes, splitConditionValues } from './options'
 import { getCustomTime } from './time-format'
@@ -336,7 +337,10 @@ const setSameId = () => {
         if (
           itx.componentId === ele &&
           curComponent.value.checkedFields?.includes(itx.componentId) &&
-          comIdMap[itx.id]
+          comIdMap[itx.id] &&
+          Object.values(itx.fields)
+            .flat()
+            .some(field => field.id === comIdMap[itx.id])
         ) {
           curComponent.value.checkedFieldsMap[itx.componentId] = comIdMap[itx.id]
           itx.activelist = comIdMap[`active-${itx.id}`]
@@ -704,7 +708,10 @@ const setParameters = field => {
     if (
       ele.id === field.id &&
       curComponent.value.checkedFields?.includes(ele.componentId) &&
-      !curComponent.value.checkedFieldsMap[ele.componentId]
+      !curComponent.value.checkedFieldsMap[ele.componentId] &&
+      Object.values(ele.fields)
+        .flat()
+        .some(item => item.id === curComponent.value.checkedFieldsMap[field.componentId])
     ) {
       ele.activelist = field.activelist
       curComponent.value.checkedFieldsMap[ele.componentId] =
@@ -1007,6 +1014,7 @@ const handleDatasetChange = () => {
     return
   }
   curComponent.value.field.id = ''
+  curComponent.value.field.chartId = undefined
   curComponent.value.displayId = ''
   curComponent.value.sortId = ''
   getOptions(curComponent.value.dataset.id, curComponent.value)
@@ -1021,6 +1029,9 @@ const handleDatasetTreeChange = () => {
 }
 
 const handleFieldChange = () => {
+  curComponent.value.field.chartId = curComponent.value.dataset.fields.find(
+    field => field.id === curComponent.value.field.id
+  )?.chartId
   if (!curComponent.value.defaultValueCheck) return
   curComponent.value.defaultValue = curComponent.value.multiple ? [] : undefined
   if (!curComponent.value.displayId) {
@@ -1043,6 +1054,9 @@ const handleValueSourceChange = () => {
     fields.value.forEach(ele => {
       if (ele.componentId === comId) {
         curComponent.value.dataset.id = ele.id
+        curComponent.value.field.chartId = Object.values(ele.fields)
+          .flat()
+          .find(field => field.id === id)?.chartId
       }
     })
     curComponent.value.displayId = id
@@ -1745,20 +1759,20 @@ const init = (queryId: string) => {
     }
   }
 
-  const datasetMapKeyList = Object.keys(datasetMap)
-
-  if (datasetFieldIdList.every(ele => datasetMapKeyList.includes(ele))) {
-    fields.value = datasetFieldList.value
-      .map(ele => {
-        if (!datasetMap[ele.tableId]) return null
-        return { ...datasetMap[ele.tableId], componentId: ele.id }
-      })
-      .filter(ele => !!ele)
-  }
   const params = [...new Set(datasetFieldList.value.map(ele => ele.tableId).filter(ele => !!ele))]
+  fields.value = []
   if (!params.length) return
-  Promise.all([getDsDetailsWithPerm(params), getSqlParams(params)])
-    .then(([dq, p]) => {
+  Promise.all([
+    getDsDetailsWithPerm(params),
+    getSqlParams(params),
+    Promise.all(
+      datasetFieldList.value.map(async ele => ({
+        componentId: ele.id,
+        fields: await getFieldByDQ(ele.tableId, ele.id, { type: ele.type })
+      }))
+    )
+  ])
+    .then(([dq, p, chartFields]) => {
       dq.filter(ele => !!ele).forEach(ele => {
         ele.activelist = 'dimensionList'
         ele.fields.parameterList = p.filter(
@@ -1774,14 +1788,38 @@ const init = (queryId: string) => {
       fields.value = datasetFieldList.value
         .map(ele => {
           if (!datasetMap[ele.tableId]) return null
-          const activeCom = datasetMap[ele.tableId].fields || {}
+          const chart = chartFields.find(item => item.componentId === ele.id)
+          const activeCom = {
+            dimensionList: (chart?.fields.dimensionList || []).filter(isQueryField),
+            quotaList: (chart?.fields.quotaList || []).filter(isQueryField),
+            parameterList: datasetMap[ele.tableId].fields.parameterList
+          }
           const activelist = setActiveSelectTab(
             [activeCom.dimensionList, activeCom.quotaList, activeCom.parameterList],
             curComponent.value.checkedFieldsMap[ele.id]
           )
-          return { ...datasetMap[ele.tableId], componentId: ele.id, activelist }
+          return {
+            ...datasetMap[ele.tableId],
+            fields: activeCom,
+            componentId: ele.id,
+            activelist
+          }
         })
         .filter(ele => !!ele)
+      conditions.value.forEach(condition => {
+        const owner = fields.value.find(item =>
+          [...item.fields.dimensionList, ...item.fields.quotaList].some(
+            field => field.id === condition.field.id && !!field.chartId
+          )
+        )
+        if (!owner) return
+        condition.field.chartId = owner.componentId
+        if (condition.auto) {
+          condition.checkedFields = [owner.componentId]
+          condition.checkedFieldsMap = { [owner.componentId]: condition.field.id }
+        }
+        condition.dataset.fields = [...owner.fields.dimensionList, ...owner.fields.quotaList]
+      })
     })
     .finally(() => {
       if (!curComponent.value.treeDatasetId) {
@@ -1881,9 +1919,7 @@ const handleCondition = (item, idx = 0) => {
     defaultConfigurationRef.value.changeMultiple(curComponent.value.multiple)
   })
   if (curComponent.value.dataset.id) {
-    listFieldsWithPermissions(curComponent.value.dataset.id).then(res => {
-      curComponent.value.dataset.fields = res.data
-    })
+    getOptions(curComponent.value.dataset.id, curComponent.value)
   }
   if (!curComponent.value.checkedFieldsMapStart) {
     curComponent.value.checkedFieldsMapStart = {}
@@ -1970,8 +2006,20 @@ const handleCondition = (item, idx = 0) => {
   })
 }
 
+const isQueryField = (field: Field) =>
+  String(field.id) !== '-1' && !field.agg && !field.params?.length
+
 const getOptions = (id, component) => {
+  const chartId = component.field.chartId
+  if (chartId) {
+    getFieldByDQ(id, chartId, {}).then(res => {
+      if (component.dataset.id !== id || component.field.chartId !== chartId) return
+      component.dataset.fields = [...res.dimensionList, ...res.quotaList].filter(isQueryField)
+    })
+    return
+  }
   listFieldsWithPermissions(id).then(res => {
+    if (component.dataset.id !== id || component.field.chartId !== chartId) return
     component.dataset.fields = res.data
   })
 }
