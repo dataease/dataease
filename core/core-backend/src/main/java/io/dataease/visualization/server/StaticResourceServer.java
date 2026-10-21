@@ -62,19 +62,33 @@ public class StaticResourceServer implements StaticResourceApi {
             for (Map.Entry<String, String> entry : resource.entrySet()) {
                 String path = entry.getKey();
                 String fileName = extractFileName(path);
-                saveSingleFileToServe(fileName, entry.getValue());
+                saveSingleFileToServe(fileName, entry.getValue(), true);
             }
         }
     }
 
     public void saveSingleFileToServe(String fileName, String content) {
+        saveSingleFileToServe(fileName, content, false);
+    }
+
+    private void saveSingleFileToServe(String fileName, String content, boolean skipInvalidImage) {
         try {
             FileUtils.validateUploadFilename(fileName);
-            if (content == null || content.length() > ((StaticResourceContentGuard.MAX_BYTES + 2L) / 3) * 4) {
-                throw new IOException("Invalid static resource size");
+            byte[] decoded;
+            try {
+                if (content == null || content.length() > ((StaticResourceContentGuard.MAX_BYTES + 2L) / 3) * 4) {
+                    throw new IOException("Invalid static resource size");
+                }
+                decoded = Base64.getDecoder().decode(content);
+                StaticResourceContentGuard.validate(fileName, decoded);
+            } catch (Exception e) {
+                if (!skipInvalidImage) {
+                    throw e;
+                }
+                LogUtil.warn("Skip invalid template static resource: {}", fileName);
+                LogUtil.warn(e);
+                return;
             }
-            byte[] decoded = Base64.getDecoder().decode(content);
-            StaticResourceContentGuard.validate(fileName, decoded);
             Path basePath = Paths.get(staticDir).toAbsolutePath().normalize();
             FileUtils.createIfAbsent(basePath);
             Path uploadPath = basePath.resolve(fileName);

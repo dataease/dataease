@@ -1292,11 +1292,14 @@ public class DatasourceServer implements DatasourceApi {
         if (StringUtils.isBlank(identifier)) {
             DEException.throwException(Translator.get("i18n_dataset_table_not_exist"));
         }
+        // prefix/suffix 为空时无法安全转义标识符（如 db2），必须显式拒绝，避免原始表名直接拼入 SQL
+        if (StringUtils.isBlank(prefix) || StringUtils.isBlank(suffix)) {
+            DEException.throwException("Unsupported datasource identifier quoting");
+        }
         String escaped = identifier;
-        if (StringUtils.isNotBlank(prefix) && StringUtils.isNotBlank(suffix)
-                && !StringUtils.equals(prefix, suffix) && "[".equals(prefix) && "]".equals(suffix)) {
+        if (!StringUtils.equals(prefix, suffix) && "[".equals(prefix) && "]".equals(suffix)) {
             escaped = escaped.replace("]", "]]");
-        } else if (StringUtils.isNotBlank(prefix)) {
+        } else {
             escaped = escaped.replace(prefix, prefix + prefix);
         }
         return prefix + escaped + suffix;

@@ -3,6 +3,7 @@ import io.dataease.license.utils.LogUtil;
 
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.provider.ExtendedJdbcClassLoader;
+import io.dataease.extensions.datasource.provider.JdbcDriverPolicy;
 import io.dataease.extensions.sync.model.TableFieldDTO;
 import io.dataease.extensions.sync.model.datasource.ConnectionObj;
 import io.dataease.extensions.sync.vo.DatasourceConfiguration;
@@ -45,7 +46,7 @@ public class ProviderUtil {
         if (StringUtils.isNotBlank(configuration.getPassword())) {
             props.setProperty("password", configuration.getPassword());
         }
-        String driverClassName = configuration.getDriver();
+        String driverClassName = JdbcDriverPolicy.resolveDriverClass(configuration.getType(), configuration.getDriver());
         Connection conn = null;
         try {
             Driver driverClass = (Driver) extendedJdbcClassLoader.loadClass(driverClassName).getDeclaredConstructor().newInstance();

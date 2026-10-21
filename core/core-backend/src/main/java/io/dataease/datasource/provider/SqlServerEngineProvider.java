@@ -154,7 +154,7 @@ public class SqlServerEngineProvider extends EngineProvider {
         switch (tableField.getDeExtractType()) {
             case 0:
                 if (StringUtils.isNotEmpty(tableField.getLength())) {
-                    return "nvarchar(" + tableField.getLength() + ")";
+                    return "nvarchar(" + validateLength(tableField.getLength()) + ")";
                 }
                 return "nvarchar(max)";
             case 1:

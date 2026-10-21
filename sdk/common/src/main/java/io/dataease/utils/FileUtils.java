@@ -100,11 +100,11 @@ public class FileUtils {
                 DEException.throwException(Translator.get("i18n_invalid_file_name"));
             }
 
-            // 文件写入
-            FileOutputStream fileOutputStream = new FileOutputStream(dest);
-            fileOutputStream.write(file.getBytes());
-            fileOutputStream.flush();
-            fileOutputStream.close();
+            // 文件写入：使用流式拷贝，避免大文件一次性载入堆内存
+            try (InputStream in = file.getInputStream();
+                 OutputStream out = new FileOutputStream(dest)) {
+                in.transferTo(out);
+            }
             return dest;
         } catch (DEException e) {
             throw e;

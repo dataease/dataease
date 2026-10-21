@@ -179,9 +179,9 @@ public class DatasetSQLManage {
                             if (Objects.equals(a_f.getId(), f.getId())) {
                                 f.setDataeaseName(a_f.getDataeaseName());
                             }
-                            if (f.getDeType() == 1 && f.getDeExtractType() == 0 && StringUtils.equalsIgnoreCase("custom", f.getDateFormatType())) {
-                                Utils.validateSqlInjectionRisk(f.getDateFormat());
-                            }
+                        }
+                        if (f.getDeType() == 1 && f.getDeExtractType() == 0 && StringUtils.equalsIgnoreCase("custom", f.getDateFormatType())) {
+                            Utils.validateSqlInjectionRisk(f.getDateFormat());
                         }
 
                         String alias;

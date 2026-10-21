@@ -7,6 +7,7 @@ import io.dataease.dao.auto.entity.CoreDatasource;
 import io.dataease.dataset.utils.FieldUtils;
 import io.dataease.datasource.dao.auto.repository.CoreDatasourceRepository;
 import io.dataease.datasource.manage.EngineManage;
+import io.dataease.datasource.security.JdbcUrlSecurityPolicy;
 import io.dataease.datasource.type.*;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.*;
@@ -642,7 +643,7 @@ public class CalciteProvider extends Provider {
         if (StringUtils.isNotBlank(configuration.getPassword())) {
             props.setProperty("password", configuration.getPassword());
         }
-        String driverClassName = configuration.getDriver();
+        String driverClassName = JdbcUrlSecurityPolicy.trustedDriverClass(coreDatasource.getType());
         ExtendedJdbcClassLoader jdbcClassLoader = extendedJdbcClassLoader;
         Connection conn = null;
         try {

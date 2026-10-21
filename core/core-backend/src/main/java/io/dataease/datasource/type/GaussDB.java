@@ -1,33 +1,20 @@
 package io.dataease.datasource.type;
 
-import io.dataease.exception.DEException;
+import io.dataease.datasource.security.JdbcUrlSecurityPolicy;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-
-import java.net.URLDecoder;
-import java.util.Arrays;
-import java.util.List;
 
 @Data
 @Component("gaussdb")
 public class GaussDB extends Pg {
     private String driver = "com.huawei.gaussdb.jdbc.Driver";
     private String extraParams = "";
-    private List<String> illegalParameters = Arrays.asList("socketFactory", "socketFactoryArg", "sslfactory", "sslhostnameverifier", "sslpasswordcallback", "authenticationPluginClassName");
 
     @Override
     public String getJdbc() {
         if (StringUtils.isNoneEmpty(getUrlType()) && !getUrlType().equalsIgnoreCase("hostName")) {
-            for (String illegalParameter : illegalParameters) {
-                if (URLDecoder.decode(getJdbcUrl()).contains(illegalParameter)) {
-                    DEException.throwException("Illegal parameter: " + illegalParameter);
-                }
-            }
-            if (!getJdbcUrl().startsWith("jdbc:gaussdb")) {
-                DEException.throwException("Illegal jdbcUrl: " + getJdbcUrl());
-            }
-            return getJdbcUrl();
+            return JdbcUrlSecurityPolicy.validate("gaussdb", getDriver(), getJdbcUrl(), getExtraParams());
         }
         String jdbcUrl = "";
         if (StringUtils.isEmpty(extraParams.trim())) {
@@ -53,11 +40,6 @@ public class GaussDB extends Pg {
                 jdbcUrl += "&currentSchema=\"" + getSchema().trim() + "\"";
             }
         }
-        for (String illegalParameter : illegalParameters) {
-            if (URLDecoder.decode(jdbcUrl).toLowerCase().contains(illegalParameter.toLowerCase()) || URLDecoder.decode(jdbcUrl).contains(illegalParameter.toLowerCase())) {
-                DEException.throwException("Illegal parameter: " + illegalParameter);
-            }
-        }
-        return jdbcUrl;
+        return JdbcUrlSecurityPolicy.validate("gaussdb", getDriver(), jdbcUrl, getExtraParams());
     }
 }

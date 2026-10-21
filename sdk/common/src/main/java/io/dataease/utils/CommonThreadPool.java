@@ -72,21 +72,20 @@ public class CommonThreadPool {
      * @param timeUnit 超时时间单位
      */
     public void addTask(Runnable task, long timeOut, TimeUnit timeUnit) {
-        scheduledThreadPoolExecutor.execute(() -> {
-            ExecutorService executorService = Executors.newSingleThreadExecutor();
+        // 直接提交到共享调度线程池执行，避免每次新建单线程池并阻塞核心线程等待任务结束
+        Future<?> future = scheduledThreadPoolExecutor.submit(() -> {
             try {
-                Future future = executorService.submit(task);
-                future.get(timeOut, timeUnit); // 此行会阻塞，直到任务执行完或超时
-            } catch (TimeoutException timeoutException) {
-                LogUtil.getLogger().error("timeout to execute task", timeoutException);
+                task.run();
             } catch (Exception exception) {
                 LogUtil.getLogger().error("failed to execute task", exception);
-            } finally {
-                if (!executorService.isShutdown()) {
-                    executorService.shutdown();
-                }
             }
         });
+        // 超时后取消任务，防止长时间任务一直占用线程池
+        scheduledThreadPoolExecutor.schedule(() -> {
+            if (!future.isDone() && future.cancel(true)) {
+                LogUtil.getLogger().error("timeout to execute task");
+            }
+        }, timeOut, timeUnit);
     }
 
     public void setCorePoolSize(int corePoolSize) {
