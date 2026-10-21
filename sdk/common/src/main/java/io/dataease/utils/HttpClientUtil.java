@@ -757,9 +757,10 @@ public class HttpClientUtil {
     }
 
     public static boolean isURLReachable(String urlString, Map<String, String> head) {
+        HttpURLConnection connection = null;
         try {
             URL url = new URL(urlString);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setConnectTimeout(5000); // 设置连接超时时间，单位为毫秒
             connection.setReadTimeout(5000); // 设置读取超时时间，单位为毫秒
@@ -776,6 +777,10 @@ public class HttpClientUtil {
             }
         } catch (IOException e) {
             return false;
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
         }
         return false; // 如果发生异常或状态码不是200，则URL不可达
     }
