@@ -255,6 +255,8 @@ public class ExcelUtils {
                     fields.add(tableFiled);
                 }
             }
+        } finally {
+            CommonExcelUtils.clearThreadLocalCache();
         }
         return noModelDataListener.getData();
     }
@@ -791,6 +793,8 @@ public class ExcelUtils {
                         excelSheetData.setExcelLabel(readSheet.getSheetName());
                         excelSheetDataList.add(excelSheetData);
                     }
+                } finally {
+                    CommonExcelUtils.clearThreadLocalCache();
                 }
             }
 
