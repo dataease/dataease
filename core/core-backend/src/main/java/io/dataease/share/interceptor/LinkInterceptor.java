@@ -12,6 +12,8 @@ public class LinkInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         if (V3UserUtil.getLink() != null) {
+            if ("POST".equals(request.getMethod()) && request.getRequestURI().substring(request.getContextPath().length())
+                    .matches("(?:/de2api)?/material/(?:content/[1-9][0-9]{0,18}|export)")) return true;
             try {
                 TokenUtils.linkVerifier().checkRequestPath(request.getRequestURI(), request.getMethod());
             } catch (IllegalArgumentException e) {

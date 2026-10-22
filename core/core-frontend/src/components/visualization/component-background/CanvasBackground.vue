@@ -13,6 +13,11 @@
       "
       @change="reUpload"
     />
+    <MaterialPickerButton
+      :themes="themes"
+      :disabled="!canvasStyleData.backgroundImageEnable"
+      @select="applyMaterial"
+    />
     <el-form size="small" label-position="top" style="width: 100%; margin-bottom: 16px">
       <el-form-item class="form-item" :class="'form-item-' + themes" v-if="showWatermarkSetting">
         <el-checkbox
@@ -154,6 +159,7 @@
 
 <script setup lang="ts">
 import { Plus } from '@element-plus/icons-vue'
+import MaterialPickerButton from '@/components/material/MaterialPickerButton.vue'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { imageUploadItem } from '@/utils/resourceImages'
@@ -264,6 +270,11 @@ watch(
     init()
   }
 )
+const applyMaterial = (reference: string) => {
+  canvasStyleData.value.background = reference
+  state.fileList = [imageUploadItem(reference)]
+  onBackgroundChange()
+}
 </script>
 
 <style scoped lang="less">

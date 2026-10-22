@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { CopyDocument, Delete, EditPen } from '@element-plus/icons-vue'
+import MaterialPickerButton from '@/components/material/MaterialPickerButton.vue'
 import dvBatch from '@/assets/svg/dv-batch.svg'
 import dvDashboard from '@/assets/svg/dv-dashboard.svg'
 import dvHidden from '@/assets/svg/dv-hidden.svg'
@@ -664,6 +665,18 @@ const userGroupShow = ref(false)
           >
             <db-more-com-group themes="light" :dv-model="dvModel"></db-more-com-group>
           </component-group>
+          <MaterialPickerButton
+            toolbar
+            :themes="'light'"
+            @select="
+              reference =>
+                eventBus.emit('handleNew', {
+                  componentName: 'Picture',
+                  innerType: 'Picture',
+                  materialReference: reference
+                })
+            "
+          />
           <component-button-label
             :icon-name="icon_copy_filled"
             :title="t('visualization.multiplexing')"

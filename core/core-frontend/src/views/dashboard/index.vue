@@ -305,6 +305,8 @@ onMounted(async () => {
         dvMainStore.setCanvasStyle(deTemplateData['canvasStyleData'])
         dvMainStore.setCanvasViewInfo(deTemplateData['canvasViewInfo'])
         dvMainStore.setAppDataInfo(deTemplateData['appData'])
+        dvInfo.value.materialBundle = deTemplateData.materialBundle
+        dvInfo.value.materialSourceTemplateId = deTemplateData.materialSourceTemplateId
         setTimeout(() => {
           snapshotStore.recordSnapshotCache('template')
         }, 1500)

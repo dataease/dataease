@@ -363,15 +363,25 @@ const unbindMfa = () => {
   const drawForm = () =>
     h('div', { class: 'unbind-tip-box-div' }, [
       h('p', null, confirmMsg),
-      h(ElForm, { model: state.mfaForm, ref: mfaForm, rules: mfaRule, labelPosition: 'top' }, [
-        h(ElFormItem, { label: t('setting_mfa.mfa_code'), prop: 'code' }, [
-          h(ElInput, {
-            modelValue: state.mfaForm.code,
-            'onUpdate:modelValue': updateCode,
-            placeholder: t('setting_mfa.code_input_msg', [6])
-          })
-        ])
-      ])
+      h(
+        ElForm,
+        {
+          model: state.mfaForm,
+          ref: mfaForm,
+          rules: mfaRule,
+          labelPosition: 'top',
+          onSubmit: (event: Event) => event.preventDefault()
+        },
+        [
+          h(ElFormItem, { label: t('setting_mfa.mfa_code'), prop: 'code' }, [
+            h(ElInput, {
+              modelValue: state.mfaForm.code,
+              'onUpdate:modelValue': updateCode,
+              placeholder: t('setting_mfa.code_input_msg', [6])
+            })
+          ])
+        ]
+      )
     ])
   const boxOption = {
     confirmButtonType: 'danger',

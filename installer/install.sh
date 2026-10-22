@@ -72,6 +72,30 @@ function db_defaults() {
    esac
 }
 
+# 只调整数据库 profile，保留其他 profile 的顺序，避免丢失用户的额外配置。
+function set_database_profile() {
+   local profile result="" database_profile_set=false
+   local profiles=()
+   IFS=',' read -r -a profiles <<< "${DE_SPRING_PROFILE:-}"
+   for profile in "${profiles[@]}"; do
+      profile="${profile#"${profile%%[![:space:]]*}"}"
+      profile="${profile%"${profile##*[![:space:]]}"}"
+      case "$profile" in
+         mysql|pg|oracle|dm|kingbase|sqlserver|greatsql)
+            [[ "$database_profile_set" == true ]] && continue
+            profile="$DE_DB_TYPE"
+            database_profile_set=true
+            ;;
+         '') continue ;;
+      esac
+      result="${result:+${result},}${profile}"
+   done
+   if [[ "$database_profile_set" == false ]]; then
+      result="${DE_DB_TYPE}${result:+,${result}}"
+   fi
+   export DE_SPRING_PROFILE="$result"
+}
+
 # 读取失败时立即停止，不能把 EOF 当成接受默认值后继续安装。
 function read_db_input() {
    if ! IFS= read -r "$@"; then
@@ -184,9 +208,6 @@ function prompt_database_config() {
       log_content "配置外部数据库连接信息"
       prompt_db_connection
    fi
-
-   # 设置 spring profile，用于加载对应数据库的 jpa 配置
-   DE_SPRING_PROFILE="$DE_DB_TYPE"
 
    export DE_DB_TYPE DE_EXTERNAL_DB DE_DB_HOST DE_DB_PORT DE_DB_DATABASE DE_DB_SCHEMA \
           DE_DB_USER DE_DB_PASSWORD DE_DB_PARAMS DE_SPRING_PROFILE
@@ -310,6 +331,7 @@ function check_and_prepare_env_params() {
    set +a
 
    prompt_database_config
+   set_database_profile
    validate_database_password || exit 1
 
    if [[ -n "$DE_BASE_OLD" ]]; then
@@ -403,12 +425,12 @@ function prepare_de_run_base() {
       fi
    done
 
-   # 生成数据库 jpa 配置（application-<profile>.yml）
-   if [[ -n "$DE_SPRING_PROFILE" && -f "jpa/application-${DE_SPRING_PROFILE}.yml" ]]; then
-      write_private_config "$CONF_FOLDER/application-${DE_SPRING_PROFILE}.yml" envsubst < "jpa/application-${DE_SPRING_PROFILE}.yml" || return 1
-      log_content "已启用数据库配置 profile: ${DE_SPRING_PROFILE}"
+   # JPA 模板由数据库类型决定，DE_SPRING_PROFILE 可以包含其他自定义配置。
+   if [[ -f "jpa/application-${DE_DB_TYPE}.yml" ]]; then
+      write_private_config "$CONF_FOLDER/application-${DE_DB_TYPE}.yml" envsubst < "jpa/application-${DE_DB_TYPE}.yml" || return 1
+      log_content "已启用数据库配置 profile: ${DE_DB_TYPE}"
    else
-      log_content "[警告] 未找到数据库 jpa 模板 jpa/application-${DE_SPRING_PROFILE}.yml"
+      log_content "[警告] 未找到数据库 jpa 模板 jpa/application-${DE_DB_TYPE}.yml"
    fi
 
    # 复制数据库驱动到 data/driver
