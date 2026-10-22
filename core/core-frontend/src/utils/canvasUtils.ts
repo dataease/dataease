@@ -935,9 +935,10 @@ export async function canvasSaveWithParams(params, callBack) {
 }
 
 const httpUrlReg = /^https?:\/\//i
-const fileUrlReg = /^file:\/\//i
 const urlProtocolReg = /^([a-z][a-z0-9+.-]*):/i
-const hostPortWithoutProtocolReg = /^(?:\[[^\]]+\]|[^/?#\s:]+):\d+(?:[/?#]|$)/
+// 单标签主机与自定义协议有歧义，带端口时需显式填写 HTTP/HTTPS。
+const hostPortWithoutProtocolReg =
+  /^(?:localhost\.?|\[[^\]]+\]|[a-z0-9-]+(?:\.[a-z0-9-]+)+\.?):\d+(?:[/?#]|$)/i
 
 export type ExternalLinkUrlStatus = 'valid' | 'empty' | 'unsupportedProtocol' | 'invalid'
 
@@ -952,15 +953,6 @@ const isValidHttpUrl = url => {
   try {
     const parsedUrl = new URL(url)
     return /^https?:$/.test(parsedUrl.protocol) && !!parsedUrl.hostname
-  } catch {
-    return false
-  }
-}
-
-const isValidFileUrl = url => {
-  try {
-    const parsedUrl = new URL(url)
-    return parsedUrl.protocol === 'file:'
   } catch {
     return false
   }
@@ -983,17 +975,16 @@ export function normalizeExternalLinkUrl(url): ExternalLinkUrlResult {
     }
   }
 
-  if (httpUrlReg.test(rawUrl)) {
-    const valid = isValidHttpUrl(rawUrl)
+  if (rawUrl.includes('\t') || rawUrl.includes('\r') || rawUrl.includes('\n')) {
     return {
-      valid,
+      valid: false,
       url: rawUrl,
-      status: valid ? 'valid' : 'invalid'
+      status: 'invalid'
     }
   }
 
-  if (fileUrlReg.test(rawUrl)) {
-    const valid = isValidFileUrl(rawUrl)
+  if (httpUrlReg.test(rawUrl)) {
+    const valid = isValidHttpUrl(rawUrl)
     return {
       valid,
       url: rawUrl,
@@ -1006,7 +997,7 @@ export function normalizeExternalLinkUrl(url): ExternalLinkUrlResult {
     return {
       valid: false,
       url: rawUrl,
-      status: ['http', 'https', 'file'].includes(protocol) ? 'invalid' : 'unsupportedProtocol',
+      status: ['http', 'https'].includes(protocol) ? 'invalid' : 'unsupportedProtocol',
       protocol
     }
   }
@@ -1029,19 +1020,10 @@ export function setIdValueTrans(from, to, content, colList) {
   if (!content) {
     return content
   }
-  let name2Id = content
-  const nameIdMap = colList.reduce((pre, next) => {
-    pre[next[from]] = next[to]
-    return pre
-  }, {})
-  const on = content?.match(/\[(.+?)\]/g) || []
-  if (on) {
-    on.forEach(itm => {
-      const ele = itm.slice(1, -1)
-      name2Id = name2Id.replace(itm, nameIdMap[ele])
-    })
-  }
-  return name2Id
+  const nameIdMap = new Map(colList.map(item => [String(item[from]), item[to]]))
+  return content.replace(/\[(.+?)\]/g, (token, key) => {
+    return nameIdMap.has(key) ? String(nameIdMap.get(key) ?? '') : token
+  })
 }
 
 export function isMainCanvas(canvasId) {
