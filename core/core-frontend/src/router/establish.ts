@@ -1,5 +1,6 @@
 import { isExternal } from '@/utils/validate'
 import { cloneDeep } from 'lodash-es'
+import { MATERIAL_LIBRARY_ENTRY_ENABLED } from '@/config/material'
 // import { proxyMapping } from '@/views/proxy/mapping'
 const modules = import.meta.glob('../views/pages/**/*.vue')
 export const Layout = () => import('@/layout/index.vue')
@@ -10,6 +11,9 @@ export const generateRoutesFn2 = (routes: AppCustomRouteRecordRaw[]): AppRouteRe
   const res: AppRouteRecordRaw[] = []
 
   for (const router of routes) {
+    if (!MATERIAL_LIBRARY_ENTRY_ENABLED && router.component === '/menu/system/material/index') {
+      continue
+    }
     let route = { ...router }
 
     if (route.top && route.inLayout) {
@@ -53,6 +57,7 @@ export const generateRoutesFn2 = (routes: AppCustomRouteRecordRaw[]): AppRouteRe
     }
     if (route.children) {
       data.children = generateRoutesFn2(route.children)
+      if (route.children.length && !data.children.length) continue
     }
     res.push(data as AppRouteRecordRaw)
   }
