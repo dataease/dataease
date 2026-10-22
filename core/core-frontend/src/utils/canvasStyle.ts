@@ -432,9 +432,9 @@ export function recursionThemTransObj(template, infoObj, color) {
 export function componentScalePublic(chartInfo, heightScale, widthScale) {
   const scale = Math.min(heightScale, widthScale)
   // attr 缩放转换
-  recursionTransObj(this.customAttrTrans, chartInfo.customAttr, scale, null)
+  recursionTransObj(customAttrTrans, chartInfo.customAttr, scale, null)
   // style 缩放转换
-  recursionTransObj(this.customStyleTrans, chartInfo.customStyle, scale, null)
+  recursionTransObj(customStyleTrans, chartInfo.customStyle, scale, null)
   return chartInfo
 }
 
