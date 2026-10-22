@@ -2,12 +2,13 @@
   <Icon v-once v-if="element.innerType.includes('board')" class-name="de-svg-main"
     ><component class="svg-icon de-svg-main" :is="iconBoardMap[element.innerType]"></component
   ></Icon>
-  <component v-else v-once :is="element.innerType"></component>
+  <component v-else v-once class="de-svg-main" :is="iconCanvasMap[element.innerType]"></component>
 </template>
 
 <script setup lang="ts">
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import { iconBoardMap } from '@/components/icon-group/board-list'
+import { iconCanvasMap } from '@/components/icon-group/canvas-icon-list'
 import { toRefs } from 'vue'
 const props = defineProps({
   propValue: {
