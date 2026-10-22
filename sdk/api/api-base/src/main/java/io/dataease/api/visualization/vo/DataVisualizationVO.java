@@ -25,6 +25,10 @@ public class DataVisualizationVO implements Serializable {
      */
     private String name;
 
+    private io.dataease.api.material.vo.MaterialBundle materialBundle;
+
+    private String materialSourceTemplateId;
+
     /**
      * 父id
      */

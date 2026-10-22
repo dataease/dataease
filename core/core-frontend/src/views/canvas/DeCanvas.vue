@@ -99,6 +99,12 @@ const handleNewFromCanvasMain = newComponentInfo => {
   if (componentName) {
     const component = findNewComponentFromList(componentName, innerType, curOriginThemes, staticMap)
     syncShapeItemStyle(component, baseWidth.value, baseHeight.value)
+    if (
+      component.component === 'Picture' &&
+      /^material:\/\/[1-9][0-9]{0,18}$/.test(newComponentInfo.materialReference || '')
+    ) {
+      component.propValue.url = newComponentInfo.materialReference
+    }
     component.id = guid()
     component.y = undefined
     component.x = cyGridster.value.findPositionX(component)
@@ -122,6 +128,10 @@ const handleDrop = e => {
     e.preventDefault()
     e.stopPropagation()
     const addComponent = cyGridster.value.getMoveItem()
+    const material = e.dataTransfer.getData('application/x-dataease-material')
+    if (addComponent?.component === 'Picture' && /^material:\/\/[1-9][0-9]{0,18}$/.test(material)) {
+      addComponent.propValue.url = material
+    }
     // 当前isShow =  true 则确定已经移入画布中
     addComponent.isShow = true
     syncShapeItemStyle(addComponent, baseWidth.value, baseHeight.value)

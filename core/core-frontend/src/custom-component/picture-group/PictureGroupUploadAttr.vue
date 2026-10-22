@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Plus } from '@element-plus/icons-vue'
+import MaterialPickerButton from '@/components/material/MaterialPickerButton.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 
@@ -137,9 +138,20 @@ onMounted(() => {
 onBeforeUnmount(() => {
   eventBus.off('uploadImg', goFile)
 })
+const applyMaterial = (reference: string) => {
+  if (element.value.propValue.urlList.length >= 10) return
+  element.value.propValue.urlList.push({ name: reference, url: reference })
+  useEmitt().emitter.emit('calcData-' + element.value.id)
+  snapshotStore.recordSnapshotCache('renderChart')
+}
 </script>
 
 <template>
+  <MaterialPickerButton
+    :themes="themes"
+    :disabled="element.propValue.urlList.length >= 10"
+    @select="applyMaterial"
+  />
   <el-collapse-item :effect="themes" :title="t('visualization.pic_group')" name="picture">
     <el-row class="img-area" :class="`img-area_${themes}`">
       <el-col style="width: 130px !important">

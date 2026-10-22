@@ -373,6 +373,8 @@ const handleNodeClick = data => {
 
   selectedItemId.value = data.id
   selectedItem.value = undefined
+  state.paginationConfig.key = ''
+  showFilter.value = false
 
   mainLoading.value = true
   return getDataFilling(data.id)
@@ -796,6 +798,12 @@ const pageChange = index => {
   }
   state.paginationConfig.currentPage = index
   search(searchConditions.value)
+}
+
+const applyFilter = condition => {
+  state.paginationConfig.currentPage = 1
+  multipleTableRef.value?.clearSelection()
+  search(condition)
 }
 
 const sizeChange = size => {
@@ -1319,6 +1327,7 @@ function getMultipleValueList(data) {
                 </div>
                 <el-button
                   @click="drawerMainOpen"
+                  :disabled="dsLoading || !state.paginationConfig.key"
                   :plain="!!searchConditions.length"
                   :class="searchConditions.length ? 'filter-condition-button' : 'filter-button'"
                 >
@@ -1348,6 +1357,16 @@ function getMultipleValueList(data) {
                   border
                 >
                   <el-table-column type="selection" width="36" v-if="selectedItem?.weight >= 7" />
+                  <el-table-column
+                    v-if="state.paginationConfig.key"
+                    :label="t('data_fill.data.primary_key')"
+                    min-width="200"
+                    show-overflow-tooltip
+                  >
+                    <template #default="scope">
+                      {{ scope.row.data[state.paginationConfig.key] }}
+                    </template>
+                  </el-table-column>
                   <el-table-column v-for="c in columns" :key="c.props" :prop="c.props">
                     <template #header>
                       {{ c.label }}
@@ -1478,8 +1497,9 @@ function getMultipleValueList(data) {
 
   <FilterSearchDrawer
     v-if="showFilter"
-    @trigger-filter="search"
+    @trigger-filter="applyFilter"
     :form-id="selectedItem?.id"
+    :primary-key="state.paginationConfig.key"
     :base-form="selectedItem?.forms"
     v-model:conditions="searchConditions"
     v-model:model-value="showFilter"

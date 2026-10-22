@@ -7,6 +7,7 @@ import io
 import json
 import os
 from pathlib import Path
+import pty
 import re
 import shlex
 import shutil
@@ -64,10 +65,19 @@ os.execv('/bin/rm', ['/bin/rm'] + sys.argv[1:])
                           + body + '\n')
         script.chmod(0o755)
 
-    def execute(self, source, suffix='', input=None, env=None):
-        return subprocess.run(['bash', '-c', 'umask 022\n' + source + '\n' + suffix],
-                              cwd=self.package, env={**self.env, **(env or {})}, input=input,
-                              text=True, capture_output=True, timeout=20)
+    def execute(self, source, suffix='', input=None, env=None, tty=False):
+        command = ['bash', '-c', 'umask 022\n' + source + '\n' + suffix]
+        options = dict(cwd=self.package, env={**self.env, **(env or {})},
+                       text=True, capture_output=True, timeout=20)
+        if not tty:
+            return subprocess.run(command, input=input, **options)
+        master, slave = pty.openpty()
+        try:
+            os.write(master, input.encode())
+            return subprocess.run(command, stdin=slave, **options)
+        finally:
+            os.close(master)
+            os.close(slave)
 
     def functions(self, name):
         source = (ROOT / name).read_text()
@@ -169,6 +179,56 @@ os.execv('/bin/rm', ['/bin/rm'] + sys.argv[1:])
                 path = self.runtime / ('conf/application-' + profile + '.yml')
                 self.assert_private(path)
                 self.assertIn('fixture=a&$\\"b', path.read_text())
+
+    def test_interactive_database_choice_keeps_custom_profiles(self):
+        source = self.functions('install.sh')
+        suffix = ('CURRENT_DIR=' + shlex.quote(str(self.package)) + '\n'
+                  'prompt_db_connection() { return 0; }\n'
+                  'prompt_database_config\nset_database_profile\n'
+                  'printf "profiles=%s\\n" "$DE_SPRING_PROFILE"\n')
+        for selection, database in enumerate(['mysql', 'pg', 'oracle', 'dm',
+                                               'kingbase', 'sqlserver', 'greatsql'], 1):
+            with self.subTest(database=database):
+                result = self.execute(source, suffix, input=f'{selection}\ny\n', tty=True,
+                                      env={'DE_SPRING_PROFILE': 'demo,mysql,metrics'})
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertIn(f'profiles=demo,{database},metrics\n', result.stdout)
+
+    def test_noninteractive_and_upgrade_keep_custom_profiles(self):
+        source = self.functions('install.sh')
+        for mode in ['install', 'upgrade']:
+            for profiles, expected in [('mysql,demo', 'mysql,demo'),
+                                       ('demo,mysql,metrics', 'demo,mysql,metrics'),
+                                       ('demo,metrics', 'mysql,demo,metrics'),
+                                       ('', 'mysql'),
+                                       (' mysql , demo , ', 'mysql,demo')]:
+                with self.subTest(mode=mode, profiles=profiles):
+                    suffix = (f'INSTALL_TYPE={mode}\n'
+                              'prompt_database_config\nset_database_profile\n'
+                              'printf "profiles=%s\\n" "$DE_SPRING_PROFILE"\n')
+                    result = self.execute(source, suffix, env={'DE_SPRING_PROFILE': profiles})
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self.assertIn(f'profiles={expected}\n', result.stdout)
+
+    def test_custom_profiles_render_correct_jpa_and_preserve_user_config(self):
+        conf = self.runtime / 'conf'
+        conf.mkdir()
+        custom = conf / 'application-demo.yml'
+        custom.write_text('fixture:\n  enabled: true\n')
+        for database in ['mysql', 'pg', 'oracle', 'dm', 'kingbase', 'sqlserver', 'greatsql']:
+            with self.subTest(database=database):
+                profiles = f'demo,{database},metrics'
+                result = self.installer(env={'DE_EXTERNAL_DB': 'true', 'DE_DB_TYPE': database,
+                                             'DE_SPRING_PROFILE': profiles})
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertIn('include: ' + profiles, (conf / 'application.yml').read_text())
+                self.assertIn('DE_SPRING_PROFILE=' + profiles, (self.runtime / '.env').read_text())
+                generated = conf / ('application-' + database + '.yml')
+                self.assertTrue(generated.is_file(), generated)
+                self.assertIn('fixture-secret', generated.read_text())
+                self.assertEqual(custom.read_text(), 'fixture:\n  enabled: true\n')
+                self.assert_private(generated)
+                self.assert_private(custom)
 
     def test_render_destination_is_private_before_secret_is_written(self):
         self.mock('envsubst', '''
