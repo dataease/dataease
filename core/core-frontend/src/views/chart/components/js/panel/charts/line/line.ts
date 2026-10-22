@@ -18,7 +18,7 @@ import {
   parseJson,
   setUpGroupSeriesColor
 } from '@/views/chart/components/js/util'
-import { cloneDeep, defaults, isEmpty } from 'lodash-es'
+import { cloneDeep, defaults, escape, isEmpty } from 'lodash-es'
 import {
   calcNiceMinValue,
   listenYAxisNiceMinEvents,
@@ -37,6 +37,13 @@ import { Group } from '@antv/g-canvas'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
+const GROUP_TOOLTIP_TPL =
+  '<li class="g2-tooltip-list-item" data-index={index} ' +
+  'style="margin-top:{itemMarginTop}px;padding-left:{itemPaddingLeft}px">' +
+  '<span class="g2-tooltip-marker" style="background:{color};visibility:{markerVisibility}"></span>' +
+  '<span class="g2-tooltip-name" style="font-weight:{nameFontWeight}">{name}{nameSuffix}</span>' +
+  '<span class="g2-tooltip-value">{value}</span>' +
+  '</li>'
 
 function sortSeriesItems<T extends { name: string }>(
   items: T[],
@@ -338,49 +345,76 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
         tooltip: false
       }
     }
-    const xAxisExt = chart.xAxisExt
-    const formatterMap = tooltipAttr.seriesTooltipFormatter
-      ?.filter(i => i.show)
-      .reduce((pre, next) => {
-        pre[next.id] = next
-        return pre
-      }, {}) as Record<string, SeriesFormatter>
+    const hasGroup = chart.xAxisExt?.length > 0
+    const formatterMap = (
+      tooltipAttr.seriesTooltipFormatter?.length
+        ? tooltipAttr.seriesTooltipFormatter.filter(i => i.show)
+        : [...(chart.yAxis ?? []), ...(chart.extTooltip ?? [])]
+    ).reduce((pre, next) => {
+      pre[next.id] = next
+      return pre
+    }, {}) as Record<string, Axis>
     const tooltip: LineOptions['tooltip'] = {
       showTitle: true,
       customItems(originalItems) {
-        if (!tooltipAttr.seriesTooltipFormatter?.length) {
+        if (!originalItems.length || (!hasGroup && !tooltipAttr.seriesTooltipFormatter?.length)) {
           return originalItems
         }
-        const head = originalItems[0]
-        // 非原始数据
-        if (!head.data.quotaList) {
-          return originalItems
-        }
+        // 有子维度时每个数据点独立展示主指标和额外字段，无子维度时仍共享额外字段。
+        const groups = hasGroup ? originalItems.map(item => [item]) : [originalItems]
         const result = []
-        originalItems
-          .filter(item => formatterMap[item.data.quotaList[0].id])
-          .forEach(item => {
-            const formatter = formatterMap[item.data.quotaList[0].id]
-            const value = valueFormatter(parseFloat(item.value as string), formatter.formatterCfg)
-            let name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
-            if (xAxisExt?.length > 0) {
-              name = item.data.category
-            }
-            // 保留图库映射后的 color，格式化名称和数值时不重新分配颜色。
-            result.push({ ...item, name, value })
-          })
-        head.data.dynamicTooltipValue?.forEach(item => {
-          const formatter = formatterMap[item.fieldId]
-          if (formatter) {
-            const value = valueFormatter(parseFloat(item.value), formatter.formatterCfg)
-            const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
-            result.push({ color: 'grey', name, value })
+        groups.forEach(items => {
+          const head = items[0]
+          if (!head.data?.quotaList?.length) {
+            result.push(...items)
+            return
           }
+          const groupItems = []
+          items.forEach(item => {
+            const formatter = formatterMap[item.data?.quotaList?.[0]?.id]
+            if (!formatter) {
+              return
+            }
+            const value = formatter.formatterCfg
+              ? valueFormatter(item.data.value, formatter.formatterCfg)
+              : item.value
+            const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
+            // 保留图库映射后的 color，格式化名称和数值时不重新分配颜色。
+            groupItems.push({ ...item, name, value })
+          })
+          head.data.dynamicTooltipValue?.forEach(item => {
+            const formatter = formatterMap[item.fieldId]
+            if (formatter) {
+              const value = formatter.formatterCfg
+                ? valueFormatter(item.value, formatter.formatterCfg)
+                : item.value
+              const name = isEmpty(formatter.chartShowName)
+                ? formatter.name
+                : formatter.chartShowName
+              groupItems.push({ color: 'grey', name, value })
+            }
+          })
+          if (hasGroup && groupItems.length) {
+            result.push({ ...head, name: head.data.category, value: '', groupHeader: true })
+          }
+          result.push(...groupItems)
         })
-        return result
+        if (!hasGroup) {
+          return result
+        }
+        return result.map((item, index) => ({
+          ...item,
+          name: escape(item.name),
+          value: escape(String(item.value ?? '')),
+          itemMarginTop: item.groupHeader && index > 0 ? 12 : 0,
+          itemPaddingLeft: item.groupHeader ? 0 : 12,
+          markerVisibility: item.groupHeader ? 'visible' : 'hidden',
+          nameFontWeight: item.groupHeader ? 500 : 400,
+          nameSuffix: item.groupHeader ? '' : ':'
+        }))
       },
       container: getTooltipContainer(`tooltip-${chart.id}`, chart.container),
-      itemTpl: TOOLTIP_TPL,
+      itemTpl: hasGroup ? GROUP_TOOLTIP_TPL : TOOLTIP_TPL,
       enterable: true
     }
     return {
