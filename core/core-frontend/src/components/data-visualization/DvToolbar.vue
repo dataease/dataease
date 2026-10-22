@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { EditPen } from '@element-plus/icons-vue'
+import MaterialPickerButton from '@/components/material/MaterialPickerButton.vue'
 import dvFilter from '@/assets/svg/dv-filter.svg'
 import dvMaterial from '@/assets/svg/dv-material.svg'
 import dvMedia from '@/assets/svg/dv-media.svg'
@@ -460,6 +461,18 @@ const fullScreenPreview = () => {
           >
             <more-com-group></more-com-group>
           </component-group>
+          <MaterialPickerButton
+            toolbar
+            :themes="'dark'"
+            @select="
+              reference =>
+                eventBus.emit('handleNew', {
+                  componentName: 'Picture',
+                  innerType: 'Picture',
+                  materialReference: reference
+                })
+            "
+          />
           <component-group
             is-label
             :base-width="410"

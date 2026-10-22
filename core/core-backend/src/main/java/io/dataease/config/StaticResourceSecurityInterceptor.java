@@ -14,7 +14,10 @@ public class StaticResourceSecurityInterceptor implements HandlerInterceptor {
         response.setHeader("X-Content-Type-Options", "nosniff");
         response.setHeader("Content-Security-Policy",
                 "sandbox; default-src 'none'; script-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'");
-        if (!StaticResourceContentGuard.allowedExtension(request.getRequestURI())) {
+        String decodedPath = org.springframework.web.util.UriUtils.decode(request.getRequestURI(), java.nio.charset.StandardCharsets.UTF_8);
+        if (decodedPath.contains("de-material-")
+                || decodedPath.contains(".material-tmp")
+                || !StaticResourceContentGuard.allowedExtension(request.getRequestURI())) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return false;
         }

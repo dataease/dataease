@@ -15,6 +15,7 @@ const request = (option: any) => {
     loading,
     signal,
     handleErrorLocally,
+    onUploadProgress,
     headers = {}
   } = option
   return service({
@@ -23,6 +24,7 @@ const request = (option: any) => {
     loading,
     signal,
     handleErrorLocally,
+    onUploadProgress,
     params,
     data,
     responseType: responseType,

@@ -354,6 +354,7 @@
           }"
         >
           <div class="avatar-uploader-container" :class="`img-area_${themes}`">
+            <MaterialPickerButton :themes="themes" @select="applyMaterial" />
             <el-upload
               action=""
               :effect="themes"
@@ -401,6 +402,7 @@
 
 <script setup lang="ts">
 import { Plus } from '@element-plus/icons-vue'
+import MaterialPickerButton from '@/components/material/MaterialPickerButton.vue'
 import { queryVisualizationBackground } from '@/api/visualization/visualizationBackground'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
@@ -606,6 +608,11 @@ watch(
     init()
   }
 )
+const applyMaterial = (reference: string) => {
+  state.commonBackground.outerImage = reference
+  state.fileList = [imageUploadItem(reference)]
+  onBackgroundChange()
+}
 </script>
 
 <style scoped lang="less">
