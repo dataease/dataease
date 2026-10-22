@@ -23,6 +23,4 @@ public class TemplateManageFileDTO extends VisualizationTemplateVO {
 
     private String staticResource;
 
-    private io.dataease.api.material.vo.MaterialBundle materialBundle;
-
 }

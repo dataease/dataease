@@ -1,5 +1,4 @@
 import path from 'path'
-import { materialExtension } from './material'
 import { resolve } from 'path'
 import Vue from '@vitejs/plugin-vue'
 import eslintPlugin from 'vite-plugin-eslint'
@@ -23,7 +22,6 @@ export function pathResolve(dir: string) {
 export default {
   base: './',
   plugins: [
-    materialExtension(),
     // 在 G2 模块解析前接入 DataEase 布局校正，升级 G2 时需验证内部 layout 入口
     createG2LayoutPlugin(root),
     Vue(),
@@ -81,13 +79,7 @@ export default {
   },
   resolve: {
     // 画布关闭区域与 Univer 弹窗必须共用同一份 Radix Context。
-    dedupe: [
-      '@radix-ui/react-dismissable-layer',
-      'vue',
-      'pinia',
-      'element-plus-secondary',
-      'file-saver'
-    ],
+    dedupe: ['@radix-ui/react-dismissable-layer'],
     extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.less', '.css'],
     alias: [
       {

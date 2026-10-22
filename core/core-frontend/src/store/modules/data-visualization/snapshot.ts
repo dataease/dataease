@@ -124,10 +124,6 @@ export const snapshotStore = defineStore('snapshot', {
       }
     },
     snapshotPublish(snapshotInfo) {
-      // Keep an unfinished package outside undo snapshots; binary originals can be large.
-      if (dvInfo.value.materialBundle)
-        snapshotInfo.dvInfo.materialBundle = dvInfo.value.materialBundle
-      else delete snapshotInfo.dvInfo.materialBundle
       dvMainStore.updateCurDvInfo(snapshotInfo.dvInfo)
       dvMainStore.setComponentData(snapshotInfo.componentData)
       dvMainStore.setCanvasStyle(snapshotInfo.canvasStyleData)
@@ -211,11 +207,7 @@ export const snapshotStore = defineStore('snapshot', {
           cacheViewIdInfo: deepCopy(this.cacheViewIdInfo),
           nowPanelTrackInfo: deepCopy(nowPanelTrackInfo.value),
           nowPanelJumpInfo: deepCopy(nowPanelJumpInfo.value),
-          dvInfo: deepCopy(
-            Object.fromEntries(
-              Object.entries(dvInfo.value).filter(([key]) => key !== 'materialBundle')
-            )
-          )
+          dvInfo: deepCopy(dvInfo.value)
         }
         this.snapshotData[++this.snapshotIndex] = newSnapshot
         // 在 undo 过程中，添加新的快照时，要将它后面的快照清理掉

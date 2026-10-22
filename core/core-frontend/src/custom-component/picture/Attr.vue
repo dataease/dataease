@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { Plus } from '@element-plus/icons-vue'
-import MaterialPickerButton from '@/components/material/MaterialPickerButton.vue'
 import CommonAttr from '@/custom-component/common/CommonAttr.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -99,15 +98,10 @@ onMounted(() => {
 onBeforeUnmount(() => {
   eventBus.off('uploadImg', goFile)
 })
-const applyMaterial = (reference: string) => {
-  curComponent.value.propValue.url = reference
-  snapshotStore.recordSnapshotCache('renderChart')
-}
 </script>
 
 <template>
   <div class="attr-list de-collapse-style">
-    <MaterialPickerButton :themes="themes" @select="applyMaterial" />
     <input
       id="input"
       ref="files"

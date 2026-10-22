@@ -19,8 +19,6 @@ public class TemplateManageRequest extends VisualizationTemplateVO {
 
     private String staticResource;
 
-    private io.dataease.api.material.vo.MaterialBundle materialBundle;
-
     private Boolean withChildren = false;
 
     private String leafDvType;
