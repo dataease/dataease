@@ -6,6 +6,7 @@ import { materialCapabilities, materialContext } from '@/api/material'
 import extensionEnabled from 'virtual:dataease-material-enabled'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useI18n } from '@/hooks/web/useI18n'
+import { MATERIAL_LIBRARY_ENTRY_ENABLED } from '@/config/material'
 
 const props = withDefaults(
   defineProps<{ disabled?: boolean; themes?: EditorTheme; toolbar?: boolean }>(),
@@ -21,13 +22,15 @@ const open = ref(false)
 const canvas = dvMainStoreWithOut()
 const available = ref(false)
 let availabilitySequence = 0
-const visible = computed(() => available.value && canvas.editMode === 'edit')
+const visible = computed(
+  () => MATERIAL_LIBRARY_ENTRY_ENABLED && available.value && canvas.editMode === 'edit'
+)
 watch(
   () => canvas.editMode,
   async mode => {
     const current = ++availabilitySequence
     available.value = false
-    if (!extensionEnabled || mode !== 'edit') return
+    if (!MATERIAL_LIBRARY_ENTRY_ENABLED || !extensionEnabled || mode !== 'edit') return
     try {
       const result = await materialCapabilities()
       if (current === availabilitySequence) available.value = result.data.available === true
