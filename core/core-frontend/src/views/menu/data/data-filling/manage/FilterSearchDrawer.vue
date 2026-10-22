@@ -46,6 +46,7 @@ interface FilterOptionItem {
 const props = defineProps<{
   modelValue: boolean
   formId: string
+  primaryKey?: string
   baseForm: Array<DfFormItemExt>
   conditions: Array<any>
 }>()
@@ -217,7 +218,9 @@ function onSelectColumn(data: FilterOptionItem, c: string) {
   data.select = item.select
   data.multiple = !!item.multiple
 
-  if (data.select) {
+  if (data.type === 'primaryKey') {
+    data.term = 'eq'
+  } else if (data.select) {
     data.term = 'in'
   } else if (data.number || data.date) {
     data.term = data.term && data.term !== 'in' && data.term !== 'like' ? data.term : 'eq'
@@ -286,6 +289,17 @@ onMounted(() => {
   const tempForms = filter(props.baseForm, f => !f.removed)
 
   const _list: Array<FilterItem> = []
+  if (props.primaryKey) {
+    _list.push({
+      props: props.primaryKey,
+      label: t('data_fill.data.primary_key'),
+      date: false,
+      number: false,
+      dateType: '',
+      type: 'primaryKey',
+      multiple: false
+    })
+  }
   forEach(tempForms, (f) => {
     if (f.type === "dateRange") {
       _list.push({
@@ -385,7 +399,25 @@ onUnmounted(() => {
             </el-form-item>
           </el-col>
           <el-col :span="16">
-            <template v-if="data.number">
+            <template v-if="data.type === 'primaryKey'">
+              <el-row :gutter="8">
+                <el-col :span="6">
+                  <el-form-item class="m-form-item form-item">
+                    <el-input :model-value="t('chart.filter_eq')" disabled />
+                  </el-form-item>
+                </el-col>
+                <el-col :span="18">
+                  <el-form-item
+                    class="m-form-item form-item"
+                    :prop="'[' + index + '].value'"
+                    :rules="[requiredRule]"
+                  >
+                    <el-input v-model="data.value" />
+                  </el-form-item>
+                </el-col>
+              </el-row>
+            </template>
+            <template v-else-if="data.number">
               <el-row :gutter="8">
                 <el-col :span="6">
                   <el-form-item class="m-form-item form-item" :prop="'['+ index +'].term'" :rules="[requiredRule]">
