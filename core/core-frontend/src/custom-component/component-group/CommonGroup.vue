@@ -5,6 +5,7 @@ import Icon from '@/components/icon-custom/src/Icon.vue'
 import { CANVAS_MATERIAL } from '@/custom-component/common/ComponentConfig'
 import { ElScrollbar } from 'element-plus-secondary'
 import DeDecoration from '@/custom-component/de-decoration/Component.vue'
+import { iconCanvasMap } from '@/components/icon-group/canvas-icon-list'
 
 defineProps({
   propValue: {
@@ -102,7 +103,12 @@ const findUrl = name => {
               :scale="0.15"
               v-else-if="['de_decoration'].includes(chartInfo.type)"
             ></DeDecoration>
-            <component v-else style="color: #a6a6a6" :is="chartInfo.icon"></component>
+            <component
+              v-else
+              class="svg-icon item-top-icon"
+              style="color: #a6a6a6"
+              :is="iconCanvasMap[chartInfo.value]"
+            ></component>
           </div>
           <div v-if="chartInfo.title" class="item-bottom">
             <span>{{ chartInfo.title }}</span>
