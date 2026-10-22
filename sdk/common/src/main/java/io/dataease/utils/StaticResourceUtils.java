@@ -6,7 +6,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -86,38 +85,14 @@ public class StaticResourceUtils {
             LogUtil.warn("Reject static resource that is not a regular file: " + imgFile);
             return null;
         }
-        //Convert the picture file into byte array  and encode it with Base64
-        InputStream inputStream = null;
-        byte[] buffer = null;
-        //Read picture byte array
         try {
-            inputStream = Files.newInputStream(targetPath);
-            int count = 0;
-            while (count == 0) {
-                count = inputStream.available();
-            }
-            buffer = new byte[count];
-            inputStream.read(buffer);
+            return Base64.getEncoder().encodeToString(Files.readAllBytes(targetPath));
         } catch (IOException e) {
             LogUtil.error(e);
         } catch (Exception e) {
             LogUtil.error(e);
-        } finally {
-            if (inputStream != null) {
-                try {
-                    // Close InputStream
-                    inputStream.close();
-                } catch (IOException e) {
-                    LogUtil.error(e);
-                }
-            }
         }
-        // Encode byte array as Base64
-        if (buffer != null) {
-            return Base64.getEncoder().encodeToString(buffer);
-        } else {
-            return null;
-        }
+        return null;
     }
 
     private static Path resolveSafeResourcePath(String fileName) {
