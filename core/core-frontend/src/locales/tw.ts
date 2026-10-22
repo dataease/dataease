@@ -4783,6 +4783,7 @@ export default {
       update_data: '更新資料',
       delete_data: '刪除資料',
       recent_committer: '最近提交人',
+      primary_key: '主鍵',
       recent_commit_time: '最近提交時間',
       start: '開始',
       end: '結束',
