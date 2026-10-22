@@ -87,6 +87,8 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/dataVisualization")
 public class DataVisualizationServer implements DataVisualizationApi {
+    @Autowired
+    private org.springframework.beans.factory.ObjectProvider<io.dataease.api.material.MaterialBundleService> materialBundles;
     @Resource
     private JPAQueryFactory queryFactory;
     @Resource
@@ -688,6 +690,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
     }
 
     @Override
+    @Transactional
     public void updatePublishStatus(DataVisualizationBaseRequest request) {
         /**
          * 如果当前传入状态是1（已发布），则原始状态0（未发布）-》1（已发布）；2（已保存未发布）-》1（已发布）
@@ -712,6 +715,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
     }
 
     @Override
+    @Transactional
     public void recoverToPublished(DataVisualizationBaseRequest request) {
         coreVisualizationManage.dvSnapshotRecover(request.getId());
         DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
@@ -927,6 +931,17 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 if (templateFileInfo == null) {
                     DEException.throwException("Can't find the template's info from market,please check");
                 }
+                if (templateFileInfo.getMaterialBundle() != null) {
+                    var service = materialBundles.getIfAvailable();
+                    if (service == null) DEException.throwException(Translator.get("i18n_material_invalid"));
+                    service.validate(templateFileInfo.getMaterialBundle());
+                    Set<String> images = MaterialDocuments.images(templateFileInfo.getCanvasStyleData(), templateFileInfo.getComponentData());
+                    var entries = templateFileInfo.getMaterialBundle().getFiles();
+                    if (!images.equals(entries.stream().map(io.dataease.api.material.vo.MaterialBundleEntry::getReference).collect(Collectors.toSet()))) {
+                        DEException.throwException(Translator.get("i18n_material_invalid"));
+                    }
+                    request.setMaterialBundle(templateFileInfo.getMaterialBundle());
+                }
                 templateStyle = templateFileInfo.getCanvasStyleData();
                 templateData = templateFileInfo.getComponentData();
                 dynamicData = templateFileInfo.getDynamicData();
@@ -998,7 +1013,12 @@ public class DataVisualizationServer implements DataVisualizationApi {
             request.setCanvasStyleData(templateStyle);
             //Store static resource into the server
             staticResourceServer.saveFilesToServe(staticResource);
-            return new DataVisualizationVO(newDvId, name, dvType, version, templateStyle, templateData, appDataStr, canvasViewInfo, null,viewIdsMap);
+            DataVisualizationVO result = new DataVisualizationVO(newDvId, name, dvType, version, templateStyle, templateData, appDataStr, canvasViewInfo, null,viewIdsMap);
+            result.setMaterialBundle(request.getMaterialBundle());
+            if (DataVisualizationConstants.NEW_PANEL_FROM.NEW_INNER_TEMPLATE.equals(newFrom)) {
+                result.setMaterialSourceTemplateId(request.getTemplateId());
+            }
+            return result;
         } catch (Exception e) {
             LogUtil.error(e);
             DEException.throwException("解析错误");
