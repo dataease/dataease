@@ -165,13 +165,11 @@ public class CoreVisualizationManage {
         }
     }
 
-    @Transactional
     public void delete(Long id) {
         delete(id, false);
     }
 
     @XpackInteract(value = "visualizationResourceTree", before = false)
-    @Transactional
     public void delete(Long id, boolean rootOrgNode) {
         if (!rootOrgNode) {
             DataVisualizationInfo info = dataVisualizationInfoRepository.findById(id).orElse(null);

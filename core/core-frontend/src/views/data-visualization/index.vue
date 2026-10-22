@@ -192,12 +192,6 @@ const handleNew = newComponentInfo => {
     const component = findNewComponent(componentName, innerType, staticMap)
     component.style.top = ((height - component.style.height) * scale) / 200
     component.style.left = ((width - component.style.width) * scale) / 200
-    if (
-      component.component === 'Picture' &&
-      /^material:\/\/[1-9][0-9]{0,18}$/.test(newComponentInfo.materialReference || '')
-    ) {
-      component.propValue.url = newComponentInfo.materialReference
-    }
     component.id = guid()
     const popComponents = componentData.value.filter(
       ele => ele.category && ele.category === 'hidden'
@@ -233,10 +227,6 @@ const handleDrop = e => {
   const rectInfo = editorMap.value[state.canvasId].getBoundingClientRect()
   if (componentInfo) {
     const component = findDragComponent(componentInfo)
-    const material = e.dataTransfer.getData('application/x-dataease-material')
-    if (component.component === 'Picture' && /^material:\/\/[1-9][0-9]{0,18}$/.test(material)) {
-      component.propValue.url = material
-    }
     component.style.top = e.clientY - rectInfo.y
     component.style.left = e.clientX - rectInfo.x
     component.id = guid()
@@ -477,8 +467,6 @@ onMounted(async () => {
         dvMainStore.setCanvasStyle(deTemplateData['canvasStyleData'])
         dvMainStore.setCanvasViewInfo(deTemplateData['canvasViewInfo'])
         dvMainStore.setAppDataInfo(deTemplateData['appData'])
-        dvInfo.value.materialBundle = deTemplateData.materialBundle
-        dvInfo.value.materialSourceTemplateId = deTemplateData.materialSourceTemplateId
         setTimeout(() => {
           snapshotStore.recordSnapshotCache('template')
         }, 1500)

@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import type { MaterialBundle } from '@/api/material'
 import { store } from '../../index'
 import { deepCopy } from '@/utils/utils'
 import {
@@ -137,7 +136,6 @@ export const dvMainStore = defineStore('dataVisualization', {
       isClickComponent: false,
       // 大屏基础信息
       dvInfo: {
-        ...({} as { materialBundle?: MaterialBundle; materialSourceTemplateId?: string }),
         dataState: null,
         optType: null,
         id: null,

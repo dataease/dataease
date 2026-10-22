@@ -1,11 +1,5 @@
 <template>
   <div class="template-import">
-    <el-alert
-      v-if="state.templateInfo['materialBundle']"
-      :title="t('material.import_hint')"
-      type="info"
-      :closable="false"
-    />
     <el-form
       ref="templateImportForm"
       class="de-form-item"
@@ -89,7 +83,6 @@ import { computed, reactive, ref } from 'vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
-import { MAX_MATERIAL_PACKAGE_BYTES } from '@/api/material'
 const emits = defineEmits(['closeEditTemplateDialog', 'refresh', 'addCategoryInfo'])
 const { t } = useI18n()
 const filesRef = ref(null)
@@ -312,19 +305,14 @@ const importTemplate = () => {
 
 const handleFileChange = e => {
   const file = e.target.files[0]
-  if (!file) return
   const reader = new FileReader()
-  if (file.size > MAX_MATERIAL_PACKAGE_BYTES) {
-    ElMessage.error(t('material.package_size_hint'))
+  if (file.size > maxImageSize) {
+    ElMessage.success(t('template_manage.template_size_hint'))
     return
   }
   reader.onload = res => {
     const result = res.target.result as string
     state.importTemplateInfo = JSON.parse(result)
-    if (!state.importTemplateInfo['materialBundle'] && file.size > maxImageSize) {
-      ElMessage.error(t('template_manage.template_size_hint'))
-      return
-    }
     state.templateInfo.name = state.importTemplateInfo['name']
     state.templateInfo.dvType = state.importTemplateInfo['dvType']
     state.templateInfo.templateStyle = state.importTemplateInfo['canvasStyleData']
@@ -333,7 +321,6 @@ const handleFileChange = e => {
     state.templateInfo.dynamicData = state.importTemplateInfo['dynamicData']
     state.templateInfo.appData = state.importTemplateInfo['appData']
     state.templateInfo.staticResource = state.importTemplateInfo['staticResource']
-    state.templateInfo['materialBundle'] = state.importTemplateInfo['materialBundle']
     state.templateInfo['nodeType'] = state.importTemplateInfo['nodeType'] || 'template'
     state.templateInfo['version'] = state.importTemplateInfo['version']
   }

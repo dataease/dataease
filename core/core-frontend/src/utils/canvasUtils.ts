@@ -1,4 +1,3 @@
-import { registerMaterialPreviews, clearMaterialPreviews } from '@/utils/resourceImages'
 import { cloneDeep } from 'lodash-es'
 import componentList, {
   ACTION_SELECTION,
@@ -296,7 +295,7 @@ export function findNewComponent(componentName, innerType, staticMap?) {
 }
 
 export function commonHandleDragStart(e, dvModel) {
-  const componentInfo = e.currentTarget?.dataset?.id || e.target.dataset.id
+  const componentInfo = e.target.dataset.id
   if (dvModel === 'dashboard') {
     // 仪表板使用组件消息传输方式
     eventBus.emit('handleDragStartMoveIn-canvas-main', componentInfo)
@@ -906,28 +905,13 @@ export async function canvasSaveWithParams(params, callBack) {
       id: curDvInfo.value.id
     })
   }
-  return method(canvasInfo).then(async res => {
+  method(canvasInfo).then(res => {
     if (method === updateCanvas) {
       // saveCanvas 为初次保存 状态为0 updateCanvas为二次保存状态为2 当存在传入状态时，则修改对应的传入状态
       const status = params?.status ? params?.status : res.data?.status
       dvMainStore.updateDvInfoCall(status, null, newContentId)
     } else {
       dvMainStore.updateDvInfoCall(0, res.data, newContentId)
-    }
-    if (canvasInfo.materialBundle) {
-      delete curDvInfo.value.materialBundle
-      await new Promise<void>(resolve =>
-        initCanvasData(
-          curDvInfo.value.id,
-          {
-            busiFlag: curDvInfo.value.type,
-            resourceTable: 'snapshot'
-          },
-          resolve
-        )
-      )
-      clearMaterialPreviews()
-      snapshotStore.resetSnapshot()
     }
     snapshotStore.resetStyleChangeTimes()
     callBack(res)
@@ -1270,7 +1254,6 @@ export async function decompressionPre(params, callBack) {
   await decompression(params)
     .then(response => {
       const deTemplateDataTemp = response.data
-      registerMaterialPreviews(deTemplateDataTemp.materialBundle)
       const sourceComponentData = JSON.parse(deTemplateDataTemp['componentData'])
       const appData = deTemplateDataTemp['appData']
       const sourceCanvasStyle = JSON.parse(deTemplateDataTemp['canvasStyleData'])
@@ -1293,8 +1276,6 @@ export async function decompressionPre(params, callBack) {
         componentData: sourceComponentData,
         canvasViewInfo: deTemplateDataTemp['canvasViewInfo'],
         appData: appData,
-        materialBundle: deTemplateDataTemp.materialBundle,
-        materialSourceTemplateId: deTemplateDataTemp.materialSourceTemplateId,
         baseInfo: {
           preName: deTemplateDataTemp.name,
           dvType: deTemplateDataTemp.type

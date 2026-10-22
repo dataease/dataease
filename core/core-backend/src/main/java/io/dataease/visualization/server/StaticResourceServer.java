@@ -35,7 +35,6 @@ public class StaticResourceServer implements StaticResourceApi {
         Assert.notNull(file, "Multipart file must not be null");
         try {
             FileUtils.validateUploadFilename(fileId);
-            if (fileId.startsWith("de-material-") || fileId.contains(".material-tmp")) throw new IOException("Reserved material filename");
             String originName = file.getOriginalFilename();
             FileUtils.validateUploadFilename(originName);
             String newFileName = fileId + originName.substring(originName.lastIndexOf('.'));
@@ -75,7 +74,6 @@ public class StaticResourceServer implements StaticResourceApi {
     private void saveSingleFileToServe(String fileName, String content, boolean skipInvalidImage) {
         try {
             FileUtils.validateUploadFilename(fileName);
-            if (fileName.startsWith("de-material-")) throw new IOException("Reserved material filename");
             byte[] decoded;
             try {
                 if (content == null || content.length() > ((StaticResourceContentGuard.MAX_BYTES + 2L) / 3) * 4) {

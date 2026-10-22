@@ -7,12 +7,6 @@
     :before-close="close"
     @submit.prevent
   >
-    <el-alert
-      v-if="state.dvCreateInfo['materialBundle']"
-      :title="t('material.import_hint')"
-      type="info"
-      :closable="false"
-    />
     <el-row class="create-main" v-loading="state.loading">
       <el-row>
         <el-col :span="18" style="height: 40px">
@@ -74,7 +68,6 @@ import { computed, reactive, ref, watch } from 'vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import { ElMessage } from 'element-plus-secondary'
 import { decompression } from '@/api/visualization/dataVisualization'
-import { MAX_MATERIAL_PACKAGE_BYTES } from '@/api/material'
 import DeTemplatePreviewList from '@/views/common/DeTemplatePreviewList.vue'
 const { t } = useI18n()
 const emits = defineEmits(['finish'])
@@ -138,7 +131,6 @@ const createInit = () => {
   state.dvCreateInfo.componentData = null
   state.importTemplateInfo.snapshot = null
   state.dvCreateInfo.templateId = null
-  delete state.dvCreateInfo['materialBundle']
 }
 
 const showCurrentTemplateInfo = data => {
@@ -199,22 +191,16 @@ const save = () => {
 }
 const handleFileChange = e => {
   const file = e.target.files[0]
-  if (!file) return
-  if (file.size > MAX_MATERIAL_PACKAGE_BYTES) {
-    ElMessage.error(t('material.package_size_hint'))
-    return
-  }
   const reader = new FileReader()
   reader.onload = res => {
     state.templateSelected = true
     const result = res.target.result
     state.importTemplateInfo = JSON.parse(result)
-    state.dvCreateInfo.name = state.importTemplateInfo['name']
+    state.dvCreateInfo.name = state.importTemplateInfo['name'].name
     state.dvCreateInfo.canvasStyleData = state.importTemplateInfo['canvasStyleData']
     state.dvCreateInfo.componentData = state.importTemplateInfo['componentData']
     state.dvCreateInfo.dynamicData = state.importTemplateInfo['dynamicData']
     state.dvCreateInfo.staticResource = state.importTemplateInfo['staticResource']
-    state.dvCreateInfo['materialBundle'] = state.importTemplateInfo['materialBundle']
   }
   reader.readAsText(file)
 }

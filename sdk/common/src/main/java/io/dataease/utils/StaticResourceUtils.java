@@ -70,7 +70,7 @@ public class StaticResourceUtils {
      * @return
      */
     public static String getImgFileToBase64(String imgFile) {
-        if (StringUtils.isBlank(imgFile) || imgFile.startsWith("de-material-") || !SAFE_RESOURCE_FILE_NAME.matcher(imgFile).matches()) {
+        if (StringUtils.isBlank(imgFile) || !SAFE_RESOURCE_FILE_NAME.matcher(imgFile).matches()) {
             LogUtil.warn("Reject illegal static resource file name: " + imgFile);
             return null;
         }

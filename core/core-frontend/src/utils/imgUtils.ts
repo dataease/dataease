@@ -6,8 +6,6 @@ import { storeToRefs } from 'pinia'
 import { authenticatedImageUrl } from './resourceImages'
 import { waitForResourceImages } from './resourceImageCache'
 import { findResourceAsBase64 } from '@/api/staticResource'
-import { exportMaterialBundle, remapMaterialDocument } from '@/api/material'
-import { useAppStoreWithOut } from '@/store/modules/app'
 import FileSaver from 'file-saver'
 import { deepCopy } from '@/utils/utils'
 import { toPng } from 'html-to-image'
@@ -47,7 +45,7 @@ function prePareTemplateBaseData(dvId, callback) {
   }
 }
 
-export async function download2AppTemplate(downloadType, canvasDom, name, attachParams, callBack?) {
+export function download2AppTemplate(downloadType, canvasDom, name, attachParams, callBack?) {
   const canvasViewDataTemplate = deepCopy(canvasViewInfo.value)
   Object.keys(canvasViewDataTemplate).forEach(viewId => {
     canvasViewDataTemplate[viewId].data = deepCopy(canvasViewDataInfo.value[viewId])
@@ -71,56 +69,60 @@ export async function download2AppTemplate(downloadType, canvasDom, name, attach
     return
   }
   try {
-    const { canvasDataResult, canvasStyleResult } = await new Promise<{
-      canvasDataResult: string
-      canvasStyleResult: string
-    }>(resolve => prePareTemplateBaseData(dvInfo.value.id, resolve))
-    const materialBundle = useAppStoreWithOut().getXpackValid
-      ? (await exportMaterialBundle(canvasStyleResult, canvasDataResult)).data
-      : null
-    const staticResource = materialBundle
-      ? {}
-      : await new Promise<Record<string, string>>((resolve, reject) => {
-          findStaticSource(resources => resolve(resources || {})).catch(reject)
+    findStaticSource(function (staticResource) {
+      withMapPictures(canvasDom, async () => {
+        await waitForResourceImages(canvasDom)
+        return domToPng(canvasDom, {
+          width: canvasDom.offsetWidth,
+          height: canvasDom.offsetHeight,
+          // 保持模板快照的原有分辨率
+          scale: Math.max(1, window.devicePixelRatio || 1)
         })
-    const dataUrl = await withMapPictures(canvasDom, async () => {
-      await waitForResourceImages(canvasDom)
-      return domToPng(canvasDom, {
-        width: canvasDom.offsetWidth,
-        height: canvasDom.offsetHeight,
-        scale: Math.max(1, window.devicePixelRatio || 1)
       })
+        .then(dataUrl => {
+          const templateName = attachParams?.appName ? attachParams.appName : name
+          if (dataUrl !== '') {
+            prePareTemplateBaseData(
+              dvInfo.value.id,
+              function ({ canvasDataResult, canvasStyleResult }) {
+                const templateInfo = {
+                  name: templateName,
+                  templateType: 'self',
+                  snapshot: dataUrl,
+                  dvType: dvInfo.value.type,
+                  nodeType: downloadType,
+                  version: 3,
+                  canvasStyleData: canvasStyleResult,
+                  componentData: canvasDataResult,
+                  dynamicData: JSON.stringify(canvasViewDataTemplate),
+                  staticResource: JSON.stringify(staticResource || {}),
+                  appData: attachParams ? JSON.stringify(attachParams) : null
+                }
+                const blob = new Blob([JSON.stringify(templateInfo)], { type: '' })
+                if (downloadType === 'template') {
+                  FileSaver.saveAs(blob, name + '-TEMPLATE.DET2')
+                } else if (downloadType === 'app') {
+                  FileSaver.saveAs(blob, templateName + '-APP.DET2APP')
+                }
+                if (callBack) {
+                  callBack()
+                }
+              }
+            )
+          } else if (callBack) {
+            callBack()
+          }
+        })
+        .catch(error => {
+          callBack?.()
+          console.error('Image export failed', error)
+        })
     })
-    if (!dataUrl) throw new Error('Template snapshot unavailable')
-    const templateName = attachParams?.appName || name
-    const templateInfo = {
-      name: templateName,
-      templateType: 'self',
-      snapshot: dataUrl,
-      dvType: dvInfo.value.type,
-      nodeType: downloadType,
-      version: 3,
-      canvasStyleData: remapMaterialDocument(canvasStyleResult, materialBundle?.referenceMap),
-      componentData: remapMaterialDocument(canvasDataResult, materialBundle?.referenceMap),
-      dynamicData: remapMaterialDocument(
-        JSON.stringify(canvasViewDataTemplate),
-        materialBundle?.referenceMap
-      ),
-      staticResource: JSON.stringify(staticResource),
-      materialBundle: materialBundle
-        ? { version: materialBundle.version, files: materialBundle.files }
-        : undefined,
-      appData: attachParams ? JSON.stringify(attachParams) : null
-    }
-    const blob = new Blob([JSON.stringify(templateInfo)], { type: '' })
-    if (downloadType === 'template') FileSaver.saveAs(blob, name + '-TEMPLATE.DET2')
-    else if (downloadType === 'app') FileSaver.saveAs(blob, templateName + '-APP.DET2APP')
   } catch (e) {
-    const { t } = useI18n()
-    ElMessage.error(t('material.export_failed'))
+    if (callBack) {
+      callBack()
+    }
     console.error(e)
-  } finally {
-    callBack?.()
   }
 }
 
@@ -260,9 +262,17 @@ export function findStaticSource(callBack) {
   }
   findStaticSourceInner(componentData.value, staticResource)
   if (staticResource.length > 0) {
-    return findResourceAsBase64({ resourcePathList: staticResource }).then(rsp => {
-      callBack(rsp.data)
-    })
+    try {
+      findResourceAsBase64({ resourcePathList: staticResource }).then(rsp => {
+        callBack(rsp.data)
+      })
+    } catch (e) {
+      console.error('findResourceAsBase64 error', e)
+      callBack()
+    }
+  } else {
+    setTimeout(() => {
+      callBack()
+    }, 0)
   }
-  return Promise.resolve().then(() => callBack())
 }

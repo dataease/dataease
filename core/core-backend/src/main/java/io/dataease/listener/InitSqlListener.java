@@ -38,7 +38,7 @@ public class InitSqlListener implements ApplicationRunner {
             groupedSqlBlocks.computeIfAbsent(versionGroup, k -> new ArrayList<>()).add(block);
         }
 
-        executeGroups(groupedSqlBlocks, "0", "1", "2", "3");
+        executeGroups(groupedSqlBlocks, "1", "2", "3");
     }
 
     private void executeGroups(Map<String, List<SqlBlock>> groupedSqlBlocks, String... groups) {
