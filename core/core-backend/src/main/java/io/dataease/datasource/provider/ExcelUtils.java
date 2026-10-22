@@ -7,6 +7,8 @@ import com.alibaba.excel.enums.CellDataTypeEnum;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.excel.metadata.data.ReadCellData;
 import com.alibaba.excel.read.metadata.ReadSheet;
+import com.alibaba.excel.util.DateUtils;
+import com.alibaba.excel.util.NumberDataFormatterUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -238,24 +240,28 @@ public class ExcelUtils {
 
     private List<String[]> fetchExcelDataList(String sheetName, InputStream inputStream) {
         NoModelDataListener noModelDataListener = new NoModelDataListener();
-        ExcelReader excelReader = EasyExcel.read(inputStream, noModelDataListener).build();
-        List<ReadSheet> sheets = excelReader.excelExecutor().sheetList();
-        for (ReadSheet readSheet : sheets) {
-            if (!sheetName.equalsIgnoreCase(readSheet.getSheetName())) {
-                continue;
+        try (ExcelReader excelReader = EasyExcel.read(inputStream, noModelDataListener).build()) {
+            List<ReadSheet> sheets = excelReader.excelExecutor().sheetList();
+            for (ReadSheet readSheet : sheets) {
+                if (!sheetName.equalsIgnoreCase(readSheet.getSheetName())) {
+                    continue;
+                }
+                noModelDataListener.clear();
+                List<TableField> fields = new ArrayList<>();
+                excelReader.read(readSheet);
+                for (String s : noModelDataListener.getHeader()) {
+                    TableField tableFiled = new TableField();
+                    tableFiled.setFieldType("TEXT");
+                    tableFiled.setName(s);
+                    tableFiled.setOriginName(s);
+                    fields.add(tableFiled);
+                }
             }
-            noModelDataListener.clear();
-            List<TableField> fields = new ArrayList<>();
-            excelReader.read(readSheet);
-            for (String s : noModelDataListener.getHeader()) {
-                TableField tableFiled = new TableField();
-                tableFiled.setFieldType("TEXT");
-                tableFiled.setName(s);
-                tableFiled.setOriginName(s);
-                fields.add(tableFiled);
-            }
+            return noModelDataListener.getData();
+        } finally {
+            DateUtils.removeThreadLocalCache();
+            NumberDataFormatterUtils.removeThreadLocalCache();
         }
-        return noModelDataListener.getData();
     }
 
     public static List<TableField> getTableFields(DatasourceRequest datasourceRequest) throws DEException {
@@ -651,49 +657,53 @@ public class ExcelUtils {
         String suffix = filename.substring(filename.lastIndexOf(".") + 1);
         if (StringUtils.equalsIgnoreCase(suffix, "xlsx") || StringUtils.equalsIgnoreCase(suffix, "xls")) {
             NoModelDataListener noModelDataListener = new NoModelDataListener();
-            ExcelReader excelReader = EasyExcel.read(inputStream, noModelDataListener).build();
-            List<ReadSheet> sheets = excelReader.excelExecutor().sheetList();
-            for (ReadSheet readSheet : sheets) {
-                noModelDataListener.clear();
-                List<TableField> fields = new ArrayList<>();
-                excelReader.read(readSheet);
-                if (CollectionUtils.isEmpty(noModelDataListener.getHeader())) {
-                    DEException.throwException(readSheet.getSheetName() + "首行不能为空！");
-                }
-                for (String s : noModelDataListener.getHeader()) {
-                    TableField tableFiled = new TableField();
-                    tableFiled.setFieldType(null);
-                    tableFiled.setName(s);
-                    tableFiled.setOriginName(s);
-                    tableFiled.setChecked(true);
-                    fields.add(tableFiled);
-                }
-                List<String[]> data = new ArrayList<>(noModelDataListener.getData());
-                if (isPreview) {
-                    for (int i = 0; i < data.size(); i++) {
-                        for (int j = 0; j < data.get(i).length; j++) {
-                            if (j < fields.size()) {
-                                cellType(data.get(i)[j], i, fields.get(j));
+            try (ExcelReader excelReader = EasyExcel.read(inputStream, noModelDataListener).build()) {
+                List<ReadSheet> sheets = excelReader.excelExecutor().sheetList();
+                for (ReadSheet readSheet : sheets) {
+                    noModelDataListener.clear();
+                    List<TableField> fields = new ArrayList<>();
+                    excelReader.read(readSheet);
+                    if (CollectionUtils.isEmpty(noModelDataListener.getHeader())) {
+                        DEException.throwException(readSheet.getSheetName() + "首行不能为空！");
+                    }
+                    for (String s : noModelDataListener.getHeader()) {
+                        TableField tableFiled = new TableField();
+                        tableFiled.setFieldType(null);
+                        tableFiled.setName(s);
+                        tableFiled.setOriginName(s);
+                        tableFiled.setChecked(true);
+                        fields.add(tableFiled);
+                    }
+                    List<String[]> data = new ArrayList<>(noModelDataListener.getData());
+                    if (isPreview) {
+                        for (int i = 0; i < data.size(); i++) {
+                            for (int j = 0; j < data.get(i).length; j++) {
+                                if (j < fields.size()) {
+                                    cellType(data.get(i)[j], i, fields.get(j));
+                                }
                             }
                         }
+                        if (data.size() > 100) {
+                            data = data.subList(0, 100);
+                        }
                     }
-                    if (data.size() > 100) {
-                        data = data.subList(0, 100);
-                    }
-                }
 
-                for (int i = 0; i < fields.size(); i++) {
-                    if (StringUtils.isEmpty(fields.get(i).getFieldType())) {
-                        fields.get(i).setFieldType("TEXT");
+                    for (int i = 0; i < fields.size(); i++) {
+                        if (StringUtils.isEmpty(fields.get(i).getFieldType())) {
+                            fields.get(i).setFieldType("TEXT");
+                        }
                     }
-                }
 
-                ExcelSheetData excelSheetData = new ExcelSheetData();
-                excelSheetData.setFields(fields);
-                excelSheetData.setData(data);
-                excelSheetData.setFileName(filename);
-                excelSheetData.setExcelLabel(readSheet.getSheetName());
-                excelSheetDataList.add(excelSheetData);
+                    ExcelSheetData excelSheetData = new ExcelSheetData();
+                    excelSheetData.setFields(fields);
+                    excelSheetData.setData(data);
+                    excelSheetData.setFileName(filename);
+                    excelSheetData.setExcelLabel(readSheet.getSheetName());
+                    excelSheetDataList.add(excelSheetData);
+                }
+            } finally {
+                DateUtils.removeThreadLocalCache();
+                NumberDataFormatterUtils.removeThreadLocalCache();
             }
         }
 
