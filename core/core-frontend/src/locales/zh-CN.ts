@@ -4800,6 +4800,7 @@ export default {
       update_data: '更新数据',
       delete_data: '删除数据',
       recent_committer: '最近提交人',
+      primary_key: '主键',
       recent_commit_time: '最近提交时间',
       start: '开始',
       end: '结束',

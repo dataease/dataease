@@ -4956,6 +4956,7 @@ export default {
       update_data: 'Update data',
       delete_data: 'Delete data',
       recent_committer: 'Recent committer',
+      primary_key: 'Primary key',
       recent_commit_time: 'Latest submission time',
       start: 'Start',
       end: 'End',
