@@ -70,7 +70,7 @@
     "dingtalk-jsapi": "^3.1.0",
     "dompurify": "^3.4.2",
     "echarts": "^5.5.1",
-    "element-plus-secondary": "^1.0.0",
+        "element-plus-secondary": "^2.1.2",
     "element-resize-detector": "^1.2.4",
     "exceljs": "^4.4.0",
     "file-saver": "^2.0.5",
