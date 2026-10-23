@@ -546,12 +546,9 @@ const delHandler = (row: ITaskInfoRes) => {
 
 const logStatus = ref()
 const jobLogDetailRef = ref()
-const showLogDetail = row => {
+const showLogDetail = async row => {
   logStatus.value = row.logStatus
-  jobLogDetailRef.value.logId = row.logId
-  jobLogDetailRef.value.jobLogDetailVisible = true
-  jobLogDetailRef.value?.startInterval(row.logId, logStatus.value)
-  stopInterval()
+  if (await jobLogDetailRef.value?.openLog(row.logId)) stopInterval()
 }
 
 const jobLogDetailVisibleClose = () => {

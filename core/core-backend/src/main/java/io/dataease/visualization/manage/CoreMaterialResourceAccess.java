@@ -13,6 +13,7 @@ import io.dataease.utils.MaterialReferences;
 import io.dataease.visualization.dao.auto.mapper.*;
 import io.dataease.template.dao.auto.mapper.VisualizationTemplateRepository;
 import jakarta.annotation.Resource;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import java.util.*;
@@ -22,7 +23,11 @@ public class CoreMaterialResourceAccess implements MaterialResourceAccess {
     @Resource private DataVisualizationInfoRepository resources;
     @Resource private SnapshotDataVisualizationInfoRepository snapshots;
     @Resource private VisualizationTemplateRepository templates;
-    @Resource private InteractiveAuthApi auth;
+    private final ObjectProvider<InteractiveAuthApi> authProvider;
+
+    public CoreMaterialResourceAccess(ObjectProvider<InteractiveAuthApi> authProvider) {
+        this.authProvider = authProvider;
+    }
 
     @Override
     public Set<Long> authorize(MaterialContext context, boolean edit) {
@@ -46,9 +51,9 @@ public class CoreMaterialResourceAccess implements MaterialResourceAccess {
             if (parentId == null || parentId == 0L) {
                 // New canvases can choose their destination on first save; no folder ID exists yet.
                 long menuId = (screen ? AuthResourceEnum.SCREEN : AuthResourceEnum.PANEL).getMenuId();
-                if (!auth.menuIds().contains(menuId)) throw denied();
+                if (!requireAuth().menuIds().contains(menuId)) throw denied();
             } else {
-                auth.checkAuth(new BusiPerCheckDTO(parentId,
+                requireAuth().checkAuth(new BusiPerCheckDTO(parentId,
                         screen ? BusiResourceEnum.SCREEN : BusiResourceEnum.PANEL, AuthEnum.MANAGE));
             }
             return Set.of();
@@ -68,7 +73,7 @@ public class CoreMaterialResourceAccess implements MaterialResourceAccess {
             if (V3UserUtil.getUid() == null) throw denied();
             if (!(edit && Objects.equals(resource.getPid(), -1L)
                     && Objects.equals(resource.getCreateBy(), V3UserUtil.getUid().toString())))
-            auth.checkAuth(new BusiPerCheckDTO(resource.getId(),
+            requireAuth().checkAuth(new BusiPerCheckDTO(resource.getId(),
                     "dataV".equals(resource.getType()) ? BusiResourceEnum.SCREEN : BusiResourceEnum.PANEL,
                     edit || draft ? AuthEnum.MANAGE : AuthEnum.READ));
         }
@@ -108,7 +113,7 @@ public class CoreMaterialResourceAccess implements MaterialResourceAccess {
                     .require(io.dataease.share.manage.ShareVisitorPermissionManage.EXPORT_IMAGE);
         } else {
             DataVisualizationInfo resource = resources.findById(context.getResourceId()).orElseThrow(this::denied);
-            auth.checkAuth(new BusiPerCheckDTO(resource.getId(),
+            requireAuth().checkAuth(new BusiPerCheckDTO(resource.getId(),
                     "dataV".equals(resource.getType()) ? BusiResourceEnum.SCREEN : BusiResourceEnum.PANEL,
                     AuthEnum.EXPORT));
         }
@@ -133,6 +138,12 @@ public class CoreMaterialResourceAccess implements MaterialResourceAccess {
             if (batch.stream().anyMatch(value -> MaterialReferences.collect(value.getTemplateStyle(), value.getTemplateData()).contains(materialId))) return true;
             if (!batch.hasNext()) return false;
         }
+    }
+
+    private InteractiveAuthApi requireAuth() {
+        InteractiveAuthApi auth = authProvider.getIfAvailable();
+        if (auth == null) throw denied();
+        return auth;
     }
 
     private DEException denied() {

@@ -32,6 +32,10 @@ public interface TaskLogApi {
     @DePermit("m:read")
     LogResultVO logDetail(@PathVariable("logId") String logId, @PathVariable("fromLineNum") int fromLineNum);
 
+    @GetMapping("/connection/{logId}")
+    @DePermit("m:read")
+    void checkLogConnection(@PathVariable("logId") String logId);
+
     @PostMapping("/save")
     @DePermit("m:manage")
     void saveLog(@RequestBody TaskLogVO logDetail);

@@ -230,9 +230,7 @@ const logStatus = ref()
 const jobLogDetailRef = ref()
 const showLogDetail = row => {
   logStatus.value = row.status
-  jobLogDetailRef.value.logId = row.id
-  jobLogDetailRef.value.jobLogDetailVisible = true
-  jobLogDetailRef.value?.startInterval(row.id, row.status)
+  void jobLogDetailRef.value?.openLog(row.id)
 }
 
 const jobLogDetailVisibleClose = () => {

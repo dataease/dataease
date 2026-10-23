@@ -1,105 +1,32 @@
 <script lang="ts" setup>
 import { Loading } from '@element-plus/icons-vue'
-import {computed, defineEmits, onUnmounted, reactive, ref} from 'vue'
-import {getTaskLogDetailApi} from "@/api/sync/syncTaskLog";
-import { useI18n } from "@/hooks/web/useI18n";
-const { t } = useI18n();
-// 自定义指令-列表新增元素后自动滚动底部
-const vScrollBottom = {
-  updated: (el => {
-    el.scrollTo({
-      top: el.scrollHeight - el.clientHeight,
-      behavior: 'smooth'
-    })
-  })
-}
+import { computed, onUnmounted, ref } from 'vue'
+import { checkTaskLogConnectionApi, getTaskLogDetailApi } from '@/api/sync/syncTaskLog'
+import { useI18n } from '@/hooks/web/useI18n'
 
-const jobLogDetailVisible = ref<boolean>(false)
-const props = defineProps({
-  jobLogStatus: {
-    type: String,
-    default: ''
+const { t } = useI18n()
+const vScrollBottom = {
+  updated: el => {
+    el.scrollTo({ top: el.scrollHeight - el.clientHeight, behavior: 'smooth' })
   }
-})
-const logStatus = computed(() => {
-  return props.jobLogStatus
-})
+}
+const jobLogDetailVisible = ref(false)
+const props = defineProps({ jobLogStatus: { type: String, default: '' } })
+const logStatus = computed(() => props.jobLogStatus)
 const emit = defineEmits(['jobLogDetailVisibleClose'])
-const logId = ref()
+const logId = ref<string>()
 const logSegments = ref<{ text: string; className: string }[]>([])
-const loading = ref<boolean>(false)
-const timeInterval = reactive({
-  timeId: null
-})
+const loading = ref(false)
+const polling = ref(false)
+const readFailed = ref(false)
+let timeId: ReturnType<typeof window.setTimeout> | undefined
 let fromLineNum = 1
 let pullFailCount = 0
 let logSession = 0
-const pullLog = (done: boolean) => {
-  loading.value = true
-  // 查了20次都查不到就结束
-  if (pullFailCount++ > 20) {
-    logRunStop(t('sync_task.log_read_finished'))
-    return
-  }
-  const session = logSession
-  const requestLogId = logId.value
-  const requestLine = fromLineNum
-  getTaskLogDetailApi(requestLogId, requestLine)
-      .then(data => {
-        if (session !== logSession || requestLogId !== logId.value) {
-          return
-        }
-        const res = data.data
-        if (done) {
-          loading.value = false
-        }
-        if (fromLineNum != res.fromLineNum) {
-          return
-        }
-        // 兼容后端状态检查的占位响应，不改变已读取的位置
-        const placeholder = res.logContent === '...' && res.toLineNum < requestLine
-        if (placeholder) {
-          // 状态检查返回的 end 不代表日志文件已读完，继续从原位置读取
-          if (done) {
-            timeInterval.timeId = window.setTimeout(() => {
-              timeInterval.timeId = null
-              pullLog(true)
-            }, 3000)
-          }
-          return
-        }
-        fromLineNum = Math.max(fromLineNum, res.toLineNum + 1)
-        appendLogContent(res.logContent)
-        pullFailCount = 0
-        if (fromLineNum > res.toLineNum) {
-          let resultContent
-          // 内容读取结束
-          if (res.end) {
-            resultContent = t('sync_task.log_read_finished')
-            logRunStop(`\n[${resultContent}]`, 'done')
-            return
-          }
-          if (logStatus.value === "CONNECTION_LOST") {
-            resultContent = t('sync_task.connection_lost')
-            logRunStop(`\n[${resultContent}]`, 'lost')
-          }
-          return
-        }
-      })
-      .catch(err => {
-        if (session !== logSession || requestLogId !== logId.value) {
-          return
-        }
-        loading.value = false
-        throw err
-      })
-}
+let openRequest = 0
+let disposed = false
 
-/**
- * 高亮关键字
- */
 const errorMsgKeywords = ['ErrorCode', 'IllegalArgumentException', 'SQLSyntaxErrorException']
-
 const appendLogContent = (content: string) => {
   content.split(new RegExp(`(${errorMsgKeywords.join('|')})`, 'g')).forEach(text => {
     if (text) {
@@ -110,49 +37,103 @@ const appendLogContent = (content: string) => {
     }
   })
 }
-
-const logRunStop = (content: string, type: '' | 'done' | 'lost' = '') => {
+const stopInterval = () => {
+  logSession++
   loading.value = false
-  timeInterval.timeId && window.clearInterval(timeInterval.timeId)
-  timeInterval.timeId = null
+  polling.value = false
+  window.clearTimeout(timeId)
+  timeId = undefined
+}
+const logRunStop = (content: string, type = '') => {
+  stopInterval()
   logSegments.value.push({
     text: content,
     className: type ? `log-end-message ${type}` : 'log-end-message'
   })
 }
-onUnmounted(() => {
-  loading.value = false
-  stopInterval()
-})
-
-const startInterval = (taskLogId: string, jobLogStatus: string) => {
-  stopInterval()
-  logId.value = taskLogId
-  logSegments.value = []
-  fromLineNum = 1
-  pullFailCount = 0
-  if (jobLogStatus === 'RUNNING') {
-    pullLog(false)
-    timeInterval.timeId = window.setInterval(() => {
-      pullLog(false)
-    }, 3000)
-  } else {
-    pullLog(true)
+const pullLog = async () => {
+  const session = logSession
+  const requestLogId = logId.value
+  const requestLine = fromLineNum
+  loading.value = true
+  try {
+    const data = await getTaskLogDetailApi(requestLogId, requestLine)
+    if (session !== logSession || requestLogId !== logId.value) return
+    const res = data.data
+    if (requestLine !== res.fromLineNum) return
+    // 状态检查的占位响应不能推进文件读取位置
+    const placeholder = res.logContent === '...' && res.toLineNum < requestLine
+    if (placeholder || !res.logContent) {
+      // 长任务可能暂时没有新日志，运行中不能按空结果次数结束轮询
+      if (++pullFailCount > 20 && logStatus.value !== 'RUNNING') {
+        logRunStop(`\n[${t('sync_task.log_read_finished')}]`, 'done')
+        return
+      }
+    } else {
+      appendLogContent(res.logContent)
+      fromLineNum = Math.max(fromLineNum, res.toLineNum + 1)
+      pullFailCount = 0
+    }
+    if (!placeholder && res.end) {
+      logRunStop(`\n[${t('sync_task.log_read_finished')}]`, 'done')
+      return
+    }
+    // 上一次请求结束后再安排下一次，避免慢请求重叠及失败后持续弹错
+    polling.value = true
+    timeId = window.setTimeout(pullLog, 3000)
+  } catch (error) {
+    if (session !== logSession || requestLogId !== logId.value) return
+    stopInterval()
+    readFailed.value = true
+    if (typeof error === 'string') appendLogContent(`\n[${error}]`)
+  } finally {
+    if (session === logSession) loading.value = false
   }
 }
-
-const stopInterval = () => {
-  logSession++
-  loading.value = false
-  timeInterval.timeId && window.clearInterval(timeInterval.timeId)
-  timeInterval.timeId = null
+const openLog = async (taskLogId: string) => {
+  const request = ++openRequest
+  try {
+    await checkTaskLogConnectionApi(taskLogId)
+    if (disposed || request !== openRequest) return false
+    stopInterval()
+    logId.value = taskLogId
+    logSegments.value = []
+    fromLineNum = 1
+    pullFailCount = 0
+    readFailed.value = false
+    jobLogDetailVisible.value = true
+    void pullLog()
+    return true
+  } catch {
+    return false
+  }
 }
-
+const retryRead = async () => {
+  const session = logSession
+  loading.value = true
+  try {
+    await checkTaskLogConnectionApi(logId.value)
+    if (session !== logSession) return
+    readFailed.value = false
+    pullFailCount = 0
+    await pullLog()
+  } catch {
+    // 请求层展示诊断信息，保留已有日志和重试入口
+  } finally {
+    if (session === logSession) loading.value = false
+  }
+}
 const closeClick = () => {
+  openRequest++
   stopInterval()
   emit('jobLogDetailVisibleClose')
 }
-defineExpose({jobLogDetailVisible, startInterval, logId, stopInterval})
+onUnmounted(() => {
+  disposed = true
+  openRequest++
+  stopInterval()
+})
+defineExpose({ jobLogDetailVisible, openLog, logId, stopInterval })
 </script>
 <template>
   <div>
@@ -168,6 +149,9 @@ defineExpose({jobLogDetailVisible, startInterval, logId, stopInterval})
       <template #title>
         <div class="drawer-title">
           <div class="title">{{ t('sync_task.execute_log') }}</div>
+          <el-button v-if="readFailed" :loading="loading" @click="retryRead">{{
+            t('common.refresh')
+          }}</el-button>
         </div>
       </template>
       <div v-if="logStatus === 'RUNNING'" v-scroll-bottom class="job-log-detail-class">
@@ -176,7 +160,7 @@ defineExpose({jobLogDetailVisible, startInterval, logId, stopInterval})
             segment.text
           }}</span></span
         >
-        <span v-if="loading">
+        <span v-if="loading || polling">
           <el-icon class="is-loading">
             <Loading />
           </el-icon>
@@ -188,7 +172,7 @@ defineExpose({jobLogDetailVisible, startInterval, logId, stopInterval})
             segment.text
           }}</span></span
         >
-        <span v-if="loading">
+        <span v-if="loading || polling">
           <el-icon class="is-loading">
             <Loading />
           </el-icon>
