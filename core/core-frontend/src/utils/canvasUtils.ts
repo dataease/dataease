@@ -1248,44 +1248,37 @@ export function findParentIdByChildIdRecursive(tree, targetChildId) {
 }
 
 export async function decompressionPre(params, callBack) {
-  let deTemplateData
-  await decompression(params)
-    .then(response => {
-      const deTemplateDataTemp = response.data
-      registerMaterialPreviews(deTemplateDataTemp.materialBundle)
-      const sourceComponentData = JSON.parse(deTemplateDataTemp['componentData'])
-      const appData = deTemplateDataTemp['appData']
-      const sourceCanvasStyle = JSON.parse(deTemplateDataTemp['canvasStyleData'])
-      sourceComponentData.forEach(componentItem => {
-        // 2 为基础版本 此处需要增加仪表板矩阵密度
-        if (
-          (!deTemplateDataTemp.version || deTemplateDataTemp.version === 2) &&
-          deTemplateDataTemp.type === 'dashboard'
-        ) {
-          matrixAdaptor(componentItem)
-        }
-      })
-      //历史字段适配
-      sourceCanvasStyle.component['seniorStyleSetting'] =
-        sourceCanvasStyle.component['seniorStyleSetting'] || deepCopy(SENIOR_STYLE_SETTING_LIGHT)
-      sourceCanvasStyle['scaleWidth'] = sourceCanvasStyle['scale']
-      sourceCanvasStyle['scaleHeight'] = sourceCanvasStyle['scaleHeight']
-      deTemplateData = {
-        canvasStyleData: sourceCanvasStyle,
-        componentData: sourceComponentData,
-        canvasViewInfo: deTemplateDataTemp['canvasViewInfo'],
-        appData: appData,
-        materialBundle: deTemplateDataTemp.materialBundle,
-        materialSourceTemplateId: deTemplateDataTemp.materialSourceTemplateId,
-        baseInfo: {
-          preName: deTemplateDataTemp.name,
-          dvType: deTemplateDataTemp.type
-        }
-      }
-    })
-    .catch(e => {
-      console.error(e)
-    })
+  const response = await decompression(params)
+  const deTemplateDataTemp = response.data
+  const sourceComponentData = JSON.parse(deTemplateDataTemp['componentData'])
+  const appData = deTemplateDataTemp['appData']
+  const sourceCanvasStyle = JSON.parse(deTemplateDataTemp['canvasStyleData'])
+  sourceComponentData.forEach(componentItem => {
+    // 2 为基础版本 此处需要增加仪表板矩阵密度
+    if (
+      (!deTemplateDataTemp.version || deTemplateDataTemp.version === 2) &&
+      deTemplateDataTemp.type === 'dashboard'
+    ) {
+      matrixAdaptor(componentItem)
+    }
+  })
+  //历史字段适配
+  sourceCanvasStyle.component['seniorStyleSetting'] =
+    sourceCanvasStyle.component['seniorStyleSetting'] || deepCopy(SENIOR_STYLE_SETTING_LIGHT)
+  sourceCanvasStyle['scaleWidth'] = sourceCanvasStyle['scale']
+  sourceCanvasStyle['scaleHeight'] = sourceCanvasStyle['scaleHeight']
+  const deTemplateData = {
+    canvasStyleData: sourceCanvasStyle,
+    componentData: sourceComponentData,
+    canvasViewInfo: deTemplateDataTemp['canvasViewInfo'],
+    appData: appData,
+    materialBundle: deTemplateDataTemp.materialBundle,
+    materialSourceTemplateId: deTemplateDataTemp.materialSourceTemplateId,
+    baseInfo: {
+      preName: deTemplateDataTemp.name,
+      dvType: deTemplateDataTemp.type
+    }
+  }
   historyAdaptor(
     deTemplateData.canvasStyleData,
     deTemplateData.componentData,
@@ -1293,7 +1286,8 @@ export async function decompressionPre(params, callBack) {
     { resourceTable: 'snapshot', dvType: deTemplateData.baseInfo.dvType },
     null
   )
-  callBack(deTemplateData)
+  registerMaterialPreviews(deTemplateData.materialBundle)
+  return callBack(deTemplateData)
 }
 
 export function isDashboard() {

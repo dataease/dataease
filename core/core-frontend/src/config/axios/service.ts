@@ -245,6 +245,7 @@ service.interceptors.response.use(
     }
   },
   (error: AxiosErrorWidthLoading<AxiosError<{ msg?: string }>>) => {
+    error.config?.loading && tryHideLoading(permissionStore.getCurrentPath)
     // Image failures belong to the image loader, as with native <img> requests. Preserve
     // the rejection so denied/missing images cannot become successful exports or trigger a login loop.
     if (error.config?.handleErrorLocally) {
@@ -288,7 +289,6 @@ service.interceptors.response.use(
       )
     }
 
-    error.config.loading && tryHideLoading(permissionStore.getCurrentPath)
     if (header.has('DE-GATEWAY-FLAG')) {
       if (revalidateLink(error.config)) {
         return Promise.reject(error)

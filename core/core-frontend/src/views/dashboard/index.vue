@@ -77,6 +77,7 @@ const {
   dvInfo
 } = storeToRefs(dvMainStore)
 const dataInitState = ref(false)
+const templateLoadError = ref(false)
 const appStore = useAppStoreWithOut()
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 const { t } = useI18n()
@@ -290,11 +291,18 @@ onMounted(async () => {
     let deTemplateData
     let preName
     if (createType === 'template') {
-      const templateParamsApply = JSON.parse(Base64.decode(decodeURIComponent(templateParams + '')))
-      await decompressionPre(templateParamsApply, result => {
-        deTemplateData = result
-        preName = deTemplateData.baseInfo?.preName
-      })
+      try {
+        const templateParamsApply = JSON.parse(
+          Base64.decode(decodeURIComponent(templateParams + ''))
+        )
+        await decompressionPre(templateParamsApply, result => {
+          deTemplateData = result
+          preName = deTemplateData.baseInfo?.preName
+        })
+      } catch {
+        templateLoadError.value = true
+        return
+      }
     }
     nextTick(() => {
       dvMainStore.createInit('dashboard', null, pid, watermarkBaseInfo, preName)
@@ -381,11 +389,12 @@ onUnmounted(() => {
 </script>
 
 <template>
+  <el-empty v-if="templateLoadError" :description="t('visualization.template_load_failed')" />
   <div
     class="dv-common-layout dv-teleport-query"
     :class="isDataEaseBi && !newWindowFromDiv && 'dataease-w-h'"
     v-loading="pageLoading"
-    v-if="loadFinish && !mobileConfig"
+    v-if="loadFinish && !mobileConfig && !templateLoadError"
   >
     <DbToolbar @recoverToPublished="doRecoverToPublished" />
     <el-container
@@ -463,7 +472,7 @@ onUnmounted(() => {
   </div>
   <MobileConfigPanel
     @pcMode="mobileConfig = false"
-    v-else-if="loadFinish && mobileConfig"
+    v-else-if="loadFinish && mobileConfig && !templateLoadError"
   ></MobileConfigPanel>
   <NewWindowHandler
     v-if="appStore.getXpackValid"
