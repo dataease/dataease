@@ -3148,6 +3148,7 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    template_load_failed: '範本載入失敗，請檢查範本後重新開啟，或稍後重試。',
     hover_button_tips: '顯示圖表操作按鈕',
     preview_effect: '預覽時生效',
     img_can_not_null: '圖片不能為空',

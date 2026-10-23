@@ -3167,6 +3167,7 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
+    template_load_failed: '模板加载失败，请检查模板后重新打开，或稍后重试。',
     hover_button_tips: '显示图表操作按钮',
     preview_effect: '预览时生效',
     img_can_not_null: '图片不能为空',

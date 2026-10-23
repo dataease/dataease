@@ -111,6 +111,7 @@ const leftSidebarRef = ref(null)
 const dvLayout = ref(null)
 const canvasCenterRef = ref(null)
 const mainHeight = ref(300)
+const templateLoadError = ref(false)
 let createType = null
 let isDragging = false // 标记是否在拖动
 let startX, startY, scrollLeft, scrollTop
@@ -460,11 +461,18 @@ onMounted(async () => {
     let deTemplateData
     let preName
     if (createType === 'template') {
-      const templateParamsApply = JSON.parse(Base64.decode(decodeURIComponent(templateParams + '')))
-      await decompressionPre(templateParamsApply, result => {
-        deTemplateData = result
-        preName = deTemplateData.baseInfo?.preName
-      })
+      try {
+        const templateParamsApply = JSON.parse(
+          Base64.decode(decodeURIComponent(templateParams + ''))
+        )
+        await decompressionPre(templateParamsApply, result => {
+          deTemplateData = result
+          preName = deTemplateData.baseInfo?.preName
+        })
+      } catch {
+        templateLoadError.value = true
+        return
+      }
     }
     dvMainStore.createInit('dataV', null, pid, watermarkBaseInfo, preName)
     nextTick(() => {
@@ -562,10 +570,11 @@ eventBus.on('tabSort', tabSort)
 </script>
 
 <template>
+  <el-empty v-if="templateLoadError" :description="t('visualization.template_load_failed')" />
   <!-- 全屏期间移出编辑器布局树，只保留全屏预览画布 -->
   <div
     v-show="!fullscreenFlag"
-    v-if="loadFinish"
+    v-if="loadFinish && !templateLoadError"
     v-loading="requestStore.loadingMap && requestStore.loadingMap[permissionStore.currentPath]"
     ref="dvLayout"
     class="dv-common-layout"
@@ -713,7 +722,7 @@ eventBus.on('tabSort', tabSort)
   <ThresholdDialog v-if="appStore.getXpackValid"></ThresholdDialog>
   <canvas-cache-dialog ref="canvasCacheOutRef" @doUseCache="doUseCache"></canvas-cache-dialog>
   <dv-preview
-    v-if="fullscreenFlag"
+    v-if="fullscreenFlag && !templateLoadError"
     style="z-index: 10"
     ref="dvPreviewRef"
     show-position="edit-preview"

@@ -3251,6 +3251,7 @@ export default {
     column_name: 'Field name'
   },
   visualization: {
+    template_load_failed: 'Failed to load the template. Check it and reopen, or try again later.',
     hover_button_tips: 'Display chart action buttons',
     preview_effect: 'Takes effect in preview mode',
     img_can_not_null: 'Image cannot be empty',
