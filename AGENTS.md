@@ -39,6 +39,10 @@
 - 前端修改按所在模块选择验证命令：核心前端提供 `npm run ts:check`，xpack 前端以各自 `package.json` 的脚本为准。核心前端的 Vite 配置区分 `dev`、`base`、`distributed`、`lib`；`build:base`、`build:distributed` 还会执行 `build:flush`。Maven 打包也可能复制或移动前端 `dist` 到后端静态资源目录，运行前检查脚本副作用。需要检查代码风格时先确认脚本是否带 `--fix`；核心前端的 `npm run lint` 和 `npm run lint:stylelint` 会写入文件。
 - 对数据库、权限、数据查询和跨模块 API 变更增加或运行能验证行为的测试；对纯文案、低风险样式等改动采用与影响相称的检查。报告实际运行的验证和未覆盖的部分，不宣称未执行的检查通过。
 
+- 浏览器问题按 `tests/browser/README.md` 使用独立 Playwright CLI 复现和修复后复测、Playwright Test 定向回归，不使用 Playwright MCP。每个缺陷使用独立浏览器会话，CLI 快照写文件并按需读取；测试仅返回简短摘要，失败时再查看截图和 trace。工具自检不等于产品回归。CLI/Test 遇到限制时先排查工具配置和测试入口，不自动回退到 MCP；只有用户明确要求时才调整这一约定。
+
+- 核心功能浏览器回归放在主仓库 `tests/browser/`；XPack 专属回归放在私有子模块 `de-xpack/tests/browser/`，遵循其局部 AGENTS.md，私有用例、夹具和专项配置随子模块提交；CLI/Test 工具依赖和锁文件统一复用主仓库 `tests/browser/`，不在子模块重复安装。不得将 XPack 测试实现、私有夹具或产物复制到开源主仓库。
+
 ## V2/V3 修复同步
 
 - V2 与 V3 持续独立迭代，可能位于不同目录，也可能是同一仓库的不同分支。另一版本的提交、PR 或修复说明是调查线索，不是可直接合并的补丁；不得在有未提交改动的工作区为查看来源版本擅自切换分支。

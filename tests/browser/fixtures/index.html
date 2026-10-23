@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:,">
+    <title>浏览器测试工具自检</title>
+    <style>
+      body { max-width: 640px; margin: 48px auto; font-family: sans-serif; }
+      input, button { padding: 8px; margin: 8px 0; }
+      output { display: block; white-space: pre-wrap; }
+    </style>
+  </head>
+  <body>
+    <h1>浏览器测试工具自检</h1>
+    <p>此页面仅验证 CLI 和 Test 工具，不连接 DataEase 后端。</p>
+    <form>
+      <label for="message">测试内容</label>
+      <input id="message" required autocomplete="off">
+      <button type="submit">显示内容</button>
+      <output aria-label="显示结果" aria-live="polite"></output>
+    </form>
+    <script>
+      document.querySelector('form').addEventListener('submit', event => {
+        event.preventDefault()
+        document.querySelector('output').textContent = document.querySelector('input').value
+      })
+    </script>
+  </body>
+</html>
