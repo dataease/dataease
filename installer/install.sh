@@ -44,27 +44,23 @@ function check_and_prepare_env_params() {
       # 获取已安装的 DataEase 的运行目录
       DE_BASE=$(grep "^DE_BASE=" /usr/bin/dectl | cut -d'=' -f2)
       DE_BASE_OLD=$DE_BASE
-      sed -i -e "s#DE_BASE=.*#DE_BASE=${DE_BASE}#g" dectl
-      \cp dectl /usr/local/bin && chmod +x /usr/local/bin/dectl
-
-      log_content "停止 DataEase 服务"
-      if [[ -f /etc/systemd/system/dataease.service ]];then
-         systemctl stop dataease
-      else
-         dectl stop
-      fi
+      installed_dectl=true
 
       INSTALL_TYPE='upgrade'
    fi
 
    set -a
-   source ${CURRENT_DIR}/install.conf
+   source "${CURRENT_DIR}/install.conf" || exit 1
    if [[ $DE_BASE_OLD ]];then
       DE_BASE=$DE_BASE_OLD
       export DE_BASE=$DE_BASE_OLD
    fi
+   if [[ "${installed_dectl:-false}" == "true" && ! -f "$DE_BASE/dataease2.0/.env" ]]; then
+      sync_auth_error ENV_MISSING "已安装环境的 .env 文件缺失" "先恢复运行目录 .env 及其中原有的 DE_SYNC_AUTH_SECRET，再重新执行升级；旧服务尚未停止"
+      exit 1
+   fi
    if [[ -d $DE_BASE ]] && [[ -f $DE_BASE/dataease2.0/.env ]]; then
-      source $DE_BASE/dataease2.0/.env
+      source "$DE_BASE/dataease2.0/.env" || exit 1
       # 保存升级前是否部署同步，供首次启用鉴权时判断
       sync_auth_was_enabled=false
       sync_auth_enabled && sync_auth_was_enabled=true
@@ -113,7 +109,7 @@ function prepare_sync_auth() {
       installed_auth=false
    fi
    sync_auth_prepare "$DE_RUN_BASE" "$installed_auth" || {
-      echo "同步执行器鉴权配置未完成，安装或升级已中止；升级时旧服务可能已按原流程停止，请按上述提示修复后重新执行安装或升级" >&2
+      echo "同步执行器鉴权配置未完成，安装或升级已中止；请按上述提示修复后重新执行安装或升级" >&2
       exit 1
    }
    if sync_auth_enabled; then
@@ -124,6 +120,19 @@ function prepare_sync_auth() {
       sync_auth_validate || exit 1
       export DE_SYNC_AUTH_SECRET
       export DE_SYNC_AUTH_VERSION=1
+   fi
+}
+
+#
+# 鉴权配置和镜像准备完成后才停服，准备失败时保留旧服务运行
+#
+function stop_de_service() {
+   [[ "${installed_dectl:-false}" == "true" ]] || return 0
+   log_content "停止 DataEase 服务"
+   if [[ -f /etc/systemd/system/dataease.service ]]; then
+      systemctl stop dataease || exit 1
+   else
+      dectl stop || exit 1
    fi
 }
 
@@ -353,6 +362,10 @@ function set_de_service() {
 function start_de_service() {
    log_title "启动 DataEase 服务"
    systemctl start dataease 2>&1 | tee -a ${CURRENT_DIR}/install.log
+   if [[ "${PIPESTATUS[0]}" -ne 0 ]]; then
+      echo "DataEase 启动失败，安装或升级未完成；请检查 systemctl status dataease 和 journalctl -u dataease 后重试" >&2
+      exit 1
+   fi
 
    access_port=$DE_PORT
    if [[ $DE_INSTALL_MODE != "community" ]];then
@@ -371,13 +384,23 @@ function start_de_service() {
 function main() {
    check_and_prepare_env_params
    set_run_base_path
+   if sync_auth_enabled && [[ "$INSTALL_TYPE" == "upgrade" ]]; then
+      sync_auth_backup "$DE_RUN_BASE" || exit 1
+   fi
    prepare_sync_auth
+   if [[ "$INSTALL_TYPE" == "upgrade" ]]; then
+      sync_auth_prepare_images "$CURRENT_DIR" || exit 1
+   fi
+   stop_de_service
    prepare_de_run_base
    update_dectl
    prepare_system_settings
    install_docker
    install_docker_compose
    load_de_images
+   if [[ "$INSTALL_TYPE" != "upgrade" ]]; then
+      sync_auth_prepare_images "$CURRENT_DIR" || exit 1
+   fi
    set_de_service
    start_de_service
 }

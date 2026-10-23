@@ -296,7 +296,7 @@ function upgrade() {
    fi
 
    cd ${installer_file%.tar.gz}
-   /bin/bash install.sh
+   /bin/bash install.sh || return $?
 
    cd ..
    rm -rf /tmp/${installer_file%.*}
