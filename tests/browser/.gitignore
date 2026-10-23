@@ -1,0 +1,6 @@
+node_modules/
+output/
+.playwright-cli/
+.auth/
+.env*
+!package-lock.json

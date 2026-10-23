@@ -9,7 +9,7 @@ enabled_tools = ["tapd_get_current_user", "tapd_parse_url", "tapd_get_story", "t
 [mcp_servers.playwright]
 command = "python3"
 args = [".codex/playwright_mcp/launch.py"]
-enabled = true
+enabled = false
 startup_timeout_sec = 30
 tool_timeout_sec = 120
 
