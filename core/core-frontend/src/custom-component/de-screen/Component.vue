@@ -71,7 +71,7 @@
                           {{ t('visualization.copy') }}
                         </el-dropdown-item>
                         <el-dropdown-item
-                          v-if="element.propValue.length > 1"
+                          v-if="screenTabs.length > 1"
                           :command="beforeHandleCommand('deleteCur', tabItem)"
                         >
                           {{ t('visualization.delete') }}
@@ -153,7 +153,6 @@ import {
   computed,
   getCurrentInstance,
   nextTick,
-  onBeforeMount,
   onBeforeUnmount,
   onMounted,
   reactive,
@@ -244,6 +243,10 @@ const {
   searchCount
 } = toRefs(props)
 
+const screenTabs = computed(() =>
+  Array.isArray(element.value.propValue) ? element.value.propValue : []
+)
+
 const screenType =
   dvInfo.value.type === 'dataV' ? t('work_branch.big_data_screen') : t('work_branch.dashboard')
 
@@ -281,7 +284,7 @@ const svgInnerActiveEnable = itemName => {
 
 // tooltips 轮播会影响tab 展示
 const viewToolTipsChange = () => {
-  element.value.propValue?.forEach(tabItem => {
+  screenTabs.value.forEach(tabItem => {
     const tMethod =
       element.value.editableTabsValue === tabItem.name
         ? G2TooltipCarousel.resume
@@ -327,16 +330,16 @@ const showTabTitleFlag = computed(() => {
 })
 
 const visibleTabs = computed(() => {
-  return element.value.propValue.filter(tabItem => !tabItem.hidden)
+  return screenTabs.value.filter(tabItem => !tabItem.hidden)
 })
 
 const isEditMode = computed(() => editMode.value === 'edit' && isEdit.value && !mobileInPc.value)
 const curThemes = isDashboard() ? 'light' : 'dark'
 const calcTabLength = () => {
   setTimeout(() => {
-    if (element.value.propValue.length > 1) {
+    if (screenTabs.value.length > 1) {
       const containerDom = document.getElementById(
-        'tab-' + element.value.propValue[element.value.propValue.length - 1].name
+        'tab-' + screenTabs.value[screenTabs.value.length - 1].name
       )
       if (containerDom) {
         tabsAreaScroll.value =
@@ -374,6 +377,9 @@ function addTab() {
     screenId: null,
     closable: true
   }
+  if (!Array.isArray(element.value.propValue)) {
+    element.value.propValue = []
+  }
   element.value.propValue.push(newTab)
   element.value.editableTabsValue = newTab.name
   snapshotStore.recordSnapshotCache('addTab')
@@ -381,13 +387,14 @@ function addTab() {
 
 function deleteCur(param) {
   state.curItem = param
-  let len = element.value.propValue.length
+  let len = screenTabs.value.length
   while (len--) {
-    if (element.value.propValue[len].name === param.name) {
-      element.value.propValue.splice(len, 1)
-      const activeIndex =
-        (len - 1 + element.value.propValue.length) % element.value.propValue.length
-      element.value.editableTabsValue = element.value.propValue[activeIndex].name
+    if (screenTabs.value[len].name === param.name) {
+      screenTabs.value.splice(len, 1)
+      const tabs = screenTabs.value
+      element.value.editableTabsValue = tabs.length
+        ? tabs[(len - 1 + tabs.length) % tabs.length].name
+        : ''
       state.tabShow = false
       nextTick(() => {
         state.tabShow = true
@@ -398,7 +405,7 @@ function deleteCur(param) {
 
 function copyCur(param) {
   addTab()
-  const newTabItem = element.value.propValue[element.value.propValue.length - 1]
+  const newTabItem = screenTabs.value[screenTabs.value.length - 1]
   newTabItem.title = param.title + ' - ' + t('visualization.copy')
   newTabItem.screenId = param.screenId
   snapshotStore.recordSnapshotCache('copyCur')
@@ -443,7 +450,7 @@ const reloadLinkage = () => {
 }
 
 const componentMoveIn = component => {
-  element.value.propValue.forEach((tabItem, index) => {
+  screenTabs.value.forEach((tabItem, index) => {
     if (element.value.editableTabsValue === tabItem.name) {
       //获取主画布当前组件的index
       if (isDashboard()) {
@@ -672,7 +679,7 @@ const reShow = () => {
 }
 
 const selectNewScreen = screenId => {
-  element.value.propValue.forEach(tabItem => {
+  screenTabs.value.forEach(tabItem => {
     if (element.value.editableTabsValue === tabItem.name) {
       tabItem.screenId = null
       nextTick(() => {
@@ -684,28 +691,28 @@ const selectNewScreen = screenId => {
   })
 }
 
-watch(
-  () => isEditMode.value,
-  () => {
-    initCarousel()
-  }
-)
+watch([isEditMode, () => screenTabs.value.length], () => {
+  initCarousel()
+})
 
 const initCarousel = () => {
   carouselTimer && clearInterval(carouselTimer)
   carouselTimer = null
   if (!isEditMode.value) {
-    if (element.value.carousel?.enable) {
+    if (element.value.carousel?.enable && screenTabs.value.length > 0) {
       const switchTime = (element.value.carousel.time || 5) * 1000
       let switchCount = 1
       // 轮播定时器
       carouselTimer = setInterval(() => {
         // 鼠标移入时 停止轮播
         if (!state.hoverFlag) {
-          const nowIndex = switchCount % element.value.propValue.length
-          switchCount++
           nextTick(() => {
-            element.value.editableTabsValue = element.value.propValue[nowIndex].name
+            const tabs = screenTabs.value
+            if (carouselTimer === null || !tabs.length) {
+              return
+            }
+            element.value.editableTabsValue = tabs[switchCount % tabs.length].name
+            switchCount++
           })
         }
       }, switchTime)
@@ -714,8 +721,8 @@ const initCarousel = () => {
 }
 onMounted(() => {
   document.addEventListener('visibilitychange', viewToolTipsChange)
-  if (element.value.propValue.length > 0) {
-    element.value.editableTabsValue = element.value.propValue[0].name
+  if (screenTabs.value.length > 0) {
+    element.value.editableTabsValue = screenTabs.value[0].name
   }
   calcTabLength()
   if (['canvas', 'canvasDataV', 'edit'].includes(showPosition.value) && !mobileInPc.value) {
@@ -733,6 +740,8 @@ onMounted(() => {
   }, 1000)
 })
 onBeforeUnmount(() => {
+  carouselTimer && clearInterval(carouselTimer)
+  carouselTimer = null
   document.removeEventListener('visibilitychange', viewToolTipsChange)
   if (['canvas', 'canvasDataV', 'edit'].includes(showPosition.value) && !mobileInPc.value) {
     eventBus.off('onTabMoveIn-' + element.value.id, componentMoveIn)
@@ -740,13 +749,6 @@ onBeforeUnmount(() => {
     eventBus.off('onTabSortChange-' + element.value.id, reShow)
     eventBus.off('onTabDelete-' + element.value.id, deleteCur)
     eventBus.off('onTabCopy-' + element.value.id, copyCur)
-  }
-})
-
-onBeforeMount(() => {
-  if (carouselTimer) {
-    clearInterval(carouselTimer)
-    carouselTimer = null
   }
 })
 </script>
