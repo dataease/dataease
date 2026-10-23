@@ -8,7 +8,7 @@
 
 CLI 快照、截图和 Test 报告位于 `tests/browser/output/`，登录状态按需保存到 `tests/browser/.auth/`，均被 Git 忽略。旧 MCP 浏览器资料和输出仍保留在 `.codex/playwright_mcp/` 的本地忽略目录中。建议用 `chmod 600` 限制凭据文件权限。
 
-TAPD 仅开放配置中的读取工具。查询“我的待办”时，默认查询整个项目的需求 `owner` 和缺陷 `current_owner`，不限定迭代。成员接口若返回 403，需相应接口权限。
+TAPD 开放配置中的读取工具，以及工作流流转查询、缺陷更新、需求/任务更新和评论创建工具。写入操作仅在用户授权的任务范围内执行；更新前先核对当前状态和可用流转，更新后读取确认。查询“我的待办”时，默认查询整个项目的需求 `owner` 和缺陷 `current_owner`，不限定迭代。成员接口若返回 403，需相应接口权限。
 
 ## DBHub
 
@@ -28,7 +28,7 @@ TAPD 支持原 Node 实现，以及 Python 包 `mcp-server-tapd` 的 `bin/mcp-se
 Python 模式将 `TAPD_API_TOKEN` 映射到 `TAPD_ACCESS_TOKEN`，将 `TAPD_CURRENT_USER` 映射到 `CURRENT_USER_NICK`，强制使用 stdio。
 可用 `TAPD_API_BASE_URL`、`TAPD_BASE_URL` 指定服务地址，默认使用 TAPD 官方站点。
 不要指向另行加载个人 credentials.env 的包装脚本，以免覆盖项目凭据。
-配置保留两种实现的只读工具白名单；Python 查询须显式传入本项目 `workspace_id`，不会自动将项目 ID 注入每次调用。
+配置保留两种实现的读取工具白名单，并开放 Python 实现的 get_workflows_all_transitions、update_bug、update_story_or_task、create_comments；Python 查询须显式传入本项目 `workspace_id`，不会自动将项目 ID 注入每次调用。
 
 运行时兼容不代表任意同名 MCP 的参数和 API 兼容：Playwright 入口须支持现有 Chrome/profile/output 参数，DBHub 入口须支持现有 `--config` 和只读配置。
 Playwright 和 DBHub 的已验证安装包是 Node 实现，不需要改成 Python。
