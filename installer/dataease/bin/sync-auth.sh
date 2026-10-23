@@ -1,12 +1,10 @@
 #!/bin/bash
 
+#
 # 同步执行器鉴权只在部署阶段初始化，应用启动不得自动更换密钥
+#
 sync_auth_enabled() {
-   [[ "${DE_INSTALL_MODE:-community}" != "community" ]] && {
-      [[ "${DE_EXTERNAL_SYNC_TASK:-false}" != "true" ]] ||
-      [[ "${DE_SYNC_AUTH_REQUIRED:-false}" == "true" ]] ||
-      [[ -n "${DE_SYNC_AUTH_SECRET:-}" ]]
-   }
+   [[ "${DE_INSTALL_MODE:-community}" != "community" ]]
 }
 
 # 只输出错误类型和处理办法，不包含密钥内容
@@ -82,4 +80,67 @@ sync_auth_prepare() (
       exit 1
    }
    tmp_file=""
+)
+
+#
+# 仅备份鉴权迁移涉及的现有配置，备份与原目录使用相同的访问边界
+#
+sync_auth_backup() (
+   local run_base="$1"
+   [[ -d "$run_base" ]] || exit 0
+   umask 077
+   local backup_dir
+   backup_dir=$(mktemp -d "$run_base/.sync-auth-backup.XXXXXXXX") || {
+      sync_auth_error BACKUP_FAILED "无法创建升级配置备份" "检查运行目录权限和磁盘空间，旧服务尚未停止，修复后重试升级"
+      exit 1
+   }
+   local file
+   for file in .env docker-compose.yml docker-compose-task.yml; do
+      if [[ -f "$run_base/$file" ]]; then
+         cp "$run_base/$file" "$backup_dir/$file" && chmod 600 "$backup_dir/$file" || {
+            sync_auth_error BACKUP_FAILED "无法备份升级配置" "检查原配置读取权限及磁盘空间，旧服务尚未停止，修复后重试升级"
+            exit 1
+         }
+      fi
+   done
+   printf '同步执行器鉴权升级配置已备份至：%s\n' "$backup_dir"
+)
+
+#
+# 同步鉴权两端必须使用配套镜像，同标签升级也不复用未经确认的旧镜像
+#
+sync_auth_prepare_images() (
+   sync_auth_enabled || exit 0
+   local package_dir="$1"
+   local compose_file image archive candidate
+   local files=(docker-compose.yml)
+   if [[ "${DE_EXTERNAL_SYNC_TASK:-false}" != "true" ]]; then
+      files+=(docker-compose-task.yml)
+   fi
+   for compose_file in "${files[@]}"; do
+      image=$(awk '$1 == "image:" { print $2; exit }' "$package_dir/dataease/$compose_file")
+      if [[ -z "$image" || "$image" == *DE_TAG* ]]; then
+         sync_auth_error IMAGE_CONFIG_INVALID "安装包中的同步鉴权镜像配置无效" "使用已完成版本替换的配套安装包，不要直接运行源码目录中的安装脚本"
+         exit 1
+      fi
+      if [[ -d "$package_dir/images" ]]; then
+         archive=""
+         for candidate in "$package_dir/images/${image##*/}.tar.gz" "$package_dir/images/${image##*/}.tar"; do
+            [[ -f "$candidate" ]] && archive="$candidate" && break
+         done
+         if [[ -z "$archive" ]]; then
+            sync_auth_error IMAGE_ARCHIVE_MISSING "离线包缺少主服务或同步执行器的配套镜像" "使用包含两端镜像的完整离线包；不要以本地同标签旧镜像代替"
+            exit 1
+         fi
+         docker load -i "$archive" || {
+            sync_auth_error IMAGE_LOAD_FAILED "同步鉴权配套镜像加载失败" "检查离线镜像文件完整性、Docker 状态及磁盘空间后重新升级"
+            exit 1
+         }
+      else
+         docker pull "$image" || {
+            sync_auth_error IMAGE_PULL_FAILED "同步鉴权配套镜像拉取失败" "检查镜像仓库访问、网络和磁盘空间后重新升级，勿只更新主服务"
+            exit 1
+         }
+      fi
+   done
 )
