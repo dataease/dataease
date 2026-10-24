@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import request from '@/config/axios'
+import { queryDefaultSnapshot } from '@/utils/queryDefaultSnapshot'
 import { useLinkStoreWithOut } from '@/store/modules/link'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import router from '@/router'
 import { useEmitt } from '@/hooks/web/useEmitt'
@@ -63,7 +64,10 @@ const props = defineProps({
   ticketArgs: propTypes.string.def(null)
 })
 
+let reportDefaultsKey: string | undefined
 const loadCanvasDataAsync = async (dvId, dvType, ignoreParams = false) => {
+  if (reportDefaultsKey) delete window[reportDefaultsKey]
+  reportDefaultsKey = undefined
   const jumpInfoParam = embeddedStore.jumpInfoParam || router.currentRoute.value.query.jumpInfoParam
   let jumpParam
   // 获取外部跳转参数
@@ -147,6 +151,10 @@ const loadCanvasDataAsync = async (dvId, dvType, ignoreParams = false) => {
         }
       }
       state.canvasDataPreview = canvasDataResult
+      if (router.currentRoute.value.query.taskId) {
+        reportDefaultsKey = `de-report-query-defaults-${dvId}`
+        window[reportDefaultsKey] = () => queryDefaultSnapshot(canvasDataResult, t)
+      }
       state.canvasStylePreview = canvasStyleResult
       state.canvasViewInfoPreview = canvasViewInfoPreview
       if (state.editPreview) {
@@ -240,6 +248,10 @@ onMounted(async () => {
       await prepareForPrint()
     }
   })
+})
+
+onUnmounted(() => {
+  if (reportDefaultsKey) delete window[reportDefaultsKey]
 })
 
 const dataVKeepSize = computed(() => {

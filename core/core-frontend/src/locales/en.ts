@@ -4468,6 +4468,8 @@ export default {
       render_time: 'render time(s)'
     },
     filter: {
+      snapshot_unrecorded: 'Not recorded',
+      snapshot_not_applied: 'No filter applied',
       title: 'Set Query Component Default Values',
       reset: 'Restore Default Values',
       reset_all: 'Restore All Query Condition Default Values',

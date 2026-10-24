@@ -4338,6 +4338,8 @@ export default {
       data_permission_tips: '接收人若为系统内用户，则遵循设置的数据权限规则；否则使用创建人的权限'
     },
     filter: {
+      snapshot_unrecorded: '未记录',
+      snapshot_not_applied: '未应用筛选',
       title: '设置查询组件默认值',
       reset: '还原默认值',
       reset_all: '还原所有查询条件默认值',
