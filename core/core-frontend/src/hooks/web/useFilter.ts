@@ -1,3 +1,4 @@
+import { rememberQueryDefault } from '@/utils/queryDefaultSnapshot'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import type { ManipulateType } from 'dayjs'
 import { storeToRefs } from 'pinia'
@@ -478,6 +479,9 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               displayType,
               displayId
             )
+          }
+          if (dvMainStore.canvasAttachInfo?.taskId) {
+            rememberQueryDefault(item, selectValue, firstLoad)
           }
           if (
             !!selectValue?.length ||

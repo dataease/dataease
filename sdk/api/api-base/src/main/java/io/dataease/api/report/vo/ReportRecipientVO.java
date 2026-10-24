@@ -22,6 +22,7 @@ public class ReportRecipientVO {
     @JsonSerialize(using = ToStringSerializer.class)
     private Long artifactId;
     private String title;
+    /** Query component defaults captured at generation; null means unrecorded, empty means not set. */
     private String filter;
     private Long generatedTime;
     private List<String> files;

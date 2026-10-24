@@ -4331,6 +4331,8 @@ export default {
       render_time: '渲染時間（秒）'
     },
     filter: {
+      snapshot_unrecorded: '未記錄',
+      snapshot_not_applied: '未套用篩選',
       title: '設置查詢組件默認值',
       reset: '還原默認值',
       reset_all: '還原所有查詢條件默認值',
