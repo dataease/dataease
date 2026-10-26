@@ -246,15 +246,14 @@ const editFilter = () => {
 const quickCalc = param => {
   switch (param.type) {
     case 'none':
-      // 选择占比外，设置自动
-      resetValueFormatter(item.value)
+      if (chart.value.type !== 'table-normal') {
+        resetValueFormatter(item.value)
+      }
       item.value.compareCalc.type = 'none'
       emit('onQuotaItemChange', item.value)
       break
     case 'setting':
-      // 选择占比外，设置自动
-      // 指标卡不需要重置数值格式
-      if (chart.value.type !== 'indicator') {
+      if (!['indicator', 'table-normal'].includes(chart.value.type)) {
         resetValueFormatter(item.value)
       }
       editCompare()
