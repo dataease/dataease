@@ -217,7 +217,7 @@ function refreshActiveSheet(accessor: IAccessor): void {
     return
   }
 
-  const currentRender = accessor.get(IRenderManagerService).getRenderById(unitId) as any
+  const currentRender = accessor.get(IRenderManagerService).getRenderUnitById(unitId) as any
   currentRender?.mainComponent?.makeDirty?.(true)
   currentRender?.scene?.makeDirty?.(true)
   workbook?.getActiveSheet?.()?.refreshCanvas?.()

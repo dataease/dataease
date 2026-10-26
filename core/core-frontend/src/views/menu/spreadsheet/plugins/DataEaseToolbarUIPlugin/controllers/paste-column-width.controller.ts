@@ -3,7 +3,9 @@ import {
   DEFAULT_WORKSHEET_COLUMN_WIDTH_KEY,
   Disposable,
   IConfigService,
-  IUniverInstanceService
+  IUniverInstanceService,
+  UniverInstanceType,
+  type Workbook
 } from '@univerjs/core'
 import { SetWorksheetColWidthMutation, SetWorksheetColWidthMutationFactory } from '@univerjs/sheets'
 import { ISheetClipboardService, PREDEFINED_HOOK_NAME_PASTE } from '@univerjs/sheets-ui'
@@ -30,7 +32,7 @@ export class PasteColumnWidthController extends Disposable {
             subUnitId,
             range: { rows, cols }
           } = pasteTo
-          const workbook = instances.getUniverSheetInstance(unitId)
+          const workbook = instances.getUnit<Workbook>(unitId, UniverInstanceType.UNIVER_SHEET)
           const worksheet = workbook && workbook.getSheetBySheetId(subUnitId)
           if (!worksheet || !rows.length || !cols.length) return empty
           const configuredWidth = config.getConfig<number>(DEFAULT_WORKSHEET_COLUMN_WIDTH_KEY)

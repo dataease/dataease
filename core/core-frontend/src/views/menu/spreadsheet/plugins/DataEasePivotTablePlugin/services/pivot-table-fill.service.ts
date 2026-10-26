@@ -585,7 +585,7 @@ export class PivotTableFillService {
     const workbook = univerApi.getActiveWorkbook?.()
     const unitId = workbook?.getId?.() || workbook?.getUnitId?.()
     const currentRender = unitId
-      ? this.renderManagerService.getRenderById(unitId) as any
+      ? (this.renderManagerService.getRenderUnitById(unitId) as any)
       : undefined
     currentRender?.mainComponent?.makeDirty?.(true)
     currentRender?.scene?.makeDirty?.(true)

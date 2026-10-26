@@ -1,7 +1,6 @@
 import type { IAccessor } from '@univerjs/core'
 import { LocaleService, UniverInstanceType } from '@univerjs/core'
-import { FunctionType, type IFunctionInfo } from '@univerjs/engine-formula'
-import { IDescriptionService } from '@univerjs/sheets-formula'
+import { FunctionType, IDescriptionService, type IFunctionInfo } from '@univerjs/engine-formula'
 import { InsertFunctionOperation } from '@univerjs/sheets-formula-ui'
 import type { IMenuSelectorItem } from '@univerjs/ui'
 import { getMenuHiddenObservable, MenuItemType } from '@univerjs/ui'

@@ -11,6 +11,7 @@ import { SetWorksheetActiveOperation } from '@univerjs/sheets'
 import {
   BuiltInUIPart,
   ComponentManager,
+  IconManager,
   IMenuManagerService,
   ISidebarService,
   IUIPartsService,
@@ -75,6 +76,7 @@ export class DataEaseFilterController extends Disposable {
     @ISidebarService private readonly _sidebarService: ISidebarService,
     @IUIPartsService private readonly _uiPartsService: IUIPartsService,
     @Inject(ComponentManager) private readonly _componentManager: ComponentManager,
+    @Inject(IconManager) private readonly _iconManager: IconManager,
     @Inject(IResourceManagerService) private readonly _resourceManagerService: IResourceManagerService,
     @Inject(IUniverInstanceService)
     private readonly _univerInstanceService: IUniverInstanceService,
@@ -146,6 +148,13 @@ export class DataEaseFilterController extends Disposable {
       this._componentManager.register('DataEaseQueryControlIcon', DataEaseQueryControlIcon, {
         framework: 'vue3'
       })
+    )
+    // IconManager 接收 React 组件，复用 ComponentManager 的 Vue 适配结果。
+    this.disposeWithMe(
+      this._iconManager.register(
+        'DataEaseQueryControlIcon',
+        this._componentManager.get('DataEaseQueryControlIcon')
+      )
     )
     this.disposeWithMe(
       this._componentManager.register(SPREADSHEET_QUERY_BAR_COMPONENT, QueryBarHost)

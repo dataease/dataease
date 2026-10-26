@@ -49,6 +49,7 @@ import type { SpreadsheetRuntimeOptions } from '../types/mode'
 
 import DesignZhCN from '@univerjs/design/locale/zh-CN'
 import DocsUIZhCN from '@univerjs/docs-ui/locale/zh-CN'
+import EngineFormulaZhCN from '@univerjs/engine-formula/locale/zh-CN'
 import FindReplaceZhCN from '@univerjs/find-replace/locale/zh-CN'
 import SheetsConditionalFormattingUIZhCN from '@univerjs/sheets-conditional-formatting-ui/locale/zh-CN'
 import SheetsCrosshairHighlightZhCN from '@univerjs/sheets-crosshair-highlight/locale/zh-CN'
@@ -67,6 +68,7 @@ import UIZhCN from '@univerjs/ui/locale/zh-CN'
 
 import DesignZhTW from '@univerjs/design/locale/zh-TW'
 import DocsUIZhTW from '@univerjs/docs-ui/locale/zh-TW'
+import EngineFormulaZhTW from '@univerjs/engine-formula/locale/zh-TW'
 import FindReplaceZhTW from '@univerjs/find-replace/locale/zh-TW'
 import SheetsConditionalFormattingUIZhTW from '@univerjs/sheets-conditional-formatting-ui/locale/zh-TW'
 import SheetsCrosshairHighlightZhTW from '@univerjs/sheets-crosshair-highlight/locale/zh-TW'
@@ -85,6 +87,7 @@ import UIZhTW from '@univerjs/ui/locale/zh-TW'
 
 import DesignEnUS from '@univerjs/design/locale/en-US'
 import DocsUIEnUS from '@univerjs/docs-ui/locale/en-US'
+import EngineFormulaEnUS from '@univerjs/engine-formula/locale/en-US'
 import FindReplaceEnUS from '@univerjs/find-replace/locale/en-US'
 import SheetsConditionalFormattingUIEnUS from '@univerjs/sheets-conditional-formatting-ui/locale/en-US'
 import SheetsCrosshairHighlightEnUS from '@univerjs/sheets-crosshair-highlight/locale/en-US'
@@ -123,6 +126,7 @@ export interface UniverInstance {
   dispose: () => void
 }
 
+// 1.x 将函数说明移到公式引擎，需与表格公式的进度文案一并加载。
 const LOCALES_MAP = {
   [LocaleType.ZH_CN]: mergeLocalePatches(
     DesignZhCN,
@@ -132,6 +136,7 @@ const LOCALES_MAP = {
     SheetsUIZhCN,
     SheetsFormulaUIZhCN,
     SheetsFormulaZhCN,
+    EngineFormulaZhCN,
     SheetsNumfmtUIZhCN,
     SheetsFilterUIZhCN,
     SheetsConditionalFormattingUIZhCN,
@@ -152,6 +157,7 @@ const LOCALES_MAP = {
     SheetsUIEnUS,
     SheetsFormulaUIEnUS,
     SheetsFormulaEnUS,
+    EngineFormulaEnUS,
     SheetsNumfmtUIEnUS,
     SheetsFilterUIEnUS,
     SheetsConditionalFormattingUIEnUS,
@@ -172,6 +178,7 @@ const LOCALES_MAP = {
     SheetsUIZhTW,
     SheetsFormulaUIZhTW,
     SheetsFormulaZhTW,
+    EngineFormulaZhTW,
     SheetsNumfmtUIZhTW,
     SheetsFilterUIZhTW,
     SheetsConditionalFormattingUIZhTW,
