@@ -259,6 +259,7 @@ import barStackHorizontal from '@/assets/svg/bar-stack-horizontal.svg'
 import barStack from '@/assets/svg/bar-stack.svg'
 import bar from '@/assets/svg/bar.svg'
 import bidirectionalBar from '@/assets/svg/bidirectional-bar.svg'
+import boxPlot from '@/assets/svg/chart-light/icon_box-plot_light.svg'
 import bubbleMap from '@/assets/svg/bubble-map.svg'
 import chartMixGroup from '@/assets/svg/chart-mix-group.svg'
 import chartMixStack from '@/assets/svg/chart-mix-stack.svg'
@@ -363,6 +364,7 @@ const iconMap = {
   'bar-stack': barStack,
   bar: bar,
   'bidirectional-bar': bidirectionalBar,
+  'box-plot': boxPlot,
   'bubble-map': bubbleMap,
   'chart-mix-group': chartMixGroup,
   'chart-mix-stack': chartMixStack,

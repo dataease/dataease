@@ -4580,7 +4580,11 @@ export default {
       reci_permission: '接收人權限',
       data_permission_tips: '接收人若為系統內用戶，則遵循設置的數據權限規則；否則使用創建人的權限'
     },
+    run_confirm:
+      '本次執行將依目前設定產生並發送新報告。執行完成後，先前保留的報告副本將失效，無法繼續補發。是否執行？',
     filter: {
+      snapshot_unrecorded: '未記錄',
+      snapshot_not_applied: '未套用篩選',
       title: '設置查詢組件默認值',
       reset: '還原默認值',
       reset_all: '還原所有查詢條件默認值',
