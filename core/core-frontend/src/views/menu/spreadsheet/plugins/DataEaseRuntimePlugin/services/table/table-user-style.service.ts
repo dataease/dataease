@@ -10,6 +10,7 @@ import {
   ICommandService,
   IUniverInstanceService,
   Inject,
+  UniverInstanceType,
   type ICommandInfo,
   type IMutationInfo,
   type IRange,
@@ -74,7 +75,10 @@ export class TableUserStyleService extends Disposable {
       return
     }
 
-    const workbook = this.univerInstanceService.getUniverSheetInstance(params.unitId)
+    const workbook = this.univerInstanceService.getUnit<Workbook>(
+      params.unitId,
+      UniverInstanceType.UNIVER_SHEET
+    )
     const worksheet = workbook?.getSheetBySheetId(params.subUnitId)
     if (!workbook || !worksheet) {
       return
@@ -152,7 +156,10 @@ export class TableUserStyleService extends Disposable {
 
     const unitId = params.unitId || fallbackUnitId
     const sheetId = params.subUnitId || fallbackSheetId
-    const workbook = this.univerInstanceService.getUniverSheetInstance(unitId)
+    const workbook = this.univerInstanceService.getUnit<Workbook>(
+      unitId,
+      UniverInstanceType.UNIVER_SHEET
+    )
     const worksheet = workbook?.getSheetBySheetId(sheetId)
     if (!workbook || !worksheet) {
       return true

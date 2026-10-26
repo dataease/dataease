@@ -121,7 +121,7 @@ export const createDataEaseRibbonComponent = (
       let registeredUnitId: string | undefined
       const updateSurface = () => {
         const workbook = instanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET)
-        const render = workbook ? renderManager.getRenderById(workbook.getUnitId()) : undefined
+        const render = workbook ? renderManager.getRenderUnitById(workbook.getUnitId()) : undefined
         const canvas = render?.engine.getCanvasElement() ?? null
         registeredUnitId = render?.unitId
         // Radix 类型限定 div，实际仅使用 contains；只登记画布，避免把浮层也纳入关闭区域。

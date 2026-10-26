@@ -7,7 +7,6 @@ import {
   type IMutationInfo,
   ObjectMatrix
 } from '@univerjs/core'
-import { LinkIcon } from '@univerjs/icons'
 import {
   type ISetRangeValuesMutationParams,
   SetRangeValuesMutation,
@@ -21,6 +20,7 @@ import {
 import {
   BuiltInUIPart,
   ComponentManager,
+  IconManager,
   IMenuManagerService,
   IShortcutService,
   IUIPartsService,
@@ -69,6 +69,7 @@ export class DataEaseToolbarUIController extends Disposable {
     @IUIPartsService private readonly uiPartsService: IUIPartsService,
     @IFormatPainterService private readonly formatPainterService: IFormatPainterService,
     @Inject(ComponentManager) private readonly componentManager: ComponentManager,
+    @Inject(IconManager) private readonly iconManager: IconManager,
     @Inject(TableUserStyleService)
     private readonly tableUserStyleService: TableUserStyleService,
     @Inject(SpreadsheetModeService)
@@ -168,11 +169,17 @@ export class DataEaseToolbarUIController extends Disposable {
   }
 
   private initComponents(): void {
-    this.disposeWithMe(this.componentManager.register('LinkIcon', LinkIcon))
     this.disposeWithMe(
       this.componentManager.register('DataEaseInsertIcon', DataEaseInsertIcon, {
         framework: 'vue3'
       })
+    )
+    // IconManager 接收 React 组件，复用 ComponentManager 的 Vue 适配结果。
+    this.disposeWithMe(
+      this.iconManager.register(
+        'DataEaseInsertIcon',
+        this.componentManager.get('DataEaseInsertIcon')
+      )
     )
     this.disposeWithMe(
       this.componentManager.register(DATAEASE_INSERT_DROPDOWN_COMPONENT, DataEaseInsertDropdown, {

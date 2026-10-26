@@ -57,6 +57,7 @@ import {
   Inject,
   type ICommandInfo,
   type IRange,
+  type Workbook,
   UniverInstanceType
 } from '@univerjs/core'
 import { ElMessage } from 'element-plus-secondary'
@@ -508,7 +509,7 @@ export class PivotTableEditProtectionService {
     sheetId: string
   ): ProtectedRange {
     const workbook = unitId
-      ? this.univerInstanceService.getUniverSheetInstance(unitId)
+      ? this.univerInstanceService.getUnit<Workbook>(unitId, UniverInstanceType.UNIVER_SHEET)
       : undefined
     const worksheet = workbook?.getSheetBySheetId?.(sheetId)
     const expanded: ProtectedRange = { ...range, sheetId }
@@ -581,7 +582,7 @@ export class PivotTableEditProtectionService {
     const unitId = params.unitId || this.getCurrentUnitId()
     const sheetId = params.subUnitId || this.getCurrentSheetId(unitId)
     const workbook = unitId
-      ? this.univerInstanceService.getUniverSheetInstance(unitId)
+      ? this.univerInstanceService.getUnit<Workbook>(unitId, UniverInstanceType.UNIVER_SHEET)
       : undefined
     const worksheet = sheetId ? workbook?.getSheetBySheetId?.(sheetId) : undefined
     if (!worksheet) {
@@ -604,7 +605,7 @@ export class PivotTableEditProtectionService {
 
   private getCurrentSheetId(unitId?: string): string | undefined {
     const workbook = unitId
-      ? this.univerInstanceService.getUniverSheetInstance(unitId)
+      ? this.univerInstanceService.getUnit<Workbook>(unitId, UniverInstanceType.UNIVER_SHEET)
       : this.univerInstanceService.getCurrentUnitOfType<any>(UniverInstanceType.UNIVER_SHEET)
     return workbook?.getActiveSheet?.()?.getSheetId?.()
   }
