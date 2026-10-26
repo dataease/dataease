@@ -912,6 +912,8 @@ export default {
     switch_success: 'Switch successful',
     user_name_pattern_error:
       "Only numbers and letters and {'@'}._- are allowed, and must start with a number or letter",
+    initial_password_policy:
+      'When the initial password is disabled, your new password must be different from it.',
     pwd_pattern_error:
       '6-20 characters and at least one uppercase letter, lowercase letter, number, special character',
     special_characters_are_not_supported: 'Special characters are not allowed',
