@@ -1128,6 +1128,11 @@ const autoStyle = computed(() => {
     font-size: v-bind(boxWidth);
   }
 
+  /* element-plus hardcodes .ed-range-separator at 14px and it ignores --ed-font-size-base */
+  :deep(.ed-range-separator) {
+    font-size: v-bind(boxWidth);
+  }
+
   .no-list-label {
     width: 100%;
     position: absolute;
