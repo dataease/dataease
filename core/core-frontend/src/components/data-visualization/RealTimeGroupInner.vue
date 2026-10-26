@@ -347,7 +347,7 @@ const expandClick = component => {
                 >
                   <el-icon
                     class="component-base component-icon-display"
-                    v-show="!getComponent(index).isShow"
+                    v-show="!getComponent(index)?.isShow"
                     @click="showComponent"
                   >
                     <Icon name="dv-eye-close"><dvEyeClose class="svg-icon opt-icon" /></Icon>
