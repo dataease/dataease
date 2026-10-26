@@ -79,7 +79,9 @@ const menuOpt = optName => {
 const cut = () => {
   if (curComponent.value) {
     const curInfo = getCurInfo()
-    copyStore.cut(curInfo.componentData)
+    if (curInfo) {
+      copyStore.cut(curInfo.componentData)
+    }
   } else if (areaData.value.components.length) {
     copyStore.cut()
   }
@@ -143,7 +145,9 @@ const paste = () => {
 const deleteComponent = () => {
   if (curComponent.value && !isGroupArea.value) {
     const curInfo = getCurInfo()
-    dvMainStore.deleteComponentById(curComponent.value?.id, curInfo.componentData)
+    if (curInfo) {
+      dvMainStore.deleteComponentById(curComponent.value?.id, curInfo.componentData)
+    }
   } else if (areaData.value.components.length) {
     areaData.value.components.forEach(component => {
       dvMainStore.deleteComponentById(component.id)
