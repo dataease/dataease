@@ -779,6 +779,7 @@ export default {
     password_changed_relogin: '密碼變更，請重新登入',
     switch_success: '切換成功',
     user_name_pattern_error: "只允許數字字母以及{'@'}._-且必須數字或字母開頭",
+    initial_password_policy: '系統啟用「停用初始密碼」時，新密碼不能與系統初始密碼相同。',
     pwd_pattern_error: '6-20位元且至少一位大寫字母、小寫字母、數字、特殊字元',
     special_characters_are_not_supported: '不允許特殊字元',
     phone_format: '請填入正確格式手機號碼',
