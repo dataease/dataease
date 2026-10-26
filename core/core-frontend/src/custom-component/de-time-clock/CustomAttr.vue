@@ -1,16 +1,24 @@
 <script setup lang="ts">
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
-
+import ComponentPosition from '@/components/visualization/common/ComponentPosition.vue'
+import { useI18n } from '@/hooks/web/useI18n'
 import { storeToRefs } from 'pinia'
-import { onMounted, reactive } from 'vue'
+import { computed } from 'vue'
 
-const state = reactive({})
+withDefaults(
+  defineProps<{
+    themes?: EditorTheme
+  }>(),
+  {
+    themes: 'dark'
+  }
+)
 
+const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
-const snapshotStore = snapshotStoreWithOut()
+const { dvInfo } = storeToRefs(dvMainStore)
 
-const { curComponent } = storeToRefs(dvMainStore)
+const dashboardActive = computed(() => dvInfo.value.type === 'dashboard')
 </script>
 
 <template>
