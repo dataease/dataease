@@ -367,7 +367,18 @@ const execute = row => {
     ElMessage.error(t('report.task_running_tips'))
     return
   }
-  ElMessageBox.confirm(t('commons.confirm') + t('sync_task.running_one'), {
+  const fire = () => {
+    wsCache.set(key, 1, { exp: 5 })
+    reportFireApi(row.id).then(() => {
+      ElMessage.success(t('report.start_success'))
+      search()
+    })
+  }
+  if (row.lastExecTime == null) {
+    fire()
+    return
+  }
+  ElMessageBox.confirm(t('report.run_confirm'), {
     confirmButtonText: t('commons.confirm'),
     cancelButtonText: t('commons.cancel'),
     showCancelButton: true,
@@ -375,13 +386,7 @@ const execute = row => {
     type: 'warning',
     autofocus: false,
     showClose: false
-  }).then(() => {
-    wsCache.set(key, 1, { exp: 5 })
-    reportFireApi(row.id).then(() => {
-      ElMessage.success(t('report.start_success'))
-      search()
-    })
-  })
+  }).then(fire)
 }
 
 const delHandler = row => {

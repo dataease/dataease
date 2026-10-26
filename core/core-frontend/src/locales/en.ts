@@ -4748,7 +4748,11 @@ export default {
       data_permission_tips:
         "If the recipient is a system user, the data permission rules will be applied; otherwise, the creator's permission will be used"
     },
+    run_confirm:
+      'Generate and send a new report using the current settings? When this execution completes, previous report copies expire and cannot be resent.',
     filter: {
+      snapshot_unrecorded: 'Not recorded',
+      snapshot_not_applied: 'No filter applied',
       title: 'Set Query Component Default Values',
       reset: 'Restore Default Values',
       reset_all: 'Restore All Query Condition Default Values',
