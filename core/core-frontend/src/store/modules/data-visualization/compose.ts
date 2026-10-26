@@ -12,6 +12,7 @@ import {
 import { createGroupStyle, getComponentRotatedStyle } from '@/utils/style'
 import eventBus from '@/utils/eventBus'
 import { canvasIdMapCheck, checkJoinGroup, isTabCanvas } from '@/utils/canvasUtils'
+import { getComponentById } from '@/store/modules/data-visualization/common'
 import { useI18n } from '@/hooks/web/useI18n'
 const { t } = useI18n()
 
@@ -61,9 +62,12 @@ export const composeStore = defineStore('compose', {
     },
     updateGroupBorder(canvasId) {
       if (canvasId) {
-        // 1.查找所属分组
+        // 1.查找所属分组 分组可能位于 Tab 或其他分组内部 需要在整棵画布树中查找
         const groupId = canvasId.replace('Group-', '')
-        const sourceGroupComponent = componentData.value.filter(ele => ele.id === groupId)[0]
+        const sourceGroupComponent = getComponentById(groupId)
+        if (!sourceGroupComponent) {
+          return
+        }
         const sourceSubComponents = sourceGroupComponent.propValue
         // 2. 还原分组内部组件再主画布位置
         const sourceParentStyle = { ...sourceGroupComponent.style }
