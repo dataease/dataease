@@ -525,20 +525,20 @@ const setTreeDefault = () => {
   }
 }
 
-const setTreeDefaultBatch = ele => {
-  if (!!ele.checkedFields.length) {
+const setTreeDefaultBatch = condition => {
+  if (!!condition.checkedFields.length) {
     let tableId = ''
-    fields.value.forEach(ele => {
+    fields.value.forEach(chart => {
       if (
-        ele.checkedFields.includes(ele.componentId) &&
-        ele.checkedFieldsMap[ele.componentId] &&
+        condition.checkedFields.includes(chart.componentId) &&
+        condition.checkedFieldsMap[chart.componentId] &&
         !tableId
       ) {
-        tableId = datasetFieldList.value.find(itx => itx.id === ele.componentId)?.tableId
+        tableId = datasetFieldList.value.find(itx => itx.id === chart.componentId)?.tableId
       }
     })
-    if (tableId && !ele.treeDatasetId) {
-      ele.treeDatasetId = tableId
+    if (tableId && !condition.treeDatasetId) {
+      condition.treeDatasetId = tableId
     }
   }
 }
@@ -1333,8 +1333,8 @@ const validate = () => {
         setTreeDefaultBatch(ele)
         if (!ele.treeDatasetId) {
           ElMessage.error(t('data_set.dataset_cannot_be'))
+          return true
         }
-        return true
       }
 
       if (!ele.treeFieldList?.length) {
