@@ -185,7 +185,8 @@ import { ShorthandMode } from '@/Types'
 import { checkFilterRemove } from '@/custom-component/v-query/QueryUtils'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
-const { tabMoveInActiveId, bashMatrixInfo, editMode, mobileInPc } = storeToRefs(dvMainStore)
+const { tabMoveInActiveId, bashMatrixInfo, editMode, mobileInPc, curComponent, curTabName } =
+  storeToRefs(dvMainStore)
 const tabComponentRef = ref(null)
 let carouselTimer = null
 const { t } = useI18n()
@@ -401,24 +402,42 @@ function addTab() {
 }
 
 function deleteCur(param) {
+  const tabs = element.value.propValue
+  const index = tabs.findIndex(tab => tab.name === param.name)
+  if (index === -1) return
+
   state.curItem = param
-  let len = element.value.propValue.length
-  while (len--) {
-    if (element.value.propValue[len].name === param.name) {
-      const deletedTab = element.value.propValue[len]
-      element.value.propValue.splice(len, 1)
-      const activeIndex =
-        (len - 1 + element.value.propValue.length) % element.value.propValue.length
-      element.value.editableTabsValue = element.value.propValue[activeIndex].name
-      state.tabShow = false
-      nextTick(() => {
-        state.tabShow = true
-        deletedTab.componentData?.forEach(tabComponent => {
-          checkFilterRemove(tabComponent)
-        })
-      })
-    }
+  const [deletedTab] = tabs.splice(index, 1)
+  activatedTabs.value.delete(deletedTab.name)
+  if (!tabs.some(tab => tab.name === element.value.editableTabsValue && !tab.hidden)) {
+    element.value.editableTabsValue = tabs.find(tab => !tab.hidden)?.name || ''
   }
+
+  const containsCurrentComponent = components =>
+    components?.some(
+      component =>
+        component.id === curComponent.value?.id ||
+        (component.component === 'Group' && containsCurrentComponent(component.propValue)) ||
+        (component.component === 'DeTabs' &&
+          component.propValue?.some(tab => containsCurrentComponent(tab.componentData)))
+    )
+  const selectedComponentRemoved =
+    curComponent.value && containsCurrentComponent(deletedTab.componentData)
+  const selectedTabRemoved = curTabName.value === deletedTab.name
+  if (selectedComponentRemoved) {
+    dvMainStore.setCurComponent({ component: null, index: null })
+  }
+  if (selectedComponentRemoved || selectedTabRemoved) {
+    dvMainStore.setCurTabName(element.value.editableTabsValue || null)
+  }
+
+  state.tabShow = false
+  nextTick(() => {
+    state.tabShow = true
+    deletedTab.componentData?.forEach(tabComponent => {
+      checkFilterRemove(tabComponent)
+    })
+  })
 }
 function copyCur(param) {
   addTab()
@@ -757,9 +776,7 @@ const initCarousel = () => {
 
 onMounted(() => {
   document.addEventListener('visibilitychange', viewToolTipsChange)
-  if (element.value.propValue.length > 0) {
-    element.value.editableTabsValue = element.value.propValue[0].name
-  }
+  element.value.editableTabsValue = element.value.propValue.find(tab => !tab.hidden)?.name || ''
   initActivatedTab()
   calcTabLength()
   if (['canvas', 'canvasDataV', 'edit'].includes(showPosition.value) && !mobileInPc.value) {
