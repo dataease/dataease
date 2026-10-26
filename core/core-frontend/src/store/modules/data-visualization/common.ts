@@ -18,46 +18,47 @@ export const getCurInfo = (componentId?) => {
   }
 }
 
-export const getCurInfoById = curComponentId => {
-  if (curComponentId) {
-    let curIndex = 0
-    let curTabIndex = 0
-    let curComponentData = componentData.value
-    let targetComponent = null
-    componentData.value.forEach((component, index) => {
-      if (curComponentId === component.id) {
-        curIndex = index
-        targetComponent = component
+const findComponentInfo = (components, componentId, currentTabIndex = 0) => {
+  if (!Array.isArray(components)) {
+    return null
+  }
+  for (let index = 0; index < components.length; index++) {
+    const component = components[index]
+    if (!component) {
+      continue
+    }
+    if (component.id === componentId) {
+      return {
+        index,
+        tabIndex: currentTabIndex,
+        targetComponent: component,
+        componentData: components
       }
-      if (component.component === 'Group') {
-        component.propValue.forEach((subComponent, subIndex) => {
-          if (curComponentId === subComponent.id) {
-            curIndex = subIndex
-            targetComponent = subComponent
-            curComponentData = component.propValue
-          }
-        })
+    }
+    if (component.component === 'Group' && Array.isArray(component.propValue)) {
+      const info = findComponentInfo(component.propValue, componentId, currentTabIndex)
+      if (info) {
+        return info
       }
-      if (component.component === 'DeTabs') {
-        component.propValue.forEach((tabItem, tabIndex) => {
-          curTabIndex = tabIndex
-          tabItem.componentData?.forEach((tabComponent, subIndex) => {
-            if (curComponentId === tabComponent.id) {
-              curIndex = subIndex
-              targetComponent = tabComponent
-              curComponentData = tabItem.componentData
-            }
-          })
-        })
+    }
+    if (component.component === 'DeTabs' && Array.isArray(component.propValue)) {
+      for (let tabIndex = 0; tabIndex < component.propValue.length; tabIndex++) {
+        const tabItem = component.propValue[tabIndex]
+        const info = findComponentInfo(tabItem?.componentData, componentId, tabIndex)
+        if (info) {
+          return info
+        }
       }
-    })
-    return {
-      index: curIndex,
-      tabIndex: curTabIndex,
-      targetComponent: targetComponent,
-      componentData: curComponentData
     }
   }
+  return null
+}
+
+export const getCurInfoById = curComponentId => {
+  if (!curComponentId) {
+    return null
+  }
+  return findComponentInfo(componentData.value, curComponentId)
 }
 
 export const componentArraySort = (sortArray, direction = 'down') => {
