@@ -124,7 +124,28 @@ const VanPopupSelect = defineAsyncComponent(() => import('./VanPopupSelect.vue')
 const cascade = computed(() => {
   return cascadeList() || []
 })
-let time
+let time: ReturnType<typeof setTimeout>
+let optionRequestId = 0
+let optionRequestController: AbortController | undefined
+let disposed = false
+const invalidateOptionsRequest = () => {
+  optionRequestId++
+  optionRequestController?.abort()
+  optionRequestController = undefined
+  clearTimeout(time)
+  loading.value = false
+}
+const startOptionsRequest = () => {
+  invalidateOptionsRequest()
+  const requestId = optionRequestId
+  const controller = new AbortController()
+  optionRequestController = controller
+  loading.value = true
+  return {
+    signal: controller.signal,
+    isCurrent: () => !disposed && requestId === optionRequestId
+  }
+}
 const disabledFirstItem = computed(() => {
   const { defaultValueFirstItem, optionValueSource } = props.config
   return defaultValueFirstItem && optionValueSource === 1
@@ -281,12 +302,16 @@ const displayTypeChange = () => {
 }
 
 const handleFieldIdDefaultChange = (val: string[]) => {
-  loading.value = true
-  getEnumValue({
-    fieldIds: val,
-    resultMode: config.value.resultMode || 0
-  })
+  const { signal, isCurrent } = startOptionsRequest()
+  return getEnumValue(
+    {
+      fieldIds: val,
+      resultMode: config.value.resultMode || 0
+    },
+    signal
+  )
     .then(res => {
+      if (!isCurrent()) return
       options.value = (res || [])
         .filter(ele => {
           return (
@@ -305,8 +330,8 @@ const handleFieldIdDefaultChange = (val: string[]) => {
           }
         })
     })
-    .finally(() => {
-      loading.value = false
+    .then(() => {
+      if (!isCurrent()) return
       if (config.value.defaultValueCheck) {
         selectValue.value = Array.isArray(config.value.defaultValue)
           ? [...config.value.defaultValue]
@@ -318,6 +343,12 @@ const handleFieldIdDefaultChange = (val: string[]) => {
       }
       requiredComp()
       if (options.value) setEmptyData()
+    })
+    .catch(error => {
+      if (isCurrent() && !signal.aborted) console.error(error)
+    })
+    .finally(() => {
+      if (isCurrent()) loading.value = false
     })
 }
 
@@ -342,9 +373,10 @@ const customSort = () => {
 
 const handleFieldIdChange = (val: EnumValue) => {
   let change = false
-  loading.value = true
-  enumValueObj(val)
+  const { signal, isCurrent } = startOptionsRequest()
+  return enumValueObj(val, signal)
     .then(res => {
+      if (!isCurrent()) return
       let oldArr = []
       if (selectValue.value?.length && config.value.multiple) {
         oldArr = [...selectValue.value]
@@ -412,14 +444,15 @@ const handleFieldIdChange = (val: EnumValue) => {
         setCascadeValueBack(config.value.mapValue)
       }
     })
-    .finally(() => {
+    .then(() => {
+      if (!isCurrent()) return
       let changeAuth = change
       change = false
       loading.value = false
       if (disabledFirstItem.value && config.value.defaultValueCheck) {
         time = setTimeout(() => {
           clearTimeout(time)
-          setDefaultValueFirstItem()
+          if (isCurrent()) setDefaultValueFirstItem()
         }, 300)
         return
       }
@@ -467,6 +500,12 @@ const handleFieldIdChange = (val: EnumValue) => {
       }
       setCascadeValueBack(config.value.mapValue)
       isFromRemote.value = false
+    })
+    .catch(error => {
+      if (isCurrent() && !signal.aborted) console.error(error)
+    })
+    .finally(() => {
+      if (isCurrent()) loading.value = false
     })
 }
 
@@ -675,7 +714,8 @@ const hasIntersection = (options, selectValue) => {
 }
 
 const setOptions = (num: number) => {
-  if (num !== config.value.optionValueSource) return
+  if (disposed || num !== config.value.optionValueSource) return
+  invalidateOptionsRequest()
   const {
     optionValueSource,
     checkedFieldsMap,
@@ -743,7 +783,12 @@ const setOptions = (num: number) => {
   }
 }
 
-const debounceOptions = debounce(setOptions, 300)
+const pendingOptions = debounce(setOptions, 300)
+const debounceOptions = (num: number) => {
+  if (disposed) return
+  invalidateOptionsRequest()
+  pendingOptions(num)
+}
 
 const init = () => {
   const { defaultValueCheck, multiple: plus, defaultValue, optionValueSource } = config.value
@@ -883,6 +928,9 @@ onMounted(() => {
   eventBus.on('componentClick', componentClick)
 })
 onBeforeUnmount(() => {
+  disposed = true
+  pendingOptions.cancel()
+  invalidateOptionsRequest()
   eventBus.off('componentClick', componentClick)
 })
 

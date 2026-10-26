@@ -111,8 +111,11 @@ export const renameDatasetTree = async (data: DatasetOrFolder): Promise<IRespons
   })
 }
 
-export const enumValueObj = async (data: EnumValue): Promise<Record<string, string>[]> => {
-  return request.post({ url: '/datasetData/enumValueObj', data }).then(res => {
+export const enumValueObj = async (
+  data: EnumValue,
+  signal?: AbortSignal
+): Promise<Record<string, string>[]> => {
+  return request.post({ url: '/datasetData/enumValueObj', data, signal }).then(res => {
     return res?.data
   })
 }
@@ -334,8 +337,8 @@ export const deleteFieldByChartId = async (id): Promise<DatasetDetail[]> => {
   })
 }
 
-export const getEnumValue = async (data): Promise<DatasetDetail[]> => {
-  return request.post({ url: '/datasetData/enumValue', data }).then(res => {
+export const getEnumValue = async (data, signal?: AbortSignal): Promise<DatasetDetail[]> => {
+  return request.post({ url: '/datasetData/enumValue', data, signal }).then(res => {
     return res?.data
   })
 }
