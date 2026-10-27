@@ -85,10 +85,13 @@ router.beforeEach(async (to, from, next) => {
       window.location.href = url
     }
   }
-  await appearanceStore.setAppearance()
-  await appearanceStore.setFontList()
-  await appStore.setXpackValid()
-  const defaultSort = await getDefaultSettings()
+  // 运行模式已确定；这些配置互不依赖，全部加载完成后再继续路由初始化。
+  const [, , , defaultSort] = await Promise.all([
+    appearanceStore.setAppearance(),
+    appearanceStore.setFontList(),
+    appStore.setXpackValid(),
+    getDefaultSettings()
+  ])
   wsCache.set('TreeSort-backend', defaultSort['basic.defaultSort'] ?? '1')
   wsCache.set('open-backend', defaultSort['basic.defaultOpen'] ?? '0')
   wsCache.set('embeddedExportMode-backend', defaultSort['basic.embeddedExportMode'] ?? 'sync')
