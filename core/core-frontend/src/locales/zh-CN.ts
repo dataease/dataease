@@ -1794,6 +1794,7 @@ export default {
     value_can_not_empty: '值不能为空',
     value_error: '值必须为数值',
     threshold: '条件样式',
+    condition_style_apply_to_total_row: '条件样式对总计行生效',
     threshold_range: '阈值区间',
     gauge_threshold_format_error: '格式错误',
     total_cfg: '总计配置',

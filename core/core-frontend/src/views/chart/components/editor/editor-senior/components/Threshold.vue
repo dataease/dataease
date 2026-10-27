@@ -53,6 +53,7 @@ const state = reactive({
   thresholdArr: [],
   editTableThresholdDialog: false,
   tableThresholdArr: [],
+  applyToTotalRow: false,
   editLineThresholdDialog: false,
   lineThresholdArr: []
 })
@@ -67,6 +68,7 @@ const init = () => {
     state.textThresholdArr = JSON.parse(JSON.stringify(state.thresholdForm.textLabelThreshold))
     state.thresholdArr = JSON.parse(JSON.stringify(state.thresholdForm.labelThreshold))
     state.tableThresholdArr = JSON.parse(JSON.stringify(state.thresholdForm.tableThreshold))
+    state.applyToTotalRow = state.thresholdForm.applyToTotalRow ?? false
     state.lineThresholdArr = JSON.parse(JSON.stringify(state.thresholdForm.lineThreshold ?? []))
   }
 }
@@ -175,6 +177,7 @@ const tableThresholdChange = val => {
   state.tableThresholdArr = val
 }
 const editTableThreshold = () => {
+  state.applyToTotalRow = state.thresholdForm.applyToTotalRow ?? false
   state.editTableThresholdDialog = true
 }
 const closeTableThreshold = () => {
@@ -269,6 +272,7 @@ const changeTableThreshold = () => {
     }
   }
   state.thresholdForm.tableThreshold = JSON.parse(JSON.stringify(state.tableThresholdArr))
+  state.thresholdForm.applyToTotalRow = state.applyToTotalRow
   changeThreshold()
   closeTableThreshold()
 }
@@ -1131,11 +1135,21 @@ init()
         @onTableThresholdChange="tableThresholdChange"
       />
       <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="closeTableThreshold">{{ t('chart.cancel') }}</el-button>
-          <el-button type="primary" @click="changeTableThreshold">{{
-            t('chart.confirm')
-          }}</el-button>
+        <div
+          class="dialog-footer"
+          style="display: flex; align-items: center; justify-content: space-between"
+        >
+          <el-checkbox
+            v-if="chart.type === 'table-info' || chart.type === 'table-normal'"
+            v-model="state.applyToTotalRow"
+            :label="t('chart.condition_style_apply_to_total_row')"
+          />
+          <span style="margin-left: auto">
+            <el-button @click="closeTableThreshold">{{ t('chart.cancel') }}</el-button>
+            <el-button type="primary" @click="changeTableThreshold">{{
+              t('chart.confirm')
+            }}</el-button>
+          </span>
         </div>
       </template>
     </el-dialog>
