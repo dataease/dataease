@@ -4,6 +4,7 @@ import { ElMessage, ElLoading } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import request from '@/config/axios'
+import { invalidateDefaultSettings } from '@/api/common'
 import dvInfo from '@/assets/svg/dv-info.svg'
 const { t } = useI18n()
 
@@ -133,6 +134,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         .post({ url: '/sysParameter/basic/save', data: param })
         .then(res => {
           if (!res.msg) {
+            invalidateDefaultSettings()
             ElMessage.success(t('common.save_success'))
             emits('saved')
             reset()

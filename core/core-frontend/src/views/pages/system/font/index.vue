@@ -28,7 +28,7 @@ const uploadFont = (title, type, item) => {
 
 const listFont = async () => {
   loading.value = true
-  await appearanceStore.setFontList()
+  await appearanceStore.setFontList(true)
   fontList.value = cloneDeep(appearanceStore.fontList)
   loading.value = false
 }
@@ -107,7 +107,7 @@ const getDefaultFont = () => {
 }
 const uploadFilish = async () => {
   loading.value = true
-  await appearanceStore.setFontList()
+  await appearanceStore.setFontList(true)
   fontList.value = cloneDeep(appearanceStore.fontList)
   loading.value = false
   getDefaultFont()

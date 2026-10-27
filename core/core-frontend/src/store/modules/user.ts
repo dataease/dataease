@@ -1,3 +1,4 @@
+import { clearConfigRequestCaches } from '@/utils/configRequestCache'
 import { clearResourceImages } from '@/utils/resourceImageCache'
 import { clearBindings } from '@/utils/platformBinding'
 import { defineStore } from 'pinia'
@@ -134,6 +135,7 @@ export const userStore = defineStore('user', {
       changeLocale(language as any)
     },
     clear() {
+      clearConfigRequestCaches()
       clearBindings()
       clearResourceImages()
       const keys: string[] = ['token', 'uid', 'name', 'oid', 'language', 'exp', 'time', 'proxyInfo']
