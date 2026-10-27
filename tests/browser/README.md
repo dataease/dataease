@@ -100,3 +100,16 @@ npm --prefix tests/browser test -- --config=playwright.mfa.config.mjs
 独立配置启动 `127.0.0.1:4190` 的 Vite 组件夹具，加载主工程真实 `MfaStep.vue`、Vue 和 Element Plus，复用主前端已安装依赖，不运行主应用构建插件。测试替换 API、路由、Store 和国际化边界，使用合成挑战与 Token，通过 Playwright 拦截响应并控制返回时机，不连接业务后端。
 
 覆盖一次回车、长按回车、同步连续点击、回车后点击、校验失败后重试、过期挑战拒绝、成功后页面卸载前的防重、移动端成功事件、个人资料绑定及卸载清理。修复前“一次回车”用例实测收到两条请求，修复后应为一条。全局和个人 MFA 策略由后端判定，进入本组件后使用相同提交路径；这里不验证真实全局配置、TOTP、缓存或实际 Token 鉴权。
+
+
+## 阈值告警接收对象标签字号回归
+
+```sh
+npm --prefix tests/browser test -- --config=playwright.threshold-tags.config.mjs
+```
+
+独立配置启动 `127.0.0.1:4194` 的组件夹具，加载 V3 真实 `ThresholdWarnForm.vue`、接收人组件和 Element Plus。仅替换候选查询、国际化以及与本次字号检查无关的图标和富文本边界；候选数据均为合成数据，不连接业务后端、不发送或保存告警。
+
+覆盖 1440px 和 960px 视口下的接收人、邮件、飞书群、国际飞书群及 Webhook 选中标签字号，群组下拉候选字号、四项多选、长名称与删除标签。修复前两个用例均在期望 12px、实际 14px 的群组标签断言失败；修复后均通过。这是实际组件的浏览器回归，不代表完整登录、权限、后端群组连接或生产构建已验证。
+
+CLI 可先运行 `node tests/browser/fixtures/threshold-tags/server.mjs`，再从 `tests/browser` 使用独立会话打开上述地址。测试启动器默认要求端口未被占用；确需复用手动启动的本夹具时设置 `THRESHOLD_TAGS_SERVER=1`。

@@ -104,9 +104,7 @@
                         style="width: 14px; height: 14px"
                         ><peoples class="svg-icon"
                       /></Icon>
-                      <span
-                        style="float: left; margin-left: 4px; font-size: 14px"
-                      >
+                      <span style="float: left; margin-left: 4px">
                         {{ state.larkGroupMap.get(id)?.name }}
                       </span>
                     </span>
@@ -172,9 +170,7 @@
                         style="width: 14px; height: 14px"
                         ><peoples class="svg-icon"
                       /></Icon>
-                      <span
-                        style="float: left; margin-left: 4px; font-size: 14px"
-                      >
+                      <span style="float: left; margin-left: 4px">
                         {{ state.larksuiteGroupMap.get(id)?.name }}
                       </span>
                     </span>
@@ -786,6 +782,9 @@ onMounted(() => {
 }
 
 .ed-select__tags {
+  .custom-option {
+    font-size: inherit;
+  }
   .ed-select-tags-wrapper {
     display: flex;
     flex-wrap: wrap;
