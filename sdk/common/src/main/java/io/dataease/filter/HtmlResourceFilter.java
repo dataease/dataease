@@ -1,5 +1,7 @@
 package io.dataease.filter;
 
+import io.dataease.constant.AuthConstant;
+import io.dataease.constant.StaticResourceConstants;
 import io.dataease.result.ResultMessage;
 import io.dataease.utils.JsonUtil;
 import jakarta.servlet.*;
@@ -11,11 +13,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UrlPathHelper;
 
 import java.io.IOException;
+import java.util.Locale;
 
 @Component
 public class HtmlResourceFilter implements Filter, Ordered {
+
+    private static final String SVG_CONTENT_SECURITY_POLICY = "default-src 'none'; script-src 'none'; object-src 'none'; "
+            + "base-uri 'none'; form-action 'none'; style-src 'unsafe-inline'; img-src data:; sandbox; frame-ancestors ";
 
     @Value("${dataease.http.cache:false}")
     private Boolean httpCache;
@@ -52,7 +59,10 @@ public class HtmlResourceFilter implements Filter, Ordered {
             httpResponse.setHeader("X-Frame-Options", frameOptions);
         }
         String frameAncestorsValue = frameAncestors == null || frameAncestors.isBlank() ? "'self'" : frameAncestors;
-        httpResponse.setHeader("Content-Security-Policy", "default-src * data: blob: 'unsafe-inline' 'unsafe-eval'; frame-ancestors " + frameAncestorsValue);
+        String contentSecurityPolicy = isUploadedSvgRequest(servletRequest)
+                ? SVG_CONTENT_SECURITY_POLICY + frameAncestorsValue
+                : "default-src * data: blob: 'unsafe-inline' 'unsafe-eval'; frame-ancestors " + frameAncestorsValue;
+        httpResponse.setHeader("Content-Security-Policy", contentSecurityPolicy);
         httpResponse.setHeader("X-Content-Type-Options", "nosniff");
         httpResponse.setHeader("X-XSS-Protection", "1; mode=block");
         httpResponse.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
@@ -69,6 +79,16 @@ public class HtmlResourceFilter implements Filter, Ordered {
             httpResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             httpResponse.getWriter().write(JsonUtil.toJSONString(new ResultMessage(HttpServletResponse.SC_BAD_REQUEST,e.getMessage())).toString());
         }
+    }
+
+    private boolean isUploadedSvgRequest(ServletRequest servletRequest) {
+        if (!(servletRequest instanceof HttpServletRequest request)) {
+            return false;
+        }
+        // 与静态资源处理器使用同一应用内路径，覆盖上下文路径、编码文件名及矩阵参数。
+        String path = UrlPathHelper.defaultInstance.getPathWithinApplication(request);
+        String resourcePrefix = AuthConstant.DE_API_PREFIX + "/" + StaticResourceConstants.UPLOAD_URL_PREFIX + "/";
+        return path.startsWith(resourcePrefix) && path.toLowerCase(Locale.ROOT).endsWith(".svg");
     }
 
     @Override

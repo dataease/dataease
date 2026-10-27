@@ -14,6 +14,12 @@ public class WhitelistUtils {
 
     private static String contextPath;
 
+    private static final List<String> FRONTEND_RESOURCE_PATHS = List.of(
+            "/assets/", "/js/", "/svg/", "/tinymce-dataease-private/", "/webjars/", "/swagger-ui/");
+
+    private static final List<String> FRONTEND_RESOURCE_FILES = List.of(
+            "/dataease.svg", "/api.png", "/vite.svg", "/favicon.ico");
+
     public static String getContextPath() {
         if (StringUtils.isBlank(contextPath)) {
             contextPath = Objects.requireNonNull(CommonBeanFactory.getBean(Environment.class)).getProperty("server.servlet.context-path", String.class);
@@ -53,23 +59,21 @@ public class WhitelistUtils {
 
     public static boolean match(String requestURI) {
         invalidUrl(requestURI);
-        if (StringUtils.startsWith(requestURI, getContextPath())) {
-            requestURI = StringUtils.replaceOnce(requestURI, getContextPath(), "");
+        String context = StringUtils.removeEnd(getContextPath(), "/");
+        if (hasPathPrefix(requestURI, context)) {
+            requestURI = requestURI.substring(context.length());
         }
-        if (StringUtils.startsWith(requestURI, AuthConstant.DE_API_PREFIX)) {
-            requestURI = requestURI.replaceFirst(AuthConstant.DE_API_PREFIX, "");
-        }
-        if (StringUtils.startsWith(requestURI, AuthConstant.DE_CASAPI_PREFIX)) {
-            requestURI = requestURI.replaceFirst(AuthConstant.DE_CASAPI_PREFIX, "");
-        }
-        if (StringUtils.startsWith(requestURI, AuthConstant.DE_OIDCAPI_PREFIX)) {
-            requestURI = requestURI.replaceFirst(AuthConstant.DE_OIDCAPI_PREFIX, "");
+        boolean apiRequest = false;
+        for (String prefix : List.of(AuthConstant.DE_API_PREFIX, AuthConstant.DE_CASAPI_PREFIX, AuthConstant.DE_OIDCAPI_PREFIX)) {
+            if (hasPathPrefix(requestURI, prefix)) {
+                requestURI = requestURI.substring(prefix.length());
+                apiRequest = true;
+                break;
+            }
         }
         return WHITE_PATH.contains(requestURI)
-                || StringUtils.endsWithAny(requestURI, ".gif",".ico", "js", ".css", "svg", "png", "jpg", "js.map", ".otf", ".ttf", ".woff2")
-                || StringUtils.startsWithAny(requestURI, "data:image")
+                || (!apiRequest && isFrontendResource(requestURI))
                 || StringUtils.startsWithAny(requestURI, "/login/platformLogin/")
-                || StringUtils.startsWithAny(requestURI, "/static-resource/")
                 || StringUtils.startsWithAny(requestURI, "/appearance/image/")
                 || StringUtils.startsWithAny(requestURI, "/share/proxyInfo")
                 || StringUtils.startsWithAny(requestURI, "/share/validate")
@@ -89,6 +93,21 @@ public class WhitelistUtils {
                 || StringUtils.startsWithAny(requestURI, "/communicate/image/")
                 || StringUtils.startsWithAny(requestURI, "/saml/")
                 || StringUtils.startsWithAny(requestURI, "/communicate/down/");
+    }
+
+    private static boolean hasPathPrefix(String requestURI, String prefix) {
+        return StringUtils.isNotBlank(prefix)
+                && (requestURI.equals(prefix) || requestURI.startsWith(prefix + "/"));
+    }
+
+    private static boolean isFrontendResource(String requestURI) {
+        // API path variables must never become public merely because they end in an image or script suffix.
+        if (FRONTEND_RESOURCE_FILES.contains(requestURI)) {
+            return true;
+        }
+        return FRONTEND_RESOURCE_PATHS.stream().anyMatch(requestURI::startsWith)
+                && StringUtils.endsWithAny(requestURI, ".gif", ".ico", ".js", ".css", ".svg", ".png", ".jpg", ".jpeg",
+                ".js.map", ".otf", ".ttf", ".woff", ".woff2");
     }
 
     public static String getBaseApiUrl(String redirect_uri) {
