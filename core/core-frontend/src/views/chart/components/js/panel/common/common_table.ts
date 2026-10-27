@@ -1426,7 +1426,7 @@ export function getPivotConditions(chart: Chart) {
             fill: mappingPivotColor(
               value,
               defaultValueColor,
-              rules.toReversed(),
+              rules.slice().reverse(),
               'color',
               filedValueMap,
               rowData
@@ -1448,7 +1448,7 @@ export function getPivotConditions(chart: Chart) {
           const fill = mappingPivotColor(
             value,
             defaultBgColor,
-            rules.toReversed(),
+            rules.slice().reverse(),
             'backgroundColor',
             filedValueMap,
             rowData
