@@ -783,7 +783,7 @@ export function getConditions(chart: Chart) {
       res.text.push({
         field: targetName,
         mapping(value, rowData, cell) {
-          if (!value && !rowData) {
+          if ((!value && !rowData) || (rowData?.SUMMARY && !threshold.applyToTotalRow)) {
             return null
           }
           // 汇总行在未命中条件样式时，不能回退到普通单元格文字颜色，需返回 null 保持汇总行默认字体样式
@@ -809,7 +809,7 @@ export function getConditions(chart: Chart) {
       res.background.push({
         field: targetName,
         mapping(value, rowData, cell) {
-          if (!value && !rowData) {
+          if ((!value && !rowData) || (rowData?.SUMMARY && !threshold.applyToTotalRow)) {
             return null
           }
           // 汇总行在未命中条件样式时，不能回退到普通单元格背景颜色，需返回 null 保持汇总行默认背景样式
