@@ -887,11 +887,11 @@ const setGuid = (arr, id, datasourceId, oldArr) => {
 
 const dfsFields = (arr, list) => {
   list.forEach(ele => {
+    const { currentDsFields } = ele
+    arr.push(...cloneDeep(currentDsFields))
     if (ele.children?.length) {
       dfsFields(arr, ele.children)
     }
-    const { currentDsFields } = ele
-    arr.push(...cloneDeep(currentDsFields))
   })
 }
 
@@ -906,13 +906,10 @@ const getDelIdArr = (newArr, oldArr) => {
 }
 
 const diffArr = (newArr, oldArr) => {
-  const idMapNew = newArr.map(ele => ele.id)
-  const idMapOld = oldArr.map(ele => ele.id)
-  const arr = newArr.filter(ele => !idMapOld.includes(ele.id))
+  const oldFields = new Map(oldArr.map(ele => [ele.id, ele]))
   return cloneDeep([
     ...oldArr.filter(ele => [2, 3].includes(ele.extField)),
-    ...arr,
-    ...oldArr.filter(ele => idMapNew.includes(ele.id))
+    ...newArr.map(ele => oldFields.get(ele.id) || ele)
   ])
 }
 
