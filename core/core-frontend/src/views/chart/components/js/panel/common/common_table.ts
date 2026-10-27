@@ -889,32 +889,42 @@ export function getConditions(
       res.text.push({
         field: targetName,
         mapping(value, rowData, cell) {
-          if (value === undefined && !rowData) {
+          if (
+            (value === undefined && !rowData) ||
+            (rowData?.SUMMARY && !threshold.applyToTotalRow)
+          ) {
             return null
           }
-          return {
-            fill: mappingRulesColor(
-              value,
-              valueColor,
-              getCellRules(cell),
-              'color',
-              filedValueMap,
-              rowData,
-              targetName,
-              getTableConditionRows(value, rowData, cell)
-            )
-          }
+          // 总计行未命中规则时保留自身样式，不回退到普通单元格颜色。
+          const defaultColor = rowData?.SUMMARY ? null : valueColor
+          const fill = mappingRulesColor(
+            value,
+            defaultColor,
+            getCellRules(cell),
+            'color',
+            filedValueMap,
+            rowData,
+            targetName,
+            getTableConditionRows(value, rowData, cell)
+          )
+          if (!fill) return null
+          return { fill }
         }
       })
       res.background.push({
         field: targetName,
         mapping(value, rowData, cell) {
-          if (value === undefined && !rowData) {
+          if (
+            (value === undefined && !rowData) ||
+            (rowData?.SUMMARY && !threshold.applyToTotalRow)
+          ) {
             return null
           }
+          // 总计行未命中规则时保留自身背景，不回退到普通单元格颜色。
+          const defaultColor = rowData?.SUMMARY ? null : valueBgColor
           const fill = mappingRulesColor(
             value,
-            valueBgColor,
+            defaultColor,
             getCellRules(cell),
             'backgroundColor',
             filedValueMap,
@@ -922,10 +932,10 @@ export function getConditions(
             targetName,
             getTableConditionRows(value, rowData, cell)
           )
-          if (isTransparent(fill)) {
+          if (!fill || isTransparent(fill)) {
             return null
           }
-          return {fill}
+          return { fill }
         }
       })
     }
@@ -3228,12 +3238,14 @@ export class SummaryCell extends CustomDataCell {
     } else {
       textStyle.textAlign = this.theme.dataCell.text.textAlign
     }
-    return textStyle
+    // 保留总计文字外观，并应用 S2 的条件文字颜色及背景反色规则。
+    return this.getContainConditionMappingResultTextStyle(textStyle)
   }
 
   getBackgroundColor() {
-    const {backgroundColor, backgroundColorOpacity, } = this.theme.colCell.cell
-    return {backgroundColor, backgroundColorOpacity, intelligentReverseTextColor: false}
+    const { backgroundColor, backgroundColorOpacity } = this.theme.colCell.cell
+    // 未命中条件时沿用总计背景，命中后由 S2 应用条件背景。
+    return { backgroundColor, backgroundColorOpacity, ...this.getBackgroundConditionFill() }
   }
 }
 

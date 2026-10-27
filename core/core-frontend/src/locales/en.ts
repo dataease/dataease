@@ -2018,6 +2018,7 @@ export default {
     value_can_not_empty: 'Value cannot be empty',
     value_error: 'Value must be a numeric value',
     threshold: 'Conditional style',
+    condition_style_apply_to_total_row: 'Apply conditional style to total row',
     threshold_range: 'Threshold range',
     gauge_threshold_format_error: 'Format error',
     total_cfg: 'Total configuration',
