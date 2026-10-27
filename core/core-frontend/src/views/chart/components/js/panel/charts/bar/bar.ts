@@ -86,7 +86,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
   }
 
   async drawChart(drawOptions: G2PlotDrawOptions<Column>): Promise<Column> {
-    const { chart, container, action } = drawOptions
+    const { chart, container, action, scale } = drawOptions
     chart.container = container
     if (!chart?.data?.data?.length) {
       clearExtremum(chart)
@@ -101,7 +101,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
       appendPadding: getPadding(chart),
       data
     }
-    const options: ColumnOptions = this.setupOptions(chart, initOptions)
+    const options: ColumnOptions = this.setupOptions(chart, initOptions, { scale })
     let newChart = null
     const { Column: ColumnClass } = await import('@antv/g2plot/esm/plots/column')
     newChart = new ColumnClass(container, options)
@@ -294,7 +294,11 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
     return tmpOptions
   }
 
-  protected setupOptions(chart: Chart, options: ColumnOptions): ColumnOptions {
+  protected setupOptions(
+    chart: Chart,
+    options: ColumnOptions,
+    context?: Record<string, any>
+  ): ColumnOptions {
     return flow(
       this.addConditionsStyleColorToData,
       this.configTheme,
@@ -309,7 +313,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
       this.configSlider,
       this.configAnalyse,
       this.configBarConditions
-    )(chart, options, {}, this)
+    )(chart, options, context, this)
   }
 
   setupDefaultOptions(chart: ChartObj): ChartObj {
@@ -572,7 +576,11 @@ export class StackBar extends Bar {
     return chartTmp
   }
 
-  protected setupOptions(chart: Chart, options: ColumnOptions): ColumnOptions {
+  protected setupOptions(
+    chart: Chart,
+    options: ColumnOptions,
+    context?: Record<string, any>
+  ): ColumnOptions {
     return flow(
       this.configTheme,
       this.configEmptyDataStrategy,
@@ -586,7 +594,7 @@ export class StackBar extends Bar {
       this.configYAxis,
       this.configSlider,
       this.configAnalyse
-    )(chart, options, {}, this)
+    )(chart, options, context, this)
   }
 
   constructor(name = 'bar-stack') {
@@ -724,7 +732,11 @@ export class GroupBar extends StackBar {
     return setUpGroupSeriesColor(chart, data)
   }
 
-  protected setupOptions(chart: Chart, options: ColumnOptions): ColumnOptions {
+  protected setupOptions(
+    chart: Chart,
+    options: ColumnOptions,
+    context?: Record<string, any>
+  ): ColumnOptions {
     return flow(
       this.addConditionsStyleColorToData,
       this.configTheme,
@@ -739,7 +751,7 @@ export class GroupBar extends StackBar {
       this.configSlider,
       this.configAnalyse,
       this.configBarConditions
-    )(chart, options, {}, this)
+    )(chart, options, context, this)
   }
 
   constructor(name = 'bar-group') {
@@ -839,7 +851,11 @@ export class GroupStackBar extends StackBar {
     return options
   }
 
-  protected setupOptions(chart: Chart, options: ColumnOptions): ColumnOptions {
+  protected setupOptions(
+    chart: Chart,
+    options: ColumnOptions,
+    context?: Record<string, any>
+  ): ColumnOptions {
     return flow(
       this.configData,
       this.configTheme,
@@ -853,7 +869,7 @@ export class GroupStackBar extends StackBar {
       this.configYAxis,
       this.configSlider,
       this.configAnalyse
-    )(chart, options, {}, this)
+    )(chart, options, context, this)
   }
 
   constructor(name = 'bar-group-stack') {
@@ -968,7 +984,11 @@ export class PercentageStackBar extends GroupStackBar {
       tooltip
     }
   }
-  protected setupOptions(chart: Chart, options: ColumnOptions): ColumnOptions {
+  protected setupOptions(
+    chart: Chart,
+    options: ColumnOptions,
+    context?: Record<string, any>
+  ): ColumnOptions {
     return flow(
       this.configTheme,
       this.configEmptyDataStrategy,
@@ -981,7 +1001,7 @@ export class PercentageStackBar extends GroupStackBar {
       this.configYAxis,
       this.configSlider,
       this.configAnalyse
-    )(chart, options, {}, this)
+    )(chart, options, context, this)
   }
   constructor() {
     super('percentage-bar-stack')
