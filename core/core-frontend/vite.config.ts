@@ -1,5 +1,6 @@
 import {
   lazyRouteDevDependencies,
+  observedDevDependencies,
   getElementPlusStyleDependencies
 } from './config/dev-dependencies'
 import common from './config/common'
@@ -14,7 +15,11 @@ export default defineConfig(({ mode }) => {
   if (mode === 'dev') {
     return mergeConfig(mergeConfig(common, mergeConfig(dev, pages)), {
       optimizeDeps: {
-        include: [...getElementPlusStyleDependencies(), ...lazyRouteDevDependencies]
+        include: [
+          ...getElementPlusStyleDependencies(),
+          ...lazyRouteDevDependencies,
+          ...observedDevDependencies
+        ]
       }
     })
   }

@@ -8,7 +8,8 @@ import { loadConfigFromFile } from 'vite'
 const configPath = resolve('vite.config.ts')
 const scenarios = [
   ['dashboard', 'first-navigation-deps.json'],
-  ['datasource', 'datasource-navigation-deps.json']
+  ['datasource', 'datasource-navigation-deps.json'],
+  ['startup reoptimization', 'reoptimization-deps.json']
 ]
 
 for (const [name, file] of scenarios) {
@@ -29,5 +30,7 @@ for (const mode of ['base', 'distributed', 'lib']) {
     assert.ok(!config.optimizeDeps?.include?.includes('tinymce/plugins/pagebreak'))
     assert.ok(!config.optimizeDeps?.include?.includes('vant/es/popup/style'))
     assert.ok(!config.optimizeDeps?.include?.includes('vue3-ace-editor'))
+    assert.ok(!config.optimizeDeps?.include?.includes('vue-router_2'))
+    assert.ok(!config.optimizeDeps?.include?.includes('@antv/g2'))
   })
 }
