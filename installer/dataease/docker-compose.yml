@@ -23,6 +23,7 @@ services:
       - ${DE_BASE}/dataease3.0/data/driver:/opt/dataease3.0/data/driver
       - ${DE_BASE}/dataease3.0/data/i18n:/opt/dataease3.0/data/i18n
       - ${DE_BASE}/dataease3.0/data/report:/opt/dataease3.0/data/report
+      - ${DE_BASE}/dataease3.0/data/report-artifacts:/opt/dataease3.0/data/report-artifacts
     depends_on:
       DE_MYSQL_HOST:
         condition: service_healthy
