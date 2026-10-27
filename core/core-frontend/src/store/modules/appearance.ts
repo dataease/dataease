@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { store } from '@/store/index'
-import { defaultFont, list } from '@/api/font'
+import { defaultFont, getCachedFontList } from '@/api/font'
+import { cloneDeep } from 'lodash-es'
 import { uiLoadApi } from '@/api/login'
 import { useCache } from '@/hooks/web/useCache'
 import { useEmbedded } from '@/store/modules/embedded'
@@ -162,9 +163,9 @@ export const useAppearanceStore = defineStore('appearanceStore', {
     setMobileLogin(data: string) {
       this.mobileLogin = data
     },
-    async setFontList() {
-      const res = await list()
-      this.fontList = res || []
+    async setFontList(force = false) {
+      const res = await getCachedFontList(force)
+      this.fontList = cloneDeep(res || [])
     },
     setCurrentFont(name) {
       const embeddedStore = useEmbedded()

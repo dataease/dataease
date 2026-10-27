@@ -28,6 +28,7 @@ const setup = () => {
     appearanceStore: { setAppearance: request('appearance'), setFontList: request('fonts') },
     appStore: { setXpackValid: request('xpack') },
     getDefaultSettings: request('defaults'),
+    getCachedDefaultSettings: request('defaults'),
     wsCache: { set: (...args) => writes.push(args) }
   })
   return { result, calls, pending, writes }

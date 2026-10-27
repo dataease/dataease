@@ -2,7 +2,7 @@ import router from './router'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import type { RouteRecordRaw } from 'vue-router_2'
-import { getDefaultSettings } from '@/api/common'
+import { getCachedDefaultSettings } from '@/api/common'
 import { useNProgress } from '@/hooks/web/useNProgress'
 import { usePermissionStoreWithOut, pathValid, getFirstAuthMenu } from '@/store/modules/permission'
 import { usePageLoading } from '@/hooks/web/usePageLoading'
@@ -90,7 +90,7 @@ router.beforeEach(async (to, from, next) => {
     appearanceStore.setAppearance(),
     appearanceStore.setFontList(),
     appStore.setXpackValid(),
-    getDefaultSettings()
+    getCachedDefaultSettings()
   ])
   wsCache.set('TreeSort-backend', defaultSort['basic.defaultSort'] ?? '1')
   wsCache.set('open-backend', defaultSort['basic.defaultOpen'] ?? '0')

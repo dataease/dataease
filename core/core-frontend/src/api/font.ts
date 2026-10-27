@@ -1,3 +1,4 @@
+import { createConfigRequestCache } from '@/utils/configRequestCache'
 import request from '@/config/axios'
 
 export interface Font {
@@ -14,20 +15,26 @@ export const list = (data = {}) => {
   })
 }
 
+const fontListCache = createConfigRequestCache<Font[]>(() => list())
+export const getCachedFontList = (force = false) => fontListCache.get(force)
+
 export const create = (data = {}) => {
   return request.post({ url: '/typeface/create', data }).then(res => {
+    fontListCache.clear()
     return res?.data
   })
 }
 
 export const edit = (data = {}) => {
   return request.post({ url: '/typeface/edit', data }).then(res => {
+    fontListCache.clear()
     return res?.data
   })
 }
 
 export const deleteById = id => {
   return request.post({ url: '/typeface/delete/' + id, data: {} }).then(res => {
+    fontListCache.clear()
     return res?.data
   })
 }
@@ -47,6 +54,7 @@ export const uploadFontFile = async (data): Promise<IResponse> => {
       headersType: 'multipart/form-data;'
     })
     .then(res => {
+      fontListCache.clear()
       return res
     })
 }
