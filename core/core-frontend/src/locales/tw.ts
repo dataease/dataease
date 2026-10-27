@@ -2362,7 +2362,7 @@ export default {
     merge_title: '合併資料',
     field_name_less_50: '欄位名稱不能超過50個字元',
     field_name_less_2_64: '2-64個字元',
-    excel_info_1: '1、Excel 檔案中不能存在合併儲存格；',
+    excel_info_1: '1、Excel 檔案中存在合併儲存格時，合併值會自動向下/向右填充；',
     excel_info_2: '2、Excel 檔案的第一個行為標題行，不能為空，不能為日期型；',
     excel_info_3: '3、檔案大小請確保在500M以內。 ',
     sync_field: '同步欄位',

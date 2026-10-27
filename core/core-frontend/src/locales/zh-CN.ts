@@ -2367,7 +2367,7 @@ export default {
     merge_title: '合并数据',
     field_name_less_50: '字段名不能超过50个字符',
     field_name_less_2_64: '2-64个字符',
-    excel_info_1: '1、Excel 文件中不能存在合并单元格；',
+    excel_info_1: '1、Excel 文件中存在合并单元格时，合并值会自动向下/向右填充；',
     excel_info_2: '2、Excel 文件的第一行为标题行，不能为空，不能为日期型；',
     excel_info_3: '3、文件大小请确保在500M以内。',
     sync_field: '同步字段',

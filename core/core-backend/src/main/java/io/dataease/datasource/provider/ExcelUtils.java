@@ -4,7 +4,9 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.enums.CellDataTypeEnum;
+import com.alibaba.excel.enums.CellExtraTypeEnum;
 import com.alibaba.excel.event.AnalysisEventListener;
+import com.alibaba.excel.metadata.CellExtra;
 import com.alibaba.excel.metadata.data.ReadCellData;
 import com.alibaba.excel.read.metadata.ReadSheet;
 import com.alibaba.excel.util.DateUtils;
@@ -240,7 +242,7 @@ public class ExcelUtils {
 
     private List<String[]> fetchExcelDataList(String sheetName, InputStream inputStream) {
         NoModelDataListener noModelDataListener = new NoModelDataListener();
-        try (ExcelReader excelReader = EasyExcel.read(inputStream, noModelDataListener).build()) {
+        try (ExcelReader excelReader = EasyExcel.read(inputStream, noModelDataListener).extraRead(CellExtraTypeEnum.MERGE).build()) {
             List<ReadSheet> sheets = excelReader.excelExecutor().sheetList();
             for (ReadSheet readSheet : sheets) {
                 if (!sheetName.equalsIgnoreCase(readSheet.getSheetName())) {
@@ -600,6 +602,7 @@ public class ExcelUtils {
         private List<String[]> data = new ArrayList<>();
         private List<String> header = new ArrayList<>();
         private List<Integer> headerKey = new ArrayList<>();
+        private List<CellExtra> mergeRegions = new ArrayList<>();
 
         @Override
         public void invokeHead(Map<Integer, ReadCellData<?>> headMap, AnalysisContext context) {
@@ -618,6 +621,13 @@ public class ExcelUtils {
                 }
                 headerKey.add(key);
                 header.add(value);
+            }
+        }
+
+        @Override
+        public void extra(CellExtra extra, AnalysisContext context) {
+            if (extra != null && CellExtraTypeEnum.MERGE.equals(extra.getType())) {
+                mergeRegions.add(extra);
             }
         }
 
@@ -644,11 +654,73 @@ public class ExcelUtils {
 
         @Override
         public void doAfterAllAnalysed(AnalysisContext analysisContext) {
+            fillMergedCells();
         }
 
         public void clear() {
             data.clear();
             header.clear();
+            headerKey.clear();
+            mergeRegions.clear();
+        }
+
+        private void fillMergedCells() {
+            if (CollectionUtils.isEmpty(mergeRegions) || CollectionUtils.isEmpty(data) || CollectionUtils.isEmpty(headerKey)) {
+                return;
+            }
+            Map<Integer, Integer> columnPositionMap = new HashMap<>();
+            for (int i = 0; i < headerKey.size(); i++) {
+                columnPositionMap.putIfAbsent(headerKey.get(i), i);
+            }
+            for (CellExtra mergeRegion : mergeRegions) {
+                Integer firstRow = mergeRegion.getFirstRowIndex();
+                Integer lastRow = mergeRegion.getLastRowIndex();
+                Integer firstColumn = mergeRegion.getFirstColumnIndex();
+                Integer lastColumn = mergeRegion.getLastColumnIndex();
+                if (firstRow == null || lastRow == null || firstColumn == null || lastColumn == null) {
+                    continue;
+                }
+                if (firstRow.equals(lastRow) && firstColumn.equals(lastColumn)) {
+                    continue;
+                }
+                String sourceValue = null;
+                if (firstRow == 0) {
+                    Integer sourceColumnPosition = columnPositionMap.get(firstColumn);
+                    if (sourceColumnPosition != null && sourceColumnPosition < header.size()) {
+                        sourceValue = header.get(sourceColumnPosition);
+                    }
+                } else {
+                    int sourceDataRow = firstRow - 1;
+                    if (sourceDataRow >= 0 && sourceDataRow < data.size()) {
+                        Integer sourceColumnPosition = columnPositionMap.get(firstColumn);
+                        if (sourceColumnPosition != null) {
+                            String[] sourceRow = data.get(sourceDataRow);
+                            if (sourceColumnPosition < sourceRow.length) {
+                                sourceValue = sourceRow[sourceColumnPosition];
+                            }
+                        }
+                    }
+                }
+                if (sourceValue == null) {
+                    continue;
+                }
+                for (int rowIndex = Math.max(firstRow, 1); rowIndex <= lastRow; rowIndex++) {
+                    int dataRowIndex = rowIndex - 1;
+                    if (dataRowIndex < 0 || dataRowIndex >= data.size()) {
+                        continue;
+                    }
+                    String[] row = data.get(dataRowIndex);
+                    for (int columnIndex = firstColumn; columnIndex <= lastColumn; columnIndex++) {
+                        Integer columnPosition = columnPositionMap.get(columnIndex);
+                        if (columnPosition == null || columnPosition >= row.length) {
+                            continue;
+                        }
+                        if (StringUtils.isEmpty(row[columnPosition])) {
+                            row[columnPosition] = sourceValue;
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -657,7 +729,7 @@ public class ExcelUtils {
         String suffix = filename.substring(filename.lastIndexOf(".") + 1);
         if (StringUtils.equalsIgnoreCase(suffix, "xlsx") || StringUtils.equalsIgnoreCase(suffix, "xls")) {
             NoModelDataListener noModelDataListener = new NoModelDataListener();
-            try (ExcelReader excelReader = EasyExcel.read(inputStream, noModelDataListener).build()) {
+            try (ExcelReader excelReader = EasyExcel.read(inputStream, noModelDataListener).extraRead(CellExtraTypeEnum.MERGE).build()) {
                 List<ReadSheet> sheets = excelReader.excelExecutor().sheetList();
                 for (ReadSheet readSheet : sheets) {
                     noModelDataListener.clear();
