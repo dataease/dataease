@@ -1838,6 +1838,7 @@ export default {
     value_can_not_empty: 'Value cannot be empty',
     value_error: 'Value must be a numeric value',
     threshold: 'Conditional style',
+    condition_style_apply_to_total_row: 'Apply conditional style to total row',
     threshold_range: 'Threshold range',
     gauge_threshold_format_error: 'Format error',
     total_cfg: 'Total configuration',
@@ -2431,7 +2432,7 @@ export default {
     merge_title: 'Merge data',
     field_name_less_50: 'Field name cannot exceed 50 characters',
     field_name_less_2_64: '2-64 characters',
-    excel_info_1: '1. There cannot be merged cells in the Excel file;',
+    excel_info_1: '1. Merged cells in the Excel file will be filled down/right automatically;',
     excel_info_2:
       '2. The first line of the Excel file is the title row, which cannot be empty and cannot be a date type;',
     excel_info_3: '3. Please make sure that the file size is within 500M. ',

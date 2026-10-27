@@ -151,6 +151,10 @@ declare interface ChartThreshold {
    */
   tableThreshold: TableThreshold[]
   /**
+   * 总计行是否生效
+   */
+  applyToTotalRow?: boolean
+  /**
    * 文本卡阈值
    */
   textLabelThreshold: Threshold[]

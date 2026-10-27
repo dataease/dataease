@@ -106,7 +106,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
   }
 
   async drawChart(drawOptions: G2PlotDrawOptions<G2Line>): Promise<G2Line> {
-    const { chart, action, container } = drawOptions
+    const { chart, action, container, scale } = drawOptions
     chart.container = container
     if (!chart.data?.data?.length) {
       clearExtremum(chart)
@@ -162,7 +162,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
         }
       ]
     }
-    const options = this.setupOptions(chart, initOptions)
+    const options = this.setupOptions(chart, initOptions, { scale })
     const { Line: G2Line } = await import('@antv/g2plot/esm/plots/line')
     // 开始渲染
     const newChart = new G2Line(container, options)
@@ -476,7 +476,11 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
     return optionTmp
   }
 
-  protected setupOptions(chart: Chart, options: LineOptions): LineOptions {
+  protected setupOptions(
+    chart: Chart,
+    options: LineOptions,
+    context?: Record<string, any>
+  ): LineOptions {
     return flow(
       this.configTheme,
       this.configEmptyDataStrategy,
@@ -490,7 +494,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       this.configSlider,
       this.configAnalyse,
       this.configConditions
-    )(chart, options)
+    )(chart, options, context)
   }
 
   constructor(name = 'line') {

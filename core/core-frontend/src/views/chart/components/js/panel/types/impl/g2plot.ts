@@ -150,8 +150,8 @@ export abstract class G2PlotChartView<
     return { ...options, yAxis }
   }
 
-  protected configSlider(chart: Chart, options: O): O {
-    const slider = getSlider(chart)
+  protected configSlider(chart: Chart, options: O, context?: Record<string, any>): O {
+    const slider = getSlider(chart, context?.scale)
     return { ...options, slider }
   }
 

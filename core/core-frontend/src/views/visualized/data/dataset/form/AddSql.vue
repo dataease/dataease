@@ -480,6 +480,19 @@ const getIconName = (type: string) => {
   }
 }
 
+const variableType2DeType = (type?: string) => {
+  if (type === 'LONG') {
+    return 2
+  }
+  if (type === 'DOUBLE') {
+    return 3
+  }
+  if (type?.startsWith('DATETIME')) {
+    return 1
+  }
+  return 0
+}
+
 const formatter = (_, __, cellValue) => {
   return cellValue ? `${cellValue} ${t(`commons.millisecond`)}` : '-'
 }
@@ -568,6 +581,7 @@ const parseVariable = () => {
               }
               obj.type.push('TEXT')
             }
+            obj.deType = variableType2DeType(obj.type[0])
             state.variablesTmp.push(obj)
           }
         }
@@ -603,6 +617,7 @@ const parseVariable = () => {
             }
             obj.type.push('TEXT')
           }
+          obj.deType = variableType2DeType(obj.type[0])
           state.variablesTmp.push(obj)
         }
       }
@@ -612,6 +627,10 @@ const parseVariable = () => {
 }
 
 const saveVariable = () => {
+  state.variablesTmp = state.variablesTmp.map(item => ({
+    ...item,
+    deType: variableType2DeType(item.type?.[0])
+  }))
   state.variables = JSON.parse(JSON.stringify(state.variablesTmp))
   showVariableMgm.value = false
   changeFlagCode.value = true

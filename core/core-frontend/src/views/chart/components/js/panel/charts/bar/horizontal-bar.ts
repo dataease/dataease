@@ -91,7 +91,7 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
   }
 
   async drawChart(drawOptions: G2PlotDrawOptions<Bar>): Promise<Bar> {
-    const { chart, container, action } = drawOptions
+    const { chart, container, action, scale } = drawOptions
     if (!chart.data?.data?.length) {
       return
     }
@@ -105,7 +105,7 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
       data
     }
 
-    const options = this.setupOptions(chart, initOptions)
+    const options = this.setupOptions(chart, initOptions, { scale })
 
     const { Bar } = await import('@antv/g2plot/esm/plots/bar')
     // 开始渲染
@@ -311,7 +311,11 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
     return tmpOptions
   }
 
-  protected setupOptions(chart: Chart, options: BarOptions): BarOptions {
+  protected setupOptions(
+    chart: Chart,
+    options: BarOptions,
+    context?: Record<string, any>
+  ): BarOptions {
     return flow(
       this.addConditionsStyleColorToData,
       this.configTheme,
@@ -326,7 +330,7 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
       this.configSlider,
       this.configAnalyseHorizontal,
       this.configBarConditions
-    )(chart, options, {}, this)
+    )(chart, options, context, this)
   }
 
   constructor(name = 'bar-horizontal') {
@@ -597,7 +601,11 @@ export class HorizontalStackBar extends HorizontalBar {
     return chartTmp
   }
 
-  protected setupOptions(chart: Chart, options: BarOptions): BarOptions {
+  protected setupOptions(
+    chart: Chart,
+    options: BarOptions,
+    context?: Record<string, any>
+  ): BarOptions {
     return flow(
       this.configTheme,
       this.configEmptyDataStrategy,
@@ -611,7 +619,7 @@ export class HorizontalStackBar extends HorizontalBar {
       this.configYAxis,
       this.configSlider,
       this.configAnalyseHorizontal
-    )(chart, options, {}, this)
+    )(chart, options, context, this)
   }
 
   constructor(name = 'bar-stack-horizontal') {
@@ -746,7 +754,11 @@ export class HorizontalPercentageStackBar extends HorizontalStackBar {
       tooltip
     }
   }
-  protected setupOptions(chart: Chart, options: BarOptions): BarOptions {
+  protected setupOptions(
+    chart: Chart,
+    options: BarOptions,
+    context?: Record<string, any>
+  ): BarOptions {
     return flow(
       this.configTheme,
       this.configEmptyDataStrategy,
@@ -759,7 +771,7 @@ export class HorizontalPercentageStackBar extends HorizontalStackBar {
       this.configYAxis,
       this.configSlider,
       this.configAnalyseHorizontal
-    )(chart, options, {}, this)
+    )(chart, options, context, this)
   }
 
   constructor() {
