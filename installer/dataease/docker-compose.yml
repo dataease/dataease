@@ -22,6 +22,7 @@ services:
       - ${DE_BASE}/dataease2.0/data/font:/opt/dataease2.0/data/font
       - ${DE_BASE}/dataease2.0/data/i18n:/opt/dataease2.0/data/i18n
       - ${DE_BASE}/dataease2.0/data/report:/opt/dataease2.0/data/report
+      - ${DE_BASE}/dataease2.0/data/report-artifacts:/opt/dataease2.0/data/report-artifacts
     depends_on:
       DE_MYSQL_HOST:
         condition: service_healthy
