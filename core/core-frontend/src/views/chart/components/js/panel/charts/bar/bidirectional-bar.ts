@@ -115,7 +115,7 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
   }
 
   async drawChart(drawOptions: G2PlotDrawOptions<G2BidirectionalBar>): Promise<G2BidirectionalBar> {
-    const { chart, container, action } = drawOptions
+    const { chart, container, action, scale } = drawOptions
     if (!chart.data?.data?.length) {
       return
     }
@@ -148,7 +148,7 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
         }
       }
     }
-    const customOptions = this.setupOptions(chart, initOptions)
+    const customOptions = this.setupOptions(chart, initOptions, { scale })
     const options = {
       ...customOptions
     }
@@ -556,7 +556,11 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
     return options
   }
 
-  protected setupOptions(chart: Chart, options: BidirectionalBarOptions) {
+  protected setupOptions(
+    chart: Chart,
+    options: BidirectionalBarOptions,
+    context?: Record<string, any>
+  ) {
     return flow(
       this.addConditionsStyleColorToData,
       this.configTheme,
@@ -570,7 +574,7 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
       this.configSlider,
       this.configEmptyDataStrategy,
       this.configBarConditions
-    )(chart, options)
+    )(chart, options, context)
   }
 
   constructor() {

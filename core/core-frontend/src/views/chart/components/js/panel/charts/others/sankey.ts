@@ -96,7 +96,7 @@ export class SankeyBar extends G2PlotChartView<SankeyOptions, Sankey> {
   }
 
   async drawChart(drawOptions: G2PlotDrawOptions<Sankey>): Promise<Sankey> {
-    const { chart, container, action } = drawOptions
+    const { chart, container, action, scale } = drawOptions
     if (!chart.data?.data?.length) {
       return
     }
@@ -157,7 +157,7 @@ export class SankeyBar extends G2PlotChartView<SankeyOptions, Sankey> {
       }
     }
 
-    const options = this.setupOptions(chart, initOptions)
+    const options = this.setupOptions(chart, initOptions, { scale })
     const { Sankey } = await import('@antv/g2plot/esm/plots/sankey')
     // 开始渲染
     const newChart = new Sankey(container, options)
@@ -282,7 +282,11 @@ export class SankeyBar extends G2PlotChartView<SankeyOptions, Sankey> {
     }
   }
 
-  protected setupOptions(chart: Chart, options: SankeyOptions): SankeyOptions {
+  protected setupOptions(
+    chart: Chart,
+    options: SankeyOptions,
+    context?: Record<string, any>
+  ): SankeyOptions {
     return flow(
       this.configTheme,
       this.configBasicStyle,
@@ -292,7 +296,7 @@ export class SankeyBar extends G2PlotChartView<SankeyOptions, Sankey> {
       this.configSlider,
       this.configAnalyseHorizontal,
       this.configEmptyDataStrategy
-    )(chart, options)
+    )(chart, options, context)
   }
 
   constructor(name = 'sankey') {

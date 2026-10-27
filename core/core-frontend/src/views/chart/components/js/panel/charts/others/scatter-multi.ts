@@ -172,7 +172,7 @@ export class MultiScatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
     }
   }
   async drawChart(drawOptions: G2PlotDrawOptions<G2Scatter>): Promise<G2Scatter> {
-    const { chart, container, action } = drawOptions
+    const { chart, container, action, scale } = drawOptions
     if (!chart.data?.data) {
       return
     }
@@ -221,7 +221,7 @@ export class MultiScatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
         }
       ]
     }
-    const options = this.setupOptions(chart, baseOptions)
+    const options = this.setupOptions(chart, baseOptions, { scale })
     const { Scatter: G2Scatter } = await import('@antv/g2plot/esm/plots/scatter')
     const newChart = new G2Scatter(container, options)
     newChart.on('point:click', e => {
@@ -537,7 +537,7 @@ export class MultiScatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
     return chart
   }
 
-  protected setupOptions(chart: Chart, options: ScatterOptions) {
+  protected setupOptions(chart: Chart, options: ScatterOptions, context?: Record<string, any>) {
     return flow(
       this.configTheme,
       this.configColor,
@@ -548,7 +548,7 @@ export class MultiScatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
       this.configYAxis,
       this.configSlider,
       this.configBasicStyle
-    )(chart, options, {}, this)
+    )(chart, options, context, this)
   }
 
   private buildScatterDataContext(sourceData: Record<string, unknown>[]) {
