@@ -23,6 +23,7 @@ public class ExcelWatermarkUtils {
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private static final int MAX_TEXT_LENGTH = 100;
+    private static final int MIN_IMAGE_SIZE = 1;
     private static final int MAX_IMAGE_WIDTH = 4096;
     private static final int MAX_IMAGE_HEIGHT = 4096;
     private static final Pattern IP_PATTERN = Pattern.compile(
@@ -109,8 +110,11 @@ public class ExcelWatermarkUtils {
         }
         int fontSize = Math.max(MIN_FONT_SIZE, Math.min(watermarkContent.getWatermark_fontsize(), MAX_FONT_SIZE));
         double radians = Math.toRadians(15);
-        int width = Math.min(fontSize * text.length(), MAX_IMAGE_WIDTH);
-        int height = Math.min((int) Math.round(fontSize + width * Math.sin(radians)), MAX_IMAGE_HEIGHT);
+        // 水印文案可能为空（自定义内容为空、用户昵称为空等），此时按文本长度算出的宽度为 0，
+        // BufferedImage 不接受 0 宽高会直接抛 IllegalArgumentException，导致整个 Excel 导出任务失败，
+        // 因此宽高统一兜底为最小 1 像素，保证仅生成一张空白水印图。
+        int width = Math.max(MIN_IMAGE_SIZE, Math.min(fontSize * text.length(), MAX_IMAGE_WIDTH));
+        int height = Math.max(MIN_IMAGE_SIZE, Math.min((int) Math.round(fontSize + width * Math.sin(radians)), MAX_IMAGE_HEIGHT));
         Color baseColor = Color.decode(watermarkContent.getWatermark_color());
 
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
