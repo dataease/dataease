@@ -1,13 +1,6 @@
 package io.dataease.datasource.provider;
 
 
-import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.ExcelReader;
-import com.alibaba.excel.context.AnalysisContext;
-import com.alibaba.excel.enums.CellDataTypeEnum;
-import com.alibaba.excel.event.AnalysisEventListener;
-import com.alibaba.excel.metadata.data.ReadCellData;
-import com.alibaba.excel.read.metadata.ReadSheet;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,6 +9,14 @@ import io.dataease.api.ds.vo.ExcelSheetData;
 import io.dataease.api.ds.vo.RemoteExcelRequest;
 import io.dataease.dao.auto.entity.CoreDatasource;
 import io.dataease.exception.DEException;
+import io.dataease.excel.ExcelCell;
+import io.dataease.excel.ExcelCellType;
+import io.dataease.excel.ExcelIO;
+import io.dataease.excel.ExcelReadHandler;
+import io.dataease.excel.ExcelReadOptions;
+import io.dataease.excel.ExcelReadSession;
+import io.dataease.excel.ExcelReadStopException;
+import io.dataease.excel.ExcelSheetInfo;
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
@@ -23,7 +24,6 @@ import io.dataease.extensions.datasource.dto.TableField;
 import io.dataease.api.ds.vo.ExcelConfiguration;
 import io.dataease.i18n.Translator;
 import io.dataease.utils.*;
-import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -237,28 +237,17 @@ public class ExcelUtils {
     }
 
     private List<String[]> fetchExcelDataList(String sheetName, InputStream inputStream) {
-        NoModelDataListener noModelDataListener = new NoModelDataListener();
-        try (ExcelReader excelReader = EasyExcel.read(inputStream, noModelDataListener).build()) {
-            List<ReadSheet> sheets = excelReader.excelExecutor().sheetList();
-            for (ReadSheet readSheet : sheets) {
-                if (!sheetName.equalsIgnoreCase(readSheet.getSheetName())) {
+        SheetDataCollector collector = new SheetDataCollector();
+        try (ExcelReadSession session = ExcelIO.openRead(inputStream, new ExcelReadOptions())) {
+            for (ExcelSheetInfo sheet : session.getSheets()) {
+                if (!sheetName.equalsIgnoreCase(sheet.getSheetName())) {
                     continue;
                 }
-                noModelDataListener.clear();
-                List<TableField> fields = new ArrayList<>();
-                excelReader.read(readSheet);
-                for (String s : noModelDataListener.getHeader()) {
-                    TableField tableFiled = new TableField();
-                    tableFiled.setFieldType("TEXT");
-                    tableFiled.setName(s);
-                    tableFiled.setOriginName(s);
-                    fields.add(tableFiled);
-                }
+                collector.clear();
+                session.read(sheet, collector);
             }
-        } finally {
-            CommonExcelUtils.clearThreadLocalCache();
         }
-        return noModelDataListener.getData();
+        return collector.getData();
     }
 
     public static List<TableField> getTableFields(DatasourceRequest datasourceRequest) throws DEException {
@@ -677,27 +666,25 @@ public class ExcelUtils {
 
     }
 
-    @Data
-    public class NoModelDataListener extends AnalysisEventListener<Map<Integer, String>> {
+    public class SheetDataCollector implements ExcelReadHandler {
         private final boolean preview;
-        public NoModelDataListener() { this(false); }
-        public NoModelDataListener(boolean preview) { this.preview = preview; }
+        public SheetDataCollector() { this(false); }
+        public SheetDataCollector(boolean preview) { this.preview = preview; }
 
         private List<String[]> data = new ArrayList<>();
         private List<String> header = new ArrayList<>();
         private List<Integer> headerKey = new ArrayList<>();
 
         @Override
-        public void invokeHead(Map<Integer, ReadCellData<?>> headMap, AnalysisContext context) {
-            super.invokeHead(headMap, context);
+        public void onHeader(Map<Integer, ExcelCell> headMap) {
             for (Integer key : headMap.keySet()) {
-                ReadCellData<?> cellData = headMap.get(key);
+                ExcelCell cellData = headMap.get(key);
                 String value = null;
-                if (cellData.getType().equals(CellDataTypeEnum.STRING)) {
+                if (cellData.getType() == ExcelCellType.STRING) {
                     value = cellData.getStringValue();
                 }
-                if (cellData.getType().equals(CellDataTypeEnum.NUMBER)) {
-                    value = cellData.getNumberValue().toString();
+                if (cellData.getType() == ExcelCellType.NUMBER) {
+                    value = cellData.getNumberValue() == null ? null : cellData.getNumberValue().toString();
                 }
                 if (StringUtils.isEmpty(value)) {
                     continue;
@@ -708,17 +695,16 @@ public class ExcelUtils {
         }
 
         @Override
-        public void invoke(Map<Integer, String> dataMap, AnalysisContext context) {
-            if (preview && data.size() >= 100) throw new com.alibaba.excel.exception.ExcelAnalysisStopSheetException();
+        public void onRow(int rowIndex, Map<Integer, ExcelCell> dataMap) {
+            if (preview && data.size() >= 100) throw new ExcelReadStopException();
             List<String> line = new ArrayList<>();
-            for (Integer key : dataMap.keySet()) {
-                String value = dataMap.get(key);
+            for (Integer key : headerKey) {
+                ExcelCell cellData = dataMap.get(key);
+                String value = cellData == null ? null : cellData.getStringValue();
                 if (StringUtils.isEmpty(value)) {
                     value = null;
                 }
-                if (headerKey.contains(key)) {
-                    line.add(value);
-                }
+                line.add(value);
             }
             int size = line.size();
             if (size < header.size()) {
@@ -729,14 +715,18 @@ public class ExcelUtils {
             data.add(line.toArray(new String[line.size()]));
         }
 
-        @Override
-        public void doAfterAllAnalysed(AnalysisContext analysisContext) {
-        }
-
         public void clear() {
             data.clear();
             header.clear();
             headerKey.clear();
+        }
+
+        public List<String[]> getData() {
+            return data;
+        }
+
+        public List<String> getHeader() {
+            return header;
         }
     }
 
@@ -746,18 +736,18 @@ public class ExcelUtils {
             List<ExcelSheetData> excelSheetDataList = new ArrayList<>();
             String suffix = filename.substring(filename.lastIndexOf(".") + 1);
             if (StringUtils.equalsIgnoreCase(suffix, "xlsx") || StringUtils.equalsIgnoreCase(suffix, "xls")) {
-                NoModelDataListener noModelDataListener = new NoModelDataListener(isPreview);
-                try (ExcelReader excelReader = EasyExcel.read(inputStream, noModelDataListener).build()) {
-                    List<ReadSheet> sheets = excelReader.excelExecutor().sheetList();
+                SheetDataCollector collector = new SheetDataCollector(isPreview);
+                try (ExcelReadSession session = ExcelIO.openRead(inputStream, new ExcelReadOptions())) {
+                    List<ExcelSheetInfo> sheets = session.getSheets();
                     if (sheets.size() > 100) throw new IOException(Translator.get("i18n_excel_sheet_limit"));
-                    for (ReadSheet readSheet : sheets) {
-                        noModelDataListener.clear();
+                    for (ExcelSheetInfo sheet : sheets) {
+                        collector.clear();
                         List<TableField> fields = new ArrayList<>();
-                        excelReader.read(readSheet);
-                        if (CollectionUtils.isEmpty(noModelDataListener.getHeader())) {
-                            DEException.throwException(readSheet.getSheetName() + "首行不能为空！");
+                        session.read(sheet, collector);
+                        if (CollectionUtils.isEmpty(collector.getHeader())) {
+                            DEException.throwException(sheet.getSheetName() + "首行不能为空！");
                         }
-                        for (String s : noModelDataListener.getHeader()) {
+                        for (String s : collector.getHeader()) {
                             EngineProvider.validateIdentifier(s);
                             TableField tableFiled = new TableField();
                             tableFiled.setFieldType(null);
@@ -766,7 +756,7 @@ public class ExcelUtils {
                             tableFiled.setChecked(true);
                             fields.add(tableFiled);
                         }
-                        List<String[]> data = new ArrayList<>(noModelDataListener.getData());
+                        List<String[]> data = new ArrayList<>(collector.getData());
                         if (isPreview) {
                             for (int i = 0; i < data.size(); i++) {
                                 for (int j = 0; j < data.get(i).length; j++) {
@@ -790,11 +780,9 @@ public class ExcelUtils {
                         excelSheetData.setFields(fields);
                         excelSheetData.setData(data);
                         excelSheetData.setFileName(filename);
-                        excelSheetData.setExcelLabel(readSheet.getSheetName());
+                        excelSheetData.setExcelLabel(sheet.getSheetName());
                         excelSheetDataList.add(excelSheetData);
                     }
-                } finally {
-                    CommonExcelUtils.clearThreadLocalCache();
                 }
             }
 
