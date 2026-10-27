@@ -1,6 +1,7 @@
 apisix:
-  node_listen: 9080              # APISIX listening port
+  node_listen: 9080 # APISIX listening port
   enable_ipv6: false
+  enable_server_tokens: false
 
   enable_control: true
   control:

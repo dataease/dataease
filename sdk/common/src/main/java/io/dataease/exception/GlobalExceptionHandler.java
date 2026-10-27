@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DEException.class)
     public ResultMessage deExceptionHandler(DEException e) {
         LogUtil.error(e.getMessage(), e);
-        return new ResultMessage(e.getCode(), e.getMessage());
+        return new ResultMessage(e.getCode(), DEException.getSafeMessage(e));
     }
 
     @ExceptionHandler(NullPointerException.class)
@@ -35,6 +35,6 @@ public class GlobalExceptionHandler {
         if (StringUtils.contains(message, "Cannot invoke \"io.dataease.auth.bo.TokenUserBO.getUserId()\" because \"user\" is null")) {
             return new ResultMessage(ResultCode.USER_NOT_LOGGED_IN.code(), ResultCode.USER_NOT_LOGGED_IN.message());
         }
-        return new ResultMessage(ResultCode.PARAM_IS_BLANK.code(), message);
+        return new ResultMessage(ResultCode.PARAM_IS_BLANK.code(), ResultCode.SYSTEM_INNER_ERROR.message());
     }
 }

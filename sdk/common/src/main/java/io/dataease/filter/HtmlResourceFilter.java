@@ -1,7 +1,9 @@
 package io.dataease.filter;
 
+import io.dataease.result.ResultCode;
 import io.dataease.result.ResultMessage;
 import io.dataease.utils.JsonUtil;
+import io.dataease.utils.LogUtil;
 import jakarta.servlet.*;
 import jakarta.servlet.FilterConfig;
 import jakarta.servlet.http.HttpServletRequest;
@@ -64,10 +66,15 @@ public class HtmlResourceFilter implements Filter, Ordered {
         try {
             filterChain.doFilter(servletRequest, httpResponse);
         }catch (Exception e){
+            LogUtil.error("Request processing failed", e);
+            if (httpResponse.isCommitted()) {
+                return;
+            }
+            httpResponse.resetBuffer();
             httpResponse.setContentType("application/json");
             httpResponse.setCharacterEncoding("UTF-8");
             httpResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            httpResponse.getWriter().write(JsonUtil.toJSONString(new ResultMessage(HttpServletResponse.SC_BAD_REQUEST,e.getMessage())).toString());
+            httpResponse.getWriter().write(JsonUtil.toJSONString(new ResultMessage(HttpServletResponse.SC_BAD_REQUEST, ResultCode.SYSTEM_INNER_ERROR.message())).toString());
         }
     }
 

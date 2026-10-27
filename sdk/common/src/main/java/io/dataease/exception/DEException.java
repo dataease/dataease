@@ -4,6 +4,7 @@ import io.dataease.result.ResultCode;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.io.Serial;
 
@@ -32,6 +33,15 @@ public class DEException extends RuntimeException {
         super(t);
         this.code = ResultCode.SYSTEM_INNER_ERROR.code();
         this.msg = t.getMessage();
+    }
+
+    public static String getSafeMessage(Throwable throwable) {
+        Throwable rootCause = ExceptionUtils.getRootCause(throwable);
+        if (rootCause == null) {
+            rootCause = throwable;
+        }
+        // Preserve wrapped business messages without exposing technical causes.
+        return rootCause instanceof DEException ? rootCause.getMessage() : ResultCode.SYSTEM_INNER_ERROR.message();
     }
 
     public static void throwException(String message) {
