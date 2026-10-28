@@ -24,7 +24,7 @@ for (const [name, file] of scenarios) {
   })
 }
 
-for (const mode of ['base', 'distributed', 'lib']) {
+for (const mode of ['base', 'distributed']) {
   test(`${mode} build does not enable the dev-only dependency additions`, async () => {
     const { config } = await loadConfigFromFile({ command: 'build', mode }, configPath)
     assert.ok(!config.optimizeDeps?.include?.includes('tinymce/plugins/pagebreak'))
