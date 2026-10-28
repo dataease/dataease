@@ -1318,4 +1318,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
     public List<DatasetPermissionTemplate> queruDatasetPermissionTemplate(Long resourceId) {
         return resourcePermissionManage.queruDatasetPermissionTemplate(resourceId);
     }
+
+    @Override
+    public List<DatasetPermissionTemplate> queryDatasetPermissionTemplates(List<Long> datasetIds) {
+        return resourcePermissionManage.queryDatasetPermissionTemplates(datasetIds);
+    }
 }
