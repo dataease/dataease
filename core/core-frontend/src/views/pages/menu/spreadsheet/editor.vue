@@ -861,6 +861,7 @@ onBeforeUnmount(() => {
           v-if="!loading && !previewVisible"
           ref="univerSheetRef"
           :model-value="workbookData || undefined"
+          :locale="localeStore.getCurrentLocale.lang"
           mode="edit"
           @change="markSpreadsheetChanged"
           @ready="handleUniverReady"

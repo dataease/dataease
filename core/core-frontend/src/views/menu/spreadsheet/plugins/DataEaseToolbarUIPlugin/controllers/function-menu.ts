@@ -142,6 +142,7 @@ const getFunctionCategories = (accessor: IAccessor): DataEaseFunctionCategory[] 
 export function DataEaseFunctionDropdownMenuFactory(
   accessor: IAccessor
 ): IMenuSelectorItem<string> {
+  const localeService = accessor.get(LocaleService)
   let categories: DataEaseFunctionCategory[] = []
 
   try {
@@ -150,7 +151,7 @@ export function DataEaseFunctionDropdownMenuFactory(
     categories = [
       {
         key: 'common',
-        label: '常用函数',
+        label: localeService.t('sheets-formula-ui.insert.common'),
         functions: COMMON_FUNCTIONS.map(name => ({
           name,
           desc: ''
@@ -164,7 +165,7 @@ export function DataEaseFunctionDropdownMenuFactory(
     commandId: InsertFunctionOperation.id,
     type: MenuItemType.SELECTOR,
     icon: 'FunctionIcon',
-    tooltip: '函数',
+    tooltip: 'dataease-spreadsheet.menu.function',
     slot: true,
     selections: [
       {
@@ -173,7 +174,8 @@ export function DataEaseFunctionDropdownMenuFactory(
           hoverable: false,
           selectable: false,
           props: {
-            categories
+            categories,
+            emptyText: localeService.t('dataease-spreadsheet.menu.noFunctions')
           } as any
         },
         value: ''
