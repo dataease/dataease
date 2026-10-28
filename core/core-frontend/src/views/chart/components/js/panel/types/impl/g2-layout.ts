@@ -11,6 +11,7 @@
  * 4 左侧纵轴标题过长时被裁切，同时需要保留完整标题供悬浮提示使用
  * 5 极小画布中标签和图例可能占满全部空间，需要保证图形内容区仍然可见
  * 6 双 View 图表需要关闭或限制公共边界修正，避免左右绘图区失去对称
+ * 7 四类组合图在测量前对齐自动纵轴，减少刻度时继续保持左右对应
  *
  * 当前影响范围
  * - 普通 G2 直角坐标图会使用轴标签抽稀和边界修正，例如柱状图、折线图、面积图和散点图
@@ -19,9 +20,10 @@
  * - 设置 dataeaseAxisLabelOverflow 为 false 的轴会退出公共边界修正
  * - 双向条形图通过 dataeaseAxisLabelCenter 让中轴文字在两个子 View 之间居中
  * - 双向条形图通过 dataeaseAxisLabelOverflowSides 修正类目轴首尾和数值轴外侧越界
+ * - 仅显式登记轴角色的四类组合图会调整自动轴范围和刻度
  *
  * 不影响的内容
- * - 不修改图表数据、比例尺数据范围、数据集查询、权限、联动条件和后端接口
+ * - 不修改图表数据、数据集查询、权限、联动条件和后端接口
  * - 不处理 L7 地图和 S2 表格
  * - 无普通坐标轴的 G2 图表只继续使用从 G2 原样导出的布局辅助方法
  *
@@ -44,6 +46,10 @@ import {
 import { createCoordinate } from '@antv/g2/esm/runtime/coordinate'
 import type { Layout, G2Theme } from '@antv/g2/esm/runtime/types/common'
 import type { G2GuideComponentOptions, G2Library, G2View } from '@antv/g2/esm/runtime/types/options'
+import {
+  prepareMixAxisAlignment,
+  type MixAxisScaleOptions
+} from '../../charts/g2/mix/axis-alignment'
 import {
   getSideHorizontalLegendGrid,
   getSideLegendMaxWidth,
@@ -990,6 +996,34 @@ const applyAxisTickIndexes = (
 }
 
 /**
+ * 自动侧跟随参照轴的可见刻度，两侧继续保留原有边界约束
+ */
+const syncMixAxisTickIndexes = (
+  components: G2GuideComponentOptions[],
+  measurements: Map<G2GuideComponentOptions, AxisMeasurement>
+) => {
+  if (components.length !== 2 || components.some(component => !measurements.has(component))) {
+    return
+  }
+  const descriptor = components[0].scales.find(
+    scale => (scale as MixAxisScaleOptions).dataeaseMixAxisSource
+  ) as MixAxisScaleOptions
+  const state = descriptor.dataeaseMixAxisState()
+  const referenceIndex = state.auto[1] ? 0 : 1
+  const reference = measurements.get(components[referenceIndex])
+  const targetComponent = components[referenceIndex === 0 ? 1 : 0]
+  const target = measurements.get(targetComponent)
+  // 保留参照轴显示，自动侧不能重新显示已越界的标签
+  const indexes = new Set(
+    [...reference.sampledIndexes].filter(index => target.sampledIndexes.has(index))
+  )
+  target.sampledIndexes = indexes
+  target.sampled = indexes.size < target.ticks.length
+  target.positionedLabels = target.positionedLabels?.filter(label => indexes.has(label.index))
+  applyAxisTickIndexes(targetComponent, getOriginalAxisTickFilter(targetComponent), indexes)
+}
+
+/**
  * 计算标签从轴线向外移动的方向
  *
  * 返回值是横向和纵向两个移动方向，后续会乘以刻度长度加文字间距
@@ -1288,6 +1322,7 @@ const applyLayoutCorrection = (
  *
  * 这不是业务图表主动调用的方法，G2 在 render 和 forceFit 的布局阶段会进入这里
  * 方法先复用 G2 原生 computeLayout，再补充 DataEase 需要的图例、轴标签和轴标题处理
+ * 显式登记轴角色的四类组合图先对齐自动纵轴，让测量与绘制使用相同刻度
  * 普通图表不需要自己写固定 padding，也不需要首次 render 后测量 DOM 再 render 第二次
  *
  * 处理顺序
@@ -1308,9 +1343,10 @@ const applyLayoutCorrection = (
  * - 开启左轴标题安全边距的图表标题长度和左侧留白
  * - 设置 dataeaseAxisLabelOverflow 为 false 后退出公共边界修正的多 View 图表
  * - 显式使用中轴居中和按边修正开关的双向条形图
+ * - 四类组合图的自动纵轴范围、刻度位置及对参照轴显示位置的跟随
  *
  * 不直接影响
- * - mark 的数据值、柱线点形状、颜色、比例尺数据范围和后端返回结果
+ * - mark 的数据值、柱线点形状、颜色和后端返回结果
  * - L7 地图和 S2 表格
  *
  * 兼容性边界
@@ -1323,6 +1359,10 @@ export function computeLayout(
   theme: G2Theme,
   library: G2Library
 ): Layout {
+  // 仅带组合图标记的纵轴参与，测量和最终绘制必须使用同一套刻度
+  const alignedMixAxes = prepareMixAxisAlignment(components, component =>
+    createScale(component, library)
+  )
   // 第一步统一普通轴的防重叠策略，后续测量必须与最终隐藏规则一致
   applyAxisLabelOverlapDefaults(components)
   // 极坐标轴和其他特殊组件不进入直角坐标轴的边界修正
@@ -1482,6 +1522,7 @@ export function computeLayout(
       )
     )
     .some(Boolean)
+  syncMixAxisTickIndexes(alignedMixAxes, measurementCache)
   if (hasSampledAxis) {
     // 标签减少后轴宽也可能变小，恢复原始 size 后让 G2 按最终可见标签重新计算留白
     axisComponents.forEach(component => {
@@ -1525,6 +1566,7 @@ export function computeLayout(
         measurementCache
       )
     )
+    syncMixAxisTickIndexes(alignedMixAxes, measurementCache)
 
     // 只增加正数像素，向上取整避免小数像素仍留下半个字形被裁切
     const rawTop = Math.max(0, Math.ceil(overflow.top))
@@ -1584,6 +1626,7 @@ export function computeLayout(
     )
   )
   pruneUnfitAxisLabels(verticalAxisComponents, measurementCache, correctedLayout)
+  syncMixAxisTickIndexes(alignedMixAxes, measurementCache)
   // 最终 padding 确定后再移动中轴文字，避免使用修正过程中的旧中心位置
   applyCenteredAxisLabelOffset(axisComponents, correctedLayout, theme)
   // 标题最大长度依赖最终 innerHeight，因此必须放在所有 padding 修正之后
