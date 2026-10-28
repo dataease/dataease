@@ -35,6 +35,7 @@ import {
   getAssistLineAxisIndex,
   getMixAssistLineOptions,
   configMixLabel,
+  configMixAxisAlignment,
   configMixLineArea,
   getMixColumnWidthOptions,
   MixG2Chart
@@ -595,6 +596,7 @@ export class ColumnLineMix extends G2ChartView {
         }
       })
     }
+    configMixAxisAlignment(chart, [intervalMark], [lineMark, pointMark])
     // 隐藏数据轴只影响显示，仍需执行轴域同步和手动范围配置
     if (!yAxis.show) {
       intervalMark.axis.y = false
