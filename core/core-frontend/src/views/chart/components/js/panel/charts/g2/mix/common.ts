@@ -3,6 +3,7 @@ import { defaultsDeep } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { parseJson } from '@/views/chart/components/js/util'
 import { DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'
+import { setGradientColor } from '../../../common/common_antv'
 import { getColumnSeriesPaddingTransform } from '../bar/barUtil'
 import {
   getCategoryLegendStyle,
@@ -381,6 +382,8 @@ type MixAssistScaleOptions = LinearScale & {
   dataeaseAssistAxis?: number
   dataeaseAssistSource?: boolean
   dataeaseAssistSetDomain?: (domain: number[]) => number[]
+  dataeaseAreaSource?: string
+  dataeaseAreaTarget?: string
 }
 
 type MixAssistNumericScale = {
@@ -418,6 +421,87 @@ const syncMixAssistScales: NonNullable<LinearScale['groupTransform']> = scales =
       numericScale.update({ domain, range: sourceOptions?.range, nice: false })
     }
   })
+  // 面积的零基线不参与折线轴域推断，辅助线冻结轴域后再同步面积范围
+  scales.forEach(scale => {
+    const options = scale.getOptions() as MixAssistScaleOptions
+    if (!options.dataeaseAreaTarget) {
+      return
+    }
+    const source = scales.find(candidate => {
+      const sourceOptions = candidate.getOptions() as MixAssistScaleOptions
+      return sourceOptions.dataeaseAreaSource === options.dataeaseAreaTarget
+    })
+    const sourceOptions = source?.getOptions() as MixAssistScaleOptions
+    const domain = sourceOptions?.domain || []
+    if (domain.length === 2 && domain.every(Number.isFinite)) {
+      const numericScale = scale as MixAssistNumericScale
+      numericScale.update({ domain, range: sourceOptions.range, nice: false })
+    }
+  })
+}
+
+/**
+ * 在原图元配置完成后追加面积，沿用最终数据、系列颜色和轴域
+ */
+export const configMixLineArea = (chart: Chart, options: G2Spec): G2Spec => {
+  const { basicStyle } = parseJson(chart.customAttr)
+  const view = options.type === 'view' ? options : options.children.find(c => c.key === 'chart')
+  const lineMarks = view.children.filter(mark => mark.type === 'line')
+  const zIndex = Math.min(0, ...view.children.map(mark => mark.zIndex ?? 0)) - 1
+  lineMarks.forEach(lineMark => {
+    const axis = lineMark.scale.y.key
+    const show = axis === 'left' ? basicStyle.leftLineArea : basicStyle.lineArea
+    if (!show) {
+      return
+    }
+    const gradient = axis === 'left' ? basicStyle.leftLineAreaGradient : basicStyle.lineAreaGradient
+    const colors = new Map<string, string>(lineMark.scale.color.relations)
+    const colorOf = lineMark.encode.color as (datum: Record<string, any>) => string
+    lineMark.scale.y = {
+      ...lineMark.scale.y,
+      dataeaseAreaSource: axis,
+      groupTransform: syncMixAssistScales
+    }
+    // G2 从首个 Y 比例尺读取同步函数，右轴单独启用面积时也需保留该入口
+    const firstMark = view.children[0]
+    firstMark.scale.y = { ...firstMark.scale.y, groupTransform: syncMixAssistScales }
+    view.children.push({
+      type: 'area',
+      data: lineMark.data,
+      encode: {
+        ...lineMark.encode,
+        shape: lineMark.encode.shape === 'smooth' ? 'smooth' : 'area'
+      },
+      scale: {
+        ...lineMark.scale,
+        // 保留点比例尺默认间距及柱形当前间距，避免面积默认零间距改变共有 X 比例尺
+        x: { padding: 0.5, ...view.scale?.x, ...firstMark.scale.x, ...lineMark.scale.x },
+        y: {
+          ...lineMark.scale.y,
+          independent: true,
+          // 自动轴仅钳住域外零基线，手动轴沿用折线既有裁剪，避免切掉自动轴边界圆点
+          clamp: lineMark.scale.y.clamp ?? true,
+          dataeaseAssistSource: false,
+          dataeaseAreaSource: undefined,
+          dataeaseAreaTarget: axis
+        }
+      },
+      axis: { y: false },
+      tooltip: false,
+      zIndex,
+      style: {
+        connect: lineMark.style?.connect ?? false,
+        fillOpacity: 1,
+        lineWidth: 0,
+        pointerEvents: 'none',
+        ...(gradient && {
+          fill: (data: Record<string, any>[]) =>
+            setGradientColor(colors.get(colorOf(data[0])), true, 270)
+        })
+      }
+    })
+  })
+  return options
 }
 
 export const getMixAssistLineOptions = <T extends { value: number }>(
@@ -598,6 +682,8 @@ export const CHART_MIX_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
     'lineSymbol',
     'lineSymbolSize',
     'lineSmooth',
+    'lineArea',
+    'lineAreaGradient',
     'radiusColumnBar',
     'subSeriesColor',
     'seriesColor',

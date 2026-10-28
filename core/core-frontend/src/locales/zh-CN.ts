@@ -1397,6 +1397,7 @@ export default {
     latitude: '纬度',
     longitude_and_latitude: '经度纬度',
     gradient: '渐变',
+    show_area: '显示面积',
     layer_controller: '指标切换',
     show_zoom: '显示缩放按钮',
     button_color: '按钮颜色',

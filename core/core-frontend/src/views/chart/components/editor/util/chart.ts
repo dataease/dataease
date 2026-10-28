@@ -1808,6 +1808,8 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   lineSymbol: 'circle',
   lineSymbolSize: 4,
   lineSmooth: true,
+  lineArea: false,
+  lineAreaGradient: false,
   barDefault: true,
   radiusColumnBar: 'rightAngle',
   columnBarRightAngleRadius: 20,
@@ -1890,7 +1892,9 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   leftLineWidth: 2,
   leftLineSymbol: 'circle',
   leftLineSymbolSize: 4,
-  leftLineSmooth: true
+  leftLineSmooth: true,
+  leftLineArea: false,
+  leftLineAreaGradient: false
 }
 
 export const BASE_VIEW_CONFIG = {

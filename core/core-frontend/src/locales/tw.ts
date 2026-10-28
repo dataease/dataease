@@ -1379,6 +1379,7 @@ export default {
     latitude: '緯度',
     longitude_and_latitude: '經度緯度',
     gradient: '漸層',
+    show_area: '顯示面積',
     layer_controller: '指標切換',
     show_zoom: '顯示縮放按鈕',
     button_color: '按鈕顏色',
