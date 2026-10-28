@@ -429,10 +429,15 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
     if (!xAxisExt) {
       return items
     }
-    // 配色面板与折线使用相同的子类别顺序，不受图例排序影响。
     const series = sortSeriesItems(items, xAxisExt.sort, xAxisExt.customSort)
     const colors = chart.customAttr.basicStyle.colors
-    return series.map((item, index) => ({ ...item, color: colors[index % colors.length] }))
+    // 先按子类别顺序确定颜色，再按图例顺序展示，避免排序改变类别配色。
+    const seriesColors = series.map((item, index) => ({
+      ...item,
+      color: colors[index % colors.length]
+    }))
+    const { sort, customSort } = chart.customStyle.legend
+    return sortSeriesItems(seriesColors, sort, customSort)
   }
 
   protected configLegend(chart: Chart, options: LineOptions): LineOptions {
