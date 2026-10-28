@@ -36,6 +36,7 @@ import {
   getAssistLineAxisIndex,
   getMixAssistLineOptions,
   configMixLabel,
+  configMixLineArea,
   getMixColumnWidthOptions,
   MixG2Chart
 } from './common'
@@ -895,7 +896,8 @@ export class GroupLineMix extends G2ChartView {
       this.configTooltip,
       this.configXAxis,
       this.configYAxis,
-      this.configAssistLine
+      this.configAssistLine,
+      configMixLineArea
     )(chart, options, context, this)
   }
 

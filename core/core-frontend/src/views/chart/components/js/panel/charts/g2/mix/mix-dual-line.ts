@@ -33,6 +33,7 @@ import {
   getAssistLineAxisIndex,
   getMixAssistLineOptions,
   configMixLabel,
+  configMixLineArea,
   MixG2Chart
 } from './common'
 import G2TooltipCarousel from '@/views/chart/components/js/G2TooltipCarousel'
@@ -999,7 +1000,8 @@ export class GroupLineMix extends G2ChartView {
       this.configTooltip,
       this.configXAxis,
       this.configYAxis,
-      this.configAssistLine
+      this.configAssistLine,
+      configMixLineArea
     )(chart, options, context, this)
   }
 

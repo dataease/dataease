@@ -208,6 +208,14 @@ declare interface ChartBasicStyle {
    */
   lineSmooth: boolean
   /**
+   * 组合图右轴折线显示面积
+   */
+  lineArea: boolean
+  /**
+   * 组合图右轴折线面积使用渐变颜色
+   */
+  lineAreaGradient: boolean
+  /**
    * 自适应
    */
   barDefault: boolean
@@ -484,6 +492,14 @@ declare interface ChartBasicStyle {
    * 副轴平滑折线开关
    */
   leftLineSmooth: boolean
+  /**
+   * 双折线组合图左轴显示面积
+   */
+  leftLineArea: boolean
+  /**
+   * 双折线组合图左轴面积使用渐变颜色
+   */
+  leftLineAreaGradient: boolean
   /**
    * 主题反色，浅色主题黑色，深色主题白色
    */

@@ -1439,6 +1439,7 @@ export default {
     latitude: 'Latitude',
     longitude_and_latitude: 'Longitude and latitude',
     gradient: 'Gradient',
+    show_area: 'Show area',
     layer_controller: 'Indicator switch',
     show_zoom: 'Show zoom button',
     button_color: 'Button color',
