@@ -132,12 +132,14 @@ sync_auth_prepare_images() (
             sync_auth_error IMAGE_ARCHIVE_MISSING "离线包缺少主服务或同步执行器的配套镜像" "使用包含两端镜像的完整离线包；不要以本地同标签旧镜像代替"
             exit 1
          fi
-         docker load -i "$archive" || {
+         printf '\t加载镜像 %s\n' "${image##*/}" | tee -a "$package_dir/install.log"
+         docker load -i "$archive" >>"$package_dir/install.log" 2>&1 || {
             sync_auth_error IMAGE_LOAD_FAILED "同步鉴权配套镜像加载失败" "检查离线镜像文件完整性、Docker 状态及磁盘空间后重新升级"
             exit 1
          }
       else
-         docker pull "$image" || {
+         printf '\t拉取镜像 %s\n' "${image##*/}" | tee -a "$package_dir/install.log"
+         docker pull "$image" >>"$package_dir/install.log" 2>&1 || {
             sync_auth_error IMAGE_PULL_FAILED "同步鉴权配套镜像拉取失败" "检查镜像仓库访问、网络和磁盘空间后重新升级，勿只更新主服务"
             exit 1
          }
