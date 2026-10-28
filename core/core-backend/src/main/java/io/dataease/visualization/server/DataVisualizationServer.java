@@ -82,11 +82,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/dataVisualization")
 public class DataVisualizationServer implements DataVisualizationApi {
+
+    private static final Pattern EXCEL_TABLE_NAME_PATTERN = Pattern.compile("^excel_(.+)_[0-9a-fA-F]{10}$");
 
     @Resource
     private DataVisualizationInfoMapper visualizationInfoMapper;
@@ -376,7 +380,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
                             if (datasourceOld.getType().equals(DatasourceConfiguration.DatasourceType.API.name())) {
                                 DEException.throwException(Translator.get("i18n_app_error_no_api"));
                             } else if (datasourceOld.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name()) || datasourceOld.getType().equals(DatasourceConfiguration.DatasourceType.ExcelRemote.name())) {
-                                dsTableNamesMap.put(datasourceOld.getId(), ExcelUtils.getTableNamesMap(datasourceOld.getType(), datasourceOld.getConfiguration()));
+                                dsTableNamesMap.put(datasourceOld.getId(), getAppExcelTableNamesMap(datasourceOld, appData.getDatasetTablesInfo()));
                             } else if (datasourceOld.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
                                 dsTableNamesMap.put(datasourceOld.getId(), (Map<String, String>) datasourceServer.invokeMethod(datasourceOld.getType(), "getTableNamesMap", String.class, datasourceOld.getConfiguration()));
                             }
@@ -664,6 +668,31 @@ public class DataVisualizationServer implements DataVisualizationApi {
         //保存图表信息
         chartDataManage.saveChartViewFromVisualization(request.getComponentData(), newDvId, canvasViews);
         return newDvId.toString();
+    }
+
+    private Map<String, String> getAppExcelTableNamesMap(AppCoreDatasourceVO datasource, List<AppCoreDatasetTableVO> datasetTables) {
+        try {
+            return ExcelUtils.getTableNamesMap(datasource.getType(), datasource.getConfiguration());
+        } catch (DEException e) {
+            // 跨环境的旧应用模板可能无法解密，从已导出的物理表名恢复 Sheet 映射。
+            Map<String, String> tableNames = new LinkedHashMap<>();
+            if (CollectionUtils.isNotEmpty(datasetTables)) {
+                for (AppCoreDatasetTableVO table : datasetTables) {
+                    if (!Objects.equals(datasource.getId(), table.getDatasourceId())) {
+                        continue;
+                    }
+                    Matcher matcher = EXCEL_TABLE_NAME_PATTERN.matcher(StringUtils.defaultString(table.getTableName()));
+                    if (!matcher.matches()) {
+                        throw e;
+                    }
+                    tableNames.put(matcher.group(1), table.getTableName());
+                }
+            }
+            if (tableNames.isEmpty()) {
+                throw e;
+            }
+            return tableNames;
+        }
     }
 
     private void excelAdaptor(DatasetGroupInfoDTO dsInfo, Map<String, String> excelTableNamesMap, List<Long> excelDsId) {
