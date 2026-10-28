@@ -9,6 +9,7 @@ import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.constant.AuthConstant;
 import io.dataease.exception.DEException;
 import io.dataease.license.utils.LicenseUtil;
+import io.dataease.model.DeModel;
 import io.dataease.result.ResultMessage;
 import io.dataease.utils.*;
 import jakarta.servlet.*;
@@ -21,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.web.util.UrlPathHelper;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -51,7 +53,10 @@ public class TokenFilter implements Filter {
             return;
         }
         String requestURI = request.getRequestURI();
-        boolean staticResource = isStaticResourceRequest(requestURI);
+        String resourcePath = getResourcePath(request);
+        boolean staticResource = resourcePath.startsWith("/static-resource/");
+        boolean resourceUpload = ModelUtils.get() == DeModel.STANDALONE
+                && resourcePath.startsWith("/staticResource/upload/");
 
         boolean match = false;
         try {
@@ -64,13 +69,19 @@ public class TokenFilter implements Filter {
             LogUtil.error(e.getMessage(), e);
             return;
         }
-        if (!staticResource && match) {
+        if (!staticResource && !resourceUpload && match) {
             filterChain.doFilter(servletRequest, servletResponse);
             return;
         }
+        if (resourceUpload) {
+            filterResourceUpload(request, (HttpServletResponse) servletResponse, filterChain);
+            return;
+        }
+        boolean authenticated = false;
         try {
             if (ModelUtils.isDesktop()) {
                 UserUtils.setDesktopUser();
+                authenticated = true;
                 filterChain.doFilter(servletRequest, servletResponse);
                 return;
             }
@@ -107,6 +118,7 @@ public class TokenFilter implements Filter {
                 if (StringUtils.isNotBlank(ServletUtils.getHead(AuthConstant.LINK_TOKEN_KEY))) {
                     ServletUtils.setCookie((HttpServletResponse) servletResponse, AuthConstant.LINK_TOKEN_COOKIE_KEY, linkToken);
                 }
+                authenticated = true;
                 filterChain.doFilter(servletRequest, servletResponse);
                 return;
             }
@@ -117,9 +129,14 @@ public class TokenFilter implements Filter {
             }
             TokenUserBO userBO = TokenUtils.validate(token);
             UserUtils.setUserInfo(userBO);
+            authenticated = true;
             filterChain.doFilter(servletRequest, servletResponse);
         } catch (Exception e) {
-            if (!LicenseUtil.licenseValid()) {
+            if (staticResource && !authenticated) {
+                sendUnauthorized((HttpServletResponse) servletResponse);
+            } else if (staticResource) {
+                throw e;
+            } else if (!LicenseUtil.licenseValid()) {
                 HttpServletResponse res = (HttpServletResponse) servletResponse;
                 ResultMessage resultMessage = new ResultMessage(HttpStatus.UNAUTHORIZED.value(), e.getMessage());
                 HttpHeaders headers = new HttpHeaders();
@@ -136,8 +153,53 @@ public class TokenFilter implements Filter {
         }
     }
 
-    private boolean isStaticResourceRequest(String requestURI) {
-        return StringUtils.isNotBlank(requestURI) && requestURI.contains("/static-resource/");
+    private String getResourcePath(HttpServletRequest request) {
+        // Servlet paths are already decoded and normalized by the container.
+        String path = StringUtils.defaultString(request.getServletPath())
+                + StringUtils.defaultString(request.getPathInfo());
+        if (StringUtils.isBlank(path)) {
+            path = UrlPathHelper.defaultInstance.getPathWithinApplication(request);
+        }
+        for (String prefix : new String[]{AuthConstant.DE_API_PREFIX, AuthConstant.DE_CASAPI_PREFIX, AuthConstant.DE_OIDCAPI_PREFIX}) {
+            if (path.startsWith(prefix + "/")) {
+                return path.substring(prefix.length());
+            }
+        }
+        return path;
+    }
+
+    private void filterResourceUpload(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+        try {
+            TokenUserBO userBO;
+            String token = request.getHeader(AuthConstant.TOKEN_KEY);
+            try {
+                userBO = TokenUtils.validateBusinessToken(token);
+            } catch (Exception e) {
+                // Validator exceptions may contain credentials; do not return or log them.
+                sendUnauthorized(response);
+                return;
+            }
+            UserUtils.setUserInfo(userBO);
+            String executeVersion = VersionUtil.getRandomVersion();
+            if (StringUtils.isNotBlank(executeVersion)) {
+                response.addHeader(AuthConstant.DE_EXECUTE_VERSION, executeVersion);
+            }
+            if (StringUtils.isNotBlank(token)
+                    && StringUtils.isBlank(request.getHeader(AuthConstant.ASK_TOKEN_KEY))
+                    && StringUtils.isBlank(request.getHeader(AuthConstant.EMBEDDED_TOKEN_KEY))) {
+                ServletUtils.setCookie(response, AuthConstant.TOKEN_COOKIE_KEY, token);
+            }
+            chain.doFilter(request, response);
+        } finally {
+            UserUtils.removeUser();
+        }
+    }
+
+    private void sendUnauthorized(HttpServletResponse response) throws IOException {
+        response.setHeader(headName, "Unauthorized");
+        response.setContentType("application/json");
+        sendResponseEntity(response, new ResponseEntity<>(
+                new ResultMessage(HttpStatus.UNAUTHORIZED.value(), "Unauthorized"), HttpStatus.UNAUTHORIZED));
     }
 
     private String getLinkToken(HttpServletRequest request, boolean staticResource) {
