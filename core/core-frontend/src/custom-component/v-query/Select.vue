@@ -16,7 +16,7 @@ import {
   Ref
 } from 'vue'
 import { enumValueObj, type EnumValue, getEnumValue } from '@/api/dataset'
-import { cloneDeep, debounce } from 'lodash-es'
+import { cloneDeep, debounce, isEqual } from 'lodash-es'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import Flat from './Flat.vue'
 import eventBus from '@/utils/eventBus'
@@ -27,7 +27,7 @@ import colorTree from 'less/lib/less/tree/color.js'
 import { colorStringToHex } from '@/utils/color'
 import { isMobile } from '@/utils/utils'
 import { ElMessage } from 'element-plus-secondary'
-import { isCascadeParentCleared } from './cascade-utils'
+import { isCascadeParentCleared, isEmptyCascadeValue } from './cascade-utils'
 
 interface SelectConfig {
   selectValue: any
@@ -376,6 +376,10 @@ const handleFieldIdChange = (val: EnumValue) => {
       customSort()
       if (!res?.length) {
         options.value = []
+        change =
+          !isEmptyCascadeValue(selectValue.value) ||
+          !isEmptyCascadeValue(config.value.selectValue) ||
+          !!config.value.mapValue?.length
         selectValue.value = config.value.multiple ? [] : undefined
         config.value.defaultValue = selectValue.value
       }
@@ -402,14 +406,17 @@ const handleFieldIdChange = (val: EnumValue) => {
         change = true
       }
 
+      const mapValue = setDefaultMapValue(
+        Array.isArray(selectValue.value) ? [...selectValue.value] : [selectValue.value]
+      )
+      // 枚举重载也可能只改变显示值对应的 ID，运行态查询与级联都要同步新映射。
+      if (!props.isConfig && !isEqual(config.value.mapValue || [], mapValue)) {
+        change = true
+      }
       if (change) {
-        config.value.mapValue = setDefaultMapValue(
-          Array.isArray(selectValue.value) ? [...selectValue.value] : [selectValue.value]
-        )
-        config.value.defaultMapValue = setDefaultMapValue(
-          Array.isArray(selectValue.value) ? [...selectValue.value] : [selectValue.value]
-        )
-        setCascadeValueBack(config.value.mapValue)
+        config.value.defaultMapValue = cloneDeep(mapValue)
+        // 复用用户改选路径，同步实际查询值、下级级联，并遵循查询按钮的触发规则。
+        handleValueChange()
       }
     })
     .finally(() => {
