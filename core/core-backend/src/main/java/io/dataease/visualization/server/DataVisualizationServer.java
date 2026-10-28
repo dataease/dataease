@@ -1239,6 +1239,11 @@ public class DataVisualizationServer implements DataVisualizationApi {
     }
 
     @Override
+    public List<DatasetPermissionTemplate> queryDatasetPermissionTemplates(List<Long> datasetIds) {
+        return resourcePermissionManage.queryDatasetPermissionTemplates(datasetIds);
+    }
+
+    @Override
     public DataVisualizationVO findDataVisualizationById(DataVisualizationBaseRequest request) {
         Long dvId = request.getId();
         String busiFlag = request.getBusiFlag();

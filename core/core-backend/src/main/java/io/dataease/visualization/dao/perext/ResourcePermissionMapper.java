@@ -25,4 +25,14 @@ public interface ResourcePermissionMapper {
     </script>
     """)
     List<CoreDatasetGroup> queryDataSetList(@Param("viewIds") List<Long> viewIds);
+
+    @Select("""
+    <script>
+        select cdg.* from core_dataset_group cdg where cdg.id IN
+        <foreach item='item' collection='datasetIds' open='(' separator=',' close=')'>
+            #{item}
+        </foreach>
+    </script>
+    """)
+    List<CoreDatasetGroup> queryDataSetListByIds(@Param("datasetIds") List<Long> datasetIds);
 }
