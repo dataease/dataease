@@ -120,6 +120,7 @@ const blocks: Record<string, string> = {
   NOT_SENT: 'notSent'
 }
 const rows = computed(() => detail.value?.recipients || [])
+const resendTime = (time: number) => (Number.isFinite(time) ? time : Number.NEGATIVE_INFINITY)
 // Manual resends have their own list; normal executions and automatic retries are excluded.
 const resendRecords = computed(() =>
   rows.value
@@ -136,7 +137,13 @@ const resendRecords = computed(() =>
           artifactId: attempt.artifactId || recipient.artifactId
         }))
     )
-    .sort((a, b) => a.createTime - b.createTime || a.attemptNo - b.attemptNo)
+    .sort(
+      (a, b) =>
+        resendTime(b.createTime) - resendTime(a.createTime) ||
+        b.attemptNo - a.attemptNo ||
+        b.id.length - a.id.length ||
+        (a.id < b.id ? 1 : a.id > b.id ? -1 : 0)
+    )
 )
 const resendMessage = (attempt: Attempt) => {
   if (attempt.status === 0 || attempt.status === 1) return tr('awaitingResult')
