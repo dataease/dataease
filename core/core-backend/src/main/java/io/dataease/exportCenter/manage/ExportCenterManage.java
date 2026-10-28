@@ -29,6 +29,7 @@ import io.dataease.exportCenter.util.ExportFileNameUtils;
 import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
+import io.dataease.license.utils.LicenseUtil;
 import io.dataease.log.DeLog;
 import io.dataease.model.ExportTaskDTO;
 import io.dataease.constant.XpackSettingConstants;
@@ -245,7 +246,8 @@ public class ExportCenterManage implements BaseExportApi {
         if (Objects.equals(dataVisualizationInfo.getPid(), dataVisualizationInfo.getId())) {
             return list;
         }
-        InteractiveAuthApi interactiveAuthApi = CommonBeanFactory.getBean(InteractiveAuthApi.class);
+        InteractiveAuthApi interactiveAuthApi = LicenseUtil.licenseValid()
+                ? CommonBeanFactory.getBean(InteractiveAuthApi.class) : null;
         if (interactiveAuthApi == null) {
             getParent(list, dataVisualizationInfo);
         } else {
