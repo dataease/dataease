@@ -76,6 +76,10 @@ public class EncryptUtils extends CodingUtil {
         return str;
     }
 
+    public static String aesDecryptLegacy(String value) {
+        return value == null ? null : tryDecryptRaw(value, OLD_SECRET_KEY, OLD_IV);
+    }
+
     private static String tryDecryptRaw(String src, String key, String iv) {
         try {
             byte[] raw = key.getBytes(StandardCharsets.UTF_8);

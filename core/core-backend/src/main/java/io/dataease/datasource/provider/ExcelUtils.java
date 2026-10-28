@@ -122,28 +122,69 @@ public class ExcelUtils {
     }
 
     public static Map<String, String> getTableNamesMap(String type, String configuration) throws DEException {
-        Map<String, String> result = new HashMap<>();
-        JsonNode rootNode = null;
-        // 兼容历史未加密信息
-        String sheets = configuration;
-        try {
-            if (type.equalsIgnoreCase("ExcelRemote")) {
-                sheets = objectMapper.readTree(configuration).get("sheets").toString();
-            }
-            rootNode = objectMapper.readTree((String) EncryptUtils.aesDecrypt(sheets));
-        } catch (Exception e) {
-            try {
-                rootNode = objectMapper.readTree(sheets);
-            } catch (Exception ex) {
-                DEException.throwException(ex);
-            }
-        }
-        if (rootNode != null) {
-            for (int i = 0; i < rootNode.size(); i++) {
-                result.put(rootNode.get(i).get("tableName").asText(), rootNode.get(i).get("deTableName").asText());
+        Map<String, String> result = new LinkedHashMap<>();
+        for (JsonNode sheet : readTableNameSheets(type, configuration)) {
+            String tableName = sheet.get("tableName").asText();
+            String deTableName = sheet.get("deTableName").asText();
+            String previous = result.putIfAbsent(tableName, deTableName);
+            if (previous != null && !previous.equals(deTableName)) {
+                DEException.throwException(Translator.get("i18n_app_excel_mapping_invalid"));
             }
         }
         return result;
+    }
+
+    public static String exportTableNames(String type, String configuration) {
+        var sheets = objectMapper.createArrayNode();
+        getTableNamesMap(type, configuration).forEach((tableName, deTableName) ->
+                sheets.addObject().put("tableName", tableName).put("deTableName", deTableName));
+        if ("ExcelRemote".equalsIgnoreCase(type)) {
+            return objectMapper.createObjectNode().set("sheets", sheets).toString();
+        }
+        return sheets.toString();
+    }
+
+    private static JsonNode readTableNameSheets(String type, String configuration) {
+        // Template metadata may be plain JSON or encrypted with the current/legacy storage key.
+        for (String candidate : new String[]{configuration, (String) EncryptUtils.aesDecrypt(configuration),
+                EncryptUtils.aesDecryptLegacy(configuration)}) {
+            JsonNode sheets = readTableNameJson(candidate);
+            if ("ExcelRemote".equalsIgnoreCase(type) && sheets != null && sheets.isObject()) {
+                sheets = sheets.get("sheets");
+                if (sheets != null && sheets.isTextual()) {
+                    sheets = readTableNameSheets("Excel", sheets.asText());
+                }
+            }
+            if (sheets != null && sheets.isArray()) {
+                boolean valid = true;
+                for (JsonNode sheet : sheets) {
+                    if (!sheet.isObject() || !sheet.path("tableName").isTextual()
+                            || !sheet.path("deTableName").isTextual()
+                            || StringUtils.isBlank(sheet.path("tableName").asText())
+                            || StringUtils.isBlank(sheet.path("deTableName").asText())) {
+                        valid = false;
+                        break;
+                    }
+                }
+                if (valid) {
+                    return sheets;
+                }
+            }
+        }
+        DEException.throwException(Translator.get("i18n_app_excel_mapping_invalid"));
+        return null;
+    }
+
+    private static JsonNode readTableNameJson(String configuration) {
+        if (StringUtils.isBlank(configuration)) {
+            return null;
+        }
+        try {
+            return objectMapper.reader().with(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
+                    .readTree(configuration);
+        } catch (IOException e) {
+            return null;
+        }
     }
 
     public static String getFileName(CoreDatasource datasource) throws DEException {
