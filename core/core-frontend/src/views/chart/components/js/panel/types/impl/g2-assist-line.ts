@@ -17,7 +17,13 @@ export const createAssistLineVisibility = (chart: Chart) => {
   const collect = (data: Record<string, any>[], fields: Axis[], axis: string) => {
     data?.forEach(row => {
       if (Array.isArray(row.data)) collect(row.data, fields, axis)
-      if (row.category === undefined || row.category === null) return
+      const category =
+        chart.type === 'box-plot'
+          ? chart.xAxisExt?.length
+            ? JSON.stringify([row.category ?? null])
+            : fields?.[0]?.chartShowName || fields?.[0]?.name
+          : row.category
+      if (category === undefined || category === null) return
       const quotas = row.quotaList?.length ? row.quotaList : fields?.length === 1 ? fields : []
       quotas?.forEach(field => {
         const id = `${axis}:${field.id}`
@@ -27,7 +33,7 @@ export const createAssistLineVisibility = (chart: Chart) => {
           .add(
             usesMixSeriesKey(chart.type)
               ? getMixSeriesKey(axis, getMixSeriesCategory(chart, axis, row))
-              : String(row.category)
+              : String(category)
           )
       })
     })

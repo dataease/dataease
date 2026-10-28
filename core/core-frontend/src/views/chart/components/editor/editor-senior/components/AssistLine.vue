@@ -88,6 +88,10 @@ const changeLine = () => {
       ElMessage.error(t('chart.name_can_not_empty'))
       return
     }
+    if (props.chart.type === 'box-plot' && ele.yAxisType === 'right') {
+      ElMessage.error(t('chart.box_plot_assist_axis_unsupported'))
+      return
+    }
     if (ele.field === '0') {
       if (ele.value === null || ele.value === undefined || ele.value === '') {
         ElMessage.error(t('chart.value_can_not_empty'))
@@ -104,6 +108,10 @@ const changeLine = () => {
       }
       if (!ele.summary || ele.summary === '') {
         ElMessage.error(t('chart.summary_not_empty'))
+        return
+      }
+      if (props.chart.type === 'box-plot' && !['avg', 'max', 'min'].includes(ele.summary)) {
+        ElMessage.error(t('chart.box_plot_assist_summary_unsupported'))
         return
       }
     }
@@ -177,6 +185,27 @@ onMounted(() => {
         </button>
       </span>
     </div>
+
+    <el-alert
+      v-if="
+        chart.type === 'box-plot' &&
+        state.assistLineCfg.assistLine.some(
+          item => item.field === '1' && !['avg', 'max', 'min'].includes(item.summary)
+        )
+      "
+      :title="t('chart.box_plot_assist_summary_unsupported')"
+      type="warning"
+      :closable="false"
+    />
+    <el-alert
+      v-if="
+        chart.type === 'box-plot' &&
+        state.assistLineCfg.assistLine.some(item => item.yAxisType === 'right')
+      "
+      :title="t('chart.box_plot_assist_axis_unsupported')"
+      type="warning"
+      :closable="false"
+    />
 
     <el-row v-for="(item, index) in state.assistLineCfg.assistLine" :key="index" class="line-style">
       <el-col :span="8" class="line-style">
