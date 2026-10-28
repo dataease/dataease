@@ -48,7 +48,6 @@ import lombok.Data;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -239,24 +238,26 @@ public class ExportCenterManage implements BaseExportApi {
     public List<DataVisualizationInfo> getParents(Long id) {
         List<DataVisualizationInfo> list = new ArrayList<>();
         DataVisualizationInfo dataVisualizationInfo = visualizationInfoMapper.selectById(id);
-        list.add(dataVisualizationInfo);
-        if (dataVisualizationInfo.getPid().equals(dataVisualizationInfo.getId())) {
+        if (dataVisualizationInfo == null) {
             return list;
         }
-        try {
-            InteractiveAuthApi  interactiveAuthApi = CommonBeanFactory.getBean(InteractiveAuthApi.class);
+        list.add(dataVisualizationInfo);
+        if (Objects.equals(dataVisualizationInfo.getPid(), dataVisualizationInfo.getId())) {
+            return list;
+        }
+        InteractiveAuthApi interactiveAuthApi = CommonBeanFactory.getBean(InteractiveAuthApi.class);
+        if (interactiveAuthApi == null) {
+            getParent(list, dataVisualizationInfo);
+        } else {
             PerBusiResourceDTO perBusiResourceDTO = interactiveAuthApi.queryResourceById(id);
-            if (StringUtils.isNotEmpty(perBusiResourceDTO.getRootPath())){
-                List<String>  rootList = Arrays.stream(perBusiResourceDTO.getRootPath().split(",")).collect(Collectors.toList());
+            if (perBusiResourceDTO != null && StringUtils.isNotEmpty(perBusiResourceDTO.getRootPath())) {
+                List<String> rootList = Arrays.stream(perBusiResourceDTO.getRootPath().split(",")).collect(Collectors.toList());
                 Collections.reverse(rootList);
                 for (int i = 0; i < rootList.size(); i++) {
                     DataVisualizationInfo d = visualizationInfoMapper.selectById(dataVisualizationInfo.getPid());
                     list.add(d);
                 }
             }
-
-        } catch (NoSuchBeanDefinitionException e) {
-            getParent(list, dataVisualizationInfo);
         }
         Collections.reverse(list);
         return list;
@@ -265,8 +266,10 @@ public class ExportCenterManage implements BaseExportApi {
     public void getParent(List<DataVisualizationInfo> list, DataVisualizationInfo dataVisualizationInfo) {
         if (ObjectUtils.isNotEmpty(dataVisualizationInfo) && dataVisualizationInfo.getPid() != null && !dataVisualizationInfo.getPid().equals(dataVisualizationInfo.getId())) {
             DataVisualizationInfo d = visualizationInfoMapper.selectById(dataVisualizationInfo.getPid());
-            list.add(d);
-            getParent(list, d);
+            if (d != null) {
+                list.add(d);
+                getParent(list, d);
+            }
         }
     }
 
