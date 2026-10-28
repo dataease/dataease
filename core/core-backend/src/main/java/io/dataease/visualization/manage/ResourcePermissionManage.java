@@ -41,6 +41,11 @@ public class ResourcePermissionManage {
         return getDatasetPermissionTemplate(datasetGroups);
     }
 
+    public List<DatasetPermissionTemplate> queryDatasetPermissionTemplates(List<Long> datasetIds) {
+        if (CollectionUtils.isEmpty(datasetIds)) return List.of();
+        return getDatasetPermissionTemplate(resourcePermissionMapper.queryDataSetListByIds(datasetIds));
+    }
+
     private static boolean isParams(String paramId) {
         if (Arrays.asList("sysParams.userId", "sysParams.userEmail", "sysParams.userName").contains(paramId)) {
             return true;
