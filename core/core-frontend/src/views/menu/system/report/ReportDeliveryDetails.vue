@@ -1267,6 +1267,10 @@ small {
   padding: 14px 0;
   border-top: 1px solid #dee0e3;
   border-bottom: 1px solid #dee0e3;
+  line-height: 1.5;
+}
+.confirmation .retry-source dd > div + div {
+  margin-top: 8px;
 }
 .resend-description {
   line-height: 1.7;

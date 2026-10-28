@@ -212,3 +212,38 @@ test('SMTP connection failure permits batch resend and preserves original failur
   expect(requests[0].recipientIds).toEqual(['1', '2'])
   expect(requests[0].confirmUnknown).toBe(false)
 })
+
+for (const width of [1440, 390]) {
+  test(`original report files remain readable at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 })
+    const detail = initial()
+    const row = target(3, 4)
+    row.title = '长标题'.repeat(30)
+    row.filter = '区域：华东、华南；'.repeat(20)
+    row.files = ['report.png', `${'长文件名'.repeat(40)}.xlsx`]
+    detail.recipients = [row]
+    await page.route('**/report/resend', route => route.abort())
+    await open(page, detail)
+    await page.getByRole('button', { name: '补发原报告', exact: true }).click()
+    const dialog = page.getByRole('dialog', { name: '补发原报告', exact: true })
+    const source = dialog.locator('.retry-source')
+    await expect(source.locator('dd').first()).toHaveCSS('line-height', '19.5px')
+    await expect
+      .poll(() =>
+        source.evaluate(el => {
+          const files = [...el.querySelectorAll('dd:last-child > div')]
+          return files
+            .slice(1)
+            .map((file, i) =>
+              Math.round(file.getBoundingClientRect().top - files[i].getBoundingClientRect().bottom)
+            )
+        })
+      )
+      .toEqual([8, 8])
+    expect(await source.evaluate(el => el.scrollWidth - el.clientWidth)).toBeLessThanOrEqual(1)
+    await dialog.getByRole('checkbox').scrollIntoViewIfNeeded()
+    await expect(dialog.getByRole('checkbox')).toBeInViewport()
+    await expect(dialog.getByRole('button', { name: /确认补发/ })).toBeDisabled()
+    await dialog.getByRole('button', { name: '取消', exact: true }).click()
+  })
+}
