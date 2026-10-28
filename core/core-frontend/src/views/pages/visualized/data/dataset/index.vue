@@ -1280,7 +1280,7 @@ const proxyAllowDrop = throttle((arg1, arg2) => {
     height: 100%;
     width: 279px;
     padding: 0;
-    border-right: 1px solid #d7d7d7;
+    border-right: 1px solid #1f232926;
     overflow: visible;
     &.retract {
       display: none;

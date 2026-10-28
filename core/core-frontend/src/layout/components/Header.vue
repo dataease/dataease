@@ -252,7 +252,6 @@ onMounted(() => {
 }
 
 .header-flex {
-  margin-bottom: 0.5px;
   display: flex;
   align-items: center;
   height: 56px;
@@ -275,7 +274,8 @@ onMounted(() => {
 
 .header-light {
   background-color: #ffffff !important;
-  box-shadow: 0px 1px 0px 0px #1f232926 !important;
+  border-bottom: 1px solid #1f232926;
+  box-shadow: none !important;
   .logo {
     color: #3371ff !important;
   }

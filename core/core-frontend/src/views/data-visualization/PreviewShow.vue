@@ -352,7 +352,7 @@ onBeforeMount(() => {
     width: 279px;
     padding: 0;
     overflow: visible;
-    border-right: 1px solid #d7d7d7;
+    border-right: 1px solid #1f232926;
 
     &.retract {
       display: none;
@@ -398,9 +398,9 @@ onBeforeMount(() => {
   z-index: 10;
   display: flex;
   align-items: center;
-  border-top: 1px solid #d7d7d7;
-  border-right: 1px solid #d7d7d7;
-  border-bottom: 1px solid #d7d7d7;
+  border-top: 1px solid #1f232926;
+  border-right: 1px solid #1f232926;
+  border-bottom: 1px solid #1f232926;
 }
 
 .multiplexing-content {
