@@ -234,7 +234,12 @@ const changeTableThreshold = () => {
             return
           }
         } else {
-          if (!ele.term.includes('null') && !ele.term.includes('empty') && ele.value === '') {
+          if (
+            !ele.term.includes('null') &&
+            !ele.term.includes('empty') &&
+            (ele.value === '' ||
+              (field.field.deType === 1 && (ele.value === null || ele.value === undefined)))
+          ) {
             ElMessage.error(t('chart.value_can_not_empty'))
             return
           }

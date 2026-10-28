@@ -257,6 +257,9 @@ const initOptions = (item, fieldObj) => {
     item.conditions &&
       item.conditions.forEach(ele => {
         ele.term = ''
+        if (fieldObj.deType === 1) {
+          ele.value = ''
+        }
       })
   }
 }
@@ -315,8 +318,8 @@ const changeThreshold = () => {
 
 const addConditions = item => {
   const newCondition = JSON.parse(JSON.stringify(thresholdCondition))
-  if (item.field.dateStyle === 'H_m_s') {
-    newCondition.value = '00:00:00'
+  if (item.field.deType === 1) {
+    newCondition.value = item.field.dateStyle === 'H_m_s' ? '00:00:00' : ''
   }
   // 获取单元格默认背景颜色
   const tableCell = props.chart?.customAttr?.tableCell
