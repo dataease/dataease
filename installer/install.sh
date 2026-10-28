@@ -61,9 +61,6 @@ function check_and_prepare_env_params() {
    fi
    if [[ -d $DE_BASE ]] && [[ -f $DE_BASE/dataease2.0/.env ]]; then
       source "$DE_BASE/dataease2.0/.env" || exit 1
-      # 保存升级前是否部署同步，供首次启用鉴权时判断
-      sync_auth_was_enabled=false
-      sync_auth_enabled && sync_auth_was_enabled=true
       INSTALL_TYPE='upgrade'
 
       conf_install_mode=$(prop $CURRENT_DIR/install.conf DE_INSTALL_MODE)
@@ -104,10 +101,7 @@ function set_run_base_path() {
 # 复用已初始化的运行目录，仅补充同步执行器鉴权配置
 function prepare_sync_auth() {
    local installed_auth=false
-   [[ -f "${DE_RUN_BASE}/bin/sync-auth.sh" ]] && installed_auth=true
-   if [[ "${DE_SYNC_AUTH_VERSION:-}" != "1" && "${sync_auth_was_enabled:-true}" == "false" ]]; then
-      installed_auth=false
-   fi
+   [[ "${DE_SYNC_AUTH_VERSION:-}" == "1" ]] && installed_auth=true
    sync_auth_prepare "$DE_RUN_BASE" "$installed_auth" || {
       echo "同步执行器鉴权配置未完成，安装或升级已中止；请按上述提示修复后重新执行安装或升级" >&2
       exit 1

@@ -2,7 +2,8 @@ services:
   task-actuator:
     image: registry.cn-qingdao.aliyuncs.com/dataease/dataease-sync-task:DE_TAG
     environment:
-      DE_SYNC_AUTH_SECRET: ${DE_SYNC_AUTH_SECRET:?请先初始化同步执行器鉴权密钥}
+      DE_SYNC_AUTH_ENABLED: ${DE_SYNC_AUTH_ENABLED:-false}
+      DE_SYNC_AUTH_SECRET: ${DE_SYNC_AUTH_SECRET:-}
     container_name: sync-task-actuator
     volumes:
       - ${DE_BASE}/dataease2.0/logs:/opt/dataease2.0/logs
