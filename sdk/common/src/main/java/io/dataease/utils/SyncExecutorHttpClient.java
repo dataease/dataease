@@ -25,13 +25,16 @@ import java.util.HexFormat;
 import java.util.UUID;
 
 /**
- * 同步执行器的公共签名协议，签名和发送使用同一条路径及同一份请求字节
+ * 同步执行器的公共请求客户端，开启鉴权时使用同一条路径及同一份请求字节签名
  */
 @Component
 public class SyncExecutorHttpClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(SyncExecutorHttpClient.class);
     private static final ObjectMapper JSON = new ObjectMapper();
     private static final int MAX_RESPONSE_BYTES = 16 * 1024 * 1024;
+
+    @Value("${task.executor.auth.enabled:${DE_SYNC_AUTH_ENABLED:false}}")
+    private boolean authEnabled;
 
     @Value("${task.executor.auth.secret:${DE_SYNC_AUTH_SECRET:}}")
     private String secret;
@@ -50,13 +53,6 @@ public class SyncExecutorHttpClient {
     }
 
     private String request(String method, String url, byte[] body, HttpClientConfig config) {
-        byte[] key;
-        try {
-            key = Base64.getDecoder().decode(secret == null ? "" : secret);
-            if (key.length != 32) throw new IllegalArgumentException();
-        } catch (IllegalArgumentException e) {
-            throw failure(url, "主服务未配置有效的同步执行器鉴权密钥，请检查 DE_SYNC_AUTH_SECRET", false);
-        }
         URI uri;
         try {
             uri = URI.create(url);
@@ -71,12 +67,6 @@ public class SyncExecutorHttpClient {
         }
         boolean execution = "POST".equals(method) && uri.getPath().endsWith("/actuator/executed-task");
         try {
-            String timestamp = Long.toString(Instant.now().getEpochSecond());
-            String nonce = UUID.randomUUID().toString();
-            String digest = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(body));
-            String canonical = String.join("\n", "v1", method, uri.getRawPath(), timestamp, nonce, digest);
-            Mac mac = Mac.getInstance("HmacSHA256");
-            mac.init(new SecretKeySpec(key, "HmacSHA256"));
             HttpRequestBase request;
             if ("POST".equals(method)) {
                 HttpPost post = new HttpPost(uri);
@@ -86,10 +76,25 @@ public class SyncExecutorHttpClient {
                 request = new HttpGet(uri);
             }
             request.setConfig(RequestConfig.copy(config.buildRequestConfig()).setNormalizeUri(false).build());
-            request.setHeader("X-DE-Sync-Version", "v1");
-            request.setHeader("X-DE-Sync-Timestamp", timestamp);
-            request.setHeader("X-DE-Sync-Nonce", nonce);
-            request.setHeader("X-DE-Sync-Signature", Base64.getEncoder().encodeToString(mac.doFinal(canonical.getBytes(StandardCharsets.UTF_8))));
+            if (authEnabled) {
+                byte[] key;
+                try {
+                    key = Base64.getDecoder().decode(secret == null ? "" : secret);
+                    if (key.length != 32) throw new IllegalArgumentException();
+                } catch (IllegalArgumentException e) {
+                    throw failure(url, "主服务未配置有效的同步执行器鉴权密钥，请检查 DE_SYNC_AUTH_SECRET", false);
+                }
+                String timestamp = Long.toString(Instant.now().getEpochSecond());
+                String nonce = UUID.randomUUID().toString();
+                String digest = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(body));
+                String canonical = String.join("\n", "v1", method, uri.getRawPath(), timestamp, nonce, digest);
+                Mac mac = Mac.getInstance("HmacSHA256");
+                mac.init(new SecretKeySpec(key, "HmacSHA256"));
+                request.setHeader("X-DE-Sync-Version", "v1");
+                request.setHeader("X-DE-Sync-Timestamp", timestamp);
+                request.setHeader("X-DE-Sync-Nonce", nonce);
+                request.setHeader("X-DE-Sync-Signature", Base64.getEncoder().encodeToString(mac.doFinal(canonical.getBytes(StandardCharsets.UTF_8))));
+            }
             // 保留系统 TLS 校验，不允许重定向或自动重发可能已执行的任务
             try (var client = HttpClients.custom().disableRedirectHandling().disableAutomaticRetries().build();
                  var transfer = new RemoteTransfer(MAX_RESPONSE_BYTES, config.getResponseTimeout(), request::abort);

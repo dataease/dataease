@@ -2,6 +2,7 @@ services:
 
   dataease:
     environment:
+      DE_SYNC_AUTH_ENABLED: ${DE_SYNC_AUTH_ENABLED:-false}
       DE_SYNC_AUTH_SECRET: ${DE_SYNC_AUTH_SECRET:-}
     image: registry.cn-qingdao.aliyuncs.com/dataease/dataease:DE_TAG
     stop_signal: SIGTERM

@@ -313,8 +313,6 @@ function check_and_prepare_env_params() {
    fi
    if [[ -d $DE_BASE ]] && [[ -f $DE_BASE/dataease3.0/.env ]]; then
       source $DE_BASE/dataease3.0/.env
-      sync_auth_was_enabled=false
-      sync_auth_enabled && sync_auth_was_enabled=true
       INSTALL_TYPE='upgrade'
 
       conf_install_mode=$(prop $CURRENT_DIR/install.conf DE_INSTALL_MODE)
@@ -371,10 +369,7 @@ function stop_de_service() {
 function prepare_sync_auth() {
    sync_auth_enabled || return 0
    local installed_auth=false
-   [[ -f "$DE_RUN_BASE/bin/sync-auth.sh" ]] && installed_auth=true
-   if [[ "${DE_SYNC_AUTH_VERSION:-}" != "1" && "${sync_auth_was_enabled:-true}" == "false" ]]; then
-      installed_auth=false
-   fi
+   [[ "${DE_SYNC_AUTH_VERSION:-}" == "1" ]] && installed_auth=true
    if [[ "$INSTALL_TYPE" == "upgrade" ]]; then
       sync_auth_backup "$DE_RUN_BASE" || return 1
    fi

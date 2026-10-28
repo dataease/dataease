@@ -4,7 +4,7 @@
 # 同步执行器鉴权只在部署阶段初始化，应用启动不得自动更换密钥
 #
 sync_auth_enabled() {
-   [[ "${DE_INSTALL_MODE:-community}" != "community" ]]
+   [[ "${DE_SYNC_AUTH_ENABLED:-false}" == "true" && "${DE_INSTALL_MODE:-community}" != "community" ]]
 }
 
 #
@@ -118,7 +118,7 @@ sync_auth_backup() (
 # 同步鉴权两端必须使用配套镜像，同标签升级也不复用未经确认的旧镜像
 #
 sync_auth_prepare_images() (
-   sync_auth_enabled || exit 0
+   [[ "${DE_INSTALL_MODE:-community}" != "community" ]] || exit 0
    local package_dir="$1"
    local compose_file image archive candidate
    local files=(docker-compose.yml)
