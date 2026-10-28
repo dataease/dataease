@@ -264,6 +264,18 @@ declare interface ChartBasicStyle {
    */
   showOutliers: boolean
   /**
+   * 箱线图是否显示全部有效样本的平均值，默认关闭
+   */
+  showMean: boolean
+  /**
+   * 箱线图平均值标记形状，旧配置默认使用菱形
+   */
+  meanSymbol: 'cross' | 'diamond' | 'triangle' | 'square'
+  /**
+   * 箱线图是否显示平均值标签，仅显示平均值时生效，默认关闭
+   */
+  showMeanLabel: boolean
+  /**
    * 箱线图异常点颜色模式，默认跟随所属箱体或分组系列
    */
   outlierColorMode: 'series' | 'custom'

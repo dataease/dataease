@@ -1701,6 +1701,17 @@ export default {
     box_plot_low: 'Lower whisker (lowest non-outlier)',
     box_plot_q1: 'First quartile (Q1)',
     box_plot_median: 'Median',
+    box_plot_mean: 'Mean',
+    box_plot_mean_symbol: 'Mean marker shape',
+    box_plot_mean_cross: 'Cross (×)',
+    box_plot_show_mean: 'Show mean',
+    box_plot_show_mean_label: 'Show mean label',
+    box_plot_mean_tip:
+      'The mean includes all valid samples in each box, including outliers; hiding outlier points does not change the mean',
+    box_plot_assist_summary_unsupported:
+      'Box plot reference lines support only mean, maximum, and minimum. Please select one of these options',
+    box_plot_assist_axis_unsupported:
+      'Box plot reference lines support only the primary axis. Switch to the primary axis or delete this line',
     box_plot_quartile_range: 'Quartile range (Q1–Q3)',
     box_plot_q3: 'Third quartile (Q3)',
     box_plot_high: 'Upper whisker (highest non-outlier)',

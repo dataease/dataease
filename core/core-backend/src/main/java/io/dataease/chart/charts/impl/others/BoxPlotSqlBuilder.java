@@ -124,7 +124,10 @@ final class BoxPlotSqlBuilder {
                        MAX(box_fenced.sample_count) AS box_sample_count,
                        SUM(CASE WHEN box_fenced.metric_value < box_fenced.lower_fence
                                      OR box_fenced.metric_value > box_fenced.upper_fence
-                                THEN 1 ELSE 0 END) AS box_outlier_count
+                                THEN 1 ELSE 0 END) AS box_outlier_count,
+                       SUM(box_fenced.metric_value) AS box_sample_sum,
+                       MIN(box_fenced.metric_value) AS box_sample_min,
+                       MAX(box_fenced.metric_value) AS box_sample_max
                 FROM box_fenced
                 JOIN box_groups ON %s
                 %s

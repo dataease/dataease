@@ -337,6 +337,10 @@ const symbolOptions = [
   { name: t('chart.line_symbol_triangle'), value: 'triangle' },
   { name: t('chart.line_symbol_diamond'), value: 'diamond' }
 ]
+const meanSymbolOptions = [
+  { name: t('chart.box_plot_mean_cross'), value: 'cross' },
+  ...symbolOptions.filter(option => option.value !== 'circle')
+]
 
 const mapStore = useMapStoreWithOut()
 
@@ -538,6 +542,64 @@ onMounted(() => {
         </el-col>
       </el-row>
     </div>
+
+    <el-form-item v-if="showProperty('showMean')" class="form-item" :class="'form-item-' + themes">
+      <el-checkbox
+        size="small"
+        :effect="themes"
+        v-model="state.basicStyleForm.showMean"
+        @change="changeBasicStyle('showMean')"
+      >
+        <span class="data-area-label">
+          <span style="margin-right: 4px">{{ t('chart.box_plot_show_mean') }}</span>
+          <el-tooltip :effect="themes" placement="top">
+            <template #content>
+              <div class="box-plot-outlier-tip">{{ t('chart.box_plot_mean_tip') }}</div>
+            </template>
+            <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
+              <Icon name="icon_info_outlined"><icon_info_outlined class="svg-icon" /></Icon>
+            </el-icon>
+          </el-tooltip>
+        </span>
+      </el-checkbox>
+    </el-form-item>
+
+    <el-form-item
+      v-if="showProperty('meanSymbol')"
+      :label="t('chart.box_plot_mean_symbol')"
+      class="form-item"
+      :class="'form-item-' + themes"
+    >
+      <el-select
+        v-model="state.basicStyleForm.meanSymbol"
+        :effect="themes"
+        :disabled="!state.basicStyleForm.showMean"
+        @change="changeBasicStyle('meanSymbol')"
+      >
+        <el-option
+          v-for="option in meanSymbolOptions"
+          :key="option.value"
+          :label="option.name"
+          :value="option.value"
+        />
+      </el-select>
+    </el-form-item>
+
+    <el-form-item
+      v-if="showProperty('showMeanLabel')"
+      class="form-item"
+      :class="'form-item-' + themes"
+    >
+      <el-checkbox
+        size="small"
+        :effect="themes"
+        v-model="state.basicStyleForm.showMeanLabel"
+        :disabled="!state.basicStyleForm.showMean"
+        @change="changeBasicStyle('showMeanLabel')"
+      >
+        {{ t('chart.box_plot_show_mean_label') }}
+      </el-checkbox>
+    </el-form-item>
 
     <el-form-item
       v-if="showProperty('showOutliers')"
