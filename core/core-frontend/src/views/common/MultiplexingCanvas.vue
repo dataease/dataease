@@ -163,7 +163,7 @@ defineExpose({
   .ed-drawer__footer {
     height: 64px !important;
     padding: 0px !important;
-    box-shadow: 0 -1px 0px #d7d7d7 !important;
+    box-shadow: 0 -1px 0px #1f232926 !important;
   }
 
   .ed-drawer__body {
