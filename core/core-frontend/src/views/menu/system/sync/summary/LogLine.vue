@@ -1,17 +1,20 @@
 <template>
-  <div ref="mainEcharts" style="width: auto; height: 300px" id="logLineChart" v-loading="loading"/>
+  <div ref="mainEcharts" style="width: auto; height: 300px" id="logLineChart" v-loading="loading" />
 </template>
 
 <script lang="ts" setup>
 import * as echarts from 'echarts'
-import {computed, onMounted, onUnmounted, ref} from 'vue'
-import {getJobLogLienChartInfo} from '@/api/sync/syncSummary'
-import { useI18n } from "@/hooks/web/useI18n";
-const {t} = useI18n()
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { getJobLogLienChartInfo } from '@/api/sync/syncSummary'
+import { useI18n } from '@/hooks/web/useI18n'
+const { t } = useI18n()
 const mainEcharts = ref()
 const loading = ref<boolean>(false)
 let resizeObserver: ResizeObserver | null = null,
-    canResize = true
+  canResize = true
+let myChart: echarts.ECharts | null = null
+let resizeTimer: ReturnType<typeof setTimeout> | undefined
+let disposed = false
 const data = ref({
   executeDateList: [],
   executeDateRunningList: [],
@@ -20,6 +23,7 @@ const data = ref({
 })
 const getChartData = () => {
   getJobLogLienChartInfo(loading).then(res => {
+    if (disposed) return
     data.value = res.data
     echartsInit()
   })
@@ -43,10 +47,10 @@ const option = computed(() => {
       type: 'scroll',
       orient: 'horizontal',
       bottom: 'bottom',
-      icon:'circle',
+      icon: 'circle',
       data: [t('sync_task.status_success'), t('sync_task.status_failed')],
-      itemHeight:8,
-      itemWidth:8,
+      itemHeight: 8,
+      itemWidth: 8
     },
     toolbox: {
       feature: {
@@ -76,14 +80,14 @@ const option = computed(() => {
         name: t('sync_task.status_success'),
         type: 'line',
         //stack: 'Total', 这个stack会导致跟上一条线重合
-        symbolSize:0,
+        symbolSize: 0,
         data: data.value.executeDateSuccessList
       },
       {
         name: t('sync_task.status_failed'),
         type: 'line',
         //stack: 'Total',
-        symbolSize:0,
+        symbolSize: 0,
         data: data.value.executeDateFailList
       }
     ],
@@ -93,22 +97,25 @@ const option = computed(() => {
 onMounted(() => {
   getChartData()
 })
-onUnmounted(() => {
+onBeforeUnmount(() => {
+  disposed = true
   resizeObserver?.disconnect()
+  if (resizeTimer !== undefined) clearTimeout(resizeTimer)
+  myChart?.dispose()
+  myChart = null
 })
 const echartsInit = () => {
-  // 在生命周期中挂载
-  const echartsInit = echarts.init(mainEcharts.value)
-  echartsInit.setOption(option.value)
+  myChart = echarts.init(mainEcharts.value)
+  myChart.setOption(option.value)
   const targetElement = document.getElementById('logLineChart')
   resizeObserver = new ResizeObserver(() => {
     if (!canResize) {
       return
     }
     canResize = false
-    setTimeout(() => {
+    resizeTimer = setTimeout(() => {
       canResize = true
-      echartsInit.resize()
+      myChart?.resize()
     }, 500)
   })
   targetElement && resizeObserver.observe(targetElement)
