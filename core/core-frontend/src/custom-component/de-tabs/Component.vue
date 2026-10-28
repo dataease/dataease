@@ -111,7 +111,7 @@
             :dv-info="dvInfo"
             :cur-gap="curPreviewGap"
             :component-data="tabItem.componentData"
-            :canvas-style-data="{}"
+            :canvas-style-data="{ dashboardAdaptor: canvasStyleData.dashboardAdaptor }"
             :canvas-view-info="canvasViewInfo"
             :canvas-id="element.id + '--' + tabItem.name"
             :preview-active="element.editableTabsValue === tabItem.name"
@@ -168,6 +168,7 @@ import eventBus from '@/utils/eventBus'
 import { canvasChangeAdaptor, findComponentIndexById, isDashboard } from '@/utils/canvasUtils'
 import DeCustomTab from '@/custom-component/de-tabs/DeCustomTab.vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
+import router from '@/router'
 import { getPanelAllLinkageInfo } from '@/api/visualization/linkage'
 import { dataVTabComponentAdd, groupSizeStyleAdaptor } from '@/utils/style'
 import { deepCopyTabItemHelper } from '@/store/modules/data-visualization/copy'
@@ -313,6 +314,7 @@ const state = reactive({
 })
 
 const activatedTabs = ref(new Set())
+const hasTaskId = computed(() => !!router.currentRoute.value.query?.taskId)
 
 const initActivatedTab = () => {
   if (element.value.editableTabsValue) {
@@ -330,7 +332,7 @@ watch(
 )
 
 const isTabActivated = tabName => {
-  return activatedTabs.value.has(tabName)
+  return hasTaskId.value || activatedTabs.value.has(tabName)
 }
 const tabsAreaScroll = ref(false)
 
@@ -350,9 +352,10 @@ const isEditMode = computed(() => editMode.value === 'edit' && isEdit.value && !
 const curThemes = isDashboard() ? 'light' : 'dark'
 const calcTabLength = () => {
   setTimeout(() => {
-    if (element.value.propValue.length > 1) {
+    const visibleTabs = element.value.propValue.filter(tabItem => !tabItem.hidden)
+    if (visibleTabs.length > 1) {
       const containerDom = document.getElementById(
-        'tab-' + element.value.propValue[element.value.propValue.length - 1].name
+        'tab-' + visibleTabs[visibleTabs.length - 1].name
       )
       if (containerDom) {
         tabsAreaScroll.value =

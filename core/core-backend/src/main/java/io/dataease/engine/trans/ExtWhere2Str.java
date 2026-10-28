@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
  * @Author Junjun
  */
 public class ExtWhere2Str {
+    private static final Pattern COMPOUND_OPERATOR_PATTERN = Pattern.compile("(eq|like)-(?i:and|or)-(eq|like)");
     private static final Pattern NUMBER_PATTERN = Pattern.compile("^[-+]?\\d+(\\.\\d+)?([eE][-+]?\\d+)?$");
 
     public static void extWhere2sqlOjb(SQLMeta meta, List<ChartExtFilterDTO> fields, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap, List<CalParam> fieldParam, List<CalParam> chartParam, PluginManageApi pluginManage) {
@@ -43,9 +44,25 @@ public class ExtWhere2Str {
             dsType = next.getValue().getType();
         }
 
+        // 单源 Oracle 的字符串字面量不使用反斜杠转义，跨源仍由 Calcite 执行。
+        boolean backslashEscapes = isCross || !StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.oracle.getType());
+
         if (ObjectUtils.isNotEmpty(fields)) {
             for (ChartExtFilterDTO request : fields) {
                 List<String> value = request.getValue();
+                String operator = request.getOperator();
+                boolean compoundCondition = StringUtils.contains(operator, "-");
+                // 复合条件仅支持两个文本匹配项，必须在 SQL 拼接前校验完整格式及值数量。
+                if (compoundCondition) {
+                    if (!COMPOUND_OPERATOR_PATTERN.matcher(operator).matches()) {
+                        DEException.throwException("Illegal filter operator");
+                    }
+                    if (value == null || value.size() != 2) {
+                        DEException.throwException("Illegal compound filter value");
+                    }
+                } else if (StringUtils.isEmpty(operator) || StringUtils.isEmpty(Utils.transFilterTerm(operator))) {
+                    DEException.throwException("Illegal filter operator");
+                }
                 boolean nullCondition = "null".equals(request.getOperator());
 
                 List<String> whereNameList = new ArrayList<>();
@@ -156,16 +173,20 @@ public class ExtWhere2Str {
                 if (nullCondition) {
                     // IS NULL 是无操作数条件，不拼接空字符串，也不与空字符串分组合并
                     whereValue = "";
-                } else if (StringUtils.containsIgnoreCase(request.getOperator(), "-")) {
-                    String[] split = request.getOperator().split("-");
+                } else if (compoundCondition) {
+                    String[] split = operator.split("-", -1);
                     String term1 = split[0];
-                    String logic = split[1];
+                    // 逻辑连接符使用固定 SQL 关键字，禁止直接拼接请求中的原始内容。
+                    String logic = " AND ";
+                    if ("or".equalsIgnoreCase(split[1])) {
+                        logic = " OR ";
+                    }
                     String term2 = split[2];
-                    whereValue = Utils.transFilterTerm(term1) + getValue(term1, value.get(0)) + " " + logic + " " + whereName + Utils.transFilterTerm(term2) + getValue(term2, value.get(1));
+                    whereValue = Utils.transFilterTerm(term1) + getValue(term1, value.get(0), backslashEscapes) + logic + whereName + Utils.transFilterTerm(term2) + getValue(term2, value.get(1), backslashEscapes);
                 } else if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
                     // 过滤空数据
                     if (value.contains(SQLConstants.EMPTY_SIGN)) {
-                        String joined = value.stream().map(ExtWhere2Str::sanitizeSqlLiteral).collect(Collectors.joining("','"));
+                        String joined = value.stream().map(item -> sanitizeSqlLiteral(item, backslashEscapes)).collect(Collectors.joining("','"));
                         whereValue = "('" + joined + "', '')" + " or " + whereName + " is null ";
                     } else {
                         // tree的情况需额外处理
@@ -180,21 +201,21 @@ public class ExtWhere2Str {
                                 }
                             }
                             if (hasN && !isCross && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
-                                whereValue = "(" + value.stream().map(ExtWhere2Str::toSqlServerNQuotedValue).collect(Collectors.joining(",")) + ")";
+                                whereValue = "(" + value.stream().map(item -> toSqlServerNQuotedValue(item, backslashEscapes)).collect(Collectors.joining(",")) + ")";
                             } else {
-                                whereValue = "(" + value.stream().map(ExtWhere2Str::toQuotedValue).collect(Collectors.joining(",")) + ")";
+                                whereValue = "(" + value.stream().map(item -> toQuotedValue(item, backslashEscapes)).collect(Collectors.joining(",")) + ")";
                             }
                         } else {
                             if ((StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NVARCHAR")
                                     || StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NCHAR"))
                                     && !isCross
                                     && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
-                                whereValue = "(" + value.stream().map(ExtWhere2Str::toSqlServerNQuotedValue).collect(Collectors.joining(",")) + ")";
+                                whereValue = "(" + value.stream().map(item -> toSqlServerNQuotedValue(item, backslashEscapes)).collect(Collectors.joining(",")) + ")";
                             } else {
                                 if (request.getDatasetTableField().getDeType() == 2 || request.getDatasetTableField().getDeType() == 3) {
                                     whereValue = "(" + value.stream().map(ExtWhere2Str::sanitizeNumberLiteral).collect(Collectors.joining(",")) + ")";
                                 } else {
-                                    whereValue = "(" + value.stream().map(ExtWhere2Str::toQuotedValue).collect(Collectors.joining(",")) + ")";
+                                    whereValue = "(" + value.stream().map(item -> toQuotedValue(item, backslashEscapes)).collect(Collectors.joining(",")) + ")";
                                 }
                             }
                         }
@@ -212,18 +233,18 @@ public class ExtWhere2Str {
                             }
                         }
                         if (hasN && !isCross && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
-                            whereValue = toSqlServerNLikeValue(value.get(0));
+                            whereValue = toSqlServerNLikeValue(value.get(0), backslashEscapes);
                         } else {
-                            whereValue = toLikeValue(value.get(0));
+                            whereValue = toLikeValue(value.get(0), backslashEscapes);
                         }
                     } else {
                         if ((StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NVARCHAR")
                                 || StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NCHAR"))
                                 && !isCross
                                 && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
-                            whereValue = toSqlServerNLikeValue(value.get(0));
+                            whereValue = toSqlServerNLikeValue(value.get(0), backslashEscapes);
                         } else {
-                            whereValue = toLikeValue(value.get(0));
+                            whereValue = toLikeValue(value.get(0), backslashEscapes);
                         }
                     }
                 } else if (StringUtils.containsIgnoreCase(request.getOperator(), "start_with")) {
@@ -239,18 +260,18 @@ public class ExtWhere2Str {
                             }
                         }
                         if (hasN && !isCross && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
-                            whereValue = toSqlServerNStartValue(value.get(0));
+                            whereValue = toSqlServerNStartValue(value.get(0), backslashEscapes);
                         } else {
-                            whereValue = toStartValue(value.get(0));
+                            whereValue = toStartValue(value.get(0), backslashEscapes);
                         }
                     } else {
                         if ((StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NVARCHAR")
                                 || StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NCHAR"))
                                 && !isCross
                                 && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
-                            whereValue = toSqlServerNStartValue(value.get(0));
+                            whereValue = toSqlServerNStartValue(value.get(0), backslashEscapes);
                         } else {
-                            whereValue = toStartValue(value.get(0));
+                            whereValue = toStartValue(value.get(0), backslashEscapes);
                         }
                     }
                 } else if (StringUtils.containsIgnoreCase(request.getOperator(), "end_with")) {
@@ -266,18 +287,18 @@ public class ExtWhere2Str {
                             }
                         }
                         if (hasN && !isCross && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
-                            whereValue = toSqlServerNEndValue(value.get(0));
+                            whereValue = toSqlServerNEndValue(value.get(0), backslashEscapes);
                         } else {
-                            whereValue = toEndValue(value.get(0));
+                            whereValue = toEndValue(value.get(0), backslashEscapes);
                         }
                     } else {
                         if ((StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NVARCHAR")
                                 || StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NCHAR"))
                                 && !isCross
                                 && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
-                            whereValue = toSqlServerNEndValue(value.get(0));
+                            whereValue = toSqlServerNEndValue(value.get(0), backslashEscapes);
                         } else {
-                            whereValue = toEndValue(value.get(0));
+                            whereValue = toEndValue(value.get(0), backslashEscapes);
                         }
                     }
                 } else if (StringUtils.containsIgnoreCase(request.getOperator(), "between")) {
@@ -307,7 +328,7 @@ public class ExtWhere2Str {
                             || request.getDatasetTableField().getDeType() == 4) {
                         whereValue = String.format(SQLConstants.WHERE_VALUE_BETWEEN, sanitizeNumberLiteral(value.get(0)), sanitizeNumberLiteral(value.get(1)));
                     } else {
-                        whereValue = String.format(SQLConstants.WHERE_BETWEEN, sanitizeSqlLiteral(value.get(0)), sanitizeSqlLiteral(value.get(1)));
+                        whereValue = String.format(SQLConstants.WHERE_BETWEEN, sanitizeSqlLiteral(value.get(0), backslashEscapes), sanitizeSqlLiteral(value.get(1), backslashEscapes));
                     }
                 } else {
                     // 过滤空数据
@@ -327,23 +348,23 @@ public class ExtWhere2Str {
                                 }
                             }
                             if (hasN && !isCross) {
-                                whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE_CH, sanitizeSqlLiteral(value.get(0)));
+                                whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE_CH, sanitizeSqlLiteral(value.get(0), backslashEscapes));
                             } else {
-                                whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, sanitizeSqlLiteral(value.get(0)));
+                                whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, sanitizeSqlLiteral(value.get(0), backslashEscapes));
                             }
                         } else {
                             if ((StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NVARCHAR")
                                     || StringUtils.containsIgnoreCase(request.getDatasetTableField().getType(), "NCHAR"))
                                     && !isCross
                                     && StringUtils.equalsIgnoreCase(dsType, DatasourceConfiguration.DatasourceType.sqlServer.getType())) {
-                                whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE_CH, sanitizeSqlLiteral(value.get(0)));
+                                whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE_CH, sanitizeSqlLiteral(value.get(0), backslashEscapes));
                             } else {
                                 if (request.getDatasetTableField().getDeType() == 2
                                         || request.getDatasetTableField().getDeType() == 3
                                         || request.getDatasetTableField().getDeType() == 4) {
                                     whereValue = String.format(SQLConstants.WHERE_NUMBER_VALUE, sanitizeNumberLiteral(value.get(0)));
                                 } else {
-                                    whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, sanitizeSqlLiteral(value.get(0)));
+                                    whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, sanitizeSqlLiteral(value.get(0), backslashEscapes));
                                 }
                             }
                         }
@@ -361,51 +382,51 @@ public class ExtWhere2Str {
         meta.setExtWheresDialect(fieldsDialect);
     }
 
-    private static String getValue(String term, String value) {
+    private static String getValue(String term, String value, boolean backslashEscapes) {
         switch (term) {
             case "like":
-                return toLikeValue(value);
+                return toLikeValue(value, backslashEscapes);
             case "eq":
-                return toQuotedValue(value);
+                return toQuotedValue(value, backslashEscapes);
         }
         return null;
     }
 
-    private static String sanitizeSqlLiteral(String value) {
+    private static String sanitizeSqlLiteral(String value, boolean backslashEscapes) {
         String normalized = StringUtils.defaultString(value);
-        return Utils.transValue(normalized);
+        return Utils.transValue(normalized, backslashEscapes);
     }
 
-    private static String toQuotedValue(String value) {
-        return "'" + sanitizeSqlLiteral(value) + "'";
+    private static String toQuotedValue(String value, boolean backslashEscapes) {
+        return "'" + sanitizeSqlLiteral(value, backslashEscapes) + "'";
     }
 
-    private static String toLikeValue(String value) {
-        return "'%" + sanitizeSqlLiteral(value) + "%'";
+    private static String toLikeValue(String value, boolean backslashEscapes) {
+        return "'%" + sanitizeSqlLiteral(value, backslashEscapes) + "%'";
     }
 
-    private static String toStartValue(String value) {
-        return "'" + sanitizeSqlLiteral(value) + "%'";
+    private static String toStartValue(String value, boolean backslashEscapes) {
+        return "'" + sanitizeSqlLiteral(value, backslashEscapes) + "%'";
     }
 
-    private static String toEndValue(String value) {
-        return "'%" + sanitizeSqlLiteral(value) + "'";
+    private static String toEndValue(String value, boolean backslashEscapes) {
+        return "'%" + sanitizeSqlLiteral(value, backslashEscapes) + "'";
     }
 
-    private static String toSqlServerNQuotedValue(String value) {
-        return "'" + SQLConstants.MSSQL_N_PREFIX + sanitizeSqlLiteral(value) + "'";
+    private static String toSqlServerNQuotedValue(String value, boolean backslashEscapes) {
+        return "'" + SQLConstants.MSSQL_N_PREFIX + sanitizeSqlLiteral(value, backslashEscapes) + "'";
     }
 
-    private static String toSqlServerNLikeValue(String value) {
-        return "'" + SQLConstants.MSSQL_N_PREFIX + "%" + sanitizeSqlLiteral(value) + "%'";
+    private static String toSqlServerNLikeValue(String value, boolean backslashEscapes) {
+        return "'" + SQLConstants.MSSQL_N_PREFIX + "%" + sanitizeSqlLiteral(value, backslashEscapes) + "%'";
     }
 
-    private static String toSqlServerNStartValue(String value) {
-        return "'" + SQLConstants.MSSQL_N_PREFIX + sanitizeSqlLiteral(value) + "%'";
+    private static String toSqlServerNStartValue(String value, boolean backslashEscapes) {
+        return "'" + SQLConstants.MSSQL_N_PREFIX + sanitizeSqlLiteral(value, backslashEscapes) + "%'";
     }
 
-    private static String toSqlServerNEndValue(String value) {
-        return "'" + SQLConstants.MSSQL_N_PREFIX + "%" + sanitizeSqlLiteral(value) + "'";
+    private static String toSqlServerNEndValue(String value, boolean backslashEscapes) {
+        return "'" + SQLConstants.MSSQL_N_PREFIX + "%" + sanitizeSqlLiteral(value, backslashEscapes) + "'";
     }
 
     private static String sanitizeNumberLiteral(String value) {

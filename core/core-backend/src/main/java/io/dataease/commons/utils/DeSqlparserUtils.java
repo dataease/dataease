@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.api.permissions.variable.dto.SysVariableValueDto;
 import io.dataease.api.permissions.variable.dto.SysVariableValueItem;
+import io.dataease.dataset.utils.FieldUtils;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.api.PluginManageApi;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
@@ -42,6 +43,7 @@ public class DeSqlparserUtils {
     private static final String SubstitutedSql = " 'DE-BI' = 'DE-BI' ";
     private final List<Map<String, String>> sysParams = new ArrayList<>();
     private final Map<String, TableFieldWithValue> preparedBindings = new LinkedHashMap<>();
+    private final SqlVariableFilterExpander filterExpander = new SqlVariableFilterExpander();
     private int preparedBindingIndex;
     TypeReference<List<SqlVariableDetails>> listTypeReference = new TypeReference<List<SqlVariableDetails>>() {
     };
@@ -60,13 +62,16 @@ public class DeSqlparserUtils {
         this.userEntity = userEntity;
         this.preparedBindings.clear();
         this.preparedBindingIndex = 0;
+        this.filterExpander.reset(parameters);
         sql = sql.trim();
         if (sql.endsWith(";")) {
             sql = sql.substring(0, sql.length() - 1);
         }
         if (StringUtils.isNotEmpty(sqlVariableDetails)) {
             defaultsSqlVariableDetails = JsonUtil.parseList(sqlVariableDetails, listTypeReference);
+            normalizeVariableDeTypes(defaultsSqlVariableDetails);
         }
+        normalizeVariableDeTypes(parameters);
         List<TableFieldWithValue> tableFieldWithValues = new ArrayList<>();
         Pattern pattern = Pattern.compile(deVariablePattern);
         Matcher matcher = pattern.matcher(sql);
@@ -274,7 +279,31 @@ public class DeSqlparserUtils {
         return null;
     }
 
+    private void normalizeVariableDeTypes(List<SqlVariableDetails> sqlVariableDetails) {
+        if (CollectionUtils.isEmpty(sqlVariableDetails)) {
+            return;
+        }
+        for (SqlVariableDetails sqlVariableDetail : sqlVariableDetails) {
+            if (sqlVariableDetail == null || sqlVariableDetail.getDeType() != 0 || CollectionUtils.isEmpty(sqlVariableDetail.getType())) {
+                continue;
+            }
+            String type = sqlVariableDetail.getType().get(0);
+            if (StringUtils.containsIgnoreCase(type, "DATETIME")) {
+                type = "DATETIME";
+            }
+            int deType = FieldUtils.transType2DeType(type);
+            if (deType != 0) {
+                sqlVariableDetail.setDeType(deType);
+            }
+        }
+    }
+
     private PreparedSqlFragment resolvePreparedSqlFragment(String variableName, List<SqlVariableDetails> parameters, boolean isEdit, boolean isFromDataSet) {
+        String filterBinding = filterExpander.register(Collections.singletonList(variableName), selection ->
+                buildPreparedSqlFragment(selection.get(SqlVariableFilterExpander.normalize(variableName))).replacement());
+        if (filterBinding != null) {
+            return new PreparedSqlFragment(filterBinding, Collections.emptyList());
+        }
         SqlVariableDetails filterParameter = findSqlVariableDetail(parameters, variableName);
         if (filterParameter != null) {
             return buildPreparedSqlFragment(filterParameter);
@@ -327,6 +356,20 @@ public class DeSqlparserUtils {
         if (literalSegments.size() == 1 && literalSegments.get(0).variable()) {
             return resolvePreparedSqlFragment(literalSegments.get(0).content(), parameters, isEdit, isFromDataSet);
         }
+        PreparedSqlFragment fragment = buildPreparedSqlFragmentForLiteralSegments(literalSegments, parameters, isEdit, isFromDataSet);
+        if (fragment == null) {
+            return null;
+        }
+        List<String> variableNames = literalSegments.stream().filter(LiteralSegment::variable).map(LiteralSegment::content).toList();
+        String filterBinding = filterExpander.register(variableNames, selection ->
+                buildPreparedSqlFragmentForLiteralSegments(literalSegments, filterExpander.parametersFor(selection), isEdit, isFromDataSet).replacement());
+        if (filterBinding != null) {
+            return new PreparedSqlFragment(filterBinding, Collections.emptyList());
+        }
+        return fragment;
+    }
+
+    private PreparedSqlFragment buildPreparedSqlFragmentForLiteralSegments(List<LiteralSegment> literalSegments, List<SqlVariableDetails> parameters, boolean isEdit, boolean isFromDataSet) {
         StringBuilder preparedValueBuilder = new StringBuilder();
         boolean hasVariable = false;
         for (LiteralSegment literalSegment : literalSegments) {
@@ -573,6 +616,7 @@ public class DeSqlparserUtils {
     }
 
     private SqlVariableHandleResult finalizePreparedSql(String sql) {
+        sql = filterExpander.expand(sql);
         Pattern tokenPattern = Pattern.compile("'(" + PREPARED_BINDING_TOKEN_PREFIX + "\\d+)'");
         Matcher matcher = tokenPattern.matcher(sql);
         StringBuilder sqlBuilder = new StringBuilder();

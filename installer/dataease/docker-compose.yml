@@ -1,7 +1,9 @@
 services:
-
   dataease:
     image: registry.cn-qingdao.aliyuncs.com/dataease/dataease:DE_TAG
+    environment:
+      DE_SYNC_AUTH_ENABLED: ${DE_SYNC_AUTH_ENABLED:-false}
+      DE_SYNC_AUTH_SECRET: ${DE_SYNC_AUTH_SECRET:-}
     stop_signal: SIGTERM
     stop_grace_period: 15s
     container_name: dataease
@@ -20,6 +22,7 @@ services:
       - ${DE_BASE}/dataease2.0/data/font:/opt/dataease2.0/data/font
       - ${DE_BASE}/dataease2.0/data/i18n:/opt/dataease2.0/data/i18n
       - ${DE_BASE}/dataease2.0/data/report:/opt/dataease2.0/data/report
+      - ${DE_BASE}/dataease2.0/data/report-artifacts:/opt/dataease2.0/data/report-artifacts
     depends_on:
       DE_MYSQL_HOST:
         condition: service_healthy

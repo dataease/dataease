@@ -118,9 +118,11 @@ public class DatasetSQLManage {
         if (ObjectUtils.isNotEmpty(filterDTO.getParameters())) {
             for (SqlVariableDetails parameter : filterDTO.getParameters()) {
                 if (parameter.getDatasetTableId().equals(datasetTableId)) {
-                    parameter.setValue(filterDTO.getValue());
-                    parameter.setOperator(filterDTO.getOperator());
-                    parameters.add(parameter);
+                    SqlVariableDetails filterParameter = new SqlVariableDetails();
+                    BeanUtils.copyBean(filterParameter, parameter);
+                    filterParameter.setValue(filterDTO.getValue());
+                    filterParameter.setOperator(filterDTO.getOperator());
+                    parameters.add(filterParameter);
                 }
             }
         }

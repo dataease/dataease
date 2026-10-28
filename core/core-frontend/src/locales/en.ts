@@ -809,6 +809,8 @@ export default {
     switch_success: 'Switch successful',
     user_name_pattern_error:
       "Only numbers and letters and {'@'}._- are allowed, and must start with a number or letter",
+    initial_password_policy:
+      'When the initial password is disabled, your new password must be different from it.',
     pwd_pattern_error:
       '6-20 characters and at least one uppercase letter, lowercase letter, number, special character',
     special_characters_are_not_supported: 'Special characters are not allowed',
@@ -1836,6 +1838,7 @@ export default {
     value_can_not_empty: 'Value cannot be empty',
     value_error: 'Value must be a numeric value',
     threshold: 'Conditional style',
+    condition_style_apply_to_total_row: 'Apply conditional style to total row',
     threshold_range: 'Threshold range',
     gauge_threshold_format_error: 'Format error',
     total_cfg: 'Total configuration',
@@ -2429,7 +2432,7 @@ export default {
     merge_title: 'Merge data',
     field_name_less_50: 'Field name cannot exceed 50 characters',
     field_name_less_2_64: '2-64 characters',
-    excel_info_1: '1. There cannot be merged cells in the Excel file;',
+    excel_info_1: '1. Merged cells in the Excel file will be filled down/right automatically;',
     excel_info_2:
       '2. The first line of the Excel file is the title row, which cannot be empty and cannot be a date type;',
     excel_info_3: '3. Please make sure that the file size is within 500M. ',
@@ -3414,6 +3417,8 @@ export default {
     hidden: 'Hidden',
     cancel_hidden: 'Cancel Hidden',
     template_view_tips: 'This is currently a template chart. Please replace the dataset...',
+    template_data_not_ready:
+      'Data for chart "{0}" is not ready. Wait for loading to finish before exporting. If loading failed, refresh and retry.',
     download: 'Download',
     refresh: 'Refresh',
     head_font_color: 'Header Font Color',
@@ -3425,6 +3430,8 @@ export default {
     filter_no_select: 'Filter components do not need to be selected',
     forbidden_copy: 'Copying of the current component is not allowed',
     url_check_error: 'Redirect error, invalid URL',
+    url_protocol_not_supported:
+      'External links only support HTTP/HTTPS/file. The current protocol {0} is not supported.',
     view_style: 'Chart Style',
     view_color_setting: 'Chart Color Setting',
     border_color_setting: 'Border Color Setting',
@@ -4350,6 +4357,10 @@ export default {
     last_1_years_log: 'Log from 1 year ago',
     execute_log: 'Execution log',
     done: 'Done',
+    log_read_failed: 'Failed to read logs. Reopen the log to retry',
+    log_checking: 'Checking sync executor',
+    log_check_failed: 'Sync executor check failed. Check the configuration and retry',
+    log_retry: 'Retry reading logs',
     connection_lost: 'Disconnected',
     task_name: 'Task name',
     es_params_label: 'Query Parameters',
@@ -4460,6 +4471,8 @@ export default {
       render_time: 'render time(s)'
     },
     filter: {
+      snapshot_unrecorded: 'Not recorded',
+      snapshot_not_applied: 'No filter applied',
       title: 'Set Query Component Default Values',
       reset: 'Restore Default Values',
       reset_all: 'Restore All Query Condition Default Values',

@@ -8,6 +8,8 @@ import FileSaver from 'file-saver'
 import { deepCopy } from '@/utils/utils'
 import { domToPng } from 'modern-screenshot'
 import { initCanvasDataPrepare } from '@/utils/canvasUtils'
+import { ElMessage } from 'element-plus-secondary'
+import { useI18n } from '@/hooks/web/useI18n'
 const embeddedStore = useEmbedded()
 const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData, componentData, canvasViewInfo, canvasViewDataInfo, dvInfo } =
@@ -57,13 +59,31 @@ function prePareTemplateBaseData(dvId, callback) {
 }
 
 export function download2AppTemplate(downloadType, canvasDom, name, attachParams, callBack?) {
+  const canvasViewDataTemplate = deepCopy(canvasViewInfo.value)
+  Object.keys(canvasViewDataTemplate).forEach(viewId => {
+    canvasViewDataTemplate[viewId].data = deepCopy(canvasViewDataInfo.value[viewId])
+  })
+  const missingDataId = Object.keys(canvasViewDataTemplate).find(viewId => {
+    const view = canvasViewDataTemplate[viewId]
+    const needsData =
+      view.type !== 'VQuery' &&
+      (view.tableId ||
+        (view['dataFrom'] === 'template' && !['rich-text', 'picture-group'].includes(view.type)))
+    return needsData && view.data == null
+  })
+  if (missingDataId) {
+    const { t } = useI18n()
+    ElMessage.warning(
+      t('visualization.template_data_not_ready', [
+        canvasViewDataTemplate[missingDataId].title || missingDataId
+      ])
+    )
+    callBack?.()
+    return
+  }
   try {
     findStaticSource(function (staticResource) {
       html2canvas(canvasDom).then(canvas => {
-        const canvasViewDataTemplate = deepCopy(canvasViewInfo.value)
-        Object.keys(canvasViewDataTemplate).forEach(viewId => {
-          canvasViewDataTemplate[viewId].data = canvasViewDataInfo.value[viewId]
-        })
         const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.1是图片质量
         const templateName = attachParams?.appName ? attachParams.appName : name
         if (snapshot !== '') {

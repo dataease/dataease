@@ -1,7 +1,11 @@
 package io.dataease.utils;
 
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.event.AnalysisEventListener;
+import com.alibaba.excel.read.metadata.ReadSheet;
+import com.alibaba.excel.util.DateUtils;
+import com.alibaba.excel.util.NumberDataFormatterUtils;
 import com.alibaba.excel.write.builder.ExcelWriterBuilder;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.metadata.style.WriteFont;
@@ -66,6 +70,12 @@ public class CommonExcelUtils {
     }
 
     public static void importExcel(InputStream inputStream, Class clazsz, AnalysisEventListener analysisEventListener) throws Exception {
-        EasyExcel.read(inputStream, clazsz, analysisEventListener).sheet().headRowNumber(0).doRead();
+        try (ExcelReader excelReader = EasyExcel.read(inputStream, clazsz, analysisEventListener).build()) {
+            ReadSheet readSheet = EasyExcel.readSheet(0).headRowNumber(0).build();
+            excelReader.read(readSheet);
+        } finally {
+            DateUtils.removeThreadLocalCache();
+            NumberDataFormatterUtils.removeThreadLocalCache();
+        }
     }
 }

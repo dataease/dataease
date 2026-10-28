@@ -83,7 +83,7 @@ export class RangeBar extends G2PlotChartView<BarOptions, Bar> {
   }
 
   async drawChart(drawOptions: G2PlotDrawOptions<Bar>): Promise<Bar> {
-    const { chart, container, action } = drawOptions
+    const { chart, container, action, scale } = drawOptions
     if (!chart.data?.data?.length) {
       return
     }
@@ -162,7 +162,7 @@ export class RangeBar extends G2PlotChartView<BarOptions, Bar> {
           }
     }
 
-    const options = this.setupOptions(chart, initOptions)
+    const options = this.setupOptions(chart, initOptions, { scale })
 
     const { Bar: BarClass } = await import('@antv/g2plot/esm/plots/bar')
     // 开始渲染
@@ -430,7 +430,11 @@ export class RangeBar extends G2PlotChartView<BarOptions, Bar> {
     return tmpOptions
   }
 
-  protected setupOptions(chart: Chart, options: BarOptions): BarOptions {
+  protected setupOptions(
+    chart: Chart,
+    options: BarOptions,
+    context?: Record<string, any>
+  ): BarOptions {
     return flow(
       this.configTheme,
       this.configBasicStyle,
@@ -441,7 +445,7 @@ export class RangeBar extends G2PlotChartView<BarOptions, Bar> {
       this.configYAxis,
       this.configSlider,
       this.configEmptyDataStrategy
-    )(chart, options)
+    )(chart, options, context)
   }
 
   constructor(name = 'bar-range') {

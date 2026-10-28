@@ -166,6 +166,7 @@ export const copyStore = defineStore('copy', {
         replaceQueryRefs(newComponent)
         _this.copyData = {
           data: [newComponent],
+          sourceType: dvInfo.value.type,
           copyCanvasViewInfo: canvasViewInfoPreview,
           index: index,
           copyFrom: copyFrom,
@@ -184,7 +185,7 @@ export const copyStore = defineStore('copy', {
     },
 
     paste(isMouse?) {
-      if (!this.copyData) {
+      if (!this.copyData?.sourceType || this.copyData.sourceType !== dvInfo.value.type) {
         return
       }
       const dataArray = this.copyData.data
@@ -192,7 +193,7 @@ export const copyStore = defineStore('copy', {
       const copyDataTemp = this.copyData
       const moveTime = dataArray.length > 1 ? 300 : 10
       const timeId = setInterval(function () {
-        if (i >= dataArray.length) {
+        if (copyDataTemp.sourceType !== dvInfo.value.type || i >= dataArray.length) {
           clearInterval(timeId)
         } else {
           const data = dataArray[i]
@@ -279,6 +280,7 @@ export const copyStore = defineStore('copy', {
     copyDataInfo(copyData) {
       this.copyData = {
         data: deepCopy(copyData),
+        sourceType: dvInfo.value.type,
         index: curComponentIndex
       }
     }

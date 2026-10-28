@@ -239,6 +239,8 @@ watch(
     () => props.chart?.customAttr.basicStyle.calcTopN,
     () => props.chart?.customAttr.basicStyle.topN,
     () => props.chart?.customAttr.basicStyle.topNLabel,
+    () => props.chart?.customStyle.legend?.sort,
+    () => JSON.stringify(props.chart?.customStyle.legend?.customSort),
     () => JSON.stringify(props.chart?.customAttr.basicStyle[colorsName.value]),
     () => JSON.stringify(props.chart?.customAttr.basicStyle[seriesColorName.value])
   ],

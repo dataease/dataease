@@ -132,7 +132,7 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
   }
 
   async drawChart(drawOptions: G2PlotDrawOptions<G2Scatter>): Promise<G2Scatter> {
-    const { chart, container, action, quadrantDefaultBaseline } = drawOptions
+    const { chart, container, action, quadrantDefaultBaseline, scale } = drawOptions
     if (!chart.data?.data) {
       return
     }
@@ -217,7 +217,7 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
       }
     }
     chart.container = container
-    const options = this.setupOptions(chart, baseOptions)
+    const options = this.setupOptions(chart, baseOptions, { scale })
     const { Scatter: G2Scatter } = await import('@antv/g2plot/esm/plots/scatter')
     const newChart = new G2Scatter(container, options)
     newChart.on('point:click', action)
@@ -471,7 +471,7 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
     return optionTmp
   }
 
-  protected setupOptions(chart: Chart, options: ScatterOptions) {
+  protected setupOptions(chart: Chart, options: ScatterOptions, context?: Record<string, any>) {
     return flow(
       this.configTheme,
       this.configColor,
@@ -482,7 +482,7 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
       this.configYAxis,
       this.configSlider,
       this.configBasicStyle
-    )(chart, options, {}, this)
+    )(chart, options, context, this)
   }
 
   constructor() {

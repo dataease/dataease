@@ -780,21 +780,33 @@ export function getYAxisExt(chart: Chart) {
   return axis
 }
 
-export function getSlider(chart: Chart) {
+export function getSlider(chart: Chart, scale = 1) {
   let cfg
   const senior = parseJson(chart.senior)
   if (senior.functionCfg) {
     if (senior.functionCfg.sliderShow) {
       cfg = {
         start: senior.functionCfg.sliderRange[0] / 100,
-        end: senior.functionCfg.sliderRange[1] / 100
+        end: senior.functionCfg.sliderRange[1] / 100,
+        // G2 的缩略轴尺寸默认为固定像素，需与主图一起按渲染比例缩放。
+        height: 16 * scale,
+        padding: [8, 8, 8, 8].map(value => value * scale),
+        handlerStyle: {
+          width: 10 * scale,
+          height: 24 * scale,
+          radius: 2 * scale
+        },
+        textStyle: {
+          fontSize: 12 * scale,
+          lineHeight: 12 * scale
+        }
       }
 
       if (senior.functionCfg.sliderBg) {
         cfg.backgroundStyle = {
           fill: senior.functionCfg.sliderBg,
           stroke: senior.functionCfg.sliderBg,
-          lineWidth: 1,
+          lineWidth: scale,
           strokeOpacity: 0.5
         }
       }
@@ -806,10 +818,12 @@ export function getSlider(chart: Chart) {
       }
       if (senior.functionCfg.sliderTextColor) {
         cfg.textStyle = {
+          ...cfg.textStyle,
           fill: senior.functionCfg.sliderTextColor,
           fontFamily: chart.fontFamily
         }
         cfg.handlerStyle = {
+          ...cfg.handlerStyle,
           fill: senior.functionCfg.sliderTextColor,
           fillOpacity: 0.5,
           highLightFill: senior.functionCfg.sliderTextColor

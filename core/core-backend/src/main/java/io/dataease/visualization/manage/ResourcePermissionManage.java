@@ -33,8 +33,10 @@ public class ResourcePermissionManage {
         TypeReference<List<Map<String, Object>>> tokenType = new TypeReference<>() {
         };
         List<Map<String, Object>> componentData = JsonUtil.parseList(componentDataText, tokenType);
+        if (CollectionUtils.isEmpty(componentData)) return List.of();
         List<Map<String, Object>> userViewList = getUserViewList(componentData);
         List<Long> viewIds = userViewList.stream().filter(item -> ObjectUtils.isNotEmpty(item.get("id"))).map(item -> Long.parseLong(item.get("id").toString())).collect(Collectors.toList());
+        if (viewIds.isEmpty()) return List.of();
         List<CoreDatasetGroup> datasetGroups = resourcePermissionMapper.queryDataSetList(viewIds);
         return getDatasetPermissionTemplate(datasetGroups);
     }

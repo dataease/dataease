@@ -107,7 +107,7 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
   }
 
   async drawChart(drawOptions: G2PlotDrawOptions<G2Area>): Promise<G2Area> {
-    const { chart, container, action } = drawOptions
+    const { chart, container, action, scale } = drawOptions
     chart.container = container
     if (!chart.data?.data?.length) {
       clearExtremum(chart)
@@ -122,7 +122,7 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
       appendPadding: getPadding(chart)
     }
     // options
-    const options = this.setupOptions(chart, initOptions)
+    const options = this.setupOptions(chart, initOptions, { scale })
     const { Area: G2Area } = await import('@antv/g2plot/esm/plots/area')
     // 开始渲染
     const newChart = new G2Area(container, options)
@@ -285,7 +285,11 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
     return super.configMultiSeriesTooltip(chart, options)
   }
 
-  protected setupOptions(chart: Chart, options: AreaOptions): AreaOptions {
+  protected setupOptions(
+    chart: Chart,
+    options: AreaOptions,
+    context?: Record<string, any>
+  ): AreaOptions {
     return flow(
       this.configTheme,
       this.configEmptyDataStrategy,
@@ -299,7 +303,7 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
       this.configSlider,
       this.configAnalyse,
       this.configConditions
-    )(chart, options, {}, this)
+    )(chart, options, context, this)
   }
 
   constructor(name = 'area') {

@@ -1,0 +1,16 @@
+{
+  "browser": {
+    "browserName": "chromium",
+    "isolated": true,
+    "launchOptions": {
+      "channel": "chrome",
+      "headless": true
+    },
+    "contextOptions": {
+      "viewport": { "width": 1440, "height": 900 }
+    }
+  },
+  "outputDir": "output/cli",
+  "outputMode": "file",
+  "console": { "level": "error" }
+}

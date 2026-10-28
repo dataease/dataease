@@ -26,6 +26,10 @@ function prop {
 }
 
 function check_and_prepare_env_params() {
+   source "${CURRENT_DIR}/dataease/bin/sync-auth.sh" || {
+      echo "同步执行器鉴权组件加载失败，请重新解压完整安装包并检查 dataease/bin/sync-auth.sh 的读取权限后重试" >&2
+      exit 1
+   }
    log "当前时间 : $(date)"
    log_title "检查安装环境并初始化环境变量"
    DE_APISIX_PORT=9080
@@ -40,27 +44,23 @@ function check_and_prepare_env_params() {
       # 获取已安装的 DataEase 的运行目录
       DE_BASE=$(grep "^DE_BASE=" /usr/bin/dectl | cut -d'=' -f2)
       DE_BASE_OLD=$DE_BASE
-      sed -i -e "s#DE_BASE=.*#DE_BASE=${DE_BASE}#g" dectl
-      \cp dectl /usr/local/bin && chmod +x /usr/local/bin/dectl
-
-      log_content "停止 DataEase 服务"
-      if [[ -f /etc/systemd/system/dataease.service ]];then
-         systemctl stop dataease
-      else
-         dectl stop
-      fi
+      installed_dectl=true
 
       INSTALL_TYPE='upgrade'
    fi
 
    set -a
-   source ${CURRENT_DIR}/install.conf
+   source "${CURRENT_DIR}/install.conf" || exit 1
    if [[ $DE_BASE_OLD ]];then
       DE_BASE=$DE_BASE_OLD
       export DE_BASE=$DE_BASE_OLD
    fi
+   if [[ "${installed_dectl:-false}" == "true" && ! -f "$DE_BASE/dataease2.0/.env" ]]; then
+      sync_auth_error ENV_MISSING "已安装环境的 .env 文件缺失" "先恢复运行目录 .env 及其中原有的 DE_SYNC_AUTH_SECRET，再重新执行升级；旧服务尚未停止"
+      exit 1
+   fi
    if [[ -d $DE_BASE ]] && [[ -f $DE_BASE/dataease2.0/.env ]]; then
-      source $DE_BASE/dataease2.0/.env
+      source "$DE_BASE/dataease2.0/.env" || exit 1
       INSTALL_TYPE='upgrade'
 
       conf_install_mode=$(prop $CURRENT_DIR/install.conf DE_INSTALL_MODE)
@@ -98,6 +98,38 @@ function set_run_base_path() {
    log_content "配置文件目录 $CONF_FOLDER"
 }
 
+# 复用已初始化的运行目录，仅补充同步执行器鉴权配置
+function prepare_sync_auth() {
+   local installed_auth=false
+   [[ "${DE_SYNC_AUTH_VERSION:-}" == "1" ]] && installed_auth=true
+   sync_auth_prepare "$DE_RUN_BASE" "$installed_auth" || {
+      echo "同步执行器鉴权配置未完成，安装或升级已中止；请按上述提示修复后重新执行安装或升级" >&2
+      exit 1
+   }
+   if sync_auth_enabled; then
+      DE_SYNC_AUTH_SECRET=$(sed -n 's/^DE_SYNC_AUTH_SECRET=//p' "${DE_RUN_BASE}/.env") || {
+         sync_auth_error RELOAD_FAILED "无法读取已保存的同步执行器鉴权密钥" "检查运行目录 .env 的读取权限后重新执行安装或升级"
+         exit 1
+      }
+      sync_auth_validate || exit 1
+      export DE_SYNC_AUTH_SECRET
+      export DE_SYNC_AUTH_VERSION=1
+   fi
+}
+
+#
+# 鉴权配置和镜像准备完成后才停服，准备失败时保留旧服务运行
+#
+function stop_de_service() {
+   [[ "${installed_dectl:-false}" == "true" ]] || return 0
+   log_content "停止 DataEase 服务"
+   if [[ -f /etc/systemd/system/dataease.service ]]; then
+      systemctl stop dataease || exit 1
+   else
+      dectl stop || exit 1
+   fi
+}
+
 function prepare_de_run_base() {
    log_title "初始化运行目录"
    cd ${CURRENT_DIR}
@@ -109,7 +141,7 @@ function prepare_de_run_base() {
    env | grep DE_ >.env
 
    mkdir -p ${DE_RUN_BASE}/{cache,logs,conf}
-   mkdir -p ${DE_RUN_BASE}/data/{mysql,static-resource,map,etcd_data,geo,appearance,exportData,plugin,font,i18n,report}
+   mkdir -p ${DE_RUN_BASE}/data/{mysql,static-resource,map,etcd_data,geo,appearance,exportData,plugin,font,i18n,report,report-artifacts}
    mkdir -p ${DE_RUN_BASE}/apisix/logs
    mkdir -p ${DE_RUN_BASE}/task/logs
    chmod 777 ${DE_RUN_BASE}/apisix/logs ${DE_RUN_BASE}/data/etcd_data ${DE_RUN_BASE}/task/logs
@@ -324,6 +356,10 @@ function set_de_service() {
 function start_de_service() {
    log_title "启动 DataEase 服务"
    systemctl start dataease 2>&1 | tee -a ${CURRENT_DIR}/install.log
+   if [[ "${PIPESTATUS[0]}" -ne 0 ]]; then
+      echo "DataEase 启动失败，安装或升级未完成；请检查 systemctl status dataease 和 journalctl -u dataease 后重试" >&2
+      exit 1
+   fi
 
    access_port=$DE_PORT
    if [[ $DE_INSTALL_MODE != "community" ]];then
@@ -342,12 +378,23 @@ function start_de_service() {
 function main() {
    check_and_prepare_env_params
    set_run_base_path
+   if sync_auth_enabled && [[ "$INSTALL_TYPE" == "upgrade" ]]; then
+      sync_auth_backup "$DE_RUN_BASE" || exit 1
+   fi
+   prepare_sync_auth
+   if [[ "$INSTALL_TYPE" == "upgrade" ]]; then
+      sync_auth_prepare_images "$CURRENT_DIR" || exit 1
+   fi
+   stop_de_service
    prepare_de_run_base
    update_dectl
    prepare_system_settings
    install_docker
    install_docker_compose
    load_de_images
+   if [[ "$INSTALL_TYPE" != "upgrade" ]]; then
+      sync_auth_prepare_images "$CURRENT_DIR" || exit 1
+   fi
    set_de_service
    start_de_service
 }
