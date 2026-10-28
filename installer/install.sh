@@ -299,18 +299,29 @@ function load_de_images() {
    log_title "加载 DataEase 镜像"
    cd ${CURRENT_DIR}
 
+   # 全新安装先加载配套镜像，后续遍历通过已加载镜像列表跳过，避免重复导入
+   if [[ "$INSTALL_TYPE" != "upgrade" ]]; then
+      sync_auth_prepare_images "$CURRENT_DIR" || exit 1
+   fi
+
    for i in $(docker images --format '{{.Repository}}:{{.Tag}}' | grep dataease); do
       current_images[${#current_images[@]}]=${i##*/}
    done
 
    # 加载镜像
    if [[ -d images ]]; then
+      local image_name
       for i in $(ls images); do
-         if [[ "${current_images[@]}"  =~ "${i%.tar.gz}" ]]; then
-            log_content "已存在镜像 ${i%.tar.gz}"
+         image_name=${i%.tar.gz}
+         image_name=${image_name%.tar}
+         if [[ " ${current_images[*]} " == *" $image_name "* ]]; then
+            log_content "已存在镜像 $image_name"
          else
-            log_content "加载镜像 ${i%.tar.gz}"
-            docker load -i images/$i >/dev/null 2>&1 | tee -a ${CURRENT_DIR}/install.log
+            log_content "加载镜像 $image_name"
+            if ! docker load -i "images/$i" >>"${CURRENT_DIR}/install.log" 2>&1; then
+               log_content "镜像 $image_name 加载失败，请检查 install.log、镜像文件完整性及磁盘空间后重试"
+               exit 1
+            fi
          fi
       done
    else
@@ -392,9 +403,6 @@ function main() {
    install_docker
    install_docker_compose
    load_de_images
-   if [[ "$INSTALL_TYPE" != "upgrade" ]]; then
-      sync_auth_prepare_images "$CURRENT_DIR" || exit 1
-   fi
    set_de_service
    start_de_service
 }
