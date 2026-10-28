@@ -895,7 +895,9 @@ public class CalciteProvider extends Provider {
                 int columnType = metaData.getColumnType(j + 1);
                 switch (columnType) {
                     case Types.DATE:
-                        if (rs.getDate(j + 1) != null) {
+                        if (StringUtils.equalsIgnoreCase(metaData.getColumnTypeName(j + 1), "YEAR")) {
+                            row[j] = rs.getString(j + 1);
+                        } else if (rs.getDate(j + 1) != null) {
                             row[j] = rs.getDate(j + 1).toString();
                         }
                         break;
@@ -1345,7 +1347,9 @@ public class CalciteProvider extends Provider {
                     int columnType = metaData.getColumnType(j + 1);
                     switch (columnType) {
                         case Types.DATE:
-                            if (rs.getDate(j + 1) != null) {
+                            if (StringUtils.equalsIgnoreCase(metaData.getColumnTypeName(j + 1), "YEAR")) {
+                                row[j] = rs.getString(j + 1);
+                            } else if (rs.getDate(j + 1) != null) {
                                 row[j] = rs.getDate(j + 1).toString();
                             }
                             break;
