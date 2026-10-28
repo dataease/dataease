@@ -14,7 +14,7 @@ const composeStore = composeStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const copyStore = copyStoreWithOut()
 const lockStore = lockStoreWithOut()
-const { curComponent, editMode } = storeToRefs(dvMainStore)
+const { curComponent, editMode, dvInfo } = storeToRefs(dvMainStore)
 const { areaData } = storeToRefs(composeStore)
 
 const ctrlKey = 17,
@@ -105,10 +105,11 @@ const checkDialog = () => {
 
 let isCtrlOrCommandDown = false
 let isShiftDown = false
+const isDataVEdit = () => dvInfo.value.type === 'dataV' && editMode.value === 'edit'
 // 全局监听按键操作并执行相应命令
 export function listenGlobalKeyDown() {
-  window.onkeydown = e => {
-    if (editMode.value === 'preview' || checkDialog()) return
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (!isDataVEdit() || checkDialog()) return
     const { keyCode } = e
     if (positionMoveKey[keyCode] && curComponent.value) {
       positionMoveKey[keyCode](keyCode)
@@ -139,12 +140,16 @@ export function listenGlobalKeyDown() {
     }
   }
 
-  window.onkeyup = e => {
+  const handleKeyUp = (e: KeyboardEvent) => {
+    if (!isDataVEdit()) {
+      releaseAttachKey()
+      return
+    }
     if (e.keyCode === ctrlKey || e.keyCode === commandKey) {
       isCtrlOrCommandDown = false
       composeStore.setIsCtrlOrCmdDownStatus(false)
     } else if (e.keyCode === shiftKey) {
-      isShiftDown = true
+      isShiftDown = false
       composeStore.setIsShiftDownStatus(false)
     } else if (e.keyCode === spaceKey) {
       composeStore.setSpaceDownStatus(false)
@@ -153,8 +158,21 @@ export function listenGlobalKeyDown() {
     }
   }
 
-  window.onmousedown = () => {
-    dvMainStore.setInEditorStatus(false)
+  const handleMouseDown = () => {
+    if (isDataVEdit()) {
+      dvMainStore.setInEditorStatus(false)
+    }
+  }
+
+  window.addEventListener('keydown', handleKeyDown)
+  window.addEventListener('keyup', handleKeyUp)
+  window.addEventListener('mousedown', handleMouseDown)
+
+  return () => {
+    window.removeEventListener('keydown', handleKeyDown)
+    window.removeEventListener('keyup', handleKeyUp)
+    window.removeEventListener('mousedown', handleMouseDown)
+    releaseAttachKey()
   }
 }
 
@@ -163,6 +181,7 @@ export function releaseAttachKey() {
   composeStore.setIsCtrlOrCmdDownStatus(false)
   isShiftDown = false
   composeStore.setIsShiftDownStatus(false)
+  composeStore.setSpaceDownStatus(false)
 }
 
 //当前不支持同时ctrl + shift操作
@@ -182,7 +201,6 @@ function copy() {
 
 function paste() {
   copyStore.paste(false)
-  snapshotStore.recordSnapshotCache('key-paste')
 }
 
 function move(keyCode) {

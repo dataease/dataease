@@ -262,7 +262,7 @@ const initDataset = () => {
 const scrollOffset = computed(() => (canvasStyleData.value.scale < 150 ? 1.5 : 2))
 
 // 全局监听按键事件
-listenGlobalKeyDown()
+const removeGlobalKeyListeners = listenGlobalKeyDown()
 
 const initScroll = () => {
   nextTick(() => {
@@ -467,6 +467,7 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
+  removeGlobalKeyListeners()
   document.body.style.overflow = ''
   window.removeEventListener('storage', eventCheck)
   window.removeEventListener('blur', releaseAttachKey)
