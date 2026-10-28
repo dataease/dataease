@@ -372,11 +372,11 @@ public class DataVisualizationServer implements DataVisualizationApi {
                     appCoreDatasourceVO.forEach(datasourceOld -> {
                         newDatasourceId.add(datasourceOld.getSystemDatasourceId());
                         // Excel 数据表明映射
-                        if (StringUtils.isNotEmpty(datasourceOld.getConfiguration())) {
+                        if (datasourceOld.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name()) || datasourceOld.getType().equals(DatasourceConfiguration.DatasourceType.ExcelRemote.name())) {
+                            dsTableNamesMap.put(datasourceOld.getId(), ExcelUtils.getTableNamesMap(datasourceOld.getType(), datasourceOld.getConfiguration()));
+                        } else if (StringUtils.isNotEmpty(datasourceOld.getConfiguration())) {
                             if (datasourceOld.getType().equals(DatasourceConfiguration.DatasourceType.API.name())) {
                                 DEException.throwException(Translator.get("i18n_app_error_no_api"));
-                            } else if (datasourceOld.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name()) || datasourceOld.getType().equals(DatasourceConfiguration.DatasourceType.ExcelRemote.name())) {
-                                dsTableNamesMap.put(datasourceOld.getId(), ExcelUtils.getTableNamesMap(datasourceOld.getType(), datasourceOld.getConfiguration()));
                             } else if (datasourceOld.getType().contains(DatasourceConfiguration.DatasourceType.API.name())) {
                                 dsTableNamesMap.put(datasourceOld.getId(), (Map<String, String>) datasourceServer.invokeMethod(datasourceOld.getType(), "getTableNamesMap", String.class, datasourceOld.getConfiguration()));
                             }
@@ -516,6 +516,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
                 } catch (Exception e) {
                     LogUtil.error(e);
+                    if (e instanceof DEException) {
+                        throw e;
+                    }
                     DEException.throwException(e);
                 }
             }
@@ -1124,6 +1127,25 @@ public class DataVisualizationServer implements DataVisualizationApi {
             DEException.throwException(Translator.get("i18n_app_error_no_api"));
         }
 
+        // Application templates bind to a target datasource; only portable Excel table mappings are needed.
+        datasourceVOInfo = datasourceVOInfo.stream().map(datasource -> {
+            AppCoreDatasourceVO exported = BeanUtils.copyBean(new AppCoreDatasourceVO(), datasource);
+            if (DatasourceConfiguration.DatasourceType.Excel.name().equalsIgnoreCase(datasource.getType())
+                    || DatasourceConfiguration.DatasourceType.ExcelRemote.name().equalsIgnoreCase(datasource.getType())) {
+                exported.setConfiguration(ExcelUtils.exportTableNames(datasource.getType(), datasource.getConfiguration()));
+            } else {
+                exported.setConfiguration(null);
+            }
+            return exported;
+        }).toList();
+        if (datasourceTaskVOInfo != null) {
+            datasourceTaskVOInfo = datasourceTaskVOInfo.stream().map(task -> {
+                AppCoreDatasourceTaskVO exported = BeanUtils.copyBean(new AppCoreDatasourceTaskVO(), task);
+                exported.setExtraData(null);
+                return exported;
+            }).toList();
+        }
+
         List<VisualizationLinkageVO> linkageVOInfo = appTemplateMapper.findAppLinkageInfo(dvId);
         List<VisualizationLinkageFieldVO> linkageFieldVOInfo = appTemplateMapper.findAppLinkageFieldInfo(dvId);
         List<VisualizationLinkJumpVO> linkJumpVOInfo = appTemplateMapper.findAppLinkJumpInfo(dvId);
@@ -1236,6 +1258,11 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Override
     public List<DatasetPermissionTemplate> queruDatasetPermissionTemplate(Long resourceId) {
         return resourcePermissionManage.queruDatasetPermissionTemplate(resourceId);
+    }
+
+    @Override
+    public List<DatasetPermissionTemplate> queryDatasetPermissionTemplates(List<Long> datasetIds) {
+        return resourcePermissionManage.queryDatasetPermissionTemplates(datasetIds);
     }
 
     @Override

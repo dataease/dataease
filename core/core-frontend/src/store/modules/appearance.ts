@@ -250,6 +250,8 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       const res = await uiLoadApi()
       this.loaded = true
       const resData = res.data
+      // 社区版响应包含 community 标记；空数组表示企业版尚未配置外观。
+      this.community = !Array.isArray(resData) || resData.some(item => item.pkey === 'community')
       if (!resData?.length) {
         if (!isDataEaseBi) {
           document.title = 'DataEase'
@@ -257,16 +259,10 @@ export const useAppearanceStore = defineStore('appearanceStore', {
         }
         return
       }
-      const data: AppearanceState = { loaded: false, community: true }
-      let isCommunity = false
+      const data: AppearanceState = { loaded: false, community: this.community }
       resData.forEach(item => {
         data[item.pkey] = item.pval
-        if (item.pkey === 'community') {
-          isCommunity = true
-        }
       })
-      data.community = isCommunity
-      this.community = data.community
       if (this.community) {
         this.showDemoTips = data.showDemoTips
         this.demoTipsContent = data.demoTipsContent

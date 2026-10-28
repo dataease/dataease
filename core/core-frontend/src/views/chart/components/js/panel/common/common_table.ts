@@ -1090,7 +1090,8 @@ export function mappingColor(value, defaultColor, rules, type, filedValueMap?, r
     if (sourceField.dataeaseName) {
       const rowVal =
         rowData?.[sourceField.dataeaseName] ?? rowData?.query?.[sourceField.dataeaseName]
-      if (rowVal !== undefined) {
+      // 汇总行缺失的维度按空值匹配，不能回退到目标单元格的值
+      if (rowVal !== undefined || rowData?.SUMMARY) {
         checkValue = rowVal
       }
     }
