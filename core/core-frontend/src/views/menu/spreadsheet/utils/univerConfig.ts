@@ -209,7 +209,7 @@ export function createUniverInstance(
   let localeType = LocaleType.ZH_CN
   if (locale === 'en-US' || locale === 'en_US' || locale === 'en') {
     localeType = LocaleType.EN_US
-  } else if (locale === 'zh-TW' || locale === 'zh_TW') {
+  } else if (locale === 'zh-TW' || locale === 'zh_TW' || locale === 'tw') {
     localeType = LocaleType.ZH_TW
   }
 

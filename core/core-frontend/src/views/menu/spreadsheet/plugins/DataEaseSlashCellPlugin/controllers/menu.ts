@@ -13,7 +13,7 @@ export function SlashCellDropdownFactory(): IMenuSelectorItem<string> {
     id: DATAEASE_SLASH_CELL_DROPDOWN_ID,
     type: MenuItemType.SUBITEMS,
     icon: 'BackSlashDoubleIcon',
-    tooltip: '斜线单元格'
+    tooltip: 'dataease-spreadsheet.menu.slashCell'
   }
 }
 
@@ -22,8 +22,8 @@ export function TwoSlashCellMenuFactory(): IMenuButtonItem<string> {
     id: ApplyTwoSlashCellOperation.id,
     type: MenuItemType.BUTTON,
     icon: 'BackSlashDoubleIcon',
-    title: '二分斜线单元格',
-    tooltip: '二分斜线单元格'
+    title: 'dataease-spreadsheet.menu.slashCellTwo',
+    tooltip: 'dataease-spreadsheet.menu.slashCellTwo'
   }
 }
 
@@ -32,8 +32,8 @@ export function ThreeSlashCellMenuFactory(): IMenuButtonItem<string> {
     id: ApplyThreeSlashCellOperation.id,
     type: MenuItemType.BUTTON,
     icon: 'LeftDoubleDiagonalDoubleIcon',
-    title: '三分斜线单元格',
-    tooltip: '三分斜线单元格'
+    title: 'dataease-spreadsheet.menu.slashCellThree',
+    tooltip: 'dataease-spreadsheet.menu.slashCellThree'
   }
 }
 
@@ -42,7 +42,7 @@ export function ClearSlashCellMenuFactory(): IMenuButtonItem<string> {
     id: ClearSlashCellOperation.id,
     type: MenuItemType.BUTTON,
     icon: 'AllBorderIcon',
-    title: '取消斜线单元格',
-    tooltip: '取消斜线单元格'
+    title: 'dataease-spreadsheet.menu.removeSlashCell',
+    tooltip: 'dataease-spreadsheet.menu.removeSlashCell'
   }
 }

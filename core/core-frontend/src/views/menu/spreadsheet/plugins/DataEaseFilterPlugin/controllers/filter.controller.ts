@@ -5,6 +5,7 @@ import {
   Injector,
   IResourceManagerService,
   IUniverInstanceService,
+  LocaleService,
   UniverInstanceType
 } from '@univerjs/core'
 import { SetWorksheetActiveOperation } from '@univerjs/sheets'
@@ -124,6 +125,7 @@ export class DataEaseFilterController extends Disposable {
 
   private _initComponents(): void {
     const mode = this._spreadsheetModeService.getMode()
+    const localeService = this._injector.get(LocaleService)
     const { createElement, useEffect, useRef } = this._componentManager.reactUtils
     const QueryBarHost = () => {
       const containerRef = useRef<HTMLElement | null>(null)
@@ -149,11 +151,14 @@ export class DataEaseFilterController extends Disposable {
         framework: 'vue3'
       })
     )
+    const QueryControlIcon = this._componentManager.get('DataEaseQueryControlIcon')
     // IconManager 接收 React 组件，复用 ComponentManager 的 Vue 适配结果。
     this.disposeWithMe(
-      this._iconManager.register(
-        'DataEaseQueryControlIcon',
-        this._componentManager.get('DataEaseQueryControlIcon')
+      this._iconManager.register('DataEaseQueryControlIcon', props =>
+        createElement(QueryControlIcon, {
+          ...props,
+          label: localeService.t('dataease-spreadsheet.menu.queryControlShort')
+        })
       )
     )
     this.disposeWithMe(

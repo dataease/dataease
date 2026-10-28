@@ -3,6 +3,7 @@ import {
   Disposable,
   ICommandService,
   Inject,
+  LocaleService,
   type ICommandInfo,
   type IMutationInfo,
   ObjectMatrix
@@ -70,6 +71,7 @@ export class DataEaseToolbarUIController extends Disposable {
     @IFormatPainterService private readonly formatPainterService: IFormatPainterService,
     @Inject(ComponentManager) private readonly componentManager: ComponentManager,
     @Inject(IconManager) private readonly iconManager: IconManager,
+    @Inject(LocaleService) private readonly localeService: LocaleService,
     @Inject(TableUserStyleService)
     private readonly tableUserStyleService: TableUserStyleService,
     @Inject(SpreadsheetModeService)
@@ -174,11 +176,15 @@ export class DataEaseToolbarUIController extends Disposable {
         framework: 'vue3'
       })
     )
-    // IconManager 接收 React 组件，复用 ComponentManager 的 Vue 适配结果。
+    const insertIcon = this.componentManager.get('DataEaseInsertIcon')
+    const { createElement } = this.componentManager.reactUtils
+    // 复用 Vue 适配器，并由当前 Univer 实例提供语言，避免与页面语言状态分离。
     this.disposeWithMe(
-      this.iconManager.register(
-        'DataEaseInsertIcon',
-        this.componentManager.get('DataEaseInsertIcon')
+      this.iconManager.register('DataEaseInsertIcon', props =>
+        createElement(insertIcon, {
+          ...props,
+          label: this.localeService.t('dataease-spreadsheet.menu.insert')
+        })
       )
     )
     this.disposeWithMe(

@@ -1,4 +1,5 @@
 import type { IAccessor } from '@univerjs/core'
+import { LocaleService } from '@univerjs/core'
 import type { IMenuSelectorItem } from '@univerjs/ui'
 import { MenuItemType } from '@univerjs/ui'
 import { combineLatest } from 'rxjs'
@@ -16,11 +17,10 @@ import {
   DATAEASE_INSERT_DROPDOWN_OPERATION_ID
 } from './insert-operation'
 
-export function DataEaseInsertDropdownMenuFactory(
-  accessor: IAccessor
-): IMenuSelectorItem<string> {
+export function DataEaseInsertDropdownMenuFactory(accessor: IAccessor): IMenuSelectorItem<string> {
   const insertionService = accessor.get(TableInsertionService)
   const renderStatusService = accessor.get(PluginRenderStatusService)
+  const localeService = accessor.get(LocaleService)
   const draftDisabled$ = renderStatusService.changed$.pipe(
     startWith(undefined),
     map(() => renderStatusService.hasDraft()),
@@ -32,7 +32,7 @@ export function DataEaseInsertDropdownMenuFactory(
     commandId: DATAEASE_INSERT_DROPDOWN_OPERATION_ID,
     type: MenuItemType.SELECTOR,
     icon: 'DataEaseInsertIcon',
-    tooltip: '插入',
+    tooltip: 'dataease-spreadsheet.menu.insert',
     slot: true,
     selections: [
       {
@@ -41,7 +41,10 @@ export function DataEaseInsertDropdownMenuFactory(
           hoverable: false,
           selectable: false,
           props: {
-            items: DATAEASE_INSERT_DROPDOWN_ITEMS
+            items: DATAEASE_INSERT_DROPDOWN_ITEMS.map(item => ({
+              ...item,
+              label: item.divided ? '' : localeService.t(item.label)
+            }))
           } as any
         },
         value: ''

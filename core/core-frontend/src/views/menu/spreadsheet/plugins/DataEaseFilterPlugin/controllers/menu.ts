@@ -11,7 +11,7 @@ export function ToggleSpreadsheetFilterMenuFactory(accessor: IAccessor): IMenuBu
     id: ToggleSpreadsheetFilterOperation.id,
     type: MenuItemType.BUTTON,
     icon: 'DataEaseQueryControlIcon',
-    tooltip: '查询控件',
+    tooltip: 'dataease-spreadsheet.menu.queryControl',
     activated$: filterInstanceService.visible$
   }
 }

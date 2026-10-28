@@ -9,7 +9,7 @@ export function InsertDropdownMainButtonFactory(): IMenuSelectorItem<string> {
     id: DATAEASE_INSERT_DROPDOWN_ID,
     type: MenuItemType.SUBITEMS,
     icon: 'AdditionAndSubtractionSingle', // 尝试使用内置图标
-    tooltip: '添加',
-    title: '添加'
+    tooltip: 'dataease-spreadsheet.menu.add',
+    title: 'dataease-spreadsheet.menu.add'
   }
 }
