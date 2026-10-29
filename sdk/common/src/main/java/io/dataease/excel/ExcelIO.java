@@ -100,6 +100,7 @@ public final class ExcelIO {
             if (CollectionUtils.isNotEmpty(writeOptions.getHeaderComments())) {
                 writerBuilder.registerWriteHandler(new FesodHeaderCommentHandler(writeOptions.getHeaderComments()));
             }
+            writerBuilder.registerWriteHandler(new FesodAutoWidthStyleStrategy());
             ExcelWriterSheetBuilder sheetBuilder = writerBuilder.sheet(writeOptions.getSheetName());
             sheetBuilder.doWrite(Collections.emptyList());
         } catch (Exception e) {

@@ -51,14 +51,6 @@ public class FesodErrorPostilHandler implements RowWriteHandler {
 
     private void setPostil(Sheet sheet, Integer relativeRowIndex, Integer columnIndex, String msg) {
         Workbook workbook = sheet.getWorkbook();
-        CellStyle cellStyle = workbook.createCellStyle();
-        cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        cellStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
-        cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-        Drawing<?> drawingPatriarch = sheet.createDrawingPatriarch();
-        XSSFClientAnchor xssfClientAnchor = new XSSFClientAnchor(0, 0, 0, 0, 0, 0, 2, 2);
-        Comment comment = drawingPatriarch.createCellComment(xssfClientAnchor);
-        comment.setString(new XSSFRichTextString(msg));
         Row targetRow = sheet.getRow(relativeRowIndex + 1);
         if (targetRow == null) {
             return;
@@ -67,6 +59,18 @@ public class FesodErrorPostilHandler implements RowWriteHandler {
         if (cell == null) {
             return;
         }
+        CellStyle originalStyle = cell.getCellStyle();
+        CellStyle cellStyle = workbook.createCellStyle();
+        if (originalStyle != null) {
+            cellStyle.cloneStyleFrom(originalStyle);
+        }
+        cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        cellStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
+        cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        Drawing<?> drawingPatriarch = sheet.createDrawingPatriarch();
+        XSSFClientAnchor xssfClientAnchor = new XSSFClientAnchor(0, 0, 0, 0, 0, 0, 2, 2);
+        Comment comment = drawingPatriarch.createCellComment(xssfClientAnchor);
+        comment.setString(new XSSFRichTextString(msg));
         cell.setCellComment(comment);
         cell.setCellStyle(cellStyle);
     }
