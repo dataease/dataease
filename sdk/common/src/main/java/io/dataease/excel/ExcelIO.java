@@ -1,13 +1,17 @@
 package io.dataease.excel;
 
 import io.dataease.excel.internal.FesodAutoWidthStyleStrategy;
+import io.dataease.excel.internal.FesodColumnDateConverter;
 import io.dataease.excel.internal.FesodErrorPostilHandler;
 import io.dataease.excel.internal.FesodHeaderCommentHandler;
 import io.dataease.excel.internal.FesodModelReadListener;
 import io.dataease.excel.internal.FesodReadSession;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.fesod.sheet.ExcelReader;
 import org.apache.fesod.sheet.FesodSheet;
+import org.apache.fesod.sheet.read.builder.ExcelReaderBuilder;
 import org.apache.fesod.sheet.read.builder.ExcelReaderSheetBuilder;
+import org.apache.fesod.sheet.read.metadata.ReadSheet;
 import org.apache.fesod.sheet.util.DateUtils;
 import org.apache.fesod.sheet.util.NumberDataFormatterUtils;
 import org.apache.fesod.sheet.write.builder.ExcelWriterBuilder;
@@ -22,6 +26,8 @@ import java.io.OutputStream;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Excel 适配层唯一入口，集中封装 Fesod 读写与流生命周期，业务模块不得直接依赖 Fesod 类型。
@@ -49,7 +55,25 @@ public final class ExcelIO {
     public static <T> void readModel(InputStream inputStream, Class<T> modelClass, ExcelReadOptions options, ExcelModelHandler<T> handler) {
         ExcelReadOptions readOptions = options == null ? new ExcelReadOptions() : options;
         try {
-            ExcelReaderSheetBuilder sheetBuilder = FesodSheet.read(inputStream, modelClass, new FesodModelReadListener<>(handler)).sheet();
+            ExcelReaderBuilder readerBuilder = FesodSheet.read(inputStream, modelClass, new FesodModelReadListener<>(handler));
+            if (readOptions.getAutoCloseStream() != null) {
+                readerBuilder.autoCloseStream(readOptions.getAutoCloseStream());
+            }
+            if (readOptions.getColumnDateFormats() != null && !readOptions.getColumnDateFormats().isEmpty()) {
+                readerBuilder.registerConverter(new FesodColumnDateConverter(readOptions.getColumnDateFormats()));
+            }
+            ExcelReader reader = readerBuilder.build();
+            List<ReadSheet> readSheets = reader.excelExecutor().sheetList();
+            List<ExcelSheetInfo> sheetInfos = readSheets.stream()
+                    .map(readSheet -> new ExcelSheetInfo(readSheet.getSheetNo(), readSheet.getSheetName()))
+                    .collect(Collectors.toList());
+            ExcelSheetInfo target = resolveTarget(sheetInfos, readOptions);
+            ReadSheet targetSheet = readSheets.stream()
+                    .filter(readSheet -> Objects.equals(readSheet.getSheetNo(), target.getSheetNo()))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalStateException("sheet not found: " + target.getSheetName()));
+            ExcelReaderSheetBuilder sheetBuilder = new ExcelReaderSheetBuilder(reader);
+            sheetBuilder.sheetNo(targetSheet.getSheetNo());
             if (readOptions.getHeadRowNumber() != null) {
                 sheetBuilder.headRowNumber(readOptions.getHeadRowNumber());
             }
@@ -61,10 +85,16 @@ public final class ExcelIO {
 
     public static void writeModel(OutputStream outputStream, Class<?> modelClass, List<?> data, ExcelWriteOptions options) {
         ExcelWriteOptions writeOptions = options == null ? new ExcelWriteOptions() : options;
+        if (CollectionUtils.isNotEmpty(writeOptions.getHead()) || writeOptions.getAutomaticMergeHead() != null) {
+            throw new IllegalArgumentException("head/automaticMergeHead are not supported by writeModel");
+        }
         try {
             ExcelWriterBuilder writerBuilder = FesodSheet.write(outputStream, modelClass);
             if (writeOptions.getInMemory() != null) {
                 writerBuilder.inMemory(writeOptions.getInMemory());
+            }
+            if (writeOptions.getAutoCloseStream() != null) {
+                writerBuilder.autoCloseStream(writeOptions.getAutoCloseStream());
             }
             if (CollectionUtils.isNotEmpty(writeOptions.getErrMsgList())) {
                 writerBuilder.inMemory(Boolean.TRUE).registerWriteHandler(new FesodErrorPostilHandler(writeOptions.getErrMsgList()));
@@ -83,6 +113,9 @@ public final class ExcelIO {
 
     public static void writeTemplate(OutputStream outputStream, ExcelWriteOptions options) {
         ExcelWriteOptions writeOptions = options == null ? new ExcelWriteOptions() : options;
+        if (CollectionUtils.isNotEmpty(writeOptions.getErrMsgList())) {
+            throw new IllegalArgumentException("errMsgList is not supported by writeTemplate");
+        }
         try {
             ExcelWriterBuilder writerBuilder = FesodSheet.write(outputStream);
             if (CollectionUtils.isNotEmpty(writeOptions.getHead())) {

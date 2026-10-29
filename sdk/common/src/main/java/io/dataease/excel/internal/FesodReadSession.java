@@ -43,6 +43,9 @@ public class FesodReadSession implements ExcelReadSession {
             if (options.getHeadRowNumber() != null) {
                 builder.headRowNumber(options.getHeadRowNumber());
             }
+            if (options.getAutoCloseStream() != null) {
+                builder.autoCloseStream(options.getAutoCloseStream());
+            }
             if (MapUtils.isNotEmpty(options.getColumnDateFormats())) {
                 builder.registerConverter(new FesodColumnDateConverter(options.getColumnDateFormats()));
             }

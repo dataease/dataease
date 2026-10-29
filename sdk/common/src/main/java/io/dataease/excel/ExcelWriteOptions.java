@@ -29,6 +29,10 @@ public class ExcelWriteOptions {
 
     private Boolean inMemory;
 
+    /**
+     * 是否由适配层关闭输出流，默认 true（与 Fesod 默认一致）。
+     * 设置为 false 时由调用方负责关闭输出流。
+     */
     private Boolean autoCloseStream;
 
     private Boolean automaticMergeHead;
