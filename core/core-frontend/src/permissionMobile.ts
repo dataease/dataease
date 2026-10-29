@@ -60,6 +60,58 @@ const interactiveStore = interactiveStoreWithOut()
 const { loadStart, loadDone } = usePageLoading()
 const whiteList = ['/login', '/panel', '/DashboardEmpty', '/preview'] // 不重定向白名单
 
+// 外观与 xpack 有效性属于全局配置：首次导航加载即可，无需每次导航重复请求
+let appearanceLoaded = false
+let xpackChecked = false
+
+// 首次导航并发去重：同一登录会话内复用进行中的初始化 Promise；失败后清理以便重试
+let initPermissionPromise: Promise<void> | undefined
+// 会话代次：登出/登录失效时递增，使进行中的旧任务不再回写完成标志
+let initGeneration = 0
+
+const initializePermissionState = async (generation: number) => {
+  const isCurrent = () => generation === initGeneration
+  const roleRouters = (await getRoleRouters()) || []
+  // 应用响应前校验会话：旧会话的响应不得覆盖新会话
+  if (!isCurrent()) return
+  const routers: any[] = roleRouters as AppCustomRouteRecordRaw[]
+  routers.forEach(item => (item['top'] = true))
+  await permissionStore.generateRoutes(routers as AppCustomRouteRecordRaw[])
+  // 生成路由会写入 Store，之后再校验一次，避免为过期会话初始化交互状态
+  if (!isCurrent()) return
+  await interactiveStore.initInteractive(true, isCurrent)
+  // 交互初始化完成后再校验，会话已变则不回写完成标志
+  if (!isCurrent()) return
+  // 全部初始化成功后再置位，避免中途失败被误判为已完成
+  permissionStore.setIsAddRouters(true)
+}
+
+const ensurePermissionInitialized = (): Promise<void> => {
+  if (permissionStore.getIsAddRouters) return Promise.resolve()
+  if (initPermissionPromise) return initPermissionPromise
+  const generation = initGeneration
+  const settle = () => {
+    // 仅当仍属于当前会话时清理共享 Promise，避免旧任务清掉新会话的进行中任务
+    if (generation === initGeneration) initPermissionPromise = undefined
+  }
+  const promise = initializePermissionState(generation).then(
+    () => settle(),
+    error => {
+      settle()
+      throw error
+    }
+  )
+  initPermissionPromise = promise
+  return promise
+}
+
+// 未认证导航（登出、登录失效或登录页）标志新会话边界：作废旧初始化状态与进行中的任务
+const invalidatePermissionInitialization = () => {
+  initGeneration++
+  initPermissionPromise = undefined
+  if (permissionStore.getIsAddRouters) permissionStore.setIsAddRouters(false)
+}
+
 router.beforeEach(async (to, _, next) => {
   if (to.path.startsWith('/de-link/')) {
     open()
@@ -67,8 +119,14 @@ router.beforeEach(async (to, _, next) => {
   start()
   loadStart()
   const appearanceStore = useAppearanceStoreWithOut()
-  await appearanceStore.setAppearance()
-  await appStore.setXpackValid()
+  if (!appearanceLoaded) {
+    await appearanceStore.setAppearance()
+    appearanceLoaded = true
+  }
+  if (!xpackChecked) {
+    await appStore.setXpackValid()
+    xpackChecked = true
+  }
   if (to.name === 'link') {
     next()
   } else if (wsCache.get('user.token')) {
@@ -79,15 +137,13 @@ router.beforeEach(async (to, _, next) => {
     if (to.path === '/login') {
       next({ path: '/index' })
     } else {
-      const roleRouters = (await getRoleRouters()) || []
-      const routers: any[] = roleRouters as AppCustomRouteRecordRaw[]
-      routers.forEach(item => (item['top'] = true))
-      await permissionStore.generateRoutes(routers as AppCustomRouteRecordRaw[])
-      permissionStore.setIsAddRouters(true)
-      await interactiveStore.initInteractive(true)
+      if (!permissionStore.getIsAddRouters) {
+        await ensurePermissionInitialized()
+      }
       next()
     }
   } else {
+    invalidatePermissionInitialization()
     if (whiteList.includes(to.path) || to.name === 'link') {
       next()
     } else {
