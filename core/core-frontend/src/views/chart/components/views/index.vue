@@ -37,6 +37,7 @@ import {
 import DrillPath from '@/views/chart/components/views/components/DrillPath.vue'
 import { ElIcon, ElInput, ElMessage } from 'element-plus-secondary'
 import { useFilter } from '@/hooks/web/useFilter'
+import { useChartViewportLoad } from '@/hooks/web/useChartViewportLoad'
 import { useCache } from '@/hooks/web/useCache'
 
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -46,7 +47,7 @@ import { ChartLibraryType } from '@/views/chart/components/js/panel/types'
 import chartViewManager from '@/views/chart/components/js/panel'
 import { storeToRefs } from 'pinia'
 import { normalizeExternalLinkUrl, setIdValueTrans } from '@/utils/canvasUtils'
-import { sanitizeHtml } from '@/utils/utils'
+import { isMobile, sanitizeHtml } from '@/utils/utils'
 import { Base64 } from 'js-base64'
 import DeRichTextView from '@/custom-component/rich-text/DeRichTextView.vue'
 import DePictureGroup from '@/custom-component/picture-group/Component.vue'
@@ -292,6 +293,18 @@ const hasDrillIcon = computed(() => {
 })
 
 const loading = ref(false)
+const chartAreaRef = ref<HTMLElement | null>(null)
+const viewportLoadEnabled = () =>
+  !isMobile() &&
+  !dvMainStore.inMobile &&
+  !dvMainStore.mobileInPc &&
+  !view.value.isPlugin &&
+  !view.value.plugin?.isPlugin &&
+  dvInfo.value.type === 'dashboard' &&
+  ['preview', 'edit-preview', 'multiplexing'].includes(showPosition.value)
+const viewportLoad = useChartViewportLoad(chartAreaRef, viewportLoadEnabled, loading, () =>
+  queryData.flush()
+)
 const isAutoRefreshing = ref(false)
 
 const resultMode = computed(() => {
@@ -688,6 +701,11 @@ const queryData = debounce((firstLoad = false, autoRefresh = false) => {
  */
 const calcData = (params, autoRefresh = false) => {
   dvMainStore.setLastViewRequestInfo(params.id, params.chartExtRequest)
+  const request = cloneDeep(params)
+  viewportLoad.run(() => performCalcData(request, autoRefresh))
+}
+
+const performCalcData = (params, autoRefresh = false) => {
   if (chartComponent?.value) {
     isAutoRefreshing.value = autoRefresh
     loading.value = true
@@ -1240,6 +1258,7 @@ const clearG2Tooltip = () => {
 
 <template>
   <div
+    ref="chartAreaRef"
     class="chart-area report-load"
     :class="{ 'report-load-finish': !loadingFlag }"
     v-loading="loadingFlag"
@@ -1335,7 +1354,13 @@ const clearG2Tooltip = () => {
       </div>
     </div>
     <!--这里去渲染不同图库的图表-->
-    <div v-if="allEmptyCheck || (chartAreaShow && !showEmpty)" style="flex: 1; overflow: hidden">
+    <div
+      v-if="
+        (!viewportLoadEnabled() || viewportLoad.activated.value) &&
+        (allEmptyCheck || (chartAreaShow && !showEmpty))
+      "
+      style="flex: 1; overflow: hidden"
+    >
       <plugin-component
         v-if="view.plugin?.isPlugin && loadPlugin"
         :jsname="view.plugin.staticMap['index']"

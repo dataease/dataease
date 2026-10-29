@@ -1,4 +1,5 @@
 import { withMapPictures } from './mapExport'
+import { prepareViewportChartsForExport } from '@/hooks/web/useChartViewportLoad'
 import html2canvas from 'html2canvas'
 import JsPDF from 'jspdf'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -48,29 +49,29 @@ function prePareTemplateBaseData(dvId, callback) {
 }
 
 export async function download2AppTemplate(downloadType, canvasDom, name, attachParams, callBack?) {
-  const canvasViewDataTemplate = deepCopy(canvasViewInfo.value)
-  Object.keys(canvasViewDataTemplate).forEach(viewId => {
-    canvasViewDataTemplate[viewId].data = deepCopy(canvasViewDataInfo.value[viewId])
-  })
-  const missingDataId = Object.keys(canvasViewDataTemplate).find(viewId => {
-    const view = canvasViewDataTemplate[viewId]
-    const needsData =
-      view.type !== 'VQuery' &&
-      (view.tableId ||
-        (view['dataFrom'] === 'template' && !['rich-text', 'picture-group'].includes(view.type)))
-    return needsData && view.data == null
-  })
-  if (missingDataId) {
-    const { t } = useI18n()
-    ElMessage.warning(
-      t('visualization.template_data_not_ready', [
-        canvasViewDataTemplate[missingDataId].title || missingDataId
-      ])
-    )
-    callBack?.()
-    return
-  }
   try {
+    await prepareViewportChartsForExport(canvasDom)
+    const canvasViewDataTemplate = deepCopy(canvasViewInfo.value)
+    Object.keys(canvasViewDataTemplate).forEach(viewId => {
+      canvasViewDataTemplate[viewId].data = deepCopy(canvasViewDataInfo.value[viewId])
+    })
+    const missingDataId = Object.keys(canvasViewDataTemplate).find(viewId => {
+      const view = canvasViewDataTemplate[viewId]
+      const needsData =
+        view.type !== 'VQuery' &&
+        (view.tableId ||
+          (view['dataFrom'] === 'template' && !['rich-text', 'picture-group'].includes(view.type)))
+      return needsData && view.data == null
+    })
+    if (missingDataId) {
+      const { t } = useI18n()
+      ElMessage.warning(
+        t('visualization.template_data_not_ready', [
+          canvasViewDataTemplate[missingDataId].title || missingDataId
+        ])
+      )
+      return
+    }
     const { canvasDataResult, canvasStyleResult } = await new Promise<{
       canvasDataResult: string
       canvasStyleResult: string
@@ -126,7 +127,8 @@ export async function download2AppTemplate(downloadType, canvasDom, name, attach
 
 export function downloadCanvas(type, canvasDom, name, callBack?) {
   if (canvasDom) {
-    waitForResourceImages(canvasDom)
+    prepareViewportChartsForExport(canvasDom)
+      .then(() => waitForResourceImages(canvasDom))
       .then(() => html2canvas(canvasDom))
       .then(canvas => {
         const dom = document.body.appendChild(canvas)
@@ -153,6 +155,7 @@ export function downloadCanvas(type, canvasDom, name, callBack?) {
         }
       })
       .catch(error => {
+        ElMessage.error(useI18n().t('material.export_failed'))
         console.error('oops, something went wrong!', error)
         if (callBack) {
           callBack()
@@ -162,15 +165,18 @@ export function downloadCanvas(type, canvasDom, name, callBack?) {
 }
 
 export function downloadCanvas2(type, canvasDom, name, callBack?) {
-  withMapPictures(canvasDom, async () => {
-    await waitForResourceImages(canvasDom)
-    return domToPng(canvasDom, {
-      width: canvasDom.offsetWidth,
-      height: canvasDom.offsetHeight,
-      // 按 2 倍(或更高)分辨率渲染,解决导出图片模糊问题
-      scale: Math.max(3, window.devicePixelRatio || 1)
-    })
-  })
+  prepareViewportChartsForExport(canvasDom)
+    .then(() =>
+      withMapPictures(canvasDom, async () => {
+        await waitForResourceImages(canvasDom)
+        return domToPng(canvasDom, {
+          width: canvasDom.offsetWidth,
+          height: canvasDom.offsetHeight,
+          // 按 2 倍(或更高)分辨率渲染,解决导出图片模糊问题
+          scale: Math.max(3, window.devicePixelRatio || 1)
+        })
+      })
+    )
     .then(dataUrl => {
       if (type === 'img') {
         const a = document.createElement('a')
@@ -192,6 +198,7 @@ export function downloadCanvas2(type, canvasDom, name, callBack?) {
       }
     })
     .catch(error => {
+      ElMessage.error(useI18n().t('material.export_failed'))
       if (callBack) {
         callBack()
       }
