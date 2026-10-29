@@ -1,14 +1,17 @@
 package io.dataease.utils;
-import io.dataease.utils.LogUtil;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Base64;
 import java.util.Locale;
 import java.util.Set;
@@ -19,6 +22,8 @@ import static io.dataease.constant.StaticResourceConstants.*;
 public class StaticResourceUtils {
 
     private final static String FILE_BASE_PATH = USER_HOME + FILE_SEPARATOR + UPLOAD_URL_PREFIX;
+
+    private static final Pattern SAFE_RESOURCE_ID = Pattern.compile("[A-Za-z0-9_-]+");
 
     private static final Pattern SAFE_RESOURCE_FILE_NAME = Pattern.compile("^[A-Za-z0-9._-]+$");
 
@@ -69,44 +74,95 @@ public class StaticResourceUtils {
      * @return
      */
     public static String getImgFileToBase64(String imgFile) {
-        if (StringUtils.isBlank(imgFile) || imgFile.startsWith("de-material-") || !SAFE_RESOURCE_FILE_NAME.matcher(imgFile).matches()) {
-            LogUtil.warn("Reject illegal static resource file name: " + imgFile);
-            return null;
-        }
-        if (!hasAllowedExtension(imgFile)) {
-            LogUtil.warn("Reject static resource with disallowed extension: " + imgFile);
-            return null;
-        }
-        Path targetPath = resolveSafeResourcePath(imgFile);
-        if (targetPath == null) {
-            return null;
-        }
-        if (!Files.isRegularFile(targetPath)) {
-            LogUtil.warn("Reject static resource that is not a regular file: " + imgFile);
+        return getImgFileToBase64(Paths.get(FILE_BASE_PATH), imgFile);
+    }
+
+    public static String getImgFileToBase64(Path root, String imgFile) {
+        if (imgFile == null || !hasAllowedExtension(imgFile)) {
             return null;
         }
         try {
-            return Base64.getEncoder().encodeToString(Files.readAllBytes(targetPath));
+            Path targetPath = resolveResourcePath(root, imgFile);
+            if (!Files.isRegularFile(targetPath, LinkOption.NOFOLLOW_LINKS)) {
+                return null;
+            }
+            try (InputStream input = Files.newInputStream(targetPath, StandardOpenOption.READ,
+                    LinkOption.NOFOLLOW_LINKS)) {
+                return Base64.getEncoder().encodeToString(input.readAllBytes());
+            }
         } catch (IOException e) {
-            LogUtil.error(e);
-        } catch (Exception e) {
             LogUtil.error(e);
         }
         return null;
     }
 
-    private static Path resolveSafeResourcePath(String fileName) {
+    public static void validateResourceId(String fileId) throws IOException {
+        if (fileId == null || !SAFE_RESOURCE_ID.matcher(fileId).matches()) {
+            throw new IOException("Invalid static resource id");
+        }
+    }
+
+    /** Validate legacy resource URLs before extracting their single file name. */
+    public static String getResourceFileName(String reference) throws IOException {
+        if (StringUtils.isBlank(reference) || reference.indexOf('\\') >= 0) {
+            throw new IOException("Invalid static resource reference");
+        }
         try {
-            Path basePath = Paths.get(FILE_BASE_PATH).toAbsolutePath().normalize();
-            Path targetPath = basePath.resolve(fileName).normalize();
-            if (!targetPath.startsWith(basePath)) {
-                LogUtil.warn("Reject static resource path outside base directory: " + fileName);
-                return null;
+            URI uri = URI.create(reference);
+            String scheme = uri.getScheme();
+            if (scheme != null && !scheme.equalsIgnoreCase("http") && !scheme.equalsIgnoreCase("https")) {
+                throw new IOException("Invalid static resource reference");
             }
-            return targetPath;
-        } catch (Exception e) {
-            LogUtil.error(e);
-            return null;
+            // Never decode a second time or normalize away traversal supplied by the client.
+            String path = uri.getRawPath();
+            if (StringUtils.isBlank(path) || path.indexOf('%') >= 0) {
+                throw new IOException("Invalid static resource reference");
+            }
+            for (String segment : path.split("/")) {
+                if (segment.equals(".") || segment.equals("..")) {
+                    throw new IOException("Invalid static resource reference");
+                }
+            }
+            String prefix = "/" + UPLOAD_URL_PREFIX + "/";
+            int prefixIndex = path.indexOf(prefix);
+            String fileName;
+            if (prefixIndex >= 0) {
+                fileName = path.substring(prefixIndex + prefix.length());
+            } else if (path.startsWith(UPLOAD_URL_PREFIX + "/")) {
+                fileName = path.substring(UPLOAD_URL_PREFIX.length() + 1);
+            } else if (path.indexOf('/') < 0) {
+                fileName = path;
+            } else {
+                throw new IOException("Invalid static resource reference");
+            }
+            validateResourceFileName(fileName);
+            return fileName;
+        } catch (IllegalArgumentException e) {
+            throw new IOException("Invalid static resource reference", e);
+        }
+    }
+
+    /** The configured root may be a link, but individual resource files must not be. */
+    public static Path resolveResourcePath(Path root, String fileName) throws IOException {
+        validateResourceFileName(fileName);
+        Path basePath = root.toRealPath();
+        Path targetPath = basePath.resolve(fileName).normalize();
+        if (!basePath.equals(targetPath.getParent()) || Files.isSymbolicLink(targetPath)) {
+            throw new IOException("Invalid static resource path");
+        }
+        if (Files.exists(targetPath, LinkOption.NOFOLLOW_LINKS)
+                && (!basePath.equals(targetPath.toRealPath().getParent())
+                || !Files.isRegularFile(targetPath, LinkOption.NOFOLLOW_LINKS))) {
+            throw new IOException("Invalid static resource path");
+        }
+        return targetPath;
+    }
+
+    private static void validateResourceFileName(String fileName) throws IOException {
+        if (StringUtils.isBlank(fileName) || !SAFE_RESOURCE_FILE_NAME.matcher(fileName).matches()
+                || fileName.contains("..") || fileName.startsWith("de-material-")
+                || fileName.contains(".material-tmp")) {
+            throw new IOException("Invalid static resource file name");
         }
     }
 

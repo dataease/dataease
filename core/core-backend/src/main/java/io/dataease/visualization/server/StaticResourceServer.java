@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -31,10 +32,9 @@ public class StaticResourceServer implements StaticResourceApi {
 
     @Override
     public void upload(String fileId, MultipartFile file) {
-        // check if the path is valid (not outside staticDir)
         Assert.notNull(file, "Multipart file must not be null");
         try {
-            FileUtils.validateUploadFilename(fileId);
+            StaticResourceUtils.validateResourceId(fileId);
             if (fileId.startsWith("de-material-") || fileId.contains(".material-tmp")) throw new IOException("Reserved material filename");
             String originName = file.getOriginalFilename();
             FileUtils.validateUploadFilename(originName);
@@ -44,11 +44,12 @@ public class StaticResourceServer implements StaticResourceApi {
                 content = input.readNBytes(StaticResourceContentGuard.MAX_BYTES + 1);
             }
             StaticResourceContentGuard.validate(newFileName, content);
-            Path basePath = Paths.get(staticDir.toString());
+            Path basePath = Paths.get(staticDir).toAbsolutePath().normalize();
             // create dir is absent
             FileUtils.createIfAbsent(basePath);
-            Path uploadPath = basePath.resolve(newFileName);
-            Files.write(uploadPath, content, java.nio.file.StandardOpenOption.CREATE_NEW);
+            Path uploadPath = StaticResourceUtils.resolveResourcePath(basePath, newFileName);
+            Files.write(uploadPath, content, java.nio.file.StandardOpenOption.CREATE_NEW,
+                    LinkOption.NOFOLLOW_LINKS);
         } catch (IOException e) {
             LogUtil.error("文件上传失败", e);
             DEException.throwException(io.dataease.i18n.Translator.get("i18n_static_resource_invalid"));
@@ -93,12 +94,10 @@ public class StaticResourceServer implements StaticResourceApi {
             }
             Path basePath = Paths.get(staticDir).toAbsolutePath().normalize();
             FileUtils.createIfAbsent(basePath);
-            Path uploadPath = basePath.resolve(fileName);
-            if (Files.isSymbolicLink(uploadPath)) {
-                throw new IOException("Invalid static resource path");
-            }
-            if (!Files.exists(uploadPath)) {
-                Files.write(uploadPath, decoded, java.nio.file.StandardOpenOption.CREATE_NEW);
+            Path uploadPath = StaticResourceUtils.resolveResourcePath(basePath, fileName);
+            if (!Files.exists(uploadPath, LinkOption.NOFOLLOW_LINKS)) {
+                Files.write(uploadPath, decoded, java.nio.file.StandardOpenOption.CREATE_NEW,
+                        LinkOption.NOFOLLOW_LINKS);
             }
         } catch (Exception e) {
             LogUtil.error("template static resource save error", e);
@@ -119,7 +118,12 @@ public class StaticResourceServer implements StaticResourceApi {
     }
 
     private String extractFileName(String path) {
-        return StringUtils.substringAfterLast(StringUtils.replace(path, "\\", "/"), "/");
+        try {
+            return StaticResourceUtils.getResourceFileName(path);
+        } catch (IOException e) {
+            DEException.throwException(io.dataease.i18n.Translator.get("i18n_static_resource_invalid"));
+            return null;
+        }
     }
 
     public static FileType getFileType(InputStream is) throws IOException {
