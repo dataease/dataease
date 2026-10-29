@@ -18,8 +18,8 @@ const setCollapse = () => {
 }
 const width = ref(280)
 const { wsCache } = useCache('localStorage')
-const setWidth = () => {
-  const num = wsCache.get('current-collapse_bar')
+const setWidth = (value?: number) => {
+  const num = value ?? wsCache.get('current-collapse_bar')
   if (!num) return
   width.value = num
 }
