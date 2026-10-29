@@ -1,5 +1,5 @@
 import type { IWorkbookData } from '@univerjs/core'
-import { LocaleType, Univer, UniverInstanceType } from '@univerjs/core'
+import { LocaleType, mergeLocales, Univer, UniverInstanceType } from '@univerjs/core'
 import { FUniver } from '@univerjs/core/facade'
 import { UniverUIPlugin } from '@univerjs/ui'
 import { UniverDocsPlugin } from '@univerjs/docs'
@@ -37,8 +37,7 @@ import { DataEaseToolbarUIPlugin } from '../plugins/DataEaseToolbarUIPlugin'
 import {
   DataEaseToolbarUIEnUS,
   DataEaseToolbarUIZhCN,
-  DataEaseToolbarUIZhTW,
-  mergeLocalePatches
+  DataEaseToolbarUIZhTW
 } from '../plugins/DataEaseToolbarUIPlugin/locales'
 import { DATAEASE_PROTECTION_MENU_CONFIG } from '../plugins/DataEaseToolbarUIPlugin/config/protection-config'
 import { DataEasePreviewModePlugin } from '../plugins/DataEasePreviewModePlugin'
@@ -47,58 +46,76 @@ import { PREVIEW_MENU_CONFIG } from '../plugins/DataEasePreviewModePlugin/config
 import { RangeSelectPlugin } from '../plugins/RangeSelectPlugin'
 import type { SpreadsheetRuntimeOptions } from '../types/mode'
 
+import DataValidationZhCN from '@univerjs/data-validation/locale/zh-CN'
 import DesignZhCN from '@univerjs/design/locale/zh-CN'
 import DocsUIZhCN from '@univerjs/docs-ui/locale/zh-CN'
 import EngineFormulaZhCN from '@univerjs/engine-formula/locale/zh-CN'
 import FindReplaceZhCN from '@univerjs/find-replace/locale/zh-CN'
+import SheetsConditionalFormattingZhCN from '@univerjs/sheets-conditional-formatting/locale/zh-CN'
 import SheetsConditionalFormattingUIZhCN from '@univerjs/sheets-conditional-formatting-ui/locale/zh-CN'
 import SheetsCrosshairHighlightZhCN from '@univerjs/sheets-crosshair-highlight/locale/zh-CN'
+import SheetsDataValidationZhCN from '@univerjs/sheets-data-validation/locale/zh-CN'
 import SheetsDataValidationUIZhCN from '@univerjs/sheets-data-validation-ui/locale/zh-CN'
+import SheetsFilterZhCN from '@univerjs/sheets-filter/locale/zh-CN'
 import SheetsFilterUIZhCN from '@univerjs/sheets-filter-ui/locale/zh-CN'
 import SheetsFormulaUIZhCN from '@univerjs/sheets-formula-ui/locale/zh-CN'
 import SheetsFormulaZhCN from '@univerjs/sheets-formula/locale/zh-CN'
+import SheetsHyperLinkZhCN from '@univerjs/sheets-hyper-link/locale/zh-CN'
 import SheetsHyperLinkUIZhCN from '@univerjs/sheets-hyper-link-ui/locale/zh-CN'
 import SheetsNoteUIZhCN from '@univerjs/sheets-note-ui/locale/zh-CN'
 import SheetsNumfmtUIZhCN from '@univerjs/sheets-numfmt-ui/locale/zh-CN'
 import SheetsSortUIZhCN from '@univerjs/sheets-sort-ui/locale/zh-CN'
+import SheetsTableZhCN from '@univerjs/sheets-table/locale/zh-CN'
 import SheetsTableUIZhCN from '@univerjs/sheets-table-ui/locale/zh-CN'
 import SheetsUIZhCN from '@univerjs/sheets-ui/locale/zh-CN'
 import SheetsZhCN from '@univerjs/sheets/locale/zh-CN'
 import UIZhCN from '@univerjs/ui/locale/zh-CN'
 
+import DataValidationZhTW from '@univerjs/data-validation/locale/zh-TW'
 import DesignZhTW from '@univerjs/design/locale/zh-TW'
 import DocsUIZhTW from '@univerjs/docs-ui/locale/zh-TW'
 import EngineFormulaZhTW from '@univerjs/engine-formula/locale/zh-TW'
 import FindReplaceZhTW from '@univerjs/find-replace/locale/zh-TW'
+import SheetsConditionalFormattingZhTW from '@univerjs/sheets-conditional-formatting/locale/zh-TW'
 import SheetsConditionalFormattingUIZhTW from '@univerjs/sheets-conditional-formatting-ui/locale/zh-TW'
 import SheetsCrosshairHighlightZhTW from '@univerjs/sheets-crosshair-highlight/locale/zh-TW'
+import SheetsDataValidationZhTW from '@univerjs/sheets-data-validation/locale/zh-TW'
 import SheetsDataValidationUIZhTW from '@univerjs/sheets-data-validation-ui/locale/zh-TW'
+import SheetsFilterZhTW from '@univerjs/sheets-filter/locale/zh-TW'
 import SheetsFilterUIZhTW from '@univerjs/sheets-filter-ui/locale/zh-TW'
 import SheetsFormulaZhTW from '@univerjs/sheets-formula/locale/zh-TW'
 import SheetsFormulaUIZhTW from '@univerjs/sheets-formula-ui/locale/zh-TW'
+import SheetsHyperLinkZhTW from '@univerjs/sheets-hyper-link/locale/zh-TW'
 import SheetsHyperLinkUIZhTW from '@univerjs/sheets-hyper-link-ui/locale/zh-TW'
 import SheetsNoteUIZhTW from '@univerjs/sheets-note-ui/locale/zh-TW'
 import SheetsNumfmtUIZhTW from '@univerjs/sheets-numfmt-ui/locale/zh-TW'
 import SheetsSortUIZhTW from '@univerjs/sheets-sort-ui/locale/zh-TW'
+import SheetsTableZhTW from '@univerjs/sheets-table/locale/zh-TW'
 import SheetsTableUIZhTW from '@univerjs/sheets-table-ui/locale/zh-TW'
 import SheetsUIZhTW from '@univerjs/sheets-ui/locale/zh-TW'
 import SheetsZhTW from '@univerjs/sheets/locale/zh-TW'
 import UIZhTW from '@univerjs/ui/locale/zh-TW'
 
+import DataValidationEnUS from '@univerjs/data-validation/locale/en-US'
 import DesignEnUS from '@univerjs/design/locale/en-US'
 import DocsUIEnUS from '@univerjs/docs-ui/locale/en-US'
 import EngineFormulaEnUS from '@univerjs/engine-formula/locale/en-US'
 import FindReplaceEnUS from '@univerjs/find-replace/locale/en-US'
+import SheetsConditionalFormattingEnUS from '@univerjs/sheets-conditional-formatting/locale/en-US'
 import SheetsConditionalFormattingUIEnUS from '@univerjs/sheets-conditional-formatting-ui/locale/en-US'
 import SheetsCrosshairHighlightEnUS from '@univerjs/sheets-crosshair-highlight/locale/en-US'
+import SheetsDataValidationEnUS from '@univerjs/sheets-data-validation/locale/en-US'
 import SheetsDataValidationUIEnUS from '@univerjs/sheets-data-validation-ui/locale/en-US'
+import SheetsFilterEnUS from '@univerjs/sheets-filter/locale/en-US'
 import SheetsFilterUIEnUS from '@univerjs/sheets-filter-ui/locale/en-US'
 import SheetsFormulaUIEnUS from '@univerjs/sheets-formula-ui/locale/en-US'
 import SheetsFormulaEnUS from '@univerjs/sheets-formula/locale/en-US'
+import SheetsHyperLinkEnUS from '@univerjs/sheets-hyper-link/locale/en-US'
 import SheetsHyperLinkUIEnUS from '@univerjs/sheets-hyper-link-ui/locale/en-US'
 import SheetsNoteUIEnUS from '@univerjs/sheets-note-ui/locale/en-US'
 import SheetsNumfmtUIEnUS from '@univerjs/sheets-numfmt-ui/locale/en-US'
 import SheetsSortUIEnUS from '@univerjs/sheets-sort-ui/locale/en-US'
+import SheetsTableEnUS from '@univerjs/sheets-table/locale/en-US'
 import SheetsTableUIEnUS from '@univerjs/sheets-table-ui/locale/en-US'
 import SheetsUIEnUS from '@univerjs/sheets-ui/locale/en-US'
 import SheetsEnUS from '@univerjs/sheets/locale/en-US'
@@ -127,8 +144,11 @@ export interface UniverInstance {
 }
 
 // 1.x 将函数说明移到公式引擎，需与表格公式的进度文案一并加载。
+// 核心插件与 UI 插件使用独立命名空间，需分别加载官方语言包。
+// 图标集下拉分组读取核心包的 iconSet 文案，UI 包的快捷菜单文案不能替代。
 const LOCALES_MAP = {
-  [LocaleType.ZH_CN]: mergeLocalePatches(
+  [LocaleType.ZH_CN]: mergeLocales(
+    DataValidationZhCN,
     DesignZhCN,
     UIZhCN,
     DocsUIZhCN,
@@ -138,18 +158,24 @@ const LOCALES_MAP = {
     SheetsFormulaZhCN,
     EngineFormulaZhCN,
     SheetsNumfmtUIZhCN,
+    SheetsFilterZhCN,
     SheetsFilterUIZhCN,
+    SheetsConditionalFormattingZhCN,
     SheetsConditionalFormattingUIZhCN,
+    SheetsDataValidationZhCN,
     SheetsDataValidationUIZhCN,
     SheetsSortUIZhCN,
     FindReplaceZhCN,
     SheetsNoteUIZhCN,
+    SheetsHyperLinkZhCN,
     SheetsHyperLinkUIZhCN,
+    SheetsTableZhCN,
     SheetsTableUIZhCN,
     SheetsCrosshairHighlightZhCN,
     DataEaseToolbarUIZhCN
   ),
-  [LocaleType.EN_US]: mergeLocalePatches(
+  [LocaleType.EN_US]: mergeLocales(
+    DataValidationEnUS,
     DesignEnUS,
     UIEnUS,
     DocsUIEnUS,
@@ -159,18 +185,24 @@ const LOCALES_MAP = {
     SheetsFormulaEnUS,
     EngineFormulaEnUS,
     SheetsNumfmtUIEnUS,
+    SheetsFilterEnUS,
     SheetsFilterUIEnUS,
+    SheetsConditionalFormattingEnUS,
     SheetsConditionalFormattingUIEnUS,
+    SheetsDataValidationEnUS,
     SheetsDataValidationUIEnUS,
     SheetsSortUIEnUS,
     FindReplaceEnUS,
     SheetsNoteUIEnUS,
+    SheetsHyperLinkEnUS,
     SheetsHyperLinkUIEnUS,
+    SheetsTableEnUS,
     SheetsTableUIEnUS,
     SheetsCrosshairHighlightEnUS,
     DataEaseToolbarUIEnUS
   ),
-  [LocaleType.ZH_TW]: mergeLocalePatches(
+  [LocaleType.ZH_TW]: mergeLocales(
+    DataValidationZhTW,
     DesignZhTW,
     UIZhTW,
     DocsUIZhTW,
@@ -180,13 +212,18 @@ const LOCALES_MAP = {
     SheetsFormulaZhTW,
     EngineFormulaZhTW,
     SheetsNumfmtUIZhTW,
+    SheetsFilterZhTW,
     SheetsFilterUIZhTW,
+    SheetsConditionalFormattingZhTW,
     SheetsConditionalFormattingUIZhTW,
+    SheetsDataValidationZhTW,
     SheetsDataValidationUIZhTW,
     SheetsSortUIZhTW,
     FindReplaceZhTW,
     SheetsNoteUIZhTW,
+    SheetsHyperLinkZhTW,
     SheetsHyperLinkUIZhTW,
+    SheetsTableZhTW,
     SheetsTableUIZhTW,
     SheetsCrosshairHighlightZhTW,
     DataEaseToolbarUIZhTW
