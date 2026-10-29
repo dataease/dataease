@@ -13,7 +13,6 @@ import {
 import { OpenConditionalFormattingOperator } from '@univerjs/sheets-conditional-formatting-ui'
 import {
   CancelFrozenCommand,
-  ClearSelectionAllCommand,
   AddWorksheetMergeCommand,
   SetBackgroundColorCommand,
   SetBorderBasicCommand,
@@ -34,7 +33,6 @@ import {
   SetRangeStrickThroughCommand,
   SetRangeTextColorCommand,
   SetRangeUnderlineCommand,
-  SetOnceFormatPainterCommand,
   SetRowFrozenCommand,
   SetSelectionFrozenCommand
 } from '@univerjs/sheets-ui'
@@ -134,14 +132,9 @@ const DATAEASE_FONT_TOOL_ITEM_ROWS = [
 ]
 
 const DATAEASE_HISTORY_TOOL_ITEM_ROWS = [
-  [
-    UndoCommand.id,
-    RedoCommand.id
-  ],
-  [
-    SetOnceFormatPainterCommand.id,
-    ClearSelectionAllCommand.id
-  ]
+  [UndoCommand.id, RedoCommand.id],
+  // Univer 1.x 改由 UI 层注册这两个菜单，使用新版 ID 复用原生状态和行为。
+  ['ui.operation.activate-format-painter', 'ui.command.clear-formatting']
 ]
 
 const DATAEASE_LAYOUT_TOOL_ITEM_ROWS = [
