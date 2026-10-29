@@ -33,6 +33,8 @@ const setup = () => {
   const fetch = (data, signal) => new Promise((resolve, reject) => calls.push({ data, signal, resolve, reject }))
   const context = {
     AbortController, cloneDeep: value => structuredClone(value),
+    // Race tests isolate configuration-mode option loading; runtime synchronization has separate coverage.
+    props: { isConfig: true },
     config: { value: { optionValueSource: 1, field: { id: 'id' }, defaultValueCheck: true,
       defaultValue: 'kept', optionFilter: [], multiple: false, mapValue: ['kept-id'] } },
     options: { value: [] }, selectValue: { value: 'kept' }, loading: { value: false },

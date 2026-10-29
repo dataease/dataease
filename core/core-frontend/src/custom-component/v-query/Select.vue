@@ -16,7 +16,7 @@ import {
   Ref
 } from 'vue'
 import { enumValueObj, type EnumValue, getEnumValue } from '@/api/dataset'
-import { cloneDeep, debounce } from 'lodash-es'
+import { cloneDeep, debounce, isEqual } from 'lodash-es'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import Flat from './Flat.vue'
 import eventBus from '@/utils/eventBus'
@@ -25,7 +25,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { colorStringToHex } from '@/utils/color'
 import { isMobile } from '@/utils/utils'
 import { mixColor } from '@/utils/color'
-import { isCascadeParentCleared } from './cascade-utils'
+import { isCascadeParentCleared, isEmptyCascadeValue, cascadeResetState } from './cascade-utils'
 import { ElMessage } from 'element-plus-secondary'
 import { filterValueEquals } from '@/utils/componentUtils'
 
@@ -408,6 +408,10 @@ const handleFieldIdChange = (val: EnumValue) => {
       customSort()
       if (!res?.length) {
         options.value = []
+        change =
+          !isEmptyCascadeValue(selectValue.value) ||
+          !isEmptyCascadeValue(config.value.selectValue) ||
+          !!config.value.mapValue?.length
         selectValue.value = config.value.multiple ? [] : undefined
         config.value.defaultValue = selectValue.value
       }
@@ -434,14 +438,18 @@ const handleFieldIdChange = (val: EnumValue) => {
         change = true
       }
 
+      const mapValue = setDefaultMapValue(
+        Array.isArray(selectValue.value) ? [...selectValue.value] : [selectValue.value]
+      )
+      if (!props.isConfig && !isEqual(config.value.mapValue || [], mapValue)) {
+        change = true
+      }
       if (change) {
-        config.value.mapValue = setDefaultMapValue(
-          Array.isArray(selectValue.value) ? [...selectValue.value] : [selectValue.value]
-        )
-        config.value.defaultMapValue = setDefaultMapValue(
-          Array.isArray(selectValue.value) ? [...selectValue.value] : [selectValue.value]
-        )
-        setCascadeValueBack(config.value.mapValue)
+        config.value.defaultMapValue = cloneDeep(mapValue)
+        // 与用户改选走同一路径，同步查询值、下级级联及查询按钮规则。
+        handleValueChange()
+        // 运行态已安排查询，避免后续默认值分支重复查询或绕过查询按钮。
+        if (!props.isConfig) change = false
       }
     })
     .then(() => {
@@ -828,9 +836,22 @@ const single = ref()
 
 const getOptionFromCascade = () => {
   if (config.value.optionValueSource !== 1 || ![0, 2, 5].includes(+config.value.displayType)) return
-  if (isCascadeParentCleared(cascade.value, config.value.id, props.isConfig)) {
+  // 上级级联值一旦变化（含清空），本级已选值即失效：同步清空并向下级传播，
+  // 避免上级触发的即时查询仍携带旧的本级值；批量应用默认值的重置过程中保留原值。
+  const parentCleared = isCascadeParentCleared(cascade.value, config.value.id, props.isConfig)
+  if (!cascadeResetState.value || parentCleared) {
+    const hadValue =
+      !isEmptyCascadeValue(selectValue.value) ||
+      !isEmptyCascadeValue(config.value.selectValue) ||
+      !!config.value.mapValue?.length
     clearCascadeSelectValue()
     emitCascade()
+    // 本级可能关联不同于上级的图表，清空条件后也需按查询按钮规则通知刷新。
+    if (!props.isConfig && hadValue) {
+      nextTick(() => {
+        if (!disposed) isConfirmSearch(config.value.id)
+      })
+    }
   }
   isFromFromCascade = true
   isFromRemote.value = true
