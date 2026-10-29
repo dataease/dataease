@@ -78,6 +78,21 @@ public class StaticResourceUtils {
     }
 
     public static String getImgFileToBase64(Path root, String imgFile) {
+        try (InputStream input = openImgFile(root, imgFile)) {
+            return input == null ? null : Base64.getEncoder().encodeToString(input.readAllBytes());
+        } catch (IOException e) {
+            LogUtil.error(e);
+        }
+        return null;
+    }
+
+    /** Opens an image from the existing export directory; the caller must close the stream. */
+    public static InputStream openImgFile(String imgFile) {
+        return openImgFile(Paths.get(FILE_BASE_PATH), imgFile);
+    }
+
+    /** Returns null for an unsupported, missing or unreadable resource. */
+    public static InputStream openImgFile(Path root, String imgFile) {
         if (imgFile == null || !hasAllowedExtension(imgFile)) {
             return null;
         }
@@ -86,10 +101,7 @@ public class StaticResourceUtils {
             if (!Files.isRegularFile(targetPath, LinkOption.NOFOLLOW_LINKS)) {
                 return null;
             }
-            try (InputStream input = Files.newInputStream(targetPath, StandardOpenOption.READ,
-                    LinkOption.NOFOLLOW_LINKS)) {
-                return Base64.getEncoder().encodeToString(input.readAllBytes());
-            }
+            return Files.newInputStream(targetPath, StandardOpenOption.READ, LinkOption.NOFOLLOW_LINKS);
         } catch (IOException e) {
             LogUtil.error(e);
         }

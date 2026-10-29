@@ -1,15 +1,22 @@
 package io.dataease.visualization.server;
 
+import com.fasterxml.jackson.core.Base64Variants;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.api.visualization.StaticResourceApi;
 import io.dataease.api.visualization.request.StaticResourceRequest;
 import io.dataease.exception.DEException;
+import io.dataease.result.ResultMessage;
 import io.dataease.utils.FileUtils;
 import io.dataease.utils.JsonUtil;
 import io.dataease.utils.LogUtil;
 import io.dataease.utils.StaticResourceUtils;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -29,6 +37,9 @@ public class StaticResourceServer implements StaticResourceApi {
 
     @Value("${dataease.path.static-resource:/opt/dataease3.0/data/static-resource/}")
     private String staticDir;
+
+    @Resource
+    private ObjectMapper objectMapper;
 
     @Override
     public void upload(String fileId, MultipartFile file) {
@@ -106,15 +117,45 @@ public class StaticResourceServer implements StaticResourceApi {
     }
 
     @Override
-    public Map<String, String> findResourceAsBase64(StaticResourceRequest resourceRequest) {
-        Map<String, String> result = new HashMap<>();
+    public void findResourceAsBase64(StaticResourceRequest resourceRequest,
+                                     HttpServletResponse response) throws IOException {
+        // Validate all references before writing; only file names are retained, never file contents.
+        Map<String, String> resourceFiles = new LinkedHashMap<>();
         if (CollectionUtils.isNotEmpty(resourceRequest.getResourcePathList())) {
             for (String path : resourceRequest.getResourcePathList()) {
-                String value = StaticResourceUtils.getImgFileToBase64(extractFileName(path));
-                result.put(path, value);
+                resourceFiles.computeIfAbsent(path, this::extractFileName);
             }
         }
-        return result;
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        try (JsonGenerator generator = objectMapper.getFactory().createGenerator(response.getOutputStream())) {
+            generator.disable(JsonGenerator.Feature.AUTO_CLOSE_JSON_CONTENT);
+            generator.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
+            generator.disable(JsonGenerator.Feature.FLUSH_PASSED_TO_STREAM);
+            // Writing directly bypasses ResultResponseBodyAdvice; keep its existing response envelope.
+            ResultMessage result = ResultMessage.success();
+            generator.writeStartObject();
+            generator.writeNumberField("code", result.getCode());
+            generator.writeObjectField("msg", result.getMsg());
+            generator.writeObjectFieldStart("data");
+            for (Map.Entry<String, String> resource : resourceFiles.entrySet()) {
+                try (InputStream input = StaticResourceUtils.openImgFile(resource.getValue())) {
+                    generator.writeFieldName(resource.getKey());
+                    if (input == null) {
+                        generator.writeNull();
+                    } else {
+                        generator.writeBinary(Base64Variants.MIME_NO_LINEFEEDS, input, -1);
+                    }
+                }
+            }
+            generator.writeEndObject();
+            generator.writeEndObject();
+        } catch (IOException e) {
+            if (!response.isCommitted()) {
+                response.resetBuffer();
+            }
+            throw e;
+        }
     }
 
     private String extractFileName(String path) {
