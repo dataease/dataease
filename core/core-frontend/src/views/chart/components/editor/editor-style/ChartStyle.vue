@@ -74,6 +74,10 @@ const props = defineProps({
     type: Array,
     required: true
   },
+  quotaFieldsReady: {
+    type: Boolean,
+    default: true
+  },
   properties: {
     type: Array as PropType<EditorProperty[]>,
     required: false,
@@ -463,6 +467,7 @@ watch(
               :title="t('visualization.component_size')"
             >
               <misc-selector
+                v-if="!['gauge', 'liquid'].includes(chart.type) || props.quotaFieldsReady"
                 :property-inner="propertyInnerAll['misc-selector']"
                 :themes="themes"
                 class="attr-selector"
