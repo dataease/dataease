@@ -34,6 +34,7 @@ import { comInfo } from './com-info'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import StyleInject from './StyleInject.vue'
 import { getKeyList, reRenderAll } from '@/custom-component/v-query/QueryUtils'
+import { cascadeResetState } from '@/custom-component/v-query/cascade-utils'
 const props = defineProps({
   view: {
     type: Object,
@@ -693,6 +694,7 @@ const resetData = () => {
   element.value.propValue = []
   nextTick(() => {
     element.value.propValue = cloneDeep(oldList)
+    cascadeResetState.value = true
     ;(element.value.propValue || []).reduce((pre, next) => {
       next.conditionValueF = next.defaultConditionValueF
       next.conditionValueOperatorF = next.defaultConditionValueOperatorF
@@ -782,6 +784,7 @@ const resetData = () => {
       pre = [...new Set([...keyList, ...pre])]
       return pre
     }, [])
+    cascadeResetState.value = false
     !componentWithSure.value && queryData()
   })
 }
