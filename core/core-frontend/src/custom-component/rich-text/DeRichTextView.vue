@@ -394,27 +394,22 @@ const assignment = content => {
   if (content) {
     // data-mce-content 属性内的占位符只是 tinymce 元数据，展示时无需处理，先移除避免重复匹配
     content = content.replace(/\sdata-mce-content="[^"]*"/g, '')
-    const on = content?.match(/\[(.+?)\]/g) || []
-    if (on) {
-      const thresholdStyleInfo = conditionAdaptor(state.viewDataInfo)
-      on.forEach(itm => {
-        if (dataRowFiledName.value.includes(decodeHTMLEntities(itm))) {
-          const ele = itm.slice(1, -1)
-          let value =
-            dataRowNameSelect.value[ele] !== undefined ? dataRowNameSelect.value[ele] : null
-          let targetValue = !!value ? value : state.emptyValue
-          if (thresholdStyleInfo && thresholdStyleInfo[ele]) {
-            const thresholdStyle = thresholdStyleInfo[ele]
-            targetValue = `<span style="color:${thresholdStyle.color};background-color: ${thresholdStyle.backgroundColor}">${targetValue}</span>`
-          }
-          if (initReady.value) {
-            content = content.replace(itm, targetValue)
-          } else {
-            content = content.replace(itm, !!value ? targetValue : '[获取中...]')
-          }
-        }
-      })
-    }
+    const thresholdStyleInfo = conditionAdaptor(state.viewDataInfo)
+    content = content.replace(/\[(.+?)\]/g, itm => {
+      const fieldToken = decodeHTMLEntities(itm)
+      if (!dataRowFiledName.value.includes(fieldToken)) return itm
+
+      const fieldName = fieldToken.slice(1, -1)
+      const value = dataRowNameSelect.value[fieldName]
+      let targetValue = encodeHTMLEntities(value ? value : state.emptyValue)
+      if (thresholdStyleInfo && thresholdStyleInfo[fieldName]) {
+        const thresholdStyle = thresholdStyleInfo[fieldName]
+        const color = encodeHTMLEntities(thresholdStyle.color)
+        const backgroundColor = encodeHTMLEntities(thresholdStyle.backgroundColor)
+        targetValue = `<span style="color:${color};background-color: ${backgroundColor}">${targetValue}</span>`
+      }
+      return initReady.value || value ? targetValue : '[获取中...]'
+    })
     content = content.replace('class="base-selected"', '')
     //De 本地跳转失效问题
     content = content.replace(/href="#\//g, 'href="/#/')
@@ -436,13 +431,13 @@ const decodeHTMLEntities = text => {
   return textarea.value
 }
 
-const encodeHTMLEntities = text => {
-  if (!text) return text
-
-  const textarea = document.createElement('textarea')
-  textarea.textContent = text
-  return textarea.innerHTML
-}
+const encodeHTMLEntities = (text: unknown): string =>
+  String(text ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
 const initFontFamily = htmlText => {
   const regex = /font-family:\s*([^;"]+);/g
   let match
@@ -460,7 +455,7 @@ const fieldSelect = field => {
     '<span id="' +
     fieldId +
     '"><span class="mceNonEditable" contenteditable="false">[' +
-    field.name +
+    encodeHTMLEntities(field.name) +
     ']</span></span>'
   const attachValue = '<span id="attachValue">&nbsp;</span>'
   ed.insertContent(value)
