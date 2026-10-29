@@ -6,43 +6,66 @@ type Sidebar = 'DATASET' | 'DASHBOARD' | 'DATASOURCE' | 'DATA-FILLING' | 'SPREAD
 
 export const useMoveLine = (type: Sidebar) => {
   const { wsCache } = useCache('localStorage')
+  const { emitter } = useEmitt()
   const width = ref(wsCache.get(type) || 280)
   wsCache.set('current-collapse_bar', width.value)
+  let dragging = false
+  let frameId: number | null = null
+  let pendingWidth: number | null = null
+  let previousUserSelect = ''
 
   const getCoordinates = () => {
-    if (document.querySelector('.sidebar-move-line')) {
-      document.querySelector('.sidebar-move-line').className = 'sidebar-move-line dragging'
-    }
+    if (dragging) return
+    dragging = true
+    ele.classList.add('dragging')
     document.addEventListener('mousemove', setCoordinates)
     document.addEventListener('mouseup', cancelEvent)
-    document.querySelector('body').style['user-select'] = 'none'
+    previousUserSelect = document.body.style.userSelect
+    document.body.style.userSelect = 'none'
   }
 
-  const setCollapseBarWidth = () => {
-    wsCache.set('current-collapse_bar', width.value)
-    useEmitt().emitter.emit('current-collapse_bar')
+  const updateWidth = () => {
+    frameId = null
+    if (pendingWidth === null) return
+    const nextWidth = pendingWidth
+    pendingWidth = null
+    if (width.value === nextWidth) return
+    width.value = nextWidth
+    ele.style.left = width.value - 5 + 'px'
+    emitter.emit('current-collapse_bar', width.value)
   }
 
   const setCoordinates = (e: MouseEvent) => {
-    const x = e.clientX
-    if (x > 401 || x < 279) {
-      width.value = Math.max(Math.min(401, x), 279)
-      ele.style.left = width.value - 5 + 'px'
-      setCollapseBarWidth()
-      return
+    pendingWidth = Math.max(Math.min(401, e.clientX), 279)
+    if (frameId === null) {
+      frameId = requestAnimationFrame(updateWidth)
     }
-    ele.style.left = width.value - 5 + 'px'
-    width.value = x
-    setCollapseBarWidth()
+  }
+
+  const clearDrag = () => {
+    if (frameId !== null) {
+      cancelAnimationFrame(frameId)
+      frameId = null
+    }
+    pendingWidth = null
+    document.removeEventListener('mousemove', setCoordinates)
+    document.removeEventListener('mouseup', cancelEvent)
+    if (dragging) {
+      dragging = false
+      ele.classList.remove('dragging')
+      document.body.style.userSelect = previousUserSelect
+    }
   }
 
   const cancelEvent = () => {
-    if (document.querySelector('.sidebar-move-line')) {
-      document.querySelector('.sidebar-move-line').className = 'sidebar-move-line'
+    if (!dragging) return
+    if (frameId !== null) {
+      cancelAnimationFrame(frameId)
     }
-    document.querySelector('body').style['user-select'] = 'auto'
+    updateWidth()
+    clearDrag()
+    wsCache.set('current-collapse_bar', width.value)
     wsCache.set(type, width.value)
-    document.removeEventListener('mousemove', setCoordinates)
   }
 
   const node = ref()
@@ -58,10 +81,9 @@ export const useMoveLine = (type: Sidebar) => {
   })
 
   onBeforeUnmount(() => {
-    cancelEvent()
+    clearDrag()
     ele.removeEventListener('mousedown', getCoordinates)
-    ;(node.value?.$el || node.value)?.removeChild?.(ele)
-    width.value = null
+    ele.remove()
   })
 
   return {
