@@ -25,6 +25,7 @@
     "@univerjs/icons": "^1.46.0",
     "@univerjs/icons-vue": "^1.46.0",
     "@univerjs/sheets": "^1.2.0",
+    "@univerjs/sheets-conditional-formatting": "^1.2.0",
     "@univerjs/sheets-conditional-formatting-ui": "^1.2.0",
     "@univerjs/sheets-crosshair-highlight": "^1.2.0",
     "@univerjs/sheets-data-validation": "^1.2.0",
