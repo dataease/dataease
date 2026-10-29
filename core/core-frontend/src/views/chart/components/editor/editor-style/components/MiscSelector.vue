@@ -244,7 +244,7 @@ const changeFixedValidate = prop => {
   }
   changeMisc(prop, true)
 }
-const initAxis = yAxisId => {
+const initAxis = (yAxisId, resetMin = true) => {
   state.quotaData = []
   if (yAxisId) {
     const uniqueIds = new Set(state.quotaData.map(item => item.id))
@@ -266,10 +266,11 @@ const initAxis = yAxisId => {
         const quotaField = getQuotaField(state.miscForm.gaugeMaxField.id)
         state.miscForm.gaugeMaxField.summary = quotaField.summary
         normalizeDynamicFieldSummary(state.miscForm.gaugeMaxField)
-        // min
-        state.miscForm.gaugeMinType = 'fix'
-        state.miscForm.gaugeMin = 0
-        state.miscForm.gaugeMinField.summary = quotaField.summary
+        if (resetMin) {
+          state.miscForm.gaugeMinType = 'fix'
+          state.miscForm.gaugeMin = 0
+          state.miscForm.gaugeMinField.summary = quotaField.summary
+        }
       }
       changeMisc()
     } else {
@@ -311,7 +312,7 @@ const validMaxFieldAgg = computed(() => {
 const isAggField = field => {
   return quotaData.value.find(ele => ele.id === field.id)?.agg
 }
-// 非数值或计算字段作为动态值时，后端只按计数聚合
+// 计算字段和非数值字段不开放汇总选项，聚合表达式的汇总单独处理
 const isDisabledSummaryField = field => {
   const quotaField = quotaData.value.find(ele => ele.id === field.id)
   return quotaField
@@ -320,6 +321,14 @@ const isDisabledSummaryField = field => {
 }
 
 const normalizeDynamicFieldSummary = field => {
+  // 数值聚合计算字段直接使用公式结果，避免动态值再次套用聚合函数
+  if (isAggField(field) && isNumType(field)) {
+    if (field.summary !== '') {
+      field.summary = ''
+      return true
+    }
+    return false
+  }
   if (isDisabledSummaryField(field) && field.summary !== 'count') {
     field.summary = 'count'
     return true
@@ -352,13 +361,13 @@ const isLiquid = computed(() => props.chart.type === 'liquid')
 const isGauge = computed(() => props.chart.type === 'gauge')
 onMounted(() => {
   init()
-  initField()
   if (
     (isGauge.value && !state.miscForm.gaugeMaxField.id && !state.miscForm.gaugeMax) ||
     (isLiquid.value && !state.miscForm.liquidMaxField.id && !state.miscForm.liquidMax)
   ) {
-    initAxis(props.chart.yAxis[0]?.id)
+    initAxis(props.chart.yAxis[0]?.id, false)
   }
+  initField()
 })
 </script>
 
