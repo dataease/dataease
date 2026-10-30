@@ -3,7 +3,8 @@ import { createI18n } from 'vue-i18n'
 import { useLocaleStoreWithOut } from '@/store/modules/locale'
 import type { I18n, I18nOptions } from 'vue-i18n'
 import { setHtmlPageLang } from './helper'
-export let i18n: ReturnType<typeof createI18n>
+import { setI18n } from './instance'
+export { i18n } from './instance'
 import { getLocale } from '@/utils/utils'
 import { useCache } from '@/hooks/web/useCache'
 import { loadLocaleMessages } from './loader'
@@ -38,6 +39,7 @@ const createI18nOptions = async (): Promise<I18nOptions> => {
 
 export const setupI18n = async (app: App<Element>) => {
   const options = await createI18nOptions()
-  i18n = createI18n(options) as I18n
+  const i18n = createI18n(options) as I18n
+  setI18n(i18n)
   app.use(i18n)
 }
