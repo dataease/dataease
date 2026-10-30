@@ -3,8 +3,11 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import type { ManipulateType } from 'dayjs'
 import { storeToRefs } from 'pinia'
 import dayjs from 'dayjs'
-import { getDynamicRange, getCustomTime } from '@/custom-component/v-query/time-format'
-import { getCustomRange } from '@/custom-component/v-query/time-format-dayjs'
+import { getCustomTime, getDynamicRange } from '@/custom-component/v-query/time-format'
+import {
+  evaluateRuntimeDynamicDefault,
+  isCustomClockDefault
+} from '@/custom-component/v-query/dynamic-default-time'
 import { splitConditionValues } from '@/custom-component/v-query/condition-utils'
 const dvMainStore = dvMainStoreWithOut()
 const { componentData, canvasStyleData, componentDataMultiply } = storeToRefs(dvMainStore)
@@ -413,50 +416,16 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
             firstLoad &&
             defaultValueCheck
           ) {
-            if (+displayType === 1) {
+            if (+displayType === 1 && !isCustomClockDefault(item)) {
+              // A single year/month/day selection still filters the entire period.
               selectValue = getDynamicRange(item)
               item.defaultValue = new Date(selectValue[0])
               item.selectValue = new Date(selectValue[0])
             } else {
-              const {
-                timeNum,
-                relativeToCurrentType,
-                around,
-                relativeToCurrentRange,
-                arbitraryTime,
-                timeGranularity,
-                timeNumRange,
-                relativeToCurrentTypeRange,
-                aroundRange,
-                timeGranularityMultiple,
-                arbitraryTimeRange
-              } = item
-
-              let startTime = getCustomTime(
-                timeNum,
-                relativeToCurrentType,
-                timeGranularity,
-                around,
-                arbitraryTime,
-                timeGranularityMultiple,
-                'start-panel'
-              )
-              let endTime = getCustomTime(
-                timeNumRange,
-                relativeToCurrentTypeRange,
-                timeGranularity,
-                aroundRange,
-                arbitraryTimeRange,
-                timeGranularityMultiple,
-                'end-panel'
-              )
-
-              if (!!relativeToCurrentRange && relativeToCurrentRange !== 'custom') {
-                ;[startTime, endTime] = getCustomRange(relativeToCurrentRange)
-              }
-              item.defaultValue = [startTime, endTime]
-              item.selectValue = [startTime, endTime]
-              selectValue = [startTime, endTime]
+              const result = evaluateRuntimeDynamicDefault(item)
+              item.defaultValue = result
+              item.selectValue = Array.isArray(result) ? [...result] : result
+              selectValue = Array.isArray(result) ? result : [+result, +result]
             }
           } else if (displayType === '8') {
             selectValue = getResult(

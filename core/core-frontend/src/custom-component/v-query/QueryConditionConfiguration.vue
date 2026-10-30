@@ -28,7 +28,7 @@ import { enumValueObj } from '@/api/dataset'
 import { getFieldByDQ, type Field } from '@/api/chart'
 import CustomSortFilter from './CustomSortFilter.vue'
 import { addQueryCriteriaConfig, attributes, splitConditionValues } from './options'
-import { getCustomTime } from './time-format'
+import { evaluateDynamicDefault, validateDynamicDefault } from './dynamic-default-time'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import {
   getThisStart,
@@ -1289,6 +1289,7 @@ const setParams = ele => {
 }
 
 const validate = () => {
+  const baseline = new Date()
   return conditions.value.some(ele => {
     if (
       ele.displayType === '8' &&
@@ -1298,6 +1299,13 @@ const validate = () => {
     ) {
       ElMessage.error(t('v_query.custom_separator_required'))
       return true
+    }
+    if (['1', '7'].includes(ele.displayType)) {
+      const error = validateDynamicDefault(ele, baseline)
+      if (error) {
+        ElMessage.error(t(error))
+        return true
+      }
     }
     if (ele.auto) return false
     if (!ele.checkedFields?.length || ele.checkedFields.some(itx => !ele.checkedFieldsMap[itx])) {
@@ -1530,48 +1538,11 @@ const validate = () => {
           return true
         }
       }
-      const {
-        timeNum,
-        relativeToCurrentType,
-        around,
-        relativeToCurrentRange,
-        timeGranularityMultiple,
-        arbitraryTime,
-        timeGranularity,
-        timeNumRange,
-        relativeToCurrentTypeRange,
-        aroundRange,
-        arbitraryTimeRange,
-        timeType
-      } = ele
-
-      let startTime =
-        timeType === 'dynamic'
-          ? getCustomTime(
-              timeNum,
-              relativeToCurrentType,
-              timeGranularity,
-              around,
-              arbitraryTime,
-              timeGranularityMultiple,
-              'start-config'
-            )
-          : new Date(ele.defaultValue[0])
-      let endTime =
-        timeType === 'dynamic'
-          ? getCustomTime(
-              timeNumRange,
-              relativeToCurrentTypeRange,
-              timeGranularity,
-              aroundRange,
-              arbitraryTimeRange,
-              timeGranularityMultiple,
-              'end-config'
-            )
-          : new Date(ele.defaultValue[1])
-      if (!!relativeToCurrentRange && relativeToCurrentRange !== 'custom') {
-        ;[startTime, endTime] = getCustomRange(relativeToCurrentRange)
-      }
+      const { timeGranularityMultiple } = ele
+      const [startTime, endTime] =
+        ele.timeType === 'dynamic'
+          ? (evaluateDynamicDefault(ele, baseline, 'config') as [Date, Date])
+          : ele.defaultValue.map(value => new Date(value))
       if (+startTime > +endTime) {
         ElMessage.error(t('v_query.the_start_time'))
         return true

@@ -86,6 +86,10 @@ import { deepCopy } from '@/utils/utils'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import dayjs from 'dayjs'
 import { useI18n } from '@/hooks/web/useI18n'
+import {
+  isCustomClockDefault,
+  validateDynamicDefault
+} from '@/custom-component/v-query/dynamic-default-time'
 const { t } = useI18n()
 const emits = defineEmits(['reportFilterChange'])
 let currentInstance
@@ -210,6 +214,38 @@ const getDisplayLines = (filterItem): ConditionDisplayLine[] => {
       })
     }
     return lines
+  }
+
+  if (
+    filterItem.defaultValueCheck &&
+    filterItem.timeType === 'dynamic' &&
+    isCustomClockDefault(filterItem)
+  ) {
+    const endpoint = (end = false) => {
+      const date = end ? filterItem.timeNumRange : filterItem.timeNum
+      const unit = end ? filterItem.relativeToCurrentTypeRange : filterItem.relativeToCurrentType
+      const around = end ? filterItem.aroundRange : filterItem.around
+      const offset = end ? filterItem.clockOffsetRange : filterItem.clockOffset
+      const clock = end ? filterItem.arbitraryTimeRange : filterItem.arbitraryTime
+      const time =
+        offset?.mode === 'relative'
+          ? `${t('dynamic_time.relative')} ${toDisplayText(offset.hours)}${t(
+              'dynamic_time.hours'
+            )} ${toDisplayText(offset.minutes)}${t('dynamic_time.minutes')} ${toDisplayText(
+              offset.seconds
+            )}${t('dynamic_time.seconds')} ${relativeToCurrentList[offset.around]}`
+          : `${t('dynamic_time.fixed_clock')} ${clock ? dayjs(clock).format('HH:mm:ss') : ''}`
+      return `${toDisplayText(date)}${relativeToCurrentList[unit]}${
+        relativeToCurrentList[around]
+      } / ${time}`
+    }
+    return filterItem.displayType === '7'
+      ? [
+          { text: t('dynamic_time.dynamic') },
+          { text: `${t('report.start_time')}: ${endpoint()}` },
+          { text: `${t('report.end_time')}: ${endpoint(true)}` }
+        ]
+      : [{ text: endpoint() }]
   }
 
   if (filterItem.displayType === '7' && filterItem.timeType === 'dynamic') {
@@ -402,7 +438,15 @@ const setParams = ele => {
 }
 
 const validate = () => {
+  const baseline = new Date()
   return filterInfo.value.defaultFilter.some(ele => {
+    if (['1', '7'].includes(ele.displayType)) {
+      const error = validateDynamicDefault(ele, baseline)
+      if (error) {
+        ElMessage.error(t(error))
+        return true
+      }
+    }
     if (ele.auto) return false
     if (!ele.checkedFields?.length || ele.checkedFields.some(itx => !ele.checkedFieldsMap[itx])) {
       ElMessage.error(t('v_query.be_linked_first'))
