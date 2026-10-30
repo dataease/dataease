@@ -1,4 +1,6 @@
 import request from '@/config/axios'
+import { requireSwitchLanguage } from '@/utils/languageSwitch'
+import { useI18n } from '@/hooks/web/useI18n'
 
 export const mountedOrg = (keyword?: string) =>
   request.post({ url: '/org/mounted', data: { keyword } })
@@ -60,7 +62,18 @@ export const searchExternalUserApi = keyword =>
 
 export const mountExternalUserApi = data => request.post({ url: '/role/mountExternalUser', data })
 
-export const switchLangApi = data => request.post({ url: '/user/switchLanguage', data })
+export const switchLangApi = async (data: { lang?: unknown }) => {
+  const lang = await requireSwitchLanguage(data?.lang)
+  const response = await request.post({
+    url: '/user/switchLanguage',
+    data: { lang },
+    handleErrorLocally: true
+  })
+  if (response?.code !== 0) {
+    throw new Error(response?.msg || useI18n().t('common.language_switch_failed'))
+  }
+  return response
+}
 
 export const downExcelTemplateApi = () =>
   request.post({ url: '/user/excelTemplate', responseType: 'blob' })

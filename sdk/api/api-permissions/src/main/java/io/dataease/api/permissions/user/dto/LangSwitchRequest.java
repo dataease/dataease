@@ -1,6 +1,7 @@
 package io.dataease.api.permissions.user.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 import java.io.Serial;
@@ -13,5 +14,6 @@ public class LangSwitchRequest implements Serializable {
     private static final long serialVersionUID = -6779697711311519431L;
 
     @Schema(description = "目标语言", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotBlank
     private String lang;
 }

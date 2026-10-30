@@ -75,6 +75,9 @@ export default {
     save_copy: '保存并复制链接'
   },
   common: {
+    language_required: '语言不能为空',
+    language_unsupported: '不支持所选语言，请重新选择',
+    language_switch_failed: '语言切换失败，请重试',
     display_formats: '展示形式',
     dropdown_display: '下拉展示',
     tile_display: '平铺展示',

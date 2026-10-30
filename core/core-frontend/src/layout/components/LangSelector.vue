@@ -6,21 +6,27 @@ import { useUserStoreWithOut } from '@/store/modules/user'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { useLocaleStoreWithOut } from '@/store/modules/locale'
 import { switchLangApi } from '@/api/user'
+import { ElMessage } from 'element-plus-secondary'
+import { useI18n } from '@/hooks/web/useI18n'
 const permissionStore = usePermissionStoreWithOut()
 const userStore = useUserStoreWithOut()
 const localeStore = useLocaleStoreWithOut()
 
 const language = ref(null)
-const handleSetLanguage = lang => {
-  const param = { lang }
-  switchLangApi(param).then(res => {
-    if (!res.msg) {
-      language.value = lang
-      userStore.setLanguage(lang)
-      permissionStore.$reset()
-      window.location.reload()
-    }
-  })
+const handleSetLanguage = async (lang: string) => {
+  try {
+    await switchLangApi({ lang })
+    await userStore.setLanguage(lang)
+    language.value = userStore.getLanguage
+    permissionStore.$reset()
+    window.location.reload()
+  } catch (error) {
+    // Business-error strings have already been displayed by the Axios interceptor.
+    if (typeof error === 'string') return
+    ElMessage.error(
+      error?.response?.data?.msg || error?.message || useI18n().t('common.language_switch_failed')
+    )
+  }
 }
 
 const options = reactive([])

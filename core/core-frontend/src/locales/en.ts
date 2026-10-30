@@ -78,6 +78,9 @@ export default {
     save_copy: 'Save and copy link'
   },
   common: {
+    language_required: 'Language is required',
+    language_unsupported: 'The selected language is not supported',
+    language_switch_failed: 'Unable to switch language. Please try again.',
     display_formats: 'Display Formats',
     dropdown_display: 'Drop-down Display',
     tile_display: 'Tile Display',
