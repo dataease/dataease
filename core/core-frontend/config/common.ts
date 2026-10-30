@@ -1,5 +1,6 @@
 import path from 'path'
 import { materialExtension } from './material'
+import { hmacObfuscation } from './hmac-obfuscation'
 import { resolve } from 'path'
 import Vue from '@vitejs/plugin-vue'
 import eslintPlugin from 'vite-plugin-eslint'
@@ -23,6 +24,7 @@ export function pathResolve(dir: string) {
 export default {
   base: './',
   plugins: [
+    hmacObfuscation(),
     materialExtension(),
     // 在 G2 模块解析前接入 DataEase 布局校正，升级 G2 时需验证内部 layout 入口
     createG2LayoutPlugin(root),
