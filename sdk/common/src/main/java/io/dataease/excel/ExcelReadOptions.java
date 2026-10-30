@@ -13,6 +13,8 @@ import java.util.Map;
 @Accessors(chain = true)
 public class ExcelReadOptions {
 
+    public static final String DEFAULT_DATE_PATTERN = "yyyy-MM-dd HH:mm:ss";
+
     /**
      * 表头行数，默认 1（与 Fesod 默认一致）。
      */
@@ -29,9 +31,15 @@ public class ExcelReadOptions {
     private String sheetName;
 
     /**
-     * 按列索引指定的日期格式，由适配层内部转换器消费。
+     * 按列索引指定的日期格式，由适配层内部转换器消费；优先于 defaultDatePattern。
      */
     private Map<Integer, String> columnDateFormats = new HashMap<>();
+
+    /**
+     * 无模型读取时日期单元格的默认输出格式；默认 yyyy-MM-dd HH:mm:ss。
+     * 日期只有日期无时间时补 00:00:00；设为 null 可恢复 Fesod 原行为。
+     */
+    private String defaultDatePattern = DEFAULT_DATE_PATTERN;
 
     /**
      * 是否由适配层关闭输入流，默认 true（与 Fesod 默认一致）。
