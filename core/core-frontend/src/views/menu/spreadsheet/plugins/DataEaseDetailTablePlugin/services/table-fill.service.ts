@@ -1,4 +1,5 @@
-import { HorizontalAlign, Inject, VerticalAlign } from '@univerjs/core'
+import { HorizontalAlign, Inject, Rectangle, VerticalAlign, type IRange } from '@univerjs/core'
+import type { FWorksheet } from '@univerjs/sheets/facade'
 import type { DetailTableConfig } from '../types'
 import type { CellPosition } from '../types'
 import { TableDataService } from './table-data.service'
@@ -9,11 +10,7 @@ import { ElMessage } from 'element-plus-secondary'
 import { DetailTableRenderStyleService } from './detail-table-render-style.service'
 import { DetailTableEditProtectionService } from './detail-table-edit-protection.service'
 import { SpreadsheetFilterRuntimeService } from '../../DataEaseFilterPlugin/services/filter-runtime.service'
-import {
-  findConfiguredField,
-  getFieldNumberFormat,
-  toNativeCellValue
-} from '../utils/field-format'
+import { findConfiguredField, getFieldNumberFormat, toNativeCellValue } from '../utils/field-format'
 import { validateDetailConfig } from '../utils/detail-config-validator'
 import { ensureSheetSize } from '../utils/sheet-size'
 import { isDetailTableIndexVisible } from '../utils/table-style-state'
@@ -77,9 +74,7 @@ export class TableFillService {
     }
 
     const sheetId = config.placement.sheetId
-    const worksheet = workbook
-      .getSheets?.()
-      ?.find(sheet => sheet.getSheetId?.() === sheetId)
+    const worksheet = workbook.getSheets?.()?.find(sheet => sheet.getSheetId?.() === sheetId)
     if (!worksheet) {
       throw new Error(`未找到明细表目标工作表: ${sheetId || '未配置 Sheet ID'}`)
     }
@@ -101,7 +96,6 @@ export class TableFillService {
     targetWorksheet: any,
     options: TableFillOptions = {}
   ): Promise<boolean> {
-
     const fWorkbook = univerApi.getActiveWorkbook()
     const fWorksheet = targetWorksheet
 
@@ -118,13 +112,11 @@ export class TableFillService {
     }
     let startPos = this.parseCell(startCell)
     const previousState = this.displayStateService.get(config.id)
-    const previousRange = previousState?.sheetId === sheetId &&
-      previousState.rowCount > 0 && previousState.colCount > 0
-      ? previousState
-      : undefined
-    const loadingStart = previousRange
-      ? this.parseCell(previousRange.startCell)
-      : startPos
+    const previousRange =
+      previousState?.sheetId === sheetId && previousState.rowCount > 0 && previousState.colCount > 0
+        ? previousState
+        : undefined
+    const loadingStart = previousRange ? this.parseCell(previousRange.startCell) : startPos
     const loading = unitId
       ? this.pluginRenderLoadingService.begin({
           unitId,
@@ -154,8 +146,7 @@ export class TableFillService {
       ElMessage.warning(validateMessage)
       try {
         await this.clearPreviousData(univerApi, config.id, startCell, fWorksheet)
-      } catch (clearError) {
-      }
+      } catch (clearError) {}
       if (unitId) {
         this.pluginRenderStatusService.set({
           pluginId: config.id,
@@ -228,7 +219,8 @@ export class TableFillService {
             initialRestore: options.initialRestore === true
           })
         : undefined
-      const conflictMessage = expansionMessage ||
+      const conflictMessage =
+        expansionMessage ||
         this.detailTableRangeService.validateRenderRangeBeforeFill(
           config,
           startCell,
@@ -305,7 +297,6 @@ export class TableFillService {
       ]
 
       if (values.length > 0 && columnCount > 0) {
-
         await this.detailTableEditProtectionService.runWithoutProtection(() =>
           setWorksheetValuesSilently(univerApi, {
             unitId,
@@ -356,8 +347,7 @@ export class TableFillService {
     } catch (error) {
       try {
         await this.clearPreviousData(univerApi, config.id, startCell, fWorksheet)
-      } catch (clearError) {
-      }
+      } catch (clearError) {}
       if (unitId) {
         this.pluginRenderStatusService.set({
           pluginId: config.id,
@@ -407,9 +397,7 @@ export class TableFillService {
 
     const startPos = this.parseCell(state.startCell)
     if (showIndex && state.indexLabel !== indexLabel) {
-      const worksheet = workbook
-        .getSheets?.()
-        ?.find(sheet => sheet.getSheetId() === state.sheetId)
+      const worksheet = workbook.getSheets?.()?.find(sheet => sheet.getSheetId() === state.sheetId)
       if (!hideHeader) {
         await this.detailTableEditProtectionService.runWithoutProtection(() =>
           setWorksheetValuesSilently(univerApi, {
@@ -435,21 +423,27 @@ export class TableFillService {
       return
     }
     const headerRowCount = state.hideHeader ? 0 : 1
-    const dataRowCount = state.dataValues?.length ?? Math.max(
-      state.rowCount - headerRowCount - (state.totalEnabled ? 1 : 0),
-      0
-    )
-    const dataRange = dataRowCount > 0
-      ? {
-          startRow: startPos.row + headerRowCount,
-          endRow: startPos.row + headerRowCount + dataRowCount - 1,
-          startColumn: startPos.col,
-          endColumn: startPos.col + state.colCount - 1
-        }
-      : undefined
+    const dataRowCount =
+      state.dataValues?.length ??
+      Math.max(state.rowCount - headerRowCount - (state.totalEnabled ? 1 : 0), 0)
+    const dataRange =
+      dataRowCount > 0
+        ? {
+            startRow: startPos.row + headerRowCount,
+            endRow: startPos.row + headerRowCount + dataRowCount - 1,
+            startColumn: startPos.col,
+            endColumn: startPos.col + state.colCount - 1
+          }
+        : undefined
 
+    // 按整表范围清理，兼容首次重开时旧数据合并落入新表头或总计行的情况。
+    await this.removeMerges(univerApi, unitId, state.sheetId, {
+      startRow: startPos.row,
+      endRow: startPos.row + state.rowCount - 1,
+      startColumn: startPos.col,
+      endColumn: startPos.col + state.colCount - 1
+    })
     if (dataRange) {
-      await this.removeMerges(univerApi, unitId, state.sheetId, dataRange)
       await this.restoreDataValues(univerApi, state)
     }
     this.updateRenderStyleRange(univerApi, config)
@@ -483,12 +477,21 @@ export class TableFillService {
       return
     }
 
+    const worksheet: FWorksheet | undefined = univerApi
+      .getActiveWorkbook?.()
+      ?.getSheets?.()
+      ?.find(sheet => sheet.getSheetId?.() === state.sheetId)
+    if (!worksheet) {
+      return
+    }
+    const existingMerges = worksheet.getMergedRanges().map(range => range.getRange())
+    // 保留跨边界合并优先，跳过冲突的新合并，也不调整这些保留区域的对齐样式。
     const mergeRanges = this.buildMergeRanges(
       dataValues,
       dataRange.startRow,
       dataRange.startColumn + indexColumnOffset,
       mergeColumnCount
-    )
+    ).filter(range => !existingMerges.some(existing => Rectangle.intersects(range, existing)))
     if (!mergeRanges.length) {
       return
     }
@@ -548,8 +551,9 @@ export class TableFillService {
         return
       }
 
-      const fieldConfig = config.style?.total?.fieldConfig?.find(item =>
-        item.dataeaseName === field.dataeaseName || String(item.fieldId) === String(field.id)
+      const fieldConfig = config.style?.total?.fieldConfig?.find(
+        item =>
+          item.dataeaseName === field.dataeaseName || String(item.fieldId) === String(field.id)
       )
       const aggregation = fieldConfig?.aggregation || 'SUM'
       let value: number | undefined
@@ -626,7 +630,8 @@ export class TableFillService {
       for (const group of groups) {
         let runStart = group.start
         for (let row = group.start + 1; row <= group.end + 1; row++) {
-          const currentValue = row <= group.end ? this.normalizeMergeValue(dataValues[row]?.[col]) : undefined
+          const currentValue =
+            row <= group.end ? this.normalizeMergeValue(dataValues[row]?.[col]) : undefined
           const previousValue = this.normalizeMergeValue(dataValues[row - 1]?.[col])
 
           if (row <= group.end && currentValue === previousValue) {
@@ -653,10 +658,7 @@ export class TableFillService {
   }
 
   private normalizeMergeValue(value: any): string {
-    const cellValue =
-      value && typeof value === 'object' && 'v' in value
-        ? value.v
-        : value
+    const cellValue = value && typeof value === 'object' && 'v' in value ? value.v : value
     return cellValue == null ? '' : String(cellValue)
   }
 
@@ -666,9 +668,7 @@ export class TableFillService {
     dataRange: { startRow: number; startColumn: number }
   ): any[][] {
     const workbook = univerApi.getActiveWorkbook()
-    const worksheet = workbook
-      ?.getSheets?.()
-      ?.find(sheet => sheet.getSheetId() === state.sheetId)
+    const worksheet = workbook?.getSheets?.()?.find(sheet => sheet.getSheetId() === state.sheetId)
     const headerRowCount = state.hideHeader ? 0 : 1
     const dataRowCount = state.rowCount - headerRowCount - (state.totalEnabled ? 1 : 0)
     if (!worksheet || dataRowCount <= 0) {
@@ -680,10 +680,7 @@ export class TableFillService {
       .getValues()
   }
 
-  private async restoreDataValues(
-    univerApi: any,
-    state: DetailTableDisplayState
-  ): Promise<void> {
+  private async restoreDataValues(univerApi: any, state: DetailTableDisplayState): Promise<void> {
     if (!state.dataValues?.length) {
       return
     }
@@ -691,9 +688,7 @@ export class TableFillService {
 
     const workbook = univerApi.getActiveWorkbook()
     const unitId = workbook?.getId?.() || workbook?.getUnitId?.()
-    const worksheet = workbook
-      ?.getSheets?.()
-      ?.find(sheet => sheet.getSheetId() === state.sheetId)
+    const worksheet = workbook?.getSheets?.()?.find(sheet => sheet.getSheetId() === state.sheetId)
     if (!unitId || !worksheet) {
       return
     }
@@ -727,13 +722,26 @@ export class TableFillService {
     univerApi: any,
     unitId: string,
     sheetId: string,
-    range: { startRow: number; endRow: number; startColumn: number; endColumn: number }
+    range: IRange
   ): Promise<void> {
+    const worksheet: FWorksheet | undefined = univerApi
+      .getActiveWorkbook?.()
+      ?.getSheets?.()
+      ?.find(sheet => sheet.getSheetId?.() === sheetId)
+    if (!worksheet) {
+      return
+    }
+
+    // 删除 Mutation 按相交范围处理，必须传入完整位于目标范围内的实际合并。
+    const ranges = worksheet
+      .getMergedRanges()
+      .map(mergedRange => mergedRange.getRange())
+      .filter(mergedRange => Rectangle.contains(range, mergedRange))
     await this.detailTableEditProtectionService.runWithoutProtection(() => {
       return removeWorksheetMergesSilently(univerApi, {
         unitId,
         sheetId,
-        ranges: [range]
+        ranges
       })
     })
   }
@@ -895,7 +903,9 @@ export class TableFillService {
     const fWorksheet = targetWorksheet
     const unitId = fWorkbook?.getId?.() || fWorkbook?.getUnitId?.()
     const subUnitId = fWorksheet?.getSheetId?.()
-    const state = subUnitId ? this.displayStateService.findByLocation(subUnitId, startCell) : undefined
+    const state = subUnitId
+      ? this.displayStateService.findByLocation(subUnitId, startCell)
+      : undefined
 
     if (rowCount <= 0 || colCount <= 0) {
       return
@@ -913,14 +923,7 @@ export class TableFillService {
         endColumn: startPos.col + colCount - 1
       })
 
-      await this.clearRangeFormats(
-        univerApi,
-        unitId,
-        subUnitId,
-        startCell,
-        rowCount,
-        colCount
-      )
+      await this.clearRangeFormats(univerApi, unitId, subUnitId, startCell, rowCount, colCount)
 
       if (state) {
         this.detailTableRenderStyleService.deleteRange(unitId, subUnitId, state.pluginId)
@@ -969,12 +972,14 @@ export class TableFillService {
       clearWorksheetFormatsSilently(univerApi, {
         unitId,
         sheetId,
-        ranges: [{
-          startRow: start.row,
-          endRow: start.row + rowCount - 1,
-          startColumn: start.col,
-          endColumn: start.col + colCount - 1
-        }]
+        ranges: [
+          {
+            startRow: start.row,
+            endRow: start.row + rowCount - 1,
+            startColumn: start.col,
+            endColumn: start.col + colCount - 1
+          }
+        ]
       })
     )
   }

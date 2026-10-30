@@ -1,5 +1,5 @@
 import type { IWorkbookData } from '@univerjs/core'
-import { Inject } from '@univerjs/core'
+import { Inject, Rectangle } from '@univerjs/core'
 import type { PluginSnapshotCleaner } from '../../../services/plugin-snapshot-cleaning.service'
 import { DETAIL_TABLE_PLUGIN_RESOURCE_NAME } from '../../../utils/plugin-resource'
 import type { DetailTableConfig } from '../types'
@@ -45,21 +45,32 @@ export class DetailTableSnapshotCleaner implements PluginSnapshotCleaner<DetailT
     }
 
     const state = this.displayStateService.get(plugin.id)
-    if (!state) {
+    if (!state || state.rowCount <= 0 || state.colCount <= 0) {
       return
     }
 
-    const targetSheet = (snapshot.sheets || {})[state.sheetId] as Record<string, any> | undefined
-
-    if (!targetSheet?.cellData) {
-      return
-    }
-
-    if (state.rowCount <= 0 || state.colCount <= 0) {
+    const targetSheet = snapshot.sheets?.[state.sheetId]
+    if (!targetSheet) {
       return
     }
 
     const startPos = parseCellAddress(state.startCell)
+    const tableRange = {
+      startRow: startPos.row,
+      endRow: startPos.row + state.rowCount - 1,
+      startColumn: startPos.col,
+      endColumn: startPos.col + state.colCount - 1
+    }
+    // 动态合并重开时按最新数据重建，只清理表格内部，保留范围外和跨边界的合并。
+    if (targetSheet.mergeData?.length) {
+      targetSheet.mergeData = targetSheet.mergeData.filter(
+        range => !Rectangle.contains(tableRange, range)
+      )
+    }
+    if (!targetSheet.cellData) {
+      return
+    }
+
     const candidateStyleIds = new Set<string>()
 
     for (let row = 0; row < state.rowCount; row++) {
@@ -99,18 +110,12 @@ export class DetailTableSnapshotCleaner implements PluginSnapshotCleaner<DetailT
     return Array.isArray(plugin.data?.zones?.fields) && plugin.data.zones.fields.length > 0
   }
 
-  private removePluginNumberFormat(
-    style: unknown,
-    styles?: IWorkbookData['styles']
-  ): unknown {
+  private removePluginNumberFormat(style: unknown, styles?: IWorkbookData['styles']): unknown {
     if (style == null) {
       return undefined
     }
 
-    const resolvedStyle =
-      typeof style === 'string'
-        ? styles?.[style]
-        : style
+    const resolvedStyle = typeof style === 'string' ? styles?.[style] : style
     if (!resolvedStyle || typeof resolvedStyle !== 'object') {
       return undefined
     }
@@ -172,7 +177,6 @@ export class DetailTableSnapshotCleaner implements PluginSnapshotCleaner<DetailT
       }
 
       resource.data = JSON.stringify(instances.filter(instance => instance.id !== pluginId))
-    } catch (error) {
-    }
+    } catch (error) {}
   }
 }
