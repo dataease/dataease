@@ -4,41 +4,29 @@ import { useLocaleStoreWithOut } from '@/store/modules/locale'
 import type { I18n, I18nOptions } from 'vue-i18n'
 import { setHtmlPageLang } from './helper'
 export let i18n: ReturnType<typeof createI18n>
-import { PATH_URL } from '@/config/axios/service'
+import { getLocale } from '@/utils/utils'
+import { useCache } from '@/hooks/web/useCache'
+import { loadLocaleMessages } from './loader'
 const createI18nOptions = async (): Promise<I18nOptions> => {
   const localeStore = useLocaleStoreWithOut()
-  let locale = localeStore.getCurrentLocale
   const localeMap = await localeStore.getLocaleMap
-  const cMap: any = localeMap.find(item => {
-    return item.lang === locale.lang
-  })
-  let defaultLocal = null
-  if (cMap) {
-    if (cMap['custom']) {
-      defaultLocal = await loadRemoteI18n(cMap)
-    } else {
-      defaultLocal = await import(`../../locales/${locale.lang}.ts`)
-    }
-  } else {
-    const item = localeMap[0]
-    localeStore.setLang(item.lang)
-    locale = localeStore.getCurrentLocale
-    defaultLocal = await import(`../../locales/${locale.lang}.ts`)
-  }
-  const message = defaultLocal.default ?? {}
+  const loaded = await loadLocaleMessages(getLocale(), localeMap)
+  const locale = loaded.locale
+  useCache().wsCache.set('user.language', locale)
+  const message = loaded.messages
 
-  setHtmlPageLang(locale.lang)
+  setHtmlPageLang(locale)
 
   localeStore.setCurrentLocale({
-    lang: locale.lang
+    lang: locale
   })
 
   return {
     legacy: false,
-    locale: locale.lang,
-    fallbackLocale: locale.lang,
+    locale: locale,
+    fallbackLocale: locale,
     messages: {
-      [locale.lang]: message
+      [locale]: message
     },
     availableLocales: localeMap.map(v => v.lang),
     sync: true,
@@ -46,16 +34,6 @@ const createI18nOptions = async (): Promise<I18nOptions> => {
     missingWarn: false,
     silentFallbackWarn: true
   }
-}
-
-const loadRemoteI18n = async (option: any) => {
-  const name = option.lang.replace('-', '_')
-  const path =
-    PATH_URL.startsWith('./') && PATH_URL.length > 2
-      ? window.location.pathname + PATH_URL.substring(2)
-      : PATH_URL
-  const url = `${path}/i18n/custom_${name}_front_${option.name}.js`
-  return await import(url)
 }
 
 export const setupI18n = async (app: App<Element>) => {
