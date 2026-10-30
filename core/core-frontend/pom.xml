@@ -54,7 +54,7 @@
             </goals>
             <configuration>
               <nodeVersion>v24.22.1</nodeVersion>
-              <npmVersion>10.9.2</npmVersion>
+              <npmVersion>11.19.1</npmVersion>
             </configuration>
           </execution>
           <!--前端组件有更新需要放开-->
