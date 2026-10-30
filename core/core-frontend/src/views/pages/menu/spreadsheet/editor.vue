@@ -201,6 +201,9 @@ const syncDraftCache = async () => {
       deleteSpreadsheetDraftCache(routeSheetId.value)
     }
   } catch (error) {
+    if (currentRevision !== draftCheckRevision) {
+      return
+    }
     draftCheckPending = false
     hasChanges.value = true
     cacheCurrentDraft(getCurrentRawSheetData())
@@ -209,6 +212,9 @@ const syncDraftCache = async () => {
 }
 
 const markSpreadsheetChanged = () => {
+  if (loading.value) {
+    return
+  }
   if (routeMode.value !== 'edit' || !routeSheetId.value) {
     hasChanges.value = true
     return
@@ -345,6 +351,7 @@ const handlePluginEditorTransition = async (
     return
   }
 
+  const univerApi = univerApiRef.value
   try {
     await ElMessageBox.confirm(t('commons.prompt'), {
       tip: t('spreadsheet.draft_close_message'),
@@ -353,7 +360,14 @@ const handlePluginEditorTransition = async (
       type: 'warning',
       autofocus: false
     })
+    // 恢复已发布版本会重建实例，旧确认回调不能再删除插件或打开配置面板。
+    if (univerApi !== univerApiRef.value) {
+      return
+    }
     await removeDraftInstance(config)
+    if (univerApi !== univerApiRef.value) {
+      return
+    }
 
     // 确认期间可能收到多个选区事件，最终打开最新命中的实例。
     let targetPayload = requestedPayload
@@ -363,6 +377,9 @@ const handlePluginEditorTransition = async (
     pendingPluginEditorPayload = undefined
     applyPluginEditorPayload(targetPayload)
   } catch {
+    if (univerApi !== univerApiRef.value) {
+      return
+    }
     // 用户取消时必须保留 draft 面板，避免实例失去配置入口后持续禁用插入。
     pendingPluginEditorPayload = undefined
   }
@@ -399,6 +416,9 @@ const schedulePluginEditorTransition = (): void => {
 }
 
 const requestPluginEditorTransition = (payload: PluginEditPayload | null): void => {
+  if (loading.value) {
+    return
+  }
   // 同一次选区变化中，非命中插件可能先发出关闭事件；实际命中的打开请求应优先。
   if (payload || pendingPluginEditorPayload === undefined) {
     pendingPluginEditorPayload = payload
@@ -588,16 +608,36 @@ const handleRecoverPublished = async () => {
   recovering.value = true
   try {
     const result = await recoverToPublished(routeSheetId.value)
+    const publishedWorkbookData = parseSheetData(result.sheetData)
+    if (!publishedWorkbookData) {
+      throw new Error('Invalid published spreadsheet snapshot')
+    }
+    // 服务端已返回持久化快照，不能再按旧实例的表格范围清理，否则会误删普通单元格。
+    const recoveredWorkbookData = clearUniverProtectionResources(publishedWorkbookData)
+    const recoveredSheetData = serializeSheetData(recoveredWorkbookData)
+
+    loading.value = true
+    // 停止旧草稿任务，并使已开始的异步比较失效，避免恢复后重新写入旧缓存。
+    if (draftCacheTimer) {
+      clearTimeout(draftCacheTimer)
+      draftCacheTimer = undefined
+    }
+    draftCheckRevision++
+    draftCheckPending = false
+    pendingPluginEditorPayload = undefined
+    applyPluginEditorPayload(null)
+    editorComponent.value = null
+    datasetReplacementVisible.value = false
+    datasetReplacementComponentId.value = undefined
+    univerApiRef.value = undefined
+    univerInstanceRef.value = undefined
+    await nextTick()
+
+    workbookData.value = recoveredWorkbookData
+    spreadsheetName.value = result.name
     spreadsheetStatus.value = result.status ?? SpreadsheetPublishStatus.Published
     spreadsheetRemark.value = result.remark ?? ''
     spreadsheetVersion.value = result.version ?? spreadsheetVersion.value
-    loading.value = true
-    await nextTick()
-    const recoveredWorkbookData = clearUniverProtectionResources(
-      parseSheetData(result.sheetData) ?? createLocalizedDefaultWorkbookData()
-    )
-    const recoveredSheetData = await cleanSheetData(serializeSheetData(recoveredWorkbookData))
-    workbookData.value = parseSheetData(recoveredSheetData) ?? createLocalizedDefaultWorkbookData()
     updateSavedBaseline(recoveredSheetData, spreadsheetName.value)
     hasChanges.value = false
     deleteSpreadsheetDraftCache(routeSheetId.value)
