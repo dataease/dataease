@@ -37,6 +37,7 @@ import {
 import DrillPath from '@/views/chart/components/views/components/DrillPath.vue'
 import { ElIcon, ElInput, ElMessage } from 'element-plus-secondary'
 import { useFilter } from '@/hooks/web/useFilter'
+import { DynamicTimeError } from '@/custom-component/v-query/dynamic-default-time'
 import { useChartViewportLoad } from '@/hooks/web/useChartViewportLoad'
 import { useCache } from '@/hooks/web/useCache'
 
@@ -685,7 +686,14 @@ const queryData = debounce((firstLoad = false, autoRefresh = false) => {
     return
   }
   const searched = dvMainStore.firstLoadMap.includes(element.value.id)
-  let queryFilter = filter(searched ? false : firstLoad)
+  let queryFilter
+  try {
+    queryFilter = filter(searched ? false : firstLoad)
+  } catch (error) {
+    if (!(error instanceof DynamicTimeError)) throw error
+    ElMessage.error({ message: t(error.key), grouping: true })
+    return
+  }
   if (showPosition.value.includes('viewDialog') || autoRefresh) {
     queryFilter = dvMainStore.getLastViewRequestInfo(view.value.id)
   }
@@ -853,7 +861,14 @@ onMounted(() => {
     queryData(!showPosition.value.includes('viewDialog'))
   } else {
     const searched = dvMainStore.firstLoadMap.includes(element.value.id)
-    const queryFilter = filter(!searched)
+    let queryFilter
+    try {
+      queryFilter = filter(!searched)
+    } catch (error) {
+      if (!(error instanceof DynamicTimeError)) throw error
+      ElMessage.error({ message: t(error.key), grouping: true })
+      return
+    }
     view.value['chartExtRequest'] = queryFilter
     chartExtRequest.value = queryFilter
     loadPlugin.value = true

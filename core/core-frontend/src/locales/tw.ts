@@ -463,6 +463,18 @@ export default {
     api_data: 'API資料'
   },
   dynamic_time: {
+    date_offset: '日期偏移',
+    clock: '時分秒',
+    fixed_clock: '指定時刻',
+    clock_offset: '時間偏移',
+    hours: '時',
+    minutes: '分',
+    seconds: '秒',
+    clock_direction: '時間偏移方向',
+    offset_hint: '以目前時刻為基準，自動處理跨日。',
+    baseline: '目前時刻：',
+    invalid_offset: '請輸入有效的非負整數；分、秒須為 0–59，且計算結果不能超出日期範圍。',
+
     set_default: '設定預設值',
     fix: '固定時間',
     dynamic: '動態時間',

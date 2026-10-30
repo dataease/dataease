@@ -9,8 +9,7 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import QueryConditionConfiguration from './QueryConditionConfiguration.vue'
 import type { ComponentInfo } from '@/api/chart'
 import { mixColor } from '@/utils/color'
-import { getDynamicRange, getCustomTime } from '@/custom-component/v-query/time-format'
-import { getCustomRange } from '@/custom-component/v-query/time-format-dayjs'
+import { DynamicTimeError, evaluateRuntimeDynamicDefault } from './dynamic-default-time'
 import { infoFormat, splitConditionValues } from './options'
 import {
   onBeforeUnmount,
@@ -690,101 +689,81 @@ const delQueryConfig = index => {
 }
 
 const resetData = () => {
+  const previous = cloneDeep(element.value.propValue)
   isResetData = true
   element.value.propValue = []
   nextTick(() => {
     element.value.propValue = cloneDeep(oldList)
     cascadeResetState.value = true
-    ;(element.value.propValue || []).reduce((pre, next) => {
-      next.conditionValueF = next.defaultConditionValueF
-      next.conditionValueOperatorF = next.defaultConditionValueOperatorF
-      next.conditionValueS = next.defaultConditionValueS
-      next.conditionValueOperatorS = next.defaultConditionValueOperatorS
-
-      if (next.displayType === '22') {
-        next.numValueEnd = next.defaultNumValueEnd
-        next.numValueStart = next.defaultNumValueStart
-      }
-
-      if (!next.defaultValueCheck) {
-        next.defaultValue = next.multiple || +next.displayType === 7 ? [] : undefined
-      }
-      next.selectValue = Array.isArray(next.defaultValue)
-        ? [...next.defaultValue]
-        : next.defaultValue
-      if (next.optionValueSource === 1 && next.defaultMapValue?.length) {
-        next.mapValue = Array.isArray(next.defaultMapValue)
-          ? [...next.defaultMapValue]
-          : next.defaultMapValue
-      }
-
-      if (
-        next.defaultValueCheck &&
-        [1, 7].includes(+next.displayType) &&
-        next.timeType === 'dynamic'
-      ) {
-        if (+next.displayType === 1) {
-          let selectValue = getDynamicRange(next) || []
-          next.defaultValue = new Date(selectValue[0])
-          next.selectValue = new Date(selectValue[0])
-        } else {
-          const {
-            timeNum,
-            relativeToCurrentType,
-            around,
-            relativeToCurrentRange,
-            arbitraryTime,
-            timeGranularity,
-            timeNumRange,
-            relativeToCurrentTypeRange,
-            aroundRange,
-            timeGranularityMultiple,
-            arbitraryTimeRange
-          } = next
-
-          let startTime = getCustomTime(
-            timeNum,
-            relativeToCurrentType,
-            timeGranularity,
-            around,
-            arbitraryTime,
-            timeGranularityMultiple,
-            'start-panel'
-          )
-          let endTime = getCustomTime(
-            timeNumRange,
-            relativeToCurrentTypeRange,
-            timeGranularity,
-            aroundRange,
-            arbitraryTimeRange,
-            timeGranularityMultiple,
-            'end-panel'
-          )
-
-          if (!!relativeToCurrentRange && relativeToCurrentRange !== 'custom') {
-            ;[startTime, endTime] = getCustomRange(relativeToCurrentRange)
-          }
-          next.defaultValue = [startTime, endTime]
-          next.selectValue = [startTime, endTime]
+    try {
+      const dynamicDefaults = new Map()
+      const baseline = new Date()
+      for (const next of element.value.propValue || []) {
+        if (
+          next.defaultValueCheck &&
+          [1, 7].includes(+next.displayType) &&
+          next.timeType === 'dynamic'
+        ) {
+          dynamicDefaults.set(next, evaluateRuntimeDynamicDefault(next, baseline))
         }
       }
+      ;(element.value.propValue || []).reduce((pre, next) => {
+        next.conditionValueF = next.defaultConditionValueF
+        next.conditionValueOperatorF = next.defaultConditionValueOperatorF
+        next.conditionValueS = next.defaultConditionValueS
+        next.conditionValueOperatorS = next.defaultConditionValueOperatorS
 
-      ;(props.element.cascade || []).forEach(ele => {
-        ele.forEach(item => {
-          const comId = item.datasetId.split('--')[1]
-          if (next.id === comId) {
-            item.currentSelectValue = Array.isArray(next.selectValue)
-              ? next.selectValue
-              : [next.selectValue].filter(itx => ![null, undefined].includes(itx))
-            useEmitt().emitter.emit(`${item.datasetId.split('--')[1]}-select`)
-          }
+        if (next.displayType === '22') {
+          next.numValueEnd = next.defaultNumValueEnd
+          next.numValueStart = next.defaultNumValueStart
+        }
+
+        if (!next.defaultValueCheck) {
+          next.defaultValue = next.multiple || +next.displayType === 7 ? [] : undefined
+        }
+        next.selectValue = Array.isArray(next.defaultValue)
+          ? [...next.defaultValue]
+          : next.defaultValue
+        if (next.optionValueSource === 1 && next.defaultMapValue?.length) {
+          next.mapValue = Array.isArray(next.defaultMapValue)
+            ? [...next.defaultMapValue]
+            : next.defaultMapValue
+        }
+
+        if (
+          next.defaultValueCheck &&
+          [1, 7].includes(+next.displayType) &&
+          next.timeType === 'dynamic'
+        ) {
+          const value = dynamicDefaults.get(next)
+          next.defaultValue = value
+          next.selectValue = Array.isArray(value) ? [...value] : value
+        }
+
+        ;(props.element.cascade || []).forEach(ele => {
+          ele.forEach(item => {
+            const comId = item.datasetId.split('--')[1]
+            if (next.id === comId) {
+              item.currentSelectValue = Array.isArray(next.selectValue)
+                ? next.selectValue
+                : [next.selectValue].filter(itx => ![null, undefined].includes(itx))
+              useEmitt().emitter.emit(`${item.datasetId.split('--')[1]}-select`)
+            }
+          })
         })
-      })
-      const keyList = getKeyList(next)
-      pre = [...new Set([...keyList, ...pre])]
-      return pre
-    }, [])
-    cascadeResetState.value = false
+        const keyList = getKeyList(next)
+        pre = [...new Set([...keyList, ...pre])]
+        return pre
+      }, [])
+    } catch (error) {
+      element.value.propValue = previous
+      isResetData = false
+      if (!(error instanceof DynamicTimeError)) throw error
+      ElMessage.error({ message: t(error.key), grouping: true })
+      return
+    } finally {
+      cascadeResetState.value = false
+    }
     !componentWithSure.value && queryData()
   })
 }

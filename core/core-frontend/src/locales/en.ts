@@ -482,6 +482,19 @@ export default {
     api_data: 'API data'
   },
   dynamic_time: {
+    date_offset: 'Date offset',
+    clock: 'Time of day',
+    fixed_clock: 'Fixed time',
+    clock_offset: 'Time offset',
+    hours: 'h',
+    minutes: 'm',
+    seconds: 's',
+    clock_direction: 'Time offset direction',
+    offset_hint: 'Based on the current time; day changes are handled automatically.',
+    baseline: 'Current time: ',
+    invalid_offset:
+      'Enter valid non-negative integers; minutes and seconds must be 0–59 and the result must be within the supported date range.',
+
     set_default: 'Default value',
     fix: 'Fixed time',
     dynamic: 'Dynamic time',
