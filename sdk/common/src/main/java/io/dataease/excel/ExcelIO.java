@@ -63,7 +63,7 @@ public final class ExcelIO {
                 readerBuilder.autoCloseStream(readOptions.getAutoCloseStream());
             }
             if (readOptions.getColumnDateFormats() != null && !readOptions.getColumnDateFormats().isEmpty()) {
-                readerBuilder.registerConverter(new FesodColumnDateConverter(readOptions.getColumnDateFormats()));
+                readerBuilder.registerConverter(new FesodColumnDateConverter(readOptions.getColumnDateFormats(), null));
             }
             ExcelReader reader = readerBuilder.build();
             List<ReadSheet> readSheets = reader.excelExecutor().sheetList();

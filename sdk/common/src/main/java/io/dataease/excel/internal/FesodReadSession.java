@@ -9,6 +9,7 @@ import io.dataease.excel.ExcelReadSession;
 import io.dataease.excel.ExcelReadStopException;
 import io.dataease.excel.ExcelSheetInfo;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.fesod.sheet.ExcelReader;
 import org.apache.fesod.sheet.context.AnalysisContext;
 import org.apache.fesod.sheet.enums.CellDataTypeEnum;
@@ -47,8 +48,8 @@ public class FesodReadSession implements ExcelReadSession {
             if (options.getAutoCloseStream() != null) {
                 builder.autoCloseStream(options.getAutoCloseStream());
             }
-            if (MapUtils.isNotEmpty(options.getColumnDateFormats())) {
-                builder.registerConverter(new FesodColumnDateConverter(options.getColumnDateFormats()));
+            if (MapUtils.isNotEmpty(options.getColumnDateFormats()) || StringUtils.isNotBlank(options.getDefaultDatePattern())) {
+                builder.registerConverter(new FesodColumnDateConverter(options.getColumnDateFormats(), options.getDefaultDatePattern()));
             }
         }
         this.excelReader = builder.build();
