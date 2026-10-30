@@ -3,7 +3,8 @@ import {
   ClearSelectionAllCommand,
   type ISetRangeValuesMutationParams,
   RemoveWorksheetMergeMutation,
-  SetRangeValuesMutation
+  SetRangeValuesMutation,
+  SetStyleCommand
 } from '@univerjs/sheets'
 import {
   Disposable,
@@ -112,7 +113,7 @@ export class TableUserStyleService extends Disposable {
     mutations: IMutationInfo[],
     fallbackUnitId: string,
     fallbackSheetId: string,
-    applyUserStyle: boolean
+    isRedo: boolean
   ): void {
     for (let index = mutations.length - 1; index >= 0; index--) {
       const mutation = mutations[index]
@@ -121,7 +122,7 @@ export class TableUserStyleService extends Disposable {
           mutation.params as ISetRangeValuesMutationParams,
           fallbackUnitId,
           fallbackSheetId,
-          applyUserStyle
+          isRedo
         )
         if (!hasRemainingCells) {
           mutations.splice(index, 1)
@@ -148,7 +149,7 @@ export class TableUserStyleService extends Disposable {
     params: ISetRangeValuesMutationParams,
     fallbackUnitId: string,
     fallbackSheetId: string,
-    applyUserStyle: boolean
+    isRedo: boolean
   ): boolean {
     if (!params.cellValue) {
       return false
@@ -184,11 +185,13 @@ export class TableUserStyleService extends Disposable {
         }
 
         const patch = cellPatch as Record<string, unknown>
-        if (!applyUserStyle) {
-          // 撤销只保留格式刷自身的样式回滚，合并产生的内容恢复不应触碰插件单元格。
-          if (Object.keys(patch).some(key => key !== 's')) {
-            delete rowData[Number(columnKey)]
-          }
+        // 样式撤销也携带原值和公式；仅放行样式操作，继续过滤合并产生的内容恢复。
+        if (
+          !isRedo &&
+          params.trigger !== SetStyleCommand.id &&
+          Object.keys(patch).some(key => key !== 's')
+        ) {
+          delete rowData[Number(columnKey)]
           return
         }
 
@@ -201,11 +204,9 @@ export class TableUserStyleService extends Disposable {
         const currentStyle = workbook.getStyles().getStyleByCell(rawCell) || {}
         const sourceStyle = this.resolveStyle(workbook, patch.s)
         const userStyle = pickDataEaseUserStyle(sourceStyle)
-        const nextStyle = replaceDataEaseUserStyle(
-          currentStyle as Partial<IStyleData>,
-          userStyle
-        )
+        const nextStyle = replaceDataEaseUserStyle(currentStyle as Partial<IStyleData>, userStyle)
 
+        // 应用和撤销都只写入样式，避免恢复旧值、公式或插件元数据。
         rowData[Number(columnKey)] = { s: nextStyle }
       })
 
