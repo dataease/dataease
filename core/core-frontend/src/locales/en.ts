@@ -5230,6 +5230,15 @@ export default {
     title: 'Security Settings'
   },
   setting_hmac: {
+    signature_missing:
+      'The request is missing an HMAC signature. Refresh and try again. If it persists, ask your administrator to check the backend and gateway HMAC switches and header forwarding.',
+    authentication_failed:
+      'Request signature verification failed. Refresh and try again. If it persists, ask your administrator to check the HMAC configuration and client clock.',
+    clock_skew_failed:
+      'Request signature verification failed: the client and server clocks differ too much. Correct the system clock and try again.',
+    initialization_failed: 'HMAC initialization failed. Refresh the page and try again.',
+    random_source_required:
+      'HMAC signing requires a browser with a secure random number generator.',
     title: 'HMAC Settings',
     enable: 'Enable HMAC Authentication',
     clock_skew: 'Clock skew',

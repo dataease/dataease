@@ -5063,6 +5063,13 @@ export default {
     title: '安全设置'
   },
   setting_hmac: {
+    signature_missing:
+      '请求缺少 HMAC 签名，请刷新页面后重试；仍失败请联系管理员检查前后端 HMAC 开关及请求头转发配置',
+    authentication_failed:
+      '请求签名校验失败，请刷新页面后重试；仍失败请联系管理员检查 HMAC 配置及客户端时间',
+    clock_skew_failed: '请求签名校验失败：客户端与服务器时间偏差过大，请校准系统时间后重试',
+    initialization_failed: 'HMAC 初始化失败，请刷新页面后重试',
+    random_source_required: 'HMAC 签名需要浏览器支持安全随机数生成，请升级浏览器',
     title: 'HMAC 设置',
     enable: '启用 HMAC 认证',
     clock_skew: '时钟偏差',

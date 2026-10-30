@@ -50,6 +50,7 @@ public class WhitelistUtils {
             "/sysParameter/i18nOptions",
             "/login/modifyInvalidPwd",
             "/perSetting/hmac/info",
+            "/perSetting/hmac/exchange",
             "/");
 
     // TinyMCE loads its language and skin files through browser tags without authentication headers.

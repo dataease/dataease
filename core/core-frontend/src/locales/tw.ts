@@ -5041,6 +5041,13 @@ export default {
     title: '安全設置'
   },
   setting_hmac: {
+    signature_missing:
+      '請求缺少 HMAC 簽名，請重新整理頁面後重試；仍失敗請聯絡管理員檢查前後端 HMAC 開關及請求標頭轉送設定',
+    authentication_failed:
+      '請求簽名校驗失敗，請重新整理頁面後重試；仍失敗請聯絡管理員檢查 HMAC 設定及用戶端時間',
+    clock_skew_failed: '請求簽名校驗失敗：用戶端與伺服器時間偏差過大，請校準系統時間後重試',
+    initialization_failed: 'HMAC 初始化失敗，請重新整理頁面後重試',
+    random_source_required: 'HMAC 簽名需要瀏覽器支援安全亂數產生，請升級瀏覽器',
     title: 'HMAC 設定',
     enable: '啟用 HMAC 認證',
     clock_skew: '時鐘偏差',

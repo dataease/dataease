@@ -87,6 +87,8 @@ PLAYWRIGHT_BASE_URL=http://127.0.0.1:7070 PLAYWRIGHT_STORAGE_STATE=.auth/local.j
 
 ## 参考
 
+HMAC 协议回归使用 `playwright.hmac.config.mjs`，夹具仅监听 `127.0.0.1:4197`。需通过 `HMAC_EXCHANGE_FIXTURE_CP` 指定提供合成响应的 Java 夹具 classpath；测试加载实际签名模块，分别在安全上下文和映射至本机的普通 HTTP 域名 hmac-http.test 下，校验跨语言封装互通、签名兼容、缓存及失败拒绝行为。设置 `HMAC_FIXTURE_BUILD_DIR` 可对已生成的独立生产混淆产物运行同一组测试；不连接业务数据库或真实网关。`hmac-errors.spec.mjs` 另加载实际 Axios service，使用合成网关响应验证签名失败提示、拒绝状态及登录/权限/网络错误区分，不替代真实网关验签验证。
+
 - [Playwright CLI](https://playwright.dev/docs/getting-started-cli)
 - [Playwright Test 配置](https://playwright.dev/docs/test-configuration)
 - [命令行运行测试](https://playwright.dev/docs/test-cli)

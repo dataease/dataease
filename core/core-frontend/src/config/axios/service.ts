@@ -21,6 +21,8 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { useRequestStoreWithOut } from '@/store/modules/request'
 import { clearCache } from '@/utils/cacheUtil'
 import { securityConfig } from './hmac'
+import { getHmacFailure } from './hmacError'
+import { getHmacMessage } from './hmacMessage'
 
 type AxiosErrorWidthLoading<T> = T & {
   config: {
@@ -122,6 +124,9 @@ service.interceptors.request.use(
     if (config instanceof Promise) {
       config = await config
     }
+    if (embeddedStore.baseUrl) {
+      config.baseURL = PATH_URL
+    }
     await securityConfig(config, service.getUri(config))
     if (
       config.method === 'post' &&
@@ -129,9 +134,6 @@ service.interceptors.request.use(
         'application/x-www-form-urlencoded'
     ) {
       config.data = qs.stringify(config.data)
-    }
-    if (embeddedStore.baseUrl) {
-      config.baseURL = PATH_URL
     }
 
     if (isMobile()) {
@@ -244,7 +246,7 @@ service.interceptors.response.use(
       return Promise.reject(response.data.msg)
     }
   },
-  (error: AxiosErrorWidthLoading<AxiosError<{ msg?: string }>>) => {
+  async (error: AxiosErrorWidthLoading<AxiosError<{ msg?: string }>>) => {
     error.config?.loading && tryHideLoading(permissionStore.getCurrentPath)
     // Image failures belong to the image loader, as with native <img> requests. Preserve
     // the rejection so denied/missing images cannot become successful exports or trigger a login loop.
@@ -261,6 +263,19 @@ service.interceptors.response.use(
     }
 
     if (!error?.response) {
+      return Promise.reject(error)
+    }
+
+    const hmacFailure = getHmacFailure(error)
+    if (hmacFailure) {
+      ElMessage({
+        type: 'error',
+        message: await getHmacMessage(hmacFailure),
+        showClose: true,
+        grouping: true,
+        duration: 0
+      })
+      // A rejected signature must not become an undefined successful response or a login redirect.
       return Promise.reject(error)
     }
 
