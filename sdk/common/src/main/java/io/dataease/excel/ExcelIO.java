@@ -54,6 +54,9 @@ public final class ExcelIO {
 
     public static <T> void readModel(InputStream inputStream, Class<T> modelClass, ExcelReadOptions options, ExcelModelHandler<T> handler) {
         ExcelReadOptions readOptions = options == null ? new ExcelReadOptions() : options;
+        if (readOptions.getIncludeColumnIndexes() != null && !readOptions.getIncludeColumnIndexes().isEmpty()) {
+            throw new IllegalArgumentException("includeColumnIndexes is not supported by readModel");
+        }
         try {
             ExcelReaderBuilder readerBuilder = FesodSheet.read(inputStream, modelClass, new FesodModelReadListener<>(handler));
             if (readOptions.getAutoCloseStream() != null) {

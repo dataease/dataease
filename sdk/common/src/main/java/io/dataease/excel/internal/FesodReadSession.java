@@ -34,6 +34,7 @@ public class FesodReadSession implements ExcelReadSession {
     private final ExcelReader excelReader;
     private final List<ExcelSheetInfo> sheets = new ArrayList<>();
     private final List<ReadSheet> readSheets;
+    private final List<Integer> includeColumnIndexes;
     private final InternalListener listener = new InternalListener();
     private ExcelReadHandler currentHandler;
 
@@ -52,6 +53,7 @@ public class FesodReadSession implements ExcelReadSession {
         }
         this.excelReader = builder.build();
         this.readSheets = excelReader.excelExecutor().sheetList();
+        this.includeColumnIndexes = options == null ? null : options.getIncludeColumnIndexes();
         for (ReadSheet readSheet : readSheets) {
             sheets.add(new ExcelSheetInfo(readSheet.getSheetNo(), readSheet.getSheetName()));
         }
@@ -68,6 +70,9 @@ public class FesodReadSession implements ExcelReadSession {
                 .filter(readSheet -> Objects.equals(readSheet.getSheetNo(), sheet.getSheetNo()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("sheet not found: " + sheet.getSheetName()));
+        if (includeColumnIndexes != null && !includeColumnIndexes.isEmpty()) {
+            target.setIncludeColumnIndexes(includeColumnIndexes);
+        }
         this.currentHandler = handler;
         try {
             excelReader.read(target);

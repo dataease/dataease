@@ -263,6 +263,14 @@ public class ExcelUtils {
      * 与既有全量读取行为保持一致。
      */
     public void consumeDataByBatch(DatasourceRequest datasourceRequest, int columnCount, int batchSize, ExcelBatchConsumer consumer) throws Exception {
+        consumeDataByBatch(datasourceRequest, columnCount, batchSize, null, consumer);
+    }
+
+    /**
+     * 按批读取目标 Sheet/CSV，不累计完整 Sheet 数据。
+     * includeColumnIndexes 为需要读取的原始列索引（0 基，按全量字段顺序）；null/空表示读取全部列。
+     */
+    public void consumeDataByBatch(DatasourceRequest datasourceRequest, int columnCount, int batchSize, List<Integer> includeColumnIndexes, ExcelBatchConsumer consumer) throws Exception {
         if (batchSize <= 0) {
             throw new IllegalArgumentException("batchSize must be positive");
         }
@@ -274,7 +282,7 @@ public class ExcelUtils {
                     if (sheet.getDeTableName().equalsIgnoreCase(datasourceRequest.getTable())) {
                         String suffix = fileNames.get("fileName").substring(fileNames.get("fileName").lastIndexOf(".") + 1);
                         try (InputStream inputStream = new FileInputStream(path + fileNames.get("tranName"))) {
-                            consumeSheetBatches(sheet.getTableName(), suffix, inputStream, columnCount, batchSize, consumer);
+                            consumeSheetBatches(sheet.getTableName(), suffix, inputStream, columnCount, batchSize, includeColumnIndexes, consumer);
                         }
                     }
                 }
@@ -289,26 +297,30 @@ public class ExcelUtils {
                 if (rootNode.get(i).get("deTableName").asText().equalsIgnoreCase(datasourceRequest.getTable())) {
                     String suffix = rootNode.get(i).get("path").asText().substring(rootNode.get(i).get("path").asText().lastIndexOf(".") + 1);
                     try (InputStream inputStream = ExcelFileGuard.open(java.nio.file.Path.of(path), rootNode.get(i).get("path").asText())) {
-                        consumeSheetBatches(rootNode.get(i).get("tableName").asText(), suffix, inputStream, columnCount, batchSize, consumer);
+                        consumeSheetBatches(rootNode.get(i).get("tableName").asText(), suffix, inputStream, columnCount, batchSize, includeColumnIndexes, consumer);
                     }
                 }
             }
         }
     }
 
-    private void consumeSheetBatches(String sheetName, String suffix, InputStream inputStream, int columnCount, int batchSize, ExcelBatchConsumer consumer) throws Exception {
+    private void consumeSheetBatches(String sheetName, String suffix, InputStream inputStream, int columnCount, int batchSize, List<Integer> includeColumnIndexes, ExcelBatchConsumer consumer) throws Exception {
         if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
             BufferedReader reader = csvReader(inputStream);
             readCsvLine(reader);//去掉表头
             consumeCsvBatches(reader, columnCount, batchSize, consumer);
         } else {
-            consumeExcelBatches(sheetName, inputStream, batchSize, consumer);
+            consumeExcelBatches(sheetName, inputStream, columnCount, batchSize, includeColumnIndexes, consumer);
         }
     }
 
-    private void consumeExcelBatches(String sheetName, InputStream inputStream, int batchSize, ExcelBatchConsumer consumer) throws Exception {
-        BatchSheetHandler handler = new BatchSheetHandler(batchSize, consumer);
-        try (ExcelReadSession session = ExcelIO.openRead(inputStream, new ExcelReadOptions())) {
+    private void consumeExcelBatches(String sheetName, InputStream inputStream, int columnCount, int batchSize, List<Integer> includeColumnIndexes, ExcelBatchConsumer consumer) throws Exception {
+        BatchSheetHandler handler = new BatchSheetHandler(batchSize, columnCount, includeColumnIndexes, consumer);
+        ExcelReadOptions readOptions = new ExcelReadOptions();
+        if (includeColumnIndexes != null && !includeColumnIndexes.isEmpty()) {
+            readOptions.setIncludeColumnIndexes(includeColumnIndexes);
+        }
+        try (ExcelReadSession session = ExcelIO.openRead(inputStream, readOptions)) {
             for (ExcelSheetInfo sheet : session.getSheets()) {
                 if (!sheetName.equalsIgnoreCase(sheet.getSheetName())) {
                     continue;
@@ -345,18 +357,25 @@ public class ExcelUtils {
 
     private static class BatchSheetHandler implements ExcelReadHandler {
         private final int batchSize;
+        private final int columnCount;
+        private final List<Integer> includeColumnIndexes;
         private final ExcelBatchConsumer consumer;
         private final List<String> header = new ArrayList<>();
         private final List<Integer> headerKey = new ArrayList<>();
         private final List<String[]> batch = new ArrayList<>();
 
-        BatchSheetHandler(int batchSize, ExcelBatchConsumer consumer) {
+        BatchSheetHandler(int batchSize, int columnCount, List<Integer> includeColumnIndexes, ExcelBatchConsumer consumer) {
             this.batchSize = batchSize;
+            this.columnCount = columnCount;
+            this.includeColumnIndexes = includeColumnIndexes == null || includeColumnIndexes.isEmpty() ? null : includeColumnIndexes;
             this.consumer = consumer;
         }
 
         @Override
         public void onHeader(Map<Integer, ExcelCell> headMap) {
+            if (includeColumnIndexes != null) {
+                return;
+            }
             for (Integer key : headMap.keySet()) {
                 ExcelCell cellData = headMap.get(key);
                 String value = null;
@@ -376,6 +395,34 @@ public class ExcelUtils {
 
         @Override
         public void onRow(int rowIndex, Map<Integer, ExcelCell> dataMap) {
+            if (includeColumnIndexes != null) {
+                addSelectedRow(dataMap);
+            } else {
+                addFullRow(dataMap);
+            }
+            if (batch.size() >= batchSize) {
+                flush();
+            }
+        }
+
+        private void addSelectedRow(Map<Integer, ExcelCell> dataMap) {
+            String[] row = new String[columnCount];
+            for (int relativeIndex = 0; relativeIndex < includeColumnIndexes.size(); relativeIndex++) {
+                Integer originalIndex = includeColumnIndexes.get(relativeIndex);
+                if (originalIndex == null || originalIndex < 0 || originalIndex >= columnCount) {
+                    continue;
+                }
+                ExcelCell cellData = dataMap.get(relativeIndex);
+                String value = cellData == null ? null : cellData.getStringValue();
+                if (StringUtils.isEmpty(value)) {
+                    value = null;
+                }
+                row[originalIndex] = value;
+            }
+            batch.add(row);
+        }
+
+        private void addFullRow(Map<Integer, ExcelCell> dataMap) {
             List<String> line = new ArrayList<>();
             for (Integer key : headerKey) {
                 ExcelCell cellData = dataMap.get(key);
@@ -392,9 +439,6 @@ public class ExcelUtils {
                 }
             }
             batch.add(line.toArray(new String[line.size()]));
-            if (batch.size() >= batchSize) {
-                flush();
-            }
         }
 
         private void flush() {

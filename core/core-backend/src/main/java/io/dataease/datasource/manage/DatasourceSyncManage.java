@@ -301,8 +301,9 @@ public class DatasourceSyncManage {
         EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());
         boolean starRocks = engine.getType().equalsIgnoreCase("StarRocks");
         final int pageNumber = engine.getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.oracle.name()) ? 1 : 1000;
+        final List<Integer> includeColumnIndexes = buildSelectedColumnIndexes(tableFields);
         ExcelUtils excelUtils = new ExcelUtils();
-        excelUtils.consumeDataByBatch(request, tableFields.size(), pageNumber, batch -> {
+        excelUtils.consumeDataByBatch(request, tableFields.size(), pageNumber, includeColumnIndexes, batch -> {
             if (starRocks) {
                 ((StarRocksEngineProvider) engineProvider).streamLoadInsert(request.getTable(), extractType, batch, tableFields, engine);
                 return;
@@ -311,6 +312,23 @@ public class DatasourceSyncManage {
             LogUtil.debug(datasourceRequest.getQuery());
             provider.execDDL(datasourceRequest);
         });
+    }
+
+    private List<Integer> buildSelectedColumnIndexes(List<TableField> tableFields) {
+        if (tableFields == null || tableFields.isEmpty()) {
+            return null;
+        }
+        List<Integer> selectedIndexes = new ArrayList<>();
+        for (int i = 0; i < tableFields.size(); i++) {
+            if (tableFields.get(i).isChecked()) {
+                selectedIndexes.add(i);
+            }
+        }
+        // 全选或全不选时走原全量读取路径，保持既有行为。
+        if (selectedIndexes.isEmpty() || selectedIndexes.size() == tableFields.size()) {
+            return null;
+        }
+        return selectedIndexes;
     }
 
     private void replaceTable(String tableName) throws Exception {
