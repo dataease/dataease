@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -37,4 +38,10 @@ public class ExcelReadOptions {
      * 设置为 false 时由调用方负责关闭输入流。
      */
     private Boolean autoCloseStream;
+
+    /**
+     * 仅读取指定原始列索引（0 基）；null 或空表示读取全部列。
+     * 索引对应原始 Sheet 列号，适配层负责维持原始列映射。
+     */
+    private List<Integer> includeColumnIndexes;
 }
