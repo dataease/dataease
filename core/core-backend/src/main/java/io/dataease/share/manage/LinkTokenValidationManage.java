@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.auth.DeLinkPermit;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewRepository;
 import io.dataease.utils.WhitelistUtils;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.server.PathContainer;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -24,6 +25,7 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("!desktop")
 public class LinkTokenValidationManage implements LinkTokenVerifier {
     @Resource
     private XpackShareRepository shares;
