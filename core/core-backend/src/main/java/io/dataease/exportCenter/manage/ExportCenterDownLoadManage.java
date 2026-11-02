@@ -716,14 +716,18 @@ public class ExportCenterDownLoadManage {
 
     public void addWatermarkTools(Workbook wb) {
         VisualizationWatermark watermark = watermarkRepository.findById("system_default").orElse(null);
+        if (watermark == null || StringUtils.isBlank(watermark.getSettingContent())) {
+            return;
+        }
         WatermarkContentDTO watermarkContent = JsonUtil.parseObject(watermark.getSettingContent(), WatermarkContentDTO.class);
-        if (watermarkContent.getEnable() && watermarkContent.getExcelEnable()) {
-            UserFormVO userInfo = CommonBeanFactory.getBean(UserApi.class).queryById(V3UserUtil.getUid());
-            // 在主逻辑中添加水印
-            int watermarkPictureIdx = ExcelWatermarkUtils.addWatermarkImage(wb, watermarkContent, userInfo); // 生成水印图片并获取 ID
-            for (Sheet sheet : wb) {
-                ExcelWatermarkUtils.addWatermarkToSheet(sheet, watermarkPictureIdx); // 为每个 Sheet 添加水印
-            }
+        if (watermarkContent == null || !Boolean.TRUE.equals(watermarkContent.getEnable()) || !Boolean.TRUE.equals(watermarkContent.getExcelEnable())) {
+            return;
+        }
+        UserFormVO userInfo = CommonBeanFactory.getBean(UserApi.class).queryById(V3UserUtil.getUid());
+        // 在主逻辑中添加水印
+        int watermarkPictureIdx = ExcelWatermarkUtils.addWatermarkImage(wb, watermarkContent, userInfo); // 生成水印图片并获取 ID
+        for (Sheet sheet : wb) {
+            ExcelWatermarkUtils.addWatermarkToSheet(sheet, watermarkPictureIdx); // 为每个 Sheet 添加水印
         }
     }
 
