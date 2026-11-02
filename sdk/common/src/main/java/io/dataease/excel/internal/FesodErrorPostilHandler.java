@@ -16,6 +16,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +26,8 @@ import java.util.Map;
 public class FesodErrorPostilHandler implements RowWriteHandler {
 
     private final List<Map<Integer, String>> errMsgList;
+
+    private final Map<Integer, CellStyle> errorStyleCache = new HashMap<>();
 
     public FesodErrorPostilHandler(List<Map<Integer, String>> errMsgList) {
         this.errMsgList = errMsgList;
@@ -60,14 +63,22 @@ public class FesodErrorPostilHandler implements RowWriteHandler {
             return;
         }
         CellStyle originalStyle = cell.getCellStyle();
-        CellStyle cellStyle = workbook.createCellStyle();
-        if (originalStyle != null) {
-            cellStyle.cloneStyleFrom(originalStyle);
+        Integer styleKey = originalStyle == null ? -1 : Integer.valueOf(originalStyle.getIndex());
+        CellStyle cellStyle = errorStyleCache.get(styleKey);
+        if (cellStyle == null) {
+            cellStyle = workbook.createCellStyle();
+            if (originalStyle != null) {
+                cellStyle.cloneStyleFrom(originalStyle);
+            }
+            cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            cellStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
+            cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            errorStyleCache.put(styleKey, cellStyle);
         }
-        cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        cellStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
-        cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-        Drawing<?> drawingPatriarch = sheet.createDrawingPatriarch();
+        Drawing<?> drawingPatriarch = sheet.getDrawingPatriarch();
+        if (drawingPatriarch == null) {
+            drawingPatriarch = sheet.createDrawingPatriarch();
+        }
         XSSFClientAnchor xssfClientAnchor = new XSSFClientAnchor(0, 0, 0, 0, 0, 0, 2, 2);
         Comment comment = drawingPatriarch.createCellComment(xssfClientAnchor);
         comment.setString(new XSSFRichTextString(msg));
