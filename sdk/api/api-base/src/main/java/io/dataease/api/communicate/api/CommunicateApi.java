@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Hidden
 public interface CommunicateApi {
@@ -17,8 +18,8 @@ public interface CommunicateApi {
     void send(@RequestBody MessageDTO dto);
 
     @GetMapping("/down/{fileId}/{fileName}/{suffix}")
-    ResponseEntity<Resource> down(@PathVariable("fileId") String fileId, @PathVariable("fileName") String fileName, @PathVariable("suffix") String suffix) throws Exception;
+    ResponseEntity<Resource> down(@PathVariable("fileId") String fileId, @PathVariable("fileName") String fileName, @PathVariable("suffix") String suffix, @RequestParam(value = "access", required = false) String access) throws Exception;
 
     @GetMapping(value = "/image/{imageId}", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
-    ResponseEntity<Resource> image(@PathVariable("imageId") String imageId);
+    ResponseEntity<Resource> image(@PathVariable("imageId") String imageId, @RequestParam(value = "access", required = false) String access);
 }
