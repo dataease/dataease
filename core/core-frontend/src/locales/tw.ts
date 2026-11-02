@@ -243,6 +243,7 @@ export default {
     client: '客戶端'
   },
   data_set: {
+    dataset_load_failed: '資料集載入失敗，請重新選擇資料集重試。',
     validation_succeeded: '欄位表達式校驗成功',
     to_nth_digits: '保留第M至N位元',
     the_column_permissions: '確定刪除列權限嗎?',

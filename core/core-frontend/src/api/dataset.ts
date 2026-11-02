@@ -139,8 +139,8 @@ export const getDatasetTree = async (data: BusiTreeRequest): Promise<IResponse> 
   })
 }
 
-export const barInfoApi = async (id): Promise<IResponse> => {
-  return request.get({ url: `/datasetTree/barInfo/${id}`, data: {} }).then(res => {
+export const barInfoApi = async (id, signal?: AbortSignal): Promise<IResponse> => {
+  return request.get({ url: `/datasetTree/barInfo/${id}`, data: {}, signal }).then(res => {
     return res?.data
   })
 }
@@ -213,16 +213,18 @@ export const getPreviewData = async (data): Promise<IResponse> => {
   })
 }
 
-export const getDatasetPreview = async (id): Promise<FieldData> => {
-  return request.post({ url: `/datasetTree/get/${id}`, data: {} }).then(res => {
+export const getDatasetPreview = async (id, signal?: AbortSignal): Promise<FieldData> => {
+  return request.post({ url: `/datasetTree/get/${id}`, data: {}, signal }).then(res => {
     return res?.data
   })
 }
 
-export const getDatasetTotal = async (id): Promise<FieldData> => {
-  return request.post({ url: `/datasetData/getDatasetTotal`, data: { id: id } }).then(res => {
-    return res?.data
-  })
+export const getDatasetTotal = async (id, signal?: AbortSignal): Promise<FieldData> => {
+  return request
+    .post({ url: `/datasetData/getDatasetTotal`, data: { id: id }, signal })
+    .then(res => {
+      return res?.data
+    })
 }
 
 export const getDatasetDetails = async (id): Promise<Dataset> => {
