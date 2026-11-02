@@ -27,6 +27,7 @@ public class WhitelistUtils {
             "/apisix/check",
             "/dekey",
             "/index.html",
+            "/dataease.svg",
             "/model",
             "/xpackModel",
             "/swagger-resources",
