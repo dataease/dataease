@@ -326,6 +326,7 @@ public class ExcelUtils {
                     continue;
                 }
                 session.read(sheet, handler);
+                handler.throwIfEmptyHeaderHasData(sheet.getSheetName());
                 break;
             }
         }
@@ -362,6 +363,8 @@ public class ExcelUtils {
         private final ExcelBatchConsumer consumer;
         private final List<String> header = new ArrayList<>();
         private final List<Integer> headerKey = new ArrayList<>();
+        private final List<Integer> emptyHeaderKeys = new ArrayList<>();
+        private final Set<Integer> emptyHeaderColumnsWithData = new LinkedHashSet<>();
         private final List<String[]> batch = new ArrayList<>();
 
         BatchSheetHandler(int batchSize, int columnCount, List<Integer> includeColumnIndexes, ExcelBatchConsumer consumer) {
@@ -386,6 +389,7 @@ public class ExcelUtils {
                     value = cellData.getNumberValue() == null ? null : cellData.getNumberValue().toString();
                 }
                 if (StringUtils.isEmpty(value)) {
+                    emptyHeaderKeys.add(key);
                     continue;
                 }
                 headerKey.add(key);
@@ -423,6 +427,12 @@ public class ExcelUtils {
         }
 
         private void addFullRow(Map<Integer, ExcelCell> dataMap) {
+            for (Integer key : emptyHeaderKeys) {
+                ExcelCell cellData = dataMap.get(key);
+                if (cellData != null && StringUtils.isNotEmpty(cellData.getStringValue())) {
+                    emptyHeaderColumnsWithData.add(key);
+                }
+            }
             List<String> line = new ArrayList<>();
             for (Integer key : headerKey) {
                 ExcelCell cellData = dataMap.get(key);
@@ -439,6 +449,13 @@ public class ExcelUtils {
                 }
             }
             batch.add(line.toArray(new String[line.size()]));
+        }
+
+        private void throwIfEmptyHeaderHasData(String sheetName) {
+            if (!emptyHeaderColumnsWithData.isEmpty()) {
+                Integer emptyHeaderColumn = emptyHeaderColumnsWithData.iterator().next();
+                DEException.throwException(Translator.get("i18n_excel_empty_header_with_data", sheetName, emptyHeaderColumn + 1));
+            }
         }
 
         private void flush() {
@@ -879,6 +896,8 @@ public class ExcelUtils {
         private List<String[]> data = new ArrayList<>();
         private List<String> header = new ArrayList<>();
         private List<Integer> headerKey = new ArrayList<>();
+        private List<Integer> emptyHeaderKeys = new ArrayList<>();
+        private Set<Integer> emptyHeaderColumnsWithData = new LinkedHashSet<>();
 
         @Override
         public void onHeader(Map<Integer, ExcelCell> headMap) {
@@ -892,6 +911,7 @@ public class ExcelUtils {
                     value = cellData.getNumberValue() == null ? null : cellData.getNumberValue().toString();
                 }
                 if (StringUtils.isEmpty(value)) {
+                    emptyHeaderKeys.add(key);
                     continue;
                 }
                 headerKey.add(key);
@@ -902,6 +922,12 @@ public class ExcelUtils {
         @Override
         public void onRow(int rowIndex, Map<Integer, ExcelCell> dataMap) {
             if (preview && data.size() >= 100) throw new ExcelReadStopException();
+            for (Integer key : emptyHeaderKeys) {
+                ExcelCell cellData = dataMap.get(key);
+                if (cellData != null && StringUtils.isNotEmpty(cellData.getStringValue())) {
+                    emptyHeaderColumnsWithData.add(key);
+                }
+            }
             List<String> line = new ArrayList<>();
             for (Integer key : headerKey) {
                 ExcelCell cellData = dataMap.get(key);
@@ -924,6 +950,8 @@ public class ExcelUtils {
             data.clear();
             header.clear();
             headerKey.clear();
+            emptyHeaderKeys.clear();
+            emptyHeaderColumnsWithData.clear();
         }
 
         public List<String[]> getData() {
@@ -932,6 +960,10 @@ public class ExcelUtils {
 
         public List<String> getHeader() {
             return header;
+        }
+
+        public Set<Integer> getEmptyHeaderColumnsWithData() {
+            return emptyHeaderColumnsWithData;
         }
     }
 
@@ -951,6 +983,10 @@ public class ExcelUtils {
                         session.read(sheet, collector);
                         if (CollectionUtils.isEmpty(collector.getHeader())) {
                             DEException.throwException(sheet.getSheetName() + "首行不能为空！");
+                        }
+                        if (!collector.getEmptyHeaderColumnsWithData().isEmpty()) {
+                            Integer emptyHeaderColumn = collector.getEmptyHeaderColumnsWithData().iterator().next();
+                            DEException.throwException(Translator.get("i18n_excel_empty_header_with_data", sheet.getSheetName(), emptyHeaderColumn + 1));
                         }
                         for (String s : collector.getHeader()) {
                             EngineProvider.validateIdentifier(s);
