@@ -17,6 +17,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ExcelWatermarkUtils {
@@ -103,6 +104,10 @@ public class ExcelWatermarkUtils {
 
     private static final int MIN_FONT_SIZE = 12;
     private static final int MAX_FONT_SIZE = 100;
+    // 取色器在 rgb 模式下会把 "rgb(217, 203, 203)" / "rgba(217, 203, 203, 0.5)" 原样存进水印配置
+    private static final Pattern RGB_COLOR_PATTERN = Pattern.compile(
+            "^rgba?\\(\\s*(\\d{1,3})[\\s,]+(\\d{1,3})[\\s,]+(\\d{1,3})[^)]*\\)$", Pattern.CASE_INSENSITIVE);
+    private static final Color DEFAULT_WATERMARK_COLOR = new Color(0xDD, 0x10, 0x10);
 
     public static byte[] createTextImage(String text, WatermarkContentDTO watermarkContent) {
         if (text.length() > MAX_TEXT_LENGTH) {
@@ -115,7 +120,7 @@ public class ExcelWatermarkUtils {
         // 因此宽高统一兜底为最小 1 像素，保证仅生成一张空白水印图。
         int width = Math.max(MIN_IMAGE_SIZE, Math.min(fontSize * text.length(), MAX_IMAGE_WIDTH));
         int height = Math.max(MIN_IMAGE_SIZE, Math.min((int) Math.round(fontSize + width * Math.sin(radians)), MAX_IMAGE_HEIGHT));
-        Color baseColor = Color.decode(watermarkContent.getWatermark_color());
+        Color baseColor = parseWatermarkColor(watermarkContent.getWatermark_color());
 
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = image.createGraphics();
@@ -149,5 +154,30 @@ public class ExcelWatermarkUtils {
             LogUtil.error(e);
         }
         return baos.toByteArray();
+    }
+
+    /**
+     * 解析水印颜色配置，支持 #hex 与 rgb()/rgba() 两种写法。
+     * Color.decode 只认十六进制，遇到 "rgb(217, 203, 203)" 会抛 NumberFormatException，
+     * 让整条 Excel 导出任务失败，所以这里按取色器实际产出的格式先做一次识别。
+     */
+    private static Color parseWatermarkColor(String colorStr) {
+        if (colorStr == null || colorStr.isBlank()) {
+            return DEFAULT_WATERMARK_COLOR;
+        }
+        String value = colorStr.trim();
+        Matcher matcher = RGB_COLOR_PATTERN.matcher(value);
+        if (matcher.matches()) {
+            return new Color(
+                    Math.min(255, Integer.parseInt(matcher.group(1))),
+                    Math.min(255, Integer.parseInt(matcher.group(2))),
+                    Math.min(255, Integer.parseInt(matcher.group(3))));
+        }
+        try {
+            return Color.decode(value);
+        } catch (NumberFormatException e) {
+            LogUtil.error("Unsupported watermark color: " + value, e);
+            return DEFAULT_WATERMARK_COLOR;
+        }
     }
 }
