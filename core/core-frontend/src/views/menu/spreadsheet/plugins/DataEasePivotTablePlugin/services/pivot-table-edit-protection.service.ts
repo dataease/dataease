@@ -87,7 +87,7 @@ const REMOVE_TABLE_COL_COMMAND_ID = 'sheet.command.table-remove-col'
 const SORT_RANGE_COMMAND_ID = 'sheet.command.sort-range'
 
 export class PivotTableEditProtectionService {
-  // 格式刷和“清除全部”由共享白名单策略收敛为纯用户样式写入，不再作为内容编辑拦截。
+  // 格式刷、清除格式及清除全部由共享服务保护表格样式边界，普通内容编辑仍需拦截。
   private readonly valueCommandIds = new Set([
     SetRangeValuesCommand.id,
     SetRangeValuesMutation.id,

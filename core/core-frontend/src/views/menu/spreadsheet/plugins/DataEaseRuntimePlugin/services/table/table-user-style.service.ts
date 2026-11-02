@@ -1,21 +1,33 @@
 import {
   AddWorksheetMergeMutation,
   ClearSelectionAllCommand,
+  ClearSelectionFormatCommand,
+  type IClearSelectionFormatCommandParams,
+  type IRemoveWorksheetMergeMutationParams,
   type ISetRangeValuesMutationParams,
   RemoveWorksheetMergeMutation,
   SetRangeValuesMutation,
   SetStyleCommand
 } from '@univerjs/sheets'
 import {
+  CommandType,
   Disposable,
   ICommandService,
+  IUndoRedoService,
   IUniverInstanceService,
   Inject,
+  ObjectMatrix,
+  Rectangle,
+  Tools,
   UniverInstanceType,
-  type ICommandInfo,
+  sequenceExecute,
+  type ICellData,
+  type IExecutionOptions,
   type IMutationInfo,
   type IRange,
   type IStyleData,
+  type IUndoRedoItem,
+  type Nullable,
   type Workbook
 } from '@univerjs/core'
 import {
@@ -27,9 +39,15 @@ import { TableRangeConflictService } from './table-range-conflict.service'
 
 type MutableCellMatrix = Record<number, Record<number, unknown>>
 
+const REPLAY_TABLE_CLEAR_MUTATION_ID = 'dataease.mutation.replay-table-clear'
+
+interface ReplayTableClearParams {
+  mutation: IMutationInfo
+}
+
 /**
  * 统一管理表格渲染区域内的用户样式写入边界。
- * “清除全部”和格式刷都只能修改共享白名单，值、公式、合并及插件样式保持不变。
+ * 清除格式、清除全部和格式刷在表格内只修改用户样式，保留数据及插件控制的格式和合并。
  */
 export class TableUserStyleService extends Disposable {
   constructor(
@@ -42,9 +60,85 @@ export class TableUserStyleService extends Disposable {
     private readonly pluginRenderStatusService: PluginRenderStatusService
   ) {
     super()
+    this.initClearCommands()
+  }
+
+  private initClearCommands(): void {
     this.disposeWithMe(
-      this.commandService.beforeCommandExecuted(command => this.normalizeClearAllMutation(command))
+      this.commandService.registerCommand({
+        id: REPLAY_TABLE_CLEAR_MUTATION_ID,
+        type: CommandType.MUTATION,
+        handler: (_accessor, params: ReplayTableClearParams, options) => {
+          if (!params?.mutation || !this.isClearMutation(params.mutation.id)) {
+            return false
+          }
+          // 查询可能改变表格范围；重放时重新保护当前范围，不修改原历史记录。
+          return this.executeClearMutation(Tools.deepClone(params.mutation), options)
+        }
+      })
     )
+
+    // 顶部清除格式和右键入口共用底层命令，保留原生附加操作及单步撤销语义。
+    for (const command of [ClearSelectionFormatCommand, ClearSelectionAllCommand]) {
+      this.commandService.unregisterCommand(command.id)
+      this.disposeWithMe(
+        this.commandService.registerCommand({
+          ...command,
+          handler: (accessor, params: IClearSelectionFormatCommandParams | undefined, options) => {
+            const commandService = this.commandService
+            const undoRedoService = accessor.get(IUndoRedoService)
+            const commandsProxy = new Proxy(commandService, {
+              get: (target, property) => {
+                if (property === 'syncExecuteCommand') {
+                  return (
+                    id: string,
+                    mutationParams: object,
+                    executionOptions?: IExecutionOptions
+                  ) => {
+                    if (this.isClearMutation(id)) {
+                      return this.executeClearMutation(
+                        { id, params: mutationParams },
+                        executionOptions
+                      )
+                    }
+                    return target.syncExecuteCommand(id, mutationParams, executionOptions)
+                  }
+                }
+                const value = Reflect.get(target, property)
+                return typeof value === 'function' ? value.bind(target) : value
+              }
+            })
+            const historyProxy = new Proxy(undoRedoService, {
+              get: (target, property) => {
+                if (property === 'pushUndoRedo') {
+                  return (item: IUndoRedoItem) =>
+                    target.pushUndoRedo({
+                      ...item,
+                      undoMutations: this.prepareClearHistory(item.undoMutations),
+                      redoMutations: this.prepareClearHistory(item.redoMutations)
+                    })
+                }
+                const value = Reflect.get(target, property)
+                return typeof value === 'function' ? value.bind(target) : value
+              }
+            })
+            const clearAccessor = new Proxy(accessor, {
+              get(target, property) {
+                if (property === 'get') {
+                  return (id: Parameters<typeof accessor.get>[0]) => {
+                    if (id === ICommandService) return commandsProxy
+                    if (id === IUndoRedoService) return historyProxy
+                    return target.get(id)
+                  }
+                }
+                return Reflect.get(target, property)
+              }
+            })
+            return command.handler(clearAccessor, params, options)
+          }
+        })
+      )
+    }
   }
 
   sanitizeFormatPainter(
@@ -61,52 +155,113 @@ export class TableUserStyleService extends Disposable {
     this.sanitizeFormatPainterMutations(undoMutations, unitId, sheetId, false)
   }
 
-  private normalizeClearAllMutation(command: Readonly<ICommandInfo>): void {
-    if (command.id !== SetRangeValuesMutation.id) {
-      return
+  private isClearMutation(id: string): boolean {
+    return (
+      id === SetRangeValuesMutation.id ||
+      id === AddWorksheetMergeMutation.id ||
+      id === RemoveWorksheetMergeMutation.id
+    )
+  }
+
+  private executeClearMutation(mutation: IMutationInfo, options?: IExecutionOptions): boolean {
+    const mutations = this.prepareClearMutation(mutation, true)
+    return sequenceExecute(mutations, this.commandService, options).result
+  }
+
+  private prepareClearHistory(mutations: IMutationInfo[]): IMutationInfo[] {
+    return mutations.flatMap(mutation => {
+      if (!this.isClearMutation(mutation.id)) {
+        return [mutation]
+      }
+      // 入栈前永久去掉原表格区域的旧数据，防止查询缩小后又恢复到空白区域。
+      return this.prepareClearMutation(mutation, false).map(prepared => ({
+        id: REPLAY_TABLE_CLEAR_MUTATION_ID,
+        params: { mutation: prepared }
+      }))
+    })
+  }
+
+  private prepareClearMutation(
+    mutation: IMutationInfo,
+    resolveRemovedMerges: boolean
+  ): IMutationInfo[] {
+    if (mutation.id === SetRangeValuesMutation.id) {
+      return this.prepareClearCellMutation(mutation.params as ISetRangeValuesMutationParams)
     }
 
-    const params = command.params as ISetRangeValuesMutationParams | undefined
-    if (
-      !params?.unitId ||
-      !params.subUnitId ||
-      !params.cellValue ||
-      params.trigger !== ClearSelectionAllCommand.id
-    ) {
-      return
-    }
-
+    const params = mutation.params as IRemoveWorksheetMergeMutationParams
     const workbook = this.univerInstanceService.getUnit<Workbook>(
       params.unitId,
       UniverInstanceType.UNIVER_SHEET
     )
     const worksheet = workbook?.getSheetBySheetId(params.subUnitId)
-    if (!workbook || !worksheet) {
-      return
+    if (!worksheet) {
+      return [mutation]
     }
 
-    const cellMatrix = params.cellValue as unknown as MutableCellMatrix
-    Object.entries(cellMatrix).forEach(([rowKey, rowData]) => {
-      const row = Number(rowKey)
-      Object.entries(rowData || {}).forEach(([columnKey, cellPatch]) => {
-        const column = Number(columnKey)
-        if (
-          cellPatch !== null ||
-          !Number.isFinite(row) ||
-          !Number.isFinite(column) ||
-          !this.isTableCell(params.subUnitId, row, column)
-        ) {
+    let ranges = params.ranges
+    if (mutation.id === RemoveWorksheetMergeMutation.id && resolveRemovedMerges) {
+      // 原生命令传入整个选区，删除按相交执行；先收敛到实际普通合并，保留跨表格边界的合并。
+      ranges = worksheet
+        .getMergeData()
+        .filter(merge => params.ranges.some(range => Rectangle.intersects(range, merge)))
+    }
+    params.ranges = ranges.filter(range => !this.rangeIntersectsTable(params.subUnitId, range))
+    return params.ranges.length ? [mutation] : []
+  }
+
+  private prepareClearCellMutation(params: ISetRangeValuesMutationParams): IMutationInfo[] {
+    const workbook = this.univerInstanceService.getUnit<Workbook>(
+      params.unitId,
+      UniverInstanceType.UNIVER_SHEET
+    )
+    if (!params.cellValue || !workbook?.getSheetBySheetId(params.subUnitId)) {
+      return [{ id: SetRangeValuesMutation.id, params }]
+    }
+
+    const allCells = new ObjectMatrix<Nullable<ICellData>>()
+    const styleCells = new ObjectMatrix<Nullable<ICellData>>()
+    const contentCells = new ObjectMatrix<Nullable<ICellData>>()
+    new ObjectMatrix(params.cellValue).forValue((row, column, cell) => {
+      let patch = cell
+      if (this.isTableCell(params.subUnitId, row, column)) {
+        if (cell && !Object.prototype.hasOwnProperty.call(cell, 's')) {
           return
         }
-
-        const rawCell = worksheet.getCellRaw?.(row, column)
-        const rawStyle = workbook.getStyles().getStyleByCell(rawCell) || {}
-        const nextStyle = replaceDataEaseUserStyle(rawStyle as Partial<IStyleData>, {})
-
-        // Univer 按字段合并样式，白名单字段必须显式置空，才能保留 n 等插件样式。
-        rowData[Number(columnKey)] = { s: nextStyle }
-      })
+        const sourceStyle = this.resolveStyle(workbook, cell?.s)
+        // 清除格式传入 { s: null }，清除全部传入 null；撤销也只恢复白名单样式。
+        // 不保存当时的 n 等插件样式，重放时通过样式字段合并保留最新配置。
+        patch = { s: replaceDataEaseUserStyle({}, pickDataEaseUserStyle(sourceStyle)) }
+      }
+      allCells.setValue(row, column, patch)
+      if (
+        patch &&
+        Object.keys(patch).length === 1 &&
+        Object.prototype.hasOwnProperty.call(patch, 's')
+      ) {
+        styleCells.setValue(row, column, patch)
+      } else {
+        contentCells.setValue(row, column, patch)
+      }
     })
+
+    params.cellValue = allCells.getMatrix()
+    const mutations: IMutationInfo[] = []
+    // 纯样式必须独立执行，否则公式同步会把未携带 f 的表格单元格当作清除公式。
+    if (styleCells.hasValue()) {
+      mutations.push({
+        id: SetRangeValuesMutation.id,
+        params: { ...params, cellValue: styleCells.getMatrix(), isOverrideStyle: false }
+      })
+    }
+    // 普通单元格保留原生完整撤销数据，包括用于恢复富文本内部样式的 p。
+    if (contentCells.hasValue()) {
+      mutations.push({
+        id: SetRangeValuesMutation.id,
+        params: { ...params, cellValue: contentCells.getMatrix() }
+      })
+    }
+    return mutations
   }
 
   private sanitizeFormatPainterMutations(
@@ -224,8 +379,8 @@ export class TableUserStyleService extends Disposable {
   ): boolean {
     const sheetId = typeof params.subUnitId === 'string' ? params.subUnitId : fallbackSheetId
     if (Array.isArray(params.ranges)) {
-      const retainedRanges = params.ranges.filter(range =>
-        !this.rangeIntersectsTable(sheetId, range as IRange)
+      const retainedRanges = params.ranges.filter(
+        range => !this.rangeIntersectsTable(sheetId, range as IRange)
       )
       params.ranges = retainedRanges
       return retainedRanges.length > 0
@@ -258,7 +413,7 @@ export class TableUserStyleService extends Disposable {
     if (typeof style === 'string') {
       return workbook.getStyles().get(style) || {}
     }
-    return style && typeof style === 'object' ? style as Partial<IStyleData> : {}
+    return style && typeof style === 'object' ? (style as Partial<IStyleData>) : {}
   }
 
   private rangeIntersectsTable(sheetId: string, range: IRange): boolean {
@@ -271,10 +426,12 @@ export class TableUserStyleService extends Disposable {
         return false
       }
       const start = this.parseCell(status.startCell)
-      return start.row >= range.startRow &&
+      return (
+        start.row >= range.startRow &&
         start.row <= range.endRow &&
         start.column >= range.startColumn &&
         start.column <= range.endColumn
+      )
     })
   }
 
