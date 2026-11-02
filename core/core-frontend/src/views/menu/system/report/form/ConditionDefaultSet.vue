@@ -248,6 +248,23 @@ const getDisplayLines = (filterItem): ConditionDisplayLine[] => {
       : [{ text: endpoint() }]
   }
 
+  if (
+    filterItem.displayType === '7' &&
+    filterItem.timeType === 'dynamic' &&
+    ['thisQuarter', 'lastQuarter'].includes(filterItem.relativeToCurrentRange)
+  ) {
+    return [
+      { text: t('dynamic_time.dynamic') },
+      {
+        text: t(
+          filterItem.relativeToCurrentRange === 'thisQuarter'
+            ? 'dynamic_time.tquarter'
+            : 'dynamic_time.last_quarter'
+        )
+      }
+    ]
+  }
+
   if (filterItem.displayType === '7' && filterItem.timeType === 'dynamic') {
     return [
       { text: t('dynamic_time.dynamic') },

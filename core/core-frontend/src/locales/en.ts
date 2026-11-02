@@ -519,6 +519,7 @@ export default {
     cquarter: 'This quarter',
     tquarter: 'This quarter',
     lquarter: 'Last quarter',
+    last_quarter: 'Last quarter',
     cyear: 'This year'
   },
   dynamic_year: {

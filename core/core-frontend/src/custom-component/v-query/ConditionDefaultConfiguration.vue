@@ -216,6 +216,10 @@ const relativeToCurrentListRange = computed(() => {
           value: 'thisQuarter'
         },
         {
+          label: t('dynamic_time.last_quarter'),
+          value: 'lastQuarter'
+        },
+        {
           label: t('v_query.last_3_months'),
           value: 'LastThreeMonths'
         },
@@ -255,6 +259,14 @@ const relativeToCurrentListRange = computed(() => {
         {
           label: t('cron.this_month'),
           value: 'thisMonth'
+        },
+        {
+          label: t('dynamic_time.tquarter'),
+          value: 'thisQuarter'
+        },
+        {
+          label: t('dynamic_time.last_quarter'),
+          value: 'lastQuarter'
         },
         {
           label: t('v_query.last_3_days'),
