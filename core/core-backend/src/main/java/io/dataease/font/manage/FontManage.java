@@ -2,6 +2,7 @@ package io.dataease.font.manage;
 
 import io.dataease.api.font.dto.FontDto;
 import io.dataease.exception.DEException;
+import io.dataease.result.ResultCode;
 import io.dataease.i18n.Translator;
 import io.dataease.font.dao.auto.entity.CoreFont;
 import io.dataease.font.dao.auto.mapper.CoreFontRepository;
@@ -75,6 +76,9 @@ public class FontManage {
 
     public FontDto edit(FontDto fontDto) {
         fontSettingsManage.checkMenuPermission();
+        if (fontDto == null || fontDto.getIsDefault() == null|| fontDto.getId() == null|| fontDto.getName() == null) {
+            DEException.throwException(ResultCode.PARAM_IS_BLANK.code(), ResultCode.PARAM_IS_BLANK.message());
+        }
         if (ObjectUtils.isEmpty(fontDto.getId())) {
             return create(fontDto);
         }
