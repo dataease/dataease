@@ -3,6 +3,8 @@ import io.dataease.permission.util.V3UserUtil;
 import io.dataease.utils.*;
 
 import io.dataease.api.ds.EngineApi;
+import io.dataease.exception.DEException;
+import io.dataease.result.ResultCode;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.dao.auto.repository.CoreDeEngineRepository;
 import io.dataease.datasource.manage.EngineManage;
@@ -97,6 +99,9 @@ public class EngineServer implements EngineApi {
 
     @Override
     public void validate(DatasourceDTO datasourceDTO) throws Exception {
+        if (datasourceDTO == null || StringUtils.isBlank(datasourceDTO.getConfiguration())) {
+            DEException.throwException(ResultCode.PARAM_IS_BLANK.code(), ResultCode.PARAM_IS_BLANK.message());
+        }
         CoreDeEngine coreDeEngine = new CoreDeEngine();
         BeanUtils.copyBean(coreDeEngine, datasourceDTO);
         coreDeEngine.setConfiguration(new String(Base64.getDecoder().decode(coreDeEngine.getConfiguration())));
