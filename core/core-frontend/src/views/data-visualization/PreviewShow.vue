@@ -34,6 +34,8 @@ const dvPreviewRef = ref(null)
 const slideShow = ref(true)
 const permissionStore = usePermissionStoreWithOut()
 const dataInitState = ref(true)
+const loadError = ref(false)
+let loadSequence = 0
 const downloadStatus = ref(false)
 const { width, node } = useMoveLine('DASHBOARD')
 const appExportFormRef = ref(null)
@@ -78,10 +80,12 @@ function createNew() {
 
 const loadCanvasData = (dvId, weight?, ext?) => {
   const initMethod = props.showPosition === 'multiplexing' ? initCanvasDataPrepare : initCanvasData
+  const sequence = ++loadSequence
   dataInitState.value = false
+  loadError.value = false
   initMethod(
     dvId,
-    { busiFlag: 'dataV', resourceTable: 'core' },
+    { busiFlag: 'dataV', resourceTable: 'core', awaitLoad: true },
     function ({
       canvasDataResult,
       canvasStyleResult,
@@ -89,6 +93,7 @@ const loadCanvasData = (dvId, weight?, ext?) => {
       canvasViewInfoPreview,
       curPreviewGap
     }) {
+      if (sequence !== loadSequence) return
       dvInfo['weight'] = weight
       dvInfo['ext'] = ext || 0
       state.canvasDataPreview = canvasDataResult
@@ -107,7 +112,11 @@ const loadCanvasData = (dvId, weight?, ext?) => {
         onInitReady({ resourceId: dvId })
       })
     }
-  )
+  ).catch(() => {
+    if (sequence !== loadSequence) return
+    loadError.value = true
+    dataInitState.value = true
+  })
 }
 
 const download = type => {
@@ -269,7 +278,10 @@ onBeforeMount(() => {
         <el-icon v-if="slideShow"><ArrowLeft /></el-icon>
         <el-icon v-else><ArrowRight /></el-icon>
       </div>
-      <template v-if="dvInfo.name">
+      <div v-if="loadError" class="canvas-load-error" role="alert">
+        {{ t('visualization.canvas_load_failed') }}
+      </div>
+      <template v-else-if="dvInfo.name">
         <preview-head
           v-if="showPosition === 'preview'"
           @reload="reload"
@@ -339,6 +351,12 @@ onBeforeMount(() => {
 </template>
 
 <style lang="less">
+.canvas-load-error {
+  margin: auto;
+  padding: 24px;
+  text-align: center;
+  color: var(--ed-text-color-secondary);
+}
 .dv-preview {
   width: 100%;
   height: 100%;

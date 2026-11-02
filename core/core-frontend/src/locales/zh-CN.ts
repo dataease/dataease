@@ -3194,6 +3194,7 @@ export default {
     column_name: '字段名称'
   },
   visualization: {
+    canvas_load_failed: '内容加载失败，请重新打开；若仍失败，请联系管理员检查画布配置。',
     template_load_failed: '模板加载失败，请检查模板后重新打开，或稍后重试。',
     hover_button_tips: '显示图表操作按钮',
     preview_effect: '预览时生效',
