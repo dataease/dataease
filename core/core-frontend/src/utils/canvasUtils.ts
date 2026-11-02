@@ -1,3 +1,4 @@
+import { normalizeCanvasWatermark } from '@/utils/canvasWatermark'
 import { registerMaterialPreviews, clearMaterialPreviews } from '@/utils/resourceImages'
 import { cloneDeep } from 'lodash-es'
 import componentList, {
@@ -614,12 +615,7 @@ export function initCanvasDataPrepare(dvId, params, callBack) {
   attachInfo['resourceTable'] = params.resourceTable ? params.resourceTable : 'core'
   return method(dvId, busiFlagCustom, attachInfo).then(res => {
     const canvasInfo = res.data
-    const watermarkInfo = {
-      ...canvasInfo.watermarkInfo,
-      settingContent: canvasInfo.watermarkInfo?.settingContent
-        ? JSON.parse(canvasInfo.watermarkInfo.settingContent)
-        : {}
-    }
+    const watermarkInfo = normalizeCanvasWatermark(canvasInfo.watermarkInfo)
 
     const dvInfo = {
       id: canvasInfo.id,

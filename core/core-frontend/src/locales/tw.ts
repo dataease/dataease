@@ -3175,6 +3175,7 @@ export default {
     column_name: '欄位名稱'
   },
   visualization: {
+    canvas_load_failed: '內容載入失敗，請重新開啟；若仍失敗，請聯絡管理員檢查畫布設定。',
     template_load_failed: '範本載入失敗，請檢查範本後重新開啟，或稍後重試。',
     hover_button_tips: '顯示圖表操作按鈕',
     preview_effect: '預覽時生效',

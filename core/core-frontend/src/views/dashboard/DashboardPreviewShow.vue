@@ -33,6 +33,8 @@ const slideShow = ref(true)
 const permissionStore = usePermissionStoreWithOut()
 const appStore = useAppStoreWithOut()
 const dataInitState = ref(true)
+const loadError = ref(false)
+let loadSequence = 0
 const downloadStatus = ref(false)
 const state = reactive({
   canvasDataPreview: null,
@@ -101,10 +103,12 @@ function createNew() {
 const loadCanvasData = (dvId, weight?, ext?) => {
   // 复用不设置 dvMain 中的componentData 等画布信息
   const initMethod = showPosition.value === 'multiplexing' ? initCanvasDataPrepare : initCanvasData
+  const sequence = ++loadSequence
   dataInitState.value = false
+  loadError.value = false
   initMethod(
     dvId,
-    { busiFlag: 'dashboard', resourceTable: 'core' },
+    { busiFlag: 'dashboard', resourceTable: 'core', awaitLoad: true },
     function ({
       canvasDataResult,
       canvasStyleResult,
@@ -112,6 +116,7 @@ const loadCanvasData = (dvId, weight?, ext?) => {
       canvasViewInfoPreview,
       curPreviewGap
     }) {
+      if (sequence !== loadSequence) return
       dvInfo['weight'] = weight
       dvInfo['ext'] = ext || 0
       state.canvasDataPreview = canvasDataResult
@@ -128,7 +133,11 @@ const loadCanvasData = (dvId, weight?, ext?) => {
         onInitReady({ resourceId: dvId })
       })
     }
-  )
+  ).catch(() => {
+    if (sequence !== loadSequence) return
+    loadError.value = true
+    dataInitState.value = true
+  })
 }
 const downloadH2 = type => {
   downloadStatus.value = true
@@ -283,7 +292,10 @@ defineExpose({
         <el-icon v-else><ArrowRight /></el-icon>
       </div>
       <!--从store中判断当前是否有点击仪表板 复用时也符合-->
-      <template v-if="previewShowFlag">
+      <div v-if="loadError" class="canvas-load-error" role="alert">
+        {{ t('visualization.canvas_load_failed') }}
+      </div>
+      <template v-else-if="previewShowFlag">
         <preview-head
           v-if="showPosition === 'preview'"
           @reload="reload"
@@ -348,6 +360,12 @@ defineExpose({
 </template>
 
 <style lang="less">
+.canvas-load-error {
+  margin: auto;
+  padding: 24px;
+  text-align: center;
+  color: var(--ed-text-color-secondary);
+}
 .dv-preview {
   width: 100%;
   height: 100%;
