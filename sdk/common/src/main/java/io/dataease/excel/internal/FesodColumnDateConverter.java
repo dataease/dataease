@@ -7,6 +7,7 @@ import org.apache.fesod.sheet.metadata.data.ReadCellData;
 import org.apache.fesod.sheet.metadata.property.ExcelContentProperty;
 import org.apache.fesod.sheet.util.DateUtils;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Map;
 
@@ -37,13 +38,9 @@ public class FesodColumnDateConverter extends StringNumberConverter {
         String dataFormat = cellData.getDataFormatData().getFormat();
         // 核心判断：如果 DataFormat 是 "@"，说明是文本格式，文本格式的数字不应被当作日期序列号解析
         if (StringUtils.equals("@", dataFormat)) {
-            Number numberValue = cellData.getNumberValue();
+            BigDecimal numberValue = cellData.getNumberValue();
             if (numberValue != null) {
-                double doubleVal = numberValue.doubleValue();
-                if (doubleVal == Math.floor(doubleVal) && !Double.isInfinite(doubleVal)) {
-                    return String.valueOf((long) doubleVal);
-                }
-                return String.valueOf(doubleVal);
+                return numberValue.stripTrailingZeros().toPlainString();
             }
             return "";
         }
