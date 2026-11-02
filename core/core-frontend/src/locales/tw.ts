@@ -500,6 +500,7 @@ export default {
     cquarter: '本季',
     tquarter: '本季',
     lquarter: '上季',
+    last_quarter: '上季度',
     cyear: '本年'
   },
   dynamic_year: {

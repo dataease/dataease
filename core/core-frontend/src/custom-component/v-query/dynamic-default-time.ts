@@ -109,7 +109,7 @@ export const evaluateDynamicDefault = (
   if (!range)
     return new Date(getDynamicRange({ ...config, arbitraryTime: config.arbitraryTime })[0])
   if (config.relativeToCurrentRange && config.relativeToCurrentRange !== 'custom') {
-    return getCustomRange(config.relativeToCurrentRange)
+    return getCustomRange(config.relativeToCurrentRange, baseline)
   }
   return [
     getCustomTime(
