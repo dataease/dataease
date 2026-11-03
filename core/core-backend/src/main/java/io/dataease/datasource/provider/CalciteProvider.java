@@ -2198,6 +2198,13 @@ public class CalciteProvider extends Provider {
         return connection;
     }
 
+    @Override
+    public ConnectionObj getWriteConnection(DatasourceDTO datasource) throws Exception {
+        ConnectionObj connection = new ConnectionObj();
+        connection.setConnection(getConnectionFromPool(datasource.getId()));
+        return connection;
+    }
+
     private Connection getConnectionFromPool(Long dsId) {
         try {
             Connection connection = take();
