@@ -25,6 +25,12 @@ import io.dataease.api.ds.vo.ExcelConfiguration;
 import io.dataease.i18n.Translator;
 import io.dataease.utils.*;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -501,18 +507,29 @@ public class ExcelUtils {
     public ExcelFileData excelSaveAndParse(MultipartFile file, String createBy) throws DEException {
         String filename = file.getOriginalFilename();
         FileUtils.validateUploadFilename(filename);
+        String suffix = StringUtils.substringAfterLast(filename, ".").toLowerCase(Locale.ROOT);
+        boolean isExcel = StringUtils.equalsAny(suffix, "xls", "xlsx");
+        byte[] content = null;
+        if (isExcel) {
+            try {
+                content = evaluateFormulasIfNeeded(file.getBytes(), filename);
+            } catch (Exception e) {
+                DEException.throwException(e);
+            }
+        }
         List<ExcelSheetData> excelSheetDataList = null;
-        try {
-            excelSheetDataList = parseExcel(filename, file.getInputStream(), true, filename);
+        try (InputStream inputStream = content == null ? file.getInputStream() : new ByteArrayInputStream(content)) {
+            excelSheetDataList = parseExcel(filename, inputStream, true, filename);
         } catch (Exception e) {
             DEException.throwException(e);
         }
-        List<ExcelSheetData> returnSheetDataList = new ArrayList<>();
-        returnSheetDataList = excelSheetDataList;
-        returnSheetDataList = returnSheetDataList.stream().filter(excelSheetData -> !CollectionUtils.isEmpty(excelSheetData.getFields())).collect(Collectors.toList());
+        List<ExcelSheetData> returnSheetDataList = excelSheetDataList.stream()
+                .filter(excelSheetData -> !CollectionUtils.isEmpty(excelSheetData.getFields()))
+                .collect(Collectors.toList());
         // save file
         String excelId = UUID.randomUUID().toString();
-        String filePath = saveFile(file, excelId, createBy);
+        String filePath = content == null ? saveFile(file, excelId, createBy) : saveFile(content, filename, excelId, createBy);
+        long fileSize = content == null ? file.getSize() : content.length;
 
         for (ExcelSheetData excelSheetData : returnSheetDataList) {
             excelSheetData.setLastUpdateTime(System.currentTimeMillis());
@@ -547,15 +564,15 @@ public class ExcelUtils {
             }
             long size = 0;
             String unit = "B";
-            if (file.getSize() / 1024 == 0) {
-                size = file.getSize();
+            if (fileSize / 1024 == 0) {
+                size = fileSize;
             }
-            if (0 < file.getSize() / 1024 && file.getSize() / 1024 < 1024) {
-                size = file.getSize() / 1024;
+            if (0 < fileSize / 1024 && fileSize / 1024 < 1024) {
+                size = fileSize / 1024;
                 unit = "KB";
             }
-            if (1024 <= file.getSize() / 1024) {
-                size = file.getSize() / 1024 / 1024;
+            if (1024 <= fileSize / 1024) {
+                size = fileSize / 1024 / 1024;
                 unit = "MB";
             }
             excelSheetData.setSize(size + " " + unit);
@@ -719,6 +736,36 @@ public class ExcelUtils {
         }
     }
 
+    private static byte[] evaluateFormulasIfNeeded(byte[] content, String filename) throws IOException {
+        String suffix = StringUtils.substringAfterLast(filename, ".").toLowerCase(Locale.ROOT);
+        if (!StringUtils.equalsAny(suffix, "xls", "xlsx")) {
+            return content;
+        }
+        try (Workbook workbook = WorkbookFactory.create(new ByteArrayInputStream(content))) {
+            if (!hasFormulaCells(workbook)) {
+                return content;
+            }
+            workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            workbook.write(output);
+            return output.toByteArray();
+        }
+    }
+
+    private static boolean hasFormulaCells(Workbook workbook) {
+        for (int sheetIndex = 0; sheetIndex < workbook.getNumberOfSheets(); sheetIndex++) {
+            Sheet sheet = workbook.getSheetAt(sheetIndex);
+            for (Row row : sheet) {
+                for (Cell cell : row) {
+                    if (cell.getCellType() == CellType.FORMULA) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     private static String saveFile(MultipartFile file, String fileNameUUID, String owner) throws DEException {
         String filePath = null;
         try {
@@ -730,6 +777,32 @@ public class ExcelUtils {
             filePath = target.toString();
             boolean created = false;
             try (InputStream input = file.getInputStream();
+                 OutputStream output = java.nio.file.Files.newOutputStream(target,
+                         java.nio.file.StandardOpenOption.CREATE_NEW, java.nio.file.StandardOpenOption.WRITE)) {
+                created = true;
+                input.transferTo(output);
+            } catch (Exception e) {
+                if (created) {
+                    java.nio.file.Files.deleteIfExists(target);
+                }
+                throw e;
+            }
+        } catch (Exception e) {
+            DEException.throwException(e);
+        }
+        return filePath;
+    }
+
+    private static String saveFile(byte[] content, String filename, String fileNameUUID, String owner) throws DEException {
+        String filePath = null;
+        try {
+            FileUtils.validateUploadFilename(filename);
+            String suffix = filename.substring(filename.lastIndexOf(".") + 1);
+            java.nio.file.Path directory = ExcelFileGuard.uploadDirectory(java.nio.file.Path.of(path), owner);
+            java.nio.file.Path target = directory.resolve(fileNameUUID + "." + suffix);
+            filePath = target.toString();
+            boolean created = false;
+            try (InputStream input = new ByteArrayInputStream(content);
                  OutputStream output = java.nio.file.Files.newOutputStream(target,
                          java.nio.file.StandardOpenOption.CREATE_NEW, java.nio.file.StandardOpenOption.WRITE)) {
                 created = true;
