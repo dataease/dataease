@@ -987,6 +987,7 @@ export default {
     success: 'Import successful',
     placeholder: 'Click to select a file',
     defaultTip: 'Only supports xlsx and xls format files',
+    emptyOrgTip: 'When the organization is blank, no organization or roles are assigned.',
     errorTip:
       'Upload failed: There is non-compliant data in the file, if you need to view details,',
     downTip: 'Download template',

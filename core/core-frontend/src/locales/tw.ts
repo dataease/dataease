@@ -938,6 +938,7 @@ export default {
     success: '導入成功',
     placeholder: '點選選擇檔',
     defaultTip: '僅支援xlsx、xls格式的檔案',
+    emptyOrgTip: '所屬組織留空時，不分配組織和角色。',
     errorTip: '上傳失敗：文件中存在不合規數據，如需查看詳情，',
     downTip: '下載範本',
     uploadAgain: '再次上傳',

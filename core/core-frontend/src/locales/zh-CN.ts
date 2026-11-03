@@ -950,6 +950,7 @@ export default {
     success: '导入成功',
     placeholder: '点击选择文件',
     defaultTip: '仅支持xlsx、xls格式的文件',
+    emptyOrgTip: '所属组织留空时，不分配组织和角色。',
     errorTip: '上传失败：文件中存在不合规数据，如需查看详情，',
     downTip: '下载模板',
     uploadAgain: '再次上传',
