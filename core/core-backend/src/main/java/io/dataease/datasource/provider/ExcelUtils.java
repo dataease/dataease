@@ -1137,24 +1137,25 @@ public class ExcelUtils {
                 List<TableField> fields = new ArrayList<>();
                 BufferedReader reader = csvReader(inputStream);
                 String s = readCsvRecord(reader);// first logical record
-                if (StringUtils.isNotEmpty(s)) {
-                    List<String> headerCells = parseCsvRecord(s);
-                    for (int i = 0; i < headerCells.size(); i++) {
-                        String filedName = headerCells.get(i);
-                        if (StringUtils.isEmpty(filedName)) {
-                            DEException.throwException(Translator.get("i18n_excel_error_first_row"));
-                        }
-                        if (filedName.startsWith(UFEFF)) {
-                            filedName = filedName.replace(UFEFF, "");
-                        }
-                        EngineProvider.validateIdentifier(filedName);
-                        TableField tableFiled = new TableField();
-                        tableFiled.setName(filedName);
-                        tableFiled.setOriginName(filedName);
-                        tableFiled.setFieldType(null);
-                        tableFiled.setChecked(true);
-                        fields.add(tableFiled);
+                if (StringUtils.isEmpty(s)) {
+                    DEException.throwException(Translator.get("i18n_excel_first_row_empty"));
+                }
+                List<String> headerCells = parseCsvRecord(s);
+                for (int i = 0; i < headerCells.size(); i++) {
+                    String filedName = headerCells.get(i);
+                    if (StringUtils.isEmpty(filedName)) {
+                        DEException.throwException(Translator.get("i18n_excel_error_first_row"));
                     }
+                    if (filedName.startsWith(UFEFF)) {
+                        filedName = filedName.replace(UFEFF, "");
+                    }
+                    EngineProvider.validateIdentifier(filedName);
+                    TableField tableFiled = new TableField();
+                    tableFiled.setName(filedName);
+                    tableFiled.setOriginName(filedName);
+                    tableFiled.setFieldType(null);
+                    tableFiled.setChecked(true);
+                    fields.add(tableFiled);
                 }
                 List<String[]> data = csvData(reader, isPreview, fields.size());
                 if (isPreview) {

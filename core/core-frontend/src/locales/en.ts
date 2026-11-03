@@ -2647,7 +2647,7 @@ export default {
     edit_calc_field: 'Edit calculated field',
     calc_field: 'Calculate fields',
     show_sql: 'Show SQL',
-    ple_select_excel: 'Please re-upload the Excel to be imported.',
+    ple_select_excel: 'Please re-upload the file to be imported.',
     merge: 'Merge',
     no_merge: 'Do not merge',
     merge_msg:
