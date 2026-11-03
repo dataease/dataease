@@ -25,6 +25,8 @@ public class VisualizationExcelUtils {
 
     private static final String suffix = ".xlsx";
     private static final String BASE_ROOT = getBaseRoot();
+    // POI 在 createSheet 时会直接抛 IllegalArgumentException：除已有的非法字符外，[ 和 ] 同样不被接受
+    private static final Pattern SHEET_NAME_PATTERN = Pattern.compile("[\\s\\\\/:\\*\\?\\\"<>\\|\\[\\]]");
     private static final Map<Workbook, CellStyle> NUMERIC_STYLE_CACHE = new HashMap<>();
     private static final Map<Workbook, CellStyle> INTEGER_STYLE_CACHE = new HashMap<>();
 
@@ -52,9 +54,25 @@ public class VisualizationExcelUtils {
         }
     }
 
+    /**
+     * 图表标题会直接作为工作表名，POI 校验不通过时整份导出都会失败。
+     * 除替换非法字符外，首尾的单引号也必须去掉。
+     */
+    private static String toSheetName(String rawName) {
+        String sheetName = SHEET_NAME_PATTERN.matcher(rawName).replaceAll("-");
+        int start = 0;
+        int end = sheetName.length();
+        while (start < end && sheetName.charAt(start) == '\'') {
+            start++;
+        }
+        while (end > start && sheetName.charAt(end - 1) == '\'') {
+            end--;
+        }
+        return sheetName.substring(start, end);
+    }
+
     public static File exportExcel(List<ExcelSheetModel> sheets, String fileName, String folderId) throws Exception {
         Pattern pattern = Pattern.compile("[\\s\\\\/:\\*\\?\\\"<>.\\|]");
-        Pattern sheetNamePattern = Pattern.compile("[\\s\\\\/:\\*\\?\\\"<>\\|]");
         AtomicReference<String> realFileName = new AtomicReference<>(fileName);
         if (StringUtils.isNotBlank(fileName)) {
             realFileName.set(pattern.matcher(StringUtils.removeEnd(fileName, suffix)).replaceAll("-"));
@@ -66,7 +84,7 @@ public class VisualizationExcelUtils {
             List<List<String>> details = sheet.getData();
             List<Integer> fieldTypes = sheet.getFiledTypes();
             details.add(0, sheet.getHeads());
-            String sheetName = sheetNamePattern.matcher(sheet.getSheetName()).replaceAll("-");
+            String sheetName = toSheetName(sheet.getSheetName());
             Sheet curSheet = wb.createSheet(sheetName);
             if (StringUtils.isBlank(fileName)) {
                 String cName = pattern.matcher(sheetName).replaceAll("-");
