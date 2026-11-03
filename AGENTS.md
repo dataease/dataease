@@ -212,3 +212,23 @@ git -C de-xpack push origin dev-v3
 - 仅在任务包含提交/交付要求时暂存、提交或推送，按本节约定执行；已获得的授权持续有效。用户已有暂存内容保持原状，不擅自改写远端历史。
 - 完成说明应包含：解决的问题、主要修改文件、已运行的验证及结果、未验证项与原因。涉及 SDK/XPack、历史数据或配置迁移时说明影响。
 - PR 按实际问题和最终行为描述，遵循仓库模板，目标分支为维护者指定的 `dev-v3`；不要把计划中的验证写成已完成。两仓库的提交、推送和 PR 状态分别报告。
+
+## Agent skills
+
+本仓库的代理开发规范以本文件为准。
+
+本节及 `docs/agents/` 配置仅在已安装并使用 Matt Pocock 工程技能时适用。
+安装状态以当前代理可用的技能为准，不以这些配置文件是否存在为依据。
+未安装相关技能的开发者和代理继续遵循本文件其余规范，无需安装技能或执行本节流程。
+
+### Issue tracker
+
+使用这些技能处理工作项前，读取 `docs/agents/issue-tracker.md`；默认跟踪仓库为 `dataease/dataease` 的 GitHub Issues。
+
+### Triage labels
+
+使用 triage 技能前，读取 `docs/agents/triage-labels.md`；采用技能默认的五类分诊标签。
+
+### Domain docs
+
+使用这些技能探索业务概念或架构决策前，读取 `docs/agents/domain.md`；采用 single-context 布局。
