@@ -186,6 +186,7 @@
 - 开发目标为 `dev-v3`，交付时使用任务分支创建 PR，不直接推送主仓库 `dev-v3`。
 - 任务分支沿用维护者命名：`pr@dev-v3@fix_something`、`pr@dev-v3@perf_something`、`pr@dev-v3@chore_something`，后缀描述实际任务。PR base 明确为 `dev-v3`。
 - 提交消息遵循 `.github/PULL_REQUEST_TEMPLATE.md` 要求的 Conventional Commits，例如 `fix(chart): 修复标签越界`。分支命名与提交消息格式是两个不同约定。
+- 处理关联 GitHub Issue 的任务时，提交消息必须以对应的 `#<Issue 编号>` 结尾，例如 `fix(threshold): 忽略已删除指标的空标签 #19649`。先核实关联仓库和 Issue 编号，不把 TAPD 缺陷 ID 当作 GitHub Issue 编号；没有关联 GitHub Issue 的任务不添加该后缀。
 - 在已有工作区准备 PR 时，保留用户未提交/已暂存的内容；按具体路径选择本次修改，不使用全量暂存把无关变更带入 PR。
 
 ### de-xpack：直接同步 dev-v3
