@@ -286,6 +286,7 @@ const clearErrorRecord = () => {
           </span>
         </span>
       </el-form-item>
+      <p class="org-empty-tip">{{ t('userimport.emptyOrgTip') }}</p>
     </el-form>
     <template #footer>
       <span class="dialog-footer">
@@ -347,6 +348,12 @@ const clearErrorRecord = () => {
       height: 40px;
     }
   }
+}
+.org-empty-tip {
+  margin: 8px 0 0;
+  color: var(--deTextSecondary, #646a73);
+  font-size: 12px;
+  line-height: 20px;
 }
 .import-form {
   margin-top: 16px;
