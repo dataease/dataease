@@ -385,6 +385,7 @@ watch(
       :title="t('chart.remark_edit')"
       :visible="showEditRemark"
       v-model="showEditRemark"
+      append-to-body
       width="420px"
       :close-on-click-modal="false"
     >
