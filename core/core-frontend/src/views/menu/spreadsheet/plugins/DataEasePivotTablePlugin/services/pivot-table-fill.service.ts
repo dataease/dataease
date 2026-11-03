@@ -91,7 +91,7 @@ export class PivotTableFillService {
   private async fillByConfigSerial(
     univerApi: any,
     config: PivotTableConfig,
-    worksheet: any,
+    worksheet: FWorksheet,
     options: PivotTableFillOptions = {}
   ): Promise<boolean> {
     const workbook = univerApi.getActiveWorkbook?.()
@@ -101,6 +101,10 @@ export class PivotTableFillService {
 
     const unitId = workbook.getId?.() || workbook.getUnitId?.()
     const sheetId = worksheet.getSheetId()
+    // 撤销删表会创建相同 ID 的新工作表。排队和异步查询均只允许写入原工作表对象。
+    const isCurrentWorksheet = () =>
+      worksheet.getWorkbook().getSheetBySheetId(sheetId) === worksheet.getSheet()
+    if (!isCurrentWorksheet()) return false
     if (unitId) {
       config.placement.startCell = this.tableRenderExpansionService.resolveStartCell(
         unitId,
@@ -116,7 +120,7 @@ export class PivotTableFillService {
       try {
         await this.clearPrevious(univerApi, config.id, worksheet, config.placement.startCell, true)
       } catch (clearError) {}
-      if (unitId) {
+      if (unitId && isCurrentWorksheet()) {
         this.pluginRenderStatusService.set({
           pluginId: config.id,
           type: 'pivot',
@@ -169,11 +173,13 @@ export class PivotTableFillService {
     try {
       if (unitId) {
         await this.spreadsheetFilterRuntimeService.waitForValues(unitId)
+        if (!isCurrentWorksheet()) return false
       }
       const queryConfig = unitId
         ? this.spreadsheetFilterRuntimeService.applyQueryFilterToConfig(unitId, config)
         : config
       const result = await this.dataService.queryData(queryConfig)
+      if (!isCurrentWorksheet()) return false
       if (unitId) {
         // 查询期间可能发生合法的行列删除，写入前必须重新读取实例的最新坐标。
         config.placement.startCell = this.tableRenderExpansionService.resolveStartCell(
@@ -213,6 +219,7 @@ export class PivotTableFillService {
           layout.columnCount,
           options.initialRestore === true
         )
+      if (!isCurrentWorksheet()) return false
       if (rangeMessage) {
         ElMessage.warning(rangeMessage)
         if (unitId) {
@@ -231,6 +238,7 @@ export class PivotTableFillService {
       }
 
       await this.clearPrevious(univerApi, config.id, worksheet, config.placement.startCell)
+      if (!isCurrentWorksheet()) return false
       const tableRange = {
         startRow: start.row,
         endRow: start.row + layout.rowCount - 1,
@@ -240,6 +248,7 @@ export class PivotTableFillService {
       // 首次加载没有旧显示状态，仍需在写入新数据前清理当前范围内的历史合并。
       if (options.initialRestore) {
         await this.removeContainedMerges(univerApi, worksheet, tableRange)
+        if (!isCurrentWorksheet()) return false
       }
       await this.editProtectionService.runWithoutProtection(() =>
         setWorksheetValuesSilently(univerApi, {
@@ -251,9 +260,11 @@ export class PivotTableFillService {
       )
       const effectiveMerges = this.getEffectiveMerges(config, layout.merges, layout.corner?.range)
       if (effectiveMerges.length) {
+        if (!isCurrentWorksheet()) return false
         await this.applyMerges(univerApi, worksheet, start, effectiveMerges)
       }
 
+      if (!isCurrentWorksheet()) return false
       this.displayStateService.set({
         pluginId: config.id,
         sheetId: worksheet.getSheetId(),
@@ -284,10 +295,11 @@ export class PivotTableFillService {
       }
       return true
     } catch (error) {
+      if (!isCurrentWorksheet()) return false
       try {
         await this.clearPrevious(univerApi, config.id, worksheet, config.placement.startCell, true)
       } catch (clearError) {}
-      if (unitId) {
+      if (unitId && isCurrentWorksheet()) {
         this.pluginRenderStatusService.set({
           pluginId: config.id,
           type: 'pivot',

@@ -93,7 +93,7 @@ export class TableFillService {
     univerApi: any,
     config: DetailTableConfig,
     startCell: string,
-    targetWorksheet: any,
+    targetWorksheet: FWorksheet,
     options: TableFillOptions = {}
   ): Promise<boolean> {
     const fWorkbook = univerApi.getActiveWorkbook()
@@ -101,6 +101,10 @@ export class TableFillService {
 
     const unitId = fWorkbook?.getId?.() || fWorkbook?.getUnitId?.()
     const sheetId = fWorksheet.getSheetId()
+    // 撤销删表会创建相同 ID 的新工作表。排队和异步查询均只允许写入原工作表对象。
+    const isCurrentWorksheet = () =>
+      fWorksheet.getWorkbook().getSheetBySheetId(sheetId) === fWorksheet.getSheet()
+    if (!isCurrentWorksheet()) return false
     if (unitId) {
       startCell = this.tableRenderExpansionService.resolveStartCell(
         unitId,
@@ -147,7 +151,7 @@ export class TableFillService {
       try {
         await this.clearPreviousData(univerApi, config.id, startCell, fWorksheet)
       } catch (clearError) {}
-      if (unitId) {
+      if (unitId && isCurrentWorksheet()) {
         this.pluginRenderStatusService.set({
           pluginId: config.id,
           type: 'detail',
@@ -166,11 +170,13 @@ export class TableFillService {
     try {
       if (unitId) {
         await this.spreadsheetFilterRuntimeService.waitForValues(unitId)
+        if (!isCurrentWorksheet()) return false
       }
       const queryConfig = unitId
         ? this.spreadsheetFilterRuntimeService.applyQueryFilterToConfig(unitId, config)
         : config
       const dataResult = await this.dataService.queryData(queryConfig)
+      if (!isCurrentWorksheet()) return false
       if (unitId) {
         // 查询期间可能发生合法的行列删除，写入前必须重新读取实例的最新坐标。
         startCell = this.tableRenderExpansionService.resolveStartCell(
@@ -229,6 +235,7 @@ export class TableFillService {
           fWorksheet,
           options.initialRestore === true
         )
+      if (!isCurrentWorksheet()) return false
       if (conflictMessage) {
         ElMessage.warning(conflictMessage)
         if (unitId) {
@@ -247,6 +254,7 @@ export class TableFillService {
       }
 
       await this.clearPreviousData(univerApi, config.id, startCell, fWorksheet)
+      if (!isCurrentWorksheet()) return false
 
       const dataValues = dataResult.data.rowData.map((row, rowIndex) => {
         const rowValues = resultFields.map((column, index) => {
@@ -312,6 +320,7 @@ export class TableFillService {
         )
       }
 
+      if (!isCurrentWorksheet()) return false
       this.displayStateService.set({
         pluginId: config.id,
         startCell,
@@ -330,6 +339,7 @@ export class TableFillService {
 
       this.updateRenderStyleRange(univerApi, config)
       await this.applyStyleOnly(univerApi, config)
+      if (!isCurrentWorksheet()) return false
 
       if (unitId) {
         this.pluginRenderStatusService.set({
@@ -345,10 +355,11 @@ export class TableFillService {
 
       return true
     } catch (error) {
+      if (!isCurrentWorksheet()) return false
       try {
         await this.clearPreviousData(univerApi, config.id, startCell, fWorksheet)
       } catch (clearError) {}
-      if (unitId) {
+      if (unitId && isCurrentWorksheet()) {
         this.pluginRenderStatusService.set({
           pluginId: config.id,
           type: 'detail',
