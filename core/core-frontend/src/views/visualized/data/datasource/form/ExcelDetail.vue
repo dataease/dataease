@@ -265,7 +265,7 @@ const saveExcelDs = (params, successCb, finallyCb) => {
           return
         }
       }
-      selectedSheet.push(selectNode[i])
+      selectedSheet.push(cloneDeep(selectNode[i]))
       sheetFileMd5.push(selectNode[i].fieldsMd5)
     }
   }
