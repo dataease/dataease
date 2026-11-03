@@ -377,7 +377,6 @@ const tableData = shallowRef([])
 const total = ref(null)
 
 const selectionLoading = ref(false)
-const selectionError = ref(false)
 let selectionSequence = 0
 let selectionController: AbortController | undefined
 let previewController: AbortController | undefined
@@ -401,7 +400,6 @@ const loadSelectedDataset = debounce((data: BusiTreeNode, sequence: number) => {
     .catch(() => {
       if (sequence !== selectionSequence) return
       selectionLoading.value = false
-      selectionError.value = true
       dataPreviewLoading.value = false
     })
 }, 150)
@@ -417,7 +415,6 @@ const handleNodeClick = (data: BusiTreeNode) => {
   previewPending = false
   previewLoaded = false
   selectionLoading.value = true
-  selectionError.value = false
   Object.assign(nodeInfo, defaultNode)
   columnsPreview = []
   dataPreview = []
@@ -571,7 +568,7 @@ const createDataset = (data?: BusiTreeNode) => {
 }
 
 const handleClick = (tabName: TabPaneName) => {
-  if (selectionLoading.value || selectionError.value || !nodeInfo.id) return
+  if (selectionLoading.value || !nodeInfo.id) return
   switch (tabName) {
     case 'dataPreview': {
       if (previewLoaded) {
@@ -603,7 +600,7 @@ const handleClick = (tabName: TabPaneName) => {
           }
         })
         .catch(() => {
-          if (sequence === selectionSequence) selectionError.value = true
+          // Request failures are reported by the shared HTTP interceptor.
         })
         .finally(() => {
           if (sequence !== selectionSequence) return
@@ -1079,9 +1076,6 @@ const proxyAllowDrop = throttle((arg1, arg2) => {
         class="dataset-selection-state"
         aria-busy="true"
       />
-      <div v-else-if="selectionError" class="dataset-selection-state" role="alert">
-        {{ t('data_set.dataset_load_failed') }}
-      </div>
       <template v-else-if="!!nodeInfo.id">
         <div class="dataset-info">
           <div class="info-method">
