@@ -1281,7 +1281,10 @@ public class ExcelUtils {
         } catch (IOException e) {
             try { java.nio.file.Files.deleteIfExists(java.nio.file.Path.of(localFilePath)); }
             catch (IOException cleanup) { e.addSuppressed(cleanup); }
-            DEException.throwException(Translator.get("i18n_file_download_failed") + ", " + e.getMessage());
+            if (StringUtils.containsIgnoreCase(e.getMessage(), "Invalid username/password")) {
+                DEException.throwException(Translator.get("i18n_ftp_invalid_credentials"));
+            }
+            DEException.throwException(Translator.get("i18n_ftp_download_failed"));
         }
         return fileNames;
     }
