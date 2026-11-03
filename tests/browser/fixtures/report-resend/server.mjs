@@ -36,7 +36,7 @@ const server = await createServer({
   ],
   resolve: {
     alias: [
-      { find: /^@\/plugins\/vue-i18n$/, replacement: path.join(fixture, 'i18n.js') },
+      { find: /^@\/plugins\/vue-i18n(?:\/instance)?$/, replacement: path.join(fixture, 'i18n.js') },
       { find: '@', replacement: path.join(frontend, 'src') }
     ],
     dedupe: ['vue', 'vue-i18n', 'element-plus-secondary']
