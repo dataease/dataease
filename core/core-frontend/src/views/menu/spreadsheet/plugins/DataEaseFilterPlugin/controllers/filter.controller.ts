@@ -20,7 +20,10 @@ import {
 } from '@univerjs/ui'
 import SpreadsheetQueryBar from '../components/SpreadsheetQueryBar.vue'
 import DataEaseQueryControlIcon from '../components/DataEaseQueryControlIcon.vue'
-import { ToggleSpreadsheetFilterOperation } from '../commands/operations'
+import {
+  createToggleSpreadsheetFilterOperation,
+  TOGGLE_SPREADSHEET_FILTER_OPERATION_ID
+} from '../commands/operations'
 import { ToggleSpreadsheetFilterMenuFactory } from './menu'
 import { FILTER_PLUGIN_RESOURCE_NAME } from '../../../utils/plugin-resource'
 import { FilterInstanceService } from '../services/filter-instance.service'
@@ -99,7 +102,10 @@ export class DataEaseFilterController extends Disposable {
   }
 
   private _initCommands(): void {
-    this.disposeWithMe(this._commandService.registerCommand(ToggleSpreadsheetFilterOperation))
+    const toggle = createToggleSpreadsheetFilterOperation(unitId =>
+      this._resolveValuesReady(unitId)
+    )
+    this.disposeWithMe(this._commandService.registerCommand(toggle))
   }
 
   private _initSheetSwitchListener(): void {
@@ -169,7 +175,7 @@ export class DataEaseFilterController extends Disposable {
   private _initMenus(): void {
     this._menuManagerService.mergeMenu({
       [RibbonStartGroup.OTHERS]: {
-        [ToggleSpreadsheetFilterOperation.id]: {
+        [TOGGLE_SPREADSHEET_FILTER_OPERATION_ID]: {
           order: 20,
           menuItemFactory: ToggleSpreadsheetFilterMenuFactory
         }
