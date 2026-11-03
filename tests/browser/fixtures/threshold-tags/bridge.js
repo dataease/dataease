@@ -9,6 +9,16 @@ export const groups = Array.from({ length: 4 }, (_, i) => ({
 export const queryCategoryStatusApi = async () => ({ data: ['email', 'lark', 'larksuite'].map(name => ({ name, enable: true })) })
 export const larkGroupOptionApi = async () => ({ data: { valid: true, groupList: groups } })
 export const larksuiteGroupOptionApi = larkGroupOptionApi
-export const webhookOptionsApi = async () => ({ data: [{ id: 'hook', name: 'Webhook recipient' }] })
+export const webhookOptionsApi = async () => {
+  window.webhookCandidateRequests = (window.webhookCandidateRequests || 0) + 1
+  return { data: [{ id: 'hook', name: 'Webhook recipient' }] }
+}
 export const queryAllSubjectsApi = async type => ({ data: type ? [] : [{ id: 'user', name: 'Test recipient', account: 'test' }] })
 export const thresholdPreviewApi = () => { throw new Error('Preview requests are outside this fixture') }
+
+const orgMode = new URLSearchParams(location.search).get('org') || 'member'
+export const useUserStoreWithOut = () => ({
+  getOid: orgMode === 'member' ? '1' : null,
+  getProxyInfo: { proxy: orgMode === 'proxy', proxyOid: orgMode === 'proxy' ? '1' : null }
+})
+export const thresholdBatchReciApi = () => { throw new Error('Saving is outside this fixture') }

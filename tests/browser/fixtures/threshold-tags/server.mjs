@@ -13,13 +13,14 @@ const server = await createServer({
     name: 'threshold-tags-boundaries',
     enforce: 'pre',
     resolveId(id, importer) {
-      if (importer?.endsWith('/ThresholdWarnForm.vue') && ['../../../menu/system/report/api', '../api'].includes(id)) return bridge
+      if ((importer?.endsWith('/ThresholdWarnForm.vue') || importer?.endsWith('/BatchReciDialog.vue')) && ['../../../menu/system/report/api', '../api'].includes(id)) return bridge
     },
     load(id) { if (id.endsWith('.svg')) return 'export default { render() { return null } }' }
   }],
   optimizeDeps: { noDiscovery: true, include: ['vue', 'element-plus-secondary', '@element-plus/icons-vue'] },
   resolve: { alias: [
-    ...['@/api/auth', '@/hooks/web/useI18n', '@/utils/utils', '@/components/icon-custom', '@/components/rich-text/TinymacEditorAlarm.vue'].map(find => ({ find, replacement: bridge })),
+    ...['@/store/modules/user', '@/api/auth', '@/hooks/web/useI18n', '@/utils/utils', '@/components/icon-custom', '@/components/rich-text/TinymacEditorAlarm.vue'].map(find => ({ find, replacement: bridge })),
+    { find: 'threshold-batch', replacement: path.join(frontend, 'src/views/component/threshold-warning/form/BatchReciDialog.vue') },
     { find: 'threshold-form', replacement: path.join(frontend, 'src/views/component/threshold-warning/form/ThresholdWarnForm.vue') },
     { find: '@', replacement: path.join(frontend, 'src') },
     { find: 'vue', replacement: path.join(frontend, 'node_modules/vue/dist/vue.esm-bundler.js') },
