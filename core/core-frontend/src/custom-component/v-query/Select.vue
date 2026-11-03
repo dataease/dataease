@@ -911,7 +911,7 @@ const tagColor = computed(() => {
     ? customStyle.background
     : colorStringToHex(customStyle.background)
 
-  return mixColor('ffffff', hexColor.substr(1), 0.2)
+  return mixColor('ffffff', hexColor.substr(1), 20)
 })
 
 const tagWidth = computed(() => {

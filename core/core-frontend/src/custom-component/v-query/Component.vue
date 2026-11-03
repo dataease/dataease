@@ -169,8 +169,8 @@ const btnHoverStyle = computed(() => {
 
   return {
     rawColor: customStyle.btnColor ?? '#3370ff',
-    hoverColor: customStyle.btnColor ? mixColor('ffffff', btnColor, 0.15) : '#5285FF',
-    activeColor: customStyle.btnColor ? mixColor('000000', btnColor, 0.15) : '#2B5FD9'
+    hoverColor: customStyle.btnColor ? mixColor('ffffff', btnColor, 15) : '#5285FF',
+    activeColor: customStyle.btnColor ? mixColor('000000', btnColor, 15) : '#2B5FD9'
   }
 })
 
@@ -188,7 +188,7 @@ const btnPrimaryActiveColor = computed(() => {
 
 const tagColor = computed(() => {
   if (customStyle.background && !customStyle.background.toLowerCase().includes('#ffffff')) {
-    return mixColor('ffffff', customStyle.background.substr(1), 0.15)
+    return mixColor('ffffff', customStyle.background.substr(1), 15)
   }
   return '#f0f2f5'
 })
