@@ -438,7 +438,19 @@ useEmitt({
 
 useEmitt({
   name: SPREADSHEET_EVENTS.CLOSE_PLUGIN_EDITOR,
-  callback: () => {
+  callback: (discarded?: { unitId: string; pluginIds: string[] }) => {
+    if (discarded) {
+      if (univerApiRef.value?.getActiveWorkbook()?.getId() !== discarded.unitId) return
+      // 删表可能发生在非活动 Sheet，仅撤销被丢弃草稿的打开请求或编辑面板。
+      if (
+        pendingPluginEditorPayload &&
+        discarded.pluginIds.includes(pendingPluginEditorPayload.config.id)
+      ) {
+        pendingPluginEditorPayload = undefined
+      }
+      if (!currentPluginConfig.value || !discarded.pluginIds.includes(currentPluginConfig.value.id))
+        return
+    }
     requestPluginEditorTransition(null)
   }
 })

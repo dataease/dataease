@@ -56,6 +56,10 @@ interface PivotTableHeaderSection {
 export class PivotTableRenderStyleService {
   private readonly ranges = new Map<string, PivotTableRenderRange>()
 
+  getRange(unitId: string, sheetId: string, pluginId: string): PivotTableRenderRange | undefined {
+    return this.ranges.get(this.getRangeKey(unitId, sheetId, pluginId))
+  }
+
   setRange(range: PivotTableRenderRange): void {
     this.ranges.set(this.getRangeKey(range.unitId, range.sheetId, range.pluginId), range)
   }

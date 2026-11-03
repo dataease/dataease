@@ -21,7 +21,6 @@ import {
 } from '@univerjs/ui'
 import {
   INTERCEPTOR_POINT,
-  RemoveSheetCommand,
   SetWorksheetActiveOperation,
   SheetInterceptorService
 } from '@univerjs/sheets'
@@ -48,10 +47,7 @@ import {
 import { DATAEASE_INSERT_DROPDOWN_ID } from '../../DataEaseInsertPlugin/controllers/menu'
 import { SlashCellRenderService } from '../../DataEaseSlashCellPlugin/services/slash-cell-render.service'
 import { InsertPivotTableOperation } from '../commands/insert-operations'
-import {
-  SetPivotTableInstancesMutation,
-  type ISetPivotTableInstancesMutationParams
-} from '../commands/instance-mutations'
+import { registerTableSheetHistory } from '../../../services/table-sheet-history'
 import PivotTableCreateDialog from '../components/PivotTableCreateDialog.vue'
 import { PivotTableDisplayStateService } from '../services/pivot-table-display-state.service'
 import { PivotTableEditProtectionService } from '../services/pivot-table-edit-protection.service'
@@ -135,10 +131,7 @@ export class DataEasePivotTableController extends Disposable {
   }
 
   private initCommands(): void {
-    const commands = [InsertPivotTableOperation, SetPivotTableInstancesMutation]
-    commands.forEach(command => {
-      this.disposeWithMe(this.commandService.registerCommand(command))
-    })
+    this.disposeWithMe(this.commandService.registerCommand(InsertPivotTableOperation))
   }
 
   private initSheetSwitchListener(): void {
@@ -168,80 +161,15 @@ export class DataEasePivotTableController extends Disposable {
 
   private initSheetDeleteLifecycle(): void {
     this.disposeWithMe(
-      this.sheetInterceptorService.interceptCommand({
-        getMutations: commandInfo => {
-          if (commandInfo.id !== RemoveSheetCommand.id) {
-            return { redos: [], undos: [] }
-          }
-
-          const { unitId, subUnitId } = commandInfo.params || {}
-          const workbook = unitId
-            ? this.univerInstanceService.getUnit(unitId, UniverInstanceType.UNIVER_SHEET)
-            : this.univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET)
-          const targetUnitId = unitId || workbook?.getUnitId()
-          if (!targetUnitId || !subUnitId) {
-            return { redos: [], undos: [] }
-          }
-
-          const previousInstances = [...this.pivotTableInstanceService.get(targetUnitId)]
-          const draftIds = new Set(
-            previousInstances
-              .filter(plugin => {
-                const status = this.pluginRenderStatusService.get(plugin.id)
-                return plugin.placement.sheetId === subUnitId && status?.status === 'draft'
-              })
-              .map(plugin => plugin.id)
-          )
-          const nextInstances = previousInstances.filter(
-            plugin => plugin.placement.sheetId !== subUnitId
-          )
-          if (nextInstances.length === previousInstances.length) {
-            return { redos: [], undos: [] }
-          }
-
-          const restoredInstances = previousInstances.filter(plugin => !draftIds.has(plugin.id))
-
-          // 已完成实例跟随 Sheet 进入撤销栈；未完成草稿删除后不再恢复。
-          return {
-            // 删除草稿状态必须早于原生 Sheet mutation，避免 Sheet 切换先触发关闭确认。
-            preRedos: [
-              {
-                id: SetPivotTableInstancesMutation.id,
-                params: {
-                  unitId: targetUnitId,
-                  instances: nextInstances,
-                  discardedDraftIds: [...draftIds]
-                }
-              }
-            ],
-            redos: [],
-            undos: [
-              {
-                id: SetPivotTableInstancesMutation.id,
-                params: { unitId: targetUnitId, instances: restoredInstances }
-              }
-            ]
-          }
-        }
-      })
-    )
-
-    this.disposeWithMe(
-      this.commandService.onCommandExecuted(commandInfo => {
-        if (commandInfo.id !== SetPivotTableInstancesMutation.id) {
-          return
-        }
-
-        const params = commandInfo.params as ISetPivotTableInstancesMutationParams | undefined
-        if (!params?.discardedDraftIds?.length) {
-          return
-        }
-
-        this.dialogService.close('RangeSelectDialog')
-        this.dialogService.close('PivotTableCreateDialog')
-        this.pivotTableInsertionService.cancel()
-        emitter.emit(SPREADSHEET_EVENTS.CLOSE_PLUGIN_EDITOR)
-      })
+      registerTableSheetHistory(
+        this.injector,
+        'dataease.mutation.set-sheet-pivot-table-instances',
+        this.pivotTableInstanceService,
+        this.pivotTableDisplayStateService,
+        this.pivotTableRenderStyleService,
+        config =>
+          this.pivotTableFillService.fillByConfig(this.univerApi, config, { initialRestore: true })
+      )
     )
   }
 
