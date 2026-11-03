@@ -252,7 +252,6 @@ export default {
     client: 'Client'
   },
   data_set: {
-    dataset_load_failed: 'Failed to load the dataset. Select it again to retry.',
     validation_succeeded: 'Field expression validation succeeded',
     to_nth_digits: 'Retain the Mth to Nth digits',
     the_column_permissions: 'Are you sure you want to delete column permissions?',

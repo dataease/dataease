@@ -20,7 +20,7 @@ const tabs = source.slice(
 const code = transformSync(
   selection +
     tabs +
-    ';this.click = handleNodeClick; this.tab = handleClick;this.loading = selectionLoading;this.error = selectionError',
+    ';this.click = handleNodeClick; this.tab = handleClick;this.loading = selectionLoading',
   { loader: 'tsx' }
 ).code
 const settle = () => new Promise(resolve => setImmediate(resolve))
@@ -160,12 +160,8 @@ test('空字段结果可缓存，预览失败后允许重新加载', async () =>
   r.preview[0].reject(new Error('request failed'))
   await settle()
   assert.equal(c.dataPreviewLoading.value, false)
-  assert.equal(c.error.value, true)
-  c.click(leaf('a'))
-  await wait()
-  r.info[1].resolve({ id: 'a' })
-  await settle()
-  assert.equal(c.error.value, false)
+  assert.equal(c.nodeInfo.id, 'a')
+  c.tab('dataPreview')
   assert.equal(r.preview.length, 2)
   r.preview[1].resolve({ allFields: [], data: { fields: [], data: [] } })
   await settle()
@@ -200,7 +196,7 @@ test('点击瞬间清除旧ID、字段、表格和总数，等待详情时不允
   dispose()
 })
 
-test('最新详情失败结束加载并显示错误，重新选择后可恢复', async () => {
+test('最新详情失败结束加载并保留原有未选择状态，重新选择后可恢复', async () => {
   const { c, requests: r, dispose } = fixture()
   c.click(leaf('a'))
   await wait()
@@ -208,10 +204,8 @@ test('最新详情失败结束加载并显示错误，重新选择后可恢复',
   await settle()
   assert.equal(c.loading.value, false)
   assert.equal(c.dataPreviewLoading.value, false)
-  assert.equal(c.error.value, true)
   assert.equal(c.nodeInfo.id, '')
   c.click(leaf('b'))
-  assert.equal(c.error.value, false)
   await wait()
   r.info[1].resolve({ id: 'b' })
   await settle()
@@ -221,7 +215,7 @@ test('最新详情失败结束加载并显示错误，重新选择后可恢复',
   dispose()
 })
 
-test('旧详情失败不能结束最新选择的加载或显示错误', async () => {
+test('旧详情失败不能结束最新选择的加载', async () => {
   const { c, requests: r, dispose } = fixture()
   c.click(leaf('a'))
   await wait()
@@ -229,7 +223,6 @@ test('旧详情失败不能结束最新选择的加载或显示错误', async ()
   r.info[0].reject(new Error('aborted'))
   await settle()
   assert.equal(c.loading.value, true)
-  assert.equal(c.error.value, false)
   assert.equal(c.dataPreviewLoading.value, true)
   dispose()
 })
