@@ -227,6 +227,9 @@ const autoQueryEnabled = computed(() => !buttonList.value.includes('sure'))
 
 const handleVisibleChange = (nextVisible: boolean) => {
   visible.value = nextVisible
+  if (!nextVisible) {
+    pendingOptionConditionIds.clear()
+  }
 }
 
 const handleConfigChange = (nextConfig: SpreadsheetFilterConfig) => {
