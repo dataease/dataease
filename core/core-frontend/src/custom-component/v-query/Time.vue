@@ -5,6 +5,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import type { ManipulateType } from 'dayjs'
 import { type TimeRange } from './time-format'
 import dayjs from 'dayjs'
+import { FixedTimeError, readFixedTimeValue } from './fixed-time-value'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useShortcuts } from './shortcuts'
 import {
@@ -85,6 +86,15 @@ const selectValue = ref()
 const multiple = ref(false)
 const dvMainStore = dvMainStoreWithOut()
 const { config } = toRefs(props)
+const toPickerValue = (value: unknown) => {
+  try {
+    const resolved = readFixedTimeValue(value)
+    return Array.isArray(resolved) ? [...resolved] : resolved
+  } catch (error) {
+    if (!(error instanceof FixedTimeError)) throw error
+    return config.value.displayType === '7' ? [] : undefined
+  }
+}
 const minDate = new Date('1970/1/1')
 const maxDate = new Date('2100/1/1')
 watch(
@@ -95,7 +105,7 @@ watch(
     if (isMultiple) {
       multiple.value = isMultiple
     }
-    selectValue.value = Array.isArray(val) ? [...val] : val
+    selectValue.value = toPickerValue(val)
     nextTick(() => {
       multiple.value = isMultiple
     })
@@ -132,14 +142,12 @@ watch(
   val => {
     if (props.isConfig) return
     if (config.value.displayType === '7') {
-      selectValue.value = Array.isArray(val) ? [...val] : val
+      selectValue.value = toPickerValue(val)
     }
     nextTick(() => {
       multiple.value = config.value.displayType === '7'
       if (!multiple.value) {
-        selectValue.value = Array.isArray(config.value.selectValue)
-          ? [...config.value.selectValue]
-          : config.value.selectValue
+        selectValue.value = toPickerValue(config.value.selectValue)
       }
     })
   }
@@ -167,9 +175,7 @@ const handleValueChange = () => {
     config.value.defaultValue = undefined
     return
   }
-  config.value.defaultValue = Array.isArray(value)
-    ? value.map(ele => new Date(ele).toLocaleString())
-    : new Date(value).toLocaleString()
+  config.value.defaultValue = value
 }
 
 const init = () => {
@@ -177,7 +183,7 @@ const init = () => {
   const plus = displayType === '7'
   if (defaultValueCheck) {
     config.value.selectValue = Array.isArray(defaultValue) ? [...defaultValue] : defaultValue
-    selectValue.value = Array.isArray(defaultValue) ? [...defaultValue] : defaultValue
+    selectValue.value = toPickerValue(defaultValue)
   } else {
     config.value.selectValue = plus ? [] : undefined
     selectValue.value = plus ? [] : undefined

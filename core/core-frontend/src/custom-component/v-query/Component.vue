@@ -10,6 +10,7 @@ import QueryConditionConfiguration from './QueryConditionConfiguration.vue'
 import type { ComponentInfo } from '@/api/chart'
 import { mixColor } from '@/utils/color'
 import { DynamicTimeError, evaluateRuntimeDynamicDefault } from './dynamic-default-time'
+import { normalizeFixedTimeConfig } from './fixed-time-value'
 import { infoFormat, splitConditionValues } from './options'
 import {
   onBeforeUnmount,
@@ -309,13 +310,15 @@ let oldList = []
 let isResetData = false
 watch(
   () => props.element.propValue,
-  () => {
-    list.value = [...props.element.propValue]
+  value => {
+    const conditions = Array.isArray(value) ? value : []
+    conditions.forEach(normalizeFixedTimeConfig)
+    list.value = [...conditions]
     if (isResetData) {
       isResetData = false
       return
     }
-    oldList = cloneDeep(props.element.propValue)
+    oldList = cloneDeep(conditions)
   },
   {
     immediate: true
