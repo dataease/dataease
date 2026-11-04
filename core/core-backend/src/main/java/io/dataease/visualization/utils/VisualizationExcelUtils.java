@@ -33,19 +33,17 @@ public class VisualizationExcelUtils {
     // POI 与工作表规范的名字长度上限，超出会被静默截断
     private static final int SHEET_NAME_MAX_LENGTH = 31;
     private static final String FALLBACK_SHEET_NAME = "Sheet";
-    private static final Map<Workbook, CellStyle> NUMERIC_STYLE_CACHE = new HashMap<>();
-    private static final Map<Workbook, CellStyle> INTEGER_STYLE_CACHE = new HashMap<>();
 
-    private static CellStyle getNumericCellStyle(Workbook workbook) {
-        return NUMERIC_STYLE_CACHE.computeIfAbsent(workbook, wb -> {
+    private static CellStyle getNumericCellStyle(Workbook workbook, Map<Workbook, CellStyle> cache) {
+        return cache.computeIfAbsent(workbook, wb -> {
             CellStyle style = wb.createCellStyle();
             style.setDataFormat(wb.createDataFormat().getFormat("#.##########"));
             return style;
         });
     }
 
-    private static CellStyle getIntegerCellStyle(Workbook workbook) {
-        return INTEGER_STYLE_CACHE.computeIfAbsent(workbook, wb -> {
+    private static CellStyle getIntegerCellStyle(Workbook workbook, Map<Workbook, CellStyle> cache) {
+        return cache.computeIfAbsent(workbook, wb -> {
             CellStyle style = wb.createCellStyle();
             style.setDataFormat(wb.createDataFormat().getFormat("0"));
             return style;
@@ -113,6 +111,9 @@ public class VisualizationExcelUtils {
         }
         SXSSFWorkbook wb = new SXSSFWorkbook();
         Set<String> usedSheetNames = new HashSet<>();
+        // 样式缓存跟随本次导出的 workbook，函数返回后即可回收；放在静态字段上会让每次导出都永久留住已经 close() 的 Workbook
+        Map<Workbook, CellStyle> numericStyleCache = new HashMap<>();
+        Map<Workbook, CellStyle> integerStyleCache = new HashMap<>();
 
         sheets.forEach(sheet -> {
 
@@ -145,9 +146,9 @@ public class VisualizationExcelUtils {
                             if (i > 0 && (fieldTypes.get(j).equals(DeTypeConstants.DE_INT) || fieldTypes.get(j).equals(DeTypeConstants.DE_FLOAT)) && StringUtils.isNotEmpty(rowData.get(j))) {
                                 BigDecimal decimal = new BigDecimal(rowData.get(j)).stripTrailingZeros();
                                 if (decimal.scale() <= 0) {
-                                    cell.setCellStyle(getIntegerCellStyle(wb));
+                                    cell.setCellStyle(getIntegerCellStyle(wb, integerStyleCache));
                                 } else {
-                                    cell.setCellStyle(getNumericCellStyle(wb));
+                                    cell.setCellStyle(getNumericCellStyle(wb, numericStyleCache));
                                 }
                                 cell.setCellValue(decimal.doubleValue());
                             } else {
