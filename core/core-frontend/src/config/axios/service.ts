@@ -285,7 +285,7 @@ service.interceptors.response.use(
         message: useI18n().t('common.file_size_exceed_tips'),
         showClose: true
       })
-      return
+      return Promise.reject(error)
     }
     const header = error.response?.headers as AxiosHeaders
     if (
@@ -333,7 +333,7 @@ service.interceptors.response.use(
         showMsg(useI18n().t('common.permission_denied_tips'), '-changed-')
       }
     }
-    if (error?.response.status === 400) {
+    if (error?.response.status >= 400) {
       return Promise.reject(error)
     }
 
