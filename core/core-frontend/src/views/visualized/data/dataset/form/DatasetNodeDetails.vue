@@ -82,9 +82,8 @@ const getDatasetFieldType = (field: Field): FieldTypePath => {
   const draft = fieldDrafts.value[field.originName]?.typePath
   if (draft) return draft
   const saved = getDatasetField(field) as DatasetField
-  return saved.deTypeArr?.length
-    ? saved.deTypeArr
-    : saved.deType === 1 && saved.deExtractType === 0
+  if (saved.deTypeArr?.length) return saved.deTypeArr
+  return saved.deType === 1 && saved.deExtractType === 0
     ? [1, saved.dateFormatType || 'yyyy-MM-dd']
     : [saved.deType]
 }
