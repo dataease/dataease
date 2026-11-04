@@ -188,46 +188,48 @@ const optInit = (type, data: BusiTreeNode, exec, parentSelect = false, attachPar
   } else {
     resourceForm.name = data.name
   }
-  queryTreeApi(request).then(res => {
-    filterFreeFolder(res, curCanvasType.value)
-    const resultTree = res || []
-    dfs(resultTree as unknown as BusiTreeNode[])
-    state.tData = (resultTree as unknown as BusiTreeNode[]) || []
-    if (state.tData.length && state.tData[0].name === 'root' && state.tData[0].id === '0') {
-      state.tData[0].name =
-        curCanvasType.value === 'dataV'
-          ? t('work_branch.big_data_screen')
-          : t('work_branch.dashboard')
-    }
-    tData = [...state.tData]
-    if ('move' === exec) {
-      cutTargetTree(state.tData, data.id)
-    }
-    if (['newLeaf', 'newFolder'].includes(exec)) {
-      resourceForm.pid = data.id as string
-      pid.value = data.id
-      if (!findNodeById(state.tData, resourceForm.pid)) {
-        const firstValid = findFirstValidFolder(state.tData)
-        if (firstValid) {
-          resourceForm.pid = firstValid.id as string
-          pid.value = firstValid.id
-        }
+  if ('rename' !== exec) {
+    queryTreeApi(request).then(res => {
+      filterFreeFolder(res, curCanvasType.value)
+      const resultTree = res || []
+      dfs(resultTree as unknown as BusiTreeNode[])
+      state.tData = (resultTree as unknown as BusiTreeNode[]) || []
+      if (state.tData.length && state.tData[0].name === 'root' && state.tData[0].id === '0') {
+        state.tData[0].name =
+          curCanvasType.value === 'dataV'
+            ? t('work_branch.big_data_screen')
+            : t('work_branch.dashboard')
       }
-    } else if ('copy' === exec) {
-      id.value = data.id
-      const sourcePid = data.pid as string
-      if (sourcePid) {
-        resourceForm.pid = sourcePid
-        pid.value = sourcePid
-        if (!findNodeById(state.tData, sourcePid)) {
-          resourceForm.pid = ''
-          pid.value = ''
-        }
+      tData = [...state.tData]
+      if ('move' === exec) {
+        cutTargetTree(state.tData, data.id)
       }
-    } else {
-      id.value = data.id
-    }
-  })
+      if (['newLeaf', 'newFolder'].includes(exec)) {
+        resourceForm.pid = data.id as string
+        pid.value = data.id
+        if (!findNodeById(state.tData, resourceForm.pid)) {
+          const firstValid = findFirstValidFolder(state.tData)
+          if (firstValid) {
+            resourceForm.pid = firstValid.id as string
+            pid.value = firstValid.id
+          }
+        }
+      } else if ('copy' === exec) {
+        id.value = data.id
+        const sourcePid = data.pid as string
+        if (sourcePid) {
+          resourceForm.pid = sourcePid
+          pid.value = sourcePid
+          if (!findNodeById(state.tData, sourcePid)) {
+            resourceForm.pid = ''
+            pid.value = ''
+          }
+        }
+      } else {
+        id.value = data.id
+      }
+    })
+  }
   cmd.value = exec
   resourceDialogShow.value = true
   resourceFormRules.value = {
@@ -319,8 +321,8 @@ const saveResource = () => {
           params.pid = resourceForm.pid || pid.value || '0'
           break
         case 'rename':
-          params.pid = pid.value as string
-          params.id = id.value
+          params.pid = state.targetInfo.pid
+          params.id = state.targetInfo.id
           break
         default:
           params.pid = resourceForm.pid || pid.value || '0'

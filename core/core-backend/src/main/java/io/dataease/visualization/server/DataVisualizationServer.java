@@ -1206,7 +1206,13 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
         if (DataVisualizationConstants.RESOURCE_OPT_TYPE.MOVE.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.RENAME.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.EDIT.equals(request.getOpt()) || DataVisualizationConstants.RESOURCE_OPT_TYPE.COPY.equals(request.getOpt())) {
             if (request.getPid() == null) {
+                if (request.getId() == null) {
+                    DEException.throwException(ResultCode.PARAM_NOT_COMPLETE.code(), ResultCode.PARAM_NOT_COMPLETE.message());
+                }
                 DataVisualizationInfo result = dataVisualizationInfoRepository.findById(request.getId()).orElse(null);
+                if (result == null) {
+                    DEException.throwException(Translator.get("i18n_resource_not_exists"));
+                }
                 request.setPid(result.getPid());
             }
         }
