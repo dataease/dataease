@@ -2383,6 +2383,14 @@ export default {
     liquid_border_distance: '边框间距'
   },
   dataset: {
+    dataset_field_name: '数据集字段名',
+    dataset_field_type: '数据集字段类型',
+    source_physical_table: '来源物理表',
+    field_remark: '备注',
+    canvas_fullscreen: '画布全屏',
+    node_details_fullscreen: '节点详情全屏',
+    next_data_processing: '下一步，数据处理',
+    table_relationship: '数据表关联',
     field_value: '字段值',
     scope_edit: '仅编辑时生效',
     scope_all: '数据集预览时全局生效',

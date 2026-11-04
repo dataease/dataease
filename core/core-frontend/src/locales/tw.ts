@@ -2364,6 +2364,14 @@ export default {
     liquid_border_distance: '邊框間距'
   },
   dataset: {
+    dataset_field_name: '資料集欄位名稱',
+    dataset_field_type: '資料集欄位類型',
+    source_physical_table: '來源實體表',
+    field_remark: '備註',
+    canvas_fullscreen: '畫布全螢幕',
+    node_details_fullscreen: '節點詳情全螢幕',
+    next_data_processing: '下一步，資料處理',
+    table_relationship: '資料表關聯',
     field_value: '欄位值',
     scope_edit: '僅編輯時生效',
     scope_all: '資料集預覽時全域生效',
