@@ -148,6 +148,17 @@ export const prepareMixAxisAlignment = (
     // 另一侧为空或隐藏时仍需提前恢复保域轴，不能在绘图阶段再改变布局已测量的范围
     if (fixedRange) {
       setAxisRange(axes[index], index, fixedRange)
+    } else if (axisState.auto[index]) {
+      const scale = makeScale(axes[index])
+      const domain = scale.getOptions().domain as number[]
+      // 全零自动轴需要有效范围，否则唯一的零刻度会落在轴中点并跳过双轴对齐
+      if (domain?.length === 2 && domain.every(value => value === 0)) {
+        scale.update({ domain: [0, 1], nice: false })
+        const range = getAxisRange(scale)
+        if (range) {
+          setAxisRange(axes[index], index, range)
+        }
+      }
     }
   })
   if (
