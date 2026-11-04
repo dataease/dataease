@@ -148,7 +148,7 @@ const triggerFilterRole = () => {
   state.roleData.forEach(roleGroup => {
     roleGroup.children?.forEach(data => {
       setColorName(data, value)
-      data['hidden'] = value && !data.name.includes(value)
+      data['hidden'] = value && !data.name.toLowerCase().includes(value.toLowerCase())
     })
   })
 }
@@ -220,17 +220,16 @@ const selectedSearch = (sysVariableId?: string) => {
 
 const selectedVariableValue = (sysVariableId?: string) => {
   if (sysVariableId) {
-    valueForVariable(sysVariableId)
-      .then(res => {
-        if (res.data.length > 0) {
-          Object.assign(state.form, res.data[0])
-        } else {
-          state.form.id = null
-          state.form.begin = ''
-          state.form.end = ''
-          state.form.sysVariableId = selectedRoleId.value
-        }
-      })
+    valueForVariable(sysVariableId).then(res => {
+      if (res.data.length > 0) {
+        Object.assign(state.form, res.data[0])
+      } else {
+        state.form.id = null
+        state.form.begin = ''
+        state.form.end = ''
+        state.form.sysVariableId = selectedRoleId.value
+      }
+    })
   }
 }
 const variableSearch = (resolve, reject, type, data) => {

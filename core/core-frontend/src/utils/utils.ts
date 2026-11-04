@@ -4,6 +4,7 @@ import { useCache } from '@/hooks/web/useCache'
 import { loadScript } from '@/utils/RemoteJs'
 import { ElMessage } from 'element-plus-secondary'
 import DOMPurify from 'dompurify'
+import { escape } from 'lodash-es'
 import * as dd from 'dingtalk-jsapi'
 import { getBrowserLanguages, resolveLocale } from '@/utils/locale'
 
@@ -110,11 +111,11 @@ export const setColorName = (obj, keyword: string, key?: string, colorKey?: stri
   const index = name.toLowerCase().indexOf(keyword.toLowerCase())
   if (index > -1) {
     const textCode =
-      name.substring(0, index) +
+      escape(name.substring(0, index)) +
       '<span class="search-key-span">' +
-      name.substring(index, index + keyword.length) +
+      escape(name.substring(index, index + keyword.length)) +
       '</span>' +
-      name.substring(index + keyword.length, name.length)
+      escape(name.substring(index + keyword.length, name.length))
     obj[colorKey] = DOMPurify.sanitize(textCode, {
       ALLOWED_TAGS: ['span'],
       ALLOWED_ATTR: ['class']
